@@ -6,6 +6,8 @@
         "FishNet.Runtime",
         "SS3D.Attributes",
         "SS3D.Systems",
+        "SS3D.Atmospherics.ECS",
+        "SS3D.Rendering.URP",
         "Coimbra",
         "SS3D.Data",
         "SS3D.Logging",

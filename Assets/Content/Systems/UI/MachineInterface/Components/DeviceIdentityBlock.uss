@@ -1,21 +1,18 @@
-@import url("../Tokens/diegetic-tokens.uss");
-@import url("../../Tokens/ss3d-typography.uss");
 
 .device-identity-block {
     flex-direction: column;
-    margin-bottom: 14px;
 }
 
 .device-identity-block__title {
-    font-size: 22px;
-    letter-spacing: 3px;
+    font-size: 32px;
+    letter-spacing: 2.5px;
     color: var(--ss3d-text-primary);
     -unity-text-align: upper-left;
     white-space: normal;
 }
 
 .device-identity-block__subtitle {
-    font-size: 13px;
+    font-size: 15px;
     color: var(--ss3d-text-secondary);
     margin-top: 4px;
     white-space: normal;

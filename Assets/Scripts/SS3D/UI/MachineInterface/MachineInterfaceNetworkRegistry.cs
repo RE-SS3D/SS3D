@@ -21,6 +21,18 @@ namespace SS3D.UI.MachineInterface
             Register<IdConsoleInterfaceSnapshot>(
                 GetIdConsoleInterfaceId,
                 IdConsoleInterfaceSnapshotMapper.ToViewModel);
+            Register<PumpInterfaceSnapshot>(
+                GetPumpInterfaceId,
+                PumpInterfaceSnapshotMapper.ToViewModel);
+            Register<AirAlarmInterfaceSnapshot>(
+                GetAirAlarmInterfaceId,
+                AirAlarmInterfaceSnapshotMapper.ToViewModel);
+            Register<ScrubberInterfaceSnapshot>(
+                GetScrubberInterfaceId,
+                ScrubberInterfaceSnapshotMapper.ToViewModel);
+            Register<VentInterfaceSnapshot>(
+                GetVentInterfaceId,
+                VentInterfaceSnapshotMapper.ToViewModel);
         }
 
         public static void DispatchOpen<TSnapshot>(
@@ -58,6 +70,14 @@ namespace SS3D.UI.MachineInterface
         private static string GetApcInterfaceId(ApcInterfaceSnapshot snapshot) => snapshot.InterfaceId;
 
         private static string GetSmesInterfaceId(SmesInterfaceSnapshot snapshot) => snapshot.InterfaceId;
+
+        private static string GetPumpInterfaceId(PumpInterfaceSnapshot snapshot) => snapshot.InterfaceId;
+
+        private static string GetAirAlarmInterfaceId(AirAlarmInterfaceSnapshot snapshot) => snapshot.InterfaceId;
+
+        private static string GetScrubberInterfaceId(ScrubberInterfaceSnapshot snapshot) => snapshot.InterfaceId;
+
+        private static string GetVentInterfaceId(VentInterfaceSnapshot snapshot) => snapshot.InterfaceId;
 
         private static void Register<TSnapshot>(
             Func<TSnapshot, string> getInterfaceId,

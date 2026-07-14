@@ -11,9 +11,8 @@ GameObject:
   - component: {fileID: 118807477453521061}
   - component: {fileID: 5337321269354081326}
   - component: {fileID: 4164283902413096174}
-  - component: {fileID: 3309572359951597859}
   m_Layer: 0
-  m_Name: ScrubberFan
+  m_Name: Scrubber Fan
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -91,28 +90,6 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!95 &3309572359951597859
-Animator:
-  serializedVersion: 7
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 803445164596243578}
-  m_Enabled: 1
-  m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: 0b60a6b65f27ff84d82e9ba0a4655f6b, type: 2}
-  m_CullingMode: 0
-  m_UpdateMode: 0
-  m_ApplyRootMotion: 0
-  m_LinearVelocityBlending: 0
-  m_StabilizeFeet: 0
-  m_AnimatePhysics: 0
-  m_WarningMessage: 
-  m_HasTransformHierarchy: 1
-  m_AllowConstantClipSamplingOptimization: 1
-  m_KeepAnimatorStateOnDisable: 0
-  m_WriteDefaultValuesOnDisable: 0
 --- !u!1 &9154955770433736351
 GameObject:
   m_ObjectHideFlags: 0
@@ -130,6 +107,10 @@ GameObject:
   - component: {fileID: 118605385810179959}
   - component: {fileID: -7485152300816284691}
   - component: {fileID: -5085990572914726944}
+  - component: {fileID: 8827364519023341188}
+  - component: {fileID: 8827364519023341194}
+  - component: {fileID: 8827364519023341195}
+  - component: {fileID: 8827364519023341196}
   m_Layer: 0
   m_Name: Scrubber
   m_TagString: Untagged
@@ -277,7 +258,11 @@ MonoBehaviour:
   <IsNested>k__BackingField: 0
   <ComponentIndex>k__BackingField: 0
   <PredictedSpawn>k__BackingField: {fileID: 0}
-  _networkBehaviours: []
+  _networkBehaviours:
+  - {fileID: 8827364519023341188}
+  - {fileID: 8827364519023341194}
+  - {fileID: 8827364519023341195}
+  - {fileID: 8827364519023341196}
   <ParentNetworkObject>k__BackingField: {fileID: 0}
   <ChildNetworkObjects>k__BackingField: []
   SerializedTransformProperties:
@@ -329,3 +314,77 @@ MonoBehaviour:
   _updateHostVisibility: 1
   _observerConditions:
   - {fileID: 11400000, guid: cc503f7541ebd424c94541e6a767efee, type: 2}
+--- !u!114 &8827364519023341188
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9154955770433736351}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5d1a745b911a46b494299fd0f3068a83, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _componentIndexCache: 0
+  _addedNetworkObject: {fileID: -1764620254179843544}
+  _networkObjectCache: {fileID: -1764620254179843544}
+  _animator: {fileID: 4484013068238330198}
+  _powerConsumer: {fileID: 8827364519023341194}
+  _enabled: 1
+  _animatorActive: 0
+  _portFlowing: 0
+  _previewAnimatorInEditor: 1
+--- !u!114 &8827364519023341194
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9154955770433736351}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b5dc697195ff36649947ce641b391e16, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _componentIndexCache: 1
+  _addedNetworkObject: {fileID: -1764620254179843544}
+  _networkObjectCache: {fileID: -1764620254179843544}
+  _powerConsumption: 0.2
+  _channel: 2
+  _powerStatus: 0
+--- !u!114 &8827364519023341195
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9154955770433736351}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1bbc87ddd49b01f4098910ffdf858004, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _componentIndexCache: 2
+  _addedNetworkObject: {fileID: -1764620254179843544}
+  _networkObjectCache: {fileID: -1764620254179843544}
+--- !u!114 &8827364519023341196
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9154955770433736351}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7f2a9c4e1b8d4036a5e2f9c8b1d4e6a3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _componentIndexCache: 3
+  _addedNetworkObject: {fileID: -1764620254179843544}
+  _networkObjectCache: {fileID: -1764620254179843544}
+  _title: "SCRUBBER \xB7 ATMOSPHERICS"
+  _modelLabel: "SCB-09 \xB7 atmospheric scrubber unit"
+  _deviceTitle: SCB-09
+  _subtitle: "Engineering Bay 3 \u2014 Atmospheric Scrubber"
+  _powerConsumer: {fileID: 8827364519023341194}

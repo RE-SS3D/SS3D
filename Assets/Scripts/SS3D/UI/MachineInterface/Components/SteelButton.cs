@@ -13,6 +13,7 @@ namespace SS3D.UI.MachineInterface.Components
         public SteelButton()
         {
             AddToClassList("steel-button");
+            pickingMode = PickingMode.Position;
 
             _button = new Button(OnClicked);
             _button.AddToClassList("steel-button__control");

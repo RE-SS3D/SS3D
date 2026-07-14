@@ -1,0 +1,128 @@
+
+.access-panel--hidden {
+    display: none;
+}
+
+.access-gate-panel {
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 24px 20px;
+    flex-grow: 1;
+}
+
+.access-gate-panel__slot {
+    width: 52px;
+    height: 36px;
+    border-radius: 3px;
+    background-color: var(--ss3d-diegetic-inset);
+    border-width: 1px;
+    border-color: rgba(0, 0, 0, 0.45);
+    margin-bottom: 12px;
+    align-items: center;
+    justify-content: center;
+}
+
+.access-gate-panel__slot-clip {
+    width: 100%;
+    height: 100%;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    position: relative;
+}
+
+.access-gate-panel__slot-line {
+    width: 34px;
+    height: 2px;
+    background-color: var(--ss3d-border-subtle);
+}
+
+.access-gate-panel__scan-overlay {
+    position: absolute;
+    left: 2px;
+    right: 2px;
+    top: 2px;
+    bottom: 2px;
+    border-radius: 2px;
+    background-color: var(--ss3d-feedback-info);
+    opacity: 0.35;
+}
+
+.access-gate-panel__headline {
+    font-size: 20px;
+    letter-spacing: 1.6px;
+    color: var(--ss3d-text-primary);
+    -unity-text-align: middle-center;
+    margin-bottom: 4px;
+}
+
+.access-gate-panel__sub {
+    font-size: 11px;
+    color: var(--ss3d-text-tertiary);
+    -unity-text-align: middle-center;
+    white-space: normal;
+    margin-bottom: 12px;
+}
+
+.access-gate-panel__sub.font-terminal {
+    color: var(--ss3d-text-tertiary);
+}
+
+.access-gate-panel__button.steel-button {
+    align-self: center;
+    width: 200px;
+}
+
+.access-gate-panel__button .steel-button__control {
+    width: 100%;
+    min-width: 0;
+    min-height: 40px;
+    margin: 0;
+    padding: 8px 22px 6px;
+    font-size: 15px;
+    letter-spacing: 1.2px;
+    -unity-text-align: middle-center;
+    border-radius: var(--ss3d-radius-sm);
+    border-top-width: 1px;
+    border-right-width: 1px;
+    border-left-width: 1px;
+    border-bottom-width: 4px;
+    border-top-color: #2e3138;
+    border-right-color: #2e3138;
+    border-left-color: #2e3138;
+    border-bottom-color: rgba(0, 0, 0, 0.55);
+    background-color: var(--ss3d-diegetic-panel-raised);
+    color: var(--ss3d-text-primary);
+}
+
+.access-gate-panel__button .steel-button__control:hover {
+    background-color: #35373a;
+    border-top-color: #3a3d44;
+    border-right-color: #3a3d44;
+    border-left-color: #3a3d44;
+    border-bottom-color: rgba(0, 0, 0, 0.55);
+}
+
+.access-gate-panel__button .steel-button__control:active {
+    background-color: var(--ss3d-accent-rust-dim);
+    color: var(--ss3d-text-on-accent);
+    border-top-color: #6b2f1f;
+    border-right-color: #6b2f1f;
+    border-left-color: #6b2f1f;
+    border-bottom-width: 1px;
+    padding-top: 10px;
+    margin-top: 3px;
+}
+
+.access-gate-panel__button .steel-button__control:disabled {
+    background-color: var(--ss3d-diegetic-panel-raised);
+    color: var(--ss3d-text-tertiary);
+    border-top-color: #1e2126;
+    border-right-color: #1e2126;
+    border-left-color: #1e2126;
+    border-bottom-color: #1e2126;
+    border-bottom-width: 1px;
+    padding-top: 8px;
+    margin-top: 0;
+}

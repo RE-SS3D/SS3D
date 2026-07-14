@@ -1,8 +1,19 @@
-@import url("../../Tokens/ss3d-tokens.uss");
 
-.smes-unit-interface {
+#identity {
+    margin-bottom: 14px;
+}
+
+#status-chip {
+    margin-bottom: 14px;
+}
+
+.smes-access-region {
     flex-direction: column;
-    width: 100%;
+    flex-grow: 1;
+    min-width: 0;
+    background-color: var(--ss3d-diegetic-panel-body);
+    border-radius: var(--ss3d-radius-md);
+    margin-bottom: 14px;
 }
 
 .smes-section-title {
@@ -15,7 +26,6 @@
 .smes-metrics-row {
     flex-direction: row;
     align-items: stretch;
-    margin-top: 14px;
 }
 
 .smes-storage-column {
@@ -46,15 +56,11 @@
 
 .smes-controls-row {
     flex-direction: row;
-    margin-top: 14px;
-    padding-top: 6px;
-    border-top-width: 1px;
-    border-top-color: var(--ss3d-border-subtle);
 }
 
 .smes-controls-row .rate-control {
     flex-grow: 1;
-    flex-shrink: 1;
+    flex-basis: 0;
     min-width: 0;
     border-top-width: 0;
     padding-top: 0;
@@ -64,12 +70,17 @@
     margin-right: 14px;
 }
 
-.smes-controls-row .toggle-pill__button {
-    min-width: 90px;
-}
-
 .smes-unit-interface .storage-cell-row__cell {
     height: 26px;
+}
+
+#storage-flow-section .panel-section__content {
+    padding-top: 14px;
+}
+
+#controls-section .rate-control {
+    border-top-width: 0;
+    padding-top: 0;
 }
 
 .tone-success {

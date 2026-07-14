@@ -47,7 +47,7 @@ namespace SS3D.UI.MachineInterface
                 case SmesPowerState.Degraded:
                 {
                     model.StatusBadgeText = "DEGRADED";
-                    model.ExteriorStatusWord = "Running on Reserve";
+                    model.ExteriorStatusWord = "On Reserve";
                     model.ExteriorInputWord = model.InputActive ? "AVAILABLE" : "NO SIGNAL";
                     break;
                 }

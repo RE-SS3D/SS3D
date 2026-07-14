@@ -34,9 +34,13 @@ namespace SS3D.UI.MachineInterface.Components
             VisualElement track = new();
             track.AddToClassList("battery-bar__track");
 
+            VisualElement trackClip = new();
+            trackClip.AddToClassList("battery-bar__track-clip");
+
             _fill = new VisualElement();
             _fill.AddToClassList("battery-bar__fill");
-            track.Add(_fill);
+            trackClip.Add(_fill);
+            track.Add(trackClip);
 
             VisualElement footer = new();
             footer.AddToClassList("battery-bar__footer");

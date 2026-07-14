@@ -1,0 +1,57 @@
+
+.connected-device-row {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 10px;
+    border-radius: var(--ss3d-radius-sm);
+    border-width: 1px;
+    border-color: rgba(0, 0, 0, 0);
+    cursor: link;
+}
+
+.connected-device-row--selected {
+    background-color: var(--ss3d-diegetic-inset);
+    border-color: var(--ss3d-border-default);
+}
+
+.connected-device-row__left {
+    flex-direction: row;
+    align-items: center;
+    flex-grow: 1;
+    min-width: 0;
+    margin-right: 8px;
+}
+
+.connected-device-row__type {
+    width: 64px;
+    flex-shrink: 0;
+    font-size: 9px;
+    letter-spacing: 2px;
+    color: var(--ss3d-text-tertiary);
+    padding: 0;
+    margin-left: 10px;
+    background-color: rgba(0, 0, 0, 0);
+}
+
+.connected-device-row__name {
+    font-size: 13px;
+    color: var(--ss3d-text-primary);
+    padding: 0;
+    flex-grow: 1;
+    min-width: 0;
+    white-space: normal;
+}
+
+.connected-device-row__state {
+    font-size: 11px;
+    flex-shrink: 0;
+    padding: 0;
+    background-color: rgba(0, 0, 0, 0);
+}
+
+.panel-section__content .connected-device-row__type,
+.panel-section__content .connected-device-row__name,
+.panel-section__content .connected-device-row__state {
+    background-color: rgba(0, 0, 0, 0);
+}

@@ -17,7 +17,7 @@ Authoring conventions: [Documents/SKILL.md](../SKILL.md). Agent rules: [AGENTS.m
 | Localization | [localization](systems/localization.md) | partial | `LocalizedTextService` and examine string tables |
 | Logging | [logging](systems/logging.md) | shipped | Serilog structured logging |
 | Permissions | [permissions](systems/permissions.md) | stub | Admin permission checks |
-| Rendering | [rendering](systems/rendering.md) | partial | URP features including selection pick pass |
+| Rendering | [rendering](systems/rendering.md) | partial | URP features: selection pick pass, atmospherics scatter/glow/distortion |
 
 ## Gameplay
 
@@ -26,7 +26,8 @@ Authoring conventions: [Documents/SKILL.md](../SKILL.md). Agent rules: [AGENTS.m
 | Interactions (runtime) | [interactions-runtime](systems/interactions-runtime.md) | shipped | `InteractionController`, radial menu, armed interactions, outlines |
 | Selection | [selection](systems/selection.md) | shipped | Shader-ID mesh picking for interaction targeting |
 | Examine | [examine](systems/examine.md) | shipped | Hover tooltips and shift-hold detailed examine |
-| Tile / construction | [tile](systems/tile.md) | shipped | Tilemap, adjacency engine, construction |
+| Tile / construction | [tile](systems/tile.md) | shipped | Tilemap, adjacency engine, construction, dynamic tile occupancy; build-menu client layer visibility |
+| Atmospherics | [atmospherics](systems/atmospherics.md) | partial | ECS turf gas sim; GPU fog/fire on server/host only — client VFX sync planned |
 | Area | [area](systems/area.md) | partial | APC-seeded flood-fill, area power, lighting state, wall light switches |
 | Electricity | [electricity](systems/electricity.md) | partial | kWh storage, HV cable grid, APC/SMES/generators, consumer visuals |
 | Substances | [substances](systems/substances.md) | partial | Containers, transfer interactions, Tier 2 armed proof-of-concept |
@@ -40,7 +41,7 @@ Authoring conventions: [Documents/SKILL.md](../SKILL.md). Agent rules: [AGENTS.m
 | Gamemodes / roles / traits | [gamemodes-roles-traits](systems/gamemodes-roles-traits.md) | stub | Objectives, job roles, character traits |
 | Player control | [player-control](systems/player-control.md) | stub | Player subsystem and input routing |
 | Chat / audio / screens | [chat-audio-screens](systems/chat-audio-screens.md) | stub | Chat, audio, camera controllers |
-| Machine interface UI | [machine-interface](systems/machine-interface.md) | shipped | Modal APC/SMES panels and diegetic device shell (vending) |
+| Machine interface UI | [machine-interface](systems/machine-interface.md) | shipped | Diegetic APC/SMES panels with ID access gates; vending/gas pump diegetic shell |
 | Inputs | [inputs](systems/inputs.md) | stub | Input subsystem |
 | In-game console | [ingame-console](systems/ingame-console.md) | stub | Dev/admin console commands |
 
@@ -56,6 +57,8 @@ Implementation history — not navigation maps. Update `Status` in the header wh
 | [2026-07_diegetic-screen-ui-framework](2026-07_diegetic-screen-ui-framework.md) | shipped |
 | [2026-07_interaction-system-hardening](2026-07_interaction-system-hardening.md) | shipped |
 | [2026-07_area-foundation](2026-07_area-foundation.md) | shipped (deferred: live mutation recompute, editor merge/split) |
+| [2026-07_atmos-ecs-foundation](2026-07_atmos-ecs-foundation.md) | shipped (deferred: liquid/solid phase, pipes, pumps, client VFX sync) |
+| [2026-07_atmos-client-visualization-sync](2026-07_atmos-client-visualization-sync.md) | planned |
 
 ## Implementation plans
 
@@ -68,6 +71,7 @@ Temporary working plans in [Documents/plans/](../plans/). Update todos when work
 | [interaction_system_improvements_9e14ae22.plan.md](../plans/interaction_system_improvements_9e14ae22.plan.md) | Interaction system hardening |
 | [areas_implementation_plan_c0639343.plan.md](../plans/areas_implementation_plan_c0639343.plan.md) | APC-seeded areas, flood-fill, power/lighting follow-ups |
 | [electricity_kwh_foundation_917ccdbc.plan.md](../plans/electricity_kwh_foundation_917ccdbc.plan.md) | kWh storage, priority shedding, HV cable grid rules |
+| [persistence_architecture_design_2fe61864.plan.md](../plans/persistence_architecture_design_2fe61864.plan.md) | Layered persistence framework; station templates, server meta, round snapshots |
 
 ## Design specs (read-only)
 

@@ -7,6 +7,7 @@ namespace SS3D.UI.MachineInterface.Components
     {
         private readonly Label _gridValue;
         private readonly Label _loadValue;
+        private readonly Label _arrow;
         private float _gridKw;
         private float _loadKw;
 
@@ -15,13 +16,15 @@ namespace SS3D.UI.MachineInterface.Components
             AddToClassList("power-flow-row");
 
             VisualElement gridMetric = CreateMetric("GRID IN", out _gridValue, alignEnd: false);
-            Label arrow = new("→");
-            arrow.AddToClassList("power-flow-row__arrow");
-            arrow.AddToClassList("font-arcade");
+            gridMetric.AddToClassList("power-flow-row__metric--grid-in");
+            _arrow = new Label("→");
+            _arrow.AddToClassList("power-flow-row__arrow");
+            _arrow.AddToClassList("font-arcade");
             VisualElement loadMetric = CreateMetric("LOAD OUT", out _loadValue, alignEnd: true);
+            loadMetric.AddToClassList("power-flow-row__metric--load-out");
 
             Add(gridMetric);
-            Add(arrow);
+            Add(_arrow);
             Add(loadMetric);
         }
 
@@ -32,7 +35,7 @@ namespace SS3D.UI.MachineInterface.Components
             set
             {
                 _gridKw = value;
-                _gridValue.text = value.ToString("0.0");
+                _gridValue.text = $"{value:0.0} kW";
             }
         }
 
@@ -43,7 +46,7 @@ namespace SS3D.UI.MachineInterface.Components
             set
             {
                 _loadKw = value;
-                _loadValue.text = value.ToString("0.0");
+                _loadValue.text = $"{value:0.0} kW";
             }
         }
 
@@ -60,23 +63,35 @@ namespace SS3D.UI.MachineInterface.Components
             label.AddToClassList("power-flow-row__label");
             label.AddToClassList("font-arcade");
 
-            VisualElement valueRow = new();
-            valueRow.AddToClassList("power-flow-row__value-row");
-
-            valueLabel = new Label("0.0");
+            valueLabel = new Label("0.0 kW");
             valueLabel.AddToClassList("power-flow-row__value");
             valueLabel.AddToClassList("font-terminal");
 
-            Label unit = new("kW");
-            unit.AddToClassList("power-flow-row__unit");
-            unit.AddToClassList("font-body");
-
-            valueRow.Add(valueLabel);
-            valueRow.Add(unit);
-
             metric.Add(label);
-            metric.Add(valueRow);
+            metric.Add(valueLabel);
             return metric;
+        }
+
+        public void SetFlowDisplay(string arrowGlyph, StatusTone arrowTone, StatusTone loadTone)
+        {
+            _arrow.text = arrowGlyph;
+            StatusToneUtility.ApplyTone(_arrow, arrowTone);
+
+            _loadValue.RemoveFromClassList("tone-info");
+            _loadValue.RemoveFromClassList("tone-success");
+            _loadValue.RemoveFromClassList("tone-warning");
+            _loadValue.RemoveFromClassList("tone-danger");
+            _loadValue.RemoveFromClassList("tone-neutral");
+            _loadValue.RemoveFromClassList("power-flow-row__value--primary");
+
+            if (loadTone == StatusTone.Neutral)
+            {
+                _loadValue.AddToClassList("power-flow-row__value--primary");
+            }
+            else
+            {
+                StatusToneUtility.ApplyTone(_loadValue, loadTone);
+            }
         }
     }
 }

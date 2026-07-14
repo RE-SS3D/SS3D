@@ -31,7 +31,8 @@ namespace EditorTests
         [Test]
         public void PowerAreaConsumers_GridDeficit_DrainsApcCell()
         {
-            TestConsumer consumer = new TestConsumer(8f, PowerChannel.Lighting);
+            // Ensure the APC cell can fully cover the consumer demand so the test asserts a drain, not load shedding.
+            TestConsumer consumer = new TestConsumer(4f, PowerChannel.Lighting);
             TestApcStorage apc = new TestApcStorage(storedEnergyKwh: 5f, maxCapacityKwh: 5f, maxDischargeRateKw: 5f);
 
             AreaApcPowerDistribution.PowerAreaConsumers(
@@ -71,7 +72,8 @@ namespace EditorTests
         {
             TestConsumer lighting = new TestConsumer(2f, PowerChannel.Lighting);
             TestConsumer equipment = new TestConsumer(2f, PowerChannel.Equipment);
-            TestApcStorage apc = new TestApcStorage(storedEnergyKwh: 5f, maxCapacityKwh: 5f, maxDischargeRateKw: 5f);
+            // No cell contribution: only grid supply is available for this tick.
+            TestApcStorage apc = new TestApcStorage(storedEnergyKwh: 0f, maxCapacityKwh: 5f, maxDischargeRateKw: 0f);
 
             AreaApcPowerDistribution.PowerAreaConsumers(
                 apc,

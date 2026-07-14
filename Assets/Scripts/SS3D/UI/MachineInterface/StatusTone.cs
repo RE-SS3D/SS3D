@@ -6,5 +6,6 @@ namespace SS3D.UI.MachineInterface
         Success = 1,
         Warning = 2,
         Danger = 3,
+        Neutral = 4,
     }
 }

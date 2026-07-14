@@ -1,8 +1,13 @@
-@import url("../../Tokens/ss3d-tokens.uss");
 
 :root {
     /* Diegetic device chassis — values from prototype zip, isolated from APC/SMES tokens */
     --ss3d-diegetic-width: 664px;
+    --ss3d-diegetic-width-apc: 1000px;
+    --ss3d-diegetic-width-smes: 700px;
+    --ss3d-diegetic-width-air-alarm: 700px;
+    --ss3d-diegetic-width-scrubber: 660px;
+    --ss3d-diegetic-width-vent: 640px;
+    --ss3d-diegetic-width-pump: 640px;
     --ss3d-diegetic-chassis-bg: #37383b;
     --ss3d-diegetic-chassis-border: #26272a;
     --ss3d-diegetic-chassis-radius: 20px;
@@ -10,14 +15,27 @@
     --ss3d-diegetic-bezel-bg: #0a0a0a;
     --ss3d-diegetic-bezel-radius: 10px;
     --ss3d-diegetic-bezel-padding: 8px;
-    --ss3d-diegetic-screen-bg: var(--ss3d-surface-void);
+    --ss3d-diegetic-screen-bg: #0f1114;
+    --ss3d-diegetic-screen-max-height: 900px;
     --ss3d-diegetic-screen-radius: 5px;
     --ss3d-diegetic-screen-padding: 18px;
     --ss3d-diegetic-tray-bg: #050505;
-    --ss3d-diegetic-panel-raised: #161616;
-    --ss3d-diegetic-panel-body: #353538;
-    --ss3d-diegetic-inset: #2a2a2e;
+    --ss3d-diegetic-panel-raised: #23262b;
+    --ss3d-diegetic-panel-body: #171a1e;
+    --ss3d-diegetic-inset: #0a0b0d;
     --ss3d-diegetic-shadow-chassis: 0 24px 60px rgba(0, 0, 0, 0.55);
     --ss3d-diegetic-shadow-bezel-inset: inset 0 2px 8px rgba(0, 0, 0, 0.8);
     --ss3d-diegetic-shadow-tray-inset: inset 0 3px 10px rgba(0, 0, 0, 0.75);
+    --ss3d-diegetic-text-primary: #ffffff;
+    --ss3d-diegetic-text-secondary: #aaaaaa;
+    --ss3d-diegetic-text-tertiary: #717c7f;
+    --ss3d-diegetic-feedback-success: #35a02c;
+    --ss3d-diegetic-feedback-success-bg: rgba(53, 160, 44, 0.14);
+    --ss3d-diegetic-feedback-success-border: #35a02c;
+    --ss3d-diegetic-feedback-warning: #ee9037;
+    --ss3d-diegetic-feedback-warning-bg: rgba(238, 144, 55, 0.14);
+    --ss3d-diegetic-feedback-danger: #b94848;
+    --ss3d-diegetic-feedback-danger-bg: rgba(185, 72, 72, 0.14);
+    --ss3d-diegetic-border-subtle: rgba(216, 216, 216, 0.1);
+    --ss3d-diegetic-border-default: rgba(216, 216, 216, 0.18);
 }

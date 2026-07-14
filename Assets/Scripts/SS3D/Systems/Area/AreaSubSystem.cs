@@ -167,6 +167,15 @@ namespace SS3D.Systems.Area
                 return false;
             }
 
+            // Wall-mounted devices can share the same wall tile on opposite sides of a wall.
+            // In that case the wall tile's stored area (if any) is ambiguous; the correct area is
+            // always the tile "in front" of the device's facing direction.
+            if (tileObject.Layer == TileLayer.WallMountHigh || tileObject.Layer == TileLayer.WallMountLow)
+            {
+                TileCoord inFrontTile = AreaDeviceTileResolver.GetTileInFront(tileObject);
+                return TryGetAreaForTile(inFrontTile, out record);
+            }
+
             TileCoord origin = AreaDeviceTileResolver.GetOriginTile(tileObject);
             if (TryGetAreaForTile(origin, out record))
             {
@@ -402,6 +411,11 @@ namespace SS3D.Systems.Area
         }
 
         public void OnChunkCreated(TileChunkRef chunk) { }
+
+        public void OnTileStateChanged(TileCoord coord)
+        {
+            // Live boundary recompute deferred.
+        }
 
         private void HandleMapLoaded(object sender, EventArgs args)
         {

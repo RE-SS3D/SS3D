@@ -74,22 +74,26 @@ namespace SS3D.UI.MachineInterface
             {
                 case ApcPowerState.Critical:
                 {
-                    model.StatusHeadline = "POWER CRITICAL";
-                    model.StatusExplanation = "Cell depleted. Load shedding may be active.";
+                    model.StatusHeadline = "POWER FAILURE";
+                    model.StatusExplanation = "No grid input detected.";
+                    model.HeaderReadout = "NO GRID INPUT";
+                    model.ChassisPowerOk = false;
                     break;
                 }
 
                 case ApcPowerState.Overload:
                 {
                     model.StatusHeadline = "GRID OVERLOAD";
-                    model.StatusExplanation = "Connected load exceeds grid supply. Battery discharging.";
+                    model.StatusExplanation = "Grid supply below connected load.";
+                    model.HeaderReadout = "LOAD EXCEEDS SUPPLY";
                     break;
                 }
 
                 default:
                 {
-                    model.StatusHeadline = "POWER NOMINAL";
+                    model.StatusHeadline = "ROOM POWERED";
                     model.StatusExplanation = "Grid supply meets connected load.";
+                    model.HeaderReadout = "GRID FEED NOMINAL";
                     break;
                 }
             }

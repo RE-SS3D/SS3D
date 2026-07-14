@@ -18,6 +18,8 @@ GameObject:
   - component: {fileID: -8800000000000000001}
   - component: {fileID: -8800000000000000002}
   - component: {fileID: -8800000000000000003}
+  - component: {fileID: -8800000000000000004}
+  - component: {fileID: -8800000000000000005}
   m_Layer: 0
   m_Name: AirAlarm
   m_TagString: Untagged
@@ -122,6 +124,8 @@ MonoBehaviour:
   _networkBehaviours:
   - {fileID: -8800000000000000001}
   - {fileID: -8800000000000000002}
+  - {fileID: -8800000000000000004}
+  - {fileID: -8800000000000000005}
   <ParentNetworkObject>k__BackingField: {fileID: 0}
   <ChildNetworkObjects>k__BackingField: []
   SerializedTransformProperties:
@@ -153,7 +157,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 6961426338783081091}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 38640bf88ae0c29409092a258bd36878, type: 3}
+  m_Script: {fileID: 11500000, guid: 61ec12fc7e934ae68220124a51a0d850, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   key: {fileID: 11400000, guid: c2e2a35ebb0394541a1a9fca27e10877, type: 2}
@@ -222,3 +226,45 @@ MonoBehaviour:
   _renderers:
   - {fileID: 6757050621484211566}
   _panelIndicators: []
+--- !u!114 &-8800000000000000004
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6961426338783081091}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: eff0e1c7a0c942589779254d56c647c6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _componentIndexCache: 2
+  _addedNetworkObject: {fileID: -752502555905215929}
+  _networkObjectCache: {fileID: -752502555905215929}
+  _powerConsumer: {fileID: -8800000000000000001}
+  _emissiveRenderers:
+  - {fileID: 6757050621484211566}
+  _alarmState: 0
+  _samplePressureKpa: 0
+  _sampleOxygenFraction: 0
+  _sampleCarbonDioxideFraction: 0
+--- !u!114 &-8800000000000000005
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6961426338783081091}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9b4c1e6a3d0f5268c7b4f1e0d3a6c9f5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _componentIndexCache: 3
+  _addedNetworkObject: {fileID: -752502555905215929}
+  _networkObjectCache: {fileID: -752502555905215929}
+  _title: "AIR ALARM \xB7 ATMOSPHERICS"
+  _modelLabel: "AA-07 \xB7 atmospheric alarm control unit"
+  _deviceTitle: AA-07
+  _subtitle: "Engineering Bay 3 \u2014 Air Alarm"
+  _powerConsumer: {fileID: -8800000000000000001}

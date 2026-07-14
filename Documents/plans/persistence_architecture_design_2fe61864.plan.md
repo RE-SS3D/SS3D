@@ -6,40 +6,44 @@ todos:
     content: Create PersistenceSubSystem, IPersistenceContributor, PersistenceEnvelope, and EnvelopePersistenceStore under Assets/Scripts/SS3D/Data/Persistence/
     status: pending
   - id: phase-1a-tilemap-refactor
-    content: Extract TileMapPersistenceContributor and AreaPersistenceContributor from existing TileMap save logic; add LegacyTileMapMigrator
+    content: Extract TileMapPersistenceContributor and AreaPersistenceContributor from existing TileMap save logic; persist LightingSwitchOn; add AreaSubSystem.RestoreFromSave() with template-restore precedence over APC re-flood; add LegacyTileMapMigrator
     status: pending
   - id: phase-1a-rewire
     content: Rewire TileSubSystem + TileMap Creator UI to use PersistenceSubSystem; replace OnMapLoaded with framework lifecycle events
     status: pending
   - id: phase-1a-tests
-    content: Add EditMode tests for envelope round-trip, legacy migration, and contributor load ordering
+    content: Add EditMode tests for envelope round-trip, legacy migration, contributor load ordering, and APC-present load (saved metadata survives when map has placed APCs)
     status: pending
   - id: phase-1b-server-meta
-    content: "Implement server meta contributors: round config, permissions migration, round history JSONL; hook round-start map selection"
+    content: "Implement server meta contributors: round config, permissions migration, round history JSONL; hook round-start map selection (blocked on round-config feature)"
     status: pending
   - id: phase-2-snapshots
-    content: "Phase 2: round snapshot contributors (items, electricity, substances, entities) with delta-from-template format and admin commands"
+    content: "Phase 2: round snapshot contributors (items, electricity kWh, atmospherics, substances, entities) with delta-from-template format and admin commands"
     status: pending
   - id: docs
-    content: Add persistence system map and register in architecture INDEX; update rounds-lobby.md with persistence hooks (tile.md and area.md already synced in area-foundation commits)
+    content: Add persistence system map and register in architecture INDEX; update rounds-lobby.md with persistence hooks (tile.md and area.md already synced in area-foundation effort)
     status: pending
 isProject: false
 ---
 
 # Persistence Architecture — Recommended Design
 
-## Revision note (post area-foundation commits)
+## Revision note (Jul 2026 fork state)
 
-Recent commits (`5ebe0426`–`6fa79807`) shipped **APC-seeded area foundation (phases 0–2)** with save/load already wired into the tilemap pipeline. This validates the plan’s contributor split but does **not** change the recommended architecture — it gives us concrete extraction points and existing tests to build on.
+The [areas implementation plan](areas_implementation_plan_c0639343.plan.md) is **complete** — all todos shipped. The [2026-07 area-foundation](../architecture/2026-07_area-foundation.md) effort (phases 0–4 plus consumer visuals and wall light switches) landed save/load hooks in the tilemap pipeline. This validates the plan's contributor split and gives concrete extraction points, but does **not** change the recommended architecture.
 
 **What changed since the original draft:**
 
-- Area save/load is live: per-chunk `areaIds`, `SavedAreaRecord[]`, `AreaSubSystem.BuildSavedAreaRecords()`, restore via `TileMap.LoadedAreaRecords` + `OnMapLoaded`
-- Architecture docs landed: [`area.md`](../architecture/systems/area.md), [`2026-07_area-foundation`](../architecture/2026-07_area-foundation.md), [`tile.md`](../architecture/systems/tile.md) updated (areas no longer stale)
-- EditMode coverage exists: `AreaFloodFillTests.SaveLoad_PreservesAreaIdsAndMetadata`
-- Area rebuild on load has a **dual path** (see load-order note below): if APCs are already registered, `AreaSubSystem` re-floods from live APCs instead of restoring saved metadata
+- Area save/load is live: per-chunk `areaIds`, `SavedAreaRecord[]` (including departmental light tint), `AreaSubSystem.BuildSavedAreaRecords()`, restore via `TileMap.LoadedAreaRecords` + `OnMapLoaded`
+- Architecture docs current: [`area.md`](../architecture/systems/area.md), [`2026-07_area-foundation`](../architecture/2026-07_area-foundation.md), [`tile.md`](../architecture/systems/tile.md)
+- [Electricity kWh foundation](electricity_kwh_foundation_917ccdbc.plan.md) shipped — APC/SMES use kWh reservoirs; relevant for Phase 2 electricity contributor
+- [Atmos ECS foundation](../architecture/2026-07_atmos-ecs-foundation.md) shipped — turf gas cell buffers; relevant for Phase 2 atmospherics contributor
+- [Diegetic screen UI framework](../architecture/2026-07_diegetic-screen-ui-framework.md) shipped — confirms machine UI snapshots are derived, not persisted
+- EditMode coverage expanded: area/power/lighting/HV-cable tests; one save/load test remains (`AreaFloodFillTests.SaveLoad_PreservesAreaIdsAndMetadata`)
+- Area rebuild on load has a **dual path** (see load-order note below): if APCs are already registered, `AreaSubSystem` re-floods from live APCs and **discards** saved metadata
+- **`LightingSwitchOn` is not saved** — `AreaRecord.LightingSwitchOn` (wall light switch state) is runtime-only; gap to fix in Phase 1a area contributor
 
-**What did not change:** no central `PersistenceSubSystem`, no envelope format, no round-config integration, no round snapshots. Core recommendations stand.
+**What did not change:** no central `PersistenceSubSystem`, no envelope format, no round-config integration, no round snapshots. Core recommendations stand. Phase 1a is unblocked; Phase 1b waits on round-config implementation; player meta waits on auth.
 
 ---
 
@@ -58,30 +62,30 @@ flowchart LR
     TileMap -->|OnMapLoaded| AreaSubSystem
 ```
 
+| Piece | Location | Role |
+| ----- | -------- | ---- |
+| Generic I/O | [`LocalStorage.cs`](Assets/Scripts/SS3D/Data/Management/LocalStorage.cs) | `JsonUtility` read/write to `Builds/Game/Data/` |
+| Orchestration | [`TileSubSystem.cs`](Assets/Scripts/SS3D/Systems/Tile/TileSubSystem.cs) | Server-only `Save()` / `Load()`; auto-loads most recent map on boot |
+| DTO + walk | [`TileMap.Save/Load`](Assets/Scripts/SS3D/Systems/Tile/TileMap.cs), `SavedObjects/*` | Chunk/tile/item/area serialization |
+| Cross-system hook | [`AreaSubSystem`](Assets/Scripts/SS3D/Systems/Area/AreaSubSystem.cs) | `BuildSavedAreaRecords()` on save; restore via `TileMap.LoadedAreaRecords` + `OnMapLoaded` |
+| Area storage | [`TileChunk`](Assets/Scripts/SS3D/Systems/Tile/TileChunk.cs) area-id grid | Per-chunk `ushort[] areaIds` serialized in `SavedTileChunk` |
+| Area DTO | [`SavedAreaRecord`](Assets/Scripts/SS3D/Systems/Tile/SavedObjects/SavedAreaRecord.cs) | id, displayName, parentTag, apcWorldPosition, departmentalLightTint — **not** `LightingSwitchOn` |
+| Network identity | [`TileAssetCatalog`](Assets/Scripts/SS3D/Systems/Tile/TileAssetCatalog.cs) | Stable ushort IDs for FishNet sync; saves still use prefab name strings |
+| Tests | [`AreaFloodFillTests.SaveLoad_PreservesAreaIdsAndMetadata`](Assets/Scripts/Tests/EditMode/AreaFloodFillTests.cs) | Baseline for contributor extraction tests (harness without live APCs) |
 
-
-
-| Piece             | Location                                                                             | Role                                                                    |
-| ----------------- | ------------------------------------------------------------------------------------ | ----------------------------------------------------------------------- |
-| Generic I/O       | `[LocalStorage.cs](Assets/Scripts/SS3D/Data/Management/LocalStorage.cs)`             | `JsonUtility` read/write to `Builds/Game/Data/`                         |
-| Orchestration     | `[TileSubSystem.cs](Assets/Scripts/SS3D/Systems/Tile/TileSubSystem.cs)`              | Server-only `Save()` / `Load()`; auto-loads most recent map on boot     |
-| DTO + walk        | `[TileMap.Save/Load](Assets/Scripts/SS3D/Systems/Tile/TileMap.cs)`, `SavedObjects/*` | Chunk/tile/item/area serialization                                      |
-| Cross-system hook | `[AreaSubSystem](Assets/Scripts/SS3D/Systems/Area/AreaSubSystem.cs)`                 | `BuildSavedAreaRecords()` on save; restore via `TileMap.LoadedAreaRecords` + `OnMapLoaded` |
-| Area storage      | `[TileChunk](Assets/Scripts/SS3D/Systems/Tile/TileChunk.cs)` area-id grid            | Per-chunk `ushort[] areaIds` serialized in `SavedTileChunk`            |
-| Tests             | `[AreaFloodFillTests.SaveLoad_PreservesAreaIdsAndMetadata](Assets/Scripts/Tests/EditMode/AreaFloodFillTests.cs)` | Baseline for contributor extraction tests |
-
-
-**What it is:** a **station layout template** editor, not gameplay persistence. Items in containers/inventory are explicitly excluded. Adjacency, electricity, substances, machine runtime state, round state, and player meta are not saved.
+**What it is:** a **station layout template** editor, not gameplay persistence. Items in containers/inventory are explicitly excluded. Adjacency, electricity, atmospherics, substances, machine runtime state, round state, and player meta are not saved.
 
 **Pain points to address:**
 
 - No central orchestrator — `TileSubSystem` owns save/load directly
-- `JsonUtility` + `[SerializeReference]` on `[SavedTileChunk](Assets/Scripts/SS3D/Systems/Tile/SavedObjects/SavedTileChunk.cs)` — bloated files, weak polymorphism, no schema versioning
-- Asset identity is **prefab name strings** at save time; network uses **ushort catalog IDs** — two parallel identity systems
+- `JsonUtility` + `[SerializeReference]` on [`SavedTileChunk`](Assets/Scripts/SS3D/Systems/Tile/SavedObjects/SavedTileChunk.cs) — bloated files, weak polymorphism, no schema versioning
+- Asset identity is **prefab name strings** at save time; network uses **ushort catalog IDs** via `TileAssetCatalog` — two parallel identity systems
 - Areas are coupled into tilemap DTOs (shipped in area foundation; still should be split into separate contributor chunks)
+- **Area template metadata lost on load when APCs present** — `HandleMapLoaded` re-floods from live APCs and ignores saved display names, parent tags, and tints
+- **`LightingSwitchOn` not persisted** — wall light switch state resets to default on every load
 - Area restore depends on `OnMapLoaded` firing after tiles **and** APC NetworkObjects exist — contributor load order must guarantee this (see below)
-- No integration with `[RoundSubSystem](Assets/Scripts/SS3D/Systems/Rounds/RoundSubSystem.cs)` — server boot always loads "most recent" map, not round-selected map
-- Design docs (`[lobby.md](Documents/design/lobby.md)` §11, `[round-config.md](Documents/design/round-config.md)` §5) assume a **Persistence & accounts** layer that does not exist
+- No integration with [`RoundSubSystem`](Assets/Scripts/SS3D/Systems/Rounds/RoundSubSystem.cs) — server boot always loads "most recent" map, not round-selected map
+- Design docs ([`lobby.md`](Documents/design/lobby.md) §11, [`round-config.md`](Documents/design/round-config.md) §5, [`inventory-storage.md`](Documents/design/inventory-storage.md)) assume a **Persistence & accounts** layer that does not exist
 
 ---
 
@@ -125,9 +129,7 @@ flowchart TB
     diegetic -->|"SyncVar state within round"| Sim
 ```
 
-
-
-**Critical design rule (from `[death-cloning-respawn.md](Documents/design/death-cloning-respawn.md)` §4):** genetics/crew records are **in-fiction physical databases** — destructible station objects synced via FishNet, not external save files. The persistence framework must not shortcut this.
+**Critical design rule (from [`death-cloning-respawn.md`](Documents/design/death-cloning-respawn.md) §4):** genetics/crew records are **in-fiction physical databases** — destructible station objects synced via FishNet, not external save files. The persistence framework must not shortcut this.
 
 ---
 
@@ -135,7 +137,7 @@ flowchart TB
 
 ### Core: `PersistenceSubSystem` + contributor pattern
 
-Add a new infrastructure subsystem at `[Assets/Scripts/SS3D/Data/Persistence/](Assets/Scripts/SS3D/Data/Persistence/)` that owns **when** and **what** gets saved, while each domain owns **how** its data is serialized.
+Add a new infrastructure subsystem at [`Assets/Scripts/SS3D/Data/Persistence/`](Assets/Scripts/SS3D/Data/Persistence/) that owns **when** and **what** gets saved, while each domain owns **how** its data is serialized.
 
 ```csharp
 // Contracts (sketch)
@@ -158,7 +160,7 @@ public interface IPersistenceStore
 }
 ```
 
-`**PersistenceSubSystem**` responsibilities:
+**`PersistenceSubSystem`** responsibilities:
 
 - Register contributors at startup (each subsystem calls `RegisterContributor` in `OnStartServer`)
 - Orchestrate **layered save/load** with ordered contributors and explicit lifecycle hooks
@@ -166,7 +168,7 @@ public interface IPersistenceStore
 - Fire events: `OnBeforeRestore`, `OnAfterRestore`, `OnBeforeCapture` — replaces ad-hoc `OnMapLoaded` pattern
 - Enforce **server-only** disk I/O (same rule as tilemap today)
 
-`**PersistenceEnvelope**` — wrapper for all saves:
+**`PersistenceEnvelope`** — wrapper for all saves:
 
 ```csharp
 [Serializable]
@@ -205,7 +207,7 @@ Builds/Game/Data/
     └── 2026-07-10_143022.json
 ```
 
-Keep `[LocalStorage](Assets/Scripts/SS3D/Data/Management/LocalStorage.cs)` as the low-level file primitive; add `EnvelopePersistenceStore` on top that reads/writes `PersistenceEnvelope`.
+Keep [`LocalStorage`](Assets/Scripts/SS3D/Data/Management/LocalStorage.cs) as the low-level file primitive; add `EnvelopePersistenceStore` on top that reads/writes `PersistenceEnvelope`.
 
 ### Serializer strategy
 
@@ -213,7 +215,7 @@ Keep `[LocalStorage](Assets/Scripts/SS3D/Data/Management/LocalStorage.cs)` as th
 
 **Phase 1.5 / 2:** Evaluate **Newtonsoft.Json** (already common in Unity projects) or **System.Text.Json** for contributor payloads that need polymorphism, dictionaries, or `[JsonProperty]`. The contributor boundary means this can be adopted per-domain without rewriting everything.
 
-Add `**IAssetResolver**` for load-time identity:
+Add **`IAssetResolver`** for load-time identity — wrap the existing [`TileAssetCatalog`](Assets/Scripts/SS3D/Systems/Tile/TileAssetCatalog.cs) rather than building catalog identity from scratch:
 
 ```csharp
 public interface IAssetResolver
@@ -232,22 +234,22 @@ Migrate tilemap saves from raw prefab names to **catalog-backed stable keys** wi
 
 ### Split tilemap into two contributors
 
-
-| Contributor                     | Layer           | Captures                                  | Notes                                                      |
-| ------------------------------- | --------------- | ----------------------------------------- | ---------------------------------------------------------- |
-| `TileMapPersistenceContributor` | StationTemplate | `SavedTileMap` minus areas                | Existing `TileMap.Save/Load` logic, extracted              |
-| `AreaPersistenceContributor`    | StationTemplate | `SavedAreaRecord[]` + per-chunk `areaIds` | Wrap existing `AreaSubSystem.BuildSavedAreaRecords()` + restore path; decouple from `SavedTileMap` DTO |
-
+| Contributor | Layer | Captures | Notes |
+| ----------- | ----- | -------- | ----- |
+| `TileMapPersistenceContributor` | StationTemplate | `SavedTileMap` minus areas | Existing `TileMap.Save/Load` logic, extracted |
+| `AreaPersistenceContributor` | StationTemplate | `SavedAreaRecord[]` + per-chunk `areaIds` + `LightingSwitchOn` | Wrap existing `AreaSubSystem.BuildSavedAreaRecords()` + restore path; decouple from `SavedTileMap` DTO |
 
 **Load order:** tilemap first (creates chunks, tiles, and per-chunk `areaIds`), then APC NetworkObjects spawn/register, then areas contributor restores registry.
 
-**Important (from shipped `AreaSubSystem.HandleMapLoaded`):** if APCs are already registered when the map finishes loading, the subsystem calls `RebuildAllAreasFromApcs()` and **ignores** saved area metadata. The persistence orchestrator must either (a) restore area metadata only after tiles are placed but before APC registration, or (b) expose a explicit `RestoreFromSave()` on `AreaSubSystem` that takes precedence over live re-flood. Option (b) is cleaner for the contributor model.
+**Required Phase 1a fix — APC restore precedence:** shipped `AreaSubSystem.HandleMapLoaded` re-floods from live APCs when any are registered, **discarding** saved display names, parent tags, and tints. Maps with placed APC NetworkObjects (typical production maps) always hit this path. Phase 1a must add a public `RestoreFromSave()` (or equivalent template-restore flag) on `AreaSubSystem` that takes precedence over `RebuildAllAreasFromApcs()` during station template restore. The persistence orchestrator calls this explicitly after tile placement.
+
+**Required Phase 1a fix — `LightingSwitchOn`:** add to `SavedAreaRecord` and capture/restore in the area contributor so wall light switch state survives template save/load.
 
 **Backward compatibility:** `PersistenceSubSystem` detects legacy flat `SavedTileMap` JSON (no envelope wrapper) and routes through a `LegacyTileMapMigrator` that wraps it into the new format on first save.
 
 ### Slim down `TileSubSystem`
 
-`[TileSubSystem.Save/Load](Assets/Scripts/SS3D/Systems/Tile/TileSubSystem.cs)` become thin delegates:
+[`TileSubSystem.Save/Load`](Assets/Scripts/SS3D/Systems/Tile/TileSubSystem.cs) become thin delegates:
 
 ```csharp
 // Before: TileSubSystem owns file I/O directly
@@ -257,11 +259,11 @@ public void Save(string mapName, bool overwrite)
          .SaveStationTemplate(mapName, overwrite);
 ```
 
-TileMap Creator UI (`[TileMapSaveTab](Assets/Scripts/SS3D/Systems/Tile/TileMapCreator/TileMapSaveTab.cs)`, `[TileMapLoadTab](Assets/Scripts/SS3D/Systems/Tile/TileMapCreator/TileMapLoadTab.cs)`) continues to work; only the backend changes.
+TileMap Creator UI ([`TileMapSaveTab`](Assets/Scripts/SS3D/Systems/Tile/TileMapCreator/TileMapSaveTab.cs), [`TileMapLoadTab`](Assets/Scripts/SS3D/Systems/Tile/TileMapCreator/TileMapLoadTab.cs)) continues to work; only the backend changes.
 
 ### Replace `OnMapLoaded` with framework events
 
-`[TileMap.OnMapLoaded](Assets/Scripts/SS3D/Systems/Tile/TileMap.cs)` → `PersistenceSubSystem.OnAfterRestore(PersistenceLayer.StationTemplate)`. `[AreaSubSystem.HandleMapLoaded](Assets/Scripts/SS3D/Systems/Area/AreaSubSystem.cs)` subscribes to the persistence event instead of tilemap-specific event.
+[`TileMap.OnMapLoaded`](Assets/Scripts/SS3D/Systems/Tile/TileMap.cs) → `PersistenceSubSystem.OnAfterRestore(PersistenceLayer.StationTemplate)`. [`AreaSubSystem.HandleMapLoaded`](Assets/Scripts/SS3D/Systems/Area/AreaSubSystem.cs) subscribes to the persistence event instead of tilemap-specific event.
 
 ---
 
@@ -290,14 +292,12 @@ sequenceDiagram
     Note over Sim: Live FishNet state only
 
     Round->>Round: Ending
-  Note over Persist: Phase 2 — optional SaveRoundSnapshot
+    Note over Persist: Phase 2 — optional SaveRoundSnapshot
     Round->>Persist: AppendRoundHistory(drawn mode, map, duration)
     Note over Sim: World resets on next Preparing
 ```
 
-
-
-**Round start:** load station template selected by round config pool (`[round-config.md](Documents/design/round-config.md)`), not "most recent file." Keep "load most recent" as a **map editor dev default** only.
+**Round start:** load station template selected by round config pool ([`round-config.md`](Documents/design/round-config.md)), not "most recent file." Keep "load most recent" as a **map editor dev default** only.
 
 **Round end:** append to `round-history.jsonl`; do **not** auto-save round snapshots unless admin requests it (Phase 2).
 
@@ -307,16 +307,15 @@ sequenceDiagram
 
 When implementing full mid-round persistence, each gameplay domain registers a contributor at `PersistenceLayer.RoundSnapshot`:
 
-
-| Contributor (future)                | Priority | Captures                                                          |
-| ----------------------------------- | -------- | ----------------------------------------------------------------- |
-| `TileMapPersistenceContributor`     | early    | Structural diffs from template (damaged walls, new constructions) |
-| `ItemPersistenceContributor`        | mid      | World items + container contents (requires `Item` serialization)  |
-| `ElectricityPersistenceContributor` | mid      | Circuit charge, APC cell levels, cable breaks                     |
-| `SubstancePersistenceContributor`   | mid      | Tank/pipe contents                                                |
-| `EntityPersistenceContributor`      | late     | Humanoid health, inventory, mind links                            |
-| `GamemodePersistenceContributor`    | late     | Objectives, antag assignments                                     |
-
+| Contributor (future) | Priority | Captures |
+| -------------------- | -------- | -------- |
+| `TileMapPersistenceContributor` | early | Structural diffs from template (damaged walls, new constructions) |
+| `AtmosphericsPersistenceContributor` | early/mid | Turf gas cell buffers (O₂, N₂, CO₂, plasma per cell) from [`AtmosWorld`](Assets/Scripts/SS3D/Systems/Atmospherics/ECS/AtmosWorld.cs) |
+| `ElectricityPersistenceContributor` | mid | kWh on APC cells and SMES, breaker/channel state, cable topology |
+| `ItemPersistenceContributor` | mid | World items + container contents (requires `Item` serialization; see [`inventory-storage.md`](Documents/design/inventory-storage.md)) |
+| `SubstancePersistenceContributor` | mid | Tank/pipe contents (when pipe networks ship) |
+| `EntityPersistenceContributor` | late | Humanoid health, inventory, mind links |
+| `GamemodePersistenceContributor` | late | Objectives, antag assignments |
 
 **Snapshot vs template:** a round snapshot references a `baseTemplateId` and stores **deltas** where possible (only changed tiles, moved items). Full snapshots are a fallback for admin "save round" commands.
 
@@ -326,15 +325,13 @@ When implementing full mid-round persistence, each gameplay domain registers a c
 
 ---
 
-## Server meta contributors (Phase 1)
+## Server meta contributors (Phase 1b)
 
-
-| Contributor                          | Source today                                                                                                         | Action                                                                   |
-| ------------------------------------ | -------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------ |
-| `PermissionsPersistenceContributor`  | `[PermissionSubSystem](Assets/Scripts/SS3D/Permissions/PermissionSubSystem.cs)` reads `permissions.txt` from Config/ | Migrate to envelope; keep txt import for backward compat                 |
-| `RoundConfigPersistenceContributor`  | Design only (`[round-config.md](Documents/design/round-config.md)`)                                                  | New; pool model with enabled/weight/preconditions                        |
-| `RoundHistoryPersistenceContributor` | None                                                                                                                 | Append-only JSONL: timestamp, gamemode, map, player count, fallback flag |
-
+| Contributor | Source today | Action |
+| ----------- | ------------ | ------ |
+| `PermissionsPersistenceContributor` | [`PermissionSubSystem`](Assets/Scripts/SS3D/Permissions/PermissionSubSystem.cs) reads `permissions.txt` from Config/ | Migrate to envelope; keep txt import for backward compat |
+| `RoundConfigPersistenceContributor` | Design only ([`round-config.md`](Documents/design/round-config.md)) | New; pool model with enabled/weight/preconditions — **blocked on round-config feature** |
+| `RoundHistoryPersistenceContributor` | None | Append-only JSONL: timestamp, gamemode, map, player count, fallback flag |
 
 ---
 
@@ -343,8 +340,8 @@ When implementing full mid-round persistence, each gameplay domain registers a c
 Deferred until accounts/auth exist, but design for it now:
 
 - `PlayerMetaPersistenceContributor` — per-ckey file: playtime per role, job unlock state, lobby preference defaults
-- Ties into `[lobby.md](Documents/design/lobby.md)` playtime-gated jobs
-- Requires real authentication (today ckey is client-trusted in `[PlayerSubSystem](Assets/Scripts/SS3D/Systems/PlayerControl/PlayerSubSystem.cs)`)
+- Ties into [`lobby.md`](Documents/design/lobby.md) playtime-gated jobs
+- Requires real authentication (today ckey is client-trusted in [`PlayerSubSystem`](Assets/Scripts/SS3D/Systems/PlayerControl/PlayerSubSystem.cs))
 
 ---
 
@@ -352,21 +349,31 @@ Deferred until accounts/auth exist, but design for it now:
 
 - **Genetics/crew records** — in-world objects per design spec
 - **ID card contents** — physical items; saved only in round snapshots (Phase 2) as item state
-- **Machine UI snapshots** (`[ApcInterfaceSnapshot](Assets/Scripts/SS3D/UI/MachineInterface/ApcInterfaceSnapshot.cs)`) — derived read models, rebuilt from sim state
+- **Machine UI snapshots** ([`ApcInterfaceSnapshot`](Assets/Scripts/SS3D/UI/MachineInterface/ApcInterfaceSnapshot.cs)) — derived read models, rebuilt from sim state (confirmed by diegetic UI framework)
 - **FishNet wire serializers** — keep separate from disk format; optionally share DTO shapes where sensible
 
 ---
 
 ## Implementation phases
 
+### Dependencies / sequencing
+
+| Phase | Blocked? | Prerequisite |
+| ----- | -------- | ------------ |
+| **Phase 1a** | No — start now | [Areas plan](areas_implementation_plan_c0639343.plan.md) complete |
+| **Phase 1b** | Yes | Round-config feature (pool UI + draw logic) — design in [`round-config.md`](Documents/design/round-config.md), no C# yet |
+| **Player meta** | Yes | Real authentication (ckey currently client-trusted) |
+| **Phase 2** | Partially | Inventory/entity serialization maturity; atmos/electricity foundations already shipped |
+
 ### Phase 1a — Framework + station templates (first ship)
 
 1. Create `PersistenceSubSystem`, `IPersistenceContributor`, `PersistenceEnvelope`, `EnvelopePersistenceStore`
 2. Extract `TileMapPersistenceContributor` and `AreaPersistenceContributor` from existing save logic
-3. Add `LegacyTileMapMigrator` for old flat JSON files
-4. Rewire `TileSubSystem` and TileMap Creator UI to use framework
-5. Replace `OnMapLoaded` with persistence lifecycle events
-6. Add EditMode tests: envelope round-trip, legacy migration, contributor load ordering — extend/migrate existing `AreaFloodFillTests.SaveLoad_PreservesAreaIdsAndMetadata` rather than rewriting from scratch
+3. Add `AreaSubSystem.RestoreFromSave()` with template-restore precedence over APC re-flood; persist `LightingSwitchOn`
+4. Add `LegacyTileMapMigrator` for old flat JSON files
+5. Rewire `TileSubSystem` and TileMap Creator UI to use framework
+6. Replace `OnMapLoaded` with persistence lifecycle events
+7. Add EditMode tests: envelope round-trip, legacy migration, contributor load ordering, **APC-present load scenario** — extend/migrate existing `AreaFloodFillTests.SaveLoad_PreservesAreaIdsAndMetadata` rather than rewriting from scratch
 
 ### Phase 1b — Server meta
 
@@ -379,7 +386,7 @@ Deferred until accounts/auth exist, but design for it now:
 
 1. Define delta format for tilemap changes from template
 2. Item/container serialization (biggest new work — inventory is currently stub)
-3. Electricity, substances contributors
+3. Electricity (kWh reservoirs), atmospherics (turf gas cells), substances contributors
 4. Entity/mind/gamemode contributors
 5. Admin console commands: `save_round`, `load_round`, `list_snapshots`
 6. Optional: periodic auto-checkpoint for crash recovery
@@ -387,23 +394,34 @@ Deferred until accounts/auth exist, but design for it now:
 ### Ongoing — docs
 
 - Add `Documents/architecture/systems/persistence.md` system map
-- Update `[rounds-lobby.md](Documents/architecture/systems/rounds-lobby.md)` with persistence hooks (round-start template load, round-end history append)
-- Register persistence in `[INDEX.md](Documents/architecture/INDEX.md)`
-- Already done (area-foundation commits): `[tile.md](Documents/architecture/systems/tile.md)`, `[area.md](Documents/architecture/systems/area.md)`, `[2026-07_area-foundation.md](Documents/architecture/2026-07_area-foundation.md)`
+- Update [`rounds-lobby.md`](Documents/architecture/systems/rounds-lobby.md) with persistence hooks (round-start template load, round-end history append)
+- Register persistence in [`INDEX.md`](Documents/architecture/INDEX.md)
+- Already done (area-foundation effort): [`tile.md`](Documents/architecture/systems/tile.md), [`area.md`](Documents/architecture/systems/area.md), [`2026-07_area-foundation.md`](Documents/architecture/2026-07_area-foundation.md)
+
+---
+
+## Related docs
+
+| Doc | Relevance |
+| --- | --------- |
+| [areas_implementation_plan_c0639343.plan.md](areas_implementation_plan_c0639343.plan.md) | Complete — Phase 1a prerequisite |
+| [electricity_kwh_foundation_917ccdbc.plan.md](electricity_kwh_foundation_917ccdbc.plan.md) | Shipped — Phase 2 electricity contributor uses kWh model |
+| [2026-07_atmos-ecs-foundation.md](../architecture/2026-07_atmos-ecs-foundation.md) | Shipped — Phase 2 atmospherics contributor source |
+| [2026-07_diegetic-screen-ui-framework.md](../architecture/2026-07_diegetic-screen-ui-framework.md) | Shipped — confirms UI snapshots are not persisted |
+| [round-config.md](Documents/design/round-config.md) | Design only — blocks Phase 1b map pool + history |
+| [inventory-storage.md](Documents/design/inventory-storage.md) | Defers container persistence to cross-cutting infra (Phase 2) |
 
 ---
 
 ## Key design decisions (summary)
 
-
-| Decision             | Recommendation                               | Rationale                                                             |
-| -------------------- | -------------------------------------------- | --------------------------------------------------------------------- |
-| Central orchestrator | `PersistenceSubSystem`                       | Matches existing `SubSystem` pattern; single lifecycle owner          |
-| Domain serialization | Contributor pattern                          | Tilemap refactor is proof-of-concept; scales to 10+ domains           |
-| File format          | Envelope + per-chunk JSON                    | Decouples domains, enables versioning, fixes SerializeReference bloat |
-| Station vs round     | Separate layers + directories                | SS13 resets world each round; templates != snapshots                  |
-| Asset identity       | Catalog stable keys + legacy fallback        | Unifies save and network identity over time                           |
-| Serializer           | JsonUtility now, Newtonsoft per-domain later | Minimize Phase 1 churn; upgrade at contributor boundary               |
-| Diegetic records     | Excluded from disk                           | Honors design spec; keeps stakes physical                             |
-
-
+| Decision | Recommendation | Rationale |
+| -------- | -------------- | --------- |
+| Central orchestrator | `PersistenceSubSystem` | Matches existing `SubSystem` pattern; single lifecycle owner |
+| Domain serialization | Contributor pattern | Tilemap refactor is proof-of-concept; scales to 10+ domains |
+| File format | Envelope + per-chunk JSON | Decouples domains, enables versioning, fixes SerializeReference bloat |
+| Station vs round | Separate layers + directories | SS13 resets world each round; templates != snapshots |
+| Asset identity | `TileAssetCatalog` stable keys + legacy fallback | Unifies save and network identity over time |
+| Serializer | JsonUtility now, Newtonsoft per-domain later | Minimize Phase 1 churn; upgrade at contributor boundary |
+| Diegetic records | Excluded from disk | Honors design spec; keeps stakes physical |
+| Area template restore | `RestoreFromSave()` over APC re-flood | Saved metadata must survive on maps with placed APCs |

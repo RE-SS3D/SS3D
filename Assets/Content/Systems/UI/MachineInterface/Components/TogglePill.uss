@@ -1,4 +1,3 @@
-@import url("../../Tokens/ss3d-tokens.uss");
 
 .toggle-pill__button {
     min-width: 90px;

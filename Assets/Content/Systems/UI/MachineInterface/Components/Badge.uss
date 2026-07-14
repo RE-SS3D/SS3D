@@ -1,5 +1,3 @@
-@import url("../Tokens/diegetic-tones.uss");
-@import url("../../Tokens/ss3d-typography.uss");
 
 .diegetic-badge {
     flex-direction: row;

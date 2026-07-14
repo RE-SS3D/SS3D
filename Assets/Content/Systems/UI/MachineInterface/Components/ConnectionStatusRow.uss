@@ -1,6 +1,3 @@
-@import url("../Tokens/diegetic-tokens.uss");
-@import url("../Tokens/diegetic-tones.uss");
-@import url("../../Tokens/ss3d-typography.uss");
 
 .connection-status-row {
     flex-direction: row;
@@ -19,7 +16,7 @@
 
 .connection-status-row__status {
     font-size: 11px;
-    letter-spacing: 0.04em;
+    letter-spacing: 1px;
     color: var(--ss3d-text-secondary);
     margin-left: 7px;
     -unity-text-align: middle-left;

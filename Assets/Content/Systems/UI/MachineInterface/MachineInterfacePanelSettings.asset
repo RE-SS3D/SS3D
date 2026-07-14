@@ -12,8 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 19101, guid: 0000000000000000e000000000000000, type: 0}
   m_Name: MachineInterfacePanelSettings
   m_EditorClassIdentifier: 
-  themeUss: {fileID: -4733365628477956816, guid: 9301c5ba7ff575a4b9c5763861c773b1, type: 3}
-  m_DisableNoThemeWarning: 0
+  themeUss: {fileID: 7433441132597879392, guid: a8f3c2e19b4d5678a9012bc3def45678, type: 3}
+  m_DisableNoThemeWarning: 1
   m_TargetTexture: {fileID: 0}
   m_RenderMode: 0
   m_ColliderUpdateMode: 0

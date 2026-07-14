@@ -511,10 +511,16 @@ MonoBehaviour:
   _machineWindowStyle: {fileID: 7433441132597879392, guid: 2433e3839429109c4a24395da97d3bae, type: 3}
   _apcTemplateStyle: {fileID: 7433441132597879392, guid: df40fcc0bee62728ab016d9de9e31fba, type: 3}
   _smesTemplateStyle: {fileID: 7433441132597879392, guid: d4e0a6b83c9f506792d3e4f5a6b7c8d9, type: 3}
-  _vendingTemplate: {fileID: 0}
-  _vendingTemplateStyle: {fileID: 0}
+  _vendingTemplate: {fileID: 9197481963319205126, guid: b2c5cf23726c6357db2690a32a64b2c9, type: 3}
+  _vendingTemplateStyle: {fileID: 7433441132597879392, guid: 9bc99832241078f76aae320597f6ffd5, type: 3}
   _idConsoleTemplate: {fileID: 9197481963319205126, guid: d1e2f3a4b5c6478990abcdef12345678, type: 3}
   _idConsoleTemplateStyle: {fileID: 7433441132597879392, guid: e2f3a4b5c6d7488990abcdef123456789, type: 3}
+  _gasPumpTemplate: {fileID: 9197481963319205126, guid: 8cfee9cd2f95465783b184c754da96bc, type: 3}
+  _gasPumpTemplateStyle: {fileID: 7433441132597879392, guid: 5906cda8434f4f0b9bffeb8244497175, type: 3}
+  _ss3dTokensStyle: {fileID: 7433441132597879392, guid: 73b8fe755692049198490f1974236d47, type: 3}
+  _diegeticTokensStyle: {fileID: 7433441132597879392, guid: 747b9eb951f23f36c816ca185407b6fd, type: 3}
+  _diegeticTonesStyle: {fileID: 7433441132597879392, guid: 067bee90fcabf93f1b50dd11716b0b59, type: 3}
+  _ss3dTypographyStyle: {fileID: 7433441132597879392, guid: 5c5d40e591a47dca8a2ac25e2b23b4c8, type: 3}
 --- !u!114 &467607470
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2173,6 +2179,54 @@ Camera:
   m_OcclusionCulling: 1
   m_StereoConvergence: 10
   m_StereoSeparation: 0.022
+--- !u!1 &1110795316
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1110795317}
+  - component: {fileID: 1110795318}
+  m_Layer: 0
+  m_Name: AtmosSystem
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1110795317
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1110795316}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1506918115}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1110795318
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1110795316}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f97e21a49e2949b1bf39f08f78253fee, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: SS3D.Systems::SS3D.Systems.Atmospherics.AtmosSubSystem
+  _componentIndexCache: 8
+  _addedNetworkObject: {fileID: 1506918116}
+  _networkObjectCache: {fileID: 1506918116}
+  _gasRegistry: {fileID: 11400000, guid: 0aee396c6f7001293acdb041245c13ef, type: 2}
 --- !u!1 &1121348072
 GameObject:
   m_ObjectHideFlags: 0
@@ -2350,6 +2404,62 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3f06bc7a96bf97f40b66b573b9eddb9f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!1 &1168891139
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1168891141}
+  - component: {fileID: 1168891140}
+  m_Layer: 0
+  m_Name: AtmosTest
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1168891140
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1168891139}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c3d4e5f6a7b8091a2b3c4d5e6f7a8091, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: SS3D.Systems::SS3D.Systems.Atmospherics.Visualization.AtmosVisualizationDebugSource
+  _active: 1
+  _camera: {fileID: 0}
+  _rebuildEveryFrame: 1
+  _originX: 0
+  _originZ: 0
+  _size: 12
+  _basePressure: 160
+  _hotSpotTemperature: 1200
+  _hotSpotRadius: 0.35
+  _fireIntensity: 1
+  _plasmaFraction: 0.6
+  _co2Fraction: 0.45
+--- !u!4 &1168891141
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1168891139}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1177464309 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 8999006631830363571, guid: df2268f4f5f6669459174c6d7e2043ce, type: 3}
@@ -2565,6 +2675,7 @@ Transform:
   - {fileID: 478499395}
   - {fileID: 2093847561}
   - {fileID: 478615867}
+  - {fileID: 1110795317}
   - {fileID: 467607467}
   - {fileID: 882210002}
   - {fileID: 883310002}
@@ -2601,6 +2712,7 @@ MonoBehaviour:
   - {fileID: 606666310}
   - {fileID: 274660132}
   - {fileID: 478499396}
+  - {fileID: 1110795318}
   - {fileID: 2093847562}
   - {fileID: 2193847562}
   <ParentNetworkObject>k__BackingField: {fileID: 0}
@@ -7601,3 +7713,4 @@ SceneRoots:
   - {fileID: 4559952173117635203}
   - {fileID: 1448301645}
   - {fileID: 1002102147}
+  - {fileID: 1168891141}

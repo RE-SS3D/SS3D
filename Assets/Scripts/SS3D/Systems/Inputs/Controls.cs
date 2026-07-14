@@ -775,6 +775,15 @@ namespace SS3D.Systems.Inputs
                     ""initialStateCheck"": false
                 },
                 {
+                    ""name"": ""Toggle Atmos Debug"",
+                    ""type"": ""Button"",
+                    ""id"": ""a4f8c2e1-9b3d-4a7f-8c6e-1d5e0f2a3b4c"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": ""Tap"",
+                    ""initialStateCheck"": false
+                },
+                {
                     ""name"": ""SendChatMessage"",
                     ""type"": ""Button"",
                     ""id"": ""3ec638f1-be3c-4b60-a0ec-2df8837e6eb9"",
@@ -914,6 +923,17 @@ namespace SS3D.Systems.Inputs
                     ""processors"": """",
                     ""groups"": """",
                     ""action"": ""Toggle Selection Debug"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""b7e3a1c4-5d2f-4e8a-9c1b-6f0d2e3a4b5c"",
+                    ""path"": ""<Keyboard>/p"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Toggle Atmos Debug"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 },
@@ -1178,6 +1198,7 @@ namespace SS3D.Systems.Inputs
             m_Other_SeeContainerContents = m_Other.FindAction("See Container Contents", throwIfNotFound: true);
             m_Other_ShowOwner = m_Other.FindAction("Show Owner", throwIfNotFound: true);
             m_Other_ToggleSelectionDebug = m_Other.FindAction("Toggle Selection Debug", throwIfNotFound: true);
+            m_Other_ToggleAtmosDebug = m_Other.FindAction("Toggle Atmos Debug", throwIfNotFound: true);
             m_Other_SendChatMessage = m_Other.FindAction("SendChatMessage", throwIfNotFound: true);
             // Tile Creator
             m_TileCreator = asset.FindActionMap("Tile Creator", throwIfNotFound: true);
@@ -1806,6 +1827,7 @@ namespace SS3D.Systems.Inputs
         private readonly InputAction m_Other_SeeContainerContents;
         private readonly InputAction m_Other_ShowOwner;
         private readonly InputAction m_Other_ToggleSelectionDebug;
+        private readonly InputAction m_Other_ToggleAtmosDebug;
         private readonly InputAction m_Other_SendChatMessage;
         /// <summary>
         /// Provides access to input actions defined in input action map "Other".
@@ -1866,6 +1888,10 @@ namespace SS3D.Systems.Inputs
             /// Provides access to the underlying input action "Other/ToggleSelectionDebug".
             /// </summary>
             public InputAction @ToggleSelectionDebug => m_Wrapper.m_Other_ToggleSelectionDebug;
+            /// <summary>
+            /// Provides access to the underlying input action "Other/ToggleAtmosDebug".
+            /// </summary>
+            public InputAction @ToggleAtmosDebug => m_Wrapper.m_Other_ToggleAtmosDebug;
             /// <summary>
             /// Provides access to the underlying input action "Other/SendChatMessage".
             /// </summary>
@@ -1932,6 +1958,9 @@ namespace SS3D.Systems.Inputs
                 @ToggleSelectionDebug.started += instance.OnToggleSelectionDebug;
                 @ToggleSelectionDebug.performed += instance.OnToggleSelectionDebug;
                 @ToggleSelectionDebug.canceled += instance.OnToggleSelectionDebug;
+                @ToggleAtmosDebug.started += instance.OnToggleAtmosDebug;
+                @ToggleAtmosDebug.performed += instance.OnToggleAtmosDebug;
+                @ToggleAtmosDebug.canceled += instance.OnToggleAtmosDebug;
                 @SendChatMessage.started += instance.OnSendChatMessage;
                 @SendChatMessage.performed += instance.OnSendChatMessage;
                 @SendChatMessage.canceled += instance.OnSendChatMessage;
@@ -1982,6 +2011,9 @@ namespace SS3D.Systems.Inputs
                 @ToggleSelectionDebug.started -= instance.OnToggleSelectionDebug;
                 @ToggleSelectionDebug.performed -= instance.OnToggleSelectionDebug;
                 @ToggleSelectionDebug.canceled -= instance.OnToggleSelectionDebug;
+                @ToggleAtmosDebug.started -= instance.OnToggleAtmosDebug;
+                @ToggleAtmosDebug.performed -= instance.OnToggleAtmosDebug;
+                @ToggleAtmosDebug.canceled -= instance.OnToggleAtmosDebug;
                 @SendChatMessage.started -= instance.OnSendChatMessage;
                 @SendChatMessage.performed -= instance.OnSendChatMessage;
                 @SendChatMessage.canceled -= instance.OnSendChatMessage;
@@ -2522,6 +2554,13 @@ namespace SS3D.Systems.Inputs
             /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
             /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
             void OnToggleSelectionDebug(InputAction.CallbackContext context);
+            /// <summary>
+            /// Method invoked when associated input action "Toggle Atmos Debug" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+            /// </summary>
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+            void OnToggleAtmosDebug(InputAction.CallbackContext context);
             /// <summary>
             /// Method invoked when associated input action "SendChatMessage" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
             /// </summary>

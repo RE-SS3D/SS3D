@@ -1,0 +1,70 @@
+
+.gas-bar-row {
+    flex-direction: row;
+    align-items: center;
+    width: 100%;
+}
+
+.gas-bar-row__label {
+    width: 60px;
+    flex-shrink: 0;
+    font-size: 13px;
+    color: var(--ss3d-text-secondary);
+    padding: 0;
+    background-color: rgba(0, 0, 0, 0);
+}
+
+/* Painted outer track: radius and border only — no overflow clipping here. */
+.gas-bar-row__track {
+    flex-grow: 1;
+    flex-shrink: 1;
+    min-width: 0;
+    height: 8px;
+    margin-right: 10px;
+    margin-left: 0;
+    background-color: #0a0b0d;
+    border-width: 1px;
+    border-color: var(--ss3d-border-subtle);
+    border-radius: var(--ss3d-radius-sm);
+}
+
+/* Inner clip: overflow only — never combine border-radius with overflow on this node. */
+.gas-bar-row__track-clip {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+}
+
+.gas-bar-row__fill {
+    height: 100%;
+    width: 0%;
+    flex-shrink: 0;
+    background-color: #8a8d92;
+}
+
+.gas-bar-row__fill--accent {
+    background-color: #c54f30;
+}
+
+.gas-bar-row__fill.tone-warning {
+    background-color: var(--ss3d-feedback-warning);
+}
+
+.gas-bar-row__fill.tone-danger {
+    background-color: var(--ss3d-feedback-danger);
+}
+
+.gas-bar-row__value {
+    width: 52px;
+    flex-shrink: 0;
+    font-size: 13px;
+    color: var(--ss3d-text-primary);
+    -unity-text-align: middle-right;
+    padding: 0;
+    background-color: rgba(0, 0, 0, 0);
+}
+
+.panel-section__content .gas-bar-row__label,
+.panel-section__content .gas-bar-row__value {
+    background-color: rgba(0, 0, 0, 0);
+}

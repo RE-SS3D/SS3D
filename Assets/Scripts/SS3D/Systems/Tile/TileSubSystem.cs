@@ -99,6 +99,14 @@ namespace SS3D.Systems.Tile
             _currentMap?.UnregisterMutationObserver(observer);
         }
 
+        /// <summary>
+        /// Notifies the tilemap that a tile cell's runtime state changed (e.g. door open/close).
+        /// </summary>
+        public void NotifyTileStateChanged(Vector3 worldPosition)
+        {
+            _currentMap?.NotifyTileStateChanged(worldPosition);
+        }
+
         [ServerOrClient]
         public GenericObjectSo GetAsset(string assetName) => Loader.GetAsset(assetName);
 

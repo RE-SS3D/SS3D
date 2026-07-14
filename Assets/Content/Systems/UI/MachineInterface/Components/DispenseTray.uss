@@ -1,5 +1,3 @@
-@import url("../Tokens/diegetic-tokens.uss");
-@import url("../../Tokens/ss3d-typography.uss");
 
 .dispense-tray {
     background-color: var(--ss3d-diegetic-tray-bg);

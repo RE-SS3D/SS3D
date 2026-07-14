@@ -1,21 +1,109 @@
-@import url("../../Tokens/ss3d-tokens.uss");
 
-.apc-power-controller {
-    flex-direction: column;
+.apc-identity-row {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 14px;
 }
 
-.apc-channels-title {
-    font-size: 9px;
+.apc-identity-row .device-identity-block {
+    flex-grow: 1;
+    margin-right: 16px;
+}
+
+.apc-body-columns {
+    flex-direction: row;
+    align-items: stretch;
+    flex-grow: 1;
+    flex-shrink: 0;
+    min-height: 0;
+}
+
+.apc-body-column {
+    flex-direction: column;
+    flex-grow: 1;
+    flex-basis: 0;
+    min-width: 0;
+    flex-shrink: 0;
+}
+
+.apc-body-column--controls {
+    margin-left: 14px;
+}
+
+.apc-access-region {
+    flex-direction: column;
+    flex-grow: 1;
+    min-width: 0;
+    background-color: var(--ss3d-diegetic-panel-body);
+    border-radius: var(--ss3d-radius-md);
+    border-width: 1px;
+    border-color: var(--ss3d-diegetic-panel-raised);
+}
+
+#diagnostics-section .panel-section__content {
+    padding-top: 12px;
+    padding-bottom: 12px;
+}
+
+.apc-access-unlocked .panel-section__content {
+    padding-top: 0;
+    padding-bottom: 0;
+}
+
+.apc-battery-state-header {
+    font-size: 12px;
     color: var(--ss3d-text-tertiary);
-    letter-spacing: 2px;
-    margin-top: var(--ss3d-space-2);
-    margin-bottom: var(--ss3d-space-2);
+    padding: 0;
+    background-color: rgba(0, 0, 0, 0);
+}
+
+.apc-battery-state-header.font-terminal {
+    color: var(--ss3d-text-tertiary);
+}
+
+.apc-body-column .power-flow-row {
+    margin-bottom: 0;
+    border-width: 0;
+    background-color: transparent;
+    padding: 0;
+    align-items: stretch;
+}
+
+.apc-body-column .power-flow-row__metric {
+    flex-grow: 1;
+    flex-basis: 0;
+    background-color: var(--ss3d-diegetic-inset);
+    padding: 10px 12px;
+}
+
+.apc-body-column .power-flow-row__metric--grid-in {
+    border-top-left-radius: var(--ss3d-radius-sm);
+    border-bottom-left-radius: var(--ss3d-radius-sm);
+}
+
+.apc-body-column .power-flow-row__metric--load-out {
+    border-top-right-radius: var(--ss3d-radius-sm);
+    border-bottom-right-radius: var(--ss3d-radius-sm);
+}
+
+.apc-body-column .power-flow-row__arrow {
+    align-self: center;
 }
 
 .apc-shed-hint {
-    font-size: 10px;
+    font-size: 11px;
     color: var(--ss3d-text-tertiary);
     white-space: normal;
-    margin-top: var(--ss3d-space-2);
-    margin-bottom: var(--ss3d-space-2);
+    line-height: 1.4;
+    margin-top: 4px;
+}
+
+.apc-body-column .panel-section {
+    margin-bottom: 14px;
+}
+
+.apc-access-region .access-gated-region__controls .panel-section__content {
+    padding-top: 0;
+    padding-bottom: 0;
 }

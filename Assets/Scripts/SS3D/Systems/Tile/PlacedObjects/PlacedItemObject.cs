@@ -3,6 +3,7 @@ using FishNet.Object;
 using SS3D.Core;
 using SS3D.Data;
 using SS3D.Logging;
+using SS3D.Systems.Tile.TileMapCreator;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -83,6 +84,12 @@ namespace SS3D.Systems.Tile
             _worldPosition = worldPosition;
             _rotation = rotation;
             _itemSo = itemSo;
+        }
+
+        public override void OnStartClient()
+        {
+            base.OnStartClient();
+            TileLayerVisibilityService.TryApplyPlacedItem(this);
         }
 
         /// <summary>

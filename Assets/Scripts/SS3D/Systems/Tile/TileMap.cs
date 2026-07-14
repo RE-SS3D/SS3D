@@ -33,6 +33,8 @@ namespace SS3D.Systems.Tile
 
         public int ChunkCount => _chunks.Count;
 
+        public IReadOnlyList<PlacedItemObject> PlacedItems => _items;
+
         public IReadOnlyList<SavedAreaRecord> LoadedAreaRecords => _loadedAreaRecords;
 
         public event EventHandler OnMapLoaded;
@@ -637,6 +639,23 @@ namespace SS3D.Systems.Tile
                 observer.OnChunkCreated(chunkRef);
         }
 
+        /// <summary>
+        /// Enumerates the chunks that currently exist on the map. Lets observers that register
+        /// after chunks were created (e.g. atmospherics) seed themselves from existing state.
+        /// </summary>
+        public IEnumerable<TileChunkRef> GetChunkRefs()
+        {
+            foreach (KeyValuePair<Vector2Int, TileChunk> pair in _chunks)
+            {
+                yield return new TileChunkRef
+                {
+                    MapId = MapId,
+                    ChunkKey = pair.Key,
+                    Origin = new Vector3(pair.Key.x * TileChunk.ChunkSize, 0, pair.Key.y * TileChunk.ChunkSize),
+                };
+            }
+        }
+
         private void NotifyTilePlaced(PlacedTileObject placedObject, Vector3 worldPosition)
         {
             TileCoord coord = new TileCoord(MapId, Mathf.RoundToInt(worldPosition.x), Mathf.RoundToInt(worldPosition.z));
@@ -651,6 +670,17 @@ namespace SS3D.Systems.Tile
 
             foreach (ITileMutationObserver observer in _mutationObservers)
                 observer.OnTileCleared(placedObject, coord, layer);
+        }
+
+        /// <summary>
+        /// Notifies observers that a tile cell's runtime state changed (e.g. door open/close).
+        /// </summary>
+        public void NotifyTileStateChanged(Vector3 worldPosition)
+        {
+            TileCoord coord = new TileCoord(MapId, Mathf.RoundToInt(worldPosition.x), Mathf.RoundToInt(worldPosition.z));
+
+            foreach (ITileMutationObserver observer in _mutationObservers)
+                observer.OnTileStateChanged(coord);
         }
 
         private void ClearUntrackedItems()

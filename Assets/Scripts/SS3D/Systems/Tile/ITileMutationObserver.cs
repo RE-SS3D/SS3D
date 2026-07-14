@@ -10,6 +10,8 @@ namespace SS3D.Systems.Tile
         void OnTileCleared(ITileOccupant occupant, TileCoord coord, TileLayer layer);
 
         void OnChunkCreated(TileChunkRef chunk);
+
+        void OnTileStateChanged(TileCoord coord);
     }
 
     /// <summary>

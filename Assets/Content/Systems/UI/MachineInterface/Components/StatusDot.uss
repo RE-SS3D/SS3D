@@ -1,4 +1,3 @@
-@import url("../Tokens/diegetic-tones.uss");
 
 .status-dot {
     width: 7px;
@@ -23,4 +22,8 @@
 
 .status-dot.tone-info {
     background-color: var(--ss3d-feedback-info);
+}
+
+.status-dot.tone-neutral {
+    background-color: #6b6b70;
 }

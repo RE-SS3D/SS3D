@@ -8,7 +8,7 @@ current review capacity supports.
 This document is the plain-language divergence log. It is updated periodically — not per-commit.
 For doc authoring conventions see [SKILL.md](SKILL.md).
 
-**Last updated:** 2026-07-11
+**Last updated:** 2026-07-14
 
 ---
 
@@ -21,8 +21,8 @@ For doc authoring conventions see [SKILL.md](SKILL.md).
 | Render pipeline | Built-in | **URP 17** |
 | Release channel | Tagged releases on GitHub | **No releases** — build from source |
 | Documentation | GitBook ([ss3d.gitbook.io](https://ss3d.gitbook.io/dev-guide/)) | `Documents/design/` + `Documents/architecture/` + system maps |
-| Commits ahead of upstream | — | **~119** (0 behind as of last fetch) |
-| Files changed vs upstream | — | ~2,672 files, +164k / −44k lines |
+| Commits ahead of upstream | — | **~231** (0 behind as of last fetch) |
+| Files changed vs upstream | — | ~12k files, +542k / −55k lines |
 
 ---
 
@@ -98,6 +98,11 @@ Merged via `archive/feature-urp-migration` (through `develop-unity6`). Includes:
 Upstream remains on the Built-in render pipeline with no equivalent URP assets or selection-pick
 render features.
 
+### Analyzer tooling
+
+StyleCop analyzers disabled in the project (2026-07-14) to reduce friction on AI-assisted edits.
+EditMode test CI still runs on push and PR.
+
 ---
 
 ## Shipped on `develop`
@@ -130,7 +135,7 @@ Merged from `archive/feature-1394-detailed-examine`.
 
 **Paths:** `SS3D.Localization`, `SS3D.Systems.Examine`
 
-Unified **Examine** string table for all 146 `ExamineData` assets, replacing sparse per-category
+Unified **Examine** string table for all 147 `ExamineData` assets, replacing sparse per-category
 tables (Items, Tiles, Misc). Shared **`LocalizedTextService`** (caching, locale-change invalidation,
 dev/release fallback) drives code-driven lookups; **`ExamineContentResolver`** separates static
 table text from dynamic sections via **`IExamineContentProvider`**.
@@ -179,6 +184,12 @@ Architecture: [2026-07_interaction-system-hardening.md](architecture/2026-07_int
 Plans: [interaction_system_improvements_9e14ae22.plan.md](plans/interaction_system_improvements_9e14ae22.plan.md),
 [radial_menu_implementation_5a83bdf9.plan.md](plans/radial_menu_implementation_5a83bdf9.plan.md).
 
+**Post-merge polish** (2026-07-12): stuck outline cleanup, drop-on-click duplicate-spawn fix, instant-interaction
+loading-bar flash, toggle-interaction Power icon fallback, radial menu polish, crafting outline log spam.
+Removed FastScriptReload and repaired Game scene missing scripts.
+
+Merged from `archive/feature-interactions`.
+
 ### Tilemap and adjacency engine
 
 **Paths:** `SS3D.Systems.Tile`, `SS3D.Systems.Tile.Connections`
@@ -220,27 +231,122 @@ Diegetic **UI Toolkit** panels for station machines, networked via FishNet snaps
 |---|---|---|
 | [Phase 1](architecture/2026-07_machine-interface-phase1-foundation.md) | Shipped | UI foundation, local APC panel preview |
 | [Phase 2](architecture/2026-07_machine-interface-phase2-apc-networking.md) | Shipped | Networked APC with power channel gating |
-| [Phase 3](architecture/2026-07_machine-interface-phase3-smes-generalization.md) | Mostly shipped | SMES interface (exterior + engineer views), registry-driven plumbing, shared binder flow |
+| [Phase 3](architecture/2026-07_machine-interface-phase3-smes-generalization.md) | Shipped | SMES interface (exterior + engineer views), registry-driven plumbing, shared binder flow |
 | [Diegetic screen UI](architecture/2026-07_diegetic-screen-ui-framework.md) | Shipped | Reusable diegetic device shell + component library; vending machine as first consumer |
 
-APC and SMES keep the existing modal `MachineWindow` shell. Newer devices use
-`DiegeticDeviceShell` (chassis/bezel/screen) with diegetic tokens and shared chrome components
-(`PanelSection`, `SteelButton`, `ActionLog`, etc.). `MachineInterfaceShellKind` registers modal vs
-diegetic layouts on the host.
+**APC and SMES** now use `DiegeticDeviceShell` (chassis/bezel/screen) with engineering
+`AccessGatePanel` ID swipe gates, glanceable status chips, channel rows, and steel-button controls.
+Legacy modal `MachineWindow` remains available for simple panels but is no longer used by APC/SMES.
 
-**Vending machines** now open a networked diegetic panel (`VendingMachineController`) with
-tray-based dispense (vend to tray, then take). Legacy per-product `DispenseProductInteraction` and
+**Atmospheric devices** ship diegetic panels with the same shell pattern:
+
+- **Air alarm** — live turf sampling (tile in front of wall mount), area vent/scrubber discovery,
+  preset mode dispatch, plasma/temperature readouts, gas bar widgets
+- **Scrubber** — per-gas filter toggles and flow-rate stepper wired into `ScrubberController`
+- **Vent** — target pressure control enforced in `VentController` (stops filling at target)
+- **Pump** — inlet/outlet pressure readouts, target outlet pressure, power toggle; operates on its
+  own tile and pipe network only (not area-linked)
+
+Power toggles on atmos port UIs require engineering ID access. Diegetic panels support vertical
+scrolling for tall content. `MachineInterfaceShellKind` registers modal vs diegetic layouts on the
+host.
+
+**Vending machines** open a networked diegetic panel (`VendingMachineController`) with tray-based
+dispense (vend to tray, then take). Legacy per-product `DispenseProductInteraction` and
 `VendingMachine` behaviour removed. ID card reader is stubbed in v1.
 
 `MachineInterfaceHost` disables `UIDocument` when closed to avoid interfering with the selection
 pick pass. Diegetic panels mount the full cloned UXML `TemplateContainer` so attached style sheets
-apply at runtime.
+apply at runtime. UI Toolkit masking rule: never combine `border-radius` and `overflow: hidden` on
+the same element — split painted and clipping layers (`DiegeticDeviceShell`, `PanelSection`).
 
-Merged from `archive/machine-ui` (APC/SMES) and
-`archive/feature-diegetic-screen-ui-framework` (diegetic shell + vending). Phase 3 architecture doc
-still lists minor cleanup (shared diagnostics across binders, multi-viewer integration tests).
+Merged from `archive/machine-ui` (APC/SMES networking),
+`archive/feature-diegetic-screen-ui-framework` (diegetic shell + vending), and
+`atmos-pipes` (APC/SMES diegetic redesign + atmos device panels). Plan:
+[diegetic_screen_ui_framework_643c2e6f.plan.md](plans/diegetic_screen_ui_framework_643c2e6f.plan.md).
+System map: [machine-interface.md](architecture/systems/machine-interface.md).
 
-Plan: [diegetic_screen_ui_framework_643c2e6f.plan.md](plans/diegetic_screen_ui_framework_643c2e6f.plan.md).
+### Area foundation
+
+**Paths:** `SS3D.Systems.Area`, `SS3D.Systems.Electricity`
+
+APC-seeded per-tile area partition with flood-fill, save/load, and area-scoped power and lighting:
+
+- **`AreaSubSystem`** + **`AreaFloodFillService`** — first-wins APC order, door-tile post-pass, wall-mount
+  seeding from `FacingDirection`; per-chunk `ushort[]` area ids; overlap diagnostic in APC machine UI
+- **Area-scoped power** — `AreaApcPowerDistribution` draws grid headroom to each APC and drains its cell
+  per area; consumers (vendors, jukebox, air alarms, airlocks) do not join the HV cable graph
+- **kWh storage model** — tick-integrated charge/discharge; priority channel shedding (Equipment →
+  Environment → Lighting)
+- **Lighting state** — `AreaLightingState` derivation + client sync; `LightPower` fixture visuals;
+  `LightSwitchController` toggles player lighting preference (distinct from APC lighting breaker)
+- **Consumer visuals** — `ConsumerPowerVisual` dims emissive/panel materials; airlocks power-gated via
+  `AirLockOpener` with delayed close on power loss
+- **Atmos port power** — vents, scrubbers, pumps, and air alarms draw from the **Environment**
+  power channel via `BasicPowerConsumer`; port simulation skips when unpowered
+
+EditMode tests under `Assets/Scripts/Tests/EditMode/AreaTests/` and
+`Assets/Scripts/Tests/EditMode/ElectricityTests/`.
+
+Merged from `archive/areas-foundation` and extended by `atmos-pipes` (environment channel for atmos
+ports). Architecture:
+[2026-07_area-foundation.md](architecture/2026-07_area-foundation.md). Plans:
+[areas_implementation_plan_c0639343.plan.md](plans/areas_implementation_plan_c0639343.plan.md),
+[electricity_kwh_foundation_917ccdbc.plan.md](plans/electricity_kwh_foundation_917ccdbc.plan.md).
+
+Deferred: live tile-mutation recompute; editor merge/split UI.
+
+### Atmospherics ECS foundation
+
+**Paths:** `SS3D.Systems.Atmospherics`, `SS3D.Rendering.URP.AtmosRendererFeature`
+
+Server-authoritative open-tile gas simulation on the turf grid:
+
+- **ECS world** — `AtmosSimulation` with native cell buffers, active-cell sleep/wake, Burst jobs
+  (`ShareGasJob`, `ConductHeatJob`, `ReactAtmosJob` for plasma combustion)
+- **Tile bridge** — `AtmosTileObserver` on `ITileMutationObserver`; dynamic airlock occupancy via
+  `IDynamicTileOccupant` reopens/closes gas paths when doors move
+- **GPU visualization** — `AtmosGpuUploader` → pressure/temperature/composition/fire textures;
+  `AtmosRendererFeature` scatter + plasma glow + heat distortion passes
+- **Debug** — `AtmosDebugController` overlay; shader debug views on renderer feature
+
+EditMode tests under `Assets/Scripts/Tests/EditMode/Atmospherics/`.
+
+Merged from `archive/feature-atmos-ecs`. Architecture:
+[2026-07_atmos-ecs-foundation.md](architecture/2026-07_atmos-ecs-foundation.md).
+
+Deferred: liquid/solid phase buffers, valves, liquid pipe networks, pipe failures, chemistry
+integration, **client VFX sync** (server/host only today — see
+[2026-07_atmos-client-visualization-sync.md](architecture/2026-07_atmos-client-visualization-sync.md)).
+
+### Atmospherics pipe machinery
+
+**Paths:** `SS3D.Systems.Atmospherics.Pipes`, `SS3D.UI.MachineInterface` (atmos panels)
+
+Gas pipe layer on top of the turf ECS simulation — bulk pipe networks exchange gas with turf cells
+via registered port devices:
+
+- **Pipe networks** — `GasPipeNetworkRegistry`, `AtmosPipeSimulation`, tile-driven connectivity via
+  `AtmosPipeObserver`; bulk pressure/mole sharing across connected segments
+- **Vents** — `VentController` pushes network gas into turf until target pressure reached
+- **Scrubbers** — `ScrubberController` pulls filtered gases from turf into the network; UI flow rate
+  scales rated throughput
+- **Pumps** — `AtmosPumpController` moves turf gas into the pipe network with target outlet pressure
+  and max differential stall; not area-linked
+- **Air alarms** — `AirAlarmController` samples the turf cell in front of the wall mount, discovers
+  area vents/scrubbers via `AtmosAreaDeviceQuery`, and dispatches preset modes; port commands
+  validated against the alarm's resolved area
+- **Power gating** — port devices require Environment channel power (`AtmosPortPower`)
+- **VFX polish** — fire clipping, wall occlusion, and heat distortion placement fixes on the atmos
+  render passes
+- **Debug** — `AtmosDebugController` extended with pipe network overlay
+
+EditMode tests under `Assets/Scripts/Tests/EditMode/Atmospherics/` (port flow, pump stall/target,
+scrubber flow rate, air-alarm sampler). Gas pump examine strings added to the unified Examine table.
+
+Merged from `atmos-pipes`. System map: [atmospherics.md](architecture/systems/atmospherics.md).
+
+Deferred: valves, liquid pipes, pipe failures (clog/rupture), junction chemistry.
 
 ### Structured logging
 
@@ -270,9 +376,11 @@ Implementation should follow the specs or document explicit deviations.
 | [hacking-interface.md](design/hacking-interface.md) | Field diagnostic unit (FDU) — diegetic 7-panel tool; discovery by physical access |
 
 Machine interfaces and the radial interaction menu partially implement
-[main-hud.md](design/main-hud.md) (tiered interactions, intent chording — drag-combine Tier 3 still
-pending). Machine interfaces also touch [area.md](design/area.md) power assumptions; the rest of
-these specs remain design-only.
+[main-hud.md](design/main-hud.md) (tiered interactions, intent chording, diegetic machine control
+surfaces for APC/SMES/vending/atmos devices — drag-combine Tier 3 still pending). **Area foundation**
+partially implements [area.md](design/area.md) (APC-seeded flood-fill, area-scoped power/lighting,
+air-alarm area device discovery — live mutation recompute and editor merge/split still pending). The
+rest of these specs remain design-only.
 
 ---
 
@@ -283,10 +391,12 @@ before assuming commit counts.
 
 | Branch | Ahead / behind `develop` | System | Notes |
 |---|---|---|---|
-| `feature/atmos-ecs` | 26 / 21 | ECS atmospherics + GPU gas/fire visuals | `SS3D.Systems.Atmospherics`, `AtmosRendererFeature`; EditMode tests on branch |
-| `feature/vision-urp-tilemap` | 9 / 21 | Grid-based FOV / fog-of-war on URP + tilemap | `SS3D.Systems.Vision`, `VisionRendererFeature`; supersedes older vision work |
-| `vision-system-wip` | 6 / 100 | Older vision prototype | Stale — use `feature/vision-urp-tilemap` instead |
-| `feature/animation-system` | 0 / 75 | Animation system | No unique commits; stale relative to `develop` |
+| `feature/id-access-foundation` | 2 / 30 | ID cards + door access gating | Server-side crew records; debug ID console |
+| `feature/inventory-storage` | 9 / 58 | Inventory + main HUD | Gear/hands strip, intent module, storage UI migration |
+| `feature/urp-lighting-phase1` | 2 / 69 | URP lighting visual foundation | Forward+ fixture fixes, unitless intensity handling |
+| `feature/animation-system` | 3 / 71 | Humanoid animation | Body-state-driven locomotion scaffold |
+| `feature/vision-urp-tilemap` | 9 / 120 | Grid-based FOV / fog-of-war on URP + tilemap | `SS3D.Systems.Vision`, `VisionRendererFeature`; supersedes older vision work |
+| `vision-system-wip` | 6 / 199 | Older vision prototype | Stale — use `feature/vision-urp-tilemap` instead |
 
 ---
 
@@ -309,6 +419,10 @@ Do not develop on them — use `develop` or a new feature branch.
 | `archive/feature-examine-localization` | 2026-07-09 | Unified Examine localization + `LocalizedTextService` |
 | `archive/feature-interaction-system-hardening` | 2026-07-09 | Interaction RPC hardening, pipeline, outlines, radial menu |
 | `archive/feature-radial-menu-redesign` | (via interaction-system-hardening) | UI Toolkit three-tier radial menu + armed overlay |
+| `archive/areas-foundation` | 2026-07-12 | APC-seeded areas, kWh power model, area lighting + consumer visuals |
+| `archive/feature-atmos-ecs` | 2026-07-12 | ECS turf gas sim, plasma combustion, GPU fog/fire visuals |
+| `archive/feature-interactions` | 2026-07-12 | Post-hardening interaction/radial polish + FastScriptReload removal |
+| `atmos-pipes` | 2026-07-14 | Gas pipe networks, port devices, atmos machine UIs, APC/SMES diegetic redesign |
 
 ---
 

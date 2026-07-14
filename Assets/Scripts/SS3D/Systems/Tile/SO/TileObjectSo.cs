@@ -24,6 +24,18 @@ namespace SS3D.Systems.Tile
         // Whether or not a wall mount is large
         public bool isLarge;
 
+        [Tooltip("Extra height applied when the object is placed on the tile grid. Used for inset floor furniture such as vents.")]
+        public float placementYOffset;
+
+        /// <summary>
+        /// World position for a tile grid anchor, including any placement height offset.
+        /// </summary>
+        public Vector3 GetPlacedWorldPosition(Vector3 gridPosition)
+        {
+            gridPosition.y += placementYOffset;
+            return gridPosition;
+        }
+
         /// <summary>
         /// TODO : document and understand properly this method. Why the diagonal directions are not treated ?
         /// </summary>
