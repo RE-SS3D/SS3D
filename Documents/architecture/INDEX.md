@@ -26,7 +26,7 @@ Authoring conventions: [Documents/SKILL.md](../SKILL.md). Agent rules: [AGENTS.m
 | Interactions (runtime) | [interactions-runtime](systems/interactions-runtime.md) | shipped | `InteractionController`, radial menu, armed interactions, outlines |
 | Selection | [selection](systems/selection.md) | shipped | Shader-ID mesh picking for interaction targeting |
 | Examine | [examine](systems/examine.md) | shipped | Hover tooltips and shift-hold detailed examine |
-| Tile / construction | [tile](systems/tile.md) | shipped | Tilemap, adjacency engine, construction, dynamic tile occupancy |
+| Tile / construction | [tile](systems/tile.md) | shipped | Tilemap, adjacency engine, construction, dynamic tile occupancy; build-menu client layer visibility |
 | Atmospherics | [atmospherics](systems/atmospherics.md) | partial | ECS turf gas sim; GPU fog/fire on server/host only — client VFX sync planned |
 | Area | [area](systems/area.md) | partial | APC-seeded flood-fill, area power, lighting state, wall light switches |
 | Electricity | [electricity](systems/electricity.md) | partial | kWh storage, HV cable grid, APC/SMES/generators, consumer visuals |
