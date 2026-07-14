@@ -1,15 +1,18 @@
 ---
 name: Health Implementation Plan
-overview: Greenfield rewrite of SS3D health to match Documents/design/health.md, anchored to the Human.fbx rig and Human.prefab anatomy. Replaces the existing BodyLayer/circulatory prototype with a simpler two-tier model (7-zone damage + systemic pools + organ function), then ships vertical slices for bleeding, organs, critical/death, combat, treatment, HUD, and cross-system hooks.
+overview: Clean-slate rewrite of SS3D health per Documents/design/health.md — delete all legacy health simulation code in Phase 0 (no dual-stack), rebuild from Human.fbx/prefab anchors only, then ship vertical slices for bleeding, organs, critical/death, combat, treatment, HUD, and cross-system hooks.
 todos:
+  - id: phase0-purge
+    content: "Phase 0a: Purge all legacy Assets/Scripts/SS3D/Systems/Health/ simulation code + update external references; no dual-stack period"
+    status: pending
   - id: phase0-asset-audit
-    content: "Phase 0a: Document Human.fbx anatomy map — body parts, colliders, organs, zone mapping, asset gaps (kidneys, groin collider)"
+    content: "Phase 0b: Document Human.fbx anatomy map — body parts, colliders, organs, zone mapping, asset gaps (kidneys)"
     status: pending
   - id: phase0-data-contract
-    content: "Phase 0b: Greenfield data contract — ZoneDamageState, OrganState, SystemicPools, HealthSnapshot, HumanHealthController, IHealthEffectModifier hook; delete/replace BodyLayer stack"
+    content: "Phase 0c: New clean-slate data contract — ZoneDamageState, OrganState, SystemicPools, HealthSnapshot, HumanHealthController, IHealthEffectModifier; fresh AnatomyNode/OrganInstance types"
     status: pending
   - id: phase0-prefab-wiring
-    content: "Phase 0c: Rewire Human.prefab — ZoneTargetCollider on skeleton colliders, organ prefab registration, hips groin collider"
+    content: "Phase 0d: Rewire Human.prefab — strip legacy health components, add new controller + ZoneTargetCollider + organ registration"
     status: pending
   - id: phase1-bleeding-slice
     content: "Phase 1: Wound severity, bleeding → blood volume → oxy debt, bandage interaction, Bleeding alert chip"
@@ -18,7 +21,7 @@ todos:
     content: "Phase 2: Wire asset-backed organs (heart, lungs, liver, brain); kidney clearance interim until art asset; cardiac arrest"
     status: pending
   - id: phase3-critical-death
-    content: "Phase 3: Multi-threshold critical, screen-space feedback, brain-function-zero death, defibrillator window"
+    content: "Phase 3: Multi-threshold critical, screen-space feedback (existing custom designs), brain-function-zero death, defibrillator window"
     status: pending
   - id: phase4-combat
     content: "Phase 4: ZoneTargetResolver on BodyParts layer, replace HitInteraction, one melee weapon vertical slice"
@@ -27,7 +30,7 @@ todos:
     content: "Phase 5: Field treatments (burn dressing, splint, O2, CPR, antitoxin, IV/transfusion)"
     status: pending
   - id: phase6-hud
-    content: "Phase 6: Vitals cluster, screen-space feedback, examine-self organ readout, wound rendering on model"
+    content: "Phase 6: Vitals cluster + screen-space feedback (existing custom designs), examine-self organ readout, wound rendering on model"
     status: pending
   - id: phase7-cross-system
     content: "Phase 7: Stamina↔oxy bridge, armor, surgery direct-repair slice, death/cloning, chemistry stubs"
@@ -62,37 +65,63 @@ Primary spec: [Documents/design/health.md](Documents/design/health.md). Adjacent
 
 ---
 
-## Strategic shift: greenfield rewrite
+## Strategic shift: clean-slate rewrite
 
-The existing health code (~40 files) is a **simulation prototype** (multi-layer damage, molar circulatory math, heartbeat `Update()` loops) that diverges from the design spec's gameplay-facing model. **We do not need to retain it.**
+The existing health code (~40 C# files under `Assets/Scripts/SS3D/Systems/Health/`) is a **simulation prototype** that diverges from the design spec. **Delete it entirely — do not slim, bridge, or run alongside new code.** Phase 0 opens with a purge PR; the new system is written fresh on top of prefab/content anchors only.
 
-### What we keep (content / prefab anchors)
+**No dual-stack rule:** At no point should legacy `BodyLayer`, `CirculatoryController`, `Heart`/`Lungs` pulse loops, or `InflictDamageToAllLayer` APIs coexist with the new `HumanHealthController`. One PR (or a tight back-to-back pair) must leave the tree clean.
 
-These come from [Human.fbx](Assets/Art/Models/Entities/Humanoids/Human/Human.fbx) and [Human.prefab](Assets/Content/WorldObjects/Entities/Humanoids/Human/Human.prefab) — the rewrite adheres to this anatomy, not to legacy C# structure:
+### What we keep (content only — not C#)
+
+These come from [Human.fbx](Assets/Art/Models/Entities/Humanoids/Human/Human.fbx) and [Human.prefab](Assets/Content/WorldObjects/Entities/Humanoids/Human/Human.prefab):
 
 | Keep | Why |
 |------|-----|
 | Human.prefab hierarchy and skinned meshes | Rig, animations, visual wound surface |
-| Body-part prefab instances (torso, head, limbs, hands, feet) | Detachable anatomy tree |
-| Skeleton colliders on armature bones | Zone raycast targets |
-| Organ meshes + organ prefabs | Diegetic organ model, surgery extract/install |
-| `BleedingBodyPart` VFX pattern | Acute bleed feedback (rewire, don't inherit logic) |
-| Severed-item spawning pattern | Physical severed limbs as holdable items |
+| Body-part and organ **prefab assets** | Anatomy references; legacy `MonoBehaviour` scripts on them are removed and replaced |
+| Skeleton colliders on armature bones | Zone raycast targets (add `ZoneTargetCollider`) |
+| Bleeding **particle prefab** | Reuse VFX asset; replace `BleedingBodyPart` script with new `WoundVfx` (or equivalent) |
+| Severed limb **item prefabs** | Physical drops; new severance code spawns them |
 | `BodyParts` physics layer (layer 10) | Combat/medical raycast |
-| `Human.Kill()` / mind-swap hooks | Death and head-severance integration points |
+| `Human.Kill()` / mind-swap **integration points** on `Human` entity | Rewire to new death API; do not keep old brain-destroy path |
 
-### What we delete / replace (code)
+### Phase 0a — Legacy purge (delete entirely)
 
-| Retire | Replace with |
-|--------|--------------|
-| `BodyLayers/` (bone, muscle, circulatory, nerve, organ layers) | Per-zone `ZoneDamageState` (brute, burn, wound severity) |
-| `CirculatoryController` molar `SubstanceContainer` sim | `SystemicPools` (blood volume ratio, oxy debt, toxin concentration) |
-| `OxygenConsumerSubSystem` + per-layer O2 reserves | Single 1 Hz tick on `HumanHealthController` |
-| `Heart`/`Lungs` `Update()` heartbeat loops | `OrganState.FunctionPercent` driving pool deltas |
-| 11-type `DamageType` on layers | 4 HUD categories (brute/burn/toxin/oxy) + optional fine-grained `DamageSource` for combat weapons |
-| `FeetController` | Limb function debuffs on `ZoneDamageState` |
-| `BodyPart.InflictDamageToAllLayer` | `ApplyDamage(BodyZone, DamagePacket)` on controller |
-| Binary bleed (`RelativeDamage > 0`) | `BleedingRate = f(WoundSeverity)` |
+Remove all of `Assets/Scripts/SS3D/Systems/Health/` **except nothing** — the whole folder is deleted and rebuilt. Includes:
+
+| Delete | Notes |
+|--------|-------|
+| `BodyLayers/` | All layer types, `DamagesContainer`, susceptibility math |
+| `BodyParts/` | `Bodypart.cs`, `Heart`, `Lungs`, `Brain`, limb subclasses, organ spawn logic |
+| `CirculatoryController`, `HealthController`, `FeetController` | Molar blood/O2 sim |
+| `OxygenConsumerSubSystem`, `IOxygenConsumer`, `IOxygenNeeder` | Global O2 tick |
+| `BleedingBodyPart`, `DamageType*`, `HealthConstants`, `HealthStateType` (old) | Replaced by new types |
+| `Events/DamageEventArgs`, `Interfaces/IWalkEnabler` | Legacy hooks |
+| `Stamina/` under Health | **Relocate** to `Assets/Scripts/SS3D/Systems/Stamina/` and rewrite against new health hooks in Phase 7a (interim: preserve interaction gates with a minimal stub if needed for compile) |
+
+Also delete or rewrite **external references** in the same purge PR:
+
+- `Assets/Scripts/SS3D/Hacks/AttackBodyPartByClickingIt.cs` — remove; replaced by `ZoneTargetResolver` in Phase 4
+- `Assets/Scripts/SS3D/Systems/IngameConsoleSystem/Commands/` — `HurtCommand`, `HitBodyPartCommand`, `ExamineBodyPartCommand`, `DestroyBodyPartCommand`, `KillCommand` → rewrite against `HumanHealthController` or remove until re-added
+- `Assets/Scripts/SS3D/Systems/Combat/Interactions/HitInteraction.cs` — stub to new `ApplyDamage` or no-op until Phase 4
+- `Assets/Scripts/SS3D/Systems/Entities/Humanoid/HumanoidLivingController.cs` — remove `FeetController` dependency
+- `Assets/Scripts/SS3D/Systems/Entities/Human.cs`, `Entity.cs` — rewire death to new API
+- `Assets/Scripts/Tests/EditMode/HealthTests.cs` — delete; replace as phases ship
+- Human.prefab + body-part/organ prefabs — **strip all legacy health `MonoBehaviour` components** from YAML
+
+Prefabs must not reference deleted scripts. Unity missing-script cleanup is part of Phase 0d acceptance.
+
+### What the new code replaces (fresh types, not refactors)
+
+| New | Replaces |
+|-----|----------|
+| `HumanHealthController` | `HealthController`, `CirculatoryController`, organ tick loops |
+| `ZoneDamageState[7]` | `BodyLayer` damage on every part |
+| `OrganInstance` + `OrganState` | `Heart`/`Lungs`/`Brain` `BodyPart` subclasses with `Update()` pulses |
+| `AnatomyNode` (or fresh `BodyPart` written from scratch) | Legacy `Bodypart.cs` tree — **new file, new API**; severance logic reimplemented, not copied |
+| `ZoneTargetCollider` | Per-collider zone mapping |
+| `WoundVfx` | `BleedingBodyPart` |
+| `SystemicPools` | `SubstanceContainer` molar circulatory math |
 
 `SubstancesSubSystem` integration is **deferred** until chemistry needs real bloodstream reagents; pools are normalized floats first.
 
@@ -106,7 +135,7 @@ The design spec defines **7 gameplay zones**; the FBX defines **finer physical a
 
 | Prefab | Anatomy role | Detachable | Maps to zone(s) |
 |--------|--------------|------------|-----------------|
-| `HumanTorso` | Root | No | Chest, Groin |
+| `HumanTorso` | Root | No | Chest (+ Groin via banding, no dedicated collider) |
 | `HumanHead` | Head | Yes | Head |
 | `HumanArmLeft` / `HumanArmRight` | Upper limb | Yes | L/R Arm |
 | `HumanHandLeft` / `HumanHandRight` | Hand | Yes (child of arm) | L/R Arm (design: hand effects → arm zone) |
@@ -122,12 +151,13 @@ Present today in Human.prefab:
 | Collider bone | Proposed `BodyZone` |
 |---------------|---------------------|
 | `head` | Head |
-| `chest`, `spine` | Chest |
-| `hips` | Groin — **bone exists, collider missing; add BoxCollider in Phase 0c** |
+| `chest`, `spine` | Chest (Groin resolved separately — see below) |
 | `BodyColliderArm_l`, `upper_arm_l`, `forearm_l`, `hand_l` | LeftArm |
 | `BodyColliderArm_r`, `forearm_r`, `hand_r` | RightArm |
 | `BodyColliderLeg_l`, `lower_leg_l`, `thigh_l`, `foot_l` | LeftLeg |
 | `BodyColliderLeg_r`, `thigh_r`, `foot_r` | RightLeg |
+
+**Groin zone (no collider):** `BodyZone.Groin` stays in the data model (armor, damage, vitals per main-hud §6) but has **no dedicated raycast collider** on the `hips` bone. Targeting resolves via screen-space vertical banding on torso hits — cursor vertical offset from the target's on-screen center maps chest/spine raycast hits to Chest vs Groin (main-hud §6 fallback). Same hover-and-confirm UX, different resolution underneath.
 
 New component: **`ZoneTargetCollider`** on each collider GameObject — `[SerializeField] BodyZone zone`. Multiple colliders per zone is intentional (design §6: hand/foot precision → arm/leg zone).
 
@@ -202,20 +232,28 @@ flowchart TD
 
 ---
 
-## Phase 0 — Asset audit, data contract, prefab wiring
+## Phase 0 — Purge, asset audit, data contract, prefab wiring
 
-### 0a. Anatomy map (documentation deliverable)
+### 0a. Legacy purge (first — blocking)
+
+1. Delete entire legacy `Assets/Scripts/SS3D/Systems/Health/` tree (see purge table above).
+2. Update all external references so the project compiles with new stubs or minimal `HumanHealthController` skeleton.
+3. Remove `AttackBodyPartByClickingIt` hack.
+4. Strip legacy health components from Human.prefab and body-part/organ prefabs.
+5. **Acceptance:** `rg 'BodyLayer|CirculatoryController|InflictDamageToAllLayer|OxygenConsumerSubSystem' Assets/Scripts/SS3D/` returns zero hits (except git history).
+
+### 0b. Anatomy map (documentation deliverable)
 
 Create `Documents/architecture/systems/health-anatomy-map.md` (or section in health system map) listing:
 
 - Body-part tree matching Human.prefab
 - Collider → `BodyZone` table (above)
 - Organ inventory with gameplay role and phase
-- Known asset gaps (kidneys, ears, groin collider)
+- Known asset gaps (kidneys, ears)
 
-### 0b. Greenfield data contract
+### 0c. Clean-slate data contract
 
-New types under `Assets/Scripts/SS3D/Systems/Health/`:
+New types under a **fresh** `Assets/Scripts/SS3D/Systems/Health/` folder (created after purge):
 
 ```csharp
 enum BodyZone { Head, Chest, LeftArm, RightArm, LeftLeg, RightLeg, Groin }
@@ -264,19 +302,16 @@ toxinDelta = Intake - LiverClearance(liver) /* kidney factor interim */;
 - **`ApplyTreatment(...)`** — entry point for medical interactions.
 - **`IHealthEffectModifier` registry** — per-tick deltas on organ function and systemic pools from downstream systems ([virology.md](Documents/design/virology.md) disease stages, [chemistry.md](Documents/design/chemistry.md) reagents, stamina overdraw). No parallel infection meter; virology routes through this hook. Open surgical wounds are contact-exposure vectors for virology only — no health-specific surgical-infection mechanic.
 
-**Delete** (after new controller passes tests): `BodyLayers/`, `CirculatoryController`, `OxygenConsumerSubSystem`, `IOxygenConsumer`, `IOxygenNeeder`, old `Heart`/`Lungs`/`Brain` simulation logic, `FeetController`, `HealthConstants` molar values.
+**No legacy code carried forward.** `AnatomyNode`, `OrganInstance`, and `WoundVfx` are new implementations — severance, organ attachment, and bleed VFX behavior is re-derived from design docs, not copied from deleted `Bodypart.cs` / `BleedingBodyPart`.
 
-**Retain and slim:** `BodyPart` base for anatomy tree + severing + organ container attachment — but strip layer damage; body parts become **structural nodes** located by `BodyZone`, not damage containers.
+### 0d. Prefab wiring (Human.prefab only)
 
-### 0c. Prefab wiring (Human.prefab only)
+1. Add **`ZoneTargetCollider`** to every armature collider listed above (excluding groin — no hips collider).
+2. Attach new `HumanHealthController`, `AnatomyNode` tree, and `OrganInstance` registrations (liver alongside heart/lungs).
+3. Replace all removed legacy components on Human.prefab — **zero missing-script refs**.
+4. Fix or remove obsolete `_bodyCollider` fields on prefabs; colliders live on armature via `ZoneTargetCollider`.
 
-1. Add **`ZoneTargetCollider`** to every armature collider listed above.
-2. Add **BoxCollider on `hips` bone** → `BodyZone.Groin`.
-3. Register organ prefabs on torso/head body-part components (liver spawn alongside heart/lungs).
-4. Replace `HealthController` with `HumanHealthController` on Human.prefab.
-5. Fix `_bodyCollider: {fileID: 0}` on body-part prefabs — point to armature colliders or remove unused field.
-
-**Deliverable:** Data contract + EditMode tests (pool math, critical/death, wound severity thresholds). No treatment UI yet.
+**Deliverable:** Purge complete + data contract + compiling skeleton + EditMode tests for pool math and critical/death checks. No treatment UI yet.
 
 ---
 
@@ -288,7 +323,7 @@ Implements health.md §10 prompt 2 / §8 steps 1–5.
 2. Bleeding drains `BloodVolumeRatio` each tick.
 3. Low blood volume raises `OxyDebt` independent of organ health.
 4. **Bandage** (Help, Tier 2, zone-targeted): stops `BleedingRate`; does not restore blood.
-5. Rewire `BleedingBodyPart` VFX from any zone with `BleedingRate > 0`.
+5. Rewire `BleedingBodyPart` VFX via new `WoundVfx` component (same particle prefab, new script).
 6. **"Bleeding" alert chip** (main-hud §9).
 
 **Exit criteria:** worked example steps 1–5 in two-player test scene.
@@ -310,7 +345,7 @@ Implements health.md §10 prompt 2 / §8 steps 1–5.
 ## Phase 3 — Critical, death, revival window
 
 1. Multi-threshold critical (blood, oxy, toxin, brain).
-2. Screen-space feedback: heartbeat audio + vignette pulse (main-hud §5).
+2. Screen-space condition feedback — **wire to existing custom HUD designs** (owner-provided mockups/assets). Do not redesign from prose; drive intensity/state from `HealthSnapshot` (critical, low O2, pain, etc.).
 3. Cardiac arrest sub-state + defib window.
 4. Death only at brain function = 0; corpse persists.
 5. Defibrillator: chest zone, charge, restart heart if brain > 0.
@@ -319,10 +354,10 @@ Implements health.md §10 prompt 2 / §8 steps 1–5.
 
 ## Phase 4 — Combat integration
 
-1. **`ZoneTargetResolver`** — raycast `BodyParts` layer → `ZoneTargetCollider.zone` (replaces [AttackBodyPartByClickingIt.cs](Assets/Scripts/SS3D/Hacks/AttackBodyPartByClickingIt.cs) hack).
+1. **`ZoneTargetResolver`** — raycast `BodyParts` layer → `ZoneTargetCollider.zone` (new in Phase 4; hack removed in Phase 0a).
 2. Replace [HitInteraction.cs](Assets/Scripts/SS3D/Systems/Combat/Interactions/HitInteraction.cs) → `ApplyDamage(zone, packet)`.
 3. One melee weapon with windup/recovery (combat.md §2).
-4. Screen-space vertical banding fallback if camera lacks zone separation (main-hud §6).
+4. **`ZoneTargetResolver`** groin resolution: vertical banding on chest/spine hits (no groin collider).
 
 ---
 
@@ -334,8 +369,8 @@ Bandage pattern extended to: burn dressing, splint, O2 mask, CPR, antitoxin, IV/
 
 ## Phase 6 — Vitals HUD
 
-1. Vitals cluster — worst-limb brute/burn + systemic toxin/oxy (health.md §7).
-2. Screen-space condition feedback.
+1. Vitals cluster — worst-limb brute/burn + systemic toxin/oxy (health.md §7). **Follow existing custom vitals-cluster designs** — wire bars/alerts to `HealthSnapshot`, do not redesign layout.
+2. Screen-space condition feedback — same custom designs as Phase 3; shared controller driven by health state.
 3. Examine-self hold → per-zone + organ function readout. Reserve a slot for diagnosed infections (virology.md §8) — listed once scanned, not a standalone infection bar.
 4. Wound severity on character model (materials/decals/blendshapes if available on Human.fbx).
 
@@ -381,7 +416,8 @@ Spec: [Documents/design/virology.md](Documents/design/virology.md). Resolves ite
 
 - EditMode + PlayMode: health.md §8 full chain (steps 1–8).
 - Update [health.md](Documents/architecture/systems/health.md) system map, effort doc, INDEX status.
-- Remove dead code and orphaned health tests; add new suite.
+- **Verify no legacy health symbols remain** — grep audit across `Assets/Scripts/SS3D/` for deleted type names.
+- Add new test suite; do not port old `HealthTests.cs`.
 
 ---
 
@@ -420,16 +456,18 @@ flowchart LR
 
 ---
 
-## Key decisions (resolved for greenfield)
+## Key decisions (resolved for clean slate)
 
 | Decision | Choice |
 |----------|--------|
-| Retain old health code? | **No** — rewrite; keep prefab/content anchors only |
+| Retain old health code? | **No** — full purge in Phase 0a; zero dual-stack |
+| Dual-stack / bridge period? | **Forbidden** — purge and skeleton land together |
 | Damage storage | Per-zone `ZoneDamageState`, not per-layer |
 | Blood/O2 simulation | Normalized pools, not molar `SubstanceContainer` |
 | 7 zones vs 11 body parts | Mapping layer on colliders; anatomy tree stays granular for severing |
 | Kidneys missing from FBX | Liver-only clearance + interim renal factor; art follow-up |
-| Groin zone | Add collider on existing `hips` bone |
+| Groin zone | No dedicated collider; `BodyZone.Groin` in data model, resolved via vertical banding on torso hits |
+| Screen-space / vitals UI | Implement owner's existing custom designs; code wires `HealthSnapshot` → designed assets |
 | Global tick | `HumanHealthController.TickHealth()` at 1 Hz; delete `OxygenConsumerSubSystem` |
 | Death | Brain function → 0 only; severed head keeps special mind-swap behavior |
 | Disease/infection | Separate Phase 9 per virology.md; routes through `IHealthEffectModifier`, not new health pools |
@@ -441,11 +479,11 @@ flowchart LR
 
 | Risk | Mitigation |
 |------|------------|
-| Greenfield breaks severing/head-swap | Keep `BodyPart` severance hooks; port tests early |
+| Greenfield breaks severing/head-swap | Reimplement on fresh `AnatomyNode`; port behavior from design, not deleted code |
+| Legacy scripts on prefabs | Phase 0d strips all removed components; missing-script check is acceptance criteria |
+| Stamina interaction gates break on purge | Relocate `Stamina/` out of Health; minimal stub preserves compile until Phase 7a |
 | Kidney missing vs design spec | Document divergence; derived clearance until art |
-| `_bodyCollider` unset on prefabs | Phase 0c audit; colliders live on armature via `ZoneTargetCollider` |
 | FBX has no wound blendshapes | Start with bleed particles + material tint; art pass later |
-| Large deletion PR | Phase 0 ships new controller alongside old; delete old in Phase 1 after slice passes |
 
 ---
 
