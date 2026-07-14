@@ -1,21 +1,22 @@
 > Code paths: Assets/Scripts/SS3D/Systems/Health/
-> Entry points: HumanHealthController, HealthSimulation
-> Status: partial (Phase 1 bleeding vertical slice shipped)
+> Entry points: HumanHealthController, HealthSimulation, OrganSimulation
+> Status: partial (Phase 2 organ function shipped)
 
 # Health
 
 ## Overview
 
-Greenfield rewrite in progress per [health_implementation_plan.md](../../plans/health_implementation_plan.md). Legacy layer/organ simulation deleted; new per-zone damage model and normalized systemic pools (`HumanHealthController` + `HealthSimulation`). Phase 1 adds wound severity → bleeding, blood drain → oxy debt, bandage treatment, per-zone VFX, and a bleeding HUD alert chip.
+Greenfield rewrite in progress per [health_implementation_plan.md](../../plans/health_implementation_plan.md). Phase 1 shipped bleeding, bandage, VFX, and alert chip. Phase 2 wires asset-backed organs (brain, heart, lungs, liver) into pool math, cardiac arrest, consciousness/movement debuffs, and limb capability stubs.
 
 ## Start here
 
-- `Assets/Scripts/SS3D/Systems/Health/HumanHealthController.cs` — server tick, damage/treatment entry points, snapshot SyncVar, client VFX/HUD hooks
-- `Assets/Scripts/SS3D/Systems/Health/HealthSimulation.cs` — pure pool math, severity/bleeding rates, critical/death evaluation
-- `Assets/Scripts/SS3D/Systems/Health/Interactions/BandageInteraction.cs` — Help-intent, Tier 2 zone-targeted bandage
-- `Assets/Scripts/SS3D/Systems/Health/WoundVfx.cs` — per-zone bleeding particles from snapshot mask
-- `Assets/Scripts/SS3D/Systems/Health/HealthAlertsView.cs` — top-right "Bleeding" alert chip (PlayerCanvas)
-- [health-anatomy-map.md](health-anatomy-map.md) — Human.prefab anatomy contract
+- `Assets/Scripts/SS3D/Systems/Health/HumanHealthController.cs` — server tick, damage/treatment, organ registration, snapshot SyncVar
+- `Assets/Scripts/SS3D/Systems/Health/HealthSimulation.cs` — pool math, severity/bleeding, critical/death evaluation
+- `Assets/Scripts/SS3D/Systems/Health/OrganSimulation.cs` — zone→organ damage, organ tick drains, perfusion, limb multipliers
+- `Assets/Scripts/SS3D/Systems/Health/OrganInstance.cs` — organ registration on Human prefab / organ item prefabs
+- `Assets/Scripts/SS3D/Systems/Health/HealthDebugController.cs` — IMGUI overlay (H) for full zone/organ/pool inspection
+- `Assets/Scripts/SS3D/Systems/Health/HealthDebugDetail.cs` — per-zone/per-organ SyncVar payload for debug UI
+- [health-anatomy-map.md](health-anatomy-map.md) — anatomy contract
 
 ## Extension points
 
@@ -27,11 +28,11 @@ Greenfield rewrite in progress per [health_implementation_plan.md](../../plans/h
 ## Depends on / Used by
 
 - **Depends on:** [entities](entities.md), [interactions-framework](interactions-framework.md)
-- **Used by:** [combat](combat.md) (HitInteraction stub), dev console hurt commands, MedicalPatch item (bandage)
-- **Stamina:** relocated to `Assets/Scripts/SS3D/Systems/Stamina/` — bridge Phase 7a
+- **Used by:** [combat](combat.md), dev console `hurt`/`heal`, `HumanoidLivingController` (movement/consciousness), `Hand` (arm debuff stub)
+- **Stamina:** `Assets/Scripts/SS3D/Systems/Stamina/` — bridge Phase 7a
 
 ## Related docs
 
-- Design (read-only): [Documents/design/health.md](../../design/health.md), [main-hud.md](../../design/main-hud.md) §9, [stamina.md](../../design/stamina.md)
+- Design (read-only): [Documents/design/health.md](../../design/health.md), [main-hud.md](../../design/main-hud.md) §9
 - Anatomy map: [health-anatomy-map.md](health-anatomy-map.md)
 - Plan: [health_implementation_plan.md](../../plans/health_implementation_plan.md)

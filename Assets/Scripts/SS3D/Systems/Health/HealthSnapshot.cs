@@ -13,6 +13,10 @@ namespace SS3D.Systems.Health
         public bool IsConscious;
         public bool IsCardiacArrest;
         public int BleedingZoneMask;
+        public float BrainFunctionPercent;
+        public float HeartFunctionPercent;
+        public float MovementSpeedMultiplier;
+        public bool CanUseArms;
 
         public bool IsZoneBleeding(BodyZone zone)
         {
@@ -29,6 +33,10 @@ namespace SS3D.Systems.Health
             IsConscious = true,
             IsCardiacArrest = false,
             BleedingZoneMask = 0,
+            BrainFunctionPercent = 100f,
+            HeartFunctionPercent = 100f,
+            MovementSpeedMultiplier = 1f,
+            CanUseArms = true,
         };
     }
 }

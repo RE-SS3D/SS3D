@@ -19,35 +19,28 @@ namespace SS3D.Systems.Health
             return total;
         }
 
-        public static float GetOrganFunction(IReadOnlyList<OrganState> organs, OrganType type)
+        public static float GetOrganFunction(IReadOnlyList<OrganState> organs, OrganType type, float bloodVolumeRatio = 1f)
         {
-            for (int i = 0; i < organs.Count; i++)
-            {
-                if (organs[i].Type == type)
-                {
-                    return organs[i].FunctionPercent;
-                }
-            }
-
-            return 100f;
+            float stored = OrganSimulation.GetStoredOrganFunction(organs, type);
+            return OrganSimulation.EffectiveOrganFunction(stored, bloodVolumeRatio);
         }
 
-        public static float LungIntake(IReadOnlyList<OrganState> organs, float atmosphereO2 = 1f)
+        public static float LungIntake(IReadOnlyList<OrganState> organs, float atmosphereO2 = 1f, float bloodVolumeRatio = 1f)
         {
-            float left = GetOrganFunction(organs, OrganType.LeftLung) / 100f;
-            float right = GetOrganFunction(organs, OrganType.RightLung) / 100f;
+            float left = GetOrganFunction(organs, OrganType.LeftLung, bloodVolumeRatio) / 100f;
+            float right = GetOrganFunction(organs, OrganType.RightLung, bloodVolumeRatio) / 100f;
             return (left + right) * 0.5f * atmosphereO2 * HealthConstants.BaseOxygenDemand;
         }
 
         public static float HeartDelivery(IReadOnlyList<OrganState> organs, float bloodVolumeRatio)
         {
-            float heart = GetOrganFunction(organs, OrganType.Heart) / 100f;
+            float heart = GetOrganFunction(organs, OrganType.Heart, bloodVolumeRatio) / 100f;
             return heart * bloodVolumeRatio * HealthConstants.BaseOxygenDemand;
         }
 
-        public static float LiverClearance(IReadOnlyList<OrganState> organs)
+        public static float LiverClearance(IReadOnlyList<OrganState> organs, float bloodVolumeRatio = 1f)
         {
-            float liver = GetOrganFunction(organs, OrganType.Liver) / 100f;
+            float liver = GetOrganFunction(organs, OrganType.Liver, bloodVolumeRatio) / 100f;
             float renal = liver * HealthConstants.RenalClearanceFactor;
             return (liver + renal) * HealthConstants.LiverClearanceRate;
         }
@@ -60,7 +53,7 @@ namespace SS3D.Systems.Health
             float toxinIntake = HealthConstants.BaseToxinIntake)
         {
             float bloodDelta = -SumBleedingRates(zones) * HealthConstants.BleedingBloodDrainScale;
-            float lungIntake = LungIntake(organs, atmosphereO2);
+            float lungIntake = LungIntake(organs, atmosphereO2, pools.BloodVolumeRatio);
             float heartDelivery = HeartDelivery(organs, pools.BloodVolumeRatio);
             float oxyDelta = lungIntake - heartDelivery - HealthConstants.BaseOxygenDemand;
 
@@ -70,7 +63,7 @@ namespace SS3D.Systems.Health
                 oxyDelta += deficit * HealthConstants.LowBloodOxyDebtGainScale;
             }
 
-            float toxinDelta = toxinIntake - LiverClearance(organs);
+            float toxinDelta = toxinIntake - LiverClearance(organs, pools.BloodVolumeRatio);
 
             return new SystemicPools
             {
@@ -147,20 +140,22 @@ namespace SS3D.Systems.Health
             SystemicPools pools,
             IReadOnlyList<OrganState> organs)
         {
-            float brain = GetOrganFunction(organs, OrganType.Brain);
-            float heart = GetOrganFunction(organs, OrganType.Heart);
+            float bloodVolume = pools.BloodVolumeRatio;
+            float brainStored = OrganSimulation.GetStoredOrganFunction(organs, OrganType.Brain);
+            float heartStored = OrganSimulation.GetStoredOrganFunction(organs, OrganType.Heart);
+            float brainEffective = GetOrganFunction(organs, OrganType.Brain, bloodVolume);
 
-            if (IsBrainDead(brain))
+            if (IsBrainDead(brainStored))
             {
                 return HealthState.Dead;
             }
 
-            if (IsCardiacArrest(heart))
+            if (IsCardiacArrest(heartStored))
             {
                 return HealthState.CardiacArrest;
             }
 
-            if (IsSystemicallyCritical(pools) || IsBrainCriticallyLow(brain))
+            if (IsSystemicallyCritical(pools) || IsBrainCriticallyLow(brainEffective))
             {
                 return HealthState.Critical;
             }
@@ -189,8 +184,8 @@ namespace SS3D.Systems.Health
                 }
             }
 
-            float brain = GetOrganFunction(organs, OrganType.Brain);
-            float heart = GetOrganFunction(organs, OrganType.Heart);
+            float brainEffective = GetOrganFunction(organs, OrganType.Brain, pools.BloodVolumeRatio);
+            float heartStored = OrganSimulation.GetStoredOrganFunction(organs, OrganType.Heart);
             HealthState state = EvaluateHealthState(pools, organs);
 
             return new HealthSnapshot
@@ -200,9 +195,13 @@ namespace SS3D.Systems.Health
                 WorstZoneBrute = worstBrute,
                 WorstZoneBurn = worstBurn,
                 IsBleeding = bleeding,
-                IsConscious = IsConscious(brain),
-                IsCardiacArrest = IsCardiacArrest(heart),
+                IsConscious = IsConscious(brainEffective),
+                IsCardiacArrest = IsCardiacArrest(heartStored),
                 BleedingZoneMask = bleedingMask,
+                BrainFunctionPercent = OrganSimulation.GetStoredOrganFunction(organs, OrganType.Brain),
+                HeartFunctionPercent = OrganSimulation.GetStoredOrganFunction(organs, OrganType.Heart),
+                MovementSpeedMultiplier = OrganSimulation.ComputeMovementSpeedMultiplier(zones),
+                CanUseArms = OrganSimulation.CanUseArms(zones),
             };
         }
 

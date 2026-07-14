@@ -29,7 +29,25 @@ namespace SS3D.Systems.Health
         [SyncVar(OnChange = nameof(SyncSnapshot))]
         private HealthSnapshot _snapshot = HealthSnapshot.Default;
 
+        [SyncVar]
+        private HealthDebugDetail _debugDetail;
+
         public HealthSnapshot Snapshot => _snapshot;
+
+        public HealthDebugDetail DebugDetail => _debugDetail;
+
+        public float GetStoredOrganFunction(OrganType type)
+        {
+            for (int i = 0; i < _organs.Count; i++)
+            {
+                if (_organs[i].Type == type)
+                {
+                    return _organs[i].FunctionPercent;
+                }
+            }
+
+            return 100f;
+        }
 
         protected override void OnStart()
         {
@@ -62,6 +80,8 @@ namespace SS3D.Systems.Health
         public override void OnStartServer()
         {
             base.OnStartServer();
+            EnsureBuiltinOrgans();
+            OrganSimulation.EnsureDefaultOrgans(_organs);
             PublishSnapshot();
         }
 
@@ -129,6 +149,7 @@ namespace SS3D.Systems.Health
             RefreshZoneDerivedState(ref state);
             state.BleedingRate = HealthSimulation.BleedingRateForSeverity(state.Severity);
             _zones[index] = state;
+            OrganSimulation.ApplyZoneDamageToOrgans(zone, brute, burn, _organs);
 
             PublishSnapshot();
         }
@@ -170,8 +191,23 @@ namespace SS3D.Systems.Health
         }
 
         [Server]
+        public void RestoreOrgans()
+        {
+            for (int i = 0; i < _organs.Count; i++)
+            {
+                OrganState organ = _organs[i];
+                organ.FunctionPercent = 100f;
+                organ.IsCritical = false;
+                _organs[i] = organ;
+            }
+
+            PublishSnapshot();
+        }
+
+        [Server]
         public void TickHealth(float atmosphereO2 = 1f)
         {
+            OrganSimulation.TickOrganFunction(_pools, _organs);
             _pools = HealthSimulation.TickPools(_pools, _zones, _organs, atmosphereO2);
 
             for (int i = 0; i < _modifiers.Count; i++)
@@ -224,6 +260,7 @@ namespace SS3D.Systems.Health
         private void PublishSnapshot()
         {
             _snapshot = HealthSimulation.BuildSnapshot(_pools, _zones, _organs);
+            _debugDetail = HealthDebugDetail.FromStates(_zones, _organs);
         }
 
         private void SyncSnapshot(HealthSnapshot oldValue, HealthSnapshot newValue, bool asServer)
@@ -260,6 +297,38 @@ namespace SS3D.Systems.Health
             if (_entity.Mind != null && _entity.Mind.IsOwner)
             {
                 AssignAlertsViewToControllable(_entity.Mind);
+            }
+        }
+
+        [Server]
+        private void EnsureBuiltinOrgans()
+        {
+            AttachOrganIfMissing("HumanBrain", OrganType.Brain);
+            AttachOrganIfMissing("HumanHeart", OrganType.Heart);
+            AttachOrganIfMissing("HumanLungLeft", OrganType.LeftLung);
+            AttachOrganIfMissing("HumanLungRight", OrganType.RightLung);
+            AttachOrganIfMissing("HumanLiver", OrganType.Liver);
+        }
+
+        [Server]
+        private void AttachOrganIfMissing(string objectName, OrganType type)
+        {
+            Transform[] transforms = GetComponentsInChildren<Transform>(true);
+            for (int i = 0; i < transforms.Length; i++)
+            {
+                if (transforms[i].name != objectName)
+                {
+                    continue;
+                }
+
+                OrganInstance organ = transforms[i].GetComponent<OrganInstance>();
+                if (organ == null)
+                {
+                    organ = transforms[i].gameObject.AddComponent<OrganInstance>();
+                }
+
+                organ.Configure(type);
+                return;
             }
         }
     }

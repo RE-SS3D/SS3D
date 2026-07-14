@@ -19,7 +19,7 @@ todos:
     status: completed
   - id: phase2-organs
     content: "Phase 2: Wire asset-backed organs (heart, lungs, liver, brain); kidney clearance interim until art asset; cardiac arrest"
-    status: pending
+    status: completed
   - id: phase3-critical-death
     content: "Phase 3: Multi-threshold critical, screen-space feedback (existing custom designs), brain-function-zero death, defibrillator window"
     status: pending
@@ -509,3 +509,11 @@ health.md §8 + death-cloning §9 example A, end-to-end:
 - Bandage wired to `MedicalPatch.prefab` via `BandageItemExtension`; dedicated bandage prefab can split later.
 - `WoundVfx` is auto-added on `HumanHealthController` startup if missing from prefab.
 - Transfusion and other blood restoration deferred to Phase 5.
+
+### Phase 2 (shipped)
+
+- `OrganSimulation` drives zone→organ damage, cardiac-arrest brain drain, perfusion-scaled effective function, and limb capability multipliers.
+- `HumanHealthController.EnsureBuiltinOrgans()` attaches `OrganInstance` to inline Human prefab organ meshes at server start.
+- `HumanLiver.prefab` now carries `OrganInstance`; kidney clearance remains liver-derived interim.
+- Unconscious players cannot move; disabled legs slow movement; both arms disabled blocks hand interactions (stub).
+- Full `heal … all` restores organ function via `RestoreOrgans()`.

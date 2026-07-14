@@ -40,6 +40,7 @@ namespace SS3D.Systems.IngameConsoleSystem.Commands
                 }
 
                 values.Health.RestoreSystemicPools();
+                values.Health.RestoreOrgans();
                 return "Player fully healed";
             }
 

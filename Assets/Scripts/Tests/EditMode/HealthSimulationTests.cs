@@ -1,6 +1,7 @@
 using NUnit.Framework;
 using SS3D.Systems.Health;
 using SS3D.Systems.Stamina;
+using System.Collections.Generic;
 
 namespace EditorTests
 {
@@ -152,6 +153,60 @@ namespace EditorTests
             WoundSeverity severity = HealthSimulation.ResolveZoneSeverity(0f, HealthConstants.BurnWoundThreshold);
             Assert.AreEqual(WoundSeverity.Wound, severity);
             Assert.AreEqual(0.5f, HealthSimulation.BleedingRateForSeverity(severity));
+        }
+
+        [Test]
+        public void HeadDamageReducesBrainFunction()
+        {
+            var organs = new List<OrganState>
+            {
+                OrganState.Default(OrganType.Brain),
+            };
+
+            OrganSimulation.ApplyZoneDamageToOrgans(BodyZone.Head, 50f, 0f, organs);
+
+            Assert.Less(organs[0].FunctionPercent, 100f);
+        }
+
+        [Test]
+        public void CardiacArrestDrainsBrainOverTicks()
+        {
+            var organs = new List<OrganState>
+            {
+                new OrganState { Type = OrganType.Heart, FunctionPercent = 0f },
+                OrganState.Default(OrganType.Brain),
+            };
+
+            var pools = SystemicPools.Default;
+            OrganSimulation.TickOrganFunction(pools, organs);
+
+            Assert.Less(organs[1].FunctionPercent, 100f);
+        }
+
+        [Test]
+        public void DisabledLegReducesMovementMultiplier()
+        {
+            var zones = new ZoneDamageState[HealthConstants.ZoneCount];
+            for (int i = 0; i < zones.Length; i++)
+            {
+                zones[i] = ZoneDamageState.Default;
+            }
+
+            zones[(int)BodyZone.LeftLeg] = new ZoneDamageState
+            {
+                Severity = WoundSeverity.Disabled,
+                IsDisabled = true,
+            };
+
+            float multiplier = OrganSimulation.ComputeMovementSpeedMultiplier(zones);
+            Assert.Less(multiplier, 1f);
+        }
+
+        [Test]
+        public void LowBloodReducesEffectiveOrganFunction()
+        {
+            float effective = OrganSimulation.EffectiveOrganFunction(100f, 0.2f);
+            Assert.Less(effective, 100f);
         }
 
         [Test]

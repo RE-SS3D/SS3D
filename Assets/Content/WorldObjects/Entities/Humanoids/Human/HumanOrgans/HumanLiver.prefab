@@ -128,7 +128,7 @@ GameObject:
   - component: {fileID: 103478066480505861}
   - component: {fileID: 4081087857378720118}
   - component: {fileID: 8078190299072383431}
-  m_Layer: 10
+  - component: {fileID: 9123456789012345688}
   m_Name: HumanLiver
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -341,3 +341,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e00534faac6488c47893490f2bf4c5a2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: SS3D.Systems::SS3D.Systems.Selection.Selectable
+--- !u!114 &9123456789012345688
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5774385816057912484}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7e0d645991b499c43ac8ca1478c49742, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _type: 4

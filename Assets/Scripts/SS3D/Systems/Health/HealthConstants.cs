@@ -32,5 +32,23 @@
         public const float BurnWoundThreshold = 25f;
         public const float BurnSevereThreshold = 50f;
         public const float BurnDisabledThreshold = 75f;
+
+        // Organ damage mapping (zone hits → stored organ function loss).
+        public const float HeadBruteToBrainDamageScale = 0.4f;
+        public const float HeadBurnToBrainDamageScale = 0.25f;
+        public const float ChestBruteToHeartDamageScale = 0.25f;
+        public const float ChestBruteToLungDamageScale = 0.2f;
+        public const float ChestBruteToLiverDamageScale = 0.15f;
+
+        // Organ tick dynamics (1 Hz).
+        public const float CardiacArrestBrainDrainPerTick = 4f;
+        public const float CriticalOxyBrainDrainPerTick = 2f;
+        public const float OrganPerfusionBloodFloor = 0.25f;
+        public const float CriticalOrganFunctionPercent = 30f;
+
+        // Limb capability multipliers.
+        public const float LimbDisabledMovementMultiplier = 0.35f;
+        public const float LimbSevereMovementMultiplier = 0.6f;
+        public const float LimbWoundMovementMultiplier = 0.85f;
     }
 }

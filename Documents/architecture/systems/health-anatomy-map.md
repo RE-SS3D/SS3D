@@ -1,5 +1,5 @@
 > Parent map: [health.md](health.md)
-> Status: partial (Phase 0 — clean-slate foundation)
+> Status: partial (Phase 2 — organ function wired)
 
 # Health anatomy map
 
@@ -44,7 +44,7 @@ Physics layer: **BodyParts (layer 10)** for combat/medical raycast.
 | Brain | Yes | `HumanBrain` | 2 | Consciousness; sole death trigger |
 | Heart | Yes | `HumanHeart` | 2 | Circulation; cardiac arrest at 0% |
 | Lungs ×2 | Yes | `HumanLungLeft/Right` | 2 | O2 intake |
-| Liver | Yes | `HumanLiver` | 2 | Toxin clearance |
+| Liver | Yes | `HumanLiver` | 2 (shipped) | Toxin clearance; inline on Human.prefab + item prefab |
 | Kidneys | **No mesh** | **No prefab** | interim | Renal clearance derived from liver until art ships |
 | Eyes ×2 | Yes | `HumanEye` | 7+ | Vision — deferred |
 | Stomach | Yes | `HumanStomach` | deferred | Hunger (existing alert) |
