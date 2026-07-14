@@ -63,27 +63,26 @@ namespace SS3D.Systems.Atmospherics.Pipes
         {
             _lastFlowMolesPerSecond = 0f;
             _lastDifferentialKpa = 0f;
-            _lastInletPressureKpa = 0f;
-            _lastOutletPressureKpa = 0f;
             _lastStalled = false;
+
+            TileCoord turfCell = OriginTile;
+            _lastInletPressureKpa = turfSimulation.GetCellPressure(turfCell);
 
             if (!TryGetConnectedNetwork(out GasPipeNetworkId networkId)
                 || !pipeSimulation.Registry.TryGetNetwork(networkId, out GasPipeNetworkRecord network))
             {
+                _lastOutletPressureKpa = 0f;
                 return false;
             }
 
-            TileCoord turfCell = OriginTile;
-            float inletPressure = turfSimulation.GetCellPressure(turfCell);
             float outletPressure = network.GetPressure(AtmosConstants.DefaultGasCount);
-            _lastInletPressureKpa = inletPressure;
             _lastOutletPressureKpa = outletPressure;
 
             if (!ShouldPumpToOutlet(outletPressure, _targetOutletPressureKpa))
                 return false;
 
             float budgetMoles = AtmosPortFlow.ComputePumpFlowMoles(
-                inletPressure,
+                _lastInletPressureKpa,
                 outletPressure,
                 RatedMaxFlowMolesPerSecond,
                 MaxDifferentialKpa,

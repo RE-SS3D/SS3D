@@ -1,6 +1,6 @@
 namespace SS3D.UI.MachineInterface
 {
-    public struct GasPumpInterfaceSnapshot
+    public struct PumpInterfaceSnapshot
     {
         public int MachineObjectId;
 

@@ -16,7 +16,7 @@
     <ui:Style src="project://database/Assets/Content/Systems/UI/MachineInterface/Components/SteelButton.uss" />
     <ui:Style src="project://database/Assets/Content/Systems/UI/MachineInterface/Components/StatusBadge.uss" />
     <ui:Style src="project://database/Assets/Content/Systems/UI/MachineInterface/Components/DeviceFooter.uss" />
-    <ui:Style src="project://database/Assets/Content/Systems/UI/MachineInterface/Templates/GasPumpInterface.uss" />
+    <ui:Style src="project://database/Assets/Content/Systems/UI/MachineInterface/Templates/PumpUnitInterface.uss" />
 
     <ss3d:DiegeticDeviceShell name="device-shell"
         class="diegetic-device-shell--pump"

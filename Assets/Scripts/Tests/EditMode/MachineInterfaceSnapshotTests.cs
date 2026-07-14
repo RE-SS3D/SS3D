@@ -295,6 +295,65 @@ namespace EditorTests
             };
         }
 
+        [Test]
+        public void PumpInterfaceSnapshotSerializer_RoundTrips()
+        {
+            PumpInterfaceSnapshot original = CreatePumpSnapshot();
+
+            using PooledWriter writer = WriterPool.Retrieve();
+            writer.WritePumpInterfaceSnapshot(original);
+
+            ArraySegment<byte> segment = writer.GetArraySegment();
+            using PooledReader reader = ReaderPool.Retrieve(segment, null);
+            PumpInterfaceSnapshot roundTripped = reader.ReadPumpInterfaceSnapshot();
+
+            Assert.AreEqual(original.MachineObjectId, roundTripped.MachineObjectId);
+            Assert.AreEqual(original.InterfaceId, roundTripped.InterfaceId);
+            Assert.AreEqual(original.TargetOutletPressureKpa, roundTripped.TargetOutletPressureKpa);
+            Assert.AreEqual(original.InletPressureKpa, roundTripped.InletPressureKpa);
+            Assert.AreEqual(original.OutletPressureKpa, roundTripped.OutletPressureKpa);
+            Assert.AreEqual(original.FlowMolesPerSecond, roundTripped.FlowMolesPerSecond);
+            Assert.AreEqual(original.Scenario, roundTripped.Scenario);
+            Assert.AreEqual(original.AccessGranted, roundTripped.AccessGranted);
+        }
+
+        [Test]
+        public void PumpSnapshotMapper_MapsPumpingScenario()
+        {
+            PumpInterfaceSnapshot snapshot = CreatePumpSnapshot();
+            snapshot.Scenario = (byte)PumpScenario.Pumping;
+            snapshot.FlowMolesPerSecond = 0.55f;
+
+            PumpInterfaceViewModel model = PumpInterfaceSnapshotMapper.ToViewModel(snapshot);
+
+            Assert.AreEqual(PumpScenario.Pumping, model.Scenario);
+            Assert.AreEqual("PUMPING", model.StatusBadgeText);
+            Assert.AreEqual("Flowing — 12.3 L/s", model.FlowStatusText);
+        }
+
+        private static PumpInterfaceSnapshot CreatePumpSnapshot()
+        {
+            return new PumpInterfaceSnapshot
+            {
+                MachineObjectId = 210,
+                InterfaceId = MachineInterfaceIds.Pump,
+                Title = "PUMP · TEST",
+                ModelLabel = "PMP-22 · pipe pump unit",
+                DeviceTitle = "PMP-22",
+                Subtitle = "Engineering Bay 3 — Pipe Pump",
+                PowerOk = true,
+                Powered = true,
+                Connected = true,
+                Scenario = (byte)PumpScenario.Idle,
+                AccessGranted = true,
+                AccessScanning = false,
+                TargetOutletPressureKpa = 4500,
+                InletPressureKpa = 101.3f,
+                OutletPressureKpa = 4487.6f,
+                FlowMolesPerSecond = 0.55f,
+            };
+        }
+
         private static VendingInterfaceSnapshot CreateVendingSnapshot()
         {
             return new VendingInterfaceSnapshot

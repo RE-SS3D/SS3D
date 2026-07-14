@@ -339,13 +339,13 @@ namespace SS3D.UI.MachineInterface
             if (_gasPumpTemplate == null)
             {
                 _gasPumpTemplate = UnityEditor.AssetDatabase.LoadAssetAtPath<VisualTreeAsset>(
-                    "Assets/Content/Systems/UI/MachineInterface/Templates/GasPumpInterface.uxml");
+                    "Assets/Content/Systems/UI/MachineInterface/Templates/PumpUnitInterface.uxml");
             }
 
             if (_gasPumpTemplateStyle == null)
             {
                 _gasPumpTemplateStyle = UnityEditor.AssetDatabase.LoadAssetAtPath<StyleSheet>(
-                    "Assets/Content/Systems/UI/MachineInterface/Templates/GasPumpInterface.uss");
+                    "Assets/Content/Systems/UI/MachineInterface/Templates/PumpUnitInterface.uss");
             }
 
             if (_airAlarmTemplate == null)
@@ -584,12 +584,12 @@ namespace SS3D.UI.MachineInterface
 
             MachineInterfaceRegistry.RegisterUi(new MachineInterfaceUiRegistration
             {
-                InterfaceId = MachineInterfaceIds.GasPump,
+                InterfaceId = MachineInterfaceIds.Pump,
                 Template = _gasPumpTemplate,
                 TemplateStyle = _gasPumpTemplateStyle,
                 ComponentStyles = _gasPumpComponentStyles,
                 ShellKind = MachineInterfaceShellKind.DiegeticDevice,
-                CreateBinder = root => new GasPumpGaugeBinder(root),
+                CreateBinder = root => new PumpInterfaceBinder(root),
             });
 
             MachineInterfaceRegistry.RegisterUi(new MachineInterfaceUiRegistration

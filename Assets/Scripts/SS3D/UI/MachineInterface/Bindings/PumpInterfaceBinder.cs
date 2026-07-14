@@ -4,7 +4,7 @@ using UnityEngine.UIElements;
 
 namespace SS3D.UI.MachineInterface.Bindings
 {
-    public sealed class GasPumpGaugeBinder : IMachineInterfaceBinder
+    public sealed class PumpInterfaceBinder : IMachineInterfaceBinder
     {
         public event Action CloseRequested;
 
@@ -26,7 +26,7 @@ namespace SS3D.UI.MachineInterface.Bindings
         private readonly NumericStepper _targetStepper;
         private readonly DeviceFooter _footer;
 
-        public GasPumpGaugeBinder(VisualElement root)
+        public PumpInterfaceBinder(VisualElement root)
         {
             _shell = root.Q<DiegeticDeviceShell>("device-shell") ?? root.Q<DiegeticDeviceShell>();
             VisualElement queryRoot = _shell?.ScreenContent ?? root;
@@ -65,7 +65,7 @@ namespace SS3D.UI.MachineInterface.Bindings
 
         public void Bind(IMachineInterfaceViewModel viewModel)
         {
-            if (viewModel is not GasPumpInterfaceViewModel model)
+            if (viewModel is not PumpInterfaceViewModel model)
             {
                 return;
             }
@@ -173,7 +173,7 @@ namespace SS3D.UI.MachineInterface.Bindings
         private void HandleTargetDeltaRequested(float delta) =>
             NumericControlChanged?.Invoke(MachineInterfaceControlIds.Atmos.TargetPressure, delta);
 
-        private void BindAccess(GasPumpInterfaceViewModel model)
+        private void BindAccess(PumpInterfaceViewModel model)
         {
             if (_idReader == null)
             {

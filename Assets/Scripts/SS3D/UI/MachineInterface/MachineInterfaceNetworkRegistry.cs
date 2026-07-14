@@ -18,9 +18,9 @@ namespace SS3D.UI.MachineInterface
             Register<VendingInterfaceSnapshot>(
                 GetVendingInterfaceId,
                 VendingInterfaceSnapshotMapper.ToViewModel);
-            Register<GasPumpInterfaceSnapshot>(
-                GetGasPumpInterfaceId,
-                GasPumpInterfaceSnapshotMapper.ToViewModel);
+            Register<PumpInterfaceSnapshot>(
+                GetPumpInterfaceId,
+                PumpInterfaceSnapshotMapper.ToViewModel);
             Register<AirAlarmInterfaceSnapshot>(
                 GetAirAlarmInterfaceId,
                 AirAlarmInterfaceSnapshotMapper.ToViewModel);
@@ -66,7 +66,7 @@ namespace SS3D.UI.MachineInterface
 
         private static string GetVendingInterfaceId(VendingInterfaceSnapshot snapshot) => snapshot.InterfaceId;
 
-        private static string GetGasPumpInterfaceId(GasPumpInterfaceSnapshot snapshot) => snapshot.InterfaceId;
+        private static string GetPumpInterfaceId(PumpInterfaceSnapshot snapshot) => snapshot.InterfaceId;
 
         private static string GetAirAlarmInterfaceId(AirAlarmInterfaceSnapshot snapshot) => snapshot.InterfaceId;
 

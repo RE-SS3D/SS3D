@@ -28,9 +28,6 @@ namespace SS3D.UI.MachineInterface
         [SerializeField]
         private BasicPowerConsumer _powerConsumer;
 
-        [SyncVar(OnChange = nameof(OnFlowRateChanged))]
-        private int _flowRate = 5;
-
         private ScrubberController _scrubber;
 
         public override string InterfaceId => MachineInterfaceIds.Scrubber;
@@ -75,7 +72,14 @@ namespace SS3D.UI.MachineInterface
                 return false;
             }
 
-            _flowRate = Mathf.Clamp(_flowRate + Mathf.RoundToInt(delta), 1, 10);
+            if (_scrubber == null)
+            {
+                _scrubber = GetComponent<ScrubberController>();
+            }
+
+            int current = _scrubber != null ? _scrubber.FlowRate : 5;
+            int next = Mathf.Clamp(current + Mathf.RoundToInt(delta), 1, 10);
+            _scrubber?.ServerSetFlowRate(next);
             RefreshAllViewers();
             return true;
         }
@@ -183,21 +187,13 @@ namespace SS3D.UI.MachineInterface
                 Scenario = (byte)scenario,
                 AccessGranted = AccessGranted,
                 AccessScanning = AccessScanning,
-                FlowRate = _flowRate,
+                FlowRate = _scrubber != null ? _scrubber.FlowRate : 5,
                 FilterO2 = filterO2,
                 FilterN2 = filterN2,
                 FilterCo2 = filterCo2,
                 FilterPlasma = filterPlasma,
                 FilterToxins = filterToxins,
             };
-        }
-
-        private void OnFlowRateChanged(int _, int __, bool asServer)
-        {
-            if (asServer)
-            {
-                RefreshAllViewers();
-            }
         }
     }
 }

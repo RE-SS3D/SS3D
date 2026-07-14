@@ -2,9 +2,9 @@ using FishNet.Serializing;
 
 namespace SS3D.UI.MachineInterface
 {
-    public static class GasPumpInterfaceSnapshotSerializer
+    public static class PumpInterfaceSnapshotSerializer
     {
-        public static void WriteGasPumpInterfaceSnapshot(this Writer writer, GasPumpInterfaceSnapshot snapshot)
+        public static void WritePumpInterfaceSnapshot(this Writer writer, PumpInterfaceSnapshot snapshot)
         {
             writer.WriteInt32(snapshot.MachineObjectId);
             writer.WriteString(snapshot.InterfaceId);
@@ -24,9 +24,9 @@ namespace SS3D.UI.MachineInterface
             writer.WriteSingle(snapshot.FlowMolesPerSecond);
         }
 
-        public static GasPumpInterfaceSnapshot ReadGasPumpInterfaceSnapshot(this Reader reader)
+        public static PumpInterfaceSnapshot ReadPumpInterfaceSnapshot(this Reader reader)
         {
-            return new GasPumpInterfaceSnapshot
+            return new PumpInterfaceSnapshot
             {
                 MachineObjectId = reader.ReadInt32(),
                 InterfaceId = reader.ReadString(),

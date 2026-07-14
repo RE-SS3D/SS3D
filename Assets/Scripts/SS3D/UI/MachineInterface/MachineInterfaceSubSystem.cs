@@ -165,7 +165,7 @@ namespace SS3D.UI.MachineInterface
                     break;
                 }
 
-                case GasPumpInterfaceViewModel pumpModel:
+                case PumpInterfaceViewModel pumpModel:
                 {
                     ApplyPumpBoolControl(pumpModel, controlId, isOn);
                     break;
@@ -209,7 +209,7 @@ namespace SS3D.UI.MachineInterface
                     break;
                 }
 
-                case GasPumpInterfaceViewModel pumpModel:
+                case PumpInterfaceViewModel pumpModel:
                 {
                     ApplyPumpNumericControl(pumpModel, controlId, delta);
                     break;
@@ -270,7 +270,7 @@ namespace SS3D.UI.MachineInterface
                     break;
                 }
 
-                case GasPumpInterfaceViewModel:
+                case PumpInterfaceViewModel:
                 {
                     if (controlId == MachineInterfaceControlIds.Atmos.ReadId)
                     {
@@ -300,7 +300,7 @@ namespace SS3D.UI.MachineInterface
             if (_openModel is VendingInterfaceViewModel
                 or ScrubberInterfaceViewModel
                 or VentInterfaceViewModel
-                or GasPumpInterfaceViewModel
+                or PumpInterfaceViewModel
                 or AirAlarmInterfaceViewModel)
             {
                 Refresh(_openModel);
@@ -440,7 +440,7 @@ namespace SS3D.UI.MachineInterface
             }
         }
 
-        private static void ApplyPumpBoolControl(GasPumpInterfaceViewModel model, byte controlId, bool isOn)
+        private static void ApplyPumpBoolControl(PumpInterfaceViewModel model, byte controlId, bool isOn)
         {
             if (controlId == MachineInterfaceControlIds.Atmos.Power && model.AccessGranted)
             {
@@ -479,7 +479,7 @@ namespace SS3D.UI.MachineInterface
             }
         }
 
-        private static void ApplyPumpNumericControl(GasPumpInterfaceViewModel model, byte controlId, float delta)
+        private static void ApplyPumpNumericControl(PumpInterfaceViewModel model, byte controlId, float delta)
         {
             if (controlId == MachineInterfaceControlIds.Atmos.TargetPressure && model.AccessGranted)
             {
@@ -524,7 +524,7 @@ namespace SS3D.UI.MachineInterface
                     break;
                 }
 
-                case GasPumpInterfaceViewModel pump:
+                case PumpInterfaceViewModel pump:
                 {
                     if (pump.AccessGranted)
                     {

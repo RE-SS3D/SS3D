@@ -1,4 +1,5 @@
 using FishNet.Object;
+using FishNet.Object.Synchronizing;
 using SS3D.Systems.Atmospherics;
 using SS3D.Systems.Tile;
 using System.Collections.Generic;
@@ -13,11 +14,22 @@ namespace SS3D.Systems.Atmospherics.Pipes
     {
         private static readonly int ScrubActiveId = Animator.StringToHash("scrubActive");
 
+        [SyncVar]
+        private int _flowRate = 5;
+
         private bool _filterO2 = true;
         private bool _filterN2 = true;
         private bool _filterCo2 = true;
         private bool _filterPlasma;
         private bool _filterToxins = true;
+
+        public int FlowRate => _flowRate;
+
+        public static float GetRatedFlowMolesPerSecond(int flowRate)
+        {
+            float scale = Mathf.Clamp(flowRate, 1, 10) / 10f;
+            return AtmosPortConstants.ScrubberRatedFlowMolesPerSecond * scale;
+        }
 
         public void GetFilterStates(
             out bool filterO2,
@@ -31,6 +43,12 @@ namespace SS3D.Systems.Atmospherics.Pipes
             filterCo2 = _filterCo2;
             filterPlasma = _filterPlasma;
             filterToxins = _filterToxins;
+        }
+
+        [Server]
+        public void ServerSetFlowRate(int flowRate)
+        {
+            _flowRate = Mathf.Clamp(flowRate, 1, 10);
         }
 
         [Server]
@@ -98,7 +116,7 @@ namespace SS3D.Systems.Atmospherics.Pipes
             }
 
             float pressureFactor = Mathf.Clamp01((differential + maxDiff) / maxDiff);
-            float budgetMoles = AtmosPortConstants.ScrubberRatedFlowMolesPerSecond * pressureFactor * deltaTime;
+            float budgetMoles = GetRatedFlowMolesPerSecond(_flowRate) * pressureFactor * deltaTime;
 
             if (budgetMoles <= 0f)
                 return false;

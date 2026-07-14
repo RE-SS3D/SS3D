@@ -29,8 +29,8 @@ UI Toolkit panels for station machines, networked via FishNet snapshots. APC and
 - `Assets/Scripts/SS3D/UI/MachineInterface/AirAlarmInterfaceController.cs` — air alarm UI; live device discovery and preset dispatch
 - `Assets/Scripts/SS3D/UI/MachineInterface/ScrubberInterfaceController.cs` — scrubber UI; filter state in snapshots
 - `Assets/Scripts/SS3D/UI/MachineInterface/VentInterfaceController.cs` — vent UI; target pressure stored on `VentController`
-- `Assets/Scripts/SS3D/UI/MachineInterface/GasPumpGaugeController.cs` — pump unit UI; power/target outlet pressure on `AtmosPumpController` (not area-linked)
-- `Assets/Scripts/SS3D/UI/MachineInterface/Bindings/GasPumpGaugeBinder.cs` — pump panel binder (inlet/outlet readouts, ID gate)
+- `Assets/Scripts/SS3D/UI/MachineInterface/PumpInterfaceController.cs` — pump unit UI; power/target outlet pressure on `AtmosPumpController` (not area-linked)
+- `Assets/Scripts/SS3D/UI/MachineInterface/Bindings/PumpInterfaceBinder.cs` — pump panel binder (inlet/outlet readouts, ID gate)
 - `Assets/Scripts/SS3D/UI/MachineInterface/OpenMachineInterfaceInteraction.cs` — interaction to open panel
 - `Assets/Scripts/SS3D/UI/MachineInterface/Components/DiegeticDeviceShell.cs` — diegetic chassis shell
 - `Assets/Scripts/SS3D/Editor/DiegeticComponentsPreviewWindow.cs` — editor component preview
@@ -51,7 +51,7 @@ Dev harness: `MachineInterfaceDevHarness.cs`; editor previews via `SS3D → Mach
 ## Depends on / Used by
 
 - **Depends on:** [electricity](electricity.md), [area](area.md), [atmospherics](atmospherics.md) (air alarm sampling and port discovery), [interactions-framework](interactions-framework.md), [selection](selection.md), [inventory](inventory.md) (vending dispense)
-- **Used by:** `ApcController`, `SmesController`, `VendingMachineController`, `AirAlarmInterfaceController`, `ScrubberInterfaceController`, `VentInterfaceController`, `GasPumpGaugeController`
+- **Used by:** `ApcController`, `SmesController`, `VendingMachineController`, `AirAlarmInterfaceController`, `ScrubberInterfaceController`, `VentInterfaceController`, `PumpInterfaceController`
 
 ## Related docs
 

@@ -23,12 +23,16 @@ Ship turf gas simulation with tile-driven neighbour graph, plasma combustion, GP
 ## Deferred (design §4–§9, §13)
 
 - LiquidBuffer / SolidBuffer and phase transitions
-- Pipe networks, pumps, vents, valves, gauges
+- Valves, liquid pipe networks, pipe failures (clog/rupture), junction chemistry
 - Chemistry reagent integration (boiling/freezing points)
 - Liquid/solid rendering (puddles, decals)
-- Junction reactions, breach hooks (explosives, suit breach, wet-floor shocks)
+- Breach hooks (explosives, suit breach, wet-floor shocks)
 - Perception-altering gas effects
 - **Client VFX sync** — see [2026-07_atmos-client-visualization-sync.md](2026-07_atmos-client-visualization-sync.md)
+
+## Shipped on fork (pipe layer, 2026)
+
+- Gas pipe networks, vents, scrubbers, pumps, air alarms, and diegetic machine interfaces (see [atmospherics](systems/atmospherics.md))
 
 ## Documented fork deviations
 

@@ -2,19 +2,19 @@ using SS3D.Systems.Atmospherics.Pipes;
 
 namespace SS3D.UI.MachineInterface
 {
-    public static class GasPumpInterfaceSnapshotMapper
+    public static class PumpInterfaceSnapshotMapper
     {
         private const float MolesPerSecondToLitersPerSecond = 22.414f;
 
-        public static GasPumpInterfaceViewModel ToViewModel(GasPumpInterfaceSnapshot snapshot)
+        public static PumpInterfaceViewModel ToViewModel(PumpInterfaceSnapshot snapshot)
         {
             PumpScenario scenario = (PumpScenario)snapshot.Scenario;
-            GasPumpInterfaceViewModel model = scenario switch
+            PumpInterfaceViewModel model = scenario switch
             {
-                PumpScenario.Pumping => GasPumpInterfaceViewModel.CreatePumping(),
-                PumpScenario.Starved => GasPumpInterfaceViewModel.CreateStarved(),
-                PumpScenario.Fault => GasPumpInterfaceViewModel.CreateFault(),
-                _ => GasPumpInterfaceViewModel.CreateIdle(),
+                PumpScenario.Pumping => PumpInterfaceViewModel.CreatePumping(),
+                PumpScenario.Starved => PumpInterfaceViewModel.CreateStarved(),
+                PumpScenario.Fault => PumpInterfaceViewModel.CreateFault(),
+                _ => PumpInterfaceViewModel.CreateIdle(),
             };
 
             model.Title = snapshot.Title;

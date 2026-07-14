@@ -27,12 +27,12 @@ namespace SS3D.Editor
         private ScrubberInterfaceBinder _scrubberBinder;
         private VentInterfaceBinder _ventBinder;
 
-        private GasPumpGaugeBinder _pumpBinder;
+        private PumpInterfaceBinder _pumpBinder;
 
         private AirAlarmInterfaceViewModel _airAlarmModel = AirAlarmInterfaceViewModel.CreateNormal();
         private ScrubberInterfaceViewModel _scrubberModel = ScrubberInterfaceViewModel.CreateFiltering();
         private VentInterfaceViewModel _ventModel = VentInterfaceViewModel.CreateIdle();
-        private GasPumpInterfaceViewModel _pumpModel = GasPumpInterfaceViewModel.CreateIdle();
+        private PumpInterfaceViewModel _pumpModel = PumpInterfaceViewModel.CreateIdle();
 
         [MenuItem("SS3D/Machine Interface/Preview Air Alarm Panel")]
         public static void OpenAirAlarm()
@@ -149,10 +149,10 @@ namespace SS3D.Editor
                 },
                 PreviewPanel.Pump => new[]
                 {
-                    CreateScenarioButton("Idle", () => SetPumpScenario(GasPumpInterfaceViewModel.CreateIdle())),
-                    CreateScenarioButton("Pumping", () => SetPumpScenario(GasPumpInterfaceViewModel.CreatePumping())),
-                    CreateScenarioButton("Starved", () => SetPumpScenario(GasPumpInterfaceViewModel.CreateStarved())),
-                    CreateScenarioButton("Fault", () => SetPumpScenario(GasPumpInterfaceViewModel.CreateFault())),
+                    CreateScenarioButton("Idle", () => SetPumpScenario(PumpInterfaceViewModel.CreateIdle())),
+                    CreateScenarioButton("Pumping", () => SetPumpScenario(PumpInterfaceViewModel.CreatePumping())),
+                    CreateScenarioButton("Starved", () => SetPumpScenario(PumpInterfaceViewModel.CreateStarved())),
+                    CreateScenarioButton("Fault", () => SetPumpScenario(PumpInterfaceViewModel.CreateFault())),
                 },
                 PreviewPanel.Vent => new[]
                 {
@@ -275,7 +275,7 @@ namespace SS3D.Editor
             _scrubberBinder?.Bind(_scrubberModel);
         }
 
-        private void SetPumpScenario(GasPumpInterfaceViewModel model)
+        private void SetPumpScenario(PumpInterfaceViewModel model)
         {
             model.AccessGranted = _pumpModel.AccessGranted;
             _pumpModel = model;
@@ -297,7 +297,7 @@ namespace SS3D.Editor
             {
                 PreviewPanel.Scrubber => "Assets/Content/Systems/UI/MachineInterface/Templates/ScrubberUnitInterface.uxml",
                 PreviewPanel.Vent => "Assets/Content/Systems/UI/MachineInterface/Templates/VentUnitInterface.uxml",
-                PreviewPanel.Pump => "Assets/Content/Systems/UI/MachineInterface/Templates/GasPumpInterface.uxml",
+                PreviewPanel.Pump => "Assets/Content/Systems/UI/MachineInterface/Templates/PumpUnitInterface.uxml",
                 _ => "Assets/Content/Systems/UI/MachineInterface/Templates/AirAlarmInterface.uxml",
             };
 
@@ -323,7 +323,7 @@ namespace SS3D.Editor
                     _ventBinder.Bind(_ventModel);
                     break;
                 case PreviewPanel.Pump:
-                    _pumpBinder = new GasPumpGaugeBinder(_panelRoot);
+                    _pumpBinder = new PumpInterfaceBinder(_panelRoot);
                     _pumpBinder.Bind(_pumpModel);
                     break;
                 default:

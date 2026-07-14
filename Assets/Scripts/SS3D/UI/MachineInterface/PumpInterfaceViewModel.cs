@@ -8,7 +8,7 @@ namespace SS3D.UI.MachineInterface
         Fault = 3,
     }
 
-    public sealed class GasPumpInterfaceViewModel : IMachineInterfaceViewModel
+    public sealed class PumpInterfaceViewModel : IMachineInterfaceViewModel
     {
         public string Title { get; set; } = "PUMP · ATMOSPHERICS";
 
@@ -59,9 +59,9 @@ namespace SS3D.UI.MachineInterface
 
         public int TargetOutletPressureKpa { get; set; } = 4500;
 
-        public static GasPumpInterfaceViewModel CreateIdle()
+        public static PumpInterfaceViewModel CreateIdle()
         {
-            return new GasPumpInterfaceViewModel
+            return new PumpInterfaceViewModel
             {
                 Scenario = PumpScenario.Idle,
                 StatusBadgeText = "IDLE",
@@ -74,9 +74,9 @@ namespace SS3D.UI.MachineInterface
             };
         }
 
-        public static GasPumpInterfaceViewModel CreatePumping()
+        public static PumpInterfaceViewModel CreatePumping()
         {
-            return new GasPumpInterfaceViewModel
+            return new PumpInterfaceViewModel
             {
                 Scenario = PumpScenario.Pumping,
                 StatusBadgeText = "PUMPING",
@@ -91,9 +91,9 @@ namespace SS3D.UI.MachineInterface
             };
         }
 
-        public static GasPumpInterfaceViewModel CreateStarved()
+        public static PumpInterfaceViewModel CreateStarved()
         {
-            return new GasPumpInterfaceViewModel
+            return new PumpInterfaceViewModel
             {
                 Scenario = PumpScenario.Starved,
                 StatusBadgeText = "STARVED",
@@ -109,9 +109,9 @@ namespace SS3D.UI.MachineInterface
             };
         }
 
-        public static GasPumpInterfaceViewModel CreateFault()
+        public static PumpInterfaceViewModel CreateFault()
         {
-            return new GasPumpInterfaceViewModel
+            return new PumpInterfaceViewModel
             {
                 Scenario = PumpScenario.Fault,
                 ChassisPowerOk = false,

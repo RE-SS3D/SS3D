@@ -10,7 +10,7 @@ namespace SS3D.UI.MachineInterface
     /// Networked pump unit machine interface. Pumps are not area-linked — they operate on their own tile and pipe network.
     /// </summary>
     [RequireComponent(typeof(AtmosPumpController))]
-    public sealed class GasPumpGaugeController : AtmosMachineInterfaceBehaviour
+    public sealed class PumpInterfaceController : AtmosMachineInterfaceBehaviour
     {
         [SerializeField]
         private string _title = "PUMP · ATMOSPHERICS";
@@ -29,7 +29,7 @@ namespace SS3D.UI.MachineInterface
 
         private AtmosPumpController _pump;
 
-        public override string InterfaceId => MachineInterfaceIds.GasPump;
+        public override string InterfaceId => MachineInterfaceIds.Pump;
 
         public override void OnStartServer()
         {
@@ -96,18 +96,18 @@ namespace SS3D.UI.MachineInterface
         }
 
         [TargetRpc(RunLocally = true)]
-        private void TargetOpenInterface(NetworkConnection conn, GasPumpInterfaceSnapshot snapshot)
+        private void TargetOpenInterface(NetworkConnection conn, PumpInterfaceSnapshot snapshot)
         {
             DispatchClientOpen(snapshot);
         }
 
         [TargetRpc(RunLocally = true)]
-        private void TargetRefreshInterface(NetworkConnection conn, GasPumpInterfaceSnapshot snapshot)
+        private void TargetRefreshInterface(NetworkConnection conn, PumpInterfaceSnapshot snapshot)
         {
             DispatchClientRefresh(snapshot);
         }
 
-        private GasPumpInterfaceSnapshot BuildSnapshot()
+        private PumpInterfaceSnapshot BuildSnapshot()
         {
             if (_pump == null)
             {
@@ -150,7 +150,7 @@ namespace SS3D.UI.MachineInterface
                 scenario = PumpScenario.Idle;
             }
 
-            return new GasPumpInterfaceSnapshot
+            return new PumpInterfaceSnapshot
             {
                 MachineObjectId = NetworkObject != null ? NetworkObject.ObjectId : 0,
                 InterfaceId = InterfaceId,
