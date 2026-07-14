@@ -142,7 +142,7 @@ namespace EditorTests
 
         private static void SetPlayerHands(Hands hands, List<Hand> playerHands)
         {
-            SetPrivateField(hands, "PlayerHands", playerHands);
+            hands.PlayerHands = playerHands;
         }
 
         private static void SetPrivateField(object target, string fieldName, object value)
