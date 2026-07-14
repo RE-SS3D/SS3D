@@ -1,11 +1,12 @@
-using System.Linq;
+using System.Collections.Generic;
 using SS3D.Systems.Inventory.Containers;
+using SS3D.Systems.Inventory.Items;
 using SS3D.Systems.Inventory.Items.Generic;
 
 namespace SS3D.Systems.IdAccess
 {
     /// <summary>
-    /// Resolves the on-person credential from gear-strip slots per design/id-access.md §3.
+    /// Resolves the on-person credential from any container on the character's inventory or hands.
     /// </summary>
     public static class AccessCredentialResolver
     {
@@ -22,63 +23,78 @@ namespace SS3D.Systems.IdAccess
                 return false;
             }
 
-            if (TryGetIdCardFromContainer(inventory, ContainerType.Identification, out idCard))
+            foreach (AttachedContainer container in GetSearchContainers(inventory))
             {
+                if (!TryGetIdCardFromAttachedContainer(container, out idCard))
+                {
+                    continue;
+                }
+
                 recordId = idCard.BoundRecordId;
-                return !recordId.IsNone;
+                if (!recordId.IsNone)
+                {
+                    return true;
+                }
             }
 
-            if (TryGetIdCardFromPdaContainer(inventory, ContainerType.Pda, out idCard))
-            {
-                recordId = idCard.BoundRecordId;
-                return !recordId.IsNone;
-            }
-
-            // Backward compatibility: PDA currently lives in the Identification slot.
-            if (TryGetIdCardFromPdaContainer(inventory, ContainerType.Identification, out idCard))
-            {
-                recordId = idCard.BoundRecordId;
-                return !recordId.IsNone;
-            }
-
+            recordId = default;
+            idCard = null;
             return false;
         }
 
-        private static bool TryGetIdCardFromContainer(
-            HumanInventory inventory,
-            ContainerType containerType,
-            out IDCard idCard)
+        private static IEnumerable<AttachedContainer> GetSearchContainers(HumanInventory inventory)
         {
-            idCard = null;
+            var seen = new HashSet<AttachedContainer>();
 
-            if (!inventory.TryGetTypeContainer(containerType, 0, out AttachedContainer container))
+            List<AttachedContainer> containers = inventory.Containers;
+            if (containers != null)
             {
-                return false;
+                foreach (AttachedContainer container in containers)
+                {
+                    if (container != null && seen.Add(container))
+                    {
+                        yield return container;
+                    }
+                }
             }
 
-            idCard = container.Items.FirstOrDefault() as IDCard;
-            return idCard != null && !idCard.BoundRecordId.IsNone;
+            Hands hands = inventory.Hands;
+            if (hands == null)
+            {
+                yield break;
+            }
+
+            foreach (AttachedContainer container in hands.HandContainers)
+            {
+                if (container != null && seen.Add(container))
+                {
+                    yield return container;
+                }
+            }
         }
 
-        private static bool TryGetIdCardFromPdaContainer(
-            HumanInventory inventory,
-            ContainerType containerType,
-            out IDCard idCard)
+        private static bool TryGetIdCardFromAttachedContainer(AttachedContainer container, out IDCard idCard)
         {
             idCard = null;
 
-            if (!inventory.TryGetTypeContainer(containerType, 0, out AttachedContainer container))
+            foreach (Item item in container.Items)
             {
-                return false;
+                if (item is IDCard directCard && !directCard.BoundRecordId.IsNone)
+                {
+                    idCard = directCard;
+                    return true;
+                }
+
+                if (item is PDA pda
+                    && pda.GetInsertedIdCard() is IDCard insertedCard
+                    && !insertedCard.BoundRecordId.IsNone)
+                {
+                    idCard = insertedCard;
+                    return true;
+                }
             }
 
-            if (container.Items.FirstOrDefault() is not PDA pda)
-            {
-                return false;
-            }
-
-            idCard = pda.GetInsertedIdCard();
-            return idCard != null && !idCard.BoundRecordId.IsNone;
+            return false;
         }
     }
 }

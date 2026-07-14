@@ -65,6 +65,12 @@ namespace SS3D.Systems.IdAccess
             AccessLevel.Crew,
             AccessLevel.Maintenance);
 
+        public static readonly AccessMask Engineer = AccessMask.FromLevels(
+            AccessLevel.Engineering,
+            AccessLevel.EVA,
+            AccessLevel.Crew,
+            AccessLevel.Maintenance);
+
         public static readonly AccessMask Captain = AccessMask.FromLevels(
             AccessLevel.Command,
             AccessLevel.Security,

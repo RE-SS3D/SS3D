@@ -170,10 +170,7 @@ namespace SS3D.Systems.Roles
 
             if (!inventory.TryGetTypeContainer(ContainerType.Identification, 0, out AttachedContainer container)) return;
 
-            Item pdaItem = SpawnItemInSlot(role.PDAAsset, true, container);
             Item idCardItem = itemSystem.SpawnItem(role.IDCardAsset.Id, Vector3.zero, Quaternion.identity);
-
-            PDA pda = (PDA)pdaItem;
             IDCard idCard = (IDCard)idCardItem;
 
             CrewRecord crewRecord = idAccess.CreateCrewRecord(
@@ -184,9 +181,12 @@ namespace SS3D.Systems.Roles
 
             idAccess.BindIdCard(idCard, crewRecord.Id);
 
-            Log.Information(this, "Bound crew record " + crewRecord.Id + " to ID card of " + entity.Ckey);
-
+            Item pdaItem = SpawnItemInSlot(role.PDAAsset, true, container);
+            PDA pda = (PDA)pdaItem;
             pda.StartingIDCard = idCardItem;
+            pda.EnsureStartingIdCardInserted();
+
+            Log.Information(this, "Bound crew record " + crewRecord.Id + " to ID card of " + entity.Ckey);
         }
 
         /// <summary>

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using FishNet.Object;
+using System.Collections.Generic;
 using System.Linq;
 using SS3D.Interactions;
 using SS3D.Interactions.Interfaces;
@@ -18,15 +19,31 @@ namespace SS3D.Systems.Inventory.Items.Generic
 
         [HideInInspector] public Item StartingIDCard;
 
-        protected override void OnStart()
+        public override void OnStartServer()
         {
-            base.OnStart();
+            base.OnStartServer();
+            EnsureStartingIdCardInserted();
+        }
 
-            attachedContainer = GetComponent<AttachedContainer>();
-            if (StartingIDCard)
+        [Server]
+        public void EnsureStartingIdCardInserted()
+        {
+            if (attachedContainer == null)
             {
-                attachedContainer.AddItem(StartingIDCard);
+                attachedContainer = GetComponent<AttachedContainer>();
             }
+
+            if (StartingIDCard == null || attachedContainer == null)
+            {
+                return;
+            }
+
+            if (GetInsertedIdCard() != null)
+            {
+                return;
+            }
+
+            attachedContainer.AddItem(StartingIDCard);
         }
 
         public IDCard GetInsertedIdCard()
