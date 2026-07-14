@@ -16,12 +16,12 @@ todos:
     status: completed
   - id: phase-1b-server-meta
     content: "Implement server meta contributors: round config, permissions migration, round history JSONL; hook round-start map selection (blocked on round-config feature)"
-    status: pending
-  - id: phase-2-snapshots
-    content: "Phase 2: round snapshot contributors (items, electricity kWh, atmospherics, substances, entities) with delta-from-template format and admin commands"
-    status: pending
+    status: completed
   - id: docs
     content: Add persistence system map and register in architecture INDEX; update rounds-lobby.md with persistence hooks (tile.md and area.md already synced in area-foundation effort)
+    status: completed
+  - id: phase-2-snapshots
+    content: "Phase 2: round snapshot contributors (items, electricity kWh, atmospherics, substances, entities) with delta-from-template format and admin commands"
     status: pending
 isProject: false
 ---
@@ -429,3 +429,13 @@ Deferred until accounts/auth exist, but design for it now:
 | Serializer | JsonUtility now, Newtonsoft per-domain later | Minimize Phase 1 churn; upgrade at contributor boundary |
 | Diegetic records | Excluded from disk | Honors design spec; keeps stakes physical |
 | Area template restore | `RestoreFromSave()` over APC re-flood | Saved metadata must survive on maps with placed APCs |
+
+---
+
+## Implementation notes (Jul 2026)
+
+**Phase 1a shipped** on `feature/persistence-framework`: envelope-based station templates, tilemap/area contributors, legacy tilemap migration, template-restore APC linking.
+
+**Phase 1b shipped (partial):** `PermissionsPersistenceContributor` + `LegacyPermissionsMigrator` (envelope at `ServerMeta/permissions.json`, legacy `Config/permissions.txt` fallback); `RoundHistoryStore` append-only JSONL at `ServerMeta/round-history.jsonl`; `LoadServerMeta` on server boot via `TileSubSystem`; round-end history hook in `RoundSubSystem`. **Deferred:** `RoundConfigPersistenceContributor` and round-start `LoadStationTemplate(mapId)` until round-config feature exists.
+
+**Next:** Phase 2 round snapshot contributors.

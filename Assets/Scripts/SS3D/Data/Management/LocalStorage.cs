@@ -271,5 +271,38 @@ namespace SS3D.Data.Management
         {
             return GetAllObjectsNameInFolder(folderPath).Contains(name + "." + SaveExtension);
         }
+
+        public static bool AppendLine(string fileName, string line)
+        {
+            return AppendToFile(fileName, SaveExtension, line);
+        }
+
+        public static bool AppendJsonlLine(string fileName, string line)
+        {
+            return AppendToFile(fileName, "jsonl", line);
+        }
+
+        private static bool AppendToFile(string fileName, string extension, string line)
+        {
+            Initialize();
+
+            try
+            {
+                string fullPath = SaveFolder + fileName + "." + extension;
+                string directory = Path.GetDirectoryName(fullPath);
+                if (!string.IsNullOrEmpty(directory) && !Directory.Exists(directory))
+                {
+                    Directory.CreateDirectory(directory);
+                }
+
+                File.AppendAllText(fullPath, line + Environment.NewLine);
+                return true;
+            }
+            catch (Exception e)
+            {
+                Log.Error(typeof(LocalStorage), $"Something went wrong when appending to {fileName}: {e.Message}");
+                return false;
+            }
+        }
     }
 }

@@ -33,6 +33,8 @@ namespace SS3D.Systems.Gamemodes
         /// </summary>
         public List<string> Antagonists => _gamemode.RoundAntagonists;
 
+        public string CurrentGamemodeName => _gamemode != null ? _gamemode.name : "unknown";
+
         protected override void OnStart()
         {
             base.OnStart();

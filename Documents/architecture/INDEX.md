@@ -14,9 +14,10 @@ Authoring conventions: [Documents/SKILL.md](../SKILL.md). Agent rules: [AGENTS.m
 | Scene management | [scene-management](systems/scene-management.md) | stub | Scene loading and switching |
 | Interactions (framework) | [interactions-framework](systems/interactions-framework.md) | shipped | Shared `IInteraction` contracts, pipeline, and wire identifiers |
 | Data / codegen | [data-codegen](systems/data-codegen.md) | stub | Asset databases and generated references |
+| Persistence | [persistence](systems/persistence.md) | partial | Contributor-based station templates and server meta (permissions, round history) |
 | Localization | [localization](systems/localization.md) | partial | `LocalizedTextService` and examine string tables |
 | Logging | [logging](systems/logging.md) | shipped | Serilog structured logging |
-| Permissions | [permissions](systems/permissions.md) | stub | Admin permission checks |
+| Permissions | [permissions](systems/permissions.md) | partial | Admin permission checks; persisted via [persistence](systems/persistence.md) envelope with legacy txt fallback |
 | Rendering | [rendering](systems/rendering.md) | partial | URP features: selection pick pass, atmospherics scatter/glow/distortion |
 
 ## Gameplay

@@ -10,6 +10,8 @@ namespace SS3D.Data.Persistence
 
         public const string StationTemplateType = "station-template";
 
+        public const string ServerMetaType = "server-meta";
+
         public int schemaVersion;
 
         public string envelopeType;

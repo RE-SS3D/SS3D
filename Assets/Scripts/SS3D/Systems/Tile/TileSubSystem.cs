@@ -68,6 +68,11 @@ namespace SS3D.Systems.Tile
 		        return;
 	        }
 
+            if (SubSystems.TryGet(out PersistenceSubSystem persistenceSubSystem))
+            {
+                persistenceSubSystem.LoadServerMeta();
+            }
+
 	        CreateMap(unnamedMapName);
 
 	        await WaitForResourcesLoad();

@@ -1,10 +1,14 @@
+using Coimbra.Services.Events;
 using SS3D.Core;
 using SS3D.Core.Behaviours;
 using SS3D.Data.Persistence;
 using SS3D.Data.Management;
 using SS3D.Logging;
+using SS3D.Permissions;
+using SS3D.Permissions.Events;
 using SS3D.Systems.Area;
 using SS3D.Systems.Tile;
+using FishNet;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,6 +23,7 @@ namespace SS3D.Systems.Persistence
     {
         private readonly IPersistenceStore _store = new EnvelopePersistenceStore();
         private readonly List<IPersistenceContributor> _contributors = new();
+        private bool _serverMetaLoaded;
 
         public event Action<PersistenceLayer> OnBeforeRestore;
 
@@ -30,6 +35,31 @@ namespace SS3D.Systems.Persistence
         {
             base.OnStart();
             RegisterBuiltInContributors();
+            AddHandle(UserPermissionsChangedEvent.AddListener(HandleUserPermissionsChanged));
+        }
+
+        public bool LoadServerMeta()
+        {
+            if (_serverMetaLoaded)
+            {
+                return true;
+            }
+
+            _store.TryLoad(PersistencePaths.ServerMetaPermissions, out PersistenceEnvelope envelope);
+            RestoreServerMeta(envelope);
+            _serverMetaLoaded = true;
+            return true;
+        }
+
+        public bool SaveServerMeta()
+        {
+            PersistenceEnvelope envelope = CaptureServerMeta();
+            return _store.TrySave(PersistencePaths.ServerMetaPermissions, envelope, overwrite: true);
+        }
+
+        public bool AppendRoundHistory(RoundHistoryEntry entry)
+        {
+            return RoundHistoryStore.Append(entry);
         }
 
         public void RegisterContributor(IPersistenceContributor contributor)
@@ -95,6 +125,77 @@ namespace SS3D.Systems.Persistence
             RegisterContributor(new AreaPersistenceContributor(
                 () => SubSystems.Get<AreaSubSystem>(),
                 () => SubSystems.Get<TileSubSystem>()));
+            RegisterContributor(new PermissionsPersistenceContributor(() => SubSystems.Get<PermissionSubSystem>()));
+        }
+
+        private void HandleUserPermissionsChanged(ref EventContext context, in UserPermissionsChangedEvent e)
+        {
+            if (!InstanceFinder.IsServer)
+            {
+                return;
+            }
+
+            SaveServerMeta();
+        }
+
+        private PersistenceEnvelope CaptureServerMeta()
+        {
+            OnBeforeCapture?.Invoke(PersistenceLayer.ServerMeta);
+
+            var envelope = new PersistenceEnvelope
+            {
+                schemaVersion = PersistenceEnvelope.CurrentSchemaVersion,
+                envelopeType = PersistenceEnvelope.ServerMetaType,
+                createdAt = DateTime.UtcNow.ToString("o"),
+                gameVersion = UnityEngine.Application.version,
+            };
+
+            foreach (IPersistenceContributor contributor in GetContributors(PersistenceLayer.ServerMeta))
+            {
+                object payload = contributor.Capture();
+                if (payload == null)
+                {
+                    continue;
+                }
+
+                envelope.chunks.Add(new PersistenceChunk
+                {
+                    contributorId = contributor.ContributorId,
+                    payloadJson = JsonUtility.ToJson(payload),
+                });
+            }
+
+            return envelope;
+        }
+
+        private void RestoreServerMeta(PersistenceEnvelope envelope)
+        {
+            OnBeforeRestore?.Invoke(PersistenceLayer.ServerMeta);
+
+            var context = new PersistenceContext
+            {
+                IsTemplateRestore = false,
+                TemplateName = string.Empty,
+            };
+
+            foreach (IPersistenceContributor contributor in GetContributors(PersistenceLayer.ServerMeta))
+            {
+                object payload = null;
+                if (envelope?.chunks != null)
+                {
+                    PersistenceChunk chunk = envelope.chunks.FirstOrDefault(
+                        candidate => candidate.contributorId == contributor.ContributorId);
+
+                    if (!string.IsNullOrEmpty(chunk?.payloadJson))
+                    {
+                        payload = DeserializePayload(contributor, chunk.payloadJson);
+                    }
+                }
+
+                contributor.Restore(payload, context);
+            }
+
+            OnAfterRestore?.Invoke(PersistenceLayer.ServerMeta);
         }
 
         private PersistenceEnvelope CaptureStationTemplate(string templateName)
@@ -178,6 +279,7 @@ namespace SS3D.Systems.Persistence
             {
                 TileMapPersistenceContributor.ContributorIdValue => JsonUtility.FromJson<SavedTileMap>(payloadJson),
                 AreaPersistenceContributor.ContributorIdValue => JsonUtility.FromJson<SavedAreaChunkPayload>(payloadJson),
+                PermissionsPersistenceContributor.ContributorIdValue => JsonUtility.FromJson<SavedPermissionsPayload>(payloadJson),
                 _ => payloadJson,
             };
         }
