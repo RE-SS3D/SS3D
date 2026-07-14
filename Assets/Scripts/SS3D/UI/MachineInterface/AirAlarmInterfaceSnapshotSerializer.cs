@@ -19,6 +19,7 @@ namespace SS3D.UI.MachineInterface
             writer.WriteByte(snapshot.Scenario);
             writer.WriteBoolean(snapshot.AccessGranted);
             writer.WriteBoolean(snapshot.AccessScanning);
+            writer.WriteBoolean(snapshot.AccessDenied);
             writer.WriteSingle(snapshot.PressureKpa);
             writer.WriteSingle(snapshot.OxygenFraction);
             writer.WriteSingle(snapshot.CarbonDioxideFraction);
@@ -50,6 +51,7 @@ namespace SS3D.UI.MachineInterface
                 Scenario = reader.ReadByte(),
                 AccessGranted = reader.ReadBoolean(),
                 AccessScanning = reader.ReadBoolean(),
+                AccessDenied = reader.ReadBoolean(),
                 PressureKpa = reader.ReadSingle(),
                 OxygenFraction = reader.ReadSingle(),
                 CarbonDioxideFraction = reader.ReadSingle(),

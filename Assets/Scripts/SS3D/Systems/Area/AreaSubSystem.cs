@@ -345,6 +345,28 @@ namespace SS3D.Systems.Area
         }
 
         [Server]
+        public void SetDefaultRequiredAccess(AreaId areaId, IdAccess.AccessMask requiredAccess)
+        {
+            if (!_registry.TryGet(areaId, out AreaRecord record))
+            {
+                return;
+            }
+
+            record.DefaultRequiredAccess = requiredAccess;
+        }
+
+        public bool TryGetAreaForWorldPosition(Vector3 worldPosition, out AreaRecord record)
+        {
+            record = null;
+            if (_query == null)
+            {
+                return false;
+            }
+
+            TileCoord coord = _query.WorldToTile(worldPosition);
+            return TryGetAreaForTile(coord, out record);
+        }
+
         public void ClearDepartmentalLightTint(AreaId areaId)
         {
             if (!_registry.TryGet(areaId, out AreaRecord record))
@@ -371,6 +393,7 @@ namespace SS3D.Systems.Area
                     apcWorldPosition = world,
                     hasDepartmentalLightTint = record.HasDepartmentalLightTint,
                     departmentalLightTint = record.DepartmentalLightTint,
+                    defaultRequiredAccessBits = record.DefaultRequiredAccess.Value,
                 });
             }
 
@@ -422,6 +445,7 @@ namespace SS3D.Systems.Area
                     Apc = null,
                     HasDepartmentalLightTint = saved.hasDepartmentalLightTint,
                     DepartmentalLightTint = saved.departmentalLightTint,
+                    DefaultRequiredAccess = new IdAccess.AccessMask(saved.defaultRequiredAccessBits),
                 });
             }
 

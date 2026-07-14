@@ -155,6 +155,7 @@ namespace SS3D.UI.MachineInterface
             AirAlarmInterfaceViewModel model = AirAlarmInterfaceViewModel.CreateNormal();
             model.AccessGranted = AccessGranted;
             model.AccessScanning = AccessScanning;
+            model.AccessDenied = AccessDenied;
             model.ActiveMode = _airAlarm != null ? _airAlarm.ActiveMode : AirAlarmPresetMode.Filtering;
             model.SelectedDeviceId = _selectedDeviceId;
             PopulateConnectedDevices(model.ConnectedDevices);
@@ -266,6 +267,7 @@ namespace SS3D.UI.MachineInterface
                 Scenario = (byte)scenario,
                 AccessGranted = AccessGranted,
                 AccessScanning = AccessScanning,
+                AccessDenied = AccessDenied,
                 PressureKpa = _airAlarm != null ? _airAlarm.SamplePressureKpa : 0f,
                 OxygenFraction = _airAlarm != null ? _airAlarm.SampleOxygenFraction : 0f,
                 CarbonDioxideFraction = _airAlarm != null ? _airAlarm.SampleCarbonDioxideFraction : 0f,

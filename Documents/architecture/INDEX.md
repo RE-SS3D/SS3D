@@ -31,7 +31,7 @@ Authoring conventions: [Documents/SKILL.md](../SKILL.md). Agent rules: [AGENTS.m
 | Area | [area](systems/area.md) | partial | APC-seeded flood-fill, area power, lighting state, wall light switches |
 | Electricity | [electricity](systems/electricity.md) | partial | kWh storage, HV cable grid, APC/SMES/generators, consumer visuals |
 | Substances | [substances](systems/substances.md) | partial | Containers, transfer interactions, Tier 2 armed proof-of-concept |
-| Inventory | [inventory](systems/inventory.md) | stub | Items, containers, ID cards |
+| Inventory | [inventory](systems/inventory.md) | partial | Items, containers, hands, ID cards and PDAs |
 | Entities | [entities](systems/entities.md) | stub | Humanoids, minds, entity spawning |
 | Health | [health](systems/health.md) | partial | Body parts, oxygen consumer (design spec not fully implemented) |
 | Combat | [combat](systems/combat.md) | stub | Hit interactions (design spec not implemented) |
@@ -41,9 +41,10 @@ Authoring conventions: [Documents/SKILL.md](../SKILL.md). Agent rules: [AGENTS.m
 | Gamemodes / roles / traits | [gamemodes-roles-traits](systems/gamemodes-roles-traits.md) | stub | Objectives, job roles, character traits |
 | Player control | [player-control](systems/player-control.md) | stub | Player subsystem and input routing |
 | Chat / audio / screens | [chat-audio-screens](systems/chat-audio-screens.md) | stub | Chat, audio, camera controllers |
-| Machine interface UI | [machine-interface](systems/machine-interface.md) | shipped | Diegetic APC/SMES panels with ID access gates; vending/gas pump diegetic shell |
+| Machine interface UI | [machine-interface](systems/machine-interface.md) | shipped | Diegetic APC/SMES/atmos panels with server-side ID access gates |
+| ID / access | [id-access](systems/id-access.md) | partial | Crew records, credential checks, doors, machine UI gates, dev console helpers |
 | Inputs | [inputs](systems/inputs.md) | stub | Input subsystem |
-| In-game console | [ingame-console](systems/ingame-console.md) | stub | Dev/admin console commands |
+| In-game console | [ingame-console](systems/ingame-console.md) | partial | Dev/admin console; includes ID access test commands |
 
 ## Architecture efforts (dated)
 

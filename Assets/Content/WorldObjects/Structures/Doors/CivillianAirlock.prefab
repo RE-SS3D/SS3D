@@ -250,6 +250,8 @@ GameObject:
   - component: {fileID: -8800000000000000011}
   - component: {fileID: -8800000000000000012}
   - component: {fileID: -8800000000000000013}
+  - component: {fileID: 8811223344556677883}
+  - component: {fileID: 8811223344556677884}
   m_Layer: 0
   m_Name: CivillianAirlock
   m_TagString: Untagged
@@ -398,6 +400,35 @@ MonoBehaviour:
   - {fileID: 1610574527409645708}
   - {fileID: 1526798170224380914}
   _powerConsumer: {fileID: -8800000000000000011}
+--- !u!114 &8811223344556677883
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7133738675197207439}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c8f9a0b1d2e3f4a5b6c7d8e9f0a1b2c3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _deviceId: CivillianAirlock
+  _logCapacity: 32
+--- !u!114 &8811223344556677884
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7133738675197207439}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b7e8f9a0c1d2e3f4a5b6c7d8e9f0a1b2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _requireAccess: 1
+  _useAreaDefault: 0
+  _overrideRequiredAccessBits: 128
 --- !u!65 &3215555771586221794
 BoxCollider:
   m_ObjectHideFlags: 0

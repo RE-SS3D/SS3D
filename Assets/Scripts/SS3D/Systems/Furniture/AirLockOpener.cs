@@ -7,6 +7,8 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Electricity;
+using SS3D.Systems.IdAccess;
+using SS3D.Systems.Inventory.Containers;
 using UnityEngine;
 
 namespace SS3D.Systems.Furniture
@@ -37,14 +39,16 @@ namespace SS3D.Systems.Furniture
         [SerializeField] private LayerMask doorTriggerLayers = -1;
 
         /// <summary>
-        /// Number of player close enough to the airlock.
+        /// Authorized occupants currently in the trigger volume.
         /// </summary>
-        private int playersInTrigger; // Server Only
+        private readonly HashSet<Collider> _authorizedOccupants = new();
 
         /// <summary>
         /// Coroutine to eventually close the door when no one is around.
         /// </summary>
         private Coroutine closeTimer; // Server Only
+
+        private AirLockAccessGate _accessGate;
 
         [SyncVar(OnChange = nameof(OnOpenChanged))]
         private bool _isOpen;
@@ -64,6 +68,8 @@ namespace SS3D.Systems.Furniture
         public override void OnStartServer()
         {
             base.OnStartServer();
+
+            _accessGate = GetComponent<AirLockAccessGate>();
 
             if (_powerConsumer == null)
             {
@@ -100,17 +106,21 @@ namespace SS3D.Systems.Furniture
             if ((1 << other.gameObject.layer & doorTriggerLayers) == 0) return;
             if (!IsPowered()) return;
 
-            if (playersInTrigger == 0)
+            if (_accessGate != null && !_accessGate.TryAuthorizeCollider(other, out HumanInventory _, out _))
+            {
+                return;
+            }
+
+            if (_authorizedOccupants.Add(other) && _authorizedOccupants.Count == 1)
             {
                 if (closeTimer != null)
                 {
                     StopCoroutine(closeTimer);
                     closeTimer = null;
                 }
+
                 SetOpen(true);
             }
-
-            playersInTrigger += 1;
         }
 
         public void OnTriggerExit(Collider other)
@@ -118,9 +128,12 @@ namespace SS3D.Systems.Furniture
             if(!IsServer) return;
             if ((1 << other.gameObject.layer & doorTriggerLayers) == 0) return;
 
-            playersInTrigger = Math.Max(playersInTrigger - 1, 0);
+            if (!_authorizedOccupants.Remove(other))
+            {
+                return;
+            }
 
-            if (playersInTrigger == 0)
+            if (_authorizedOccupants.Count == 0)
             {
                 ScheduleCloseAfterDelay();
             }
@@ -172,8 +185,7 @@ namespace SS3D.Systems.Furniture
                 closeTimer = null;
             }
 
-            // Keep the door open while someone is still in the trigger; normal exit timing applies.
-            if (playersInTrigger > 0)
+            if (_authorizedOccupants.Count > 0)
             {
                 return;
             }

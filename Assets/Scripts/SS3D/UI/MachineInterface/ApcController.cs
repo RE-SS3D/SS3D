@@ -3,6 +3,7 @@ using FishNet.Object;
 using FishNet.Object.Synchronizing;
 using SS3D.Core;
 using SS3D.Systems.Area;
+using SS3D.Systems.IdAccess;
 using SS3D.Systems.Tile;
 using SS3D.Systems.Tile.Connections;
 using System.Collections.Generic;
@@ -15,7 +16,8 @@ namespace SS3D.UI.MachineInterface
     /// Area Power Controller with machine interface, local cell storage, and circuit channel gating.
     /// </summary>
     [RequireComponent(typeof(ElectricDeviceAdjacencyConnector))]
-    public sealed class ApcController : MachineInterfaceBehaviour, IApcChannelSource, IPowerStorage, IAreaApcOrigin
+    [RequireComponent(typeof(AuthLogDeviceBehaviour))]
+    public sealed class ApcController : AccessGatedMachineInterfaceBehaviour, IApcChannelSource, IPowerStorage, IAreaApcOrigin
     {
         [SerializeField]
         private string _title = "APC · ENGINEERING BAY";
@@ -38,6 +40,8 @@ namespace SS3D.UI.MachineInterface
         private bool _multipleApcsInArea;
 
         public override string InterfaceId => MachineInterfaceIds.Apc;
+
+        protected override byte ReadIdControlId => MachineInterfaceControlIds.Apc.ReadId;
 
         public ApcControlFlags Channels => _channels;
 
@@ -158,6 +162,11 @@ namespace SS3D.UI.MachineInterface
 
         protected override bool ApplyControl(byte controlId, bool value)
         {
+            if (!AccessGranted)
+            {
+                return false;
+            }
+
             ApcControlFlags flag = controlId switch
             {
                 MachineInterfaceControlIds.Apc.Lighting => ApcControlFlags.Lighting,
@@ -357,6 +366,9 @@ namespace SS3D.UI.MachineInterface
                 EquipmentLoadKw = stats.EquipmentLoadKw,
                 EnvironmentLoadKw = stats.EnvironmentLoadKw,
                 MultipleApcsInArea = _multipleApcsInArea,
+                AccessGranted = AccessGranted,
+                AccessScanning = AccessScanning,
+                AccessDenied = AccessDenied,
             };
 
             ApplyDiagnostics(ref snapshot, stats, powerState, batteryState);

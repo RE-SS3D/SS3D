@@ -18,6 +18,7 @@ namespace SS3D.UI.MachineInterface
             writer.WriteByte(snapshot.Scenario);
             writer.WriteBoolean(snapshot.AccessGranted);
             writer.WriteBoolean(snapshot.AccessScanning);
+            writer.WriteBoolean(snapshot.AccessDenied);
             writer.WriteInt32(snapshot.FlowRate);
             writer.WriteBoolean(snapshot.FilterO2);
             writer.WriteBoolean(snapshot.FilterN2);
@@ -42,6 +43,7 @@ namespace SS3D.UI.MachineInterface
                 Scenario = reader.ReadByte(),
                 AccessGranted = reader.ReadBoolean(),
                 AccessScanning = reader.ReadBoolean(),
+                AccessDenied = reader.ReadBoolean(),
                 FlowRate = reader.ReadInt32(),
                 FilterO2 = reader.ReadBoolean(),
                 FilterN2 = reader.ReadBoolean(),

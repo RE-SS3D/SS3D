@@ -12,5 +12,6 @@ namespace SS3D.Systems.Tile
         public Vector3 apcWorldPosition;
         public bool hasDepartmentalLightTint;
         public Color departmentalLightTint;
+        public ulong defaultRequiredAccessBits;
     }
 }

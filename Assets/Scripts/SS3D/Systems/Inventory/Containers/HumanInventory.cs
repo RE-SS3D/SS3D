@@ -11,6 +11,8 @@ using SS3D.Systems.Entities;
 using SS3D.Systems.Inventory.Containers;
 using SS3D.Systems.Inventory.Items;
 using SS3D.Systems.Inventory.UI;
+using SS3D.Core;
+using SS3D.Systems.IdAccess;
 using SS3D.Systems.Roles;
 using UnityEngine;
 using System.Collections;
@@ -387,18 +389,33 @@ namespace SS3D.Systems.Inventory.Containers
 
         public bool HasPermission(IDPermission permission)
         {
-            // This check only in the first identification containers, if there's multiple and the id is not in the first one it won't work.
-            if(!TryGetTypeContainer(ContainerType.Identification, 0, out AttachedContainer IDContainer))
+            if (permission == null)
+            {
+                return true;
+            }
+
+            if (!SubSystems.TryGet(out IdAccessSubSystem idAccess))
             {
                 return false;
             }
 
-            IIdentification id = IDContainer.Items.FirstOrDefault() as IIdentification;
-            if (id == null)
+            AccessMask required = IdAccessPermissionMapper.FromLegacyPermission(permission);
+            return idAccess.CheckAccess(this, required, device: null).Passed;
+        }
+
+        public bool HasAccess(AccessMask requiredAccess)
+        {
+            if (requiredAccess.IsNone)
+            {
+                return true;
+            }
+
+            if (!SubSystems.TryGet(out IdAccessSubSystem idAccess))
             {
                 return false;
             }
-            return id.HasPermission(permission);
+
+            return idAccess.CheckAccess(this, requiredAccess, device: null).Passed;
         }
 
         /// <summary>

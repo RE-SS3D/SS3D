@@ -293,6 +293,26 @@ namespace SS3D.UI.MachineInterface
 
                     break;
                 }
+
+                case ApcInterfaceViewModel apc:
+                {
+                    if (controlId == MachineInterfaceControlIds.Apc.ReadId)
+                    {
+                        ApplyPowerReadIdAction(apc);
+                    }
+
+                    break;
+                }
+
+                case SmesInterfaceViewModel smes:
+                {
+                    if (controlId == MachineInterfaceControlIds.Smes.ReadId)
+                    {
+                        ApplyPowerReadIdAction(smes);
+                    }
+
+                    break;
+                }
             }
 
             _clientBridge?.SetActionControl(controlId, value);
@@ -301,7 +321,9 @@ namespace SS3D.UI.MachineInterface
                 or ScrubberInterfaceViewModel
                 or VentInterfaceViewModel
                 or PumpInterfaceViewModel
-                or AirAlarmInterfaceViewModel)
+                or AirAlarmInterfaceViewModel
+                or ApcInterfaceViewModel
+                or SmesInterfaceViewModel)
             {
                 Refresh(_openModel);
             }
@@ -390,6 +412,11 @@ namespace SS3D.UI.MachineInterface
 
         private static void ApplySmesBoolControl(SmesInterfaceViewModel model, byte controlId, bool isOn)
         {
+            if (!model.AccessGranted)
+            {
+                return;
+            }
+
             switch (controlId)
             {
                 case MachineInterfaceControlIds.Smes.Input:
@@ -408,6 +435,11 @@ namespace SS3D.UI.MachineInterface
 
         private static void ApplySmesNumericControl(SmesInterfaceViewModel model, byte controlId, float delta)
         {
+            if (!model.AccessGranted)
+            {
+                return;
+            }
+
             switch (controlId)
             {
                 case MachineInterfaceControlIds.Smes.Input:
@@ -496,46 +528,19 @@ namespace SS3D.UI.MachineInterface
             {
                 case ScrubberInterfaceViewModel scrubber:
                 {
-                    if (scrubber.AccessGranted)
-                    {
-                        scrubber.AccessGranted = false;
-                        scrubber.AccessScanning = false;
-                    }
-                    else if (!scrubber.AccessScanning)
-                    {
-                        scrubber.AccessScanning = true;
-                    }
-
+                    ToggleAccessScan(scrubber);
                     break;
                 }
 
                 case VentInterfaceViewModel vent:
                 {
-                    if (vent.AccessGranted)
-                    {
-                        vent.AccessGranted = false;
-                        vent.AccessScanning = false;
-                    }
-                    else if (!vent.AccessScanning)
-                    {
-                        vent.AccessScanning = true;
-                    }
-
+                    ToggleAccessScan(vent);
                     break;
                 }
 
                 case PumpInterfaceViewModel pump:
                 {
-                    if (pump.AccessGranted)
-                    {
-                        pump.AccessGranted = false;
-                        pump.AccessScanning = false;
-                    }
-                    else if (!pump.AccessScanning)
-                    {
-                        pump.AccessScanning = true;
-                    }
-
+                    ToggleAccessScan(pump);
                     break;
                 }
 
@@ -545,15 +550,50 @@ namespace SS3D.UI.MachineInterface
                     {
                         airAlarm.AccessGranted = false;
                         airAlarm.AccessScanning = false;
+                        airAlarm.AccessDenied = false;
                         airAlarm.SelectedDeviceId = null;
                     }
                     else if (!airAlarm.AccessScanning)
                     {
                         airAlarm.AccessScanning = true;
+                        airAlarm.AccessDenied = false;
                     }
 
                     break;
                 }
+            }
+        }
+
+        private static void ApplyPowerReadIdAction(IMachineInterfaceViewModel model)
+        {
+            switch (model)
+            {
+                case ApcInterfaceViewModel apc:
+                {
+                    ToggleAccessScan(apc);
+                    break;
+                }
+
+                case SmesInterfaceViewModel smes:
+                {
+                    ToggleAccessScan(smes);
+                    break;
+                }
+            }
+        }
+
+        private static void ToggleAccessScan(IAccessGatedInterfaceViewModel model)
+        {
+            if (model.AccessGranted)
+            {
+                model.AccessGranted = false;
+                model.AccessScanning = false;
+                model.AccessDenied = false;
+            }
+            else if (!model.AccessScanning)
+            {
+                model.AccessScanning = true;
+                model.AccessDenied = false;
             }
         }
 
@@ -585,6 +625,11 @@ namespace SS3D.UI.MachineInterface
 
         private void ApplyApcControl(ApcInterfaceViewModel model, byte controlId, bool isOn)
         {
+            if (!model.AccessGranted)
+            {
+                return;
+            }
+
             string channelId = controlId switch
             {
                 MachineInterfaceControlIds.Apc.Lighting => "lighting",

@@ -1,6 +1,7 @@
 using FishNet.Serializing;
 using NUnit.Framework;
 using SS3D.Systems.Atmospherics.Pipes;
+using SS3D.Systems.IdAccess;
 using SS3D.Tests;
 using SS3D.UI.MachineInterface;
 using System;
@@ -35,6 +36,9 @@ namespace EditorTests
             Assert.AreEqual(original.EquipmentLoadKw, roundTripped.EquipmentLoadKw);
             Assert.AreEqual(original.EnvironmentLoadKw, roundTripped.EnvironmentLoadKw);
             Assert.AreEqual(original.MultipleApcsInArea, roundTripped.MultipleApcsInArea);
+            Assert.AreEqual(original.AccessGranted, roundTripped.AccessGranted);
+            Assert.AreEqual(original.AccessScanning, roundTripped.AccessScanning);
+            Assert.AreEqual(original.AccessDenied, roundTripped.AccessDenied);
             Assert.AreEqual(original.DiagnosticCount, roundTripped.DiagnosticCount);
             Assert.AreEqual(original.Diagnostic0.Glyph, roundTripped.Diagnostic0.Glyph);
             Assert.AreEqual(original.Diagnostic0.Text, roundTripped.Diagnostic0.Text);
@@ -68,6 +72,9 @@ namespace EditorTests
             Assert.AreEqual(original.InputActive, roundTripped.InputActive);
             Assert.AreEqual(original.OutputActive, roundTripped.OutputActive);
             Assert.AreEqual(original.ConnectionStateText, roundTripped.ConnectionStateText);
+            Assert.AreEqual(original.AccessGranted, roundTripped.AccessGranted);
+            Assert.AreEqual(original.AccessScanning, roundTripped.AccessScanning);
+            Assert.AreEqual(original.AccessDenied, roundTripped.AccessDenied);
         }
 
         [Test]
@@ -134,6 +141,38 @@ namespace EditorTests
             Assert.AreEqual(1, model.TrayItems.Count);
             Assert.AreEqual("Space Cola", model.TrayItems[0].Name);
             Assert.AreEqual(1, model.ActionLog.Count);
+        }
+
+        [Test]
+        public void IdConsoleInterfaceSnapshotSerializer_RoundTrips()
+        {
+            IdConsoleInterfaceSnapshot original = new()
+            {
+                MachineObjectId = 9,
+                InterfaceId = MachineInterfaceIds.IdConsole,
+                Title = "ID CONSOLE",
+                Subtitle = "Personnel Access Management",
+                ModelLabel = "IDC-1",
+                PromptText = "Edit access levels below.",
+                EditorUnlocked = true,
+                HasTargetCard = true,
+                TargetName = "Alice",
+                TargetJob = "Engineer",
+                TargetAccessMask = (ulong)AccessLevel.Engineering,
+                LogEntryCount = 1,
+                Log0 = "Granted Engineering on Alice.",
+            };
+
+            using PooledWriter writer = WriterPool.Retrieve();
+            writer.WriteIdConsoleInterfaceSnapshot(original);
+
+            ArraySegment<byte> segment = writer.GetArraySegment();
+            using PooledReader reader = ReaderPool.Retrieve(segment, null);
+            IdConsoleInterfaceSnapshot roundTripped = reader.ReadIdConsoleInterfaceSnapshot();
+
+            Assert.AreEqual(original.TargetName, roundTripped.TargetName);
+            Assert.AreEqual(original.TargetAccessMask, roundTripped.TargetAccessMask);
+            Assert.AreEqual(original.Log0, roundTripped.Log0);
         }
 
         [Test]
@@ -263,6 +302,10 @@ namespace EditorTests
                 LightingLoadKw = 2.1f,
                 EquipmentLoadKw = 5.4f,
                 EnvironmentLoadKw = 2.3f,
+                MultipleApcsInArea = false,
+                AccessGranted = true,
+                AccessScanning = false,
+                AccessDenied = false,
                 DiagnosticCount = 1,
                 Diagnostic0 = new ApcDiagnosticSnapshot
                 {
@@ -292,6 +335,9 @@ namespace EditorTests
                 InputActive = true,
                 OutputActive = true,
                 ConnectionStateText = "Grid link nominal — both connections healthy.",
+                AccessGranted = false,
+                AccessScanning = true,
+                AccessDenied = true,
             };
         }
 
@@ -315,6 +361,8 @@ namespace EditorTests
             Assert.AreEqual(original.FlowMolesPerSecond, roundTripped.FlowMolesPerSecond);
             Assert.AreEqual(original.Scenario, roundTripped.Scenario);
             Assert.AreEqual(original.AccessGranted, roundTripped.AccessGranted);
+            Assert.AreEqual(original.AccessScanning, roundTripped.AccessScanning);
+            Assert.AreEqual(original.AccessDenied, roundTripped.AccessDenied);
         }
 
         [Test]
@@ -347,6 +395,7 @@ namespace EditorTests
                 Scenario = (byte)PumpScenario.Idle,
                 AccessGranted = true,
                 AccessScanning = false,
+                AccessDenied = false,
                 TargetOutletPressureKpa = 4500,
                 InletPressureKpa = 101.3f,
                 OutletPressureKpa = 4487.6f,

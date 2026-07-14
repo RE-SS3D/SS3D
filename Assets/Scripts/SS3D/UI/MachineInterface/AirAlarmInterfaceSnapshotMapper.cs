@@ -25,6 +25,7 @@ namespace SS3D.UI.MachineInterface
             model.ChassisPowerOk = snapshot.PowerOk;
             model.AccessGranted = snapshot.AccessGranted;
             model.AccessScanning = snapshot.AccessScanning;
+            model.AccessDenied = snapshot.AccessDenied;
             model.Scenario = scenario;
 
             if (snapshot.HasSample)

@@ -53,6 +53,12 @@ namespace SS3D.UI.MachineInterface
         private StyleSheet _vendingTemplateStyle;
 
         [SerializeField]
+        private VisualTreeAsset _idConsoleTemplate;
+
+        [SerializeField]
+        private StyleSheet _idConsoleTemplateStyle;
+
+        [SerializeField]
         private VisualTreeAsset _gasPumpTemplate;
 
         [SerializeField]
@@ -336,6 +342,18 @@ namespace SS3D.UI.MachineInterface
                     "Assets/Content/Systems/UI/MachineInterface/Templates/VendingMachineInterface.uss");
             }
 
+            if (_idConsoleTemplate == null)
+            {
+                _idConsoleTemplate = UnityEditor.AssetDatabase.LoadAssetAtPath<VisualTreeAsset>(
+                    "Assets/Content/Systems/UI/MachineInterface/Templates/IdConsoleInterface.uxml");
+            }
+
+            if (_idConsoleTemplateStyle == null)
+            {
+                _idConsoleTemplateStyle = UnityEditor.AssetDatabase.LoadAssetAtPath<StyleSheet>(
+                    "Assets/Content/Systems/UI/MachineInterface/Templates/IdConsoleInterface.uss");
+            }
+
             if (_gasPumpTemplate == null)
             {
                 _gasPumpTemplate = UnityEditor.AssetDatabase.LoadAssetAtPath<VisualTreeAsset>(
@@ -580,6 +598,15 @@ namespace SS3D.UI.MachineInterface
                 ComponentStyles = _vendingComponentStyles,
                 ShellKind = MachineInterfaceShellKind.DiegeticDevice,
                 CreateBinder = root => new VendingMachineBinder(root),
+            });
+
+            MachineInterfaceRegistry.RegisterUi(new MachineInterfaceUiRegistration
+            {
+                InterfaceId = MachineInterfaceIds.IdConsole,
+                Template = _idConsoleTemplate,
+                TemplateStyle = _idConsoleTemplateStyle,
+                ShellKind = MachineInterfaceShellKind.DiegeticDevice,
+                CreateBinder = root => new IdConsoleBinder(root),
             });
 
             MachineInterfaceRegistry.RegisterUi(new MachineInterfaceUiRegistration

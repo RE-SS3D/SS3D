@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using SS3D.Localization;
+using SS3D.Systems.IdAccess;
 using SS3D.Systems.Inventory.Items.Generic;
 using UnityEngine;
 
@@ -44,6 +45,12 @@ namespace SS3D.Systems.Examine
                     string.Format(ExamineIdentificationKeys.RoleFallback, idCard.RoleName));
 
                 sections.Add(new ExamineSection(roleLine));
+            }
+
+            string departmentName = DepartmentDisplay.GetName(idCard.Department);
+            if (!string.IsNullOrWhiteSpace(departmentName))
+            {
+                sections.Add(new ExamineSection($"Department: {departmentName}"));
             }
         }
     }

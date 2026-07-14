@@ -135,6 +135,10 @@ namespace SS3D.Systems.Inventory.UI
                     slot = AddHorizontalLayoutSlot(IDSlotPrefab, ContainerType.Identification);
                     break;
 
+                case ContainerType.Pda:
+                    slot = AddHorizontalLayoutSlot(IDSlotPrefab, ContainerType.Pda);
+                    break;
+
                 case ContainerType.Bag:
                     slot = AddHorizontalLayoutSlot(BagPrefab, ContainerType.Bag);
                     break;

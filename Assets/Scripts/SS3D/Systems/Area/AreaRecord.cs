@@ -21,6 +21,11 @@ namespace SS3D.Systems.Area
         /// </summary>
         public bool LightingSwitchOn = true;
 
+        /// <summary>
+        /// Default access requirement for doors opening into this area.
+        /// </summary>
+        public IdAccess.AccessMask DefaultRequiredAccess;
+
         // Future: NormalFixtures[], EmergencyFixtures[]
     }
 }

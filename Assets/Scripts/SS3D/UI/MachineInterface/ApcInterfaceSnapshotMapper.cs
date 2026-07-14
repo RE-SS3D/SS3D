@@ -23,6 +23,9 @@ namespace SS3D.UI.MachineInterface
                 EquipmentLoadKw = snapshot.EquipmentLoadKw,
                 EnvironmentLoadKw = snapshot.EnvironmentLoadKw,
                 Diagnostics = BuildDiagnostics(snapshot),
+                AccessGranted = snapshot.AccessGranted,
+                AccessScanning = snapshot.AccessScanning,
+                AccessDenied = snapshot.AccessDenied,
             };
 
             ApplyStatusCopy(model);

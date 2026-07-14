@@ -18,6 +18,7 @@ namespace SS3D.UI.MachineInterface
             writer.WriteByte(snapshot.Scenario);
             writer.WriteBoolean(snapshot.AccessGranted);
             writer.WriteBoolean(snapshot.AccessScanning);
+            writer.WriteBoolean(snapshot.AccessDenied);
             writer.WriteInt32(snapshot.TargetPressureKpa);
         }
 
@@ -37,6 +38,7 @@ namespace SS3D.UI.MachineInterface
                 Scenario = reader.ReadByte(),
                 AccessGranted = reader.ReadBoolean(),
                 AccessScanning = reader.ReadBoolean(),
+                AccessDenied = reader.ReadBoolean(),
                 TargetPressureKpa = reader.ReadInt32(),
             };
         }

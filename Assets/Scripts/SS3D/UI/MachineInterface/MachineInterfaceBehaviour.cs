@@ -19,6 +19,8 @@ namespace SS3D.UI.MachineInterface
 
         public abstract string InterfaceId { get; }
 
+        protected NetworkConnection LastControlConnection { get; private set; }
+
         NetworkObject IMachineInterfaceProvider.NetworkObject => NetworkObject;
 
         public override IInteraction[] CreateTargetInteractions(InteractionEvent interactionEvent)
@@ -105,7 +107,9 @@ namespace SS3D.UI.MachineInterface
                 return;
             }
 
+            LastControlConnection = conn;
             ApplyControl(controlId, value);
+            LastControlConnection = null;
         }
 
         [ServerRpc(RequireOwnership = false)]
@@ -116,7 +120,9 @@ namespace SS3D.UI.MachineInterface
                 return;
             }
 
+            LastControlConnection = conn;
             ApplyNumericControl(controlId, delta);
+            LastControlConnection = null;
         }
 
         [ServerRpc(RequireOwnership = false)]
@@ -127,7 +133,9 @@ namespace SS3D.UI.MachineInterface
                 return;
             }
 
+            LastControlConnection = conn;
             ApplyActionControl(controlId, value);
+            LastControlConnection = null;
         }
 
         [ServerRpc(RequireOwnership = false)]

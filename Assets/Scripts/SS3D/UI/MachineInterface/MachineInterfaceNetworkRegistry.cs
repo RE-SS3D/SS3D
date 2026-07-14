@@ -18,6 +18,9 @@ namespace SS3D.UI.MachineInterface
             Register<VendingInterfaceSnapshot>(
                 GetVendingInterfaceId,
                 VendingInterfaceSnapshotMapper.ToViewModel);
+            Register<IdConsoleInterfaceSnapshot>(
+                GetIdConsoleInterfaceId,
+                IdConsoleInterfaceSnapshotMapper.ToViewModel);
             Register<PumpInterfaceSnapshot>(
                 GetPumpInterfaceId,
                 PumpInterfaceSnapshotMapper.ToViewModel);
@@ -60,11 +63,13 @@ namespace SS3D.UI.MachineInterface
             subsystem.RefreshFromNetwork(handler.GetInterfaceId(snapshot), handler.ToViewModel(snapshot));
         }
 
+        private static string GetVendingInterfaceId(VendingInterfaceSnapshot snapshot) => snapshot.InterfaceId;
+
+        private static string GetIdConsoleInterfaceId(IdConsoleInterfaceSnapshot snapshot) => snapshot.InterfaceId;
+
         private static string GetApcInterfaceId(ApcInterfaceSnapshot snapshot) => snapshot.InterfaceId;
 
         private static string GetSmesInterfaceId(SmesInterfaceSnapshot snapshot) => snapshot.InterfaceId;
-
-        private static string GetVendingInterfaceId(VendingInterfaceSnapshot snapshot) => snapshot.InterfaceId;
 
         private static string GetPumpInterfaceId(PumpInterfaceSnapshot snapshot) => snapshot.InterfaceId;
 

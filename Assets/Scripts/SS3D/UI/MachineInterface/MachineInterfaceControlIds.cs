@@ -9,6 +9,8 @@ namespace SS3D.UI.MachineInterface
             public const byte Equipment = 1;
 
             public const byte Environment = 2;
+
+            public const byte ReadId = 3;
         }
 
         public static class Smes
@@ -16,6 +18,8 @@ namespace SS3D.UI.MachineInterface
             public const byte Input = 0;
 
             public const byte Output = 1;
+
+            public const byte ReadId = 2;
         }
 
         public static class Vending
@@ -25,6 +29,11 @@ namespace SS3D.UI.MachineInterface
             public const byte TakeTrayItem = 1;
 
             public const byte ReadId = 2;
+        }
+
+        public static class IdConsole
+        {
+            public const byte ToggleAccessLevel = 0;
         }
 
         public static class Atmos

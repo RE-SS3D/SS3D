@@ -10,7 +10,7 @@ namespace SS3D.UI.MachineInterface
         Fault = 3,
     }
 
-    public class ScrubberInterfaceViewModel : IMachineInterfaceViewModel
+    public class ScrubberInterfaceViewModel : IMachineInterfaceViewModel, IAccessGatedInterfaceViewModel
     {
         public string Title { get; set; } = "SCRUBBER · ATMOSPHERICS";
 
@@ -41,6 +41,8 @@ namespace SS3D.UI.MachineInterface
         public bool AccessGranted { get; set; }
 
         public bool AccessScanning { get; set; }
+
+        public bool AccessDenied { get; set; }
 
         public string IdReaderSubline { get; set; } =
             "Read an ID to unlock gas filter selection and flow rate";
