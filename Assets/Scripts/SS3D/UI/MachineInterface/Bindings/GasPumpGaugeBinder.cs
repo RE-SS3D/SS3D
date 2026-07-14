@@ -17,22 +17,49 @@ namespace SS3D.UI.MachineInterface.Bindings
         private readonly DiegeticDeviceShell _shell;
         private readonly ConnectionStatusRow _connectionRow;
         private readonly DeviceIdentityBlock _identity;
-        private readonly DiagnosticsList _diagnostics;
+        private readonly GlanceableStatusChip _statusChip;
+        private readonly PressureFlowReadout _pressureReadout;
+        private readonly Label _flowStatusValue;
+        private readonly AtmosIdReaderRow _idReader;
+        private readonly ToggleSwitch _powerToggle;
+        private readonly Label _targetGatedHint;
+        private readonly NumericStepper _targetStepper;
         private readonly DeviceFooter _footer;
 
         public GasPumpGaugeBinder(VisualElement root)
         {
             _shell = root.Q<DiegeticDeviceShell>("device-shell") ?? root.Q<DiegeticDeviceShell>();
-            VisualElement contentRoot = _shell ?? root;
+            VisualElement queryRoot = _shell?.ScreenContent ?? root;
 
-            _connectionRow = contentRoot.Q<ConnectionStatusRow>("connection-row");
-            _identity = contentRoot.Q<DeviceIdentityBlock>("identity");
-            _diagnostics = contentRoot.Q<DiagnosticsList>("diagnostics");
-            _footer = contentRoot.Q<DeviceFooter>("footer");
+            _connectionRow = queryRoot.Q<ConnectionStatusRow>("connection-row");
+            _identity = queryRoot.Q<DeviceIdentityBlock>("identity");
+            _statusChip = queryRoot.Q<GlanceableStatusChip>("status-chip");
+            _pressureReadout = queryRoot.Q<PressureFlowReadout>("pressure-readout");
+            _flowStatusValue = queryRoot.Q<Label>("flow-status-value");
+            _idReader = queryRoot.Q<AtmosIdReaderRow>("id-reader");
+            _powerToggle = queryRoot.Q<ToggleSwitch>("power-toggle");
+            _targetGatedHint = queryRoot.Q<Label>("target-gated-hint");
+            _targetStepper = queryRoot.Q<NumericStepper>("target-stepper");
+            _footer = queryRoot.Q<DeviceFooter>("footer");
 
             if (_shell != null)
             {
                 _shell.CloseClicked += HandleCloseRequested;
+            }
+
+            if (_idReader != null)
+            {
+                _idReader.ReadRequested += HandleReadRequested;
+            }
+
+            if (_powerToggle != null)
+            {
+                _powerToggle.ValueChanged += HandlePowerChanged;
+            }
+
+            if (_targetStepper != null)
+            {
+                _targetStepper.DeltaRequested += HandleTargetDeltaRequested;
             }
         }
 
@@ -46,35 +73,69 @@ namespace SS3D.UI.MachineInterface.Bindings
             if (_shell != null)
             {
                 _shell.ModelLabel = model.ModelLabel;
-                _shell.PowerOk = model.PowerOk;
+                _shell.PowerOk = model.ChassisPowerOk;
             }
 
             if (_connectionRow != null)
             {
-                _connectionRow.StatusText = model.StatusReadout;
-                _connectionRow.ReadoutText = model.FlowReadout;
-                _connectionRow.DotTone = model.StatusTone;
+                _connectionRow.StatusText = model.ConnectionStatus;
+                _connectionRow.ReadoutText = string.Empty;
+                _connectionRow.DotTone = GetConnectionTone(model.Scenario);
             }
 
             if (_identity != null)
             {
-                _identity.Title = model.Title;
-                _identity.Subtitle = model.Connected ? "Pipe network linked" : "No pipe connection";
+                _identity.Title = model.DeviceTitle;
+                _identity.Subtitle = model.Subtitle;
             }
 
-            if (_diagnostics != null)
+            StatusTone statusTone = GetScenarioTone(model.Scenario);
+            _statusChip?.SetContent(model.StatusHeadline, model.StatusBadgeText, statusTone, model.StatusSubline);
+
+            if (_pressureReadout != null)
             {
-                _diagnostics.SetLines(new DiagnosticLine[]
-                {
-                    new DiagnosticLine(">", $"Flow {model.FlowReadout}", model.StatusTone),
-                    new DiagnosticLine(">", $"ΔP {model.DifferentialReadout}", model.Stalled ? StatusTone.Warning : StatusTone.Info),
-                    new DiagnosticLine(">", model.Enabled ? "Pump enabled" : "Pump disabled", model.Enabled ? StatusTone.Info : StatusTone.Info),
-                });
+                _pressureReadout.ExternalLabel = "Inlet";
+                _pressureReadout.InternalLabel = "Outlet";
+                _pressureReadout.ExternalValue = model.InletPressureText;
+                _pressureReadout.InternalValue = model.OutletPressureText;
+                _pressureReadout.FlowGlyph = model.FlowGlyph;
+                _pressureReadout.ExternalTone = model.InletTone;
+                _pressureReadout.InternalTone = model.OutletTone;
+                _pressureReadout.FlowTone = model.FlowTone;
+            }
+
+            if (_flowStatusValue != null)
+            {
+                _flowStatusValue.text = model.FlowStatusText;
+                StatusToneUtility.ApplyTone(_flowStatusValue, model.FlowStatusTone);
+            }
+
+            BindAccess(model);
+
+            bool locked = !model.AccessGranted;
+            string gatedHint = locked ? "Locked — read ID" : string.Empty;
+
+            if (_powerToggle != null)
+            {
+                _powerToggle.IsOn = model.Powered;
+                _powerToggle.Locked = locked;
+            }
+
+            if (_targetGatedHint != null)
+            {
+                _targetGatedHint.text = gatedHint;
+            }
+
+            if (_targetStepper != null)
+            {
+                _targetStepper.ValueText = $"{model.TargetOutletPressureKpa} kPa";
+                _targetStepper.HintText = string.Empty;
+                _targetStepper.Locked = locked;
             }
 
             if (_footer != null)
             {
-                _footer.Text = "SS3D Gas Pump — ATP-1 differential gauge";
+                _footer.Text = model.FooterText;
             }
         }
 
@@ -84,11 +145,69 @@ namespace SS3D.UI.MachineInterface.Bindings
             {
                 _shell.CloseClicked -= HandleCloseRequested;
             }
+
+            if (_idReader != null)
+            {
+                _idReader.ReadRequested -= HandleReadRequested;
+            }
+
+            if (_powerToggle != null)
+            {
+                _powerToggle.ValueChanged -= HandlePowerChanged;
+            }
+
+            if (_targetStepper != null)
+            {
+                _targetStepper.DeltaRequested -= HandleTargetDeltaRequested;
+            }
         }
 
-        private void HandleCloseRequested()
+        private void HandleCloseRequested() => CloseRequested?.Invoke();
+
+        private void HandleReadRequested() =>
+            ActionControlChanged?.Invoke(MachineInterfaceControlIds.Atmos.ReadId, 0);
+
+        private void HandlePowerChanged(bool value) =>
+            BoolControlChanged?.Invoke(MachineInterfaceControlIds.Atmos.Power, value);
+
+        private void HandleTargetDeltaRequested(float delta) =>
+            NumericControlChanged?.Invoke(MachineInterfaceControlIds.Atmos.TargetPressure, delta);
+
+        private void BindAccess(GasPumpInterfaceViewModel model)
         {
-            CloseRequested?.Invoke();
+            if (_idReader == null)
+            {
+                return;
+            }
+
+            _idReader.SubText = model.IdReaderSubline;
+            _idReader.SetAccessState(!model.AccessGranted, model.AccessScanning, model.AccessGranted);
+            if (model.AccessGranted)
+            {
+                _idReader.SubText = "Power and target pressure unlocked for this session";
+            }
+        }
+
+        private static StatusTone GetScenarioTone(PumpScenario scenario)
+        {
+            return scenario switch
+            {
+                PumpScenario.Pumping => StatusTone.Success,
+                PumpScenario.Starved => StatusTone.Warning,
+                PumpScenario.Fault => StatusTone.Danger,
+                _ => StatusTone.Neutral,
+            };
+        }
+
+        private static StatusTone GetConnectionTone(PumpScenario scenario)
+        {
+            return scenario switch
+            {
+                PumpScenario.Pumping => StatusTone.Success,
+                PumpScenario.Starved => StatusTone.Warning,
+                PumpScenario.Fault => StatusTone.Danger,
+                _ => StatusTone.Info,
+            };
         }
     }
 }

@@ -15,6 +15,7 @@ namespace SS3D.Editor
             AirAlarm,
             Scrubber,
             Vent,
+            Pump,
         }
 
         private PreviewPanel _panel = PreviewPanel.AirAlarm;
@@ -26,9 +27,12 @@ namespace SS3D.Editor
         private ScrubberInterfaceBinder _scrubberBinder;
         private VentInterfaceBinder _ventBinder;
 
+        private GasPumpGaugeBinder _pumpBinder;
+
         private AirAlarmInterfaceViewModel _airAlarmModel = AirAlarmInterfaceViewModel.CreateNormal();
         private ScrubberInterfaceViewModel _scrubberModel = ScrubberInterfaceViewModel.CreateFiltering();
         private VentInterfaceViewModel _ventModel = VentInterfaceViewModel.CreateIdle();
+        private GasPumpInterfaceViewModel _pumpModel = GasPumpInterfaceViewModel.CreateIdle();
 
         [MenuItem("SS3D/Machine Interface/Preview Air Alarm Panel")]
         public static void OpenAirAlarm()
@@ -46,6 +50,12 @@ namespace SS3D.Editor
         public static void OpenVent()
         {
             Open(PreviewPanel.Vent);
+        }
+
+        [MenuItem("SS3D/Machine Interface/Preview Pump Panel")]
+        public static void OpenPump()
+        {
+            Open(PreviewPanel.Pump);
         }
 
         private static void Open(PreviewPanel panel)
@@ -86,6 +96,7 @@ namespace SS3D.Editor
             toolbar.Add(CreatePanelButton("Air Alarm", PreviewPanel.AirAlarm));
             toolbar.Add(CreatePanelButton("Scrubber", PreviewPanel.Scrubber));
             toolbar.Add(CreatePanelButton("Vent", PreviewPanel.Vent));
+            toolbar.Add(CreatePanelButton("Pump", PreviewPanel.Pump));
             toolbar.Add(CreateActionButton("Toggle ID Access", ToggleAccess));
             toolbar.Add(CreateActionButton("Select Device", CycleSelectedDevice));
 
@@ -136,12 +147,25 @@ namespace SS3D.Editor
                     CreateScenarioButton("Overload", () => SetScrubberScenario(ScrubberInterfaceViewModel.CreateOverloaded())),
                     CreateScenarioButton("Fault", () => SetScrubberScenario(ScrubberInterfaceViewModel.CreateFault())),
                 },
-                _ => new[]
+                PreviewPanel.Pump => new[]
+                {
+                    CreateScenarioButton("Idle", () => SetPumpScenario(GasPumpInterfaceViewModel.CreateIdle())),
+                    CreateScenarioButton("Pumping", () => SetPumpScenario(GasPumpInterfaceViewModel.CreatePumping())),
+                    CreateScenarioButton("Starved", () => SetPumpScenario(GasPumpInterfaceViewModel.CreateStarved())),
+                    CreateScenarioButton("Fault", () => SetPumpScenario(GasPumpInterfaceViewModel.CreateFault())),
+                },
+                PreviewPanel.Vent => new[]
                 {
                     CreateScenarioButton("Idle", () => SetVentScenario(VentInterfaceViewModel.CreateIdle())),
                     CreateScenarioButton("Pressurize", () => SetVentScenario(VentInterfaceViewModel.CreatePressurizing())),
                     CreateScenarioButton("Depressurize", () => SetVentScenario(VentInterfaceViewModel.CreateDepressurizing())),
                     CreateScenarioButton("Fault", () => SetVentScenario(VentInterfaceViewModel.CreateFault())),
+                },
+                _ => new[]
+                {
+                    CreateScenarioButton("Normal", () => SetAirAlarmScenario(AirAlarmInterfaceViewModel.CreateNormal())),
+                    CreateScenarioButton("Warning", () => SetAirAlarmScenario(AirAlarmInterfaceViewModel.CreateWarning())),
+                    CreateScenarioButton("Danger", () => SetAirAlarmScenario(AirAlarmInterfaceViewModel.CreateDanger())),
                 },
             };
         }
@@ -166,9 +190,17 @@ namespace SS3D.Editor
                     _scrubberModel.AccessGranted = !_scrubberModel.AccessGranted;
                     _scrubberBinder?.Bind(_scrubberModel);
                     break;
-                default:
+                case PreviewPanel.Pump:
+                    _pumpModel.AccessGranted = !_pumpModel.AccessGranted;
+                    _pumpBinder?.Bind(_pumpModel);
+                    break;
+                case PreviewPanel.Vent:
                     _ventModel.AccessGranted = !_ventModel.AccessGranted;
                     _ventBinder?.Bind(_ventModel);
+                    break;
+                default:
+                    _airAlarmModel.AccessGranted = !_airAlarmModel.AccessGranted;
+                    _airAlarmBinder?.Bind(_airAlarmModel);
                     break;
             }
         }
@@ -243,6 +275,13 @@ namespace SS3D.Editor
             _scrubberBinder?.Bind(_scrubberModel);
         }
 
+        private void SetPumpScenario(GasPumpInterfaceViewModel model)
+        {
+            model.AccessGranted = _pumpModel.AccessGranted;
+            _pumpModel = model;
+            _pumpBinder?.Bind(_pumpModel);
+        }
+
         private void SetVentScenario(VentInterfaceViewModel model)
         {
             model.AccessGranted = _ventModel.AccessGranted;
@@ -258,6 +297,7 @@ namespace SS3D.Editor
             {
                 PreviewPanel.Scrubber => "Assets/Content/Systems/UI/MachineInterface/Templates/ScrubberUnitInterface.uxml",
                 PreviewPanel.Vent => "Assets/Content/Systems/UI/MachineInterface/Templates/VentUnitInterface.uxml",
+                PreviewPanel.Pump => "Assets/Content/Systems/UI/MachineInterface/Templates/GasPumpInterface.uxml",
                 _ => "Assets/Content/Systems/UI/MachineInterface/Templates/AirAlarmInterface.uxml",
             };
 
@@ -281,6 +321,10 @@ namespace SS3D.Editor
                 case PreviewPanel.Vent:
                     _ventBinder = new VentInterfaceBinder(_panelRoot);
                     _ventBinder.Bind(_ventModel);
+                    break;
+                case PreviewPanel.Pump:
+                    _pumpBinder = new GasPumpGaugeBinder(_panelRoot);
+                    _pumpBinder.Bind(_pumpModel);
                     break;
                 default:
                     _airAlarmBinder = new AirAlarmInterfaceBinder(_panelRoot);
@@ -377,6 +421,7 @@ namespace SS3D.Editor
             {
                 PreviewPanel.Scrubber => "Scrubber Unit",
                 PreviewPanel.Vent => "Vent Unit",
+                PreviewPanel.Pump => "Pump Unit",
                 _ => "Air Alarm",
             };
         }

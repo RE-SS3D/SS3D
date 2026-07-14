@@ -10,23 +10,28 @@ namespace SS3D.UI.MachineInterface
 
         public string ModelLabel;
 
+        public string DeviceTitle;
+
+        public string Subtitle;
+
         public bool PowerOk;
 
-        public bool Enabled;
+        public bool Powered;
 
         public bool Connected;
 
-        public float RatedMaxFlowMolesPerSecond;
+        public byte Scenario;
 
-        public float CurrentFlowMolesPerSecond;
+        public bool AccessGranted;
 
-        public float DifferentialKpa;
+        public bool AccessScanning;
 
-        public float MaxDifferentialKpa;
+        public int TargetOutletPressureKpa;
 
-        public bool Stalled;
+        public float InletPressureKpa;
 
-        /// <summary>0 idle, 1 flowing, 2 stalled, 3 unpowered.</summary>
-        public byte HealthState;
+        public float OutletPressureKpa;
+
+        public float FlowMolesPerSecond;
     }
 }

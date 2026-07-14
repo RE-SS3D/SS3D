@@ -1,49 +1,80 @@
+using SS3D.Systems.Atmospherics.Pipes;
+
 namespace SS3D.UI.MachineInterface
 {
     public static class GasPumpInterfaceSnapshotMapper
     {
+        private const float MolesPerSecondToLitersPerSecond = 22.414f;
+
         public static GasPumpInterfaceViewModel ToViewModel(GasPumpInterfaceSnapshot snapshot)
         {
-            StatusTone tone = snapshot.HealthState switch
+            PumpScenario scenario = (PumpScenario)snapshot.Scenario;
+            GasPumpInterfaceViewModel model = scenario switch
             {
-                3 => StatusTone.Danger,
-                2 => StatusTone.Warning,
-                1 => StatusTone.Info,
-                _ => StatusTone.Info,
+                PumpScenario.Pumping => GasPumpInterfaceViewModel.CreatePumping(),
+                PumpScenario.Starved => GasPumpInterfaceViewModel.CreateStarved(),
+                PumpScenario.Fault => GasPumpInterfaceViewModel.CreateFault(),
+                _ => GasPumpInterfaceViewModel.CreateIdle(),
             };
 
-            string status = snapshot.HealthState switch
-            {
-                3 => "UNPOWERED",
-                2 => "STALLED — ΔP EXCEEDS MOTOR RATING",
-                1 => "TRANSFERRING",
-                _ when !snapshot.Enabled => "DISABLED",
-                _ when !snapshot.Connected => "NO PIPE CONNECTION",
-                _ => "IDLE",
-            };
+            model.Title = snapshot.Title;
+            model.ModelLabel = snapshot.ModelLabel;
+            model.DeviceTitle = snapshot.DeviceTitle;
+            model.Subtitle = snapshot.Subtitle;
+            model.ChassisPowerOk = snapshot.PowerOk;
+            model.Powered = snapshot.Powered;
+            model.AccessGranted = snapshot.AccessGranted;
+            model.AccessScanning = snapshot.AccessScanning;
+            model.TargetOutletPressureKpa = snapshot.TargetOutletPressureKpa;
 
-            float flowPct = snapshot.RatedMaxFlowMolesPerSecond > 0f
-                ? snapshot.CurrentFlowMolesPerSecond / snapshot.RatedMaxFlowMolesPerSecond
-                : 0f;
+            model.InletPressureText = $"{snapshot.InletPressureKpa:F1} kPa";
+            model.OutletPressureText = $"{snapshot.OutletPressureKpa:F1} kPa";
 
-            return new GasPumpInterfaceViewModel
+            if (snapshot.InletPressureKpa < 20f)
             {
-                Title = snapshot.Title,
-                ModelLabel = snapshot.ModelLabel,
-                PowerOk = snapshot.PowerOk,
-                Enabled = snapshot.Enabled,
-                Connected = snapshot.Connected,
-                RatedMaxFlowMolesPerSecond = snapshot.RatedMaxFlowMolesPerSecond,
-                CurrentFlowMolesPerSecond = snapshot.CurrentFlowMolesPerSecond,
-                DifferentialKpa = snapshot.DifferentialKpa,
-                MaxDifferentialKpa = snapshot.MaxDifferentialKpa,
-                Stalled = snapshot.Stalled,
-                HealthState = snapshot.HealthState,
-                FlowReadout = $"{snapshot.CurrentFlowMolesPerSecond:F1} / {snapshot.RatedMaxFlowMolesPerSecond:F1} mol/s ({flowPct:P0})",
-                DifferentialReadout = $"{snapshot.DifferentialKpa:F1} / {snapshot.MaxDifferentialKpa:F1} kPa",
-                StatusReadout = status,
-                StatusTone = tone,
-            };
+                model.InletTone = StatusTone.Warning;
+            }
+
+            if (snapshot.OutletPressureKpa > snapshot.TargetOutletPressureKpa && snapshot.TargetOutletPressureKpa > 0)
+            {
+                model.OutletTone = StatusTone.Danger;
+            }
+
+            if (scenario is PumpScenario.Pumping or PumpScenario.Starved)
+            {
+                float litersPerSecond = snapshot.FlowMolesPerSecond * MolesPerSecondToLitersPerSecond;
+                string flowQualifier = scenario == PumpScenario.Starved ? "Restricted" : "Flowing";
+                model.FlowStatusText = $"{flowQualifier} — {litersPerSecond:F1} L/s";
+                model.FlowStatusTone = scenario == PumpScenario.Starved ? StatusTone.Warning : StatusTone.Success;
+                model.FlowGlyph = "→";
+                model.FlowTone = model.FlowStatusTone;
+            }
+            else if (scenario == PumpScenario.Fault)
+            {
+                float litersPerSecond = snapshot.FlowMolesPerSecond * MolesPerSecondToLitersPerSecond;
+                if (litersPerSecond > 0f)
+                {
+                    model.FlowStatusText = $"Uncontrolled — {litersPerSecond:F1} L/s";
+                }
+            }
+            else if (!snapshot.Powered)
+            {
+                model.StatusSubline = "Powered off — no throughput.";
+                model.FlowStatusText = "No flow";
+            }
+            else if (!snapshot.Connected)
+            {
+                model.ConnectionStatus = "NO PIPE CONNECTION";
+                model.StatusSubline = "Awaiting pipe network link.";
+                model.FlowStatusText = "No flow";
+            }
+            else if (!AtmosPumpController.ShouldPumpToOutlet(snapshot.OutletPressureKpa, snapshot.TargetOutletPressureKpa))
+            {
+                model.StatusSubline = "Outlet at or above target — pump holding.";
+                model.FlowStatusText = "No flow";
+            }
+
+            return model;
         }
     }
 }

@@ -270,6 +270,8 @@ MonoBehaviour:
   _componentIndexCache: 3
   _addedNetworkObject: {fileID: -2473204136432335067}
   _networkObjectCache: {fileID: -2473204136432335067}
-  _title: "GAS PUMP \xB7 FLOW MONITOR"
-  _modelLabel: "ATP-1 \xB7 differential transfer pump"
+  _title: "PUMP \xB7 ATMOSPHERICS"
+  _modelLabel: "PMP-22 \xB7 pipe pump unit"
+  _deviceTitle: PMP-22
+  _subtitle: Engineering Bay 3 — Pipe Pump
   _powerConsumer: {fileID: 8827364519023341190}

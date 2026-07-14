@@ -7,6 +7,7 @@
     --ss3d-diegetic-width-air-alarm: 700px;
     --ss3d-diegetic-width-scrubber: 660px;
     --ss3d-diegetic-width-vent: 640px;
+    --ss3d-diegetic-width-pump: 640px;
     --ss3d-diegetic-chassis-bg: #37383b;
     --ss3d-diegetic-chassis-border: #26272a;
     --ss3d-diegetic-chassis-radius: 20px;

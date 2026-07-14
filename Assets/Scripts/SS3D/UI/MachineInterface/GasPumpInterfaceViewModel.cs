@@ -1,35 +1,132 @@
 namespace SS3D.UI.MachineInterface
 {
+    public enum PumpScenario
+    {
+        Idle = 0,
+        Pumping = 1,
+        Starved = 2,
+        Fault = 3,
+    }
+
     public sealed class GasPumpInterfaceViewModel : IMachineInterfaceViewModel
     {
-        public string Title { get; init; }
+        public string Title { get; set; } = "PUMP · ATMOSPHERICS";
 
-        public string ModelLabel { get; init; }
+        public string ModelLabel { get; set; } = "PMP-22 · pipe pump unit";
 
-        public bool PowerOk { get; init; }
+        public string DeviceTitle { get; set; } = "PMP-22";
 
-        public bool Enabled { get; init; }
+        public string Subtitle { get; set; } = "Engineering Bay 3 — Pipe Pump";
 
-        public bool Connected { get; init; }
+        public string ConnectionStatus { get; set; } = "WIRED · PIPE NET · PORT P1";
 
-        public float RatedMaxFlowMolesPerSecond { get; init; }
+        public string FooterText { get; set; } = "SS3D Atmospherics — Pump Unit Model PMP-22";
 
-        public float CurrentFlowMolesPerSecond { get; init; }
+        public bool ChassisPowerOk { get; set; } = true;
 
-        public float DifferentialKpa { get; init; }
+        public PumpScenario Scenario { get; set; } = PumpScenario.Idle;
 
-        public float MaxDifferentialKpa { get; init; }
+        public string StatusBadgeText { get; set; } = "IDLE";
 
-        public bool Stalled { get; init; }
+        public string StatusHeadline { get; set; } = "Pump Idle";
 
-        public byte HealthState { get; init; }
+        public string StatusSubline { get; set; } = "Powered off — no throughput.";
 
-        public string FlowReadout { get; init; }
+        public string InletPressureText { get; set; } = "101.3 kPa";
 
-        public string DifferentialReadout { get; init; }
+        public StatusTone InletTone { get; set; } = StatusTone.Neutral;
 
-        public string StatusReadout { get; init; }
+        public string OutletPressureText { get; set; } = "101.3 kPa";
 
-        public StatusTone StatusTone { get; init; }
+        public StatusTone OutletTone { get; set; } = StatusTone.Neutral;
+
+        public string FlowGlyph { get; set; } = "·";
+
+        public StatusTone FlowTone { get; set; } = StatusTone.Neutral;
+
+        public string FlowStatusText { get; set; } = "No flow";
+
+        public StatusTone FlowStatusTone { get; set; } = StatusTone.Neutral;
+
+        public bool AccessGranted { get; set; }
+
+        public bool AccessScanning { get; set; }
+
+        public string IdReaderSubline { get; set; } =
+            "Read an ID to unlock power and target pressure control";
+
+        public bool Powered { get; set; } = true;
+
+        public int TargetOutletPressureKpa { get; set; } = 4500;
+
+        public static GasPumpInterfaceViewModel CreateIdle()
+        {
+            return new GasPumpInterfaceViewModel
+            {
+                Scenario = PumpScenario.Idle,
+                StatusBadgeText = "IDLE",
+                StatusHeadline = "Pump Idle",
+                StatusSubline = "Powered off — no throughput.",
+                InletPressureText = "101.3 kPa",
+                OutletPressureText = "101.3 kPa",
+                FlowGlyph = "·",
+                FlowStatusText = "No flow",
+            };
+        }
+
+        public static GasPumpInterfaceViewModel CreatePumping()
+        {
+            return new GasPumpInterfaceViewModel
+            {
+                Scenario = PumpScenario.Pumping,
+                StatusBadgeText = "PUMPING",
+                StatusHeadline = "Pumping Normally",
+                StatusSubline = "Outlet pressure within target range.",
+                InletPressureText = "101.3 kPa",
+                OutletPressureText = "4487.6 kPa",
+                FlowGlyph = "→",
+                FlowTone = StatusTone.Success,
+                FlowStatusText = "Flowing — 12.4 L/s",
+                FlowStatusTone = StatusTone.Success,
+            };
+        }
+
+        public static GasPumpInterfaceViewModel CreateStarved()
+        {
+            return new GasPumpInterfaceViewModel
+            {
+                Scenario = PumpScenario.Starved,
+                StatusBadgeText = "STARVED",
+                StatusHeadline = "Inlet Starved",
+                StatusSubline = "Insufficient inlet supply to reach target.",
+                InletPressureText = "4.8 kPa",
+                InletTone = StatusTone.Warning,
+                OutletPressureText = "612.0 kPa",
+                FlowGlyph = "→",
+                FlowTone = StatusTone.Warning,
+                FlowStatusText = "Restricted — 1.1 L/s",
+                FlowStatusTone = StatusTone.Warning,
+            };
+        }
+
+        public static GasPumpInterfaceViewModel CreateFault()
+        {
+            return new GasPumpInterfaceViewModel
+            {
+                Scenario = PumpScenario.Fault,
+                ChassisPowerOk = false,
+                StatusBadgeText = "FAULT",
+                StatusHeadline = "Overpressure",
+                StatusSubline = "Relief valve unresponsive — outlet exceeds target.",
+                InletPressureText = "101.3 kPa",
+                OutletPressureText = "6218.4 kPa",
+                OutletTone = StatusTone.Danger,
+                FlowGlyph = "✕",
+                FlowTone = StatusTone.Danger,
+                FlowStatusText = "Uncontrolled — 18.7 L/s",
+                FlowStatusTone = StatusTone.Danger,
+                Powered = false,
+            };
+        }
     }
 }

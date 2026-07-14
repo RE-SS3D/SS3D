@@ -1,3 +1,81 @@
-.gas-pump-interface .diagnostics-list {
+
+#identity,
+#status-chip {
+    margin-bottom: 14px;
+}
+
+.pump-flow-status-row {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    padding-top: 2px;
+    margin-top: 14px;
+    border-top-width: 1px;
+    border-top-color: var(--ss3d-border-subtle);
+}
+
+.pump-flow-status-label {
+    font-size: 9px;
+    letter-spacing: 2px;
+    color: var(--ss3d-text-tertiary);
+    padding: 0;
+    background-color: rgba(0, 0, 0, 0);
+}
+
+.pump-flow-status-value {
+    font-size: 12px;
+    color: var(--ss3d-text-tertiary);
+    padding: 0;
+    background-color: rgba(0, 0, 0, 0);
+}
+
+.pump-controls-row {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.atmos-power-caption {
+    font-size: 9px;
+    letter-spacing: 2px;
+    color: var(--ss3d-text-secondary);
     margin-top: 8px;
+    padding: 0;
+    background-color: rgba(0, 0, 0, 0);
+}
+
+.pump-power-column {
+    flex-direction: column;
+    align-items: center;
+    margin-right: 20px;
+}
+
+.pump-power-column .toggle-switch__label {
+    display: none;
+}
+
+.pump-target-column {
+    flex-direction: column;
+    align-items: flex-end;
+    flex-grow: 1;
+}
+
+.pump-target-labels {
+    flex-direction: column;
+    align-items: flex-end;
+    margin-bottom: 6px;
+}
+
+.pump-target-title {
+    font-size: 11px;
+    color: var(--ss3d-text-tertiary);
+    padding: 0;
+    background-color: rgba(0, 0, 0, 0);
+}
+
+.pump-gated-hint {
+    font-size: 9.5px;
+    color: var(--ss3d-text-tertiary);
+    padding: 0;
+    background-color: rgba(0, 0, 0, 0);
 }

@@ -75,6 +75,13 @@ namespace SS3D.UI.MachineInterface.Components
             set => StatusToneUtility.ApplyTone(_glyph, value);
         }
 
+        [UxmlAttribute]
+        public StatusTone InternalTone
+        {
+            get => StatusTone.Info;
+            set => StatusToneUtility.ApplyTone(_internalValue, value);
+        }
+
         private static VisualElement CreateNode(string title, out Label titleLabel, out Label valueLabel, bool core)
         {
             VisualElement node = new();

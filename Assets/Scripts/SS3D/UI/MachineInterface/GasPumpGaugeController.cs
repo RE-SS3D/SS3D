@@ -1,7 +1,5 @@
 using FishNet.Connection;
 using FishNet.Object;
-using SS3D.Interactions;
-using SS3D.Interactions.Interfaces;
 using SS3D.Systems.Atmospherics.Pipes;
 using System.Electricity;
 using UnityEngine;
@@ -9,16 +7,22 @@ using UnityEngine;
 namespace SS3D.UI.MachineInterface
 {
     /// <summary>
-    /// Diegetic flow gauge for <see cref="AtmosPumpController"/> (lives in this assembly to avoid Systems↔UI circular refs).
+    /// Networked pump unit machine interface. Pumps are not area-linked — they operate on their own tile and pipe network.
     /// </summary>
     [RequireComponent(typeof(AtmosPumpController))]
-    public sealed class GasPumpGaugeController : MachineInterfaceBehaviour
+    public sealed class GasPumpGaugeController : AtmosMachineInterfaceBehaviour
     {
         [SerializeField]
-        private string _title = "GAS PUMP · FLOW MONITOR";
+        private string _title = "PUMP · ATMOSPHERICS";
 
         [SerializeField]
-        private string _modelLabel = "ATP-1 · differential transfer pump";
+        private string _modelLabel = "PMP-22 · pipe pump unit";
+
+        [SerializeField]
+        private string _deviceTitle = "PMP-22";
+
+        [SerializeField]
+        private string _subtitle = "Engineering Bay 3 — Pipe Pump";
 
         [SerializeField]
         private BasicPowerConsumer _powerConsumer;
@@ -26,11 +30,6 @@ namespace SS3D.UI.MachineInterface
         private AtmosPumpController _pump;
 
         public override string InterfaceId => MachineInterfaceIds.GasPump;
-
-        public override IInteraction[] CreateTargetInteractions(InteractionEvent interactionEvent)
-        {
-            return new IInteraction[] { new OpenMachineInterfaceInteraction() };
-        }
 
         public override void OnStartServer()
         {
@@ -43,7 +42,48 @@ namespace SS3D.UI.MachineInterface
             base.OnStartServer();
         }
 
-        protected override bool ApplyControl(byte controlId, bool value) => false;
+        protected override bool ApplyControl(byte controlId, bool value)
+        {
+            if (controlId != MachineInterfaceControlIds.Atmos.Power || !AccessGranted)
+            {
+                return false;
+            }
+
+            if (_pump == null)
+            {
+                _pump = GetComponent<AtmosPumpController>();
+            }
+
+            if (_pump == null || _pump.GetState() == value)
+            {
+                return _pump != null;
+            }
+
+            _pump.Toggle();
+            RefreshAllViewers();
+            return true;
+        }
+
+        protected override bool ApplyNumericControl(byte controlId, float delta)
+        {
+            if (controlId != MachineInterfaceControlIds.Atmos.TargetPressure || !AccessGranted)
+            {
+                return false;
+            }
+
+            if (_pump == null)
+            {
+                _pump = GetComponent<AtmosPumpController>();
+            }
+
+            int next = Mathf.Clamp(
+                (_pump != null ? _pump.TargetOutletPressureKpa : 0) + Mathf.RoundToInt(delta * 100f),
+                0,
+                9000);
+            _pump?.ServerSetTargetOutletPressureKpa(next);
+            RefreshAllViewers();
+            return true;
+        }
 
         protected override void SendOpenToViewer(NetworkConnection conn)
         {
@@ -74,23 +114,40 @@ namespace SS3D.UI.MachineInterface
                 _pump = GetComponent<AtmosPumpController>();
             }
 
-            bool powered = _powerConsumer == null || _powerConsumer.PowerStatus == PowerStatus.Powered;
+            bool powerOk = _powerConsumer == null || _powerConsumer.PowerStatus == PowerStatus.Powered;
+            bool powered = _pump != null && _pump.IsEnabled;
             bool connected = _pump != null && _pump.TryGetConnectedNetwork(out _);
-            bool flowing = _pump != null && _pump.LastFlowMolesPerSecond > 0f;
+            bool flowing = _pump != null && _pump.IsPortFlowing;
             bool stalled = _pump != null && _pump.LastStalled;
+            float inletPressure = _pump != null ? _pump.LastInletPressureKpa : 0f;
+            float outletPressure = _pump != null ? _pump.LastOutletPressureKpa : 0f;
+            int targetPressure = _pump != null ? _pump.TargetOutletPressureKpa : 0;
+            float flowMoles = _pump != null ? _pump.LastFlowMolesPerSecond : 0f;
 
-            byte health = 0;
-            if (!powered)
+            PumpScenario scenario;
+            if (!powerOk)
             {
-                health = 3;
+                scenario = PumpScenario.Fault;
             }
-            else if (stalled)
+            else if (!powered)
             {
-                health = 2;
+                scenario = PumpScenario.Idle;
+            }
+            else if (targetPressure > 0 && outletPressure > targetPressure)
+            {
+                scenario = PumpScenario.Fault;
+            }
+            else if (stalled || (powered && inletPressure < 20f && !flowing))
+            {
+                scenario = PumpScenario.Starved;
             }
             else if (flowing)
             {
-                health = 1;
+                scenario = PumpScenario.Pumping;
+            }
+            else
+            {
+                scenario = PumpScenario.Idle;
             }
 
             return new GasPumpInterfaceSnapshot
@@ -99,15 +156,18 @@ namespace SS3D.UI.MachineInterface
                 InterfaceId = InterfaceId,
                 Title = _title,
                 ModelLabel = _modelLabel,
-                PowerOk = powered,
-                Enabled = _pump == null || _pump.IsEnabled,
+                DeviceTitle = _deviceTitle,
+                Subtitle = _subtitle,
+                PowerOk = powerOk,
+                Powered = powered,
                 Connected = connected,
-                RatedMaxFlowMolesPerSecond = _pump != null ? _pump.RatedMaxFlowMolesPerSecond : 0f,
-                CurrentFlowMolesPerSecond = _pump != null ? _pump.LastFlowMolesPerSecond : 0f,
-                DifferentialKpa = _pump != null ? _pump.LastDifferentialKpa : 0f,
-                MaxDifferentialKpa = _pump != null ? _pump.MaxDifferentialKpa : 0f,
-                Stalled = stalled,
-                HealthState = health,
+                Scenario = (byte)scenario,
+                AccessGranted = AccessGranted,
+                AccessScanning = AccessScanning,
+                TargetOutletPressureKpa = targetPressure,
+                InletPressureKpa = inletPressure,
+                OutletPressureKpa = outletPressure,
+                FlowMolesPerSecond = flowMoles,
             };
         }
     }

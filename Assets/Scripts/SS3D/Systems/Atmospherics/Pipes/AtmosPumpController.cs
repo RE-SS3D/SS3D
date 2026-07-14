@@ -1,10 +1,12 @@
+using FishNet.Object;
+using FishNet.Object.Synchronizing;
 using SS3D.Systems.Tile;
 using UnityEngine;
 
 namespace SS3D.Systems.Atmospherics.Pipes
 {
     /// <summary>
-    /// Bidirectional pipe↔turf pump (design §7). Pair with <c>GasPumpGaugeController</c> for the diegetic gauge UI.
+    /// Turf→pipe pump with target outlet pressure (design §7). Not area-linked — operates on its tile and pipe network only.
     /// </summary>
     public sealed class AtmosPumpController : AtmosPortControllerBase
     {
@@ -16,8 +18,13 @@ namespace SS3D.Systems.Atmospherics.Pipes
         [SerializeField]
         private float _maxDifferentialKpa = AtmosPortConstants.PumpMaxDifferentialKpa;
 
+        [SyncVar]
+        private int _targetOutletPressureKpa = 4500;
+
         private float _lastFlowMolesPerSecond;
         private float _lastDifferentialKpa;
+        private float _lastInletPressureKpa;
+        private float _lastOutletPressureKpa;
         private bool _lastStalled;
 
         public float RatedMaxFlowMolesPerSecond =>
@@ -26,11 +33,26 @@ namespace SS3D.Systems.Atmospherics.Pipes
         public float MaxDifferentialKpa =>
             _maxDifferentialKpa > 0f ? _maxDifferentialKpa : AtmosPortConstants.PumpMaxDifferentialKpa;
 
+        public int TargetOutletPressureKpa => _targetOutletPressureKpa;
+
         public float LastFlowMolesPerSecond => _lastFlowMolesPerSecond;
 
         public float LastDifferentialKpa => _lastDifferentialKpa;
 
+        public float LastInletPressureKpa => _lastInletPressureKpa;
+
+        public float LastOutletPressureKpa => _lastOutletPressureKpa;
+
         public bool LastStalled => _lastStalled;
+
+        public static bool ShouldPumpToOutlet(float outletPressureKpa, int targetOutletPressureKpa) =>
+            targetOutletPressureKpa > 0 && outletPressureKpa < targetOutletPressureKpa;
+
+        [Server]
+        public void ServerSetTargetOutletPressureKpa(int targetKpa)
+        {
+            _targetOutletPressureKpa = Mathf.Clamp(targetKpa, 0, 9000);
+        }
 
         protected override bool ShouldAnimateWhileIdle() => false;
 
@@ -41,6 +63,8 @@ namespace SS3D.Systems.Atmospherics.Pipes
         {
             _lastFlowMolesPerSecond = 0f;
             _lastDifferentialKpa = 0f;
+            _lastInletPressureKpa = 0f;
+            _lastOutletPressureKpa = 0f;
             _lastStalled = false;
 
             if (!TryGetConnectedNetwork(out GasPipeNetworkId networkId)
@@ -50,15 +74,17 @@ namespace SS3D.Systems.Atmospherics.Pipes
             }
 
             TileCoord turfCell = OriginTile;
-            float networkPressure = network.GetPressure(AtmosConstants.DefaultGasCount);
-            float turfPressure = turfSimulation.GetCellPressure(turfCell);
-            bool networkToTurf = networkPressure >= turfPressure;
-            float sourcePressure = networkToTurf ? networkPressure : turfPressure;
-            float destinationPressure = networkToTurf ? turfPressure : networkPressure;
+            float inletPressure = turfSimulation.GetCellPressure(turfCell);
+            float outletPressure = network.GetPressure(AtmosConstants.DefaultGasCount);
+            _lastInletPressureKpa = inletPressure;
+            _lastOutletPressureKpa = outletPressure;
+
+            if (!ShouldPumpToOutlet(outletPressure, _targetOutletPressureKpa))
+                return false;
 
             float budgetMoles = AtmosPortFlow.ComputePumpFlowMoles(
-                sourcePressure,
-                destinationPressure,
+                inletPressure,
+                outletPressure,
                 RatedMaxFlowMolesPerSecond,
                 MaxDifferentialKpa,
                 deltaTime,
@@ -72,9 +98,6 @@ namespace SS3D.Systems.Atmospherics.Pipes
             if (budgetMoles <= 0f)
                 return false;
 
-            if (networkToTurf)
-                return PushNetworkToTurf(pipeSimulation, network, networkId, turfCell, budgetMoles);
-
             return PullTurfToNetwork(pipeSimulation, turfSimulation, networkId, turfCell, budgetMoles);
         }
 
@@ -84,44 +107,6 @@ namespace SS3D.Systems.Atmospherics.Pipes
                 return;
 
             _animator.SetBool(PumpActiveId, flowing);
-        }
-
-        private static bool PushNetworkToTurf(
-            AtmosPipeSimulation pipeSimulation,
-            GasPipeNetworkRecord network,
-            GasPipeNetworkId networkId,
-            TileCoord turfCell,
-            float budgetMoles)
-        {
-            float totalMoles = network.GetTotalMoles(AtmosConstants.DefaultGasCount);
-            if (totalMoles <= 0f)
-                return false;
-
-            budgetMoles = Mathf.Min(budgetMoles, totalMoles);
-            bool movedAny = false;
-
-            for (int gasId = 0; gasId < AtmosConstants.DefaultGasCount; gasId++)
-            {
-                float gasMoles = network.Moles[gasId];
-                if (gasMoles <= 0f)
-                    continue;
-
-                float share = gasMoles / totalMoles;
-                float request = budgetMoles * share;
-                if (pipeSimulation.TryTransferMoles(
-                        networkId,
-                        new GasId((ushort)gasId),
-                        request,
-                        turfCell,
-                        PipeTransferDirection.ToTurf,
-                        out float moved)
-                    && moved > 0f)
-                {
-                    movedAny = true;
-                }
-            }
-
-            return movedAny;
         }
 
         private static bool PullTurfToNetwork(

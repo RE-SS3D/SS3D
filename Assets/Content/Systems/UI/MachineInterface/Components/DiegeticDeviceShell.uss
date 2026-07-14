@@ -167,3 +167,7 @@
 .diegetic-device-shell--vent {
     width: var(--ss3d-diegetic-width-vent);
 }
+
+.diegetic-device-shell--pump {
+    width: var(--ss3d-diegetic-width-pump);
+}

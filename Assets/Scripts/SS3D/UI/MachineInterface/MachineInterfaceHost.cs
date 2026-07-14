@@ -465,14 +465,7 @@ namespace SS3D.UI.MachineInterface
                 "Assets/Content/Systems/UI/MachineInterface/Components/ActionLog.uss",
                 "Assets/Content/Systems/UI/MachineInterface/Components/DeviceFooter.uss");
 
-            _gasPumpComponentStyles = EnsureComponentStyles(
-                _gasPumpComponentStyles,
-                "Assets/Content/Systems/UI/MachineInterface/Components/DiegeticDeviceShell.uss",
-                "Assets/Content/Systems/UI/MachineInterface/Components/StatusDot.uss",
-                "Assets/Content/Systems/UI/MachineInterface/Components/ConnectionStatusRow.uss",
-                "Assets/Content/Systems/UI/MachineInterface/Components/DeviceIdentityBlock.uss",
-                "Assets/Content/Systems/UI/MachineInterface/Components/DiagnosticsList.uss",
-                "Assets/Content/Systems/UI/MachineInterface/Components/DeviceFooter.uss");
+            _gasPumpComponentStyles = EnsureAtmosComponentStyles(_gasPumpComponentStyles, includeAirAlarm: false, includeVent: true);
 
             _airAlarmComponentStyles = EnsureAtmosComponentStyles(_airAlarmComponentStyles, includeAirAlarm: true);
             _scrubberComponentStyles = EnsureAtmosComponentStyles(_scrubberComponentStyles, includeAirAlarm: false);

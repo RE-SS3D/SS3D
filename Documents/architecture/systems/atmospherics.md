@@ -27,6 +27,7 @@ Server-authoritative open-tile gas simulation on the turf grid. Each walkable ce
 - `Assets/Scripts/SS3D/Systems/Atmospherics/Pipes/AtmosAreaSampler.cs` — area aggregate and single-tile sampling
 - `Assets/Scripts/SS3D/Systems/Atmospherics/Pipes/ScrubberController.cs` — per-gas filter scrubbing into pipe networks
 - `Assets/Scripts/SS3D/Systems/Atmospherics/Pipes/VentController.cs` — network→turf venting with target-pressure cutoff
+- `Assets/Scripts/SS3D/Systems/Atmospherics/Pipes/AtmosPumpController.cs` — turf→pipe pump with target outlet pressure; not area-linked
 - `Assets/Scripts/Tests/EditMode/Atmospherics/` — flux, combustion, neighbour, GPU, visual-metrics, air-alarm sampler tests
 
 ## Extension points
@@ -40,7 +41,7 @@ Server-authoritative open-tile gas simulation on the turf grid. Each walkable ce
 ## Depends on / Used by
 
 - **Depends on:** [tile](tile.md) (`ITileQueryService`, `ITileMutationObserver`, `IDynamicTileOccupant`), [rendering](rendering.md) (`AtmosRendererFeature`), [area](area.md) (air-alarm area membership and tile-in-front resolution)
-- **Used by:** [machine-interface](machine-interface.md) (air alarm / scrubber / vent panels), (future) [substances](substances.md), [health](health.md)
+- **Used by:** [machine-interface](machine-interface.md) (air alarm / scrubber / vent / pump panels), (future) [substances](substances.md), [health](health.md)
 
 ## Related docs
 
