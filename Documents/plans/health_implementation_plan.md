@@ -16,7 +16,7 @@ todos:
     status: completed
   - id: phase1-bleeding-slice
     content: "Phase 1: Wound severity, bleeding → blood volume → oxy debt, bandage interaction, Bleeding alert chip"
-    status: pending
+    status: completed
   - id: phase2-organs
     content: "Phase 2: Wire asset-backed organs (heart, lungs, liver, brain); kidney clearance interim until art asset; cardiac arrest"
     status: pending
@@ -498,3 +498,14 @@ health.md §8 + death-cloning §9 example A, end-to-end:
 5. Untreated → critical → cardiac arrest → defib window.
 6. Defib in time → recovery; late → brain death → corpse.
 7. Vitals + examine-self accurate throughout.
+
+---
+
+## Implementation notes
+
+### Phase 1 (shipped)
+
+- `ZoneTargetResolver` added early for bandage zone targeting; Phase 4 will extend it for combat raycasts.
+- Bandage wired to `MedicalPatch.prefab` via `BandageItemExtension`; dedicated bandage prefab can split later.
+- `WoundVfx` is auto-added on `HumanHealthController` startup if missing from prefab.
+- Transfusion and other blood restoration deferred to Phase 5.

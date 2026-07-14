@@ -1,10 +1,12 @@
-using Coimbra.Services.Events;
-using Coimbra.Services.PlayerLoopEvents;
 using FishNet.Object;
 using FishNet.Object.Synchronizing;
+using Coimbra.Services.Events;
+using Coimbra.Services.PlayerLoopEvents;
+using SS3D.Core;
 using SS3D.Core.Behaviours;
 using SS3D.Systems.Entities;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace SS3D.Systems.Health
@@ -20,6 +22,9 @@ namespace SS3D.Systems.Health
 
         private SystemicPools _pools = SystemicPools.Default;
         private float _tickTimer;
+        private Entity _entity;
+        private WoundVfx _woundVfx;
+        private HealthAlertsView _healthAlertsView;
 
         [SyncVar(OnChange = nameof(SyncSnapshot))]
         private HealthSnapshot _snapshot = HealthSnapshot.Default;
@@ -30,13 +35,45 @@ namespace SS3D.Systems.Health
         {
             base.OnStart();
             InitializeDefaults();
+            _entity = GetComponent<Entity>();
+            _woundVfx = GetComponent<WoundVfx>();
+            if (_woundVfx == null)
+            {
+                _woundVfx = gameObject.AddComponent<WoundVfx>();
+            }
+
             AddHandle(UpdateEvent.AddListener(HandleUpdate));
+        }
+
+        public override void OnStartClient()
+        {
+            base.OnStartClient();
+            List<HealthAlertsView> alertViews = ViewLocator.Get<HealthAlertsView>();
+            _healthAlertsView = alertViews?.FirstOrDefault();
+            if (_entity != null)
+            {
+                _entity.OnMindChanged += AssignAlertsViewToControllable;
+                InitialAssignAlertsView();
+            }
+
+            _woundVfx?.ApplySnapshot(_snapshot);
         }
 
         public override void OnStartServer()
         {
             base.OnStartServer();
             PublishSnapshot();
+        }
+
+        protected override void OnDestroyed()
+        {
+            if (_entity != null)
+            {
+                _entity.OnMindChanged -= AssignAlertsViewToControllable;
+            }
+
+            _healthAlertsView?.UnassignViewFromPlayer(this);
+            base.OnDestroyed();
         }
 
         private void InitializeDefaults()
@@ -89,9 +126,8 @@ namespace SS3D.Systems.Health
             ZoneDamageState state = _zones[index];
             state.Brute += brute;
             state.Burn += burn;
-            state.Severity = HealthSimulation.SeverityFromBrute(state.Brute);
+            RefreshZoneDerivedState(ref state);
             state.BleedingRate = HealthSimulation.BleedingRateForSeverity(state.Severity);
-            state.IsDisabled = state.Severity >= WoundSeverity.Disabled;
             _zones[index] = state;
 
             PublishSnapshot();
@@ -115,8 +151,12 @@ namespace SS3D.Systems.Health
                 state.BleedingRate = 0f;
             }
 
-            state.Severity = HealthSimulation.SeverityFromBrute(state.Brute);
-            state.IsDisabled = state.Severity >= WoundSeverity.Disabled;
+            RefreshZoneDerivedState(ref state);
+            if (!stopBleeding)
+            {
+                state.BleedingRate = HealthSimulation.BleedingRateForSeverity(state.Severity);
+            }
+
             _zones[index] = state;
 
             PublishSnapshot();
@@ -139,6 +179,12 @@ namespace SS3D.Systems.Health
             }
 
             PublishSnapshot();
+        }
+
+        private static void RefreshZoneDerivedState(ref ZoneDamageState state)
+        {
+            state.Severity = HealthSimulation.ResolveZoneSeverity(state.Brute, state.Burn);
+            state.IsDisabled = state.Severity >= WoundSeverity.Disabled;
         }
 
         private void HandleUpdate(ref EventContext context, in UpdateEvent updateEvent)
@@ -175,6 +221,39 @@ namespace SS3D.Systems.Health
 
         private void SyncSnapshot(HealthSnapshot oldValue, HealthSnapshot newValue, bool asServer)
         {
+            _woundVfx?.ApplySnapshot(newValue);
+
+            if (_healthAlertsView != null && _entity != null && _entity.Mind != null && _entity.Mind.IsOwner)
+            {
+                _healthAlertsView.Refresh();
+            }
+        }
+
+        [Client]
+        private void AssignAlertsViewToControllable(Mind mind)
+        {
+            if (_healthAlertsView == null)
+            {
+                return;
+            }
+
+            if (mind == null || !mind.IsOwner)
+            {
+                _healthAlertsView.UnassignViewFromPlayer(this);
+            }
+            else
+            {
+                _healthAlertsView.AssignViewToPlayer(this);
+            }
+        }
+
+        [Client]
+        private void InitialAssignAlertsView()
+        {
+            if (_entity.Mind != null && _entity.Mind.IsOwner)
+            {
+                AssignAlertsViewToControllable(_entity.Mind);
+            }
         }
     }
 }

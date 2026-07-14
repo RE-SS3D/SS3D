@@ -28,5 +28,9 @@
         public const float WoundThreshold = 25f;
         public const float SevereThreshold = 50f;
         public const float DisabledThreshold = 75f;
+        // Wound severity thresholds (burn damage per zone).
+        public const float BurnWoundThreshold = 25f;
+        public const float BurnSevereThreshold = 50f;
+        public const float BurnDisabledThreshold = 75f;
     }
 }

@@ -49,6 +49,7 @@ GameObject:
   - component: {fileID: 881130758709618923}
   - component: {fileID: 3371975112976805248}
   - component: {fileID: -6302843535208911692}
+  - component: {fileID: 9123456789012345670}
   m_Layer: 10
   m_Name: MedicalPatch
   m_TagString: Untagged
@@ -304,3 +305,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   key: {fileID: 11400000, guid: 701702f531eac8b4e9e3e01f19af1aee, type: 2}
+--- !u!114 &9123456789012345670
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4068007204767187790}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d7f5f1b4ce607ad9ef2345678901def0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

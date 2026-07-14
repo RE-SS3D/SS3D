@@ -75,6 +75,86 @@ namespace EditorTests
         }
 
         [Test]
+        public void StoppedBleedingHaltsBloodDrain()
+        {
+            var zones = new ZoneDamageState[HealthConstants.ZoneCount];
+            for (int i = 0; i < zones.Length; i++)
+            {
+                zones[i] = ZoneDamageState.Default;
+            }
+
+            zones[(int)BodyZone.Chest] = new ZoneDamageState
+            {
+                Brute = HealthConstants.WoundThreshold,
+                Severity = WoundSeverity.Wound,
+                BleedingRate = 0.5f,
+            };
+
+            var organs = new[]
+            {
+                OrganState.Default(OrganType.Heart),
+                OrganState.Default(OrganType.LeftLung),
+                OrganState.Default(OrganType.RightLung),
+                OrganState.Default(OrganType.Liver),
+                OrganState.Default(OrganType.Brain),
+            };
+
+            SystemicPools bleedingPools = SystemicPools.Default;
+            for (int tick = 0; tick < 5; tick++)
+            {
+                bleedingPools = HealthSimulation.TickPools(bleedingPools, zones, organs);
+            }
+
+            zones[(int)BodyZone.Chest] = new ZoneDamageState
+            {
+                Brute = HealthConstants.WoundThreshold,
+                Severity = WoundSeverity.Wound,
+                BleedingRate = 0f,
+            };
+
+            SystemicPools bandagedPools = bleedingPools;
+            for (int tick = 0; tick < 5; tick++)
+            {
+                bandagedPools = HealthSimulation.TickPools(bandagedPools, zones, organs);
+            }
+
+            Assert.Less(bleedingPools.BloodVolumeRatio, 1f);
+            Assert.AreEqual(bleedingPools.BloodVolumeRatio, bandagedPools.BloodVolumeRatio);
+        }
+
+        [Test]
+        public void BuildSnapshotSetsBleedingZoneMask()
+        {
+            var zones = new ZoneDamageState[HealthConstants.ZoneCount];
+            for (int i = 0; i < zones.Length; i++)
+            {
+                zones[i] = ZoneDamageState.Default;
+            }
+
+            zones[(int)BodyZone.LeftArm] = new ZoneDamageState
+            {
+                Brute = HealthConstants.WoundThreshold,
+                Severity = WoundSeverity.Wound,
+                BleedingRate = 0.5f,
+            };
+
+            var organs = new[] { OrganState.Default(OrganType.Brain) };
+            HealthSnapshot snapshot = HealthSimulation.BuildSnapshot(SystemicPools.Default, zones, organs);
+
+            Assert.IsTrue(snapshot.IsBleeding);
+            Assert.IsTrue(snapshot.IsZoneBleeding(BodyZone.LeftArm));
+            Assert.IsFalse(snapshot.IsZoneBleeding(BodyZone.Chest));
+        }
+
+        [Test]
+        public void BurnDamageCanReachWoundSeverity()
+        {
+            WoundSeverity severity = HealthSimulation.ResolveZoneSeverity(0f, HealthConstants.BurnWoundThreshold);
+            Assert.AreEqual(WoundSeverity.Wound, severity);
+            Assert.AreEqual(0.5f, HealthSimulation.BleedingRateForSeverity(severity));
+        }
+
+        [Test]
         public void AnySystemicThresholdCanTriggerCritical()
         {
             var pools = new SystemicPools

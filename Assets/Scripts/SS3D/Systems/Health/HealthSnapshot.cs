@@ -12,6 +12,12 @@ namespace SS3D.Systems.Health
         public bool IsBleeding;
         public bool IsConscious;
         public bool IsCardiacArrest;
+        public int BleedingZoneMask;
+
+        public bool IsZoneBleeding(BodyZone zone)
+        {
+            return (BleedingZoneMask & (1 << (int)zone)) != 0;
+        }
 
         public static HealthSnapshot Default => new()
         {
@@ -22,6 +28,7 @@ namespace SS3D.Systems.Health
             IsBleeding = false,
             IsConscious = true,
             IsCardiacArrest = false,
+            BleedingZoneMask = 0,
         };
     }
 }

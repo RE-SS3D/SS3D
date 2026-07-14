@@ -89,6 +89,21 @@ namespace SS3D.Systems.Health
             return WoundSeverity.None;
         }
 
+        public static WoundSeverity SeverityFromBurn(float burn)
+        {
+            if (burn >= HealthConstants.BurnDisabledThreshold) return WoundSeverity.Disabled;
+            if (burn >= HealthConstants.BurnSevereThreshold) return WoundSeverity.Severe;
+            if (burn >= HealthConstants.BurnWoundThreshold) return WoundSeverity.Wound;
+            return WoundSeverity.None;
+        }
+
+        public static WoundSeverity ResolveZoneSeverity(float brute, float burn)
+        {
+            WoundSeverity bruteSeverity = SeverityFromBrute(brute);
+            WoundSeverity burnSeverity = SeverityFromBurn(burn);
+            return (WoundSeverity)Math.Max((int)bruteSeverity, (int)burnSeverity);
+        }
+
         public static float BleedingRateForSeverity(WoundSeverity severity)
         {
             return severity switch
@@ -161,6 +176,7 @@ namespace SS3D.Systems.Health
             float worstBrute = 0f;
             float worstBurn = 0f;
             bool bleeding = false;
+            int bleedingMask = 0;
 
             for (int i = 0; i < zones.Count; i++)
             {
@@ -169,6 +185,7 @@ namespace SS3D.Systems.Health
                 if (zones[i].BleedingRate > 0f)
                 {
                     bleeding = true;
+                    bleedingMask |= 1 << i;
                 }
             }
 
@@ -185,6 +202,7 @@ namespace SS3D.Systems.Health
                 IsBleeding = bleeding,
                 IsConscious = IsConscious(brain),
                 IsCardiacArrest = IsCardiacArrest(heart),
+                BleedingZoneMask = bleedingMask,
             };
         }
 
