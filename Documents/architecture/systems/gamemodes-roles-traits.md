@@ -15,11 +15,12 @@ Round objectives, job roles/loadouts, and character traits (e.g. ID permissions)
 
 ## Extension points
 
-(stub)
+- Active gamemode name: `GamemodeSubSystem.CurrentGamemodeName` (used by round-history persistence).
 
 ## Depends on / Used by
 
 - **Depends on:** [rounds-lobby](rounds-lobby.md), [entities](entities.md)
+- **Used by:** [persistence](persistence.md) (round-end history entry)
 
 ## Related docs
 

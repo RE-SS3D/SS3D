@@ -20,6 +20,9 @@ Layered contributor-based disk persistence for station templates and server meta
 - `Assets/Scripts/SS3D/Systems/Persistence/RoundHistoryStore.cs` — append-only round history JSONL
 - `Assets/Scripts/SS3D/Systems/Persistence/LegacyTileMapMigrator.cs` — flat tilemap JSON → envelope
 - `Assets/Scripts/SS3D/Systems/Persistence/LegacyPermissionsMigrator.cs` — `permissions.txt` → payload
+- `Assets/Scripts/SS3D/Data/Persistence/SavedPermissionsPayload.cs` — permissions envelope DTO
+- `Assets/Scripts/Tests/EditMode/PersistenceFrameworkTests.cs` — envelope round-trip, legacy tilemap migration, load order
+- `Assets/Scripts/Tests/EditMode/ServerMetaPersistenceTests.cs` — permissions migration and round-history append
 
 ## Extension points
 
@@ -31,7 +34,7 @@ Layered contributor-based disk persistence for station templates and server meta
 
 ## Depends on / Used by
 
-- **Depends on:** [data-codegen](data-codegen.md) (`LocalStorage`), [permissions](permissions.md), [tile](tile.md), [area](area.md), [rounds-lobby](rounds-lobby.md)
+- **Depends on:** [data-codegen](data-codegen.md) (`LocalStorage`), [permissions](permissions.md), [tile](tile.md), [area](area.md), [rounds-lobby](rounds-lobby.md), [gamemodes-roles-traits](gamemodes-roles-traits.md) (`CurrentGamemodeName` for round history)
 - **Used by:** [tile](tile.md) (save/load backend), [permissions](permissions.md) (import/export), [rounds-lobby](rounds-lobby.md) (round-end history)
 
 ## Related docs

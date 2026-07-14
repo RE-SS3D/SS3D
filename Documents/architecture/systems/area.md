@@ -6,7 +6,7 @@
 
 ## Overview
 
-APC-seeded area flood-fill: each APC owns one `AreaRecord` and claims reachable floor tiles with a per-chunk `ushort[]` area-id layer. Walls and doors block expansion; unclaimed tiles stay `AreaId.None`. Live boundary recompute on tile mutation is deferred — rebuild runs on map load and APC place/remove only.
+APC-seeded area flood-fill: each APC owns one `AreaRecord` and claims reachable floor tiles with a per-chunk `ushort[]` area-id layer. Walls and doors block expansion; unclaimed tiles stay `AreaId.None`. Live boundary recompute on tile mutation is deferred — rebuild runs on map load and APC place/remove only. Area metadata persists via [persistence](persistence.md) `AreaPersistenceContributor`; template restore uses `BeginTemplateRestore` / `RestoreFromSave` / `EndTemplateRestore` so saved display names, tints, access bits, and `lightingSwitchOn` survive when APCs are already placed.
 
 Per-consumer power gating and **area-scoped APC cell drain** via [electricity](electricity.md) `AreaApcPowerDistribution`: devices in an assigned area use their area APC's channels and cell, not circuit-wide OR or equal battery split. `AreaLightingState` (Normal/Emergency/Dark) is derived each electricity tick from the area APC's circuit stats and `AreaRecord.LightingSwitchOn`; a disabled lighting channel forces Dark regardless of cell charge. Transitions fire `OnAreaLightingStateChanged` and sync to clients via ObserversRpc. Wall `LightSwitchController` toggles `LightingSwitchOn` for its area. `LightPower` consumes area state for fixture on/off/emergency visuals; optional `DepartmentalLightTint` on `AreaRecord` tints normal-mode emission.
 
@@ -44,15 +44,17 @@ Per-consumer power gating and **area-scoped APC cell drain** via [electricity](e
 - Departmental tint API: `SetDepartmentalLightTint` / `ClearDepartmentalLightTint` (server).
 - Fixture visuals: `LightPower` + `AreaLightFixturePolicy` + `LightFixtureCapability` on prefabs.
 - Dev bypass (`SS3D → Dev → Lighting → Always Power Light Fixtures`) treats fixtures as powered but still respects APC channel toggles and area Normal/Emergency/Dark policy.
+- Template restore: `BeginTemplateRestore` → `RestoreFromSave` → APC registration → `EndTemplateRestore` (see `AreaFloodFillTests.TemplateRestore_WithRegisteredApc_PreservesSavedMetadata`).
 - **Not yet wired:** fixture subset authoring on `AreaRecord`.
 
 ## Depends on / Used by
 
-- **Depends on:** [tile](tile.md) (`TileMap` area-id storage, `ITileQueryService`, save/load)
-- **Used by:** [machine-interface](machine-interface.md) (APC overlap diagnostic); [electricity](electricity.md) (area→APC resolver, `LightPower` fixture visuals, `LightSwitchController` consumer)
+- **Depends on:** [tile](tile.md) (`TileMap` area-id storage, `ITileQueryService`), [persistence](persistence.md) (area contributor chunk, `OnAfterRestore` lifecycle)
+- **Used by:** [machine-interface](machine-interface.md) (APC overlap diagnostic); [electricity](electricity.md) (area→APC resolver, `LightPower` fixture visuals, `LightSwitchController` consumer); [persistence](persistence.md) (area metadata capture/restore)
 
 ## Related docs
 
 - Plan: [areas_implementation_plan_c0639343.plan.md](../../plans/areas_implementation_plan_c0639343.plan.md)
+- Plan: [persistence_architecture_design_2fe61864.plan.md](../../plans/persistence_architecture_design_2fe61864.plan.md)
 - Architecture effort: [2026-07_area-foundation](../2026-07_area-foundation.md)
 - Design (read-only): [Documents/design/area.md](../../design/area.md)

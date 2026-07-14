@@ -26,7 +26,7 @@ Round lifecycle state machine with single-flight `CancellationTokenSource` (prev
 
 ## Depends on / Used by
 
-- **Depends on:** [entities](entities.md), [player-control](player-control.md), [gamemodes-roles-traits](gamemodes-roles-traits.md)
+- **Depends on:** [entities](entities.md), [player-control](player-control.md), [gamemodes-roles-traits](gamemodes-roles-traits.md), [persistence](persistence.md) (round-end history append)
 - **Used by:** All in-round gameplay (gates when simulation is active); [persistence](persistence.md) (round history on end)
 
 ## Related docs

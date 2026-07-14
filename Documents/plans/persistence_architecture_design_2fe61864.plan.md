@@ -30,29 +30,32 @@ isProject: false
 
 ## Revision note (Jul 2026 fork state, updated 14 Jul)
 
-The [areas implementation plan](areas_implementation_plan_c0639343.plan.md) is **complete** — all todos shipped. The [2026-07 area-foundation](../architecture/2026-07_area-foundation.md) effort (phases 0–4 plus consumer visuals and wall light switches) landed save/load hooks in the tilemap pipeline. This validates the plan's contributor split and gives concrete extraction points, but does **not** change the recommended architecture.
+**Phase 1a and Phase 1b (partial) shipped** on `feature/persistence-framework`. See [Implementation notes](#implementation-notes-jul-2026) and system map [`persistence.md`](../architecture/systems/persistence.md).
 
-**What changed since the original draft:**
+**Shipped since the original draft:**
 
-- Area save/load is live: per-chunk `areaIds`, `SavedAreaRecord[]` (departmental light tint, `defaultRequiredAccessBits`), `AreaSubSystem.BuildSavedAreaRecords()`, restore via `TileMap.LoadedAreaRecords` + `OnMapLoaded`
-- [ID access foundation](../architecture/systems/id-access.md) shipped — area door defaults persist via `SavedAreaRecord.defaultRequiredAccessBits`; same APC-restore precedence gap applies on production maps
-- Architecture docs current: [`area.md`](../architecture/systems/area.md), [`2026-07_area-foundation`](../architecture/2026-07_area-foundation.md), [`tile.md`](../architecture/systems/tile.md), [`id-access.md`](../architecture/systems/id-access.md)
-- [Electricity kWh foundation](electricity_kwh_foundation_917ccdbc.plan.md) shipped — APC/SMES use kWh reservoirs; relevant for Phase 2 electricity contributor
-- [Atmos ECS foundation](../architecture/2026-07_atmos-ecs-foundation.md) shipped — turf gas cell buffers; relevant for Phase 2 atmospherics contributor
-- **Atmos pipe network foundation shipped** — vents, scrubbers, pumps, air-alarm routing; Phase 2 substances contributor can build on pipe topology (full pipe-contents persistence still Phase 2)
-- [Diegetic screen UI framework](../architecture/2026-07_diegetic-screen-ui-framework.md) shipped — confirms machine UI snapshots are derived, not persisted
-- EditMode coverage expanded: area/power/lighting/HV-cable/ID-access tests; one save/load test remains (`AreaFloodFillTests.SaveLoad_PreservesAreaIdsAndMetadata`)
-- Area rebuild on load has a **dual path** (see load-order note below): if APCs are already registered, `AreaSubSystem` re-floods from live APCs and **discards** saved metadata (display names, tints, access bits)
-- **`LightingSwitchOn` is not saved** — `AreaRecord.LightingSwitchOn` (wall light switch state) is runtime-only; gap to fix in Phase 1a area contributor
-- **Map Editor UI** (`feature/map-editor-replacement`, not merged) will replace TileMap Creator — Phase 1a rewire targets current `TileMapSaveTab`/`TileMapLoadTab`; update entry points when that branch merges
+- `PersistenceSubSystem`, envelope format, tilemap/area contributors, legacy tilemap migration
+- Area template restore with APC precedence (`BeginTemplateRestore` / `RestoreFromSave`); `lightingSwitchOn` persisted on `SavedAreaRecord`
+- Server meta: permissions envelope + legacy `permissions.txt` migration; append-only round history JSONL
+- `TileSubSystem` and TileMap Creator UI rewired to persistence; `OnMapLoaded` replaced by framework lifecycle events
+- EditMode tests: `PersistenceFrameworkTests`, `ServerMetaPersistenceTests`, updated `AreaFloodFillTests`
 
-**What did not change:** no central `PersistenceSubSystem`, no envelope format, no round-config integration, no round snapshots. Core recommendations stand. Phase 1a is unblocked; Phase 1b waits on round-config implementation; player meta waits on auth.
+**Still deferred (unchanged recommendations):**
+
+- `RoundConfigPersistenceContributor` and round-start `LoadStationTemplate(mapId)` — blocked on round-config feature
+- Phase 2 round snapshots (items, electricity kWh, atmospherics, substances, entities)
+- Player meta — blocked on auth
+- **Map Editor UI** (`feature/map-editor-replacement`, not merged) will replace TileMap Creator — update entry points when that branch merges
+
+**Phase 2 prerequisites unchanged:** [electricity kWh foundation](electricity_kwh_foundation_917ccdbc.plan.md), [atmos ECS foundation](../architecture/2026-07_atmos-ecs-foundation.md), [id-access](../architecture/systems/id-access.md), [inventory-storage.md](Documents/design/inventory-storage.md).
 
 ---
 
-## Current state (what exists)
+## Current state (pre-Phase-1a baseline)
 
-The only real disk persistence today is a **tilemap authoring pipeline** (now including embedded area data):
+> **Note:** This section documents the codebase **before** the persistence framework landed. For the shipped state, see [Implementation notes](#implementation-notes-jul-2026).
+
+The only real disk persistence was a **tilemap authoring pipeline** (including embedded area data):
 
 ```mermaid
 flowchart LR
