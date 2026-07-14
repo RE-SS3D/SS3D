@@ -37,6 +37,17 @@ namespace SS3D.Systems.Tile
 
         public IReadOnlyList<SavedAreaRecord> LoadedAreaRecords => _loadedAreaRecords;
 
+        public void SetLoadedAreaRecords(IEnumerable<SavedAreaRecord> records)
+        {
+            _loadedAreaRecords.Clear();
+            if (records == null)
+            {
+                return;
+            }
+
+            _loadedAreaRecords.AddRange(records);
+        }
+
         public event EventHandler OnMapLoaded;
 
         public static TileMap Create(string name, int mapId = 0)
@@ -536,7 +547,7 @@ namespace SS3D.Systems.Tile
             return Array.Empty<SavedAreaRecord>();
         }
 
-        public void Load([CanBeNull] SavedTileMap saveObject)
+        public void Load([CanBeNull] SavedTileMap saveObject, bool invokeMapLoadedEvent = true)
         {
             if (saveObject == null)
             {
@@ -583,7 +594,11 @@ namespace SS3D.Systems.Tile
 
             if (tileSystem == null)
             {
-                OnMapLoaded?.Invoke(this, EventArgs.Empty);
+                if (invokeMapLoadedEvent)
+                {
+                    OnMapLoaded?.Invoke(this, EventArgs.Empty);
+                }
+
                 return;
             }
 
@@ -594,7 +609,11 @@ namespace SS3D.Systems.Tile
                 PlaceItemObject(savedItem.worldPosition, savedItem.rotation, toBePlaced);
             }
 
-            OnMapLoaded?.Invoke(this, EventArgs.Empty);
+            if (invokeMapLoadedEvent)
+            {
+                OnMapLoaded?.Invoke(this, EventArgs.Empty);
+            }
+
             UpdateAllAdjacencies();
         }
 

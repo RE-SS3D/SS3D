@@ -163,6 +163,17 @@ namespace SS3D.Data.Management
 	        return default;
         }
 
+        public static bool TryReadRaw(string fileName, out string saveString)
+        {
+            return Load(fileName, out saveString);
+        }
+
+        public static DateTime GetLastWriteTimeUtc(string fileName)
+        {
+            string fullPath = SaveFolder + fileName + "." + SaveExtension;
+            return File.Exists(fullPath) ? File.GetLastWriteTimeUtc(fullPath) : DateTime.MinValue;
+        }
+
         public static TSaveObject LoadMostRecentObject<TSaveObject>(string path)
         {
             bool mostRecentFileExists = TryLoadMostRecentFile(path, out string saveString);
@@ -175,6 +186,36 @@ namespace SS3D.Data.Management
             TSaveObject saveObject = JsonUtility.FromJson<TSaveObject>(saveString);
             return saveObject;
 
+        }
+
+        public static string GetMostRecentFileName(string path)
+        {
+            if (!TryLoadMostRecentFile(path, out _))
+            {
+                return null;
+            }
+
+            DirectoryInfo directoryInfo = new(SaveFolder + path);
+            FileInfo[] saveFiles = directoryInfo.GetFiles("*." + SaveExtension);
+            FileInfo mostRecentFile = null;
+
+            foreach (FileInfo fileInfo in saveFiles)
+            {
+                if (mostRecentFile == null || fileInfo.LastWriteTime > mostRecentFile.LastWriteTime)
+                {
+                    mostRecentFile = fileInfo;
+                }
+            }
+
+            if (mostRecentFile == null)
+            {
+                return null;
+            }
+
+            string fileName = mostRecentFile.Name;
+            return fileName.EndsWith("." + SaveExtension)
+                ? fileName[..^(SaveExtension.Length + 1)]
+                : fileName;
         }
 
         /// <summary>

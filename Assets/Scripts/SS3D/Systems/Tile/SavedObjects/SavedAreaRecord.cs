@@ -13,5 +13,6 @@ namespace SS3D.Systems.Tile
         public bool hasDepartmentalLightTint;
         public Color departmentalLightTint;
         public ulong defaultRequiredAccessBits;
+        public bool lightingSwitchOn = true;
     }
 }

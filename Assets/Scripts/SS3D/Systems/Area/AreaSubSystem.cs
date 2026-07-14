@@ -28,11 +28,13 @@ namespace SS3D.Systems.Area
         private readonly HashSet<IAreaApcOrigin> _overlapFlaggedApcs = new();
         private readonly Dictionary<AreaId, AreaLightingState> _lightingStates = new();
         private readonly Dictionary<AreaId, bool> _lightingSwitchOn = new();
+        private Dictionary<Vector3, SavedAreaRecord> _pendingSavedByApcPosition;
 
         private TileMap _map;
         private ITileQueryService _query;
         private AreaFloodFillService _floodFill;
         private bool _electricityTickSubscribed;
+        private bool _templateRestoreActive;
 
         public override void OnStartServer()
         {
@@ -49,9 +51,6 @@ namespace SS3D.Systems.Area
         {
             if (SubSystems.TryGet(out TileSubSystem tileSubSystem))
                 tileSubSystem.OnMapCreated -= HandleTileMapCreated;
-
-            if (_map != null)
-                _map.OnMapLoaded -= HandleMapLoaded;
 
             UnsubscribeElectricityTicks();
             SubSystems.Get<TileSubSystem>()?.UnregisterTileMutationObserver(this);
@@ -77,10 +76,6 @@ namespace SS3D.Systems.Area
             _floodFill = new AreaFloodFillService(_map, _query);
 
             tileSubSystem.RegisterTileMutationObserver(this);
-            _map.OnMapLoaded += HandleMapLoaded;
-
-            if (_map.LoadedAreaRecords.Count > 0 && _registeredApcs.Count == 0)
-                RestoreRegistryFromSave(_map.LoadedAreaRecords);
 
             IsSetUp = true;
             OnSystemSetUp?.Invoke();
@@ -210,6 +205,13 @@ namespace SS3D.Systems.Area
                 return;
 
             _registeredApcs.Add(apc);
+
+            if (_templateRestoreActive && TryLinkApcDuringTemplateRestore(apc))
+            {
+                UpdateOverlapWarnings();
+                TryCompleteTemplateRestore();
+                return;
+            }
 
             if (_registry.TryGetApcArea(apc, out AreaId existingArea))
             {
@@ -394,6 +396,7 @@ namespace SS3D.Systems.Area
                     hasDepartmentalLightTint = record.HasDepartmentalLightTint,
                     departmentalLightTint = record.DepartmentalLightTint,
                     defaultRequiredAccessBits = record.DefaultRequiredAccess.Value,
+                    lightingSwitchOn = record.LightingSwitchOn,
                 });
             }
 
@@ -417,16 +420,101 @@ namespace SS3D.Systems.Area
             // Live boundary recompute deferred.
         }
 
-        private void HandleMapLoaded(object sender, EventArgs args)
+        [Server]
+        public void BeginTemplateRestore(IReadOnlyList<SavedAreaRecord> savedAreas)
         {
-            if (_registeredApcs.Count > 0)
+            _templateRestoreActive = true;
+            _pendingSavedByApcPosition = new Dictionary<Vector3, SavedAreaRecord>();
+
+            if (savedAreas == null)
             {
-                RebuildAllAreasFromApcs();
                 return;
             }
 
-            if (_map.LoadedAreaRecords.Count > 0)
-                RestoreRegistryFromSave(_map.LoadedAreaRecords);
+            foreach (SavedAreaRecord saved in savedAreas)
+            {
+                _pendingSavedByApcPosition[saved.apcWorldPosition] = saved;
+            }
+        }
+
+        [Server]
+        public void RestoreFromSave(IReadOnlyList<SavedAreaRecord> savedAreas)
+        {
+            if (savedAreas == null || savedAreas.Count == 0)
+            {
+                return;
+            }
+
+            RestoreRegistryFromSave(savedAreas);
+            LinkRegisteredApcsDuringTemplateRestore();
+            UpdateAreaLightingStates();
+            TryCompleteTemplateRestore();
+        }
+
+        [Server]
+        public void EndTemplateRestore()
+        {
+            _templateRestoreActive = false;
+            _pendingSavedByApcPosition = null;
+        }
+
+        private bool TryLinkApcDuringTemplateRestore(IAreaApcOrigin apc)
+        {
+            if (_pendingSavedByApcPosition == null || _query == null)
+            {
+                return false;
+            }
+
+            Vector3 world = _query.TileToWorld(apc.OriginTile);
+            if (!_pendingSavedByApcPosition.TryGetValue(world, out SavedAreaRecord saved))
+            {
+                return false;
+            }
+
+            var areaId = new AreaId(saved.id);
+            if (!_registry.TryGet(areaId, out AreaRecord record))
+            {
+                return false;
+            }
+
+            record.Apc = apc;
+            _lightingSwitchOn[areaId] = record.LightingSwitchOn;
+            return true;
+        }
+
+        private void LinkRegisteredApcsDuringTemplateRestore()
+        {
+            foreach (IAreaApcOrigin apc in _registeredApcs)
+            {
+                TryLinkApcDuringTemplateRestore(apc);
+            }
+
+            UpdateOverlapWarnings();
+        }
+
+        private void TryCompleteTemplateRestore()
+        {
+            if (!_templateRestoreActive)
+            {
+                return;
+            }
+
+            if (_pendingSavedByApcPosition == null || _pendingSavedByApcPosition.Count == 0)
+            {
+                EndTemplateRestore();
+                return;
+            }
+
+            foreach (SavedAreaRecord saved in _pendingSavedByApcPosition.Values)
+            {
+                var areaId = new AreaId(saved.id);
+                if (!_registry.TryGet(areaId, out AreaRecord record) || record.Apc == null)
+                {
+                    return;
+                }
+            }
+
+            EndTemplateRestore();
         }
 
         private void RestoreRegistryFromSave(IReadOnlyList<SavedAreaRecord> savedAreas)
@@ -446,7 +534,10 @@ namespace SS3D.Systems.Area
                     HasDepartmentalLightTint = saved.hasDepartmentalLightTint,
                     DepartmentalLightTint = saved.departmentalLightTint,
                     DefaultRequiredAccess = new IdAccess.AccessMask(saved.defaultRequiredAccessBits),
+                    LightingSwitchOn = saved.lightingSwitchOn,
                 });
+
+                _lightingSwitchOn[new AreaId(saved.id)] = saved.lightingSwitchOn;
             }
 
             _registry.EnsureNextIdAbove(highestId);

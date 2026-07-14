@@ -222,13 +222,43 @@ namespace EditorTests
 
             var loadedQuery = new TileQueryService(loadedMap);
             var loadedAreaSubSystem = new AreaSubSystemHarness(loadedMap, loadedQuery);
-            loadedAreaSubSystem.HandleMapLoaded();
+            loadedAreaSubSystem.BeginTemplateRestore(saved.savedAreas);
+            loadedAreaSubSystem.RestoreFromSave(saved.savedAreas);
 
             TileCoord origin = apc.OriginTile;
             Assert.AreEqual(context.GetAreaId(origin), GetRawAreaId(loadedMap, origin));
             Assert.AreEqual(1, loadedMap.LoadedAreaRecords.Count);
             Assert.AreEqual("Engineering", loadedMap.LoadedAreaRecords[0].displayName);
             Assert.AreEqual("eng", loadedMap.LoadedAreaRecords[0].parentTag);
+        }
+
+        [Test]
+        public void TemplateRestore_WithRegisteredApc_PreservesSavedMetadata()
+        {
+            AreaTestContext context = AreaTestContext.CreateRoom(new Vector3(0, 0, 0), 4, 4);
+            TestApc apc = context.PlaceApc(new Vector3(2, 0, 2));
+            context.RebuildAll();
+            AreaId areaId = context.GetApcAreaId(apc);
+            context.AreaSubSystem.RenameArea(areaId, "Engineering");
+            context.AreaSubSystem.SetParentTag(areaId, "eng");
+
+            SavedAreaRecord[] saved = context.AreaSubSystem.BuildSavedAreaRecords();
+            saved[0].lightingSwitchOn = false;
+
+            TileMap loadedMap = TileMap.Create("LoadedApcMap");
+            loadedMap.Load(context.Map.Save(), invokeMapLoadedEvent: false);
+            loadedMap.SetLoadedAreaRecords(saved);
+
+            var loadedQuery = new TileQueryService(loadedMap);
+            var loadedAreaSubSystem = new AreaSubSystemHarness(loadedMap, loadedQuery);
+            loadedAreaSubSystem.RegisterApc(apc);
+            loadedAreaSubSystem.BeginTemplateRestore(saved);
+            loadedAreaSubSystem.RestoreFromSave(saved);
+
+            Assert.IsTrue(loadedAreaSubSystem.TryGetAreaForApc(apc, out AreaRecord record));
+            Assert.AreEqual("Engineering", record.DisplayName);
+            Assert.AreEqual("eng", record.ParentTag);
+            Assert.IsFalse(record.LightingSwitchOn);
         }
 
         private static ushort GetRawAreaId(TileMap map, TileCoord coord)
@@ -443,6 +473,8 @@ namespace EditorTests
             private readonly TileMap _map;
             private readonly ITileQueryService _query;
             private readonly AreaFloodFillService _floodFill;
+            private Dictionary<Vector3, SavedAreaRecord> _pendingSavedByApcPosition;
+            private bool _templateRestoreActive;
 
             public AreaSubSystemHarness(TileMap map, ITileQueryService query)
             {
@@ -453,6 +485,16 @@ namespace EditorTests
 
             public void HandleMapLoaded()
             {
+                if (_templateRestoreActive)
+                {
+                    if (_map.LoadedAreaRecords.Count > 0)
+                    {
+                        RestoreFromSave(_map.LoadedAreaRecords);
+                    }
+
+                    return;
+                }
+
                 if (_registeredApcs.Count > 0)
                 {
                     RebuildAllAreasFromApcs();
@@ -460,7 +502,40 @@ namespace EditorTests
                 }
 
                 if (_map.LoadedAreaRecords.Count > 0)
-                    RestoreRegistryFromSave(_map.LoadedAreaRecords);
+                    RestoreFromSave(_map.LoadedAreaRecords);
+            }
+
+            public void BeginTemplateRestore(IReadOnlyList<SavedAreaRecord> savedAreas)
+            {
+                _templateRestoreActive = true;
+                _pendingSavedByApcPosition = new Dictionary<Vector3, SavedAreaRecord>();
+
+                if (savedAreas == null)
+                {
+                    return;
+                }
+
+                foreach (SavedAreaRecord saved in savedAreas)
+                {
+                    _pendingSavedByApcPosition[saved.apcWorldPosition] = saved;
+                }
+            }
+
+            public void RestoreFromSave(IReadOnlyList<SavedAreaRecord> savedAreas)
+            {
+                if (savedAreas == null || savedAreas.Count == 0)
+                {
+                    return;
+                }
+
+                RestoreRegistryFromSave(savedAreas);
+                LinkRegisteredApcsDuringTemplateRestore();
+            }
+
+            public bool TryGetAreaForApc(IAreaApcOrigin apc, out AreaRecord record)
+            {
+                record = null;
+                return _registry.TryGetApcArea(apc, out AreaId areaId) && _registry.TryGet(areaId, out record);
             }
 
             public bool TryGetAreaForDevice(PlacedTileObject tileObject, out AreaRecord record)
@@ -504,6 +579,12 @@ namespace EditorTests
                     return;
 
                 _registeredApcs.Add(apc);
+
+                if (_templateRestoreActive && TryLinkApcDuringTemplateRestore(apc))
+                {
+                    UpdateOverlapWarnings();
+                    return;
+                }
 
                 if (_registry.TryGetApcArea(apc, out AreaId existingArea))
                 {
@@ -596,6 +677,7 @@ namespace EditorTests
                             displayName = record.DisplayName,
                             parentTag = record.ParentTag,
                             apcWorldPosition = _query.TileToWorld(apc.OriginTile),
+                            lightingSwitchOn = record.LightingSwitchOn,
                         };
                     })
                     .ToArray();
@@ -614,10 +696,44 @@ namespace EditorTests
                         Id = new AreaId(saved.id),
                         DisplayName = saved.displayName,
                         ParentTag = saved.parentTag,
+                        LightingSwitchOn = saved.lightingSwitchOn,
                     });
                 }
 
                 _registry.EnsureNextIdAbove(highestId);
+            }
+
+            private bool TryLinkApcDuringTemplateRestore(IAreaApcOrigin apc)
+            {
+                if (_pendingSavedByApcPosition == null)
+                {
+                    return false;
+                }
+
+                Vector3 world = _query.TileToWorld(apc.OriginTile);
+                if (!_pendingSavedByApcPosition.TryGetValue(world, out SavedAreaRecord saved))
+                {
+                    return false;
+                }
+
+                var areaId = new AreaId(saved.id);
+                if (!_registry.TryGet(areaId, out AreaRecord record))
+                {
+                    return false;
+                }
+
+                record.Apc = apc;
+                return true;
+            }
+
+            private void LinkRegisteredApcsDuringTemplateRestore()
+            {
+                foreach (IAreaApcOrigin apc in _registeredApcs)
+                {
+                    TryLinkApcDuringTemplateRestore(apc);
+                }
+
+                UpdateOverlapWarnings();
             }
 
             private HashSet<TileCoord> BuildClaimedTilesExcluding(AreaId excludeAreaId)
