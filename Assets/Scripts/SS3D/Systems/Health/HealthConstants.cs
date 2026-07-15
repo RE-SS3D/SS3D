@@ -58,6 +58,16 @@
         public const float DefibrillatorHeartRestorePercent = 60f;
         public const float DefibrillatorMisshockBurnDamage = 25f;
 
+        // Field treatment (Phase 5).
+        public const float BurnDressingHealAmount = 25f;
+        public const float OxygenTankOxyRelief = 0.35f;
+        public const float CprOxyRelief = 0.25f;
+        public const float CprWindupSeconds = 3f;
+        public const float TransfusionBloodRestore = 0.35f;
+        public const float AntitoxinReduction = 0.40f;
+        public const float TreatmentBloodLowThreshold = 0.85f;
+        public const float TreatmentOxyDebtThreshold = 0.05f;
+
         // Limb capability multipliers.
         public const float LimbDisabledMovementMultiplier = 0.35f;
         public const float LimbSevereMovementMultiplier = 0.6f;

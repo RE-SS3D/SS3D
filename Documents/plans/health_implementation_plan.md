@@ -28,7 +28,7 @@ todos:
     status: completed
   - id: phase5-treatment
     content: "Phase 5: Field treatments (burn dressing, splint, O2, CPR, antitoxin, IV/transfusion)"
-    status: pending
+    status: completed
   - id: phase6-hud
     content: "Phase 6: Vitals cluster + screen-space feedback, examine-self organ readout, new bleeding VFX + URP Decal blood decals on model"
     status: pending
@@ -545,3 +545,10 @@ health.md §8 + death-cloning §9 example A, end-to-end:
 - `ZoneTargetResolver.TryResolveCombatZone` raycasts `BodyParts` colliders from aim origin; groin resolved via lower-chest vertical banding (`GroinTorsoBandFraction`).
 - Fists via `HandHit`; crowbar vertical slice via `MeleeWeaponItemExtension` on `Crowbar.prefab` (18 brute, 0.35s windup, 0.5s recovery).
 - Held weapons resolve the owning `Hand` through `IInteractionSource.Source` for range checks and recovery tracking.
+
+### Phase 5 (shipped)
+
+- Field treatments follow the bandage Help-intent pattern via `MedicalInteractionUtility` and targeted zone/systemic application.
+- **BurnPatch** → burn dressing (zone burn heal); **BrutePatch** → splint (disabled limb stabilization via `IsSplinted`); **OxygenTank** → head-targeted oxy relief; **Medkit** → chest transfusion + antitoxin (reusable); empty hands → chest CPR (3s windup).
+- `HumanHealthController` adds `ApplyBloodTransfusion`, `ApplyOxyRelief`, `ApplyAntitoxin`, `ApplyCpr`, and splint support on `ApplyTreatment`.
+- Dedicated IV bag / syringe prefabs deferred until art import; medkit stands in for field blood + antitoxin.

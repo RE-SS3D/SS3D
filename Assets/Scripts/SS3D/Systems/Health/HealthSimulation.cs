@@ -268,6 +268,36 @@ namespace SS3D.Systems.Health
             return DefibrillatorOutcome.UnnecessaryShock;
         }
 
+        public static SystemicPools ApplyBloodTransfusion(SystemicPools pools, float bloodRestore)
+        {
+            return new SystemicPools
+            {
+                BloodVolumeRatio = Clamp01(pools.BloodVolumeRatio + bloodRestore),
+                OxyDebt = pools.OxyDebt,
+                ToxinConcentration = pools.ToxinConcentration,
+            };
+        }
+
+        public static SystemicPools ApplyOxyRelief(SystemicPools pools, float oxyRelief)
+        {
+            return new SystemicPools
+            {
+                BloodVolumeRatio = pools.BloodVolumeRatio,
+                OxyDebt = Math.Max(0f, pools.OxyDebt - oxyRelief),
+                ToxinConcentration = pools.ToxinConcentration,
+            };
+        }
+
+        public static SystemicPools ApplyAntitoxin(SystemicPools pools, float toxinReduction)
+        {
+            return new SystemicPools
+            {
+                BloodVolumeRatio = pools.BloodVolumeRatio,
+                OxyDebt = pools.OxyDebt,
+                ToxinConcentration = Math.Max(0f, pools.ToxinConcentration - toxinReduction),
+            };
+        }
+
         private static float Clamp01(float value) => Math.Clamp(value, 0f, 1f);
     }
 }

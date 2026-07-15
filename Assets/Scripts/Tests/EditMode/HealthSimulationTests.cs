@@ -391,5 +391,60 @@ namespace EditorTests
             Assert.AreEqual(HealthConstants.DefibrillatorMisshockBurnDamage, burnApplied);
             Assert.AreEqual(HealthConstants.DefibrillatorMisshockBurnDamage, zones[(int)BodyZone.Chest].Burn);
         }
+
+        [Test]
+        public void BloodTransfusionRestoresBloodVolume()
+        {
+            SystemicPools pools = new SystemicPools
+            {
+                BloodVolumeRatio = 0.4f,
+                OxyDebt = 0.5f,
+                ToxinConcentration = 0.2f,
+            };
+
+            pools = HealthSimulation.ApplyBloodTransfusion(pools, HealthConstants.TransfusionBloodRestore);
+
+            Assert.AreEqual(0.75f, pools.BloodVolumeRatio, 0.001f);
+            Assert.AreEqual(0.5f, pools.OxyDebt, 0.001f);
+        }
+
+        [Test]
+        public void OxyReliefAndAntitoxinReduceSystemicPools()
+        {
+            SystemicPools pools = new SystemicPools
+            {
+                BloodVolumeRatio = 0.6f,
+                OxyDebt = 0.8f,
+                ToxinConcentration = 0.9f,
+            };
+
+            pools = HealthSimulation.ApplyOxyRelief(pools, HealthConstants.OxygenTankOxyRelief);
+            pools = HealthSimulation.ApplyAntitoxin(pools, HealthConstants.AntitoxinReduction);
+
+            Assert.AreEqual(0.45f, pools.OxyDebt, 0.001f);
+            Assert.AreEqual(0.5f, pools.ToxinConcentration, 0.001f);
+        }
+
+        [Test]
+        public void SplintedDisabledLimbUsesPartialMovementMultiplier()
+        {
+            var zones = new ZoneDamageState[HealthConstants.ZoneCount];
+            for (int i = 0; i < zones.Length; i++)
+            {
+                zones[i] = ZoneDamageState.Default;
+            }
+
+            zones[(int)BodyZone.LeftLeg] = new ZoneDamageState
+            {
+                Brute = HealthConstants.DisabledThreshold,
+                Severity = WoundSeverity.Disabled,
+                IsDisabled = true,
+                IsSplinted = true,
+            };
+
+            float movement = OrganSimulation.ComputeMovementSpeedMultiplier(zones);
+            Assert.AreEqual(HealthConstants.LimbSevereMovementMultiplier, movement, 0.001f);
+            Assert.IsTrue(OrganSimulation.CanUseArms(zones));
+        }
     }
 }

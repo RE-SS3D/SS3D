@@ -101,9 +101,19 @@ namespace SS3D.Systems.Health
 
         public static bool CanUseArms(IReadOnlyList<ZoneDamageState> zones)
         {
-            bool leftDisabled = zones[(int)BodyZone.LeftArm].IsDisabled;
-            bool rightDisabled = zones[(int)BodyZone.RightArm].IsDisabled;
+            bool leftDisabled = IsLimbFunctionallyDisabled(zones[(int)BodyZone.LeftArm]);
+            bool rightDisabled = IsLimbFunctionallyDisabled(zones[(int)BodyZone.RightArm]);
             return !(leftDisabled && rightDisabled);
+        }
+
+        public static bool IsLimbZone(BodyZone zone)
+        {
+            return zone is BodyZone.LeftArm or BodyZone.RightArm or BodyZone.LeftLeg or BodyZone.RightLeg;
+        }
+
+        public static bool IsLimbFunctionallyDisabled(ZoneDamageState zone)
+        {
+            return zone.IsDisabled && !zone.IsSplinted;
         }
 
         public static float GetStoredOrganFunction(IEnumerable<OrganState> organs, OrganType type)
@@ -173,7 +183,9 @@ namespace SS3D.Systems.Health
         {
             if (zone.IsDisabled)
             {
-                return HealthConstants.LimbDisabledMovementMultiplier;
+                return zone.IsSplinted
+                    ? HealthConstants.LimbSevereMovementMultiplier
+                    : HealthConstants.LimbDisabledMovementMultiplier;
             }
 
             if (zone.Severity >= WoundSeverity.Severe)

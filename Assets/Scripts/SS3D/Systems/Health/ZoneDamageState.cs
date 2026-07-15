@@ -10,6 +10,7 @@ namespace SS3D.Systems.Health
         public WoundSeverity Severity;
         public float BleedingRate;
         public bool IsDisabled;
+        public bool IsSplinted;
 
         public static ZoneDamageState Default => new()
         {
@@ -18,6 +19,7 @@ namespace SS3D.Systems.Health
             Severity = WoundSeverity.None,
             BleedingRate = 0f,
             IsDisabled = false,
+            IsSplinted = false,
         };
     }
 }

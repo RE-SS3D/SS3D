@@ -1,12 +1,12 @@
 > Code paths: Assets/Scripts/SS3D/Systems/Health/
 > Entry points: HumanHealthController, HealthSimulation, OrganSimulation
-> Status: partial (Phase 4 combat zone hits shipped; field treatment Phase 5)
+> Status: partial (Phase 5 field treatments shipped; vitals HUD Phase 6)
 
 # Health
 
 ## Overview
 
-Greenfield rewrite in progress per [health_implementation_plan.md](../../plans/health_implementation_plan.md). Phase 1 shipped bleeding, bandage, VFX, and alert chip. Phase 2 wires asset-backed organs into pool math, cardiac arrest, and movement debuffs. Phase 3 adds multi-threshold critical state, cardiac arrest → defib window, and chest defibrillation (screen-space feedback moves to Phase 6). Phase 4 adds BodyParts raycast zone resolution for melee combat.
+Greenfield rewrite in progress per [health_implementation_plan.md](../../plans/health_implementation_plan.md). Phase 1 shipped bleeding, bandage, VFX, and alert chip. Phase 2 wires asset-backed organs into pool math, cardiac arrest, and movement debuffs. Phase 3 adds multi-threshold critical state, cardiac arrest → defib window, and chest defibrillation (screen-space feedback moves to Phase 6). Phase 4 adds BodyParts raycast zone resolution for melee combat. Phase 5 adds field treatments (burn dressing, splint, O2, CPR, transfusion, antitoxin).
 
 ## Start here
 
@@ -14,6 +14,12 @@ Greenfield rewrite in progress per [health_implementation_plan.md](../../plans/h
 - `Assets/Scripts/SS3D/Systems/Health/HealthSimulation.cs` — pool math, severity/bleeding, critical/death evaluation
 - `Assets/Scripts/SS3D/Systems/Health/OrganSimulation.cs` — zone→organ damage, organ tick drains, perfusion, limb multipliers
 - `Assets/Scripts/SS3D/Systems/Health/OrganInstance.cs` — organ registration on Human prefab / organ item prefabs
+- `Assets/Scripts/SS3D/Systems/Health/Interactions/BandageInteraction.cs` — stop bleeding (Phase 1)
+- `Assets/Scripts/SS3D/Systems/Health/Interactions/BurnDressingInteraction.cs` — zone burn heal (Phase 5)
+- `Assets/Scripts/SS3D/Systems/Health/Interactions/SplintInteraction.cs` — limb splint (Phase 5)
+- `Assets/Scripts/SS3D/Systems/Health/Interactions/OxygenTreatmentInteraction.cs` — oxy debt relief (Phase 5)
+- `Assets/Scripts/SS3D/Systems/Health/Interactions/CprInteraction.cs` + `HandCprExtension.cs` — chest CPR (Phase 5)
+- `Assets/Scripts/SS3D/Systems/Health/Interactions/TransfusionInteraction.cs` / `AntitoxinInteraction.cs` — medkit systemic treatments (Phase 5)
 - `Assets/Scripts/SS3D/Systems/Health/Interactions/DefibrillatorInteraction.cs` — chest-zone defibrillation (Phase 3)
 - `Assets/Scripts/SS3D/Systems/IngameConsoleSystem/Commands/DefibCommand.cs` — admin defib testing
 - `Assets/Scripts/SS3D/Systems/Health/HealthDebugController.cs` — IMGUI overlay (H) for full zone/organ/pool inspection
@@ -26,7 +32,8 @@ Greenfield rewrite in progress per [health_implementation_plan.md](../../plans/h
 - `IHealthEffectModifier` — virology/chemistry/stamina deltas (Phase 7+)
 - `ApplyDamage(BodyZone, MeleeDamagePacket)` — melee combat input (Phase 4)
 - `ApplyDamage(BodyZone, brute, burn)` — direct damage (console `hurt`, future sources)
-- `ApplyTreatment(...)` — medical interactions (Phase 5 field treatments)
+- `ApplyTreatment(...)` — zone treatments including splint flag (Phase 5)
+- `ApplyBloodTransfusion` / `ApplyOxyRelief` / `ApplyAntitoxin` / `ApplyCpr` — systemic field treatments (Phase 5)
 - `ZoneTargetResolver.TryResolveCombatZone` — BodyParts raycast + groin banding for Harm hits
 
 ## Depends on / Used by

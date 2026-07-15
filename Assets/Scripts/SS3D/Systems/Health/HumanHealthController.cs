@@ -162,7 +162,7 @@ namespace SS3D.Systems.Health
         }
 
         [Server]
-        public void ApplyTreatment(BodyZone zone, float bruteHeal = 0f, float burnHeal = 0f, bool stopBleeding = false)
+        public void ApplyTreatment(BodyZone zone, float bruteHeal = 0f, float burnHeal = 0f, bool stopBleeding = false, bool applySplint = false)
         {
             int index = (int)zone;
             if (index < 0 || index >= _zones.Length)
@@ -179,6 +179,11 @@ namespace SS3D.Systems.Health
                 state.BleedingRate = 0f;
             }
 
+            if (applySplint)
+            {
+                state.IsSplinted = true;
+            }
+
             RefreshZoneDerivedState(ref state);
             if (!stopBleeding)
             {
@@ -187,6 +192,34 @@ namespace SS3D.Systems.Health
 
             _zones[index] = state;
 
+            PublishSnapshot();
+        }
+
+        [Server]
+        public void ApplyBloodTransfusion(float bloodRestore = HealthConstants.TransfusionBloodRestore)
+        {
+            _pools = HealthSimulation.ApplyBloodTransfusion(_pools, bloodRestore);
+            PublishSnapshot();
+        }
+
+        [Server]
+        public void ApplyOxyRelief(float oxyRelief = HealthConstants.OxygenTankOxyRelief)
+        {
+            _pools = HealthSimulation.ApplyOxyRelief(_pools, oxyRelief);
+            PublishSnapshot();
+        }
+
+        [Server]
+        public void ApplyAntitoxin(float toxinReduction = HealthConstants.AntitoxinReduction)
+        {
+            _pools = HealthSimulation.ApplyAntitoxin(_pools, toxinReduction);
+            PublishSnapshot();
+        }
+
+        [Server]
+        public void ApplyCpr()
+        {
+            _pools = HealthSimulation.ApplyOxyRelief(_pools, HealthConstants.CprOxyRelief);
             PublishSnapshot();
         }
 
