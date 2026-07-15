@@ -18,6 +18,7 @@
     <ui:Style src="project://database/Assets/Content/Systems/UI/MachineInterface/Templates/VendingMachineInterface.uss" />
 
     <ss3d:DiegeticDeviceShell name="device-shell"
+        class="vending-interface"
         model-label="VND-7 · ration &amp; sundries dispenser"
         power-ok="true"
         style="align-self: center; margin-top: 24px;">

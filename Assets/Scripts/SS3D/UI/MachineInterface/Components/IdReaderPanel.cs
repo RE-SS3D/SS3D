@@ -57,7 +57,7 @@ namespace SS3D.UI.MachineInterface.Components
                 _statusLine.text = "No compatible ID read";
                 _subLine.text = "Read a Medical-tier ID to unlock gated items";
                 _readButton.Text = "Read ID Card";
-                _readButton.Disabled = true;
+                _readButton.Disabled = false;
             }
         }
     }

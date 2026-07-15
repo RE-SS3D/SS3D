@@ -121,9 +121,12 @@ namespace EditorTests
             Assert.AreEqual(original.MachineObjectId, roundTripped.MachineObjectId);
             Assert.AreEqual(original.InterfaceId, roundTripped.InterfaceId);
             Assert.AreEqual(original.Title, roundTripped.Title);
+            Assert.AreEqual(original.IdScanned, roundTripped.IdScanned);
+            Assert.AreEqual(original.Scanning, roundTripped.Scanning);
             Assert.AreEqual(original.ProductCount, roundTripped.ProductCount);
             Assert.AreEqual(original.Product0.Name, roundTripped.Product0.Name);
             Assert.AreEqual(original.Product0.Stock, roundTripped.Product0.Stock);
+            Assert.AreEqual(original.Product1.RequiresId, roundTripped.Product1.RequiresId);
             Assert.AreEqual(original.TrayItemCount, roundTripped.TrayItemCount);
             Assert.AreEqual(original.Tray0.Name, roundTripped.Tray0.Name);
             Assert.AreEqual(original.LogEntryCount, roundTripped.LogEntryCount);
@@ -415,9 +418,11 @@ namespace EditorTests
                 ConnectionStatus = "WIRED · VEND BUS · PORT J1",
                 StockedReadout = "2 of 2 items stocked",
                 PowerOk = true,
+                IdScanned = true,
+                Scanning = false,
                 ProductCount = 2,
                 Product0 = new VendingProductSnapshot { Name = "Ration Bar", Stock = 4, RequiresId = false },
-                Product1 = new VendingProductSnapshot { Name = "Water Pouch", Stock = 0, RequiresId = false },
+                Product1 = new VendingProductSnapshot { Name = "Water Pouch", Stock = 0, RequiresId = true },
                 TrayItemCount = 1,
                 Tray0 = new VendingTrayItemSnapshot { Name = "Space Cola" },
                 LogEntryCount = 1,

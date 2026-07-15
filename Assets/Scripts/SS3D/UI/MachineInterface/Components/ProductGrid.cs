@@ -33,6 +33,8 @@ namespace SS3D.UI.MachineInterface.Components
             {
                 VendingProductViewData product = products[i];
                 ProductCard card = new();
+                card.Clicked += index => ProductSelected?.Invoke(index);
+                _grid.Add(card);
                 card.SetProduct(
                     product.Index,
                     product.Name,
@@ -40,8 +42,6 @@ namespace SS3D.UI.MachineInterface.Components
                     product.Locked,
                     vendingProductIndex == product.Index,
                     product.CanSelect);
-                card.Clicked += index => ProductSelected?.Invoke(index);
-                _grid.Add(card);
             }
         }
     }

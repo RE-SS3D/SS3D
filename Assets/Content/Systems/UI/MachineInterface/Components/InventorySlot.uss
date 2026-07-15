@@ -17,6 +17,12 @@
     background-color: var(--ss3d-diegetic-panel-raised);
 }
 
+.inventory-slot__unknown-glyph {
+    font-size: 22px;
+    color: var(--ss3d-text-tertiary);
+    display: none;
+}
+
 .inventory-slot__label {
     font-size: 10px;
     color: var(--ss3d-text-tertiary);
