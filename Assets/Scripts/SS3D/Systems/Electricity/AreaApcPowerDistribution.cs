@@ -1,9 +1,8 @@
 using SS3D.Core;
 using SS3D.Systems.Area;
 using System.Collections.Generic;
-using System.Linq;
 
-namespace System.Electricity
+namespace SS3D.Systems.Electricity
 {
     /// <summary>
     /// Powers consumers from their area APC without requiring a cable path to each device.
@@ -57,24 +56,15 @@ namespace System.Electricity
             return activeConsumers;
         }
 
-        public static bool IsChannelEnabled(PowerChannel channel, ApcControlFlags enabledChannels)
-        {
-            ApcControlFlags flag = channel switch
-            {
-                PowerChannel.Lighting => ApcControlFlags.Lighting,
-                PowerChannel.Environment => ApcControlFlags.Environment,
-                _ => ApcControlFlags.Equipment,
-            };
-
-            return (enabledChannels & flag) != 0;
-        }
+        public static bool IsChannelEnabled(PowerChannel channel, ApcControlFlags enabledChannels) =>
+            PowerGate.IsChannelEnabled(channel, enabledChannels);
 
         public static CircuitStats BuildApcStats(
             float gridSupplyKw,
             IPowerStorage apcCell,
             IReadOnlyList<IPowerConsumer> activeAreaConsumers)
         {
-            float demandKw = activeAreaConsumers.Sum(consumer => consumer.PowerNeeded);
+            float demandKw = SumPowerNeeded(activeAreaConsumers);
             float batteryCharge = apcCell != null && apcCell.MaxCapacityKwh > 0f
                 ? apcCell.StoredEnergyKwh / apcCell.MaxCapacityKwh
                 : 0f;
@@ -104,7 +94,7 @@ namespace System.Electricity
             float totalBudgetKw = gridSupplyKw + cellDeliverableKw;
             List<IPowerConsumer> poweredConsumers = PowerConsumerAllocation.AllocateUnderBudget(activeAreaConsumers, totalBudgetKw);
 
-            float poweredDemandKw = poweredConsumers.Sum(consumer => consumer.PowerNeeded);
+            float poweredDemandKw = SumPowerNeeded(poweredConsumers);
             float cellDrawKw = poweredDemandKw - gridSupplyKw;
 
             if (cellDrawKw > 0f && apcCell != null)
@@ -116,16 +106,41 @@ namespace System.Electricity
                 apcCell.AddPowerKw(-cellDrawKw, tickSeconds);
             }
 
-            HashSet<IPowerConsumer> poweredSet = poweredConsumers.ToHashSet();
-            foreach (IPowerConsumer consumer in areaConsumers)
+            for (int i = 0; i < areaConsumers.Count; i++)
             {
-                consumer.PowerStatus = poweredSet.Contains(consumer) ? PowerStatus.Powered : PowerStatus.Inactive;
+                areaConsumers[i].PowerStatus = PowerStatus.Inactive;
+            }
+
+            for (int i = 0; i < poweredConsumers.Count; i++)
+            {
+                poweredConsumers[i].PowerStatus = PowerStatus.Powered;
             }
         }
 
-        private static float SumChannelLoad(IEnumerable<IPowerConsumer> consumers, PowerChannel channel)
+        public static float SumPowerNeeded(IReadOnlyList<IPowerConsumer> consumers)
         {
-            return consumers.Where(consumer => consumer.Channel == channel).Sum(consumer => consumer.PowerNeeded);
+            float sum = 0f;
+            for (int i = 0; i < consumers.Count; i++)
+            {
+                sum += consumers[i].PowerNeeded;
+            }
+
+            return sum;
+        }
+
+        private static float SumChannelLoad(IReadOnlyList<IPowerConsumer> consumers, PowerChannel channel)
+        {
+            float sum = 0f;
+            for (int i = 0; i < consumers.Count; i++)
+            {
+                IPowerConsumer consumer = consumers[i];
+                if (consumer.Channel == channel)
+                {
+                    sum += consumer.PowerNeeded;
+                }
+            }
+
+            return sum;
         }
     }
 }

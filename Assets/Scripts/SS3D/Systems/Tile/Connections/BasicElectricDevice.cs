@@ -1,6 +1,6 @@
 ﻿using SS3D.Core;
 using SS3D.Core.Behaviours;
-using System.Electricity;
+using SS3D.Systems.Electricity;
 
 namespace SS3D.Systems.Tile.Connections
 {

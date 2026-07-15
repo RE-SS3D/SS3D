@@ -1,9 +1,9 @@
-﻿using FishNet.Object;
+using FishNet.Object;
 using SS3D.Core;
 using UnityEngine;
 using UnityEngine.Serialization;
 
-namespace System.Electricity
+namespace SS3D.Systems.Electricity
 {
     /// <summary>
     /// Script for SMES battery, mostly to handle displaying visual indicators on the SMES models.

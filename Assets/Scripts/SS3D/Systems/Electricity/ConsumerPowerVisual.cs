@@ -5,7 +5,7 @@ using SS3D.Systems.Area;
 using SS3D.Systems.Tile.Connections;
 using UnityEngine;
 
-namespace System.Electricity
+namespace SS3D.Systems.Electricity
 {
     /// <summary>
     /// Dims emissive materials and optional panel indicators when a power consumer is inactive.
@@ -239,30 +239,7 @@ namespace System.Electricity
 
         private bool ShouldShowPowered()
         {
-            if (_consumer == null)
-            {
-                return false;
-            }
-
-            PowerStatus status = _consumer.PowerStatus;
-            if (!IsConsumerApcChannelEnabled())
-            {
-                status = PowerStatus.Inactive;
-            }
-
-            return status == PowerStatus.Powered;
-        }
-
-        private bool IsConsumerApcChannelEnabled()
-        {
-            if (_consumer is not IElectricDevice device
-                || !SubSystems.TryGet(out AreaSubSystem areaSubSystem)
-                || !areaSubSystem.TryGetEffectiveApcForDevice(device, out IApcChannelSource apc))
-            {
-                return true;
-            }
-
-            return AreaApcPowerDistribution.IsChannelEnabled(_consumer.Channel, apc.Channels);
+            return PowerGate.IsEffectivelyPowered(_consumer, NullConsumerPolicy.Deny);
         }
 
         private void SetEmissiveState(bool powered)

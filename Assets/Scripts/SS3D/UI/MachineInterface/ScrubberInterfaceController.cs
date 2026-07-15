@@ -2,7 +2,7 @@ using FishNet.Connection;
 using FishNet.Object;
 using FishNet.Object.Synchronizing;
 using SS3D.Systems.Atmospherics.Pipes;
-using System.Electricity;
+using SS3D.Systems.Electricity;
 using UnityEngine;
 
 namespace SS3D.UI.MachineInterface
@@ -135,7 +135,7 @@ namespace SS3D.UI.MachineInterface
                 _scrubber = GetComponent<ScrubberController>();
             }
 
-            bool powerOk = _powerConsumer == null || _powerConsumer.PowerStatus == PowerStatus.Powered;
+            bool powerOk = PowerGate.IsPowered(_powerConsumer, NullConsumerPolicy.Allow);
             bool powered = _scrubber != null && _scrubber.IsEnabled;
             bool connected = _scrubber != null && _scrubber.TryGetConnectedNetwork(out _);
             bool flowing = _scrubber != null && _scrubber.IsPortFlowing;

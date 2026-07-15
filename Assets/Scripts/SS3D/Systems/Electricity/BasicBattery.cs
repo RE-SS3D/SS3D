@@ -1,8 +1,9 @@
-﻿using FishNet.Object.Synchronizing;
+using FishNet.Object.Synchronizing;
 using SS3D.Systems.Tile.Connections;
+using System;
 using UnityEngine;
 
-namespace System.Electricity
+namespace SS3D.Systems.Electricity
 {
     /// <summary>
     /// A basic implementation of the IPowerStorage interface.
@@ -42,15 +43,8 @@ namespace System.Electricity
             set => _maxChargeRateKw = Mathf.Max(0f, value);
         }
 
-        public float MaxDeliverableKw(float tickSeconds)
-        {
-            if (!_isOn || _storedEnergyKwh <= 0f)
-            {
-                return 0f;
-            }
-
-            return Mathf.Min(_maxDischargeRateKw, ElectricityUnits.KwhToKw(_storedEnergyKwh, tickSeconds));
-        }
+        public float MaxDeliverableKw(float tickSeconds) =>
+            PowerStorageMath.MaxDeliverableKw(_storedEnergyKwh, _maxDischargeRateKw, tickSeconds, _isOn);
 
         public bool IsOn { get => _isOn; set => _isOn = value; }
 
@@ -62,33 +56,22 @@ namespace System.Electricity
             StoredEnergyKwh = storedEnergyKwh;
         }
 
-        public float AddPowerKw(float requestedKw, float tickSeconds)
-        {
-            if (requestedKw <= 0f || !_isOn || RemainingCapacityKwh <= 0f || _maxChargeRateKw <= 0f)
-            {
-                return 0f;
-            }
+        public float AddPowerKw(float requestedKw, float tickSeconds) =>
+            PowerStorageMath.AddPowerKw(
+                ref _storedEnergyKwh,
+                _maxCapacityKwh,
+                _maxChargeRateKw,
+                requestedKw,
+                tickSeconds,
+                _isOn);
 
-            float absorbedKw = Mathf.Min(requestedKw, _maxChargeRateKw);
-            float energyToAdd = ElectricityUnits.KwToKwh(absorbedKw, tickSeconds);
-            float addedEnergy = Mathf.Min(RemainingCapacityKwh, energyToAdd);
-            _storedEnergyKwh += addedEnergy;
-            return ElectricityUnits.KwhToKw(addedEnergy, tickSeconds);
-        }
-
-        public float RemovePowerKw(float requestedKw, float tickSeconds)
-        {
-            if (requestedKw <= 0f || !_isOn || _storedEnergyKwh <= 0f)
-            {
-                return 0f;
-            }
-
-            float deliverableKw = MaxDeliverableKw(tickSeconds);
-            float deliveredKw = Mathf.Min(requestedKw, deliverableKw);
-            float removedEnergy = ElectricityUnits.KwToKwh(deliveredKw, tickSeconds);
-            _storedEnergyKwh -= removedEnergy;
-            return deliveredKw;
-        }
+        public float RemovePowerKw(float requestedKw, float tickSeconds) =>
+            PowerStorageMath.RemovePowerKw(
+                ref _storedEnergyKwh,
+                _maxDischargeRateKw,
+                requestedKw,
+                tickSeconds,
+                _isOn);
 
         protected virtual void HandleSyncEnabled(bool oldValue, bool newValue, bool asServer) { }
     }

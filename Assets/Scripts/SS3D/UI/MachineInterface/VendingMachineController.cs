@@ -7,7 +7,7 @@ using SS3D.Systems.Furniture;
 using SS3D.Systems.Inventory.Items;
 using SS3D.Systems.Selection;
 using System.Collections.Generic;
-using System.Electricity;
+using SS3D.Systems.Electricity;
 using UnityEngine;
 using AudioType = SS3D.Systems.Audio.AudioType;
 using Random = UnityEngine.Random;
@@ -379,7 +379,7 @@ namespace SS3D.UI.MachineInterface
 
         private bool IsPowered()
         {
-            return _powerConsumer != null && _powerConsumer.PowerStatus != PowerStatus.Inactive;
+            return PowerGate.IsPowered(_powerConsumer, NullConsumerPolicy.Deny);
         }
 
         private void PlayOutOfStockSound()

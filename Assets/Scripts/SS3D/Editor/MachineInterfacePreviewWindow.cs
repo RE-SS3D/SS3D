@@ -5,6 +5,7 @@ using SS3D.UI.MachineInterface.Components;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.UIElements;
+using SS3D.Systems.Electricity;
 
 namespace SS3D.Editor
 {

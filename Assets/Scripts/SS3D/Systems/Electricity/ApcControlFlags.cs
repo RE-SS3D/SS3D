@@ -1,6 +1,6 @@
 using System;
 
-namespace System.Electricity
+namespace SS3D.Systems.Electricity
 {
     [Flags]
     public enum ApcControlFlags : byte

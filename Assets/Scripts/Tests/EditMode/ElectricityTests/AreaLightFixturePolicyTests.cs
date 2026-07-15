@@ -1,6 +1,6 @@
 using NUnit.Framework;
 using SS3D.Systems.Area;
-using System.Electricity;
+using SS3D.Systems.Electricity;
 
 namespace EditorTests
 {

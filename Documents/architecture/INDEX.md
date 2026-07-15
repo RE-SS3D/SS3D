@@ -55,12 +55,13 @@ Implementation history — not navigation maps. Update `Status` in the header wh
 |--------|--------|
 | [2026-07_machine-interface-phase1-foundation](2026-07_machine-interface-phase1-foundation.md) | shipped |
 | [2026-07_machine-interface-phase2-apc-networking](2026-07_machine-interface-phase2-apc-networking.md) | shipped |
-| [2026-07_machine-interface-phase3-smes-generalization](2026-07_machine-interface-phase3-smes-generalization.md) | shipped (minor cleanup remaining) |
+| [2026-07_machine-interface-phase3-smes-generalization](2026-07_machine-interface-phase3-smes-generalization.md) | shipped |
 | [2026-07_diegetic-screen-ui-framework](2026-07_diegetic-screen-ui-framework.md) | shipped |
 | [2026-07_interaction-system-hardening](2026-07_interaction-system-hardening.md) | shipped |
 | [2026-07_area-foundation](2026-07_area-foundation.md) | shipped (deferred: live mutation recompute, editor merge/split) |
 | [2026-07_atmos-ecs-foundation](2026-07_atmos-ecs-foundation.md) | shipped (deferred: liquid/solid phase, pipes, pumps, client VFX sync) |
 | [2026-07_atmos-client-visualization-sync](2026-07_atmos-client-visualization-sync.md) | planned |
+| [2026-07_mi-area-electricity-debt](2026-07_mi-area-electricity-debt.md) | shipped |
 
 ## Implementation plans
 

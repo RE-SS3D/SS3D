@@ -1,7 +1,8 @@
-using System.Electricity;
-
-namespace SS3D.UI.MachineInterface
+namespace SS3D.Systems.Electricity
 {
+    /// <summary>
+    /// Derives APC panel power/battery status from circuit load statistics.
+    /// </summary>
     public static class ApcStatusDeriver
     {
         private const float CriticalBatteryThreshold = 0.15f;

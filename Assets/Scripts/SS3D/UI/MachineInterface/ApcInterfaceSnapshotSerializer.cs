@@ -43,7 +43,7 @@ namespace SS3D.UI.MachineInterface
                 MachineObjectId = reader.ReadInt32(),
                 InterfaceId = reader.ReadString(),
                 Title = reader.ReadString(),
-                Channels = (System.Electricity.ApcControlFlags)reader.ReadByte(),
+                Channels = (SS3D.Systems.Electricity.ApcControlFlags)reader.ReadByte(),
                 PowerState = reader.ReadByte(),
                 GridInputKw = reader.ReadSingle(),
                 LoadOutputKw = reader.ReadSingle(),

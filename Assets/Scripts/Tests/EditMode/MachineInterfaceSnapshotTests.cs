@@ -5,7 +5,7 @@ using SS3D.Systems.IdAccess;
 using SS3D.Tests;
 using SS3D.UI.MachineInterface;
 using System;
-using System.Electricity;
+using SS3D.Systems.Electricity;
 
 namespace EditorTests
 {

@@ -2,7 +2,7 @@ using FishNet.Connection;
 using FishNet.Object;
 using FishNet.Object.Synchronizing;
 using SS3D.Systems.Atmospherics.Pipes;
-using System.Electricity;
+using SS3D.Systems.Electricity;
 using UnityEngine;
 
 namespace SS3D.UI.MachineInterface
@@ -114,7 +114,7 @@ namespace SS3D.UI.MachineInterface
                 _vent = GetComponent<VentController>();
             }
 
-            bool powerOk = _powerConsumer == null || _powerConsumer.PowerStatus == PowerStatus.Powered;
+            bool powerOk = PowerGate.IsPowered(_powerConsumer, NullConsumerPolicy.Allow);
             bool powered = _vent != null && _vent.IsEnabled;
             bool connected = _vent != null && _vent.TryGetConnectedNetwork(out _);
             bool flowing = _vent != null && _vent.IsPortFlowing;

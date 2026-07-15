@@ -89,17 +89,6 @@ namespace SS3D.UI.MachineInterface
         }
 
         [ServerRpc(RequireOwnership = false)]
-        public void CmdRequestOpen(NetworkConnection conn = null)
-        {
-            if (conn == null || !conn.IsValid)
-            {
-                return;
-            }
-
-            OpenInterfaceForViewer(conn);
-        }
-
-        [ServerRpc(RequireOwnership = false)]
         public void CmdSetControl(byte controlId, bool value, NetworkConnection conn = null)
         {
             if (conn == null || !conn.IsValid || !_viewers.Contains(conn))
@@ -325,7 +314,7 @@ namespace SS3D.UI.MachineInterface
                 return;
             }
 
-            if (SubSystems.TryGet(out global::System.Electricity.ElectricitySubSystem electricitySubSystem))
+            if (SubSystems.TryGet(out global::SS3D.Systems.Electricity.ElectricitySubSystem electricitySubSystem))
             {
                 electricitySubSystem.OnTick += OnInterfaceTick;
             }
@@ -338,7 +327,7 @@ namespace SS3D.UI.MachineInterface
                 return;
             }
 
-            if (SubSystems.TryGet(out global::System.Electricity.ElectricitySubSystem electricitySubSystem))
+            if (SubSystems.TryGet(out global::SS3D.Systems.Electricity.ElectricitySubSystem electricitySubSystem))
             {
                 electricitySubSystem.OnTick -= OnInterfaceTick;
             }

@@ -1,10 +1,10 @@
 using SS3D.Core;
 using SS3D.Core.Behaviours;
-using SS3D.Systems.Atmospherics.Pipes;
 using SS3D.Systems.Inputs;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using SS3D.Systems.Electricity;
 
 namespace SS3D.UI.MachineInterface
 {
@@ -139,43 +139,10 @@ namespace SS3D.UI.MachineInterface
                 return;
             }
 
-            switch (_openModel)
+            MachineOptimisticControlRegistry.EnsureRegistered();
+            if (MachineOptimisticControlRegistry.TryGet(_openModel.GetType(), out IMachineOptimisticControlHandler handler))
             {
-                case ApcInterfaceViewModel apcModel:
-                {
-                    ApplyApcControl(apcModel, controlId, isOn);
-                    break;
-                }
-
-                case SmesInterfaceViewModel smesModel:
-                {
-                    ApplySmesBoolControl(smesModel, controlId, isOn);
-                    break;
-                }
-
-                case ScrubberInterfaceViewModel scrubberModel:
-                {
-                    ApplyScrubberBoolControl(scrubberModel, controlId, isOn);
-                    break;
-                }
-
-                case VentInterfaceViewModel ventModel:
-                {
-                    ApplyVentBoolControl(ventModel, controlId, isOn);
-                    break;
-                }
-
-                case PumpInterfaceViewModel pumpModel:
-                {
-                    ApplyPumpBoolControl(pumpModel, controlId, isOn);
-                    break;
-                }
-
-                case AirAlarmInterfaceViewModel airAlarmModel:
-                {
-                    AirAlarmInterfaceInteractionLogic.ApplyBool(airAlarmModel, controlId, isOn);
-                    break;
-                }
+                handler.ApplyBool(_openModel, controlId, isOn, CreateOptimisticCallbacks());
             }
 
             _clientBridge?.SetControl(controlId, isOn);
@@ -189,44 +156,13 @@ namespace SS3D.UI.MachineInterface
                 return;
             }
 
-            switch (_openModel)
+            MachineOptimisticControlRegistry.EnsureRegistered();
+            if (!MachineOptimisticControlRegistry.TryGet(_openModel.GetType(), out IMachineOptimisticControlHandler handler))
             {
-                case SmesInterfaceViewModel smesModel:
-                {
-                    ApplySmesNumericControl(smesModel, controlId, delta);
-                    break;
-                }
-
-                case ScrubberInterfaceViewModel scrubberModel:
-                {
-                    ApplyScrubberNumericControl(scrubberModel, controlId, delta);
-                    break;
-                }
-
-                case VentInterfaceViewModel ventModel:
-                {
-                    ApplyVentNumericControl(ventModel, controlId, delta);
-                    break;
-                }
-
-                case PumpInterfaceViewModel pumpModel:
-                {
-                    ApplyPumpNumericControl(pumpModel, controlId, delta);
-                    break;
-                }
-
-                case AirAlarmInterfaceViewModel airAlarmModel:
-                {
-                    AirAlarmInterfaceInteractionLogic.ApplyNumeric(airAlarmModel, controlId, delta);
-                    break;
-                }
-
-                default:
-                {
-                    return;
-                }
+                return;
             }
 
+            handler.ApplyNumeric(_openModel, controlId, delta, CreateOptimisticCallbacks());
             _clientBridge?.SetNumericControl(controlId, delta);
             Refresh(_openModel);
         }
@@ -238,81 +174,10 @@ namespace SS3D.UI.MachineInterface
                 return;
             }
 
-            switch (_openModel)
+            MachineOptimisticControlRegistry.EnsureRegistered();
+            if (MachineOptimisticControlRegistry.TryGet(_openModel.GetType(), out IMachineOptimisticControlHandler handler))
             {
-                case VendingInterfaceViewModel vendingModel:
-                {
-                    ApplyVendingAction(vendingModel, controlId, value);
-                    break;
-                }
-
-                case ScrubberInterfaceViewModel scrubber:
-                {
-                    if (controlId == MachineInterfaceControlIds.Atmos.ReadId)
-                    {
-                        ApplyAtmosReadIdAction(scrubber);
-                    }
-                    else if (controlId == MachineInterfaceControlIds.Atmos.DeviceFilter)
-                    {
-                        ApplyScrubberFilterAction(scrubber, value);
-                    }
-
-                    break;
-                }
-
-                case VentInterfaceViewModel:
-                {
-                    if (controlId == MachineInterfaceControlIds.Atmos.ReadId)
-                    {
-                        ApplyAtmosReadIdAction(_openModel);
-                    }
-
-                    break;
-                }
-
-                case PumpInterfaceViewModel:
-                {
-                    if (controlId == MachineInterfaceControlIds.Atmos.ReadId)
-                    {
-                        ApplyAtmosReadIdAction(_openModel);
-                    }
-
-                    break;
-                }
-
-                case AirAlarmInterfaceViewModel airAlarm:
-                {
-                    if (controlId == MachineInterfaceControlIds.Atmos.ReadId)
-                    {
-                        ApplyAtmosReadIdAction(airAlarm);
-                    }
-                    else
-                    {
-                        AirAlarmInterfaceInteractionLogic.ApplyAction(airAlarm, controlId, value);
-                    }
-
-                    break;
-                }
-
-                case ApcInterfaceViewModel apc:
-                {
-                    if (controlId == MachineInterfaceControlIds.Apc.ReadId)
-                    {
-                        ApplyPowerReadIdAction(apc);
-                    }
-
-                    break;
-                }
-
-                case SmesInterfaceViewModel smes:
-                {
-                    if (controlId == MachineInterfaceControlIds.Smes.ReadId)
-                    {
-                        ApplyPowerReadIdAction(smes);
-                    }
-
-                    break;
-                }
+                handler.ApplyAction(_openModel, controlId, value, CreateOptimisticCallbacks());
             }
 
             _clientBridge?.SetActionControl(controlId, value);
@@ -410,262 +275,8 @@ namespace SS3D.UI.MachineInterface
             return hosts is { Count: > 0 } ? hosts[0] : null;
         }
 
-        private static void ApplySmesBoolControl(SmesInterfaceViewModel model, byte controlId, bool isOn)
-        {
-            if (!model.AccessGranted)
-            {
-                return;
-            }
-
-            switch (controlId)
-            {
-                case MachineInterfaceControlIds.Smes.Input:
-                {
-                    model.InputEnabled = isOn;
-                    break;
-                }
-
-                case MachineInterfaceControlIds.Smes.Output:
-                {
-                    model.OutputEnabled = isOn;
-                    break;
-                }
-            }
-        }
-
-        private static void ApplySmesNumericControl(SmesInterfaceViewModel model, byte controlId, float delta)
-        {
-            if (!model.AccessGranted)
-            {
-                return;
-            }
-
-            switch (controlId)
-            {
-                case MachineInterfaceControlIds.Smes.Input:
-                {
-                    model.InputMaxKw = Math.Max(1f, model.InputMaxKw + delta);
-                    break;
-                }
-
-                case MachineInterfaceControlIds.Smes.Output:
-                {
-                    model.OutputMaxKw = Math.Max(1f, model.OutputMaxKw + delta);
-                    break;
-                }
-            }
-        }
-
-        private static void ApplyScrubberBoolControl(ScrubberInterfaceViewModel model, byte controlId, bool isOn)
-        {
-            if (controlId == MachineInterfaceControlIds.Atmos.Power && model.AccessGranted)
-            {
-                model.Powered = isOn;
-            }
-        }
-
-        private static void ApplyVentBoolControl(VentInterfaceViewModel model, byte controlId, bool isOn)
-        {
-            if (controlId == MachineInterfaceControlIds.Atmos.Power && model.AccessGranted)
-            {
-                model.Powered = isOn;
-            }
-        }
-
-        private static void ApplyPumpBoolControl(PumpInterfaceViewModel model, byte controlId, bool isOn)
-        {
-            if (controlId == MachineInterfaceControlIds.Atmos.Power && model.AccessGranted)
-            {
-                model.Powered = isOn;
-            }
-        }
-
-        private static void ApplyScrubberNumericControl(ScrubberInterfaceViewModel model, byte controlId, float delta)
-        {
-            if (controlId == MachineInterfaceControlIds.Atmos.FlowRate && model.AccessGranted)
-            {
-                model.FlowRate = Math.Clamp(model.FlowRate + (int)delta, 1, 10);
-            }
-        }
-
-        private static void ApplyScrubberFilterAction(ScrubberInterfaceViewModel model, int filterIndex)
-        {
-            if (!model.AccessGranted
-                || filterIndex < 0
-                || filterIndex >= ScrubberGasFilters.KeyCount)
-            {
-                return;
-            }
-
-            string key = ScrubberGasFilters.Keys[filterIndex];
-            model.Filters ??= ScrubberGasFilters.CreateDefaultMap();
-            model.Filters.TryGetValue(key, out bool current);
-            model.Filters[key] = !current;
-        }
-
-        private static void ApplyVentNumericControl(VentInterfaceViewModel model, byte controlId, float delta)
-        {
-            if (controlId == MachineInterfaceControlIds.Atmos.TargetPressure && model.AccessGranted)
-            {
-                model.TargetPressureKpa = Math.Clamp(model.TargetPressureKpa + (int)delta, 0, 200);
-            }
-        }
-
-        private static void ApplyPumpNumericControl(PumpInterfaceViewModel model, byte controlId, float delta)
-        {
-            if (controlId == MachineInterfaceControlIds.Atmos.TargetPressure && model.AccessGranted)
-            {
-                model.TargetOutletPressureKpa = Math.Clamp(
-                    model.TargetOutletPressureKpa + (int)MathF.Round(delta * 100f),
-                    0,
-                    9000);
-            }
-        }
-
-        private static void ApplyAtmosReadIdAction(IMachineInterfaceViewModel model)
-        {
-            switch (model)
-            {
-                case ScrubberInterfaceViewModel scrubber:
-                {
-                    ToggleAccessScan(scrubber);
-                    break;
-                }
-
-                case VentInterfaceViewModel vent:
-                {
-                    ToggleAccessScan(vent);
-                    break;
-                }
-
-                case PumpInterfaceViewModel pump:
-                {
-                    ToggleAccessScan(pump);
-                    break;
-                }
-
-                case AirAlarmInterfaceViewModel airAlarm:
-                {
-                    if (airAlarm.AccessGranted)
-                    {
-                        airAlarm.AccessGranted = false;
-                        airAlarm.AccessScanning = false;
-                        airAlarm.AccessDenied = false;
-                        airAlarm.SelectedDeviceId = null;
-                    }
-                    else if (!airAlarm.AccessScanning)
-                    {
-                        airAlarm.AccessScanning = true;
-                        airAlarm.AccessDenied = false;
-                    }
-
-                    break;
-                }
-            }
-        }
-
-        private static void ApplyPowerReadIdAction(IMachineInterfaceViewModel model)
-        {
-            switch (model)
-            {
-                case ApcInterfaceViewModel apc:
-                {
-                    ToggleAccessScan(apc);
-                    break;
-                }
-
-                case SmesInterfaceViewModel smes:
-                {
-                    ToggleAccessScan(smes);
-                    break;
-                }
-            }
-        }
-
-        private static void ToggleAccessScan(IAccessGatedInterfaceViewModel model)
-        {
-            if (model.AccessGranted)
-            {
-                model.AccessGranted = false;
-                model.AccessScanning = false;
-                model.AccessDenied = false;
-            }
-            else if (!model.AccessScanning)
-            {
-                model.AccessScanning = true;
-                model.AccessDenied = false;
-            }
-        }
-
-        private static void ApplyVendingAction(VendingInterfaceViewModel model, byte controlId, int value)
-        {
-            switch (controlId)
-            {
-                case MachineInterfaceControlIds.Vending.SelectProduct:
-                {
-                    if (value >= 0 && value < model.Products.Count && model.Products[value].CanSelect)
-                    {
-                        model.VendingProductIndex = value;
-                    }
-
-                    break;
-                }
-
-                case MachineInterfaceControlIds.Vending.TakeTrayItem:
-                {
-                    if (value >= 0 && value < model.TrayItems.Count)
-                    {
-                        model.TrayItems.RemoveAt(value);
-                    }
-
-                    break;
-                }
-            }
-        }
-
-        private void ApplyApcControl(ApcInterfaceViewModel model, byte controlId, bool isOn)
-        {
-            if (!model.AccessGranted)
-            {
-                return;
-            }
-
-            string channelId = controlId switch
-            {
-                MachineInterfaceControlIds.Apc.Lighting => "lighting",
-                MachineInterfaceControlIds.Apc.Equipment => "equipment",
-                MachineInterfaceControlIds.Apc.Environment => "environment",
-                _ => null,
-            };
-
-            if (channelId == null)
-            {
-                return;
-            }
-
-            switch (controlId)
-            {
-                case MachineInterfaceControlIds.Apc.Lighting:
-                {
-                    model.LightingOn = isOn;
-                    break;
-                }
-
-                case MachineInterfaceControlIds.Apc.Equipment:
-                {
-                    model.EquipmentOn = isOn;
-                    break;
-                }
-
-                case MachineInterfaceControlIds.Apc.Environment:
-                {
-                    model.EnvironmentOn = isOn;
-                    break;
-                }
-            }
-
-            ChannelToggled?.Invoke(channelId, isOn);
-        }
+        private MachineOptimisticControlCallbacks CreateOptimisticCallbacks() =>
+            new MachineOptimisticControlCallbacks((channelId, isOn) => ChannelToggled?.Invoke(channelId, isOn));
 
         private void SetGameplayInputBlocked(bool blocked)
         {

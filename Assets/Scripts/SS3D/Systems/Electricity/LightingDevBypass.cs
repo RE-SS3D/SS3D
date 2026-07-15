@@ -1,4 +1,4 @@
-namespace System.Electricity
+namespace SS3D.Systems.Electricity
 {
     /// <summary>
     /// Development-only toggle so wall light fixtures can glow without a powered grid.

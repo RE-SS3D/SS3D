@@ -7,7 +7,7 @@ using SS3D.Systems.IdAccess;
 using SS3D.Systems.Tile;
 using SS3D.Systems.Tile.Connections;
 using System.Collections.Generic;
-using System.Electricity;
+using SS3D.Systems.Electricity;
 using UnityEngine;
 
 namespace SS3D.UI.MachineInterface
@@ -78,15 +78,8 @@ namespace SS3D.UI.MachineInterface
 
         public bool IsOn => true;
 
-        public float MaxDeliverableKw(float tickSeconds)
-        {
-            if (_storedEnergyKwh <= 0f)
-            {
-                return 0f;
-            }
-
-            return Mathf.Min(_maxDischargeRateKw, ElectricityUnits.KwhToKw(_storedEnergyKwh, tickSeconds));
-        }
+        public float MaxDeliverableKw(float tickSeconds) =>
+            PowerStorageMath.MaxDeliverableKw(_storedEnergyKwh, _maxDischargeRateKw, tickSeconds);
 
         public void SetMultipleApcsInArea(bool value)
         {
@@ -122,33 +115,20 @@ namespace SS3D.UI.MachineInterface
             }
         }
 
-        public float AddPowerKw(float requestedKw, float tickSeconds)
-        {
-            if (requestedKw <= 0f || RemainingCapacityKwh <= 0f || _maxChargeRateKw <= 0f)
-            {
-                return 0f;
-            }
+        public float AddPowerKw(float requestedKw, float tickSeconds) =>
+            PowerStorageMath.AddPowerKw(
+                ref _storedEnergyKwh,
+                _maxCapacityKwh,
+                _maxChargeRateKw,
+                requestedKw,
+                tickSeconds);
 
-            float absorbedKw = Mathf.Min(requestedKw, _maxChargeRateKw);
-            float energyToAdd = ElectricityUnits.KwToKwh(absorbedKw, tickSeconds);
-            float addedEnergy = Mathf.Min(RemainingCapacityKwh, energyToAdd);
-            _storedEnergyKwh += addedEnergy;
-            return ElectricityUnits.KwhToKw(addedEnergy, tickSeconds);
-        }
-
-        public float RemovePowerKw(float requestedKw, float tickSeconds)
-        {
-            if (requestedKw <= 0f || _storedEnergyKwh <= 0f)
-            {
-                return 0f;
-            }
-
-            float deliverableKw = MaxDeliverableKw(tickSeconds);
-            float deliveredKw = Mathf.Min(requestedKw, deliverableKw);
-            float removedEnergy = ElectricityUnits.KwToKwh(deliveredKw, tickSeconds);
-            _storedEnergyKwh -= removedEnergy;
-            return deliveredKw;
-        }
+        public float RemovePowerKw(float requestedKw, float tickSeconds) =>
+            PowerStorageMath.RemovePowerKw(
+                ref _storedEnergyKwh,
+                _maxDischargeRateKw,
+                requestedKw,
+                tickSeconds);
 
         protected override void SendOpenToViewer(NetworkConnection conn)
         {
