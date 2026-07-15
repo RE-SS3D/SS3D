@@ -6,7 +6,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Electricity;
+using SS3D.Systems.Electricity;
 using SS3D.Systems.IdAccess;
 using SS3D.Systems.Inventory.Containers;
 using UnityEngine;
@@ -195,7 +195,7 @@ namespace SS3D.Systems.Furniture
 
         private bool IsPowered()
         {
-            return _powerConsumer == null || _powerConsumer.PowerStatus == PowerStatus.Powered;
+            return PowerGate.IsPowered(_powerConsumer, NullConsumerPolicy.Allow);
         }
     }
 }

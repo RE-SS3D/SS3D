@@ -1,7 +1,7 @@
 using NUnit.Framework;
 using SS3D.Systems.Electricity;
 using SS3D.Systems.Tile;
-using System.Electricity;
+using SS3D.Systems.Electricity;
 
 namespace EditorTests
 {

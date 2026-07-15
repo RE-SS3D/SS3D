@@ -5,7 +5,7 @@ using SS3D.Interactions;
 using SS3D.Interactions.Interfaces;
 using SS3D.Systems.Atmospherics;
 using SS3D.Systems.Tile;
-using System.Electricity;
+using SS3D.Systems.Electricity;
 using UnityEngine;
 
 namespace SS3D.Systems.Atmospherics.Pipes

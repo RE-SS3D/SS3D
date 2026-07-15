@@ -1,6 +1,6 @@
-namespace SS3D.UI.MachineInterface
+namespace SS3D.Systems.Electricity
 {
-    public enum ApcPowerState
+    public enum ApcPowerState : byte
     {
         Nominal = 0,
         Overload = 1,

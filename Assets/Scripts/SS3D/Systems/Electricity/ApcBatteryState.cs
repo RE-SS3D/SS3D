@@ -1,6 +1,6 @@
-namespace SS3D.UI.MachineInterface
+namespace SS3D.Systems.Electricity
 {
-    public enum ApcBatteryState
+    public enum ApcBatteryState : byte
     {
         Charged = 0,
         Discharging = 1,

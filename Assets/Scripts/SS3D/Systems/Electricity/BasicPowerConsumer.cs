@@ -1,9 +1,9 @@
-﻿using FishNet.Object.Synchronizing;
+using FishNet.Object.Synchronizing;
 using SS3D.Core;
 using SS3D.Systems.Tile.Connections;
 using UnityEngine;
 
-namespace System.Electricity
+namespace SS3D.Systems.Electricity
 {
     /// <summary>
     /// Script providing a basic implementation for IPowerConsumer.

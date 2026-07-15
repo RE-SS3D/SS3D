@@ -1,4 +1,4 @@
-﻿using Coimbra.Services.Events;
+using Coimbra.Services.Events;
 using Coimbra.Services.PlayerLoopEvents;
 using FishNet.Object;
 using QuikGraph;
@@ -13,7 +13,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-namespace System.Electricity
+namespace SS3D.Systems.Electricity
 {
     /// <summary>
     /// Handles a graph that contains all electricity circuits.
@@ -37,9 +37,11 @@ namespace System.Electricity
         private record VerticeCoordinates(short X, short Y, byte Layer, byte Direction);
 
         private bool _graphIsDirty;
+        private bool _apcConsumerIndexDirty = true;
         private List<Circuit> _circuits;
         private readonly List<IPowerConsumer> _registeredConsumers = new();
         private readonly List<IElectricDevice> _registeredDevices = new();
+        private readonly Dictionary<IApcChannelSource, List<IPowerConsumer>> _consumersByApc = new();
         private readonly Dictionary<IApcChannelSource, float> _lastApcGridInputKw = new();
         private readonly Dictionary<IApcChannelSource, float> _lastApcGridAvailableKw = new();
         private UndirectedGraph<VerticeCoordinates, Edge<VerticeCoordinates>> _electricityGraph;
@@ -97,7 +99,8 @@ namespace System.Electricity
                 return false;
             }
 
-            List<IPowerConsumer> areaConsumers = AreaApcPowerDistribution.GetConsumersForApc(apc, _registeredConsumers);
+            EnsureApcConsumerIndex();
+            IReadOnlyList<IPowerConsumer> areaConsumers = GetIndexedConsumersForApc(apc);
             List<IPowerConsumer> activeConsumers = AreaApcPowerDistribution.GetActiveConsumers(areaConsumers, apc.Channels);
             float gridInputKw = GetApcGridInputKw(apc);
             stats = AreaApcPowerDistribution.BuildApcStats(gridInputKw, apcCell, activeConsumers);
@@ -111,6 +114,15 @@ namespace System.Electricity
             }
 
             return true;
+        }
+
+        /// <summary>
+        /// Marks the APC→consumer index dirty after area membership changes.
+        /// Call from Area APC register/unregister/rebuild paths.
+        /// </summary>
+        public void InvalidateAreaConsumerIndex()
+        {
+            _apcConsumerIndexDirty = true;
         }
 
         [Server]
@@ -157,6 +169,8 @@ namespace System.Electricity
                 return;
             }
 
+            EnsureApcConsumerIndex();
+
             foreach (AreaRecord record in areaSubSystem.GetAllAreas())
             {
                 if (record.Apc is not IApcChannelSource apc
@@ -166,9 +180,9 @@ namespace System.Electricity
                     continue;
                 }
 
-                List<IPowerConsumer> areaConsumers = AreaApcPowerDistribution.GetConsumersForApc(apc, _registeredConsumers);
+                IReadOnlyList<IPowerConsumer> areaConsumers = GetIndexedConsumersForApc(apc);
                 List<IPowerConsumer> activeConsumers = AreaApcPowerDistribution.GetActiveConsumers(areaConsumers, apc.Channels);
-                float demandKw = activeConsumers.Sum(consumer => consumer.PowerNeeded);
+                float demandKw = AreaApcPowerDistribution.SumPowerNeeded(activeConsumers);
                 float gridAvailableKw = GetAvailableGridSupplyForApc(apcDevice);
                 float gridDrawKw = Math.Min(demandKw, gridAvailableKw);
                 _lastApcGridAvailableKw[apc] = gridAvailableKw;
@@ -176,6 +190,59 @@ namespace System.Electricity
                 TryGetCircuitForDevice(apcDevice)?.DrawGridPowerForArea(gridDrawKw, _tickRate);
                 AreaApcPowerDistribution.PowerAreaConsumers(apc, apcStorage, gridDrawKw, areaConsumers, activeConsumers, _tickRate);
             }
+        }
+
+        [Server]
+        private void EnsureApcConsumerIndex()
+        {
+            if (!_apcConsumerIndexDirty)
+            {
+                return;
+            }
+
+            RebuildApcConsumerIndex();
+            _apcConsumerIndexDirty = false;
+        }
+
+        [Server]
+        private void RebuildApcConsumerIndex()
+        {
+            foreach (KeyValuePair<IApcChannelSource, List<IPowerConsumer>> entry in _consumersByApc)
+            {
+                entry.Value.Clear();
+            }
+
+            if (!SubSystems.TryGet(out AreaSubSystem areaSubSystem))
+            {
+                return;
+            }
+
+            foreach (IPowerConsumer consumer in _registeredConsumers)
+            {
+                if (consumer is not IElectricDevice device
+                    || !areaSubSystem.TryGetEffectiveApcForDevice(device, out IApcChannelSource apc))
+                {
+                    continue;
+                }
+
+                if (!_consumersByApc.TryGetValue(apc, out List<IPowerConsumer> list))
+                {
+                    list = new List<IPowerConsumer>();
+                    _consumersByApc[apc] = list;
+                }
+
+                list.Add(consumer);
+            }
+        }
+
+        private IReadOnlyList<IPowerConsumer> GetIndexedConsumersForApc(IApcChannelSource apc)
+        {
+            if (_consumersByApc.TryGetValue(apc, out List<IPowerConsumer> list))
+            {
+                return list;
+            }
+
+            return Array.Empty<IPowerConsumer>();
         }
 
         [Server]
@@ -233,6 +300,7 @@ namespace System.Electricity
             }
 
             _graphIsDirty = true;
+            _apcConsumerIndexDirty = true;
         }
 
         [Server]
@@ -254,9 +322,11 @@ namespace System.Electricity
             {
                 _lastApcGridInputKw.Remove(apc);
                 _lastApcGridAvailableKw.Remove(apc);
+                _consumersByApc.Remove(apc);
             }
 
             _graphIsDirty = true;
+            _apcConsumerIndexDirty = true;
         }
 
         [Server]

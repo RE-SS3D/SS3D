@@ -37,6 +37,7 @@ Per-consumer power gating and **area-scoped APC cell drain** via [electricity](e
 - Register APC origins: implement `IAreaApcOrigin` (see `ApcController`).
 - Server rename/tag API: `AreaSubSystem.RenameArea`, `SetParentTag` (no editor UI yet).
 - Resolve effective APC for a device: `AreaSubSystem.TryGetEffectiveApcForDevice`.
+- Area rebuild / APC lifecycle invalidates electricity's per-APC consumer index via `ElectricitySubSystem.InvalidateAreaConsumerIndex`.
 - Query lighting by tile: `IAreaLightingStateSource.TryGetLightingStateForTile`.
 - Subscribe to area lighting transitions: `AreaSubSystem.OnAreaLightingStateChanged`.
 - Toggle area fixture lighting: `AreaSubSystem.ToggleAreaLightingSwitch` via `LightSwitchController` (separate from APC lighting **breaker** in machine interface).
@@ -57,4 +58,5 @@ Per-consumer power gating and **area-scoped APC cell drain** via [electricity](e
 - Plan: [areas_implementation_plan_c0639343.plan.md](../../plans/areas_implementation_plan_c0639343.plan.md)
 - Plan: [persistence_architecture_design_2fe61864.plan.md](../../plans/persistence_architecture_design_2fe61864.plan.md)
 - Architecture effort: [2026-07_area-foundation](../2026-07_area-foundation.md)
+- Architecture effort: [2026-07_mi-area-electricity-debt](../2026-07_mi-area-electricity-debt.md)
 - Design (read-only): [Documents/design/area.md](../../design/area.md)

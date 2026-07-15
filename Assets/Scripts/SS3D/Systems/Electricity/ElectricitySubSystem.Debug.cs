@@ -2,11 +2,11 @@ using SS3D.Core;
 using SS3D.Systems.Tile;
 using SS3D.Systems.Tile.Connections;
 using System.Collections.Generic;
-using System.Electricity;
+using SS3D.Systems.Electricity;
 using System.Text;
 using UnityEngine;
 
-namespace System.Electricity
+namespace SS3D.Systems.Electricity
 {
     public readonly struct ElectricityDeviceDebugInfo
     {

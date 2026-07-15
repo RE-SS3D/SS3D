@@ -1,4 +1,4 @@
-namespace System.Electricity
+namespace SS3D.Systems.Electricity
 {
     /// <summary>
     /// Converts between per-tick power flow (kW) and stored energy (kWh).

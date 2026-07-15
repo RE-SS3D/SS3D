@@ -1,9 +1,9 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using SS3D.Core;
 using SS3D.Systems.Area;
 using UnityEngine;
 
-namespace System.Electricity
+namespace SS3D.Systems.Electricity
 {
     /// <summary>
     /// Toggles a fixture's realtime light and emissive mesh visuals based on power and area lighting state.
@@ -271,7 +271,7 @@ namespace System.Electricity
             useEmergencyVisuals = false;
 
             PowerStatus consumerStatus = _consumer != null ? _consumer.PowerStatus : PowerStatus.Inactive;
-            if (!IsConsumerApcChannelEnabled())
+            if (!PowerGate.IsChannelOpen(_consumer))
             {
                 consumerStatus = PowerStatus.Inactive;
             }
@@ -298,18 +298,6 @@ namespace System.Electricity
                 _fixtureCapability,
                 consumerStatus,
                 out useEmergencyVisuals);
-        }
-
-        private bool IsConsumerApcChannelEnabled()
-        {
-            if (_consumer is not IElectricDevice device
-                || !SubSystems.TryGet(out AreaSubSystem areaSubSystem)
-                || !areaSubSystem.TryGetEffectiveApcForDevice(device, out IApcChannelSource apc))
-            {
-                return true;
-            }
-
-            return AreaApcPowerDistribution.IsChannelEnabled(_consumer.Channel, apc.Channels);
         }
 
         private void TurnLightOnNormal()
