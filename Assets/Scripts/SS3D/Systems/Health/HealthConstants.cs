@@ -26,6 +26,8 @@
         public const float LiverClearanceRate = 0.02f;
         public const float RenalClearanceFactor = 0.5f;
 
+        public const float GroinTorsoBandFraction = 0.35f;
+
         // Wound severity thresholds (brute damage per zone).
         public const float BruisedThreshold = 10f;
         public const float WoundThreshold = 25f;

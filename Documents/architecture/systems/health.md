@@ -1,12 +1,12 @@
 > Code paths: Assets/Scripts/SS3D/Systems/Health/
 > Entry points: HumanHealthController, HealthSimulation, OrganSimulation
-> Status: partial (Phase 3 critical/death/defib shipped; screen-space feedback deferred to Phase 6)
+> Status: partial (Phase 4 combat zone hits shipped; field treatment Phase 5)
 
 # Health
 
 ## Overview
 
-Greenfield rewrite in progress per [health_implementation_plan.md](../../plans/health_implementation_plan.md). Phase 1 shipped bleeding, bandage, VFX, and alert chip. Phase 2 wires asset-backed organs into pool math, cardiac arrest, and movement debuffs. Phase 3 adds multi-threshold critical state, cardiac arrest → defib window, and chest defibrillation (screen-space feedback moves to Phase 6).
+Greenfield rewrite in progress per [health_implementation_plan.md](../../plans/health_implementation_plan.md). Phase 1 shipped bleeding, bandage, VFX, and alert chip. Phase 2 wires asset-backed organs into pool math, cardiac arrest, and movement debuffs. Phase 3 adds multi-threshold critical state, cardiac arrest → defib window, and chest defibrillation (screen-space feedback moves to Phase 6). Phase 4 adds BodyParts raycast zone resolution for melee combat.
 
 ## Start here
 
@@ -18,19 +18,21 @@ Greenfield rewrite in progress per [health_implementation_plan.md](../../plans/h
 - `Assets/Scripts/SS3D/Systems/IngameConsoleSystem/Commands/DefibCommand.cs` — admin defib testing
 - `Assets/Scripts/SS3D/Systems/Health/HealthDebugController.cs` — IMGUI overlay (H) for full zone/organ/pool inspection
 - `Assets/Scripts/SS3D/Systems/Health/HealthDebugDetail.cs` — per-zone/per-organ SyncVar payload for debug UI
-- [health-anatomy-map.md](health-anatomy-map.md) — anatomy contract
+- `Assets/Scripts/SS3D/Systems/Health/ZoneTargetResolver.cs` — point + combat raycast zone resolution, groin banding
+- `Assets/Scripts/SS3D/Systems/Health/HealthLayers.cs` — `BodyParts` layer mask for combat raycasts
 
 ## Extension points
 
 - `IHealthEffectModifier` — virology/chemistry/stamina deltas (Phase 7+)
-- `ApplyDamage(BodyZone, brute, burn)` — combat input (Phase 4: full combat raycast)
+- `ApplyDamage(BodyZone, MeleeDamagePacket)` — melee combat input (Phase 4)
+- `ApplyDamage(BodyZone, brute, burn)` — direct damage (console `hurt`, future sources)
 - `ApplyTreatment(...)` — medical interactions (Phase 5 field treatments)
-- `ZoneTargetResolver` — interaction-point zone resolution (Phase 4 expands for combat)
+- `ZoneTargetResolver.TryResolveCombatZone` — BodyParts raycast + groin banding for Harm hits
 
 ## Depends on / Used by
 
 - **Depends on:** [entities](entities.md), [interactions-framework](interactions-framework.md)
-- **Used by:** [combat](combat.md), dev console `hurt`/`heal`, `HumanoidLivingController` (movement/consciousness), `Hand` (arm debuff stub)
+- **Used by:** [combat](combat.md) (melee zone hits), dev console `hurt`/`heal`, `HumanoidLivingController` (movement/consciousness), `Hand` (arm debuff stub)
 - **Stamina:** `Assets/Scripts/SS3D/Systems/Stamina/` — bridge Phase 7a
 
 ## Related docs

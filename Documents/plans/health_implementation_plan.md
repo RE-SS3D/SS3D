@@ -25,7 +25,7 @@ todos:
     status: completed
   - id: phase4-combat
     content: "Phase 4: ZoneTargetResolver on BodyParts layer, replace HitInteraction, one melee weapon vertical slice"
-    status: pending
+    status: completed
   - id: phase5-treatment
     content: "Phase 5: Field treatments (burn dressing, splint, O2, CPR, antitoxin, IV/transfusion)"
     status: pending
@@ -538,3 +538,10 @@ health.md §8 + death-cloning §9 example A, end-to-end:
 - Oxy debt now scales **continuously** with blood lost `(1 − bloodVolume) × gain` — hypoxia begins around **60–70%** blood remaining, not near empty.
 - Heart O₂ delivery uses **volume^1.75** so circulation collapses faster as blood drops (shock before exsanguination).
 - **Reference: `hurt Head 100`** — Disabled head wound (bleed 1.5), brain ~60% instantly; untreated death typically **~60–90 s** via hypoxia → heart failure → brain death (bandage/transfusion/defib interrupt each stage).
+
+### Phase 4 (shipped)
+
+- `HitInteraction` removed; `MeleeHitInteraction` applies zone-targeted `ApplyDamage(BodyZone, MeleeDamagePacket)` with Harm intent, windup, and hand recovery lockout.
+- `ZoneTargetResolver.TryResolveCombatZone` raycasts `BodyParts` colliders from aim origin; groin resolved via lower-chest vertical banding (`GroinTorsoBandFraction`).
+- Fists via `HandHit`; crowbar vertical slice via `MeleeWeaponItemExtension` on `Crowbar.prefab` (18 brute, 0.35s windup, 0.5s recovery).
+- Held weapons resolve the owning `Hand` through `IInteractionSource.Source` for range checks and recovery tracking.

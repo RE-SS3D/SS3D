@@ -19,6 +19,7 @@ GameObject:
   - component: {fileID: 8720207852131239820}
   - component: {fileID: -2383566575337408285}
   - component: {fileID: 4853142667098648343}
+  - component: {fileID: 9182736450123456789}
   m_Layer: 10
   m_Name: Crowbar
   m_TagString: Untagged
@@ -288,6 +289,23 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   type: 4
+--- !u!114 &9182736450123456789
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1888703706215615217}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a1b2c3d4e5f6789012345678abcdef01, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _profile:
+    BruteDamage: 18
+    BurnDamage: 0
+    WindupSeconds: 0.35
+    RecoverySeconds: 0.5
 --- !u!1 &2468349444349537438
 GameObject:
   m_ObjectHideFlags: 0

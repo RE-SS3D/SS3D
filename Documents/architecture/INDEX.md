@@ -34,8 +34,8 @@ Authoring conventions: [Documents/SKILL.md](../SKILL.md). Agent rules: [AGENTS.m
 | Substances | [substances](systems/substances.md) | partial | Containers, transfer interactions, Tier 2 armed proof-of-concept |
 | Inventory | [inventory](systems/inventory.md) | partial | Items, containers, hands, ID cards and PDAs |
 | Entities | [entities](systems/entities.md) | stub | Humanoids, minds, entity spawning |
-| Health | [health](systems/health.md) | partial | Phase 2 organs: function sim, cardiac arrest, limb debuffs |
-| Combat | [combat](systems/combat.md) | stub | Hit interactions (design spec not implemented) |
+| Health | [health](systems/health.md) | partial | Phase 4 combat zone hits; field treatment Phase 5 |
+| Combat | [combat](systems/combat.md) | partial | Phase 4 melee vertical slice (fists + crowbar) |
 | Crafting | [crafting](systems/crafting.md) | stub | Recipe crafting |
 | Furniture / world objects | [furniture](systems/furniture.md) | partial | Airlocks, vendors, jukebox; power-gated behaviors; vending via machine-interface |
 | Rounds / lobby | [rounds-lobby](systems/rounds-lobby.md) | shipped | Round state machine and pre-round lobby UI |

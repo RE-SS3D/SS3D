@@ -1,5 +1,5 @@
 > Parent map: [health.md](health.md)
-> Status: partial (Phase 2 — organ function wired)
+> Status: partial (Phase 4 — combat zone raycast + groin banding)
 
 # Health anatomy map
 
@@ -33,9 +33,9 @@ Armature colliders in Human.prefab carry **`ZoneTargetCollider`**:
 | `BodyColliderLeg_l`, `lower_leg_l`, `thigh_l`, `foot_l` | LeftLeg |
 | `BodyColliderLeg_r`, `thigh_r`, `foot_r` | RightLeg |
 
-**Groin zone:** `BodyZone.Groin` is in the data model but has **no dedicated collider**. Torso hits resolve Chest vs Groin via vertical banding (main-hud §6) — ships in Phase 4.
+**Groin zone:** `BodyZone.Groin` has **no dedicated collider**. Lower-chest/spine hits resolve to Groin via `ZoneTargetResolver` vertical banding (`GroinTorsoBandFraction` = 0.35) — shipped Phase 4.
 
-Physics layer: **BodyParts (layer 10)** for combat/medical raycast.
+Physics layer: **`BodyParts`** (name-based via `HealthLayers`; index may differ per project) for combat/medical raycast.
 
 ## Organs
 

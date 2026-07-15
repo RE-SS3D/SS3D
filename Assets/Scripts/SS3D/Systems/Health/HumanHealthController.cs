@@ -4,6 +4,7 @@ using Coimbra.Services.Events;
 using Coimbra.Services.PlayerLoopEvents;
 using SS3D.Core;
 using SS3D.Core.Behaviours;
+using SS3D.Systems.Combat;
 using SS3D.Systems.Entities;
 using System.Collections.Generic;
 using System.Linq;
@@ -132,6 +133,12 @@ namespace SS3D.Systems.Health
         public void UnregisterModifier(IHealthEffectModifier modifier)
         {
             _modifiers.Remove(modifier);
+        }
+
+        [Server]
+        public void ApplyDamage(BodyZone zone, MeleeDamagePacket packet)
+        {
+            ApplyDamage(zone, packet.Brute, packet.Burn);
         }
 
         [Server]
