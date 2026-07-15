@@ -3,28 +3,103 @@ using SS3D.Data;
 using SS3D.Data.Generated;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Rendering;
+using UnityEngine.Rendering.Universal;
 
 namespace SS3D.Systems.Health
 {
     /// <summary>
-    /// Per-zone bleeding particle VFX driven by synced health snapshots.
+    /// Per-zone bleeding VFX: particle streams, body wound decals, and floor blood accumulation.
     /// </summary>
     public class WoundVfx : MonoBehaviour
     {
+        private const float FloorDecalIntervalSeconds = 0.65f;
+        private const float BodyDecalSize = 0.14f;
+        private const float SeveredBodyDecalSize = 0.2f;
+        private const float ImpactBurstCount = 16f;
+        private const float SeveredImpactBurstCount = 20f;
+
+        private static readonly Color BloodColor = new(90f / 255f, 8f / 255f, 10f / 255f, 1f);
+
         private readonly Dictionary<BodyZone, GameObject> _activeParticles = new();
+        private readonly Dictionary<BodyZone, DecalProjector> _bodyDecals = new();
         private readonly Dictionary<BodyZone, Transform> _anchors = new();
+        private readonly HashSet<BodyZone> _impactBurstPlayed = new();
+        private readonly HashSet<BodyZone> _particlesInitialized = new();
+
         private GameObject _particlePrefab;
         private bool _anchorsBuilt;
+        private HealthSnapshot _snapshot = HealthSnapshot.Default;
+        private float _floorDecalTimer;
 
         public void ApplySnapshot(HealthSnapshot snapshot)
         {
+            _snapshot = snapshot;
             EnsureAnchors();
 
             for (int i = 0; i < HealthConstants.ZoneCount; i++)
             {
                 BodyZone zone = (BodyZone)i;
-                SetZoneBleeding(zone, snapshot.IsZoneBleeding(zone));
+                bool bleeding = snapshot.IsZoneBleeding(zone);
+                SetZoneBleeding(zone, bleeding, snapshot.IsZoneSevered(zone));
             }
+
+            if (!snapshot.IsBleeding)
+            {
+                _floorDecalTimer = 0f;
+                _impactBurstPlayed.Clear();
+                _particlesInitialized.Clear();
+            }
+        }
+
+        private void Update()
+        {
+            if (!_snapshot.IsBleeding || !BloodDecalSpawner.IsSupported)
+            {
+                return;
+            }
+
+            _floorDecalTimer -= Time.deltaTime;
+            if (_floorDecalTimer > 0f)
+            {
+                return;
+            }
+
+            _floorDecalTimer = FloorDecalIntervalSeconds;
+            TrySpawnFloorDecal();
+        }
+
+        private void TrySpawnFloorDecal()
+        {
+            List<BodyZone> bleedingZones = GetBleedingZones();
+            if (bleedingZones.Count == 0)
+            {
+                return;
+            }
+
+            BodyZone zone = bleedingZones[Random.Range(0, bleedingZones.Count)];
+            if (!_anchors.TryGetValue(zone, out Transform anchor) || anchor == null)
+            {
+                return;
+            }
+
+            float intensity = _snapshot.IsZoneSevered(zone) ? 1.35f : 1f;
+            BloodDecalSpawner.SpawnAtAnchor(anchor, intensity);
+        }
+
+        private List<BodyZone> GetBleedingZones()
+        {
+            var zones = new List<BodyZone>(HealthConstants.ZoneCount);
+            for (int i = 0; i < HealthConstants.ZoneCount; i++)
+            {
+                BodyZone zone = (BodyZone)i;
+                if (_snapshot.IsZoneBleeding(zone))
+                {
+                    zones.Add(zone);
+                }
+            }
+
+            return zones;
         }
 
         private void EnsureAnchors()
@@ -51,15 +126,12 @@ namespace SS3D.Systems.Health
             _anchorsBuilt = true;
         }
 
-        private void SetZoneBleeding(BodyZone zone, bool bleeding)
+        private void SetZoneBleeding(BodyZone zone, bool bleeding, bool isSevered)
         {
             if (!bleeding)
             {
-                if (_activeParticles.TryGetValue(zone, out GameObject existing))
-                {
-                    existing.SetActive(false);
-                }
-
+                DisableZoneEffects(zone);
+                _impactBurstPlayed.Remove(zone);
                 return;
             }
 
@@ -68,7 +140,32 @@ namespace SS3D.Systems.Health
                 return;
             }
 
-            if (!_activeParticles.TryGetValue(zone, out GameObject particle) || particle == null)
+            bool playImpactBurst = _impactBurstPlayed.Add(zone);
+            EnableParticle(zone, anchor, isSevered, playImpactBurst);
+            EnableBodyDecal(zone, anchor, isSevered);
+        }
+
+        private void DisableZoneEffects(BodyZone zone)
+        {
+            if (_activeParticles.TryGetValue(zone, out GameObject existing))
+            {
+                existing.SetActive(false);
+            }
+
+            _particlesInitialized.Remove(zone);
+
+            if (_bodyDecals.TryGetValue(zone, out DecalProjector bodyDecal) && bodyDecal != null)
+            {
+                bodyDecal.gameObject.SetActive(false);
+            }
+        }
+
+        private void EnableParticle(BodyZone zone, Transform anchor, bool isSevered, bool playImpactBurst)
+        {
+            bool isNew = !_activeParticles.TryGetValue(zone, out GameObject particle) || particle == null;
+            bool wasInactive = !isNew && !particle.activeSelf;
+
+            if (isNew)
             {
                 GameObject prefab = GetParticlePrefab();
                 if (prefab == null)
@@ -76,13 +173,149 @@ namespace SS3D.Systems.Health
                     return;
                 }
 
-                particle = Instantiate(prefab, anchor);
+                particle = Instantiate(prefab, anchor.position, anchor.rotation, anchor);
                 _activeParticles[zone] = particle;
             }
 
             particle.transform.SetParent(anchor, false);
             particle.transform.localPosition = Vector3.zero;
+            particle.transform.localRotation = Quaternion.identity;
+
+            ParticleSystem particleSystem = particle.GetComponentInChildren<ParticleSystem>();
+            bool needsFullSetup = isNew || wasInactive || !_particlesInitialized.Contains(zone);
+            if (needsFullSetup)
+            {
+                if (particleSystem != null && particleSystem.isPlaying)
+                {
+                    particleSystem.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
+                }
+
+                InitializeParticle(particleSystem, isSevered, playImpactBurst);
+                _particlesInitialized.Add(zone);
+            }
+            else
+            {
+                UpdateParticleIntensity(particleSystem, isSevered);
+            }
+
             particle.SetActive(true);
+
+            if (particleSystem != null && !particleSystem.isPlaying)
+            {
+                particleSystem.Play();
+            }
+        }
+
+        private void EnableBodyDecal(BodyZone zone, Transform anchor, bool isSevered)
+        {
+            if (!BloodDecalSpawner.IsSupported)
+            {
+                return;
+            }
+
+            if (!_bodyDecals.TryGetValue(zone, out DecalProjector decal) || decal == null)
+            {
+                var decalObject = new GameObject($"BloodWoundDecal_{zone}");
+                decalObject.transform.SetParent(anchor, false);
+                decalObject.transform.localPosition = Vector3.zero;
+                decalObject.transform.localRotation = Quaternion.identity;
+
+                decal = decalObject.AddComponent<DecalProjector>();
+                decal.scaleMode = DecalScaleMode.ScaleInvariant;
+                decal.drawDistance = 24f;
+                decal.startAngleFade = 180f;
+                decal.endAngleFade = 180f;
+                decal.material = BloodDecalSpawner.CreateBodyDecalMaterial();
+                _bodyDecals[zone] = decal;
+            }
+            else if (!decal.gameObject.activeSelf)
+            {
+                Material previous = decal.material;
+                Material template = BloodDecalSpawner.BloodDecalMaterial;
+                decal.material = BloodDecalSpawner.CreateBodyDecalMaterial();
+                if (previous != null && previous != template)
+                {
+                    Destroy(previous);
+                }
+            }
+            float size = isSevered ? SeveredBodyDecalSize : BodyDecalSize;
+            decal.size = new Vector3(size, size, 0.35f);
+            decal.fadeFactor = isSevered ? 1f : 0.88f;
+            decal.gameObject.SetActive(true);
+        }
+
+        private static void InitializeParticle(ParticleSystem particleSystem, bool isSevered, bool playImpactBurst)
+        {
+            if (particleSystem == null)
+            {
+                return;
+            }
+
+            ParticleSystem.MainModule main = particleSystem.main;
+            main.duration = 5f;
+            main.loop = true;
+            main.startLifetime = new ParticleSystem.MinMaxCurve(0.6f, 1f);
+            main.startSpeed = new ParticleSystem.MinMaxCurve(0.5f, 1.5f);
+            main.startSize = new ParticleSystem.MinMaxCurve(0.03f, 0.06f);
+            main.startRotation = new ParticleSystem.MinMaxCurve(0f, Mathf.PI * 2f);
+            main.startColor = BloodColor;
+            main.gravityModifier = 1.5f;
+            main.simulationSpace = ParticleSystemSimulationSpace.World;
+            main.maxParticles = 50;
+
+            UpdateParticleIntensity(particleSystem, isSevered);
+
+            ParticleSystem.ColorOverLifetimeModule colorOverLifetime = particleSystem.colorOverLifetime;
+            colorOverLifetime.enabled = true;
+            Gradient gradient = new();
+            gradient.SetKeys(
+                new[] { new GradientColorKey(BloodColor, 0f), new GradientColorKey(BloodColor, 1f) },
+                new[]
+                {
+                    new GradientAlphaKey(1f, 0f),
+                    new GradientAlphaKey(1f, 0.15f),
+                    new GradientAlphaKey(0f, 1f),
+                });
+            colorOverLifetime.color = gradient;
+
+            ParticleSystem.SizeOverLifetimeModule sizeOverLifetime = particleSystem.sizeOverLifetime;
+            sizeOverLifetime.enabled = true;
+            sizeOverLifetime.size = new ParticleSystem.MinMaxCurve(1f, AnimationCurve.Linear(0f, 1f, 1f, 0.6f));
+
+            ParticleSystemRenderer renderer = particleSystem.GetComponent<ParticleSystemRenderer>();
+            Material particleMaterial = BleedingVfxCatalog.Instance != null
+                ? BleedingVfxCatalog.Instance.ParticleMaterial
+                : null;
+            if (particleMaterial != null)
+            {
+                renderer.material = particleMaterial;
+            }
+
+            renderer.shadowCastingMode = ShadowCastingMode.Off;
+            renderer.receiveShadows = false;
+
+            if (playImpactBurst)
+            {
+                particleSystem.Emit(isSevered ? (int)SeveredImpactBurstCount : (int)ImpactBurstCount);
+            }
+        }
+
+        private static void UpdateParticleIntensity(ParticleSystem particleSystem, bool isSevered)
+        {
+            if (particleSystem == null)
+            {
+                return;
+            }
+
+            ParticleSystem.EmissionModule emission = particleSystem.emission;
+            emission.rateOverTime = isSevered ? 10f : 6f;
+
+            ParticleSystem.ShapeModule shape = particleSystem.shape;
+            shape.enabled = true;
+            shape.shapeType = ParticleSystemShapeType.Cone;
+            shape.angle = isSevered ? 12f : 10f;
+            shape.radius = 0.02f;
+            shape.rotation = new Vector3(-90f, 0f, 0f);
         }
 
         private GameObject GetParticlePrefab()
@@ -106,6 +339,24 @@ namespace SS3D.Systems.Health
             }
 
             _activeParticles.Clear();
+
+            Material template = BloodDecalSpawner.BloodDecalMaterial;
+            foreach (DecalProjector decal in _bodyDecals.Values)
+            {
+                if (decal == null)
+                {
+                    continue;
+                }
+
+                if (decal.material != null && decal.material != template)
+                {
+                    Destroy(decal.material);
+                }
+
+                decal.gameObject.Dispose(true);
+            }
+
+            _bodyDecals.Clear();
         }
     }
 }

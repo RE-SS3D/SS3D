@@ -11,10 +11,20 @@ namespace SS3D.Systems.Health.Interactions
     /// </summary>
     public sealed class HandCprExtension : MonoBehaviour, IInteractionSourceExtension
     {
-        private readonly CprInteraction _interaction = new();
+        private CprInteraction _interaction;
+
+        private void Awake()
+        {
+            _interaction = new CprInteraction();
+        }
 
         public void GetSourceInteractions(IInteractionTarget[] targets, List<InteractionEntry> interactions)
         {
+            if (_interaction == null)
+            {
+                return;
+            }
+
             Hand hand = GetComponent<Hand>();
             if (!hand.IsEmpty())
             {

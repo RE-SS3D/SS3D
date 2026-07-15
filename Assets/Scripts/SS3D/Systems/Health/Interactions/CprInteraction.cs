@@ -18,7 +18,11 @@ namespace SS3D.Systems.Health.Interactions
         {
             Delay = HealthConstants.CprWindupSeconds;
             CheckInterval = 0.25f;
-            Icon = Assets.Get<Sprite>(AssetDatabases.InteractionIcons, InteractionIcons.Examine);
+        }
+
+        public override Sprite GetIcon(InteractionEvent interactionEvent)
+        {
+            return Icon ? Icon : Assets.Get<Sprite>(AssetDatabases.InteractionIcons, InteractionIcons.Examine);
         }
 
         public IntentType AllowedIntent => IntentType.Help;

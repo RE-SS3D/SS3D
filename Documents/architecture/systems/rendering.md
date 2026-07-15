@@ -6,7 +6,7 @@
 
 ## Overview
 
-URP rendering extensions for this fork. The selection pick pass ([selection](selection.md)) is gameplay-critical for interaction targeting. The atmospherics pass ([atmospherics](atmospherics.md)) composites gas scatter, plasma glow, and heat distortion from sim GPU textures via `AtmosRenderContext`. **Atmos snapshot is server-built only** — clients render when a snapshot is present; multiplayer client sync is not implemented yet.
+URP rendering extensions for this fork. The selection pick pass ([selection](selection.md)) is gameplay-critical for interaction targeting. The atmospherics pass ([atmospherics](atmospherics.md)) composites gas scatter, plasma glow, and heat distortion from sim GPU textures via `AtmosRenderContext`. **Decal Renderer** is enabled on the forward renderer for health blood decals and future surface marks. **Atmos snapshot is server-built only** — clients render when a snapshot is present; multiplayer client sync is not implemented yet.
 
 ## Start here
 
@@ -14,7 +14,7 @@ URP rendering extensions for this fork. The selection pick pass ([selection](sel
 - `Assets/Scripts/SS3D/Rendering/URP/SelectionPickContext.cs` — pick pass render context
 - `Assets/Scripts/SS3D/Rendering/URP/AtmosRendererFeature.cs` — gas scatter, glow, distortion passes
 - `Assets/Scripts/SS3D/Rendering/URP/AtmosRenderContext.cs` — shared GPU snapshot for atmos shaders
-- `Assets/Settings/URP/` — pipeline asset and Forward+ renderer
+- `Assets/Settings/URP/` — pipeline asset and Forward+ renderer (includes Decal Renderer feature)
 
 ## Extension points
 

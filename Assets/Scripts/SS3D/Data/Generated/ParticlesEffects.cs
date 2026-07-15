@@ -5,6 +5,7 @@ namespace SS3D.Data.Generated
     {
         public const string AttackParticles = "17b0d9163e9cdf14aa557557e7d9d76b";
         public const string BleedingParticle = "a6a77c26ee7edd94c804f4ddd851c8ba";
+        public const string BloodFloorDecal = "7e8a9b0c1d2e3f405162738495a6b7c0";
         public const string ConstructionParticle = "ca5e6b5f7c6c5054a8f8155ef44e3e43";
     }
 }
