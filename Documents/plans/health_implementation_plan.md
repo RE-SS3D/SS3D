@@ -29,6 +29,9 @@ todos:
   - id: phase5-treatment
     content: "Phase 5: Field treatments (burn dressing, splint, O2, CPR, antitoxin, IV/transfusion)"
     status: completed
+  - id: phase5b-severing
+    content: "Phase 5b: Limb severing — AnatomyNode detach, zone Severed state, world drops, head mind-swap"
+    status: completed
   - id: phase6-hud
     content: "Phase 6: Vitals cluster + screen-space feedback, examine-self organ readout, new bleeding VFX + URP Decal blood decals on model"
     status: pending
@@ -367,18 +370,33 @@ Bandage pattern extended to: burn dressing, splint, O2 mask, CPR, antitoxin, IV/
 
 ---
 
+## Phase 5b — Limb severing
+
+Ships between Phase 5 and Phase 6. Design authority: health.md §5 (Severed tier), §6 (reattach deferred to Phase 7c surgery).
+
+1. **`AnatomyNode`** — restore detach fields: skinned mesh ref, sever anchor, optional severed-item prefab; `IsSevered` runtime state.
+2. **`HumanAnatomyController`** — zone → anatomy subtree map from nested HumanBodyParts prefabs; hide meshes, disable zone colliders, spawn severed item via `ItemSubSystem`.
+3. **`ZoneDamageState.IsSevered`** — explicit transition to `WoundSeverity.Severed` (not derived from brute thresholds); max bleeding; limb function hard-disabled.
+4. **Severance trigger** — zone must reach Disabled first; sharp melee (`CanSever` on `MeleeDamagePacket`) or admin `sever` / `destroybodypart` commands.
+5. **Head decapitation** — mind-swap to severed head entity (plan key decision); body deactivates player controls, does not run ghost/death flow.
+6. **Reattachment / prosthetics** — explicitly deferred to Phase 7c.
+
+**Out of scope:** stump blendshapes (`HumanCut.mat` wiring), groin/chest severance, nested NetworkObject unparent (spawn fresh item copy instead).
+
+---
+
 ## Phase 6 — Vitals HUD
 
 1. Vitals cluster — worst-limb brute/burn + systemic toxin/oxy (health.md §7). **Follow existing custom vitals-cluster designs** — wire bars/alerts to `HealthSnapshot`, do not redesign layout.
 2. **Screen-space condition feedback** — deferred from Phase 3; wire existing custom designs (critical, low O2, pain, etc.) to `HealthSnapshot` intensity/state.
 3. Examine-self hold → per-zone + organ function readout. Reserve a slot for diagnosed infections (virology.md §8) — listed once scanned, not a standalone infection bar.
 4. **Wound visuals on character model** — replace Phase 1 interim particle bleed with purpose-built assets:
-   - **New bleeding VFX** — per-zone particle/stream prefabs tuned for Human anatomy anchors (not the legacy bleed particle reused in `WoundVfx`).
-   - **Blood decals** — pooled blood marks on floors/walls and optional body-surface splatter, driven by wound severity and active bleeding; prefer **URP Decal Renderer** (`DecalProjector` + decal materials) over mesh quads.
-   - Wire spawn/fade/cleanup from `WoundVfx` (or successor) + `HealthSnapshot` zone mask / severity; decals accumulate while bleeding, stop growing when bandaged.
+   - **New bleeding VFX** — per-zone particle/stream prefabs tuned for Human anatomy anchors (not the legacy bleed particle reused in `WoundVfx`). *(Partial: emission/lifetime tuned in code; dedicated stream prefab still TODO.)*
+   - **Blood decals** — pooled blood marks on floors/walls and optional body-surface splatter, driven by wound severity and active bleeding; prefer **URP Decal Renderer** (`DecalProjector` + decal materials) over mesh quads. *(Shipped: `BloodDecalSpawner`, body + floor decals via `WoundVfx`.)*
+   - Wire spawn/fade/cleanup from `WoundVfx` (or successor) + `HealthSnapshot` zone mask / severity; decals accumulate while bleeding, stop growing when bandaged. *(Shipped.)*
    - Blendshapes/material tint on Human.fbx remain optional if art adds them later — decals + particles are the v1 path.
 
-**URP Decal prerequisites:** URP renderer already exposes default decal materials; Phase 6 confirms Decal Renderer feature is enabled on the active forward renderer asset and adds blood decal shader/material variants (wet, dry, footprint smear).
+**URP Decal prerequisites:** URP renderer exposes Decal Renderer feature on `SS3D_ForwardPlusRenderer`; blood decal shader/material variants live under `Assets/Content/WorldObjects/World/VFX/Health/`. Wet/dry/footprint variants remain optional follow-ups.
 
 ---
 
@@ -437,6 +455,7 @@ flowchart LR
     P3[Phase 3 Critical/death]
     P4[Phase 4 Combat]
     P5[Phase 5 Treatment]
+    P5b[Phase 5b Severing]
     P6[Phase 6 HUD]
     P7[Phase 7 Cross-system]
     P8[Phase 8 Hardening]
@@ -450,7 +469,10 @@ flowchart LR
     P1 --> P6
     P2 --> P6
     P3 --> P7
+    P5 --> P5b
+    P5b --> P6
     P5 --> P7
+    P5b --> P7
     P6 --> P8
     P7 --> P8
     P2 --> P9
@@ -552,3 +574,12 @@ health.md §8 + death-cloning §9 example A, end-to-end:
 - **BurnPatch** → burn dressing (zone burn heal); **BrutePatch** → splint (disabled limb stabilization via `IsSplinted`); **OxygenTank** → head-targeted oxy relief; **Medkit** → chest transfusion + antitoxin (reusable); empty hands → chest CPR (3s windup).
 - `HumanHealthController` adds `ApplyBloodTransfusion`, `ApplyOxyRelief`, `ApplyAntitoxin`, `ApplyCpr`, and splint support on `ApplyTreatment`.
 - Dedicated IV bag / syringe prefabs deferred until art import; medkit stands in for field blood + antitoxin.
+
+### Phase 5b (shipped)
+
+- `AnatomyNode` expanded with severed visuals, optional drop prefab, and sever anchor; legacy `_bodyPartItem` YAML ignored — spawns via `Items.*` constants or `Item.Asset.Id`.
+- `HumanAnatomyController` maps zones to nested body-part prefabs, hides anatomy, disables zone colliders, spawns world item copies; head severance instantiates `HumanHead` with runtime `Entity` before FishNet spawn, then `MindSubSystem.SwapMinds`.
+- `ZoneDamageState.IsSevered` + `HealthSnapshot.SeveredZoneMask`; severance requires Disabled tier unless admin `force`.
+- Sharp melee: `CanSever` on `MeleeDamagePacket` / `MeleeWeaponProfile`; hatchet and kitchen knife wired via `MeleeWeaponItemExtension`.
+- Admin: `sever (ckey) (zone) [force]`; `destroybodypart` force-severs head for decap testing.
+- Reattachment / stump `HumanCut.mat` / nested NO unparent deferred (Phase 7c / art).

@@ -113,7 +113,7 @@ namespace SS3D.Systems.Health
 
         public static bool IsLimbFunctionallyDisabled(ZoneDamageState zone)
         {
-            return zone.IsDisabled && !zone.IsSplinted;
+            return zone.IsSevered || (zone.IsDisabled && !zone.IsSplinted);
         }
 
         public static float GetStoredOrganFunction(IEnumerable<OrganState> organs, OrganType type)
@@ -181,11 +181,11 @@ namespace SS3D.Systems.Health
 
         private static float LimbMovementFactor(ZoneDamageState zone)
         {
-            if (zone.IsDisabled)
+            if (zone.IsSevered || zone.IsDisabled)
             {
-                return zone.IsSplinted
-                    ? HealthConstants.LimbSevereMovementMultiplier
-                    : HealthConstants.LimbDisabledMovementMultiplier;
+                return zone.IsSevered || !zone.IsSplinted
+                    ? HealthConstants.LimbDisabledMovementMultiplier
+                    : HealthConstants.LimbSevereMovementMultiplier;
             }
 
             if (zone.Severity >= WoundSeverity.Severe)

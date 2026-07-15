@@ -25,6 +25,7 @@ namespace SS3D.Systems.Health
         private float _tickTimer;
         private Entity _entity;
         private WoundVfx _woundVfx;
+        private HumanAnatomyController _anatomy;
         private HealthAlertsView _healthAlertsView;
 
         [SyncVar(OnChange = nameof(SyncSnapshot))]
@@ -61,6 +62,14 @@ namespace SS3D.Systems.Health
                 _woundVfx = gameObject.AddComponent<WoundVfx>();
             }
 
+            _anatomy = GetComponent<HumanAnatomyController>();
+            if (_anatomy == null)
+            {
+                _anatomy = gameObject.AddComponent<HumanAnatomyController>();
+            }
+
+            _anatomy.Initialize(this);
+
             AddHandle(UpdateEvent.AddListener(HandleUpdate));
         }
 
@@ -76,6 +85,7 @@ namespace SS3D.Systems.Health
             }
 
             _woundVfx?.ApplySnapshot(_snapshot);
+            ApplySeveranceVisualsFromSnapshot(_snapshot);
         }
 
         public override void OnStartServer()
@@ -139,6 +149,11 @@ namespace SS3D.Systems.Health
         public void ApplyDamage(BodyZone zone, MeleeDamagePacket packet)
         {
             ApplyDamage(zone, packet.Brute, packet.Burn);
+
+            if (packet.CanSever)
+            {
+                TrySeverZone(zone);
+            }
         }
 
         [Server]
@@ -153,8 +168,12 @@ namespace SS3D.Systems.Health
             ZoneDamageState state = _zones[index];
             state.Brute += brute;
             state.Burn += burn;
-            RefreshZoneDerivedState(ref state);
-            state.BleedingRate = HealthSimulation.BleedingRateForSeverity(state.Severity);
+            HealthSimulation.RefreshZoneDerivedState(ref state);
+            if (!state.IsSevered)
+            {
+                state.BleedingRate = HealthSimulation.BleedingRateForSeverity(state.Severity);
+            }
+
             _zones[index] = state;
             OrganSimulation.ApplyZoneDamageToOrgans(zone, brute, burn, _organs);
 
@@ -179,13 +198,13 @@ namespace SS3D.Systems.Health
                 state.BleedingRate = 0f;
             }
 
-            if (applySplint)
+            if (applySplint && !state.IsSevered)
             {
                 state.IsSplinted = true;
             }
 
-            RefreshZoneDerivedState(ref state);
-            if (!stopBleeding)
+            HealthSimulation.RefreshZoneDerivedState(ref state);
+            if (!stopBleeding && !state.IsSevered)
             {
                 state.BleedingRate = HealthSimulation.BleedingRateForSeverity(state.Severity);
             }
@@ -261,6 +280,46 @@ namespace SS3D.Systems.Health
         }
 
         [Server]
+        public bool TrySeverZone(BodyZone zone, bool force = false)
+        {
+            if (!HealthSimulation.IsSeverableZone(zone))
+            {
+                return false;
+            }
+
+            int index = (int)zone;
+            if (index < 0 || index >= _zones.Length)
+            {
+                return false;
+            }
+
+            ZoneDamageState state = _zones[index];
+            if (state.IsSevered)
+            {
+                return false;
+            }
+
+            if (!force && state.Severity < WoundSeverity.Disabled)
+            {
+                return false;
+            }
+
+            HealthSimulation.ApplySeverance(ref state);
+            _zones[index] = state;
+
+            _anatomy.ExecuteServerSeverance(zone);
+            RpcApplySeveranceVisuals(zone);
+            PublishSnapshot();
+            return true;
+        }
+
+        [ObserversRpc(RunLocally = true)]
+        private void RpcApplySeveranceVisuals(BodyZone zone)
+        {
+            _anatomy?.ApplyVisualSeverance(zone);
+        }
+
+        [Server]
         public void TickHealth(float atmosphereO2 = 1f)
         {
             OrganSimulation.TickOrganFunction(_pools, _organs);
@@ -278,12 +337,6 @@ namespace SS3D.Systems.Health
             }
 
             PublishSnapshot();
-        }
-
-        private static void RefreshZoneDerivedState(ref ZoneDamageState state)
-        {
-            state.Severity = HealthSimulation.ResolveZoneSeverity(state.Brute, state.Burn);
-            state.IsDisabled = state.Severity >= WoundSeverity.Disabled;
         }
 
         private void HandleUpdate(ref EventContext context, in UpdateEvent updateEvent)
@@ -322,10 +375,27 @@ namespace SS3D.Systems.Health
         private void SyncSnapshot(HealthSnapshot oldValue, HealthSnapshot newValue, bool asServer)
         {
             _woundVfx?.ApplySnapshot(newValue);
+            ApplySeveranceVisualsFromSnapshot(newValue);
 
             if (_healthAlertsView != null && _entity != null && _entity.Mind != null && _entity.Mind.IsOwner)
             {
                 _healthAlertsView.Refresh();
+            }
+        }
+
+        private void ApplySeveranceVisualsFromSnapshot(HealthSnapshot snapshot)
+        {
+            if (_anatomy == null)
+            {
+                return;
+            }
+
+            for (int i = 0; i < HealthConstants.ZoneCount; i++)
+            {
+                if (snapshot.IsZoneSevered((BodyZone)i))
+                {
+                    _anatomy.ApplyVisualSeverance((BodyZone)i);
+                }
             }
         }
 

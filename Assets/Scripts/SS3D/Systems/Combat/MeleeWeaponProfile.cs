@@ -9,8 +9,9 @@ namespace SS3D.Systems.Combat
         public float BurnDamage;
         public float WindupSeconds;
         public float RecoverySeconds;
+        public bool CanSever;
 
-        public MeleeDamagePacket ToDamagePacket() => new(BruteDamage, BurnDamage);
+        public MeleeDamagePacket ToDamagePacket() => new(BruteDamage, BurnDamage, CanSever);
 
         public static MeleeWeaponProfile Fists => new()
         {
@@ -18,6 +19,7 @@ namespace SS3D.Systems.Combat
             BurnDamage = 0f,
             WindupSeconds = 0.25f,
             RecoverySeconds = 0.35f,
+            CanSever = false,
         };
 
         public static MeleeWeaponProfile Crowbar => new()
@@ -26,6 +28,25 @@ namespace SS3D.Systems.Combat
             BurnDamage = 0f,
             WindupSeconds = 0.35f,
             RecoverySeconds = 0.5f,
+            CanSever = false,
+        };
+
+        public static MeleeWeaponProfile Hatchet => new()
+        {
+            BruteDamage = 16f,
+            BurnDamage = 0f,
+            WindupSeconds = 0.3f,
+            RecoverySeconds = 0.45f,
+            CanSever = true,
+        };
+
+        public static MeleeWeaponProfile KitchenKnife => new()
+        {
+            BruteDamage = 12f,
+            BurnDamage = 0f,
+            WindupSeconds = 0.2f,
+            RecoverySeconds = 0.35f,
+            CanSever = true,
         };
     }
 }

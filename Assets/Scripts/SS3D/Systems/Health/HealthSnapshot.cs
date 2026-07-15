@@ -13,6 +13,7 @@ namespace SS3D.Systems.Health
         public bool IsConscious;
         public bool IsCardiacArrest;
         public int BleedingZoneMask;
+        public int SeveredZoneMask;
         public float BrainFunctionPercent;
         public float HeartFunctionPercent;
         public float MovementSpeedMultiplier;
@@ -25,6 +26,11 @@ namespace SS3D.Systems.Health
             return (BleedingZoneMask & (1 << (int)zone)) != 0;
         }
 
+        public bool IsZoneSevered(BodyZone zone)
+        {
+            return (SeveredZoneMask & (1 << (int)zone)) != 0;
+        }
+
         public static HealthSnapshot Default => new()
         {
             State = HealthState.Healthy,
@@ -35,6 +41,7 @@ namespace SS3D.Systems.Health
             IsConscious = true,
             IsCardiacArrest = false,
             BleedingZoneMask = 0,
+            SeveredZoneMask = 0,
             BrainFunctionPercent = 100f,
             HeartFunctionPercent = 100f,
             MovementSpeedMultiplier = 1f,

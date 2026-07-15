@@ -107,6 +107,36 @@ namespace SS3D.Systems.Health
             };
         }
 
+        public static bool IsSeverableZone(BodyZone zone)
+        {
+            return zone is BodyZone.Head
+                or BodyZone.LeftArm
+                or BodyZone.RightArm
+                or BodyZone.LeftLeg
+                or BodyZone.RightLeg;
+        }
+
+        public static void ApplySeverance(ref ZoneDamageState state)
+        {
+            state.IsSevered = true;
+            state.Severity = WoundSeverity.Severed;
+            state.IsDisabled = true;
+            state.BleedingRate = BleedingRateForSeverity(WoundSeverity.Severed);
+        }
+
+        public static void RefreshZoneDerivedState(ref ZoneDamageState state)
+        {
+            if (state.IsSevered)
+            {
+                state.Severity = WoundSeverity.Severed;
+                state.IsDisabled = true;
+                return;
+            }
+
+            state.Severity = ResolveZoneSeverity(state.Brute, state.Burn);
+            state.IsDisabled = state.Severity >= WoundSeverity.Disabled;
+        }
+
         public static bool IsSystemicallyCritical(SystemicPools pools)
         {
             return pools.BloodVolumeRatio <= HealthConstants.CriticalBloodVolumeRatio
@@ -197,6 +227,7 @@ namespace SS3D.Systems.Health
             float worstBurn = 0f;
             bool bleeding = false;
             int bleedingMask = 0;
+            int severedMask = 0;
 
             for (int i = 0; i < zones.Count; i++)
             {
@@ -206,6 +237,11 @@ namespace SS3D.Systems.Health
                 {
                     bleeding = true;
                     bleedingMask |= 1 << i;
+                }
+
+                if (zones[i].IsSevered)
+                {
+                    severedMask |= 1 << i;
                 }
             }
 
@@ -224,6 +260,7 @@ namespace SS3D.Systems.Health
                 IsConscious = IsConscious(brainEffective),
                 IsCardiacArrest = IsCardiacArrest(heartStored),
                 BleedingZoneMask = bleedingMask,
+                SeveredZoneMask = severedMask,
                 BrainFunctionPercent = brainStored,
                 HeartFunctionPercent = heartStored,
                 MovementSpeedMultiplier = OrganSimulation.ComputeMovementSpeedMultiplier(zones),

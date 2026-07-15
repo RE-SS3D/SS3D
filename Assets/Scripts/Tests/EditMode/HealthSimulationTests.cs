@@ -446,5 +446,64 @@ namespace EditorTests
             Assert.AreEqual(HealthConstants.LimbSevereMovementMultiplier, movement, 0.001f);
             Assert.IsTrue(OrganSimulation.CanUseArms(zones));
         }
+
+        [Test]
+        public void ApplySeveranceSetsMaxBleedingAndPreservesStateOnRefresh()
+        {
+            ZoneDamageState state = ZoneDamageState.Default;
+            HealthSimulation.ApplySeverance(ref state);
+
+            Assert.IsTrue(state.IsSevered);
+            Assert.AreEqual(WoundSeverity.Severed, state.Severity);
+            Assert.AreEqual(2f, state.BleedingRate, 0.001f);
+
+            state.Brute = 0f;
+            HealthSimulation.RefreshZoneDerivedState(ref state);
+
+            Assert.IsTrue(state.IsSevered);
+            Assert.AreEqual(WoundSeverity.Severed, state.Severity);
+        }
+
+        [Test]
+        public void SeveredLimbIsFunctionallyDisabledEvenWhenSplinted()
+        {
+            ZoneDamageState state = new ZoneDamageState
+            {
+                IsSevered = true,
+                Severity = WoundSeverity.Severed,
+                IsDisabled = true,
+                IsSplinted = true,
+            };
+
+            Assert.IsTrue(OrganSimulation.IsLimbFunctionallyDisabled(state));
+            Assert.AreEqual(HealthConstants.LimbDisabledMovementMultiplier,
+                OrganSimulation.ComputeMovementSpeedMultiplier(new[]
+                {
+                    ZoneDamageState.Default,
+                    ZoneDamageState.Default,
+                    ZoneDamageState.Default,
+                    ZoneDamageState.Default,
+                    state,
+                    ZoneDamageState.Default,
+                }), 0.001f);
+        }
+
+        [Test]
+        public void BuildSnapshotIncludesSeveredZoneMask()
+        {
+            var zones = new ZoneDamageState[HealthConstants.ZoneCount];
+            for (int i = 0; i < zones.Length; i++)
+            {
+                zones[i] = ZoneDamageState.Default;
+            }
+
+            HealthSimulation.ApplySeverance(ref zones[(int)BodyZone.LeftArm]);
+            var organs = new List<OrganState> { OrganState.Default(OrganType.Brain) };
+
+            HealthSnapshot snapshot = HealthSimulation.BuildSnapshot(SystemicPools.Default, zones, organs);
+
+            Assert.IsTrue(snapshot.IsZoneSevered(BodyZone.LeftArm));
+            Assert.IsFalse(snapshot.IsZoneSevered(BodyZone.RightArm));
+        }
     }
 }

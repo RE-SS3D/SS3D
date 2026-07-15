@@ -8,8 +8,8 @@ namespace SS3D.Systems.IngameConsoleSystem.Commands
 {
     public class DestroyBodyPartCommand : Command
     {
-        public override string LongDescription => "Apply lethal head damage via HumanHealthController";
-        public override string ShortDescription => "Apply lethal head damage";
+        public override string LongDescription => "Force-sever a player's head (decapitation / mind-swap test)";
+        public override string ShortDescription => "Sever head";
         public override string Usage => "(game object name)";
         public override ServerRoleTypes AccessLevel => ServerRoleTypes.Administrator;
         public override CommandType Type => CommandType.Server;
@@ -24,8 +24,13 @@ namespace SS3D.Systems.IngameConsoleSystem.Commands
                 return response.InvalidArgs;
             }
 
-            values.Health.ApplyDamage(BodyZone.Head, 200f, 0f);
-            return "Lethal head damage applied";
+            values.Health.ApplyDamage(BodyZone.Head, HealthConstants.DisabledThreshold, 0f);
+            if (!values.Health.TrySeverZone(BodyZone.Head, force: true))
+            {
+                return "Head severance failed";
+            }
+
+            return "Head severed";
         }
 
         [Server]

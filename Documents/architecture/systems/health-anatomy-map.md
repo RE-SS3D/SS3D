@@ -1,5 +1,5 @@
 > Parent map: [health.md](health.md)
-> Status: partial (Phase 4 — combat zone raycast + groin banding)
+> Status: partial (Phase 5b — limb severing)
 
 # Health anatomy map
 
@@ -18,7 +18,19 @@ Human.fbx / Human.prefab anatomy contract for the greenfield health rewrite. Des
 
 `HumanEarLeft` / `HumanEarRight` prefabs exist but are **not wired** in Human.prefab — out of scope for v1.
 
-Each body-part prefab carries **`AnatomyNode`** (replaces legacy `HumanBodypart` scripts).
+Each body-part prefab carries **`AnatomyNode`** (replaces legacy `HumanBodypart` scripts). Phase 5b: severance hides the nested subtree on the character and spawns a world **`Item`** copy via `HumanAnatomyController` + `ItemSubSystem`.
+
+## Severance (Phase 5b)
+
+| Zone | Anatomy root | World drop item |
+|------|--------------|-----------------|
+| Head | `HumanHead` | `Items.HumanHead` (+ mind-swap to severed head `Entity`) |
+| LeftArm / RightArm | `HumanArmLeft/Right` | matching body-part item |
+| LeftLeg / RightLeg | `HumanLegLeft/Right` | matching body-part item |
+
+Chest and Groin are not severable. Reattachment deferred to Phase 7c surgery.
+
+Trigger: zone at **Disabled** + sharp melee (`CanSever` on `MeleeDamagePacket`) or admin `sever` / `destroybodypart` commands.
 
 ## Skeleton colliders → `BodyZone`
 
@@ -69,7 +81,8 @@ Surgical access: chest (heart, lungs, liver); head (brain) per [surgery.md](../.
 | `HumanHealthController.cs` | Server 1 Hz tick, zone damage, pools, snapshot SyncVar |
 | `HealthSimulation.cs` | Pure pool math + critical/death checks (EditMode tested) |
 | `ZoneTargetCollider.cs` | Collider → zone mapping |
-| `AnatomyNode.cs` | Body-part tree anchor |
+| `AnatomyNode.cs` | Body-part tree anchor; severed visual state |
+| `HumanAnatomyController.cs` | Zone → anatomy map, sever visuals, world drops, head mind-swap |
 | `OrganInstance.cs` | Organ registration |
 
 Stamina relocated to `Assets/Scripts/SS3D/Systems/Stamina/` — health bridge ships Phase 7a.
