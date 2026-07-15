@@ -30,7 +30,7 @@ todos:
     content: "Phase 5: Field treatments (burn dressing, splint, O2, CPR, antitoxin, IV/transfusion)"
     status: pending
   - id: phase6-hud
-    content: "Phase 6: Vitals cluster + screen-space condition feedback (existing custom designs), examine-self organ readout, wound rendering on model"
+    content: "Phase 6: Vitals cluster + screen-space feedback, examine-self organ readout, new bleeding VFX + URP Decal blood decals on model"
     status: pending
   - id: phase7-cross-system
     content: "Phase 7: Stamina↔oxy bridge, armor, surgery direct-repair slice, death/cloning, chemistry stubs"
@@ -372,7 +372,13 @@ Bandage pattern extended to: burn dressing, splint, O2 mask, CPR, antitoxin, IV/
 1. Vitals cluster — worst-limb brute/burn + systemic toxin/oxy (health.md §7). **Follow existing custom vitals-cluster designs** — wire bars/alerts to `HealthSnapshot`, do not redesign layout.
 2. **Screen-space condition feedback** — deferred from Phase 3; wire existing custom designs (critical, low O2, pain, etc.) to `HealthSnapshot` intensity/state.
 3. Examine-self hold → per-zone + organ function readout. Reserve a slot for diagnosed infections (virology.md §8) — listed once scanned, not a standalone infection bar.
-4. Wound severity on character model (materials/decals/blendshapes if available on Human.fbx).
+4. **Wound visuals on character model** — replace Phase 1 interim particle bleed with purpose-built assets:
+   - **New bleeding VFX** — per-zone particle/stream prefabs tuned for Human anatomy anchors (not the legacy bleed particle reused in `WoundVfx`).
+   - **Blood decals** — pooled blood marks on floors/walls and optional body-surface splatter, driven by wound severity and active bleeding; prefer **URP Decal Renderer** (`DecalProjector` + decal materials) over mesh quads.
+   - Wire spawn/fade/cleanup from `WoundVfx` (or successor) + `HealthSnapshot` zone mask / severity; decals accumulate while bleeding, stop growing when bandaged.
+   - Blendshapes/material tint on Human.fbx remain optional if art adds them later — decals + particles are the v1 path.
+
+**URP Decal prerequisites:** URP renderer already exposes default decal materials; Phase 6 confirms Decal Renderer feature is enabled on the active forward renderer asset and adds blood decal shader/material variants (wet, dry, footprint smear).
 
 ---
 
@@ -468,6 +474,7 @@ flowchart LR
 | Kidneys missing from FBX | Liver-only clearance + interim renal factor; art follow-up |
 | Groin zone | No dedicated collider; `BodyZone.Groin` in data model, resolved via vertical banding on torso hits |
 | Screen-space / vitals UI | Implement owner's existing custom designs; code wires `HealthSnapshot` → designed assets |
+| Wound / bleed visuals | Phase 6: new per-zone bleed VFX + URP Decal Renderer blood decals; Phase 1 `WoundVfx` particle reuse is interim |
 | Global tick | `HumanHealthController.TickHealth()` at 1 Hz; delete `OxygenConsumerSubSystem` |
 | Death | Brain function → 0 only; severed head keeps special mind-swap behavior |
 | Disease/infection | Separate Phase 9 per virology.md; routes through `IHealthEffectModifier`, not new health pools |
@@ -483,7 +490,7 @@ flowchart LR
 | Legacy scripts on prefabs | Phase 0d strips all removed components; missing-script check is acceptance criteria |
 | Stamina interaction gates break on purge | Relocate `Stamina/` out of Health; minimal stub preserves compile until Phase 7a |
 | Kidney missing vs design spec | Document divergence; derived clearance until art |
-| FBX has no wound blendshapes | Start with bleed particles + material tint; art pass later |
+| FBX has no wound blendshapes | Phase 6 ships URP Decal blood marks + new bleed particles; blendshapes/material tint if art adds later |
 
 ---
 
@@ -509,6 +516,7 @@ health.md §8 + death-cloning §9 example A, end-to-end:
 - Bandage wired to `MedicalPatch.prefab` via `BandageItemExtension`; dedicated bandage prefab can split later.
 - `WoundVfx` is auto-added on `HumanHealthController` startup if missing from prefab.
 - Transfusion and other blood restoration deferred to Phase 5.
+- **Interim bleed VFX only** — Phase 1 reuses the legacy particle prefab via `WoundVfx`; Phase 6 replaces with new bleeding VFX and URP Decal blood decals on surfaces.
 
 ### Phase 2 (shipped)
 
@@ -524,3 +532,9 @@ health.md §8 + death-cloning §9 example A, end-to-end:
 - `HealthCriticalFlags` + Critical / Cardiac Arrest alert chips; defibrillation via `DefibrillatorInteraction` + admin `defib` command.
 - Untreated critical systemic pools drain heart function → cardiac arrest → brain drain → death at brain function zero.
 - Defib charge, armor block, and portable defib prefab deferred (Phase 7d / art import).
+
+### Hemorrhage tuning (2026-07)
+
+- Oxy debt now scales **continuously** with blood lost `(1 − bloodVolume) × gain` — hypoxia begins around **60–70%** blood remaining, not near empty.
+- Heart O₂ delivery uses **volume^1.75** so circulation collapses faster as blood drops (shock before exsanguination).
+- **Reference: `hurt Head 100`** — Disabled head wound (bleed 1.5), brain ~60% instantly; untreated death typically **~60–90 s** via hypoxia → heart failure → brain death (bandage/transfusion/defib interrupt each stage).

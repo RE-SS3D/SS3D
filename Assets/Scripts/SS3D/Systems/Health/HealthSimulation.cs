@@ -35,7 +35,8 @@ namespace SS3D.Systems.Health
         public static float HeartDelivery(IReadOnlyList<OrganState> organs, float bloodVolumeRatio)
         {
             float heart = GetOrganFunction(organs, OrganType.Heart, bloodVolumeRatio) / 100f;
-            return heart * bloodVolumeRatio * HealthConstants.BaseOxygenDemand;
+            float deliveryVolume = MathF.Pow(Math.Max(bloodVolumeRatio, 0f), HealthConstants.BloodDeliveryVolumeExponent);
+            return heart * deliveryVolume * HealthConstants.BaseOxygenDemand;
         }
 
         public static float LiverClearance(IReadOnlyList<OrganState> organs, float bloodVolumeRatio = 1f)
@@ -57,11 +58,8 @@ namespace SS3D.Systems.Health
             float heartDelivery = HeartDelivery(organs, pools.BloodVolumeRatio);
             float oxyDelta = lungIntake - heartDelivery - HealthConstants.BaseOxygenDemand;
 
-            if (pools.BloodVolumeRatio < HealthConstants.LowBloodThreshold)
-            {
-                float deficit = HealthConstants.LowBloodThreshold - pools.BloodVolumeRatio;
-                oxyDelta += deficit * HealthConstants.LowBloodOxyDebtGainScale;
-            }
+            // Hemorrhagic hypoxia scales continuously with blood lost — shock before empty.
+            oxyDelta += (1f - pools.BloodVolumeRatio) * HealthConstants.LowBloodOxyDebtGainScale;
 
             float toxinDelta = toxinIntake - LiverClearance(organs, pools.BloodVolumeRatio);
 

@@ -44,6 +44,47 @@ namespace EditorTests
         }
 
         [Test]
+        public void OxyDebtRisesBeforeBloodReachesHalfVolume()
+        {
+            var zones = new ZoneDamageState[HealthConstants.ZoneCount];
+            for (int i = 0; i < zones.Length; i++)
+            {
+                zones[i] = ZoneDamageState.Default;
+            }
+
+            zones[(int)BodyZone.Chest] = new ZoneDamageState
+            {
+                Brute = HealthConstants.SevereThreshold,
+                Severity = WoundSeverity.Severe,
+                BleedingRate = 1f,
+            };
+
+            var organs = new[]
+            {
+                OrganState.Default(OrganType.Heart),
+                OrganState.Default(OrganType.LeftLung),
+                OrganState.Default(OrganType.RightLung),
+                OrganState.Default(OrganType.Liver),
+                OrganState.Default(OrganType.Brain),
+            };
+
+            SystemicPools pools = SystemicPools.Default;
+            bool oxyRoseEarly = false;
+
+            for (int tick = 0; tick < 15; tick++)
+            {
+                pools = HealthSimulation.TickPools(pools, zones, organs);
+                if (pools.BloodVolumeRatio > 0.5f && pools.OxyDebt > 0f)
+                {
+                    oxyRoseEarly = true;
+                    break;
+                }
+            }
+
+            Assert.IsTrue(oxyRoseEarly);
+        }
+
+        [Test]
         public void BrainFunctionZeroIsOnlyDeathTrigger()
         {
             var pools = SystemicPools.Default;

@@ -7,7 +7,7 @@
         public const float TickIntervalSeconds = 1f;
 
         // Systemic thresholds (normalized 0–1 unless noted).
-        public const float CriticalBloodVolumeRatio = 0.35f;
+        public const float CriticalBloodVolumeRatio = 0.40f;
         public const float CriticalOxyDebt = 0.75f;
         public const float CriticalToxinConcentration = 0.75f;
         public const float CriticalBrainFunctionPercent = 30f;
@@ -15,10 +15,13 @@
         public const float ConsciousnessBrainFunctionPercent = 10f;
 
         // Pool dynamics per 1 Hz tick.
-        public const float BleedingBloodDrainScale = 0.02f;
-        public const float LowBloodOxyDebtGainScale = 0.05f;
-        public const float LowBloodThreshold = 0.5f;
-        public const float BaseOxygenDemand = 0.01f;
+        // Tuning target: untreated Disabled-tier bleed (~1.5 rate) should show rising oxy debt
+        // around 60–70% blood remaining; brain death ~90–150 s after a catastrophic head wound
+        // (100 brute → Disabled + ~40 brain damage) without treatment.
+        public const float BleedingBloodDrainScale = 0.021f;
+        public const float LowBloodOxyDebtGainScale = 0.065f;
+        public const float BaseOxygenDemand = 0.012f;
+        public const float BloodDeliveryVolumeExponent = 1.75f;
         public const float BaseToxinIntake = 0f;
         public const float LiverClearanceRate = 0.02f;
         public const float RenalClearanceFactor = 0.5f;
