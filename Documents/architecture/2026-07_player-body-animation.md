@@ -1,6 +1,10 @@
-# Player Body & Animation System
+> Implements: Documents/plans/animation_system_design_250de599.plan.md; issues #1060, #1333, #1246, #937
+> Touches systems: entities, player-control, interactions-runtime, inventory, health, combat
+> Status: shipped (foundation; blend/timing polish remains animator-owned)
 
-Design document resolving [#1060](https://github.com/RE-SS3D/SS3D/issues/1060) and guiding implementation of [#1333](https://github.com/RE-SS3D/SS3D/issues/1333) and [#1246](https://github.com/RE-SS3D/SS3D/issues/1246).
+# Player body & animation foundation (Jul 2026)
+
+Design decisions resolving [#1060](https://github.com/RE-SS3D/SS3D/issues/1060) and the shipped foundation for [#1333](https://github.com/RE-SS3D/SS3D/issues/1333) and [#1246](https://github.com/RE-SS3D/SS3D/issues/1246). Navigation map: [systems/entities.md](systems/entities.md). Working plan: [animation_system_design_250de599.plan.md](../plans/animation_system_design_250de599.plan.md).
 
 ## Overview
 
@@ -50,9 +54,9 @@ Each state exposes: `CanMove`, `CanRotate`, `CanRun`, `CanUseHands`, `CanInterac
 ### Animator Layers
 
 1. **Base** — three FreeformCartesian2D locomotion blends switched by `CombatStance` (0 Peaceful / 1 Melee / 2 Ranged):
-   - **Peaceful** — [Locomotion Pack](../Assets/Art/Animations/Locomotion%20Pack/) idle / walk / run / strafes
-   - **Melee** — [Pro Melee Axe Pack](../Assets/Art/Animations/Pro%20Melee%20Axe%20Pack/) standing idle / walk F-B-L-R / run F-B (includes backpedal)
-   - **Ranged** — [Basic Shooter Pack](../Assets/Art/Animations/Basic%20Shooter%20Pack/) rifle idle / walk / walk back / strafes / run / run back
+   - **Peaceful** — [Locomotion Pack](../../Assets/Art/Animations/Locomotion%20Pack/) idle / walk / run / strafes
+   - **Melee** — [Pro Melee Axe Pack](../../Assets/Art/Animations/Pro%20Melee%20Axe%20Pack/) standing idle / walk F-B-L-R / run F-B (includes backpedal)
+   - **Ranged** — [Basic Shooter Pack](../../Assets/Art/Animations/Basic%20Shooter%20Pack/) rifle idle / walk / walk back / strafes / run / run back
 2. **UpperBody** (arms-only mask) — **Melee** item/weapon holds and `AttackSwing` only; Ranged uses base shooter locomotion (no hold overlay). Head stays on base + look-at IK. Weight is 0 in Peaceful/Ranged.
 3. **Additive** — flinch (`Flinch` uses melee gut react), injured arm overlay
 4. **FullBody Override** — sit, crawl, emote, stand-up
@@ -82,7 +86,7 @@ Animators should be able to open the controller and adjust swing → idle blends
 | Melee | Pro Melee Axe Pack | `C` on + unarmed or non-ranged weapon |
 | Ranged | Basic Shooter Pack | `C` on + hand item trait contains Ranged/Gun/Firearm/Rifle |
 
-Peaceful movement faces the move direction. Melee/Ranged face the mouse: body yaw from the planar aim, head/torso pitch via look-at IK (AimPitch). Pack clips bake root rotation into pose so GameObject aim yaw stays authoritative.
+Peaceful movement faces the move direction. Melee/Ranged face the mouse: body yaw from the planar aim, head/torso pitch via look-at IK (AimPitch). Pack clips bake root rotation into pose so GameObject aim yaw stays authoritative. Combat walk/run world speed uses slow combat gait scales for both Melee and Ranged so feet stay in sync with pack cadence.
 
 `BodyAnimationSnapshot` replicates `CombatMode` (2 bits), `AimYaw`, and `AimPitch`. Orchestrator drives animator `CombatStance` / aim floats and combat look-at IK.
 
