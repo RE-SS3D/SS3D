@@ -48,9 +48,19 @@ float3 VisionClipToWorld(float2 posClip)
     if (VisionDepthIsSky(rawDepth))
         return _PlayerPos.xyz;
 
+    // posClip comes from the fullscreen triangle's texture UV (screenUV * 2 - 1), which is
+    // flipped relative to true clip space on APIs where UNITY_UV_STARTS_AT_TOP is set (D3D,
+    // Vulkan, Metal). Un-flip before multiplying by the CPU-supplied camera inverse
+    // view-projection, otherwise the reconstructed world position is mirrored vertically and
+    // the vision mask samples the wrong geometry (walls read as open air and vice versa).
+    float2 ndc = posClip;
+#if UNITY_UV_STARTS_AT_TOP
+    ndc.y = -ndc.y;
+#endif
+
     // In a fullscreen/blit pass the bound VP is the blit matrix, not the camera's,
     // so reconstruct world position from a CPU-supplied camera inverse view-projection.
-    float4 adjClip = float4(posClip, rawDepth, 1.0);
+    float4 adjClip = float4(ndc, rawDepth, 1.0);
     float4 worldSpace = mul(_PlayerCameraInvViewProj, adjClip);
     return worldSpace.xyz / worldSpace.w;
 }
