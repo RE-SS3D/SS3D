@@ -7396,6 +7396,9 @@ MonoBehaviour:
   _movementSpeed: 5
   _lerpMultiplier: 2
   _rotationLerpMultiplier: 6
+  _turnVelocityScale: 4
+  _combatWalkSpeedFactor: 0.7
+  _combatRunSpeedFactor: 0.3
   _movementTarget: {fileID: 282733360052666326}
   TargetMovement: {x: 0, y: 0, z: 0}
   _characterController: {fileID: 3812744165389046210}
@@ -7717,6 +7720,8 @@ MonoBehaviour:
   _feetController: {fileID: 5164211669966765644}
   _movementSpeed: 5
   _walkSpeedFactor: 0.3
+  _combatWalkSpeedFactor: 0.7
+  _combatRunSpeedFactor: 0.3
 --- !u!114 &9100001003
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -7734,6 +7739,7 @@ MonoBehaviour:
   _networkObjectCache: {fileID: 2930813178971533500}
   _bodyStateMachine: {fileID: 9100001001}
   _orchestrator: {fileID: 6706577840954258383}
+  _bodyStateBridge: {fileID: 0}
 --- !u!114 &9100001004
 MonoBehaviour:
   m_ObjectHideFlags: 0

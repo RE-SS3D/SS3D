@@ -102,7 +102,12 @@ namespace SS3D.Systems.Entities.Humanoid
         protected override void MovePlayer()
         {
             float feetFactor = _feetController != null ? _feetController.FeetHealthFactor : 1f;
-            float combatFactor = IsCombatMode() ? _combatSpeedFactor : 1f;
+            float combatFactor = 1f;
+            if (IsCombatMode())
+            {
+                combatFactor = IsRunning ? _combatRunSpeedFactor : _combatWalkSpeedFactor;
+            }
+
             _characterController.Move(TargetMovement * ((feetFactor * _movementSpeed * combatFactor) * Time.deltaTime));
         }
     }
