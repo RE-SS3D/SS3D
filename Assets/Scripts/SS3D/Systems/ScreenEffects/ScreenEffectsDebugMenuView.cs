@@ -5,9 +5,7 @@ using SS3D.Core.Behaviours;
 using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using UnityEngine.InputSystem.UI;
 using UnityEngine.UI;
-using UnityEventSystem = UnityEngine.EventSystems.EventSystem;
 
 namespace SS3D.Systems.ScreenEffects
 {
@@ -57,14 +55,9 @@ namespace SS3D.Systems.ScreenEffects
 
         private void BuildUi()
         {
-            if (UnityEventSystem.current == null)
-            {
-                GameObject eventSystemHost = new("EventSystem");
-                eventSystemHost.transform.SetParent(Transform, false);
-                eventSystemHost.AddComponent<UnityEventSystem>();
-                eventSystemHost.AddComponent<InputSystemUIInputModule>();
-            }
-
+            // Relies on the scene's own EventSystem (the existing HUD/console already depends on one being
+            // present) rather than creating a fallback here - a second EventSystem spams
+            // "There are N event systems in the scene" every frame.
             GameObject canvasHost = new("ScreenEffectsDebugCanvas");
             canvasHost.transform.SetParent(Transform, false);
 
