@@ -108,15 +108,17 @@ namespace SS3D.Networking
         }
 
         /// <summary>
-        /// Transport.StartConnection() returns false without throwing when it can't start (e.g. the port
-        /// is already bound by another process), which otherwise fails completely silently - the
-        /// "Hosting a new headless server" log above is written unconditionally before this is known.
+        /// Transport.StartConnection() returns false without throwing when it can't start - either the
+        /// connection is already Starting/Started (e.g. something else already called StartConnection
+        /// on this transport), or the underlying socket bind itself failed (e.g. the OS port is already
+        /// bound by another process). This would otherwise fail completely silently, since the "Hosting
+        /// a new headless server" log above is written unconditionally before any of this is known.
         /// </summary>
         private void LogIfConnectionFailedToStart(string role, bool started)
         {
             if (!started)
             {
-                Log.Error(this, "Failed to start the {role} connection on port {port}. The port may already be in use by another process.", Logs.Important, role, Port);
+                Log.Error(this, "Failed to start the {role} connection on port {port}. Either it was already starting/started, or the port is already bound by another process.", Logs.Important, role, Port);
             }
         }
 
