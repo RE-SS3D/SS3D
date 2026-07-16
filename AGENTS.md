@@ -39,6 +39,9 @@ Regenerate with `python3 Tools/generate_icon_index.py` after adding icons.
 | Art asset index | `Documents/art-asset-index.md` | **Read** when importing or locating art |
 | UI icon index | `Documents/icon-index.md` | **Read** when building UI that needs game-icons |
 | Fork status | `Documents/FORK_STATUS.md` | **Read-only** unless owner asks |
+| Coverage table | `Documents/architecture/INDEX.md` | Update as part of `update-system-docs` |
+
+**Design docs are WHAT/WHY only** — no prototyping prompts, no build-status field. If you need a Cursor or Claude Design prompt for a system, generate it fresh from the design doc plus the current system map; don't look for one already written into the design doc. If you need to know what's already built vs. only designed, check the coverage table in `Documents/architecture/INDEX.md`, not the design doc itself.
 
 **Do not edit `Documents/design/` or `Documents/FORK_STATUS.md`.** If code diverges from a design spec, document the divergence in the system map, plan, or architecture effort doc — do not change the design file.
 

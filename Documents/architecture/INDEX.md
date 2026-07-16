@@ -4,6 +4,75 @@ Navigation hub for agents. Read this before broad code search. Open the relevant
 
 Authoring conventions: [Documents/SKILL.md](../SKILL.md). Agent rules: [AGENTS.md](../../AGENTS.md).
 
+## Coverage table
+
+One row per gameplay domain that has (or should eventually have) a design doc. **Design**
+links to [`Documents/design/`](../design/) (owner-authored spec). **Architecture** links to
+the effort doc(s) in this directory that implement it, or "none yet." **System map** links
+to [`systems/`](systems/), or "none yet."
+
+This is the answer to "what's left" at the domain level: a design with no architecture
+entry is designed but unbuilt; a domain with no design entry hasn't been designed at all.
+Feature-level gaps *within* an already-designed system stay in that design doc's own
+`§Out of scope for this pass` — this table doesn't duplicate those. Update as part of
+`update-system-docs`.
+
+| Domain | Design | Architecture | System map |
+|---|---|---|---|
+| main-hud | [main-hud.md](../design/main-hud.md) — active | [phase1-foundation](2026-07_machine-interface-phase1-foundation.md), [phase2-apc-networking](2026-07_machine-interface-phase2-apc-networking.md), [phase3-smes-generalization](2026-07_machine-interface-phase3-smes-generalization.md), [diegetic-screen-ui-framework](2026-07_diegetic-screen-ui-framework.md), [mi-area-electricity-debt](2026-07_mi-area-electricity-debt.md) — all shipped | none yet (see [machine-interface](systems/machine-interface.md) for the built surface) |
+| comms | [comms.md](../design/comms.md) — active | [phase1-foundation](2026-07_machine-interface-phase1-foundation.md) — shipped (operator feedback conventions only) | [chat-audio-screens](systems/chat-audio-screens.md) — stub |
+| area | [area.md](../design/area.md) — active | [area-foundation](2026-07_area-foundation.md) — shipped (partial: APC-seeded variant; live mutation recompute and editor merge/split deferred) | [area](systems/area.md) — partial |
+| hacking-interface | [hacking-interface.md](../design/hacking-interface.md) — active | none yet | none yet |
+| combat | [combat.md](../design/combat.md) — active | none yet | [combat](systems/combat.md) — stub |
+| stamina | [stamina.md](../design/stamina.md) — active | none yet | none yet |
+| health | [health.md](../design/health.md) — active | none yet | [health](systems/health.md) — partial |
+| armor | [armor.md](../design/armor.md) — active | none yet | none yet |
+| inventory-storage | [inventory-storage.md](../design/inventory-storage.md) — active | none yet | [inventory](systems/inventory.md) — partial |
+| examine | [examine.md](../design/examine.md) — active | none yet | [examine](systems/examine.md) — shipped |
+| crafting | [crafting.md](../design/crafting.md) — active | none yet | [crafting](systems/crafting.md) — stub |
+| death-cloning-respawn | [death-cloning-respawn.md](../design/death-cloning-respawn.md) — active | none yet | none yet |
+| surgery | [surgery.md](../design/surgery.md) — active | none yet | none yet |
+| lobby | [lobby.md](../design/lobby.md) — active | none yet | [rounds-lobby](systems/rounds-lobby.md) — shipped |
+| round-config | [round-config.md](../design/round-config.md) — active | none yet | [rounds-lobby](systems/rounds-lobby.md) — shipped |
+| round-end | none yet — see migration note below | none yet | none yet |
+| observer | [observer.md](../design/observer.md) — active | none yet | none yet |
+| electricity | [electricity.md](../design/electricity.md) — active | none yet (electricity system is touched by [mi-area-electricity-debt](2026-07_mi-area-electricity-debt.md), but that effort implements area.md/main-hud.md, not electricity.md) | [electricity](systems/electricity.md) — partial |
+| pda | [pda.md](../design/pda.md) — active | none yet | [inventory](systems/inventory.md) — partial |
+| cargo | [cargo.md](../design/cargo.md) — active | none yet | none yet |
+| disposal | [disposal.md](../design/disposal.md) — active | none yet | none yet |
+| id-access | [id-access.md](../design/id-access.md) — active | none yet | [id-access](systems/id-access.md) — partial |
+| virology | [virology.md](../design/virology.md) — active | none yet | none yet |
+| atmospherics | [atmospherics.md](../design/atmospherics.md) — active | [atmos-ecs-foundation](2026-07_atmos-ecs-foundation.md) — shipped (partial); [atmos-client-visualization-sync](2026-07_atmos-client-visualization-sync.md) — planned | [atmospherics](systems/atmospherics.md) — partial |
+| chemistry | [chemistry.md](../design/chemistry.md) — active | none yet | [substances](systems/substances.md) — partial |
+| explosives-destruction | [explosives-destruction.md](../design/explosives-destruction.md) — active | none yet | none yet |
+| construction | [construction.md](../design/construction.md) — active | none yet | [tile](systems/tile.md) — shipped |
+| creative-mode | [creative-mode.md](../design/creative-mode.md) — active | none yet | none yet |
+| rendering-lighting | [rendering-lighting.md](../design/rendering-lighting.md) — active | none yet | [rendering](systems/rendering.md) — partial |
+| shuttles | [shuttles.md](../design/shuttles.md) — active | none yet | none yet |
+| ai-cyborgs | [ai-cyborgs.md](../design/ai-cyborgs.md) — active | none yet | none yet |
+| persistence-save | none yet | none yet | [persistence](systems/persistence.md) — partial (station templates, server meta only, not a design spec) |
+| networking | none yet | none yet | [networking-session](systems/networking-session.md) — stub |
+| audio | none yet | none yet | none yet |
+| onboarding-tutorial | none yet | none yet | none yet |
+| antagonist-content | none yet | none yet | none yet |
+| rd-material-economy | none yet | none yet | none yet |
+| cryogenics | none yet | none yet | none yet |
+| admin-tools | none yet | none yet | [ingame-console](systems/ingame-console.md) — partial (dev/admin console, not a design spec) |
+| player-accounts | none yet | none yet | none yet |
+
+[2026-07_interaction-system-hardening](2026-07_interaction-system-hardening.md) (shipped) and the infrastructure systems below (core
+subsystems, rendering pipeline internals, data/codegen, etc.) aren't gameplay domains with
+their own design docs — they support the domains above rather than being one themselves,
+so they stay out of this table and live only in the Infrastructure section below.
+
+### Migration note
+
+`design/round-end.md` (round-end/transition) does not exist yet — it's referenced by
+`observer.md` §6/§10 but was never authored. It's the one gap surfaced by the design-doc
+cleanup pass (stripping `§Prototyping this` and the build-status field from all 29 existing
+docs, per `Documents/SKILL.md`); needs the same treatment applied once it's written: no
+prototyping section, `Status` line for draft/active/superseded only, cross-refs verified.
+
 ## Infrastructure
 
 | System | Map | Status | Summary |
@@ -79,6 +148,8 @@ Temporary working plans in [Documents/plans/](../plans/). Update todos when work
 ## Design specs (read-only)
 
 Gameplay specs in [Documents/design/](../design/) — owner-maintained. Agents link, never edit.
+See the [coverage table](#coverage-table) above for design/architecture/system-map status
+per domain.
 
 ## Reference (non-system)
 

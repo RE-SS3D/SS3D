@@ -130,18 +130,3 @@ No new permanent chrome.
 - Blueprint/template stamping for multi-tile room layouts — a plausible future addition, not core to this pass
 - Structural load-bearing simulation beyond the four-stage ladder — not modeled, the same grain explosives already chose for its own damage model
 
-## 12. Prototyping this
-
-Same two-stage pipeline as the rest of this project.
-
-**Claude Design, prompt 1 — the construction ladder:**
-> Using our SS3D design system, show one wall tile across its four construction stages — Open, Framed (skeletal girder lattice), Plated (unsealed, visible seams and a faint hiss/vapor), Sealed (finished weld) — side by side, same toon/half-toon shading and visual language as explosives' four damage stages, since Sealed and Intact are the same state.
-
-**Claude Design, prompt 2 — hull extension into open space:**
-> Show a sequence: deck plating laid out from an existing airlock into open space, a girder perimeter going up around it, plating following with a vacuum-exposure hazard indicator visible on a suited crew member inside, and the final weld moment triggering the area-name popup as the new region claims its own Area.
-
-**Cursor, prompt 1 — data contract first:**
-> Here's the construction design doc. Define the per-tile construction-stage state (Open/Framed/Plated/Sealed, plus the door branch off Framed), the deck-plating tile state for previously-unclaimed cells, and the freeform recipe records for girder/plate/deck-plating (reusing crafting's recipe record shape from `crafting.md`). Show me the data contract before wiring any interaction.
-
-**Cursor, prompt 2 — one vertical slice:**
-> Implement one wall built end to end in an existing interior room — Open through Sealed — reusing Area's existing local-recompute function directly to confirm the subdivide case works. Hull extension into unclaimed space, door construction, and deconstruction come after this is reviewed.

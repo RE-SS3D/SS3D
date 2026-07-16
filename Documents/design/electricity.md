@@ -142,18 +142,3 @@ No new permanent chrome, same discipline as every doc in this project.
 - Handheld battery cells for portable tools/weapons — a small item-economy question, not grid-relevant
 - Editor tooling for authoring the backbone loop/spur topology (same category as Area's own authoring-tool gap, `area.md` §8)
 
-## 12. Prototyping this
-
-Mostly data-architecture and simulation work, plus one visual-validation pass for the physical objects players actually look at.
-
-**Claude Design, prompt 1 — reactor and APC panels:**
-> Using our SS3D design system, build static mockups of two diegetic device screens: the reactor's control panel (throttle position, fuel level, heat gauge with a marked safe band, output readout) and an APC's panel (three channel toggles with live/shed state, cell charge gauge, breaker status). Same visual language as the diagnostic interface and fabricator screens — industrial, flat, no neon.
-
-**Cursor, prompt 1 — data contract first:**
-> Here's the electricity design doc. Define the grid as a graph: generator and solar nodes, SMES nodes (with their own battery bank, terminating thick cable and originating standard cable), APC nodes (with three channels and their own cell), and thick/standard cable edges. Define the connectivity/flow-sum resolution described in §1 and §5 — no per-tile circuit simulation, just live-source reachability and total demand vs. supply per connected component. Show me the data contract before wiring any consumer behavior.
-
-**Cursor, prompt 2 — one vertical slice:**
-> Wire one thick-cable run end to end: reactor generating onto thick cable, one SMES with its own buffer, one APC with three channels and its own cell fed over standard cable, feeding Engineering — main bay exactly as the lighting doc's Area lighting states already expect. Cutting either cable tier should cascade through §5's table in real time. Solar, sabotage detection, and the reactor's meltdown consequence come after this is reviewed.
-
-**Cursor, prompt 3 — generation and failure states (after the above is reviewed):**
-> Add the reactor's throttle/fuel/heat model and meltdown consequence from §2, and solar's sun-tracking output curve. Wire breaker trips and priority shedding order from §4.

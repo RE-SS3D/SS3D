@@ -73,18 +73,3 @@ Zone targeting (seven zones, raycast, reticle confirm) and the intent/combat-ver
 - Weapon crafting or attachments
 - Skill/training progression affecting accuracy
 
-## 9. Prototyping this
-
-Two new HUD feedback elements fall out of this pass that zone targeting alone didn't need — worth a Claude Design pass before Cursor. The rest is data contract work.
-
-**Claude Design, prompt 1 — ranged feedback:**
-> Build the reticle feedback for ranged weapons: an accuracy cone that visibly widens on sustained fire and while moving, narrows when standing still. Add a hit marker on connect and a distinct "blocked by cover" indicator when a raycast hits geometry instead of the target.
-
-**Claude Design, prompt 2 — melee windup/recovery:**
-> Build a melee attack cycle: a visible windup telegraph before the swing lands, then a brief recovery-window indicator after. Test at contact range against a target using the existing zone-targeting reticle from the main HUD mockup.
-
-**Cursor, prompt 1 — data contract first:**
-> Here's the combat design doc. Define the weapon data structure (melee: damage type/amount, windup/recovery timing; ranged: damage type/amount, base accuracy cone, recoil growth, effective range falloff) and the hit-resolution function for each class, feeding into the existing per-limb damage model. Show me both before wiring any weapon behavior.
-
-**Cursor, prompt 2 — one vertical slice:**
-> Implement one melee weapon and one ranged weapon end to end — windup/recovery for melee, accuracy cone and cover raycast for ranged — wired to real character positions and the existing zone-targeting system. Everything else in §8 comes after this is reviewed.

@@ -67,13 +67,3 @@ Same rule as vitals (`main-hud.md` §5): minimal permanent chrome, diegetic feed
 - Stamina effects on non-combat actions (climbing, heavy lifting, etc.) — plausible future hook, not designed here
 - Character-level fitness/training modifiers to stamina capacity — not assumed to exist, same caveat as accuracy modifiers in the combat doc
 
-## 8. Prototyping this
-
-**Claude Design, prompt 1 — exhaustion feedback:**
-> Build the screen-space exhaustion feedback: mild FOV narrowing and screen sway that scales in as a stamina toggle drops from full to empty, plus the compact stamina indicator that fades in only below 50% and back out above it. No permanent stamina bar.
-
-**Cursor, prompt 1 — data contract first:**
-> Here's the stamina design doc. Define the stamina pool (drain sources, regen rate as a function of heart/lung function and blood volume from the health model) and the push-past-empty function that begins adding to oxy debt once stamina is at zero and exertion continues. Show me the data contract before wiring any specific drain source.
-
-**Cursor, prompt 2 — one vertical slice:**
-> Wire sprint drain and passive regen only, with regen rate pulling from real organ/blood-volume state. Melee, blocking, ranged, and grab-struggle drains come after this is reviewed.

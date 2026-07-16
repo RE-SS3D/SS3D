@@ -102,18 +102,3 @@ No new permanent chrome — same discipline as every other doc in this project.
 - Deconstruction (reversing a fabricated or freeform item back into materials) — plausible future hook, not designed here
 - Found-blueprint items as an alternate unlock path alongside R&D — a small, real future addition, but not needed for this pass
 
-## 10. Prototyping this
-
-Same two-stage pipeline as the rest of this project — Claude Design to validate the visual/interaction language, then Cursor for the Unity implementation.
-
-**Claude Design, prompt 1 — freeform combine sequence:**
-> Build a multi-step freeform crafting sequence: a metal sheet dragged onto a frame kit with a valid-target highlight, a short visible action timer on commit, and a part-built object state on the tile. Show an interrupted step leaving the object in its last completed partial state rather than resetting or failing silently. Add the PDA construction-guide tab listing the remaining steps.
-
-**Claude Design, prompt 2 — fabricator screen:**
-> Build the fabricator's diegetic device screen: a design list filtered to unlocked R&D designs, a material/power check before a job starts, a running-job state with a visible build timer, and a stalled-job state (part-formed item sitting in the tray) triggered by a power cut mid-print. Same visual language as the FDU screens from the hacking interface mockups — industrial diagnostic tool, not a sci-fi crafting menu.
-
-**Cursor, prompt 1 — data contract first:**
-> Here's the crafting design doc. Define the recipe record covering both freeform (required items/tools, step sequence, per-step timer) and fabricator (material cost, research/unlock gate, build time) cases, and the job-state machine for a fabricator print (idle → running → stalled → complete), including what happens to in-progress material on a stall. Show me both before wiring any UI.
-
-**Cursor, prompt 2 — one vertical slice:**
-> Implement one freeform recipe (the machine-frame example) and one fabricator recipe end to end, wired to real inventory, Area/power, and material-silo state. Everything else in §9 comes after this is reviewed.

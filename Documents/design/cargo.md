@@ -137,18 +137,3 @@ No new permanent chrome.
 - Persistence of the budget across rounds (persistence & accounts' job, cross-cutting infra)
 - Full server-side transaction logging beyond the console's own ledger tab (server logging, cross-cutting infra)
 
-## 13. Prototyping this
-
-Same two-stage pipeline as the rest of this project.
-
-**Claude Design, prompt 1 — ordering console:**
-> Using our existing SS3D design system, build the cargo ordering console's diegetic device screen — same visual language as the FDU and fabricator screens. Show a catalog list (name, manifest summary, cost), the current station budget total, a "confirm order" action, and one order sitting in a visibly distinct pending-approval state above the configured threshold.
-
-**Claude Design, prompt 2 — approval flow and ledger:**
-> Show the approval side: a PDA notification chip arriving for a pending order (reusing the PDA's existing notification pattern), then the console's ledger/history tab — a scrollable, timestamped list of transactions (order placed, order approved, stipend paid, export sold), each attributed to a name where relevant. Same flat-surface, monospace-for-data language as the rest of this project's device screens.
-
-**Cursor, prompt 1 — data contract first:**
-> Here's the cargo design doc. Define the budget ledger (a single station-wide credit total plus an append-only transaction log), the order record (catalog item, cost, requester, approval state), and the crate record (manifest, lock state, contents) as data. Reuse the shuttle's existing docking/manifest hooks rather than inventing new cargo-hold storage. Show me all three before wiring any console UI.
-
-**Cursor, prompt 2 — one vertical slice:**
-> Implement one below-threshold order end to end: console selection → immediate budget deduction and ledger entry → crate spawns and loads on the next shuttle call → shuttle round-trips using the existing shuttle framework → crate unloads into cargo bay. Approval flow, PDA notifications, and exporting come after this is reviewed.

@@ -62,6 +62,9 @@ In [Documents/architecture/INDEX.md](../../Documents/architecture/INDEX.md):
 - Update the **Status** column for affected rows
 - Add a new row if a new domain was introduced
 - Add architecture effort or plan links if new docs were created
+- Update the **Coverage table**: if this work shipped or created an architecture effort
+  or system map for a domain, update that domain's row (never touch its Design column —
+  that's owner-authored)
 
 ## Step 5: Update implementation plans
 
