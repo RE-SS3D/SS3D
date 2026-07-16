@@ -474,7 +474,7 @@ namespace SS3D.UI.MachineInterface
                 "Assets/Content/Systems/UI/MachineInterface/Components/ConnectionStatusRow.uss",
                 "Assets/Content/Systems/UI/MachineInterface/Components/DeviceIdentityBlock.uss",
                 "Assets/Content/Systems/UI/MachineInterface/Components/PanelSection.uss",
-                "Assets/Content/Systems/UI/MachineInterface/Components/IdReaderPanel.uss",
+                "Assets/Content/Systems/UI/MachineInterface/Components/AtmosIdReaderRow.uss",
                 "Assets/Content/Systems/UI/MachineInterface/Components/SteelButton.uss",
                 "Assets/Content/Systems/UI/MachineInterface/Components/InventorySlot.uss",
                 "Assets/Content/Systems/UI/MachineInterface/Components/ProductCard.uss",

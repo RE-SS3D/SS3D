@@ -51,6 +51,7 @@ namespace SS3D.Systems.Electricity
         
         private void HandleMachineWasUsed()
         {
+            isIdle = true;
             _machineUsedOnce = false;
             SubSystems.Get<ElectricitySubSystem>().OnTick -= HandleMachineWasUsed;
         }

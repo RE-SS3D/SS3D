@@ -37,6 +37,39 @@
     opacity: 0.45;
 }
 
-.product-card--vending .product-card__slot-wrap {
-    opacity: 0.55;
+.product-card--out-of-stock {
+    opacity: 0.45;
+}
+
+.product-card__lock-badge {
+    position: absolute;
+    bottom: -4px;
+    right: -4px;
+    width: 18px;
+    height: 18px;
+    padding: 3px;
+    background-color: var(--ss3d-diegetic-panel-raised);
+    border-radius: 50%;
+    background-image: url("project://database/Assets/Art/Graphics/UI/Misc/Heroicons/Outline/LockClosed.png");
+    -unity-background-scale-mode: scale-to-fit;
+    -unity-background-image-tint-color: var(--ss3d-text-tertiary);
+}
+
+.product-card__vend-overlay {
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    align-items: center;
+    justify-content: center;
+    background-color: rgba(10, 10, 10, 0.55);
+    border-radius: 10px;
+}
+
+.product-card__vend-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background-color: var(--ss3d-feedback-info);
 }

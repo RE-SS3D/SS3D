@@ -15,6 +15,7 @@ namespace SS3D.UI.MachineInterface
             writer.WriteString(snapshot.StockedReadout);
             writer.WriteBoolean(snapshot.PowerOk);
             writer.WriteBoolean(snapshot.IdScanned);
+            writer.WriteBoolean(snapshot.Scanning);
             writer.WriteByte(snapshot.VendingProductIndex);
 
             int productCount = snapshot.ProductCount;
@@ -67,6 +68,7 @@ namespace SS3D.UI.MachineInterface
                 StockedReadout = reader.ReadString(),
                 PowerOk = reader.ReadBoolean(),
                 IdScanned = reader.ReadBoolean(),
+                Scanning = reader.ReadBoolean(),
                 VendingProductIndex = reader.ReadByte(),
                 ProductCount = reader.ReadByte(),
             };

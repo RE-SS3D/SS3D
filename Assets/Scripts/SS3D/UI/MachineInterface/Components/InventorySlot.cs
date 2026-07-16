@@ -8,6 +8,7 @@ namespace SS3D.UI.MachineInterface.Components
     {
         private readonly VisualElement _well;
         private readonly Label _label;
+        private readonly Label _unknownGlyph;
         private bool _unknown = true;
         private float _size = 48f;
 
@@ -17,6 +18,11 @@ namespace SS3D.UI.MachineInterface.Components
 
             _well = new VisualElement();
             _well.AddToClassList("inventory-slot__well");
+
+            _unknownGlyph = new Label("?");
+            _unknownGlyph.AddToClassList("inventory-slot__unknown-glyph");
+            _unknownGlyph.AddToClassList("font-titling");
+            _well.Add(_unknownGlyph);
 
             _label = new Label();
             _label.AddToClassList("inventory-slot__label");
@@ -69,6 +75,7 @@ namespace SS3D.UI.MachineInterface.Components
         private void ApplyUnknown(bool unknown)
         {
             EnableInClassList("inventory-slot--unknown", unknown);
+            _unknownGlyph.style.display = unknown ? DisplayStyle.Flex : DisplayStyle.None;
         }
     }
 }
