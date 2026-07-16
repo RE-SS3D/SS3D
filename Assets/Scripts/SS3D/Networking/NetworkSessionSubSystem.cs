@@ -88,16 +88,16 @@ namespace SS3D.Networking
             {
                 case NetworkType.DedicatedServer:
                     Log.Information(this, "Hosting a new headless server on port {port}", Logs.Important, Port);
-                    networkManager.ServerManager.StartConnection(Port);
+                    LogIfConnectionFailedToStart("server", networkManager.ServerManager.StartConnection(Port));
                     break;
                 case NetworkType.Client:
                     Log.Information(this, "Joining server {serverAddress}:{port} as {ckey}", Logs.Important, ServerAddress, Port, ckey);
-                    networkManager.ClientManager.StartConnection(ServerAddress, Port);
+                    LogIfConnectionFailedToStart("client", networkManager.ClientManager.StartConnection(ServerAddress, Port));
                     break;
                 case NetworkType.Host:
                     Log.Information(this, "Hosting a new server on port {port}", Logs.Important, Port);
-                    networkManager.ServerManager.StartConnection(Port);
-                    networkManager.ClientManager.StartConnection();
+                    LogIfConnectionFailedToStart("server", networkManager.ServerManager.StartConnection(Port));
+                    LogIfConnectionFailedToStart("client", networkManager.ClientManager.StartConnection());
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
@@ -105,6 +105,19 @@ namespace SS3D.Networking
 
             NetworkSessionStartedEvent networkSessionStartedEvent = new(ckey, NetworkType);
             networkSessionStartedEvent.Invoke(this);
+        }
+
+        /// <summary>
+        /// Transport.StartConnection() returns false without throwing when it can't start (e.g. the port
+        /// is already bound by another process), which otherwise fails completely silently - the
+        /// "Hosting a new headless server" log above is written unconditionally before this is known.
+        /// </summary>
+        private void LogIfConnectionFailedToStart(string role, bool started)
+        {
+            if (!started)
+            {
+                Log.Error(this, "Failed to start the {role} connection on port {port}. The port may already be in use by another process.", Logs.Important, role, Port);
+            }
         }
 
         private void OnApplicationQuit()
