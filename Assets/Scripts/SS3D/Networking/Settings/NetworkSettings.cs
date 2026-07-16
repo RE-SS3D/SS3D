@@ -70,7 +70,11 @@ namespace SS3D.Networking.Settings
 
 			Log.Information(nameof(NetworkSettings), $"Network settings reset on the built executable");
 
+#if UNITY_SERVER
+			networkSettings.NetworkType = NetworkType.DedicatedServer;
+#else
 			networkSettings.NetworkType = NetworkType.Client;
+#endif
 			networkSettings.ServerAddress = string.Empty;
 			networkSettings._ckey = string.Empty;
 			networkSettings.ServerPort = ushort.MinValue;

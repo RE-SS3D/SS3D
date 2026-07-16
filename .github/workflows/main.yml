@@ -51,3 +51,46 @@ jobs:
           files: /home/runner/work/SS3D/SS3D/RESS3D-${{ steps.tag_name.outputs.SOURCE_TAG }}.zip
         env:
           GITHUB_TOKEN: ${{ github.token }}
+
+  build-server:
+    name: Build Dedicated Server
+    runs-on: ubuntu-latest
+    env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+    steps:
+      - name: Checkout project code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          lfs: true
+      - name: Get version tag
+        id: tag_name
+        run: |
+          echo "SOURCE_TAG=${GITHUB_REF#refs/tags/}" >> "$GITHUB_OUTPUT"
+      - name: Make headless server build
+        uses: game-ci/unity-builder@v4
+        env:
+          UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
+          UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
+          UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
+          UNITY_SERIAL: ${{ secrets.UNITY_SERIAL }}
+        with:
+          buildName: RESS3D-Server-${{ steps.tag_name.outputs.SOURCE_TAG }}
+          targetPlatform: StandaloneLinux64
+          buildMethod: SS3D.Editor.ServerBuildScript.BuildServer
+      - name: Smoke test - boot the server binary headlessly
+        working-directory: /home/runner/work/SS3D/SS3D/build/StandaloneLinux64
+        run: |
+          chmod +x RESS3D-Server-${{ steps.tag_name.outputs.SOURCE_TAG }}.x86_64
+          timeout 30s ./RESS3D-Server-${{ steps.tag_name.outputs.SOURCE_TAG }}.x86_64 \
+            -batchmode -nographics -serveronly -port=2222 -logFile server.log || true
+          if ! grep -q "Hosting a new headless server" server.log; then
+            echo "Server did not report a successful startup, dumping log:"
+            cat server.log
+            exit 1
+          fi
+      - name: Upload server build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: RESS3D-Server-${{ steps.tag_name.outputs.SOURCE_TAG }}
+          path: /home/runner/work/SS3D/SS3D/build/StandaloneLinux64
