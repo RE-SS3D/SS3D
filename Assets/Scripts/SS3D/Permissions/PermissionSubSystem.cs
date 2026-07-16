@@ -38,6 +38,8 @@ namespace SS3D.Permissions
 
         private static readonly string PermissionsPath = Paths.GetPath(GamePaths.Config, true) + "/" + ConfigFileName;
 
+        private bool _suppressPermissionSync;
+
         protected override void OnStart()
         {
             base.OnStart();
@@ -75,24 +77,32 @@ namespace SS3D.Permissions
         [Server]
         public void ImportUserPermissions(IEnumerable<SavedPermissionRecord> records)
         {
-            _userPermissions.Clear();
-
-            if (records != null)
+            _suppressPermissionSync = true;
+            try
             {
-                foreach (SavedPermissionRecord record in records)
+                _userPermissions.Clear();
+
+                if (records != null)
                 {
-                    if (string.IsNullOrWhiteSpace(record.ckey) || string.IsNullOrWhiteSpace(record.role))
+                    foreach (SavedPermissionRecord record in records)
                     {
-                        continue;
-                    }
+                        if (string.IsNullOrWhiteSpace(record.ckey) || string.IsNullOrWhiteSpace(record.role))
+                        {
+                            continue;
+                        }
 
-                    if (!Enum.TryParse(record.role, out ServerRoleTypes role))
-                    {
-                        continue;
-                    }
+                        if (!Enum.TryParse(record.role, out ServerRoleTypes role))
+                        {
+                            continue;
+                        }
 
-                    _userPermissions[record.ckey] = role;
+                        _userPermissions[record.ckey] = role;
+                    }
                 }
+            }
+            finally
+            {
+                _suppressPermissionSync = false;
             }
 
             HasLoadedPermissions = true;
@@ -229,6 +239,11 @@ namespace SS3D.Permissions
 
         private void SyncHandleUserPermissionsChanged(SyncDictionaryOperation op, string key, ServerRoleTypes value, bool asServer)
         {
+            if (_suppressPermissionSync)
+            {
+                return;
+            }
+
             if (!asServer && IsHost)
             {
                 return;

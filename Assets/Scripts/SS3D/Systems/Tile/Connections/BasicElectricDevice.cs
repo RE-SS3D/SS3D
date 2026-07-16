@@ -26,7 +26,14 @@ namespace SS3D.Systems.Tile.Connections
         protected override void OnDestroyed()
         {
             base.OnDestroyed();
-            ElectricitySubSystem electricitySystem = SubSystems.Get<ElectricitySubSystem>();
+
+            // Tile icon previews DestroyImmediate prefabs that never started as server objects.
+            if (!IsServer || !SubSystems.TryGet(out ElectricitySubSystem electricitySystem))
+            {
+                return;
+            }
+
+            electricitySystem.OnSystemSetUp -= OnElectricitySystemSetup;
             electricitySystem.RemoveElectricalElement(this);
         }
 

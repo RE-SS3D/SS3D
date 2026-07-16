@@ -170,13 +170,19 @@ namespace SS3D.UI.MachineInterface
             if (SubSystems.TryGet(out AreaSubSystem areaSubSystem))
             {
                 areaSubSystem.OnSystemSetUp -= OnAreaSystemSetup;
-                areaSubSystem.UnregisterApc(this);
+                if (IsServer)
+                {
+                    areaSubSystem.UnregisterApc(this);
+                }
             }
 
             if (SubSystems.TryGet(out ElectricitySubSystem electricitySystem))
             {
-                electricitySystem.RemoveElectricalElement(this);
                 electricitySystem.OnSystemSetUp -= OnElectricitySystemSetup;
+                if (IsServer)
+                {
+                    electricitySystem.RemoveElectricalElement(this);
+                }
             }
 
             base.OnDestroyed();
