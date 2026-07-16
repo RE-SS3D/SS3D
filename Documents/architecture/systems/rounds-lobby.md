@@ -22,7 +22,7 @@ Round lifecycle state machine with single-flight `CancellationTokenSource` (prev
 - Round transitions: extend `RoundSubSystemBase` state handlers and messages in `Messages/`.
 - Round-end history: `RoundSubSystem.AppendRoundHistory` → `PersistenceSubSystem.AppendRoundHistory`.
 - Spawn flow: `SpawnReadyPlayersEvent` and [entities](entities.md) / [gamemodes-roles-traits](gamemodes-roles-traits.md).
-- Tests: `Assets/Scripts/Tests/KnownIssueReproduction/RoundLifecycle_*`.
+- Tests: `Assets/Scripts/Tests/KnownIssueReproduction/` (`RoundLifecycle_*` fixtures)
 
 ## Depends on / Used by
 

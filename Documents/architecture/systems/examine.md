@@ -8,14 +8,16 @@
 
 Hover tooltips and shift-hold detailed examine panels, range-gated off the [selection](selection.md) system's current `IExaminable`. Supports text and image panel variants. Localization uses a unified Examine string table and `LocalizedTextService`; dynamic content via `IExamineContentProvider` (e.g. identification cards).
 
+Examine is **not** an `IInteraction` — `ExaminableBase` is read by `ExamineSubSystem` from the current selection (hover + Shift). There is no `ExamineInteraction` petal class on develop.
+
 ## Start here
 
-- `Assets/Scripts/SS3D/Systems/Examine/ExamineSubSystem.cs` — subsystem entry point
-- `Assets/Scripts/SS3D/Systems/Examine/ExamineUI.cs` — hover and detailed panel UI
+- `Assets/Scripts/SS3D/Systems/Examine/ExamineSubSystem.cs` — subsystem entry point; raises hover/detailed events
+- `Assets/Scripts/SS3D/Systems/Examine/ExamineUI.cs` — hover and detailed panel UI (Shift-hold)
 - `Assets/Scripts/SS3D/Systems/Examine/ExamineContentResolver.cs` — static table + dynamic section resolution
 - `Assets/Scripts/SS3D/Systems/Examine/IExaminable.cs` — interface for examinable objects
+- `Assets/Scripts/SS3D/Systems/Examine/ExaminableBase.cs` — base component; not an interaction target
 - `Assets/Scripts/SS3D/Systems/Examine/ExamineData.cs` — ScriptableObject examine content asset
-- `Assets/Scripts/SS3D/Systems/Examine/ExamineInteraction.cs` — Tier 1 radial petal; shift-hold detailed examine
 - `Assets/Scripts/SS3D/Localization/LocalizedTextService.cs` — shared localization accessor with caching
 
 ## Extension points
@@ -26,10 +28,11 @@ Hover tooltips and shift-hold detailed examine panels, range-gated off the [sele
 
 ## Depends on / Used by
 
-- **Depends on:** [selection](selection.md), [localization](localization.md), [interactions-framework](interactions-framework.md)
+- **Depends on:** [selection](selection.md), [localization](localization.md)
 - **Used by:** Most world objects with examine content
 
 ## Related docs
 
 - Plan: [examine_localization_design_5ca361a6.plan.md](../../plans/examine_localization_design_5ca361a6.plan.md)
-- Plan: [radial_menu_implementation_5a83bdf9.plan.md](../../plans/radial_menu_implementation_5a83bdf9.plan.md) § Examine tier
+- Plan: [radial_menu_implementation_5a83bdf9.plan.md](../../plans/radial_menu_implementation_5a83bdf9.plan.md) § Examine tier (planned petal; not shipped as `IInteraction`)
+- Design (read-only): [Documents/design/examine.md](../../design/examine.md)

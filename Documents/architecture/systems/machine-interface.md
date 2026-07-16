@@ -22,6 +22,8 @@ UI Toolkit panels for station machines, networked via FishNet snapshots. APC and
 - `Assets/Scripts/SS3D/UI/MachineInterface/ApcInterfaceSnapshot.cs` — APC snapshot fields (includes `MultipleApcsInArea` overlap flag)
 - `Assets/Scripts/SS3D/Systems/Electricity/ApcStatusDeriver.cs` — APC nominal/overload/critical derivation from circuit stats
 - `Assets/Scripts/SS3D/UI/MachineInterface/SmesController.cs` — SMES panel; input/output enable and rate limits
+- `Assets/Scripts/SS3D/UI/MachineInterface/VendingMachineController.cs` — vending; diegetic shell, tray dispense (no ID gate)
+- `Assets/Scripts/SS3D/UI/MachineInterface/Bindings/VendingMachineBinder.cs` — vending binder; avoid rebuild-teardown on every refresh (breaks Take/vend clicks)
 - `Assets/Scripts/SS3D/UI/MachineInterface/Bindings/ApcPowerControllerBinder.cs` — APC panel binder (diegetic shell, access gate)
 - `Assets/Scripts/SS3D/UI/MachineInterface/Bindings/SmesUnitBinder.cs` — SMES panel binder (diegetic shell, access gate)
 - `Assets/Scripts/SS3D/UI/MachineInterface/AccessGatedMachineInterfaceBehaviour.cs` — server ID scan; syncs `AccessGranted` / `AccessScanning` / `AccessDenied`
