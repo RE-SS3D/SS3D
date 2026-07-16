@@ -7772,7 +7772,7 @@ MonoBehaviour:
   _hips: {fileID: 2312129763742525980}
   _spine: {fileID: 0}
   _chest: {fileID: 0}
-  _head: {fileID: 0}
+  _head: {fileID: 9089863125375551091}
   _handLeft: {fileID: 2561159763559213326}
   _handRight: {fileID: 4983652985280326632}
   _upperArmLeft: {fileID: 0}
@@ -7805,8 +7805,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _rig: {fileID: 9100001005}
   _lookAtTarget: {fileID: 0}
-  _headLookWeight: 0.6
-  _torsoLookWeight: 0.3
+  _headLookWeight: 0.65
+  _torsoLookWeight: 0.45
+  _lookDistance: 4
   _blockedStandUpHeadroom: 1.2
 --- !u!1 &6418095482179841189
 GameObject:

@@ -16,6 +16,7 @@ namespace SS3D.Systems.Entities.Humanoid.Body
         public HumanoidCombatMode CombatMode;
         public LimpSide LimpSide;
         public float AimYaw;
+        public float AimPitch;
         public float MovementSpeed;
         public float InjuredArmLeft;
         public float InjuredArmRight;
@@ -40,7 +41,13 @@ namespace SS3D.Systems.Entities.Humanoid.Body
             return packed;
         }
 
-        public static BodyAnimationSnapshot Unpack(uint packed, float aimYaw, float movementSpeed, float injuredArmLeft, float injuredArmRight)
+        public static BodyAnimationSnapshot Unpack(
+            uint packed,
+            float aimYaw,
+            float aimPitch,
+            float movementSpeed,
+            float injuredArmLeft,
+            float injuredArmRight)
         {
             return new BodyAnimationSnapshot
             {
@@ -55,6 +62,7 @@ namespace SS3D.Systems.Entities.Humanoid.Body
                 IsFloating = (packed & (1u << 17)) != 0,
                 IsDragging = (packed & (1u << 18)) != 0,
                 AimYaw = aimYaw,
+                AimPitch = aimPitch,
                 MovementSpeed = movementSpeed,
                 InjuredArmLeft = injuredArmLeft,
                 InjuredArmRight = injuredArmRight,
@@ -65,6 +73,7 @@ namespace SS3D.Systems.Entities.Humanoid.Body
         {
             return Pack() == other.Pack()
                 && Math.Abs(AimYaw - other.AimYaw) < 0.01f
+                && Math.Abs(AimPitch - other.AimPitch) < 0.01f
                 && Math.Abs(MovementSpeed - other.MovementSpeed) < 0.01f
                 && Math.Abs(InjuredArmLeft - other.InjuredArmLeft) < 0.01f
                 && Math.Abs(InjuredArmRight - other.InjuredArmRight) < 0.01f;

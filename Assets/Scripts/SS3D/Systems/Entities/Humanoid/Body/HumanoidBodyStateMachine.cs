@@ -24,6 +24,9 @@ namespace SS3D.Systems.Entities.Humanoid.Body
         [SyncVar(OnChange = nameof(SyncAimYaw))]
         private float _aimYaw;
 
+        [SyncVar(OnChange = nameof(SyncAimPitch))]
+        private float _aimPitch;
+
         [SyncVar(OnChange = nameof(SyncMovementSpeed))]
         private float _movementSpeed;
 
@@ -203,6 +206,14 @@ namespace SS3D.Systems.Entities.Humanoid.Body
         }
 
         [ServerRpc]
+        public void CmdSetAim(float aimYaw, float aimPitch)
+        {
+            _aimYaw = aimYaw;
+            _aimPitch = Mathf.Clamp(aimPitch, -60f, 60f);
+            ApplyLocalSnapshot();
+        }
+
+        [ServerRpc]
         public void CmdFireTrigger(AnimationTriggerId trigger)
         {
             _snapshot.ActiveTrigger = trigger;
@@ -356,6 +367,7 @@ namespace SS3D.Systems.Entities.Humanoid.Body
         {
             _snapshot.MovementSpeed = _movementSpeed;
             _snapshot.AimYaw = _aimYaw;
+            _snapshot.AimPitch = _aimPitch;
             _snapshot.InjuredArmLeft = _injuredArmLeft;
             _snapshot.InjuredArmRight = _injuredArmRight;
             _orchestrator?.ApplySnapshot(_snapshot);
@@ -364,7 +376,8 @@ namespace SS3D.Systems.Entities.Humanoid.Body
 
         private void RebuildSnapshotFromSyncVars()
         {
-            _snapshot = BodyAnimationSnapshot.Unpack(_packedSnapshot, _aimYaw, _movementSpeed, _injuredArmLeft, _injuredArmRight);
+            _snapshot = BodyAnimationSnapshot.Unpack(
+                _packedSnapshot, _aimYaw, _aimPitch, _movementSpeed, _injuredArmLeft, _injuredArmRight);
             _orchestrator?.ApplySnapshot(_snapshot);
             OnSnapshotChanged?.Invoke(_snapshot);
             OnCapabilitiesChanged?.Invoke(Capabilities);
@@ -377,6 +390,12 @@ namespace SS3D.Systems.Entities.Humanoid.Body
         }
 
         private void SyncAimYaw(float prev, float next, bool asServer)
+        {
+            if (Mathf.Approximately(prev, next)) return;
+            RebuildSnapshotFromSyncVars();
+        }
+
+        private void SyncAimPitch(float prev, float next, bool asServer)
         {
             if (Mathf.Approximately(prev, next)) return;
             RebuildSnapshotFromSyncVars();

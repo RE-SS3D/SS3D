@@ -393,17 +393,17 @@ namespace SS3D.Systems.Entities.Humanoid
         }
 
         /// <summary>
-        /// Combat facing: rotate toward the mouse hit on the ground plane and sync AimYaw.
-        /// Movement stays camera-relative, so WASD produces forward/strafe clips relative to aim.
+        /// Combat facing: body yaw toward mouse, head/torso pitch via look-at IK.
         /// </summary>
         protected void RotatePlayerToCombatAim()
         {
-            if (!TryGetCombatAimYaw(out float yaw))
+            if (!TryGetCombatAim(out float yaw, out float pitch, out Vector3 aimPoint))
             {
                 return;
             }
 
-            _bodyStateMachine?.CmdSetAimYaw(yaw);
+            _bodyStateMachine?.CmdSetAim(yaw, pitch);
+            GetComponent<HumanoidIkController>()?.SetCombatAimPoint(aimPoint);
 
             Quaternion lookRotation = Quaternion.Euler(0f, yaw, 0f);
             // Slightly snappier than peaceful turn-to-move so aim tracks the cursor.
@@ -411,9 +411,16 @@ namespace SS3D.Systems.Entities.Humanoid
             transform.rotation = Quaternion.Slerp(Rotation, lookRotation, Time.deltaTime * combatRotateRate);
         }
 
-        protected bool TryGetCombatAimYaw(out float yaw)
+        /// <summary>
+        /// Resolves combat aim from the camera mouse ray (3D hit or fallback distance).
+        /// Body yaw uses the planar component; pitch is elevation to the aim point.
+        /// </summary>
+        public bool TryGetCombatAim(out float yaw, out float pitch, out Vector3 aimPoint)
         {
             yaw = 0f;
+            pitch = 0f;
+            aimPoint = Position;
+
             if (_camera == null)
             {
                 _camera = SubSystems.Get<CameraSubSystem>().PlayerCamera;
@@ -431,29 +438,59 @@ namespace SS3D.Systems.Entities.Humanoid
             }
 
             Ray ray = cam.ScreenPointToRay(Mouse.current.position.ReadValue());
-            Vector3 aimPoint;
-            Plane ground = new Plane(Vector3.up, Position);
-            if (ground.Raycast(ray, out float enter))
+            const float maxDistance = 100f;
+            const float fallbackDistance = 20f;
+
+            if (!TryResolveAimPoint(ray, maxDistance, fallbackDistance, out aimPoint))
             {
-                aimPoint = ray.GetPoint(enter);
+                return false;
             }
-            else if (Physics.Raycast(ray, out RaycastHit hit, 100f))
+
+            Vector3 eye = Position + Vector3.up * 1.5f;
+            Vector3 toAim = aimPoint - eye;
+            if (toAim.sqrMagnitude < 0.0001f)
             {
+                return false;
+            }
+
+            Vector3 flat = toAim;
+            flat.y = 0f;
+            if (flat.sqrMagnitude < 0.01f)
+            {
+                flat = Vector3.ProjectOnPlane(ray.direction, Vector3.up);
+                if (flat.sqrMagnitude < 0.01f)
+                {
+                    return false;
+                }
+            }
+
+            yaw = Quaternion.LookRotation(flat).eulerAngles.y;
+            float flatMag = flat.magnitude;
+            pitch = Mathf.Clamp(Mathf.Atan2(toAim.y, flatMag) * Mathf.Rad2Deg, -60f, 60f);
+            return true;
+        }
+
+        private bool TryResolveAimPoint(Ray ray, float maxDistance, float fallbackDistance, out Vector3 aimPoint)
+        {
+            aimPoint = ray.GetPoint(fallbackDistance);
+            RaycastHit[] hits = Physics.RaycastAll(ray, maxDistance, Physics.DefaultRaycastLayers, QueryTriggerInteraction.Ignore);
+            if (hits.Length == 0)
+            {
+                return true;
+            }
+
+            System.Array.Sort(hits, (a, b) => a.distance.CompareTo(b.distance));
+            foreach (RaycastHit hit in hits)
+            {
+                if (hit.transform != null && hit.transform.IsChildOf(transform))
+                {
+                    continue;
+                }
+
                 aimPoint = hit.point;
-            }
-            else
-            {
-                return false;
+                return true;
             }
 
-            Vector3 lookDir = aimPoint - Position;
-            lookDir.y = 0f;
-            if (lookDir.sqrMagnitude < 0.01f)
-            {
-                return false;
-            }
-
-            yaw = Quaternion.LookRotation(lookDir).eulerAngles.y;
             return true;
         }
 

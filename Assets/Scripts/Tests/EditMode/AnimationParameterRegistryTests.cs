@@ -21,6 +21,8 @@ namespace SS3D.Tests.EditMode
             Assert.AreNotEqual(0, Animations.Humanoid.ArmHold);
             Assert.AreNotEqual(0, Animations.Humanoid.CombatMode);
             Assert.AreNotEqual(0, Animations.Humanoid.CombatStance);
+            Assert.AreNotEqual(0, Animations.Humanoid.AimYaw);
+            Assert.AreNotEqual(0, Animations.Humanoid.AimPitch);
             Assert.AreNotEqual(0, Animations.Humanoid.AttackSwing);
             Assert.AreNotEqual(0, Animations.Humanoid.AttackStab);
             Assert.AreNotEqual(0, Animations.Humanoid.Throw);

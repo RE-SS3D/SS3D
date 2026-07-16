@@ -67,9 +67,9 @@ Rebuild via **SS3D → Animation → Rebuild Combat Stance Blend Trees** after r
 | Melee | Pro Melee Axe Pack | `C` on + unarmed or non-ranged weapon |
 | Ranged | Basic Shooter Pack | `C` on + hand item trait contains Ranged/Gun/Firearm/Rifle |
 
-Peaceful movement faces the move direction. Melee/Ranged face the mouse on the ground plane so WASD produces forward/back/strafe clips relative to aim. Pack clips bake root rotation into pose so GameObject aim yaw stays authoritative.
+Peaceful movement faces the move direction. Melee/Ranged face the mouse: body yaw from the planar aim, head/torso pitch via look-at IK (AimPitch). Pack clips bake root rotation into pose so GameObject aim yaw stays authoritative.
 
-`BodyAnimationSnapshot` packs `CombatMode` in 2 bits (Peaceful/Melee/Ranged). Orchestrator drives animator `CombatStance` int + `CombatMode` bool.
+`BodyAnimationSnapshot` replicates `CombatMode` (2 bits), `AimYaw`, and `AimPitch`. Orchestrator drives animator `CombatStance` / aim floats and combat look-at IK.
 
 ### Networking
 

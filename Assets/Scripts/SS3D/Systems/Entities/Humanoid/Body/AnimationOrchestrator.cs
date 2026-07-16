@@ -242,7 +242,8 @@ namespace SS3D.Systems.Entities.Humanoid
             _animator.SetBool(Animations.Humanoid.CombatMode, inCombat);
             _animator.SetInteger(Animations.Humanoid.CombatStance, (int)snapshot.CombatMode);
             _animator.SetFloat(Animations.Humanoid.AimYaw, snapshot.AimYaw);
-            _ikController?.SetCombatLookAt(inCombat, snapshot.AimYaw);
+            _animator.SetFloat(Animations.Humanoid.AimPitch, snapshot.AimPitch);
+            _ikController?.SetCombatLookAt(inCombat, snapshot.AimYaw, snapshot.AimPitch);
         }
 
         private void ApplyInjuries(BodyAnimationSnapshot snapshot)

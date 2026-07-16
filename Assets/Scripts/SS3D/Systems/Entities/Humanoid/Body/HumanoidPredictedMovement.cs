@@ -233,14 +233,16 @@ namespace SS3D.Systems.Entities.Humanoid
             bool isRunning = caps.CanRun && _livingController != null && _livingController.IsRunning;
 
             float aimYaw = 0f;
+            float aimPitch = 0f;
+            Vector3 aimPoint = default;
             bool hasCombatAim = false;
-            if (_bodyStateMachine.CombatMode.IsCombat())
+            if (_bodyStateMachine.CombatMode.IsCombat()
+                && _livingController != null
+                && _livingController.TryGetCombatAim(out aimYaw, out aimPitch, out aimPoint))
             {
-                hasCombatAim = TryGetCombatAimYaw(out aimYaw);
-                if (hasCombatAim)
-                {
-                    _bodyStateMachine.CmdSetAimYaw(aimYaw);
-                }
+                hasCombatAim = true;
+                _bodyStateMachine.CmdSetAim(aimYaw, aimPitch);
+                _livingController.GetComponent<HumanoidIkController>()?.SetCombatAimPoint(aimPoint);
             }
 
             // Idle: still carry aim so standing combat facing tracks the mouse.
@@ -346,42 +348,6 @@ namespace SS3D.Systems.Entities.Humanoid
                 vertical * Vector3.Cross(_camera.Right, Vector3.up).normalized +
                 horizontal * Vector3.Cross(Vector3.up, _camera.Forward).normalized
             ).normalized;
-        }
-
-        /// <summary>
-        /// Mouse on the player ground plane (same as <see cref="HumanoidController.TryGetCombatAimYaw"/>).
-        /// Avoids Physics.Raycast hitting props/walls and skewing aim yaw.
-        /// </summary>
-        private bool TryGetCombatAimYaw(out float yaw)
-        {
-            yaw = 0f;
-            if (_camera == null || Mouse.current == null)
-            {
-                return false;
-            }
-
-            Camera cam = _camera.GetComponent<Camera>();
-            if (cam == null)
-            {
-                return false;
-            }
-
-            Ray ray = cam.ScreenPointToRay(Mouse.current.position.ReadValue());
-            Plane ground = new Plane(Vector3.up, transform.position);
-            if (!ground.Raycast(ray, out float enter))
-            {
-                return false;
-            }
-
-            Vector3 lookDir = ray.GetPoint(enter) - transform.position;
-            lookDir.y = 0f;
-            if (lookDir.sqrMagnitude < 0.01f)
-            {
-                return false;
-            }
-
-            yaw = Quaternion.LookRotation(lookDir).eulerAngles.y;
-            return true;
         }
     }
 }
