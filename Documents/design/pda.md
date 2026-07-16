@@ -110,18 +110,3 @@ No new permanent chrome — same discipline as every other doc in this project.
 - Notes, ringtones, or other cosmetic PDA features — no gameplay weight, not designed here
 - PDA skinning/department color variants — a content/art question, not a systems one
 
-## 11. Prototyping this
-
-Same two-stage pipeline as the rest of this project — Claude Design to validate the visual/interaction language, then Cursor for the Unity implementation.
-
-**Claude Design, prompt 1 — device screen and tab bar:**
-> Using our existing SS3D design system, build the PDA's diegetic device screen (same visual treatment as the field diagnostic unit): a tab bar across the top (Comms log, Construction guide, ID/access, Manifest, Messages), with the Comms log tab active showing a filterable timestamped transcript. Same flat-surface, hairline-border language as the FDU and fabricator screens — no browser-panel look.
-
-**Claude Design, prompt 2 — messaging and notification:**
-> Build the Messages tab: a recent-contacts list, a simple compose field, and a sent/received thread view. Then show the momentary HUD notification chip that appears when a message arrives while the PDA is closed, matching the alert stack's appear-and-fade behavior.
-
-**Cursor, prompt 1 — data contract first:**
-> Here's the PDA design doc. Define the PDA record (owner binding via inserted ID, gear-strip slot reference, tab set) and the message record (sender ID, recipient ID, timestamp, body) as an extension of the existing comms message backend rather than a new store. Show me both before wiring any tab UI.
-
-**Cursor, prompt 2 — one vertical slice:**
-> Implement gear-strip open/close and the Comms log tab only, wired to real comms data, matching the mockup. ID/access, Manifest, Construction guide, and Messages tabs come after this is reviewed.

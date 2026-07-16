@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using SS3D.Core;
 using SS3D.Data.AssetDatabases;
-using System.Electricity;
+using SS3D.Systems.Electricity;
 using UnityEngine.Serialization;
 
 namespace SS3D.Systems.Audio

@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using System.Electricity;
+using SS3D.Systems.Electricity;
 using System.Text;
 using SS3D.Core;
 using SS3D.Core.Behaviours;

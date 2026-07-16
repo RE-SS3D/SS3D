@@ -5,15 +5,29 @@ using SS3D.Systems.Tile;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using Object = UnityEngine.Object;
 
 namespace EditorTests
 {
     public class AreaFloodFillTests
     {
+        private List<GameObject> _instantiated;
+
+        [SetUp]
+        public void SetUp() => _instantiated = new List<GameObject>();
+
+        [TearDown]
+        public void TearDown()
+        {
+            foreach (GameObject go in _instantiated)
+                Object.DestroyImmediate(go);
+            _instantiated.Clear();
+        }
+
         [Test]
         public void SingleApcInEnclosedRoom_ClaimsAllInteriorTiles()
         {
-            AreaTestContext context = AreaTestContext.CreateRoom(origin: new Vector3(10, 0, 10), width: 5, height: 5);
+            AreaTestContext context = AreaTestContext.CreateRoom(_instantiated, origin: new Vector3(10, 0, 10), width: 5, height: 5);
             TestApc apc = context.PlaceApc(new Vector3(12, 0, 12));
 
             context.RebuildAll();
@@ -34,7 +48,7 @@ namespace EditorTests
         [Test]
         public void TwoApcsInSeparateWalledRooms_CreateDistinctAreas()
         {
-            AreaTestContext context = AreaTestContext.CreateRoom(new Vector3(0, 0, 0), 5, 5);
+            AreaTestContext context = AreaTestContext.CreateRoom(_instantiated, new Vector3(0, 0, 0), 5, 5);
             context.AddRoom(new Vector3(8, 0, 0), 5, 5);
 
             TestApc leftApc = context.PlaceApc(new Vector3(2, 0, 2));
@@ -53,7 +67,7 @@ namespace EditorTests
         [Test]
         public void TwoApcsInOpenSpace_FirstApcWinsAndSecondGetsOverlapWarning()
         {
-            AreaTestContext context = AreaTestContext.CreateOpenFloor(origin: new Vector3(0, 0, 0), width: 6, height: 4);
+            AreaTestContext context = AreaTestContext.CreateOpenFloor(_instantiated, origin: new Vector3(0, 0, 0), width: 6, height: 4);
             TestApc firstApc = context.PlaceApc(new Vector3(1, 0, 2));
             TestApc secondApc = context.PlaceApc(new Vector3(4, 0, 2));
 
@@ -74,6 +88,7 @@ namespace EditorTests
         public void DoorBetweenTwoApcRooms_EachSideGetsOwnAreaAndDoorMatchesNeighbor()
         {
             AreaTestContext context = AreaTestContext.CreateTwoRoomsWithDoor(
+                _instantiated,
                 leftOrigin: new Vector3(0, 0, 0),
                 rightOrigin: new Vector3(5, 0, 0),
                 roomSize: 5);
@@ -96,7 +111,7 @@ namespace EditorTests
         [Test]
         public void WallMountedApcOnPerimeter_FloodsInteriorTiles()
         {
-            AreaTestContext context = AreaTestContext.CreateRoom(origin: new Vector3(10, 0, 10), width: 5, height: 5);
+            AreaTestContext context = AreaTestContext.CreateRoom(_instantiated, origin: new Vector3(10, 0, 10), width: 5, height: 5);
             TestApc apc = context.PlaceApc(new Vector3(10, 0, 12), Direction.East);
 
             context.RebuildAll();
@@ -119,7 +134,7 @@ namespace EditorTests
         [Test]
         public void WallMountedDevice_ResolvesAreaFromTileInFront()
         {
-            AreaTestContext context = AreaTestContext.CreateRoom(origin: new Vector3(10, 0, 10), width: 5, height: 5);
+            AreaTestContext context = AreaTestContext.CreateRoom(_instantiated, origin: new Vector3(10, 0, 10), width: 5, height: 5);
             TestApc apc = context.PlaceApc(new Vector3(10, 0, 12), Direction.East);
             context.RebuildAll();
 
@@ -133,7 +148,7 @@ namespace EditorTests
         [Test]
         public void WallMountedDevice_UsesTileInFrontWhenOriginHasAreaId()
         {
-            AreaTestContext context = AreaTestContext.CreateTwoAdjacentRooms(new Vector3(0, 0, 0), roomSize: 5);
+            AreaTestContext context = AreaTestContext.CreateTwoAdjacentRooms(_instantiated, new Vector3(0, 0, 0), roomSize: 5);
             TestApc leftApc = context.PlaceApc(new Vector3(4, 0, 2), Direction.West);
             TestApc rightApc = context.PlaceApc(new Vector3(5, 0, 2), Direction.East);
             context.RebuildAll();
@@ -157,7 +172,7 @@ namespace EditorTests
         [Test]
         public void WallMountedApcFacingIntoRoom_DoesNotFloodRoomBehindWall()
         {
-            AreaTestContext context = AreaTestContext.CreateTwoAdjacentRooms(new Vector3(0, 0, 0), roomSize: 5);
+            AreaTestContext context = AreaTestContext.CreateTwoAdjacentRooms(_instantiated, new Vector3(0, 0, 0), roomSize: 5);
             TestApc apc = context.PlaceApc(new Vector3(4, 0, 2), Direction.West);
 
             context.RebuildAll();
@@ -171,7 +186,7 @@ namespace EditorTests
         [Test]
         public void WallMountedApcFacingAwayFromRoom_DoesNotFloodEitherRoom()
         {
-            AreaTestContext context = AreaTestContext.CreateTwoAdjacentRooms(new Vector3(0, 0, 0), roomSize: 5);
+            AreaTestContext context = AreaTestContext.CreateTwoAdjacentRooms(_instantiated, new Vector3(0, 0, 0), roomSize: 5);
             TestApc apc = context.PlaceApc(new Vector3(4, 0, 2), Direction.East);
 
             context.RebuildAll();
@@ -183,7 +198,7 @@ namespace EditorTests
         [Test]
         public void RoomWithoutApc_RemainsUnassigned()
         {
-            AreaTestContext context = AreaTestContext.CreateRoom(new Vector3(0, 0, 0), 4, 4);
+            AreaTestContext context = AreaTestContext.CreateRoom(_instantiated, new Vector3(0, 0, 0), 4, 4);
 
             context.RebuildAll();
 
@@ -193,7 +208,7 @@ namespace EditorTests
         [Test]
         public void ApcRemoved_ClearsClaimedTiles()
         {
-            AreaTestContext context = AreaTestContext.CreateRoom(new Vector3(0, 0, 0), 4, 4);
+            AreaTestContext context = AreaTestContext.CreateRoom(_instantiated, new Vector3(0, 0, 0), 4, 4);
             TestApc apc = context.PlaceApc(new Vector3(2, 0, 2));
             context.RebuildAll();
 
@@ -208,7 +223,7 @@ namespace EditorTests
         [Test]
         public void SaveLoad_PreservesAreaIdsAndMetadata()
         {
-            AreaTestContext context = AreaTestContext.CreateRoom(new Vector3(0, 0, 0), 4, 4);
+            AreaTestContext context = AreaTestContext.CreateRoom(_instantiated, new Vector3(0, 0, 0), 4, 4);
             TestApc apc = context.PlaceApc(new Vector3(2, 0, 2));
             context.RebuildAll();
             context.AreaSubSystem.RenameArea(context.GetApcAreaId(apc), "Engineering");
@@ -218,6 +233,7 @@ namespace EditorTests
             saved.savedAreas = context.AreaSubSystem.BuildSavedAreaRecords();
 
             TileMap loadedMap = TileMap.Create("LoadedAreaMap");
+            _instantiated.Add(loadedMap.gameObject);
             loadedMap.Load(saved);
 
             var loadedQuery = new TileQueryService(loadedMap);
@@ -235,7 +251,7 @@ namespace EditorTests
         [Test]
         public void TemplateRestore_WithRegisteredApc_PreservesSavedMetadata()
         {
-            AreaTestContext context = AreaTestContext.CreateRoom(new Vector3(0, 0, 0), 4, 4);
+            AreaTestContext context = AreaTestContext.CreateRoom(_instantiated, new Vector3(0, 0, 0), 4, 4);
             TestApc apc = context.PlaceApc(new Vector3(2, 0, 2));
             context.RebuildAll();
             AreaId areaId = context.GetApcAreaId(apc);
@@ -246,6 +262,7 @@ namespace EditorTests
             saved[0].lightingSwitchOn = false;
 
             TileMap loadedMap = TileMap.Create("LoadedApcMap");
+            _instantiated.Add(loadedMap.gameObject);
             loadedMap.Load(context.Map.Save(), invokeMapLoadedEvent: false);
             loadedMap.SetLoadedAreaRecords(saved);
 
@@ -267,9 +284,10 @@ namespace EditorTests
             return areaId;
         }
 
-        private static PlacedTileObject CreateWallMountedDevice(Vector2Int worldOrigin, Direction direction)
+        private PlacedTileObject CreateWallMountedDevice(Vector2Int worldOrigin, Direction direction)
         {
             var go = new GameObject("WallLightTest");
+            _instantiated.Add(go);
             PlacedTileObject placed = go.AddComponent<PlacedTileObject>();
             // A wall-mounted device must have a TileObjectSo so PlacedTileObject.Layer can be evaluated.
             // We use WallMountHigh to force the resolver to look at the tile in front of the wall.
@@ -323,18 +341,18 @@ namespace EditorTests
 
             public AreaSubSystemHarness AreaSubSystem => _areaSubSystem;
 
-            public static AreaTestContext CreateRoom(Vector3 origin, int width, int height)
+            public static AreaTestContext CreateRoom(List<GameObject> instantiated, Vector3 origin, int width, int height)
             {
-                AreaTestContext context = CreateBase();
+                AreaTestContext context = CreateBase(instantiated);
                 context.FillRoom(origin, width, height);
                 return context;
             }
 
             public void AddRoom(Vector3 origin, int width, int height) => FillRoom(origin, width, height);
 
-            public static AreaTestContext CreateOpenFloor(Vector3 origin, int width, int height)
+            public static AreaTestContext CreateOpenFloor(List<GameObject> instantiated, Vector3 origin, int width, int height)
             {
-                AreaTestContext context = CreateBase();
+                AreaTestContext context = CreateBase(instantiated);
 
                 for (int x = 0; x < width; x++)
                 {
@@ -345,9 +363,9 @@ namespace EditorTests
                 return context;
             }
 
-            public static AreaTestContext CreateTwoRoomsWithDoor(Vector3 leftOrigin, Vector3 rightOrigin, int roomSize)
+            public static AreaTestContext CreateTwoRoomsWithDoor(List<GameObject> instantiated, Vector3 leftOrigin, Vector3 rightOrigin, int roomSize)
             {
-                AreaTestContext context = CreateBase();
+                AreaTestContext context = CreateBase(instantiated);
                 Vector3 doorPosition = new Vector3(leftOrigin.x + roomSize - 1, 0, leftOrigin.z + roomSize / 2);
 
                 context.BuildRoom(leftOrigin, roomSize, doorPosition);
@@ -359,9 +377,9 @@ namespace EditorTests
                 return context;
             }
 
-            public static AreaTestContext CreateTwoAdjacentRooms(Vector3 leftOrigin, int roomSize)
+            public static AreaTestContext CreateTwoAdjacentRooms(List<GameObject> instantiated, Vector3 leftOrigin, int roomSize)
             {
-                AreaTestContext context = CreateRoom(leftOrigin, roomSize, roomSize);
+                AreaTestContext context = CreateRoom(instantiated, leftOrigin, roomSize, roomSize);
                 context.AddRoom(leftOrigin + new Vector3(roomSize, 0, 0), roomSize, roomSize);
                 return context;
             }
@@ -396,10 +414,11 @@ namespace EditorTests
                 return areaId;
             }
 
-            private static AreaTestContext CreateBase()
+            private static AreaTestContext CreateBase(List<GameObject> instantiated)
             {
                 TileMapTestUtilities.EnsureTestAssetsRegistered();
                 TileMap map = TileMap.Create("AreaFloodFillTests");
+                instantiated.Add(map.gameObject);
                 var query = new TileQueryService(map);
                 var construction = new ConstructionService(map, query);
                 var areaSubSystem = new AreaSubSystemHarness(map, query);

@@ -2,3 +2,7 @@
 .vending-interface .panel-section__content {
     padding: 12px;
 }
+
+.vending-interface #identity {
+    margin-bottom: 14px;
+}

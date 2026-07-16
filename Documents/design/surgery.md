@@ -113,16 +113,3 @@ No new permanent chrome.
 - Disease/infection risk from surgery — already flagged as a separate future system in `health.md` §9
 - Surgical skill/training affecting speed or quality — not assumed to exist, same caveat combat and stamina already apply to accuracy/exertion modifiers
 
-## 12. Prototyping this
-
-**Claude Design, prompt 1 — procedure sequence:**
-> Build the four-stage surgery sequence on a test patient: incise (scalpel, Tier 2 reticle + chip), clamp, an operate step showing organ extract-then-install (Tier 3), and close with a cautery/suture choice. Show the open site rendering visibly on the model at each stage — this is the doll's replacement for surgery, not a separate panel.
-
-**Claude Design, prompt 2 — skipped-clamp consequence:**
-> Show two closing paths side by side: incise → clamp → close (clean), versus incise → close directly (unclamped). For the unclamped path, show the visible bleeding right up until the close click, then the site sealing with no external tell — followed by a later scene showing the same patient's condition degrading from internal bleeding with the wound already closed.
-
-**Cursor, prompt 1 — data contract first:**
-> Here's the surgery design doc. Define the per-zone surgical state machine (closed → incised → clamped-or-not → operated → closed-clean / closed-unclamped) and the tool-step validity table (which tool is valid given current zone state). Wire the unclamped-close outcome into the existing blood volume model as internal bleeding. Show me both before wiring any UI.
-
-**Cursor, prompt 2 — one vertical slice:**
-> Implement direct repair only, end to end — incise, clamp (skippable), repair, close, with the unclamped-close consequence wired to real blood volume. Organ exchange and limb attach come after this is reviewed.

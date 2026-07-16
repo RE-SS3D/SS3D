@@ -3,11 +3,25 @@ using SS3D.Systems.Area;
 using SS3D.Systems.Tile;
 using System.Collections.Generic;
 using UnityEngine;
+using Object = UnityEngine.Object;
 
 namespace EditorTests
 {
     public class AreaBoundaryEvaluatorTests
     {
+        private List<GameObject> _instantiated;
+
+        [SetUp]
+        public void SetUp() => _instantiated = new List<GameObject>();
+
+        [TearDown]
+        public void TearDown()
+        {
+            foreach (GameObject go in _instantiated)
+                Object.DestroyImmediate(go);
+            _instantiated.Clear();
+        }
+
         [Test]
         public void IsWalkable_RequiresPlenumAndNoWall()
         {
@@ -65,11 +79,10 @@ namespace EditorTests
                 AreaId.None));
         }
 
-        private static TileMapTestUtilities.MapContext CreateMap()
+        private TileMapTestUtilities.MapContext CreateMap()
         {
-            var instantiated = new List<GameObject>();
             TileMapTestUtilities.EnsureTestAssetsRegistered();
-            return TileMapTestUtilities.CreateContext(instantiated);
+            return TileMapTestUtilities.CreateContext(_instantiated);
         }
 
         private static void PlaceTurf(

@@ -3,10 +3,12 @@ using Coimbra.Services.Events;
 using SS3D.Application;
 using SS3D.Application.Events;
 using SS3D.Core.Behaviours;
-using SS3D.Data.AssetDatabases;
 using SS3D.Data.Generated;
 using SS3D.Logging;
 using System;
+using UnityEngine.SceneManagement;
+using UnityScene = UnityEngine.SceneManagement.Scene;
+using UnitySceneManager = UnityEngine.SceneManagement.SceneManager;
 
 // ReSharper disable ConditionIsAlwaysTrueOrFalse
 namespace SS3D.SceneManagement
@@ -21,11 +23,43 @@ namespace SS3D.SceneManagement
 			base.OnAwake();
 
 			ApplicationInitializing.AddListener(HandleApplicationInitializing);
+			UnitySceneManager.sceneLoaded += HandleUnitySceneLoaded;
+		}
+
+		protected override void OnDestroyed()
+		{
+			UnitySceneManager.sceneLoaded -= HandleUnitySceneLoaded;
+			base.OnDestroyed();
 		}
 
 		private void HandleApplicationInitializing(ref EventContext context, in ApplicationInitializing e)
 		{
 			LoadMainScene();
+		}
+
+		/// <summary>
+		/// FishNet loads Game additively and cannot unload Intro while it is still the only scene,
+		/// so Intro (EventSystem + AudioListener) would otherwise stick around and spam the console.
+		/// </summary>
+		private void HandleUnitySceneLoaded(UnityScene scene, LoadSceneMode mode)
+		{
+			if (scene.name != Scenes.Game)
+			{
+				return;
+			}
+
+			UnitySceneManager.SetActiveScene(scene);
+			UnloadIfLoaded(Scenes.Intro);
+			UnloadIfLoaded(Scenes.Launcher);
+		}
+
+		private static void UnloadIfLoaded(string sceneName)
+		{
+			UnityScene loaded = UnitySceneManager.GetSceneByName(sceneName);
+			if (loaded.IsValid() && loaded.isLoaded)
+			{
+				UnitySceneManager.UnloadSceneAsync(loaded);
+			}
 		}
 
         /// <summary>

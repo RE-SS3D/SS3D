@@ -273,7 +273,11 @@ Shipped on branch `feature/diegetic-screen-ui-framework` (commits through `a4656
 - Editor preview is `SS3D → Machine Interface → Preview Diegetic Components` (shared component preview), not a vending-only preview window.
 - `VendingMachineController` lives in `Assets/Scripts/SS3D/UI/MachineInterface/`; legacy `VendingMachine.cs` and `DispenseProductInteraction.cs` were removed rather than kept alongside.
 - Snapshot helper structs split into `VendingProductSnapshot.cs` and `VendingTrayItemSnapshot.cs` for StyleCop file/type rules.
-- ID reader remains stubbed; `ReadId` logs that access system is not installed.
+- Vending stays ungated (no ID gate). Engineering ID access shipped later for APC/SMES/atmos panels — not applied to vendors.
+
+**Follow-ups shipped on develop after the diegetic PR**
+- Refresh-driven UI teardown no longer drops Take/vend click handlers (`ProductGrid` / `DispenseTray`).
+- `MachinePowerConsumer` no longer sticks at "in use" wattage after vend.
 
 **Documentation**
 - Architecture effort: [2026-07_diegetic-screen-ui-framework.md](../architecture/2026-07_diegetic-screen-ui-framework.md)

@@ -1,9 +1,10 @@
-﻿using FishNet.Object.Synchronizing;
+using FishNet.Object.Synchronizing;
 using SS3D.Core;
 using SS3D.Systems.Furniture;
 using SS3D.Systems.Tile.Connections;
+using System;
 using UnityEngine;
-namespace System.Electricity
+namespace SS3D.Systems.Electricity
 {
     public class MachinePowerConsumer : BasicElectricDevice, IPowerConsumer
     {
@@ -50,6 +51,7 @@ namespace System.Electricity
         
         private void HandleMachineWasUsed()
         {
+            isIdle = true;
             _machineUsedOnce = false;
             SubSystems.Get<ElectricitySubSystem>().OnTick -= HandleMachineWasUsed;
         }

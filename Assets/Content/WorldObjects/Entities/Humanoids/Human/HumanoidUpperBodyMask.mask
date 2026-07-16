@@ -1,0 +1,45 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!319 &31900000
+AvatarMask:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: HumanoidUpperBodyMask
+  m_Mask: 00000000000000000000000000000000000000000100000001000000010000000100000000000000000000000100000001000000
+  m_Elements:
+  - m_Path: 
+    m_Weight: 0
+  - m_Path: Armature
+    m_Weight: 0
+  - m_Path: Armature/hips
+    m_Weight: 0
+  - m_Path: Armature/hips/spine
+    m_Weight: 0
+  - m_Path: Armature/hips/spine/chest
+    m_Weight: 0
+  - m_Path: Armature/hips/spine/chest/neck
+    m_Weight: 0
+  - m_Path: Armature/hips/spine/chest/neck/head
+    m_Weight: 0
+  - m_Path: Armature/hips/spine/chest/shoulder_r
+    m_Weight: 1
+  - m_Path: Armature/hips/spine/chest/shoulder_r/upper_arm_r
+    m_Weight: 1
+  - m_Path: Armature/hips/spine/chest/shoulder_r/upper_arm_r/forearm_r
+    m_Weight: 1
+  - m_Path: Armature/hips/spine/chest/shoulder_r/upper_arm_r/forearm_r/hand_r
+    m_Weight: 1
+  - m_Path: Armature/hips/spine/chest/shoulder_l
+    m_Weight: 1
+  - m_Path: Armature/hips/spine/chest/shoulder_l/upper_arm_l
+    m_Weight: 1
+  - m_Path: Armature/hips/spine/chest/shoulder_l/upper_arm_l/forearm_l
+    m_Weight: 1
+  - m_Path: Armature/hips/spine/chest/shoulder_l/upper_arm_l/forearm_l/hand_l
+    m_Weight: 1
+  - m_Path: Armature/hips/thigh_l
+    m_Weight: 0
+  - m_Path: Armature/hips/thigh_r
+    m_Weight: 0

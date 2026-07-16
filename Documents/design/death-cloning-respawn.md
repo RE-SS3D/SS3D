@@ -125,18 +125,3 @@ Records live on the genetics console / crew records as a real, breakable databas
 - Cryogenics/cryo storage as a holding state for logged-off characters — flagged alongside cloning in `combat.md` §6, but it's a genuinely separate "pause" mechanic, not a revival path, and worth its own pass
 - Cybernetic revival paths beyond what `health.md` §9 already covers
 
-## 11. Prototyping this
-
-Same two-stage pipeline as the rest of this project.
-
-**Claude Design, prompt 1 — defibrillation sequence:**
-> Build the defib sequence: critical/dying screen feedback per the existing main HUD mockup, pad placement on the chest zone, a check showing armor blocking contact until removed, a successful revival (shock effect, heartbeat audio resuming), and a clean "no response" failure state for a case past the window.
-
-**Claude Design, prompt 2 — cloning pod:**
-> Build the cloning pod's diegetic device screen, explicitly reusing the fabricator screen's visual language from the crafting mockups: a DNA record lookup tied to crew records, a material (biomass) and power check before starting, a running-job state with visible build timer, a stalled state from a power cut mid-grow, and a completed state with the clone-ready prompt.
-
-**Cursor, prompt 1 — data contract first:**
-> Here's the death/cloning/respawn doc. Define the DNA record structure (tied to the existing ID/crew record), the defib check function (window state from the health model, zone/armor coverage check, charge state), and the cloning job-state machine — reuse the fabricator job-state machine from the crafting doc's data contract rather than defining a new one. Show me all three before wiring any UI.
-
-**Cursor, prompt 2 — one vertical slice:**
-> Implement defibrillation only, end to end — window check, zone/armor gating, charge, and the revival hook back into the health model. Cloning and the respawn threshold come after this is reviewed.

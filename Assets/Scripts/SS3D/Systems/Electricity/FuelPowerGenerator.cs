@@ -1,4 +1,4 @@
-﻿using FishNet.Object;
+using FishNet.Object;
 using FishNet.Object.Synchronizing;
 using SS3D.Core;
 using SS3D.Data;
@@ -10,7 +10,7 @@ using SS3D.Systems.Tile.Connections;
 using UnityEngine;
 using AudioType = SS3D.Systems.Audio.AudioType;
 
-namespace System.Electricity
+namespace SS3D.Systems.Electricity
 {
     /// <summary>
     /// Script for the pacman generator, handling light and noise when turning it on and off. 

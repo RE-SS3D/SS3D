@@ -20,19 +20,20 @@ namespace EditorTests
             loader.Catalog.Build(new[] { floorSo });
             ushort assetId = loader.Catalog.TryGetAssetId(floorSo);
             SetLoader(tileSubSystem, loader);
-            SubSystems.Register(tileSubSystem);
 
             CreateGameObject(out GameObject go, out PlacedTileObject placed);
-            SetSyncField(placed, "_syncAssetId", assetId);
-            SetSyncField(placed, "_syncOriginX", 3);
-            SetSyncField(placed, "_syncOriginY", 7);
-            SetSyncField(placed, "_syncWorldOriginX", 3);
-            SetSyncField(placed, "_syncWorldOriginY", 7);
-            SetSyncField(placed, "_syncDirection", Direction.East);
-            SetSyncField(placed, "_syncMapId", 2);
 
             try
             {
+                SubSystems.Register(tileSubSystem);
+                SetSyncField(placed, "_syncAssetId", assetId);
+                SetSyncField(placed, "_syncOriginX", 3);
+                SetSyncField(placed, "_syncOriginY", 7);
+                SetSyncField(placed, "_syncWorldOriginX", 3);
+                SetSyncField(placed, "_syncWorldOriginY", 7);
+                SetSyncField(placed, "_syncDirection", Direction.East);
+                SetSyncField(placed, "_syncMapId", 2);
+
                 MethodInfo applyIdentity = typeof(PlacedTileObject).GetMethod("ApplySyncedIdentity", BindingFlags.Instance | BindingFlags.NonPublic);
                 applyIdentity.Invoke(placed, null);
 

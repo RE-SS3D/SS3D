@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace System.Electricity
+namespace SS3D.Systems.Electricity
 {
     /// <summary>
     /// Allocates power to consumers by channel priority.

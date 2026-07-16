@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace System.Electricity
+namespace SS3D.Systems.Electricity
 {
     /// <summary>
     /// Development-only settings for visualizing power circuits and device connectivity.

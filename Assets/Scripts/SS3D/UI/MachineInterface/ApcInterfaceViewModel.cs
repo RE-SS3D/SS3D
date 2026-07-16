@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using SS3D.Systems.Electricity;
 
 namespace SS3D.UI.MachineInterface
 {

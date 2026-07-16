@@ -1,9 +1,9 @@
-﻿using SS3D.Logging;
+using SS3D.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace System.Electricity
+namespace SS3D.Systems.Electricity
 {
     /// <summary>
     /// Class to store all connected consumers, producers and storages of electric power.
@@ -347,7 +347,7 @@ namespace System.Electricity
                 }
 
                 ApcControlFlags enabledChannels = _getEnabledChannelsForConsumer(consumer);
-                if (IsChannelEnabled(consumer.Channel, enabledChannels))
+                if (PowerGate.IsChannelEnabled(consumer.Channel, enabledChannels))
                 {
                     activeConsumers.Add(consumer);
                 }
@@ -361,25 +361,13 @@ namespace System.Electricity
             List<IPowerConsumer> activeConsumers = new();
             foreach (IPowerConsumer consumer in consumers)
             {
-                if (IsChannelEnabled(consumer.Channel, enabledChannels))
+                if (PowerGate.IsChannelEnabled(consumer.Channel, enabledChannels))
                 {
                     activeConsumers.Add(consumer);
                 }
             }
 
             return activeConsumers;
-        }
-
-        private static bool IsChannelEnabled(PowerChannel channel, ApcControlFlags enabledChannels)
-        {
-            ApcControlFlags flag = channel switch
-            {
-                PowerChannel.Lighting => ApcControlFlags.Lighting,
-                PowerChannel.Environment => ApcControlFlags.Environment,
-                _ => ApcControlFlags.Equipment,
-            };
-
-            return (enabledChannels & flag) != 0;
         }
 
         private static float SumChannelLoad(IEnumerable<IPowerConsumer> consumers, PowerChannel channel)

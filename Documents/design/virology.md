@@ -2,7 +2,7 @@
 
 > Status: active
 
-Resolves an item four other docs deliberately punted on: `health.md` §9 flags "disease/infection" as a natural future system given organs already exist, `chemistry.md` §12 defers "disease/infection interactions," `surgery.md` §11 defers "disease/infection risk from surgery," and `examine.md` §11 flags "a medical scanner tool for exact organ/vitals function values... a plausible future item, not designed here." This doc is that system, and that item. Builds on the organ/systemic-pool model (`health.md` §2–3), the reagent/bloodstream/delivery model (`chemistry.md`), the diegetic device-screen and discovery-tier pattern (`hacking-interface.md` §2–4, `chemistry.md` §6), Area as the current stand-in for co-location (`area.md` §2), armor's zone-coverage check (`armor.md` §2), and the crew identity record DNA already rides (`death-cloning-respawn.md` §4).
+Resolves an item four other docs deliberately punted on: `health.md` §9 flags "disease/infection" as a natural future system given organs already exist, `chemistry.md` §13 defers "disease/infection interactions," `surgery.md` §11 defers "disease/infection risk from surgery," and `examine.md` §11 flags "a medical scanner tool for exact organ/vitals function values... a plausible future item, not designed here." This doc is that system, and that item. Builds on the organ/systemic-pool model (`health.md` §2–3), the reagent/bloodstream/delivery model (`chemistry.md`), the diegetic device-screen and discovery-tier pattern (`hacking-interface.md` §2–4, `chemistry.md` §7), Area as the current stand-in for co-location (`area.md` §2), armor's zone-coverage check (`armor.md` §2), and the crew identity record DNA already rides (`death-cloning-respawn.md` §4).
 
 ## 1. Design philosophy
 
@@ -82,7 +82,7 @@ No mechanical lockdown exists in this doc, deliberately, per §1. An infected ch
 No new permanent chrome.
 
 - **Symptom rendering on the model** once past incubation — cough, tint, sound — matches the wound-rendering precedent exactly (`health.md` §2).
-- **A new alert-stack entry**, hidden-until-relevant like chemistry's overdose/sedation chips (`chemistry.md` §10): a generic "Infected" chip once symptomatic and unscanned, upgrading to name the specific disease once that character has actually been scanned themselves — reflects what the character currently knows, not omniscient information.
+- **A new alert-stack entry**, hidden-until-relevant like chemistry's overdose/sedation chips (`chemistry.md` §11): a generic "Infected" chip once symptomatic and unscanned, upgrading to name the specific disease once that character has actually been scanned themselves — reflects what the character currently knows, not omniscient information.
 - **The organ-status readout** (`health.md` §7, already extended once by chemistry §10) gains active infection as one more listed entry once diagnosed, alongside metabolizing reagents.
 - No standalone infection bar — consistent with the vitals cluster's existing "only draws the eye when something's actually wrong" rule.
 
@@ -91,14 +91,14 @@ No new permanent chrome.
 | Virology element | Touches existing system |
 |---|---|
 | Disease effects | Organ function / systemic pools — `health.md` §2–3 |
-| Cure synthesis & delivery | Reagents, recipes, delivery methods — `chemistry.md` §2–9 |
+| Cure synthesis & delivery | Reagents, recipes, delivery methods — `chemistry.md` §2–4, §6–10 |
 | Airborne exposure (interim) | Area co-location — `area.md` §2, pending a real atmosphere zone system |
 | Protective equipment | Zone coverage check — `armor.md` §2 |
-| Medical scanner | Diegetic device-screen, discovery-tier pattern — `hacking-interface.md` §2–4, `chemistry.md` §6 |
+| Medical scanner | Diegetic device-screen, discovery-tier pattern — `hacking-interface.md` §2–4, `chemistry.md` §7 |
 | Blood sample | Container/transfer grammar — `chemistry.md` §3 |
 | Immunity flag | Crew identity record — `death-cloning-respawn.md` §4 |
 | Quarantine | Area/door access — `area.md` §5, `id-access.md` |
-| Alert chip | Alert-stack hidden-until-relevant pattern — `chemistry.md` §10 |
+| Alert chip | Alert-stack hidden-until-relevant pattern — `chemistry.md` §11 |
 
 ## 10. Worked examples
 
@@ -142,20 +142,7 @@ No new permanent chrome.
 ## 12. Companion edits flagged
 
 - `health.md` §9 — remove "disease/infection" from the out-of-scope list; point to this doc instead.
-- `chemistry.md` §12 — remove "disease/infection interactions"; cure reagents are ordinary recipes per §4 there, nothing further needed.
+- `chemistry.md` §13 — remove "disease/infection interactions"; cure reagents are ordinary recipes per §4 there, nothing further needed.
 - `surgery.md` §11 — "disease/infection risk from surgery" resolves as an ordinary contact-exposure vector (§3 here), not a bespoke surgical mechanic; repoint the citation rather than redesigning surgery.
 - `examine.md` §11 — the flagged "medical scanner tool" is now built in §5; repoint the citation.
 
-## 13. Prototyping this
-
-**Claude Design, prompt 1 — medical scanner device screen:**
-> Using our SS3D design system, build the medical scanner's diegetic device screen, same visual language as the FDU and chemical analyzer: a live-scan result view (disease name, current stage, time-to-next-stage) and a blood-sample-analysis mode showing the same fields for a container instead of a person. Industrial, flat, no neon.
-
-**Claude Design, prompt 2 — symptom rendering and alert states:**
-> Show a symptomatic character rendering on the model (cough animation, pallor/flush tint) alongside the two alert-chip states: generic "Infected" before that character has been scanned, upgrading to the named disease after. Confirm the silent-incubation state shows nothing at all — no chip, no model change — for contrast.
-
-**Cursor, prompt 1 — data contract first:**
-> Here's the virology design doc. Define the disease record (transmission modes, infection threshold, incubation duration, ordered stage list with per-stage organ/systemic effect definitions and contagion flag, cure reagent reference), the exposure-accumulation function (discrete contact dose, per-tick airborne accrual via Area co-location, decay below threshold), and the infection/stage-progression scheduler reading and writing the health doc's real organ/systemic pools. Show me all three before wiring the scanner UI.
-
-**Cursor, prompt 2 — one vertical slice:**
-> Implement one contact-transmitted disease end to end: exposure event → threshold check → infection → incubation → first symptomatic stage writing a real organ/systemic effect → scanner diagnosis → chemistry-synthesized cure → recovery and immunity flag. Airborne exposure and additional diseases come after this is reviewed.

@@ -17,7 +17,7 @@ namespace SS3D.UI.MachineInterface.Bindings
         private readonly DiegeticDeviceShell _shell;
         private readonly ConnectionStatusRow _connectionRow;
         private readonly DeviceIdentityBlock _identity;
-        private readonly IdReaderPanel _idReader;
+        private readonly AtmosIdReaderRow _idReader;
         private readonly ProductGrid _productGrid;
         private readonly DispenseTray _dispenseTray;
         private readonly ActionLog _actionLog;
@@ -30,7 +30,7 @@ namespace SS3D.UI.MachineInterface.Bindings
 
             _connectionRow = contentRoot.Q<ConnectionStatusRow>("connection-row");
             _identity = contentRoot.Q<DeviceIdentityBlock>("identity");
-            _idReader = contentRoot.Q<IdReaderPanel>("id-reader");
+            _idReader = contentRoot.Q<AtmosIdReaderRow>("id-reader");
             _productGrid = contentRoot.Q<ProductGrid>("product-grid");
             _dispenseTray = contentRoot.Q<DispenseTray>("dispense-tray");
             _actionLog = contentRoot.Q<ActionLog>("action-log");
@@ -55,7 +55,9 @@ namespace SS3D.UI.MachineInterface.Bindings
 
             if (_idReader != null)
             {
-                _idReader.ReadIdRequested += () =>
+                _idReader.SetIdleSubline("Read a Medical-tier ID to unlock gated items");
+                _idReader.SetGrantedSubline("Gated items unlocked for this session");
+                _idReader.ReadRequested += () =>
                     ActionControlChanged?.Invoke(MachineInterfaceControlIds.Vending.ReadId, 0);
             }
         }
@@ -88,7 +90,7 @@ namespace SS3D.UI.MachineInterface.Bindings
 
             if (_idReader != null)
             {
-                _idReader.SetState(model.IdScanned, model.IdScanning);
+                _idReader.SetAccessState(model.IdScanning, model.IdScanned, denied: false);
             }
 
             if (_productGrid != null)

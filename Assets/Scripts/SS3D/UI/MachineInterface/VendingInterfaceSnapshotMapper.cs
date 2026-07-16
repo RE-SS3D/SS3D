@@ -15,6 +15,7 @@ namespace SS3D.UI.MachineInterface
                 StockedReadout = snapshot.StockedReadout,
                 PowerOk = snapshot.PowerOk,
                 IdScanned = snapshot.IdScanned,
+                IdScanning = snapshot.Scanning,
                 VendingProductIndex = snapshot.VendingProductIndex == VendingInterfaceSnapshot.NoVendingProduct
                     ? -1
                     : snapshot.VendingProductIndex,

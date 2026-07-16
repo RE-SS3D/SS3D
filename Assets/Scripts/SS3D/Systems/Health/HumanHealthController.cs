@@ -51,6 +51,22 @@ namespace SS3D.Systems.Health
             return 100f;
         }
 
+        /// <summary>
+        /// Relative brute damage (0..1) for a body zone, normalised against the disabled threshold.
+        /// Replaces the legacy FootBodyPart.RelativeDamage the gait/limp presentation used to read.
+        /// </summary>
+        public float GetZoneBruteFraction(BodyZone zone)
+        {
+            int index = (int)zone;
+            if (index < 0 || index >= _zones.Length)
+            {
+                return 0f;
+            }
+
+            float fraction = _zones[index].Brute / HealthConstants.DisabledThreshold;
+            return fraction < 0f ? 0f : (fraction > 1f ? 1f : fraction);
+        }
+
         protected override void OnStart()
         {
             base.OnStart();

@@ -1,6 +1,5 @@
 using SS3D.Core;
 using SS3D.Core.Behaviours;
-using SS3D.UI.MachineInterface.Bindings;
 using SS3D.UI.MachineInterface.Components;
 using System.Collections.Generic;
 using UnityEngine;
@@ -20,8 +19,9 @@ namespace SS3D.UI.MachineInterface
     /// <item><description>Define snapshot, FishNet serializer, view model, and mapper types.</description></item>
     /// <item><description>Create UXML/USS under Content/Systems/UI/MachineInterface and a binder implementing <see cref="IMachineInterfaceBinder"/>.</description></item>
     /// <item><description>Add a networked controller on the machine prefab (inherit <see cref="MachineInterfaceBehaviour"/>; use concrete TargetRpc snapshot types—FishNet does not support generic RPC parameters).</description></item>
-    /// <item><description>Assign serialized templates on this host and register a <see cref="MachineInterfaceUiRegistration"/> in <see cref="RegisterUiEntries"/> (set <c>Wide</c> for layouts wider than the default window).</description></item>
+    /// <item><description>Assign serialized templates on this host; <see cref="MachineUiCatalog"/> registers UI entries (set <c>Wide</c> for layouts wider than the default window).</description></item>
     /// <item><description>Register the snapshot type in <see cref="MachineInterfaceNetworkRegistry"/>.</description></item>
+    /// <item><description>Register an <see cref="IMachineOptimisticControlHandler"/> for client optimistic controls when adding interactive controls.</description></item>
     /// <item><description>Optional: add control IDs to <see cref="MachineInterfaceControlIds"/> and a dev scenario in <see cref="MachineInterfaceDevHarness"/>.</description></item>
     /// </list>
     /// </summary>
@@ -474,7 +474,7 @@ namespace SS3D.UI.MachineInterface
                 "Assets/Content/Systems/UI/MachineInterface/Components/ConnectionStatusRow.uss",
                 "Assets/Content/Systems/UI/MachineInterface/Components/DeviceIdentityBlock.uss",
                 "Assets/Content/Systems/UI/MachineInterface/Components/PanelSection.uss",
-                "Assets/Content/Systems/UI/MachineInterface/Components/IdReaderPanel.uss",
+                "Assets/Content/Systems/UI/MachineInterface/Components/AtmosIdReaderRow.uss",
                 "Assets/Content/Systems/UI/MachineInterface/Components/SteelButton.uss",
                 "Assets/Content/Systems/UI/MachineInterface/Components/InventorySlot.uss",
                 "Assets/Content/Systems/UI/MachineInterface/Components/ProductCard.uss",
@@ -570,83 +570,31 @@ namespace SS3D.UI.MachineInterface
 
         private void RegisterUiEntries()
         {
-            MachineInterfaceRegistry.RegisterUi(new MachineInterfaceUiRegistration
+            MachineUiCatalog.RegisterAll(new MachineUiCatalogAssets
             {
-                InterfaceId = MachineInterfaceIds.Apc,
-                Template = _apcTemplate,
-                TemplateStyle = _apcTemplateStyle,
-                ComponentStyles = _apcComponentStyles,
-                ShellKind = MachineInterfaceShellKind.DiegeticDevice,
-                CreateBinder = root => new ApcPowerControllerBinder(root),
-            });
-
-            MachineInterfaceRegistry.RegisterUi(new MachineInterfaceUiRegistration
-            {
-                InterfaceId = MachineInterfaceIds.Smes,
-                Template = _smesTemplate,
-                TemplateStyle = _smesTemplateStyle,
-                ComponentStyles = _smesComponentStyles,
-                ShellKind = MachineInterfaceShellKind.DiegeticDevice,
-                CreateBinder = root => new SmesUnitBinder(root),
-            });
-
-            MachineInterfaceRegistry.RegisterUi(new MachineInterfaceUiRegistration
-            {
-                InterfaceId = MachineInterfaceIds.Vending,
-                Template = _vendingTemplate,
-                TemplateStyle = _vendingTemplateStyle,
-                ComponentStyles = _vendingComponentStyles,
-                ShellKind = MachineInterfaceShellKind.DiegeticDevice,
-                CreateBinder = root => new VendingMachineBinder(root),
-            });
-
-            MachineInterfaceRegistry.RegisterUi(new MachineInterfaceUiRegistration
-            {
-                InterfaceId = MachineInterfaceIds.IdConsole,
-                Template = _idConsoleTemplate,
-                TemplateStyle = _idConsoleTemplateStyle,
-                ShellKind = MachineInterfaceShellKind.DiegeticDevice,
-                CreateBinder = root => new IdConsoleBinder(root),
-            });
-
-            MachineInterfaceRegistry.RegisterUi(new MachineInterfaceUiRegistration
-            {
-                InterfaceId = MachineInterfaceIds.Pump,
-                Template = _gasPumpTemplate,
-                TemplateStyle = _gasPumpTemplateStyle,
-                ComponentStyles = _gasPumpComponentStyles,
-                ShellKind = MachineInterfaceShellKind.DiegeticDevice,
-                CreateBinder = root => new PumpInterfaceBinder(root),
-            });
-
-            MachineInterfaceRegistry.RegisterUi(new MachineInterfaceUiRegistration
-            {
-                InterfaceId = MachineInterfaceIds.AirAlarm,
-                Template = _airAlarmTemplate,
-                TemplateStyle = _airAlarmTemplateStyle,
-                ComponentStyles = _airAlarmComponentStyles,
-                ShellKind = MachineInterfaceShellKind.DiegeticDevice,
-                CreateBinder = root => new AirAlarmInterfaceBinder(root),
-            });
-
-            MachineInterfaceRegistry.RegisterUi(new MachineInterfaceUiRegistration
-            {
-                InterfaceId = MachineInterfaceIds.Scrubber,
-                Template = _scrubberTemplate,
-                TemplateStyle = _scrubberTemplateStyle,
-                ComponentStyles = _scrubberComponentStyles,
-                ShellKind = MachineInterfaceShellKind.DiegeticDevice,
-                CreateBinder = root => new ScrubberInterfaceBinder(root),
-            });
-
-            MachineInterfaceRegistry.RegisterUi(new MachineInterfaceUiRegistration
-            {
-                InterfaceId = MachineInterfaceIds.Vent,
-                Template = _ventTemplate,
-                TemplateStyle = _ventTemplateStyle,
-                ComponentStyles = _ventComponentStyles,
-                ShellKind = MachineInterfaceShellKind.DiegeticDevice,
-                CreateBinder = root => new VentInterfaceBinder(root),
+                ApcTemplate = _apcTemplate,
+                ApcTemplateStyle = _apcTemplateStyle,
+                ApcComponentStyles = _apcComponentStyles,
+                SmesTemplate = _smesTemplate,
+                SmesTemplateStyle = _smesTemplateStyle,
+                SmesComponentStyles = _smesComponentStyles,
+                VendingTemplate = _vendingTemplate,
+                VendingTemplateStyle = _vendingTemplateStyle,
+                VendingComponentStyles = _vendingComponentStyles,
+                IdConsoleTemplate = _idConsoleTemplate,
+                IdConsoleTemplateStyle = _idConsoleTemplateStyle,
+                GasPumpTemplate = _gasPumpTemplate,
+                GasPumpTemplateStyle = _gasPumpTemplateStyle,
+                GasPumpComponentStyles = _gasPumpComponentStyles,
+                AirAlarmTemplate = _airAlarmTemplate,
+                AirAlarmTemplateStyle = _airAlarmTemplateStyle,
+                AirAlarmComponentStyles = _airAlarmComponentStyles,
+                ScrubberTemplate = _scrubberTemplate,
+                ScrubberTemplateStyle = _scrubberTemplateStyle,
+                ScrubberComponentStyles = _scrubberComponentStyles,
+                VentTemplate = _ventTemplate,
+                VentTemplateStyle = _ventTemplateStyle,
+                VentComponentStyles = _ventComponentStyles,
             });
         }
 

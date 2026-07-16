@@ -111,12 +111,3 @@ With no directional sun, shadows are primarily cast by Key-tier fixture lights (
 - Any planetside/exterior station variant that would reintroduce a real directional sun — this doc assumes a space station interior throughout
 - Weather or exterior lighting of any kind
 
-## 12. Prototyping this
-
-This is a rendering/visual-tuning pass, not a UI-mockup one — the natural next step is direct in-Unity iteration (Volume profiles, shader ramp tuning, fixture placement) rather than a Claude Design prototype, the same way Area's own data-architecture pass skipped Claude Design for Cursor. The Area lighting-state switching, though, is real gameplay logic and fits the established data-contract-first pattern:
-
-**Cursor, prompt 1 — data contract first:**
-> Here's the rendering/lighting doc and the updated Area doc's lighting-states section. Define the three-state Area lighting model (Normal / Emergency / Dark) as data — what triggers each transition given APC power state and backup battery charge — and how it feeds the existing light-budget manager's Key-tier light list per Area. Show me the data contract before wiring any transition behavior.
-
-**Cursor, prompt 2 — one vertical slice:**
-> Wire one Area's lighting-state transitions end to end: APC loses power → Emergency (reduced fixture subset, red tint, battery drain) → Dark (Key-tier light removed) → Normal on power restore. Use Engineering — main bay as the test case. Departmental color temperature and the outline renderer feature come after this is reviewed.

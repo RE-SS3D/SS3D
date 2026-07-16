@@ -2,7 +2,7 @@
 {
     /// <summary>
     /// Electric devices share the circuit via <see cref="ElectricNeighbourLookup"/> but have no visual adjacency mesh to sync.
-    /// Cable topology changes refresh device edges through <see cref="System.Electricity.ElectricitySubSystem"/>.
+    /// Cable topology changes refresh device edges through <see cref="SS3D.Systems.Electricity.ElectricitySubSystem"/>.
     /// </summary>
     public class ElectricDeviceAdjacencyConnector : ElectricAdjacencyConnector
     {

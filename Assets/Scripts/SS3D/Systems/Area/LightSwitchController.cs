@@ -5,7 +5,7 @@ using SS3D.Interactions;
 using SS3D.Interactions.Interfaces;
 using SS3D.Systems.Tile;
 using SS3D.Systems.Tile.Connections;
-using System.Electricity;
+using SS3D.Systems.Electricity;
 using UnityEngine;
 
 namespace SS3D.Systems.Area
@@ -341,30 +341,7 @@ namespace SS3D.Systems.Area
 
         private bool IsPowered()
         {
-            if (_powerConsumer == null)
-            {
-                return false;
-            }
-
-            PowerStatus status = _powerConsumer.PowerStatus;
-            if (!IsConsumerApcChannelEnabled())
-            {
-                status = PowerStatus.Inactive;
-            }
-
-            return status == PowerStatus.Powered;
-        }
-
-        private bool IsConsumerApcChannelEnabled()
-        {
-            if (_powerConsumer is not IElectricDevice device
-                || !SubSystems.TryGet(out AreaSubSystem areaSubSystem)
-                || !areaSubSystem.TryGetEffectiveApcForDevice(device, out IApcChannelSource apc))
-            {
-                return true;
-            }
-
-            return AreaApcPowerDistribution.IsChannelEnabled(_powerConsumer.Channel, apc.Channels);
+            return PowerGate.IsEffectivelyPowered(_powerConsumer, NullConsumerPolicy.Deny);
         }
     }
 }

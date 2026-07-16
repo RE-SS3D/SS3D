@@ -156,18 +156,3 @@ No new permanent chrome — same discipline as every doc in this project.
 | Taking items from another character | `id-access.md` §3, `surgery.md` §7 (physical possession as the gate) |
 | Stacking | `cargo.md` §5's counted-unit manifest precedent |
 
-## 16. Prototyping this
-
-Same two-stage pipeline as the rest of this project.
-
-**Claude Design, prompt 1 — single container panel:**
-> Using our existing SS3D design system, build a storage panel for a backpack: a slot grid (6 slots), a weight/capacity readout at the top, one slot holding a stack (e.g. "×12" on a stack of zipties), and a drag-in-progress state showing an invalid-size rejection highlight on one slot. Same flat-surface, hairline-border visual language as the FDU and fabricator screens, but a plain panel, not a diegetic device screen.
-
-**Claude Design, prompt 2 — multi-panel transfer:**
-> Show two storage panels open side by side — a player's backpack and a locker they're looting, with a nested lockbox shown as a single icon inside the locker. Illustrate an item mid-drag from the locker's panel toward the backpack's panel, and the lockbox opening as a third panel when clicked.
-
-**Cursor, prompt 1 — data contract first:**
-> Here's the inventory/storage design doc. Define the Container record (capacity as slot count + max size-class, contents list with stack support, computed recursive weight, optional lock referencing the existing ID/access check) and the equip-slot record (named mount, accepted item category, currently held item reference). Define the recursive weight function and the size-class fit check as pure functions over this data. Show me all three before wiring any panel UI.
-
-**Cursor, prompt 2 — one vertical slice:**
-> Implement one worn backpack end to end: gear-strip icon → opens its panel → drag an item in from the world (size-class check, weight recompute) → weight feeds the existing stamina function from `stamina.md`. Nested containers, locked containers, and taking items from another character come after this is reviewed.

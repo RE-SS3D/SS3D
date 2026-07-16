@@ -97,16 +97,3 @@ This screen doesn't inherit main HUD's minimal-permanent-chrome rule, and that's
 - The persistence/accounts system underlying playtime-gated jobs (cross-cutting infra, assumed to exist)
 - The observer/ghost UI itself (already deferred in `main-hud.md` §13 — this doc only adds the entry point)
 
-## 12. Prototyping this
-
-**Claude Design, prompt 1 — job-select screen:**
-> Build the lobby job-select screen using our SS3D design system: departments grouped with muted color coding, slot counts per job, one locked job showing its real playtime requirement instead of being hidden, and a hover/expand description for an unfamiliar job name. Full-screen, information-dense — this screen doesn't follow the minimal-chrome rule the in-round HUD does.
-
-**Claude Design, prompt 2 — preference builder:**
-> Build the ranked-preference panel: a drag-to-reorder list built by adding jobs from the department browser, a live demand indicator per job ("N interested / M slots"), an explicit "no preference" option, and a visually separate antagonist-opt-in section below it. Include the round-start countdown timer.
-
-**Cursor, prompt 1 — data contract first:**
-> Here's the lobby design doc. Define the job record (department, slot cap, unlock requirement), the preference record (player, ordered job list, antag opt-in flags), and the resolution function's shape (input: all submitted preferences + slot caps; output: final roster + guaranteed-fallback assignments for anyone unfulfilled). Show me all three before wiring any UI.
-
-**Cursor, prompt 2 — one vertical slice:**
-> Implement the job list, preference submission, and a placeholder resolution pass (simple sequential best-available allocation is fine) end to end for a small fixed job set. Live demand indicators and the real fairness algorithm come after this is reviewed.

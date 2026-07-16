@@ -6,8 +6,9 @@ using SS3D.Systems.Audio;
 using SS3D.Systems.Furniture;
 using SS3D.Systems.Inventory.Items;
 using SS3D.Systems.Selection;
+using System.Collections;
 using System.Collections.Generic;
-using System.Electricity;
+using SS3D.Systems.Electricity;
 using UnityEngine;
 using AudioType = SS3D.Systems.Audio.AudioType;
 using Random = UnityEngine.Random;
@@ -33,9 +34,23 @@ namespace SS3D.UI.MachineInterface
 
         private const int MaxTrayItems = VendingInterfaceSnapshot.MaxTrayItems;
 
+        private const float IdScanDelaySeconds = 0.9f;
+
+        private const float VendDelaySeconds = 0.85f;
+
         private readonly List<TrayEntry> _trayItems = new();
 
         private readonly List<string> _actionLog = new();
+
+        private bool _idScanned;
+
+        private bool _scanning;
+
+        private int _vendingProductIndex = -1;
+
+        private Coroutine _scanCoroutine;
+
+        private Coroutine _vendCoroutine;
 
         [SerializeField]
         private MachinePowerConsumer _powerConsumer;
@@ -61,6 +76,23 @@ namespace SS3D.UI.MachineInterface
         private int _logSequence;
 
         public override string InterfaceId => MachineInterfaceIds.Vending;
+
+        protected override void OnDestroyed()
+        {
+            if (_scanCoroutine != null)
+            {
+                StopCoroutine(_scanCoroutine);
+                _scanCoroutine = null;
+            }
+
+            if (_vendCoroutine != null)
+            {
+                StopCoroutine(_vendCoroutine);
+                _vendCoroutine = null;
+            }
+
+            base.OnDestroyed();
+        }
 
         protected override void SendOpenToViewer(NetworkConnection conn)
         {
@@ -93,9 +125,7 @@ namespace SS3D.UI.MachineInterface
 
                 case MachineInterfaceControlIds.Vending.ReadId:
                 {
-                    PushLog("ID reader unavailable — access system not installed");
-                    RefreshAllViewers();
-                    return true;
+                    return TryReadId();
                 }
 
                 default:
@@ -255,9 +285,52 @@ namespace SS3D.UI.MachineInterface
             DispatchClientRefresh(snapshot);
         }
 
+        private bool TryReadId()
+        {
+            if (_scanning)
+            {
+                return true;
+            }
+
+            if (_idScanned)
+            {
+                _idScanned = false;
+                PushLog("Terminal locked — Medical access revoked");
+                RefreshAllViewers();
+                return true;
+            }
+
+            _scanning = true;
+            RefreshAllViewers();
+
+            if (_scanCoroutine != null)
+            {
+                StopCoroutine(_scanCoroutine);
+            }
+
+            _scanCoroutine = StartCoroutine(CompleteIdScan());
+            return true;
+        }
+
+        private IEnumerator CompleteIdScan()
+        {
+            yield return new WaitForSeconds(IdScanDelaySeconds);
+
+            _scanCoroutine = null;
+            _scanning = false;
+            _idScanned = true;
+            PushLog("ID card read — Medical access confirmed");
+            RefreshAllViewers();
+        }
+
         private bool TryVendToTray(int productIndex)
         {
             if (!IsPowered() || productIndex < 0 || productIndex >= _productsToDispense.Length)
+            {
+                return false;
+            }
+
+            if (_vendingProductIndex >= 0)
             {
                 return false;
             }
@@ -276,6 +349,31 @@ namespace SS3D.UI.MachineInterface
                 return false;
             }
 
+            if (productStock.RequiresId && !_idScanned)
+            {
+                return false;
+            }
+
+            _vendingProductIndex = productIndex;
+            RefreshAllViewers();
+
+            if (_vendCoroutine != null)
+            {
+                StopCoroutine(_vendCoroutine);
+            }
+
+            _vendCoroutine = StartCoroutine(CompleteVend(productIndex));
+            return true;
+        }
+
+        private IEnumerator CompleteVend(int productIndex)
+        {
+            yield return new WaitForSeconds(VendDelaySeconds);
+
+            _vendCoroutine = null;
+            _vendingProductIndex = -1;
+
+            VendingMachineProductStock productStock = _productsToDispense[productIndex];
             _powerConsumer.UseMachineOnce();
             productStock.Stock--;
             string productName = productStock.Product.NameString;
@@ -283,7 +381,6 @@ namespace SS3D.UI.MachineInterface
             PlayVendSound();
             PushLog($"{productName} dispensed to tray");
             RefreshAllViewers();
-            return true;
         }
 
         private bool TryTakeFromTray(int trayIndex)
@@ -342,8 +439,11 @@ namespace SS3D.UI.MachineInterface
                 ConnectionStatus = _connectionStatus,
                 StockedReadout = $"{inStockCount} of {_productsToDispense.Length} items stocked",
                 PowerOk = IsPowered(),
-                IdScanned = false,
-                VendingProductIndex = VendingInterfaceSnapshot.NoVendingProduct,
+                IdScanned = _idScanned,
+                Scanning = _scanning,
+                VendingProductIndex = _vendingProductIndex < 0
+                    ? VendingInterfaceSnapshot.NoVendingProduct
+                    : (byte)_vendingProductIndex,
                 ProductCount = (byte)Mathf.Min(_productsToDispense.Length, VendingInterfaceSnapshot.MaxProducts),
                 TrayItemCount = (byte)Mathf.Min(_trayItems.Count, MaxTrayItems),
                 LogEntryCount = (byte)Mathf.Min(_actionLog.Count, VendingInterfaceSnapshot.MaxLogEntries),
@@ -356,7 +456,7 @@ namespace SS3D.UI.MachineInterface
                 {
                     Name = stock.Product != null ? stock.Product.NameString : "Unknown",
                     Stock = stock.Stock,
-                    RequiresId = false,
+                    RequiresId = stock.RequiresId,
                 });
             }
 
@@ -379,7 +479,7 @@ namespace SS3D.UI.MachineInterface
 
         private bool IsPowered()
         {
-            return _powerConsumer != null && _powerConsumer.PowerStatus != PowerStatus.Inactive;
+            return PowerGate.IsPowered(_powerConsumer, NullConsumerPolicy.Deny);
         }
 
         private void PlayOutOfStockSound()

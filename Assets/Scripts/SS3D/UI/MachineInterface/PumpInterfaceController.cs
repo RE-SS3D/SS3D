@@ -1,7 +1,7 @@
 using FishNet.Connection;
 using FishNet.Object;
 using SS3D.Systems.Atmospherics.Pipes;
-using System.Electricity;
+using SS3D.Systems.Electricity;
 using UnityEngine;
 
 namespace SS3D.UI.MachineInterface
@@ -114,7 +114,7 @@ namespace SS3D.UI.MachineInterface
                 _pump = GetComponent<AtmosPumpController>();
             }
 
-            bool powerOk = _powerConsumer == null || _powerConsumer.PowerStatus == PowerStatus.Powered;
+            bool powerOk = PowerGate.IsPowered(_powerConsumer, NullConsumerPolicy.Allow);
             bool powered = _pump != null && _pump.IsEnabled;
             bool connected = _pump != null && _pump.TryGetConnectedNetwork(out _);
             bool flowing = _pump != null && _pump.IsPortFlowing;

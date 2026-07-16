@@ -4,7 +4,7 @@ using SS3D.Core.Behaviours;
 using SS3D.Systems.Tile;
 using System;
 using System.Collections.Generic;
-using System.Electricity;
+using SS3D.Systems.Electricity;
 using System.Linq;
 using UnityEngine;
 
@@ -210,6 +210,7 @@ namespace SS3D.Systems.Area
             {
                 UpdateOverlapWarnings();
                 TryCompleteTemplateRestore();
+                InvalidateElectricityConsumerIndex();
                 return;
             }
 
@@ -234,6 +235,7 @@ namespace SS3D.Systems.Area
             _floodFill.FloodFromApc(apc, areaId, claimedTiles);
             _floodFill.AssignDoorTileAreas();
             UpdateOverlapWarnings();
+            InvalidateElectricityConsumerIndex();
         }
 
         [Server]
@@ -252,6 +254,7 @@ namespace SS3D.Systems.Area
             _overlapFlaggedApcs.Remove(apc);
             apc.SetMultipleApcsInArea(false);
             UpdateOverlapWarnings();
+            InvalidateElectricityConsumerIndex();
         }
 
         [Server]
@@ -287,6 +290,7 @@ namespace SS3D.Systems.Area
 
             _floodFill.AssignDoorTileAreas();
             UpdateOverlapWarnings();
+            InvalidateElectricityConsumerIndex();
         }
 
         [Server]
@@ -316,6 +320,7 @@ namespace SS3D.Systems.Area
             _floodFill.FloodFromApc(apc, areaId, claimedTiles);
             _floodFill.AssignDoorTileAreas();
             UpdateOverlapWarnings();
+            InvalidateElectricityConsumerIndex();
         }
 
         [Server]
@@ -715,6 +720,14 @@ namespace SS3D.Systems.Area
             var areaId = new AreaId(areaIdValue);
             _lightingSwitchOn[areaId] = on;
             OnAreaLightingSwitchChanged?.Invoke(areaId, on);
+        }
+
+        private static void InvalidateElectricityConsumerIndex()
+        {
+            if (SubSystems.TryGet(out ElectricitySubSystem electricitySubSystem))
+            {
+                electricitySubSystem.InvalidateAreaConsumerIndex();
+            }
         }
     }
 }

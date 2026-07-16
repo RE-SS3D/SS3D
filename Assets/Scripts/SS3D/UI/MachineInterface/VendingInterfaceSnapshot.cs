@@ -28,6 +28,8 @@ namespace SS3D.UI.MachineInterface
 
         public bool IdScanned;
 
+        public bool Scanning;
+
         public byte VendingProductIndex;
 
         public byte ProductCount;
