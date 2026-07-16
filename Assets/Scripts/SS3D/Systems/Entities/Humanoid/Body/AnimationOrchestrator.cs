@@ -37,9 +37,16 @@ namespace SS3D.Systems.Entities.Humanoid
         private byte _lastTriggerSequence;
         private bool _ownerPredictedAttack;
         private float _meleeSwingEndsAt;
+        private float _meleeSwingFadeStartsAt;
+        private float _upperBodyWeight;
+        private float _upperBodyWeightTarget;
 
         private static readonly int AttackSwingState = Animator.StringToHash("Attack Swing");
-        private const float MeleeSwingDurationSeconds = 2.2f;
+        /// <summary>Mixamo horizontal swing length (~72 frames at 30fps).</summary>
+        private const float MeleeSwingDurationSeconds = 2.4f;
+        /// <summary>Start blending the upper-body layer out before the clip ends.</summary>
+        private const float MeleeSwingFadeNormalized = 0.75f;
+        [SerializeField] private float _upperBodyWeightLerp = 6f;
 
         public Animator Animator => _animator;
 
@@ -98,6 +105,7 @@ namespace SS3D.Systems.Entities.Humanoid
 
             ApplyLocomotionVelocity();
             TickMeleeSwingIk();
+            TickUpperBodyWeight();
         }
 
         private void SubscribeToEvents()
@@ -182,6 +190,9 @@ namespace SS3D.Systems.Entities.Humanoid
 
         private void BeginMeleeSwingVisual()
         {
+            // Snappy attack start; fade out is handled by TickUpperBodyWeight.
+            _upperBodyWeight = 1f;
+            _upperBodyWeightTarget = 1f;
             if (_animator.layerCount > 1)
             {
                 _animator.SetLayerWeight(1, 1f);
@@ -190,18 +201,40 @@ namespace SS3D.Systems.Entities.Humanoid
             // Force the upper-body state — Any State triggers can be raced/consumed by other layers.
             _animator.Play(AttackSwingState, 1, 0f);
             _meleeSwingEndsAt = Time.time + MeleeSwingDurationSeconds;
+            _meleeSwingFadeStartsAt = Time.time + MeleeSwingDurationSeconds * MeleeSwingFadeNormalized;
             _ikController?.SetMeleeAttackActive(true);
         }
 
         private void TickMeleeSwingIk()
         {
+            // Start easing look-at back in when the upper-body layer begins fading out.
+            if (_meleeSwingFadeStartsAt > 0f && Time.time >= _meleeSwingFadeStartsAt)
+            {
+                _ikController?.SetMeleeAttackActive(false);
+            }
+
             if (_meleeSwingEndsAt <= 0f || Time.time < _meleeSwingEndsAt)
             {
                 return;
             }
 
             _meleeSwingEndsAt = 0f;
+            _meleeSwingFadeStartsAt = 0f;
             _ikController?.SetMeleeAttackActive(false);
+        }
+
+        private void TickUpperBodyWeight()
+        {
+            if (_animator == null || _animator.layerCount <= 1)
+            {
+                return;
+            }
+
+            _upperBodyWeight = Mathf.MoveTowards(
+                _upperBodyWeight,
+                _upperBodyWeightTarget,
+                Time.deltaTime * _upperBodyWeightLerp);
+            _animator.SetLayerWeight(1, _upperBodyWeight);
         }
 
         public void ApplySnapshot(BodyAnimationSnapshot snapshot)
@@ -296,18 +329,20 @@ namespace SS3D.Systems.Entities.Humanoid
             _animator.SetInteger(Animations.Humanoid.ArmHold, (int)snapshot.ArmHold);
             _animator.SetBool(Animations.Humanoid.IsSeated, snapshot.IsSeated);
 
-            if (_animator.layerCount > 1)
+            if (_animator.layerCount <= 1)
             {
-                // Peaceful: always full base locomotion (no hold overlay).
-                // Combat: item/weapon holds + active swings only; empty-handed uses base melee idle.
-                bool swinging = _meleeSwingEndsAt > 0f && Time.time < _meleeSwingEndsAt;
-                bool needsUpperBodyLayer = snapshot.State != BodyState.Ragdoll
-                    && (
-                        swinging
-                        || (snapshot.CombatMode.IsCombat() && snapshot.ArmHold != ArmHoldPose.Default)
-                    );
-                _animator.SetLayerWeight(1, needsUpperBodyLayer ? 1f : 0f);
+                return;
             }
+
+            // Peaceful: always full base locomotion (no hold overlay).
+            // Combat: item/weapon holds; empty-handed swings keep the layer up until fade-out starts.
+            bool swingHoldsLayer = _meleeSwingFadeStartsAt > 0f && Time.time < _meleeSwingFadeStartsAt;
+            bool needsUpperBodyLayer = snapshot.State != BodyState.Ragdoll
+                && (
+                    swingHoldsLayer
+                    || (snapshot.CombatMode.IsCombat() && snapshot.ArmHold != ArmHoldPose.Default)
+                );
+            _upperBodyWeightTarget = needsUpperBodyLayer ? 1f : 0f;
         }
 
         private void ApplyCombat(BodyAnimationSnapshot snapshot)

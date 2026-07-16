@@ -13,14 +13,20 @@ namespace SS3D.Systems.Entities.Humanoid
         [SerializeField] private float _headLookWeight = 0.65f;
         [SerializeField] private float _torsoLookWeight = 0.45f;
         [SerializeField] private float _lookDistance = 4f;
+        /// <summary>Matches combat body yaw so head look-at does not snap ahead of the torso.</summary>
+        [SerializeField] private float _lookAtLerpMultiplier = 3.5f;
+        [SerializeField] private float _meleeIkBlendLerp = 6f;
         [SerializeField] private float _blockedStandUpHeadroom = 1.2f;
 
         private bool _combatLookActive;
-        private bool _meleeAttackActive;
+        private float _meleeAttackIkBlend;
+        private float _meleeAttackIkBlendTarget;
         private float _aimYaw;
         private float _aimPitch;
         private bool _hasWorldAimPoint;
         private Vector3 _worldAimPoint;
+        private Vector3 _smoothedLookTarget;
+        private bool _hasSmoothedLookTarget;
         private Animator _animator;
 
         private void Awake()
@@ -40,16 +46,24 @@ namespace SS3D.Systems.Entities.Humanoid
             if (!active)
             {
                 _hasWorldAimPoint = false;
+                _hasSmoothedLookTarget = false;
+                _meleeAttackIkBlend = 0f;
+                _meleeAttackIkBlendTarget = 0f;
             }
         }
 
         /// <summary>
-        /// While a melee swing plays, look-at IK is off for head and body so the clip
-        /// drives the upper pose; GameObject yaw still faces the aim target.
+        /// While a melee swing plays, torso look-at eases out; head keeps aiming at the target.
+        /// Upper-body mask is arms-only so the swing clip cannot counter-rotate the head.
         /// </summary>
         public void SetMeleeAttackActive(bool active)
         {
-            _meleeAttackActive = active;
+            _meleeAttackIkBlendTarget = active ? 1f : 0f;
+            if (active)
+            {
+                // Snappy suppress at swing start; release is smoothed in OnAnimatorIK.
+                _meleeAttackIkBlend = 1f;
+            }
         }
 
         /// <summary>
@@ -104,22 +118,39 @@ namespace SS3D.Systems.Entities.Humanoid
                 return;
             }
 
-            Vector3 lookTarget = _hasWorldAimPoint
+            _meleeAttackIkBlend = Mathf.MoveTowards(
+                _meleeAttackIkBlend,
+                _meleeAttackIkBlendTarget,
+                Time.deltaTime * _meleeIkBlendLerp);
+
+            Vector3 desiredTarget = _hasWorldAimPoint
                 ? _worldAimPoint
                 : head.position + AimDirection(_aimYaw, _aimPitch) * _lookDistance;
 
-            if (_lookAtTarget != null)
+            if (!_hasSmoothedLookTarget)
             {
-                _lookAtTarget.position = lookTarget;
+                // Seed from current facing so look-at does not pop when leaving a swing.
+                _smoothedLookTarget = head.position + transform.forward * _lookDistance;
+                _hasSmoothedLookTarget = true;
             }
 
-            // SetLookAtWeight(global, body, head, eyes, clamp).
-            // Swing: transform yaw already faces the target — no body look-at (avoids chest
-            // crumpling through clothing). Head weight 0 so the clip owns the head.
-            float bodyWeight = _meleeAttackActive ? 0f : _torsoLookWeight;
-            float headWeight = _meleeAttackActive ? 0f : _headLookWeight;
+            _smoothedLookTarget = Vector3.Lerp(
+                _smoothedLookTarget,
+                desiredTarget,
+                Time.deltaTime * _lookAtLerpMultiplier);
+
+            if (_lookAtTarget != null)
+            {
+                _lookAtTarget.position = _smoothedLookTarget;
+            }
+
+            // SetLookAtWeight(global, body, head).
+            // Swing clip is arms-only (head masked out) — keep head aiming at the target while
+            // torso look-at eases out so Mixamo counter-rotation does not yank the head.
+            float bodyWeight = Mathf.Lerp(_torsoLookWeight, 0f, _meleeAttackIkBlend);
+            float headWeight = _headLookWeight;
             _animator.SetLookAtWeight(1f, bodyWeight, headWeight);
-            _animator.SetLookAtPosition(lookTarget);
+            _animator.SetLookAtPosition(_smoothedLookTarget);
         }
 
         private static Vector3 AimDirection(float yawDegrees, float pitchDegrees)

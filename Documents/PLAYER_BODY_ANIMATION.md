@@ -53,13 +53,26 @@ Each state exposes: `CanMove`, `CanRotate`, `CanRun`, `CanUseHands`, `CanInterac
    - **Peaceful** — [Locomotion Pack](../Assets/Art/Animations/Locomotion%20Pack/) idle / walk / run / strafes
    - **Melee** — [Pro Melee Axe Pack](../Assets/Art/Animations/Pro%20Melee%20Axe%20Pack/) standing idle / walk F-B-L-R / run F-B (includes backpedal)
    - **Ranged** — [Basic Shooter Pack](../Assets/Art/Animations/Basic%20Shooter%20Pack/) rifle idle / walk / walk back / strafes / run / run back
-2. **UpperBody** (arms + head mask) — combat-only item/weapon holds and `AttackSwing`; weight is always 0 in Peaceful so locomotion returns to normal even while holding items
+2. **UpperBody** (arms-only mask) — combat item/weapon holds and `AttackSwing`; head stays on base + look-at IK so swing clips do not counter-rotate the head; weight is 0 in Peaceful
 3. **Additive** — flinch (`Flinch` uses melee gut react), injured arm overlay
 4. **FullBody Override** — sit, crawl, emote, stand-up
 
 `AttackSwing` is an upper-body one-shot over Melee locomotion (layer weight raised for the swing only).
 
 Rebuild via **SS3D → Animation → Rebuild Combat Stance Blend Trees** after reimporting pack FBX clips.
+
+### Who tunes what (animators vs code)
+
+**Goal:** natural motion is authored in Unity by people who know animation — not hardcoded timers in C#.
+
+| Owner | Owns | Asset / API |
+|-------|------|-------------|
+| **Animator** | Clip choice, blend-tree positions, transition exit times / durations, avatar masks, layer default weights, hold poses | `HumanCharacterAnimator.controller`, `.mask`, FBX import |
+| **Code** | When combat is on/off, `CombatStance` / `ArmHold` / `VelX`/`VelZ`, firing triggers (`AttackSwing`), network snapshot, smoothed look-at IK toward aim | `AnimationOrchestrator`, `HumanoidIkController`, body state machine |
+
+Animators should be able to open the controller and adjust swing → idle blends, locomotion samples, and masks **without touching scripts**. If a change requires editing `MeleeSwingDurationSeconds` or layer-weight lerp constants in code, that logic still belongs in the Animator and should be migrated.
+
+**Current debt (move back into the controller when polishing):** upper-body layer weight fades and swing duration timers in `AnimationOrchestrator`; melee IK suppress blend in `HumanoidIkController`. Prefer Any State → Attack Swing → Hold/Empty with exit-time blends, and keep Upper Body weight driven by a single animator parameter or layer setup animators control.
 
 ### Combat stances
 

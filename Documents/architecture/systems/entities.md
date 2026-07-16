@@ -21,6 +21,7 @@ Humanoid/silicon entity spawning, minds, and join/round ordering with [rounds-lo
 
 - Combat stance packs: Peaceful (Locomotion Pack), Melee (Pro Melee Axe), Ranged (Basic Shooter). Rebuild with **SS3D → Animation → Rebuild Combat Stance Blend Trees**.
 - `HumanoidCombatMode` is 2 bits in the snapshot (`Peaceful` / `Melee` / `Ranged`); `C` toggles Peaceful ↔ inventory-derived combat stance.
+- **Animator vs code:** blend trees, transitions, and masks are animator-owned (see [PLAYER_BODY_ANIMATION.md](../../PLAYER_BODY_ANIMATION.md) “Who tunes what”). Code only sets parameters, fires triggers, and applies look-at IK — do not add new motion timing in C# when the controller can own it.
 
 ## Depends on / Used by
 
