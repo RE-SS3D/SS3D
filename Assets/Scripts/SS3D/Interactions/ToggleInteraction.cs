@@ -52,14 +52,25 @@ namespace SS3D.Interactions
 
         public string GetGenericName() => "Toggle";
 
+        /// <summary>
+        /// World device toggles (generators, switches) sit above inventory fallbacks but below machine UI panels.
+        /// </summary>
+        public int Priority => 40;
+
         public Sprite GetIcon(InteractionEvent interactionEvent)
         {
+            Sprite stateIcon = null;
             if (interactionEvent.Target is IToggleable toggle)
             {
-                return toggle.GetState() ? IconOn : IconOff;
+                stateIcon = toggle.GetState() ? IconOn : IconOff;
             }
 
-            return null;
+            if (stateIcon)
+            {
+                return stateIcon;
+            }
+
+            return Icon ? Icon : InteractionIconLookup.Power;
         }
 
         public bool CanInteract(InteractionEvent interactionEvent)

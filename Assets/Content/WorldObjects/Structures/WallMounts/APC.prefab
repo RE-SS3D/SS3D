@@ -236,8 +236,9 @@ MonoBehaviour:
   _addedNetworkObject: {fileID: -5633820156739102180}
   _networkObjectCache: {fileID: -5633820156739102180}
   _title: APC · ENGINEERING BAY
-  _maxCapacity: 5
-  _maxPowerRate: 5
+  _maxCapacityKwh: 5
+  _maxDischargeRateKw: 10
+  _maxChargeRateKw: 10
 --- !u!114 &-3535122389528252537
 MonoBehaviour:
   m_ObjectHideFlags: 0

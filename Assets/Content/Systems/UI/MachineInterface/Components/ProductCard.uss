@@ -1,0 +1,75 @@
+
+.product-card {
+    width: 31%;
+    margin-right: 2%;
+    margin-bottom: 10px;
+    align-items: center;
+    background-color: var(--ss3d-diegetic-inset);
+    border-radius: 2px;
+    padding: 12px 8px 10px;
+}
+
+.product-card__slot-wrap {
+    position: relative;
+    width: 48px;
+    height: 48px;
+}
+
+.product-card__name {
+    font-size: 12.5px;
+    margin-top: 8px;
+    -unity-text-align: middle-center;
+    white-space: normal;
+}
+
+.product-card__qty {
+    font-size: 12px;
+    margin-top: 3px;
+    -unity-text-align: middle-center;
+}
+
+.product-card__qty--out-of-stock {
+    opacity: 0.55;
+    color: var(--ss3d-text-tertiary);
+}
+
+.product-card--disabled {
+    opacity: 0.45;
+}
+
+.product-card--out-of-stock {
+    opacity: 0.45;
+}
+
+.product-card__lock-badge {
+    position: absolute;
+    bottom: -4px;
+    right: -4px;
+    width: 18px;
+    height: 18px;
+    padding: 3px;
+    background-color: var(--ss3d-diegetic-panel-raised);
+    border-radius: 50%;
+    background-image: url("project://database/Assets/Art/Graphics/UI/Misc/Heroicons/Outline/LockClosed.png");
+    -unity-background-scale-mode: scale-to-fit;
+    -unity-background-image-tint-color: var(--ss3d-text-tertiary);
+}
+
+.product-card__vend-overlay {
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    align-items: center;
+    justify-content: center;
+    background-color: rgba(10, 10, 10, 0.55);
+    border-radius: 10px;
+}
+
+.product-card__vend-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background-color: var(--ss3d-feedback-info);
+}

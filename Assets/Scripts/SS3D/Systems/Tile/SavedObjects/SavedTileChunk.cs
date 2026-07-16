@@ -21,5 +21,7 @@ namespace SS3D.Systems.Tile
         /// </summary>
         [SerializeReference]
         public ISavedTileLocation[] savedTiles;
+
+        public ushort[] areaIds;
     }
 }

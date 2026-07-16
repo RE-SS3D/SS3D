@@ -1,0 +1,52 @@
+
+.access-strip {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    background-color: var(--ss3d-diegetic-inset);
+    border-radius: var(--ss3d-radius-sm);
+    padding: 8px 12px;
+    margin-bottom: 14px;
+}
+
+.access-strip .steel-button {
+    flex-shrink: 0;
+}
+
+.access-strip .steel-button__control {
+    min-height: 40px;
+    min-width: 120px;
+    margin: 0;
+    padding: 8px 14px 6px;
+    -unity-text-align: middle-center;
+    border-radius: var(--ss3d-radius-sm);
+    border-top-width: 1px;
+    border-right-width: 1px;
+    border-left-width: 1px;
+    border-bottom-width: 4px;
+    border-top-color: #2e3138;
+    border-right-color: #2e3138;
+    border-left-color: #2e3138;
+    border-bottom-color: rgba(0, 0, 0, 0.55);
+    background-color: var(--ss3d-diegetic-panel-raised);
+    color: var(--ss3d-text-primary);
+}
+
+.access-strip .steel-button__control:hover {
+    background-color: #35373a;
+    border-top-color: #3a3d44;
+    border-right-color: #3a3d44;
+    border-left-color: #3a3d44;
+    border-bottom-color: rgba(0, 0, 0, 0.55);
+}
+
+.access-strip .steel-button__control:active {
+    background-color: var(--ss3d-accent-rust-dim);
+    color: var(--ss3d-text-on-accent);
+    border-top-color: #6b2f1f;
+    border-right-color: #6b2f1f;
+    border-left-color: #6b2f1f;
+    border-bottom-width: 1px;
+    padding-top: 10px;
+    margin-top: 3px;
+}

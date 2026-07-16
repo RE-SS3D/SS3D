@@ -3,6 +3,7 @@ using SS3D.Core;
 using SS3D.Core.Behaviours;
 using SS3D.Data.Management;
 using SS3D.Logging;
+using SS3D.Systems.Persistence;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
@@ -50,11 +51,15 @@ namespace SS3D.Systems.Tile.TileMapCreator
         public void Display()
         {
             _loadMapContentRoot.gameObject.SetActive(true);
-            var MapNames = LocalStorage.GetAllObjectsNameInFolder(SubSystems.Get<TileSubSystem>().SavePath);
+            var MapNames = SubSystems.TryGet(out PersistenceSubSystem persistenceSubSystem)
+                ? persistenceSubSystem.ListStationTemplates()
+                : LocalStorage.GetAllObjectsNameInFolder(SubSystems.Get<TileSubSystem>().SavePath);
 
             foreach (string mapName in MapNames)
             {
-                string mapNameWithNoExtension = mapName.Substring(0, mapName.IndexOf("."));
+                string mapNameWithNoExtension = mapName.Contains('.')
+                    ? mapName.Substring(0, mapName.IndexOf('.'))
+                    : mapName;
                 GameObject slot = Instantiate(_mapNameSlotPrefab, _loadMapContentRoot.transform, true);
 
                 // I've no idea why but something modify the slots scale so it's necessary to adjust it here.
@@ -106,7 +111,7 @@ namespace SS3D.Systems.Tile.TileMapCreator
         {
             if (IsServer)
             {
-                SubSystems.Get<TileSubSystem>().Load(SubSystems.Get<TileSubSystem>().SavePath + "/" + mapName);
+                SubSystems.Get<TileSubSystem>().Load(mapName);
             }
             else
             {

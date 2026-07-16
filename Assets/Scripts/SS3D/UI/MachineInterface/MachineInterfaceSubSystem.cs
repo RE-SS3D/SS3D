@@ -3,6 +3,8 @@ using SS3D.Core.Behaviours;
 using SS3D.Systems.Inputs;
 using System;
 using System.Collections.Generic;
+using UnityEngine;
+using SS3D.Systems.Electricity;
 
 namespace SS3D.UI.MachineInterface
 {
@@ -137,47 +139,59 @@ namespace SS3D.UI.MachineInterface
                 return;
             }
 
-            switch (_openModel)
+            MachineOptimisticControlRegistry.EnsureRegistered();
+            if (MachineOptimisticControlRegistry.TryGet(_openModel.GetType(), out IMachineOptimisticControlHandler handler))
             {
-                case ApcInterfaceViewModel apcModel:
-                {
-                    ApplyApcControl(apcModel, controlId, isOn);
-                    break;
-                }
-
-                case SmesInterfaceViewModel smesModel:
-                {
-                    ApplySmesBoolControl(smesModel, controlId, isOn);
-                    break;
-                }
+                handler.ApplyBool(_openModel, controlId, isOn, CreateOptimisticCallbacks());
             }
 
             _clientBridge?.SetControl(controlId, isOn);
+            Refresh(_openModel);
         }
 
         public void NotifyNumericControl(byte controlId, float delta)
         {
-            if (_openModel is not SmesInterfaceViewModel smesModel)
+            if (_openModel == null)
             {
                 return;
             }
 
-            switch (controlId)
+            MachineOptimisticControlRegistry.EnsureRegistered();
+            if (!MachineOptimisticControlRegistry.TryGet(_openModel.GetType(), out IMachineOptimisticControlHandler handler))
             {
-                case MachineInterfaceControlIds.Smes.Input:
-                {
-                    smesModel.InputMaxKw = Math.Max(1f, smesModel.InputMaxKw + delta);
-                    break;
-                }
-
-                case MachineInterfaceControlIds.Smes.Output:
-                {
-                    smesModel.OutputMaxKw = Math.Max(1f, smesModel.OutputMaxKw + delta);
-                    break;
-                }
+                return;
             }
 
+            handler.ApplyNumeric(_openModel, controlId, delta, CreateOptimisticCallbacks());
             _clientBridge?.SetNumericControl(controlId, delta);
+            Refresh(_openModel);
+        }
+
+        public void NotifyActionControl(byte controlId, int value)
+        {
+            if (_openModel == null)
+            {
+                return;
+            }
+
+            MachineOptimisticControlRegistry.EnsureRegistered();
+            if (MachineOptimisticControlRegistry.TryGet(_openModel.GetType(), out IMachineOptimisticControlHandler handler))
+            {
+                handler.ApplyAction(_openModel, controlId, value, CreateOptimisticCallbacks());
+            }
+
+            _clientBridge?.SetActionControl(controlId, value);
+
+            if (_openModel is VendingInterfaceViewModel
+                or ScrubberInterfaceViewModel
+                or VentInterfaceViewModel
+                or PumpInterfaceViewModel
+                or AirAlarmInterfaceViewModel
+                or ApcInterfaceViewModel
+                or SmesInterfaceViewModel)
+            {
+                Refresh(_openModel);
+            }
         }
 
         public void SimulateApcState(ApcPowerState state)
@@ -219,6 +233,30 @@ namespace SS3D.UI.MachineInterface
             }
         }
 
+        public void SimulateVendingState()
+        {
+            VendingInterfaceViewModel model = VendingInterfaceViewModel.CreateSample();
+
+            if (IsOpen && _openInterfaceId == MachineInterfaceIds.Vending)
+            {
+                Refresh(model);
+            }
+            else
+            {
+                Open(MachineInterfaceIds.Vending, model);
+            }
+        }
+
+        protected void Update()
+        {
+            if (!IsOpen || !Input.GetKeyDown(KeyCode.Escape))
+            {
+                return;
+            }
+
+            RequestCloseFromUi(_openInterfaceId);
+        }
+
         protected override void OnDestroyed()
         {
             SetGameplayInputBlocked(false);
@@ -237,62 +275,8 @@ namespace SS3D.UI.MachineInterface
             return hosts is { Count: > 0 } ? hosts[0] : null;
         }
 
-        private static void ApplySmesBoolControl(SmesInterfaceViewModel model, byte controlId, bool isOn)
-        {
-            switch (controlId)
-            {
-                case MachineInterfaceControlIds.Smes.Input:
-                {
-                    model.InputEnabled = isOn;
-                    break;
-                }
-
-                case MachineInterfaceControlIds.Smes.Output:
-                {
-                    model.OutputEnabled = isOn;
-                    break;
-                }
-            }
-        }
-
-        private void ApplyApcControl(ApcInterfaceViewModel model, byte controlId, bool isOn)
-        {
-            string channelId = controlId switch
-            {
-                MachineInterfaceControlIds.Apc.Lighting => "lighting",
-                MachineInterfaceControlIds.Apc.Equipment => "equipment",
-                MachineInterfaceControlIds.Apc.Environment => "environment",
-                _ => null,
-            };
-
-            if (channelId == null)
-            {
-                return;
-            }
-
-            switch (controlId)
-            {
-                case MachineInterfaceControlIds.Apc.Lighting:
-                {
-                    model.LightingOn = isOn;
-                    break;
-                }
-
-                case MachineInterfaceControlIds.Apc.Equipment:
-                {
-                    model.EquipmentOn = isOn;
-                    break;
-                }
-
-                case MachineInterfaceControlIds.Apc.Environment:
-                {
-                    model.EnvironmentOn = isOn;
-                    break;
-                }
-            }
-
-            ChannelToggled?.Invoke(channelId, isOn);
-        }
+        private MachineOptimisticControlCallbacks CreateOptimisticCallbacks() =>
+            new MachineOptimisticControlCallbacks((channelId, isOn) => ChannelToggled?.Invoke(channelId, isOn));
 
         private void SetGameplayInputBlocked(bool blocked)
         {

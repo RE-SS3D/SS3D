@@ -2,8 +2,6 @@ namespace SS3D.UI.MachineInterface
 {
     public struct SmesInterfaceSnapshot
     {
-        public const int MaxWarnings = 4;
-
         public int MachineObjectId;
 
         public string InterfaceId;
@@ -34,16 +32,10 @@ namespace SS3D.UI.MachineInterface
 
         public string ConnectionStateText;
 
-        public string DiagnosisHint;
+        public bool AccessGranted;
 
-        public int WarningCount;
+        public bool AccessScanning;
 
-        public ApcDiagnosticSnapshot Warning0;
-
-        public ApcDiagnosticSnapshot Warning1;
-
-        public ApcDiagnosticSnapshot Warning2;
-
-        public ApcDiagnosticSnapshot Warning3;
+        public bool AccessDenied;
     }
 }

@@ -11,7 +11,7 @@ namespace SS3D.UI.MachineInterface.Components
 
         public event Action<float> RateDeltaRequested;
 
-        private readonly TogglePill _toggle;
+        private readonly ToggleSwitch _toggle;
         private readonly VisualElement _fill;
         private readonly Label _currentLabel;
         private readonly Label _maxLabel;
@@ -30,18 +30,27 @@ namespace SS3D.UI.MachineInterface.Components
             title.AddToClassList("rate-control__title");
             title.AddToClassList("font-titling");
 
-            _toggle = new TogglePill();
+            _toggle = new ToggleSwitch { OnLabel = "ENABLED", OffLabel = "DISABLED", Horizontal = true };
+
+            VisualElement headerRight = new();
+            headerRight.AddToClassList("rate-control__header-right");
+            headerRight.Add(_toggle);
             header.Add(title);
-            header.Add(_toggle);
+            header.Add(headerRight);
 
             VisualElement barRow = new();
             barRow.AddToClassList("rate-control__bar-row");
 
             VisualElement track = new();
             track.AddToClassList("rate-control__track");
+
+            VisualElement trackClip = new();
+            trackClip.AddToClassList("rate-control__track-clip");
+
             _fill = new VisualElement();
             _fill.AddToClassList("rate-control__fill");
-            track.Add(_fill);
+            trackClip.Add(_fill);
+            track.Add(trackClip);
 
             _currentLabel = new Label("0.0 kW");
             _currentLabel.AddToClassList("rate-control__current");
@@ -122,7 +131,7 @@ namespace SS3D.UI.MachineInterface.Components
             set
             {
                 _maxKw = Mathf.Max(0.01f, value);
-                _maxLabel.text = $"{_maxKw:0} kW";
+                    _maxLabel.text = $"{_maxKw:0} kW";
                 UpdateFill();
             }
         }

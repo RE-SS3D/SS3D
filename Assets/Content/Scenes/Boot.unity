@@ -285,7 +285,7 @@ MonoBehaviour:
   _startInOffline: 1
   _offlineScene: Assets/Content/Scenes/Boot.unity
   _onlineScene: Assets/Content/Scenes/Game.unity
-  _replaceScenes: 0
+  _replaceScenes: 2
 --- !u!114 &340427415
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -1,17 +1,21 @@
-@import url("../../Tokens/ss3d-tokens.uss");
-@import url("../../Tokens/ss3d-typography.uss");
 
 .status-badge {
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
     border-radius: var(--ss3d-radius-sm);
     border-width: 1px;
-    padding: 2px var(--ss3d-space-2);
-    align-self: flex-start;
+    padding: 3px 8px;
+    align-self: center;
 }
 
 .status-badge__label {
-    font-size: 10px;
+    font-size: 11px;
     -unity-font-style: bold;
     letter-spacing: 1px;
+    padding: 0;
+    margin: 0;
+    -unity-text-align: middle-center;
 }
 
 .status-badge.tone-info {
@@ -48,4 +52,13 @@
 
 .status-badge.tone-danger .status-badge__label {
     color: var(--ss3d-feedback-danger);
+}
+
+.status-badge.tone-neutral {
+    border-color: var(--ss3d-border-subtle);
+    background-color: var(--ss3d-diegetic-inset);
+}
+
+.status-badge.tone-neutral .status-badge__label {
+    color: var(--ss3d-text-secondary);
 }

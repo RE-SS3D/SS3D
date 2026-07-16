@@ -1,4 +1,3 @@
-using SS3D.UI.MachineInterface.Components;
 using System;
 using UnityEngine.UIElements;
 
@@ -12,8 +11,12 @@ namespace SS3D.UI.MachineInterface
 
         public StyleSheet TemplateStyle { get; init; }
 
+        public StyleSheet[] ComponentStyles { get; init; } = Array.Empty<StyleSheet>();
+
+        public MachineInterfaceShellKind ShellKind { get; init; } = MachineInterfaceShellKind.ModalWindow;
+
         public bool Wide { get; init; }
 
-        public Func<MachineWindow, IMachineInterfaceBinder> CreateBinder { get; init; }
+        public Func<VisualElement, IMachineInterfaceBinder> CreateBinder { get; init; }
     }
 }

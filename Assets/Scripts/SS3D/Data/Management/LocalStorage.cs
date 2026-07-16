@@ -42,6 +42,8 @@ namespace SS3D.Data.Management
 
         private static bool Save(string fileName, string saveString, bool overwrite)
         {
+            Initialize();
+
             string saveFileName = fileName;
 
             if (!overwrite)
@@ -57,7 +59,14 @@ namespace SS3D.Data.Management
 
             try
             {
-	            File.WriteAllText(SaveFolder + saveFileName + "." + SaveExtension, saveString);
+                string fullPath = SaveFolder + saveFileName + "." + SaveExtension;
+                string directory = Path.GetDirectoryName(fullPath);
+                if (!string.IsNullOrEmpty(directory) && !Directory.Exists(directory))
+                {
+                    Directory.CreateDirectory(directory);
+                }
+
+	            File.WriteAllText(fullPath, saveString);
 	            Log.Debug(typeof(LocalStorage), $"Saved file {fileName}");
             }
             catch (Exception e)
@@ -67,6 +76,21 @@ namespace SS3D.Data.Management
 	            return false;
             }
 
+            return true;
+        }
+
+        private static bool TryGetDirectoryInfo(string path, out DirectoryInfo directoryInfo)
+        {
+            Initialize();
+
+            string fullPath = SaveFolder + path;
+            if (!Directory.Exists(fullPath))
+            {
+                directoryInfo = null;
+                return false;
+            }
+
+            directoryInfo = new DirectoryInfo(fullPath);
             return true;
         }
 
@@ -85,17 +109,14 @@ namespace SS3D.Data.Management
 
         private static bool TryLoadMostRecentFile(string path, [CanBeNull] out string file)
         {
-            DirectoryInfo directoryInfo = new(SaveFolder + path);
-
-            if (!Directory.Exists(SaveFolder))
+            if (!TryGetDirectoryInfo(path, out DirectoryInfo directoryInfo))
             {
-				Log.Debug(nameof(LocalStorage), $"No saves found, creating new folder at {SaveFolder}");
-
-				Directory.CreateDirectory(SaveFolder);
+                file = null;
+                return false;
             }
 
             // Get all save files
-            FileInfo[] saveFiles = directoryInfo.GetFiles( "*." + SaveExtension);
+            FileInfo[] saveFiles = directoryInfo.GetFiles("*." + SaveExtension);
 
             // Cycle through all save files and identify the most recent one
             FileInfo mostRecentFile = null;
@@ -117,8 +138,6 @@ namespace SS3D.Data.Management
             // If theres a save file, load it, if not return null
             if (mostRecentFile == null)
             {
-				Log.Error(typeof(LocalStorage), $"Failed to find the most recent file at {path}");
-
 	            file = null;
 	            return false;
             }
@@ -163,6 +182,17 @@ namespace SS3D.Data.Management
 	        return default;
         }
 
+        public static bool TryReadRaw(string fileName, out string saveString)
+        {
+            return Load(fileName, out saveString);
+        }
+
+        public static DateTime GetLastWriteTimeUtc(string fileName)
+        {
+            string fullPath = SaveFolder + fileName + "." + SaveExtension;
+            return File.Exists(fullPath) ? File.GetLastWriteTimeUtc(fullPath) : DateTime.MinValue;
+        }
+
         public static TSaveObject LoadMostRecentObject<TSaveObject>(string path)
         {
             bool mostRecentFileExists = TryLoadMostRecentFile(path, out string saveString);
@@ -177,6 +207,35 @@ namespace SS3D.Data.Management
 
         }
 
+        public static string GetMostRecentFileName(string path)
+        {
+            if (!TryGetDirectoryInfo(path, out DirectoryInfo directoryInfo))
+            {
+                return null;
+            }
+
+            FileInfo[] saveFiles = directoryInfo.GetFiles("*." + SaveExtension);
+            FileInfo mostRecentFile = null;
+
+            foreach (FileInfo fileInfo in saveFiles)
+            {
+                if (mostRecentFile == null || fileInfo.LastWriteTime > mostRecentFile.LastWriteTime)
+                {
+                    mostRecentFile = fileInfo;
+                }
+            }
+
+            if (mostRecentFile == null)
+            {
+                return null;
+            }
+
+            string fileName = mostRecentFile.Name;
+            return fileName.EndsWith("." + SaveExtension)
+                ? fileName[..^(SaveExtension.Length + 1)]
+                : fileName;
+        }
+
         /// <summary>
         /// Get the name of all files in a given folder.
         /// </summary>
@@ -184,9 +243,12 @@ namespace SS3D.Data.Management
         /// <returns></returns>
         public static List<string> GetAllObjectsNameInFolder(string path)
         {
-            DirectoryInfo directoryInfo = new(SaveFolder + path);
+            var allFileNames = new List<string>();
 
-            List<string> allFileNames = new List<string>();
+            if (!TryGetDirectoryInfo(path, out DirectoryInfo directoryInfo))
+            {
+                return allFileNames;
+            }
 
             // Get all save files
             FileInfo[] saveFiles = directoryInfo.GetFiles("*." + SaveExtension);
@@ -208,6 +270,39 @@ namespace SS3D.Data.Management
         public static bool FolderAlreadyContainsName(string folderPath, string name)
         {
             return GetAllObjectsNameInFolder(folderPath).Contains(name + "." + SaveExtension);
+        }
+
+        public static bool AppendLine(string fileName, string line)
+        {
+            return AppendToFile(fileName, SaveExtension, line);
+        }
+
+        public static bool AppendJsonlLine(string fileName, string line)
+        {
+            return AppendToFile(fileName, "jsonl", line);
+        }
+
+        private static bool AppendToFile(string fileName, string extension, string line)
+        {
+            Initialize();
+
+            try
+            {
+                string fullPath = SaveFolder + fileName + "." + extension;
+                string directory = Path.GetDirectoryName(fullPath);
+                if (!string.IsNullOrEmpty(directory) && !Directory.Exists(directory))
+                {
+                    Directory.CreateDirectory(directory);
+                }
+
+                File.AppendAllText(fullPath, line + Environment.NewLine);
+                return true;
+            }
+            catch (Exception e)
+            {
+                Log.Error(typeof(LocalStorage), $"Something went wrong when appending to {fileName}: {e.Message}");
+                return false;
+            }
         }
     }
 }

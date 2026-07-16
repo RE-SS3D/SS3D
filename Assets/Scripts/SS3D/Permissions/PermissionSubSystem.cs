@@ -2,6 +2,7 @@
 using FishNet.Object.Synchronizing;
 using SS3D.Core.Behaviours;
 using SS3D.Data;
+using SS3D.Data.Persistence;
 using SS3D.Logging;
 using SS3D.Permissions.Events;
 using System;
@@ -37,6 +38,8 @@ namespace SS3D.Permissions
 
         private static readonly string PermissionsPath = Paths.GetPath(GamePaths.Config, true) + "/" + ConfigFileName;
 
+        private bool _suppressPermissionSync;
+
         protected override void OnStart()
         {
             base.OnStart();
@@ -54,8 +57,56 @@ namespace SS3D.Permissions
         public override void OnStartServer()
         {
             base.OnStartServer();
+        }
 
-            LoadPermissions();
+        /// <summary>
+        /// Exports the current permission table for persistence contributors.
+        /// </summary>
+        [Server]
+        public IEnumerable<KeyValuePair<string, ServerRoleTypes>> ExportUserPermissions()
+        {
+            foreach (KeyValuePair<string, ServerRoleTypes> permission in _userPermissions)
+            {
+                yield return permission;
+            }
+        }
+
+        /// <summary>
+        /// Replaces permissions from a persisted payload or legacy import.
+        /// </summary>
+        [Server]
+        public void ImportUserPermissions(IEnumerable<SavedPermissionRecord> records)
+        {
+            _suppressPermissionSync = true;
+            try
+            {
+                _userPermissions.Clear();
+
+                if (records != null)
+                {
+                    foreach (SavedPermissionRecord record in records)
+                    {
+                        if (string.IsNullOrWhiteSpace(record.ckey) || string.IsNullOrWhiteSpace(record.role))
+                        {
+                            continue;
+                        }
+
+                        if (!Enum.TryParse(record.role, out ServerRoleTypes role))
+                        {
+                            continue;
+                        }
+
+                        _userPermissions[record.ckey] = role;
+                    }
+                }
+            }
+            finally
+            {
+                _suppressPermissionSync = false;
+            }
+
+            HasLoadedPermissions = true;
+            SyncUserPermissions();
         }
 
         /// <summary>
@@ -68,7 +119,7 @@ namespace SS3D.Permissions
         {
             if (_userPermissions.Count == 0 || _userPermissions == null)
             {
-                LoadPermissions();
+                EnsurePermissionsLoaded();
             }
 
             if (string.IsNullOrEmpty(ckey))
@@ -117,11 +168,22 @@ namespace SS3D.Permissions
             File.WriteAllText(PermissionsPath, fileContent);
         }
 
+        [Server]
+        private void EnsurePermissionsLoaded()
+        {
+            if (HasLoadedPermissions)
+            {
+                return;
+            }
+
+            LoadPermissionsFromLegacyTxt();
+        }
+
         /// <summary>
-        /// Loads the user permissions found in the txt file.
+        /// Loads the user permissions found in the legacy txt file.
         /// </summary>
         [Server]
-        private void LoadPermissions()
+        private void LoadPermissionsFromLegacyTxt()
         {
             Log.Debug(this, "Loading permission data from file", Logs.ServerOnly);
             
@@ -177,6 +239,11 @@ namespace SS3D.Permissions
 
         private void SyncHandleUserPermissionsChanged(SyncDictionaryOperation op, string key, ServerRoleTypes value, bool asServer)
         {
+            if (_suppressPermissionSync)
+            {
+                return;
+            }
+
             if (!asServer && IsHost)
             {
                 return;

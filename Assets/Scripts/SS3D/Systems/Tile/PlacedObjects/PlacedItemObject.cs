@@ -3,6 +3,7 @@ using FishNet.Object;
 using SS3D.Core;
 using SS3D.Data;
 using SS3D.Logging;
+using SS3D.Systems.Tile.TileMapCreator;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -49,13 +50,18 @@ namespace SS3D.Systems.Tile
 
             placedObject.Setup(worldPosition, rotation, itemSo);
 
-            if (InstanceFinder.ServerManager != null && placedObject.GetComponent<NetworkObject>() != null)
+            NetworkObject networkObject = placedObject.GetComponent<NetworkObject>();
+            if (InstanceFinder.ServerManager != null && networkObject != null)
             {
-                if (placedObject.GetComponent<NetworkObject>() == null)
-                    Log.Warning(SubSystems.Get<TileSubSystem>(), "{placedObject} does not have a Network Component and will not be spawned",
-                        Logs.Generic, placedObject.NameString);
-                else
+                if (!networkObject.IsSpawned)
+                {
                     InstanceFinder.ServerManager.Spawn(placedGameObject);
+                }
+            }
+            else if (networkObject == null)
+            {
+                Log.Warning(SubSystems.Get<TileSubSystem>(), "{placedObject} does not have a Network Component and will not be spawned",
+                    Logs.Generic, placedObject.NameString);
             }
 
             return placedObject;
@@ -78,6 +84,12 @@ namespace SS3D.Systems.Tile
             _worldPosition = worldPosition;
             _rotation = rotation;
             _itemSo = itemSo;
+        }
+
+        public override void OnStartClient()
+        {
+            base.OnStartClient();
+            TileLayerVisibilityService.TryApplyPlacedItem(this);
         }
 
         /// <summary>

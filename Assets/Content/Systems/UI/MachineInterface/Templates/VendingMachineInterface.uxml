@@ -1,0 +1,56 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:ss3d="SS3D.UI.MachineInterface.Components" editor-extension-mode="False">
+    <ui:Style src="project://database/Assets/Content/Systems/UI/Tokens/ss3d-tokens.uss" />
+    <ui:Style src="project://database/Assets/Content/Systems/UI/Tokens/ss3d-typography.uss" />
+    <ui:Style src="project://database/Assets/Content/Systems/UI/MachineInterface/Tokens/diegetic-tokens.uss" />
+    <ui:Style src="project://database/Assets/Content/Systems/UI/MachineInterface/Tokens/diegetic-tones.uss" />
+    <ui:Style src="project://database/Assets/Content/Systems/UI/MachineInterface/Components/DiegeticDeviceShell.uss" />
+    <ui:Style src="project://database/Assets/Content/Systems/UI/MachineInterface/Components/StatusDot.uss" />
+    <ui:Style src="project://database/Assets/Content/Systems/UI/MachineInterface/Components/ConnectionStatusRow.uss" />
+    <ui:Style src="project://database/Assets/Content/Systems/UI/MachineInterface/Components/DeviceIdentityBlock.uss" />
+    <ui:Style src="project://database/Assets/Content/Systems/UI/MachineInterface/Components/PanelSection.uss" />
+    <ui:Style src="project://database/Assets/Content/Systems/UI/MachineInterface/Components/SteelButton.uss" />
+    <ui:Style src="project://database/Assets/Content/Systems/UI/MachineInterface/Components/AtmosIdReaderRow.uss" />
+    <ui:Style src="project://database/Assets/Content/Systems/UI/MachineInterface/Components/InventorySlot.uss" />
+    <ui:Style src="project://database/Assets/Content/Systems/UI/MachineInterface/Components/ProductCard.uss" />
+    <ui:Style src="project://database/Assets/Content/Systems/UI/MachineInterface/Components/ProductGrid.uss" />
+    <ui:Style src="project://database/Assets/Content/Systems/UI/MachineInterface/Components/DispenseTray.uss" />
+    <ui:Style src="project://database/Assets/Content/Systems/UI/MachineInterface/Components/ActionLog.uss" />
+    <ui:Style src="project://database/Assets/Content/Systems/UI/MachineInterface/Components/DeviceFooter.uss" />
+    <ui:Style src="project://database/Assets/Content/Systems/UI/MachineInterface/Templates/VendingMachineInterface.uss" />
+
+    <ss3d:DiegeticDeviceShell name="device-shell"
+        class="vending-interface"
+        model-label="VND-7 · ration &amp; sundries dispenser"
+        power-ok="true"
+        style="align-self: center; margin-top: 24px;">
+        <ss3d:ConnectionStatusRow name="connection-row"
+            status-text="WIRED · VEND BUS · PORT J1"
+            readout-text="0 of 0 items stocked" />
+        <ss3d:DeviceIdentityBlock name="identity"
+            title="GALLEY VENDOMAT"
+            subtitle="Crew Mess — Sundries Dispenser" />
+        <ui:VisualElement name="id-reader-section" class="panel-section">
+            <ui:VisualElement class="panel-section__clip">
+                <ui:VisualElement class="panel-section__header">
+                    <ui:Label class="panel-section__header-title font-titling" text="ID Reader" />
+                </ui:VisualElement>
+                <ui:VisualElement class="panel-section__content">
+                    <ss3d:AtmosIdReaderRow name="id-reader" />
+                </ui:VisualElement>
+            </ui:VisualElement>
+        </ui:VisualElement>
+        <ui:VisualElement name="products-section" class="panel-section">
+            <ui:VisualElement class="panel-section__clip">
+                <ui:VisualElement class="panel-section__header">
+                    <ui:Label class="panel-section__header-title font-titling" text="Select Item" />
+                </ui:VisualElement>
+                <ui:VisualElement class="panel-section__content">
+                    <ss3d:ProductGrid name="product-grid" />
+                </ui:VisualElement>
+            </ui:VisualElement>
+        </ui:VisualElement>
+        <ss3d:DispenseTray name="dispense-tray" />
+        <ss3d:ActionLog name="action-log" />
+        <ss3d:DeviceFooter name="footer" text="SS3D Vending Dispenser — Model VND-7" />
+    </ss3d:DiegeticDeviceShell>
+</ui:UXML>

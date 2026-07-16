@@ -40,7 +40,7 @@ public class OpenCraftingMenuInteraction : IInteraction, IClientInteractionSourc
     /// </summary>
     public Sprite GetIcon(InteractionEvent interactionEvent)
     {
-        return null;
+        return Icon ? Icon : InteractionIconLookup.Crafting;
     }
 
     /// <summary>
@@ -61,10 +61,13 @@ public class OpenCraftingMenuInteraction : IInteraction, IClientInteractionSourc
             return false;
         }
 
-        bool recipesAvailable = true;
-        recipesAvailable &= craftingSystem.AvailableRecipeLinks(_craftingInteractionType, interactionEvent, out List<TaggedEdge<RecipeStep, RecipeStepLink>> _);
+        GameObject target = interactionEvent.Target.GetGameObject();
+        if (!craftingSystem.TargetHasRecipes(target))
+        {
+            return false;
+        }
 
-        return recipesAvailable;
+        return craftingSystem.AvailableRecipeLinks(_craftingInteractionType, interactionEvent, out List<TaggedEdge<RecipeStep, RecipeStepLink>> _);
     }
 
     /// <summary>

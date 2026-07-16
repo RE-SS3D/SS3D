@@ -1,4 +1,4 @@
-using System.Electricity;
+using SS3D.Systems.Electricity;
 
 namespace SS3D.UI.MachineInterface
 {
@@ -29,6 +29,14 @@ namespace SS3D.UI.MachineInterface
         public float EquipmentLoadKw;
 
         public float EnvironmentLoadKw;
+
+        public bool MultipleApcsInArea;
+
+        public bool AccessGranted;
+
+        public bool AccessScanning;
+
+        public bool AccessDenied;
 
         public int DiagnosticCount;
 

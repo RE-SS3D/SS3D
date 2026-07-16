@@ -1183,6 +1183,14 @@ MonoBehaviour:
     m_Localized: Electrical wires.
     m_Metadata:
       m_Items: []
+  - m_Id: 252934895022240032
+    m_Localized: Gas Pump
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022240033
+    m_Localized: A gas pump. Moves gases between a turf cell and the connected pipe network.
+    m_Metadata:
+      m_Items: []
   - m_Id: 252937831022456832
     m_Localized: 'Registered to: {0}'
     m_Metadata:

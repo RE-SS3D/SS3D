@@ -19,6 +19,8 @@ namespace SS3D.UI.MachineInterface
 
         public abstract string InterfaceId { get; }
 
+        protected NetworkConnection LastControlConnection { get; private set; }
+
         NetworkObject IMachineInterfaceProvider.NetworkObject => NetworkObject;
 
         public override IInteraction[] CreateTargetInteractions(InteractionEvent interactionEvent)
@@ -34,6 +36,11 @@ namespace SS3D.UI.MachineInterface
         public void SetNumericControl(byte controlId, float delta)
         {
             CmdSetNumericControl(controlId, delta);
+        }
+
+        public void SetActionControl(byte controlId, int value)
+        {
+            CmdSetActionControl(controlId, value);
         }
 
         public void RequestClose()
@@ -82,17 +89,6 @@ namespace SS3D.UI.MachineInterface
         }
 
         [ServerRpc(RequireOwnership = false)]
-        public void CmdRequestOpen(NetworkConnection conn = null)
-        {
-            if (conn == null || !conn.IsValid)
-            {
-                return;
-            }
-
-            OpenInterfaceForViewer(conn);
-        }
-
-        [ServerRpc(RequireOwnership = false)]
         public void CmdSetControl(byte controlId, bool value, NetworkConnection conn = null)
         {
             if (conn == null || !conn.IsValid || !_viewers.Contains(conn))
@@ -100,7 +96,9 @@ namespace SS3D.UI.MachineInterface
                 return;
             }
 
+            LastControlConnection = conn;
             ApplyControl(controlId, value);
+            LastControlConnection = null;
         }
 
         [ServerRpc(RequireOwnership = false)]
@@ -111,7 +109,22 @@ namespace SS3D.UI.MachineInterface
                 return;
             }
 
+            LastControlConnection = conn;
             ApplyNumericControl(controlId, delta);
+            LastControlConnection = null;
+        }
+
+        [ServerRpc(RequireOwnership = false)]
+        public void CmdSetActionControl(byte controlId, int value, NetworkConnection conn = null)
+        {
+            if (conn == null || !conn.IsValid || !_viewers.Contains(conn))
+            {
+                return;
+            }
+
+            LastControlConnection = conn;
+            ApplyActionControl(controlId, value);
+            LastControlConnection = null;
         }
 
         [ServerRpc(RequireOwnership = false)]
@@ -134,6 +147,11 @@ namespace SS3D.UI.MachineInterface
         protected abstract bool ApplyControl(byte controlId, bool value);
 
         protected virtual bool ApplyNumericControl(byte controlId, float delta)
+        {
+            return false;
+        }
+
+        protected virtual bool ApplyActionControl(byte controlId, int value)
         {
             return false;
         }
@@ -296,7 +314,7 @@ namespace SS3D.UI.MachineInterface
                 return;
             }
 
-            if (SubSystems.TryGet(out global::System.Electricity.ElectricitySubSystem electricitySubSystem))
+            if (SubSystems.TryGet(out global::SS3D.Systems.Electricity.ElectricitySubSystem electricitySubSystem))
             {
                 electricitySubSystem.OnTick += OnInterfaceTick;
             }
@@ -309,7 +327,7 @@ namespace SS3D.UI.MachineInterface
                 return;
             }
 
-            if (SubSystems.TryGet(out global::System.Electricity.ElectricitySubSystem electricitySubSystem))
+            if (SubSystems.TryGet(out global::SS3D.Systems.Electricity.ElectricitySubSystem electricitySubSystem))
             {
                 electricitySubSystem.OnTick -= OnInterfaceTick;
             }

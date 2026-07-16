@@ -6,6 +6,9 @@
 TEXTURE2D(_MainTex);
 SAMPLER(sampler_MainTex);
 
+TEXTURE2D(_EmissionMap);
+SAMPLER(sampler_EmissionMap);
+
 CBUFFER_START(UnityPerMaterial)
     float4 _MainTex_ST;
     float4 _Color;

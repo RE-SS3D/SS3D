@@ -1,5 +1,6 @@
 ﻿using SS3D.Core;
 using SS3D.Core.Behaviours;
+using SS3D.Systems.Electricity;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -50,10 +51,25 @@ namespace SS3D.Systems.Tile.Connections
             if (placedObject == null)
                 return new List<PlacedTileObject>();
 
-            List<PlacedTileObject> neighbours = GetElectricDevicesOnSameTile(placedObject);
-            neighbours.AddRange(GetNeighbourElectricDevicesOnSameLayer(placedObject));
-            neighbours.RemoveAll(x => x == null);
-            return neighbours;
+            var neighbours = new HashSet<PlacedTileObject>();
+            foreach (PlacedTileObject neighbour in GetElectricDevicesOnSameTile(placedObject))
+            {
+                neighbours.Add(neighbour);
+            }
+
+            foreach (PlacedTileObject neighbour in GetNeighbourElectricDevicesOnSameLayer(placedObject))
+            {
+                neighbours.Add(neighbour);
+            }
+
+            foreach (PlacedTileObject neighbour in ElectricCableConnectivity.GetCableLinkedDevices(placedObject))
+            {
+                neighbours.Add(neighbour);
+            }
+
+            neighbours.Remove(placedObject);
+            neighbours.RemoveWhere(x => x == null);
+            return neighbours.ToList();
         }
 
         private static List<PlacedTileObject> GetElectricDevicesOnSameTile(PlacedTileObject placedObject)

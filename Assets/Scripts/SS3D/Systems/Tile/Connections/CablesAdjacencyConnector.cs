@@ -5,7 +5,7 @@ using UnityEngine;
 namespace SS3D.Systems.Tile.Connections
 {
     /// <summary>
-    /// Cables can connect electrically to any electric device, but only display visual stubs to other cables.
+    /// Underfloor HV cables link grid backbone devices (generators, SMES, APC) and only display visual stubs to other cables.
     /// </summary>
     public class CablesAdjacencyConnector : EngineDrivenHorizontalConnector
     {

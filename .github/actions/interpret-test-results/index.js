@@ -29,6 +29,15 @@ var name;
 
 // Read the results text, and turn it into Document Object Model (DOM) format
 const path = core.getInput('XML_PATH');
+if (!fs.existsSync(path)) {
+    const message = `Test results file not found at ${path}. Unity tests may not have run — check UNITY_LICENSE (or UNITY_SERIAL) and related secrets in the unity_tests environment.`;
+    core.warning(message);
+    console.log(message);
+    core.setOutput('DISPLAY_STRING', message);
+    core.setOutput('ALL_TESTS_PASSED', false);
+    process.exit(0);
+}
+
 const data = fs.readFileSync(path);
 const dom = new jsdom.JSDOM(data).window.document;
 var testSuites = dom.getElementsByTagName("test-suite")

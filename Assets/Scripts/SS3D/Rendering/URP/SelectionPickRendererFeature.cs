@@ -184,7 +184,10 @@ namespace SS3D.Rendering.URP
                 drawingSettings.overrideMaterial = _overrideMaterial;
                 drawingSettings.overrideMaterialPassIndex = materialPassIndex;
 
-                FilteringSettings filteringSettings = new FilteringSettings(queueRange, cameraData.camera.cullingMask);
+                FilteringSettings filteringSettings = new FilteringSettings(queueRange, cameraData.camera.cullingMask)
+                {
+                    renderingLayerMask = SelectionRenderingLayers.PickPassMask
+                };
 
                 RendererListHandle rendererList;
                 if (useSceneDepth)

@@ -1,7 +1,8 @@
-﻿using SS3D.Systems.Tile.Connections;
+using SS3D.Systems.Tile.Connections;
+using System;
 using UnityEngine;
 
-namespace System.Electricity
+namespace SS3D.Systems.Electricity
 {
     /// <summary>
     /// very basic power generator, producing constant infinite power.

@@ -44,8 +44,12 @@ namespace EditorTests
         {
             ExamineContentResolver resolver = new();
             ExamineData data = UnityEngine.ScriptableObject.CreateInstance<ExamineData>();
-            data.Name.SetReference(ExamineCanonicalKeyGenerator.ExamineTableName, "items.tools.engineering.wrench.name");
-            data.Description.SetReference(ExamineCanonicalKeyGenerator.ExamineTableName, "items.tools.engineering.wrench.desc");
+            data.Name = new LocalizedString(
+                ExamineCanonicalKeyGenerator.ExamineTableName,
+                "items.tools.engineering.wrench.name");
+            data.Description = new LocalizedString(
+                ExamineCanonicalKeyGenerator.ExamineTableName,
+                "items.tools.engineering.wrench.desc");
 
             StubExaminable examinable = new(data);
             ExamineContent content = resolver.Resolve(examinable);

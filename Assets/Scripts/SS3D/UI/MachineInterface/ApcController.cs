@@ -2,10 +2,12 @@ using FishNet.Connection;
 using FishNet.Object;
 using FishNet.Object.Synchronizing;
 using SS3D.Core;
+using SS3D.Systems.Area;
+using SS3D.Systems.IdAccess;
 using SS3D.Systems.Tile;
 using SS3D.Systems.Tile.Connections;
 using System.Collections.Generic;
-using System.Electricity;
+using SS3D.Systems.Electricity;
 using UnityEngine;
 
 namespace SS3D.UI.MachineInterface
@@ -14,50 +16,81 @@ namespace SS3D.UI.MachineInterface
     /// Area Power Controller with machine interface, local cell storage, and circuit channel gating.
     /// </summary>
     [RequireComponent(typeof(ElectricDeviceAdjacencyConnector))]
-    public sealed class ApcController : MachineInterfaceBehaviour, IApcChannelSource, IPowerStorage
+    [RequireComponent(typeof(AuthLogDeviceBehaviour))]
+    public sealed class ApcController : AccessGatedMachineInterfaceBehaviour, IApcChannelSource, IPowerStorage, IAreaApcOrigin
     {
-        private const float CriticalBatteryThreshold = 0.15f;
-
         [SerializeField]
         private string _title = "APC · ENGINEERING BAY";
 
         [SerializeField]
-        private float _maxCapacity = 5f;
+        private float _maxCapacityKwh = 5f;
 
         [SerializeField]
-        private float _maxPowerRate = 5f;
+        private float _maxDischargeRateKw = 10f;
+
+        [SerializeField]
+        private float _maxChargeRateKw = 10f;
 
         [SyncVar(OnChange = nameof(OnChannelsChanged))]
         private ApcControlFlags _channels = ApcControlFlags.All;
 
         [SyncVar]
-        private float _storedPower;
+        private float _storedEnergyKwh;
+
+        private bool _multipleApcsInArea;
 
         public override string InterfaceId => MachineInterfaceIds.Apc;
+
+        protected override byte ReadIdControlId => MachineInterfaceControlIds.Apc.ReadId;
 
         public ApcControlFlags Channels => _channels;
 
         public PlacedTileObject TileObject => GetComponent<PlacedTileObject>();
 
-        public float StoredPower
+        public TileCoord OriginTile
         {
-            get => _storedPower;
-            set => _storedPower = Mathf.Clamp(value, 0f, MaxCapacity);
+            get
+            {
+                PlacedTileObject tileObject = TileObject;
+                Vector2Int origin = tileObject != null ? tileObject.WorldOrigin : Vector2Int.zero;
+                int mapId = tileObject != null ? tileObject.MapId : 0;
+                return new TileCoord(mapId, origin);
+            }
         }
 
-        public float MaxCapacity => _maxCapacity;
+        public Direction FacingDirection => TileObject != null ? TileObject.Direction : Direction.North;
 
-        public float RemainingCapacity => Mathf.Max(0f, _maxCapacity - _storedPower);
+        public string DisplayName => _title;
 
-        public float MaxPowerRate => _maxPowerRate;
+        public float StoredEnergyKwh
+        {
+            get => _storedEnergyKwh;
+            set => _storedEnergyKwh = Mathf.Clamp(value, 0f, MaxCapacityKwh);
+        }
 
-        public float MaxRemovablePower => Mathf.Min(_storedPower, _maxPowerRate);
+        public float MaxCapacityKwh => _maxCapacityKwh;
+
+        public float RemainingCapacityKwh => Mathf.Max(0f, _maxCapacityKwh - _storedEnergyKwh);
+
+        public float MaxDischargeRateKw => _maxDischargeRateKw;
+
+        public float MaxChargeRateKw => _maxChargeRateKw;
 
         public bool IsOn => true;
+
+        public float MaxDeliverableKw(float tickSeconds) =>
+            PowerStorageMath.MaxDeliverableKw(_storedEnergyKwh, _maxDischargeRateKw, tickSeconds);
+
+        public void SetMultipleApcsInArea(bool value)
+        {
+            _multipleApcsInArea = value;
+        }
 
         public override void OnStartServer()
         {
             base.OnStartServer();
+
+            _storedEnergyKwh = _maxCapacityKwh;
 
             ElectricitySubSystem electricitySystem = SubSystems.Get<ElectricitySubSystem>();
             if (electricitySystem.IsSetUp)
@@ -68,31 +101,34 @@ namespace SS3D.UI.MachineInterface
             {
                 electricitySystem.OnSystemSetUp += OnElectricitySystemSetup;
             }
-        }
 
-        public float AddPower(float amount)
-        {
-            if (amount <= 0f)
+            if (SubSystems.TryGet(out AreaSubSystem areaSubSystem))
             {
-                return 0f;
+                if (areaSubSystem.IsSetUp)
+                {
+                    areaSubSystem.RegisterApc(this);
+                }
+                else
+                {
+                    areaSubSystem.OnSystemSetUp += OnAreaSystemSetup;
+                }
             }
-
-            float addedAmount = Mathf.Min(RemainingCapacity, amount);
-            _storedPower += addedAmount;
-            return addedAmount;
         }
 
-        public float RemovePower(float amount)
-        {
-            if (amount <= 0f)
-            {
-                return 0f;
-            }
+        public float AddPowerKw(float requestedKw, float tickSeconds) =>
+            PowerStorageMath.AddPowerKw(
+                ref _storedEnergyKwh,
+                _maxCapacityKwh,
+                _maxChargeRateKw,
+                requestedKw,
+                tickSeconds);
 
-            float removedAmount = Mathf.Min(_storedPower, amount);
-            _storedPower -= removedAmount;
-            return removedAmount;
-        }
+        public float RemovePowerKw(float requestedKw, float tickSeconds) =>
+            PowerStorageMath.RemovePowerKw(
+                ref _storedEnergyKwh,
+                _maxDischargeRateKw,
+                requestedKw,
+                tickSeconds);
 
         protected override void SendOpenToViewer(NetworkConnection conn)
         {
@@ -106,71 +142,63 @@ namespace SS3D.UI.MachineInterface
 
         protected override bool ApplyControl(byte controlId, bool value)
         {
+            if (!AccessGranted)
+            {
+                return false;
+            }
+
             ApcControlFlags flag = controlId switch
             {
-                0 => ApcControlFlags.Lighting,
-                2 => ApcControlFlags.Environment,
-                _ => ApcControlFlags.Equipment,
+                MachineInterfaceControlIds.Apc.Lighting => ApcControlFlags.Lighting,
+                MachineInterfaceControlIds.Apc.Environment => ApcControlFlags.Environment,
+                MachineInterfaceControlIds.Apc.Equipment => ApcControlFlags.Equipment,
+                _ => ApcControlFlags.None,
             };
 
-            if (value)
+            if (flag == ApcControlFlags.None)
             {
-                _channels |= flag;
-            }
-            else
-            {
-                _channels &= ~flag;
+                return false;
             }
 
+            _channels = value ? _channels | flag : _channels & ~flag;
+            RefreshAllViewers();
             return true;
         }
 
         protected override void OnDestroyed()
         {
+            if (SubSystems.TryGet(out AreaSubSystem areaSubSystem))
+            {
+                areaSubSystem.OnSystemSetUp -= OnAreaSystemSetup;
+                if (IsServer)
+                {
+                    areaSubSystem.UnregisterApc(this);
+                }
+            }
+
             if (SubSystems.TryGet(out ElectricitySubSystem electricitySystem))
             {
-                electricitySystem.RemoveElectricalElement(this);
                 electricitySystem.OnSystemSetUp -= OnElectricitySystemSetup;
+                if (IsServer)
+                {
+                    electricitySystem.RemoveElectricalElement(this);
+                }
             }
 
             base.OnDestroyed();
         }
 
-        private static ApcPowerState DerivePowerState(CircuitStats stats)
-        {
-            if (stats.ApcBatteryCharge <= CriticalBatteryThreshold && !stats.GridMeetsLoad)
-            {
-                return ApcPowerState.Critical;
-            }
+        private static ApcPowerState DerivePowerState(CircuitStats stats) =>
+            ApcStatusDeriver.DerivePowerState(stats);
 
-            if (!stats.GridMeetsLoad || stats.BatteryDraining)
-            {
-                return ApcPowerState.Overload;
-            }
-
-            return ApcPowerState.Nominal;
-        }
-
-        private static ApcBatteryState DeriveBatteryState(CircuitStats stats)
-        {
-            if (stats.ApcBatteryCharge <= CriticalBatteryThreshold)
-            {
-                return ApcBatteryState.Critical;
-            }
-
-            if (stats.BatteryDraining)
-            {
-                return ApcBatteryState.Discharging;
-            }
-
-            return ApcBatteryState.Charged;
-        }
+        private static ApcBatteryState DeriveBatteryState(CircuitStats stats) =>
+            ApcStatusDeriver.DeriveBatteryState(stats);
 
         private static void ApplyDiagnostics(ref ApcInterfaceSnapshot snapshot, CircuitStats stats, ApcPowerState powerState, ApcBatteryState batteryState)
         {
             List<ApcDiagnosticSnapshot> diagnostics = new();
 
-            if (stats.TotalSupplyKw <= 0f)
+            if (stats.GridAvailableKw <= 0f && stats.TotalDemandKw > 0f)
             {
                 diagnostics.Add(new ApcDiagnosticSnapshot
                 {
@@ -179,7 +207,7 @@ namespace SS3D.UI.MachineInterface
                     Tone = (byte)StatusTone.Danger,
                 });
             }
-            else if (!stats.GridMeetsLoad)
+            else if (stats.TotalDemandKw > 0f && !stats.GridMeetsLoad)
             {
                 diagnostics.Add(new ApcDiagnosticSnapshot
                 {
@@ -188,7 +216,7 @@ namespace SS3D.UI.MachineInterface
                     Tone = (byte)StatusTone.Warning,
                 });
             }
-            else
+            else if (stats.TotalDemandKw > 0f || stats.GridAvailableKw > 0f)
             {
                 diagnostics.Add(new ApcDiagnosticSnapshot
                 {
@@ -224,6 +252,16 @@ namespace SS3D.UI.MachineInterface
                     Glyph = ">",
                     Text = "Consider shedding non-critical channels.",
                     Tone = (byte)StatusTone.Info,
+                });
+            }
+
+            if (snapshot.MultipleApcsInArea)
+            {
+                diagnostics.Add(new ApcDiagnosticSnapshot
+                {
+                    Glyph = "!",
+                    Text = "Multiple APCs share this flood-filled region.",
+                    Tone = (byte)StatusTone.Warning,
                 });
             }
 
@@ -293,7 +331,7 @@ namespace SS3D.UI.MachineInterface
             CircuitStats stats = default;
             if (SubSystems.TryGet(out ElectricitySubSystem electricitySubSystem))
             {
-                electricitySubSystem.TryGetCircuitStats(this, this, out stats);
+                electricitySubSystem.TryGetApcCircuitStats(this, this, out stats);
             }
 
             ApcPowerState powerState = DerivePowerState(stats);
@@ -313,10 +351,23 @@ namespace SS3D.UI.MachineInterface
                 LightingLoadKw = stats.LightingLoadKw,
                 EquipmentLoadKw = stats.EquipmentLoadKw,
                 EnvironmentLoadKw = stats.EnvironmentLoadKw,
+                MultipleApcsInArea = _multipleApcsInArea,
+                AccessGranted = AccessGranted,
+                AccessScanning = AccessScanning,
+                AccessDenied = AccessDenied,
             };
 
             ApplyDiagnostics(ref snapshot, stats, powerState, batteryState);
             return snapshot;
+        }
+
+        private void OnAreaSystemSetup()
+        {
+            if (SubSystems.TryGet(out AreaSubSystem areaSubSystem))
+            {
+                areaSubSystem.RegisterApc(this);
+                areaSubSystem.OnSystemSetUp -= OnAreaSystemSetup;
+            }
         }
 
         private void OnElectricitySystemSetup()

@@ -274,6 +274,8 @@ MonoBehaviour:
   _light: {fileID: 2502875599337934467}
   _emissiveRenderers:
   - {fileID: 8972151215438808530}
+  _respectDevBypass: 1
+  _fixtureCapability: 1
 --- !u!114 &8301714305325130111
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -289,7 +291,8 @@ MonoBehaviour:
   _componentIndexCache: 0
   _addedNetworkObject: {fileID: -7828078595381397262}
   _networkObjectCache: {fileID: -7828078595381397262}
-  _powerConsumption: 5
+  _powerConsumption: 0.25
+  _channel: 0
   _powerStatus: 0
 --- !u!114 &-7419120924986984554
 MonoBehaviour:

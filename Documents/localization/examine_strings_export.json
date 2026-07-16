@@ -136,6 +136,13 @@
             "EnDescription": "An air vent. Provides rooms with an air supply."
         },
         {
+            "AssetPath": "Assets/Content/Data/Examine/String/Furniture/Machines/Atmospherics/GasPump.asset",
+            "NameKey": "furniture.machines.atmospherics.gas_pump.name",
+            "DescriptionKey": "furniture.machines.atmospherics.gas_pump.desc",
+            "EnName": "Gas Pump",
+            "EnDescription": "A gas pump. Moves gases between a turf cell and the connected pipe network."
+        },
+        {
             "AssetPath": "Assets/Content/Data/Examine/String/Furniture/Machines/Engineering/PacManGenerator.asset",
             "NameKey": "furniture.machines.engineering.pac_man_generator.name",
             "DescriptionKey": "furniture.machines.engineering.pac_man_generator.desc",

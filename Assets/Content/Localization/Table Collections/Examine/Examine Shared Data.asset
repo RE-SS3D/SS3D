@@ -1171,6 +1171,14 @@ MonoBehaviour:
     m_Key: structures.wires.wires.desc
     m_Metadata:
       m_Items: []
+  - m_Id: 252934895022240032
+    m_Key: furniture.machines.atmospherics.gas_pump.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022240033
+    m_Key: furniture.machines.atmospherics.gas_pump.desc
+    m_Metadata:
+      m_Items: []
   - m_Id: 252937831022456832
     m_Key: examine.identification.owner
     m_Metadata:

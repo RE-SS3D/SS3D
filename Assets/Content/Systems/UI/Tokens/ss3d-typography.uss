@@ -1,5 +1,3 @@
-@import url("ss3d-tokens.uss");
-
 .font-titling {
     -unity-font-definition: url("project://database/Assets/Content/Systems/UI/Font/Fonts/GurajadaRegularSDF.asset");
     color: var(--ss3d-text-primary);

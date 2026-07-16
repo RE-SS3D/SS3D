@@ -10,6 +10,8 @@ namespace SS3D.UI.MachineInterface
 
         event Action<byte, float> NumericControlChanged;
 
+        event Action<byte, int> ActionControlChanged;
+
         void Bind(IMachineInterfaceViewModel viewModel);
 
         void Disconnect();

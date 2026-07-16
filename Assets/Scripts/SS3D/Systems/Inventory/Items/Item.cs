@@ -250,6 +250,26 @@ namespace SS3D.Systems.Inventory.Items
             }
         }
         
+        /// <summary>
+        /// Removes any interaction outline shells (added by <see cref="SS3D.Systems.Interactions.InteractionOutlineView"/>)
+        /// from a preview clone, so they can't be force-enabled by <see cref="SetVisibility"/> and leak into
+        /// generated icons.
+        /// </summary>
+        private static void RemoveInteractionOutlines(Transform root)
+        {
+            for (int i = root.childCount - 1; i >= 0; i--)
+            {
+                Transform child = root.GetChild(i);
+                if (child.name == "InteractionOutline")
+                {
+                    child.gameObject.Dispose(true);
+                    continue;
+                }
+
+                RemoveInteractionOutlines(child);
+            }
+        }
+
         /// <param name="visible">Should the item be visible</param>
         [ServerOrClient]
         public void SetVisibility(bool visible)
@@ -258,6 +278,13 @@ namespace SS3D.Systems.Inventory.Items
             Renderer[] renderers = GetComponentsInChildren<Renderer>();
             foreach (Renderer childRenderer in renderers)
             {
+                // Interaction outline shells manage their own visibility (see InteractionOutlineView);
+                // toggling them here would leave them stuck visible when the outline is meant to be hidden.
+                if (childRenderer.transform.name == "InteractionOutline")
+                {
+                    continue;
+                }
+
                 childRenderer.enabled = visible;
             }
         }
@@ -355,6 +382,7 @@ namespace SS3D.Systems.Inventory.Items
 
             Transform previewObject = Instantiate(transform, null, false);
             previewObject.gameObject.hideFlags = HideFlags.HideAndDontSave;
+            RemoveInteractionOutlines(previewObject);
             previewObject.GetComponent<Item>().SetVisibility(true);
             Sprite icon;
             try

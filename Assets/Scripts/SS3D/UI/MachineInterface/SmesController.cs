@@ -2,8 +2,8 @@ using FishNet.Connection;
 using FishNet.Object;
 using FishNet.Object.Synchronizing;
 using SS3D.Core;
-using System.Collections.Generic;
-using System.Electricity;
+using SS3D.Systems.IdAccess;
+using SS3D.Systems.Electricity;
 using UnityEngine;
 
 namespace SS3D.UI.MachineInterface
@@ -12,10 +12,10 @@ namespace SS3D.UI.MachineInterface
     /// Networked SMES machine interface controller. Reads battery/circuit state and exposes input/output controls.
     /// </summary>
     [RequireComponent(typeof(SmesBattery))]
-    public sealed class SmesController : MachineInterfaceBehaviour
+    [RequireComponent(typeof(AuthLogDeviceBehaviour))]
+    public sealed class SmesController : AccessGatedMachineInterfaceBehaviour
     {
         private const float CriticalChargeThreshold = 0.05f;
-        private const float LowChargeThreshold = 0.15f;
         private const float MinRateKw = 1f;
         private const float MaxRateKw = 50f;
         private const float RateStepKw = 1f;
@@ -39,22 +39,14 @@ namespace SS3D.UI.MachineInterface
 
         public override string InterfaceId => MachineInterfaceIds.Smes;
 
+        protected override byte ReadIdControlId => MachineInterfaceControlIds.Smes.ReadId;
+
         public override void OnStartServer()
         {
             _battery = GetComponent<SmesBattery>();
             base.OnStartServer();
-
-            ElectricitySubSystem electricitySystem = SubSystems.Get<ElectricitySubSystem>();
-            if (electricitySystem.IsSetUp)
-            {
-                RegisterWithElectricity(electricitySystem);
-            }
-            else
-            {
-                electricitySystem.OnSystemSetUp += OnElectricitySystemSetup;
-            }
-
             ApplyOutputEnabled(_outputEnabled);
+            ApplyInputSettings();
         }
 
         protected override void SendOpenToViewer(NetworkConnection conn)
@@ -69,15 +61,20 @@ namespace SS3D.UI.MachineInterface
 
         protected override bool ApplyControl(byte controlId, bool value)
         {
+            if (!AccessGranted)
+            {
+                return false;
+            }
+
             switch (controlId)
             {
-                case 0:
+                case MachineInterfaceControlIds.Smes.Input:
                 {
                     _inputEnabled = value;
                     return true;
                 }
 
-                case 1:
+                case MachineInterfaceControlIds.Smes.Output:
                 {
                     _outputEnabled = value;
                     ApplyOutputEnabled(value);
@@ -93,20 +90,25 @@ namespace SS3D.UI.MachineInterface
 
         protected override bool ApplyNumericControl(byte controlId, float delta)
         {
+            if (!AccessGranted)
+            {
+                return false;
+            }
+
             switch (controlId)
             {
-                case 0:
+                case MachineInterfaceControlIds.Smes.Input:
                 {
                     _inputMaxKw = Mathf.Clamp(_inputMaxKw + delta, MinRateKw, MaxRateKw);
                     return true;
                 }
 
-                case 1:
+                case MachineInterfaceControlIds.Smes.Output:
                 {
                     _outputMaxKw = Mathf.Clamp(_outputMaxKw + delta, MinRateKw, MaxRateKw);
                     if (_battery != null)
                     {
-                        _battery.Init(_outputMaxKw, _battery.MaxCapacity, _battery.StoredPower);
+                        _battery.Init(_outputMaxKw, _battery.MaxCapacityKwh, _battery.StoredEnergyKwh, _inputEnabled ? _inputMaxKw : 0f);
                     }
 
                     return true;
@@ -117,17 +119,6 @@ namespace SS3D.UI.MachineInterface
                     return false;
                 }
             }
-        }
-
-        protected override void OnDestroyed()
-        {
-            if (SubSystems.TryGet(out ElectricitySubSystem electricitySystem))
-            {
-                electricitySystem.RemoveElectricalElement(_battery);
-                electricitySystem.OnSystemSetUp -= OnElectricitySystemSetup;
-            }
-
-            base.OnDestroyed();
         }
 
         private static SmesPowerState DerivePowerState(float chargePct, CircuitStats stats, bool inputActive, bool outputActive)
@@ -175,105 +166,6 @@ namespace SS3D.UI.MachineInterface
             };
         }
 
-        private static void ApplyWarnings(
-            ref SmesInterfaceSnapshot snapshot,
-            SmesPowerState powerState,
-            CircuitStats stats,
-            float chargePct,
-            bool inputActive)
-        {
-            List<ApcDiagnosticSnapshot> warnings = new();
-
-            if (!inputActive && snapshot.OutputActive)
-            {
-                warnings.Add(new ApcDiagnosticSnapshot
-                {
-                    Glyph = "!",
-                    Text = "No grid connection detected.",
-                    Tone = (byte)StatusTone.Danger,
-                });
-                snapshot.DiagnosisHint = "The SMES is not the fault — check the upstream generator or grid cable feeding this unit.";
-            }
-
-            if (powerState == SmesPowerState.Overload)
-            {
-                warnings.Add(new ApcDiagnosticSnapshot
-                {
-                    Glyph = "!",
-                    Text = "Output exceeds sustainable generation.",
-                    Tone = (byte)StatusTone.Warning,
-                });
-                snapshot.DiagnosisHint = "The grid is overloaded, not the SMES — reduce distribution demand or bring another generator online.";
-            }
-
-            if (stats.BatteryDraining)
-            {
-                warnings.Add(new ApcDiagnosticSnapshot
-                {
-                    Glyph = "!",
-                    Text = "Battery discharge increasing.",
-                    Tone = (byte)StatusTone.Warning,
-                });
-            }
-
-            if (chargePct <= LowChargeThreshold)
-            {
-                warnings.Add(new ApcDiagnosticSnapshot
-                {
-                    Glyph = "X",
-                    Text = "Charge critical — connect input immediately.",
-                    Tone = (byte)StatusTone.Danger,
-                });
-            }
-
-            if (powerState == SmesPowerState.Fault)
-            {
-                warnings.Add(new ApcDiagnosticSnapshot
-                {
-                    Glyph = "X",
-                    Text = "Cell bank overheating — output disabled.",
-                    Tone = (byte)StatusTone.Danger,
-                });
-                snapshot.DiagnosisHint = "The SMES itself has faulted — restore input power, then let it cool before re-enabling output.";
-            }
-
-            snapshot.WarningCount = Mathf.Min(warnings.Count, SmesInterfaceSnapshot.MaxWarnings);
-            for (int i = 0; i < snapshot.WarningCount; i++)
-            {
-                SetWarning(ref snapshot, i, warnings[i]);
-            }
-        }
-
-        private static void SetWarning(ref SmesInterfaceSnapshot snapshot, int index, ApcDiagnosticSnapshot warning)
-        {
-            switch (index)
-            {
-                case 0:
-                {
-                    snapshot.Warning0 = warning;
-                    break;
-                }
-
-                case 1:
-                {
-                    snapshot.Warning1 = warning;
-                    break;
-                }
-
-                case 2:
-                {
-                    snapshot.Warning2 = warning;
-                    break;
-                }
-
-                case 3:
-                {
-                    snapshot.Warning3 = warning;
-                    break;
-                }
-            }
-        }
-
         [TargetRpc(RunLocally = true)]
         private void TargetOpenInterface(NetworkConnection conn, SmesInterfaceSnapshot snapshot)
         {
@@ -299,8 +191,8 @@ namespace SS3D.UI.MachineInterface
                 electricitySubSystem.TryGetCircuitStats(_battery, _battery, out stats);
             }
 
-            float chargePct = _battery != null && _battery.MaxCapacity > 0f
-                ? _battery.StoredPower / _battery.MaxCapacity
+            float chargePct = _battery != null && _battery.MaxCapacityKwh > 0f
+                ? _battery.StoredEnergyKwh / _battery.MaxCapacityKwh
                 : 0f;
 
             float inputKw = Mathf.Min(stats.TotalSupplyKw, _inputMaxKw);
@@ -328,29 +220,12 @@ namespace SS3D.UI.MachineInterface
                 InputActive = inputActive,
                 OutputActive = outputActive,
                 ConnectionStateText = BuildConnectionStateText(powerState, inputActive, outputActive),
-                DiagnosisHint = string.Empty,
+                AccessGranted = AccessGranted,
+                AccessScanning = AccessScanning,
+                AccessDenied = AccessDenied,
             };
 
-            ApplyWarnings(ref snapshot, powerState, stats, chargePct, inputActive);
             return snapshot;
-        }
-
-        private void OnElectricitySystemSetup()
-        {
-            if (SubSystems.TryGet(out ElectricitySubSystem electricitySystem))
-            {
-                RegisterWithElectricity(electricitySystem);
-            }
-        }
-
-        private void RegisterWithElectricity(ElectricitySubSystem electricitySystem)
-        {
-            if (_battery == null)
-            {
-                _battery = GetComponent<SmesBattery>();
-            }
-
-            electricitySystem.AddElectricalElement(_battery);
         }
 
         private void OnBoolControlChanged(bool oldValue, bool newValue, bool asServer)
@@ -363,6 +238,7 @@ namespace SS3D.UI.MachineInterface
             if (_battery != null)
             {
                 ApplyOutputEnabled(_outputEnabled);
+                ApplyInputSettings();
             }
 
             RefreshAllViewers();
@@ -375,6 +251,11 @@ namespace SS3D.UI.MachineInterface
                 return;
             }
 
+            if (_battery != null)
+            {
+                _battery.Init(_outputMaxKw, _battery.MaxCapacityKwh, _battery.StoredEnergyKwh, _inputEnabled ? _inputMaxKw : 0f);
+            }
+
             RefreshAllViewers();
         }
 
@@ -384,6 +265,16 @@ namespace SS3D.UI.MachineInterface
             {
                 _battery.IsOn = enabled;
             }
+        }
+
+        private void ApplyInputSettings()
+        {
+            if (_battery == null)
+            {
+                return;
+            }
+
+            _battery.MaxChargeRateKw = _inputEnabled ? _inputMaxKw : 0f;
         }
     }
 }

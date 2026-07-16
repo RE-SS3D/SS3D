@@ -1,0 +1,173 @@
+
+.diegetic-device-shell {
+    width: var(--ss3d-diegetic-width);
+    background-color: var(--ss3d-diegetic-chassis-bg);
+    border-radius: var(--ss3d-diegetic-chassis-radius);
+    padding: var(--ss3d-diegetic-chassis-padding);
+    border-width: 1px;
+    border-color: var(--ss3d-diegetic-chassis-border);
+    flex-shrink: 1;
+    max-height: 100%;
+}
+
+.diegetic-device-shell__chassis-header {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    padding-bottom: var(--ss3d-space-3);
+}
+
+.diegetic-device-shell__model-group {
+    flex-direction: row;
+    align-items: center;
+    flex-grow: 1;
+}
+
+.diegetic-device-shell__model-label {
+    font-size: 8px;
+    letter-spacing: 2px;
+    color: rgba(255, 255, 255, 0.35);
+    -unity-text-align: middle-left;
+}
+
+.diegetic-device-shell__power-group {
+    flex-direction: row;
+    align-items: center;
+    margin-right: var(--ss3d-space-2);
+}
+
+.diegetic-device-shell__power-label {
+    font-size: 8px;
+    letter-spacing: 2px;
+    color: rgba(255, 255, 255, 0.35);
+    margin-left: 6px;
+}
+
+.diegetic-device-shell__close {
+    width: 24px;
+    height: 24px;
+    min-width: 24px;
+    padding: 0;
+    margin: 0;
+    border-width: 0;
+    background-color: transparent;
+    color: rgba(255, 255, 255, 0.35);
+    font-size: 14px;
+    -unity-font-style: bold;
+}
+
+.diegetic-device-shell__close:hover {
+    color: var(--ss3d-feedback-danger);
+    background-color: var(--ss3d-feedback-danger-bg);
+}
+
+.diegetic-device-shell__bezel {
+    background-color: var(--ss3d-diegetic-bezel-bg);
+    border-radius: var(--ss3d-diegetic-bezel-radius);
+    padding: var(--ss3d-diegetic-bezel-padding);
+    flex-shrink: 1;
+    min-height: 0;
+}
+
+.diegetic-device-shell__screen {
+    background-color: var(--ss3d-diegetic-screen-bg);
+    padding: var(--ss3d-diegetic-screen-padding);
+    max-height: var(--ss3d-diegetic-screen-max-height);
+    flex-direction: column;
+    flex-grow: 1;
+    flex-shrink: 1;
+    min-height: 0;
+    overflow: hidden;
+}
+
+.diegetic-device-shell__scroll {
+    flex-grow: 1;
+    flex-shrink: 1;
+    min-height: 0;
+}
+
+.diegetic-device-shell__scroll .unity-scroll-view__content-viewport {
+    padding-right: 0;
+}
+
+.diegetic-device-shell__scroll .unity-scroll-view__content-container {
+    align-items: stretch;
+    min-width: 100%;
+}
+
+.diegetic-device-shell__scroll .unity-scroller--vertical {
+    width: 8px;
+    margin-left: 4px;
+}
+
+.diegetic-device-shell__scroll .unity-base-slider__tracker {
+    background-color: var(--ss3d-diegetic-inset);
+    border-radius: 4px;
+    border-width: 0;
+}
+
+.diegetic-device-shell__scroll .unity-base-slider__dragger {
+    background-color: var(--ss3d-diegetic-border-default);
+    border-radius: 4px;
+    border-width: 0;
+    min-height: 24px;
+}
+
+.diegetic-device-shell__scroll .unity-base-slider__dragger:hover {
+    background-color: var(--ss3d-diegetic-text-tertiary);
+}
+
+.diegetic-device-shell__screen-content {
+    flex-direction: column;
+    flex-grow: 0;
+    flex-shrink: 0;
+    width: 100%;
+    align-self: stretch;
+    --ss3d-text-primary: var(--ss3d-diegetic-text-primary);
+    --ss3d-text-secondary: var(--ss3d-diegetic-text-secondary);
+    --ss3d-text-tertiary: var(--ss3d-diegetic-text-tertiary);
+    --ss3d-diegetic-panel-raised: #23262b;
+    --ss3d-diegetic-panel-body: #171a1e;
+    --ss3d-diegetic-inset: #0a0b0d;
+    --ss3d-surface-inset: var(--ss3d-diegetic-inset);
+    --ss3d-feedback-success: var(--ss3d-diegetic-feedback-success);
+    --ss3d-feedback-success-bg: var(--ss3d-diegetic-feedback-success-bg);
+    --ss3d-feedback-success-border: var(--ss3d-diegetic-feedback-success-border);
+    --ss3d-feedback-warning: var(--ss3d-diegetic-feedback-warning);
+    --ss3d-feedback-warning-bg: var(--ss3d-diegetic-feedback-warning-bg);
+    --ss3d-feedback-warning-border: var(--ss3d-diegetic-feedback-warning);
+    --ss3d-feedback-danger: var(--ss3d-diegetic-feedback-danger);
+    --ss3d-feedback-danger-bg: var(--ss3d-diegetic-feedback-danger-bg);
+    --ss3d-feedback-danger-border: var(--ss3d-diegetic-feedback-danger);
+    --ss3d-border-subtle: var(--ss3d-diegetic-border-subtle);
+    --ss3d-border-default: var(--ss3d-diegetic-border-default);
+    --ss3d-accent-rust: #c54f30;
+}
+
+.diegetic-device-shell__screen-content .panel-section__content Label {
+    background-color: rgba(0, 0, 0, 0);
+}
+
+.diegetic-device-shell--apc {
+    width: var(--ss3d-diegetic-width-apc);
+}
+
+.diegetic-device-shell--smes {
+    width: var(--ss3d-diegetic-width-smes);
+}
+
+.diegetic-device-shell--air-alarm {
+    width: var(--ss3d-diegetic-width-air-alarm);
+}
+
+.diegetic-device-shell--scrubber {
+    width: var(--ss3d-diegetic-width-scrubber);
+}
+
+.diegetic-device-shell--vent {
+    width: var(--ss3d-diegetic-width-vent);
+}
+
+.diegetic-device-shell--pump {
+    width: var(--ss3d-diegetic-width-pump);
+}

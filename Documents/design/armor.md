@@ -71,10 +71,3 @@ No new permanent chrome — same discipline as everything else in this project.
 - Armor crafting or modification
 - Equip-slot UI (covered by the already-deferred inventory screen)
 
-## 9. Prototyping this
-
-**Cursor, prompt 1 — data contract first:**
-> Here's the armor design doc. Define the armor-piece record (zone coverage, per-damage-type absorption, integrity/durability, weight, and — where applicable — seal type and resource capacity). Define the hit-resolution insertion point: armor absorption applies between the existing combat hit resolution and the per-limb damage model, and define the breach check (absorbed damage exceeds remaining absorption → seal on that zone fails). Show me the data contract before wiring any specific item.
-
-**Cursor, prompt 2 — one vertical slice:**
-> Wire one combat armor piece (a vest covering chest, brute/burn absorption, integrity that depletes and eventually breaks) end to end against the existing hit resolution. Environmental sealing, weight/stamina interaction, and the alert-stack additions come after this is reviewed.

@@ -20,7 +20,7 @@ namespace EditorTests
                 CreateEntry("Mid", 50),
             };
 
-            List<InteractionEntry> viable = InteractionPipeline.FilterAndSort(source, entries, Vector3.zero, IntentType.Help);
+            List<InteractionEntry> viable = InteractionPipeline.FilterAndSort(source, entries, Vector3.zero, Vector3.up, IntentType.Help);
 
             Assert.AreEqual(3, viable.Count);
             Assert.AreEqual("High", viable[0].Interaction.GetGenericName());
@@ -38,7 +38,7 @@ namespace EditorTests
                 CreateEntry("Pickup", 10),
             };
 
-            List<InteractionEntry> viable = InteractionPipeline.FilterAndSort(source, entries, Vector3.zero, IntentType.Help);
+            List<InteractionEntry> viable = InteractionPipeline.FilterAndSort(source, entries, Vector3.zero, Vector3.up, IntentType.Help);
 
             Assert.AreEqual(1, viable.Count);
             Assert.AreEqual("Pickup", viable[0].Interaction.GetGenericName());

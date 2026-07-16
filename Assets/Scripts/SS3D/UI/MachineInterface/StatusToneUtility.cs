@@ -10,12 +10,14 @@ namespace SS3D.UI.MachineInterface
             element.RemoveFromClassList("tone-success");
             element.RemoveFromClassList("tone-warning");
             element.RemoveFromClassList("tone-danger");
+            element.RemoveFromClassList("tone-neutral");
 
             string className = tone switch
             {
                 StatusTone.Success => "tone-success",
                 StatusTone.Warning => "tone-warning",
                 StatusTone.Danger => "tone-danger",
+                StatusTone.Neutral => "tone-neutral",
                 _ => "tone-info",
             };
 

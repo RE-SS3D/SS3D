@@ -27,6 +27,7 @@ namespace SS3D.Systems.Inventory.Containers
         EarLeft = 1 << 13,
         EarRight = 1 << 14,
         Belt = 1 << 15,
+        Pda = 1 << 16,
     }
 }
 

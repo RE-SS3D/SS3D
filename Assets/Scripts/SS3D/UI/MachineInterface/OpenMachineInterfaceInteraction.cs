@@ -5,7 +5,11 @@ using UnityEngine;
 
 namespace SS3D.UI.MachineInterface
 {
-    public sealed class OpenMachineInterfaceInteraction : IInteraction, IClientInteractionSource
+    /// <summary>
+    /// Opens a machine panel via the validated server interaction path only.
+    /// Do not add a client open ServerRpc — that bypasses range checks.
+    /// </summary>
+    public sealed class OpenMachineInterfaceInteraction : IInteraction
     {
         public int Priority => 60;
 
@@ -13,7 +17,7 @@ namespace SS3D.UI.MachineInterface
 
         public string GetName(InteractionEvent interactionEvent) => "Open interface";
 
-        public Sprite GetIcon(InteractionEvent interactionEvent) => null;
+        public Sprite GetIcon(InteractionEvent interactionEvent) => InteractionIconLookup.MachineInterface;
 
         public bool CanInteract(InteractionEvent interactionEvent)
         {
@@ -38,16 +42,6 @@ namespace SS3D.UI.MachineInterface
             }
 
             return false;
-        }
-
-        public IClientInteraction CreateClient(InteractionEvent interactionEvent)
-        {
-            if (interactionEvent.Target is MachineInterfaceBehaviour machine)
-            {
-                machine.CmdRequestOpen();
-            }
-
-            return null;
         }
     }
 }

@@ -1,14 +1,29 @@
 using System.Collections.Generic;
+using SS3D.Systems.Electricity;
 
 namespace SS3D.UI.MachineInterface
 {
-    public class ApcInterfaceViewModel : IMachineInterfaceViewModel
+    public class ApcInterfaceViewModel : IMachineInterfaceViewModel, IAccessGatedInterfaceViewModel
     {
         public string Title { get; set; } = "APC · ENGINEERING BAY";
 
+        public string ModelLabel { get; set; } = "APC-7 · area power controller";
+
+        public string DeviceTitle { get; set; } = "APC-ENG-03";
+
+        public string Subtitle { get; set; } = "Engineering Bay 3";
+
+        public string ConnectionStatus { get; set; } = "WIRED · POWER NET · NODE E-12";
+
+        public string HeaderReadout { get; set; } = "GRID FEED NOMINAL";
+
+        public string FooterText { get; set; } = "SS3D Area Power Controller — Model APC-7";
+
+        public bool ChassisPowerOk { get; set; } = true;
+
         public ApcPowerState State { get; set; } = ApcPowerState.Nominal;
 
-        public string StatusHeadline { get; set; } = "POWER NOMINAL";
+        public string StatusHeadline { get; set; } = "ROOM POWERED";
 
         public string StatusExplanation { get; set; } = "Grid supply meets connected load.";
 
@@ -36,26 +51,30 @@ namespace SS3D.UI.MachineInterface
 
         public List<DiagnosticLine> Diagnostics { get; set; } = new();
 
+        public bool AccessGranted { get; set; }
+
+        public bool AccessScanning { get; set; }
+
+        public bool AccessDenied { get; set; }
+
         public static ApcInterfaceViewModel CreateNominal()
         {
             return new ApcInterfaceViewModel
             {
                 State = ApcPowerState.Nominal,
-                StatusHeadline = "POWER NOMINAL",
+                StatusHeadline = "ROOM POWERED",
                 StatusExplanation = "Grid supply meets connected load.",
-                GridInputKw = 12.4f,
-                LoadOutputKw = 9.8f,
-                BatteryCharge = 0.92f,
+                HeaderReadout = "GRID FEED NOMINAL",
+                GridInputKw = 6.2f,
+                LoadOutputKw = 4.8f,
+                BatteryCharge = 0.98f,
                 BatteryStateText = "CHARGED",
-                BatteryEtaText = "FULL",
-                LightingLoadKw = 2.1f,
-                EquipmentLoadKw = 5.4f,
-                EnvironmentLoadKw = 2.3f,
+                LightingLoadKw = 0.6f,
+                EquipmentLoadKw = 2.9f,
+                EnvironmentLoadKw = 1.3f,
                 Diagnostics = new List<DiagnosticLine>
                 {
-                    new(">", "External power available.", StatusTone.Success),
-                    new(">", "Cell charge above threshold.", StatusTone.Success),
-                    new(">", "All channels enabled.", StatusTone.Info),
+                    new("✓", "NO FAULTS DETECTED.", StatusTone.Neutral),
                 },
             };
         }
@@ -65,21 +84,20 @@ namespace SS3D.UI.MachineInterface
             return new ApcInterfaceViewModel
             {
                 State = ApcPowerState.Overload,
-                StatusHeadline = "GRID OVERLOAD",
-                StatusExplanation = "Connected load exceeds grid supply. Battery discharging.",
-                GridInputKw = 6.2f,
-                LoadOutputKw = 11.5f,
-                BatteryCharge = 0.48f,
+                StatusHeadline = "Running on Battery",
+                StatusExplanation = "Grid supply below connected load.",
+                HeaderReadout = "LOAD EXCEEDS SUPPLY",
+                GridInputKw = 3.0f,
+                LoadOutputKw = 5.4f,
+                BatteryCharge = 0.41f,
                 BatteryStateText = "DISCHARGING",
-                BatteryEtaText = "~4 MIN",
-                LightingLoadKw = 2.1f,
-                EquipmentLoadKw = 6.8f,
-                EnvironmentLoadKw = 2.6f,
+                LightingLoadKw = 0.6f,
+                EquipmentLoadKw = 2.9f,
+                EnvironmentLoadKw = 1.3f,
                 Diagnostics = new List<DiagnosticLine>
                 {
                     new("!", "Grid supply below connected load.", StatusTone.Warning),
-                    new(">", "Cell compensating deficit.", StatusTone.Warning),
-                    new(">", "Consider shedding non-critical channels.", StatusTone.Info),
+                    new("→", "Shut off a system to reduce draw.", StatusTone.Info),
                 },
             };
         }
@@ -89,24 +107,24 @@ namespace SS3D.UI.MachineInterface
             return new ApcInterfaceViewModel
             {
                 State = ApcPowerState.Critical,
-                StatusHeadline = "POWER CRITICAL",
-                StatusExplanation = "Cell depleted. Load shedding imminent.",
+                StatusHeadline = "POWER FAILURE",
+                StatusExplanation = "No grid input detected.",
+                HeaderReadout = "NO GRID INPUT",
+                ChassisPowerOk = false,
                 GridInputKw = 0f,
-                LoadOutputKw = 8.2f,
+                LoadOutputKw = 2.1f,
                 BatteryCharge = 0.06f,
                 BatteryStateText = "CRITICAL",
-                BatteryEtaText = "< 1 MIN",
                 LightingOn = false,
-                EquipmentOn = true,
-                EnvironmentOn = false,
+                EquipmentOn = false,
+                EnvironmentOn = true,
                 LightingLoadKw = 0f,
-                EquipmentLoadKw = 8.2f,
-                EnvironmentLoadKw = 0f,
+                EquipmentLoadKw = 0f,
+                EnvironmentLoadKw = 2.1f,
                 Diagnostics = new List<DiagnosticLine>
                 {
-                    new("X", "No external power detected.", StatusTone.Danger),
-                    new("!", "Cell charge critical.", StatusTone.Danger),
-                    new(">", "Auto-shed active on Lighting, Environment.", StatusTone.Warning),
+                    new("✕", "No grid input detected. Check upstream cable / SMES.", StatusTone.Danger),
+                    new("!", "Battery critical — equipment auto-disabled.", StatusTone.Danger),
                 },
             };
         }

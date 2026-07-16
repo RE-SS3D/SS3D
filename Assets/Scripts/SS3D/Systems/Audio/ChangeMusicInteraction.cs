@@ -23,9 +23,11 @@ namespace SS3D.Systems.Audio
         public Sprite GetIcon(InteractionEvent interactionEvent)
         {
             if (interactionEvent.Target is Boombox boom)
+            {
                 return boom.InteractionIcon;
+            }
 
-            return null;
+            return Icon ? Icon : InteractionIconLookup.Music;
         }
 
         public bool CanInteract(InteractionEvent interactionEvent)

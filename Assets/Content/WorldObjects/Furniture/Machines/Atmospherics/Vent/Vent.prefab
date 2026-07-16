@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 4432888557401662878}
   - component: {fileID: 8136077423948845529}
   m_Layer: 0
-  m_Name: VentFan
+  m_Name: Vent Fan
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -107,6 +107,10 @@ GameObject:
   - component: {fileID: 1278048393882565784}
   - component: {fileID: -9109099915246017288}
   - component: {fileID: -7411637464005841016}
+  - component: {fileID: 8827364519023341187}
+  - component: {fileID: 8827364519023341192}
+  - component: {fileID: 8827364519023341193}
+  - component: {fileID: 8827364519023341194}
   m_Layer: 0
   m_Name: Vent
   m_TagString: Untagged
@@ -157,7 +161,7 @@ MeshRenderer:
   m_RayTraceProcedural: 0
   m_RayTracingAccelStructBuildFlagsOverride: 0
   m_RayTracingAccelStructBuildFlags: 1
-  m_SmallMeshCulling: 1
+  m_SmallMeshCulling: 0
   m_ForceMeshLod: -1
   m_MeshLodSelectionBias: 0
   m_RenderingLayerMask: 1
@@ -254,7 +258,11 @@ MonoBehaviour:
   <IsNested>k__BackingField: 0
   <ComponentIndex>k__BackingField: 0
   <PredictedSpawn>k__BackingField: {fileID: 0}
-  _networkBehaviours: []
+  _networkBehaviours:
+  - {fileID: 8827364519023341187}
+  - {fileID: 8827364519023341192}
+  - {fileID: 8827364519023341193}
+  - {fileID: 8827364519023341194}
   <ParentNetworkObject>k__BackingField: {fileID: 0}
   <ChildNetworkObjects>k__BackingField: []
   SerializedTransformProperties:
@@ -306,3 +314,77 @@ MonoBehaviour:
   _updateHostVisibility: 1
   _observerConditions:
   - {fileID: 11400000, guid: cc503f7541ebd424c94541e6a767efee, type: 2}
+--- !u!114 &8827364519023341187
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9154955770433736351}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: accb27484c6b4af1a243478f75e418e0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _componentIndexCache: 0
+  _addedNetworkObject: {fileID: -2473204136432335067}
+  _networkObjectCache: {fileID: -2473204136432335067}
+  _animator: {fileID: 7551927119831908791}
+  _powerConsumer: {fileID: 8827364519023341192}
+  _enabled: 1
+  _animatorActive: 0
+  _portFlowing: 0
+  _previewAnimatorInEditor: 1
+--- !u!114 &8827364519023341192
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9154955770433736351}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b5dc697195ff36649947ce641b391e16, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _componentIndexCache: 1
+  _addedNetworkObject: {fileID: -2473204136432335067}
+  _networkObjectCache: {fileID: -2473204136432335067}
+  _powerConsumption: 0.2
+  _channel: 2
+  _powerStatus: 0
+--- !u!114 &8827364519023341193
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9154955770433736351}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1bbc87ddd49b01f4098910ffdf858004, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _componentIndexCache: 2
+  _addedNetworkObject: {fileID: -2473204136432335067}
+  _networkObjectCache: {fileID: -2473204136432335067}
+--- !u!114 &8827364519023341194
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9154955770433736351}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8a3b0d5f2c9e4157b6a3e0d9c2f5b8e4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _componentIndexCache: 3
+  _addedNetworkObject: {fileID: -2473204136432335067}
+  _networkObjectCache: {fileID: -2473204136432335067}
+  _title: "VENT \xB7 ATMOSPHERICS"
+  _modelLabel: "VT-14 \xB7 atmospheric vent unit"
+  _deviceTitle: VT-14
+  _subtitle: "Engineering Bay 3 \u2014 Atmospheric Vent"
+  _powerConsumer: {fileID: 8827364519023341192}

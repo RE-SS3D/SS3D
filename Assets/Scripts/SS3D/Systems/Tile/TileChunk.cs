@@ -34,6 +34,7 @@ namespace SS3D.Systems.Tile
         private Vector2Int _chunkKey;
         private Vector3 _originPosition;
         private List<TileGrid> _tileGridList;
+        private ushort[] _areaIds;
 
         public static TileChunk Create(Vector2Int chunkKey, Vector3 originPosition)
         {
@@ -142,6 +143,72 @@ namespace SS3D.Systems.Tile
             }
         }
 
+        private void EnsureAreaIds()
+        {
+            if (_areaIds != null)
+                return;
+
+            _areaIds = new ushort[ChunkSize * ChunkSize];
+        }
+
+        public ushort GetAreaId(int localX, int localY)
+        {
+            if (_areaIds == null || localX < 0 || localY < 0 || localX >= ChunkSize || localY >= ChunkSize)
+                return 0;
+
+            return _areaIds[localY * ChunkSize + localX];
+        }
+
+        public void SetAreaId(int localX, int localY, ushort id)
+        {
+            if (localX < 0 || localY < 0 || localX >= ChunkSize || localY >= ChunkSize)
+                return;
+
+            EnsureAreaIds();
+            _areaIds[localY * ChunkSize + localX] = id;
+        }
+
+        public void SetAreaIds(ushort[] ids)
+        {
+            if (ids == null || ids.Length != ChunkSize * ChunkSize)
+                return;
+
+            EnsureAreaIds();
+            Array.Copy(ids, _areaIds, ids.Length);
+        }
+
+        public void ClearAreaIds()
+        {
+            if (_areaIds == null)
+                return;
+
+            Array.Clear(_areaIds, 0, _areaIds.Length);
+        }
+
+        public bool HasAnyAreaIds()
+        {
+            if (_areaIds == null)
+                return false;
+
+            foreach (ushort areaId in _areaIds)
+            {
+                if (areaId != 0)
+                    return true;
+            }
+
+            return false;
+        }
+
+        public ushort[] CopyAreaIds()
+        {
+            if (_areaIds == null)
+                return null;
+
+            var copy = new ushort[_areaIds.Length];
+            Array.Copy(_areaIds, copy, _areaIds.Length);
+            return copy;
+        }
+
         public List<ITileLocation> GetTileLocations(int x, int y)
         {
 
@@ -209,6 +276,7 @@ namespace SS3D.Systems.Tile
                 savedTiles = SavedTiles.ToArray(),
                 originPosition = _originPosition,
                 chunkKey = _chunkKey,
+                areaIds = HasAnyAreaIds() ? CopyAreaIds() : null,
             };
 
             return saveObject;

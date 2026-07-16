@@ -1,8 +1,13 @@
-namespace System.Electricity
+namespace SS3D.Systems.Electricity
 {
     public struct CircuitStats
     {
         public float TotalSupplyKw;
+
+        /// <summary>
+        /// Grid headroom available to the APC before the last area draw, in kW.
+        /// </summary>
+        public float GridAvailableKw;
 
         public float TotalDemandKw;
 

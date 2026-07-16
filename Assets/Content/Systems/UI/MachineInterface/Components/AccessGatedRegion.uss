@@ -1,0 +1,16 @@
+
+.access-gated-region {
+    flex-direction: column;
+    flex-grow: 1;
+    min-width: 0;
+}
+
+.access-gated-region__controls {
+    flex-direction: column;
+    flex-grow: 1;
+    min-width: 0;
+}
+
+.access-gated-region__controls--hidden {
+    display: none;
+}

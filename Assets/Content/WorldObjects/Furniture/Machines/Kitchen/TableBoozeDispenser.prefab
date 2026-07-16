@@ -212,6 +212,7 @@ GameObject:
   - component: {fileID: 5947817776542571981}
   - component: {fileID: 5323246766978482323}
   - component: {fileID: 4379932917193560450}
+  - component: {fileID: 9000000000000000003}
   m_Layer: 0
   m_Name: Body
   m_TagString: Untagged
@@ -330,6 +331,18 @@ MonoBehaviour:
   substances: 03000000
   amount: 250
   useMillilitres: 1
+--- !u!114 &9000000000000000003
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4379219507269237858}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e00534faac6488c47893490f2bf4c5a2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &5027368584148461806
 GameObject:
   m_ObjectHideFlags: 0

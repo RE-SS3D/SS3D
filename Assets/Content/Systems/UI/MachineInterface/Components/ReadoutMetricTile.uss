@@ -1,0 +1,33 @@
+
+.readout-metric-tile {
+    flex-direction: column;
+    flex-grow: 1;
+    flex-basis: 0;
+    min-width: 0;
+    padding: 8px 10px;
+    background-color: var(--ss3d-diegetic-inset);
+    border-width: 1px;
+    border-color: var(--ss3d-border-subtle);
+    border-radius: var(--ss3d-radius-sm);
+}
+
+.readout-metric-tile__label {
+    font-size: 9px;
+    letter-spacing: 2px;
+    color: var(--ss3d-text-tertiary);
+    margin-bottom: 2px;
+    padding: 0;
+    background-color: rgba(0, 0, 0, 0);
+}
+
+.readout-metric-tile__value {
+    font-size: 15px;
+    color: var(--ss3d-text-primary);
+    padding: 0;
+    background-color: rgba(0, 0, 0, 0);
+}
+
+.panel-section__content .readout-metric-tile__label,
+.panel-section__content .readout-metric-tile__value {
+    background-color: rgba(0, 0, 0, 0);
+}

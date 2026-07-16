@@ -3604,7 +3604,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 6241789247798514904}
-        m_TargetAssemblyTypeName: TileMapMenuBuildingView, SS3D.Systems
+        m_TargetAssemblyTypeName: AssetGrid, SS3D.Systems
         m_MethodName: LoadCurrentCategory
         m_Mode: 1
         m_Arguments:

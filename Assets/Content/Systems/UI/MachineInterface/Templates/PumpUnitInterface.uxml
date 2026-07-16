@@ -1,0 +1,89 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:ss3d="SS3D.UI.MachineInterface.Components" editor-extension-mode="False">
+    <ui:Style src="project://database/Assets/Content/Systems/UI/Tokens/ss3d-tokens.uss" />
+    <ui:Style src="project://database/Assets/Content/Systems/UI/Tokens/ss3d-typography.uss" />
+    <ui:Style src="project://database/Assets/Content/Systems/UI/MachineInterface/Tokens/diegetic-tokens.uss" />
+    <ui:Style src="project://database/Assets/Content/Systems/UI/MachineInterface/Tokens/diegetic-tones.uss" />
+    <ui:Style src="project://database/Assets/Content/Systems/UI/MachineInterface/Components/DiegeticDeviceShell.uss" />
+    <ui:Style src="project://database/Assets/Content/Systems/UI/MachineInterface/Components/StatusDot.uss" />
+    <ui:Style src="project://database/Assets/Content/Systems/UI/MachineInterface/Components/ConnectionStatusRow.uss" />
+    <ui:Style src="project://database/Assets/Content/Systems/UI/MachineInterface/Components/DeviceIdentityBlock.uss" />
+    <ui:Style src="project://database/Assets/Content/Systems/UI/MachineInterface/Components/GlanceableStatusChip.uss" />
+    <ui:Style src="project://database/Assets/Content/Systems/UI/MachineInterface/Components/PanelSection.uss" />
+    <ui:Style src="project://database/Assets/Content/Systems/UI/MachineInterface/Components/PressureFlowReadout.uss" />
+    <ui:Style src="project://database/Assets/Content/Systems/UI/MachineInterface/Components/AtmosIdReaderRow.uss" />
+    <ui:Style src="project://database/Assets/Content/Systems/UI/MachineInterface/Components/ToggleSwitch.uss" />
+    <ui:Style src="project://database/Assets/Content/Systems/UI/MachineInterface/Components/NumericStepper.uss" />
+    <ui:Style src="project://database/Assets/Content/Systems/UI/MachineInterface/Components/SteelButton.uss" />
+    <ui:Style src="project://database/Assets/Content/Systems/UI/MachineInterface/Components/StatusBadge.uss" />
+    <ui:Style src="project://database/Assets/Content/Systems/UI/MachineInterface/Components/DeviceFooter.uss" />
+    <ui:Style src="project://database/Assets/Content/Systems/UI/MachineInterface/Templates/PumpUnitInterface.uss" />
+
+    <ss3d:DiegeticDeviceShell name="device-shell"
+        class="diegetic-device-shell--pump"
+        model-label="PMP-22 · pipe pump unit"
+        power-ok="true"
+        style="align-self: center; margin-top: 24px;">
+        <ss3d:ConnectionStatusRow name="connection-row"
+            status-text="WIRED · PIPE NET · PORT P1" />
+        <ss3d:DeviceIdentityBlock name="identity"
+            title="PMP-22"
+            subtitle="Engineering Bay 3 — Pipe Pump" />
+        <ss3d:GlanceableStatusChip name="status-chip" />
+
+        <ui:VisualElement class="panel-section" name="pressure-readouts-section">
+            <ui:VisualElement class="panel-section__clip">
+                <ui:VisualElement class="panel-section__header">
+                    <ui:Label class="panel-section__header-title font-titling" text="Pressure Readouts" />
+                </ui:VisualElement>
+                <ui:VisualElement class="panel-section__content">
+                    <ss3d:PressureFlowReadout name="pressure-readout"
+                        external-label="Inlet"
+                        internal-label="Outlet"
+                        external-value="101.3 kPa"
+                        internal-value="101.3 kPa"
+                        flow-glyph="·" />
+                    <ui:VisualElement class="pump-flow-status-row">
+                        <ui:Label class="pump-flow-status-label font-arcade" text="Flow status" />
+                        <ui:Label name="flow-status-value" class="pump-flow-status-value font-terminal" text="No flow" />
+                    </ui:VisualElement>
+                </ui:VisualElement>
+            </ui:VisualElement>
+        </ui:VisualElement>
+
+        <ui:VisualElement class="panel-section" name="id-reader-section">
+            <ui:VisualElement class="panel-section__clip">
+                <ui:VisualElement class="panel-section__header">
+                    <ui:Label class="panel-section__header-title font-titling" text="ID Reader" />
+                </ui:VisualElement>
+                <ui:VisualElement class="panel-section__content">
+                    <ss3d:AtmosIdReaderRow name="id-reader" />
+                </ui:VisualElement>
+            </ui:VisualElement>
+        </ui:VisualElement>
+
+        <ui:VisualElement class="panel-section" name="controls-section">
+            <ui:VisualElement class="panel-section__clip">
+                <ui:VisualElement class="panel-section__header">
+                    <ui:Label class="panel-section__header-title font-titling" text="Pump Controls" />
+                </ui:VisualElement>
+                <ui:VisualElement class="panel-section__content">
+                    <ui:VisualElement class="pump-controls-row">
+                        <ui:VisualElement class="pump-power-column">
+                            <ss3d:ToggleSwitch name="power-toggle" is-on="true" on-label="ON" off-label="OFF" />
+                            <ui:Label text="Pwr" class="atmos-power-caption font-arcade" />
+                        </ui:VisualElement>
+                        <ui:VisualElement class="pump-target-column">
+                            <ui:VisualElement class="pump-target-labels">
+                                <ui:Label text="Target outlet pressure" class="pump-target-title font-body" />
+                                <ui:Label name="target-gated-hint" class="pump-gated-hint font-terminal" text="" />
+                            </ui:VisualElement>
+                            <ss3d:NumericStepper name="target-stepper" value-text="4500 kPa" />
+                        </ui:VisualElement>
+                    </ui:VisualElement>
+                </ui:VisualElement>
+            </ui:VisualElement>
+        </ui:VisualElement>
+
+        <ss3d:DeviceFooter name="footer" text="SS3D Atmospherics — Pump Unit Model PMP-22" />
+    </ss3d:DiegeticDeviceShell>
+</ui:UXML>

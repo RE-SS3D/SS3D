@@ -20,3 +20,4 @@ MonoBehaviour:
   width: 1
   height: 1
   isLarge: 0
+  placementYOffset: 0.06

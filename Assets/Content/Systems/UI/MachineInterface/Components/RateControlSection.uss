@@ -1,4 +1,3 @@
-@import url("../../Tokens/ss3d-tokens.uss");
 
 .rate-control {
     flex-direction: column;
@@ -18,6 +17,22 @@
     align-items: center;
     justify-content: space-between;
     width: 100%;
+}
+
+.rate-control__header-right {
+    flex-direction: row;
+    align-items: center;
+    flex-shrink: 0;
+}
+
+.rate-control__header-right .toggle-switch__row {
+    flex-direction: row;
+    align-items: center;
+}
+
+.rate-control__header-right .toggle-switch__label {
+    margin-bottom: 0;
+    margin-right: 8px;
 }
 
 .rate-control__title {
@@ -42,6 +57,10 @@
     border-width: 1px;
     border-color: var(--ss3d-border-subtle);
     border-radius: var(--ss3d-radius-sm);
+}
+
+.rate-control__track-clip {
+    height: 100%;
     overflow: hidden;
 }
 

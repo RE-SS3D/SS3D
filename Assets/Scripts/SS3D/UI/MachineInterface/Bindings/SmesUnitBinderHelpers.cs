@@ -37,6 +37,11 @@ namespace SS3D.UI.MachineInterface.Bindings
                 return StatusTone.Success;
             }
 
+            if (model.State is SmesPowerState.Degraded or SmesPowerState.Fault)
+            {
+                return StatusTone.Danger;
+            }
+
             if (model.InputEnabled)
             {
                 return StatusTone.Warning;
@@ -47,14 +52,16 @@ namespace SS3D.UI.MachineInterface.Bindings
 
         public static StatusTone GetOutputTone(SmesInterfaceViewModel model)
         {
-            if (model.State == SmesPowerState.Overload)
-            {
-                return StatusTone.Warning;
-            }
-
             if (model.OutputActive)
             {
-                return StatusTone.Success;
+                return model.State == SmesPowerState.Overload
+                    ? StatusTone.Warning
+                    : StatusTone.Success;
+            }
+
+            if (model.State == SmesPowerState.Fault)
+            {
+                return StatusTone.Danger;
             }
 
             return StatusTone.Info;

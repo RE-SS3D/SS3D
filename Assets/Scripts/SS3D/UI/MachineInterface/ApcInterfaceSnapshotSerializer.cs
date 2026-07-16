@@ -18,6 +18,10 @@ namespace SS3D.UI.MachineInterface
             writer.WriteSingle(snapshot.LightingLoadKw);
             writer.WriteSingle(snapshot.EquipmentLoadKw);
             writer.WriteSingle(snapshot.EnvironmentLoadKw);
+            writer.WriteBoolean(snapshot.MultipleApcsInArea);
+            writer.WriteBoolean(snapshot.AccessGranted);
+            writer.WriteBoolean(snapshot.AccessScanning);
+            writer.WriteBoolean(snapshot.AccessDenied);
 
             int diagnosticCount = snapshot.DiagnosticCount;
             if (diagnosticCount > ApcInterfaceSnapshot.MaxDiagnostics)
@@ -39,7 +43,7 @@ namespace SS3D.UI.MachineInterface
                 MachineObjectId = reader.ReadInt32(),
                 InterfaceId = reader.ReadString(),
                 Title = reader.ReadString(),
-                Channels = (System.Electricity.ApcControlFlags)reader.ReadByte(),
+                Channels = (SS3D.Systems.Electricity.ApcControlFlags)reader.ReadByte(),
                 PowerState = reader.ReadByte(),
                 GridInputKw = reader.ReadSingle(),
                 LoadOutputKw = reader.ReadSingle(),
@@ -48,6 +52,10 @@ namespace SS3D.UI.MachineInterface
                 LightingLoadKw = reader.ReadSingle(),
                 EquipmentLoadKw = reader.ReadSingle(),
                 EnvironmentLoadKw = reader.ReadSingle(),
+                MultipleApcsInArea = reader.ReadBoolean(),
+                AccessGranted = reader.ReadBoolean(),
+                AccessScanning = reader.ReadBoolean(),
+                AccessDenied = reader.ReadBoolean(),
                 DiagnosticCount = reader.ReadInt32(),
             };
 
