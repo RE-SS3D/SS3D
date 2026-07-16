@@ -5,7 +5,6 @@ using UnityEngine.Rendering;
 using UnityEngine.Rendering.RenderGraphModule;
 using UnityEngine.Rendering.RenderGraphModule.Util;
 using UnityEngine.Rendering.Universal;
-using SS3D.Systems.Selection;
 
 namespace SS3D.Rendering.URP
 {

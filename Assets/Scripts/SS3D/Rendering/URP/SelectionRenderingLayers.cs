@@ -1,4 +1,4 @@
-namespace SS3D.Systems.Selection
+namespace SS3D.Rendering.URP
 {
     /// <summary>
     /// Reserved rendering-layer bit used to exclude auxiliary renderers (e.g. interaction outline
