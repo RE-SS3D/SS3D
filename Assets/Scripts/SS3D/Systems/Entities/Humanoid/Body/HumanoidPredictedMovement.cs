@@ -333,12 +333,11 @@ namespace SS3D.Systems.Entities.Humanoid
 
         /// <summary>
         /// Fraction of max run speed for the current gait / stance.
-        /// Melee uses slow combat walk/run scales (axe-pack cadence). Ranged and Peaceful
-        /// use normal walk/run factors so melee tuning does not affect shooter locomotion.
+        /// Combat (melee + ranged) uses slow combat walk/run scales so feet and clips stay in sync.
         /// </summary>
         private float GetTargetSpeedScale(bool isRunning, HumanoidCombatMode combatMode)
         {
-            if (combatMode == HumanoidCombatMode.Melee)
+            if (combatMode.IsCombat())
             {
                 return isRunning
                     ? _combatRunSpeedFactor
