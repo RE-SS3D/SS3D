@@ -16,6 +16,7 @@ namespace SS3D.Systems.Entities.Humanoid
         [SerializeField] private float _blockedStandUpHeadroom = 1.2f;
 
         private bool _combatLookActive;
+        private bool _meleeAttackActive;
         private float _aimYaw;
         private float _aimPitch;
         private bool _hasWorldAimPoint;
@@ -40,6 +41,15 @@ namespace SS3D.Systems.Entities.Humanoid
             {
                 _hasWorldAimPoint = false;
             }
+        }
+
+        /// <summary>
+        /// While a melee swing plays, torso look-at must not override the swing.
+        /// Head keep a light aim so it does not snap with the clip.
+        /// </summary>
+        public void SetMeleeAttackActive(bool active)
+        {
+            _meleeAttackActive = active;
         }
 
         /// <summary>
@@ -71,6 +81,12 @@ namespace SS3D.Systems.Entities.Humanoid
                 return;
             }
 
+            // Look-at is global; only apply once (base layer pass).
+            if (layerIndex != 0)
+            {
+                return;
+            }
+
             Transform head = _rig != null ? _rig.Head : null;
             if (head == null)
             {
@@ -97,7 +113,10 @@ namespace SS3D.Systems.Entities.Humanoid
                 _lookAtTarget.position = lookTarget;
             }
 
-            _animator.SetLookAtWeight(_headLookWeight, _torsoLookWeight);
+            // During swings: no torso IK (lets arms/chest play), soft head aim only.
+            float headWeight = _meleeAttackActive ? _headLookWeight * 0.35f : _headLookWeight;
+            float torsoWeight = _meleeAttackActive ? 0f : _torsoLookWeight;
+            _animator.SetLookAtWeight(headWeight, torsoWeight);
             _animator.SetLookAtPosition(lookTarget);
         }
 

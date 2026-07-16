@@ -562,7 +562,6 @@ AnimatorStateMachine:
   - {fileID: -5920010633605364073}
   - {fileID: 5427166978479484046}
   - {fileID: -6775899163770191475}
-  - {fileID: 8800002101}
   m_EntryTransitions: []
   m_StateMachineTransitions: {}
   m_StateMachineBehaviours: []
@@ -1783,7 +1782,7 @@ AnimatorStateTransition:
   m_DstStateMachine: {fileID: 0}
   m_DstState: {fileID: 8800002100}
   m_Solo: 0
-  m_Mute: 0
+  m_Mute: 1
   m_IsExit: 0
   serializedVersion: 3
   m_TransitionDuration: 0.05

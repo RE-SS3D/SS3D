@@ -159,32 +159,28 @@ namespace SS3D.Editor
                 EnsureExitToState(jumpState, peaceful, hasExitTime: true, exitTime: 0.85f, duration: 0.1f);
             }
 
-            // Full-body melee swing on the base layer (same Any State pattern as Jump).
-            AnimationClip attackClip = LoadPackClip(
-                $"{MeleePack}/standing melee attack horizontal.fbx",
-                "Mix_StandingMeleeAttackHorizontal");
-            if (attackClip != null)
-            {
-                AnimatorState attackState = FindOrCreateState(baseMachine, "Attack Swing", new Vector3(720, 120, 0));
-                attackState.motion = attackClip;
-                attackState.writeDefaultValues = true;
-                EnsureAnyStateTrigger(baseMachine, attackState, "AttackSwing", canTransitionToSelf: false);
-                EnsureExitToState(attackState, melee, hasExitTime: true, exitTime: 0.85f, duration: 0.15f);
-            }
-
             RemapStateMotion(baseMachine, "Flinch", $"{MeleePack}/standing react large gut.fbx", "Mix_StandingReactLargeGut");
 
-            // Keep upper-body Attack Swing clip remapped for hold-layer use, but mute its Any State
-            // trigger so it cannot race the base-layer swing and snap back to Hold Default.
+            // Mute Any State AttackSwing on all layers — orchestrator uses Animator.Play on Upper Body.
+            MuteAnyStateTrigger(baseMachine, "AttackSwing");
+
+            // Upper-body Attack Swing overlays arms/torso; base layer keeps walk/run.
             if (controller.layers.Length > 1)
             {
                 AnimatorStateMachine upper = controller.layers[1].stateMachine;
-                RemapStateMotion(upper, "Attack Swing",
-                    $"{MeleePack}/standing melee attack horizontal.fbx", "Mix_StandingMeleeAttackHorizontal");
+                AnimationClip attackClip = LoadPackClip(
+                    $"{MeleePack}/standing melee attack horizontal.fbx",
+                    "Mix_StandingMeleeAttackHorizontal");
+                AnimatorState upperAttack = FindOrCreateState(upper, "Attack Swing", new Vector3(600, 100, 0));
+                if (attackClip != null)
+                {
+                    upperAttack.motion = attackClip;
+                    upperAttack.writeDefaultValues = true;
+                }
+
                 MuteAnyStateTrigger(upper, "AttackSwing");
-                AnimatorState upperAttack = FindState(upper, "Attack Swing");
                 AnimatorState holdDefault = FindState(upper, "Hold Default");
-                if (upperAttack != null && holdDefault != null)
+                if (holdDefault != null)
                 {
                     EnsureExitToState(upperAttack, holdDefault, hasExitTime: true, exitTime: 0.85f, duration: 0.15f);
                 }

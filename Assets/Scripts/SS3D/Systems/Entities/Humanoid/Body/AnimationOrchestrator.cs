@@ -36,7 +36,10 @@ namespace SS3D.Systems.Entities.Humanoid
         private AnimationTriggerId _lastConsumedTrigger = AnimationTriggerId.None;
         private byte _lastTriggerSequence;
         private bool _ownerPredictedAttack;
-        private float _suppressUpperBodyUntil;
+        private float _meleeSwingEndsAt;
+
+        private static readonly int AttackSwingState = Animator.StringToHash("Attack Swing");
+        private const float MeleeSwingDurationSeconds = 2.2f;
 
         public Animator Animator => _animator;
 
@@ -94,6 +97,7 @@ namespace SS3D.Systems.Entities.Humanoid
             }
 
             ApplyLocomotionVelocity();
+            TickMeleeSwingIk();
         }
 
         private void SubscribeToEvents()
@@ -149,7 +153,7 @@ namespace SS3D.Systems.Entities.Humanoid
         }
 
         /// <summary>
-        /// Owner-side immediate attack playback (base-layer Attack Swing, same pattern as Jump).
+        /// Owner-side immediate attack playback (upper-body Attack Swing over locomotion).
         /// </summary>
         public void PlayAttackTrigger(AnimationTriggerId trigger)
         {
@@ -166,20 +170,38 @@ namespace SS3D.Systems.Entities.Humanoid
 
             _ownerPredictedAttack = true;
 
-            // Combat keeps Upper Body at weight 1 (Hold Default). That mask would hide a
-            // base-layer swing's arms — drop it for the clip duration.
             if (trigger == AnimationTriggerId.AttackSwing)
             {
-                _suppressUpperBodyUntil = Time.time + 2.2f;
-                if (_animator.layerCount > 1)
-                {
-                    _animator.SetLayerWeight(1, 0f);
-                }
+                BeginMeleeSwingVisual();
+                return;
             }
 
-            // One path only: Any State trigger on the base layer (no upper-body CrossFade race).
             _animator.ResetTrigger(hash);
             _animator.SetTrigger(hash);
+        }
+
+        private void BeginMeleeSwingVisual()
+        {
+            if (_animator.layerCount > 1)
+            {
+                _animator.SetLayerWeight(1, 1f);
+            }
+
+            // Force the upper-body state — Any State triggers can be raced/consumed by other layers.
+            _animator.Play(AttackSwingState, 1, 0f);
+            _meleeSwingEndsAt = Time.time + MeleeSwingDurationSeconds;
+            _ikController?.SetMeleeAttackActive(true);
+        }
+
+        private void TickMeleeSwingIk()
+        {
+            if (_meleeSwingEndsAt <= 0f || Time.time < _meleeSwingEndsAt)
+            {
+                return;
+            }
+
+            _meleeSwingEndsAt = 0f;
+            _ikController?.SetMeleeAttackActive(false);
         }
 
         public void ApplySnapshot(BodyAnimationSnapshot snapshot)
@@ -276,13 +298,7 @@ namespace SS3D.Systems.Entities.Humanoid
 
             if (_animator.layerCount > 1)
             {
-                if (Time.time < _suppressUpperBodyUntil)
-                {
-                    _animator.SetLayerWeight(1, 0f);
-                    return;
-                }
-
-                // Keep upper body active in combat for hold poses; attack briefly suppresses it.
+                // Upper body overlays holds and melee swings while base layer keeps locomotion legs.
                 bool needsUpperBodyLayer = snapshot.State != BodyState.Ragdoll
                     && (snapshot.ArmHold != ArmHoldPose.Default || snapshot.CombatMode.IsCombat());
                 _animator.SetLayerWeight(1, needsUpperBodyLayer ? 1f : 0f);
@@ -338,18 +354,16 @@ namespace SS3D.Systems.Entities.Humanoid
             }
 
             _lastConsumedTrigger = trigger;
+            if (trigger == AnimationTriggerId.AttackSwing)
+            {
+                BeginMeleeSwingVisual();
+                OnTriggerFired?.Invoke(trigger);
+                return;
+            }
+
             int hash = Animations.Humanoid.GetTriggerHash(trigger);
             if (hash != 0)
             {
-                if (trigger == AnimationTriggerId.AttackSwing)
-                {
-                    _suppressUpperBodyUntil = Time.time + 2.2f;
-                    if (_animator.layerCount > 1)
-                    {
-                        _animator.SetLayerWeight(1, 0f);
-                    }
-                }
-
                 _animator.SetTrigger(hash);
             }
 

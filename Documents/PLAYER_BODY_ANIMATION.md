@@ -53,11 +53,11 @@ Each state exposes: `CanMove`, `CanRotate`, `CanRun`, `CanUseHands`, `CanInterac
    - **Peaceful** — [Locomotion Pack](../Assets/Art/Animations/Locomotion%20Pack/) idle / walk / run / strafes
    - **Melee** — [Pro Melee Axe Pack](../Assets/Art/Animations/Pro%20Melee%20Axe%20Pack/) standing idle / walk F-B-L-R / run F-B (includes backpedal)
    - **Ranged** — [Basic Shooter Pack](../Assets/Art/Animations/Basic%20Shooter%20Pack/) rifle idle / walk / walk back / strafes / run / run back
-2. **UpperBody** (arms + torso mask) — hold poses (weight dropped for ~2.2s during `AttackSwing` so the base-layer swing is visible)
+2. **UpperBody** (arms + torso mask) — hold poses and `AttackSwing` (melee horizontal); legs stay on base locomotion
 3. **Additive** — flinch (`Flinch` uses melee gut react), injured arm overlay
 4. **FullBody Override** — sit, crawl, emote, stand-up
 
-`AttackSwing` plays as a base-layer one-shot (same Any State pattern as Jump), then returns to Melee Locomotion.
+`AttackSwing` is an upper-body one-shot over Melee/Peaceful locomotion (base-layer AttackSwing Any State stays muted).
 
 Rebuild via **SS3D → Animation → Rebuild Combat Stance Blend Trees** after reimporting pack FBX clips.
 
