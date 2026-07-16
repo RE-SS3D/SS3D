@@ -19,6 +19,7 @@ namespace SS3D.UI.MachineInterface.Components
 
             _subtitle = new Label();
             _subtitle.AddToClassList("device-identity-block__subtitle");
+            _subtitle.AddToClassList("font-body");
 
             _metadata = new Label();
             _metadata.AddToClassList("device-identity-block__metadata");

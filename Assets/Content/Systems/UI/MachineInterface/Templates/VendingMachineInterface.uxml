@@ -28,12 +28,22 @@
         <ss3d:DeviceIdentityBlock name="identity"
             title="GALLEY VENDOMAT"
             subtitle="Crew Mess — Sundries Dispenser" />
-        <ss3d:PanelSection name="id-reader-section" title="ID Reader">
-            <ss3d:IdReaderPanel name="id-reader" />
-        </ss3d:PanelSection>
-        <ss3d:PanelSection name="products-section" title="Select Item">
-            <ss3d:ProductGrid name="product-grid" />
-        </ss3d:PanelSection>
+        <ui:VisualElement name="id-reader-section" class="panel-section">
+            <ui:VisualElement class="panel-section__clip">
+                <ui:Label text="ID Reader" class="panel-section__header font-titling" />
+                <ui:VisualElement class="panel-section__content">
+                    <ss3d:IdReaderPanel name="id-reader" />
+                </ui:VisualElement>
+            </ui:VisualElement>
+        </ui:VisualElement>
+        <ui:VisualElement name="products-section" class="panel-section">
+            <ui:VisualElement class="panel-section__clip">
+                <ui:Label text="Select Item" class="panel-section__header font-titling" />
+                <ui:VisualElement class="panel-section__content">
+                    <ss3d:ProductGrid name="product-grid" />
+                </ui:VisualElement>
+            </ui:VisualElement>
+        </ui:VisualElement>
         <ss3d:DispenseTray name="dispense-tray" />
         <ss3d:ActionLog name="action-log" />
         <ss3d:DeviceFooter name="footer" text="SS3D Vending Dispenser — Model VND-7" />
