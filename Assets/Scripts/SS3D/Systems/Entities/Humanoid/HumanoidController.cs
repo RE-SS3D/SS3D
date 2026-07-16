@@ -36,6 +36,8 @@ namespace SS3D.Systems.Entities.Humanoid
         [SerializeField] protected float _movementSpeed;
         [SerializeField] protected float _lerpMultiplier;
         [SerializeField] protected float _rotationLerpMultiplier;
+        /// <summary>Yaw turn rate while aiming in combat (lower than peaceful for less twitchy facing).</summary>
+        [SerializeField] protected float _combatRotationLerpMultiplier = 3.5f;
         [SerializeField] protected float _turnVelocityScale = 4f;
         /// <summary>Combat gaits are slower than peaceful — scale world speed to match Mixamo cadence.</summary>
         [SerializeField] protected float _combatWalkSpeedFactor = 0.7f;
@@ -406,9 +408,16 @@ namespace SS3D.Systems.Entities.Humanoid
             GetComponent<HumanoidIkController>()?.SetCombatAimPoint(aimPoint);
 
             Quaternion lookRotation = Quaternion.Euler(0f, yaw, 0f);
-            // Slightly snappier than peaceful turn-to-move so aim tracks the cursor.
-            float combatRotateRate = _rotationLerpMultiplier * 1.5f;
-            transform.rotation = Quaternion.Slerp(Rotation, lookRotation, Time.deltaTime * combatRotateRate);
+            transform.rotation = Quaternion.Slerp(Rotation, lookRotation, Time.deltaTime * _combatRotationLerpMultiplier);
+        }
+
+        /// <summary>
+        /// Smooth combat yaw used by predicted movement (same rate as <see cref="RotatePlayerToCombatAim"/>).
+        /// </summary>
+        public void ApplyCombatAimYaw(float aimYaw, float deltaTime)
+        {
+            Quaternion lookRotation = Quaternion.Euler(0f, aimYaw, 0f);
+            transform.rotation = Quaternion.Slerp(transform.rotation, lookRotation, deltaTime * _combatRotationLerpMultiplier);
         }
 
         /// <summary>

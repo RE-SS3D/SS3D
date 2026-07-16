@@ -7,7 +7,7 @@ AvatarMask:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: HumanoidUpperBodyMask
-  m_Mask: 00000000010000000100000000000000000000000100000001000000010000000100000000000000000000000100000001000000
+  m_Mask: 00000000000000000100000000000000000000000100000001000000010000000100000000000000000000000100000001000000
   m_Elements:
   - m_Path: 
     m_Weight: 0
@@ -16,11 +16,11 @@ AvatarMask:
   - m_Path: Armature/hips
     m_Weight: 0
   - m_Path: Armature/hips/spine
-    m_Weight: 1
+    m_Weight: 0
   - m_Path: Armature/hips/spine/chest
-    m_Weight: 1
+    m_Weight: 0
   - m_Path: Armature/hips/spine/chest/neck
-    m_Weight: 1
+    m_Weight: 0
   - m_Path: Armature/hips/spine/chest/neck/head
     m_Weight: 1
   - m_Path: Armature/hips/spine/chest/shoulder_r

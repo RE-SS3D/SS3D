@@ -44,8 +44,8 @@ namespace SS3D.Systems.Entities.Humanoid
         }
 
         /// <summary>
-        /// While a melee swing plays, torso look-at must not override the swing.
-        /// Head keep a light aim so it does not snap with the clip.
+        /// While a melee swing plays, look-at IK is off for head and body so the clip
+        /// drives the upper pose; GameObject yaw still faces the aim target.
         /// </summary>
         public void SetMeleeAttackActive(bool active)
         {
@@ -113,10 +113,12 @@ namespace SS3D.Systems.Entities.Humanoid
                 _lookAtTarget.position = lookTarget;
             }
 
-            // During swings: no torso IK (lets arms/chest play), soft head aim only.
-            float headWeight = _meleeAttackActive ? _headLookWeight * 0.35f : _headLookWeight;
-            float torsoWeight = _meleeAttackActive ? 0f : _torsoLookWeight;
-            _animator.SetLookAtWeight(headWeight, torsoWeight);
+            // SetLookAtWeight(global, body, head, eyes, clamp).
+            // Swing: transform yaw already faces the target — no body look-at (avoids chest
+            // crumpling through clothing). Head weight 0 so the clip owns the head.
+            float bodyWeight = _meleeAttackActive ? 0f : _torsoLookWeight;
+            float headWeight = _meleeAttackActive ? 0f : _headLookWeight;
+            _animator.SetLookAtWeight(1f, bodyWeight, headWeight);
             _animator.SetLookAtPosition(lookTarget);
         }
 

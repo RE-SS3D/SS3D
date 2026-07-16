@@ -285,7 +285,7 @@ namespace SS3D.Systems.Entities.Humanoid
                 _livingController?.PublishPredictedLocomotionVelocity(0f, 0f);
                 if (caps.CanRotate && md.HasCombatAim)
                 {
-                    transform.rotation = Quaternion.Euler(0f, md.AimYaw, 0f);
+                    ApplyCombatAimRotation(md.AimYaw, tickDelta);
                 }
 
                 return;
@@ -310,7 +310,7 @@ namespace SS3D.Systems.Entities.Humanoid
             {
                 if (md.HasCombatAim)
                 {
-                    transform.rotation = Quaternion.Euler(0f, md.AimYaw, 0f);
+                    ApplyCombatAimRotation(md.AimYaw, tickDelta);
                 }
                 else
                 {
@@ -335,6 +335,18 @@ namespace SS3D.Systems.Entities.Humanoid
         {
             transform.position = rd.Position;
             transform.rotation = rd.Rotation;
+        }
+
+        private void ApplyCombatAimRotation(float aimYaw, float tickDelta)
+        {
+            if (_livingController != null)
+            {
+                _livingController.ApplyCombatAimYaw(aimYaw, tickDelta);
+                return;
+            }
+
+            Quaternion lookRotation = Quaternion.Euler(0f, aimYaw, 0f);
+            transform.rotation = Quaternion.Slerp(transform.rotation, lookRotation, tickDelta * 3.5f);
         }
 
         private Vector3 GetCameraRelativeDirection(float horizontal, float vertical)
