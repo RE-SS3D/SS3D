@@ -50,7 +50,19 @@ namespace SS3D.Systems.ScreenEffects
         private DepthOfField _depthOfField;
         private Image _blackout;
 
+        private readonly List<ScreenParticle> _emberParticles = new();
+        private readonly List<ScreenParticle> _frostParticles = new();
+
         private float _hitFlashTimer = -1f;
+
+        private sealed class ScreenParticle
+        {
+            public RectTransform Rect;
+            public Image Image;
+            public float XFraction;
+            public float Period;
+            public float PhaseOffset;
+        }
 
         protected override void OnAwake()
         {
@@ -64,6 +76,7 @@ namespace SS3D.Systems.ScreenEffects
 
             BuildVolume();
             BuildBlackout();
+            BuildParticles();
 
             AddHandle(UpdateEvent.AddListener(HandleUpdate));
         }
@@ -131,6 +144,91 @@ namespace SS3D.Systems.ScreenEffects
             rect.offsetMax = Vector2.zero;
         }
 
+        // Ember rise (OnFire) / frost fall (Freezing) - mirrors the drifting flecks in the "Screen-Space Effect"
+        // mockup. No CanvasScaler here on purpose: positions are computed straight from Screen.width/height each
+        // frame, so a stretched anchor isn't needed and there's no reference-resolution conversion to account for.
+        private static readonly (float XFraction, float Period, float PhaseOffset)[] ParticleSpecs =
+        {
+            (0.24f, 2.1f, 0f),
+            (0.47f, 2.6f, 0.4f),
+            (0.68f, 1.8f, 0.9f),
+            (0.84f, 2.3f, 1.3f),
+        };
+
+        private void BuildParticles()
+        {
+            GameObject canvasHost = new("ScreenEffectsParticles");
+            canvasHost.transform.SetParent(Transform, false);
+
+            Canvas canvas = canvasHost.AddComponent<Canvas>();
+            canvas.renderMode = RenderMode.ScreenSpaceOverlay;
+            canvas.sortingOrder = 950;
+
+            Color emberColor = new(0.94f, 0.64f, 0.3f);
+            Color frostColor = new(0.85f, 0.93f, 1f);
+
+            foreach ((float xFraction, float period, float phaseOffset) in ParticleSpecs)
+            {
+                _emberParticles.Add(CreateParticle(canvasHost.transform, xFraction, period, phaseOffset, emberColor));
+            }
+
+            foreach ((float xFraction, float period, float phaseOffset) in ParticleSpecs)
+            {
+                _frostParticles.Add(CreateParticle(canvasHost.transform, xFraction, period, phaseOffset, frostColor));
+            }
+        }
+
+        private static ScreenParticle CreateParticle(Transform parent, float xFraction, float period, float phaseOffset, Color color)
+        {
+            GameObject host = new("Particle");
+            host.transform.SetParent(parent, false);
+
+            Image image = host.AddComponent<Image>();
+            image.color = new Color(color.r, color.g, color.b, 0f);
+            image.raycastTarget = false;
+
+            RectTransform rect = image.rectTransform;
+            rect.anchorMin = Vector2.zero;
+            rect.anchorMax = Vector2.zero;
+            rect.pivot = new Vector2(0.5f, 0.5f);
+            rect.sizeDelta = new Vector2(5f, 5f);
+
+            return new ScreenParticle { Rect = rect, Image = image, XFraction = xFraction, Period = period, PhaseOffset = phaseOffset };
+        }
+
+        private static void UpdateParticles(List<ScreenParticle> particles, float intensity, bool risesUpward)
+        {
+            const float startOffset = 10f;
+            const float travel = 140f;
+
+            bool active = intensity > 0.001f;
+
+            foreach (ScreenParticle particle in particles)
+            {
+                if (!active)
+                {
+                    if (particle.Image.color.a > 0f)
+                    {
+                        Color hidden = particle.Image.color;
+                        hidden.a = 0f;
+                        particle.Image.color = hidden;
+                    }
+
+                    continue;
+                }
+
+                float cycle = Mathf.Repeat(Time.time - particle.PhaseOffset, particle.Period) / particle.Period;
+                float alpha = (cycle < 0.15f ? cycle / 0.15f : 1f - (cycle - 0.15f) / 0.85f) * intensity;
+                float y = risesUpward ? startOffset + cycle * travel : Screen.height - startOffset - cycle * travel;
+
+                particle.Rect.anchoredPosition = new Vector2(particle.XFraction * Screen.width, y);
+
+                Color color = particle.Image.color;
+                color.a = Mathf.Clamp01(alpha);
+                particle.Image.color = color;
+            }
+        }
+
         private void HandleUpdate(ref EventContext context, in UpdateEvent updateEvent)
         {
             float deltaTime = Time.deltaTime;
@@ -183,73 +281,77 @@ namespace SS3D.Systems.ScreenEffects
             float hot = _currentIntensity[ScreenEffectType.HotRoom];
             if (hot > 0f)
             {
-                AddVignette(hot * (0.25f + 0.15f * Breathe(3.8f)), new Color(0.85f, 0.6f, 0.25f));
+                AddVignette(hot * (0.45f + 0.25f * Breathe(3.8f)), new Color(0.85f, 0.6f, 0.25f));
             }
 
             float fire = _currentIntensity[ScreenEffectType.OnFire];
             if (fire > 0f)
             {
-                AddVignette(fire * (0.45f + 0.35f * Flicker(6f, 1.1f)), new Color(0.8f, 0.25f, 0.1f));
+                AddVignette(fire * (0.65f + 0.45f * Flicker(6f, 1.1f)), new Color(0.8f, 0.25f, 0.1f));
             }
 
             float cold = _currentIntensity[ScreenEffectType.ColdRoom];
             if (cold > 0f)
             {
-                AddVignette(cold * (0.25f + 0.15f * Breathe(4f)), new Color(0.35f, 0.6f, 0.85f));
-                saturation -= cold * 15f;
+                AddVignette(cold * (0.45f + 0.25f * Breathe(4f)), new Color(0.35f, 0.6f, 0.85f));
+                saturation -= cold * 25f;
             }
 
             float freezing = _currentIntensity[ScreenEffectType.Freezing];
             if (freezing > 0f)
             {
-                AddVignette(freezing * (0.45f + 0.35f * Flicker(5f, 2.7f)), new Color(0.3f, 0.55f, 0.85f));
-                saturation -= freezing * 25f;
+                AddVignette(freezing * (0.65f + 0.45f * Flicker(5f, 2.7f)), new Color(0.3f, 0.55f, 0.85f));
+                saturation -= freezing * 40f;
             }
 
             float lowOxygen = _currentIntensity[ScreenEffectType.LowOxygen];
             if (lowOxygen > 0f)
             {
                 float breathe = Breathe(4.4f);
-                AddVignette(lowOxygen * (0.4f + 0.2f * breathe), new Color(0.3f, 0.45f, 0.65f));
-                saturation -= lowOxygen * (60f + 20f * breathe);
+                AddVignette(lowOxygen * (0.6f + 0.3f * breathe), new Color(0.3f, 0.45f, 0.65f));
+                saturation -= lowOxygen * (80f + 20f * breathe);
             }
 
+            // Blur + heartbeat only, deliberately no vignette here - the design treats Dying/Critical as a
+            // full-screen blur pulse, distinct from the vignette-driven states above.
             float dying = _currentIntensity[ScreenEffectType.DyingCritical];
             if (dying > 0f)
             {
                 float beat = Heartbeat(1.6f);
-                AddVignette(dying * (0.55f + 0.35f * beat), new Color(0.45f, 0.08f, 0.08f));
-                blur += dying * (0.3f + 0.7f * beat);
+                blur += dying * (0.6f + 0.6f * beat);
             }
 
             float bloodLoss = _currentIntensity[ScreenEffectType.BloodLossTunnelVision];
             if (bloodLoss > 0f)
             {
                 float breathe = Breathe(5.2f);
-                AddVignette(bloodLoss * (0.55f + 0.15f * breathe), new Color(0.35f, 0.06f, 0.06f));
-                saturation -= bloodLoss * 45f;
+                AddVignette(bloodLoss * (0.75f + 0.2f * breathe), new Color(0.35f, 0.06f, 0.06f));
+                saturation -= bloodLoss * 60f;
             }
 
             float concussion = _currentIntensity[ScreenEffectType.Concussion];
             if (concussion > 0f)
             {
-                blur += concussion * (0.35f + 0.4f * Flicker(1.1f, 4.3f));
-                chromaticAberration += concussion * (0.3f + 0.3f * Flicker(0.9f, 8.6f));
+                blur += concussion * (0.55f + 0.55f * Flicker(1.1f, 4.3f));
+                chromaticAberration += concussion * (0.5f + 0.5f * Flicker(0.9f, 8.6f));
             }
 
             float unconscious = _currentIntensity[ScreenEffectType.Unconscious];
             if (unconscious > 0f)
             {
                 saturation -= unconscious * 100f;
-                contrast -= unconscious * 40f;
-                blackoutAlpha = Mathf.Clamp01(unconscious * 1.3f - 0.3f);
+                contrast -= unconscious * 60f;
+                blackoutAlpha = Mathf.Clamp01(unconscious * 1.5f - 0.35f);
             }
 
             float hitFlash = ComputeHitFlash(deltaTime);
             if (hitFlash > 0f)
             {
-                AddVignette(hitFlash, new Color(0.75f, 0.1f, 0.1f));
+                AddVignette(hitFlash, new Color(0.85f, 0.1f, 0.1f));
             }
+
+            UpdateParticles(_emberParticles, fire, true);
+            UpdateParticles(_frostParticles, freezing, false);
 
             Color finalVignetteColor = vignetteWeightSum > 0f ? vignetteColorSum / vignetteWeightSum : Color.black;
             float finalVignetteIntensity = Mathf.Clamp01(vignetteIntensity);
@@ -257,7 +359,7 @@ namespace SS3D.Systems.ScreenEffects
             _vignette.active = finalVignetteIntensity > 0.001f;
             _vignette.color.value = finalVignetteColor;
             _vignette.intensity.value = finalVignetteIntensity;
-            _vignette.smoothness.value = 0.45f;
+            _vignette.smoothness.value = 0.3f;
 
             _chromaticAberration.active = chromaticAberration > 0.001f;
             _chromaticAberration.intensity.value = Mathf.Clamp01(chromaticAberration);
@@ -266,12 +368,16 @@ namespace SS3D.Systems.ScreenEffects
             _colorAdjustments.saturation.value = Mathf.Clamp(saturation, -100f, 100f);
             _colorAdjustments.contrast.value = Mathf.Clamp(contrast, -100f, 100f);
 
+            // gaussianMaxRadius is hard-clamped to [0.5, 1.5] by URP, so it alone can't sell a strong blur -
+            // front-load the ramp with sqrt so the in-focus range collapses (and the max radius saturates)
+            // well before intensity reaches 1, instead of a straight lerp that reads as barely-there blur.
             bool blurActive = blur > 0.001f;
+            float blurT = Mathf.Sqrt(Mathf.Clamp01(blur));
             _depthOfField.active = blurActive;
             _depthOfField.mode.value = blurActive ? DepthOfFieldMode.Gaussian : DepthOfFieldMode.Off;
-            _depthOfField.gaussianStart.value = Mathf.Lerp(50f, 0.01f, Mathf.Clamp01(blur));
-            _depthOfField.gaussianEnd.value = Mathf.Lerp(60f, 0.05f, Mathf.Clamp01(blur));
-            _depthOfField.gaussianMaxRadius.value = Mathf.Lerp(0.5f, 1.5f, Mathf.Clamp01(blur));
+            _depthOfField.gaussianStart.value = Mathf.Lerp(50f, 0.01f, blurT);
+            _depthOfField.gaussianEnd.value = Mathf.Lerp(60f, 0.05f, blurT);
+            _depthOfField.gaussianMaxRadius.value = Mathf.Lerp(0.5f, 1.5f, blurT);
 
             Color blackoutColor = _blackout.color;
             blackoutColor.a = blackoutAlpha;
