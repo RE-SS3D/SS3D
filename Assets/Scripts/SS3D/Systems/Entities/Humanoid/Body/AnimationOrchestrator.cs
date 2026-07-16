@@ -176,12 +176,13 @@ namespace SS3D.Systems.Entities.Humanoid
 
         private void ApplyLocomotionVelocity()
         {
-            float targetMagSq = _targetVelX * _targetVelX + _targetVelZ * _targetVelZ;
-            float currentMagSq = _currentVelX * _currentVelX + _currentVelZ * _currentVelZ;
-            bool accelerating = targetMagSq > currentMagSq + 0.0001f;
+            float currentMag = Mathf.Sqrt(_currentVelX * _currentVelX + _currentVelZ * _currentVelZ);
+            float targetMag = Mathf.Sqrt(_targetVelX * _targetVelX + _targetVelZ * _targetVelZ);
+            bool leavingIdle = currentMag < 0.05f && targetMag > currentMag;
 
-            // Snap when speeding up so walk/run starts immediately; ease only when slowing to idle.
-            if (accelerating)
+            // Snap only when leaving standstill so walk starts immediately.
+            // Walk ↔ run (and stop) ease so the FreeformCartesian2D blend does not pop.
+            if (leavingIdle)
             {
                 _currentVelX = _targetVelX;
                 _currentVelZ = _targetVelZ;
@@ -190,7 +191,8 @@ namespace SS3D.Systems.Entities.Humanoid
             }
             else
             {
-                float lerp = Time.deltaTime * (_lerpMultiplier * 3f);
+                bool slowingToIdle = targetMag < 0.05f;
+                float lerp = Time.deltaTime * (slowingToIdle ? _lerpMultiplier * 3f : _lerpMultiplier);
                 _currentVelX = Mathf.Lerp(_currentVelX, _targetVelX, lerp);
                 _currentVelZ = Mathf.Lerp(_currentVelZ, _targetVelZ, lerp);
                 _currentTurn = Mathf.Lerp(_currentTurn, _targetTurn, lerp);
