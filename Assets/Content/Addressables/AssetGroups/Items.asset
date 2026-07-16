@@ -645,6 +645,11 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: b25f51097d8c9b35ba76f8697fefa2ca
+    m_Address: Assets/Content/WorldObjects/Items/Weapons/M4.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: b38ae683afaacc4419ac13936cecd1a5
     m_Address: Assets/Content/WorldObjects/Furniture/Machines/Engineering/SMES.prefab
     m_ReadOnly: 0
