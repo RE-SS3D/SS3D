@@ -19,6 +19,10 @@ Builds/Game/*
 /[Ll]ogs/
 /[Uu]ser[Ss]ettings/
 
+# Unity license files should never be committed
+*.ulf
+/Documents/UnityLicense.ulf
+
 # MemoryCaptures can get excessive in size.
 # They also could contain extremely sensitive data
 /[Mm]emoryCaptures/
