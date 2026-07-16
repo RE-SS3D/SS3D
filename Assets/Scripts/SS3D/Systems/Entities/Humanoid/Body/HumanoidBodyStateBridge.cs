@@ -104,6 +104,63 @@ namespace SS3D.Systems.Entities.Humanoid
         private void HandleItemChanged(object sender, Item item)
         {
             UpdateArmHold();
+            RefreshCombatStanceFromInventory();
+        }
+
+        /// <summary>
+        /// Melee vs Ranged from the active hand item. Unarmed or non-ranged weapon → Melee.
+        /// </summary>
+        public HumanoidCombatMode ResolveCombatStance()
+        {
+            if (_hands == null)
+            {
+                return HumanoidCombatMode.Melee;
+            }
+
+            Item item = _hands.SelectedHand?.ItemInHand;
+            if (item == null)
+            {
+                return HumanoidCombatMode.Melee;
+            }
+
+            foreach (Trait trait in item.Traits)
+            {
+                if (trait == null || string.IsNullOrEmpty(trait.Name))
+                {
+                    continue;
+                }
+
+                string name = trait.Name;
+                if (name.Contains("Ranged", System.StringComparison.OrdinalIgnoreCase)
+                    || name.Contains("Gun", System.StringComparison.OrdinalIgnoreCase)
+                    || name.Contains("Firearm", System.StringComparison.OrdinalIgnoreCase)
+                    || name.Contains("Rifle", System.StringComparison.OrdinalIgnoreCase))
+                {
+                    return HumanoidCombatMode.Ranged;
+                }
+            }
+
+            return HumanoidCombatMode.Melee;
+        }
+
+        private void RefreshCombatStanceFromInventory()
+        {
+            if (_bodyStateMachine == null || !_bodyStateMachine.CombatMode.IsCombat())
+            {
+                return;
+            }
+
+            // ServerRpc — only the owning client should request a stance change.
+            if (!_bodyStateMachine.IsOwner)
+            {
+                return;
+            }
+
+            HumanoidCombatMode stance = ResolveCombatStance();
+            if (stance != _bodyStateMachine.CombatMode)
+            {
+                _bodyStateMachine.CmdSetCombatMode(stance);
+            }
         }
 
         private void UpdateArmHold()
@@ -118,7 +175,7 @@ namespace SS3D.Systems.Entities.Humanoid
             ArmHoldPose pose = ArmHoldPose.Default;
             if (item != null)
             {
-                foreach (SS3D.Systems.Trait trait in item.Traits)
+                foreach (Trait trait in item.Traits)
                 {
                     if (trait != null && trait.Name.Contains("Weapon", System.StringComparison.OrdinalIgnoreCase))
                     {

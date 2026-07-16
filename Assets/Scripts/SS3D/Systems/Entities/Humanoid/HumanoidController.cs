@@ -346,7 +346,7 @@ namespace SS3D.Systems.Entities.Humanoid
         /// <summary>
         /// Publishes local-space VelX/VelZ for the FreeformCartesian2D locomotion blend.
         /// Peaceful mode faces the move direction, so only forward gait is used.
-        /// Combat mode faces the camera and uses true strafe axes.
+        /// Combat mode faces the mouse aim point and uses true strafe axes.
         /// </summary>
         protected void PublishLocomotionVelocity(Vector3 worldMoveDirection, float gaitSpeed)
         {
@@ -385,29 +385,72 @@ namespace SS3D.Systems.Entities.Humanoid
         protected bool IsCombatMode()
         {
             return _bodyStateMachine != null
-                && _bodyStateMachine.CombatMode == HumanoidCombatMode.Combat;
+                && _bodyStateMachine.CombatMode.IsCombat();
         }
 
-        protected void RotatePlayerToAimOrCamera()
+        /// <summary>
+        /// Combat facing: rotate toward the mouse hit on the ground plane and sync AimYaw.
+        /// Movement stays camera-relative, so WASD produces forward/strafe clips relative to aim.
+        /// </summary>
+        protected void RotatePlayerToCombatAim()
         {
+            if (!TryGetCombatAimYaw(out float yaw))
+            {
+                return;
+            }
+
+            _bodyStateMachine?.CmdSetAimYaw(yaw);
+
+            Quaternion lookRotation = Quaternion.Euler(0f, yaw, 0f);
+            // Slightly snappier than peaceful turn-to-move so aim tracks the cursor.
+            float combatRotateRate = _rotationLerpMultiplier * 1.5f;
+            transform.rotation = Quaternion.Slerp(Rotation, lookRotation, Time.deltaTime * combatRotateRate);
+        }
+
+        protected bool TryGetCombatAimYaw(out float yaw)
+        {
+            yaw = 0f;
             if (_camera == null)
             {
                 _camera = SubSystems.Get<CameraSubSystem>().PlayerCamera;
             }
 
-            if (_camera == null)
+            if (_camera == null || Mouse.current == null)
             {
-                return;
+                return false;
             }
 
-            Vector3 look = Vector3.Cross(_camera.Right, Vector3.up);
-            if (look.sqrMagnitude < 0.001f)
+            Camera cam = _camera.GetComponent<Camera>();
+            if (cam == null)
             {
-                return;
+                return false;
             }
 
-            Quaternion lookRotation = Quaternion.LookRotation(look);
-            transform.rotation = Quaternion.Slerp(Rotation, lookRotation, Time.deltaTime * _rotationLerpMultiplier);
+            Ray ray = cam.ScreenPointToRay(Mouse.current.position.ReadValue());
+            Vector3 aimPoint;
+            Plane ground = new Plane(Vector3.up, Position);
+            if (ground.Raycast(ray, out float enter))
+            {
+                aimPoint = ray.GetPoint(enter);
+            }
+            else if (Physics.Raycast(ray, out RaycastHit hit, 100f))
+            {
+                aimPoint = hit.point;
+            }
+            else
+            {
+                return false;
+            }
+
+            Vector3 lookDir = aimPoint - Position;
+            lookDir.y = 0f;
+            if (lookDir.sqrMagnitude < 0.01f)
+            {
+                return false;
+            }
+
+            yaw = Quaternion.LookRotation(lookDir).eulerAngles.y;
+            return true;
         }
 
         /// <summary>

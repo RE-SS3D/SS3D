@@ -33,7 +33,14 @@ namespace SS3D.Systems.Entities.Humanoid.Body
     public enum HumanoidCombatMode : byte
     {
         Peaceful = 0,
-        Combat = 1,
+        Melee = 1,
+        Ranged = 2,
+    }
+
+    public static class HumanoidCombatModeExtensions
+    {
+        public static bool IsCombat(this HumanoidCombatMode mode) =>
+            mode == HumanoidCombatMode.Melee || mode == HumanoidCombatMode.Ranged;
     }
 
     public enum ArmHoldPose : byte

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using FishNet.Object.Synchronizing;
@@ -66,7 +66,7 @@ namespace SS3D.Systems.Entities.Humanoid
                 {
                     if (IsCombatMode())
                     {
-                        RotatePlayerToAimOrCamera();
+                        RotatePlayerToCombatAim();
                     }
                     else
                     {
@@ -83,7 +83,7 @@ namespace SS3D.Systems.Entities.Humanoid
                 MoveMovementTarget(Vector2.zero, 5);
                 if (IsCombatMode() && !IsDragging)
                 {
-                    RotatePlayerToAimOrCamera();
+                    RotatePlayerToCombatAim();
                 }
 
                 PublishLocomotionVelocity(Vector3.zero, 0f);

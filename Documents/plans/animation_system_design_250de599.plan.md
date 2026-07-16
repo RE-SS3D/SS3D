@@ -323,3 +323,11 @@ struct BodyAnimationSnapshot {
 | Integrate | [`Ragdoll.cs`](Assets/Scripts/SS3D/Systems/Entities/Humanoid/Ragdoll.cs), [`HumanoidLivingController.cs`](Assets/Scripts/SS3D/Systems/Entities/Humanoid/HumanoidLivingController.cs) |
 | Content | New layered `HumanCharacterAnimator.controller` + Mixamo clip set |
 | Docs | GitBook: `dev-guide/systems/player-body-animation` |
+
+---
+
+## Implementation notes
+
+### Combat stance packs (follow-up)
+
+Base locomotion is three FreeformCartesian2D blends switched by animator int `CombatStance` (0 Peaceful / 1 Melee / 2 Ranged). Packs: Locomotion Pack, Pro Melee Axe Pack, Basic Shooter Pack. `HumanoidCombatMode` is packed in 2 snapshot bits; `C` toggles Peaceful ↔ Melee/Ranged from held-item traits. Editor menu: **SS3D → Animation → Rebuild Combat Stance Blend Trees**. After importing new pack FBX metas, reimport in Unity then run that menu so Mixamo `Mix_*` clips resolve. See [PLAYER_BODY_ANIMATION.md](../PLAYER_BODY_ANIMATION.md).

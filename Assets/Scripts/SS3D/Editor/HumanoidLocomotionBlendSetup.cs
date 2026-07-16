@@ -7,16 +7,18 @@ using UnityEngine;
 namespace SS3D.Editor
 {
     /// <summary>
-    /// Rebuilds the Human Character Movement blend tree to use the full Locomotion Pack
-    /// (idle / walk / run / strafes) plus Jump and in-place Turn states.
+    /// Rebuilds Base Layer locomotion into Peaceful / Melee / Ranged FreeformCartesian2D
+    /// blend trees switched by the CombatStance animator int.
     /// </summary>
     public static class HumanoidLocomotionBlendSetup
     {
         private const string ControllerPath =
             "Assets/Content/WorldObjects/Entities/Humanoids/Human/HumanCharacterAnimator.controller";
-        private const string PackFolder = "Assets/Art/Animations/Locomotion Pack";
+        private const string LocomotionPack = "Assets/Art/Animations/Locomotion Pack";
+        private const string MeleePack = "Assets/Art/Animations/Pro Melee Axe Pack";
+        private const string ShooterPack = "Assets/Art/Animations/Basic Shooter Pack";
 
-        private static readonly (string File, string ClipName, Vector2 Pos)[] LocomotionClips =
+        private static readonly (string File, string ClipName, Vector2 Pos)[] PeacefulClips =
         {
             ("idle.fbx", "Mix_Idle", new Vector2(0f, 0f)),
             ("walking.fbx", "Mix_Walking", new Vector2(0f, 0.3f)),
@@ -25,33 +27,60 @@ namespace SS3D.Editor
             ("right strafe walking.fbx", "Mix_RightStrafeWalking", new Vector2(1f, 0.3f)),
             ("left strafe.fbx", "Mix_LeftStrafe", new Vector2(-1f, 1f)),
             ("right strafe.fbx", "Mix_RightStrafe", new Vector2(1f, 1f)),
-            // Continuous turn-in-place near idle, driven when VelZ≈0 and VelX from yaw.
-            ("left turn.fbx", "Mix_LeftTurn", new Vector2(-0.35f, 0f)),
-            ("right turn.fbx", "Mix_RightTurn", new Vector2(0.35f, 0f)),
+            ("left strafe walking.fbx", "Mix_LeftStrafeWalking", new Vector2(-1f, 0f)),
+            ("right strafe walking.fbx", "Mix_RightStrafeWalking", new Vector2(1f, 0f)),
         };
 
-        [MenuItem("SS3D/Animation/Rebuild Locomotion Pack Blend Tree")]
-        public static void RebuildLocomotionBlendTreeMenu()
+        private static readonly (string File, string ClipName, Vector2 Pos)[] MeleeClips =
+        {
+            ("standing idle.fbx", "Mix_StandingIdle", new Vector2(0f, 0f)),
+            ("standing walk forward.fbx", "Mix_StandingWalkForward", new Vector2(0f, 0.3f)),
+            ("standing walk back.fbx", "Mix_StandingWalkBack", new Vector2(0f, -0.3f)),
+            ("standing walk left.fbx", "Mix_StandingWalkLeft", new Vector2(-1f, 0.3f)),
+            ("standing walk right.fbx", "Mix_StandingWalkRight", new Vector2(1f, 0.3f)),
+            ("standing walk left.fbx", "Mix_StandingWalkLeft", new Vector2(-1f, 0f)),
+            ("standing walk right.fbx", "Mix_StandingWalkRight", new Vector2(1f, 0f)),
+            ("standing run forward.fbx", "Mix_StandingRunForward", new Vector2(0f, 1f)),
+            ("standing run back.fbx", "Mix_StandingRunBack", new Vector2(0f, -1f)),
+        };
+
+        private static readonly (string File, string ClipName, Vector2 Pos)[] RangedClips =
+        {
+            ("rifle aiming idle.fbx", "Mix_AimingIdle", new Vector2(0f, 0f)),
+            ("walking.fbx", "Mix_RifleWalking", new Vector2(0f, 0.3f)),
+            ("walking backwards.fbx", "Mix_RifleWalkingBackwards", new Vector2(0f, -0.3f)),
+            ("strafe left.fbx", "Mix_RifleStrafeLeft", new Vector2(-1f, 0.3f)),
+            ("strafe right.fbx", "Mix_RifleStrafeRight", new Vector2(1f, 0.3f)),
+            ("strafe left.fbx", "Mix_RifleStrafeLeft", new Vector2(-1f, 0f)),
+            ("strafe right.fbx", "Mix_RifleStrafeRight", new Vector2(1f, 0f)),
+            ("strafe (2).fbx", "Mix_RifleStrafeLeftFast", new Vector2(-1f, 1f)),
+            ("strafe.fbx", "Mix_RifleStrafeRightFast", new Vector2(1f, 1f)),
+            ("rifle run.fbx", "Mix_RifleRun", new Vector2(0f, 1f)),
+            ("run backwards.fbx", "Mix_RunBackwards", new Vector2(0f, -1f)),
+        };
+
+        [MenuItem("SS3D/Animation/Rebuild Combat Stance Blend Trees")]
+        public static void RebuildCombatStanceBlendTreesMenu()
         {
             if (!EditorUtility.DisplayDialog(
-                    "Rebuild Locomotion Blend Tree",
-                    "Replace the Movement 1D Speed blend with a FreeformCartesian2D tree using " +
-                    "idle/walk/run/strafes/turns from Locomotion Pack, and add Jump + Turn90 states.\n\n" +
-                    "This modifies HumanCharacterAnimator.controller.",
+                    "Rebuild Combat Stance Blend Trees",
+                    "Rebuild Base Layer Peaceful / Melee / Ranged FreeformCartesian2D locomotion " +
+                    "switched by CombatStance (0/1/2). Also remaps AttackSwing / Flinch to melee clips.\n\n" +
+                    "Modifies HumanCharacterAnimator.controller.",
                     "Rebuild",
                     "Cancel"))
             {
                 return;
             }
 
-            string result = RebuildLocomotionBlendTree();
-            EditorUtility.DisplayDialog("Rebuild Locomotion Blend Tree", result, "OK");
+            string result = RebuildCombatStanceBlendTrees();
+            EditorUtility.DisplayDialog("Rebuild Combat Stance Blend Trees", result, "OK");
         }
 
-        /// <summary>Batchmode entry: -executeMethod SS3D.Editor.HumanoidLocomotionBlendSetup.RebuildLocomotionBlendTreeBatch</summary>
-        public static void RebuildLocomotionBlendTreeBatch()
+        /// <summary>Batchmode: -executeMethod SS3D.Editor.HumanoidLocomotionBlendSetup.RebuildCombatStanceBlendTreesBatch</summary>
+        public static void RebuildCombatStanceBlendTreesBatch()
         {
-            string result = RebuildLocomotionBlendTree();
+            string result = RebuildCombatStanceBlendTrees();
             Debug.Log($"[HumanoidLocomotionBlendSetup] {result}");
             if (result.StartsWith("ERROR"))
             {
@@ -59,7 +88,13 @@ namespace SS3D.Editor
             }
         }
 
-        public static string RebuildLocomotionBlendTree()
+        // Keep old menu entry as alias.
+        [MenuItem("SS3D/Animation/Rebuild Locomotion Pack Blend Tree")]
+        public static void RebuildLocomotionBlendTreeMenu() => RebuildCombatStanceBlendTreesMenu();
+
+        public static void RebuildLocomotionBlendTreeBatch() => RebuildCombatStanceBlendTreesBatch();
+
+        public static string RebuildCombatStanceBlendTrees()
         {
             AnimatorController controller = AssetDatabase.LoadAssetAtPath<AnimatorController>(ControllerPath);
             if (controller == null)
@@ -70,87 +105,161 @@ namespace SS3D.Editor
             EnsureFloatParam(controller, "VelX");
             EnsureFloatParam(controller, "VelZ");
             EnsureFloatParam(controller, "Turn");
+            EnsureIntParam(controller, "CombatStance");
+            EnsureBoolParam(controller, "CombatMode");
             EnsureTriggerParam(controller, "Jump");
             EnsureTriggerParam(controller, "TurnLeft90");
             EnsureTriggerParam(controller, "TurnRight90");
+            EnsureTriggerParam(controller, "AttackSwing");
+            EnsureTriggerParam(controller, "Flinch");
 
             AnimatorStateMachine baseMachine = controller.layers[0].stateMachine;
-            AnimatorState movementState = FindState(baseMachine, "Movement");
-            if (movementState == null)
+
+            BlendTree peacefulTree = BuildBlendTree(controller, "Peaceful Locomotion 2D", LocomotionPack, PeacefulClips);
+            BlendTree meleeTree = BuildBlendTree(controller, "Melee Locomotion 2D", MeleePack, MeleeClips);
+            BlendTree rangedTree = BuildBlendTree(controller, "Ranged Locomotion 2D", ShooterPack, RangedClips);
+            if (peacefulTree == null || meleeTree == null || rangedTree == null)
             {
-                return "ERROR: Movement state not found on Base Layer";
+                return "ERROR: Failed to build one or more stance blend trees (check Mix_* clip names after reimport).";
             }
 
+            AnimatorState peaceful = FindOrCreateState(baseMachine, "Peaceful Locomotion", new Vector3(300, 0, 0));
+            AnimatorState melee = FindOrCreateState(baseMachine, "Melee Locomotion", new Vector3(300, 120, 0));
+            AnimatorState ranged = FindOrCreateState(baseMachine, "Ranged Locomotion", new Vector3(300, 240, 0));
+            peaceful.motion = peacefulTree;
+            melee.motion = meleeTree;
+            ranged.motion = rangedTree;
+            baseMachine.defaultState = peaceful;
+
+            // Retarget legacy Movement state if present.
+            AnimatorState legacyMovement = FindState(baseMachine, "Movement");
+            if (legacyMovement != null)
+            {
+                legacyMovement.motion = peacefulTree;
+            }
+
+            WireStanceTransitions(peaceful, melee, ranged);
+            WireStanceTransitions(melee, peaceful, ranged);
+            WireStanceTransitions(ranged, peaceful, melee);
+
+            AnimationClip jumpClip = LoadPackClip($"{LocomotionPack}/jump.fbx", "Mix_Jump");
+            if (jumpClip != null)
+            {
+                AnimatorState jumpState = FindOrCreateState(baseMachine, "Jump", new Vector3(550, 120, 0));
+                jumpState.motion = jumpClip;
+                EnsureAnyStateTrigger(baseMachine, jumpState, "Jump", canTransitionToSelf: false);
+                EnsureExitToState(jumpState, peaceful, hasExitTime: true, exitTime: 0.85f, duration: 0.1f);
+            }
+
+            // Melee attack / flinch hooks on existing named states if present.
+            RemapStateMotion(baseMachine, "Attack Swing", $"{MeleePack}/standing melee attack horizontal.fbx", "Mix_StandingMeleeAttackHorizontal");
+            RemapStateMotion(baseMachine, "Flinch", $"{MeleePack}/standing react large gut.fbx", "Mix_StandingReactLargeGut");
+
+            // Upper-body layer Attack Swing if that name exists there too.
+            if (controller.layers.Length > 1)
+            {
+                RemapStateMotion(controller.layers[1].stateMachine, "Attack Swing",
+                    $"{MeleePack}/standing melee attack horizontal.fbx", "Mix_StandingMeleeAttackHorizontal");
+                RemapStateMotion(controller.layers[2].stateMachine, "Flinch",
+                    $"{MeleePack}/standing react large gut.fbx", "Mix_StandingReactLargeGut");
+            }
+
+            EditorUtility.SetDirty(controller);
+            AssetDatabase.SaveAssets();
+            AssetDatabase.Refresh();
+
+            return "OK: Rebuilt Peaceful / Melee / Ranged locomotion blends switched by CombatStance; " +
+                   "AttackSwing / Flinch remapped to melee pack clips where states exist.";
+        }
+
+        private static BlendTree BuildBlendTree(
+            AnimatorController controller,
+            string treeName,
+            string packFolder,
+            (string File, string ClipName, Vector2 Pos)[] entries)
+        {
             BlendTree tree = new BlendTree
             {
-                name = "Locomotion 2D",
+                name = treeName,
                 blendType = BlendTreeType.FreeformCartesian2D,
                 blendParameter = "VelX",
                 blendParameterY = "VelZ",
                 useAutomaticThresholds = false,
             };
 
-            List<(AnimationClip Clip, Vector2 Pos)> children = new();
-            foreach ((string File, string ClipName, Vector2 Pos) entry in LocomotionClips)
+            foreach ((string File, string ClipName, Vector2 Pos) entry in entries)
             {
-                AnimationClip clip = LoadPackClip($"{PackFolder}/{entry.File}", entry.ClipName);
+                AnimationClip clip = LoadPackClip($"{packFolder}/{entry.File}", entry.ClipName);
                 if (clip == null)
                 {
-                    return $"ERROR: Could not load clip '{entry.ClipName}' from {entry.File}";
+                    Debug.LogError($"[HumanoidLocomotionBlendSetup] Missing clip '{entry.ClipName}' in {packFolder}/{entry.File}");
+                    return null;
                 }
 
-                children.Add((clip, entry.Pos));
-            }
-
-            // Side-step at zero forward so pure strafe input blends cleanly.
-            AnimationClip leftStrafeWalk = children.First(c => c.Clip.name == "Mix_LeftStrafeWalking").Clip;
-            AnimationClip rightStrafeWalk = children.First(c => c.Clip.name == "Mix_RightStrafeWalking").Clip;
-            children.Add((leftStrafeWalk, new Vector2(-1f, 0f)));
-            children.Add((rightStrafeWalk, new Vector2(1f, 0f)));
-
-            foreach ((AnimationClip Clip, Vector2 Pos) child in children)
-            {
-                tree.AddChild(child.Clip, child.Pos);
+                tree.AddChild(clip, entry.Pos);
             }
 
             AssetDatabase.AddObjectToAsset(tree, controller);
-            movementState.motion = tree;
+            return tree;
+        }
 
-            AnimationClip jumpClip = LoadPackClip($"{PackFolder}/jump.fbx", "Mix_Jump");
-            AnimationClip turnLeft90 = LoadPackClip($"{PackFolder}/left turn 90.fbx", "Mix_LeftTurn90");
-            AnimationClip turnRight90 = LoadPackClip($"{PackFolder}/right turn 90.fbx", "Mix_RightTurn90");
-            if (jumpClip == null || turnLeft90 == null || turnRight90 == null)
+        private static void WireStanceTransitions(AnimatorState from, AnimatorState otherA, AnimatorState otherB)
+        {
+            EnsureStanceTransition(from, otherA, (int)GetStanceForState(otherA));
+            EnsureStanceTransition(from, otherB, (int)GetStanceForState(otherB));
+        }
+
+        private static int GetStanceForState(AnimatorState state)
+        {
+            if (state.name.StartsWith("Melee"))
             {
-                return "ERROR: Missing jump or turn-90 clips";
+                return 1;
             }
 
-            AnimatorState jumpState = FindOrCreateState(baseMachine, "Jump", new Vector3(550, 120, 0));
-            jumpState.motion = jumpClip;
-            jumpState.writeDefaultValues = true;
+            if (state.name.StartsWith("Ranged"))
+            {
+                return 2;
+            }
 
-            AnimatorState turnLeft90State = FindOrCreateState(baseMachine, "Turn Left 90", new Vector3(550, 200, 0));
-            turnLeft90State.motion = turnLeft90;
+            return 0;
+        }
 
-            AnimatorState turnRight90State = FindOrCreateState(baseMachine, "Turn Right 90", new Vector3(550, 280, 0));
-            turnRight90State.motion = turnRight90;
+        private static void EnsureStanceTransition(AnimatorState from, AnimatorState to, int stanceValue)
+        {
+            foreach (AnimatorStateTransition transition in from.transitions)
+            {
+                if (transition.destinationState == to
+                    && transition.conditions.Any(c => c.parameter == "CombatStance" && (int)c.threshold == stanceValue))
+                {
+                    return;
+                }
+            }
 
-            EnsureAnyStateTrigger(baseMachine, jumpState, "Jump", canTransitionToSelf: false);
-            EnsureAnyStateTrigger(baseMachine, turnLeft90State, "TurnLeft90", canTransitionToSelf: false);
-            EnsureAnyStateTrigger(baseMachine, turnRight90State, "TurnRight90", canTransitionToSelf: false);
+            AnimatorStateTransition created = from.AddTransition(to);
+            created.hasExitTime = false;
+            created.hasFixedDuration = true;
+            created.duration = 0.15f;
+            created.AddCondition(AnimatorConditionMode.Equals, stanceValue, "CombatStance");
+        }
 
-            EnsureExitToMovement(jumpState, movementState, hasExitTime: true, exitTime: 0.85f, duration: 0.1f);
-            EnsureExitToMovement(turnLeft90State, movementState, hasExitTime: true, exitTime: 0.9f, duration: 0.1f);
-            EnsureExitToMovement(turnRight90State, movementState, hasExitTime: true, exitTime: 0.9f, duration: 0.1f);
+        private static void RemapStateMotion(AnimatorStateMachine machine, string stateName, string fbxPath, string clipName)
+        {
+            if (machine == null)
+            {
+                return;
+            }
 
-            // Keep Speed as magnitude alias for legacy bindings / ragdoll zeroing.
-            // Runtime still writes Speed = length of (VelX, VelZ) for the 1D fallthrough states.
+            AnimatorState state = FindState(machine, stateName);
+            if (state == null)
+            {
+                return;
+            }
 
-            EditorUtility.SetDirty(controller);
-            AssetDatabase.SaveAssets();
-            AssetDatabase.Refresh();
-
-            return $"OK: Rebuilt Movement FreeformCartesian2D with {children.Count} clips; " +
-                   "Jump / Turn Left 90 / Turn Right 90 states wired.";
+            AnimationClip clip = LoadPackClip(fbxPath, clipName);
+            if (clip != null)
+            {
+                state.motion = clip;
+            }
         }
 
         private static AnimationClip LoadPackClip(string fbxPath, string clipName)
@@ -164,7 +273,6 @@ namespace SS3D.Editor
                 }
             }
 
-            // Fallback: first non-preview clip in the FBX.
             foreach (Object asset in assets)
             {
                 if (asset is AnimationClip clip && !clip.name.StartsWith("__preview__"))
@@ -185,6 +293,26 @@ namespace SS3D.Editor
             }
 
             controller.AddParameter(name, AnimatorControllerParameterType.Float);
+        }
+
+        private static void EnsureIntParam(AnimatorController controller, string name)
+        {
+            if (controller.parameters.Any(p => p.name == name))
+            {
+                return;
+            }
+
+            controller.AddParameter(name, AnimatorControllerParameterType.Int);
+        }
+
+        private static void EnsureBoolParam(AnimatorController controller, string name)
+        {
+            if (controller.parameters.Any(p => p.name == name))
+            {
+                return;
+            }
+
+            controller.AddParameter(name, AnimatorControllerParameterType.Bool);
         }
 
         private static void EnsureTriggerParam(AnimatorController controller, string name)
@@ -244,22 +372,22 @@ namespace SS3D.Editor
             created.AddCondition(AnimatorConditionMode.If, 0f, triggerName);
         }
 
-        private static void EnsureExitToMovement(
+        private static void EnsureExitToState(
             AnimatorState from,
-            AnimatorState movement,
+            AnimatorState destination,
             bool hasExitTime,
             float exitTime,
             float duration)
         {
             foreach (AnimatorStateTransition transition in from.transitions)
             {
-                if (transition.destinationState == movement)
+                if (transition.destinationState == destination)
                 {
                     return;
                 }
             }
 
-            AnimatorStateTransition created = from.AddTransition(movement);
+            AnimatorStateTransition created = from.AddTransition(destination);
             created.hasExitTime = hasExitTime;
             created.exitTime = exitTime;
             created.hasFixedDuration = true;

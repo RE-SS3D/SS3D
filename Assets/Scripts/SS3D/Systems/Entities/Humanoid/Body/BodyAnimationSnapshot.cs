@@ -31,12 +31,12 @@ namespace SS3D.Systems.Entities.Humanoid.Body
             packed |= ((uint)Locomotion & 0x7) << 3;
             packed |= ((uint)ArmHold & 0x3) << 6;
             packed |= ((uint)ActiveTrigger & 0x7) << 8;
-            packed |= ((uint)CombatMode & 0x1) << 11;
-            packed |= ((uint)LimpSide & 0x3) << 12;
-            if (IsSeated) packed |= 1u << 14;
-            if (IsCrawling) packed |= 1u << 15;
-            if (IsFloating) packed |= 1u << 16;
-            if (IsDragging) packed |= 1u << 17;
+            packed |= ((uint)CombatMode & 0x3) << 11;
+            packed |= ((uint)LimpSide & 0x3) << 13;
+            if (IsSeated) packed |= 1u << 15;
+            if (IsCrawling) packed |= 1u << 16;
+            if (IsFloating) packed |= 1u << 17;
+            if (IsDragging) packed |= 1u << 18;
             return packed;
         }
 
@@ -48,12 +48,12 @@ namespace SS3D.Systems.Entities.Humanoid.Body
                 Locomotion = (LocomotionMode)((packed >> 3) & 0x7),
                 ArmHold = (ArmHoldPose)((packed >> 6) & 0x3),
                 ActiveTrigger = (AnimationTriggerId)((packed >> 8) & 0x7),
-                CombatMode = (HumanoidCombatMode)((packed >> 11) & 0x1),
-                LimpSide = (LimpSide)((packed >> 12) & 0x3),
-                IsSeated = (packed & (1u << 14)) != 0,
-                IsCrawling = (packed & (1u << 15)) != 0,
-                IsFloating = (packed & (1u << 16)) != 0,
-                IsDragging = (packed & (1u << 17)) != 0,
+                CombatMode = (HumanoidCombatMode)((packed >> 11) & 0x3),
+                LimpSide = (LimpSide)((packed >> 13) & 0x3),
+                IsSeated = (packed & (1u << 15)) != 0,
+                IsCrawling = (packed & (1u << 16)) != 0,
+                IsFloating = (packed & (1u << 17)) != 0,
+                IsDragging = (packed & (1u << 18)) != 0,
                 AimYaw = aimYaw,
                 MovementSpeed = movementSpeed,
                 InjuredArmLeft = injuredArmLeft,

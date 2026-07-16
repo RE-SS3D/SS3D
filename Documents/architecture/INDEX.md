@@ -30,7 +30,7 @@ Authoring conventions: [Documents/SKILL.md](../SKILL.md). Agent rules: [AGENTS.m
 | Electricity | [electricity](systems/electricity.md) | partial | Power circuits, APC, SMES, generators |
 | Substances | [substances](systems/substances.md) | partial | Containers, transfer interactions, Tier 2 armed proof-of-concept |
 | Inventory | [inventory](systems/inventory.md) | stub | Items, containers, ID cards |
-| Entities | [entities](systems/entities.md) | stub | Humanoids, minds, entity spawning |
+| Entities | [entities](systems/entities.md) | partial | Humanoids, minds, entity spawning; body-state animation + combat stances |
 | Health | [health](systems/health.md) | partial | Body parts, oxygen consumer (design spec not fully implemented) |
 | Combat | [combat](systems/combat.md) | stub | Hit interactions (design spec not implemented) |
 | Crafting | [crafting](systems/crafting.md) | stub | Recipe crafting |

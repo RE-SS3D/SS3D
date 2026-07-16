@@ -49,12 +49,27 @@ Each state exposes: `CanMove`, `CanRotate`, `CanRun`, `CanUseHands`, `CanInterac
 
 ### Animator Layers
 
-1. **Base** (mask optional) — `Locomotion 2D` FreeformCartesian2D blend (`VelX` / `VelZ`) from Locomotion Pack: idle, walk, run, walk/run strafes, in-place turns. `Jump` / `TurnLeft90` / `TurnRight90` triggers available (run **SS3D → Animation → Rebuild Locomotion Pack Blend Tree** to wire one-shot states if missing).
-2. **UpperBody** (arms + torso mask) — hold poses, attacks
-3. **Additive** — flinch, injured arm overlay
+1. **Base** — three FreeformCartesian2D locomotion blends switched by `CombatStance` (0 Peaceful / 1 Melee / 2 Ranged):
+   - **Peaceful** — [Locomotion Pack](../Assets/Art/Animations/Locomotion%20Pack/) idle / walk / run / strafes
+   - **Melee** — [Pro Melee Axe Pack](../Assets/Art/Animations/Pro%20Melee%20Axe%20Pack/) standing idle / walk F-B-L-R / run F-B (includes backpedal)
+   - **Ranged** — [Basic Shooter Pack](../Assets/Art/Animations/Basic%20Shooter%20Pack/) rifle idle / walk / walk back / strafes / run / run back
+2. **UpperBody** (arms + torso mask) — hold poses, attacks (`AttackSwing` uses melee horizontal swing)
+3. **Additive** — flinch (`Flinch` uses melee gut react), injured arm overlay
 4. **FullBody Override** — sit, crawl, emote, stand-up
 
-Peaceful movement faces the move direction (mostly forward gait). Combat mode (`C`) faces the camera so strafe clips engage.
+Rebuild via **SS3D → Animation → Rebuild Combat Stance Blend Trees** after reimporting pack FBX clips.
+
+### Combat stances
+
+| Stance | Pack | How entered |
+|--------|------|-------------|
+| Peaceful | Locomotion Pack | Default; `C` toggles combat off |
+| Melee | Pro Melee Axe Pack | `C` on + unarmed or non-ranged weapon |
+| Ranged | Basic Shooter Pack | `C` on + hand item trait contains Ranged/Gun/Firearm/Rifle |
+
+Peaceful movement faces the move direction. Melee/Ranged face the mouse on the ground plane so WASD produces forward/back/strafe clips relative to aim. Pack clips bake root rotation into pose so GameObject aim yaw stays authoritative.
+
+`BodyAnimationSnapshot` packs `CombatMode` in 2 bits (Peaceful/Melee/Ranged). Orchestrator drives animator `CombatStance` int + `CombatMode` bool.
 
 ### Networking
 
@@ -69,9 +84,9 @@ Peaceful movement faces the move direction (mostly forward gait). Combat mode (`
 |--------|------|
 | Movement | Reads `BodyCapabilities`; combat mode enables strafe |
 | Health | Foot damage → limp; arm damage → injured overlay; hit → stagger |
-| Inventory | Item in hand → `ArmHold` pose |
+| Inventory | Item in hand → `ArmHold` pose; ranged traits refresh combat stance while in combat |
 | Interactions | Seat → `TrySit(anchor)`; throw/hit → animation triggers |
-| Combat | Combat mode toggle, aim yaw, attack overrides |
+| Combat | `C` toggles Peaceful ↔ Melee/Ranged (from held item); mouse aim + strafe |
 | Ragdoll | Universal interrupt via existing `Ragdoll` SyncVar |
 
 ## Phased Delivery

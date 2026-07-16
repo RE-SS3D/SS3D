@@ -6,13 +6,15 @@ using UnityEngine.InputSystem;
 namespace SS3D.Systems.Entities.Humanoid
 {
     /// <summary>
-    /// Toggles combat/peaceful mode and drives strafe + aim behaviour (#1246).
+    /// Toggles peaceful / combat stance and drives strafe + aim behaviour (#1246).
+    /// Combat subtype (Melee vs Ranged) comes from inventory via <see cref="HumanoidBodyStateBridge"/>.
     /// </summary>
     [RequireComponent(typeof(HumanoidBodyStateMachine))]
     public class HumanoidCombatController : NetworkActor
     {
         [SerializeField] private HumanoidBodyStateMachine _bodyStateMachine;
         [SerializeField] private AnimationOrchestrator _orchestrator;
+        [SerializeField] private HumanoidBodyStateBridge _bodyStateBridge;
 
         protected override void OnAwake()
         {
@@ -25,6 +27,11 @@ namespace SS3D.Systems.Entities.Humanoid
             if (_orchestrator == null)
             {
                 _orchestrator = GetComponent<AnimationOrchestrator>();
+            }
+
+            if (_bodyStateBridge == null)
+            {
+                _bodyStateBridge = GetComponent<HumanoidBodyStateBridge>();
             }
         }
 
@@ -43,10 +50,17 @@ namespace SS3D.Systems.Entities.Humanoid
 
             if (Keyboard.current != null && Keyboard.current.cKey.wasPressedThisFrame)
             {
-                HumanoidCombatMode newMode = _bodyStateMachine.CombatMode == HumanoidCombatMode.Combat
-                    ? HumanoidCombatMode.Peaceful
-                    : HumanoidCombatMode.Combat;
-                _bodyStateMachine.CmdSetCombatMode(newMode);
+                if (_bodyStateMachine.CombatMode.IsCombat())
+                {
+                    _bodyStateMachine.CmdSetCombatMode(HumanoidCombatMode.Peaceful);
+                }
+                else
+                {
+                    HumanoidCombatMode stance = _bodyStateBridge != null
+                        ? _bodyStateBridge.ResolveCombatStance()
+                        : HumanoidCombatMode.Melee;
+                    _bodyStateMachine.CmdSetCombatMode(stance);
+                }
             }
         }
 

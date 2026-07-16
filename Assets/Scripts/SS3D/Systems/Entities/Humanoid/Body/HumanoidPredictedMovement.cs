@@ -232,7 +232,7 @@ namespace SS3D.Systems.Entities.Humanoid
 
             bool isRunning = caps.CanRun && _livingController != null && _livingController.IsRunning;
             float aimYaw = 0f;
-            if (_bodyStateMachine.CombatMode == HumanoidCombatMode.Combat && _camera != null)
+            if (_bodyStateMachine.CombatMode.IsCombat() && _camera != null)
             {
                 Vector3 mouseWorld = GetMouseWorldPosition();
                 Vector3 lookDir = mouseWorld - transform.position;
@@ -284,7 +284,7 @@ namespace SS3D.Systems.Entities.Humanoid
 
             if (caps.CanRotate)
             {
-                if (_bodyStateMachine.CombatMode == HumanoidCombatMode.Combat)
+                if (_bodyStateMachine.CombatMode.IsCombat())
                 {
                     transform.rotation = Quaternion.Euler(0f, md.AimYaw, 0f);
                 }
