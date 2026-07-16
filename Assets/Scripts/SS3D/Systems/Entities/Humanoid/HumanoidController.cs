@@ -280,10 +280,18 @@ namespace SS3D.Systems.Entities.Humanoid
                  movementInput.x * rightBasis;
 
              float lerpRate = _lerpMultiplier * multiplier;
-             // Reach gait quickly from standstill so feet and motion start together.
+             // Snap idle→walk; seed idle→run at walk speed so motion accelerates through the gait blend.
              if (TargetMovement.sqrMagnitude < 0.0001f && newTargetMovement.sqrMagnitude > 0.0001f)
              {
-                 TargetMovement = newTargetMovement;
+                 float targetMag = newTargetMovement.magnitude;
+                 if (targetMag <= WalkAnimatorValue + 0.05f)
+                 {
+                     TargetMovement = newTargetMovement;
+                 }
+                 else
+                 {
+                     TargetMovement = newTargetMovement.normalized * WalkAnimatorValue;
+                 }
              }
              else
              {

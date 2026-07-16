@@ -179,15 +179,25 @@ namespace SS3D.Systems.Entities.Humanoid
             float currentMag = Mathf.Sqrt(_currentVelX * _currentVelX + _currentVelZ * _currentVelZ);
             float targetMag = Mathf.Sqrt(_targetVelX * _targetVelX + _targetVelZ * _targetVelZ);
             bool leavingIdle = currentMag < 0.05f && targetMag > currentMag;
+            // Walk targets sit near 0.3; run is 1.0 — only snap the short idle→walk step.
+            bool leavingIdleToWalk = leavingIdle && targetMag <= 0.45f;
 
-            // Snap only when leaving standstill so walk starts immediately.
-            // Walk ↔ run (and stop) ease so the FreeformCartesian2D blend does not pop.
-            if (leavingIdle)
+            if (leavingIdleToWalk)
             {
                 _currentVelX = _targetVelX;
                 _currentVelZ = _targetVelZ;
                 _currentTurn = _targetTurn;
                 _currentSpeed = _targetSpeed;
+            }
+            else if (leavingIdle)
+            {
+                // Idle → run: begin at walk gait so acceleration passes through the blend tree.
+                Vector2 target = new Vector2(_targetVelX, _targetVelZ);
+                Vector2 walkSeed = target.normalized * 0.3f;
+                _currentVelX = walkSeed.x;
+                _currentVelZ = walkSeed.y;
+                _currentTurn = _targetTurn;
+                _currentSpeed = 0.3f;
             }
             else
             {
