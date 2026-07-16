@@ -18,12 +18,14 @@ namespace SS3D.Systems.Furniture
             _locker = locker;
         }
 
+        public int Priority => 25;
+
         public string GetName(InteractionEvent interactionEvent)
         {
             return !string.IsNullOrEmpty(Name) ? Name : "Open or Close Locker";
         }
 
-        public string GetGenericName() => throw new System.NotImplementedException();
+        public string GetGenericName() => "OpenLocker";
 
         public Sprite GetIcon(InteractionEvent interactionEvent)
         {

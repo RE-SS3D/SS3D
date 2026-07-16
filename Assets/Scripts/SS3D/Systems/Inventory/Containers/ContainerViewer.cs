@@ -111,7 +111,6 @@ namespace SS3D.Systems.Inventory.Containers
         {
             if (_displayedContainers.Remove(container))
             {
-                Debug.Log("client call remove");
                 SetOpenState(container.gameObject, false);
                 NetworkConnection client = Owner;
                 if (client != null)

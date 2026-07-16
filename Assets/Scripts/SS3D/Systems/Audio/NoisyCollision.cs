@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using FishNet.Object;
 using SS3D.Core;
+using SS3D.Logging;
 using FishNet;
 using SS3D.Data.AssetDatabases;
 using UnityEngine.Serialization;
@@ -74,7 +75,8 @@ namespace SS3D.Systems.Audio
                 return;
             }
 
-            Debug.LogWarning("<color=red>Woops!</color> " + gameObject.name + " is configured to make collision sounds, but cannot. Make sure the Noisy Collision script is configured correctly.");
+            Log.Warning(this, "{gameObjectName} is configured to make collision sounds, but cannot. Make sure the Noisy Collision script is configured correctly.",
+                Logs.Generic, gameObject.name);
             enabled = false;
         }
 

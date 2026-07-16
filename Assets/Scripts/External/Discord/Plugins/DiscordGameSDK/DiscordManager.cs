@@ -98,11 +98,11 @@ namespace UDiscord
             {
                 if(res == Result.Ok)
                 {
-                    Debug.Log($"[{typeof(DiscordManager)}] - Discord Status Is On!");
+                    Log.Debug(typeof(DiscordManager), "Discord status is on", Logs.External);
                 }
                 else
                 {
-                    Debug.LogError($"[{typeof(DiscordManager)}] - Discord Status Failed!");
+                    Log.Error(typeof(DiscordManager), "Discord status failed", Logs.External);
                 }
             });
         }
@@ -155,11 +155,11 @@ namespace UDiscord
             {
                 if(res == Result.Ok)
                 {
-                    Debug.Log($"[{typeof(DiscordManager)}] - Discord Status Is On!");
+                    Log.Debug(typeof(DiscordManager), "Discord status is on", Logs.External);
                 }
                 else
                 {
-                    Debug.LogError($"[{typeof(DiscordManager)}] - Discord Status Failed!");
+                    Log.Error(typeof(DiscordManager), "Discord status failed", Logs.External);
                 }
             });
         }

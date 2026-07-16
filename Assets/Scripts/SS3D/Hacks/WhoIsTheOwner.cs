@@ -1,5 +1,6 @@
 ﻿using FishNet.Object;
 using SS3D.Core;
+using SS3D.Logging;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -28,7 +29,7 @@ namespace SS3D.Hacks
 
         private void ShowOwner(InputAction.CallbackContext callbackContext)
         {
-            Debug.Log("Owner of gameobject" + gameObject.name + " is " + Owner);
+            Log.Debug(this, "Owner of {gameObjectName} is {owner}", Logs.Generic, gameObject.name, Owner);
         }
     }
 }

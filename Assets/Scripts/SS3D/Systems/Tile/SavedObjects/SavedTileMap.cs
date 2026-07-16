@@ -14,5 +14,6 @@ namespace SS3D.Systems.Tile
         public string mapName;
         public SavedTileChunk[] savedChunkList;
         public SavedPlacedItemObject[] savedItemList;
+        public SavedAreaRecord[] savedAreas;
     }
 }

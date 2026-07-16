@@ -32,7 +32,40 @@ MonoBehaviour:
   _blurQuality: 5
   _blurDirections: 25
   _blurSize: {x: 5, y: 5}
+  _fogStrength: 0.9
   _debugMask: 0
+--- !u!114 &-3601183876851600227
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1e54601e917853c2c93138c2b6e2515b, type: 3}
+  m_Name: AtmosRendererFeature
+  m_EditorClassIdentifier: SS3D.Rendering.URP::SS3D.Rendering.URP.AtmosRendererFeature
+  m_Active: 1
+  _scatterShader: {fileID: 4800000, guid: 7f2a9b8c1d3e4f5061728394a5b6c7d8, type: 3}
+  _glowShader: {fileID: 4800000, guid: a3c7e1f92b4d5a60817293b4c5d6e7f8, type: 3}
+  _distortionShader: {fileID: 4800000, guid: b4d8e2a13c5f6b70918293a4b5c6d7e9, type: 3}
+  _enabled: 1
+  _debugView: 0
+  _scatterStrength: 1
+  _scatterColor: {r: 0.60260093, g: 0.36712354, b: 0.6226415, a: 1}
+  _glowStrength: 4
+  _plasmaEmissionColor: {r: 0.75, g: 0.2, b: 1, a: 1}
+  _distortionStrength: 0.02
+  _distortionNoiseScale: 0.35
+  _distortionNoiseSpeed: 3
+  _turbulenceStrength: 0.52
+  _flowNoiseScale: 0.5
+  _flowSpeed: 1
+  _volumeHeight: 2.5
+  _referencePressure: 101.325
+  _fogPressureScale: 80
+  _slabSteps: 6
 --- !u!114 &11400000
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -59,8 +92,9 @@ MonoBehaviour:
     probeVolumeBlendStatesCS: {fileID: 0}
   m_RendererFeatures:
   - {fileID: 5324824689208116589}
-  - {fileID: -8472639182736451891}
   - {fileID: -8695474903262945238}
+  - {fileID: -8472639182736451891}
+  - {fileID: -3601183876851600227}
   m_RendererFeatureMap: 6dc57abbd793e54920f24d2a314fd717cd16f0a28d236b8a
   m_UseNativeRenderPass: 0
   xrSystemData: {fileID: 0}

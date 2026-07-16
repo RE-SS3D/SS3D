@@ -19,7 +19,7 @@
 <!-- optional, if no code -->
 - [ ] Relevant code is documented.
 <!-- optional, if doc is needed -->
-- [ ] Update the related GitBook document, or create a new one if needed.
+- [ ] Update the related design or architecture doc in `Documents/`, or create one if needed.
 
 <!-- optional. -->
 # Pictures/Videos

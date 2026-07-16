@@ -1,0 +1,26 @@
+
+.device-identity-block {
+    flex-direction: column;
+}
+
+.device-identity-block__title {
+    font-size: 32px;
+    letter-spacing: 2.5px;
+    color: var(--ss3d-text-primary);
+    -unity-text-align: upper-left;
+    white-space: normal;
+}
+
+.device-identity-block__subtitle {
+    font-size: 15px;
+    color: var(--ss3d-text-secondary);
+    margin-top: 4px;
+    white-space: normal;
+}
+
+.device-identity-block__metadata {
+    font-size: 12px;
+    color: var(--ss3d-text-tertiary);
+    margin-top: 4px;
+    white-space: normal;
+}

@@ -66,10 +66,12 @@ namespace SS3D.Core
         {
             Type type = subSystem.GetType();
 
-            if (!RegisteredSubsystems.TryGetValue(type, out ISubSystem _))
+            // A previously registered instance that was destroyed without calling Unregister() (e.g. an
+            // exception skipped cleanup) must not permanently block re-registration of a fresh instance.
+            if (!RegisteredSubsystems.TryGetValue(type, out ISubSystem existing) || existing is UnityEngine.Object existingObject && existingObject == null)
             {
-                Serilog.Log.Information($"{nameof(SubSystems)} - Registering {subSystem.GetType().Name}");
-                RegisteredSubsystems.Add(type, subSystem);
+                Log.Debug(typeof(SubSystems), "Registering subsystem {subSystemType}", Logs.Generic, subSystem.GetType().Name);
+                RegisteredSubsystems[type] = subSystem;
             }
         }
 
@@ -79,7 +81,7 @@ namespace SS3D.Core
         /// <param name="subSystem">The subsystem to unregister.</param>
         public static void Unregister([NotNull] ISubSystem subSystem)
         {
-            Serilog.Log.Information($"{nameof(SubSystems)} - Unregistering {subSystem.GetType().Name}");
+            Log.Debug(typeof(SubSystems), "Unregistering subsystem {subSystemType}", Logs.Generic, subSystem.GetType().Name);
             RegisteredSubsystems.Remove(subSystem.GetType());
         }
     }

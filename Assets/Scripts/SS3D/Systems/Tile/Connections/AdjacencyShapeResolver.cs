@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using SS3D.Logging;
+using UnityEngine;
 
 namespace SS3D.Systems.Tile.Connections
 {
@@ -24,7 +25,7 @@ namespace SS3D.Systems.Tile.Connections
                 case 4:
                     return AdjacencyShape.X;
                 default:
-                    Debug.LogError($"Could not resolve Simple Adjacency Shape for given Adjacency Map - {adjacencyMap}");
+                    Log.Error(typeof(AdjacencyShapeResolver), "Could not resolve Simple Adjacency Shape for given Adjacency Map - {adjacencyMap}", Logs.Generic, adjacencyMap);
                     return AdjacencyShape.O;
             }
         }
@@ -108,8 +109,8 @@ namespace SS3D.Systems.Tile.Connections
                 case 4:
                     return AdjacencyShape.XQuad;
                 default:
-                    Debug.LogError(
-                        $"Could not resolve Advanced Adjacency Shape for given Adjacency Map - {adjacencyMap}");
+                    Log.Error(typeof(AdjacencyShapeResolver),
+                        "Could not resolve Advanced Adjacency Shape for given Adjacency Map - {adjacencyMap}", Logs.Generic, adjacencyMap);
                     return AdjacencyShape.XQuad;
             }
         }
@@ -158,8 +159,8 @@ namespace SS3D.Systems.Tile.Connections
                 return AdjacencyShape.X;
             }
             
-            Debug.LogError(
-                $"Could not resolve Offset Adjacency Shape for given Adjacency Map - {adjacencyMap}");
+            Log.Error(typeof(AdjacencyShapeResolver),
+                "Could not resolve Offset Adjacency Shape for given Adjacency Map - {adjacencyMap}", Logs.Generic, adjacencyMap);
             return AdjacencyShape.X;
         }
     }

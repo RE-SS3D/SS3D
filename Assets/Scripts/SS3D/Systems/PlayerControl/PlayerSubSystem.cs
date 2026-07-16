@@ -144,8 +144,7 @@ namespace SS3D.Systems.PlayerControl
         [Server]
         private void ProcessPlayerJoin(NetworkConnection conn)
         {
-            string message = $"Player joined the server - {conn.ClientId} {conn.GetAddress()}";
-            Log.Information(this, "Player joined the server - {clientId} {connectionAddress}", Logs.ServerOnly, conn.ClientId, conn.GetAddress());
+            Log.Debug(this, "Player joined the server - {clientId} {connectionAddress}", Logs.ServerOnly, conn.ClientId, conn.GetAddress());
 
             NetworkObject unauthorizedUser = Instantiate(_unauthorizedUserPrefab, Vector3.zero, Quaternion.identity);
             ServerManager.Spawn(unauthorizedUser, conn);
@@ -165,11 +164,11 @@ namespace SS3D.Systems.PlayerControl
 
             if (playedHasConnectedAlready)
             {
-                Log.Information(this, "Player match for {ckey} found, reassigning to client", Logs.ServerOnly, ckey);
+                Log.Debug(this, "Player match for {ckey} found, reassigning to client", Logs.ServerOnly, ckey);
             }
             else
             {
-                Log.Information(this, "No Player match for {ckey} found, creating a new one", Logs.ServerOnly, ckey);
+                Log.Debug(this, "No Player match for {ckey} found, creating a new one", Logs.ServerOnly, ckey);
 
                 player = Instantiate(_playerPrefab);
                 ServerManager.Spawn(player.gameObject);
@@ -178,7 +177,7 @@ namespace SS3D.Systems.PlayerControl
 
                 if (conn.IsHost && PermissionSettings.AddServerOwnerPermissionToServerHost)
                 {
-                    Log.Information(this, $"Adding ServerOwner permission to server owner: {ckey}", Logs.ServerOnly, ckey);
+                    Log.Debug(this, $"Adding ServerOwner permission to server owner: {ckey}", Logs.ServerOnly, ckey);
 
                     SubSystems.Get<PermissionSubSystem>().ChangeUserPermission(ckey, ServerRoleTypes.ServerOwner);
                 }
@@ -215,8 +214,7 @@ namespace SS3D.Systems.PlayerControl
         [Server]
         private void ProcessPlayerDisconnect(NetworkConnection conn)
         {
-            string message = $"Client {conn.ClientId} {conn.GetAddress()} disconnected";
-            Log.Information(this, "Client {clientId} {connectionAddress} disconnected", Logs.ServerOnly, conn.ClientId, conn.GetAddress());
+            Log.Debug(this, "Client {clientId} {connectionAddress} disconnected", Logs.ServerOnly, conn.ClientId, conn.GetAddress());
 
             NetworkObject[] ownedObjects = conn.Objects.ToArray();
             if (ownedObjects.Length == 0)
@@ -227,7 +225,7 @@ namespace SS3D.Systems.PlayerControl
 
             foreach (NetworkObject networkIdentity in ownedObjects)
             {
-                Log.Information(this, "Client {connectionAddress}'s owned object: {networkIdentity}",
+                Log.Debug(this, "Client {connectionAddress}'s owned object: {networkIdentity}",
                     Logs.ServerOnly, conn.GetAddress(), networkIdentity.name);
 
                 Player player = networkIdentity.GetComponent<Player>();
@@ -235,7 +233,7 @@ namespace SS3D.Systems.PlayerControl
                 {
                     _onlinePlayers.Remove(player.Ckey);
                     player.RemoveOwnership();
-                    Log.Information(this, "Invoking the player server left event: {ckey}", Logs.ServerOnly, player.Ckey);
+                    Log.Debug(this, "Invoking the player server left event: {ckey}", Logs.ServerOnly, player.Ckey);
 
                     return;
                 }

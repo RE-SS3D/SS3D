@@ -1,0 +1,64 @@
+:root {
+    /* Surfaces */
+    --ss3d-surface-void: #0a0b0d;
+    --ss3d-surface-panel: #12141a;
+    --ss3d-surface-inset: #0a0b0d;
+    --ss3d-surface-elevated: #1a1d24;
+    --ss3d-surface-panel-raised: #1a1d24;
+
+    /* Accent */
+    --ss3d-accent-rust: #c54f30;
+    --ss3d-accent-rust-dim: #8a3822;
+    --ss3d-accent-rust-hover: #d45f40;
+
+    /* Text */
+    --ss3d-text-primary: #e8e6e3;
+    --ss3d-text-secondary: #9a9690;
+    --ss3d-text-tertiary: #5c5955;
+    --ss3d-text-terminal: #7ec87e;
+    --ss3d-text-on-accent: #e8e6e3;
+
+    /* Feedback */
+    --ss3d-feedback-success: #4a8f5c;
+    --ss3d-feedback-success-bg: rgba(74, 143, 92, 0.15);
+    --ss3d-feedback-success-border: rgba(74, 143, 92, 0.4);
+    --ss3d-feedback-warning: #c9a227;
+    --ss3d-feedback-warning-bg: rgba(201, 162, 39, 0.15);
+    --ss3d-feedback-warning-border: rgba(201, 162, 39, 0.4);
+    --ss3d-feedback-danger: #b94848;
+    --ss3d-feedback-danger-bg: rgba(185, 72, 72, 0.15);
+    --ss3d-feedback-danger-border: rgba(185, 72, 72, 0.4);
+    --ss3d-feedback-info: #4a7a9f;
+    --ss3d-feedback-info-bg: rgba(74, 122, 159, 0.15);
+    --ss3d-feedback-info-border: rgba(74, 122, 159, 0.4);
+
+    /* Ramp colors used by interaction tiers */
+    --ss3d-ramp-green-300: #88b36a;
+    --ss3d-ramp-green-400: #6fa055;
+    --ss3d-ramp-blue-300: #5f86b3;
+
+    /* Borders & shadows */
+    --ss3d-border-subtle: #2a2d35;
+    --ss3d-border-default: #2a2d35;
+    --ss3d-border-strong: #3d4149;
+    --ss3d-border-accent: #3d4149;
+    --ss3d-shadow-window: 0 8px 32px rgba(0, 0, 0, 0.6);
+    --ss3d-shadow-panel: 0 8px 24px rgba(0, 0, 0, 0.55);
+
+    /* Spacing */
+    --ss3d-space-1: 4px;
+    --ss3d-space-2: 8px;
+    --ss3d-space-3: 12px;
+    --ss3d-space-4: 16px;
+    --ss3d-space-5: 20px;
+    --ss3d-space-6: 24px;
+
+    /* Radius */
+    --ss3d-radius-sm: 2px;
+    --ss3d-radius-md: 4px;
+
+    /* Motion */
+    --ss3d-duration-fast: 80ms;
+    --ss3d-duration-medium: 160ms;
+    --ss3d-duration-slow: 400ms;
+}

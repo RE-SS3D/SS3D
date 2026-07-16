@@ -6,11 +6,16 @@
         "FishNet.Runtime",
         "SS3D.Attributes",
         "SS3D.Systems",
+        "SS3D.Atmospherics.ECS",
+        "SS3D.Rendering.URP",
         "Coimbra",
         "SS3D.Data",
         "SS3D.Logging",
         "SS3D.Interactions",
-        "SS3D.Tests.Common"
+        "SS3D.Tests.Common",
+        "SS3D.UI.MachineInterface",
+        "SS3D.Localization",
+        "Unity.Localization"
     ],
     "includePlatforms": [
         "Editor"

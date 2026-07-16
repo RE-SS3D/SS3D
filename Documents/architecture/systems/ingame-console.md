@@ -1,0 +1,35 @@
+> Code paths: Assets/Scripts/SS3D/Systems/IngameConsoleSystem/
+> Entry points: CommandsController
+> Status: partial
+
+# In-game console
+
+## Overview
+
+Dev/admin in-game console commands routed through `CommandsController`. Commands are discovered by reflection from `Command` subclasses. Server commands check `PermissionSubSystem` role before executing.
+
+## Start here
+
+- `Assets/Scripts/SS3D/Systems/IngameConsoleSystem/CommandsController.cs` — command dispatch (offline, server, client)
+- `Assets/Scripts/SS3D/Systems/IngameConsoleSystem/Commands/Command.cs` — base class; subclasses auto-register
+- `Assets/Scripts/SS3D/Systems/IngameConsoleSystem/Commands/IdAccessCommands/` — `accesscheck`, `accessgrant`, `accessrevoke`, `accesspreset` dev helpers
+- `Assets/Scripts/SS3D/Systems/IngameConsoleSystem/Commands/ScreenEffectCommand.cs` — client `screeneffect` intensity setter
+- `Assets/Scripts/SS3D/Systems/IngameConsoleSystem/Commands/ScreenEffectHitFlashCommand.cs` — client hit-flash trigger
+
+## Extension points
+
+**New server command:** subclass `Command`, set `Type = Server`, `AccessLevel`, implement `Perform` and `CheckArgs`; name class with `Command` suffix.
+
+**ID access dev commands:** use `IdAccessCommandUtilities` for target resolution and level/preset parsing.
+
+**Screen-effect debug:** client commands call [screen-effects](screen-effects.md); F2 menu is an alternate path on the same subsystem.
+
+## Depends on / Used by
+
+- **Depends on:** [permissions](permissions.md), [id-access](id-access.md) (access dev commands), [entities](entities.md), [inventory](inventory.md), [screen-effects](screen-effects.md)
+
+## Related docs
+
+- [id-access](id-access.md)
+- [screen-effects](screen-effects.md)
+- [INDEX.md](../INDEX.md)

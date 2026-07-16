@@ -78,6 +78,7 @@ namespace SS3D.Data.Generated
         public const string LightTubeFixture = "66f6206faf2f7fb4a993d935c83fc239";
         public const string Locker = "fa1909e0d40b4cf408ff599df7a2043f";
         public const string LockerSecure = "330d85a67a5891145bd8037dde90f37b";
+        public const string M4 = "b25f51097d8c9b35ba76f8697fefa2ca";
         public const string MachineFrame = "bdeac5e9a27546348a584caa74f00ec7";
         public const string MatterBin = "ed77d98d3e75b7946b404face1fe8f82";
         public const string MedicalPatch = "2332a158259900e4f8a237fa8daff266";

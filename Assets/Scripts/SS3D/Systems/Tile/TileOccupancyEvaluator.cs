@@ -21,8 +21,10 @@ namespace SS3D.Systems.Tile
                     if (IsWindow(placed))
                     {
                         occupancy.IsWindow = true;
+                        occupancy.HasWall = true;
                         occupancy.BlocksVision = false;
-                        occupancy.BlockedEdges = 0;
+                        occupancy.BlockedEdges = ComputeWallBlockedEdges(placed, map);
+                        occupancy.IsAirtight = true;
                     }
                     else
                     {

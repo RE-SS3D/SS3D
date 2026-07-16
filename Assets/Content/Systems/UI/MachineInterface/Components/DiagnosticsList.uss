@@ -1,0 +1,55 @@
+
+.diagnostics-list {
+    flex-direction: column;
+    flex-grow: 1;
+}
+
+.diagnostics-list__lines {
+    flex-direction: column;
+}
+
+.diagnostics-list__line {
+    flex-direction: row;
+    margin-bottom: 4px;
+}
+
+.diagnostics-list__glyph {
+    min-width: 14px;
+    font-size: 12px;
+    margin-right: 8px;
+    color: var(--ss3d-text-tertiary);
+    -unity-font-definition: url("project://database/Assets/Content/Systems/UI/Font/Fonts/SpessmanFontSDF.asset");
+}
+
+.diagnostics-list__text {
+    font-size: 12px;
+    white-space: normal;
+    flex-grow: 1;
+    color: var(--ss3d-text-tertiary);
+    -unity-font-definition: url("project://database/Assets/Content/Systems/UI/Font/Fonts/SpessmanFontSDF.asset");
+}
+
+.diagnostics-list__glyph.tone-info,
+.diagnostics-list__text.tone-info {
+    color: var(--ss3d-feedback-info);
+}
+
+.diagnostics-list__glyph.tone-success,
+.diagnostics-list__text.tone-success {
+    color: var(--ss3d-feedback-success);
+}
+
+.diagnostics-list__glyph.tone-warning,
+.diagnostics-list__text.tone-warning {
+    color: var(--ss3d-feedback-warning);
+}
+
+.diagnostics-list__glyph.tone-danger,
+.diagnostics-list__text.tone-danger {
+    color: var(--ss3d-feedback-danger);
+}
+
+.diagnostics-list__glyph.tone-neutral,
+.diagnostics-list__text.tone-neutral {
+    color: var(--ss3d-text-tertiary);
+}

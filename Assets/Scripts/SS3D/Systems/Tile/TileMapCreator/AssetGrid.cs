@@ -96,70 +96,24 @@ public class AssetGrid : Actor
     /// <summary>
     /// Change the currently displayed tiles/items when a new layer is selected in the drop down menu.
     /// </summary>
-    private void LoadCurrentCategory()
+    public void LoadCurrentCategory()
     {
-        int index = _layerPlacementDropdown.value;
-        bool isItems = false;
-        TileLayer[] layers = null;
-        switch (index)
+        TileLayerCategory category = TileLayerCategoryMapping.FromDropdownIndex(_layerPlacementDropdown.value);
+
+        if (TileLayerCategoryMapping.IsItemsCategory(category))
         {
-            case 0:
-                layers = new[] { TileLayer.Plenum };
-                break;
-
-            case 1:
-                layers = new[] { TileLayer.Turf };
-                break;
-
-            case 2:
-                layers = new[]
-                {
-                    TileLayer.FurnitureBase,
-                    TileLayer.FurnitureTop
-                };
-                break;
-
-            case 3:
-                layers = new[]
-                {
-                    TileLayer.WallMountLow,
-                    TileLayer.WallMountHigh
-                };
-                break;
-
-            case 4:
-                layers = new[]
-                {
-                    TileLayer.Wire,
-                    TileLayer.Disposal,
-                    TileLayer.PipeLeft,
-                    TileLayer.PipeRight,
-                    TileLayer.PipeSurface,
-                    TileLayer.PipeMiddle
-                };
-                break;
-
-            case 5:
-                layers = new[]
-                {
-                    TileLayer.Overlays
-                };
-                break;
-
-            case 6:
-                LoadObjectGrid(null, true);
-                isItems = true;
-                break;
-
-            default:
-                ClearGrid();
-                break;
+            LoadObjectGrid(null, true);
+            return;
         }
 
-        if ((layers != null) || isItems)
+        TileLayer[] layers = TileLayerCategoryMapping.GetLayers(category).ToArray();
+        if (layers.Length == 0)
         {
-            LoadObjectGrid(layers, isItems);
+            ClearGrid();
+            return;
         }
+
+        LoadObjectGrid(layers, false);
     }
 
     /// <summary>

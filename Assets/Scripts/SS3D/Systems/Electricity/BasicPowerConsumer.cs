@@ -1,9 +1,10 @@
-﻿using FishNet.Object.Synchronizing;
+using FishNet.Object.Synchronizing;
 using SS3D.Core;
 using SS3D.Systems.Tile.Connections;
+using System;
 using UnityEngine;
 
-namespace System.Electricity
+namespace SS3D.Systems.Electricity
 {
     /// <summary>
     /// Script providing a basic implementation for IPowerConsumer.
@@ -14,20 +15,31 @@ namespace System.Electricity
         [SerializeField]
         private float _powerConsumption = 1f;
 
+        [SerializeField]
+        private PowerChannel _channel = PowerChannel.Equipment;
+
         [SyncVar(OnChange = nameof(SyncPowerStatus))]
         private PowerStatus _powerStatus;
         public float PowerNeeded => _powerConsumption;
+        public PowerChannel Channel => _channel;
         public event EventHandler<PowerStatus> OnPowerStatusUpdated;
         public PowerStatus PowerStatus { get => _powerStatus; set => _powerStatus = value; }
 
-        public void Init(float powerConsumption)
+        public override void OnStartClient()
+        {
+            base.OnStartClient();
+            OnPowerStatusUpdated?.Invoke(this, _powerStatus);
+        }
+
+        public void Init(float powerConsumption, PowerChannel channel = PowerChannel.Equipment)
         {
             _powerConsumption = MathF.Max(powerConsumption, 0);
+            _channel = channel;
         }
 
         private void SyncPowerStatus(PowerStatus oldValue, PowerStatus newValue, bool asServer)
         {
-            OnPowerStatusUpdated.Invoke(this, newValue);
+            OnPowerStatusUpdated?.Invoke(this, newValue);
         }
     }
 }

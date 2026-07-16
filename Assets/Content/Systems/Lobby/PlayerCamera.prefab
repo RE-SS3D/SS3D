@@ -15,6 +15,7 @@ GameObject:
   - component: {fileID: 4559952172929818818}
   - component: {fileID: 7057516369088071922}
   - component: {fileID: 4387917767973724163}
+  - component: {fileID: 8234567890123456780}
   m_Layer: 0
   m_Name: PlayerCamera
   m_TagString: MainCamera
@@ -356,3 +357,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _shader: {fileID: 4800000, guid: bcd9cf75c1aa43247b53d2014cfde501, type: 3}
+--- !u!114 &8234567890123456780
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4559952172929818810}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b2c3d4e5f6a708192b3c4d5e6f7a8090, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: SS3D.Systems::SS3D.Systems.Atmospherics.Visualization.AtmosCamera

@@ -645,6 +645,11 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: b25f51097d8c9b35ba76f8697fefa2ca
+    m_Address: Assets/Content/WorldObjects/Items/Weapons/M4.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: b38ae683afaacc4419ac13936cecd1a5
     m_Address: Assets/Content/WorldObjects/Furniture/Machines/Engineering/SMES.prefab
     m_ReadOnly: 0
@@ -697,6 +702,11 @@ MonoBehaviour:
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: c69ed93dc225ea049bbf1a02662c48c0
     m_Address: Assets/Content/WorldObjects/Items/Functional/Parts/PowerCells/PowerCellAdmin.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: cb3c5f7550674ca4895c24c93c9a7eb4
+    m_Address: Assets/Content/WorldObjects/Furniture/Machines/Atmospherics/GasPump/GasPump.prefab
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0

@@ -21,7 +21,9 @@ public class OpenCraftingMenuInteraction : IInteraction, IClientInteractionSourc
         _craftingInteractionType = craftingInteraction;
     }
 
-    public string GetGenericName() => "Open crafting menu";
+    public int Priority => 60;
+
+    public string GetGenericName() => "OpenCraftingMenu";
 
     /// <summary>
     /// Get the name of the interaction
@@ -38,7 +40,7 @@ public class OpenCraftingMenuInteraction : IInteraction, IClientInteractionSourc
     /// </summary>
     public Sprite GetIcon(InteractionEvent interactionEvent)
     {
-        return null;
+        return Icon ? Icon : InteractionIconLookup.Crafting;
     }
 
     /// <summary>
@@ -59,10 +61,13 @@ public class OpenCraftingMenuInteraction : IInteraction, IClientInteractionSourc
             return false;
         }
 
-        bool recipesAvailable = true;
-        recipesAvailable &= craftingSystem.AvailableRecipeLinks(_craftingInteractionType, interactionEvent, out List<TaggedEdge<RecipeStep, RecipeStepLink>> _);
+        GameObject target = interactionEvent.Target.GetGameObject();
+        if (!craftingSystem.TargetHasRecipes(target))
+        {
+            return false;
+        }
 
-        return recipesAvailable;
+        return craftingSystem.AvailableRecipeLinks(_craftingInteractionType, interactionEvent, out List<TaggedEdge<RecipeStep, RecipeStepLink>> _);
     }
 
     /// <summary>

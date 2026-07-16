@@ -58,7 +58,7 @@ namespace SS3D.Networking
         /// </summary>
         public void  StartNetworkSession()
         {
-            Log.Information(this, "Initializing network session", Logs.Important);
+            Log.Debug(this, "Initializing network session", Logs.Important);
 
             NetworkManager networkManager = InstanceFinder.NetworkManager;
             NetworkSettings networkSettings = ScriptableSettings.GetOrFind<NetworkSettings>();
@@ -70,6 +70,10 @@ namespace SS3D.Networking
             Port = Convert.ToUInt16(networkSettings.ServerPort);
 
             NetworkType = networkSettings.NetworkType;
+
+            // Dedicated Server build target defines UNITY_SERVER, which makes FishNet auto-start
+            // the transport on Boot (default port). Stop that so Host/Client use NetworkSettings.
+            StopAutoStartedConnections(networkManager);
 
             switch (NetworkType)
             {
@@ -84,7 +88,7 @@ namespace SS3D.Networking
                 case NetworkType.Host:
                     Log.Information(this, "Hosting a new server on port {port}", Logs.Important, Port);
                     networkManager.ServerManager.StartConnection(Port);
-                    networkManager.ClientManager.StartConnection();
+                    networkManager.ClientManager.StartConnection(ServerAddress, Port);
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
@@ -92,6 +96,21 @@ namespace SS3D.Networking
 
             NetworkSessionStartedEvent networkSessionStartedEvent = new(ckey, NetworkType);
             networkSessionStartedEvent.Invoke(this);
+        }
+
+        private static void StopAutoStartedConnections(NetworkManager networkManager)
+        {
+            if (networkManager.ClientManager.Started)
+            {
+                networkManager.ClientManager.StopConnection();
+            }
+
+            if (networkManager.ServerManager.Started)
+            {
+                Log.Warning(typeof(NetworkSessionSubSystem),
+                    "Stopping a server that was already started (often UNITY_SERVER / Dedicated Server build target auto-start). Switch the Editor build target to Standalone for normal Host play.");
+                networkManager.ServerManager.StopConnection(true);
+            }
         }
 
         private void OnApplicationQuit()
@@ -112,7 +131,7 @@ namespace SS3D.Networking
                 return;
             }
 
-            Log.Information(this, "Closing network session", Logs.Important);
+            Log.Debug(this, "Closing network session", Logs.Important);
             networkManager.TransportManager.Transport.Shutdown();
         }
     }

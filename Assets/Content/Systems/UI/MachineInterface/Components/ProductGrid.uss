@@ -1,0 +1,9 @@
+
+.product-grid {
+    flex-direction: column;
+}
+
+.product-grid__items {
+    flex-direction: row;
+    flex-wrap: wrap;
+}

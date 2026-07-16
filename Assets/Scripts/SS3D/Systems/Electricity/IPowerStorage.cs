@@ -1,49 +1,56 @@
-﻿/// <summary>
-/// Interface for things that can receive, store power and send it back.
-/// </summary>
-public interface IPowerStorage : IElectricDevice
+namespace SS3D.Systems.Electricity
 {
     /// <summary>
-    /// How much power is currently stored.
+    /// Interface for devices that store electrical energy and feed it back into the grid.
+    /// Stored values are kWh; charge and discharge rates are kW per tick.
     /// </summary>
-    public float StoredPower { get; }
+    public interface IPowerStorage : IElectricDevice
+    {
+        /// <summary>
+        /// Energy currently stored in kWh.
+        /// </summary>
+        float StoredEnergyKwh { get; }
 
-    /// <summary>
-    /// How much power can this store.
-    /// </summary>
-    public float MaxCapacity { get; }
+        /// <summary>
+        /// Maximum storable energy in kWh.
+        /// </summary>
+        float MaxCapacityKwh { get; }
 
-    /// <summary>
-    /// How much power storage room is left.
-    /// </summary>
-    public float RemainingCapacity { get; }
+        /// <summary>
+        /// Remaining storage headroom in kWh.
+        /// </summary>
+        float RemainingCapacityKwh { get; }
 
-    /// <summary>
-    /// How much power one can remove in one update, considering there's enough power left.
-    /// </summary>
-    public float MaxPowerRate { get; }
+        /// <summary>
+        /// Maximum discharge rate in kW per tick.
+        /// </summary>
+        float MaxDischargeRateKw { get; }
 
-    /// <summary>
-    /// How much power one can remove in one update.
-    /// </summary>
-    public float MaxRemovablePower { get; }
+        /// <summary>
+        /// Maximum charge rate in kW per tick.
+        /// </summary>
+        float MaxChargeRateKw { get; }
 
-    /// <summary>
-    /// If the storage can send or receive power.
-    /// </summary>
-    public bool IsOn { get; }
+        /// <summary>
+        /// Maximum deliverable power this tick in kW.
+        /// </summary>
+        float MaxDeliverableKw(float tickSeconds);
 
-    /// <summary>
-    ///  Remove a given amount of power from battery, respecting Max power rate and present amount.*
-    ///  Should also not remove power if the storage is off.
-    /// </summary>
-    /// <returns> Return the power amount removed. </returns>
-    public float RemovePower(float amount);
+        /// <summary>
+        /// Whether the storage can send or receive power.
+        /// </summary>
+        bool IsOn { get; }
 
-    /// <summary>
-    /// Add power to battery, respecting maximum.
-    /// Should also not add power if the storage is off.
-    /// </summary>
-    /// <returns> Return the power amount added. </returns>
-    public float AddPower(float amount);
+        /// <summary>
+        /// Discharge up to the requested kW this tick, respecting rate and stored energy.
+        /// </summary>
+        /// <returns>kW actually delivered this tick.</returns>
+        float RemovePowerKw(float requestedKw, float tickSeconds);
+
+        /// <summary>
+        /// Charge up to the requested kW this tick, respecting rate and remaining capacity.
+        /// </summary>
+        /// <returns>kW actually absorbed this tick.</returns>
+        float AddPowerKw(float requestedKw, float tickSeconds);
+    }
 }

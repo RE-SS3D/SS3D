@@ -9,6 +9,7 @@ using SS3D.Data;
 using SS3D.Data.AssetDatabases;
 using SS3D.Logging;
 using SS3D.Systems.Tile.Connections;
+using SS3D.Systems.Tile.TileMapCreator;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -30,7 +31,8 @@ namespace SS3D.Systems.Tile
         {
             GameObject tileObjectPrefab = Assets.Get<GameObject>(tileObjectSo.PrefabAsset);
             GameObject placedGameObject = Instantiate(tileObjectPrefab);
-            placedGameObject.transform.SetPositionAndRotation(worldPosition, Quaternion.Euler(0, TileHelper.GetRotationAngle(dir), 0));
+            Vector3 placedPosition = tileObjectSo.GetPlacedWorldPosition(worldPosition);
+            placedGameObject.transform.SetPositionAndRotation(placedPosition, Quaternion.Euler(0, TileHelper.GetRotationAngle(dir), 0));
 
             PlacedTileObject placedObject = placedGameObject.GetComponent<PlacedTileObject>();
             if (placedObject == null)
@@ -125,7 +127,7 @@ namespace SS3D.Systems.Tile
             {
                 if (UnityEngine.Application.isPlaying)
                 {
-                    Serilog.Log.Warning($"Field {nameof(Asset)} is being modified in runtime. This should not happen in normal conditions.");
+                    Log.Warning(this, "Field {fieldName} is being modified in runtime. This should not happen in normal conditions.", Logs.Generic, nameof(Asset));
                 }
                 _asset = value;
             }
@@ -181,6 +183,7 @@ namespace SS3D.Systems.Tile
                 return;
 
             NetworkObject.SetRenderersVisible(NetworkObject.Observers.Contains(localConnection), force: true);
+            TileLayerVisibilityService.TryApplyPlacedTileObject(this);
         }
 
         private void PublishIdentityToNetwork()
@@ -252,6 +255,7 @@ namespace SS3D.Systems.Tile
             if (TryGetComponent(out DoorAdjacencyConnector doorConnector))
                 doorConnector.RefreshWallCapsFromSyncedAdjacencies();
 
+            TileLayerVisibilityService.TryApplyPlacedTileObject(this);
             RegisterWithClientMap();
         }
 

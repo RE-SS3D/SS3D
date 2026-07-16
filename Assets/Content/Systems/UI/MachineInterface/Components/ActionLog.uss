@@ -1,0 +1,25 @@
+
+.action-log {
+    flex-direction: column;
+    background-color: var(--ss3d-surface-inset);
+    border-radius: var(--ss3d-radius-sm);
+    padding: 10px 12px;
+    margin-bottom: 10px;
+}
+
+.action-log__title {
+    font-size: 8px;
+    letter-spacing: 2px;
+    color: var(--ss3d-text-tertiary);
+    margin-bottom: 2px;
+}
+
+.action-log__entries {
+    flex-direction: column;
+}
+
+.action-log__entry {
+    font-size: 10.5px;
+    color: var(--ss3d-text-tertiary);
+    white-space: normal;
+}

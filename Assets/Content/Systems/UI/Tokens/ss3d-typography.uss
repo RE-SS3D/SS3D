@@ -1,0 +1,35 @@
+.font-titling {
+    -unity-font-definition: url("project://database/Assets/Content/Systems/UI/Font/Fonts/GurajadaRegularSDF.asset");
+    color: var(--ss3d-text-primary);
+    -unity-font-style: normal;
+}
+
+.font-terminal {
+    -unity-font-definition: url("project://database/Assets/Content/Systems/UI/Font/Fonts/SpessmanFontSDF.asset");
+    color: var(--ss3d-text-terminal);
+    -unity-font-style: normal;
+}
+
+.font-arcade {
+    -unity-font-definition: url("project://database/Assets/Content/Systems/UI/Font/Fonts/OdetoIdleGamingSDF.asset");
+    color: var(--ss3d-text-primary);
+    -unity-font-style: normal;
+}
+
+.font-body {
+    -unity-font-definition: url("project://database/Assets/Content/Systems/UI/Font/Fonts/SpessmanFontSDF.asset");
+    color: var(--ss3d-text-secondary);
+    font-size: 11px;
+}
+
+.text-primary {
+    color: var(--ss3d-text-primary);
+}
+
+.text-secondary {
+    color: var(--ss3d-text-secondary);
+}
+
+.text-tertiary {
+    color: var(--ss3d-text-tertiary);
+}

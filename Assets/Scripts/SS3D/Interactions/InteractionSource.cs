@@ -116,6 +116,21 @@ namespace SS3D.Interactions
 
         public virtual bool CanExecuteInteraction(IInteraction interaction)
         {
+            if (Source != null && !ReferenceEquals(Source, this))
+            {
+                return Source.CanExecuteInteraction(interaction);
+            }
+
+            return true;
+        }
+
+        public virtual bool CanContinueInteraction()
+        {
+            if (Source != null && !ReferenceEquals(Source, this))
+            {
+                return Source.CanContinueInteraction();
+            }
+
             return true;
         }
 
@@ -142,6 +157,24 @@ namespace SS3D.Interactions
         public InteractionInstance GetInstanceFromReference(InteractionReference reference)
         {
             return _interactions.FirstOrDefault(x => x.Reference.Equals(reference));
+        }
+
+        public bool HasInteraction(InteractionReference reference)
+        {
+            if (IsServer)
+            {
+                return GetInstanceFromReference(reference) != null;
+            }
+
+            for (int i = 0; i < _clientInteractions.Count; i++)
+            {
+                if (_clientInteractions[i].Reference.Id == reference.Id)
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
 
         public void ClientInteract(InteractionEvent interactionEvent, IInteraction interaction, InteractionReference reference)

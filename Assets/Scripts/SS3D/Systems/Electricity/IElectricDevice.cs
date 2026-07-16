@@ -1,12 +1,15 @@
-﻿using SS3D.Systems.Tile;
+using SS3D.Systems.Tile;
 
-/// <summary>
-/// IElectricDevice are tile objects that can be connected to an electric circuit in some way.
-/// </summary>
-public interface IElectricDevice
+namespace SS3D.Systems.Electricity
 {
     /// <summary>
-    /// Tile object linked to this electric device.
+    /// IElectricDevice are tile objects that can be connected to an electric circuit in some way.
     /// </summary>
-    public PlacedTileObject TileObject { get; }
+    public interface IElectricDevice
+    {
+        /// <summary>
+        /// Tile object linked to this electric device.
+        /// </summary>
+        PlacedTileObject TileObject { get; }
+    }
 }

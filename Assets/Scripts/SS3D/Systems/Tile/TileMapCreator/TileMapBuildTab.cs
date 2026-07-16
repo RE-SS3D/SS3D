@@ -51,6 +51,8 @@ namespace SS3D.Systems.Tile.TileMapCreator
         [SerializeField]
         private Button _buildOrDelete;
 
+        private TileLayerVisibilityPanel _layerVisibilityPanel;
+
         /// <summary>
         /// true if the construction mode is deleting the tile objects.
         /// </summary>
@@ -69,6 +71,9 @@ namespace SS3D.Systems.Tile.TileMapCreator
         /// </summary>
         public void Clear()
         {
+            TileLayerVisibilityService.Deactivate();
+            _layerVisibilityPanel?.Hide();
+
             _buildRoot.gameObject.SetActive(false);
             _tileObjectSearchBar.gameObject.SetActive(false);
             _layerPlacementDropdown.gameObject.SetActive(false);
@@ -93,6 +98,11 @@ namespace SS3D.Systems.Tile.TileMapCreator
             _tileObjectSearchBar.gameObject.SetActive(true);
             _layerPlacementDropdown.gameObject.SetActive(true);
             _buildOrDelete.gameObject.SetActive(true);
+
+            EnsureLayerVisibilityPanel();
+            _layerVisibilityPanel.ResetToDefaults();
+            _layerVisibilityPanel.Show();
+            TileLayerVisibilityService.Activate();
         }
 
         /// <summary>
@@ -129,6 +139,20 @@ namespace SS3D.Systems.Tile.TileMapCreator
                 tmpComponent.text = "Build";
                 tmpComponent.color = _buildColor;
             }
+        }
+
+        private void EnsureLayerVisibilityPanel()
+        {
+            if (_layerVisibilityPanel != null)
+                return;
+
+            RectTransform parent = _layerPlacementDropdown.transform.parent as RectTransform;
+            int siblingIndex = _layerPlacementDropdown.transform.GetSiblingIndex() + 1;
+
+            _layerVisibilityPanel = TileLayerVisibilityPanel.Create(
+                _layerPlacementDropdown,
+                parent,
+                siblingIndex);
         }
     }
 }

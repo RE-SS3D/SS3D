@@ -1,0 +1,59 @@
+
+.smes-status-banner {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 16px;
+    border-width: 1px;
+    border-radius: var(--ss3d-radius-md);
+}
+
+.smes-status-banner__left {
+    flex-direction: row;
+    align-items: baseline;
+    flex-shrink: 1;
+    min-width: 0;
+}
+
+.smes-status-banner__headline {
+    margin-right: var(--ss3d-space-3);
+    font-size: 14px;
+    letter-spacing: 2px;
+}
+
+.smes-status-banner__connection {
+    flex-direction: row;
+    align-items: center;
+    flex-shrink: 1;
+    min-width: 0;
+    margin-left: var(--ss3d-space-2);
+}
+
+.smes-status-banner__connection-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    margin-right: var(--ss3d-space-2);
+}
+
+.smes-status-banner__connection-text {
+    font-size: 12px;
+    color: var(--ss3d-text-secondary);
+    white-space: normal;
+}
+
+.smes-status-banner.tone-bg-success {
+    background-color: var(--ss3d-feedback-success-bg);
+    border-color: var(--ss3d-feedback-success);
+}
+
+.smes-status-banner.tone-bg-warning {
+    background-color: var(--ss3d-feedback-warning-bg);
+    border-color: var(--ss3d-feedback-warning);
+}
+
+.smes-status-banner.tone-bg-danger {
+    background-color: var(--ss3d-feedback-danger-bg);
+    border-color: var(--ss3d-feedback-danger);
+}

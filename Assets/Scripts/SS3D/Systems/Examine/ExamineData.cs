@@ -9,21 +9,9 @@ namespace SS3D.Systems.Examine
     {
         public ExamineType Type = ExamineType.SIMPLE_TEXT;
 
-        /// <summary>
-        /// The table holding the localization strings for this object.
-        /// </summary>
-        public LocalizedStringTable LocalizationTable;
+        public LocalizedString Name;
 
-        /// <summary>
-        /// Key to access the name of the object, when the cursor hovers over the item.
-        /// </summary>
-        public string NameKey;
-
-        /// <summary>
-        /// Key to access the description shown below the name, when the cursor hovers over the item while holding Shift.
-        /// For image examine types, this is used as the caption below the image.
-        /// </summary>
-        public string DescriptionKey;
+        public LocalizedString Description;
 
         /// <summary>
         /// Display size for the detailed image view of <see cref="ExamineType.SIMPLE_IMAGE"/> types.

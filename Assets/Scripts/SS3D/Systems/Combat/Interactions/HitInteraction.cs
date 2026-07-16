@@ -13,17 +13,21 @@ namespace SS3D.Systems.Combat.Interactions
     /// <summary>
     /// Interaction to hit another player.
     /// </summary>
-    public class HitInteraction : IInteraction, IClientInteractionSource
+    public class HitInteraction : IInteraction, IClientInteractionSource, IIntentRestrictedInteraction
     {
         public string Name;
         public Sprite Icon;
+
+        public IntentType AllowedIntent => IntentType.Harm;
+
+        public int Priority => 100;
 
         public string GetName(InteractionEvent interactionEvent)
         {
             return "Hit";
         }
 
-        public string GetGenericName() => throw new System.NotImplementedException();
+        public string GetGenericName() => "Hit";
 
         public Sprite GetIcon(InteractionEvent interactionEvent)
         {

@@ -1,0 +1,52 @@
+
+.smes-power-flow-row {
+    flex-direction: row;
+    align-items: center;
+    flex-grow: 1;
+}
+
+.panel-section__content .smes-power-flow-row__node {
+    flex-grow: 1;
+    flex-shrink: 1;
+    min-width: 0;
+    -unity-text-align: middle-center;
+    padding: 12px 8px;
+    background-color: var(--ss3d-diegetic-inset);
+    border-radius: var(--ss3d-radius-sm);
+    font-size: 12px;
+    color: var(--ss3d-text-secondary);
+}
+
+.panel-section__content .smes-power-flow-row__node--core {
+    background-color: var(--ss3d-diegetic-panel-raised);
+    border-width: 1px;
+    border-color: var(--ss3d-border-default);
+    color: var(--ss3d-text-primary);
+    font-size: 13px;
+    padding: 12px 8px;
+}
+
+.smes-power-flow-row__glyph {
+    width: 34px;
+    flex-shrink: 0;
+    font-size: 18px;
+    -unity-text-align: middle-center;
+    padding: 0;
+    background-color: rgba(0, 0, 0, 0);
+}
+
+.smes-power-flow-row__glyph.tone-success {
+    color: var(--ss3d-feedback-success);
+}
+
+.smes-power-flow-row__glyph.tone-warning {
+    color: var(--ss3d-feedback-warning);
+}
+
+.smes-power-flow-row__glyph.tone-danger {
+    color: var(--ss3d-feedback-danger);
+}
+
+.smes-power-flow-row__glyph.tone-info {
+    color: var(--ss3d-text-tertiary);
+}

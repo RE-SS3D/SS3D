@@ -2,14 +2,13 @@
 using SS3D.Attributes;
 using SS3D.Core;
 using SS3D.Core.Behaviours;
+using SS3D.Localization;
 using SS3D.Systems.Rounds;
 using SS3D.Systems.Rounds.Messages;
 using System.Collections;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Localization;
-using UnityEngine.Localization.Tables;
-using UnityEngine.ResourceManagement.AsyncOperations;
 using RoundStateUpdated = SS3D.Systems.Rounds.Events.RoundStateUpdated;
 using RoundTickUpdated = SS3D.Systems.Rounds.Events.RoundTickUpdated;
 
@@ -27,7 +26,6 @@ namespace SS3D.Systems.Lobby.UI
         private int _seconds;
         private RoundState _roundState;
         [SerializeField] private LocalizedStringTable _localizedStringTable;
-        private StringTable _currentStringTable;
 
         public void UpdateLocalization()
         {
@@ -41,15 +39,27 @@ namespace SS3D.Systems.Lobby.UI
             StartCoroutine(LoadStringTable());
         }
 
+        protected override void OnEnabled()
+        {
+            base.OnEnabled();
+            LocalizedTextService.EnsureInitialized();
+            LocalizedTextService.LocaleChanged += HandleLocaleChanged;
+        }
+
+        protected override void OnDisabled()
+        {
+            base.OnDisabled();
+            LocalizedTextService.LocaleChanged -= HandleLocaleChanged;
+        }
+
+        private void HandleLocaleChanged()
+        {
+            StartCoroutine(LoadStringTable());
+        }
+
         private IEnumerator LoadStringTable()
         {
-            AsyncOperationHandle<StringTable> tableLoading = _localizedStringTable.GetTableAsync();
-            while (!tableLoading.IsDone)
-            {
-                yield return null;
-            }
-
-            _currentStringTable = tableLoading.Result;
+            yield return LocalizedTextService.PreloadTableAsync(_localizedStringTable);
             UpdateRoundCountDownText();
         }
 
@@ -75,7 +85,9 @@ namespace SS3D.Systems.Lobby.UI
 
         private void UpdateRoundCountDownText()
         {
-            string localized = _currentStringTable[_roundState.ToString()].LocalizedValue.Trim();
+            string localized = LocalizedTextService
+                .GetString(_localizedStringTable, _roundState.ToString(), _roundState.ToString())
+                .Trim();
             _roundCountdownText.text = localized + " - " + _seconds;
         }
     }

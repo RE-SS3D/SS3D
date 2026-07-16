@@ -1,11 +1,16 @@
 ﻿using Coimbra;
 using System.Threading;
 using Cysharp.Threading.Tasks;
+using FishNet;
 using FishNet.Object;
 using SS3D.Core;
 using SS3D.Engine.Chat;
 using SS3D.Logging;
+using SS3D.Systems.Gamemodes;
+using SS3D.Systems.Persistence;
+using SS3D.Systems.Tile;
 using SS3D.Systems.Rounds.Messages;
+using System;
 
 namespace SS3D.Systems.Rounds
 {
@@ -120,7 +125,36 @@ namespace SS3D.Systems.Rounds
             RoundState = RoundState.Ending;
             CancelTick();
 
+            AppendRoundHistory();
+
             await UniTask.Delay(System.TimeSpan.FromSeconds(3), cancellationToken: cancellationToken);
+        }
+
+        [Server]
+        private void AppendRoundHistory()
+        {
+            if (!SubSystems.TryGet(out PersistenceSubSystem persistenceSubSystem))
+            {
+                return;
+            }
+
+            string mapId = SubSystems.TryGet(out TileSubSystem tileSubSystem) && tileSubSystem.CurrentMap != null
+                ? tileSubSystem.CurrentMap.gameObject.name
+                : string.Empty;
+
+            string gamemode = SubSystems.TryGet(out GamemodeSubSystem gamemodeSubSystem)
+                ? gamemodeSubSystem.CurrentGamemodeName
+                : "unknown";
+
+            persistenceSubSystem.AppendRoundHistory(new RoundHistoryEntry
+            {
+                timestamp = DateTime.UtcNow.ToString("o"),
+                gamemode = gamemode,
+                mapId = mapId,
+                playerCount = ServerManager?.Clients.Count ?? 0,
+                durationSeconds = RoundSeconds,
+                fallbackMap = true,
+            });
         }
 
         [Server]

@@ -1,0 +1,54 @@
+
+.steel-button {
+    flex-shrink: 0;
+    align-items: stretch;
+}
+
+.steel-button__control {
+    min-height: 36px;
+    margin: 0;
+    padding: 0 14px;
+    border-width: 0;
+    border-radius: var(--ss3d-radius-sm);
+    background-color: var(--ss3d-diegetic-panel-raised);
+    color: var(--ss3d-text-primary);
+    font-size: 12px;
+    letter-spacing: 1px;
+    -unity-text-align: middle-center;
+}
+
+.steel-button__control:hover {
+    background-color: var(--ss3d-diegetic-inset);
+}
+
+.steel-button__control:active {
+    background-color: var(--ss3d-accent-rust-dim);
+    color: var(--ss3d-text-on-accent);
+}
+
+.steel-button__control:disabled {
+    background-color: var(--ss3d-diegetic-inset);
+    color: var(--ss3d-text-tertiary);
+}
+
+.steel-button--blue .steel-button__control {
+    background-color: rgba(58, 120, 190, 0.18);
+    border-width: 1px;
+    border-color: #3a78be;
+    color: #8ec0ff;
+}
+
+.steel-button--blue .steel-button__control:hover {
+    background-color: rgba(58, 120, 190, 0.28);
+}
+
+.steel-button--danger .steel-button__control {
+    background-color: var(--ss3d-feedback-danger-bg);
+    border-width: 1px;
+    border-color: var(--ss3d-feedback-danger-border);
+    color: var(--ss3d-feedback-danger);
+}
+
+.steel-button--danger .steel-button__control:hover {
+    background-color: rgba(185, 72, 72, 0.22);
+}

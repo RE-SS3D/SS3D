@@ -313,7 +313,7 @@ namespace SS3D.Systems.Tile
                     return new Vector2Int(-1, 1);
 
                 default:
-                    Debug.LogError("direction not handled, returning (0,0)");
+                    Log.Error(typeof(TileHelper), "direction not handled, returning (0,0)");
                     return new Vector2Int(0, 0);
             }
         }
@@ -360,7 +360,7 @@ namespace SS3D.Systems.Tile
                 case TileLayer.Overlays:
                     return new SingleTileLocation(layer, x, y);
                 default:
-                    Debug.LogError($"no objects defined for layer {layer}, add a case to this switch.");
+                    Log.Error(typeof(TileHelper), "no objects defined for layer {layer}, add a case to this switch.", Logs.Generic, layer);
                     return null;
             }
         }

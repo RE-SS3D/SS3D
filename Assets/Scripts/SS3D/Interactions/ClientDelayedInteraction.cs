@@ -33,8 +33,19 @@ namespace SS3D.Interactions
                 _loadingBarInstance.GameObject.Dispose(true);
             }
 
+            if (Delay < 0.1f)
+            {
+                return true;
+            }
+
             if (interactionEvent.Source.GetRootSource() is not IGameObjectProvider source)
             {
+                return true;
+            }
+
+            if (InteractionOptimisticFeedback.TryAdoptExisting(source.GameObject.transform, out LoadingBar existingBar))
+            {
+                _loadingBarInstance = existingBar;
                 return true;
             }
 
@@ -59,6 +70,11 @@ namespace SS3D.Interactions
             if (_loadingBarInstance != null)
             {
                 _loadingBarInstance.GameObject.Dispose(true);
+            }
+
+            if (interactionEvent.Source.GetRootSource() is IGameObjectProvider source)
+            {
+                InteractionOptimisticFeedback.Clear(source.GameObject.transform);
             }
         }
     }

@@ -1,64 +1,72 @@
-﻿using Coimbra.Services.Events;
-using Coimbra.Services.PlayerLoopEvents;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using DG.Tweening;
 using SS3D.Core;
+using SS3D.Core.Behaviours;
 using SS3D.Interactions;
 using SS3D.Interactions.Interfaces;
 using SS3D.Systems.Inputs;
+using SS3D.Systems.Interactions.UI;
 using SS3D.Utils;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.UIElements;
 using InputSubSystem = SS3D.Systems.Inputs.InputSubSystem;
-using SS3D.Core.Behaviours;
 
 namespace SS3D.Systems.Interactions
 {
     /// <summary>
-    /// Controls the UI for a radial interaction menu
+    /// Controls the UI Toolkit radial interaction menu.
     /// </summary>
+    [RequireComponent(typeof(UIDocument))]
     public sealed class RadialInteractionSubSystem : SubSystem
     {
-        public event Action<IInteraction, RadialInteractionButton> OnInteractionSelected;
+        public event Action<IInteraction> OnInteractionSelected;
 
-        [Header("UI")]
-        [SerializeField] private CanvasGroup _canvasGroup;
-        [SerializeField] private RectTransform _indicator;
-
+        [SerializeField] private UIDocument _document;
+        [SerializeField] private StyleSheet _menuStyleSheet;
         [SerializeField] private Sprite _missingIcon;
+        [SerializeField] private Sprite _closeIconSprite;
+        [SerializeField] private int _maxPetals = 12;
 
-        [Header("Buttons")]
-        [SerializeField] private List<RadialInteractionButton> _interactionButtons;
-
-        private GameObject _selectedObject;
-
-        private Sequence _rotateSequence;
-        private Sequence _scaleSequence;
-        private Sequence _fadeSequence;
-        private Sequence _indicatorRotateSequence;
-
-        private const float ScaleDuration = .2f;
-        private const float PetalRotateDuration = .02f;
-
-        private List<IInteraction> Interactions { get; set; }
-        private InteractionEvent Event { get; set; }
+        private RadialInteractionMenuView _menuView;
+        private List<IInteraction> _interactions;
+        private InteractionEvent _event;
         private Controls.InteractionsActions _controls;
         private InputSubSystem _inputSystem;
+        private bool _overlayReady;
+        private bool _leftButtonSuppressed;
+
+        public float MenuHeight => RadialInteractionMenuView.MenuDiameter;
+
+        /// <summary>
+        /// Suppresses LMB actions while the radial menu is held open.
+        /// </summary>
+        public void SuppressLeftButtonForMenu()
+        {
+            if (_leftButtonSuppressed)
+            {
+                return;
+            }
+
+            _inputSystem.ToggleBinding("<Mouse>/leftButton", false);
+            _leftButtonSuppressed = true;
+        }
 
         protected override void OnAwake()
         {
             base.OnAwake();
 
-            Setup();
-        }
+            if (_document == null)
+            {
+                _document = GetComponent<UIDocument>();
+            }
 
-        protected override void OnStart()
-        {
-            base.OnStart();
-
-            Disappear();
+#if UNITY_EDITOR
+            EnsureEditorAssets();
+#endif
+            ShutdownDocument();
+            _inputSystem = SubSystems.Get<InputSubSystem>();
+            _controls = _inputSystem.Inputs.Interactions;
         }
 
         protected override void OnEnabled()
@@ -75,200 +83,152 @@ namespace SS3D.Systems.Interactions
             _controls.ViewInteractions.canceled -= HandleDisappear;
         }
 
-        private void HandleUpdate(ref EventContext context, in UpdateEvent updateEvent)
+        protected override void OnDestroyed()
         {
-            UpdateIndicator();
+            ReleaseLeftButtonSuppression();
+            _menuView?.Detach();
+            ShutdownDocument();
+            base.OnDestroyed();
         }
 
-        private void Setup()
+        public void SetInteractions(List<IInteraction> interactions, InteractionEvent interactionEvent, Vector3 mousePosition)
         {
-            AddHandle(UpdateEvent.AddListener(HandleUpdate));
-
-            Interactions = new List<IInteraction>();
-
-            foreach (RadialInteractionButton interactionButton in _interactionButtons)
-            {
-                interactionButton.OnHovered += HandleInteractionButtonHovered;
-            }
-
-            _inputSystem = SubSystems.Get<InputSubSystem>();
-            _controls = _inputSystem.Inputs.Interactions;
+            _interactions = interactions;
+            _event = interactionEvent;
         }
 
-        private void HandleInteractionButtonHovered(GameObject button, IInteraction interaction)
+        public void ShowInteractionsMenu()
         {
-            _selectedObject = button;
-        }
-
-        private void HandleInteractionButtonPressed(IInteraction interaction, RadialInteractionButton radialInteractionButton)
-        {
-            radialInteractionButton.OnInteractionSelected -= HandleInteractionButtonPressed;
-
-            Disappear();
-            OnInteractionSelected?.Invoke(interaction, radialInteractionButton);
-        }
-
-        /// <summary>
-        /// Updates the indicator to the current selected interaction
-        /// </summary>
-        private void UpdateIndicator()
-        {
-            if (_selectedObject == null)
+            bool hasInteractions = _event != null && _interactions != null && !_interactions.IsNullOrEmpty();
+            if (!hasInteractions || !EnsureDocumentActive())
             {
                 return;
             }
 
-            _indicatorRotateSequence?.Kill();
-            _indicatorRotateSequence = DOTween.Sequence();
-
-            //_indicator.eulerAngles = new Vector3(0, 0, z);
-            float z = _selectedObject.transform.eulerAngles.z;
-            Vector3 rotation = new(0, 0, z);
-
-            // Rotates the petal to the selected interaction
-            _indicatorRotateSequence.Append(_indicator
-                .DORotate(rotation, PetalRotateDuration)
-                .SetEase(Ease.InCirc));
-
-            _indicatorRotateSequence.Play();
-        }
-
-        /// <summary>
-        /// Opens the interaction menu
-        /// </summary>
-        public void ShowInteractionsMenu()
-        {
-            bool hasInteractions = Event != null && !Interactions.IsNullOrEmpty();
-            if (!hasInteractions) { return; }
-
-            InteractionFolder folder = new();
-            foreach (IInteraction interaction in Interactions)
-            {
-                Sprite icon = interaction.GetIcon(Event);
-
-                if (icon == null)
-                {
-                    icon = _missingIcon;
-                }
-
-                string interactionName = interaction.GetName(Event);
-                string objectName = Event.Target.ToString();
-
-                RadialInteractionItem radialInteractionItem = new(icon, interactionName, interaction, objectName);
-                folder.AddInteraction(radialInteractionItem);
-
-                RadialInteractionButton interactionButton = GetAvailableButton();
-
-                interactionButton.SetInteraction(radialInteractionItem);
-                interactionButton.OnInteractionSelected += HandleInteractionButtonPressed;
-            }
-
-            Show();
-        }
-
-        /// <summary>
-        /// Tweens the UI on the enabled position
-        /// </summary>
-        private void Show()
-        {
             Vector2 screenPos = Mouse.current.position.ReadValue();
-            Position = screenPos;
+            _menuView.Show(_interactions, _event, screenPos);
+        }
 
-            _selectedObject = _interactionButtons.First().GameObject;
+        private void HandleInteractionSelected(IInteraction interaction)
+        {
+            _menuView.InteractionSelected -= HandleInteractionSelected;
+            ReleaseLeftButtonSuppression();
+            Disappear();
+            OnInteractionSelected?.Invoke(interaction);
+        }
 
-            UpdateIndicator();
-
-            _scaleSequence?.Kill();
-            _fadeSequence?.Kill();
-
-            _scaleSequence = DOTween.Sequence();
-            _fadeSequence = DOTween.Sequence();
-
-            _scaleSequence
-                .Append(Transform
-                .DOScale(1, ScaleDuration)
-                .SetEase(Ease.OutCirc));
-
-            _fadeSequence
-                .Append(_canvasGroup
-                .DOFade(1, ScaleDuration)
-                .SetEase(Ease.OutElastic));
-
-            _scaleSequence.Play();
-            _fadeSequence.Play();
-
-            _canvasGroup.interactable = true;
+        private void HandleCloseRequested()
+        {
+            ReleaseLeftButtonSuppression();
+            Disappear();
         }
 
         private void HandleDisappear(InputAction.CallbackContext callbackContext)
         {
-            // leftButton is disabled in InteractionController HandleView
-            _inputSystem.ToggleBinding("<Mouse>/leftButton", true);
+            ReleaseLeftButtonSuppression();
             Disappear();
         }
 
-        /// <summary>
-        /// Tweens the UI on the disabled position
-        /// </summary>
-        private void Disappear()
+        private void ReleaseLeftButtonSuppression()
         {
-            _scaleSequence?.Kill();
-            _fadeSequence?.Kill();
-
-            _scaleSequence = DOTween.Sequence();
-            _fadeSequence = DOTween.Sequence();
-
-            _scaleSequence
-                .Append(Transform
-                .DOScale(0, ScaleDuration)
-                .SetEase(Ease.OutCirc));
-
-            _fadeSequence.Append(_canvasGroup
-                .DOFade(0, ScaleDuration)
-                .SetEase(Ease.OutElastic));
-
-            _scaleSequence.Play();
-            _fadeSequence.Play();
-
-            _canvasGroup.interactable = false;
-
-            ResetInteractionsMenu();
-        }
-
-        /// <summary>
-        /// Clears the interactions menu
-        /// </summary>
-        private void ResetInteractionsMenu()
-        {
-            foreach (RadialInteractionButton interactionButton in _interactionButtons)
+            if (!_leftButtonSuppressed)
             {
-                interactionButton.Reset();
+                return;
             }
 
-            Interactions.Clear();
-            _selectedObject = null;
-            Event = null;
+            _inputSystem.ToggleBinding("<Mouse>/leftButton", true);
+            _leftButtonSuppressed = false;
         }
 
-        /// <summary>
-        /// Updates the interactions that are available on the menu
-        /// </summary>
-        /// <param name="interactions">Interaction list</param>
-        /// <param name="interactionEvent">Interaction event</param>
-        /// <param name="mousePosition">Mouse position when the interaction was created</param>
-        public void SetInteractions(List<IInteraction> interactions, InteractionEvent interactionEvent, Vector3 mousePosition)
+        private void Disappear()
         {
-            Interactions = interactions;
-            Event = interactionEvent;
+            if (_menuView == null)
+            {
+                ShutdownDocument();
+                return;
+            }
+
+            _menuView.InteractionSelected -= HandleInteractionSelected;
+            _menuView.CloseRequested -= HandleCloseRequested;
+            _menuView.Hide(() =>
+            {
+                ResetInteractionsMenu();
+                ShutdownDocument();
+            });
         }
 
-        /// <summary>
-        /// Gets a button that is not used
-        /// </summary>
-        /// <returns></returns>
-        private RadialInteractionButton GetAvailableButton()
+        private void ResetInteractionsMenu()
         {
-            return _interactionButtons.First(button => !button.Occupied);
+            _interactions?.Clear();
+            _event = null;
         }
+
+        private bool EnsureDocumentActive()
+        {
+            if (_document == null)
+            {
+                return false;
+            }
+
+            if (!_document.enabled)
+            {
+                _document.enabled = true;
+                _overlayReady = false;
+            }
+
+            return EnsureOverlay();
+        }
+
+        private bool EnsureOverlay()
+        {
+            if (_overlayReady && _menuView != null)
+            {
+                return true;
+            }
+
+            VisualElement root = _document.rootVisualElement;
+            if (root == null)
+            {
+                Debug.LogError("RadialInteractionSubSystem requires PanelSettings on UIDocument.", this);
+                return false;
+            }
+
+            _menuView?.Detach();
+            _menuView = new RadialInteractionMenuView(_menuStyleSheet, _missingIcon, _closeIconSprite, _maxPetals);
+            _menuView.Attach(root);
+            _menuView.InteractionSelected += HandleInteractionSelected;
+            _menuView.CloseRequested += HandleCloseRequested;
+            _overlayReady = true;
+            return true;
+        }
+
+        private void ShutdownDocument()
+        {
+            _overlayReady = false;
+            _menuView?.Detach();
+            _menuView = null;
+
+            if (_document != null)
+            {
+                _document.enabled = false;
+            }
+        }
+
+#if UNITY_EDITOR
+        private void EnsureEditorAssets()
+        {
+            if (_menuStyleSheet == null)
+            {
+                _menuStyleSheet = UnityEditor.AssetDatabase.LoadAssetAtPath<StyleSheet>(
+                    "Assets/Content/Systems/UI/Interactions/RadialInteractionMenu/RadialInteractionMenu.uss");
+            }
+
+            if (_document != null && _document.panelSettings == null)
+            {
+                _document.panelSettings = UnityEditor.AssetDatabase.LoadAssetAtPath<PanelSettings>(
+                    "Assets/Content/Systems/UI/Interactions/RadialInteractionMenu/HudOverlayPanelSettings.asset");
+            }
+        }
+#endif
     }
 }

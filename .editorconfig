@@ -288,6 +288,17 @@ indent_size = 2
 indent_style = space
 indent_size = 4
 
+[*.cs]
+# StyleCop disabled for this fork — strict layout/naming rules are costly for AI-assisted edits.
+dotnet_analyzer_diagnostic.category-StyleCop.CSharp.DocumentationRules.severity = none
+dotnet_analyzer_diagnostic.category-StyleCop.CSharp.LayoutRules.severity = none
+dotnet_analyzer_diagnostic.category-StyleCop.CSharp.MaintainabilityRules.severity = none
+dotnet_analyzer_diagnostic.category-StyleCop.CSharp.NamingRules.severity = none
+dotnet_analyzer_diagnostic.category-StyleCop.CSharp.OrderingRules.severity = none
+dotnet_analyzer_diagnostic.category-StyleCop.CSharp.ReadabilityRules.severity = none
+dotnet_analyzer_diagnostic.category-StyleCop.CSharp.SpacingRules.severity = none
+dotnet_analyzer_diagnostic.category-StyleCop.CSharp.SpecialRules.severity = none
+
 [*.{appxmanifest,asax,ascx,aspx,axaml,build,cshtml,dtd,fs,fsi,fsscript,fsx,master,ml,mli,nuspec,paml,razor,resw,resx,shader,skin,vb,xaml,xamlx,xoml,xsd}]
 indent_style = space
 indent_size = 4

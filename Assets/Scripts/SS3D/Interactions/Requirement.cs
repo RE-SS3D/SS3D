@@ -15,6 +15,8 @@ namespace SS3D.Interactions
 
         protected IInteraction Interaction { get; }
 
+        public int Priority => Interaction.Priority;
+
         public IClientInteraction CreateClient(InteractionEvent interactionEvent)
         {
             if (Interaction is IClientInteractionSource clientInteractionSource)
@@ -27,7 +29,7 @@ namespace SS3D.Interactions
 
         public string GetName(InteractionEvent interactionEvent) => Interaction.GetName(interactionEvent);
 
-        public abstract string GetGenericName();
+        public virtual string GetGenericName() => Interaction.GetGenericName();
 
         public Sprite GetIcon(InteractionEvent interactionEvent) => Interaction.GetIcon(interactionEvent);
 

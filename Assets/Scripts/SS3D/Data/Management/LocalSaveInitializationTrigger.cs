@@ -19,7 +19,7 @@ namespace SS3D.Data.Management
 
         private void HandleApplicationInitializing(ref EventContext context, in ApplicationInitializing e)
         {
-            Log.Information(this, "Initializing local save files", Logs.Important);
+            Log.Debug(this, "Initializing local save files", Logs.Important);
 
             LocalStorage.Initialize();
         }

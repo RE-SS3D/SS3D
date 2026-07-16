@@ -17,4 +17,5 @@ MonoBehaviour:
   _idCardAsset: {fileID: 11400000, guid: bca8d36802b3dbc47bc479151a3f7ea1, type: 2}
   _permissions:
   - {fileID: 11400000, guid: 921240e0c27686d4eaf2ff761944c5eb, type: 2}
+  _startingAccessBits: 98432
   _loadout: {fileID: 11400000, guid: 5db09cbd548ecf34f97473fb3898e95e, type: 2}

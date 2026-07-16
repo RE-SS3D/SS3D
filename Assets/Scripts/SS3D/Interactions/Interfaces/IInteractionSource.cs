@@ -30,6 +30,11 @@ namespace SS3D.Interactions.Interfaces
         bool CanExecuteInteraction(IInteraction interaction);
 
         /// <summary>
+        /// Checks if this source can continue an in-progress interaction.
+        /// </summary>
+        bool CanContinueInteraction();
+
+        /// <summary>
         /// Executes the interaction (server-side)
         /// </summary>
         /// <param name="interactionEvent">The interaction event</param>
@@ -51,5 +56,10 @@ namespace SS3D.Interactions.Interfaces
         void CancelInteraction(InteractionReference reference);
 
         InteractionInstance GetInstanceFromReference(InteractionReference reference);
+
+        /// <summary>
+        /// Returns whether an interaction with the given reference is still active on this source.
+        /// </summary>
+        bool HasInteraction(InteractionReference reference);
     }
 }

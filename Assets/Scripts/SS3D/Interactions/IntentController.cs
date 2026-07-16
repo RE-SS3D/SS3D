@@ -1,4 +1,5 @@
 ﻿using SS3D.Core.Behaviours;
+using SS3D.Interactions.Interfaces;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -10,7 +11,7 @@ namespace SS3D.Interactions
     /// </summary>
     public class IntentController : Actor
     {
-        private IntentType _selectedIntent;
+        private IIntentProvider _intentProvider;
 
         private Image _intentImage;
 
@@ -26,8 +27,10 @@ namespace SS3D.Interactions
         {
             base.OnStart();
 
+            _intentProvider = GetComponentInParent<IIntentProvider>();
             _intentButton = GetComponent<Button>();
             _intentButton.onClick.AddListener(HandleIntentButtonPressed);
+            RefreshIntentVisual();
         }
 
         public void HandleIntentButtonPressed()
@@ -40,10 +43,23 @@ namespace SS3D.Interactions
         /// </summary>
         public void SelectIntent()
         {
-            bool harm = _selectedIntent == IntentType.Harm;
-            _selectedIntent = harm ? IntentType.Help : IntentType.Harm;
-            _intentImage.sprite = harm ? _spriteHelp : _spriteHarm;
-            _intentImage.color = harm ? _colorHelp : _colorHarm;
+            IntentType current = _intentProvider?.CurrentIntent ?? IntentType.Help;
+            IntentType next = current == IntentType.Harm ? IntentType.Help : IntentType.Harm;
+            _intentProvider?.RequestToggleIntent();
+            RefreshIntentVisual(next);
+        }
+
+        private void RefreshIntentVisual(IntentType? intentOverride = null)
+        {
+            if (_intentImage == null)
+            {
+                return;
+            }
+
+            IntentType intent = intentOverride ?? _intentProvider?.CurrentIntent ?? IntentType.Help;
+            bool isHelp = intent == IntentType.Help;
+            _intentImage.sprite = isHelp ? _spriteHelp : _spriteHarm;
+            _intentImage.color = isHelp ? _colorHelp : _colorHarm;
         }
     }
 }

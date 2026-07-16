@@ -22,6 +22,7 @@
         _MinLight ("Min Light", Range(0,1)) = 0
         _MaxLight ("Max Light", Range(0,1)) = 1
         _Lumin ("Luminocity", Range(0,2)) = 0
+        _EmissionMap ("Emission Map", 2D) = "white" {}
         [HDR] _EmissionColor ("Emission Color", COLOR) = (0,0,0,0)
 
         [Header(Shine)][Space(5)]

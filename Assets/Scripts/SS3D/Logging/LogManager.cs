@@ -54,7 +54,7 @@ namespace SS3D.Logging
             // Create the logger from the configuration.
             Serilog.Log.Logger = configuration.CreateLogger();
 
-            Log.Information(typeof(LogManager), "Logging settings loaded and initialized", Logs.Important);
+            Log.Debug(typeof(LogManager), "Logging settings loaded and initialized", Logs.Important);
 
             IsInitialized = true;
         }

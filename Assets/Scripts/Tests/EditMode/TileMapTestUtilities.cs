@@ -44,8 +44,11 @@ namespace EditorTests
 
         internal static void EnsureTestAssetsRegistered()
         {
-            if (_assetsRegistered)
+            if (_assetsRegistered && _tilePrefab != null)
                 return;
+
+            if (_tilePrefab != null)
+                Object.DestroyImmediate(_tilePrefab);
 
             _tilePrefab = new GameObject("EditModeTilePrefab");
             _tilePrefab.AddComponent<PlacedTileObject>();
@@ -88,6 +91,65 @@ namespace EditorTests
             TileObjectSo plenumSo = CreateTileSo(TileLayer.Plenum, "TestPlenum");
             PlaceResult result = context.Construction.TryPlaceTile(plenumSo, position, Direction.North, replaceExisting: false);
             Assert.IsTrue(result.Success, "Expected plenum placement to succeed.");
+        }
+
+        internal static void PlaceAirtightWall(MapContext context, Vector3 position)
+        {
+            TileObjectSo wallSo = CreateTileSo(TileLayer.Turf, "TestWall");
+            wallSo.genericType = TileObjectGenericType.Wall;
+            wallSo.specificType = TileObjectSpecificType.Steel;
+            bool placed = context.Map.PlaceTileObject(
+                wallSo,
+                position,
+                Direction.North,
+                skipBuildCheck: true,
+                replaceExisting: false,
+                skipAdjacency: false,
+                out GameObject _);
+            Assert.IsTrue(placed, "Expected wall placement to succeed.");
+        }
+
+        internal static void PlaceWindow(MapContext context, Vector3 position)
+        {
+            TileObjectSo wallSo = CreateTileSo(TileLayer.Turf, "SteelWindow");
+            wallSo.genericType = TileObjectGenericType.Wall;
+            wallSo.specificType = TileObjectSpecificType.Steel;
+            bool placed = context.Map.PlaceTileObject(
+                wallSo,
+                position,
+                Direction.North,
+                skipBuildCheck: true,
+                replaceExisting: false,
+                skipAdjacency: false,
+                out GameObject _);
+            Assert.IsTrue(placed, "Expected window placement to succeed.");
+        }
+
+        /// <summary>
+        /// Interior plenum cells surrounded by an airtight wall ring so chunk vacuum slots
+        /// cannot drain the room through open cardinal edges.
+        /// Interior occupies (origin+1, origin+1) through (origin+size, origin+size).
+        /// </summary>
+        internal static void BuildWalledRoom(MapContext context, int originX, int originZ, int interiorSize)
+        {
+            int outerSize = interiorSize + 2;
+            for (int x = 0; x < outerSize; x++)
+            {
+                for (int z = 0; z < outerSize; z++)
+                    PlacePlenum(context, new Vector3(originX + x, 0, originZ + z));
+            }
+
+            for (int x = 0; x < outerSize; x++)
+            {
+                for (int z = 0; z < outerSize; z++)
+                {
+                    bool isPerimeter = x == 0 || z == 0 || x == outerSize - 1 || z == outerSize - 1;
+                    if (!isPerimeter)
+                        continue;
+
+                    PlaceAirtightWall(context, new Vector3(originX + x, 0, originZ + z));
+                }
+            }
         }
 
         internal static bool IsLayerEmpty(TileMap map, TileLayer layer, Vector3 position)

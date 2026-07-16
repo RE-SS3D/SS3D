@@ -25,7 +25,7 @@ labels: 'Feature'
 
 ## Document
 
-<!-- Is the feature already designed? If so, link the document. -->
+<!-- Is the feature already designed? If so, link the relevant file in Documents/design/. -->
 
 ## Dependencies
 

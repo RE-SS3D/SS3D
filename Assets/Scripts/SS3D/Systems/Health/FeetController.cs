@@ -24,7 +24,7 @@ public class FeetController : NetworkActor
 	/// <summary>
 	/// Factor influencing the speed of a player, based upon state of feets. Should be between 0 and 1 in value.
 	/// </summary>
-	[SyncVar] private float _feetHealthFactor;
+	[SyncVar] private float _feetHealthFactor = 1f;
 
 	public float FeetHealthFactor => _feetHealthFactor;
 

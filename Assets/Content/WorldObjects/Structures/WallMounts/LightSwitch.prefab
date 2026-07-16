@@ -15,6 +15,9 @@ GameObject:
   - component: {fileID: -1805269809057551517}
   - component: {fileID: 4792652958643398202}
   - component: {fileID: -5220227056810940659}
+  - component: {fileID: -8800000000000000101}
+  - component: {fileID: -8800000000000000102}
+  - component: {fileID: -8800000000000000103}
   m_Layer: 0
   m_Name: LightSwitch
   m_TagString: Untagged
@@ -116,7 +119,10 @@ MonoBehaviour:
   <IsNested>k__BackingField: 0
   <ComponentIndex>k__BackingField: 0
   <PredictedSpawn>k__BackingField: {fileID: 0}
-  _networkBehaviours: []
+  _networkBehaviours:
+  - {fileID: -8800000000000000101}
+  - {fileID: -8800000000000000102}
+  - {fileID: -8800000000000000103}
   <ParentNetworkObject>k__BackingField: {fileID: 0}
   <ChildNetworkObjects>k__BackingField: []
   SerializedTransformProperties:
@@ -168,3 +174,54 @@ MonoBehaviour:
   _updateHostVisibility: 1
   _observerConditions:
   - {fileID: 11400000, guid: cc503f7541ebd424c94541e6a767efee, type: 2}
+--- !u!114 &-8800000000000000101
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4866668043303595546}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b5dc697195ff36649947ce641b391e16, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _componentIndexCache: 0
+  _addedNetworkObject: {fileID: -7828078595381397262}
+  _networkObjectCache: {fileID: -7828078595381397262}
+  _powerConsumption: 0.05
+  _channel: 0
+  _powerStatus: 0
+--- !u!114 &-8800000000000000102
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4866668043303595546}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1bbc87ddd49b01f4098910ffdf858004, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _componentIndexCache: 1
+  _addedNetworkObject: {fileID: -7828078595381397262}
+  _networkObjectCache: {fileID: -7828078595381397262}
+--- !u!114 &-8800000000000000103
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4866668043303595546}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7a3e1c9f2b8d4e6510a4f3c2d1e5b907, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _componentIndexCache: 2
+  _addedNetworkObject: {fileID: -7828078595381397262}
+  _networkObjectCache: {fileID: -7828078595381397262}
+  _powerConsumer: {fileID: -8800000000000000101}
+  _emissiveRenderers:
+  - {fileID: 5408453921918118358}

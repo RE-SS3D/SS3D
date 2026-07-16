@@ -686,6 +686,15 @@
                     "initialStateCheck": false
                 },
                 {
+                    "name": "Toggle Atmos Debug",
+                    "type": "Button",
+                    "id": "a4f8c2e1-9b3d-4a7f-8c6e-1d5e0f2a3b4c",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "Tap",
+                    "initialStateCheck": false
+                },
+                {
                     "name": "SendChatMessage",
                     "type": "Button",
                     "id": "3ec638f1-be3c-4b60-a0ec-2df8837e6eb9",
@@ -825,6 +834,17 @@
                     "processors": "",
                     "groups": "",
                     "action": "Toggle Selection Debug",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "b7e3a1c4-5d2f-4e8a-9c1b-6f0d2e3a4b5c",
+                    "path": "<Keyboard>/p",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Toggle Atmos Debug",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
@@ -1001,6 +1021,15 @@
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
+                },
+                {
+                    "name": "Cancel Interaction",
+                    "type": "Button",
+                    "id": "f8a2c1d0-9e4b-4a7c-b3d6-1e5f8a9c0d2b",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
                 }
             ],
             "bindings": [
@@ -1023,6 +1052,17 @@
                     "processors": "",
                     "groups": "",
                     "action": "View Interactions",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+                    "path": "<Keyboard>/c",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Cancel Interaction",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

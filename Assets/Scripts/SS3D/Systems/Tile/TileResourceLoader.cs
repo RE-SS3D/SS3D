@@ -31,7 +31,7 @@ namespace SS3D.Systems.Tile
         {
             Assets = new();
 
-			Log.Information(this, "Loading tilemaps content");
+			Log.Debug(this, "Loading tilemaps content");
 
             GenericObjectSo[] tempAssets = Resources.LoadAll<GenericObjectSo>("");
             foreach (GenericObjectSo asset in tempAssets)

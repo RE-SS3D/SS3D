@@ -6,6 +6,19 @@ namespace SS3D.Interactions.Extensions
     public static class InteractionExtensions
     {
         /// <summary>
+        /// Resolves the interaction tier, defaulting to instant when not explicitly provided.
+        /// </summary>
+        public static InteractionTier GetInteractionTier(this IInteraction interaction, InteractionEvent interactionEvent)
+        {
+            if (interaction is IInteractionTierProvider tierProvider)
+            {
+                return tierProvider.GetTier(interactionEvent);
+            }
+
+            return InteractionTier.Instant;
+        }
+
+        /// <summary>
         /// Check if position of player changed, if it did by a distance above tolerance, should return false;
         /// </summary>>
         public static bool CharacterMoveCheck(Vector3 startingPosition, Vector3 currentPosition, float tolerance = 0.1f)

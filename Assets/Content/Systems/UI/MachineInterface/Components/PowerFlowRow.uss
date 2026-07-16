@@ -1,0 +1,62 @@
+
+.power-flow-row {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    background-color: var(--ss3d-surface-inset);
+    border-radius: var(--ss3d-radius-sm);
+    border-width: 1px;
+    border-color: var(--ss3d-border-subtle);
+    padding: var(--ss3d-space-3) var(--ss3d-space-4);
+    margin-bottom: var(--ss3d-space-3);
+}
+
+.power-flow-row__metric {
+    flex-direction: column;
+    flex-grow: 1;
+}
+
+.power-flow-row__label {
+    font-size: 9px;
+    color: var(--ss3d-text-tertiary);
+    letter-spacing: 2px;
+    margin-bottom: var(--ss3d-space-1);
+}
+
+.power-flow-row__value {
+    font-size: 16px;
+    color: var(--ss3d-text-primary);
+}
+
+.power-flow-row__value.font-terminal {
+    color: var(--ss3d-text-primary);
+}
+
+.power-flow-row__value--primary {
+    color: var(--ss3d-text-primary);
+}
+
+.power-flow-row__unit {
+    font-size: 10px;
+    color: var(--ss3d-text-secondary);
+    margin-left: var(--ss3d-space-1);
+}
+
+.power-flow-row__arrow {
+    font-size: 18px;
+    margin-left: 0;
+    margin-right: 0;
+    -unity-text-align: middle-center;
+    min-width: 36px;
+    width: 36px;
+    flex-shrink: 0;
+}
+
+.power-flow-row__metric--output {
+    align-items: flex-end;
+}
+
+.power-flow-row__value-row {
+    flex-direction: row;
+    align-items: flex-end;
+}

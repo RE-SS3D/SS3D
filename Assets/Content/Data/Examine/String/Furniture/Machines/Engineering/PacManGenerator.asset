@@ -12,8 +12,29 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1dadffec94eb9a649b83c858cc4aa7d0, type: 3}
   m_Name: PacManGenerator
   m_EditorClassIdentifier: 
-  LocalizationTable:
+  Type: 0
+  Name:
     m_TableReference:
-      m_TableCollectionName: GUID:c2d3dd9ea24a44444a91fe8467ebb1c1
-  NameKey: PacMan Generator
-  DescriptionKey: Generates electricity from specific fuels.
+      m_TableCollectionName: Examine
+    m_TableEntryReference:
+      m_KeyId: 0
+      m_Key: furniture.machines.engineering.pac_man_generator.name
+    m_FallbackState: 0
+    m_WaitForCompletion: 0
+    m_LocalVariables: []
+  Description:
+    m_TableReference:
+      m_TableCollectionName: Examine
+    m_TableEntryReference:
+      m_KeyId: 0
+      m_Key: furniture.machines.engineering.pac_man_generator.desc
+    m_FallbackState: 0
+    m_WaitForCompletion: 0
+    m_LocalVariables: []
+  DetailedImageSize: {x: 260, y: 175}
+  DetailedImageRange:
+    Horizontal: 1.5
+    Vertical: 2
+  references:
+    version: 2
+    RefIds: []

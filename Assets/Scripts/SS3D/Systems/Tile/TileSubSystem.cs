@@ -1,10 +1,13 @@
 ﻿using Cysharp.Threading.Tasks;
 using FishNet.Connection;
 using FishNet.Object;
+using SS3D.Core;
 using SS3D.Core.Behaviours;
 using SS3D.Data.AssetDatabases;
 using SS3D.Data.Management;
+using SS3D.Data.Persistence;
 using SS3D.Logging;
+using SS3D.Systems.Persistence;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -19,7 +22,9 @@ namespace SS3D.Systems.Tile
     /// </summary>
     public class TileSubSystem : NetworkSubSystem
     {
-	    public const string savePath = "/Tilemaps";
+	    public const string savePath = PersistencePaths.StationTemplates;
+
+	    public const string legacySavePath = PersistencePaths.LegacyTilemaps;
 
 	    public const string unnamedMapName = "UnnamedMap";
 
@@ -31,6 +36,8 @@ namespace SS3D.Systems.Tile
         public TileMap CurrentMap => _currentMap;
         public ITileQueryService QueryService => _queryService;
         public IConstructionService Construction => _constructionService;
+
+        public event Action OnMapCreated;
 
         public string SavePath => savePath;
 
@@ -68,9 +75,14 @@ namespace SS3D.Systems.Tile
 		        return;
 	        }
 
+            if (SubSystems.TryGet(out PersistenceSubSystem persistenceSubSystem))
+            {
+                persistenceSubSystem.LoadServerMeta();
+            }
+
 	        await WaitForResourcesLoad();
 
-            Log.Information(this, "All tiles loaded successfully");
+            Log.Debug(this, "All tiles loaded successfully");
         }
 
         [ServerOrClient]
@@ -82,13 +94,14 @@ namespace SS3D.Systems.Tile
 		        return;
 	        }
 
-			Log.Information(this, $"Creating new tilemap {mapName}");
+			Log.Debug(this, $"Creating new tilemap {mapName}");
 
 	        TileMap map = TileMap.Create(mapName);
 	        map.transform.SetParent(transform);
 	        _currentMap = map;
 	        _queryService = new TileQueryService(map);
 	        _constructionService = new ConstructionService(map, _queryService);
+            OnMapCreated?.Invoke();
         }
 
         public void RegisterTileMutationObserver(ITileMutationObserver observer)
@@ -230,30 +243,45 @@ namespace SS3D.Systems.Tile
         [Server]
         public void Save(string mapName, bool overwrite)
         {
-			Log.Information(this, $"Saving tilemap {mapName}");
+			Log.Debug(this, $"Saving station template {mapName}");
+
+            if (SubSystems.TryGet(out PersistenceSubSystem persistenceSubSystem))
+            {
+                persistenceSubSystem.SaveStationTemplate(mapName, overwrite);
+                return;
+            }
 
             SavedTileMap mapSave = _currentMap.Save();
-												    
-            LocalStorage.SaveObject(SavePath + "/" + mapName, mapSave, overwrite);
+            LocalStorage.SaveObject(legacySavePath + "/" + mapName, mapSave, overwrite);
         }
 
         [Server]
         public void Load()
         {
-            Log.Information(this, "Loading most recent tilemap");
-            
-	        SavedTileMap mapSave = LocalStorage.LoadMostRecentObject<SavedTileMap>(SavePath);
+            Log.Debug(this, "Loading most recent station template");
 
+            if (SubSystems.TryGet(out PersistenceSubSystem persistenceSubSystem))
+            {
+                persistenceSubSystem.LoadMostRecentStationTemplate();
+                return;
+            }
+
+	        SavedTileMap mapSave = LocalStorage.LoadMostRecentObject<SavedTileMap>(legacySavePath);
             _currentMap.Load(mapSave);
         }
 
         [Server]
         public void Load(string mapName)
         {
-            Log.Information(this, "Loading most recent tilemap");
+            Log.Debug(this, $"Loading station template {mapName}");
 
-            SavedTileMap mapSave = LocalStorage.LoadObject<SavedTileMap>(mapName);
+            if (SubSystems.TryGet(out PersistenceSubSystem persistenceSubSystem))
+            {
+                persistenceSubSystem.LoadStationTemplate(mapName);
+                return;
+            }
 
+            SavedTileMap mapSave = LocalStorage.LoadObject<SavedTileMap>(legacySavePath + "/" + mapName);
             _currentMap.Load(mapSave);
         }
 
@@ -267,7 +295,13 @@ namespace SS3D.Systems.Tile
 
         public bool MapNameAlreadyExist(string name)
         {
-            return LocalStorage.FolderAlreadyContainsName(savePath, name);
+            if (SubSystems.TryGet(out PersistenceSubSystem persistenceSubSystem))
+            {
+                return persistenceSubSystem.StationTemplateExists(name);
+            }
+
+            return LocalStorage.FolderAlreadyContainsName(savePath, name)
+                || LocalStorage.FolderAlreadyContainsName(legacySavePath, name);
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using SS3D.Logging;
+using UnityEngine;
 
 namespace SS3D.Rendering
 {
@@ -14,7 +15,7 @@ namespace SS3D.Rendering
 		{
             if (!s)
 			{
-                Debug.Log("Missing shader in " + ToString ());
+                Log.Warning(this, "Missing shader in {effectName}", Logs.Generic, ToString());
                 enabled = false;
                 return null;
             }
@@ -25,7 +26,7 @@ namespace SS3D.Rendering
             if (!s.isSupported)
 			{
                 NotSupported ();
-                Debug.Log("The shader " + s.ToString() + " on effect "+ToString()+" is not supported on this platform!");
+                Log.Warning(this, "The shader {shaderName} on effect {effectName} is not supported on this platform!", Logs.Generic, s, ToString());
                 return null;
             }
             else
@@ -45,7 +46,7 @@ namespace SS3D.Rendering
 		{
             if (!s)
 			{
-                Debug.Log ("Missing shader in " + ToString ());
+                Log.Warning(this, "Missing shader in {effectName}", Logs.Generic, ToString());
                 return null;
             }
 
@@ -79,7 +80,7 @@ namespace SS3D.Rendering
 
         public virtual bool CheckResources ()
 		{
-            Debug.LogWarning ("CheckResources () for " + ToString() + " should be overwritten.");
+            Log.Warning(this, "CheckResources() for {effectName} should be overwritten.", Logs.Generic, ToString());
             return IsSupported;
         }
 
@@ -131,13 +132,13 @@ namespace SS3D.Rendering
 
         protected void ReportAutoDisable ()
 		{
-            Debug.LogWarning ("The image effect " + ToString() + " has been disabled as it's not supported on the current platform.");
+            Log.Warning(this, "The image effect {effectName} has been disabled as it's not supported on the current platform.", Logs.Generic, ToString());
         }
 
         // deprecated but needed for old effects to survive upgrading
         private bool CheckShader (Shader s)
 		{
-            Debug.Log("The shader " + s + " on effect "+ ToString () + " is not part of the Unity 3.2+ effects suite anymore. For best performance and quality, please ensure you are using the latest Standard Assets Image Effects (Pro only) package.");
+            Log.Warning(this, "The shader {shaderName} on effect {effectName} is not part of the Unity 3.2+ effects suite anymore.", Logs.Generic, s, ToString());
             if (!s.isSupported)
 			{
                 NotSupported ();
