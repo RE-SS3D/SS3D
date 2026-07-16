@@ -13,6 +13,9 @@ namespace SS3D.Tests.EditMode
         public void HumanoidParameterHashes_AreNonZero()
         {
             Assert.AreNotEqual(0, Animations.Humanoid.MovementSpeed);
+            Assert.AreNotEqual(0, Animations.Humanoid.VelX);
+            Assert.AreNotEqual(0, Animations.Humanoid.VelZ);
+            Assert.AreNotEqual(0, Animations.Humanoid.Turn);
             Assert.AreNotEqual(0, Animations.Humanoid.Floating);
             Assert.AreNotEqual(0, Animations.Humanoid.LimpSide);
             Assert.AreNotEqual(0, Animations.Humanoid.ArmHold);
@@ -22,6 +25,9 @@ namespace SS3D.Tests.EditMode
             Assert.AreNotEqual(0, Animations.Humanoid.Throw);
             Assert.AreNotEqual(0, Animations.Humanoid.Emote);
             Assert.AreNotEqual(0, Animations.Humanoid.Flinch);
+            Assert.AreNotEqual(0, Animations.Humanoid.Jump);
+            Assert.AreNotEqual(0, Animations.Humanoid.TurnLeft90);
+            Assert.AreNotEqual(0, Animations.Humanoid.TurnRight90);
         }
 
         [Test]

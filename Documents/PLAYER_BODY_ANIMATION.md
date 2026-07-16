@@ -49,10 +49,12 @@ Each state exposes: `CanMove`, `CanRotate`, `CanRun`, `CanUseHands`, `CanInterac
 
 ### Animator Layers
 
-1. **Base** (lower body mask) — locomotion blend tree
+1. **Base** (mask optional) — `Locomotion 2D` FreeformCartesian2D blend (`VelX` / `VelZ`) from Locomotion Pack: idle, walk, run, walk/run strafes, in-place turns. `Jump` / `TurnLeft90` / `TurnRight90` triggers available (run **SS3D → Animation → Rebuild Locomotion Pack Blend Tree** to wire one-shot states if missing).
 2. **UpperBody** (arms + torso mask) — hold poses, attacks
 3. **Additive** — flinch, injured arm overlay
 4. **FullBody Override** — sit, crawl, emote, stand-up
+
+Peaceful movement faces the move direction (mostly forward gait). Combat mode (`C`) faces the camera so strafe clips engage.
 
 ### Networking
 

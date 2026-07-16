@@ -56,14 +56,18 @@ namespace SS3D.Systems.Entities.Humanoid
         [SerializeField] private HumanoidLivingController _livingController;
         [SerializeField] private HumanoidBodyStateMachine _bodyStateMachine;
         [SerializeField] private FeetController _feetController;
+        /// <summary>World units/sec at full run (Speed animator param 1.0).</summary>
         [SerializeField] private float _movementSpeed = 5f;
-        [SerializeField] private float _runMultiplier = 1.6f;
+        /// <summary>Matches HumanoidController walk animator value (0.3) so walk/run stay in sync.</summary>
+        [SerializeField] private float _walkSpeedFactor = 0.3f;
 
         private CharacterController _characterController;
         private Actor _camera;
         private Controls.MovementActions _movementControls;
         private InputSubSystem _inputSystem;
         private bool _subscribed;
+        private bool _tickSubscribed;
+        private bool _networkStarted;
 
         protected override void OnAwake()
         {
@@ -88,33 +92,40 @@ namespace SS3D.Systems.Entities.Humanoid
         public override void OnStartNetwork()
         {
             base.OnStartNetwork();
-            if (IsOwner)
-            {
-                InstanceFinder.TimeManager.OnTick += TimeManager_OnTick;
-                _characterController.enabled = true;
-            }
-            else if (IsServer)
-            {
-                InstanceFinder.TimeManager.OnTick += TimeManager_OnTick;
-            }
-            else
-            {
-                _characterController.enabled = false;
-            }
+            _networkStarted = true;
+            TrySubscribeTick();
+        }
+
+        protected override void OnEnabled()
+        {
+            base.OnEnabled();
+            TrySubscribeTick();
+        }
+
+        protected override void OnDisabled()
+        {
+            base.OnDisabled();
+            UnsubscribeTick();
         }
 
         protected override void OnDestroyed()
         {
             base.OnDestroyed();
-            if (InstanceFinder.TimeManager != null)
+            UnsubscribeTick();
+            if (_subscribed)
             {
-                InstanceFinder.TimeManager.OnTick -= TimeManager_OnTick;
+                UnsubscribeInput();
             }
         }
 
         public override void OnOwnershipClient(FishNet.Connection.NetworkConnection prevOwner)
         {
             base.OnOwnershipClient(prevOwner);
+            if (!enabled)
+            {
+                return;
+            }
+
             if (IsOwner && !_subscribed)
             {
                 SubscribeInput();
@@ -123,6 +134,47 @@ namespace SS3D.Systems.Entities.Humanoid
             {
                 UnsubscribeInput();
             }
+
+            TrySubscribeTick();
+        }
+
+        private void TrySubscribeTick()
+        {
+            if (!_networkStarted || !enabled || _tickSubscribed || InstanceFinder.TimeManager == null)
+            {
+                return;
+            }
+
+            if (IsOwner)
+            {
+                InstanceFinder.TimeManager.OnTick += TimeManager_OnTick;
+                _characterController.enabled = true;
+                _tickSubscribed = true;
+            }
+            else if (IsServer)
+            {
+                InstanceFinder.TimeManager.OnTick += TimeManager_OnTick;
+                _tickSubscribed = true;
+            }
+            else
+            {
+                _characterController.enabled = false;
+            }
+        }
+
+        private void UnsubscribeTick()
+        {
+            if (!_tickSubscribed)
+            {
+                return;
+            }
+
+            if (InstanceFinder.TimeManager != null)
+            {
+                InstanceFinder.TimeManager.OnTick -= TimeManager_OnTick;
+            }
+
+            _tickSubscribed = false;
         }
 
         private void SubscribeInput()
@@ -143,6 +195,11 @@ namespace SS3D.Systems.Entities.Humanoid
 
         private void TimeManager_OnTick()
         {
+            if (!enabled)
+            {
+                return;
+            }
+
             if (IsOwner)
             {
                 Reconciliation(default, false);
@@ -162,7 +219,7 @@ namespace SS3D.Systems.Entities.Humanoid
         {
             md = default;
             BodyCapabilities caps = _bodyStateMachine.Capabilities;
-            if (!caps.CanMove)
+            if (!caps.CanMove || !_subscribed)
             {
                 return;
             }
@@ -212,12 +269,16 @@ namespace SS3D.Systems.Entities.Humanoid
             {
                 _bodyStateMachine.SetLocomotionSpeed(0f);
                 _bodyStateMachine.SetLocomotionMode(LocomotionMode.Idle);
+                _livingController?.PublishPredictedLocomotionVelocity(0f, 0f);
                 return;
             }
 
             Vector3 moveDirection = GetCameraRelativeDirection(md.Horizontal, md.Vertical);
             float speedFactor = _feetController != null ? _feetController.FeetHealthFactor : 1f;
-            float speed = _movementSpeed * speedFactor * (md.IsRunning ? _runMultiplier : 1f);
+            // Same mapping as HumanoidController: walk clamps to ~0.3 of run speed so feet match Speed blend.
+            float gaitFactor = md.IsRunning ? 1f : _walkSpeedFactor;
+            float speed = _movementSpeed * speedFactor * gaitFactor;
+            float animSpeed = md.IsRunning ? 1f : _walkSpeedFactor;
 
             _characterController.Move(moveDirection * (tickDelta * speed));
 
@@ -233,9 +294,16 @@ namespace SS3D.Systems.Entities.Humanoid
                 }
             }
 
-            float animSpeed = md.IsRunning ? 1f : 0.3f;
             _bodyStateMachine.SetLocomotionSpeed(animSpeed);
             _bodyStateMachine.SetLocomotionMode(md.IsRunning ? LocomotionMode.Run : LocomotionMode.Walk);
+            if (_livingController != null)
+            {
+                // Local-space blend axes relative to facing after rotation applied this tick.
+                Vector3 local = transform.InverseTransformDirection(moveDirection);
+                float velX = local.x * animSpeed;
+                float velZ = local.z * animSpeed;
+                _livingController.PublishPredictedLocomotionVelocity(velX, velZ);
+            }
         }
 
         [Reconcile]

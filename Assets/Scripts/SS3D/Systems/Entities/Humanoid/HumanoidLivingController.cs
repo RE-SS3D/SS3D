@@ -58,16 +58,35 @@ namespace SS3D.Systems.Entities.Humanoid
 
             _characterController.Move(Physics.gravity);
 
+            float gaitSpeed = FilterSpeed();
             if (Input.magnitude != 0)
             {
                 MoveMovementTarget(Input);
-                if(!IsDragging) RotatePlayerToMovement();
+                if (!IsDragging)
+                {
+                    if (IsCombatMode())
+                    {
+                        RotatePlayerToAimOrCamera();
+                    }
+                    else
+                    {
+                        RotatePlayerToMovement();
+                    }
+                }
+
                 MovePlayer();
+                PublishLocomotionVelocity(TargetMovement, gaitSpeed);
             }
             else
             {
                 MovePlayer();
                 MoveMovementTarget(Vector2.zero, 5);
+                if (IsCombatMode() && !IsDragging)
+                {
+                    RotatePlayerToAimOrCamera();
+                }
+
+                PublishLocomotionVelocity(Vector3.zero, 0f);
             }
         }
 

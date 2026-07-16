@@ -26,6 +26,12 @@ namespace SS3D.Systems.Entities.Humanoid
 
         private float _currentSpeed;
         private float _targetSpeed;
+        private float _currentVelX;
+        private float _currentVelZ;
+        private float _currentTurn;
+        private float _targetVelX;
+        private float _targetVelZ;
+        private float _targetTurn;
         private BodyAnimationSnapshot _lastSnapshot = BodyAnimationSnapshot.Default;
         private AnimationTriggerId _lastConsumedTrigger = AnimationTriggerId.None;
         private byte _lastTriggerSequence;
@@ -53,12 +59,16 @@ namespace SS3D.Systems.Entities.Humanoid
             if (_bodyStateMachine != null)
             {
                 _targetSpeed = _bodyStateMachine.Snapshot.MovementSpeed;
+                _targetVelZ = _targetSpeed;
                 ApplySnapshot(_bodyStateMachine.Snapshot);
             }
             else if (_animator != null)
             {
                 _targetSpeed = 0f;
                 _animator.SetFloat(Animations.Humanoid.MovementSpeed, 0f);
+                _animator.SetFloat(Animations.Humanoid.VelX, 0f);
+                _animator.SetFloat(Animations.Humanoid.VelZ, 0f);
+                _animator.SetFloat(Animations.Humanoid.Turn, 0f);
             }
         }
 
@@ -81,7 +91,7 @@ namespace SS3D.Systems.Entities.Humanoid
                 return;
             }
 
-            ApplyMovementSpeed(_targetSpeed);
+            ApplyLocomotionVelocity();
         }
 
         private void SubscribeToEvents()
@@ -89,6 +99,7 @@ namespace SS3D.Systems.Entities.Humanoid
             if (_movementController != null)
             {
                 _movementController.OnSpeedChangeEvent += HandleSpeedChanged;
+                _movementController.OnLocomotionVelocityChanged += HandleLocomotionVelocityChanged;
             }
             if (_bodyStateMachine != null)
             {
@@ -101,6 +112,7 @@ namespace SS3D.Systems.Entities.Humanoid
             if (_movementController != null)
             {
                 _movementController.OnSpeedChangeEvent -= HandleSpeedChanged;
+                _movementController.OnLocomotionVelocityChanged -= HandleLocomotionVelocityChanged;
             }
             if (_bodyStateMachine != null)
             {
@@ -114,12 +126,36 @@ namespace SS3D.Systems.Entities.Humanoid
             _bodyStateMachine?.SetLocomotionSpeed(speed);
         }
 
+        private void HandleLocomotionVelocityChanged(float velX, float velZ, float turn)
+        {
+            _targetVelX = velX;
+            _targetVelZ = velZ;
+            _targetTurn = turn;
+            _targetSpeed = new Vector2(velX, velZ).magnitude;
+            _bodyStateMachine?.SetLocomotionSpeed(_targetSpeed);
+        }
+
+        /// <summary>
+        /// Plays a one-shot locomotion pack trigger (Jump / Turn90). Local visual for now.
+        /// </summary>
+        public void PlayLocomotionTrigger(int triggerHash)
+        {
+            if (_animator != null && triggerHash != 0)
+            {
+                _animator.SetTrigger(triggerHash);
+            }
+        }
+
         public void ApplySnapshot(BodyAnimationSnapshot snapshot)
         {
             _lastSnapshot = snapshot;
             if (!IsLocalMovementAuthority())
             {
                 _targetSpeed = snapshot.MovementSpeed;
+                // Remotes do not yet replicate strafe axes — approximate with forward gait.
+                _targetVelX = 0f;
+                _targetVelZ = snapshot.MovementSpeed;
+                _targetTurn = 0f;
             }
             ApplyLocomotion(snapshot);
             ApplyUpperBody(snapshot);
@@ -138,11 +174,32 @@ namespace SS3D.Systems.Entities.Humanoid
             }
         }
 
-        private void ApplyMovementSpeed(float speed)
+        private void ApplyLocomotionVelocity()
         {
-            bool isMoving = speed != 0f;
-            float newLerpModifier = isMoving ? _lerpMultiplier : (_lerpMultiplier * 3f);
-            _currentSpeed = Mathf.Lerp(_currentSpeed, speed, Time.deltaTime * newLerpModifier);
+            float targetMagSq = _targetVelX * _targetVelX + _targetVelZ * _targetVelZ;
+            float currentMagSq = _currentVelX * _currentVelX + _currentVelZ * _currentVelZ;
+            bool accelerating = targetMagSq > currentMagSq + 0.0001f;
+
+            // Snap when speeding up so walk/run starts immediately; ease only when slowing to idle.
+            if (accelerating)
+            {
+                _currentVelX = _targetVelX;
+                _currentVelZ = _targetVelZ;
+                _currentTurn = _targetTurn;
+                _currentSpeed = _targetSpeed;
+            }
+            else
+            {
+                float lerp = Time.deltaTime * (_lerpMultiplier * 3f);
+                _currentVelX = Mathf.Lerp(_currentVelX, _targetVelX, lerp);
+                _currentVelZ = Mathf.Lerp(_currentVelZ, _targetVelZ, lerp);
+                _currentTurn = Mathf.Lerp(_currentTurn, _targetTurn, lerp);
+                _currentSpeed = Mathf.Lerp(_currentSpeed, _targetSpeed, lerp);
+            }
+
+            _animator.SetFloat(Animations.Humanoid.VelX, _currentVelX);
+            _animator.SetFloat(Animations.Humanoid.VelZ, _currentVelZ);
+            _animator.SetFloat(Animations.Humanoid.Turn, _currentTurn);
             _animator.SetFloat(Animations.Humanoid.MovementSpeed, _currentSpeed);
         }
 

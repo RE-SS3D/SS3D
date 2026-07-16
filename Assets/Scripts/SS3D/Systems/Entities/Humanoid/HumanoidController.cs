@@ -26,6 +26,8 @@ namespace SS3D.Systems.Entities.Humanoid
     {
         #region Fields
         public event Action<float> OnSpeedChangeEvent;
+        /// <summary>Local-space planar locomotion (VelX, VelZ) and Turn (-1..1) for the 2D blend tree.</summary>
+        public event Action<float, float, float> OnLocomotionVelocityChanged;
 
         [Header("Components")] 
         [SerializeField] protected Entity _entity;
@@ -34,6 +36,7 @@ namespace SS3D.Systems.Entities.Humanoid
         [SerializeField] protected float _movementSpeed;
         [SerializeField] protected float _lerpMultiplier;
         [SerializeField] protected float _rotationLerpMultiplier;
+        [SerializeField] protected float _turnVelocityScale = 4f;
 
         [Header("Movement IK Targets")]
         [SerializeField] private Transform _movementTarget;
@@ -53,6 +56,7 @@ namespace SS3D.Systems.Entities.Humanoid
         private InputSubSystem _inputSystem;
         private HumanoidBodyStateMachine _bodyStateMachine;
         private bool _inputSubscribed;
+        private float _previousYaw;
         private const float _walkAnimatorValue = .3f;
         private const float _runAnimatorValue = 1f;
         #endregion
@@ -61,6 +65,7 @@ namespace SS3D.Systems.Entities.Humanoid
         public virtual float WalkAnimatorValue => _walkAnimatorValue;
         public virtual float RunAnimatorValue => _runAnimatorValue;
         public bool IsRunning => _isRunning;
+        protected HumanoidBodyStateMachine BodyStateMachine => _bodyStateMachine;
         #endregion
 
         public override void OnStartClient()
@@ -127,6 +132,7 @@ namespace SS3D.Systems.Entities.Humanoid
             _camera = SubSystems.Get<CameraSubSystem>().PlayerCamera;
             _entity.OnMindChanged += HandleControllingPlayerChanged;
             _bodyStateMachine = GetComponent<HumanoidBodyStateMachine>();
+            _previousYaw = transform.eulerAngles.y;
             EnsureInputReady();
             AddHandle(UpdateEvent.AddListener(HandleUpdate));
         }
@@ -155,16 +161,17 @@ namespace SS3D.Systems.Entities.Humanoid
                 return;
             }
 
-            InputAction movementAction = _inputSystem.Inputs.Movement.Movement;
-            if (movementAction.enabled)
+            InputActionMap movementMap = _inputSystem.Inputs.Movement;
+            // Movement and ToggleRun share this map — never force-enable only one action.
+            if (movementMap.enabled && MovementControls.ToggleRun.enabled && MovementControls.Movement.enabled)
             {
                 return;
             }
 
-            _inputSystem.ToggleActionMap(_inputSystem.Inputs.Movement, true);
-            if (!movementAction.enabled)
+            _inputSystem.ToggleActionMap(movementMap, true);
+            if (!MovementControls.ToggleRun.enabled || !MovementControls.Movement.enabled)
             {
-                movementAction.Enable();
+                _inputSystem.ForceEnableActionMap(movementMap);
             }
         }
 
@@ -272,8 +279,16 @@ namespace SS3D.Systems.Entities.Humanoid
                  movementInput.y * forwardBasis +
                  movementInput.x * rightBasis;
 
-             // smoothly changes the target movement
-             TargetMovement = Vector3.Lerp(TargetMovement, newTargetMovement, Time.deltaTime * (_lerpMultiplier * multiplier));
+             float lerpRate = _lerpMultiplier * multiplier;
+             // Reach gait quickly from standstill so feet and motion start together.
+             if (TargetMovement.sqrMagnitude < 0.0001f && newTargetMovement.sqrMagnitude > 0.0001f)
+             {
+                 TargetMovement = newTargetMovement;
+             }
+             else
+             {
+                 TargetMovement = Vector3.Lerp(TargetMovement, newTargetMovement, Time.deltaTime * lerpRate);
+             }
 
              Vector3 resultingMovement = TargetMovement + Position;
             AbsoluteMovement = resultingMovement;
@@ -318,6 +333,82 @@ namespace SS3D.Systems.Entities.Humanoid
             SmoothedInput = Vector2.Lerp(SmoothedInput, Input, Time.deltaTime * (_lerpMultiplier / 10));
 
             OnSpeedChanged(Input.magnitude != 0 ? inputFilteredSpeed : 0);
+        }
+
+        /// <summary>
+        /// Publishes local-space VelX/VelZ for the FreeformCartesian2D locomotion blend.
+        /// Peaceful mode faces the move direction, so only forward gait is used.
+        /// Combat mode faces the camera and uses true strafe axes.
+        /// </summary>
+        protected void PublishLocomotionVelocity(Vector3 worldMoveDirection, float gaitSpeed)
+        {
+            float velX = 0f;
+            float velZ = 0f;
+
+            if (gaitSpeed > 0.01f)
+            {
+                if (IsCombatMode())
+                {
+                    Vector3 planar = worldMoveDirection;
+                    planar.y = 0f;
+                    if (planar.sqrMagnitude > 0.0001f)
+                    {
+                        Vector3 local = transform.InverseTransformDirection(planar.normalized);
+                        velX = local.x * gaitSpeed;
+                        velZ = local.z * gaitSpeed;
+                    }
+                }
+                else
+                {
+                    // Body rotates to face movement — keep blend on the forward axis only so
+                    // turn/strafe clips do not pop in while facing catches up.
+                    velZ = gaitSpeed;
+                }
+            }
+
+            float yaw = transform.eulerAngles.y;
+            float yawDelta = Mathf.DeltaAngle(_previousYaw, yaw);
+            _previousYaw = yaw;
+            float turn = Mathf.Clamp(yawDelta / Mathf.Max(0.01f, _turnVelocityScale), -1f, 1f);
+
+            OnLocomotionVelocityChanged?.Invoke(velX, velZ, turn);
+        }
+
+        protected bool IsCombatMode()
+        {
+            return _bodyStateMachine != null
+                && _bodyStateMachine.CombatMode == HumanoidCombatMode.Combat;
+        }
+
+        protected void RotatePlayerToAimOrCamera()
+        {
+            if (_camera == null)
+            {
+                _camera = SubSystems.Get<CameraSubSystem>().PlayerCamera;
+            }
+
+            if (_camera == null)
+            {
+                return;
+            }
+
+            Vector3 look = Vector3.Cross(_camera.Right, Vector3.up);
+            if (look.sqrMagnitude < 0.001f)
+            {
+                return;
+            }
+
+            Quaternion lookRotation = Quaternion.LookRotation(look);
+            transform.rotation = Quaternion.Slerp(Rotation, lookRotation, Time.deltaTime * _rotationLerpMultiplier);
+        }
+
+        /// <summary>
+        /// Used by <see cref="HumanoidPredictedMovement"/> when it owns locomotion ticks.
+        /// </summary>
+        public void PublishPredictedLocomotionVelocity(float velX, float velZ, float turn = 0f)
+        {
+            OnLocomotionVelocityChanged?.Invoke(velX, velZ, turn);
+            OnSpeedChanged(new Vector2(velX, velZ).magnitude);
         }
 
         protected virtual float FilterSpeed()

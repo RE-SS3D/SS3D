@@ -7716,7 +7716,7 @@ MonoBehaviour:
   _bodyStateMachine: {fileID: 9100001001}
   _feetController: {fileID: 5164211669966765644}
   _movementSpeed: 5
-  _runMultiplier: 1.6
+  _walkSpeedFactor: 0.3
 --- !u!114 &9100001003
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -8,6 +8,9 @@ namespace SS3D.Systems.Entities.Data
         public static class Humanoid
         {
             public static readonly int MovementSpeed = Animator.StringToHash("Speed");
+            public static readonly int VelX = Animator.StringToHash("VelX");
+            public static readonly int VelZ = Animator.StringToHash("VelZ");
+            public static readonly int Turn = Animator.StringToHash("Turn");
             public static readonly int Floating = Animator.StringToHash("Floating");
             public static readonly int LimpSide = Animator.StringToHash("LimpSide");
             public static readonly int IsCrawling = Animator.StringToHash("IsCrawling");
@@ -23,6 +26,9 @@ namespace SS3D.Systems.Entities.Data
             public static readonly int Throw = Animator.StringToHash("Throw");
             public static readonly int Emote = Animator.StringToHash("Emote");
             public static readonly int Flinch = Animator.StringToHash("Flinch");
+            public static readonly int Jump = Animator.StringToHash("Jump");
+            public static readonly int TurnLeft90 = Animator.StringToHash("TurnLeft90");
+            public static readonly int TurnRight90 = Animator.StringToHash("TurnRight90");
 
             public static int GetTriggerHash(AnimationTriggerId trigger)
             {
