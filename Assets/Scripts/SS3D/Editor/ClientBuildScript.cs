@@ -19,14 +19,14 @@ namespace SS3D.Editor
         {
             Directory.CreateDirectory(Path.GetDirectoryName(DefaultBuildPath) ?? string.Empty);
 
-            EditorUserBuildSettings.standaloneBuildSubtarget = StandaloneBuildSubtarget.Default;
+            EditorUserBuildSettings.standaloneBuildSubtarget = StandaloneBuildSubtarget.Player;
 
             BuildPlayerOptions buildPlayerOptions = new()
             {
                 scenes = EditorBuildSettings.scenes.Where(scene => scene.enabled).Select(scene => scene.path).ToArray(),
                 locationPathName = DefaultBuildPath,
                 target = BuildTarget.StandaloneLinux64,
-                subtarget = (int)StandaloneBuildSubtarget.Default,
+                subtarget = (int)StandaloneBuildSubtarget.Player,
                 options = BuildOptions.None,
             };
 
