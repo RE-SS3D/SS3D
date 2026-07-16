@@ -117,15 +117,3 @@ Not a redesign of the main HUD doc's vitals cluster (§5) — a note on what its
 - Cybernetic/prosthetic depth beyond "this is a treatment option for severed limbs and failed organs"
 - Nutrition/hunger specifics — already an existing alert, untouched here
 
-## 10. Prototyping this
-
-Mostly data-architecture work, plus one HUD mockup update.
-
-**Claude Design, prompt 1 — updated vitals and organ readout:**
-> Update the vitals cluster mockup: brute/burn bars now show worst-affected-limb value, toxin/oxy are explicitly systemic. Add the paired organ-status view that appears alongside the existing per-limb readout on hold — a short list of organs with a function-percentage bar each, one flagged as critical.
-
-**Cursor, prompt 1 — data contract first:**
-> Here's the health design doc. Define the systemic pools (blood volume, toxin, oxy) and their update functions given organ function inputs (heart, lungs, liver, kidneys) and bleeding rate from wound state. Define the critical/death check as described in §4 — multiple independent systemic thresholds for critical, brain function reaching zero as the sole death trigger. Show me the data contract before wiring any treatment items.
-
-**Cursor, prompt 2 — one vertical slice:**
-> Wire bleeding and blood volume only: wound severity on a zone produces a bleeding rate, bleeding drains blood volume over time, low blood volume raises oxy debt. Bandaging a wound stops the bleeding rate but doesn't restore blood volume directly. Everything else in §6 comes after this is reviewed.

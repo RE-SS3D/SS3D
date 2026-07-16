@@ -129,16 +129,3 @@ No new permanent chrome — same discipline as everything else.
 - `cargo.md` §5, `disposal.md` §4/§9/§10, `surgery.md` §9, `id-access.md` §3, and `inventory-storage.md` §14 all currently cite "`main-hud.md` §15" for the examine system. Nothing functional changes in any of them — just repoint each citation at this doc (`examine.md`), since that's where the system actually lives now.
 - `main-hud.md` never had a §15 to begin with. This doc resolves that gap rather than main HUD growing one; no edit needed there beyond, optionally, a one-line pointer to this doc from §6 where the reticle pattern examine reuses is first defined.
 
-## 13. Prototyping this
-
-**Claude Design, prompt 1 — examine panel across target types:**
-> Using our existing SS3D design system, build the examine panel in its screen-space home (same region as the zone-targeting reticle/label). Show four states: an ordinary item (name + flavor + size class), a manifest-labeled crate (name + truncated item list + lock state), an ID card (name/job/department color), and another character (name/job + a short worn/held item list). Same flat-surface, hairline-border, monospace-for-data language as the rest of this project's HUD.
-
-**Claude Design, prompt 2 — self fallback and truncation:**
-> Show the same examine key falling through to the existing per-limb/organ readout when nothing's under the cursor, and a long crate manifest truncating to "+N more" rather than overflowing the panel. This is to confirm the length discipline reads clearly before it's implementation-locked.
-
-**Cursor, prompt 1 — data contract first:**
-> Here's the examine design doc. Define the shared examine-text resolver: given a raycast hit (or none, falling through to self), return a target-type-tagged content block (item/container/ID/character/device/organ/self) built from each object's existing printed-property fields — no new data invented here, just a read path over what `cargo.md`, `id-access.md`, `disposal.md`, and `inventory-storage.md` already define. Show me the resolver and the content-block shape before wiring any panel UI.
-
-**Cursor, prompt 2 — one vertical slice:**
-> Wire the examine key end to end for two target types — an ordinary item and a manifest-labeled crate — reusing the existing raycast system for target acquisition and the zone-targeting reticle's screen region for the panel. Character, ID, organ, and device cases come after this is reviewed.

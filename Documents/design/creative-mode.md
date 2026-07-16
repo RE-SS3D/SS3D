@@ -98,16 +98,3 @@ The construction menu panel is the one deliberate departure from "no abstract me
 - Map metadata beyond a name — author, tags, thumbnail generation — a content/tooling nicety, not this pass's job
 - Griefing/PvP prevention during a session — server policy, not a mechanic
 
-## 10. Prototyping this
-
-**Claude Design, prompt 1 — the construction menu:**
-> Using our SS3D design system, build the creative-mode construction menu: a palette panel (wall, door, window, deck plating, eraser) and an area-authoring tool (select tiles, rename/merge/split). This is the one deliberate exception to diegetic-only UI in this project — a real panel, not a radial or in-world tool — so it should read as clearly a meta/editor surface, closer to the round-config admin screen's visual language than to any in-fiction HUD element.
-
-**Claude Design, prompt 2 — hull extension and save flow:**
-> Show a builder laying deck plating into open space and sealing a perimeter with the construction menu (instant placement, no timers), the moment the enclosed region claims its own Area, and the save dialog producing a new named, disabled entry in round config's map pool.
-
-**Cursor, prompt 1 — data contract first:**
-> Here's the creative mode design doc. Define the gamemode pool entry for creative mode (job-list override, empty antag categories), the instant-placement/erase functions (same wall/door/deck-plating objects as `construction.md`, skipping staged states and cost), and the save function (snapshot of live tile/Area state into a new round-config map pool entry, disabled by default). Show me all three before wiring any UI.
-
-**Cursor, prompt 2 — one vertical slice:**
-> Implement instant wall placement and erase in an existing interior room, confirm it reuses Area's local recompute correctly on enclosure, and wire one save producing a real disabled map pool entry. The area-authoring tool, hull extension into unclaimed space, and job-list override come after this is reviewed.

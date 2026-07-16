@@ -133,18 +133,3 @@ No new permanent chrome.
 - Any dedicated escape/struggle minigame for a player caught in transit — Phase 2's job, if it's wanted at all
 - Full server-side logging of disposal contents beyond what security can physically discover by searching or cutting — server logging, cross-cutting infra
 
-## 13. Prototyping this
-
-Same two-stage pipeline as the rest of this project.
-
-**Claude Design, prompt 1 — chute, tagger, and a visible pipe run:**
-> Using our existing SS3D design system, mock up a disposal chute (industrial hopper, same flat-surface/hairline-border language as the rest of this project's machines), a simple tagger interaction showing a short list of department destinations, and a visible pipe run — a physical tube along a maintenance corridor wall with an observation window section showing a package mid-transit.
-
-**Claude Design, prompt 2 — pipe cut and the cargo-side outlet:**
-> Show a pipe segment being cut open mid-transit — the item inside physically spilling out at that location. Then show the main disposal outlet near cargo bay: an item sitting in its grace-window state, and a cargo tech sweeping it onto the export pad instead of letting it eject.
-
-**Cursor, prompt 1 — data contract first:**
-> Here's the disposal design doc. Define the pipe network as a graph (segments, junctions) reusing the same connectivity/BFS approach as the electricity and lighting docs, the transiting-object record (current position along path, destination tag, contents), and the chute/outlet definitions (accept check by collider size class per §2 and §8). Show me the data contract before wiring any transit behavior.
-
-**Cursor, prompt 2 — one vertical slice:**
-> Implement one chute-to-outlet run end to end: item dropped in, routed through at least one junction, visible transit along the path, arrival at the main outlet, grace-window ejection into space if unclaimed. Tagging, the cargo export sweep, and mid-transit pipe-cutting come after this is reviewed.

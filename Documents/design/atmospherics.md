@@ -160,16 +160,3 @@ Three renderers, one shared tile anchor and write pattern — the same "one shar
 - Floor/ceiling and multi-level exposure — no z-level system exists anywhere in this project; this entire doc assumes a single flat plane, which is what makes liquid/solid phase tractable without a height-field simulation
 - Player transit through pipes — not this system. Disposal's chute network already moves solid items (`disposal.md`); this doc's SolidBuffer is reagent residue, not a transiting object
 
-## 14. Prototyping this
-
-**Claude Design, prompt 1 — pump/gauge device screen:**
-> Using our SS3D design system, build a pump's diegetic device readout: rated max flow, current actual flow, and the differential/backpressure it's working against, rendered as a physical gauge on the device itself — same visual language as the reactor's heat gauge and the SMES charge readout. Show a healthy-flow state and a straining-against-backpressure state side by side.
-
-**Claude Design, prompt 2 — gas vs. liquid rendering:**
-> Show a heavier-than-air gas leak (plasma) pooling low in a room as a volumetric fog with a visible density falloff, next to a liquid spill spreading across the floor as a flat puddle with soft edges — same room, same lighting. Meant to check the two phases read as clearly different substances at a glance, not just different colors of the same effect.
-
-**Cursor, prompt 1 — data contract first:**
-> Here's the atmospherics design doc. Define the extended substance record (adds molar mass, boiling point, freezing point to the existing reagent shape), the three per-tile buffers (GasBuffer, LiquidBuffer, SolidBuffer — sparse entry lists, matching the existing gas buffer's shape), the PipeNetwork record (connected segment set, pooled substance volumes, total volume, gas- or liquid-typed), and the Pump record (rated max flow, max differential capacity, current computed flow as a function of the pressure difference on each side). Show me the data contract before wiring any rendering or reaction hooks.
-
-**Cursor, prompt 2 — one vertical slice:**
-> Implement one pump moving a single gas between two networks separated by a real pressure differential — flow rate computed from that differential and the pump's two stats, tapering to zero as the sides equalize. Then implement one phase transition end to end: a liquid-carrying pipe segment whose ambient-derived temperature crosses its substance's boiling point, converting that volume into the segment's local gas state and venting it as a rupture per §8. Junction reactions, rendering, and liquid/solid open-tile diffusion come after this is reviewed.

@@ -117,16 +117,3 @@ No new permanent chrome.
 - Grenade throw arc/mechanics themselves — assumed to reuse whatever general throwable-item interaction exists elsewhere
 - Explosive crafting/synthesis recipes — the items exist as designed objects in §6; whether they're player-craftable via chemistry or crafting recipes is a content question, not this doc's
 
-## 10. Prototyping this
-
-**Claude Design, prompt 1 — structural damage stages:**
-> Using our SS3D design system, show one wall tile across its four damage stages — intact, damaged (dent/scorch), cracked/venting (visible crack, hiss/vapor particle), destroyed (open gap, debris) — side by side, toon/half-toon shading, same visual language as armor's wear states.
-
-**Claude Design, prompt 2 — breaching charge sequence and area merge:**
-> Show a breaching charge placed on a wall with a visible countdown, then the detonation moment, then the resulting hole with the two formerly separate rooms now visibly one continuous space — lighting, camera feed indicator, and any visible power state updating to reflect the area merge.
-
-**Cursor, prompt 1 — data contract first:**
-> Here's the explosives & structural destruction design doc. Define the blast event record (epicenter tile, yield, falloff rate), the per-tile structural damage state (four stages per §3), and the BFS resolution function (hop-based traversal, blocked by intact walls/closed doors, spending force per hop, applying structural or brute damage on arrival). Show me the data contract before wiring any item behavior.
-
-**Cursor, prompt 2 — one vertical slice:**
-> Implement one breaching charge end to end: place → arm → countdown → detonate → §2 BFS resolution → target wall crosses Destroyed → Area's local recompute per §4 → atmosphere connects. Grenades, timed charges, remote detonators, and crew damage come after this is reviewed.

@@ -105,16 +105,3 @@ If the ghost has already committed elsewhere before defib succeeds, the original
 - Ghost cosmetic customization (appearance, trail effects, etc.) — no gameplay weight
 - The round-end summary screen and transition logic itself — this doc only supplies the camera/state framework round-end will use; the content and transition mechanics are `round-end.md`'s job
 
-## 10. Prototyping this
-
-**Claude Design, prompt 1 — free-cam and chrome:**
-> Build the ghost's screen: a free-flying camera view of a station interior (no collision, moves through walls), with a slim dead-chat panel and a nearby-ghosts indicator as the only permanent chrome. No vitals, no elements meant for a living body — this is a distinct third category from the main HUD and the AI's screen, closer to a director's free-cam than either.
-
-**Claude Design, prompt 2 — possession prompts:**
-> Show two possession moments side by side: a dismissible on-demand prompt ("Clone ready — enter?") that can appear regardless of camera position without yanking the view, and a proximity possession prompt that only appears when the free-cam is close to and looking at an idle drone in the world ("Possess this body?").
-
-**Cursor, prompt 1 — data contract first:**
-> Here's the observer design doc. Define the ghost state itself (camera-only, no world-collision, invisible flag against every living-side detection system) and the single Possession event with its two trigger paths (reserved on-demand prompt keyed to identity; proximity interaction against a body flagged possessable). Show me both before wiring any specific reserved-prompt source.
-
-**Cursor, prompt 2 — one vertical slice:**
-> Wire ghost-state entry from death, free-cam movement, and the clone-ready reserved prompt end to end. Become-AI/cyborg prompts and ghost-role possession come after this is reviewed.

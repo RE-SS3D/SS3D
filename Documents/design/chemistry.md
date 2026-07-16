@@ -141,16 +141,3 @@ No new permanent chrome — same discipline as every other doc in this project.
 - Disease/infection interactions — already flagged as a separate future system in `health.md` §9
 - Chemist-specific job/access balancing (exactly which reagents which access level unlocks)
 
-## 13. Prototyping this
-
-**Claude Design, prompt 1 — dispenser and container screens:**
-> Using our SS3D design system, build the chem dispenser's diegetic device screen (reagent tap list with amount selector, ID/access gate) and a handheld container's hold-examine readout showing contents two ways: fully identified (name, volume, effect category) versus unanalyzed (color, approximate volume, state only). Same visual language as the fabricator and FDU screens — industrial, flat, no neon.
-
-**Claude Design, prompt 2 — bad mix consequence:**
-> Show a beaker mixing sequence going wrong: two reagents poured together without the required heat step, resolving into a gas-release hazard that visibly spreads and changes the room's ambient state, distinct from a clean successful reaction poured correctly. This is meant to check that "this went wrong" reads clearly at a glance, the same legibility standard the armor breach mockups already set.
-
-**Cursor, prompt 1 — data contract first:**
-> Here's the chemistry design doc. Define the reagent record (category, color, effect target — which health-doc systemic pool or organ function, metabolism rate, overdose threshold), the container record (capacity, current reagent volumes), and the reaction resolution function (ratio match → condition check if the recipe has one → yield, or near-miss/incompatible-pair → hazard event per §5). Show me the data contract before wiring any machine UI.
-
-**Cursor, prompt 2 — one vertical slice:**
-> Implement one condition-gated recipe (antitoxin, requiring heat) and one flagged-incompatible pair end to end: dispenser → beaker → pour → resolution → correct case yields antitoxin, incompatible case triggers a gas-release hazard that feeds the existing atmosphere/toxin pools. Delivery methods beyond injection, the analyzer, and production machines beyond the dispenser come after this is reviewed.

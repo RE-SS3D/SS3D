@@ -99,16 +99,3 @@ A light, explicitly advisory poll — map preference is the natural candidate, s
 - Exact weight values and precondition thresholds (a balancing pass, not a design decision)
 - The full admin toolkit — ahelp, player management, audit logging, stealth observation (`in-round admin tools`, a separate pass; this doc only needs a config screen, not the whole toolkit)
 
-## 11. Prototyping this
-
-**Claude Design, prompt 1 — admin config screen:**
-> Build the round-config admin screen using our SS3D design system: a gamemode pool list (enable toggle, weight field, min/max player-count precondition) and an identical-shaped map pool list below it, plus a read-only history log showing the last several rounds' drawn mode, drawn map, and whether fallback triggered. Same visual language as the lobby job-select screen — flat surfaces, hairline borders, no browser-panel look.
-
-**Claude Design, prompt 2 — the lobby handoff:**
-> Show the round-config draw resolving into the lobby's antagonist opt-in section from the lobby mockup — the resolved, non-spoiling category list populating that section, with the actual drawn gamemode identity visibly absent from every player-facing surface, including this mockup's own "player view" frame.
-
-**Cursor, prompt 1 — data contract first:**
-> Here's the round config design doc. Define the shared pool-entry record (used for both gamemode and map pools), the draw function (weighted, precondition-gated against live population, deterministic fallback), and the payload handed to the lobby system (active antag categories, any job-list deltas) — without leaking the drawn gamemode's identity into that payload. Show me all three before wiring any UI.
-
-**Cursor, prompt 2 — one vertical slice:**
-> Implement the gamemode pool and draw/fallback logic only, wired to a placeholder lobby hook that just logs the handed-off category payload. Map pool and the admin config screen come after this is reviewed.

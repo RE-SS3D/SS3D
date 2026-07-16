@@ -146,16 +146,3 @@ No new permanent chrome.
 - `surgery.md` §11 — "disease/infection risk from surgery" resolves as an ordinary contact-exposure vector (§3 here), not a bespoke surgical mechanic; repoint the citation rather than redesigning surgery.
 - `examine.md` §11 — the flagged "medical scanner tool" is now built in §5; repoint the citation.
 
-## 13. Prototyping this
-
-**Claude Design, prompt 1 — medical scanner device screen:**
-> Using our SS3D design system, build the medical scanner's diegetic device screen, same visual language as the FDU and chemical analyzer: a live-scan result view (disease name, current stage, time-to-next-stage) and a blood-sample-analysis mode showing the same fields for a container instead of a person. Industrial, flat, no neon.
-
-**Claude Design, prompt 2 — symptom rendering and alert states:**
-> Show a symptomatic character rendering on the model (cough animation, pallor/flush tint) alongside the two alert-chip states: generic "Infected" before that character has been scanned, upgrading to the named disease after. Confirm the silent-incubation state shows nothing at all — no chip, no model change — for contrast.
-
-**Cursor, prompt 1 — data contract first:**
-> Here's the virology design doc. Define the disease record (transmission modes, infection threshold, incubation duration, ordered stage list with per-stage organ/systemic effect definitions and contagion flag, cure reagent reference), the exposure-accumulation function (discrete contact dose, per-tick airborne accrual via Area co-location, decay below threshold), and the infection/stage-progression scheduler reading and writing the health doc's real organ/systemic pools. Show me all three before wiring the scanner UI.
-
-**Cursor, prompt 2 — one vertical slice:**
-> Implement one contact-transmitted disease end to end: exposure event → threshold check → infection → incubation → first symptomatic stage writing a real organ/systemic effect → scanner diagnosis → chemistry-synthesized cure → recovery and immunity flag. Airborne exposure and additional diseases come after this is reviewed.

@@ -184,16 +184,3 @@ A standalone, console-independent forging tool — a portable cloner an antagoni
 - Console siting, count, and station layout (a map-authoring question)
 - Exact wording/UX of the "report lost" social flow — it's a comms conversation, not a system
 
-## 13. Prototyping this
-
-**Claude Design, prompt 1 — the ID card and console at rest:**
-> Using our SS3D design system, build a handheld ID card's examine view (name, job, department color, no access info visible) and the ID console's diegetic device screen: insert-target-card state, a locked "insert your own ID" prompt, and the unlocked editor view once a valid Change ID card is present — a list of access levels with toggles, grouped department-first then cross-cutting. Same flat-surface, hairline-border language as the FDU and fabricator screens.
-
-**Claude Design, prompt 2 — the hacker-tier bypass:**
-> Extend the console mockup with a hacker-tier state, reusing the hacking interface's existing three-tier visual language: raw bitmask view, a flagged replayable credential, and the write-arbitrary-access action once the tamper layer is shown bypassed. Then show the console's own log with one entry visibly missing a legitimate operator session, to check the "gap in the log" tell reads clearly.
-
-**Cursor, prompt 1 — data contract first:**
-> Here's the ID/access design doc. Define the CrewRecord (name, job, department, access-level bitmask, DNA record reference), the ID card record (crew record reference only, no independent state), and the shared access-check function (holder's on-person ID scan — gear-strip slot or PDA-inserted card — against a required level set, returning pass/fail and writing an auth-log entry). Show me all three before wiring any consumer.
-
-**Cursor, prompt 2 — one vertical slice:**
-> Wire one door (reading Area's default requirement per `area.md` §5) and the ID console's legitimate issuance flow (Change ID check, edit, log write) end to end against the shared access-check function from prompt 1. Hacking-interface-tier console bypass and every other consumer (crates, chutes, AI authority) come after this is reviewed.
