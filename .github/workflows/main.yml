@@ -8,6 +8,8 @@ jobs:
   build:
     name: Build for ${{ matrix.targetPlatform }}
     runs-on: ubuntu-latest
+    env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
     strategy:
       fail-fast: false
       matrix:
@@ -18,42 +20,34 @@ jobs:
           #- StandaloneLinux64
     steps:
       - name: Checkout project code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
           lfs: true
       - name: Get version tag
         id: tag_name
         run: |
-          echo ::set-output name=SOURCE_TAG::${GITHUB_REF#refs/tags/}
+          echo "SOURCE_TAG=${GITHUB_REF#refs/tags/}" >> "$GITHUB_OUTPUT"
       - name: Make build
-        uses: game-ci/unity-builder@v2
+        uses: game-ci/unity-builder@v4
         env:
           UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
+          UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
+          UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
+          UNITY_SERIAL: ${{ secrets.UNITY_SERIAL }}
         with:
           buildName: RESS3D-${{ steps.tag_name.outputs.SOURCE_TAG }}
           targetPlatform: ${{ matrix.targetPlatform }}
-      - name: Create new release from tag
-        uses: actions/create-release@v1
-        id: create_release
-        with:
-          draft: false
-          prerelease: false
-          release_name: Release ${{ steps.tag_name.outputs.SOURCE_TAG }}
-          tag_name: ${{ steps.tag_name.outputs.SOURCE_TAG }}
-        env:
-          GITHUB_TOKEN: ${{ github.token }}
-      - name: Install zip
-        uses: montudor/action-zip@v1
       - name: Archive build
         run: zip -qq -r RESS3D-${{ steps.tag_name.outputs.SOURCE_TAG }}.zip build/${{ matrix.targetPlatform }}
         working-directory: /home/runner/work/SS3D/SS3D
-      - name: Add build arhive to release
-        uses: actions/upload-release-asset@v1
+      - name: Create release with build archive
+        uses: softprops/action-gh-release@v2
+        with:
+          draft: false
+          prerelease: false
+          name: Release ${{ steps.tag_name.outputs.SOURCE_TAG }}
+          tag_name: ${{ steps.tag_name.outputs.SOURCE_TAG }}
+          files: /home/runner/work/SS3D/SS3D/RESS3D-${{ steps.tag_name.outputs.SOURCE_TAG }}.zip
         env:
           GITHUB_TOKEN: ${{ github.token }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: /home/runner/work/SS3D/SS3D/RESS3D-${{ steps.tag_name.outputs.SOURCE_TAG }}.zip
-          asset_name: RESS3D-${{ steps.tag_name.outputs.SOURCE_TAG }}.zip
-          asset_content_type: application/zip
