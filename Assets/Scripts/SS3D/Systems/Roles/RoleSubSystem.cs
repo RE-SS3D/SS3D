@@ -122,7 +122,7 @@ namespace SS3D.Systems.Roles
         /// <param name="player</param>
         private void RemovePlayerFromCounters(Player player)
         {
-            if (!_rolePlayers.TryGetValue(player, out RoleData roleData))
+            if (player == null || !_rolePlayers.TryGetValue(player, out RoleData roleData))
             {
                 return;
             }
