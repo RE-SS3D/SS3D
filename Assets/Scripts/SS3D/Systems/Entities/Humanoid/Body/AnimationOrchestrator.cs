@@ -35,6 +35,8 @@ namespace SS3D.Systems.Entities.Humanoid
         private BodyAnimationSnapshot _lastSnapshot = BodyAnimationSnapshot.Default;
         private AnimationTriggerId _lastConsumedTrigger = AnimationTriggerId.None;
         private byte _lastTriggerSequence;
+        private bool _ownerPredictedAttack;
+        private float _suppressUpperBodyUntil;
 
         public Animator Animator => _animator;
 
@@ -146,6 +148,40 @@ namespace SS3D.Systems.Entities.Humanoid
             }
         }
 
+        /// <summary>
+        /// Owner-side immediate attack playback (base-layer Attack Swing, same pattern as Jump).
+        /// </summary>
+        public void PlayAttackTrigger(AnimationTriggerId trigger)
+        {
+            if (_animator == null)
+            {
+                return;
+            }
+
+            int hash = Animations.Humanoid.GetTriggerHash(trigger);
+            if (hash == 0)
+            {
+                return;
+            }
+
+            _ownerPredictedAttack = true;
+
+            // Combat keeps Upper Body at weight 1 (Hold Default). That mask would hide a
+            // base-layer swing's arms — drop it for the clip duration.
+            if (trigger == AnimationTriggerId.AttackSwing)
+            {
+                _suppressUpperBodyUntil = Time.time + 2.2f;
+                if (_animator.layerCount > 1)
+                {
+                    _animator.SetLayerWeight(1, 0f);
+                }
+            }
+
+            // One path only: Any State trigger on the base layer (no upper-body CrossFade race).
+            _animator.ResetTrigger(hash);
+            _animator.SetTrigger(hash);
+        }
+
         public void ApplySnapshot(BodyAnimationSnapshot snapshot)
         {
             _lastSnapshot = snapshot;
@@ -169,7 +205,17 @@ namespace SS3D.Systems.Entities.Humanoid
                 if (sequence != _lastTriggerSequence && snapshot.ActiveTrigger != AnimationTriggerId.None)
                 {
                     _lastTriggerSequence = sequence;
-                    ConsumeTrigger(snapshot.ActiveTrigger);
+                    // Owner already played predictively — skip duplicate SetTrigger on host/client echo.
+                    if (_ownerPredictedAttack)
+                    {
+                        _ownerPredictedAttack = false;
+                        _lastConsumedTrigger = snapshot.ActiveTrigger;
+                        OnTriggerFired?.Invoke(snapshot.ActiveTrigger);
+                    }
+                    else
+                    {
+                        ConsumeTrigger(snapshot.ActiveTrigger);
+                    }
                 }
             }
         }
@@ -230,8 +276,15 @@ namespace SS3D.Systems.Entities.Humanoid
 
             if (_animator.layerCount > 1)
             {
+                if (Time.time < _suppressUpperBodyUntil)
+                {
+                    _animator.SetLayerWeight(1, 0f);
+                    return;
+                }
+
+                // Keep upper body active in combat for hold poses; attack briefly suppresses it.
                 bool needsUpperBodyLayer = snapshot.State != BodyState.Ragdoll
-                    && snapshot.ArmHold != ArmHoldPose.Default;
+                    && (snapshot.ArmHold != ArmHoldPose.Default || snapshot.CombatMode.IsCombat());
                 _animator.SetLayerWeight(1, needsUpperBodyLayer ? 1f : 0f);
             }
         }
@@ -278,7 +331,8 @@ namespace SS3D.Systems.Entities.Humanoid
 
         private void ConsumeTrigger(AnimationTriggerId trigger)
         {
-            if (trigger == AnimationTriggerId.None || trigger == _lastConsumedTrigger)
+            // Sequence already gates re-entry; allow the same trigger id to fire repeatedly (e.g. swing spam).
+            if (trigger == AnimationTriggerId.None)
             {
                 return;
             }
@@ -287,6 +341,15 @@ namespace SS3D.Systems.Entities.Humanoid
             int hash = Animations.Humanoid.GetTriggerHash(trigger);
             if (hash != 0)
             {
+                if (trigger == AnimationTriggerId.AttackSwing)
+                {
+                    _suppressUpperBodyUntil = Time.time + 2.2f;
+                    if (_animator.layerCount > 1)
+                    {
+                        _animator.SetLayerWeight(1, 0f);
+                    }
+                }
+
                 _animator.SetTrigger(hash);
             }
 

@@ -8,6 +8,8 @@ namespace SS3D.Systems.Entities.Humanoid
     /// <summary>
     /// Toggles peaceful / combat stance and drives strafe + aim behaviour (#1246).
     /// Combat subtype (Melee vs Ranged) comes from inventory via <see cref="HumanoidBodyStateBridge"/>.
+    /// Melee LMB swing is triggered from <see cref="SS3D.Systems.Interactions.InteractionController"/>
+    /// (Run Primary) so it shares the same input path as interactions.
     /// </summary>
     [RequireComponent(typeof(HumanoidBodyStateMachine))]
     public class HumanoidCombatController : NetworkActor
@@ -65,6 +67,26 @@ namespace SS3D.Systems.Entities.Humanoid
         }
 
         /// <summary>
+        /// Called from interaction Run Primary while in melee combat.
+        /// Returns true if the click was consumed as an attack.
+        /// </summary>
+        public bool TryHandlePrimaryAttack()
+        {
+            if (!IsOwner || _bodyStateMachine == null)
+            {
+                return false;
+            }
+
+            if (_bodyStateMachine.CombatMode != HumanoidCombatMode.Melee)
+            {
+                return false;
+            }
+
+            RequestAttack(AnimationTriggerId.AttackSwing);
+            return true;
+        }
+
+        /// <summary>
         /// Called by combat system when a hit lands on this humanoid.
         /// </summary>
         public void OnHitReceived(Vector3 knockbackDirection, float knockbackForce, float staggerDuration)
@@ -88,6 +110,8 @@ namespace SS3D.Systems.Entities.Humanoid
                 return;
             }
 
+            // Play immediately on the owning client — don't wait for ServerRpc + SyncVar.
+            _orchestrator?.PlayAttackTrigger(attackType);
             _bodyStateMachine.CmdFireTrigger(attackType);
         }
     }

@@ -53,9 +53,11 @@ Each state exposes: `CanMove`, `CanRotate`, `CanRun`, `CanUseHands`, `CanInterac
    - **Peaceful** — [Locomotion Pack](../Assets/Art/Animations/Locomotion%20Pack/) idle / walk / run / strafes
    - **Melee** — [Pro Melee Axe Pack](../Assets/Art/Animations/Pro%20Melee%20Axe%20Pack/) standing idle / walk F-B-L-R / run F-B (includes backpedal)
    - **Ranged** — [Basic Shooter Pack](../Assets/Art/Animations/Basic%20Shooter%20Pack/) rifle idle / walk / walk back / strafes / run / run back
-2. **UpperBody** (arms + torso mask) — hold poses, attacks (`AttackSwing` uses melee horizontal swing)
+2. **UpperBody** (arms + torso mask) — hold poses (weight dropped for ~2.2s during `AttackSwing` so the base-layer swing is visible)
 3. **Additive** — flinch (`Flinch` uses melee gut react), injured arm overlay
 4. **FullBody Override** — sit, crawl, emote, stand-up
+
+`AttackSwing` plays as a base-layer one-shot (same Any State pattern as Jump), then returns to Melee Locomotion.
 
 Rebuild via **SS3D → Animation → Rebuild Combat Stance Blend Trees** after reimporting pack FBX clips.
 
@@ -86,7 +88,7 @@ Peaceful movement faces the move direction. Melee/Ranged face the mouse: body ya
 | Health | Foot damage → limp; arm damage → injured overlay; hit → stagger |
 | Inventory | Item in hand → `ArmHold` pose; ranged traits refresh combat stance while in combat |
 | Interactions | Seat → `TrySit(anchor)`; throw/hit → animation triggers |
-| Combat | `C` toggles Peaceful ↔ Melee/Ranged (from held item); mouse aim + strafe |
+| Combat | `C` toggles Peaceful ↔ Melee/Ranged; mouse aim + strafe; LMB (Run Primary) melee swing instead of interactions |
 | Ragdoll | Universal interrupt via existing `Ragdoll` SyncVar |
 
 ## Phased Delivery

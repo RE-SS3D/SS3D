@@ -159,15 +159,39 @@ namespace SS3D.Editor
                 EnsureExitToState(jumpState, peaceful, hasExitTime: true, exitTime: 0.85f, duration: 0.1f);
             }
 
-            // Melee attack / flinch hooks on existing named states if present.
-            RemapStateMotion(baseMachine, "Attack Swing", $"{MeleePack}/standing melee attack horizontal.fbx", "Mix_StandingMeleeAttackHorizontal");
+            // Full-body melee swing on the base layer (same Any State pattern as Jump).
+            AnimationClip attackClip = LoadPackClip(
+                $"{MeleePack}/standing melee attack horizontal.fbx",
+                "Mix_StandingMeleeAttackHorizontal");
+            if (attackClip != null)
+            {
+                AnimatorState attackState = FindOrCreateState(baseMachine, "Attack Swing", new Vector3(720, 120, 0));
+                attackState.motion = attackClip;
+                attackState.writeDefaultValues = true;
+                EnsureAnyStateTrigger(baseMachine, attackState, "AttackSwing", canTransitionToSelf: false);
+                EnsureExitToState(attackState, melee, hasExitTime: true, exitTime: 0.85f, duration: 0.15f);
+            }
+
             RemapStateMotion(baseMachine, "Flinch", $"{MeleePack}/standing react large gut.fbx", "Mix_StandingReactLargeGut");
 
-            // Upper-body layer Attack Swing if that name exists there too.
+            // Keep upper-body Attack Swing clip remapped for hold-layer use, but mute its Any State
+            // trigger so it cannot race the base-layer swing and snap back to Hold Default.
             if (controller.layers.Length > 1)
             {
-                RemapStateMotion(controller.layers[1].stateMachine, "Attack Swing",
+                AnimatorStateMachine upper = controller.layers[1].stateMachine;
+                RemapStateMotion(upper, "Attack Swing",
                     $"{MeleePack}/standing melee attack horizontal.fbx", "Mix_StandingMeleeAttackHorizontal");
+                MuteAnyStateTrigger(upper, "AttackSwing");
+                AnimatorState upperAttack = FindState(upper, "Attack Swing");
+                AnimatorState holdDefault = FindState(upper, "Hold Default");
+                if (upperAttack != null && holdDefault != null)
+                {
+                    EnsureExitToState(upperAttack, holdDefault, hasExitTime: true, exitTime: 0.85f, duration: 0.15f);
+                }
+            }
+
+            if (controller.layers.Length > 2)
+            {
                 RemapStateMotion(controller.layers[2].stateMachine, "Flinch",
                     $"{MeleePack}/standing react large gut.fbx", "Mix_StandingReactLargeGut");
             }
@@ -368,6 +392,8 @@ namespace SS3D.Editor
                 if (transition.destinationState == destination
                     && transition.conditions.Any(c => c.parameter == triggerName))
                 {
+                    transition.mute = false;
+                    transition.canTransitionToSelf = canTransitionToSelf;
                     return;
                 }
             }
@@ -378,6 +404,17 @@ namespace SS3D.Editor
             created.duration = 0.05f;
             created.canTransitionToSelf = canTransitionToSelf;
             created.AddCondition(AnimatorConditionMode.If, 0f, triggerName);
+        }
+
+        private static void MuteAnyStateTrigger(AnimatorStateMachine machine, string triggerName)
+        {
+            foreach (AnimatorStateTransition transition in machine.anyStateTransitions)
+            {
+                if (transition.conditions.Any(c => c.parameter == triggerName))
+                {
+                    transition.mute = true;
+                }
+            }
         }
 
         private static void EnsureExitToState(
@@ -391,6 +428,21 @@ namespace SS3D.Editor
             {
                 if (transition.destinationState == destination)
                 {
+                    return;
+                }
+            }
+
+            // Prefer rewriting Exit-node transitions so the clip cannot dump out of the layer SM.
+            foreach (AnimatorStateTransition transition in from.transitions)
+            {
+                if (transition.isExit)
+                {
+                    transition.isExit = false;
+                    transition.destinationState = destination;
+                    transition.hasExitTime = hasExitTime;
+                    transition.exitTime = exitTime;
+                    transition.hasFixedDuration = true;
+                    transition.duration = duration;
                     return;
                 }
             }

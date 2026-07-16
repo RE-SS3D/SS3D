@@ -11,6 +11,7 @@ using SS3D.Interactions.Interfaces;
 using SS3D.Logging;
 using SS3D.Systems.Inputs;
 using SS3D.Systems.Entities;
+using SS3D.Systems.Entities.Humanoid;
 using SS3D.Systems.Screens;
 using SS3D.Systems.Selection;
 using SS3D.Systems.Inventory.Containers;
@@ -166,6 +167,13 @@ namespace SS3D.Systems.Interactions
         public void HandleRunPrimary(InputAction.CallbackContext callbackContext)
         {
             if (EventSystem.current.IsPointerOverGameObject())
+            {
+                return;
+            }
+
+            // Melee combat preview: LMB (Run Primary) swings instead of world interactions.
+            HumanoidCombatController combat = GetComponent<HumanoidCombatController>();
+            if (combat != null && combat.TryHandlePrimaryAttack())
             {
                 return;
             }
