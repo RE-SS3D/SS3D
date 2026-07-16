@@ -39,25 +39,30 @@ namespace SS3D.Systems.ScreenEffects
         {
             base.OnAwake();
 
-            BuildUi();
-            _panel.SetActive(false);
-
             AddHandle(UpdateEvent.AddListener(HandleUpdate));
         }
 
         private void HandleUpdate(ref EventContext context, in UpdateEvent updateEvent)
         {
-            if (Keyboard.current != null && Keyboard.current[Key.F2].wasPressedThisFrame)
+            if (Keyboard.current == null || !Keyboard.current[Key.F2].wasPressedThisFrame)
             {
-                _panel.SetActive(!_panel.activeSelf);
+                return;
             }
+
+            // Built lazily on first use rather than in OnAwake, which - since this view bootstraps itself very
+            // early via RuntimeInitializeOnLoadMethod - can run before the real scene's own EventSystem exists,
+            // causing our GraphicRaycaster to trigger uGUI's auto-created one and duplicate it.
+            if (_panel == null)
+            {
+                BuildUi();
+                _panel.SetActive(false);
+            }
+
+            _panel.SetActive(!_panel.activeSelf);
         }
 
         private void BuildUi()
         {
-            // Relies on the scene's own EventSystem (the existing HUD/console already depends on one being
-            // present) rather than creating a fallback here - a second EventSystem spams
-            // "There are N event systems in the scene" every frame.
             GameObject canvasHost = new("ScreenEffectsDebugCanvas");
             canvasHost.transform.SetParent(Transform, false);
 
