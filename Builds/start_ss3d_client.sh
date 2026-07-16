@@ -5,7 +5,7 @@ set -euo pipefail
 
 SERVER_IP="${1:-127.0.0.1}"
 PORT="${2:-2222}"
-CKEY="${3:-devClient}"
+CKEY="${3:-john}"
 EXTRA_ARGS=("${@:4}")
 
 cd "$(dirname "$0")/Game"
