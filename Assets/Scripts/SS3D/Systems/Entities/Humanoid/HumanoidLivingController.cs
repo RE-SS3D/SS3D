@@ -103,7 +103,8 @@ namespace SS3D.Systems.Entities.Humanoid
         {
             float feetFactor = _feetController != null ? _feetController.FeetHealthFactor : 1f;
             float combatFactor = 1f;
-            if (IsCombatMode())
+            // Melee-only slow cadence; ranged uses base movement speed with TargetMovement gait.
+            if (BodyStateMachine != null && BodyStateMachine.CombatMode == HumanoidCombatMode.Melee)
             {
                 combatFactor = IsRunning ? _combatRunSpeedFactor : _combatWalkSpeedFactor;
             }

@@ -65,6 +65,8 @@ namespace SS3D.Systems.Entities.Humanoid
         [SerializeField] private float _combatWalkSpeedFactor = 0.7f;
         /// <summary>Combat run world-speed scale — lower than walk; combat runs are slower clips.</summary>
         [SerializeField] private float _combatRunSpeedFactor = 0.3f;
+        /// <summary>Ease world speed toward walk/run so movement does not outrun the locomotion blend.</summary>
+        [SerializeField] private float _speedScaleLerp = 2.4f;
 
         private CharacterController _characterController;
         private Actor _camera;
@@ -73,6 +75,7 @@ namespace SS3D.Systems.Entities.Humanoid
         private bool _subscribed;
         private bool _tickSubscribed;
         private bool _networkStarted;
+        private float _smoothedSpeedScale;
 
         protected override void OnAwake()
         {
@@ -280,6 +283,7 @@ namespace SS3D.Systems.Entities.Humanoid
 
             if (md.Horizontal == 0f && md.Vertical == 0f)
             {
+                _smoothedSpeedScale = Mathf.Lerp(_smoothedSpeedScale, 0f, tickDelta * _speedScaleLerp);
                 _bodyStateMachine.SetLocomotionSpeed(0f);
                 _bodyStateMachine.SetLocomotionMode(LocomotionMode.Idle);
                 _livingController?.PublishPredictedLocomotionVelocity(0f, 0f);
@@ -293,15 +297,12 @@ namespace SS3D.Systems.Entities.Humanoid
 
             Vector3 moveDirection = GetCameraRelativeDirection(md.Horizontal, md.Vertical);
             float speedFactor = _feetController != null ? _feetController.FeetHealthFactor : 1f;
-            // Same mapping as HumanoidController: walk clamps to ~0.3 of run speed so feet match Speed blend.
-            float gaitFactor = md.IsRunning ? 1f : _walkSpeedFactor;
-            float combatFactor = 1f;
-            if (_bodyStateMachine.CombatMode.IsCombat())
-            {
-                combatFactor = md.IsRunning ? _combatRunSpeedFactor : _combatWalkSpeedFactor;
-            }
+            float targetSpeedScale = GetTargetSpeedScale(md.IsRunning, _bodyStateMachine.CombatMode);
+            // Match AnimationOrchestrator gait easing — snapping run scale while VelZ still
+            // lerps from walk caused a combat walk→run surge then settle.
+            _smoothedSpeedScale = Mathf.Lerp(_smoothedSpeedScale, targetSpeedScale, tickDelta * _speedScaleLerp);
 
-            float speed = _movementSpeed * speedFactor * gaitFactor * combatFactor;
+            float speed = _movementSpeed * speedFactor * _smoothedSpeedScale;
             float animSpeed = md.IsRunning ? 1f : _walkSpeedFactor;
 
             _characterController.Move(moveDirection * (tickDelta * speed));
@@ -328,6 +329,23 @@ namespace SS3D.Systems.Entities.Humanoid
                 float velZ = local.z * animSpeed;
                 _livingController.PublishPredictedLocomotionVelocity(velX, velZ);
             }
+        }
+
+        /// <summary>
+        /// Fraction of max run speed for the current gait / stance.
+        /// Melee uses slow combat walk/run scales (axe-pack cadence). Ranged and Peaceful
+        /// use normal walk/run factors so melee tuning does not affect shooter locomotion.
+        /// </summary>
+        private float GetTargetSpeedScale(bool isRunning, HumanoidCombatMode combatMode)
+        {
+            if (combatMode == HumanoidCombatMode.Melee)
+            {
+                return isRunning
+                    ? _combatRunSpeedFactor
+                    : _walkSpeedFactor * _combatWalkSpeedFactor;
+            }
+
+            return isRunning ? 1f : _walkSpeedFactor;
         }
 
         [Reconcile]

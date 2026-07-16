@@ -334,14 +334,13 @@ namespace SS3D.Systems.Entities.Humanoid
                 return;
             }
 
-            // Peaceful: always full base locomotion (no hold overlay).
-            // Combat: item/weapon holds; empty-handed swings keep the layer up until fade-out starts.
+            // Peaceful / Ranged: full base locomotion (ranged pack already has rifle poses).
+            // Melee: item/weapon holds + active swings only (empty-handed uses base melee idle).
             bool swingHoldsLayer = _meleeSwingFadeStartsAt > 0f && Time.time < _meleeSwingFadeStartsAt;
+            bool meleeHold = snapshot.CombatMode == HumanoidCombatMode.Melee
+                && snapshot.ArmHold != ArmHoldPose.Default;
             bool needsUpperBodyLayer = snapshot.State != BodyState.Ragdoll
-                && (
-                    swingHoldsLayer
-                    || (snapshot.CombatMode.IsCombat() && snapshot.ArmHold != ArmHoldPose.Default)
-                );
+                && (swingHoldsLayer || meleeHold);
             _upperBodyWeightTarget = needsUpperBodyLayer ? 1f : 0f;
         }
 

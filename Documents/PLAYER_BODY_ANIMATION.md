@@ -53,7 +53,7 @@ Each state exposes: `CanMove`, `CanRotate`, `CanRun`, `CanUseHands`, `CanInterac
    - **Peaceful** — [Locomotion Pack](../Assets/Art/Animations/Locomotion%20Pack/) idle / walk / run / strafes
    - **Melee** — [Pro Melee Axe Pack](../Assets/Art/Animations/Pro%20Melee%20Axe%20Pack/) standing idle / walk F-B-L-R / run F-B (includes backpedal)
    - **Ranged** — [Basic Shooter Pack](../Assets/Art/Animations/Basic%20Shooter%20Pack/) rifle idle / walk / walk back / strafes / run / run back
-2. **UpperBody** (arms-only mask) — combat item/weapon holds and `AttackSwing`; head stays on base + look-at IK so swing clips do not counter-rotate the head; weight is 0 in Peaceful
+2. **UpperBody** (arms-only mask) — **Melee** item/weapon holds and `AttackSwing` only; Ranged uses base shooter locomotion (no hold overlay). Head stays on base + look-at IK. Weight is 0 in Peaceful/Ranged.
 3. **Additive** — flinch (`Flinch` uses melee gut react), injured arm overlay
 4. **FullBody Override** — sit, crawl, emote, stand-up
 
