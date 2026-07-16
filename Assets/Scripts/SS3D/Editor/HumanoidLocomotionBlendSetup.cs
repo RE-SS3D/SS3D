@@ -67,6 +67,38 @@ namespace SS3D.Editor
             ("run backwards.fbx", "Mix_RunBackwards", new Vector2(0f, -1f)),
         };
 
+        /// <summary>
+        /// Parameters expected by <c>Animations.Humanoid</c> / AnimationOrchestrator.
+        /// Order is preserved when force-rebinding so the Animator window stays readable.
+        /// </summary>
+        private static readonly (string Name, AnimatorControllerParameterType Type)[] RequiredHumanoidParameters =
+        {
+            ("Speed", AnimatorControllerParameterType.Float),
+            ("Floating", AnimatorControllerParameterType.Bool),
+            ("LimpSide", AnimatorControllerParameterType.Int),
+            ("IsCrawling", AnimatorControllerParameterType.Bool),
+            ("IsDragging", AnimatorControllerParameterType.Bool),
+            ("ArmHold", AnimatorControllerParameterType.Int),
+            ("InjuredArmLeft", AnimatorControllerParameterType.Float),
+            ("InjuredArmRight", AnimatorControllerParameterType.Float),
+            ("IsSeated", AnimatorControllerParameterType.Bool),
+            ("CombatMode", AnimatorControllerParameterType.Bool),
+            ("CombatStance", AnimatorControllerParameterType.Int),
+            ("AimYaw", AnimatorControllerParameterType.Float),
+            ("AimPitch", AnimatorControllerParameterType.Float),
+            ("AttackSwing", AnimatorControllerParameterType.Trigger),
+            ("AttackStab", AnimatorControllerParameterType.Trigger),
+            ("Throw", AnimatorControllerParameterType.Trigger),
+            ("Emote", AnimatorControllerParameterType.Trigger),
+            ("Flinch", AnimatorControllerParameterType.Trigger),
+            ("VelX", AnimatorControllerParameterType.Float),
+            ("VelZ", AnimatorControllerParameterType.Float),
+            ("Turn", AnimatorControllerParameterType.Float),
+            ("Jump", AnimatorControllerParameterType.Trigger),
+            ("TurnLeft90", AnimatorControllerParameterType.Trigger),
+            ("TurnRight90", AnimatorControllerParameterType.Trigger),
+        };
+
         [MenuItem("SS3D/Animation/Rebuild Combat Stance Blend Trees")]
         public static void RebuildCombatStanceBlendTreesMenu()
         {
@@ -102,6 +134,91 @@ namespace SS3D.Editor
 
         public static void RebuildLocomotionBlendTreeBatch() => RebuildCombatStanceBlendTreesBatch();
 
+        [MenuItem("SS3D/Animation/Rebind Humanoid Animator Parameters")]
+        public static void RebindHumanoidAnimatorParametersMenu()
+        {
+            string result = RebindHumanoidAnimatorParameters();
+            EditorUtility.DisplayDialog("Rebind Humanoid Animator Parameters", result, "OK");
+        }
+
+        /// <summary>Batchmode: -executeMethod SS3D.Editor.HumanoidLocomotionBlendSetup.RebindHumanoidAnimatorParametersBatch</summary>
+        public static void RebindHumanoidAnimatorParametersBatch()
+        {
+            string result = RebindHumanoidAnimatorParameters();
+            Debug.Log($"[HumanoidLocomotionBlendSetup] {result}");
+            if (result.StartsWith("ERROR"))
+            {
+                EditorApplication.Exit(1);
+            }
+        }
+
+        /// <summary>
+        /// Force-removes and re-adds every orchestrator parameter through the AnimatorController API.
+        /// Hand-edited YAML parameter entries can appear in the asset yet fail Animator.Set* at runtime.
+        /// </summary>
+        public static string RebindHumanoidAnimatorParameters()
+        {
+            AnimatorController controller = AssetDatabase.LoadAssetAtPath<AnimatorController>(ControllerPath);
+            if (controller == null)
+            {
+                return $"ERROR: Missing controller at {ControllerPath}";
+            }
+
+            var before = controller.parameters.Select(p => $"{p.name}:{p.type}:{p.nameHash}").ToArray();
+            Debug.Log($"[HumanoidLocomotionBlendSetup] Parameters before rebind ({before.Length}):\n - "
+                      + string.Join("\n - ", before));
+
+            // Remove required params by name (keep any unexpected extras).
+            for (int i = controller.parameters.Length - 1; i >= 0; i--)
+            {
+                string name = controller.parameters[i].name;
+                if (RequiredHumanoidParameters.Any(p => p.Name == name))
+                {
+                    controller.RemoveParameter(i);
+                }
+            }
+
+            foreach ((string Name, AnimatorControllerParameterType Type) required in RequiredHumanoidParameters)
+            {
+                controller.AddParameter(required.Name, required.Type);
+            }
+
+            var after = controller.parameters.Select(p => $"{p.name}:{p.type}:{p.nameHash}").ToArray();
+            Debug.Log($"[HumanoidLocomotionBlendSetup] Parameters after rebind ({after.Length}):\n - "
+                      + string.Join("\n - ", after));
+
+            // Verify hashes match Animator.StringToHash (what AnimationOrchestrator uses).
+            var mismatches = new List<string>();
+            foreach ((string Name, AnimatorControllerParameterType Type) required in RequiredHumanoidParameters)
+            {
+                AnimatorControllerParameter param = controller.parameters.FirstOrDefault(p => p.name == required.Name);
+                int expected = Animator.StringToHash(required.Name);
+                if (param == null)
+                {
+                    mismatches.Add($"{required.Name}: missing after rebind");
+                }
+                else if (param.nameHash != expected)
+                {
+                    mismatches.Add($"{required.Name}: nameHash {param.nameHash} != StringToHash {expected}");
+                }
+                else if (param.type != required.Type)
+                {
+                    mismatches.Add($"{required.Name}: type {param.type} != {required.Type}");
+                }
+            }
+
+            EditorUtility.SetDirty(controller);
+            AssetDatabase.SaveAssets();
+            AssetDatabase.Refresh();
+
+            if (mismatches.Count > 0)
+            {
+                return "ERROR: Rebind finished with mismatches:\n - " + string.Join("\n - ", mismatches);
+            }
+
+            return $"OK: Re-bound {RequiredHumanoidParameters.Length} humanoid animator parameters via AnimatorController API.";
+        }
+
         public static string RebuildCombatStanceBlendTrees()
         {
             AnimatorController controller = AssetDatabase.LoadAssetAtPath<AnimatorController>(ControllerPath);
@@ -110,16 +227,14 @@ namespace SS3D.Editor
                 return $"ERROR: Missing controller at {ControllerPath}";
             }
 
-            EnsureFloatParam(controller, "VelX");
-            EnsureFloatParam(controller, "VelZ");
-            EnsureFloatParam(controller, "Turn");
-            EnsureIntParam(controller, "CombatStance");
-            EnsureBoolParam(controller, "CombatMode");
-            EnsureTriggerParam(controller, "Jump");
-            EnsureTriggerParam(controller, "TurnLeft90");
-            EnsureTriggerParam(controller, "TurnRight90");
-            EnsureTriggerParam(controller, "AttackSwing");
-            EnsureTriggerParam(controller, "Flinch");
+            // Prefer a full API rebind so hand-edited YAML stubs cannot leave SetBool/SetInteger broken.
+            string rebind = RebindHumanoidAnimatorParameters();
+            if (rebind.StartsWith("ERROR"))
+            {
+                return rebind;
+            }
+
+            controller = AssetDatabase.LoadAssetAtPath<AnimatorController>(ControllerPath);
 
             AnimatorStateMachine baseMachine = controller.layers[0].stateMachine;
 
