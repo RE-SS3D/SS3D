@@ -191,7 +191,7 @@ namespace SS3D.Systems.ScreenEffects
             rect.anchorMin = Vector2.zero;
             rect.anchorMax = Vector2.zero;
             rect.pivot = new Vector2(0.5f, 0.5f);
-            rect.sizeDelta = new Vector2(5f, 5f);
+            rect.sizeDelta = new Vector2(8f, 8f);
 
             return new ScreenParticle { Rect = rect, Image = image, XFraction = xFraction, Period = period, PhaseOffset = phaseOffset };
         }
@@ -218,7 +218,7 @@ namespace SS3D.Systems.ScreenEffects
                 }
 
                 float cycle = Mathf.Repeat(Time.time - particle.PhaseOffset, particle.Period) / particle.Period;
-                float alpha = (cycle < 0.15f ? cycle / 0.15f : 1f - (cycle - 0.15f) / 0.85f) * intensity;
+                float alpha = (cycle < 0.15f ? cycle / 0.15f : 1f - (cycle - 0.15f) / 0.85f) * intensity * 1.3f;
                 float y = risesUpward ? startOffset + cycle * travel : Screen.height - startOffset - cycle * travel;
 
                 particle.Rect.anchoredPosition = new Vector2(particle.XFraction * Screen.width, y);
@@ -281,67 +281,68 @@ namespace SS3D.Systems.ScreenEffects
             float hot = _currentIntensity[ScreenEffectType.HotRoom];
             if (hot > 0f)
             {
-                AddVignette(hot * (0.45f + 0.25f * Breathe(3.8f)), new Color(0.85f, 0.6f, 0.25f));
+                AddVignette(hot * (0.6f + 0.3f * Breathe(3.8f)), new Color(0.85f, 0.6f, 0.25f));
             }
 
             float fire = _currentIntensity[ScreenEffectType.OnFire];
             if (fire > 0f)
             {
-                AddVignette(fire * (0.65f + 0.45f * Flicker(6f, 1.1f)), new Color(0.8f, 0.25f, 0.1f));
+                AddVignette(fire * (0.85f + 0.5f * Flicker(6f, 1.1f)), new Color(0.8f, 0.25f, 0.1f));
             }
 
             float cold = _currentIntensity[ScreenEffectType.ColdRoom];
             if (cold > 0f)
             {
-                AddVignette(cold * (0.45f + 0.25f * Breathe(4f)), new Color(0.35f, 0.6f, 0.85f));
-                saturation -= cold * 25f;
+                AddVignette(cold * (0.6f + 0.3f * Breathe(4f)), new Color(0.35f, 0.6f, 0.85f));
+                saturation -= cold * 35f;
             }
 
             float freezing = _currentIntensity[ScreenEffectType.Freezing];
             if (freezing > 0f)
             {
-                AddVignette(freezing * (0.65f + 0.45f * Flicker(5f, 2.7f)), new Color(0.3f, 0.55f, 0.85f));
-                saturation -= freezing * 40f;
+                AddVignette(freezing * (0.85f + 0.5f * Flicker(5f, 2.7f)), new Color(0.3f, 0.55f, 0.85f));
+                saturation -= freezing * 55f;
             }
 
             float lowOxygen = _currentIntensity[ScreenEffectType.LowOxygen];
             if (lowOxygen > 0f)
             {
                 float breathe = Breathe(4.4f);
-                AddVignette(lowOxygen * (0.6f + 0.3f * breathe), new Color(0.3f, 0.45f, 0.65f));
-                saturation -= lowOxygen * (80f + 20f * breathe);
+                AddVignette(lowOxygen * (0.75f + 0.35f * breathe), new Color(0.3f, 0.45f, 0.65f));
+                saturation -= lowOxygen * (90f + 25f * breathe);
             }
 
-            // Blur + heartbeat only, deliberately no vignette here - the design treats Dying/Critical as a
-            // full-screen blur pulse, distinct from the vignette-driven states above.
+            // Both blur and a dark-red vignette, pulsing together on the heartbeat - matches the design's
+            // "Dying" mockup exactly (backdrop-filter blur + inset box-shadow, same animation timing).
             float dying = _currentIntensity[ScreenEffectType.DyingCritical];
             if (dying > 0f)
             {
                 float beat = Heartbeat(1.6f);
-                blur += dying * (0.6f + 0.6f * beat);
+                AddVignette(dying * (0.65f + 0.35f * beat), new Color(0.5f, 0.05f, 0.05f));
+                blur += dying * (0.35f + 0.35f * beat);
             }
 
             float bloodLoss = _currentIntensity[ScreenEffectType.BloodLossTunnelVision];
             if (bloodLoss > 0f)
             {
                 float breathe = Breathe(5.2f);
-                AddVignette(bloodLoss * (0.75f + 0.2f * breathe), new Color(0.35f, 0.06f, 0.06f));
-                saturation -= bloodLoss * 60f;
+                AddVignette(bloodLoss * (0.85f + 0.25f * breathe), new Color(0.35f, 0.06f, 0.06f));
+                saturation -= bloodLoss * 75f;
             }
 
             float concussion = _currentIntensity[ScreenEffectType.Concussion];
             if (concussion > 0f)
             {
-                blur += concussion * (0.55f + 0.55f * Flicker(1.1f, 4.3f));
-                chromaticAberration += concussion * (0.5f + 0.5f * Flicker(0.9f, 8.6f));
+                blur += concussion * (0.5f + 0.4f * Flicker(1.1f, 4.3f));
+                chromaticAberration += concussion * (0.65f + 0.55f * Flicker(0.9f, 8.6f));
             }
 
             float unconscious = _currentIntensity[ScreenEffectType.Unconscious];
             if (unconscious > 0f)
             {
                 saturation -= unconscious * 100f;
-                contrast -= unconscious * 60f;
-                blackoutAlpha = Mathf.Clamp01(unconscious * 1.5f - 0.35f);
+                contrast -= unconscious * 75f;
+                blackoutAlpha = Mathf.Clamp01(unconscious * 1.6f - 0.3f);
             }
 
             float hitFlash = ComputeHitFlash(deltaTime);
@@ -368,15 +369,15 @@ namespace SS3D.Systems.ScreenEffects
             _colorAdjustments.saturation.value = Mathf.Clamp(saturation, -100f, 100f);
             _colorAdjustments.contrast.value = Mathf.Clamp(contrast, -100f, 100f);
 
-            // gaussianMaxRadius is hard-clamped to [0.5, 1.5] by URP, so it alone can't sell a strong blur -
-            // front-load the ramp with sqrt so the in-focus range collapses (and the max radius saturates)
-            // well before intensity reaches 1, instead of a straight lerp that reads as barely-there blur.
+            // gaussianMaxRadius is hard-clamped to [0.5, 1.5] by URP. Pushing gaussianStart/End all the way to
+            // near-zero (everything past the near clip plane counted as "out of focus") reads as broken/artifacty
+            // rather than a soft vision blur, so this keeps a few metres of in-focus range even at full intensity.
             bool blurActive = blur > 0.001f;
-            float blurT = Mathf.Sqrt(Mathf.Clamp01(blur));
+            float blurT = Mathf.Clamp01(blur);
             _depthOfField.active = blurActive;
             _depthOfField.mode.value = blurActive ? DepthOfFieldMode.Gaussian : DepthOfFieldMode.Off;
-            _depthOfField.gaussianStart.value = Mathf.Lerp(50f, 0.01f, blurT);
-            _depthOfField.gaussianEnd.value = Mathf.Lerp(60f, 0.05f, blurT);
+            _depthOfField.gaussianStart.value = Mathf.Lerp(50f, 3f, blurT);
+            _depthOfField.gaussianEnd.value = Mathf.Lerp(60f, 6f, blurT);
             _depthOfField.gaussianMaxRadius.value = Mathf.Lerp(0.5f, 1.5f, blurT);
 
             Color blackoutColor = _blackout.color;
