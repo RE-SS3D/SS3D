@@ -278,6 +278,13 @@ namespace SS3D.Systems.Inventory.Items
             Renderer[] renderers = GetComponentsInChildren<Renderer>();
             foreach (Renderer childRenderer in renderers)
             {
+                // Interaction outline shells manage their own visibility (see InteractionOutlineView);
+                // toggling them here would leave them stuck visible when the outline is meant to be hidden.
+                if (childRenderer.transform.name == "InteractionOutline")
+                {
+                    continue;
+                }
+
                 childRenderer.enabled = visible;
             }
         }

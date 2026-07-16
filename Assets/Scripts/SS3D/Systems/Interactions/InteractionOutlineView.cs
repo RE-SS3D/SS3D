@@ -59,18 +59,21 @@ namespace SS3D.Systems.Interactions
                 return;
             }
 
+            if (state == OutlineState.Hidden)
+            {
+                // Always force renderers off, even if _currentState already reads Hidden: external code
+                // (e.g. Item.SetVisibility) can force-enable renderers without going through this view.
+                _currentState = state;
+                SetRenderersEnabled(false);
+                return;
+            }
+
             if (_currentState == state)
             {
                 return;
             }
 
             _currentState = state;
-
-            if (state == OutlineState.Hidden)
-            {
-                SetRenderersEnabled(false);
-                return;
-            }
 
             Color color = state switch
             {
