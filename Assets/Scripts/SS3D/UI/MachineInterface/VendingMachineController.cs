@@ -287,8 +287,16 @@ namespace SS3D.UI.MachineInterface
 
         private bool TryReadId()
         {
-            if (_scanning || _idScanned)
+            if (_scanning)
             {
+                return true;
+            }
+
+            if (_idScanned)
+            {
+                _idScanned = false;
+                PushLog("Terminal locked — Medical access revoked");
+                RefreshAllViewers();
                 return true;
             }
 
