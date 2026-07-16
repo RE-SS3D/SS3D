@@ -27,7 +27,20 @@ namespace SS3D.Networking
             base.OnAwake();
 
             ApplicationPreInitializing.AddListener(HandleApplicationPreInitializing);
+
+#if UNITY_SERVER
+            // Dedicated servers skip the Intro scene (the only place that otherwise calls
+            // StartNetworkSession), so start listening for connections here instead.
+            ApplicationInitializing.AddListener(HandleApplicationInitializing);
+#endif
         }
+
+#if UNITY_SERVER
+        private void HandleApplicationInitializing(ref EventContext context, in ApplicationInitializing applicationInitializing)
+        {
+            StartNetworkSession();
+        }
+#endif
 
         private void HandleApplicationPreInitializing(ref EventContext context, in ApplicationPreInitializing applicationInitializing)
         {
