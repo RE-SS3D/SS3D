@@ -26,8 +26,7 @@ namespace SS3D.Systems.Tile.Connections
         protected override void OnDestroyed()
         {
             base.OnDestroyed();
-            ElectricitySubSystem electricitySystem = SubSystems.Get<ElectricitySubSystem>();
-            electricitySystem.RemoveElectricalElement(this);
+            SubSystems.Get<ElectricitySubSystem>()?.RemoveElectricalElement(this);
         }
 
         private void OnElectricitySystemSetup()
