@@ -4,10 +4,10 @@ using SS3D.Core;
 using SS3D.Core.Behaviours;
 using System;
 using UnityEngine;
-using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.UI;
 using UnityEngine.UI;
+using UnityEventSystem = UnityEngine.EventSystems.EventSystem;
 
 namespace SS3D.Systems.ScreenEffects
 {
@@ -57,11 +57,11 @@ namespace SS3D.Systems.ScreenEffects
 
         private void BuildUi()
         {
-            if (EventSystem.current == null)
+            if (UnityEventSystem.current == null)
             {
                 GameObject eventSystemHost = new("EventSystem");
                 eventSystemHost.transform.SetParent(Transform, false);
-                eventSystemHost.AddComponent<EventSystem>();
+                eventSystemHost.AddComponent<UnityEventSystem>();
                 eventSystemHost.AddComponent<InputSystemUIInputModule>();
             }
 
