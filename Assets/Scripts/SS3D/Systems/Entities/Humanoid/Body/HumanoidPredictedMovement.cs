@@ -28,6 +28,7 @@ namespace SS3D.Systems.Entities.Humanoid
             public float Vertical;
             public bool IsRunning;
             public float AimYaw;
+            public bool HasCombatAim;
 
             private uint _tick;
             public void Dispose() { }
@@ -225,23 +226,28 @@ namespace SS3D.Systems.Entities.Humanoid
             }
 
             Vector2 input = _movementControls.Movement.ReadValue<Vector2>();
-            if (input.sqrMagnitude < 0.01f)
-            {
-                return;
-            }
-
             bool isRunning = caps.CanRun && _livingController != null && _livingController.IsRunning;
+
             float aimYaw = 0f;
-            if (_bodyStateMachine.CombatMode.IsCombat() && _camera != null)
+            bool hasCombatAim = false;
+            if (_bodyStateMachine.CombatMode.IsCombat())
             {
-                Vector3 mouseWorld = GetMouseWorldPosition();
-                Vector3 lookDir = mouseWorld - transform.position;
-                lookDir.y = 0f;
-                if (lookDir.sqrMagnitude > 0.01f)
+                hasCombatAim = TryGetCombatAimYaw(out aimYaw);
+                if (hasCombatAim)
                 {
-                    aimYaw = Quaternion.LookRotation(lookDir).eulerAngles.y;
                     _bodyStateMachine.CmdSetAimYaw(aimYaw);
                 }
+            }
+
+            // Idle: still carry aim so standing combat facing tracks the mouse.
+            if (input.sqrMagnitude < 0.01f)
+            {
+                if (hasCombatAim)
+                {
+                    md = new MoveData { AimYaw = aimYaw, HasCombatAim = true };
+                }
+
+                return;
             }
 
             md = new MoveData
@@ -250,6 +256,7 @@ namespace SS3D.Systems.Entities.Humanoid
                 Vertical = input.y,
                 IsRunning = isRunning,
                 AimYaw = aimYaw,
+                HasCombatAim = hasCombatAim,
             };
         }
 
@@ -270,6 +277,11 @@ namespace SS3D.Systems.Entities.Humanoid
                 _bodyStateMachine.SetLocomotionSpeed(0f);
                 _bodyStateMachine.SetLocomotionMode(LocomotionMode.Idle);
                 _livingController?.PublishPredictedLocomotionVelocity(0f, 0f);
+                if (caps.CanRotate && md.HasCombatAim)
+                {
+                    transform.rotation = Quaternion.Euler(0f, md.AimYaw, 0f);
+                }
+
                 return;
             }
 
@@ -284,7 +296,7 @@ namespace SS3D.Systems.Entities.Humanoid
 
             if (caps.CanRotate)
             {
-                if (_bodyStateMachine.CombatMode.IsCombat())
+                if (md.HasCombatAim)
                 {
                     transform.rotation = Quaternion.Euler(0f, md.AimYaw, 0f);
                 }
@@ -326,20 +338,40 @@ namespace SS3D.Systems.Entities.Humanoid
             ).normalized;
         }
 
-        private Vector3 GetMouseWorldPosition()
+        /// <summary>
+        /// Mouse on the player ground plane (same as <see cref="HumanoidController.TryGetCombatAimYaw"/>).
+        /// Avoids Physics.Raycast hitting props/walls and skewing aim yaw.
+        /// </summary>
+        private bool TryGetCombatAimYaw(out float yaw)
         {
+            yaw = 0f;
             if (_camera == null || Mouse.current == null)
             {
-                return transform.position + transform.forward;
+                return false;
             }
 
-            Ray ray = _camera.GetComponent<Camera>().ScreenPointToRay(Mouse.current.position.ReadValue());
-            if (Physics.Raycast(ray, out RaycastHit hit, 100f))
+            Camera cam = _camera.GetComponent<Camera>();
+            if (cam == null)
             {
-                return hit.point;
+                return false;
             }
 
-            return ray.origin + ray.direction * 10f;
+            Ray ray = cam.ScreenPointToRay(Mouse.current.position.ReadValue());
+            Plane ground = new Plane(Vector3.up, transform.position);
+            if (!ground.Raycast(ray, out float enter))
+            {
+                return false;
+            }
+
+            Vector3 lookDir = ray.GetPoint(enter) - transform.position;
+            lookDir.y = 0f;
+            if (lookDir.sqrMagnitude < 0.01f)
+            {
+                return false;
+            }
+
+            yaw = Quaternion.LookRotation(lookDir).eulerAngles.y;
+            return true;
         }
     }
 }

@@ -60,7 +60,8 @@ namespace SS3D.Systems.Entities.Humanoid
                 return;
             }
 
-            Vector3 lookDirection = Quaternion.Euler(0f, _aimYaw, 0f) * transform.forward;
+            // AimYaw is absolute world yaw — do not multiply by transform.forward (that double-applies yaw).
+            Vector3 lookDirection = Quaternion.Euler(0f, _aimYaw, 0f) * Vector3.forward;
             Vector3 lookTarget = _rig.Head.position + lookDirection * 2f;
 
             if (_lookAtTarget != null)
