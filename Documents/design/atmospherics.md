@@ -2,7 +2,7 @@
 
 > Status: active
 
-Gives a real spec to a system every other doc has been referencing without ever designing: chemistry's gas release (`chemistry.md` §5), armor's suit breach (`armor.md` §3), explosives' venting on wall breach (`explosives-destruction.md` §4), and shuttles' hull breach (`shuttles.md` §6) all point at "the existing atmospherics system" as a stub. Area §4 deliberately excluded atmosphere as a consumer of its own boundary system, reasoning that gas simulation needs its own dynamic zone lifecycle — this doc is that lifecycle. Builds on and formalizes the working tile-based ECS/DOTS implementation already built (ideal-gas-law pressure equalization, specific-heat-driven heat exchange, Burst-driven, tied directly to tilemap change notifications), then extends it to cover liquid and solid phase and a real pipe network, closing chemistry's deferred "gas and solid reagent states" item (`chemistry.md` §12) and giving chemistry a two-way relationship with atmosphere instead of a one-directional gas dump.
+Gives a real spec to a system every other doc has been referencing without ever designing: chemistry's gas release (`chemistry.md` §6), armor's suit breach (`armor.md` §3), explosives' venting on wall breach (`explosives-destruction.md` §4), and shuttles' hull breach (`shuttles.md` §6) all point at "the existing atmospherics system" as a stub. Area §4 deliberately excluded atmosphere as a consumer of its own boundary system, reasoning that gas simulation needs its own dynamic zone lifecycle — this doc is that lifecycle. Builds on and formalizes the working tile-based ECS/DOTS implementation already built (ideal-gas-law pressure equalization, specific-heat-driven heat exchange, Burst-driven, tied directly to tilemap change notifications), then extends it to cover liquid and solid phase and a real pipe network, closing chemistry's deferred "gas and solid reagent states" item (`chemistry.md` §13) and giving chemistry a two-way relationship with atmosphere instead of a one-directional gas dump.
 
 ## 1. Design philosophy
 
@@ -25,7 +25,7 @@ Extends chemistry's reagent record (`chemistry.md` §2: name, category, color, e
 
 Every reagent gets these fields. Most medicinal reagents simply have a boiling point set far above anything the station ever reaches — they never appear in a GasBuffer (§4) in practice, not because they're forbidden to, but because nothing in a normal round gets them that hot. This is what keeps the baseline gases dominant without an authored allowlist: it's an emergent fact of the numbers, not a restriction (companion edit, §11).
 
-Color, effect target, and the analyzer-gated discovery tier (`chemistry.md` §6) are unchanged and apply identically regardless of which buffer a reagent currently sits in.
+Color, effect target, and the analyzer-gated discovery tier (`chemistry.md` §7) are unchanged and apply identically regardless of which buffer a reagent currently sits in.
 
 ## 4. Phase — three buffers, one tile
 
@@ -82,7 +82,7 @@ Deliberately a matched pair, both temperature-driven, opposite direction — kep
 
 ## 9. Reactions crossing a junction
 
-A network's pooled contents is describable as an instance of the Container primitive (`inventory-storage.md` §2: capacity, contents, a mixed volume) — the same shape a beaker, a crate, and a disposal unit already turned out to be. Chemistry's reaction resolution (`chemistry.md` §4–5: ratio check → condition check → yield, or near-miss/incompatible-pair → hazard) needs no pipes-specific rewrite — it's the same function, a new caller.
+A network's pooled contents is describable as an instance of the Container primitive (`inventory-storage.md` §2: capacity, contents, a mixed volume) — the same shape a beaker, a crate, and a disposal unit already turned out to be. Chemistry's reaction resolution (`chemistry.md` §4, §6: ratio check → condition check → yield, or near-miss/incompatible-pair → hazard) needs no pipes-specific rewrite — it's the same function, a new caller.
 
 Two full networks merging and instantly reacting their entire pooled volume would be physically defensible under §6's well-mixed bulk-flow assumption — but deliberately not what this doc specifies, for the same reason structural damage is graded across stages instead of a binary wall: an instant, station-scale reaction gives no one a chance to notice or interrupt it, breaking the "diegetic warning before catastrophe" standard this project runs everywhere else.
 
@@ -104,7 +104,7 @@ Three renderers, one shared tile anchor and write pattern — the same "one shar
 |---|---|---|
 | `area.md` | §4 | "The existing atmospherics system" now has a real spec to point at; Area's decoupling reasoning (different lifecycle, code-adjacent not code-coupled) stands unchanged. |
 | `chemistry.md` | §2 | Reagent record gains molar mass and boiling/freezing point fields. |
-| `chemistry.md` | §5, §12 | "Gas diffusion... atmospherics' domain" and "gas and solid reagent states... a plausible future extension" are both resolved by this doc. |
+| `chemistry.md` | §6, §13 | "Gas diffusion... atmospherics' domain" and "gas and solid reagent states... a plausible future extension" are both resolved by this doc. |
 | `electricity.md` | §7 | "Wet/conductive interaction... if in scope elsewhere" is now in scope — a tile's LiquidBuffer presence is the physical trigger for a compromised-ground shock hazard. |
 | `explosives-destruction.md` | §4 | Breach-into-atmosphere already assumed this doc; now resolves against a real spec. |
 | `shuttles.md` | §6 | Same — hull breach into atmosphere now resolves against a real spec. |
@@ -138,7 +138,7 @@ Three renderers, one shared tile anchor and write pattern — the same "one shar
 | Step | What happens | System state |
 |---|---|---|
 | 1 | Two chem lines carrying incompatible reagents get cross-connected at a junction | Junction's real flow capacity gates how much of each crosses per tick (§9) |
-| 2 | Chemistry's resolution runs continuously on the crossing volume | Near-miss/incompatible trigger fires per `chemistry.md` §5 |
+| 2 | Chemistry's resolution runs continuously on the crossing volume | Near-miss/incompatible trigger fires per `chemistry.md` §6 |
 | 3 | Hazard enters each side's network pool at the junction's flow rate, not instantly | Contamination visibly spreads down both networks over several ticks |
 | 4 | An engineer spots the junction or a downstream symptom and closes the valve | Event stops spreading — same interruptible-mid-event standard the reactor already sets |
 

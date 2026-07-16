@@ -2,7 +2,7 @@
 
 > Status: active
 
-Resolves an open scope question Area raised and never answered: "a hole blown in a wall should be able to affect area boundaries as much as it affects atmosphere... flagged as an open scope question rather than assumed" (`area.md` §3). Also closes a loop chemistry deliberately left open — its own bad-mix explosions were scoped as "a lightweight, local, container-centered effect... not a redesign of blast mechanics generally" (`chemistry.md` §5, §12), on the assumption a real system would exist elsewhere. This is that system. Builds on shuttles' per-Area hull-breach-into-atmosphere pattern (`shuttles.md` §6), electricity's local-fault-into-hazard pattern (`electricity.md` §6), health's per-limb brute damage (§2), and the BFS hop-based traversal the lighting doc already uses for Ambient-tier bleed-through (`rendering-lighting.md` §3) — reused here for force instead of lux.
+Resolves an open scope question Area raised and never answered: "a hole blown in a wall should be able to affect area boundaries as much as it affects atmosphere... flagged as an open scope question rather than assumed" (`area.md` §3). Also closes a loop chemistry deliberately left open — its own bad-mix explosions were scoped as "a lightweight, local, container-centered effect... not a redesign of blast mechanics generally" (`chemistry.md` §6, §13), on the assumption a real system would exist elsewhere. This is that system. Builds on shuttles' per-Area hull-breach-into-atmosphere pattern (`shuttles.md` §6), electricity's local-fault-into-hazard pattern (`electricity.md` §6), health's per-limb brute damage (§2), and the BFS hop-based traversal the lighting doc already uses for Ambient-tier bleed-through (`rendering-lighting.md` §3) — reused here for force instead of lux.
 
 ## 1. Design philosophy
 
@@ -52,7 +52,7 @@ Atmosphere connects or leaks exactly as any other breach already does — chemis
 
 Force reaching an occupied tile applies **brute damage through the existing per-limb model** (`health.md` §2) — a blast is a physical impact, not a new damage type. Severity scales with however much force is left when it reaches that character — the same falloff figure §2's traversal already computed, not a second calculation. A hard-hit stagger/knockback reuses whatever general hard-hit response already exists elsewhere in the project, the same "not designed here, just reused" note the shuttle doc already made for its own impact damage (`shuttles.md` §6).
 
-**Secondary effects aren't a bespoke explosion-only system** — they're this doc's event re-triggering other systems' existing hazard resolution. Atmosphere ignited by the blast is fire propagation's job, not this doc's; a chemistry storage caught in the radius runs its own bad-mix resolution (`chemistry.md` §5) if the force crosses its container. Recursion, not duplication.
+**Secondary effects aren't a bespoke explosion-only system** — they're this doc's event re-triggering other systems' existing hazard resolution. Atmosphere ignited by the blast is fire propagation's job, not this doc's; a chemistry storage caught in the radius runs its own bad-mix resolution (`chemistry.md` §6) if the force crosses its container. Recursion, not duplication.
 
 ## 6. Explosive items
 
@@ -104,7 +104,7 @@ No new permanent chrome.
 
 | Step | What happens | System state |
 |---|---|---|
-| 1 | A bad chemical mix resolves as an explosive consequence (`chemistry.md` §5) | Instead of a bespoke local effect, it now calls this doc's §2 resolution directly, epicenter at the container's tile, a small yield |
+| 1 | A bad chemical mix resolves as an explosive consequence (`chemistry.md` §6) | Instead of a bespoke local effect, it now calls this doc's §2 resolution directly, epicenter at the container's tile, a small yield |
 | 2 | Chemistry's "assumes a lightweight effect exists elsewhere" note is resolved | It was deferring to this doc all along |
 
 ## 9. Out of scope for this pass
