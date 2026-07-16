@@ -3,6 +3,7 @@ using Coimbra;
 using SS3D.Core.Behaviours;
 using SS3D.Interactions;
 using SS3D.Interactions.Interfaces;
+using SS3D.Rendering.URP;
 using SS3D.Systems.Selection;
 using UnityEngine;
 using UnityEngine.Rendering;
@@ -58,18 +59,21 @@ namespace SS3D.Systems.Interactions
                 return;
             }
 
+            if (state == OutlineState.Hidden)
+            {
+                // Always force renderers off, even if _currentState already reads Hidden: external code
+                // (e.g. Item.SetVisibility) can force-enable renderers without going through this view.
+                _currentState = state;
+                SetRenderersEnabled(false);
+                return;
+            }
+
             if (_currentState == state)
             {
                 return;
             }
 
             _currentState = state;
-
-            if (state == OutlineState.Hidden)
-            {
-                SetRenderersEnabled(false);
-                return;
-            }
 
             Color color = state switch
             {
@@ -275,6 +279,7 @@ namespace SS3D.Systems.Interactions
             outlineRenderer.sharedMaterial = _outlineMaterial;
             outlineRenderer.shadowCastingMode = ShadowCastingMode.Off;
             outlineRenderer.receiveShadows = false;
+            outlineRenderer.renderingLayerMask = SelectionRenderingLayers.ExcludeFromSelectionPick;
             outlineRenderer.enabled = false;
 
             _entries.Add(new OutlineEntry
@@ -302,6 +307,7 @@ namespace SS3D.Systems.Interactions
             outlineRenderer.rootBone = source.rootBone;
             outlineRenderer.shadowCastingMode = ShadowCastingMode.Off;
             outlineRenderer.receiveShadows = false;
+            outlineRenderer.renderingLayerMask = SelectionRenderingLayers.ExcludeFromSelectionPick;
             outlineRenderer.enabled = false;
 
             _entries.Add(new OutlineEntry
