@@ -275,6 +275,7 @@ namespace SS3D.Systems.Interactions
             outlineRenderer.sharedMaterial = _outlineMaterial;
             outlineRenderer.shadowCastingMode = ShadowCastingMode.Off;
             outlineRenderer.receiveShadows = false;
+            outlineRenderer.renderingLayerMask = SelectionRenderingLayers.ExcludeFromSelectionPick;
             outlineRenderer.enabled = false;
 
             _entries.Add(new OutlineEntry
@@ -302,6 +303,7 @@ namespace SS3D.Systems.Interactions
             outlineRenderer.rootBone = source.rootBone;
             outlineRenderer.shadowCastingMode = ShadowCastingMode.Off;
             outlineRenderer.receiveShadows = false;
+            outlineRenderer.renderingLayerMask = SelectionRenderingLayers.ExcludeFromSelectionPick;
             outlineRenderer.enabled = false;
 
             _entries.Add(new OutlineEntry

@@ -5,6 +5,7 @@ using UnityEngine.Rendering;
 using UnityEngine.Rendering.RenderGraphModule;
 using UnityEngine.Rendering.RenderGraphModule.Util;
 using UnityEngine.Rendering.Universal;
+using SS3D.Systems.Selection;
 
 namespace SS3D.Rendering.URP
 {
@@ -184,7 +185,10 @@ namespace SS3D.Rendering.URP
                 drawingSettings.overrideMaterial = _overrideMaterial;
                 drawingSettings.overrideMaterialPassIndex = materialPassIndex;
 
-                FilteringSettings filteringSettings = new FilteringSettings(queueRange, cameraData.camera.cullingMask);
+                FilteringSettings filteringSettings = new FilteringSettings(queueRange, cameraData.camera.cullingMask)
+                {
+                    renderingLayerMask = SelectionRenderingLayers.PickPassMask
+                };
 
                 RendererListHandle rendererList;
                 if (useSceneDepth)
