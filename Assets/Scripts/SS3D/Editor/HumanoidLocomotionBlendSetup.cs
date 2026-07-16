@@ -36,12 +36,18 @@ namespace SS3D.Editor
             ("standing idle.fbx", "Mix_StandingIdle", new Vector2(0f, 0f)),
             ("standing walk forward.fbx", "Mix_StandingWalkForward", new Vector2(0f, 0.3f)),
             ("standing walk back.fbx", "Mix_StandingWalkBack", new Vector2(0f, -0.3f)),
-            ("standing walk left.fbx", "Mix_StandingWalkLeft", new Vector2(-1f, 0.3f)),
-            ("standing walk right.fbx", "Mix_StandingWalkRight", new Vector2(1f, 0.3f)),
-            ("standing walk left.fbx", "Mix_StandingWalkLeft", new Vector2(-1f, 0f)),
-            ("standing walk right.fbx", "Mix_StandingWalkRight", new Vector2(1f, 0f)),
+            // Walk-magnitude strafes must sit at ±0.3 — VelX/VelZ use gait 0.3 for walk.
+            ("standing walk left.fbx", "Mix_StandingWalkLeft", new Vector2(-0.3f, 0.3f)),
+            ("standing walk right.fbx", "Mix_StandingWalkRight", new Vector2(0.3f, 0.3f)),
+            ("standing walk left.fbx", "Mix_StandingWalkLeft", new Vector2(-0.3f, 0f)),
+            ("standing walk right.fbx", "Mix_StandingWalkRight", new Vector2(0.3f, 0f)),
             ("standing run forward.fbx", "Mix_StandingRunForward", new Vector2(0f, 1f)),
             ("standing run back.fbx", "Mix_StandingRunBack", new Vector2(0f, -1f)),
+            // Run-magnitude strafe samples (pack has no dedicated run-strafe clips).
+            ("standing walk left.fbx", "Mix_StandingWalkLeft", new Vector2(-1f, 1f)),
+            ("standing walk right.fbx", "Mix_StandingWalkRight", new Vector2(1f, 1f)),
+            ("standing walk left.fbx", "Mix_StandingWalkLeft", new Vector2(-1f, 0f)),
+            ("standing walk right.fbx", "Mix_StandingWalkRight", new Vector2(1f, 0f)),
         };
 
         private static readonly (string File, string ClipName, Vector2 Pos)[] RangedClips =
@@ -49,12 +55,14 @@ namespace SS3D.Editor
             ("rifle aiming idle.fbx", "Mix_AimingIdle", new Vector2(0f, 0f)),
             ("walking.fbx", "Mix_RifleWalking", new Vector2(0f, 0.3f)),
             ("walking backwards.fbx", "Mix_RifleWalkingBackwards", new Vector2(0f, -0.3f)),
-            ("strafe left.fbx", "Mix_RifleStrafeLeft", new Vector2(-1f, 0.3f)),
-            ("strafe right.fbx", "Mix_RifleStrafeRight", new Vector2(1f, 0.3f)),
-            ("strafe left.fbx", "Mix_RifleStrafeLeft", new Vector2(-1f, 0f)),
-            ("strafe right.fbx", "Mix_RifleStrafeRight", new Vector2(1f, 0f)),
+            ("strafe left.fbx", "Mix_RifleStrafeLeft", new Vector2(-0.3f, 0.3f)),
+            ("strafe right.fbx", "Mix_RifleStrafeRight", new Vector2(0.3f, 0.3f)),
+            ("strafe left.fbx", "Mix_RifleStrafeLeft", new Vector2(-0.3f, 0f)),
+            ("strafe right.fbx", "Mix_RifleStrafeRight", new Vector2(0.3f, 0f)),
             ("strafe (2).fbx", "Mix_RifleStrafeLeftFast", new Vector2(-1f, 1f)),
             ("strafe.fbx", "Mix_RifleStrafeRightFast", new Vector2(1f, 1f)),
+            ("strafe left.fbx", "Mix_RifleStrafeLeft", new Vector2(-1f, 0f)),
+            ("strafe right.fbx", "Mix_RifleStrafeRight", new Vector2(1f, 0f)),
             ("rifle run.fbx", "Mix_RifleRun", new Vector2(0f, 1f)),
             ("run backwards.fbx", "Mix_RunBackwards", new Vector2(0f, -1f)),
         };

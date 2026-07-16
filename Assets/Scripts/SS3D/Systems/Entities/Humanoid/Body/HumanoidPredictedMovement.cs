@@ -61,6 +61,8 @@ namespace SS3D.Systems.Entities.Humanoid
         [SerializeField] private float _movementSpeed = 5f;
         /// <summary>Matches HumanoidController walk animator value (0.3) so walk/run stay in sync.</summary>
         [SerializeField] private float _walkSpeedFactor = 0.3f;
+        /// <summary>Combat gaits are slower than peaceful — scale world speed to match Mixamo cadence.</summary>
+        [SerializeField] private float _combatSpeedFactor = 0.8f;
 
         private CharacterController _characterController;
         private Actor _camera;
@@ -289,7 +291,8 @@ namespace SS3D.Systems.Entities.Humanoid
             float speedFactor = _feetController != null ? _feetController.FeetHealthFactor : 1f;
             // Same mapping as HumanoidController: walk clamps to ~0.3 of run speed so feet match Speed blend.
             float gaitFactor = md.IsRunning ? 1f : _walkSpeedFactor;
-            float speed = _movementSpeed * speedFactor * gaitFactor;
+            float combatFactor = _bodyStateMachine.CombatMode.IsCombat() ? _combatSpeedFactor : 1f;
+            float speed = _movementSpeed * speedFactor * gaitFactor * combatFactor;
             float animSpeed = md.IsRunning ? 1f : _walkSpeedFactor;
 
             _characterController.Move(moveDirection * (tickDelta * speed));

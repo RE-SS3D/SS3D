@@ -37,6 +37,8 @@ namespace SS3D.Systems.Entities.Humanoid
         [SerializeField] protected float _lerpMultiplier;
         [SerializeField] protected float _rotationLerpMultiplier;
         [SerializeField] protected float _turnVelocityScale = 4f;
+        /// <summary>Combat gaits are slower than peaceful — scale world speed to match Mixamo cadence.</summary>
+        [SerializeField] protected float _combatSpeedFactor = 0.8f;
 
         [Header("Movement IK Targets")]
         [SerializeField] private Transform _movementTarget;
