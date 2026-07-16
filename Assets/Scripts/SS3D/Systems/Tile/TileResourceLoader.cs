@@ -40,7 +40,11 @@ namespace SS3D.Systems.Tile
             Catalog.Build(Assets);
             IsInitialized = true;
 
+#if !UNITY_SERVER
+            // Icons are only used by client-side UI (construction/build menus); generating them
+            // requires rendering a camera, which is unavailable and unnecessary on a dedicated server.
             StartCoroutine(LoadAssetsWithIcon(tempAssets));
+#endif
         }
 
         private IEnumerator LoadAssetsWithIcon(GenericObjectSo[] assets)
