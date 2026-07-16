@@ -298,9 +298,14 @@ namespace SS3D.Systems.Entities.Humanoid
 
             if (_animator.layerCount > 1)
             {
-                // Upper body overlays holds and melee swings while base layer keeps locomotion legs.
+                // Peaceful: always full base locomotion (no hold overlay).
+                // Combat: item/weapon holds + active swings only; empty-handed uses base melee idle.
+                bool swinging = _meleeSwingEndsAt > 0f && Time.time < _meleeSwingEndsAt;
                 bool needsUpperBodyLayer = snapshot.State != BodyState.Ragdoll
-                    && (snapshot.ArmHold != ArmHoldPose.Default || snapshot.CombatMode.IsCombat());
+                    && (
+                        swinging
+                        || (snapshot.CombatMode.IsCombat() && snapshot.ArmHold != ArmHoldPose.Default)
+                    );
                 _animator.SetLayerWeight(1, needsUpperBodyLayer ? 1f : 0f);
             }
         }
