@@ -1,0 +1,60 @@
+.intent-module {
+    flex-direction: column;
+    align-items: flex-end;
+}
+
+.intent-module__hints {
+    flex-direction: row;
+    margin-bottom: var(--ss3d-space-2);
+    padding-right: 2px;
+}
+
+.intent-hint {
+    flex-direction: row;
+    align-items: center;
+    margin-left: var(--ss3d-space-3);
+    opacity: 0.5;
+}
+
+.intent-hint__key {
+    font-size: 10px;
+    color: var(--ss3d-text-tertiary);
+    border-width: 1px;
+    border-color: var(--ss3d-border-default);
+    border-radius: var(--ss3d-radius-sm);
+    padding: 1px 5px;
+    margin-right: 4px;
+}
+
+.intent-hint__label {
+    font-size: 10px;
+    color: var(--ss3d-text-tertiary);
+}
+
+.intent-toggle {
+    flex-direction: row;
+    background-color: var(--ss3d-surface-panel-raised);
+    border-radius: var(--ss3d-radius-md);
+    overflow: hidden;
+}
+
+.intent-toggle__segment {
+    padding: 10px 22px;
+    font-size: 15px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--ss3d-text-tertiary);
+    background-color: transparent;
+}
+
+.intent-toggle__segment--active {
+    color: var(--ss3d-text-on-accent);
+}
+
+.intent-toggle__segment--help.intent-toggle__segment--active {
+    background-color: var(--ss3d-btn-green-bg);
+}
+
+.intent-toggle__segment--harm.intent-toggle__segment--active {
+    background-color: var(--ss3d-feedback-danger);
+}

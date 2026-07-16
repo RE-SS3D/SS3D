@@ -1,0 +1,17 @@
+.equipment-grid {
+    flex-direction: column;
+}
+
+.equipment-grid__row {
+    flex-direction: row;
+}
+
+.equipment-grid__row > .inventory-slot {
+    margin-right: var(--ss3d-space-1);
+    margin-bottom: var(--ss3d-space-1);
+}
+
+.equipment-grid__spacer {
+    width: 56px;
+    margin-right: var(--ss3d-space-1);
+}

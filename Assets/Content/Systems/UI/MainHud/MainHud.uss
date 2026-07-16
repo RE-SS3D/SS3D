@@ -1,0 +1,46 @@
+@import url("../Tokens/ss3d-tokens.uss");
+@import url("../Tokens/ss3d-typography.uss");
+
+.main-hud {
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+}
+
+.main-hud__zone {
+    position: absolute;
+}
+
+.main-hud__zone--alerts {
+    top: var(--ss3d-space-5);
+    right: var(--ss3d-space-5);
+    flex-direction: row;
+}
+
+.main-hud__zone--equipment {
+    bottom: var(--ss3d-space-5);
+    left: var(--ss3d-space-5);
+}
+
+.main-hud__zone--hands-gear {
+    bottom: var(--ss3d-space-5);
+    left: 50%;
+    translate: -50% 0;
+    flex-direction: row;
+    align-items: flex-end;
+}
+
+.main-hud__zone--intent {
+    bottom: var(--ss3d-space-5);
+    right: var(--ss3d-space-5);
+    flex-direction: column;
+    align-items: flex-end;
+}
+
+.main-hud__zone--examine {
+    left: var(--ss3d-space-5);
+    top: 90px;
+    max-height: 60%;
+}
