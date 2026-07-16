@@ -514,7 +514,7 @@ MonoBehaviour:
   _vendingTemplate: {fileID: 9197481963319205126, guid: b2c5cf23726c6357db2690a32a64b2c9, type: 3}
   _vendingTemplateStyle: {fileID: 7433441132597879392, guid: 9bc99832241078f76aae320597f6ffd5, type: 3}
   _idConsoleTemplate: {fileID: 9197481963319205126, guid: d1e2f3a4b5c6478990abcdef12345678, type: 3}
-  _idConsoleTemplateStyle: {fileID: 7433441132597879392, guid: e2f3a4b5c6d7488990abcdef123456789, type: 3}
+  _idConsoleTemplateStyle: {fileID: 7433441132597879392, guid: a7c3e91f4b2d46c8e5f1039b8d6a4e72, type: 3}
   _gasPumpTemplate: {fileID: 9197481963319205126, guid: 8cfee9cd2f95465783b184c754da96bc, type: 3}
   _gasPumpTemplateStyle: {fileID: 7433441132597879392, guid: 5906cda8434f4f0b9bffeb8244497175, type: 3}
   _ss3dTokensStyle: {fileID: 7433441132597879392, guid: 73b8fe755692049198490f1974236d47, type: 3}
