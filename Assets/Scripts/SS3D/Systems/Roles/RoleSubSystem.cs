@@ -49,6 +49,7 @@ namespace SS3D.Systems.Roles
             if (_rolesAvailable == null)
             {
                 Log.Error(this, "Initial Available Roles not set!");
+                return;
             }
 
             foreach (RolesData role in _rolesAvailable.Roles)
