@@ -42,12 +42,6 @@
     align-items: flex-end;
 }
 
-.main-hud__zone--examine {
-    left: var(--ss3d-space-5);
-    top: 90px;
-    max-height: 60%;
-}
-
 /* Icon wells only — design #161616. Scoped so Machine Interface slots keep diegetic tokens. */
 .main-hud .inventory-slot__well {
     background-color: var(--ss3d-surface-hud);

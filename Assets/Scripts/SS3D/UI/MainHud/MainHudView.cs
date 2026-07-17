@@ -1,6 +1,5 @@
 using System;
 using SS3D.Interactions;
-using SS3D.UI.MachineInterface.Components;
 using SS3D.UI.MainHud.Components;
 using UnityEngine.UIElements;
 
@@ -23,8 +22,6 @@ namespace SS3D.UI.MainHud
         private EquipmentGrid _equipmentGrid;
         private HandsGearStrip _handsGearStrip;
         private IntentModule _intentModule;
-        private MachineWindow _examineWindow;
-        private SelfExamineWindowContent _examineContent;
 
         public MainHudView(StyleSheet[] styleSheets, MainHudIconSet icons)
         {
@@ -97,17 +94,6 @@ namespace SS3D.UI.MainHud
             _handsGearStrip.SetActiveHand(leftIsActive);
         }
 
-        public void SetExamineOpen(bool isOpen)
-        {
-            _examineWindow.style.display = isOpen ? DisplayStyle.Flex : DisplayStyle.None;
-        }
-
-        public void SetExamineData(System.Collections.Generic.IReadOnlyList<LimbReadout> limbs, System.Collections.Generic.IReadOnlyList<OrganReadout> organs)
-        {
-            _examineContent.SetLimbs(limbs);
-            _examineContent.SetOrgans(organs);
-        }
-
         private void BuildTree()
         {
             _alertStack = new AlertIconStack();
@@ -123,17 +109,10 @@ namespace SS3D.UI.MainHud
             _intentModule.ToggleRequested += () => IntentToggleRequested?.Invoke();
             VisualElement intentZone = BuildZone("main-hud__zone--intent", _intentModule);
 
-            _examineContent = new SelfExamineWindowContent();
-            _examineWindow = new MachineWindow { Title = "Self-Examine" };
-            _examineWindow.Content.Add(_examineContent);
-            _examineWindow.style.display = DisplayStyle.None;
-            VisualElement examineZone = BuildZone("main-hud__zone--examine", _examineWindow);
-
             _root.Add(alertZone);
             _root.Add(equipmentZone);
             _root.Add(handsGearZone);
             _root.Add(intentZone);
-            _root.Add(examineZone);
         }
 
         private static VisualElement BuildZone(string className, VisualElement content)

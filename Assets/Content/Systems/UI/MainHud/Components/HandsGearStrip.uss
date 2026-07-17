@@ -16,7 +16,7 @@
 
 .hands-gear-strip__divider {
     width: 1px;
-    height: 56px;
+    height: 72px;
     background-color: var(--ss3d-border-default);
     margin-left: var(--ss3d-space-2);
     margin-right: var(--ss3d-space-2);

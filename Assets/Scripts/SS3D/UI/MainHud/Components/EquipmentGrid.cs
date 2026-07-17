@@ -71,7 +71,7 @@ namespace SS3D.UI.MainHud.Components
 
         private static InventorySlot CreateSlot(string label, UnityEngine.Sprite emptyIcon)
         {
-            return new InventorySlot { Unknown = emptyIcon == null, EmptyIcon = emptyIcon, Size = 56, SlotLabel = label };
+            return new InventorySlot { Unknown = emptyIcon == null, EmptyIcon = emptyIcon, Size = 72, SlotLabel = label };
         }
 
         private static VisualElement BuildRow(params VisualElement[] children)

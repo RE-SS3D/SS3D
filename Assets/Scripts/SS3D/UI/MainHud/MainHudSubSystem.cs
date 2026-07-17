@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using System.Linq;
 using Coimbra.Services.Events;
 using SS3D.Core;
@@ -6,7 +5,6 @@ using SS3D.Core.Behaviours;
 using SS3D.Interactions;
 using SS3D.Interactions.Interfaces;
 using SS3D.Systems.Entities.Events;
-using SS3D.Systems.Health;
 using SS3D.Systems.Inventory.Containers;
 using SS3D.Systems.Inventory.Items;
 using SS3D.Systems.Rounds;
@@ -20,8 +18,7 @@ namespace SS3D.UI.MainHud
     /// <summary>
     /// Main HUD overlay (design doc: Documents/design/main-hud.md). Binds the visual/interaction
     /// layer built in <see cref="MainHudView"/> to the local player's existing gameplay systems: hands/equipment
-    /// (<see cref="Hands"/>/<see cref="HumanInventory"/>), per-body-part damage (<see cref="HealthController"/>),
-    /// and help/harm intent (<see cref="IIntentProvider"/>).
+    /// (<see cref="Hands"/>/<see cref="HumanInventory"/>) and help/harm intent (<see cref="IIntentProvider"/>).
     /// <para>
     /// Hidden until <see cref="LocalPlayerObjectChanged"/> reports a local spawned body; hidden again when the
     /// round leaves in-game states (same spawn/round gate pattern as <c>GameScreensController</c>).
@@ -34,6 +31,10 @@ namespace SS3D.UI.MainHud
     /// <para>
     /// Self-bootstraps the same way <c>ScreenEffectsSubSystem</c> does, instead of living on a scene/prefab
     /// GameObject - hand-editing scene/prefab YAML outside the Unity Editor isn't safe.
+    /// </para>
+    /// <para>
+    /// Divergence from design: the hold-to-self-examine panel (main-hud.md §5/§15) is not implemented here —
+    /// examine-self belongs with the general examine surface, not permanent HUD chrome.
     /// </para>
     /// </summary>
     [RequireComponent(typeof(UIDocument))]
@@ -53,41 +54,21 @@ namespace SS3D.UI.MainHud
             host.AddComponent<MainHudSubSystem>();
         }
 
-        // Reuses the same physical key ExamineUI.cs defaults to for its unrelated hover-detail feature - there is
-        // no dedicated self-examine input action yet (see Documents/design/main-hud.md §5/§15 and ExamineUI.cs).
-        private const KeyCode SelfExamineKey = KeyCode.LeftShift;
-        private const KeyCode SelfExamineKeyAlt = KeyCode.RightShift;
-
-        private static readonly (string Label, string[] NameHints)[] LimbZones =
-        {
-            ("Head", new[] { "head" }),
-            ("Chest", new[] { "torso", "chest" }),
-            ("L. Arm", new[] { "leftarm", "left_arm", "l_arm", "armleft" }),
-            ("R. Arm", new[] { "rightarm", "right_arm", "r_arm", "armright" }),
-            ("L. Leg", new[] { "leftleg", "left_leg", "l_leg", "legleft" }),
-            ("R. Leg", new[] { "rightleg", "right_leg", "r_leg", "legright" }),
-            ("Groin", new[] { "groin", "pelvis", "hip" }),
-        };
-
         [SerializeField] private UIDocument _document;
         [SerializeField] private StyleSheet _mainHudStyle;
         [SerializeField] private StyleSheet _alertIconStackStyle;
         [SerializeField] private StyleSheet _intentModuleStyle;
         [SerializeField] private StyleSheet _handsGearStripStyle;
         [SerializeField] private StyleSheet _equipmentGridStyle;
-        [SerializeField] private StyleSheet _selfExamineStyle;
         [SerializeField] private StyleSheet _inventorySlotStyle;
-        [SerializeField] private StyleSheet _machineWindowStyle;
         [SerializeField] private MainHudIconSet _icons;
 
         private MainHudView _view;
         private GameObject _localPlayer;
         private HumanInventory _inventory;
         private Hands _hands;
-        private HealthController _health;
         private IIntentProvider _intentProvider;
         private Hand _cachedSelectedHand;
-        private bool _examineOpen;
 
         protected override void OnAwake()
         {
@@ -116,7 +97,7 @@ namespace SS3D.UI.MainHud
         private void EnsureRuntimeAssets()
         {
 #if !UNITY_EDITOR
-            if (_mainHudStyle == null || _machineWindowStyle == null)
+            if (_mainHudStyle == null)
             {
                 Debug.LogWarning(
                     "MainHudSubSystem is missing its UI Toolkit assets in this build - it self-bootstraps and " +
@@ -149,7 +130,6 @@ namespace SS3D.UI.MainHud
             }
 
             RefreshActiveHand();
-            RefreshExamineVisibility();
         }
 
         private void BuildView()
@@ -157,7 +137,7 @@ namespace SS3D.UI.MainHud
             StyleSheet[] styleSheets =
             {
                 _mainHudStyle, _alertIconStackStyle, _intentModuleStyle, _handsGearStripStyle,
-                _equipmentGridStyle, _selfExamineStyle, _inventorySlotStyle, _machineWindowStyle,
+                _equipmentGridStyle, _inventorySlotStyle,
             };
 
             _view = new MainHudView(styleSheets, _icons);
@@ -199,7 +179,6 @@ namespace SS3D.UI.MainHud
             _localPlayer = playerObject;
             _inventory = _localPlayer.GetComponentInChildren<HumanInventory>();
             _hands = _localPlayer.GetComponentInChildren<Hands>();
-            _health = _localPlayer.GetComponentInChildren<HealthController>();
             _intentProvider = _localPlayer.GetComponent<IIntentProvider>()
                 ?? _localPlayer.GetComponentInChildren<IIntentProvider>();
 
@@ -228,7 +207,6 @@ namespace SS3D.UI.MainHud
             _localPlayer = null;
             _inventory = null;
             _hands = null;
-            _health = null;
             _intentProvider = null;
             _cachedSelectedHand = null;
         }
@@ -240,8 +218,6 @@ namespace SS3D.UI.MainHud
 
         private void HideHud()
         {
-            _examineOpen = false;
-            _view?.SetExamineOpen(false);
             _view?.SetVisible(false);
         }
 
@@ -325,96 +301,6 @@ namespace SS3D.UI.MainHud
             _view.SetActiveHand(_hands.PlayerHands.IndexOf(selected) == 0);
         }
 
-        private void RefreshExamineVisibility()
-        {
-            bool held = Input.GetKey(SelfExamineKey) || Input.GetKey(SelfExamineKeyAlt);
-            if (held != _examineOpen)
-            {
-                _examineOpen = held;
-                _view.SetExamineOpen(held);
-            }
-
-            if (held)
-            {
-                RefreshExamineData();
-            }
-        }
-
-        private void RefreshExamineData()
-        {
-            if (_health == null)
-            {
-                _view.SetExamineData(BuildEmptyLimbs(), System.Array.Empty<OrganReadout>());
-                return;
-            }
-
-            List<BodyPart> bodyParts = _health.BodyPartsOnEntity.ToList();
-            List<LimbReadout> limbs = new(LimbZones.Length);
-
-            foreach ((string label, string[] nameHints) in LimbZones)
-            {
-                BodyPart match = bodyParts.FirstOrDefault(part => nameHints.Any(hint =>
-                    part.Name.Replace(" ", string.Empty).ToLowerInvariant().Contains(hint)));
-
-                limbs.Add(match == null
-                    ? new LimbReadout(label, "0 / 0")
-                    : new LimbReadout(label, BuildBruteBurnText(match)));
-            }
-
-            // ContainsLayer/FirstBodyLayerOfType are FishNet [Server]-gated; on a non-host client they currently
-            // read back defaults until the health system exposes client-synced damage values. Pre-existing
-            // networking limitation, out of scope for this HUD pass.
-            List<OrganReadout> organs = new();
-            foreach (BodyPart part in bodyParts)
-            {
-                if (!part.ContainsLayer(BodyLayerType.Organ))
-                {
-                    continue;
-                }
-
-                BodyLayer organLayer = part.FirstBodyLayerOfType(BodyLayerType.Organ);
-                int percent = Mathf.RoundToInt(Mathf.Clamp01(1f - organLayer.RelativeDamage) * 100f);
-                OrganSeverity severity = organLayer.RelativeDamage >= 0.6f
-                    ? OrganSeverity.Critical
-                    : organLayer.RelativeDamage >= 0.15f
-                        ? OrganSeverity.Warning
-                        : OrganSeverity.Normal;
-
-                organs.Add(new OrganReadout(part.Name, percent, severity));
-            }
-
-            _view.SetExamineData(limbs, organs);
-        }
-
-        // Aggregates the closest brute/burn equivalent from the existing DamageType set (Crush/Slash/Puncture ~
-        // brute, Heat/Cold ~ burn) since a literal brute/burn/toxin/oxy split doesn't exist per-layer.
-        private static string BuildBruteBurnText(BodyPart part)
-        {
-            float brute = 0f;
-            float burn = 0f;
-
-            foreach (BodyLayer layer in part.BodyLayers)
-            {
-                brute += layer.GetDamageTypeQuantity(DamageType.Crush)
-                    + layer.GetDamageTypeQuantity(DamageType.Slash)
-                    + layer.GetDamageTypeQuantity(DamageType.Puncture);
-                burn += layer.GetDamageTypeQuantity(DamageType.Heat) + layer.GetDamageTypeQuantity(DamageType.Cold);
-            }
-
-            return $"{Mathf.RoundToInt(brute)} / {Mathf.RoundToInt(burn)}";
-        }
-
-        private static List<LimbReadout> BuildEmptyLimbs()
-        {
-            List<LimbReadout> limbs = new(LimbZones.Length);
-            foreach ((string label, _) in LimbZones)
-            {
-                limbs.Add(new LimbReadout(label, "0 / 0"));
-            }
-
-            return limbs;
-        }
-
 #if UNITY_EDITOR
         private void EnsureEditorAssets()
         {
@@ -448,22 +334,10 @@ namespace SS3D.UI.MainHud
                     "Assets/Content/Systems/UI/MainHud/Components/EquipmentGrid.uss");
             }
 
-            if (_selfExamineStyle == null)
-            {
-                _selfExamineStyle = UnityEditor.AssetDatabase.LoadAssetAtPath<StyleSheet>(
-                    "Assets/Content/Systems/UI/MainHud/Components/SelfExamineWindowContent.uss");
-            }
-
             if (_inventorySlotStyle == null)
             {
                 _inventorySlotStyle = UnityEditor.AssetDatabase.LoadAssetAtPath<StyleSheet>(
                     "Assets/Content/Systems/UI/MachineInterface/Components/InventorySlot.uss");
-            }
-
-            if (_machineWindowStyle == null)
-            {
-                _machineWindowStyle = UnityEditor.AssetDatabase.LoadAssetAtPath<StyleSheet>(
-                    "Assets/Content/Systems/UI/MachineInterface/Components/MachineWindow.uss");
             }
 
             if (_icons.Head == null)

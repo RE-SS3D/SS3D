@@ -14,6 +14,6 @@
 }
 
 .equipment-grid__spacer {
-    width: 56px;
+    width: 72px;
     margin-right: var(--ss3d-space-1);
 }

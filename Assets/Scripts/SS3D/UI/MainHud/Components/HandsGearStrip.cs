@@ -29,10 +29,10 @@ namespace SS3D.UI.MainHud.Components
         {
             AddToClassList("hands-gear-strip");
 
-            _belt = CreateSlot("Belt", icons.Belt, 44);
-            _id = CreateSlot("ID", icons.Id, 44);
-            _pda = CreateSlot("PDA", icons.Pda, 44);
-            _back = CreateSlot("Back", icons.Back, 44);
+            _belt = CreateSlot("Belt", icons.Belt, 56);
+            _id = CreateSlot("ID", icons.Id, 56);
+            _pda = CreateSlot("PDA", icons.Pda, 56);
+            _back = CreateSlot("Back", icons.Back, 56);
 
             VisualElement gear = new();
             gear.AddToClassList("hands-gear-strip__gear");
@@ -44,8 +44,8 @@ namespace SS3D.UI.MainHud.Components
             VisualElement divider = new();
             divider.AddToClassList("hands-gear-strip__divider");
 
-            _handLeft = CreateSlot("Left hand", icons.HandLeft, 64);
-            _handRight = CreateSlot("Right hand", icons.HandRight, 64);
+            _handLeft = CreateSlot("Left hand", icons.HandLeft, 80);
+            _handRight = CreateSlot("Right hand", icons.HandRight, 80);
 
             VisualElement hands = new();
             hands.AddToClassList("hands-gear-strip__hands");
