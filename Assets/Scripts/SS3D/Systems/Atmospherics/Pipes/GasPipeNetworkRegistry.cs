@@ -13,6 +13,7 @@ namespace SS3D.Systems.Atmospherics.Pipes
         private readonly Dictionary<GasPipeNetworkId, GasPipeNetworkRecord> _networks = new();
         private ushort _nextNetworkId = GasPipeNetworkId.NoneValue + 1;
         private readonly int _gasTypeCount;
+        private int _topologyVersion;
 
         public GasPipeNetworkRegistry(int gasTypeCount)
         {
@@ -22,6 +23,11 @@ namespace SS3D.Systems.Atmospherics.Pipes
         public IReadOnlyDictionary<GasPipeNetworkId, GasPipeNetworkRecord> Networks => _networks;
 
         public int NetworkCount => _networks.Count;
+
+        /// <summary>
+        /// Incremented whenever network topology is rebuilt. Ports cache resolutions against this.
+        /// </summary>
+        public int TopologyVersion => _topologyVersion;
 
         public bool TryGetNetwork(GasPipeNetworkId id, out GasPipeNetworkRecord record) =>
             _networks.TryGetValue(id, out record);
@@ -52,6 +58,8 @@ namespace SS3D.Systems.Atmospherics.Pipes
 
                 CreateNetworkFromSeed(map, segment, assigned);
             }
+
+            _topologyVersion++;
         }
 
         public void RebuildAround(TileMap map, TileCoord coord)
@@ -100,6 +108,8 @@ namespace SS3D.Systems.Atmospherics.Pipes
 
                 CreateNetworkFromSeed(map, segment, assigned);
             }
+
+            _topologyVersion++;
         }
 
         private void CreateNetworkFromSeed(TileMap map, PlacedTileObject seed, HashSet<GasPipeSegmentKey> assigned)

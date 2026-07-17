@@ -35,6 +35,7 @@ namespace SS3D.Systems.Atmospherics.Pipes
 
         private PlacedTileObject _tileObject;
         private GasPipeNetworkId _networkId = GasPipeNetworkId.None;
+        private int _resolvedTopologyVersion = -1;
 
         public TileCoord OriginTile =>
             _tileObject != null
@@ -145,13 +146,23 @@ namespace SS3D.Systems.Atmospherics.Pipes
                 return;
             }
 
+            GasPipeNetworkRegistry registry = atmosSubSystem.PipeRegistry;
+            int topologyVersion = registry.TopologyVersion;
+            if (!_networkId.IsNone
+                && _resolvedTopologyVersion == topologyVersion
+                && registry.TryGetNetwork(_networkId, out _))
+            {
+                return;
+            }
+
             _networkId = GasPipeNetworkId.None;
             AtmosDevicePipeResolver.TryResolveNetwork(
                 tileSubSystem.CurrentMap,
-                atmosSubSystem.PipeRegistry,
+                registry,
                 _tileObject,
                 out _networkId,
                 out _);
+            _resolvedTopologyVersion = topologyVersion;
         }
 
         private void Initialize()
