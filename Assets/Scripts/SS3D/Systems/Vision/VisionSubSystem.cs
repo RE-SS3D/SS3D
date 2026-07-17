@@ -19,6 +19,23 @@ namespace SS3D.Systems.Vision
     /// </summary>
     public class VisionSubSystem : Core.Behaviours.SubSystem
     {
+        // Bootstraps itself instead of living in Boot.unity like the other persistent subsystems, since hand-editing
+        // scene YAML outside the Unity Editor isn't safe. Mirrors ScreenEffectsSubSystem's bootstrap - move this
+        // into Boot.unity later if preferred, the behaviour is identical, this is just how it gets into the scene
+        // without an Editor session.
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
+        private static void Bootstrap()
+        {
+            if (SubSystems.TryGet(out VisionSubSystem _))
+            {
+                return;
+            }
+
+            GameObject host = new(nameof(VisionSubSystem));
+            DontDestroyOnLoad(host);
+            host.AddComponent<VisionSubSystem>();
+        }
+
         [SerializeField]
         public bool showDebug;
         [SerializeField]
