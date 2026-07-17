@@ -34,7 +34,7 @@ Feature-level gaps *within* an already-designed system stay in that design doc's
 | surgery | [surgery.md](../design/surgery.md) — active | none yet | none yet |
 | lobby | [lobby.md](../design/lobby.md) — active | none yet | [rounds-lobby](systems/rounds-lobby.md) — shipped |
 | round-config | [round-config.md](../design/round-config.md) — active | none yet | [rounds-lobby](systems/rounds-lobby.md) — shipped |
-| round-end | none yet — see migration note below | none yet | none yet |
+| round-end | [round-end.md](../design/round-end.md) — draft | none yet | none yet |
 | observer | [observer.md](../design/observer.md) — active | none yet | none yet |
 | electricity | [electricity.md](../design/electricity.md) — active | none yet (electricity system is touched by [mi-area-electricity-debt](2026-07_mi-area-electricity-debt.md), but that effort implements area.md/main-hud.md, not electricity.md) | [electricity](systems/electricity.md) — partial |
 | pda | [pda.md](../design/pda.md) — active | none yet | [inventory](systems/inventory.md) — partial |
@@ -67,11 +67,11 @@ so they stay out of this table and live only in the Infrastructure section below
 
 ### Migration note
 
-`design/round-end.md` (round-end/transition) does not exist yet — it's referenced by
-`observer.md` §6/§10 but was never authored. It's the one gap surfaced by the design-doc
-cleanup pass (stripping `§Prototyping this` and the build-status field from all 29 existing
-docs, per `Documents/SKILL.md`); needs the same treatment applied once it's written: no
-prototyping section, `Status` line for draft/active/superseded only, cross-refs verified.
+`design/round-end.md` (round-end/transition) now exists as a **draft** — it builds its summary
+screen and transition on the spectator framework `observer.md` §7 supplies and spends the secret
+gamemode identity `round-config.md` §4 protects. Authored in the house style (no prototyping
+section, `Status: draft`, design-docs-cite-design-docs only). Owner review to promote it to
+`active`.
 
 ## Infrastructure
 
@@ -149,7 +149,8 @@ Temporary working plans in [Documents/plans/](../plans/). Update todos when work
 | [electricity_kwh_foundation_917ccdbc.plan.md](../plans/electricity_kwh_foundation_917ccdbc.plan.md) | kWh storage, priority shedding, HV cable grid rules |
 | [persistence_architecture_design_2fe61864.plan.md](../plans/persistence_architecture_design_2fe61864.plan.md) | Layered persistence framework; Phase 1a/1b shipped, Phase 2 round snapshots pending |
 | [animation_system_design_250de599.plan.md](../plans/animation_system_design_250de599.plan.md) | Player body / layered animation foundation |
-| [health_implementation_plan.md](../plans/health_implementation_plan.md) | Clean-slate health rewrite (pending) |
+| [health_implementation_plan.md](../plans/health_implementation_plan.md) | Clean-slate health rewrite (Phases 0–5b shipped; 6–9 pending) |
+| [combat_implementation_plan.md](../plans/combat_implementation_plan.md) | Combat build-out on health/animation/screen-fx/atmos foundations (pending) |
 | [urp_lighting_look_plan_d42c32f5.plan.md](../plans/urp_lighting_look_plan_d42c32f5.plan.md) | URP half-toon look pass (pending) |
 | [shuttle_system_design_a3dd2e04.plan.md](../plans/shuttle_system_design_a3dd2e04.plan.md) | Shuttle tile blueprints / multi-map (pending) |
 
