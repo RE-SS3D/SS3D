@@ -1,7 +1,6 @@
 using System;
 using FishNet;
 using Unity.Collections;
-using Unity.Jobs;
 using Unity.Profiling;
 using UnityEngine;
 using UnityEngine.Rendering;
@@ -16,9 +15,9 @@ using Coimbra.Services.Events;
 namespace SS3D.Systems.Vision
 {
     /// <summary>
-    /// Client-side field-of-view producer. Batches physics raycasts from the player's
-    /// <see cref="Entity.ViewPoint"/> (Seteron / PR #1491 approach) into a 1D polar
-    /// <c>_VisionMap</c> depth texture consumed by the URP vision render feature.
+    /// Client-side field-of-view producer. Casts rays from the player's
+    /// <see cref="Entity.ViewPoint"/> into a 1D polar <c>_VisionMap</c> depth texture
+    /// consumed by the URP vision render feature.
     /// </summary>
     public class VisionSubSystem : Core.Behaviours.SubSystem
     {
@@ -66,10 +65,10 @@ namespace SS3D.Systems.Vision
         private float resolution = 3f;
 
         /// <summary>
-        /// Max physics hits considered per ray before giving up (furniture in front of a wall
-        /// must be skipped until a real occluder is found).
+        /// Safety cap on how many non-occluder colliders a single ray may skip (furniture,
+        /// props, etc.) before giving up.
         /// </summary>
-        private const int MaxHitsPerRay = 16;
+        private const int MaxOccluderSkips = 64;
 
         [SerializeField]
         [Tooltip("Fallback cast origin offset when the target has no Entity.ViewPoint")]
@@ -279,21 +278,6 @@ namespace SS3D.Systems.Vision
             if (resultArray.Length < count)
                 throw new ArgumentException("Results can't be smaller than count", nameof(resultArray));
 
-            NativeArray<RaycastHit> hits = new(count * MaxHitsPerRay, Allocator.TempJob);
-            NativeArray<RaycastCommand> commands = new(count, Allocator.TempJob, NativeArrayOptions.UninitializedMemory);
-
-            // Ignore triggers: airlocks keep a large proximity BoxCollider on the root that
-            // stays in the doorway when open; only the animated door-leaf colliders should occlude.
-            QueryParameters query = new(obstacleMask, false, QueryTriggerInteraction.Ignore, false);
-            for (int i = 0; i < count; i++)
-            {
-                Vector3 direction = DirectionFromAngle(angles[i], true);
-                commands[i] = new RaycastCommand(origin, direction, query, viewRange);
-            }
-
-            JobHandle handle = RaycastCommand.ScheduleBatch(commands, hits, 1, MaxHitsPerRay, default);
-            handle.Complete();
-
             // Push past the collider hit so the occluder's own mesh (often slightly behind the
             // collider) stays visible. Without this, walls paint black while still correctly
             // hiding everything beyond them.
@@ -302,15 +286,15 @@ namespace SS3D.Systems.Vision
             for (int i = 0; i < count; i++)
             {
                 Vector3 direction = DirectionFromAngle(angles[i], true);
-                if (TryFindOccluderHit(hits, i * MaxHitsPerRay, out RaycastHit hit))
+                if (TryFindNearestOccluder(origin, direction, out float hitDistance, out Vector3 hitNormal))
                 {
-                    float visibleDistance = Mathf.Min(hit.distance + occluderSurfaceBias, viewRange);
+                    float visibleDistance = Mathf.Min(hitDistance + occluderSurfaceBias, viewRange);
                     resultArray[i] = new ViewCastInfo(
                         true,
                         origin + (direction * visibleDistance),
                         visibleDistance,
                         angles[i],
-                        hit.normal);
+                        hitNormal);
                 }
                 else
                 {
@@ -322,31 +306,55 @@ namespace SS3D.Systems.Vision
                         Vector3.zero);
                 }
             }
-
-            hits.Dispose();
-            commands.Dispose();
         }
 
         /// <summary>
-        /// Walk multi-hit results (closest first) and keep the first wall/door occluder.
-        /// Furniture and other Default-layer props are skipped so they do not darken FOV.
+        /// Walk the ray, skipping furniture/props, until the nearest wall/door (or miss).
+        /// Uses iterative single-hit casts so a dense prop pile cannot exhaust a fixed hit
+        /// buffer and falsely report a clear line of sight through walls.
         /// </summary>
-        private bool TryFindOccluderHit(NativeArray<RaycastHit> hits, int startIndex, out RaycastHit occluder)
+        private bool TryFindNearestOccluder(
+            Vector3 origin,
+            Vector3 direction,
+            out float occluderDistance,
+            out Vector3 occluderNormal)
         {
-            for (int i = 0; i < MaxHitsPerRay; i++)
+            const float skin = 0.05f;
+            float traveled = 0f;
+            Vector3 from = origin;
+
+            for (int skip = 0; skip < MaxOccluderSkips; skip++)
             {
-                RaycastHit hit = hits[startIndex + i];
-                if (hit.collider == null)
+                float remaining = viewRange - traveled;
+                if (remaining <= skin)
                     break;
 
+                if (!Physics.Raycast(
+                        from,
+                        direction,
+                        out RaycastHit hit,
+                        remaining,
+                        obstacleMask,
+                        QueryTriggerInteraction.Ignore))
+                {
+                    break;
+                }
+
+                float distanceFromOrigin = traveled + hit.distance;
                 if (IsVisionOccluder(hit.collider))
                 {
-                    occluder = hit;
+                    occluderDistance = distanceFromOrigin;
+                    occluderNormal = hit.normal;
                     return true;
                 }
+
+                // Advance past this non-occluder and keep searching for a wall/door.
+                traveled = distanceFromOrigin + skin;
+                from = origin + (direction * traveled);
             }
 
-            occluder = default;
+            occluderDistance = viewRange;
+            occluderNormal = Vector3.zero;
             return false;
         }
 

@@ -10,7 +10,7 @@ URP rendering extensions for this fork. The selection pick pass ([selection](sel
 
 Station materials use the **Simple Toon** shader stack (`STDefault` / `STTransparent`). Palette emission must sample `_EmissionMap` (same UV swatch pattern as albedo) — a flat `_EmissionColor` alone washes shared `PaletteEmission` materials white.
 
-Client FOV / fog-of-war is a hard black mask driven by batched physics raycasts from `Entity.ViewPoint` (`VisionSubSystem` → `_VisionMap`) and composited by `VisionRendererFeature`. Unseen areas are fully opaque black, not soft fog. Rays hit Default/`Walls` physics (triggers ignored), then keep only wall/door (non-window) occluders — tall furniture and airlock proximity volumes do not block vision. Cameras rendering to a `targetTexture` (inventory icon previews) skip the FOV feature.
+Client FOV / fog-of-war is a hard black mask driven by physics raycasts from `Entity.ViewPoint` (`VisionSubSystem` → `_VisionMap`) and composited by `VisionRendererFeature`. Unseen areas are fully opaque black, not soft fog. Each ray iteratively skips furniture/props until the nearest wall/door (non-window); a capped multi-hit batch previously filled with props and leaked vision through walls. Triggers and inventory preview cameras are ignored.
 
 ## Start here
 
