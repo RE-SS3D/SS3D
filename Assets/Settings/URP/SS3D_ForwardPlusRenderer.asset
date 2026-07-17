@@ -1,5 +1,21 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!114 &-8472639182736451891
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 729836a4b4b4b16589994599bb480a8e, type: 3}
+  m_Name: VisionRendererFeature
+  m_EditorClassIdentifier: SS3D.Rendering.URP::SS3D.Rendering.URP.VisionRendererFeature
+  m_Active: 1
+  _visionMaskShader: {fileID: 4800000, guid: 15369a85bf338fdb7af4340cb5d185ec, type: 3}
+  _visionBlurShader: {fileID: 4800000, guid: a2c58fdd58bc3e1a9a6970b779eebb57, type: 3}
+  _debugMask: 0
 --- !u!114 &-8123456789012345678
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -21,7 +37,7 @@ MonoBehaviour:
       surfaceData: 2
     screenSpaceSettings:
       normalBlend: 0
---- !u!114 &-5200967459084580021
+--- !u!114 &-6234567890123456789
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -30,27 +46,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 02f817be434d471c9377a7c61382a2cd, type: 3}
-  m_Name: SelectionPickRendererFeature
-  m_EditorClassIdentifier: SS3D.Rendering.URP::SS3D.Rendering.URP.SelectionPickRendererFeature
+  m_Script: {fileID: 11500000, guid: c8a4f1e29b3d47a6a0e5d1c2b3a4f5e6, type: 3}
+  m_Name: UiBackdropBlurRendererFeature
+  m_EditorClassIdentifier: SS3D.Rendering.URP::SS3D.Rendering.URP.UiBackdropBlurRendererFeature
   m_Active: 1
-  _selectionShader: {fileID: 4800000, guid: bcd9cf75c1aa43247b53d2014cfde501, type: 3}
---- !u!114 &-8472639182736451891
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 729836a4b4b4b16589994599bb480a8e, type: 3}
-  m_Name: VisionRendererFeature
-  m_EditorClassIdentifier: SS3D.Rendering.URP::SS3D.Rendering.URP.VisionRendererFeature
-  m_Active: 1
-  _visionMaskShader: {fileID: 4800000, guid: 15369a85bf338fdb7af4340cb5d185ec, type: 3}
-  _visionBlurShader: {fileID: 4800000, guid: a2c58fdd58bc3e1a9a6970b779eebb57, type: 3}
-  _debugMask: 0
+  _blurShader: {fileID: 4800000, guid: f1d7a4b52e6a70d9d3b8a4f5e6d7c8b9, type: 3}
 --- !u!114 &-3601183876851600227
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -99,7 +99,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: de640fe3d0db1804a85f9fc8f5cadab6, type: 3}
   m_Name: SS3D_ForwardPlusRenderer
-  m_EditorClassIdentifier:
+  m_EditorClassIdentifier: 
   debugShaders:
     debugReplacementPS: {fileID: 4800000, guid: cf852408f2e174538bcd9b7fda1c5ae7, type: 3}
     hdrDebugViewPS: {fileID: 4800000, guid: 573620ae32aec764abd4d728906d2587, type: 3}
@@ -115,10 +115,11 @@ MonoBehaviour:
   m_RendererFeatures:
   - {fileID: 5324824689208116589}
   - {fileID: -8123456789012345678}
-  - {fileID: -5200967459084580021}
   - {fileID: -8472639182736451891}
   - {fileID: -3601183876851600227}
-  m_RendererFeatureMap: 6dc57abbd793e549b20caf1e17af438f4bcbe5e0a673d2b7cd16f0a28d236b8a9d746509580606ce
+  - {fileID: -6234567890123456789}
+  - {fileID: 7832133479651918364}
+  m_RendererFeatureMap: 6dc57abbd793e549b20caf1e17af438f4bcbe5e0a673d2b7cd16f0a28d236b8a9d746509580606ceeb7e223d895d7aa9
   m_UseNativeRenderPass: 0
   xrSystemData: {fileID: 0}
   postProcessData: {fileID: 11400000, guid: 41439944d30ece34e96484bdb6645b55, type: 2}
@@ -173,3 +174,17 @@ MonoBehaviour:
     BlurQuality: 0
     Falloff: 100
     SampleCount: -1
+--- !u!114 &7832133479651918364
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 02f817be434d471c9377a7c61382a2cd, type: 3}
+  m_Name: SelectionPickRendererFeature
+  m_EditorClassIdentifier: SS3D.Rendering.URP::SS3D.Rendering.URP.SelectionPickRendererFeature
+  m_Active: 1
+  _selectionShader: {fileID: 4800000, guid: bcd9cf75c1aa43247b53d2014cfde501, type: 3}
