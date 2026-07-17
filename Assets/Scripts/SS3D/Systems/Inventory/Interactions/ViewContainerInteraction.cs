@@ -63,6 +63,11 @@ namespace SS3D.Systems.Inventory.Interactions
                 return false;
             }
 
+            if (!AttachedContainer.IsAccessibleBy(interactionEvent.Source.GetComponentInParent<HumanInventory>()))
+            {
+                return false;
+            }
+
             return !containerViewer.HasContainer(AttachedContainer) && entity.GetComponent<Hands>().SelectedHand.CanInteract(AttachedContainer.gameObject);
         }
 

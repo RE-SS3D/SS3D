@@ -9,23 +9,23 @@ todos:
     content: "Phase 0: Delete condemned uGUI container UI (ContainerUi, ContainerDisplay, ItemGrid, ItemGridItem, ItemDisplay, DraggableWindow, InventoryView, DummySlot, SingleItemContainerSlot, InventoryDisplayElement) + strip Human.prefab refs via Editor tool"
     status: pending
   - id: size-class
-    content: "Phase 1: SizeClass enum on Item + max-size-class fit-check on AttachedContainer (SizeClassStorageCondition)"
-    status: pending
+    content: "Phase 1: SizeClass enum on Item + max-size-class fit-check on AttachedContainer.CanContainItem"
+    status: completed
   - id: recursive-weight
-    content: "Phase 1: Real recursive AttachedContainer.Weight (computed, never cached) wired off Item._weight"
-    status: pending
+    content: "Phase 1: Real recursive AttachedContainer.Weight (computed, never cached) wired off Item.Weight + StackCount"
+    status: completed
   - id: stacking
-    content: "Phase 1: Revive stacking — StackableItem trait/component, AttachedContainer collapses identical stackable items into one slot + count"
-    status: pending
+    content: "Phase 1: Revive stacking — Item.MaxStackSize/StackCount, AttachedContainer.AddStoredItem merges into an existing compatible stack instead of taking a new slot (splitting deferred, see architecture doc)"
+    status: completed
   - id: flat-slots
-    content: "Phase 1: Collapse 2D grid Position addressing to flat slot-index; remove ClothingContainers string-keyed lookup in favor of ContainerType"
-    status: pending
+    content: "Phase 1 (dropped): kept existing 2D grid Position addressing — behaves as flat slot count already since no item occupies >1 cell; ClothingContainers string-keyed lookup left untouched (out of blast radius). See architecture doc scope decisions."
+    status: completed
   - id: store-bug
-    content: "Phase 1: Fix StoreInteraction.Start() — dumps whole hand Container instead of moving the single item"
-    status: pending
+    content: "Phase 1: Fix StoreInteraction.Start() — was calling Container.Dump() (whole hand); now RemoveItem(item)"
+    status: completed
   - id: container-lock
-    content: "Phase 1: Minimal ID-gated lock component on AttachedContainer for world containers, via IdAccessSubSystem.CheckAccess"
-    status: pending
+    content: "Phase 1: AttachedContainerLock component + AttachedContainer.IsAccessibleBy, wired into ViewContainerInteraction/StoreInteraction/TakeFirstInteraction/OpenInteraction CanInteract"
+    status: completed
   - id: viewer-multi
     content: "Phase 2: Verify/extend ContainerViewer TargetRpc/ObserversRpc for multiple simultaneously open containers per client"
     status: pending
@@ -82,4 +82,21 @@ today), panel drag-drop is a new UITK implementation (not literal `InteractionTi
 
 ## Implementation notes
 
-(fill in as phases ship — record any divergence from the plan here)
+**Phase 1 (data model), shipped this pass:** `SizeClass` enum, `Item.Weight`/`SizeClass`/
+`MaxStackSize`/`StackCount` fields, `AttachedContainer.Weight` (recursive), `AttachedContainer.
+CanContainItem` size-class check, stack-merge in `AddStoredItem` (`TryFindMergeableStack` +
+`DespawnMergedItem`), `StoreInteraction.Start()` hand-dump bug fix, `AttachedContainerLock` +
+`AttachedContainer.IsAccessibleBy` wired into the four container interactions' `CanInteract`. Deleted
+dead `Stackable.cs` (fully commented out, unused). Two items **trimmed from the original plan** during
+implementation (see architecture doc "Scope decisions"): flat slot-index addressing refactor and
+`ClothingContainers` string-key cleanup — both judged unnecessary churn/risk for no behavior change,
+given no compiler was available to verify a wider refactor. Stack **splitting** (pulling part of a
+stack back out) is explicitly not implemented — only merging on add.
+
+**Not yet started:** Phases 0, 2, 3, 4, 5 (uGUI purge, ContainerViewer multi-panel networking, the
+UITK storage panel surface itself, slot drag-and-drop, gear-strip/world-container wiring). See
+architecture doc "Execution environment constraint" — no Unity Editor was available in the
+implementing session; Phase 1 could be written and reasoned about as plain C#, but the remaining
+phases involve UXML/USS assets, ScriptableObject catalog instances, and (for Phase 0) mega-prefab
+surgery that per policy requires an Editor tool, none of which can be authored with confidence without
+compiler/Editor feedback in one continuous session. Resume here.

@@ -66,6 +66,11 @@ namespace SS3D.Systems.Inventory.Interactions
                 return false;
             }
 
+            if (_attachedContainer != null && !_attachedContainer.IsAccessibleBy(entity.GetComponent<HumanInventory>()))
+            {
+                return false;
+            }
+
             if (interactionEvent.Target is IGameObjectProvider target)
             {
                 // Check that the entity is actually capable of interacting with the target

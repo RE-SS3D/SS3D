@@ -125,10 +125,15 @@ namespace SS3D.Systems.Inventory.Containers
 
         [Tooltip("The filter on the container."), SerializeField]
         private Filter _startFilter;
+
+        [Tooltip("The largest item size class this container accepts (Documents/design/inventory-storage.md §4)."), SerializeField]
+        private SizeClass _maxSizeClass = SizeClass.Huge;
+
         public ContainerType Type => _type;
         public Vector2Int Size => _size;
         public bool HideItems => _hideItems;
         public Filter StartFilter => _startFilter;
+        public SizeClass MaxSizeClass => _maxSizeClass;
 
 		/// <summary>
 		/// Is this container empty
@@ -138,6 +143,36 @@ namespace SS3D.Systems.Inventory.Containers
 		/// How many items are in this container
 		/// </summary>
 		public int ItemCount => Items.Count();
+
+        /// <summary>
+        /// Total carried weight: every stored item's own weight (times its stack count), plus,
+        /// recursively, the weight of anything stored inside a nested container on a stored item.
+        /// Always computed, never cached (Documents/design/inventory-storage.md §2, §7).
+        /// </summary>
+        public float Weight
+        {
+            get
+            {
+                float total = 0f;
+                foreach (StoredItem storedItem in _storedItems)
+                {
+                    Item item = storedItem.Item;
+                    if (item == null)
+                    {
+                        continue;
+                    }
+
+                    total += item.Weight * Mathf.Max(1, item.StackCount);
+
+                    foreach (AttachedContainer nested in item.GetComponentsInChildren<AttachedContainer>())
+                    {
+                        total += nested.Weight;
+                    }
+                }
+
+                return total;
+            }
+        }
 
 		#endregion
 
@@ -445,10 +480,56 @@ namespace SS3D.Systems.Inventory.Containers
                 return true;
             }
 
+            // Stacking: merge into an existing compatible stack instead of taking a new slot
+            // (Documents/design/inventory-storage.md §5).
+            if (newItem.Item.IsStackable && TryFindMergeableStack(newItem.Item, out int mergeIndex))
+            {
+                Item existingStackItem = _storedItems[mergeIndex].Item;
+                existingStackItem.SetStackCount(existingStackItem.StackCount + newItem.Item.StackCount);
+                DespawnMergedItem(newItem.Item);
+                return true;
+            }
+
             _storedItems.Add(newItem);
             newItem.Item.SetContainer(this);
             return true;
 		}
+
+        /// <summary>
+        /// Finds an existing stored item this stackable item could merge into: same stack definition,
+        /// with enough remaining room for the incoming item's full count. Does not partially merge/split.
+        /// </summary>
+        private bool TryFindMergeableStack(Item item, out int index)
+        {
+            for (int i = 0; i < _storedItems.Count; i++)
+            {
+                Item existing = _storedItems[i].Item;
+                if (existing != null
+                    && existing.CanMergeWith(item)
+                    && existing.StackCount + item.StackCount <= existing.MaxStackSize)
+                {
+                    index = i;
+                    return true;
+                }
+            }
+
+            index = -1;
+            return false;
+        }
+
+        /// <summary>
+        /// Despawns an item that was merged into an existing stack rather than stored in its own slot.
+        /// Does not go through Item.Delete()/Container.RemoveItem — the item was never added to this
+        /// container's storage, and may already have been removed from its source (see TransferItemToOther).
+        /// </summary>
+        [Server]
+        private void DespawnMergedItem(Item item)
+        {
+            if (item.GameObject != null)
+            {
+                ServerManager.Despawn(item.GameObject);
+            }
+        }
 
 		/// <summary>
 		/// Correctly set a storeItem in the container at the given index. All replacing should use this method, never do it directly.
@@ -592,17 +673,23 @@ namespace SS3D.Systems.Inventory.Containers
 		}
 
 		/// <summary>
-		/// Checks if this item fits inside the container
+		/// Checks if this item fits inside the container. A stackable item that can merge into an
+		/// existing compatible stack doesn't need a free slot (Documents/design/inventory-storage.md §5).
 		/// </summary>
 		/// <param name="item"></param>
 		/// <returns></returns>
 		private bool CanHoldItem(Item item)
 		{
+			if (item.IsStackable && TryFindMergeableStack(item, out _))
+			{
+				return true;
+			}
+
 			return Items.Count() < Size.x * Size.y;
 		}
 
         /// <summary>
-        /// Checks if this item can be stored and fits inside the container. It will also check for 
+        /// Checks if this item can be stored and fits inside the container. It will also check for
         /// custom storage conditions if they exists, which are scripts put on the same game object as this container and
         /// implementing IStorageCondition.
         /// </summary>
@@ -610,6 +697,7 @@ namespace SS3D.Systems.Inventory.Containers
 		{
             return CanStoreItem(item)
                     && CanHoldItem(item)
+                    && item.SizeClass <= _maxSizeClass // Flat size-class fit check (Documents/design/inventory-storage.md §4)
                     && !item.GetComponentsInChildren<AttachedContainer>().AsEnumerable().Contains(this) // Can't put an item in its own container
                     && !(bool)GetComponents<IStorageCondition>()?.Any(x => !x.CanStore(this, item));
         }
@@ -617,6 +705,17 @@ namespace SS3D.Systems.Inventory.Containers
         public bool CanContainItemAtPosition(Item item, Vector2Int position)
         {
             return CanContainItem(item) && IsAreaFree(position) && AreSlotCoordinatesInGrid(position);
+        }
+
+        /// <summary>
+        /// Whether the given inventory is allowed to open/store/take from this container right now.
+        /// Always true unless an AttachedContainerLock component is present and locked
+        /// (Documents/design/inventory-storage.md §8).
+        /// </summary>
+        public bool IsAccessibleBy(HumanInventory inventory)
+        {
+            AttachedContainerLock containerLock = GetComponent<AttachedContainerLock>();
+            return containerLock == null || containerLock.IsAccessGranted(inventory);
         }
 
         /// <summary>

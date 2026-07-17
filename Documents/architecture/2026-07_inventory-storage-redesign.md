@@ -22,10 +22,15 @@ model, not just the presentation layer.
   consumer uses) for freestanding world containers. `hacking-interface.md` §3's FDU
   hacker-visible-bitmask exposure is **deferred** — hacking-interface has no architecture effort yet.
   Flagged as a follow-on integration point, same pattern `pda.md` used for its own unbuilt ahelp tab.
-- **Slot addressing:** the existing `AttachedContainer` 2D grid (`Vector2Int Position`) carries no
-  item-footprint data (nothing is ever wider than 1 cell) — collapsed to flat slot-index addressing
-  matching the mockups' uniform grid. `ClothingContainers`' redundant string-keyed lookup is removed
-  in favor of `ContainerType` as the single addressing scheme.
+- **Slot addressing:** kept the existing `AttachedContainer` 2D grid (`Vector2Int Position`) as the
+  storage-layer representation rather than refactoring to flat slot-index addressing — since no item
+  ever occupies more than one cell, a `Size.x × Size.y` grid already behaves identically to a flat
+  slot count for capacity purposes, so collapsing it is pure churn for no behavior change. The new
+  UITK panel view computes its own 3-column visual layout from slot count; the storage layer is
+  untouched. Revisited during implementation — trimmed from the original plan to reduce risk.
+  `ClothingContainers`' redundant string-keyed lookup was also left alone for the same reason: it's
+  used by clothing/armor rendering call sites beyond this effort's scope, and swapping its addressing
+  scheme without compiler verification (see below) isn't worth the blast radius for a cosmetic cleanup.
 - **Drag-and-drop:** screen-space panel-to-panel slot dragging is a new UITK pointer-capture
   implementation, not a literal reuse of world-space `InteractionTier.Combine` (radial menu
   arm-cursor-then-click). `inventory-storage.md`'s "same Tier 3 combine grammar" language is a
@@ -35,7 +40,19 @@ model, not just the presentation layer.
   pocket variance, storage item durability, bulk "loot everything," cross-round persistence, bag
   fullness silhouette, `cargo.md`/`disposal.md` code changes (conceptually already `Container`
   instances per design doc §2/§14, no functional change needed there), full hacking-interface FDU
-  taxonomy (see locking above).
+  taxonomy (see locking above). **Stack splitting** is also out of scope this pass — merging identical
+  incoming items into an existing compatible stack is implemented, but pulling part of a stack back out
+  is left for the Tier 3 combine grammar design doc §5 already points at, not built here.
+
+## Execution environment constraint
+
+This effort was implemented in a remote session with **no local Unity Editor** — no compilation, Play
+Mode, or Test Runner access. C#/UXML/USS source was written and reviewed by careful reading, not
+compiler feedback. Per [2026-07_agent-first-composition.md](2026-07_agent-first-composition.md),
+mega-prefabs (`Human.prefab`, item prefabs) are never hand-edited as YAML regardless of environment —
+that already requires an Editor tool. The owner must: open the project in Unity Editor, resolve any
+compile errors this effort's diff introduces, run the Editor purge/rebuild tools this effort adds, and
+carry out the Verification section below before merging.
 
 ## Phases
 
