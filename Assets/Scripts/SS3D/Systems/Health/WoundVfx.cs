@@ -17,10 +17,10 @@ namespace SS3D.Systems.Health
         private const float FloorDecalIntervalSeconds = 0.65f;
         private const float BodyDecalSize = 0.14f;
         private const float SeveredBodyDecalSize = 0.2f;
-        private const float ImpactBurstCount = 16f;
-        private const float SeveredImpactBurstCount = 20f;
+        private const float ImpactBurstCount = 28f;
+        private const float SeveredImpactBurstCount = 40f;
 
-        private static readonly Color BloodColor = new(90f / 255f, 8f / 255f, 10f / 255f, 1f);
+        private static readonly Color BloodColor = new(200f / 255f, 18f / 255f, 28f / 255f, 1f);
 
         private readonly Dictionary<BodyZone, GameObject> _activeParticles = new();
         private readonly Dictionary<BodyZone, DecalProjector> _bodyDecals = new();
@@ -110,6 +110,16 @@ namespace SS3D.Systems.Health
                 return;
             }
 
+            // Prefer ZoneTargetCollider transforms — they live on armature bones and follow
+            // the skinned pose. AnatomyNode roots are body-part prefab pivots that stay at
+            // bind-pose offsets beside the visible mesh.
+            ZoneTargetCollider[] zoneColliders = GetComponentsInChildren<ZoneTargetCollider>(true);
+            for (int i = 0; i < zoneColliders.Length; i++)
+            {
+                ZoneTargetCollider zoneCollider = zoneColliders[i];
+                PreferDistalAnchor(zoneCollider.Zone, zoneCollider.transform);
+            }
+
             AnatomyNode[] anatomyNodes = GetComponentsInChildren<AnatomyNode>(true);
             for (int i = 0; i < anatomyNodes.Length; i++)
             {
@@ -117,14 +127,38 @@ namespace SS3D.Systems.Health
                 _anchors.TryAdd(node.PrimaryZone, node.transform);
             }
 
-            ZoneTargetCollider[] zoneColliders = GetComponentsInChildren<ZoneTargetCollider>(true);
-            for (int i = 0; i < zoneColliders.Length; i++)
+            _anchorsBuilt = true;
+        }
+
+        /// <summary>
+        /// Keep the deepest (most distal) collider per zone so bleed VFX sit on the limb,
+        /// not a proximal BodyCollider proxy when both exist.
+        /// </summary>
+        private void PreferDistalAnchor(BodyZone zone, Transform candidate)
+        {
+            if (!_anchors.TryGetValue(zone, out Transform existing) || existing == null)
             {
-                ZoneTargetCollider zoneCollider = zoneColliders[i];
-                _anchors.TryAdd(zoneCollider.Zone, zoneCollider.transform);
+                _anchors[zone] = candidate;
+                return;
             }
 
-            _anchorsBuilt = true;
+            if (GetHierarchyDepth(candidate) > GetHierarchyDepth(existing))
+            {
+                _anchors[zone] = candidate;
+            }
+        }
+
+        private static int GetHierarchyDepth(Transform transform)
+        {
+            int depth = 0;
+            Transform current = transform;
+            while (current.parent != null)
+            {
+                depth++;
+                current = current.parent;
+            }
+
+            return depth;
         }
 
         private void SetZoneBleeding(BodyZone zone, bool bleeding, bool isSevered)
@@ -256,14 +290,15 @@ namespace SS3D.Systems.Health
             ParticleSystem.MainModule main = particleSystem.main;
             main.duration = 5f;
             main.loop = true;
-            main.startLifetime = new ParticleSystem.MinMaxCurve(0.6f, 1f);
-            main.startSpeed = new ParticleSystem.MinMaxCurve(0.5f, 1.5f);
-            main.startSize = new ParticleSystem.MinMaxCurve(0.03f, 0.06f);
+            main.startLifetime = new ParticleSystem.MinMaxCurve(0.9f, 1.6f);
+            main.startSpeed = new ParticleSystem.MinMaxCurve(0.35f, 1.1f);
+            main.startSize = new ParticleSystem.MinMaxCurve(0.06f, 0.12f);
             main.startRotation = new ParticleSystem.MinMaxCurve(0f, Mathf.PI * 2f);
             main.startColor = BloodColor;
-            main.gravityModifier = 1.5f;
+            main.gravityModifier = 2.8f;
             main.simulationSpace = ParticleSystemSimulationSpace.World;
-            main.maxParticles = 50;
+            main.maxParticles = 96;
+            main.scalingMode = ParticleSystemScalingMode.Hierarchy;
 
             UpdateParticleIntensity(particleSystem, isSevered);
 
@@ -275,14 +310,15 @@ namespace SS3D.Systems.Health
                 new[]
                 {
                     new GradientAlphaKey(1f, 0f),
-                    new GradientAlphaKey(1f, 0.15f),
+                    new GradientAlphaKey(1f, 0.45f),
+                    new GradientAlphaKey(0.35f, 0.75f),
                     new GradientAlphaKey(0f, 1f),
                 });
             colorOverLifetime.color = gradient;
 
             ParticleSystem.SizeOverLifetimeModule sizeOverLifetime = particleSystem.sizeOverLifetime;
             sizeOverLifetime.enabled = true;
-            sizeOverLifetime.size = new ParticleSystem.MinMaxCurve(1f, AnimationCurve.Linear(0f, 1f, 1f, 0.6f));
+            sizeOverLifetime.size = new ParticleSystem.MinMaxCurve(1f, AnimationCurve.Linear(0f, 1f, 1f, 0.75f));
 
             ParticleSystemRenderer renderer = particleSystem.GetComponent<ParticleSystemRenderer>();
             Material particleMaterial = BleedingVfxCatalog.Instance != null
@@ -310,14 +346,16 @@ namespace SS3D.Systems.Health
             }
 
             ParticleSystem.EmissionModule emission = particleSystem.emission;
-            emission.rateOverTime = isSevered ? 10f : 6f;
+            emission.rateOverTime = isSevered ? 36f : 22f;
 
+            // Sphere drip from the bone — avoids cone axes that spray sideways on armature bones.
             ParticleSystem.ShapeModule shape = particleSystem.shape;
             shape.enabled = true;
-            shape.shapeType = ParticleSystemShapeType.Cone;
-            shape.angle = isSevered ? 12f : 10f;
-            shape.radius = 0.02f;
-            shape.rotation = new Vector3(-90f, 0f, 0f);
+            shape.shapeType = ParticleSystemShapeType.Sphere;
+            shape.radius = isSevered ? 0.05f : 0.035f;
+            shape.radiusThickness = 1f;
+            shape.rotation = Vector3.zero;
+            shape.scale = Vector3.one;
         }
 
         private GameObject GetParticlePrefab()

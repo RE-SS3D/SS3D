@@ -13,7 +13,6 @@ MonoBehaviour:
   m_Name: BleedingVfxCatalog
   m_EditorClassIdentifier: SS3D.Systems::SS3D.Systems.Health.BleedingVfxCatalog
   _splatters:
-  - {fileID: 2800000, guid: e8ea4021cc268d7398cbc72a4716e156, type: 3}
   - {fileID: 2800000, guid: 783c95252050366a3bf7eb1e177bd377, type: 3}
   - {fileID: 2800000, guid: 3d232eaaf6e9dd63c987f17f606b2127, type: 3}
   - {fileID: 2800000, guid: d366dd9cf87b9231ea0f8ff1157ddb8f, type: 3}

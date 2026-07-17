@@ -88,13 +88,7 @@ namespace SS3D.Systems.Health
                 return null;
             }
 
-            // Pre-colored blood art (e.g. BloodSplatter1) is used as-is; white mask
-            // splatters need a runtime multiply because URP Decal has no Base Color input.
-            if (source.name.IndexOf("Blood", System.StringComparison.OrdinalIgnoreCase) >= 0)
-            {
-                return source;
-            }
-
+            // White mask splatters need a runtime multiply because URP Decal has no Base Color input.
             int id = source.GetInstanceID();
             if (_tintedSplatters.TryGetValue(id, out Texture2D cached) && cached != null)
             {

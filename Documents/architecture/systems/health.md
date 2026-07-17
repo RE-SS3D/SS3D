@@ -1,7 +1,7 @@
 > Code paths: Assets/Scripts/SS3D/Systems/Health/
 > Entry points: HumanHealthController, HealthSimulation, OrganSimulation
 > Status: partial (Phase 5b severing shipped; vitals HUD Phase 6)
-> Verified: a86b44505 — 2026-07-17
+> Verified: e059ca756 — 2026-07-17
 
 # Health
 
@@ -21,7 +21,7 @@ Phase 0d strips legacy health components from `Human.prefab` and rewires a thinn
 - `Assets/Scripts/SS3D/Systems/Health/OrganSimulation.cs` — zone→organ damage, organ tick drains, perfusion, limb multipliers
 - `Assets/Scripts/SS3D/Systems/Health/OrganInstance.cs` — organ registration on Human prefab / organ item prefabs
 - `Assets/Scripts/SS3D/Systems/Health/Interactions/BandageInteraction.cs` — stop bleeding (Phase 1)
-- `Assets/Scripts/SS3D/Systems/Health/WoundVfx.cs` — per-zone bleed particles, body wound decals, floor drip timer
+- `Assets/Scripts/SS3D/Systems/Health/WoundVfx.cs` — per-zone bleed particles / body decals; anchors prefer armature `ZoneTargetCollider` bones over `AnatomyNode` pivots so VFX follow the skinned pose
 - `Assets/Scripts/SS3D/Systems/Health/BloodDecalSpawner.cs` — pooled URP floor blood decals
 - `Assets/Scripts/SS3D/Systems/Health/BleedingVfxCatalog.cs` — Resources catalog; tints white mask splatters for Decal `Base_Map`
 - `Assets/Scripts/SS3D/Rendering/URP/DecalRenderingLayers.cs` — floor vs character DecalProjector rendering-layer masks
@@ -54,6 +54,7 @@ Phase 0d strips legacy health components from `Human.prefab` and rewires a thinn
 - **Blood decals vanish after setting Surface Type Transparent:** URP `Decal` shadergraph materials must stay **Opaque**. Alpha already blends via the DBuffer/Screen Space passes (`SrcAlpha OneMinusSrcAlpha`); flipping `_Surface` / render queue 3000 / `_SURFACE_TYPE_TRANSPARENT` makes projectors stop drawing. Keep `BloodDecal.mat` Opaque like the package `Decal.mat` default.
 - **White / untinted splatters:** most `Assets/Art/Textures/World/VFX/Splatters/Splatter*.png` are white masks. URP Decal has no Base Color multiply (only `Base_Map` → albedo). `BleedingVfxCatalog.CreateDecalMaterial` tints those masks at runtime; do not “fix” white by switching the material to Transparent.
 - **Floor blood paints through the player / looks cut off:** Mesh Bias only affects mesh decals. Cutoffs: align with `DecalRotationOntoSurface` (never bare `LookRotation(-normal)` on flats). Through-player: URP Decal Layers need receivers to write rendering layers in a **DepthNormals** pass — Simple Toon lacked that, so character pixels kept the floor’s layer and still matched floor projectors. `STDefault` now has DepthNormals/`_WRITE_RENDERING_LAYERS`; tiles stamp `ReceiveWorldDecals`, floor projectors use `WorldFloorProjectorMask`.
+- **Bleed particles float beside the limb:** do not parent VFX to `AnatomyNode` roots first — those prefab pivots do not follow the skinned mesh. Prefer `ZoneTargetCollider` bone transforms (see `WoundVfx.EnsureAnchors`).
 
 ## Depends on / Used by
 
