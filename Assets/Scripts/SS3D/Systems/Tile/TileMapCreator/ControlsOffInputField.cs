@@ -12,16 +12,18 @@ namespace SS3D.Systems.Tile.TileMapCreator
     /// </summary>
     public class ControlsOffInputField : TMP_InputField
     {
+        private readonly InputTextEntryScope _textEntry = new();
+
         public override void OnSelect(BaseEventData eventData)
         {
             base.OnSelect(eventData);
-            SubSystems.Get<InputSubSystem>().ToggleAllActions(false);
+            _textEntry.Enter();
         }
 
         public override void OnDeselect(BaseEventData eventData)
         {
             base.OnDeselect(eventData);
-            SubSystems.Get<InputSubSystem>().ToggleAllActions(true);
+            _textEntry.Exit();
         }
     }
 }

@@ -236,11 +236,8 @@ namespace SS3D.Systems.Tile.TileMapCreator
         {
             _isDragging = false;
 
-            if (_menu.MouseOverUI)
-            {
-                _inputSystem.ToggleAction(_controls.Place, false);
-            }
-
+            // While the pointer is over the menu the TileMapMenuSubSystem already suppresses Place,
+            // so this handler does not fire there and no manual toggle is needed.
             if (!_menu.IsDeleting)
             {
                 PlaceOnHolograms();

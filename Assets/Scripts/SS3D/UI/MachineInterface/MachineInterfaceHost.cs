@@ -1,5 +1,6 @@
 using SS3D.Core;
 using SS3D.Core.Behaviours;
+using SS3D.Systems.Inputs;
 using SS3D.UI.MachineInterface.Components;
 using System.Collections.Generic;
 using UnityEngine;
@@ -217,10 +218,12 @@ namespace SS3D.UI.MachineInterface
             EnsureRuntimeAssets();
             RegisterUiEntries();
             ShutdownDocument();
+            InputInterface.RegisterDocument(_document);
         }
 
         protected override void OnDestroyed()
         {
+            InputInterface.UnregisterDocument(_document);
             Close();
             base.OnDestroyed();
         }

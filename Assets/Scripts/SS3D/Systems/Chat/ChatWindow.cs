@@ -32,6 +32,8 @@ namespace SS3D.Engine.Chat
         private ChatSubSystem _chatSystem;
         private InputSubSystem _inputSystem;
         private Controls.OtherActions _controls;
+        private readonly InputTextEntryScope _textEntry = new(InputContext.ChatEntry);
+        private IInputHandle _scrollSuppress;
 
         protected virtual ChatChannel GetCurrentChatChannel() => throw new NotImplementedException();
 
@@ -62,12 +64,13 @@ namespace SS3D.Engine.Chat
 
         public void OnPointerEnter(PointerEventData eventData)
         {
-            _inputSystem.ToggleBinding("<Mouse>/scroll/y", false);
+            _scrollSuppress ??= _inputSystem.SuppressBinding("<Mouse>/scroll/y");
         }
 
         public void OnPointerExit(PointerEventData eventData)
         {
-            _inputSystem.ToggleBinding("<Mouse>/scroll/y", true);
+            _scrollSuppress?.Dispose();
+            _scrollSuppress = null;
         }
 
         protected virtual void HandleSendMessage(InputAction.CallbackContext context)
@@ -147,12 +150,12 @@ namespace SS3D.Engine.Chat
         
         public void OnInputFieldSelect()
         {
-            _inputSystem.ToggleAllActions(false, new[] { _controls.SendChatMessage });
+            _textEntry.Enter();
         }
 
         public void OnInputFieldDeselect()
         {
-            _inputSystem.ToggleAllActions(true, new[] { _controls.SendChatMessage });
+            _textEntry.Exit();
         }
     }
 }
