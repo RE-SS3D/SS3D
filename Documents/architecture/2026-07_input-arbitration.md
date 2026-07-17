@@ -74,10 +74,11 @@ released. Definitions live in `InputSubSystem.BuildContexts()`.
 
 `InputInterface.IsPointerOverInterface()` returns true if the pointer is over any uGUI element
 (`EventSystem.IsPointerOverGameObject()`) or any registered, enabled UI Toolkit panel
-(`panel.Pick(RuntimePanelUtils.ScreenToPanel(...))`). `InteractionController` world-click gates use
-it instead of the uGUI-only check, so clicks no longer leak through the radial menu or machine
-panels. Runtime documents register in setup: `RadialInteractionSubSystem`, `ArmedInteractionSubSystem`,
-`MachineInterfaceHost`.
+(`panel.Pick(RuntimePanelUtils.ScreenToPanel(...))` with bottom-left screen pixels — do not
+pre-flip Y). `InteractionController` world-click gates and `SelectionCamera` hover clearing both
+use it, so examine/outlines/clicks do not target world objects through registered UI Toolkit panels.
+Runtime documents register in setup: `RadialInteractionSubSystem`, `ArmedInteractionSubSystem`,
+`MachineInterfaceHost`, `MainHudSubSystem`.
 
 ## Legacy input removed
 

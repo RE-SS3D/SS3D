@@ -10,6 +10,8 @@ Shader-ID mesh picking replaces screen raycasts for interaction targeting. Each 
 
 Outline shells and other auxiliary meshes use `SelectionRenderingLayers.ExcludeFromSelectionPick` so they stay out of the ID pass (avoids hover flicker / z-fight and outline bleed into item icons). Clear outlines on inventory pickup so the green shell does not stick after Take.
 
+`SelectionCamera` clears the current selectable while `InputInterface.IsPointerOverInterface()` is true, so examine/hover/outlines do not target world objects through registered UI Toolkit panels (Main HUD, machine UI, radial).
+
 ## Start here
 
 - `Assets/Scripts/SS3D/Systems/Selection/SelectionSubSystem.cs` — subsystem entry point
@@ -29,7 +31,7 @@ Outline shells and other auxiliary meshes use `SelectionRenderingLayers.ExcludeF
 
 ## Depends on / Used by
 
-- **Depends on:** [rendering](rendering.md) (URP pick pass)
+- **Depends on:** [rendering](rendering.md) (URP pick pass), [inputs](inputs.md) (pointer-over-UI clears hover)
 - **Used by:** [interactions-runtime](interactions-runtime.md), [examine](examine.md), [machine-interface](machine-interface.md)
 
 ## Related docs

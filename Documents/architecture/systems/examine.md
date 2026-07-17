@@ -30,7 +30,7 @@ Examine is **not** an `IInteraction` — `ExaminableBase` is read by `ExamineSub
 
 ## Depends on / Used by
 
-- **Depends on:** [selection](selection.md), [localization](localization.md)
+- **Depends on:** [selection](selection.md), [localization](localization.md), [inputs](inputs.md) (via selection pointer-over-UI clear)
 - **Used by:** Most world objects with examine content
 
 ## Related docs

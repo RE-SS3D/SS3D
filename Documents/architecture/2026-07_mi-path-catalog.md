@@ -26,6 +26,7 @@ Replaces `MachineInterfaceHost` per-template SerializeFields and Editor-only `En
 - Full UiShell / folding radial + armed
 - Subsystem bootstrap / moving MI host off Game.unity
 - Addressables
+- **Shared catalog helper** — Main HUD later copied this Paths + Resources SO + rebuild-menu stack (`MainHudAssetCatalog`). Unifying MI + Main HUD (and blocking a third copy) is follow-on (b) work, documented under [ui-shell.md](systems/ui-shell.md) § Future work — not part of this MI-only wedge.
 
 ## Implementation notes
 
@@ -35,4 +36,4 @@ Replaces `MachineInterfaceHost` per-template SerializeFields and Editor-only `En
 ## Related docs
 
 - Policy: [2026-07_agent-first-composition.md](2026-07_agent-first-composition.md)
-- Map: [systems/machine-interface.md](systems/machine-interface.md), [systems/ui-shell.md](systems/ui-shell.md)
+- Map: [systems/machine-interface.md](systems/machine-interface.md), [systems/ui-shell.md](systems/ui-shell.md), [systems/inventory.md](systems/inventory.md) (sibling Main HUD catalog)

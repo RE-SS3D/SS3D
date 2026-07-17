@@ -2,6 +2,7 @@
     /* Surfaces */
     --ss3d-surface-void: #0a0b0d;
     --ss3d-surface-panel: #12141a;
+    --ss3d-surface-hud: #161616;
     --ss3d-surface-inset: #0a0b0d;
     --ss3d-surface-elevated: #1a1d24;
     --ss3d-surface-panel-raised: #1a1d24;
@@ -36,6 +37,10 @@
     --ss3d-ramp-green-300: #88b36a;
     --ss3d-ramp-green-400: #6fa055;
     --ss3d-ramp-blue-300: #5f86b3;
+
+    /* Functional button fills (flat, white text, no border) */
+    --ss3d-btn-green-bg: var(--ss3d-ramp-green-400);
+    --ss3d-btn-green-hover-bg: var(--ss3d-ramp-green-300);
 
     /* Borders & shadows */
     --ss3d-border-subtle: #2a2d35;

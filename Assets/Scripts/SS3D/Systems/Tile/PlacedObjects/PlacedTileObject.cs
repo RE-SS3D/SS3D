@@ -100,6 +100,7 @@ namespace SS3D.Systems.Tile
 
         private IAdjacencyConnector _connector;
         private Vector2Int _worldOrigin;
+        private bool _clientRegistered;
 
         /// <summary>
         /// Returns a list of all grids positions that object occupies.
@@ -276,6 +277,31 @@ namespace SS3D.Systems.Tile
                 doorConnector.RefreshWallCapsFromSyncedAdjacencies();
 
             TileLayerVisibilityService.TryApplyPlacedTileObject(this);
+            RegisterWithClientMap();
+        }
+
+        /// <summary>
+        /// On a remote client, insert this object into the client-side tilemap so systems such as vision
+        /// can query occupancy. The server already tracks it, so this is skipped on server/host.
+        /// </summary>
+        private void RegisterWithClientMap()
+        {
+            if (IsServer || _clientRegistered)
+                return;
+
+            _clientRegistered = true;
+            SubSystems.Get<TileSubSystem>()?.NotifyClientPlacedObjectStarted(this);
+        }
+
+        public override void OnStopClient()
+        {
+            base.OnStopClient();
+
+            if (IsServer || !_clientRegistered)
+                return;
+
+            _clientRegistered = false;
+            SubSystems.Get<TileSubSystem>()?.NotifyClientPlacedObjectStopped(this);
         }
 
         /// <summary>

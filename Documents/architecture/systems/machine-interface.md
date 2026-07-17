@@ -43,7 +43,7 @@ Dev harness: `MachineInterfaceDevHarness.cs`; editor previews via `SS3D → Mach
 
 ## Pitfalls
 
-- **Missing catalog in builds:** host loads `Resources/MachineUiAssetCatalog`. If the asset was never rebuilt/committed, Play Mode and builds fail at awake with an explicit error — not a silent null at panel open (that was the old `EnsureEditorAssets` trap).
+- **Missing catalog in builds:** host loads `Resources/MachineUiAssetCatalog`. If the asset was never rebuilt/committed, Play Mode and builds fail at awake with an explicit error — not a silent null at panel open (that was the old `EnsureEditorAssets` trap). Main HUD now has the same trap/fix class (`MainHudAssetCatalog`); do not grow a third copy — see [ui-shell](ui-shell.md) § Future work.
 - **New UXML without rebuild:** adding paths in C# without running **Rebuild Asset Catalog** leaves the committed SO stale; Editor Play Mode uses the SO, not `AssetDatabase` path strings.
 - **Editor asmdef:** `MachineUiAssetCatalogBuilder` needs `SS3D.Core` referenced from `SS3D.Editor` (so `MachineInterfaceHost` / `View` resolve for scene cleanup). Without it, `FindObjectsByType<MachineInterfaceHost>` fails to compile.
 

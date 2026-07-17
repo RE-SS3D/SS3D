@@ -1,0 +1,19 @@
+.equipment-grid {
+    flex-direction: column;
+    overflow: visible;
+}
+
+.equipment-grid__row {
+    flex-direction: row;
+    overflow: visible;
+}
+
+.equipment-grid__row > .inventory-slot {
+    margin-right: var(--ss3d-space-1);
+    margin-bottom: var(--ss3d-space-1);
+}
+
+.equipment-grid__spacer {
+    width: 72px;
+    margin-right: var(--ss3d-space-1);
+}

@@ -1,5 +1,5 @@
-> Code paths: Assets/Scripts/SS3D/Rendering/, Assets/Content/Resources/Simple Toon/
-> Entry points: SelectionPickRendererFeature, AtmosRendererFeature
+> Code paths: Assets/Scripts/SS3D/Rendering/, Assets/Content/Resources/Simple Toon/, Assets/Scripts/SS3D/Systems/Vision/, Assets/Content/Resources/Vision/
+> Entry points: SelectionPickRendererFeature, AtmosRendererFeature, VisionRendererFeature
 > Status: partial
 > Verified: a86b44505 — 2026-07-17
 
@@ -11,6 +11,8 @@ URP rendering extensions for this fork. The selection pick pass ([selection](sel
 
 Station materials use the **Simple Toon** shader stack (`STDefault` / `STTransparent`). Palette emission must sample `_EmissionMap` (same UV swatch pattern as albedo) — a flat `_EmissionColor` alone washes shared `PaletteEmission` materials white. `STDefault` includes DepthOnly + DepthNormals (with `_WRITE_RENDERING_LAYERS`) so URP Decal Layers can distinguish characters from tiles.
 
+Client FOV / fog-of-war is a hard black mask driven by physics raycasts from `Entity.ViewPoint` (`VisionSubSystem` → `_VisionMap`) and composited by `VisionRendererFeature`. Unseen areas are fully opaque black, not soft fog. Each ray iteratively skips furniture/props until the nearest wall/door (non-window); a capped multi-hit batch previously filled with props and leaked vision through walls. Triggers and inventory preview cameras are ignored.
+
 ## Start here
 
 - `Assets/Scripts/SS3D/Rendering/URP/SelectionPickRendererFeature.cs` — URP feature for shader-ID picking
@@ -19,6 +21,8 @@ Station materials use the **Simple Toon** shader stack (`STDefault` / `STTranspa
 - `Assets/Scripts/SS3D/Rendering/URP/DecalRenderingLayers.cs` — floor vs character DecalProjector masks (`ReceiveWorldDecals`)
 - `Assets/Scripts/SS3D/Rendering/URP/AtmosRendererFeature.cs` — gas scatter, glow, distortion passes
 - `Assets/Scripts/SS3D/Rendering/URP/AtmosRenderContext.cs` — shared GPU snapshot for atmos shaders
+- `Assets/Scripts/SS3D/Rendering/URP/VisionRendererFeature.cs` — FOV mask + hard black composite
+- `Assets/Scripts/SS3D/Systems/Vision/VisionSubSystem.cs` — client `RaycastCommand` batch → `_VisionMap`
 - `Assets/Content/Resources/Simple Toon/Shaders/STLighting.hlsl` — half-toon lighting + palette emission sample
 - `Assets/Content/Resources/Simple Toon/Shaders/STDefault.shader` — opaque toon (+ DepthNormals for Decal Layers)
 - `Assets/Settings/URP/` — pipeline asset and Forward+ renderer (includes Decal Renderer feature)
@@ -32,6 +36,7 @@ Station materials use the **Simple Toon** shader stack (`STDefault` / `STTranspa
 ## Depends on / Used by
 
 - **Used by:** [selection](selection.md), [atmospherics](atmospherics.md), [screen-effects](screen-effects.md) (Volume stack; not a custom feature)
+- **Vision FOV depends on:** `PlacedTileObject` Wall/Door (or `Walls` layer) colliders; cast origin from [entities](entities.md) `Entity.ViewPoint` when present
 
 ## Related docs
 

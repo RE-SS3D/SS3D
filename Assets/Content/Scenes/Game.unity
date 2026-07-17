@@ -1474,6 +1474,57 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 8012741811675473015, guid: f7a8b9c0d1e24990a1b2c3d4e5f60c05, type: 3}
   m_PrefabInstance: {fileID: 883310001}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &893779522
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 893779523}
+  - component: {fileID: 893779524}
+  m_Layer: 0
+  m_Name: VisionSystem
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &893779523
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 893779522}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1506918115}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &893779524
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 893779522}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: af299b0e71ae82ed3982954cf49b476c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: SS3D.Systems::SS3D.Systems.Vision.VisionSubSystem
+  showDebug: 0
+  visionMap: {fileID: 0}
+  target: {fileID: 0}
+  viewRange: 35
+  viewConeWidth: 360
+  resolution: 1
+  detectionOffset: {x: 0, y: 0, z: 0}
 --- !u!1 &913757965
 GameObject:
   m_ObjectHideFlags: 0
@@ -2666,6 +2717,7 @@ Transform:
   - {fileID: 883310002}
   - {fileID: 2193847561}
   - {fileID: 2293847601}
+  - {fileID: 893779523}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1506918116

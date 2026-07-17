@@ -77,8 +77,8 @@ Named only — separate architecture efforts when scheduled:
 | Effort | Intent |
 |---|---|
 | (a) Subsystem bootstrap + `NetworkSystemsHub` | Empty Boot/Game of per-system GameObjects |
-| (b) UiShell + path catalog | **MI path catalog shipped** ([2026-07_mi-path-catalog.md](2026-07_mi-path-catalog.md)); full UiShell + folding radial/armed still deferred |
-| (c) Main-HUD UITK slice | First purge pilot (hands + intent) |
+| (b) UiShell + path catalog | **Wedges shipped:** MI ([mi-path-catalog](2026-07_mi-path-catalog.md)) and Main HUD (`MainHudAssetCatalog` — see [inventory](systems/inventory.md)). **Still deferred:** full UiShell layers/document ownership; **shared catalog infrastructure** so a third UITK surface does not copy-paste Paths/SO/rebuild-menu again ([ui-shell](systems/ui-shell.md) § Future work) |
+| (c) Main-HUD UITK slice | **Partial:** player overlay (`MainHudSubSystem` — hands, gear, equipment, intent) + `MainHudAssetCatalog` Resources load; vitals/alerts/self-examine and Phase 0 uGUI purge still open — see [inventory](systems/inventory.md) |
 | (d) Entity prefab setup / recipes | Safe `Human.prefab` evolution beyond one-off Phase 0d edits |
 
 ## Related docs

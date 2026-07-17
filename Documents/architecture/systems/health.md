@@ -11,6 +11,8 @@ Greenfield rewrite per [health_implementation_plan.md](../../plans/health_implem
 
 Local-owner [screen-effects](screen-effects.md) are driven from `HealthSnapshot` via `HealthScreenEffectMapper` (dying/critical, blood-loss tunnel vision, oxy debt, concussion, unconscious) plus hit flash on `ApplyDamage`. The atmosphere→oxygen coupling is still open: `HealthSimulation.LungIntake(atmosphereO2)` currently defaults to full O2 and should be fed the occupant's turf O2 ratio. Vitals cluster UITK and examine-self readout remain Phase 6.
 
+**Condemned UI:** `StaminaBar` on `PlayerCanvas` is disabled (obsolete chrome pending Main HUD / [stamina.md](../../design/stamina.md) vitals). Domain `StaminaController` remains and must tolerate a missing bar view.
+
 Phase 0d strips legacy health components from `Human.prefab` and rewires a thinner root — do not dual-stack or grow the mega-prefab ([agent-first composition](../2026-07_agent-first-composition.md), [health_implementation_plan.md](../../plans/health_implementation_plan.md) Phase 0d).
 
 **Body presentation debt:** Health owns vitals intent (conscious / cardiac arrest / dead); it must not grow a third collapse path. Ragdoll, animator, and movement still share presentation via interim RPCs — refactor per [2026-07_body-presentation-authority.md](../2026-07_body-presentation-authority.md).

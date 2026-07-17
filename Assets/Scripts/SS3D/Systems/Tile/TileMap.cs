@@ -75,6 +75,50 @@ namespace SS3D.Systems.Tile
             _adjacencyEngine = new AdjacencyEngine(this);
         }
 
+        /// <summary>
+        /// Inserts an already-spawned <see cref="PlacedTileObject"/> into the logical map. Used on a remote
+        /// client to mirror server-side placement into a client-local map (chunks are created on demand),
+        /// so read-only systems such as vision can query occupancy. Does not run adjacency processing;
+        /// clients receive derived adjacency through the objects' own synced state.
+        /// </summary>
+        public void AddClientPlacedObject(PlacedTileObject placed)
+        {
+            if (placed == null || placed.tileObjectSO == null)
+                return;
+
+            Vector3 origin = new Vector3(placed.WorldOrigin.x, 0, placed.WorldOrigin.y);
+
+            foreach (Vector2Int gridOffset in placed.GridOffsetList)
+            {
+                Vector3 cell = origin + new Vector3(gridOffset.x, 0, gridOffset.y);
+                GetOrCreateTileLocation(placed.Layer, cell).AddPlacedObject(placed, placed.Direction);
+            }
+
+            NotifyTilePlaced(placed, origin);
+        }
+
+        /// <summary>
+        /// Removes a placed object from the client-local map (e.g. when it despawns).
+        /// </summary>
+        public void RemoveClientPlacedObject(PlacedTileObject placed)
+        {
+            if (placed == null || placed.tileObjectSO == null)
+                return;
+
+            Vector3 origin = new Vector3(placed.WorldOrigin.x, 0, placed.WorldOrigin.y);
+
+            foreach (Vector2Int gridOffset in placed.GridOffsetList)
+            {
+                Vector3 cell = origin + new Vector3(gridOffset.x, 0, gridOffset.y);
+                if (!TryGetTileLocation(placed.Layer, cell, out ITileLocation location))
+                    continue;
+
+                location.TryClearPlacedObject(placed.Direction);
+            }
+
+            NotifyTileCleared(placed, origin, placed.Layer);
+        }
+
         public void RegisterMutationObserver(ITileMutationObserver observer)
         {
             if (observer != null && !_mutationObservers.Contains(observer))

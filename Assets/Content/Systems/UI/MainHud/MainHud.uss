@@ -1,0 +1,110 @@
+@import url("../Tokens/ss3d-tokens.uss");
+@import url("../Tokens/ss3d-typography.uss");
+@import url("../MachineInterface/Tokens/diegetic-tokens.uss");
+
+.main-hud {
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+}
+
+.main-hud__zone {
+    position: absolute;
+}
+
+.main-hud__zone--alerts {
+    top: var(--ss3d-space-5);
+    right: var(--ss3d-space-5);
+    flex-direction: row;
+}
+
+.main-hud__zone--equipment {
+    bottom: var(--ss3d-space-5);
+    left: var(--ss3d-space-5);
+    overflow: visible;
+}
+
+.main-hud__zone--hands-gear {
+    bottom: var(--ss3d-space-5);
+    left: 50%;
+    translate: -50% 0;
+    flex-direction: row;
+    align-items: flex-end;
+    overflow: visible;
+}
+
+.main-hud__zone--intent {
+    bottom: var(--ss3d-space-5);
+    right: var(--ss3d-space-5);
+    flex-direction: column;
+    align-items: flex-end;
+}
+
+/* Icon wells only — design #161616. Scoped so Machine Interface slots keep diegetic tokens. */
+.main-hud .inventory-slot__well {
+    background-color: var(--ss3d-surface-hud);
+}
+
+.main-hud .inventory-slot--unknown .inventory-slot__well {
+    background-color: var(--ss3d-surface-hud);
+}
+
+/*
+ * Main HUD slots: label floats above the well (absolute, no layout cost) in a surface-hud chip.
+ * z-index on hover raises the chip above neighboring wells without reordering flex children.
+ */
+.main-hud .inventory-slot {
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+    overflow: visible;
+}
+
+.main-hud .inventory-slot:hover {
+    z-index: 10;
+}
+
+.main-hud .equipment-grid__row,
+.main-hud .hands-gear-strip__gear,
+.main-hud .hands-gear-strip__hands {
+    position: relative;
+}
+
+.main-hud .equipment-grid__row:hover,
+.main-hud .hands-gear-strip__gear:hover,
+.main-hud .hands-gear-strip__hands:hover {
+    z-index: 10;
+}
+
+.main-hud .inventory-slot__label {
+    position: absolute;
+    left: 50%;
+    bottom: 100%;
+    top: auto;
+    translate: -50% calc(-1 * var(--ss3d-space-2));
+    margin-top: 0;
+    max-width: none;
+    white-space: nowrap;
+    opacity: 0;
+    z-index: 1;
+    background-color: var(--ss3d-surface-hud);
+    color: var(--ss3d-text-secondary);
+    border-radius: var(--ss3d-radius-sm);
+    border-width: 1px;
+    border-color: var(--ss3d-border-subtle);
+    padding: 2px 8px;
+    transition-property: opacity;
+    transition-duration: var(--ss3d-duration-fast);
+}
+
+.main-hud .inventory-slot:hover .inventory-slot__label {
+    opacity: 1;
+}
+
+/* Active hand: outline the icon well only, not the label chip. */
+.main-hud .inventory-slot--active-hand .inventory-slot__well {
+    border-width: 2px;
+    border-color: var(--ss3d-accent-rust);
+}
