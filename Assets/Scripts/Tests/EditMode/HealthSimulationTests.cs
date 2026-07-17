@@ -71,7 +71,8 @@ namespace EditorTests
             SystemicPools pools = SystemicPools.Default;
             bool oxyRoseEarly = false;
 
-            for (int tick = 0; tick < 15; tick++)
+            // Severe bleed reaches ~70% blood (~hypoxia onset) by ~30 ticks at current drain scale.
+            for (int tick = 0; tick < 35; tick++)
             {
                 pools = HealthSimulation.TickPools(pools, zones, organs);
                 if (pools.BloodVolumeRatio > 0.5f && pools.OxyDebt > 0f)
@@ -82,6 +83,162 @@ namespace EditorTests
             }
 
             Assert.IsTrue(oxyRoseEarly);
+        }
+
+        [Test]
+        public void HemorrhageCascadeKeepsOxyAfterBloodAndUsableDefibWindow()
+        {
+            // Wound-tier limb bleed: oxy critical after blood critical; arrest → death ≥ 15 s.
+            AssertHemorrhageCascadeOrder(
+                bleedingRate: HealthSimulation.BleedingRateForSeverity(WoundSeverity.Wound),
+                brainStartPercent: 100f,
+                minDefibWindowTicks: 15);
+
+            AssertHemorrhageCascadeOrder(
+                bleedingRate: HealthSimulation.BleedingRateForSeverity(WoundSeverity.Disabled),
+                brainStartPercent: 100f,
+                minDefibWindowTicks: 15);
+        }
+
+        private static void AssertHemorrhageCascadeOrder(float bleedingRate, float brainStartPercent, int minDefibWindowTicks)
+        {
+            var zones = new ZoneDamageState[HealthConstants.ZoneCount];
+            for (int i = 0; i < zones.Length; i++)
+            {
+                zones[i] = ZoneDamageState.Default;
+            }
+
+            zones[(int)BodyZone.LeftArm] = new ZoneDamageState
+            {
+                Severity = WoundSeverity.Wound,
+                BleedingRate = bleedingRate,
+            };
+
+            var organs = new List<OrganState>
+            {
+                OrganState.Default(OrganType.Heart),
+                OrganState.Default(OrganType.LeftLung),
+                OrganState.Default(OrganType.RightLung),
+                OrganState.Default(OrganType.Liver),
+                new OrganState { Type = OrganType.Brain, FunctionPercent = brainStartPercent },
+            };
+
+            SystemicPools pools = SystemicPools.Default;
+            int? bloodCriticalTick = null;
+            int? oxyCriticalTick = null;
+            int? arrestTick = null;
+            int? deathTick = null;
+
+            for (int tick = 1; tick <= 400; tick++)
+            {
+                pools = HealthSimulation.TickPools(pools, zones, organs);
+                OrganSimulation.TickOrganFunction(pools, organs);
+
+                if (bloodCriticalTick == null && pools.BloodVolumeRatio <= HealthConstants.CriticalBloodVolumeRatio)
+                {
+                    bloodCriticalTick = tick;
+                }
+
+                if (oxyCriticalTick == null && pools.OxyDebt >= HealthConstants.CriticalOxyDebt)
+                {
+                    oxyCriticalTick = tick;
+                }
+
+                float heart = OrganSimulation.GetStoredOrganFunction(organs, OrganType.Heart);
+                float brain = OrganSimulation.GetStoredOrganFunction(organs, OrganType.Brain);
+
+                if (arrestTick == null && heart <= 0f)
+                {
+                    arrestTick = tick;
+                }
+
+                if (brain <= 0f)
+                {
+                    deathTick = tick;
+                    break;
+                }
+            }
+
+            Assert.IsNotNull(bloodCriticalTick, "Never reached critical blood.");
+            Assert.IsNotNull(oxyCriticalTick, "Never reached critical oxy debt.");
+            Assert.IsNotNull(arrestTick, "Never reached cardiac arrest.");
+            Assert.IsNotNull(deathTick, "Never reached brain death.");
+            Assert.GreaterOrEqual(oxyCriticalTick.Value, bloodCriticalTick.Value,
+                "Oxy critical should not outrun blood critical after bleed/oxy sync.");
+            Assert.GreaterOrEqual(deathTick.Value - arrestTick.Value, minDefibWindowTicks,
+                "Arrest → death defib window too short.");
+        }
+
+        [Test]
+        public void UntreatedBleedTimelinesMatchHemorrhageTuningTargets()
+        {
+            AssertBleedTimeline(
+                HealthSimulation.BleedingRateForSeverity(WoundSeverity.Wound),
+                criticalTicks: 120,
+                emptyTicks: 200,
+                tickTolerance: 5);
+
+            AssertBleedTimeline(
+                HealthSimulation.BleedingRateForSeverity(WoundSeverity.Severe),
+                criticalTicks: 60,
+                emptyTicks: 100,
+                tickTolerance: 5);
+
+            AssertBleedTimeline(
+                HealthSimulation.BleedingRateForSeverity(WoundSeverity.Disabled),
+                criticalTicks: 40,
+                emptyTicks: 67,
+                tickTolerance: 5);
+        }
+
+        private static void AssertBleedTimeline(float bleedingRate, int criticalTicks, int emptyTicks, int tickTolerance)
+        {
+            var zones = new ZoneDamageState[HealthConstants.ZoneCount];
+            for (int i = 0; i < zones.Length; i++)
+            {
+                zones[i] = ZoneDamageState.Default;
+            }
+
+            zones[(int)BodyZone.LeftArm] = new ZoneDamageState
+            {
+                Severity = WoundSeverity.Wound,
+                BleedingRate = bleedingRate,
+            };
+
+            var organs = new[]
+            {
+                OrganState.Default(OrganType.Heart),
+                OrganState.Default(OrganType.LeftLung),
+                OrganState.Default(OrganType.RightLung),
+                OrganState.Default(OrganType.Liver),
+                OrganState.Default(OrganType.Brain),
+            };
+
+            SystemicPools pools = SystemicPools.Default;
+            int? ticksToCritical = null;
+            int? ticksToEmpty = null;
+            int maxTicks = emptyTicks + tickTolerance + 10;
+
+            for (int tick = 1; tick <= maxTicks; tick++)
+            {
+                pools = HealthSimulation.TickPools(pools, zones, organs);
+
+                if (ticksToCritical == null && pools.BloodVolumeRatio <= HealthConstants.CriticalBloodVolumeRatio)
+                {
+                    ticksToCritical = tick;
+                }
+
+                if (ticksToEmpty == null && pools.BloodVolumeRatio <= 0.001f)
+                {
+                    ticksToEmpty = tick;
+                    break;
+                }
+            }
+
+            Assert.IsNotNull(ticksToCritical, $"Bleed rate {bleedingRate} never reached critical blood.");
+            Assert.IsNotNull(ticksToEmpty, $"Bleed rate {bleedingRate} never reached empty blood.");
+            Assert.That(ticksToCritical.Value, Is.InRange(criticalTicks - tickTolerance, criticalTicks + tickTolerance));
+            Assert.That(ticksToEmpty.Value, Is.InRange(emptyTicks - tickTolerance, emptyTicks + tickTolerance));
         }
 
         [Test]

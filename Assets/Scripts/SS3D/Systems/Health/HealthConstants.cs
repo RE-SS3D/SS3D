@@ -15,11 +15,14 @@
         public const float ConsciousnessBrainFunctionPercent = 10f;
 
         // Pool dynamics per 1 Hz tick.
-        // Tuning target: untreated Disabled-tier bleed (~1.5 rate) should show rising oxy debt
-        // around 60–70% blood remaining; brain death ~90–150 s after a catastrophic head wound
-        // (100 brute → Disabled + ~40 brain damage) without treatment.
-        public const float BleedingBloodDrainScale = 0.021f;
-        public const float LowBloodOxyDebtGainScale = 0.065f;
+        // Bleed drain (~2× slower than early Phase 1): untreated single-zone targets —
+        // Wound (0.5) ~2:00 to critical / ~3:20 empty; Severe (1.0) ~1:00 / ~1:40;
+        // Disabled (1.5) ~40s / ~1:07; Severed (2.0) ~30s / ~50s.
+        // Oxy gain is tuned to the slower bleed: hypoxia starts ~60–70% blood remaining,
+        // oxy critical lands after blood critical (not before), then heart failure opens a
+        // ~15–30 s defib window (arrest brain drain) before brain death.
+        public const float BleedingBloodDrainScale = 0.010f;
+        public const float LowBloodOxyDebtGainScale = 0.035f;
         public const float BaseOxygenDemand = 0.012f;
         public const float BloodDeliveryVolumeExponent = 1.75f;
         public const float BaseToxinIntake = 0f;
@@ -46,8 +49,9 @@
         public const float ChestBruteToLiverDamageScale = 0.15f;
 
         // Organ tick dynamics (1 Hz).
-        public const float CardiacArrestBrainDrainPerTick = 4f;
-        public const float CriticalOxyBrainDrainPerTick = 2f;
+        // Mild pre-arrest hypoxia drain on brain; most brain loss is post-arrest (defib window).
+        public const float CardiacArrestBrainDrainPerTick = 2.5f;
+        public const float CriticalOxyBrainDrainPerTick = 0.5f;
         public const float CriticalOxyHeartDrainPerTick = 1.5f;
         public const float CriticalBloodHeartDrainPerTick = 1f;
         public const float CriticalToxinHeartDrainPerTick = 0.5f;

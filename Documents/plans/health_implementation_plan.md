@@ -557,10 +557,11 @@ health.md §8 + death-cloning §9 example A, end-to-end:
 
 ### Hemorrhage tuning (2026-07)
 
-- Oxy debt now scales **continuously** with blood lost `(1 − bloodVolume) × gain` — hypoxia begins around **60–70%** blood remaining, not near empty.
+- Oxy debt scales **continuously** with blood lost `(1 − bloodVolume) × gain` — hypoxia begins around **60–70%** blood remaining, not near empty.
 - Heart O₂ delivery uses **volume^1.75** so circulation collapses faster as blood drops (shock before exsanguination).
 - **`BleedingBloodDrainScale = 0.010`** (~2× slower than early Phase 1): untreated single-zone blood clocks — Wound ~2:00 critical / ~3:20 empty; Severe ~1:00 / ~1:40; Disabled ~40s / ~1:07; Severed ~30s / ~50s. Rates stay severity-only (no per-zone bleed multipliers).
-- **Reference: `hurt Head 100`** — Disabled head wound (bleed 1.5), brain ~60% instantly; untreated death typically **~90–150 s** via hypoxia → heart failure → brain death (bandage/transfusion/defib interrupt each stage).
+- **Oxy synced to bleed:** `LowBloodOxyDebtGainScale = 0.035` so oxy critical lands **after** blood critical (not a hypoxia snap while volume is still high). Pre-arrest brain drain is mild (`CriticalOxyBrainDrainPerTick = 0.5`); post-arrest `CardiacArrestBrainDrainPerTick = 2.5` opens a **~15–30 s** defib window.
+- **Reference: `hurt Head 100`** — Disabled head wound (bleed 1.5), brain ~60% instantly; untreated death typically **~90–120 s** via hypoxia → heart failure → brain death (bandage/transfusion/defib interrupt each stage).
 
 ### Phase 4 (shipped)
 
