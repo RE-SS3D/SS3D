@@ -9,6 +9,8 @@ using SS3D.Systems.Entities.Events;
 using SS3D.Systems.Health;
 using SS3D.Systems.Inventory.Containers;
 using SS3D.Systems.Inventory.Items;
+using SS3D.Systems.Rounds;
+using SS3D.Systems.Rounds.Events;
 using SS3D.UI.MainHud.Components;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -16,10 +18,14 @@ using UnityEngine.UIElements;
 namespace SS3D.UI.MainHud
 {
     /// <summary>
-    /// Always-on main HUD overlay (design doc: Documents/design/main-hud.md). Binds the visual/interaction
+    /// Main HUD overlay (design doc: Documents/design/main-hud.md). Binds the visual/interaction
     /// layer built in <see cref="MainHudView"/> to the local player's existing gameplay systems: hands/equipment
     /// (<see cref="Hands"/>/<see cref="HumanInventory"/>), per-body-part damage (<see cref="HealthController"/>),
     /// and help/harm intent (<see cref="IIntentProvider"/>).
+    /// <para>
+    /// Hidden until <see cref="LocalPlayerObjectChanged"/> reports a local spawned body; hidden again when the
+    /// round leaves in-game states (same spawn/round gate pattern as <c>GameScreensController</c>).
+    /// </para>
     /// <para>
     /// The alert icon stack has no hunger/thirst/restrained/pressure/radiation trackers to bind to yet - it
     /// always reports the all-clear <see cref="AlertStackState"/> until those systems exist, mirroring how
@@ -125,6 +131,7 @@ namespace SS3D.UI.MainHud
         {
             base.OnStart();
             AddHandle(LocalPlayerObjectChanged.AddListener(HandleLocalPlayerObjectChanged));
+            AddHandle(RoundStateUpdated.AddListener(HandleRoundStateUpdated));
         }
 
         protected override void OnDestroyed()
@@ -136,7 +143,7 @@ namespace SS3D.UI.MainHud
 
         private void Update()
         {
-            if (_view == null)
+            if (_view == null || _localPlayer == null)
             {
                 return;
             }
@@ -163,16 +170,38 @@ namespace SS3D.UI.MainHud
         {
             UnbindLocalPlayer();
 
-            if (!e.PlayerHasObject)
+            if (!e.PlayerHasObject || e.PlayerObject == null)
             {
+                HideHud();
                 return;
             }
 
-            _localPlayer = e.PlayerObject;
+            BindLocalPlayer(e.PlayerObject);
+            ShowHud();
+        }
+
+        private void HandleRoundStateUpdated(ref EventContext context, in RoundStateUpdated e)
+        {
+            switch (e.RoundState)
+            {
+                case RoundState.Ongoing:
+                case RoundState.Ending:
+                    break;
+                default:
+                    UnbindLocalPlayer();
+                    HideHud();
+                    break;
+            }
+        }
+
+        private void BindLocalPlayer(GameObject playerObject)
+        {
+            _localPlayer = playerObject;
             _inventory = _localPlayer.GetComponentInChildren<HumanInventory>();
             _hands = _localPlayer.GetComponentInChildren<Hands>();
             _health = _localPlayer.GetComponentInChildren<HealthController>();
-            _intentProvider = _localPlayer.GetComponent<IIntentProvider>() ?? _localPlayer.GetComponentInChildren<IIntentProvider>();
+            _intentProvider = _localPlayer.GetComponent<IIntentProvider>()
+                ?? _localPlayer.GetComponentInChildren<IIntentProvider>();
 
             if (_inventory != null)
             {
@@ -202,6 +231,18 @@ namespace SS3D.UI.MainHud
             _health = null;
             _intentProvider = null;
             _cachedSelectedHand = null;
+        }
+
+        private void ShowHud()
+        {
+            _view?.SetVisible(true);
+        }
+
+        private void HideHud()
+        {
+            _examineOpen = false;
+            _view?.SetExamineOpen(false);
+            _view?.SetVisible(false);
         }
 
         private void HandleIntentToggleRequested()

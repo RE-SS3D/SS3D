@@ -1774,6 +1774,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: HumanoidInventoryAlt
       objectReference: {fileID: 0}
+    - target: {fileID: 6178539299263414650, guid: 0b8fbd4d5c5a29648b0311070cd87b40, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 8084791768262570791, guid: 0b8fbd4d5c5a29648b0311070cd87b40, type: 3}
       propertyPath: m_LocalPosition.y
       value: -95

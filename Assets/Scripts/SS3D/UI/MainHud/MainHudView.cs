@@ -48,12 +48,23 @@ namespace SS3D.UI.MainHud
 
             BuildTree();
             overlayRoot.Add(_root);
+            SetVisible(false);
         }
 
         public void Detach()
         {
             _root?.RemoveFromHierarchy();
             _root = null;
+        }
+
+        public void SetVisible(bool visible)
+        {
+            if (_root == null)
+            {
+                return;
+            }
+
+            _root.style.display = visible ? DisplayStyle.Flex : DisplayStyle.None;
         }
 
         public void SetAlertState(AlertStackState state)
