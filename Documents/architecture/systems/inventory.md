@@ -24,19 +24,20 @@ Items, containers, hands, and identification cards (`IDCard`, `PDA`). ID cards b
 
 ## Extension points
 
-- **New Main HUD stylesheet/icon:** add a path in `MainHudAssetPaths`, assign on `MainHudAssetCatalog`, run **SS3D → Main HUD → Rebuild Asset Catalog**, commit the SO (do not rely on Editor `AssetDatabase` in `MainHudSubSystem`).
+- **New Main HUD stylesheet/icon:** add a path in `MainHudAssetPaths`, assign on `MainHudAssetCatalog`, run **SS3D → Main HUD → Rebuild Asset Catalog**, commit the SO (do not rely on Editor `AssetDatabase` in `MainHudSubSystem`). Do not invent a third Resources-catalog stack — shared helper is deferred under [ui-shell](ui-shell.md) § Future work.
 
 ## Pitfalls
 
-- **HUD works in Editor Play Mode, missing in player builds:** `MainHudSubSystem` self-bootstraps with no SerializeFields; Editor used to fill via `AssetDatabase`. Builds need `Resources/MainHudAssetCatalog` — run **SS3D → Main HUD → Rebuild Asset Catalog** and commit the asset (same pattern as Machine UI).
+- **HUD works in Editor Play Mode, missing in player builds:** `MainHudSubSystem` self-bootstraps with no SerializeFields; Editor used to fill via `AssetDatabase`. Builds need `Resources/MainHudAssetCatalog` — run **SS3D → Main HUD → Rebuild Asset Catalog** and commit the asset (same pattern as Machine UI; second copy of that stack).
 
 ## Depends on / Used by
 
 - **Depends on:** [interactions-framework](interactions-framework.md), [inputs](inputs.md) (UITK document registry / pointer-over-UI)
 - **Used by:** [examine](examine.md), [player-control](player-control.md), [id-access](id-access.md)
+- **Catalog pattern:** [ui-shell](ui-shell.md), [machine-interface](machine-interface.md)
 
 ## Related docs
 
 - Design (read-only): [Documents/design/inventory-storage.md](../../design/inventory-storage.md), [main-hud.md](../../design/main-hud.md)
-- [2026-07_agent-first-composition](../2026-07_agent-first-composition.md)
+- [2026-07_agent-first-composition](../2026-07_agent-first-composition.md), [2026-07_mi-path-catalog](../2026-07_mi-path-catalog.md)
 - [INDEX.md](../INDEX.md)
