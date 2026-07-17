@@ -5,6 +5,7 @@ using FishNet.Transporting;
 using SS3D.Core;
 using SS3D.Core.Behaviours;
 using SS3D.Systems.Entities.Humanoid.Body;
+using SS3D.Systems.Health;
 using SS3D.Systems.Inputs;
 using SS3D.Systems.Screens;
 using UnityEngine;
@@ -56,7 +57,7 @@ namespace SS3D.Systems.Entities.Humanoid
 
         [SerializeField] private HumanoidLivingController _livingController;
         [SerializeField] private HumanoidBodyStateMachine _bodyStateMachine;
-        [SerializeField] private FeetController _feetController;
+        [SerializeField] private HumanHealthController _healthController;
         /// <summary>World units/sec at full run (Speed animator param 1.0).</summary>
         [SerializeField] private float _movementSpeed = 5f;
         /// <summary>Matches HumanoidController walk animator value (0.3) so walk/run stay in sync.</summary>
@@ -92,9 +93,9 @@ namespace SS3D.Systems.Entities.Humanoid
                 _livingController = GetComponent<HumanoidLivingController>();
             }
 
-            if (_feetController == null)
+            if (_healthController == null)
             {
-                _feetController = GetComponent<FeetController>();
+                _healthController = GetComponent<HumanHealthController>();
             }
         }
 
@@ -298,7 +299,7 @@ namespace SS3D.Systems.Entities.Humanoid
             }
 
             Vector3 moveDirection = GetCameraRelativeDirection(md.Horizontal, md.Vertical);
-            float speedFactor = _feetController != null ? _feetController.FeetHealthFactor : 1f;
+            float speedFactor = _healthController != null ? _healthController.Snapshot.MovementSpeedMultiplier : 1f;
             float targetSpeedScale = GetTargetSpeedScale(md.IsRunning, _bodyStateMachine.CombatMode);
             // Match AnimationOrchestrator gait easing — snapping run scale while VelZ still
             // lerps from walk caused a combat walk→run surge then settle.

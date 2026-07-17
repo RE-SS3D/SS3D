@@ -4,33 +4,36 @@ overview: Clean-slate rewrite of SS3D health per Documents/design/health.md — 
 todos:
   - id: phase0-purge
     content: "Phase 0a: Purge all legacy Assets/Scripts/SS3D/Systems/Health/ simulation code + update external references; no dual-stack period"
-    status: pending
+    status: completed
   - id: phase0-asset-audit
     content: "Phase 0b: Document Human.fbx anatomy map — body parts, colliders, organs, zone mapping, asset gaps (kidneys)"
-    status: pending
+    status: completed
   - id: phase0-data-contract
     content: "Phase 0c: New clean-slate data contract — ZoneDamageState, OrganState, SystemicPools, HealthSnapshot, HumanHealthController, IHealthEffectModifier; fresh AnatomyNode/OrganInstance types"
-    status: pending
+    status: completed
   - id: phase0-prefab-wiring
     content: "Phase 0d: Rewire Human.prefab — strip legacy health components, add new controller + ZoneTargetCollider + organ registration"
-    status: pending
+    status: completed
   - id: phase1-bleeding-slice
     content: "Phase 1: Wound severity, bleeding → blood volume → oxy debt, bandage interaction, Bleeding alert chip"
-    status: pending
+    status: completed
   - id: phase2-organs
     content: "Phase 2: Wire asset-backed organs (heart, lungs, liver, brain); kidney clearance interim until art asset; cardiac arrest"
-    status: pending
+    status: completed
   - id: phase3-critical-death
-    content: "Phase 3: Multi-threshold critical, screen-space feedback (existing custom designs), brain-function-zero death, defibrillator window"
-    status: pending
+    content: "Phase 3: Multi-threshold critical, brain-function-zero death, cardiac arrest + defibrillator window (screen-space feedback deferred to Phase 6)"
+    status: completed
   - id: phase4-combat
     content: "Phase 4: ZoneTargetResolver on BodyParts layer, replace HitInteraction, one melee weapon vertical slice"
-    status: pending
+    status: completed
   - id: phase5-treatment
     content: "Phase 5: Field treatments (burn dressing, splint, O2, CPR, antitoxin, IV/transfusion)"
-    status: pending
+    status: completed
+  - id: phase5b-severing
+    content: "Phase 5b: Limb severing — AnatomyNode detach, zone Severed state, world drops, head mind-swap"
+    status: completed
   - id: phase6-hud
-    content: "Phase 6: Vitals cluster + screen-space feedback (existing custom designs), examine-self organ readout, wound rendering on model"
+    content: "Phase 6: Vitals cluster + examine-self organ readout remaining; screen-space feedback + blood decals shipped"
     status: pending
   - id: phase7-cross-system
     content: "Phase 7: Stamina↔oxy bridge, armor, surgery direct-repair slice, death/cloning, chemistry stubs"
@@ -344,11 +347,11 @@ Implements health.md §10 prompt 2 / §8 steps 1–5.
 
 ## Phase 3 — Critical, death, revival window
 
-1. Multi-threshold critical (blood, oxy, toxin, brain).
-2. Screen-space condition feedback — **wire to existing custom HUD designs** (owner-provided mockups/assets). Do not redesign from prose; drive intensity/state from `HealthSnapshot` (critical, low O2, pain, etc.).
-3. Cardiac arrest sub-state + defib window.
-4. Death only at brain function = 0; corpse persists.
-5. Defibrillator: chest zone, charge, restart heart if brain > 0.
+1. Multi-threshold critical (blood, oxy, toxin, brain) — `HealthCriticalFlags` on snapshot + Critical alert chip.
+2. ~~Screen-space condition feedback~~ — **deferred to Phase 6** (wire to existing custom HUD designs there).
+3. Cardiac arrest sub-state + defib window — systemic stress drains heart; arrest drains brain each tick.
+4. Death only at brain function = 0; corpse persists via existing `Human.Kill()`.
+5. Defibrillator: chest zone Help interaction + admin `defib` command; restarts heart if brain > 0; mis-shock burns chest. Charge/armor deferred to Phase 7d.
 
 ---
 
@@ -367,12 +370,33 @@ Bandage pattern extended to: burn dressing, splint, O2 mask, CPR, antitoxin, IV/
 
 ---
 
+## Phase 5b — Limb severing
+
+Ships between Phase 5 and Phase 6. Design authority: health.md §5 (Severed tier), §6 (reattach deferred to Phase 7c surgery).
+
+1. **`AnatomyNode`** — restore detach fields: skinned mesh ref, sever anchor, optional severed-item prefab; `IsSevered` runtime state.
+2. **`HumanAnatomyController`** — zone → anatomy subtree map from nested HumanBodyParts prefabs; hide meshes, disable zone colliders, spawn severed item via `ItemSubSystem`.
+3. **`ZoneDamageState.IsSevered`** — explicit transition to `WoundSeverity.Severed` (not derived from brute thresholds); max bleeding; limb function hard-disabled.
+4. **Severance trigger** — zone must reach Disabled first; sharp melee (`CanSever` on `MeleeDamagePacket`) or admin `sever` / `destroybodypart` commands.
+5. **Head decapitation** — mind-swap to severed head entity (plan key decision); body deactivates player controls, does not run ghost/death flow.
+6. **Reattachment / prosthetics** — explicitly deferred to Phase 7c.
+
+**Out of scope:** stump blendshapes (`HumanCut.mat` wiring), groin/chest severance, nested NetworkObject unparent (spawn fresh item copy instead).
+
+---
+
 ## Phase 6 — Vitals HUD
 
 1. Vitals cluster — worst-limb brute/burn + systemic toxin/oxy (health.md §7). **Follow existing custom vitals-cluster designs** — wire bars/alerts to `HealthSnapshot`, do not redesign layout.
-2. Screen-space condition feedback — same custom designs as Phase 3; shared controller driven by health state.
+2. ~~**Screen-space condition feedback**~~ — **shipped:** `HealthScreenEffectMapper` + local-owner `HumanHealthController` drive dying/blood-loss/oxy/concussion/unconscious; hit flash on `ApplyDamage`.
 3. Examine-self hold → per-zone + organ function readout. Reserve a slot for diagnosed infections (virology.md §8) — listed once scanned, not a standalone infection bar.
-4. Wound severity on character model (materials/decals/blendshapes if available on Human.fbx).
+4. **Wound visuals on character model** — replace Phase 1 interim particle bleed with purpose-built assets:
+   - **New bleeding VFX** — per-zone particle/stream prefabs tuned for Human anatomy anchors (not the legacy bleed particle reused in `WoundVfx`). *(Partial: emission/lifetime tuned in code; dedicated stream prefab still TODO.)*
+   - **Blood decals** — pooled blood marks on floors/walls and optional body-surface splatter, driven by wound severity and active bleeding; prefer **URP Decal Renderer** (`DecalProjector` + decal materials) over mesh quads. *(Shipped: `BloodDecalSpawner`, body + floor decals via `WoundVfx`.)*
+   - Wire spawn/fade/cleanup from `WoundVfx` (or successor) + `HealthSnapshot` zone mask / severity; decals accumulate while bleeding, stop growing when bandaged. *(Shipped.)*
+   - Blendshapes/material tint on Human.fbx remain optional if art adds them later — decals + particles are the v1 path.
+
+**URP Decal prerequisites:** URP renderer exposes Decal Renderer feature on `SS3D_ForwardPlusRenderer`; blood decal shader/material variants live under `Assets/Content/WorldObjects/World/VFX/Health/`. Wet/dry/footprint variants remain optional follow-ups.
 
 ---
 
@@ -431,6 +455,7 @@ flowchart LR
     P3[Phase 3 Critical/death]
     P4[Phase 4 Combat]
     P5[Phase 5 Treatment]
+    P5b[Phase 5b Severing]
     P6[Phase 6 HUD]
     P7[Phase 7 Cross-system]
     P8[Phase 8 Hardening]
@@ -444,7 +469,10 @@ flowchart LR
     P1 --> P6
     P2 --> P6
     P3 --> P7
+    P5 --> P5b
+    P5b --> P6
     P5 --> P7
+    P5b --> P7
     P6 --> P8
     P7 --> P8
     P2 --> P9
@@ -468,6 +496,7 @@ flowchart LR
 | Kidneys missing from FBX | Liver-only clearance + interim renal factor; art follow-up |
 | Groin zone | No dedicated collider; `BodyZone.Groin` in data model, resolved via vertical banding on torso hits |
 | Screen-space / vitals UI | Implement owner's existing custom designs; code wires `HealthSnapshot` → designed assets |
+| Wound / bleed visuals | Phase 6: new per-zone bleed VFX + URP Decal Renderer blood decals; Phase 1 `WoundVfx` particle reuse is interim |
 | Global tick | `HumanHealthController.TickHealth()` at 1 Hz; delete `OxygenConsumerSubSystem` |
 | Death | Brain function → 0 only; severed head keeps special mind-swap behavior |
 | Disease/infection | Separate Phase 9 per virology.md; routes through `IHealthEffectModifier`, not new health pools |
@@ -483,7 +512,7 @@ flowchart LR
 | Legacy scripts on prefabs | Phase 0d strips all removed components; missing-script check is acceptance criteria |
 | Stamina interaction gates break on purge | Relocate `Stamina/` out of Health; minimal stub preserves compile until Phase 7a |
 | Kidney missing vs design spec | Document divergence; derived clearance until art |
-| FBX has no wound blendshapes | Start with bleed particles + material tint; art pass later |
+| FBX has no wound blendshapes | Phase 6 ships URP Decal blood marks + new bleed particles; blendshapes/material tint if art adds later |
 
 ---
 
@@ -498,3 +527,71 @@ health.md §8 + death-cloning §9 example A, end-to-end:
 5. Untreated → critical → cardiac arrest → defib window.
 6. Defib in time → recovery; late → brain death → corpse.
 7. Vitals + examine-self accurate throughout.
+
+---
+
+## Implementation notes
+
+### Phase 1 (shipped)
+
+- `ZoneTargetResolver` added early for bandage zone targeting; Phase 4 will extend it for combat raycasts.
+- Bandage wired to `MedicalPatch.prefab` via `BandageItemExtension`; dedicated bandage prefab can split later.
+- `WoundVfx` is auto-added on `HumanHealthController` startup if missing from prefab.
+- Transfusion and other blood restoration deferred to Phase 5.
+- **Interim bleed VFX only** — Phase 1 reuses the legacy particle prefab via `WoundVfx`; Phase 6 replaces with new bleeding VFX and URP Decal blood decals on surfaces.
+
+### Phase 2 (shipped)
+
+- `OrganSimulation` drives zone→organ damage, cardiac-arrest brain drain, perfusion-scaled effective function, and limb capability multipliers.
+- `HumanHealthController.EnsureBuiltinOrgans()` attaches `OrganInstance` to inline Human prefab organ meshes at server start.
+- `HumanLiver.prefab` now carries `OrganInstance`; kidney clearance remains liver-derived interim.
+- Unconscious players cannot move; disabled legs slow movement; both arms disabled blocks hand interactions (stub).
+- Full `heal … all` restores organ function via `RestoreOrgans()`.
+
+### Phase 3 (shipped)
+
+- Screen-space condition feedback deferred to Phase 6 at the time; **now shipped** via `HealthScreenEffectMapper`.
+- `HealthCriticalFlags` + Critical / Cardiac Arrest alert chips; defibrillation via `DefibrillatorInteraction` + admin `defib` command.
+- Untreated critical systemic pools drain heart function → cardiac arrest → brain drain → death at brain function zero.
+- Defib charge, armor block, and portable defib prefab deferred (Phase 7d / art import).
+
+### Hemorrhage tuning (2026-07)
+
+- Oxy debt scales **continuously** with blood lost `(1 − bloodVolume) × gain` — hypoxia begins around **60–70%** blood remaining, not near empty.
+- Heart O₂ delivery uses **volume^1.75** so circulation collapses faster as blood drops (shock before exsanguination).
+- **`BleedingBloodDrainScale = 0.010`** (~2× slower than early Phase 1): untreated single-zone blood clocks — Wound ~2:00 critical / ~3:20 empty; Severe ~1:00 / ~1:40; Disabled ~40s / ~1:07; Severed ~30s / ~50s. Rates stay severity-only (no per-zone bleed multipliers).
+- **Oxy synced to bleed:** `LowBloodOxyDebtGainScale = 0.035` so oxy critical lands **after** blood critical (not a hypoxia snap while volume is still high). Pre-arrest brain drain is mild (`CriticalOxyBrainDrainPerTick = 0.5`); post-arrest `CardiacArrestBrainDrainPerTick = 2.5` opens a **~15–30 s** defib window.
+- **Reference: `hurt Head 100`** — Disabled head wound (bleed 1.5), brain ~60% instantly; untreated death typically **~90–120 s** via hypoxia → heart failure → brain death (bandage/transfusion/defib interrupt each stage).
+
+### Phase 4 (shipped)
+
+- `HitInteraction` removed; `MeleeHitInteraction` applies zone-targeted `ApplyDamage(BodyZone, MeleeDamagePacket)` with Harm intent, windup, and hand recovery lockout.
+- `ZoneTargetResolver.TryResolveCombatZone` raycasts `BodyParts` colliders from aim origin; groin resolved via lower-chest vertical banding (`GroinTorsoBandFraction`).
+- Fists via `HandHit`; crowbar vertical slice via `MeleeWeaponItemExtension` on `Crowbar.prefab` (18 brute, 0.35s windup, 0.5s recovery).
+- Held weapons resolve the owning `Hand` through `IInteractionSource.Source` for range checks and recovery tracking.
+
+### Phase 5 (shipped)
+
+- Field treatments follow the bandage Help-intent pattern via `MedicalInteractionUtility` and targeted zone/systemic application.
+- **BurnPatch** → burn dressing (zone burn heal); **BrutePatch** → splint (disabled limb stabilization via `IsSplinted`); **OxygenTank** → head-targeted oxy relief; **Medkit** → chest transfusion + antitoxin (reusable); empty hands → chest CPR (3s windup).
+- `HumanHealthController` adds `ApplyBloodTransfusion`, `ApplyOxyRelief`, `ApplyAntitoxin`, `ApplyCpr`, and splint support on `ApplyTreatment`.
+- Dedicated IV bag / syringe prefabs deferred until art import; medkit stands in for field blood + antitoxin.
+
+### Phase 5b (shipped)
+
+- `AnatomyNode` expanded with severed visuals, optional drop prefab, and sever anchor; legacy `_bodyPartItem` YAML ignored — spawns via `Items.*` constants or `Item.Asset.Id`.
+- `HumanAnatomyController` maps zones to nested body-part prefabs, hides anatomy, disables zone colliders, spawns world item copies; head severance instantiates `HumanHead` with runtime `Entity` before FishNet spawn, then `MindSubSystem.SwapMinds`.
+- `ZoneDamageState.IsSevered` + `HealthSnapshot.SeveredZoneMask`; severance requires Disabled tier unless admin `force`.
+- Sharp melee: `CanSever` on `MeleeDamagePacket` / `MeleeWeaponProfile`; hatchet and kitchen knife wired via `MeleeWeaponItemExtension`.
+- Admin: `sever (ckey) (zone) [force]`; `destroybodypart` force-severs head for decap testing.
+- Reattachment / stump `HumanCut.mat` / nested NO unparent deferred (Phase 7c / art).
+
+### Phase 6 (partial)
+
+- **Screen-space feedback shipped:** `HealthScreenEffectMapper` maps local-owner `HealthSnapshot` to dying/blood-loss/oxy/concussion/unconscious; `ApplyDamage` TargetRpc fires hit flash. EditMode: `HealthScreenEffectMapperTests`.
+- Vitals cluster UITK and examine-self organ readout still open.
+- Blood decals / bleed VFX tuning already landed earlier in Phase 6 wound-visuals work.
+
+### Body presentation debt (banked 2026-07)
+
+Death and unconsciousness collapse were fixed with interim reinforce RPCs + `Ragdoll.ApplyCollapseVisuals` + `SetPosingSuppressed`. That is stopgap — Health must not grow a third collapse path. Future single-authority refactor: [2026-07_body-presentation-authority.md](../architecture/2026-07_body-presentation-authority.md).

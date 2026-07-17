@@ -26,17 +26,17 @@ namespace SS3D.Systems.IngameConsoleSystem.Commands
 
 			if (args.Length > 1)
 			{
-				ragdoll.Knockdown(values.Time);
+				ragdoll.ServerKnockdown(values.Time);
 			}
 			else
 			{
 				if (ragdoll.IsKnockedDown)
 				{
-					ragdoll.Recover();
+					ragdoll.ServerRecover();
 				}
 				else
 				{
-					ragdoll.KnockdownTimeless();
+					ragdoll.ServerKnockdownTimeless();
 				}
 			}
 			return "Player ragdolled";

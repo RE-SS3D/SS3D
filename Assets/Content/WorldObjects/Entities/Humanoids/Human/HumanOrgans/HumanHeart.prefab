@@ -14,7 +14,6 @@ GameObject:
   - component: {fileID: 4159476743201579799}
   - component: {fileID: 5674218650751824428}
   - component: {fileID: 8360202902009561000}
-  - component: {fileID: 1799650741258744035}
   - component: {fileID: 7924400709005504179}
   m_Layer: 10
   m_Name: HumanHeart
@@ -185,30 +184,12 @@ MonoBehaviour:
   _componentIndexCache: 2
   _addedNetworkObject: {fileID: 4159476743201579799}
   _networkObjectCache: {fileID: 4159476743201579799}
-  _parentBodyPart: {fileID: 0}
   _skinnedMeshRenderer: {fileID: 0}
   _bodyPartItem: {fileID: 2302397424301738637}
   _internalBodyParts: {fileID: 0}
+  _type: 1
+  _functionPercent: 100
   _bodyCollider: {fileID: 0}
-  HealthController: {fileID: 0}
-  _bodyPartVolume: 300
---- !u!114 &1799650741258744035
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2302397424301738637}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 80e876a9101cc6042b1b5a1fbf89b810, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _componentIndexCache: 3
-  _addedNetworkObject: {fileID: 4159476743201579799}
-  _networkObjectCache: {fileID: 4159476743201579799}
-  _bodyPart: {fileID: 8360202902009561000}
-  isBleeding: 0
 --- !u!114 &7924400709005504179
 MonoBehaviour:
   m_ObjectHideFlags: 0

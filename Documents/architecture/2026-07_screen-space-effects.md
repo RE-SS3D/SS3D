@@ -1,6 +1,6 @@
 > Implements: Documents/design/main-hud.md §5 (screen-space feedback)
-> Touches systems: screen-effects, ingame-console, health (integration deferred), atmospherics (integration deferred)
-> Status: shipped (foundation; health/atmos wiring deferred)
+> Touches systems: screen-effects, ingame-console, health (wired), atmospherics (integration deferred)
+> Status: shipped (foundation + health wiring; atmos deferred)
 
 # Screen-space effects foundation (Jul 2026)
 
@@ -16,8 +16,9 @@ Shipped a `ScreenEffectsSubSystem` that drives URP Volume effects (vignette, chr
 - Effect types: HotRoom, OnFire, ColdRoom, Freezing, LowOxygen, DyingCritical, BloodLossTunnelVision, Concussion, Unconscious
 - F2 debug menu (lazy UI, no duplicate EventSystem)
 - Console: `screeneffect`, hit-flash command
+- **Health wiring:** `HealthScreenEffectMapper` maps local-owner `HealthSnapshot` → health-driven intensities; `HumanHealthController` TargetRpc fires hit flash on damage
 
 ## Deferred
 
-- Drive intensities from [health](../plans/health_implementation_plan.md) and atmospherics instead of debug-only callers
+- Drive HotRoom/OnFire/ColdRoom/Freezing from atmospherics
 - Optional move of bootstrap into Boot.unity once preferred

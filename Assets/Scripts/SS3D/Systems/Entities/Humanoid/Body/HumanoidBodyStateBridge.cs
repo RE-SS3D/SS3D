@@ -14,11 +14,8 @@ namespace SS3D.Systems.Entities.Humanoid
     {
         [SerializeField] private HumanoidBodyStateMachine _bodyStateMachine;
         [SerializeField] private HumanoidLivingController _livingController;
-        [SerializeField] private FeetController _feetController;
+        [SerializeField] private HumanHealthController _healthController;
         [SerializeField] private Hands _hands;
-
-        private FootBodyPart _leftFoot;
-        private FootBodyPart _rightFoot;
 
         private void Awake()
         {
@@ -32,9 +29,9 @@ namespace SS3D.Systems.Entities.Humanoid
                 _livingController = GetComponent<HumanoidLivingController>();
             }
 
-            if (_feetController == null)
+            if (_healthController == null)
             {
-                _feetController = GetComponent<FeetController>();
+                _healthController = GetComponent<HumanHealthController>();
             }
 
             if (_hands == null)
@@ -45,7 +42,6 @@ namespace SS3D.Systems.Entities.Humanoid
 
         private void Start()
         {
-            CacheFeet();
             Subscribe();
             UpdateArmHold();
         }
@@ -53,22 +49,6 @@ namespace SS3D.Systems.Entities.Humanoid
         private void OnDestroy()
         {
             Unsubscribe();
-        }
-
-        private void CacheFeet()
-        {
-            FootBodyPart[] feet = GetComponentsInChildren<FootBodyPart>();
-            foreach (FootBodyPart foot in feet)
-            {
-                if (foot.name.Contains("Left", System.StringComparison.OrdinalIgnoreCase))
-                {
-                    _leftFoot = foot;
-                }
-                else if (foot.name.Contains("Right", System.StringComparison.OrdinalIgnoreCase))
-                {
-                    _rightFoot = foot;
-                }
-            }
         }
 
         private void Subscribe()
@@ -97,8 +77,33 @@ namespace SS3D.Systems.Entities.Humanoid
 
         private void Update()
         {
+            if (ShouldSuppressBodyPresentation())
+            {
+                return;
+            }
+
             UpdateLimp();
             UpdateDragging();
+        }
+
+        /// <summary>
+        /// Limp/drag writes keep feeding the animator via BodyStateMachine even while Ragdoll has
+        /// disabled AnimationOrchestrator — that re-poses a walk cycle on a collapsed body.
+        /// </summary>
+        private bool ShouldSuppressBodyPresentation()
+        {
+            if (_healthController != null)
+            {
+                HealthSnapshot snapshot = _healthController.Snapshot;
+                if (!snapshot.IsConscious
+                    || snapshot.IsCardiacArrest
+                    || snapshot.State == HealthState.Dead)
+                {
+                    return true;
+                }
+            }
+
+            return TryGetComponent(out Ragdoll ragdoll) && ragdoll.IsKnockedDown;
         }
 
         private void HandleItemChanged(object sender, Item item)
@@ -199,8 +204,10 @@ namespace SS3D.Systems.Entities.Humanoid
                 return;
             }
 
-            float leftDamage = _leftFoot != null ? _leftFoot.RelativeDamage : 0f;
-            float rightDamage = _rightFoot != null ? _rightFoot.RelativeDamage : 0f;
+            // Foot/leg injury slows and limps the gait. The legacy FeetController/FootBodyPart
+            // path was removed in the health rewrite; per-leg damage now comes from the zone model.
+            float leftDamage = _healthController != null ? _healthController.GetZoneBruteFraction(BodyZone.LeftLeg) : 0f;
+            float rightDamage = _healthController != null ? _healthController.GetZoneBruteFraction(BodyZone.RightLeg) : 0f;
 
             LimpSide side = LimpSide.None;
             if (leftDamage > 0.3f && leftDamage > rightDamage)

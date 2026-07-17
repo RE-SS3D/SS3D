@@ -49,6 +49,7 @@ GameObject:
   - component: {fileID: 4529416820187209592}
   - component: {fileID: 3371975112976805248}
   - component: {fileID: 821199113568163535}
+  - component: {fileID: 9182736450123456790}
   m_Layer: 10
   m_Name: BurnPatch
   m_TagString: Untagged
@@ -304,3 +305,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   key: {fileID: 11400000, guid: d10859ef6ce874d49b50d88d73760653, type: 2}
+--- !u!114 &9182736450123456790
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4068007204767187790}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1e731f81e519abcd54b5c559ed82bd3b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

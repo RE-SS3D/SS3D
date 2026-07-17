@@ -1,29 +1,36 @@
 ﻿using FishNet.Connection;
 using FishNet.Object;
 using SS3D.Permissions;
-using System.Collections.Generic;
-using System.Linq;
+using SS3D.Systems.Health;
 using UnityEngine;
 
 namespace SS3D.Systems.IngameConsoleSystem.Commands
 {
     public class DestroyBodyPartCommand : Command
     {
-        public override string LongDescription => "Destroy a given body part, unattached from a player";
-        public override string ShortDescription => "Hit me daddy";
+        public override string LongDescription => "Force-sever a player's head (decapitation / mind-swap test)";
+        public override string ShortDescription => "Sever head";
         public override string Usage => "(game object name)";
         public override ServerRoleTypes AccessLevel => ServerRoleTypes.Administrator;
         public override CommandType Type => CommandType.Server;
 
-        private record CalculatedValues(IEnumerable<BodyPart> BodyParts) : ICalculatedValues;
+        private record CalculatedValues(HumanHealthController Health) : ICalculatedValues;
 
         [Server]
         public override string Perform(string[] args, NetworkConnection conn = null)
         {
-            if (!ReceiveCheckResponse(args, out CheckArgsResponse response, out CalculatedValues values)) return response.InvalidArgs;
+            if (!ReceiveCheckResponse(args, out CheckArgsResponse response, out CalculatedValues values))
+            {
+                return response.InvalidArgs;
+            }
 
-            values.BodyParts.First().InflictDamageToAllLayer(new (Health.DamageType.Heat, 10000000000));
-            return "BodyPart hurt";
+            values.Health.ApplyDamage(BodyZone.Head, HealthConstants.DisabledThreshold, 0f);
+            if (!values.Health.TrySeverZone(BodyZone.Head, force: true))
+            {
+                return "Head severance failed";
+            }
+
+            return "Head severed";
         }
 
         [Server]
@@ -31,20 +38,23 @@ namespace SS3D.Systems.IngameConsoleSystem.Commands
         {
             CheckArgsResponse response = new();
 
-            if (args.Length != 1) return response.MakeInvalid("Invalid number of arguments");
-            
-            string gameObjectName = args[0];
-            GameObject go = GameObject.Find(gameObjectName);
-            if (go == null) return response.MakeInvalid("No bodypart with this name");
+            if (args.Length != 1)
+            {
+                return response.MakeInvalid("Invalid number of arguments");
+            }
 
-            BodyPart[] bodyParts = go.GetComponentsInChildren<BodyPart>().Where(x => x.gameObject.name == gameObjectName).ToArray();
-            if (!bodyParts.Any()) return response.MakeInvalid("No bodypart with this name");
+            GameObject go = GameObject.Find(args[0]);
+            if (go == null)
+            {
+                return response.MakeInvalid("No object with this name");
+            }
 
-            if (bodyParts.Length != 1) return response.MakeInvalid("Multiple body parts with the same name, ambiguous command");
+            if (!go.TryGetComponent(out HumanHealthController health))
+            {
+                return response.MakeInvalid("Object has no HumanHealthController");
+            }
 
-            return response.MakeValid(new CalculatedValues(bodyParts));
+            return response.MakeValid(new CalculatedValues(health));
         }
     }
 }
-
-

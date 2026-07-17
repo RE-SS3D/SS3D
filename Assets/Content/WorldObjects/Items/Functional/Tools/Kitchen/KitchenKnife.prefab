@@ -50,6 +50,7 @@ GameObject:
   - component: {fileID: 5464842264619517571}
   - component: {fileID: 2986267657943188832}
   - component: {fileID: 4004628490018734234}
+  - component: {fileID: 9182736450123456791}
   m_Layer: 10
   m_Name: KitchenKnife
   m_TagString: Untagged
@@ -318,3 +319,21 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   type: 2
+--- !u!114 &9182736450123456791
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3794527162878356835}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a1b2c3d4e5f6789012345678abcdef01, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _profile:
+    BruteDamage: 12
+    BurnDamage: 0
+    WindupSeconds: 0.2
+    RecoverySeconds: 0.35
+    CanSever: 1

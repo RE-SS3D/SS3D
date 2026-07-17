@@ -132,9 +132,9 @@ GameObject:
   - component: {fileID: -5519180950159476568}
   - component: {fileID: 5199727990370395664}
   - component: {fileID: 3575842280113044479}
-  - component: {fileID: 3171269491459057760}
   - component: {fileID: 5767018055607047746}
   - component: {fileID: 427023688766138603}
+  - component: {fileID: 9182736450123456796}
   m_Layer: 10
   m_Name: HumanHandRight
   m_TagString: Untagged
@@ -390,19 +390,18 @@ MonoBehaviour:
   m_GameObject: {fileID: 7546631754298856378}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 83a3281d5348d93498a0d8d0e3b7751d, type: 3}
+  m_Script: {fileID: 11500000, guid: d25aaf3a871b3d1438c1a27c2c6b57c6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   _componentIndexCache: 1
   _addedNetworkObject: {fileID: 8124597772398120270}
   _networkObjectCache: {fileID: 8124597772398120270}
-  _parentBodyPart: {fileID: 0}
   _skinnedMeshRenderer: {fileID: 4418670870993768765}
   _bodyPartItem: {fileID: 5774385816057912484, guid: c19eccca279beee4186432a03257a7b9, type: 3}
   _internalBodyParts: {fileID: 0}
   _bodyCollider: {fileID: 0}
-  HealthController: {fileID: 0}
-  _bodyPartVolume: 650
+  _primaryZone: 3
+  _isDetachable: 1
   _hand: {fileID: 5199727990370395664}
 --- !u!114 &4420238873472181166
 MonoBehaviour:
@@ -501,23 +500,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   attachedContainer: {fileID: 4420238873472181166}
   Mirrored: 0
---- !u!114 &3171269491459057760
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7546631754298856378}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 80e876a9101cc6042b1b5a1fbf89b810, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _componentIndexCache: 5
-  _addedNetworkObject: {fileID: 8124597772398120270}
-  _networkObjectCache: {fileID: 8124597772398120270}
-  _bodyPart: {fileID: 566047520403034647}
-  isBleeding: 0
 --- !u!114 &5767018055607047746
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -543,6 +525,18 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   type: 3
+--- !u!114 &9182736450123456796
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7546631754298856378}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 42eacc5c80038987eec528347519bb2f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &8277670340540735588
 GameObject:
   m_ObjectHideFlags: 0

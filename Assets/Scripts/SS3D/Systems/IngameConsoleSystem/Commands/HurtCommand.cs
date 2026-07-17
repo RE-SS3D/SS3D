@@ -3,82 +3,77 @@ using FishNet.Object;
 using SS3D.Core;
 using SS3D.Permissions;
 using SS3D.Systems.Entities;
+using SS3D.Systems.Health;
 using SS3D.Systems.PlayerControl;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using SS3D.Systems.Health;
 
 namespace SS3D.Systems.IngameConsoleSystem.Commands
 {
     public class HurtCommand : Command
     {
-        public override string LongDescription => "Hurt body layer in a body part of a player";
-        public override string Usage => "(ckey) (body part name) (body layer name) (damage type) (damage amount)\n"
-            + "example: hurt editorUser HumanHead all toxic 10";
-        public override string ShortDescription => "Hurt me daddy";
+        public override string LongDescription => "Apply zone damage to a player";
+        public override string Usage => "(ckey) (BodyZone) (brute) (burn)\nexample: hurt editorUser Chest 25 0";
+        public override string ShortDescription => "Apply zone damage to a player";
         public override ServerRoleTypes AccessLevel => ServerRoleTypes.Administrator;
         public override CommandType Type => CommandType.Server;
 
-        private record CalculatedValues(BodyPart BodyPart, BodyLayerType BodyLayerType, DamageType DamageType, int DamageAmount) : ICalculatedValues;
+        private record CalculatedValues(HumanHealthController Health, BodyZone Zone, float Brute, float Burn) : ICalculatedValues;
 
         [Server]
         public override string Perform(string[] args, NetworkConnection conn = null)
         {
-            if (!ReceiveCheckResponse(args, out CheckArgsResponse response, out CalculatedValues values)) return response.InvalidArgs;
-            string bodyLayerName = args[2];
-
-			if (bodyLayerName == "all")
-			{
-				values.BodyPart.InflictDamageToAllLayer(new (values.DamageType, values.DamageAmount));
-			}
-			else if (!values.BodyPart.TryInflictDamage(values.BodyLayerType, new(values.DamageType, values.DamageAmount)))
+            if (!ReceiveCheckResponse(args, out CheckArgsResponse response, out CalculatedValues values))
             {
-                return response.MakeInvalid("can't inflict damage on bodypart").InvalidArgs;
+                return response.InvalidArgs;
             }
+
+            values.Health.ApplyDamage(values.Zone, values.Brute, values.Burn);
             return "Player hurt";
         }
 
         [Server]
         protected override CheckArgsResponse CheckArgs(string[] args)
         {
-
             CheckArgsResponse response = new();
 
-            if (args.Length != 5) return response.MakeInvalid("Invalid number of arguments");
+            if (args.Length != 4)
+            {
+                return response.MakeInvalid("Invalid number of arguments");
+            }
 
-            string ckey = args[0];
-            string bodyPartName = args[1];
-            string bodyLayerName = args[2];
-            string damageTypeName = args[3];
-            string damageAmountString = args[4];
-            int damageAmount = 0;
-            BodyLayerType bodyLayerType;
-            DamageType damageType;
-            
-            if (!int.TryParse(damageAmountString, out damageAmount)) return response.MakeInvalid("Invalid damage amount");
+            if (!Enum.TryParse(args[1], true, out BodyZone zone))
+            {
+                return response.MakeInvalid("Invalid body zone");
+            }
 
-            if (!Enum.TryParse(bodyLayerName, true, out bodyLayerType) && bodyLayerName != "all") 
-                return response.MakeInvalid("Invalid body layer type");
+            if (!float.TryParse(args[2], out float brute))
+            {
+                return response.MakeInvalid("Invalid brute amount");
+            }
 
-            if (!Enum.TryParse(damageTypeName, true, out damageType)) return response.MakeInvalid("Invalid damage type");
+            if (!float.TryParse(args[3], out float burn))
+            {
+                return response.MakeInvalid("Invalid burn amount");
+            }
 
-            Player player = SubSystems.Get<PlayerSubSystem>().GetPlayer(ckey);
-            if (player == null) return response.MakeInvalid("This player doesn't exist");
+            Player player = SubSystems.Get<PlayerSubSystem>().GetPlayer(args[0]);
+            if (player == null)
+            {
+                return response.MakeInvalid("This player doesn't exist");
+            }
 
             Entity entity = SubSystems.Get<EntitySubSystem>().GetSpawnedEntity(player);
-            if (entity == null) return response.MakeInvalid("This entity doesn't exist");
-            
-            IEnumerable<BodyPart> bodyParts = entity.GetComponentsInChildren<BodyPart>().Where(x => x.gameObject.name == bodyPartName).ToArray();
+            if (entity == null)
+            {
+                return response.MakeInvalid("This entity doesn't exist");
+            }
 
-            if (!bodyParts.Any()) return response.MakeInvalid("No bodypart with this name");
+            if (!entity.TryGetComponent(out HumanHealthController health))
+            {
+                return response.MakeInvalid("Entity has no HumanHealthController");
+            }
 
-            if (bodyParts.Count() != 1) return response.MakeInvalid("Multiple body parts with the same name, ambiguous command");
-            
-            BodyPart bodyPart = bodyParts.First();
-            if (bodyLayerName != "all" && !bodyPart.ContainsLayer(bodyLayerType)) return response.MakeInvalid("body layer not present on the bodypart");
-            
-            return response.MakeValid(new CalculatedValues(bodyPart, bodyLayerType, damageType, damageAmount));
+            return response.MakeValid(new CalculatedValues(health, zone, brute, burn));
         }
     }
 }

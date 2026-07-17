@@ -406,7 +406,6 @@ GameObject:
   - component: {fileID: 6308754684896537634}
   - component: {fileID: 7076920505370493219}
   - component: {fileID: 31103313540038479}
-  - component: {fileID: 2397838539606738385}
   - component: {fileID: 5308582014386986525}
   - component: {fileID: 2667861044257637155}
   - component: {fileID: 8049927839799613062}
@@ -695,39 +694,21 @@ MonoBehaviour:
   m_GameObject: {fileID: 5562010227207703736}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 692f4890b7494814083561e6206c4334, type: 3}
+  m_Script: {fileID: 11500000, guid: d25aaf3a871b3d1438c1a27c2c6b57c6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   _componentIndexCache: 2
   _addedNetworkObject: {fileID: 7892022672265885063}
   _networkObjectCache: {fileID: 7892022672265885063}
-  _parentBodyPart: {fileID: 0}
   _skinnedMeshRenderer: {fileID: 6308754684896537634}
   _bodyPartItem: {fileID: 0}
   _internalBodyParts: {fileID: 4471929947553035006}
   _bodyCollider: {fileID: 0}
-  HealthController: {fileID: 0}
-  _bodyPartVolume: 25300
   Heart: {fileID: 0}
   LeftLung: {fileID: 0}
+  _primaryZone: 1
+  _isDetachable: 0
   RightLung: {fileID: 0}
---- !u!114 &2397838539606738385
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5562010227207703736}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 80e876a9101cc6042b1b5a1fbf89b810, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _componentIndexCache: 3
-  _addedNetworkObject: {fileID: 7892022672265885063}
-  _networkObjectCache: {fileID: 7892022672265885063}
-  _bodyPart: {fileID: 31103313540038479}
-  isBleeding: 0
 --- !u!95 &5308582014386986525
 Animator:
   serializedVersion: 7

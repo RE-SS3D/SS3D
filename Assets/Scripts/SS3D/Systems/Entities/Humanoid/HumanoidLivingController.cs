@@ -6,6 +6,7 @@ using SS3D.Core;
 using SS3D.Core.Behaviours;
 using SS3D.Systems.Entities.Humanoid.Body;
 using SS3D.Systems.Health;
+using SS3D.Systems.Stamina;
 using SS3D.Systems.Screens;
 using UnityEngine;
 
@@ -24,7 +25,7 @@ namespace SS3D.Systems.Entities.Humanoid
         [Header("Components")]
         [SerializeField] private CharacterController _characterController;
         [SerializeField] private StaminaController _staminaController;
-		[SerializeField] private FeetController _feetController;
+        private HumanHealthController _healthController;
         [SerializeField] private HumanoidPredictedMovement _predictedMovement;
 
         public bool IsDragging { get; set; }
@@ -34,6 +35,7 @@ namespace SS3D.Systems.Entities.Humanoid
 		public override void OnStartClient()
         {
             base.OnStartClient();
+            _healthController = GetComponent<HumanHealthController>();
             if (_predictedMovement == null)
             {
                 _predictedMovement = GetComponent<HumanoidPredictedMovement>();
@@ -49,6 +51,15 @@ namespace SS3D.Systems.Entities.Humanoid
         /// </summary>
         protected override void ProcessCharacterMovement()
         {
+            if (_healthController != null
+                && (!_healthController.Snapshot.IsConscious || _healthController.Snapshot.IsCardiacArrest))
+            {
+                _characterController.Move(Physics.gravity);
+                MoveMovementTarget(Vector2.zero, 5);
+                MovePlayer();
+                return;
+            }
+
             ProcessPlayerInput();
 
             if (_predictedMovement != null && _predictedMovement.enabled)
@@ -101,7 +112,11 @@ namespace SS3D.Systems.Entities.Humanoid
         /// </summary>
         protected override void MovePlayer()
         {
-            float feetFactor = _feetController != null ? _feetController.FeetHealthFactor : 1f;
+            // Health rewrite: MovementSpeedMultiplier subsumes the legacy per-foot FeetHealthFactor
+            // (it already derives from LeftLeg/RightLeg zone damage). Combat scaling is orthogonal.
+            float healthMultiplier = _healthController != null
+                ? _healthController.Snapshot.MovementSpeedMultiplier
+                : 1f;
             float combatFactor = 1f;
             // Combat walk/run clips are authored at the same cadence across stances (melee + ranged),
             // so apply slow combat speed scaling for any combat mode.
@@ -110,7 +125,7 @@ namespace SS3D.Systems.Entities.Humanoid
                 combatFactor = IsRunning ? _combatRunSpeedFactor : _combatWalkSpeedFactor;
             }
 
-            _characterController.Move(TargetMovement * ((feetFactor * _movementSpeed * combatFactor) * Time.deltaTime));
+            _characterController.Move(TargetMovement * (_movementSpeed * healthMultiplier * combatFactor * Time.deltaTime));
         }
     }
 

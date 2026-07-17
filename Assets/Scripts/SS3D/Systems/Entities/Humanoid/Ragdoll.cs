@@ -1,5 +1,6 @@
 ﻿using FishNet.Component.Animating;
 using SS3D.Systems.Entities.Data;
+using SS3D.Systems.Entities.Humanoid.Body;
 using FishNet.Component.Transforming;
 using FishNet.Connection;
 using FishNet.Object;
@@ -77,6 +78,11 @@ namespace SS3D.Systems.Entities.Humanoid
         private byte _ragdollPartSyncInterval;
 
         private bool _ragdollPartsCached;
+        /// <summary>
+        /// Death corpses must stay down — ownership/network teardown can disable this component
+        /// and must not call Recover() back into a walking pose.
+        /// </summary>
+        private bool _deathRagdoll;
 
         private void Awake()
         {
@@ -95,7 +101,7 @@ namespace SS3D.Systems.Entities.Humanoid
 			{
                 Knockdown();
             }
-			else
+			else if (!_deathRagdoll)
             {
 				BonesReset();
 			}
@@ -154,7 +160,8 @@ namespace SS3D.Systems.Entities.Humanoid
 
         private void OnDisable()
         {
-            Recover();
+            // Do not Recover() here. Ownership transfer and NetworkBehaviour teardown during
+            // death disable this component and would stand the corpse back up into a walk cycle.
         }
 
         private void Update()
@@ -187,51 +194,221 @@ namespace SS3D.Systems.Entities.Humanoid
         private void WalkingBehavior() { }
         
         /// <summary>
-        /// Cast knockdown, that isn't going to expire until Recover()
+        /// Permanent knockdown for death. Applies visuals immediately on the server (do not rely
+        /// solely on SyncVar OnChange) and blocks Recover from standing the corpse up.
+        /// </summary>
+        [Server]
+        public void ServerDeathRagdoll()
+        {
+            if (!enabled && !_deathRagdoll)
+            {
+                // Component may already be mid-teardown; still force the pose if possible.
+            }
+
+            _deathRagdoll = true;
+            _isKnockdownTimed = false;
+            EnsureAnimatorCached();
+
+            if (!IsKnockedDown)
+            {
+                IsKnockedDown = true;
+            }
+
+            // FishNet SyncVar OnChange can be deferred or skipped when already dirty; death
+            // must not wait on it or the animator keeps driving a walk cycle.
+            if (_currentState != RagdollState.Ragdoll)
+            {
+                Knockdown();
+            }
+            else
+            {
+                ReinforceRagdollPose();
+            }
+        }
+
+        /// <summary>
+        /// Knockdown that does not expire until Recover(). Safe to call from server code
+        /// (admin). Prefer this over the ServerRpc from server authority paths.
+        /// </summary>
+        [Server]
+        public void ServerKnockdownTimeless()
+        {
+            if (!enabled)
+            {
+                return;
+            }
+
+            _isKnockdownTimed = false;
+            EnsureAnimatorCached();
+            if (!IsKnockedDown)
+            {
+                IsKnockedDown = true;
+            }
+
+            // Always force collapse visuals — same path death uses via observer RPC.
+            ApplyCollapseVisuals();
+        }
+
+        /// <summary>
+        /// Client-owned request for timeless knockdown.
         /// </summary>
         [ServerRpc(RequireOwnership = false)]
         public void KnockdownTimeless()
         {
-            if (!enabled) return;
-            
-            _isKnockdownTimed = false;
-            IsKnockedDown = true;
+            ServerKnockdownTimeless();
         }
+
         /// <summary>
         /// Knockdown the character for some time.
         /// </summary>
-        /// <param name="seconds"></param>
+        [Server]
+        public void ServerKnockdown(float seconds)
+        {
+            if (!enabled)
+            {
+                return;
+            }
+
+            _isKnockdownTimed = true;
+            _knockdownTimer += seconds;
+            EnsureAnimatorCached();
+            if (!IsKnockedDown)
+            {
+                IsKnockedDown = true;
+            }
+
+            if (_currentState != RagdollState.Ragdoll)
+            {
+                Knockdown();
+            }
+        }
+
+        /// <summary>
+        /// Client-owned request for timed knockdown.
+        /// </summary>
         [ServerRpc(RequireOwnership = false)]
         public void Knockdown(float seconds)
         {
-            if (!enabled) return;
-            _isKnockdownTimed = true;
-            _knockdownTimer += seconds;
-            IsKnockedDown = true;
+            ServerKnockdown(seconds);
+        }
+
+        private void EnsureAnimatorCached()
+        {
+            if (_animator == null)
+            {
+                _animator = GetComponent<Animator>();
+            }
+
+            if (_humanoidLivingController == null)
+            {
+                _humanoidLivingController = GetComponent<HumanoidLivingController>();
+            }
+
+            if (_characterController == null)
+            {
+                _characterController = GetComponent<CharacterController>();
+            }
+
+            if (_networkAnimator == null)
+            {
+                _networkAnimator = GetComponent<NetworkAnimator>();
+                _networkAnimatorInitiallyEnabled = _networkAnimator != null && _networkAnimator.enabled;
+            }
         }
         
         private void Knockdown()
         {
+            EnsureAnimatorCached();
+            Vector3 movement = _humanoidLivingController != null
+                ? _humanoidLivingController.TargetMovement * 3f
+                : Vector3.zero;
+
+            ApplyCollapseVisuals();
+
+            if (movement.sqrMagnitude > 0.01f && _ragdollParts != null)
+            {
+                foreach (Transform part in _ragdollParts)
+                {
+                    part.GetComponent<Rigidbody>().AddForce(movement, ForceMode.VelocityChange);
+                }
+            }
+        }
+
+        private void ReinforceRagdollPose()
+        {
+            ToggleAnimator(false);
+            DisableAnimationDrivers();
+            ToggleKinematic(false);
+            ToggleSyncRagdoll(true);
+        }
+
+        private void DisableAnimationDrivers()
+        {
+            if (TryGetComponent(out AnimationOrchestrator orchestrator))
+            {
+                orchestrator.SetPosingSuppressed(true);
+                orchestrator.enabled = false;
+            }
+
+            if (TryGetComponent(out HumanoidBodyStateMachine bodyState))
+            {
+                bodyState.enabled = false;
+            }
+        }
+
+        private void EnableAnimationDrivers()
+        {
+            if (_deathRagdoll)
+            {
+                return;
+            }
+
+            if (TryGetComponent(out AnimationOrchestrator orchestrator))
+            {
+                orchestrator.SetPosingSuppressed(false);
+                orchestrator.enabled = true;
+            }
+
+            if (TryGetComponent(out HumanoidBodyStateMachine bodyState))
+            {
+                bodyState.enabled = true;
+            }
+        }
+
+        /// <summary>
+        /// Force collapsed pose on server and observers. Does not depend on SyncVar OnChange.
+        /// </summary>
+        public void ApplyCollapseVisuals()
+        {
+            EnsureAnimatorCached();
+            CacheRagdollParts();
             _currentState = RagdollState.Ragdoll;
-            Vector3 movement = _humanoidLivingController.TargetMovement * 3;
             ToggleSyncRagdoll(true);
             ToggleController(false);
             ToggleAnimator(false);
-
-            if (!IsOwner && Owner.ClientId != -1)
-                return;
-            
+            DisableAnimationDrivers();
             ToggleKinematic(false);
-            foreach (Transform part in _ragdollParts)
-            {
-                part.GetComponent<Rigidbody>().AddForce(movement, ForceMode.VelocityChange);
-            }
+        }
+
+        /// <summary>
+        /// Client/host reinforce after death RPC — stops animator drivers and enables physics
+        /// without requiring ownership (corpse is usually unowned after mind-swap).
+        /// </summary>
+        public void ApplyObserverDeathRagdoll()
+        {
+            _deathRagdoll = true;
+            _isKnockdownTimed = false;
+            ApplyCollapseVisuals();
         }
 
         private void RagdollBehavior()
         {
-            // Only the owner handles ragdoll's physics
-            if (!IsOwner) return;
+            // Owner aligns living ragdolls; server aligns death corpses (usually unowned).
+            if (!IsOwner && !(IsServer && _deathRagdoll))
+            {
+                return;
+            }
+
             AlignToHips();
         }
         /// <summary>
@@ -267,6 +444,11 @@ namespace SS3D.Systems.Entities.Humanoid
         /// </summary>
         private void BonesReset()
         {
+            if (_deathRagdoll)
+            {
+                return;
+            }
+
             _currentState = RagdollState.BonesReset;
             _elapsedResetBonesTime = 0;
 
@@ -327,7 +509,9 @@ namespace SS3D.Systems.Entities.Humanoid
         {
             _currentState = RagdollState.Walking;
             ToggleController(true);
+            EnableAnimationDrivers();
         }
+
         /// <summary>
         /// Copy current ragdoll parts positions to array
         /// </summary>
@@ -368,11 +552,22 @@ namespace SS3D.Systems.Entities.Humanoid
                 _ragdollParts[partIndex].localRotation = originalTransforms[partIndex].Rotation;
             }
         }
+        [Server]
+        public void ServerRecover()
+        {
+            if (_deathRagdoll)
+            {
+                return;
+            }
+
+            IsKnockedDown = false;
+            _knockdownTimer = 0f;
+        }
+
         [ServerRpc(RequireOwnership = false)]
         public void Recover()
         {
-            IsKnockedDown = false;
-            _knockdownTimer = 0;
+            ServerRecover();
         }
         
 		/// <summary>
@@ -400,12 +595,24 @@ namespace SS3D.Systems.Entities.Humanoid
             {
                 _characterController.enabled = enable;
             }
+
+            if (TryGetComponent(out HumanoidPredictedMovement predictedMovement))
+            {
+                predictedMovement.enabled = enable;
+            }
         }
         private void ToggleAnimator(bool enable)
         {
+            if (_animator == null)
+            {
+                _animator = GetComponent<Animator>();
+            }
+
             // Speed=0 prevents animator from choosing Walking animations after enabling it
-            if (!enable)
+            if (!enable && _animator != null)
+            {
                 _animator.SetFloat(Animations.Humanoid.MovementSpeed, 0);
+            }
 
             if (_animator != null)
             {

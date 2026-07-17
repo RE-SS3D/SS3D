@@ -1,6 +1,6 @@
 ﻿using FishNet.Object;
 using SS3D.Systems.Entities.Humanoid;
-using SS3D.Systems.Health;
+using SS3D.Systems.Stamina;
 using SS3D.Systems.Interactions;
 using SS3D.Systems.Inventory.Containers;
 using UnityEngine;
@@ -17,6 +17,7 @@ namespace SS3D.Systems.Entities
         // prefab for the ghost 
 		public GameObject Ghost;
 		private GameObject _spawnedGhost;
+        private bool _killStarted;
 
         /// <summary>
 		/// On death, the player should become a ghost.
@@ -27,15 +28,38 @@ namespace SS3D.Systems.Entities
 			Entity originEntity = player.GetComponent<Entity>();
 			Entity ghostEntity = ghost.GetComponent<Entity>();
 
+            // Drop the corpse before mind-swap/component dispose. Must use ServerDeathRagdoll —
+            // SyncVar-only knockdown races animator drivers and OnDisable Recover used to stand
+            // the body back up into a walk cycle.
+            if (TryGetComponent(out Ragdoll ragdoll))
+            {
+                ragdoll.ServerDeathRagdoll();
+            }
+
             MindSubSystem mindSystem = SubSystems.Get<MindSubSystem>();
             mindSystem.SwapMinds(originEntity, ghostEntity);
 
             RpcUpdateGhostPosition(originEntity, ghostEntity);
-            if (TryGetComponent(out Ragdoll ragdoll))
-            {
-                ragdoll.KnockdownTimeless();
-            }
+            RpcApplyDeathRagdoll(originEntity);
             RpcDestroyComponents(originEntity);
+        }
+
+        /// <summary>
+        /// Observers (and host) reinforce corpse ragdoll after mind-swap — disables animator
+        /// drivers that would otherwise keep the walk cycle posing the mesh.
+        /// </summary>
+		[ObserversRpc(RunLocally = true)]
+		private void RpcApplyDeathRagdoll(Entity originEntity)
+		{
+            if (originEntity == null)
+            {
+                return;
+            }
+
+            if (originEntity.TryGetComponent(out Ragdoll ragdoll))
+            {
+                ragdoll.ApplyObserverDeathRagdoll();
+            }
         }
 
         /// <summary>
@@ -70,6 +94,13 @@ namespace SS3D.Systems.Entities
 		[Server]
 		public override void Kill()
 		{
+            if (_killStarted)
+            {
+                return;
+            }
+
+            _killStarted = true;
+
             _spawnedGhost = Instantiate(Ghost);
 			EntitySubSystem entitySystem = SubSystems.Get<EntitySubSystem>();
 			if(entitySystem.TryTransferEntity(GetComponentInParent<Entity>(), _spawnedGhost.GetComponent<Entity>()))
@@ -80,6 +111,8 @@ namespace SS3D.Systems.Entities
             else
             {
                 _spawnedGhost.Dispose(true);
+                _spawnedGhost = null;
+                _killStarted = false;
             }
 		}
 

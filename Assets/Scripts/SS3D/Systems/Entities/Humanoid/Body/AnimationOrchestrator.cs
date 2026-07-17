@@ -41,6 +41,7 @@ namespace SS3D.Systems.Entities.Humanoid
         private float _meleeSwingFadeStartsAt;
         private float _upperBodyWeight;
         private float _upperBodyWeightTarget;
+        private bool _posingSuppressed;
 
         private static readonly int AttackSwingState = Animator.StringToHash("Attack Swing");
         /// <summary>Mixamo horizontal swing length (~72 frames at 30fps).</summary>
@@ -62,10 +63,8 @@ namespace SS3D.Systems.Entities.Humanoid
             {
                 _movementController = GetComponent<HumanoidController>();
             }
-            if (_animator == null)
-            {
-                _animator = GetComponent<Animator>();
-            }
+
+            EnsureAnimator();
 
             LogMissingAnimatorParametersOnce();
             SubscribeToEvents();
@@ -83,6 +82,19 @@ namespace SS3D.Systems.Entities.Humanoid
                 _animator.SetFloat(Animations.Humanoid.VelX, 0f);
                 _animator.SetFloat(Animations.Humanoid.VelZ, 0f);
                 _animator.SetFloat(Animations.Humanoid.Turn, 0f);
+            }
+        }
+
+        private void EnsureAnimator()
+        {
+            if (_animator == null)
+            {
+                _animator = GetComponent<Animator>();
+            }
+
+            if (_animator == null)
+            {
+                _animator = GetComponentInChildren<Animator>(true);
             }
         }
 
@@ -179,7 +191,8 @@ namespace SS3D.Systems.Entities.Humanoid
 
         private void HandleUpdate(ref EventContext context, in UpdateEvent updateEvent)
         {
-            if (_animator == null)
+            // Coimbra UpdateEvent still fires after enabled=false — must guard or walk params keep writing.
+            if (!isActiveAndEnabled || _posingSuppressed || _animator == null || !_animator.enabled)
             {
                 return;
             }
@@ -187,6 +200,21 @@ namespace SS3D.Systems.Entities.Humanoid
             ApplyLocomotionVelocity();
             TickMeleeSwingIk();
             TickUpperBodyWeight();
+        }
+
+        /// <summary>
+        /// Ragdoll/collapse sets this so Coimbra listeners cannot keep driving walk cycles.
+        /// </summary>
+        public void SetPosingSuppressed(bool suppressed)
+        {
+            _posingSuppressed = suppressed;
+            if (suppressed && _animator != null)
+            {
+                _animator.SetFloat(Animations.Humanoid.MovementSpeed, 0f);
+                _animator.SetFloat(Animations.Humanoid.VelX, 0f);
+                _animator.SetFloat(Animations.Humanoid.VelZ, 0f);
+                _animator.enabled = false;
+            }
         }
 
         private void SubscribeToEvents()
@@ -320,6 +348,17 @@ namespace SS3D.Systems.Entities.Humanoid
 
         public void ApplySnapshot(BodyAnimationSnapshot snapshot)
         {
+            EnsureAnimator();
+            if (_posingSuppressed || _animator == null || !_animator.enabled)
+            {
+                return;
+            }
+
+            if (snapshot.State == BodyState.Ragdoll)
+            {
+                return;
+            }
+
             _lastSnapshot = snapshot;
             if (!IsLocalMovementAuthority())
             {

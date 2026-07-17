@@ -6,6 +6,7 @@ using SS3D.Interactions;
 using FishNet.Object;
 using SS3D.Systems.Tile;
 using SS3D.Core;
+using SS3D.Systems.Stamina;
 using SS3D.Systems.Health;
 
 namespace SS3D.Systems.Inventory.Containers
@@ -95,6 +96,12 @@ namespace SS3D.Systems.Inventory.Containers
             StaminaController stamina = GetComponentInParent<StaminaController>();
 
             if (stamina != null && !stamina.CanCommenceInteraction)
+            {
+                return false;
+            }
+
+            HumanHealthController health = GetComponentInParent<HumanHealthController>();
+            if (health != null && !health.Snapshot.CanUseArms)
             {
                 return false;
             }

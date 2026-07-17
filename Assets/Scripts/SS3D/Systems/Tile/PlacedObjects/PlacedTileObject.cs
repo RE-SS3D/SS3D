@@ -8,6 +8,7 @@ using SS3D.Core;
 using SS3D.Data;
 using SS3D.Data.AssetDatabases;
 using SS3D.Logging;
+using SS3D.Rendering.URP;
 using SS3D.Systems.Tile.Connections;
 using SS3D.Systems.Tile.TileMapCreator;
 using System;
@@ -36,6 +37,7 @@ namespace SS3D.Systems.Tile
             ServerVisualsUtility.DisableRenderingComponents(placedGameObject);
 #endif
 
+            StampWorldDecalReceivers(placedGameObject);
             Vector3 placedPosition = tileObjectSo.GetPlacedWorldPosition(worldPosition);
             placedGameObject.transform.SetPositionAndRotation(placedPosition, Quaternion.Euler(0, TileHelper.GetRotationAngle(dir), 0));
 
@@ -142,7 +144,21 @@ namespace SS3D.Systems.Tile
         public override void OnStartClient()
         {
             base.OnStartClient();
+            StampWorldDecalReceivers(gameObject);
             ApplySyncedIdentity();
+        }
+
+        /// <summary>
+        /// OR <see cref="DecalRenderingLayers.ReceiveWorldDecals"/> onto tile renderers so
+        /// floor DecalProjectors can hit tiles without painting characters (Default-only).
+        /// </summary>
+        private static void StampWorldDecalReceivers(GameObject root)
+        {
+            Renderer[] renderers = root.GetComponentsInChildren<Renderer>(true);
+            for (int i = 0; i < renderers.Length; i++)
+            {
+                renderers[i].renderingLayerMask = DecalRenderingLayers.WithWorldDecals(renderers[i].renderingLayerMask);
+            }
         }
 
         /// <summary>
