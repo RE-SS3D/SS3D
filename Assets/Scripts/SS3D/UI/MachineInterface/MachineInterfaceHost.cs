@@ -1,6 +1,7 @@
 using SS3D.Core;
 using SS3D.Core.Behaviours;
 using SS3D.Systems.Inputs;
+using SS3D.Systems.ScreenEffects;
 using SS3D.UI.MachineInterface.Components;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -28,6 +29,12 @@ namespace SS3D.UI.MachineInterface
     [RequireComponent(typeof(UIDocument))]
     public class MachineInterfaceHost : View
     {
+        /// <summary>
+        /// Strength passed to <see cref="ScreenEffectsSubSystem.SetUiBackdropBlur"/> while a diegetic panel is open.
+        /// Softens the 3D world; the UITK overlay stays sharp on top.
+        /// </summary>
+        private const float DiegeticBackdropBlur = 0.85f;
+
         [SerializeField]
         private UIDocument _document;
 
@@ -88,6 +95,7 @@ namespace SS3D.UI.MachineInterface
                 _overlayRoot.Add(template);
 
                 ApplyDiegeticPanelStyles(template, _diegeticShell, registration);
+                SetDiegeticBackdropBlur(true);
             }
             else
             {
@@ -96,6 +104,7 @@ namespace SS3D.UI.MachineInterface
                 _window.Content.Add(template);
                 _overlayRoot.Add(_window);
                 _panelRoot = _window;
+                SetDiegeticBackdropBlur(false);
             }
 
             SetOverlayInteractive(true);
@@ -315,6 +324,7 @@ namespace SS3D.UI.MachineInterface
             _window = null;
             _diegeticShell = null;
             _openInterfaceId = null;
+            SetDiegeticBackdropBlur(false);
             SetOverlayInteractive(false);
         }
 
@@ -322,6 +332,7 @@ namespace SS3D.UI.MachineInterface
         {
             _overlayReady = false;
             _overlayRoot = null;
+            SetDiegeticBackdropBlur(false);
 
             if (_document != null)
             {
@@ -402,6 +413,16 @@ namespace SS3D.UI.MachineInterface
                 _overlayRoot.style.flexShrink = 1;
                 _overlayRoot.pickingMode = PickingMode.Ignore;
             }
+        }
+
+        private static void SetDiegeticBackdropBlur(bool enabled)
+        {
+            if (!SubSystems.TryGet(out ScreenEffectsSubSystem screenEffects))
+            {
+                return;
+            }
+
+            screenEffects.SetUiBackdropBlur(enabled ? DiegeticBackdropBlur : 0f);
         }
 
         private void WireBinder(IMachineInterfaceBinder binder)

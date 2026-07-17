@@ -1,18 +1,18 @@
 > Code paths: Assets/Scripts/SS3D/UI/MachineInterface/, Assets/Content/Systems/UI/MachineInterface/
 > Entry points: MachineInterfaceSubSystem, MachineInterfaceHost, MachineInterfaceRegistry, MachineUiAssetCatalog
 > Status: shipped
-> Verified: e7cfcc3aa — 2026-07-17
+> Verified: eecaa7881 — 2026-07-18
 
 # Machine interface UI
 
 ## Overview
 
-UI Toolkit panels for station machines, networked via FishNet snapshots. Templates and styles load from a committed `MachineUiAssetCatalog` (`Resources.Load`) rebuilt from `MachineUiAssetPaths` — not Game.unity SerializeFields. APC and SMES use the diegetic `DiegeticDeviceShell` with full-screen engineering ID access gates; atmospheric devices use an inline ID reader row. Both variants share server-side credential checks and expose idle, scanning, granted, and denied UI states. Vending uses the diegetic shell without an access gate. Shared view-model/binder pattern with `MachineUiCatalog` registration and `IMachineOptimisticControlHandler` for client optimistic controls. Open is server-only via validated interaction (`ServerHandleOpenRequest`); there is no open ServerRpc. Air alarm panels discover real area vents/scrubbers, apply preset modes server-side, and read the turf cell in front of the wall mount. Scrubber panels persist per-gas filter toggles into `ScrubberController` simulation state. Vent target pressure is enforced in `VentController`. Pump panels control `AtmosPumpController` directly — pumps are not area-linked.
+UI Toolkit panels for station machines, networked via FishNet snapshots. Templates and styles load from a committed `MachineUiAssetCatalog` (`Resources.Load`) rebuilt from `MachineUiAssetPaths` — not Game.unity SerializeFields. APC and SMES use the diegetic `DiegeticDeviceShell` with full-screen engineering ID access gates; atmospheric devices use an inline ID reader row. Both variants share server-side credential checks and expose idle, scanning, granted, and denied UI states. Vending uses the diegetic shell without an access gate. Shared view-model/binder pattern with `MachineUiCatalog` registration and `IMachineOptimisticControlHandler` for client optimistic controls. Open is server-only via validated interaction (`ServerHandleOpenRequest`); there is no open ServerRpc. Air alarm panels discover real area vents/scrubbers, apply preset modes server-side, and read the turf cell in front of the wall mount. Scrubber panels persist per-gas filter toggles into `ScrubberController` simulation state. Vent target pressure is enforced in `VentController`. Pump panels control `AtmosPumpController` directly — pumps are not area-linked. Diegetic open softens the 3D world via `ScreenEffectsSubSystem.SetUiBackdropBlur` (UITK overlay stays sharp).
 
 ## Start here
 
 - `Assets/Scripts/SS3D/UI/MachineInterface/MachineInterfaceSubSystem.cs` — open/close/refresh; delegates optimistic Apply* to handlers
-- `Assets/Scripts/SS3D/UI/MachineInterface/MachineInterfaceHost.cs` — panel host; loads catalog via Resources
+- `Assets/Scripts/SS3D/UI/MachineInterface/MachineInterfaceHost.cs` — panel host; loads catalog via Resources; diegetic backdrop blur
 - `Assets/Scripts/SS3D/UI/MachineInterface/MachineUiAssetPaths.cs` — path constants for templates/styles
 - `Assets/Scripts/SS3D/UI/MachineInterface/MachineUiAssetCatalog.cs` — ScriptableObject catalog type
 - `Assets/Content/Systems/UI/MachineInterface/Resources/MachineUiAssetCatalog.asset` — committed runtime catalog
@@ -46,10 +46,11 @@ Dev harness: `MachineInterfaceDevHarness.cs`; editor previews via `SS3D → Mach
 - **Missing catalog in builds:** host loads `Resources/MachineUiAssetCatalog`. If the asset was never rebuilt/committed, Play Mode and builds fail at awake with an explicit error — not a silent null at panel open (that was the old `EnsureEditorAssets` trap). Main HUD now has the same trap/fix class (`MainHudAssetCatalog`); do not grow a third copy — see [ui-shell](ui-shell.md) § Future work.
 - **New UXML without rebuild:** adding paths in C# without running **Rebuild Asset Catalog** leaves the committed SO stale; Editor Play Mode uses the SO, not `AssetDatabase` path strings.
 - **Editor asmdef:** `MachineUiAssetCatalogBuilder` needs `SS3D.Core` referenced from `SS3D.Editor` (so `MachineInterfaceHost` / `View` resolve for scene cleanup). Without it, `FindObjectsByType<MachineInterfaceHost>` fails to compile.
+- **No UITK backdrop-filter:** USS cannot blur the 3D world behind a panel. Diegetic focus uses URP Depth of Field via [screen-effects](screen-effects.md) `SetUiBackdropBlur`; the Screen Space Overlay panel stays sharp on top.
 
 ## Depends on / Used by
 
-- **Depends on:** [electricity](electricity.md), [area](area.md), [atmospherics](atmospherics.md), [id-access](id-access.md), [interactions-framework](interactions-framework.md), [selection](selection.md), [inventory](inventory.md)
+- **Depends on:** [electricity](electricity.md), [area](area.md), [atmospherics](atmospherics.md), [id-access](id-access.md), [interactions-framework](interactions-framework.md), [selection](selection.md), [inventory](inventory.md), [screen-effects](screen-effects.md) (diegetic backdrop blur)
 - **Used by:** `ApcController`, `SmesController`, `VendingMachineController`, `AirAlarmInterfaceController`, `ScrubberInterfaceController`, `VentInterfaceController`, `PumpInterfaceController`
 
 ## Related docs

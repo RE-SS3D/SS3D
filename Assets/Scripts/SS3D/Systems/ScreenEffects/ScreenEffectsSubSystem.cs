@@ -54,6 +54,8 @@ namespace SS3D.Systems.ScreenEffects
         private readonly List<ScreenParticle> _frostParticles = new();
 
         private float _hitFlashTimer = -1f;
+        private float _uiBackdropBlurTarget;
+        private float _uiBackdropBlurCurrent;
 
         private sealed class ScreenParticle
         {
@@ -92,6 +94,15 @@ namespace SS3D.Systems.ScreenEffects
         public float GetEffectIntensity(ScreenEffectType type)
         {
             return _targetIntensity.GetValueOrDefault(type, 0f);
+        }
+
+        /// <summary>
+        /// Softens the 3D world behind a sharp UI Toolkit overlay (e.g. diegetic machine panels).
+        /// Independent of <see cref="ScreenEffectType"/> so health/atmos clears do not wipe it.
+        /// </summary>
+        public void SetUiBackdropBlur(float intensity)
+        {
+            _uiBackdropBlurTarget = Mathf.Clamp01(intensity);
         }
 
         /// <summary>
@@ -240,6 +251,9 @@ namespace SS3D.Systems.ScreenEffects
                 _currentIntensity[type] = Mathf.MoveTowards(_currentIntensity[type], _targetIntensity[type], smoothSpeed * deltaTime);
             }
 
+            // Faster than health blur so the world softens as the panel appears/disappears.
+            _uiBackdropBlurCurrent = Mathf.MoveTowards(_uiBackdropBlurCurrent, _uiBackdropBlurTarget, 10f * deltaTime);
+
             float vignetteIntensity = 0f;
             Color vignetteColorSum = Color.black;
             float vignetteWeightSum = 0f;
@@ -369,16 +383,7 @@ namespace SS3D.Systems.ScreenEffects
             _colorAdjustments.saturation.value = Mathf.Clamp(saturation, -100f, 100f);
             _colorAdjustments.contrast.value = Mathf.Clamp(contrast, -100f, 100f);
 
-            // gaussianMaxRadius is hard-clamped to [0.5, 1.5] by URP. Pushing gaussianStart/End all the way to
-            // near-zero (everything past the near clip plane counted as "out of focus") reads as broken/artifacty
-            // rather than a soft vision blur, so this keeps a few metres of in-focus range even at full intensity.
-            bool blurActive = blur > 0.001f;
-            float blurT = Mathf.Clamp01(blur);
-            _depthOfField.active = blurActive;
-            _depthOfField.mode.value = blurActive ? DepthOfFieldMode.Gaussian : DepthOfFieldMode.Off;
-            _depthOfField.gaussianStart.value = Mathf.Lerp(50f, 3f, blurT);
-            _depthOfField.gaussianEnd.value = Mathf.Lerp(60f, 6f, blurT);
-            _depthOfField.gaussianMaxRadius.value = Mathf.Lerp(0.5f, 1.5f, blurT);
+            ApplyDepthOfField(blur, _uiBackdropBlurCurrent);
 
             Color blackoutColor = _blackout.color;
             blackoutColor.a = blackoutAlpha;
@@ -407,6 +412,38 @@ namespace SS3D.Systems.ScreenEffects
             }
 
             return 1f - (_hitFlashTimer - HitFlashAttack) / HitFlashDecay;
+        }
+
+        private void ApplyDepthOfField(float healthBlur, float uiBackdropBlur)
+        {
+            // gaussianMaxRadius is hard-clamped to [0.5, 1.5] by URP.
+            // Health blur keeps a few metres of in-focus range so it reads as soft vision, not a broken lens.
+            // UI backdrop blur starts sooner so nearby station geometry softens around a sharp UITK overlay.
+            bool uiFocus = uiBackdropBlur > 0.001f;
+            bool healthFocus = healthBlur > 0.001f;
+            bool blurActive = uiFocus || healthFocus;
+
+            _depthOfField.active = blurActive;
+            _depthOfField.mode.value = blurActive ? DepthOfFieldMode.Gaussian : DepthOfFieldMode.Off;
+
+            if (!blurActive)
+            {
+                return;
+            }
+
+            if (uiFocus && uiBackdropBlur >= healthBlur)
+            {
+                float t = Mathf.Clamp01(uiBackdropBlur);
+                _depthOfField.gaussianStart.value = Mathf.Lerp(4f, 0.15f, t);
+                _depthOfField.gaussianEnd.value = Mathf.Lerp(10f, 1.25f, t);
+                _depthOfField.gaussianMaxRadius.value = Mathf.Lerp(1.0f, 1.5f, t);
+                return;
+            }
+
+            float blurT = Mathf.Clamp01(healthBlur);
+            _depthOfField.gaussianStart.value = Mathf.Lerp(50f, 3f, blurT);
+            _depthOfField.gaussianEnd.value = Mathf.Lerp(60f, 6f, blurT);
+            _depthOfField.gaussianMaxRadius.value = Mathf.Lerp(0.5f, 1.5f, blurT);
         }
     }
 }
