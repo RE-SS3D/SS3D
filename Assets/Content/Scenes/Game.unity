@@ -517,10 +517,23 @@ MonoBehaviour:
   _idConsoleTemplateStyle: {fileID: 7433441132597879392, guid: a7c3e91f4b2d46c8e5f1039b8d6a4e72, type: 3}
   _gasPumpTemplate: {fileID: 9197481963319205126, guid: 8cfee9cd2f95465783b184c754da96bc, type: 3}
   _gasPumpTemplateStyle: {fileID: 7433441132597879392, guid: 5906cda8434f4f0b9bffeb8244497175, type: 3}
+  _airAlarmTemplate: {fileID: 9197481963319205126, guid: ac5aa7305ab332bbf847fbb77e8e0823, type: 3}
+  _airAlarmTemplateStyle: {fileID: 7433441132597879392, guid: 6fda622814b5911f29b3da9658d07540, type: 3}
+  _scrubberTemplate: {fileID: 9197481963319205126, guid: 88f4204eebebe5646b3a7c6c95ca533f, type: 3}
+  _scrubberTemplateStyle: {fileID: 7433441132597879392, guid: 7690112ae4d99325b80f4e6113938d10, type: 3}
+  _ventTemplate: {fileID: 9197481963319205126, guid: 8b3cdb50ff625a6be89f48d4303cd831, type: 3}
+  _ventTemplateStyle: {fileID: 7433441132597879392, guid: c5258ab2a8965e5b593b0b4838301644, type: 3}
   _ss3dTokensStyle: {fileID: 7433441132597879392, guid: 73b8fe755692049198490f1974236d47, type: 3}
   _diegeticTokensStyle: {fileID: 7433441132597879392, guid: 747b9eb951f23f36c816ca185407b6fd, type: 3}
   _diegeticTonesStyle: {fileID: 7433441132597879392, guid: 067bee90fcabf93f1b50dd11716b0b59, type: 3}
   _ss3dTypographyStyle: {fileID: 7433441132597879392, guid: 5c5d40e591a47dca8a2ac25e2b23b4c8, type: 3}
+  _apcComponentStyles: []
+  _smesComponentStyles: []
+  _vendingComponentStyles: []
+  _gasPumpComponentStyles: []
+  _airAlarmComponentStyles: []
+  _scrubberComponentStyles: []
+  _ventComponentStyles: []
 --- !u!114 &467607470
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2223,7 +2236,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f97e21a49e2949b1bf39f08f78253fee, type: 3}
   m_Name: 
   m_EditorClassIdentifier: SS3D.Systems::SS3D.Systems.Atmospherics.AtmosSubSystem
-  _componentIndexCache: 8
+  _componentIndexCache: 9
   _addedNetworkObject: {fileID: 1506918116}
   _networkObjectCache: {fileID: 1506918116}
   _gasRegistry: {fileID: 11400000, guid: 0aee396c6f7001293acdb041245c13ef, type: 2}
@@ -2713,8 +2726,8 @@ MonoBehaviour:
   - {fileID: 606666310}
   - {fileID: 274660132}
   - {fileID: 478499396}
-  - {fileID: 1110795318}
   - {fileID: 2093847562}
+  - {fileID: 1110795318}
   - {fileID: 2193847562}
   <ParentNetworkObject>k__BackingField: {fileID: 0}
   <ChildNetworkObjects>k__BackingField:
@@ -3182,6 +3195,37 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8b5d0f3a2c9e5147b6a1f0d4e8c3b927, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!1 &2103898777
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2103898778}
+  m_Layer: 0
+  m_Name: ----------------------------------
+  m_TagString: Untagged
+  m_Icon: {fileID: 2800000, guid: 21cf13dcdd81e8f44826f84f086180c1, type: 3}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2103898778
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2103898777}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 1135.0063, y: 387.37747, z: 4.5864706}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &2193847560
 GameObject:
   m_ObjectHideFlags: 0
@@ -3226,7 +3270,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c4d8e2f16a3b4c5d9e0f1a2b3c4d5e6f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _componentIndexCache: 9
+  _componentIndexCache: 10
   _addedNetworkObject: {fileID: 1506918116}
   _networkObjectCache: {fileID: 1506918116}
 --- !u!1 &2293847600
@@ -3273,37 +3317,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b4e8f1a23c5d6479ab2e3f1c0d8e9a01, type: 3}
   m_Name: 
   m_EditorClassIdentifier: SS3D.Systems::SS3D.Systems.Persistence.PersistenceSubSystem
---- !u!1 &2103898777
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 2103898778}
-  m_Layer: 0
-  m_Name: ----------------------------------
-  m_TagString: Untagged
-  m_Icon: {fileID: 2800000, guid: 21cf13dcdd81e8f44826f84f086180c1, type: 3}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &2103898778
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2103898777}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 1135.0063, y: 387.37747, z: 4.5864706}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!224 &1113205650295772864 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 3736358311688126520, guid: 8c378d8ec3d1cda4389f92d2d8703b6a, type: 3}
