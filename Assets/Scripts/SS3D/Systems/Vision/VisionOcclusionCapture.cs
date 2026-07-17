@@ -1,4 +1,6 @@
+using Coimbra;
 using UnityEngine;
+using UnityEngine.Rendering;
 
 namespace SS3D.Systems.Vision
 {
@@ -45,7 +47,7 @@ namespace SS3D.Systems.Vision
         public void Dispose()
         {
             if (_camera != null)
-                Object.Destroy(_camera.gameObject);
+                _camera.gameObject.Dispose(true);
 
             if (_depthCubemap != null)
                 _depthCubemap.Release();
