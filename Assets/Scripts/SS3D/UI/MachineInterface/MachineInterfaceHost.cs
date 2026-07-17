@@ -33,7 +33,10 @@ namespace SS3D.UI.MachineInterface
         /// Strength passed to <see cref="ScreenEffectsSubSystem.SetUiBackdropBlur"/> while a diegetic panel is open.
         /// Softens the 3D world; the UITK overlay stays sharp on top.
         /// </summary>
-        private const float DiegeticBackdropBlur = 0.85f;
+        private const float DiegeticBackdropBlur = 0.7f;
+
+        /// <summary>Full-screen scrim alpha behind the diegetic chassis (0..1).</summary>
+        private const float DiegeticBackdropDimAlpha = 0.55f;
 
         [SerializeField]
         private UIDocument _document;
@@ -95,7 +98,7 @@ namespace SS3D.UI.MachineInterface
                 _overlayRoot.Add(template);
 
                 ApplyDiegeticPanelStyles(template, _diegeticShell, registration);
-                SetDiegeticBackdropBlur(true);
+                SetDiegeticBackdrop(true);
             }
             else
             {
@@ -104,7 +107,7 @@ namespace SS3D.UI.MachineInterface
                 _window.Content.Add(template);
                 _overlayRoot.Add(_window);
                 _panelRoot = _window;
-                SetDiegeticBackdropBlur(false);
+                SetDiegeticBackdrop(false);
             }
 
             SetOverlayInteractive(true);
@@ -324,15 +327,15 @@ namespace SS3D.UI.MachineInterface
             _window = null;
             _diegeticShell = null;
             _openInterfaceId = null;
-            SetDiegeticBackdropBlur(false);
+            SetDiegeticBackdrop(false);
             SetOverlayInteractive(false);
         }
 
         private void ShutdownDocument()
         {
+            SetDiegeticBackdrop(false);
             _overlayReady = false;
             _overlayRoot = null;
-            SetDiegeticBackdropBlur(false);
 
             if (_document != null)
             {
@@ -415,8 +418,15 @@ namespace SS3D.UI.MachineInterface
             }
         }
 
-        private static void SetDiegeticBackdropBlur(bool enabled)
+        private void SetDiegeticBackdrop(bool enabled)
         {
+            if (_overlayRoot != null)
+            {
+                _overlayRoot.style.backgroundColor = enabled
+                    ? new Color(0f, 0f, 0f, DiegeticBackdropDimAlpha)
+                    : Color.clear;
+            }
+
             if (!SubSystems.TryGet(out ScreenEffectsSubSystem screenEffects))
             {
                 return;

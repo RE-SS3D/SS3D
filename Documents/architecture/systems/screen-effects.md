@@ -7,7 +7,7 @@
 
 ## Overview
 
-Client-only URP Volume overlays for diegetic feedback from [main-hud](../../design/main-hud.md) §5: temperature, fire/freezing, low oxygen, dying/critical, blood-loss tunnel vision, concussion, unconsciousness, plus a momentary melee hit flash. Driven by intensity (0..1) via `SetEffect` / `TriggerHitFlash`. Also hosts `SetUiBackdropBlur` for soft world focus behind sharp UI Toolkit overlays (diegetic machine panels) — separate from `ScreenEffectType` so health clears do not wipe it.
+Client-only URP Volume overlays for diegetic feedback from [main-hud](../../design/main-hud.md) §5: temperature, fire/freezing, low oxygen, dying/critical, blood-loss tunnel vision, concussion, unconsciousness, plus a momentary melee hit flash. Driven by intensity (0..1) via `SetEffect` / `TriggerHitFlash`. Also hosts `SetUiBackdropBlur`, which drives Dual Kawase fullscreen blur (`UiBackdropBlurContext` → [rendering](rendering.md) `UiBackdropBlurRendererFeature`) for soft world focus behind sharp UI Toolkit overlays — separate from `ScreenEffectType` so health clears do not wipe it. Diegetic panels also paint a dark UITK scrim on the overlay root.
 
 **Health wiring shipped:** local-owner [health](health.md) drives dying/blood-loss/oxy/concussion/unconscious via `HealthScreenEffectMapper`, and hit flash via `HumanHealthController` TargetRpc. Temperature/fire/frost remain debug/console-only until atmospherics wires them.
 
@@ -28,7 +28,7 @@ Bootstraps itself with `RuntimeInitializeOnLoadMethod` (not in Boot.unity) so it
 
 - Atmos integration: call `SetEffect` for HotRoom/OnFire/ColdRoom/Freezing from temperature/fire state (leave health types alone).
 - New sustained effect: add to `ScreenEffectType`, handle in `ScreenEffectsSubSystem` update/composite, expose in debug menu + command usage string.
-- UI focus blur: call `SetUiBackdropBlur(0..1)` while a Screen Space Overlay panel is open; clear on close. Uses a nearer Gaussian DoF curve than health blur so nearby geometry softens.
+- UI focus blur: call `SetUiBackdropBlur(0..1)` while a Screen Space Overlay panel is open; clear on close. Strength feeds `UiBackdropBlurContext` (Dual Kawase), not Volume DoF.
 
 ## Pitfalls
 

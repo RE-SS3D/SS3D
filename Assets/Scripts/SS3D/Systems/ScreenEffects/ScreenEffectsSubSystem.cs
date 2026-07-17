@@ -2,6 +2,7 @@ using Coimbra.Services.Events;
 using Coimbra.Services.PlayerLoopEvents;
 using SS3D.Core;
 using SS3D.Core.Behaviours;
+using SS3D.Rendering.URP;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -83,6 +84,12 @@ namespace SS3D.Systems.ScreenEffects
             AddHandle(UpdateEvent.AddListener(HandleUpdate));
         }
 
+        protected override void OnDestroyed()
+        {
+            UiBackdropBlurContext.Intensity = 0f;
+            base.OnDestroyed();
+        }
+
         /// <summary>
         /// Sets the target strength (0..1) of a sustained screen-space effect. 0 turns it off.
         /// </summary>
@@ -97,8 +104,9 @@ namespace SS3D.Systems.ScreenEffects
         }
 
         /// <summary>
-        /// Softens the 3D world behind a sharp UI Toolkit overlay (e.g. diegetic machine panels).
-        /// Independent of <see cref="ScreenEffectType"/> so health/atmos clears do not wipe it.
+        /// Softens the 3D world behind a sharp UI Toolkit overlay (e.g. diegetic machine panels)
+        /// via Dual Kawase fullscreen blur. Independent of <see cref="ScreenEffectType"/> so
+        /// health/atmos clears do not wipe it.
         /// </summary>
         public void SetUiBackdropBlur(float intensity)
         {
@@ -253,6 +261,7 @@ namespace SS3D.Systems.ScreenEffects
 
             // Faster than health blur so the world softens as the panel appears/disappears.
             _uiBackdropBlurCurrent = Mathf.MoveTowards(_uiBackdropBlurCurrent, _uiBackdropBlurTarget, 10f * deltaTime);
+            UiBackdropBlurContext.Intensity = _uiBackdropBlurCurrent;
 
             float vignetteIntensity = 0f;
             Color vignetteColorSum = Color.black;
@@ -383,7 +392,7 @@ namespace SS3D.Systems.ScreenEffects
             _colorAdjustments.saturation.value = Mathf.Clamp(saturation, -100f, 100f);
             _colorAdjustments.contrast.value = Mathf.Clamp(contrast, -100f, 100f);
 
-            ApplyDepthOfField(blur, _uiBackdropBlurCurrent);
+            ApplyDepthOfField(blur);
 
             Color blackoutColor = _blackout.color;
             blackoutColor.a = blackoutAlpha;
@@ -414,15 +423,13 @@ namespace SS3D.Systems.ScreenEffects
             return 1f - (_hitFlashTimer - HitFlashAttack) / HitFlashDecay;
         }
 
-        private void ApplyDepthOfField(float healthBlur, float uiBackdropBlur)
+        private void ApplyDepthOfField(float healthBlur)
         {
             // gaussianMaxRadius is hard-clamped to [0.5, 1.5] by URP.
             // Health blur keeps a few metres of in-focus range so it reads as soft vision, not a broken lens.
-            // UI backdrop blur starts sooner so nearby station geometry softens around a sharp UITK overlay.
-            bool uiFocus = uiBackdropBlur > 0.001f;
-            bool healthFocus = healthBlur > 0.001f;
-            bool blurActive = uiFocus || healthFocus;
-
+            // Diegetic UI focus uses Dual Kawase via UiBackdropBlurRendererFeature instead — DoF is too weak.
+            bool blurActive = healthBlur > 0.001f;
+            float blurT = Mathf.Clamp01(healthBlur);
             _depthOfField.active = blurActive;
             _depthOfField.mode.value = blurActive ? DepthOfFieldMode.Gaussian : DepthOfFieldMode.Off;
 
@@ -431,16 +438,6 @@ namespace SS3D.Systems.ScreenEffects
                 return;
             }
 
-            if (uiFocus && uiBackdropBlur >= healthBlur)
-            {
-                float t = Mathf.Clamp01(uiBackdropBlur);
-                _depthOfField.gaussianStart.value = Mathf.Lerp(4f, 0.15f, t);
-                _depthOfField.gaussianEnd.value = Mathf.Lerp(10f, 1.25f, t);
-                _depthOfField.gaussianMaxRadius.value = Mathf.Lerp(1.0f, 1.5f, t);
-                return;
-            }
-
-            float blurT = Mathf.Clamp01(healthBlur);
             _depthOfField.gaussianStart.value = Mathf.Lerp(50f, 3f, blurT);
             _depthOfField.gaussianEnd.value = Mathf.Lerp(60f, 6f, blurT);
             _depthOfField.gaussianMaxRadius.value = Mathf.Lerp(0.5f, 1.5f, blurT);
