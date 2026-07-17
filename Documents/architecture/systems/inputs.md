@@ -55,7 +55,7 @@ the context table, and the migration from the old refcount API.
 
 - **Used by:** [player-control](player-control.md), [interactions-runtime](interactions-runtime.md),
   [machine-interface](machine-interface.md), [chat-audio-screens](chat-audio-screens.md),
-  [tile](tile.md), [examine](examine.md), [ingame-console](ingame-console.md)
+  [tile](tile.md), [examine](examine.md), [ingame-console](ingame-console.md), [inventory](inventory.md)
 
 ## Related docs
 

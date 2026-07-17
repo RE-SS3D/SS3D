@@ -14,6 +14,11 @@ namespace SS3D.UI.MainHud
     {
         public event Action IntentToggleRequested;
 
+        /// <summary>
+        /// Fired when a hand well is clicked. Argument is true for the left (first) hand slot.
+        /// </summary>
+        public event Action<bool> HandSelectedRequested;
+
         private readonly StyleSheet[] _styleSheets;
         private readonly MainHudIconSet _icons;
 
@@ -103,6 +108,7 @@ namespace SS3D.UI.MainHud
             VisualElement equipmentZone = BuildZone("main-hud__zone--equipment", _equipmentGrid);
 
             _handsGearStrip = new HandsGearStrip(_icons);
+            _handsGearStrip.HandClickRequested += leftIsActive => HandSelectedRequested?.Invoke(leftIsActive);
             VisualElement handsGearZone = BuildZone("main-hud__zone--hands-gear", _handsGearStrip);
 
             _intentModule = new IntentModule();

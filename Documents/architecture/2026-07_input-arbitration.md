@@ -77,7 +77,7 @@ released. Definitions live in `InputSubSystem.BuildContexts()`.
 (`panel.Pick(RuntimePanelUtils.ScreenToPanel(...))`). `InteractionController` world-click gates use
 it instead of the uGUI-only check, so clicks no longer leak through the radial menu or machine
 panels. Runtime documents register in setup: `RadialInteractionSubSystem`, `ArmedInteractionSubSystem`,
-`MachineInterfaceHost`.
+`MachineInterfaceHost`, `MainHudSubSystem`.
 
 ## Legacy input removed
 

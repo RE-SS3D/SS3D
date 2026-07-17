@@ -5,6 +5,7 @@ using SS3D.Core.Behaviours;
 using SS3D.Interactions;
 using SS3D.Interactions.Interfaces;
 using SS3D.Systems.Entities.Events;
+using SS3D.Systems.Inputs;
 using SS3D.Systems.Inventory.Containers;
 using SS3D.Systems.Inventory.Items;
 using SS3D.Systems.Rounds;
@@ -84,6 +85,7 @@ namespace SS3D.UI.MainHud
 #endif
             EnsureRuntimeAssets();
             BuildView();
+            InputInterface.RegisterDocument(_document);
         }
 
         // Assets are resolved through the Editor-only AssetDatabase lookups below because this subsystem
@@ -119,6 +121,7 @@ namespace SS3D.UI.MainHud
         {
             UnbindLocalPlayer();
             _view?.Detach();
+            InputInterface.UnregisterDocument(_document);
             base.OnDestroyed();
         }
 
@@ -142,6 +145,7 @@ namespace SS3D.UI.MainHud
 
             _view = new MainHudView(styleSheets, _icons);
             _view.IntentToggleRequested += HandleIntentToggleRequested;
+            _view.HandSelectedRequested += HandleHandSelectedRequested;
             _view.Attach(_document.rootVisualElement);
             _view.SetAlertState(default);
         }
@@ -225,6 +229,29 @@ namespace SS3D.UI.MainHud
         {
             _intentProvider?.RequestToggleIntent();
             RefreshIntent();
+        }
+
+        private void HandleHandSelectedRequested(bool leftHand)
+        {
+            if (_inventory == null || _hands == null || _hands.PlayerHands.Count == 0)
+            {
+                return;
+            }
+
+            int index = leftHand ? 0 : 1;
+            if (index >= _hands.PlayerHands.Count)
+            {
+                return;
+            }
+
+            Hand hand = _hands.PlayerHands[index];
+            if (hand?.Container == null)
+            {
+                return;
+            }
+
+            // Same path as legacy SingleItemContainerSlot — ServerRpc via HumanInventory.ActivateHand.
+            _inventory.ActivateHand(hand.Container);
         }
 
         private void RefreshIntent()

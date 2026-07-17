@@ -1,3 +1,4 @@
+using System;
 using SS3D.UI.MachineInterface.Components;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -17,6 +18,11 @@ namespace SS3D.UI.MainHud.Components
             Pda,
             Back,
         }
+
+        /// <summary>
+        /// Fired when a hand well is clicked. Argument is true for the left (first) hand slot.
+        /// </summary>
+        public event Action<bool> HandClickRequested;
 
         private readonly InventorySlot _belt;
         private readonly InventorySlot _id;
@@ -46,6 +52,8 @@ namespace SS3D.UI.MainHud.Components
 
             _handLeft = CreateSlot("Left hand", icons.HandLeft, 96);
             _handRight = CreateSlot("Right hand", icons.HandRight, 96);
+            _handLeft.RegisterCallback<ClickEvent>(_ => HandClickRequested?.Invoke(true));
+            _handRight.RegisterCallback<ClickEvent>(_ => HandClickRequested?.Invoke(false));
 
             VisualElement hands = new();
             hands.AddToClassList("hands-gear-strip__hands");
