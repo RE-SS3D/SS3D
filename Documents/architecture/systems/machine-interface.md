@@ -1,18 +1,18 @@
 > Code paths: Assets/Scripts/SS3D/UI/MachineInterface/, Assets/Content/Systems/UI/MachineInterface/
 > Entry points: MachineInterfaceSubSystem, MachineInterfaceHost, MachineInterfaceRegistry, MachineUiAssetCatalog
 > Status: shipped
-> Verified: eecaa7881 — 2026-07-18
+> Verified: 624906c2b — 2026-07-18
 
 # Machine interface UI
 
 ## Overview
 
-UI Toolkit panels for station machines, networked via FishNet snapshots. Templates and styles load from a committed `MachineUiAssetCatalog` (`Resources.Load`) rebuilt from `MachineUiAssetPaths` — not Game.unity SerializeFields. APC and SMES use the diegetic `DiegeticDeviceShell` with full-screen engineering ID access gates; atmospheric devices use an inline ID reader row. Both variants share server-side credential checks and expose idle, scanning, granted, and denied UI states. Vending uses the diegetic shell without an access gate. Shared view-model/binder pattern with `MachineUiCatalog` registration and `IMachineOptimisticControlHandler` for client optimistic controls. Open is server-only via validated interaction (`ServerHandleOpenRequest`); there is no open ServerRpc. Air alarm panels discover real area vents/scrubbers, apply preset modes server-side, and read the turf cell in front of the wall mount. Scrubber panels persist per-gas filter toggles into `ScrubberController` simulation state. Vent target pressure is enforced in `VentController`. Pump panels control `AtmosPumpController` directly — pumps are not area-linked. Diegetic open dims the overlay scrim and softens the 3D world via `ScreenEffectsSubSystem.SetUiBackdropBlur` (UITK chassis stays sharp).
+UI Toolkit panels for station machines, networked via FishNet snapshots. Templates and styles load from a committed `MachineUiAssetCatalog` (`Resources.Load`) rebuilt from `MachineUiAssetPaths` — not Game.unity SerializeFields. APC and SMES use the diegetic `DiegeticDeviceShell` with full-screen engineering ID access gates; atmospheric devices use an inline ID reader row. Both variants share server-side credential checks and expose idle, scanning, granted, and denied UI states. Vending uses the diegetic shell without an access gate. Shared view-model/binder pattern with `MachineUiCatalog` registration and `IMachineOptimisticControlHandler` for client optimistic controls. Open is server-only via validated interaction (`ServerHandleOpenRequest`); there is no open ServerRpc. Air alarm panels discover real area vents/scrubbers, apply preset modes server-side, and read the turf cell in front of the wall mount. Scrubber panels persist per-gas filter toggles into `ScrubberController` simulation state. Vent target pressure is enforced in `VentController`. Pump panels control `AtmosPumpController` directly — pumps are not area-linked. Diegetic open dims the overlay scrim and softens the 3D world via `ScreenEffectsSubSystem.SetUiBackdropBlur` (UITK chassis stays sharp), with a DOTween bring-up/dismiss (opacity, scale, translate). Close awaits the dismiss tween before disabling the `UIDocument`.
 
 ## Start here
 
-- `Assets/Scripts/SS3D/UI/MachineInterface/MachineInterfaceSubSystem.cs` — open/close/refresh; delegates optimistic Apply* to handlers
-- `Assets/Scripts/SS3D/UI/MachineInterface/MachineInterfaceHost.cs` — panel host; loads catalog via Resources; diegetic backdrop blur + dim
+- `Assets/Scripts/SS3D/UI/MachineInterface/MachineInterfaceSubSystem.cs` — open/close/refresh; `InterfaceOpened` / `InterfaceClosed`; awaits host close anim
+- `Assets/Scripts/SS3D/UI/MachineInterface/MachineInterfaceHost.cs` — panel host; catalog; diegetic backdrop + DOTween open/close
 - `Assets/Scripts/SS3D/UI/MachineInterface/MachineUiAssetPaths.cs` — path constants for templates/styles
 - `Assets/Scripts/SS3D/UI/MachineInterface/MachineUiAssetCatalog.cs` — ScriptableObject catalog type
 - `Assets/Content/Systems/UI/MachineInterface/Resources/MachineUiAssetCatalog.asset` — committed runtime catalog
@@ -47,11 +47,13 @@ Dev harness: `MachineInterfaceDevHarness.cs`; editor previews via `SS3D → Mach
 - **New UXML without rebuild:** adding paths in C# without running **Rebuild Asset Catalog** leaves the committed SO stale; Editor Play Mode uses the SO, not `AssetDatabase` path strings.
 - **Editor asmdef:** `MachineUiAssetCatalogBuilder` needs `SS3D.Core` referenced from `SS3D.Editor` (so `MachineInterfaceHost` / `View` resolve for scene cleanup). Without it, `FindObjectsByType<MachineInterfaceHost>` fails to compile.
 - **No UITK backdrop-filter:** USS cannot blur the 3D world behind a panel. Diegetic focus uses a dark overlay scrim plus Dual Kawase fullscreen blur (`UiBackdropBlurRendererFeature` via [screen-effects](screen-effects.md) `SetUiBackdropBlur`); the Screen Space Overlay chassis stays sharp on top. URP Gaussian DoF is too weak for this — do not reintroduce DoF for UI focus.
+- **Close must await dismiss tween:** disabling `UIDocument` mid-DOTween kills the tree. `MachineInterfaceHost.Close(onComplete)` teardowns only after the sequence; SubSystem keeps input blocked / `IsOpen` until then.
+- **Do not hide Main HUD from MI:** chrome visibility is owned by [inventory](inventory.md) `MainHudSubSystem` observing `InterfaceOpened` / `InterfaceClosed` (asmdef is MainHud → MI; reverse would cycle).
 
 ## Depends on / Used by
 
 - **Depends on:** [electricity](electricity.md), [area](area.md), [atmospherics](atmospherics.md), [id-access](id-access.md), [interactions-framework](interactions-framework.md), [selection](selection.md), [inventory](inventory.md), [screen-effects](screen-effects.md) (diegetic backdrop blur)
-- **Used by:** `ApcController`, `SmesController`, `VendingMachineController`, `AirAlarmInterfaceController`, `ScrubberInterfaceController`, `VentInterfaceController`, `PumpInterfaceController`
+- **Used by:** `ApcController`, `SmesController`, `VendingMachineController`, `AirAlarmInterfaceController`, `ScrubberInterfaceController`, `VentInterfaceController`, `PumpInterfaceController`; Main HUD observes open/close for suppress
 
 ## Related docs
 
