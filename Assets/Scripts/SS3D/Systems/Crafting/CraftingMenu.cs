@@ -8,6 +8,7 @@ using SS3D.Interactions;
 using SS3D.Interactions.Extensions;
 using SS3D.Interactions.Interfaces;
 using SS3D.Logging;
+using SS3D.Systems.Inputs;
 using SS3D.Systems.Tile;
 using SS3D.Systems.Tile.UI;
 using System.Collections.Generic;
@@ -28,6 +29,7 @@ namespace SS3D.Systems.Crafting
     public class CraftingMenu : NetworkView, IPointerEnterHandler, IPointerExitHandler
     {
         private InputSubSystem _inputSystem;
+        private IInputHandle _scrollSuppress;
 
         /// <summary>
         ///  The model for a single slot, to display recipe step names in the crafting menu.
@@ -91,7 +93,7 @@ namespace SS3D.Systems.Crafting
         /// </summary>
         public void OnPointerEnter(PointerEventData eventData)
         {
-            _inputSystem.ToggleBinding("<Mouse>/scroll/y", false);
+            _scrollSuppress ??= _inputSystem.SuppressBinding("<Mouse>/scroll/y");
             _isPointerOnMenu = true;
         }
 
@@ -100,7 +102,8 @@ namespace SS3D.Systems.Crafting
         /// </summary>
         public void OnPointerExit(PointerEventData eventData)
         {
-            _inputSystem.ToggleBinding("<Mouse>/scroll/y", true);
+            _scrollSuppress?.Dispose();
+            _scrollSuppress = null;
             _isPointerOnMenu = false;
         }
 
@@ -139,11 +142,9 @@ namespace SS3D.Systems.Crafting
         public void HideMenu()
         {
             ShowUI(false);
-            
-            if (_isPointerOnMenu)
-            {
-                _inputSystem.ToggleBinding("<Mouse>/scroll/y", true);
-            }
+
+            _scrollSuppress?.Dispose();
+            _scrollSuppress = null;
         }
 
         /// <summary>

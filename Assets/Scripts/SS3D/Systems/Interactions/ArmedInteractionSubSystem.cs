@@ -3,6 +3,7 @@ using SS3D.Core;
 using SS3D.Core.Behaviours;
 using SS3D.Interactions;
 using SS3D.Interactions.Interfaces;
+using SS3D.Systems.Inputs;
 using SS3D.Systems.Interactions.UI;
 using SS3D.Systems.Selection;
 using UnityEngine;
@@ -44,6 +45,7 @@ namespace SS3D.Systems.Interactions
             EnsureEditorAssets();
 #endif
             ShutdownDocument();
+            InputInterface.RegisterDocument(_document);
 
             _selectionSystem = SubSystems.Get<SelectionSubSystem>();
         }
@@ -62,6 +64,7 @@ namespace SS3D.Systems.Interactions
 
         protected override void OnDestroyed()
         {
+            InputInterface.UnregisterDocument(_document);
             _overlayView?.Detach();
             ShutdownDocument();
             base.OnDestroyed();

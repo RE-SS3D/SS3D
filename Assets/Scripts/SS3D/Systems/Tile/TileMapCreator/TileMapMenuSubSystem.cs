@@ -41,6 +41,11 @@ namespace SS3D.Systems.Tile.TileMapCreator
 
         private InputSubSystem _inputSystem;
 
+        private IInputHandle _tileMenuHandle;
+        private IInputHandle _scrollSuppress;
+        private IInputHandle _placeSuppress;
+        private readonly InputTextEntryScope _textEntry = new();
+
         private PanelTab _tab;
         
         [SerializeField]
@@ -92,10 +97,10 @@ namespace SS3D.Systems.Tile.TileMapCreator
         public void OnPointerEnter(PointerEventData eventData)
         {
             _mouseOverUI = true;
-            _inputSystem.ToggleBinding("<Mouse>/scroll/y", false);
+            _scrollSuppress ??= _inputSystem.SuppressBinding("<Mouse>/scroll/y");
             if (!_hologramManager.IsDragging)
             {
-                _inputSystem.ToggleAction(_controls.Place, false);
+                _placeSuppress ??= _inputSystem.SuppressAction(_controls.Place);
             }
         }
 
@@ -105,11 +110,10 @@ namespace SS3D.Systems.Tile.TileMapCreator
         public void OnPointerExit(PointerEventData eventData)
         {
             _mouseOverUI = false;
-            _inputSystem.ToggleBinding("<Mouse>/scroll/y", true);
-            if (!_hologramManager.IsDragging)
-            {
-                _inputSystem.ToggleAction(_controls.Place, true);
-            }
+            _scrollSuppress?.Dispose();
+            _scrollSuppress = null;
+            _placeSuppress?.Dispose();
+            _placeSuppress = null;
         }
 
         protected override void OnStart()
@@ -119,7 +123,7 @@ namespace SS3D.Systems.Tile.TileMapCreator
             ShowUI(false);
             _inputSystem = SubSystems.Get<InputSubSystem>();
             _controls = _inputSystem.Inputs.TileCreator;
-            _inputSystem.ToggleAction(_controls.ToggleMenu, true);
+            // TileCreator.ToggleMenu is always enabled by the Global context.
             _controls.ToggleMenu.performed += HandleToggleMenu;
         }
 
@@ -130,13 +134,14 @@ namespace SS3D.Systems.Tile.TileMapCreator
         {
             if (_enabled)
             {
-                _inputSystem.ToggleActionMap(_controls, false, new[] { _controls.ToggleMenu });
-                _inputSystem.ToggleCollisions(_controls, true);
+                _tileMenuHandle?.Dispose();
+                _tileMenuHandle = null;
             }
             else
             {
-                _inputSystem.ToggleActionMap(_controls, true, new[] { _controls.ToggleMenu });
-                _inputSystem.ToggleCollisions(_controls, false);
+                // TileMenu context enables placement + movement/camera and drops world interactions,
+                // replacing the old runtime binding-collision toggling.
+                _tileMenuHandle = _inputSystem.PushContext(InputContext.TileMenu);
             }
             _enabled = !_enabled;
             ShowUI(_enabled);
@@ -196,7 +201,7 @@ namespace SS3D.Systems.Tile.TileMapCreator
         /// </summary>
         public void HandleInputFieldSelect()
         {
-            _inputSystem.ToggleAllActions(false);
+            _textEntry.Enter();
         }
 
         /// <summary>
@@ -204,7 +209,7 @@ namespace SS3D.Systems.Tile.TileMapCreator
         /// </summary>
         public void HandleInputFieldDeselect()
         {
-            _inputSystem.ToggleAllActions(true);
+            _textEntry.Exit();
         }
 
         /// <summary>

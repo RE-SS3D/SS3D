@@ -34,7 +34,7 @@ namespace SS3D.Systems.Interactions
         private Controls.InteractionsActions _controls;
         private InputSubSystem _inputSystem;
         private bool _overlayReady;
-        private bool _leftButtonSuppressed;
+        private IInputHandle _leftButtonSuppress;
 
         public float MenuHeight => RadialInteractionMenuView.MenuDiameter;
 
@@ -43,13 +43,7 @@ namespace SS3D.Systems.Interactions
         /// </summary>
         public void SuppressLeftButtonForMenu()
         {
-            if (_leftButtonSuppressed)
-            {
-                return;
-            }
-
-            _inputSystem.ToggleBinding("<Mouse>/leftButton", false);
-            _leftButtonSuppressed = true;
+            _leftButtonSuppress ??= _inputSystem.SuppressBinding("<Mouse>/leftButton");
         }
 
         protected override void OnAwake()
@@ -67,6 +61,7 @@ namespace SS3D.Systems.Interactions
             ShutdownDocument();
             _inputSystem = SubSystems.Get<InputSubSystem>();
             _controls = _inputSystem.Inputs.Interactions;
+            InputInterface.RegisterDocument(_document);
         }
 
         protected override void OnEnabled()
@@ -86,6 +81,7 @@ namespace SS3D.Systems.Interactions
         protected override void OnDestroyed()
         {
             ReleaseLeftButtonSuppression();
+            InputInterface.UnregisterDocument(_document);
             _menuView?.Detach();
             ShutdownDocument();
             base.OnDestroyed();
@@ -131,13 +127,8 @@ namespace SS3D.Systems.Interactions
 
         private void ReleaseLeftButtonSuppression()
         {
-            if (!_leftButtonSuppressed)
-            {
-                return;
-            }
-
-            _inputSystem.ToggleBinding("<Mouse>/leftButton", true);
-            _leftButtonSuppressed = false;
+            _leftButtonSuppress?.Dispose();
+            _leftButtonSuppress = null;
         }
 
         private void Disappear()
