@@ -45,7 +45,12 @@ namespace SS3D.Systems.Inventory.Containers
 
         private void SetupView()
         {
-            var containerView = ViewLocator.Get<ContainerView>().First();
+            ContainerView containerView = ViewLocator.Get<ContainerView>().FirstOrDefault();
+            if (containerView == null)
+            {
+                return;
+            }
+
             containerView.Setup(this);
         }
 

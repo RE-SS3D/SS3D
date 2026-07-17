@@ -5,6 +5,7 @@ using UnityEngine.Rendering;
 using SS3D.Core;
 using SS3D.Core.Behaviours;
 using SS3D.Rendering.URP;
+using SS3D.Systems.Inputs;
 using InputSubSystem = SS3D.Systems.Inputs.InputSubSystem;
 
 namespace SS3D.Systems.Selection
@@ -141,9 +142,10 @@ namespace SS3D.Systems.Selection
                 return;
             }
 
+            // Selection feeds examine/outlines/interaction hover. Clear it while over UI so world
+            // targets do not "show through" registered UI Toolkit panels (Main HUD, MI, radial).
             Color32 col = Color.black;
-
-            if (TryGetMousePixel(out int x, out int y))
+            if (!InputInterface.IsPointerOverInterface() && TryGetMousePixel(out int x, out int y))
             {
                 RenderTexture previous = RenderTexture.active;
                 RenderTexture.active = _renderTexture;

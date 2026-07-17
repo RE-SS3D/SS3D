@@ -197,8 +197,24 @@ namespace SS3D.Systems.Inventory.Containers
         [Client]
         private void SetHandHighlight(Hand hand, bool highlight)
         {
-            Transform handSlot = ViewLocator.Get<InventoryView>().First().GetHandSlot(hand);
+            InventoryView inventoryView = ViewLocator.Get<InventoryView>().FirstOrDefault();
+            if (inventoryView == null)
+            {
+                return;
+            }
+
+            Transform handSlot = inventoryView.GetHandSlot(hand);
+            if (handSlot == null)
+            {
+                return;
+            }
+
             Button button = handSlot.GetComponent<Button>();
+            if (button == null)
+            {
+                return;
+            }
+
             ColorBlock buttonColors = button.colors;
             if (highlight)
             {

@@ -1,0 +1,48 @@
+.alert-icon-stack {
+    flex-direction: row;
+}
+
+.alert-chip {
+    position: relative;
+    margin-left: var(--ss3d-space-3);
+}
+
+.alert-chip__box {
+    width: 56px;
+    height: 56px;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--ss3d-surface-inset);
+    border-radius: var(--ss3d-radius-md);
+    border-width: 2px;
+    border-color: var(--ss3d-feedback-warning);
+    color: var(--ss3d-feedback-warning);
+}
+
+.alert-chip--critical .alert-chip__box {
+    border-color: var(--ss3d-feedback-danger);
+    color: var(--ss3d-feedback-danger);
+}
+
+.alert-chip__label {
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    translate: -50% 0;
+    margin-top: var(--ss3d-space-2);
+    background-color: var(--ss3d-surface-panel-raised);
+    color: var(--ss3d-text-primary);
+    font-size: 11px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    padding: 4px 10px;
+    border-radius: var(--ss3d-radius-sm);
+    white-space: nowrap;
+    opacity: 0;
+    transition-property: opacity;
+    transition-duration: var(--ss3d-duration-fast);
+}
+
+.alert-chip--hovered .alert-chip__label {
+    opacity: 1;
+}

@@ -23,6 +23,17 @@
     display: none;
 }
 
+.inventory-slot__icon {
+    width: 62%;
+    height: 62%;
+    display: none;
+    -unity-background-scale-mode: scale-to-fit;
+}
+
+.inventory-slot__icon--placeholder {
+    opacity: 0.65;
+}
+
 .inventory-slot__label {
     font-size: 10px;
     color: var(--ss3d-text-tertiary);
