@@ -365,6 +365,12 @@ namespace SS3D.Systems.Entities.Humanoid.Body
 
         private void ApplyOwnerSnapshot()
         {
+            // BodyStateBridge limp updates call PublishSnapshot every frame; skip posing while ragdolled.
+            if (TryGetComponent(out Ragdoll ragdoll) && ragdoll.IsKnockedDown)
+            {
+                return;
+            }
+
             _snapshot.MovementSpeed = _movementSpeed;
             _snapshot.AimYaw = _aimYaw;
             _snapshot.AimPitch = _aimPitch;
@@ -378,6 +384,13 @@ namespace SS3D.Systems.Entities.Humanoid.Body
         {
             _snapshot = BodyAnimationSnapshot.Unpack(
                 _packedSnapshot, _aimYaw, _aimPitch, _movementSpeed, _injuredArmLeft, _injuredArmRight);
+
+            if (TryGetComponent(out Ragdoll ragdoll) && ragdoll.IsKnockedDown)
+            {
+                OnCapabilitiesChanged?.Invoke(Capabilities);
+                return;
+            }
+
             _orchestrator?.ApplySnapshot(_snapshot);
             OnSnapshotChanged?.Invoke(_snapshot);
             OnCapabilitiesChanged?.Invoke(Capabilities);

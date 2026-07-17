@@ -51,7 +51,8 @@ namespace SS3D.Systems.Entities.Humanoid
         /// </summary>
         protected override void ProcessCharacterMovement()
         {
-            if (_healthController != null && !_healthController.Snapshot.IsConscious)
+            if (_healthController != null
+                && (!_healthController.Snapshot.IsConscious || _healthController.Snapshot.IsCardiacArrest))
             {
                 _characterController.Move(Physics.gravity);
                 MoveMovementTarget(Vector2.zero, 5);

@@ -6,6 +6,8 @@ using SS3D.Core;
 using SS3D.Core.Behaviours;
 using SS3D.Systems.Combat;
 using SS3D.Systems.Entities;
+using SS3D.Systems.Entities.Humanoid;
+using SS3D.Systems.Entities.Humanoid.Body;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -27,7 +29,9 @@ namespace SS3D.Systems.Health
         private WoundVfx _woundVfx;
         private HumanAnatomyController _anatomy;
         private HealthAlertsView _healthAlertsView;
+        private Ragdoll _ragdoll;
         private bool _deathTriggered;
+        private bool _unconsciousRagdollActive;
 
         [SyncVar(OnChange = nameof(SyncSnapshot))]
         private HealthSnapshot _snapshot = HealthSnapshot.Default;
@@ -392,8 +396,13 @@ namespace SS3D.Systems.Health
         [Server]
         private void PublishSnapshot()
         {
-            _snapshot = HealthSimulation.BuildSnapshot(_pools, _zones, _organs);
+            HealthSnapshot snapshot = HealthSimulation.BuildSnapshot(_pools, _zones, _organs);
+            _snapshot = snapshot;
             _debugDetail = HealthDebugDetail.FromStates(_zones, _organs);
+
+            // Do not rely on SyncVar OnChange for this — FishNet may not invoke it on the
+            // server when assigning the snapshot, which left unconscious players walking.
+            ApplyConsciousnessRagdoll(snapshot);
         }
 
         private void SyncSnapshot(HealthSnapshot oldValue, HealthSnapshot newValue, bool asServer)
@@ -405,6 +414,77 @@ namespace SS3D.Systems.Health
                 && _entity.Mind != Mind.Empty && _entity.Mind.IsOwner)
             {
                 _healthAlertsView.Refresh();
+            }
+        }
+
+        /// <summary>
+        /// Unconscious / cardiac-arrest characters drop into a recoverable ragdoll; waking stands them up.
+        /// Death uses <see cref="Ragdoll.ServerDeathRagdoll"/> separately and is ignored here.
+        /// </summary>
+        [Server]
+        private void ApplyConsciousnessRagdoll(HealthSnapshot snapshot)
+        {
+            if (_deathTriggered || snapshot.State == HealthState.Dead)
+            {
+                return;
+            }
+
+            if (_ragdoll == null)
+            {
+                _ragdoll = GetComponent<Ragdoll>();
+            }
+
+            if (_ragdoll == null)
+            {
+                return;
+            }
+
+            // Cardiac arrest keeps IsConscious true until brain drains ≤10%; still collapse immediately.
+            bool shouldCollapse = !snapshot.IsConscious || snapshot.IsCardiacArrest;
+            if (shouldCollapse)
+            {
+                _ragdoll.ServerKnockdownTimeless();
+                RpcSetConsciousnessCollapsed(true);
+                _unconsciousRagdollActive = true;
+                return;
+            }
+
+            if (!_unconsciousRagdollActive)
+            {
+                return;
+            }
+
+            _unconsciousRagdollActive = false;
+            if (_ragdoll.IsKnockedDown)
+            {
+                _ragdoll.ServerRecover();
+            }
+
+            RpcSetConsciousnessCollapsed(false);
+        }
+
+        /// <summary>
+        /// Mirrors death's observer reinforce — host/client must apply collapse locally; SyncVar
+        /// knockdown alone left upright walk-cycle corpses.
+        /// </summary>
+        [ObserversRpc(RunLocally = true)]
+        private void RpcSetConsciousnessCollapsed(bool collapsed)
+        {
+            if (!TryGetComponent(out Ragdoll ragdoll))
+            {
+                return;
+            }
+
+            if (collapsed)
+            {
+                ragdoll.ApplyCollapseVisuals();
+                return;
+            }
+
+            // Recover SyncVar drives BonesReset/StandUp on server; observers just clear suppress.
+            if (TryGetComponent(out AnimationOrchestrator orchestrator))
+            {
+                orchestrator.SetPosingSuppressed(false);
             }
         }
 

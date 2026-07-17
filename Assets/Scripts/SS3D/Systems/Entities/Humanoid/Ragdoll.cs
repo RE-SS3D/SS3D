@@ -245,10 +245,8 @@ namespace SS3D.Systems.Entities.Humanoid
                 IsKnockedDown = true;
             }
 
-            if (_currentState != RagdollState.Ragdoll)
-            {
-                Knockdown();
-            }
+            // Always force collapse visuals — same path death uses via observer RPC.
+            ApplyCollapseVisuals();
         }
 
         /// <summary>
@@ -321,17 +319,11 @@ namespace SS3D.Systems.Entities.Humanoid
         private void Knockdown()
         {
             EnsureAnimatorCached();
-            CacheRagdollParts();
-
-            _currentState = RagdollState.Ragdoll;
             Vector3 movement = _humanoidLivingController != null
                 ? _humanoidLivingController.TargetMovement * 3f
                 : Vector3.zero;
-            ToggleSyncRagdoll(true);
-            ToggleController(false);
-            ToggleAnimator(false);
-            DisableAnimationDrivers();
-            ReinforceRagdollPose();
+
+            ApplyCollapseVisuals();
 
             if (movement.sqrMagnitude > 0.01f && _ragdollParts != null)
             {
@@ -354,6 +346,7 @@ namespace SS3D.Systems.Entities.Humanoid
         {
             if (TryGetComponent(out AnimationOrchestrator orchestrator))
             {
+                orchestrator.SetPosingSuppressed(true);
                 orchestrator.enabled = false;
             }
 
@@ -361,6 +354,40 @@ namespace SS3D.Systems.Entities.Humanoid
             {
                 bodyState.enabled = false;
             }
+        }
+
+        private void EnableAnimationDrivers()
+        {
+            if (_deathRagdoll)
+            {
+                return;
+            }
+
+            if (TryGetComponent(out AnimationOrchestrator orchestrator))
+            {
+                orchestrator.SetPosingSuppressed(false);
+                orchestrator.enabled = true;
+            }
+
+            if (TryGetComponent(out HumanoidBodyStateMachine bodyState))
+            {
+                bodyState.enabled = true;
+            }
+        }
+
+        /// <summary>
+        /// Force collapsed pose on server and observers. Does not depend on SyncVar OnChange.
+        /// </summary>
+        public void ApplyCollapseVisuals()
+        {
+            EnsureAnimatorCached();
+            CacheRagdollParts();
+            _currentState = RagdollState.Ragdoll;
+            ToggleSyncRagdoll(true);
+            ToggleController(false);
+            ToggleAnimator(false);
+            DisableAnimationDrivers();
+            ToggleKinematic(false);
         }
 
         /// <summary>
@@ -371,11 +398,7 @@ namespace SS3D.Systems.Entities.Humanoid
         {
             _deathRagdoll = true;
             _isKnockdownTimed = false;
-            EnsureAnimatorCached();
-            CacheRagdollParts();
-            _currentState = RagdollState.Ragdoll;
-            ToggleController(false);
-            ReinforceRagdollPose();
+            ApplyCollapseVisuals();
         }
 
         private void RagdollBehavior()
@@ -489,23 +512,6 @@ namespace SS3D.Systems.Entities.Humanoid
             EnableAnimationDrivers();
         }
 
-        private void EnableAnimationDrivers()
-        {
-            if (_deathRagdoll)
-            {
-                return;
-            }
-
-            if (TryGetComponent(out AnimationOrchestrator orchestrator))
-            {
-                orchestrator.enabled = true;
-            }
-
-            if (TryGetComponent(out HumanoidBodyStateMachine bodyState))
-            {
-                bodyState.enabled = true;
-            }
-        }
         /// <summary>
         /// Copy current ragdoll parts positions to array
         /// </summary>
@@ -546,8 +552,8 @@ namespace SS3D.Systems.Entities.Humanoid
                 _ragdollParts[partIndex].localRotation = originalTransforms[partIndex].Rotation;
             }
         }
-        [ServerRpc(RequireOwnership = false)]
-        public void Recover()
+        [Server]
+        public void ServerRecover()
         {
             if (_deathRagdoll)
             {
@@ -555,7 +561,13 @@ namespace SS3D.Systems.Entities.Humanoid
             }
 
             IsKnockedDown = false;
-            _knockdownTimer = 0;
+            _knockdownTimer = 0f;
+        }
+
+        [ServerRpc(RequireOwnership = false)]
+        public void Recover()
+        {
+            ServerRecover();
         }
         
 		/// <summary>
@@ -582,6 +594,11 @@ namespace SS3D.Systems.Entities.Humanoid
             if (_characterController != null)
             {
                 _characterController.enabled = enable;
+            }
+
+            if (TryGetComponent(out HumanoidPredictedMovement predictedMovement))
+            {
+                predictedMovement.enabled = enable;
             }
         }
         private void ToggleAnimator(bool enable)

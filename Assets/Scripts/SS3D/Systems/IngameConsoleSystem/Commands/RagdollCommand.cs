@@ -32,7 +32,7 @@ namespace SS3D.Systems.IngameConsoleSystem.Commands
 			{
 				if (ragdoll.IsKnockedDown)
 				{
-					ragdoll.Recover();
+					ragdoll.ServerRecover();
 				}
 				else
 				{

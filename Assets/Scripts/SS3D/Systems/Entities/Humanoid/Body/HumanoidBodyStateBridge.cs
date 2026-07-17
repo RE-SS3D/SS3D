@@ -77,8 +77,33 @@ namespace SS3D.Systems.Entities.Humanoid
 
         private void Update()
         {
+            if (ShouldSuppressBodyPresentation())
+            {
+                return;
+            }
+
             UpdateLimp();
             UpdateDragging();
+        }
+
+        /// <summary>
+        /// Limp/drag writes keep feeding the animator via BodyStateMachine even while Ragdoll has
+        /// disabled AnimationOrchestrator — that re-poses a walk cycle on a collapsed body.
+        /// </summary>
+        private bool ShouldSuppressBodyPresentation()
+        {
+            if (_healthController != null)
+            {
+                HealthSnapshot snapshot = _healthController.Snapshot;
+                if (!snapshot.IsConscious
+                    || snapshot.IsCardiacArrest
+                    || snapshot.State == HealthState.Dead)
+                {
+                    return true;
+                }
+            }
+
+            return TryGetComponent(out Ragdoll ragdoll) && ragdoll.IsKnockedDown;
         }
 
         private void HandleItemChanged(object sender, Item item)
