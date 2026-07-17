@@ -50,7 +50,8 @@ namespace SS3D.Systems.Stamina
         public override void OnStartClient()
         {
             base.OnStartClient();
-            _staminaBarView = ViewLocator.Get<StaminaBarView>().FirstOrDefault();
+            // StaminaBar on PlayerCanvas is condemned (Main HUD); tolerate a missing view.
+            _staminaBarView = ViewLocator.Get<StaminaBarView>()?.FirstOrDefault();
             // Currently movement is client-authoritative, so we need to subscribe to events on the client only.
             SubscribeToEvents();
             InitialAssignViewToControllable();
