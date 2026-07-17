@@ -3,7 +3,7 @@ name: Combat Implementation Plan
 overview: Build combat.md on top of the now-integrated foundations — the health rewrite (Phases 0–5b, zone damage + ApplyDamage), body-state animation (stance packs, swing triggers, aim IK), screen-space effects, and the atmos turf sim. Phase 4 melee already lands hits; this plan finishes melee, wires the foundation hookups, adds ranged, intent/disarm/grab, and the stamina/armor cross-system layer.
 todos:
   - id: phase0-foundation-wiring
-    content: "Phase 0: Verify the health-rewrite<-develop merge compiles + smoke-tests in Unity; wire screen-effects to health (Phase 6 hookup) and turf O2 into HealthSimulation.LungIntake; marry melee swing animation to windup/recovery timing"
+    content: "Phase 0: Verify merge + smoke-test; screen-effects←health shipped; remaining: turf O2 into LungIntake; marry melee swing animation to windup/recovery"
     status: pending
   - id: phase1-melee-complete
     content: "Phase 1: Melee to MVP — intent (help/harm) gating on the hit path, lethality tuning to 'a handful of solid hits', improvised-weapon fallback for any held item"
@@ -83,8 +83,7 @@ model rather than starting it.
    smoke-test humanoid movement + limp (the merge rerouted gait/limp off the deleted
    `FeetController` onto `HumanHealthController.Snapshot.MovementSpeedMultiplier` /
    `GetZoneBruteFraction`). See merge commit for the exact resolution.
-2. **Screen-effects ← health** (health plan Phase 6 hookup). Drive `ScreenEffectsSubSystem.SetEffect`
-   from critical/dying/blood-loss/cardiac-arrest snapshot state. No new overlays — the effects exist.
+2. ~~**Screen-effects ← health**~~ — **shipped** (`HealthScreenEffectMapper` + hit-flash TargetRpc).
 3. **Atmos → oxygen.** Feed the occupant's turf O2 ratio into `HealthSimulation.LungIntake(atmosphereO2)`
    (currently defaults to `1f`). This makes suffocation/low-pressure real and gives combat stakes in
    breached areas.

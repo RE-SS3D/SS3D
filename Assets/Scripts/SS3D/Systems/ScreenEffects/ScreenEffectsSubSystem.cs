@@ -16,9 +16,9 @@ namespace SS3D.Systems.ScreenEffects
     /// "Screen-Space Effect" mockups: ambient temperature, fire/freezing, low oxygen, dying, blood loss,
     /// concussion and unconsciousness, plus a momentary melee hit flash.
     ///
-    /// Not wired into the health/atmospherics systems yet - <see cref="SetEffect"/> and
-    /// <see cref="TriggerHitFlash"/> are the integration points a future pass will call from there.
-    /// For now they're only called by the screen-effects debug menu/commands.
+    /// Health drives dying/blood-loss/oxy/concussion/unconscious and hit flash via
+    /// <c>HealthScreenEffectMapper</c> / <see cref="TriggerHitFlash"/>. Temperature and fire/frost
+    /// remain debug/console-only until atmospherics wires them.
     /// </summary>
     public sealed class ScreenEffectsSubSystem : SubSystem
     {

@@ -1,3 +1,4 @@
+using FishNet.Connection;
 using FishNet.Object;
 using FishNet.Object.Synchronizing;
 using Coimbra.Services.Events;
@@ -8,6 +9,7 @@ using SS3D.Systems.Combat;
 using SS3D.Systems.Entities;
 using SS3D.Systems.Entities.Humanoid;
 using SS3D.Systems.Entities.Humanoid.Body;
+using SS3D.Systems.ScreenEffects;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -32,6 +34,7 @@ namespace SS3D.Systems.Health
         private Ragdoll _ragdoll;
         private bool _deathTriggered;
         private bool _unconsciousRagdollActive;
+        private bool _drivingLocalScreenEffects;
 
         [SyncVar(OnChange = nameof(SyncSnapshot))]
         private HealthSnapshot _snapshot = HealthSnapshot.Default;
@@ -107,6 +110,7 @@ namespace SS3D.Systems.Health
 
             _woundVfx?.ApplySnapshot(_snapshot);
             ApplySeveranceVisualsFromSnapshot(_snapshot);
+            ApplyScreenEffectsFromSnapshot(_snapshot);
         }
 
         public override void OnStartServer()
@@ -125,6 +129,8 @@ namespace SS3D.Systems.Health
             }
 
             _healthAlertsView?.UnassignViewFromPlayer(this);
+            ClearScreenEffectsIfDriving();
+
             base.OnDestroyed();
         }
 
@@ -199,6 +205,11 @@ namespace SS3D.Systems.Health
             OrganSimulation.ApplyZoneDamageToOrgans(zone, brute, burn, _organs);
 
             PublishSnapshot();
+
+            if (brute + burn > 0f && Owner.IsValid)
+            {
+                RpcHitFlash(Owner);
+            }
         }
 
         [Server]
@@ -403,18 +414,61 @@ namespace SS3D.Systems.Health
             // Do not rely on SyncVar OnChange for this — FishNet may not invoke it on the
             // server when assigning the snapshot, which left unconscious players walking.
             ApplyConsciousnessRagdoll(snapshot);
+            // Same host gap for local screen overlays.
+            ApplyScreenEffectsFromSnapshot(snapshot);
         }
 
         private void SyncSnapshot(HealthSnapshot oldValue, HealthSnapshot newValue, bool asServer)
         {
             _woundVfx?.ApplySnapshot(newValue);
             ApplySeveranceVisualsFromSnapshot(newValue);
+            ApplyScreenEffectsFromSnapshot(newValue);
 
-            if (_healthAlertsView != null && _entity != null && _entity.Mind != null
-                && _entity.Mind != Mind.Empty && _entity.Mind.IsOwner)
+            if (_healthAlertsView != null && IsLocalOwnerMind())
             {
                 _healthAlertsView.Refresh();
             }
+        }
+
+        [TargetRpc(RunLocally = true)]
+        private void RpcHitFlash(NetworkConnection target)
+        {
+            SubSystems.Get<ScreenEffectsSubSystem>()?.TriggerHitFlash();
+        }
+
+        private void ApplyScreenEffectsFromSnapshot(HealthSnapshot snapshot)
+        {
+            if (!IsLocalOwnerMind())
+            {
+                return;
+            }
+
+            _drivingLocalScreenEffects = true;
+            ScreenEffectsSubSystem effects = SubSystems.Get<ScreenEffectsSubSystem>();
+            if (snapshot.State == HealthState.Dead)
+            {
+                HealthScreenEffectMapper.Clear(effects);
+                return;
+            }
+
+            HealthScreenEffectMapper.Apply(snapshot, effects);
+        }
+
+        private void ClearScreenEffectsIfDriving()
+        {
+            if (!_drivingLocalScreenEffects)
+            {
+                return;
+            }
+
+            _drivingLocalScreenEffects = false;
+            HealthScreenEffectMapper.Clear(SubSystems.Get<ScreenEffectsSubSystem>());
+        }
+
+        private bool IsLocalOwnerMind()
+        {
+            return _entity != null && _entity.Mind != null
+                && _entity.Mind != Mind.Empty && _entity.Mind.IsOwner;
         }
 
         /// <summary>
@@ -507,19 +561,15 @@ namespace SS3D.Systems.Health
         [Client]
         private void AssignAlertsViewToControllable(Mind mind)
         {
-            if (_healthAlertsView == null)
+            if (mind == null || !mind.IsOwner)
             {
+                _healthAlertsView?.UnassignViewFromPlayer(this);
+                ClearScreenEffectsIfDriving();
                 return;
             }
 
-            if (mind == null || !mind.IsOwner)
-            {
-                _healthAlertsView.UnassignViewFromPlayer(this);
-            }
-            else
-            {
-                _healthAlertsView.AssignViewToPlayer(this);
-            }
+            _healthAlertsView?.AssignViewToPlayer(this);
+            ApplyScreenEffectsFromSnapshot(_snapshot);
         }
 
         [Client]
