@@ -18,4 +18,4 @@ MonoBehaviour:
   _ckey: hostingUser
   ServerAddress: 127.0.0.1
   ServerPort: 8616
-  EnableNetworkBandwidthUsageStats: 1
+  EnableNetworkBandwidthUsageStats: 0
