@@ -81,7 +81,7 @@ prototyping section, `Status` line for draft/active/superseded only, cross-refs 
 | Application | [application](systems/application.md) | stub | App bootstrap and startup; Boot/Game as thin launch pads |
 | Networking (session) | [networking-session](systems/networking-session.md) | stub | FishNet host/join session management |
 | Scene management | [scene-management](systems/scene-management.md) | stub | Scene loading and switching; not a system composition root |
-| UI shell | [ui-shell](systems/ui-shell.md) | stub | Target UITK composition root (HUD/overlay/diegetic/debug); policy in [agent-first composition](2026-07_agent-first-composition.md) |
+| UI shell | [ui-shell](systems/ui-shell.md) | stub | Target UITK composition root; MI path catalog shipped ([mi-path-catalog](2026-07_mi-path-catalog.md)); full shell deferred |
 | Interactions (framework) | [interactions-framework](systems/interactions-framework.md) | shipped | Shared `IInteraction` contracts, pipeline, and wire identifiers |
 | Data / codegen | [data-codegen](systems/data-codegen.md) | stub | Asset databases and generated references |
 | Persistence | [persistence](systems/persistence.md) | partial | Contributor-based station templates and server meta (permissions, round history) |
@@ -112,7 +112,7 @@ prototyping section, `Status` line for draft/active/superseded only, cross-refs 
 | Gamemodes / roles / traits | [gamemodes-roles-traits](systems/gamemodes-roles-traits.md) | stub | Objectives, job roles, character traits |
 | Player control | [player-control](systems/player-control.md) | stub | Player subsystem and input routing |
 | Chat / audio / screens | [chat-audio-screens](systems/chat-audio-screens.md) | stub | Chat UI condemned per comms.md; audio/camera controllers |
-| Machine interface UI | [machine-interface](systems/machine-interface.md) | shipped | Diegetic APC/SMES/atmos/vending; SerializeField host debt → path catalog / [ui-shell](systems/ui-shell.md) |
+| Machine interface UI | [machine-interface](systems/machine-interface.md) | shipped | Diegetic APC/SMES/atmos/vending; path catalog (`MachineUiAssetCatalog`) — no Game.unity template wiring |
 | Screen-space effects | [screen-effects](systems/screen-effects.md) | partial | URP Volume overlays; F2 debug Canvas condemned; health wiring deferred |
 | ID / access | [id-access](systems/id-access.md) | partial | Crew records, credential checks, doors, machine UI gates, dev console helpers |
 | Inputs | [inputs](systems/inputs.md) | stub | Input subsystem |
@@ -137,6 +137,7 @@ Implementation history — not navigation maps. Update `Status` in the header wh
 | [2026-07_screen-space-effects](2026-07_screen-space-effects.md) | shipped (foundation; health/atmos wiring deferred) |
 | [2026-07_headless-dedicated-server](2026-07_headless-dedicated-server.md) | shipped (partial: selection outline, drop interaction, multiplayer test harness deferred) |
 | [2026-07_agent-first-composition](2026-07_agent-first-composition.md) | shipped (policy); code deferred — bootstrap, UiShell, main-HUD slice, prefab tooling |
+| [2026-07_mi-path-catalog](2026-07_mi-path-catalog.md) | shipped (MI path catalog wedge of composition follow-on b) |
 
 ## Implementation plans
 

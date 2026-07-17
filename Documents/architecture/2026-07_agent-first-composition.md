@@ -13,7 +13,7 @@ Agents excel at C#, UXML/USS, and docs. They fail at Unity-owned object graphs: 
 Pressure already in-tree:
 
 - `ScreenEffectsSubSystem` self-bootstraps via `RuntimeInitializeOnLoadMethod` to avoid `Boot.unity` YAML
-- `MachineInterfaceHost.EnsureEditorAssets` papers over scene SerializeField debt (Editor-only; fails in builds)
+- `MachineInterfaceHost.EnsureEditorAssets` papers over scene SerializeField debt (Editor-only; fails in builds) — **mitigated for MI** by [2026-07_mi-path-catalog.md](2026-07_mi-path-catalog.md)
 - [`Human.prefab`](../../Assets/Content/WorldObjects/Entities/Humanoids/Human/Human.prefab) (~15k lines, ~120 `m_Script` refs) — health, inventory, movement, interactions, and body parts piled onto one graph agents cannot safely edit
 
 ## Scene composition policy
@@ -77,7 +77,7 @@ Named only — separate architecture efforts when scheduled:
 | Effort | Intent |
 |---|---|
 | (a) Subsystem bootstrap + `NetworkSystemsHub` | Empty Boot/Game of per-system GameObjects |
-| (b) UiShell + path catalog | Fold MI / radial / armed under one shell; kill SerializeField host lists |
+| (b) UiShell + path catalog | **MI path catalog shipped** ([2026-07_mi-path-catalog.md](2026-07_mi-path-catalog.md)); full UiShell + folding radial/armed still deferred |
 | (c) Main-HUD UITK slice | First purge pilot (hands + intent) |
 | (d) Entity prefab setup / recipes | Safe `Human.prefab` evolution beyond one-off Phase 0d edits |
 

@@ -4,7 +4,7 @@ using UnityEngine.UIElements;
 namespace SS3D.UI.MachineInterface
 {
     /// <summary>
-    /// Serialized asset refs collected by <see cref="MachineInterfaceHost"/> for UI registration.
+    /// Serialized asset refs for UI registration (filled from <see cref="MachineUiAssetCatalog"/>).
     /// </summary>
     public readonly struct MachineUiCatalogAssets
     {
@@ -42,6 +42,7 @@ namespace SS3D.UI.MachineInterface
 
     /// <summary>
     /// Registers machine UI entries into <see cref="MachineInterfaceRegistry"/>.
+    /// Asset refs come from <see cref="MachineUiAssetCatalog"/> (path catalog), not scene SerializeFields.
     /// </summary>
     public static class MachineUiCatalog
     {

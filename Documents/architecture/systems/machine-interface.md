@@ -11,8 +11,12 @@ UI Toolkit panels for station machines, networked via FishNet snapshots. APC and
 ## Start here
 
 - `Assets/Scripts/SS3D/UI/MachineInterface/MachineInterfaceSubSystem.cs` — open/close/refresh; delegates optimistic Apply* to handlers
-- `Assets/Scripts/SS3D/UI/MachineInterface/MachineInterfaceHost.cs` — panel host; `MachineInterfaceShellKind` routing; asset mount
+- `Assets/Scripts/SS3D/UI/MachineInterface/MachineInterfaceHost.cs` — panel host; loads `MachineUiAssetCatalog` via Resources
+- `Assets/Scripts/SS3D/UI/MachineInterface/MachineUiAssetPaths.cs` — path constants for templates/styles
+- `Assets/Scripts/SS3D/UI/MachineInterface/MachineUiAssetCatalog.cs` — committed ScriptableObject catalog
 - `Assets/Scripts/SS3D/UI/MachineInterface/MachineUiCatalog.cs` — registers UI templates/binders into `MachineInterfaceRegistry`
+- `Assets/Scripts/SS3D/Editor/MachineUiAssetCatalogBuilder.cs` — rebuild catalog menu
+- `Assets/Content/Systems/UI/MachineInterface/Resources/MachineUiAssetCatalog.asset` — runtime catalog asset
 - `Assets/Scripts/SS3D/UI/MachineInterface/MachineOptimisticControlHandlers.cs` — per-machine optimistic control handlers
 - `Assets/Scripts/SS3D/UI/MachineInterface/IMachineOptimisticControlHandler.cs` — optimistic control handler contract + registry
 - `Assets/Scripts/SS3D/UI/MachineInterface/MachineInterfaceRegistry.cs` — interface id → UI registration
@@ -37,7 +41,7 @@ UI Toolkit panels for station machines, networked via FishNet snapshots. APC and
 1. Add id in `MachineInterfaceIds`; control ids in `MachineInterfaceControlIds` if needed.
 2. Snapshot + FishNet serializer + view model + mapper + binder + UXML/USS.
 3. Prefab controller subclassing `MachineInterfaceBehaviour` (concrete TargetRpc snapshot types — FishNet does not support generic RPC parameters). Prefer Editor setup tools over hand-editing machine prefab YAML ([agent-first composition](../2026-07_agent-first-composition.md)).
-4. Register in `MachineUiCatalog.RegisterAll` with **path-based** asset resolution when possible — `MachineInterfaceHost` SerializeField lists + `EnsureEditorAssets` are composition debt (path catalog / UiShell follow-on).
+4. Add paths to `MachineUiAssetPaths` + entry in `MachineUiCatalog.RegisterAll`; run **SS3D → Machine Interface → Rebuild Asset Catalog** and commit the catalog asset (no Game.unity template wiring).
 5. Register snapshot in `MachineInterfaceNetworkRegistry`.
 6. Add `IMachineOptimisticControlHandler` for client optimistic Apply* (register in `MachineOptimisticControlRegistry.EnsureRegistered`).
 7. Optional: dev harness scenario / editor preview.
@@ -55,7 +59,7 @@ Dev harness: `MachineInterfaceDevHarness.cs`; editor previews via `SS3D → Mach
 
 ## Related docs
 
-- Architecture efforts: [phase 1](../2026-07_machine-interface-phase1-foundation.md), [phase 2](../2026-07_machine-interface-phase2-apc-networking.md), [phase 3](../2026-07_machine-interface-phase3-smes-generalization.md), [diegetic screen UI](../2026-07_diegetic-screen-ui-framework.md), [mi-area-electricity debt](../2026-07_mi-area-electricity-debt.md), [area foundation](../2026-07_area-foundation.md), [agent-first composition](../2026-07_agent-first-composition.md)
+- Architecture efforts: [phase 1](../2026-07_machine-interface-phase1-foundation.md), [phase 2](../2026-07_machine-interface-phase2-apc-networking.md), [phase 3](../2026-07_machine-interface-phase3-smes-generalization.md), [diegetic screen UI](../2026-07_diegetic-screen-ui-framework.md), [mi-area-electricity debt](../2026-07_mi-area-electricity-debt.md), [area foundation](../2026-07_area-foundation.md), [agent-first composition](../2026-07_agent-first-composition.md), [mi path catalog](../2026-07_mi-path-catalog.md)
 - Target shell: [ui-shell](ui-shell.md)
 - Plan: [areas_implementation_plan_c0639343.plan.md](../../plans/areas_implementation_plan_c0639343.plan.md)
 - Design (read-only): [Documents/design/id-access.md](../../design/id-access.md), [Documents/design/main-hud.md](../../design/main-hud.md)

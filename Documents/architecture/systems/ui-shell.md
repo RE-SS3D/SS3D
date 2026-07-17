@@ -8,12 +8,16 @@
 
 Target composition root for all player-facing UI Toolkit surfaces. Layers: **HUD** (persistent), **overlay** (radial, armed, examine, reticle), **diegetic/modal** (machine panels), **debug** (console). Surfaces register via a path-based catalog (UXML/USS + binder factory), not scene SerializeField hosts. Policy: [2026-07_agent-first-composition.md](../2026-07_agent-first-composition.md).
 
-Until this lands, use [machine-interface](machine-interface.md) + radial/armed UITK hosts as the interim pattern. Do not add new uGUI.
+**Shipped wedge:** machine UI path catalog ([2026-07_mi-path-catalog.md](../2026-07_mi-path-catalog.md)) — `MachineUiAssetPaths` + `MachineUiAssetCatalog` via Resources. Full UiShell (document ownership / layers) still deferred.
+
+Until UiShell lands, use [machine-interface](machine-interface.md) + radial/armed UITK hosts as the interim pattern. Do not add new uGUI.
 
 ## Start here
 
 - Policy: [2026-07_agent-first-composition.md](../2026-07_agent-first-composition.md)
+- Shipped wedge: [2026-07_mi-path-catalog.md](../2026-07_mi-path-catalog.md)
 - Interim: `Assets/Scripts/SS3D/UI/MachineInterface/MachineUiCatalog.cs`
+- Interim: `Assets/Scripts/SS3D/UI/MachineInterface/MachineUiAssetPaths.cs`
 - Interim: `Assets/Scripts/SS3D/Systems/Interactions/RadialInteractionSubSystem.cs`
 - Tokens: `Assets/Content/Systems/UI/Tokens/`, `Assets/Content/Systems/UI/MachineInterface/Tokens/`
 
