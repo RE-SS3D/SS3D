@@ -29,10 +29,6 @@ MonoBehaviour:
   m_Active: 1
   _visionMaskShader: {fileID: 4800000, guid: 15369a85bf338fdb7af4340cb5d185ec, type: 3}
   _visionBlurShader: {fileID: 4800000, guid: a2c58fdd58bc3e1a9a6970b779eebb57, type: 3}
-  _blurQuality: 5
-  _blurDirections: 25
-  _blurSize: {x: 5, y: 5}
-  _fogStrength: 0.9
   _debugMask: 0
 --- !u!114 &-3601183876851600227
 MonoBehaviour:

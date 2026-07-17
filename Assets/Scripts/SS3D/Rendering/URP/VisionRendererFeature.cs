@@ -6,17 +6,14 @@ using UnityEngine.Rendering.Universal;
 namespace SS3D.Rendering.URP
 {
     /// <summary>
-    /// URP fog-of-war fullscreen mask + blur composite for the player camera.
+    /// URP fog-of-war fullscreen mask + hard composite for the player camera. Unseen tiles are
+    /// fully opaque black - a mask, not a soft fog.
     /// </summary>
     public sealed class VisionRendererFeature : ScriptableRendererFeature
     {
         [SerializeField] private Shader _visionMaskShader;
         [SerializeField] private Shader _visionBlurShader;
-        [SerializeField] private float _blurQuality = 5f;
-        [SerializeField] private float _blurDirections = 25f;
-        [SerializeField] private Vector2 _blurSize = new(5f, 5f);
-        [SerializeField] [Range(0f, 1f)] private float _fogStrength = 0.9f;
-        [SerializeField] [Tooltip("Output the raw visibility mask to the screen and skip the blur composite (diagnostic).")] private bool _debugMask;
+        [SerializeField] [Tooltip("Output the raw visibility mask to the screen and skip the composite (diagnostic).")] private bool _debugMask;
 
         VisionMaskRenderPass _maskPass;
         VisionBlurRenderPass _blurPass;
@@ -58,7 +55,7 @@ namespace SS3D.Rendering.URP
             if (_debugMask)
                 return;
 
-            _blurPass.Setup(this, _blurQuality, _blurDirections, _blurSize, _fogStrength);
+            _blurPass.Setup(this);
             renderer.EnqueuePass(_blurPass);
         }
 
