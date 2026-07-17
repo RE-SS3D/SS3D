@@ -358,6 +358,11 @@ namespace SS3D.Systems.Inventory.Items
         [ServerOrClient]
         public Sprite GenerateIcon()
         {
+#if UNITY_SERVER
+            // Icon generation renders a camera to produce a preview texture, which is unavailable and
+            // unnecessary on a dedicated server (no shaders are included in the build for it to use).
+            return null;
+#else
             RuntimePreviewGenerator.BackgroundColor = new Color(0, 0, 0, 0);
             RuntimePreviewGenerator.OrthographicMode = true;
             // Find stored items
@@ -404,6 +409,7 @@ namespace SS3D.Systems.Inventory.Items
                 storedItemWithParent.Key.parent = storedItemWithParent.Value;
             }
             return icon;
+#endif
         }
 
         /// <summary>

@@ -67,6 +67,16 @@ namespace SS3D.SceneManagement
         /// </summary>
         private void LoadMainScene()
         {
+#if UNITY_SERVER
+            Log.Debug(this, "Loading main scene as Game (dedicated server)", Logs.Important);
+
+            // This call is async and not awaited. Hence the pragma disable.
+            #pragma warning disable CS4014
+            Scene.LoadAsync(Scenes.Game);
+            #pragma warning restore CS4014
+
+            return;
+#else
             ApplicationSettings applicationSettings = ScriptableSettings.GetOrFind<ApplicationSettings>();
 
             bool isUsingCommandLineArgs = false;
@@ -100,6 +110,7 @@ namespace SS3D.SceneManagement
 			#pragma warning disable CS4014
 			Scene.LoadAsync(sceneToLoad);
 			#pragma warning restore CS4014
+#endif
 		}
 	}
 }

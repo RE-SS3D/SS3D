@@ -49,6 +49,7 @@ namespace SS3D.Systems.Roles
             if (_rolesAvailable == null)
             {
                 Log.Error(this, "Initial Available Roles not set!");
+                return;
             }
 
             foreach (RolesData role in _rolesAvailable.Roles)
@@ -121,16 +122,14 @@ namespace SS3D.Systems.Roles
         /// <param name="player</param>
         private void RemovePlayerFromCounters(Player player)
         {
-            KeyValuePair<Player, RoleData>? rolePlayer =
-                _rolePlayers.FirstOrDefault(rp => rp.Key == player);
-
-            if (rolePlayer != null)
+            if (player == null || !_rolePlayers.TryGetValue(player, out RoleData roleData))
             {
-                RoleData roleData = rolePlayer.Value.Value;
-                RoleCounter roleCounter = _roleCounters.First(rc => rc.Role == roleData);
-
-                roleCounter.RemovePlayer(player);
+                return;
             }
+
+            RoleCounter roleCounter = _roleCounters.FirstOrDefault(rc => rc.Role == roleData);
+
+            roleCounter?.RemovePlayer(player);
         }
 
         /// <summary>

@@ -139,6 +139,11 @@ namespace SS3D.Systems.Tile
         /// <returns></returns>
         public static Vector3 GetPointedPosition(bool isTilePosition = false)
         {
+            if (Camera.main == null)
+            {
+                return Vector3.zero;
+            }
+
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
             if (new Plane(Vector3.up, 0).Raycast(ray, out float distance))
             {

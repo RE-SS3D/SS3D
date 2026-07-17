@@ -500,12 +500,26 @@ namespace SS3D.UI.MachineInterface
         private void EnsureRuntimeAssets()
         {
 #if !UNITY_EDITOR
-            if (_vendingTemplate == null || _vendingTemplateStyle == null || _gasPumpTemplate == null
-                || _gasPumpTemplateStyle == null || _ss3dTokensStyle == null || _diegeticTokensStyle == null
+            // These fields are only auto-populated from AssetDatabase paths by EnsureEditorAssets(),
+            // which is editor-only. If a field is left unassigned on the scene's MachineInterfaceHost, it
+            // silently stays null in every compiled build (client and server alike) and only surfaces
+            // later as "MachineInterfaceHost is missing the template for X" when a player opens that
+            // specific interface. Check every template/style field here so the gap is obvious at boot.
+            if (_apcTemplate == null || _apcTemplateStyle == null
+                || _smesTemplate == null || _smesTemplateStyle == null
+                || _vendingTemplate == null || _vendingTemplateStyle == null
+                || _idConsoleTemplate == null || _idConsoleTemplateStyle == null
+                || _gasPumpTemplate == null || _gasPumpTemplateStyle == null
+                || _airAlarmTemplate == null || _airAlarmTemplateStyle == null
+                || _scrubberTemplate == null || _scrubberTemplateStyle == null
+                || _ventTemplate == null || _ventTemplateStyle == null
+                || _ss3dTokensStyle == null || _diegeticTokensStyle == null
                 || _diegeticTonesStyle == null || _ss3dTypographyStyle == null)
             {
                 Debug.LogWarning(
-                    "MachineInterfaceHost is missing diegetic UI assets. Assign templates and token style sheets on the Game scene host.",
+                    "MachineInterfaceHost is missing one or more UI assets (templates and/or style sheets). "
+                    + "Assign every template/style field on the Game scene host in the Editor - fields left "
+                    + "unassigned only get auto-loaded in the Editor and stay null in any compiled build.",
                     this);
             }
 #endif

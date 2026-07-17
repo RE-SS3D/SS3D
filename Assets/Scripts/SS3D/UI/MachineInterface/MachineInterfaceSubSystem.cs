@@ -27,6 +27,13 @@ namespace SS3D.UI.MachineInterface
 
         public void Open(string interfaceId, IMachineInterfaceViewModel viewModel)
         {
+#if UNITY_SERVER
+            // Machine controllers send their "open" RPC as TargetRpc(RunLocally = true), which also runs
+            // this on the server that sent it (needed for host mode, where server and client are the same
+            // process). A dedicated server has no local player to show UI to, so skip it entirely - it
+            // would otherwise try to lay out UI Toolkit text with no shaders available and crash.
+            return;
+#endif
             MachineInterfaceHost host = GetHost();
             if (host == null || !host.Open(interfaceId, viewModel))
             {

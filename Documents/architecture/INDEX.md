@@ -51,7 +51,7 @@ Feature-level gaps *within* an already-designed system stay in that design doc's
 | shuttles | [shuttles.md](../design/shuttles.md) — active | none yet | none yet |
 | ai-cyborgs | [ai-cyborgs.md](../design/ai-cyborgs.md) — active | none yet | none yet |
 | persistence-save | none yet | none yet | [persistence](systems/persistence.md) — partial (station templates, server meta only, not a design spec) |
-| networking | none yet | none yet | [networking-session](systems/networking-session.md) — stub |
+| networking | none yet | [headless-dedicated-server](2026-07_headless-dedicated-server.md) — shipped (partial: selection outline and drop interaction against a real client still broken, not root-caused; no automated multiplayer test coverage) | [networking-session](systems/networking-session.md) — partial |
 | audio | none yet | none yet | none yet |
 | onboarding-tutorial | none yet | none yet | none yet |
 | antagonist-content | none yet | none yet | none yet |
@@ -134,6 +134,7 @@ Implementation history — not navigation maps. Update `Status` in the header wh
 | [2026-07_mi-area-electricity-debt](2026-07_mi-area-electricity-debt.md) | shipped |
 | [2026-07_player-body-animation](2026-07_player-body-animation.md) | shipped (foundation; blend/timing polish remains) |
 | [2026-07_screen-space-effects](2026-07_screen-space-effects.md) | shipped (foundation; health/atmos wiring deferred) |
+| [2026-07_headless-dedicated-server](2026-07_headless-dedicated-server.md) | shipped (partial: selection outline, drop interaction, multiplayer test harness deferred) |
 
 ## Implementation plans
 
