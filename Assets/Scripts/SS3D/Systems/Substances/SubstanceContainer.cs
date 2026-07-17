@@ -41,14 +41,20 @@ namespace SS3D.Substances
         /// <summary>
         /// A list of all substances in this container
         /// </summary>
-        private List<SubstanceEntry> _substances = new List<SubstanceEntry>();
+        private readonly List<SubstanceEntry> _substances = new List<SubstanceEntry>();
+
+        /// <summary>
+        /// Live read-only view of <see cref="_substances"/>. Cached once — <see cref="List{T}.AsReadOnly"/> allocates.
+        /// </summary>
+        private ReadOnlyCollection<SubstanceEntry> _substancesView;
 
         /// <summary>
         /// The temperature of the container
         /// </summary>
         public float Temperature => _temperature;
 
-        public ReadOnlyCollection<SubstanceEntry> Substances => _substances.AsReadOnly();
+        public ReadOnlyCollection<SubstanceEntry> Substances =>
+            _substancesView ??= _substances.AsReadOnly();
 
         /// <summary>
         /// The capacity of this container in milliliters
@@ -78,7 +84,16 @@ namespace SS3D.Substances
         /// <summary>
         /// The total number of millimoles
         /// </summary>
-        public float TotalMilliMoles => Substances.Sum(x => x.MilliMoles);
+        public float TotalMilliMoles
+        {
+            get
+            {
+                float total = 0f;
+                for (int i = 0; i < _substances.Count; i++)
+                    total += _substances[i].MilliMoles;
+                return total;
+            }
+        }
 
         [SyncVar]
         private bool _initialised = false;
@@ -118,8 +133,12 @@ namespace SS3D.Substances
         {
             float val = 0;
             float total = TotalMilliMoles;
-            foreach (var entry in Substances)
+            if (total <= 0f)
+                return 0f;
+
+            for (int i = 0; i < _substances.Count; i++)
             {
+                SubstanceEntry entry = _substances[i];
                 val += entry.Substance.MillilitersPerMilliMoles * (entry.MilliMoles / total);
             }
             return val;
@@ -142,7 +161,7 @@ namespace SS3D.Substances
                 return;
             }
 
-            SubstanceEntry entry = Substances[index];
+            SubstanceEntry entry = _substances[index];
             float newAmount = entry.MilliMoles - millimoles;
             if (newAmount <= 0.000001)
             {
@@ -158,7 +177,14 @@ namespace SS3D.Substances
 
         private void RecalculateAndSyncVolume()
         {
-            _currentVolume = Substances.Sum(x => x.MilliMoles * x.Substance.MillilitersPerMilliMoles);
+            float volume = 0f;
+            for (int i = 0; i < _substances.Count; i++)
+            {
+                SubstanceEntry entry = _substances[i];
+                volume += entry.MilliMoles * entry.Substance.MillilitersPerMilliMoles;
+            }
+
+            _currentVolume = volume;
         }
 
         /// <summary>
@@ -202,7 +228,7 @@ namespace SS3D.Substances
         public void TransferMoles(SubstanceContainer other, float milliMoles)
         {
             // Only transfer what's left.
-            float totalMilliMoles = Substances.Sum(x => x.MilliMoles);
+            float totalMilliMoles = TotalMilliMoles;
             if (milliMoles > totalMilliMoles)
             {
                 milliMoles = totalMilliMoles;
@@ -212,9 +238,9 @@ namespace SS3D.Substances
 
             float relativeMoles = milliMoles / totalMilliMoles;
 
-            for (int i = 0; i < Substances.Count; i++)
+            for (int i = 0; i < _substances.Count; i++)
             {
-                SubstanceEntry entry = Substances[i];
+                SubstanceEntry entry = _substances[i];
                 float entryMoles = entry.MilliMoles * relativeMoles;
                 entry.MilliMoles -= entryMoles;
                 other.AddSubstance(entry.Substance, entryMoles);
@@ -238,9 +264,9 @@ namespace SS3D.Substances
         /// <returns>The index or -1 if it is not found</returns>
         public int IndexOfSubstance(Substance substance)
         {
-            for (int i = 0; i < Substances.Count; i++)
+            for (int i = 0; i < _substances.Count; i++)
             {
-                if (Substances[i].Substance == substance)
+                if (_substances[i].Substance == substance)
                 {
                     return i;
                 }
@@ -275,7 +301,7 @@ namespace SS3D.Substances
             }
             else
             {
-                SubstanceEntry entry = Substances[index];
+                SubstanceEntry entry = _substances[index];
                 entry.MilliMoles += millimoles;
                 _substances[index] = entry;
             }
@@ -291,7 +317,7 @@ namespace SS3D.Substances
         /// <param name="moles">The amount of moles</param>
         public void RemoveMoles(float milliMoles)
         {
-            float totalMoles = _substances.Sum(x => x.MilliMoles);
+            float totalMoles = TotalMilliMoles;
             if (milliMoles > totalMoles)
             {
                 milliMoles = totalMoles;
@@ -302,9 +328,9 @@ namespace SS3D.Substances
                 return;
             }
 
-            for (int i = 0; i < Substances.Count; i++)
+            for (int i = 0; i < _substances.Count; i++)
             {
-                SubstanceEntry entry = Substances[i];
+                SubstanceEntry entry = _substances[i];
                 entry.MilliMoles -= entry.MilliMoles / totalMoles * milliMoles;
                 if (entry.MilliMoles <= 0.0001)
                 {
@@ -345,7 +371,8 @@ namespace SS3D.Substances
         [Server]
         public bool ContainsSubstance(Substance substance, float moles = 0.0001f)
         {
-            return Substances.FirstOrDefault(x => x.Substance == substance).MilliMoles >= moles;
+            int index = IndexOfSubstance(substance);
+            return index >= 0 && _substances[index].MilliMoles >= moles;
         }
 
 
@@ -460,13 +487,18 @@ namespace SS3D.Substances
 
         public float GetSubstanceQuantity(Substance substance)
         {
-           return Substances.FirstOrDefault(x => x.Substance == substance).MilliMoles;
+            int index = IndexOfSubstance(substance);
+            return index < 0 ? 0f : _substances[index].MilliMoles;
         }
 
         public float GetSubstanceVolume(Substance substance)
         {
-            var entry = Substances.FirstOrDefault(x => x.Substance == substance);
-            return entry.Substance == null ? 0f : entry.Substance.MillilitersPerMilliMoles * entry.MilliMoles;
+            int index = IndexOfSubstance(substance);
+            if (index < 0)
+                return 0f;
+
+            SubstanceEntry entry = _substances[index];
+            return entry.Substance.MillilitersPerMilliMoles * entry.MilliMoles;
         }
     }
 }
