@@ -79,18 +79,13 @@ exercised, which masks a different set of ordering/null bugs):
   not just vending/gas-pump/tokens. `_ventTemplate`, `_scrubberTemplate`, `_airAlarmTemplate`
   were never assigned on the `Game.unity` scene host (only auto-populated by an Editor-only
   `AssetDatabase` fallback, so they were silently null in **every** compiled build — client
-  included, not just the server). The scene-data fix itself (assigning those fields in the
-  Editor) is **not done** — see Known issues.
+  included, not just the server). Scene data fixed by assigning those fields in the Editor.
 
 ## Known issues (found during manual dogfooding, not yet root-caused)
 
 Found by playing a real session against the dedicated server with a separate client build.
 This list is almost certainly incomplete — see Testing gap below for why.
 
-- **`_ventTemplate`/`_scrubberTemplate`/`_airAlarmTemplate` unassigned on `Game.unity`'s
-  `MachineInterfaceHost`.** Confirmed root cause (see above); needs someone with Editor
-  access to assign the three template + style fields (paths listed in
-  `MachineInterfaceHost.EnsureEditorAssets()`) and re-save the scene.
 - **Selection outline not working** against a real remote client (client-authored, only
   ever manually tested in host mode before). Not yet investigated — see
   [selection.md](systems/selection.md).
