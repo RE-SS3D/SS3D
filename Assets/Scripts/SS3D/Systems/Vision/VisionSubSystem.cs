@@ -56,12 +56,13 @@ namespace SS3D.Systems.Vision
         // Defaults to "everything except known non-occluding layers" so the capture camera - which
         // sits at the player's own position - doesn't immediately self-occlude on the player's own
         // body mesh. Tune down further in the Inspector to just wall/structure layers if other
-        // furniture/props end up occluding vision incorrectly.
+        // furniture/props end up occluding vision incorrectly. Left unassigned here and filled in
+        // during OnAwake: LayerMask.GetMask/NameToLayer cannot run from a field initializer
+        // (Unity throws - field initializers execute as part of the MonoBehaviour constructor).
         [SerializeField]
         [Tooltip("Layers the occlusion capture treats as vision-blocking geometry (walls, closed doors, ...). " +
                  "Must exclude Characters/BodyParts or the capture self-occludes on the player's own body.")]
-        private LayerMask occluderMask = ~LayerMask.GetMask(
-            "TransparentFX", "Ignore Raycast", "Water", "UI", "Items", "Characters", "BodyParts");
+        private LayerMask occluderMask;
 
         private readonly VisionOcclusionCapture _occlusionCapture = new();
 
@@ -74,6 +75,14 @@ namespace SS3D.Systems.Vision
         protected override void OnAwake()
         {
             base.OnAwake();
+
+            // 0 means "never customized in the Inspector" (LayerMask's own default), since an
+            // intentionally empty mask - occluding nothing - would be a useless configuration.
+            if (occluderMask == 0)
+            {
+                occluderMask = ~LayerMask.GetMask(
+                    "TransparentFX", "Ignore Raycast", "Water", "UI", "Items", "Characters", "BodyParts");
+            }
 
             AddHandle(LocalPlayerObjectChanged.AddListener(HandlePlayerObjectChanged));
         }
