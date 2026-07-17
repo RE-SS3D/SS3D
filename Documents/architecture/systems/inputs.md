@@ -1,6 +1,7 @@
 > Code paths: Assets/Scripts/SS3D/Systems/Inputs/
 > Entry points: InputSubSystem, InputArbiter, InputInterface
-> Status: active
+> Status: partial
+> Verified: 56e4cd004 — 2026-07-17
 
 # Inputs
 

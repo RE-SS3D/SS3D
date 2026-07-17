@@ -1,7 +1,7 @@
 > Code paths: Assets/Scripts/SS3D/Systems/Inventory/, Assets/Scripts/SS3D/UI/MainHud/
 > Entry points: ItemSubSystem, MainHudSubSystem
 > Status: partial
-> Verified: eb1e40492 — 2026-07-17
+> Verified: 56e4cd004 — 2026-07-17
 
 # Inventory
 
@@ -24,7 +24,7 @@ Items, containers, hands, and identification cards (`IDCard`, `PDA`). ID cards b
 
 ## Extension points
 
-(stub)
+- **New Main HUD stylesheet/icon:** add a path in `MainHudAssetPaths`, assign on `MainHudAssetCatalog`, run **SS3D → Main HUD → Rebuild Asset Catalog**, commit the SO (do not rely on Editor `AssetDatabase` in `MainHudSubSystem`).
 
 ## Pitfalls
 
@@ -32,7 +32,7 @@ Items, containers, hands, and identification cards (`IDCard`, `PDA`). ID cards b
 
 ## Depends on / Used by
 
-- **Depends on:** [interactions-framework](interactions-framework.md)
+- **Depends on:** [interactions-framework](interactions-framework.md), [inputs](inputs.md) (UITK document registry / pointer-over-UI)
 - **Used by:** [examine](examine.md), [player-control](player-control.md), [id-access](id-access.md)
 
 ## Related docs
