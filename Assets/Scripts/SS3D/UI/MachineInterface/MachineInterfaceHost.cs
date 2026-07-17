@@ -84,7 +84,7 @@ namespace SS3D.UI.MachineInterface
             }
 
             // Drop any in-flight close without invoking its completion callback — SubSystem.Open resets state.
-            KillPanelAnimation(invokeCloseComplete: false);
+            CancelPanelAnimation();
             ClosePanelOnly();
             if (!CreatePanel(viewModel.Title, registration))
             {
@@ -180,21 +180,13 @@ namespace SS3D.UI.MachineInterface
 
             _isClosing = true;
             _pendingCloseComplete = onComplete;
-            PlayDiegeticClose(animRoot, () =>
-            {
-                ClosePanelOnly();
-                ShutdownDocument();
-                _isClosing = false;
-                Action callback = _pendingCloseComplete;
-                _pendingCloseComplete = null;
-                callback?.Invoke();
-            });
+            PlayDiegeticClose(animRoot);
         }
 
         /// <summary>Kills tweens and tears down immediately (destroy / reopen).</summary>
         public void CloseImmediate()
         {
-            KillPanelAnimation(invokeCloseComplete: false);
+            CancelPanelAnimation();
             ClosePanelOnly();
             ShutdownDocument();
         }
@@ -399,7 +391,7 @@ namespace SS3D.UI.MachineInterface
                 return;
             }
 
-            KillPanelAnimation(invokeCloseComplete: false);
+            KillActiveSequence();
 
             _panelSequence = DOTween.Sequence();
             _panelSequence.Append(DOTween.To(
@@ -436,9 +428,11 @@ namespace SS3D.UI.MachineInterface
                 .SetEase(Ease.OutCirc));
         }
 
-        private void PlayDiegeticClose(VisualElement animRoot, Action onComplete)
+        private void PlayDiegeticClose(VisualElement animRoot)
         {
-            KillPanelAnimation(invokeCloseComplete: false);
+            // Only kill the running tween — do not clear _pendingCloseComplete / _isClosing
+            // (Close() just set those; wiping them would skip FinishClose and leave input locked).
+            KillActiveSequence();
             SetBackdropBlur(0f);
 
             _panelSequence = DOTween.Sequence();
@@ -474,25 +468,31 @@ namespace SS3D.UI.MachineInterface
                     0f,
                     AnimDuration)
                 .SetEase(Ease.OutCirc));
-            _panelSequence.OnComplete(() => onComplete?.Invoke());
+            _panelSequence.OnComplete(CompleteDiegeticClose);
         }
 
-        private void KillPanelAnimation(bool invokeCloseComplete)
+        private void CompleteDiegeticClose()
+        {
+            ClosePanelOnly();
+            ShutdownDocument();
+            _isClosing = false;
+            Action callback = _pendingCloseComplete;
+            _pendingCloseComplete = null;
+            callback?.Invoke();
+        }
+
+        /// <summary>Stops tweens and drops any pending close callback without invoking it.</summary>
+        private void CancelPanelAnimation()
+        {
+            KillActiveSequence();
+            _pendingCloseComplete = null;
+            _isClosing = false;
+        }
+
+        private void KillActiveSequence()
         {
             _panelSequence?.Kill();
             _panelSequence = null;
-
-            if (!invokeCloseComplete)
-            {
-                _pendingCloseComplete = null;
-                _isClosing = false;
-                return;
-            }
-
-            Action callback = _pendingCloseComplete;
-            _pendingCloseComplete = null;
-            _isClosing = false;
-            callback?.Invoke();
         }
 
         private void ClosePanelOnly()
