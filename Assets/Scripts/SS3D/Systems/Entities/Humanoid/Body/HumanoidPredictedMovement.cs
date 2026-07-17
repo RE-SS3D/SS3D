@@ -73,6 +73,7 @@ namespace SS3D.Systems.Entities.Humanoid
         private Actor _camera;
         private Controls.MovementActions _movementControls;
         private InputSubSystem _inputSystem;
+        private IInputHandle _gameplayHandle;
         private bool _subscribed;
         private bool _tickSubscribed;
         private bool _networkStarted;
@@ -191,14 +192,15 @@ namespace SS3D.Systems.Entities.Humanoid
             _inputSystem = SubSystems.Get<InputSubSystem>();
             _camera = SubSystems.Get<CameraSubSystem>().PlayerCamera;
             _movementControls = _inputSystem.Inputs.Movement;
-            _inputSystem.ToggleActionMap(_movementControls, true);
+            _gameplayHandle = _inputSystem.PushContext(InputContext.Gameplay);
             _subscribed = true;
         }
 
         private void UnsubscribeInput()
         {
             if (_inputSystem == null) return;
-            _inputSystem.ToggleActionMap(_movementControls, false);
+            _gameplayHandle?.Dispose();
+            _gameplayHandle = null;
             _subscribed = false;
         }
 

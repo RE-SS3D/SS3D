@@ -14,6 +14,8 @@ Read this before writing or editing anything in `Documents/`.
 | `Documents/architecture/systems/` | WHERE in code (one map per domain) | Agents via `update-system-docs` |
 | `Documents/FORK_STATUS.md` | Upstream divergence log | Owner periodically — agents do not touch |
 
+This table is canonical. `AGENTS.md` inlines only the hard prohibitions drawn from it; it does not restate the table, so the two cannot drift.
+
 ### Design (`Documents/design/`)
 
 Gameplay design specs. Stable. One file per system (e.g. `health.md`, `combat.md`).
@@ -43,6 +45,17 @@ Implementation plans for a specific effort (can span multiple systems). Named `Y
 ### System maps (`Documents/architecture/systems/`)
 
 Navigation docs: entry points, key files, dependencies. One file per domain (kebab-case, e.g. `tile.md`). Status reflects code navigation coverage, not upstream divergence (that stays in `FORK_STATUS.md`).
+
+**Status values:** `shipped | partial | stub | condemned`.
+
+- `shipped` / `partial` / `stub` — live code navigation coverage.
+- `condemned` — do not extend; scheduled for replace-and-purge per [2026-07_agent-first-composition.md](architecture/2026-07_agent-first-composition.md). A map may stay `partial` or `shipped` overall while carrying a **Condemned UI** and/or **Prefab composition debt** subsection when domain logic still lives but presentation or prefab wiring must not grow.
+
+**Verified stamp.** Every map header carries `> Verified: <short-sha> — <YYYY-MM-DD>`, the commit the map was last checked against code. `update-system-docs` bumps it to `HEAD` on each map it actually touches; untouched maps keep their old stamp, so a stamp far behind `HEAD` is the staleness signal — the map may still be right, but nobody has confirmed it, and a confidently wrong map is worse than none. Never bump the stamp on a map you didn't re-verify.
+
+**Pitfalls.** When you hit a *silent* failure — code that compiles and runs but misbehaves with no error or log (UI Toolkit layout quirks, FishNet serialization limits, prefab wiring that no-ops, order-dependent init) — record it in the owning map's **Pitfalls** section as symptom → cause → fix. This is the single highest-value content a map carries: it's the wiki-only, hours-to-rediscover knowledge that AI agents are worst at recovering on their own because nothing throws. Keep entries to one or two lines; the fix or the constraint is the payload, not the story.
+
+**Redesign Phase 0:** architecture efforts that replace a condemned surface must include a purge checklist for legacy UI files/prefabs and obsolete MonoBehaviours on shared roots (e.g. `Human.prefab`). Prefer tool-mediated prefab mutation (`PrefabUtility` / Editor menus) over raw YAML edits. See agent-first composition policy.
 
 ### Coverage table (`Documents/architecture/INDEX.md`)
 
@@ -77,21 +90,33 @@ Every **system map** starts with:
 ```
 > Code paths: <primary folder(s)>
 > Entry points: <SubSystem classes, key services>
-> Status: shipped | partial | stub
+> Status: shipped | partial | stub | condemned
+> Verified: <short-sha> — <YYYY-MM-DD>
 ```
 
-System map body sections (fixed order): **Overview**, **Start here**, **Extension points**, **Depends on / Used by**, **Related docs**.
+System map body sections (fixed order): **Overview**, **Start here**, **Extension points**, **Pitfalls** (optional — include only when there are real silent-failure landmines), **Depends on / Used by**, **Related docs**.
 
 Design doc body sections (fixed order): unnumbered opening — what this doc formalizes and why it exists — then **Design philosophy**, doc-specific numbered sections, **Worked examples**, **Integration notes**, **Out of scope for this pass**. Nothing follows "Out of scope." No prototyping section, no status field beyond the one above.
 
-Keep each system map under ~80 lines. Do not duplicate gameplay rules from design docs — link and cite by path + section.
+Keep each system map under ~80 lines; **Pitfalls** does not count against this — it's the one section worth letting a map run long for. Do not duplicate gameplay rules from design docs — link and cite by path + section.
 
 ## Linking convention
 
 Always cite by path + section (`Documents/design/combat.md §3`), never by paraphrasing
 another doc's content into a new one. If a fact needs restating, restate it briefly and
 link back to the source of truth — never fork the explanation into two places that can
-drift apart.
+drift apart. This rule binds these governance docs too: `AGENTS.md` and the
+`update-system-docs` skill point at this file for layers and templates rather than copying them.
+
+## Starting a new domain
+
+A domain sitting at "none yet / none yet" in INDEX.md's coverage table goes from design-only to navigable in a fixed order — the cold-start path, distinct from the steady-state `update-system-docs` loop:
+
+1. **Owner** authors `Documents/design/<domain>.md` (agents never create design docs).
+2. When the build is commissioned, create the first architecture effort `Documents/architecture/YYYY-MM_<domain>-<slice>.md`. Header per template above; `Implements:` the specific design-doc sections; read those sections in full first (see below).
+3. Create the first system map `Documents/architecture/systems/<domain>.md` at `Status: stub`, `Verified` stamped with the current `HEAD`. It grows from stub → partial → shipped as slices land.
+4. Fill in the domain's row in INDEX.md's coverage table — the **Architecture** and **System map** columns only. Never touch the **Design** column; that's owner-authored.
+5. From here on it's the normal loop: implement, then run `update-system-docs`.
 
 ## Before writing an architecture effort doc
 
@@ -111,4 +136,4 @@ drift apart.
 
 ## After implementing a feature (agents)
 
-Run the `update-system-docs` skill (`.cursor/skills/update-system-docs/SKILL.md`) to sync INDEX, affected system maps, linked plans, and architecture effort status. Never edit `Documents/design/` or `Documents/FORK_STATUS.md` unless the owner explicitly asks.
+Run the `update-system-docs` skill (`.cursor/skills/update-system-docs/SKILL.md`) to sync INDEX, affected system maps (status, `Verified` stamp, new **Pitfalls**), linked plans, and architecture effort status. Never edit `Documents/design/` or `Documents/FORK_STATUS.md` unless the owner explicitly asks.

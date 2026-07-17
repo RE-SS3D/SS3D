@@ -18,6 +18,18 @@ namespace SS3D.Core
         private static readonly Dictionary<Type, ISubSystem> RegisteredSubsystems = new();
 
         /// <summary>
+        /// True once the application has started quitting. During teardown, GameObjects are destroyed in
+        /// an arbitrary order, so a subsystem being unavailable to a late OnDestroy callback is expected
+        /// rather than an error worth logging.
+        /// </summary>
+        private static bool _isQuitting;
+
+        static SubSystems()
+        {
+            UnityEngine.Application.quitting += () => _isQuitting = true;
+        }
+
+        /// <summary>
         /// Tries to get a subsystem at runtime, make sure there's no duplicates of said subsystem before using.
         /// </summary>
         /// <typeparam name="T">The Type of object you want to get.</typeparam>
@@ -50,10 +62,13 @@ namespace SS3D.Core
                 return subsystem as T;
             }
 
-            string message = $"Couldn't find subsystem of {typeof(T).Name} in the scene";
+            if (!_isQuitting)
+            {
+                string message = $"Couldn't find subsystem of {typeof(T).Name} in the scene";
 
-            // ReSharper disable once Unity.PerformanceCriticalCodeInvocation
-            Log.Error(typeof(SubSystems), message, Logs.Important);
+                // ReSharper disable once Unity.PerformanceCriticalCodeInvocation
+                Log.Error(typeof(SubSystems), message, Logs.Important);
+            }
 
             return null;
         }

@@ -34,11 +34,13 @@ namespace SS3D.Systems.Screens
         {
             GameObject target = e.PlayerObject;
 
+#if !UNITY_SERVER
             _fovSequence?.Kill();
             _fovSequence = DOTween.Sequence();
 
             _fovSequence.Append(_camera.DOFieldOfView(75, 0.1f));
             _fovSequence.Append(_camera.DOFieldOfView(65, .7F));
+#endif
 
             Log.Information(this, "setting new camera target {gameObject}", Logs.Generic, target.name);
             _cameraFollow.SetTarget(target);

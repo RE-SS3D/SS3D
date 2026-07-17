@@ -15,7 +15,8 @@
         "SS3D.Tests.Common",
         "SS3D.UI.MachineInterface",
         "SS3D.Localization",
-        "Unity.Localization"
+        "Unity.Localization",
+        "Unity.InputSystem"
     ],
     "includePlatforms": [
         "Editor"

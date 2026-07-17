@@ -18,6 +18,8 @@ namespace SS3D.Tests.EditMode
             Assert.AreNotEqual(0, Animations.Humanoid.Turn);
             Assert.AreNotEqual(0, Animations.Humanoid.Floating);
             Assert.AreNotEqual(0, Animations.Humanoid.LimpSide);
+            Assert.AreNotEqual(0, Animations.Humanoid.IsCrawling);
+            Assert.AreNotEqual(0, Animations.Humanoid.IsDragging);
             Assert.AreNotEqual(0, Animations.Humanoid.ArmHold);
             Assert.AreNotEqual(0, Animations.Humanoid.CombatMode);
             Assert.AreNotEqual(0, Animations.Humanoid.CombatStance);

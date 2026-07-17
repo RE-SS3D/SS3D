@@ -1,7 +1,7 @@
 using SS3D.Core;
 using SS3D.Core.Behaviours;
+using SS3D.Systems.Inputs;
 using SS3D.UI.MachineInterface.Components;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -19,7 +19,7 @@ namespace SS3D.UI.MachineInterface
     /// <item><description>Define snapshot, FishNet serializer, view model, and mapper types.</description></item>
     /// <item><description>Create UXML/USS under Content/Systems/UI/MachineInterface and a binder implementing <see cref="IMachineInterfaceBinder"/>.</description></item>
     /// <item><description>Add a networked controller on the machine prefab (inherit <see cref="MachineInterfaceBehaviour"/>; use concrete TargetRpc snapshot types—FishNet does not support generic RPC parameters).</description></item>
-    /// <item><description>Assign serialized templates on this host; <see cref="MachineUiCatalog"/> registers UI entries (set <c>Wide</c> for layouts wider than the default window).</description></item>
+    /// <item><description>Add paths to <see cref="MachineUiAssetPaths"/> and an entry in <see cref="MachineUiCatalog.RegisterAll"/>; run <c>SS3D → Machine Interface → Rebuild Asset Catalog</c>.</description></item>
     /// <item><description>Register the snapshot type in <see cref="MachineInterfaceNetworkRegistry"/>.</description></item>
     /// <item><description>Register an <see cref="IMachineOptimisticControlHandler"/> for client optimistic controls when adding interactive controls.</description></item>
     /// <item><description>Optional: add control IDs to <see cref="MachineInterfaceControlIds"/> and a dev scenario in <see cref="MachineInterfaceDevHarness"/>.</description></item>
@@ -31,90 +31,7 @@ namespace SS3D.UI.MachineInterface
         [SerializeField]
         private UIDocument _document;
 
-        [SerializeField]
-        private VisualTreeAsset _apcTemplate;
-
-        [SerializeField]
-        private VisualTreeAsset _smesTemplate;
-
-        [SerializeField]
-        private StyleSheet _machineWindowStyle;
-
-        [SerializeField]
-        private StyleSheet _apcTemplateStyle;
-
-        [SerializeField]
-        private StyleSheet _smesTemplateStyle;
-
-        [SerializeField]
-        private VisualTreeAsset _vendingTemplate;
-
-        [SerializeField]
-        private StyleSheet _vendingTemplateStyle;
-
-        [SerializeField]
-        private VisualTreeAsset _idConsoleTemplate;
-
-        [SerializeField]
-        private StyleSheet _idConsoleTemplateStyle;
-
-        [SerializeField]
-        private VisualTreeAsset _gasPumpTemplate;
-
-        [SerializeField]
-        private StyleSheet _gasPumpTemplateStyle;
-
-        [SerializeField]
-        private VisualTreeAsset _airAlarmTemplate;
-
-        [SerializeField]
-        private StyleSheet _airAlarmTemplateStyle;
-
-        [SerializeField]
-        private VisualTreeAsset _scrubberTemplate;
-
-        [SerializeField]
-        private StyleSheet _scrubberTemplateStyle;
-
-        [SerializeField]
-        private VisualTreeAsset _ventTemplate;
-
-        [SerializeField]
-        private StyleSheet _ventTemplateStyle;
-
-        [SerializeField]
-        private StyleSheet _ss3dTokensStyle;
-
-        [SerializeField]
-        private StyleSheet _diegeticTokensStyle;
-
-        [SerializeField]
-        private StyleSheet _diegeticTonesStyle;
-
-        [SerializeField]
-        private StyleSheet _ss3dTypographyStyle;
-
-        [SerializeField]
-        private StyleSheet[] _apcComponentStyles;
-
-        [SerializeField]
-        private StyleSheet[] _smesComponentStyles;
-
-        [SerializeField]
-        private StyleSheet[] _vendingComponentStyles;
-
-        [SerializeField]
-        private StyleSheet[] _gasPumpComponentStyles;
-
-        [SerializeField]
-        private StyleSheet[] _airAlarmComponentStyles;
-
-        [SerializeField]
-        private StyleSheet[] _scrubberComponentStyles;
-
-        [SerializeField]
-        private StyleSheet[] _ventComponentStyles;
-
+        private MachineUiAssetCatalog _catalog;
         private VisualElement _overlayRoot;
         private VisualElement _panelRoot;
         private MachineWindow _window;
@@ -211,310 +128,56 @@ namespace SS3D.UI.MachineInterface
                 _document = GetComponent<UIDocument>();
             }
 
-#if UNITY_EDITOR
-            EnsureEditorAssets();
-#endif
-            EnsureRuntimeAssets();
-            RegisterUiEntries();
+            if (!TryLoadCatalog())
+            {
+                return;
+            }
+
+            if (_document != null && _document.panelSettings == null)
+            {
+                _document.panelSettings = _catalog.PanelSettings;
+            }
+
+            MachineUiCatalog.RegisterAll(_catalog.ToCatalogAssets());
             ShutdownDocument();
+            InputInterface.RegisterDocument(_document);
         }
 
         protected override void OnDestroyed()
         {
+            InputInterface.UnregisterDocument(_document);
             Close();
             base.OnDestroyed();
         }
 
-#if UNITY_EDITOR
-        private static StyleSheet[] EnsureComponentStyles(StyleSheet[] current, params string[] paths)
+        private bool TryLoadCatalog()
         {
-            if (current != null && current.Length > 0)
+            _catalog = Resources.Load<MachineUiAssetCatalog>(MachineUiAssetPaths.ResourcesCatalogName);
+            if (_catalog == null)
             {
-                return current;
-            }
-
-            StyleSheet[] loaded = new StyleSheet[paths.Length];
-            int count = 0;
-            for (int i = 0; i < paths.Length; i++)
-            {
-                StyleSheet styleSheet = UnityEditor.AssetDatabase.LoadAssetAtPath<StyleSheet>(paths[i]);
-                if (styleSheet != null)
-                {
-                    loaded[count++] = styleSheet;
-                }
-            }
-
-            if (count == 0)
-            {
-                return current ?? System.Array.Empty<StyleSheet>();
-            }
-
-            if (count == loaded.Length)
-            {
-                return loaded;
-            }
-
-            StyleSheet[] trimmed = new StyleSheet[count];
-            System.Array.Copy(loaded, trimmed, count);
-            return trimmed;
-        }
-
-        private static StyleSheet[] EnsureAtmosComponentStyles(
-            StyleSheet[] current,
-            bool includeAirAlarm,
-            bool includeVent = false)
-        {
-            List<string> paths = new()
-            {
-                "Assets/Content/Systems/UI/MachineInterface/Components/DiegeticDeviceShell.uss",
-                "Assets/Content/Systems/UI/MachineInterface/Components/StatusDot.uss",
-                "Assets/Content/Systems/UI/MachineInterface/Components/ConnectionStatusRow.uss",
-                "Assets/Content/Systems/UI/MachineInterface/Components/DeviceIdentityBlock.uss",
-                "Assets/Content/Systems/UI/MachineInterface/Components/GlanceableStatusChip.uss",
-                "Assets/Content/Systems/UI/MachineInterface/Components/PanelSection.uss",
-                "Assets/Content/Systems/UI/MachineInterface/Components/ReadoutMetricTile.uss",
-                "Assets/Content/Systems/UI/MachineInterface/Components/GasBarRow.uss",
-                "Assets/Content/Systems/UI/MachineInterface/Components/AtmosIdReaderRow.uss",
-                "Assets/Content/Systems/UI/MachineInterface/Components/ToggleSwitch.uss",
-                "Assets/Content/Systems/UI/MachineInterface/Components/CompactFilterToggle.uss",
-                "Assets/Content/Systems/UI/MachineInterface/Components/NumericStepper.uss",
-                "Assets/Content/Systems/UI/MachineInterface/Components/SteelButton.uss",
-                "Assets/Content/Systems/UI/MachineInterface/Components/StatusBadge.uss",
-                "Assets/Content/Systems/UI/MachineInterface/Components/DeviceFooter.uss",
-            };
-
-            if (includeAirAlarm)
-            {
-                paths.Add("Assets/Content/Systems/UI/MachineInterface/Components/PresetModeButton.uss");
-                paths.Add("Assets/Content/Systems/UI/MachineInterface/Components/ConnectedDeviceRow.uss");
-                paths.Add("Assets/Content/Systems/UI/MachineInterface/Components/AirAlarmDeviceDetailPanel.uss");
-            }
-
-            if (includeVent)
-            {
-                paths.Add("Assets/Content/Systems/UI/MachineInterface/Components/PressureFlowReadout.uss");
-            }
-
-            return EnsureComponentStyles(current, paths.ToArray());
-        }
-
-        private void EnsureEditorAssets()
-        {
-            if (_apcTemplate == null)
-            {
-                _apcTemplate = UnityEditor.AssetDatabase.LoadAssetAtPath<VisualTreeAsset>(
-                    "Assets/Content/Systems/UI/MachineInterface/Templates/ApcPowerController.uxml");
-            }
-
-            if (_smesTemplate == null)
-            {
-                _smesTemplate = UnityEditor.AssetDatabase.LoadAssetAtPath<VisualTreeAsset>(
-                    "Assets/Content/Systems/UI/MachineInterface/Templates/SmesUnitInterface.uxml");
-            }
-
-            if (_machineWindowStyle == null)
-            {
-                _machineWindowStyle = UnityEditor.AssetDatabase.LoadAssetAtPath<StyleSheet>(
-                    "Assets/Content/Systems/UI/MachineInterface/Components/MachineWindow.uss");
-            }
-
-            if (_apcTemplateStyle == null)
-            {
-                _apcTemplateStyle = UnityEditor.AssetDatabase.LoadAssetAtPath<StyleSheet>(
-                    "Assets/Content/Systems/UI/MachineInterface/Templates/ApcPowerController.uss");
-            }
-
-            if (_smesTemplateStyle == null)
-            {
-                _smesTemplateStyle = UnityEditor.AssetDatabase.LoadAssetAtPath<StyleSheet>(
-                    "Assets/Content/Systems/UI/MachineInterface/Templates/SmesUnitInterface.uss");
-            }
-
-            if (_vendingTemplate == null)
-            {
-                _vendingTemplate = UnityEditor.AssetDatabase.LoadAssetAtPath<VisualTreeAsset>(
-                    "Assets/Content/Systems/UI/MachineInterface/Templates/VendingMachineInterface.uxml");
-            }
-
-            if (_vendingTemplateStyle == null)
-            {
-                _vendingTemplateStyle = UnityEditor.AssetDatabase.LoadAssetAtPath<StyleSheet>(
-                    "Assets/Content/Systems/UI/MachineInterface/Templates/VendingMachineInterface.uss");
-            }
-
-            if (_idConsoleTemplate == null)
-            {
-                _idConsoleTemplate = UnityEditor.AssetDatabase.LoadAssetAtPath<VisualTreeAsset>(
-                    "Assets/Content/Systems/UI/MachineInterface/Templates/IdConsoleInterface.uxml");
-            }
-
-            if (_idConsoleTemplateStyle == null)
-            {
-                _idConsoleTemplateStyle = UnityEditor.AssetDatabase.LoadAssetAtPath<StyleSheet>(
-                    "Assets/Content/Systems/UI/MachineInterface/Templates/IdConsoleInterface.uss");
-            }
-
-            if (_gasPumpTemplate == null)
-            {
-                _gasPumpTemplate = UnityEditor.AssetDatabase.LoadAssetAtPath<VisualTreeAsset>(
-                    "Assets/Content/Systems/UI/MachineInterface/Templates/PumpUnitInterface.uxml");
-            }
-
-            if (_gasPumpTemplateStyle == null)
-            {
-                _gasPumpTemplateStyle = UnityEditor.AssetDatabase.LoadAssetAtPath<StyleSheet>(
-                    "Assets/Content/Systems/UI/MachineInterface/Templates/PumpUnitInterface.uss");
-            }
-
-            if (_airAlarmTemplate == null)
-            {
-                _airAlarmTemplate = UnityEditor.AssetDatabase.LoadAssetAtPath<VisualTreeAsset>(
-                    "Assets/Content/Systems/UI/MachineInterface/Templates/AirAlarmInterface.uxml");
-            }
-
-            if (_airAlarmTemplateStyle == null)
-            {
-                _airAlarmTemplateStyle = UnityEditor.AssetDatabase.LoadAssetAtPath<StyleSheet>(
-                    "Assets/Content/Systems/UI/MachineInterface/Templates/AirAlarmInterface.uss");
-            }
-
-            if (_scrubberTemplate == null)
-            {
-                _scrubberTemplate = UnityEditor.AssetDatabase.LoadAssetAtPath<VisualTreeAsset>(
-                    "Assets/Content/Systems/UI/MachineInterface/Templates/ScrubberUnitInterface.uxml");
-            }
-
-            if (_scrubberTemplateStyle == null)
-            {
-                _scrubberTemplateStyle = UnityEditor.AssetDatabase.LoadAssetAtPath<StyleSheet>(
-                    "Assets/Content/Systems/UI/MachineInterface/Templates/ScrubberUnitInterface.uss");
-            }
-
-            if (_ventTemplate == null)
-            {
-                _ventTemplate = UnityEditor.AssetDatabase.LoadAssetAtPath<VisualTreeAsset>(
-                    "Assets/Content/Systems/UI/MachineInterface/Templates/VentUnitInterface.uxml");
-            }
-
-            if (_ventTemplateStyle == null)
-            {
-                _ventTemplateStyle = UnityEditor.AssetDatabase.LoadAssetAtPath<StyleSheet>(
-                    "Assets/Content/Systems/UI/MachineInterface/Templates/VentUnitInterface.uss");
-            }
-
-            if (_ss3dTokensStyle == null)
-            {
-                _ss3dTokensStyle = UnityEditor.AssetDatabase.LoadAssetAtPath<StyleSheet>(
-                    "Assets/Content/Systems/UI/Tokens/ss3d-tokens.uss");
-            }
-
-            if (_diegeticTokensStyle == null)
-            {
-                _diegeticTokensStyle = UnityEditor.AssetDatabase.LoadAssetAtPath<StyleSheet>(
-                    "Assets/Content/Systems/UI/MachineInterface/Tokens/diegetic-tokens.uss");
-            }
-
-            if (_diegeticTonesStyle == null)
-            {
-                _diegeticTonesStyle = UnityEditor.AssetDatabase.LoadAssetAtPath<StyleSheet>(
-                    "Assets/Content/Systems/UI/MachineInterface/Tokens/diegetic-tones.uss");
-            }
-
-            if (_ss3dTypographyStyle == null)
-            {
-                _ss3dTypographyStyle = UnityEditor.AssetDatabase.LoadAssetAtPath<StyleSheet>(
-                    "Assets/Content/Systems/UI/Tokens/ss3d-typography.uss");
-            }
-
-            _apcComponentStyles = EnsureComponentStyles(
-                _apcComponentStyles,
-                "Assets/Content/Systems/UI/MachineInterface/Components/DiegeticDeviceShell.uss",
-                "Assets/Content/Systems/UI/MachineInterface/Components/StatusDot.uss",
-                "Assets/Content/Systems/UI/MachineInterface/Components/ConnectionStatusRow.uss",
-                "Assets/Content/Systems/UI/MachineInterface/Components/DeviceIdentityBlock.uss",
-                "Assets/Content/Systems/UI/MachineInterface/Components/GlanceableStatusChip.uss",
-                "Assets/Content/Systems/UI/MachineInterface/Components/PanelSection.uss",
-                "Assets/Content/Systems/UI/MachineInterface/Components/PowerFlowRow.uss",
-                "Assets/Content/Systems/UI/MachineInterface/Components/BatteryBar.uss",
-                "Assets/Content/Systems/UI/MachineInterface/Components/DiagnosticsList.uss",
-                "Assets/Content/Systems/UI/MachineInterface/Components/ChannelRow.uss",
-                "Assets/Content/Systems/UI/MachineInterface/Components/ToggleSwitch.uss",
-                "Assets/Content/Systems/UI/MachineInterface/Components/AccessGatePanel.uss",
-                "Assets/Content/Systems/UI/MachineInterface/Components/AccessGatedRegion.uss",
-                "Assets/Content/Systems/UI/MachineInterface/Components/AccessStrip.uss",
-                "Assets/Content/Systems/UI/MachineInterface/Components/SteelButton.uss",
-                "Assets/Content/Systems/UI/MachineInterface/Components/Badge.uss",
-                "Assets/Content/Systems/UI/MachineInterface/Components/StatusBadge.uss",
-                "Assets/Content/Systems/UI/MachineInterface/Components/DeviceFooter.uss");
-
-            _smesComponentStyles = EnsureComponentStyles(
-                _smesComponentStyles,
-                "Assets/Content/Systems/UI/MachineInterface/Components/DiegeticDeviceShell.uss",
-                "Assets/Content/Systems/UI/MachineInterface/Components/StatusDot.uss",
-                "Assets/Content/Systems/UI/MachineInterface/Components/ConnectionStatusRow.uss",
-                "Assets/Content/Systems/UI/MachineInterface/Components/DeviceIdentityBlock.uss",
-                "Assets/Content/Systems/UI/MachineInterface/Components/GlanceableStatusChip.uss",
-                "Assets/Content/Systems/UI/MachineInterface/Components/PanelSection.uss",
-                "Assets/Content/Systems/UI/MachineInterface/Components/StorageCellRow.uss",
-                "Assets/Content/Systems/UI/MachineInterface/Components/SmesPowerFlowRow.uss",
-                "Assets/Content/Systems/UI/MachineInterface/Components/RateControlSection.uss",
-                "Assets/Content/Systems/UI/MachineInterface/Components/ToggleSwitch.uss",
-                "Assets/Content/Systems/UI/MachineInterface/Components/AccessGatePanel.uss",
-                "Assets/Content/Systems/UI/MachineInterface/Components/AccessGatedRegion.uss",
-                "Assets/Content/Systems/UI/MachineInterface/Components/AccessStrip.uss",
-                "Assets/Content/Systems/UI/MachineInterface/Components/SteelButton.uss",
-                "Assets/Content/Systems/UI/MachineInterface/Components/Badge.uss",
-                "Assets/Content/Systems/UI/MachineInterface/Components/StatusBadge.uss",
-                "Assets/Content/Systems/UI/MachineInterface/Components/DeviceFooter.uss");
-
-            _vendingComponentStyles = EnsureComponentStyles(
-                _vendingComponentStyles,
-                "Assets/Content/Systems/UI/MachineInterface/Components/DiegeticDeviceShell.uss",
-                "Assets/Content/Systems/UI/MachineInterface/Components/StatusDot.uss",
-                "Assets/Content/Systems/UI/MachineInterface/Components/ConnectionStatusRow.uss",
-                "Assets/Content/Systems/UI/MachineInterface/Components/DeviceIdentityBlock.uss",
-                "Assets/Content/Systems/UI/MachineInterface/Components/PanelSection.uss",
-                "Assets/Content/Systems/UI/MachineInterface/Components/AtmosIdReaderRow.uss",
-                "Assets/Content/Systems/UI/MachineInterface/Components/SteelButton.uss",
-                "Assets/Content/Systems/UI/MachineInterface/Components/InventorySlot.uss",
-                "Assets/Content/Systems/UI/MachineInterface/Components/ProductCard.uss",
-                "Assets/Content/Systems/UI/MachineInterface/Components/ProductGrid.uss",
-                "Assets/Content/Systems/UI/MachineInterface/Components/DispenseTray.uss",
-                "Assets/Content/Systems/UI/MachineInterface/Components/ActionLog.uss",
-                "Assets/Content/Systems/UI/MachineInterface/Components/DeviceFooter.uss");
-
-            _gasPumpComponentStyles = EnsureAtmosComponentStyles(_gasPumpComponentStyles, includeAirAlarm: false, includeVent: true);
-
-            _airAlarmComponentStyles = EnsureAtmosComponentStyles(_airAlarmComponentStyles, includeAirAlarm: true);
-            _scrubberComponentStyles = EnsureAtmosComponentStyles(_scrubberComponentStyles, includeAirAlarm: false);
-            _ventComponentStyles = EnsureAtmosComponentStyles(_ventComponentStyles, includeAirAlarm: false, includeVent: true);
-
-            if (_document != null && _document.panelSettings == null)
-            {
-                _document.panelSettings = UnityEditor.AssetDatabase.LoadAssetAtPath<PanelSettings>(
-                    "Assets/Content/Systems/UI/MachineInterface/MachineInterfacePanelSettings.asset");
-            }
-        }
-#endif
-
-        private void EnsureRuntimeAssets()
-        {
-#if !UNITY_EDITOR
-            if (_vendingTemplate == null || _vendingTemplateStyle == null || _gasPumpTemplate == null
-                || _gasPumpTemplateStyle == null || _ss3dTokensStyle == null || _diegeticTokensStyle == null
-                || _diegeticTonesStyle == null || _ss3dTypographyStyle == null)
-            {
-                Debug.LogWarning(
-                    "MachineInterfaceHost is missing diegetic UI assets. Assign templates and token style sheets on the Game scene host.",
+                Debug.LogError(
+                    $"MachineInterfaceHost could not load Resources/{MachineUiAssetPaths.ResourcesCatalogName}. "
+                    + "Run SS3D → Machine Interface → Rebuild Asset Catalog and commit the asset.",
                     this);
+                return false;
             }
-#endif
+
+            if (!_catalog.HasRequiredAssets(out string missingField))
+            {
+                Debug.LogError(
+                    $"MachineUiAssetCatalog is missing required assets ({missingField}). "
+                    + "Run SS3D → Machine Interface → Rebuild Asset Catalog.",
+                    this);
+                return false;
+            }
+
+            return true;
         }
 
         private void ApplySharedTokenStyles(VisualElement target)
         {
-            MachineInterfaceHostHelpers.ApplyTemplateStyle(target, _ss3dTokensStyle);
-            MachineInterfaceHostHelpers.ApplyTemplateStyle(target, _ss3dTypographyStyle);
+            MachineInterfaceHostHelpers.ApplyTemplateStyle(target, _catalog.Ss3dTokensStyle);
+            MachineInterfaceHostHelpers.ApplyTemplateStyle(target, _catalog.Ss3dTypographyStyle);
         }
 
         private void ApplyDiegeticPanelStyles(
@@ -564,38 +227,8 @@ namespace SS3D.UI.MachineInterface
         private void ApplyDiegeticBaseStyles(VisualElement template)
         {
             ApplySharedTokenStyles(template);
-            MachineInterfaceHostHelpers.ApplyTemplateStyle(template, _diegeticTokensStyle);
-            MachineInterfaceHostHelpers.ApplyTemplateStyle(template, _diegeticTonesStyle);
-        }
-
-        private void RegisterUiEntries()
-        {
-            MachineUiCatalog.RegisterAll(new MachineUiCatalogAssets
-            {
-                ApcTemplate = _apcTemplate,
-                ApcTemplateStyle = _apcTemplateStyle,
-                ApcComponentStyles = _apcComponentStyles,
-                SmesTemplate = _smesTemplate,
-                SmesTemplateStyle = _smesTemplateStyle,
-                SmesComponentStyles = _smesComponentStyles,
-                VendingTemplate = _vendingTemplate,
-                VendingTemplateStyle = _vendingTemplateStyle,
-                VendingComponentStyles = _vendingComponentStyles,
-                IdConsoleTemplate = _idConsoleTemplate,
-                IdConsoleTemplateStyle = _idConsoleTemplateStyle,
-                GasPumpTemplate = _gasPumpTemplate,
-                GasPumpTemplateStyle = _gasPumpTemplateStyle,
-                GasPumpComponentStyles = _gasPumpComponentStyles,
-                AirAlarmTemplate = _airAlarmTemplate,
-                AirAlarmTemplateStyle = _airAlarmTemplateStyle,
-                AirAlarmComponentStyles = _airAlarmComponentStyles,
-                ScrubberTemplate = _scrubberTemplate,
-                ScrubberTemplateStyle = _scrubberTemplateStyle,
-                ScrubberComponentStyles = _scrubberComponentStyles,
-                VentTemplate = _ventTemplate,
-                VentTemplateStyle = _ventTemplateStyle,
-                VentComponentStyles = _ventComponentStyles,
-            });
+            MachineInterfaceHostHelpers.ApplyTemplateStyle(template, _catalog.DiegeticTokensStyle);
+            MachineInterfaceHostHelpers.ApplyTemplateStyle(template, _catalog.DiegeticTonesStyle);
         }
 
         private bool CreatePanel(string title, MachineInterfaceUiRegistration registration)
@@ -649,9 +282,9 @@ namespace SS3D.UI.MachineInterface
             _window.style.translate = new Translate(Length.Percent(-50), Length.Percent(-50));
             _window.pickingMode = PickingMode.Position;
 
-            if (_machineWindowStyle != null)
+            if (_catalog.MachineWindowStyle != null)
             {
-                _window.styleSheets.Add(_machineWindowStyle);
+                _window.styleSheets.Add(_catalog.MachineWindowStyle);
             }
 
             ApplySharedTokenStyles(_window);

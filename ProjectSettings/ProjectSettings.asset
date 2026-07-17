@@ -869,8 +869,9 @@ PlayerSettings:
     Nintendo Switch 2: 
     PS4: 
     PS5: 
-    QNX: 
-    Stadia: 
+    QNX:
+    Server: FISHNET;FISHNET_V3;DISABLE_QOL_ATTRIBUTES
+    Stadia:
     Standalone: FISHNET;FISHNET_V3;DISABLE_QOL_ATTRIBUTES
     VisionOS: 
     WebGL: 

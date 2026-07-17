@@ -46,6 +46,7 @@ namespace SS3D.Systems.IngameConsoleSystem
         private Controls _controls;
         private Controls.ConsoleActions _consoleControls;
         private InputSubSystem _inputSystem;
+        private IInputHandle _consoleHandle;
 
         protected override void OnStart()
         {
@@ -54,7 +55,7 @@ namespace SS3D.Systems.IngameConsoleSystem
             _inputSystem = SubSystems.Get<InputSubSystem>();
             _controls = _inputSystem.Inputs;
             _consoleControls = _controls.Console;
-            _inputSystem.ToggleAction(_consoleControls.Open, true);
+            // Console.Open is always enabled by the Global context.
 
             AddHandle(UpdateEvent.AddListener(HandleUpdate));
         }
@@ -110,9 +111,8 @@ namespace SS3D.Systems.IngameConsoleSystem
             _targetPointMin = Vector2.zero;
             _targetPointMax = _targetPointMin + new Vector2(0, _consolePanel.rect.height);
             _inputField.DeactivateInputField();
-            _inputSystem.ToggleAllActions(true, ((InputActionMap)_consoleControls).ToArray());
-            _inputSystem.ToggleAction(_consoleControls.Open, true);
-            _inputSystem.ToggleActionMap(_consoleControls, false, new []{_consoleControls.Open});
+            _consoleHandle?.Dispose();
+            _consoleHandle = null;
         }
         /// <summary>
         /// Move console to screen, enable all controls, disable Open action
@@ -123,9 +123,7 @@ namespace SS3D.Systems.IngameConsoleSystem
             _targetPointMin = new Vector2(0, -_consolePanel.rect.height);
             _targetPointMax = _targetPointMin + new Vector2(0, _consolePanel.rect.height);
             _inputField.ActivateInputField();
-            _inputSystem.ToggleAllActions(false, ((InputActionMap)_consoleControls).ToArray());
-            _inputSystem.ToggleActionMap(_consoleControls, true, new []{_consoleControls.Open});
-            _inputSystem.ToggleAction(_consoleControls.Open, false);
+            _consoleHandle ??= _inputSystem.PushContext(InputContext.Console);
         }
         /// <summary>
         /// Put previously used commands in input field

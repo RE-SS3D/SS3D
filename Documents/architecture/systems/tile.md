@@ -8,6 +8,8 @@
 
 Server-authoritative tilemap with adjacency-driven mesh visuals, construction placement, and FishNet HashGrid AOI replication. The adjacency engine queues recompute for walls, doors, pipes, cables, disposal, and furniture connectors. Tile identity sync uses a compact ushort asset catalog. Station template save/load delegates to [persistence](persistence.md) (`PersistenceSubSystem`) with legacy flat-JSON fallback. The TileMap Creator build menu includes client-only layer-group visibility controls for admin map editing.
 
+**Condemned UI:** TileMap Creator uGUI — do not extend; replace with the editor redesign (creative-mode / construction). Tile simulation is **not** condemned ([agent-first composition](../2026-07_agent-first-composition.md)).
+
 ## Start here
 
 - `Assets/Scripts/SS3D/Systems/Tile/TileSubSystem.cs` — subsystem entry point
@@ -42,6 +44,7 @@ Server-authoritative tilemap with adjacency-driven mesh visuals, construction pl
 
 ## Related docs
 
-- Design (read-only): [Documents/design/area.md](../../design/area.md)
+- Design (read-only): [Documents/design/area.md](../../design/area.md), [construction.md](../../design/construction.md)
 - System map: [area](area.md)
 - Plan: [persistence_architecture_design_2fe61864.plan.md](../../plans/persistence_architecture_design_2fe61864.plan.md)
+- [2026-07_agent-first-composition](../2026-07_agent-first-composition.md)

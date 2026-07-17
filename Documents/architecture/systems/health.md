@@ -10,6 +10,8 @@ Greenfield rewrite per [health_implementation_plan.md](../../plans/health_implem
 
 Client [screen-effects](screen-effects.md) already implement dying/critical, blood-loss, concussion, and related overlays, but **nothing in Health drives them yet** — wire via `ScreenEffectsSubSystem.SetEffect` in Phase 6 (moved out of Phase 3). The atmosphere→oxygen coupling is likewise a single hookup point: `HealthSimulation.LungIntake(atmosphereO2)` currently defaults to full O2 and should be fed the occupant's turf O2 ratio.
 
+Phase 0d strips legacy health components from `Human.prefab` and rewires a thinner root — do not dual-stack or grow the mega-prefab ([agent-first composition](../2026-07_agent-first-composition.md), [health_implementation_plan.md](../../plans/health_implementation_plan.md) Phase 0d).
+
 ## Start here
 
 - `Assets/Scripts/SS3D/Systems/Health/HumanHealthController.cs` — server tick, damage/treatment, organ registration, snapshot SyncVar
@@ -56,4 +58,5 @@ Client [screen-effects](screen-effects.md) already implement dying/critical, blo
 - Design (read-only): [Documents/design/health.md](../../design/health.md), [main-hud.md](../../design/main-hud.md) §9, [stamina.md](../../design/stamina.md), [armor.md](../../design/armor.md)
 - Anatomy map: [health-anatomy-map.md](health-anatomy-map.md)
 - Plan: [health_implementation_plan.md](../../plans/health_implementation_plan.md)
+- [2026-07_agent-first-composition](../2026-07_agent-first-composition.md)
 - [screen-effects](screen-effects.md)

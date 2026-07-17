@@ -328,7 +328,7 @@ MonoBehaviour:
   _changeFrameRate: 1
   _frameRate: 60
   _shareIds: 1
-  _startOnHeadless: 1
+  _startOnHeadless: 0
   _limitClientMTU: 1
 --- !u!114 &340427417
 MonoBehaviour:

@@ -8,6 +8,8 @@
 
 Humanoid/silicon entity spawning, minds, and join/round ordering with [rounds-lobby](rounds-lobby.md). Humanoid body animation is driven by a packed `BodyAnimationSnapshot` SyncVar, not ad-hoc Animator calls.
 
+**Prefab composition debt:** `Human.prefab` is a mega-prefab (~15k lines, ~120 script refs). Do not hand-add features on it. Target is a thin visual/network anchor; health Phase 0d is strip-and-rewire, not grow. See [2026-07_agent-first-composition.md](../2026-07_agent-first-composition.md).
+
 ## Start here
 
 - `Assets/Scripts/SS3D/Systems/Entities/EntitySubSystem.cs` — entity spawn/management
@@ -31,5 +33,6 @@ Humanoid/silicon entity spawning, minds, and join/round ordering with [rounds-lo
 ## Related docs
 
 - [2026-07_player-body-animation](../2026-07_player-body-animation.md)
+- [2026-07_agent-first-composition](../2026-07_agent-first-composition.md) (prefab debt)
 - [animation_system_design plan](../../plans/animation_system_design_250de599.plan.md)
 - [INDEX.md](../INDEX.md)

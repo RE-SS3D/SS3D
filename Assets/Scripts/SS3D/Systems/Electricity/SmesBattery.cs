@@ -40,7 +40,11 @@ namespace SS3D.Systems.Electricity
         protected override void OnDestroyed()
         {
             base.OnDestroyed();
-            SubSystems.Get<ElectricitySubSystem>().OnTick -= HandleTick;
+            ElectricitySubSystem electricitySystem = SubSystems.Get<ElectricitySubSystem>();
+            if (electricitySystem != null)
+            {
+                electricitySystem.OnTick -= HandleTick;
+            }
         }
 
         [Client]
