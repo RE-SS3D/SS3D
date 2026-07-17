@@ -27,6 +27,7 @@ namespace SS3D.Systems.Health
         private WoundVfx _woundVfx;
         private HumanAnatomyController _anatomy;
         private HealthAlertsView _healthAlertsView;
+        private bool _deathTriggered;
 
         [SyncVar(OnChange = nameof(SyncSnapshot))]
         private HealthSnapshot _snapshot = HealthSnapshot.Default;
@@ -347,17 +348,17 @@ namespace SS3D.Systems.Health
             }
 
             HealthState state = HealthSimulation.EvaluateHealthState(_pools, _organs);
+            PublishSnapshot();
+
             if (state == HealthState.Dead)
             {
                 TriggerDeath();
             }
-
-            PublishSnapshot();
         }
 
         private void HandleUpdate(ref EventContext context, in UpdateEvent updateEvent)
         {
-            if (!IsServer)
+            if (!IsServer || _deathTriggered)
             {
                 return;
             }
@@ -375,6 +376,13 @@ namespace SS3D.Systems.Health
         [Server]
         private void TriggerDeath()
         {
+            if (_deathTriggered)
+            {
+                return;
+            }
+
+            _deathTriggered = true;
+
             if (TryGetComponent(out Human human))
             {
                 human.Kill();
@@ -393,7 +401,8 @@ namespace SS3D.Systems.Health
             _woundVfx?.ApplySnapshot(newValue);
             ApplySeveranceVisualsFromSnapshot(newValue);
 
-            if (_healthAlertsView != null && _entity != null && _entity.Mind != null && _entity.Mind.IsOwner)
+            if (_healthAlertsView != null && _entity != null && _entity.Mind != null
+                && _entity.Mind != Mind.Empty && _entity.Mind.IsOwner)
             {
                 _healthAlertsView.Refresh();
             }

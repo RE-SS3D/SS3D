@@ -17,7 +17,7 @@ namespace SS3D.Systems.Entities.Humanoid
 
         protected override void OnAwake()
         {
-            base.Awake();
+            base.OnAwake();
             _bodyStateMachine = GetComponent<HumanoidBodyStateMachine>();
         }
 

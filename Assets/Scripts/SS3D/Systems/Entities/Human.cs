@@ -17,6 +17,7 @@ namespace SS3D.Systems.Entities
         // prefab for the ghost 
 		public GameObject Ghost;
 		private GameObject _spawnedGhost;
+        private bool _killStarted;
 
         /// <summary>
 		/// On death, the player should become a ghost.
@@ -70,6 +71,13 @@ namespace SS3D.Systems.Entities
 		[Server]
 		public override void Kill()
 		{
+            if (_killStarted)
+            {
+                return;
+            }
+
+            _killStarted = true;
+
             _spawnedGhost = Instantiate(Ghost);
 			EntitySubSystem entitySystem = SubSystems.Get<EntitySubSystem>();
 			if(entitySystem.TryTransferEntity(GetComponentInParent<Entity>(), _spawnedGhost.GetComponent<Entity>()))
@@ -80,6 +88,8 @@ namespace SS3D.Systems.Entities
             else
             {
                 _spawnedGhost.Dispose(true);
+                _spawnedGhost = null;
+                _killStarted = false;
             }
 		}
 

@@ -42,6 +42,15 @@ namespace SS3D.Systems.Health
             _snapshot = snapshot;
             EnsureAnchors();
 
+            // Stop bleed VFX on death — particles/decals parented to bones while Kill() ragdolls
+            // and disposes controllers have caused hard editor crashes.
+            if (snapshot.State == HealthState.Dead)
+            {
+                ClearAllEffects();
+                enabled = false;
+                return;
+            }
+
             for (int i = 0; i < HealthConstants.ZoneCount; i++)
             {
                 BodyZone zone = (BodyZone)i;
@@ -55,6 +64,18 @@ namespace SS3D.Systems.Health
                 _impactBurstPlayed.Clear();
                 _particlesInitialized.Clear();
             }
+        }
+
+        private void ClearAllEffects()
+        {
+            for (int i = 0; i < HealthConstants.ZoneCount; i++)
+            {
+                DisableZoneEffects((BodyZone)i);
+            }
+
+            _floorDecalTimer = 0f;
+            _impactBurstPlayed.Clear();
+            _particlesInitialized.Clear();
         }
 
         private void Update()
