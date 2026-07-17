@@ -35,6 +35,7 @@ namespace SS3D.UI.MachineInterface.Components
             _label = new Label();
             _label.AddToClassList("inventory-slot__label");
             _label.AddToClassList("font-body");
+            _label.pickingMode = PickingMode.Ignore;
 
             Add(_well);
             Add(_label);

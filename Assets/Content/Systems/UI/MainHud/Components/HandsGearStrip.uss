@@ -1,11 +1,13 @@
 .hands-gear-strip {
     flex-direction: row;
     align-items: flex-end;
+    overflow: visible;
 }
 
 .hands-gear-strip__gear {
     flex-direction: row;
     padding-bottom: 4px;
+    overflow: visible;
 }
 
 .hands-gear-strip__gear > .inventory-slot {

@@ -23,6 +23,7 @@
 .main-hud__zone--equipment {
     bottom: var(--ss3d-space-5);
     left: var(--ss3d-space-5);
+    overflow: visible;
 }
 
 .main-hud__zone--hands-gear {
@@ -31,6 +32,7 @@
     translate: -50% 0;
     flex-direction: row;
     align-items: flex-end;
+    overflow: visible;
 }
 
 .main-hud__zone--intent {
@@ -56,25 +58,43 @@
 }
 
 /*
- * Main HUD slots: label sits beside the well (not under it) and is absolute so it does not
- * inflate row/column spacing while hidden. Appears on hover in a surface-hud chip.
+ * Main HUD slots: label floats above the well (absolute, no layout cost) in a surface-hud chip.
+ * z-index on hover raises the chip above neighboring wells without reordering flex children.
  */
 .main-hud .inventory-slot {
-    flex-direction: row;
+    flex-direction: column;
     align-items: center;
     position: relative;
     overflow: visible;
 }
 
+.main-hud .inventory-slot:hover {
+    z-index: 10;
+}
+
+.main-hud .equipment-grid__row,
+.main-hud .hands-gear-strip__gear,
+.main-hud .hands-gear-strip__hands {
+    position: relative;
+}
+
+.main-hud .equipment-grid__row:hover,
+.main-hud .hands-gear-strip__gear:hover,
+.main-hud .hands-gear-strip__hands:hover {
+    z-index: 10;
+}
+
 .main-hud .inventory-slot__label {
     position: absolute;
-    left: 100%;
-    top: 50%;
-    translate: var(--ss3d-space-2) -50%;
+    left: 50%;
+    bottom: 100%;
+    top: auto;
+    translate: -50% calc(-1 * var(--ss3d-space-2));
     margin-top: 0;
     max-width: none;
     white-space: nowrap;
     opacity: 0;
+    z-index: 1;
     background-color: var(--ss3d-surface-hud);
     color: var(--ss3d-text-secondary);
     border-radius: var(--ss3d-radius-sm);

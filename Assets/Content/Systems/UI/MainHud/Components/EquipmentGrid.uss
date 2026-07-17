@@ -1,9 +1,11 @@
 .equipment-grid {
     flex-direction: column;
+    overflow: visible;
 }
 
 .equipment-grid__row {
     flex-direction: row;
+    overflow: visible;
 }
 
 .equipment-grid__row > .inventory-slot {

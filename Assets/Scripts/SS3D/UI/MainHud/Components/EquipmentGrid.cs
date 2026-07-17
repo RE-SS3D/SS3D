@@ -4,9 +4,10 @@ using UnityEngine.UIElements;
 namespace SS3D.UI.MainHud.Components
 {
     /// <summary>
-    /// Bottom-left worn-equipment doll: head/eyes/face-cover/ears on top, hands/shirt/feet below - same
+    /// Bottom-left worn-equipment doll: head/eyes/face-cover/ears on top, gloves/shirt/feet below - same
     /// 3-column arrangement as the Main HUD mockup. Occupancy is refreshed by
     /// <see cref="SS3D.UI.MainHud.MainHudSubSystem"/> via <see cref="SetIcon"/>.
+    /// Held items live on the center <see cref="HandsGearStrip"/>, not here.
     /// </summary>
     public class EquipmentGrid : VisualElement
     {
@@ -16,9 +17,9 @@ namespace SS3D.UI.MainHud.Components
             Eyes,
             Face,
             Ears,
-            HandLeft,
+            GloveLeft,
             Shirt,
-            HandRight,
+            GloveRight,
             Feet,
         }
 
@@ -26,9 +27,9 @@ namespace SS3D.UI.MainHud.Components
         private readonly InventorySlot _eyes;
         private readonly InventorySlot _face;
         private readonly InventorySlot _ears;
-        private readonly InventorySlot _handLeft;
+        private readonly InventorySlot _gloveLeft;
         private readonly InventorySlot _shirt;
-        private readonly InventorySlot _handRight;
+        private readonly InventorySlot _gloveRight;
         private readonly InventorySlot _feet;
 
         public EquipmentGrid(MainHudIconSet icons)
@@ -39,14 +40,14 @@ namespace SS3D.UI.MainHud.Components
             _eyes = CreateSlot("Eyes", icons.Eyes);
             _face = CreateSlot("Face Cover", icons.Face);
             _ears = CreateSlot("Ears", icons.Ears);
-            _handLeft = CreateSlot("Left Hand", icons.HandLeft);
+            _gloveLeft = CreateSlot("Left Glove", icons.HandLeft);
             _shirt = CreateSlot("Shirt", icons.Shirt);
-            _handRight = CreateSlot("Right Hand", icons.HandRight);
+            _gloveRight = CreateSlot("Right Glove", icons.HandRight);
             _feet = CreateSlot("Feet", icons.Feet);
 
             Add(BuildRow(BuildSpacer(), _head, BuildSpacer()));
             Add(BuildRow(_eyes, _face, _ears));
-            Add(BuildRow(_handLeft, _shirt, _handRight));
+            Add(BuildRow(_gloveLeft, _shirt, _gloveRight));
             Add(BuildRow(BuildSpacer(), _feet, BuildSpacer()));
         }
 
@@ -61,9 +62,9 @@ namespace SS3D.UI.MainHud.Components
             Slot.Eyes => _eyes,
             Slot.Face => _face,
             Slot.Ears => _ears,
-            Slot.HandLeft => _handLeft,
+            Slot.GloveLeft => _gloveLeft,
             Slot.Shirt => _shirt,
-            Slot.HandRight => _handRight,
+            Slot.GloveRight => _gloveRight,
             Slot.Feet => _feet,
             _ => null,
         };

@@ -278,14 +278,12 @@ namespace SS3D.UI.MainHud
             _view.SetEquipmentIcon(EquipmentGrid.Slot.Eyes, IconFor(ContainerType.Glasses));
             _view.SetEquipmentIcon(EquipmentGrid.Slot.Face, IconFor(ContainerType.Mask));
             _view.SetEquipmentIcon(EquipmentGrid.Slot.Ears, IconFor(ContainerType.EarLeft) ?? IconFor(ContainerType.EarRight));
+            _view.SetEquipmentIcon(EquipmentGrid.Slot.GloveLeft, IconFor(ContainerType.GloveLeft));
             _view.SetEquipmentIcon(EquipmentGrid.Slot.Shirt, IconFor(ContainerType.Jumpsuit));
+            _view.SetEquipmentIcon(EquipmentGrid.Slot.GloveRight, IconFor(ContainerType.GloveRight));
             _view.SetEquipmentIcon(EquipmentGrid.Slot.Feet, IconFor(ContainerType.ShoeLeft) ?? IconFor(ContainerType.ShoeRight));
 
-            Sprite handLeftIcon = HandIconAt(0);
-            Sprite handRightIcon = HandIconAt(1);
-            _view.SetEquipmentIcon(EquipmentGrid.Slot.HandLeft, handLeftIcon);
-            _view.SetEquipmentIcon(EquipmentGrid.Slot.HandRight, handRightIcon);
-            _view.SetHandIcons(handLeftIcon, handRightIcon);
+            _view.SetHandIcons(HandIconAt(0), HandIconAt(1));
 
             _view.SetGearIcon(HandsGearStrip.GearSlot.Belt, IconFor(ContainerType.Belt));
             _view.SetGearIcon(HandsGearStrip.GearSlot.Id, IconFor(ContainerType.Identification));
