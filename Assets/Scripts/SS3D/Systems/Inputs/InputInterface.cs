@@ -68,9 +68,6 @@ namespace SS3D.Systems.Inputs
                 ? Mouse.current.position.ReadValue()
                 : (Vector2)Input.mousePosition;
 
-            // UI Toolkit runtime panels use a top-left origin, screen space uses bottom-left.
-            Vector2 flipped = new(screenPosition.x, Screen.height - screenPosition.y);
-
             for (int i = 0; i < Documents.Count; i++)
             {
                 UIDocument document = Documents[i];
@@ -86,7 +83,8 @@ namespace SS3D.Systems.Inputs
                     continue;
                 }
 
-                Vector2 panelPosition = RuntimePanelUtils.ScreenToPanel(panel, flipped);
+                // ScreenToPanel expects bottom-left screen pixels (same as Mouse/Input.mousePosition).
+                Vector2 panelPosition = RuntimePanelUtils.ScreenToPanel(panel, screenPosition);
                 if (panel.Pick(panelPosition) != null)
                 {
                     return true;
