@@ -88,16 +88,15 @@ namespace SS3D.Systems.Atmospherics.Pipes
             if (!map.TryGetTileLocation(layer, world, out ITileLocation location))
                 return false;
 
-            foreach (PlacedTileObject placedObject in location.GetAllPlacedObject())
-            {
-                if (placedObject != null && PipeConnectionRule.ParticipatesInGasNetwork(placedObject))
-                {
-                    segment = placedObject;
-                    return true;
-                }
-            }
+            // Pipe layers are single-occupancy; avoid GetAllPlacedObject() which allocates a List.
+            if (!location.TryGetPlacedObject(out PlacedTileObject placedObject) || placedObject == null)
+                return false;
 
-            return false;
+            if (!PipeConnectionRule.ParticipatesInGasNetwork(placedObject))
+                return false;
+
+            segment = placedObject;
+            return true;
         }
 
         public static IEnumerable<PlacedTileObject> EnumerateAllGasPipeSegments(TileMap map)
@@ -112,16 +111,20 @@ namespace SS3D.Systems.Atmospherics.Pipes
                     for (int localY = 0; localY < TileChunk.ChunkSize; localY++)
                     {
                         Vector3 world = chunk.GetWorldPosition(localX, localY);
-                        foreach (TileLayer layer in GasPipeLayers)
+                        for (int layerIndex = 0; layerIndex < GasPipeLayers.Length; layerIndex++)
                         {
+                            TileLayer layer = GasPipeLayers[layerIndex];
                             if (!map.TryGetTileLocation(layer, world, out ITileLocation location))
                                 continue;
 
-                            foreach (PlacedTileObject placedObject in location.GetAllPlacedObject())
+                            if (!location.TryGetPlacedObject(out PlacedTileObject placedObject)
+                                || placedObject == null
+                                || !PipeConnectionRule.ParticipatesInGasNetwork(placedObject))
                             {
-                                if (placedObject != null && PipeConnectionRule.ParticipatesInGasNetwork(placedObject))
-                                    yield return placedObject;
+                                continue;
                             }
+
+                            yield return placedObject;
                         }
                     }
                 }
