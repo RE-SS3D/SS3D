@@ -2510,6 +2510,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: ToggleChatsButton
       objectReference: {fileID: 0}
+    - target: {fileID: 1009626998593189131, guid: b4a30caa411cfeb41b4589ee34fb925b, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
