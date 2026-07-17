@@ -127,6 +127,22 @@ namespace SS3D.Systems.Inputs
         }
 
         /// <summary>
+        /// Clears disable refcounts and enables every action in the map.
+        /// Use when gameplay must reclaim input after UI refcounting left actions stuck disabled.
+        /// </summary>
+        public void ForceEnableActionMap(InputActionMap actionMap)
+        {
+            foreach (InputAction action in actionMap)
+            {
+                _actionDisables[action] = 0;
+                if (!action.enabled)
+                {
+                    action.Enable();
+                }
+            }
+        }
+
+        /// <summary>
         /// Toggle all actions, that contain bindings with a given key path
         /// </summary>
         /// <param name="keyPath"></param>

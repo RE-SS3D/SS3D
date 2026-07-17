@@ -84,6 +84,10 @@ namespace SS3D.Networking
 
             NetworkType = networkSettings.NetworkType;
 
+            // Dedicated Server build target defines UNITY_SERVER, which makes FishNet auto-start
+            // the transport on Boot (default port). Stop that so Host/Client use NetworkSettings.
+            StopAutoStartedConnections(networkManager);
+
             switch (NetworkType)
             {
                 case NetworkType.DedicatedServer:
@@ -97,7 +101,7 @@ namespace SS3D.Networking
                 case NetworkType.Host:
                     Log.Information(this, "Hosting a new server on port {port}", Logs.Important, Port);
                     LogIfConnectionFailedToStart("server", networkManager.ServerManager.StartConnection(Port));
-                    LogIfConnectionFailedToStart("client", networkManager.ClientManager.StartConnection());
+                    LogIfConnectionFailedToStart("client", networkManager.ClientManager.StartConnection(ServerAddress, Port));
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
@@ -119,6 +123,27 @@ namespace SS3D.Networking
             if (!started)
             {
                 Log.Error(this, "Failed to start the {role} connection on port {port}. Either it was already starting/started, or the port is already bound by another process.", Logs.Important, role, Port);
+            }
+        }
+
+        /// <summary>
+        /// UNITY_SERVER also makes FishNet auto-start the transport on Boot.unity's own
+        /// ServerManager (its own StartOnHeadless option) using the scene-configured default port,
+        /// racing with StartNetworkSession here. Stop any such stray connection first so this method
+        /// remains the single source of truth for what actually gets started and on what port.
+        /// </summary>
+        private static void StopAutoStartedConnections(NetworkManager networkManager)
+        {
+            if (networkManager.ClientManager.Started)
+            {
+                networkManager.ClientManager.StopConnection();
+            }
+
+            if (networkManager.ServerManager.Started)
+            {
+                Log.Warning(typeof(NetworkSessionSubSystem),
+                    "Stopping a server that was already started (often UNITY_SERVER / Dedicated Server build target auto-start). Switch the Editor build target to Standalone for normal Host play.");
+                networkManager.ServerManager.StopConnection(true);
             }
         }
 

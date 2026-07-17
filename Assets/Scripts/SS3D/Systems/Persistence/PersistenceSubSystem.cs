@@ -262,15 +262,23 @@ namespace SS3D.Systems.Persistence
                 return true;
             }
 
-            string rawJson = EnvelopePersistenceStore.ReadRawJson(path);
-            if (LegacyTileMapMigrator.TryWrapLegacyJson(rawJson, templateName, out envelope))
+            // StationTemplates may be empty while legacy Tilemaps still has the map — don't warn yet.
+            if (LocalStorage.TryReadRaw(path, out string rawJson)
+                && LegacyTileMapMigrator.TryWrapLegacyJson(rawJson, templateName, out envelope))
             {
                 return true;
             }
 
             string legacyPath = PersistencePaths.LegacyTilemaps + "/" + templateName;
-            rawJson = EnvelopePersistenceStore.ReadRawJson(legacyPath);
-            return LegacyTileMapMigrator.TryWrapLegacyJson(rawJson, templateName, out envelope);
+            if (LocalStorage.TryReadRaw(legacyPath, out rawJson)
+                && LegacyTileMapMigrator.TryWrapLegacyJson(rawJson, templateName, out envelope))
+            {
+                return true;
+            }
+
+            Log.Warning(this, "No station template found for {templateName} in StationTemplates or Tilemaps", Logs.Generic, templateName);
+            envelope = null;
+            return false;
         }
 
         private static object DeserializePayload(IPersistenceContributor contributor, string payloadJson)

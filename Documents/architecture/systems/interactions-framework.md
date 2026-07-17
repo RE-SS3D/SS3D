@@ -25,6 +25,7 @@ RPCs identify interactions with `InteractionIdentifier` (`genericName` + `target
 - `Assets/Scripts/SS3D/Interactions/Interfaces/IIntentRestrictedInteraction.cs` — Help/Harm gate
 - `Assets/Scripts/SS3D/Interactions/Interfaces/ITargetedInteraction.cs` — armed-mode second-click targeting
 - `Assets/Scripts/SS3D/Interactions/DelayedInteraction.cs` — timed interaction base class
+- `Assets/Scripts/SS3D/Interactions/InteractionIconLookup.cs` — resolves radial/menu sprites from `InteractionIcons`
 
 ## Extension points
 
@@ -32,12 +33,12 @@ RPCs identify interactions with `InteractionIdentifier` (`genericName` + `target
 - Add `InteractionTargetBehaviour` (or `InteractionTargetNetworkBehaviour`) to world objects that should receive interactions.
 - Implement `IInteractionTierProvider` to control radial menu tier (instant vs armed targeted).
 - Use `Requirement` and `IInteractionRangeLimit` / `RangeLimit` for gating.
-- Register interaction icons via generated `InteractionIcons` asset refs ([data-codegen](data-codegen.md)).
+- Register interaction icons via generated `InteractionIcons` asset refs ([data-codegen](data-codegen.md)); expose named helpers on `InteractionIconLookup` when shared.
 - Replicated state changes in `Start()` must go through networked components (`NetworkedOpenable.SetOpenState`, `SyncVar` toggles), not local-only animator writes.
 
 ## Depends on / Used by
 
-- **Used by:** [interactions-runtime](interactions-runtime.md), [inventory](inventory.md), [furniture](furniture.md), [tile](tile.md), [examine](examine.md), and most gameplay systems
+- **Used by:** [interactions-runtime](interactions-runtime.md), [inventory](inventory.md), [furniture](furniture.md), [tile](tile.md), and most gameplay systems
 - **Depends on:** [core-subsystems](core-subsystems.md) (network actors)
 
 ## Related docs

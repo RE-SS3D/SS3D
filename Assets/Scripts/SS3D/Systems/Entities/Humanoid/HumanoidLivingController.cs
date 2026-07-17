@@ -1,9 +1,10 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using FishNet.Object.Synchronizing;
 using SS3D.Core;
 using SS3D.Core.Behaviours;
+using SS3D.Systems.Entities.Humanoid.Body;
 using SS3D.Systems.Health;
 using SS3D.Systems.Screens;
 using UnityEngine;
@@ -14,7 +15,7 @@ namespace SS3D.Systems.Entities.Humanoid
     /// Controls the movement for living biped characters that use the same armature
     /// as the human model uses.
     /// </summary>
-    [RequireComponent(typeof(HumanoidAnimatorController))]
+    [RequireComponent(typeof(AnimationOrchestrator))]
     [RequireComponent(typeof(CharacterController))]
     [RequireComponent(typeof(Animator))]
     public class HumanoidLivingController : HumanoidController
@@ -24,6 +25,7 @@ namespace SS3D.Systems.Entities.Humanoid
         [SerializeField] private CharacterController _characterController;
         [SerializeField] private StaminaController _staminaController;
 		[SerializeField] private FeetController _feetController;
+        [SerializeField] private HumanoidPredictedMovement _predictedMovement;
 
         public bool IsDragging { get; set; }
 
@@ -32,6 +34,10 @@ namespace SS3D.Systems.Entities.Humanoid
 		public override void OnStartClient()
         {
             base.OnStartClient();
+            if (_predictedMovement == null)
+            {
+                _predictedMovement = GetComponent<HumanoidPredictedMovement>();
+            }
             if (!IsOwner)
             {
                 return;
@@ -45,24 +51,49 @@ namespace SS3D.Systems.Entities.Humanoid
         {
             ProcessPlayerInput();
 
+            if (_predictedMovement != null && _predictedMovement.enabled)
+            {
+                return;
+            }
+
             _characterController.Move(Physics.gravity);
 
+            float gaitSpeed = FilterSpeed();
             if (Input.magnitude != 0)
             {
                 MoveMovementTarget(Input);
-                if(!IsDragging) RotatePlayerToMovement();
+                if (!IsDragging)
+                {
+                    if (IsCombatMode())
+                    {
+                        RotatePlayerToCombatAim();
+                    }
+                    else
+                    {
+                        RotatePlayerToMovement();
+                    }
+                }
+
                 MovePlayer();
+                PublishLocomotionVelocity(TargetMovement, gaitSpeed);
             }
             else
             {
                 MovePlayer();
                 MoveMovementTarget(Vector2.zero, 5);
+                if (IsCombatMode() && !IsDragging)
+                {
+                    RotatePlayerToCombatAim();
+                }
+
+                PublishLocomotionVelocity(Vector3.zero, 0f);
             }
         }
 
         protected override float FilterSpeed()
         {
-            return IsRunning && _staminaController.CanContinueInteraction ? RunAnimatorValue : WalkAnimatorValue;
+            bool canRun = _staminaController == null || _staminaController.CanContinueInteraction;
+            return IsRunning && canRun ? RunAnimatorValue : WalkAnimatorValue;
         }
 
         /// <summary>
@@ -70,7 +101,16 @@ namespace SS3D.Systems.Entities.Humanoid
         /// </summary>
         protected override void MovePlayer()
         {
-            _characterController.Move(TargetMovement * ((_feetController.FeetHealthFactor * _movementSpeed) * Time.deltaTime));
+            float feetFactor = _feetController != null ? _feetController.FeetHealthFactor : 1f;
+            float combatFactor = 1f;
+            // Combat walk/run clips are authored at the same cadence across stances (melee + ranged),
+            // so apply slow combat speed scaling for any combat mode.
+            if (IsCombatMode())
+            {
+                combatFactor = IsRunning ? _combatRunSpeedFactor : _combatWalkSpeedFactor;
+            }
+
+            _characterController.Move(TargetMovement * ((feetFactor * _movementSpeed * combatFactor) * Time.deltaTime));
         }
     }
 

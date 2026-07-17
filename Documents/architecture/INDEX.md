@@ -19,13 +19,13 @@ Feature-level gaps *within* an already-designed system stay in that design doc's
 
 | Domain | Design | Architecture | System map |
 |---|---|---|---|
-| main-hud | [main-hud.md](../design/main-hud.md) — active | [phase1-foundation](2026-07_machine-interface-phase1-foundation.md), [phase2-apc-networking](2026-07_machine-interface-phase2-apc-networking.md), [phase3-smes-generalization](2026-07_machine-interface-phase3-smes-generalization.md), [diegetic-screen-ui-framework](2026-07_diegetic-screen-ui-framework.md), [mi-area-electricity-debt](2026-07_mi-area-electricity-debt.md) — all shipped | none yet (see [machine-interface](systems/machine-interface.md) for the built surface) |
+| main-hud | [main-hud.md](../design/main-hud.md) — active | [phase1-foundation](2026-07_machine-interface-phase1-foundation.md), [phase2-apc-networking](2026-07_machine-interface-phase2-apc-networking.md), [phase3-smes-generalization](2026-07_machine-interface-phase3-smes-generalization.md), [diegetic-screen-ui-framework](2026-07_diegetic-screen-ui-framework.md), [mi-area-electricity-debt](2026-07_mi-area-electricity-debt.md), [screen-space-effects](2026-07_screen-space-effects.md) — all shipped (screen-effects health/atmos wiring deferred) | none yet (see [machine-interface](systems/machine-interface.md) and [screen-effects](systems/screen-effects.md) for built surfaces) |
 | comms | [comms.md](../design/comms.md) — active | [phase1-foundation](2026-07_machine-interface-phase1-foundation.md) — shipped (operator feedback conventions only) | [chat-audio-screens](systems/chat-audio-screens.md) — stub |
 | area | [area.md](../design/area.md) — active | [area-foundation](2026-07_area-foundation.md) — shipped (partial: APC-seeded variant; live mutation recompute and editor merge/split deferred) | [area](systems/area.md) — partial |
 | hacking-interface | [hacking-interface.md](../design/hacking-interface.md) — active | none yet | none yet |
-| combat | [combat.md](../design/combat.md) — active | none yet | [combat](systems/combat.md) — stub |
+| combat | [combat.md](../design/combat.md) — active | [player-body-animation](2026-07_player-body-animation.md) — shipped (stance/locomotion foundation only; combat.md not implemented) | [combat](systems/combat.md) — stub |
 | stamina | [stamina.md](../design/stamina.md) — active | none yet | none yet |
-| health | [health.md](../design/health.md) — active | none yet | [health](systems/health.md) — partial |
+| health | [health.md](../design/health.md) — active | none yet (rewrite planned: [health_implementation_plan](../plans/health_implementation_plan.md); screen overlays shipped separately in [screen-space-effects](2026-07_screen-space-effects.md)) | [health](systems/health.md) — partial |
 | armor | [armor.md](../design/armor.md) — active | none yet | none yet |
 | inventory-storage | [inventory-storage.md](../design/inventory-storage.md) — active | none yet | [inventory](systems/inventory.md) — partial |
 | examine | [examine.md](../design/examine.md) — active | none yet | [examine](systems/examine.md) — shipped |
@@ -47,7 +47,7 @@ Feature-level gaps *within* an already-designed system stay in that design doc's
 | explosives-destruction | [explosives-destruction.md](../design/explosives-destruction.md) — active | none yet | none yet |
 | construction | [construction.md](../design/construction.md) — active | none yet | [tile](systems/tile.md) — shipped |
 | creative-mode | [creative-mode.md](../design/creative-mode.md) — active | none yet | none yet |
-| rendering-lighting | [rendering-lighting.md](../design/rendering-lighting.md) — active | none yet | [rendering](systems/rendering.md) — partial |
+| rendering-lighting | [rendering-lighting.md](../design/rendering-lighting.md) — active | none yet (look pass planned: [urp_lighting_look_plan](../plans/urp_lighting_look_plan_d42c32f5.plan.md); palette emission sample fix shipped on Simple Toon) | [rendering](systems/rendering.md) — partial |
 | shuttles | [shuttles.md](../design/shuttles.md) — active | none yet | none yet |
 | ai-cyborgs | [ai-cyborgs.md](../design/ai-cyborgs.md) — active | none yet | none yet |
 | persistence-save | none yet | none yet | [persistence](systems/persistence.md) — partial (station templates, server meta only, not a design spec) |
@@ -87,14 +87,14 @@ prototyping section, `Status` line for draft/active/superseded only, cross-refs 
 | Localization | [localization](systems/localization.md) | partial | `LocalizedTextService` and examine string tables |
 | Logging | [logging](systems/logging.md) | shipped | Serilog structured logging |
 | Permissions | [permissions](systems/permissions.md) | partial | Admin permission checks; persisted via [persistence](systems/persistence.md) envelope with legacy txt fallback |
-| Rendering | [rendering](systems/rendering.md) | partial | URP features: selection pick pass, atmospherics scatter/glow/distortion |
+| Rendering | [rendering](systems/rendering.md) | partial | URP features: selection pick pass (+ exclude layers), atmospherics scatter/glow/distortion; Simple Toon palette emission |
 
 ## Gameplay
 
 | System | Map | Status | Summary |
 |--------|-----|--------|---------|
 | Interactions (runtime) | [interactions-runtime](systems/interactions-runtime.md) | shipped | `InteractionController`, radial menu, armed interactions, outlines |
-| Selection | [selection](systems/selection.md) | shipped | Shader-ID mesh picking for interaction targeting |
+| Selection | [selection](systems/selection.md) | shipped | Shader-ID mesh picking; outline shells excluded from pick pass |
 | Examine | [examine](systems/examine.md) | shipped | Hover tooltips and shift-hold detailed examine |
 | Tile / construction | [tile](systems/tile.md) | shipped | Tilemap, adjacency engine, construction, dynamic tile occupancy; build-menu client layer visibility |
 | Atmospherics | [atmospherics](systems/atmospherics.md) | partial | ECS turf gas sim; GPU fog/fire on server/host only — client VFX sync planned |
@@ -102,19 +102,20 @@ prototyping section, `Status` line for draft/active/superseded only, cross-refs 
 | Electricity | [electricity](systems/electricity.md) | partial | kWh storage, HV cable grid, APC/SMES/generators, consumer visuals |
 | Substances | [substances](systems/substances.md) | partial | Containers, transfer interactions, Tier 2 armed proof-of-concept |
 | Inventory | [inventory](systems/inventory.md) | partial | Items, containers, hands, ID cards and PDAs |
-| Entities | [entities](systems/entities.md) | stub | Humanoids, minds, entity spawning |
-| Health | [health](systems/health.md) | partial | Body parts, oxygen consumer (design spec not fully implemented) |
-| Combat | [combat](systems/combat.md) | stub | Hit interactions (design spec not implemented) |
+| Entities | [entities](systems/entities.md) | partial | Humanoids, minds, entity spawning; body-state animation + combat stances |
+| Health | [health](systems/health.md) | partial | Oxygen consumer; clean-slate rewrite planned; screen overlays not wired yet |
+| Combat | [combat](systems/combat.md) | stub | Hit interactions; stance/aim presentation in [entities](systems/entities.md) (design combat not implemented) |
 | Crafting | [crafting](systems/crafting.md) | stub | Recipe crafting |
-| Furniture / world objects | [furniture](systems/furniture.md) | partial | Airlocks, vendors, jukebox; power-gated behaviors; vending via machine-interface |
+| Furniture / world objects | [furniture](systems/furniture.md) | partial | Airlocks, vendors, jukebox; power-gated behaviors; vending via diegetic machine-interface |
 | Rounds / lobby | [rounds-lobby](systems/rounds-lobby.md) | shipped | Round state machine and pre-round lobby UI |
 | Gamemodes / roles / traits | [gamemodes-roles-traits](systems/gamemodes-roles-traits.md) | stub | Objectives, job roles, character traits |
 | Player control | [player-control](systems/player-control.md) | stub | Player subsystem and input routing |
 | Chat / audio / screens | [chat-audio-screens](systems/chat-audio-screens.md) | stub | Chat, audio, camera controllers |
-| Machine interface UI | [machine-interface](systems/machine-interface.md) | shipped | Diegetic APC/SMES/atmos panels with server-side ID access gates |
+| Machine interface UI | [machine-interface](systems/machine-interface.md) | shipped | Diegetic APC/SMES/atmos/vending panels; server-side ID access gates (vending ungated) |
+| Screen-space effects | [screen-effects](systems/screen-effects.md) | partial | URP Volume overlays + hit flash; debug/console only until health wires them |
 | ID / access | [id-access](systems/id-access.md) | partial | Crew records, credential checks, doors, machine UI gates, dev console helpers |
 | Inputs | [inputs](systems/inputs.md) | stub | Input subsystem |
-| In-game console | [ingame-console](systems/ingame-console.md) | partial | Dev/admin console; includes ID access test commands |
+| In-game console | [ingame-console](systems/ingame-console.md) | partial | Dev/admin console; ID access helpers and screen-effect debug commands |
 
 ## Architecture efforts (dated)
 
@@ -131,6 +132,8 @@ Implementation history — not navigation maps. Update `Status` in the header wh
 | [2026-07_atmos-ecs-foundation](2026-07_atmos-ecs-foundation.md) | shipped (deferred: liquid/solid phase, pipes, pumps, client VFX sync) |
 | [2026-07_atmos-client-visualization-sync](2026-07_atmos-client-visualization-sync.md) | planned |
 | [2026-07_mi-area-electricity-debt](2026-07_mi-area-electricity-debt.md) | shipped |
+| [2026-07_player-body-animation](2026-07_player-body-animation.md) | shipped (foundation; blend/timing polish remains) |
+| [2026-07_screen-space-effects](2026-07_screen-space-effects.md) | shipped (foundation; health/atmos wiring deferred) |
 | [2026-07_headless-dedicated-server](2026-07_headless-dedicated-server.md) | shipped (partial: selection outline, drop interaction, multiplayer test harness deferred) |
 
 ## Implementation plans
@@ -140,11 +143,16 @@ Temporary working plans in [Documents/plans/](../plans/). Update todos when work
 | Plan | Topic |
 |------|-------|
 | [examine_localization_design_5ca361a6.plan.md](../plans/examine_localization_design_5ca361a6.plan.md) | Examine localization migration |
-| [radial_menu_implementation_5a83bdf9.plan.md](../plans/radial_menu_implementation_5a83bdf9.plan.md) | Three-tier radial interaction menu |
+| [radial_menu_implementation_5a83bdf9.plan.md](../plans/radial_menu_implementation_5a83bdf9.plan.md) | Three-tier radial interaction menu (Phases 4–5 pending) |
 | [interaction_system_improvements_9e14ae22.plan.md](../plans/interaction_system_improvements_9e14ae22.plan.md) | Interaction system hardening |
+| [diegetic_screen_ui_framework_643c2e6f.plan.md](../plans/diegetic_screen_ui_framework_643c2e6f.plan.md) | Diegetic shell + vending (shipped) |
 | [areas_implementation_plan_c0639343.plan.md](../plans/areas_implementation_plan_c0639343.plan.md) | APC-seeded areas, flood-fill, power/lighting follow-ups |
 | [electricity_kwh_foundation_917ccdbc.plan.md](../plans/electricity_kwh_foundation_917ccdbc.plan.md) | kWh storage, priority shedding, HV cable grid rules |
 | [persistence_architecture_design_2fe61864.plan.md](../plans/persistence_architecture_design_2fe61864.plan.md) | Layered persistence framework; Phase 1a/1b shipped, Phase 2 round snapshots pending |
+| [animation_system_design_250de599.plan.md](../plans/animation_system_design_250de599.plan.md) | Player body / layered animation foundation |
+| [health_implementation_plan.md](../plans/health_implementation_plan.md) | Clean-slate health rewrite (pending) |
+| [urp_lighting_look_plan_d42c32f5.plan.md](../plans/urp_lighting_look_plan_d42c32f5.plan.md) | URP half-toon look pass (pending) |
+| [shuttle_system_design_a3dd2e04.plan.md](../plans/shuttle_system_design_a3dd2e04.plan.md) | Shuttle tile blueprints / multi-map (pending) |
 
 ## Design specs (read-only)
 

@@ -91,7 +91,7 @@ float4 ST_EvaluateLighting(
     }
 #endif
 
-    result.rgb += _EmissionColor.rgb;
+    result.rgb += SAMPLE_TEXTURE2D(_EmissionMap, sampler_EmissionMap, surface.uv).rgb * _EmissionColor.rgb;
     result.a = alphaMultiplier;
     return result;
 }

@@ -8,7 +8,7 @@ current review capacity supports.
 This document is the plain-language divergence log. It is updated periodically — not per-commit.
 For doc authoring conventions see [SKILL.md](SKILL.md).
 
-**Last updated:** 2026-07-14
+**Last updated:** 2026-07-16
 
 ---
 
@@ -21,8 +21,8 @@ For doc authoring conventions see [SKILL.md](SKILL.md).
 | Render pipeline | Built-in | **URP 17** |
 | Release channel | Tagged releases on GitHub | **No releases** — build from source |
 | Documentation | GitBook ([ss3d.gitbook.io](https://ss3d.gitbook.io/dev-guide/)) | `Documents/design/` + `Documents/architecture/` + system maps |
-| Commits ahead of upstream | — | **~248** (0 behind as of last fetch) |
-| Files changed vs upstream | — | ~12k files, +542k / −55k lines |
+| Commits ahead of upstream | — | **~308** (0 behind as of last fetch) |
+| Files changed vs upstream | — | ~12.5k files, +1.3M / −72k lines |
 
 ---
 
@@ -42,7 +42,7 @@ Independent of upstream's GitBook:
 | Path | Purpose |
 |---|---|
 | [SKILL.md](SKILL.md) | Conventions for all documentation layers |
-| [architecture/INDEX.md](architecture/INDEX.md) | Navigation hub — find code by system |
+| [architecture/INDEX.md](architecture/INDEX.md) | Navigation hub — find code by system; project-wide coverage table |
 | [architecture/systems/](architecture/systems/) | Per-domain system maps (entry points, key files) |
 | [design/](design/) | Gameplay design specs — **what** and **why** (owner-maintained) |
 | [architecture/](architecture/) | Dated implementation efforts — **how** and **in what order** |
@@ -55,13 +55,16 @@ milestones, and gameplay specs for this fork live in `Documents/`.
 
 ### GitHub automation
 
-Upstream milestone/roadmap/release workflows are **disabled for automatic triggers** — they run on
-`workflow_dispatch` only. The automated release build ([main.yml](../.github/workflows/main.yml))
-is likewise manual-only; this fork does not publish releases. Discord webhook notifications were
-removed from CI.
+Upstream-only workflows (milestones, roadmap, release packaging helpers, Discord notifications)
+were **removed** from this fork. Remaining workflows:
 
-EditMode test CI ([editmodetestrunner.yml](../.github/workflows/editmodetestrunner.yml)) still runs
-on push and PR.
+- [main.yml](../.github/workflows/main.yml) — release build, **manual** (`workflow_dispatch`) only;
+  this fork does not publish releases
+- [editmodetestrunner.yml](../.github/workflows/editmodetestrunner.yml) — EditMode tests on push to
+  `develop`, PRs (`pull_request_target`), and manual dispatch; forces Node 24 for JS actions;
+  validates `UNITY_LICENSE` / `UNITY_SERIAL` secrets before running
+
+Doc layer redesign (coverage table, strip prototyping prompts from design docs) merged via PR #2.
 
 ---
 
@@ -94,6 +97,8 @@ Merged via `archive/feature-urp-migration` (through `develop-unity6`). Includes:
 - Post Processing Stack v2 removed; post-processing migrated to URP volumes
 - Pipeline MSAA disabled so camera TAA can run without warnings
 - Editor migration tooling in `Assets/Editor/URPMigration/`
+- **Palette emission fix** (PR #7) — Simple Toon samples `_EmissionMap` so shared
+  `PaletteEmission` materials get UV swatch colors instead of a flat white `_EmissionColor`
 
 Upstream remains on the Built-in render pipeline with no equivalent URP assets or selection-pick
 render features.
@@ -120,6 +125,10 @@ the server validates using `NetworkObject` and interaction point.
 
 Merged from `archive/feature-1387-selection-api`. Cursor picking misalignment fix merged from
 `archive/fix-selection-camera-picking`.
+
+**Post-merge polish** (PR #5): hover flicker and outline bleed into item icons fixed by excluding
+outline shells from the pick pass via `SelectionRenderingLayers` (lives in `Rendering.URP` to avoid
+assembly cycles); green outline cleared on item pickup.
 
 ### Detailed examine (#1394)
 
@@ -150,8 +159,9 @@ English until a translation import lands.
 Merged from `archive/feature-examine-localization`. Design plan:
 [examine_localization_design_5ca361a6.plan.md](plans/examine_localization_design_5ca361a6.plan.md).
 
-**Examine interaction (radial Tier 1):** `ExamineInteraction` added as a shift-hold detailed examine
-action reachable from the radial menu (merged with interaction work below).
+**Examine UX:** hover + Shift-hold detailed panels via `ExamineSubSystem` / `ExamineUI` off the
+current selection — **not** an `IInteraction` petal. A radial Tier 1 Examine petal was planned but
+is not shipped as `ExamineInteraction` on `develop`.
 
 ### Interactions — hardening and radial menu
 
@@ -256,7 +266,11 @@ host.
 
 **Vending machines** open a networked diegetic panel (`VendingMachineController`) with tray-based
 dispense (vend to tray, then take). Legacy per-product `DispenseProductInteraction` and
-`VendingMachine` behaviour removed. ID card reader is stubbed in v1.
+`VendingMachine` behaviour removed. Vending stays **ungated** (no engineering ID swipe) even after
+the ID/access foundation shipped for APC/SMES/atmos panels.
+
+**Post-merge polish** (PR #4): refresh-driven UI teardown no longer drops Take/vend click handlers;
+`MachinePowerConsumer` no longer sticks at “in use” wattage after vend.
 
 `MachineInterfaceHost` disables `UIDocument` when closed to avoid interfering with the selection
 pick pass. Diegetic panels mount the full cloned UXML `TemplateContainer` so attached style sheets
@@ -410,6 +424,49 @@ Serilog-based structured logging with mandatory sender + context enum, namespace
 via `LogSettings` ScriptableObject, Unity console + file sinks, and client-ID enrichment for
 multiplayer. Recent work replaced remaining `Debug.Log` calls and reduced startup noise.
 
+### Player body / animation foundation
+
+**Paths:** `SS3D.Systems.Entities.Humanoid.Body`, `Assets/Art/Animations/`
+
+Body-state-driven humanoid animation replacing thin Speed-blend + ad-hoc Animator calls:
+
+- **`HumanoidBodyStateMachine`** + packed **`BodyAnimationSnapshot`** SyncVar — authoritative body /
+  combat presentation state
+- **`AnimationOrchestrator`** — snapshot → Animator parameters (`CombatStance`, `VelX`/`VelZ`,
+  triggers); walk/run blend easing
+- **Combat stance packs** — Peaceful (Locomotion Pack), Melee (Pro Melee Axe), Ranged (Basic Shooter)
+  FreeformCartesian2D blends; rebuild via **SS3D → Animation → Rebuild Combat Stance Blend Trees**
+- **`HumanoidIkController`** — combat look-at IK for aim yaw/pitch; melee swing on upper-body layer
+- **`HumanoidCombatController`** / inventory bridge — Melee/Ranged stance from held-item traits;
+  `C` toggles Peaceful ↔ combat stance
+
+This is **stance and locomotion presentation only** — [combat.md](design/combat.md) hit resolution,
+windup, and damage are not implemented. Blend/timing polish remains animator-owned where possible.
+
+Architecture: [2026-07_player-body-animation.md](architecture/2026-07_player-body-animation.md).
+Plan: [animation_system_design_250de599.plan.md](plans/animation_system_design_250de599.plan.md).
+System map: [entities.md](architecture/systems/entities.md).
+
+Merged from `feature/animation-system` onto `develop`.
+
+### Screen-space effects
+
+**Paths:** `SS3D.Systems.ScreenEffects`
+
+Client-only URP Volume overlays for diegetic feedback from [main-hud.md](design/main-hud.md) §5:
+
+- Sustained intensities (`ScreenEffectType`): heat/cold, fire/freezing particles, low oxygen,
+  dying/critical, blood-loss tunnel vision, concussion, unconscious
+- Momentary melee **hit flash** via `TriggerHitFlash`
+- F2 debug menu (lazy UI) and console commands (`screeneffect`, hit-flash)
+- Self-bootstraps at runtime (not Boot.unity) so it can land without scene YAML edits
+
+**Not wired to health or atmospherics yet** — only debug/console callers drive intensities today.
+
+Merged via PR #6. Architecture:
+[2026-07_screen-space-effects.md](architecture/2026-07_screen-space-effects.md).
+System map: [screen-effects.md](architecture/systems/screen-effects.md).
+
 ---
 
 ## Design specs (not yet implemented)
@@ -429,14 +486,17 @@ Implementation should follow the specs or document explicit deviations.
 | [main-hud.md](design/main-hud.md) | Minimal chrome HUD — 3D body vitals, cut targeting doll, intent chording |
 | [hacking-interface.md](design/hacking-interface.md) | Field diagnostic unit (FDU) — diegetic 7-panel tool; discovery by physical access |
 
-Machine interfaces and the radial interaction menu partially implement
+Machine interfaces, the radial interaction menu, and screen-space overlays partially implement
 [main-hud.md](design/main-hud.md) (tiered interactions, intent chording, diegetic machine control
-surfaces for APC/SMES/vending/atmos devices — drag-combine Tier 3 still pending). **Area foundation**
-partially implements [area.md](design/area.md) (APC-seeded flood-fill, area-scoped power/lighting,
-air-alarm area device discovery — live mutation recompute and editor merge/split still pending).
-**ID / access foundation** partially implements [id-access.md](design/id-access.md) (crew records,
-door and machine UI gates, ID console — auth logs and broader design coverage still pending).
-The rest of these specs remain design-only.
+surfaces for APC/SMES/vending/atmos devices, Volume-based screen feedback — drag-combine Tier 3 and
+health/atmos wiring for screen effects still pending). **Area foundation** partially implements
+[area.md](design/area.md) (APC-seeded flood-fill, area-scoped power/lighting, air-alarm area device
+discovery — live mutation recompute and editor merge/split still pending). **ID / access foundation**
+partially implements [id-access.md](design/id-access.md) (crew records, door and machine UI gates,
+ID console — auth logs and broader design coverage still pending). **Player body animation**
+implements stance/locomotion presentation from the animation plan; it does **not** implement
+[combat.md](design/combat.md) or [health.md](design/health.md). The rest of these specs remain
+design-only (health rewrite is in progress on a feature branch — see below).
 
 ---
 
@@ -447,11 +507,13 @@ before assuming commit counts.
 
 | Branch | Ahead / behind `develop` | System | Notes |
 |---|---|---|---|
-| `feature/inventory-storage` | 9 / 58 | Inventory + main HUD | Gear/hands strip, intent module, storage UI migration |
-| `feature/urp-lighting-phase1` | 2 / 69 | URP lighting visual foundation | Forward+ fixture fixes, unitless intensity handling |
-| `feature/animation-system` | 3 / 71 | Humanoid animation | Body-state-driven locomotion scaffold |
-| `feature/vision-urp-tilemap` | 9 / 120 | Grid-based FOV / fog-of-war on URP + tilemap | `SS3D.Systems.Vision`, `VisionRendererFeature`; supersedes older vision work |
-| `vision-system-wip` | 6 / 199 | Older vision prototype | Stale — use `feature/vision-urp-tilemap` instead |
+| `feature/inventory-storage` | 9 / 174 | Inventory + main HUD | Gear/hands strip, intent module, storage UI migration |
+| `feature/urp-lighting-phase1` | 2 / 185 | URP lighting visual foundation | Forward+ fixture fixes, unitless intensity handling |
+| `feature/vision-urp-tilemap` | 9 / 236 | Grid-based FOV / fog-of-war on URP + tilemap | `SS3D.Systems.Vision`, `VisionRendererFeature` |
+| `health-rewrite` | 11 / 57 | Health | Clean-slate rewrite per [health_implementation_plan.md](plans/health_implementation_plan.md) |
+| `feature/map-editor-replacement` | 10 / 64 | TileMap Creator / creative | Click-to-place and editor input work |
+| `feature/character-creator` | 3 / 54 | Character customizer | Layout + URP preview polish |
+| `claude/crowd-cap-chat-plan-o8v03z` | 2 / 23 | Comms | Early chat/crowd-cap integration spike |
 
 ---
 
@@ -481,6 +543,11 @@ Do not develop on them — use `develop` or a new feature branch.
 | `archive/tilemap-layer-visibility` | 2026-07-14 | Client-only tilemap build-menu layer visibility toggles |
 | `archive/feature-id-access-foundation` | 2026-07-14 | Crew records, credential resolver, door/machine ID access gates |
 | `archive/feature-persistence-framework` | 2026-07-14 | Contributor-based persistence: station templates + server meta |
+
+Recent `develop` merges that did **not** use an `archive/*` branch rename (GitHub PRs / direct
+feature merge): EditMode test race (#1), docs structure redesign (#2), Unity license CI cleanup (#3),
+vending polish (#4), selection/outline flicker (#5), screen-space effects (#6), Simple Toon palette
+emission (#7), player body animation (`feature/animation-system`).
 
 ---
 
