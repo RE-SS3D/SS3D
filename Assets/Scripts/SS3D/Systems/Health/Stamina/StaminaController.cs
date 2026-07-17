@@ -77,7 +77,7 @@ namespace SS3D.Systems.Health
         public override void OnStartClient()
         {
             base.OnStartClient();
-            _staminaBarView = ViewLocator.Get<StaminaBarView>().First();
+            _staminaBarView = ViewLocator.Get<StaminaBarView>().FirstOrDefault();
             // Currently movement is client-authoritative, so we need to subscribe to events on the client only.
             SubscribeToEvents();
             InitialAssignViewToControllable();
@@ -113,6 +113,11 @@ namespace SS3D.Systems.Health
         [Client]
         private void AssignViewToControllable(Mind mind)
         {
+            if (_staminaBarView == null)
+            {
+                return;
+            }
+
             if (mind == null || !mind.IsOwner)
             {
                 _staminaBarView.UnassignViewFromPlayer(this);
