@@ -26,7 +26,7 @@ namespace SS3D.Systems.IngameConsoleSystem.Commands
 
 			if (args.Length > 1)
 			{
-				ragdoll.Knockdown(values.Time);
+				ragdoll.ServerKnockdown(values.Time);
 			}
 			else
 			{
@@ -36,7 +36,7 @@ namespace SS3D.Systems.IngameConsoleSystem.Commands
 				}
 				else
 				{
-					ragdoll.KnockdownTimeless();
+					ragdoll.ServerKnockdownTimeless();
 				}
 			}
 			return "Player ragdolled";

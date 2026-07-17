@@ -62,10 +62,8 @@ namespace SS3D.Systems.Entities.Humanoid
             {
                 _movementController = GetComponent<HumanoidController>();
             }
-            if (_animator == null)
-            {
-                _animator = GetComponent<Animator>();
-            }
+
+            EnsureAnimator();
 
             LogMissingAnimatorParametersOnce();
             SubscribeToEvents();
@@ -83,6 +81,19 @@ namespace SS3D.Systems.Entities.Humanoid
                 _animator.SetFloat(Animations.Humanoid.VelX, 0f);
                 _animator.SetFloat(Animations.Humanoid.VelZ, 0f);
                 _animator.SetFloat(Animations.Humanoid.Turn, 0f);
+            }
+        }
+
+        private void EnsureAnimator()
+        {
+            if (_animator == null)
+            {
+                _animator = GetComponent<Animator>();
+            }
+
+            if (_animator == null)
+            {
+                _animator = GetComponentInChildren<Animator>(true);
             }
         }
 
@@ -320,6 +331,12 @@ namespace SS3D.Systems.Entities.Humanoid
 
         public void ApplySnapshot(BodyAnimationSnapshot snapshot)
         {
+            EnsureAnimator();
+            if (_animator == null)
+            {
+                return;
+            }
+
             _lastSnapshot = snapshot;
             if (!IsLocalMovementAuthority())
             {

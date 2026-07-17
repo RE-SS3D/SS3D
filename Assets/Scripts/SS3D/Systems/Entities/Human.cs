@@ -28,15 +28,38 @@ namespace SS3D.Systems.Entities
 			Entity originEntity = player.GetComponent<Entity>();
 			Entity ghostEntity = ghost.GetComponent<Entity>();
 
+            // Drop the corpse before mind-swap/component dispose. Must use ServerDeathRagdoll —
+            // SyncVar-only knockdown races animator drivers and OnDisable Recover used to stand
+            // the body back up into a walk cycle.
+            if (TryGetComponent(out Ragdoll ragdoll))
+            {
+                ragdoll.ServerDeathRagdoll();
+            }
+
             MindSubSystem mindSystem = SubSystems.Get<MindSubSystem>();
             mindSystem.SwapMinds(originEntity, ghostEntity);
 
             RpcUpdateGhostPosition(originEntity, ghostEntity);
-            if (TryGetComponent(out Ragdoll ragdoll))
-            {
-                ragdoll.KnockdownTimeless();
-            }
+            RpcApplyDeathRagdoll(originEntity);
             RpcDestroyComponents(originEntity);
+        }
+
+        /// <summary>
+        /// Observers (and host) reinforce corpse ragdoll after mind-swap — disables animator
+        /// drivers that would otherwise keep the walk cycle posing the mesh.
+        /// </summary>
+		[ObserversRpc(RunLocally = true)]
+		private void RpcApplyDeathRagdoll(Entity originEntity)
+		{
+            if (originEntity == null)
+            {
+                return;
+            }
+
+            if (originEntity.TryGetComponent(out Ragdoll ragdoll))
+            {
+                ragdoll.ApplyObserverDeathRagdoll();
+            }
         }
 
         /// <summary>
