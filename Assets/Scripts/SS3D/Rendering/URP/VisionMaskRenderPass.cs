@@ -43,6 +43,9 @@ namespace SS3D.Rendering.URP
                 return;
 
             Camera camera = cameraData.camera;
+            // GPU projection must match the matrix used when the camera depth texture was
+            // written (same as Seteron's VisionMaskEffect). Atmos's nonJittered path is for
+            // plane unproject, not depth reconstruction.
             Matrix4x4 gpuProjection = GL.GetGPUProjectionMatrix(camera.projectionMatrix, false);
             Matrix4x4 viewProjection = gpuProjection * camera.worldToCameraMatrix;
             _maskMaterial.SetMatrix(s_InvViewProjId, viewProjection.inverse);

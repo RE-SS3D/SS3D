@@ -1,5 +1,5 @@
-> Code paths: Assets/Scripts/SS3D/Rendering/, Assets/Content/Resources/Simple Toon/
-> Entry points: SelectionPickRendererFeature, AtmosRendererFeature
+> Code paths: Assets/Scripts/SS3D/Rendering/, Assets/Content/Resources/Simple Toon/, Assets/Scripts/SS3D/Systems/Vision/, Assets/Content/Resources/Vision/
+> Entry points: SelectionPickRendererFeature, AtmosRendererFeature, VisionRendererFeature
 > Status: partial
 
 # Rendering
@@ -10,6 +10,8 @@ URP rendering extensions for this fork. The selection pick pass ([selection](sel
 
 Station materials use the **Simple Toon** shader stack (`STDefault` / `STTransparent`). Palette emission must sample `_EmissionMap` (same UV swatch pattern as albedo) — a flat `_EmissionColor` alone washes shared `PaletteEmission` materials white.
 
+Client FOV / fog-of-war is a hard black mask driven by batched physics raycasts from `Entity.ViewPoint` (`VisionSubSystem` → `_VisionMap`) and composited by `VisionRendererFeature`. Unseen areas are fully opaque black, not soft fog. Rays hit Default/`Walls` physics, then keep only wall/door (non-window) occluders — tall furniture does not block vision.
+
 ## Start here
 
 - `Assets/Scripts/SS3D/Rendering/URP/SelectionPickRendererFeature.cs` — URP feature for shader-ID picking
@@ -17,6 +19,8 @@ Station materials use the **Simple Toon** shader stack (`STDefault` / `STTranspa
 - `Assets/Scripts/SS3D/Rendering/URP/SelectionRenderingLayers.cs` — layer bit to exclude outline shells from the pick pass
 - `Assets/Scripts/SS3D/Rendering/URP/AtmosRendererFeature.cs` — gas scatter, glow, distortion passes
 - `Assets/Scripts/SS3D/Rendering/URP/AtmosRenderContext.cs` — shared GPU snapshot for atmos shaders
+- `Assets/Scripts/SS3D/Rendering/URP/VisionRendererFeature.cs` — FOV mask + hard black composite
+- `Assets/Scripts/SS3D/Systems/Vision/VisionSubSystem.cs` — client `RaycastCommand` batch → `_VisionMap`
 - `Assets/Content/Resources/Simple Toon/Shaders/STLighting.hlsl` — half-toon lighting + palette emission sample
 - `Assets/Settings/URP/` — pipeline asset and Forward+ renderer
 
@@ -28,6 +32,7 @@ Station materials use the **Simple Toon** shader stack (`STDefault` / `STTranspa
 ## Depends on / Used by
 
 - **Used by:** [selection](selection.md), [atmospherics](atmospherics.md), [screen-effects](screen-effects.md) (Volume stack; not a custom feature)
+- **Vision FOV depends on:** `PlacedTileObject` Wall/Door (or `Walls` layer) colliders; cast origin from [entities](entities.md) `Entity.ViewPoint` when present
 
 ## Related docs
 

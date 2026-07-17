@@ -8,7 +8,6 @@ namespace SS3D.Systems.Vision
     {
         private VisionSubSystem _vision;
 
-        private SerializedProperty _detectionOffsetProp;
         private SerializedProperty _viewConeWidthProp;
         private SerializedProperty _viewRangeProp;
 
@@ -16,7 +15,6 @@ namespace SS3D.Systems.Vision
         {
             _vision = (VisionSubSystem)target;
 
-            _detectionOffsetProp = serializedObject.FindProperty("detectionOffset");
             _viewConeWidthProp = serializedObject.FindProperty("viewConeWidth");
             _viewRangeProp = serializedObject.FindProperty("viewRange");
         }
@@ -28,28 +26,40 @@ namespace SS3D.Systems.Vision
                 return;
             }
 
+            if (!_vision.viewPoints.IsCreated || _vision.stepCount <= 0)
+            {
+                return;
+            }
+
             serializedObject.Update();
 
             float range = _viewRangeProp.floatValue;
-            float halfCone = _viewConeWidthProp.floatValue / 2f;
-            float yaw = _vision.target.eulerAngles.y;
-
-            Vector3 center = _vision.target.position + _detectionOffsetProp.vector3Value;
-            Vector3 edgeA = DirectionFromAngle(yaw - halfCone);
-            Vector3 edgeB = DirectionFromAngle(yaw + halfCone);
+            float halfCone = _viewConeWidthProp.floatValue * 0.5f;
+            Vector3 center = _vision.DetectionCenter;
+            Vector3 edgeA = _vision.DirectionFromAngle(-halfCone, false);
+            Vector3 edgeB = _vision.DirectionFromAngle(halfCone, false);
 
             Handles.color = Color.green;
-            Handles.Label(center, "center");
-            Handles.DrawWireArc(center, Vector3.up, Vector3.forward, 360, range);
-
-            Handles.color = Color.yellow;
+            Handles.Label(center, "ViewPoint");
+            Handles.DrawWireArc(center, Vector3.up, Vector3.forward, 360f, range);
             Handles.DrawLine(center, center + (edgeA * range));
             Handles.DrawLine(center, center + (edgeB * range));
-        }
 
-        private static Vector3 DirectionFromAngle(float angleDegrees)
-        {
-            return Quaternion.AngleAxis(angleDegrees, Vector3.up) * Vector3.forward;
+            Handles.color = Color.yellow;
+            GUIStyle labelStyle = new GUIStyle { normal = { textColor = Color.red } };
+            Unity.Collections.NativeArray<Vector3> viewPoints = _vision.viewPoints;
+            int count = _vision.stepCount;
+
+            Handles.Label(viewPoints[0], "0", labelStyle);
+            for (int i = 0; i < count; i++)
+            {
+                int next = (i + 1) % count;
+                Handles.Label(viewPoints[i], i.ToString(), labelStyle);
+                Handles.color = Color.yellow;
+                Handles.DrawLine(center, viewPoints[i]);
+                Handles.color = Color.cyan;
+                Handles.DrawLine(viewPoints[i], viewPoints[next]);
+            }
         }
     }
 }

@@ -36,10 +36,29 @@ float2 VisionWorldToFov(float3 posWorld)
     return float2(length(posFov), clampedAngle);
 }
 
-float3 VisionClipToWorld(float2 posClip)
+// Same contract as AtmosUnproject: `uv` is the raw VisionVert UV (not
+// GetFullScreenTriangleTexCoord). Depth is sampled with the UNITY_UV_STARTS_AT_TOP flip;
+// NDC Y is flipped for the inverse VP multiply. Mirrors AtmosScatter + AtmosCommon.hlsl —
+// the fix that stopped volumetric gas bleeding through walls.
+float3 VisionUnproject(float2 uv, float deviceDepth)
 {
-    float2 screenUV = posClip * 0.5 + 0.5;
-    float rawDepth = SampleSceneDepth(screenUV);
+    float4 positionCS = float4(uv * 2.0 - 1.0, deviceDepth, 1.0);
+#if UNITY_UV_STARTS_AT_TOP
+    positionCS.y = -positionCS.y;
+#endif
+    float4 positionWS = mul(_PlayerCameraInvViewProj, positionCS);
+    return positionWS.xyz / max(positionWS.w, 1e-6);
+}
+
+// Prefer this entry from fullscreen passes that use VisionVert (raw 0..1 UV).
+float3 VisionWorldFromScreenUV(float2 uvScreen)
+{
+    float2 depthUV = uvScreen;
+#if UNITY_UV_STARTS_AT_TOP
+    depthUV.y = 1.0 - depthUV.y;
+#endif
+
+    float rawDepth = SampleSceneDepth(depthUV);
 
 #if !defined(UNITY_REVERSED_Z)
     rawDepth = lerp(UNITY_NEAR_CLIP_VALUE, 1.0, rawDepth);
@@ -48,21 +67,36 @@ float3 VisionClipToWorld(float2 posClip)
     if (VisionDepthIsSky(rawDepth))
         return _PlayerPos.xyz;
 
-    // posClip comes from the fullscreen triangle's texture UV (screenUV * 2 - 1), which is
-    // flipped relative to true clip space on APIs where UNITY_UV_STARTS_AT_TOP is set (D3D,
-    // Vulkan, Metal). Un-flip before multiplying by the CPU-supplied camera inverse
-    // view-projection, otherwise the reconstructed world position is mirrored vertically and
-    // the vision mask samples the wrong geometry (walls read as open air and vice versa).
-    float2 ndc = posClip;
-#if UNITY_UV_STARTS_AT_TOP
-    ndc.y = -ndc.y;
-#endif
+    return VisionUnproject(uvScreen, rawDepth);
+}
 
-    // In a fullscreen/blit pass the bound VP is the blit matrix, not the camera's,
-    // so reconstruct world position from a CPU-supplied camera inverse view-projection.
-    float4 adjClip = float4(ndc, rawDepth, 1.0);
-    float4 worldSpace = mul(_PlayerCameraInvViewProj, adjClip);
-    return worldSpace.xyz / worldSpace.w;
+float3 VisionClipToWorld(float2 posClip)
+{
+    return VisionWorldFromScreenUV(posClip * 0.5 + 0.5);
+}
+
+float4 _VisionMap_TexelSize;
+
+float VisionSampleWallDepth(float2 viewUV)
+{
+    // Center sample (bilinear via texture filterMode).
+    float center = SAMPLE_TEXTURE2D(_VisionMap, sampler_VisionMap, viewUV).r;
+
+    // Fill small angular holes on continuous surfaces (flat walls) without pulling in a
+    // distant corridor ray: only promote neighbors within ~2m of the center hit.
+    float texel = _VisionMap_TexelSize.x;
+    float left = SAMPLE_TEXTURE2D(_VisionMap, sampler_VisionMap, viewUV + float2(-texel, 0.0)).r;
+    float right = SAMPLE_TEXTURE2D(_VisionMap, sampler_VisionMap, viewUV + float2(texel, 0.0)).r;
+    float left2 = SAMPLE_TEXTURE2D(_VisionMap, sampler_VisionMap, viewUV + float2(-texel * 2.0, 0.0)).r;
+    float right2 = SAMPLE_TEXTURE2D(_VisionMap, sampler_VisionMap, viewUV + float2(texel * 2.0, 0.0)).r;
+
+    float maxNeighbor = max(max(left, right), max(left2, right2));
+    float centerWorld = center * _ViewRange;
+    float neighborWorld = maxNeighbor * _ViewRange;
+    if (abs(neighborWorld - centerWorld) < 2.0)
+        center = max(center, maxNeighbor);
+
+    return center * _ViewRange;
 }
 
 bool VisionIsVisibleWorld(float3 posWorld)
@@ -81,19 +115,19 @@ bool VisionIsVisibleWorld(float3 posWorld)
     float2 viewUV = float2(currentAngle / _ViewConeWidth, 0.0);
 
     float currentDepth = polarCoords.x;
-    float wallDepth = SAMPLE_TEXTURE2D(_VisionMap, sampler_VisionMap, viewUV).r * _ViewRange;
+    float wallDepth = VisionSampleWallDepth(viewUV);
 
-    return currentDepth < wallDepth;
-}
-
-bool VisionIsVisibleClip(float2 posClip)
-{
-    return VisionIsVisibleWorld(VisionClipToWorld(posClip));
+    return currentDepth <= wallDepth;
 }
 
 bool VisionIsVisibleScreenUV(float2 screenUV)
 {
-    return VisionIsVisibleClip(screenUV * 2.0 - 1.0);
+    return VisionIsVisibleWorld(VisionWorldFromScreenUV(screenUV));
+}
+
+bool VisionIsVisibleClip(float2 posClip)
+{
+    return VisionIsVisibleScreenUV(posClip * 0.5 + 0.5);
 }
 
 #endif

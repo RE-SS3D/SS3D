@@ -6,8 +6,9 @@ using UnityEngine.Rendering.Universal;
 namespace SS3D.Rendering.URP
 {
     /// <summary>
-    /// URP fog-of-war fullscreen mask + hard composite for the player camera. Unseen tiles are
-    /// fully opaque black - a mask, not a soft fog.
+    /// URP fog-of-war fullscreen mask + hard composite for the player camera. Visibility comes
+    /// from the polar raycast map produced by <c>VisionSubSystem</c>; unseen areas are fully
+    /// opaque black - a mask, not a soft fog.
     /// </summary>
     public sealed class VisionRendererFeature : ScriptableRendererFeature
     {
