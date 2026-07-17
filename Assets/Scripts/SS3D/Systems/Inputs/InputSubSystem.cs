@@ -144,8 +144,13 @@ namespace SS3D.Systems.Inputs
                     new[] { console },
                     System.Array.Empty<InputAction>()),
 
-                // Typing: everything off except sending the chat message that is being typed.
+                // Generic text field focused: everything off.
                 [InputContext.TextEntry] = new InputContextDefinition(
+                    System.Array.Empty<InputActionMap>(),
+                    System.Array.Empty<InputAction>()),
+
+                // Chat field focused: everything off except sending the message being typed.
+                [InputContext.ChatEntry] = new InputContextDefinition(
                     System.Array.Empty<InputActionMap>(),
                     new[] { sendChat }),
             };

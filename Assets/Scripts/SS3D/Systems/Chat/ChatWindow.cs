@@ -32,7 +32,7 @@ namespace SS3D.Engine.Chat
         private ChatSubSystem _chatSystem;
         private InputSubSystem _inputSystem;
         private Controls.OtherActions _controls;
-        private readonly InputTextEntryScope _textEntry = new();
+        private readonly InputTextEntryScope _textEntry = new(InputContext.ChatEntry);
         private IInputHandle _scrollSuppress;
 
         protected virtual ChatChannel GetCurrentChatChannel() => throw new NotImplementedException();

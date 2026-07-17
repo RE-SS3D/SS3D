@@ -56,7 +56,8 @@ released. Definitions live in `InputSubSystem.BuildContexts()`.
 | `TileMenu` | 20 | `Movement`, `Camera`, `TileCreator`, `Other`; `Console.Open`; `DetailedExamine` (world interactions/hotkeys dropped) |
 | `MachineUI` | 30 | `Hotkeys`, `Interactions`; `UiCancel` (Escape). `Movement`/`Camera`/`Other` masked so Escape closes the panel instead of toggling the lobby |
 | `Console` | 40 | `Console` map only |
-| `TextEntry` | 50 | `Other.SendChatMessage` only (typing goes to the focused field via uGUI/TMP) |
+| `TextEntry` | 50 | nothing (generic field focused; typing goes to the field via uGUI/TMP) |
+| `ChatEntry` | 60 | `Other.SendChatMessage` only (chat field focused, so Enter still submits) |
 
 `TileMenu` replaces the old `ToggleCollisions` runtime binding-path matching (including its
 `leftShift`/`rightShift` special case) with an explicit map set.
@@ -99,7 +100,8 @@ without changing callers.
 | Old | New |
 |---|---|
 | `ToggleActionMap(map, true/false)` | `PushContext(...)` / dispose handle |
-| `ToggleAllActions(false, exclude)` | `PushContext(InputContext.TextEntry)` / dispose (via `InputTextEntryScope`) |
+| `ToggleAllActions(false)` (generic field) | `PushContext(InputContext.TextEntry)` / dispose (via `InputTextEntryScope`) |
+| `ToggleAllActions(false, exclude SendChatMessage)` (chat) | `PushContext(InputContext.ChatEntry)` / dispose (via `InputTextEntryScope`) |
 | `ToggleAction(a, false)` | `SuppressAction(a)` / dispose |
 | `ToggleBinding(path, false)` | `SuppressBinding(path)` / dispose |
 | `ToggleCollisions(...)` | context map set (removed) |

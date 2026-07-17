@@ -9,7 +9,17 @@ namespace SS3D.Systems.Inputs
     /// </summary>
     public sealed class InputTextEntryScope
     {
+        private readonly InputContext _context;
         private IInputHandle _handle;
+
+        /// <param name="context">
+        /// Which text-entry context to hold. Defaults to <see cref="InputContext.TextEntry"/>
+        /// (all input off); chat uses <see cref="InputContext.ChatEntry"/> to keep Enter live.
+        /// </param>
+        public InputTextEntryScope(InputContext context = InputContext.TextEntry)
+        {
+            _context = context;
+        }
 
         public void Enter()
         {
@@ -24,7 +34,7 @@ namespace SS3D.Systems.Inputs
                 return;
             }
 
-            _handle = input.PushContext(InputContext.TextEntry);
+            _handle = input.PushContext(_context);
         }
 
         public void Exit()

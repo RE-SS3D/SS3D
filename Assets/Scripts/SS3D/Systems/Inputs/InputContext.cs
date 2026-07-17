@@ -26,7 +26,11 @@ namespace SS3D.Systems.Inputs
         /// <summary>The in-game debug console is open.</summary>
         Console = 40,
 
-        /// <summary>A text input field is focused; gameplay keybinds must not fire while typing.</summary>
+        /// <summary>A generic text input field is focused; all gameplay/system keybinds are off.</summary>
         TextEntry = 50,
+
+        /// <summary>The chat input field is focused; like <see cref="TextEntry"/> but keeps the
+        /// send-message action live so Enter submits.</summary>
+        ChatEntry = 60,
     }
 }
