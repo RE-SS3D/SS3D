@@ -132,6 +132,12 @@ namespace SS3D.Systems.Interactions
 
         private void SubscribeToInput()
         {
+            // OnEnabled and OnOwnershipClient can both fire for an owner; subscribe exactly once.
+            if (_gameplayHandle != null)
+            {
+                return;
+            }
+
             _controls.RunPrimary.performed += HandleRunPrimary;
             _controls.ViewInteractions.performed += HandleView;
             _cancelInteractionAction.performed += HandleCancelInteraction;
