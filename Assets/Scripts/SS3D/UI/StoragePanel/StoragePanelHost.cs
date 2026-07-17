@@ -1,0 +1,454 @@
+using System.Collections.Generic;
+using SS3D.Core;
+using SS3D.Core.Behaviours;
+using SS3D.Systems.Inputs;
+using SS3D.Systems.Inventory.Containers;
+using SS3D.Systems.Inventory.Items;
+using UnityEngine;
+using UnityEngine.UIElements;
+
+namespace SS3D.UI.StoragePanel
+{
+    /// <summary>
+    /// On-demand storage panel host (design doc: Documents/design/inventory-storage.md §6). Unlike
+    /// MachineInterfaceHost (deliberately single-panel), this host manages any number of
+    /// simultaneously open panels — backpack, a world locker, and a nested lockbox opened from that
+    /// locker can all be visible side by side, per the imported "Looting Scene" mockup.
+    /// <para>
+    /// Self-bootstraps the same way MainHudSubSystem/ScreenEffectsSubSystem do rather than living on a
+    /// scene/prefab GameObject — hand-editing scene/prefab YAML outside the Unity Editor isn't safe.
+    /// </para>
+    /// <para>
+    /// Binds to the local player's ContainerViewer (replacing the old condemned ContainerView) so a
+    /// panel opens/closes automatically whenever the server-authoritative open/close RPCs fire —
+    /// whether that request came from this host (gear strip / world container click) or any other
+    /// source.
+    /// </para>
+    /// </summary>
+    [RequireComponent(typeof(UIDocument))]
+    public sealed class StoragePanelHost : SubSystem
+    {
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
+        private static void Bootstrap()
+        {
+            if (SubSystems.TryGet(out StoragePanelHost _))
+            {
+                return;
+            }
+
+            GameObject host = new(nameof(StoragePanelHost));
+            DontDestroyOnLoad(host);
+            host.AddComponent<UIDocument>();
+            host.AddComponent<StoragePanelHost>();
+        }
+
+        [SerializeField] private UIDocument _document;
+        [SerializeField] private StyleSheet _storagePanelStyle;
+        [SerializeField] private StyleSheet _inventorySlotStyle;
+
+        private readonly Dictionary<AttachedContainer, StoragePanelView> _openPanels = new();
+        private readonly Dictionary<AttachedContainer, Vector2> _pendingAnchors = new();
+        private readonly Dictionary<AttachedContainer, string> _pendingBreadcrumbs = new();
+
+        private VisualElement _root;
+        private HumanInventory _localInventory;
+        private int _cascadeIndex;
+
+        // Active drag state.
+        private StoragePanelView _dragSourcePanel;
+        private StorageSlot _dragSourceSlot;
+        private VisualElement _dragGhost;
+        private Image _dragGhostIcon;
+        private StorageSlot _highlightedSlot;
+
+        protected override void OnAwake()
+        {
+            base.OnAwake();
+
+            if (_document == null)
+            {
+                _document = GetComponent<UIDocument>();
+            }
+
+            if (!TryEnsureAssets())
+            {
+                enabled = false;
+                return;
+            }
+
+            BuildRoot();
+            InputInterface.RegisterDocument(_document);
+        }
+
+        protected override void OnDestroyed()
+        {
+            InputInterface.UnregisterDocument(_document);
+            base.OnDestroyed();
+        }
+
+        private bool TryEnsureAssets()
+        {
+            StoragePanelAssetCatalog catalog =
+                Resources.Load<StoragePanelAssetCatalog>(StoragePanelAssetPaths.ResourcesCatalogName);
+            if (catalog == null)
+            {
+#if UNITY_EDITOR
+                EnsureEditorAssets();
+                if (_storagePanelStyle != null)
+                {
+                    ApplyDocumentPanelSettings(null);
+                    return true;
+                }
+#endif
+                Debug.LogError(
+                    $"StoragePanelHost could not load Resources/{StoragePanelAssetPaths.ResourcesCatalogName}. "
+                    + "Run SS3D → Storage Panel → Rebuild Asset Catalog and commit the asset.",
+                    this);
+                return false;
+            }
+
+            if (!catalog.HasRequiredAssets(out string missingField))
+            {
+                Debug.LogError(
+                    $"StoragePanelAssetCatalog is missing required assets ({missingField}). "
+                    + "Run SS3D → Storage Panel → Rebuild Asset Catalog.",
+                    this);
+                return false;
+            }
+
+            _storagePanelStyle = catalog.StoragePanelStyle;
+            _inventorySlotStyle = catalog.InventorySlotStyle;
+            ApplyDocumentPanelSettings(catalog.PanelSettings);
+            return true;
+        }
+
+        private void ApplyDocumentPanelSettings(PanelSettings panelSettings)
+        {
+            if (_document == null)
+            {
+                return;
+            }
+
+            if (_document.panelSettings == null && panelSettings != null)
+            {
+                _document.panelSettings = panelSettings;
+            }
+
+            // Above the persistent Main HUD (-10) so panels read as on top of it, same relative
+            // ordering rule as the radial/armed overlays.
+            _document.sortingOrder = 0;
+        }
+
+        private void BuildRoot()
+        {
+            _root = _document.rootVisualElement;
+            _root.styleSheets.Add(_storagePanelStyle);
+            _root.styleSheets.Add(_inventorySlotStyle);
+            _root.style.position = Position.Absolute;
+            _root.style.left = 0;
+            _root.style.top = 0;
+            _root.style.right = 0;
+            _root.style.bottom = 0;
+            _root.pickingMode = PickingMode.Ignore;
+        }
+
+        private ContainerViewer _boundViewer;
+        private ContainerViewer.ContainerEventHandler _boundOpenedHandler;
+
+        /// <summary>
+        /// Called by MainHudSubSystem once it resolves the local player's ContainerViewer (same
+        /// binding moment as HumanInventory/Hands) — Systems-layer code must not depend on a UI
+        /// assembly, so this host can't discover its own local player the way MainHudSubSystem does;
+        /// it piggybacks on that already-correct lifecycle instead of duplicating it.
+        /// </summary>
+        public void BindContainerViewer(ContainerViewer viewer)
+        {
+            if (_boundViewer == viewer)
+            {
+                return;
+            }
+
+            UnbindContainerViewer();
+
+            _boundViewer = viewer;
+            _localInventory = viewer.inventory;
+            _boundOpenedHandler = container => HandleContainerOpened(viewer, container);
+            viewer.OnContainerOpened += _boundOpenedHandler;
+            viewer.OnContainerClosed += HandleContainerClosed;
+        }
+
+        /// <summary>Called by MainHudSubSystem when the local player unbinds (respawn, disconnect).</summary>
+        public void UnbindContainerViewer()
+        {
+            if (_boundViewer != null)
+            {
+                _boundViewer.OnContainerOpened -= _boundOpenedHandler;
+                _boundViewer.OnContainerClosed -= HandleContainerClosed;
+            }
+
+            _boundViewer = null;
+            _boundOpenedHandler = null;
+            _localInventory = null;
+
+            foreach (AttachedContainer container in new List<AttachedContainer>(_openPanels.Keys))
+            {
+                ClosePanel(container);
+            }
+        }
+
+        /// <summary>
+        /// Requests opening a container's panel anchored near a screen position (gear-strip icon,
+        /// world-container click). The actual open still round-trips through ContainerViewer/the
+        /// server, same as every other container-open path — this only supplies a positioning hint
+        /// consumed once the OnContainerOpened callback fires.
+        /// </summary>
+        public void RequestOpenNear(ContainerViewer viewer, AttachedContainer container, Vector2 screenAnchor)
+        {
+            if (_openPanels.ContainsKey(container))
+            {
+                return;
+            }
+
+            _pendingAnchors[container] = screenAnchor;
+            viewer.ShowContainerUI(container);
+        }
+
+        /// <summary>Player-initiated close (× button) — tears the panel down locally and notifies the server.</summary>
+        public void RequestClose(ContainerViewer viewer, AttachedContainer container)
+        {
+            ClosePanel(container);
+            viewer.CmdContainerClose(container);
+        }
+
+        private void HandleContainerOpened(ContainerViewer viewer, AttachedContainer container)
+        {
+            if (_openPanels.ContainsKey(container))
+            {
+                return;
+            }
+
+            Vector2 anchor = _pendingAnchors.TryGetValue(container, out Vector2 pending)
+                ? pending
+                : NextCascadePosition();
+            _pendingAnchors.Remove(container);
+
+            _pendingBreadcrumbs.TryGetValue(container, out string breadcrumb);
+            _pendingBreadcrumbs.Remove(container);
+
+            StoragePanelView view = new(breadcrumb);
+            view.CloseRequested += () => RequestClose(viewer, container);
+            view.SlotDragStarted += HandleSlotDragStarted;
+            view.SlotDragMoved += HandleSlotDragMoved;
+            view.SlotDragEnded += HandleSlotDragEnded;
+            view.SlotNestedOpenRequested += HandleSlotNestedOpenRequested;
+            view.Bind(container);
+
+            _root.Add(view);
+            PositionPanel(view, anchor);
+            _openPanels[container] = view;
+            container.OpenPanel = view;
+        }
+
+        private void HandleContainerClosed(AttachedContainer container)
+        {
+            ClosePanel(container);
+        }
+
+        private void ClosePanel(AttachedContainer container)
+        {
+            if (!_openPanels.TryGetValue(container, out StoragePanelView view))
+            {
+                return;
+            }
+
+            ((IContainerPanel)view).Close();
+            _openPanels.Remove(container);
+
+            if (ReferenceEquals(container.OpenPanel, view))
+            {
+                container.OpenPanel = null;
+            }
+        }
+
+        private void PositionPanel(StoragePanelView view, Vector2 anchor)
+        {
+            view.style.left = anchor.x;
+            view.style.top = anchor.y;
+        }
+
+        private Vector2 NextCascadePosition()
+        {
+            Vector2 basePosition = new(160f, 120f);
+            Vector2 offset = new(_cascadeIndex * 40f, _cascadeIndex * 30f);
+            _cascadeIndex = (_cascadeIndex + 1) % 6;
+            return basePosition + offset;
+        }
+
+        // --- Nested containers -------------------------------------------------------------------
+
+        /// <summary>
+        /// Opens a nested container (e.g. a lockbox found inside an already-open locker) with an
+        /// origin breadcrumb, per Documents/design/inventory-storage.md §7 (one level deep, sequential
+        /// opening — this doesn't recurse further, matching the design doc's explicit limit).
+        /// </summary>
+        public void OpenNested(ContainerViewer viewer, AttachedContainer nestedContainer, AttachedContainer originContainer, Vector2Int originSlot, Vector2 screenAnchor)
+        {
+            _pendingBreadcrumbs[nestedContainer] = $"from {originContainer.ContainerName} — Slot {originSlot}";
+            RequestOpenNear(viewer, nestedContainer, screenAnchor);
+        }
+
+        // --- Drag and drop -------------------------------------------------------------------------
+        // Screen-space slot-to-slot dragging is a new UITK pointer-capture implementation, not the
+        // world-space InteractionTier.Combine grammar — see the architecture effort doc's "Scope
+        // decisions" for why. UITK doesn't support CSS @keyframes, so drop-state highlighting is a
+        // static class toggle rather than the mockup's pulsing border animation.
+
+        private void HandleSlotDragStarted(StoragePanelView panel, StorageSlot slot, Vector2 position)
+        {
+            _dragSourcePanel = panel;
+            _dragSourceSlot = slot;
+
+            _dragGhost = new VisualElement();
+            _dragGhost.AddToClassList("storage-drag-ghost");
+            _dragGhost.pickingMode = PickingMode.Ignore;
+
+            _dragGhostIcon = new Image { sprite = slot.BoundItem != null ? slot.BoundItem.ItemSprite : null };
+            _dragGhostIcon.style.width = new Length(100, LengthUnit.Percent);
+            _dragGhostIcon.style.height = new Length(100, LengthUnit.Percent);
+            _dragGhostIcon.pickingMode = PickingMode.Ignore;
+            _dragGhost.Add(_dragGhostIcon);
+
+            _root.Add(_dragGhost);
+            PositionGhost(position);
+        }
+
+        private void HandleSlotDragMoved(Vector2 position)
+        {
+            if (_dragGhost == null)
+            {
+                return;
+            }
+
+            PositionGhost(position);
+            UpdateDropHighlight(position);
+        }
+
+        private void HandleSlotDragEnded(StoragePanelView sourcePanel, StorageSlot sourceSlot, Vector2 releasePosition)
+        {
+            ClearDropHighlight();
+
+            (StoragePanelView targetPanel, StorageSlot targetSlot) = HitTestPanels(releasePosition);
+
+            if (targetPanel != null
+                && targetSlot != null
+                && targetSlot != sourceSlot
+                && sourceSlot.BoundItem != null
+                && _localInventory != null
+                && targetPanel.Container.CanContainItemAtPosition(sourceSlot.BoundItem, targetSlot.Position))
+            {
+                _localInventory.ClientTransferItem(sourceSlot.BoundItem, targetSlot.Position, targetPanel.Container);
+            }
+
+            CleanupDrag();
+        }
+
+        private void HandleSlotNestedOpenRequested(StoragePanelView panel, StorageSlot slot)
+        {
+            if (_boundViewer == null || panel.Container == null || slot.BoundItem == null)
+            {
+                return;
+            }
+
+            AttachedContainer nested = slot.BoundItem.GetComponent<AttachedContainer>();
+            if (nested == null || _openPanels.ContainsKey(nested))
+            {
+                return;
+            }
+
+            Vector2 anchor = new(slot.worldBound.xMax + 16f, slot.worldBound.y);
+            OpenNested(_boundViewer, nested, panel.Container, slot.Position, anchor);
+        }
+
+        private void PositionGhost(Vector2 position)
+        {
+            _dragGhost.style.left = position.x - 26f;
+            _dragGhost.style.top = position.y - 26f;
+        }
+
+        private void UpdateDropHighlight(Vector2 position)
+        {
+            (StoragePanelView targetPanel, StorageSlot targetSlot) = HitTestPanels(position);
+
+            if (_highlightedSlot != null && _highlightedSlot != targetSlot)
+            {
+                _highlightedSlot.SetDropState(SlotDropState.None);
+                _highlightedSlot = null;
+            }
+
+            if (targetSlot == null || targetPanel == null || targetSlot == _dragSourceSlot || _dragSourceSlot?.BoundItem == null)
+            {
+                return;
+            }
+
+            bool valid = targetPanel.Container.CanContainItemAtPosition(_dragSourceSlot.BoundItem, targetSlot.Position);
+            targetSlot.SetDropState(valid ? SlotDropState.Valid : SlotDropState.Invalid);
+            _highlightedSlot = targetSlot;
+        }
+
+        private void ClearDropHighlight()
+        {
+            _highlightedSlot?.SetDropState(SlotDropState.None);
+            _highlightedSlot = null;
+        }
+
+        private (StoragePanelView panel, StorageSlot slot) HitTestPanels(Vector2 position)
+        {
+            foreach (StoragePanelView panel in _openPanels.Values)
+            {
+                StorageSlot slot = panel.HitTestSlot(position);
+                if (slot != null)
+                {
+                    return (panel, slot);
+                }
+            }
+
+            return (null, null);
+        }
+
+        private void CleanupDrag()
+        {
+            _dragGhost?.RemoveFromHierarchy();
+            _dragGhost = null;
+            _dragGhostIcon = null;
+            _dragSourcePanel = null;
+            _dragSourceSlot = null;
+        }
+
+#if UNITY_EDITOR
+        /// <summary>
+        /// Editor-only fallback when the Resources catalog is missing (pre-rebuild iteration).
+        /// Player builds never hit this path.
+        /// </summary>
+        private void EnsureEditorAssets()
+        {
+            if (_storagePanelStyle == null)
+            {
+                _storagePanelStyle = UnityEditor.AssetDatabase.LoadAssetAtPath<StyleSheet>(
+                    StoragePanelAssetPaths.StoragePanelStyle);
+            }
+
+            if (_inventorySlotStyle == null)
+            {
+                _inventorySlotStyle = UnityEditor.AssetDatabase.LoadAssetAtPath<StyleSheet>(
+                    StoragePanelAssetPaths.InventorySlotStyle);
+            }
+
+            if (_document != null && _document.panelSettings == null)
+            {
+                _document.panelSettings = UnityEditor.AssetDatabase.LoadAssetAtPath<PanelSettings>(
+                    StoragePanelAssetPaths.PanelSettings);
+            }
+        }
+#endif
+    }
+}

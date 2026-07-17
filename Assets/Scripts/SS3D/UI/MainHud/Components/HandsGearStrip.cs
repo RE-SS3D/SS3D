@@ -24,6 +24,12 @@ namespace SS3D.UI.MainHud.Components
         /// </summary>
         public event Action<bool> HandClickRequested;
 
+        /// <summary>
+        /// Fired when a gear-strip slot (belt/ID/PDA/back) is clicked — opens that slot's storage
+        /// panel (Documents/design/inventory-storage.md §6/§11).
+        /// </summary>
+        public event Action<GearSlot> GearSlotClicked;
+
         private readonly InventorySlot _belt;
         private readonly InventorySlot _id;
         private readonly InventorySlot _pda;
@@ -39,6 +45,10 @@ namespace SS3D.UI.MainHud.Components
             _id = CreateSlot("ID", icons.Id, 64);
             _pda = CreateSlot("PDA", icons.Pda, 64);
             _back = CreateSlot("Back", icons.Back, 64);
+            _belt.RegisterCallback<ClickEvent>(_ => GearSlotClicked?.Invoke(GearSlot.Belt));
+            _id.RegisterCallback<ClickEvent>(_ => GearSlotClicked?.Invoke(GearSlot.Id));
+            _pda.RegisterCallback<ClickEvent>(_ => GearSlotClicked?.Invoke(GearSlot.Pda));
+            _back.RegisterCallback<ClickEvent>(_ => GearSlotClicked?.Invoke(GearSlot.Back));
 
             VisualElement gear = new();
             gear.AddToClassList("hands-gear-strip__gear");
@@ -71,6 +81,9 @@ namespace SS3D.UI.MainHud.Components
         {
             GetGearSlot(slot).ItemIcon = itemIcon;
         }
+
+        /// <summary>Panel-space bounds of a gear slot, used to anchor its storage panel near the click.</summary>
+        public Rect GetGearSlotWorldBound(GearSlot slot) => GetGearSlot(slot).worldBound;
 
         public void SetHandIcons(Sprite leftItemIcon, Sprite rightItemIcon)
         {

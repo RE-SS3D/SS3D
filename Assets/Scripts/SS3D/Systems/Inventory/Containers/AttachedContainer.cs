@@ -1,7 +1,6 @@
 ﻿using FishNet.Component.Transforming;
 using SS3D.Core.Behaviours;
 using SS3D.Core;
-using SS3D.Systems.Inventory.UI;
 using System.Collections.Generic;
 using System;
 using UnityEngine;
@@ -30,9 +29,12 @@ namespace SS3D.Systems.Inventory.Containers
         public ContainerInteractive ContainerInteractive;
         public ContainerItemDisplay ContainerItemDisplay;
 
-        // reference towards the container UI linked to this container.
-        [Tooltip("Reference towards the container UI linked to this container. Leave empty before run ! ")]
-        public ContainerUi ContainerUi;
+        /// <summary>
+        /// The panel currently displaying this container's contents, if any. Set/cleared by
+        /// StoragePanelHost — never authored on a prefab, always empty until runtime.
+        /// </summary>
+        [NonSerialized]
+        public IContainerPanel OpenPanel;
 
         [Tooltip("The local position of attached items."), SerializeField]
         private Vector3 _attachmentOffset = Vector3.zero;
@@ -129,11 +131,15 @@ namespace SS3D.Systems.Inventory.Containers
         [Tooltip("The largest item size class this container accepts (Documents/design/inventory-storage.md §4)."), SerializeField]
         private SizeClass _maxSizeClass = SizeClass.Huge;
 
+        [Tooltip("Weight ceiling shown in the storage panel readout. Exact value is a balancing pass, not enforced as a hard block (Documents/design/inventory-storage.md §13)."), SerializeField]
+        private float _maxWeight = 20f;
+
         public ContainerType Type => _type;
         public Vector2Int Size => _size;
         public bool HideItems => _hideItems;
         public Filter StartFilter => _startFilter;
         public SizeClass MaxSizeClass => _maxSizeClass;
+        public float MaxWeight => _maxWeight;
 
 		/// <summary>
 		/// Is this container empty
@@ -443,14 +449,8 @@ namespace SS3D.Systems.Inventory.Containers
             {
                 return false;
             }
-            
-            if (newItem.Position.x < 0 || newItem.Position.y < 0)
-            {
-                return false;
-            }
 
-            // Fail if item is at this postion
-            if (ItemAt(newItem.Position))
+            if (newItem.Position.x < 0 || newItem.Position.y < 0)
             {
                 return false;
             }
@@ -480,7 +480,10 @@ namespace SS3D.Systems.Inventory.Containers
                 return true;
             }
 
-            // Stacking: merge into an existing compatible stack instead of taking a new slot
+            // Stacking: merge into an existing compatible stack instead of taking a new slot, even if
+            // the caller targeted a different (possibly occupied-by-something-else) position — checked
+            // before the "position occupied" bailout below, since a drag-drop explicitly targets a
+            // slot position and the natural drop target for a stackable item IS an occupied stack
             // (Documents/design/inventory-storage.md §5).
             if (newItem.Item.IsStackable && TryFindMergeableStack(newItem.Item, out int mergeIndex))
             {
@@ -488,6 +491,12 @@ namespace SS3D.Systems.Inventory.Containers
                 existingStackItem.SetStackCount(existingStackItem.StackCount + newItem.Item.StackCount);
                 DespawnMergedItem(newItem.Item);
                 return true;
+            }
+
+            // Fail if item is at this postion
+            if (ItemAt(newItem.Position))
+            {
+                return false;
             }
 
             _storedItems.Add(newItem);
@@ -702,9 +711,28 @@ namespace SS3D.Systems.Inventory.Containers
                     && !(bool)GetComponents<IStorageCondition>()?.Any(x => !x.CanStore(this, item));
         }
 
+        /// <summary>
+        /// Whether dropping this item at this exact position would succeed — used to drive the storage
+        /// panel's valid/invalid drop highlighting. An occupied slot still counts as valid if it holds a
+        /// stack this item could merge into (see AddStoredItem's stacking path).
+        /// </summary>
         public bool CanContainItemAtPosition(Item item, Vector2Int position)
         {
-            return CanContainItem(item) && IsAreaFree(position) && AreSlotCoordinatesInGrid(position);
+            if (!CanContainItem(item) || !AreSlotCoordinatesInGrid(position))
+            {
+                return false;
+            }
+
+            if (IsAreaFree(position))
+            {
+                return true;
+            }
+
+            Item occupant = ItemAt(position);
+            return item.IsStackable
+                && occupant != null
+                && occupant.CanMergeWith(item)
+                && occupant.StackCount + item.StackCount <= occupant.MaxStackSize;
         }
 
         /// <summary>

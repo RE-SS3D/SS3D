@@ -12,6 +12,7 @@ using SS3D.Systems.Inventory.Items;
 using SS3D.Systems.Rounds;
 using SS3D.Systems.Rounds.Events;
 using SS3D.UI.MainHud.Components;
+using SS3D.UI.StoragePanel;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -205,6 +206,7 @@ namespace SS3D.UI.MainHud
             _view = new MainHudView(styleSheets, _icons);
             _view.IntentToggleRequested += HandleIntentToggleRequested;
             _view.HandSelectedRequested += HandleHandSelectedRequested;
+            _view.GearSlotClicked += HandleGearSlotClicked;
             _view.Attach(_document.rootVisualElement);
             _view.SetAlertState(default);
         }
@@ -317,6 +319,11 @@ namespace SS3D.UI.MainHud
                 _inventory.OnInventoryContainerRemoved += HandleInventoryChanged;
                 _inventory.OnContainerContentChanged += HandleContainerContentChanged;
                 _inventory.OnInventorySetUp += RefreshEquipmentAndGear;
+
+                if (_inventory.containerViewer != null && SubSystems.TryGet(out StoragePanelHost panelHost))
+                {
+                    panelHost.BindContainerViewer(_inventory.containerViewer);
+                }
             }
 
             RefreshEquipmentAndGear();
@@ -331,6 +338,11 @@ namespace SS3D.UI.MainHud
                 _inventory.OnInventoryContainerRemoved -= HandleInventoryChanged;
                 _inventory.OnContainerContentChanged -= HandleContainerContentChanged;
                 _inventory.OnInventorySetUp -= RefreshEquipmentAndGear;
+            }
+
+            if (SubSystems.TryGet(out StoragePanelHost panelHost))
+            {
+                panelHost.UnbindContainerViewer();
             }
 
             _localPlayer = null;
@@ -377,6 +389,41 @@ namespace SS3D.UI.MainHud
 
             // Same path as legacy SingleItemContainerSlot — ServerRpc via HumanInventory.ActivateHand.
             _inventory.ActivateHand(hand.Container);
+        }
+
+        /// <summary>
+        /// Opens the storage panel for a gear-strip slot (belt/ID/PDA/back), anchored near the icon —
+        /// same open path (ContainerViewer.ShowContainerUI) as a world container's "View" interaction,
+        /// per Documents/design/inventory-storage.md §6.
+        /// </summary>
+        private void HandleGearSlotClicked(HandsGearStrip.GearSlot slot)
+        {
+            if (_inventory == null || _inventory.containerViewer == null)
+            {
+                return;
+            }
+
+            ContainerType type = slot switch
+            {
+                HandsGearStrip.GearSlot.Belt => ContainerType.Belt,
+                HandsGearStrip.GearSlot.Id => ContainerType.Identification,
+                HandsGearStrip.GearSlot.Pda => ContainerType.Pda,
+                HandsGearStrip.GearSlot.Back => ContainerType.Bag,
+                _ => ContainerType.None,
+            };
+
+            if (!_inventory.TryGetTypeContainer(type, 0, out AttachedContainer container))
+            {
+                return;
+            }
+
+            if (!SubSystems.TryGet(out StoragePanelHost panelHost))
+            {
+                return;
+            }
+
+            Rect bound = _view.GetGearSlotWorldBound(slot);
+            panelHost.RequestOpenNear(_inventory.containerViewer, container, bound.position);
         }
 
         private void RefreshIntent()

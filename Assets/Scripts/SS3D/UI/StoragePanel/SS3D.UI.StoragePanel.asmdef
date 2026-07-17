@@ -1,15 +1,10 @@
 {
-    "name": "SS3D.UI.MainHud",
-    "rootNamespace": "SS3D.UI.MainHud",
+    "name": "SS3D.UI.StoragePanel",
+    "rootNamespace": "SS3D.UI.StoragePanel",
     "references": [
-        "Coimbra",
-        "Coimbra.Services.Events",
-        "FishNet.Runtime",
         "SS3D.Core",
-        "SS3D.Interactions",
         "SS3D.Systems",
-        "SS3D.UI.MachineInterface",
-        "SS3D.UI.StoragePanel"
+        "SS3D.UI.MachineInterface"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

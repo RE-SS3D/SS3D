@@ -49,37 +49,59 @@ model, not just the presentation layer.
 This effort was implemented in a remote session with **no local Unity Editor** — no compilation, Play
 Mode, or Test Runner access. C#/UXML/USS source was written and reviewed by careful reading, not
 compiler feedback. Per [2026-07_agent-first-composition.md](2026-07_agent-first-composition.md),
-mega-prefabs (`Human.prefab`, item prefabs) are never hand-edited as YAML regardless of environment —
-that already requires an Editor tool. The owner must: open the project in Unity Editor, resolve any
-compile errors this effort's diff introduces, run the Editor purge/rebuild tools this effort adds, and
-carry out the Verification section below before merging.
+mega-prefabs are never hand-edited as YAML regardless of environment. In practice `Human.prefab` and
+the item prefabs turned out fine — they only ever held a null `AttachedContainer.ContainerUi` field
+reference, not an attached condemned-UI component, so nothing there needed surgery. The real instance
+of this constraint turned out to be `Assets/Content/Systems/UI/Lobby/Canvas/PlayerCanvas.prefab`,
+which nests the old `HumanoidInventory.prefab` as a child `PrefabInstance` — that nested reference is
+left in place; see "Purge" below and the plan file's `purge-prefabs-followup` todo. The owner must:
+open the project in Unity Editor, resolve any compile errors this effort's diff introduces, do that
+manual prefab cleanup, run the Editor rebuild-menu tools this effort adds, and carry out the
+Verification section below before merging.
 
 ## Phases
 
-1. **Purge condemned UI** — delete legacy uGUI container UI (`ContainerUi`, `ContainerDisplay`,
-   `ItemGrid`, `ItemGridItem`, `ItemDisplay`, `DraggableWindow`, `InventoryView`, `DummySlot`,
-   `SingleItemContainerSlot`, `InventoryDisplayElement`) per the replace-and-purge policy in
-   [2026-07_agent-first-composition.md](2026-07_agent-first-composition.md). `Human.prefab`
-   references stripped via an Editor setup tool, not hand-edited YAML.
+1. **Purge condemned UI** — deleted the legacy uGUI container UI scripts (`ContainerUi`,
+   `ContainerView`, `ContainerDisplay`, `ItemGrid`, `ItemGridItem`, `ItemDisplay`, `DraggableWindow`,
+   `InventoryView`, `DummySlot`, `SingleItemContainerSlot`, `InventoryDisplayElement`,
+   `ToggleInternalClothingUI`, `ToggleBodyTargetUI`) per the replace-and-purge policy in
+   [2026-07_agent-first-composition.md](2026-07_agent-first-composition.md), and cleaned up every call
+   site (`HumanInventory`, `Hands`, a PlayMode test). Left the **prefab assets** themselves in place —
+   `HumanoidInventory.prefab` is nested inside `PlayerCanvas.prefab`; deleting the asset without the
+   Editor would leave a dangling nested-prefab reference. Manual Editor follow-up required (plan file).
 2. **Container primitive rework** — `SizeClass` + fit-check on `AttachedContainer`/`Item`; real
-   recursive `Weight` (computed, never cached, matches design doc §2/§7); revived stacking
-   (`StackableItem`); flat slot-index addressing; fix `StoreInteraction.Start()`'s whole-hand-dump
-   bug; minimal ID-gated lock component for world containers.
-3. **Networking** — verify/extend `ContainerViewer`'s per-client open/close RPC path for multiple
-   simultaneously open containers.
-4. **Storage panel UITK surface** — new `Assets/Scripts/SS3D/UI/StoragePanel/` following the
-   established path-catalog pattern (`StoragePanelAssetPaths`/`StoragePanelAssetCatalog` + Editor
-   rebuild menu, mirroring `MainHudAssetCatalog`/`MachineUiAssetCatalog`). `StoragePanelHost` manages
-   N simultaneously open panel instances (unlike single-panel `MachineInterfaceHost`) anchored near
-   their open origin; `StoragePanelView` renders header/weight bar/slot grid/nested breadcrumb per
-   the mockups.
-5. **Slot drag-and-drop** — new UITK pointer-capture manipulator per slot: floating ghost element,
-   cross-panel hit-testing, valid/invalid-drop highlighting, server-validated transfer on drop.
-6. **Wire entry points** — `HandsGearStrip` belt/ID/PDA/back click handlers (currently icon-only, no
-   handler); world container open interactions repointed at `StoragePanelHost`; "take from another
-   character" reuses the same open-panel path.
-7. **Docs sync** — `update-system-docs`: `systems/inventory.md`, `INDEX.md` coverage table, this
-   doc's `Status`, plan file todos.
+   recursive `Weight` (computed, never cached, matches design doc §2/§7) plus a new `MaxWeight`
+   display ceiling; revived stacking (`Item.MaxStackSize`/`StackCount`, merge-on-add in
+   `AttachedContainer.AddStoredItem`); fixed `StoreInteraction.Start()`'s whole-hand-dump bug; minimal
+   ID-gated `AttachedContainerLock` component for world containers.
+3. **Networking** — turned out to be a no-op: `ContainerViewer`'s existing `_displayedContainers` list
+   and per-container `TargetRpc` open/close already supports any number of simultaneously open
+   containers.
+4. **Storage panel UITK surface** — new `Assets/Scripts/SS3D/UI/StoragePanel/` (own
+   `SS3D.UI.StoragePanel.asmdef`) following the established path-catalog pattern
+   (`StoragePanelAssetPaths`/`StoragePanelAssetCatalog` + Editor rebuild menu, mirroring
+   `MainHudAssetCatalog`/`MachineUiAssetCatalog`). `StoragePanelHost` manages N simultaneously open
+   panel instances (unlike single-panel `MachineInterfaceHost`); `StoragePanelView` renders
+   header/weight bar/slot grid/nested breadcrumb per the mockups. **Assembly layering note:** placing
+   this required tracing the real asmdef dependency chain (`SS3D.Systems` → `SS3D.UI` → ... →
+   `SS3D.UI.MachineInterface` → `SS3D.UI.StoragePanel` → `SS3D.UI.MainHud`, confirmed via GUID
+   cross-references between `.asmdef` files) — `ContainerViewer` (Systems layer) cannot reference
+   `StoragePanelHost` directly without a circular assembly reference. Fixed by having
+   `MainHudSubSystem` (which already owns local-player lifecycle tracking) hand `StoragePanelHost` the
+   `ContainerViewer` reference at bind/unbind time, rather than the panel host discovering its own
+   local player.
+5. **Slot drag-and-drop** — new UITK pointer-capture manipulator per slot (`StorageSlot`): floating
+   ghost element, cross-panel hit-testing, valid/invalid-drop state. Shipped as a **static class
+   toggle**, not the mockup's pulsing border — UI Toolkit has no CSS `@keyframes`. Also click-to-open
+   for nested container items. Fixed a real bug found while wiring this: `AddStoredItem`'s "position
+   occupied" check ran before the stack-merge check, so dropping onto an existing stack (the actual
+   drag-drop case) would have failed instead of merging.
+6. **Wire entry points** — `HandsGearStrip` belt/ID/PDA/back now fire click events;
+   `MainHudSubSystem` opens the panel anchored at the slot. World containers needed no interaction-file
+   changes — `ViewContainerInteraction` already calls `ContainerViewer.ShowContainerUI`, which
+   `StoragePanelHost` now listens to directly (falls back to a cascading position, no precise
+   click-anchor plumbing this pass).
+7. **Docs sync** — this doc + system map + INDEX + plan file, done as part of shipping this pass.
 
 ## Related docs
 

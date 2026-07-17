@@ -19,6 +19,9 @@ namespace SS3D.UI.MainHud
         /// </summary>
         public event Action<bool> HandSelectedRequested;
 
+        /// <summary>Fired when a gear-strip slot (belt/ID/PDA/back) is clicked.</summary>
+        public event Action<HandsGearStrip.GearSlot> GearSlotClicked;
+
         private readonly StyleSheet[] _styleSheets;
         private readonly MainHudIconSet _icons;
 
@@ -99,6 +102,12 @@ namespace SS3D.UI.MainHud
             _handsGearStrip.SetActiveHand(leftIsActive);
         }
 
+        /// <summary>Panel-space bounds of a gear slot, used to anchor its storage panel near the click.</summary>
+        public UnityEngine.Rect GetGearSlotWorldBound(HandsGearStrip.GearSlot slot)
+        {
+            return _handsGearStrip.GetGearSlotWorldBound(slot);
+        }
+
         private void BuildTree()
         {
             _alertStack = new AlertIconStack();
@@ -109,6 +118,7 @@ namespace SS3D.UI.MainHud
 
             _handsGearStrip = new HandsGearStrip(_icons);
             _handsGearStrip.HandClickRequested += leftIsActive => HandSelectedRequested?.Invoke(leftIsActive);
+            _handsGearStrip.GearSlotClicked += slot => GearSlotClicked?.Invoke(slot);
             VisualElement handsGearZone = BuildZone("main-hud__zone--hands-gear", _handsGearStrip);
 
             _intentModule = new IntentModule();

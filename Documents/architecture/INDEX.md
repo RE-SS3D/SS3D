@@ -27,7 +27,7 @@ Feature-level gaps *within* an already-designed system stay in that design doc's
 | stamina | [stamina.md](../design/stamina.md) — active | none yet | none yet |
 | health | [health.md](../design/health.md) — active | rewrite in flight: [health_implementation_plan](../plans/health_implementation_plan.md); [body-presentation-authority](2026-07_body-presentation-authority.md) — planned; screen overlays in [screen-space-effects](2026-07_screen-space-effects.md) (health wired) | [health](systems/health.md) — partial |
 | armor | [armor.md](../design/armor.md) — active | none yet | none yet |
-| inventory-storage | [inventory-storage.md](../design/inventory-storage.md) — active | none yet | [inventory](systems/inventory.md) — partial |
+| inventory-storage | [inventory-storage.md](../design/inventory-storage.md) — active | [2026-07_inventory-storage-redesign](2026-07_inventory-storage-redesign.md) — in-progress (data model + panel UI + drag-drop shipped, unverified — no Editor in implementing session; PlayerCanvas.prefab cleanup and Play-Mode verification pending) | [inventory](systems/inventory.md) — partial |
 | examine | [examine.md](../design/examine.md) — active | none yet | [examine](systems/examine.md) — shipped |
 | crafting | [crafting.md](../design/crafting.md) — active | none yet | [crafting](systems/crafting.md) — stub |
 | death-cloning-respawn | [death-cloning-respawn.md](../design/death-cloning-respawn.md) — active | none yet | none yet |
@@ -102,7 +102,7 @@ section, `Status: draft`, design-docs-cite-design-docs only). Owner review to pr
 | Area | [area](systems/area.md) | partial | APC-seeded flood-fill, area power, lighting state, wall light switches |
 | Electricity | [electricity](systems/electricity.md) | partial | kWh storage, HV cable grid, APC/SMES/generators, consumer visuals |
 | Substances | [substances](systems/substances.md) | partial | Containers, transfer interactions, Tier 2 armed proof-of-concept; container `AsReadOnly` GC pitfall |
-| Inventory | [inventory](systems/inventory.md) | partial | Items/containers/hands; Main HUD UITK overlay (Resources catalog); legacy HUD uGUI condemned; Human hands wiring is prefab debt |
+| Inventory | [inventory](systems/inventory.md) | partial | Items/containers/hands + weight/size-class/stacking/locks; Main HUD UITK overlay + new StoragePanel UITK panel/drag-drop (unverified, no Editor); legacy container UI scripts deleted, prefab cleanup pending; Human hands wiring is prefab debt |
 | Entities | [entities](systems/entities.md) | partial | Humanoids, minds, spawning; body-state animation + combat stances; `Human.prefab` composition debt; collapse/death presentation debt ([body-presentation-authority](2026-07_body-presentation-authority.md)) |
 | Health | [health](systems/health.md) | partial | Phases 1–5b shipped; screen-effects wired from snapshot; Phase 0d strips/rewires `Human.prefab`; vitals HUD / examine-self Phase 6 remainder; interim collapse RPCs — see [body-presentation-authority](2026-07_body-presentation-authority.md) |
 | Combat | [combat](systems/combat.md) | partial | Phase 4 melee vertical slice (fists + crowbar); stance/aim presentation in [entities](systems/entities.md) |
@@ -139,6 +139,7 @@ Implementation history — not navigation maps. Update `Status` in the header wh
 | [2026-07_agent-first-composition](2026-07_agent-first-composition.md) | shipped (policy); code deferred — bootstrap, UiShell + shared path-catalog helper, prefab tooling; main-HUD UITK slice partial ([inventory](systems/inventory.md)) |
 | [2026-07_mi-path-catalog](2026-07_mi-path-catalog.md) | shipped (MI path catalog wedge of composition follow-on b; Main HUD later copied the pattern — unify under [ui-shell](systems/ui-shell.md)) |
 | [2026-07_body-presentation-authority](2026-07_body-presentation-authority.md) | planned |
+| [2026-07_inventory-storage-redesign](2026-07_inventory-storage-redesign.md) | in-progress (data model + panel UI + drag-drop shipped, unverified — no Editor in implementing session) |
 
 ## Implementation plans
 

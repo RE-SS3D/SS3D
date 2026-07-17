@@ -1,6 +1,7 @@
 using NUnit.Framework;
-using SS3D.Systems.Inventory.UI;
+using SS3D.Systems.Inventory.Containers;
 using System.Collections;
+using System.Linq;
 using UnityEngine;
 
 namespace SS3D.Tests
@@ -23,15 +24,18 @@ namespace SS3D.Tests
         #endregion
 
         /// <summary>
-        /// This test proxy checks whether there are the same number of pockets (well, SingleItemContainerSlots)
+        /// This test proxy checks whether there are the same number of pocket AttachedContainers
         /// after the round restarts. Aims to validate Issue #990: Propagating Pocket Problem.
+        /// Originally counted the (now condemned/deleted) SingleItemContainerSlot UI elements;
+        /// counts the underlying AttachedContainer data instead since the storage redesign
+        /// (Documents/architecture/2026-07_inventory-storage-redesign.md).
         /// </summary>
         /// <returns>IEnumerator for use as a UnityTest.</returns>
         public static IEnumerator Issue0990_PlayerHasTheSameNumberOfPocketsAfterEndingRoundAndStartingNewOne(bool useProgrammaticRoundControl = false)
         {
             yield return new WaitForSeconds(5f);
 
-            int initialNumberOfContainerSlots = Object.FindObjectsOfType(typeof(SingleItemContainerSlot)).Length;
+            int initialNumberOfPockets = CountPocketContainers();
 
             if (useProgrammaticRoundControl)
             {
@@ -52,12 +56,18 @@ namespace SS3D.Tests
 
             yield return new WaitForSeconds(5f);
 
-            int subsequentNumberOfContainerSlots = Object.FindObjectsOfType(typeof(SingleItemContainerSlot)).Length;
+            int subsequentNumberOfPockets = CountPocketContainers();
 
             Assert.AreEqual(
-                initialNumberOfContainerSlots,
-                subsequentNumberOfContainerSlots,
-                $"Initially there were {initialNumberOfContainerSlots} slots, but now there are {subsequentNumberOfContainerSlots} slots");
+                initialNumberOfPockets,
+                subsequentNumberOfPockets,
+                $"Initially there were {initialNumberOfPockets} pockets, but now there are {subsequentNumberOfPockets} pockets");
+        }
+
+        private static int CountPocketContainers()
+        {
+            return Object.FindObjectsByType<AttachedContainer>(FindObjectsSortMode.None)
+                .Count(container => container.Type == ContainerType.Pocket);
         }
     }
 }

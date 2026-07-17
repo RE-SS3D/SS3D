@@ -6,7 +6,10 @@ todos:
     content: "Phase 0: Architecture effort doc + this plan file"
     status: completed
   - id: purge-ugui
-    content: "Phase 0: Delete condemned uGUI container UI (ContainerUi, ContainerDisplay, ItemGrid, ItemGridItem, ItemDisplay, DraggableWindow, InventoryView, DummySlot, SingleItemContainerSlot, InventoryDisplayElement) + strip Human.prefab refs via Editor tool"
+    content: "Phase 0: Deleted condemned uGUI container UI scripts (ContainerUi, ContainerView, ContainerDisplay, ItemGrid, ItemGridItem, ItemDisplay, DraggableWindow, InventoryView, DummySlot, SingleItemContainerSlot, InventoryDisplayElement, ToggleInternalClothingUI, ToggleBodyTargetUI) + cleaned up call sites (HumanInventory, Hands, IssueReproduction test). Human.prefab/item prefabs never actually referenced these as attached components (only a since-renamed null AttachedContainer.ContainerUi field) so no prefab surgery was needed there. Prefab ASSETS themselves were NOT deleted — see 'purge-prefabs-followup' below."
+    status: completed
+  - id: purge-prefabs-followup
+    content: "Phase 0 follow-up (manual, Editor-only): HumanoidInventory.prefab (the old UI's root, under Assets/Content/Systems/UI/Systems/Containers/Inventory/) is nested as a child PrefabInstance inside Assets/Content/Systems/UI/Lobby/Canvas/PlayerCanvas.prefab. Deleting that .prefab asset without the Editor would leave a dangling nested-prefab reference. Open PlayerCanvas.prefab in Unity, remove the nested HumanoidInventory instance (Missing Script warnings on its components are expected/harmless in the meantime), then delete the now-orphaned prefab assets under Systems/UI/Systems/Containers/."
     status: pending
   - id: size-class
     content: "Phase 1: SizeClass enum on Item + max-size-class fit-check on AttachedContainer.CanContainItem"
@@ -27,31 +30,31 @@ todos:
     content: "Phase 1: AttachedContainerLock component + AttachedContainer.IsAccessibleBy, wired into ViewContainerInteraction/StoreInteraction/TakeFirstInteraction/OpenInteraction CanInteract"
     status: completed
   - id: viewer-multi
-    content: "Phase 2: Verify/extend ContainerViewer TargetRpc/ObserversRpc for multiple simultaneously open containers per client"
-    status: pending
+    content: "Phase 2: Verified — ContainerViewer's existing _displayedContainers list + per-container TargetRpc open/close already supports multiple simultaneously open containers; no change needed."
+    status: completed
   - id: panel-catalog
-    content: "Phase 3: StoragePanelAssetPaths/StoragePanelAssetCatalog + Editor rebuild menu (mirrors MainHudAssetCatalog/MachineUiAssetCatalog)"
-    status: pending
+    content: "Phase 3: StoragePanelAssetPaths/StoragePanelAssetCatalog + Editor rebuild menu (SS3D → Storage Panel → Rebuild Asset Catalog), new SS3D.UI.StoragePanel asmdef (Systems ⟶ UI ⟶ MachineInterface ⟶ StoragePanel ⟶ MainHud dependency chain — see architecture doc)"
+    status: completed
   - id: panel-host
-    content: "Phase 3: StoragePanelHost — multi-instance panel manager (dictionary keyed by container), anchored near open origin, closes on out-of-view"
-    status: pending
+    content: "Phase 3: StoragePanelHost — multi-instance panel manager (dictionary keyed by container), cascade-position fallback + anchored-near-click positioning, bound/unbound by MainHudSubSystem's existing local-player lifecycle (not self-discovered, to keep Systems→UI layering intact)"
+    status: completed
   - id: panel-view
-    content: "Phase 3: StoragePanelView — header/slot-count, weight bar (info/warning/danger thresholds), 3-col slot grid, stack badge, nested breadcrumb + close button"
-    status: pending
+    content: "Phase 3: StoragePanelView — header/slot-count, weight bar (info/warning/danger thresholds off new AttachedContainer.MaxWeight), slot grid (StorageSlot : InventorySlot), nested breadcrumb + close button"
+    status: completed
   - id: slot-drag
-    content: "Phase 4: Slot drag-and-drop UITK manipulator — ghost element, cross-panel hit-testing, valid/invalid-drop pulse states, server-validated transfer"
-    status: pending
+    content: "Phase 4: Slot drag-and-drop UITK manipulator — ghost element, cross-panel hit-testing, valid/invalid-drop state (static class toggle, not the mockup's pulse animation — UITK has no @keyframes), server-validated transfer via HumanInventory.ClientTransferItem. Also added click-to-open for nested container items (lockbox-in-locker)."
+    status: completed
   - id: gear-strip-wire
-    content: "Phase 5: HandsGearStrip belt/ID/PDA/back click handlers open StoragePanelHost panels"
-    status: pending
+    content: "Phase 5: HandsGearStrip belt/ID/PDA/back now fire GearSlotClicked; MainHudSubSystem resolves the container and calls StoragePanelHost.RequestOpenNear anchored at the slot's worldBound"
+    status: completed
   - id: world-container-wire
-    content: "Phase 5: Repoint ViewContainerInteraction/OpenInteraction at StoragePanelHost; wire take-from-character path"
-    status: pending
+    content: "Phase 5: No interaction-file changes needed — ViewContainerInteraction.Start() already calls ContainerViewer.ShowContainerUI, which StoragePanelHost now listens to directly; world containers open via the cascade-position fallback (no precise click-anchor plumbing this pass). Take-from-character reuses the same path, untested."
+    status: completed
   - id: system-docs-sync
     content: "Phase 6: update-system-docs — systems/inventory.md, INDEX.md coverage table, architecture effort Status, plan todos"
     status: pending
   - id: verification
-    content: "Verification: weight thresholds, size-class rejection, stacking, multi-panel + nested lockbox, drag-drop transfer, lock gating, two-client sync, Test Runner green"
+    content: "Verification: NOT RUN — no Unity Editor in the implementing session. Owner must compile, run the two Editor rebuild-menu tools (Main HUD already existed; Storage Panel is new), do the PlayerCanvas.prefab cleanup (see purge-prefabs-followup), and Play-Mode verify weight thresholds, size-class rejection, stacking, multi-panel + nested lockbox, drag-drop transfer, lock gating, two-client sync, Test Runner green."
     status: pending
 isProject: false
 ---
@@ -93,10 +96,30 @@ implementation (see architecture doc "Scope decisions"): flat slot-index address
 given no compiler was available to verify a wider refactor. Stack **splitting** (pulling part of a
 stack back out) is explicitly not implemented — only merging on add.
 
-**Not yet started:** Phases 0, 2, 3, 4, 5 (uGUI purge, ContainerViewer multi-panel networking, the
-UITK storage panel surface itself, slot drag-and-drop, gear-strip/world-container wiring). See
-architecture doc "Execution environment constraint" — no Unity Editor was available in the
-implementing session; Phase 1 could be written and reasoned about as plain C#, but the remaining
-phases involve UXML/USS assets, ScriptableObject catalog instances, and (for Phase 0) mega-prefab
-surgery that per policy requires an Editor tool, none of which can be authored with confidence without
-compiler/Editor feedback in one continuous session. Resume here.
+**Phases 0/2/3/4/5, shipped this pass (still unverified — no Editor):**
+
+- **Phase 0:** deleted the condemned scripts; left the .prefab assets alone (see
+  `purge-prefabs-followup` — `HumanoidInventory.prefab` is nested inside `PlayerCanvas.prefab`,
+  genuine Editor-only surgery).
+- **Phase 2:** turned out to be a no-op — `ContainerViewer` already supported N simultaneously open
+  containers.
+- **Phase 3:** `Assets/Scripts/SS3D/UI/StoragePanel/` — new `SS3D.UI.StoragePanel.asmdef`. Placing the
+  panel code required working out the real asmdef dependency chain (`SS3D.Systems` → `SS3D.UI` →
+  ... → `SS3D.UI.MachineInterface` → `SS3D.UI.StoragePanel` → `SS3D.UI.MainHud`, confirmed by
+  grepping GUID cross-references between `.asmdef` files) — an earlier attempt put the panel host
+  where `ContainerViewer` would need to reference it directly, which would have been a circular
+  assembly reference. Fixed by having `MainHudSubSystem` (which already tracks the local player)
+  hand `StoragePanelHost` the `ContainerViewer` reference, instead of the panel host discovering its
+  own local player.
+- **Phase 4:** drag-and-drop shipped without the mockup's pulsing valid/invalid border — UI Toolkit
+  has no CSS `@keyframes`; used a static class-toggle highlight instead. Also found and fixed a real
+  bug while wiring this: `AttachedContainer.AddStoredItem`'s "position occupied" check ran *before*
+  the stack-merge check, so dropping directly onto an existing stack (the actual drag-drop use case)
+  would have failed instead of merging — reordered, and `CanContainItemAtPosition` updated to match
+  so the drop-highlight preview agrees with what actually happens.
+- **Phase 5:** gear-strip wiring shipped; world-container wiring needed no changes (already routes
+  through the now-panel-connected `ContainerViewer`).
+
+**Still needed:** Phase 6 (docs sync — this note is part of it), the `purge-prefabs-followup` manual
+Editor step, and the entire Verification section — nothing in this pass was compiled or run. See
+architecture doc "Execution environment constraint."

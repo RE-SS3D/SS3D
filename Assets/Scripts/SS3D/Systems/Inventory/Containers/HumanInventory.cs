@@ -10,7 +10,6 @@ using SS3D.Logging;
 using SS3D.Systems.Entities;
 using SS3D.Systems.Inventory.Containers;
 using SS3D.Systems.Inventory.Items;
-using SS3D.Systems.Inventory.UI;
 using SS3D.Core;
 using SS3D.Systems.IdAccess;
 using SS3D.Systems.Roles;
@@ -130,7 +129,6 @@ namespace SS3D.Systems.Inventory.Containers
             }
 
             Hands.SetInventory(this);
-            SetupView();
         }
 
         public void TriggerInventorySetup()
@@ -167,32 +165,9 @@ namespace SS3D.Systems.Inventory.Containers
             }
         }
 
-        [Client]
-        private void SetupView()
-        {
-            InventoryView inventoryView = ViewLocator.Get<InventoryView>().FirstOrDefault();
-            if (inventoryView == null)
-            {
-                return;
-            }
-
-            inventoryView.Setup(this);
-        }
-
 		protected override void OnDisabled()
 		{
 			base.OnDisabled();
-			
-			if (!IsOwner) return;
-			
-			InventoryView inventoryView = ViewLocator.Get<InventoryView>().FirstOrDefault();
-			if (inventoryView == null)
-			{
-				return;
-			}
-
-			inventoryView.DestroyAllSlots();
-
 		}
 
 		/// <summary>
