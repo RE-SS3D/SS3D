@@ -1,0 +1,82 @@
+#https://game.ci/docs/github/builder
+# Builds a real headless dedicated-server binary and a real client binary, then runs them
+# against each other via Testing/multiplayer/run_smoketest.sh - the actual multiplayer test
+# harness. Separate from editmodetestrunner.yml (cheap, runs on every PR) and main.yml
+# (release-oriented, manual-dispatch-only): this job needs two full Unity player builds via
+# game-ci/unity-builder, sharing the same rate-limited unity_tests license secrets as the
+# EditMode job, so it does not run unconditionally on every PR.
+#
+# See Documents/architecture/2026-07_multiplayer-test-harness.md.
+name: Multiplayer Smoke Test
+on:
+  push:
+    branches: [develop]
+  pull_request:
+    types: [labeled, synchronize, opened, reopened]
+  workflow_dispatch: {}
+jobs:
+  multiplayer-smoke-test:
+    name: Build and run multiplayer smoke test
+    if: github.event_name != 'pull_request' || contains(github.event.pull_request.labels.*.name, 'test:multiplayer')
+    runs-on: ubuntu-latest
+    environment:
+      name: unity_tests
+    env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+    steps:
+      - name: Checkout project code
+        uses: actions/checkout@v4
+        with:
+          lfs: true
+      - name: Validate Unity CI secrets
+        run: |
+          missing=0
+          if [ -z "${{ secrets.UNITY_LICENSE }}" ] && [ -z "${{ secrets.UNITY_SERIAL }}" ]; then
+            echo "::error::Neither UNITY_LICENSE nor UNITY_SERIAL is set in the unity_tests environment."
+            missing=1
+          fi
+          if [ -n "${{ secrets.UNITY_SERIAL }}" ] && { [ -z "${{ secrets.UNITY_EMAIL }}" ] || [ -z "${{ secrets.UNITY_PASSWORD }}" ]; }; then
+            echo "::error::UNITY_SERIAL is set but UNITY_EMAIL or UNITY_PASSWORD is missing."
+            missing=1
+          fi
+          exit $missing
+      - name: Build dedicated server
+        uses: game-ci/unity-builder@v4
+        env:
+          UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
+          UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
+          UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
+          UNITY_SERIAL: ${{ secrets.UNITY_SERIAL }}
+        with:
+          buildName: RESS3D-MP-Server
+          targetPlatform: StandaloneLinux64
+          buildMethod: SS3D.Editor.ServerBuildScript.BuildServer
+      - name: Build client
+        uses: game-ci/unity-builder@v4
+        env:
+          UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
+          UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
+          UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
+          UNITY_SERIAL: ${{ secrets.UNITY_SERIAL }}
+        with:
+          buildName: RESS3D-MP-Client
+          targetPlatform: StandaloneLinux64
+          buildMethod: SS3D.Editor.ClientBuildScript.BuildClient
+      - name: Run multiplayer smoke tests
+        env:
+          SS3D_SERVER_BUILD_DIR: ${{ github.workspace }}/build/StandaloneLinux64
+          SS3D_CLIENT_BUILD_DIR: ${{ github.workspace }}/build/StandaloneLinux64
+          SS3D_SERVER_BIN_NAME: RESS3D-MP-Server.x86_64
+          SS3D_CLIENT_BIN_NAME: RESS3D-MP-Client.x86_64
+        run: |
+          chmod +x Testing/multiplayer/run_smoketest.sh
+          ./Testing/multiplayer/run_smoketest.sh basic-round
+          ./Testing/multiplayer/run_smoketest.sh late-join 2
+      - name: Upload harness logs
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: multiplayer-smoke-test-logs
+          path: Testing/multiplayer/.runs
+          if-no-files-found: ignore
+          retention-days: 7

@@ -1,0 +1,4 @@
+# Dedicated-server side of the late-join scenario. Same shape as basic-round.txt.
+wait_connected
+wait_round Ongoing
+disconnect

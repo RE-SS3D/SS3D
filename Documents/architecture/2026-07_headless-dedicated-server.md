@@ -146,4 +146,6 @@ deserves its own plan.
       lockers, items, and doors without crashing the server
 - [x] Round start/end and player disconnect handled without server-side exceptions
 - [ ] Selection outline and drop interaction work correctly against a real client (deferred)
-- [ ] Automated multiplayer test coverage exists (deferred — this doc's Testing gap section)
+- [x] Automated multiplayer test coverage exists — see
+      [2026-07_multiplayer-test-harness.md](2026-07_multiplayer-test-harness.md) (partial: mouse/
+      screen-space interaction and pocket/container round-trip regressions not yet covered)

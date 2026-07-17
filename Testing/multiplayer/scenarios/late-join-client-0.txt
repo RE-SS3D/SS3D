@@ -1,0 +1,11 @@
+# Client 0 of the late-join scenario: the first player in - starts the round and embarks
+# immediately, matching Issue1002's "...WhenHostHasAlreadyEmbarked" cases (the old
+# LoadFileHelpers-based version of this test spawned this role in the Editor test-runner
+# process itself; here it's a real headless client process like every other role).
+wait_connected
+ready
+start_round
+wait_round Ongoing
+embark
+wait_seconds 5
+disconnect

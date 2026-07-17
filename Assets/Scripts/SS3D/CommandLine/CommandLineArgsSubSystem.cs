@@ -115,6 +115,11 @@ namespace SS3D.CommandLine
             {
                 _applicationSettings.ForceLauncher = true;
             }
+
+            if (arg.Contains(CommandLineArgs.TestScript))
+            {
+                _applicationSettings.TestScriptPath = arg.Replace(CommandLineArgs.TestScript, "");
+            }
         }
 
         /// <summary>

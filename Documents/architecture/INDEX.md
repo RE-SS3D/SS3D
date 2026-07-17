@@ -51,7 +51,7 @@ Feature-level gaps *within* an already-designed system stay in that design doc's
 | shuttles | [shuttles.md](../design/shuttles.md) — active | none yet | none yet |
 | ai-cyborgs | [ai-cyborgs.md](../design/ai-cyborgs.md) — active | none yet | none yet |
 | persistence-save | none yet | none yet | [persistence](systems/persistence.md) — partial (station templates, server meta only, not a design spec) |
-| networking | none yet | [headless-dedicated-server](2026-07_headless-dedicated-server.md) — shipped (partial: selection outline and drop interaction against a real client still broken, not root-caused; no automated multiplayer test coverage) | [networking-session](systems/networking-session.md) — partial |
+| networking | none yet | [headless-dedicated-server](2026-07_headless-dedicated-server.md) — shipped (partial: selection outline and drop interaction against a real client still broken, not root-caused), [multiplayer-test-harness](2026-07_multiplayer-test-harness.md) — shipped (partial: mouse/screen-space interaction and pocket/container regressions not covered) | [networking-session](systems/networking-session.md) — partial |
 | audio | none yet | none yet | none yet |
 | onboarding-tutorial | none yet | none yet | none yet |
 | antagonist-content | none yet | none yet | none yet |
@@ -79,7 +79,7 @@ section, `Status: draft`, design-docs-cite-design-docs only). Owner review to pr
 |--------|-----|--------|---------|
 | Core / SubSystems | [core-subsystems](systems/core-subsystems.md) | shipped | `SubSystem` / `NetworkSubSystem` base types and `SubSystems` service locator; scene registration legacy — target code bootstrap |
 | Application | [application](systems/application.md) | stub | App bootstrap and startup; Boot/Game as thin launch pads |
-| Networking (session) | [networking-session](systems/networking-session.md) | stub | FishNet host/join session management |
+| Networking (session) | [networking-session](systems/networking-session.md) | partial | FishNet host/join session management; headless dedicated-server build; real multi-process test harness |
 | Scene management | [scene-management](systems/scene-management.md) | stub | Scene loading and switching; not a system composition root |
 | UI shell | [ui-shell](systems/ui-shell.md) | stub | Target UITK composition root; MI + Main HUD path catalogs shipped (duplicated); shared catalog helper + full shell deferred |
 | Interactions (framework) | [interactions-framework](systems/interactions-framework.md) | shipped | Shared `IInteraction` contracts, pipeline, and wire identifiers |
@@ -135,10 +135,11 @@ Implementation history — not navigation maps. Update `Status` in the header wh
 | [2026-07_mi-area-electricity-debt](2026-07_mi-area-electricity-debt.md) | shipped |
 | [2026-07_player-body-animation](2026-07_player-body-animation.md) | shipped (foundation; blend/timing polish remains) |
 | [2026-07_screen-space-effects](2026-07_screen-space-effects.md) | shipped (foundation + health wiring; atmos deferred) |
-| [2026-07_headless-dedicated-server](2026-07_headless-dedicated-server.md) | shipped (partial: selection outline, drop interaction, multiplayer test harness deferred) |
+| [2026-07_headless-dedicated-server](2026-07_headless-dedicated-server.md) | shipped (partial: selection outline, drop interaction against a real client still broken, not root-caused) |
 | [2026-07_agent-first-composition](2026-07_agent-first-composition.md) | shipped (policy); code deferred — bootstrap, UiShell + shared path-catalog helper, prefab tooling; main-HUD UITK slice partial ([inventory](systems/inventory.md)) |
 | [2026-07_mi-path-catalog](2026-07_mi-path-catalog.md) | shipped (MI path catalog wedge of composition follow-on b; Main HUD later copied the pattern — unify under [ui-shell](systems/ui-shell.md)) |
 | [2026-07_body-presentation-authority](2026-07_body-presentation-authority.md) | planned |
+| [2026-07_multiplayer-test-harness](2026-07_multiplayer-test-harness.md) | shipped (partial: mouse/screen-space interaction and pocket/container round-trip regressions not covered; not yet verified against a real Unity build) |
 
 ## Implementation plans
 

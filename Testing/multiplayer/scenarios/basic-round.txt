@@ -1,0 +1,6 @@
+# Dedicated-server side of the basic-round scenario. A real UNITY_SERVER build has no
+# ClientManager connection of its own, so this side only observes: wait for the transport to
+# come up, watch the round reach Ongoing once the client starts it, then disconnect cleanly.
+wait_connected
+wait_round Ongoing
+disconnect

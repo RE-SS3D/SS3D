@@ -42,8 +42,13 @@ namespace SS3D.CommandLine
 		/// </summary>
 		public const string EnableDiscordIntegration = "-enablediscordintegration";
 		/// <summary>
-		/// Forces the launcher to be initialized. 
+		/// Forces the launcher to be initialized.
 		/// </summary>
 		public const string ForceLauncher = "-forceLauncher";
+		/// <summary>
+		/// Path to a multiplayer test harness automation script for this process to run. String.
+		/// See <see cref="SS3D.Testing.AutomationSubSystem"/>.
+		/// </summary>
+		public const string TestScript = "-testscript=";
 	}
 }
