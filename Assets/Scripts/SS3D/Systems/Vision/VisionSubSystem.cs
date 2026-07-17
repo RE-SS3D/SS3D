@@ -257,7 +257,9 @@ namespace SS3D.Systems.Vision
             NativeArray<RaycastHit> hits = new(count * MaxHitsPerRay, Allocator.TempJob);
             NativeArray<RaycastCommand> commands = new(count, Allocator.TempJob, NativeArrayOptions.UninitializedMemory);
 
-            QueryParameters query = new(obstacleMask);
+            // Ignore triggers: airlocks keep a large proximity BoxCollider on the root that
+            // stays in the doorway when open; only the animated door-leaf colliders should occlude.
+            QueryParameters query = new(obstacleMask, false, QueryTriggerInteraction.Ignore, false);
             for (int i = 0; i < count; i++)
             {
                 Vector3 direction = DirectionFromAngle(angles[i], true);
@@ -329,6 +331,10 @@ namespace SS3D.Systems.Vision
         /// </summary>
         private bool IsVisionOccluder(Collider collider)
         {
+            // Proximity / interaction triggers (e.g. airlock open volume) must never darken FOV.
+            if (collider.isTrigger)
+                return false;
+
             if (_wallsLayer >= 0 && collider.gameObject.layer == _wallsLayer)
                 return true;
 
