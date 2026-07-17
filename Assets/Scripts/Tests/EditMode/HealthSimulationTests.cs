@@ -186,6 +186,46 @@ namespace EditorTests
             Assert.IsTrue(snapshot.IsBleeding);
             Assert.IsTrue(snapshot.IsZoneBleeding(BodyZone.LeftArm));
             Assert.IsFalse(snapshot.IsZoneBleeding(BodyZone.Chest));
+            Assert.AreEqual(0.5f, snapshot.GetZoneBleedingRate(BodyZone.LeftArm), 0.001f);
+            Assert.AreEqual(0f, snapshot.GetZoneBleedingRate(BodyZone.Chest), 0.001f);
+            Assert.AreEqual(0.5f, snapshot.TotalBleedingRate, 0.001f);
+        }
+
+        [Test]
+        public void BuildSnapshotPacksMultipleZoneBleedRates()
+        {
+            var zones = new ZoneDamageState[HealthConstants.ZoneCount];
+            for (int i = 0; i < zones.Length; i++)
+            {
+                zones[i] = ZoneDamageState.Default;
+            }
+
+            zones[(int)BodyZone.Head] = new ZoneDamageState
+            {
+                Severity = WoundSeverity.Wound,
+                BleedingRate = 0.5f,
+            };
+            zones[(int)BodyZone.Chest] = new ZoneDamageState
+            {
+                Severity = WoundSeverity.Disabled,
+                BleedingRate = 1.5f,
+            };
+            zones[(int)BodyZone.RightLeg] = new ZoneDamageState
+            {
+                Severity = WoundSeverity.Severed,
+                IsSevered = true,
+                BleedingRate = 2f,
+            };
+
+            HealthSnapshot snapshot = HealthSimulation.BuildSnapshot(
+                SystemicPools.Default,
+                zones,
+                new[] { OrganState.Default(OrganType.Brain) });
+
+            Assert.AreEqual(0.5f, snapshot.GetZoneBleedingRate(BodyZone.Head), 0.001f);
+            Assert.AreEqual(1.5f, snapshot.GetZoneBleedingRate(BodyZone.Chest), 0.001f);
+            Assert.AreEqual(2f, snapshot.GetZoneBleedingRate(BodyZone.RightLeg), 0.001f);
+            Assert.AreEqual(4f, snapshot.TotalBleedingRate, 0.001f);
         }
 
         [Test]

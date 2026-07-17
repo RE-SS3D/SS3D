@@ -1,7 +1,7 @@
 > Code paths: Assets/Scripts/SS3D/Systems/Health/
 > Entry points: HumanHealthController, HealthSimulation, OrganSimulation
 > Status: partial (Phase 5b severing shipped; vitals HUD Phase 6)
-> Verified: e059ca756 — 2026-07-17
+> Verified: 6dcfa2de0 — 2026-07-17
 
 # Health
 
@@ -21,7 +21,8 @@ Phase 0d strips legacy health components from `Human.prefab` and rewires a thinn
 - `Assets/Scripts/SS3D/Systems/Health/OrganSimulation.cs` — zone→organ damage, organ tick drains, perfusion, limb multipliers
 - `Assets/Scripts/SS3D/Systems/Health/OrganInstance.cs` — organ registration on Human prefab / organ item prefabs
 - `Assets/Scripts/SS3D/Systems/Health/Interactions/BandageInteraction.cs` — stop bleeding (Phase 1)
-- `Assets/Scripts/SS3D/Systems/Health/WoundVfx.cs` — per-zone bleed particles / body decals; anchors prefer armature `ZoneTargetCollider` bones over `AnatomyNode` pivots so VFX follow the skinned pose
+- `Assets/Scripts/SS3D/Systems/Health/WoundVfx.cs` — per-zone bleed particles / body decals; anchors prefer armature `ZoneTargetCollider` bones; particle/decal intensity and floor drip cadence scale with snapshot bleed rates
+- `Assets/Scripts/SS3D/Systems/Health/HealthSnapshot.cs` — synced vitals + `BleedingRatePacked` / `TotalBleedingRate` for client VFX
 - `Assets/Scripts/SS3D/Systems/Health/BloodDecalSpawner.cs` — pooled URP floor blood decals
 - `Assets/Scripts/SS3D/Systems/Health/BleedingVfxCatalog.cs` — Resources catalog; tints white mask splatters for Decal `Base_Map`
 - `Assets/Scripts/SS3D/Rendering/URP/DecalRenderingLayers.cs` — floor vs character DecalProjector rendering-layer masks

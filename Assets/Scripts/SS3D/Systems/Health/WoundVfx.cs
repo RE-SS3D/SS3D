@@ -11,14 +11,18 @@ namespace SS3D.Systems.Health
 {
     /// <summary>
     /// Per-zone bleeding VFX: particle streams, body wound decals, and floor blood accumulation.
+    /// Intensity and floor drip cadence scale with synced <see cref="HealthSnapshot"/> bleed rates.
     /// </summary>
     public class WoundVfx : MonoBehaviour
     {
-        private const float FloorDecalIntervalSeconds = 0.65f;
-        private const float BodyDecalSize = 0.14f;
-        private const float SeveredBodyDecalSize = 0.2f;
-        private const float ImpactBurstCount = 28f;
-        private const float SeveredImpactBurstCount = 40f;
+        // BleedingRateForSeverity(Severed) — used to normalize VFX intensity 0..1.
+        private const float ReferenceBleedRate = 2f;
+        private const float FloorDecalIntervalMinSeconds = 0.22f;
+        private const float FloorDecalIntervalMaxSeconds = 1.2f;
+        private const float BodyDecalSizeMin = 0.1f;
+        private const float BodyDecalSizeMax = 0.22f;
+        private const float ImpactBurstCountMin = 12f;
+        private const float ImpactBurstCountMax = 40f;
 
         private static readonly Color BloodColor = new(200f / 255f, 18f / 255f, 28f / 255f, 1f);
 
@@ -41,8 +45,8 @@ namespace SS3D.Systems.Health
             for (int i = 0; i < HealthConstants.ZoneCount; i++)
             {
                 BodyZone zone = (BodyZone)i;
-                bool bleeding = snapshot.IsZoneBleeding(zone);
-                SetZoneBleeding(zone, bleeding, snapshot.IsZoneSevered(zone));
+                float bleedRate = snapshot.GetZoneBleedingRate(zone);
+                SetZoneBleeding(zone, bleedRate);
             }
 
             if (!snapshot.IsBleeding)
@@ -66,41 +70,69 @@ namespace SS3D.Systems.Health
                 return;
             }
 
-            _floorDecalTimer = FloorDecalIntervalSeconds;
+            _floorDecalTimer = FloorDecalIntervalSeconds(_snapshot.TotalBleedingRate);
             TrySpawnFloorDecal();
+        }
+
+        private static float FloorDecalIntervalSeconds(float totalBleedRate)
+        {
+            // Higher total bleed → shorter gap between floor stamps.
+            float t = Mathf.Clamp01(totalBleedRate / ReferenceBleedRate);
+            return Mathf.Lerp(FloorDecalIntervalMaxSeconds, FloorDecalIntervalMinSeconds, t);
+        }
+
+        private static float NormalizeBleedRate(float bleedRate)
+        {
+            return Mathf.Clamp01(bleedRate / ReferenceBleedRate);
         }
 
         private void TrySpawnFloorDecal()
         {
-            List<BodyZone> bleedingZones = GetBleedingZones();
-            if (bleedingZones.Count == 0)
+            if (!TryPickWeightedBleedingZone(out BodyZone zone, out float bleedRate))
             {
                 return;
             }
 
-            BodyZone zone = bleedingZones[Random.Range(0, bleedingZones.Count)];
             if (!_anchors.TryGetValue(zone, out Transform anchor) || anchor == null)
             {
                 return;
             }
 
-            float intensity = _snapshot.IsZoneSevered(zone) ? 1.35f : 1f;
+            float intensity = Mathf.Lerp(0.7f, 1.45f, NormalizeBleedRate(bleedRate));
             BloodDecalSpawner.SpawnAtAnchor(anchor, intensity);
         }
 
-        private List<BodyZone> GetBleedingZones()
+        private bool TryPickWeightedBleedingZone(out BodyZone zone, out float bleedRate)
         {
-            var zones = new List<BodyZone>(HealthConstants.ZoneCount);
+            zone = BodyZone.Chest;
+            bleedRate = 0f;
+            float total = _snapshot.TotalBleedingRate;
+            if (total <= 0f)
+            {
+                return false;
+            }
+
+            float pick = Random.Range(0f, total);
+            float running = 0f;
             for (int i = 0; i < HealthConstants.ZoneCount; i++)
             {
-                BodyZone zone = (BodyZone)i;
-                if (_snapshot.IsZoneBleeding(zone))
+                BodyZone candidate = (BodyZone)i;
+                float rate = _snapshot.GetZoneBleedingRate(candidate);
+                if (rate <= 0f)
                 {
-                    zones.Add(zone);
+                    continue;
+                }
+
+                running += rate;
+                if (pick <= running)
+                {
+                    zone = candidate;
+                    bleedRate = rate;
+                    return true;
                 }
             }
 
-            return zones;
+            return false;
         }
 
         private void EnsureAnchors()
@@ -161,9 +193,9 @@ namespace SS3D.Systems.Health
             return depth;
         }
 
-        private void SetZoneBleeding(BodyZone zone, bool bleeding, bool isSevered)
+        private void SetZoneBleeding(BodyZone zone, float bleedRate)
         {
-            if (!bleeding)
+            if (bleedRate <= 0f)
             {
                 DisableZoneEffects(zone);
                 _impactBurstPlayed.Remove(zone);
@@ -176,8 +208,8 @@ namespace SS3D.Systems.Health
             }
 
             bool playImpactBurst = _impactBurstPlayed.Add(zone);
-            EnableParticle(zone, anchor, isSevered, playImpactBurst);
-            EnableBodyDecal(zone, anchor, isSevered);
+            EnableParticle(zone, anchor, bleedRate, playImpactBurst);
+            EnableBodyDecal(zone, anchor, bleedRate);
         }
 
         private void DisableZoneEffects(BodyZone zone)
@@ -195,7 +227,7 @@ namespace SS3D.Systems.Health
             }
         }
 
-        private void EnableParticle(BodyZone zone, Transform anchor, bool isSevered, bool playImpactBurst)
+        private void EnableParticle(BodyZone zone, Transform anchor, float bleedRate, bool playImpactBurst)
         {
             bool isNew = !_activeParticles.TryGetValue(zone, out GameObject particle) || particle == null;
             bool wasInactive = !isNew && !particle.activeSelf;
@@ -225,12 +257,12 @@ namespace SS3D.Systems.Health
                     particleSystem.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
                 }
 
-                InitializeParticle(particleSystem, isSevered, playImpactBurst);
+                InitializeParticle(particleSystem, bleedRate, playImpactBurst);
                 _particlesInitialized.Add(zone);
             }
             else
             {
-                UpdateParticleIntensity(particleSystem, isSevered);
+                UpdateParticleIntensity(particleSystem, bleedRate);
             }
 
             particle.SetActive(true);
@@ -241,7 +273,7 @@ namespace SS3D.Systems.Health
             }
         }
 
-        private void EnableBodyDecal(BodyZone zone, Transform anchor, bool isSevered)
+        private void EnableBodyDecal(BodyZone zone, Transform anchor, float bleedRate)
         {
             if (!BloodDecalSpawner.IsSupported)
             {
@@ -274,33 +306,43 @@ namespace SS3D.Systems.Health
                     Destroy(previous);
                 }
             }
-            float size = isSevered ? SeveredBodyDecalSize : BodyDecalSize;
+
+            float t = NormalizeBleedRate(bleedRate);
+            float size = Mathf.Lerp(BodyDecalSizeMin, BodyDecalSizeMax, t);
             decal.size = new Vector3(size, size, 0.35f);
-            decal.fadeFactor = isSevered ? 1f : 0.88f;
+            decal.fadeFactor = Mathf.Lerp(0.75f, 1f, t);
             decal.gameObject.SetActive(true);
         }
 
-        private static void InitializeParticle(ParticleSystem particleSystem, bool isSevered, bool playImpactBurst)
+        private static void InitializeParticle(ParticleSystem particleSystem, float bleedRate, bool playImpactBurst)
         {
             if (particleSystem == null)
             {
                 return;
             }
 
+            float t = NormalizeBleedRate(bleedRate);
+
             ParticleSystem.MainModule main = particleSystem.main;
             main.duration = 5f;
             main.loop = true;
-            main.startLifetime = new ParticleSystem.MinMaxCurve(0.9f, 1.6f);
-            main.startSpeed = new ParticleSystem.MinMaxCurve(0.35f, 1.1f);
-            main.startSize = new ParticleSystem.MinMaxCurve(0.06f, 0.12f);
+            main.startLifetime = new ParticleSystem.MinMaxCurve(
+                Mathf.Lerp(0.7f, 1.1f, t),
+                Mathf.Lerp(1.2f, 1.8f, t));
+            main.startSpeed = new ParticleSystem.MinMaxCurve(
+                Mathf.Lerp(0.2f, 0.55f, t),
+                Mathf.Lerp(0.55f, 1.35f, t));
+            main.startSize = new ParticleSystem.MinMaxCurve(
+                Mathf.Lerp(0.045f, 0.07f, t),
+                Mathf.Lerp(0.08f, 0.14f, t));
             main.startRotation = new ParticleSystem.MinMaxCurve(0f, Mathf.PI * 2f);
             main.startColor = BloodColor;
-            main.gravityModifier = 2.8f;
+            main.gravityModifier = Mathf.Lerp(2.2f, 3.2f, t);
             main.simulationSpace = ParticleSystemSimulationSpace.World;
-            main.maxParticles = 96;
+            main.maxParticles = Mathf.RoundToInt(Mathf.Lerp(48f, 120f, t));
             main.scalingMode = ParticleSystemScalingMode.Hierarchy;
 
-            UpdateParticleIntensity(particleSystem, isSevered);
+            UpdateParticleIntensity(particleSystem, bleedRate);
 
             ParticleSystem.ColorOverLifetimeModule colorOverLifetime = particleSystem.colorOverLifetime;
             colorOverLifetime.enabled = true;
@@ -334,28 +376,39 @@ namespace SS3D.Systems.Health
 
             if (playImpactBurst)
             {
-                particleSystem.Emit(isSevered ? (int)SeveredImpactBurstCount : (int)ImpactBurstCount);
+                int burst = Mathf.RoundToInt(Mathf.Lerp(ImpactBurstCountMin, ImpactBurstCountMax, t));
+                particleSystem.Emit(burst);
             }
         }
 
-        private static void UpdateParticleIntensity(ParticleSystem particleSystem, bool isSevered)
+        private static void UpdateParticleIntensity(ParticleSystem particleSystem, float bleedRate)
         {
             if (particleSystem == null)
             {
                 return;
             }
 
-            ParticleSystem.EmissionModule emission = particleSystem.emission;
-            emission.rateOverTime = isSevered ? 36f : 22f;
+            float t = NormalizeBleedRate(bleedRate);
 
-            // Sphere drip from the bone — avoids cone axes that spray sideways on armature bones.
+            ParticleSystem.EmissionModule emission = particleSystem.emission;
+            emission.rateOverTime = Mathf.Lerp(10f, 42f, t);
+
             ParticleSystem.ShapeModule shape = particleSystem.shape;
             shape.enabled = true;
             shape.shapeType = ParticleSystemShapeType.Sphere;
-            shape.radius = isSevered ? 0.05f : 0.035f;
+            shape.radius = Mathf.Lerp(0.025f, 0.055f, t);
             shape.radiusThickness = 1f;
             shape.rotation = Vector3.zero;
             shape.scale = Vector3.one;
+
+            ParticleSystem.MainModule main = particleSystem.main;
+            main.startSpeed = new ParticleSystem.MinMaxCurve(
+                Mathf.Lerp(0.2f, 0.55f, t),
+                Mathf.Lerp(0.55f, 1.35f, t));
+            main.startSize = new ParticleSystem.MinMaxCurve(
+                Mathf.Lerp(0.045f, 0.07f, t),
+                Mathf.Lerp(0.08f, 0.14f, t));
+            main.maxParticles = Mathf.RoundToInt(Mathf.Lerp(48f, 120f, t));
         }
 
         private GameObject GetParticlePrefab()

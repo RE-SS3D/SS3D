@@ -84,7 +84,7 @@ Surgical access: chest (heart, lungs, liver); head (brain) per [surgery.md](../.
 | `AnatomyNode.cs` | Body-part tree anchor; severed visual state |
 | `HumanAnatomyController.cs` | Zone → anatomy map, sever visuals, world drops, head mind-swap |
 | `OrganInstance.cs` | Organ registration |
-| `WoundVfx.cs` | Bleed VFX anchors: prefer `ZoneTargetCollider` bones over `AnatomyNode` pivots |
+| `WoundVfx.cs` | Bleed VFX: bone anchors; intensity/cadence from snapshot bleed rates |
 
 Stamina relocated to `Assets/Scripts/SS3D/Systems/Stamina/` — health bridge ships Phase 7a.
 

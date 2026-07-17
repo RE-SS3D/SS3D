@@ -228,15 +228,34 @@ namespace SS3D.Systems.Health
             bool bleeding = false;
             int bleedingMask = 0;
             int severedMask = 0;
+            int bleedingRatePacked = 0;
+            float totalBleedingRate = 0f;
 
             for (int i = 0; i < zones.Count; i++)
             {
                 worstBrute = Math.Max(worstBrute, zones[i].Brute);
                 worstBurn = Math.Max(worstBurn, zones[i].Burn);
-                if (zones[i].BleedingRate > 0f)
+                float zoneBleed = zones[i].BleedingRate;
+                if (zoneBleed > 0f)
                 {
                     bleeding = true;
                     bleedingMask |= 1 << i;
+                    totalBleedingRate += zoneBleed;
+                }
+
+                if (i < HealthConstants.ZoneCount)
+                {
+                    int code = (int)Math.Round(zoneBleed * 2f);
+                    if (code < 0)
+                    {
+                        code = 0;
+                    }
+                    else if (code > 7)
+                    {
+                        code = 7;
+                    }
+
+                    bleedingRatePacked |= code << (i * 3);
                 }
 
                 if (zones[i].IsSevered)
@@ -261,6 +280,8 @@ namespace SS3D.Systems.Health
                 IsCardiacArrest = IsCardiacArrest(heartStored),
                 BleedingZoneMask = bleedingMask,
                 SeveredZoneMask = severedMask,
+                BleedingRatePacked = bleedingRatePacked,
+                TotalBleedingRate = totalBleedingRate,
                 BrainFunctionPercent = brainStored,
                 HeartFunctionPercent = heartStored,
                 MovementSpeedMultiplier = OrganSimulation.ComputeMovementSpeedMultiplier(zones),
