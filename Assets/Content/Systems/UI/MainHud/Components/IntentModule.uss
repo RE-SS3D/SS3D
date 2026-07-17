@@ -13,7 +13,7 @@
     flex-direction: row;
     align-items: center;
     margin-left: var(--ss3d-space-3);
-    opacity: 0.5;
+    opacity: 0.85;
 }
 
 .intent-hint__key {
@@ -29,7 +29,7 @@
 
 .intent-hint__label {
     font-size: 10px;
-    color: var(--ss3d-text-tertiary);
+    color: var(--ss3d-text-secondary);
 }
 
 /* Each half paints its own fill + outer corners so active/inactive edges stay flush
@@ -41,9 +41,9 @@
 
 .intent-toggle__segment {
     margin: 0;
-    padding: 10px 22px;
+    padding: 12px 28px;
     border-width: 0;
-    font-size: 15px;
+    font-size: 17px;
     letter-spacing: 1px;
     text-transform: uppercase;
     color: var(--ss3d-text-tertiary);
