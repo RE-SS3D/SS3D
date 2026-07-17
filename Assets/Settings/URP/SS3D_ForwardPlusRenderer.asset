@@ -14,6 +14,22 @@ MonoBehaviour:
   m_EditorClassIdentifier: SS3D.Rendering.URP::SS3D.Rendering.URP.SelectionPickRendererFeature
   m_Active: 1
   _selectionShader: {fileID: 4800000, guid: bcd9cf75c1aa43247b53d2014cfde501, type: 3}
+--- !u!114 &-8472639182736451891
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 729836a4b4b4b16589994599bb480a8e, type: 3}
+  m_Name: VisionRendererFeature
+  m_EditorClassIdentifier: SS3D.Rendering.URP::SS3D.Rendering.URP.VisionRendererFeature
+  m_Active: 1
+  _visionMaskShader: {fileID: 4800000, guid: 15369a85bf338fdb7af4340cb5d185ec, type: 3}
+  _visionBlurShader: {fileID: 4800000, guid: a2c58fdd58bc3e1a9a6970b779eebb57, type: 3}
+  _debugMask: 0
 --- !u!114 &-3601183876851600227
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -62,7 +78,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: de640fe3d0db1804a85f9fc8f5cadab6, type: 3}
   m_Name: SS3D_ForwardPlusRenderer
-  m_EditorClassIdentifier: 
+  m_EditorClassIdentifier:
   debugShaders:
     debugReplacementPS: {fileID: 4800000, guid: cf852408f2e174538bcd9b7fda1c5ae7, type: 3}
     hdrDebugViewPS: {fileID: 4800000, guid: 573620ae32aec764abd4d728906d2587, type: 3}
@@ -77,8 +93,9 @@ MonoBehaviour:
     probeVolumeBlendStatesCS: {fileID: 0}
   m_RendererFeatures:
   - {fileID: 5324824689208116589}
-  - {fileID: -3601183876851600227}
   - {fileID: -5200967459084580021}
+  - {fileID: -8472639182736451891}
+  - {fileID: -3601183876851600227}
   m_RendererFeatureMap: 6dc57abbd793e549006e7d341c02045600000000000000009d746509580606ce
   m_UseNativeRenderPass: 0
   xrSystemData: {fileID: 0}
