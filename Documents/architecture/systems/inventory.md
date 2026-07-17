@@ -1,6 +1,7 @@
-> Code paths: Assets/Scripts/SS3D/Systems/Inventory/
-> Entry points: ItemSubSystem
+> Code paths: Assets/Scripts/SS3D/Systems/Inventory/, Assets/Scripts/SS3D/UI/MainHud/
+> Entry points: ItemSubSystem, MainHudSubSystem
 > Status: partial
+> Verified: eb1e40492 — 2026-07-17
 
 # Inventory
 
@@ -10,7 +11,7 @@ Items, containers, hands, and identification cards (`IDCard`, `PDA`). ID cards b
 
 **Condemned UI:** inventory / hands / intent uGUI — do not extend; replace per [main-hud.md](../../design/main-hud.md) and [inventory-storage.md](../../design/inventory-storage.md) with Phase 0 purge. Domain items/containers may remain until that redesign. Hands wiring on `Human.prefab` is prefab composition debt ([agent-first composition](../2026-07_agent-first-composition.md)).
 
-**Main HUD (partial):** `SS3D.UI.MainHud` shows worn equipment (incl. gloves), gear strip, hands, and intent. Hold-to-self-examine from [main-hud.md](../../design/main-hud.md) §5 is **not** in the HUD — deferred to the general examine surface. Hand-well clicks call `HumanInventory.ActivateHand` (same as legacy slots). The HUD `UIDocument` is registered with [InputInterface](inputs.md) so pointer-over-HUD blocks world clicks.
+**Main HUD (partial):** `SS3D.UI.MainHud` shows worn equipment (incl. gloves), gear strip, hands, and intent. Hold-to-self-examine from [main-hud.md](../../design/main-hud.md) §5 is **not** in the HUD — deferred to the general examine surface. Hand-well clicks call `HumanInventory.ActivateHand` (same as legacy slots). The HUD `UIDocument` is registered with [InputInterface](inputs.md) so pointer-over-HUD blocks world clicks. Visibility binds on `LocalPlayerObjectChanged` / `SpawnedPlayersUpdated` with a catch-up path so pure clients that miss the first mind-sync event still show the HUD. Styles/icons/`PanelSettings` load from a committed `MainHudAssetCatalog` via `Resources.Load` (rebuild: **SS3D → Main HUD → Rebuild Asset Catalog**) — Editor-only `AssetDatabase` is fallback only; standalone builds need the catalog asset.
 
 ## Start here
 
@@ -18,10 +19,16 @@ Items, containers, hands, and identification cards (`IDCard`, `PDA`). ID cards b
 - `Assets/Scripts/SS3D/Systems/Inventory/Containers/HumanInventory.cs` — on-person containers and hands
 - `Assets/Scripts/SS3D/Systems/Inventory/Items/Identification/IDCard.cs` — physical ID token
 - `Assets/Scripts/SS3D/Systems/Inventory/Items/Identification/PDA.cs` — PDA with internal ID slot
+- `Assets/Scripts/SS3D/UI/MainHud/MainHudSubSystem.cs` — Main HUD overlay bootstrap + bind
+- `Assets/Content/Systems/UI/MainHud/Resources/MainHudAssetCatalog.asset` — committed UITK refs for builds
 
 ## Extension points
 
 (stub)
+
+## Pitfalls
+
+- **HUD works in Editor Play Mode, missing in player builds:** `MainHudSubSystem` self-bootstraps with no SerializeFields; Editor used to fill via `AssetDatabase`. Builds need `Resources/MainHudAssetCatalog` — run **SS3D → Main HUD → Rebuild Asset Catalog** and commit the asset (same pattern as Machine UI).
 
 ## Depends on / Used by
 

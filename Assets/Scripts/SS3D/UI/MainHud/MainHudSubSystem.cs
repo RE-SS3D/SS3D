@@ -4,6 +4,7 @@ using SS3D.Core;
 using SS3D.Core.Behaviours;
 using SS3D.Interactions;
 using SS3D.Interactions.Interfaces;
+using SS3D.Systems.Entities;
 using SS3D.Systems.Entities.Events;
 using SS3D.Systems.Inputs;
 using SS3D.Systems.Inventory.Containers;
@@ -21,8 +22,8 @@ namespace SS3D.UI.MainHud
     /// layer built in <see cref="MainHudView"/> to the local player's existing gameplay systems: hands/equipment
     /// (<see cref="Hands"/>/<see cref="HumanInventory"/>) and help/harm intent (<see cref="IIntentProvider"/>).
     /// <para>
-    /// Hidden until <see cref="LocalPlayerObjectChanged"/> reports a local spawned body; hidden again when the
-    /// round leaves in-game states (same spawn/round gate pattern as <c>GameScreensController</c>).
+    /// Hidden until a local spawned body exists during an in-game round; hidden again when the round leaves
+    /// Ongoing/Ending (same spawn/round gate idea as <c>GameScreensController</c>).
     /// </para>
     /// <para>
     /// The alert icon stack has no hunger/thirst/restrained/pressure/radiation trackers to bind to yet - it
@@ -80,41 +81,92 @@ namespace SS3D.UI.MainHud
                 _document = GetComponent<UIDocument>();
             }
 
-#if UNITY_EDITOR
-            EnsureEditorAssets();
-#endif
-            EnsureRuntimeAssets();
+            if (!TryEnsureAssets())
+            {
+                enabled = false;
+                return;
+            }
+
             BuildView();
             InputInterface.RegisterDocument(_document);
+
+            // Subscribe in OnAwake (same as PlayerCameraSubSystem): on pure clients the mind sync
+            // often fires LocalPlayerObjectChanged before SubSystem OnStart would run.
+            AddHandle(LocalPlayerObjectChanged.AddListener(HandleLocalPlayerObjectChanged));
+            AddHandle(RoundStateUpdated.AddListener(HandleRoundStateUpdated));
+            AddHandle(SpawnedPlayersUpdated.AddListener(HandleSpawnedPlayersUpdated));
         }
 
-        // Assets are resolved through the Editor-only AssetDatabase lookups below because this subsystem
-        // self-bootstraps a bare GameObject at runtime (see Bootstrap()) rather than living on a serialized
-        // scene/prefab - the same reasoning ScreenEffectsSubSystem documents for self-bootstrapping in the
-        // first place (hand-editing scene/prefab YAML outside the Editor isn't safe). Unlike the other
-        // MonoBehaviour hosts in this codebase (MachineInterfaceHost, ArmedInteractionSubSystem), which get
-        // their serialized asset references "for free" from a prefab/scene, a bare bootstrapped GameObject has
-        // no such carrier in a standalone (non-Editor) build. Wiring this for a real build needs either a
-        // Resources.Load path for these assets or moving MainHudSubSystem onto a persistent prefab.
-        private void EnsureRuntimeAssets()
+        // Self-bootstraps a bare GameObject (see Bootstrap()), so SerializeFields are never filled from a
+        // scene/prefab. Assets come from a committed MainHudAssetCatalog under Resources — same pattern as
+        // MachineInterfaceHost — so standalone builds work without Editor AssetDatabase.
+        private bool TryEnsureAssets()
         {
-#if !UNITY_EDITOR
-            if (_mainHudStyle == null)
+            MainHudAssetCatalog catalog =
+                Resources.Load<MainHudAssetCatalog>(MainHudAssetPaths.ResourcesCatalogName);
+            if (catalog == null)
             {
-                Debug.LogWarning(
-                    "MainHudSubSystem is missing its UI Toolkit assets in this build - it self-bootstraps and " +
-                    "currently only resolves them via Editor AssetDatabase lookups. Wire them through " +
-                    "Resources.Load (or host this on a persistent prefab) for standalone builds.",
-                    this);
-            }
+#if UNITY_EDITOR
+                EnsureEditorAssets();
+                if (_mainHudStyle != null)
+                {
+                    ApplyDocumentPanelSettings(null);
+                    return true;
+                }
 #endif
+                Debug.LogError(
+                    $"MainHudSubSystem could not load Resources/{MainHudAssetPaths.ResourcesCatalogName}. "
+                    + "Run SS3D → Main HUD → Rebuild Asset Catalog and commit the asset.",
+                    this);
+                return false;
+            }
+
+            if (!catalog.HasRequiredAssets(out string missingField))
+            {
+                Debug.LogError(
+                    $"MainHudAssetCatalog is missing required assets ({missingField}). "
+                    + "Run SS3D → Main HUD → Rebuild Asset Catalog.",
+                    this);
+                return false;
+            }
+
+            ApplyCatalog(catalog);
+            return true;
+        }
+
+        private void ApplyCatalog(MainHudAssetCatalog catalog)
+        {
+            _mainHudStyle = catalog.MainHudStyle;
+            _alertIconStackStyle = catalog.AlertIconStackStyle;
+            _intentModuleStyle = catalog.IntentModuleStyle;
+            _handsGearStripStyle = catalog.HandsGearStripStyle;
+            _equipmentGridStyle = catalog.EquipmentGridStyle;
+            _inventorySlotStyle = catalog.InventorySlotStyle;
+            _icons = catalog.Icons;
+            ApplyDocumentPanelSettings(catalog.PanelSettings);
+        }
+
+        private void ApplyDocumentPanelSettings(PanelSettings panelSettings)
+        {
+            if (_document == null)
+            {
+                return;
+            }
+
+            if (_document.panelSettings == null && panelSettings != null)
+            {
+                _document.panelSettings = panelSettings;
+            }
+
+            // Stays below the radial menu / armed-interaction reticle (both on the same shared panel
+            // settings), so those transient overlays still draw on top of the persistent HUD.
+            _document.sortingOrder = -10;
         }
 
         protected override void OnStart()
         {
             base.OnStart();
-            AddHandle(LocalPlayerObjectChanged.AddListener(HandleLocalPlayerObjectChanged));
-            AddHandle(RoundStateUpdated.AddListener(HandleRoundStateUpdated));
+            TryBindExistingLocalPlayer();
         }
 
         protected override void OnDestroyed()
@@ -127,6 +179,13 @@ namespace SS3D.UI.MainHud
 
         private void Update()
         {
+            // Late-joining clients can miss one-shot spawn events (SyncList Complete is ignored in
+            // EntitySubSystem; mind may sync before Mind.player is linked). Keep trying until bound.
+            if (_view != null && _localPlayer == null)
+            {
+                TryBindExistingLocalPlayer();
+            }
+
             if (_view == null || _localPlayer == null)
             {
                 return;
@@ -161,7 +220,15 @@ namespace SS3D.UI.MainHud
             }
 
             BindLocalPlayer(e.PlayerObject);
-            ShowHud();
+            if (IsRoundInGame())
+            {
+                ShowHud();
+            }
+        }
+
+        private void HandleSpawnedPlayersUpdated(ref EventContext context, in SpawnedPlayersUpdated e)
+        {
+            TryBindExistingLocalPlayer();
         }
 
         private void HandleRoundStateUpdated(ref EventContext context, in RoundStateUpdated e)
@@ -170,12 +237,70 @@ namespace SS3D.UI.MainHud
             {
                 case RoundState.Ongoing:
                 case RoundState.Ending:
+                    TryBindExistingLocalPlayer();
                     break;
                 default:
                     UnbindLocalPlayer();
                     HideHud();
                     break;
             }
+        }
+
+        /// <summary>
+        /// Catch-up for clients that already have a spawned body before this subsystem subscribed,
+        /// or before RoundState became Ongoing.
+        /// </summary>
+        private void TryBindExistingLocalPlayer()
+        {
+            if (!IsRoundInGame())
+            {
+                return;
+            }
+
+            if (_localPlayer != null)
+            {
+                ShowHud();
+                return;
+            }
+
+            if (!SubSystems.TryGet(out EntitySubSystem entities))
+            {
+                return;
+            }
+
+            foreach (Entity entity in entities.SpawnedPlayers)
+            {
+                if (entity == null || !IsLocalPlayerEntity(entity))
+                {
+                    continue;
+                }
+
+                BindLocalPlayer(entity.gameObject);
+                ShowHud();
+                return;
+            }
+        }
+
+        private static bool IsLocalPlayerEntity(Entity entity)
+        {
+            // Prefer FishNet ownership — Mind.player can still be null on the first mind SyncVar tick.
+            if (entity.IsOwner)
+            {
+                return true;
+            }
+
+            return entity.Mind?.player != null && entity.Mind.player.IsLocalConnection;
+        }
+
+        private static bool IsRoundInGame()
+        {
+            if (!SubSystems.TryGet(out RoundSubSystem rounds))
+            {
+                return false;
+            }
+
+            RoundState state = rounds.CurrentRoundState;
+            return state is RoundState.Ongoing or RoundState.Ending;
         }
 
         private void BindLocalPlayer(GameObject playerObject)
@@ -329,42 +454,46 @@ namespace SS3D.UI.MainHud
         }
 
 #if UNITY_EDITOR
+        /// <summary>
+        /// Editor-only fallback when the Resources catalog is missing (pre-rebuild iteration).
+        /// Player builds never hit this path.
+        /// </summary>
         private void EnsureEditorAssets()
         {
             if (_mainHudStyle == null)
             {
                 _mainHudStyle = UnityEditor.AssetDatabase.LoadAssetAtPath<StyleSheet>(
-                    "Assets/Content/Systems/UI/MainHud/MainHud.uss");
+                    MainHudAssetPaths.MainHudStyle);
             }
 
             if (_alertIconStackStyle == null)
             {
                 _alertIconStackStyle = UnityEditor.AssetDatabase.LoadAssetAtPath<StyleSheet>(
-                    "Assets/Content/Systems/UI/MainHud/Components/AlertIconStack.uss");
+                    MainHudAssetPaths.AlertIconStackStyle);
             }
 
             if (_intentModuleStyle == null)
             {
                 _intentModuleStyle = UnityEditor.AssetDatabase.LoadAssetAtPath<StyleSheet>(
-                    "Assets/Content/Systems/UI/MainHud/Components/IntentModule.uss");
+                    MainHudAssetPaths.IntentModuleStyle);
             }
 
             if (_handsGearStripStyle == null)
             {
                 _handsGearStripStyle = UnityEditor.AssetDatabase.LoadAssetAtPath<StyleSheet>(
-                    "Assets/Content/Systems/UI/MainHud/Components/HandsGearStrip.uss");
+                    MainHudAssetPaths.HandsGearStripStyle);
             }
 
             if (_equipmentGridStyle == null)
             {
                 _equipmentGridStyle = UnityEditor.AssetDatabase.LoadAssetAtPath<StyleSheet>(
-                    "Assets/Content/Systems/UI/MainHud/Components/EquipmentGrid.uss");
+                    MainHudAssetPaths.EquipmentGridStyle);
             }
 
             if (_inventorySlotStyle == null)
             {
                 _inventorySlotStyle = UnityEditor.AssetDatabase.LoadAssetAtPath<StyleSheet>(
-                    "Assets/Content/Systems/UI/MachineInterface/Components/InventorySlot.uss");
+                    MainHudAssetPaths.InventorySlotStyle);
             }
 
             if (_icons.Head == null)
@@ -389,21 +518,14 @@ namespace SS3D.UI.MainHud
             if (_document != null && _document.panelSettings == null)
             {
                 _document.panelSettings = UnityEditor.AssetDatabase.LoadAssetAtPath<PanelSettings>(
-                    "Assets/Content/Systems/UI/Interactions/RadialInteractionMenu/HudOverlayPanelSettings.asset");
-            }
-
-            if (_document != null)
-            {
-                // Stays below the radial menu / armed-interaction reticle (both on the same shared panel
-                // settings), so those transient overlays still draw on top of the persistent HUD.
-                _document.sortingOrder = -10;
+                    MainHudAssetPaths.PanelSettings);
             }
         }
 
         private static Sprite LoadSprite(string fileName)
         {
             return UnityEditor.AssetDatabase.LoadAssetAtPath<Sprite>(
-                $"Assets/Art/Graphics/UI/Containers/InventoryIcons/{fileName}.png");
+                $"{MainHudAssetPaths.IconRoot}{fileName}.png");
         }
 #endif
     }
