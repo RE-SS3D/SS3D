@@ -8,6 +8,8 @@
 
 Base actor/subsystem pattern and runtime service locator. All gameplay domains expose a `*SubSystem` registered via `SubSystems.Get<T>()`. `NetworkSubSystem` extends FishNet `NetworkActor` for networked subsystems.
 
+Scene-placed registration on Boot/Game actors is **legacy**. Target is code bootstrap ([agent-first composition](../2026-07_agent-first-composition.md)); do not add new systems by editing scene YAML.
+
 ## Start here
 
 - `Assets/Scripts/SS3D/Core/Behaviours/SubSystem.cs` — non-networked subsystem base
@@ -17,7 +19,7 @@ Base actor/subsystem pattern and runtime service locator. All gameplay domains e
 
 ## Extension points
 
-- New domain subsystem: subclass `SubSystem` or `NetworkSubSystem`, register on a scene actor.
+- New domain subsystem: subclass `SubSystem` or `NetworkSubSystem`. Prefer code bootstrap / self-register (see ScreenEffects) over adding a GameObject to Boot/Game. Scene registration remains until the bootstrap follow-on ships.
 
 ## Depends on / Used by
 
@@ -25,4 +27,5 @@ Base actor/subsystem pattern and runtime service locator. All gameplay domains e
 
 ## Related docs
 
+- [2026-07_agent-first-composition](../2026-07_agent-first-composition.md)
 - [INDEX.md](../INDEX.md)

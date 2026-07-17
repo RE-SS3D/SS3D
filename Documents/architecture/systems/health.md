@@ -10,6 +10,8 @@ Partial implementation on `develop`. `OxygenConsumerSubSystem` exists; full two-
 
 Client [screen-effects](screen-effects.md) already implement dying/critical, blood-loss, concussion, and related overlays, but **nothing in Health drives them yet** — wire via `ScreenEffectsSubSystem.SetEffect` when Phases 3/6 of the health plan ship.
 
+Phase 0d strips legacy health components from `Human.prefab` and rewires a thinner root — do not dual-stack or grow the mega-prefab ([agent-first composition](../2026-07_agent-first-composition.md), [health_implementation_plan.md](../../plans/health_implementation_plan.md) Phase 0d).
+
 ## Start here
 
 - `Assets/Scripts/SS3D/Systems/Health/OxygenConsumerSubSystem.cs` — oxygen consumption subsystem
@@ -28,4 +30,5 @@ Client [screen-effects](screen-effects.md) already implement dying/critical, blo
 
 - Design (read-only): [Documents/design/health.md](../../design/health.md), [stamina.md](../../design/stamina.md), [armor.md](../../design/armor.md)
 - Plan: [health_implementation_plan.md](../../plans/health_implementation_plan.md)
+- [2026-07_agent-first-composition](../2026-07_agent-first-composition.md)
 - [screen-effects](screen-effects.md)

@@ -59,6 +59,16 @@ Run the **`update-system-docs`** skill (`.cursor/skills/update-system-docs/SKILL
 - Linked plans in `Documents/plans/`
 - Architecture effort doc status, if applicable
 
+## Composition, prefabs, and UI
+
+Before adding a SubSystem, entity behaviour, or UI surface, read [Documents/architecture/2026-07_agent-first-composition.md](Documents/architecture/2026-07_agent-first-composition.md).
+
+- **Do not** edit `Boot.unity` / `Game.unity` to register systems or UI hosts unless the task *is* the bootstrap effort.
+- **Do not** hand-edit mega-prefabs (especially `Human.prefab`) to add features — write Editor setup scripts or wait for the owning redesign’s Phase 0 rewire; never grow the component dump “just this once.”
+- **Do not** add or extend uGUI / TMP gameplay UI; **do not** “migrate” condemned views to UI Toolkit as a bridge.
+- **Do not** “fix” or feature-extend system maps marked **condemned** — replace per the linked design doc with a Phase 0 purge.
+- New UI: UI Toolkit (UXML/USS) + catalog/path pattern. Interim reference until UiShell exists: [machine-interface](Documents/architecture/systems/machine-interface.md). Target shell: [ui-shell](Documents/architecture/systems/ui-shell.md).
+
 ## Authoring conventions
 
 See [Documents/SKILL.md](Documents/SKILL.md) for header blocks, linking rules, and system map template.

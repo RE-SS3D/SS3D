@@ -10,6 +10,8 @@ Hover tooltips and shift-hold detailed examine panels, range-gated off the [sele
 
 Examine is **not** an `IInteraction` — `ExaminableBase` is read by `ExamineSubSystem` from the current selection (hover + Shift). There is no `ExamineInteraction` petal class on develop.
 
+**Condemned UI:** examine hover/detailed uGUI views — do not extend; rebuild on UITK when HUD/examine redesign lands ([agent-first composition](../2026-07_agent-first-composition.md)). Domain `IExaminable` / content resolution is **not** condemned.
+
 ## Start here
 
 - `Assets/Scripts/SS3D/Systems/Examine/ExamineSubSystem.cs` — subsystem entry point; raises hover/detailed events
@@ -36,3 +38,5 @@ Examine is **not** an `IInteraction` — `ExaminableBase` is read by `ExamineSub
 - Plan: [examine_localization_design_5ca361a6.plan.md](../../plans/examine_localization_design_5ca361a6.plan.md)
 - Plan: [radial_menu_implementation_5a83bdf9.plan.md](../../plans/radial_menu_implementation_5a83bdf9.plan.md) § Examine tier (planned petal; not shipped as `IInteraction`)
 - Design (read-only): [Documents/design/examine.md](../../design/examine.md)
+- [2026-07_agent-first-composition](../2026-07_agent-first-composition.md)
+- [ui-shell](ui-shell.md)

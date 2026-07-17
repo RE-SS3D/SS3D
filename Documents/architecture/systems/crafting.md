@@ -8,6 +8,8 @@
 
 Recipe-based crafting subsystem. (Navigation map not yet fully reviewed.)
 
+**Condemned UI:** crafting menu uGUI — do not extend; replace per [crafting.md](../../design/crafting.md) ([agent-first composition](../2026-07_agent-first-composition.md)).
+
 ## Start here
 
 - `Assets/Scripts/SS3D/Systems/Crafting/CraftingSubSystem.cs` — crafting subsystem
@@ -23,4 +25,6 @@ Recipe-based crafting subsystem. (Navigation map not yet fully reviewed.)
 
 ## Related docs
 
+- Design (read-only): [Documents/design/crafting.md](../../design/crafting.md)
+- [2026-07_agent-first-composition](../2026-07_agent-first-composition.md)
 - [INDEX.md](../INDEX.md)

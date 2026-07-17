@@ -44,6 +44,13 @@ Implementation plans for a specific effort (can span multiple systems). Named `Y
 
 Navigation docs: entry points, key files, dependencies. One file per domain (kebab-case, e.g. `tile.md`). Status reflects code navigation coverage, not upstream divergence (that stays in `FORK_STATUS.md`).
 
+**Status values:** `shipped | partial | stub | condemned`.
+
+- `shipped` / `partial` / `stub` — live code navigation coverage.
+- `condemned` — do not extend; scheduled for replace-and-purge per [2026-07_agent-first-composition.md](architecture/2026-07_agent-first-composition.md). A map may stay `partial` or `shipped` overall while carrying a **Condemned UI** and/or **Prefab composition debt** subsection when domain logic still lives but presentation or prefab wiring must not grow.
+
+**Redesign Phase 0:** architecture efforts that replace a condemned surface must include a purge checklist for legacy UI files/prefabs and obsolete MonoBehaviours on shared roots (e.g. `Human.prefab`). Prefer tool-mediated prefab mutation (`PrefabUtility` / Editor menus) over raw YAML edits. See agent-first composition policy.
+
 ### Coverage table (`Documents/architecture/INDEX.md`)
 
 Besides navigation, INDEX.md carries one table, one row per domain, three columns:
@@ -77,7 +84,7 @@ Every **system map** starts with:
 ```
 > Code paths: <primary folder(s)>
 > Entry points: <SubSystem classes, key services>
-> Status: shipped | partial | stub
+> Status: shipped | partial | stub | condemned
 ```
 
 System map body sections (fixed order): **Overview**, **Start here**, **Extension points**, **Depends on / Used by**, **Related docs**.

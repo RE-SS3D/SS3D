@@ -50,10 +50,12 @@ Update only what changed:
 - **Extension points** — document new patterns for future agents
 - **Depends on / Used by** — update cross-system links
 - **Related docs** — link new plans or effort docs
-- **Status** — bump `stub` → `partial` → `shipped` when appropriate
+- **Status** — bump `stub` → `partial` → `shipped` when appropriate; use `condemned` (or a Condemned UI / Prefab composition debt subsection) per [Documents/SKILL.md](../../Documents/SKILL.md) and [2026-07_agent-first-composition.md](../../Documents/architecture/2026-07_agent-first-composition.md)
 - **Overview** — revise if the system's role changed materially
 
 Keep each map under ~80 lines. Do not duplicate design doc content — link instead.
+
+When a redesign **ships** and purges legacy UI or mega-prefab components: remove condemned markers / note prefab debt reduction. Never “upgrade” condemned uGUI to `partial` by restyling. Never document “add component on Human.prefab” as an extension point — point at Editor setup tools or the owning redesign’s Phase 0 instead.
 
 ## Step 4: Update INDEX.md
 
@@ -93,7 +95,7 @@ New maps go in `Documents/architecture/systems/` (kebab-case filename):
 ```markdown
 > Code paths: <folder(s)>
 > Entry points: <SubSystem classes, key services>
-> Status: shipped | partial | stub
+> Status: shipped | partial | stub | condemned
 
 # <Title>
 

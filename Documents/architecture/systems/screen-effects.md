@@ -10,6 +10,8 @@ Client-only URP Volume overlays for diegetic feedback from [main-hud](../../desi
 
 Bootstraps itself with `RuntimeInitializeOnLoadMethod` (not in Boot.unity) so it can land without scene YAML edits.
 
+**Condemned UI:** F2 debug Canvas (`ScreenEffectsDebugMenuView`) — do not port to UITK; delete when health rewrite absorbs debug. Volume/effect path stays until health wires it ([agent-first composition](../2026-07_agent-first-composition.md)).
+
 ## Start here
 
 - `Assets/Scripts/SS3D/Systems/ScreenEffects/ScreenEffectsSubSystem.cs` — Volume + blackout + ember/frost particles; `SetEffect` / `TriggerHitFlash`
@@ -33,3 +35,4 @@ Bootstraps itself with `RuntimeInitializeOnLoadMethod` (not in Boot.unity) so it
 - Design (read-only): [Documents/design/main-hud.md](../../design/main-hud.md) §5
 - Plan: [health_implementation_plan.md](../../plans/health_implementation_plan.md) (Phases 3/6 wire screen feedback)
 - Effort: [2026-07_screen-space-effects.md](../2026-07_screen-space-effects.md)
+- [2026-07_agent-first-composition](../2026-07_agent-first-composition.md)

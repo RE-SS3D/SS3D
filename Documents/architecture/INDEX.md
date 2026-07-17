@@ -77,10 +77,11 @@ prototyping section, `Status` line for draft/active/superseded only, cross-refs 
 
 | System | Map | Status | Summary |
 |--------|-----|--------|---------|
-| Core / SubSystems | [core-subsystems](systems/core-subsystems.md) | shipped | `SubSystem` / `NetworkSubSystem` base types and `SubSystems` service locator |
-| Application | [application](systems/application.md) | stub | App bootstrap and startup |
+| Core / SubSystems | [core-subsystems](systems/core-subsystems.md) | shipped | `SubSystem` / `NetworkSubSystem` base types and `SubSystems` service locator; scene registration legacy — target code bootstrap |
+| Application | [application](systems/application.md) | stub | App bootstrap and startup; Boot/Game as thin launch pads |
 | Networking (session) | [networking-session](systems/networking-session.md) | stub | FishNet host/join session management |
-| Scene management | [scene-management](systems/scene-management.md) | stub | Scene loading and switching |
+| Scene management | [scene-management](systems/scene-management.md) | stub | Scene loading and switching; not a system composition root |
+| UI shell | [ui-shell](systems/ui-shell.md) | stub | Target UITK composition root (HUD/overlay/diegetic/debug); policy in [agent-first composition](2026-07_agent-first-composition.md) |
 | Interactions (framework) | [interactions-framework](systems/interactions-framework.md) | shipped | Shared `IInteraction` contracts, pipeline, and wire identifiers |
 | Data / codegen | [data-codegen](systems/data-codegen.md) | stub | Asset databases and generated references |
 | Persistence | [persistence](systems/persistence.md) | partial | Contributor-based station templates and server meta (permissions, round history) |
@@ -95,27 +96,27 @@ prototyping section, `Status` line for draft/active/superseded only, cross-refs 
 |--------|-----|--------|---------|
 | Interactions (runtime) | [interactions-runtime](systems/interactions-runtime.md) | shipped | `InteractionController`, radial menu, armed interactions, outlines |
 | Selection | [selection](systems/selection.md) | shipped | Shader-ID mesh picking; outline shells excluded from pick pass |
-| Examine | [examine](systems/examine.md) | shipped | Hover tooltips and shift-hold detailed examine |
-| Tile / construction | [tile](systems/tile.md) | shipped | Tilemap, adjacency engine, construction, dynamic tile occupancy; build-menu client layer visibility |
+| Examine | [examine](systems/examine.md) | shipped | Hover/detailed examine; uGUI views condemned pending UITK redesign |
+| Tile / construction | [tile](systems/tile.md) | shipped | Tilemap, adjacency, construction; TileMap Creator uGUI condemned |
 | Atmospherics | [atmospherics](systems/atmospherics.md) | partial | ECS turf gas sim; GPU fog/fire on server/host only — client VFX sync planned |
 | Area | [area](systems/area.md) | partial | APC-seeded flood-fill, area power, lighting state, wall light switches |
 | Electricity | [electricity](systems/electricity.md) | partial | kWh storage, HV cable grid, APC/SMES/generators, consumer visuals |
 | Substances | [substances](systems/substances.md) | partial | Containers, transfer interactions, Tier 2 armed proof-of-concept |
-| Inventory | [inventory](systems/inventory.md) | partial | Items, containers, hands, ID cards and PDAs |
-| Entities | [entities](systems/entities.md) | partial | Humanoids, minds, entity spawning; body-state animation + combat stances |
-| Health | [health](systems/health.md) | partial | Oxygen consumer; clean-slate rewrite planned; screen overlays not wired yet |
+| Inventory | [inventory](systems/inventory.md) | partial | Items/containers/hands; HUD uGUI condemned; Human hands wiring is prefab debt |
+| Entities | [entities](systems/entities.md) | partial | Humanoids, minds, spawning, body animation; `Human.prefab` composition debt |
+| Health | [health](systems/health.md) | partial | Oxygen consumer; clean-slate rewrite planned (Phase 0d strip Human.prefab); screen overlays not wired yet |
 | Combat | [combat](systems/combat.md) | stub | Hit interactions; stance/aim presentation in [entities](systems/entities.md) (design combat not implemented) |
-| Crafting | [crafting](systems/crafting.md) | stub | Recipe crafting |
+| Crafting | [crafting](systems/crafting.md) | stub | Recipe crafting; crafting menu uGUI condemned |
 | Furniture / world objects | [furniture](systems/furniture.md) | partial | Airlocks, vendors, jukebox; power-gated behaviors; vending via diegetic machine-interface |
-| Rounds / lobby | [rounds-lobby](systems/rounds-lobby.md) | shipped | Round state machine and pre-round lobby UI |
+| Rounds / lobby | [rounds-lobby](systems/rounds-lobby.md) | shipped | Round state machine; lobby UI condemned pending lobby.md redesign |
 | Gamemodes / roles / traits | [gamemodes-roles-traits](systems/gamemodes-roles-traits.md) | stub | Objectives, job roles, character traits |
 | Player control | [player-control](systems/player-control.md) | stub | Player subsystem and input routing |
-| Chat / audio / screens | [chat-audio-screens](systems/chat-audio-screens.md) | stub | Chat, audio, camera controllers |
-| Machine interface UI | [machine-interface](systems/machine-interface.md) | shipped | Diegetic APC/SMES/atmos/vending panels; server-side ID access gates (vending ungated) |
-| Screen-space effects | [screen-effects](systems/screen-effects.md) | partial | URP Volume overlays + hit flash; debug/console only until health wires them |
+| Chat / audio / screens | [chat-audio-screens](systems/chat-audio-screens.md) | stub | Chat UI condemned per comms.md; audio/camera controllers |
+| Machine interface UI | [machine-interface](systems/machine-interface.md) | shipped | Diegetic APC/SMES/atmos/vending; SerializeField host debt → path catalog / [ui-shell](systems/ui-shell.md) |
+| Screen-space effects | [screen-effects](systems/screen-effects.md) | partial | URP Volume overlays; F2 debug Canvas condemned; health wiring deferred |
 | ID / access | [id-access](systems/id-access.md) | partial | Crew records, credential checks, doors, machine UI gates, dev console helpers |
 | Inputs | [inputs](systems/inputs.md) | stub | Input subsystem |
-| In-game console | [ingame-console](systems/ingame-console.md) | partial | Dev/admin console; ID access helpers and screen-effect debug commands |
+| In-game console | [ingame-console](systems/ingame-console.md) | partial | Command dispatch; console panel uGUI condemned pending UITK debug layer |
 
 ## Architecture efforts (dated)
 
@@ -135,6 +136,7 @@ Implementation history — not navigation maps. Update `Status` in the header wh
 | [2026-07_player-body-animation](2026-07_player-body-animation.md) | shipped (foundation; blend/timing polish remains) |
 | [2026-07_screen-space-effects](2026-07_screen-space-effects.md) | shipped (foundation; health/atmos wiring deferred) |
 | [2026-07_headless-dedicated-server](2026-07_headless-dedicated-server.md) | shipped (partial: selection outline, drop interaction, multiplayer test harness deferred) |
+| [2026-07_agent-first-composition](2026-07_agent-first-composition.md) | shipped (policy); code deferred — bootstrap, UiShell, main-HUD slice, prefab tooling |
 
 ## Implementation plans
 
