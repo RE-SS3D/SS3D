@@ -97,11 +97,11 @@ section, `Status: draft`, design-docs-cite-design-docs only). Owner review to pr
 | Interactions (runtime) | [interactions-runtime](systems/interactions-runtime.md) | shipped | `InteractionController`, radial menu, armed interactions, outlines |
 | Selection | [selection](systems/selection.md) | shipped | Shader-ID mesh picking; outline shells excluded from pick pass |
 | Examine | [examine](systems/examine.md) | shipped | Hover/detailed examine; uGUI views condemned pending UITK redesign |
-| Tile / construction | [tile](systems/tile.md) | shipped | Tilemap, adjacency, construction; TileMap Creator uGUI condemned |
-| Atmospherics | [atmospherics](systems/atmospherics.md) | partial | ECS turf gas sim; GPU fog/fire on server/host only — client VFX sync planned |
+| Tile / construction | [tile](systems/tile.md) | shipped | Tilemap, adjacency, construction; TileMap Creator uGUI condemned; `TileCoord` must be `IEquatable` for dict keys |
+| Atmospherics | [atmospherics](systems/atmospherics.md) | partial | ECS turf gas sim; GPU fog/fire on server/host only — client VFX sync planned; tick GC pitfalls documented (upload/pipes) |
 | Area | [area](systems/area.md) | partial | APC-seeded flood-fill, area power, lighting state, wall light switches |
 | Electricity | [electricity](systems/electricity.md) | partial | kWh storage, HV cable grid, APC/SMES/generators, consumer visuals |
-| Substances | [substances](systems/substances.md) | partial | Containers, transfer interactions, Tier 2 armed proof-of-concept |
+| Substances | [substances](systems/substances.md) | partial | Containers, transfer interactions, Tier 2 armed proof-of-concept; container `AsReadOnly` GC pitfall |
 | Inventory | [inventory](systems/inventory.md) | partial | Items/containers/hands; Main HUD UITK overlay (Resources catalog); legacy HUD uGUI condemned; Human hands wiring is prefab debt |
 | Entities | [entities](systems/entities.md) | partial | Humanoids, minds, spawning; body-state animation + combat stances; `Human.prefab` composition debt; collapse/death presentation debt ([body-presentation-authority](2026-07_body-presentation-authority.md)) |
 | Health | [health](systems/health.md) | partial | Phases 1–5b shipped; screen-effects wired from snapshot; Phase 0d strips/rewires `Human.prefab`; vitals HUD / examine-self Phase 6 remainder; interim collapse RPCs — see [body-presentation-authority](2026-07_body-presentation-authority.md) |

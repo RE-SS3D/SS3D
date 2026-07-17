@@ -1,7 +1,7 @@
 > Code paths: Assets/Scripts/SS3D/Systems/Tile/
 > Entry points: TileSubSystem, AdjacencyEngine, ConstructionService, TileQueryService
 > Status: shipped
-> Verified: a86b44505 — 2026-07-17
+> Verified: 8d5428105 — 2026-07-17
 
 # Tile / construction
 
@@ -13,6 +13,7 @@ Server-authoritative tilemap with adjacency-driven mesh visuals, construction pl
 
 ## Start here
 
+- `Assets/Scripts/SS3D/Systems/Tile/TileCoord.cs` — map+grid key; `IEquatable` required for dictionary use without boxing
 - `Assets/Scripts/SS3D/Systems/Tile/PlacedObjects/PlacedTileObject.cs` — per-cell tile NetworkBehaviour; stamps `ReceiveWorldDecals` on renderers
 - `Assets/Scripts/SS3D/Systems/Tile/TileSubSystem.cs` — subsystem entry point
 - `Assets/Scripts/SS3D/Systems/Tile/TileMap.cs` — tilemap data and mutation
@@ -25,6 +26,7 @@ Server-authoritative tilemap with adjacency-driven mesh visuals, construction pl
 - `Assets/Scripts/SS3D/Systems/Tile/TileOccupancyEvaluator.cs` — derives passability/vision flags from placed occupants
 - `Assets/Scripts/SS3D/Systems/Tile/TileChunk.cs` — per-tile area-id array (`ushort[]`)
 - `Assets/Scripts/SS3D/Systems/Tile/TileAssetCatalog.cs` — compact tile identity catalog
+- `Assets/Scripts/SS3D/Systems/Tile/SingleTileLocation.cs` / `CardinalTileLocation.cs` — per-cell occupancy; `GetAllPlacedObject()` allocates a new `List`
 - `Assets/Scripts/SS3D/Systems/Tile/TileMapCreator/TileMapMenuSubSystem.cs` — in-game map editor menu (admin-gated)
 - `Assets/Scripts/SS3D/Systems/Tile/TileMapCreator/TileMapBuildTab.cs` — build tab UI; activates layer visibility on open
 - `Assets/Scripts/SS3D/Systems/Tile/TileMapCreator/TileLayerVisibilityService.cs` — client-only layer-group dim/restore (~5% opacity)
@@ -38,6 +40,10 @@ Server-authoritative tilemap with adjacency-driven mesh visuals, construction pl
 - HV cables (`CablesAdjacencyConnector`): underfloor Wire-layer runs link grid backbone devices only; see [electricity](electricity.md) `ElectricCableConnectivity`.
 - TileMap Creator: `TileMapMenuSubSystem` (admin-gated RPCs via `TileMapEditorPermissions`). Build tab layer visibility is **client-only** — `TileLayerVisibilityService` dims non-selected layer groups locally via material swap; no RPCs or SyncVars. UI: multi-select dropdown cloned from the asset-category dropdown (`TileLayerVisibilityPanel`); categories shared with `AssetGrid` through `TileLayerCategoryMapping`. State resets when the menu closes. New spawns re-apply via `PlacedTileObject` / `PlacedItemObject` client hooks after AOI sync.
 - Station templates: `TileSubSystem.Save` / `Load` / `Load(string)` → `PersistenceSubSystem` (`StationTemplates/`, legacy `Tilemaps/`); server boot also calls `LoadServerMeta`.
+
+## Pitfalls
+
+- **`Dictionary<TileCoord, T>` / `HashSet<TileCoord>` GC on Mono:** without `IEquatable<TileCoord>` + `GetHashCode`, every lookup boxes via `ValueType.DefaultEquals` (~24 B). Prefer `TryGetPlacedObject` over `GetAllPlacedObject` on hot single-occupancy layers — the latter always allocates a new `List`.
 
 ## Depends on / Used by
 
