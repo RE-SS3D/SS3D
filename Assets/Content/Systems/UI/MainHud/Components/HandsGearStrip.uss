@@ -29,3 +29,8 @@
 .hands-gear-strip__hands > .inventory-slot {
     margin-left: var(--ss3d-space-2);
 }
+
+.hands-gear-strip__hands .inventory-slot__icon {
+    width: 78%;
+    height: 78%;
+}
