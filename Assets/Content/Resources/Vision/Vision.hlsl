@@ -4,14 +4,14 @@
 #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
 #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/DeclareDepthTexture.hlsl"
 
-TEXTURECUBE(_VisionOcclusionDepth);
-SAMPLER(sampler_VisionOcclusionDepth);
-float4 _VisionOcclusionZParams;
+TEXTURE2D(_VisionMap);
+SAMPLER(sampler_VisionMap);
 
 float4x4 _PlayerCameraInvViewProj;
 float4 _PlayerPos;
 float _PlayerAngle;
 float _ViewConeWidth;
+float _ViewRange;
 
 float VisionModulo(float x, float y)
 {
@@ -65,26 +65,8 @@ float3 VisionClipToWorld(float2 posClip)
     return worldSpace.xyz / worldSpace.w;
 }
 
-// True distance from the player to the nearest occluder in horizontal world direction dir
-// (dir.y must be 0, matching the vision cone). Reads the real GPU depth cubemap captured from
-// the player's position each frame (see VisionOcclusionCapture.cs) instead of an abstract
-// tile-grid map, so occlusion follows actual rendered wall geometry - thin walls, corners,
-// doors - rather than a coarse per-tile boolean. Mirrors AtmosCommon.hlsl's
-// AtmosIsSampleOccluded fix for the same class of geometry leak.
-float VisionOcclusionDistance(float3 dir)
-{
-    float rawDepth = SAMPLE_TEXTURECUBE(_VisionOcclusionDepth, sampler_VisionOcclusionDepth, dir).r;
-    float eyeDepth = LinearEyeDepth(rawDepth, _VisionOcclusionZParams);
-
-    // A cubemap face's dominant axis component is cos(angle-from-face-normal) for a unit
-    // direction, which converts the face-local eye depth into a true radial distance.
-    float cosOffAxis = max(abs(dir.x), abs(dir.z));
-    return eyeDepth / max(cosOffAxis, 1e-4);
-}
-
 bool VisionIsVisibleWorld(float3 posWorld)
 {
-    float2 posFov = posWorld.xz - _PlayerPos.xz;
     float2 polarCoords = VisionWorldToFov(posWorld);
 
     float centerAngle = _ViewConeWidth * 0.5;
@@ -95,9 +77,11 @@ bool VisionIsVisibleWorld(float3 posWorld)
     if (abs(clampedOffset) > centerAngle && polarCoords.x > 1.0)
         return false;
 
+    float currentAngle = centerAngle + clampedOffset;
+    float2 viewUV = float2(currentAngle / _ViewConeWidth, 0.0);
+
     float currentDepth = polarCoords.x;
-    float3 dir = float3(posFov.x, 0.0, posFov.y) / max(currentDepth, 1e-4);
-    float wallDepth = VisionOcclusionDistance(dir);
+    float wallDepth = SAMPLE_TEXTURE2D(_VisionMap, sampler_VisionMap, viewUV).r * _ViewRange;
 
     return currentDepth < wallDepth;
 }
