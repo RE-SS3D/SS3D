@@ -1,6 +1,7 @@
 using Coimbra;
 using SS3D.Data;
 using SS3D.Data.Generated;
+using SS3D.Rendering.URP;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Rendering;
@@ -225,6 +226,7 @@ namespace SS3D.Systems.Health
                 decal.drawDistance = 24f;
                 decal.startAngleFade = 180f;
                 decal.endAngleFade = 180f;
+                decal.renderingLayerMask = DecalRenderingLayers.CharacterProjectorMask;
                 decal.material = BloodDecalSpawner.CreateBodyDecalMaterial();
                 _bodyDecals[zone] = decal;
             }

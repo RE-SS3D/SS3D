@@ -1,6 +1,7 @@
 using Coimbra;
 using SS3D.Data;
 using SS3D.Data.Generated;
+using SS3D.Rendering.URP;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Rendering.Universal;
@@ -91,17 +92,23 @@ namespace SS3D.Systems.Health
                 return;
             }
 
-            // DecalProjector projects along local +Z; point that into the surface.
+            // DecalProjector projects along local +Z into the surface. LookRotation(-normal)
+            // is degenerate on flat floors (forward anti-parallel to default up) and produces a
+            // tilted box — splat appears cut off and paints through standing characters.
             instance.transform.SetPositionAndRotation(
                 point + normal * 0.02f,
-                Quaternion.LookRotation(-normal) * Quaternion.Euler(0f, Random.Range(0f, 360f), 0f));
+                DecalRotationOntoSurface(normal, Random.Range(0f, 360f)));
 
             if (instance.TryGetComponent(out DecalProjector projector))
             {
+                // Mask first, then a property that calls OnValidate — renderingLayerMask's
+                // setter does not refresh DecalEntityManager by itself.
+                projector.renderingLayerMask = DecalRenderingLayers.WorldFloorProjectorMask;
                 projector.material = CreateRandomDecalMaterial();
                 float size = Random.Range(0.3f, 0.55f) * intensityScale;
-                projector.size = new Vector3(size, size, Mathf.Max(0.5f, size * 1.2f));
-                projector.pivot = new Vector3(0f, 0f, 0.25f);
+                // Shallow volume: deep boxes paint character feet inside the projector AABB.
+                projector.size = new Vector3(size, size, 0.15f);
+                projector.pivot = new Vector3(0f, 0f, 0.08f);
                 projector.fadeFactor = Random.Range(0.85f, 1f);
                 projector.uvScale = new Vector2(Random.Range(0.9f, 1.1f), Random.Range(0.9f, 1.1f));
                 projector.drawDistance = 40f;
@@ -109,6 +116,21 @@ namespace SS3D.Systems.Health
 
             ActiveDecals.Add(instance);
             TrimOldDecals();
+        }
+
+        /// <summary>
+        /// Align projector local +Z into the surface, then spin the splat in the surface plane.
+        /// </summary>
+        private static Quaternion DecalRotationOntoSurface(Vector3 normal, float spinDegrees)
+        {
+            Vector3 intoSurface = -normal.normalized;
+            // When projecting straight down/up, pick a stable tangent so LookRotation is well-defined.
+            Vector3 reference = Mathf.Abs(Vector3.Dot(intoSurface, Vector3.up)) > 0.99f
+                ? Vector3.forward
+                : Vector3.up;
+            Vector3 tangent = Vector3.Cross(intoSurface, reference).normalized;
+            Quaternion align = Quaternion.LookRotation(intoSurface, tangent);
+            return align * Quaternion.Euler(0f, 0f, spinDegrees);
         }
 
         private static GameObject CreateDecalInstance()
@@ -124,11 +146,12 @@ namespace SS3D.Systems.Health
             DecalProjector projector = go.AddComponent<DecalProjector>();
             projector.material = _bloodDecalMaterialTemplate;
             projector.scaleMode = DecalScaleMode.ScaleInvariant;
-            projector.size = new Vector3(0.45f, 0.45f, 0.8f);
-            projector.pivot = new Vector3(0f, 0f, 0.25f);
+            projector.size = new Vector3(0.45f, 0.45f, 0.15f);
+            projector.pivot = new Vector3(0f, 0f, 0.08f);
             projector.drawDistance = 40f;
             projector.startAngleFade = 180f;
             projector.endAngleFade = 180f;
+            projector.renderingLayerMask = DecalRenderingLayers.WorldFloorProjectorMask;
             return go;
         }
 

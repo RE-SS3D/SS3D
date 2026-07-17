@@ -35,3 +35,4 @@ MonoBehaviour:
   _particleMaterial: {fileID: 2100000, guid: af5a53a5bf82c30439df60069f07f424, type: 2}
   _bloodDecalMaterial: {fileID: 2100000, guid: e2d3c4b5a697887960523342b2c1d0e9, type: 2}
   _floorDecalPrefab: {fileID: 8012345678901234567, guid: 7e8a9b0c1d2e3f405162738495a6b7c0, type: 3}
+  _multiplyTintShader: {fileID: 4800000, guid: cf88f09667ed419d98051a601f8c0f48, type: 3}
