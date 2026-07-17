@@ -19,6 +19,7 @@
 .intent-hint__key {
     font-size: 10px;
     color: var(--ss3d-text-tertiary);
+    background-color: var(--ss3d-surface-hud);
     border-width: 1px;
     border-color: var(--ss3d-border-default);
     border-radius: var(--ss3d-radius-sm);

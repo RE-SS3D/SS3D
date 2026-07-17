@@ -24,8 +24,6 @@ namespace SS3D.UI.MainHud.Components
         private readonly InventorySlot _back;
         private readonly InventorySlot _handLeft;
         private readonly InventorySlot _handRight;
-        private readonly VisualElement _handLeftWrapper;
-        private readonly VisualElement _handRightWrapper;
 
         public HandsGearStrip(MainHudIconSet icons)
         {
@@ -49,17 +47,16 @@ namespace SS3D.UI.MainHud.Components
             _handLeft = CreateSlot("Left hand", icons.HandLeft, 64);
             _handRight = CreateSlot("Right hand", icons.HandRight, 64);
 
-            _handLeftWrapper = BuildHandWrapper(_handLeft);
-            _handRightWrapper = BuildHandWrapper(_handRight);
-
             VisualElement hands = new();
             hands.AddToClassList("hands-gear-strip__hands");
-            hands.Add(_handLeftWrapper);
-            hands.Add(_handRightWrapper);
+            hands.Add(_handLeft);
+            hands.Add(_handRight);
 
             Add(gear);
             Add(divider);
             Add(hands);
+
+            SetActiveHand(leftIsActive: true);
         }
 
         public void SetGearIcon(GearSlot slot, Sprite itemIcon)
@@ -75,8 +72,8 @@ namespace SS3D.UI.MainHud.Components
 
         public void SetActiveHand(bool leftIsActive)
         {
-            _handLeftWrapper.EnableInClassList("hands-gear-strip__hand-wrapper--active", leftIsActive);
-            _handRightWrapper.EnableInClassList("hands-gear-strip__hand-wrapper--active", !leftIsActive);
+            _handLeft.EnableInClassList("inventory-slot--active-hand", leftIsActive);
+            _handRight.EnableInClassList("inventory-slot--active-hand", !leftIsActive);
         }
 
         private InventorySlot GetGearSlot(GearSlot slot) => slot switch
@@ -91,14 +88,6 @@ namespace SS3D.UI.MainHud.Components
         private static InventorySlot CreateSlot(string label, Sprite emptyIcon, float size)
         {
             return new InventorySlot { Unknown = emptyIcon == null, EmptyIcon = emptyIcon, Size = size, SlotLabel = label };
-        }
-
-        private static VisualElement BuildHandWrapper(InventorySlot slot)
-        {
-            VisualElement wrapper = new();
-            wrapper.AddToClassList("hands-gear-strip__hand-wrapper");
-            wrapper.Add(slot);
-            return wrapper;
         }
     }
 }

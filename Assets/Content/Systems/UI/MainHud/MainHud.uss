@@ -55,13 +55,42 @@
     background-color: var(--ss3d-surface-hud);
 }
 
-/* Slot labels stay quiet until the player points at that slot. */
+/*
+ * Main HUD slots: label sits beside the well (not under it) and is absolute so it does not
+ * inflate row/column spacing while hidden. Appears on hover in a surface-hud chip.
+ */
+.main-hud .inventory-slot {
+    flex-direction: row;
+    align-items: center;
+    position: relative;
+    overflow: visible;
+}
+
 .main-hud .inventory-slot__label {
+    position: absolute;
+    left: 100%;
+    top: 50%;
+    translate: var(--ss3d-space-2) -50%;
+    margin-top: 0;
+    max-width: none;
+    white-space: nowrap;
     opacity: 0;
+    background-color: var(--ss3d-surface-hud);
+    color: var(--ss3d-text-secondary);
+    border-radius: var(--ss3d-radius-sm);
+    border-width: 1px;
+    border-color: var(--ss3d-border-subtle);
+    padding: 2px 8px;
     transition-property: opacity;
     transition-duration: var(--ss3d-duration-fast);
 }
 
 .main-hud .inventory-slot:hover .inventory-slot__label {
     opacity: 1;
+}
+
+/* Active hand: outline the icon well only, not the label chip. */
+.main-hud .inventory-slot--active-hand .inventory-slot__well {
+    border-width: 2px;
+    border-color: var(--ss3d-accent-rust);
 }

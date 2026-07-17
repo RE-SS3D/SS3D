@@ -27,14 +27,3 @@
 .hands-gear-strip__hands > .inventory-slot {
     margin-left: var(--ss3d-space-2);
 }
-
-.hands-gear-strip__hand-wrapper {
-    border-width: 2px;
-    border-color: transparent;
-    border-radius: 12px;
-    padding: 2px;
-}
-
-.hands-gear-strip__hand-wrapper--active {
-    border-color: var(--ss3d-accent-rust);
-}
