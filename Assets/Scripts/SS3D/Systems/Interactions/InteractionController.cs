@@ -35,6 +35,7 @@ namespace SS3D.Systems.Interactions
         private Controls.HotkeysActions _hotkeysControls;
         private InputAction _cancelInteractionAction;
         private InputSubSystem _inputSystem;
+        private IInputHandle _gameplayHandle;
 
         private Camera _camera;
         private RadialInteractionSubSystem _radialView;
@@ -135,7 +136,7 @@ namespace SS3D.Systems.Interactions
             _controls.ViewInteractions.performed += HandleView;
             _cancelInteractionAction.performed += HandleCancelInteraction;
             _hotkeysControls.Use.performed += HandleUse;
-            _inputSystem.ToggleActionMap(_controls, true);
+            _gameplayHandle = _inputSystem.PushContext(InputContext.Gameplay);
         }
 
         private void UnsubscribeFromInput()
@@ -144,7 +145,8 @@ namespace SS3D.Systems.Interactions
             _controls.ViewInteractions.performed -= HandleView;
             _cancelInteractionAction.performed -= HandleCancelInteraction;
             _hotkeysControls.Use.performed -= HandleUse;
-            _inputSystem.ToggleActionMap(_controls, false);
+            _gameplayHandle?.Dispose();
+            _gameplayHandle = null;
         }
 
         [Client]
@@ -168,7 +170,7 @@ namespace SS3D.Systems.Interactions
         [Client]
         public void HandleRunPrimary(InputAction.CallbackContext callbackContext)
         {
-            if (EventSystem.current.IsPointerOverGameObject())
+            if (InputInterface.IsPointerOverInterface())
             {
                 return;
             }
@@ -242,7 +244,7 @@ namespace SS3D.Systems.Interactions
                 return;
             }
 
-            if (EventSystem.current.IsPointerOverGameObject())
+            if (InputInterface.IsPointerOverInterface())
             {
                 return;
             }
