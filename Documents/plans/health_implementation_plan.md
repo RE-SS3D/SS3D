@@ -559,7 +559,8 @@ health.md §8 + death-cloning §9 example A, end-to-end:
 
 - Oxy debt now scales **continuously** with blood lost `(1 − bloodVolume) × gain` — hypoxia begins around **60–70%** blood remaining, not near empty.
 - Heart O₂ delivery uses **volume^1.75** so circulation collapses faster as blood drops (shock before exsanguination).
-- **Reference: `hurt Head 100`** — Disabled head wound (bleed 1.5), brain ~60% instantly; untreated death typically **~60–90 s** via hypoxia → heart failure → brain death (bandage/transfusion/defib interrupt each stage).
+- **`BleedingBloodDrainScale = 0.010`** (~2× slower than early Phase 1): untreated single-zone blood clocks — Wound ~2:00 critical / ~3:20 empty; Severe ~1:00 / ~1:40; Disabled ~40s / ~1:07; Severed ~30s / ~50s. Rates stay severity-only (no per-zone bleed multipliers).
+- **Reference: `hurt Head 100`** — Disabled head wound (bleed 1.5), brain ~60% instantly; untreated death typically **~90–150 s** via hypoxia → heart failure → brain death (bandage/transfusion/defib interrupt each stage).
 
 ### Phase 4 (shipped)
 
@@ -583,3 +584,7 @@ health.md §8 + death-cloning §9 example A, end-to-end:
 - Sharp melee: `CanSever` on `MeleeDamagePacket` / `MeleeWeaponProfile`; hatchet and kitchen knife wired via `MeleeWeaponItemExtension`.
 - Admin: `sever (ckey) (zone) [force]`; `destroybodypart` force-severs head for decap testing.
 - Reattachment / stump `HumanCut.mat` / nested NO unparent deferred (Phase 7c / art).
+
+### Body presentation debt (banked 2026-07)
+
+Death and unconsciousness collapse were fixed with interim reinforce RPCs + `Ragdoll.ApplyCollapseVisuals` + `SetPosingSuppressed`. That is stopgap — Health must not grow a third collapse path. Future single-authority refactor: [2026-07_body-presentation-authority.md](../architecture/2026-07_body-presentation-authority.md).

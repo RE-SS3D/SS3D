@@ -25,7 +25,7 @@ Feature-level gaps *within* an already-designed system stay in that design doc's
 | hacking-interface | [hacking-interface.md](../design/hacking-interface.md) — active | none yet | none yet |
 | combat | [combat.md](../design/combat.md) — active | [player-body-animation](2026-07_player-body-animation.md) — shipped (stance/locomotion foundation only; combat.md not implemented) | [combat](systems/combat.md) — stub |
 | stamina | [stamina.md](../design/stamina.md) — active | none yet | none yet |
-| health | [health.md](../design/health.md) — active | none yet (rewrite planned: [health_implementation_plan](../plans/health_implementation_plan.md); screen overlays shipped separately in [screen-space-effects](2026-07_screen-space-effects.md)) | [health](systems/health.md) — partial |
+| health | [health.md](../design/health.md) — active | rewrite in flight: [health_implementation_plan](../plans/health_implementation_plan.md); [body-presentation-authority](2026-07_body-presentation-authority.md) — planned; screen overlays in [screen-space-effects](2026-07_screen-space-effects.md) | [health](systems/health.md) — partial |
 | armor | [armor.md](../design/armor.md) — active | none yet | none yet |
 | inventory-storage | [inventory-storage.md](../design/inventory-storage.md) — active | none yet | [inventory](systems/inventory.md) — partial |
 | examine | [examine.md](../design/examine.md) — active | none yet | [examine](systems/examine.md) — shipped |
@@ -103,8 +103,8 @@ section, `Status: draft`, design-docs-cite-design-docs only). Owner review to pr
 | Electricity | [electricity](systems/electricity.md) | partial | kWh storage, HV cable grid, APC/SMES/generators, consumer visuals |
 | Substances | [substances](systems/substances.md) | partial | Containers, transfer interactions, Tier 2 armed proof-of-concept |
 | Inventory | [inventory](systems/inventory.md) | partial | Items/containers/hands, ID cards and PDAs; HUD uGUI condemned; Human hands wiring is prefab debt |
-| Entities | [entities](systems/entities.md) | partial | Humanoids, minds, spawning; body-state animation + combat stances; `Human.prefab` composition debt |
-| Health | [health](systems/health.md) | partial | Phases 1–5b shipped (bleeding, organs, critical/defib, zone melee, treatments, severing); Phase 0d already strips/rewires `Human.prefab`; screen-effects/vitals HUD Phase 6 |
+| Entities | [entities](systems/entities.md) | partial | Humanoids, minds, spawning; body-state animation + combat stances; `Human.prefab` composition debt; collapse/death presentation debt ([body-presentation-authority](2026-07_body-presentation-authority.md)) |
+| Health | [health](systems/health.md) | partial | Phases 1–5b shipped (bleeding, organs, critical/defib, zone melee, treatments, severing); Phase 0d already strips/rewires `Human.prefab`; screen-effects/vitals HUD Phase 6; interim collapse RPCs — see [body-presentation-authority](2026-07_body-presentation-authority.md) |
 | Combat | [combat](systems/combat.md) | partial | Phase 4 melee vertical slice (fists + crowbar); stance/aim presentation in [entities](systems/entities.md) |
 | Crafting | [crafting](systems/crafting.md) | stub | Recipe crafting; crafting menu uGUI condemned |
 | Furniture / world objects | [furniture](systems/furniture.md) | partial | Airlocks, vendors, jukebox; power-gated behaviors; vending via diegetic machine-interface |
@@ -138,6 +138,7 @@ Implementation history — not navigation maps. Update `Status` in the header wh
 | [2026-07_headless-dedicated-server](2026-07_headless-dedicated-server.md) | shipped (partial: selection outline, drop interaction, multiplayer test harness deferred) |
 | [2026-07_agent-first-composition](2026-07_agent-first-composition.md) | shipped (policy); code deferred — bootstrap, UiShell, main-HUD slice, prefab tooling |
 | [2026-07_mi-path-catalog](2026-07_mi-path-catalog.md) | shipped (MI path catalog wedge of composition follow-on b) |
+| [2026-07_body-presentation-authority](2026-07_body-presentation-authority.md) | planned |
 
 ## Implementation plans
 

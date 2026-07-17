@@ -1,17 +1,19 @@
 > Code paths: Assets/Scripts/SS3D/Systems/Health/
 > Entry points: HumanHealthController, HealthSimulation, OrganSimulation
 > Status: partial (Phase 5b severing shipped; vitals HUD Phase 6)
-> Verified: b119ae29b — 2026-07-17
+> Verified: d6d269dea — 2026-07-17
 
 # Health
 
 ## Overview
 
-Greenfield rewrite per [health_implementation_plan.md](../../plans/health_implementation_plan.md). Phase 1 shipped bleeding, bandage, VFX, and alert chip. Phase 2 wires asset-backed organs into pool math, cardiac arrest, and movement debuffs (`Snapshot.MovementSpeedMultiplier` — consumed by humanoid gait/limp presentation after the develop integration). Phase 3 adds multi-threshold critical state, cardiac arrest → defib window, and chest defibrillation. Phase 4 adds BodyParts raycast zone resolution for melee combat. Phase 5 adds field treatments (burn dressing, splint, O2, CPR, transfusion, antitoxin). Phase 5b adds limb severing (zone `IsSevered`, anatomy hide, world drops, head mind-swap). Bleeding visuals now use tuned particle streams plus URP Decal blood marks (body + floor).
+Greenfield rewrite per [health_implementation_plan.md](../../plans/health_implementation_plan.md). Phase 1 shipped bleeding, bandage, VFX, and alert chip. Phase 2 wires asset-backed organs into pool math, cardiac arrest, and movement debuffs (`Snapshot.MovementSpeedMultiplier` — consumed by humanoid gait/limp presentation after the develop integration). Phase 3 adds multi-threshold critical state, cardiac arrest → defib window, and chest defibrillation. Phase 4 adds BodyParts raycast zone resolution for melee combat. Phase 5 adds field treatments (burn dressing, splint, O2, CPR, transfusion, antitoxin). Phase 5b adds limb severing (zone `IsSevered`, anatomy hide, world drops, head mind-swap). Bleeding visuals now use tuned particle streams plus URP Decal blood marks (body + floor). Bleed drain uses `BleedingBloodDrainScale = 0.010` (severity-only rates; see plan hemorrhage tuning).
 
 Client [screen-effects](screen-effects.md) already implement dying/critical, blood-loss, concussion, and related overlays, but **nothing in Health drives them yet** — wire via `ScreenEffectsSubSystem.SetEffect` in Phase 6 (moved out of Phase 3). The atmosphere→oxygen coupling is likewise a single hookup point: `HealthSimulation.LungIntake(atmosphereO2)` currently defaults to full O2 and should be fed the occupant's turf O2 ratio.
 
 Phase 0d strips legacy health components from `Human.prefab` and rewires a thinner root — do not dual-stack or grow the mega-prefab ([agent-first composition](../2026-07_agent-first-composition.md), [health_implementation_plan.md](../../plans/health_implementation_plan.md) Phase 0d).
+
+**Body presentation debt:** Health owns vitals intent (conscious / cardiac arrest / dead); it must not grow a third collapse path. Ragdoll, animator, and movement still share presentation via interim RPCs — refactor per [2026-07_body-presentation-authority.md](../2026-07_body-presentation-authority.md).
 
 ## Start here
 
@@ -59,7 +61,7 @@ Phase 0d strips legacy health components from `Human.prefab` and rewires a thinn
 - **Death re-triggers every health tick:** `TickHealth` must latch death (`_deathTriggered`) and stop ticking; otherwise `Human.Kill()` re-runs every second (ghost spam / dispose races). `WoundVfx` also clears and disables on `HealthState.Dead`.
 - **Ghost spawn stack-overflows the editor:** `HumanoidGhostController.OnAwake` must call `base.OnAwake()`, never `base.Awake()` — the latter re-enters `NetworkActor.Awake` → `OnAwake` forever when `Human.Kill()` instantiates the ghost.
 - **Death skips ragdoll / keeps walk cycle:** `OnDisable` must not `Recover()` (ownership teardown stands the corpse up). Death uses `ServerDeathRagdoll` + observer reinforce: disable Animator/`AnimationOrchestrator`, enable bone physics. Do not rely on SyncVar OnChange alone from server `Kill()`.
-- **Unconscious presentation:** collapse on `!IsConscious` **or** `IsCardiacArrest`. Use `ApplyCollapseVisuals` + `RpcSetConsciousnessCollapsed` (same reinforce pattern as death). Coimbra `UpdateEvent` keeps firing after `enabled=false` — `AnimationOrchestrator.SetPosingSuppressed` must stop walk-param writes.
+- **Unconscious presentation:** collapse on `!IsConscious` **or** `IsCardiacArrest`. Use `ApplyCollapseVisuals` + `RpcSetConsciousnessCollapsed` (same reinforce pattern as death). Coimbra `UpdateEvent` keeps firing after `enabled=false` — `AnimationOrchestrator.SetPosingSuppressed` must stop walk-param writes. Broader ownership: [body-presentation-authority](../2026-07_body-presentation-authority.md).
 
 ## Depends on / Used by
 
@@ -73,5 +75,6 @@ Phase 0d strips legacy health components from `Human.prefab` and rewires a thinn
 - Design (read-only): [Documents/design/health.md](../../design/health.md), [main-hud.md](../../design/main-hud.md) §9, [stamina.md](../../design/stamina.md), [armor.md](../../design/armor.md)
 - Anatomy map: [health-anatomy-map.md](health-anatomy-map.md)
 - Plan: [health_implementation_plan.md](../../plans/health_implementation_plan.md)
+- [2026-07_body-presentation-authority](../2026-07_body-presentation-authority.md) — **planned** single authority for collapse/death presentation
 - [2026-07_agent-first-composition](../2026-07_agent-first-composition.md)
 - [screen-effects](screen-effects.md)
