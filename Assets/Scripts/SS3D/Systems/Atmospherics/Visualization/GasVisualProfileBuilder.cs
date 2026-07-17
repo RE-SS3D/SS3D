@@ -17,11 +17,23 @@ namespace SS3D.Systems.Atmospherics.Visualization
         }
 
         static readonly GpuSet s_DefaultSet = BuildCoreDefaults();
+        static GasRegistry s_CachedRegistry;
+        static GpuSet s_CachedSet;
 
         public static GpuSet CoreDefaults => s_DefaultSet;
 
+        /// <summary>
+        /// Packs visual profiles for GPU upload. Results are cached per registry instance so
+        /// the atmos tick path does not allocate every frame.
+        /// </summary>
         public static GpuSet Build(GasRegistry registry)
         {
+            if (registry == null)
+                return s_DefaultSet;
+
+            if (ReferenceEquals(registry, s_CachedRegistry) && s_CachedSet.Scatter != null)
+                return s_CachedSet;
+
             var scatter = new Vector4[CompositionChannels];
             var emission = new Vector4[CompositionChannels];
             var misc = new Vector4[CompositionChannels];
@@ -32,7 +44,9 @@ namespace SS3D.Systems.Atmospherics.Visualization
                 PackProfile(profile, scatter, emission, misc, gasId);
             }
 
-            return new GpuSet { Scatter = scatter, Emission = emission, Misc = misc };
+            s_CachedSet = new GpuSet { Scatter = scatter, Emission = emission, Misc = misc };
+            s_CachedRegistry = registry;
+            return s_CachedSet;
         }
 
         static GpuSet BuildCoreDefaults()
