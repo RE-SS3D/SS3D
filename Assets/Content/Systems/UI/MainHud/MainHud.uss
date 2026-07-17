@@ -1,5 +1,6 @@
 @import url("../Tokens/ss3d-tokens.uss");
 @import url("../Tokens/ss3d-typography.uss");
+@import url("../MachineInterface/Tokens/diegetic-tokens.uss");
 
 .main-hud {
     position: absolute;
@@ -43,4 +44,24 @@
     left: var(--ss3d-space-5);
     top: 90px;
     max-height: 60%;
+}
+
+/* Icon wells only — design #161616. Scoped so Machine Interface slots keep diegetic tokens. */
+.main-hud .inventory-slot__well {
+    background-color: var(--ss3d-surface-hud);
+}
+
+.main-hud .inventory-slot--unknown .inventory-slot__well {
+    background-color: var(--ss3d-surface-hud);
+}
+
+/* Slot labels stay quiet until the player points at that slot. */
+.main-hud .inventory-slot__label {
+    opacity: 0;
+    transition-property: opacity;
+    transition-duration: var(--ss3d-duration-fast);
+}
+
+.main-hud .inventory-slot:hover .inventory-slot__label {
+    opacity: 1;
 }

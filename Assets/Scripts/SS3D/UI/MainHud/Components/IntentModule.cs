@@ -30,6 +30,11 @@ namespace SS3D.UI.MainHud.Components
             VisualElement toggle = new();
             toggle.AddToClassList("intent-toggle");
 
+            // Painted shell (radius) and clip layer (overflow) must stay separate — combining both on one
+            // VisualElement renders as a flat white block (see machine-interface.md UI Toolkit masking).
+            VisualElement clip = new();
+            clip.AddToClassList("intent-toggle__clip");
+
             _helpSegment = new Label("Help");
             _helpSegment.AddToClassList("intent-toggle__segment");
             _helpSegment.AddToClassList("intent-toggle__segment--help");
@@ -40,8 +45,9 @@ namespace SS3D.UI.MainHud.Components
             _harmSegment.AddToClassList("intent-toggle__segment--harm");
             _harmSegment.AddToClassList("font-titling");
 
-            toggle.Add(_helpSegment);
-            toggle.Add(_harmSegment);
+            clip.Add(_helpSegment);
+            clip.Add(_harmSegment);
+            toggle.Add(clip);
             toggle.RegisterCallback<ClickEvent>(_ => ToggleRequested?.Invoke());
 
             Add(hints);

@@ -31,11 +31,16 @@
     color: var(--ss3d-text-tertiary);
 }
 
+/* Painted shell — radius only, no overflow. */
 .intent-toggle {
-    flex-direction: row;
-    background-color: var(--ss3d-surface-panel-raised);
     border-radius: var(--ss3d-radius-md);
+}
+
+/* Clip layer — overflow only, no radius (avoids UITK white-block bug). */
+.intent-toggle__clip {
+    flex-direction: row;
     overflow: hidden;
+    background-color: var(--ss3d-surface-panel-raised);
 }
 
 .intent-toggle__segment {

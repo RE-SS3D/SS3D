@@ -2,6 +2,7 @@
     /* Surfaces */
     --ss3d-surface-void: #0a0b0d;
     --ss3d-surface-panel: #12141a;
+    --ss3d-surface-hud: #161616;
     --ss3d-surface-inset: #0a0b0d;
     --ss3d-surface-elevated: #1a1d24;
     --ss3d-surface-panel-raised: #1a1d24;
