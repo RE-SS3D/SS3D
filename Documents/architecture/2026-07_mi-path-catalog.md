@@ -27,6 +27,11 @@ Replaces `MachineInterfaceHost` per-template SerializeFields and Editor-only `En
 - Subsystem bootstrap / moving MI host off Game.unity
 - Addressables
 
+## Implementation notes
+
+- Initial catalog asset was authored from path/guid data when Unity batchmode could not open the project (another Editor instance held the lock). Prefer **Rebuild Asset Catalog** in the Editor after any path change.
+- `SS3D.Editor` must reference `SS3D.Core` for `MachineUiAssetCatalogBuilder` scene cleanup (`MachineInterfaceHost` extends `View`).
+
 ## Related docs
 
 - Policy: [2026-07_agent-first-composition.md](2026-07_agent-first-composition.md)
