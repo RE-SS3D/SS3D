@@ -8,6 +8,8 @@
 
 App bootstrap and startup initialization. (Navigation map not yet fully reviewed.)
 
+Boot/Game should become thin launch pads; composition moves to code ([agent-first composition](../2026-07_agent-first-composition.md)).
+
 ## Start here
 
 - `Assets/Scripts/SS3D/Application/ApplicationInitializerSubSystem.cs` — application startup subsystem
@@ -23,4 +25,5 @@ App bootstrap and startup initialization. (Navigation map not yet fully reviewed
 
 ## Related docs
 
+- [2026-07_agent-first-composition](../2026-07_agent-first-composition.md)
 - [INDEX.md](../INDEX.md)

@@ -1774,6 +1774,18 @@ PrefabInstance:
       propertyPath: m_Name
       value: HumanoidInventoryAlt
       objectReference: {fileID: 0}
+    - target: {fileID: 4416089188971054470, guid: 0b8fbd4d5c5a29648b0311070cd87b40, type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2251930788393684556, guid: 0b8fbd4d5c5a29648b0311070cd87b40, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4392532013381623832, guid: 0b8fbd4d5c5a29648b0311070cd87b40, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 8084791768262570791, guid: 0b8fbd4d5c5a29648b0311070cd87b40, type: 3}
       propertyPath: m_LocalPosition.y
       value: -95
@@ -2300,6 +2312,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: StaminaBar
       objectReference: {fileID: 0}
+    - target: {fileID: 1522465952883509860, guid: 2c5702094085193418715c5332700e54, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 5717699660937599515, guid: 2c5702094085193418715c5332700e54, type: 3}
       propertyPath: m_AnchorMax.x
       value: 0
@@ -2497,6 +2513,10 @@ PrefabInstance:
     - target: {fileID: 1009626998593189131, guid: b4a30caa411cfeb41b4589ee34fb925b, type: 3}
       propertyPath: m_Name
       value: ToggleChatsButton
+      objectReference: {fileID: 0}
+    - target: {fileID: 1009626998593189131, guid: b4a30caa411cfeb41b4589ee34fb925b, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

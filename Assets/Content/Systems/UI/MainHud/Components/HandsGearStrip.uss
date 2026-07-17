@@ -1,0 +1,36 @@
+.hands-gear-strip {
+    flex-direction: row;
+    align-items: flex-end;
+    overflow: visible;
+}
+
+.hands-gear-strip__gear {
+    flex-direction: row;
+    padding-bottom: 4px;
+    overflow: visible;
+}
+
+.hands-gear-strip__gear > .inventory-slot {
+    margin-left: var(--ss3d-space-1);
+}
+
+.hands-gear-strip__divider {
+    width: 1px;
+    height: 80px;
+    background-color: var(--ss3d-border-default);
+    margin-left: var(--ss3d-space-2);
+    margin-right: var(--ss3d-space-2);
+}
+
+.hands-gear-strip__hands {
+    flex-direction: row;
+}
+
+.hands-gear-strip__hands > .inventory-slot {
+    margin-left: var(--ss3d-space-2);
+}
+
+.hands-gear-strip__hands .inventory-slot__icon {
+    width: 78%;
+    height: 78%;
+}

@@ -1,0 +1,532 @@
+using System.Linq;
+using Coimbra.Services.Events;
+using SS3D.Core;
+using SS3D.Core.Behaviours;
+using SS3D.Interactions;
+using SS3D.Interactions.Interfaces;
+using SS3D.Systems.Entities;
+using SS3D.Systems.Entities.Events;
+using SS3D.Systems.Inputs;
+using SS3D.Systems.Inventory.Containers;
+using SS3D.Systems.Inventory.Items;
+using SS3D.Systems.Rounds;
+using SS3D.Systems.Rounds.Events;
+using SS3D.UI.MainHud.Components;
+using UnityEngine;
+using UnityEngine.UIElements;
+
+namespace SS3D.UI.MainHud
+{
+    /// <summary>
+    /// Main HUD overlay (design doc: Documents/design/main-hud.md). Binds the visual/interaction
+    /// layer built in <see cref="MainHudView"/> to the local player's existing gameplay systems: hands/equipment
+    /// (<see cref="Hands"/>/<see cref="HumanInventory"/>) and help/harm intent (<see cref="IIntentProvider"/>).
+    /// <para>
+    /// Hidden until a local spawned body exists during an in-game round; hidden again when the round leaves
+    /// Ongoing/Ending (same spawn/round gate idea as <c>GameScreensController</c>).
+    /// </para>
+    /// <para>
+    /// The alert icon stack has no hunger/thirst/restrained/pressure/radiation trackers to bind to yet - it
+    /// always reports the all-clear <see cref="AlertStackState"/> until those systems exist, mirroring how
+    /// <see cref="SS3D.Systems.ScreenEffects.ScreenEffectsSubSystem"/> itself was built ahead of its own hookup.
+    /// </para>
+    /// <para>
+    /// Self-bootstraps the same way <c>ScreenEffectsSubSystem</c> does, instead of living on a scene/prefab
+    /// GameObject - hand-editing scene/prefab YAML outside the Unity Editor isn't safe.
+    /// </para>
+    /// <para>
+    /// Divergence from design: the hold-to-self-examine panel (main-hud.md §5/§15) is not implemented here —
+    /// examine-self belongs with the general examine surface, not permanent HUD chrome.
+    /// </para>
+    /// </summary>
+    [RequireComponent(typeof(UIDocument))]
+    public sealed class MainHudSubSystem : SubSystem
+    {
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
+        private static void Bootstrap()
+        {
+            if (SubSystems.TryGet(out MainHudSubSystem _))
+            {
+                return;
+            }
+
+            GameObject host = new(nameof(MainHudSubSystem));
+            DontDestroyOnLoad(host);
+            host.AddComponent<UIDocument>();
+            host.AddComponent<MainHudSubSystem>();
+        }
+
+        [SerializeField] private UIDocument _document;
+        [SerializeField] private StyleSheet _mainHudStyle;
+        [SerializeField] private StyleSheet _alertIconStackStyle;
+        [SerializeField] private StyleSheet _intentModuleStyle;
+        [SerializeField] private StyleSheet _handsGearStripStyle;
+        [SerializeField] private StyleSheet _equipmentGridStyle;
+        [SerializeField] private StyleSheet _inventorySlotStyle;
+        [SerializeField] private MainHudIconSet _icons;
+
+        private MainHudView _view;
+        private GameObject _localPlayer;
+        private HumanInventory _inventory;
+        private Hands _hands;
+        private IIntentProvider _intentProvider;
+        private Hand _cachedSelectedHand;
+
+        protected override void OnAwake()
+        {
+            base.OnAwake();
+
+            if (_document == null)
+            {
+                _document = GetComponent<UIDocument>();
+            }
+
+            if (!TryEnsureAssets())
+            {
+                enabled = false;
+                return;
+            }
+
+            BuildView();
+            InputInterface.RegisterDocument(_document);
+
+            // Subscribe in OnAwake (same as PlayerCameraSubSystem): on pure clients the mind sync
+            // often fires LocalPlayerObjectChanged before SubSystem OnStart would run.
+            AddHandle(LocalPlayerObjectChanged.AddListener(HandleLocalPlayerObjectChanged));
+            AddHandle(RoundStateUpdated.AddListener(HandleRoundStateUpdated));
+            AddHandle(SpawnedPlayersUpdated.AddListener(HandleSpawnedPlayersUpdated));
+        }
+
+        // Self-bootstraps a bare GameObject (see Bootstrap()), so SerializeFields are never filled from a
+        // scene/prefab. Assets come from a committed MainHudAssetCatalog under Resources — same pattern as
+        // MachineInterfaceHost — so standalone builds work without Editor AssetDatabase.
+        private bool TryEnsureAssets()
+        {
+            MainHudAssetCatalog catalog =
+                Resources.Load<MainHudAssetCatalog>(MainHudAssetPaths.ResourcesCatalogName);
+            if (catalog == null)
+            {
+#if UNITY_EDITOR
+                EnsureEditorAssets();
+                if (_mainHudStyle != null)
+                {
+                    ApplyDocumentPanelSettings(null);
+                    return true;
+                }
+#endif
+                Debug.LogError(
+                    $"MainHudSubSystem could not load Resources/{MainHudAssetPaths.ResourcesCatalogName}. "
+                    + "Run SS3D → Main HUD → Rebuild Asset Catalog and commit the asset.",
+                    this);
+                return false;
+            }
+
+            if (!catalog.HasRequiredAssets(out string missingField))
+            {
+                Debug.LogError(
+                    $"MainHudAssetCatalog is missing required assets ({missingField}). "
+                    + "Run SS3D → Main HUD → Rebuild Asset Catalog.",
+                    this);
+                return false;
+            }
+
+            ApplyCatalog(catalog);
+            return true;
+        }
+
+        private void ApplyCatalog(MainHudAssetCatalog catalog)
+        {
+            _mainHudStyle = catalog.MainHudStyle;
+            _alertIconStackStyle = catalog.AlertIconStackStyle;
+            _intentModuleStyle = catalog.IntentModuleStyle;
+            _handsGearStripStyle = catalog.HandsGearStripStyle;
+            _equipmentGridStyle = catalog.EquipmentGridStyle;
+            _inventorySlotStyle = catalog.InventorySlotStyle;
+            _icons = catalog.Icons;
+            ApplyDocumentPanelSettings(catalog.PanelSettings);
+        }
+
+        private void ApplyDocumentPanelSettings(PanelSettings panelSettings)
+        {
+            if (_document == null)
+            {
+                return;
+            }
+
+            if (_document.panelSettings == null && panelSettings != null)
+            {
+                _document.panelSettings = panelSettings;
+            }
+
+            // Stays below the radial menu / armed-interaction reticle (both on the same shared panel
+            // settings), so those transient overlays still draw on top of the persistent HUD.
+            _document.sortingOrder = -10;
+        }
+
+        protected override void OnStart()
+        {
+            base.OnStart();
+            TryBindExistingLocalPlayer();
+        }
+
+        protected override void OnDestroyed()
+        {
+            UnbindLocalPlayer();
+            _view?.Detach();
+            InputInterface.UnregisterDocument(_document);
+            base.OnDestroyed();
+        }
+
+        private void Update()
+        {
+            // Late-joining clients can miss one-shot spawn events (SyncList Complete is ignored in
+            // EntitySubSystem; mind may sync before Mind.player is linked). Keep trying until bound.
+            if (_view != null && _localPlayer == null)
+            {
+                TryBindExistingLocalPlayer();
+            }
+
+            if (_view == null || _localPlayer == null)
+            {
+                return;
+            }
+
+            RefreshActiveHand();
+        }
+
+        private void BuildView()
+        {
+            StyleSheet[] styleSheets =
+            {
+                _mainHudStyle, _alertIconStackStyle, _intentModuleStyle, _handsGearStripStyle,
+                _equipmentGridStyle, _inventorySlotStyle,
+            };
+
+            _view = new MainHudView(styleSheets, _icons);
+            _view.IntentToggleRequested += HandleIntentToggleRequested;
+            _view.HandSelectedRequested += HandleHandSelectedRequested;
+            _view.Attach(_document.rootVisualElement);
+            _view.SetAlertState(default);
+        }
+
+        private void HandleLocalPlayerObjectChanged(ref EventContext context, in LocalPlayerObjectChanged e)
+        {
+            UnbindLocalPlayer();
+
+            if (!e.PlayerHasObject || e.PlayerObject == null)
+            {
+                HideHud();
+                return;
+            }
+
+            BindLocalPlayer(e.PlayerObject);
+            if (IsRoundInGame())
+            {
+                ShowHud();
+            }
+        }
+
+        private void HandleSpawnedPlayersUpdated(ref EventContext context, in SpawnedPlayersUpdated e)
+        {
+            TryBindExistingLocalPlayer();
+        }
+
+        private void HandleRoundStateUpdated(ref EventContext context, in RoundStateUpdated e)
+        {
+            switch (e.RoundState)
+            {
+                case RoundState.Ongoing:
+                case RoundState.Ending:
+                    TryBindExistingLocalPlayer();
+                    break;
+                default:
+                    UnbindLocalPlayer();
+                    HideHud();
+                    break;
+            }
+        }
+
+        /// <summary>
+        /// Catch-up for clients that already have a spawned body before this subsystem subscribed,
+        /// or before RoundState became Ongoing.
+        /// </summary>
+        private void TryBindExistingLocalPlayer()
+        {
+            if (!IsRoundInGame())
+            {
+                return;
+            }
+
+            if (_localPlayer != null)
+            {
+                ShowHud();
+                return;
+            }
+
+            if (!SubSystems.TryGet(out EntitySubSystem entities))
+            {
+                return;
+            }
+
+            foreach (Entity entity in entities.SpawnedPlayers)
+            {
+                if (entity == null || !IsLocalPlayerEntity(entity))
+                {
+                    continue;
+                }
+
+                BindLocalPlayer(entity.gameObject);
+                ShowHud();
+                return;
+            }
+        }
+
+        private static bool IsLocalPlayerEntity(Entity entity)
+        {
+            // Prefer FishNet ownership — Mind.player can still be null on the first mind SyncVar tick.
+            if (entity.IsOwner)
+            {
+                return true;
+            }
+
+            return entity.Mind?.player != null && entity.Mind.player.IsLocalConnection;
+        }
+
+        private static bool IsRoundInGame()
+        {
+            if (!SubSystems.TryGet(out RoundSubSystem rounds))
+            {
+                return false;
+            }
+
+            RoundState state = rounds.CurrentRoundState;
+            return state is RoundState.Ongoing or RoundState.Ending;
+        }
+
+        private void BindLocalPlayer(GameObject playerObject)
+        {
+            _localPlayer = playerObject;
+            _inventory = _localPlayer.GetComponentInChildren<HumanInventory>();
+            _hands = _localPlayer.GetComponentInChildren<Hands>();
+            _intentProvider = _localPlayer.GetComponent<IIntentProvider>()
+                ?? _localPlayer.GetComponentInChildren<IIntentProvider>();
+
+            if (_inventory != null)
+            {
+                _inventory.OnInventoryContainerAdded += HandleInventoryChanged;
+                _inventory.OnInventoryContainerRemoved += HandleInventoryChanged;
+                _inventory.OnContainerContentChanged += HandleContainerContentChanged;
+                _inventory.OnInventorySetUp += RefreshEquipmentAndGear;
+            }
+
+            RefreshEquipmentAndGear();
+            RefreshIntent();
+        }
+
+        private void UnbindLocalPlayer()
+        {
+            if (_inventory != null)
+            {
+                _inventory.OnInventoryContainerAdded -= HandleInventoryChanged;
+                _inventory.OnInventoryContainerRemoved -= HandleInventoryChanged;
+                _inventory.OnContainerContentChanged -= HandleContainerContentChanged;
+                _inventory.OnInventorySetUp -= RefreshEquipmentAndGear;
+            }
+
+            _localPlayer = null;
+            _inventory = null;
+            _hands = null;
+            _intentProvider = null;
+            _cachedSelectedHand = null;
+        }
+
+        private void ShowHud()
+        {
+            _view?.SetVisible(true);
+        }
+
+        private void HideHud()
+        {
+            _view?.SetVisible(false);
+        }
+
+        private void HandleIntentToggleRequested()
+        {
+            _intentProvider?.RequestToggleIntent();
+            RefreshIntent();
+        }
+
+        private void HandleHandSelectedRequested(bool leftHand)
+        {
+            if (_inventory == null || _hands == null || _hands.PlayerHands.Count == 0)
+            {
+                return;
+            }
+
+            int index = leftHand ? 0 : 1;
+            if (index >= _hands.PlayerHands.Count)
+            {
+                return;
+            }
+
+            Hand hand = _hands.PlayerHands[index];
+            if (hand?.Container == null)
+            {
+                return;
+            }
+
+            // Same path as legacy SingleItemContainerSlot — ServerRpc via HumanInventory.ActivateHand.
+            _inventory.ActivateHand(hand.Container);
+        }
+
+        private void RefreshIntent()
+        {
+            IntentType intent = _intentProvider?.CurrentIntent ?? IntentType.Help;
+            _view.SetIntent(intent);
+        }
+
+        private void HandleInventoryChanged(AttachedContainer container)
+        {
+            RefreshEquipmentAndGear();
+        }
+
+        private void HandleContainerContentChanged(AttachedContainer container, Item oldItem, Item newItem, ContainerChangeType type)
+        {
+            RefreshEquipmentAndGear();
+        }
+
+        private void RefreshEquipmentAndGear()
+        {
+            if (_inventory == null)
+            {
+                return;
+            }
+
+            _view.SetEquipmentIcon(EquipmentGrid.Slot.Head, IconFor(ContainerType.Head));
+            _view.SetEquipmentIcon(EquipmentGrid.Slot.Eyes, IconFor(ContainerType.Glasses));
+            _view.SetEquipmentIcon(EquipmentGrid.Slot.Face, IconFor(ContainerType.Mask));
+            _view.SetEquipmentIcon(EquipmentGrid.Slot.Ears, IconFor(ContainerType.EarLeft) ?? IconFor(ContainerType.EarRight));
+            _view.SetEquipmentIcon(EquipmentGrid.Slot.GloveLeft, IconFor(ContainerType.GloveLeft));
+            _view.SetEquipmentIcon(EquipmentGrid.Slot.Shirt, IconFor(ContainerType.Jumpsuit));
+            _view.SetEquipmentIcon(EquipmentGrid.Slot.GloveRight, IconFor(ContainerType.GloveRight));
+            _view.SetEquipmentIcon(EquipmentGrid.Slot.Feet, IconFor(ContainerType.ShoeLeft) ?? IconFor(ContainerType.ShoeRight));
+
+            _view.SetHandIcons(HandIconAt(0), HandIconAt(1));
+
+            _view.SetGearIcon(HandsGearStrip.GearSlot.Belt, IconFor(ContainerType.Belt));
+            _view.SetGearIcon(HandsGearStrip.GearSlot.Id, IconFor(ContainerType.Identification));
+            _view.SetGearIcon(HandsGearStrip.GearSlot.Pda, IconFor(ContainerType.Pda));
+            _view.SetGearIcon(HandsGearStrip.GearSlot.Back, IconFor(ContainerType.Bag));
+        }
+
+        private Sprite IconFor(ContainerType type)
+        {
+            return _inventory != null && _inventory.TryGetTypeContainer(type, 0, out AttachedContainer container)
+                ? container.Items.FirstOrDefault()?.ItemSprite
+                : null;
+        }
+
+        private Sprite HandIconAt(int position)
+        {
+            if (_hands == null || position >= _hands.PlayerHands.Count)
+            {
+                return null;
+            }
+
+            return _hands.PlayerHands[position].ItemInHand?.ItemSprite;
+        }
+
+        private void RefreshActiveHand()
+        {
+            if (_hands == null || _hands.PlayerHands.Count == 0)
+            {
+                return;
+            }
+
+            Hand selected = _hands.SelectedHand;
+            if (selected == _cachedSelectedHand)
+            {
+                return;
+            }
+
+            _cachedSelectedHand = selected;
+            _view.SetActiveHand(_hands.PlayerHands.IndexOf(selected) == 0);
+        }
+
+#if UNITY_EDITOR
+        /// <summary>
+        /// Editor-only fallback when the Resources catalog is missing (pre-rebuild iteration).
+        /// Player builds never hit this path.
+        /// </summary>
+        private void EnsureEditorAssets()
+        {
+            if (_mainHudStyle == null)
+            {
+                _mainHudStyle = UnityEditor.AssetDatabase.LoadAssetAtPath<StyleSheet>(
+                    MainHudAssetPaths.MainHudStyle);
+            }
+
+            if (_alertIconStackStyle == null)
+            {
+                _alertIconStackStyle = UnityEditor.AssetDatabase.LoadAssetAtPath<StyleSheet>(
+                    MainHudAssetPaths.AlertIconStackStyle);
+            }
+
+            if (_intentModuleStyle == null)
+            {
+                _intentModuleStyle = UnityEditor.AssetDatabase.LoadAssetAtPath<StyleSheet>(
+                    MainHudAssetPaths.IntentModuleStyle);
+            }
+
+            if (_handsGearStripStyle == null)
+            {
+                _handsGearStripStyle = UnityEditor.AssetDatabase.LoadAssetAtPath<StyleSheet>(
+                    MainHudAssetPaths.HandsGearStripStyle);
+            }
+
+            if (_equipmentGridStyle == null)
+            {
+                _equipmentGridStyle = UnityEditor.AssetDatabase.LoadAssetAtPath<StyleSheet>(
+                    MainHudAssetPaths.EquipmentGridStyle);
+            }
+
+            if (_inventorySlotStyle == null)
+            {
+                _inventorySlotStyle = UnityEditor.AssetDatabase.LoadAssetAtPath<StyleSheet>(
+                    MainHudAssetPaths.InventorySlotStyle);
+            }
+
+            if (_icons.Head == null)
+            {
+                _icons = new MainHudIconSet
+                {
+                    Head = LoadSprite("BeepHead"),
+                    Eyes = LoadSprite("Eyes"),
+                    Face = LoadSprite("Face"),
+                    Ears = LoadSprite("Ears"),
+                    HandLeft = LoadSprite("HandLeft"),
+                    HandRight = LoadSprite("HandRight"),
+                    Shirt = null,
+                    Feet = LoadSprite("Feet"),
+                    Belt = LoadSprite("Waist"),
+                    Id = LoadSprite("Neck"),
+                    Pda = LoadSprite("Pocket"),
+                    Back = LoadSprite("BeepBack"),
+                };
+            }
+
+            if (_document != null && _document.panelSettings == null)
+            {
+                _document.panelSettings = UnityEditor.AssetDatabase.LoadAssetAtPath<PanelSettings>(
+                    MainHudAssetPaths.PanelSettings);
+            }
+        }
+
+        private static Sprite LoadSprite(string fileName)
+        {
+            return UnityEditor.AssetDatabase.LoadAssetAtPath<Sprite>(
+                $"{MainHudAssetPaths.IconRoot}{fileName}.png");
+        }
+#endif
+    }
+}

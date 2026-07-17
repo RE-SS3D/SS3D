@@ -70,33 +70,39 @@ namespace SS3D.Systems.Tile.TileMapCreator
         protected override void OnAwake()
         {
             base.OnAwake();
-            
+
+#if !UNITY_SERVER
             _inputSystem = SubSystems.Get<InputSubSystem>();
             _controls = _inputSystem.Inputs.TileCreator;
-            
+
             AddHandle(UpdateEvent.AddListener(HandleUpdate));
+#endif
         }
 
         protected override void OnEnabled()
         {
             base.OnEnabled();
-            
+
+#if !UNITY_SERVER
             _controls.Place.started += HandlePlaceStarted;
             _controls.Place.performed += HandlePlacePerformed;
             _controls.Replace.performed += HandleReplace;
             _controls.Replace.canceled += HandleReplace;
             _controls.Rotate.performed += HandleRotate;
+#endif
         }
 
         protected override void OnDisabled()
         {
             base.OnDisabled();
-            
+
+#if !UNITY_SERVER
             _controls.Place.started -= HandlePlaceStarted;
             _controls.Place.performed -= HandlePlacePerformed;
             _controls.Replace.performed -= HandleReplace;
             _controls.Replace.canceled -= HandleReplace;
             _controls.Rotate.performed -= HandleRotate;
+#endif
         }
 
         private void HandleUpdate(ref EventContext context, in UpdateEvent updateEvent)
@@ -230,11 +236,8 @@ namespace SS3D.Systems.Tile.TileMapCreator
         {
             _isDragging = false;
 
-            if (_menu.MouseOverUI)
-            {
-                _inputSystem.ToggleAction(_controls.Place, false);
-            }
-
+            // While the pointer is over the menu the TileMapMenuSubSystem already suppresses Place,
+            // so this handler does not fire there and no manual toggle is needed.
             if (!_menu.IsDeleting)
             {
                 PlaceOnHolograms();

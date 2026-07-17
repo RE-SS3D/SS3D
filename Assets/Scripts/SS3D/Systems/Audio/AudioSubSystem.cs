@@ -57,8 +57,12 @@ namespace SS3D.Systems.Audio
 
         private void Start()
         {
+#if !UNITY_SERVER
+            // Audio playback (RpcPlayAudioSource et al.) is [ObserversRpc] and only ever runs on
+            // observing clients, so the server never needs its own local AudioSource pool.
             CreateAudioSourceIndex();
             StartCoroutine(PurgeCountdown());
+#endif
         }
 
         /// <summary>

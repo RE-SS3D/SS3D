@@ -21,8 +21,12 @@ namespace SS3D.Rendering
         {
             base.OnAwake();
 
+#if UNITY_SERVER
+            _renderer.enabled = false;
+#else
             AddHandle(UpdateEvent.AddListener(HandleUpdate));
-            Setup(); 
+            Setup();
+#endif
         }
 
         private void Setup()

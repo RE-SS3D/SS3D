@@ -1,6 +1,9 @@
 ﻿
 using SS3D.Systems.Tile.Connections.AdjacencyTypes;
 using UnityEngine;
+#if UNITY_SERVER
+using SS3D.Systems.Tile;
+#endif
 
 namespace SS3D.Systems.Tile.Connections
 {
@@ -90,6 +93,10 @@ namespace SS3D.Systems.Tile.Connections
 
             if (wallCap.TryGetComponent(out FishNet.Object.NetworkObject networkObject))
                 Object.DestroyImmediate(networkObject);
+
+#if UNITY_SERVER
+            ServerVisualsUtility.DisableRenderingComponents(wallCap);
+#endif
 
             Direction cardinalDirectionInput = TileHelper.GetRelativeDirection(direction, DoorDirection);
             var cardinal = TileHelper.ToCardinalVector(cardinalDirectionInput);

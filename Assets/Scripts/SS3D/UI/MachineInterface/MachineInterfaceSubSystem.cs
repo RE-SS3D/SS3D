@@ -4,6 +4,7 @@ using SS3D.Systems.Inputs;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.InputSystem;
 using SS3D.Systems.Electricity;
 
 namespace SS3D.UI.MachineInterface
@@ -21,12 +22,19 @@ namespace SS3D.UI.MachineInterface
         private string _openInterfaceId;
         private IMachineInterfaceClientBridge _clientBridge;
         private InputSubSystem _inputSystem;
-        private bool _inputBlocked;
+        private IInputHandle _machineHandle;
 
         public bool IsOpen => !string.IsNullOrEmpty(_openInterfaceId);
 
         public void Open(string interfaceId, IMachineInterfaceViewModel viewModel)
         {
+#if UNITY_SERVER
+            // Machine controllers send their "open" RPC as TargetRpc(RunLocally = true), which also runs
+            // this on the server that sent it (needed for host mode, where server and client are the same
+            // process). A dedicated server has no local player to show UI to, so skip it entirely - it
+            // would otherwise try to lay out UI Toolkit text with no shaders available and crash.
+            return;
+#endif
             MachineInterfaceHost host = GetHost();
             if (host == null || !host.Open(interfaceId, viewModel))
             {
@@ -247,16 +255,6 @@ namespace SS3D.UI.MachineInterface
             }
         }
 
-        protected void Update()
-        {
-            if (!IsOpen || !Input.GetKeyDown(KeyCode.Escape))
-            {
-                return;
-            }
-
-            RequestCloseFromUi(_openInterfaceId);
-        }
-
         protected override void OnDestroyed()
         {
             SetGameplayInputBlocked(false);
@@ -285,17 +283,24 @@ namespace SS3D.UI.MachineInterface
                 return;
             }
 
-            if (blocked && !_inputBlocked)
+            if (blocked && _machineHandle == null)
             {
-                _inputSystem.ToggleActionMap(_inputSystem.Inputs.Movement, false);
-                _inputSystem.ToggleActionMap(_inputSystem.Inputs.Camera, false);
-                _inputBlocked = true;
+                _machineHandle = _inputSystem.PushContext(InputContext.MachineUI);
+                _inputSystem.UiCancel.performed += HandleUiCancel;
             }
-            else if (!blocked && _inputBlocked)
+            else if (!blocked && _machineHandle != null)
             {
-                _inputSystem.ToggleActionMap(_inputSystem.Inputs.Movement, true);
-                _inputSystem.ToggleActionMap(_inputSystem.Inputs.Camera, true);
-                _inputBlocked = false;
+                _inputSystem.UiCancel.performed -= HandleUiCancel;
+                _machineHandle.Dispose();
+                _machineHandle = null;
+            }
+        }
+
+        private void HandleUiCancel(InputAction.CallbackContext context)
+        {
+            if (IsOpen)
+            {
+                RequestCloseFromUi(_openInterfaceId);
             }
         }
     }

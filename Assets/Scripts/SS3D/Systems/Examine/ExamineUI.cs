@@ -4,6 +4,7 @@ using SS3D.Core;
 using SS3D.Core.Behaviours;
 using SS3D.Localization;
 using SS3D.Systems.Entities.Events;
+using SS3D.Systems.Inputs;
 using SS3D.Systems.Inventory.Containers;
 using TMPro;
 using UnityEngine;
@@ -15,7 +16,6 @@ namespace SS3D.Systems.Examine
         [SerializeField] private TMP_Text HoverName;
         [SerializeField] private ExamineDetailedView DetailedViewPrefab;
         [SerializeField] private ExamineImageDetailedView ImageDetailedViewPrefab;
-        [SerializeField] private KeyCode DetailedExamineKey = KeyCode.LeftShift;
         [SerializeField] private Vector2 DetailedTextOffset = new Vector2(16f, -16f);
 
         private readonly ExamineContentResolver _contentResolver = new();
@@ -26,6 +26,7 @@ namespace SS3D.Systems.Examine
         private GameObject _localPlayer;
         private bool _wasDetailedExamineHeld;
         private bool _pinnedDetailedExamine;
+        private InputSubSystem _inputSystem;
         private ExamineDetailedView _textDetailedView;
         private ExamineImageDetailedView _imageDetailedView;
         private RectTransform _activeDetailedPanel;
@@ -41,6 +42,7 @@ namespace SS3D.Systems.Examine
             base.OnEnabled();
             LocalizedTextService.EnsureInitialized();
             LocalizedTextService.LocaleChanged += HandleLocaleChanged;
+            _inputSystem = SubSystems.Get<InputSubSystem>();
             EnsureDetailedViews();
             SubSystems.Get<ExamineSubSystem>().OnExaminableChanged += UpdateHoverText;
             SubSystems.Get<ExamineSubSystem>().OnDetailedExamineRequested += ShowDetailedExamine;
@@ -341,7 +343,12 @@ namespace SS3D.Systems.Examine
 
         private bool IsDetailedExamineHeld()
         {
-            return _pinnedDetailedExamine || Input.GetKey(DetailedExamineKey) || Input.GetKey(KeyCode.RightShift);
+            if (_pinnedDetailedExamine)
+            {
+                return true;
+            }
+
+            return _inputSystem != null && _inputSystem.DetailedExamine.IsPressed();
         }
     }
 }

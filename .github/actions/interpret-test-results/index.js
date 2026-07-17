@@ -1,68 +1,127 @@
-function recursivelyOutputFailedTestCases(element) {
-    // If this element is a test case, we check it directly, and output if it has failed.
-    if (element.tagName == ("TEST-CASE")) {
-        if (element.getAttribute("result") == "Failed") {
-            output += "....Failed test case: " + element.getAttribute("name") + " (" + element.getAttribute("classname") + ")\n"
+const core = require('@actions/core');
+const { JSDOM } = require('jsdom');
+const fs = require('fs');
+
+const path = core.getInput('XML_PATH');
+let output = 'Test Results:\n';
+let testsFailed = false;
+const failedTests = [];
+const inconclusiveTests = [];
+
+function isTestCase(element) {
+    return element.tagName && element.tagName.toUpperCase() === 'TEST-CASE';
+}
+
+function formatAssemblySummary(suite) {
+    const name = suite.getAttribute('name');
+    const passed = suite.getAttribute('passed') ?? '0';
+    const failed = suite.getAttribute('failed') ?? '0';
+    const inconclusive = suite.getAttribute('inconclusive') ?? '0';
+    const skipped = suite.getAttribute('skipped') ?? '0';
+    const total = suite.getAttribute('total') ?? '0';
+
+    return `..Assembly: ${name} (${passed} passed, ${failed} failed, ${inconclusive} inconclusive, ${skipped} skipped / ${total} total)`;
+}
+
+function collectTestCaseResults(element) {
+    if (isTestCase(element)) {
+        const result = element.getAttribute('result');
+        const name = element.getAttribute('name');
+        const classname = element.getAttribute('classname');
+
+        if (result === 'Failed') {
             testsFailed = true;
+            failedTests.push({ name, classname });
+            output += `....Failed test case: ${name} (${classname})\n`;
+        } else if (result === 'Inconclusive') {
+            inconclusiveTests.push({ name, classname });
         }
+        return;
     }
-    // If not a test case, it may have subordinate test cases. Check them recursively.
-    else
-    {
-        for (const child of element.children) {
-            recursivelyOutputFailedTestCases(child);
-        }
+
+    for (const child of element.children) {
+        collectTestCaseResults(child);
     }
 }
 
-// Remember: you will probably need to npm install jsdom in the workflow!
-const core = require('@actions/core');
-const jsdom = require("jsdom");
-const fs = require('fs');
+function writeStepSummary(markdown) {
+    const summaryPath = process.env.GITHUB_STEP_SUMMARY;
+    if (!summaryPath) {
+        return;
+    }
 
-// Declare & Initialize variables as required.
-var testsFailed = false;         // Needs to be global.
-var output = "Test Results:\n";  // Needs to be global.
-var passed;
-var total;
-var name;
+    fs.appendFileSync(summaryPath, markdown);
+}
 
-// Read the results text, and turn it into Document Object Model (DOM) format
-const path = core.getInput('XML_PATH');
 if (!fs.existsSync(path)) {
     const message = `Test results file not found at ${path}. Unity tests may not have run — check UNITY_LICENSE (or UNITY_SERIAL) and related secrets in the unity_tests environment.`;
     core.warning(message);
     console.log(message);
     core.setOutput('DISPLAY_STRING', message);
     core.setOutput('ALL_TESTS_PASSED', false);
+    writeStepSummary(`## Test Results\n\n${message}\n`);
     process.exit(0);
 }
 
 const data = fs.readFileSync(path);
-const dom = new jsdom.JSDOM(data).window.document;
-var testSuites = dom.getElementsByTagName("test-suite")
+const dom = new JSDOM(data, { contentType: 'application/xml' }).window.document;
+const testSuites = dom.getElementsByTagName('test-suite');
 
 for (let i = 0; i < testSuites.length; i++) {
-
-    // Cycle through all of the test suites, and filter out the assemblies. Provide summary representative info.
-    if (testSuites[i].getAttribute("type") == "Assembly") {
-        name = testSuites[i].getAttribute("name");
-        passed = testSuites[i].getAttribute("passed");
-        total = testSuites[i].getAttribute("total");
-        output += "..Assembly: " + name + " (" + passed + "/" + total + ")\n"
-        recursivelyOutputFailedTestCases(testSuites[i]);
+    if (testSuites[i].getAttribute('type') === 'Assembly') {
+        output += `${formatAssemblySummary(testSuites[i])}\n`;
+        collectTestCaseResults(testSuites[i]);
     }
 }
 
-// Summarize and display the output
-output += "\nOverall result: ";
-if (testsFailed) {
-    output += "FAIL!";
-    core.setOutput('ALL_TESTS_PASSED', false);
+const testRun = dom.getElementsByTagName('test-run')[0];
+if (testRun) {
+    const passed = testRun.getAttribute('passed') ?? '?';
+    const failed = testRun.getAttribute('failed') ?? '?';
+    const inconclusive = testRun.getAttribute('inconclusive') ?? '?';
+    const skipped = testRun.getAttribute('skipped') ?? '?';
+    const total = testRun.getAttribute('total') ?? '?';
+    output += `\nTotals: ${passed} passed, ${failed} failed, ${inconclusive} inconclusive, ${skipped} skipped / ${total} total\n`;
 }
-else {
-    output += "PASS!";
+
+output += '\nOverall result: ';
+if (testsFailed) {
+    output += 'FAIL!';
+    core.setOutput('ALL_TESTS_PASSED', false);
+} else {
+    output += 'PASS!';
     core.setOutput('ALL_TESTS_PASSED', true);
 }
+
 console.log(output);
 core.setOutput('DISPLAY_STRING', output);
+
+let summary = '## Test Results\n\n';
+if (testRun) {
+    summary += `| Passed | Failed | Inconclusive | Skipped | Total |\n`;
+    summary += `| --- | --- | --- | --- | --- |\n`;
+    summary += `| ${testRun.getAttribute('passed') ?? '?'} | ${testRun.getAttribute('failed') ?? '?'} | ${testRun.getAttribute('inconclusive') ?? '?'} | ${testRun.getAttribute('skipped') ?? '?'} | ${testRun.getAttribute('total') ?? '?'} |\n\n`;
+}
+
+summary += `**Overall:** ${testsFailed ? 'FAIL' : 'PASS'}  \n`;
+
+if (failedTests.length > 0) {
+    summary += '\n### Failed tests\n\n';
+    for (const test of failedTests) {
+        summary += `- \`${test.name}\` (${test.classname})\n`;
+    }
+}
+
+if (inconclusiveTests.length > 0) {
+    summary += '\n### Inconclusive tests\n\n';
+    summary += '_Inconclusive results do not fail the run. On CI, the compiled-player prerequisite is expected when no build artifact is present._\n\n';
+    for (const test of inconclusiveTests) {
+        summary += `- \`${test.name}\` (${test.classname})\n`;
+    }
+}
+
+summary += '\n<details><summary>Assembly breakdown</summary>\n\n```\n';
+summary += output;
+summary += '\n```\n</details>\n';
+
+writeStepSummary(summary);

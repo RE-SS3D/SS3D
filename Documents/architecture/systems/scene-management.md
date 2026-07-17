@@ -8,6 +8,8 @@
 
 Scene loading and switching. Integrates with editor toolbar Scene Switcher.
 
+Scenes are launch pads, not system composition roots ([agent-first composition](../2026-07_agent-first-composition.md)).
+
 ## Start here
 
 - `Assets/Scripts/SS3D/SceneManagement/SceneSubSystem.cs` — scene loading subsystem
@@ -23,4 +25,5 @@ Scene loading and switching. Integrates with editor toolbar Scene Switcher.
 
 ## Related docs
 
+- [2026-07_agent-first-composition](../2026-07_agent-first-composition.md)
 - [INDEX.md](../INDEX.md)

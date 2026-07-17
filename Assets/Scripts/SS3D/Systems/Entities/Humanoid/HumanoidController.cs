@@ -60,6 +60,7 @@ namespace SS3D.Systems.Entities.Humanoid
         protected Controls.MovementActions MovementControls;
         protected Controls.HotkeysActions HotkeysControls;
         private InputSubSystem _inputSystem;
+        private IInputHandle _gameplayHandle;
         private HumanoidBodyStateMachine _bodyStateMachine;
         private bool _inputSubscribed;
         private float _previousYaw;
@@ -153,32 +154,10 @@ namespace SS3D.Systems.Entities.Humanoid
 
             MovementControls.ToggleRun.performed += HandleToggleRun;
 
-            _inputSystem.ToggleActionMap(_inputSystem.Inputs.Movement, true);
-            _inputSystem.ToggleActionMap(_inputSystem.Inputs.Hotkeys, true);
+            // Gameplay context enables Movement, Camera, Interactions and Hotkeys; it is released
+            // deterministically on unsubscribe, so no per-frame re-enabling is needed.
+            _gameplayHandle = _inputSystem.PushContext(InputContext.Gameplay);
             _inputSubscribed = true;
-            EnsureMovementInputEnabled();
-        }
-
-        private void EnsureMovementInputEnabled()
-        {
-            EnsureInputReady();
-            if (_inputSystem == null)
-            {
-                return;
-            }
-
-            InputActionMap movementMap = _inputSystem.Inputs.Movement;
-            // Movement and ToggleRun share this map — never force-enable only one action.
-            if (movementMap.enabled && MovementControls.ToggleRun.enabled && MovementControls.Movement.enabled)
-            {
-                return;
-            }
-
-            _inputSystem.ToggleActionMap(movementMap, true);
-            if (!MovementControls.ToggleRun.enabled || !MovementControls.Movement.enabled)
-            {
-                _inputSystem.ForceEnableActionMap(movementMap);
-            }
         }
 
         private void EnsureInputReady()
@@ -208,8 +187,8 @@ namespace SS3D.Systems.Entities.Humanoid
 
             MovementControls.ToggleRun.performed -= HandleToggleRun;
 
-            _inputSystem.ToggleActionMap(_inputSystem.Inputs.Movement, false);
-            _inputSystem.ToggleActionMap(_inputSystem.Inputs.Hotkeys, false);
+            _gameplayHandle?.Dispose();
+            _gameplayHandle = null;
             _inputSubscribed = false;
         }
 
@@ -331,7 +310,6 @@ namespace SS3D.Systems.Entities.Humanoid
         protected void ProcessPlayerInput()
         {
             EnsureInputReady();
-            EnsureMovementInputEnabled();
 
             if (_camera == null)
             {

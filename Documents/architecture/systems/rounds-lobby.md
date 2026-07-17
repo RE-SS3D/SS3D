@@ -8,6 +8,8 @@
 
 Round lifecycle state machine with single-flight `CancellationTokenSource` (prevents double start/stop and embark-during-ending races). States: `Stopped → Preparing → WarmingUp → Ongoing → Ending → Ended`. Pre-round lobby UI shows ready players and round state. Join ordering hardened across entity, player, and gamemode subsystems. Round end appends a JSONL entry via [persistence](persistence.md) (`gamemode`, map id, player count, duration).
 
+**Condemned UI:** lobby job-select / ready uGUI — do not extend; replace per [lobby.md](../../design/lobby.md). Round state machine is **not** condemned ([agent-first composition](../2026-07_agent-first-composition.md)).
+
 ## Start here
 
 - `Assets/Scripts/SS3D/Systems/Rounds/RoundSubSystem.cs` — concrete round subsystem
@@ -31,4 +33,6 @@ Round lifecycle state machine with single-flight `CancellationTokenSource` (prev
 
 ## Related docs
 
+- Design (read-only): [Documents/design/lobby.md](../../design/lobby.md), [round-config.md](../../design/round-config.md)
 - Plan: [persistence_architecture_design_2fe61864.plan.md](../../plans/persistence_architecture_design_2fe61864.plan.md)
+- [2026-07_agent-first-composition](../2026-07_agent-first-composition.md)

@@ -170,7 +170,12 @@ namespace SS3D.Systems.Inventory.Containers
         [Client]
         private void SetupView()
         {
-            var inventoryView = ViewLocator.Get<InventoryView>().First();
+            InventoryView inventoryView = ViewLocator.Get<InventoryView>().FirstOrDefault();
+            if (inventoryView == null)
+            {
+                return;
+            }
+
             inventoryView.Setup(this);
         }
 
@@ -180,7 +185,12 @@ namespace SS3D.Systems.Inventory.Containers
 			
 			if (!IsOwner) return;
 			
-			InventoryView inventoryView = ViewLocator.Get<InventoryView>().First();
+			InventoryView inventoryView = ViewLocator.Get<InventoryView>().FirstOrDefault();
+			if (inventoryView == null)
+			{
+				return;
+			}
+
 			inventoryView.DestroyAllSlots();
 
 		}

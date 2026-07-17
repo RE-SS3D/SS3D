@@ -38,6 +38,10 @@ namespace SS3D.Systems.Tile
             {
                 GameObject itemPrefab = Assets.Get<GameObject>(itemSo.PrefabAsset);
                 placedGameObject = Instantiate(itemPrefab);
+
+#if UNITY_SERVER
+                ServerVisualsUtility.DisableRenderingComponents(placedGameObject);
+#endif
             }
             placedGameObject.transform.SetPositionAndRotation(worldPosition, rotation);
 

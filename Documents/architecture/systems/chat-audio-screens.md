@@ -8,6 +8,8 @@
 
 In-game chat, audio playback, and camera/screen controllers. (Navigation map not yet fully reviewed.)
 
+**Condemned UI:** always-on chat window — do not extend or port to UITK; replace per [comms.md](../../design/comms.md) ([agent-first composition](../2026-07_agent-first-composition.md)). The in-game `ToggleChatsButton` on `PlayerCanvas` is disabled (obsolete chrome).
+
 ## Start here
 
 - `Assets/Scripts/SS3D/Systems/Chat/ChatSubSystem.cs` — chat subsystem
@@ -26,3 +28,4 @@ In-game chat, audio playback, and camera/screen controllers. (Navigation map not
 ## Related docs
 
 - Design (read-only): [Documents/design/comms.md](../../design/comms.md)
+- [2026-07_agent-first-composition](../2026-07_agent-first-composition.md)

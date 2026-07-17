@@ -1,0 +1,22 @@
+{
+    "name": "SS3D.UI.MainHud",
+    "rootNamespace": "SS3D.UI.MainHud",
+    "references": [
+        "Coimbra",
+        "Coimbra.Services.Events",
+        "FishNet.Runtime",
+        "SS3D.Core",
+        "SS3D.Interactions",
+        "SS3D.Systems",
+        "SS3D.UI.MachineInterface"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

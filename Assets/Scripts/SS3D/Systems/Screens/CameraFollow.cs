@@ -64,6 +64,9 @@ namespace SS3D.Systems.Screens
         
         private Controls.CameraActions _controls;
         private InputSubSystem _inputSystem;
+        private IInputHandle _gameplayHandle;
+        private IInputHandle _transitionSuppress;
+        private IInputHandle _mouseRotationSuppress;
         
         // Sensitivities and Accelerations
         private const float DistanceAcceleration = 10.0f;
@@ -109,8 +112,8 @@ namespace SS3D.Systems.Screens
             _controls.SnapRight.performed += HandleSnapRight;
             _controls.SnapLeft.performed += HandleSnapLeft;
             _controls.MouseRotation.performed += HandleMouseRotation;
-            
-            _inputSystem.ToggleActionMap(_controls, true);
+
+            _gameplayHandle = _inputSystem.PushContext(InputContext.Gameplay);
         }
 
         protected override void OnDisabled()
@@ -121,8 +124,13 @@ namespace SS3D.Systems.Screens
             _controls.SnapRight.performed -= HandleSnapRight;
             _controls.SnapLeft.performed -= HandleSnapLeft;
             _controls.MouseRotation.performed -= HandleMouseRotation;
-            
-            _inputSystem.ToggleActionMap(_controls, false);
+
+            _mouseRotationSuppress?.Dispose();
+            _mouseRotationSuppress = null;
+            _transitionSuppress?.Dispose();
+            _transitionSuppress = null;
+            _gameplayHandle?.Dispose();
+            _gameplayHandle = null;
         }
 
         private void HandleUpdate(ref EventContext context, in UpdateEvent updateEvent)
@@ -157,7 +165,7 @@ namespace SS3D.Systems.Screens
             if (Math.Abs(value) > MouseSnapThreshold)
             {
                 Snap(value > 0);
-                _inputSystem.ToggleAction(_controls.MouseRotation, false);
+                _mouseRotationSuppress ??= _inputSystem.SuppressAction(_controls.MouseRotation);
                 StartCoroutine(MouseRotationTimeout(.4f));
             }
             else
@@ -169,7 +177,8 @@ namespace SS3D.Systems.Screens
         private IEnumerator MouseRotationTimeout(float time)
         {
             yield return new WaitForSeconds(time);
-            _inputSystem.ToggleAction(_controls.MouseRotation, true);
+            _mouseRotationSuppress?.Dispose();
+            _mouseRotationSuppress = null;
         }
 
         /// <summary>
@@ -231,7 +240,8 @@ namespace SS3D.Systems.Screens
             if (Vector3.Distance(Position, newPosition) <= _endTransitionDistance)
             {
                 _inTransition = false;
-                _inputSystem.ToggleActionMap(_controls, true);
+                _transitionSuppress?.Dispose();
+                _transitionSuppress = null;
                 return;
             }
             //The lower the offset, the more transition slows down at the end
@@ -256,7 +266,7 @@ namespace SS3D.Systems.Screens
             // Smoothes movement at the end
             _endTransitionDistance = 0.05f / _transitionSpeed;
             _prevTargetPosition = targetPosition;
-            _inputSystem.ToggleActionMap(_controls, false);
+            _transitionSuppress ??= _inputSystem.SuppressMap(_controls.Get());
         }
 
         /// <summary>
