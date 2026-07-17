@@ -83,7 +83,7 @@ float VisionSampleWallDepth(float2 viewUV)
     float center = SAMPLE_TEXTURE2D(_VisionMap, sampler_VisionMap, viewUV).r;
 
     // Fill small angular holes on continuous surfaces (flat walls) without pulling in a
-    // distant corridor ray: only promote neighbors within ~2m of the center hit.
+    // distant corridor ray: only promote neighbors within ~2.5m of the center hit.
     float texel = _VisionMap_TexelSize.x;
     float left = SAMPLE_TEXTURE2D(_VisionMap, sampler_VisionMap, viewUV + float2(-texel, 0.0)).r;
     float right = SAMPLE_TEXTURE2D(_VisionMap, sampler_VisionMap, viewUV + float2(texel, 0.0)).r;
@@ -93,10 +93,12 @@ float VisionSampleWallDepth(float2 viewUV)
     float maxNeighbor = max(max(left, right), max(left2, right2));
     float centerWorld = center * _ViewRange;
     float neighborWorld = maxNeighbor * _ViewRange;
-    if (abs(neighborWorld - centerWorld) < 2.0)
+    if (abs(neighborWorld - centerWorld) < 2.5)
         center = max(center, maxNeighbor);
 
-    return center * _ViewRange;
+    // Extra slack so wall meshes that sit slightly past the collider / polar sample stay lit
+    // (especially at glancing angles where XZ depth and ray depth disagree a little).
+    return center * _ViewRange + 0.4;
 }
 
 bool VisionIsVisibleWorld(float3 posWorld)

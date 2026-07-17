@@ -63,7 +63,7 @@ namespace SS3D.Systems.Vision
 
         [SerializeField]
         [Tooltip("Raycasts per degree of the view cone. Higher reduces angular stripe jitter.")]
-        private float resolution = 2f;
+        private float resolution = 3f;
 
         /// <summary>
         /// Max physics hits considered per ray before giving up (furniture in front of a wall
@@ -219,6 +219,8 @@ namespace SS3D.Systems.Vision
                 _pixelBuffer[i] = new Color(offset.magnitude / viewRange, 0f, 0f);
             }
 
+            DilateSimilarDepthPixels();
+
 #pragma warning disable UNT0017 // SetPixels invocation is slow
             visionMap.SetPixels(0, 0, stepCount, 1, _pixelBuffer);
 #pragma warning restore UNT0017
@@ -240,13 +242,36 @@ namespace SS3D.Systems.Vision
             float halfCone = viewConeWidth * 0.5f;
             float yaw = target.eulerAngles.y;
 
+            // Sample bin centers so bilinear UV lookups align with ray angles (reduces
+            // crawling vertical stripes when rotating past flat walls).
             for (int i = 0; i < stepCount; i++)
-                _angleBuffer[i] = (yaw - halfCone) + (stepAngleSize * i);
+                _angleBuffer[i] = (yaw - halfCone) + (stepAngleSize * (i + 0.5f));
 
             ViewCastBatch(origin, _angleBuffer, stepCount, _viewCastResults);
 
             for (int i = 0; i < stepCount; i++)
                 viewPoints[i] = _viewCastResults[i].Point;
+        }
+
+        /// <summary>
+        /// Fill 1° angular holes on continuous surfaces without extending into distant corridors.
+        /// </summary>
+        private void DilateSimilarDepthPixels()
+        {
+            const float similarMeters = 1.75f;
+            float similarNorm = similarMeters / viewRange;
+            Color[] source = new Color[stepCount];
+            Array.Copy(_pixelBuffer, source, stepCount);
+
+            for (int i = 0; i < stepCount; i++)
+            {
+                float center = source[i].r;
+                float left = source[(i - 1 + stepCount) % stepCount].r;
+                float right = source[(i + 1) % stepCount].r;
+                float maxNeighbor = Mathf.Max(left, right);
+                if (Mathf.Abs(maxNeighbor - center) <= similarNorm)
+                    _pixelBuffer[i].r = Mathf.Max(center, maxNeighbor);
+            }
         }
 
         private void ViewCastBatch(Vector3 origin, float[] angles, int count, ViewCastInfo[] resultArray)
@@ -272,7 +297,7 @@ namespace SS3D.Systems.Vision
             // Push past the collider hit so the occluder's own mesh (often slightly behind the
             // collider) stays visible. Without this, walls paint black while still correctly
             // hiding everything beyond them.
-            const float occluderSurfaceBias = 0.5f;
+            const float occluderSurfaceBias = 0.75f;
 
             for (int i = 0; i < count; i++)
             {

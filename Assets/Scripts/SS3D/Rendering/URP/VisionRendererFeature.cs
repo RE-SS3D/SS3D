@@ -47,6 +47,12 @@ namespace SS3D.Rendering.URP
             if (camera == null || camera.cameraType != CameraType.Game)
                 return;
 
+            // Inventory icons use RuntimePreviewGenerator (CameraType.Game + targetTexture).
+            // FOV globals are world-space for the player camera, so applying the mask here
+            // paints every preview pixel black.
+            if (camera.targetTexture != null)
+                return;
+
             if (renderingData.cameraData.renderType != CameraRenderType.Base)
                 return;
 
