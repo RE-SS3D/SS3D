@@ -15,6 +15,9 @@ Builds/Game/*
 !/[Bb]uilds/Game/Config/
 !/[Bb]uilds/Game/BUILD_THE_GAME_HERE.txt
 
+# Runtime server persistence (generated on boot / save; not source data)
+/[Bb]uilds/Game/[Dd]ata/[Ss]erver[Mm]eta/
+
 
 /[Ll]ogs/
 /[Uu]ser[Ss]ettings/
