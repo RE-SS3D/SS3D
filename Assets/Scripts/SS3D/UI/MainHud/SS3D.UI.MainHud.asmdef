@@ -9,6 +9,7 @@
         "SS3D.Interactions",
         "SS3D.Systems",
         "SS3D.UI.MachineInterface",
+        "SS3D.UI.StoragePanel",
         "GUID:fa8dbf94b90efa1478e7c833397cb0b2"
     ],
     "includePlatforms": [],

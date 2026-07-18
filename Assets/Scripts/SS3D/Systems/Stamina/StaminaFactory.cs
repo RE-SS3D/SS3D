@@ -2,7 +2,10 @@ namespace SS3D.Systems.Stamina
 {
     public abstract class StaminaFactory
     {
-        public static IStamina Create(float max = 10f, float rechargeRate = 0.05f)
+        public const float DefaultMax = 10f;
+        public const float DefaultRechargeRate = 0.08f;
+
+        public static IStamina Create(float max = DefaultMax, float rechargeRate = DefaultRechargeRate)
         {
             return new Stamina(max, rechargeRate);
         }

@@ -3,30 +3,39 @@ namespace SS3D.Systems.Stamina
     public interface IStamina
     {
         /// <summary>
-        /// Gets the current stamina as a proportion of max stamina. Will return value between 0f and 1f.
+        /// Current stamina as a proportion of max (0..1).
         /// </summary>
-        public float Current { get; }
+        float Current { get; }
 
         /// <summary>
-        /// Whether the entity has stamina available to commence an new interaction.
+        /// Whether a new interaction may start. Design allows acting at zero stamina.
         /// </summary>
-        public bool CanCommenceInteraction { get; }
+        bool CanCommenceInteraction { get; }
 
         /// <summary>
-        /// Whether the entity has stamina available to continue an interaction they have already started.
+        /// Whether an in-progress interaction may continue. Design allows acting at zero stamina.
         /// </summary>
-        public bool CanContinueInteraction { get; }
+        bool CanContinueInteraction { get; }
 
-        /// <summary>
-        /// Reduces the current stamina by a set amount.
-        /// </summary>
-        /// <param name="amount">The amount of stamina to reduce by. Must be a positive number.</param>
-        public void ConsumeStamina(float amount);
+        /// <summary>0 when rested, 1 when fully exhausted — movement/performance degradation.</summary>
+        float ExertionPenalty { get; }
 
-        /// <summary>
-        /// Recharges stamina over time.
-        /// </summary>
-        /// <param name="deltaTime"></param>
-        public void RechargeStamina(float deltaTime);
+        /// <summary>Absolute stamina remaining (not normalized).</summary>
+        float CurrentAbsolute { get; }
+
+        float Max { get; }
+
+        /// <summary>Overdraw amount from the last <see cref="ConsumeStamina"/> call.</summary>
+        float LastOverdraw { get; }
+
+        void ConsumeStamina(float amount);
+
+        void RechargeStamina(float deltaTime);
+
+        void ApplyModifiers(float maxScale, float regenScale);
+
+        void SetBaseRecoveryRate(float recoveryRate);
+
+        void SetBaseMax(float max);
     }
 }

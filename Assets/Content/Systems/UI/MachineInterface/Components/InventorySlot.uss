@@ -34,11 +34,27 @@
     opacity: 0.65;
 }
 
+.inventory-slot__label-host {
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    margin-top: 4px;
+}
+
 .inventory-slot__label {
     font-size: 10px;
     color: var(--ss3d-text-tertiary);
-    margin-top: 4px;
     -unity-text-align: middle-center;
     white-space: normal;
     max-width: 64px;
+}
+
+.inventory-slot--valid-drop .inventory-slot__well {
+    border-color: var(--ss3d-feedback-info);
+    background-color: var(--ss3d-feedback-info-bg);
+}
+
+.inventory-slot--invalid-drop .inventory-slot__well {
+    border-color: var(--ss3d-feedback-danger);
+    background-color: var(--ss3d-feedback-danger-bg);
 }

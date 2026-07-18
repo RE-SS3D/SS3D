@@ -6,7 +6,6 @@ using SS3D.Core;
 using SS3D.Core.Behaviours;
 using SS3D.Systems.Entities;
 using SS3D.Systems.Inventory.Containers;
-using SS3D.Systems.Inventory.UI;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -39,19 +38,11 @@ namespace SS3D.Systems.Inventory.Containers
         {
             base.OnStartClient();
             if (!IsOwner) { return; }
-            SetupView();
+
+            // No UI lookup here — Systems-layer code must not depend on a UI assembly. The UI side
+            // (StoragePanelHost, via MainHudSubSystem's existing local-player tracking) discovers this
+            // ContainerViewer and subscribes to OnContainerOpened/OnContainerClosed itself.
             AddHandle(UpdateEvent.AddListener(HandleUpdate));
-        }
-
-        private void SetupView()
-        {
-            ContainerView containerView = ViewLocator.Get<ContainerView>().FirstOrDefault();
-            if (containerView == null)
-            {
-                return;
-            }
-
-            containerView.Setup(this);
         }
 
         /// <summary>

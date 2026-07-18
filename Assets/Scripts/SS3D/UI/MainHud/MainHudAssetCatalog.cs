@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.Serialization;
 using UnityEngine.UIElements;
 
 namespace SS3D.UI.MainHud
@@ -27,10 +28,12 @@ namespace SS3D.UI.MainHud
         [SerializeField] private Sprite _iconEars;
         [SerializeField] private Sprite _iconHandLeft;
         [SerializeField] private Sprite _iconHandRight;
+        [SerializeField] private Sprite _iconShirt;
         [SerializeField] private Sprite _iconFeet;
         [SerializeField] private Sprite _iconBelt;
         [SerializeField] private Sprite _iconId;
-        [SerializeField] private Sprite _iconPda;
+        [FormerlySerializedAs("_iconPda")]
+        [SerializeField] private Sprite _iconPocket;
         [SerializeField] private Sprite _iconBack;
 
         public PanelSettings PanelSettings => _panelSettings;
@@ -49,11 +52,11 @@ namespace SS3D.UI.MainHud
             Ears = _iconEars,
             HandLeft = _iconHandLeft,
             HandRight = _iconHandRight,
-            Shirt = null,
+            Shirt = _iconShirt,
             Feet = _iconFeet,
             Belt = _iconBelt,
             Id = _iconId,
-            Pda = _iconPda,
+            Pocket = _iconPocket,
             Back = _iconBack,
         };
 
@@ -104,10 +107,11 @@ namespace SS3D.UI.MainHud
             _iconEars = icons.Ears;
             _iconHandLeft = icons.HandLeft;
             _iconHandRight = icons.HandRight;
+            _iconShirt = icons.Shirt;
             _iconFeet = icons.Feet;
             _iconBelt = icons.Belt;
             _iconId = icons.Id;
-            _iconPda = icons.Pda;
+            _iconPocket = icons.Pocket;
             _iconBack = icons.Back;
         }
 #endif

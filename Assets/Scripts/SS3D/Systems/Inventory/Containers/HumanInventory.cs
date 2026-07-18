@@ -10,7 +10,6 @@ using SS3D.Logging;
 using SS3D.Systems.Entities;
 using SS3D.Systems.Inventory.Containers;
 using SS3D.Systems.Inventory.Items;
-using SS3D.Systems.Inventory.UI;
 using SS3D.Core;
 using SS3D.Systems.IdAccess;
 using SS3D.Systems.Roles;
@@ -20,6 +19,7 @@ using FishNet.Object.Synchronizing;
 using System.ComponentModel;
 using static UnityEngine.GraphicsBuffer;
 using SS3D.Systems.Interactions;
+using SS3D.Systems.Tile;
 
 namespace SS3D.Systems.Inventory.Containers
 {
@@ -52,10 +52,39 @@ namespace SS3D.Systems.Inventory.Containers
         // When the inventory is done doing its setup
         public event Notify OnInventorySetUp;
 
+        /// <summary>
+        /// Fired when <see cref="CarriedWeight"/> may have changed (container add/remove or contents).
+        /// </summary>
+        public event Notify OnCarriedWeightChanged;
+
         // reference to the component allowing to display out of inventory containers.
         public ContainerViewer containerViewer;
 
         public List<AttachedContainer> Containers => ContainersOnPlayer.Collection.ToList();
+
+        /// <summary>
+        /// Total carried weight for encumbrance: every inventory container's recursive
+        /// <see cref="AttachedContainer.Weight"/> (includes hands, worn gear, and nested contents).
+        /// Always computed, never cached (Documents/design/inventory-storage.md §2, §7, §10).
+        /// </summary>
+        public float CarriedWeight
+        {
+            get
+            {
+                float total = 0f;
+                foreach (AttachedContainer container in ContainersOnPlayer)
+                {
+                    if (container == null)
+                    {
+                        continue;
+                    }
+
+                    total += container.Weight;
+                }
+
+                return total;
+            }
+        }
 
         /// <summary>
         /// The controllable body of the owning player
@@ -114,9 +143,11 @@ namespace SS3D.Systems.Inventory.Containers
             {
                 case SyncListOperation.Add:
                     OnInventoryContainerAdded?.Invoke(newContainer);
+                    OnCarriedWeightChanged?.Invoke();
                     break;
                 case SyncListOperation.RemoveAt:
                     OnInventoryContainerRemoved?.Invoke(oldContainer);
+                    OnCarriedWeightChanged?.Invoke();
                     break;
             }
         }
@@ -130,7 +161,6 @@ namespace SS3D.Systems.Inventory.Containers
             }
 
             Hands.SetInventory(this);
-            SetupView();
         }
 
         public void TriggerInventorySetup()
@@ -167,32 +197,9 @@ namespace SS3D.Systems.Inventory.Containers
             }
         }
 
-        [Client]
-        private void SetupView()
-        {
-            InventoryView inventoryView = ViewLocator.Get<InventoryView>().FirstOrDefault();
-            if (inventoryView == null)
-            {
-                return;
-            }
-
-            inventoryView.Setup(this);
-        }
-
 		protected override void OnDisabled()
 		{
 			base.OnDisabled();
-			
-			if (!IsOwner) return;
-			
-			InventoryView inventoryView = ViewLocator.Get<InventoryView>().FirstOrDefault();
-			if (inventoryView == null)
-			{
-				return;
-			}
-
-			inventoryView.DestroyAllSlots();
-
 		}
 
 		/// <summary>
@@ -262,6 +269,7 @@ namespace SS3D.Systems.Inventory.Containers
 		private void HandleContainerContentChanged(AttachedContainer container, Item oldItem, Item newItem, ContainerChangeType type)
         {
             OnContainerContentChanged?.Invoke(container,oldItem,newItem,type);
+            OnCarriedWeightChanged?.Invoke();
         }
 
         /// <summary>
@@ -271,6 +279,20 @@ namespace SS3D.Systems.Inventory.Containers
         public void ClientDropItem(Item item)
         {
             CmdDropItem(item.gameObject);
+        }
+
+        /// <summary>
+        /// Requests the server to place an inventory item into the world at a point (UI drag-to-world,
+        /// same placement rules as <see cref="SS3D.Systems.Inventory.Interactions.DropInteraction"/>).
+        /// </summary>
+        public void ClientPlaceItemInWorld(Item item, Vector3 point, Vector3 surfaceNormal)
+        {
+            if (item == null)
+            {
+                return;
+            }
+
+            CmdPlaceItemInWorld(item.gameObject, point, surfaceNormal);
         }
 
         /// <summary>
@@ -303,6 +325,99 @@ namespace SS3D.Systems.Inventory.Containers
             }
 
             attachedTo.RemoveItem(item);
+        }
+
+        [ServerRpc]
+        private void CmdPlaceItemInWorld(GameObject itemObject, Vector3 point, Vector3 surfaceNormal)
+        {
+            Item item = itemObject != null ? itemObject.GetComponent<Item>() : null;
+            if (item == null || !CanPlaceInventoryItemInWorld(item, point, surfaceNormal))
+            {
+                return;
+            }
+
+            Hands hands = GetComponent<Hands>();
+            Hand hand = hands != null ? hands.SelectedHand : null;
+            Quaternion rotation = Quaternion.Euler(0f, transform.eulerAngles.y, 0f);
+
+            if (hand != null && hand.ItemInHand == item)
+            {
+                hand.PlaceHeldItemOutOfHand(point, rotation);
+                return;
+            }
+
+            AttachedContainer attachedTo = item.Container;
+            item.GiveOwnership(null);
+            attachedTo.RemoveItem(item);
+            ItemUtility.Place(item, point, rotation);
+
+            if (SubSystems.TryGet(out TileSubSystem tile)
+                && tile.GetAsset(item.Asset) is ItemObjectSo itemObjectSo)
+            {
+                tile.Construction.TryPlaceItem(itemObjectSo, point, rotation, item.gameObject);
+            }
+        }
+
+        /// <summary>
+        /// Placement checks for UI drag-to-world: container permission, hand range, and a mostly-upward
+        /// surface. Line-of-sight uses an unmasked ray from the entity ViewPoint (tile floors are often
+        /// not on the Default layer, so DropInteraction's Default-only mask is too strict here).
+        /// </summary>
+        [Server]
+        private bool CanPlaceInventoryItemInWorld(Item item, Vector3 point, Vector3 surfaceNormal)
+        {
+            AttachedContainer attachedTo = item.Container;
+            if (attachedTo == null || containerViewer == null || !containerViewer.CanModifyContainer(attachedTo))
+            {
+                return false;
+            }
+
+            Hands hands = GetComponent<Hands>();
+            Hand hand = hands != null ? hands.SelectedHand : null;
+            if (hand == null || !hand.GetInteractionRange().IsInRange(hand.InteractionOrigin, point))
+            {
+                return false;
+            }
+
+            // Allow slightly steeper floors than DropInteraction's 10° — tile meshes are rarely flat.
+            const float maxSurfaceAngle = 35f;
+            if (Vector3.Angle(surfaceNormal, Vector3.up) > maxSurfaceAngle)
+            {
+                return false;
+            }
+
+            Entity entity = GetComponent<Entity>();
+            if (entity == null)
+            {
+                entity = GetComponentInParent<Entity>();
+            }
+
+            if (entity == null || entity.ViewPoint == null)
+            {
+                return false;
+            }
+
+            Vector3 viewPosition = entity.ViewPoint.transform.position;
+            Vector3 toPoint = point - viewPosition;
+            float distance = toPoint.magnitude;
+            if (distance < 0.01f)
+            {
+                return false;
+            }
+
+            Vector3 direction = toPoint / distance;
+            if (!Physics.Raycast(
+                    viewPosition,
+                    direction,
+                    out RaycastHit hit,
+                    distance + 0.25f,
+                    Physics.DefaultRaycastLayers,
+                    QueryTriggerInteraction.Ignore))
+            {
+                return false;
+            }
+
+            return Vector3.Distance(point, hit.point) <= 0.35f;
         }
 
 
@@ -391,7 +506,11 @@ namespace SS3D.Systems.Inventory.Containers
             {
                 if (item == null)
                 {
-                    ClientTransferItem(Hands.SelectedHand.ItemInHand, position, container);
+                    Item handItem = Hands.SelectedHand.ItemInHand;
+                    if (handItem != null && container.CanContainItemAtPosition(handItem, position))
+                    {
+                        ClientTransferItem(handItem, position, container);
+                    }
                 }
             }
         }

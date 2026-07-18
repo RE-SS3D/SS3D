@@ -11,7 +11,7 @@ Greenfield rewrite per [health_implementation_plan.md](../../plans/health_implem
 
 Local-owner [screen-effects](screen-effects.md) are driven from `HealthSnapshot` via `HealthScreenEffectMapper` (dying/critical, blood-loss tunnel vision, oxy debt, concussion, unconscious) plus hit flash on `ApplyDamage`. The atmosphere→oxygen coupling is still open: `HealthSimulation.LungIntake(atmosphereO2)` currently defaults to full O2 and should be fed the occupant's turf O2 ratio. Vitals cluster UITK and examine-self readout remain Phase 6.
 
-**Condemned UI:** `StaminaBar` on `PlayerCanvas` is disabled (obsolete chrome pending Main HUD / [stamina.md](../../design/stamina.md) vitals). Domain `StaminaController` remains and must tolerate a missing bar view.
+**Stamina Phase 7a core shipped:** see [stamina](stamina.md) — push-past-empty calls `ApplyOxyDebt`; obsolete `StaminaBar` purged from PlayerCanvas. Combat stamina costs still deferred.
 
 Phase 0d strips legacy health components from `Human.prefab` and rewires a thinner root — do not dual-stack or grow the mega-prefab ([agent-first composition](../2026-07_agent-first-composition.md), [health_implementation_plan.md](../../plans/health_implementation_plan.md) Phase 0d).
 
@@ -71,13 +71,14 @@ Phase 0d strips legacy health components from `Human.prefab` and rewires a thinn
 
 - **Depends on:** [entities](entities.md), [interactions-framework](interactions-framework.md), [screen-effects](screen-effects.md)
 - **Used by:** [combat](combat.md) (melee zone hits), dev console `hurt`/`heal`, `HumanoidLivingController` / `HumanoidPredictedMovement` / `HumanoidBodyStateBridge` (movement/consciousness/limp), `Hand` (arm debuff stub)
-- **Stamina:** `Assets/Scripts/SS3D/Systems/Stamina/` — bridge Phase 7a
+- **Stamina:** [stamina](stamina.md) Phase 7a core — regen/encumbrance/overdraw→oxy; combat drains deferred
 
 ## Related docs
 
 - Design (read-only): [Documents/design/health.md](../../design/health.md), [main-hud.md](../../design/main-hud.md) §9, [stamina.md](../../design/stamina.md), [armor.md](../../design/armor.md)
 - Anatomy map: [health-anatomy-map.md](health-anatomy-map.md)
 - Plan: [health_implementation_plan.md](../../plans/health_implementation_plan.md)
+- Stamina map: [stamina](stamina.md)
 - [2026-07_body-presentation-authority](../2026-07_body-presentation-authority.md) — **planned** single authority for collapse/death presentation
 - [2026-07_agent-first-composition](../2026-07_agent-first-composition.md)
 - [screen-effects](screen-effects.md)

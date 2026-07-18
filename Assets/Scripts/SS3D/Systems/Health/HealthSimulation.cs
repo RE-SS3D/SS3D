@@ -346,6 +346,16 @@ namespace SS3D.Systems.Health
             };
         }
 
+        public static SystemicPools ApplyOxyDebt(SystemicPools pools, float oxyDebtGain)
+        {
+            return new SystemicPools
+            {
+                BloodVolumeRatio = pools.BloodVolumeRatio,
+                OxyDebt = Math.Max(0f, pools.OxyDebt + Math.Max(0f, oxyDebtGain)),
+                ToxinConcentration = pools.ToxinConcentration,
+            };
+        }
+
         public static SystemicPools ApplyAntitoxin(SystemicPools pools, float toxinReduction)
         {
             return new SystemicPools

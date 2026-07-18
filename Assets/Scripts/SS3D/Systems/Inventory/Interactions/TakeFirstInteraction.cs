@@ -46,7 +46,9 @@ namespace SS3D.Systems.Inventory.Interactions
             // Will only appear if the current hand is empty and the container isn't empty
             if (interactionEvent.Source is Hand hand && _attachedContainer != null)
             {
-                return hand.IsEmpty() && !_attachedContainer.Empty;
+                return hand.IsEmpty()
+                    && !_attachedContainer.Empty
+                    && _attachedContainer.IsAccessibleBy(hand.GetComponentInParent<HumanInventory>());
             }
 
             return false;

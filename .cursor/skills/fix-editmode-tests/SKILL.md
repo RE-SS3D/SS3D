@@ -76,7 +76,7 @@ If the fix touches shared infrastructure, run the full suite once more before cl
 |-----------|--------|
 | No Unity CLI | Ask user to run **Window → General → Test Runner** (EditMode), export/paste failures, then fix from that list |
 | CI only | `gh run download` the “Test results” artifact from `editmodetestrunner.yml`, summarize the XML |
-| Compile error, no XML | Tail/rg `artifacts/editmode.log` for `error CS` |
+| Compile error, no XML | Prefer **check-compile** / `./Tools/check_compile.sh`; or rg `artifacts/editmode.log` for `: error ` |
 
 ## Do not
 

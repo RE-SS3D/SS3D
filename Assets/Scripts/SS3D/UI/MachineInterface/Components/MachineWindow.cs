@@ -80,7 +80,6 @@ namespace SS3D.UI.MachineInterface.Components
             _dragStartPointer = evt.position;
             _dragStartPosition = new Vector2(resolvedStyle.left, resolvedStyle.top);
             _header.CapturePointer(evt.pointerId);
-            _header.AddToClassList("machine-window__header--dragging");
             evt.StopPropagation();
         }
 
@@ -113,7 +112,6 @@ namespace SS3D.UI.MachineInterface.Components
             }
 
             _isDragging = false;
-            _header.RemoveFromClassList("machine-window__header--dragging");
             _header.ReleasePointer(PointerId.mousePointerId);
         }
 

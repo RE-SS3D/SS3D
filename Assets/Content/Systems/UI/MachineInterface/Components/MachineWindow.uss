@@ -25,10 +25,6 @@
     border-top-right-radius: var(--ss3d-radius-md);
 }
 
-.machine-window__header--dragging {
-    cursor: move-arrow;
-}
-
 .machine-window__title {
     font-size: 13px;
     letter-spacing: 2px;

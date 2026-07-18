@@ -57,6 +57,16 @@ namespace SS3D.Systems.Inputs
             return IsPointerOverToolkitPanel();
         }
 
+        /// <summary>
+        /// Current pointer position in bottom-left screen pixels (Input System mouse, with legacy fallback).
+        /// </summary>
+        public static Vector2 GetPointerScreenPosition()
+        {
+            return Mouse.current != null
+                ? Mouse.current.position.ReadValue()
+                : (Vector2)Input.mousePosition;
+        }
+
         private static bool IsPointerOverToolkitPanel()
         {
             if (Documents.Count == 0)
@@ -64,9 +74,7 @@ namespace SS3D.Systems.Inputs
                 return false;
             }
 
-            Vector2 screenPosition = Mouse.current != null
-                ? Mouse.current.position.ReadValue()
-                : (Vector2)Input.mousePosition;
+            Vector2 screenPosition = GetPointerScreenPosition();
 
             for (int i = 0; i < Documents.Count; i++)
             {

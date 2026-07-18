@@ -10,6 +10,7 @@ Station furniture and interactable world objects — airlocks, lockers, disposal
 
 ## Start here
 
+- `Assets/Scripts/SS3D/Systems/Furniture/Locker.cs` — door + ID lock; implements `IStorageAccessGate` so view/store only while open; closing door closes storage panels
 - `Assets/Scripts/SS3D/Systems/Furniture/AirLockOpener.cs` — proximity open/close; power-gated; `IDynamicTileOccupant` notifies [atmospherics](atmospherics.md) on door state change
 - `Assets/Scripts/SS3D/Systems/Furniture/AirlockStateMachine.cs` — animator panel colors during open/close
 - `Assets/Scripts/SS3D/UI/MachineInterface/VendingMachineController.cs` — vending machines (machine-interface controller)

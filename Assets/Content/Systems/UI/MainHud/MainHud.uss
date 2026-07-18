@@ -78,17 +78,21 @@
     z-index: 10;
 }
 
-.main-hud .inventory-slot__label {
+/* Full-width host + flex-center so the chip recenters when text changes (translate -50% does not). */
+.main-hud .inventory-slot__label-host {
     position: absolute;
-    left: 50%;
+    left: 0;
+    right: 0;
     bottom: 100%;
-    top: auto;
-    translate: -50% calc(-1 * var(--ss3d-space-2));
     margin-top: 0;
+    margin-bottom: var(--ss3d-space-2);
+    z-index: 1;
+}
+
+.main-hud .inventory-slot__label {
     max-width: none;
     white-space: nowrap;
     opacity: 0;
-    z-index: 1;
     background-color: var(--ss3d-surface-hud);
     color: var(--ss3d-text-secondary);
     border-radius: var(--ss3d-radius-sm);

@@ -55,6 +55,17 @@ namespace SS3D.Systems.Inventory.Interactions
                 return false;
             }
 
+            if (!_attachedContainer.IsAccessibleBy(hands.GetComponentInParent<HumanInventory>()))
+            {
+                return false;
+            }
+
+            IStorageAccessGate gate = _attachedContainer.GetComponentInParent<IStorageAccessGate>();
+            if (gate != null && !gate.AllowsStorageAccess)
+            {
+                return false;
+            }
+
             Item item = interactionEvent.Source.GetComponent<Item>();
 
             if (!item)
@@ -79,7 +90,8 @@ namespace SS3D.Systems.Inventory.Interactions
                 Hands hands = sourceGameObjectProvider.GameObject.GetComponentInParent<Hands>();
                 Item item = hands.SelectedHand.ItemInHand;
 
-                hands.SelectedHand.Container.Dump();
+                // Move only the item being stored — the hand may still hold other items via other slots.
+                hands.SelectedHand.Container.RemoveItem(item);
                 _attachedContainer.AddItem(item);
             }
 

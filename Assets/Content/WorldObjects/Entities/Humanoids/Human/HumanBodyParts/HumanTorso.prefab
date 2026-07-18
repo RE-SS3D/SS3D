@@ -889,7 +889,7 @@ GameObject:
   - component: {fileID: 3624414110009039979}
   - component: {fileID: 4471929947553035006}
   m_Layer: 0
-  m_Name: TorsoContainer
+  m_Name: PocketContainer
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -954,8 +954,8 @@ MonoBehaviour:
   _hasCustomDisplay: 0
   _displays: []
   _numberDisplay: 0
-  _displayAsSlotInUI: 0
+  _displayAsSlotInUI: 1
   _size: {x: 2, y: 2}
   _hideItems: 1
-  _type: 0
+  _type: 1
   _startFilter: {fileID: 0}

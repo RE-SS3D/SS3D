@@ -49,6 +49,11 @@ namespace SS3D.Systems.Inventory.Interactions
                 return false;
             }
 
+            if (!AllowsStorageAccess(AttachedContainer))
+            {
+                return false;
+            }
+
             var containerViewer = interactionEvent.Source.GetComponentInParent<ContainerViewer>();
 
             if (containerViewer == null)
@@ -63,7 +68,18 @@ namespace SS3D.Systems.Inventory.Interactions
                 return false;
             }
 
+            if (!AttachedContainer.IsAccessibleBy(interactionEvent.Source.GetComponentInParent<HumanInventory>()))
+            {
+                return false;
+            }
+
             return !containerViewer.HasContainer(AttachedContainer) && entity.GetComponent<Hands>().SelectedHand.CanInteract(AttachedContainer.gameObject);
+        }
+
+        private static bool AllowsStorageAccess(AttachedContainer container)
+        {
+            IStorageAccessGate gate = container.GetComponentInParent<IStorageAccessGate>();
+            return gate == null || gate.AllowsStorageAccess;
         }
 
         public bool Start(InteractionEvent interactionEvent, InteractionReference reference)
