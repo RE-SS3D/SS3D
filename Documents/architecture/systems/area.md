@@ -1,6 +1,7 @@
 > Code paths: Assets/Scripts/SS3D/Systems/Area/
 > Entry points: AreaSubSystem, AreaFloodFillService, AreaBoundaryEvaluator
 > Status: partial
+> Verified: 2e2d03815 — 2026-07-18
 
 # Area
 
@@ -14,7 +15,7 @@ Per-consumer power gating and **area-scoped APC cell drain** via [electricity](e
 
 ## Start here
 
-- `Assets/Scripts/SS3D/Systems/Area/AreaSubSystem.cs` — registry, APC lifecycle, rebuild orchestration
+- `Assets/Scripts/SS3D/Systems/Area/AreaSubSystem.cs` — registry, APC lifecycle, rebuild orchestration; `BeginDeferredAreaFlood` / `EndDeferredAreaFlood` around station template load
 - `Assets/Scripts/SS3D/Systems/Area/AreaFloodFillService.cs` — BFS from APC seeds, door-tile post-pass
 - `Assets/Scripts/SS3D/Systems/Area/AreaBoundaryEvaluator.cs` — walkability and expansion blocking rules
 - `Assets/Scripts/SS3D/Systems/Area/AreaRegistry.cs` — `AreaRecord` storage and APC reverse lookup
@@ -47,6 +48,10 @@ Per-consumer power gating and **area-scoped APC cell drain** via [electricity](e
 - Dev bypass (`SS3D → Dev → Lighting → Always Power Light Fixtures`) treats fixtures as powered but still respects APC channel toggles and area Normal/Emergency/Dark policy.
 - Template restore: `BeginTemplateRestore` → `RestoreFromSave` → APC registration → `EndTemplateRestore` (see `AreaFloodFillTests.TemplateRestore_WithRegisteredApc_PreservesSavedMetadata`).
 - **Not yet wired:** fixture subset authoring on `AreaRecord`.
+
+## Pitfalls
+
+- **APC area only fills front/right at game start, left empty until remove/re-add:** `ApcController.OnStartServer` → `RegisterApc` → flood runs during `TileMap.Load` while later chunks are still unplaced. Missing plenums look unwalkable, so BFS never claims that side; live mutation rebuild is deferred. Fix: `PersistenceSubSystem` / legacy `TileSubSystem.Load` wrap load in `BeginDeferredAreaFlood` / `EndDeferredAreaFlood` (refloods after the full map exists, preserving AreaRecord metadata). Do not flood from `RegisterApc` while deferred. Tests: `DeferredFlood_*`, `FloodWithoutDefer_OnIncompleteMap_MissesUnplacedWestTiles`.
 
 ## Depends on / Used by
 

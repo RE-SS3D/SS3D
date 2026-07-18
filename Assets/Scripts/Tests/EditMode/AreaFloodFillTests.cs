@@ -25,6 +25,96 @@ namespace EditorTests
         }
 
         [Test]
+        public void DeferredFlood_RegisterDuringIncompleteMap_ClaimsFullRoomAfterEnd()
+        {
+            // East column only — simulates an APC spawning before west chunks load.
+            AreaTestContext context = AreaTestContext.CreateOpenFloor(
+                _instantiated,
+                origin: new Vector3(2, 0, 0),
+                width: 1,
+                height: 3);
+
+            context.AreaSubSystem.BeginDeferredAreaFlood();
+            TestApc apc = context.PlaceApc(new Vector3(2, 0, 1), Direction.West);
+
+            Assert.AreEqual(0, context.GetAreaId(new TileCoord(context.Map.MapId, 2, 1)),
+                "Deferred RegisterApc must not flood before the map is complete.");
+
+            // Later chunks: west columns appear.
+            for (int x = 0; x <= 1; x++)
+            {
+                for (int z = 0; z < 3; z++)
+                {
+                    context.PlaceOpenFloorTile(new Vector3(x, 0, z));
+                }
+            }
+
+            context.AreaSubSystem.EndDeferredAreaFlood();
+
+            AreaId areaId = context.GetApcAreaId(apc);
+            Assert.IsFalse(areaId.IsNone);
+
+            for (int x = 0; x <= 2; x++)
+            {
+                for (int z = 0; z <= 2; z++)
+                {
+                    Assert.AreEqual(
+                        areaId.Value,
+                        context.GetAreaId(new TileCoord(context.Map.MapId, x, z)),
+                        $"Tile ({x},{z}) should be claimed after EndDeferredAreaFlood.");
+                }
+            }
+        }
+
+        [Test]
+        public void FloodWithoutDefer_OnIncompleteMap_MissesUnplacedWestTiles()
+        {
+            // Documents the game-start failure mode: flood while west tiles missing.
+            AreaTestContext context = AreaTestContext.CreateOpenFloor(
+                _instantiated,
+                origin: new Vector3(2, 0, 0),
+                width: 1,
+                height: 3);
+
+            TestApc apc = context.PlaceApc(new Vector3(2, 0, 1), Direction.West);
+            AreaId areaId = context.GetApcAreaId(apc);
+
+            Assert.AreEqual(areaId.Value, context.GetAreaId(new TileCoord(context.Map.MapId, 2, 1)));
+
+            for (int x = 0; x <= 1; x++)
+            {
+                for (int z = 0; z < 3; z++)
+                {
+                    context.PlaceOpenFloorTile(new Vector3(x, 0, z));
+                }
+            }
+
+            // Without rebuild, newly placed west tiles stay unclaimed (live mutation deferred).
+            Assert.AreEqual(0, context.GetAreaId(new TileCoord(context.Map.MapId, 0, 1)));
+            Assert.AreEqual(0, context.GetAreaId(new TileCoord(context.Map.MapId, 1, 1)));
+        }
+
+        [Test]
+        public void DeferredFlood_PreservesRenamedAreaMetadata()
+        {
+            AreaTestContext context = AreaTestContext.CreateRoom(_instantiated, new Vector3(0, 0, 0), 4, 4);
+            TestApc apc = context.PlaceApc(new Vector3(2, 0, 2));
+            context.RebuildAll();
+            AreaId areaId = context.GetApcAreaId(apc);
+            context.AreaSubSystem.RenameArea(areaId, "Engineering");
+            context.AreaSubSystem.SetParentTag(areaId, "eng");
+
+            // Simulate post-load reflood: defer flag was set, then ended with APCs already linked.
+            context.AreaSubSystem.BeginDeferredAreaFlood();
+            context.AreaSubSystem.EndDeferredAreaFlood();
+
+            Assert.IsTrue(context.AreaSubSystem.TryGetAreaForApc(apc, out AreaRecord record));
+            Assert.AreEqual("Engineering", record.DisplayName);
+            Assert.AreEqual("eng", record.ParentTag);
+            Assert.AreEqual(areaId.Value, context.GetAreaId(new TileCoord(context.Map.MapId, 2, 2)));
+        }
+
+        [Test]
         public void SingleApcInEnclosedRoom_ClaimsAllInteriorTiles()
         {
             AreaTestContext context = AreaTestContext.CreateRoom(_instantiated, origin: new Vector3(10, 0, 10), width: 5, height: 5);
@@ -400,6 +490,8 @@ namespace EditorTests
 
             public void RebuildAll() => _areaSubSystem.RebuildAllAreasFromApcs();
 
+            public void PlaceOpenFloorTile(Vector3 position) => PlacePlenum(this, position);
+
             public void UnregisterApc(TestApc apc) => _areaSubSystem.UnregisterApc(apc);
 
             public AreaId GetApcAreaId(TestApc apc)
@@ -494,6 +586,7 @@ namespace EditorTests
             private readonly AreaFloodFillService _floodFill;
             private Dictionary<Vector3, SavedAreaRecord> _pendingSavedByApcPosition;
             private bool _templateRestoreActive;
+            private bool _deferAreaFlood;
 
             public AreaSubSystemHarness(TileMap map, ITileQueryService query)
             {
@@ -605,6 +698,11 @@ namespace EditorTests
                     return;
                 }
 
+                if (_deferAreaFlood)
+                {
+                    return;
+                }
+
                 if (_registry.TryGetApcArea(apc, out AreaId existingArea))
                 {
                     _floodFill.ClearAreaTiles(existingArea);
@@ -621,6 +719,77 @@ namespace EditorTests
 
                 var claimedTiles = BuildClaimedTilesExcluding(areaId);
                 _floodFill.FloodFromApc(apc, areaId, claimedTiles);
+                _floodFill.AssignDoorTileAreas();
+                UpdateOverlapWarnings();
+            }
+
+            public void BeginDeferredAreaFlood()
+            {
+                _deferAreaFlood = true;
+            }
+
+            public void EndDeferredAreaFlood()
+            {
+                if (!_deferAreaFlood)
+                {
+                    return;
+                }
+
+                _deferAreaFlood = false;
+
+                if (_registeredApcs.Count == 0)
+                {
+                    return;
+                }
+
+                bool anyLinked = false;
+                foreach (IAreaApcOrigin apc in _registeredApcs)
+                {
+                    if (_registry.TryGetApcArea(apc, out _))
+                    {
+                        anyLinked = true;
+                        break;
+                    }
+                }
+
+                if (anyLinked)
+                {
+                    RefloodAllAreaTilesPreservingMetadata();
+                }
+                else
+                {
+                    RebuildAllAreasFromApcs();
+                }
+            }
+
+            public void RefloodAllAreaTilesPreservingMetadata()
+            {
+                _map.ClearAllAreaIds();
+                _overlapFlaggedApcs.Clear();
+
+                List<IAreaApcOrigin> apcs = _registeredApcs
+                    .OrderBy(apc => apc.OriginTile.Grid.x)
+                    .ThenBy(apc => apc.OriginTile.Grid.y)
+                    .ToList();
+
+                var claimedTiles = new HashSet<TileCoord>();
+
+                foreach (IAreaApcOrigin apc in apcs)
+                {
+                    if (!_registry.TryGetApcArea(apc, out AreaId areaId))
+                    {
+                        areaId = _registry.AllocateId();
+                        _registry.Register(new AreaRecord
+                        {
+                            Id = areaId,
+                            DisplayName = apc.DisplayName,
+                            Apc = apc,
+                        });
+                    }
+
+                    _floodFill.FloodFromApc(apc, areaId, claimedTiles);
+                }
+
                 _floodFill.AssignDoorTileAreas();
                 UpdateOverlapWarnings();
             }

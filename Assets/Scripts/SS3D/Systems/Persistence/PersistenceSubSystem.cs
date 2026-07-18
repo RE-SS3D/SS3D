@@ -238,18 +238,35 @@ namespace SS3D.Systems.Persistence
                 TemplateName = templateName,
             };
 
-            foreach (IPersistenceContributor contributor in GetContributors(PersistenceLayer.StationTemplate))
+            // APCs spawn mid-tile-placement and would flood against an incomplete map (missing
+            // chunks look like empty space). Defer flood until every contributor has finished.
+            if (SubSystems.TryGet(out AreaSubSystem areaSubSystem))
             {
-                PersistenceChunk chunk = envelope.chunks?.FirstOrDefault(
-                    candidate => candidate.contributorId == contributor.ContributorId);
+                areaSubSystem.BeginDeferredAreaFlood();
+            }
 
-                if (chunk == null || string.IsNullOrEmpty(chunk.payloadJson))
+            try
+            {
+                foreach (IPersistenceContributor contributor in GetContributors(PersistenceLayer.StationTemplate))
                 {
-                    continue;
-                }
+                    PersistenceChunk chunk = envelope.chunks?.FirstOrDefault(
+                        candidate => candidate.contributorId == contributor.ContributorId);
 
-                object payload = DeserializePayload(contributor, chunk.payloadJson);
-                contributor.Restore(payload, context);
+                    if (chunk == null || string.IsNullOrEmpty(chunk.payloadJson))
+                    {
+                        continue;
+                    }
+
+                    object payload = DeserializePayload(contributor, chunk.payloadJson);
+                    contributor.Restore(payload, context);
+                }
+            }
+            finally
+            {
+                if (SubSystems.TryGet(out AreaSubSystem areaAfterRestore))
+                {
+                    areaAfterRestore.EndDeferredAreaFlood();
+                }
             }
 
             OnAfterRestore?.Invoke(PersistenceLayer.StationTemplate);
