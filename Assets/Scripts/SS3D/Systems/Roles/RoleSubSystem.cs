@@ -101,6 +101,11 @@ namespace SS3D.Systems.Roles
         /// <param name="player</param>
         private void AssignPlayerRole(Player player)
         {
+            if (player == null || _rolePlayers.ContainsKey(player))
+            {
+                return;
+            }
+
             RoleCounter assistantRole = _roleCounters.FirstOrDefault(rc => rc.Role.Name == "Assistant");
             RoleCounter securityRole = _roleCounters.FirstOrDefault(rc => rc.Role.Name == "Security");
 
@@ -130,6 +135,7 @@ namespace SS3D.Systems.Roles
             RoleCounter roleCounter = _roleCounters.FirstOrDefault(rc => rc.Role == roleData);
 
             roleCounter?.RemovePlayer(player);
+            _rolePlayers.Remove(player);
         }
 
         /// <summary>

@@ -40,11 +40,11 @@ namespace SS3D.Systems.Testing
     public sealed class AutomationSubSystem : SubSystem
     {
         private const float DefaultWaitTimeoutSeconds = 30f;
-        private const float QuitDelaySeconds = 1f;
 
         private RoundState _currentRoundState = RoundState.Stopped;
         private bool _clientConnected;
         private bool _serverStarted;
+        private bool _scriptStarted;
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
         private static void Bootstrap()
@@ -75,6 +75,16 @@ namespace SS3D.Systems.Testing
                 return;
             }
 
+            // Disconnect / scene unload re-fires ApplicationInitializing. Re-running the script
+            // (and NetworkSession re-join) is what produced post-ScriptComplete Errors and RoleSubSystem
+            // duplicate-key exceptions in the multiplayer harness.
+            if (_scriptStarted)
+            {
+                return;
+            }
+
+            _scriptStarted = true;
+
             SubscribeToConnectionEvents();
             AddHandle(RoundStateUpdated.AddListener(HandleRoundStateUpdated));
 
@@ -102,6 +112,24 @@ namespace SS3D.Systems.Testing
         private void HandleRoundStateUpdated(ref EventContext context, in RoundStateUpdated e)
         {
             _currentRoundState = e.RoundState;
+        }
+
+        private bool IsRoundState(RoundState target)
+        {
+            if (_currentRoundState == target)
+            {
+                return true;
+            }
+
+            // SyncVar can advance before/without our event listener seeing every transition
+            // (e.g. after scene churn). Prefer live RoundSubSystem state when available.
+            if (SubSystems.TryGet(out RoundSubSystem roundSystem) && roundSystem.CurrentRoundState == target)
+            {
+                _currentRoundState = target;
+                return true;
+            }
+
+            return false;
         }
 
         private IEnumerator RunScript(string scriptPath)
@@ -226,7 +254,7 @@ namespace SS3D.Systems.Testing
 
                 case "wait_round":
                     RoundState target = Enum.Parse<RoundState>(instruction.Args[0], ignoreCase: true);
-                    yield return WaitUntil(() => _currentRoundState == target, DefaultWaitTimeoutSeconds, "wait_round");
+                    yield return WaitUntil(() => IsRoundState(target), DefaultWaitTimeoutSeconds, "wait_round");
                     TestSignal.Emit(this, "RoundStateChanged", target.ToString());
                     break;
 
@@ -332,9 +360,12 @@ namespace SS3D.Systems.Testing
 
         private IEnumerator QuitAfterDelay()
         {
-            yield return new WaitForSeconds(QuitDelaySeconds);
-
-            UnityEngine.Application.Quit();
+            // One frame so Serilog can flush ScriptComplete/ScriptFailed, then hard-exit.
+            // Application.Quit() in player builds still tears scenes down and re-enters
+            // ApplicationInitializing (NetworkSession re-joins, duplicate automation) before the
+            // process dies — that noise fails the harness after a successful scenario.
+            yield return null;
+            System.Environment.Exit(0);
         }
     }
 }
