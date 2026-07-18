@@ -6,41 +6,57 @@
 
 ## Goal
 
-Give this fork a gated path from a known commit to a downloadable **Windows** player zip
-(self-host via `Builds/*.bat`) plus secondary Linux client/server artifacts: EditMode → Linux
-builds → multiplayer smoke → Windows client → GitHub **prerelease**. Trigger is manual
-(`workflow_dispatch`) only — develop merges ~5–10 PRs/day, and every run burns rate-limited
-`unity_tests` Unity licenses plus long builder time.
+Give this fork a path from a known commit to a downloadable **Windows** player zip
+(self-host via `Builds/*.bat`) plus secondary Linux client/server artifacts. Default
+dispatch is **build-only** (Linux → Windows → prerelease). EditMode and multiplayer
+smoke are **opt-in** inputs — day-to-day cuts already pay ~30–45 min of Unity builder
+time; re-running gates that `editmodetestrunner.yml` / `multiplayer-smoke-test.yml`
+cover separately is optional. Trigger is manual (`workflow_dispatch`) only — develop
+merges ~5–10 PRs/day, and every run burns rate-limited `unity_tests` Unity licenses.
 
 ## Shipped
 
 ### Workflow: `.github/workflows/develop-release.yml`
 
-1. **EditMode** — same `game-ci/unity-test-runner@v4` / `6000.3.16f1` pattern as
+**Inputs (defaults favour a fast cut):**
+
+| Input | Default | Effect |
+|-------|---------|--------|
+| `run_editmode` | `false` | When true, EditMode job runs first and must pass before Linux builds. |
+| `run_smoke` | `false` | When true, after Linux builds run `basic-round` + `late-join 2`. |
+| `skip_release` | `false` | When true, skip Windows build and GitHub prerelease (Linux only). |
+| `tag_suffix` | _(empty)_ | Override tag suffix; full tag is `develop-<suffix>` (else short SHA). |
+
+**Jobs:**
+
+1. **EditMode** (opt-in) — same `game-ci/unity-test-runner@v4` / `6000.3.16f1` pattern as
    `editmodetestrunner.yml`, including secret preflight and `environment: unity_tests`.
+   Skipped when `run_editmode` is false; Linux builds still proceed.
 2. **Linux build** — sequential dedicated server + client via `ServerBuildScript` /
    `ClientBuildScript`, separate `buildsPath` roots (`build/GameServer`, `build/Game`) so the
    second builder cannot clobber the first. `versioning: None` (fork tags like `0.3.95j` break
-   game-ci Semantic versioning).
-3. **Smoke** — `Testing/multiplayer/run_smoketest.sh basic-round` then `late-join 2` against
-   those same Linux binaries; harness logs uploaded always. This is the quality gate.
-4. **Windows client** — after smoke passes, default `unity-builder` `StandaloneWindows64`
-   (`buildName: SS3D`). Not smoke-tested on Windows (no harness path for `.exe` on
-   `ubuntu-latest`). Skipped when `skip_release` is set.
+   game-ci Semantic versioning). Unity 6 Linux binaries are `SS3D-Server` / `SS3D-Client`
+   (no `.x86_64` suffix).
+3. **Smoke** (opt-in step on the Linux job) — `Testing/multiplayer/run_smoketest.sh
+   basic-round` then `late-join 2`; harness logs uploaded when smoke was requested.
+4. **Windows client** — after Linux succeeds, default `unity-builder` `StandaloneWindows64`
+   (`buildName: SS3D`). Not smoke-tested on Windows. Skipped when `skip_release` is set.
 5. **Prerelease** — primary zip `SS3D-Windows-<tag>.zip` with layout:
    `Start_SS3D_*.bat` + `README.txt` beside `Game/SS3D.exe` (matches [`Builds/`](../../Builds/)
    locally). Secondary: Linux client/server zips. Tag `develop-<shortsha>` (or
-   `tag_suffix` override). `prerelease: true`.
+   `tag_suffix` override). `prerelease: true`. Release notes do not claim EditMode/smoke
+   unless those inputs were enabled for that run.
 
 ### Related workflow changes
 
 - `multiplayer-smoke-test.yml` — removed `push: develop`; keep label-gated PR +
-  `workflow_dispatch`; same separate build dirs / `versioning: None`.
+  `workflow_dispatch`; same separate build dirs / `versioning: None`. Prefer this (or
+  `run_smoke: true` on develop-release) when you need a smoke gate.
 - `main.yml` — marked deprecated for day-to-day releases; fixed `environment: unity_tests`,
   secret preflight, `versioning: None`; Windows/legacy path uploads artifacts only (no longer
   creates a non-prerelease GitHub Release). Prefer `develop-release.yml`.
-- `editmodetestrunner.yml` — unchanged cheap PR/`develop` feedback; the release workflow
-  re-runs EditMode so a manual cut is never based on a stale green check.
+- `editmodetestrunner.yml` — unchanged cheap PR/`develop` feedback. Prefer this (or
+  `run_editmode: true` on develop-release) when you need an EditMode gate on a cut.
 
 ## Pitfalls recorded for operators
 
@@ -51,7 +67,12 @@ builds → multiplayer smoke → Windows client → GitHub **prerelease**. Trigg
   `Failed to parse git describe output`.
 - **Do not use `ClientBuildScript` for Windows** — it hardcodes `StandaloneLinux64`; Windows
   uses the default game-ci build method.
-- **Windows is not multiplayer-smoke-tested.** Trust is “same commit as green Linux smoke.”
+- **Default prereleases are unproven by EditMode/smoke.** Trust PR/`develop` EditMode CI and
+  opt into `run_smoke` (or run `multiplayer-smoke-test.yml`) when you need a gated cut.
+- **Windows is not multiplayer-smoke-tested.** Even with `run_smoke`, trust is “same commit as
+  green Linux smoke.”
+- **Unity 6 Linux binary names have no `.x86_64` suffix.** Smoke/`chmod` must use `SS3D-Server`
+  / `SS3D-Client` (local Editor menus still write `SS3D.x86_64` via hardcoded paths).
 
 ## Out of scope
 

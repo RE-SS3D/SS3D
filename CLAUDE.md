@@ -12,8 +12,8 @@ whereas upstream is still on Unity 2021.3 + Built-in RP — the two codebases ha
 
 There is no official RE:SS3D release channel for this fork; day-to-day play is still build-from-source
 in the Unity Editor. Maintainers can optionally cut a **manual prerelease** (Windows player zip with
-launch bats; Linux secondary) via `.github/workflows/develop-release.yml` after EditMode + Linux
-multiplayer smoke — see `Documents/architecture/2026-07_ci-develop-release-pipeline.md`.
+launch bats; Linux secondary) via `.github/workflows/develop-release.yml` (default build-only;
+EditMode and Linux smoke are opt-in) — see `Documents/architecture/2026-07_ci-develop-release-pipeline.md`.
 
 ## Read the docs before searching code
 
@@ -61,10 +61,11 @@ Editor.
   `SS3D.Tests.PlayMode`, plus an `AssetAudit` edit-mode assembly and a `Common` shared-fixture assembly). Run them
   via Unity's **Test Runner** window (`Window > General > Test Runner`) inside the Editor. CI runs the same
   EditMode suite headlessly via `game-ci/unity-test-runner` — see `.github/workflows/editmodetestrunner.yml`.
-- **CI build / prerelease**: `.github/workflows/develop-release.yml` is the gated manual path
-  (EditMode → Linux client+server → multiplayer smoke → Windows client + bats → GitHub prerelease).
-  `.github/workflows/main.yml` is deprecated for releases (optional Windows/legacy).
-  Cheap EditMode: `editmodetestrunner.yml`. Opt-in smoke: `multiplayer-smoke-test.yml`.
+- **CI build / prerelease**: `.github/workflows/develop-release.yml` is the manual path
+  (Linux client+server → Windows client + bats → GitHub prerelease; `run_editmode` /
+  `run_smoke` opt-in). `.github/workflows/main.yml` is deprecated for releases (optional
+  Windows/legacy). Cheap EditMode: `editmodetestrunner.yml`. Opt-in smoke:
+  `multiplayer-smoke-test.yml`.
 - **Code style**: `.editorconfig` at the repo root enforces C# naming/formatting (enforced as ReSharper/Rider
   inspections, not a separate lint CLI step) — e.g. `_camelCase` private fields, `PascalCase` events, block-scoped
   namespaces. Match existing surrounding code style; don't fight the analyzer.
