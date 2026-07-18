@@ -19,6 +19,7 @@ using FishNet.Object.Synchronizing;
 using System.ComponentModel;
 using static UnityEngine.GraphicsBuffer;
 using SS3D.Systems.Interactions;
+using SS3D.Systems.Tile;
 
 namespace SS3D.Systems.Inventory.Containers
 {
@@ -281,6 +282,20 @@ namespace SS3D.Systems.Inventory.Containers
         }
 
         /// <summary>
+        /// Requests the server to place an inventory item into the world at a point (UI drag-to-world,
+        /// same placement rules as <see cref="SS3D.Systems.Inventory.Interactions.DropInteraction"/>).
+        /// </summary>
+        public void ClientPlaceItemInWorld(Item item, Vector3 point, Vector3 surfaceNormal)
+        {
+            if (item == null)
+            {
+                return;
+            }
+
+            CmdPlaceItemInWorld(item.gameObject, point, surfaceNormal);
+        }
+
+        /// <summary>
         /// Use it to switch between active hands.
         /// </summary>
         /// <param name="container">This AttachedContainer should be the hand to activate.</param>
@@ -310,6 +325,85 @@ namespace SS3D.Systems.Inventory.Containers
             }
 
             attachedTo.RemoveItem(item);
+        }
+
+        [ServerRpc]
+        private void CmdPlaceItemInWorld(GameObject itemObject, Vector3 point, Vector3 surfaceNormal)
+        {
+            Item item = itemObject != null ? itemObject.GetComponent<Item>() : null;
+            if (item == null || !CanPlaceInventoryItemInWorld(item, point, surfaceNormal))
+            {
+                return;
+            }
+
+            Hands hands = GetComponent<Hands>();
+            Hand hand = hands != null ? hands.SelectedHand : null;
+            Quaternion rotation = Quaternion.Euler(0f, transform.eulerAngles.y, 0f);
+
+            if (hand != null && hand.ItemInHand == item)
+            {
+                hand.PlaceHeldItemOutOfHand(point, rotation);
+                return;
+            }
+
+            AttachedContainer attachedTo = item.Container;
+            item.GiveOwnership(null);
+            attachedTo.RemoveItem(item);
+            ItemUtility.Place(item, point, rotation);
+
+            if (SubSystems.TryGet(out TileSubSystem tile)
+                && tile.GetAsset(item.Asset) is ItemObjectSo itemObjectSo)
+            {
+                tile.Construction.TryPlaceItem(itemObjectSo, point, rotation, item.gameObject);
+            }
+        }
+
+        /// <summary>
+        /// Mirrors DropInteraction.CanInteract for UI drag-to-world placement:
+        /// container modify permission, hand range, upward surface, and ViewPoint line-of-sight.
+        /// </summary>
+        [Server]
+        private bool CanPlaceInventoryItemInWorld(Item item, Vector3 point, Vector3 surfaceNormal)
+        {
+            AttachedContainer attachedTo = item.Container;
+            if (attachedTo == null || containerViewer == null || !containerViewer.CanModifyContainer(attachedTo))
+            {
+                return false;
+            }
+
+            Hands hands = GetComponent<Hands>();
+            Hand hand = hands != null ? hands.SelectedHand : null;
+            if (hand == null || !hand.GetInteractionRange().IsInRange(hand.InteractionOrigin, point))
+            {
+                return false;
+            }
+
+            const float maxSurfaceAngle = 10f;
+            if (Vector3.Angle(surfaceNormal, Vector3.up) > maxSurfaceAngle)
+            {
+                return false;
+            }
+
+            Entity entity = GetComponent<Entity>();
+            if (entity == null)
+            {
+                entity = GetComponentInParent<Entity>();
+            }
+
+            if (entity == null || entity.ViewPoint == null)
+            {
+                return false;
+            }
+
+            Vector3 viewPosition = entity.ViewPoint.transform.position;
+            Vector3 direction = (point - viewPosition).normalized;
+            LayerMask defaultMask = LayerMask.GetMask("Default");
+            if (!Physics.Raycast(viewPosition, direction, out RaycastHit hit, Mathf.Infinity, defaultMask))
+            {
+                return false;
+            }
+
+            return Vector3.Distance(point, hit.point) <= 0.1f;
         }
 
 

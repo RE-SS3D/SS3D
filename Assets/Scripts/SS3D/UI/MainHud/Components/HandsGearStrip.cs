@@ -91,7 +91,22 @@ namespace SS3D.UI.MainHud.Components
 
         public void SetGearIcon(GearSlot slot, Sprite itemIcon)
         {
-            GetGearSlot(slot).ItemIcon = itemIcon;
+            SetGearContents(slot, itemIcon, itemName: null);
+        }
+
+        /// <summary>
+        /// Updates a gear well's icon and label. Empty <paramref name="itemName"/> restores Belt/ID/PDA/Back.
+        /// </summary>
+        public void SetGearContents(GearSlot slot, Sprite itemIcon, string itemName)
+        {
+            InventorySlot inventorySlot = GetGearSlot(slot);
+            if (inventorySlot == null)
+            {
+                return;
+            }
+
+            inventorySlot.ItemIcon = itemIcon;
+            inventorySlot.SlotLabel = string.IsNullOrEmpty(itemName) ? DefaultGearLabel(slot) : itemName;
         }
 
         /// <summary>Panel-space bounds of a gear slot, used to anchor its storage panel near the click.</summary>
@@ -103,8 +118,17 @@ namespace SS3D.UI.MainHud.Components
 
         public void SetHandIcons(Sprite leftItemIcon, Sprite rightItemIcon)
         {
-            _handLeft.ItemIcon = leftItemIcon;
-            _handRight.ItemIcon = rightItemIcon;
+            SetHandContents(HandSlot.Left, leftItemIcon, itemName: null);
+            SetHandContents(HandSlot.Right, rightItemIcon, itemName: null);
+        }
+
+        public void SetHandContents(HandSlot slot, Sprite itemIcon, string itemName)
+        {
+            InventorySlot inventorySlot = GetHandInventorySlot(slot);
+            inventorySlot.ItemIcon = itemIcon;
+            inventorySlot.SlotLabel = string.IsNullOrEmpty(itemName)
+                ? (slot == HandSlot.Left ? "Left hand" : "Right hand")
+                : itemName;
         }
 
         public void SetActiveHand(bool leftIsActive)
@@ -120,6 +144,15 @@ namespace SS3D.UI.MainHud.Components
             GearSlot.Pda => _pda,
             GearSlot.Back => _back,
             _ => null,
+        };
+
+        private static string DefaultGearLabel(GearSlot slot) => slot switch
+        {
+            GearSlot.Belt => "Belt",
+            GearSlot.Id => "ID",
+            GearSlot.Pda => "PDA",
+            GearSlot.Back => "Back",
+            _ => string.Empty,
         };
 
         private InventorySlot CreateGearSlot(GearSlot slot, string label, Sprite emptyIcon, float size)

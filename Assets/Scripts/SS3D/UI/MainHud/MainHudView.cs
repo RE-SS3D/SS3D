@@ -118,17 +118,35 @@ namespace SS3D.UI.MainHud
 
         public void SetEquipmentIcon(EquipmentGrid.Slot slot, UnityEngine.Sprite itemIcon)
         {
-            _equipmentGrid.SetIcon(slot, itemIcon);
+            SetEquipmentContents(slot, itemIcon, itemName: null);
+        }
+
+        public void SetEquipmentContents(EquipmentGrid.Slot slot, UnityEngine.Sprite itemIcon, string itemName)
+        {
+            _equipmentGrid.SetContents(slot, itemIcon, itemName);
         }
 
         public void SetGearIcon(HandsGearStrip.GearSlot slot, UnityEngine.Sprite itemIcon)
         {
-            _handsGearStrip.SetGearIcon(slot, itemIcon);
+            SetGearContents(slot, itemIcon, itemName: null);
+        }
+
+        public void SetGearContents(HandsGearStrip.GearSlot slot, UnityEngine.Sprite itemIcon, string itemName)
+        {
+            _handsGearStrip.SetGearContents(slot, itemIcon, itemName);
         }
 
         public void SetHandIcons(UnityEngine.Sprite leftItemIcon, UnityEngine.Sprite rightItemIcon)
         {
             _handsGearStrip.SetHandIcons(leftItemIcon, rightItemIcon);
+        }
+
+        public void SetHandContents(
+            HandsGearStrip.HandSlot slot,
+            UnityEngine.Sprite itemIcon,
+            string itemName)
+        {
+            _handsGearStrip.SetHandContents(slot, itemIcon, itemName);
         }
 
         public void SetActiveHand(bool leftIsActive)

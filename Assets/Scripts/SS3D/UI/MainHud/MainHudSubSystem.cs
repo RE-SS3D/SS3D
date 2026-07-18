@@ -771,23 +771,75 @@ namespace SS3D.UI.MainHud
                 return;
             }
 
-            _view.SetEquipmentIcon(EquipmentGrid.Slot.Head, IconFor(ContainerType.Head));
-            _view.SetEquipmentIcon(EquipmentGrid.Slot.Eyes, IconFor(ContainerType.Glasses));
-            _view.SetEquipmentIcon(EquipmentGrid.Slot.Face, IconFor(ContainerType.Mask));
-            _view.SetEquipmentIcon(EquipmentGrid.Slot.Ears, IconFor(ContainerType.EarLeft) ?? IconFor(ContainerType.EarRight));
-            _view.SetEquipmentIcon(EquipmentGrid.Slot.GloveLeft, IconFor(ContainerType.GloveLeft));
-            _view.SetEquipmentIcon(EquipmentGrid.Slot.Shirt, IconFor(ContainerType.Jumpsuit));
-            _view.SetEquipmentIcon(EquipmentGrid.Slot.GloveRight, IconFor(ContainerType.GloveRight));
-            _view.SetEquipmentIcon(EquipmentGrid.Slot.Feet, IconFor(ContainerType.ShoeLeft) ?? IconFor(ContainerType.ShoeRight));
+            SetEquipment(EquipmentGrid.Slot.Head, ContainerType.Head);
+            SetEquipment(EquipmentGrid.Slot.Eyes, ContainerType.Glasses);
+            SetEquipment(EquipmentGrid.Slot.Face, ContainerType.Mask);
+            SetEquipmentAlternate(
+                EquipmentGrid.Slot.Ears,
+                ContainerType.EarLeft,
+                ContainerType.EarRight);
+            SetEquipment(EquipmentGrid.Slot.GloveLeft, ContainerType.GloveLeft);
+            SetEquipment(EquipmentGrid.Slot.Shirt, ContainerType.Jumpsuit);
+            SetEquipment(EquipmentGrid.Slot.GloveRight, ContainerType.GloveRight);
+            SetEquipmentAlternate(
+                EquipmentGrid.Slot.Feet,
+                ContainerType.ShoeLeft,
+                ContainerType.ShoeRight);
 
-            _view.SetHandIcons(HandIconAt(0), HandIconAt(1));
+            _view.SetHandContents(
+                HandsGearStrip.HandSlot.Left,
+                HandIconAt(0),
+                HandNameAt(0));
+            _view.SetHandContents(
+                HandsGearStrip.HandSlot.Right,
+                HandIconAt(1),
+                HandNameAt(1));
 
-            _view.SetGearIcon(HandsGearStrip.GearSlot.Belt, IconFor(ContainerType.Belt));
-            _view.SetGearIcon(HandsGearStrip.GearSlot.Id, IconFor(ContainerType.Identification));
-            _view.SetGearIcon(HandsGearStrip.GearSlot.Pda, IconFor(ContainerType.Pda));
-            _view.SetGearIcon(HandsGearStrip.GearSlot.Back, IconFor(ContainerType.Bag));
+            SetGear(HandsGearStrip.GearSlot.Belt, ContainerType.Belt);
+            SetGear(HandsGearStrip.GearSlot.Id, ContainerType.Identification);
+            SetGear(HandsGearStrip.GearSlot.Pda, ContainerType.Pda);
+            SetGear(HandsGearStrip.GearSlot.Back, ContainerType.Bag);
 
             RegisterHudDropTargets();
+
+            void SetEquipment(EquipmentGrid.Slot slot, ContainerType type)
+            {
+                Item item = ItemIn(type);
+                _view.SetEquipmentContents(slot, item?.ItemSprite, item?.Name);
+            }
+
+            void SetEquipmentAlternate(EquipmentGrid.Slot slot, ContainerType primary, ContainerType secondary)
+            {
+                Item item = ItemIn(primary) ?? ItemIn(secondary);
+                _view.SetEquipmentContents(slot, item?.ItemSprite, item?.Name);
+            }
+
+            void SetGear(HandsGearStrip.GearSlot slot, ContainerType type)
+            {
+                Item item = ItemIn(type);
+                _view.SetGearContents(slot, item?.ItemSprite, item?.Name);
+            }
+        }
+
+        private Item ItemIn(ContainerType type)
+        {
+            return _inventory != null && _inventory.TryGetTypeContainer(type, 0, out AttachedContainer container)
+                ? container.Items.FirstOrDefault()
+                : null;
+        }
+
+        private Sprite HandIconAt(int position) => HandItemAt(position)?.ItemSprite;
+
+        private string HandNameAt(int position) => HandItemAt(position)?.Name;
+
+        private Item HandItemAt(int position)
+        {
+            if (_hands == null || position >= _hands.PlayerHands.Count)
+            {
+                return null;
+            }
+
+            return _hands.PlayerHands[position].ItemInHand;
         }
 
         private void RegisterHudDropTargets()
@@ -859,23 +911,6 @@ namespace SS3D.UI.MainHud
             }
 
             panelHost.SetHudDropTargets(targets);
-        }
-
-        private Sprite IconFor(ContainerType type)
-        {
-            return _inventory != null && _inventory.TryGetTypeContainer(type, 0, out AttachedContainer container)
-                ? container.Items.FirstOrDefault()?.ItemSprite
-                : null;
-        }
-
-        private Sprite HandIconAt(int position)
-        {
-            if (_hands == null || position >= _hands.PlayerHands.Count)
-            {
-                return null;
-            }
-
-            return _hands.PlayerHands[position].ItemInHand?.ItemSprite;
         }
 
         private void RefreshActiveHand()

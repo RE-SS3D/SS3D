@@ -453,11 +453,12 @@ namespace SS3D.UI.StoragePanel
             }
 
             (StoragePanelView targetPanel, StorageSlot targetSlot) = HitTestPanels(releasePosition);
-            if (targetPanel != null && targetSlot != null && targetSlot != _dragSourceSlot)
+            if (targetPanel != null && targetSlot != null)
             {
-                // Panel slot under the pointer owns the drop — never fall through to HUD (hands),
-                // or an invalid bag slot would deposit into whatever HUD target shares that screen point.
-                if (targetPanel.Container.CanContainItemAtPosition(_dragItem, targetSlot.Position))
+                // Panel slot under the pointer owns the drop — including the source slot (cancel) and
+                // invalid targets. Never fall through to HUD or world.
+                if (targetSlot != _dragSourceSlot
+                    && targetPanel.Container.CanContainItemAtPosition(_dragItem, targetSlot.Position))
                 {
                     _localInventory.ClientTransferItem(_dragItem, targetSlot.Position, targetPanel.Container);
                 }
@@ -466,19 +467,51 @@ namespace SS3D.UI.StoragePanel
             }
 
             HudDropTarget hudTarget = HitTestHud(releasePosition);
-            if (hudTarget == null || hudTarget.Element == null)
+            if (hudTarget?.Element != null)
+            {
+                if (hudTarget.Container != null
+                    && hudTarget.Container != _dragSourceContainer
+                    && hudTarget.Container.CanContainItemAtPosition(_dragItem, hudTarget.Position))
+                {
+                    _localInventory.ClientTransferItem(_dragItem, hudTarget.Position, hudTarget.Container);
+                }
+
+                return;
+            }
+
+            // Released over UI chrome (panel header, empty HUD margin) — cancel, do not world-drop.
+            if (InputInterface.IsPointerOverInterface())
             {
                 return;
             }
 
-            if (hudTarget.Container == null
-                || hudTarget.Container == _dragSourceContainer
-                || !hudTarget.Container.CanContainItemAtPosition(_dragItem, hudTarget.Position))
+            TryPlaceDraggedItemInWorld();
+        }
+
+        /// <summary>
+        /// Camera-raycasts the current pointer into the world and requests a DropInteraction-equivalent
+        /// placement via <see cref="HumanInventory.ClientPlaceItemInWorld"/>.
+        /// </summary>
+        private void TryPlaceDraggedItemInWorld()
+        {
+            if (_dragItem == null || _localInventory == null)
             {
                 return;
             }
 
-            _localInventory.ClientTransferItem(_dragItem, hudTarget.Position, hudTarget.Container);
+            Camera camera = Camera.main;
+            if (camera == null)
+            {
+                return;
+            }
+
+            Ray ray = camera.ScreenPointToRay(InputInterface.GetPointerScreenPosition());
+            if (!Physics.Raycast(ray, out RaycastHit hit, 100f))
+            {
+                return;
+            }
+
+            _localInventory.ClientPlaceItemInWorld(_dragItem, hit.point, hit.normal);
         }
 
         private void HandleSlotNestedOpenRequested(StoragePanelView panel, StorageSlot slot)

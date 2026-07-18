@@ -61,7 +61,23 @@ namespace SS3D.UI.MainHud.Components
 
         public void SetIcon(Slot slot, Sprite itemIcon)
         {
-            GetSlot(slot).ItemIcon = itemIcon;
+            SetContents(slot, itemIcon, itemName: null);
+        }
+
+        /// <summary>
+        /// Updates the well icon and label. When <paramref name="itemName"/> is set, the label shows
+        /// the item name; when empty/null, it restores the slot's default name (Head, Eyes, …).
+        /// </summary>
+        public void SetContents(Slot slot, Sprite itemIcon, string itemName)
+        {
+            InventorySlot inventorySlot = GetSlot(slot);
+            if (inventorySlot == null)
+            {
+                return;
+            }
+
+            inventorySlot.ItemIcon = itemIcon;
+            inventorySlot.SlotLabel = string.IsNullOrEmpty(itemName) ? DefaultLabel(slot) : itemName;
         }
 
         public InventorySlot GetInventorySlot(Slot slot) => GetSlot(slot);
@@ -79,6 +95,19 @@ namespace SS3D.UI.MainHud.Components
             Slot.GloveRight => _gloveRight,
             Slot.Feet => _feet,
             _ => null,
+        };
+
+        private static string DefaultLabel(Slot slot) => slot switch
+        {
+            Slot.Head => "Head",
+            Slot.Eyes => "Eyes",
+            Slot.Face => "Face Cover",
+            Slot.Ears => "Ears",
+            Slot.GloveLeft => "Left Glove",
+            Slot.Shirt => "Shirt",
+            Slot.GloveRight => "Right Glove",
+            Slot.Feet => "Feet",
+            _ => string.Empty,
         };
 
         private InventorySlot CreateSlot(Slot slot, string label, Sprite emptyIcon)
