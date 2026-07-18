@@ -74,7 +74,9 @@ namespace SS3D.Editor.URPMigration
             var pipelineSettings = new SerializedObject(pipeline);
             pipelineSettings.FindProperty("m_RequireDepthTexture").boolValue = true;
             pipelineSettings.FindProperty("m_RequireOpaqueTexture").boolValue = true;
-            pipelineSettings.FindProperty("m_GPUResidentDrawerMode").intValue = 1;
+            // Disabled: Linux OpenGL / some editor APIs do not support BatchBufferTarget.RawBuffer
+            // and spam "GPUResidentDrawer The current platform does not support…" on every rebuild.
+            pipelineSettings.FindProperty("m_GPUResidentDrawerMode").intValue = 0;
             pipelineSettings.FindProperty("m_UseSRPBatcher").boolValue = true;
             pipelineSettings.ApplyModifiedPropertiesWithoutUndo();
 

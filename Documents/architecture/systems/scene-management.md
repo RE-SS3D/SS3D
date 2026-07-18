@@ -1,6 +1,7 @@
 > Code paths: Assets/Scripts/SS3D/SceneManagement/
 > Entry points: SceneSubSystem
 > Status: stub
+> Verified: 2e2d03815 — 2026-07-18
 
 # Scene management
 
@@ -18,6 +19,10 @@ Scenes are launch pads, not system composition roots ([agent-first composition](
 ## Extension points
 
 (stub)
+
+## Pitfalls
+
+- **Duplicate EventSystem when Game loads additively over Intro:** Intro Objects prefab and Game both have an EventSystem. Unload is async — disable Intro/Launcher EventSystems synchronously when Game becomes active, then unload. Do not leave both enabled.
 
 ## Depends on / Used by
 

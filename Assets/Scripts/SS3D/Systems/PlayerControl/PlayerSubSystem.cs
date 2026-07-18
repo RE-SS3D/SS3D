@@ -71,6 +71,14 @@ namespace SS3D.Systems.PlayerControl
 
         private void HandleClientLoadedStartScenes(NetworkConnection conn, bool asServer)
         {
+            // Host also fires this with asServer=false after the client-side load path.
+            // Spawning there runs while LoadedStartScenes(asServer:true) is still false and
+            // can create a second UnauthorizedPlayer — match FishNet PlayerSpawner.
+            if (!asServer)
+            {
+                return;
+            }
+
             ProcessPlayerJoin(conn);
         }
 
@@ -199,15 +207,21 @@ namespace SS3D.Systems.PlayerControl
         [Server]
         private void DespawnUnauthorizedPlayer(NetworkConnection conn)
         {
-            foreach (NetworkObject networkObject in conn.Objects)
+            // Snapshot: Despawn mutates conn.Objects. FishNet's IsDeinitializing is internal;
+            // IsSpawned is the public gate for "safe to despawn".
+            foreach (NetworkObject networkObject in conn.Objects.ToArray())
             {
+                if (networkObject == null || !networkObject.IsSpawned)
+                {
+                    continue;
+                }
+
                 if (networkObject.GetComponent<UnauthorizedPlayer>() == null)
                 {
                     continue;
                 }
 
                 ServerManager.Despawn(networkObject);
-                return;
             }
         }
 

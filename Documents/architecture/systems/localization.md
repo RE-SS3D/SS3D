@@ -18,6 +18,10 @@ Shared localization accessor with caching, locale-change invalidation, and dev/r
 - Code-driven lookups: resolve via `LocalizedTextService` rather than direct table access.
 - New string tables: follow Examine migration pattern in [examine](examine.md).
 
+## Pitfalls
+
+- **`AssetTypeMetadata` missing `[Serializable]`:** Unity Localization package warning on SerializeReference. Upstream type inherits a `[Serializable]` base but lacks the attribute on the concrete class — cannot fix without forking the package; safe to ignore until a package update.
+
 ## Depends on / Used by
 
 - **Used by:** [examine](examine.md)
