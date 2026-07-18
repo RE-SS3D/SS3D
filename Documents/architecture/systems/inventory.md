@@ -1,7 +1,7 @@
 > Code paths: Assets/Scripts/SS3D/Systems/Inventory/, Assets/Scripts/SS3D/UI/MainHud/, Assets/Scripts/SS3D/UI/StoragePanel/, Assets/Scripts/SS3D/Systems/Stamina/
 > Entry points: ItemSubSystem, MainHudSubSystem, StoragePanelHost, StaminaController
 > Status: partial
-> Verified: 5aa81e431 — 2026-07-18
+> Verified: 8d018c33b — 2026-07-18
 
 # Inventory
 
@@ -13,9 +13,9 @@ Items, containers, hands, identification cards (`IDCard`, `PDA`), on-demand stor
 
 **Carried weight:** `HumanInventory.CarriedWeight` sums every inventory container's recursive `AttachedContainer.Weight` (hands included). Fires `OnCarriedWeightChanged`. Feeds [stamina](stamina.md) encumbrance (Phase 7a).
 
-**Storage panel UI:** `StoragePanelHost` manages N simultaneous `StoragePanelView` panels. Opened via gear strip, world `ViewContainerInteraction`, pocket hotkey (`ToggleInternalClothing` → `ContainerViewer.ShowContainerUI`), or nested click. Panel width follows container columns (1×1 / 2×2 / 3×3…); header drag uses UITK pointer capture (`MachineWindow` pattern) with the host registered on `InputInterface`. Slot drag is UITK pointer-capture; HUD equipment/gear/hand slots register as `HudDropTarget` peers for panel↔HUD transfers. Drop highlight is a static class toggle (no UITK `@keyframes`).
+**Storage panel UI:** `StoragePanelHost` manages N simultaneous `StoragePanelView` panels. Opened when an *item that is itself storage* is clicked (backpack on back, bag in hand, world `ViewContainerInteraction`), via pocket hotkey (`ToggleInternalClothing` → pockets), or nested click. Hand / gear / clothing slots do **not** open the 1-slot equip container — click equip/unequips (or selects hand) unless the held/worn item has its own `AttachedContainer`. Panel width follows container columns; header drag uses UITK pointer capture with the host on `InputInterface`. HUD slots register as `HudDropTarget` peers for panel↔HUD transfers.
 
-**Main HUD:** equipment doll click = `ClientInteractWithContainerSlot` (equip/unequip vs active hand); gear strip click opens that container's panel; hands select active hand. Cross-surface drag goes through `StoragePanelHost.BeginHudDrag` / `EndHudDrag`. Visibility is owned by `MainHudSubSystem.ApplyVisibility`: local spawned body + in-game round, and **suppressed while** [machine-interface](machine-interface.md) is open (`InterfaceOpened` / `InterfaceClosed`). Show/hide uses the same DOTween bring-up as diegetic MI. Styles/icons/`PanelSettings` load from a committed `MainHudAssetCatalog` via `Resources.Load` (rebuild: **SS3D → Main HUD → Rebuild Asset Catalog**).
+**Main HUD:** equipment/gear click = equip/unequip vs active hand, or open item storage if the worn item is a bag; hands select active hand (and open held bag if any). Cross-surface drag via `StoragePanelHost.BeginHudDrag` / `EndHudDrag`. Visibility: `ApplyVisibility` (local body + in-game round; suppressed while MI open). Catalog via `Resources.Load` (**SS3D → Main HUD → Rebuild Asset Catalog**).
 
 **Legacy uGUI purged:** condemned container UI scripts and prefabs under `Systems/UI/Systems/Containers/` removed; `HumanoidInventory` / `StaminaBar` stripped from `PlayerCanvas.prefab`. Hands wiring on `Human.prefab` remains prefab composition debt ([agent-first composition](../2026-07_agent-first-composition.md)).
 
@@ -42,6 +42,7 @@ Items, containers, hands, identification cards (`IDCard`, `PDA`), on-demand stor
 - **Stack-merge highlight must match `AddStoredItem`:** `CanContainItemAtPosition` treats mergeable occupied stacks as valid — keep in sync with merge room checks.
 - **Spawn/round catch-up can re-show HUD over MI:** always route through `ApplyVisibility()` (includes `_machineUiOpen`). Do not call bare `SetVisible(true)` from bind/round handlers.
 - **UITK white block:** never put `border-radius` and `overflow: hidden` on the same element — split painted outer vs clip inner (`storage-panel` / `storage-panel__clip`, weight track same). Same rule as [machine-interface](machine-interface.md).
+- **Gear-strip / clothing / hands vs bags:** click opens a panel only for storage *on the item* (`GetComponentsInChildren<AttachedContainer>`). Never open the equip slot's own 1×1 container. Unequip non-containers via click; bags open their grid. Do not use `Item.Container` — that is the parent slot, not the bag.
 - **Gear-strip panels open above the anchor:** `StoragePanelHost.PositionPanel` flips above when the anchor is near the bottom (belt/ID/PDA/back). Do not set `style.top = gearBound.y` without that clamp — the strip sits on the screen edge.
 - **Play Mode / Editor verification still required** for this clean-slate pass (catalog present; compile/Play Mode not run in implementing session).
 

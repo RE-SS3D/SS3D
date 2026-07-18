@@ -454,41 +454,51 @@ namespace SS3D.UI.MainHud
 
             // Same path as legacy SingleItemContainerSlot — ServerRpc via HumanInventory.ActivateHand.
             _inventory.ActivateHand(hand.Container);
+
+            // Hands never open the 1-slot hand container UI — only a held item that is itself storage (bag).
+            Item held = hand.ItemInHand;
+            if (held != null && _view != null)
+            {
+                HandsGearStrip.HandSlot handSlot = leftHand
+                    ? HandsGearStrip.HandSlot.Left
+                    : HandsGearStrip.HandSlot.Right;
+                Rect bound = _view.HandsGear.GetHandInventorySlot(handSlot).worldBound;
+                TryOpenItemStorageNear(held, new Vector2(bound.xMin, bound.yMin));
+            }
         }
 
         /// <summary>
-        /// Opens the storage panel for a gear-strip slot (belt/ID/PDA/back), anchored near the icon —
-        /// same open path (ContainerViewer.ShowContainerUI) as a world container's "View" interaction,
-        /// per Documents/design/inventory-storage.md §6.
+        /// Gear strip (belt/ID/PDA/back): equip/unequip vs active hand. Opens a storage panel only when
+        /// the worn item is itself a container (backpack, tool belt) — never the 1-slot equip container.
         /// </summary>
         private void HandleGearSlotClicked(HandsGearStrip.GearSlot slot)
         {
-            if (_inventory == null || _inventory.containerViewer == null)
+            if (_inventory == null)
             {
                 return;
             }
 
             ContainerType type = GearSlotToContainerType(slot);
-
             if (!_inventory.TryGetTypeContainer(type, 0, out AttachedContainer container))
             {
                 return;
             }
 
-            if (!SubSystems.TryGet(out StoragePanelHost panelHost))
+            Item item = container.Items.FirstOrDefault();
+            if (item != null && _view != null)
             {
-                return;
+                Rect bound = _view.GetGearSlotWorldBound(slot);
+                if (TryOpenItemStorageNear(item, new Vector2(bound.xMin, bound.yMin)))
+                {
+                    return;
+                }
             }
 
-            Rect bound = _view.GetGearSlotWorldBound(slot);
-            // Anchor at the top edge of the gear icon — PositionPanel opens the panel above this.
-            Vector2 anchor = new(bound.xMin, bound.yMin);
-            panelHost.RequestOpenNear(_inventory.containerViewer, container, anchor);
+            _inventory.ClientInteractWithContainerSlot(container, Vector2Int.zero);
         }
 
         /// <summary>
-        /// Equip/unequip against the active hand for a single-item clothing slot
-        /// (Documents/design/inventory-storage.md §3).
+        /// Equipment doll: equip/unequip vs active hand, unless the worn item is itself storage.
         /// </summary>
         private void HandleEquipmentSlotClicked(EquipmentGrid.Slot slot)
         {
@@ -497,25 +507,78 @@ namespace SS3D.UI.MainHud
                 return;
             }
 
-            ContainerType type = EquipmentSlotToContainerType(slot);
-            if (type == ContainerType.None || !_inventory.TryGetTypeContainer(type, 0, out AttachedContainer container))
+            if (!TryGetEquipmentContainer(slot, out AttachedContainer container))
             {
-                // Ears/feet may be left or right — try the alternate.
-                if (slot == EquipmentGrid.Slot.Ears
-                    && _inventory.TryGetTypeContainer(ContainerType.EarRight, 0, out container))
-                {
-                    _inventory.ClientInteractWithContainerSlot(container, Vector2Int.zero);
-                }
-                else if (slot == EquipmentGrid.Slot.Feet
-                         && _inventory.TryGetTypeContainer(ContainerType.ShoeRight, 0, out container))
-                {
-                    _inventory.ClientInteractWithContainerSlot(container, Vector2Int.zero);
-                }
-
                 return;
             }
 
+            Item item = container.Items.FirstOrDefault();
+            if (item != null && _view?.Equipment != null)
+            {
+                Rect bound = _view.Equipment.GetSlotWorldBound(slot);
+                if (TryOpenItemStorageNear(item, new Vector2(bound.xMin, bound.yMin)))
+                {
+                    return;
+                }
+            }
+
             _inventory.ClientInteractWithContainerSlot(container, Vector2Int.zero);
+        }
+
+        /// <summary>
+        /// Opens a panel for storage living on an item (bag pockets, backpack grid). Returns false when
+        /// the item has no <see cref="AttachedContainer"/> of its own — callers then equip/unequip.
+        /// </summary>
+        private bool TryOpenItemStorageNear(Item item, Vector2 anchor)
+        {
+            if (item == null
+                || _inventory?.containerViewer == null
+                || !TryGetStorageContainerOnItem(item, out AttachedContainer storage)
+                || !SubSystems.TryGet(out StoragePanelHost panelHost))
+            {
+                return false;
+            }
+
+            panelHost.RequestOpenNear(_inventory.containerViewer, storage, anchor);
+            return true;
+        }
+
+        /// <summary>
+        /// Storage capacity attached to an item prefab (backpack, belt pouch). Prefer
+        /// <see cref="AttachedContainer.DisplayAsSlotInUI"/>; never use <see cref="Item.Container"/> —
+        /// that is where the item is stored, not storage on the item.
+        /// </summary>
+        private static bool TryGetStorageContainerOnItem(Item item, out AttachedContainer storage)
+        {
+            storage = null;
+            if (item == null)
+            {
+                return false;
+            }
+
+            AttachedContainer fallback = null;
+            foreach (AttachedContainer candidate in item.GetComponentsInChildren<AttachedContainer>())
+            {
+                // Nested items' containers live under this item too — only take ones owned by this item.
+                if (candidate.GetComponentInParent<Item>() != item)
+                {
+                    continue;
+                }
+
+                if (candidate.DisplayAsSlotInUI)
+                {
+                    storage = candidate;
+                    return true;
+                }
+
+                if (fallback == null)
+                {
+                    fallback = candidate;
+                }
+            }
+
+            storage = fallback;
+            return storage != null;
         }
 
         private void HandleEquipmentDragStarted(EquipmentGrid.Slot slot, Vector2 position)
