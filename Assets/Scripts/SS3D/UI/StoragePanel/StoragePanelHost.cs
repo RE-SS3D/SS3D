@@ -5,6 +5,7 @@ using SS3D.Systems.Inputs;
 using SS3D.Systems.Inventory.Containers;
 using SS3D.Systems.Inventory.Items;
 using SS3D.Systems.Screens;
+using SS3D.UI.MachineInterface;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -24,6 +25,10 @@ namespace SS3D.UI.StoragePanel
     /// panel opens/closes automatically whenever the server-authoritative open/close RPCs fire —
     /// whether that request came from this host (gear strip / world container click) or any other
     /// source.
+    /// </para>
+    /// <para>
+    /// Observes <see cref="MachineInterfaceSubSystem"/> open/close like Main HUD and hides the panel
+    /// layer while a machine UI is up (does not close panels — they return when MI closes).
     /// </para>
     /// </summary>
     [RequireComponent(typeof(UIDocument))]
@@ -66,6 +71,10 @@ namespace SS3D.UI.StoragePanel
         private StorageSlot _highlightedSlot;
         private VisualElement _highlightedHudElement;
 
+        private MachineInterfaceSubSystem _machineUi;
+        private bool _subscribedToMachineUi;
+        private bool _machineUiOpen;
+
         protected override void OnAwake()
         {
             base.OnAwake();
@@ -85,8 +94,21 @@ namespace SS3D.UI.StoragePanel
             InputInterface.RegisterDocument(_document);
         }
 
+        protected override void OnStart()
+        {
+            base.OnStart();
+            EnsureMachineUiSubscription();
+        }
+
+        private void Update()
+        {
+            // MI may bootstrap after this host — keep trying until subscribed (same as MainHudSubSystem).
+            EnsureMachineUiSubscription();
+        }
+
         protected override void OnDestroyed()
         {
+            UnsubscribeMachineUi();
             InputInterface.UnregisterDocument(_document);
             base.OnDestroyed();
         }
@@ -155,6 +177,67 @@ namespace SS3D.UI.StoragePanel
             _root.style.right = 0;
             _root.style.bottom = 0;
             _root.pickingMode = PickingMode.Ignore;
+            ApplyMachineUiVisibility();
+        }
+
+        private void EnsureMachineUiSubscription()
+        {
+            if (_subscribedToMachineUi)
+            {
+                return;
+            }
+
+            if (!SubSystems.TryGet(out MachineInterfaceSubSystem machineUi))
+            {
+                return;
+            }
+
+            _machineUi = machineUi;
+            _machineUi.InterfaceOpened += HandleMachineUiOpened;
+            _machineUi.InterfaceClosed += HandleMachineUiClosed;
+            _subscribedToMachineUi = true;
+            _machineUiOpen = _machineUi.IsOpen;
+            ApplyMachineUiVisibility();
+        }
+
+        private void UnsubscribeMachineUi()
+        {
+            if (!_subscribedToMachineUi || _machineUi == null)
+            {
+                return;
+            }
+
+            _machineUi.InterfaceOpened -= HandleMachineUiOpened;
+            _machineUi.InterfaceClosed -= HandleMachineUiClosed;
+            _machineUi = null;
+            _subscribedToMachineUi = false;
+        }
+
+        private void HandleMachineUiOpened()
+        {
+            _machineUiOpen = true;
+            CleanupDrag();
+            ApplyMachineUiVisibility();
+        }
+
+        private void HandleMachineUiClosed()
+        {
+            _machineUiOpen = false;
+            ApplyMachineUiVisibility();
+        }
+
+        /// <summary>
+        /// Hide open storage panels while machine UI is up (same suppress as Main HUD). Panels stay
+        /// bound and return when MI closes — do not tear them down here.
+        /// </summary>
+        private void ApplyMachineUiVisibility()
+        {
+            if (_root == null)
+            {
+                return;
+            }
+
+            _root.style.display = _machineUiOpen ? DisplayStyle.None : DisplayStyle.Flex;
         }
 
         private ContainerViewer _boundViewer;
@@ -168,6 +251,8 @@ namespace SS3D.UI.StoragePanel
         /// </summary>
         public void BindContainerViewer(ContainerViewer viewer)
         {
+            EnsureMachineUiSubscription();
+
             if (_boundViewer == viewer)
             {
                 return;

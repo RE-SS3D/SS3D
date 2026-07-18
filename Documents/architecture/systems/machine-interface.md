@@ -48,7 +48,7 @@ Dev harness: `MachineInterfaceDevHarness.cs`; editor previews via `SS3D → Mach
 - **Editor asmdef:** `MachineUiAssetCatalogBuilder` needs `SS3D.Core` referenced from `SS3D.Editor` (so `MachineInterfaceHost` / `View` resolve for scene cleanup). Without it, `FindObjectsByType<MachineInterfaceHost>` fails to compile.
 - **No UITK backdrop-filter:** USS cannot blur the 3D world behind a panel. Diegetic focus uses a dark overlay scrim plus Dual Kawase fullscreen blur (`UiBackdropBlurRendererFeature` via [screen-effects](screen-effects.md) `SetUiBackdropBlur`); the Screen Space Overlay chassis stays sharp on top. URP Gaussian DoF is too weak for this — do not reintroduce DoF for UI focus.
 - **Close must await dismiss tween:** disabling `UIDocument` mid-DOTween kills the tree. `MachineInterfaceHost.Close(onComplete)` teardowns only after the sequence; SubSystem keeps input blocked / `IsOpen` until then. Starting the close tween must not clear `_pendingCloseComplete` — that skipped `FinishClose` and left `InputContext.MachineUI` stuck (no movement).
-- **Do not hide Main HUD from MI:** chrome visibility is owned by [inventory](inventory.md) `MainHudSubSystem` observing `InterfaceOpened` / `InterfaceClosed` (asmdef is MainHud → MI; reverse would cycle).
+- **Do not hide Main HUD / storage from MI:** chrome visibility is owned by [inventory](inventory.md) `MainHudSubSystem` and `StoragePanelHost` observing `InterfaceOpened` / `InterfaceClosed` (asmdef is MainHud/StoragePanel → MI; reverse would cycle).
 
 ## Depends on / Used by
 
