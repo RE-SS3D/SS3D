@@ -1,7 +1,7 @@
 > Code paths: Assets/Scripts/SS3D/Systems/Inventory/, Assets/Scripts/SS3D/UI/MainHud/, Assets/Scripts/SS3D/UI/StoragePanel/, Assets/Scripts/SS3D/Systems/Stamina/
 > Entry points: ItemSubSystem, MainHudSubSystem, StoragePanelHost, StaminaController
 > Status: partial
-> Verified: 0bdc85db0 — 2026-07-18
+> Verified: 5aa81e431 — 2026-07-18
 
 # Inventory
 
@@ -13,7 +13,7 @@ Items, containers, hands, identification cards (`IDCard`, `PDA`), on-demand stor
 
 **Carried weight:** `HumanInventory.CarriedWeight` sums every inventory container's recursive `AttachedContainer.Weight` (hands included). Fires `OnCarriedWeightChanged`. Feeds [stamina](stamina.md) encumbrance (Phase 7a).
 
-**Storage panel UI:** `StoragePanelHost` manages N simultaneous `StoragePanelView` panels. Opened via gear strip, world `ViewContainerInteraction`, pocket hotkey (`ToggleInternalClothing` → `ContainerViewer.ShowContainerUI`), or nested click. Slot drag is UITK pointer-capture; HUD equipment/gear/hand slots register as `HudDropTarget` peers for panel↔HUD transfers. Drop highlight is a static class toggle (no UITK `@keyframes`).
+**Storage panel UI:** `StoragePanelHost` manages N simultaneous `StoragePanelView` panels. Opened via gear strip, world `ViewContainerInteraction`, pocket hotkey (`ToggleInternalClothing` → `ContainerViewer.ShowContainerUI`), or nested click. Panel width follows container columns (1×1 / 2×2 / 3×3…); header drag uses UITK pointer capture (`MachineWindow` pattern) with the host registered on `InputInterface`. Slot drag is UITK pointer-capture; HUD equipment/gear/hand slots register as `HudDropTarget` peers for panel↔HUD transfers. Drop highlight is a static class toggle (no UITK `@keyframes`).
 
 **Main HUD:** equipment doll click = `ClientInteractWithContainerSlot` (equip/unequip vs active hand); gear strip click opens that container's panel; hands select active hand. Cross-surface drag goes through `StoragePanelHost.BeginHudDrag` / `EndHudDrag`. Visibility is owned by `MainHudSubSystem.ApplyVisibility`: local spawned body + in-game round, and **suppressed while** [machine-interface](machine-interface.md) is open (`InterfaceOpened` / `InterfaceClosed`). Show/hide uses the same DOTween bring-up as diegetic MI. Styles/icons/`PanelSettings` load from a committed `MainHudAssetCatalog` via `Resources.Load` (rebuild: **SS3D → Main HUD → Rebuild Asset Catalog**).
 

@@ -5,7 +5,8 @@
 .storage-panel {
     position: absolute;
     flex-direction: column;
-    width: 320px;
+    /* Width set in StoragePanelView from container column count. */
+    min-width: 160px;
     background-color: var(--ss3d-surface-panel);
     border-radius: var(--ss3d-radius-md);
 }
@@ -26,6 +27,10 @@
     /* Match outer radius — child paints would otherwise square the top corners. */
     border-top-left-radius: var(--ss3d-radius-md);
     border-top-right-radius: var(--ss3d-radius-md);
+}
+
+.storage-panel__header--dragging {
+    cursor: move-arrow;
 }
 
 .storage-panel__title {
@@ -109,20 +114,29 @@
 }
 
 .storage-panel__grid {
+    flex-direction: column;
+}
+
+.storage-panel__grid-row {
     flex-direction: row;
-    flex-wrap: wrap;
+}
+
+.storage-panel__grid-row--spaced {
+    margin-bottom: var(--ss3d-space-2);
 }
 
 /* Outer StorageSlot is an InventorySlot column — chrome lives on the well so the
    empty label doesn't shove the icon up inside a fixed-height box. */
 .storage-slot {
     width: 72px;
-    margin-right: var(--ss3d-space-2);
-    margin-bottom: var(--ss3d-space-2);
     flex-direction: column;
     align-items: stretch;
     background-color: rgba(0, 0, 0, 0);
     border-width: 0;
+}
+
+.storage-slot--gap-right {
+    margin-right: var(--ss3d-space-2);
 }
 
 .storage-slot .inventory-slot__well {

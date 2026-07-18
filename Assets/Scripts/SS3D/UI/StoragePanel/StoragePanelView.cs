@@ -12,9 +12,19 @@ namespace SS3D.UI.StoragePanel
     /// per Documents/design/inventory-storage.md §6 and the imported "Backpack Storage Panel" /
     /// "Looting Scene" Claude Design mockups. StoragePanelHost owns one of these per currently-open
     /// container; several can be visible side by side.
+    /// <para>
+    /// Width follows the container's column count (1×1, 2×2, 3×3, …). The header is draggable via
+    /// UITK pointer capture (same pattern as <c>MachineWindow</c>); the host's
+    /// <c>InputInterface.RegisterDocument</c> keeps those pointer hits from leaking into world clicks.
+    /// </para>
     /// </summary>
     public sealed class StoragePanelView : VisualElement, IContainerPanel
     {
+        public const float SlotSizePx = 72f;
+        public const float SlotGapPx = 8f;
+        public const float BodyPaddingPx = 16f;
+        public const float MinPanelWidthPx = 160f;
+
         /// <summary>Fired when the player clicks this panel's close button (needs a server close request).</summary>
         public event Action CloseRequested;
 
@@ -34,12 +44,18 @@ namespace SS3D.UI.StoragePanel
         /// <summary>Fired when a slot bound to a nested container item is clicked (Documents/design/inventory-storage.md §7).</summary>
         public event Action<StoragePanelView, StorageSlot> SlotNestedOpenRequested;
 
+        private readonly VisualElement _header;
+        private readonly VisualElement _closeButton;
         private readonly Label _titleLabel;
         private readonly Label _slotCountLabel;
         private readonly Label _weightLabel;
         private readonly VisualElement _weightFill;
         private readonly VisualElement _slotGrid;
         private readonly List<StorageSlot> _slots = new();
+
+        private bool _isDragging;
+        private Vector2 _dragStartPointer;
+        private Vector2 _dragStartPosition;
 
         public AttachedContainer Container { get; private set; }
 
@@ -50,8 +66,8 @@ namespace SS3D.UI.StoragePanel
             VisualElement clip = new();
             clip.AddToClassList("storage-panel__clip");
 
-            VisualElement header = new();
-            header.AddToClassList("storage-panel__header");
+            _header = new VisualElement();
+            _header.AddToClassList("storage-panel__header");
 
             _titleLabel = new Label();
             _titleLabel.AddToClassList("storage-panel__title");
@@ -59,13 +75,13 @@ namespace SS3D.UI.StoragePanel
             _slotCountLabel = new Label();
             _slotCountLabel.AddToClassList("storage-panel__slot-count");
 
-            VisualElement closeButton = new();
-            closeButton.AddToClassList("storage-panel__close");
-            closeButton.RegisterCallback<ClickEvent>(_ => CloseRequested?.Invoke());
+            _closeButton = new VisualElement();
+            _closeButton.AddToClassList("storage-panel__close");
+            _closeButton.RegisterCallback<ClickEvent>(_ => CloseRequested?.Invoke());
 
-            header.Add(_titleLabel);
-            header.Add(_slotCountLabel);
-            header.Add(closeButton);
+            _header.Add(_titleLabel);
+            _header.Add(_slotCountLabel);
+            _header.Add(_closeButton);
 
             VisualElement body = new();
             body.AddToClassList("storage-panel__body");
@@ -102,9 +118,11 @@ namespace SS3D.UI.StoragePanel
             body.Add(weightTrack);
             body.Add(_slotGrid);
 
-            clip.Add(header);
+            clip.Add(_header);
             clip.Add(body);
             Add(clip);
+
+            RegisterHeaderDragHandlers();
         }
 
         public void Bind(AttachedContainer container)
@@ -112,10 +130,12 @@ namespace SS3D.UI.StoragePanel
             Container = container;
             _titleLabel.text = container.ContainerName;
 
-            int slotCount = Mathf.Max(0, container.Size.x * container.Size.y);
+            Vector2Int size = new(Mathf.Max(0, container.Size.x), Mathf.Max(0, container.Size.y));
+            int slotCount = size.x * size.y;
             _slotCountLabel.text = $"{slotCount} SLOTS";
 
-            RebuildGrid(slotCount);
+            RebuildGrid(size);
+            ApplyPanelWidth(Mathf.Max(1, size.x));
             RefreshContents();
 
             container.OnContentsChanged += HandleContentsChanged;
@@ -143,26 +163,164 @@ namespace SS3D.UI.StoragePanel
             return null;
         }
 
+        private void RegisterHeaderDragHandlers()
+        {
+            _header.RegisterCallback<PointerDownEvent>(OnHeaderPointerDown);
+            _header.RegisterCallback<PointerMoveEvent>(OnHeaderPointerMove);
+            _header.RegisterCallback<PointerUpEvent>(OnHeaderPointerUp);
+            _header.RegisterCallback<PointerCaptureOutEvent>(_ => EndHeaderDrag());
+        }
+
+        private void OnHeaderPointerDown(PointerDownEvent evt)
+        {
+            if (IsOverCloseButton(evt.target))
+            {
+                return;
+            }
+
+            ConvertToPixelPosition();
+            BringToFront();
+            _isDragging = true;
+            _dragStartPointer = evt.position;
+            _dragStartPosition = new Vector2(resolvedStyle.left, resolvedStyle.top);
+            _header.CapturePointer(evt.pointerId);
+            _header.AddToClassList("storage-panel__header--dragging");
+            evt.StopPropagation();
+        }
+
+        private void OnHeaderPointerMove(PointerMoveEvent evt)
+        {
+            if (!_isDragging)
+            {
+                return;
+            }
+
+            Vector2 delta = (Vector2)evt.position - _dragStartPointer;
+            Vector2 newPosition = _dragStartPosition + delta;
+            ClampToParent(ref newPosition);
+            style.left = newPosition.x;
+            style.top = newPosition.y;
+            evt.StopPropagation();
+        }
+
+        private void OnHeaderPointerUp(PointerUpEvent evt)
+        {
+            EndHeaderDrag();
+            evt.StopPropagation();
+        }
+
+        private void EndHeaderDrag()
+        {
+            if (!_isDragging)
+            {
+                return;
+            }
+
+            _isDragging = false;
+            _header.RemoveFromClassList("storage-panel__header--dragging");
+            if (_header.HasPointerCapture(PointerId.mousePointerId))
+            {
+                _header.ReleasePointer(PointerId.mousePointerId);
+            }
+        }
+
+        private bool IsOverCloseButton(IEventHandler target)
+        {
+            if (target is not VisualElement element)
+            {
+                return false;
+            }
+
+            return element == _closeButton || _closeButton.Contains(element);
+        }
+
+        private void ConvertToPixelPosition()
+        {
+            VisualElement parentElement = parent;
+            if (parentElement == null)
+            {
+                return;
+            }
+
+            Rect parentBounds = parentElement.worldBound;
+            Rect selfBounds = worldBound;
+
+            style.translate = new Translate(0, 0);
+            style.left = selfBounds.x - parentBounds.x;
+            style.top = selfBounds.y - parentBounds.y;
+        }
+
+        private void ClampToParent(ref Vector2 position)
+        {
+            VisualElement parentElement = parent;
+            if (parentElement == null)
+            {
+                return;
+            }
+
+            float panelWidth = resolvedStyle.width;
+            float panelHeight = resolvedStyle.height;
+            float parentWidth = parentElement.resolvedStyle.width;
+            float parentHeight = parentElement.resolvedStyle.height;
+
+            if (float.IsNaN(panelWidth) || panelWidth <= 0f)
+            {
+                panelWidth = MinPanelWidthPx;
+            }
+
+            if (float.IsNaN(panelHeight) || panelHeight <= 0f)
+            {
+                panelHeight = 200f;
+            }
+
+            position.x = Mathf.Clamp(position.x, 0f, Mathf.Max(0f, parentWidth - panelWidth));
+            position.y = Mathf.Clamp(position.y, 0f, Mathf.Max(0f, parentHeight - panelHeight));
+        }
+
         private void HandleContentsChanged(AttachedContainer container, Item oldItem, Item newItem, ContainerChangeType type)
         {
             RefreshContents();
         }
 
-        private void RebuildGrid(int slotCount)
+        private void RebuildGrid(Vector2Int size)
         {
             _slotGrid.Clear();
             _slots.Clear();
 
-            for (int i = 0; i < slotCount; i++)
+            for (int y = 0; y < size.y; y++)
             {
-                StorageSlot slot = new();
-                slot.DragStarted += (s, pos) => SlotDragStarted?.Invoke(this, s, pos);
-                slot.DragMoved += (_, pos) => SlotDragMoved?.Invoke(pos);
-                slot.DragEnded += (s, pos) => SlotDragEnded?.Invoke(this, s, pos);
-                slot.NestedOpenRequested += s => SlotNestedOpenRequested?.Invoke(this, s);
-                _slots.Add(slot);
-                _slotGrid.Add(slot);
+                VisualElement row = new();
+                row.AddToClassList("storage-panel__grid-row");
+                if (y < size.y - 1)
+                {
+                    row.AddToClassList("storage-panel__grid-row--spaced");
+                }
+
+                for (int x = 0; x < size.x; x++)
+                {
+                    StorageSlot slot = new();
+                    if (x < size.x - 1)
+                    {
+                        slot.AddToClassList("storage-slot--gap-right");
+                    }
+
+                    slot.DragStarted += (s, pos) => SlotDragStarted?.Invoke(this, s, pos);
+                    slot.DragMoved += (_, pos) => SlotDragMoved?.Invoke(pos);
+                    slot.DragEnded += (s, pos) => SlotDragEnded?.Invoke(this, s, pos);
+                    slot.NestedOpenRequested += s => SlotNestedOpenRequested?.Invoke(this, s);
+                    _slots.Add(slot);
+                    row.Add(slot);
+                }
+
+                _slotGrid.Add(row);
             }
+        }
+
+        private void ApplyPanelWidth(int columns)
+        {
+            float gridWidth = (columns * SlotSizePx) + (Mathf.Max(0, columns - 1) * SlotGapPx);
+            float panelWidth = Mathf.Max(MinPanelWidthPx, gridWidth + (BodyPaddingPx * 2f));
+            style.width = panelWidth;
         }
 
         private void RefreshContents()
@@ -221,6 +379,7 @@ namespace SS3D.UI.StoragePanel
         /// </summary>
         void IContainerPanel.Close()
         {
+            EndHeaderDrag();
             Unbind();
             RemoveFromHierarchy();
         }
