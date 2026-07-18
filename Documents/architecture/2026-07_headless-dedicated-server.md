@@ -20,8 +20,9 @@ headless on Linux, and validated by actually running a client against it end to 
   the server menu item so both builds are one click each (toggling "Server Build" by hand in
   Build Settings is easy to forget and silently produces a client build that never compiles
   with `UNITY_SERVER`).
-- `.github/workflows/main.yml` `build-server` job — builds, then boots the binary headlessly
-  as a smoke test and greps its log for a successful-startup line.
+- `.github/workflows/develop-release.yml` / `multiplayer-smoke-test.yml` — build the dedicated
+  server (and client), then exercise it via the multiplayer harness rather than a
+  boot-and-grep-only job.
 - `Builds/start_ss3d_server.sh`, `Builds/start_ss3d_client.sh` — local launch scripts.
 - `Dockerfile`, `docker-compose.yml` — containerized deployment.
 
@@ -114,17 +115,15 @@ on outcomes automatically. Two directions worth evaluating, not mutually exclusi
    state and absence of logged exceptions (`LogAssert`/`Application.logMessageReceived`). Fast,
    runs in CI, but still single-process so it won't catch everything a real second process would
    (it's a step up from host mode, not equivalent to true separate processes).
-2. **Built-binary smoke test, extended**: the CI `build-server` job already boots the built
-   server and greps for a success line (`.github/workflows/main.yml`). Extend it to also launch
-   a built client binary (or a headless bot using the same `NetworkType.Client` path) against
-   it, script a few interactions via CLI/console commands, and fail the job on any `[ERR]`/
-   uncaught-exception line in either log — turning this session's manual "build both, play,
-   read logs" loop into an automated CI gate.
+2. **Built-binary smoke test, extended**: `multiplayer-smoke-test.yml` / `develop-release.yml`
+   (`run_smoke`) already build server+client and run the multi-process harness. Extend that
+   path further if you need scripted interactions beyond connect/round/late-join — fail the
+   job on any `[ERR]` / uncaught-exception line in either log.
 
-Recommendation: start with (2) since the build/smoke-test scaffolding already exists from this
-effort — it's the closer win. (1) is more valuable long-term (faster iteration, no real network
-needed) but is a bigger lift (scripted interaction driving, deterministic assertions) and
-deserves its own plan.
+Recommendation: prefer extending the existing harness (`Testing/multiplayer/`) over a
+boot-and-grep-only job. An in-process PlayMode dual-NetworkManager path (1) is more valuable
+long-term (faster iteration, no real network needed) but is a bigger lift and deserves its
+own plan.
 
 ## Deferred / out of scope
 

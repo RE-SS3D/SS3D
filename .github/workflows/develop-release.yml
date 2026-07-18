@@ -1,12 +1,21 @@
-# Manual EditMode → Linux build+smoke → Windows client → GitHub prerelease.
+# Manual Linux (+ optional EditMode / smoke) → Windows client → GitHub prerelease.
+# Default dispatch is build-only: run_editmode and run_smoke are opt-in.
 # Not triggered on every develop merge (license cost + release spam at high PR volume).
 # See Documents/architecture/2026-07_ci-develop-release-pipeline.md.
 name: Develop Release
 on:
   workflow_dispatch:
     inputs:
+      run_editmode:
+        description: Run EditMode tests before Linux builds (default off — use editmodetestrunner.yml for cheap feedback)
+        type: boolean
+        default: false
+      run_smoke:
+        description: Run multiplayer smoke after Linux builds (default off — use multiplayer-smoke-test.yml when needed)
+        type: boolean
+        default: false
       skip_release:
-        description: Skip Windows build and GitHub prerelease (EditMode + Linux smoke only)
+        description: Skip Windows build and GitHub prerelease (Linux builds only; optional EditMode/smoke still apply)
         type: boolean
         default: false
       tag_suffix:
@@ -17,6 +26,7 @@ on:
 jobs:
   editmode:
     name: EditMode tests
+    if: ${{ inputs.run_editmode == true || inputs.run_editmode == 'true' }}
     runs-on: ubuntu-latest
     environment:
       name: unity_tests
@@ -65,9 +75,11 @@ jobs:
           name: develop-release-editmode-results
           path: artifacts
 
-  build-and-smoke:
-    name: Build Linux + multiplayer smoke
+  build-linux:
+    name: Build Linux client + server
     needs: editmode
+    # EditMode skipped (default) or green → proceed; EditMode failure blocks builds.
+    if: ${{ always() && (needs.editmode.result == 'success' || needs.editmode.result == 'skipped') }}
     runs-on: ubuntu-latest
     environment:
       name: unity_tests
@@ -75,8 +87,9 @@ jobs:
       FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
       SERVER_BUILD_DIR: ${{ github.workspace }}/build/GameServer/StandaloneLinux64
       CLIENT_BUILD_DIR: ${{ github.workspace }}/build/Game/StandaloneLinux64
-      SERVER_BIN_NAME: SS3D-Server.x86_64
-      CLIENT_BIN_NAME: SS3D-Client.x86_64
+      # Unity 6 Linux players no longer append .x86_64; game-ci -customBuildPath uses buildName as-is.
+      SERVER_BIN_NAME: SS3D-Server
+      CLIENT_BIN_NAME: SS3D-Client
     steps:
       - name: Checkout project code
         uses: actions/checkout@v4
@@ -123,6 +136,7 @@ jobs:
           versioning: None
           unityVersion: 6000.3.16f1
       - name: Run multiplayer smoke tests
+        if: ${{ inputs.run_smoke == true || inputs.run_smoke == 'true' }}
         env:
           SS3D_SERVER_BUILD_DIR: ${{ env.SERVER_BUILD_DIR }}
           SS3D_CLIENT_BUILD_DIR: ${{ env.CLIENT_BUILD_DIR }}
@@ -135,7 +149,7 @@ jobs:
           ./Testing/multiplayer/run_smoketest.sh late-join 2
       - name: Upload harness logs
         uses: actions/upload-artifact@v4
-        if: always()
+        if: ${{ always() && (inputs.run_smoke == true || inputs.run_smoke == 'true') }}
         with:
           name: develop-release-smoke-logs
           path: Testing/multiplayer/.runs
@@ -151,7 +165,7 @@ jobs:
 
   build-windows:
     name: Build Windows client
-    needs: build-and-smoke
+    needs: build-linux
     if: ${{ inputs.skip_release != true && inputs.skip_release != 'true' }}
     runs-on: ubuntu-latest
     environment:
@@ -199,7 +213,7 @@ jobs:
 
   release:
     name: GitHub prerelease
-    needs: [build-and-smoke, build-windows]
+    needs: [build-linux, build-windows]
     if: ${{ inputs.skip_release != true && inputs.skip_release != 'true' }}
     runs-on: ubuntu-latest
     permissions:
@@ -248,7 +262,7 @@ jobs:
           cp Builds/README.txt "${WIN_ROOT}/"
           (cd staging && zip -qq -r "../dist/SS3D-Windows-${TAG}.zip" "SS3D-Windows-${TAG}")
 
-          # --- Secondary: Linux smoke-proven trees ---
+          # --- Secondary: Linux player trees ---
           test -d build-linux/GameServer/StandaloneLinux64
           test -d build-linux/Game/StandaloneLinux64
           zip -qq -r "dist/SS3D-Linux-Server-${TAG}.zip" build-linux/GameServer
@@ -265,14 +279,14 @@ jobs:
           body: |
             Fork-internal prerelease from `${{ github.sha }}` (short `${{ steps.tag.outputs.short_sha }}`).
 
-            Not an official RE:SS3D build. This commit passed EditMode tests and Linux multiplayer
-            smoke (`basic-round`, `late-join 2`). The Windows zip is built from the same commit
-            (not smoke-tested on Windows).
+            Not an official RE:SS3D build. Linux + Windows players were built from this commit.
+            EditMode and Linux multiplayer smoke run only when opted in on the workflow dispatch
+            (see the Actions run for this tag). Windows is not smoke-tested.
 
             **Player download (Windows):** `SS3D-Windows-${{ steps.tag.outputs.tag_name }}.zip`
             — unzip, run `Start_SS3D_Host.bat`, then a `Start_SS3D_Client_*.bat`.
 
-            Secondary (ops / Linux smoke binaries):
+            Secondary (ops / Linux binaries):
             - `SS3D-Linux-Server-${{ steps.tag.outputs.tag_name }}.zip`
             - `SS3D-Linux-Client-${{ steps.tag.outputs.tag_name }}.zip`
           files: |

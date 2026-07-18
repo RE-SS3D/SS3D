@@ -23,8 +23,9 @@ jobs:
       FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
       SERVER_BUILD_DIR: ${{ github.workspace }}/build/GameServer/StandaloneLinux64
       CLIENT_BUILD_DIR: ${{ github.workspace }}/build/Game/StandaloneLinux64
-      SERVER_BIN_NAME: SS3D-Server.x86_64
-      CLIENT_BIN_NAME: SS3D-Client.x86_64
+      # Unity 6 Linux players no longer append .x86_64; game-ci -customBuildPath uses buildName as-is.
+      SERVER_BIN_NAME: SS3D-Server
+      CLIENT_BIN_NAME: SS3D-Client
     steps:
       - name: Checkout project code
         uses: actions/checkout@v4

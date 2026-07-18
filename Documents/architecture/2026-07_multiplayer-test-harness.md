@@ -111,8 +111,7 @@ Manual / partial:
   label `test:multiplayer`); no longer runs on every `develop` push. Same build scripts and
   harness as the release workflow’s smoke stage.
 - `.github/workflows/editmodetestrunner.yml` — cheap EditMode on PR/`develop` push (unchanged).
-- `.github/workflows/main.yml` — deprecated for releases; optional Windows/legacy builder with
-  boot-and-grep server check. Prefer `develop-release.yml`.
+- `.github/workflows/main.yml` — **removed**; Windows cuts use `develop-release.yml`.
 
 ### Removed (superseded)
 - `Assets/Scripts/Tests/PlayMode/Framework/Helpers/LoadFileHelpers.cs` — `Thread.Sleep`-based

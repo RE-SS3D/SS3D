@@ -51,7 +51,7 @@ Feature-level gaps *within* an already-designed system stay in that design doc's
 | shuttles | [shuttles.md](../design/shuttles.md) — active | none yet | none yet |
 | ai-cyborgs | [ai-cyborgs.md](../design/ai-cyborgs.md) — active | none yet | none yet |
 | persistence-save | none yet | none yet | [persistence](systems/persistence.md) — partial (station templates, server meta only, not a design spec) |
-| networking | none yet | [headless-dedicated-server](2026-07_headless-dedicated-server.md) — shipped (partial: selection outline and drop interaction against a real client still broken, not root-caused), [multiplayer-test-harness](2026-07_multiplayer-test-harness.md) — shipped (partial: mouse/screen-space interaction and pocket/container regressions not covered), [ci-develop-release-pipeline](2026-07_ci-develop-release-pipeline.md) — shipped (manual EditMode → Linux smoke → Windows+bats prerelease) | [networking-session](systems/networking-session.md) — partial |
+| networking | none yet | [headless-dedicated-server](2026-07_headless-dedicated-server.md) — shipped (partial: selection outline and drop interaction against a real client still broken, not root-caused), [multiplayer-test-harness](2026-07_multiplayer-test-harness.md) — shipped (partial: mouse/screen-space interaction and pocket/container regressions not covered), [ci-develop-release-pipeline](2026-07_ci-develop-release-pipeline.md) — shipped (manual Linux→Windows+bats prerelease; EditMode/smoke opt-in) | [networking-session](systems/networking-session.md) — partial |
 | audio | none yet | none yet | none yet |
 | onboarding-tutorial | none yet | none yet | none yet |
 | antagonist-content | none yet | none yet | none yet |
@@ -142,7 +142,8 @@ Implementation history — not navigation maps. Update `Status` in the header wh
 | [2026-07_body-presentation-authority](2026-07_body-presentation-authority.md) | planned |
 | [2026-07_inventory-storage-redesign](2026-07_inventory-storage-redesign.md) | in-progress (clean-slate + stamina 7a code shipped; Play Mode verification pending) |
 | [2026-07_multiplayer-test-harness](2026-07_multiplayer-test-harness.md) | shipped (partial: mouse/screen-space interaction and pocket/container round-trip regressions not covered; not yet verified against a real Unity build) |
-| [2026-07_ci-develop-release-pipeline](2026-07_ci-develop-release-pipeline.md) | shipped (manual workflow_dispatch; Windows+bats primary after Linux EditMode+smoke; Linux zips secondary) |
+| [2026-07_ci-develop-release-pipeline](2026-07_ci-develop-release-pipeline.md) | shipped (manual workflow_dispatch; default build-only Linux→Windows+bats; EditMode/smoke opt-in; Linux zips secondary) |
+
 ## Implementation plans
 
 Temporary working plans in [Documents/plans/](../plans/). Update todos when work ships.
