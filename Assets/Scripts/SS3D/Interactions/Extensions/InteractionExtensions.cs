@@ -29,14 +29,6 @@ namespace SS3D.Interactions.Extensions
 
         public static bool RangeCheck(InteractionEvent interactionEvent)
         {
-            Vector3 point = interactionEvent.Point;
-
-            // Ignore range when there is no point
-            if (point.sqrMagnitude < 0.001)
-            {
-                return true;
-            }
-
             IInteractionRangeLimit interactionRangeLimit = interactionEvent.Source.GetComponentInTree<IInteractionRangeLimit>(out IGameObjectProvider provider);
             if (interactionRangeLimit == null)
             {
@@ -44,8 +36,10 @@ namespace SS3D.Interactions.Extensions
                 return true;
             }
 
-            //Block interaction when point is on top of wall or above.
-            if (IsWallTop(point, 0.1f))
+            Vector3 point = interactionEvent.Point;
+
+            // Block interaction when point is on top of wall or above.
+            if (HasResolvedPoint(point) && IsWallTop(point, 0.1f))
             {
                 return false;
             }
@@ -63,27 +57,62 @@ namespace SS3D.Interactions.Extensions
             }
 
             RangeLimit range = interactionEvent.Source.GetRange();
-            if (range.IsInRange(sourcePosition, point)) 
+            if (HasResolvedPoint(point) && range.IsInRange(sourcePosition, point))
             {
                 return true;
             }
 
-            Collider targetCollider = interactionEvent.Target.GetComponent<Collider>();
+            // Missing or out-of-range points still range against the target itself.
+            // Never treat an unresolved (default zero) point as unlimited range — wall mounts
+            // without colliders otherwise pass RangeCheck from anywhere.
+            return IsTargetWithinRange(sourcePosition, range, interactionEvent.Target);
+        }
+
+        /// <summary>
+        /// Default <see cref="InteractionEvent"/> point is Vector3.zero when unset.
+        /// </summary>
+        private static bool HasResolvedPoint(Vector3 point)
+        {
+            return point.sqrMagnitude >= 0.001f;
+        }
+
+        private static bool IsTargetWithinRange(Vector3 sourcePosition, RangeLimit range, IInteractionTarget target)
+        {
+            if (target == null)
+            {
+                return false;
+            }
+
+            Collider targetCollider = target.GetComponent<Collider>();
+            if (targetCollider == null)
+            {
+                GameObject targetObject = target.GetGameObject();
+                if (targetObject != null)
+                {
+                    targetCollider = targetObject.GetComponentInChildren<Collider>();
+                }
+            }
+
             if (targetCollider != null)
             {
                 Vector3 closestPointOnCollider = targetCollider.ClosestPointOnBounds(sourcePosition);
                 return range.IsInRange(sourcePosition, closestPointOnCollider);
             }
 
-            Rigidbody targetRigidBody = interactionEvent.Target.GetComponent<Rigidbody>();
-            if (targetRigidBody == null)
+            Rigidbody targetRigidBody = target.GetComponent<Rigidbody>();
+            if (targetRigidBody != null)
             {
-                return false;
+                Vector3 closestPointOnRigidBody = targetRigidBody.ClosestPointOnBounds(sourcePosition);
+                return range.IsInRange(sourcePosition, closestPointOnRigidBody);
             }
 
-            Vector3 closestPointOnRigidBody = targetRigidBody.ClosestPointOnBounds(sourcePosition);
-            return range.IsInRange(sourcePosition, closestPointOnRigidBody);
+            GameObject gameObject = target.GetGameObject();
+            if (gameObject != null)
+            {
+                return range.IsInRange(sourcePosition, gameObject.transform.position);
+            }
 
+            return false;
         }
 
         private static bool IsWallTop(Vector3 position, float deadzone = 0)

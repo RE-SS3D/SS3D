@@ -1,7 +1,7 @@
 > Code paths: Assets/Scripts/SS3D/Interactions/
 > Entry points: IInteraction, IInteractionSource, IInteractionTarget, InteractionPipeline, InteractionIdentifier
 > Status: shipped
-> Verified: 7f897ac0e — 2026-07-18
+> Verified: add2ad2c9 — 2026-07-18
 
 # Interactions (framework)
 
@@ -40,6 +40,7 @@ RPCs identify interactions with `InteractionIdentifier` (`genericName` + `target
 ## Pitfalls
 
 - **Source-only interactions pollute hover outlines:** entries with `Target == null` (e.g. Drop) are valid for radial/click but are not "available on this object." Use `FilterForOutline` before outline state.
+- **Missing interaction point used to skip range:** `RangeCheck` treated default `Point == Vector3.zero` as unlimited range. Wall mounts without colliders (light switch, air alarm) never resolve a point, so toggles / Open interface worked across the map. Unresolved points now range against the target transform/collider instead; wall-mount prefabs should still ship a `BoxCollider` for selection rays.
 
 ## Depends on / Used by
 
