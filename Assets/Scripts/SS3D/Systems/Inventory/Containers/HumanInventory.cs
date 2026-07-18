@@ -359,8 +359,9 @@ namespace SS3D.Systems.Inventory.Containers
         }
 
         /// <summary>
-        /// Mirrors DropInteraction.CanInteract for UI drag-to-world placement:
-        /// container modify permission, hand range, upward surface, and ViewPoint line-of-sight.
+        /// Placement checks for UI drag-to-world: container permission, hand range, and a mostly-upward
+        /// surface. Line-of-sight uses an unmasked ray from the entity ViewPoint (tile floors are often
+        /// not on the Default layer, so DropInteraction's Default-only mask is too strict here).
         /// </summary>
         [Server]
         private bool CanPlaceInventoryItemInWorld(Item item, Vector3 point, Vector3 surfaceNormal)
@@ -378,7 +379,8 @@ namespace SS3D.Systems.Inventory.Containers
                 return false;
             }
 
-            const float maxSurfaceAngle = 10f;
+            // Allow slightly steeper floors than DropInteraction's 10° — tile meshes are rarely flat.
+            const float maxSurfaceAngle = 35f;
             if (Vector3.Angle(surfaceNormal, Vector3.up) > maxSurfaceAngle)
             {
                 return false;
@@ -396,14 +398,26 @@ namespace SS3D.Systems.Inventory.Containers
             }
 
             Vector3 viewPosition = entity.ViewPoint.transform.position;
-            Vector3 direction = (point - viewPosition).normalized;
-            LayerMask defaultMask = LayerMask.GetMask("Default");
-            if (!Physics.Raycast(viewPosition, direction, out RaycastHit hit, Mathf.Infinity, defaultMask))
+            Vector3 toPoint = point - viewPosition;
+            float distance = toPoint.magnitude;
+            if (distance < 0.01f)
             {
                 return false;
             }
 
-            return Vector3.Distance(point, hit.point) <= 0.1f;
+            Vector3 direction = toPoint / distance;
+            if (!Physics.Raycast(
+                    viewPosition,
+                    direction,
+                    out RaycastHit hit,
+                    distance + 0.25f,
+                    Physics.DefaultRaycastLayers,
+                    QueryTriggerInteraction.Ignore))
+            {
+                return false;
+            }
+
+            return Vector3.Distance(point, hit.point) <= 0.35f;
         }
 
 

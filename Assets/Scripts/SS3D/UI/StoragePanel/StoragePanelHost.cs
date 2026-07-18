@@ -4,6 +4,7 @@ using SS3D.Core.Behaviours;
 using SS3D.Systems.Inputs;
 using SS3D.Systems.Inventory.Containers;
 using SS3D.Systems.Inventory.Items;
+using SS3D.Systems.Screens;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -479,8 +480,10 @@ namespace SS3D.UI.StoragePanel
                 return;
             }
 
-            // Released over UI chrome (panel header, empty HUD margin) — cancel, do not world-drop.
-            if (InputInterface.IsPointerOverInterface())
+            // Over a storage panel but not a slot (header/body) — cancel. Do not use
+            // InputInterface.IsPointerOverInterface(): leftover uGUI canvases often keep it true
+            // and would block every world drop.
+            if (IsOverOpenPanel(releasePosition))
             {
                 return;
             }
@@ -499,19 +502,45 @@ namespace SS3D.UI.StoragePanel
                 return;
             }
 
-            Camera camera = Camera.main;
+            Camera camera = ResolveGameplayCamera();
             if (camera == null)
             {
                 return;
             }
 
             Ray ray = camera.ScreenPointToRay(InputInterface.GetPointerScreenPosition());
-            if (!Physics.Raycast(ray, out RaycastHit hit, 100f))
+            // Match gameplay interaction rays: hit whatever the camera sees (tiles are often not on Default).
+            if (!Physics.Raycast(ray, out RaycastHit hit, 100f, Physics.DefaultRaycastLayers, QueryTriggerInteraction.Ignore))
             {
                 return;
             }
 
             _localInventory.ClientPlaceItemInWorld(_dragItem, hit.point, hit.normal);
+        }
+
+        private static Camera ResolveGameplayCamera()
+        {
+            if (SubSystems.TryGet(out CameraSubSystem cameras)
+                && cameras.PlayerCamera != null
+                && cameras.PlayerCamera.TryGetComponent(out Camera playerCamera))
+            {
+                return playerCamera;
+            }
+
+            return Camera.main;
+        }
+
+        private bool IsOverOpenPanel(Vector2 panelPosition)
+        {
+            foreach (StoragePanelView panel in _openPanels.Values)
+            {
+                if (panel != null && panel.worldBound.Contains(panelPosition))
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
 
         private void HandleSlotNestedOpenRequested(StoragePanelView panel, StorageSlot slot)
