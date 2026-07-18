@@ -16,11 +16,26 @@ namespace SS3D.Systems.Examine
             Collider collider = target.GetComponent<Collider>();
             if (collider != null)
             {
-                Vector3 closestPoint = collider.ClosestPoint(origin);
+                Vector3 closestPoint = GetClosestPoint(collider, origin);
                 return range.IsInRange(origin, closestPoint);
             }
 
             return range.IsInRange(origin, target.transform.position);
+        }
+
+        private static Vector3 GetClosestPoint(Collider collider, Vector3 position)
+        {
+            if (collider is MeshCollider { convex: false })
+            {
+                return collider.ClosestPointOnBounds(position);
+            }
+
+            if (collider is BoxCollider or SphereCollider or CapsuleCollider or MeshCollider)
+            {
+                return collider.ClosestPoint(position);
+            }
+
+            return collider.ClosestPointOnBounds(position);
         }
     }
 }

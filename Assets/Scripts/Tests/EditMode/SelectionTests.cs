@@ -215,6 +215,33 @@ namespace EditorTests
         }
 
         /// <summary>
+        /// Non-convex MeshColliders must not call ClosestPoint (Unity warns every hover frame).
+        /// </summary>
+        [Test]
+        public void TryResolveInteractionPointFallsBackOnNonConvexMeshColliderWithoutThrowing()
+        {
+            GameObject meshSource = GameObject.CreatePrimitive(PrimitiveType.Cube);
+            Mesh mesh = meshSource.GetComponent<MeshFilter>().sharedMesh;
+            Object.DestroyImmediate(meshSource);
+
+            GameObject target = new GameObject("NonConvexSelectable");
+            target.AddComponent<MeshFilter>().sharedMesh = mesh;
+            MeshCollider meshCollider = target.AddComponent<MeshCollider>();
+            meshCollider.sharedMesh = mesh;
+            meshCollider.convex = false;
+            Selectable selectable = target.AddComponent<Selectable>();
+
+            Ray ray = new Ray(new Vector3(10f, 10f, 10f), Vector3.up);
+            bool resolved = SelectionTargetUtility.TryResolveInteractionPoint(ray, selectable, out Vector3 point, out Vector3 normal);
+
+            Assert.IsTrue(resolved);
+            Assert.Greater(point.sqrMagnitude, 0.001f);
+            Assert.Greater(normal.sqrMagnitude, 0.9f);
+
+            Object.DestroyImmediate(target);
+        }
+
+        /// <summary>
         /// Interaction points should only use colliders owned by the picked selectable subtree.
         /// </summary>
         [Test]
