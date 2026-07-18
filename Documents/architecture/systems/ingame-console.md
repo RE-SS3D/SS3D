@@ -36,4 +36,5 @@ Dev/admin in-game console commands routed through `CommandsController`. Commands
 - [screen-effects](screen-effects.md)
 - [2026-07_agent-first-composition](../2026-07_agent-first-composition.md)
 - [ui-shell](ui-shell.md)
+- [2026-07_multiplayer-test-harness](../2026-07_multiplayer-test-harness.md) — `console <command line>` in the harness's automation scripts routes through `CommandsController.ClientProcessCommand`
 - [INDEX.md](../INDEX.md)

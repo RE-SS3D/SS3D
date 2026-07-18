@@ -1,4 +1,4 @@
-﻿using Coimbra;
+using Coimbra;
 using Coimbra.Services.Events;
 using SS3D.Logging;
 using SS3D.Networking;
@@ -33,6 +33,11 @@ namespace SS3D.CommandLine
         private void HandleApplicationPreInitializing(ref EventContext context, in ApplicationPreInitializing e)
         {
             ProcessCommandLineArgs();
+
+            // Log path depends on NetworkType/Ckey from the CLI above — must run here, not from
+            // another PreInitializing listener that may fire before us (see NetworkSessionSubSystem.GetFileLogName).
+            LogManager.Initialize(NetworkSessionSubSystem.GetFileLogName(_networkSettings));
+            Log.Debug(this, "Getting command line args", Logs.Important);
         }
 
         /// <summary>
@@ -40,8 +45,6 @@ namespace SS3D.CommandLine
         /// </summary>
         private void ProcessCommandLineArgs()
         {
-            Log.Debug(this, "Getting command line args", Logs.Important);
-
             LoadCommandLineArgs();
 
             if (!UnityEngine.Application.isEditor)
@@ -114,6 +117,11 @@ namespace SS3D.CommandLine
             if (arg.Contains(CommandLineArgs.ForceLauncher))
             {
                 _applicationSettings.ForceLauncher = true;
+            }
+
+            if (arg.Contains(CommandLineArgs.TestScript))
+            {
+                _applicationSettings.TestScriptPath = arg.Replace(CommandLineArgs.TestScript, "");
             }
         }
 

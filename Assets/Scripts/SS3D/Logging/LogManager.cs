@@ -5,6 +5,7 @@ using Serilog.Events;
 using Serilog.Formatting.Compact;
 using Serilog.Sinks.Unity3D;
 using SS3D.Logging.LogSettings;
+using System;
 using System.IO;
 using UnityEngine;
 
@@ -99,7 +100,16 @@ namespace SS3D.Logging
 
             path = Path.Combine(LogFolderPath, path);
 
-            if (Settings.UseCompactJsonFormatter)
+            // Player builds (and any -testscript= harness run) always write compact JSON. The
+            // LogSettings toggle only applies in Editor Play Mode — otherwise an Editor re-serialize
+            // of UseCompactJsonFormatter back to off gets baked into Builds/ and the multiplayer
+            // harness times out waiting on LogServer.json that was never created (see
+            // networking-session.md Pitfalls).
+            bool useCompactJson = !UnityEngine.Application.isEditor
+                || HasTestScriptCommandLineArg()
+                || Settings.UseCompactJsonFormatter;
+
+            if (useCompactJson)
 			{
 				configuration.WriteTo.File(new CompactJsonFormatter(), path);
 			}
@@ -110,6 +120,19 @@ namespace SS3D.Logging
 			}
 
             return configuration;
+        }
+
+        private static bool HasTestScriptCommandLineArg()
+        {
+            foreach (string arg in Environment.GetCommandLineArgs())
+            {
+                if (arg.StartsWith("-testscript=", StringComparison.Ordinal))
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
 
         /// <summary>

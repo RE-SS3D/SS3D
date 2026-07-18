@@ -29,7 +29,12 @@ This is not the official RE:SS3D release channel. For the upstream project, comm
 
 [<img src="Documents/Images/currentproject.png" alt="Current Project" width="150" align="left">](https://github.com/henkhooft/SS3D/archive/develop.zip)
 
-This fork does not publish releases. Clone or download the **`develop`** branch and build in Unity yourself.
+This fork is not the official RE:SS3D release channel. Optionally, maintainers can cut a
+**manual prerelease** via GitHub Actions → **Develop Release** after EditMode + Linux multiplayer
+smoke: primary download is a **Windows** zip (`Game\SS3D.exe` + `Start_SS3D_*.bat` for self-host);
+Linux client/server zips are secondary. See
+[Documents/architecture/2026-07_ci-develop-release-pipeline.md](Documents/architecture/2026-07_ci-develop-release-pipeline.md).
+Otherwise clone **`develop`** and build in Unity yourself.
 [<img src="https://img.shields.io/github/repo-size/henkhooft/SS3D?color=gold&label=Repository%20Size&style=plastic" alt="Repo Size" align="right">](https://github.com/henkhooft/SS3D)
 
 ```bash

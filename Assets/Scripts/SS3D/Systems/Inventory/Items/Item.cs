@@ -363,6 +363,14 @@ namespace SS3D.Systems.Inventory.Items
             // unnecessary on a dedicated server (no shaders are included in the build for it to use).
             return null;
 #else
+            // Same for headless / -nographics clients (multiplayer harness): NullGfxDevice cannot
+            // run RuntimePreviewGenerator without URP GraphicsBuffer/Blitter exceptions.
+            if (UnityEngine.Application.isBatchMode
+                || SystemInfo.graphicsDeviceType == UnityEngine.Rendering.GraphicsDeviceType.Null)
+            {
+                return null;
+            }
+
             RuntimePreviewGenerator.BackgroundColor = new Color(0, 0, 0, 0);
             RuntimePreviewGenerator.OrthographicMode = true;
             // Find stored items

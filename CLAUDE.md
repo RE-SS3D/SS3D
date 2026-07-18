@@ -10,7 +10,10 @@ and dev foundations faster than upstream's review capacity allows. It targets Un
 whereas upstream is still on Unity 2021.3 + Built-in RP — the two codebases have diverged substantially
 (~248 commits, ~12k files). Networking is via [FishNet](https://fish-networking.com/).
 
-There is no official release channel for this fork; the game is always built from source in the Unity Editor.
+There is no official RE:SS3D release channel for this fork; day-to-day play is still build-from-source
+in the Unity Editor. Maintainers can optionally cut a **manual prerelease** (Windows player zip with
+launch bats; Linux secondary) via `.github/workflows/develop-release.yml` after EditMode + Linux
+multiplayer smoke — see `Documents/architecture/2026-07_ci-develop-release-pipeline.md`.
 
 ## Read the docs before searching code
 
@@ -58,8 +61,10 @@ Editor.
   `SS3D.Tests.PlayMode`, plus an `AssetAudit` edit-mode assembly and a `Common` shared-fixture assembly). Run them
   via Unity's **Test Runner** window (`Window > General > Test Runner`) inside the Editor. CI runs the same
   EditMode suite headlessly via `game-ci/unity-test-runner` — see `.github/workflows/editmodetestrunner.yml`.
-- **CI build**: `.github/workflows/main.yml` is a manual-dispatch-only Windows build via `game-ci/unity-builder`
-  (this fork publishes no releases, so it's not wired to tags/pushes the way upstream's is).
+- **CI build / prerelease**: `.github/workflows/develop-release.yml` is the gated manual path
+  (EditMode → Linux client+server → multiplayer smoke → Windows client + bats → GitHub prerelease).
+  `.github/workflows/main.yml` is deprecated for releases (optional Windows/legacy).
+  Cheap EditMode: `editmodetestrunner.yml`. Opt-in smoke: `multiplayer-smoke-test.yml`.
 - **Code style**: `.editorconfig` at the repo root enforces C# naming/formatting (enforced as ReSharper/Rider
   inspections, not a separate lint CLI step) — e.g. `_camelCase` private fields, `PascalCase` events, block-scoped
   namespaces. Match existing surrounding code style; don't fight the analyzer.

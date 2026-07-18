@@ -134,8 +134,9 @@ deserves its own plan.
 - FishNet code stripping (Pro-only feature, disabled in the vendored free copy;
   `CameraSubSystem` etc. cover the actual client-only-instantiation surface instead).
 - Windows dedicated server build (Linux-only per this effort's scope).
-- Publishing the server build as a release artifact (CI job is `workflow_dispatch`,
-  internal-only, matching this fork's existing no-release-channel policy).
+- Publishing the server build as a release artifact — superseded by
+  [2026-07_ci-develop-release-pipeline.md](2026-07_ci-develop-release-pipeline.md)
+  (manual Windows+bats prerelease after EditMode + Linux multiplayer smoke; Linux zips secondary).
 
 ## Success criteria
 
@@ -146,4 +147,6 @@ deserves its own plan.
       lockers, items, and doors without crashing the server
 - [x] Round start/end and player disconnect handled without server-side exceptions
 - [ ] Selection outline and drop interaction work correctly against a real client (deferred)
-- [ ] Automated multiplayer test coverage exists (deferred — this doc's Testing gap section)
+- [x] Automated multiplayer test coverage exists — see
+      [2026-07_multiplayer-test-harness.md](2026-07_multiplayer-test-harness.md) (partial: mouse/
+      screen-space interaction and pocket/container round-trip regressions not yet covered)
