@@ -47,6 +47,9 @@ namespace SS3D.UI.StoragePanel
         {
             AddToClassList("storage-panel");
 
+            VisualElement clip = new();
+            clip.AddToClassList("storage-panel__clip");
+
             VisualElement header = new();
             header.AddToClassList("storage-panel__header");
 
@@ -85,9 +88,12 @@ namespace SS3D.UI.StoragePanel
 
             VisualElement weightTrack = new();
             weightTrack.AddToClassList("storage-panel__weight-track");
+            VisualElement weightTrackClip = new();
+            weightTrackClip.AddToClassList("storage-panel__weight-track-clip");
             _weightFill = new VisualElement();
             _weightFill.AddToClassList("storage-panel__weight-fill");
-            weightTrack.Add(_weightFill);
+            weightTrackClip.Add(_weightFill);
+            weightTrack.Add(weightTrackClip);
 
             _slotGrid = new VisualElement();
             _slotGrid.AddToClassList("storage-panel__grid");
@@ -96,8 +102,9 @@ namespace SS3D.UI.StoragePanel
             body.Add(weightTrack);
             body.Add(_slotGrid);
 
-            Add(header);
-            Add(body);
+            clip.Add(header);
+            clip.Add(body);
+            Add(clip);
         }
 
         public void Bind(AttachedContainer container)

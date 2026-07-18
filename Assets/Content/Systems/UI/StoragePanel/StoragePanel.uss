@@ -8,6 +8,12 @@
     width: 320px;
     background-color: var(--ss3d-surface-panel);
     border-radius: var(--ss3d-radius-md);
+}
+
+/* Clip only — never combine with border-radius on this node (UITK white-block bug). */
+.storage-panel__clip {
+    flex-direction: column;
+    flex-grow: 1;
     overflow: hidden;
 }
 
@@ -69,12 +75,19 @@
     font-size: 11px;
 }
 
+/* Painted outer track: radius and fill only — no overflow clipping here. */
 .storage-panel__weight-track {
     height: 8px;
     background-color: var(--ss3d-surface-inset);
     border-radius: var(--ss3d-radius-sm);
-    overflow: hidden;
     margin-bottom: var(--ss3d-space-4);
+}
+
+/* Inner clip: overflow only — never combine border-radius with overflow on this node. */
+.storage-panel__weight-track-clip {
+    height: 100%;
+    flex-direction: row;
+    overflow: hidden;
 }
 
 .storage-panel__weight-fill {
