@@ -295,8 +295,53 @@ namespace SS3D.UI.StoragePanel
 
         private void PositionPanel(StoragePanelView view, Vector2 anchor)
         {
+            // Tentative placement; GeometryChanged repositions once the panel has a real size so
+            // bottom-of-screen gear anchors (belt etc.) open above the strip instead of off-screen.
             view.style.left = anchor.x;
             view.style.top = anchor.y;
+
+            EventCallback<GeometryChangedEvent> onGeometry = null;
+            onGeometry = _ =>
+            {
+                float width = view.resolvedStyle.width;
+                float height = view.resolvedStyle.height;
+                if (width <= 0f || height <= 0f || float.IsNaN(width) || float.IsNaN(height))
+                {
+                    return;
+                }
+
+                view.UnregisterCallback(onGeometry);
+                Vector2 positioned = ChoosePanelPosition(anchor, width, height);
+                view.style.left = positioned.x;
+                view.style.top = positioned.y;
+            };
+            view.RegisterCallback(onGeometry);
+        }
+
+        /// <summary>
+        /// Prefer opening above the anchor (Main HUD gear strip sits on the bottom edge), then clamp
+        /// into the host root so the panel never hangs off-screen.
+        /// </summary>
+        private Vector2 ChoosePanelPosition(Vector2 anchor, float width, float height)
+        {
+            const float margin = 8f;
+
+            float parentWidth = _root.resolvedStyle.width;
+            float parentHeight = _root.resolvedStyle.height;
+            if (parentWidth <= 0f || parentHeight <= 0f)
+            {
+                return anchor;
+            }
+
+            float top = anchor.y - height - margin;
+            if (top < 0f)
+            {
+                top = anchor.y + margin;
+            }
+
+            float left = Mathf.Clamp(anchor.x, 0f, Mathf.Max(0f, parentWidth - width));
+            top = Mathf.Clamp(top, 0f, Mathf.Max(0f, parentHeight - height));
+            return new Vector2(left, top);
         }
 
         private Vector2 NextCascadePosition()

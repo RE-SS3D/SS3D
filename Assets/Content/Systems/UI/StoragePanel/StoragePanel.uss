@@ -23,6 +23,9 @@
     justify-content: space-between;
     background-color: var(--ss3d-surface-panel-raised);
     padding: 10px 14px;
+    /* Match outer radius — child paints would otherwise square the top corners. */
+    border-top-left-radius: var(--ss3d-radius-md);
+    border-top-right-radius: var(--ss3d-radius-md);
 }
 
 .storage-panel__title {
@@ -51,6 +54,8 @@
 .storage-panel__body {
     flex-direction: column;
     padding: var(--ss3d-space-4);
+    border-bottom-left-radius: var(--ss3d-radius-md);
+    border-bottom-right-radius: var(--ss3d-radius-md);
 }
 
 .storage-panel__breadcrumb {
@@ -108,11 +113,19 @@
     flex-wrap: wrap;
 }
 
+/* Outer StorageSlot is an InventorySlot column — chrome lives on the well so the
+   empty label doesn't shove the icon up inside a fixed-height box. */
 .storage-slot {
     width: 72px;
-    height: 72px;
     margin-right: var(--ss3d-space-2);
     margin-bottom: var(--ss3d-space-2);
+    flex-direction: column;
+    align-items: stretch;
+    background-color: rgba(0, 0, 0, 0);
+    border-width: 0;
+}
+
+.storage-slot .inventory-slot__well {
     background-color: var(--ss3d-surface-panel-raised);
     border-width: 1.5px;
     border-color: var(--ss3d-border-default);
@@ -121,16 +134,28 @@
     justify-content: center;
 }
 
-.storage-slot--empty {
+.storage-slot .inventory-slot__label {
+    display: none;
+    height: 0;
+    margin: 0;
+    padding: 0;
+}
+
+.storage-slot .inventory-slot__icon {
+    margin: 0;
+    padding: 0;
+}
+
+.storage-slot--empty .inventory-slot__well {
     border-color: var(--ss3d-border-subtle);
 }
 
-.storage-slot--valid-drop {
+.storage-slot--valid-drop .inventory-slot__well {
     border-color: var(--ss3d-feedback-info);
     background-color: var(--ss3d-feedback-info-bg);
 }
 
-.storage-slot--invalid-drop {
+.storage-slot--invalid-drop .inventory-slot__well {
     border-color: var(--ss3d-feedback-danger);
     background-color: var(--ss3d-feedback-danger-bg);
 }

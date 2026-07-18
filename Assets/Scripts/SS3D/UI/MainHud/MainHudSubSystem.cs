@@ -481,7 +481,9 @@ namespace SS3D.UI.MainHud
             }
 
             Rect bound = _view.GetGearSlotWorldBound(slot);
-            panelHost.RequestOpenNear(_inventory.containerViewer, container, bound.position);
+            // Anchor at the top edge of the gear icon — PositionPanel opens the panel above this.
+            Vector2 anchor = new(bound.xMin, bound.yMin);
+            panelHost.RequestOpenNear(_inventory.containerViewer, container, anchor);
         }
 
         /// <summary>
