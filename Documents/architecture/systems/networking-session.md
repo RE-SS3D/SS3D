@@ -1,7 +1,7 @@
 > Code paths: Assets/Scripts/SS3D/Networking/, Assets/Scripts/SS3D/Editor/ServerBuildScript.cs, Assets/Scripts/SS3D/Editor/ClientBuildScript.cs, Assets/Scripts/SS3D/Systems/Testing/, Testing/multiplayer/
 > Entry points: NetworkSessionSubSystem, SS3D.Systems.Testing.AutomationSubSystem
 > Status: partial
-> Verified: e4a40f277 — 2026-07-18
+> Verified: c74429e16 — 2026-07-18
 
 # Networking (session)
 
@@ -19,7 +19,7 @@ FishNet session management — host/join, network type and port settings. Distin
 - `Testing/multiplayer/run_smoketest.sh` — the actual multiplayer test harness: launches a real server + N real client processes and asserts on their logs; see [2026-07_multiplayer-test-harness](../2026-07_multiplayer-test-harness.md)
 - `Builds/start_ss3d_server.sh`, `Builds/start_ss3d_client.sh`, `Builds/Start_SS3D_*.bat` — local / Windows-prerelease launch scripts
 - `Dockerfile`, `docker-compose.yml` — containerized server deployment
-- `.github/workflows/develop-release.yml` — manual Linux→Windows+bats prerelease; EditMode/smoke opt-in ([2026-07_ci-develop-release-pipeline](../2026-07_ci-develop-release-pipeline.md))
+- `.github/workflows/develop-release.yml` — manual Windows+bats prerelease by default; Linux/EditMode/smoke opt-in ([2026-07_ci-develop-release-pipeline](../2026-07_ci-develop-release-pipeline.md))
 - `.github/workflows/multiplayer-smoke-test.yml` — opt-in multi-process smoke (`workflow_dispatch` / PR label `test:multiplayer`)
 - `.github/workflows/editmodetestrunner.yml` — cheap EditMode on PR/`develop` push
 

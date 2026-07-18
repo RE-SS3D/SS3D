@@ -1,21 +1,25 @@
-# Manual Linux (+ optional EditMode / smoke) → Windows client → GitHub prerelease.
-# Default dispatch is build-only: run_editmode and run_smoke are opt-in.
+# Manual Windows prerelease (+ optional Linux / EditMode / smoke).
+# Default dispatch: Windows client → GitHub prerelease. Linux, EditMode, and smoke are opt-in.
 # Not triggered on every develop merge (license cost + release spam at high PR volume).
 # See Documents/architecture/2026-07_ci-develop-release-pipeline.md.
 name: Develop Release
 on:
   workflow_dispatch:
     inputs:
+      build_linux:
+        description: Also build Linux dedicated server + client (~30–45 min; attach Linux zips to the prerelease)
+        type: boolean
+        default: false
       run_editmode:
-        description: Run EditMode tests before Linux builds (default off — use editmodetestrunner.yml for cheap feedback)
+        description: Run EditMode tests before player builds (default off — use editmodetestrunner.yml for cheap feedback)
         type: boolean
         default: false
       run_smoke:
-        description: Run multiplayer smoke after Linux builds (default off — use multiplayer-smoke-test.yml when needed)
+        description: Run multiplayer smoke after Linux builds (requires build_linux; default off — use multiplayer-smoke-test.yml)
         type: boolean
         default: false
       skip_release:
-        description: Skip Windows build and GitHub prerelease (Linux builds only; optional EditMode/smoke still apply)
+        description: Skip Windows build and GitHub prerelease (Linux-only when build_linux is on)
         type: boolean
         default: false
       tag_suffix:
@@ -78,8 +82,8 @@ jobs:
   build-linux:
     name: Build Linux client + server
     needs: editmode
-    # EditMode skipped (default) or green → proceed; EditMode failure blocks builds.
-    if: ${{ always() && (needs.editmode.result == 'success' || needs.editmode.result == 'skipped') }}
+    # EditMode skipped/green + build_linux opted in. always() breaks skip-cascade from EditMode.
+    if: ${{ always() && (needs.editmode.result == 'success' || needs.editmode.result == 'skipped') && (inputs.build_linux == true || inputs.build_linux == 'true') }}
     runs-on: ubuntu-latest
     environment:
       name: unity_tests
@@ -165,8 +169,9 @@ jobs:
 
   build-windows:
     name: Build Windows client
-    needs: build-linux
-    if: ${{ inputs.skip_release != true && inputs.skip_release != 'true' }}
+    needs: [editmode, build-linux]
+    # always() required so skipped EditMode / skipped Linux (default) do not cascade-skip Windows.
+    if: ${{ always() && (needs.editmode.result == 'success' || needs.editmode.result == 'skipped') && (needs.build-linux.result == 'success' || needs.build-linux.result == 'skipped') && inputs.skip_release != true && inputs.skip_release != 'true' }}
     runs-on: ubuntu-latest
     environment:
       name: unity_tests
@@ -214,7 +219,8 @@ jobs:
   release:
     name: GitHub prerelease
     needs: [build-linux, build-windows]
-    if: ${{ inputs.skip_release != true && inputs.skip_release != 'true' }}
+    # Same skip-cascade override; Linux may be skipped when build_linux is off.
+    if: ${{ always() && needs.build-windows.result == 'success' && (needs.build-linux.result == 'success' || needs.build-linux.result == 'skipped') && inputs.skip_release != true && inputs.skip_release != 'true' }}
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -237,6 +243,7 @@ jobs:
           echo "tag_name=develop-${suffix}" >> "$GITHUB_OUTPUT"
           echo "short_sha=${GITHUB_SHA:0:7}" >> "$GITHUB_OUTPUT"
       - name: Download Linux player builds
+        if: ${{ inputs.build_linux == true || inputs.build_linux == 'true' }}
         uses: actions/download-artifact@v4
         with:
           name: develop-release-linux-builds
@@ -247,6 +254,7 @@ jobs:
           name: develop-release-windows-builds
           path: build-windows
       - name: Stage and zip artifacts
+        id: stage
         run: |
           set -euo pipefail
           TAG="${{ steps.tag.outputs.tag_name }}"
@@ -262,13 +270,27 @@ jobs:
           cp Builds/README.txt "${WIN_ROOT}/"
           (cd staging && zip -qq -r "../dist/SS3D-Windows-${TAG}.zip" "SS3D-Windows-${TAG}")
 
-          # --- Secondary: Linux player trees ---
-          test -d build-linux/GameServer/StandaloneLinux64
-          test -d build-linux/Game/StandaloneLinux64
-          zip -qq -r "dist/SS3D-Linux-Server-${TAG}.zip" build-linux/GameServer
-          zip -qq -r "dist/SS3D-Linux-Client-${TAG}.zip" build-linux/Game
+          FILES="dist/SS3D-Windows-${TAG}.zip"
+          NOTES_LINUX="_(not built for this dispatch — enable build_linux to attach Linux zips)_"
+
+          if [ "${{ inputs.build_linux }}" = "true" ]; then
+            test -d build-linux/GameServer/StandaloneLinux64
+            test -d build-linux/Game/StandaloneLinux64
+            zip -qq -r "dist/SS3D-Linux-Server-${TAG}.zip" build-linux/GameServer
+            zip -qq -r "dist/SS3D-Linux-Client-${TAG}.zip" build-linux/Game
+            FILES="$(printf '%s\n%s\n%s' "$FILES" "dist/SS3D-Linux-Server-${TAG}.zip" "dist/SS3D-Linux-Client-${TAG}.zip")"
+            NOTES_LINUX="$(printf -- '- `%s`\n- `%s`' "SS3D-Linux-Server-${TAG}.zip" "SS3D-Linux-Client-${TAG}.zip")"
+          fi
 
           ls -lh dist
+          {
+            echo "files<<EOF"
+            echo "$FILES"
+            echo "EOF"
+            echo "linux_notes<<EOF"
+            echo "$NOTES_LINUX"
+            echo "EOF"
+          } >> "$GITHUB_OUTPUT"
       - name: Create prerelease
         uses: softprops/action-gh-release@v2
         with:
@@ -279,19 +301,15 @@ jobs:
           body: |
             Fork-internal prerelease from `${{ github.sha }}` (short `${{ steps.tag.outputs.short_sha }}`).
 
-            Not an official RE:SS3D build. Linux + Windows players were built from this commit.
-            EditMode and Linux multiplayer smoke run only when opted in on the workflow dispatch
-            (see the Actions run for this tag). Windows is not smoke-tested.
+            Not an official RE:SS3D build. Windows player built from this commit.
+            Linux builds, EditMode, and multiplayer smoke run only when opted in on the
+            workflow dispatch (see the Actions run for this tag). Windows is not smoke-tested.
 
             **Player download (Windows):** `SS3D-Windows-${{ steps.tag.outputs.tag_name }}.zip`
             — unzip, run `Start_SS3D_Host.bat`, then a `Start_SS3D_Client_*.bat`.
 
             Secondary (ops / Linux binaries):
-            - `SS3D-Linux-Server-${{ steps.tag.outputs.tag_name }}.zip`
-            - `SS3D-Linux-Client-${{ steps.tag.outputs.tag_name }}.zip`
-          files: |
-            dist/SS3D-Windows-${{ steps.tag.outputs.tag_name }}.zip
-            dist/SS3D-Linux-Server-${{ steps.tag.outputs.tag_name }}.zip
-            dist/SS3D-Linux-Client-${{ steps.tag.outputs.tag_name }}.zip
+            ${{ steps.stage.outputs.linux_notes }}
+          files: ${{ steps.stage.outputs.files }}
         env:
           GITHUB_TOKEN: ${{ github.token }}

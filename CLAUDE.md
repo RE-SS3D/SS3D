@@ -12,8 +12,9 @@ whereas upstream is still on Unity 2021.3 + Built-in RP — the two codebases ha
 
 There is no official RE:SS3D release channel for this fork; day-to-day play is still build-from-source
 in the Unity Editor. Maintainers can optionally cut a **manual prerelease** (Windows player zip with
-launch bats; Linux secondary) via `.github/workflows/develop-release.yml` (default build-only;
-EditMode and Linux smoke are opt-in) — see `Documents/architecture/2026-07_ci-develop-release-pipeline.md`.
+launch bats; Linux secondary when opted in) via `.github/workflows/develop-release.yml` (default
+Windows-only; Linux, EditMode, and smoke are opt-in) — see
+`Documents/architecture/2026-07_ci-develop-release-pipeline.md`.
 
 ## Read the docs before searching code
 
@@ -62,7 +63,7 @@ Editor.
   via Unity's **Test Runner** window (`Window > General > Test Runner`) inside the Editor. CI runs the same
   EditMode suite headlessly via `game-ci/unity-test-runner` — see `.github/workflows/editmodetestrunner.yml`.
 - **CI build / prerelease**: `.github/workflows/develop-release.yml` is the manual path
-  (Linux client+server → Windows client + bats → GitHub prerelease; `run_editmode` /
+  (default Windows client + bats → GitHub prerelease; `build_linux` / `run_editmode` /
   `run_smoke` opt-in). Cheap EditMode: `editmodetestrunner.yml`. Opt-in smoke:
   `multiplayer-smoke-test.yml`.
 - **Code style**: `.editorconfig` at the repo root enforces C# naming/formatting (enforced as ReSharper/Rider
