@@ -63,8 +63,7 @@ Editor.
   EditMode suite headlessly via `game-ci/unity-test-runner` — see `.github/workflows/editmodetestrunner.yml`.
 - **CI build / prerelease**: `.github/workflows/develop-release.yml` is the manual path
   (Linux client+server → Windows client + bats → GitHub prerelease; `run_editmode` /
-  `run_smoke` opt-in). `.github/workflows/main.yml` is deprecated for releases (optional
-  Windows/legacy). Cheap EditMode: `editmodetestrunner.yml`. Opt-in smoke:
+  `run_smoke` opt-in). Cheap EditMode: `editmodetestrunner.yml`. Opt-in smoke:
   `multiplayer-smoke-test.yml`.
 - **Code style**: `.editorconfig` at the repo root enforces C# naming/formatting (enforced as ReSharper/Rider
   inspections, not a separate lint CLI step) — e.g. `_camelCase` private fields, `PascalCase` events, block-scoped

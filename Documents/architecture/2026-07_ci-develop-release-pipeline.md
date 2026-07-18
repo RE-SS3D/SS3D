@@ -52,17 +52,17 @@ merges ~5–10 PRs/day, and every run burns rate-limited `unity_tests` Unity lic
 - `multiplayer-smoke-test.yml` — removed `push: develop`; keep label-gated PR +
   `workflow_dispatch`; same separate build dirs / `versioning: None`. Prefer this (or
   `run_smoke: true` on develop-release) when you need a smoke gate.
-- `main.yml` — marked deprecated for day-to-day releases; fixed `environment: unity_tests`,
-  secret preflight, `versioning: None`; Windows/legacy path uploads artifacts only (no longer
-  creates a non-prerelease GitHub Release). Prefer `develop-release.yml`.
 - `editmodetestrunner.yml` — unchanged cheap PR/`develop` feedback. Prefer this (or
   `run_editmode: true` on develop-release) when you need an EditMode gate on a cut.
+- `main.yml` (Automated Build) — **removed**; Windows prereleases go through
+  `develop-release.yml`. Upstream milestone/project workflows stay deleted (see
+  commit `23b75ad36`).
 
 ## Pitfalls recorded for operators
 
 - **License secrets live on the `unity_tests` Environment.** Jobs without
   `environment: unity_tests` see empty `UNITY_LICENSE` / `UNITY_SERIAL` even when EditMode is
-  green (`main.yml` hit this before the fix).
+  green (the old `main.yml` hit this before Environment was wired).
 - **Do not use `versioning: Semantic`** until tags are clean `X.Y.Z` — letter-suffix tags produce
   `Failed to parse git describe output`.
 - **Do not use `ClientBuildScript` for Windows** — it hardcodes `StandaloneLinux64`; Windows
