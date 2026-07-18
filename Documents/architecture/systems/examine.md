@@ -1,6 +1,7 @@
 > Code paths: Assets/Scripts/SS3D/Systems/Examine/, Assets/Scripts/SS3D/Localization/
 > Entry points: ExamineSubSystem, ExamineUI, ExamineContentResolver
 > Status: shipped
+> Verified: a906e2278 — 2026-07-18
 
 # Examine
 
@@ -40,3 +41,4 @@ Examine is **not** an `IInteraction` — `ExaminableBase` is read by `ExamineSub
 - Design (read-only): [Documents/design/examine.md](../../design/examine.md)
 - [2026-07_agent-first-composition](../2026-07_agent-first-composition.md)
 - [ui-shell](ui-shell.md)
+- Tests: `ExamineContentResolverTests` (missing-key path must use synthetic keys — see [localization](localization.md) Pitfalls)

@@ -44,22 +44,27 @@ namespace EditorTests
         {
             ExamineContentResolver resolver = new();
             ExamineData data = UnityEngine.ScriptableObject.CreateInstance<ExamineData>();
+            // Use keys that are never in the Examine table. Real keys like
+            // items.tools.engineering.wrench.name resolve to "Wrench" whenever
+            // another EditMode test (or AssetAudit) has already loaded the table.
+            const string missingNameKey = "test.examine_content_resolver.missing.name";
+            const string missingDescKey = "test.examine_content_resolver.missing.desc";
             data.Name = new LocalizedString(
                 ExamineCanonicalKeyGenerator.ExamineTableName,
-                "items.tools.engineering.wrench.name");
+                missingNameKey);
             data.Description = new LocalizedString(
                 ExamineCanonicalKeyGenerator.ExamineTableName,
-                "items.tools.engineering.wrench.desc");
+                missingDescKey);
 
             StubExaminable examinable = new(data);
             ExamineContent content = resolver.Resolve(examinable);
 
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
-            Assert.AreEqual("[MISSING: items.tools.engineering.wrench.name]", content.Name);
-            Assert.AreEqual("[MISSING: items.tools.engineering.wrench.desc]", content.Description);
+            Assert.AreEqual($"[MISSING: {missingNameKey}]", content.Name);
+            Assert.AreEqual($"[MISSING: {missingDescKey}]", content.Description);
 #else
-            Assert.AreEqual("items.tools.engineering.wrench.name", content.Name);
-            Assert.AreEqual("items.tools.engineering.wrench.desc", content.Description);
+            Assert.AreEqual(missingNameKey, content.Name);
+            Assert.AreEqual(missingDescKey, content.Description);
 #endif
             Assert.IsFalse(content.Name.Contains("*[to be localized]*"));
             Assert.IsFalse(content.Description.Contains("*[to be localized]*"));
