@@ -28,6 +28,7 @@ namespace SS3D.UI.MainHud
         [SerializeField] private Sprite _iconEars;
         [SerializeField] private Sprite _iconHandLeft;
         [SerializeField] private Sprite _iconHandRight;
+        [SerializeField] private Sprite _iconShirt;
         [SerializeField] private Sprite _iconFeet;
         [SerializeField] private Sprite _iconBelt;
         [SerializeField] private Sprite _iconId;
@@ -51,7 +52,7 @@ namespace SS3D.UI.MainHud
             Ears = _iconEars,
             HandLeft = _iconHandLeft,
             HandRight = _iconHandRight,
-            Shirt = null,
+            Shirt = _iconShirt,
             Feet = _iconFeet,
             Belt = _iconBelt,
             Id = _iconId,
@@ -106,6 +107,7 @@ namespace SS3D.UI.MainHud
             _iconEars = icons.Ears;
             _iconHandLeft = icons.HandLeft;
             _iconHandRight = icons.HandRight;
+            _iconShirt = icons.Shirt;
             _iconFeet = icons.Feet;
             _iconBelt = icons.Belt;
             _iconId = icons.Id;

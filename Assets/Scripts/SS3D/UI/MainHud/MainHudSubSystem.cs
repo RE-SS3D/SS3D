@@ -1002,7 +1002,7 @@ namespace SS3D.UI.MainHud
                     Ears = LoadSprite("Ears"),
                     HandLeft = LoadSprite("HandLeft"),
                     HandRight = LoadSprite("HandRight"),
-                    Shirt = null,
+                    Shirt = LoadSprite("Shirt"),
                     Feet = LoadSprite("Feet"),
                     Belt = LoadSprite("Waist"),
                     Id = LoadSprite("Neck"),
