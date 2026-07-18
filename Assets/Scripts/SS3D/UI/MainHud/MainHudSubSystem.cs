@@ -551,8 +551,9 @@ namespace SS3D.UI.MainHud
 
         /// <summary>
         /// Storage capacity attached to an item prefab (backpack, belt pouch). Prefer
-        /// <see cref="AttachedContainer.DisplayAsSlotInUI"/>; never use <see cref="Item.Container"/> —
-        /// that is where the item is stored, not storage on the item.
+        /// <see cref="AttachedContainer.HasUi"/> content grids; never use <see cref="Item.Container"/> —
+        /// that is where the item is stored, not storage on the item. Body equip mounts use
+        /// <see cref="AttachedContainer.DisplayAsSlotInUI"/> and live on the human, not the worn item.
         /// </summary>
         private static bool TryGetStorageContainerOnItem(Item item, out AttachedContainer storage)
         {
@@ -571,13 +572,13 @@ namespace SS3D.UI.MainHud
                     continue;
                 }
 
-                if (candidate.DisplayAsSlotInUI)
+                if (candidate.HasUi)
                 {
                     storage = candidate;
                     return true;
                 }
 
-                if (fallback == null)
+                if (fallback == null && !candidate.DisplayAsSlotInUI)
                 {
                     fallback = candidate;
                 }
