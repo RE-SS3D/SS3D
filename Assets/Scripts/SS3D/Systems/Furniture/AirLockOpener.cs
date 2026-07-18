@@ -142,6 +142,7 @@ namespace SS3D.Systems.Furniture
         private IEnumerator RunCloseEventually(float time)
         {
             yield return new WaitForSeconds(time);
+            closeTimer = null;
             SetOpen(false);
         }
 
@@ -179,13 +180,14 @@ namespace SS3D.Systems.Furniture
 
         private void ScheduleCloseAfterDelay()
         {
-            if (closeTimer != null)
+            if (_authorizedOccupants.Count > 0)
             {
-                StopCoroutine(closeTimer);
-                closeTimer = null;
+                return;
             }
 
-            if (_authorizedOccupants.Count > 0)
+            // Do not restart a running timer. Power-status churn (or repeated exits) used to
+            // reset the 2s delay forever so the door never closed.
+            if (closeTimer != null)
             {
                 return;
             }

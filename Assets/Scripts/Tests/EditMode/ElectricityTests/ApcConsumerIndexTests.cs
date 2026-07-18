@@ -55,22 +55,25 @@ namespace EditorTests
         }
 
         [Test]
-        public void PowerAreaConsumers_SetsInactiveThenPoweredWithoutHashSet()
+        public void PowerAreaConsumers_AssignsFinalStatusOnceWithoutFlicker()
         {
-            TestConsumer lighting = new TestConsumer(1f, PowerChannel.Lighting) { PowerStatus = PowerStatus.Powered };
-            TestConsumer equipment = new TestConsumer(1f, PowerChannel.Equipment) { PowerStatus = PowerStatus.Powered };
+            CountingConsumer lighting = new CountingConsumer(1f, PowerChannel.Lighting, PowerStatus.Powered);
+            CountingConsumer equipment = new CountingConsumer(1f, PowerChannel.Equipment, PowerStatus.Powered);
             TestApcStorage apc = new TestApcStorage(storedEnergyKwh: 0f, maxCapacityKwh: 5f, maxDischargeRateKw: 0f);
 
             AreaApcPowerDistribution.PowerAreaConsumers(
                 apc,
                 apc,
                 gridSupplyKw: 1f,
-                new[] { lighting, equipment },
-                new[] { lighting, equipment },
+                new IPowerConsumer[] { lighting, equipment },
+                new IPowerConsumer[] { lighting, equipment },
                 tickSeconds: 3600f);
 
             Assert.AreEqual(PowerStatus.Powered, lighting.PowerStatus);
             Assert.AreEqual(PowerStatus.Inactive, equipment.PowerStatus);
+            // Lighting already Powered — must not write Inactive then Powered (airlock close bug).
+            Assert.AreEqual(0, lighting.StatusWriteCount);
+            Assert.AreEqual(1, equipment.StatusWriteCount);
         }
 
         private sealed class TestConsumer : IPowerConsumer
@@ -86,6 +89,39 @@ namespace EditorTests
             public PowerChannel Channel { get; }
 
             public PowerStatus PowerStatus { get; set; }
+
+            public PlacedTileObject TileObject => null;
+        }
+
+        /// <summary>
+        /// Counts PowerStatus writes so tests can catch Inactive→Powered flicker regressions.
+        /// </summary>
+        private sealed class CountingConsumer : IPowerConsumer
+        {
+            private PowerStatus _powerStatus;
+
+            public CountingConsumer(float powerNeeded, PowerChannel channel, PowerStatus initialStatus)
+            {
+                PowerNeeded = powerNeeded;
+                Channel = channel;
+                _powerStatus = initialStatus;
+            }
+
+            public float PowerNeeded { get; }
+
+            public PowerChannel Channel { get; }
+
+            public int StatusWriteCount { get; private set; }
+
+            public PowerStatus PowerStatus
+            {
+                get => _powerStatus;
+                set
+                {
+                    StatusWriteCount++;
+                    _powerStatus = value;
+                }
+            }
 
             public PlacedTileObject TileObject => null;
         }

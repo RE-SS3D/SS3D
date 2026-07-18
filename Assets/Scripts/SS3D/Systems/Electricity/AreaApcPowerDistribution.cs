@@ -106,14 +106,19 @@ namespace SS3D.Systems.Electricity
                 apcCell.AddPowerKw(-cellDrawKw, tickSeconds);
             }
 
+            // Assign final status once per consumer. Setting Inactive then Powered every tick
+            // flickers SyncVar OnChange (e.g. airlock close timers never fire — fixed thrice).
+            HashSet<IPowerConsumer> poweredSet = new HashSet<IPowerConsumer>(poweredConsumers);
             for (int i = 0; i < areaConsumers.Count; i++)
             {
-                areaConsumers[i].PowerStatus = PowerStatus.Inactive;
-            }
-
-            for (int i = 0; i < poweredConsumers.Count; i++)
-            {
-                poweredConsumers[i].PowerStatus = PowerStatus.Powered;
+                IPowerConsumer consumer = areaConsumers[i];
+                PowerStatus target = poweredSet.Contains(consumer)
+                    ? PowerStatus.Powered
+                    : PowerStatus.Inactive;
+                if (consumer.PowerStatus != target)
+                {
+                    consumer.PowerStatus = target;
+                }
             }
         }
 

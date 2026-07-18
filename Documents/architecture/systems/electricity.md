@@ -1,6 +1,7 @@
 > Code paths: Assets/Scripts/SS3D/Systems/Electricity/
 > Entry points: ElectricitySubSystem
 > Status: partial
+> Verified: 2e2d03815 — 2026-07-18
 
 # Electricity
 
@@ -54,6 +55,10 @@ Power circuit simulation, APC channel gating, SMES storage, and tile-linked elec
 - HV cable graph: only `IPowerProducer` and `IPowerStorage` participate via `ElectricCableConnectivity.ParticipatesInCableGrid`; consumers draw from area APCs.
 - Machine panels: register via [machine-interface](machine-interface.md).
 - Area membership changes: Area APC register/unregister/rebuild calls `ElectricitySubSystem.InvalidateAreaConsumerIndex()`.
+
+## Pitfalls
+
+- **Never assign `Inactive` then `Powered` in the same tick.** `PowerStatus` is a SyncVar; OnChange fires on every real transition. Furniture (notably [furniture](furniture.md) airlocks) treats `Inactive` as a power-loss edge. Clear-then-set every ~0.2s tick restarts close timers forever. `PowerAreaConsumers` must write the final status once (and skip no-ops). Cable path in `Circuit` already does single-assignment — keep area path aligned. Test: `PowerAreaConsumers_AssignsFinalStatusOnceWithoutFlicker`.
 
 ## Depends on / Used by
 

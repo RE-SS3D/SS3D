@@ -1,6 +1,7 @@
 > Code paths: Assets/Scripts/SS3D/Systems/Furniture/, Assets/Content/WorldObjects/Furniture/
 > Entry points: (various world object behaviours)
 > Status: partial
+> Verified: 2e2d03815 — 2026-07-18
 
 # Furniture / world objects
 
@@ -23,6 +24,10 @@ Station furniture and interactable world objects — airlocks, lockers, disposal
 - Powered machines: attach `MachinePowerConsumer` or `BasicPowerConsumer` + `ElectricDeviceAdjacencyConnector`; add `ConsumerPowerVisual` when emissive meshes should dim unpowered (see [electricity](electricity.md)).
 - Panel-driven machines: subclass `MachineInterfaceBehaviour` and register UI per [machine-interface](machine-interface.md) extension recipe.
 - Wall light switches: use [area](area.md) `LightSwitchController`, not furniture scripts.
+
+## Pitfalls
+
+- **Airlocks stuck open after leaving the trigger:** `AirLockOpener` closes on `OnPowerStatusUpdated(Inactive)`. If [electricity](electricity.md) `PowerAreaConsumers` writes `Inactive` then `Powered` every tick (~0.2s), the SyncVar OnChange restarts the 2s close timer forever. Assign final `PowerStatus` once per consumer; never clear-then-set. Defense: `ScheduleCloseAfterDelay` must not restart an already-running timer. Regression test: `PowerAreaConsumers_AssignsFinalStatusOnceWithoutFlicker`. Hit three times (91b053c1d, Jul 16 uncommitted, 2026-07-18).
 
 ## Depends on / Used by
 
