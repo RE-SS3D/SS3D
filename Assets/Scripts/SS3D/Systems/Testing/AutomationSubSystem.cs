@@ -204,8 +204,10 @@ namespace SS3D.Systems.Testing
                 case "wait_connected":
                     yield return WaitUntil(IsConnected, DefaultWaitTimeoutSeconds, "wait_connected");
 
-                    // FishNet marks the client Connected before it finishes loading Game additively.
-                    // Lobby actions (ready/start_round/embark) need PlayerSubSystem from that scene.
+                    // FishNet marks the client Connected before Game loads additively and before
+                    // UnauthorizedPlayer auth finishes. Lobby actions need a Player with a ckey
+                    // owned by this connection — otherwise start_round hits PermissionSubSystem
+                    // with a null ckey and the round never starts.
                     if (!IsServerRole())
                     {
                         yield return WaitUntil(IsLobbyReady, DefaultWaitTimeoutSeconds, "wait_lobby");
@@ -259,7 +261,16 @@ namespace SS3D.Systems.Testing
 
         private bool IsConnected() => IsServerRole() ? _serverStarted : _clientConnected;
 
-        private static bool IsLobbyReady() => SubSystems.TryGet(out PlayerSubSystem _);
+        private static bool IsLobbyReady()
+        {
+            if (!SubSystems.TryGet(out PlayerSubSystem playerSystem))
+            {
+                return false;
+            }
+
+            string ckey = playerSystem.GetCkey(InstanceFinder.ClientManager.Connection);
+            return !string.IsNullOrEmpty(ckey);
+        }
 
         private void SendReady(bool ready)
         {

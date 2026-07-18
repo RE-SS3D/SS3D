@@ -91,11 +91,11 @@ runs in CI, and is trivially runnable locally.
   `Ongoing` and client 0 has already embarked. Ports
   `KnownIssueReproduction/Issue1002_LateJoinFails_HostPerspective.cs`'s
   `ClientCanEmbarkAfterRoundStartWhenHostHasAlreadyEmbarked` case as a real two-process run.
-- Permissions: `run_smoketest.sh` seeds `Config/permissions.txt` with each client's ckey as
-  `Administrator` in the staged server directory before launch — a real dedicated server has no
-  Editor session to grant this by hand, and `start_round` is server-side gated on it (see
-  [permissions.md](systems/permissions.md) Pitfalls for how this interacts with the persistence
-  server-meta envelope on a fresh vs. previously-saved server).
+- Permissions: `run_smoketest.sh` clears staged `Data/ServerMeta/permissions.json` (Builds often
+  ship one), then seeds `Config/permissions.txt` with each client's ckey as `Administrator` —
+  a real dedicated server has no Editor session to grant this by hand, and `start_round` is
+  server-side gated on it. Without clearing the envelope, Persistence wins and the txt is
+  ignored (see [permissions.md](systems/permissions.md) Pitfalls).
 
 ### CI
 - `.github/workflows/multiplayer-smoke-test.yml` — builds the server (`ServerBuildScript`) and
@@ -160,7 +160,8 @@ binaries (this development environment has no Unity Editor installed, so a real 
 possible here):
 
 - End-to-end pass: 1-client `basic-round` and 2-client `late-join` scenarios both resolve
-  per-client scripts, allocate a port, stage isolated build copies, seed `permissions.txt`, wait
+  per-client scripts, allocate a port, stage isolated build copies, clear ServerMeta permissions
+  and seed `permissions.txt`, wait
   on `Test signal` lines, and exit 0.
 - Negative control: injecting a `NullReferenceException` line into the mock server's Unity log
   makes the harness exit 1 and dump both processes' logs.

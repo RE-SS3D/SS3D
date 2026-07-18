@@ -1,7 +1,7 @@
 > Code paths: Assets/Scripts/SS3D/Networking/, Assets/Scripts/SS3D/Editor/ServerBuildScript.cs, Assets/Scripts/SS3D/Editor/ClientBuildScript.cs, Assets/Scripts/SS3D/Systems/Testing/, Testing/multiplayer/
 > Entry points: NetworkSessionSubSystem, SS3D.Systems.Testing.AutomationSubSystem
 > Status: partial
-> Verified: 21e83b853 — 2026-07-18
+> Verified: d592fb12a — 2026-07-18
 
 # Networking (session)
 
@@ -33,7 +33,8 @@ FishNet session management — host/join, network type and port settings. Distin
 
 - **`UseCompactJsonFormatter` / JSON file logs.** Player builds always write compact JSON (`.json`) regardless of the asset — the multiplayer harness (`Testing/multiplayer/lib/logwait.sh`) requires `LogServer.json`/`LogClient<ckey>.json`. The LogSettings toggle only affects Editor Play Mode. A `false` C# default plus Coimbra `OnValidate` dirtying the asset used to bake plain-text `.log` into Builds and make every scenario time out; the field default is now `true` and player builds ignore the toggle.
 - **Log file path is chosen in `CommandLineArgsSubSystem` after CLI parsing, not from a peer `ApplicationPreInitializing` listener.** `NetworkType`/`Ckey` come from `-serveronly`/`-ip=`/`-ckey=`; initializing Serilog from `NetworkSessionSubSystem` on the same event raced and could open `LogHost.json` while the harness waited on `LogServer.json`. Path helper: `NetworkSessionSubSystem.GetFileLogName`.
-- **Client `wait_connected` must wait for Game lobby systems.** FishNet reports Connected before Game loads additively; calling `ready` immediately NREs on missing `PlayerSubSystem`. `AutomationSubSystem` waits for `PlayerSubSystem` after connect on clients.
+- **Client `wait_connected` must wait for an authorized Player, not just `PlayerSubSystem`.** FishNet reports Connected before Game loads additively; `UnauthorizedPlayer` auth (and server `Player` spawn with ckey) finishes later still. Calling `ready`/`start_round` as soon as `PlayerSubSystem` exists sends broadcasts while `GetCkey(conn)` is still null → server logs `Ckey null while trying to get user role` / `User null doesn't have Administrator` and `wait_round Ongoing` times out. `AutomationSubSystem` waits until `PlayerSubSystem.GetCkey(LocalConnection)` is non-empty.
+- **Harness admin seed needs a clear ServerMeta permissions envelope.** Seeding only `Config/permissions.txt` is ignored when staged `Data/ServerMeta/permissions.json` exists. `run_smoketest.sh` removes that file before seeding; see [permissions.md](permissions.md).
 - **`TileResourceLoader` / `Item.GenerateIcon` preview cameras break `-nographics` clients.** `RuntimePreviewGenerator` recreates URP on NullGfxDevice → GraphicsBuffer/Blitter spam that fails the harness exception check. Skip icon generation when `Application.isBatchMode` or `GraphicsDeviceType.Null` (dedicated server already skipped via `UNITY_SERVER`).
 
 ## Depends on / Used by

@@ -1,7 +1,7 @@
 > Code paths: Assets/Scripts/SS3D/Permissions/
 > Entry points: PermissionSubSystem
 > Status: partial
-> Verified: b7b7dcf3 — 2026-07-17
+> Verified: d592fb12a — 2026-07-18
 
 # Permissions
 
@@ -21,7 +21,7 @@ Admin permission checks for server-gated actions (e.g. TileMap Creator RPCs). Pe
 
 ## Pitfalls
 
-- On a fresh server with no saved envelope yet, `PermissionsPersistenceContributor.Restore` falls through to `LegacyPermissionsMigrator.TryLoadFromLegacyTxt` — **not** `PermissionSubSystem`'s own `LoadPermissionsFromLegacyTxt` fallback (that only fires if `HasLoadedPermissions` is still false by the time something calls `TryGetUserRole`, which the persistence contributor's restore beats it to on boot). Both read the same `Config/permissions.txt` path, so seeding that file before server start (see `Testing/multiplayer/run_smoketest.sh`) still works either way, but if you're debugging why a hand-edited `permissions.txt` isn't taking effect, check whether a server-meta envelope already exists first — an existing envelope wins and the legacy file is never consulted at all.
+- On a fresh server with no saved envelope yet, `PermissionsPersistenceContributor.Restore` falls through to `LegacyPermissionsMigrator.TryLoadFromLegacyTxt` — **not** `PermissionSubSystem`'s own `LoadPermissionsFromLegacyTxt` fallback (that only fires if `HasLoadedPermissions` is still false by the time something calls `TryGetUserRole`, which the persistence contributor's restore beats it to on boot). Both read the same `Config/permissions.txt` path. An existing `Data/ServerMeta/permissions.json` wins and the legacy file is never consulted — smoke triage symptom: `User harness_… doesn't have Administrator` despite a seeded `permissions.txt`. `run_smoketest.sh` deletes the staged ServerMeta permissions file before seeding the txt so the migrator path runs.
 
 ## Depends on / Used by
 

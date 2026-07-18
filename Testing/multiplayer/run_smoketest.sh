@@ -98,6 +98,13 @@ chmod +x "$RUN_DIR/server/$SERVER_BIN_NAME"
 # ChangeRoundStateView.HandleEmbarkButtonPress / PermissionSubSystem) - seeded here since a
 # real headless dedicated server has no Editor session to grant it by hand. Harmless for
 # clients whose script never calls start_round.
+#
+# Builds often ship Data/ServerMeta/permissions.json from prior Editor/play sessions.
+# PermissionsPersistenceContributor prefers that envelope over Config/permissions.txt
+# (see Documents/architecture/systems/permissions.md Pitfalls), so clear it from the
+# staged tree first — Data is a real copy, not a hardlink to Builds/.
+rm -f "$RUN_DIR/server/Data/ServerMeta/permissions.json" \
+    "$RUN_DIR/server/Data/ServerMeta/permissions"
 mkdir -p "$RUN_DIR/server/Config"
 : > "$RUN_DIR/server/Config/permissions.txt"
 for ckey in "${CLIENT_CKEYS[@]}"; do
