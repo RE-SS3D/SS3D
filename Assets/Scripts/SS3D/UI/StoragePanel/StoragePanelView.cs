@@ -184,7 +184,6 @@ namespace SS3D.UI.StoragePanel
             _dragStartPointer = evt.position;
             _dragStartPosition = new Vector2(resolvedStyle.left, resolvedStyle.top);
             _header.CapturePointer(evt.pointerId);
-            _header.AddToClassList("storage-panel__header--dragging");
             evt.StopPropagation();
         }
 
@@ -217,7 +216,6 @@ namespace SS3D.UI.StoragePanel
             }
 
             _isDragging = false;
-            _header.RemoveFromClassList("storage-panel__header--dragging");
             if (_header.HasPointerCapture(PointerId.mousePointerId))
             {
                 _header.ReleasePointer(PointerId.mousePointerId);

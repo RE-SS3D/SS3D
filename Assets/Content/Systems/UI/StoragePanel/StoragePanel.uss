@@ -29,10 +29,6 @@
     border-top-right-radius: var(--ss3d-radius-md);
 }
 
-.storage-panel__header--dragging {
-    cursor: move-arrow;
-}
-
 .storage-panel__title {
     color: var(--ss3d-text-primary);
     -unity-font-style: bold;
