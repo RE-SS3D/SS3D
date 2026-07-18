@@ -223,7 +223,7 @@ main() {
 
     echo "=== Multiplayer smoke triage: $run_id ==="
     echo "path: $run_dir"
-    echo "total_size: $(human_bytes "${total_bytes:-0}") (mostly staged player builds, not logs)"
+    echo "total_size: $(human_bytes "${total_bytes:-0}") (apparent; player binaries usually hardlinked to Builds/)"
     echo "noise_allowlist: $NOISE_FILE (${#NOISE_PATTERNS[@]} patterns)"
 
     local procs=()

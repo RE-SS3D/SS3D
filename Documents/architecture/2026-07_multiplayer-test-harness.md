@@ -26,8 +26,9 @@ runs in CI, and is trivially runnable locally.
    `Builds/Game/SS3D.x86_64` and `Builds/GameServer/SS3D.x86_64`.
 2. **Run** the harness: `./Testing/multiplayer/run_smoketest.sh basic-round` (or
    `late-join 2`). Cursor skill: `.cursor/skills/run-multiplayer-smoke/SKILL.md`.
-   Each run still `cp -r`s the player builds into `Testing/multiplayer/.runs/<id>/`
-   (~hundreds of MB) so Logs/`Application.dataPath` stay isolated.
+   Staging hardlinks the player build into `Testing/multiplayer/.runs/<id>/` (same
+   filesystem as `Builds/`) and real-copies only small writable `Config`/`Data`/`Logs`
+   trees — so many runs do not multiply ~180–300 MB on disk.
 3. **Triage** the run dir: `./Testing/multiplayer/tools/triage_run.sh latest` (or the run id).
    Cursor skill: `.cursor/skills/triage-multiplayer-smoke/SKILL.md`. Use the summary to work
    bugs in follow-up branches; a failing scenario with clear `ScriptFailed` / signals means the
@@ -64,11 +65,11 @@ runs in CI, and is trivially runnable locally.
   N real client processes, all `-batchmode -nographics` (no display dependency, runs unmodified
   on headless Linux CI or a dev machine).
 - `lib/process.sh` — dynamic free-port allocation (no more hardcoded port); stages an isolated
-  per-run copy of each build (`Application.dataPath`/Logs folder is resolved from the binary's
-  own location, not CWD, so concurrent runs sharing one build would otherwise collide on
-  `LogServer.json`); PID-tracked spawn/kill (`trap ... EXIT INT TERM`, never a process-name
-  match — the old harness's `KillAllBuiltExecutables` could kill unrelated processes on a shared
-  machine).
+  per-run tree of each build via hardlinks when possible (`cp -a --link` / `cp -al`, full copy
+  fallback) so Logs/`Application.dataPath` stay isolated without duplicating player binaries;
+  real-copies only `Config`/`Data`/`Logs` (writable). PID-tracked spawn/kill
+  (`trap ... EXIT INT TERM`, never a process-name match — the old harness's
+  `KillAllBuiltExecutables` could kill unrelated processes on a shared machine).
 - `lib/logwait.sh` — polls the structured JSON logs for `Test signal` lines via `jq`; checks
   Unity's own `-logFile` output for uncaught-exception signatures (structured logs only capture
   what goes through the `Log` wrapper — crashes/NREs surface through Unity's own log, not
@@ -142,10 +143,9 @@ runs in CI, and is trivially runnable locally.
   would need a new one or a new `AutomationSubSystem` instruction). Deferred.
 - **Single build target.** The harness only builds/runs `StandaloneLinux64`, matching the
   dedicated-server effort's scope; no Windows client coverage.
-- **`stage_build` full copies.** Each process gets a `cp -r` of the player build (~180–300 MB),
-  so `.runs/<id>/` is hundreds of MB even when logs are tens of KB. Needed today because Unity
-  resolves `Application.dataPath`/Logs from the binary path. Hardlink/`cp -al` or overlay-only
-  Config/Logs would shrink disk use; not done yet.
+- **`stage_build` hardlinks.** Default is `cp -a --link` / `cp -al` plus real copies of
+  `Config`/`Data`/`Logs`. Falls back to a full copy (with a warning) if source and
+  `.runs/` are on different filesystems — watch CI disk if that ever happens.
 - **Headless unity.log noise.** `-batchmode -nographics` clients still emit graphics/icon and
   rare missing-script lines; server emits Dedicated Server Optimizations shader messages. Prefer
   source fixes (icon skip already mapped) over growing `known_unity_noise.patterns`. Harness

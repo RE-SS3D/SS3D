@@ -51,8 +51,11 @@ Ask the user only if they did not name a scenario; otherwise default to `basic-r
 ./Testing/multiplayer/run_smoketest.sh <scenario> [client-count]
 ```
 
-- Block until it finishes (can take minutes: stage `cp -r` of builds + scenario waits).
-- Staging still uses full `cp -r` per process (~hundreds of MB under `.runs/<id>/`) — expected.
+- Block until it finishes (can take a couple of minutes for scenario waits; staging is cheap
+  when hardlinks work).
+- Staging hardlinks player builds into `.runs/<id>/` and real-copies only `Config`/`Data`/`Logs`.
+  `du` of a single run dir can still look large; actual free-space growth across many runs should
+  stay small. A "falling back to full copy" warning means disk will grow ~180–300 MB per process.
 - Exit non-zero on ScriptFailed, JSON Error/Fatal, or unity.log exception signatures is
   **success for the harness** when investigating bugs: the run dir is the artifact.
 
@@ -79,5 +82,8 @@ or `latest`). Do not dump `unity.log`.
 
 - Rebuild the game from this skill (Editor menus / CI own builds).
 - Treat a failing scenario as “harness broken” without triage — many fails are real game bugs.
+- Treat `total_size` from triage as "apparent" tree size — hardlinked player binaries are shared
+  with `Builds/` and sibling runs; do not delete `Builds/` while old hardlinked `.runs/` exist
+  if you still need those runs.
 - Edit `Documents/design/*`.
 - Commit Unity mat/font/URP/Addressables dirt from opening the Editor.

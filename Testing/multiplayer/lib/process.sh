@@ -17,12 +17,16 @@ PY
 }
 
 # stage_build <source_build_dir> <dest_dir>
-# Copies a Unity build output directory into an isolated per-run directory. Unity resolves
-# Application.dataPath (and therefore the Serilog Logs/ folder) from the executable's own
-# location, not the process's working directory - without this, concurrent runs sharing one
-# build would all write LogServer.json/LogClient<ckey>.json to the same shared Logs/ folder.
-# Also clears any Logs/ carried over from the source build (e.g. earlier manual dogfooding
-# runs) so a stale "ServerReady" line can't be mistaken for this run's own signal.
+# Stages a Unity build into an isolated per-run directory. Unity resolves Application.dataPath
+# (and therefore the Serilog Logs/ folder) from the executable's own location, not CWD — without
+# a per-run tree, concurrent runs sharing one build would collide on LogServer.json /
+# LogClient<ckey>.json. Config/ and Data/ are CWD-relative (see Paths.cs), so the process
+# workdir is this staged dir too.
+#
+# Prefer hardlinks (cp -a --link / cp -al) so each run does not duplicate ~180–300 MB of
+# player binaries on disk. Writable overlays (Config, Data, Logs) are replaced with real
+# copies so runtime writes cannot mutate Builds/ or sibling runs sharing hardlinked files.
+# Falls back to a full copy with a warning when hardlinks are unavailable (cross-filesystem).
 stage_build() {
     local source_dir="$1"
     local dest_dir="$2"
@@ -33,8 +37,29 @@ stage_build() {
     fi
 
     mkdir -p "$(dirname "$dest_dir")"
-    cp -r "$source_dir" "$dest_dir"
-    rm -rf "${dest_dir:?}/Logs"
+    rm -rf "$dest_dir"
+
+    if cp -a --link "$source_dir" "$dest_dir" 2>/dev/null \
+        || cp -al "$source_dir" "$dest_dir" 2>/dev/null; then
+        :
+    else
+        echo "warning: hardlink staging unavailable for $dest_dir; falling back to full copy (high disk use)" >&2
+        cp -a "$source_dir" "$dest_dir" || return 1
+    fi
+
+    # Real copies of small writable trees (CWD Config/Data; Logs next to the binary).
+    rm -rf "${dest_dir:?}/Config" "${dest_dir:?}/Data" "${dest_dir:?}/Logs"
+    if [[ -d "$source_dir/Config" ]]; then
+        cp -a "$source_dir/Config" "$dest_dir/Config"
+    else
+        mkdir -p "$dest_dir/Config"
+    fi
+    if [[ -d "$source_dir/Data" ]]; then
+        cp -a "$source_dir/Data" "$dest_dir/Data"
+    else
+        mkdir -p "$dest_dir/Data"
+    fi
+    mkdir -p "$dest_dir/Logs"
 }
 
 # spawn_process <workdir> <executable> <logfile> <args...>

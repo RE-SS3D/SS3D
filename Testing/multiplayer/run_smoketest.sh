@@ -90,7 +90,7 @@ done
 
 mkdir -p "$RUN_DIR"
 
-echo "Staging isolated build copies..."
+echo "Staging isolated build trees (hardlink when possible)..."
 stage_build "$SERVER_BUILD_DIR" "$RUN_DIR/server" || exit 1
 chmod +x "$RUN_DIR/server/$SERVER_BIN_NAME"
 

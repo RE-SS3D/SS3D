@@ -64,5 +64,6 @@ CI artifacts unpack to the same layout.
 ## Do not
 
 - Dump entire `unity.log` or staged `SS3D_Data/` into chat.
-- Treat `total_size` (~hundreds of MB) as log bloat — it is mostly `stage_build` player copies.
+- Treat triage `total_size` as unique disk use — staging hardlinks player binaries; apparent
+  size stays large while free-space cost across runs stays small.
 - Edit `Documents/design/*`.
