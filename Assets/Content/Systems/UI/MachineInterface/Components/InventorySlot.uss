@@ -42,3 +42,13 @@
     white-space: normal;
     max-width: 64px;
 }
+
+.inventory-slot--valid-drop .inventory-slot__well {
+    border-color: var(--ss3d-feedback-info);
+    background-color: var(--ss3d-feedback-info-bg);
+}
+
+.inventory-slot--invalid-drop .inventory-slot__well {
+    border-color: var(--ss3d-feedback-danger);
+    background-color: var(--ss3d-feedback-danger-bg);
+}

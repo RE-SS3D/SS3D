@@ -82,8 +82,8 @@ namespace SS3D.UI.StoragePanel
 
         public void SetDropState(SlotDropState state)
         {
-            EnableInClassList("storage-slot--valid-drop", state == SlotDropState.Valid);
-            EnableInClassList("storage-slot--invalid-drop", state == SlotDropState.Invalid);
+            EnableInClassList("inventory-slot--valid-drop", state == SlotDropState.Valid);
+            EnableInClassList("inventory-slot--invalid-drop", state == SlotDropState.Invalid);
         }
 
         private void OnPointerDown(PointerDownEvent evt)

@@ -422,9 +422,32 @@ namespace SS3D.Systems.Inventory.Containers
         /// </summary>
         public bool TransferItemToOther(Item item, Vector2Int position, AttachedContainer other)
         {
-            if (!FindItem(item, out int index)) return false;
-            if(!RemoveStoredItem(index)) return false;
-            return other.AddStoredItem(new StoredItem(item, position));
+            if (other == null || !FindItem(item, out int index))
+            {
+                return false;
+            }
+
+            // Reject before remove — otherwise a failed AddStoredItem orphans the item (null container)
+            // and clients can appear to "drop into hand" when HUD hit-tests fall through.
+            if (!other.CanContainItemAtPosition(item, position))
+            {
+                return false;
+            }
+
+            StoredItem stored = _storedItems[index];
+            if (!RemoveStoredItem(index))
+            {
+                return false;
+            }
+
+            if (other.AddStoredItem(new StoredItem(item, position)))
+            {
+                return true;
+            }
+
+            // Restore to the original slot if the add still failed (race / edge conditions).
+            AddStoredItem(stored);
+            return false;
         }
 
 		/// <summary>

@@ -453,20 +453,27 @@ namespace SS3D.UI.StoragePanel
             }
 
             (StoragePanelView targetPanel, StorageSlot targetSlot) = HitTestPanels(releasePosition);
-            if (targetPanel != null
-                && targetSlot != null
-                && targetSlot != _dragSourceSlot
-                && targetPanel.Container.CanContainItemAtPosition(_dragItem, targetSlot.Position))
+            if (targetPanel != null && targetSlot != null && targetSlot != _dragSourceSlot)
             {
-                _localInventory.ClientTransferItem(_dragItem, targetSlot.Position, targetPanel.Container);
+                // Panel slot under the pointer owns the drop — never fall through to HUD (hands),
+                // or an invalid bag slot would deposit into whatever HUD target shares that screen point.
+                if (targetPanel.Container.CanContainItemAtPosition(_dragItem, targetSlot.Position))
+                {
+                    _localInventory.ClientTransferItem(_dragItem, targetSlot.Position, targetPanel.Container);
+                }
+
                 return;
             }
 
             HudDropTarget hudTarget = HitTestHud(releasePosition);
-            if (hudTarget != null
-                && hudTarget.Container != null
-                && hudTarget.Container != _dragSourceContainer
-                && hudTarget.Container.CanContainItemAtPosition(_dragItem, hudTarget.Position))
+            if (hudTarget == null
+                || hudTarget.Container == null
+                || hudTarget.Container == _dragSourceContainer)
+            {
+                return;
+            }
+
+            if (hudTarget.Container.CanContainItemAtPosition(_dragItem, hudTarget.Position))
             {
                 _localInventory.ClientTransferItem(_dragItem, hudTarget.Position, hudTarget.Container);
             }
@@ -520,8 +527,8 @@ namespace SS3D.UI.StoragePanel
             }
 
             bool hudValid = hudTarget.Container.CanContainItemAtPosition(_dragItem, hudTarget.Position);
-            hudTarget.Element.EnableInClassList("storage-slot--valid-drop", hudValid);
-            hudTarget.Element.EnableInClassList("storage-slot--invalid-drop", !hudValid);
+            hudTarget.Element.EnableInClassList("inventory-slot--valid-drop", hudValid);
+            hudTarget.Element.EnableInClassList("inventory-slot--invalid-drop", !hudValid);
             _highlightedHudElement = hudTarget.Element;
         }
 
@@ -532,8 +539,8 @@ namespace SS3D.UI.StoragePanel
 
             if (_highlightedHudElement != null)
             {
-                _highlightedHudElement.EnableInClassList("storage-slot--valid-drop", false);
-                _highlightedHudElement.EnableInClassList("storage-slot--invalid-drop", false);
+                _highlightedHudElement.EnableInClassList("inventory-slot--valid-drop", false);
+                _highlightedHudElement.EnableInClassList("inventory-slot--invalid-drop", false);
                 _highlightedHudElement = null;
             }
         }

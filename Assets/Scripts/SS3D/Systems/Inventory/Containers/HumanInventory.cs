@@ -398,7 +398,11 @@ namespace SS3D.Systems.Inventory.Containers
             {
                 if (item == null)
                 {
-                    ClientTransferItem(Hands.SelectedHand.ItemInHand, position, container);
+                    Item handItem = Hands.SelectedHand.ItemInHand;
+                    if (handItem != null && container.CanContainItemAtPosition(handItem, position))
+                    {
+                        ClientTransferItem(handItem, position, container);
+                    }
                 }
             }
         }
