@@ -260,6 +260,21 @@ namespace SS3D.Systems.Health
             PublishSnapshot();
         }
 
+        /// <summary>
+        /// Stamina push-past-empty bridge (health Phase 7a / Documents/design/stamina.md §3).
+        /// </summary>
+        [Server]
+        public void ApplyOxyDebt(float oxyDebtGain)
+        {
+            if (oxyDebtGain <= 0f)
+            {
+                return;
+            }
+
+            _pools = HealthSimulation.ApplyOxyDebt(_pools, oxyDebtGain);
+            PublishSnapshot();
+        }
+
         [Server]
         public void ApplyAntitoxin(float toxinReduction = HealthConstants.AntitoxinReduction)
         {

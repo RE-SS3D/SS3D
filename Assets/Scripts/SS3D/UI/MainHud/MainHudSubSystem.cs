@@ -1,3 +1,5 @@
+using System;
+using System.Collections.Generic;
 using System.Linq;
 using Coimbra.Services.Events;
 using SS3D.Core;
@@ -12,6 +14,7 @@ using SS3D.Systems.Inventory.Items;
 using SS3D.Systems.Rounds;
 using SS3D.Systems.Rounds.Events;
 using SS3D.UI.MainHud.Components;
+using SS3D.UI.MachineInterface.Components;
 using SS3D.UI.StoragePanel;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -207,6 +210,16 @@ namespace SS3D.UI.MainHud
             _view.IntentToggleRequested += HandleIntentToggleRequested;
             _view.HandSelectedRequested += HandleHandSelectedRequested;
             _view.GearSlotClicked += HandleGearSlotClicked;
+            _view.EquipmentSlotClicked += HandleEquipmentSlotClicked;
+            _view.EquipmentDragStarted += HandleEquipmentDragStarted;
+            _view.EquipmentDragMoved += HandleHudDragMoved;
+            _view.EquipmentDragEnded += HandleHudDragEnded;
+            _view.GearDragStarted += HandleGearDragStarted;
+            _view.GearDragMoved += HandleHudDragMoved;
+            _view.GearDragEnded += HandleHudDragEnded;
+            _view.HandDragStarted += HandleHandDragStarted;
+            _view.HandDragMoved += HandleHudDragMoved;
+            _view.HandDragEnded += HandleHudDragEnded;
             _view.Attach(_document.rootVisualElement);
             _view.SetAlertState(default);
         }
@@ -403,14 +416,7 @@ namespace SS3D.UI.MainHud
                 return;
             }
 
-            ContainerType type = slot switch
-            {
-                HandsGearStrip.GearSlot.Belt => ContainerType.Belt,
-                HandsGearStrip.GearSlot.Id => ContainerType.Identification,
-                HandsGearStrip.GearSlot.Pda => ContainerType.Pda,
-                HandsGearStrip.GearSlot.Back => ContainerType.Bag,
-                _ => ContainerType.None,
-            };
+            ContainerType type = GearSlotToContainerType(slot);
 
             if (!_inventory.TryGetTypeContainer(type, 0, out AttachedContainer container))
             {
@@ -424,6 +430,205 @@ namespace SS3D.UI.MainHud
 
             Rect bound = _view.GetGearSlotWorldBound(slot);
             panelHost.RequestOpenNear(_inventory.containerViewer, container, bound.position);
+        }
+
+        /// <summary>
+        /// Equip/unequip against the active hand for a single-item clothing slot
+        /// (Documents/design/inventory-storage.md §3).
+        /// </summary>
+        private void HandleEquipmentSlotClicked(EquipmentGrid.Slot slot)
+        {
+            if (_inventory == null)
+            {
+                return;
+            }
+
+            ContainerType type = EquipmentSlotToContainerType(slot);
+            if (type == ContainerType.None || !_inventory.TryGetTypeContainer(type, 0, out AttachedContainer container))
+            {
+                // Ears/feet may be left or right — try the alternate.
+                if (slot == EquipmentGrid.Slot.Ears
+                    && _inventory.TryGetTypeContainer(ContainerType.EarRight, 0, out container))
+                {
+                    _inventory.ClientInteractWithContainerSlot(container, Vector2Int.zero);
+                }
+                else if (slot == EquipmentGrid.Slot.Feet
+                         && _inventory.TryGetTypeContainer(ContainerType.ShoeRight, 0, out container))
+                {
+                    _inventory.ClientInteractWithContainerSlot(container, Vector2Int.zero);
+                }
+
+                return;
+            }
+
+            _inventory.ClientInteractWithContainerSlot(container, Vector2Int.zero);
+        }
+
+        private void HandleEquipmentDragStarted(EquipmentGrid.Slot slot, Vector2 position)
+        {
+            if (!TryGetEquipmentContainer(slot, out AttachedContainer container))
+            {
+                return;
+            }
+
+            Item item = container.Items.FirstOrDefault();
+            if (item == null || !SubSystems.TryGet(out StoragePanelHost panelHost))
+            {
+                return;
+            }
+
+            panelHost.BeginHudDrag(item, container, position);
+        }
+
+        private void HandleGearDragStarted(HandsGearStrip.GearSlot slot, Vector2 position)
+        {
+            ContainerType type = GearSlotToContainerType(slot);
+            if (_inventory == null
+                || !_inventory.TryGetTypeContainer(type, 0, out AttachedContainer container))
+            {
+                return;
+            }
+
+            Item item = container.Items.FirstOrDefault();
+            if (item == null || !SubSystems.TryGet(out StoragePanelHost panelHost))
+            {
+                return;
+            }
+
+            panelHost.BeginHudDrag(item, container, position);
+        }
+
+        private void HandleHandDragStarted(HandsGearStrip.HandSlot slot, Vector2 position)
+        {
+            if (_hands == null || _hands.PlayerHands.Count == 0)
+            {
+                return;
+            }
+
+            int index = slot == HandsGearStrip.HandSlot.Left ? 0 : 1;
+            if (index >= _hands.PlayerHands.Count)
+            {
+                return;
+            }
+
+            Hand hand = _hands.PlayerHands[index];
+            Item item = hand?.ItemInHand;
+            if (item == null || hand.Container == null || !SubSystems.TryGet(out StoragePanelHost panelHost))
+            {
+                return;
+            }
+
+            panelHost.BeginHudDrag(item, hand.Container, position);
+        }
+
+        private void HandleHudDragMoved(EquipmentGrid.Slot slot, Vector2 position)
+        {
+            HandleHudDragMoved(position);
+        }
+
+        private void HandleHudDragMoved(HandsGearStrip.GearSlot slot, Vector2 position)
+        {
+            HandleHudDragMoved(position);
+        }
+
+        private void HandleHudDragMoved(HandsGearStrip.HandSlot slot, Vector2 position)
+        {
+            HandleHudDragMoved(position);
+        }
+
+        private void HandleHudDragMoved(Vector2 position)
+        {
+            if (SubSystems.TryGet(out StoragePanelHost panelHost))
+            {
+                panelHost.MoveHudDrag(position);
+            }
+        }
+
+        private void HandleHudDragEnded(EquipmentGrid.Slot slot, Vector2 position)
+        {
+            HandleHudDragEnded(position);
+        }
+
+        private void HandleHudDragEnded(HandsGearStrip.GearSlot slot, Vector2 position)
+        {
+            HandleHudDragEnded(position);
+        }
+
+        private void HandleHudDragEnded(HandsGearStrip.HandSlot slot, Vector2 position)
+        {
+            HandleHudDragEnded(position);
+        }
+
+        private void HandleHudDragEnded(Vector2 position)
+        {
+            if (SubSystems.TryGet(out StoragePanelHost panelHost))
+            {
+                panelHost.EndHudDrag(position);
+            }
+        }
+
+        /// <summary>Opens all pocket containers as storage panels (replaces ToggleInternalClothing).</summary>
+        public void OpenPocketPanels()
+        {
+            if (_inventory?.containerViewer == null || !SubSystems.TryGet(out StoragePanelHost panelHost))
+            {
+                return;
+            }
+
+            for (int i = 0; _inventory.TryGetTypeContainer(ContainerType.Pocket, i, out AttachedContainer pocket); i++)
+            {
+                Vector2 anchor = new(120f + i * 40f, 200f);
+                panelHost.RequestOpenNear(_inventory.containerViewer, pocket, anchor);
+            }
+        }
+
+        private static ContainerType GearSlotToContainerType(HandsGearStrip.GearSlot slot) => slot switch
+        {
+            HandsGearStrip.GearSlot.Belt => ContainerType.Belt,
+            HandsGearStrip.GearSlot.Id => ContainerType.Identification,
+            HandsGearStrip.GearSlot.Pda => ContainerType.Pda,
+            HandsGearStrip.GearSlot.Back => ContainerType.Bag,
+            _ => ContainerType.None,
+        };
+
+        private static ContainerType EquipmentSlotToContainerType(EquipmentGrid.Slot slot) => slot switch
+        {
+            EquipmentGrid.Slot.Head => ContainerType.Head,
+            EquipmentGrid.Slot.Eyes => ContainerType.Glasses,
+            EquipmentGrid.Slot.Face => ContainerType.Mask,
+            EquipmentGrid.Slot.Ears => ContainerType.EarLeft,
+            EquipmentGrid.Slot.GloveLeft => ContainerType.GloveLeft,
+            EquipmentGrid.Slot.Shirt => ContainerType.Jumpsuit,
+            EquipmentGrid.Slot.GloveRight => ContainerType.GloveRight,
+            EquipmentGrid.Slot.Feet => ContainerType.ShoeLeft,
+            _ => ContainerType.None,
+        };
+
+        private bool TryGetEquipmentContainer(EquipmentGrid.Slot slot, out AttachedContainer container)
+        {
+            container = null;
+            if (_inventory == null)
+            {
+                return false;
+            }
+
+            ContainerType type = EquipmentSlotToContainerType(slot);
+            if (_inventory.TryGetTypeContainer(type, 0, out container))
+            {
+                return true;
+            }
+
+            if (slot == EquipmentGrid.Slot.Ears)
+            {
+                return _inventory.TryGetTypeContainer(ContainerType.EarRight, 0, out container);
+            }
+
+            if (slot == EquipmentGrid.Slot.Feet)
+            {
+                return _inventory.TryGetTypeContainer(ContainerType.ShoeRight, 0, out container);
+            }
+
+            return false;
         }
 
         private void RefreshIntent()
@@ -464,6 +669,76 @@ namespace SS3D.UI.MainHud
             _view.SetGearIcon(HandsGearStrip.GearSlot.Id, IconFor(ContainerType.Identification));
             _view.SetGearIcon(HandsGearStrip.GearSlot.Pda, IconFor(ContainerType.Pda));
             _view.SetGearIcon(HandsGearStrip.GearSlot.Back, IconFor(ContainerType.Bag));
+
+            RegisterHudDropTargets();
+        }
+
+        private void RegisterHudDropTargets()
+        {
+            if (_inventory == null || _view == null || !SubSystems.TryGet(out StoragePanelHost panelHost))
+            {
+                return;
+            }
+
+            List<HudDropTarget> targets = new();
+
+            void AddEquipment(EquipmentGrid.Slot slot)
+            {
+                if (!TryGetEquipmentContainer(slot, out AttachedContainer container))
+                {
+                    return;
+                }
+
+                InventorySlot element = _view.Equipment.GetInventorySlot(slot);
+                targets.Add(new HudDropTarget(element, container, Vector2Int.zero, () => container.Items.FirstOrDefault()));
+            }
+
+            foreach (EquipmentGrid.Slot slot in Enum.GetValues(typeof(EquipmentGrid.Slot)))
+            {
+                AddEquipment(slot);
+            }
+
+            void AddGear(HandsGearStrip.GearSlot slot)
+            {
+                ContainerType type = GearSlotToContainerType(slot);
+                if (!_inventory.TryGetTypeContainer(type, 0, out AttachedContainer container))
+                {
+                    return;
+                }
+
+                InventorySlot element = _view.HandsGear.GetGearInventorySlot(slot);
+                targets.Add(new HudDropTarget(element, container, Vector2Int.zero, () => container.Items.FirstOrDefault()));
+            }
+
+            AddGear(HandsGearStrip.GearSlot.Belt);
+            AddGear(HandsGearStrip.GearSlot.Id);
+            AddGear(HandsGearStrip.GearSlot.Pda);
+            AddGear(HandsGearStrip.GearSlot.Back);
+
+            if (_hands != null)
+            {
+                for (int i = 0; i < _hands.PlayerHands.Count && i < 2; i++)
+                {
+                    Hand hand = _hands.PlayerHands[i];
+                    if (hand?.Container == null)
+                    {
+                        continue;
+                    }
+
+                    HandsGearStrip.HandSlot handSlot = i == 0
+                        ? HandsGearStrip.HandSlot.Left
+                        : HandsGearStrip.HandSlot.Right;
+                    InventorySlot element = _view.HandsGear.GetHandInventorySlot(handSlot);
+                    AttachedContainer handContainer = hand.Container;
+                    targets.Add(new HudDropTarget(
+                        element,
+                        handContainer,
+                        Vector2Int.zero,
+                        () => handContainer.Items.FirstOrDefault()));
+                }
+            }
+
+            panelHost.SetHudDropTargets(targets);
         }
 
         private Sprite IconFor(ContainerType type)

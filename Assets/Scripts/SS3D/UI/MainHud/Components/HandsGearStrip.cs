@@ -19,6 +19,12 @@ namespace SS3D.UI.MainHud.Components
             Back,
         }
 
+        public enum HandSlot
+        {
+            Left,
+            Right,
+        }
+
         /// <summary>
         /// Fired when a hand well is clicked. Argument is true for the left (first) hand slot.
         /// </summary>
@@ -30,6 +36,14 @@ namespace SS3D.UI.MainHud.Components
         /// </summary>
         public event Action<GearSlot> GearSlotClicked;
 
+        public event Action<GearSlot, Vector2> GearDragStarted;
+        public event Action<GearSlot, Vector2> GearDragMoved;
+        public event Action<GearSlot, Vector2> GearDragEnded;
+
+        public event Action<HandSlot, Vector2> HandDragStarted;
+        public event Action<HandSlot, Vector2> HandDragMoved;
+        public event Action<HandSlot, Vector2> HandDragEnded;
+
         private readonly InventorySlot _belt;
         private readonly InventorySlot _id;
         private readonly InventorySlot _pda;
@@ -37,18 +51,18 @@ namespace SS3D.UI.MainHud.Components
         private readonly InventorySlot _handLeft;
         private readonly InventorySlot _handRight;
 
+        private GearSlot? _dragGear;
+        private HandSlot? _dragHand;
+        private bool _dragMoved;
+
         public HandsGearStrip(MainHudIconSet icons)
         {
             AddToClassList("hands-gear-strip");
 
-            _belt = CreateSlot("Belt", icons.Belt, 64);
-            _id = CreateSlot("ID", icons.Id, 64);
-            _pda = CreateSlot("PDA", icons.Pda, 64);
-            _back = CreateSlot("Back", icons.Back, 64);
-            _belt.RegisterCallback<ClickEvent>(_ => GearSlotClicked?.Invoke(GearSlot.Belt));
-            _id.RegisterCallback<ClickEvent>(_ => GearSlotClicked?.Invoke(GearSlot.Id));
-            _pda.RegisterCallback<ClickEvent>(_ => GearSlotClicked?.Invoke(GearSlot.Pda));
-            _back.RegisterCallback<ClickEvent>(_ => GearSlotClicked?.Invoke(GearSlot.Back));
+            _belt = CreateGearSlot(GearSlot.Belt, "Belt", icons.Belt, 64);
+            _id = CreateGearSlot(GearSlot.Id, "ID", icons.Id, 64);
+            _pda = CreateGearSlot(GearSlot.Pda, "PDA", icons.Pda, 64);
+            _back = CreateGearSlot(GearSlot.Back, "Back", icons.Back, 64);
 
             VisualElement gear = new();
             gear.AddToClassList("hands-gear-strip__gear");
@@ -60,10 +74,8 @@ namespace SS3D.UI.MainHud.Components
             VisualElement divider = new();
             divider.AddToClassList("hands-gear-strip__divider");
 
-            _handLeft = CreateSlot("Left hand", icons.HandLeft, 96);
-            _handRight = CreateSlot("Right hand", icons.HandRight, 96);
-            _handLeft.RegisterCallback<ClickEvent>(_ => HandClickRequested?.Invoke(true));
-            _handRight.RegisterCallback<ClickEvent>(_ => HandClickRequested?.Invoke(false));
+            _handLeft = CreateHandSlot(HandSlot.Left, "Left hand", icons.HandLeft, 96);
+            _handRight = CreateHandSlot(HandSlot.Right, "Right hand", icons.HandRight, 96);
 
             VisualElement hands = new();
             hands.AddToClassList("hands-gear-strip__hands");
@@ -85,6 +97,10 @@ namespace SS3D.UI.MainHud.Components
         /// <summary>Panel-space bounds of a gear slot, used to anchor its storage panel near the click.</summary>
         public Rect GetGearSlotWorldBound(GearSlot slot) => GetGearSlot(slot).worldBound;
 
+        public InventorySlot GetGearInventorySlot(GearSlot slot) => GetGearSlot(slot);
+
+        public InventorySlot GetHandInventorySlot(HandSlot slot) => slot == HandSlot.Left ? _handLeft : _handRight;
+
         public void SetHandIcons(Sprite leftItemIcon, Sprite rightItemIcon)
         {
             _handLeft.ItemIcon = leftItemIcon;
@@ -105,6 +121,104 @@ namespace SS3D.UI.MainHud.Components
             GearSlot.Back => _back,
             _ => null,
         };
+
+        private InventorySlot CreateGearSlot(GearSlot slot, string label, Sprite emptyIcon, float size)
+        {
+            InventorySlot inventorySlot = CreateSlot(label, emptyIcon, size);
+            inventorySlot.RegisterCallback<ClickEvent>(_ =>
+            {
+                if (_dragMoved)
+                {
+                    return;
+                }
+
+                GearSlotClicked?.Invoke(slot);
+            });
+            WireDrag(
+                inventorySlot,
+                () => inventorySlot.ItemIcon != null,
+                () =>
+                {
+                    _dragGear = slot;
+                    _dragHand = null;
+                },
+                pos => GearDragStarted?.Invoke(slot, pos),
+                pos => GearDragMoved?.Invoke(slot, pos),
+                pos => GearDragEnded?.Invoke(slot, pos));
+            return inventorySlot;
+        }
+
+        private InventorySlot CreateHandSlot(HandSlot slot, string label, Sprite emptyIcon, float size)
+        {
+            InventorySlot inventorySlot = CreateSlot(label, emptyIcon, size);
+            bool left = slot == HandSlot.Left;
+            inventorySlot.RegisterCallback<ClickEvent>(_ =>
+            {
+                if (_dragMoved)
+                {
+                    return;
+                }
+
+                HandClickRequested?.Invoke(left);
+            });
+            WireDrag(
+                inventorySlot,
+                () => inventorySlot.ItemIcon != null,
+                () =>
+                {
+                    _dragHand = slot;
+                    _dragGear = null;
+                },
+                pos => HandDragStarted?.Invoke(slot, pos),
+                pos => HandDragMoved?.Invoke(slot, pos),
+                pos => HandDragEnded?.Invoke(slot, pos));
+            return inventorySlot;
+        }
+
+        private void WireDrag(
+            InventorySlot inventorySlot,
+            Func<bool> canDrag,
+            Action onBegin,
+            Action<Vector2> started,
+            Action<Vector2> moved,
+            Action<Vector2> ended)
+        {
+            inventorySlot.RegisterCallback<PointerDownEvent>(evt =>
+            {
+                if (!canDrag())
+                {
+                    return;
+                }
+
+                onBegin();
+                _dragMoved = false;
+                inventorySlot.CapturePointer(evt.pointerId);
+                started(evt.position);
+                evt.StopPropagation();
+            });
+            inventorySlot.RegisterCallback<PointerMoveEvent>(evt =>
+            {
+                if (!inventorySlot.HasPointerCapture(evt.pointerId))
+                {
+                    return;
+                }
+
+                _dragMoved = true;
+                moved(evt.position);
+            });
+            inventorySlot.RegisterCallback<PointerUpEvent>(evt =>
+            {
+                if (!inventorySlot.HasPointerCapture(evt.pointerId))
+                {
+                    return;
+                }
+
+                inventorySlot.ReleasePointer(evt.pointerId);
+                ended(evt.position);
+                _dragGear = null;
+                _dragHand = null;
+            });
+        }
 
         private static InventorySlot CreateSlot(string label, Sprite emptyIcon, float size)
         {

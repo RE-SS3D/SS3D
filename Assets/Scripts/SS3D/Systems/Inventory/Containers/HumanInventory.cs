@@ -51,10 +51,39 @@ namespace SS3D.Systems.Inventory.Containers
         // When the inventory is done doing its setup
         public event Notify OnInventorySetUp;
 
+        /// <summary>
+        /// Fired when <see cref="CarriedWeight"/> may have changed (container add/remove or contents).
+        /// </summary>
+        public event Notify OnCarriedWeightChanged;
+
         // reference to the component allowing to display out of inventory containers.
         public ContainerViewer containerViewer;
 
         public List<AttachedContainer> Containers => ContainersOnPlayer.Collection.ToList();
+
+        /// <summary>
+        /// Total carried weight for encumbrance: every inventory container's recursive
+        /// <see cref="AttachedContainer.Weight"/> (includes hands, worn gear, and nested contents).
+        /// Always computed, never cached (Documents/design/inventory-storage.md §2, §7, §10).
+        /// </summary>
+        public float CarriedWeight
+        {
+            get
+            {
+                float total = 0f;
+                foreach (AttachedContainer container in ContainersOnPlayer)
+                {
+                    if (container == null)
+                    {
+                        continue;
+                    }
+
+                    total += container.Weight;
+                }
+
+                return total;
+            }
+        }
 
         /// <summary>
         /// The controllable body of the owning player
@@ -113,9 +142,11 @@ namespace SS3D.Systems.Inventory.Containers
             {
                 case SyncListOperation.Add:
                     OnInventoryContainerAdded?.Invoke(newContainer);
+                    OnCarriedWeightChanged?.Invoke();
                     break;
                 case SyncListOperation.RemoveAt:
                     OnInventoryContainerRemoved?.Invoke(oldContainer);
+                    OnCarriedWeightChanged?.Invoke();
                     break;
             }
         }
@@ -237,6 +268,7 @@ namespace SS3D.Systems.Inventory.Containers
 		private void HandleContainerContentChanged(AttachedContainer container, Item oldItem, Item newItem, ContainerChangeType type)
         {
             OnContainerContentChanged?.Invoke(container,oldItem,newItem,type);
+            OnCarriedWeightChanged?.Invoke();
         }
 
         /// <summary>

@@ -22,6 +22,21 @@ namespace SS3D.UI.MainHud
         /// <summary>Fired when a gear-strip slot (belt/ID/PDA/back) is clicked.</summary>
         public event Action<HandsGearStrip.GearSlot> GearSlotClicked;
 
+        /// <summary>Fired when an equipment-doll slot is clicked (equip/unequip vs active hand).</summary>
+        public event Action<EquipmentGrid.Slot> EquipmentSlotClicked;
+
+        public event Action<EquipmentGrid.Slot, Vector2> EquipmentDragStarted;
+        public event Action<EquipmentGrid.Slot, Vector2> EquipmentDragMoved;
+        public event Action<EquipmentGrid.Slot, Vector2> EquipmentDragEnded;
+
+        public event Action<HandsGearStrip.GearSlot, Vector2> GearDragStarted;
+        public event Action<HandsGearStrip.GearSlot, Vector2> GearDragMoved;
+        public event Action<HandsGearStrip.GearSlot, Vector2> GearDragEnded;
+
+        public event Action<HandsGearStrip.HandSlot, Vector2> HandDragStarted;
+        public event Action<HandsGearStrip.HandSlot, Vector2> HandDragMoved;
+        public event Action<HandsGearStrip.HandSlot, Vector2> HandDragEnded;
+
         private readonly StyleSheet[] _styleSheets;
         private readonly MainHudIconSet _icons;
 
@@ -108,17 +123,31 @@ namespace SS3D.UI.MainHud
             return _handsGearStrip.GetGearSlotWorldBound(slot);
         }
 
+        public EquipmentGrid Equipment => _equipmentGrid;
+
+        public HandsGearStrip HandsGear => _handsGearStrip;
+
         private void BuildTree()
         {
             _alertStack = new AlertIconStack();
             VisualElement alertZone = BuildZone("main-hud__zone--alerts", _alertStack);
 
             _equipmentGrid = new EquipmentGrid(_icons);
+            _equipmentGrid.SlotClicked += slot => EquipmentSlotClicked?.Invoke(slot);
+            _equipmentGrid.SlotDragStarted += (slot, pos) => EquipmentDragStarted?.Invoke(slot, pos);
+            _equipmentGrid.SlotDragMoved += (slot, pos) => EquipmentDragMoved?.Invoke(slot, pos);
+            _equipmentGrid.SlotDragEnded += (slot, pos) => EquipmentDragEnded?.Invoke(slot, pos);
             VisualElement equipmentZone = BuildZone("main-hud__zone--equipment", _equipmentGrid);
 
             _handsGearStrip = new HandsGearStrip(_icons);
             _handsGearStrip.HandClickRequested += leftIsActive => HandSelectedRequested?.Invoke(leftIsActive);
             _handsGearStrip.GearSlotClicked += slot => GearSlotClicked?.Invoke(slot);
+            _handsGearStrip.GearDragStarted += (slot, pos) => GearDragStarted?.Invoke(slot, pos);
+            _handsGearStrip.GearDragMoved += (slot, pos) => GearDragMoved?.Invoke(slot, pos);
+            _handsGearStrip.GearDragEnded += (slot, pos) => GearDragEnded?.Invoke(slot, pos);
+            _handsGearStrip.HandDragStarted += (slot, pos) => HandDragStarted?.Invoke(slot, pos);
+            _handsGearStrip.HandDragMoved += (slot, pos) => HandDragMoved?.Invoke(slot, pos);
+            _handsGearStrip.HandDragEnded += (slot, pos) => HandDragEnded?.Invoke(slot, pos);
             VisualElement handsGearZone = BuildZone("main-hud__zone--hands-gear", _handsGearStrip);
 
             _intentModule = new IntentModule();

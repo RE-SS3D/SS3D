@@ -38,6 +38,9 @@ todos:
   - id: phase7-cross-system
     content: "Phase 7: Stamina↔oxy bridge, armor, surgery direct-repair slice, death/cloning, chemistry stubs"
     status: pending
+  - id: phase7a-stamina
+    content: "Phase 7a: Stamina rewrite — health-modulated regen, carried-weight encumbrance, sprint drain, push-past-empty → ApplyOxyDebt; StaminaBar purged (combat drains deferred)"
+    status: completed
   - id: phase8-hardening
     content: "Phase 8: Test suite, full worked-example PlayMode, update architecture docs"
     status: pending
@@ -404,7 +407,7 @@ Ships between Phase 5 and Phase 6. Design authority: health.md §5 (Severed tier
 
 | Track | Scope |
 |-------|-------|
-| 7a Stamina | Regen = f(heart, lungs, blood); overdraw → oxy debt |
+| 7a Stamina | **Shipped (core):** regen = f(heart, lungs, blood) × carried-weight; overdraw → `ApplyOxyDebt`; no bar. Combat drains deferred. See [systems/stamina.md](../architecture/systems/stamina.md). |
 | 7b Armor | Per-zone absorption before `ApplyDamage`; seal breach |
 | 7c Surgery | Incise → clamp → repair → close; unclamped-close → internal bleed |
 | 7d Death/cloning | DNA record, defib polish, cloning pod |

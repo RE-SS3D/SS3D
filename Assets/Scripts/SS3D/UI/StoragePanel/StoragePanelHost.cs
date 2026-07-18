@@ -49,17 +49,21 @@ namespace SS3D.UI.StoragePanel
         private readonly Dictionary<AttachedContainer, StoragePanelView> _openPanels = new();
         private readonly Dictionary<AttachedContainer, Vector2> _pendingAnchors = new();
         private readonly Dictionary<AttachedContainer, string> _pendingBreadcrumbs = new();
+        private readonly List<HudDropTarget> _hudDropTargets = new();
 
         private VisualElement _root;
         private HumanInventory _localInventory;
         private int _cascadeIndex;
 
-        // Active drag state.
+        // Active drag state (panel slot and/or HUD-origin drag).
         private StoragePanelView _dragSourcePanel;
         private StorageSlot _dragSourceSlot;
+        private Item _dragItem;
+        private AttachedContainer _dragSourceContainer;
         private VisualElement _dragGhost;
         private Image _dragGhostIcon;
         private StorageSlot _highlightedSlot;
+        private VisualElement _highlightedHudElement;
 
         protected override void OnAwake()
         {
@@ -189,11 +193,30 @@ namespace SS3D.UI.StoragePanel
             _boundViewer = null;
             _boundOpenedHandler = null;
             _localInventory = null;
+            ClearHudDropTargets();
 
             foreach (AttachedContainer container in new List<AttachedContainer>(_openPanels.Keys))
             {
                 ClosePanel(container);
             }
+        }
+
+        /// <summary>
+        /// Registers Main HUD slots (equipment / gear / hands) as peers for panel↔HUD drag-drop.
+        /// Cleared on unbind; MainHudSubSystem re-registers after each equipment refresh.
+        /// </summary>
+        public void SetHudDropTargets(IEnumerable<HudDropTarget> targets)
+        {
+            _hudDropTargets.Clear();
+            if (targets != null)
+            {
+                _hudDropTargets.AddRange(targets);
+            }
+        }
+
+        public void ClearHudDropTargets()
+        {
+            _hudDropTargets.Clear();
         }
 
         /// <summary>
@@ -305,14 +328,50 @@ namespace SS3D.UI.StoragePanel
 
         private void HandleSlotDragStarted(StoragePanelView panel, StorageSlot slot, Vector2 position)
         {
-            _dragSourcePanel = panel;
-            _dragSourceSlot = slot;
+            BeginDrag(slot.BoundItem, panel.Container, panel, slot, position);
+        }
+
+        /// <summary>Starts a drag that originated on a Main HUD slot (equipment / gear / hand).</summary>
+        public void BeginHudDrag(Item item, AttachedContainer sourceContainer, Vector2 position)
+        {
+            BeginDrag(item, sourceContainer, null, null, position);
+        }
+
+        /// <summary>Pointer moved during a HUD-originated drag.</summary>
+        public void MoveHudDrag(Vector2 position)
+        {
+            HandleSlotDragMoved(position);
+        }
+
+        /// <summary>Pointer released during a HUD-originated drag.</summary>
+        public void EndHudDrag(Vector2 releasePosition)
+        {
+            TryCompleteTransfer(releasePosition);
+            CleanupDrag();
+        }
+
+        private void BeginDrag(
+            Item item,
+            AttachedContainer sourceContainer,
+            StoragePanelView sourcePanel,
+            StorageSlot sourceSlot,
+            Vector2 position)
+        {
+            if (item == null || sourceContainer == null)
+            {
+                return;
+            }
+
+            _dragItem = item;
+            _dragSourceContainer = sourceContainer;
+            _dragSourcePanel = sourcePanel;
+            _dragSourceSlot = sourceSlot;
 
             _dragGhost = new VisualElement();
             _dragGhost.AddToClassList("storage-drag-ghost");
             _dragGhost.pickingMode = PickingMode.Ignore;
 
-            _dragGhostIcon = new Image { sprite = slot.BoundItem != null ? slot.BoundItem.ItemSprite : null };
+            _dragGhostIcon = new Image { sprite = item.ItemSprite };
             _dragGhostIcon.style.width = new Length(100, LengthUnit.Percent);
             _dragGhostIcon.style.height = new Length(100, LengthUnit.Percent);
             _dragGhostIcon.pickingMode = PickingMode.Ignore;
@@ -335,21 +394,37 @@ namespace SS3D.UI.StoragePanel
 
         private void HandleSlotDragEnded(StoragePanelView sourcePanel, StorageSlot sourceSlot, Vector2 releasePosition)
         {
+            TryCompleteTransfer(releasePosition);
+            CleanupDrag();
+        }
+
+        private void TryCompleteTransfer(Vector2 releasePosition)
+        {
             ClearDropHighlight();
 
-            (StoragePanelView targetPanel, StorageSlot targetSlot) = HitTestPanels(releasePosition);
-
-            if (targetPanel != null
-                && targetSlot != null
-                && targetSlot != sourceSlot
-                && sourceSlot.BoundItem != null
-                && _localInventory != null
-                && targetPanel.Container.CanContainItemAtPosition(sourceSlot.BoundItem, targetSlot.Position))
+            if (_dragItem == null || _localInventory == null)
             {
-                _localInventory.ClientTransferItem(sourceSlot.BoundItem, targetSlot.Position, targetPanel.Container);
+                return;
             }
 
-            CleanupDrag();
+            (StoragePanelView targetPanel, StorageSlot targetSlot) = HitTestPanels(releasePosition);
+            if (targetPanel != null
+                && targetSlot != null
+                && targetSlot != _dragSourceSlot
+                && targetPanel.Container.CanContainItemAtPosition(_dragItem, targetSlot.Position))
+            {
+                _localInventory.ClientTransferItem(_dragItem, targetSlot.Position, targetPanel.Container);
+                return;
+            }
+
+            HudDropTarget hudTarget = HitTestHud(releasePosition);
+            if (hudTarget != null
+                && hudTarget.Container != null
+                && hudTarget.Container != _dragSourceContainer
+                && hudTarget.Container.CanContainItemAtPosition(_dragItem, hudTarget.Position))
+            {
+                _localInventory.ClientTransferItem(_dragItem, hudTarget.Position, hudTarget.Container);
+            }
         }
 
         private void HandleSlotNestedOpenRequested(StoragePanelView panel, StorageSlot slot)
@@ -359,7 +434,7 @@ namespace SS3D.UI.StoragePanel
                 return;
             }
 
-            AttachedContainer nested = slot.BoundItem.GetComponent<AttachedContainer>();
+            AttachedContainer nested = slot.BoundItem.GetComponentInChildren<AttachedContainer>();
             if (nested == null || _openPanels.ContainsKey(nested))
             {
                 return;
@@ -377,28 +452,45 @@ namespace SS3D.UI.StoragePanel
 
         private void UpdateDropHighlight(Vector2 position)
         {
-            (StoragePanelView targetPanel, StorageSlot targetSlot) = HitTestPanels(position);
+            ClearDropHighlight();
 
-            if (_highlightedSlot != null && _highlightedSlot != targetSlot)
-            {
-                _highlightedSlot.SetDropState(SlotDropState.None);
-                _highlightedSlot = null;
-            }
-
-            if (targetSlot == null || targetPanel == null || targetSlot == _dragSourceSlot || _dragSourceSlot?.BoundItem == null)
+            if (_dragItem == null)
             {
                 return;
             }
 
-            bool valid = targetPanel.Container.CanContainItemAtPosition(_dragSourceSlot.BoundItem, targetSlot.Position);
-            targetSlot.SetDropState(valid ? SlotDropState.Valid : SlotDropState.Invalid);
-            _highlightedSlot = targetSlot;
+            (StoragePanelView targetPanel, StorageSlot targetSlot) = HitTestPanels(position);
+            if (targetSlot != null && targetPanel != null && targetSlot != _dragSourceSlot)
+            {
+                bool valid = targetPanel.Container.CanContainItemAtPosition(_dragItem, targetSlot.Position);
+                targetSlot.SetDropState(valid ? SlotDropState.Valid : SlotDropState.Invalid);
+                _highlightedSlot = targetSlot;
+                return;
+            }
+
+            HudDropTarget hudTarget = HitTestHud(position);
+            if (hudTarget?.Element == null || hudTarget.Container == _dragSourceContainer)
+            {
+                return;
+            }
+
+            bool hudValid = hudTarget.Container.CanContainItemAtPosition(_dragItem, hudTarget.Position);
+            hudTarget.Element.EnableInClassList("storage-slot--valid-drop", hudValid);
+            hudTarget.Element.EnableInClassList("storage-slot--invalid-drop", !hudValid);
+            _highlightedHudElement = hudTarget.Element;
         }
 
         private void ClearDropHighlight()
         {
             _highlightedSlot?.SetDropState(SlotDropState.None);
             _highlightedSlot = null;
+
+            if (_highlightedHudElement != null)
+            {
+                _highlightedHudElement.EnableInClassList("storage-slot--valid-drop", false);
+                _highlightedHudElement.EnableInClassList("storage-slot--invalid-drop", false);
+                _highlightedHudElement = null;
+            }
         }
 
         private (StoragePanelView panel, StorageSlot slot) HitTestPanels(Vector2 position)
@@ -415,13 +507,29 @@ namespace SS3D.UI.StoragePanel
             return (null, null);
         }
 
+        private HudDropTarget HitTestHud(Vector2 position)
+        {
+            foreach (HudDropTarget target in _hudDropTargets)
+            {
+                if (target?.Element != null && target.Element.worldBound.Contains(position))
+                {
+                    return target;
+                }
+            }
+
+            return null;
+        }
+
         private void CleanupDrag()
         {
+            ClearDropHighlight();
             _dragGhost?.RemoveFromHierarchy();
             _dragGhost = null;
             _dragGhostIcon = null;
             _dragSourcePanel = null;
             _dragSourceSlot = null;
+            _dragItem = null;
+            _dragSourceContainer = null;
         }
 
 #if UNITY_EDITOR

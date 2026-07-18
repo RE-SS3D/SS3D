@@ -91,6 +91,7 @@ namespace SS3D.Systems.Inventory.Containers
             _controls = SubSystems.Get<InputSubSystem>().Inputs.Hotkeys;
             _controls.SwapHands.performed += HandleSwapHands;
             _controls.Drop.performed += HandleDropHeldItem;
+            _controls.ToggleInternalClothing.performed += HandleTogglePockets;
             _controlsInitialized = true;
 
             Inventory.OnInventorySetUp -= OnInventorySetUp;
@@ -104,6 +105,7 @@ namespace SS3D.Systems.Inventory.Containers
             {
                 _controls.SwapHands.performed -= HandleSwapHands;
                 _controls.Drop.performed -= HandleDropHeldItem;
+                _controls.ToggleInternalClothing.performed -= HandleTogglePockets;
                 _controlsInitialized = false;
             }
         }
@@ -156,6 +158,24 @@ namespace SS3D.Systems.Inventory.Containers
         private void HandleDropHeldItem(InputAction.CallbackContext context)
         {
             SelectedHand.CmdDropHeldItem();
+        }
+
+        /// <summary>
+        /// Opens pocket containers via ContainerViewer (StoragePanelHost listens) —
+        /// replaces the old internal-clothing UI toggle.
+        /// </summary>
+        [Client]
+        private void HandleTogglePockets(InputAction.CallbackContext context)
+        {
+            if (!IsOwner || !enabled || Inventory?.containerViewer == null)
+            {
+                return;
+            }
+
+            for (int i = 0; Inventory.TryGetTypeContainer(ContainerType.Pocket, i, out AttachedContainer pocket); i++)
+            {
+                Inventory.containerViewer.ShowContainerUI(pocket);
+            }
         }
 
         [ServerRpc]

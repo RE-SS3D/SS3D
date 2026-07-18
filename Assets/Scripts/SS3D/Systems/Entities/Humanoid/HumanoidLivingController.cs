@@ -103,8 +103,8 @@ namespace SS3D.Systems.Entities.Humanoid
 
         protected override float FilterSpeed()
         {
-            bool canRun = _staminaController == null || _staminaController.CanContinueInteraction;
-            return IsRunning && canRun ? RunAnimatorValue : WalkAnimatorValue;
+            // Exhaustion no longer hard-blocks run (stamina.md §3); ExertionPenalty slows MovePlayer.
+            return IsRunning ? RunAnimatorValue : WalkAnimatorValue;
         }
 
         /// <summary>
@@ -125,7 +125,12 @@ namespace SS3D.Systems.Entities.Humanoid
                 combatFactor = IsRunning ? _combatRunSpeedFactor : _combatWalkSpeedFactor;
             }
 
-            _characterController.Move(TargetMovement * (_movementSpeed * healthMultiplier * combatFactor * Time.deltaTime));
+            float exertionFactor = _staminaController != null
+                ? Mathf.Lerp(1f, 0.55f, _staminaController.ExertionPenalty)
+                : 1f;
+
+            _characterController.Move(
+                TargetMovement * (_movementSpeed * healthMultiplier * combatFactor * exertionFactor * Time.deltaTime));
         }
     }
 

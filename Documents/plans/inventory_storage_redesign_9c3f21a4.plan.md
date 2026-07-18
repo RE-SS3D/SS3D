@@ -9,8 +9,8 @@ todos:
     content: "Phase 0: Deleted condemned uGUI container UI scripts (ContainerUi, ContainerView, ContainerDisplay, ItemGrid, ItemGridItem, ItemDisplay, DraggableWindow, InventoryView, DummySlot, SingleItemContainerSlot, InventoryDisplayElement, ToggleInternalClothingUI, ToggleBodyTargetUI) + cleaned up call sites (HumanInventory, Hands, IssueReproduction test). Human.prefab/item prefabs never actually referenced these as attached components (only a since-renamed null AttachedContainer.ContainerUi field) so no prefab surgery was needed there. Prefab ASSETS themselves were NOT deleted — see 'purge-prefabs-followup' below."
     status: completed
   - id: purge-prefabs-followup
-    content: "Phase 0 follow-up (manual, Editor-only): HumanoidInventory.prefab (the old UI's root, under Assets/Content/Systems/UI/Systems/Containers/Inventory/) is nested as a child PrefabInstance inside Assets/Content/Systems/UI/Lobby/Canvas/PlayerCanvas.prefab. Deleting that .prefab asset without the Editor would leave a dangling nested-prefab reference. Open PlayerCanvas.prefab in Unity, remove the nested HumanoidInventory instance (Missing Script warnings on its components are expected/harmless in the meantime), then delete the now-orphaned prefab assets under Systems/UI/Systems/Containers/."
-    status: pending
+    content: "Phase 0 follow-up: PlayerCanvas stripped of HumanoidInventory + StaminaBar PrefabInstances; Containers UI prefab tree + StaminaBar prefab deleted; StaminaBarView deleted."
+    status: completed
   - id: size-class
     content: "Phase 1: SizeClass enum on Item + max-size-class fit-check on AttachedContainer.CanContainItem"
     status: completed
@@ -50,11 +50,17 @@ todos:
   - id: world-container-wire
     content: "Phase 5: No interaction-file changes needed — ViewContainerInteraction.Start() already calls ContainerViewer.ShowContainerUI, which StoragePanelHost now listens to directly; world containers open via the cascade-position fallback (no precise click-anchor plumbing this pass). Take-from-character reuses the same path, untested."
     status: completed
+  - id: clean-slate-hud
+    content: "Clean slate: Equipment doll click/drag; HUD↔panel HudDropTarget drag; pockets via ToggleInternalClothing→ContainerViewer; StoragePanelAssetCatalog committed"
+    status: completed
+  - id: clean-slate-stamina
+    content: "Clean slate: HumanInventory.CarriedWeight; stamina Phase 7a rewrite (health regen, weight, overdraw→oxy); StaminaBar purged; StaminaTests updated"
+    status: completed
   - id: system-docs-sync
-    content: "Phase 6: update-system-docs — systems/inventory.md, INDEX.md coverage table, architecture effort Status, plan todos"
-    status: pending
+    content: "Phase 6: update-system-docs — inventory + stamina maps, INDEX, architecture effort, health 7a, this plan"
+    status: completed
   - id: verification
-    content: "Verification: NOT RUN — no Unity Editor in the implementing session. Owner must compile, run the two Editor rebuild-menu tools (Main HUD already existed; Storage Panel is new), do the PlayerCanvas.prefab cleanup (see purge-prefabs-followup), and Play-Mode verify weight thresholds, size-class rejection, stacking, multi-panel + nested lockbox, drag-drop transfer, lock gating, two-client sync, Test Runner green."
+    content: "Verification: NOT RUN in implementing session — owner must compile in Unity Editor and Play-Mode verify equip/panels/weight/stamina/oxy before merge."
     status: pending
 isProject: false
 ---

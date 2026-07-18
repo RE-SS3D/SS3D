@@ -1,13 +1,13 @@
+using System;
 using SS3D.UI.MachineInterface.Components;
+using UnityEngine;
 using UnityEngine.UIElements;
 
 namespace SS3D.UI.MainHud.Components
 {
     /// <summary>
-    /// Bottom-left worn-equipment doll: head/eyes/face-cover/ears on top, gloves/shirt/feet below - same
-    /// 3-column arrangement as the Main HUD mockup. Occupancy is refreshed by
-    /// <see cref="SS3D.UI.MainHud.MainHudSubSystem"/> via <see cref="SetIcon"/>.
-    /// Held items live on the center <see cref="HandsGearStrip"/>, not here.
+    /// Bottom-left worn-equipment doll: head/eyes/face-cover/ears on top, gloves/shirt/feet below.
+    /// Click transfers with the active hand; drag participates in storage-panel cross-surface DnD.
     /// </summary>
     public class EquipmentGrid : VisualElement
     {
@@ -23,6 +23,11 @@ namespace SS3D.UI.MainHud.Components
             Feet,
         }
 
+        public event Action<Slot> SlotClicked;
+        public event Action<Slot, Vector2> SlotDragStarted;
+        public event Action<Slot, Vector2> SlotDragMoved;
+        public event Action<Slot, Vector2> SlotDragEnded;
+
         private readonly InventorySlot _head;
         private readonly InventorySlot _eyes;
         private readonly InventorySlot _face;
@@ -32,18 +37,21 @@ namespace SS3D.UI.MainHud.Components
         private readonly InventorySlot _gloveRight;
         private readonly InventorySlot _feet;
 
+        private Slot? _dragSlot;
+        private bool _dragMoved;
+
         public EquipmentGrid(MainHudIconSet icons)
         {
             AddToClassList("equipment-grid");
 
-            _head = CreateSlot("Head", icons.Head);
-            _eyes = CreateSlot("Eyes", icons.Eyes);
-            _face = CreateSlot("Face Cover", icons.Face);
-            _ears = CreateSlot("Ears", icons.Ears);
-            _gloveLeft = CreateSlot("Left Glove", icons.HandLeft);
-            _shirt = CreateSlot("Shirt", icons.Shirt);
-            _gloveRight = CreateSlot("Right Glove", icons.HandRight);
-            _feet = CreateSlot("Feet", icons.Feet);
+            _head = CreateSlot(Slot.Head, "Head", icons.Head);
+            _eyes = CreateSlot(Slot.Eyes, "Eyes", icons.Eyes);
+            _face = CreateSlot(Slot.Face, "Face Cover", icons.Face);
+            _ears = CreateSlot(Slot.Ears, "Ears", icons.Ears);
+            _gloveLeft = CreateSlot(Slot.GloveLeft, "Left Glove", icons.HandLeft);
+            _shirt = CreateSlot(Slot.Shirt, "Shirt", icons.Shirt);
+            _gloveRight = CreateSlot(Slot.GloveRight, "Right Glove", icons.HandRight);
+            _feet = CreateSlot(Slot.Feet, "Feet", icons.Feet);
 
             Add(BuildRow(BuildSpacer(), _head, BuildSpacer()));
             Add(BuildRow(_eyes, _face, _ears));
@@ -51,10 +59,14 @@ namespace SS3D.UI.MainHud.Components
             Add(BuildRow(BuildSpacer(), _feet, BuildSpacer()));
         }
 
-        public void SetIcon(Slot slot, UnityEngine.Sprite itemIcon)
+        public void SetIcon(Slot slot, Sprite itemIcon)
         {
             GetSlot(slot).ItemIcon = itemIcon;
         }
+
+        public InventorySlot GetInventorySlot(Slot slot) => GetSlot(slot);
+
+        public Rect GetSlotWorldBound(Slot slot) => GetSlot(slot).worldBound;
 
         private InventorySlot GetSlot(Slot slot) => slot switch
         {
@@ -69,9 +81,66 @@ namespace SS3D.UI.MainHud.Components
             _ => null,
         };
 
-        private static InventorySlot CreateSlot(string label, UnityEngine.Sprite emptyIcon)
+        private InventorySlot CreateSlot(Slot slot, string label, Sprite emptyIcon)
         {
-            return new InventorySlot { Unknown = emptyIcon == null, EmptyIcon = emptyIcon, Size = 72, SlotLabel = label };
+            InventorySlot inventorySlot = new()
+            {
+                Unknown = emptyIcon == null,
+                EmptyIcon = emptyIcon,
+                Size = 72,
+                SlotLabel = label,
+            };
+
+            inventorySlot.RegisterCallback<ClickEvent>(_ =>
+            {
+                if (_dragMoved)
+                {
+                    return;
+                }
+
+                SlotClicked?.Invoke(slot);
+            });
+            inventorySlot.RegisterCallback<PointerDownEvent>(evt => OnPointerDown(slot, inventorySlot, evt));
+            inventorySlot.RegisterCallback<PointerMoveEvent>(evt => OnPointerMove(slot, inventorySlot, evt));
+            inventorySlot.RegisterCallback<PointerUpEvent>(evt => OnPointerUp(slot, inventorySlot, evt));
+            return inventorySlot;
+        }
+
+        private void OnPointerDown(Slot slot, InventorySlot inventorySlot, PointerDownEvent evt)
+        {
+            if (inventorySlot.ItemIcon == null)
+            {
+                return;
+            }
+
+            _dragSlot = slot;
+            _dragMoved = false;
+            inventorySlot.CapturePointer(evt.pointerId);
+            SlotDragStarted?.Invoke(slot, evt.position);
+            evt.StopPropagation();
+        }
+
+        private void OnPointerMove(Slot slot, InventorySlot inventorySlot, PointerMoveEvent evt)
+        {
+            if (_dragSlot != slot || !inventorySlot.HasPointerCapture(evt.pointerId))
+            {
+                return;
+            }
+
+            _dragMoved = true;
+            SlotDragMoved?.Invoke(slot, evt.position);
+        }
+
+        private void OnPointerUp(Slot slot, InventorySlot inventorySlot, PointerUpEvent evt)
+        {
+            if (_dragSlot != slot || !inventorySlot.HasPointerCapture(evt.pointerId))
+            {
+                return;
+            }
+
+            inventorySlot.ReleasePointer(evt.pointerId);
+            SlotDragEnded?.Invoke(slot, evt.position);
+            _dragSlot = null;
         }
 
         private static VisualElement BuildRow(params VisualElement[] children)
