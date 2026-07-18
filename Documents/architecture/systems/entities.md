@@ -34,6 +34,7 @@ Humanoid/silicon entity spawning, minds, and join/round ordering with [rounds-lo
 ## Pitfalls
 
 - **Ghost spawn stack-overflow:** `HumanoidGhostController.OnAwake` must call `base.OnAwake()`, never `base.Awake()`.
+- **Do not redeclare `_bodyStateMachine` on `HumanoidGhostController`:** the field already exists on `HumanoidController`; a same-named field in the derived class makes Unity warn "serialized multiple times" on every rebuild. Use `BodyStateMachine` from the base.
 - **Walk cycle while “collapsed”:** Coimbra `UpdateEvent` keeps firing after `enabled=false`; limp bridge can still publish snapshots. Use `SetPosingSuppressed` + shared collapse visuals — see [body-presentation-authority](../2026-07_body-presentation-authority.md).
 - **`Ragdoll.OnDisable` must not `Recover()`:** ownership/network teardown would stand a corpse back into locomotion.
 

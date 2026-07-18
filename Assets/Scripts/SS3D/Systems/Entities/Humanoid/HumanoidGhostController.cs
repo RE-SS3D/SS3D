@@ -1,8 +1,3 @@
-using SS3D.Core;
-using SS3D.Core.Behaviours;
-using SS3D.Systems.Entities.Humanoid.Body;
-using SS3D.Systems.Health;
-using SS3D.Systems.Screens;
 using UnityEngine;
 
 namespace SS3D.Systems.Entities.Humanoid
@@ -13,19 +8,14 @@ namespace SS3D.Systems.Entities.Humanoid
     /// </summary>
     public class HumanoidGhostController : HumanoidController
     {
-        private HumanoidBodyStateMachine _bodyStateMachine;
-
-        protected override void OnAwake()
-        {
-            base.OnAwake();
-            _bodyStateMachine = GetComponent<HumanoidBodyStateMachine>();
-        }
-
         public override void OnStartClient()
         {
             base.OnStartClient();
-            _bodyStateMachine?.SetFloating(true);
+            // Base OnAwake/Setup already resolves HumanoidBodyStateMachine — do not redeclare
+            // _bodyStateMachine here (Unity serializes the duplicate name and warns on rebuild).
+            BodyStateMachine?.SetFloating(true);
         }
+
         /// <summary>
         /// Executes the movement code and updates the IK targets
         /// </summary>
@@ -54,5 +44,4 @@ namespace SS3D.Systems.Entities.Humanoid
             transform.position += TargetMovement * ((_movementSpeed) * Time.deltaTime);
         }
     }
-
 }
