@@ -18,6 +18,21 @@ Replace that manual loop, and the brittle multi-process PlayMode harness that pa
 automated it, with something that launches real separate server + client processes headlessly,
 runs in CI, and is trivially runnable locally.
 
+## Local workflow
+
+1. **Build** in the Editor: `SS3D/Build/Client (Linux)` and
+   `SS3D/Build/Dedicated Server (Linux)`, or
+   `SS3D/Build/Client + Dedicated Server (Linux)`. Outputs default to
+   `Builds/Game/SS3D.x86_64` and `Builds/GameServer/SS3D.x86_64`.
+2. **Run** the harness: `./Testing/multiplayer/run_smoketest.sh basic-round` (or
+   `late-join 2`). Cursor skill: `.cursor/skills/run-multiplayer-smoke/SKILL.md`.
+   Each run still `cp -r`s the player builds into `Testing/multiplayer/.runs/<id>/`
+   (~hundreds of MB) so Logs/`Application.dataPath` stay isolated.
+3. **Triage** the run dir: `./Testing/multiplayer/tools/triage_run.sh latest` (or the run id).
+   Cursor skill: `.cursor/skills/triage-multiplayer-smoke/SKILL.md`. Use the summary to work
+   bugs in follow-up branches; a failing scenario with clear `ScriptFailed` / signals means the
+   harness did its job.
+
 ## Shipped
 
 ### In-game automation
@@ -61,10 +76,11 @@ runs in CI, and is trivially runnable locally.
 - `tools/triage_run.sh <run-id|path|latest>` — agent/human-facing summary of a `.runs/<id>/`
   directory: Test signal timeline, `ScriptFailed` payloads, JSON Error/Fatal, and unity.log
   exception hits classified against `tools/known_unity_noise.patterns` (headless Blitter/shader
-  spam etc.). Does not dump full `unity.log`. Cursor skill:
-  `.cursor/skills/triage-multiplayer-smoke/SKILL.md`. The harness fail gate does **not** yet
-  use the noise allowlist — triage reports noise separately so a `ScriptFailed` root cause is
-  not buried under icon-gen stacks.
+  spam etc.). Does not dump full `unity.log`. Cursor skills:
+  `.cursor/skills/run-multiplayer-smoke/SKILL.md` (kick off `run_smoketest.sh`),
+  `.cursor/skills/triage-multiplayer-smoke/SKILL.md` (summarize a run). The harness fail gate
+  does **not** yet use the noise allowlist — triage reports noise separately so a
+  `ScriptFailed` root cause is not buried under icon-gen stacks.
 - `scenarios/basic-round{,-client}.txt` — connect, ready, start round (client-side, pre-seeded
   `Administrator` — see below), embark, one real `console playerlist` client↔server↔client RPC
   round trip, disconnect. Ports the intent of the deleted `ServerGameActions`/`ClientGameActions`
