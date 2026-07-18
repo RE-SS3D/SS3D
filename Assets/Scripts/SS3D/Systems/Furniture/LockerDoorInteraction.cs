@@ -18,7 +18,7 @@ namespace SS3D.Systems.Furniture
             _locker = locker;
         }
 
-        public int Priority => 25;
+        public int Priority => _locker.IsOpen ? 15 : 30;
 
         public string GetName(InteractionEvent interactionEvent)
         {
@@ -44,7 +44,14 @@ namespace SS3D.Systems.Furniture
 
         public bool Start(InteractionEvent interactionEvent, InteractionReference reference)
         {
-            _locker.IsOpen = !_locker.IsOpen;
+            bool wasOpen = _locker.IsOpen;
+            _locker.IsOpen = !wasOpen;
+
+            // Closing the door must tear down any open storage panels (server closes viewers → UI).
+            if (wasOpen)
+            {
+                _locker.CloseStorageUIs();
+            }
 
             return true;
         }

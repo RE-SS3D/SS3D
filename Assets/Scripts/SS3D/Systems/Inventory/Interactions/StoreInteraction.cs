@@ -60,6 +60,12 @@ namespace SS3D.Systems.Inventory.Interactions
                 return false;
             }
 
+            IStorageAccessGate gate = _attachedContainer.GetComponentInParent<IStorageAccessGate>();
+            if (gate != null && !gate.AllowsStorageAccess)
+            {
+                return false;
+            }
+
             Item item = interactionEvent.Source.GetComponent<Item>();
 
             if (!item)
