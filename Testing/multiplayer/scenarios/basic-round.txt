@@ -1,0 +1,10 @@
+# Dedicated-server side of the basic-round scenario. A real UNITY_SERVER build has no
+# ClientManager connection of its own, so this side only observes: wait for the transport to
+# come up, watch the round reach Ongoing once the client starts it, then stay up long enough
+# for Ongoing to replicate and for the client to embark/console/disconnect before we tear down.
+# Disconnecting immediately after Ongoing races the SyncVar and leaves the client stuck on
+# wait_round (see networking-session.md Pitfalls).
+wait_connected
+wait_round Ongoing
+wait_seconds 30
+disconnect

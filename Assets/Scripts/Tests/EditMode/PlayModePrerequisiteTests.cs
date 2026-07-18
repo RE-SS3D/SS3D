@@ -21,7 +21,9 @@ namespace SS3D.Tests.EditMode
     {
       if (!CompiledBuildPaths.HasCompiledBuild)
       {
-        Assert.Inconclusive(
+        // Ignore (not Inconclusive): Unity Test Framework exits non-zero on inconclusive,
+        // which fails game-ci EditMode CI even when every real assertion passed.
+        Assert.Ignore(
           $"{CompiledBuildPaths.MissingBuildMessage} " +
           "Run SS3D/Testing/Build Player For PlayMode Tests or execute the Explicit test BuildCompiledPlayerForPlayModeTests.");
       }

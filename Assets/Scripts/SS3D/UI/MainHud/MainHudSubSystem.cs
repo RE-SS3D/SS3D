@@ -13,6 +13,7 @@ using SS3D.Systems.Inventory.Containers;
 using SS3D.Systems.Inventory.Items;
 using SS3D.Systems.Rounds;
 using SS3D.Systems.Rounds.Events;
+using SS3D.UI.MachineInterface;
 using SS3D.UI.MainHud.Components;
 using SS3D.UI.MachineInterface.Components;
 using SS3D.UI.StoragePanel;
@@ -27,7 +28,9 @@ namespace SS3D.UI.MainHud
     /// (<see cref="Hands"/>/<see cref="HumanInventory"/>) and help/harm intent (<see cref="IIntentProvider"/>).
     /// <para>
     /// Hidden until a local spawned body exists during an in-game round; hidden again when the round leaves
-    /// Ongoing/Ending (same spawn/round gate idea as <c>GameScreensController</c>).
+    /// Ongoing/Ending (same spawn/round gate idea as <c>GameScreensController</c>). Also suppressed while a
+    /// diegetic machine panel is open — visibility authority stays here (observes
+    /// <see cref="MachineInterfaceSubSystem"/>); machine UI must not call into Main HUD.
     /// </para>
     /// <para>
     /// The alert icon stack has no hunger/thirst/restrained/pressure/radiation trackers to bind to yet - it
@@ -75,6 +78,9 @@ namespace SS3D.UI.MainHud
         private Hands _hands;
         private IIntentProvider _intentProvider;
         private Hand _cachedSelectedHand;
+        private bool _machineUiOpen;
+        private bool _subscribedToMachineUi;
+        private MachineInterfaceSubSystem _machineUi;
 
         protected override void OnAwake()
         {
@@ -170,11 +176,13 @@ namespace SS3D.UI.MainHud
         protected override void OnStart()
         {
             base.OnStart();
+            EnsureMachineUiSubscription();
             TryBindExistingLocalPlayer();
         }
 
         protected override void OnDestroyed()
         {
+            UnsubscribeMachineUi();
             UnbindLocalPlayer();
             _view?.Detach();
             InputInterface.UnregisterDocument(_document);
@@ -183,6 +191,8 @@ namespace SS3D.UI.MainHud
 
         private void Update()
         {
+            EnsureMachineUiSubscription();
+
             // Late-joining clients can miss one-shot spawn events (SyncList Complete is ignored in
             // EntitySubSystem; mind may sync before Mind.player is linked). Keep trying until bound.
             if (_view != null && _localPlayer == null)
@@ -230,15 +240,12 @@ namespace SS3D.UI.MainHud
 
             if (!e.PlayerHasObject || e.PlayerObject == null)
             {
-                HideHud();
+                ApplyVisibility();
                 return;
             }
 
             BindLocalPlayer(e.PlayerObject);
-            if (IsRoundInGame())
-            {
-                ShowHud();
-            }
+            ApplyVisibility();
         }
 
         private void HandleSpawnedPlayersUpdated(ref EventContext context, in SpawnedPlayersUpdated e)
@@ -256,7 +263,7 @@ namespace SS3D.UI.MainHud
                     break;
                 default:
                     UnbindLocalPlayer();
-                    HideHud();
+                    ApplyVisibility();
                     break;
             }
         }
@@ -274,7 +281,7 @@ namespace SS3D.UI.MainHud
 
             if (_localPlayer != null)
             {
-                ShowHud();
+                ApplyVisibility();
                 return;
             }
 
@@ -291,7 +298,7 @@ namespace SS3D.UI.MainHud
                 }
 
                 BindLocalPlayer(entity.gameObject);
-                ShowHud();
+                ApplyVisibility();
                 return;
             }
         }
@@ -365,14 +372,59 @@ namespace SS3D.UI.MainHud
             _cachedSelectedHand = null;
         }
 
-        private void ShowHud()
+        private void EnsureMachineUiSubscription()
         {
-            _view?.SetVisible(true);
+            if (_subscribedToMachineUi)
+            {
+                return;
+            }
+
+            if (!SubSystems.TryGet(out MachineInterfaceSubSystem machineUi))
+            {
+                return;
+            }
+
+            _machineUi = machineUi;
+            _machineUi.InterfaceOpened += HandleMachineUiOpened;
+            _machineUi.InterfaceClosed += HandleMachineUiClosed;
+            _subscribedToMachineUi = true;
+            _machineUiOpen = _machineUi.IsOpen;
+            ApplyVisibility();
         }
 
-        private void HideHud()
+        private void UnsubscribeMachineUi()
         {
-            _view?.SetVisible(false);
+            if (!_subscribedToMachineUi || _machineUi == null)
+            {
+                return;
+            }
+
+            _machineUi.InterfaceOpened -= HandleMachineUiOpened;
+            _machineUi.InterfaceClosed -= HandleMachineUiClosed;
+            _machineUi = null;
+            _subscribedToMachineUi = false;
+        }
+
+        private void HandleMachineUiOpened()
+        {
+            _machineUiOpen = true;
+            ApplyVisibility();
+        }
+
+        private void HandleMachineUiClosed()
+        {
+            _machineUiOpen = false;
+            ApplyVisibility();
+        }
+
+        /// <summary>
+        /// Single visibility gate: spawn/round eligibility and machine-UI suppress.
+        /// Call instead of bare show so catch-up cannot re-show chrome over an open panel.
+        /// </summary>
+        private void ApplyVisibility()
+        {
+            bool shouldShow = _localPlayer != null && IsRoundInGame() && !_machineUiOpen;
+            _view?.SetVisible(shouldShow);
         }
 
         private void HandleIntentToggleRequested()

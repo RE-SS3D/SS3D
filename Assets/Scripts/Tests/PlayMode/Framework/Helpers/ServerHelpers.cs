@@ -1,86 +1,21 @@
-﻿using NUnit.Framework;
 using SS3D.Core;
 using SS3D.Systems.Entities;
 using SS3D.Systems.PlayerControl;
 using SS3D.Systems.Rounds;
 using SS3D.Systems.Rounds.Messages;
-using System.Collections;
-using System.Diagnostics;
-using System.IO;
-using UnityEngine;
 using System.Linq;
-using Tests.Play_Mode.Framework.Helpers;
 
 namespace SS3D.Tests
 {
     /// <summary>
     /// This class is simply a container for helper methods for the Server, for use
-    /// in UnityTests.
+    /// in UnityTests. Only valid for single-process (Host or in-Editor DedicatedServer)
+    /// PlayMode tests - the stub broadcast methods it calls are Editor-only and don't compile
+    /// into a real built player/server. For real multi-process coverage, see
+    /// Testing/multiplayer/ (Documents/architecture/2026-07_multiplayer-test-harness.md).
     /// </summary>
     public static class ServerHelpers
     {
-        public static Process[] CreateClients(int amount, ProcessWindowStyle windowStyle = ProcessWindowStyle.Minimized)
-        {
-            LoadFileHelpers.RequireCompiledBuild();
-
-            if (!LoadFileHelpers.TryResolveExecutablePath(out string executablePath))
-            {
-                throw new FileNotFoundException(LoadFileHelpers.MissingBuildMessage);
-            }
-
-            Process[] result = new Process[amount];
-            string workingDirectory = Path.GetDirectoryName(executablePath);
-
-            for (int i = 0; i < amount; i++)
-            {
-                result[i] = new Process();
-                result[i].StartInfo.WindowStyle = windowStyle;
-                result[i].StartInfo.Arguments = $"-ip=localhost -ckey=player_{i} -port=1151 -skipintro";
-                result[i].StartInfo.FileName = executablePath;
-                result[i].StartInfo.WorkingDirectory = workingDirectory;
-                result[i].Start();
-            }
-
-            return result;
-        }
-
-
-
-        public static IEnumerator SetWindowPositions(Process[] process)
-        {
-            for (int i = 0; i < process.Length;i++)
-            {
-                LoadFileHelpers.PlaceQuadWindow(process[i], i);
-                yield return new WaitForSeconds(0.5f);
-            }
-        }
-
-        public static IEnumerator WaitUntilClientsLoaded(int amountOfClients, float timeout = 60f)
-        {
-            PlayerSubSystem playerSystem = SubSystems.Get<PlayerSubSystem>();
-            int currentOnlineSouls = 0;
-            float startTime = Time.time;
-
-            // This loop simply waits until all players have joined.
-            while (currentOnlineSouls < amountOfClients)
-            {
-                // Allow timeout if needed.
-                Assert.IsTrue(Time.time < startTime + timeout, $"Only {currentOnlineSouls} of {amountOfClients} clients loaded after timeout of {timeout} seconds.");
-
-                // Check whether all souls are online.
-                currentOnlineSouls = 0;
-                foreach (Player player in playerSystem.OnlinePlayers)
-                {
-                    currentOnlineSouls++;
-                }
-                
-                yield return new WaitForSeconds(2f);
-            }
-
-            yield return new WaitForSeconds(2f);
-        }
-
-
         /// <summary>
         /// Sets all players ready.
         /// </summary>
@@ -89,7 +24,7 @@ namespace SS3D.Tests
             PlayerSubSystem playerSystem = SubSystems.Get<PlayerSubSystem>();
             ReadyPlayersSubSystem readyPlayersSystem = SubSystems.Get<ReadyPlayersSubSystem>();
             ChangePlayerReadyMessage msg;
-                
+
             foreach (Player player in playerSystem.OnlinePlayers)
             {
                 msg = new ChangePlayerReadyMessage(player.Ckey, true);
@@ -124,7 +59,5 @@ namespace SS3D.Tests
             Player player = playerSystem.GetPlayer(Ckey);
             entitySystem.CmdSpawnLatePlayer(player);
         }
-
-
     }
 }

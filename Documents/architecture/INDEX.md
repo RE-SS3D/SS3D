@@ -51,7 +51,7 @@ Feature-level gaps *within* an already-designed system stay in that design doc's
 | shuttles | [shuttles.md](../design/shuttles.md) — active | none yet | none yet |
 | ai-cyborgs | [ai-cyborgs.md](../design/ai-cyborgs.md) — active | none yet | none yet |
 | persistence-save | none yet | none yet | [persistence](systems/persistence.md) — partial (station templates, server meta only, not a design spec) |
-| networking | none yet | [headless-dedicated-server](2026-07_headless-dedicated-server.md) — shipped (partial: selection outline and drop interaction against a real client still broken, not root-caused; no automated multiplayer test coverage) | [networking-session](systems/networking-session.md) — partial |
+| networking | none yet | [headless-dedicated-server](2026-07_headless-dedicated-server.md) — shipped (partial: selection outline and drop interaction against a real client still broken, not root-caused), [multiplayer-test-harness](2026-07_multiplayer-test-harness.md) — shipped (partial: mouse/screen-space interaction and pocket/container regressions not covered), [ci-develop-release-pipeline](2026-07_ci-develop-release-pipeline.md) — shipped (manual EditMode → Linux smoke → Windows+bats prerelease) | [networking-session](systems/networking-session.md) — partial |
 | audio | none yet | none yet | none yet |
 | onboarding-tutorial | none yet | none yet | none yet |
 | antagonist-content | none yet | none yet | none yet |
@@ -79,7 +79,7 @@ section, `Status: draft`, design-docs-cite-design-docs only). Owner review to pr
 |--------|-----|--------|---------|
 | Core / SubSystems | [core-subsystems](systems/core-subsystems.md) | shipped | `SubSystem` / `NetworkSubSystem` base types and `SubSystems` service locator; scene registration legacy — target code bootstrap |
 | Application | [application](systems/application.md) | stub | App bootstrap and startup; Boot/Game as thin launch pads |
-| Networking (session) | [networking-session](systems/networking-session.md) | stub | FishNet host/join session management |
+| Networking (session) | [networking-session](systems/networking-session.md) | partial | FishNet host/join session management; headless dedicated-server build; real multi-process test harness |
 | Scene management | [scene-management](systems/scene-management.md) | stub | Scene loading and switching; not a system composition root |
 | UI shell | [ui-shell](systems/ui-shell.md) | stub | Target UITK composition root; MI + Main HUD path catalogs shipped (duplicated); shared catalog helper + full shell deferred |
 | Interactions (framework) | [interactions-framework](systems/interactions-framework.md) | shipped | Shared `IInteraction` contracts, pipeline, and wire identifiers |
@@ -102,9 +102,8 @@ section, `Status: draft`, design-docs-cite-design-docs only). Owner review to pr
 | Area | [area](systems/area.md) | partial | APC-seeded flood-fill, area power, lighting state, wall light switches |
 | Electricity | [electricity](systems/electricity.md) | partial | kWh storage, HV cable grid, APC/SMES/generators, consumer visuals |
 | Substances | [substances](systems/substances.md) | partial | Containers, transfer interactions, Tier 2 armed proof-of-concept; container `AsReadOnly` GC pitfall |
-| Inventory | [inventory](systems/inventory.md) | partial | Items/containers/hands + weight/size-class/stacking/locks; Main HUD sole equip/storage UI + StoragePanel; old uGUI purged; `CarriedWeight` → stamina; Human hands wiring remains prefab debt |
-| Stamina | [stamina](systems/stamina.md) | partial | Phase 7a core: health-modulated regen, encumbrance, sprint drain, overdraw→oxy; no permanent bar; combat drains deferred |
-| Entities | [entities](systems/entities.md) | partial | Humanoids, minds, spawning; body-state animation + combat stances; `Human.prefab` composition debt; collapse/death presentation debt ([body-presentation-authority](2026-07_body-presentation-authority.md)) |
+| Inventory | [inventory](systems/inventory.md) | partial | Items/containers/hands + weight/size-class/stacking/locks; Main HUD sole equip/storage UI + StoragePanel; HUD suppressed while MI open; old uGUI purged; `CarriedWeight` → stamina; Human hands wiring remains prefab debt |
+| Stamina | [stamina](systems/stamina.md) | partial | Phase 7a core: health-modulated regen, encumbrance, sprint drain, overdraw→oxy; no permanent bar; combat drains deferred || Entities | [entities](systems/entities.md) | partial | Humanoids, minds, spawning; body-state animation + combat stances; `Human.prefab` composition debt; collapse/death presentation debt ([body-presentation-authority](2026-07_body-presentation-authority.md)) |
 | Health | [health](systems/health.md) | partial | Phases 1–5b shipped; screen-effects wired from snapshot; Phase 0d strips/rewires `Human.prefab`; vitals HUD / examine-self Phase 6 remainder; interim collapse RPCs — see [body-presentation-authority](2026-07_body-presentation-authority.md) |
 | Combat | [combat](systems/combat.md) | partial | Phase 4 melee vertical slice (fists + crowbar); stance/aim presentation in [entities](systems/entities.md) |
 | Crafting | [crafting](systems/crafting.md) | stub | Recipe crafting; crafting menu uGUI condemned |
@@ -113,8 +112,8 @@ section, `Status: draft`, design-docs-cite-design-docs only). Owner review to pr
 | Gamemodes / roles / traits | [gamemodes-roles-traits](systems/gamemodes-roles-traits.md) | stub | Objectives, job roles, character traits |
 | Player control | [player-control](systems/player-control.md) | stub | Player subsystem and input routing |
 | Chat / audio / screens | [chat-audio-screens](systems/chat-audio-screens.md) | stub | Chat UI condemned per comms.md; audio/camera controllers |
-| Machine interface UI | [machine-interface](systems/machine-interface.md) | shipped | Diegetic APC/SMES/atmos/vending; path catalog (`MachineUiAssetCatalog`) — no Game.unity template wiring |
-| Screen-space effects | [screen-effects](systems/screen-effects.md) | partial | URP Volume overlays; health drives dying/blood/oxy/concussion/unconscious + hit flash; atmos temp/fire deferred; F2 debug Canvas condemned |
+| Machine interface UI | [machine-interface](systems/machine-interface.md) | shipped | Diegetic APC/SMES/atmos/vending; path catalog; Dual Kawase blur + dim; DOTween bring-up/dismiss |
+| Screen-space effects | [screen-effects](systems/screen-effects.md) | partial | URP Volume overlays; health drives dying/blood/oxy/concussion/unconscious + hit flash; `SetUiBackdropBlur` for machine UI; atmos temp/fire deferred; F2 debug Canvas condemned |
 | ID / access | [id-access](systems/id-access.md) | partial | Crew records, credential checks, doors, machine UI gates, dev console helpers |
 | Inputs | [inputs](systems/inputs.md) | partial | Arbitration + `InputInterface` UITK/uGUI pointer authority (Main HUD / MI / radial register documents) |
 | In-game console | [ingame-console](systems/ingame-console.md) | partial | Command dispatch; console panel uGUI condemned pending UITK debug layer |
@@ -136,12 +135,13 @@ Implementation history — not navigation maps. Update `Status` in the header wh
 | [2026-07_mi-area-electricity-debt](2026-07_mi-area-electricity-debt.md) | shipped |
 | [2026-07_player-body-animation](2026-07_player-body-animation.md) | shipped (foundation; blend/timing polish remains) |
 | [2026-07_screen-space-effects](2026-07_screen-space-effects.md) | shipped (foundation + health wiring; atmos deferred) |
-| [2026-07_headless-dedicated-server](2026-07_headless-dedicated-server.md) | shipped (partial: selection outline, drop interaction, multiplayer test harness deferred) |
+| [2026-07_headless-dedicated-server](2026-07_headless-dedicated-server.md) | shipped (partial: selection outline, drop interaction against a real client still broken, not root-caused) |
 | [2026-07_agent-first-composition](2026-07_agent-first-composition.md) | shipped (policy); code deferred — bootstrap, UiShell + shared path-catalog helper, prefab tooling; main-HUD UITK slice partial ([inventory](systems/inventory.md)) |
 | [2026-07_mi-path-catalog](2026-07_mi-path-catalog.md) | shipped (MI path catalog wedge of composition follow-on b; Main HUD later copied the pattern — unify under [ui-shell](systems/ui-shell.md)) |
 | [2026-07_body-presentation-authority](2026-07_body-presentation-authority.md) | planned |
 | [2026-07_inventory-storage-redesign](2026-07_inventory-storage-redesign.md) | in-progress (clean-slate + stamina 7a code shipped; Play Mode verification pending) |
-
+| [2026-07_multiplayer-test-harness](2026-07_multiplayer-test-harness.md) | shipped (partial: mouse/screen-space interaction and pocket/container round-trip regressions not covered; not yet verified against a real Unity build) |
+| [2026-07_ci-develop-release-pipeline](2026-07_ci-develop-release-pipeline.md) | shipped (manual workflow_dispatch; Windows+bats primary after Linux EditMode+smoke; Linux zips secondary) |
 ## Implementation plans
 
 Temporary working plans in [Documents/plans/](../plans/). Update todos when work ships.

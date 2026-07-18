@@ -34,7 +34,9 @@ namespace EditorTests
 
             SystemicPools pools = SystemicPools.Default;
 
-            for (int tick = 0; tick < 20; tick++)
+            // Wound bleed (0.5 × BleedingBloodDrainScale) needs ~45 ticks before LowBloodOxyDebtGainScale
+            // overcomes healthy lung/heart balance (see HealthConstants hemorrhage tuning).
+            for (int tick = 0; tick < 60; tick++)
             {
                 pools = HealthSimulation.TickPools(pools, zones, organs);
             }

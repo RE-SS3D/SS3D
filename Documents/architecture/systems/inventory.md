@@ -1,7 +1,7 @@
 > Code paths: Assets/Scripts/SS3D/Systems/Inventory/, Assets/Scripts/SS3D/UI/MainHud/, Assets/Scripts/SS3D/UI/StoragePanel/, Assets/Scripts/SS3D/Systems/Stamina/
 > Entry points: ItemSubSystem, MainHudSubSystem, StoragePanelHost, StaminaController
 > Status: partial
-> Verified: 9145f200f — 2026-07-18
+> Verified: 58dfbf5ed — 2026-07-18
 
 # Inventory
 
@@ -15,7 +15,7 @@ Items, containers, hands, identification cards (`IDCard`, `PDA`), on-demand stor
 
 **Storage panel UI:** `StoragePanelHost` manages N simultaneous `StoragePanelView` panels. Opened via gear strip, world `ViewContainerInteraction`, pocket hotkey (`ToggleInternalClothing` → `ContainerViewer.ShowContainerUI`), or nested click. Slot drag is UITK pointer-capture; HUD equipment/gear/hand slots register as `HudDropTarget` peers for panel↔HUD transfers. Drop highlight is a static class toggle (no UITK `@keyframes`).
 
-**Main HUD:** equipment doll click = `ClientInteractWithContainerSlot` (equip/unequip vs active hand); gear strip click opens that container's panel; hands select active hand. Cross-surface drag goes through `StoragePanelHost.BeginHudDrag` / `EndHudDrag`.
+**Main HUD:** equipment doll click = `ClientInteractWithContainerSlot` (equip/unequip vs active hand); gear strip click opens that container's panel; hands select active hand. Cross-surface drag goes through `StoragePanelHost.BeginHudDrag` / `EndHudDrag`. Visibility is owned by `MainHudSubSystem.ApplyVisibility`: local spawned body + in-game round, and **suppressed while** [machine-interface](machine-interface.md) is open (`InterfaceOpened` / `InterfaceClosed`). Show/hide uses the same DOTween bring-up as diegetic MI. Styles/icons/`PanelSettings` load from a committed `MainHudAssetCatalog` via `Resources.Load` (rebuild: **SS3D → Main HUD → Rebuild Asset Catalog**).
 
 **Legacy uGUI purged:** condemned container UI scripts and prefabs under `Systems/UI/Systems/Containers/` removed; `HumanoidInventory` / `StaminaBar` stripped from `PlayerCanvas.prefab`. Hands wiring on `Human.prefab` remains prefab composition debt ([agent-first composition](../2026-07_agent-first-composition.md)).
 
@@ -40,11 +40,12 @@ Items, containers, hands, identification cards (`IDCard`, `PDA`), on-demand stor
 
 - **`ContainerViewer` must never reference `SS3D.UI.*`:** MainHudSubSystem hands the viewer to `StoragePanelHost` at bind/unbind. Do not add Systems→UI asmdef refs.
 - **Stack-merge highlight must match `AddStoredItem`:** `CanContainItemAtPosition` treats mergeable occupied stacks as valid — keep in sync with merge room checks.
+- **Spawn/round catch-up can re-show HUD over MI:** always route through `ApplyVisibility()` (includes `_machineUiOpen`). Do not call bare `SetVisible(true)` from bind/round handlers.
 - **Play Mode / Editor verification still required** for this clean-slate pass (catalog present; compile/Play Mode not run in implementing session).
 
 ## Depends on / Used by
 
-- **Depends on:** [interactions-framework](interactions-framework.md), [inputs](inputs.md), [id-access](id-access.md), [stamina](stamina.md) (encumbrance consumer)
+- **Depends on:** [interactions-framework](interactions-framework.md), [inputs](inputs.md), [id-access](id-access.md), [stamina](stamina.md) (encumbrance consumer), [machine-interface](machine-interface.md) (open/close suppress)
 - **Used by:** [examine](examine.md), [player-control](player-control.md), [id-access](id-access.md), [stamina](stamina.md)
 - **Catalog pattern:** [ui-shell](ui-shell.md), [machine-interface](machine-interface.md)
 

@@ -44,7 +44,11 @@ namespace SS3D.Editor
             BuildServer(buildPath);
         }
 
-        private static void BuildServer(string buildPath)
+        /// <summary>
+        /// Builds the dedicated server to <paramref name="buildPath"/>. Used by the menu item, CI
+        /// (<see cref="BuildServer()"/>), and <c>SS3D/Build/Client + Dedicated Server (Linux)</c>.
+        /// </summary>
+        public static void BuildServer(string buildPath)
         {
             Directory.CreateDirectory(Path.GetDirectoryName(buildPath) ?? string.Empty);
 

@@ -10,7 +10,8 @@ namespace SS3D.Systems.Tile.Connections
     /// </summary>
     public class BasicElectricDevice : NetworkActor, IElectricDevice
     {
-        public PlacedTileObject TileObject => gameObject.GetComponent<PlacedTileObject>();
+        // Destroyed Unity objects throw on .gameObject; callers (area/APC power) null-check TileObject.
+        public PlacedTileObject TileObject => this ? GetComponent<PlacedTileObject>() : null;
 
         public override void OnStartServer()
         {

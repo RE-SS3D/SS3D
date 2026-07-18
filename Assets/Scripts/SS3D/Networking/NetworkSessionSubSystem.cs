@@ -1,4 +1,4 @@
-﻿using Coimbra;
+using Coimbra;
 using Coimbra.Services.Events;
 using FishNet;
 using FishNet.Managing;
@@ -26,8 +26,6 @@ namespace SS3D.Networking
         {
             base.OnAwake();
 
-            ApplicationPreInitializing.AddListener(HandleApplicationPreInitializing);
-
 #if UNITY_SERVER
             // Dedicated servers skip the Intro scene (the only place that otherwise calls
             // StartNetworkSession), so start listening for connections here instead.
@@ -42,28 +40,28 @@ namespace SS3D.Networking
         }
 #endif
 
-        private void HandleApplicationPreInitializing(ref EventContext context, in ApplicationPreInitializing applicationInitializing)
+        /// <summary>
+        /// Serilog file-sink name for the current <see cref="NetworkSettings.NetworkType"/> /
+        /// ckey. Called from <see cref="CommandLine.CommandLineArgsSubSystem"/> after CLI args
+        /// have mutated those settings — registering this on
+        /// <see cref="ApplicationPreInitializing"/> raced with CLI processing and could pick
+        /// Host's <c>LogHost.json</c> even when <c>-serveronly</c>/<c>-ip=</c> later set
+        /// DedicatedServer/Client (the multiplayer harness then waits forever on
+        /// <c>LogServer.json</c>/<c>LogClient&lt;ckey&gt;.json</c>).
+        /// </summary>
+        public static string GetFileLogName(NetworkSettings networkSettings)
         {
-            NetworkSettings networkSettings = ScriptableSettings.GetOrFind<NetworkSettings>();
-
-            string path = String.Empty;
-
             switch (networkSettings.NetworkType)
             {
                 case NetworkType.DedicatedServer:
-                    path = "LogServer.json"; 
-                    break;
+                    return "LogServer.json";
                 case NetworkType.Client:
-                    path = "LogClient" + networkSettings.Ckey + ".json";
-                    break;
+                    return "LogClient" + networkSettings.Ckey + ".json";
                 case NetworkType.Host:
-                    path = "LogHost.json";
-                    break;
+                    return "LogHost.json";
                 default:
                     throw new ArgumentOutOfRangeException();
             }
-
-            LogManager.Initialize(path);
         }
 
         /// <summary>

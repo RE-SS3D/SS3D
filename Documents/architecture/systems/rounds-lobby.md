@@ -36,3 +36,4 @@ Round lifecycle state machine with single-flight `CancellationTokenSource` (prev
 - Design (read-only): [Documents/design/lobby.md](../../design/lobby.md), [round-config.md](../../design/round-config.md)
 - Plan: [persistence_architecture_design_2fe61864.plan.md](../../plans/persistence_architecture_design_2fe61864.plan.md)
 - [2026-07_agent-first-composition](../2026-07_agent-first-composition.md)
+- [2026-07_multiplayer-test-harness](../2026-07_multiplayer-test-harness.md) — the ready/start-round/embark broadcast flow this system exposes is what the headless multiplayer test harness drives

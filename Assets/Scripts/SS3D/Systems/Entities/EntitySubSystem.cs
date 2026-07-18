@@ -91,7 +91,8 @@ namespace SS3D.Systems.Entities
         /// <returns>Is the player is controlling an entity</returns>
         public bool IsPlayerSpawned(NetworkConnection networkConnection)
         {
-            Entity spawnedPlayer = _spawnedPlayers.Find(entity => entity.Mind?.player?.Owner == networkConnection);
+            Entity spawnedPlayer = _spawnedPlayers.Find(entity =>
+                entity != null && entity.Mind?.player?.Owner == networkConnection);
 
             bool isPlayerSpawned;
 

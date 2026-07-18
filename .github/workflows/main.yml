@@ -1,5 +1,8 @@
-# Disabled on this fork: no release channel here (see README.md).
-# Manual dispatch only if a tagged build is needed.
+# DEPRECATED for day-to-day releases: use Develop Release (develop-release.yml) instead —
+# EditMode → Linux client+server → multiplayer smoke → GitHub prerelease.
+# Kept for optional Windows / legacy experiments only (manual dispatch).
+# Requires unity_tests environment secrets (UNITY_LICENSE or UNITY_SERIAL trio).
+# versioning: None — fork tags like 0.3.95j break game-ci Semantic versioning.
 #https://game.ci/docs/github/builder
 name: Automated Build
 on:
@@ -8,6 +11,8 @@ jobs:
   build:
     name: Build for ${{ matrix.targetPlatform }}
     runs-on: ubuntu-latest
+    environment:
+      name: unity_tests
     env:
       FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
     strategy:
@@ -24,10 +29,23 @@ jobs:
         with:
           fetch-depth: 0
           lfs: true
+      - name: Validate Unity CI secrets
+        run: |
+          missing=0
+          if [ -z "${{ secrets.UNITY_LICENSE }}" ] && [ -z "${{ secrets.UNITY_SERIAL }}" ]; then
+            echo "::error::Neither UNITY_LICENSE nor UNITY_SERIAL is set in the unity_tests environment."
+            missing=1
+          fi
+          if [ -n "${{ secrets.UNITY_SERIAL }}" ] && { [ -z "${{ secrets.UNITY_EMAIL }}" ] || [ -z "${{ secrets.UNITY_PASSWORD }}" ]; }; then
+            echo "::error::UNITY_SERIAL is set but UNITY_EMAIL or UNITY_PASSWORD is missing."
+            missing=1
+          fi
+          exit $missing
       - name: Get version tag
         id: tag_name
         run: |
           echo "SOURCE_TAG=${GITHUB_REF#refs/tags/}" >> "$GITHUB_OUTPUT"
+          echo "SHORT_SHA=${GITHUB_SHA:0:7}" >> "$GITHUB_OUTPUT"
       - name: Make build
         uses: game-ci/unity-builder@v4
         env:
@@ -36,25 +54,23 @@ jobs:
           UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
           UNITY_SERIAL: ${{ secrets.UNITY_SERIAL }}
         with:
-          buildName: RESS3D-${{ steps.tag_name.outputs.SOURCE_TAG }}
+          buildName: RESS3D-${{ steps.tag_name.outputs.SHORT_SHA }}
           targetPlatform: ${{ matrix.targetPlatform }}
+          versioning: None
+          unityVersion: 6000.3.16f1
       - name: Archive build
-        run: zip -qq -r RESS3D-${{ steps.tag_name.outputs.SOURCE_TAG }}.zip build/${{ matrix.targetPlatform }}
-        working-directory: /home/runner/work/SS3D/SS3D
-      - name: Create release with build archive
-        uses: softprops/action-gh-release@v2
+        run: zip -qq -r RESS3D-${{ steps.tag_name.outputs.SHORT_SHA }}.zip build/${{ matrix.targetPlatform }}
+      - name: Upload Windows build artifact
+        uses: actions/upload-artifact@v4
         with:
-          draft: false
-          prerelease: false
-          name: Release ${{ steps.tag_name.outputs.SOURCE_TAG }}
-          tag_name: ${{ steps.tag_name.outputs.SOURCE_TAG }}
-          files: /home/runner/work/SS3D/SS3D/RESS3D-${{ steps.tag_name.outputs.SOURCE_TAG }}.zip
-        env:
-          GITHUB_TOKEN: ${{ github.token }}
+          name: RESS3D-Windows-${{ steps.tag_name.outputs.SHORT_SHA }}
+          path: RESS3D-${{ steps.tag_name.outputs.SHORT_SHA }}.zip
 
   build-server:
     name: Build Dedicated Server
     runs-on: ubuntu-latest
+    environment:
+      name: unity_tests
     env:
       FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
     steps:
@@ -63,10 +79,22 @@ jobs:
         with:
           fetch-depth: 0
           lfs: true
+      - name: Validate Unity CI secrets
+        run: |
+          missing=0
+          if [ -z "${{ secrets.UNITY_LICENSE }}" ] && [ -z "${{ secrets.UNITY_SERIAL }}" ]; then
+            echo "::error::Neither UNITY_LICENSE nor UNITY_SERIAL is set in the unity_tests environment."
+            missing=1
+          fi
+          if [ -n "${{ secrets.UNITY_SERIAL }}" ] && { [ -z "${{ secrets.UNITY_EMAIL }}" ] || [ -z "${{ secrets.UNITY_PASSWORD }}" ]; }; then
+            echo "::error::UNITY_SERIAL is set but UNITY_EMAIL or UNITY_PASSWORD is missing."
+            missing=1
+          fi
+          exit $missing
       - name: Get version tag
         id: tag_name
         run: |
-          echo "SOURCE_TAG=${GITHUB_REF#refs/tags/}" >> "$GITHUB_OUTPUT"
+          echo "SHORT_SHA=${GITHUB_SHA:0:7}" >> "$GITHUB_OUTPUT"
       - name: Make headless server build
         uses: game-ci/unity-builder@v4
         env:
@@ -75,14 +103,17 @@ jobs:
           UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
           UNITY_SERIAL: ${{ secrets.UNITY_SERIAL }}
         with:
-          buildName: RESS3D-Server-${{ steps.tag_name.outputs.SOURCE_TAG }}
+          buildName: RESS3D-Server-${{ steps.tag_name.outputs.SHORT_SHA }}
+          buildsPath: build/GameServer
           targetPlatform: StandaloneLinux64
           buildMethod: SS3D.Editor.ServerBuildScript.BuildServer
+          versioning: None
+          unityVersion: 6000.3.16f1
       - name: Smoke test - boot the server binary headlessly
-        working-directory: /home/runner/work/SS3D/SS3D/build/StandaloneLinux64
+        working-directory: ${{ github.workspace }}/build/GameServer/StandaloneLinux64
         run: |
-          chmod +x RESS3D-Server-${{ steps.tag_name.outputs.SOURCE_TAG }}.x86_64
-          timeout 30s ./RESS3D-Server-${{ steps.tag_name.outputs.SOURCE_TAG }}.x86_64 \
+          chmod +x RESS3D-Server-${{ steps.tag_name.outputs.SHORT_SHA }}.x86_64
+          timeout 30s ./RESS3D-Server-${{ steps.tag_name.outputs.SHORT_SHA }}.x86_64 \
             -batchmode -nographics -serveronly -port=2222 -logFile server.log || true
           if ! grep -q "Hosting a new headless server" server.log; then
             echo "Server did not report a successful startup, dumping log:"
@@ -92,5 +123,5 @@ jobs:
       - name: Upload server build artifact
         uses: actions/upload-artifact@v4
         with:
-          name: RESS3D-Server-${{ steps.tag_name.outputs.SOURCE_TAG }}
-          path: /home/runner/work/SS3D/SS3D/build/StandaloneLinux64
+          name: RESS3D-Server-${{ steps.tag_name.outputs.SHORT_SHA }}
+          path: ${{ github.workspace }}/build/GameServer/StandaloneLinux64

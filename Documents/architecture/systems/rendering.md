@@ -22,6 +22,7 @@ Client FOV / fog-of-war is a hard black mask driven by physics raycasts from `En
 - `Assets/Scripts/SS3D/Rendering/URP/AtmosRendererFeature.cs` — gas scatter, glow, distortion passes
 - `Assets/Scripts/SS3D/Rendering/URP/AtmosRenderContext.cs` — shared GPU snapshot for atmos shaders
 - `Assets/Scripts/SS3D/Rendering/URP/VisionRendererFeature.cs` — FOV mask + hard black composite
+- `Assets/Scripts/SS3D/Rendering/URP/UiBackdropBlurRendererFeature.cs` — Dual Kawase world blur behind diegetic machine UI
 - `Assets/Scripts/SS3D/Systems/Vision/VisionSubSystem.cs` — client `RaycastCommand` batch → `_VisionMap`
 - `Assets/Content/Resources/Simple Toon/Shaders/STLighting.hlsl` — half-toon lighting + palette emission sample
 - `Assets/Content/Resources/Simple Toon/Shaders/STDefault.shader` — opaque toon (+ DepthNormals for Decal Layers)
@@ -35,7 +36,7 @@ Client FOV / fog-of-war is a hard black mask driven by physics raycasts from `En
 
 ## Depends on / Used by
 
-- **Used by:** [selection](selection.md), [atmospherics](atmospherics.md), [screen-effects](screen-effects.md) (Volume stack; not a custom feature)
+- **Used by:** [selection](selection.md), [atmospherics](atmospherics.md), [screen-effects](screen-effects.md) / [machine-interface](machine-interface.md) (UI backdrop blur)
 - **Vision FOV depends on:** `PlacedTileObject` Wall/Door (or `Walls` layer) colliders; cast origin from [entities](entities.md) `Entity.ViewPoint` when present
 
 ## Related docs

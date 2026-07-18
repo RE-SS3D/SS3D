@@ -1,0 +1,13 @@
+# Client side of the basic-round scenario against a real dedicated-server process. The client's
+# ckey is pre-seeded Administrator (see run_smoketest.sh) so it's allowed to start the round.
+# Ports the intent of the old ServerGameActions/ClientGameActions PlayMode tests: join, ready
+# up, start and enter a round, embark, and exercise one real client<->server console round trip
+# (PlayerListCommand - CommandType.Client, so it also exercises the RPC-back-to-client path).
+wait_connected
+ready
+start_round
+wait_round Ongoing
+embark
+console playerlist
+wait_seconds 2
+disconnect

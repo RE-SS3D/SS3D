@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
-using System.Threading;
 using Coimbra;
 using FishNet;
 using FishNet.Managing;
@@ -16,7 +14,6 @@ using SS3D.Networking.Settings;
 using SS3D.Systems.Entities;
 using SS3D.Systems.Entities.Humanoid;
 using SS3D.Systems.Interactions;
-using Tests.Play_Mode.Framework.Helpers;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.Layouts;
@@ -30,16 +27,16 @@ namespace SS3D.Tests
 {
     /// <summary>
     /// All play mode tests should inherit from this class. This class set up the mock up controls, contains some utilities for all play tests.
+    /// Single-process (Host or in-Editor DedicatedServer) only - for real multi-process
+    /// coverage, see Testing/multiplayer/ (Documents/architecture/2026-07_multiplayer-test-harness.md).
     /// </summary>
     [TestFixture]
     public abstract class PlayModeTest : InputTestFixture
     {
-        protected const string ExecutableName = "SS3D";
         protected const string CancelButton = "Cancel";
         protected const string ReadyButtonName = "Ready";
         protected const string ServerSettingsTabName = "Server Settings";
         protected const string StartRoundButtonName = "Start Round";
-        protected const string StartClientCommand = "Start SS3D Server.bat";
 
         // Use it in [UnitySetUp] method if you want to do special stuff during the first call to such method.
         protected bool setUpOnce = false;
@@ -163,12 +160,7 @@ namespace SS3D.Tests
             NetworkSettings networkSettings = UnityEngine.Object.Instantiate(baselineNetworkSettings);
             networkSettings.NetworkType = type;
             networkSettings.Ckey = "john";
-            networkSettings.ServerAddress = LoadFileHelpers.IpAddress;
-
-            if (type == NetworkType.Client)
-            {
-                networkSettings.ServerPort = ushort.Parse(LoadFileHelpers.Port);
-            }
+            networkSettings.ServerAddress = "127.0.0.1";
 
             ScriptableSettings.SetOrOverwrite(networkSettings);
 
@@ -217,7 +209,6 @@ namespace SS3D.Tests
 
         protected IEnumerator PrepareNetworkTestEnvironment()
         {
-            KillAllBuiltExecutables();
             CloseActiveNetworkSession();
             lobbySceneLoaded = false;
             setUpOnce = false;
@@ -294,14 +285,6 @@ namespace SS3D.Tests
             lobbySceneLoaded = false;
             SceneManager.sceneLoaded += ClientSceneLoaded;
             SceneManager.LoadScene("Boot", LoadSceneMode.Single);
-        }
-
-        protected void KillAllBuiltExecutables()
-        {
-            foreach (var process in Process.GetProcessesByName(ExecutableName))
-            {
-                process.Kill();
-            }
         }
 
         private IEnumerator GetControllers()
@@ -386,8 +369,10 @@ namespace SS3D.Tests
         }
 
         /// <summary>
-        /// As host, simply open the game and wait for host to be correctly loaded in lobby.
-        /// As client, does the same, but open a dedicated server to connect to before.
+        /// Opens the game in this process (Host, or an in-Editor DedicatedServer) and waits
+        /// for it to be correctly loaded in lobby. Does not support NetworkType.Client - a
+        /// real client is a separate process, which this single-process fixture cannot drive.
+        /// See Testing/multiplayer/ for real client&lt;-&gt;server coverage.
         /// </summary>
         /// <param name="type"> The network type we want to load in lobby.</param>
         /// <returns></returns>
@@ -395,18 +380,7 @@ namespace SS3D.Tests
         {
             yield return PrepareNetworkTestEnvironment();
 
-            if(type is NetworkType.Client)
-            {
-                LoadFileHelpers.RequireCompiledBuild();
-                LoadFileHelpers.OpenCompiledBuild();
-
-                yield return new WaitForSeconds(10f);
-                SetApplicationSettings(NetworkType.Client);
-            }
-            else
-            {
-                SetApplicationSettings(type);
-            }
+            SetApplicationSettings(type);
 
             LoadStartupScene();
 

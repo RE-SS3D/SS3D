@@ -30,6 +30,12 @@ namespace SS3D.Application
         public bool ForceLauncher;
 
         /// <summary>
+        /// Path to a multiplayer test harness automation script for this process to run, set via
+        /// the "-testscript=" command line arg. Empty outside of harness-driven runs.
+        /// </summary>
+        public string TestScriptPath;
+
+        /// <summary>
         /// Resets our settings if we are ona built executable.
         /// </summary>
         public static void ResetOnBuiltApplication()
@@ -39,6 +45,7 @@ namespace SS3D.Application
             applicationSettings.SkipIntro = false;
             applicationSettings.EnableDiscord = false;
             applicationSettings.ForceLauncher = false;
+            applicationSettings.TestScriptPath = string.Empty;
         }
     }
 }

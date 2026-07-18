@@ -1,6 +1,8 @@
 using System;
+using DG.Tweening;
 using SS3D.Interactions;
 using SS3D.UI.MainHud.Components;
+using UnityEngine;
 using UnityEngine.UIElements;
 
 namespace SS3D.UI.MainHud
@@ -12,6 +14,10 @@ namespace SS3D.UI.MainHud
     /// </summary>
     public sealed class MainHudView
     {
+        private const float AnimDuration = 0.22f;
+        private const float ShowScaleFrom = 0.92f;
+        private const float ShowTranslateYFrom = 20f;
+
         public event Action IntentToggleRequested;
 
         /// <summary>
@@ -45,6 +51,10 @@ namespace SS3D.UI.MainHud
         private EquipmentGrid _equipmentGrid;
         private HandsGearStrip _handsGearStrip;
         private IntentModule _intentModule;
+        private Sequence _visibilitySequence;
+        private bool _visible;
+        private float _scale = 1f;
+        private float _translateY;
 
         public MainHudView(StyleSheet[] styleSheets, MainHudIconSet icons)
         {
@@ -68,23 +78,32 @@ namespace SS3D.UI.MainHud
 
             BuildTree();
             overlayRoot.Add(_root);
-            SetVisible(false);
+            SetVisibleImmediate(false);
         }
 
         public void Detach()
         {
+            KillVisibilitySequence();
             _root?.RemoveFromHierarchy();
             _root = null;
         }
 
         public void SetVisible(bool visible)
         {
-            if (_root == null)
+            if (_root == null || _visible == visible)
             {
                 return;
             }
 
-            _root.style.display = visible ? DisplayStyle.Flex : DisplayStyle.None;
+            _visible = visible;
+            if (visible)
+            {
+                PlayShow();
+            }
+            else
+            {
+                PlayHide();
+            }
         }
 
         public void SetAlertState(AlertStackState state)
@@ -127,6 +146,110 @@ namespace SS3D.UI.MainHud
 
         public HandsGearStrip HandsGear => _handsGearStrip;
 
+        private void SetVisibleImmediate(bool visible)
+        {
+            KillVisibilitySequence();
+            _visible = visible;
+            if (_root == null)
+            {
+                return;
+            }
+
+            _scale = 1f;
+            _translateY = 0f;
+            _root.style.opacity = visible ? 1f : 0f;
+            _root.style.scale = new Scale(Vector3.one);
+            _root.style.translate = new Translate(0f, 0f);
+            _root.style.display = visible ? DisplayStyle.Flex : DisplayStyle.None;
+        }
+
+        private void PlayShow()
+        {
+            KillVisibilitySequence();
+
+            _scale = ShowScaleFrom;
+            _translateY = ShowTranslateYFrom;
+            _root.style.display = DisplayStyle.Flex;
+            _root.style.opacity = 0f;
+            _root.style.scale = new Scale(new Vector3(_scale, _scale, 1f));
+            _root.style.translate = new Translate(0f, _translateY);
+
+            _visibilitySequence = DOTween.Sequence();
+            _visibilitySequence.Append(DOTween.To(
+                    () => _root.style.opacity.value,
+                    value => _root.style.opacity = value,
+                    1f,
+                    AnimDuration)
+                .SetEase(Ease.OutCirc));
+            _visibilitySequence.Join(DOTween.To(
+                    () => _scale,
+                    value =>
+                    {
+                        _scale = value;
+                        _root.style.scale = new Scale(new Vector3(value, value, 1f));
+                    },
+                    1f,
+                    AnimDuration)
+                .SetEase(Ease.OutCirc));
+            _visibilitySequence.Join(DOTween.To(
+                    () => _translateY,
+                    value =>
+                    {
+                        _translateY = value;
+                        _root.style.translate = new Translate(0f, value);
+                    },
+                    0f,
+                    AnimDuration)
+                .SetEase(Ease.OutCirc));
+        }
+
+        private void PlayHide()
+        {
+            KillVisibilitySequence();
+
+            _root.style.display = DisplayStyle.Flex;
+            _visibilitySequence = DOTween.Sequence();
+            _visibilitySequence.Append(DOTween.To(
+                    () => _root.style.opacity.value,
+                    value => _root.style.opacity = value,
+                    0f,
+                    AnimDuration)
+                .SetEase(Ease.OutCirc));
+            _visibilitySequence.Join(DOTween.To(
+                    () => _scale,
+                    value =>
+                    {
+                        _scale = value;
+                        _root.style.scale = new Scale(new Vector3(value, value, 1f));
+                    },
+                    ShowScaleFrom,
+                    AnimDuration)
+                .SetEase(Ease.OutCirc));
+            _visibilitySequence.Join(DOTween.To(
+                    () => _translateY,
+                    value =>
+                    {
+                        _translateY = value;
+                        _root.style.translate = new Translate(0f, value);
+                    },
+                    ShowTranslateYFrom,
+                    AnimDuration)
+                .SetEase(Ease.OutCirc));
+            _visibilitySequence.OnComplete(() =>
+            {
+                if (_root != null && !_visible)
+                {
+                    _root.style.display = DisplayStyle.None;
+                }
+            });
+        }
+
+        private void KillVisibilitySequence()
+        {
+            _visibilitySequence?.Kill();
+            _visibilitySequence = null;
+        }
+
         private void BuildTree()
         {
             _alertStack = new AlertIconStack();
@@ -160,14 +283,13 @@ namespace SS3D.UI.MainHud
             _root.Add(intentZone);
         }
 
-        private static VisualElement BuildZone(string className, VisualElement content)
+        private static VisualElement BuildZone(string className, VisualElement child)
         {
             VisualElement zone = new();
             zone.AddToClassList("main-hud__zone");
             zone.AddToClassList(className);
             zone.pickingMode = PickingMode.Ignore;
-            content.pickingMode = PickingMode.Position;
-            zone.Add(content);
+            zone.Add(child);
             return zone;
         }
     }

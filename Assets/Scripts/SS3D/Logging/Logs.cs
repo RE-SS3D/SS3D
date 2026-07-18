@@ -10,5 +10,6 @@
         ClientOnly = 5,
         Physics = 6,
         UI = 7,
+        Testing = 8,
     }
 }

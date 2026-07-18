@@ -8,7 +8,7 @@ current review capacity supports.
 This document is the plain-language divergence log. It is updated periodically — not per-commit.
 For doc authoring conventions see [SKILL.md](SKILL.md).
 
-**Last updated:** 2026-07-16
+**Last updated:** 2026-07-18
 
 ---
 
@@ -21,8 +21,33 @@ For doc authoring conventions see [SKILL.md](SKILL.md).
 | Render pipeline | Built-in | **URP 17** |
 | Release channel | Tagged releases on GitHub | **No releases** — build from source |
 | Documentation | GitBook ([ss3d.gitbook.io](https://ss3d.gitbook.io/dev-guide/)) | `Documents/design/` + `Documents/architecture/` + system maps |
-| Commits ahead of upstream | — | **~308** (0 behind as of last fetch) |
-| Files changed vs upstream | — | ~12.5k files, +1.3M / −72k lines |
+| Commits ahead of upstream | — | **~424** (0 behind as of last fetch) |
+| Files changed vs upstream | — | ~13k files, +1.35M / −77.5k lines |
+
+### Shipped gameplay
+
+Player-facing systems on this fork that upstream does not have (or has only in a thinner form).
+Engine, CI, and agent/docs tooling stay out of this table — see sections below for those.
+Coverage means how much of the design intent is playable today, not “code exists.”
+
+| Feature | Coverage | What shipped |
+|---|---|---|
+| [Selection + examine](#selection-api-1387) | shipped | Shader mesh picking; hover tooltips; Shift-hold detailed examine (text/image) |
+| [Interactions + radial menu](#interactions-hardening-and-radial-menu) | shipped | Hardened multiplayer interactions; three-tier UITK radial; armed Tier-2 targeting |
+| [Main HUD](#main-hud-ui-toolkit) | partial | Gear/hands/intent UITK overlay; legacy inventory chrome disabled; vitals/self-examine still pending |
+| [Health](#health-rewrite) | partial | Two-tier damage, organs, bleeding, critical/defib, field treatments, limb severing; vitals HUD pending |
+| [Combat](#combat-melee-vertical-slice) | partial | Harm-intent melee (fists, crowbar) with windup/zones; blocking and ranged not built |
+| [Body animation](#player-body-animation-foundation) | partial | Peaceful / melee / ranged stance locomotion + aim IK; combat hit presentation still thin |
+| [Screen effects](#screen-space-effects) | partial | Dying/blood/oxy/concussion/unconscious + hit flash from health; atmos temp/fire not wired |
+| [Vision / FOV](#vision-fov) | shipped | Hard black fog-of-war from viewpoint raycasts |
+| [Areas + station power](#area-foundation) | partial | APC-seeded areas, kWh cells, channel shedding, area lights/switches; live remesh pending |
+| [Machine interfaces](#machine-interfaces) | shipped | Diegetic UITK APC/SMES/atmos ports/vending; engineering ID swipe on gated panels |
+| [Atmospherics](#atmospherics-ecs-foundation) | partial | Turf gas ECS + fire; pipe networks, vents/scrubbers/pumps/air alarms; client VFX sync pending |
+| [ID / access](#id-access-foundation) | partial | Crew records, door + machine gates, ID console; auth logs / broader design pending |
+| [Tilemap / construction](#tilemap-and-adjacency-engine) | shipped | Adjacency engine, construction service, AOI tile sync, build-menu layer visibility |
+| [Rounds](#game-lifecycle-hardening) | shipped | Single-flight round state machine (join/start/end races hardened) |
+
+Details and deferred work for each row live under [Shipped on `develop`](#shipped-on-develop).
 
 ---
 
@@ -48,6 +73,7 @@ Independent of upstream's GitBook:
 | [architecture/](architecture/) | Dated implementation efforts — **how** and **in what order** |
 | [plans/](plans/) | Temporary implementation plans (updated when work ships) |
 | [AGENTS.md](../AGENTS.md) | AI agent instructions (docs-first navigation) |
+| [CLAUDE.md](../CLAUDE.md) | Condensed repo/navigation guidance for Claude Code |
 | [FORK_STATUS.md](FORK_STATUS.md) | This divergence log |
 
 Upstream's dev guide may still help with generic Unity and FishNet concepts, but project direction,
@@ -58,13 +84,16 @@ milestones, and gameplay specs for this fork live in `Documents/`.
 Upstream-only workflows (milestones, roadmap, release packaging helpers, Discord notifications)
 were **removed** from this fork. Remaining workflows:
 
-- [main.yml](../.github/workflows/main.yml) — release build, **manual** (`workflow_dispatch`) only;
-  this fork does not publish releases
+- [main.yml](../.github/workflows/main.yml) — **manual** (`workflow_dispatch`) Windows client build
+  plus a **dedicated Linux server** job (`build-server`) that boots the binary headlessly as a
+  smoke test; this fork does not publish releases
 - [editmodetestrunner.yml](../.github/workflows/editmodetestrunner.yml) — EditMode tests on push to
   `develop`, PRs (`pull_request_target`), and manual dispatch; forces Node 24 for JS actions;
   validates `UNITY_LICENSE` / `UNITY_SERIAL` secrets before running
 
 Doc layer redesign (coverage table, strip prototyping prompts from design docs) merged via PR #2.
+Agent-first composition policy and UI path-catalog conventions live under
+[architecture/](architecture/) (see shipped sections below).
 
 ---
 
@@ -461,19 +490,141 @@ Client-only URP Volume overlays for diegetic feedback from [main-hud.md](design/
 - F2 debug menu (lazy UI) and console commands (`screeneffect`, hit-flash)
 - Self-bootstraps at runtime (not Boot.unity) so it can land without scene YAML edits
 
-**Not wired to health or atmospherics yet** — only debug/console callers drive intensities today.
+**Health wiring shipped** (with the health rewrite): local-owner `HealthScreenEffectMapper` drives
+dying/blood-loss/oxy/concussion/unconscious from `HealthSnapshot`; hit flash on `ApplyDamage`.
+Temperature/fire/frost remain debug/console-only until atmospherics wires them.
 
-Merged via PR #6. Architecture:
+Merged via PR #6; health wiring via PR #12. Architecture:
 [2026-07_screen-space-effects.md](architecture/2026-07_screen-space-effects.md).
 System map: [screen-effects.md](architecture/systems/screen-effects.md).
 
+### Health rewrite
+
+**Paths:** `SS3D.Systems.Health`
+
+Clean-slate rewrite per [health.md](design/health.md) / [health_implementation_plan.md](plans/health_implementation_plan.md):
+
+- **Phases 1–5b shipped** — bleeding + bandage + VFX, asset-backed organs / pools / cardiac arrest,
+  multi-threshold critical + defibrillation window, BodyParts zone resolution, field treatments
+  (burn dressing, splint, O2, CPR, transfusion, antitoxin), limb severing (anatomy hide, world drops,
+  head mind-swap)
+- **`HumanHealthController`** + packed **`HealthSnapshot`** SyncVar; organ tick via
+  `HealthSimulation` / `OrganSimulation`
+- **Bleed VFX** — bone-anchored particles + URP Decal floor/body marks scaled from synced bleed rates
+- **Collapse / death presentation** — ragdoll on unconsciousness, cardiac arrest, and death (interim
+  RPCs; ownership refactor planned in
+  [2026-07_body-presentation-authority.md](architecture/2026-07_body-presentation-authority.md))
+- **Phase 0d** strips legacy health components from `Human.prefab` (do not dual-stack)
+
+Deferred: vitals HUD / examine-self (Phase 6), stamina bridge (Phase 7a), atmosphere→lung O2 intake,
+virology/chemistry modifiers.
+
+Merged via PR #12 (`health-rewrite`). System map: [health.md](architecture/systems/health.md).
+
+### Combat — melee vertical slice
+
+**Paths:** `SS3D.Systems.Combat`
+
+Phase 4 melee on top of the health rewrite and body-animation stance foundation:
+
+- Harm-intent **`MeleeHitInteraction`** with per-weapon windup/recovery (`MeleeWeaponProfile`)
+- Zone hits via `ZoneTargetResolver` on the `BodyParts` layer → `HumanHealthController.ApplyDamage`
+- First weapons: empty-hand fists (`HandHit`) and crowbar (`MeleeWeaponItemExtension`)
+
+Blocking and ranged accuracy from [combat.md](design/combat.md) are **not** implemented.
+Stance/aim presentation remains under entities body animation.
+
+Plan: [combat_implementation_plan.md](plans/combat_implementation_plan.md).
+System map: [combat.md](architecture/systems/combat.md).
+
+### Vision / FOV
+
+**Paths:** `SS3D.Systems.Vision`, `SS3D.Rendering.URP.VisionRendererFeature`
+
+Client grid-based FOV / fog-of-war as a **hard black mask** (not soft fog):
+
+- **`VisionSubSystem`** — `RaycastCommand` batch from `Entity.ViewPoint` → `_VisionMap`
+- **`VisionRendererFeature`** composites the mask; unseen areas are fully opaque black
+- Rays skip furniture/props until the nearest wall/door; triggers and inventory preview cameras
+  ignored so open airlocks and dense props do not leak or stripe vision
+
+Lives under the rendering system map ([rendering.md](architecture/systems/rendering.md)).
+Merged via PR #11 (supersedes stalled `feature/vision-urp-tilemap`).
+
+### Main HUD (UI Toolkit)
+
+**Paths:** `SS3D.UI.MainHud`, `Assets/Content/Systems/UI/MainHud/`
+
+Partial player HUD overlay from [main-hud.md](design/main-hud.md):
+
+- Worn equipment (incl. gloves), gear strip, hands, intent Help/Harm
+- Hand-well clicks → `HumanInventory.ActivateHand`; shown only after local spawn
+- Legacy inventory / stamina-bar uGUI disabled (condemned); hold-to-self-examine deferred
+- **`MainHudAssetCatalog`** via `Resources.Load` so standalone builds resolve UITK assets
+  (same path-catalog pattern as machine UI — shared helper deferred under UiShell)
+- Registers with `InputInterface` so pointer-over-HUD blocks world examine/selection
+
+Merged via PR #10. System map: [inventory.md](architecture/systems/inventory.md) (player HUD slice).
+
+### Input arbitration
+
+**Paths:** `SS3D.Systems.Inputs`
+
+Handle-based input ownership replacing the global action refcount:
+
+- **`InputArbiter`** — contexts + suppressions return `IInputHandle`; dispose removes exactly that
+  request; single writer of `InputAction.enabled`
+- **`InputInterface`** — unified pointer-over-UI spanning uGUI EventSystem and UI Toolkit panels
+- Gameplay and UI callers migrated off legacy `UnityEngine.Input` polling and unbalanced
+  Toggle* counters
+
+EditMode tests for the pure arbiter. Merged via PRs #8 / #9. Architecture:
+[2026-07_input-arbitration.md](architecture/2026-07_input-arbitration.md).
+System map: [inputs.md](architecture/systems/inputs.md).
+
+### Headless dedicated server
+
+**Paths:** Editor build scripts, `UNITY_SERVER` runtime guards, Docker / launch scripts
+
+Genuine Server-subtarget Linux build (not a client launched with `-serveronly`):
+
+- Editor menus / CI (`SS3D/Build/Dedicated Server`, `Client`) and `main.yml` `build-server` smoke boot
+- Runtime skips Intro/Launcher, defaults `NetworkType.DedicatedServer`, disables cameras/audio and
+  spawned renderers/lights under `#if UNITY_SERVER`
+- Docker Compose + start scripts under `Builds/`
+
+Known gaps: selection outline and drop interaction against a real client still broken (not
+root-caused); no automated multiplayer harness yet.
+
+Architecture: [2026-07_headless-dedicated-server.md](architecture/2026-07_headless-dedicated-server.md).
+
+### Agent-first composition and UI path catalogs
+
+Policy + first catalog wedges so agents can ship UI without scene/prefab YAML edits:
+
+- **[Agent-first composition](architecture/2026-07_agent-first-composition.md)** — no Boot/Game
+  registration for new features; no hand-edits to mega-prefabs; UITK + catalog/path pattern only;
+  condemned uGUI must be replaced, not migrated
+- **Machine UI path catalog** ([2026-07_mi-path-catalog.md](architecture/2026-07_mi-path-catalog.md))
+  — `MachineUiAssetCatalog` loads templates by path for builds
+- Main HUD copied the same Resources-catalog pattern; shared helper + full **UiShell** deferred
+
+### Hot-path performance
+
+**Paths:** atmospherics GPU upload, pipe networks, substances, tile coords
+
+PR #13 cut per-tick GC on hot sim paths: `TileCoord` equality for dictionary keys, atmos upload
+allocation avoidance, pipe `GetAllPlacedObject` list churn, `SubstanceContainer.AsReadOnly` on bleed
+ticks. Pitfalls recorded on the atmospherics / tile / substances system maps.
+
 ---
 
-## Design specs (not yet implemented)
+## Design specs (future direction)
 
-These files in [design/](design/) define **future gameplay direction**. They are marked
-`Status: active` but the systems they describe are largely **not implemented** on `develop` yet.
-Implementation should follow the specs or document explicit deviations.
+These files in [design/](design/) define **gameplay direction** (`Status: active` / `draft`).
+Many systems they describe are still unbuilt on `develop`; where a foundation has shipped, the
+paragraph after the table notes what landed and what remains. Implementation should follow the
+specs or document explicit deviations.
 
 | Doc | Summary |
 |---|---|
@@ -486,17 +637,19 @@ Implementation should follow the specs or document explicit deviations.
 | [main-hud.md](design/main-hud.md) | Minimal chrome HUD — 3D body vitals, cut targeting doll, intent chording |
 | [hacking-interface.md](design/hacking-interface.md) | Field diagnostic unit (FDU) — diegetic 7-panel tool; discovery by physical access |
 
-Machine interfaces, the radial interaction menu, and screen-space overlays partially implement
-[main-hud.md](design/main-hud.md) (tiered interactions, intent chording, diegetic machine control
-surfaces for APC/SMES/vending/atmos devices, Volume-based screen feedback — drag-combine Tier 3 and
-health/atmos wiring for screen effects still pending). **Area foundation** partially implements
+Machine interfaces, the radial interaction menu, screen-space overlays, and the Main HUD overlay
+partially implement [main-hud.md](design/main-hud.md) (tiered interactions, intent, diegetic machine
+control, Volume-based screen feedback, gear/hands strip — drag-combine Tier 3, vitals cluster, and
+atmos wiring for screen effects still pending). **Area foundation** partially implements
 [area.md](design/area.md) (APC-seeded flood-fill, area-scoped power/lighting, air-alarm area device
 discovery — live mutation recompute and editor merge/split still pending). **ID / access foundation**
 partially implements [id-access.md](design/id-access.md) (crew records, door and machine UI gates,
-ID console — auth logs and broader design coverage still pending). **Player body animation**
-implements stance/locomotion presentation from the animation plan; it does **not** implement
-[combat.md](design/combat.md) or [health.md](design/health.md). The rest of these specs remain
-design-only (health rewrite is in progress on a feature branch — see below).
+ID console — auth logs and broader design coverage still pending). **Health rewrite** partially
+implements [health.md](design/health.md) (Phases 1–5b; Phase 6+ deferred). **Combat** partially
+implements [combat.md](design/combat.md) (Phase 4 melee only). **Player body animation** implements
+stance/locomotion presentation; it is not full combat. **Vision FOV** has no dedicated design doc —
+it is a rendering feature under [rendering-lighting.md](design/rendering-lighting.md) territory.
+The rest of these specs remain design-only.
 
 ---
 
@@ -507,13 +660,18 @@ before assuming commit counts.
 
 | Branch | Ahead / behind `develop` | System | Notes |
 |---|---|---|---|
-| `feature/inventory-storage` | 9 / 174 | Inventory + main HUD | Gear/hands strip, intent module, storage UI migration |
-| `feature/urp-lighting-phase1` | 2 / 185 | URP lighting visual foundation | Forward+ fixture fixes, unitless intensity handling |
-| `feature/vision-urp-tilemap` | 9 / 236 | Grid-based FOV / fog-of-war on URP + tilemap | `SS3D.Systems.Vision`, `VisionRendererFeature` |
-| `health-rewrite` | 11 / 57 | Health | Clean-slate rewrite per [health_implementation_plan.md](plans/health_implementation_plan.md) |
-| `feature/map-editor-replacement` | 10 / 64 | TileMap Creator / creative | Click-to-place and editor input work |
-| `feature/character-creator` | 3 / 54 | Character customizer | Layout + URP preview polish |
-| `claude/crowd-cap-chat-plan-o8v03z` | 2 / 23 | Comms | Early chat/crowd-cap integration spike |
+| `cursor/diegetic-ui-backdrop-blur` | 2 / 0 | Machine UI + screen-effects | Dual Kawase world blur + dark scrim behind diegetic panels |
+| `feature/inventory-storage` | 9 / 290 | Inventory + storage UI | Gear/hands strip largely superseded by Main HUD PR #10; rebase before continuing |
+| `feature/urp-lighting-phase1` | 2 / 301 | URP lighting visual foundation | Forward+ fixture fixes, unitless intensity handling |
+| `feature/map-editor-replacement` | 10 / 180 | TileMap Creator / creative | Click-to-place and editor input work |
+| `feature/character-creator` | 3 / 170 | Character customizer | Layout + URP preview polish |
+| `claude/crowd-cap-chat-plan-o8v03z` | 4 / 57 | Comms | Early chat/crowd-cap integration spike |
+| `claude/atmospherics-client-viz-sync-ejkbw4` | 1 / 115 | Atmospherics | Client VFX sync spike ([effort doc](architecture/2026-07_atmos-client-visualization-sync.md)) |
+| `claude/multiplayer-test-harness-l90540` | 1 / 57 | Networking | Automated multiplayer harness spike |
+
+Merged and retired from this table: `health-rewrite` (PR #12), vision FOV (PR #11; old
+`feature/vision-urp-tilemap` abandoned), `feature/performance-improvements` (PR #13),
+`feature/mi-path-catalog` (catalog wedge on `develop`).
 
 ---
 
@@ -547,7 +705,10 @@ Do not develop on them — use `develop` or a new feature branch.
 Recent `develop` merges that did **not** use an `archive/*` branch rename (GitHub PRs / direct
 feature merge): EditMode test race (#1), docs structure redesign (#2), Unity license CI cleanup (#3),
 vending polish (#4), selection/outline flicker (#5), screen-space effects (#6), Simple Toon palette
-emission (#7), player body animation (`feature/animation-system`).
+emission (#7), input arbitration (#8 / #9), Main HUD UITK (#10), vision FOV hard mask (#11), health
+rewrite + combat melee + screen-effect health wiring (#12), hot-path performance (#13), player body
+animation (`feature/animation-system`), headless dedicated server tooling, agent-first composition
+policy, machine UI / Main HUD path catalogs.
 
 ---
 
