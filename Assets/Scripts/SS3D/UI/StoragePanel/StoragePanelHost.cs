@@ -466,17 +466,19 @@ namespace SS3D.UI.StoragePanel
             }
 
             HudDropTarget hudTarget = HitTestHud(releasePosition);
-            if (hudTarget == null
-                || hudTarget.Container == null
-                || hudTarget.Container == _dragSourceContainer)
+            if (hudTarget == null || hudTarget.Element == null)
             {
                 return;
             }
 
-            if (hudTarget.Container.CanContainItemAtPosition(_dragItem, hudTarget.Position))
+            if (hudTarget.Container == null
+                || hudTarget.Container == _dragSourceContainer
+                || !hudTarget.Container.CanContainItemAtPosition(_dragItem, hudTarget.Position))
             {
-                _localInventory.ClientTransferItem(_dragItem, hudTarget.Position, hudTarget.Container);
+                return;
             }
+
+            _localInventory.ClientTransferItem(_dragItem, hudTarget.Position, hudTarget.Container);
         }
 
         private void HandleSlotNestedOpenRequested(StoragePanelView panel, StorageSlot slot)
@@ -521,12 +523,21 @@ namespace SS3D.UI.StoragePanel
             }
 
             HudDropTarget hudTarget = HitTestHud(position);
-            if (hudTarget?.Element == null || hudTarget.Container == _dragSourceContainer)
+            if (hudTarget?.Element == null)
             {
                 return;
             }
 
-            bool hudValid = hudTarget.Container.CanContainItemAtPosition(_dragItem, hudTarget.Position);
+            // Same-container drag (reordering within one HUD well) — skip. Null container (missing
+            // body slot like Pda) is not "same as source"; it still needs a reject highlight.
+            if (hudTarget.Container != null && hudTarget.Container == _dragSourceContainer)
+            {
+                return;
+            }
+
+            // Missing body container (e.g. PDA gear well with no ContainerType.Pda on Human) → always reject.
+            bool hudValid = hudTarget.Container != null
+                && hudTarget.Container.CanContainItemAtPosition(_dragItem, hudTarget.Position);
             hudTarget.Element.EnableInClassList("inventory-slot--valid-drop", hudValid);
             hudTarget.Element.EnableInClassList("inventory-slot--invalid-drop", !hudValid);
             _highlightedHudElement = hudTarget.Element;

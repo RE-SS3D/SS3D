@@ -110,7 +110,28 @@ namespace SS3D.Systems.Inventory.Containers
 
         #region ContainerAndAttachedContainerFieldsAndProperties
 
-        public string ContainerName => gameObject.name;
+        public string ContainerName
+        {
+            get
+            {
+                // Prefer the owning item's display name (bags, PDAs, lockboxes) over the GameObject
+                // name, which is usually the prefab id plus "(Clone)".
+                Item owner = GetComponentInParent<Item>();
+                if (owner != null && !string.IsNullOrEmpty(owner.Name))
+                {
+                    return owner.Name;
+                }
+
+                string objectName = gameObject.name;
+                const string cloneSuffix = "(Clone)";
+                if (objectName.EndsWith(cloneSuffix))
+                {
+                    objectName = objectName[..^cloneSuffix.Length].TrimEnd();
+                }
+
+                return objectName;
+            }
+        }
 
         [Tooltip("Defines the size of the container, every item takes a defined place inside a container."), SerializeField]
         private Vector2Int _size = new(0, 0);

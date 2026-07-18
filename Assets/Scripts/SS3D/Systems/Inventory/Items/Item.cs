@@ -88,7 +88,25 @@ namespace SS3D.Systems.Inventory.Items
         [SyncVar]
         private AttachedContainer _container;
 
-        public string Name => _name;
+        public string Name
+        {
+            get
+            {
+                if (!string.IsNullOrEmpty(_name))
+                {
+                    return _name;
+                }
+
+                string objectName = gameObject.name;
+                const string cloneSuffix = "(Clone)";
+                if (objectName.EndsWith(cloneSuffix))
+                {
+                    objectName = objectName[..^cloneSuffix.Length].TrimEnd();
+                }
+
+                return objectName;
+            }
+        }
 
         /// <summary>
         /// This item's own weight. Does not include the recursive weight of anything stored inside it —

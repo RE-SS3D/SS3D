@@ -817,14 +817,17 @@ namespace SS3D.UI.MainHud
 
             void AddGear(HandsGearStrip.GearSlot slot)
             {
-                ContainerType type = GearSlotToContainerType(slot);
-                if (!_inventory.TryGetTypeContainer(type, 0, out AttachedContainer container))
-                {
-                    return;
-                }
-
+                // Always register the visual well so hover reject works even when the body is missing
+                // that ContainerType (Human.prefab currently has Identification but no Pda container).
                 InventorySlot element = _view.HandsGear.GetGearInventorySlot(slot);
-                targets.Add(new HudDropTarget(element, container, Vector2Int.zero, () => container.Items.FirstOrDefault()));
+                ContainerType type = GearSlotToContainerType(slot);
+                _inventory.TryGetTypeContainer(type, 0, out AttachedContainer container);
+                AttachedContainer captured = container;
+                targets.Add(new HudDropTarget(
+                    element,
+                    captured,
+                    Vector2Int.zero,
+                    () => captured != null ? captured.Items.FirstOrDefault() : null));
             }
 
             AddGear(HandsGearStrip.GearSlot.Belt);

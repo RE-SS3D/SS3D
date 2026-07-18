@@ -33,23 +33,41 @@
     color: var(--ss3d-text-primary);
     -unity-font-style: bold;
     font-size: 14px;
+    flex-grow: 1;
+    flex-shrink: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    margin-right: var(--ss3d-space-2);
 }
 
 .storage-panel__slot-count {
     color: var(--ss3d-text-tertiary);
     font-size: 10px;
+    flex-shrink: 0;
+    margin-right: var(--ss3d-space-2);
 }
 
 .storage-panel__close {
-    width: 18px;
-    height: 18px;
-    margin-left: var(--ss3d-space-2);
+    width: 28px;
+    height: 28px;
+    min-width: 28px;
+    min-height: 28px;
+    margin-left: 0;
+    padding: 0;
+    flex-shrink: 0;
     background-color: var(--ss3d-surface-elevated);
+    border-width: 0;
     border-radius: var(--ss3d-radius-sm);
+    color: var(--ss3d-text-tertiary);
+    font-size: 16px;
+    -unity-font-style: bold;
+    -unity-text-align: middle-center;
 }
 
 .storage-panel__close:hover {
     background-color: var(--ss3d-border-strong);
+    color: var(--ss3d-text-primary);
 }
 
 .storage-panel__body {

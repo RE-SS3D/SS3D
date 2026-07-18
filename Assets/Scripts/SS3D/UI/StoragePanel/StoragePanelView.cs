@@ -75,9 +75,10 @@ namespace SS3D.UI.StoragePanel
             _slotCountLabel = new Label();
             _slotCountLabel.AddToClassList("storage-panel__slot-count");
 
-            _closeButton = new VisualElement();
-            _closeButton.AddToClassList("storage-panel__close");
-            _closeButton.RegisterCallback<ClickEvent>(_ => CloseRequested?.Invoke());
+            Button closeButton = new(() => CloseRequested?.Invoke()) { text = "×" };
+            closeButton.AddToClassList("storage-panel__close");
+            closeButton.RegisterCallback<PointerDownEvent>(evt => evt.StopPropagation());
+            _closeButton = closeButton;
 
             _header.Add(_titleLabel);
             _header.Add(_slotCountLabel);
