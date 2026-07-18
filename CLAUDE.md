@@ -11,9 +11,9 @@ whereas upstream is still on Unity 2021.3 + Built-in RP — the two codebases ha
 (~248 commits, ~12k files). Networking is via [FishNet](https://fish-networking.com/).
 
 There is no official RE:SS3D release channel for this fork; day-to-day play is still build-from-source
-in the Unity Editor. Maintainers can optionally cut a **manual Linux prerelease** via
-`.github/workflows/develop-release.yml` after EditMode + multiplayer smoke — see
-`Documents/architecture/2026-07_ci-develop-release-pipeline.md`.
+in the Unity Editor. Maintainers can optionally cut a **manual prerelease** (Windows player zip with
+launch bats; Linux secondary) via `.github/workflows/develop-release.yml` after EditMode + Linux
+multiplayer smoke — see `Documents/architecture/2026-07_ci-develop-release-pipeline.md`.
 
 ## Read the docs before searching code
 
@@ -62,7 +62,7 @@ Editor.
   via Unity's **Test Runner** window (`Window > General > Test Runner`) inside the Editor. CI runs the same
   EditMode suite headlessly via `game-ci/unity-test-runner` — see `.github/workflows/editmodetestrunner.yml`.
 - **CI build / prerelease**: `.github/workflows/develop-release.yml` is the gated manual path
-  (EditMode → Linux client+server → multiplayer smoke → GitHub prerelease).
+  (EditMode → Linux client+server → multiplayer smoke → Windows client + bats → GitHub prerelease).
   `.github/workflows/main.yml` is deprecated for releases (optional Windows/legacy).
   Cheap EditMode: `editmodetestrunner.yml`. Opt-in smoke: `multiplayer-smoke-test.yml`.
 - **Code style**: `.editorconfig` at the repo root enforces C# naming/formatting (enforced as ReSharper/Rider

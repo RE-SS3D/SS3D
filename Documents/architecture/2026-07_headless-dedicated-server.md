@@ -136,7 +136,7 @@ deserves its own plan.
 - Windows dedicated server build (Linux-only per this effort's scope).
 - Publishing the server build as a release artifact — superseded by
   [2026-07_ci-develop-release-pipeline.md](2026-07_ci-develop-release-pipeline.md)
-  (manual Linux client+server prerelease after EditMode + multiplayer smoke).
+  (manual Windows+bats prerelease after EditMode + Linux multiplayer smoke; Linux zips secondary).
 
 ## Success criteria
 

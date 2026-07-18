@@ -17,9 +17,9 @@ FishNet session management — host/join, network type and port settings. Distin
 - `Assets/Scripts/SS3D/Editor/ClientAndServerBuildScript.cs` — `SS3D/Build/Client + Dedicated Server (Linux)` menu item; batchmode entry `BuildBothBatch` used by `Tools/build_client_and_server.sh`
 - `Assets/Scripts/SS3D/Systems/Testing/AutomationSubSystem.cs` — self-bootstrapping (no scene edit), drives a headless process through a `-testscript=` script using the same client→server broadcast/RPC APIs the lobby UI calls; no-op unless that flag is set. Client `wait_connected` also waits until `PlayerSubSystem` exists (FishNet connects before Game finishes loading additively).
 - `Testing/multiplayer/run_smoketest.sh` — the actual multiplayer test harness: launches a real server + N real client processes and asserts on their logs; see [2026-07_multiplayer-test-harness](../2026-07_multiplayer-test-harness.md)
-- `Builds/start_ss3d_server.sh`, `Builds/start_ss3d_client.sh` — local launch scripts
+- `Builds/start_ss3d_server.sh`, `Builds/start_ss3d_client.sh`, `Builds/Start_SS3D_*.bat` — local / Windows-prerelease launch scripts
 - `Dockerfile`, `docker-compose.yml` — containerized server deployment
-- `.github/workflows/develop-release.yml` — manual EditMode → Linux builds → multiplayer smoke → GitHub prerelease ([2026-07_ci-develop-release-pipeline](../2026-07_ci-develop-release-pipeline.md))
+- `.github/workflows/develop-release.yml` — manual EditMode → Linux builds → multiplayer smoke → Windows client+bats prerelease ([2026-07_ci-develop-release-pipeline](../2026-07_ci-develop-release-pipeline.md))
 - `.github/workflows/multiplayer-smoke-test.yml` — opt-in multi-process smoke (`workflow_dispatch` / PR label `test:multiplayer`)
 - `.github/workflows/main.yml` — deprecated for releases; optional Windows/legacy + boot-and-grep server check
 

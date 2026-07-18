@@ -6,10 +6,11 @@
 
 ## Goal
 
-Give this fork a gated path from a known commit to downloadable Linux client + dedicated-server
-binaries: EditMode → full player builds → multiplayer smoke → GitHub **prerelease**. Trigger is
-manual (`workflow_dispatch`) only — develop merges ~5–10 PRs/day, and every run burns
-rate-limited `unity_tests` Unity licenses plus long builder time.
+Give this fork a gated path from a known commit to a downloadable **Windows** player zip
+(self-host via `Builds/*.bat`) plus secondary Linux client/server artifacts: EditMode → Linux
+builds → multiplayer smoke → Windows client → GitHub **prerelease**. Trigger is manual
+(`workflow_dispatch`) only — develop merges ~5–10 PRs/day, and every run burns rate-limited
+`unity_tests` Unity licenses plus long builder time.
 
 ## Shipped
 
@@ -17,15 +18,19 @@ rate-limited `unity_tests` Unity licenses plus long builder time.
 
 1. **EditMode** — same `game-ci/unity-test-runner@v4` / `6000.3.16f1` pattern as
    `editmodetestrunner.yml`, including secret preflight and `environment: unity_tests`.
-2. **Build** — sequential Linux dedicated server + client via `ServerBuildScript` /
+2. **Linux build** — sequential dedicated server + client via `ServerBuildScript` /
    `ClientBuildScript`, separate `buildsPath` roots (`build/GameServer`, `build/Game`) so the
    second builder cannot clobber the first. `versioning: None` (fork tags like `0.3.95j` break
    game-ci Semantic versioning).
 3. **Smoke** — `Testing/multiplayer/run_smoketest.sh basic-round` then `late-join 2` against
-   those same binaries; harness logs uploaded always.
-4. **Prerelease** — zip the smoke-proven trees; `softprops/action-gh-release` with
-   `prerelease: true`, tag `develop-<shortsha>` (or dispatch `tag_suffix` override). Optional
-   `skip_release` input runs EditMode+build+smoke only.
+   those same Linux binaries; harness logs uploaded always. This is the quality gate.
+4. **Windows client** — after smoke passes, default `unity-builder` `StandaloneWindows64`
+   (`buildName: SS3D`). Not smoke-tested on Windows (no harness path for `.exe` on
+   `ubuntu-latest`). Skipped when `skip_release` is set.
+5. **Prerelease** — primary zip `SS3D-Windows-<tag>.zip` with layout:
+   `Start_SS3D_*.bat` + `README.txt` beside `Game/SS3D.exe` (matches [`Builds/`](../../Builds/)
+   locally). Secondary: Linux client/server zips. Tag `develop-<shortsha>` (or
+   `tag_suffix` override). `prerelease: true`.
 
 ### Related workflow changes
 
@@ -44,11 +49,14 @@ rate-limited `unity_tests` Unity licenses plus long builder time.
   green (`main.yml` hit this before the fix).
 - **Do not use `versioning: Semantic`** until tags are clean `X.Y.Z` — letter-suffix tags produce
   `Failed to parse git describe output`.
+- **Do not use `ClientBuildScript` for Windows** — it hardcodes `StandaloneLinux64`; Windows
+  uses the default game-ci build method.
+- **Windows is not multiplayer-smoke-tested.** Trust is “same commit as green Linux smoke.”
 
 ## Out of scope
 
 - Auto-trigger on every `develop` push.
-- Windows/macOS in the gated release.
+- Windows dedicated-server build / Windows smoke harness.
 - Wiring `known_unity_noise` into the harness fail gate.
 
 ## Related docs

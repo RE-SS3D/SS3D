@@ -105,8 +105,8 @@ Manual / partial:
 ### CI
 - `.github/workflows/develop-release.yml` — **manual** gated path: EditMode → Linux
   server+client builds (separate `buildsPath` dirs, `versioning: None`) → `basic-round` +
-  `late-join 2` → GitHub prerelease of the same binaries. See
-  [2026-07_ci-develop-release-pipeline.md](2026-07_ci-develop-release-pipeline.md).
+  `late-join 2` → Windows client zip with `Builds/Start_SS3D_*.bat` → GitHub prerelease.
+  See [2026-07_ci-develop-release-pipeline.md](2026-07_ci-develop-release-pipeline.md).
 - `.github/workflows/multiplayer-smoke-test.yml` — opt-in smoke only (`workflow_dispatch` or PR
   label `test:multiplayer`); no longer runs on every `develop` push. Same build scripts and
   harness as the release workflow’s smoke stage.
