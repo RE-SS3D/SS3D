@@ -216,17 +216,24 @@ namespace SS3D.UI.MainHud.Components
             Action<Vector2> moved,
             Action<Vector2> ended)
         {
+            Vector2 dragOrigin = default;
+
+            // Always clear the click-suppression flag on press — including empty wells. Otherwise a
+            // prior drag leaves _dragMoved true and empty-hand clicks (which never re-enter the
+            // canDrag path) permanently fail to select a hand.
             inventorySlot.RegisterCallback<PointerDownEvent>(evt =>
             {
+                _dragMoved = false;
+                dragOrigin = (Vector2)evt.position;
+
                 if (!canDrag())
                 {
                     return;
                 }
 
                 onBegin();
-                _dragMoved = false;
                 inventorySlot.CapturePointer(evt.pointerId);
-                started(evt.position);
+                started((Vector2)evt.position);
                 evt.StopPropagation();
             });
             inventorySlot.RegisterCallback<PointerMoveEvent>(evt =>
@@ -236,8 +243,16 @@ namespace SS3D.UI.MainHud.Components
                     return;
                 }
 
-                _dragMoved = true;
-                moved(evt.position);
+                Vector2 delta = (Vector2)evt.position - dragOrigin;
+                if (!_dragMoved && delta.sqrMagnitude >= DragThresholdSq)
+                {
+                    _dragMoved = true;
+                }
+
+                if (_dragMoved)
+                {
+                    moved((Vector2)evt.position);
+                }
             });
             inventorySlot.RegisterCallback<PointerUpEvent>(evt =>
             {
@@ -247,11 +262,23 @@ namespace SS3D.UI.MainHud.Components
                 }
 
                 inventorySlot.ReleasePointer(evt.pointerId);
-                ended(evt.position);
+                ended((Vector2)evt.position);
+                _dragGear = null;
+                _dragHand = null;
+            });
+            inventorySlot.RegisterCallback<PointerCaptureOutEvent>(_ =>
+            {
+                if (_dragGear == null && _dragHand == null)
+                {
+                    return;
+                }
+
                 _dragGear = null;
                 _dragHand = null;
             });
         }
+
+        private const float DragThresholdSq = 25f;
 
         private static InventorySlot CreateSlot(string label, Sprite emptyIcon, float size)
         {

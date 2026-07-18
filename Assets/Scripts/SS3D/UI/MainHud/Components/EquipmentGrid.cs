@@ -132,20 +132,33 @@ namespace SS3D.UI.MainHud.Components
             inventorySlot.RegisterCallback<PointerDownEvent>(evt => OnPointerDown(slot, inventorySlot, evt));
             inventorySlot.RegisterCallback<PointerMoveEvent>(evt => OnPointerMove(slot, inventorySlot, evt));
             inventorySlot.RegisterCallback<PointerUpEvent>(evt => OnPointerUp(slot, inventorySlot, evt));
+            inventorySlot.RegisterCallback<PointerCaptureOutEvent>(_ =>
+            {
+                if (_dragSlot == slot)
+                {
+                    _dragSlot = null;
+                }
+            });
             return inventorySlot;
         }
 
+        private Vector2 _dragOrigin;
+        private const float DragThresholdSq = 25f;
+
         private void OnPointerDown(Slot slot, InventorySlot inventorySlot, PointerDownEvent evt)
         {
+            // Clear before the empty-slot early-out — same sticky-_dragMoved bug as HandsGearStrip.
+            _dragMoved = false;
+            _dragOrigin = (Vector2)evt.position;
+
             if (inventorySlot.ItemIcon == null)
             {
                 return;
             }
 
             _dragSlot = slot;
-            _dragMoved = false;
             inventorySlot.CapturePointer(evt.pointerId);
-            SlotDragStarted?.Invoke(slot, evt.position);
+            SlotDragStarted?.Invoke(slot, (Vector2)evt.position);
             evt.StopPropagation();
         }
 
@@ -156,8 +169,16 @@ namespace SS3D.UI.MainHud.Components
                 return;
             }
 
-            _dragMoved = true;
-            SlotDragMoved?.Invoke(slot, evt.position);
+            Vector2 delta = (Vector2)evt.position - _dragOrigin;
+            if (!_dragMoved && delta.sqrMagnitude >= DragThresholdSq)
+            {
+                _dragMoved = true;
+            }
+
+            if (_dragMoved)
+            {
+                SlotDragMoved?.Invoke(slot, (Vector2)evt.position);
+            }
         }
 
         private void OnPointerUp(Slot slot, InventorySlot inventorySlot, PointerUpEvent evt)
@@ -168,7 +189,7 @@ namespace SS3D.UI.MainHud.Components
             }
 
             inventorySlot.ReleasePointer(evt.pointerId);
-            SlotDragEnded?.Invoke(slot, evt.position);
+            SlotDragEnded?.Invoke(slot, (Vector2)evt.position);
             _dragSlot = null;
         }
 
