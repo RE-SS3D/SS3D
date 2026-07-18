@@ -1,6 +1,7 @@
 > Code paths: Assets/Scripts/SS3D/Systems/Interactions/
 > Entry points: InteractionController, RadialInteractionSubSystem, ArmedInteractionSubSystem
 > Status: shipped
+> Verified: 7f897ac0e — 2026-07-18
 
 # Interactions (runtime)
 
@@ -33,12 +34,18 @@ Client-side interaction routing: discovers available interactions from the curre
 
 | Color | Meaning |
 |-------|---------|
-| Green | Viable interaction in range |
-| Yellow | Hovered but not viable |
+| Green | Target-bound interaction viable now (in range, intent, gates) |
+| Yellow | Target-bound interaction discovered but not currently viable (e.g. out of range) |
 | Blue (pending) | Instant interaction awaiting server confirm |
-| Hidden | No hover, entity target, or no interaction source |
+| Hidden | No hover, entity target, no source, or only source-only entries (e.g. Drop while holding) |
 
 Entities (`Human`, ghosts) are excluded from hover outlines; medical targeting will use dedicated UI.
+
+Hover outlines ignore source-only discoveries such as `Drop` (`InteractionEntry.Target == null`). Those always appear while an item is held and must not outline every `Selectable` under the cursor.
+
+## Pitfalls
+
+- **Outline on every hover while holding an item:** `Item.CreateSourceInteractions` always discovers `Drop` with a null target. Outline evaluation must run `InteractionPipeline.FilterForOutline` (keep only `Target != null`) before treating Discover as "available."
 
 ## Cancellation
 

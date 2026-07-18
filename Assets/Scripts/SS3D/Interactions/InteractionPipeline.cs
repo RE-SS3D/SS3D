@@ -82,6 +82,28 @@ namespace SS3D.Interactions
             return viable;
         }
 
+        /// <summary>
+        /// Hover outlines only reflect interactions that target the hovered object.
+        /// Source-only entries (e.g. Drop, which always appears while holding an item) must not
+        /// light up every Selectable under the cursor.
+        /// </summary>
+        public static List<InteractionEntry> FilterForOutline(List<InteractionEntry> entries)
+        {
+            List<InteractionEntry> targeted = new();
+
+            foreach (InteractionEntry entry in entries)
+            {
+                if (entry.Target == null)
+                {
+                    continue;
+                }
+
+                targeted.Add(entry);
+            }
+
+            return targeted;
+        }
+
         public static bool MatchesIntent(IInteraction interaction, IntentType intent)
         {
             if (interaction is IIntentRestrictedInteraction restricted)

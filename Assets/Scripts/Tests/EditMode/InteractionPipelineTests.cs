@@ -97,6 +97,22 @@ namespace EditorTests
         }
 
         [Test]
+        public void FilterForOutline_ExcludesSourceOnlyEntries()
+        {
+            StubInteractionTarget target = new();
+            List<InteractionEntry> entries = new()
+            {
+                new InteractionEntry(null, new NamedInteraction("Drop", 5), InteractionIdentifier.SourceOnlyTargetIndex),
+                new InteractionEntry(target, new NamedInteraction("Pickup", 10), InteractionIdentifier.SyntheticTargetIndex),
+            };
+
+            List<InteractionEntry> outlineEntries = InteractionPipeline.FilterForOutline(entries);
+
+            Assert.AreEqual(1, outlineEntries.Count);
+            Assert.AreEqual("Pickup", outlineEntries[0].Interaction.GetGenericName());
+        }
+
+        [Test]
         public void TryResolve_ReturnsFalseWhenIdentifierNotFound()
         {
             List<InteractionEntry> entries = new()

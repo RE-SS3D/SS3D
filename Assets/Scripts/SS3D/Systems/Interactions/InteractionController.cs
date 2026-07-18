@@ -847,7 +847,8 @@ namespace SS3D.Systems.Interactions
             List<IInteractionTarget> targets = GetTargetsFromGameObject(source, selectable.gameObject);
             InteractionEvent interactionEvent = new(source, targets.Count > 0 ? targets[0] : null, point, normal);
 
-            List<InteractionEntry> discovered = InteractionPipeline.Discover(source, targets, interactionEvent);
+            List<InteractionEntry> discovered = InteractionPipeline.FilterForOutline(
+                InteractionPipeline.Discover(source, targets, interactionEvent));
             if (discovered.Count == 0)
             {
                 return false;

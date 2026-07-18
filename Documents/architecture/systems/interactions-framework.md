@@ -1,6 +1,7 @@
 > Code paths: Assets/Scripts/SS3D/Interactions/
 > Entry points: IInteraction, IInteractionSource, IInteractionTarget, InteractionPipeline, InteractionIdentifier
 > Status: shipped
+> Verified: 7f897ac0e — 2026-07-18
 
 # Interactions (framework)
 
@@ -17,7 +18,7 @@ RPCs identify interactions with `InteractionIdentifier` (`genericName` + `target
 - `Assets/Scripts/SS3D/Interactions/Interfaces/IInteractionTarget.cs` — objects that receive interactions
 - `Assets/Scripts/SS3D/Interactions/InteractionEntry.cs` — target + interaction + wire identifier
 - `Assets/Scripts/SS3D/Interactions/InteractionIdentifier.cs` — stable RPC wire ID
-- `Assets/Scripts/SS3D/Interactions/InteractionPipeline.cs` — shared discover → filter → sort
+- `Assets/Scripts/SS3D/Interactions/InteractionPipeline.cs` — shared discover → filter → sort; `FilterForOutline` drops source-only entries for hover feedback
 - `Assets/Scripts/SS3D/Interactions/InteractionTier.cs` — instant / targeted / folder tiers for radial menu
 - `Assets/Scripts/SS3D/Interactions/Interfaces/IInteractionTierProvider.cs` — per-interaction tier override
 - `Assets/Scripts/SS3D/Interactions/Extensions/InteractionExtensions.cs` — `GetInteractionTier()` helper
@@ -35,6 +36,10 @@ RPCs identify interactions with `InteractionIdentifier` (`genericName` + `target
 - Use `Requirement` and `IInteractionRangeLimit` / `RangeLimit` for gating.
 - Register interaction icons via generated `InteractionIcons` asset refs ([data-codegen](data-codegen.md)); expose named helpers on `InteractionIconLookup` when shared.
 - Replicated state changes in `Start()` must go through networked components (`NetworkedOpenable.SetOpenState`, `SyncVar` toggles), not local-only animator writes.
+
+## Pitfalls
+
+- **Source-only interactions pollute hover outlines:** entries with `Target == null` (e.g. Drop) are valid for radial/click but are not "available on this object." Use `FilterForOutline` before outline state.
 
 ## Depends on / Used by
 
