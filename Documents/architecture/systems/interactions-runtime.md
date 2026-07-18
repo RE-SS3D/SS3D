@@ -1,7 +1,7 @@
 > Code paths: Assets/Scripts/SS3D/Systems/Interactions/
 > Entry points: InteractionController, RadialInteractionSubSystem, ArmedInteractionSubSystem
 > Status: shipped
-> Verified: 7f897ac0e — 2026-07-18
+> Verified: a20853b1c — 2026-07-18
 
 # Interactions (runtime)
 
@@ -43,9 +43,12 @@ Entities (`Human`, ghosts) are excluded from hover outlines; medical targeting w
 
 Hover outlines ignore source-only discoveries such as `Drop` (`InteractionEntry.Target == null`). Those always appear while an item is held and must not outline every `Selectable` under the cursor.
 
+Structural Discover/source-list debt: [interactions-framework](interactions-framework.md) § Architecture smells.
+
 ## Pitfalls
 
 - **Outline on every hover while holding an item:** `Item.CreateSourceInteractions` always discovers `Drop` with a null target. Outline evaluation must run `InteractionPipeline.FilterForOutline` (keep only `Target != null`) before treating Discover as "available."
+- **Outline on every hover with empty hands:** obsolete `Craft` on hands used to discover `OpenCraftingMenu` for every target. Holding an item switches the source to the item (no `Craft`), so the bug only showed empty-handed. Do not extend crafting — purge per [crafting](crafting.md); until then discover must stay gated.
 
 ## Cancellation
 

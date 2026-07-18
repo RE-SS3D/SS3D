@@ -1,7 +1,7 @@
 > Code paths: Assets/Scripts/SS3D/Interactions/
 > Entry points: IInteraction, IInteractionSource, IInteractionTarget, InteractionPipeline, InteractionIdentifier
 > Status: shipped
-> Verified: add2ad2c9 — 2026-07-18
+> Verified: a20853b1c — 2026-07-18
 
 # Interactions (framework)
 
@@ -19,9 +19,10 @@ RPCs identify interactions with `InteractionIdentifier` (`genericName` + `target
 - `Assets/Scripts/SS3D/Interactions/InteractionEntry.cs` — target + interaction + wire identifier
 - `Assets/Scripts/SS3D/Interactions/InteractionIdentifier.cs` — stable RPC wire ID
 - `Assets/Scripts/SS3D/Interactions/InteractionPipeline.cs` — shared discover → filter → sort; `FilterForOutline` drops source-only entries for hover feedback
+- `Assets/Scripts/SS3D/Interactions/InteractionEvent.cs` — source/target/point/normal; default `Point` is `Vector3.zero` when unset (see smells)
 - `Assets/Scripts/SS3D/Interactions/InteractionTier.cs` — instant / targeted / folder tiers for radial menu
 - `Assets/Scripts/SS3D/Interactions/Interfaces/IInteractionTierProvider.cs` — per-interaction tier override
-- `Assets/Scripts/SS3D/Interactions/Extensions/InteractionExtensions.cs` — `GetInteractionTier()` helper
+- `Assets/Scripts/SS3D/Interactions/Extensions/InteractionExtensions.cs` — `RangeCheck`, `GetInteractionTier()`
 - `Assets/Scripts/SS3D/Interactions/InteractionOptimisticFeedback.cs` — delayed loading bars during server confirm
 - `Assets/Scripts/SS3D/Interactions/Interfaces/IIntentRestrictedInteraction.cs` — Help/Harm gate
 - `Assets/Scripts/SS3D/Interactions/Interfaces/ITargetedInteraction.cs` — armed-mode second-click targeting
@@ -36,11 +37,22 @@ RPCs identify interactions with `InteractionIdentifier` (`genericName` + `target
 - Use `Requirement` and `IInteractionRangeLimit` / `RangeLimit` for gating.
 - Register interaction icons via generated `InteractionIcons` asset refs ([data-codegen](data-codegen.md)); expose named helpers on `InteractionIconLookup` when shared.
 - Replicated state changes in `Start()` must go through networked components (`NetworkedOpenable.SetOpenState`, `SyncVar` toggles), not local-only animator writes.
+- Prefer gating `IInteractionSourceExtension.GetSourceInteractions` on a real availability check (like `HandHit`), not unconditional `Add` — see smells below.
+
+## Architecture smells
+
+Structural debt (not one-off bugs). Bandages live in Pitfalls / [interactions-runtime](interactions-runtime.md); prefer fixing the contract when touching this area.
+
+1. **`Discover` has no contract.** Some source extensions always `Add` (e.g. `Drop`); others gate on `CanInteract` at discover time (`HandHit`, CPR). Consumers cannot tell whether an entry means “candidate for this target,” “source-only world action,” or “already range-checked.” Empty-hand vs held-item also swaps which extensions run (`Hands.GetActiveInteractionSource` → Hand or Item), so the same hover can look fine with an item and broken with empty hands.
+2. **Source-only and target-bound entries share one list.** `Drop` uses `Target == null` in the same bag as object interactions. Anything that assumes Discover ≈ “doable *to this hover*” needs a consumer filter (`FilterForOutline`). Longer-term: mark source-only interactions or split discover lists.
+3. **`InteractionEvent.Point` uses `Vector3.zero` as unset.** Magnitude checks cannot distinguish “no point resolved” from a real hit at world origin. Prefer an explicit `HasPoint` (or nullable) when reshaping the event type.
+4. **Pickable ≠ rangeable** (owned with [selection](selection.md)): shader pick works without colliders; range/drop need a resolved point from colliders. Missing colliders on `Selectable` wall mounts silently break range until `RangeCheck` falls back to the transform.
 
 ## Pitfalls
 
-- **Source-only interactions pollute hover outlines:** entries with `Target == null` (e.g. Drop) are valid for radial/click but are not "available on this object." Use `FilterForOutline` before outline state.
-- **Missing interaction point used to skip range:** `RangeCheck` treated default `Point == Vector3.zero` as unlimited range. Wall mounts without colliders (light switch, air alarm) never resolve a point, so toggles / Open interface worked across the map. Unresolved points now range against the target transform/collider instead; wall-mount prefabs should still ship a `BoxCollider` for selection rays.
+- **Source-only interactions pollute hover outlines:** Drop always discovers while holding an item (`Target == null`). Runtime must `FilterForOutline` before treating Discover as “available on this object” (smell #2).
+- **Missing interaction point used to skip range:** `RangeCheck` treated default zero point as unlimited range. Unresolved points now range against the target transform/collider; wall mounts should still ship a `BoxCollider` for selection rays (smells #3–4).
+- **Unconditional source `Add` pollutes Discover:** any extension that adds for every target (historical `Craft` on hands) lights yellow outlines / menus on every hover when that source is active. Gate at discover time or remove the obsolete extension ([crafting](crafting.md) is due for purge).
 
 ## Depends on / Used by
 
@@ -53,4 +65,4 @@ RPCs identify interactions with `InteractionIdentifier` (`genericName` + `target
 - Plan: [interaction_system_improvements_9e14ae22.plan.md](../../plans/interaction_system_improvements_9e14ae22.plan.md)
 - Plan: [radial_menu_implementation_5a83bdf9.plan.md](../../plans/radial_menu_implementation_5a83bdf9.plan.md)
 - Design (read-only): [Documents/design/main-hud.md](../../design/main-hud.md) § intent chording
-- Tests: `Assets/Scripts/Tests/EditMode/InteractionPipelineTests.cs`
+- Tests: `Assets/Scripts/Tests/EditMode/InteractionPipelineTests.cs`, `InteractionRangeCheckTests.cs`

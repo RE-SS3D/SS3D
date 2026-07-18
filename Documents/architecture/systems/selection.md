@@ -1,7 +1,7 @@
 > Code paths: Assets/Scripts/SS3D/Systems/Selection/, Assets/Scripts/SS3D/Rendering/URP/
 > Entry points: SelectionSubSystem, SelectionController, SelectionPickRendererFeature
 > Status: shipped
-> Verified: 2e2d03815 — 2026-07-18
+> Verified: a20853b1c — 2026-07-18
 
 # Selection
 
@@ -26,7 +26,7 @@ Outline shells and other auxiliary meshes use `SelectionRenderingLayers.ExcludeF
 
 ## Extension points
 
-- Add `Selectable` to mesh renderers on new interactable objects.
+- Add `Selectable` **and** a collider (usually `BoxCollider` on wall mounts) to mesh roots that should be pickable *and* range-checked. Pick works from materials alone; [interactions-framework](interactions-framework.md) `RangeCheck` / drop normals need a resolved point from colliders (or transform fallback).
 - Implement `IExaminable` on selectables for [examine](examine.md) integration.
 - Auxiliary meshes (outlines, FX): set `SelectionRenderingLayers.ExcludeFromSelectionPick` on their rendering layer mask.
 - `MachineInterfaceHost` disables `UIDocument` when closed to avoid interfering with the pick pass — follow this pattern for overlay UI.
@@ -34,6 +34,7 @@ Outline shells and other auxiliary meshes use `SelectionRenderingLayers.ExcludeF
 ## Pitfalls
 
 - **`ClosestPoint` spam on hover:** ray-miss fallback must not call `Collider.ClosestPoint` on non-convex `MeshCollider` (or TerrainCollider). Unity warns every `LateUpdate`. Use `ClosestPointOnBounds` for unsupported shapes (`SelectionTargetUtility.GetClosestPoint`; same rule in [examine](examine.md) `ExamineRangeUtility`).
+- **Pickable without collider breaks range:** shader ID pick does not need colliders; interaction-point resolution does. Wall mounts missing colliders left `Point` at default zero and (historically) made `RangeCheck` a no-op — see [interactions-framework](interactions-framework.md) smells #3–4. Light switch / air alarm now carry `BoxCollider`s; keep that requirement for new wall mounts.
 
 ## Depends on / Used by
 

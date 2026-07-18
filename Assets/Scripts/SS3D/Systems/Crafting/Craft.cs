@@ -19,11 +19,23 @@ namespace SS3D.Systems.Crafting
         
         public void GetSourceInteractions(IInteractionTarget[] targets, List<InteractionEntry> interactions)
         {
+            if (!TryGetComponent(out IInteractionSource source))
+            {
+                return;
+            }
+
             OpenCraftingMenuInteraction openCraftingMenuInteraction = new(type);
-            
+
             foreach (IInteractionTarget target in targets)
             {
-                interactions.Add(new(target, openCraftingMenuInteraction));
+                // Discover only when recipes exist for this target. Unconditional Add made every
+                // empty-hand hover show a yellow outline (Drop-like pollution via a non-null Target).
+                if (!openCraftingMenuInteraction.CanInteract(new InteractionEvent(source, target)))
+                {
+                    continue;
+                }
+
+                interactions.Add(new InteractionEntry(target, openCraftingMenuInteraction));
             }
         }
     }

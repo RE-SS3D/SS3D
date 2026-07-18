@@ -29,7 +29,7 @@ Feature-level gaps *within* an already-designed system stay in that design doc's
 | armor | [armor.md](../design/armor.md) — active | none yet | none yet |
 | inventory-storage | [inventory-storage.md](../design/inventory-storage.md) — active | [2026-07_inventory-storage-redesign](2026-07_inventory-storage-redesign.md) — in-progress (clean-slate: data model + panel + Main HUD equip/drag + stamina 7a + old UI purge shipped; Play Mode verification pending) | [inventory](systems/inventory.md) — partial |
 | examine | [examine.md](../design/examine.md) — active | none yet | [examine](systems/examine.md) — shipped |
-| crafting | [crafting.md](../design/crafting.md) — active | none yet | [crafting](systems/crafting.md) — stub |
+| crafting | [crafting.md](../design/crafting.md) — active | none yet | [crafting](systems/crafting.md) — stub (code obsolete / due for removal; do not extend) |
 | death-cloning-respawn | [death-cloning-respawn.md](../design/death-cloning-respawn.md) — active | none yet | none yet |
 | surgery | [surgery.md](../design/surgery.md) — active | none yet | none yet |
 | lobby | [lobby.md](../design/lobby.md) — active | none yet | [rounds-lobby](systems/rounds-lobby.md) — shipped |
@@ -82,7 +82,7 @@ section, `Status: draft`, design-docs-cite-design-docs only). Owner review to pr
 | Networking (session) | [networking-session](systems/networking-session.md) | partial | FishNet host/join session management; headless dedicated-server build; real multi-process test harness |
 | Scene management | [scene-management](systems/scene-management.md) | stub | Scene loading and switching; not a system composition root |
 | UI shell | [ui-shell](systems/ui-shell.md) | stub | Target UITK composition root; MI + Main HUD path catalogs shipped (duplicated); shared catalog helper + full shell deferred |
-| Interactions (framework) | [interactions-framework](systems/interactions-framework.md) | shipped | Shared `IInteraction` contracts, pipeline, and wire identifiers |
+| Interactions (framework) | [interactions-framework](systems/interactions-framework.md) | shipped | Shared `IInteraction` contracts, pipeline, wire identifiers; see map § Architecture smells |
 | Data / codegen | [data-codegen](systems/data-codegen.md) | stub | Asset databases and generated references |
 | Persistence | [persistence](systems/persistence.md) | partial | Contributor-based station templates and server meta (permissions, round history) |
 | Localization | [localization](systems/localization.md) | partial | `LocalizedTextService` and examine string tables |
@@ -107,7 +107,7 @@ section, `Status: draft`, design-docs-cite-design-docs only). Owner review to pr
 | Entities | [entities](systems/entities.md) | partial | Humanoids, minds, spawning; body-state animation + combat stances; `Human.prefab` composition debt; collapse/death presentation debt ([body-presentation-authority](2026-07_body-presentation-authority.md)) |
 | Health | [health](systems/health.md) | partial | Phases 1–5b shipped; screen-effects wired from snapshot; Phase 0d strips/rewires `Human.prefab`; vitals HUD / examine-self Phase 6 remainder; interim collapse RPCs — see [body-presentation-authority](2026-07_body-presentation-authority.md) |
 | Combat | [combat](systems/combat.md) | partial | Phase 4 melee vertical slice (fists + crowbar); stance/aim presentation in [entities](systems/entities.md) |
-| Crafting | [crafting](systems/crafting.md) | stub | Recipe crafting; crafting menu uGUI condemned |
+| Crafting | [crafting](systems/crafting.md) | stub | Obsolete / due for removal; menu uGUI condemned; `Craft` on hands is outline landmine until purge |
 | Furniture / world objects | [furniture](systems/furniture.md) | partial | Airlocks, vendors, jukebox; power-gated behaviors; vending via diegetic machine-interface |
 | Rounds / lobby | [rounds-lobby](systems/rounds-lobby.md) | shipped | Round state machine; lobby UI condemned pending lobby.md redesign |
 | Gamemodes / roles / traits | [gamemodes-roles-traits](systems/gamemodes-roles-traits.md) | stub | Objectives, job roles, character traits |
