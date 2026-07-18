@@ -1,7 +1,7 @@
 > Code paths: Assets/Scripts/SS3D/Networking/, Assets/Scripts/SS3D/Editor/ServerBuildScript.cs, Assets/Scripts/SS3D/Editor/ClientBuildScript.cs, Assets/Scripts/SS3D/Systems/Testing/, Testing/multiplayer/
 > Entry points: NetworkSessionSubSystem, SS3D.Systems.Testing.AutomationSubSystem
 > Status: partial
-> Verified: b7b7dcf3 — 2026-07-17
+> Verified: 21e83b853 — 2026-07-18
 
 # Networking (session)
 
@@ -14,6 +14,7 @@ FishNet session management — host/join, network type and port settings. Distin
 - `Assets/Scripts/SS3D/Networking/NetworkSessionSubSystem.cs` — session host/join subsystem; on `UNITY_SERVER` also self-starts on `ApplicationInitializing` since `IntroUIHelper` (the only other caller) lives in a scene the server skips
 - `Assets/Scripts/SS3D/Editor/ServerBuildScript.cs` — `SS3D/Build/Dedicated Server (Linux)` menu item and CI build method
 - `Assets/Scripts/SS3D/Editor/ClientBuildScript.cs` — `SS3D/Build/Client (Linux)` menu item; now also `-buildMethod`/`-customBuildPath`-invocable from CI, mirroring `ServerBuildScript`
+- `Assets/Scripts/SS3D/Editor/ClientAndServerBuildScript.cs` — `SS3D/Build/Client + Dedicated Server (Linux)` runs both in sequence for local smoke-test rebuilds
 - `Assets/Scripts/SS3D/Systems/Testing/AutomationSubSystem.cs` — self-bootstrapping (no scene edit), drives a headless process through a `-testscript=` script using the same client→server broadcast/RPC APIs the lobby UI calls; no-op unless that flag is set
 - `Testing/multiplayer/run_smoketest.sh` — the actual multiplayer test harness: launches a real server + N real client processes and asserts on their logs; see [2026-07_multiplayer-test-harness](../2026-07_multiplayer-test-harness.md)
 - `Builds/start_ss3d_server.sh`, `Builds/start_ss3d_client.sh` — local launch scripts
@@ -30,7 +31,8 @@ FishNet session management — host/join, network type and port settings. Distin
 
 ## Pitfalls
 
-- **`Assets/Settings/LogSettings.asset`'s `UseCompactJsonFormatter` defaulted to `0`** (plain-text file logs), even though `LogManager.cs` has full support for compact JSON file output gated behind it. Nothing errors either way - the Serilog file sink silently writes `.log` text instead of `.json`. The multiplayer harness's structured-log signal detection (`Testing/multiplayer/lib/logwait.sh`, `jq` over `LogServer.json`/`LogClient<ckey>.json`) requires this flag on; it's now set to `1`. If it ever gets flipped back off, the harness's `wait_for_signal`/`check_for_json_errors` will find no file at the expected `.json` path and every scenario will time out with no obvious cause in the harness's own code.
+- **`UseCompactJsonFormatter` / JSON file logs.** Player builds always write compact JSON (`.json`) regardless of the asset — the multiplayer harness (`Testing/multiplayer/lib/logwait.sh`) requires `LogServer.json`/`LogClient<ckey>.json`. The LogSettings toggle only affects Editor Play Mode. A `false` C# default plus Coimbra `OnValidate` dirtying the asset used to bake plain-text `.log` into Builds and make every scenario time out; the field default is now `true` and player builds ignore the toggle.
+- **Log file path is chosen in `CommandLineArgsSubSystem` after CLI parsing, not from a peer `ApplicationPreInitializing` listener.** `NetworkType`/`Ckey` come from `-serveronly`/`-ip=`/`-ckey=`; initializing Serilog from `NetworkSessionSubSystem` on the same event raced and could open `LogHost.json` while the harness waited on `LogServer.json`. Path helper: `NetworkSessionSubSystem.GetFileLogName`.
 
 ## Depends on / Used by
 

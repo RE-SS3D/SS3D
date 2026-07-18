@@ -39,7 +39,11 @@ namespace SS3D.Editor
             BuildClient(buildPath);
         }
 
-        private static void BuildClient(string buildPath)
+        /// <summary>
+        /// Builds the client to <paramref name="buildPath"/>. Used by the menu item, CI
+        /// (<see cref="BuildClient()"/>), and <c>SS3D/Build/Client + Dedicated Server (Linux)</c>.
+        /// </summary>
+        public static void BuildClient(string buildPath)
         {
             Directory.CreateDirectory(Path.GetDirectoryName(buildPath) ?? string.Empty);
 

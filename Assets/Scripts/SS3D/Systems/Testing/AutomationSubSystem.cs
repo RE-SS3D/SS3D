@@ -106,7 +106,8 @@ namespace SS3D.Systems.Testing
 
         private IEnumerator RunScript(string scriptPath)
         {
-            IReadOnlyList<AutomationInstruction> instructions;
+            IReadOnlyList<AutomationInstruction> instructions = null;
+            string failureReason = null;
 
             try
             {
@@ -114,7 +115,12 @@ namespace SS3D.Systems.Testing
             }
             catch (Exception ex)
             {
-                TestSignal.Emit(this, "ScriptFailed", $"CouldNotLoadScript:{ex.Message}");
+                failureReason = $"CouldNotLoadScript:{ex.Message}";
+            }
+
+            if (failureReason != null)
+            {
+                TestSignal.Emit(this, "ScriptFailed", failureReason);
                 yield return QuitAfterDelay();
                 yield break;
             }
@@ -133,9 +139,8 @@ namespace SS3D.Systems.Testing
                     }
                     catch (Exception ex)
                     {
-                        TestSignal.Emit(this, "ScriptFailed", $"{instruction.Opcode}:{ex.Message}");
-                        yield return QuitAfterDelay();
-                        yield break;
+                        failureReason = $"{instruction.Opcode}:{ex.Message}";
+                        break;
                     }
 
                     if (!moved)
@@ -144,6 +149,13 @@ namespace SS3D.Systems.Testing
                     }
 
                     yield return step.Current;
+                }
+
+                if (failureReason != null)
+                {
+                    TestSignal.Emit(this, "ScriptFailed", failureReason);
+                    yield return QuitAfterDelay();
+                    yield break;
                 }
             }
 
