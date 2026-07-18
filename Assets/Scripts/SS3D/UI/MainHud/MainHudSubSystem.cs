@@ -468,13 +468,19 @@ namespace SS3D.UI.MainHud
         }
 
         /// <summary>
-        /// Gear strip (belt/ID/PDA/back): equip/unequip vs active hand. Opens a storage panel only when
-        /// the worn item is itself a container (backpack, tool belt) — never the 1-slot equip container.
+        /// Gear strip (belt/ID/pocket/back): equip/unequip vs active hand for 1-slot mounts; pocket opens
+        /// its storage panel(s). Worn bags (backpack, tool belt) still open their own grids on click.
         /// </summary>
         private void HandleGearSlotClicked(HandsGearStrip.GearSlot slot)
         {
             if (_inventory == null)
             {
+                return;
+            }
+
+            if (slot == HandsGearStrip.GearSlot.Pocket)
+            {
+                OpenPocketPanelsNearGear();
                 return;
             }
 
@@ -687,14 +693,26 @@ namespace SS3D.UI.MainHud
         /// <summary>Opens all pocket containers as storage panels (replaces ToggleInternalClothing).</summary>
         public void OpenPocketPanels()
         {
+            OpenPocketPanelsNearGear();
+        }
+
+        private void OpenPocketPanelsNearGear()
+        {
             if (_inventory?.containerViewer == null || !SubSystems.TryGet(out StoragePanelHost panelHost))
             {
                 return;
             }
 
+            Vector2 baseAnchor = new(120f, 200f);
+            if (_view != null)
+            {
+                Rect bound = _view.GetGearSlotWorldBound(HandsGearStrip.GearSlot.Pocket);
+                baseAnchor = new Vector2(bound.xMin, bound.yMin);
+            }
+
             for (int i = 0; _inventory.TryGetTypeContainer(ContainerType.Pocket, i, out AttachedContainer pocket); i++)
             {
-                Vector2 anchor = new(120f + i * 40f, 200f);
+                Vector2 anchor = baseAnchor + new Vector2(i * 40f, -i * 24f);
                 panelHost.RequestOpenNear(_inventory.containerViewer, pocket, anchor);
             }
         }
@@ -703,7 +721,7 @@ namespace SS3D.UI.MainHud
         {
             HandsGearStrip.GearSlot.Belt => ContainerType.Belt,
             HandsGearStrip.GearSlot.Id => ContainerType.Identification,
-            HandsGearStrip.GearSlot.Pda => ContainerType.Pda,
+            HandsGearStrip.GearSlot.Pocket => ContainerType.Pocket,
             HandsGearStrip.GearSlot.Back => ContainerType.Bag,
             _ => ContainerType.None,
         };
@@ -797,7 +815,7 @@ namespace SS3D.UI.MainHud
 
             SetGear(HandsGearStrip.GearSlot.Belt, ContainerType.Belt);
             SetGear(HandsGearStrip.GearSlot.Id, ContainerType.Identification);
-            SetGear(HandsGearStrip.GearSlot.Pda, ContainerType.Pda);
+            SetGear(HandsGearStrip.GearSlot.Pocket, ContainerType.Pocket);
             SetGear(HandsGearStrip.GearSlot.Back, ContainerType.Bag);
 
             RegisterHudDropTargets();
@@ -869,8 +887,8 @@ namespace SS3D.UI.MainHud
 
             void AddGear(HandsGearStrip.GearSlot slot)
             {
-                // Always register the visual well so hover reject works even when the body is missing
-                // that ContainerType (Human.prefab currently has Identification but no Pda container).
+                // Always register the visual well so hover reject works even if the body is briefly
+                // missing that ContainerType during bind.
                 InventorySlot element = _view.HandsGear.GetGearInventorySlot(slot);
                 ContainerType type = GearSlotToContainerType(slot);
                 _inventory.TryGetTypeContainer(type, 0, out AttachedContainer container);
@@ -884,7 +902,7 @@ namespace SS3D.UI.MainHud
 
             AddGear(HandsGearStrip.GearSlot.Belt);
             AddGear(HandsGearStrip.GearSlot.Id);
-            AddGear(HandsGearStrip.GearSlot.Pda);
+            AddGear(HandsGearStrip.GearSlot.Pocket);
             AddGear(HandsGearStrip.GearSlot.Back);
 
             if (_hands != null)
@@ -987,7 +1005,7 @@ namespace SS3D.UI.MainHud
                     Feet = LoadSprite("Feet"),
                     Belt = LoadSprite("Waist"),
                     Id = LoadSprite("Neck"),
-                    Pda = LoadSprite("Pocket"),
+                    Pocket = LoadSprite("Pocket"),
                     Back = LoadSprite("BeepBack"),
                 };
             }

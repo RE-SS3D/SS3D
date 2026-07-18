@@ -7,6 +7,7 @@ namespace SS3D.UI.MachineInterface.Components
     public partial class InventorySlot : VisualElement
     {
         private readonly VisualElement _well;
+        private readonly VisualElement _labelHost;
         private readonly Label _label;
         private readonly Label _unknownGlyph;
         private readonly Image _icon;
@@ -32,13 +33,20 @@ namespace SS3D.UI.MachineInterface.Components
             _icon.pickingMode = PickingMode.Ignore;
             _well.Add(_icon);
 
+            // Host sizes to the slot and centers the chip; avoids UITK translate:-50% sticking to the
+            // previous text width when SlotLabel changes (e.g. Head → Trucker Cap).
+            _labelHost = new VisualElement();
+            _labelHost.AddToClassList("inventory-slot__label-host");
+            _labelHost.pickingMode = PickingMode.Ignore;
+
             _label = new Label();
             _label.AddToClassList("inventory-slot__label");
             _label.AddToClassList("font-body");
             _label.pickingMode = PickingMode.Ignore;
+            _labelHost.Add(_label);
 
             Add(_well);
-            Add(_label);
+            Add(_labelHost);
 
             ApplySize(_size);
             ApplyUnknown(_unknown);

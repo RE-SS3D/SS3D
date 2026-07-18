@@ -50,7 +50,7 @@ namespace SS3D.Editor
                 Feet = LoadRequiredSprite("Feet", missing),
                 Belt = LoadRequiredSprite("Waist", missing),
                 Id = LoadRequiredSprite("Neck", missing),
-                Pda = LoadRequiredSprite("Pocket", missing),
+                Pocket = LoadRequiredSprite("Pocket", missing),
                 Back = LoadRequiredSprite("BeepBack", missing),
             };
 

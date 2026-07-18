@@ -6,7 +6,7 @@ using UnityEngine.UIElements;
 namespace SS3D.UI.MainHud.Components
 {
     /// <summary>
-    /// Bottom-center gear strip (belt/ID/PDA/back) + the two hand slots, active hand marked with the
+    /// Bottom-center gear strip (belt/ID/pocket/back) + the two hand slots, active hand marked with the
     /// accent-rust border wrapper from the mockup.
     /// </summary>
     public class HandsGearStrip : VisualElement
@@ -15,7 +15,7 @@ namespace SS3D.UI.MainHud.Components
         {
             Belt,
             Id,
-            Pda,
+            Pocket,
             Back,
         }
 
@@ -31,7 +31,7 @@ namespace SS3D.UI.MainHud.Components
         public event Action<bool> HandClickRequested;
 
         /// <summary>
-        /// Fired when a gear-strip slot (belt/ID/PDA/back) is clicked — opens that slot's storage
+        /// Fired when a gear-strip slot (belt/ID/pocket/back) is clicked — opens that slot's storage
         /// panel (Documents/design/inventory-storage.md §6/§11).
         /// </summary>
         public event Action<GearSlot> GearSlotClicked;
@@ -46,7 +46,7 @@ namespace SS3D.UI.MainHud.Components
 
         private readonly InventorySlot _belt;
         private readonly InventorySlot _id;
-        private readonly InventorySlot _pda;
+        private readonly InventorySlot _pocket;
         private readonly InventorySlot _back;
         private readonly InventorySlot _handLeft;
         private readonly InventorySlot _handRight;
@@ -61,14 +61,14 @@ namespace SS3D.UI.MainHud.Components
 
             _belt = CreateGearSlot(GearSlot.Belt, "Belt", icons.Belt, 64);
             _id = CreateGearSlot(GearSlot.Id, "ID", icons.Id, 64);
-            _pda = CreateGearSlot(GearSlot.Pda, "PDA", icons.Pda, 64);
+            _pocket = CreateGearSlot(GearSlot.Pocket, "Pocket", icons.Pocket, 64);
             _back = CreateGearSlot(GearSlot.Back, "Back", icons.Back, 64);
 
             VisualElement gear = new();
             gear.AddToClassList("hands-gear-strip__gear");
             gear.Add(_belt);
             gear.Add(_id);
-            gear.Add(_pda);
+            gear.Add(_pocket);
             gear.Add(_back);
 
             VisualElement divider = new();
@@ -95,7 +95,7 @@ namespace SS3D.UI.MainHud.Components
         }
 
         /// <summary>
-        /// Updates a gear well's icon and label. Empty <paramref name="itemName"/> restores Belt/ID/PDA/Back.
+        /// Updates a gear well's icon and label. Empty <paramref name="itemName"/> restores Belt/ID/Pocket/Back.
         /// </summary>
         public void SetGearContents(GearSlot slot, Sprite itemIcon, string itemName)
         {
@@ -141,7 +141,7 @@ namespace SS3D.UI.MainHud.Components
         {
             GearSlot.Belt => _belt,
             GearSlot.Id => _id,
-            GearSlot.Pda => _pda,
+            GearSlot.Pocket => _pocket,
             GearSlot.Back => _back,
             _ => null,
         };
@@ -150,7 +150,7 @@ namespace SS3D.UI.MainHud.Components
         {
             GearSlot.Belt => "Belt",
             GearSlot.Id => "ID",
-            GearSlot.Pda => "PDA",
+            GearSlot.Pocket => "Pocket",
             GearSlot.Back => "Back",
             _ => string.Empty,
         };

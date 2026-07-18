@@ -20,7 +20,7 @@ namespace SS3D.UI.MainHud
         public Sprite Feet;
         public Sprite Belt;
         public Sprite Id;
-        public Sprite Pda;
+        public Sprite Pocket;
         public Sprite Back;
     }
 }

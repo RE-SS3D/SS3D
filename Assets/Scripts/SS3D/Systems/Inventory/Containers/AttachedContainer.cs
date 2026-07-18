@@ -423,20 +423,36 @@ namespace SS3D.Systems.Inventory.Containers
 		/// <returns>If the item was added</returns>
 		public bool AddItem(Item item)
 		{
-			// TODO: Use a more efficient algorithm
-			for (int y = 0; y < Size.y; y++)
-			{
-				for (int x = 0; x < Size.x; x++)
-				{
-					Vector2Int itemPosition = new Vector2Int(x, y);
-					if (AddItemPosition(item, itemPosition))
-					{
-						return true;
-					}
-				}
-			}
-			return false;
+            if (!TryFindPositionFor(item, out Vector2Int itemPosition))
+            {
+                return false;
+            }
+
+            return AddItemPosition(item, itemPosition);
 		}
+
+        /// <summary>
+        /// First grid cell where <paramref name="item"/> would store (free slot or mergeable stack).
+        /// Used by HUD wells that map to multi-slot containers (pockets) without a picked cell.
+        /// </summary>
+        public bool TryFindPositionFor(Item item, out Vector2Int position)
+        {
+            for (int y = 0; y < Size.y; y++)
+            {
+                for (int x = 0; x < Size.x; x++)
+                {
+                    Vector2Int candidate = new(x, y);
+                    if (CanContainItemAtPosition(item, candidate))
+                    {
+                        position = candidate;
+                        return true;
+                    }
+                }
+            }
+
+            position = default;
+            return false;
+        }
 
         /// <summary>
         /// transfer an item from this container to another container at a given position.

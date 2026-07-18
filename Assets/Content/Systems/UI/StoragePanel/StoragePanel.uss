@@ -162,6 +162,7 @@
     justify-content: center;
 }
 
+.storage-slot .inventory-slot__label-host,
 .storage-slot .inventory-slot__label {
     display: none;
     height: 0;

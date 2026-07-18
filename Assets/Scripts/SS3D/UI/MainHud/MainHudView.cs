@@ -25,7 +25,7 @@ namespace SS3D.UI.MainHud
         /// </summary>
         public event Action<bool> HandSelectedRequested;
 
-        /// <summary>Fired when a gear-strip slot (belt/ID/PDA/back) is clicked.</summary>
+        /// <summary>Fired when a gear-strip slot (belt/ID/pocket/back) is clicked.</summary>
         public event Action<HandsGearStrip.GearSlot> GearSlotClicked;
 
         /// <summary>Fired when an equipment-doll slot is clicked (equip/unequip vs active hand).</summary>

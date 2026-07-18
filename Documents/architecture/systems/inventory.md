@@ -1,7 +1,7 @@
 > Code paths: Assets/Scripts/SS3D/Systems/Inventory/, Assets/Scripts/SS3D/UI/MainHud/, Assets/Scripts/SS3D/UI/StoragePanel/, Assets/Scripts/SS3D/Systems/Stamina/
 > Entry points: ItemSubSystem, MainHudSubSystem, StoragePanelHost, StaminaController
 > Status: partial
-> Verified: 8d018c33b — 2026-07-18
+> Verified: a306ec029 — 2026-07-18
 
 # Inventory
 
@@ -13,7 +13,7 @@ Items, containers, hands, identification cards (`IDCard`, `PDA`), on-demand stor
 
 **Carried weight:** `HumanInventory.CarriedWeight` sums every inventory container's recursive `AttachedContainer.Weight` (hands included). Fires `OnCarriedWeightChanged`. Feeds [stamina](stamina.md) encumbrance (Phase 7a).
 
-**Storage panel UI:** `StoragePanelHost` manages N simultaneous `StoragePanelView` panels. Opened when an *item that is itself storage* is clicked (backpack on back, bag in hand, world `ViewContainerInteraction`), via pocket hotkey (`ToggleInternalClothing` → pockets), or nested click. Hand / gear / clothing slots do **not** open the 1-slot equip container — click equip/unequips (or selects hand) unless the held/worn item has its own `AttachedContainer`. Drag to another slot transfers; drag into the world (not over UI) places via `HumanInventory.ClientPlaceItemInWorld` (DropInteraction rules). Panel width follows container columns; header drag uses UITK pointer capture with the host on `InputInterface`. HUD slots register as `HudDropTarget` peers for panel↔HUD transfers.
+**Storage panel UI:** `StoragePanelHost` manages N simultaneous `StoragePanelView` panels. Opened when an *item that is itself storage* is clicked (backpack on back, bag in hand, world `ViewContainerInteraction`), via pocket hotkey / gear-strip **Pocket** well (`ToggleInternalClothing` → pockets), or nested click. Hand / gear / clothing slots do **not** open the 1-slot equip container — click equip/unequips (or selects hand) unless the held/worn item has its own `AttachedContainer`. Drag to another slot transfers; drag into the world (not over UI) places via `HumanInventory.ClientPlaceItemInWorld` (DropInteraction rules). Panel width follows container columns; header drag uses UITK pointer capture with the host on `InputInterface`. HUD slots register as `HudDropTarget` peers for panel↔HUD transfers.
 
 **Main HUD:** equipment/gear click = equip/unequip vs active hand, or open item storage if the worn item is a bag; hands select active hand (and open held bag if any). Cross-surface drag via `StoragePanelHost.BeginHudDrag` / `EndHudDrag`. Visibility: `ApplyVisibility` (local body + in-game round; suppressed while MI open). Catalog via `Resources.Load` (**SS3D → Main HUD → Rebuild Asset Catalog**).
 
@@ -42,10 +42,11 @@ Items, containers, hands, identification cards (`IDCard`, `PDA`), on-demand stor
 - **Stack-merge highlight must match `AddStoredItem`:** `CanContainItemAtPosition` treats mergeable occupied stacks as valid — keep in sync with merge room checks.
 - **Spawn/round catch-up can re-show HUD over MI:** always route through `ApplyVisibility()` (includes `_machineUiOpen`). Do not call bare `SetVisible(true)` from bind/round handlers.
 - **UITK white block:** never put `border-radius` and `overflow: hidden` on the same element — split painted outer vs clip inner (`storage-panel` / `storage-panel__clip`, weight track same). Same rule as [machine-interface](machine-interface.md).
+- **HUD slot label recenter:** Main HUD hover chips live in `inventory-slot__label-host` (flex-centered). Do not center with `left: 50%; translate: -50%` — UITK keeps the old percentage width after `SlotLabel` changes (Head → item name).
 - **Invalid panel drop must not fall through to HUD:** `TryCompleteTransfer` returns after a panel slot hit even when `CanContainItemAtPosition` is false — otherwise the release point can hit a hand under the panel and move the item there. World-drop when neither panel slot nor HUD owns the release; cancel only if the release is over an open panel's chrome (not via `IsPointerOverInterface`, which leftover uGUI keeps true). Gameplay camera comes from `CameraSubSystem`, not `Camera.main`.
-- **PDA gear well has no body container yet:** `Human.prefab` exposes Identification + Belt + Bag but not `ContainerType.Pda`. The HUD still registers the PDA well as a drop target so reject highlighting works; drops stay no-ops until a Pda container is added (prefab composition debt).
+- **PDA gear well → Pocket:** design (`main-hud.md` §8) still says belt/ID/PDA/back; this fork's strip is belt/ID/**pocket**/back. ID holds the PDA+card via `ContainerType.Identification` (`RoleSubSystem`). The Pocket well maps to `ContainerType.Pocket` on `HumanTorso` (`PocketContainer`, 2×2). Click opens pocket panels (same as the hotkey); drops use `TryFindPositionFor` so multi-slot wells aren't stuck on (0,0).
 - **Gear-strip / clothing / hands vs bags:** click opens a panel only for storage *on the item* (`GetComponentsInChildren<AttachedContainer>`). Never open the equip slot's own 1×1 container. Unequip non-containers via click; bags open their grid. Do not use `Item.Container` — that is the parent slot, not the bag.
-- **Gear-strip panels open above the anchor:** `StoragePanelHost.PositionPanel` flips above when the anchor is near the bottom (belt/ID/PDA/back). Do not set `style.top = gearBound.y` without that clamp — the strip sits on the screen edge.
+- **Gear-strip panels open above the anchor:** `StoragePanelHost.PositionPanel` flips above when the anchor is near the bottom (belt/ID/pocket/back). Do not set `style.top = gearBound.y` without that clamp — the strip sits on the screen edge.
 - **Play Mode / Editor verification still required** for this clean-slate pass (catalog present; compile/Play Mode not run in implementing session).
 
 ## Depends on / Used by

@@ -472,9 +472,9 @@ namespace SS3D.UI.StoragePanel
             {
                 if (hudTarget.Container != null
                     && hudTarget.Container != _dragSourceContainer
-                    && hudTarget.Container.CanContainItemAtPosition(_dragItem, hudTarget.Position))
+                    && TryGetHudDropPosition(hudTarget, _dragItem, out Vector2Int dropPosition))
                 {
-                    _localInventory.ClientTransferItem(_dragItem, hudTarget.Position, hudTarget.Container);
+                    _localInventory.ClientTransferItem(_dragItem, dropPosition, hudTarget.Container);
                 }
 
                 return;
@@ -591,18 +591,34 @@ namespace SS3D.UI.StoragePanel
             }
 
             // Same-container drag (reordering within one HUD well) — skip. Null container (missing
-            // body slot like Pda) is not "same as source"; it still needs a reject highlight.
+            // body slot during bind) is not "same as source"; it still needs a reject highlight.
             if (hudTarget.Container != null && hudTarget.Container == _dragSourceContainer)
             {
                 return;
             }
 
-            // Missing body container (e.g. PDA gear well with no ContainerType.Pda on Human) → always reject.
-            bool hudValid = hudTarget.Container != null
-                && hudTarget.Container.CanContainItemAtPosition(_dragItem, hudTarget.Position);
+            // Prefer the registered cell; for multi-slot wells (pockets) scan for a free/merge cell.
+            bool hudValid = TryGetHudDropPosition(hudTarget, _dragItem, out _);
             hudTarget.Element.EnableInClassList("inventory-slot--valid-drop", hudValid);
             hudTarget.Element.EnableInClassList("inventory-slot--invalid-drop", !hudValid);
             _highlightedHudElement = hudTarget.Element;
+        }
+
+        private static bool TryGetHudDropPosition(HudDropTarget target, Item item, out Vector2Int position)
+        {
+            position = default;
+            if (target?.Container == null || item == null)
+            {
+                return false;
+            }
+
+            if (target.Container.CanContainItemAtPosition(item, target.Position))
+            {
+                position = target.Position;
+                return true;
+            }
+
+            return target.Container.TryFindPositionFor(item, out position);
         }
 
         private void ClearDropHighlight()
