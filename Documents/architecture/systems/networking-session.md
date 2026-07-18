@@ -1,13 +1,13 @@
 > Code paths: Assets/Scripts/SS3D/Networking/, Assets/Scripts/SS3D/Editor/ServerBuildScript.cs, Assets/Scripts/SS3D/Editor/ClientBuildScript.cs, Assets/Scripts/SS3D/Systems/Testing/, Testing/multiplayer/
 > Entry points: NetworkSessionSubSystem, SS3D.Systems.Testing.AutomationSubSystem
 > Status: partial
-> Verified: d592fb12a — 2026-07-18
+> Verified: ccb021d7d — 2026-07-18
 
 # Networking (session)
 
 ## Overview
 
-FishNet session management — host/join, network type and port settings. Distinct from tile AOI helpers under `Systems/Networking/`. Includes a genuine headless dedicated-server build (`UNITY_SERVER` subtarget), not just a client build launched with `-serveronly` — see [2026-07_headless-dedicated-server](../2026-07_headless-dedicated-server.md). A real multi-process test harness now exercises this end to end — see [2026-07_multiplayer-test-harness](../2026-07_multiplayer-test-harness.md).
+FishNet session management — host/join, network type and port settings. Distinct from tile AOI helpers under `Systems/Networking/`. Includes a genuine headless dedicated-server build (`UNITY_SERVER` subtarget), not just a client build launched with `-serveronly` — see [2026-07_headless-dedicated-server](../2026-07_headless-dedicated-server.md). A real multi-process test harness now exercises this end to end — see [2026-07_multiplayer-test-harness](../2026-07_multiplayer-test-harness.md). Manual gated CI prerelease: [2026-07_ci-develop-release-pipeline](../2026-07_ci-develop-release-pipeline.md).
 
 ## Start here
 
@@ -19,8 +19,9 @@ FishNet session management — host/join, network type and port settings. Distin
 - `Testing/multiplayer/run_smoketest.sh` — the actual multiplayer test harness: launches a real server + N real client processes and asserts on their logs; see [2026-07_multiplayer-test-harness](../2026-07_multiplayer-test-harness.md)
 - `Builds/start_ss3d_server.sh`, `Builds/start_ss3d_client.sh` — local launch scripts
 - `Dockerfile`, `docker-compose.yml` — containerized server deployment
-- `.github/workflows/main.yml` `build-server` job — cheap boot-and-grep smoke test, builds + uploads the release server artifact
-- `.github/workflows/multiplayer-smoke-test.yml` — the real multi-process CI gate (`push: develop`, `workflow_dispatch`, label-gated `pull_request`)
+- `.github/workflows/develop-release.yml` — manual EditMode → Linux builds → multiplayer smoke → GitHub prerelease ([2026-07_ci-develop-release-pipeline](../2026-07_ci-develop-release-pipeline.md))
+- `.github/workflows/multiplayer-smoke-test.yml` — opt-in multi-process smoke (`workflow_dispatch` / PR label `test:multiplayer`)
+- `.github/workflows/main.yml` — deprecated for releases; optional Windows/legacy + boot-and-grep server check
 
 ## Extension points
 
@@ -50,3 +51,4 @@ FishNet session management — host/join, network type and port settings. Distin
 - [2026-07_headless-dedicated-server](../2026-07_headless-dedicated-server.md) — headless
   server build, runtime guards, known issues, testing-harness gap
 - [2026-07_multiplayer-test-harness](../2026-07_multiplayer-test-harness.md) — the harness that closes that gap
+- [2026-07_ci-develop-release-pipeline](../2026-07_ci-develop-release-pipeline.md) — manual gated CI prerelease path

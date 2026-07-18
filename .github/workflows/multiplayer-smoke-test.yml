@@ -1,16 +1,14 @@
 #https://game.ci/docs/github/builder
 # Builds a real headless dedicated-server binary and a real client binary, then runs them
 # against each other via Testing/multiplayer/run_smoketest.sh - the actual multiplayer test
-# harness. Separate from editmodetestrunner.yml (cheap, runs on every PR) and main.yml
-# (release-oriented, manual-dispatch-only): this job needs two full Unity player builds via
-# game-ci/unity-builder, sharing the same rate-limited unity_tests license secrets as the
-# EditMode job, so it does not run unconditionally on every PR.
+# harness. Opt-in for PRs (label test:multiplayer) and manual dispatch. The full gated path
+# (EditMode → build → smoke → prerelease) is develop-release.yml — this workflow does not
+# auto-run on every develop push (license cost at high merge volume).
 #
-# See Documents/architecture/2026-07_multiplayer-test-harness.md.
+# See Documents/architecture/2026-07_multiplayer-test-harness.md and
+# Documents/architecture/2026-07_ci-develop-release-pipeline.md.
 name: Multiplayer Smoke Test
 on:
-  push:
-    branches: [develop]
   pull_request:
     types: [labeled, synchronize, opened, reopened]
   workflow_dispatch: {}
@@ -23,6 +21,10 @@ jobs:
       name: unity_tests
     env:
       FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+      SERVER_BUILD_DIR: ${{ github.workspace }}/build/GameServer/StandaloneLinux64
+      CLIENT_BUILD_DIR: ${{ github.workspace }}/build/Game/StandaloneLinux64
+      SERVER_BIN_NAME: SS3D-Server.x86_64
+      CLIENT_BIN_NAME: SS3D-Client.x86_64
     steps:
       - name: Checkout project code
         uses: actions/checkout@v4
@@ -48,9 +50,12 @@ jobs:
           UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
           UNITY_SERIAL: ${{ secrets.UNITY_SERIAL }}
         with:
-          buildName: RESS3D-MP-Server
+          buildName: SS3D-Server
+          buildsPath: build/GameServer
           targetPlatform: StandaloneLinux64
           buildMethod: SS3D.Editor.ServerBuildScript.BuildServer
+          versioning: None
+          unityVersion: 6000.3.16f1
       - name: Build client
         uses: game-ci/unity-builder@v4
         env:
@@ -59,16 +64,20 @@ jobs:
           UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
           UNITY_SERIAL: ${{ secrets.UNITY_SERIAL }}
         with:
-          buildName: RESS3D-MP-Client
+          buildName: SS3D-Client
+          buildsPath: build/Game
           targetPlatform: StandaloneLinux64
           buildMethod: SS3D.Editor.ClientBuildScript.BuildClient
+          versioning: None
+          unityVersion: 6000.3.16f1
       - name: Run multiplayer smoke tests
         env:
-          SS3D_SERVER_BUILD_DIR: ${{ github.workspace }}/build/StandaloneLinux64
-          SS3D_CLIENT_BUILD_DIR: ${{ github.workspace }}/build/StandaloneLinux64
-          SS3D_SERVER_BIN_NAME: RESS3D-MP-Server.x86_64
-          SS3D_CLIENT_BIN_NAME: RESS3D-MP-Client.x86_64
+          SS3D_SERVER_BUILD_DIR: ${{ env.SERVER_BUILD_DIR }}
+          SS3D_CLIENT_BUILD_DIR: ${{ env.CLIENT_BUILD_DIR }}
+          SS3D_SERVER_BIN_NAME: ${{ env.SERVER_BIN_NAME }}
+          SS3D_CLIENT_BIN_NAME: ${{ env.CLIENT_BIN_NAME }}
         run: |
+          chmod +x "$SERVER_BUILD_DIR/$SERVER_BIN_NAME" "$CLIENT_BUILD_DIR/$CLIENT_BIN_NAME"
           chmod +x Testing/multiplayer/run_smoketest.sh
           ./Testing/multiplayer/run_smoketest.sh basic-round
           ./Testing/multiplayer/run_smoketest.sh late-join 2

@@ -103,14 +103,16 @@ Manual / partial:
   ignored (see [permissions.md](systems/permissions.md) Pitfalls).
 
 ### CI
-- `.github/workflows/multiplayer-smoke-test.yml` — builds the server (`ServerBuildScript`) and
-  client (`ClientBuildScript`, now `-buildMethod`/`-customBuildPath`-capable like the server
-  script), runs `basic-round` and `late-join 2`, uploads `Testing/multiplayer/.runs/` always.
-  Triggers: `push: develop`, `workflow_dispatch`, and `pull_request` gated on the `test:multiplayer`
-  label — separate from the cheap per-PR EditMode job and the release-oriented `main.yml`, since
-  this needs two full Unity player builds sharing the same rate-limited `unity_tests` license
-  secrets. `main.yml`'s `build-server` boot-and-grep smoke test is unchanged and still useful as
-  a fast pre-artifact-upload check; it's just no longer "the" multiplayer test.
+- `.github/workflows/develop-release.yml` — **manual** gated path: EditMode → Linux
+  server+client builds (separate `buildsPath` dirs, `versioning: None`) → `basic-round` +
+  `late-join 2` → GitHub prerelease of the same binaries. See
+  [2026-07_ci-develop-release-pipeline.md](2026-07_ci-develop-release-pipeline.md).
+- `.github/workflows/multiplayer-smoke-test.yml` — opt-in smoke only (`workflow_dispatch` or PR
+  label `test:multiplayer`); no longer runs on every `develop` push. Same build scripts and
+  harness as the release workflow’s smoke stage.
+- `.github/workflows/editmodetestrunner.yml` — cheap EditMode on PR/`develop` push (unchanged).
+- `.github/workflows/main.yml` — deprecated for releases; optional Windows/legacy builder with
+  boot-and-grep server check. Prefer `develop-release.yml`.
 
 ### Removed (superseded)
 - `Assets/Scripts/Tests/PlayMode/Framework/Helpers/LoadFileHelpers.cs` — `Thread.Sleep`-based

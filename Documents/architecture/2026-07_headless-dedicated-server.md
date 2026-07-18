@@ -134,8 +134,9 @@ deserves its own plan.
 - FishNet code stripping (Pro-only feature, disabled in the vendored free copy;
   `CameraSubSystem` etc. cover the actual client-only-instantiation surface instead).
 - Windows dedicated server build (Linux-only per this effort's scope).
-- Publishing the server build as a release artifact (CI job is `workflow_dispatch`,
-  internal-only, matching this fork's existing no-release-channel policy).
+- Publishing the server build as a release artifact — superseded by
+  [2026-07_ci-develop-release-pipeline.md](2026-07_ci-develop-release-pipeline.md)
+  (manual Linux client+server prerelease after EditMode + multiplayer smoke).
 
 ## Success criteria
 
