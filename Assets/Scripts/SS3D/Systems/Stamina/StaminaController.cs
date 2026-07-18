@@ -45,8 +45,17 @@ namespace SS3D.Systems.Stamina
         protected override void OnStart()
         {
             base.OnStart();
-            _health = GetComponent<HumanHealthController>() ?? GetComponentInParent<HumanHealthController>();
-            _inventory = GetComponent<HumanInventory>() ?? GetComponentInParent<HumanInventory>();
+            _health = GetComponent<HumanHealthController>();
+            if (_health == null)
+            {
+                _health = GetComponentInParent<HumanHealthController>();
+            }
+
+            _inventory = GetComponent<HumanInventory>();
+            if (_inventory == null)
+            {
+                _inventory = GetComponentInParent<HumanInventory>();
+            }
             AddHandle(UpdateEvent.AddListener(HandleUpdate));
         }
 

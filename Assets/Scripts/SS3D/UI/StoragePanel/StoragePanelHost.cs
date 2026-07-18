@@ -148,7 +148,7 @@ namespace SS3D.UI.StoragePanel
             _root = _document.rootVisualElement;
             _root.styleSheets.Add(_storagePanelStyle);
             _root.styleSheets.Add(_inventorySlotStyle);
-            _root.style.position = Position.Absolute;
+            _root.style.position = UnityEngine.UIElements.Position.Absolute;
             _root.style.left = 0;
             _root.style.top = 0;
             _root.style.right = 0;

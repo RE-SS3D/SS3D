@@ -2,7 +2,9 @@
     "name": "SS3D.UI.StoragePanel",
     "rootNamespace": "SS3D.UI.StoragePanel",
     "references": [
+        "FishNet.Runtime",
         "SS3D.Core",
+        "SS3D.Interactions",
         "SS3D.Systems",
         "SS3D.UI.MachineInterface"
     ],

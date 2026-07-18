@@ -13,9 +13,9 @@ namespace SS3D.UI.StoragePanel
     /// </summary>
     public enum SlotDropState
     {
-        None,
-        Valid,
-        Invalid,
+        None = 0,
+        Valid = 1,
+        Invalid = 2,
     }
 
     /// <summary>
@@ -100,7 +100,7 @@ namespace SS3D.UI.StoragePanel
 
         private void OnPointerMove(PointerMoveEvent evt)
         {
-            if (!HasPointerCapture(evt.pointerId))
+            if (!this.HasPointerCapture(evt.pointerId))
             {
                 return;
             }
@@ -110,12 +110,12 @@ namespace SS3D.UI.StoragePanel
 
         private void OnPointerUp(PointerUpEvent evt)
         {
-            if (!HasPointerCapture(evt.pointerId))
+            if (!this.HasPointerCapture(evt.pointerId))
             {
                 return;
             }
 
-            ReleasePointer(evt.pointerId);
+            this.ReleasePointer(evt.pointerId);
             DragEnded?.Invoke(this, evt.position);
         }
 
