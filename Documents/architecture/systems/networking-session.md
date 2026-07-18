@@ -14,7 +14,7 @@ FishNet session management — host/join, network type and port settings. Distin
 - `Assets/Scripts/SS3D/Networking/NetworkSessionSubSystem.cs` — session host/join subsystem; on `UNITY_SERVER` also self-starts on `ApplicationInitializing` since `IntroUIHelper` (the only other caller) lives in a scene the server skips
 - `Assets/Scripts/SS3D/Editor/ServerBuildScript.cs` — `SS3D/Build/Dedicated Server (Linux)` menu item and CI build method
 - `Assets/Scripts/SS3D/Editor/ClientBuildScript.cs` — `SS3D/Build/Client (Linux)` menu item; now also `-buildMethod`/`-customBuildPath`-invocable from CI, mirroring `ServerBuildScript`
-- `Assets/Scripts/SS3D/Editor/ClientAndServerBuildScript.cs` — `SS3D/Build/Client + Dedicated Server (Linux)` runs both in sequence for local smoke-test rebuilds
+- `Assets/Scripts/SS3D/Editor/ClientAndServerBuildScript.cs` — `SS3D/Build/Client + Dedicated Server (Linux)` menu item; batchmode entry `BuildBothBatch` used by `Tools/build_client_and_server.sh`
 - `Assets/Scripts/SS3D/Systems/Testing/AutomationSubSystem.cs` — self-bootstrapping (no scene edit), drives a headless process through a `-testscript=` script using the same client→server broadcast/RPC APIs the lobby UI calls; no-op unless that flag is set. Client `wait_connected` also waits until `PlayerSubSystem` exists (FishNet connects before Game finishes loading additively).
 - `Testing/multiplayer/run_smoketest.sh` — the actual multiplayer test harness: launches a real server + N real client processes and asserts on their logs; see [2026-07_multiplayer-test-harness](../2026-07_multiplayer-test-harness.md)
 - `Builds/start_ss3d_server.sh`, `Builds/start_ss3d_client.sh` — local launch scripts

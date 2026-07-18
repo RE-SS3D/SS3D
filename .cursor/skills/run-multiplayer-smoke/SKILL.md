@@ -10,8 +10,9 @@ description: >-
 # Run multiplayer smoke
 
 Kick off `run_smoketest.sh`, report the run id / exit code, then hand off to
-**triage-multiplayer-smoke**. Does not fix gameplay bugs — harness scope is
-launch + signal wait + fail evidence.
+**triage-multiplayer-smoke**.
+
+For **build → smoke → triage → fix** in one loop, use **multiplayer-smoke-e2e** instead.
 
 ## Checklist
 
@@ -80,7 +81,8 @@ or `latest`). Do not dump `unity.log`.
 
 ## Do not
 
-- Rebuild the game from this skill (Editor menus / CI own builds).
+- Rebuild the game from this skill — use **multiplayer-smoke-e2e** or
+  `Tools/build_client_and_server.sh` / the Editor menu.
 - Treat a failing scenario as “harness broken” without triage — many fails are real game bugs.
 - Treat `total_size` from triage as "apparent" tree size — hardlinked player binaries are shared
   with `Builds/` and sibling runs; do not delete `Builds/` while old hardlinked `.runs/` exist

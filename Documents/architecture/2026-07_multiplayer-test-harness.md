@@ -20,19 +20,21 @@ runs in CI, and is trivially runnable locally.
 
 ## Local workflow
 
-1. **Build** in the Editor: `SS3D/Build/Client (Linux)` and
-   `SS3D/Build/Dedicated Server (Linux)`, or
-   `SS3D/Build/Client + Dedicated Server (Linux)`. Outputs default to
-   `Builds/Game/SS3D.x86_64` and `Builds/GameServer/SS3D.x86_64`.
-2. **Run** the harness: `./Testing/multiplayer/run_smoketest.sh basic-round` (or
-   `late-join 2`). Cursor skill: `.cursor/skills/run-multiplayer-smoke/SKILL.md`.
-   Staging hardlinks the player build into `Testing/multiplayer/.runs/<id>/` (same
-   filesystem as `Builds/`) and real-copies only small writable `Config`/`Data`/`Logs`
-   trees — so many runs do not multiply ~180–300 MB on disk.
-3. **Triage** the run dir: `./Testing/multiplayer/tools/triage_run.sh latest` (or the run id).
-   Cursor skill: `.cursor/skills/triage-multiplayer-smoke/SKILL.md`. Use the summary to work
-   bugs in follow-up branches; a failing scenario with clear `ScriptFailed` / signals means the
-   harness did its job.
+**Full loop (agent):** `.cursor/skills/multiplayer-smoke-e2e/SKILL.md` —
+`Tools/build_client_and_server.sh` → `run_smoketest.sh` → `triage_run.sh` → fix → rebuild
+(max two fix cycles).
+
+Manual / partial:
+
+1. **Build** — `./Tools/build_client_and_server.sh`, or Editor
+   `SS3D/Build/Client + Dedicated Server (Linux)` (or the separate Client / Dedicated Server
+   items). Outputs: `Builds/Game/SS3D.x86_64`, `Builds/GameServer/SS3D.x86_64`.
+2. **Run** — `./Testing/multiplayer/run_smoketest.sh basic-round` (or `late-join 2`).
+   Skill: `.cursor/skills/run-multiplayer-smoke/SKILL.md`. Staging hardlinks the player build
+   into `Testing/multiplayer/.runs/<id>/` (same filesystem as `Builds/`) and real-copies only
+   small writable `Config`/`Data`/`Logs` trees.
+3. **Triage** — `./Testing/multiplayer/tools/triage_run.sh latest`.
+   Skill: `.cursor/skills/triage-multiplayer-smoke/SKILL.md`.
 
 ## Shipped
 
@@ -78,10 +80,13 @@ runs in CI, and is trivially runnable locally.
   directory: Test signal timeline, `ScriptFailed` payloads, JSON Error/Fatal, and unity.log
   exception hits classified against `tools/known_unity_noise.patterns` (headless Blitter/shader
   spam etc.). Does not dump full `unity.log`. Cursor skills:
+  `.cursor/skills/multiplayer-smoke-e2e/SKILL.md` (build → smoke → triage → fix),
   `.cursor/skills/run-multiplayer-smoke/SKILL.md` (kick off `run_smoketest.sh`),
   `.cursor/skills/triage-multiplayer-smoke/SKILL.md` (summarize a run). The harness fail gate
   does **not** yet use the noise allowlist — triage reports noise separately so a
   `ScriptFailed` root cause is not buried under icon-gen stacks.
+- `Tools/build_client_and_server.sh` — batchmode Unity build of both Linux binaries via
+  `ClientAndServerBuildScript.BuildBothBatch`.
 - `scenarios/basic-round{,-client}.txt` — connect, ready, start round (client-side, pre-seeded
   `Administrator` — see below), embark, one real `console playerlist` client↔server↔client RPC
   round trip, disconnect. Ports the intent of the deleted `ServerGameActions`/`ClientGameActions`

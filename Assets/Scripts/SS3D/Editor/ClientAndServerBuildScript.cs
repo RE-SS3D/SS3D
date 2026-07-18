@@ -19,6 +19,17 @@ namespace SS3D.Editor
             ClientBuildScript.BuildClient(ClientBuildPath);
             EditorUtility.RevealInFinder("Builds/");
         }
+
+        /// <summary>
+        /// Batchmode entry point for <c>Tools/build_client_and_server.sh</c> /
+        /// <c>-executeMethod SS3D.Editor.ClientAndServerBuildScript.BuildBothBatch</c>.
+        /// Uses the same default paths as the menu item (no <c>-customBuildPath</c>).
+        /// </summary>
+        public static void BuildBothBatch()
+        {
+            ServerBuildScript.BuildServer(ServerBuildPath);
+            ClientBuildScript.BuildClient(ClientBuildPath);
+        }
     }
 }
 #endif

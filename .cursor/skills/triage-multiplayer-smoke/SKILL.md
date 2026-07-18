@@ -12,8 +12,8 @@ description: >-
 Do **not** `cat` or fully read `unity.log` — client logs can be hundreds of KB of
 Blitter/icon spam. Always start with the triage script.
 
-To **start** a run after an Editor build, use **run-multiplayer-smoke** first
-(`.cursor/skills/run-multiplayer-smoke/SKILL.md`).
+To **start** a run after an Editor build, use **run-multiplayer-smoke**.
+For **build → smoke → triage → fix**, use **multiplayer-smoke-e2e**.
 
 ## Checklist
 
