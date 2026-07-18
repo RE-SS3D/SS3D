@@ -129,6 +129,7 @@ GameObject:
   - component: {fileID: 4081087857378720118}
   - component: {fileID: 8078190299072383431}
   - component: {fileID: 9123456789012345688}
+  m_Layer: 10
   m_Name: HumanLiver
   m_TagString: Untagged
   m_Icon: {fileID: 0}
