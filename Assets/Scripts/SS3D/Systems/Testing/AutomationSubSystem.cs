@@ -148,7 +148,41 @@ namespace SS3D.Systems.Testing
                         break;
                     }
 
-                    yield return step.Current;
+                    // Drive nested enumerators ourselves (e.g. WaitUntil). Yielding them to Unity
+                    // lets TimeoutException escape through SetupCoroutine instead of our catch.
+                    if (step.Current is IEnumerator nested)
+                    {
+                        while (true)
+                        {
+                            bool nestedMoved;
+
+                            try
+                            {
+                                nestedMoved = nested.MoveNext();
+                            }
+                            catch (Exception ex)
+                            {
+                                failureReason = $"{instruction.Opcode}:{ex.Message}";
+                                break;
+                            }
+
+                            if (!nestedMoved)
+                            {
+                                break;
+                            }
+
+                            yield return nested.Current;
+                        }
+
+                        if (failureReason != null)
+                        {
+                            break;
+                        }
+                    }
+                    else
+                    {
+                        yield return step.Current;
+                    }
                 }
 
                 if (failureReason != null)
@@ -169,6 +203,14 @@ namespace SS3D.Systems.Testing
             {
                 case "wait_connected":
                     yield return WaitUntil(IsConnected, DefaultWaitTimeoutSeconds, "wait_connected");
+
+                    // FishNet marks the client Connected before it finishes loading Game additively.
+                    // Lobby actions (ready/start_round/embark) need PlayerSubSystem from that scene.
+                    if (!IsServerRole())
+                    {
+                        yield return WaitUntil(IsLobbyReady, DefaultWaitTimeoutSeconds, "wait_lobby");
+                    }
+
                     TestSignal.Emit(this, IsServerRole() ? "ServerReady" : "ClientConnected");
                     break;
 
@@ -216,6 +258,8 @@ namespace SS3D.Systems.Testing
         }
 
         private bool IsConnected() => IsServerRole() ? _serverStarted : _clientConnected;
+
+        private static bool IsLobbyReady() => SubSystems.TryGet(out PlayerSubSystem _);
 
         private void SendReady(bool ready)
         {

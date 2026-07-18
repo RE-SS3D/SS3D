@@ -58,6 +58,13 @@ runs in CI, and is trivially runnable locally.
   Unity's own `-logFile` output for uncaught-exception signatures (structured logs only capture
   what goes through the `Log` wrapper — crashes/NREs surface through Unity's own log, not
   Serilog) and the JSON logs for any `Error`/`Fatal`-level entry.
+- `tools/triage_run.sh <run-id|path|latest>` — agent/human-facing summary of a `.runs/<id>/`
+  directory: Test signal timeline, `ScriptFailed` payloads, JSON Error/Fatal, and unity.log
+  exception hits classified against `tools/known_unity_noise.patterns` (headless Blitter/shader
+  spam etc.). Does not dump full `unity.log`. Cursor skill:
+  `.cursor/skills/triage-multiplayer-smoke/SKILL.md`. The harness fail gate does **not** yet
+  use the noise allowlist — triage reports noise separately so a `ScriptFailed` root cause is
+  not buried under icon-gen stacks.
 - `scenarios/basic-round{,-client}.txt` — connect, ready, start round (client-side, pre-seeded
   `Administrator` — see below), embark, one real `console playerlist` client↔server↔client RPC
   round trip, disconnect. Ports the intent of the deleted `ServerGameActions`/`ClientGameActions`
@@ -119,6 +126,14 @@ runs in CI, and is trivially runnable locally.
   would need a new one or a new `AutomationSubSystem` instruction). Deferred.
 - **Single build target.** The harness only builds/runs `StandaloneLinux64`, matching the
   dedicated-server effort's scope; no Windows client coverage.
+- **`stage_build` full copies.** Each process gets a `cp -r` of the player build (~180–300 MB),
+  so `.runs/<id>/` is hundreds of MB even when logs are tens of KB. Needed today because Unity
+  resolves `Application.dataPath`/Logs from the binary path. Hardlink/`cp -al` or overlay-only
+  Config/Logs would shrink disk use; not done yet.
+- **Headless unity.log noise.** `-batchmode -nographics` clients still emit graphics/icon and
+  rare missing-script lines; server emits Dedicated Server Optimizations shader messages. Prefer
+  source fixes (icon skip already mapped) over growing `known_unity_noise.patterns`. Harness
+  still fails on any `Exception:` until an allowlist is wired into `logwait.sh` deliberately.
 - **Not yet verified against a real Unity build in this environment** — see Verification below.
 
 ## Verification

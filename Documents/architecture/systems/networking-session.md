@@ -15,7 +15,7 @@ FishNet session management — host/join, network type and port settings. Distin
 - `Assets/Scripts/SS3D/Editor/ServerBuildScript.cs` — `SS3D/Build/Dedicated Server (Linux)` menu item and CI build method
 - `Assets/Scripts/SS3D/Editor/ClientBuildScript.cs` — `SS3D/Build/Client (Linux)` menu item; now also `-buildMethod`/`-customBuildPath`-invocable from CI, mirroring `ServerBuildScript`
 - `Assets/Scripts/SS3D/Editor/ClientAndServerBuildScript.cs` — `SS3D/Build/Client + Dedicated Server (Linux)` runs both in sequence for local smoke-test rebuilds
-- `Assets/Scripts/SS3D/Systems/Testing/AutomationSubSystem.cs` — self-bootstrapping (no scene edit), drives a headless process through a `-testscript=` script using the same client→server broadcast/RPC APIs the lobby UI calls; no-op unless that flag is set
+- `Assets/Scripts/SS3D/Systems/Testing/AutomationSubSystem.cs` — self-bootstrapping (no scene edit), drives a headless process through a `-testscript=` script using the same client→server broadcast/RPC APIs the lobby UI calls; no-op unless that flag is set. Client `wait_connected` also waits until `PlayerSubSystem` exists (FishNet connects before Game finishes loading additively).
 - `Testing/multiplayer/run_smoketest.sh` — the actual multiplayer test harness: launches a real server + N real client processes and asserts on their logs; see [2026-07_multiplayer-test-harness](../2026-07_multiplayer-test-harness.md)
 - `Builds/start_ss3d_server.sh`, `Builds/start_ss3d_client.sh` — local launch scripts
 - `Dockerfile`, `docker-compose.yml` — containerized server deployment
@@ -33,6 +33,8 @@ FishNet session management — host/join, network type and port settings. Distin
 
 - **`UseCompactJsonFormatter` / JSON file logs.** Player builds always write compact JSON (`.json`) regardless of the asset — the multiplayer harness (`Testing/multiplayer/lib/logwait.sh`) requires `LogServer.json`/`LogClient<ckey>.json`. The LogSettings toggle only affects Editor Play Mode. A `false` C# default plus Coimbra `OnValidate` dirtying the asset used to bake plain-text `.log` into Builds and make every scenario time out; the field default is now `true` and player builds ignore the toggle.
 - **Log file path is chosen in `CommandLineArgsSubSystem` after CLI parsing, not from a peer `ApplicationPreInitializing` listener.** `NetworkType`/`Ckey` come from `-serveronly`/`-ip=`/`-ckey=`; initializing Serilog from `NetworkSessionSubSystem` on the same event raced and could open `LogHost.json` while the harness waited on `LogServer.json`. Path helper: `NetworkSessionSubSystem.GetFileLogName`.
+- **Client `wait_connected` must wait for Game lobby systems.** FishNet reports Connected before Game loads additively; calling `ready` immediately NREs on missing `PlayerSubSystem`. `AutomationSubSystem` waits for `PlayerSubSystem` after connect on clients.
+- **`TileResourceLoader` / `Item.GenerateIcon` preview cameras break `-nographics` clients.** `RuntimePreviewGenerator` recreates URP on NullGfxDevice → GraphicsBuffer/Blitter spam that fails the harness exception check. Skip icon generation when `Application.isBatchMode` or `GraphicsDeviceType.Null` (dedicated server already skipped via `UNITY_SERVER`).
 
 ## Depends on / Used by
 

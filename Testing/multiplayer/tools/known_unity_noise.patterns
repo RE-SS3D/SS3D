@@ -1,0 +1,20 @@
+# Substring / extended-regex patterns for Unity -logFile lines that are known-benign under
+# -batchmode -nographics (or dedicated-server) smoke runs. One pattern per line; blank lines
+# and # comments ignored. Used by triage_run.sh — NOT by run_smoketest.sh yet (harness still
+# fails hard on any Exception:; keep this list honest so triage can say "noise-only fail").
+#
+# Only add a pattern after confirming it is not masking a real regression. Prefer fixing the
+# source (e.g. skip icon gen in batchmode) over growing this list.
+
+Blitter is already initialized
+Attempting to create a graphics buffer that requires compute shader support
+RenderTexture\.Create failed
+Trying to access a shader but no shaders were included in the build
+Built-in Resource Error:
+The referenced script on this Behaviour \(Game Object 'OxygenConsumerSystem'\) is missing!
+There can be only one active Event System
+Unable to load font asset
+OnGUI function detected
+Discord
+TMP SubMesh
+Shader warning
