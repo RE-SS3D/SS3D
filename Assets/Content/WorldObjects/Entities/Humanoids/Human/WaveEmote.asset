@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c7e0c2954ba7f2c40bc4a4f4b31d8052, type: 3}
   m_Name: WaveEmote
   m_EditorClassIdentifier: 
-  _emoteName: WaveEmote
+  _emoteName: wave
   _emoteIndex: 1
-  _clip: {fileID: 7400000, guid: 037cea4b791a5384fb1321bed4ccdbb5, type: 2}
+  _clip: {fileID: 7400000, guid: 05ebe02e7169e9b43af8148023877870, type: 2}
   _disallowedPostures: 02000000

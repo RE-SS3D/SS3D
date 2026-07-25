@@ -184,7 +184,7 @@ namespace SS3D.Systems.Entities.Humanoid
             _animator.SetTrigger(side == HandSide.Left ? Animations.Humanoid.HitTriggerLeft : Animations.Humanoid.HitTriggerRight);
         }
 
-        private static int GetFlinchParameter(FlinchRegion region)
+        private int GetFlinchParameter(FlinchRegion region)
         {
             return region switch
             {
