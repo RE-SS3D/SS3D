@@ -1,0 +1,79 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8b7bbe92ee6f2f74ab6bb3656648fd63, type: 3}
+  m_Name: Hierarchy 2 Settings
+  m_EditorClassIdentifier: 
+  personalTheme:
+    colorRowEven: {r: 0, g: 0, b: 0, a: 0}
+    colorRowOdd: {r: 0, g: 0, b: 0, a: 0}
+    colorGrid: {r: 0, g: 0, b: 0, a: 0}
+    colorTreeView: {r: 0, g: 0, b: 0, a: 0}
+    colorLockIcon: {r: 0, g: 0, b: 0, a: 0}
+    tagColor: {r: 0, g: 0, b: 0, a: 0}
+    layerColor: {r: 0, g: 0, b: 0, a: 0}
+    comSelBGColor: {r: 0, g: 0, b: 0, a: 0}
+    selectionColor: {r: 0, g: 0, b: 0, a: 0}
+    colorHeaderTitle: {r: 0, g: 0, b: 0, a: 0}
+    colorHeaderBackground: {r: 0, g: 0, b: 0, a: 0}
+  professionalTheme:
+    colorRowEven: {r: 0, g: 0, b: 0, a: 0}
+    colorRowOdd: {r: 0, g: 0, b: 0, a: 0}
+    colorGrid: {r: 0, g: 0, b: 0, a: 0}
+    colorTreeView: {r: 0, g: 0, b: 0, a: 0}
+    colorLockIcon: {r: 0, g: 0, b: 0, a: 0}
+    tagColor: {r: 0, g: 0, b: 0, a: 0}
+    layerColor: {r: 0, g: 0, b: 0, a: 0}
+    comSelBGColor: {r: 0, g: 0, b: 0, a: 0}
+    selectionColor: {r: 0, g: 0, b: 0, a: 0}
+    colorHeaderTitle: {r: 0, g: 0, b: 0, a: 0}
+    colorHeaderBackground: {r: 0, g: 0, b: 0, a: 0}
+  playmodeTheme:
+    colorRowEven: {r: 0, g: 0, b: 0, a: 0}
+    colorRowOdd: {r: 0, g: 0, b: 0, a: 0}
+    colorGrid: {r: 0, g: 0, b: 0, a: 0}
+    colorTreeView: {r: 0, g: 0, b: 0, a: 0}
+    colorLockIcon: {r: 0, g: 0, b: 0, a: 0}
+    tagColor: {r: 0, g: 0, b: 0, a: 0}
+    layerColor: {r: 0, g: 0, b: 0, a: 0}
+    comSelBGColor: {r: 0, g: 0, b: 0, a: 0}
+    selectionColor: {r: 0, g: 0, b: 0, a: 0}
+    colorHeaderTitle: {r: 0, g: 0, b: 0, a: 0}
+    colorHeaderBackground: {r: 0, g: 0, b: 0, a: 0}
+  activeHierarchy: 1
+  displayCustomObjectIcon: 1
+  displayTreeView: 1
+  displayRowBackground: 1
+  displayGrid: 0
+  displayStaticButton: 1
+  offSetIconAfterName: 8
+  displayComponents: 1
+  componentAlignment: 0
+  componentDisplayMode: 3
+  components:
+  - Transform
+  - RectTransform
+  componentLimited: 0
+  componentSize: 16
+  componentSpacing: 0
+  displayTag: 1
+  tagAlignment: 0
+  displayLayer: 1
+  layerAlignment: 0
+  applyStaticTargetAndChild: 1
+  applyTagTargetAndChild: 0
+  applyLayerTargetAndChild: 1
+  separatorStartWith: --->
+  separatorDefaultTag: Untagged
+  useInstantBackground: 0
+  instantBackgroundColors: []
+  onlyDisplayWhileMouseEnter: 0
+  contentDisplay: 7

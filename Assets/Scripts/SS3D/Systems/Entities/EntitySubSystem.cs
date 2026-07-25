@@ -173,6 +173,18 @@ namespace SS3D.Systems.Entities
         }
 
         /// <summary>
+        /// Finds the entity owned by the local client. Unlike <see cref="TryGetOwnedEntity"/>, this
+        /// doesn't need a NetworkConnection, so it works from client-only code paths that don't have
+        /// one available (e.g. a CommandType.Client console command, whose Perform is invoked locally
+        /// via TargetRpc with no connection argument).
+        /// </summary>
+        public bool TryGetLocalEntity(out Entity entity)
+        {
+            entity = SpawnedPlayers.FirstOrDefault(e => e.IsOwner);
+            return entity != null;
+        }
+
+        /// <summary>
         /// Spawns a player after the round has started
         /// </summary>
         /// <param name="playerThe player's ckey</param>

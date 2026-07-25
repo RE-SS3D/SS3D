@@ -1,0 +1,18 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c7e0c2954ba7f2c40bc4a4f4b31d8052, type: 3}
+  m_Name: WaveEmote
+  m_EditorClassIdentifier: 
+  _emoteName: WaveEmote
+  _emoteIndex: 1
+  _clip: {fileID: 7400000, guid: 037cea4b791a5384fb1321bed4ccdbb5, type: 2}
+  _disallowedPostures: 02000000

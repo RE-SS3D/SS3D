@@ -5,6 +5,7 @@ using SS3D.Interactions.Interfaces;
 using UnityEngine;
 using SS3D.Systems.Inventory.Containers;
 using SS3D.Systems.Entities;
+using SS3D.Systems.Entities.Humanoid;
 using SS3D.Systems.Health;
 using SS3D.Data.Generated;
 
@@ -73,9 +74,36 @@ namespace SS3D.Systems.Combat.Interactions
 
                 // Inflict a fix amount and type of damages for now. Long term, should be passed in parameter and depends on weapon type, velocity ...
                 bodyPart.InflictDamageToAllLayer(new DamageTypeQuantity(DamageType.Slash, 50));
+
+                TriggerAttackerHitAnimation(hand);
             }
 
             return false;
+        }
+
+        /// <summary>
+        /// Plays the attacker's own hit-swing animation. Runs server-side (this method is only
+        /// reached from Start, which executes authoritatively on the server), so it goes through
+        /// ServerTriggerHit rather than setting the Animator trigger directly.
+        /// </summary>
+        private static void TriggerAttackerHitAnimation(Hand hand)
+        {
+            Hands attackerHands = hand.HandsController;
+
+            if (attackerHands == null)
+            {
+                return;
+            }
+
+            HumanoidAnimatorController animatorController = attackerHands.GetComponent<HumanoidAnimatorController>();
+
+            if (animatorController == null)
+            {
+                return;
+            }
+
+            HandSide side = attackerHands.PlayerHands.IndexOf(hand) == 0 ? HandSide.Left : HandSide.Right;
+            animatorController.ServerTriggerHit(side);
         }
     }
 }
