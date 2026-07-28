@@ -175,7 +175,14 @@ namespace SS3D.Systems.Health
         public override void OnStopServer()
         {
             base.OnStopServer();
-            SubSystems.Get<MetabolicSubSystem>().UnregisterController(this);
+
+            // TryGet, not Get: on scene teardown the scheduler is destroyed before the entities registered with it,
+            // and Get logs an error and returns null in that case - which then throws here. Registration in Init still
+            // uses Get, because a scheduler missing at startup is a real fault and should be loud.
+            if (SubSystems.TryGet(out MetabolicSubSystem scheduler))
+            {
+                scheduler.UnregisterController(this);
+            }
 
             if (_healthController != null)
             {
