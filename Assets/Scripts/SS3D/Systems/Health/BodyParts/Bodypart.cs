@@ -224,10 +224,14 @@ public abstract class BodyPart : InteractionTargetNetworkBehaviour
     {
         GameObject go = Instantiate(_bodyPartItem, Position, Rotation);
         BodyPart bodyPart = go.GetComponent<BodyPart>();
-        CopyValuesToBodyPart(bodyPart);
         bodyPart._isDetached = true;
-        
+
         NetworkSpawner.Spawn(bodyPart);
+
+        // Copy only once the spawn has run: a freshly instantiated prefab has no body layers at all, since
+        // _bodyLayers is not serialized and is filled by AddInitialLayers in OnStartServer, which the spawn triggers.
+        // Copying before it walked an empty collection and silently threw away every sustained damage on detach.
+        CopyValuesToBodyPart(bodyPart);
 
         return bodyPart;
     }
