@@ -28,12 +28,15 @@ namespace SS3D.Systems.Health
         }
 
         /// <summary>
-        /// Add specific torso internal organs, heart, lungs, and more to come..
+        /// Add specific head internal organs.
         /// Need to do it with a delay to prevent some Unity bug since OnStartServer() is called Before Start();
+        /// Wait on IsInitialized rather than on the field alone: SpawnOrgans assigns the brain as soon as Instantiate
+        /// returns, but only the network spawn runs its OnStartServer and creates its body layers, and a layerless
+        /// organ cannot be perfused (#1362).
         /// </summary>
         private IEnumerator AddInternalOrgans()
         {
-            yield return new WaitUntil(() => Brain);
+            yield return new WaitUntil(() => Brain && Brain.IsInitialized);
             yield return null;
             AddInternalBodyPart(Brain);
         }

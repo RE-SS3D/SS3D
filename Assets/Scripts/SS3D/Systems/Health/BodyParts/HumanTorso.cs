@@ -25,14 +25,27 @@ public class HumanTorso : BodyPart
     /// <summary>
     /// Add specific torso internal organs, heart, lungs, and more to come..
     /// Need to do it with a delay to prevent some Unity bug since OnStartServer() is called Before Start();
+    /// Wait on IsInitialized, not merely on the field being assigned: SpawnOrgans assigns each organ the instant
+    /// Instantiate returns, but the network spawn is deferred behind an await, and it is that spawn which runs the
+    /// organ's own OnStartServer and therefore creates its body layers. Attaching before then hands the body a
+    /// layerless organ, which the circulatory system cannot perfuse - the heart is never connected and the body
+    /// suffocates (#1362).
     /// </summary>
     private IEnumerator AddInternalOrgans()
     {
-        yield return new WaitUntil(() => Heart && LeftLung && RightLung);
+        yield return new WaitUntil(() => IsOrganReady(Heart) && IsOrganReady(LeftLung) && IsOrganReady(RightLung));
         yield return null;
         AddInternalBodyPart(Heart);
         AddInternalBodyPart(LeftLung);
         AddInternalBodyPart(RightLung);
+    }
+
+    /// <summary>
+    /// An organ is ready to be attached once it exists and has finished building its own body layers.
+    /// </summary>
+    private static bool IsOrganReady(BodyPart organ)
+    {
+        return organ && organ.IsInitialized;
     }
 
     protected override async void SpawnOrgans()
