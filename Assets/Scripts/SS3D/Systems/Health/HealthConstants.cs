@@ -1,9 +1,11 @@
-﻿namespace SS3D.Systems.Health
+namespace SS3D.Systems.Health
 {
     public static class HealthConstants
     {
         /// <summary>
-        /// Max amount of damages taken upon each attempt at consuming oxygen if none is present in reserve. No units.
+        /// Oxy damage per second inflicted on a fully oxygen-starved body part (deficit fraction of 1). Applied
+        /// continuously and scaled by delta time and by the unmet fraction, so partial or brief deficits do
+        /// proportionally less. No units (damage per second).
         /// </summary>
         public const float DamageWithNoOxygen = 25f;
 
@@ -50,5 +52,12 @@
         /// due to the excess of blood.
         /// </summary>
         public const float HighBloodVolumeToleranceFactor = 1.15f;
+
+        /// <summary>
+        /// How many times over the resting oxygen demand the circulation can move at full cardiac output and full
+        /// blood volume. Maps onto the ~25% resting oxygen-extraction ratio (resting delivery is about 4x consumption),
+        /// so the flow cap only becomes binding under stress (low heart rate or blood loss). No units.
+        /// </summary>
+        public const float FlowExtractionHeadroom = 4f;
     }
 }

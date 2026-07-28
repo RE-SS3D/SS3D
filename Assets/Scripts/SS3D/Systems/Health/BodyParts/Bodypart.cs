@@ -523,6 +523,11 @@ public abstract class BodyPart : InteractionTargetNetworkBehaviour
 	{
 		_internalBodyParts.AddItem(part.gameObject.GetComponent<Item>());
 		part._externalBodyPart = this;
+
+		// Announce the attach rather than leaving the circulatory controller to discover it. The controller builds
+		// its perfused set once during Init, so any organ attached after that point - and every organ once organ
+		// spawning becomes asynchronous - would otherwise never be perfused at all (#1362).
+		GetComponentInParent<HealthController>()?.AddBodyPart(part);
 	}
 
     [Server]

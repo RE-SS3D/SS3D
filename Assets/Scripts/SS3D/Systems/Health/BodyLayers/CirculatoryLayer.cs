@@ -1,4 +1,4 @@
-﻿using FishNet.Object;
+using FishNet.Object;
 using SS3D.Core;
 using SS3D.Logging;
 using SS3D.Substances;
@@ -8,7 +8,7 @@ using System.Linq;
 
 namespace SS3D.Systems.Health
 {
-    public class CirculatoryLayer : BodyLayer, IOxygenConsumer, IOxygenNeeder
+    public class CirculatoryLayer : BodyLayer, IOxygenNeeder
 	{
         /// <summary>
         /// MilliMole quantity this layer can contain of oxygen.
@@ -69,7 +69,6 @@ namespace SS3D.Systems.Health
             // or if it gets destroyed or one gets added.
             SetOxygenNeeded();
 
-            RegisterToOxygenConsumerSystem();
             if(bodyPart.TryGetComponent(out BleedingBodyPart bleedingBodyPart))
             {
                 _bleedingHandler = bleedingBodyPart; 
@@ -97,51 +96,67 @@ namespace SS3D.Systems.Health
         }
 
         /// <summary>
-        /// Consume oxygen and inflict damages if not enough oxygen is present.
+        /// One continuous, dt-scaled metabolic step for this body part, driven by the CirculatoryController:
+        /// take up to <paramref name="supply"/> mmol of oxygen into the reserve (never past capacity), then burn
+        /// this tick's demand. If the reserve runs dry, inflict graded, dt-scaled Oxy damage in proportion to the
+        /// unmet fraction. Returns the oxygen actually accepted, so the controller debits the pool exactly once.
         /// </summary>
+        /// <param name="supply">Oxygen offered to this part this tick, in mmol.</param>
+        /// <param name="dt">Elapsed time this tick, in seconds.</param>
+        /// <returns>Oxygen accepted into the reserve, in mmol.</returns>
         [Server]
-        public void ConsumeOxygen()
+        public double MetabolicStep(double supply, float dt)
         {
-            float fractionOfNeededOxygen =(float)(_oxygenReserve / _oxygenNeeded);
+            double space = _oxygenMaxCapacity - _oxygenReserve;
+            double accepted = supply < space ? supply : space;
+            if (accepted < 0d)
+            {
+                accepted = 0d;
+            }
 
-            if (_oxygenNeeded > _oxygenReserve)
+            _oxygenReserve += accepted;
+
+            double demand = _oxygenNeeded * dt;
+            _oxygenReserve -= demand;
+
+            if (_oxygenReserve < 0d)
             {
-                _oxygenReserve = 0;
-                InflictOxyDamage(fractionOfNeededOxygen);
+                double deficit = -_oxygenReserve;
+                _oxygenReserve = 0d;
+
+                float deficitFraction = demand > 0d ? (float)(deficit / demand) : 0f;
+                if (deficitFraction > 1f)
+                {
+                    deficitFraction = 1f;
+                }
+
+                float damage = deficitFraction * HealthConstants.DamageWithNoOxygen * dt;
+                InflictOxyDamage(damage);
             }
-            else
-            {
-                _oxygenReserve -= _oxygenNeeded;
-            }
+
+            return accepted;
         }
 
 
 
         /// <summary>
-        /// Inflict Oxy damage to all body layers needing oxygen, in proportion of what's left in reserve.
+        /// Inflict a given amount of Oxy damage on every oxygen-needing layer of this body part.
         /// </summary>
-        /// <param name="fractionOfNeededOxygen"> oxygen in reserve divided by needed oxygen. Should be between 0 and 1.</param>
+        /// <param name="amount">Oxy damage to apply to each needing layer.</param>
         [Server]
-        private void InflictOxyDamage(float fractionOfNeededOxygen)
+        private void InflictOxyDamage(float amount)
         {
-            var consumers = BodyPart.BodyLayers.OfType<IOxygenNeeder>();
-            foreach (BodyLayer layer in consumers)
+            if (amount <= 0f)
             {
-                BodyPart.TryInflictDamage(layer.LayerType,
-                    new(DamageType.Oxy, (1- fractionOfNeededOxygen) * HealthConstants.DamageWithNoOxygen));
+                return;
             }
-        }
 
-        [Server]
-        public void ReceiveOxygen(double mole)
-        {
-            if(_oxygenReserve + mole > _oxygenMaxCapacity)
+            foreach (BodyLayer layer in BodyPart.BodyLayers)
             {
-                _oxygenReserve = _oxygenMaxCapacity;
-            }
-            else
-            {
-                _oxygenReserve += mole;
+                if (layer is IOxygenNeeder)
+                {
+                    BodyPart.TryInflictDamage(layer.LayerType, new(DamageType.Oxy, amount));
+                }
             }
         }
 
@@ -173,23 +188,12 @@ namespace SS3D.Systems.Health
         }
 
         /// <summary>
-        /// Called when this layer is created, necessary for periodic oxygen consumption.
-        /// </summary>
-        [Server]
-        public void RegisterToOxygenConsumerSystem()
-        {
-            OxygenConsumerSubSystem registry = SubSystems.Get<OxygenConsumerSubSystem>();
-            registry.RegisterConsumer(this);
-        }
-
-        /// <summary>
-        /// Should be called only when this circulatory layer does not function anymore (when body part is destroyed).
+        /// The CirculatoryController now owns registration with the metabolic scheduler and prunes this part via
+        /// HealthController.OnBodyPartRemoved, so there is nothing to clean up here.
         /// </summary>
         [Server]
         public override void Cleanlayer()
         {
-            OxygenConsumerSubSystem registry = SubSystems.Get<OxygenConsumerSubSystem>();
-            registry.UnregisterConsumer(this);
         }
 
         [Server]

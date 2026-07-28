@@ -36,14 +36,14 @@ namespace SS3D.Systems.Health
 
         public event EventHandler<BodyPart> OnBodyPartRemoved;
 
-        public event EventHandler OnBodyPartAdded;
+        public event EventHandler<BodyPart> OnBodyPartAdded;
 
         public float BodyPartsVolume 
         {
             get
             {
-                BodyPart[] AllBodyparts = GetComponentsInChildren<BodyPart>();
-                return (float)AllBodyparts.Sum(x => x.Volume);
+                BodyPart[] allBodyParts = GetComponentsInChildren<BodyPart>();
+                return (float)allBodyParts.Sum(x => x.Volume);
             }
             
         }
@@ -65,13 +65,22 @@ namespace SS3D.Systems.Health
         }
 
         /// <summary>
-        /// This will eventually actually attach a bodypart to the body, for now,
-        /// only used to warn other stuff that a body part was added.
+        /// Register a body part that attached after the initial spawn scan - notably an async-spawned internal organ
+        /// (heart, lungs, brain), which the transform-based scan in OnStartServer cannot see. Track it and subscribe to
+        /// its removal so it is dropped again on destroy/detach, then notify listeners (e.g. the circulatory controller
+        /// re-derives its perfused set). Safe to call more than once for the same part.
         /// </summary>
-        /// <param name="bodyPart"></param>
+        /// <param name="bodyPart">The body part that was attached.</param>
         public void AddBodyPart(BodyPart bodyPart)
         {
-            OnBodyPartAdded?.Invoke(this, EventArgs.Empty);
+            if (bodyPart != null && !_bodyPartsOnEntity.Contains(bodyPart))
+            {
+                _bodyPartsOnEntity.Add(bodyPart);
+                bodyPart.OnBodyPartDestroyed += HandleBodyPartDestroyedOrDetached;
+                bodyPart.OnBodyPartDetached += HandleBodyPartDestroyedOrDetached;
+            }
+
+            OnBodyPartAdded?.Invoke(this, bodyPart);
         }
     }
 }
