@@ -3,6 +3,7 @@ using FishNet.Object;
 using FishNet.Object.Synchronizing;
 using System.Collections.Generic;
 using UnityEngine;
+using SS3D.Core;
 using SS3D.Logging;
 using SS3D.Interactions;
 using SS3D.Interactions.Interfaces;
@@ -18,7 +19,7 @@ using System.Collections;
 /// <summary>
 /// Class to handle all networking stuff related to a body part, there should be only one on a given game object.
 /// </summary>
-public abstract class BodyPart : InteractionTargetNetworkBehaviour
+public abstract class BodyPart : InteractionTargetNetworkBehaviour, IMetabolicController
 {
     /// <summary>
     /// Body part to which this body part is attached, from an anatomy perspective. (left hand is attached to left arm, attached to torso...)
@@ -54,6 +55,23 @@ public abstract class BodyPart : InteractionTargetNetworkBehaviour
     public bool IsInsideBodyPart => _externalBodyPart != null;
 
     protected virtual bool IsDetachable => true;
+
+    /// <summary>
+    /// True when this part is not part of a living body, and so has to burn through its own oxygen reserve with
+    /// nothing replenishing it. Loose parts drive their own metabolism; parts in a body are driven by that body's
+    /// CirculatoryController instead.
+    /// Not keyed on _isDetached: every body part is also a spawnable item, so one can enter the world already loose
+    /// through an admin spawn, map placement or loot, without ever passing through SpawnDetachedBodyPart. develop
+    /// decayed those identically, because registration lived in the circulatory layer's constructor and was blind to
+    /// how the part got there. _isDetached is also set only after the copy is spawned, so a copy's own OnStartServer
+    /// would still see it false.
+    /// Organs are excluded and driven by the part containing them - see MetabolicTick.
+    /// Both conditions are required, hence the and. Two things can already be driving a part: the body's
+    /// CirculatoryController, ruled out by the HealthController check, or a containing part, ruled out by
+    /// IsInsideBodyPart. Ruling out only one would double-drive - with an or, every limb in a healthy body would
+    /// starve itself on an empty supply while the controller was perfusing it.
+    /// </summary>
+    private bool IsSelfMetabolising => !IsInsideBodyPart && !GetComponentInParent<HealthController>();
 
     /// <summary>
     /// A container containing all internal body parts. The head has a brain for an internal body part. Internal body parts should be destroyed
@@ -152,6 +170,77 @@ public abstract class BodyPart : InteractionTargetNetworkBehaviour
         {
             circulatory.ComputeOxygenNeeded();
         }
+
+        RefreshMetabolicRegistration();
+    }
+
+    public override void OnStopServer()
+    {
+        base.OnStopServer();
+
+        if (SubSystems.TryGet(out MetabolicSubSystem scheduler))
+        {
+            scheduler.UnregisterController(this);
+        }
+    }
+
+    /// <summary>
+    /// Register or unregister this part with the metabolic scheduler to match its current state. Idempotent, and safe
+    /// to call for a part that was never registered, so every transition that can change IsSelfMetabolising just calls
+    /// this rather than reasoning about which direction it moved.
+    /// </summary>
+    [Server]
+    private void RefreshMetabolicRegistration()
+    {
+        if (!SubSystems.TryGet(out MetabolicSubSystem scheduler))
+        {
+            return;
+        }
+
+        if (IsSelfMetabolising && ContainsLayer(BodyLayerType.Circulatory))
+        {
+            scheduler.RegisterController(this);
+        }
+        else
+        {
+            scheduler.UnregisterController(this);
+        }
+    }
+
+    /// <summary>
+    /// Burn through this part's oxygen reserve with nothing coming in, take the graded starvation damage that follows,
+    /// then do the same for anything inside it. Driven by MetabolicSubSystem only while this part is loose - see
+    /// IsSelfMetabolising.
+    /// A part with no blood supply is simply supply = 0 into the same metabolic step a perfused part uses, so there is
+    /// no separate decay model to keep in step with the living one.
+    /// Organs never register on their own account, so a loose part is responsible for the ones it carries - that is how
+    /// a brain rots inside a severed head. Child parts are deliberately not walked: severing produces an independent
+    /// copy per part, with no parent link between the copies, so each already registers itself.
+    /// </summary>
+    [Server]
+    public void MetabolicTick(float deltaTime)
+    {
+        if (IsDestroyed)
+        {
+            return;
+        }
+
+        if (TryGetBodyLayer(out CirculatoryLayer circulatory))
+        {
+            circulatory.MetabolicStep(0d, deltaTime);
+        }
+
+        if (!HasInternalBodyPart)
+        {
+            return;
+        }
+
+        // InternalBodyParts builds a fresh list per call, so this iterates a snapshot and stays valid even if an organ
+        // destroys itself, and its container, partway through the walk.
+        foreach (BodyPart part in InternalBodyParts)
+        {
+            part.MetabolicTick(deltaTime);
+        }
     }
 
     public virtual void Init(BodyPart parent)
@@ -192,6 +281,10 @@ public abstract class BodyPart : InteractionTargetNetworkBehaviour
         Log.Debug(this, "value of parent body part {bodypart}", Logs.Generic, value);
         _parentBodyPart = value;
         _parentBodyPart._childBodyParts.Add(this);
+
+        // Attached into a body, so its circulatory controller takes over and this part stops driving itself. Nothing
+        // reattaches a severed part today, but this is the transition that would do it.
+        RefreshMetabolicRegistration();
     }
 
     /// <summary>
@@ -304,6 +397,10 @@ public abstract class BodyPart : InteractionTargetNetworkBehaviour
         RemoveChildAndParent();
         DumpOrPurgeContainers(purgeContainersContent);
         CleanLayers();
+
+        // This object is the stump-side original being torn down, never the spawned copy, so it must stop ticking.
+        // The copy registers itself from its own OnStartServer and is what actually decays.
+        RefreshMetabolicRegistration();
         StartCoroutine(DeactivateOneFrameLater());
     }
 
@@ -539,6 +636,9 @@ public abstract class BodyPart : InteractionTargetNetworkBehaviour
 		_internalBodyParts.AddItem(part.gameObject.GetComponent<Item>());
 		part._externalBodyPart = this;
 
+		// The organ now belongs to this part, so it stops driving its own metabolism and this part drives it instead.
+		part.RefreshMetabolicRegistration();
+
 		// Announce the attach rather than leaving the circulatory controller to discover it. The controller builds
 		// its perfused set once during Init, so any organ attached after that point - and every organ once organ
 		// spawning becomes asynchronous - would otherwise never be perfused at all (#1362).
@@ -550,6 +650,9 @@ public abstract class BodyPart : InteractionTargetNetworkBehaviour
 	{
 		_internalBodyParts.RemoveItem(part.gameObject.GetComponent<Item>());
 		part._externalBodyPart = null;
+
+		// No longer inside anything, so the organ takes over its own metabolism unless it landed in a living body.
+		part.RefreshMetabolicRegistration();
 	}
 
     /// <summary>
