@@ -112,6 +112,11 @@ namespace SS3D.Systems.Health
         private void SetBreathingState()
         {
             float availableOxygen = (float)HealthController.Circulatory.AvailableOxygen();
+
+            // Summed over the whole body, internal organs included, so anything that changes what the health
+            // controller tracks moves these thresholds. Deliberately NOT the circulatory controller's running total:
+            // that covers only the parts blood can currently reach, so a destroyed heart would make it zero and
+            // report comfortable breathing during total circulatory failure.
             float sumNeeded = HealthController.Circulatory.ComputeIndividualNeeds(HealthController.BodyPartsOnEntity).Sum();
 
             if (availableOxygen > HealthConstants.SafeOxygenFactor * sumNeeded)

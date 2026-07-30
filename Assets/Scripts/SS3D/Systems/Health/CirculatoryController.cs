@@ -6,7 +6,6 @@ using SS3D.Systems.Health;
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
 using UnityEngine;
 
@@ -149,7 +148,7 @@ namespace SS3D.Systems.Health
         /// Compute the need in oxygen of every body part in the provided list.
         /// </summary>
         [Server]
-        public float[] ComputeIndividualNeeds(ReadOnlyCollection<BodyPart> parts)
+        public float[] ComputeIndividualNeeds(IReadOnlyCollection<BodyPart> parts)
         {
             float[] oxygenNeededForEachpart = new float[parts.Count];
             int i = 0;

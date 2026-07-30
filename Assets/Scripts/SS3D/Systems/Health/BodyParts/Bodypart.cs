@@ -282,6 +282,13 @@ public abstract class BodyPart : InteractionTargetNetworkBehaviour
         {
             foreach (BodyPart part in InternalBodyParts)
             {
+                // Announce before disposing. Dispose is the detach path's only route to internal organs and it fires
+                // no event of its own, so without this an organ is silently orphaned in every list still tracking it -
+                // the entity's body part list, the perfused set, the subscription set. Detached rather than destroyed
+                // because the organ is not destroyed, it leaves the entity with the part containing it.
+                // Not a double announcement on the destroy path: DestroyBodyPart purges the container before calling
+                // Dispose, so this loop does not run there.
+                part.InvokeOnBodyPartDetached();
                 part.Dispose(true);
             }
         }
