@@ -29,12 +29,15 @@ namespace SS3D.Systems.Health
         // changes (dirty flag), so the per-tick loop is allocation-free and safe against mid-tick removal (reentrancy).
         private readonly List<BodyPart> _perfused = new();
 
-        // Parts announced before their body layers existed (async-spawned organs). Retried from the tick until they
-        // can be perfused; normally drains within a frame or two of the organ attaching.
-        private readonly List<BodyPart> _pendingPerfusion = new();
         private CirculatoryLayer[] _perfusedLayers = Array.Empty<CirculatoryLayer>();
         private float[] _needs = Array.Empty<float>();
         private float _sumNeed;
+
+        // Set when the body's shape changes. The perfused set is re-derived from it at the top of the next tick, not in
+        // the event handler: the handlers fire mid-teardown, before BodyPart.Dispose has cut the departing part out of
+        // its parent's child list, so a walk from there still reaches it and keeps it. Deferring also coalesces the
+        // several events one dismemberment raises into a single walk.
+        private bool _perfusedSetDirty;
         private bool _cachesDirty;
 
         public SubstanceContainer Container => _container;
@@ -203,9 +206,11 @@ namespace SS3D.Systems.Health
         [Server]
         public void MetabolicTick(float dt)
         {
-            if (_pendingPerfusion.Count > 0)
+            // Topology has settled by now, unlike inside the add/remove handlers themselves.
+            if (_perfusedSetDirty)
             {
-                DrainPendingPerfusion();
+                _perfusedSetDirty = false;
+                RebuildPerfusedList();
             }
 
             if (_cachesDirty)
@@ -281,97 +286,85 @@ namespace SS3D.Systems.Health
         }
 
         /// <summary>
-        /// Track a body part announced by the health controller. We add the exact reference we were handed rather than
-        /// re-reading the containers, which lag the attach by several frames.
-        /// An internal organ is announced before its own OnStartServer has run (the torso's WaitUntil only gates on
-        /// Instantiate having assigned the field, not on the network spawn completing), so it has no body layers yet
-        /// and cannot be perfused at this instant. Park those in the pending list and admit them from the tick once
-        /// their circulatory layer exists - otherwise the heart is announced once, rejected, and never seen again,
-        /// leaving the body with no circulation at all (#1362).
+        /// The body's shape has changed, so mark the perfused set for re-derivation on the next tick. Deliberately not
+        /// re-walked here: a removal is announced from inside BodyPart.DetachBodyPart, before Dispose has unlinked the
+        /// departing part from its parent, so a walk at this moment still reaches it and keeps it perfused.
+        /// Re-deriving rather than editing the set incrementally also costs nothing when a part is announced before its
+        /// body layers exist: it is skipped that time round and picked up by the next re-derive. That does not arise
+        /// here - SpawnOrgans is synchronous on this branch, so every organ is attached before Init runs and the set is
+        /// complete on the first walk - but it is exactly what breaks once organ spawning becomes asynchronous, and the
+        /// incremental version needed a pending-retry list to survive it: announce the heart once, reject it for having
+        /// no layers yet, never look again, and the whole body has no circulation at all (#1362).
         /// </summary>
         [Server]
         private void HandleBodyPartAdded(object sender, BodyPart part)
         {
-            if (AddIfPerfused(part))
-            {
-                _cachesDirty = true;
-            }
-            else if (part && !_pendingPerfusion.Contains(part))
-            {
-                _pendingPerfusion.Add(part);
-            }
-        }
-
-        /// <summary>
-        /// Admit any pending part whose circulatory layer has since been created. Runs from the metabolic tick; the
-        /// list is empty in the steady state, so this costs nothing once the body has finished initialising.
-        /// </summary>
-        [Server]
-        private void DrainPendingPerfusion()
-        {
-            for (int i = _pendingPerfusion.Count - 1; i >= 0; i--)
-            {
-                BodyPart part = _pendingPerfusion[i];
-
-                if (!part)
-                {
-                    _pendingPerfusion.RemoveAt(i);
-                    continue;
-                }
-
-                if (AddIfPerfused(part))
-                {
-                    _pendingPerfusion.RemoveAt(i);
-                    _cachesDirty = true;
-                }
-            }
+            _perfusedSetDirty = true;
         }
 
         [Server]
         private void HandleBodyPartRemoved(object sender, BodyPart part)
         {
-            _pendingPerfusion.Remove(part);
-
-            if (_perfused.Remove(part))
-            {
-                _cachesDirty = true;
-            }
+            _perfusedSetDirty = true;
         }
 
         /// <summary>
-        /// Build the perfused-parts list from the live body. Used once at Init to capture the parts present by then;
-        /// afterwards the list is maintained incrementally through HealthController's add/remove events.
-        /// GetComponentsInChildren only walks the transform hierarchy, which holds the external body parts but NOT the
-        /// internal organs (heart, lungs, brain) - those live in each part's AttachedContainer. So we also pull every
-        /// discovered part's InternalBodyParts; otherwise the heart is never found, no oxygen is ever delivered, and
-        /// the whole body suffocates (#1362).
+        /// Re-derive the perfused set by walking outward from the heart. With no heart the set is empty and the body
+        /// gets nothing, which is correct: circulation needs a pump.
         /// </summary>
         [Server]
         private void RebuildPerfusedList()
         {
             _perfused.Clear();
-            foreach (BodyPart part in _healthController.GetComponentsInChildren<BodyPart>())
+
+            Heart heart = _healthController.GetComponentInChildren<Heart>();
+            if (heart && heart.IsInsideBodyPart)
             {
-                AddIfPerfused(part);
-
-                if (!part.HasInternalBodyPart)
-                {
-                    continue;
-                }
-
-                foreach (BodyPart organ in part.InternalBodyParts)
-                {
-                    AddIfPerfused(organ);
-                }
+                AddPerfusedRecursion(heart.ExternalBodyPart);
             }
 
             _cachesDirty = true;
         }
 
         /// <summary>
-        /// Add a body part to the perfused set if it carries a circulatory layer and is not already tracked.
-        /// Returns true if it was newly added, so callers can mark the caches dirty.
+        /// A part is perfused if it is the heart's own container, an internal organ of a perfused part, or a child
+        /// reachable through an unbroken chain of circulatory layers.
+        /// Descending only through parts that carry circulation is the whole point: blood cannot cross a part that has
+        /// no vessels, so fixing a living foot onto a wooden leg does not keep the foot alive. A flat scan of everything
+        /// under the entity - which is what this replaces - silently perfused it anyway.
         /// </summary>
+        [Server]
+        private void AddPerfusedRecursion(BodyPart current)
+        {
+            // Stopping on a false return does two jobs. It enforces the rule above - no circulation here means nothing
+            // beyond here is reached either - and it doubles as a visited check, since a part already in the set
+            // returns false too. That makes the walk safe on a cyclic topology: body parts are authored as a tree, but
+            // nothing in the code enforces that, and an unguarded recursion would not survive a cycle.
+            if (!AddIfPerfused(current))
+            {
+                return;
+            }
+
+            if (current.HasInternalBodyPart)
+            {
+                foreach (BodyPart organ in current.InternalBodyParts)
+                {
+                    AddIfPerfused(organ);
+                }
+            }
+
+            foreach (BodyPart child in current.ChildBodyParts)
+            {
+                AddPerfusedRecursion(child);
+            }
+        }
+
+        /// <summary>
+        /// Add a body part to the perfused set if it carries a circulatory layer and is not already tracked. Organs are
+        /// checked for the layer like anything else - the old graph walk added them unconditionally and then dereferenced
+        /// the layer it had not checked for.
+        /// </summary>
+        /// <returns>True if the part was newly added. The walk uses this to decide whether to descend any further.</returns>
         [Server]
         private bool AddIfPerfused(BodyPart part)
         {
