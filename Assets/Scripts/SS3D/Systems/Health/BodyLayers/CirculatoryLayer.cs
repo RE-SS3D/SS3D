@@ -22,23 +22,14 @@ namespace SS3D.Systems.Health
 
         private BleedingBodyPart _bleedingHandler;
 
-        private double _oxygenNeeded;
-
         /// <summary>
         /// To keep things simple for now, 
         /// a body part simply needs the average of 
         /// oxygen consumed for each consuming layer composing it.
         /// </summary>
-        public double OxygenNeeded
-        {
-            private set => SetOxygenNeeded();
-            get => _oxygenNeeded;
-        }
-        
-		public override BodyLayerType LayerType
-		{
-			get { return BodyLayerType.Circulatory; }
-		}
+        public double OxygenNeeded { get; private set; }
+
+        public override BodyLayerType LayerType => BodyLayerType.Circulatory;
 
         /// <summary>
         /// </summary>
@@ -67,7 +58,7 @@ namespace SS3D.Systems.Health
             // TODO : Currently only set the amount of oxygen needed once at Init.
             // Should maybe change too if a layer is changing the amount of oxygen it needs,
             // or if it gets destroyed or one gets added.
-            SetOxygenNeeded();
+            ComputeOxygenNeeded();
 
             if(bodyPart.TryGetComponent(out BleedingBodyPart bleedingBodyPart))
             {
@@ -116,7 +107,7 @@ namespace SS3D.Systems.Health
 
             _oxygenReserve += accepted;
 
-            double demand = _oxygenNeeded * dt;
+            double demand = OxygenNeeded * dt;
             _oxygenReserve -= demand;
 
             if (_oxygenReserve < 0d)
@@ -196,13 +187,22 @@ namespace SS3D.Systems.Health
         {
         }
 
+        /// <summary>
+        /// Work out this part's oxygen demand: the average of GetOxygenNeeded() across its oxygen-needing layers.
+        /// Must be called again once every layer exists, which is why it is public. The constructor cannot settle it -
+        /// it runs from inside TryAddBodyLayer, while the layer list is still being built, so any part that adds its
+        /// circulatory layer first averages over an empty list and lands on zero demand. A part needing no oxygen can
+        /// never run a deficit and so silently opts out of the metabolic model entirely; the brain was doing exactly
+        /// that. BodyPart.OnStartServer calls this once AddInitialLayers has returned, so no part depends on the order
+        /// it happens to add its layers in.
+        /// </summary>
         [Server]
-        private void SetOxygenNeeded()
+        public void ComputeOxygenNeeded()
         {
             IEnumerable<IOxygenNeeder> oxygenNeeders = BodyPart.BodyLayers.OfType<IOxygenNeeder>();
             double totalOxygen = oxygenNeeders.Sum(x => x.GetOxygenNeeded());
             int numberOfConsumers = oxygenNeeders.Count();
-            _oxygenNeeded = numberOfConsumers > 0 ? totalOxygen / numberOfConsumers : 0;
+            OxygenNeeded = numberOfConsumers > 0 ? totalOxygen / numberOfConsumers : 0;
         }
     }
 }

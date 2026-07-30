@@ -144,6 +144,14 @@ public abstract class BodyPart : InteractionTargetNetworkBehaviour
         base.OnStartServer();
         ParentBodyPart = _parentBodyPart;
         AddInitialLayers();
+
+        // Only now are all the layers present, so only now can oxygen demand be worked out - it is the average across
+        // this part's oxygen-needing layers, and the circulatory layer's constructor necessarily runs before the rest
+        // of them exist. Doing it here means no part depends on the order it happens to add its layers in.
+        if (TryGetBodyLayer(out CirculatoryLayer circulatory))
+        {
+            circulatory.ComputeOxygenNeeded();
+        }
     }
 
     public virtual void Init(BodyPart parent)
