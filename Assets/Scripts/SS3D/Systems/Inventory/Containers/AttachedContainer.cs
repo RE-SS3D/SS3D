@@ -272,13 +272,18 @@ namespace SS3D.Systems.Inventory.Containers
                     throw new ArgumentOutOfRangeException(nameof(op), op, null);
             }
 
-            if (changeType == ContainerChangeType.Add && newItem.Item.TryGetComponent(out NetworkTransform networkTransform))
+            // Both items are checked before use because a Clear arrives with no payload at all: SyncList.Clear calls
+            // AddOperation(SyncListOperation.Clear, -1, default, default), so oldItem.Item and newItem.Item are null.
+            // Purge also deletes every item before clearing the list, so by the time the removals are announced the
+            // items can be destroyed as well as null - hence truthiness rather than a null comparison, which catches
+            // both. handleItemRemoved above already guards this way; these two dereferences did not.
+            if (changeType == ContainerChangeType.Add && newItem.Item && newItem.Item.TryGetComponent(out NetworkTransform networkTransform))
             {
                  networkTransform.SetSynchronizePosition(false);
                  networkTransform.SetSynchronizeRotation(false);
             }
 
-            if (changeType == ContainerChangeType.Remove && oldItem.Item.TryGetComponent(out NetworkTransform networkTransform2))
+            if (changeType == ContainerChangeType.Remove && oldItem.Item && oldItem.Item.TryGetComponent(out NetworkTransform networkTransform2))
             {
                 networkTransform2.SetSynchronizePosition(true);
                 networkTransform2.SetSynchronizeRotation(true);
