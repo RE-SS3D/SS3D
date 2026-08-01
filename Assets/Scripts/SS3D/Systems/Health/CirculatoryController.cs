@@ -140,7 +140,7 @@ namespace SS3D.Systems.Health
 
             float oxygenQuantity = _container.GetSubstanceQuantity(_oxygen);
 
-            if(oxygenQuantity > MaxOxygenQuantity)
+            if (oxygenQuantity > MaxOxygenQuantity)
             {
                 _container.RemoveSubstance(_oxygen, oxygenQuantity - MaxOxygenQuantity);
             }
@@ -156,12 +156,14 @@ namespace SS3D.Systems.Health
         {
             float[] oxygenNeededForEachpart = new float[parts.Count];
             int i = 0;
+
             foreach (BodyPart bodyPart in parts)
             {
                 bodyPart.TryGetBodyLayer(out CirculatoryLayer circulatory);
                 oxygenNeededForEachpart[i] = (float)circulatory.OxygenNeeded;
                 i++;
             }
+
             return oxygenNeededForEachpart;
         }
 
@@ -220,7 +222,7 @@ namespace SS3D.Systems.Health
             }
 
             // The heartbeat drives bleeding (via OnPulse) and may remove blood, so beat before reading bloodFactor.
-            if (_heart != null)
+            if (_heart)
             {
                 _heart.BeatTick(dt);
             }
@@ -232,11 +234,9 @@ namespace SS3D.Systems.Health
 
             double available = AvailableOxygen();
 
-            float cardiacFactor = _heart != null ? _heart.CardiacOutputFactor : 0f;
+            float cardiacFactor = _heart ? _heart.CardiacOutputFactor : 0f;
             float healthyBloodVolume = HealthConstants.HealthyBloodVolumeRatio * MaxBloodVolume;
-            float bloodFactor = healthyBloodVolume > 0f
-                ? Mathf.Clamp01(_container.GetSubstanceVolume(_blood) / healthyBloodVolume)
-                : 0f;
+            float bloodFactor = healthyBloodVolume > 0f ? Mathf.Clamp01(_container.GetSubstanceVolume(_blood) / healthyBloodVolume) : 0f;
 
             double flowCap = cardiacFactor * bloodFactor * HealthConstants.FlowExtractionHeadroom * _sumNeed * dt;
             double deliverable = Math.Min(available, flowCap);
@@ -248,6 +248,7 @@ namespace SS3D.Systems.Health
                 float refill = (float)totalRefilled;
                 float inPool = _container.GetSubstanceQuantity(_oxygen);
                 float toRemove = refill < inPool ? refill : inPool;
+
                 if (toRemove > 0f)
                 {
                     _container.RemoveSubstance(_oxygen, toRemove);
@@ -277,10 +278,10 @@ namespace SS3D.Systems.Health
                 }
                 catch (Exception exception)
                 {
-                    Log.Error(this, exception,
-                        "Metabolic step threw for perfused layer {Index} of {Count} on {Entity}, skipping it this tick."
-                        + " Usually means a destroyed part is still in the set, because the set was not re-derived when"
-                        + " the part died.",
+                    Log.Error(
+                        this,
+                        exception,
+                        "Metabolic step threw for perfused layer {Index} of {Count} on {Entity}, skipping it this tick. Usually means a destroyed part is still in the set, because the set was not re-derived when the part died.",
                         Logs.ServerOnly,
                         i,
                         _perfusedLayers.Length,
@@ -328,29 +329,40 @@ namespace SS3D.Systems.Health
         }
 
         /// <summary>
-        /// Re-derive the perfused set by walking outward from the heart. With no heart the set is empty and the body
-        /// gets nothing, which is correct: circulation needs a pump.
+        /// Re-derive which parts are joined into this body's circulatory tree, by walking outward from the body itself.
+        /// Deliberately not rooted at the heart. This answers a question about topology - what is plumbed into what -
+        /// and that stays true whether or not anything is pumping. Whether blood actually moves through the tree is
+        /// cardiacFactor's job, and with no heart that is 0, so every part is offered nothing and starves. Rooting here
+        /// at the heart instead made a destroyed heart empty the set, which drove _sumNeed to 0 and made MetabolicTick
+        /// return early - the body stopped being simulated rather than finishing dying. develop suffocated it, because
+        /// consumption there ran off a global list entirely independent of the heart.
         /// </summary>
         [Server]
         private void RebuildPerfusedList()
         {
             _perfused.Clear();
 
-            Heart heart = _healthController.GetComponentInChildren<Heart>();
-            if (heart && heart.IsInsideBodyPart)
+            // The body's root parts: attached to nothing above them, and not an organ sitting inside something else.
+            // On a human that is the torso alone, but iterating costs nothing and degrades gracefully.
+            foreach (BodyPart part in _healthController.BodyPartsOnEntity)
             {
-                AddPerfusedRecursion(heart.ExternalBodyPart);
+                if (part && !part.IsInsideBodyPart && !part.ParentBodyPart)
+                {
+                    AddPerfusedRecursion(part);
+                }
             }
 
             _cachesDirty = true;
         }
 
         /// <summary>
-        /// A part is perfused if it is the heart's own container, an internal organ of a perfused part, or a child
+        /// A part joins the tree if it is a root of the body, an internal organ of a part already in it, or a child
         /// reachable through an unbroken chain of circulatory layers.
         /// Descending only through parts that carry circulation is the whole point: blood cannot cross a part that has
         /// no vessels, so fixing a living foot onto a wooden leg does not keep the foot alive. A flat scan of everything
-        /// under the entity - which is what this replaces - silently perfused it anyway.
+        /// under the entity - which is what this replaces - silently included it anyway.
+        /// Membership means "plumbed in", not "currently being fed": a body whose heart has stopped or been destroyed
+        /// still has a complete tree, and every part in it is offered nothing and starves.
         /// </summary>
         [Server]
         private void AddPerfusedRecursion(BodyPart current)
@@ -393,6 +405,7 @@ namespace SS3D.Systems.Health
             }
 
             _perfused.Add(part);
+
             return true;
         }
 
@@ -409,6 +422,7 @@ namespace SS3D.Systems.Health
             _sumNeed = 0f;
 
             Heart foundHeart = null;
+
             for (int i = 0; i < count; i++)
             {
                 BodyPart part = _perfused[i];
