@@ -1,6 +1,7 @@
 using FishNet.Object;
 using SS3D.Core;
 using SS3D.Core.Behaviours;
+using SS3D.Logging;
 using SS3D.Substances;
 using SS3D.Systems.Health;
 using System;
@@ -263,10 +264,28 @@ namespace SS3D.Systems.Health
         private double ApportionOxygen(double deliverable, float dt)
         {
             double totalRefilled = 0d;
+
             for (int i = 0; i < _perfusedLayers.Length; i++)
             {
-                double supply = deliverable * (_needs[i] / _sumNeed);
-                totalRefilled += _perfusedLayers[i].MetabolicStep(supply, dt);
+                // Contain a failing part rather than letting it take the rest down with it. Without this the throw
+                // aborts the remaining iterations, so every later part goes untended, and then escapes into
+                // MetabolicSubSystem.Update and stops the metabolic tick for every other entity as well.
+                try
+                {
+                    double supply = deliverable * (_needs[i] / _sumNeed);
+                    totalRefilled += _perfusedLayers[i].MetabolicStep(supply, dt);
+                }
+                catch (Exception exception)
+                {
+                    Log.Error(this, exception,
+                        "Metabolic step threw for perfused layer {Index} of {Count} on {Entity}, skipping it this tick."
+                        + " Usually means a destroyed part is still in the set, because the set was not re-derived when"
+                        + " the part died.",
+                        Logs.ServerOnly,
+                        i,
+                        _perfusedLayers.Length,
+                        name);
+                }
             }
 
             return totalRefilled;

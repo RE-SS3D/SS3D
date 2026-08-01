@@ -1,4 +1,6 @@
 using SS3D.Core.Behaviours;
+using SS3D.Logging;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -54,7 +56,23 @@ namespace SS3D.Systems.Health
             // Iterate backwards so a controller that unregisters during its own tick (OnStopServer) is safe.
             for (int i = _controllers.Count - 1; i >= 0; i--)
             {
-                _controllers[i].MetabolicTick(elapsed);
+                // One body's failure must not stop every other body being simulated. Without this a single controller
+                // throwing - a destroyed part left in its perfused set, say - aborts the loop and silently halts the
+                // metabolic tick for the whole server until it stops throwing.
+                try
+                {
+                    _controllers[i].MetabolicTick(elapsed);
+                }
+                catch (Exception exception)
+                {
+                    Log.Error(
+                        this,
+                        exception,
+                        "Metabolic tick threw for controller {Index} of {Count}, skipping it this tick so the rest still run.",
+                        Logs.ServerOnly,
+                        i,
+                        _controllers.Count);
+                }
             }
         }
     }
