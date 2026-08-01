@@ -394,12 +394,19 @@ namespace SS3D.Systems.Health
         /// Add a body part to the perfused set if it carries a circulatory layer and is not already tracked. Organs are
         /// checked for the layer like anything else - the old graph walk added them unconditionally and then dereferenced
         /// the layer it had not checked for.
+        /// Destroyed parts are rejected on IsDestroyed rather than on Unity truthiness, because truthiness is a frame too
+        /// late: Object.Destroy leaves the reference valid for the rest of the frame it is called in (measured - see the
+        /// rework doc), while the re-derive runs in that same frame. IsDestroyed is already true when the removal event
+        /// fires, since it is the precondition InflictDamage tests before calling DestroyBodyPart at all.
+        /// This relies on CleanLayers() not resetting damages - every Cleanlayer() override is currently empty. If one
+        /// ever clears its damage container, IsDestroyed flips back to false during Dispose and destroyed parts start
+        /// re-entering the perfused set.
         /// </summary>
         /// <returns>True if the part was newly added. The walk uses this to decide whether to descend any further.</returns>
         [Server]
         private bool AddIfPerfused(BodyPart part)
         {
-            if (!part || !part.ContainsLayer(BodyLayerType.Circulatory) || _perfused.Contains(part))
+            if (!part || part.IsDestroyed || !part.ContainsLayer(BodyLayerType.Circulatory) || _perfused.Contains(part))
             {
                 return false;
             }
