@@ -1,5 +1,4 @@
-@@ -0,0 +1,47 @@
-﻿using UnityEngine;
+using UnityEngine;
 using UnityEngine.Rendering.PostProcessing;
 
 namespace SS3D.Systems.Vision
