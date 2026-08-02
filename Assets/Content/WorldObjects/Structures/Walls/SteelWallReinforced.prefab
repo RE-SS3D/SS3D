@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5022873095643711340}
   - component: {fileID: 7691160284830400485}
-  m_Layer: 8
+  m_Layer: 16
   m_Name: RightViewObstacle
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -55,7 +55,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6491318275190557950}
   - component: {fileID: 3247630703720011440}
-  m_Layer: 8
+  m_Layer: 16
   m_Name: BackViewObstacle
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -100,7 +100,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4770819067178016503}
   - component: {fileID: 3843643310579965483}
-  m_Layer: 8
+  m_Layer: 16
   m_Name: LeftViewObstacle
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -253,11 +253,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 26b716c41e9b56b4baafaf13a523ba2e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  NetworkObserver: {fileID: 0}
+  <PrefabId>k__BackingField: 174
+  <SpawnableCollectionId>k__BackingField: 0
+  _scenePathHash: 0
+  <SceneId>k__BackingField: 0
+  <AssetPathHash>k__BackingField: 15843822419293565003
   <IsNested>k__BackingField: 0
   <ComponentIndex>k__BackingField: 0
   <PredictedSpawn>k__BackingField: {fileID: 0}
   _networkBehaviours:
   - {fileID: 3011383631706744183}
+  - {fileID: -6351445020948675988}
   <ParentNetworkObject>k__BackingField: {fileID: 0}
   <ChildNetworkObjects>k__BackingField: []
   SerializedTransformProperties:
@@ -268,12 +275,6 @@ MonoBehaviour:
   _isGlobal: 0
   _initializeOrder: 0
   _defaultDespawnType: 0
-  NetworkObserver: {fileID: 0}
-  <PrefabId>k__BackingField: 174
-  <SpawnableCollectionId>k__BackingField: 0
-  _scenePathHash: 0
-  <SceneId>k__BackingField: 0
-  <AssetPathHash>k__BackingField: 15843822419293565003
 --- !u!114 &3011383631706744183
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -306,8 +307,12 @@ MonoBehaviour:
     xOpposite: {fileID: -7744038958267161825, guid: 9c0b392ffb24ca248a002fe36b08bae8, type: 3}
     xTriple: {fileID: 5869884649093938551, guid: 9c0b392ffb24ca248a002fe36b08bae8, type: 3}
     xQuad: {fileID: 4199670461815796357, guid: 9c0b392ffb24ca248a002fe36b08bae8, type: 3}
-    viewObstacles: []
-    opaque: 0
+    viewObstacles:
+    - {fileID: 3334414246056966601}
+    - {fileID: 1361261120174024331}
+    - {fileID: 7790124558541205835}
+    - {fileID: 1437294527526757322}
+    opaque: 1
 --- !u!114 &6332977986281627431
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -334,9 +339,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ff65a9dda1ef18f4cbc16ee4d1aee066, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _componentIndexCache: 255
+  _componentIndexCache: 1
   _addedNetworkObject: {fileID: -2900075557854325373}
-  _networkObjectCache: {fileID: 0}
+  _networkObjectCache: {fileID: -2900075557854325373}
   _asset: {fileID: 11400000, guid: 9b16536c8b6953b459e5906389bc4cdd, type: 2}
   _tileObjectSo: {fileID: 11400000, guid: 8723b9e3524165d4abbbb6e295e85330, type: 2}
 --- !u!1 &7790124558541205835
@@ -349,7 +354,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1313969126098040064}
   - component: {fileID: 5971711339440298923}
-  m_Layer: 8
+  m_Layer: 16
   m_Name: ForwardViewObstacle
   m_TagString: Untagged
   m_Icon: {fileID: 0}
