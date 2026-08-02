@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Unity.Collections;
 using Unity.Jobs;
 using Unity.Profiling;
@@ -12,47 +12,57 @@ namespace SS3D.Systems.Vision
 {
     public class VisionSubSystem : Core.Behaviours.SubSystem
     {
-        [SerializeField]
-        public bool showDebug;
-        [SerializeField]
-        private Texture2D visionMap;
+        public bool ShowDebug => _showDebug;
 
         [SerializeField]
-        public Transform target = null;
+        public Transform Target = null;
+        
+        [NonSerialized]
+        public NativeArray<Vector3> ViewPoints;
 
+        [NonSerialized]
+        public int StepCount;
+        
+        [SerializeField]
+        private Texture2D _visionMap;
+        
         [Space]
         [SerializeField]
-        private float viewRange = 35;
+        private float _viewRange = 35;
+        
+        [SerializeField]
+        private bool _showDebug;
 
         [Range(0, 360)]
         [SerializeField]
         [Tooltip("The field of view width")]
-        private float viewConeWidth = 360;
+        private float _viewConeWidth = 360;
 
         [SerializeField]
         [Tooltip("Which layers this can't see through")]
-        private LayerMask obstacleMask = 0;
+        private LayerMask _obstacleMask = 0;
 
         [SerializeField]
         [Tooltip("Raycasts per degree")]
-        private float resolution = 1f;
+        private float _resolution = 1f;
 
+        // TODO: actually change the center of the field
         [SerializeField]
-        [Tooltip("The center of the field of view's actual wall detection")]
-        private Vector3 detectionOffset = Vector3.zero;
+        [Tooltip("The center of the field of scene debug view. TODO: The center of the field of view's actual wall detection")]
+        private Vector3 _detectionOffset = Vector3.zero;
         
-        [NonSerialized]
-        public NativeArray<Vector3> viewPoints;
-        [NonSerialized]
-        public int stepCount;
+        /// <summary>
+        /// Buffer for view cast batching
+        /// </summary>
+        private ViewCastInfo[] _viewCastResults;
         
-        // Buffer for view cast batching
-        private ViewCastInfo[] viewCastResults;
-        // Buffer for view cast angles
-        private float[] angleBuffer;
-        
-        static ProfilerMarker MapPerformanceMarker = new ProfilerMarker("Vision.VisionMap");
-        static ProfilerMarker PointsPerformanceMarker = new ProfilerMarker("Vision.ViewPoints");
+        /// <summary>
+        /// Buffer for view cast angles
+        /// </summary>
+        private float[] _angleBuffer;
+
+        private static ProfilerMarker MapPerformanceMarker = new ProfilerMarker("Vision.VisionMap");
+        private static ProfilerMarker PointsPerformanceMarker = new ProfilerMarker("Vision.ViewPoints");
 
         protected override void OnAwake()
         {
@@ -67,45 +77,47 @@ namespace SS3D.Systems.Vision
             // TODO: Only run on client
             if (SystemInfo.graphicsDeviceType == GraphicsDeviceType.Null)
             {
-                gameObject.Dispose(gameObject);
+                GameObject.Dispose(gameObject);
+
+                return;
             }
             
-            visionMap = new Texture2D(Mathf.RoundToInt(viewConeWidth * resolution), 1, TextureFormat.R16, false);
-            visionMap.wrapMode = TextureWrapMode.Repeat;
-            visionMap.filterMode = FilterMode.Bilinear;
-            Shader.SetGlobalTexture("_VisionMap", visionMap);
+            _visionMap = new Texture2D(Mathf.RoundToInt(_viewConeWidth * _resolution), 1, TextureFormat.R16, false);
+            _visionMap.wrapMode = TextureWrapMode.Repeat;
+            _visionMap.filterMode = FilterMode.Bilinear;
+            Shader.SetGlobalTexture("_VisionMap", _visionMap);
 
-            stepCount = Mathf.CeilToInt(viewConeWidth * resolution);
-            viewPoints = new NativeArray<Vector3>(stepCount + 1, Allocator.Persistent, NativeArrayOptions.UninitializedMemory);
+            StepCount = Mathf.CeilToInt(_viewConeWidth * _resolution);
+            ViewPoints = new NativeArray<Vector3>(StepCount + 1, Allocator.Persistent, NativeArrayOptions.UninitializedMemory);
             
-            viewCastResults = new ViewCastInfo[stepCount + 1];
-            angleBuffer = new float[viewCastResults.Length];
+            _viewCastResults = new ViewCastInfo[StepCount + 1];
+            _angleBuffer = new float[_viewCastResults.Length];
         }
 
         protected override void OnDisabled()
         {
-            viewPoints.Dispose();
+            ViewPoints.Dispose();
         }
 
         private void HandlePlayerObjectChanged(ref EventContext context, in LocalPlayerObjectChanged e)
         {
-            target = e.PlayerObject.transform;
+            Target = e.PlayerObject.transform;
         }
 
         private void LateUpdate()
         {
-            if (!target) 
+            if (!Target) 
             {
                 return; 
             }
 
-            transform.position = target.transform.position;
-            float angle = target.transform.rotation.eulerAngles.y * Mathf.Deg2Rad;
+            transform.position = Target.transform.position;
+            float angle = Target.transform.rotation.eulerAngles.y * Mathf.Deg2Rad;
 
-            Shader.SetGlobalVector("_PlayerPos", target.transform.position);
+            Shader.SetGlobalVector("_PlayerPos", Target.transform.position);
             Shader.SetGlobalFloat("_PlayerAngle", angle);
-            Shader.SetGlobalFloat("_ViewConeWidth", viewConeWidth * Mathf.Deg2Rad);
-            Shader.SetGlobalFloat("_ViewRange", viewRange);
+            Shader.SetGlobalFloat("_ViewConeWidth", _viewConeWidth * Mathf.Deg2Rad);
+            Shader.SetGlobalFloat("_ViewRange", _viewRange);
             
             DrawVisionMap();
         }
@@ -114,7 +126,7 @@ namespace SS3D.Systems.Vision
         {
             if (!angleIsGlobal)
             {
-                angleInDegrees += target.transform.eulerAngles.y;
+                angleInDegrees += Target.transform.eulerAngles.y;
             }
             
             Quaternion rotation = Quaternion.AngleAxis(angleInDegrees, Vector3.up);
@@ -129,52 +141,52 @@ namespace SS3D.Systems.Vision
 
             MapPerformanceMarker.Begin();
 
-            if (visionMap.width != stepCount)
+            if (_visionMap.width != StepCount)
             {
-                visionMap.Reinitialize(stepCount, 1);
+                _visionMap.Reinitialize(StepCount, 1);
             }
  
-            Color[] depths = new Color[stepCount + 1];
-            for (int i = 0; i < stepCount; i++)
+            Color[] depths = new Color[StepCount];
+            for (int i = 0; i < StepCount; i++)
             {
-                Vector3 positionOS = viewPoints[i % stepCount] - target.transform.position;
+                Vector3 positionOS = ViewPoints[i % StepCount] - Target.transform.position;
                 positionOS.y = 0;
-                depths[i] = new Color(positionOS.magnitude / viewRange, 0, 0);
+                depths[i] = new Color(positionOS.magnitude / _viewRange, 0, 0);
             }
 
 #pragma warning disable UNT0017 // SetPixels invocation is slow
-            visionMap.SetPixels(depths);
+            _visionMap.SetPixels(depths);
 #pragma warning restore UNT0017 // SetPixels invocation is slow
-            visionMap.Apply();
+            _visionMap.Apply();
             
             MapPerformanceMarker.End();
         }
 
         private void CalculateViewPoints()
         {
-            stepCount = Mathf.CeilToInt(viewConeWidth * resolution);
-            float stepAngleSize = viewConeWidth / stepCount;
-            float halfCone = viewConeWidth / 2;
+            StepCount = Mathf.CeilToInt(_viewConeWidth * _resolution);
+            float stepAngleSize = _viewConeWidth / StepCount;
+            float halfCone = _viewConeWidth / 2;
 
-            if (viewCastResults.Length < stepCount)
+            if (_viewCastResults.Length < StepCount)
             {
-                Array.Resize(ref viewCastResults, stepCount + 1);
-                Array.Resize(ref angleBuffer, stepCount + 1);
-                viewPoints.Dispose();
-                viewPoints = new NativeArray<Vector3>(stepCount + 1, Allocator.Persistent, NativeArrayOptions.UninitializedMemory);
+                Array.Resize(ref _viewCastResults, StepCount + 1);
+                Array.Resize(ref _angleBuffer, StepCount + 1);
+                ViewPoints.Dispose();
+                ViewPoints = new NativeArray<Vector3>(StepCount + 1, Allocator.Persistent, NativeArrayOptions.UninitializedMemory);
             }
 
-            for (int i = 0; i < stepCount; i++)
+            for (int i = 0; i < StepCount; i++)
             {
-                angleBuffer[i] = (target.transform.rotation.eulerAngles.y - halfCone) + (stepAngleSize * i);
+                _angleBuffer[i] = (Target.transform.rotation.eulerAngles.y - halfCone) + (stepAngleSize * i);
             }
 
-            ViewCastBatch(angleBuffer, viewCastResults);
-            for (int i = 0; i < stepCount; i++)
+            ViewCastBatch(_angleBuffer, _viewCastResults);
+            for (int i = 0; i < StepCount; i++)
             {
-                ViewCastInfo newViewCast = viewCastResults[i];
+                ViewCastInfo newViewCast = _viewCastResults[i];
 
-                viewPoints[i] = viewCastResults[i].Point;
+                ViewPoints[i] = _viewCastResults[i].Point;
             }
         }
 
@@ -189,12 +201,12 @@ namespace SS3D.Systems.Vision
             NativeArray<RaycastHit> hits = new NativeArray<RaycastHit>(angles.Length, Allocator.TempJob);
             NativeArray<RaycastCommand> commands = new NativeArray<RaycastCommand>(angles.Length, Allocator.TempJob, NativeArrayOptions.UninitializedMemory);
             
-            Vector3 origin = target.transform.position;
+            Vector3 origin = Target.transform.position;
 
             // Create raycast commands
             for (int i = 0; i < angles.Length; i++)
             {
-                commands[i] = new RaycastCommand(origin, DirectionFromAngle(angles[i], true), viewRange, obstacleMask);
+                commands[i] = new RaycastCommand(origin, DirectionFromAngle(angles[i], true), _viewRange, _obstacleMask);
             }
 
             // Schedule raycasts
@@ -217,8 +229,8 @@ namespace SS3D.Systems.Vision
                 {
                     resultArray[i] = new ViewCastInfo(
                         false, 
-                        origin + (DirectionFromAngle(angles[i], true) * viewRange),
-                        viewRange,
+                        origin + (DirectionFromAngle(angles[i], true) * _viewRange),
+                        _viewRange,
                         angles[i],
                         hit.normal);
                 }
