@@ -1,3 +1,4 @@
+@@ -1,58 +1,30 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -8,6 +9,7 @@ using UnityEngine.Rendering;
 [Serializable]
 [PostProcess(typeof(VisionRenderer), PostProcessEvent.AfterStack, "Vision/VisionMask")]
 public sealed class VisionMaskEffect : PostProcessEffectSettings
+namespace SS3D.Systems.Vision
 {
     public FloatParameter Quality = new FloatParameter {value = 5};
     public FloatParameter Directions = new FloatParameter {value = 25};
@@ -25,9 +27,13 @@ public sealed class VisionMaskEffect : PostProcessEffectSettings
 public sealed class VisionRenderer : PostProcessEffectRenderer<VisionMaskEffect>
 {
     public override void Render(PostProcessRenderContext context)
+    [Serializable]
+    [PostProcess(typeof(VisionRenderer), PostProcessEvent.AfterStack, "Vision/VisionMask")]
+    public sealed class VisionMaskEffect : PostProcessEffectSettings
     {
         var camera = context.camera;
         if((int)camera.depthTextureMode < 1)
+        public FloatParameter Quality = new()
         {
             camera.depthTextureMode += 1;
         }
@@ -52,7 +58,23 @@ public sealed class VisionRenderer : PostProcessEffectRenderer<VisionMaskEffect>
         sheet.properties.SetTexture("_FovTex", fovTexture);
 
         context.command.BlitFullscreenTriangle(context.source, context.destination, sheet, 0,false,null,true);
+            value = 5,
+        };
+        
+        public FloatParameter Directions = new()
+        {
+            value = 25,
+        };
+        
+        public Vector2Parameter Size = new()
+        {
+            value = new(5, 5),
+        };
 
         RenderTexture.ReleaseTemporary(fovTexture);
+        public override bool IsEnabledAndSupported(PostProcessRenderContext context)
+        {
+            return enabled.value && Quality.value > 0f && Directions.value > 0f && Size.value.x > 0f && Size.value.y > 0f;
+        }
     }
 }
