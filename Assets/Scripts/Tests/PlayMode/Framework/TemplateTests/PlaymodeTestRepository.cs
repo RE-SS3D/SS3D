@@ -3,6 +3,7 @@ using SS3D.Core;
 using SS3D.Data.Generated;
 using SS3D.Systems.Entities;
 using SS3D.Systems.Entities.Humanoid;
+using SS3D.Systems.Inventory.Containers;
 using SS3D.Systems.Rounds;
 using SS3D.Systems.Screens;
 using SS3D.UI.Buttons;
@@ -119,7 +120,7 @@ namespace SS3D.Tests
             var hand = TestHelpers.LocalPlayerSpawnItemInFirstHandAvailable(Items.PDA);
             var playerPosition = TestHelpers.GetLocalPlayerPosition();
 
-            yield return new WaitForSeconds(0.2f);
+            yield return WaitUntilHandEmptyState(hand, false, "PDA did not appear in the local player's hand after spawning.");
 
             // Drop item at a close position from local player
             var itemPosition = playerPosition;
@@ -130,18 +131,25 @@ namespace SS3D.Tests
             fixture.Set(fixture.Mouse.position, target2D);
 
             // Check that player can drop and pick up item again.
-            Assert.That(!hand.Empty);
-            yield return new WaitForSeconds(0.2f);
             Debug.Log("pressing left button " + target2D);
             fixture.PressAndRelease(fixture.Mouse.leftButton);
-            yield return new WaitForSeconds(0.2f);
-            Assert.That(hand.Empty);
+            yield return WaitUntilHandEmptyState(hand, true, "PDA was not dropped from the local player's hand.");
             yield return new WaitForSeconds(0.2f);
             fixture.PressAndRelease(fixture.Mouse.leftButton);
-            yield return new WaitForSeconds(0.1f);
-            Assert.That(!hand.Empty);
+            yield return WaitUntilHandEmptyState(hand, false, "PDA was not picked back up into the local player's hand.");
 
             yield return new WaitForSeconds(1f);
+        }
+
+        private static IEnumerator WaitUntilHandEmptyState(AttachedContainer hand, bool expectedEmpty, string failureMessage, float timeout = 3f)
+        {
+            float startTime = Time.time;
+            while (hand.Empty != expectedEmpty && Time.time < startTime + timeout)
+            {
+                yield return null;
+            }
+
+            Assert.That(hand.Empty, Is.EqualTo(expectedEmpty), failureMessage);
         }
 
         /// <summary>

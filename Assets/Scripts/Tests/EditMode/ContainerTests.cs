@@ -5,11 +5,34 @@ using SS3D.Systems;
 using SS3D.Systems.Inventory.Containers;
 using System.Linq;
 using SS3D.Systems.Inventory.Items;
+using UnityEngine.SceneManagement;
 
 namespace EditorTests
 {
     public class ContainerTests
     {
+        private HashSet<GameObject> _sceneRootsBeforeTest;
+
+        [SetUp]
+        public void SetUp()
+        {
+            _sceneRootsBeforeTest = SceneManager.GetActiveScene()
+                .GetRootGameObjects()
+                .ToHashSet();
+        }
+
+        [TearDown]
+        public void TearDown()
+        {
+            foreach (GameObject gameObject in SceneManager.GetActiveScene().GetRootGameObjects())
+            {
+                if (!_sceneRootsBeforeTest.Contains(gameObject))
+                {
+                    Object.DestroyImmediate(gameObject);
+                }
+            }
+        }
+
         #region Tests
         /// <summary>
         /// Test to confirm containers can have items stored in them
@@ -126,6 +149,125 @@ namespace EditorTests
             Assert.False(container.Items.Contains(neutralItem), "should only accept items with Accepted Traits");
             Assert.False(container.Items.Contains(deniedItem), "should never accept items with Denied Traits");
         }
+
+        [Test]
+        public void OccupiedSlotsRejectNormalNonStackableMoves()
+        {
+            AttachedContainer source = CreateContainer(new Vector2Int(1, 1), null);
+            AttachedContainer destination = CreateContainer(new Vector2Int(1, 1), null);
+            Item sourceItem = createItem("Source");
+            Item destinationItem = createItem("Destination");
+            source.AddItem(sourceItem);
+            destination.AddItem(destinationItem);
+
+            bool transferred = source.TransferItemToOther(sourceItem, Vector2Int.zero, destination);
+
+            Assert.False(transferred);
+            Assert.True(source.Items.Contains(sourceItem));
+            Assert.True(destination.Items.Contains(destinationItem));
+        }
+
+        [Test]
+        public void OccupiedSlotsAcceptCompatibleStackMerges()
+        {
+            AttachedContainer source = CreateContainer(new Vector2Int(1, 1), null);
+            AttachedContainer destination = CreateContainer(new Vector2Int(1, 1), null);
+            Stackable sourceStack = StackableTests.CreateStackableItem("Cable", 5);
+            Stackable destinationStack = StackableTests.CreateStackableItem("Cable", 5);
+            source.AddItem(sourceStack.Item);
+            destination.AddItem(destinationStack.Item);
+
+            bool transferred = source.TransferItemToOther(sourceStack.Item, Vector2Int.zero, destination);
+
+            Assert.True(transferred);
+            Assert.False(source.Items.Contains(sourceStack.Item));
+            Assert.True(destination.Items.Contains(destinationStack.Item));
+            Assert.AreEqual(2, destinationStack.Amount);
+        }
+
+        [Test]
+        public void TransferToContainerMergesWithCompatibleStackWhenNoSlotIsSpecified()
+        {
+            AttachedContainer source = CreateContainer(new Vector2Int(1, 1), null);
+            AttachedContainer destination = CreateContainer(new Vector2Int(1, 1), null);
+            Stackable sourceStack = StackableTests.CreateStackableItem("Cable", 5);
+            Stackable destinationStack = StackableTests.CreateStackableItem("Cable", 5);
+            source.AddItem(sourceStack.Item);
+            destination.AddItem(destinationStack.Item);
+
+            bool transferred = source.TransferItemToOther(sourceStack.Item, destination);
+
+            Assert.True(transferred);
+            Assert.False(source.Items.Contains(sourceStack.Item));
+            Assert.AreEqual(2, destinationStack.Amount);
+        }
+
+        [Test]
+        public void SpawnedStackItemMergesIntoFullContainerStack()
+        {
+            AttachedContainer destination = CreateContainer(new Vector2Int(1, 1), null);
+            Stackable destinationStack = StackableTests.CreateStackableItem("Cable", 5);
+            Stackable spawnedStack = StackableTests.CreateStackableItem("Cable", 5);
+            destination.AddItem(destinationStack.Item);
+
+            bool added = destination.AddItem(spawnedStack.Item);
+
+            Assert.True(added);
+            Assert.AreEqual(2, destinationStack.Amount);
+            Assert.False(destination.Items.Contains(spawnedStack.Item));
+            Assert.True(destinationStack.StackContainer.Items.Contains(spawnedStack.Item));
+            Assert.AreEqual(destinationStack.StackContainer, spawnedStack.Item.Container);
+        }
+
+        [Test]
+        public void StackMergeHonorsSourceRemovalConditions()
+        {
+            AttachedContainer source = CreateContainer(new Vector2Int(1, 1), null);
+            source.gameObject.AddComponent<DenyRemoveStorageCondition>();
+            AttachedContainer destination = CreateContainer(new Vector2Int(1, 1), null);
+            Stackable sourceStack = StackableTests.CreateStackableItem("Cable", 5, 2);
+            Stackable destinationStack = StackableTests.CreateStackableItem("Cable", 5);
+            source.AddItem(sourceStack.Item);
+            destination.AddItem(destinationStack.Item);
+
+            bool transferred = source.TransferItemToOther(sourceStack.Item, Vector2Int.zero, destination);
+
+            Assert.False(transferred);
+            Assert.True(source.Items.Contains(sourceStack.Item));
+            Assert.AreEqual(2, sourceStack.Amount);
+            Assert.AreEqual(1, destinationStack.Amount);
+        }
+
+        [Test]
+        public void TransferWithinSameContainerMovesItemToEmptySlot()
+        {
+            AttachedContainer container = CreateContainer(new Vector2Int(2, 1), null);
+            Item item = createItem("Source");
+            container.AddItemPosition(item, Vector2Int.zero);
+
+            bool transferred = container.TransferItemToOther(item, new Vector2Int(1, 0), container);
+
+            Assert.True(transferred);
+            Assert.AreEqual(new Vector2Int(1, 0), container.PositionOf(item));
+            Assert.AreEqual(container, item.Container);
+        }
+
+        [Test]
+        public void FailedTransferLeavesSourceContainerUnchanged()
+        {
+            AttachedContainer source = CreateContainer(new Vector2Int(1, 1), null);
+            AttachedContainer destination = CreateContainer(new Vector2Int(1, 1), null);
+            Item sourceItem = createItem("Source");
+            Item destinationItem = createItem("Destination");
+            source.AddItem(sourceItem);
+            destination.AddItem(destinationItem);
+
+            bool transferred = source.TransferItemToOther(sourceItem, Vector2Int.zero, destination);
+
+            Assert.False(transferred);
+            Assert.AreEqual(source, sourceItem.Container);
+            Assert.True(source.Items.Contains(sourceItem));
+        }
         #endregion
 
         #region Helper functions
@@ -167,6 +309,19 @@ namespace EditorTests
             var item = go.AddComponent<Item>();
             item.Init(name, weight, new List<Trait>());
             return item;
+        }
+
+        private sealed class DenyRemoveStorageCondition : MonoBehaviour, IStorageCondition
+        {
+            public bool CanStore(AttachedContainer container, Item item)
+            {
+                return true;
+            }
+
+            public bool CanRemove(AttachedContainer container, Item item)
+            {
+                return false;
+            }
         }
 
         #endregion

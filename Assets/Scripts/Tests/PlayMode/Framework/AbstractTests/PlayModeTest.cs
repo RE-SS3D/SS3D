@@ -28,7 +28,7 @@ namespace SS3D.Tests
     [TestFixture]
     public abstract class PlayModeTest : InputTestFixture
     {
-        protected const string ExecutableName = "SS3D";
+        protected internal const string ExecutableName = "SS3D";
         protected const string CancelButton = "Cancel";
         protected const string ReadyButtonName = "Ready";
         protected const string ServerSettingsTabName = "Server Settings";
@@ -153,6 +153,11 @@ namespace SS3D.Tests
             NetworkSettings newSettings = UnityEngine.Object.Instantiate(originalSettings);
             newSettings.NetworkType = type;
             newSettings.Ckey = "john";
+            if (type is NetworkType.Client)
+            {
+                newSettings.ServerAddress = LoadFileHelpers.IpAddress;
+                newSettings.ServerPort = ushort.Parse(LoadFileHelpers.Port);
+            }
 
             // Apply the new settings
             ScriptableSettings.SetOrOverwrite<NetworkSettings>(newSettings);
@@ -189,11 +194,26 @@ namespace SS3D.Tests
             SceneManager.LoadScene("Boot", LoadSceneMode.Single);
         }
 
-        protected void KillAllBuiltExecutables()
+        protected static void KillAllBuiltExecutables()
         {
             foreach (var process in Process.GetProcessesByName(ExecutableName))
             {
-                process.Kill();
+                try
+                {
+                    if (!process.HasExited)
+                    {
+                        process.Kill();
+                        process.WaitForExit(5000);
+                    }
+                }
+                catch (Exception exception)
+                {
+                    UnityEngine.Debug.LogWarning($"Failed to stop {ExecutableName} process {process.Id}: {exception.Message}");
+                }
+                finally
+                {
+                    process.Dispose();
+                }
             }
         }
 

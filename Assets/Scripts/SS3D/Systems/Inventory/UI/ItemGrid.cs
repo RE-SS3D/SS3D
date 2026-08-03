@@ -119,6 +119,8 @@ namespace SS3D.Systems.Inventory.UI
                         if (gridItem.Item == newItem)
                         {
                             position = container.PositionOf(newItem);
+                            gridItem.Item = newItem;
+                            gridItem.RefreshStackCount();
                             MoveToSlot(gridItem, position);
                             break;
                         }
@@ -209,7 +211,7 @@ namespace SS3D.Systems.Inventory.UI
 
             Vector2Int slot = new(Mathf.RoundToInt(position.x - 1 / 2f), Mathf.RoundToInt(position.y - 1 / 2f));
 
-			if (!AttachedContainer.CanContainItemAtPosition(item, slot))
+			if (!CanDropItemAtSlot(item, slot))
 			{
 				return;
 			}
@@ -222,6 +224,19 @@ namespace SS3D.Systems.Inventory.UI
 			display.MakeVisible(false);
 			display.ShouldDrop = true;
             Inventory.ClientTransferItem(item, slot, AttachedContainer);
+        }
+
+        private bool CanDropItemAtSlot(Item item, Vector2Int slot)
+        {
+            Item targetItem = AttachedContainer.ItemAt(slot);
+            if (targetItem == null)
+            {
+                return AttachedContainer.CanContainItemAtPosition(item, slot);
+            }
+
+            return targetItem.TryGetStackable(out Stackable targetStack)
+                   && item.TryGetStackable(out Stackable sourceStack)
+                   && targetStack.CanMergeFrom(sourceStack);
         }
 
 		/// <summary>

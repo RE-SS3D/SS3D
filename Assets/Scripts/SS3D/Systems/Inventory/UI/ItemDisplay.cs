@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using UnityEngine.InputSystem;
+using TMPro;
 
 namespace SS3D.Systems.Inventory.UI
 {
@@ -14,6 +15,7 @@ namespace SS3D.Systems.Inventory.UI
     public class ItemDisplay : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler, IPointerDownHandler, IPointerClickHandler
     {
         public Image ItemImage;
+        [SerializeField] private TMP_Text _countLabel;
         [NonSerialized] public bool ShouldDrop;
         [NonSerialized] public Vector3 OldPosition;
 
@@ -33,13 +35,16 @@ namespace SS3D.Systems.Inventory.UI
             get => _item;
             set
             {
+                UnsubscribeFromStack();
                 _item = value;
+                SubscribeToStack();
                 UpdateDisplay();
             }
         }
 
         public void Start()
         {
+            EnsureDisplayReferences();
             _slotImage = GetComponent<Image>();
             if (!_outlineInner)
             {
@@ -55,11 +60,21 @@ namespace SS3D.Systems.Inventory.UI
             }
             if (_item != null)
             {
+                SubscribeToStack();
                 UpdateDisplay();
             }
         }
 
-        public virtual void OnDropAccepted() { }
+        private void OnDestroy()
+        {
+            UnsubscribeFromStack();
+        }
+
+        public virtual void OnDropAccepted()
+        {
+            RestoreDragOrigin();
+            MakeVisible(true);
+        }
 
         public void OnPointerDown(PointerEventData eventData)
         {
@@ -114,14 +129,13 @@ namespace SS3D.Systems.Inventory.UI
 
             _slotImage.raycastTarget = true;
 
-            transform.SetParent(_oldParent, false);
-            GetComponent<RectTransform>().localPosition = OldPosition;
-
             if (ShouldDrop)
             {
                 OnDropAccepted();
                 return;
             }
+
+            RestoreDragOrigin();
 
             // If the raycast did not hit any element from the UI, drop the item out of the inventory.
             GameObject o = eventData.pointerCurrentRaycast.gameObject;
@@ -133,8 +147,10 @@ namespace SS3D.Systems.Inventory.UI
 
         private void UpdateDisplay()
         {
+            EnsureDisplayReferences();
             if(ItemImage == null)
             {
+                UpdateCountLabel();
                 return;
             }
             ItemImage.sprite = Item != null ? Item.ItemSprite : null;
@@ -142,6 +158,85 @@ namespace SS3D.Systems.Inventory.UI
             Color imageColor = ItemImage.color;
             imageColor.a = ItemImage.sprite != null ? 255 : 0;
             ItemImage.color = imageColor;
+            UpdateCountLabel();
+        }
+
+        public void RefreshStackCount()
+        {
+            UpdateCountLabel();
+        }
+
+        private void EnsureDisplayReferences()
+        {
+            if (ItemImage == null)
+            {
+                Transform itemImageTransform = transform.Find("ItemImage");
+                if (itemImageTransform != null)
+                {
+                    ItemImage = itemImageTransform.GetComponent<Image>();
+                }
+                else
+                {
+                    ItemImage = GetComponent<Image>();
+                }
+            }
+
+            if (_countLabel == null)
+            {
+                _countLabel = GetComponentInChildren<TMP_Text>(true);
+            }
+        }
+
+        private void RestoreDragOrigin()
+        {
+            if (_oldParent == null)
+            {
+                return;
+            }
+
+            transform.SetParent(_oldParent, false);
+            GetComponent<RectTransform>().localPosition = OldPosition;
+        }
+
+        private void SubscribeToStack()
+        {
+            if (_item != null && _item.TryGetStackable(out Stackable stackable))
+            {
+                stackable.OnAmountChanged -= HandleStackAmountChanged;
+                stackable.OnAmountChanged += HandleStackAmountChanged;
+            }
+        }
+
+        private void UnsubscribeFromStack()
+        {
+            if (_item != null && _item.TryGetStackable(out Stackable stackable))
+            {
+                stackable.OnAmountChanged -= HandleStackAmountChanged;
+            }
+        }
+
+        private void HandleStackAmountChanged(Stackable stackable)
+        {
+            UpdateCountLabel();
+        }
+
+        private void UpdateCountLabel()
+        {
+            EnsureDisplayReferences();
+            if (_countLabel == null)
+            {
+                return;
+            }
+
+            if (_item != null && _item.TryGetStackable(out Stackable stackable) && stackable.Amount > 1)
+            {
+                _countLabel.gameObject.SetActive(true);
+                _countLabel.text = stackable.Amount.ToString();
+                return;
+            }
+
+            _countLabel.text = string.Empty;
+            _countLabel.gameObject.SetActive(false);
         }
 
 		public void MakeVisible(bool visible)

@@ -361,6 +361,11 @@ namespace SS3D.Systems.Inventory.Containers
 		/// <returns>If the item was added</returns>
 		public bool AddItem(Item item)
 		{
+            if (TryMergeItemIntoAnyStack(item))
+            {
+                return true;
+            }
+
 			// TODO: Use a more efficient algorithm
 			for (int y = 0; y < Size.y; y++)
 			{
@@ -381,9 +386,93 @@ namespace SS3D.Systems.Inventory.Containers
         /// </summary>
         public bool TransferItemToOther(Item item, Vector2Int position, AttachedContainer other)
         {
-            if (!FindItem(item, out int index)) return false;
-            if(!RemoveStoredItem(index)) return false;
-            return other.AddStoredItem(new StoredItem(item, position));
+            if (other == null || !FindItem(item, out int index))
+            {
+                return false;
+            }
+
+            if (other.TryMergeItemIntoPosition(item, position, out bool handled))
+            {
+                return true;
+            }
+
+            if (ReferenceEquals(other, this))
+            {
+                return MoveItemWithinContainer(item, index, position);
+            }
+
+            if (handled || !other.CanAddItemToEmptyPosition(item, position))
+            {
+                return false;
+            }
+
+            StoredItem originalItem = _storedItems[index];
+            if (!RemoveStoredItem(index))
+            {
+                return false;
+            }
+
+            if (other.AddStoredItem(new StoredItem(item, position)))
+            {
+                return true;
+            }
+
+            AddStoredItem(originalItem);
+            return false;
+        }
+
+        private bool MoveItemWithinContainer(Item item, int index, Vector2Int position)
+        {
+            if (!AreSlotCoordinatesInGrid(position))
+            {
+                return false;
+            }
+
+            Item targetItem = ItemAt(position);
+            if (targetItem != null)
+            {
+                return targetItem == item;
+            }
+
+            if (!CanRemoveItem(item))
+            {
+                return false;
+            }
+
+            ReplaceStoredItem(new StoredItem(item, position), index);
+            return true;
+        }
+
+        /// <summary>
+        /// Transfer an item to the first compatible stack or empty slot in another container.
+        /// </summary>
+        public bool TransferItemToOther(Item item, AttachedContainer other)
+        {
+            if (other == null)
+            {
+                return false;
+            }
+
+            foreach (Vector2Int occupiedPosition in other.OccupiedPositions())
+            {
+                if (TransferItemToOther(item, occupiedPosition, other))
+                {
+                    return true;
+                }
+            }
+
+            for (int y = 0; y < other.Size.y; y++)
+            {
+                for (int x = 0; x < other.Size.x; x++)
+                {
+                    if (TransferItemToOther(item, new Vector2Int(x, y), other))
+                    {
+                        return true;
+                    }
+                }
+            }
+
+            return false;
         }
 
 		/// <summary>
@@ -449,6 +538,127 @@ namespace SS3D.Systems.Inventory.Containers
             newItem.Item.SetContainer(this);
             return true;
 		}
+
+        private bool CanAddItemToEmptyPosition(Item item, Vector2Int position)
+        {
+            return AreSlotCoordinatesInGrid(position)
+                   && ItemAt(position) == null
+                   && CanContainItem(item)
+                   && !ReferenceEquals(item.Container, this);
+        }
+
+        public bool CanAcceptItem(Item item)
+        {
+            if (item == null)
+            {
+                return false;
+            }
+
+            if (CanContainItem(item))
+            {
+                return true;
+            }
+
+            return CanMergeItemIntoAnyStack(item);
+        }
+
+        private bool TryMergeItemIntoPosition(Item item, Vector2Int position, out bool handled)
+        {
+            handled = false;
+
+            if (ContainerType == ContainerType.Hand)
+            {
+                return false;
+            }
+
+            if (!AreSlotCoordinatesInGrid(position))
+            {
+                return false;
+            }
+
+            Item targetItem = ItemAt(position);
+            if (targetItem == null)
+            {
+                return false;
+            }
+
+            handled = true;
+
+            if (!targetItem.TryGetStackable(out Stackable targetStack)
+                || !item.TryGetStackable(out Stackable sourceStack)
+                || !targetStack.CanMergeFrom(sourceStack))
+            {
+                return false;
+            }
+
+            if (!CanStoreItem(item)
+                || item.GetComponentsInChildren<AttachedContainer>().AsEnumerable().Contains(this)
+                || (bool)GetComponents<IStorageCondition>()?.Any(x => !x.CanStore(this, item)))
+            {
+                return false;
+            }
+
+            if (item.Container != null && !item.Container.CanRemoveItem(item))
+            {
+                return false;
+            }
+
+            if (targetStack.MergeFrom(sourceStack) <= 0)
+            {
+                return false;
+            }
+
+            InvokeOnContentChanged(targetItem, targetItem, ContainerChangeType.Move);
+            return true;
+        }
+
+        private bool TryMergeItemIntoAnyStack(Item item)
+        {
+            foreach (Vector2Int position in OccupiedPositions())
+            {
+                if (TryMergeItemIntoPosition(item, position, out _))
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        private bool CanMergeItemIntoAnyStack(Item item)
+        {
+            if (ContainerType == ContainerType.Hand)
+            {
+                return false;
+            }
+
+            if (item == null)
+            {
+                return false;
+            }
+
+            foreach (Vector2Int position in OccupiedPositions())
+            {
+                Item targetItem = ItemAt(position);
+                if (targetItem != null
+                    && targetItem.TryGetStackable(out Stackable targetStack)
+                    && item.TryGetStackable(out Stackable sourceStack)
+                    && targetStack.CanMergeFrom(sourceStack))
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        private IEnumerable<Vector2Int> OccupiedPositions()
+        {
+            foreach (StoredItem storedItem in _storedItems)
+            {
+                yield return storedItem.Position;
+            }
+        }
 
 		/// <summary>
 		/// Correctly set a storeItem in the container at the given index. All replacing should use this method, never do it directly.

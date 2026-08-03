@@ -371,13 +371,20 @@ namespace SS3D.Systems.Inventory.Containers
             {
                 if (item != null)
                 {
-                    ClientTransferItem(item, Vector2Int.zero, Hands.SelectedHand.Container);
+                    if (item.TryGetStackable(out Stackable stackable) && stackable.Amount > 1)
+                    {
+                        ClientTakeOneFromStack(item);
+                    }
+                    else
+                    {
+                        ClientTransferItem(item, Vector2Int.zero, Hands.SelectedHand.Container);
+                    }
                 }
             }
             // If selected hand has an item and there's no item on the slot in the container, transfer it to container slot.
             else
             {
-                if (item == null)
+                if (item == null || item.TryGetStackable(out Stackable stackable) && stackable.CanStackWith(Hands.SelectedHand.ItemInHand))
                 {
                     ClientTransferItem(Hands.SelectedHand.ItemInHand, position, container);
                 }
@@ -399,6 +406,44 @@ namespace SS3D.Systems.Inventory.Containers
                 return false;
             }
             return id.HasPermission(permission);
+        }
+
+        public void ClientTakeOneFromStack(Item stackItem)
+        {
+            CmdTakeOneFromStack(stackItem.gameObject);
+        }
+
+        [ServerRpc]
+        private void CmdTakeOneFromStack(GameObject stackObject)
+        {
+            Item stackItem = stackObject.GetComponent<Item>();
+            if (stackItem == null || !stackItem.TryGetStackable(out Stackable stackable) || stackable.Amount <= 1)
+            {
+                return;
+            }
+
+            AttachedContainer sourceContainer = stackItem.Container;
+            if (sourceContainer == null || !containerViewer.CanModifyContainer(sourceContainer))
+            {
+                return;
+            }
+
+            if (!sourceContainer.CanRemoveItem(stackItem))
+            {
+                return;
+            }
+
+            Hands hands = GetComponent<Hands>();
+            if (hands == null || !hands.SelectedHand.IsEmpty() || !hands.SelectedHand.CanInteract(sourceContainer.gameObject))
+            {
+                return;
+            }
+
+            Item splitItem = stackable.TakeOne();
+            if (splitItem != null)
+            {
+                hands.SelectedHand.Pickup(splitItem);
+            }
         }
 
         /// <summary>
