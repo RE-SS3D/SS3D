@@ -1,0 +1,171 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!319 &31900000
+AvatarMask:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: UpperBodyMask
+  m_Mask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+  m_Elements:
+  - m_Path: 
+    m_Weight: 1
+  - m_Path: Human Arm Left
+    m_Weight: 0
+  - m_Path: Human Arm Right
+    m_Weight: 0
+  - m_Path: Human COMPLETE
+    m_Weight: 0
+  - m_Path: Human Ear Gore Left
+    m_Weight: 0
+  - m_Path: Human Ear Gore Right
+    m_Weight: 0
+  - m_Path: Human Ear Left
+    m_Weight: 0
+  - m_Path: Human Ear Right
+    m_Weight: 0
+  - m_Path: Human Eye Gore Left
+    m_Weight: 0
+  - m_Path: Human Eye Gore Right
+    m_Weight: 0
+  - m_Path: Human Eyes
+    m_Weight: 0
+  - m_Path: Human Foot Left
+    m_Weight: 0
+  - m_Path: Human Foot Right
+    m_Weight: 0
+  - m_Path: Human Hand Left
+    m_Weight: 0
+  - m_Path: Human Hand Right
+    m_Weight: 0
+  - m_Path: Human Head
+    m_Weight: 0
+  - m_Path: Human Leg Left
+    m_Weight: 0
+  - m_Path: Human Leg Right
+    m_Weight: 0
+  - m_Path: Human Torso
+    m_Weight: 0
+  - m_Path: HumanAppendix
+    m_Weight: 0
+  - m_Path: HumanArmature
+    m_Weight: 0
+  - m_Path: HumanArmature/hips
+    m_Weight: 0
+  - m_Path: HumanArmature/hips/spine
+    m_Weight: 0
+  - m_Path: HumanArmature/hips/spine/chest
+    m_Weight: 1
+  - m_Path: HumanArmature/hips/spine/chest/neck
+    m_Weight: 1
+  - m_Path: HumanArmature/hips/spine/chest/neck/head
+    m_Weight: 1
+  - m_Path: HumanArmature/hips/spine/chest/shoulder_l
+    m_Weight: 1
+  - m_Path: HumanArmature/hips/spine/chest/shoulder_l/upper_arm_l
+    m_Weight: 1
+  - m_Path: HumanArmature/hips/spine/chest/shoulder_l/upper_arm_l/forearm_l
+    m_Weight: 1
+  - m_Path: HumanArmature/hips/spine/chest/shoulder_l/upper_arm_l/forearm_l/forearm_twist_l
+    m_Weight: 1
+  - m_Path: HumanArmature/hips/spine/chest/shoulder_l/upper_arm_l/forearm_l/hand_l
+    m_Weight: 1
+  - m_Path: HumanArmature/hips/spine/chest/shoulder_l/upper_arm_l/forearm_l/hand_l/c_index1_l
+    m_Weight: 1
+  - m_Path: HumanArmature/hips/spine/chest/shoulder_l/upper_arm_l/forearm_l/hand_l/c_index1_l/c_index2_l
+    m_Weight: 1
+  - m_Path: HumanArmature/hips/spine/chest/shoulder_l/upper_arm_l/forearm_l/hand_l/c_index1_l/c_index2_l/c_index3_l
+    m_Weight: 1
+  - m_Path: HumanArmature/hips/spine/chest/shoulder_l/upper_arm_l/forearm_l/hand_l/c_middle1_l
+    m_Weight: 1
+  - m_Path: HumanArmature/hips/spine/chest/shoulder_l/upper_arm_l/forearm_l/hand_l/c_middle1_l/c_middle2_l
+    m_Weight: 1
+  - m_Path: HumanArmature/hips/spine/chest/shoulder_l/upper_arm_l/forearm_l/hand_l/c_middle1_l/c_middle2_l/c_middle3_l
+    m_Weight: 1
+  - m_Path: HumanArmature/hips/spine/chest/shoulder_l/upper_arm_l/forearm_l/hand_l/c_ring1_l
+    m_Weight: 1
+  - m_Path: HumanArmature/hips/spine/chest/shoulder_l/upper_arm_l/forearm_l/hand_l/c_ring1_l/c_ring2_l
+    m_Weight: 1
+  - m_Path: HumanArmature/hips/spine/chest/shoulder_l/upper_arm_l/forearm_l/hand_l/c_ring1_l/c_ring2_l/c_ring3_l
+    m_Weight: 1
+  - m_Path: HumanArmature/hips/spine/chest/shoulder_l/upper_arm_l/forearm_l/hand_l/c_thumb1_l
+    m_Weight: 1
+  - m_Path: HumanArmature/hips/spine/chest/shoulder_l/upper_arm_l/forearm_l/hand_l/c_thumb1_l/c_thumb2_l
+    m_Weight: 1
+  - m_Path: HumanArmature/hips/spine/chest/shoulder_l/upper_arm_l/forearm_l/hand_l/c_thumb1_l/c_thumb2_l/c_thumb3_l
+    m_Weight: 1
+  - m_Path: HumanArmature/hips/spine/chest/shoulder_l/upper_arm_l/forearm_l/hand_l/hold.l
+    m_Weight: 1
+  - m_Path: HumanArmature/hips/spine/chest/shoulder_r
+    m_Weight: 1
+  - m_Path: HumanArmature/hips/spine/chest/shoulder_r/upper_arm_r
+    m_Weight: 1
+  - m_Path: HumanArmature/hips/spine/chest/shoulder_r/upper_arm_r/forearm_r
+    m_Weight: 1
+  - m_Path: HumanArmature/hips/spine/chest/shoulder_r/upper_arm_r/forearm_r/forearm_twist_r
+    m_Weight: 1
+  - m_Path: HumanArmature/hips/spine/chest/shoulder_r/upper_arm_r/forearm_r/hand_r
+    m_Weight: 1
+  - m_Path: HumanArmature/hips/spine/chest/shoulder_r/upper_arm_r/forearm_r/hand_r/c_index1_r
+    m_Weight: 1
+  - m_Path: HumanArmature/hips/spine/chest/shoulder_r/upper_arm_r/forearm_r/hand_r/c_index1_r/c_index2_r
+    m_Weight: 1
+  - m_Path: HumanArmature/hips/spine/chest/shoulder_r/upper_arm_r/forearm_r/hand_r/c_index1_r/c_index2_r/c_index3_r
+    m_Weight: 1
+  - m_Path: HumanArmature/hips/spine/chest/shoulder_r/upper_arm_r/forearm_r/hand_r/c_middle1_r
+    m_Weight: 1
+  - m_Path: HumanArmature/hips/spine/chest/shoulder_r/upper_arm_r/forearm_r/hand_r/c_middle1_r/c_middle2_r
+    m_Weight: 1
+  - m_Path: HumanArmature/hips/spine/chest/shoulder_r/upper_arm_r/forearm_r/hand_r/c_middle1_r/c_middle2_r/c_middle3_r
+    m_Weight: 1
+  - m_Path: HumanArmature/hips/spine/chest/shoulder_r/upper_arm_r/forearm_r/hand_r/c_ring1_r
+    m_Weight: 1
+  - m_Path: HumanArmature/hips/spine/chest/shoulder_r/upper_arm_r/forearm_r/hand_r/c_ring1_r/c_ring2_r
+    m_Weight: 1
+  - m_Path: HumanArmature/hips/spine/chest/shoulder_r/upper_arm_r/forearm_r/hand_r/c_ring1_r/c_ring2_r/c_ring3_r
+    m_Weight: 1
+  - m_Path: HumanArmature/hips/spine/chest/shoulder_r/upper_arm_r/forearm_r/hand_r/c_thumb1_r
+    m_Weight: 1
+  - m_Path: HumanArmature/hips/spine/chest/shoulder_r/upper_arm_r/forearm_r/hand_r/c_thumb1_r/c_thumb2_r
+    m_Weight: 1
+  - m_Path: HumanArmature/hips/spine/chest/shoulder_r/upper_arm_r/forearm_r/hand_r/c_thumb1_r/c_thumb2_r/c_thumb3_r
+    m_Weight: 1
+  - m_Path: HumanArmature/hips/spine/chest/shoulder_r/upper_arm_r/forearm_r/hand_r/hold.r
+    m_Weight: 1
+  - m_Path: HumanArmature/hips/thigh_l
+    m_Weight: 0
+  - m_Path: HumanArmature/hips/thigh_l/lower_leg_l
+    m_Weight: 0
+  - m_Path: HumanArmature/hips/thigh_l/lower_leg_l/foot_l
+    m_Weight: 0
+  - m_Path: HumanArmature/hips/thigh_l/lower_leg_l/foot_l/toes_l
+    m_Weight: 0
+  - m_Path: HumanArmature/hips/thigh_r
+    m_Weight: 0
+  - m_Path: HumanArmature/hips/thigh_r/lower_leg_r
+    m_Weight: 0
+  - m_Path: HumanArmature/hips/thigh_r/lower_leg_r/foot_r
+    m_Weight: 0
+  - m_Path: HumanArmature/hips/thigh_r/lower_leg_r/foot_r/toes_r
+    m_Weight: 0
+  - m_Path: HumanBrain
+    m_Weight: 0
+  - m_Path: HumanEyeLeft
+    m_Weight: 0
+  - m_Path: HumanEyeRight
+    m_Weight: 0
+  - m_Path: HumanHeart
+    m_Weight: 0
+  - m_Path: HumanIntestineLarge
+    m_Weight: 0
+  - m_Path: HumanIntestineSmall
+    m_Weight: 0
+  - m_Path: HumanLiver
+    m_Weight: 0
+  - m_Path: HumanLungLeft
+    m_Weight: 0
+  - m_Path: HumanLungRight
+    m_Weight: 0
+  - m_Path: HumanStomach
+    m_Weight: 0
