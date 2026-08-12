@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using SS3D.Core.Behaviours;
 using Coimbra.Services.Events;
 using FishNet.Connection;
@@ -34,6 +34,17 @@ namespace SS3D.Systems.Gamemodes
         /// </summary>
         public List<string> Antagonists => _gamemode.RoundAntagonists;
 
+        /// <summary>
+        /// Message broadcast to all clients when the traitors win the round.
+        /// </summary>
+        private const string TraitorVictoryMessage = "The traitors have won!";
+
+        /// <summary>
+        /// Guards against sending the traitor victory announcement more than once
+        /// per round (cooperative objectives can raise several success updates).
+        /// </summary>
+        private bool _traitorVictoryAnnounced;
+
         protected override void OnStart()
         {
             base.OnStart();
@@ -64,7 +75,9 @@ namespace SS3D.Systems.Gamemodes
         [Server]
         private void InitializeGamemode()
         {
-            // Creates an instance of the SO, to avoid using the file. 
+            _traitorVictoryAnnounced = false;
+
+            // Creates an instance of the SO, to avoid using the file.
             _gamemode = Instantiate(_gamemode);
 
             // Subscribe to Gamemode events
@@ -258,6 +271,41 @@ namespace SS3D.Systems.Gamemodes
         private void HandleObjectiveUpdated(GamemodeObjective objective)
         {
             SendObjectiveToClients(objective);
+            TryAnnounceTraitorVictory(objective);
+        }
+
+        /// <summary>
+        /// Broadcasts the traitor victory announcement to every client the first
+        /// time an antagonist round-winning objective succeeds. The objective
+        /// itself decides whether its success ends the round in the antagonists'
+        /// favour, so this subsystem stays unaware of concrete objective types.
+        /// </summary>
+        /// <param name="objective">The objective that was just updated.</param>
+        [Server]
+        private void TryAnnounceTraitorVictory(GamemodeObjective objective)
+        {
+            if (_traitorVictoryAnnounced)
+            {
+                return;
+            }
+
+            if (!objective.Succeeded)
+            {
+                return;
+            }
+
+            if (objective.AlignmentRequirement != Alignment.Antagonists)
+            {
+                return;
+            }
+
+            if (!objective.EndsRoundWithAntagonistVictory)
+            {
+                return;
+            }
+
+            _traitorVictoryAnnounced = true;
+            ServerManager.Broadcast(new GamemodeAnnouncementMessage(TraitorVictoryMessage));
         }
     }
 }

@@ -1,4 +1,4 @@
-﻿using FishNet.Connection;
+using FishNet.Connection;
 using FishNet.Serializing;
 using UnityEngine;
 
@@ -19,6 +19,7 @@ namespace SS3D.Systems.Gamemodes
             writer.WriteString(value.Title);
             writer.WriteInt16((short)value.Status);
             writer.WriteString(value.AssigneeCkey);
+            writer.WriteInt16((short)value.AlignmentRequirement);
         }
 
         /// <summary>
@@ -30,13 +31,15 @@ namespace SS3D.Systems.Gamemodes
             string title = reader.ReadString();
             ObjectiveStatus objectiveStatus = (ObjectiveStatus)reader.ReadInt16();
             string assigneeCkey = reader.ReadString();
+            Alignment alignment = (Alignment)reader.ReadInt16();
 
             GamemodeObjective objective = ScriptableObject.CreateInstance<GamemodeObjective>();
-            
+
             objective.SetId(id);
             objective.SetTitle(title);
             objective.SetStatus(objectiveStatus);
             objective.SetAssignee(assigneeCkey);
+            objective.SetAlignmentRequirement(alignment);
 
             return objective;
         }

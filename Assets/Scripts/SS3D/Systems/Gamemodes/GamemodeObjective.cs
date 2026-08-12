@@ -1,4 +1,4 @@
-﻿using Coimbra.Services.Events;
+using Coimbra.Services.Events;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -103,6 +103,13 @@ namespace SS3D.Systems.Gamemodes
         /// </summary>
         public bool InProgress => Status == ObjectiveStatus.InProgress;
 
+        /// <summary>
+        /// Whether the antagonists win the round when this objective succeeds.
+        /// Lets the gamemode subsystem announce an antagonist victory without
+        /// knowing about concrete objective types. Defaults to false.
+        /// </summary>
+        public virtual bool EndsRoundWithAntagonistVictory => false;
+
         /// <inheritdoc />
         public virtual void InitializeObjective()
         {
@@ -171,6 +178,17 @@ namespace SS3D.Systems.Gamemodes
         public void SetAssignee(string assigneeCkey)
         {
             _assigneeCkey = assigneeCkey;
+            OnGamemodeObjectiveUpdated?.Invoke(this);
+        }
+
+        /// <summary>
+        /// Sets the alignment requirement for this objective. Calls the OnGamemodeObjectiveUpdated event.
+        /// Used by the network deserializer so clients see the same alignment as the server.
+        /// </summary>
+        /// <param name="alignment">The new alignment requirement.</param>
+        public void SetAlignmentRequirement(Alignment alignment)
+        {
+            _alignmentRequirement = alignment;
             OnGamemodeObjectiveUpdated?.Invoke(this);
         }
 

@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using Coimbra;
 using Coimbra.Services.Events;
 using SS3D.Core;
@@ -8,12 +8,12 @@ using SS3D.Systems.Rounds.Events;
 using SS3D.Utils;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using Actor = SS3D.Core.Behaviours.Actor;
+using View = SS3D.Core.Behaviours.View;
 using InputSubSystem = SS3D.Systems.Inputs.InputSubSystem;
 
 namespace SS3D.Systems.Gamemodes.UI
 {
-    public class GamemodeObjectivePanelView : Actor
+    public class GamemodeObjectivePanelView : View
     {
         [SerializeField] private UiFade _fade;
 
