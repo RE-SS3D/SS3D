@@ -3,6 +3,7 @@ using FishNet.Object;
 using FishNet.Object.Synchronizing;
 using SS3D.Core;
 using SS3D.Core.Behaviours;
+using SS3D.Data.Networking;
 using SS3D.Systems.PlayerControl;
 using UnityEngine;
 
@@ -75,7 +76,7 @@ namespace SS3D.Systems.Entities
             }
 
             Mind mind = Instantiate(_mindPrefab).GetComponent<Mind>();
-            ServerManager.Spawn(mind.GameObject, player.Owner);
+            NetworkSpawner.Spawn(mind, player.Owner);
 
             mind.SetPlayer(player);
 

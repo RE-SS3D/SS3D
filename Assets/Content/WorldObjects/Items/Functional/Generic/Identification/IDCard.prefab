@@ -112,6 +112,9 @@ GameObject:
   - component: {fileID: 798806817747551534}
   - component: {fileID: 3379094397588441500}
   - component: {fileID: -1332326336199895530}
+  - component: {fileID: 4413770818697545987}
+  - component: {fileID: -912228677682126127}
+  - component: {fileID: -4311782684138778177}
   m_Layer: 10
   m_Name: IDCard
   m_TagString: Untagged
@@ -166,7 +169,7 @@ MonoBehaviour:
   _initializeOrder: 0
   _defaultDespawnType: 0
   NetworkObserver: {fileID: 0}
-  <PrefabId>k__BackingField: 54
+  <PrefabId>k__BackingField: 179
   <SpawnableCollectionId>k__BackingField: 0
   _scenePathHash: 0
   <SceneId>k__BackingField: 0
@@ -281,6 +284,45 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   key: {fileID: 11400000, guid: 838300e26d806024a9b45d9d54782546, type: 2}
+--- !u!114 &4413770818697545987
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5261116577612792016}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 82d17451624f45f49b4a8e42b991373f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _assetGuid: d8b0c8d1ddcdeb24d9763054c103c9fe
+--- !u!114 &-912228677682126127
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5261116577612792016}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c571b9eb801dcc943a001dd54a2b2b15, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &-4311782684138778177
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5261116577612792016}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 228a3039c03766b4c85d1c0ad4771a81, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _identifier: {fileID: 4413770818697545987}
+  _armed: 0
 --- !u!1 &7525193168266007956
 GameObject:
   m_ObjectHideFlags: 0

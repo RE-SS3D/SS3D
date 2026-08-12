@@ -13,6 +13,9 @@ namespace SS3D.Systems.Inventory.Interactions
 {
     public sealed class LockLockerInteraction : IInteraction, IClientInteractionSource
     {
+        private static AssetHandle<Sprite> DefaultIconHandle;
+        private static bool TryingToLoadIcon;
+        
         public string Name;
         public Sprite Icon;
         private readonly IDPermission _permissionToUnlock;
@@ -22,6 +25,11 @@ namespace SS3D.Systems.Inventory.Interactions
         {
             _locker = locker;
             _permissionToUnlock = permission;
+
+            if (!TryingToLoadIcon && !DefaultIconHandle)
+            {
+                AcquireDefaultIcon();
+            }
         }
 
         public string GetName(InteractionEvent interactionEvent)
@@ -33,7 +41,7 @@ namespace SS3D.Systems.Inventory.Interactions
 
         public Sprite GetIcon(InteractionEvent interactionEvent)
         {
-            return Icon ? Icon : Assets.Get<Sprite>(AssetDatabases.InteractionIcons, InteractionIcons.Open);
+            return Icon ? Icon : DefaultIconHandle?.Asset;
         }
 
         public bool CanInteract(InteractionEvent interactionEvent)
@@ -80,6 +88,29 @@ namespace SS3D.Systems.Inventory.Interactions
             }
 
             return true;
+        }
+
+        private static async void AcquireDefaultIcon()
+        {
+            TryingToLoadIcon = true;
+            DefaultIconHandle = await new AssetRequest<Sprite>(InteractionIcons.Open).LoadAsync();
+
+            if (!DefaultIconHandle)
+            {
+                AssetHandle.Release(ref DefaultIconHandle);
+            }
+            else
+            {
+                UnityEngine.Application.quitting += OnApplicationQuit;
+            }
+
+            TryingToLoadIcon = false;
+        }
+
+        private static void OnApplicationQuit()
+        {
+            AssetHandle.Release(ref DefaultIconHandle);
+            UnityEngine.Application.quitting -= OnApplicationQuit;
         }
     }
 }

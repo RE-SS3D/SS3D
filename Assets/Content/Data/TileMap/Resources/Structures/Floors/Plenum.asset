@@ -12,10 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4584c35d672b8a74797cc5efa123ce16, type: 3}
   m_Name: Plenum
   m_EditorClassIdentifier: 
-  prefab: {fileID: 8028539322119499722, guid: 3b33b5cf16a677a4e85a110679cde32a, type: 3}
   PrefabAsset: {fileID: 11400000, guid: b0c72ccf49a812947b0b526481ec6b7a, type: 2}
-  icon: {fileID: 0}
-  _nameString: 
+  icon: {fileID: 21300000, guid: 342a62991c9fc0e41860376828eed53a, type: 3}
   layer: 0
   genericType: 8
   specificType: 0

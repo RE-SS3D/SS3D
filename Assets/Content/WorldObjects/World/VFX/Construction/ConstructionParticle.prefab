@@ -11,6 +11,8 @@ GameObject:
   - component: {fileID: 3722203350502261099}
   - component: {fileID: -5207354537665871359}
   - component: {fileID: 275228036187653316}
+  - component: {fileID: 5176169994266030033}
+  - component: {fileID: -1737546938217085246}
   m_Layer: 0
   m_Name: ConstructionParticle
   m_TagString: Untagged
@@ -4812,3 +4814,30 @@ ParticleSystemRenderer:
   m_MeshWeighting2: 1
   m_MeshWeighting3: 1
   m_MaskInteraction: 0
+--- !u!114 &5176169994266030033
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9126258469831405173}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 82d17451624f45f49b4a8e42b991373f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _assetGuid: ca5e6b5f7c6c5054a8f8155ef44e3e43
+--- !u!114 &-1737546938217085246
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9126258469831405173}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 228a3039c03766b4c85d1c0ad4771a81, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _identifier: {fileID: 5176169994266030033}
+  _armed: 0

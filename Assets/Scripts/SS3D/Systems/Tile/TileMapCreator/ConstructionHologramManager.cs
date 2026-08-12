@@ -1,11 +1,13 @@
-﻿using Coimbra.Services.Events;
+using Coimbra.Services.Events;
 using Coimbra.Services.PlayerLoopEvents;
 using FishNet.Connection;
 using FishNet.Object;
+using JetBrains.Annotations;
 using SS3D.Core;
 using SS3D.Core.Behaviours;
 using SS3D.Data;
 using SS3D.Data.AssetDatabases;
+using SS3D.Data.Generated;
 using SS3D.Logging;
 using SS3D.Systems.Inputs;
 using SS3D.Utils;
@@ -52,6 +54,10 @@ namespace SS3D.Systems.Tile.TileMapCreator
         private List<ConstructionHologram> _holograms = new();
         [SerializeField]
         private TileMapMenuSubSystem _menu;
+        
+        private AssetHandle<Material> _validMaterialHandle;
+        private AssetHandle<Material> _invalidMaterialHandle;
+        private AssetHandle<Material> _deleteMaterialHandle;
 
         public void SetSelectedObject(GenericObjectSo genericObjectSo)
         {
@@ -70,6 +76,8 @@ namespace SS3D.Systems.Tile.TileMapCreator
         protected override void OnAwake()
         {
             base.OnAwake();
+            
+            AcquireAssets();
             
             _inputSystem = SubSystems.Get<InputSubSystem>();
             _controls = _inputSystem.Inputs.TileCreator;
@@ -97,6 +105,13 @@ namespace SS3D.Systems.Tile.TileMapCreator
             _controls.Replace.performed -= HandleReplace;
             _controls.Replace.canceled -= HandleReplace;
             _controls.Rotate.performed -= HandleRotate;
+        }
+
+        protected override void OnDestroyed()
+        {
+            base.OnDestroyed();
+            
+            ReleaseAssets();
         }
 
         private void HandleUpdate(ref EventContext context, in UpdateEvent updateEvent)
@@ -174,16 +189,25 @@ namespace SS3D.Systems.Tile.TileMapCreator
         /// <summary>
         /// Instantiate in the correct position and rotation a single hologram.
         /// </summary>
-        public ConstructionHologram CreateHologram(ObjectAssetReference prefabAsset, Vector3 position)
+        public async void CreateHologram([NotNull] ObjectAssetReference prefabAsset, Vector3 position)
         {
-            GameObject prefab = Assets.Get<GameObject>(prefabAsset);
-            GameObject tileObject = Instantiate(prefab);
+            AssetHandle<GameObject> handle = await new AssetRequest<GameObject>(prefabAsset).LoadAsync();
+
+            if (!handle)
+            {
+                handle?.Dispose();
+                Log.Error(this, "Cannot create hologram, prefab asset is not found");
+
+                return;
+            }
+
+            GameObject tileObject = Instantiate(handle.Asset);
+            handle.Dispose();
             ConstructionHologram hologram = new(tileObject, position, _lastRegisteredDirection);
             tileObject.transform.rotation = Quaternion.Euler(0, TileHelper.GetRotationAngle(hologram.Direction), 0);
             tileObject.transform.position = hologram.TargetPosition;
             _holograms.Add(hologram);
             RefreshHologram(hologram);
-            return hologram;
         }
 
         /// <summary>
@@ -417,6 +441,24 @@ namespace SS3D.Systems.Tile.TileMapCreator
                     SubSystems.Get<TileSubSystem>().RpcClearItemObject(placedItem.NameString, placedItem.gameObject.transform.position);
                 }
             }
+        }
+
+        private async void AcquireAssets()
+        {
+            _validMaterialHandle = await new AssetRequest<Material>(Materials.ValidConstruction).LoadAsync();
+            _invalidMaterialHandle = await new AssetRequest<Material>(Materials.InvalidConstruction).LoadAsync();
+            _deleteMaterialHandle = await new AssetRequest<Material>(Materials.DeleteConstruction).LoadAsync();
+            
+            ConstructionHologram.ValidMaterial = _validMaterialHandle?.Asset;
+            ConstructionHologram.InvalidMaterial = _invalidMaterialHandle?.Asset;
+            ConstructionHologram.DeleteMaterial = _deleteMaterialHandle?.Asset;
+        }
+
+        private void ReleaseAssets()
+        {
+            AssetHandle.Release(ref _validMaterialHandle);
+            AssetHandle.Release(ref _invalidMaterialHandle);
+            AssetHandle.Release(ref _deleteMaterialHandle);
         }
     }
 }

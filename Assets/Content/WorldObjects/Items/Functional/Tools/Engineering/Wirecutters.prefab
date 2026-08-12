@@ -49,6 +49,9 @@ GameObject:
   - component: {fileID: 6800495836141411361}
   - component: {fileID: 8006545930481202674}
   - component: {fileID: -7296570193560198535}
+  - component: {fileID: -6890115869507872364}
+  - component: {fileID: -6023455933338467819}
+  - component: {fileID: -8479277919765054253}
   m_Layer: 10
   m_Name: Wirecutters
   m_TagString: Untagged
@@ -225,7 +228,7 @@ MonoBehaviour:
   _initializeOrder: 0
   _defaultDespawnType: 0
   NetworkObserver: {fileID: 0}
-  <PrefabId>k__BackingField: 161
+  <PrefabId>k__BackingField: 50
   <SpawnableCollectionId>k__BackingField: 0
   _scenePathHash: 0
   <SceneId>k__BackingField: 0
@@ -278,3 +281,42 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   key: {fileID: 11400000, guid: ace64dc9007327f46a1be3f95894b9b4, type: 2}
+--- !u!114 &-6890115869507872364
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2402587210622244651}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 82d17451624f45f49b4a8e42b991373f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _assetGuid: 41a1c8c211dc32c4d8ffca5f0892f9dc
+--- !u!114 &-6023455933338467819
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2402587210622244651}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c571b9eb801dcc943a001dd54a2b2b15, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &-8479277919765054253
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2402587210622244651}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 228a3039c03766b4c85d1c0ad4771a81, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _identifier: {fileID: -6890115869507872364}
+  _armed: 0

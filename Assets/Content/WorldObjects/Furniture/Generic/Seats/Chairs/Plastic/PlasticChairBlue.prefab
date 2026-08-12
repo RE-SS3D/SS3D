@@ -7,6 +7,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: -6641309845460651994, guid: 4a1bd08646e8e1f4a861960d9b7485f8, type: 3}
+      propertyPath: _assetGuid
+      value: ad124dd2ec7d83344a20a44fad208ca0
+      objectReference: {fileID: 0}
     - target: {fileID: 588915473966038515, guid: 4a1bd08646e8e1f4a861960d9b7485f8, type: 3}
       propertyPath: m_Mesh
       value: 
@@ -18,6 +22,10 @@ PrefabInstance:
     - target: {fileID: 5640352947892099654, guid: 4a1bd08646e8e1f4a861960d9b7485f8, type: 3}
       propertyPath: <AssetPathHash>k__BackingField
       value: 1593070362739159512
+      objectReference: {fileID: 0}
+    - target: {fileID: 7638395556686322663, guid: 4a1bd08646e8e1f4a861960d9b7485f8, type: 3}
+      propertyPath: _assetGuid
+      value: ad124dd2ec7d83344a20a44fad208ca0
       objectReference: {fileID: 0}
     - target: {fileID: 8213111319263450463, guid: 4a1bd08646e8e1f4a861960d9b7485f8, type: 3}
       propertyPath: m_RootOrder

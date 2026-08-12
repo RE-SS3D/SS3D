@@ -140,7 +140,7 @@ namespace SS3D.Systems.Inventory.Containers
                 ItemObjectSo itemObjectSo = SubSystems.Get<TileSubSystem>().GetAsset(item.Asset) as ItemObjectSo;
                 if (itemObjectSo != null)
                 {
-                    tileMap.PlaceItemObject(position, rotation, itemObjectSo, item.gameObject);
+                    tileMap.PlaceItemObjectAsync(position, rotation, itemObjectSo, item.gameObject);
                 }
             }
         }

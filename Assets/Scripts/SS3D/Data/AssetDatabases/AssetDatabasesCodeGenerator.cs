@@ -1,9 +1,11 @@
-﻿#if UNITY_EDITOR
+#if UNITY_EDITOR
 using Coimbra;
 using JetBrains.Annotations;
+using SS3D.Data;
 using Serilog;
 using System.Collections.Generic;
 using System.Linq;
+using UnityAssetDatabase = UnityEditor.AssetDatabase;
 using UnityEditor;
 using UnityEngine;
 using Object = UnityEngine.Object;
@@ -24,17 +26,21 @@ namespace SS3D.Data.AssetDatabases
         /// </summary>
         public static void GenerateAssetDatabasesCode()
         {
-            AssetDatabaseSettings settings = ScriptableSettings.GetOrFind<AssetDatabaseSettings>(); 
+            AssetDatabaseSettings settings = ScriptableSettings.GetOrFind<AssetDatabaseSettings>();
 
             if (!settings)
             {
                 Log.Error("{AssetDatabasesCodeGeneratorName} - Asset database settings has not be found", nameof(AssetDatabasesCodeGenerator));
+
                 return;
             }
 
-            if (settings.IncludedAssetDatabases == null || settings.IncludedAssetDatabases.Count == 0)
+            List<AssetDatabase> allDatabases = settings.AllDatabases.ToList();
+
+            if (allDatabases.Count == 0)
             {
                 Log.Error("{AssetDatabasesCodeGeneratorName} - No Databases have been found", nameof(AssetDatabasesCodeGenerator));
+
                 return;
             }
 
@@ -44,99 +50,109 @@ namespace SS3D.Data.AssetDatabases
 
             HasModifiedAssetsWhenGenerating = false;
 
-            LoadAllWorldObjectAssetReferences();
+            LoadAllObjectAssetReferences();
 
-            foreach (AssetDatabase includedAssetDatabase in settings.IncludedAssetDatabases)
+            foreach (AssetDatabase includedAssetDatabase in allDatabases)
             {
                 CreateDatabaseCode(includedAssetDatabase);
 
-                CreateWorldObjectAssetReferences(includedAssetDatabase);
+                CreateObjectAssetReferences(includedAssetDatabase);
             }
 
-            CleanupWorldObjectAssetReferences(settings.IncludedAssetDatabases);
+            CleanupObjectAssetReferences(allDatabases);
         }
 
         /// <summary>
         /// Calls the method to generate all the code for a database.
         /// </summary>
-        private static void CreateDatabaseCode(AssetDatabase assetDatabase)
+        private static void CreateDatabaseCode(AssetDatabase database)
         {
-            assetDatabase.GenerateDatabaseCode();
+            database.GenerateDatabaseCode();
         }
 
         /// <summary>
-        /// Creates all the WorldObjectAssetReferences for a database. 
+        /// Creates all the ObjectAssetReferences for a database.
         /// </summary>
-        private static void CreateWorldObjectAssetReferences(AssetDatabase assetDatabase)
+        private static void CreateObjectAssetReferences(AssetDatabase database)
         {
             int createdAssets = 0;
             int modifiedAssets = 0;
 
-            foreach ((string guid, Object asset) in assetDatabase.Assets)
+            foreach (string guid in database.AssetGuids)
             {
+                string path = UnityAssetDatabase.GUIDToAssetPath(guid);
+                Object asset = UnityAssetDatabase.LoadAssetAtPath<Object>(path);
+                
                 if (asset is not GameObject gameObject)
                 {
                     continue;
                 }
-                
-                ObjectAssetReference objectAssetReference = SavedAssetReferences.Values.ToList().Find(reference => reference.Id == guid && reference.Database == assetDatabase.DatabaseID);
 
-                if (objectAssetReference)
+                if (AssetPrefabStamper.StampAssetPrefab(gameObject, guid))
                 {
-                    UpdateWorldObjectAssetReference(objectAssetReference, gameObject, ref modifiedAssets);
+                    HasModifiedAssetsWhenGenerating = true;
                 }
-                else
+
+                ObjectAssetReference objectAssetReference =
+                    SavedAssetReferences.Values.ToList().Find(reference => reference.Id == guid);
+
+                if (!objectAssetReference)
                 {
-                    objectAssetReference = CreateWorldObjectAssetReference(gameObject.name, guid, assetDatabase.DatabaseID);
+                    objectAssetReference = CreateObjectAssetReference(gameObject);
 
                     string key = $"{ObjectAssetReference.ObjectAssetPath}{gameObject.name}.asset";
 
                     if (!SavedAssetReferences.TryAdd(key, objectAssetReference))
                     {
                         Log.Error("[{AssetDatabasesCodeGeneratorName}] - {Key} is already on the dictionary", nameof(AssetDatabasesCodeGenerator), key);
+
                         continue;
                     }
 
-                    UpdateWorldObjectAssetReference(objectAssetReference, gameObject, ref createdAssets);
+                    UpdateObjectAssetReference(objectAssetReference, gameObject, ref createdAssets);
+                }
+                else
+                {
+                    UpdateObjectAssetReference(objectAssetReference, gameObject, ref modifiedAssets);
                 }
             }
 
             if (createdAssets > 0)
             {
-                Log.Information("[{AssetDatabasesCodeGeneratorName}] - {CreatedAssets} {ObjectAssetReferenceName} created for {AssetDatabaseDatabaseName}.", nameof(AssetDatabasesCodeGenerator), createdAssets, nameof(ObjectAssetReference), assetDatabase.DatabaseName);
+                Log.Information("[{AssetDatabasesCodeGeneratorName}] - {CreatedAssets} {ObjectAssetReferenceName} created for {AssetDatabaseDatabaseName}.",
+                    nameof(AssetDatabasesCodeGenerator), createdAssets, nameof(ObjectAssetReference), database.name);
             }
 
             if (modifiedAssets > 0)
             {
-                Log.Information("[{AssetDatabasesCodeGeneratorName}] - {ModifiedAssets} {ObjectAssetReferenceName} modified for {AssetDatabaseDatabaseName}.", nameof(AssetDatabasesCodeGenerator), modifiedAssets, nameof(ObjectAssetReference), assetDatabase.DatabaseName);
+                Log.Information("[{AssetDatabasesCodeGeneratorName}] - {ModifiedAssets} {ObjectAssetReferenceName} modified for {AssetDatabaseDatabaseName}.",
+                    nameof(AssetDatabasesCodeGenerator), modifiedAssets, nameof(ObjectAssetReference), database.name);
             }
 
             if (modifiedAssets == 0 && createdAssets == 0)
             {
-                Log.Information("[{AssetDatabasesCodeGeneratorName}] - No {ObjectAssetReferenceName} were modified or created for {AssetDatabaseDatabaseName}.", nameof(AssetDatabasesCodeGenerator), nameof(ObjectAssetReference), assetDatabase.DatabaseName);
+                Log.Information("[{AssetDatabasesCodeGeneratorName}] - No {ObjectAssetReferenceName} were modified or created for {AssetDatabaseDatabaseName}.",
+                    nameof(AssetDatabasesCodeGenerator), nameof(ObjectAssetReference), database.name);
             }
         }
 
         [NotNull]
-        private static ObjectAssetReference CreateWorldObjectAssetReference(string fileName, string gameObjectID, string assetDatabaseName)
+        private static ObjectAssetReference CreateObjectAssetReference([NotNull] GameObject gameObject)
         {
-            ObjectAssetReference objectAssetReference = ScriptableObject.CreateInstance<ObjectAssetReference>();
-
-            objectAssetReference.Id = gameObjectID;
-            objectAssetReference.Database = assetDatabaseName;
-
-            UnityEditor.AssetDatabase.CreateAsset(objectAssetReference, $"{ObjectAssetReference.ObjectAssetPath}{fileName}.asset");
+            ObjectAssetReference objectAssetReference = ObjectAssetReference.Create(gameObject);
 
             HasModifiedAssetsWhenGenerating = true;
 
-            Log.Information("[{AssetDatabasesCodeGeneratorName}] - Creating {FileName} WorldObjectReferenceAsset as it was missing.", nameof(AssetDatabasesCodeGenerator), fileName);
+            Log.Information(
+                "[{AssetDatabasesCodeGeneratorName}] - Creating {FileName} ObjectReferenceAsset as it was missing.", 
+                nameof(AssetDatabasesCodeGenerator),
+                gameObject.name);
 
             return objectAssetReference;
         }
 
-        private static void CleanupWorldObjectAssetReferences(List<AssetDatabase> assetDatabases)
+        private static void CleanupObjectAssetReferences(IEnumerable<AssetDatabase> assetDatabases)
         {
-            List<KeyValuePair<string, ObjectAssetReference>> assetsToDestroy = new();
             List<KeyValuePair<string, ObjectAssetReference>> nullSavedAssetReferences = SavedAssetReferences.Where(pair => !pair.Value).ToList();
 
             foreach (KeyValuePair<string, ObjectAssetReference> pair in nullSavedAssetReferences)
@@ -144,48 +160,40 @@ namespace SS3D.Data.AssetDatabases
                 SavedAssetReferences.Remove(pair.Key);
             }
 
-            Dictionary<string, string> assetsInDatabases = new();
+            HashSet<string> databaseAssetGuids = new();
 
-            foreach (AssetDatabase database in assetDatabases)
+            foreach (string key in assetDatabases.SelectMany(database => database.AssetGuids))
             {
-                foreach (string key in database.Assets.Keys)
-                {
-                    assetsInDatabases.TryAdd(key, database.DatabaseID);
-                }
+                databaseAssetGuids.Add(key);
             }
 
-            foreach (KeyValuePair<string, ObjectAssetReference> savedAsset in SavedAssetReferences)
-            {
-                if (assetsInDatabases.TryGetValue(savedAsset.Value.Id, out string databaseID) && databaseID == savedAsset.Value.Database)
-                {
-                    continue;
-                }
-
-                assetsToDestroy.Add(savedAsset);
-            }
+            List<KeyValuePair<string, ObjectAssetReference>> assetsToDestroy = 
+                SavedAssetReferences.Where(savedAsset => !databaseAssetGuids.Contains(savedAsset.Value.Id)).ToList();
 
             foreach (KeyValuePair<string, ObjectAssetReference> asset in assetsToDestroy)
             {
-                Log.Information("[{AssetDatabasesCodeGeneratorName}] - Destroying {ValueName} as there's no prefab associated with it.", nameof(AssetDatabasesCodeGenerator), asset.Value.name);
+                Log.Information("[{AssetDatabasesCodeGeneratorName}] - Destroying {ValueName} as there's no prefab associated with it.", nameof(AssetDatabasesCodeGenerator),
+                    asset.Value.name);
 
                 HasModifiedAssetsWhenGenerating = true;
 
-                UnityEditor.AssetDatabase.DeleteAsset(asset.Key);
+                UnityAssetDatabase.DeleteAsset(asset.Key);
             }
         }
 
-        private static void LoadAllWorldObjectAssetReferences()
+        private static void LoadAllObjectAssetReferences()
         {
             SavedAssetReferences.Clear();
 
-            Log.Information("[{AssetDatabasesCodeGeneratorName}] - Loading all {ObjectAssetReferenceName} assets under {Path}", nameof(AssetDatabasesCodeGenerator), nameof(ObjectAssetReference), ObjectAssetReference.ObjectAssetPath);
+            Log.Information("[{AssetDatabasesCodeGeneratorName}] - Loading all {ObjectAssetReferenceName} assets under {Path}", nameof(AssetDatabasesCodeGenerator),
+                nameof(ObjectAssetReference), ObjectAssetReference.ObjectAssetPath);
 
-            string[] loadAllAssetsAtPath = UnityEditor.AssetDatabase.FindAssets($"t:{nameof(ObjectAssetReference)}");
+            string[] loadAllAssetsAtPath = UnityAssetDatabase.FindAssets($"t:{nameof(ObjectAssetReference)}");
 
             foreach (string assetGuid in loadAllAssetsAtPath)
             {
-                string assetPath = UnityEditor.AssetDatabase.GUIDToAssetPath(assetGuid);
-                ObjectAssetReference objectAssetReference = UnityEditor.AssetDatabase.LoadAssetAtPath<ObjectAssetReference>(assetPath);
+                string assetPath = UnityAssetDatabase.GUIDToAssetPath(assetGuid);
+                ObjectAssetReference objectAssetReference = UnityAssetDatabase.LoadAssetAtPath<ObjectAssetReference>(assetPath);
 
                 SavedAssetReferences.Add(assetPath, objectAssetReference);
             }
@@ -197,26 +205,27 @@ namespace SS3D.Data.AssetDatabases
         /// <param name = "objectAssetReference"></param>
         /// <param name="gameObject">The asset to include in this WorldObjectAsset.</param>
         /// <param name="modifiedCount">reference for modified objects count</param>
-        private static void UpdateWorldObjectAssetReference(ObjectAssetReference objectAssetReference, GameObject gameObject, ref int modifiedCount)
+        private static void UpdateObjectAssetReference(ObjectAssetReference objectAssetReference, GameObject gameObject, ref int modifiedCount)
         {
-            if (!gameObject.TryGetComponent(out IWorldObjectAsset worldObjectAsset) || worldObjectAsset.Asset == objectAssetReference)
+            if (!gameObject.TryGetComponent(out IWorldObjectAsset objectAsset) || objectAsset.Asset == objectAssetReference)
             {
                 return;
             }
 
-            worldObjectAsset.Asset = objectAssetReference;
+            objectAsset.Asset = objectAssetReference;
 
             modifiedCount++;
 
             SetAssetAndPrefabDirty(objectAssetReference, gameObject);
-            
-            Log.Information("[{AssetDatabasesCodeGeneratorName}] - WorldObjectReferenceAsset reference on {GameObjectName}'s prefab was missing. Fixed.", nameof(AssetDatabasesCodeGenerator), gameObject.name);
+
+            Log.Information("[{AssetDatabasesCodeGeneratorName}] - ObjectReferenceAsset reference on {GameObjectName}'s prefab was missing. Fixed.",
+                nameof(AssetDatabasesCodeGenerator), gameObject.name);
         }
 
         private static void SetAssetAndPrefabDirty(ObjectAssetReference objectAssetReference, GameObject gameObject)
         {
             HasModifiedAssetsWhenGenerating = true;
-            
+
             EditorUtility.SetDirty(gameObject);
             EditorUtility.SetDirty(objectAssetReference);
         }

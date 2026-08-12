@@ -19,6 +19,10 @@ PrefabInstance:
       propertyPath: key
       value: 
       objectReference: {fileID: 11400000, guid: 48e4aae0598bed8418a8132eb70715a6, type: 2}
+    - target: {fileID: 3146240193629008871, guid: 56ac854f77351fa46b6a17fbb1cf45d9, type: 3}
+      propertyPath: _assetGuid
+      value: 4e6899916bc8fd742a07f32b3a04de12
+      objectReference: {fileID: 0}
     - target: {fileID: 5596787203858443778, guid: 56ac854f77351fa46b6a17fbb1cf45d9, type: 3}
       propertyPath: m_RootOrder
       value: 0
@@ -69,7 +73,7 @@ PrefabInstance:
       objectReference: {fileID: 1392182379186180254, guid: c1169b60804c0aa41bb17b72ba87985b, type: 3}
     - target: {fileID: 5958074810027370513, guid: 56ac854f77351fa46b6a17fbb1cf45d9, type: 3}
       propertyPath: <PrefabId>k__BackingField
-      value: 26
+      value: 66
       objectReference: {fileID: 0}
     - target: {fileID: 5958074810027370513, guid: 56ac854f77351fa46b6a17fbb1cf45d9, type: 3}
       propertyPath: <AssetPathHash>k__BackingField
@@ -83,5 +87,50 @@ PrefabInstance:
       propertyPath: m_Name
       value: SodaCanBeepyLime
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 3146240193629008871, guid: 56ac854f77351fa46b6a17fbb1cf45d9, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: 56ac854f77351fa46b6a17fbb1cf45d9, type: 3}
+--- !u!1 &6405503896595845848 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 8423412686940963211, guid: 56ac854f77351fa46b6a17fbb1cf45d9, type: 3}
+  m_PrefabInstance: {fileID: 3170836428244079443}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &-8558498127890860227
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6405503896595845848}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c571b9eb801dcc943a001dd54a2b2b15, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &-307514137722038703
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6405503896595845848}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 82d17451624f45f49b4a8e42b991373f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _assetGuid: 4e6899916bc8fd742a07f32b3a04de12
+--- !u!114 &-1680888648663547637
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6405503896595845848}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 228a3039c03766b4c85d1c0ad4771a81, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _identifier: {fileID: -307514137722038703}
+  _armed: 0

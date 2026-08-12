@@ -1,9 +1,7 @@
 ﻿using Coimbra;
-using SS3D.Data.Generated;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using SS3D.Data;
 
 namespace SS3D.Systems.Tile.TileMapCreator
 {
@@ -13,8 +11,14 @@ namespace SS3D.Systems.Tile.TileMapCreator
     public class ConstructionHologram
     {
         public GameObject Hologram;
+
+        internal static Material ValidMaterial;
+        internal static Material InvalidMaterial;
+        internal static Material DeleteMaterial;
+
         private Vector3 _targetPosition;
         private Direction _direction;
+
         public Direction Direction => _direction;
         public bool ActiveSelf => Hologram.activeSelf;
         public bool SetActive { set => Hologram.SetActive(value); }
@@ -29,7 +33,6 @@ namespace SS3D.Systems.Tile.TileMapCreator
         /// all tile objects. If it's not, it will choose another available direction.</param>
         public ConstructionHologram(GameObject ghostObject, Vector3 targetPosition, Direction dir, ConstructionMode mode = ConstructionMode.Valid)
         {
-
             DisableBehaviours(ghostObject);
 
             Hologram = ghostObject;
@@ -61,20 +64,12 @@ namespace SS3D.Systems.Tile.TileMapCreator
         /// <param name="mode"></param>
         public void ChangeHologramColor(ConstructionMode mode)
         {
-            Material ghostMat = null;
-
-            string ghostMatName = mode switch
+            Material ghostMat = mode switch
             {
-                ConstructionMode.Valid => Materials.ValidConstruction,
-                ConstructionMode.Invalid => Materials.InvalidConstruction,
-                ConstructionMode.Delete => Materials.DeleteConstruction,
-                _ => null,
+                ConstructionMode.Valid => ValidMaterial,
+                ConstructionMode.Invalid => InvalidMaterial,
+                ConstructionMode.Delete => DeleteMaterial,
             };
-
-            if (ghostMatName != null)
-            {
-                ghostMat = Assets.Get<Material>(AssetDatabases.Materials, ghostMatName);
-            }
 
             foreach (MeshRenderer mr in Hologram.GetComponentsInChildren<MeshRenderer>())
             {

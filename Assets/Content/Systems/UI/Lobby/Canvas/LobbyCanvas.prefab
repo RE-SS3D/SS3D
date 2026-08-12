@@ -6762,6 +6762,8 @@ GameObject:
   - component: {fileID: 4370972904279086845}
   - component: {fileID: 3493226604345077845}
   - component: {fileID: 4111591471364358944}
+  - component: {fileID: 7010253234461716203}
+  - component: {fileID: -7073204931359792866}
   m_Layer: 5
   m_Name: LobbyCanvas
   m_TagString: Untagged
@@ -6816,6 +6818,7 @@ Canvas:
   m_OverrideSorting: 0
   m_OverridePixelPerfect: 0
   m_SortingBucketNormalizedSize: 0
+  m_VertexColorAlwaysGammaSpace: 0
   m_AdditionalShaderChannelsFlag: -1
   m_SortingLayerID: 0
   m_SortingOrder: 4
@@ -6914,7 +6917,7 @@ MonoBehaviour:
   _initializeOrder: 0
   _defaultDespawnType: 0
   NetworkObserver: {fileID: 0}
-  <PrefabId>k__BackingField: 183
+  <PrefabId>k__BackingField: 119
   <SpawnableCollectionId>k__BackingField: 0
   _scenePathHash: 0
   <SceneId>k__BackingField: 0
@@ -6940,6 +6943,31 @@ MonoBehaviour:
   _chatChannelUsedForSendingMessages: {fileID: 11400000, guid: 602dd714765b66e4e8c8f6b963312b27, type: 2}
   _welcomeMessageDelayInSeconds: 1
   _welcomeMessage: <size=30>Welcome to SS3D!</size>
+--- !u!114 &7010253234461716203
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4370972905076281512}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 82d17451624f45f49b4a8e42b991373f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _assetGuid: 8c378d8ec3d1cda4389f92d2d8703b6a
+--- !u!114 &-7073204931359792866
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4370972905076281512}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c571b9eb801dcc943a001dd54a2b2b15, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &4370972905362277894
 GameObject:
   m_ObjectHideFlags: 0

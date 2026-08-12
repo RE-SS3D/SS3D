@@ -1,6 +1,8 @@
-﻿namespace SS3D.Interactions.Interfaces
+﻿using System;
+
+namespace SS3D.Interactions.Interfaces
 {
-    public interface IClientInteraction
+    public interface IClientInteraction : IDisposable
     {
         /// <summary>
         /// Starts the interaction

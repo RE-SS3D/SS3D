@@ -1,4 +1,5 @@
 ﻿using SS3D.Attributes;
+using System;
 using UnityEngine;
 
 namespace SS3D.Data.AssetDatabases
@@ -15,14 +16,11 @@ namespace SS3D.Data.AssetDatabases
         [Header("This file is auto-generated, do not modify it manually")]
         public string Id;
 
-#if UNITY_EDITOR
-        [ReadOnly]
-#endif
-        [Header("This file is auto-generated, do not modify it manually")]
-        public string Database;
 
-        public override bool Equals(object other) 
-            => other is ObjectAssetReference otherReference &&
-                Id.Equals(otherReference.Id) && Database.Equals(otherReference.Database);
+        public override bool Equals(object other) => other is ObjectAssetReference otherReference && Id.Equals(otherReference.Id);
+
+        public override int GetHashCode() => HashCode.Combine(Id);
+
+        private bool Equals([JetBrains.Annotations.NotNull] ObjectAssetReference other) => Id == other.Id;
     }
 }

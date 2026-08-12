@@ -14,6 +14,9 @@ GameObject:
   - component: {fileID: -752502555905215929}
   - component: {fileID: -125513957344249411}
   - component: {fileID: 143720641415281769}
+  - component: {fileID: 5756495760842407794}
+  - component: {fileID: 3725752855317240632}
+  - component: {fileID: -897987355984952651}
   m_Layer: 0
   m_Name: AirAlarm
   m_TagString: Untagged
@@ -114,7 +117,7 @@ MonoBehaviour:
   _initializeOrder: 0
   _defaultDespawnType: 0
   NetworkObserver: {fileID: 0}
-  <PrefabId>k__BackingField: 150
+  <PrefabId>k__BackingField: 12
   <SpawnableCollectionId>k__BackingField: 0
   _scenePathHash: 0
   <SceneId>k__BackingField: 0
@@ -144,3 +147,42 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   key: {fileID: 11400000, guid: c2e2a35ebb0394541a1a9fca27e10877, type: 2}
+--- !u!114 &5756495760842407794
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6961426338783081091}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 82d17451624f45f49b4a8e42b991373f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _assetGuid: 11a2276338ebc64429dfc565b491e437
+--- !u!114 &3725752855317240632
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6961426338783081091}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c571b9eb801dcc943a001dd54a2b2b15, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &-897987355984952651
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6961426338783081091}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 228a3039c03766b4c85d1c0ad4771a81, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _identifier: {fileID: 5756495760842407794}
+  _armed: 0

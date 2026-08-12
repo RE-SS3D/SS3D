@@ -19,6 +19,9 @@ GameObject:
   - component: {fileID: 2293966627244539820}
   - component: {fileID: 8205762469322294721}
   - component: {fileID: -4134876114123449171}
+  - component: {fileID: 1427132852503103826}
+  - component: {fileID: -3454149545443101075}
+  - component: {fileID: 8491920843610250538}
   m_Layer: 10
   m_Name: ShoeHiTops
   m_TagString: Untagged
@@ -196,7 +199,7 @@ MonoBehaviour:
   _initializeOrder: 0
   _defaultDespawnType: 0
   NetworkObserver: {fileID: 0}
-  <PrefabId>k__BackingField: 100
+  <PrefabId>k__BackingField: 109
   <SpawnableCollectionId>k__BackingField: 0
   _scenePathHash: 0
   <SceneId>k__BackingField: 0
@@ -270,6 +273,45 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   key: {fileID: 11400000, guid: 95480bb2a621fc349be9e8f2e830604b, type: 2}
+--- !u!114 &1427132852503103826
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 930591319891399865}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 82d17451624f45f49b4a8e42b991373f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _assetGuid: 81faf4debf00a0a478b924176f48d011
+--- !u!114 &-3454149545443101075
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 930591319891399865}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c571b9eb801dcc943a001dd54a2b2b15, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &8491920843610250538
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 930591319891399865}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 228a3039c03766b4c85d1c0ad4771a81, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _identifier: {fileID: 1427132852503103826}
+  _armed: 0
 --- !u!1 &2748908499357878881
 GameObject:
   m_ObjectHideFlags: 0

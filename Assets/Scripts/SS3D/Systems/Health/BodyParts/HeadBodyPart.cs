@@ -1,10 +1,13 @@
-﻿using FishNet.Object;
+using FishNet.Object;
+using Serilog;
 using SS3D.Core;
 using SS3D.Data;
 using SS3D.Data.Generated;
+using SS3D.Data.Networking;
 using SS3D.Systems.Entities;
 using SS3D.Systems.Entities.Humanoid;
 using System.Collections;
+using UnityEngine;
 using UnityEngine.Serialization;
 
 namespace SS3D.Systems.Health
@@ -25,11 +28,15 @@ namespace SS3D.Systems.Health
         }
 
         /// <summary>
-        /// Add specific torso internal organs, heart, lungs, and more to come..
+        /// Add specific head internal organs.
         /// Need to do it with a delay to prevent some Unity bug since OnStartServer() is called Before Start();
+        /// Wait on IsInitialized rather than on the field alone: SpawnOrgans assigns the brain as soon as Instantiate
+        /// returns, but only the network spawn runs its OnStartServer and creates its body layers, and a layerless
+        /// organ cannot be perfused (#1362).
         /// </summary>
         private IEnumerator AddInternalOrgans()
         {
+            yield return new WaitUntil(() => Brain && Brain.IsInitialized);
             yield return null;
             AddInternalBodyPart(Brain);
         }
@@ -77,12 +84,22 @@ namespace SS3D.Systems.Health
             GetComponentInParent<Human>()?.DeactivateComponents();
         }
 
-        protected override void SpawnOrgans()
+        protected override async void SpawnOrgans()
         {
-            Brain brainPrefab = Assets.Get<Brain>(AssetDatabases.Items, Items.HumanBrain);
-            Brain = Instantiate(brainPrefab);
+            AssetHandle<Brain> brainPrefabHandle = await new AssetRequest<Brain>(Items.HumanBrain).LoadAsync();
+
+            if (!brainPrefabHandle)
+            {
+                Log.Error("brain prefab was not loaded");
+                return;
+            }
+
+            Brain = Instantiate(brainPrefabHandle.Asset);
             Brain.HealthController = HealthController;
-            Spawn(Brain.GameObject, Owner);
+
+            await NetworkSpawner.SpawnAsync(Brain, Items.HumanBrain, Owner);
+
+            brainPrefabHandle.Dispose();
         }
     }
 }

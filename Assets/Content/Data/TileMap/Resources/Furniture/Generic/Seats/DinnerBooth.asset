@@ -12,10 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4584c35d672b8a74797cc5efa123ce16, type: 3}
   m_Name: DinnerBooth
   m_EditorClassIdentifier: 
-  prefab: {fileID: 8085678556641831659, guid: 85fa4c9b76b4b23458dcf24a745a1dfe, type: 3}
   PrefabAsset: {fileID: 11400000, guid: 4467e57350dc14745b7ef76c60fd8001, type: 2}
-  icon: {fileID: 0}
-  _nameString: 
+  icon: {fileID: 21300000, guid: cbda450d50ce66d40b9868f5f2311747, type: 3}
   layer: 7
   genericType: 5
   specificType: 0

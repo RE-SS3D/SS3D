@@ -1,4 +1,4 @@
-﻿using SS3D.Data;
+using SS3D.Data;
 using SS3D.Interactions;
 using SS3D.Interactions.Extensions;
 using SS3D.Interactions.Interfaces;
@@ -15,8 +15,19 @@ namespace SS3D.Systems.Combat.Interactions
     /// </summary>
     public class HitInteraction : IInteraction, IClientInteractionSource
     {
+        private static AssetHandle<Sprite> DefaultIconHandle;
+        private static bool TryingToLoadIcon;
+
         public string Name;
         public Sprite Icon;
+        
+        public HitInteraction()
+        {
+            if (!DefaultIconHandle && !TryingToLoadIcon)
+            {
+                AcquireDefaultIcon();
+            }
+        }
 
         public string GetName(InteractionEvent interactionEvent)
         {
@@ -27,7 +38,7 @@ namespace SS3D.Systems.Combat.Interactions
 
         public Sprite GetIcon(InteractionEvent interactionEvent)
         {
-            return Icon ? Icon : Assets.Get<Sprite>(AssetDatabases.InteractionIcons, InteractionIcons.Nuke);
+            return Icon ? Icon : DefaultIconHandle?.Asset;
         }
 
         public bool CanInteract(InteractionEvent interactionEvent)
@@ -76,6 +87,34 @@ namespace SS3D.Systems.Combat.Interactions
             }
 
             return false;
+        }
+
+        private static async void AcquireDefaultIcon()
+        {
+            if (TryingToLoadIcon || DefaultIconHandle)
+            {
+                return;
+            }
+
+            TryingToLoadIcon = true;
+            DefaultIconHandle = await new AssetRequest<Sprite>(InteractionIcons.Nuke).LoadAsync();
+
+            if (!DefaultIconHandle)
+            {
+                AssetHandle.Release(ref DefaultIconHandle);
+            }
+            else
+            {
+                UnityEngine.Application.quitting += OnApplicationQuit;
+            }
+
+            TryingToLoadIcon = false;
+        }
+
+        private static void OnApplicationQuit()
+        {
+            AssetHandle.Release(ref DefaultIconHandle);
+            UnityEngine.Application.quitting -= OnApplicationQuit;
         }
     }
 }

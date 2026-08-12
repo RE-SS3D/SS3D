@@ -1,5 +1,4 @@
 ﻿using QuikGraph;
-using SS3D.Data;
 using SS3D.Data.AssetDatabases;
 using SS3D.Logging;
 using System.Collections.Generic;
@@ -23,11 +22,6 @@ namespace SS3D.Systems.Crafting
         [Tooltip("A bunch of recipe links, which link recipe step together.")] 
         public List<RecipeStepLink> StepLinks;
 
-        /// <summary>
-        /// First step of the recipe, which should have the same name as the target of the recipe.
-        /// </summary>
-        public string RootStepName => Target ? Assets.Get<GameObject>(Target)?.name : null;
-        
         public bool HasInitial => Steps.Any(x => x.IsInitialState);
         
         /// <summary>

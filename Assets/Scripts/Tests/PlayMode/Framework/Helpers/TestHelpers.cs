@@ -10,6 +10,7 @@ using SS3D.Systems.Inventory.Items;
 using SS3D.UI.Buttons;
 using System.Collections;
 using System.Linq;
+using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.InputSystem.Controls;
 using UnityEngine.UI;
@@ -183,7 +184,7 @@ namespace SS3D.Tests
             fixture.Set((AxisControl)fixture.InputDevice["Movement/y"], 0);
         }
 
-        public static AttachedContainer LocalPlayerSpawnItemInFirstHandAvailable(string item)
+        public static async Task<AttachedContainer> LocalPlayerSpawnItemInFirstHandAvailableAsync(string item)
         {
             ItemSubSystem itemSystem = SubSystems.Get<ItemSubSystem>();
             EntitySubSystem entitySystem = SubSystems.Get<EntitySubSystem>();
@@ -192,7 +193,11 @@ namespace SS3D.Tests
 
             foreach (Hand hand in inventory.Hands.PlayerHands.Where(hand => hand.Container.Empty))
             {
-                Item itemToSpawn = Assets.Get<GameObject>(AssetDatabases.Items, item)?.GetComponent<Item>();
+                AssetHandle<Item> itemHandle = await new AssetRequest<Item>(item).LoadAsync();
+                
+                Assert.IsTrue(itemHandle, "Failed to load asset " + item);
+
+                Item itemToSpawn = itemHandle.Asset; 
 
                 itemSystem.CmdSpawnItemInContainer(itemToSpawn, hand.Container);
 

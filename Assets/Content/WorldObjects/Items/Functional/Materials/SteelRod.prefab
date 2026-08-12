@@ -113,6 +113,9 @@ GameObject:
   - component: {fileID: 1034747657592807112}
   - component: {fileID: 7829680980916556598}
   - component: {fileID: 2491671203066484625}
+  - component: {fileID: 943498888533963900}
+  - component: {fileID: -2567983173873225650}
+  - component: {fileID: -7505295886094894695}
   m_Layer: 10
   m_Name: SteelRod
   m_TagString: Untagged
@@ -216,6 +219,7 @@ MonoBehaviour:
   _networkBehaviours:
   - {fileID: 2568864249795578972}
   - {fileID: 5296084984690686628}
+  - {fileID: 2491671203066484625}
   <ParentNetworkObject>k__BackingField: {fileID: 0}
   <ChildNetworkObjects>k__BackingField: []
   SerializedTransformProperties:
@@ -227,7 +231,7 @@ MonoBehaviour:
   _initializeOrder: 0
   _defaultDespawnType: 0
   NetworkObserver: {fileID: 0}
-  <PrefabId>k__BackingField: 42
+  <PrefabId>k__BackingField: 57
   <SpawnableCollectionId>k__BackingField: 0
   _scenePathHash: 0
   <SceneId>k__BackingField: 0
@@ -292,9 +296,48 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 49d37ab5b82ded9419a6e3ab3d05af02, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _componentIndexCache: 255
+  _componentIndexCache: 2
   _addedNetworkObject: {fileID: 1773710978803455870}
-  _networkObjectCache: {fileID: 0}
+  _networkObjectCache: {fileID: 1773710978803455870}
+--- !u!114 &943498888533963900
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7125681683583715523}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 82d17451624f45f49b4a8e42b991373f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _assetGuid: 48fa93e2da7acb3499e400becf2afc26
+--- !u!114 &-2567983173873225650
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7125681683583715523}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c571b9eb801dcc943a001dd54a2b2b15, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &-7505295886094894695
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7125681683583715523}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 228a3039c03766b4c85d1c0ad4771a81, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _identifier: {fileID: 943498888533963900}
+  _armed: 0
 --- !u!1 &8648817992091836969
 GameObject:
   m_ObjectHideFlags: 0

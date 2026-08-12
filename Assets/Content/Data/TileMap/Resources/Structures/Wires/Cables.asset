@@ -12,10 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4584c35d672b8a74797cc5efa123ce16, type: 3}
   m_Name: Cables
   m_EditorClassIdentifier: 
-  prefab: {fileID: 2802364579275783218, guid: 92d3eb280886ba74cb1e19f4e01669a7, type: 3}
   PrefabAsset: {fileID: 11400000, guid: 426c07dc64523524f86c9d22e9a98936, type: 2}
-  icon: {fileID: 0}
-  _nameString: 
+  icon: {fileID: 21300000, guid: f81e232cc0db2c640a43b3f8e466f111, type: 3}
   layer: 2
   genericType: 11
   specificType: 0

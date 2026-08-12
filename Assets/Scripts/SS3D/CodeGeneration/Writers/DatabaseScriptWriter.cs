@@ -1,10 +1,10 @@
 ﻿#if UNITY_EDITOR
+using JetBrains.Annotations;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Text;
+using System.Linq;
 using UnityEditor;
-using Object = UnityEngine.Object;
 
 namespace SS3D.CodeGeneration
 {
@@ -15,11 +15,21 @@ namespace SS3D.CodeGeneration
         /// </summary>
         /// <param name="filePath">Where to write this file to.</param>
         /// <param name="className">The name of the class, currently being the asset database name</param>
-        /// <param name="items">the elements to add to this class</param>
+        /// <param name="guids">the elements to add to this class</param>
         /// <param name="namespaceName">the namespace name to use</param>
-        public static void Write(string filePath, string className, List<Object> items, string namespaceName = "SS3D.Data.Enums")
+        public static void Write(string filePath, string className, List<string> guids, string namespaceName = "SS3D.Data.Enums")
         {
-            items.Sort((obj1, obj2) => string.Compare(obj1.name, obj2.name, StringComparison.InvariantCulture));
+            List<(string Guid, string Name)> entries = new(guids.Count);
+
+            entries.AddRange(
+                from guid in guids
+                let itemPath = AssetDatabase.GUIDToAssetPath(guid)
+                where !string.IsNullOrEmpty(itemPath)
+                let itemName = Path.GetFileNameWithoutExtension(itemPath)
+                where !string.IsNullOrWhiteSpace(itemName)
+                select (guid, itemName));
+
+            entries.Sort((left, right) => string.Compare(left.Name, right.Name, StringComparison.InvariantCulture));
 
             SourceFile sourceFile = new();
 
@@ -30,30 +40,27 @@ namespace SS3D.CodeGeneration
 
                 using (new BracesScope(sourceFile))
                 {
-                    foreach (Object item in items)
+                    foreach ((string guid, string itemName) in entries)
                     {
-                        string itemPath = AssetDatabase.GetAssetPath(item);
-
-                        if (string.IsNullOrEmpty(itemPath))
-                            continue;
-
-                        if (!item || string.IsNullOrWhiteSpace(item.name))
-                            continue;
-
-                        char[] corrected = item.name.ToCharArray();
-                        corrected[0] = corrected[0].ToString().ToUpper()[0];
-
-                        StringBuilder stringBuilder = new();
-                        stringBuilder.Append(corrected);
-
-                        string guid = AssetDatabase.AssetPathToGUID(itemPath);
-
-                        sourceFile.AppendLine($"public const string {stringBuilder} = \"{guid}\";");
+                        sourceFile.AppendLine($"public const string {UppercaseFirst(itemName)} = \"{guid}\";");
                     }
                 }
             }
 
-            File.WriteAllText(filePath + "/" + className + ".cs", sourceFile.ToString());
+            string outputPath = Path.Combine(filePath, $"{className}.cs");
+            File.WriteAllText(outputPath, sourceFile.ToString());
+        }
+
+        [CanBeNull]
+        private static string UppercaseFirst([CanBeNull] string value)
+        {
+            if (string.IsNullOrEmpty(value))
+                return value;
+
+            if (value.Length == 1)
+                return char.ToUpperInvariant(value[0]).ToString();
+
+            return char.ToUpperInvariant(value[0]) + value[1..];
         }
     }
 }

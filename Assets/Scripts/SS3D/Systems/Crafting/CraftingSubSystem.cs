@@ -1,4 +1,4 @@
-﻿using Coimbra;
+using Coimbra;
 using FishNet;
 using FishNet.Object;
 using JetBrains.Annotations;
@@ -21,7 +21,9 @@ using Hand = SS3D.Systems.Inventory.Containers.Hand;
 using DG.Tweening;
 using DG.Tweening.Core;
 using DG.Tweening.Plugins.Options;
+using SS3D.Data.Networking;
 using SS3D.Systems.Inventory.Containers;
+using System.Threading.Tasks;
 
 namespace SS3D.Systems.Crafting
 {
@@ -46,6 +48,21 @@ namespace SS3D.Systems.Crafting
         /// </summary>
         private readonly Dictionary<InteractionReference, ParticleSystem> _craftingSmokes = new();
 
+        /// <summary>
+        /// Asset handle for the crafting smoke particle system, to spawn and despawn it during crafting interactions.
+        /// </summary>
+        private AssetHandle<ParticleSystem> _craftingSmokeHandle;
+
+        /// <summary>
+        /// The array of asset handles for the recipe.
+        /// </summary>
+        private AssetHandle<CraftingRecipe>[] _recipeHandles;
+        
+        /// <summary>
+        /// Flag to check before filling recipes in.
+        /// </summary>
+        private bool _recipesLoaded;
+
         public override void OnStartNetwork()
         {
             // Need to be called both on server and client,
@@ -54,29 +71,85 @@ namespace SS3D.Systems.Crafting
             FillRecipeOrganiser();
         }
 
+        protected override void OnAwake()
+        {
+            base.OnAwake();
+            
+            AcquireAssets();
+        }
+
+        protected override void OnDestroyed()
+        {
+            base.OnDestroyed();
+            
+            _craftingSmokes.Values.ToList().ForEach(x => x.Dispose(true));
+            _craftingSmokes.Clear();
+
+            ReleaseAssets();
+        }
+
+        private async void AcquireAssets()
+        {
+            _craftingSmokeHandle = await new AssetRequest<ParticleSystem>(ParticlesEffects.ConstructionParticle).LoadAsync();
+
+            if (!_craftingSmokeHandle)
+            {
+                AssetHandle.Release(ref _craftingSmokeHandle);
+            }
+
+            AssetDatabase recipesDataBase = SubSystems.Get<AssetSubSystem>().GetDatabase(AssetDatabases.CraftingRecipes);
+
+            if (!recipesDataBase)
+            {
+                Log.Error(this, "recipeDatabase is null");
+
+                return;
+            }
+
+            string[] recipeGuids = recipesDataBase.AssetGuids.ToArray();
+            _recipeHandles = new AssetHandle<CraftingRecipe>[recipeGuids.Length];
+
+            for (int i = 0; i < recipeGuids.Length; i++)
+            {
+                string guid = recipeGuids[i];
+                _recipeHandles[i] = await new AssetRequest<CraftingRecipe>(guid).LoadAsync();
+
+                if (_recipeHandles[i])
+                {
+                    continue;
+                }
+
+                AssetHandle.Release(ref _recipeHandles[i]);
+                Log.Error(this, $"Crafting recipe with guid {guid} could not be loaded");
+            }
+            
+            _recipesLoaded = true;
+        }
+
+        private void ReleaseAssets()
+        {
+            AssetHandle.Release(ref _craftingSmokeHandle);
+
+            for (int i = 0; i < _recipeHandles.Length; i++)
+            {
+                AssetHandle.Release(ref _recipeHandles[i]);
+            }
+        }
+
         /// <summary>
         /// Organise the recipes in such a way that it'll be easy to sort through the relevant recipes when looking
         /// up which recipes are available for a given interaction and target.
         /// </summary>
         [ServerOrClient]
-        private void FillRecipeOrganiser()
+        private async void FillRecipeOrganiser()
         {
-            AssetDatabase recipesDataBase = Assets.GetDatabase(AssetDatabases.CraftingRecipes);
-
-            if (!recipesDataBase)
+            while (!_recipesLoaded)
             {
-                Log.Error(this, "recipeDatabase is null");
-                return;
+                await Task.Yield();
             }
 
-            foreach (Object asset in recipesDataBase.Assets.Values)
+            foreach (CraftingRecipe recipe in from recipeHandle in _recipeHandles where recipeHandle select recipeHandle.Asset)
             {
-                if (asset is not CraftingRecipe recipe)
-                {
-                    Log.Error(this, "Crafting recipe database contains object which is not recipe");
-                    continue;
-                }
-
                 _recipeOrganiser.TryAdd(recipe.Target.Id, new());
                 _recipeOrganiser[recipe.Target.Id].Add(recipe);
             }
@@ -134,18 +207,16 @@ namespace SS3D.Systems.Crafting
         /// spawn the result item. 
         /// </summary>
         [Server]
-        public void Craft(CraftingInteraction interaction, InteractionEvent interactionEvent)
+        public async void Craft(CraftingInteraction interaction, InteractionEvent interactionEvent)
         {
             TaggedEdge<RecipeStep, RecipeStepLink> link = interaction.ChosenLink;
             if (!CanCraftRecipeLink(interactionEvent, link)) return;
             List<IRecipeIngredient> ingredients = GetIngredientsToConsume(interactionEvent, link);
             IRecipeIngredient recipeTarget = interactionEvent.Target.GetGameObject().GetComponent<IRecipeIngredient>();
 
-            ModifyOrConsumeRecipeTarget(recipeTarget, interaction, interactionEvent, link);
-
             if (link.Target.TryGetResult(out ObjectAssetReference result))
             {
-                SpawnOrModifyMainResult(result, interaction, interactionEvent, link);
+                await SpawnOrModifyMainResultAsync(result, interaction, interactionEvent, link);
             }
 
             if (link.Tag == null)
@@ -156,12 +227,31 @@ namespace SS3D.Systems.Crafting
 
             foreach (SecondaryResult secondaryResult in link.Tag.SecondaryResults)
             {
+                if (!secondaryResult.Asset)
+                {
+                    Log.Error(this, $"Secondary result {secondaryResult} has no asset associated, skipping");
+                    continue;
+                }
+                    
+                AssetHandle<GameObject> secondaryHandle = await new AssetRequest<GameObject>(secondaryResult.Asset).LoadAsync();
+
+                if (!secondaryHandle)
+                {
+                    secondaryHandle?.Dispose();
+                    Log.Error(this, $"Secondary result {secondaryResult} has no prefab associated, skipping");
+
+                    continue;
+                }
+
                 for (int i = 0; i < secondaryResult.Amount; i++)
                 {
-                    GameObject secondaryResultPrefab = Assets.Get<GameObject>(secondaryResult.Asset);
-                    DefaultCraft(interaction, interactionEvent, secondaryResultPrefab, link.Target);
+                    await DefaultCraftAsync(interaction, interactionEvent, secondaryHandle.Asset, link.Target, secondaryResult.Asset);
                 }
+
+                secondaryHandle.Dispose();
             }
+
+            ModifyOrConsumeRecipeTarget(recipeTarget, interaction, interactionEvent, link);
 
             foreach (IRecipeIngredient item in ingredients)
             {
@@ -187,36 +277,42 @@ namespace SS3D.Systems.Crafting
             }
         }
 
-        private void SpawnOrModifyMainResult(ObjectAssetReference result, CraftingInteraction interaction,
-            InteractionEvent interactionEvent, TaggedEdge<RecipeStep, RecipeStepLink> link)
+        private async Task SpawnOrModifyMainResultAsync(ObjectAssetReference result, CraftingInteraction interaction, InteractionEvent interactionEvent, TaggedEdge<RecipeStep, RecipeStepLink> link)
         {
-            GameObject resultInstance;
+            AssetHandle<GameObject> handle = await new AssetRequest<GameObject>(result).LoadAsync();
 
-            GameObject resultPrefab = Assets.Get<GameObject>(result);
-
-            if (!resultPrefab)
+            if (!handle)
             {
+                handle?.Dispose();
                 Log.Error(this, $"World object reference {result} has no prefab associated");
+
                 return;
             }
 
+            GameObject resultPrefab = handle.Asset;
+            GameObject resultInstance;
             if (link.Target.CustomCraft)
             {
                 resultInstance = resultPrefab.GetComponent<ICraftable>()?.Craft(interaction, interactionEvent);
             }
             else
             {
-                resultInstance = DefaultCraft(interaction, interactionEvent, resultPrefab, link.Target);
+                resultInstance = await DefaultCraftAsync(interaction, interactionEvent, resultPrefab, link.Target, result);
             }
 
-            if (link.Tag == null || !link.Tag.ModifyResult) return;
-
-            if (!resultInstance)
+            if (link.Tag is { ModifyResult: true })
             {
-                Log.Error(this, "could not craft an instance for the recipe result");
-                return;
+                if (resultInstance)
+                {
+                    resultInstance.GetComponent<ICraftable>()?.Modify(interaction, interactionEvent, link.Target.Name);
+                }
+                else
+                {
+                    Log.Error(this, "could not craft an instance for the recipe result");
+                }
             }
-            resultInstance.GetComponent<ICraftable>()?.Modify(interaction, interactionEvent, link.Target.Name);
+
+            handle.Dispose();
         }
 
         /// <summary>
@@ -227,19 +323,10 @@ namespace SS3D.Systems.Crafting
             if (!target.TryGetComponent(out IWorldObjectAsset targetAssetReference))
             {
                 Log.Warning(this, $"GameObject {target} has no IWorldObjectAsset component, can't retrieve the current step name");
-                return "";
+                return string.Empty;
             }
 
-            GameObject targetPrefab = Assets.Get<GameObject>(targetAssetReference.Asset);
-
-            if (targetPrefab == null)
-            {
-                Log.Error(this, $"IWorldObjectAsset {targetAssetReference} has no prefab associated, returning");
-
-                return "";
-            }
-
-            string rootStepName = targetPrefab.name;
+            string rootStepName = targetAssetReference.Asset.name;
             string stepName;
 
             if (target.TryGetComponent(out ICraftable craftableTarget) && craftableTarget.CurrentStepName != rootStepName)
@@ -248,7 +335,7 @@ namespace SS3D.Systems.Crafting
             }
             else
             {
-                stepName = targetPrefab.name;
+                stepName = targetAssetReference.Asset.name;
             }
 
             return stepName;
@@ -425,26 +512,32 @@ namespace SS3D.Systems.Crafting
         /// Method that should handle basic spawning for everything.
         /// </summary>
         [Server]
-        private GameObject DefaultCraft(CraftingInteraction interaction, InteractionEvent interactionEvent, GameObject prefab, RecipeStep recipeStep)
+        [ItemCanBeNull]
+        private async Task<GameObject> DefaultCraftAsync(
+            CraftingInteraction interaction,
+            [NotNull] InteractionEvent interactionEvent,
+            GameObject prefab,
+            RecipeStep recipeStep,
+            ObjectAssetReference assetReference)
         {
             GameObject instance;
 
             // If result is an item held in hand, either put the crafting result in hand or in front of the crafter.
-            if (interactionEvent.Target is Item targetItem && interactionEvent.Source is Hand hand &&
-                    targetItem.Container == hand.Container)
+            if (interactionEvent.Target is Item targetItem && interactionEvent.Source is Hand hand && targetItem.Container == hand.Container)
             {
-                instance = DefaultCraftItemHeldInHand(prefab, hand, recipeStep, interaction);
+                instance = await DefaultCraftItemHeldInHandAsync(prefab, hand, recipeStep, interaction, assetReference);
             }
+            
             // If result is a placed tile object, just place it on the tilemap.
             else if (prefab.TryGetComponent(out PlacedTileObject resultTileObject))
             {
-                instance = DefaultCraftTileObject(interactionEvent, resultTileObject);
+                instance = await DefaultCraftTileObjectAsync(interactionEvent, resultTileObject);
             }
             else if (interactionEvent.Target.GetGameObject().TryGetComponent(out PlacedTileObject _) && prefab.TryGetComponent(out Draggable _))
             {
                 instance = Instantiate(prefab);
                 instance.transform.position = interactionEvent.Target.GetGameObject().transform.position;
-                InstanceFinder.ServerManager.Spawn(instance);
+                await NetworkSpawner.SpawnAsync(instance, assetReference);
                 instance.SetActive(true);
             }
             else
@@ -453,7 +546,7 @@ namespace SS3D.Systems.Crafting
                 Vector3 characterGround = interaction.CharacterTransform.position;
                 characterGround.y = 0.1f;
                 instance.transform.position = characterGround + interaction.CharacterTransform.forward;
-                InstanceFinder.ServerManager.Spawn(instance);
+                await NetworkSpawner.SpawnAsync(instance, assetReference);
                 instance.SetActive(true);
             }
 
@@ -482,14 +575,18 @@ namespace SS3D.Systems.Crafting
         /// Handles spawning item, when the target is an item held in hand, and the result is whatever.
         /// </summary>>
         [Server]
-        private GameObject DefaultCraftItemHeldInHand(GameObject prefab, Hand hand, RecipeStep recipeStep, CraftingInteraction interaction)
+        [ItemNotNull]
+        private async Task<GameObject> DefaultCraftItemHeldInHandAsync(
+            GameObject prefab,
+            Hand hand,
+            RecipeStep recipeStep,
+            CraftingInteraction interaction,
+            ObjectAssetReference assetReference)
         {
-            GameObject instance;
+            GameObject instance = Instantiate(prefab);
 
-            if (prefab.TryGetComponent(out Item resultItem))
+            if (instance.TryGetComponent(out Item resultItem))
             {
-                instance = Instantiate(prefab);
-
                 // If result is an item, replace whatever is in hand by the new item.
                 if (recipeStep.IsTerminal)
                 {
@@ -502,17 +599,16 @@ namespace SS3D.Systems.Crafting
                     characterGround.y = 0;
                     instance.transform.position = characterGround + interaction.CharacterTransform.forward;
                 }
-                InstanceFinder.ServerManager.Spawn(instance);
+                
+                await NetworkSpawner.SpawnAsync(instance, assetReference);
             }
             else
             {
-                instance = Instantiate(prefab);
-
                 Vector3 characterGround = interaction.CharacterTransform.position;
                 characterGround.y = 0;
                 instance.transform.position = characterGround + interaction.CharacterTransform.forward;
 
-                InstanceFinder.ServerManager.Spawn(instance);
+                await NetworkSpawner.SpawnAsync(instance, assetReference);
                 instance.SetActive(true);
             }
 
@@ -523,20 +619,14 @@ namespace SS3D.Systems.Crafting
         /// The default method to craft new tile objects.
         /// </summary>
         [Server]
-        private GameObject DefaultCraftTileObject([NotNull] InteractionEvent interactionEvent, [NotNull] PlacedTileObject resultTileObject)
+        [ItemCanBeNull]
+        private async Task<GameObject> DefaultCraftTileObjectAsync([NotNull] InteractionEvent interactionEvent, [NotNull] PlacedTileObject resultTileObject)
         {
-            bool replace = false;
-            Direction direction = Direction.North;
+            bool replace = interactionEvent.Target.GetGameObject().TryGetComponent(out PlacedTileObject targetTileObject) && targetTileObject.Layer == resultTileObject.Layer;
 
-            if (interactionEvent.Target.GetGameObject().TryGetComponent(out PlacedTileObject targetTileObject)
-                && targetTileObject.Layer == resultTileObject.Layer)
-            {
-                replace = true;
-            }
-
-            SubSystems.Get<TileSubSystem>().CurrentMap.PlaceTileObject(resultTileObject.tileObjectSO,
+            GameObject instance = await SubSystems.Get<TileSubSystem>().CurrentMap.PlaceTileObjectAsync(resultTileObject.tileObjectSO,
                 TileHelper.GetClosestPosition(interactionEvent.Target.GetGameObject().transform.position),
-                direction, false, replace, false, out GameObject instance);
+                Direction.North, false, replace, false);
 
             return instance;
         }
@@ -561,33 +651,32 @@ namespace SS3D.Systems.Crafting
         [Server]
         private bool ResultIsValid(InteractionEvent interactionEvent, RecipeStep recipeStep)
         {
-            if (!recipeStep.TryGetResult(out ObjectAssetReference recipeResult)) return true;
-
-            GameObject recipeResultPrefab = Assets.Get<GameObject>(recipeResult);
-
-            if (recipeResultPrefab && recipeResultPrefab.TryGetComponent(out PlacedTileObject result))
+            if (!recipeStep.TryGetResult(out ObjectAssetReference recipeResult))
             {
-                return ResultIsValidPlacedTileObject(result, interactionEvent);
+                return true;
             }
 
-            return true;
+            TileSubSystem tileSubSystem = SubSystems.Get<TileSubSystem>();
+            TileObjectSo tileObjectSo = tileSubSystem.GetAsset(recipeResult) as TileObjectSo;
+
+            return !tileObjectSo || ResultIsValidPlacedTileObject(tileObjectSo, interactionEvent);
         }
 
         /// <summary>
         /// Check if the result placed object won't conflict with other placed tile objects. Should check collisions too probably.
         /// </summary>
         [Server]
-        private bool ResultIsValidPlacedTileObject([NotNull] PlacedTileObject result, [NotNull] InteractionEvent interactionEvent)
+        private bool ResultIsValidPlacedTileObject([NotNull] TileObjectSo result, [NotNull] InteractionEvent interactionEvent)
         {
             bool replace = false;
             bool targetIsPlacedTileObject = interactionEvent.Target.GetGameObject().TryGetComponent(out PlacedTileObject target);
 
-            if (targetIsPlacedTileObject && result.Layer == target.Layer)
+            if (targetIsPlacedTileObject && result.layer == target.Layer)
             {
                 replace = true;
             }
 
-            return SubSystems.Get<TileSubSystem>().CanBuild(result.tileObjectSO, interactionEvent.Target.GetGameObject().transform.position, Direction.North, replace);
+            return SubSystems.Get<TileSubSystem>().CanBuild(result, interactionEvent.Target.GetGameObject().transform.position, Direction.North, replace);
         }
 
         /// <summary>
@@ -616,8 +705,12 @@ namespace SS3D.Systems.Crafting
         [ObserversRpc]
         private void AddCraftingSmoke(GameObject target, int referenceId)
         {
-            ParticleSystem particlePrefab = Assets.Get<ParticleSystem>(AssetDatabases.ParticlesEffects, ParticlesEffects.ConstructionParticle);
-            ParticleSystem particles = Instantiate(particlePrefab, target.transform.position, Quaternion.identity);
+            if (_craftingSmokeHandle is not { IsValid: true })
+            {
+                return;
+            }
+            
+            ParticleSystem particles = Instantiate(_craftingSmokeHandle.Asset, target.transform.position, Quaternion.identity);
 
             // Get the shape module of the dust cloud particle system
             ParticleSystem.ShapeModule shapeModule = particles.shape;

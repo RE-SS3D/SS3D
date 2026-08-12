@@ -12,10 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4584c35d672b8a74797cc5efa123ce16, type: 3}
   m_Name: Lattice
   m_EditorClassIdentifier: 
-  prefab: {fileID: 7825286949101219487, guid: 854451834f026fb4f860bf0e977a104c, type: 3}
   PrefabAsset: {fileID: 11400000, guid: b692a03693f271f42a9207742b0d900a, type: 2}
-  icon: {fileID: 0}
-  _nameString: 
+  icon: {fileID: 21300000, guid: 88197e6ed9912c14b840aa65373fa966, type: 3}
   layer: 0
   genericType: 0
   specificType: 0

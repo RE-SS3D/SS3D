@@ -52,6 +52,8 @@ GameObject:
   - component: {fileID: 844800983004635204}
   - component: {fileID: 2460252798676826451}
   - component: {fileID: 1335663030982295525}
+  - component: {fileID: 8095916385686154216}
+  - component: {fileID: -776503011735973628}
   m_Layer: 10
   m_Name: SodaCanGeneric
   m_TagString: Untagged
@@ -231,7 +233,7 @@ MonoBehaviour:
   _initializeOrder: 0
   _defaultDespawnType: 0
   NetworkObserver: {fileID: 0}
-  <PrefabId>k__BackingField: 63
+  <PrefabId>k__BackingField: 73
   <SpawnableCollectionId>k__BackingField: 0
   _scenePathHash: 0
   <SceneId>k__BackingField: 0
@@ -316,15 +318,9 @@ MonoBehaviour:
   _lightImpactVelocity: 0.5
   _useHardImpactSounds: 0
   _hardImpactVelocity: 7.5
-  _lightImpactSounds:
-  - {fileID: 8300000, guid: 1a34c805f84be3b4caac14d7de790607, type: 3}
-  - {fileID: 8300000, guid: 8d93fdf9dcada204a952e29213f0293f, type: 3}
   _lightImpactSoundReferences:
   - {fileID: 11400000, guid: a018567162ec7ad40bdd2d7d8ae6074b, type: 2}
   - {fileID: 11400000, guid: 5d6d1f8ffca30774e8791de6a68f2d97, type: 2}
-  _hardImpactSounds:
-  - {fileID: 8300000, guid: f00c6b5a098e84b4b87d80d23b4f295a, type: 3}
-  - {fileID: 8300000, guid: b315c4abdef36244fb211c5f643d411a, type: 3}
   _hardImpactSoundReferences:
   - {fileID: 11400000, guid: 4cac36cceddb62f4c914372c095706e3, type: 2}
   - {fileID: 11400000, guid: b30cc2cc7d13a7f459a5911da388787f, type: 2}
@@ -353,3 +349,28 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   key: {fileID: 11400000, guid: 4ae07ac1297905a44ab1d66984e20c86, type: 2}
+--- !u!114 &8095916385686154216
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8423412686940963211}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 82d17451624f45f49b4a8e42b991373f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _assetGuid: 56ac854f77351fa46b6a17fbb1cf45d9
+--- !u!114 &-776503011735973628
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8423412686940963211}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c571b9eb801dcc943a001dd54a2b2b15, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

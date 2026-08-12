@@ -3,6 +3,7 @@ using UnityEngine;
 using SS3D.Systems.Tile.Connections.AdjacencyTypes;
 using Coimbra;
 using FishNet.Object;
+using SS3D.Data.Networking;
 
 namespace SS3D.Systems.Tile.Connections
 {
@@ -96,7 +97,7 @@ namespace SS3D.Systems.Tile.Connections
 
             wallCap.transform.localRotation = Quaternion.Euler(0, rotation, 0);
             wallCap.transform.localPosition = new Vector3(cardinal.Item1 * WALL_CAP_DISTANCE_FROM_CENTRE, 0, cardinal.Item2 * WALL_CAP_DISTANCE_FROM_CENTRE);
-            Spawn(wallCap);
+            NetworkSpawner.Spawn(wallCap);
             return wallCap;
         }
 

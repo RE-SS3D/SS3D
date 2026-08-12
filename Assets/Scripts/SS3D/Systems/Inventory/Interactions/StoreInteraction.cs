@@ -11,6 +11,9 @@ namespace SS3D.Systems.Inventory.Interactions
 {
     public sealed class StoreInteraction : IInteraction, IClientInteractionSource
     {
+        private static AssetHandle<Sprite> DefaultIconHandle;
+        private static bool TryingToLoadIcon;
+
         public string Name;
         public Sprite Icon;
         private readonly AttachedContainer _attachedContainer;
@@ -18,6 +21,11 @@ namespace SS3D.Systems.Inventory.Interactions
         public StoreInteraction(AttachedContainer attachedContainer)
         {
             _attachedContainer = attachedContainer;
+
+            if (!TryingToLoadIcon && !DefaultIconHandle)
+            {
+                AcquireDefaultIcon();
+            }
         }
 
         public string GetName(InteractionEvent interactionEvent)
@@ -29,7 +37,7 @@ namespace SS3D.Systems.Inventory.Interactions
 
         public Sprite GetIcon(InteractionEvent interactionEvent)
         {
-            return Icon ? Icon : Assets.Get<Sprite>(AssetDatabases.InteractionIcons, InteractionIcons.Discard);
+            return Icon ? Icon : DefaultIconHandle?.Asset;
         }
 
         public bool CanInteract(InteractionEvent interactionEvent)
@@ -82,6 +90,29 @@ namespace SS3D.Systems.Inventory.Interactions
             }
 
             return false;
+        }
+
+        private static async void AcquireDefaultIcon()
+        {
+            TryingToLoadIcon = true;
+            DefaultIconHandle = await new AssetRequest<Sprite>(InteractionIcons.Discard).LoadAsync();
+
+            if (DefaultIconHandle)
+            {
+                UnityEngine.Application.quitting += OnApplicationQuit;
+            }
+            else
+            {
+                AssetHandle.Release(ref DefaultIconHandle);
+            }
+            
+            TryingToLoadIcon = false;
+        }
+        
+        private static void OnApplicationQuit()
+        {
+            AssetHandle.Release(ref DefaultIconHandle);
+            UnityEngine.Application.quitting -= OnApplicationQuit;
         }
     }
 }

@@ -1,4 +1,4 @@
-﻿using SS3D.Data;
+using SS3D.Data;
 using SS3D.Data.Generated;
 using SS3D.Interactions;
 using SS3D.Interactions.Extensions;
@@ -9,6 +9,9 @@ namespace SS3D.Systems.Furniture
 {
     public class LockerDoorInteraction : IInteraction, IClientInteractionSource
     {
+        private static AssetHandle<Sprite> DefaultIconHandle;
+        private static bool TryingToLoadDefaultIcon;
+
         public string Name;
         public Sprite Icon;
         private readonly Locker _locker;
@@ -16,6 +19,11 @@ namespace SS3D.Systems.Furniture
         public LockerDoorInteraction(Locker locker)
         {
             _locker = locker;
+
+            if (!TryingToLoadDefaultIcon && !DefaultIconHandle)
+            {
+                AcquireDefaultIcon();
+            }
         }
 
         public string GetName(InteractionEvent interactionEvent)
@@ -27,7 +35,7 @@ namespace SS3D.Systems.Furniture
 
         public Sprite GetIcon(InteractionEvent interactionEvent)
         {
-            return Icon ? Icon : Assets.Get<Sprite>(AssetDatabases.InteractionIcons, InteractionIcons.Open);
+            return Icon ? Icon : DefaultIconHandle?.Asset;
         }
 
         public bool CanInteract(InteractionEvent interactionEvent)
@@ -45,6 +53,29 @@ namespace SS3D.Systems.Furniture
             _locker.IsOpen = !_locker.IsOpen;
 
             return true;
+        }
+
+        private static async void AcquireDefaultIcon()
+        {
+            TryingToLoadDefaultIcon = true;
+            DefaultIconHandle = await new AssetRequest<Sprite>(InteractionIcons.Open).LoadAsync();
+
+            if (!DefaultIconHandle)
+            {
+                AssetHandle.Release(ref DefaultIconHandle);
+            }
+            else
+            {
+                UnityEngine.Application.quitting += OnApplicationQuit;
+            }
+
+            TryingToLoadDefaultIcon = false;
+        }
+
+        private static void OnApplicationQuit()
+        {
+            AssetHandle.Release(ref DefaultIconHandle);
+            UnityEngine.Application.quitting -= OnApplicationQuit;
         }
     }
 }

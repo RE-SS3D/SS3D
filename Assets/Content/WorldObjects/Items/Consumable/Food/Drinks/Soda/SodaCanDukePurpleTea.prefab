@@ -19,6 +19,10 @@ PrefabInstance:
       propertyPath: key
       value: 
       objectReference: {fileID: 11400000, guid: b25764db1d1ff8a45a74cc287e98fcb4, type: 2}
+    - target: {fileID: 3146240193629008871, guid: 56ac854f77351fa46b6a17fbb1cf45d9, type: 3}
+      propertyPath: _assetGuid
+      value: 177428b73bad0fb4a89d1a64b85629bf
+      objectReference: {fileID: 0}
     - target: {fileID: 5596787203858443778, guid: 56ac854f77351fa46b6a17fbb1cf45d9, type: 3}
       propertyPath: m_RootOrder
       value: 0
@@ -69,7 +73,7 @@ PrefabInstance:
       objectReference: {fileID: 8420070316573550880, guid: c1169b60804c0aa41bb17b72ba87985b, type: 3}
     - target: {fileID: 5958074810027370513, guid: 56ac854f77351fa46b6a17fbb1cf45d9, type: 3}
       propertyPath: <PrefabId>k__BackingField
-      value: 4
+      value: 19
       objectReference: {fileID: 0}
     - target: {fileID: 5958074810027370513, guid: 56ac854f77351fa46b6a17fbb1cf45d9, type: 3}
       propertyPath: <AssetPathHash>k__BackingField
@@ -83,5 +87,50 @@ PrefabInstance:
       propertyPath: m_Name
       value: SodaCanDukePurpleTea
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 3146240193629008871, guid: 56ac854f77351fa46b6a17fbb1cf45d9, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: 56ac854f77351fa46b6a17fbb1cf45d9, type: 3}
+--- !u!1 &169984495843080388 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 8423412686940963211, guid: 56ac854f77351fa46b6a17fbb1cf45d9, type: 3}
+  m_PrefabInstance: {fileID: 8556310196017592655}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &4640044559894654951
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 169984495843080388}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 82d17451624f45f49b4a8e42b991373f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _assetGuid: 177428b73bad0fb4a89d1a64b85629bf
+--- !u!114 &6416181655805358742
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 169984495843080388}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c571b9eb801dcc943a001dd54a2b2b15, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &3843721040962200517
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 169984495843080388}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 228a3039c03766b4c85d1c0ad4771a81, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _identifier: {fileID: 4640044559894654951}
+  _armed: 0

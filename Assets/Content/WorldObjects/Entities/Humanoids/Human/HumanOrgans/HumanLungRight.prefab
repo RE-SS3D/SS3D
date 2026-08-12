@@ -113,6 +113,10 @@ GameObject:
   - component: {fileID: 2482166521292498734}
   - component: {fileID: 8187159198088897848}
   - component: {fileID: 8312465371777337006}
+  - component: {fileID: 1088763023440096940}
+  - component: {fileID: -6772150641971451993}
+  - component: {fileID: 4741311624768041736}
+  - component: {fileID: 5891511505421458316}
   m_Layer: 10
   m_Name: HumanLungRight
   m_TagString: Untagged
@@ -228,7 +232,7 @@ MonoBehaviour:
   _initializeOrder: 0
   _defaultDespawnType: 0
   NetworkObserver: {fileID: 0}
-  <PrefabId>k__BackingField: 140
+  <PrefabId>k__BackingField: 145
   <SpawnableCollectionId>k__BackingField: 0
   _scenePathHash: 0
   <SceneId>k__BackingField: 0
@@ -297,3 +301,54 @@ MonoBehaviour:
   _networkObjectCache: {fileID: 6158070572286981653}
   _bodyPart: {fileID: 8187159198088897848}
   isBleeding: 0
+--- !u!114 &1088763023440096940
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8304480218026041231}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e00534faac6488c47893490f2bf4c5a2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &-6772150641971451993
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8304480218026041231}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 82d17451624f45f49b4a8e42b991373f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _assetGuid: a8b265034e3f79344a6067b406e1bff6
+--- !u!114 &4741311624768041736
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8304480218026041231}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c571b9eb801dcc943a001dd54a2b2b15, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &5891511505421458316
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8304480218026041231}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 228a3039c03766b4c85d1c0ad4771a81, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _identifier: {fileID: -6772150641971451993}
+  _armed: 0

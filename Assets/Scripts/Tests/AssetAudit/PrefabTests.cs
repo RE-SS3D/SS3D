@@ -3,6 +3,8 @@ using System.Reflection;
 using System.Text;
 using NUnit.Framework;
 using SS3D.Attributes;
+using SS3D.Data;
+using System.Collections.Generic;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
@@ -36,6 +38,16 @@ namespace AssetAudit
             StringBuilder sb = new();
             bool allScriptsExist = AssetAuditUtilities.CheckGameObjectForMissingScripts(prefab, ref sb);
             Assert.IsTrue(allScriptsExist, sb.ToString());
+        }
+
+        /// <summary>
+        /// Test to confirm that asset and network prefabs keep the editor-time GUID stamps required by runtime loading.
+        /// </summary>
+        [Test]
+        public void PrefabsHaveValidAssetStamps()
+        {
+            IReadOnlyList<string> errors = AssetPrefabStamper.FindStampVerificationErrors();
+            Assert.That(errors, Is.Empty, string.Join("\n", errors));
         }
         #endregion
 

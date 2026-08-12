@@ -6,6 +6,7 @@ using FishNet.Object.Synchronizing;
 using FishNet.Transporting;
 using SS3D.Core;
 using SS3D.Core.Behaviours;
+using SS3D.Data.Networking;
 using SS3D.Logging;
 using SS3D.Permissions;
 using SS3D.Systems.Entities;
@@ -148,7 +149,7 @@ namespace SS3D.Systems.PlayerControl
             Log.Information(this, "Player joined the server - {clientId} {connectionAddress}", Logs.ServerOnly, conn.ClientId, conn.GetAddress());
 
             NetworkObject unauthorizedUser = Instantiate(_unauthorizedUserPrefab, Vector3.zero, Quaternion.identity);
-            ServerManager.Spawn(unauthorizedUser, conn);
+            NetworkSpawner.Spawn(unauthorizedUser, conn);
         }
 
         /// <summary>
@@ -172,7 +173,7 @@ namespace SS3D.Systems.PlayerControl
                 Log.Information(this, "No Player match for {ckey} found, creating a new one", Logs.ServerOnly, ckey);
 
                 player = Instantiate(_playerPrefab);
-                ServerManager.Spawn(player.gameObject);
+                NetworkSpawner.Spawn(player);
 
                 player.SetCkey(ckey);
 

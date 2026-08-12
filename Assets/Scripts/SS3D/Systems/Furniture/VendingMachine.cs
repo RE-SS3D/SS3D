@@ -1,4 +1,5 @@
-﻿using FishNet.Object;
+using FishNet.Object;
+using JetBrains.Annotations;
 using SS3D.Core;
 using SS3D.Data;
 using SS3D.Data.Generated;
@@ -35,6 +36,26 @@ namespace SS3D.Systems.Furniture
         /// </summary>
         [SerializeField]
         private Transform _dispensingTransform;
+        
+        /// <summary>
+        /// The asset handle for the take icon.
+        /// </summary>
+        private AssetHandle<Sprite> _takeIconHandle;
+        
+        private AssetHandle<AudioClip> _emptyClipHandle;
+        private AssetHandle<AudioClip> _dispenseClipHandle;
+
+        protected override void OnAwake()
+        {
+            base.OnAwake();
+            AcquireAssets();
+        }
+
+        protected override void OnDestroyed()
+        {
+            base.OnDestroyed();
+            ReleaseAssets();
+        }
 
         /// <summary>
         /// Requests the server to dispense a specific product.
@@ -50,7 +71,7 @@ namespace SS3D.Systems.Furniture
         /// If there's not enough stock, a sound is played and the product isn't dispensed.
         /// </summary>
         [Server]
-        public void DispenseProduct(int productIndex)
+        public async void DispenseProduct(int productIndex)
         {
             if (_powerConsumer.PowerStatus == PowerStatus.Inactive)
             {
@@ -89,7 +110,7 @@ namespace SS3D.Systems.Furniture
             ItemSubSystem itemSystem = SubSystems.Get<ItemSubSystem>();
             Quaternion quaternion = Quaternion.Euler(new Vector3(Random.Range(0, 360), Random.Range(0, 360), Random.Range(0, 360)));
 
-            itemSystem.SpawnItem(productToDispenseStock.Product.PrefabAsset.Id, _dispensingTransform.position, quaternion);
+            await itemSystem.SpawnItemAsync(productToDispenseStock.Product.PrefabAsset.Id, _dispensingTransform.position, quaternion);
         }
 
         /// <inheritdoc />
@@ -100,7 +121,7 @@ namespace SS3D.Systems.Furniture
                 return Array.Empty<IInteraction>();
             }
 
-            Sprite takeIcon = Assets.Get<Sprite>(AssetDatabases.InteractionIcons, InteractionIcons.Take);
+            Sprite takeIcon = _takeIconHandle?.Asset;
             
             IInteraction[] interactions = new IInteraction[_productsToDispense.Length];
             for (int i = 0; i < _productsToDispense.Length; i++)
@@ -115,6 +136,37 @@ namespace SS3D.Systems.Furniture
             }
 
             return interactions;
+        }
+
+        private async void AcquireAssets()
+        {
+            _takeIconHandle = await new AssetRequest<Sprite>(InteractionIcons.Take).LoadAsync();
+
+            if (!_takeIconHandle)
+            {
+                AssetHandle.Release(ref _takeIconHandle);
+            }
+
+            _emptyClipHandle = await new AssetRequest<AudioClip>(Sounds.BikeHorn).LoadAsync();
+
+            if (!_emptyClipHandle)
+            {
+                AssetHandle.Release(ref _emptyClipHandle);
+            }
+
+            _dispenseClipHandle = await new AssetRequest<AudioClip>(Sounds.Can1).LoadAsync();
+
+            if (!_dispenseClipHandle)
+            {
+                AssetHandle.Release(ref _dispenseClipHandle);
+            }
+        }
+
+        private void ReleaseAssets()
+        {
+            AssetHandle.Release(ref _takeIconHandle);
+            AssetHandle.Release(ref _emptyClipHandle);
+            AssetHandle.Release(ref _dispenseClipHandle);
         }
     }
 }

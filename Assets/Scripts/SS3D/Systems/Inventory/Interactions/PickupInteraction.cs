@@ -15,8 +15,19 @@ namespace SS3D.Systems.Inventory.Interactions
     // you can only pick things that are not in a container
     public class PickupInteraction : IInteraction, IClientInteractionSource
     {
+        private static AssetHandle<Sprite> DefaultIconHandle;
+        private static bool TryingToLoadIcon;
+
         public string Name;
         public Sprite Icon;
+
+        public PickupInteraction()
+        {
+            if (!TryingToLoadIcon && !DefaultIconHandle)
+            {
+                AcquireDefaultIcon();
+            }
+        }
 
         public string GetName(InteractionEvent interactionEvent)
         {
@@ -27,7 +38,7 @@ namespace SS3D.Systems.Inventory.Interactions
 
         public Sprite GetIcon(InteractionEvent interactionEvent)
         {
-            return Icon ? Icon : Assets.Get<Sprite>(AssetDatabases.InteractionIcons, InteractionIcons.Take);
+            return Icon ? Icon : DefaultIconHandle.Asset;
         }
 
         public bool CanInteract(InteractionEvent interactionEvent)
@@ -98,6 +109,27 @@ namespace SS3D.Systems.Inventory.Interactions
             }
 
             return false;
+        }
+
+        private static async void AcquireDefaultIcon()
+        {
+            TryingToLoadIcon = true;
+            DefaultIconHandle = await new AssetRequest<Sprite>(InteractionIcons.Take).LoadAsync();
+
+            if (DefaultIconHandle)
+            {
+                UnityEngine.Application.quitting += OnApplicationQuit;
+            }
+            else
+            {
+                AssetHandle.Release(ref DefaultIconHandle);
+            }
+        }
+        
+        private static void OnApplicationQuit()
+        {
+            AssetHandle.Release(ref DefaultIconHandle);
+            UnityEngine.Application.quitting -= OnApplicationQuit;
         }
     }
 }

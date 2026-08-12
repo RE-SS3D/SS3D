@@ -82,6 +82,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a19f823e20acab740ba5150747863eb9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _clothType: 0
 --- !u!1 &1551047009890542782
 GameObject:
   m_ObjectHideFlags: 0
@@ -165,6 +166,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a19f823e20acab740ba5150747863eb9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _clothType: 0
 --- !u!114 &5406363294925787456
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -261,6 +263,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a19f823e20acab740ba5150747863eb9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _clothType: 0
 --- !u!114 &6441499895056736688
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -391,6 +394,10 @@ GameObject:
   - component: {fileID: 2397838539606738385}
   - component: {fileID: 5308582014386986525}
   - component: {fileID: 2667861044257637155}
+  - component: {fileID: 8049927839799613062}
+  - component: {fileID: 1071527651825949178}
+  - component: {fileID: 7105979873094868763}
+  - component: {fileID: 3662427276155504952}
   m_Layer: 10
   m_Name: HumanTorso
   m_TagString: Untagged
@@ -457,7 +464,7 @@ MonoBehaviour:
   _initializeOrder: 0
   _defaultDespawnType: 0
   NetworkObserver: {fileID: 0}
-  <PrefabId>k__BackingField: 55
+  <PrefabId>k__BackingField: 60
   <SpawnableCollectionId>k__BackingField: 0
   _scenePathHash: 0
   <SceneId>k__BackingField: 0
@@ -671,9 +678,9 @@ MonoBehaviour:
   _bodyCollider: {fileID: 0}
   HealthController: {fileID: 0}
   _bodyPartVolume: 25300
-  heart: {fileID: 0}
-  leftLung: {fileID: 0}
-  rightLung: {fileID: 0}
+  Heart: {fileID: 0}
+  LeftLung: {fileID: 0}
+  RightLung: {fileID: 0}
 --- !u!114 &2397838539606738385
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -693,7 +700,7 @@ MonoBehaviour:
   isBleeding: 0
 --- !u!95 &5308582014386986525
 Animator:
-  serializedVersion: 4
+  serializedVersion: 5
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -710,7 +717,8 @@ Animator:
   m_WarningMessage: 
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
-  m_KeepAnimatorControllerStateOnDisable: 0
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!114 &2667861044257637155
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -729,6 +737,57 @@ MonoBehaviour:
   _openState: 0
   OverrideOpenIcon: {fileID: 0}
   attachedContainer: {fileID: 4471929947553035006}
+--- !u!114 &8049927839799613062
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5562010227207703736}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e00534faac6488c47893490f2bf4c5a2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &1071527651825949178
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5562010227207703736}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 82d17451624f45f49b4a8e42b991373f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _assetGuid: 4a9d34a6cf84ef045a740513d8ae30b1
+--- !u!114 &7105979873094868763
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5562010227207703736}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c571b9eb801dcc943a001dd54a2b2b15, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &3662427276155504952
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5562010227207703736}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 228a3039c03766b4c85d1c0ad4771a81, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _identifier: {fileID: 1071527651825949178}
+  _armed: 0
 --- !u!1 &6030422096952570203
 GameObject:
   m_ObjectHideFlags: 0

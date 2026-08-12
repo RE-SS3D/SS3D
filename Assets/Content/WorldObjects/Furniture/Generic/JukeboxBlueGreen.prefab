@@ -16,6 +16,9 @@ GameObject:
   - component: {fileID: 8174704186285038031}
   - component: {fileID: 8272970134100573020}
   - component: {fileID: 5978761350964980520}
+  - component: {fileID: 7838589302475224335}
+  - component: {fileID: 6302252258634323957}
+  - component: {fileID: -5349693217339790292}
   m_Layer: 0
   m_Name: JukeboxBlueGreen
   m_TagString: Untagged
@@ -119,7 +122,7 @@ MonoBehaviour:
   _initializeOrder: 0
   _defaultDespawnType: 0
   NetworkObserver: {fileID: 0}
-  <PrefabId>k__BackingField: 155
+  <PrefabId>k__BackingField: 121
   <SpawnableCollectionId>k__BackingField: 0
   _scenePathHash: 0
   <SceneId>k__BackingField: 0
@@ -196,3 +199,42 @@ MonoBehaviour:
   _componentIndexCache: 2
   _addedNetworkObject: {fileID: 4294524822034227355}
   _networkObjectCache: {fileID: 4294524822034227355}
+--- !u!114 &7838589302475224335
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6118765911134750290}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 82d17451624f45f49b4a8e42b991373f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _assetGuid: 8dc5399c58290d54f9a6cc2f6c1c9d9f
+--- !u!114 &6302252258634323957
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6118765911134750290}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c571b9eb801dcc943a001dd54a2b2b15, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &-5349693217339790292
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6118765911134750290}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 228a3039c03766b4c85d1c0ad4771a81, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _identifier: {fileID: 7838589302475224335}
+  _armed: 0

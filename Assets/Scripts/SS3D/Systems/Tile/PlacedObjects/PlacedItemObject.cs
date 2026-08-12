@@ -1,11 +1,14 @@
-﻿using FishNet;
+using FishNet;
 using FishNet.Object;
+using JetBrains.Annotations;
 using SS3D.Core;
 using SS3D.Data;
+using SS3D.Data.Networking;
 using SS3D.Logging;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using UnityEngine;
 
 namespace SS3D.Systems.Tile
@@ -19,29 +22,33 @@ namespace SS3D.Systems.Tile
         ///  Places an item on the tilemap at a given position and rotation
         /// </summary>
         /// <param name="worldPosition"></param>
-        /// <param name="origin"></param>
         /// <param name="rotation"></param>
         /// <param name="itemSo"></param>
-        /// <param name="existingItem">The existing Item GameObject to add the PlacedItemObject component to</param>
+        /// <param name="placedGameObject"></param>
+        /// <param name="origin"></param>
         /// <returns></returns>
-        public static PlacedItemObject Create(Vector3 worldPosition, Quaternion rotation, ItemObjectSo itemSo, GameObject existingItem = null)
+        [ItemCanBeNull]
+        public static async Task<PlacedItemObject> CreateAsync(Vector3 worldPosition, Quaternion rotation, ItemObjectSo itemSo, GameObject placedGameObject = null)
         {
-            GameObject placedGameObject;
-            
-            if (existingItem != null)
+            if (!placedGameObject)
             {
-                // Use the existing item GameObject
-                placedGameObject = existingItem;
+                AssetHandle<GameObject> handle = await new AssetRequest<GameObject>(itemSo.PrefabAsset).LoadAsync();
+
+                if (!handle)
+                {
+                    handle?.Dispose();
+                    Log.Error(typeof(PlacedItemObject), $"Failed to load prefab for item '{itemSo.NameString}'.");
+
+                    return null;
+                }
+
+                placedGameObject = Instantiate(handle.Asset);
+                handle.Dispose();
             }
-            else
-            {
-                GameObject itemPrefab = Assets.Get<GameObject>(itemSo.PrefabAsset);
-                placedGameObject = Instantiate(itemPrefab);
-            }
+
             placedGameObject.transform.SetPositionAndRotation(worldPosition, rotation);
 
-            PlacedItemObject placedObject = placedGameObject.GetComponent<PlacedItemObject>();
-            if (placedObject == null)
+            if (!placedGameObject.TryGetComponent(out PlacedItemObject placedObject))
             {
                 // Ideally an editor script adds this instead of doing it at runtime
                 placedObject = placedGameObject.AddComponent<PlacedItemObject>();
@@ -49,13 +56,18 @@ namespace SS3D.Systems.Tile
 
             placedObject.Setup(worldPosition, rotation, itemSo);
 
-            if (InstanceFinder.ServerManager != null && placedObject.GetComponent<NetworkObject>() != null)
+            if (!InstanceFinder.ServerManager || !placedObject.TryGetComponent<NetworkObject>(out _))
             {
-                if (placedObject.GetComponent<NetworkObject>() == null)
-                    Log.Warning(SubSystems.Get<TileSubSystem>(), "{placedObject} does not have a Network Component and will not be spawned",
-                        Logs.Generic, placedObject.NameString);
-                else
-                    InstanceFinder.ServerManager.Spawn(placedGameObject);
+                return placedObject;
+            }
+
+            if (!placedObject.TryGetComponent<NetworkObject>(out _))
+            {
+                Log.Warning(SubSystems.Get<TileSubSystem>(), "{placedObject} does not have a Network Component and will not be spawned", Logs.Generic, placedObject.NameString);
+            }
+            else
+            {
+                await NetworkSpawner.SpawnAsync(placedObject, itemSo.PrefabAsset);
             }
 
             return placedObject;

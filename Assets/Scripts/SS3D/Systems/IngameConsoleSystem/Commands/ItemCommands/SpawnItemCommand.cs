@@ -1,7 +1,6 @@
-﻿using FishNet.Connection;
+using FishNet.Connection;
 using SS3D.Core;
 using SS3D.Data;
-using SS3D.Data.Generated;
 using SS3D.Permissions;
 using SS3D.Systems.Entities;
 using SS3D.Systems.Inventory.Items;
@@ -49,12 +48,12 @@ namespace SS3D.Systems.IngameConsoleSystem.Commands.ItemCommands
                 return response;
             }
 
-            string itemName = args[0];
+            string id = args[0];
 
-            if (!Assets.TryGet(AssetDatabases.Items, itemName, out Item item))
+            if (!SubSystems.Get<AssetSubSystem>().Has(id))
             {
                 response.IsValid = false;
-                response.InvalidArgs = $"item with name {itemName} not found";
+                response.InvalidArgs = $"item with name {id} not found";
 
                 return response;
             }

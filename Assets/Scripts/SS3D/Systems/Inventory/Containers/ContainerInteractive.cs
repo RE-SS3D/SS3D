@@ -1,12 +1,12 @@
-﻿using SS3D.Data;
-using System;
-using System.Collections.Generic;
+using SS3D.Data;
+using SS3D.Data.Generated;
 using SS3D.Interactions;
 using SS3D.Interactions.Interfaces;
 using SS3D.Systems.Inventory.Interactions;
 using SS3D.Systems.Inventory.Items;
+using System;
+using System.Collections.Generic;
 using UnityEngine;
-using SS3D.Data.Generated;
 
 namespace SS3D.Systems.Inventory.Containers
 {
@@ -20,6 +20,21 @@ namespace SS3D.Systems.Inventory.Containers
         public AttachedContainer attachedContainer;
         private Sprite _viewContainerIcon;
 
+        private AssetHandle<Sprite> _takeIconHandle;
+        private AssetHandle<Sprite> _openIconHandle;
+
+        protected override void OnAwake()
+        {
+            base.OnAwake();
+            AcquireAssets();
+        }
+
+        protected override void OnDestroyed()
+        {
+            base.OnDestroyed();
+            ReleaseAssets();
+        }
+
         public override IInteraction[] CreateTargetInteractions(InteractionEvent interactionEvent)
         {
             if (attachedContainer.HasCustomInteraction)
@@ -29,25 +44,20 @@ namespace SS3D.Systems.Inventory.Containers
 
             List<IInteraction> interactions = new();
 
-            Sprite takeIcon = Assets.Get<Sprite>(AssetDatabases.InteractionIcons, InteractionIcons.Take);
-            Sprite openIcon = Assets.Get<Sprite>(AssetDatabases.InteractionIcons, InteractionIcons.Open);
-
             StoreInteraction storeInteraction = new(attachedContainer)
             {
-                Icon = takeIcon,
+                Icon = _takeIconHandle?.Asset,
             };
 
             TakeFirstInteraction takeFirstInteraction = new(attachedContainer)
             {
-                Icon = takeIcon,
+                Icon = _takeIconHandle?.Asset,
             };
 
             ViewContainerInteraction view = new(attachedContainer)
             {
-                MaxDistance = attachedContainer.MaxDistance, Icon = _viewContainerIcon,
+                MaxDistance = attachedContainer.MaxDistance, Icon = _openIconHandle?.Asset,
             };
-
-            view.Icon = openIcon;
 
             // Pile or Normal the Store Interaction will always appear, but View only appears in Normal containers
             if (IsOpen() | !attachedContainer.OnlyStoreWhenOpen | !attachedContainer.IsOpenable)
@@ -71,7 +81,7 @@ namespace SS3D.Systems.Inventory.Containers
 
             OpenInteraction openInteraction = new(attachedContainer)
             {
-                Icon = openIcon,
+                Icon = _openIconHandle?.Asset,
             };
 
             openInteraction.OnOpenStateChanged += OpenStateChanged;
@@ -83,6 +93,15 @@ namespace SS3D.Systems.Inventory.Containers
         protected override void OpenStateChanged(object sender, bool e)
         {
             base.OpenStateChanged(sender, e);
+        }
+
+        protected override void SyncOpenState(bool oldVal, bool newVal, bool asServer)
+        {
+            base.SyncOpenState(oldVal, newVal, asServer);
+            if (!newVal)
+            {
+                CloseUis();
+            }
         }
 
         /// <summary>
@@ -115,13 +134,27 @@ namespace SS3D.Systems.Inventory.Containers
             }
         }
 
-        protected override void SyncOpenState(bool oldVal, bool newVal, bool asServer)
+        private async void AcquireAssets()
         {
-            base.SyncOpenState(oldVal, newVal, asServer);
-            if (!newVal)
+            _takeIconHandle = await new AssetRequest<Sprite>(InteractionIcons.Take).LoadAsync();
+
+            if (!_takeIconHandle)
             {
-                CloseUis();
+                AssetHandle.Release(ref _takeIconHandle);
             }
+
+            _openIconHandle = await new AssetRequest<Sprite>(InteractionIcons.Open).LoadAsync();
+
+            if (!_openIconHandle)
+            {
+                AssetHandle.Release(ref _openIconHandle);
+            }
+        }
+
+        private void ReleaseAssets()
+        {
+            AssetHandle.Release(ref _takeIconHandle);
+            AssetHandle.Release(ref _openIconHandle);
         }
     }
 }

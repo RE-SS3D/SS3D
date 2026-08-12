@@ -12,10 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4584c35d672b8a74797cc5efa123ce16, type: 3}
   m_Name: TileWhite
   m_EditorClassIdentifier: 
-  prefab: {fileID: 6767447678079105841, guid: 61201f10ccc2856459a9de99d9cdc52e, type: 3}
   PrefabAsset: {fileID: 11400000, guid: e5a9093f9ed950049869333d55ef39ea, type: 2}
-  icon: {fileID: 0}
-  _nameString: 
+  icon: {fileID: 21300000, guid: 80f6c9273b382a04982e141ce7a5d8d3, type: 3}
   layer: 1
   genericType: 9
   specificType: 0

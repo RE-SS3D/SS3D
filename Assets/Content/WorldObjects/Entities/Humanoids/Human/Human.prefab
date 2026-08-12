@@ -6639,6 +6639,8 @@ GameObject:
   - component: {fileID: 8703868999579586524}
   - component: {fileID: -4713880493128437662}
   - component: {fileID: -8174327676669324710}
+  - component: {fileID: 6094202723139528700}
+  - component: {fileID: -4511443939268896009}
   m_Layer: 11
   m_Name: Human
   m_TagString: Player
@@ -6779,7 +6781,7 @@ MonoBehaviour:
   _initializeOrder: 0
   _defaultDespawnType: 0
   NetworkObserver: {fileID: 0}
-  <PrefabId>k__BackingField: 113
+  <PrefabId>k__BackingField: 21
   <SpawnableCollectionId>k__BackingField: 0
   _scenePathHash: 0
   <SceneId>k__BackingField: 0
@@ -6862,7 +6864,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c71fd7f855ec523429999fc4e14a1928, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _overrideType: 1
+  _overrideType: 2
   _updateHostVisibility: 1
   _observerConditions: []
 --- !u!95 &1252106768682846670
@@ -7250,6 +7252,31 @@ MonoBehaviour:
   _addedNetworkObject: {fileID: 2930813178971533500}
   _networkObjectCache: {fileID: 2930813178971533500}
   _humanInventory: {fileID: 1089183168752255729}
+--- !u!114 &6094202723139528700
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6415765038646171405}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 82d17451624f45f49b4a8e42b991373f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _assetGuid: 1c3eed1ea37ecc1448e41270cdc63486
+--- !u!114 &-4511443939268896009
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6415765038646171405}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c571b9eb801dcc943a001dd54a2b2b15, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &6418095482179841189
 GameObject:
   m_ObjectHideFlags: 0

@@ -1,7 +1,8 @@
-﻿using FishNet.Object;
+using FishNet.Object;
 using FishNet.Object.Synchronizing;
 using UnityEngine;
 using Coimbra;
+using JetBrains.Annotations;
 using SS3D.Data;
 using SS3D.Data.Generated;
 using System;
@@ -19,6 +20,7 @@ namespace SS3D.Systems.Health
         [SyncVar(OnChange = nameof(SyncBleedEffect))]
         public bool isBleeding;
 
+        private AssetHandle<GameObject> _bleedingEffectHandle;
         private GameObject _bloodEffect;
 
         public override void OnStartServer()
@@ -27,27 +29,18 @@ namespace SS3D.Systems.Health
             _bodyPart.OnBodyPartDetached += HandleBodyPartDestroyedOrDetached;
         }
 
-        private void OnDestroy()
-        {
-            _bodyPart.OnBodyPartDestroyed -= HandleBodyPartDestroyedOrDetached;
-            _bodyPart.OnBodyPartDetached -= HandleBodyPartDestroyedOrDetached;
-        }
-
-        private void HandleBodyPartDestroyedOrDetached(object sender, EventArgs eventArgs)
-        {
-            isBleeding = false;
-        }
-
         public void SyncBleedEffect(bool prev, bool next, bool asServer)
         {
-            if (prev == next) return;
-
-            if (next && _bloodEffect == null)
+            if (prev == next)
             {
-                GameObject bleedingEffect = Assets.Get<GameObject>(AssetDatabases.ParticlesEffects, ParticlesEffects.BleedingParticle);
+                return;
+            }
+
+            if (next && !_bloodEffect && _bleedingEffectHandle)
+            {
                 GameObject bloodDisplayer;
                 Transform bloodParent;
-                if (_bodyPart.BodyCollider != null)
+                if (_bodyPart.BodyCollider)
                 {
                     bloodDisplayer = _bodyPart.BodyCollider.gameObject;
                     bloodParent = _bodyPart.BodyCollider.gameObject.transform;
@@ -58,12 +51,40 @@ namespace SS3D.Systems.Health
                     bloodParent = gameObject.transform;
                 }
 
-                _bloodEffect = Instantiate(bleedingEffect, bloodDisplayer.transform.position, Quaternion.identity);
+                _bloodEffect = Instantiate(_bleedingEffectHandle.Asset, bloodDisplayer.transform.position, Quaternion.identity);
                 _bloodEffect.transform.parent = bloodParent;
             }
-            else if (!next && _bloodEffect != null)
+            else if (!next && _bloodEffect)
             {
                 _bloodEffect.Dispose(true);
+            }
+        }
+
+        private void Awake()
+        {
+            AcquireAssets();
+        }
+
+        private void OnDestroy()
+        {
+            _bodyPart.OnBodyPartDestroyed -= HandleBodyPartDestroyedOrDetached;
+            _bodyPart.OnBodyPartDetached -= HandleBodyPartDestroyedOrDetached;
+
+            AssetHandle.Release(ref _bleedingEffectHandle);
+        }
+
+        private void HandleBodyPartDestroyedOrDetached(object sender, EventArgs eventArgs)
+        {
+            isBleeding = false;
+        }
+
+        private async void AcquireAssets()
+        {
+            _bleedingEffectHandle = await new AssetRequest<GameObject>(ParticlesEffects.BleedingParticle).LoadAsync();
+
+            if (!_bleedingEffectHandle)
+            {
+                AssetHandle.Release(ref _bleedingEffectHandle);
             }
         }
     }

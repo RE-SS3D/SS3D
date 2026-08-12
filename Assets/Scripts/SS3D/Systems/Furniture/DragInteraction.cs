@@ -1,4 +1,4 @@
-﻿using SS3D.Data;
+using SS3D.Data;
 using SS3D.Data.Generated;
 using SS3D.Interactions;
 using SS3D.Interactions.Extensions;
@@ -6,6 +6,7 @@ using SS3D.Interactions.Interfaces;
 using SS3D.Systems.Entities;
 using SS3D.Systems.Entities.Humanoid;
 using SS3D.Systems.Inventory.Containers;
+using System;
 using UnityEngine;
 
 namespace SS3D.Systems.Furniture
@@ -13,14 +14,32 @@ namespace SS3D.Systems.Furniture
     /// <summary>
     /// Interaction used to drag heavy stuff around the map.
     /// </summary>
-    public class DragInteraction : IInteraction, IClientInteractionSource
+    public class DragInteraction : IInteraction, IClientInteractionSource, IDisposable
     {
         public string Name;
         public Sprite Icon;
+        
+        private AssetHandle<Sprite> _iconHandle;
+
         /// <summary>
         /// If the interaction should be range limited
         /// </summary>
         public bool RangeCheck { get; set; } = true;
+
+        public DragInteraction()
+        {
+            AcquireIcon();
+        }
+        
+        ~DragInteraction()
+        {
+            Dispose();
+        }
+
+        public void Dispose()
+        {
+            AssetHandle.Release(ref _iconHandle);
+        }
 
         public string GetName(InteractionEvent interactionEvent)
         {
@@ -36,7 +55,7 @@ namespace SS3D.Systems.Furniture
 
         public Sprite GetIcon(InteractionEvent interactionEvent)
         {
-            return Assets.Get<Sprite>(AssetDatabases.InteractionIcons, InteractionIcons.Discard);
+            return Icon;
         }
 
         public bool CanInteract(InteractionEvent interactionEvent)
@@ -81,6 +100,20 @@ namespace SS3D.Systems.Furniture
 
             // Check if the angle is within the tolerance range
             return angle <= toleranceAngle;
+        }
+        
+        private async void AcquireIcon()
+        {
+            _iconHandle = await new AssetRequest<Sprite>(InteractionIcons.Discard).LoadAsync();
+
+            if (!_iconHandle)
+            {
+                AssetHandle.Release(ref _iconHandle);
+                
+                return;
+            }
+
+            Icon = _iconHandle.Asset;
         }
     }
 }

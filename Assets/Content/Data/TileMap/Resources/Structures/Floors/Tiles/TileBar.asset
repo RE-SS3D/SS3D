@@ -12,10 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4584c35d672b8a74797cc5efa123ce16, type: 3}
   m_Name: TileBar
   m_EditorClassIdentifier: 
-  prefab: {fileID: 6767447678079105841, guid: 75680e6a1df5ff547bdb5b8f116f766b, type: 3}
   PrefabAsset: {fileID: 11400000, guid: e6e23e6ec76da7c4eaf5f33cbc356f8e, type: 2}
-  icon: {fileID: 0}
-  _nameString: 
+  icon: {fileID: 21300000, guid: 0b0e68fd409ec9f49ad977fc3462ef3e, type: 3}
   layer: 1
   genericType: 9
   specificType: 0

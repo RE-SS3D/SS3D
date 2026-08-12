@@ -12,7 +12,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 827764dff5251cd4ebdef8908d68f3dd, type: 3}
   m_Name: ShoeJackboots
   m_EditorClassIdentifier: 
-  prefab: {fileID: 2653363475000095017, guid: 535ed7c02b5cbdc43ae2b234a963c5cc, type: 3}
   PrefabAsset: {fileID: 11400000, guid: 7514f2bc5fd84a14095929761da0a4dd, type: 2}
-  icon: {fileID: 0}
-  _nameString: 
+  icon: {fileID: 21300000, guid: c5c11e2231fd3464b8582a3e0c52ab40, type: 3}

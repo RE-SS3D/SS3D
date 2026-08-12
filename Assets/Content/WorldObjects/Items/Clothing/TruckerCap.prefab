@@ -51,6 +51,9 @@ GameObject:
   - component: {fileID: 5067584742411346480}
   - component: {fileID: -8219830496143806192}
   - component: {fileID: 7778212894035129079}
+  - component: {fileID: 192691792857772630}
+  - component: {fileID: -1831522851129439347}
+  - component: {fileID: 2172962599184011602}
   m_Layer: 10
   m_Name: TruckerCap
   m_TagString: Untagged
@@ -215,7 +218,7 @@ MonoBehaviour:
   _initializeOrder: 0
   _defaultDespawnType: 0
   NetworkObserver: {fileID: 0}
-  <PrefabId>k__BackingField: 3
+  <PrefabId>k__BackingField: 26
   <SpawnableCollectionId>k__BackingField: 0
   _scenePathHash: 0
   <SceneId>k__BackingField: 0
@@ -315,3 +318,42 @@ MonoBehaviour:
   _componentIndexCache: 2
   _addedNetworkObject: {fileID: -1921154974467191097}
   _networkObjectCache: {fileID: -1921154974467191097}
+--- !u!114 &192691792857772630
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2601952054522247362}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 82d17451624f45f49b4a8e42b991373f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _assetGuid: 1ef3c21a685ec2d4e9f0876719839d5f
+--- !u!114 &-1831522851129439347
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2601952054522247362}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c571b9eb801dcc943a001dd54a2b2b15, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &2172962599184011602
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2601952054522247362}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 228a3039c03766b4c85d1c0ad4771a81, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _identifier: {fileID: 192691792857772630}
+  _armed: 0

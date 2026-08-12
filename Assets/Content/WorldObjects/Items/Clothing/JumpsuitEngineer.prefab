@@ -75,17 +75,26 @@ PrefabInstance:
       propertyPath: m_Mesh
       value: 
       objectReference: {fileID: 7310264250969126733, guid: 76ba5420c179bb841858ed042df97ba2, type: 3}
+    - target: {fileID: 2355343268079052499, guid: 236b51ddc6f9aa94ca92579082370c06, type: 3}
+      propertyPath: _assetGuid
+      value: 7436f4976849b994aaee40df1bca7d89
+      objectReference: {fileID: 0}
     - target: {fileID: 2527334834019670621, guid: 236b51ddc6f9aa94ca92579082370c06, type: 3}
       propertyPath: <PrefabId>k__BackingField
-      value: 159
+      value: 94
       objectReference: {fileID: 0}
     - target: {fileID: 2527334834019670621, guid: 236b51ddc6f9aa94ca92579082370c06, type: 3}
       propertyPath: <AssetPathHash>k__BackingField
       value: 13453785768474410456
       objectReference: {fileID: 0}
+    - target: {fileID: 6496854825033079438, guid: 236b51ddc6f9aa94ca92579082370c06, type: 3}
+      propertyPath: _assetGuid
+      value: 7436f4976849b994aaee40df1bca7d89
+      objectReference: {fileID: 0}
     - target: {fileID: 7201402233169256053, guid: 236b51ddc6f9aa94ca92579082370c06, type: 3}
       propertyPath: _clothMeshes._list.Array.data[0]._value
       value: 
       objectReference: {fileID: 7310264250969126733, guid: 76ba5420c179bb841858ed042df97ba2, type: 3}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 2355343268079052499, guid: 236b51ddc6f9aa94ca92579082370c06, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: 236b51ddc6f9aa94ca92579082370c06, type: 3}

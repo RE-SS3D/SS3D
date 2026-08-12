@@ -16,6 +16,9 @@ GameObject:
   - component: {fileID: 4188904223884923263}
   - component: {fileID: -6743858448264233399}
   - component: {fileID: -5719492879188372624}
+  - component: {fileID: -2629763520413151900}
+  - component: {fileID: 781567074712748038}
+  - component: {fileID: -693485811546147091}
   m_Layer: 0
   m_Name: DisposalPipes
   m_TagString: Untagged
@@ -55,6 +58,7 @@ MonoBehaviour:
   <PredictedSpawn>k__BackingField: {fileID: 0}
   _networkBehaviours:
   - {fileID: 355159483773011154}
+  - {fileID: 4188904223884923263}
   <ParentNetworkObject>k__BackingField: {fileID: 0}
   <ChildNetworkObjects>k__BackingField: []
   SerializedTransformProperties:
@@ -66,7 +70,7 @@ MonoBehaviour:
   _initializeOrder: 0
   _defaultDespawnType: 0
   NetworkObserver: {fileID: 0}
-  <PrefabId>k__BackingField: 166
+  <PrefabId>k__BackingField: 15
   <SpawnableCollectionId>k__BackingField: 0
   _scenePathHash: 0
   <SceneId>k__BackingField: 0
@@ -159,9 +163,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ff65a9dda1ef18f4cbc16ee4d1aee066, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _componentIndexCache: 255
+  _componentIndexCache: 1
   _addedNetworkObject: {fileID: -7727686409064562107}
-  _networkObjectCache: {fileID: 0}
+  _networkObjectCache: {fileID: -7727686409064562107}
+  _asset: {fileID: 11400000, guid: 57608ddf01d6f6049a7130f791e07297, type: 2}
+  _tileObjectSo: {fileID: 0}
 --- !u!114 &-6743858448264233399
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -187,3 +193,42 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   key: {fileID: 11400000, guid: e0b540ece8c1ac44ca3e48e9a9549064, type: 2}
+--- !u!114 &-2629763520413151900
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2802364579275783218}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 82d17451624f45f49b4a8e42b991373f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _assetGuid: 12a989ad41a83a3468d1ae9aff9628d3
+--- !u!114 &781567074712748038
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2802364579275783218}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c571b9eb801dcc943a001dd54a2b2b15, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &-693485811546147091
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2802364579275783218}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 228a3039c03766b4c85d1c0ad4771a81, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _identifier: {fileID: -2629763520413151900}
+  _armed: 0

@@ -1,4 +1,4 @@
-﻿using FishNet.Object;
+using FishNet.Object;
 using SS3D.Core.Behaviours;
 using SS3D.Systems.PlayerControl;
 using UnityEngine;
@@ -14,6 +14,7 @@ using SS3D.Core;
 using SS3D.Data;
 using SS3D.Data.AssetDatabases;
 using SS3D.Systems.Inventory.Items.Generic;
+using System.Threading.Tasks;
 
 namespace SS3D.Systems.Roles
 {
@@ -96,7 +97,7 @@ namespace SS3D.Systems.Roles
         /// <summary>
         /// Assign a role to the player after joining the server
         /// </summary>
-        /// <param name="player</param>
+        /// <param name="player"></param>
         private void AssignPlayerRole(Player player)
         {
             RoleCounter assistantRole = _roleCounters.FirstOrDefault(rc => rc.Role.Name == "Assistant");
@@ -120,16 +121,15 @@ namespace SS3D.Systems.Roles
         /// <param name="player</param>
         private void RemovePlayerFromCounters(Player player)
         {
-            KeyValuePair<Player, RoleData>? rolePlayer =
-                _rolePlayers.FirstOrDefault(rp => rp.Key == player);
+            (_, RoleData roleData) = _rolePlayers.FirstOrDefault(rp => rp.Key == player);
 
-            if (rolePlayer != null)
+            if (!roleData)
             {
-                RoleData roleData = rolePlayer.Value.Value;
-                RoleCounter roleCounter = _roleCounters.First(rc => rc.Role == roleData);
-
-                roleCounter.RemovePlayer(player);
+                return;
             }
+
+            RoleCounter roleCounter = _roleCounters.First(rc => rc.Role == roleData);
+            roleCounter.RemovePlayer(player);
         }
 
         /// <summary>
@@ -139,20 +139,19 @@ namespace SS3D.Systems.Roles
         [ServerRpc(RequireOwnership = false)]
         public void GiveRoleLoadoutToPlayer(Entity entity)
         {
-            KeyValuePair<Player, RoleData>? rolePlayer =
-                _rolePlayers.FirstOrDefault(rp => rp.Key == entity.Mind.player);
+            (_, RoleData roleData) = _rolePlayers.FirstOrDefault(rp => rp.Key == entity.Mind.player);
 
-            if (rolePlayer != null)
+            if (!roleData)
             {
-                RoleData roleData = rolePlayer.Value.Value;
+                return;
+            }
 
-                Log.Information(this, entity.Ckey + " embarked with role " + roleData.Name);
-                SpawnIdentificationItems(entity, roleData);
+            Log.Information(this, entity.Ckey + " embarked with role " + roleData.Name);
+            SpawnIdentificationItems(entity, roleData);
 
-                if (roleData.Loadout != null)
-                {
-                    SpawnLoadoutItems(entity, roleData.Loadout);
-                }
+            if (roleData.Loadout)
+            {
+                SpawnLoadoutItems(entity, roleData.Loadout);
             }
         }
 
@@ -161,15 +160,15 @@ namespace SS3D.Systems.Roles
         /// </summary>
         /// <param name="entity"></param>
         /// <param name="role"></param>
-        private void SpawnIdentificationItems(Entity entity, RoleData role)
+        private async void SpawnIdentificationItems(Entity entity, RoleData role)
         {
             ItemSubSystem itemSystem = SubSystems.Get<ItemSubSystem>();
             HumanInventory inventory = entity.GetComponent<HumanInventory>();
 
             if (!inventory.TryGetTypeContainer(ContainerType.Identification, 0, out AttachedContainer container)) return;
 
-            Item pdaItem = SpawnItemInSlot(role.PDAAsset, true, container);
-            Item idCardItem = itemSystem.SpawnItem(role.IDCardAsset.Id, Vector3.zero, Quaternion.identity);
+            Item pdaItem = await SpawnItemInSlotAsync(role.PDAAsset, true, container);
+            Item idCardItem = await itemSystem.SpawnItemAsync(role.IDCardAsset.Id, Vector3.zero, Quaternion.identity);
 
             PDA pda = (PDA)pdaItem;
             IDCard idCard = (IDCard)idCardItem;
@@ -191,46 +190,38 @@ namespace SS3D.Systems.Roles
         /// </summary>
         /// <param name="entity">The player that will receive the items</param>
         /// <param name="loadout">The loadout of items he will receive</param>
-        private void SpawnLoadoutItems(Entity entity, RoleLoadout loadout)
+        private async void SpawnLoadoutItems(Entity entity, RoleLoadout loadout)
         {
             Hands hands = entity.GetComponent<Hands>();
             HumanInventory inventory = entity.GetComponent<HumanInventory>();
 
-            Dictionary<ContainerType, AttachedContainer> containers = new Dictionary<ContainerType, AttachedContainer>();
             List<AttachedContainer> handContainers = hands.HandContainers;
 
-            foreach (AttachedContainer inventoryContainer in inventory.Containers)
+            Dictionary<ContainerType, AttachedContainer> containers = inventory.Containers.Where(inventoryContainer => inventoryContainer.ContainerType != ContainerType.Hand)
+                .ToDictionary(inventoryContainer => inventoryContainer.ContainerType);
+            
+            List<Task<Item>> loadoutTasks = new();
+
+            foreach (KeyValuePair<ContainerType, ObjectAssetReference> itemToEquip 
+                in loadout.EquipmentAssets.Where(itemToEquip => itemToEquip.Value))
             {
-                if (inventoryContainer.ContainerType == ContainerType.Hand)
-                {
-                    continue;
-                }
-
-                containers.Add(inventoryContainer.ContainerType, inventoryContainer);
-            }
-
-            foreach (KeyValuePair<ContainerType, ObjectAssetReference> itemToEquip in loadout.EquipmentAssets)
-            {
-                if (!itemToEquip.Value)
-                {
-                    continue;
-                }
-
                 if (containers.TryGetValue(itemToEquip.Key, out AttachedContainer container))
                 {
-                    SpawnItemInSlot(itemToEquip.Value, true, container);
+                    loadoutTasks.Add(SpawnItemInSlotAsync(itemToEquip.Value, true, container));
                 }
             }
 
             if (loadout.HandLeftAsset)
             {
-                SpawnItemInSlot(loadout.HandLeftAsset, true, handContainers[0]);
+                loadoutTasks.Add(SpawnItemInSlotAsync(loadout.HandLeftAsset, true, handContainers[0]));
             }
 
             if (loadout.HandRightAsset)
             {
-                SpawnItemInSlot(loadout.HandRightAsset, true, handContainers[1]);
+                loadoutTasks.Add(SpawnItemInSlotAsync(loadout.HandRightAsset, true, handContainers[1]));
             }
+
+            await Task.WhenAll(loadoutTasks);
 
             inventory.TriggerInventorySetup();
         }
@@ -241,16 +232,28 @@ namespace SS3D.Systems.Roles
         /// <param name="assetReference"></param>
         /// <param name="shouldSpawn">Condition indicating if the item should be spawned</param>
         /// <param name="container">Container the item will be spawned in</param>
-        private Item SpawnItemInSlot(ObjectAssetReference assetReference, bool shouldSpawn, AttachedContainer container)
+        private async Task<Item> SpawnItemInSlotAsync(ObjectAssetReference assetReference, bool shouldSpawn, AttachedContainer container)
         {
             if (!shouldSpawn)
             {
                 return null;
             }
 
+            AssetHandle<GameObject> handle = await new AssetRequest<GameObject>(assetReference).LoadAsync();
+
+            if (!handle)
+            {
+                handle?.Dispose();
+                Log.Error(this, $"Failed to load asset '{assetReference.Id}' for role loadout.");
+
+                return null;
+            }
+
             ItemSubSystem itemSystem = SubSystems.Get<ItemSubSystem>();
-            GameObject gameObjectToSpawn = Assets.Get<GameObject>(assetReference);
-            return itemSystem.SpawnItemInContainer(gameObjectToSpawn, container);
+            Item result = await itemSystem.SpawnItemInContainerAsync(handle.Asset, assetReference.Id, container);
+            handle.Dispose();
+
+            return result;
         }
     }
 }

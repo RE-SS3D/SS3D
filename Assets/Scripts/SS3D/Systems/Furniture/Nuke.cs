@@ -1,4 +1,4 @@
-﻿using SS3D.Interactions;
+using SS3D.Interactions;
 using SS3D.Interactions.Interfaces;
 using FishNet.Object;
 using SS3D.Core;
@@ -12,6 +12,20 @@ namespace SS3D.Systems.Furniture
 {
     public class Nuke : InteractionSource, IInteractionTarget
     {
+        private AssetHandle<Sprite> _nukeIconHandle;
+
+        protected override void OnAwake()
+        {
+            base.OnAwake();
+            AcquireIcon();
+        }
+
+        protected override void OnDestroyed()
+        {
+            base.OnDestroyed();
+            AssetHandle.Release(ref _nukeIconHandle);
+        }
+
         [ServerRpc(RequireOwnership = false)]
         public void Detonate()
         {
@@ -21,7 +35,23 @@ namespace SS3D.Systems.Furniture
 
         IInteraction[] IInteractionTarget.CreateTargetInteractions(InteractionEvent interactionEvent)
         {
-            return new IInteraction[] { new NukeDetonateInteraction { Icon = Assets.Get<Sprite>(AssetDatabases.InteractionIcons, InteractionIcons.Nuke) } };
+            return new IInteraction[]
+            {
+                new NukeDetonateInteraction
+                {
+                    Icon = _nukeIconHandle?.Asset,
+                },
+            };
+        }
+
+        private async void AcquireIcon()
+        {
+            _nukeIconHandle = await new AssetRequest<Sprite>(InteractionIcons.Nuke).LoadAsync();
+
+            if (!_nukeIconHandle)
+            {
+                AssetHandle.Release(ref _nukeIconHandle);
+            }
         }
     }
 }

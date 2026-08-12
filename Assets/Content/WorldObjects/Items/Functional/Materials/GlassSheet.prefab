@@ -212,6 +212,9 @@ GameObject:
   - component: {fileID: 1034747657592807112}
   - component: {fileID: 4129408090615520002}
   - component: {fileID: 1465153506310873417}
+  - component: {fileID: -2017461897509095220}
+  - component: {fileID: 6759132503127033088}
+  - component: {fileID: -4864534536186658930}
   m_Layer: 10
   m_Name: GlassSheet
   m_TagString: Untagged
@@ -329,7 +332,7 @@ MonoBehaviour:
   _initializeOrder: 0
   _defaultDespawnType: 0
   NetworkObserver: {fileID: 0}
-  <PrefabId>k__BackingField: 117
+  <PrefabId>k__BackingField: 191
   <SpawnableCollectionId>k__BackingField: 0
   _scenePathHash: 0
   <SceneId>k__BackingField: 0
@@ -397,6 +400,45 @@ MonoBehaviour:
   _componentIndexCache: 2
   _addedNetworkObject: {fileID: 1773710978803455870}
   _networkObjectCache: {fileID: 1773710978803455870}
+--- !u!114 &-2017461897509095220
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7125681683583715523}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 82d17451624f45f49b4a8e42b991373f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _assetGuid: e2a06f02e6a7e0348bdc535344bfe1f3
+--- !u!114 &6759132503127033088
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7125681683583715523}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c571b9eb801dcc943a001dd54a2b2b15, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &-4864534536186658930
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7125681683583715523}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 228a3039c03766b4c85d1c0ad4771a81, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _identifier: {fileID: -2017461897509095220}
+  _armed: 0
 --- !u!1 &7393894785072713980
 GameObject:
   m_ObjectHideFlags: 0

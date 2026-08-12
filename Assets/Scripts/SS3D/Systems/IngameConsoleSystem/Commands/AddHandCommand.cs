@@ -1,13 +1,15 @@
-﻿using SS3D.Core;
+using System;
+using SS3D.Core;
 using SS3D.Systems.Entities;
 using SS3D.Systems.PlayerControl;
 using UnityEngine;
-using FishNet;
 using SS3D.Systems.Inventory.Containers;
 using FishNet.Connection;
 using SS3D.Data;
+using SS3D.Logging;
 using SS3D.Permissions;
 using SS3D.Data.Generated;
+using SS3D.Data.Networking;
 
 namespace SS3D.Systems.IngameConsoleSystem.Commands
 {
@@ -41,23 +43,48 @@ namespace SS3D.Systems.IngameConsoleSystem.Commands
                 rotation = new Vector3(float.Parse(args[4]), float.Parse(args[5]), float.Parse(args[6]));
             }
 
-            Player Player = SubSystems.Get<PlayerSubSystem>().GetPlayer(ckey);
-            Entity entity = SubSystems.Get<EntitySubSystem>().GetSpawnedEntity(Player);
+            if (!SubSystems.Get<AssetSubSystem>().Has(Items.HumanHandLeft))
+            {
+                return "Hand asset not found";
+            }
 
-            Hand leftHandPrefab = Assets.Get<Hand>(AssetDatabases.Items, Items.HumanHandLeft);
-            Hand leftHand = Object.Instantiate(leftHandPrefab, entity.transform);
-            leftHand.Transform.localPosition = position;
-            leftHand.Transform.localEulerAngles = rotation;
+            Player player = SubSystems.Get<PlayerSubSystem>().GetPlayer(ckey);
+            Entity entity = SubSystems.Get<EntitySubSystem>().GetSpawnedEntity(player);
 
-            InstanceFinder.ServerManager.Spawn(leftHand.GameObject, Player.Owner);
+            AddHandAsync(entity, position, rotation, player);
 
-            Hands hands = entity.GetComponent<Hands>();
-            HumanInventory inventory = entity.GetComponent<HumanInventory>();
-            inventory.TryAddContainer(leftHand.GetComponent<AttachedContainer>());
-            hands.AddHand(leftHand);
-
-            return "hand added";
+            return "Adding hand...";
         }
+
+        private async void AddHandAsync(Entity entity, Vector3 position, Vector3 rotation, Player player)
+        {
+            try
+            {
+                AssetHandle<Hand> leftHandHandle = await new AssetRequest<Hand>(Items.HumanHandLeft).LoadAsync();
+
+                if (!leftHandHandle)
+                {
+                    Log.Error(this, "Failed to load hand asset");
+                    return;
+                }
+
+                Hand leftHand = UnityEngine.Object.Instantiate(leftHandHandle.Asset, entity.transform);
+                leftHand.Transform.localPosition = position;
+                leftHand.Transform.localEulerAngles = rotation;
+
+                await NetworkSpawner.SpawnAsync(leftHand, Items.HumanHandLeft, player.Owner);
+
+                Hands hands = entity.GetComponent<Hands>();
+                HumanInventory inventory = entity.GetComponent<HumanInventory>();
+                inventory.TryAddContainer(leftHand.GetComponent<AttachedContainer>());
+                hands.AddHand(leftHand);
+            }
+            catch (Exception e)
+            {
+                Log.Error(this, $"Failed to add hand: {e.Message}");
+            }
+        }
+
         protected override CheckArgsResponse CheckArgs(string[] args)
         {
             CheckArgsResponse response = new CheckArgsResponse();

@@ -12,10 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4584c35d672b8a74797cc5efa123ce16, type: 3}
   m_Name: PosterHorizontal
   m_EditorClassIdentifier: 
-  prefab: {fileID: 5161561551087789900, guid: fdaaabc96a55d824a86a3636906240c1, type: 3}
   PrefabAsset: {fileID: 11400000, guid: 744c2b8be430f5a448ab30c7de840764, type: 2}
-  icon: {fileID: 0}
-  _nameString: 
+  icon: {fileID: 21300000, guid: 2ef7a358e0e9597499cc7da2e7d893f8, type: 3}
   layer: 6
   genericType: 0
   specificType: 0

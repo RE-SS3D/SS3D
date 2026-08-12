@@ -14,8 +14,12 @@ namespace SS3D.Systems.Inventory.Interactions
     [Serializable]
     public class DropInteraction : IInteraction, IClientInteractionSource
     {
+        private static AssetHandle<Sprite> DefaultIconHandle;
+        private static bool TryingToLoadIcon;
+        
         public string Name;
         public Sprite Icon;
+
         /// <summary>
         /// The maximum angle of surface the item will allow being dropped on
         /// </summary>
@@ -26,6 +30,14 @@ namespace SS3D.Systems.Inventory.Interactions
         /// </summary>
         private LayerMask _defaultMask = LayerMask.GetMask("Default");
 
+        public DropInteraction()
+        {
+            if (!TryingToLoadIcon && !DefaultIconHandle)
+            {
+                AcquireDefaultIcon();
+            }
+        }
+
         public string GetName(InteractionEvent interactionEvent)
         {
             return "Drop";
@@ -33,10 +45,7 @@ namespace SS3D.Systems.Inventory.Interactions
 
         public string GetGenericName() => throw new NotImplementedException();
 
-        public Sprite GetIcon(InteractionEvent interactionEvent)
-        {
-            return Icon ? Icon : Assets.Get<Sprite>(AssetDatabases.InteractionIcons, InteractionIcons.Discard);
-        }
+        public Sprite GetIcon(InteractionEvent interactionEvent) => Icon ? Icon : DefaultIconHandle.Asset;
 
         public bool CanInteract(InteractionEvent interactionEvent)
         {
@@ -95,6 +104,29 @@ namespace SS3D.Systems.Inventory.Interactions
             hand.PlaceHeldItemOutOfHand(interactionEvent.Point, rotation);
 
             return false;
+        }
+
+        private static async void AcquireDefaultIcon()
+        {
+            TryingToLoadIcon = true;
+            DefaultIconHandle = await new AssetRequest<Sprite>(InteractionIcons.Discard).LoadAsync();
+
+            if (!DefaultIconHandle)
+            {
+                AssetHandle.Release(ref DefaultIconHandle);
+            }
+            else
+            {
+                UnityEngine.Application.quitting += OnApplicationQuit;
+            }
+
+            TryingToLoadIcon = false;
+        }
+
+        private static void OnApplicationQuit()
+        {
+            AssetHandle.Release(ref DefaultIconHandle);
+            UnityEngine.Application.quitting -= OnApplicationQuit;
         }
     }
 }

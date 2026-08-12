@@ -2,7 +2,6 @@
 using SS3D.Data.AssetDatabases;
 using SS3D.Logging;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -12,7 +11,7 @@ namespace SS3D.Systems.Tile
     /// <summary>
     /// Loads assets used by the tilemap. Can be used to retrieve scriptableobjects from a name string.
     /// </summary>
-    public sealed class TileResourceLoader: MonoBehaviour
+    public sealed class TileResourceLoader : MonoBehaviour
     {
         public Sprite _missingIcon;
 
@@ -32,42 +31,18 @@ namespace SS3D.Systems.Tile
 			Log.Information(this, "Loading tilemaps content");
 
             GenericObjectSo[] tempAssets = Resources.LoadAll<GenericObjectSo>("");
-            StartCoroutine(LoadAssetsWithIcon(tempAssets));
+            LoadAssetsWithIcon(tempAssets);
         }
 
-        private IEnumerator LoadAssetsWithIcon(GenericObjectSo[] assets)
+        private void LoadAssetsWithIcon(GenericObjectSo[] assets)
         {
-	        List<Texture2D> tempIcons = new List<Texture2D>();
-	        RuntimePreviewGenerator.OrthographicMode = true;
+            foreach (GenericObjectSo asset in assets)
+            {
+                asset.icon = asset.icon ? asset.icon : _missingIcon;
+                Assets.Add(asset);
+            }
 
-	        foreach (GenericObjectSo asset in assets)
-	        {
-                GameObject prefab = Data.Assets.Get<GameObject>(asset.PrefabAsset);
-                Transform prefabTransform = prefab.transform;
-		        Shader shader = Shader.Find("Unlit/ObjectIcon");
-
-		        Texture2D texture = RuntimePreviewGenerator.GenerateModelPreviewWithShader(prefabTransform, shader, null, 128, 128, true);
-
-		        tempIcons.Add(texture);
-	        }
-
-	        for (int i = 0; i < assets.Length; i++)
-	        {
-		        if (tempIcons[i] != null)
-		        {
-			        assets[i].icon = Sprite.Create(tempIcons[i], new Rect(0, 0, tempIcons[i].width, tempIcons[i].height), new Vector2(0.5f, 0.5f));
-		        }
-		        else
-		        {
-			        assets[i].icon = _missingIcon;
-		        }
-
-		        Assets.Add(assets[i]);
-	        }
-
-	        IsInitialized = true;
-
-	        yield return null;
+            IsInitialized = true;
         }
 
         [CanBeNull]
@@ -75,7 +50,7 @@ namespace SS3D.Systems.Tile
         {
             GenericObjectSo genericObjectSo = Assets.FirstOrDefault(tileObject =>  tileObject.NameString.Equals(assetName, StringComparison.OrdinalIgnoreCase));
             
-            if (genericObjectSo == null)
+            if (!genericObjectSo)
             {
 	            Log.Warning(this, "Requested tile asset {assetName} was not found.", Logs.Generic, assetName);
             }

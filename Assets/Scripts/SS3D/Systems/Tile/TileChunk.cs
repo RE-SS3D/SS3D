@@ -1,6 +1,7 @@
 ﻿using FishNet;
 using FishNet.Object;
 using SS3D.Core;
+using SS3D.Data.Networking;
 using SS3D.Logging;
 using System;
 using System.Collections;
@@ -42,9 +43,9 @@ namespace SS3D.Systems.Tile
 
             chunk.Setup(chunkKey, originPosition);
 
-            if (InstanceFinder.ServerManager != null && chunkObject.GetComponent<NetworkObject>() != null)
+            if (chunk.GetComponent<NetworkObject>())
             {
-                InstanceFinder.ServerManager.Spawn(chunkObject);
+                NetworkSpawner.Spawn(chunk);
             }
 
             return chunk;

@@ -1,4 +1,5 @@
-﻿using SS3D.Core;
+﻿using JetBrains.Annotations;
+using SS3D.Core;
 using SS3D.Data;
 using SS3D.Data.Generated;
 using SS3D.Interactions;
@@ -17,8 +18,19 @@ namespace SS3D.Systems.Inventory.Items.Generic
     /// </summary>
     public class NukeDetonateInteraction : IInteraction, IClientInteractionSource
     {
+        private static AssetHandle<Sprite> DefaultIconHandle;
+        private static bool TryingToLoadIcon;
+
         public string Name;
         public Sprite Icon;
+
+        public NukeDetonateInteraction()
+        {
+            if (!TryingToLoadIcon && !DefaultIconHandle)
+            {
+                AcquireDefaultIcon();
+            }
+        }
 
         public string GetName(InteractionEvent interactionEvent)
         {
@@ -27,10 +39,8 @@ namespace SS3D.Systems.Inventory.Items.Generic
 
         public string GetGenericName() => throw new System.NotImplementedException();
 
-        public Sprite GetIcon(InteractionEvent interactionEvent)
-        {
-            return Icon ? Icon : Assets.Get<Sprite>(AssetDatabases.InteractionIcons, InteractionIcons.Nuke);
-        }
+        [CanBeNull]
+        public Sprite GetIcon(InteractionEvent interactionEvent) => Icon ? Icon : DefaultIconHandle?.Asset;
 
         public bool CanInteract(InteractionEvent interactionEvent)
         {
@@ -64,6 +74,29 @@ namespace SS3D.Systems.Inventory.Items.Generic
             }
 
             return false;
+        }
+
+        private static async void AcquireDefaultIcon()
+        {
+            TryingToLoadIcon = true;
+            DefaultIconHandle = await new AssetRequest<Sprite>(InteractionIcons.Nuke).LoadAsync();
+
+            if (DefaultIconHandle)
+            {
+                UnityEngine.Application.quitting += OnApplicationQuit;
+            }
+            else
+            {
+                AssetHandle.Release(ref DefaultIconHandle);
+            }
+
+            TryingToLoadIcon = false;
+        }
+
+        private static void OnApplicationQuit()
+        {
+            AssetHandle.Release(ref DefaultIconHandle);
+            UnityEngine.Application.quitting -= OnApplicationQuit;
         }
     }
 }

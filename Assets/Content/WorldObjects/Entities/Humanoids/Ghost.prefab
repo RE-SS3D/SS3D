@@ -270,6 +270,8 @@ GameObject:
   - component: {fileID: -824690604824484445}
   - component: {fileID: 8139887722852006663}
   - component: {fileID: -3766456295137581405}
+  - component: {fileID: -4097501438854599080}
+  - component: {fileID: 4664935747247485430}
   m_Layer: 0
   m_Name: Ghost
   m_TagString: Untagged
@@ -328,7 +330,7 @@ MonoBehaviour:
   _initializeOrder: 0
   _defaultDespawnType: 0
   NetworkObserver: {fileID: 0}
-  <PrefabId>k__BackingField: 90
+  <PrefabId>k__BackingField: 104
   <SpawnableCollectionId>k__BackingField: 0
   _scenePathHash: 0
   <SceneId>k__BackingField: 0
@@ -380,7 +382,7 @@ MonoBehaviour:
     Z: 0
 --- !u!95 &-4088739754747855438
 Animator:
-  serializedVersion: 4
+  serializedVersion: 5
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -397,7 +399,8 @@ Animator:
   m_WarningMessage: 
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
-  m_KeepAnimatorControllerStateOnDisable: 0
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!114 &6740096083906303264
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -472,6 +475,31 @@ MonoBehaviour:
   _rotationLerpMultiplier: 5
   _movementTarget: {fileID: 4985541985952727430}
   TargetMovement: {x: 0, y: 0, z: 0}
+--- !u!114 &-4097501438854599080
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2798955099631966591}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 82d17451624f45f49b4a8e42b991373f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _assetGuid: 7bbb74a7ffc8cae44baa886de43c586b
+--- !u!114 &4664935747247485430
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2798955099631966591}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c571b9eb801dcc943a001dd54a2b2b15, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &2858841725742773226
 GameObject:
   m_ObjectHideFlags: 0

@@ -1,4 +1,4 @@
-﻿using SS3D.Data;
+using SS3D.Data;
 using SS3D.Data.Generated;
 using SS3D.Interactions;
 using SS3D.Interactions.Extensions;
@@ -13,6 +13,9 @@ namespace SS3D.Systems.Inventory.Interactions
 {
     public sealed class UnlockLockerInteraction : IInteraction, IClientInteractionSource
     {
+        private static AssetHandle<Sprite> DefaultIconHandle;
+        private static bool TryingToLoadDefaultIcon;
+
         public string Name;
         public Sprite Icon;
         private readonly IDPermission _permissionToUnlock;
@@ -24,6 +27,11 @@ namespace SS3D.Systems.Inventory.Interactions
         {
             _locker = locker;
             _permissionToUnlock = permission;
+
+            if (!TryingToLoadDefaultIcon && !DefaultIconHandle)
+            {
+                AcquireDefaultIcon();
+            }
         }
 
         public string GetName(InteractionEvent interactionEvent)
@@ -35,7 +43,7 @@ namespace SS3D.Systems.Inventory.Interactions
 
         public Sprite GetIcon(InteractionEvent interactionEvent)
         {
-            return Icon ? Icon : Assets.Get<Sprite>(AssetDatabases.InteractionIcons, InteractionIcons.Open);
+            return Icon ? Icon : DefaultIconHandle?.Asset;
         }
 
         public bool CanInteract(InteractionEvent interactionEvent)
@@ -78,6 +86,29 @@ namespace SS3D.Systems.Inventory.Interactions
             }
 
             return false;
+        }
+
+        private async void AcquireDefaultIcon()
+        {
+            TryingToLoadDefaultIcon = true;
+            DefaultIconHandle = await new AssetRequest<Sprite>(InteractionIcons.Open).LoadAsync();
+
+            if (!DefaultIconHandle)
+            {
+                AssetHandle.Release(ref DefaultIconHandle);
+            }
+            else
+            {
+                UnityEngine.Application.quitting += OnApplicationQuit;
+            }
+
+            TryingToLoadDefaultIcon = false;
+        }
+
+        private void OnApplicationQuit()
+        {
+            AssetHandle.Release(ref DefaultIconHandle);
+            UnityEngine.Application.quitting -= OnApplicationQuit;
         }
     }
 }

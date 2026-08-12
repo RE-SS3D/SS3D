@@ -12,10 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4584c35d672b8a74797cc5efa123ce16, type: 3}
   m_Name: PlasticChairBlue
   m_EditorClassIdentifier: 
-  prefab: {fileID: 4522437496122700672, guid: ad124dd2ec7d83344a20a44fad208ca0, type: 3}
   PrefabAsset: {fileID: 11400000, guid: 8c0f778498a9baa4ebc43a943c97a314, type: 2}
-  icon: {fileID: 0}
-  _nameString: 
+  icon: {fileID: 21300000, guid: d4131ed2f08fa5942a0831cdb17b6da1, type: 3}
   layer: 7
   genericType: 0
   specificType: 0

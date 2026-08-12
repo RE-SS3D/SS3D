@@ -1,8 +1,10 @@
 ﻿using FishNet.Object;
+using JetBrains.Annotations;
 using SS3D.Core;
 using SS3D.Data;
 using SS3D.Data.Generated;
 using SS3D.Systems.Audio;
+using System;
 using UnityEngine;
 using AudioType = SS3D.Systems.Audio.AudioType;
 
@@ -23,6 +25,9 @@ namespace SS3D.Systems.Furniture
 
         private const int DoorLightMaterialIndex = 1;
 
+        private AssetHandle<AudioClip> _openSoundHandle;
+        private AssetHandle<AudioClip> _closeSoundHandle;
+
         public override void OnStateExit(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
         {
             ChangeColors(_idleColor, animator);
@@ -41,6 +46,39 @@ namespace SS3D.Systems.Furniture
                 ChangeColors(_closingColor, animator);
                 SubSystems.Get<AudioSubSystem>().PlayAudioSource(AudioType.Sfx, Sounds.AirlockClose, animator.GetComponent<NetworkObject>());
             }
+        }
+
+        private void OnEnable()
+        {
+            AcquireAssets();
+        }
+
+        private void OnDisable()
+        {
+            ReleaseAssets();
+        }
+
+        private async void AcquireAssets()
+        {
+            _openSoundHandle = await new AssetRequest<AudioClip>(Sounds.AirlockOpen).LoadAsync();
+
+            if (!_openSoundHandle)
+            {
+                AssetHandle.Release(ref _openSoundHandle);
+            }
+
+            _closeSoundHandle = await new AssetRequest<AudioClip>(Sounds.AirlockClose).LoadAsync();
+
+            if (!_closeSoundHandle)
+            {
+                AssetHandle.Release(ref _closeSoundHandle);
+            }
+        }
+
+        private void ReleaseAssets()
+        {
+            AssetHandle.Release(ref _openSoundHandle);
+            AssetHandle.Release(ref _closeSoundHandle);
         }
 
         private void ChangeColors(Color color, Animator animator)

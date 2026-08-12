@@ -10,6 +10,7 @@ using SS3D.Systems.Health;
 using System.Linq;
 using System.Collections.ObjectModel;
 using FishNet;
+using SS3D.Data.Networking;
 using SS3D.Systems.Inventory.Containers;
 using SS3D.Systems.Inventory.Items;
 using System;
@@ -81,6 +82,16 @@ public abstract class BodyPart : InteractionTargetNetworkBehaviour
     {
         get { return _bodyLayers.AsReadOnly(); }
     }
+
+    /// <summary>
+    /// True once this body part's own body layers exist, so it can take part in the health simulation - be attached
+    /// into a body, perfused, and damaged. Prefer this over the network's IsSpawned when gating on readiness:
+    /// IsSpawned only reports that an ObjectId was assigned, which says nothing about this part having been built.
+    /// Note this describes the part itself, not any internal organs it spawns - those are separate body parts with
+    /// their own flag.
+    /// Server-side only: layers are created in OnStartServer, so this stays false on clients.
+    /// </summary>
+    public bool IsInitialized { get; protected set; }
     public ReadOnlyCollection<BodyPart> ChildBodyParts
     {
         get { return _childBodyParts.AsReadOnly(); }
@@ -144,6 +155,7 @@ public abstract class BodyPart : InteractionTargetNetworkBehaviour
         base.OnStartServer();
         ParentBodyPart = _parentBodyPart;
         AddInitialLayers();
+        IsInitialized = true;
     }
 
     public virtual void Init(BodyPart parent)
@@ -160,6 +172,10 @@ public abstract class BodyPart : InteractionTargetNetworkBehaviour
         {
             bodylayer.BodyPart = this;
         }
+
+        // The other path that builds a part's layers (the copy spawned when a part is detached), so it counts as
+        // initialized just as much as the OnStartServer path does.
+        IsInitialized = true;
     }
 
     /// <summary>
@@ -222,10 +238,16 @@ public abstract class BodyPart : InteractionTargetNetworkBehaviour
     private BodyPart SpawnDetachedBodyPart()
     {
         GameObject go = Instantiate(_bodyPartItem, Position, Rotation);
-        InstanceFinder.ServerManager.Spawn(go, null);
         BodyPart bodyPart = go.GetComponent<BodyPart>();
-        CopyValuesToBodyPart(bodyPart);
         bodyPart._isDetached = true;
+
+        NetworkSpawner.Spawn(bodyPart);
+
+        // Copy only once the spawn has run: a freshly instantiated prefab has no body layers at all, since
+        // _bodyLayers is not serialized and is filled by AddInitialLayers in OnStartServer, which the spawn triggers.
+        // Copying before it walked an empty collection and silently threw away every sustained damage on detach.
+        CopyValuesToBodyPart(bodyPart);
+
         return bodyPart;
     }
 

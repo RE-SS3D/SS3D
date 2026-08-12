@@ -1,7 +1,11 @@
 ﻿using SS3D.Data;
 using SS3D.Data.Generated;
+using SS3D.Data.Networking;
 using SS3D.Systems.Health;
 using System.Collections;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using UnityEngine;
 
 public class HumanTorso : BodyPart
 {
@@ -21,28 +25,65 @@ public class HumanTorso : BodyPart
     /// <summary>
     /// Add specific torso internal organs, heart, lungs, and more to come..
     /// Need to do it with a delay to prevent some Unity bug since OnStartServer() is called Before Start();
+    /// Wait on IsInitialized, not merely on the field being assigned: SpawnOrgans assigns each organ the instant
+    /// Instantiate returns, but the network spawn is deferred behind an await, and it is that spawn which runs the
+    /// organ's own OnStartServer and therefore creates its body layers. Attaching before then hands the body a
+    /// layerless organ, which the circulatory system cannot perfuse - the heart is never connected and the body
+    /// suffocates (#1362).
     /// </summary>
     private IEnumerator AddInternalOrgans()
     {
+        yield return new WaitUntil(() => IsOrganReady(Heart) && IsOrganReady(LeftLung) && IsOrganReady(RightLung));
         yield return null;
         AddInternalBodyPart(Heart);
         AddInternalBodyPart(LeftLung);
         AddInternalBodyPart(RightLung);
     }
 
-    protected override void SpawnOrgans()
+    /// <summary>
+    /// An organ is ready to be attached once it exists and has finished building its own body layers.
+    /// </summary>
+    private static bool IsOrganReady(BodyPart organ)
     {
-        Heart heartPrefab = Assets.Get<Heart>(AssetDatabases.Items, Items.HumanHeart);
-        Lungs leftLungPrefab = Assets.Get<Lungs>(AssetDatabases.Items, Items.HumanLungLeft);
-        Lungs rightLungPrefab = Assets.Get<Lungs>(AssetDatabases.Items, Items.HumanLungRight);
+        return organ && organ.IsInitialized;
+    }
 
-        Heart = Instantiate(heartPrefab);
-        LeftLung = Instantiate(leftLungPrefab);
-        RightLung = Instantiate(rightLungPrefab);
+    protected override async void SpawnOrgans()
+    {
+        Task<AssetHandle<Heart>> loadHeartTask = new AssetRequest<Heart>(Items.HumanHeart).LoadAsync();
+        Task<AssetHandle<Lungs>> loadLeftLungTask = new AssetRequest<Lungs>(Items.HumanLungLeft).LoadAsync();
+        Task<AssetHandle<Lungs>> loadRightTask = new AssetRequest<Lungs>(Items.HumanLungRight).LoadAsync();
+        
+        await Task.WhenAll(loadHeartTask, loadLeftLungTask, loadRightTask);
+        
+        AssetHandle<Heart> heartHandle = loadHeartTask.Result;
+        AssetHandle<Lungs> leftLungHandle = loadLeftLungTask.Result;
+        AssetHandle<Lungs> rightLungHandle = loadRightTask.Result;
 
-        Spawn(Heart.GameObject, Owner);
-        Spawn(LeftLung.GameObject, Owner);
-        Spawn(RightLung.GameObject, Owner);
+        List<Task> spawnTasks = new();
+        if (heartHandle)
+        {
+            Heart = Instantiate(heartHandle.Asset);
+            spawnTasks.Add(NetworkSpawner.SpawnAsync(Heart, Items.HumanHeart, Owner));
+        }
+
+        if (leftLungHandle)
+        {
+            LeftLung = Instantiate(leftLungHandle.Asset);
+            spawnTasks.Add(NetworkSpawner.SpawnAsync(LeftLung, Items.HumanLungLeft, Owner));
+        }
+
+        if (rightLungHandle)
+        {
+            RightLung = Instantiate(rightLungHandle.Asset);
+            spawnTasks.Add(NetworkSpawner.SpawnAsync(RightLung, Items.HumanLungRight, Owner));
+        }
+        
+        await Task.WhenAll(spawnTasks);
+        
+        heartHandle.Dispose();
+        leftLungHandle.Dispose();
+        rightLungHandle.Dispose();
     }
 
     protected override void AddInitialLayers()
