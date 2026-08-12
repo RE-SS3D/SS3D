@@ -1468,6 +1468,31 @@ MonoBehaviour:
       - 0.5
       - 0.5
       - 0.5
+--- !u!114 &-544443839450707328
+MonoBehaviour:
+  m_ObjectHideFlags: 3
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9788bbdb5ef1f158d9c84116721f0a30, type: 3}
+  m_Name: VisionMaskEffect
+  m_EditorClassIdentifier: 
+  active: 1
+  enabled:
+    overrideState: 1
+    value: 1
+  Quality:
+    overrideState: 1
+    value: 5
+  Directions:
+    overrideState: 1
+    value: 25
+  Size:
+    overrideState: 1
+    value: {x: 5, y: 5}
 --- !u!114 &11400000
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1489,6 +1514,7 @@ MonoBehaviour:
   - {fileID: -4984722078144235035}
   - {fileID: -2400775673892574313}
   - {fileID: -9132564074991082903}
+  - {fileID: -544443839450707328}
 --- !u!114 &4662285201658728894
 MonoBehaviour:
   m_ObjectHideFlags: 3
