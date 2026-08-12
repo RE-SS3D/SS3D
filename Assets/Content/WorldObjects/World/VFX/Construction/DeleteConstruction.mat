@@ -9,6 +9,8 @@ Material:
   m_PrefabAsset: {fileID: 0}
   m_Name: DeleteConstruction
   m_Shader: {fileID: -6465566751694194690, guid: baf9737c0bc9438478794548ae53dc86, type: 3}
+  m_Parent: {fileID: 0}
+  m_ModifiedSerializedProperties: 0
   m_ValidKeywords: []
   m_InvalidKeywords: []
   m_LightmapFlags: 4
@@ -17,6 +19,7 @@ Material:
   m_CustomRenderQueue: -1
   stringTagMap: {}
   disabledShaderPasses: []
+  m_LockedProperties: 
   m_SavedProperties:
     serializedVersion: 3
     m_TexEnvs:
@@ -89,6 +92,7 @@ Material:
     - _Glow: {r: 23.968628, g: 5.8029733, b: 0, a: 0}
     - _Texture_Tiling: {r: 1, g: 3, b: 0, a: 0}
   m_BuildTextureStacks: []
+  m_AllowLocking: 1
 --- !u!114 &6622256065269268780
 MonoBehaviour:
   m_ObjectHideFlags: 11

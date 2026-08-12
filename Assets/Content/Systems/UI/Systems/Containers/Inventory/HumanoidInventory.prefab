@@ -30,7 +30,6 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 4452887637558266342}
-  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0}
   m_AnchorMax: {x: 0.5, y: 0}
@@ -93,7 +92,6 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 6041109227899930349}
-  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
@@ -157,7 +155,6 @@ RectTransform:
   - {fileID: 2493494043804383331}
   - {fileID: 6041109227899930349}
   m_Father: {fileID: 0}
-  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
@@ -195,6 +192,7 @@ MonoBehaviour:
   HandLeftPrefab: {fileID: 7029089980375190653, guid: 64d5b65bffd07dc4fbbbd5c73d0b6281, type: 3}
   HandRightPrefab: {fileID: 6293962685997774382, guid: aca25d317b84e5c43afafc9832b4df8d, type: 3}
   BagPrefab: {fileID: 3969695133087941026, guid: 98867721229cea84eb087210f54475e0, type: 3}
+  BeltPrefab: {fileID: 6161546706607067415, guid: 7c614d478e3f2c84288321617f283dfb, type: 3}
   Divisor: {fileID: 6527856439637363361, guid: 823c4c1392e36034fab7fd8e1a1ed147, type: 3}
   HorizontalSlotOrder: 0800000000800000040000000200000001000000
   ClothingLayout: {fileID: 4392532013381623832}
@@ -209,7 +207,6 @@ MonoBehaviour:
   ExoSuitPrefab: {fileID: 6837100192917222649, guid: 7213f8ade5a231544997e1def361efaa, type: 3}
   EarLeftPrefab: {fileID: 1102191780216136002, guid: 7fba0b2cc13002b4da9b264a030ce7d8, type: 3}
   EarRightPrefab: {fileID: 6702060473300478753, guid: 2b52bcb3e287ce1468a7f69caa576557, type: 3}
-  BeltPrefab: {fileID: 6161546706607067415, guid: 7c614d478e3f2c84288321617f283dfb, type: 3}
   DummyPrefab: {fileID: 3933365585080000025, guid: 4d43e2768b3c98f47bcb46c541146e0a, type: 3}
   ClothingSlotPosition: 002000000001000000400000400000008000000000000000001000000002000000080000100000002000000020000000
 --- !u!1 &9219927822186948004
@@ -242,7 +239,6 @@ RectTransform:
   m_Children:
   - {fileID: 8398295385582505097}
   m_Father: {fileID: 4452887637558266342}
-  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}

@@ -19,10 +19,9 @@ Sprite:
   m_Pivot: {x: 0.5, y: 0.5}
   m_Extrude: 1
   m_IsPolygon: 0
-  m_AtlasName: 
   m_PackingTag: 
   m_RenderDataKey:
-    bf85b01e2333f59439185d22d03adcaa: 21300000
+    3030468639c4d15459be5f65d30a42df: 21300000
   m_AtlasTags: []
   m_SpriteAtlas: {fileID: 0}
   m_RD:
@@ -401,4 +400,5 @@ Sprite:
     - {x: 0.53, y: 0.84}
     - {x: 0.53, y: 0.82}
   m_Bones: []
+  m_ScriptableObjects: []
   m_SpriteID: 5e97eb03825dee720800000000000000

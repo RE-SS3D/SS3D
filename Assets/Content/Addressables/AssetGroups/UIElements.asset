@@ -13,14 +13,13 @@ MonoBehaviour:
   m_Name: UIElements
   m_EditorClassIdentifier: 
   m_GroupName: UIElements
-  m_Data:
-    m_SerializedData: []
   m_GUID: 60ea9dc91a0f41d4db08de60e08ce1fc
   m_SerializeEntries:
   - m_GUID: 03bcc1824d3b20748b912ca532f86bb9
     m_Address: Assets/Content/Systems/Interactions/LoadingBar.prefab
     m_ReadOnly: 0
     m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: ddc57d0f5f9fb874e8a26db0c5b215e0, type: 2}
   m_SchemaSet:

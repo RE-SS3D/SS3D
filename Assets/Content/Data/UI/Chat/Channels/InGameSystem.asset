@@ -24,5 +24,7 @@ MonoBehaviour:
   defaultVerb: 
   TextPrefix: 
   TextSuffix: 
+  UseCharacterName: 0
   HideSenderName: 1
+  SurroundMessageWithQuotationMarks: 0
   RequiredTraitInHeadset: {fileID: 0}
