@@ -61,7 +61,27 @@ A public "fuck around" server: a separate instance where anyone who joins can bu
 
 ## 7. Reporting bugs
 
-The `/bug` chat command lets a player report a problem the moment they see it, with a short note. The report is tied to that round and moment, so it can be matched with what the server saw. Bug reports are the server's main output.
+Bug reports are the server's main output, so filing one must cost seconds and must never interrupt the round.
+
+**Two ways in, one report.** `/bug <note>` in chat files instantly, with no dialog, the moment a player sees something. **F8**, a bare `/bug`, or **Report a bug** in the Escape menu opens the bug report dialog. It works everywhere: lobby, in round, as a ghost, in the map editor. Both paths produce the same report; the dialog only adds detail.
+
+**The moment is frozen, not the game.** Nothing pauses; other players keep playing. When the dialog opens, the round ID, round time, position and a screenshot are captured as they were *before* the dialog appeared, so the report describes what the player saw.
+
+**What the player fills in:**
+
+- **Summary**, required, up to 80 characters.
+- **What happened**, optional, prompting for steps: what they were doing, what they expected.
+- **Severity**, optional, with nothing selected by default: *Minor* (cosmetic, easy to ignore), *Major* (breaks a mechanic or task), *Blocker* (can't keep playing). Blank means a developer triages it. A preselected default would make most reports look Minor.
+- **The game crashed or froze**, one checkbox. There is no category picker: players guess categories badly, and the context below says more.
+- **Screenshot**, attached by default and removable in one click, since it can show chat and player names.
+
+**What is logged automatically**, listed in the dialog so the player can see it: game version, round ID and time, map, context (lobby, alive, ghost, or map editor and active tool), position, network role, player count, frame rate, OS and graphics card, player name, and the tail of the player's own log (warnings and errors), because many bugs only happen on the player's machine.
+
+**Limits.** One report per player per minute; the dialog shows when the next one is allowed. Screenshots are sent at reduced size. No per-round cap until the first invite-only session shows one is needed.
+
+**After sending**, the dialog closes and a short notice confirms the report was saved, naming the round.
+
+**The same dialog in a local session.** When the player is their own host, such as a tester building a map (`creative-mode.md` §9), there is no remote server to receive the report. The dialog then saves a report bundle on the player's machine: the report, their logs, the screenshot and, if they choose, the **current map** as it is now, including unsaved edits, without touching the saved map file. The map option only appears locally, and it is on by default when the map editor was used this round or the map is not one the game ships with. After saving, the player gets buttons to open the report folder and to open a pre-filled bug report on the project's issue tracker, plus a reminder that the bundle can be posted in Discord instead.
 
 ## 8. Worked examples
 

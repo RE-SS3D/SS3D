@@ -1,7 +1,7 @@
 > Goal: A stranger clicks the latest GitHub release link, downloads, and joins the live test server in a few clicks — no config files, no localhost editing, no technical setup
 > Status: in-progress
 > Depends on: — (parallel operational track; reuses MVP1 [mvp1-nuke-ops.md](mvp1-nuke-ops.md) M5 round-end loop when it lands, but does not require MVP1 gameplay)
-> Current focus: T1 (re-cut Windows after host loopback fix; packaging verified on develop-059e3dd), T2 (zero-setup remote join), T3 (session stability — round/connect lifecycle, doors under MP, remaining admin wedge tools (round controls shipped), smoke happy-path, perf floor), T4 (end screen + restart; latejoin shipped)
+> Current focus: T2 (zero-setup remote join), T3 (session stability — round/connect lifecycle, doors under MP, remaining admin wedge tools (round controls shipped), smoke happy-path, perf floor), T4 (end screen + restart; latejoin shipped), T7 hosting
 > Roadmap: Test server — Download a release, click join, play with others on a live server
 
 # Test server — hop-on/off playtest gate
@@ -20,7 +20,7 @@ An **operational** gate, not a gameplay one: it's what makes everything else act
 - A **smoke / harness path** covers the Nuke Ops happy path (spawn→fight→breach→arm→end→restart) so merges don’t silently re-break the loop
 - The authored **test station stays performant** enough for ~8 players + blast + atmos without hitching the session into unplayability
 
-This is the piece the CI pipeline was built toward but the *artifact* doesn't yet fully deliver: packaging now seeds `Config/` + `Data/Tilemaps/` into player zips (T1), but verify on the next Windows cut; shipped launch bats still target `127.0.0.1` (LAN/self-host only), not a public server (T2).
+The release zips now load and run (T1, verified by the owner on stable releases v0.3.x). What the artifact still lacks is a destination: shipped launch scripts still target `127.0.0.1` and the client `.bat` prompts for an IP (LAN/self-host only), not a public server (T2). So far only the owner has played a release; no outside tester has.
 
 ## Dependency tree
 
@@ -62,7 +62,7 @@ flowchart TB
   loop --> server
 ```
 
-- **Loadable build** — packaging of CWD `Config/` + `Data/Tilemaps/` verified on `develop-059e3dd` (station loads, WorldReady). Separate host bug: empty `ServerAddress` → IPv6 link-local disconnect (see [networking-session](../architecture/systems/networking-session.md) pitfalls); needs a re-cut to confirm playable Host.bat.
+- **Loadable build (shipped)** — release zips package `Config/`, `Data/Tilemaps/` and `Data/StationTemplates/`; `Start_SS3D_Host.bat` passes an explicit `-ip=127.0.0.1` to avoid the IPv6 link-local disconnect (see [networking-session](../architecture/systems/networking-session.md) pitfalls). The owner hosted, dogfooded and joined a sandbox server on stable v0.3.x releases.
 - **Zero-setup remote join** — launch bats hardcode `-ip=127.0.0.1` ([`Builds/`](../../Builds/)); public builds must default to the hosted server ([networking-session](../architecture/systems/networking-session.md)).
 - **Session stability** — foundations shipped ([2026-07_headless-dedicated-server.md](../archive/architecture/2026-07_headless-dedicated-server.md), [2026-07_session-world-lifecycle.md](../archive/architecture/2026-07_session-world-lifecycle.md)); still **partial**. Covers: graceful round start/stop + connect/disconnect; no silent mind→spawn→loadout failures; remote drop/selection break; **doors/airlocks under MP**; host admin wedge tools; happy-path smoke ([Multiplayer testing](../architecture/systems/networking-session-testing.md)); test-station performance floor.
 - **Player settings (audio + display)** — [2026-10_player-settings.md](../architecture/2026-10_player-settings.md) Phases 1–2; controls rebinding (Phase 3) is outside this gate.
@@ -73,12 +73,12 @@ flowchart TB
 | Id | Name | Status | Links | Player view |
 |----|------|--------|-------|-------------|
 | T0 | CI release-cut path | shipped | [2026-07_ci-develop-release-pipeline.md](../architecture/2026-07_ci-develop-release-pipeline.md) | Releases are built automatically, so there's always a download |
-| T1 | Loadable build (content + permissions) | partial — Config/Tilemaps packaging verified on `059e3dd`; host loopback fix and newly packaged StationTemplates pending re-cut | [2026-07_ci-develop-release-pipeline.md](../architecture/2026-07_ci-develop-release-pipeline.md); [networking-session](../architecture/systems/networking-session.md) | The downloaded build loads and runs (a networking fix still needs a fresh build) |
+| T1 | Loadable build (content + permissions) | shipped — owner-verified on stable v0.3.x releases: host loads the packaged station templates, and the client joins a server | [2026-07_ci-develop-release-pipeline.md](../architecture/2026-07_ci-develop-release-pipeline.md); [networking-session](../architecture/systems/networking-session.md) | The downloaded build loads and runs |
 | T2 | Zero-setup remote join (default server target) | pending — **focus** | [networking-session](../architecture/systems/networking-session.md); [`Builds/`](../../Builds/) | Joining a server needs no setup: no typing IP addresses |
 | T3 | Session stability (lifecycle, doors under MP, admin wedge, happy-path smoke, perf floor) | partial — **focus** (admin names need a server-side token on dedicated servers; `-openbuild` sandbox map editing with throttling and own-edit undo implemented; SS13-scale perf + underfloor MeshRenderer occlusion shipped; Server Settings start/force/extend/cancel/stop wedge shipped; stop before Ongoing cancels the start; local validate.sh PlayMode/server-build/smoke loop shipped; doors/remote drop-selection/reassign/teleport still open; CI smoke not passing since 2026-10-01) | [networking-session](../architecture/systems/networking-session.md); [furniture](../architecture/systems/furniture.md) (airlocks); [2026-07_metastation-scale-perf.md](../archive/architecture/2026-07_metastation-scale-perf.md); [rounds-lobby](../architecture/systems/rounds-lobby.md) (round controls); [ingame-console](../architecture/systems/ingame-console.md) / [admin-tools.md](../design/admin-tools.md); [Multiplayer testing](../architecture/systems/networking-session-testing.md) | Multiplayer sessions stay stable: doors work, admins can unstick a round, no lag spikes |
 | T4 | End-game screen + round restart + latejoin (no softlock; spectator sees outcome) | partial — **focus** (latejoin from first attachment + late join after an earlier round shipped; end screen/restart pending); shared with MVP1 M5 | [round-end.md](../design/round-end.md) §5–§6; [lobby.md](../design/lobby.md) §7; [mvp1-nuke-ops.md](mvp1-nuke-ops.md) M5 | Rounds end with a summary screen and restart; you can join mid-round (joining mid-round works) |
 | T6 | Player settings: audio + display | shipped | [2026-10_player-settings.md](../architecture/2026-10_player-settings.md) Phases 1–2 | You can change volume, resolution and graphics quality, and they stay set |
-| T7 | Sandbox server (open build, 20-min auto-reset, respawn, reset telemetry) | partial (profile, lockdown, auto-reset, respawn, telemetry, `/bug` and the F8 bug report dialog built; hosting and caps pending) | [sandbox-server.md](../design/sandbox-server.md); [2026-11_sandbox-server.md](../architecture/2026-11_sandbox-server.md) | A separate server where everyone can build and fight, and the station resets every 20 minutes (a `-sandbox` server runs that loop; not hosted yet) |
+| T7 | Sandbox server (open build, 20-min auto-reset, respawn, reset telemetry) | partial (profile, lockdown, auto-reset, respawn, telemetry, `/bug` and the F8 bug report dialog built; the owner's first sandbox session filed #111–#118, all fixed; hosting and caps pending) | [sandbox-server.md](../design/sandbox-server.md); [2026-11_sandbox-server.md](../architecture/2026-11_sandbox-server.md) | A separate server where everyone can build and fight, and the station resets every 20 minutes (a `-sandbox` server runs that loop; not hosted yet) |
 | T5 | Test-server playable close | pending | depends T1–T4, T6 | Finish line: a stranger downloads the latest release and plays on the live test server |
 
 ## Explicitly deferred

@@ -15,8 +15,8 @@ do end to end. Each goal is split into **slices**, the smaller pieces that have 
 
 | Goal | What you'll be able to do | Progress |
 |------|---------------------------|----------|
-| [Test server](#test-server) | Download a release, click join, play with others on a live server | 2 of 7 done, 4 partial |
-| [Map authoring](#map-authoring) | Build your own station in a release build and hand it in | 4 of 9 done, 4 partial |
+| [Test server](#test-server) | Download a release, click join, play with others on a live server | 3 of 7 done, 3 partial |
+| [Map authoring](#map-authoring) | Build your own station in a release build and hand it in | 5 of 9 done, 3 partial |
 | [Nuclear Operatives round](#nuclear-operatives-round) | Play a full Nuke Ops round from spawn to end screen | 2 of 10 done, 4 partial |
 | [Station round](#station-round) | Play a short, bare-bones SS13 shift with jobs and antagonists | 0 of 7 done, 1 partial, 1 blocked |
 
@@ -30,7 +30,7 @@ What already works, system by system, is listed in
 | | Slice | What it means for a player |
 |---|---|---|
 | ✅ | T0 | Releases are built automatically, so there's always a download |
-| 🟡 | T1 | The downloaded build loads and runs (a networking fix still needs a fresh build) |
+| ✅ | T1 | The downloaded build loads and runs |
 | ⬜ | T2 | Joining a server needs no setup: no typing IP addresses |
 | 🟡 | T3 | Multiplayer sessions stay stable: doors work, admins can unstick a round, no lag spikes |
 | 🟡 | T4 | Rounds end with a summary screen and restart; you can join mid-round (joining mid-round works) |
@@ -46,7 +46,7 @@ What already works, system by system, is listed in
 | | Slice | What it means for a player |
 |---|---|---|
 | ✅ | A0 | The in-game Map Editor works in a local build: walls, floors, spawns, air |
-| 🟡 | A1 | The downloaded build loads, including the station templates |
+| ✅ | A1 | The downloaded build loads, including the station templates |
 | ✅ | A2 | Paint rooms, name them, choose their department and control door access |
 | ✅ | A2.5 | A developer builds the Nuke Ops station first and fixes what breaks |
 | 🟡 | A3 | The editor warns you about broken maps before you start a round |

@@ -11,14 +11,15 @@ Three tracks run in parallel — an **operational** one that makes multiplayer p
 
 **Near-term operational push** — [test-server.md](test-server.md):
 
-- **T1** — Loadable Windows build (Config/Tilemaps packaging OK on `059e3dd`; re-cut after host loopback fix)
+- **T1 shipped** — Release zips load and host (owner-verified on stable v0.3.x; no outside tester yet)
 - **T2** — Zero-setup remote join (stop hardcoding `127.0.0.1`)
 - **T3** — Session stability: doors under MP, remote drop/selection, remaining admin wedge tools (round controls + stop-cancels-start shipped), Nuke Ops happy-path smoke, test-station perf floor. Local `validate.sh --full` covers PlayMode/server build/smoke, but **CI smoke hasn't passed since 2026-10-01** (runner offline)
 - **T4** — End-game screen + restart (**shared with M5**); latejoin without softlock shipped, including after an earlier round
+- **T7** — Sandbox server hosting (loop, `/bug`/F8 and the owner's first-session fixes #111–#118 shipped)
 
 **Authoring track** — [map-authoring.md](map-authoring.md) (expect many gaps: map authoring in a build is largely untested):
 
-- **A1** — Loadable local build: shares test-server T1 re-cut; verify newly packaged `Data/StationTemplates/` on that cut
+- **A1 shipped** — Loadable local build, including packaged `Data/StationTemplates/` (shares test-server T1)
 - **A2 shipped** — Scripts → Rooms: painting, metadata, shared toolbar, undo/persistence and APC-facing membership; owner manually accepted in the editor
 - **A2.5 shipped** — Owner dogfooded the map editor and the F8 bug report in a release build
 - **A3 partial** — Map validation and save warnings implemented; Unity validation/render review pending
