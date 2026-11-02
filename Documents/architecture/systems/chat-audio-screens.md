@@ -1,7 +1,7 @@
 > Code paths: Assets/Scripts/SS3D/Systems/Comms/, Assets/Scripts/SS3D/Systems/Screens/, Assets/Content/Data/Comms/Channels/, Assets/Content/Systems/UI/Comms/
 > Entry points: CommsSubSystem, LocalSpeechBubbleController, CommsFeedController, PlayerCameraSubSystem, CameraSubSystem, CameraFollow
 > Status: partial
-> Verified: ce69181d3 — 2026-11-01
+> Verified: d7d70d1a5 — 2026-11-02
 
 # Chat / audio / screens
 
@@ -35,7 +35,7 @@ HUD feed yet.
 - `CommsSubSystem.cs` — local + radio/announce hub; `SendAnnouncement` / `HandleAnnouncementRequest`;
   `TryResolveComposePrefix`; transcript `Logs/Comms.txt` on server.
 - `CommsSubSystem.Ooc.cs` — `SendOoc` / `RequestOocHistory` (client), `PostOocSystem` (server); `OocChat.cs` — messages, `OocChatRules`, `OocRateLimiter`, `OocChatHistory` (EditMode-tested in `OocChatTests`).
-- `LocalSpeechEmitter` — `CmdSpeak` / `CmdSendRadio` / `CmdSendAnnouncement` on the speaking Entity.
+- `LocalSpeechEmitter` — `CmdSpeak` / `CmdSendRadio` / `CmdSendAnnouncement` on the speaking Entity; `CanSpeak` reads health. All three server handlers refuse critical, unconscious, arrested or dead speakers; OOC remains separate.
 - `CommsComposePrefix` — pure `/token` parse/strip (EditMode-tested).
 - `LocalSpeechBubbleController` + `LocalSpeechBubbleView` — head chips + compose on
   `UiShell` `UiLayer.Overlay` (not the hub/MI UIDocument).
@@ -56,6 +56,8 @@ HUD feed yet.
   `AvailableInCompose` / announcement writability flags.
 
 ## Pitfalls
+
+- **Critical characters talking:** validate `LocalSpeechEmitter.CanSpeak` inside all three server handlers, not only in the compose UI. Critical can still have `IsConscious == true`, so speech must require Healthy state as well as consciousness and no cardiac arrest.
 
 - **Local speech on UiShell Overlay:** do not attach bubbles/compose to the hub UIDocument —
   `MachineInterfaceHost` disables it while closed, and a child `UIDocument` under the hub cannot
@@ -95,9 +97,13 @@ HUD feed yet.
 - **OOC sender identity:** never trust a client-supplied name. The server resolves the ckey from the connection. Chat labels set `enableRichText = false`.
 - **OOC history replay** may arrive after live lines. `OocChatHistory.Add` inserts by id and dedupes, so don't append blindly.
 
+## Tests
+
+- `Testing/ui/validate.sh --steps compile,critical-speech` exercises healthy delivery, critical refusal, treatment recovery and corpse refusal for speak/whisper/shout, radio and announcements in a host session. Remote clients and OOC are outside this pilot.
+
 ## Depends on / Used by
 
-- **Depends on:** [player-control](player-control.md), [inputs](inputs.md), [ui-shell](ui-shell.md)
+- **Depends on:** [health](health.md) (speech capability), [player-control](player-control.md), [inputs](inputs.md), [ui-shell](ui-shell.md)
 - **Used by:** [rounds-lobby](rounds-lobby.md) (announcements), [tile](tile.md) (map editor camera),
   [interactions-runtime](interactions-runtime.md)
 

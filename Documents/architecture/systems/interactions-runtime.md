@@ -1,7 +1,7 @@
 > Code paths: Assets/Scripts/SS3D/Systems/Interactions/
 > Entry points: InteractionController, InteractionDiscovery, InteractionDispatch, RadialInteractionSubSystem, ArmedInteractionSubSystem
 > Status: shipped
-> Verified: 73a838a3b — 2026-11-01
+> Verified: 9bf3544cf — 2026-11-02
 
 # Interactions (runtime)
 
@@ -69,6 +69,8 @@ Discover / `HasPoint` contract: [interactions-framework](interactions-framework.
 
 ## Pitfalls
 
+- **Armed CPR labels drift at scaled resolutions:** raw mouse pixels are not UI Toolkit units. Armed/radial surfaces fill the overlay layer and convert via `InputInterface.ScreenToPanel` then into surface-local coordinates. Position chips after layout from their measured size, and keep them inside panel bounds. The terminal font lacks em-dash/arrow glyphs; armed captions use an ASCII separator.
+
 - **Outline MissingReferenceException after destroying a wall/object:** outline MeshRenderers are children of source meshes; destruction can wipe them while `InteractionOutlineView` on the `Selectable` still lives. `SetState` / `SetRenderersEnabled` must prune Unity-null `Renderer` refs — do not assume `_entries` stay valid for the view's lifetime. Do not use `?.` on `InteractionOutlineView` — it ignores Unity fake-null.
 - **Player builds silently omit hover outlines:** `InteractionOutlineView` uses `Shader.Find("Custom/InteractionOutline")` with no material/prefab reference. Editor finds it; player strips it (`Custom/InteractionOutline` absent from `SS3D_Data`). Symptom: clicks/MI still work (Selection pick shader is wired on the URP feature), but no green/yellow/blue hull. Keep the shader in **Always Included Shaders** (`GraphicsSettings`); warn if Find returns null.
 - **Spawn NRE in `OnAwake` / `SubscribeToInput`:** if `CameraSubSystem.PlayerCamera` is null (hub before Game camera — see [chat-audio-screens](chat-audio-screens.md)), wiring `_controls` after the camera line leaves SubscribeToInput cascading. Resolve inputs first; tolerate a late camera.
@@ -83,7 +85,11 @@ Discover / `HasPoint` contract: [interactions-framework](interactions-framework.
 - **Harm must not fall through to world verbs:** `HandleRunPrimary` always returns after the melee attempt in Harm — never resume the Help path when recovery blocks the swing. Unrestricted interactions are Help-default in `MatchesIntent`; Drop hotkey also checks Help.
 - **Radial shows icons but petal clicks no-op after first close:** `Disappear` unsubscribes `InteractionSelected`/`CloseRequested` (avoids double-fire during hide). The UiShell-backed menu view is reused, so `ShowInteractionsMenu` must call `BindMenuViewHandlers` every open — otherwise the second hold-RMB session looks fine (icons populate) but petals never route. Not Addressables-related.
 - **Hover outline and examine tooltip flicker at some angles:** the outline hull used to draw at `Geometry-1` with `ZWrite On`. The selection pick pass reuses scene depth after opaques, so where the expanded hull poked in front of the object's own surface the object failed its own pick, lost hover, hid the outline and regained hover next frame. `InteractionOutline.shader` now draws at `Geometry+1` with `ZWrite Off`; keep it from writing depth. Fixed 2026-11-01.
-- **New interaction icons:** drop the PNG in `Assets/Art/Graphics/UI/Interactions/InteractionIcons/`, run **SS3D → Interactions → Rebuild Interaction Icon Sprites** (or `InteractionIconSpriteBuilder.RebuildOne` + register) to get the sprite asset, Addressables entry and `InteractionIcons` constant. The radial background is 55 % opaque (`RadialInteractionMenu.uss`).
+- **New interaction icons:** image assets belong under `Assets/Art/Icons/`; consult the [icon index](../../icon-index.md). The legacy interaction icon builder still targets `Assets/Art/Graphics/UI/Interactions/InteractionIcons/` and must be updated before using it for new images.
+
+## Tests
+
+- `Testing/ui/validate.sh --steps compile,interaction-overlay` checks radial/armed CPR overlay geometry at 1.5 and 0.75 panel scales and near screen edges, with screenshots. It does not exercise medical dispatch or health effects.
 
 ## Depends on / Used by
 

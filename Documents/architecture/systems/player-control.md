@@ -1,7 +1,7 @@
 > Code paths: Assets/Scripts/SS3D/Systems/PlayerControl/
 > Entry points: PlayerSubSystem
 > Status: partial
-> Verified: 259787487 — 2026-11-01
+> Verified: b0df80aa9 — 2026-11-02
 
 # Player control
 
@@ -34,6 +34,8 @@ Connect/disconnect lifecycle, server-side:
 - No real authentication (`ProcessAuthorizePlayer` trusts the client-supplied ckey wholesale) — flagged in-code as a TODO, out of scope here.
 
 ## Pitfalls
+
+- **Reclaiming a collapsed body must reapply ragdoll authority:** the ownership callback runs without a presentation SyncVar change. `Ragdoll` reapplies the current collapse/death state and preserves animator startup defaults; see [entities](entities.md).
 
 - **Rejoin shows lobby + HUD:** `TryReclaimEntity` restores ownership without mutating `SpawnedPlayers` / Mind SyncVar. HUD binds via `Mind.player.IsLocalConnection`; lobby used to leave only on `SpawnedPlayersUpdated` with Owner match. Fire `LocalPlayerObjectChanged` from `Entity.OnOwnershipClient` (HUD). `GameScreensController` was deleted with the legacy lobby (Phase F); the UITK lobby polls `EntitySubSystem.IsPlayerSpawned(connection)`, which matches a reclaimed body via `Mind.player.Owner`. Hit 2026-07-26.
 - **`OnClientLoadedStartScenes` must gate on `asServer`:** host also fires the client-side (`asServer=false`) callback before `LoadedStartScenes(true)` is set. Spawning there warns and can create a duplicate UnauthorizedPlayer that later fails despawn ("already deinitializing"). Match FishNet `PlayerSpawner`.

@@ -27,6 +27,7 @@ namespace SS3D.Tests.EditMode
             Assert.IsTrue(sandbox.AutoStart);
             Assert.IsTrue(sandbox.AllConnectedReady);
             Assert.IsTrue(sandbox.RespawnEnabled);
+            Assert.IsTrue(sandbox.RemoveCorpseOnRespawn);
             Assert.AreEqual(30, sandbox.RespawnCooldownSeconds);
             Assert.IsFalse(sandbox.MapPersistence);
             Assert.AreEqual(SandboxProfile.Motd, sandbox.Motd);
@@ -42,6 +43,7 @@ namespace SS3D.Tests.EditMode
             Assert.IsFalse(settings.AutoStart);
             Assert.IsFalse(settings.AllConnectedReady);
             Assert.IsFalse(settings.RespawnEnabled);
+            Assert.IsFalse(settings.RemoveCorpseOnRespawn);
             Assert.IsTrue(settings.MapPersistence);
         }
 
@@ -60,6 +62,7 @@ namespace SS3D.Tests.EditMode
             Assert.AreEqual(45, saved.RoundLengthMinutes);
             Assert.IsTrue(saved.AutoStart);
             Assert.IsTrue(saved.RespawnEnabled);
+            Assert.IsTrue(saved.RemoveCorpseOnRespawn);
             Assert.IsFalse(saved.MapPersistence);
             Assert.AreEqual(SandboxProfile.Motd, saved.Motd);
         }

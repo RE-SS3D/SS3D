@@ -110,7 +110,9 @@ namespace SS3D.Systems.Atmospherics
                 return;
             }
 
-            IsReady = false;
+            DisposeSimulation();
+            _dirtyChunkTracker = new AtmosDirtyChunkTracker();
+            _dirtyChunkBuffer.Clear();
             InitializeWhenMapReady().Forget();
         }
 
@@ -232,7 +234,21 @@ namespace SS3D.Systems.Atmospherics
                 readiness.PhaseChanged -= HandleReadinessPhaseChanged;
             }
 
-            TileSubSystem tileSubSystem = SubSystems.Get<TileSubSystem>();
+            DisposeSimulation();
+            _visualizationBridge = null;
+            _clientVisualizationBridge = null;
+            _dirtyChunkTracker = null;
+            _patchBuilder = null;
+            base.OnDestroyed();
+        }
+
+        private void DisposeSimulation()
+        {
+            IsReady = false;
+            SimulationPaused = false;
+            _tickTimer = 0f;
+            LastTickMilliseconds = 0f;
+            SubSystems.TryGet(out TileSubSystem tileSubSystem);
             if (_tileObserver != null)
                 tileSubSystem?.UnregisterTileMutationObserver(_tileObserver);
             if (_pipeObserver != null)
@@ -244,13 +260,9 @@ namespace SS3D.Systems.Atmospherics
             _pipeObserver = null;
             _pipeSimulation = null;
             _pipeRegistry = null;
-            _visualizationBridge = null;
-            _clientVisualizationBridge = null;
-            _dirtyChunkTracker = null;
-            _patchBuilder = null;
             _atmosWorld?.Dispose();
             _atmosWorld = null;
-            base.OnDestroyed();
+            _areaPortIndex.Invalidate();
         }
 
         private void Update()

@@ -55,7 +55,7 @@ namespace SS3D.Systems.Entities
     /// <summary>
     /// Respawn (<c>sandbox-server.md</c> §4): a ghost asks the server for a fresh body. The server checks
     /// <see cref="ServerSettings.RespawnEnabled"/> and the cooldown, despawns the ghost and runs the normal
-    /// spawn path, so the player always gets a new body at a spawn point. The corpse stays where it fell.
+    /// spawn path, so the player always gets a new body at a spawn point. The sandbox profile removes the previous corpse.
     /// </summary>
     public partial class EntitySubSystem
     {
@@ -66,6 +66,7 @@ namespace SS3D.Systems.Entities
         /// over, so round end despawns them from here, or every death would leak a body into the next round.
         /// </summary>
         private readonly List<Entity> _corpses = new();
+        private readonly Dictionary<string, Entity> _previousCorpseByPlayer = new(StringComparer.Ordinal);
 
         /// <summary>Client: fired when the server tells the local player when they may respawn (seconds from now).</summary>
         public event Action<int> LocalRespawnOffered;
@@ -87,6 +88,9 @@ namespace SS3D.Systems.Entities
             Player player = ghost != null && ghost.Mind != null ? ghost.Mind.player : null;
             if (player == null)
                 return;
+
+            if (corpse != null)
+                _previousCorpseByPlayer[player.Ckey] = corpse;
 
             _respawnCooldown.RecordDeath(player.Ckey, Now);
             ServerSettings settings = Settings;
@@ -125,6 +129,14 @@ namespace SS3D.Systems.Entities
             _respawnCooldown.Forget(player.Ckey);
 
             Entity body = SpawnPlayer(player, mind);
+            if (body != null && _previousCorpseByPlayer.Remove(player.Ckey, out Entity corpse)
+                && settings.RemoveCorpseOnRespawn && corpse != null)
+            {
+                _corpses.Remove(corpse);
+                if (corpse.IsSpawned)
+                    ServerManager.Despawn(corpse.NetworkObject);
+                corpse.GameObject.Dispose(true);
+            }
             Log.Information(this, "Respawned {ckey} as {entity}", Logs.ServerOnly, player.Ckey, body != null ? body.name : "nothing");
             TargetRespawnWithdrawn(conn);
             return body != null;
@@ -144,6 +156,7 @@ namespace SS3D.Systems.Entities
             }
 
             _corpses.Clear();
+            _previousCorpseByPlayer.Clear();
         }
 
         [TargetRpc]

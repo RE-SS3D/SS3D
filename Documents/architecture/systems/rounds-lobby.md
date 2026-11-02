@@ -1,7 +1,7 @@
 > Code paths: Assets/Scripts/SS3D/Systems/Rounds/, Assets/Scripts/SS3D/UI/Lobby/
 > Entry points: RoundSubSystem, ReadyPlayersSubSystem, RoundSubSystemBase, LobbyUiSubSystem
 > Status: partial
-> Verified: ce69181d3 — 2026-11-01
+> Verified: 948061cc0 — 2026-11-02
 
 # Rounds / lobby
 
@@ -58,7 +58,7 @@ Secret (currently the nuclear mode) and Nuclear Emergency also need an operative
 Failures return to Stopped/Failed with the complete actionable list in the admin settings status; all start paths share the gate.
 An empty job configuration or unsupported mode fails closed. Missing/unreadable templates retain the existing load-failure path.
 
-**Sandbox profile** ([2026-11_sandbox-server](../2026-11_sandbox-server.md)): `-sandbox` overlays the in-memory settings at boot (`SandboxProfile`): Extended, 20 min (`-sandbox-round-minutes=N`), cap 16, and the rule fields `AutoStart`, `AllConnectedReady`, `RespawnEnabled`/`RespawnCooldownSeconds`, `MapPersistence`, which the admin form doesn't edit (`WithRulesOf` keeps them). `AutoStart` runs a 20 s idle countdown (`RoundAutoStart.cs`) once a player is ready, then the normal Start; an admin Cancel or a failed load holds it until an admin Start. `AllConnectedReady` spawns everyone online. Every timed round warns at 5 and 1 minutes left. Each round gets a per-process `RoundId`; after Stopped, `ServerMeta/reset-health.jsonl` gains a line, and `/bug <note>` or the bug report dialog writes `ServerMeta/bugs.jsonl` (`RoundObservability.cs`): the server stamps time, round, ckey, alive/ghost/lobby and position, and keeps the dialog's summary, details, severity, crash flag, client context and log tail; its reduced JPEG goes to `ServerMeta/bug-screenshots/`. Both paths share one report per ckey per minute (`BugReportRateLimiter`). `RoundId` is a SyncVar so clients can name the round. The dialog itself: [ui-shell](ui-shell.md). `-heartbeat-file=` and `-exit-after-rounds=` (`ServerLifetime.cs`) serve an unattended server.
+**Sandbox profile** ([2026-11_sandbox-server](../2026-11_sandbox-server.md)): `-sandbox` overlays the in-memory settings at boot (`SandboxProfile`): Extended, 20 min (`-sandbox-round-minutes=N`), cap 16, and the rule fields `AutoStart`, `AllConnectedReady`, `RespawnEnabled`/`RespawnCooldownSeconds`/`RemoveCorpseOnRespawn`, `MapPersistence` (sandbox removes the previous corpse after successful respawn), which the admin form doesn't edit (`WithRulesOf` keeps them). `AutoStart` runs a 20 s idle countdown (`RoundAutoStart.cs`) once a player is ready, then the normal Start; an admin Cancel or a failed load holds it until an admin Start. `AllConnectedReady` spawns everyone online. Every timed round warns at 5 and 1 minutes left. Each round gets a per-process `RoundId`; after Stopped, `ServerMeta/reset-health.jsonl` gains a line, and `/bug <note>` or the bug report dialog writes `ServerMeta/bugs.jsonl` (`RoundObservability.cs`): the server stamps time, round, ckey, alive/ghost/lobby and position, and keeps the dialog's summary, details, severity, crash flag, client context and log tail; its reduced JPEG goes to `ServerMeta/bug-screenshots/`. Both paths share one report per ckey per minute (`BugReportRateLimiter`). `RoundId` is a SyncVar so clients can name the round. The dialog itself: [ui-shell](ui-shell.md). `-heartbeat-file=` and `-exit-after-rounds=` (`ServerLifetime.cs`) serve an unattended server.
 
 Unsaved map edits across a round stop (A4): the map editor runs during an Ongoing round, and
 Stop unloads the station, so an admin Stop with unsaved editor commands first opens
@@ -104,6 +104,8 @@ original) and tells admins in Admin chat. Unloading resets the editor's history 
 - Lobby UITK: Session snapshots/actions live in `LobbyUiSubSystem` (including job preference sends); `LobbyShellView` renders `RoleSubSystem.Jobs`; Character Creator is a separate Modal screen.
 
 ## Pitfalls
+
+- **Surface decals are client-local round state:** clearing the tilemap does not clear blood/bullet projectors held by static spawners. `SyncRoundState(Stopped)` clears both spawners on server/host and pure clients, including their instance materials.
 
 - **The empty change log needs its own label style.** `lobby-shell__changelog-text` has `flex-basis: 0` for the row layout; reused on the lone "No change log in this build." label in the ScrollView's column it collapses to ~0 px and only the tops of the glyphs show (v0.1.0, every build without `BuildInfo.json`). The editor always has the file, so only player builds show it. Use `lobby-shell__changelog-empty`.
 - **Portrait capture must restore `RenderTexture.active`:** `Graphics.Blit` changes the global active target. Save/restore it around the head crop so later rendering/readback does not inherit the portrait target; the lifecycle pilot uses a sentinel target to check this.
@@ -153,6 +155,8 @@ original) and tells admins in Admin chat. Unloading resets the editor's history 
 - **Unloading the station is server-only and after despawn:** `UnloadStation` runs in `StopRound` after `RoundState = Stopped`, whose SyncVar callback already despawned players. Map editor sessions close themselves once the round leaves `Ongoing` ([tile](tile.md)), so no editor camera is left over a cleared map.
 
 ## Tests
+
+- `Testing/ui/validate.sh --steps compile,round-reset` checks blood/bullet decal cleanup and atmos reseeding on an immediate host stop/restart, without the full sandbox timer or UI suite.
 
 - `Testing/ui/validate.sh --full` runs the current validation loop. `LobbyUiPilot` covers shell/creator visuals; `LobbyLifecyclePilot` covers host lifecycle, saved characters and settings; the remote pilot checks a built non-admin client. Review screenshots as well as assertions; OS-input Ready/chat checks do not imply every pilot action uses real input.
 - **Run Sandbox Pilot** (`LobbyLifecyclePilot.Sandbox.cs`, `validate.sh --full`) applies the profile in Play Mode (`ApplyServerSettingsForTesting`) and runs two automatic rounds: countdown without Ready, death → ghost editing → Respawn, `/bug`, the F8 dialog saving a local bundle, 1-minute warning, wipe without autosave, reset-health lines with no leftover tile objects/items and flat NetworkObject counts. `SandboxServerTests` covers the pure rules.

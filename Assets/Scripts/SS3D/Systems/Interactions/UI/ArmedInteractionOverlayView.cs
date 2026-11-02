@@ -1,4 +1,5 @@
 using SS3D.UI.Shell;
+using SS3D.Systems.Inputs;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.UIElements;
@@ -14,6 +15,8 @@ namespace SS3D.Systems.Interactions.UI
         private const float ChipOffsetY = 24f;
 
         private readonly StyleSheet _styleSheet;
+        private Vector2 _lastScreenPosition;
+        private bool _hasCursorPosition;
 
         private VisualElement _overlayRoot;
         private VisualElement _reticle;
@@ -30,7 +33,12 @@ namespace SS3D.Systems.Interactions.UI
         public void Attach(VisualElement layerRoot)
         {
             _overlayRoot = new VisualElement { name = "armed-interaction-overlay-surface" };
-            _overlayRoot.style.flexGrow = 1;
+            _overlayRoot.style.position = Position.Absolute;
+            _overlayRoot.style.left = 0;
+            _overlayRoot.style.top = 0;
+            _overlayRoot.style.right = 0;
+            _overlayRoot.style.bottom = 0;
+            _overlayRoot.RegisterCallback<GeometryChangedEvent>(_ => RefreshCursorPosition());
             _overlayRoot.pickingMode = PickingMode.Ignore;
 
             if (_styleSheet != null)
@@ -69,21 +77,45 @@ namespace SS3D.Systems.Interactions.UI
 
         public void UpdateCursorPosition(Vector2 screenPosition)
         {
-            if (_reticle == null)
+            _lastScreenPosition = screenPosition;
+            _hasCursorPosition = true;
+            RefreshCursorPosition();
+        }
+
+        private void RefreshCursorPosition()
+        {
+            if (!_hasCursorPosition || _reticle == null || _overlayRoot?.panel == null)
             {
                 return;
             }
 
+            Vector2 point = _overlayRoot.WorldToLocal(InputInterface.ScreenToPanel(_overlayRoot.panel, _lastScreenPosition));
             float half = ReticleSize * 0.5f;
-            _reticle.style.left = screenPosition.x - half;
-            _reticle.style.bottom = screenPosition.y - half;
+            _reticle.style.left = point.x - half;
+            _reticle.style.top = point.y - half;
+            _reticle.style.bottom = StyleKeyword.Auto;
 
-            _chip.style.left = screenPosition.x;
-            _chip.style.bottom = screenPosition.y - ChipOffsetY;
-            _chip.style.translate = new Translate(new Length(-50, LengthUnit.Percent), 0);
+            const float margin = 8f;
+            float width = _overlayRoot.contentRect.width;
+            float height = _overlayRoot.contentRect.height;
+            _chip.style.maxWidth = Mathf.Max(0f, width - 2f * margin);
+            float chipWidth = _chip.resolvedStyle.width;
+            float chipHeight = _chip.resolvedStyle.height;
+            if (float.IsFinite(chipWidth) && float.IsFinite(chipHeight))
+            {
+                _chip.style.left = Mathf.Clamp(point.x - chipWidth * 0.5f, margin, Mathf.Max(margin, width - chipWidth - margin));
+                float top = point.y + ChipOffsetY;
+                if (top + chipHeight > height - margin)
+                    top = point.y - ChipOffsetY - chipHeight;
+                _chip.style.top = Mathf.Clamp(top, margin, Mathf.Max(margin, height - chipHeight - margin));
+                _chip.style.bottom = StyleKeyword.Auto;
+            }
 
-            _cantBadge.style.left = screenPosition.x + 18f;
-            _cantBadge.style.bottom = screenPosition.y + 10f;
+            float badgeWidth = _cantBadge.resolvedStyle.width;
+            float badgeHeight = _cantBadge.resolvedStyle.height;
+            _cantBadge.style.left = Mathf.Clamp(point.x + 18f, margin, Mathf.Max(margin, width - badgeWidth - margin));
+            _cantBadge.style.top = Mathf.Clamp(point.y - 24f, margin, Mathf.Max(margin, height - badgeHeight - margin));
+            _cantBadge.style.bottom = StyleKeyword.Auto;
         }
 
         public void SetTargetState(bool hasTarget, bool isValid)
@@ -127,11 +159,13 @@ namespace SS3D.Systems.Interactions.UI
             _chip = new VisualElement();
             _chip.AddToClassList("armed-interaction-chip");
             _chip.pickingMode = PickingMode.Ignore;
+            _chip.RegisterCallback<GeometryChangedEvent>(_ => RefreshCursorPosition());
 
             _chipLabel = new Label();
             _chipLabel.AddToClassList("armed-interaction-chip__label");
             _chipLabel.AddToClassList("font-terminal");
             _chipLabel.pickingMode = PickingMode.Ignore;
+            _chipLabel.style.whiteSpace = WhiteSpace.Normal;
 
             _chipHint = new Label("Esc or right-click to cancel");
             _chipHint.AddToClassList("armed-interaction-chip__hint");
@@ -141,9 +175,11 @@ namespace SS3D.Systems.Interactions.UI
             _chip.Add(_chipHint);
 
             _cantBadge = new Label("CAN'T");
+            _cantBadge.style.position = Position.Absolute;
             _cantBadge.AddToClassList("armed-interaction-cant");
             _cantBadge.AddToClassList("font-arcade");
             _cantBadge.pickingMode = PickingMode.Ignore;
+            _cantBadge.RegisterCallback<GeometryChangedEvent>(_ => RefreshCursorPosition());
             _cantBadge.style.display = DisplayStyle.None;
 
             container.Add(_reticle);

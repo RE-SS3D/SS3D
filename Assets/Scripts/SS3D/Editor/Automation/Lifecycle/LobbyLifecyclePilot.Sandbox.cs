@@ -1,6 +1,9 @@
 using System.Linq;
 using FishNet;
 using SS3D.Systems.Entities;
+using SS3D.Systems.Atmospherics;
+using SS3D.Systems.Combat;
+using UnityEngine.Rendering.Universal;
 using SS3D.Systems.Entities.Humanoid;
 using SS3D.Rendering.URP;
 using SS3D.Systems.Health;
@@ -28,6 +31,11 @@ namespace SS3D.Editor.Automation
     public static partial class LobbyLifecyclePilot
     {
         private const string SandboxMode = "sandbox";
+        private const string RoundResetRegressionMode = "round-reset-regressions";
+
+        [MenuItem("SS3D/Testing/Run Round Reset Regressions")]
+        public static void RunRoundResetRegressions() => Start(RoundResetRegressionMode);
+
         private const string HealthRegressionMode = "health-regressions";
 
         // Runs only spawn, incapacitation, blackout/menu, ghost and respawn checks.
@@ -65,6 +73,40 @@ namespace SS3D.Editor.Automation
                 Kind = MapEditorCommandKind.PlaceSpawnPoint, AssetName = "spawn:job:Assistant",
                 Position = _mapEditSpawnPosition, Direction = Direction.North,
             } });
+        }
+
+        private static AtmosSimulation _previousAtmos;
+        private static TileCoord _depletedAtmosCoord;
+        private static GameObject[] _roundDecals;
+
+        private static void SeedRoundResetRegressions()
+        {
+            AtmosSubSystem atmos = SubSystems.Get<AtmosSubSystem>();
+            _previousAtmos = atmos.Simulation;
+            bool found = false;
+            _previousAtmos.ForEachCell((coord, _) =>
+            {
+                if (!found && _previousAtmos.DebugGetMoles(coord, AtmosConstants.Oxygen) > 0f)
+                {
+                    _depletedAtmosCoord = coord;
+                    found = true;
+                }
+            });
+            Require(found, "Station has a breathable cell for the reset regression");
+            // Freeze diffusion so this cell remains depleted until the next restore.
+            atmos.SimulationPaused = true;
+            _previousAtmos.DebugAddMoles(_depletedAtmosCoord, AtmosConstants.Oxygen,
+                -_previousAtmos.DebugGetMoles(_depletedAtmosCoord, AtmosConstants.Oxygen));
+            Require(_previousAtmos.DebugGetMoles(_depletedAtmosCoord, AtmosConstants.Oxygen) == 0f,
+                "Oxygen is depleted before round reset");
+
+            DecalProjector[] before = Object.FindObjectsByType<DecalProjector>(FindObjectsSortMode.None);
+            Transform body = SubSystems.Get<EntitySubSystem>().GetSpawnedEntity(Local()).transform;
+            BulletHoleDecalSpawner.Spawn(body.position, Vector3.up);
+            BloodDecalSpawner.SpawnAtAnchor(body, 1f);
+            _roundDecals = Object.FindObjectsByType<DecalProjector>(FindObjectsSortMode.None)
+                .Except(before).Select(projector => projector.gameObject).ToArray();
+            Require(_roundDecals.Length == 2, "Blood and bullet-hole surface decals exist before reset");
         }
 
         private static Human _corpse;
@@ -114,6 +156,43 @@ namespace SS3D.Editor.Automation
         }
 
         private static string SidebarSub() => Shell()?.Q<Label>(className: "lobby-shell__countdown-sub")?.text;
+
+        private static void VerifyAtmosReset()
+        {
+            AtmosSubSystem atmos = SubSystems.Get<AtmosSubSystem>();
+            Require(!ReferenceEquals(_previousAtmos, atmos.Simulation), "New round owns a fresh atmos simulation");
+            _depletedAtmosCoord.MapId = SubSystems.Get<TileSubSystem>().CurrentMap.MapId;
+            Require(atmos.Simulation.DebugGetMoles(_depletedAtmosCoord, AtmosConstants.Oxygen) > 0f,
+                "Fresh station restores oxygen to the depleted cell");
+            Require(!atmos.SimulationPaused, "New round resumes atmos simulation");
+        }
+
+        private static Step[] BuildRoundResetSteps()
+        {
+            Step[] sandbox = BuildSandboxSteps();
+            return sandbox.Take(4).Concat(new Step[]
+            {
+                new Step
+                {
+                    Name = "Deplete oxygen, stamp decals, and stop the round",
+                    Enter = () =>
+                    {
+                        SeedRoundResetRegressions();
+                        Rounds().ChangeRoundStateMessageStubBroadcast(new SS3D.Systems.Rounds.Messages.ChangeRoundStateMessage(false));
+                    },
+                    Until = () => Rounds().CurrentRoundState == RoundState.Stopped && StationEmpty() && ResetLogged(),
+                    Verify = () => Require(_roundDecals.All(decal => decal == null), "Both surface decals are destroyed on Stop"),
+                },
+                new Step
+                {
+                    Name = "Restore the same station for a second round",
+                    Enter = () => Rounds().ChangeRoundStateMessageStubBroadcast(new SS3D.Systems.Rounds.Messages.ChangeRoundStateMessage(true)),
+                    Timeout = 180,
+                    Until = () => Rounds().CurrentRoundState == RoundState.Ongoing && Spawned(),
+                    Verify = VerifyAtmosReset,
+                },
+            }).ToArray();
+        }
 
         private static Step[] BuildSandboxSteps() => new Step[]
         {
@@ -290,7 +369,7 @@ namespace SS3D.Editor.Automation
             },
             new Step
             {
-                Name = "Respawn gives a fresh body at a spawn point; the corpse stays",
+                Name = "Respawn gives a fresh body and removes the previous corpse",
                 Enter = () => Click(Root().Q<Button>("respawn-prompt-button")),
                 Until = () => Spawned() && !LocalEntityIsGhost() && !Prompt().IsShown,
                 Verify = () =>
@@ -300,7 +379,7 @@ namespace SS3D.Editor.Automation
                     Require(SubSystems.Get<SS3D.UI.MainHud.MainHudSubSystem>().GetComponent<UIDocument>()
                         .rootVisualElement.Q(className: "main-hud").resolvedStyle.display != DisplayStyle.None,
                         "Body HUD returns on respawn");
-                    Require(_corpse != null && _corpse.gameObject.activeInHierarchy, "The corpse stays where it fell");
+                    Require(_corpse == null, "Sandbox removes the previous corpse after respawn");
                     Vector3 spawn = SubSystems.Get<TileSubSystem>().SpawnPoints.Records[0].Position;
                     Require(Vector3.Distance(Flat(body.transform.position), Flat(spawn)) < 1.5f, "New body stands at a spawn point");
                     Capture("sandbox-respawned");
@@ -371,7 +450,11 @@ namespace SS3D.Editor.Automation
                 Name = "One-minute warning",
                 Timeout = 90,
                 Until = () => HostChatContains("The round ends in 1 minute."),
-                Verify = () => Require(Rounds().CurrentRoundState == RoundState.Ongoing, "Warning arrives while the round runs"),
+                Verify = () =>
+                {
+                    Require(Rounds().CurrentRoundState == RoundState.Ongoing, "Warning arrives while the round runs");
+                    SeedRoundResetRegressions();
+                },
             },
             new Step
             {
@@ -383,6 +466,7 @@ namespace SS3D.Editor.Automation
                     Require(!AutosaveExists(), "No round-end autosave with persistence off");
                     Require(UnityEngine.Object.FindObjectsByType<Human>(FindObjectsSortMode.None).Length == 0,
                         "No bodies or corpses survive the reset");
+                    Require(_roundDecals.All(decal => decal == null), "Blood and bullet-hole decals are destroyed on Stop");
                     VerifyResetHealth(1);
                     ServerSettings settings = Rounds().SettingsForServer;
                     settings.RoundLengthMinutes = 1;
@@ -405,6 +489,7 @@ namespace SS3D.Editor.Automation
                 {
                     Require(!MapEditSpawnPresent(), "Last round's edit is gone from the fresh station");
                     Require(!UnsavedMapEdits(), "Editor history starts clean");
+                    VerifyAtmosReset();
                 },
             },
             new Step

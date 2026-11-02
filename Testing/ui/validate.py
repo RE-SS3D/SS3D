@@ -429,7 +429,43 @@ async def step_smoke(editor, ctx):
     return Done(", ".join(results))
 
 
+async def step_round_reset(editor, ctx):
+    return await run_pilot(editor, "SS3D/Testing/Run Round Reset Regressions",
+                           "round-reset-regressions-*/status.json", 90, 300)
+
+
+async def step_ragdoll_space(editor, ctx):
+    return await run_pilot(editor, "SS3D/Testing/Run Ragdoll Space Regressions",
+                           "ragdoll-space-*/status.json", 90, 300)
+
+
+async def step_respawn_cleanup(editor, ctx):
+    return await run_pilot(editor, "SS3D/Testing/Run Respawn Cleanup Regressions",
+                           "respawn-cleanup-*/status.json", 90, 300)
+
+
+async def step_critical_speech(editor, ctx):
+    return await run_pilot(editor, "SS3D/Testing/Run Critical Speech Regressions",
+                           "critical-speech-*/status.json", 90, 300)
+
+
+async def step_critical_reclaim(editor, ctx):
+    return await run_pilot(editor, "SS3D/Testing/Run Critical Reclaim Regressions",
+                           "critical-reclaim-*/status.json", 90, 300)
+
+
+async def step_interaction_overlay(editor, ctx):
+    return await run_pilot(editor, "SS3D/Testing/Run Interaction Overlay Regressions",
+                           "interaction-overlay-*/status.json", 90, 300)
+
+
 STEPS = {name: globals()["step_" + name] for name in ORDER}
+STEPS["round-reset"] = step_round_reset
+STEPS["ragdoll-space"] = step_ragdoll_space
+STEPS["respawn-cleanup"] = step_respawn_cleanup
+STEPS["critical-speech"] = step_critical_speech
+STEPS["critical-reclaim"] = step_critical_reclaim
+STEPS["interaction-overlay"] = step_interaction_overlay
 
 
 async def main():

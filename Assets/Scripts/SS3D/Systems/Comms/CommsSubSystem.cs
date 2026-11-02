@@ -210,7 +210,7 @@ namespace SS3D.Systems.Comms
         /// </summary>
         public void HandleSpeakRequest(LocalSpeechEmitter emitter, string text, SpeechMode mode)
         {
-            if (!IsServer)
+            if (!IsServer || emitter == null || !emitter.CanSpeak)
             {
                 return;
             }
@@ -241,7 +241,7 @@ namespace SS3D.Systems.Comms
         /// </summary>
         public void HandleRadioRequest(LocalSpeechEmitter emitter, string channelId, string text)
         {
-            if (!IsServer || emitter == null)
+            if (!IsServer || emitter == null || !emitter.CanSpeak)
             {
                 return;
             }
@@ -289,7 +289,7 @@ namespace SS3D.Systems.Comms
         /// </summary>
         public void HandleAnnouncementRequest(LocalSpeechEmitter emitter, string text)
         {
-            if (!IsServer || emitter == null)
+            if (!IsServer || emitter == null || !emitter.CanSpeak)
             {
                 return;
             }

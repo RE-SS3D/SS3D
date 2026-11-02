@@ -3,6 +3,7 @@
     "rootNamespace": "SS3D.Editor.Automation",
     "references": [
         "SS3D.Core",
+        "Coimbra",
         "SS3D.UI.Lobby",
         "SS3D.UI.MainHud",
         "SS3D.UI.Shell",
@@ -13,6 +14,7 @@
         "SS3D.Permissions",
         "FishNet.Runtime",
         "Unity.InputSystem",
+        "Unity.RenderPipelines.Universal.Runtime",
         "SS3D.Editor",
         "SS3D.Editor.Automation"
     ],

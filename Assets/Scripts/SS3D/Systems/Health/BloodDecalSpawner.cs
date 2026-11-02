@@ -222,26 +222,42 @@ namespace SS3D.Systems.Health
             }
         }
 
+        /// <summary>Releases this client's surface marks at the round boundary.</summary>
+        public static void Clear()
+        {
+            foreach (GameObject decal in ActiveDecals)
+            {
+                DestroyDecal(decal);
+            }
+
+            ActiveDecals.Clear();
+        }
+
         private static void TrimOldDecals()
         {
             while (ActiveDecals.Count > MaxActiveDecals)
             {
                 GameObject oldest = ActiveDecals[0];
                 ActiveDecals.RemoveAt(0);
-                if (oldest == null)
-                {
-                    continue;
-                }
-
-                if (oldest.TryGetComponent(out DecalProjector projector)
-                    && projector.material != null
-                    && projector.material != _bloodDecalMaterialTemplate)
-                {
-                    Object.Destroy(projector.material);
-                }
-
-                oldest.Dispose(true);
+                DestroyDecal(oldest);
             }
+        }
+
+        private static void DestroyDecal(GameObject decal)
+        {
+            if (decal == null)
+            {
+                return;
+            }
+
+            if (decal.TryGetComponent(out DecalProjector projector)
+                && projector.material != null
+                && projector.material != _bloodDecalMaterialTemplate)
+            {
+                Object.Destroy(projector.material);
+            }
+
+            decal.Dispose(true);
         }
     }
 }

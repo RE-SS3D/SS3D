@@ -123,11 +123,9 @@ namespace SS3D.Systems.Entities.Humanoid
 		{
 			base.OnStartNetwork();
 
-			_animator = GetComponent<Animator>();
-			_humanoidLivingController = GetComponent<HumanoidLivingController>();
-			_characterController = GetComponent<CharacterController>();
-			_networkAnimator = GetComponent<NetworkAnimator>();
-            _networkAnimatorInitiallyEnabled = _networkAnimator != null && _networkAnimator.enabled;
+            // Initial SyncVars may already have applied collapse and disabled the drivers.
+            // Preserve the original NetworkAnimator enabled state captured by that application.
+            EnsureAnimatorCached();
             _knockdownTimer = 0;
             _hips = _armatureRoot.GetChild(0);
             _character = _armatureRoot.parent;
@@ -176,10 +174,19 @@ namespace SS3D.Systems.Entities.Humanoid
 
             CacheRagdollParts();
 
-            // Set interval need to be called by owner. This allows fast setting
-            foreach (Transform part in _ragdollParts)
+            if (IsOwner)
             {
-                part.GetComponent<NetworkTransform>().SetInterval(_ragdollPartSyncInterval);
+                foreach (Transform part in _ragdollParts)
+                {
+                    part.GetComponent<NetworkTransform>().SetInterval(_ragdollPartSyncInterval);
+                }
+            }
+
+            // Reclaim does not change the presentation SyncVar. Reapply its physics authority
+            // when ownership changes, otherwise the new owner inherits kinematic observer bones.
+            if (_hips != null && _presentation != BodyPresentationState.Locomotion)
+            {
+                ApplyPresentation(_presentation, applyImpulse: false);
             }
         }
 
@@ -467,6 +474,7 @@ namespace SS3D.Systems.Entities.Humanoid
             // Observers must stay kinematic while bone NetworkTransforms receive — dual write twitches.
             // Death: only server simulates (corpse unowned after SwapMinds). Living knockdown: owner.
             ToggleKinematic(!IsRagdollPhysicsAuthority());
+            UpdateRagdollGravity();
         }
 
         /// <summary>
@@ -490,8 +498,71 @@ namespace SS3D.Systems.Entities.Humanoid
                 return;
             }
 
+            UpdateRagdollGravity();
             AlignToHips();
         }
+        private static int _floorSupportMask = -1;
+
+        private static int FloorSupportMask
+        {
+            get
+            {
+                if (_floorSupportMask == -1)
+                {
+                    _floorSupportMask = ~LayerMask.GetMask(
+                        "Characters", "BodyParts", "Items", "UI", "TransparentFX", "Ignore Raycast");
+                }
+
+                return _floorSupportMask;
+            }
+        }
+
+        private bool HasFloorSupport()
+        {
+            Vector3 position = _hips != null ? _hips.position : transform.position;
+            HumanoidSupportState support = HumanoidSpaceSupport.GetSupportAt(position);
+            if (support != HumanoidSupportState.Unknown)
+            {
+                return support == HumanoidSupportState.Supported;
+            }
+
+            // Pure-client occupancy can lag behind the floor mesh. An already-floating body
+            // must retain zero gravity until support is confirmed, including after death.
+            if (TryGetComponent(out HumanoidBodyStateMachine bodyState) && bodyState.Snapshot.IsFloating)
+            {
+                return false;
+            }
+
+            return TryGetFloorBelow(position, out _);
+        }
+
+        private static bool TryGetFloorBelow(Vector3 position, out RaycastHit hit) =>
+            Physics.Raycast(position + Vector3.up * 0.05f, Vector3.down, out hit, 2f,
+                FloorSupportMask, QueryTriggerInteraction.Ignore);
+
+        private void UpdateRagdollGravity()
+        {
+            if (!IsRagdollPhysicsAuthority())
+            {
+                return;
+            }
+
+            bool useGravity = HasFloorSupport();
+            foreach (Transform part in _ragdollParts)
+            {
+                Rigidbody body = part.GetComponent<Rigidbody>();
+                if (body.useGravity && !useGravity && !body.isKinematic)
+                {
+                    // Do not carry deck-settling fall speed into planar space float.
+                    Vector3 velocity = body.linearVelocity;
+                    velocity.y = 0f;
+                    body.linearVelocity = velocity;
+                }
+
+                body.useGravity = useGravity;
+            }
+        }
+
         /// <summary>
         /// Adjust player's position and rotation. Character's x and z coords equals hips coords, y is at lowest positon.
         /// Character's y rotation is aligned with hips forwards direction.
@@ -509,7 +580,7 @@ namespace SS3D.Systems.Entities.Humanoid
             Vector3 originalHipsPosition = _hips.position;
             Vector3 newPosition = _hips.position;
             // Get the lowest position
-            if (Physics.Raycast(transform.position, Vector3.down, out RaycastHit hitInfo))
+            if (HasFloorSupport() && TryGetFloorBelow(_hips.position, out RaycastHit hitInfo))
             {
                 newPosition.y = hitInfo.point.y + AlignmentYDelta;
             }

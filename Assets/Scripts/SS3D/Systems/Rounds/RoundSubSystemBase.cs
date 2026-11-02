@@ -278,6 +278,12 @@ namespace SS3D.Systems.Rounds
                 return;
             }
 
+            if (newValue == RoundState.Stopped)
+            {
+                Combat.BulletHoleDecalSpawner.Clear();
+                Health.BloodDecalSpawner.Clear();
+            }
+
             Log.Information(this, _roundState.ToString(), Logs.ServerOnly);
 
             RoundStateUpdated roundStateUpdated = new(newValue);

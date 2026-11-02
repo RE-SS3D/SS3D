@@ -2,6 +2,8 @@ using FishNet.Object;
 using SS3D.Core;
 using SS3D.Core.Behaviours;
 using SS3D.Systems.Entities;
+using SS3D.Systems.Health;
+using SS3D.Systems.Entities.Humanoid;
 using UnityEngine;
 
 namespace SS3D.Systems.Comms
@@ -17,6 +19,12 @@ namespace SS3D.Systems.Comms
     public class LocalSpeechEmitter : NetworkActor
     {
         private Entity _entity;
+
+        /// <summary>Health gates in-character speech on the server, including radio and announcements.</summary>
+        public bool CanSpeak => (!TryGetComponent(out Ragdoll ragdoll) || ragdoll.Presentation != BodyPresentationState.Dead)
+            && (!TryGetComponent(out HumanHealthController health)
+                || (health.Snapshot.State == HealthState.Healthy
+                    && health.Snapshot.IsConscious && !health.Snapshot.IsCardiacArrest));
 
         protected override void OnAwake()
         {

@@ -1,7 +1,7 @@
 > Code paths: Assets/Scripts/SS3D/Systems/Atmospherics/, Assets/Scripts/SS3D/Rendering/URP/Atmos*
 > Entry points: AtmosSubSystem, AtmosSimulation, AtmosRendererFeature
 > Status: partial
-> Verified: 259787487 — 2026-11-01
+> Verified: 4f732584a — 2026-11-02
 
 # Atmospherics
 
@@ -49,6 +49,8 @@ Server-authoritative open-tile gas simulation on the turf grid. Each walkable ce
 
 ## Pitfalls
 
+- **Round restarts must dispose the previous simulation before restoring a template:** readiness resets outlive the subsystem. Keeping `_simulation` makes the initialization guard accept old turf/pipe gas as ready. Unregister both observers, dispose simulation/world, reset dirty tracking and tick/debug state, then seed the restored map.
+
 - **Host `SS3D.Atmos.Upload` on large maps:** full-chunk AABB + `ForEachCell` + six `Texture2D.Apply` every tick dominated Metastation (~10 ms/tick). Host upload now fills only local HashGrid AOI tile bounds (+1 chunk pad). Dedicated server skips GPU publish. Network dirty-chunk Phase 2 AOI still open. Hit 2026-07-28.
 - **`ShareGasJob` / `ConductHeatJob` must not touch passive cells:** copying / energy-seeding / T-resolve over all `_cellCount` (~27k on Meta) kept `LastTick` ~20 ms with only ~83 active. Jobs use a **working set** (actives + neighbours) and commit only that set; `RebuildActiveList` is incremental (`_pendingActivate` + prior actives), not a full-grid scan. Hit 2026-07-28.
 - **`SS3D.Atmos.NetworkSync` GC on host-only Metastation:** ObserversRpc patch build/serialize ran every tick even with no remote clients (host atlas is `PublishSnapshot`). Skip broadcast when no non-local server clients; dirty scan walks `ActiveCells` only; `AtmosChunkPatchBuilder` reuses array buffers. Hit 2026-07-28 (~1.6 MB / 101 ticks with ~83 active tiles).
@@ -61,6 +63,10 @@ Server-authoritative open-tile gas simulation on the turf grid. Each walkable ce
 - **`GasPipeNetworkId` must implement `IEquatable<>`:** Dictionary lookup without it boxes the key every `TryGetNetwork` (~18 B × ports/tick under `SS3D.Atmos.Sim`). Same class of bug as `TileCoord`. Hit 2026-07-29.
 - **Scrubber filter iteration must not `yield return`:** `GetActiveFilteredGases()` allocated an iterator state machine per scrubber per atmos tick. Unroll filter flags instead. Hit 2026-07-29.
 - **Equal-pressure breath pockets:** a 1:1 O₂→CO₂ swap does not change total pressure, so pressure-only sharing never diluted the tile. `ShareGasJob` must run equal-P partial-pressure diffusion (`DiffusionSpeed`); composition gradients keep cells awake until the room mixes, then sleep again. Vacuum edges stay pressure-vent only.
+
+## Tests
+
+- `Testing/ui/validate.sh --steps compile,round-reset` runs a focused host stop/restart, depletes a cell before Stop and checks oxygen returns in a fresh simulation. The sandbox pilot also carries this regression. Remote dedicated-server replay remains required for release acceptance.
 
 ## Depends on / Used by
 

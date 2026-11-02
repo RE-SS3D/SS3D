@@ -160,7 +160,7 @@ namespace SS3D.Systems.Interactions
                 targetName = provider.GameObject.name;
             }
 
-            return $"{label} — {targetName} →";
+            return $"{label} - {targetName}";
         }
 
         private bool EnsureOverlayView()

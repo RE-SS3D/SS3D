@@ -238,6 +238,14 @@ namespace SS3D.Systems.Testing
         {
             switch (instruction.Opcode)
             {
+                case "assert_bullet_decal":
+                    TestSignal.Emit(this, "BulletDecalValidated", BulletDecalProbe.Validate());
+                    break;
+
+                case "stamp_bullet_holes":
+                    TestSignal.Emit(this, "BulletHolesStamped", BulletDecalProbe.StampVisibleSurfaces());
+                    break;
+
                 case "wait_connected":
                     yield return WaitUntil(IsConnected, _waitTimeoutSeconds, "wait_connected");
 

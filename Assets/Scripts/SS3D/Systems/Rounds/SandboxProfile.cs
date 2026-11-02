@@ -53,6 +53,7 @@ namespace SS3D.Systems.Rounds
             settings.PlayerCap = PlayerCap;
             settings.AutoStart = true;
             settings.RespawnEnabled = true;
+            settings.RemoveCorpseOnRespawn = true;
             settings.RespawnCooldownSeconds = RespawnCooldownSeconds;
             settings.MapPersistence = false;
             settings.AllConnectedReady = true;

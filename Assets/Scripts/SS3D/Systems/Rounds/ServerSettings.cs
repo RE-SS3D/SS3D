@@ -32,6 +32,8 @@ namespace SS3D.Systems.Rounds
         public bool AllConnectedReady;
         /// <summary>Ghosts may respawn as a fresh body after <see cref="RespawnCooldownSeconds"/>.</summary>
         public bool RespawnEnabled;
+        /// <summary>Despawn the player's previous corpse after a successful respawn.</summary>
+        public bool RemoveCorpseOnRespawn;
         /// <summary>Seconds from death until respawn is allowed.</summary>
         public int RespawnCooldownSeconds;
         /// <summary>Map editor save, export, load, delete, new map and the round-end autosave.</summary>
@@ -57,6 +59,7 @@ namespace SS3D.Systems.Rounds
             result.AutoStart = current.AutoStart;
             result.AllConnectedReady = current.AllConnectedReady;
             result.RespawnEnabled = current.RespawnEnabled;
+            result.RemoveCorpseOnRespawn = current.RemoveCorpseOnRespawn;
             result.RespawnCooldownSeconds = current.RespawnCooldownSeconds;
             result.MapPersistence = current.MapPersistence;
             return result;

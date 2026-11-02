@@ -5,6 +5,7 @@ using SS3D.Interactions;
 using SS3D.Interactions.Extensions;
 using SS3D.Interactions.Interfaces;
 using SS3D.UI.Shell;
+using SS3D.Systems.Inputs;
 using SS3D.UI.Shell.Animation;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -57,7 +58,11 @@ namespace SS3D.Systems.Interactions.UI
         public void Attach(VisualElement layerRoot)
         {
             _overlayRoot = new VisualElement { name = "radial-interaction-menu-surface" };
-            _overlayRoot.style.flexGrow = 1;
+            _overlayRoot.style.position = Position.Absolute;
+            _overlayRoot.style.left = 0;
+            _overlayRoot.style.top = 0;
+            _overlayRoot.style.right = 0;
+            _overlayRoot.style.bottom = 0;
             _overlayRoot.pickingMode = PickingMode.Ignore;
 
             if (_menuStyleSheet != null)
@@ -208,9 +213,14 @@ namespace SS3D.Systems.Interactions.UI
 
         private void PositionAt(Vector2 screenPosition)
         {
+            if (_overlayRoot.panel == null)
+                return;
+
+            Vector2 point = _overlayRoot.WorldToLocal(InputInterface.ScreenToPanel(_overlayRoot.panel, screenPosition));
             float half = MenuDiameter * 0.5f;
-            _menuRoot.style.left = screenPosition.x - half;
-            _menuRoot.style.bottom = screenPosition.y - half;
+            _menuRoot.style.left = point.x - half;
+            _menuRoot.style.top = point.y - half;
+            _menuRoot.style.bottom = StyleKeyword.Auto;
         }
 
         private void SetOverlayInteractive(bool interactive)
