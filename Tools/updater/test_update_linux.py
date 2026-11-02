@@ -28,8 +28,8 @@ class UpdaterTests(unittest.TestCase):
         self.root = self.base / "installation with spaces"
         self.new = self.base / "payload/SS3D-Linux-Client-v0.3.0"
         for name in ("Game/SS3D-Client", "Game/UnityPlayer.so", "Game/SS3D-Client_Data/globalgamemanagers",
-                     "Game/Config/permissions.txt", "Game/Config/network.json", "start_ss3d_host.sh",
-                     "start_ss3d_client.sh", "README.txt", "TESTERS.md", "update_ss3d.py",
+                     "Game/Config/permissions.txt", "Game/Config/network.json", "README.txt", "TESTERS.md",
+                     "update_ss3d.py",
                      "Game/Data/StationTemplates/ministation.json", "Game/Data/StationTemplates/edited.json"):
             self.write(self.new, name, "new release")
         self.write(self.new, "Game/UnityCrashHandler64", "native helper")
@@ -39,6 +39,7 @@ class UpdaterTests(unittest.TestCase):
             for path in self.new.rglob("*"):
                 if path.is_file():
                     archive.write(path, path.relative_to(self.new.parent))
+        # The installed copy predates the main menu and still has the retired launch scripts.
         for name in ("Game/SS3D-Client", "start_ss3d_host.sh", "start_ss3d_client.sh", "README.txt", "TESTERS.md",
                      "update_ss3d.py", "update_ss3d.sh", "Game/Config/network.json", "Game/Data/StationTemplates/ministation.json",
                      "Game/Data/StationTemplates/edited.json", "Game/Data/StationTemplates/my station.json",
@@ -85,8 +86,10 @@ class UpdaterTests(unittest.TestCase):
                      "Game/Logs/player.log", "Game/Config/network.json"):
             self.assertEqual((self.root / name).read_text(), "local data", name)
         self.assertEqual(updater.metadata(self.root)["tag"], "v0.3.0")
-        for name in ("Game/SS3D-Client", "Game/UnityCrashHandler64", "start_ss3d_host.sh", "start_ss3d_client.sh"):
+        for name in ("Game/SS3D-Client", "Game/UnityCrashHandler64"):
             self.assertTrue((self.root / name).stat().st_mode & stat.S_IXUSR, name)
+        for name in updater.RETIRED:
+            self.assertFalse((self.root / name).exists(), name)
         backups = list((self.root / ".ss3d-backups").iterdir())
         self.assertEqual(len(backups), 1)
         for name in ("Game/SS3D-Client", "start_ss3d_host.sh", "start_ss3d_client.sh", "update_ss3d.py"):
@@ -194,6 +197,40 @@ class UpdaterTests(unittest.TestCase):
                 with tempfile.TemporaryDirectory(dir=self.base) as dest:
                     with self.assertRaisesRegex(RuntimeError, "Unsafe|Incomplete"):
                         updater.expand_release(archive_path, Path(dest), "v0.3.0")
+
+    def test_wait_for_exit_returns_once_the_process_is_gone_and_times_out_otherwise(self):
+        with mock.patch.object(updater.Path, "exists", side_effect=[True, True, False]), \
+                mock.patch.object(updater.time, "sleep") as sleep:
+            updater.wait_for_exit(4242)
+        self.assertEqual(sleep.call_count, 2)
+        with mock.patch.object(updater.Path, "exists", return_value=True), \
+                mock.patch.object(updater.time, "sleep"), \
+                mock.patch.object(updater.time, "monotonic", side_effect=[0.0, 0.0, 61.0]):
+            with self.assertRaisesRegex(RuntimeError, "did not close"):
+                updater.wait_for_exit(4242)
+
+    def test_restart_relaunches_the_client_without_arguments_even_after_a_failed_update(self):
+        self.latest.side_effect = OSError("offline")
+        with mock.patch.object(updater.subprocess, "Popen") as popen, \
+                mock.patch.object(updater, "wait_for_exit") as wait, \
+                mock.patch.object(updater, "__file__", str(self.root / "update_ss3d.py")), \
+                mock.patch.object(updater.sys, "argv", ["update_ss3d.py", "--wait-pid", "77", "--restart"]), \
+                contextlib.redirect_stderr(io.StringIO()):
+            self.assertEqual(updater.main(), 1)
+        wait.assert_called_once_with(77)
+        args, kwargs = popen.call_args
+        self.assertEqual(args[0], [str(self.root.resolve() / "Game/SS3D-Client")])
+        self.assertEqual(kwargs["cwd"], self.root.resolve() / "Game")
+        self.assertTrue(kwargs["start_new_session"])
+
+    def test_without_restart_the_updater_never_launches_the_game(self):
+        self.latest.side_effect = OSError("offline")
+        with mock.patch.object(updater.subprocess, "Popen") as popen, \
+                mock.patch.object(updater, "__file__", str(self.root / "update_ss3d.py")), \
+                mock.patch.object(updater.sys, "argv", ["update_ss3d.py"]), \
+                contextlib.redirect_stderr(io.StringIO()):
+            self.assertEqual(updater.main(), 1)
+        popen.assert_not_called()
 
 
 class ReleaseSelectionTests(unittest.TestCase):

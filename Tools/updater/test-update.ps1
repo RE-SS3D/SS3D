@@ -29,7 +29,12 @@ function Expect-Failure([scriptblock]$Action, [string]$Pattern) {
     }
     throw "Expected a failure matching $Pattern"
 }
-function Get-Process { param($Name, $ErrorAction) if ($script:running) { return 'fake SS3D process' } }
+function Get-Process {
+    param($Name, $Id, $ErrorAction)
+    if ($Id) { return $script:gameProcess }
+    if ($script:running) { return 'fake SS3D process' }
+}
+$script:gameProcess = $null
 # Like Windows PowerShell 5.1, emit the JSON array as a single pipeline object (unary comma).
 function Invoke-RestMethod { param($Uri, $Headers, $TimeoutSec, [switch]$UseBasicParsing) return ,@($script:releases) }
 function Invoke-WebRequest {
@@ -52,8 +57,8 @@ try {
     $payload = Join-Path $testRoot 'payload'
     $new = Join-Path $payload 'SS3D-Windows-v0.3.0'
     foreach ($name in @('Game/SS3D.exe', 'Game/UnityPlayer.dll', 'Game/SS3D_Data/globalgamemanagers',
-        'Game/Config/permissions.txt', 'Game/Config/network.json', 'Start_SS3D_Host.bat',
-        'Start_SS3D_Client.bat', 'README.txt', 'TESTERS.md', 'Update_SS3D.ps1', 'Game/Data/StationTemplates/ministation.json',
+        'Game/Config/permissions.txt', 'Game/Config/network.json', 'README.txt', 'TESTERS.md', 'Update_SS3D.ps1',
+        'Game/Data/StationTemplates/ministation.json',
         'Game/Data/StationTemplates/edited.json')) { Write-Fixture $new $name 'new release' }
     $script:zip = Join-Path $testRoot 'release.zip'
     [IO.Compression.ZipFile]::CreateFromDirectory($payload, $script:zip)
@@ -79,6 +84,7 @@ try {
     $script:releases = $allReleases
 
     $install = Join-Path $testRoot 'installation with spaces'
+    # The installed copy predates the main menu and still has the retired launch scripts.
     foreach ($name in @('Game/SS3D.exe', 'Start_SS3D_Host.bat', 'Start_SS3D_Client.bat', 'README.txt', 'TESTERS.md',
         'Update_SS3D.ps1', 'Update_SS3D.bat', 'Game/Data/StationTemplates/ministation.json', 'Game/Data/StationTemplates/edited.json',
         'Game/Data/StationTemplates/my station.json', 'Game/Data/Exports/map.zip', 'Game/Data/ServerMeta/permissions.json',
@@ -119,6 +125,7 @@ try {
     Expect-Failure { Update-SS3D $install } 'Simulated disk failure'
     Assert ((Read-Fixture $install 'Game/SS3D.exe') -eq 'local data') 'Swap failure restores game'
     Assert ((Read-Fixture $install 'README.txt') -eq 'local data') 'Swap failure restores launch files'
+    Assert ((Read-Fixture $install 'Start_SS3D_Host.bat') -eq 'local data') 'Swap failure restores retired launch scripts'
     Assert ((Get-Content (Join-Path $install '.ss3d-release.json') -Raw | ConvertFrom-Json).tag -eq 'v0.2.0') 'Swap failure restores version'
 
     foreach ($old in @('20260101-000000-aaaaaaaa', '20260201-000000-bbbbbbbb')) {
@@ -128,6 +135,9 @@ try {
     Assert ((Read-Fixture $install 'Game/SS3D.exe') -eq 'new release') 'Installs game'
     Assert ((Read-Fixture $install 'Update_SS3D.ps1') -eq 'new release') 'Updater script replaces itself'
     Assert ((Read-Fixture $install 'Update_SS3D.bat') -eq 'local data') 'Running batch launcher is left alone'
+    foreach ($name in @('Start_SS3D_Host.bat', 'Start_SS3D_Client.bat')) {
+        Assert (-not (Test-Path -LiteralPath (Join-Path $install $name))) "Moves retired $name out of the installation"
+    }
     Assert (@(Get-ChildItem (Join-Path $install '.ss3d-backups') -Directory).Count -eq 1) 'Only the previous installation is kept'
     Assert ((Read-Fixture $install 'Game/Data/StationTemplates/ministation.json') -eq 'new release') 'Refreshes unchanged shipped map'
     foreach ($name in @('Game/Data/StationTemplates/edited.json', 'Game/Data/StationTemplates/my station.json',
@@ -138,7 +148,7 @@ try {
         Where-Object { Test-Path (Join-Path $_.FullName 'Game/SS3D.exe') })
     Assert ($backups.Count -eq 1) 'Keeps a complete runnable backup'
     Assert ((Read-Fixture $backups[0].FullName 'Game/SS3D.exe') -eq 'local data') 'Backup contains old build'
-    Assert ((Read-Fixture $backups[0].FullName 'Start_SS3D_Host.bat') -eq 'local data') 'Backup contains matching launcher'
+    Assert ((Read-Fixture $backups[0].FullName 'Start_SS3D_Host.bat') -eq 'local data') 'Backup keeps the retired launch script'
     Assert ((Read-Fixture $backups[0].FullName 'Update_SS3D.ps1') -eq 'local data') 'Backup contains matching updater'
     $count = $script:downloads
     Update-SS3D $install
@@ -166,5 +176,13 @@ try {
     $null = $archive.CreateEntry('SS3D-Windows-v0.3.0/Game/SS3D.exe')
     $archive.Dispose()
     Expect-Failure { Expand-SS3DRelease $incomplete (Join-Path $testRoot 'incomplete-extract') 'v0.3.0' } 'Incomplete'
-    Write-Host 'PASS: stable release selection/promotion, check-only, process/lock refusal, download/hash/asset failures, swap rollback, data preservation, self-update, n-1 backup retention, repeat update, no downgrade, legacy update, unsafe/incomplete archives.'
+    # In-game Update: wait for the quitting game; a process that never exits is refused.
+    Wait-SS3DExit 4242
+    $script:gameProcess = [pscustomobject]@{ Exited = $true } |
+        Add-Member -MemberType ScriptMethod -Name WaitForExit -Value { param($ms) $this.Exited } -PassThru
+    Wait-SS3DExit 4242
+    $script:gameProcess.Exited = $false
+    Expect-Failure { Wait-SS3DExit 4242 1 } 'did not close'
+    $script:gameProcess = $null
+    Write-Host 'PASS: stable release selection/promotion, check-only, process/lock refusal, download/hash/asset failures, swap rollback, data preservation, self-update, n-1 backup retention, repeat update, no downgrade, legacy update, unsafe/incomplete archives, wait for the quitting game.'
 } finally { Remove-Item -LiteralPath $testRoot -Recurse -Force }

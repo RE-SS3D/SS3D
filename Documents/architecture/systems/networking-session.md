@@ -1,7 +1,7 @@
 > Code paths: Assets/Scripts/SS3D/Networking/, Assets/Scripts/SS3D/Editor/ServerBuildScript.cs, Assets/Scripts/SS3D/Editor/ClientBuildScript.cs, Assets/Scripts/SS3D/Systems/Testing/, Testing/multiplayer/
 > Entry points: NetworkSessionSubSystem, ClientConnectionRecovery, NetworkSystemsHub, SS3D.Systems.Testing.AutomationSubSystem
 > Status: partial
-> Verified: 81659fe3f — 2026-11-02
+> Verified: f21a4d0b4 — 2026-11-02
 
 # Networking (session)
 
@@ -13,9 +13,10 @@ FishNet session management — host/join, network type and port settings. Distin
 
 - `Assets/Scripts/SS3D/Networking/SessionState.cs` — `Cold → Connecting → Online → Disconnecting → WaitingForServer`
 - `Assets/Scripts/SS3D/Networking/ClientConnectionRecovery.cs` — DDOL session FSM owner; arms `Scenes.EmptyPath` offline after first Online; OnGUI Retry/Quit; suppresses `SubSystems.Get` Errors while WaitingForServer; spawns `NetworkSystemsHub` on server Online
-- `Assets/Scripts/SS3D/Networking/NetworkSessionSubSystem.cs` — session host/join; gates on `ClientConnectionRecovery.CanStart`; UNITY_SERVER auto-starts on `ApplicationInitializing`
+- `Assets/Scripts/SS3D/Networking/NetworkSessionSubSystem.cs` — session host/join; gates on `ClientConnectionRecovery.CanStart`; UNITY_SERVER auto-starts on `ApplicationInitializing`; `LeaveToMainMenu` stops client/server, waits for FishNet's Empty swap, then loads Launcher
 - `Assets/Scripts/SS3D/Networking/NetworkSystemsHub.cs` + `Assets/Resources/NetworkSystemsHub.prefab` — Online hub NetworkObject (all Game NetworkSubSystems)
-- `Assets/Scripts/SS3D/Networking/ServerConnectionView.cs` — Intro connection progress/fail UI; Retry calls `StartNetworkSession` again
+- `Assets/Scripts/SS3D/Networking/ServerConnectionView.cs` — Intro connection progress/fail UI; Retry calls `StartNetworkSession` again. Launches without args use the [main menu](ui-shell-main-menu.md) instead, which owns its failures (`ClientConnectionRecovery.FailureUiOwnedElsewhere`) and arms Empty before joining (`ArmEmptyOfflineScene`)
+- `Assets/Scripts/SS3D/Networking/Status/` + `Systems/Rounds/ServerStatusPublisher.cs` — pre-join status query answered on the game port through the `SS3D patch` in Tugboat's `ServerSocket.UnconnectedRequestHandler` (LiteNetLib unconnected messages; re-apply on FishNet upgrades)
 - `Assets/Scripts/SS3D/Networking/ProtocolVersionAuthenticator.cs` + `ProtocolVersion.cs` — FishNet authenticator (installed at runtime in `StartNetworkSession`, no scene wiring); rejects clients whose `ProtocolVersion.Current` differs; `LastRejection` feeds the fail UIs. When to bump: [2026-10_game-versioning](../2026-10_game-versioning.md)
 - `Assets/Scripts/SS3D/Systems/Bootstrap/SystemsBootstrap.cs` — DDOL process-wide (incl. NetworkSession via type name)
 - `Assets/Scripts/SS3D/Systems/Testing/AutomationSubSystem.cs` — harness script runner (bootstrapped via SystemsBootstrap); Empty offline redirect never restores Boot
@@ -24,7 +25,7 @@ FishNet session management — host/join, network type and port settings. Distin
 - `Testing/multiplayer/run_loadtest.sh` — dedicated server + N real headless clients; configurable soak duration/stagger and `metrics.csv`
 - `Tools/build_client_and_server.sh` — batchmode Linux builds (installed Unity required; close the project Editor first)
 - `Builds/Update_SS3D.bat` / `Update_SS3D.ps1` — Windows in-place stable-release updater; packaging, data preservation and rollback contract in [CI release pipeline](../2026-07_ci-develop-release-pipeline.md#windows-release-updates).
-- `Builds/update_ss3d.sh` / `update_ss3d.py` — equivalent Linux client updater using Python 3; [Linux updater contract](../2026-07_ci-develop-release-pipeline.md#linux-client-release-updates).
+- `Builds/update_ss3d.sh` / `update_ss3d.py` — equivalent Linux client updater using Python 3; [Linux updater contract](../2026-07_ci-develop-release-pipeline.md#linux-client-release-updates). Both take wait-for-pid and restart options for the main menu's **Update and restart**.
 
 ## Extension points
 
@@ -41,7 +42,7 @@ FishNet session management — host/join, network type and port settings. Distin
 
 - **Smoke round drops from Preparing to Stopped with no error:** round start validates the station template against the mode (Map Check). `run_smoketest.sh` used to stage only `Data/Tilemaps`, so the server ran on whatever `StationTemplates/ministation.json` the GameServer tree held: a stale copy without spawn markers, which was refused. The script now stages `Builds/Game/Data/StationTemplates` too, and `RoundSubSystem.FailStationLoad` logs `Round start aborted: <reason>` on the server. Hit 2026-11-01.
 - **Editor stuck as a dedicated server after a server build:** `BuildPlayer` with the Server subtarget compiles the editor's own assemblies with `UNITY_SERVER`, and restoring the subtarget does not recompile them. Play Mode then runs server code paths: `AudioSubSystem` never builds its source pool (NRE in `FindAvailableAudioSource`), `Item.GenerateIcon` returns null (no inventory icons) and `PlayerSettingsSubSystem.IsHeadless` is true (settings not applied or saved, no FPS overlay). Tell-tale sign: `PlayerSettingsSubSystem.IsHeadless` IL is just `ldc.i4.1; ret`. `ServerBuildScript.BuildServer` now restores the subtarget and requests a `CleanBuildCache` recompile. Hit 2026-11-01 after `validate.sh --full`.
-- **Host `-host` without a loopback address.** Built apps call `NetworkSettings.ResetOnBuiltApplication()` which clears `ServerAddress`. Older `Start_SS3D_Host.bat` omitted `-ip=`, so Host's local client called `StartConnection("", port)`. LiteNetLib resolves empty via DNS (IPv6-first) → link-local `fe80::…` instead of `127.0.0.1`. Symptom (esp. Wine): world loads / WorldReady OK, then `Client 0 fe80::… disconnected` spam ≈ every 500 ms, session → WaitingForServer, empty OnGUI Retry/Quit, lobby stuck `Stopped - 0` (no stable Player auth). Fix: Host defaults empty address to `127.0.0.1`; `-ip=` only sets address (no longer forces Client); Host.bat includes `-ip=127.0.0.1`. **Existing zips:** edit the bat to `-ip=127.0.0.1 -host -port=1151 …` (`-ip` before `-host` on pre-fix builds so NetworkType stays Host).
+- **Host `-host` without a loopback address.** Built apps call `NetworkSettings.ResetOnBuiltApplication()` which clears `ServerAddress`. The old `Start_SS3D_Host.bat` (since removed; the main menu hosts) once omitted `-ip=`, so Host's local client called `StartConnection("", port)`. LiteNetLib resolves empty via DNS (IPv6-first) → link-local `fe80::…` instead of `127.0.0.1`. Symptom (esp. Wine): world loads / WorldReady OK, then `Client 0 fe80::… disconnected` spam ≈ every 500 ms, session → WaitingForServer, empty OnGUI Retry/Quit, lobby stuck `Stopped - 0` (no stable Player auth). Fix: Host defaults empty address to `127.0.0.1`; `-ip=` only sets address (no longer forces Client). When launching `-host` by hand, still pass `-ip=127.0.0.1` (before `-host` on pre-fix builds so NetworkType stays Host).
 - **CCR OnGUI + OS fonts.** Recovery dialog uses IMGUI; player default font fails under Wine (`Unable to load font face for [LegacyRuntime]` × per frame → blank buttons). Prefer **installed** OS fonts via `Font.GetOSInstalledFontNames` (Windows: Segoe UI; Linux: DejaVu/Liberation/Noto — never lead with Segoe UI on Linux or CreateDynamicFontFromOSFont still binds it and spams blank buttons). Hit 2026-07-28 (Fedora MetaStation import).
 - **DMM MetaStation import can drop Host session:** a synchronous full-map `PlaceTileObject` loop blocks the main thread long enough that FishNet/LiteNetLib heartbeats fail → CCR Retry/Quit. Import window applies via `MapImportApplier.ApplyRoutine` (yield every 64 placements). Hit 2026-07-28.
 - **Station template boot load freezes the same way:** `LoadMostRecentStationTemplate` used to place sync; use `LoadStationTemplateAsync` / `TileMap.LoadRoutine` (Play start + Map Editor Load). Hit 2026-07-28.

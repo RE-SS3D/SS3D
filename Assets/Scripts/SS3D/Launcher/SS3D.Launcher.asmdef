@@ -1,4 +1,4 @@
-﻿{
+{
     "name": "SS3D.Launcher",
     "rootNamespace": "",
     "references": [
@@ -8,7 +8,10 @@
         "GUID:92a1e40b8cccf8645adbdd275ac6371a",
         "GUID:0d835944b7c304149ad6e6fd114de512",
         "SS3D.Networking",
-        "GUID:eb124556ba20d60469be9771eb1f0360"
+        "GUID:eb124556ba20d60469be9771eb1f0360",
+        "GUID:7c88a4a7926ee5145ad2dfa06f454c67",
+        "GUID:1fee5c6d1d0f465a8cb36afd3cf4b5ef",
+        "GUID:ca7dfa56d1d490249a5fe56aee92a13c"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

@@ -15,7 +15,8 @@ namespace SS3D.Networking
     /// <summary>
     /// Session lifecycle owner (DDOL on NetworkManager). Tracks <see cref="SessionState"/>,
     /// arms Empty as FishNet offline after the first successful connect, and offers OnGUI
-    /// Retry/Quit when Boot is gone. Intro failure UI stays on <see cref="ServerConnectionView"/>.
+    /// Retry/Quit when Boot is gone. Intro failure UI stays on <see cref="ServerConnectionView"/>;
+    /// the main menu owns its own (<see cref="FailureUiOwnedElsewhere"/>).
     /// </summary>
     public sealed class ClientConnectionRecovery : MonoBehaviour
     {
@@ -28,6 +29,13 @@ namespace SS3D.Networking
         public SessionState State { get; private set; } = SessionState.Cold;
 
         public static ClientConnectionRecovery Instance { get; private set; }
+
+        /// <summary>
+        /// Set while another UI shows connection failures itself (the main menu's Connecting dialog
+        /// returns to the server list with the reason). The OnGUI Retry/Quit box then stays hidden,
+        /// including when a rejected join swaps the scenes for Empty.
+        /// </summary>
+        public static bool FailureUiOwnedElsewhere { get; set; }
 
         public static void EnsureOn(NetworkManager networkManager)
         {
@@ -195,7 +203,7 @@ namespace SS3D.Networking
             // Intro can still be loaded here yet about to go: a server rejection (version
             // mismatch) stops the client after the transport Started armed Empty, and
             // DefaultScene swaps Intro for Empty right after this event. Then OnGUI owns it.
-            if (IsConnectionUiSceneLoaded() && !WillLoadEmptyOfflineScene())
+            if (FailureUiOwnedElsewhere || (IsConnectionUiSceneLoaded() && !WillLoadEmptyOfflineScene()))
             {
                 return;
             }
@@ -261,7 +269,12 @@ namespace SS3D.Networking
             }
         }
 
-        private void ArmEmptyOfflineScene()
+        /// <summary>
+        /// Makes FishNet load Empty, not Boot, when the client stops. Done after the first connect,
+        /// and by the main menu before it starts one: a failed join there would otherwise reload
+        /// Boot over the Launcher scene (duplicate NetworkManager, re-run Boot objects).
+        /// </summary>
+        public void ArmEmptyOfflineScene()
         {
             DefaultScene defaultScene = GetComponent<DefaultScene>();
             if (defaultScene == null)

@@ -35,7 +35,7 @@ function Invoke-Updater([string]$Root) {
 }
 function Test-Launch([string]$Root, [string]$Label) {
     # The client keeps running after ScriptComplete in batchmode, so stop it once the signal lands.
-    # Start inside Game\ like Start_SS3D_Host.bat: players resolve Config/Data from the working directory.
+    # Start inside Game\ like a double-click from Explorer would.
     $log = Join-Path $Root 'Game\Logs\LogHost.json'
     Remove-Item -LiteralPath $log -ErrorAction SilentlyContinue
     $unityLog = Join-Path $WorkDir "$Label-unity.log"

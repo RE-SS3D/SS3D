@@ -1,10 +1,10 @@
 {
-  "generated_at": "2026-07-26T08:41:55.303236+00:00",
+  "generated_at": "2026-11-02T16:28:38.865155+00:00",
   "purpose": "Agent reference for locating SS3D art assets and determining import status.",
   "sources": {
     "in_game": {
       "root": "Assets/Art",
-      "file_count": 5196
+      "file_count": 5224
     },
     "ss3d_art": {
       "repo": "https://github.com/RE-SS3D/SS3D-Art",
@@ -13,13 +13,13 @@
     }
   },
   "summary": {
-    "in_game_files": 5196,
+    "in_game_files": 5224,
     "ss3d_art_files": 2480,
-    "unique_assets": 7466,
-    "imported": 210,
-    "in_game_only": 4996,
-    "ss3d_art_only": 2260,
-    "available_for_import": 2045,
+    "unique_assets": 7490,
+    "imported": 214,
+    "in_game_only": 5020,
+    "ss3d_art_only": 2256,
+    "available_for_import": 2041,
     "artwork_only": 215
   },
   "categories": [
@@ -57,18 +57,18 @@
     },
     {
       "path": "Graphics",
-      "in_game": 74,
+      "in_game": 76,
       "ss3d_art": 677,
       "imported": 5,
-      "in_game_only": 69,
+      "in_game_only": 71,
       "ss3d_art_only": 672
     },
     {
       "path": "Icons",
-      "in_game": 4725,
+      "in_game": 4742,
       "ss3d_art": 0,
       "imported": 0,
-      "in_game_only": 4725,
+      "in_game_only": 4742,
       "ss3d_art_only": 0
     },
     {
@@ -81,18 +81,18 @@
     },
     {
       "path": "Sound",
-      "in_game": 88,
+      "in_game": 93,
       "ss3d_art": 218,
-      "imported": 58,
-      "in_game_only": 30,
-      "ss3d_art_only": 160
+      "imported": 62,
+      "in_game_only": 31,
+      "ss3d_art_only": 156
     },
     {
       "path": "Textures",
-      "in_game": 85,
+      "in_game": 89,
       "ss3d_art": 579,
       "imported": 66,
-      "in_game_only": 25,
+      "in_game_only": 29,
       "ss3d_art_only": 513
     }
   ],
@@ -491,10 +491,10 @@
     },
     {
       "path": "Graphics/UI/Interactions/InteractionIcons",
-      "in_game": 51,
+      "in_game": 53,
       "ss3d_art": 0,
       "imported": 0,
-      "in_game_only": 51,
+      "in_game_only": 53,
       "ss3d_art_only": 0
     },
     {
@@ -895,6 +895,22 @@
       "ss3d_art": 0,
       "imported": 0,
       "in_game_only": 19,
+      "ss3d_art_only": 0
+    },
+    {
+      "path": "Icons/Lobby",
+      "in_game": 3,
+      "ss3d_art": 0,
+      "imported": 0,
+      "in_game_only": 3,
+      "ss3d_art_only": 0
+    },
+    {
+      "path": "Icons/Lobby/Jobs",
+      "in_game": 14,
+      "ss3d_art": 0,
+      "imported": 0,
+      "in_game_only": 14,
       "ss3d_art_only": 0
     },
     {
@@ -2203,10 +2219,10 @@
     },
     {
       "path": "Sound/World/Airlocks",
-      "in_game": 2,
+      "in_game": 3,
       "ss3d_art": 0,
       "imported": 0,
-      "in_game_only": 2,
+      "in_game_only": 3,
       "ss3d_art_only": 0
     },
     {
@@ -2299,11 +2315,11 @@
     },
     {
       "path": "Sound/World/Music",
-      "in_game": 5,
+      "in_game": 9,
       "ss3d_art": 9,
-      "imported": 5,
+      "imported": 9,
       "in_game_only": 0,
-      "ss3d_art_only": 4
+      "ss3d_art_only": 0
     },
     {
       "path": "Textures",
@@ -2578,6 +2594,14 @@
       "ss3d_art_only": 0
     },
     {
+      "path": "Textures/Lobby",
+      "in_game": 1,
+      "ss3d_art": 0,
+      "imported": 0,
+      "in_game_only": 1,
+      "ss3d_art_only": 0
+    },
+    {
       "path": "Textures/Structures/Floors/TileOverlays",
       "in_game": 6,
       "ss3d_art": 7,
@@ -2624,6 +2648,14 @@
       "imported": 10,
       "in_game_only": 0,
       "ss3d_art_only": 5
+    },
+    {
+      "path": "Textures/UI/Wallpapers",
+      "in_game": 2,
+      "ss3d_art": 0,
+      "imported": 0,
+      "in_game_only": 2,
+      "ss3d_art_only": 0
     },
     {
       "path": "Textures/World",
@@ -2786,6 +2818,14 @@
       "ss3d_art_only": 17
     },
     {
+      "path": "Textures/World/VFX/Health",
+      "in_game": 1,
+      "ss3d_art": 0,
+      "imported": 0,
+      "in_game_only": 1,
+      "ss3d_art_only": 0
+    },
+    {
       "path": "Textures/World/VFX/Particles",
       "in_game": 0,
       "ss3d_art": 102,
@@ -2836,11 +2876,11 @@
   ],
   "extensions": {
     "svg": 4248,
-    "png": 2018,
+    "png": 2041,
     "blend": 677,
     "fbx": 224,
-    "wav": 160,
-    "ogg": 70,
+    "wav": 159,
+    "ogg": 72,
     "mp3": 18,
     "ma": 13,
     "mp4": 12,
@@ -9265,6 +9305,17 @@
       "status": "in_game_only"
     },
     {
+      "name": "Lock.png",
+      "stem": "lock",
+      "extension": "png",
+      "category": "Graphics/UI/Interactions/InteractionIcons",
+      "in_game_path": "Assets/Art/Graphics/UI/Interactions/InteractionIcons/Lock.png",
+      "ss3d_art_path": null,
+      "github_url": null,
+      "import_target_path": null,
+      "status": "in_game_only"
+    },
+    {
       "name": "Lockpick.png",
       "stem": "lockpick",
       "extension": "png",
@@ -9501,6 +9552,17 @@
       "extension": "png",
       "category": "Graphics/UI/Interactions/InteractionIcons",
       "in_game_path": "Assets/Art/Graphics/UI/Interactions/InteractionIcons/Type.png",
+      "ss3d_art_path": null,
+      "github_url": null,
+      "import_target_path": null,
+      "status": "in_game_only"
+    },
+    {
+      "name": "Unlock.png",
+      "stem": "unlock",
+      "extension": "png",
+      "category": "Graphics/UI/Interactions/InteractionIcons",
+      "in_game_path": "Assets/Art/Graphics/UI/Interactions/InteractionIcons/Unlock.png",
       "ss3d_art_path": null,
       "github_url": null,
       "import_target_path": null,
@@ -66707,6 +66769,193 @@
       "status": "in_game_only"
     },
     {
+      "name": "DropdownArrow.png",
+      "stem": "dropdownarrow",
+      "extension": "png",
+      "category": "Icons/Lobby",
+      "in_game_path": "Assets/Art/Icons/Lobby/DropdownArrow.png",
+      "ss3d_art_path": null,
+      "github_url": null,
+      "import_target_path": null,
+      "status": "in_game_only"
+    },
+    {
+      "name": "PnJanitor.png",
+      "stem": "pnjanitor",
+      "extension": "png",
+      "category": "Icons/Lobby",
+      "in_game_path": "Assets/Art/Icons/Lobby/PnJanitor.png",
+      "ss3d_art_path": null,
+      "github_url": null,
+      "import_target_path": null,
+      "status": "in_game_only"
+    },
+    {
+      "name": "PnSecurity.png",
+      "stem": "pnsecurity",
+      "extension": "png",
+      "category": "Icons/Lobby",
+      "in_game_path": "Assets/Art/Icons/Lobby/PnSecurity.png",
+      "ss3d_art_path": null,
+      "github_url": null,
+      "import_target_path": null,
+      "status": "in_game_only"
+    },
+    {
+      "name": "Bartender.png",
+      "stem": "bartender",
+      "extension": "png",
+      "category": "Icons/Lobby/Jobs",
+      "in_game_path": "Assets/Art/Icons/Lobby/Jobs/Bartender.png",
+      "ss3d_art_path": null,
+      "github_url": null,
+      "import_target_path": null,
+      "status": "in_game_only"
+    },
+    {
+      "name": "Captain.png",
+      "stem": "captain",
+      "extension": "png",
+      "category": "Icons/Lobby/Jobs",
+      "in_game_path": "Assets/Art/Icons/Lobby/Jobs/Captain.png",
+      "ss3d_art_path": null,
+      "github_url": null,
+      "import_target_path": null,
+      "status": "in_game_only"
+    },
+    {
+      "name": "CargoTechnician.png",
+      "stem": "cargotechnician",
+      "extension": "png",
+      "category": "Icons/Lobby/Jobs",
+      "in_game_path": "Assets/Art/Icons/Lobby/Jobs/CargoTechnician.png",
+      "ss3d_art_path": null,
+      "github_url": null,
+      "import_target_path": null,
+      "status": "in_game_only"
+    },
+    {
+      "name": "Chef.png",
+      "stem": "chef",
+      "extension": "png",
+      "category": "Icons/Lobby/Jobs",
+      "in_game_path": "Assets/Art/Icons/Lobby/Jobs/Chef.png",
+      "ss3d_art_path": null,
+      "github_url": null,
+      "import_target_path": null,
+      "status": "in_game_only"
+    },
+    {
+      "name": "Chemist.png",
+      "stem": "chemist",
+      "extension": "png",
+      "category": "Icons/Lobby/Jobs",
+      "in_game_path": "Assets/Art/Icons/Lobby/Jobs/Chemist.png",
+      "ss3d_art_path": null,
+      "github_url": null,
+      "import_target_path": null,
+      "status": "in_game_only"
+    },
+    {
+      "name": "ChiefEngineer.png",
+      "stem": "chiefengineer",
+      "extension": "png",
+      "category": "Icons/Lobby/Jobs",
+      "in_game_path": "Assets/Art/Icons/Lobby/Jobs/ChiefEngineer.png",
+      "ss3d_art_path": null,
+      "github_url": null,
+      "import_target_path": null,
+      "status": "in_game_only"
+    },
+    {
+      "name": "Doctor.png",
+      "stem": "doctor",
+      "extension": "png",
+      "category": "Icons/Lobby/Jobs",
+      "in_game_path": "Assets/Art/Icons/Lobby/Jobs/Doctor.png",
+      "ss3d_art_path": null,
+      "github_url": null,
+      "import_target_path": null,
+      "status": "in_game_only"
+    },
+    {
+      "name": "Engineer.png",
+      "stem": "engineer",
+      "extension": "png",
+      "category": "Icons/Lobby/Jobs",
+      "in_game_path": "Assets/Art/Icons/Lobby/Jobs/Engineer.png",
+      "ss3d_art_path": null,
+      "github_url": null,
+      "import_target_path": null,
+      "status": "in_game_only"
+    },
+    {
+      "name": "Janitor.png",
+      "stem": "janitor",
+      "extension": "png",
+      "category": "Icons/Lobby/Jobs",
+      "in_game_path": "Assets/Art/Icons/Lobby/Jobs/Janitor.png",
+      "ss3d_art_path": null,
+      "github_url": null,
+      "import_target_path": null,
+      "status": "in_game_only"
+    },
+    {
+      "name": "Miner.png",
+      "stem": "miner",
+      "extension": "png",
+      "category": "Icons/Lobby/Jobs",
+      "in_game_path": "Assets/Art/Icons/Lobby/Jobs/Miner.png",
+      "ss3d_art_path": null,
+      "github_url": null,
+      "import_target_path": null,
+      "status": "in_game_only"
+    },
+    {
+      "name": "Plumber.png",
+      "stem": "plumber",
+      "extension": "png",
+      "category": "Icons/Lobby/Jobs",
+      "in_game_path": "Assets/Art/Icons/Lobby/Jobs/Plumber.png",
+      "ss3d_art_path": null,
+      "github_url": null,
+      "import_target_path": null,
+      "status": "in_game_only"
+    },
+    {
+      "name": "Roboticist.png",
+      "stem": "roboticist",
+      "extension": "png",
+      "category": "Icons/Lobby/Jobs",
+      "in_game_path": "Assets/Art/Icons/Lobby/Jobs/Roboticist.png",
+      "ss3d_art_path": null,
+      "github_url": null,
+      "import_target_path": null,
+      "status": "in_game_only"
+    },
+    {
+      "name": "SecurityOfficer.png",
+      "stem": "securityofficer",
+      "extension": "png",
+      "category": "Icons/Lobby/Jobs",
+      "in_game_path": "Assets/Art/Icons/Lobby/Jobs/SecurityOfficer.png",
+      "ss3d_art_path": null,
+      "github_url": null,
+      "import_target_path": null,
+      "status": "in_game_only"
+    },
+    {
+      "name": "Warden.png",
+      "stem": "warden",
+      "extension": "png",
+      "category": "Icons/Lobby/Jobs",
+      "in_game_path": "Assets/Art/Icons/Lobby/Jobs/Warden.png",
+      "ss3d_art_path": null,
+      "github_url": null,
+      "import_target_path": null,
+      "status": "in_game_only"
+    },
+    {
       "name": "Approved.png",
       "stem": "approved",
       "extension": "png",
@@ -77322,6 +77571,17 @@
       "status": "in_game_only"
     },
     {
+      "name": "AirlockDeny.ogg",
+      "stem": "airlockdeny",
+      "extension": "ogg",
+      "category": "Sound/World/Airlocks",
+      "in_game_path": "Assets/Art/Sound/World/Airlocks/AirlockDeny.ogg",
+      "ss3d_art_path": null,
+      "github_url": null,
+      "import_target_path": null,
+      "status": "in_game_only"
+    },
+    {
       "name": "AirlockOpen.ogg",
       "stem": "airlockopen",
       "extension": "ogg",
@@ -78239,22 +78499,22 @@
       "stem": "breach",
       "extension": "mp3",
       "category": "Sound/World/Music",
-      "in_game_path": null,
+      "in_game_path": "Assets/Art/Sound/World/Music/Breach.mp3",
       "ss3d_art_path": "Assets/Sound/World/Music/Breach.mp3",
       "github_url": "https://github.com/RE-SS3D/SS3D-Art/blob/main/Assets/Sound/World/Music/Breach.mp3",
       "import_target_path": "Assets/Art/Sound/World/Music/Breach.mp3",
-      "status": "ss3d_art_only"
+      "status": "imported"
     },
     {
       "name": "GatewayToTheForest.mp3",
       "stem": "gatewaytotheforest",
       "extension": "mp3",
       "category": "Sound/World/Music",
-      "in_game_path": null,
+      "in_game_path": "Assets/Art/Sound/World/Music/GatewayToTheForest.mp3",
       "ss3d_art_path": "Assets/Sound/World/Music/GatewayToTheForest.mp3",
       "github_url": "https://github.com/RE-SS3D/SS3D-Art/blob/main/Assets/Sound/World/Music/GatewayToTheForest.mp3",
       "import_target_path": "Assets/Art/Sound/World/Music/GatewayToTheForest.mp3",
-      "status": "ss3d_art_only"
+      "status": "imported"
     },
     {
       "name": "Intro.ogg",
@@ -78279,26 +78539,26 @@
       "status": "imported"
     },
     {
-      "name": "Space Theme.wav",
+      "name": "Space Theme.ogg",
       "stem": "space theme",
-      "extension": "wav",
+      "extension": "ogg",
       "category": "Sound/World/Music",
-      "in_game_path": null,
+      "in_game_path": "Assets/Art/Sound/World/Music/Space Theme.ogg",
       "ss3d_art_path": "Assets/Sound/World/Music/Space Theme.wav",
       "github_url": "https://github.com/RE-SS3D/SS3D-Art/blob/main/Assets/Sound/World/Music/Space Theme.wav",
       "import_target_path": "Assets/Art/Sound/World/Music/Space Theme.wav",
-      "status": "ss3d_art_only"
+      "status": "imported"
     },
     {
       "name": "SpacemansLullaby.mp3",
       "stem": "spacemanslullaby",
       "extension": "mp3",
       "category": "Sound/World/Music",
-      "in_game_path": null,
+      "in_game_path": "Assets/Art/Sound/World/Music/SpacemansLullaby.mp3",
       "ss3d_art_path": "Assets/Sound/World/Music/SpacemansLullaby.mp3",
       "github_url": "https://github.com/RE-SS3D/SS3D-Art/blob/main/Assets/Sound/World/Music/SpacemansLullaby.mp3",
       "import_target_path": "Assets/Art/Sound/World/Music/SpacemansLullaby.mp3",
-      "status": "ss3d_art_only"
+      "status": "imported"
     },
     {
       "name": "Title1.ogg",
@@ -80479,6 +80739,17 @@
       "status": "in_game_only"
     },
     {
+      "name": "ProbablyNotChaseBanner.png",
+      "stem": "probablynotchasebanner",
+      "extension": "png",
+      "category": "Textures/Lobby",
+      "in_game_path": "Assets/Art/Textures/Lobby/ProbablyNotChaseBanner.png",
+      "ss3d_art_path": null,
+      "github_url": null,
+      "import_target_path": null,
+      "status": "in_game_only"
+    },
+    {
       "name": "TileOverlayAlpha.png",
       "stem": "tileoverlayalpha",
       "extension": "png",
@@ -81379,6 +81650,28 @@
       "github_url": "https://github.com/RE-SS3D/SS3D-Art/blob/main/Assets/Textures/UI/Renders/ProbablyNotClownBlur.png",
       "import_target_path": "Assets/Art/Textures/UI/Renders/ProbablyNotClownBlur.png",
       "status": "ss3d_art_only"
+    },
+    {
+      "name": "FloatingSpace2.png",
+      "stem": "floatingspace2",
+      "extension": "png",
+      "category": "Textures/UI/Wallpapers",
+      "in_game_path": "Assets/Art/Textures/UI/Wallpapers/FloatingSpace2.png",
+      "ss3d_art_path": null,
+      "github_url": null,
+      "import_target_path": null,
+      "status": "in_game_only"
+    },
+    {
+      "name": "FloatingSpace3.png",
+      "stem": "floatingspace3",
+      "extension": "png",
+      "category": "Textures/UI/Wallpapers",
+      "in_game_path": "Assets/Art/Textures/UI/Wallpapers/FloatingSpace3.png",
+      "ss3d_art_path": null,
+      "github_url": null,
+      "import_target_path": null,
+      "status": "in_game_only"
     },
     {
       "name": "Palette01.png",
@@ -83480,6 +83773,17 @@
       "github_url": "https://github.com/RE-SS3D/SS3D-Art/blob/main/Assets/Textures/World/VFX/Graffiti/Symbols/GraffitiSymbolSlashInverse.png",
       "import_target_path": "Assets/Art/Textures/World/VFX/Graffiti/Symbols/GraffitiSymbolSlashInverse.png",
       "status": "ss3d_art_only"
+    },
+    {
+      "name": "blood_droplet.png",
+      "stem": "blood_droplet",
+      "extension": "png",
+      "category": "Textures/World/VFX/Health",
+      "in_game_path": "Assets/Art/Textures/World/VFX/Health/blood_droplet.png",
+      "ss3d_art_path": null,
+      "github_url": null,
+      "import_target_path": null,
+      "status": "in_game_only"
     },
     {
       "name": "ParticleElectronicsPart1.png",

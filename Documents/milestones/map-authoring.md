@@ -12,7 +12,7 @@
 
 An **authoring** gate, separate from the operational [test-server.md](test-server.md) track and the gameplay [mvp1-nuke-ops.md](mvp1-nuke-ops.md) gate. Done when someone outside the project can:
 
-- Download a release zip, run `Start_SS3D_Host.bat`, and open the Map Editor with no config editing (the host is ServerOwner via the shipped `Config/permissions.txt`)
+- Download a release zip, run `Game\SS3D.exe`, choose **Play locally**, and open the Map Editor with no config editing (the local host is ServerOwner automatically)
 - Author a map that expresses everything a Nuke Ops station needs: structure, furniture, items, pipes and cables; job + antag spawns; APCs and lights; **room name, department and access** (a vault is a Command room); nuke and disk placement. Air at round start comes free (every floor tile seeds station O₂/N₂, no-floor tiles are vacuum)
 - Save, select the map, Start a round on it, play it alone or with LAN friends, Stop, and keep editing — without restarting the game and without silently losing edits or saving battle damage into the template
 - Be told **before** a round starts when the map can't host it (missing required spawns, missing nuke/disk under Nuke Ops), and warned on save about softer problems

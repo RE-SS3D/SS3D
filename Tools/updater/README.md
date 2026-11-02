@@ -21,7 +21,7 @@ If restoration itself fails or power is lost, staging and backup directories rem
 There is no dependency on Git, Unity, a hosted server, or an administrator account.
 
 Each successful update keeps the previous complete installation in `.ss3d-backups/<id>/`.
-To roll back, close the game and run the Host/Client script in that backup; it contains the
+To roll back, close the game and run `Game/SS3D.exe` in that backup; it contains the
 local data from before the update. Later changes remain in the newer installation. Only that
 previous installation (n-1) is kept: older backups are deleted after a successful update.
 `Update_SS3D.ps1` is replaced along with the game (PowerShell has already read it), so updater
@@ -42,12 +42,12 @@ Develop Release dispatches test the updater players actually have.
 
 ## Update an extracted Linux client release
 
-Linux client zips ship `update_ss3d.sh` and `update_ss3d.py` beside the launch scripts.
+Linux client zips ship `update_ss3d.sh` and `update_ss3d.py` beside the `Game/` folder.
 Close all Linux clients, then run `./update_ss3d.sh`; use `--check-only` to check without
 installing. Requires Python 3 and its standard library only. No sudo or system changes.
 The updater shares the Windows contract above: stable numbered releases only, verified
 downloads, preserved local data, refreshed unchanged bundled maps and runnable backups.
-It also restores executable permissions on the player, native helpers and launch scripts.
+It also restores executable permissions on the player and native helpers.
 `update_ss3d.py` updates itself like the PowerShell script; the `update_ss3d.sh` launcher stays.
 
 Use `python3 -B Tools/updater/test_update_linux.py` for isolated regression tests. Fixtures
@@ -57,7 +57,7 @@ required to ship the helper and map-hash manifest only in the client zip, not th
 
 For manual release acceptance, update a disposable older Linux client extraction with a custom
 map, export and config change; confirm those survive, the new client launches, a repeat update
-does nothing, and the backup's launch script starts the old build. Native game launch remains
+does nothing, and the backup's `Game/SS3D-Client` starts the old build. Native game launch remains
 a manual check. Numbered releases always build Linux (the release workflow forces
 `build_linux`), because the updater refuses a stable release without its matching Linux
 client zip rather than silently falling back to a different version.

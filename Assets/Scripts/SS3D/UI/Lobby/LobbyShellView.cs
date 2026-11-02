@@ -574,13 +574,14 @@ namespace SS3D.UI.Lobby
         }
 
         /// <summary>
-        /// Quits the game. The first click arms it and the second quits, so a stray click in the
-        /// in-round menu can't drop the player out; moving the pointer away disarms it.
+        /// Leaves for the main menu (ending the session when hosting). The first click arms it and the
+        /// second leaves, so a stray click in the in-round menu can't drop the player out; moving the
+        /// pointer away disarms it.
         /// </summary>
         private Button BuildQuitButton()
         {
-            const string idleText = "QUIT GAME";
-            const string armedText = "CLICK AGAIN TO QUIT";
+            const string idleText = "QUIT TO MENU";
+            const string armedText = "CLICK AGAIN TO LEAVE";
             bool armed = false;
             Button quit = null;
             quit = new Button(() =>

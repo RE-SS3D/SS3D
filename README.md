@@ -55,7 +55,7 @@ This is not the official RE:SS3D release channel. For the upstream project, comm
 
 This fork is not the official RE:SS3D release channel. Optionally, maintainers can cut a **manual
 prerelease** via GitHub Actions → **Develop Release**: default is a **Windows** zip
-(`Game\SS3D.exe` + `Start_SS3D_*.bat` for self-host). Linux client/server, EditMode, and multiplayer
+(`Game\SS3D.exe`, whose main menu hosts or joins). Linux client/server, EditMode, and multiplayer
 smoke are **opt-in** workflow inputs — see
 [Documents/architecture/2026-07_ci-develop-release-pipeline.md](Documents/architecture/2026-07_ci-develop-release-pipeline.md).
 Otherwise clone **`develop`** and build in Unity yourself.

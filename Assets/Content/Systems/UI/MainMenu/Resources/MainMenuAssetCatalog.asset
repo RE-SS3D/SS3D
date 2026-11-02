@@ -1,0 +1,32 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9cf74500c22f3af3db3860ff6e4e21b4, type: 3}
+  m_Name: MainMenuAssetCatalog
+  m_EditorClassIdentifier: SS3D.UI.Shell::SS3D.UI.Shell.MainMenu.MainMenuAssetCatalog
+  _panelSettings: {fileID: 11400000, guid: d9e8accab86f453aacb827761d335103, type: 2}
+  _ss3dTokensStyle: {fileID: 7433441132597879392, guid: 73b8fe755692049198490f1974236d47, type: 3}
+  _ss3dTypographyStyle: {fileID: 7433441132597879392, guid: 5c5d40e591a47dca8a2ac25e2b23b4c8, type: 3}
+  _template: {fileID: 9197481963319205126, guid: 642ecf24a1c788046818a159b3274027, type: 3}
+  _style: {fileID: 7433441132597879392, guid: 17e6a5fb3e8f1bd8fba4617660829be2, type: 3}
+  _logo: {fileID: 2800000, guid: 5c01797ec228c7b44a1b7fdce44dce2e, type: 3}
+  _wallpapers:
+  - {fileID: 2800000, guid: 11f34a2347269a5f3bf7ad6b5e7b4d3d, type: 3}
+  - {fileID: 2800000, guid: 9364b90cc962f9e7b9de9db1a9a14cd6, type: 3}
+  _musicIcon: {fileID: 2800000, guid: 625cf513ff7b3cb47b3b70e1db0b8e6e, type: 3}
+  _music:
+  - {fileID: 8300000, guid: 41d4341d4f61bd33ebc28420a47c280f, type: 3}
+  - {fileID: 8300000, guid: 3af126b3d82c5e0d3bb29839f1617d57, type: 3}
+  - {fileID: 8300000, guid: 100836e5ae0dc60a7a3a26a7a5528c7b, type: 3}
+  - {fileID: 8300000, guid: a28d9e5fdfda4c339bd46dc5cc152caa, type: 3}
+  - {fileID: 8300000, guid: ec8b849764a7e9147b2a565f81a1ca42, type: 3}
+  - {fileID: 8300000, guid: 3f51862f0b88a5243a8cceb97147489d, type: 3}
+  - {fileID: 8300000, guid: fd331e360db5fbb448e66367e41d1893, type: 3}

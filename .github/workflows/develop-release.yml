@@ -524,7 +524,7 @@ jobs:
     env:
       FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
     steps:
-      - name: Checkout launch scripts
+      - name: Checkout release files
         uses: actions/checkout@v4
         with:
           lfs: false
@@ -576,9 +576,9 @@ jobs:
           TAG="${{ steps.tag.outputs.tag_name }}"
           mkdir -p dist
 
-          # Paths.cs resolves Config/ and Data/ from process CWD (bats/scripts cd next to the
-          # binary). Unity player builds do not include those trees — seed the git-tracked
-          # fixtures from Builds/Game. Never copy Data/ServerMeta (runtime state).
+          # Paths.cs resolves Config/ and Data/ beside the player binary. Unity player builds do
+          # not include those trees — seed the git-tracked fixtures from Builds/Game.
+          # Never copy Data/ServerMeta (runtime state).
           seed_cwd_data() {
             local dest="$1"
             test -f Builds/Game/Config/permissions.txt
@@ -611,7 +611,7 @@ jobs:
           PY
           }
 
-          # --- Primary: Windows client + launch bats ---
+          # --- Primary: Windows client + updater ---
           WIN_ROOT="staging/SS3D-Windows-${TAG}"
           mkdir -p "${WIN_ROOT}/Game"
           # Artifact is the StandaloneWindows64 tree (SS3D.exe + *_Data, etc.).
@@ -619,7 +619,7 @@ jobs:
           cp -a build-windows/. "${WIN_ROOT}/Game/"
           strip_debug "${WIN_ROOT}/Game"
           seed_cwd_data "${WIN_ROOT}/Game"
-          cp Builds/Start_SS3D_Host.bat Builds/Start_SS3D_Client.bat Builds/Update_SS3D.bat Builds/Update_SS3D.ps1 Builds/README.txt Builds/TESTERS.md "${WIN_ROOT}/"
+          cp Builds/Update_SS3D.bat Builds/Update_SS3D.ps1 Builds/README.txt Builds/TESTERS.md "${WIN_ROOT}/"
           write_update_manifest "${WIN_ROOT}"
           (cd staging && zip -qq -r "../dist/SS3D-Windows-${TAG}.zip" "SS3D-Windows-${TAG}")
 
@@ -627,7 +627,7 @@ jobs:
           NOTES_LINUX="_(not built for this dispatch — enable build_linux to attach Linux zips)_"
 
           if [ "${{ needs.prepare.outputs.build_linux }}" = "true" ]; then
-            # Same shape as Windows: launch scripts at the top, the player under Game/ or
+            # Same shape as Windows: scripts at the top, the player under Game/ or
             # GameServer/. upload-artifact drops the exec bit, so restore it before zipping
             # (zip keeps Unix modes; unzip restores them).
             stage_linux() {
@@ -651,11 +651,11 @@ jobs:
               (cd staging && zip -qq -r "../dist/SS3D-Linux-${kind}-${TAG}.zip" "SS3D-Linux-${kind}-${TAG}")
             }
             stage_linux Client build-linux/Game/StandaloneLinux64 Game SS3D-Client \
-              start_ss3d_client.sh start_ss3d_host.sh update_ss3d.sh
+              update_ss3d.sh
             stage_linux Server build-linux/GameServer/StandaloneLinux64 GameServer SS3D-Server \
               start_ss3d_server.sh
             FILES="$(printf '%s\n%s\n%s' "$FILES" "dist/SS3D-Linux-Server-${TAG}.zip" "dist/SS3D-Linux-Client-${TAG}.zip")"
-            NOTES_LINUX="$(printf -- '- `%s` — unzip, run `./start_ss3d_host.sh` or `./start_ss3d_client.sh <server ip>`\n- `%s` — unzip, run `./start_ss3d_server.sh`' "SS3D-Linux-Client-${TAG}.zip" "SS3D-Linux-Server-${TAG}.zip")"
+            NOTES_LINUX="$(printf -- '- `%s` — unzip, run `Game/SS3D-Client` to open the main menu\n- `%s` — unzip, run `./start_ss3d_server.sh`' "SS3D-Linux-Client-${TAG}.zip" "SS3D-Linux-Server-${TAG}.zip")"
           fi
 
           ls -lh dist
@@ -699,8 +699,7 @@ jobs:
             dispatch (see the Actions run). Windows is not smoke-tested.
 
             **Player download (Windows):** `SS3D-Windows-${{ steps.tag.outputs.tag_name }}.zip`
-            — unzip, run `Start_SS3D_Host.bat` to host, or `Start_SS3D_Client.bat` to join
-            (it asks for your name and the server IP). `Game\SS3D.exe` on its own opens the launcher.
+            — unzip and run `Game\SS3D.exe`. The main menu hosts a local game or joins a server.
 
             Close the game and run `Update_SS3D.bat` to get the newest stable numbered release while
             preserving local data. Prereleases and nightlies are excluded; the previous installation is kept.

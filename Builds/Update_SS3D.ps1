@@ -1,5 +1,5 @@
 #requires -Version 5.1
-param([switch]$CheckOnly)
+param([switch]$CheckOnly, [int]$WaitPid = 0, [switch]$Restart)
 
 $ErrorActionPreference = 'Stop'
 Set-StrictMode -Version 2
@@ -30,6 +30,21 @@ function Assert-SS3DClosed {
     }
 }
 
+function Wait-SS3DExit([int]$ProcessId, [int]$TimeoutSeconds = 60) {
+    # The in-game Update button quits the game; wait for it before the closed check.
+    $process = Get-Process -Id $ProcessId -ErrorAction SilentlyContinue
+    if (-not $process) { return }
+    if (-not $process.WaitForExit($TimeoutSeconds * 1000)) {
+        throw 'The game did not close within a minute. Close it and run the updater again.'
+    }
+}
+
+function Start-SS3DGame([string]$Root) {
+    # No arguments: the game opens its main menu.
+    $game = Join-Path $Root 'Game'
+    Start-Process -FilePath (Join-Path $game 'SS3D.exe') -WorkingDirectory $game
+}
+
 function Expand-SS3DRelease([string]$Zip, [string]$Destination, [string]$Tag) {
     Add-Type -AssemblyName System.IO.Compression.FileSystem
     $archive = [IO.Compression.ZipFile]::OpenRead($Zip)
@@ -49,8 +64,7 @@ function Expand-SS3DRelease([string]$Zip, [string]$Destination, [string]$Tag) {
     $root = Join-Path $Destination "SS3D-Windows-$Tag"
     foreach ($required in @('Game/SS3D.exe', 'Game/UnityPlayer.dll', 'Game/SS3D_Data/globalgamemanagers',
             'Game/Config/permissions.txt', 'Game/Config/network.json',
-            'Game/Data/StationTemplates/ministation.json', 'Start_SS3D_Host.bat',
-            'Start_SS3D_Client.bat', 'README.txt', 'TESTERS.md', 'Update_SS3D.ps1')) {
+            'Game/Data/StationTemplates/ministation.json', 'README.txt', 'TESTERS.md', 'Update_SS3D.ps1')) {
         if (-not (Test-Path -LiteralPath (Join-Path $root $required) -PathType Leaf)) {
             throw "Incomplete Windows release: missing $required"
         }
@@ -92,12 +106,20 @@ function Copy-SS3DLocalData([string]$OldRoot, [string]$NewRoot) {
 function Install-SS3DRelease([string]$Root, [string]$NewRoot, [string]$Backup) {
     # Update_SS3D.ps1 replaces itself so updater fixes reach existing installs; PowerShell has already
     # read it. Update_SS3D.bat is NOT replaced: cmd reads a running batch file line by line.
-    $managed = @('Game', 'Start_SS3D_Host.bat', 'Start_SS3D_Client.bat', 'README.txt', 'TESTERS.md',
-        'Update_SS3D.ps1', '.ss3d-release.json')
+    $managed = @('Game', 'README.txt', 'TESTERS.md', 'Update_SS3D.ps1', '.ss3d-release.json')
+    # Launch scripts from releases before the main menu replaced them; moved into the backup, not reinstalled.
+    $retired = @('Start_SS3D_Host.bat', 'Start_SS3D_Client.bat')
     $saved = @()
     $installed = @()
     New-Item -ItemType Directory -Path $Backup | Out-Null
     try {
+        foreach ($name in $retired) {
+            $old = Join-Path $Root $name
+            if (Test-Path -LiteralPath $old) {
+                Move-Item -LiteralPath $old -Destination (Join-Path $Backup $name)
+                $saved += $name
+            }
+        }
         foreach ($name in $managed) {
             $old = Join-Path $Root $name
             if (Test-Path -LiteralPath $old) {
@@ -136,7 +158,7 @@ function Remove-SS3DOldBackups([string]$Backups, [string]$Keep) {
 
 function Update-SS3D([string]$Root, [switch]$CheckOnly) {
     if (-not (Test-Path -LiteralPath (Join-Path $Root 'Game/SS3D.exe') -PathType Leaf)) {
-        throw 'Keep the updater beside Start_SS3D_Host.bat in an extracted Windows release.'
+        throw 'Keep the updater beside the Game folder in an extracted Windows release.'
     }
     Assert-SS3DClosed
     $lock = $null
@@ -199,10 +221,10 @@ function Update-SS3D([string]$Root, [switch]$CheckOnly) {
         Install-SS3DRelease $Root $newRoot $backup
         $complete = $true
         $removed = Remove-SS3DOldBackups (Split-Path $backup -Parent) $backup
-        Write-Host "Updated to $tag. Use your usual Host or Client script in this folder."
+        Write-Host "Updated to $tag. Start Game\SS3D.exe as usual."
         Write-Host "Previous installation: $backup"
         if ($removed) { Write-Host "Removed $removed older backup(s); only the previous installation is kept." }
-        Write-Host 'To roll back, close SS3D and run the Host or Client script inside that backup folder.'
+        Write-Host 'To roll back, close SS3D and run Game\SS3D.exe inside that backup folder.'
     } finally {
         # On a swap/restore failure leave staging available for manual recovery.
         if ($stage -and (Test-Path -LiteralPath $stage) -and (-not $swapStarted -or $complete)) {
@@ -214,6 +236,17 @@ function Update-SS3D([string]$Root, [switch]$CheckOnly) {
 
 # Dot-sourcing exposes functions to isolated tests without touching an installation.
 if ($MyInvocation.InvocationName -ne '.') {
-    try { Update-SS3D -Root $PSScriptRoot -CheckOnly:$CheckOnly }
-    catch { Write-Host "Update failed: $($_.Exception.Message)" -ForegroundColor Red; exit 1 }
+    $result = 0
+    try {
+        if ($WaitPid) { Wait-SS3DExit $WaitPid }
+        Update-SS3D -Root $PSScriptRoot -CheckOnly:$CheckOnly
+    }
+    catch {
+        Write-Host "Update failed: $($_.Exception.Message)" -ForegroundColor Red
+        $result = 1
+        # Launched from the game: keep the reason readable before the old version restarts.
+        if ($Restart) { Read-Host 'Press Enter to restart SS3D' | Out-Null }
+    }
+    if ($Restart) { Start-SS3DGame $PSScriptRoot }
+    exit $result
 }

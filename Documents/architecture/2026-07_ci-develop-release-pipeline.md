@@ -66,15 +66,14 @@ afterward; a manual recovery confirms publication, not future delivery of GitHub
    (`buildName: SS3D`). Same TomNAS Library stash / `runAsHostUser` when self-hosted. Not
    smoke-tested on Windows. Skipped when `skip_release` is set.
 6. **Prerelease** — primary zip `SS3D-Windows-<tag>.zip` with layout:
-   `Start_SS3D_Host.bat`, `Start_SS3D_Client.bat` (prompts for name + IP), `Update_SS3D.bat`,
-   `Update_SS3D.ps1`, `.ss3d-release.json`, `TESTERS.md` and `README.txt`
-   beside `Game/SS3D.exe`, plus CWD fixtures
+   `Update_SS3D.bat`, `Update_SS3D.ps1`, `.ss3d-release.json`, `TESTERS.md` and `README.txt`
+   beside `Game/SS3D.exe` (its main menu hosts and joins; there are no launch scripts), plus fixtures
    `Game/Config/` (`permissions.txt`, `network.json`), `Game/Data/Tilemaps/`, and `Game/Data/StationTemplates/`
    copied from git-tracked [`Builds/Game/`](../../Builds/Game/) (Unity does not pack these;
-   `Paths.cs` reads them from process CWD). Never ships `Data/ServerMeta/` (runtime) or
+   `Paths.cs` reads them from the folder holding the player binary). Never ships `Data/ServerMeta/` (runtime) or
    `StationTemplates/Metastation v2.json` (broken; kept in git only for the multiplayer loadtest).
    Linux zips use the same shape when Linux was built: `SS3D-Linux-Client-<tag>/` holds
-   `start_ss3d_client.sh`, `start_ss3d_host.sh`, `update_ss3d.sh`, `update_ss3d.py`,
+   `update_ss3d.sh`, `update_ss3d.py`,
    `.ss3d-release.json`, `TESTERS.md`, `README.txt` and `Game/` (binary `SS3D-Client`);
    `SS3D-Linux-Server-<tag>/` holds `start_ss3d_server.sh` and `GameServer/` (`SS3D-Server`).
    `*_BurstDebugInformation_DoNotShip` is stripped from every zip. Tag `vX.Y.Z` (manual release, at the built commit), `develop-nightly`
@@ -88,10 +87,14 @@ published **stable** `vMAJOR.MINOR.PATCH` release, ignoring drafts, prereleases 
 Numbered releases publish as stable, so they reach the update channel immediately. To hold one
 back, mark it as a prerelease in GitHub; clearing the flag later promotes that exact artifact.
 `-CheckOnly` checks without downloading; a newer installed version is never downgraded.
+The main menu's **Update and restart** runs `Update_SS3D.ps1 -WaitPid <game pid> -Restart` in a
+visible console and quits: the script waits up to a minute for the game to exit, updates, then
+starts `Game/SS3D.exe` (also after a failure, once Enter is pressed, so the old build reopens).
 
 Updates require all SS3D processes closed. The script locks the installation against concurrent
 updates, downloads and checks GitHub's SHA-256 digest, checks archive paths and required files,
-and stages beside the installation before swapping `Game/`, launch scripts, guides and metadata.
+and stages beside the installation before swapping `Game/`, the updater, guides and metadata.
+Launch scripts left by releases before the main menu replaced them move into the backup.
 `Game/Config`, local data and logs carry forward. `.ss3d-release.json` records tag and shipped
 map hashes so unchanged bundled maps refresh while custom/edited maps survive, including name
 collisions. Older downloads without metadata conservatively preserve every local map.
@@ -100,7 +103,7 @@ swapped along with the game, so updater fixes reach existing installs; `Update_S
 never replaced, because cmd reads a running batch file line by line.
 
 Each update retains a complete previous installation under `.ss3d-backups/<id>/`; launch its
-Host/Client script to roll back with its pre-update local data. Later edits stay in the newer
+`Game/SS3D.exe` to roll back with its pre-update local data. Later edits stay in the newer
 installation. Only that previous installation is kept: after a successful update, older
 backups are deleted (n-1 retention; each is a full player). A caught swap failure restores the
 original; an interrupted swap or failed restore leaves staging/backup files for manual recovery.
@@ -117,9 +120,10 @@ Windows download/update and backup launch are still required in first-release do
 preservation, `.ss3d-backups/` n-1 rollback and self-update contract as Windows
 (`update_ss3d.py` is replaced, the `update_ss3d.sh` launcher stays). Linux uses `flock` for the installation lock and reads `/proc/*/comm`
 before downloading and before swapping to refuse running `SS3D-Client` / `SS3D.x86_64`
-processes; it never signals or launches them. It rejects archive symlinks/special files and
+processes; it never signals them, and launches the client only with `--restart`. The main menu
+runs it detached with `--wait-pid <game pid> --restart`, logging to `update.log` in the release root. It rejects archive symlinks/special files and
 path traversal, refuses links in local data, preserves native helper execute bits and ensures
-the player and launch scripts are executable. Caught swap failures (including Ctrl+C) restore
+the player is executable. Caught swap failures (including Ctrl+C) restore
 the old installation; interrupted/failed restoration retains staging and backup directories.
 
 Only Linux **client** zips include the updater and metadata. A stable release without its
@@ -150,14 +154,14 @@ a manual release check.
 - **Player zips must seed `Config/` + `Data/Tilemaps/` next to the binary.** Symptom on
   `develop-f1c9476` Windows: starts, empty `Game/Data/`, no `Config/`, host log
   `No station templates found to load` — Addressables were fine. Cause: release staging
-  copied only the Unity player + bats; `Paths.GetPath(GamePaths.Config|Data)` is CWD-relative
-  (`Start_SS3D_*.bat` / smoke `cd` beside the exe). Fix: `seed_cwd_data` in
+  copied only the Unity player + bats; `Paths.GetPath(GamePaths.Config|Data)` resolves beside
+  the player binary (it was CWD-relative while launch scripts existed). Fix: `seed_cwd_data` in
   `develop-release.yml` from tracked `Builds/Game/Config` + `Builds/Game/Data/Tilemaps`.
   Do not ship `Data/ServerMeta/` (gitignored runtime envelope preferred over `permissions.txt`).
-- **Host.bat must give the local client a loopback address.** `ResetOnBuiltApplication` clears
+- **Host must give the local client a loopback address.** `ResetOnBuiltApplication` clears
   `ServerAddress`; Host without `-ip=` used to DNS-resolve empty → `fe80::…` and drop the
-  session after WorldReady (Wine reproduces hard). See networking-session pitfalls; Host.bat
-  now passes `-ip=127.0.0.1` and code defaults empty Host address to loopback.
+  session after WorldReady (Wine reproduces hard). See networking-session pitfalls; code now
+  defaults an empty Host address to loopback.
 - **`upload-artifact` drops the exec bit.** v0.1.0's Linux zips shipped `SS3D-Client` /
   `SS3D-Server` as `-rw-r--r--` under `build-linux/Game/StandaloneLinux64/`. Staging now
   `chmod +x`es the binary and scripts before `zip` (which keeps Unix modes); the scripts also

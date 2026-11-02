@@ -9,6 +9,10 @@ using SS3D.Core.Settings;
 using SS3D.Logging;
 using SS3D.Networking.Settings;
 using System;
+using System.Collections;
+using SS3D.Data.Generated;
+using UnityEngine;
+using UnitySceneManager = UnityEngine.SceneManagement.SceneManager;
 
 namespace SS3D.Networking
 {
@@ -22,6 +26,8 @@ namespace SS3D.Networking
 
         public string ServerAddress;
         public ushort Port;
+
+        private bool _leaving;
 
         protected override void OnAwake()
         {
@@ -200,6 +206,55 @@ namespace SS3D.Networking
                     "Stopping a server that was already started (often UNITY_SERVER / Dedicated Server build target auto-start). Switch the Editor build target to Standalone for normal Host play.");
                 networkManager.ServerManager.StopConnection(true);
             }
+        }
+
+        /// <summary>
+        /// Ends this client's session, and the local server when hosting, then opens the main menu
+        /// (the Launcher scene; <c>MainMenuSubSystem</c> shows itself there). FishNet first swaps the
+        /// scenes for Empty on the stop, so the menu loads only after that has landed.
+        /// </summary>
+        public void LeaveToMainMenu()
+        {
+            if (!_leaving)
+            {
+                StartCoroutine(LeaveToMainMenuRoutine());
+            }
+        }
+
+        private IEnumerator LeaveToMainMenuRoutine()
+        {
+            _leaving = true;
+            Log.Information(this, "Leaving the session for the main menu", Logs.Important);
+
+            // The player chose to leave: no Retry/Quit box. The menu keeps this set while it is open.
+            ClientConnectionRecovery.FailureUiOwnedElsewhere = true;
+            NetworkManager networkManager = InstanceFinder.NetworkManager;
+            if (networkManager != null)
+            {
+                ClientConnectionRecovery.EnsureOn(networkManager);
+                ClientConnectionRecovery.Instance.ArmEmptyOfflineScene();
+                if (networkManager.ServerManager.Started)
+                {
+                    networkManager.ServerManager.StopConnection(true);
+                }
+
+                if (networkManager.ClientManager.Started)
+                {
+                    networkManager.ClientManager.StopConnection();
+                }
+
+                float deadline = Time.realtimeSinceStartup + 10f;
+                while (Time.realtimeSinceStartup < deadline
+                    && (networkManager.TransportManager.Transport.GetConnectionState(false) != LocalConnectionState.Stopped
+                        || networkManager.TransportManager.Transport.GetConnectionState(true) != LocalConnectionState.Stopped
+                        || UnitySceneManager.GetActiveScene().name != Scenes.Empty))
+                {
+                    yield return null;
+                }
+            }
+
+            UnitySceneManager.LoadScene(Scenes.Launcher);
+            _leaving = false;
         }
 
         private void OnApplicationQuit()

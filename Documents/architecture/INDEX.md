@@ -106,7 +106,7 @@ Infrastructure and gameplay maps, including the ones with no design doc (interac
 | [structural-destruction](systems/structural-destruction.md) | partial | Turf integrity, structural force, blasts |
 | [substances](systems/substances.md) | partial | Networked containers, reactions, heat |
 | [tile](systems/tile.md) | partial | Tilemap, adjacency, Map Editor with persistent Map Check, SS13 DMM import |
-| [ui-shell](systems/ui-shell.md) | partial | UITK composition root, shared catalog/binder, bug report dialog (F8) on the Modal layer; F1 debug host still separate |
+| [ui-shell](systems/ui-shell.md) | partial | UITK composition root, shared catalog/binder, bug report dialog (F8) on the Modal layer; [main menu](systems/ui-shell-main-menu.md) (join/host/status/update); F1 debug host still separate |
 
 ## Active efforts and plans
 

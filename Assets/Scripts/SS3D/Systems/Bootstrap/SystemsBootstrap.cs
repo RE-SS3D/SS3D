@@ -4,6 +4,7 @@ using SS3D.Core.Behaviours;
 using SS3D.SceneManagement;
 using SS3D.Systems.Audio;
 using SS3D.Systems.Inputs;
+using SS3D.Systems.Rounds;
 using SS3D.Systems.ScreenEffects;
 using SS3D.Systems.Settings;
 using SS3D.Systems.Testing;
@@ -29,6 +30,10 @@ namespace SS3D.Systems.Bootstrap
 
         private const string CommandLineArgsTypeName =
             "SS3D.CommandLine.CommandLineArgsSubSystem, SS3D.CommandLine";
+
+        /// <summary>Client main menu; by type name because SS3D.Systems does not reference SS3D.Launcher.</summary>
+        private const string MainMenuTypeName =
+            "SS3D.Launcher.MainMenuSubSystem, SS3D.Launcher";
 
         /// <summary>Scene the Unity Test Runner enters Play Mode in (InitTestScene&lt;guid&gt;).</summary>
         private const string TestRunnerScenePrefix = "InitTestScene";
@@ -81,6 +86,10 @@ namespace SS3D.Systems.Bootstrap
             EnsureSubSystem<PersonalAudioSubSystem>();
             EnsureSubSystem<AutomationSubSystem>();
             EnsureSubSystem<VisionSubSystem>();
+            EnsureSubSystem<ServerStatusPublisher>();
+#if !UNITY_SERVER
+            EnsureSubSystemType(MainMenuTypeName);
+#endif
             EnsureSubSystem<ApplicationInitializerSubSystem>();
         }
 

@@ -34,7 +34,7 @@ The UITK shell is the sole lobby UI. Do not restore the removed uGUI lobby/custo
 **Round end (Stopped)** despawns the crew (`EntitySubSystem`) and then `RoundSubSystem.UnloadStation`
 clears the station (`TileMap.Clear`, load state `NotLoaded`); the next Start restores the template.
 The lobby blurs the world (`SetMenuBlur`) whenever it is visible, not only as the Escape menu.
-The sidebar has a two-click **Quit Game** button (`QuitRequested`). The Server Info **Change Log**
+The sidebar has a two-click **Quit to menu** button (`QuitRequested` → `NetworkSessionSubSystem.LeaveToMainMenu`): it leaves the session (ending it when hosting) and opens the [main menu](ui-shell-main-menu.md). The Server Info **Change Log**
 lists first-parent changes (merged PRs by title, `#N` links) grouped under the `v*` release tag that
 shipped them ("In development" before a tag) and links to the GitHub releases page. One starter
 character ships (`CharacterCreatorMockData.Loadouts`).

@@ -1,7 +1,7 @@
 > Code paths: Assets/Scripts/SS3D/UI/Shell/
 > Entry points: UiShellSubSystem, UiLayer, IUiSurface, UiShellAssetCatalog
 > Status: partial
-> Verified: ce69181d3 — 2026-11-01
+> Verified: f21a4d0b4 — 2026-11-02
 
 # UI shell
 
@@ -19,6 +19,7 @@ Composition root for player-facing UI Toolkit surfaces. `UiShellSubSystem` self-
 | Comms feed (`CommsFeedController`) | Hud | [chat-audio-screens](chat-audio-screens.md) |
 | Lobby shell + Character Creator (`LobbyUiSubSystem`) | Modal | [rounds-lobby](rounds-lobby.md) |
 | Bug report dialog + toast (`BugReportSubSystem` / `BugReportView`) | Modal | [rounds-lobby](rounds-lobby.md) (report records) |
+| Main menu (`MainMenuSubSystem` / `MainMenuView`) | Modal | [main menu](ui-shell-main-menu.md) |
 
 **Not migrated yet.** Each still has its own `UIDocument` and path catalog, all rebuilt by **SS3D → Data → Rebuild All UI Catalogs**:
 
@@ -34,8 +35,11 @@ The shell's own catalog (`UiShellAssetPaths` / `UiShellAssetCatalog`) and the lo
 
 **Bug report dialog** ([sandbox-server.md](../../design/sandbox-server.md) §7): `Systems/BugReports/BugReportSubSystem` self-bootstraps on clients (not batch mode) and attaches `BugReportView`, built from `Content/Systems/UI/BugReport/BugReport.uxml` / `.uss` via `BugReportAssetCatalog` (umbrella rebuild). The warmer v2 colours are scoped to this window, not the shared tokens. F8, a bare `/bug` and the menu's **Report a bug (F8)** open it; the context, round, position and screenshot are frozen first (one frame plus end-of-frame, so the closed Escape menu isn't in the shot). A client sends `BugReportSubmitMessage` and keeps the dialog open until `BugReportResultMessage` arrives (rate-limit refusals keep the text). An own host (or an offline player) saves a zip to `Data/Exports/` (`BugReportBundle`) and gets the saved screen with **Open Report Folder** / **Open GitHub Issue** (`BugReportIssueLink` pre-fills `Bug.yml` or `MapBug.yml`). **SS3D → UI → Preview Bug Report** drives the same view with sample data for each design state.
 
+**Main menu:** [main menu](ui-shell-main-menu.md) replaces the old Launcher UI. `MainMenuSubSystem` attaches it whenever the Launcher scene loads and detaches it when Game loads.
+
 ## Start here
 
+- [Main menu](ui-shell-main-menu.md) — controller, view, server status query, update button
 - `Assets/Scripts/SS3D/UI/Shell/UiShellSubSystem.cs` — `TryGetLayer(UiLayer, out VisualElement)` (preferred) / `GetLayer`
 - `Assets/Scripts/SS3D/UI/Shell/UiLayer.cs`, `IUiSurface.cs` — layer enum; surface contract implemented by the radial, armed, examine and lobby views
 - `Assets/Scripts/SS3D/UI/Shell/Catalog/UiAssetCatalogBase.cs`, `UiCatalogRuntimeLoader.cs` — shared catalog base

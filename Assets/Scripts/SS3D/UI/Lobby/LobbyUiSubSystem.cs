@@ -464,13 +464,13 @@ namespace SS3D.UI.Lobby
                 InstanceFinder.ClientManager.Broadcast(new ChangeRoundStateMessage(start));
         }
 
+        /// <summary>Leaves the session (ending it when hosting) and returns to the main menu.</summary>
         private static void HandleQuitRequested()
         {
-#if UNITY_EDITOR
-            UnityEditor.EditorApplication.isPlaying = false;
-#else
-            Application.Quit();
-#endif
+            if (SubSystems.TryGet(out SS3D.Networking.NetworkSessionSubSystem session))
+            {
+                session.LeaveToMainMenu();
+            }
         }
 
         private void HandleReadyRequested()

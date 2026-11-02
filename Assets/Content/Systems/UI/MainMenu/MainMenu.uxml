@@ -1,0 +1,45 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements">
+    <ui:VisualElement name="main-menu" class="main-menu">
+        <ui:VisualElement name="wallpaper" class="main-menu__wallpaper" picking-mode="Ignore" />
+        <ui:ScrollView name="sidebar" class="main-menu__sidebar" horizontal-scroller-visibility="Hidden" vertical-scroller-visibility="Auto">
+            <ui:VisualElement name="logo" class="main-menu__logo" picking-mode="Ignore" />
+            <ui:VisualElement name="update-banner" class="main-menu__update main-menu__hidden">
+                <ui:VisualElement class="main-menu__row"><ui:VisualElement class="main-menu__dot main-menu__dot--blue" /><ui:Label text="New version available" class="main-menu__text main-menu__bold" /></ui:VisualElement>
+                <ui:Label name="update-copy" text="v0.5.0 is out; this is v0.4.2. 1 server in your list needs it." class="main-menu__text main-menu__secondary main-menu__wrap main-menu__banner-copy" />
+                <ui:VisualElement class="main-menu__row"><ui:Button name="update" text="UPDATE AND RESTART" class="main-menu__button main-menu__button--blue" /><ui:Label name="update-hint" text="Keeps maps and settings" class="main-menu__text main-menu__secondary main-menu__tiny main-menu__beside" /></ui:VisualElement>
+            </ui:VisualElement>
+            <ui:VisualElement class="main-menu__identity">
+                <ui:Label text="NAME" class="main-menu__text main-menu__eyebrow" />
+                <ui:TextField name="player-name" value="jmoore" max-length="32" class="main-menu__input" />
+                <ui:Label name="name-hint" class="main-menu__text main-menu__tiny main-menu__secondary main-menu__wrap main-menu__hidden" />
+            </ui:VisualElement>
+            <ui:VisualElement class="main-menu__navigation">
+                <ui:Button name="join" class="main-menu__nav main-menu__button--accent"><ui:Label text="JOIN A SERVER" class="main-menu__text main-menu__title" /><ui:Label name="join-subtitle" text="Last played: RE:SS3D Sandbox" class="main-menu__text main-menu__nav-subtitle" /></ui:Button>
+                <ui:VisualElement class="main-menu__local-row">
+                    <ui:Button name="local" class="main-menu__nav main-menu__local"><ui:Label text="PLAY LOCALLY" class="main-menu__text main-menu__title" /><ui:Label name="local-subtitle" text="Host on this computer, port 1151" class="main-menu__text main-menu__secondary main-menu__nav-subtitle" /></ui:Button>
+                    <ui:Button name="advanced" class="main-menu__advanced"><ui:Label text="Advanced" class="main-menu__text" /><ui:VisualElement name="advanced-caret" class="main-menu__caret" /></ui:Button>
+                </ui:VisualElement>
+                <ui:VisualElement name="port-panel" class="main-menu__port main-menu__hidden"><ui:Label text="Port" class="main-menu__text main-menu__secondary" /><ui:TextField name="port" value="1151" max-length="5" class="main-menu__input main-menu__port-input main-menu__mono" /><ui:Label text="Default 1151" class="main-menu__text main-menu__tiny main-menu__secondary" /></ui:VisualElement>
+                <ui:Button name="settings" text="SETTINGS" class="main-menu__nav main-menu__title" />
+                <ui:Button name="quit" text="QUIT" class="main-menu__nav main-menu__title" />
+            </ui:VisualElement>
+            <ui:VisualElement class="main-menu__spacer" />
+            <ui:VisualElement name="music" class="main-menu__music">
+                <ui:Button name="music-toggle" tooltip="Turn music off" class="main-menu__music-toggle"><ui:VisualElement name="music-icon" class="main-menu__music-icon" picking-mode="Ignore" /></ui:Button>
+                <ui:VisualElement class="main-menu__music-text"><ui:Label text="MUSIC" class="main-menu__text main-menu__music-eyebrow" /><ui:Label name="music-title" text="Breach" class="main-menu__text main-menu__mono main-menu__music-title" /></ui:VisualElement>
+                <ui:Button name="music-next" text="Next" tooltip="Next track" class="main-menu__music-next" />
+                <ui:Slider name="music-volume" low-value="0" high-value="1" value="0.5" class="main-menu__music-volume" />
+            </ui:VisualElement>
+            <ui:VisualElement class="main-menu__footer">
+                <ui:VisualElement class="main-menu__row main-menu__spread"><ui:Label name="version" text="v0.4.2 pre-alpha" class="main-menu__text main-menu__mono main-menu__tiny main-menu__secondary" /><ui:Button name="discord" text="Discord" class="main-menu__link" /></ui:VisualElement>
+                <ui:VisualElement class="main-menu__row"><ui:Label text="Wallpapers:" class="main-menu__text main-menu__tiny main-menu__secondary" /><ui:Button name="credits" text="RE:SS3D art contributors" class="main-menu__link main-menu__tiny" /></ui:VisualElement>
+            </ui:VisualElement>
+        </ui:ScrollView>
+        <ui:VisualElement name="side-panel" class="main-menu__panel main-menu__hidden">
+            <ui:VisualElement class="main-menu__header"><ui:Label name="panel-title" text="JOIN A SERVER" class="main-menu__text main-menu__title" /><ui:VisualElement class="main-menu__spacer" /><ui:Label name="checked" text="Checked just now" class="main-menu__text main-menu__mono main-menu__tiny main-menu__secondary" /><ui:Button name="refresh" text="REFRESH" class="main-menu__button" /><ui:Button name="back" text="BACK" class="main-menu__button" /></ui:VisualElement>
+            <ui:ScrollView name="server-scroll" class="main-menu__server-scroll" horizontal-scroller-visibility="Hidden"><ui:VisualElement name="server-content" class="main-menu__server-content" /></ui:ScrollView>
+            <ui:VisualElement name="settings-placeholder" class="main-menu__settings main-menu__hidden"><ui:VisualElement class="main-menu__empty main-menu__settings-copy"><ui:Label text="Settings screen placeholder" class="main-menu__text main-menu__bold main-menu__large" /><ui:Label text="The same Settings screen as the in-game Escape menu (audio, display, controls) mounts here. Back or Esc returns to the main menu, with the name field and server list unchanged." class="main-menu__text main-menu__secondary main-menu__wrap" /></ui:VisualElement></ui:VisualElement>
+        </ui:VisualElement>
+        <ui:VisualElement name="overlay" class="main-menu__overlay main-menu__hidden"><ui:VisualElement class="main-menu__dialog"><ui:VisualElement class="main-menu__header"><ui:Label name="overlay-title" text="CONNECTING" class="main-menu__text main-menu__title" /></ui:VisualElement><ui:VisualElement class="main-menu__dialog-body"><ui:Label name="overlay-name" text="RE:SS3D Sandbox" class="main-menu__text main-menu__bold main-menu__large" /><ui:Label name="overlay-address" text="sandbox.ss3d.space:1151" class="main-menu__text main-menu__mono main-menu__secondary" /><ui:VisualElement name="progress-steps" class="main-menu__steps" /><ui:VisualElement class="main-menu__row main-menu__end"><ui:Button name="cancel" text="CANCEL" class="main-menu__button" /></ui:VisualElement></ui:VisualElement></ui:VisualElement></ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>
