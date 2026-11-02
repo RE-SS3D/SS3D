@@ -3,6 +3,7 @@ using SS3D.Rendering.URP;
 using SS3D.Systems.Health;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Rendering;
 using UnityEngine.Rendering.Universal;
 
 namespace SS3D.Systems.Combat
@@ -25,10 +26,16 @@ namespace SS3D.Systems.Combat
         private static Material _decalMaterialTemplate;
         private static readonly List<GameObject> ActiveDecals = new();
 
+        /// <summary>False without a graphics device (dedicated server): its build strips shaders.</summary>
         public static bool IsSupported
         {
             get
             {
+                if (SystemInfo.graphicsDeviceType == GraphicsDeviceType.Null)
+                {
+                    return false;
+                }
+
                 EnsureAssetsLoaded();
                 return _decalMaterialTemplate != null;
             }

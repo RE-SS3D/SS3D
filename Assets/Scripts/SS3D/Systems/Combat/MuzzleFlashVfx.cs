@@ -1,6 +1,7 @@
 using Coimbra;
 using System.Collections;
 using UnityEngine;
+using UnityEngine.Rendering;
 
 namespace SS3D.Systems.Combat
 {
@@ -17,13 +18,16 @@ namespace SS3D.Systems.Combat
         private const float LightRange = 1.1f;
         private static Material _particleMaterial;
 
+        /// <summary>False without a graphics device (dedicated server): its build strips shaders.</summary>
+        public static bool IsSupported => SystemInfo.graphicsDeviceType != GraphicsDeviceType.Null;
+
         /// <summary>
         /// Spawn flash parented to <paramref name="muzzle"/> (local origin). Light and particles
         /// share that transform, so both are exactly at the socket.
         /// </summary>
         public static void Play(Transform muzzle)
         {
-            if (muzzle == null)
+            if (muzzle == null || !IsSupported)
             {
                 return;
             }
@@ -41,6 +45,11 @@ namespace SS3D.Systems.Combat
         /// <summary>Fallback when no muzzle socket is wired — world-space one-shot.</summary>
         public static void Play(Vector3 worldPosition, Vector3 worldForward)
         {
+            if (!IsSupported)
+            {
+                return;
+            }
+
             if (worldForward.sqrMagnitude < 0.0001f)
             {
                 worldForward = Vector3.forward;
@@ -189,6 +198,11 @@ namespace SS3D.Systems.Combat
                 if (shader == null)
                 {
                     shader = Shader.Find("Sprites/Default");
+                }
+
+                if (shader == null)
+                {
+                    return null;
                 }
 
                 _particleMaterial = new Material(shader)
