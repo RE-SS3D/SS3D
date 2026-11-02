@@ -192,7 +192,10 @@ namespace SS3D.Networking
 
             // Intro/Boot still loaded: ServerConnectionView owns retry. After Empty offline,
             // those scenes are gone — show OnGUI even though NetworkSession is DDOL now.
-            if (IsConnectionUiSceneLoaded())
+            // Intro can still be loaded here yet about to go: a server rejection (version
+            // mismatch) stops the client after the transport Started armed Empty, and
+            // DefaultScene swaps Intro for Empty right after this event. Then OnGUI owns it.
+            if (IsConnectionUiSceneLoaded() && !WillLoadEmptyOfflineScene())
             {
                 return;
             }
@@ -214,6 +217,18 @@ namespace SS3D.Networking
             }
 
             return false;
+        }
+
+        /// <summary>
+        /// Whether FishNet's <see cref="DefaultScene"/> will replace the loaded scenes with Empty
+        /// on this client stop (it skips the offline load while the local server runs).
+        /// </summary>
+        private bool WillLoadEmptyOfflineScene()
+        {
+            DefaultScene defaultScene = GetComponent<DefaultScene>();
+            return defaultScene != null
+                && defaultScene.GetOfflineScene() == Scenes.EmptyPath
+                && !InstanceFinder.IsServer;
         }
 
         private void EnterOnline()
