@@ -165,8 +165,10 @@ namespace SS3D.Systems.Entities.Humanoid
                 return;
             }
 
-            // Invincible (map editor setting) walks on open space instead of falling through.
-            if (!EntityInvincibility.IsInvincible(this) || HasPhysicalFloorUnderfoot())
+            // Gravity only snaps onto a floor collider. Tile support ignores height, so a body that
+            // fell below the deck (plenum known, floor collider not mirrored yet) would otherwise
+            // read as Supported and fall forever. Invincible walkers also cross open space this way.
+            if (HasPhysicalFloorUnderfoot())
             {
                 _characterController.Move(Physics.gravity);
             }
