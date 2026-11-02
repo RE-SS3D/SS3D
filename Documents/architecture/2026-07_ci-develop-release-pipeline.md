@@ -13,7 +13,7 @@ client/server (Linux is forced on, since both client updaters follow stable rele
 `tag_suffix` test cuts stay Windows-only prereleases unless `build_linux` is set. EditMode and
 multiplayer smoke are **opt-in** — day-to-day cuts should not pay for
 gates/`StandaloneLinux64` that `editmodetestrunner.yml` / `multiplayer-smoke-test.yml`
-already cover separately. A **nightly schedule** (05:00 UTC) always builds Windows + Linux
+already cover separately. A **nightly schedule** (05:17 UTC) always builds Windows + Linux
 client + Linux dedicated server and publishes a floating `develop-nightly` prerelease.
 Not triggered on every develop merge (license cost + release spam at high PR volume).
 
@@ -21,11 +21,19 @@ Not triggered on every develop merge (license cost + release spam at high PR vol
 
 ### Workflow: `.github/workflows/develop-release.yml`
 
-**Triggers:** `workflow_dispatch` + nightly `cron: "0 5 * * *"` (after smoke at 04:00 so
+**Triggers:** `workflow_dispatch` + nightly `cron: "17 5 * * *"` (after smoke at 04:00 so
 TomNAS `Library` is warm). `concurrency: develop-release` / `cancel-in-progress: false`.
 
-**Nightly (schedule):** forces `build_linux=true`, `skip_release=false`, EditMode/smoke off,
-`tag_suffix=nightly` → tag `develop-nightly` (overwritten each night).
+**Nightly (schedule or manual `tag_suffix=nightly`):** forces `build_linux=true`, `skip_release=false`, EditMode/smoke off,
+`tag_suffix=nightly` → tag `develop-nightly` (overwritten each night). The tag is explicitly
+moved to the built commit before publication; a missing tag/release is recreated.
+
+The schedule runs away from the busy top of the hour to reduce delayed/dropped GitHub triggers.
+A cron edit on the default branch refreshes the scheduled actor registration. To recover a missing
+nightly immediately, run `gh workflow run develop-release.yml --ref develop -f tag_suffix=nightly`.
+This uses the same full-platform flags and nightly title as a scheduled run. It remains a
+prerelease and is excluded from stable client updates. Check the run and all three release assets
+afterward; a manual recovery confirms publication, not future delivery of GitHub schedule events.
 
 **Inputs (manual; defaults favour a fast Windows cut):**
 
@@ -36,7 +44,7 @@ TomNAS `Library` is warm). `concurrency: develop-release` / `cancel-in-progress:
 | `run_smoke` | `false` | When true, after Linux builds run smoke scenarios (needs `build_linux`). |
 | `skip_release` | `false` | When true, skip Windows build and GitHub prerelease (Linux-only if `build_linux`). |
 | `version_bump` | `auto` | Release bump level; `auto` derives it from signals — see [2026-10_game-versioning](2026-10_game-versioning.md). |
-| `tag_suffix` | _(empty)_ | Unversioned test cut tagged `develop-<suffix>` instead of a `vX.Y.Z` release. |
+| `tag_suffix` | _(empty)_ | Unversioned test cut tagged `develop-<suffix>`; `nightly` forces the full nightly path. |
 | `runner` | `auto` | `auto` / `tomnas` / `github` — TomNAS when online, else `ubuntu-latest`. |
 
 **Jobs:**

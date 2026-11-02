@@ -1,7 +1,7 @@
 > Code paths: Assets/Scripts/SS3D/Networking/, Assets/Scripts/SS3D/Editor/ServerBuildScript.cs, Assets/Scripts/SS3D/Editor/ClientBuildScript.cs, Assets/Scripts/SS3D/Systems/Testing/, Testing/multiplayer/
 > Entry points: NetworkSessionSubSystem, ClientConnectionRecovery, NetworkSystemsHub, SS3D.Systems.Testing.AutomationSubSystem
 > Status: partial
-> Verified: 9e6db31db — 2026-11-01
+> Verified: 81659fe3f — 2026-11-02
 
 # Networking (session)
 
@@ -36,6 +36,8 @@ FishNet session management — host/join, network type and port settings. Distin
 - Harness scripts: `wait_timeout <s>` sets later waits; windowed clients can probe UITK with `ui_wait <#name|.class> visible|hidden|enabled|disabled|absent`, `ui_text <selector> <substring>`, `ui_submit <selector>` (NavigationSubmit, not OS input) and `screenshot <name>` (to `SS3D_AUTOMATION_OUTPUT_DIR`, else `persistentDataPath`). Example: `Testing/multiplayer/scenarios/lobby-remote-client.txt`.
 
 ## Pitfalls
+
+- **No nightly run record means no job reached a runner.** GitHub schedules may be delayed/dropped even while active; keep cron off the hour, refresh its registration with a cron edit, and use the [manual nightly recovery](../2026-07_ci-develop-release-pipeline.md#workflow-githubworkflowsdevelop-releaseyml) to restore downloads. Nightly publication moves the floating tag to the built commit before replacing assets.
 
 - **Smoke round drops from Preparing to Stopped with no error:** round start validates the station template against the mode (Map Check). `run_smoketest.sh` used to stage only `Data/Tilemaps`, so the server ran on whatever `StationTemplates/ministation.json` the GameServer tree held: a stale copy without spawn markers, which was refused. The script now stages `Builds/Game/Data/StationTemplates` too, and `RoundSubSystem.FailStationLoad` logs `Round start aborted: <reason>` on the server. Hit 2026-11-01.
 - **Editor stuck as a dedicated server after a server build:** `BuildPlayer` with the Server subtarget compiles the editor's own assemblies with `UNITY_SERVER`, and restoring the subtarget does not recompile them. Play Mode then runs server code paths: `AudioSubSystem` never builds its source pool (NRE in `FindAvailableAudioSource`), `Item.GenerateIcon` returns null (no inventory icons) and `PlayerSettingsSubSystem.IsHeadless` is true (settings not applied or saved, no FPS overlay). Tell-tale sign: `PlayerSettingsSubSystem.IsHeadless` IL is just `ldc.i4.1; ret`. `ServerBuildScript.BuildServer` now restores the subtarget and requests a `CleanBuildCache` recompile. Hit 2026-11-01 after `validate.sh --full`.

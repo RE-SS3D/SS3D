@@ -2,14 +2,14 @@
 # Default dispatch: Windows client → versioned GitHub release vX.Y.Z (bump worked out by
 # Tools/versioning/next_version.py — see Documents/architecture/2026-10_game-versioning.md).
 # Linux, EditMode, and smoke are opt-in. tag_suffix gives an unversioned develop-<suffix> test cut.
-# Nightly (05:00 UTC): Windows + Linux client + Linux dedicated server → floating develop-nightly.
+# Nightly (05:17 UTC): Windows + Linux client + Linux dedicated server → floating develop-nightly.
 # Prefers TomNAS when online; falls back to ubuntu-latest. Not triggered on every develop merge.
 # See Documents/architecture/2026-07_ci-develop-release-pipeline.md.
 name: Develop Release
 on:
   schedule:
-    # After multiplayer-smoke-test (04:00 UTC) so TomNAS Library stash is warm.
-    - cron: "0 5 * * *"
+    # After smoke (04:00 UTC); avoid the busy top of the hour, when GitHub may drop schedules.
+    - cron: "17 5 * * *"
   workflow_dispatch:
     inputs:
       build_linux:
@@ -38,7 +38,7 @@ on:
           - major
         default: auto
       tag_suffix:
-        description: Unversioned test cut instead of a vX.Y.Z release — tag develop-<suffix>
+        description: Unversioned develop-<suffix> test cut; nightly restores the full nightly prerelease
         type: string
         default: ''
       runner:
@@ -87,13 +87,13 @@ jobs:
         id: flags
         run: |
           set -euo pipefail
-          if [ "${{ github.event_name }}" = "schedule" ]; then
+          if [ "${{ github.event_name == 'schedule' || inputs.tag_suffix == 'nightly' }}" = "true" ]; then
             echo "build_linux=true" >> "$GITHUB_OUTPUT"
             echo "skip_release=false" >> "$GITHUB_OUTPUT"
             echo "run_editmode=false" >> "$GITHUB_OUTPUT"
             echo "run_smoke=false" >> "$GITHUB_OUTPUT"
             echo "tag_suffix=nightly" >> "$GITHUB_OUTPUT"
-            echo "Nightly schedule: full Windows + Linux client/server, tag develop-nightly"
+            echo "Nightly: full Windows + Linux client/server, tag develop-nightly"
             exit 0
           fi
 
@@ -541,8 +541,8 @@ jobs:
           set -euo pipefail
           echo "tag_name=${{ needs.prepare.outputs.release_tag }}" >> "$GITHUB_OUTPUT"
           echo "short_sha=${GITHUB_SHA:0:7}" >> "$GITHUB_OUTPUT"
-          if [ "${{ github.event_name }}" = "schedule" ]; then
-            echo "title=Nightly ${VERSION}" >> "$GITHUB_OUTPUT"
+          if [ "${{ needs.prepare.outputs.release_tag }}" = "develop-nightly" ]; then
+            echo "title=Nightly — ${VERSION}" >> "$GITHUB_OUTPUT"
             echo "kind_line=**Nightly build** \`${VERSION}\` (floating develop-nightly tag — overwritten each night)." >> "$GITHUB_OUTPUT"
           elif [ "$VERSIONED" = "true" ]; then
             echo "title=SS3D v${VERSION}" >> "$GITHUB_OUTPUT"
@@ -667,6 +667,20 @@ jobs:
             echo "$NOTES_LINUX"
             echo "EOF"
           } >> "$GITHUB_OUTPUT"
+      - name: Move nightly tag to the built commit
+        if: needs.prepare.outputs.release_tag == 'develop-nightly'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const repo = { owner: context.repo.owner, repo: context.repo.repo };
+            try {
+              await github.rest.git.getRef({ ...repo, ref: 'tags/develop-nightly' });
+            } catch (error) {
+              if (error.status !== 404) throw error;
+              await github.rest.git.createRef({ ...repo, ref: 'refs/tags/develop-nightly', sha: context.sha });
+              return;
+            }
+            await github.rest.git.updateRef({ ...repo, ref: 'tags/develop-nightly', sha: context.sha, force: true });
       - name: Create release
         uses: softprops/action-gh-release@v2
         with:
