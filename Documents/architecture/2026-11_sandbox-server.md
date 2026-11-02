@@ -2,7 +2,7 @@
 > Touches systems: rounds-lobby, map-editor-creative-hooks (tile), entities, networking-session, persistence, ui-shell, inputs
 > Status: in-progress
 
-**Progress:** P1–P4 built and pilot-tested in the editor (`Run Sandbox Pilot`), plus the bug report dialog (below); P5's server-build half (heartbeat, exit after N rounds) is in, hosting files and the TomNAS deploy are not; P6 waits on session data. Advances [test-server.md](../milestones/test-server.md) T7.
+**Progress:** P1–P4 built and pilot-tested in the editor (`Run Sandbox Pilot`), plus the bug report dialog (below); P5's server-build half (heartbeat, exit after N rounds) is in, and the server is live on TomNAS, deployed and maintained outside this repo (no `Tools/sandbox-server/` files); P6 waits on session data. Advances [test-server.md](../milestones/test-server.md) T7.
 
 # Sandbox server (Nov 2026)
 

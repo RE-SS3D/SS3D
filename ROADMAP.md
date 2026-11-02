@@ -31,11 +31,11 @@ What already works, system by system, is listed in
 |---|---|---|
 | ✅ | T0 | Releases are built automatically, so there's always a download |
 | ✅ | T1 | The downloaded build loads and runs |
-| ⬜ | T2 | Joining a server needs no setup: no typing IP addresses |
+| ⬜ | T2 | The game opens to a main menu: paste a server address once, then join in one click |
 | 🟡 | T3 | Multiplayer sessions stay stable: doors work, admins can unstick a round, no lag spikes |
 | 🟡 | T4 | Rounds end with a summary screen and restart; you can join mid-round (joining mid-round works) |
 | ✅ | T6 | You can change volume, resolution and graphics quality, and they stay set |
-| 🟡 | T7 | A separate server where everyone can build and fight, and the station resets every 20 minutes (a `-sandbox` server runs that loop; not hosted yet) |
+| 🟡 | T7 | A separate server where everyone can build and fight, and the station resets every 20 minutes (live, address shared in Discord) |
 
 **Finish line (T5):** a stranger downloads the latest release and plays on the live test server.
 
