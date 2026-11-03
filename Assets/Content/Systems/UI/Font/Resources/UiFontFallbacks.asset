@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3198cf2f895013a338af83e132ceb3f5, type: 3}
+  m_Name: UiFontFallbacks
+  m_EditorClassIdentifier: SS3D.UI.Shell::SS3D.UI.Shell.Fonts.UiFontFallbacks
+  _entries:
+  - Asset: {fileID: 11400000, guid: a13539c4929a7a142b4a2413e834392f, type: 2}
+    Source: {fileID: 12800000, guid: ee9f0196637d47b4f9ba7acc13753205, type: 3}
+  - Asset: {fileID: 11400000, guid: 85349eec352cce944bfbd828955be891, type: 2}
+    Source: {fileID: 12800000, guid: 86ea6299c33458946a5d84f274786204, type: 3}
+  - Asset: {fileID: 11400000, guid: a65e53ed1093bdb4bb547766d0ada613, type: 2}
+    Source: {fileID: 12800000, guid: bb44e79903b97e646a9e6444dbe7952c, type: 3}

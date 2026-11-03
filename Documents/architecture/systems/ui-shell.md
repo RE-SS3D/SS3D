@@ -60,6 +60,7 @@ The shell's own catalog (`UiShellAssetPaths` / `UiShellAssetCatalog`) and the lo
 
 ## Pitfalls
 
+- **UI Toolkit font assets are static atlases.** A dynamic atlas rewrites its asset with every new glyph drawn, which churned git after each play session. `SS3D → Build → Bake Static UI Fonts` (`UiFontBaker`) bakes every `FontAsset` under `Assets/Content/Systems/UI` with `UiFontFallbacks.Characters` and records its source font; at runtime `UiFontFallbacks` adds an unsaved dynamic fallback for anything else (chat in other scripts). After adding a UI font asset or a character your UI uses, run the bake and commit the result.
 - USS does not support `:first-child` / `:last-child`; sibling spacing requires explicit modifier classes. Unsupported selectors are ignored and leave unwanted edge margins.
 - **`Application` inside `SS3D.*` namespaces resolves to the `SS3D.Application` namespace**, not `UnityEngine.Application`, in assemblies that reference it (`SS3D.Systems`, `SS3D.Editor`). Write `UnityEngine.Application.…` there.
 - **A modal surface's scrim must take picks.** The bug report scrim was `picking-mode="Ignore"` in the fixture; on the shared document that lets clicks fall through to the lobby shell underneath.

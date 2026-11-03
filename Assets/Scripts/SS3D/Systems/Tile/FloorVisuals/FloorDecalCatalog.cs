@@ -13,6 +13,11 @@ namespace SS3D.Systems.Tile.FloorVisuals
         [SerializeField]
         private List<FloorDecalDefinition> _definitions = new();
 
+        /// <summary>
+        /// Runtime view: the serialized list plus Resources and the placeholder. Never written back to
+        /// <see cref="_definitions"/>, which would save Play Mode objects into the settings asset.
+        /// </summary>
+        private List<FloorDecalDefinition> _all;
         private Dictionary<ushort, FloorDecalDefinition> _byId;
         private static FloorDecalCatalog _runtimeFallback;
 
@@ -21,7 +26,7 @@ namespace SS3D.Systems.Tile.FloorVisuals
             get
             {
                 EnsureIndex();
-                return _definitions;
+                return _all;
             }
         }
 
@@ -58,11 +63,12 @@ namespace SS3D.Systems.Tile.FloorVisuals
                 return;
 
             _byId = new Dictionary<ushort, FloorDecalDefinition>();
-            if (_definitions == null)
-                return;
-
-            foreach (FloorDecalDefinition definition in _definitions)
+            _all = new List<FloorDecalDefinition>();
+            foreach (FloorDecalDefinition definition in _definitions ?? new List<FloorDecalDefinition>())
             {
+                if (definition != null && !_all.Contains(definition))
+                    _all.Add(definition);
+
                 if (definition == null || definition.Id == 0)
                     continue;
 
@@ -76,8 +82,8 @@ namespace SS3D.Systems.Tile.FloorVisuals
                     continue;
 
                 _byId[definition.Id] = definition;
-                if (!_definitions.Contains(definition))
-                    _definitions.Add(definition);
+                if (!_all.Contains(definition))
+                    _all.Add(definition);
             }
 
             if (_byId.Count == 0)
@@ -88,7 +94,7 @@ namespace SS3D.Systems.Tile.FloorVisuals
                 placeholder.Texture = FloorVisualMesh.GetStripeCornerTexture();
                 placeholder.Tint = new Color(1f, 0.85f, 0.2f, 1f);
                 _byId[placeholder.Id] = placeholder;
-                _definitions.Add(placeholder);
+                _all.Add(placeholder);
             }
         }
     }

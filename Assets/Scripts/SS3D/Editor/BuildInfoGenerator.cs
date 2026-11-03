@@ -15,13 +15,14 @@ namespace SS3D.Editor
     /// <summary>
     /// Writes <see cref="BuildInfo"/> (game version, commit id, release-grouped change log) from git into a
     /// gitignored Resources file: on editor load when it changed, and before every player build.
-    /// Player builds also get the version as <see cref="PlayerSettings.bundleVersion"/> (restored
-    /// right after, so ProjectSettings never churns). CI passes <c>-ss3dVersion X.Y.Z</c> to stamp
+    /// Player builds also get the version as <see cref="PlayerSettings.bundleVersion"/>. The build writes
+    /// ProjectSettings to disk with the stamp, so it is restored and saved again after the build (or on the
+    /// next editor tick if the build failed), so ProjectSettings never churns. CI passes <c>-ss3dVersion X.Y.Z</c> to stamp
     /// the release version before its tag exists. Without git the existing file is kept (or none
     /// exists) and the lobby falls back. Rules: Documents/architecture/2026-10_game-versioning.md.
     /// </summary>
     [InitializeOnLoad]
-    public sealed class BuildInfoGenerator : IPreprocessBuildWithReport
+    public sealed class BuildInfoGenerator : IPreprocessBuildWithReport, IPostprocessBuildWithReport
     {
         public const string AssetPath = "Assets/Content/Systems/UI/Lobby/Resources/" + BuildInfo.ResourceName + ".json";
         public const string VersionArgument = "-ss3dVersion";
@@ -41,10 +42,25 @@ namespace SS3D.Editor
             string original = PlayerSettings.bundleVersion;
             if (version == original) return;
 
-            // Build runs synchronously on the main thread; delayCall fires once it returns (pass or fail).
             PlayerSettings.bundleVersion = version;
-            EditorApplication.delayCall += () => PlayerSettings.bundleVersion = original;
+            _stampedFrom = original;
+            // Postprocess doesn't run for a failed build; delayCall fires once the build returns either way.
+            EditorApplication.delayCall += RestoreVersion;
             Debug.Log($"[BuildInfo] Stamped player version {version}");
+        }
+
+        public void OnPostprocessBuild(BuildReport report) => RestoreVersion();
+
+        /// <summary>The bundleVersion before the stamp; null when nothing is stamped.</summary>
+        private static string _stampedFrom;
+
+        private static void RestoreVersion()
+        {
+            if (_stampedFrom == null) return;
+            PlayerSettings.bundleVersion = _stampedFrom;
+            _stampedFrom = null;
+            // The build already wrote the stamped value to ProjectSettings.asset; write the original back.
+            AssetDatabase.SaveAssets();
         }
 
         [MenuItem("SS3D/Build/Regenerate Build Info")]

@@ -68,7 +68,7 @@ afterward; a manual recovery confirms publication, not future delivery of GitHub
 6. **Prerelease** — primary zip `SS3D-Windows-<tag>.zip` with layout:
    `Update_SS3D.bat`, `Update_SS3D.ps1`, `.ss3d-release.json`, `TESTERS.md` and `README.txt`
    beside `Game/SS3D.exe` (its main menu hosts and joins; there are no launch scripts), plus fixtures
-   `Game/Config/` (`permissions.txt`, `network.json`), `Game/Data/Tilemaps/`, and `Game/Data/StationTemplates/`
+   `Game/Config/` (`network.json`, and `permissions.txt` copied from the tracked `permissions.default.txt`, since the live file is gitignored), `Game/Data/Tilemaps/`, and `Game/Data/StationTemplates/`
    copied from git-tracked [`Builds/Game/`](../../Builds/Game/) (Unity does not pack these;
    `Paths.cs` reads them from the folder holding the player binary). Never ships `Data/ServerMeta/` (runtime) or
    `StationTemplates/Metastation v2.json` (broken; kept in git only for the multiplayer loadtest).

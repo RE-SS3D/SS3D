@@ -219,6 +219,14 @@ async def step_compile(editor, ctx):
     return Done(f"no errors ({seconds:.1f}s compile)", rel(COMPILE_RESULT))
 
 
+SAVE_EDITOR_SETTINGS = """
+var settings = UnityEditor.Unsupported.GetSerializedAssetInterfaceSingleton("EditorSettings");
+UnityEditor.EditorUtility.SetDirty(settings);
+UnityEditor.AssetDatabase.SaveAssets();
+return "saved";
+"""
+
+
 async def run_test_job(editor, mode, expected, timeout, category=None):
     """Run one Test Runner job through MCP; returns its data once the editor's scenes are restored."""
     await editor.wait_ready()
@@ -255,6 +263,14 @@ async def run_test_job(editor, mode, expected, timeout, category=None):
         if not problems or time.monotonic() > deadline:
             break
         await asyncio.sleep(1)
+    if mode == "PlayMode":
+        # MCP's run_tests turns domain reload off for the run and restores EditorSettings in memory
+        # only; a save during the run leaves the temporary value in ProjectSettings/EditorSettings.asset.
+        # Write the restored value back so a test run never leaves churn behind.
+        try:
+            await editor.execute(SAVE_EDITOR_SETTINGS)
+        except StepFailed:
+            pass
     return data, problems
 
 

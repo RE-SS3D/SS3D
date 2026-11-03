@@ -9,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using File = System.IO.File;
+using Path = System.IO.Path;
 using UserPermissionsChangedEvent = SS3D.Permissions.Events.UserPermissionsChangedEvent;
 
 namespace SS3D.Permissions
@@ -35,6 +36,8 @@ namespace SS3D.Permissions
         /// TODO: Move this to a PermissionSettings and create permissions via JSON.
         /// </summary>
         private const string ConfigFileName = "permissions.txt";
+        /// <summary>Tracked starting permissions; copied to <see cref="ConfigFileName"/> when that is missing.</summary>
+        public const string DefaultConfigFileName = "permissions.default.txt";
 
         private static readonly string PermissionsPath = Paths.GetPath(GamePaths.Config, true) + "/" + ConfigFileName;
 
@@ -222,8 +225,13 @@ namespace SS3D.Permissions
                 return;
             }
 
-            Log.Debug(this, "Permissions file not found, creating a new one", Logs.ServerOnly);
-            File.WriteAllText(PermissionsPath, string.Empty);
+            // The tracked default seeds the live file, which the game rewrites and git ignores.
+            string defaults = Path.Combine(Path.GetDirectoryName(PermissionsPath) ?? "", DefaultConfigFileName);
+            Log.Debug(this, "Permissions file not found, creating it from {defaults}", Logs.ServerOnly, defaults);
+            if (File.Exists(defaults))
+                File.Copy(defaults, PermissionsPath);
+            else
+                File.WriteAllText(PermissionsPath, string.Empty);
         }
 
         /// <summary>

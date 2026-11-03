@@ -21,6 +21,11 @@ Builds/Game/*
 !/[Bb]uilds/Game/Config/
 !/[Bb]uilds/Game/BUILD_THE_GAME_HERE.txt
 
+# Live permissions: seeded from Config/permissions.default.txt on first run, then rewritten by the game
+/[Bb]uilds/Game/Config/permissions.txt
+# Mono crash dumps written by the editor
+mono_crash.*
+
 # Runtime server persistence (generated on boot / save; not source data)
 /[Bb]uilds/Game/[Dd]ata/[Ss]erver[Mm]eta/
 # Map editor sharing output (Save & Export, imported zips)

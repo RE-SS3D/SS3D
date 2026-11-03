@@ -13,9 +13,17 @@ namespace SS3D.Systems.Persistence
 
         private static readonly string PermissionsPath = Paths.GetPath(GamePaths.Config, true) + "/" + ConfigFileName;
 
+        /// <summary>
+        /// Reads Config/permissions.txt, or the tracked permissions.default.txt beside it when the live file
+        /// doesn't exist yet (a fresh checkout or install: the live file is gitignored).
+        /// </summary>
         public static bool TryLoadFromLegacyTxt(out SavedPermissionsPayload payload)
         {
-            return TryLoadFromLegacyTxtAtPath(PermissionsPath, out payload);
+            if (TryLoadFromLegacyTxtAtPath(PermissionsPath, out payload))
+                return true;
+
+            string defaults = Path.Combine(Path.GetDirectoryName(PermissionsPath) ?? "", PermissionSubSystem.DefaultConfigFileName);
+            return TryLoadFromLegacyTxtAtPath(defaults, out payload);
         }
 
         public static bool TryLoadFromLegacyTxtAtPath(string path, out SavedPermissionsPayload payload)

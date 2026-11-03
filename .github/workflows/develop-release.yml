@@ -561,12 +561,15 @@ jobs:
           # Never copy Data/ServerMeta (runtime state).
           seed_cwd_data() {
             local dest="$1"
-            test -f Builds/Game/Config/permissions.txt
+            test -f Builds/Game/Config/permissions.default.txt
             test -f Builds/Game/Config/network.json
             test -d Builds/Game/Data/Tilemaps
             test -f Builds/Game/Data/StationTemplates/ministation.json
             mkdir -p "${dest}/Config" "${dest}/Data/Tilemaps" "${dest}/Data/StationTemplates"
             cp -a Builds/Game/Config/. "${dest}/Config/"
+            # The live permissions.txt is gitignored; ship the tracked defaults under the live name too,
+            # because updaters already in testers' hands require Game/Config/permissions.txt in the zip.
+            cp Builds/Game/Config/permissions.default.txt "${dest}/Config/permissions.txt"
             cp -a Builds/Game/Data/Tilemaps/. "${dest}/Data/Tilemaps/"
             cp -a Builds/Game/Data/StationTemplates/. "${dest}/Data/StationTemplates/"
             # Metastation v2 is a broken map kept only for the multiplayer loadtest; never ship it.
