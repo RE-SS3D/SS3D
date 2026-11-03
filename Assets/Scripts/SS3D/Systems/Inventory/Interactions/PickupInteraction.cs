@@ -1,10 +1,7 @@
 ﻿using SS3D.Data;
-using SS3D.Logging;
 using SS3D.Interactions;
 using SS3D.Interactions.Extensions;
 using SS3D.Interactions.Interfaces;
-using SS3D.Systems.Entities;
-using SS3D.Systems.GameModes.Events;
 using UnityEngine;
 using SS3D.Data.Generated;
 using SS3D.Systems.Combat;
@@ -90,46 +87,9 @@ namespace SS3D.Systems.Inventory.Interactions
                 // and then we run the function that adds it to the container
                 // (Hand.Pickup auto-routes two-hand rifles to RequiredHand)
                 hand.Pickup(target);
-
-                if (TryResolvePickerCkey(hand, out string ckey))
-                {
-                    new ItemPickedUpEvent(target, ckey).Invoke(this);
-                }
-                else
-                {
-                    Log.Warning(typeof(PickupInteraction), "Couldn't get player ckey for pickup event");
-                }
             }
 
             return false;
-        }
-
-        /// <summary>
-        /// Resolve ckey from the controlling <see cref="Entity"/> mind.
-        /// Do not use <c>Hands.Inventory</c> — that reference is only set on the owning client.
-        /// </summary>
-        private static bool TryResolvePickerCkey(Hand hand, out string ckey)
-        {
-            ckey = null;
-            if (hand == null)
-            {
-                return false;
-            }
-
-            Entity entity = hand.GetComponentInParent<Entity>();
-            if (entity == null)
-            {
-                return false;
-            }
-
-            Mind mind = entity.Mind;
-            if (mind == null || mind == Mind.Empty || mind.player == null)
-            {
-                return false;
-            }
-
-            ckey = mind.player.Ckey;
-            return !string.IsNullOrEmpty(ckey);
         }
     }
 }

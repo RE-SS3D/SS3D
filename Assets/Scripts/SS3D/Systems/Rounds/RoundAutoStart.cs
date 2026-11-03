@@ -12,7 +12,7 @@ namespace SS3D.Systems.Rounds
 {
     /// <summary>
     /// The lobby's self-starting countdown (<c>lobby.md</c> §7), one tick per second. While the round is
-    /// idle and at least one player is ready, it counts down and then asks for a start. An admin hold
+    /// idle and enough players are ready, it counts down and then asks for a start. An admin hold
     /// (cancelling a countdown, or a failed station load) stops it until an admin starts a round.
     /// </summary>
     public sealed class AutoStartCountdown
@@ -25,9 +25,9 @@ namespace SS3D.Systems.Rounds
         public bool Held { get; set; }
 
         /// <summary>Advances one second; true exactly when the round should start now.</summary>
-        public bool Tick(bool enabled, bool idle, int readyCount)
+        public bool Tick(bool enabled, bool idle, int readyCount, int minimumReady = 1)
         {
-            if (!enabled || Held || !idle || readyCount < 1)
+            if (!enabled || Held || !idle || readyCount < Math.Max(1, minimumReady))
             {
                 SecondsLeft = 0;
                 return false;
@@ -108,7 +108,7 @@ namespace SS3D.Systems.Rounds
             int ready = SubSystems.TryGet(out ReadyPlayersSubSystem readyPlayers)
                 ? readyPlayers.EffectiveReadyCount(_serverSettings.AllConnectedReady)
                 : 0;
-            bool start = _autoStart.Tick(_serverSettings.AutoStart, idle, ready);
+            bool start = _autoStart.Tick(_serverSettings.AutoStart, idle, ready, _serverSettings.MinimumReady);
             _autoStartEnabled = _serverSettings.AutoStart;
             _autoStartHeld = _autoStart.Held;
             _autoStartSeconds = _autoStart.SecondsLeft;

@@ -489,6 +489,14 @@ namespace SS3D.Systems.Testing
                     TestSignal.Emit(this, "ResetHealthVerified", minimum.ToString(System.Globalization.CultureInfo.InvariantCulture));
                     break;
 
+                // Client: the server's round outcome reached this process (buffered RPC) with the given
+                // trigger, and lists this player. Not a UI check: the round-end overlay is visual review.
+                case "assert_outcome":
+                    RoundEndTrigger trigger = Enum.Parse<RoundEndTrigger>(instruction.Args[0], ignoreCase: true);
+                    yield return WaitUntil(() => OutcomeListsMe(trigger), _waitTimeoutSeconds, $"assert_outcome {trigger}");
+                    TestSignal.Emit(this, "OutcomeVerified", trigger.ToString());
+                    break;
+
                 case "wait_seconds":
                     yield return new WaitForSeconds(float.Parse(instruction.Args[0]));
                     break;
@@ -589,6 +597,18 @@ namespace SS3D.Systems.Testing
 
             Player player = playerSystem.GetPlayer(InstanceFinder.ClientManager.Connection);
             entitySystem.CmdSpawnLatePlayer(player);
+        }
+
+        private static bool OutcomeListsMe(RoundEndTrigger trigger)
+        {
+            if (!SubSystems.TryGet(out RoundSubSystem rounds) || rounds.LastOutcome == null
+                || rounds.LastOutcome.Trigger != trigger || !SubSystems.TryGet(out PlayerSubSystem players))
+            {
+                return false;
+            }
+
+            string ckey = players.GetCkey(InstanceFinder.ClientManager.Connection);
+            return Array.Exists(rounds.LastOutcome.Players, p => p.Ckey == ckey);
         }
 
         private bool IsEmbarked()

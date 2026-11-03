@@ -38,7 +38,10 @@ namespace SS3D.Tests.EditMode
         {
             RolesAvailable roles = AssetDatabase.LoadAssetAtPath<RolesAvailable>(StartingRolesPath);
             Assert.IsNotNull(roles, StartingRolesPath);
-            string[] jobs = roles.Roles.Where(role => role.Data != null).Select(role => role.Data.Name).ToArray();
+            // Crew jobs only, as MapValidationService gets them from RoleSubSystem.Jobs: antagonist roles
+            // (Operative) spawn on antagonist markers and are no job-spawn requirement.
+            string[] jobs = roles.Roles.Where(role => role.Data != null && !role.Data.IsAntagonist)
+                .Select(role => role.Data.Name).ToArray();
 
             MapValidationReport report = MapValidator.Validate("Extended", jobs, SpawnPoints().ToList(), false, false);
 

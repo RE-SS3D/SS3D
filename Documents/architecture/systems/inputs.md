@@ -29,8 +29,9 @@ bindings. Arbitration model: [2026-07_input-arbitration.md](../../archive/archit
 - `Assets/Scripts/SS3D/Systems/Inputs/InputSubSystem.cs` — owns `Controls`, builds the context table,
   exposes `PushContext` / `SuppressMap` / `SuppressAction` / `SuppressBinding` and the code-defined
   `UiCancel` / `DetailedExamine` / `ToggleIntent` / `OpenLocalSpeechCompose` / `ToggleDebugMenu` /
-  `OpenBugReport` (F8, rebindable as "Report a Bug"; live in every context but Console, Dialog and TextEntry)
-  actions.
+  `OpenBugReport` (F8, rebindable as "Report a Bug"; live in every context but Console, Dialog and TextEntry) /
+  `ToggleRoundSummary` (Tab, collapses the round-end summary; Global, Gameplay, TileMenu and MapEditor;
+  not in the Controls tab, so Tab is reserved) actions.
 - `Assets/Content/Systems/Input/Controls.inputactions` — asset bindings (keep in sync with generated
   `Controls.cs` when regenerating).
 - `Assets/Scripts/SS3D/Systems/Inputs/InputArbiter.cs` — pure resolution engine (unit tested).

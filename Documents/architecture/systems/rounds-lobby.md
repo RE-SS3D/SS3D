@@ -1,7 +1,7 @@
 > Code paths: Assets/Scripts/SS3D/Systems/Rounds/, Assets/Scripts/SS3D/UI/Lobby/
 > Entry points: RoundSubSystem, ReadyPlayersSubSystem, RoundSubSystemBase, LobbyUiSubSystem
 > Status: partial
-> Verified: 948061cc0 — 2026-11-02
+> Verified: af6e71178 — 2026-11-02
 
 # Rounds / lobby
 
@@ -31,7 +31,9 @@ ping/account-age fields are absent.
 The UITK shell is the sole lobby UI. Do not restore the removed uGUI lobby/customizer or
 `GameScreens`; the round simulation remains live ([composition policy](../2026-07_agent-first-composition.md)).
 
-**Round end (Stopped)** despawns the crew (`EntitySubSystem`) and then `RoundSubSystem.UnloadStation`
+**Round end** ([2026-11_round-end-loop](../2026-11_round-end-loop.md) P1, [round-end.md](../../design/round-end.md) §2, §5–§6): every trigger (timer, gamemode condition via `GamemodeSubSystem.EndRound`, admin stop) calls `RoundSubSystem.RequestRoundEnd(RoundEndRequest)`, which fixes a `RoundOutcome` on the spot: trigger, winner, configured vs. resolved mode, reason, duration, and every player who took a body (name, job, alive; a ghost counts as dead). `Nuke.Detonate` ends as an Operatives win with the station destroyed. Ending posts the result to OOC, appends round history, sends the outcome to every client (buffered `ObserversRpc`, so latecomers get it) and runs a 30 s beat (`RoundEndBeat`) that an admin can hold and resume from Server Settings. The world keeps running during the beat. `RoundEndUiSubSystem` paints the summary over living and ghost players on the shell's Overlay layer; Tab or the chevron collapses it to a banner. The lobby shell keeps the outcome as a **Last Round** tab until the next round ends. `AutoStart` defaults on for a dedicated server (`NetworkType.DedicatedServer`) and waits for `MinimumReady` ready players; the admin form edits both.
+
+**Stopped** despawns the crew (`EntitySubSystem`) and then `RoundSubSystem.UnloadStation`
 clears the station (`TileMap.Clear`, load state `NotLoaded`); the next Start restores the template.
 The lobby blurs the world (`SetMenuBlur`) whenever it is visible, not only as the Escape menu.
 The sidebar has a two-click **Quit to menu** button (`QuitRequested` → `NetworkSessionSubSystem.LeaveToMainMenu`): it leaves the session (ending it when hosting) and opens the [main menu](ui-shell-main-menu.md). The Server Info **Change Log**
@@ -58,7 +60,7 @@ Secret (currently the nuclear mode) and Nuclear Emergency also need an operative
 Failures return to Stopped/Failed with the complete actionable list in the admin settings status; all start paths share the gate.
 An empty job configuration or unsupported mode fails closed. Missing/unreadable templates retain the existing load-failure path.
 
-**Sandbox profile** ([2026-11_sandbox-server](../2026-11_sandbox-server.md)): `-sandbox` overlays the in-memory settings at boot (`SandboxProfile`): Extended, 20 min (`-sandbox-round-minutes=N`), cap 16, and the rule fields `AutoStart`, `AllConnectedReady`, `RespawnEnabled`/`RespawnCooldownSeconds`/`RemoveCorpseOnRespawn`, `MapPersistence` (sandbox removes the previous corpse after successful respawn), which the admin form doesn't edit (`WithRulesOf` keeps them). `AutoStart` runs a 20 s idle countdown (`RoundAutoStart.cs`) once a player is ready, then the normal Start; an admin Cancel or a failed load holds it until an admin Start. `AllConnectedReady` spawns everyone online. Every timed round warns at 5 and 1 minutes left. Each round gets a per-process `RoundId`; after Stopped, `ServerMeta/reset-health.jsonl` gains a line, and `/bug <note>` or the bug report dialog writes `ServerMeta/bugs.jsonl` (`RoundObservability.cs`): the server stamps time, round, ckey, alive/ghost/lobby and position, and keeps the dialog's summary, details, severity, crash flag, client context and log tail; its reduced JPEG goes to `ServerMeta/bug-screenshots/`. Both paths share one report per ckey per minute (`BugReportRateLimiter`). `RoundId` is a SyncVar so clients can name the round. The dialog itself: [ui-shell](ui-shell.md). `-heartbeat-file=` and `-exit-after-rounds=` (`ServerLifetime.cs`) serve an unattended server.
+**Sandbox profile** ([2026-11_sandbox-server](../2026-11_sandbox-server.md)): `-sandbox` overlays the in-memory settings at boot (`SandboxProfile`): Extended, 20 min (`-sandbox-round-minutes=N`), cap 16, and the rule fields `AutoStart`, `AllConnectedReady`, `RespawnEnabled`/`RespawnCooldownSeconds`/`RemoveCorpseOnRespawn`, `MapPersistence` (sandbox removes the previous corpse after successful respawn), which the admin form doesn't edit except `AutoStart` (`WithRulesOf` keeps them). `AutoStart` (also on by default for a dedicated server) runs a 20 s idle countdown (`RoundAutoStart.cs`) once `MinimumReady` players are ready, then the normal Start; an admin Cancel or a failed load holds it until an admin Start. `AllConnectedReady` spawns everyone online. Every timed round warns at 5 and 1 minutes left. Each round gets a per-process `RoundId`; after Stopped, `ServerMeta/reset-health.jsonl` gains a line, and `/bug <note>` or the bug report dialog writes `ServerMeta/bugs.jsonl` (`RoundObservability.cs`): the server stamps time, round, ckey, alive/ghost/lobby and position, and keeps the dialog's summary, details, severity, crash flag, client context and log tail; its reduced JPEG goes to `ServerMeta/bug-screenshots/`. Both paths share one report per ckey per minute (`BugReportRateLimiter`). `RoundId` is a SyncVar so clients can name the round. The dialog itself: [ui-shell](ui-shell.md). `-heartbeat-file=` and `-exit-after-rounds=` (`ServerLifetime.cs`) serve an unattended server.
 
 Unsaved map edits across a round stop (A4): the map editor runs during an Ongoing round, and
 Stop unloads the station, so an admin Stop with unsaved editor commands first opens
@@ -89,6 +91,9 @@ original) and tells admins in Admin chat. Unloading resets the editor's history 
   `WaitUntilAsync(WorldReady)`; on Ongoing fires welcome via `CommsSubSystem.SendAnnouncement`
   (`StationWelcome` follow-up clip)
 - `Assets/Scripts/SS3D/Systems/Rounds/RoundSubSystemBase.cs` — state machine base with generation-tracked CTS
+- `Assets/Scripts/SS3D/Systems/Rounds/RoundEnd.cs` — `RequestRoundEnd`, outcome build, buffered outcome RPC, summary beat and admin hold
+- `Assets/Scripts/SS3D/Systems/Rounds/Outcome/` — `RoundOutcome`/`RoundEndRequest` (record + triggers), `RoundEndBeat` + `RoundOutcomeBuilder`, `RoundSummaryModel` (viewer-relative fate/rows); pure, EditMode-tested
+- `Assets/Scripts/SS3D/UI/Lobby/RoundEnd/` — `RoundEndUiSubSystem` (client host, Tab), `RoundEndOverlay` (panel + banner), `RoundSummaryView` (shared ledger builder), `LobbyShellView.LastRound.cs` (Last Round tab); styles `Content/Systems/UI/RoundEnd/RoundEnd.uss` via `RoundEndAssetCatalog` (umbrella rebuild)
 - `Assets/Scripts/SS3D/Systems/Rounds/ReadyPlayersSubSystem.cs` — player ready tracking; spawns on `Ongoing`
 - `Assets/Scripts/SS3D/Systems/WorldReadiness/WorldReadinessSubSystem.cs` — readiness gate for prepare
 
@@ -100,10 +105,17 @@ original) and tells admins in Admin chat. Unloading resets the editor's history 
 ## Extension points
 
 - Round transitions: extend `RoundSubSystemBase` state handlers and messages in `Messages/`.
+- Ending a round: call `RoundSubSystem.RequestRoundEnd` (or `GamemodeSubSystem.EndRound(request)`) with the winner and wording; never `RequestRoundStateChange(false)` directly, or the outcome falls back to an admin end. Nuke Ops rules (P3) build the request; antagonist rows set `RoundOutcomePlayer.Antagonist`.
 - Spawn flow: `SpawnReadyPlayersEvent` after Ongoing (world must already be ready from PrepareRound).
 - Lobby UITK: Session snapshots/actions live in `LobbyUiSubSystem` (including job preference sends); `LobbyShellView` renders `RoleSubSystem.Jobs`; Character Creator is a separate Modal screen.
 
 ## Pitfalls
+
+- **Round-end typography must use explicit line boxes.** Web `line-height: 1`/`1.1` is not the fonts' natural TextCore height; leaving result/reason and roster labels unconstrained bloats the result and clips row text. Reset theme Label padding locally, constrain those labels, and keep the roster flexible. The overlay switches to 680 px wide with 16/84 px top/bottom clearance at panel heights ≤720.
+- **The legacy `OdetoIdleGamingSDF` contains Spessman face/glyph data.** Round-end uses `RoundEndArcade.asset`, generated from the real Ode font by `RoundEndAssetCatalogBuilder`; don't replace it with the legacy asset. TextCore tracking uses percent-of-font-size units: the reference's `0.12em` requires `letter-spacing: 12px`, while badges/statuses use zero tracking.
+
+- **Every round end now takes 30 s longer.** Ending runs the summary beat before Stopped, so pilot steps that wait on Stopped after a stop need ≥60 s timeouts (the lifecycle and sandbox pilots were raised). A stop during Preparing/WarmingUp still skips Ending.
+- **Don't auto-switch lobby tabs under the player.** The Last Round tab opens itself once per round, except from Server Settings (pilots and admins wait on its buttons) or Chat (focus loss mid-line). Scenarios that need it select `#tab-last-round` explicitly.
 
 - **Surface decals are client-local round state:** clearing the tilemap does not clear blood/bullet projectors held by static spawners. `SyncRoundState(Stopped)` clears both spawners on server/host and pure clients, including their instance materials.
 
@@ -160,6 +172,7 @@ original) and tells admins in Admin chat. Unloading resets the editor's history 
 
 - `Testing/ui/validate.sh --weekly` runs these graphical pilots. `LobbyUiPilot` covers shell/creator visuals; `LobbyLifecyclePilot` covers host lifecycle, saved characters and settings; the remote pilot checks a built non-admin client. Review screenshots as well as assertions; OS-input Ready/chat checks do not imply every pilot action uses real input.
 - **Run Sandbox Pilot** (`LobbyLifecyclePilot.Sandbox.cs`, `validate.sh --steps sandbox` or `--weekly`) applies the profile in Play Mode (`ApplyServerSettingsForTesting`) and runs two automatic rounds: countdown without Ready, death → ghost editing → Respawn, `/bug`, the F8 dialog saving a local bundle, 1-minute warning, wipe without autosave, reset-health lines with no leftover tile objects/items and flat NetworkObject counts. `SandboxServerTests` covers the pure rules.
+- **Round end** (tier per the [testing philosophy](../2026-11_testing-philosophy.md)): `RoundEndLoopTests` (EditMode) covers the outcome per trigger, respawned players listed once, the viewer's fate and row, the beat and hold, countdown text, minimum-ready auto-start and the dedicated default; `SquadDrawTests` covers the draw. `validate.sh --steps lifecycle`: one host stop checks the overlay over a living player, the admin hold reaching the UI, return to the lobby and the Last Round tab (`round-end-summary.png`, `round-end-held.png`, `round-end-banner.png`, `lobby-last-round.png`). The nightly `sandbox-reset` smoke asserts that the outcome reaches a remote client (`assert_outcome Timer`). PlayMode tests and pilots run a 3 s beat (`ServerHelpers.TestEndBeatSeconds`, `RoundSubSystem.SetEndBeatSecondsForTesting`); only the pilot's summary step runs the real 30 s.
 - `MapValidationTests` covers mode/job requirements, combined failures, repair, warnings and the scrollable save report.
 - The lifecycle pilot creates temporary invalid/valid station copies, checks a failed Start lists all missing jobs without countdown/spawn, then repairs the file and retries. Remote smoke uses the valid copy; original templates are untouched. `server-settings-validation.png` captures the failure list.
 - The lifecycle pilot edits a spawn during the first round, checks that Stop opens the prompt (`map-stop-unsaved.png`) and that Cancel keeps the round and edits, then that the timed round end autosaves. Later rounds check a player stop request with Discard and stop (no autosave) and Save and stop (template overwritten). `LobbyMapStopPromptTests` covers the name draft and choice submission.

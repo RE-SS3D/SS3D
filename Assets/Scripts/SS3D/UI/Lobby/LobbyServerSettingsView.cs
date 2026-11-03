@@ -49,6 +49,15 @@ namespace SS3D.UI.Lobby
         private const float PendingServerTextSeconds = 5f;
         private readonly Dictionary<ServerSetting, (string Value, float Expires)> _pendingServerText = new();
         private readonly HashSet<VisualElement> _editingFields = new();
+        private bool _endHeld;
+        private int _endSecondsLeft;
+
+        /// <summary>The round-end summary beat (Ending); call before <c>SetSession</c>.</summary>
+        public void SetRoundEnd(bool held, int secondsLeft)
+        {
+            _endHeld = held;
+            _endSecondsLeft = secondsLeft;
+        }
         public event Action<ServerSetting, ServerSettings> ServerSettingsChanged;
         public event Action<RoundAdminAction> RoundAdminRequested;
 
@@ -109,6 +118,9 @@ namespace SS3D.UI.Lobby
             AddRoundAction(controls, "Cancel Countdown", "server-cancel", RoundAdminAction.CancelCountdown, true);
             // Stop is an in-round extension to the pre-round reference.
             AddRoundAction(controls, "Stop Round", "server-stop", RoundAdminAction.Stop, true);
+            // The 30 s round-end summary: hold it for a discussion, resume to return everyone to the lobby.
+            AddRoundAction(controls, "Hold Summary", "server-hold-end", RoundAdminAction.HoldEnd, true);
+            AddRoundAction(controls, "Resume Summary", "server-resume-end", RoundAdminAction.ResumeEnd, true);
             form.Add(controls);
 
             form.Add(SectionTitle("Server Info"));
@@ -145,11 +157,17 @@ namespace SS3D.UI.Lobby
             numbers.AddToClassList("lobby-shell__server-numbers");
             AddServerNumber(numbers, "Player Cap", "server-player-cap", ServerSetting.PlayerCap, value => _serverSettings.PlayerCap = value);
             AddServerNumber(numbers, "Round Length (min)", "server-round-length", ServerSetting.RoundLengthMinutes, value => _serverSettings.RoundLengthMinutes = value);
+            AddServerNumber(numbers, "Minimum Ready", "server-minimum-ready", ServerSetting.MinimumReady, value => _serverSettings.MinimumReady = value);
+            AddServerNumber(numbers, "Minimum Operatives", "server-minimum-operatives", ServerSetting.MinimumOperatives, value => _serverSettings.MinimumOperatives = value);
             form.Add(numbers);
             form.Add(SectionTitle("Round Rules"));
             Toggle late = ServerRule("Allow Late Join", "server-late-join", true, "");
             late.RegisterValueChangedCallback(e => { _serverSettings.AllowLateJoin = e.newValue; SaveServerSettings(ServerSetting.AllowLateJoin); });
             form.Add(late);
+            Toggle autoStart = ServerRule("Auto Start Rounds", "server-auto-start", true,
+                "Start a countdown on its own once enough players are ready, and again after every round.");
+            autoStart.RegisterValueChangedCallback(e => { _serverSettings.AutoStart = e.newValue; SaveServerSettings(ServerSetting.AutoStart); });
+            form.Add(autoStart);
             form.Add(ServerRule("Random Events", "server-random-events", false, "Random events are not implemented yet."));
             form.Add(ServerRule("Friendly Fire", "server-friendly-fire", false, "Combat has no friendly-fire policy yet."));
             form.Add(ServerRule("Allow Respawn (Cloning)", "server-respawn", false, "Cloning is not implemented yet."));
@@ -164,7 +182,7 @@ namespace SS3D.UI.Lobby
             if (!_hasServerSettings) return;
             if (!_serverSettings.IsValid)
             {
-                _serverSettingsStatus = "Player cap must be 1–256; round length must be 1–1440 minutes.";
+                _serverSettingsStatus = "Player cap and minimum ready must be 1–256; round length must be 1–1440 minutes.";
                 _tabContent.Q<Label>("server-settings-status").text = _serverSettingsStatus;
                 return;
             }
@@ -285,6 +303,7 @@ namespace SS3D.UI.Lobby
             else if (idle && _autoStartHeld) detailText = "Auto start held. Start resumes it.";
             else if (idle) detailText = "Auto start when a player is ready";
             else if (_roundState == RoundState.Ongoing) detailText = $"{_secondsLeft / 60:00}:{_secondsLeft % 60:00} elapsed";
+            else if (_roundState == RoundState.Ending) detailText = RoundSummaryModel.Countdown(_endSecondsLeft, _endHeld, shortForm: true);
             form.Q<Label>("server-round-detail").text = detailText;
             form.Q<Label>("server-ready-ratio").text = $"{_players.Count(p => p.Ready)}/{_players.Length}";
             Button start = form.Q<Button>("server-start");
@@ -300,6 +319,13 @@ namespace SS3D.UI.Lobby
             Button stop = form.Q<Button>("server-stop");
             stop.style.display = _roundState == RoundState.Ongoing ? DisplayStyle.Flex : DisplayStyle.None;
             stop.SetEnabled(_roundState == RoundState.Ongoing);
+            bool ending = _roundState == RoundState.Ending;
+            Button holdEnd = form.Q<Button>("server-hold-end");
+            holdEnd.style.display = ending && !_endHeld ? DisplayStyle.Flex : DisplayStyle.None;
+            holdEnd.SetEnabled(ending && !_endHeld);
+            Button resumeEnd = form.Q<Button>("server-resume-end");
+            resumeEnd.style.display = ending && _endHeld ? DisplayStyle.Flex : DisplayStyle.None;
+            resumeEnd.SetEnabled(ending && _endHeld);
             DropdownField map = form.Q<DropdownField>("server-map");
             map.choices = _serverMaps.ToList();
             map.SetValueWithoutNotify(_serverSettings.Map ?? "");
@@ -316,8 +342,19 @@ namespace SS3D.UI.Lobby
                 cap.SetValueWithoutNotify(_serverSettings.PlayerCap);
             if (!_editingFields.Contains(length))
                 length.SetValueWithoutNotify(_serverSettings.RoundLengthMinutes);
+            IntegerField minimumReady = form.Q<IntegerField>("server-minimum-ready");
+            if (!_editingFields.Contains(minimumReady))
+                minimumReady.SetValueWithoutNotify(_serverSettings.MinimumReady);
+            IntegerField minimumOperatives = form.Q<IntegerField>("server-minimum-operatives");
+            if (!_editingFields.Contains(minimumOperatives))
+                minimumOperatives.SetValueWithoutNotify(_serverSettings.MinimumOperatives);
             cap.SetEnabled(idle && _hasServerSettings);
             length.SetEnabled(idle && _hasServerSettings);
+            minimumReady.SetEnabled(idle && _hasServerSettings);
+            minimumOperatives.SetEnabled(idle && _hasServerSettings);
+            Toggle autoStart = form.Q<Toggle>("server-auto-start");
+            autoStart.SetValueWithoutNotify(_serverSettings.AutoStart);
+            autoStart.SetEnabled(_hasServerSettings);
             foreach ((string name, string value) in new (string, string)[] { ("server-name", _serverSettings.ServerName), ("server-motd", _serverSettings.Motd) })
             {
                 TextField text = form.Q<TextField>(name);

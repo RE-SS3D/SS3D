@@ -24,6 +24,8 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using Cloth = SS3D.Systems.Inventory.Containers.Cloth;
 using UnityEngine.UIElements;
+using SS3D.UI.Shell.RoundEnd;
+using SS3D.UI.Shell.Catalog;
 
 namespace SS3D.UI.Lobby
 {
@@ -258,6 +260,10 @@ namespace SS3D.UI.Lobby
         private InputAction _toggleMenuAction;
 
         private RoundState _lastRoundSnapshot;
+        private RoundEndAssetCatalog _roundEndCatalog;
+        private bool _roundEndCatalogFailed;
+        private RoundOutcome _lastRoundOutcome;
+        private int _lastRoundSelectedId = -1;
         private StationLoadState _lastStationSnapshot;
         private string _lastStationName;
 
@@ -330,6 +336,7 @@ namespace SS3D.UI.Lobby
                 _shellView.SetServerInfo(rounds.ServerName, rounds.Motd, rounds.PublicMode, rounds.ServerBuild, rounds.ServerStarted);
             else
                 _shellView.SetServerInfo(null, "", null, "", null);
+            RefreshLastRound(connected ? rounds : null, visible);
             _shellView.SetStationLoadState(rounds != null ? rounds.CurrentStationLoadState : StationLoadState.NotLoaded,
                 rounds != null ? rounds.StationName : "");
             bool admin = CanAdmin();
@@ -353,6 +360,7 @@ namespace SS3D.UI.Lobby
                     null, "—", "—", "—")).ToArray() : System.Array.Empty<LobbyMockData.PlayerRow>();
             _shellView.SetAutoStart(rounds != null && rounds.AutoStartEnabled, rounds != null && rounds.AutoStartHeld,
                 rounds != null ? rounds.AutoStartSecondsLeft : 0);
+            _shellView.SetRoundEnd(rounds != null && rounds.EndHeld, rounds != null ? rounds.EndSecondsLeft : 0);
             _shellView.SetSession(rounds != null ? rounds.CurrentRoundState : RoundState.Stopped,
                 rounds != null ? rounds.CurrentTimerSeconds : 0,
                 local != null && ready != null && ready.IsReady(local), local != null && (rounds == null || rounds.CurrentRoundState != RoundState.Ongoing || rounds.AllowLateJoin), admin, rows, spawned);
@@ -538,6 +546,29 @@ namespace SS3D.UI.Lobby
             _shellView.SetVisible(false);
             _creatorView.Open();
             Debug.Log("[Lobby] Character Creator opened.");
+        }
+
+        /// <summary>
+        /// Feeds the Last Round tab (effort <c>2026-11_round-end-loop</c> Decision 6) and opens it once per
+        /// ended round, the first time this player sees the lobby after it ended.
+        /// </summary>
+        private void RefreshLastRound(RoundSubSystem rounds, bool visible)
+        {
+            RoundOutcome outcome = rounds != null ? rounds.LastOutcome : null;
+            if (outcome != null && _roundEndCatalog == null && !_roundEndCatalogFailed
+                && !UiCatalogRuntimeLoader.TryLoad(RoundEndAssetPaths.ResourcesCatalogName, RoundEndAssetPaths.RebuildMenuPath,
+                    this, out _roundEndCatalog))
+                _roundEndCatalogFailed = true;
+
+            bool select = visible && outcome != null && outcome.RoundId != _lastRoundSelectedId;
+            if (select)
+                _lastRoundSelectedId = outcome.RoundId;
+            if (ReferenceEquals(outcome, _lastRoundOutcome) && !select)
+                return;
+
+            _lastRoundOutcome = outcome;
+            RoundSummaryModel model = outcome != null ? new RoundSummaryModel(outcome, SS3D.Core.Settings.LocalPlayer.Ckey) : null;
+            _shellView.SetLastRound(model, _roundEndCatalog != null ? _roundEndCatalog.Style : null, select);
         }
 
         private void HandleReturnToLobbyRequested()

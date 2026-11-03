@@ -42,6 +42,9 @@ namespace SS3D.Systems.Inputs
         /// <summary>F8: the bug report dialog, from anywhere but a focused text field or the console.</summary>
         public InputAction OpenBugReport => _openBugReport;
 
+        /// <summary>Tab: collapses or expands the round-end summary. Live wherever the player can move or look.</summary>
+        public InputAction ToggleRoundSummary => _toggleRoundSummary;
+
         private InputActionMap _systemMap;
         private InputAction _uiCancel;
         private InputAction _detailedExamine;
@@ -49,6 +52,7 @@ namespace SS3D.Systems.Inputs
         private InputAction _openLocalSpeechCompose;
         private InputAction _toggleDebugMenu;
         private InputAction _openBugReport;
+        private InputAction _toggleRoundSummary;
 
         private InputArbiter _arbiter;
         private Dictionary<InputContext, InputContextDefinition> _contexts;
@@ -150,6 +154,7 @@ namespace SS3D.Systems.Inputs
                 ? _systemMap.AddAction("ToggleDebugMenu", InputActionType.Button, "<Keyboard>/f1")
                 : _systemMap.AddAction("ToggleDebugMenu", InputActionType.Button);
             _openBugReport = _systemMap.AddAction("OpenBugReport", InputActionType.Button, "<Keyboard>/f8");
+            _toggleRoundSummary = _systemMap.AddAction("ToggleRoundSummary", InputActionType.Button, "<Keyboard>/tab");
         }
 
         private List<InputAction> CollectAllActions()
@@ -187,27 +192,27 @@ namespace SS3D.Systems.Inputs
                 // plus code-defined debug toggles that share Other's availability.
                 [InputContext.Global] = new InputContextDefinition(
                     new[] { other },
-                    new[] { consoleOpen, tileToggle, _toggleDebugMenu, _openBugReport }),
+                    new[] { consoleOpen, tileToggle, _toggleDebugMenu, _openBugReport, _toggleRoundSummary }),
 
                 [InputContext.Gameplay] = new InputContextDefinition(
                     new[] { movement, camera, interactions, hotkeys, other },
                     new[]
                     {
                         consoleOpen, tileToggle, _detailedExamine, _toggleIntent,
-                        _openLocalSpeechCompose, _toggleDebugMenu, _openBugReport,
+                        _openLocalSpeechCompose, _toggleDebugMenu, _openBugReport, _toggleRoundSummary,
                     }),
 
                 // Build menu: keep looking around and placing; drop world interactions/hotkeys.
                 [InputContext.TileMenu] = new InputContextDefinition(
                     new[] { movement, camera, tile, other },
-                    new[] { consoleOpen, _detailedExamine, _toggleDebugMenu, _openBugReport }),
+                    new[] { consoleOpen, _detailedExamine, _toggleDebugMenu, _openBugReport, _toggleRoundSummary }),
 
                 // Map Editor: it polls Keyboard/Mouse directly for its own free-fly camera, so
                 // Movement/Camera must be masked here too (unlike TileMenu) to avoid the normal
                 // character/camera fighting it every frame.
                 [InputContext.MapEditor] = new InputContextDefinition(
                     new[] { tile, other },
-                    new[] { consoleOpen, _openBugReport }),
+                    new[] { consoleOpen, _openBugReport, _toggleRoundSummary }),
 
                 // Machine panel captures movement/camera; Escape closes via UiCancel (Other masked).
                 [InputContext.MachineUI] = new InputContextDefinition(

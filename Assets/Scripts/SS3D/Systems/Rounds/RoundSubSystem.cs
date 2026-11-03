@@ -5,7 +5,6 @@ using SS3D.Core;
 using SS3D.Core.WorldReadiness;
 using SS3D.Logging;
 using SS3D.Systems.Comms;
-using SS3D.Systems.Gamemodes;
 using SS3D.Systems.Persistence;
 using SS3D.Systems.Tile.Validation;
 using SS3D.Systems.Rounds.Messages;
@@ -59,6 +58,8 @@ namespace SS3D.Systems.Rounds
             RoundState = RoundState.Preparing;
             RoundSeconds = 0;
             BeginRoundId();
+            _roundFellBackToExtended = false;
+            _pendingOutcome = null;
             _stationName = _serverSettings.Map;
             _stationLoadState = StationLoadState.Loading;
             try
@@ -191,7 +192,7 @@ namespace SS3D.Systems.Rounds
                 int secondsLeft = _serverSettings.RoundLengthMinutes * 60 - RoundSeconds;
                 if (secondsLeft <= 0)
                 {
-                    RequestRoundEnd();
+                    RequestRoundEnd(RoundEndRequest.Timer);
                     return;
                 }
 
@@ -199,21 +200,30 @@ namespace SS3D.Systems.Rounds
             }
         }
 
+        /// <summary>
+        /// Ending: fixes the outcome (if no trigger did yet), shows the summary to everyone and runs the
+        /// 30 s beat, which an admin can hold. The world keeps running; <see cref="StopRound"/> follows.
+        /// </summary>
         [Server]
         protected override async UniTask ProcessEndRound(CancellationToken cancellationToken)
         {
+            // A stop that bypassed RequestRoundEnd (test stubs) still gets a record, as an admin end.
+            RoundOutcome outcome = _pendingOutcome ?? BuildOutcome(RoundEndRequest.Admin);
+            _pendingOutcome = null;
             RoundState = RoundState.Ending;
             CancelTick();
-            Log.Information(this, "Round {roundId} ended after {seconds} s", Logs.ServerOnly, _roundId, RoundSeconds);
-            if (SubSystems.TryGet(out CommsSubSystem comms)) comms.PostOocSystem(OocChannel.Ooc, "The round has ended.");
+            Log.Information(this, "Round {roundId} ended after {seconds} s: {trigger}, winner {winner}", Logs.ServerOnly,
+                _roundId, RoundSeconds, outcome.Trigger, outcome.Winner);
+            if (SubSystems.TryGet(out CommsSubSystem comms))
+                comms.PostOocSystem(OocChannel.Ooc, $"The round has ended. {RoundOutcomeText.Title(outcome.Winner)}: {outcome.Reason}");
 
-            AppendRoundHistory();
-
-            await UniTask.Delay(System.TimeSpan.FromSeconds(3), cancellationToken: cancellationToken);
+            AppendRoundHistory(outcome);
+            PublishOutcome(outcome);
+            await RunEndBeat(cancellationToken);
         }
 
         [Server]
-        private void AppendRoundHistory()
+        private void AppendRoundHistory(RoundOutcome outcome)
         {
             if (!SubSystems.TryGet(out PersistenceSubSystem persistenceSubSystem))
             {
@@ -224,18 +234,17 @@ namespace SS3D.Systems.Rounds
                 ? tileSubSystem.CurrentMap.gameObject.name
                 : string.Empty;
 
-            string gamemode = SubSystems.TryGet(out GamemodeSubSystem gamemodeSubSystem)
-                ? gamemodeSubSystem.CurrentGamemodeName
-                : "unknown";
-
             persistenceSubSystem.AppendRoundHistory(new RoundHistoryEntry
             {
                 timestamp = DateTime.UtcNow.ToString("o"),
-                gamemode = gamemode,
+                gamemode = outcome.Mode,
                 mapId = mapId,
                 playerCount = ServerManager?.Clients.Count ?? 0,
-                durationSeconds = RoundSeconds,
-                fallbackMap = true,
+                durationSeconds = outcome.DurationSeconds,
+                fallbackMap = _roundFellBackToExtended,
+                trigger = outcome.Trigger.ToString(),
+                winner = outcome.Winner.ToString(),
+                operativeCkeys = outcome.Players.Where(p => p.Antagonist).Select(p => p.Ckey).ToArray(),
             });
         }
 
@@ -302,6 +311,14 @@ namespace SS3D.Systems.Rounds
             _motd = settings.Motd;
             ApplyServerRules();
         }
+
+        /// <summary>
+        /// Automation only: the round-end summary beat lasts <paramref name="seconds"/> instead of
+        /// <see cref="RoundEndBeat.Seconds"/>, so tests that stop rounds for set-up don't pay 30 s per stop.
+        /// Tests about the round end itself put it back. Lasts for this server session.
+        /// </summary>
+        [Server]
+        public void SetEndBeatSecondsForTesting(int seconds) => _endBeatSeconds = Math.Max(1, seconds);
 #endif
     }
 }

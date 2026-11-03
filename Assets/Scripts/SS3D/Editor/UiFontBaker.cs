@@ -29,6 +29,10 @@ namespace SS3D.Editor
                 AssetDatabase.CreateAsset(catalog, CatalogPath);
             }
 
+            Dictionary<FontAsset, string> baked = new();
+            foreach (UiFontFallbacks.Entry previous in catalog.Entries)
+                if (previous.Asset != null)
+                    baked[previous.Asset] = previous.BakedCharacters;
             catalog.Entries.Clear();
             foreach (string guid in AssetDatabase.FindAssets("t:FontAsset", new[] { FontRoot }))
             {
@@ -38,6 +42,16 @@ namespace SS3D.Editor
                 if (asset == null || source == null)
                 {
                     Debug.LogWarning($"[UiFontBaker] {path}: no source font, left as it is");
+                    continue;
+                }
+
+                // Re-baking recreates the atlas textures under new ids; skip assets already baked with this set.
+                // Entries from before BakedCharacters existed count as baked with the current set.
+                baked.TryGetValue(asset, out string previousCharacters);
+                if (asset.atlasPopulationMode == AtlasPopulationMode.Static && baked.ContainsKey(asset)
+                    && (string.IsNullOrEmpty(previousCharacters) || previousCharacters == UiFontFallbacks.Characters))
+                {
+                    catalog.Entries.Add(new UiFontFallbacks.Entry { Asset = asset, Source = source, BakedCharacters = UiFontFallbacks.Characters });
                     continue;
                 }
 
@@ -54,7 +68,7 @@ namespace SS3D.Editor
                 serialized.ApplyModifiedPropertiesWithoutUndo();
                 EditorUtility.SetDirty(asset);
 
-                catalog.Entries.Add(new UiFontFallbacks.Entry { Asset = asset, Source = source });
+                catalog.Entries.Add(new UiFontFallbacks.Entry { Asset = asset, Source = source, BakedCharacters = UiFontFallbacks.Characters });
                 Debug.Log($"[UiFontBaker] {path}: static, {asset.characterTable.Count} characters"
                     + (string.IsNullOrEmpty(missing) ? "" : $"; not in the font: {missing}"));
             }

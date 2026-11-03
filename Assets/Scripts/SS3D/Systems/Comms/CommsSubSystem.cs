@@ -370,6 +370,27 @@ namespace SS3D.Systems.Comms
             });
         }
 
+        /// <summary>
+        /// Server-only: a line in one player's HUD feed that nobody else receives (an antagonist briefing).
+        /// It uses the radio feed's row with <paramref name="header"/> as its header; the channel id
+        /// matches no radio channel, so it is never writable or overheard.
+        /// </summary>
+        public void SendPrivateFeed(NetworkConnection target, string header, string text)
+        {
+            if (!IsServer || target == null || !target.IsActive || !TryNormalizeText(text, out text))
+            {
+                return;
+            }
+
+            InstanceFinder.ServerManager.Broadcast(target, new CommsMessage
+            {
+                ChannelId = header,
+                Sender = "",
+                Text = text,
+                Kind = CommsChannelKind.Radio,
+            });
+        }
+
         public void NotifyLocalSpeechReceived(Entity speaker, SpeechEvent speechEvent)
         {
             OnLocalSpeechReceived?.Invoke(speaker, speechEvent);

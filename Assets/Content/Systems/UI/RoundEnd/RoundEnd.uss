@@ -1,0 +1,583 @@
+/*
+ * Round-end summary (round-end.md §5): the in-round overlay, its collapsed banner and the lobby's
+ * Last Round tab. Sizes come from the "Round End Summary" design at 1920×1080, used as-is: the shell panel is
+ * constant physical size at 96 dpi, so one USS px is one screen px on a normal display. Solid fills only: it must stay readable over a white flash.
+ */
+
+.round-end {
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+}
+
+/* UI Toolkit's runtime theme adds Label padding. Keep web line boxes explicit where
+ * the reference uses line-height: 1 / 1.1, and centre text inside fixed roster rows. */
+.round-end__arcade,
+.round-end__terminal,
+.round-end__titling {
+    margin: 0;
+    padding: 0;
+    -unity-text-align: middle-left;
+}
+
+/* ---- Fonts ---- */
+.round-end__arcade {
+    -unity-font-definition: url("project://database/Assets/Content/Systems/UI/RoundEnd/RoundEndArcade.asset");
+    -unity-font-style: normal;
+    font-size: 10px;
+    /* TextCore measures tracking in percent of the font size (12 → 0.12em). */
+    letter-spacing: 12px;
+    color: #aaaaaa;
+}
+
+.round-end__terminal {
+    -unity-font-definition: url("project://database/Assets/Content/Systems/UI/Font/Fonts/SpessmanFontSDF.asset");
+    -unity-font-style: normal;
+    font-size: 13px;
+    color: #aaaaaa;
+}
+
+.round-end__titling {
+    -unity-font-definition: url("project://database/Assets/Content/Systems/UI/Font/Fonts/GurajadaRegularSDF.asset");
+    -unity-font-style: normal;
+    font-size: 19px;
+    color: #d8d8d8;
+}
+
+.round-end__ellipsis {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    flex-shrink: 1;
+    min-width: 0;
+}
+
+/* ---- Overlay panel ---- */
+.round-end__panel {
+    position: absolute;
+    top: 40px;
+    bottom: 112px;
+    width: 760px;
+    max-width: 92%;
+    left: 50%;
+    translate: -50% 0;
+    flex-direction: column;
+    background-color: #353538;
+    border-width: 1px;
+    border-color: rgba(216, 216, 216, 0.18);
+}
+
+.round-end__header {
+    flex-direction: row;
+    align-items: center;
+    height: 40px;
+    flex-shrink: 0;
+    padding-left: 16px;
+    padding-right: 8px;
+    background-color: #161616;
+}
+
+.round-end__header-round {
+    margin-right: 12px;
+}
+
+.round-end__spacer {
+    flex-grow: 1;
+}
+
+.round-end__paused {
+    background-color: #c98f38;
+    color: #161616;
+    padding: 4px 6px;
+    margin-right: 12px;
+}
+
+.round-end__countdown {
+    font-size: 14px;
+    color: #d8d8d8;
+    margin-right: 12px;
+}
+
+.round-end__countdown--held {
+    color: #e6ad53;
+}
+
+.round-end__chevron {
+    width: 28px;
+    height: 28px;
+    margin: 0;
+    padding: 0;
+    border-width: 0;
+    border-radius: 0;
+    background-color: #2a2a2e;
+    align-items: center;
+    justify-content: center;
+}
+
+.round-end__chevron:hover {
+    background-color: #45454a;
+}
+
+.round-end__chevron-glyph {
+    width: 8px;
+    height: 8px;
+    border-top-width: 1.5px;
+    border-left-width: 1.5px;
+    border-color: #d8d8d8;
+    rotate: 45deg;
+    translate: 0 1px;
+}
+
+.round-end__chevron-glyph--down {
+    rotate: 225deg;
+    translate: 0 -1px;
+}
+
+.round-end__progress {
+    height: 3px;
+    flex-shrink: 0;
+    flex-direction: row;
+    background-color: #2a2a2e;
+}
+
+.round-end__progress-fill {
+    background-color: #aaaaaa;
+}
+
+.round-end__progress-fill--held {
+    background-color: #c98f38;
+}
+
+/* ---- Result block ---- */
+.round-end__result {
+    flex-shrink: 0;
+    padding: 20px 24px 18px 24px;
+    background-color: #2a2a2e;
+    border-top-width: 4px;
+    border-top-color: #717c7f;
+}
+
+.round-end__result-row {
+    flex-direction: row;
+    align-items: center;
+    flex-wrap: wrap;
+    margin-top: 8px;
+    margin-bottom: 8px;
+}
+
+.round-end__title {
+    height: 32px;
+    flex-shrink: 0;
+    font-size: 32px;
+    color: #d8d8d8;
+    margin-right: 16px;
+}
+
+.round-end__destroyed {
+    background-color: #b13d3d;
+    color: #fff8ef;
+    padding: 6px 8px;
+}
+
+.round-end__reason {
+    height: 22px;
+    font-size: 20px;
+    color: #d8d8d8;
+}
+
+/* Winner tints: rule colour on the block, tint on the title. */
+.round-end--ops .round-end__result,
+.round-end--ops .round-end__banner-result {
+    border-color: #b13d3d;
+}
+.round-end--ops .round-end__title {
+    color: #d17a7a;
+}
+.round-end--crew .round-end__result,
+.round-end--crew .round-end__banner-result {
+    border-color: #3d6089;
+}
+.round-end--crew .round-end__title {
+    color: #7fa3cc;
+}
+.round-end--none .round-end__result,
+.round-end--none .round-end__banner-result {
+    border-color: #717c7f;
+}
+
+/* ---- Facts: gamemode + your fate ---- */
+.round-end__facts {
+    flex-direction: row;
+    flex-shrink: 0;
+    border-bottom-width: 1px;
+    border-bottom-color: rgba(216, 216, 216, 0.1);
+}
+
+.round-end__fact {
+    flex-grow: 1;
+    flex-basis: 0;
+    min-width: 0;
+    padding: 14px 24px;
+}
+
+.round-end__fact--divided {
+    border-left-width: 1px;
+    border-left-color: rgba(216, 216, 216, 0.1);
+}
+
+.round-end__fact-value {
+    flex-direction: row;
+    align-items: center;
+    min-height: 42px;
+    margin-top: 6px;
+    min-width: 0;
+}
+
+.round-end__mode-configured {
+    -unity-text-overflow-position: end;
+    color: #aaaaaa;
+    margin-right: 10px;
+}
+
+.round-end__strike {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 50%;
+    height: 1px;
+    background-color: #aaaaaa;
+}
+
+.round-end__mode {
+    font-size: 20px;
+    color: #ffffff;
+}
+
+.round-end__fate {
+    font-size: 20px;
+    margin-right: 10px;
+    flex-shrink: 0;
+}
+
+.round-end__fate-who {
+    font-size: 18px;
+    color: #aaaaaa;
+}
+
+.round-end__alive {
+    color: #88b36a;
+}
+
+.round-end__dead {
+    color: #d17a7a;
+}
+
+.round-end__neutral {
+    color: #d8d8d8;
+}
+
+/* ---- Antagonists ---- */
+.round-end__section {
+    flex-shrink: 0;
+    padding: 14px 24px 12px 24px;
+    border-bottom-width: 1px;
+    border-bottom-color: rgba(216, 216, 216, 0.1);
+}
+
+.round-end__section-head {
+    flex-direction: row;
+    align-items: center;
+    padding-bottom: 8px;
+}
+
+.round-end__section-label {
+    margin-right: 10px;
+}
+
+.round-end__section-label--antag {
+    color: #d17a7a;
+}
+
+.round-end__objective {
+    flex-direction: row;
+    align-items: center;
+    background-color: #2a2a2e;
+    padding: 8px 12px;
+    margin-bottom: 8px;
+}
+
+.round-end__objective-label {
+    font-size: 9px;
+    margin-right: 12px;
+}
+
+.round-end__objective-text {
+    flex-grow: 1;
+    color: #ffffff;
+    font-size: 18px;
+}
+
+.round-end__objective-result {
+    font-size: 10px;
+    padding: 4px 6px;
+    border-width: 1px;
+}
+
+.round-end__objective-result--met {
+    color: #88b36a;
+    border-color: #88b36a;
+}
+
+.round-end__objective-result--failed {
+    color: #d17a7a;
+    border-color: #d17a7a;
+}
+
+/* ---- Rosters ---- */
+.round-end__crew {
+    flex-grow: 1;
+    flex-basis: 0;
+    min-height: 0;
+    padding: 14px 24px 0 24px;
+}
+
+.round-end__roster {
+    flex-grow: 1;
+    flex-basis: 0;
+    min-height: 0;
+    background-color: #2a2a2e;
+}
+
+.round-end__roster--grid > .unity-scroll-view__content-viewport > .unity-scroll-view__content-container {
+    flex-direction: row;
+    flex-wrap: wrap;
+}
+
+.round-end__ops-grid {
+    flex-direction: row;
+    flex-wrap: wrap;
+}
+
+.round-end__row {
+    flex-direction: row;
+    align-items: center;
+    height: 30px;
+    flex-shrink: 0;
+    padding: 0 12px;
+    border-width: 1px;
+    border-color: rgba(0, 0, 0, 0);
+    border-bottom-color: rgba(216, 216, 216, 0.06);
+}
+
+.round-end__row--half {
+    width: 50%;
+}
+
+.round-end__row--you {
+    background-color: #4a3d28;
+    border-color: #c98f38;
+}
+
+.round-end__row-name {
+    height: 28px;
+    flex-grow: 1;
+    flex-basis: 0;
+    font-size: 19px;
+    color: #ffffff;
+}
+
+.round-end__row-name--dead {
+    color: #aaaaaa;
+}
+
+.round-end__you {
+    font-size: 9px;
+    background-color: #e6ad53;
+    color: #161616;
+    padding: 3px 5px;
+    margin-left: 12px;
+    flex-shrink: 0;
+}
+
+.round-end__row-job {
+    height: 28px;
+    width: 220px;
+    flex-shrink: 0;
+    margin-left: 12px;
+    font-size: 18px;
+    color: #aaaaaa;
+}
+
+.round-end__row-status {
+    margin-left: 12px;
+    width: 44px;
+    flex-shrink: 0;
+    -unity-text-align: middle-right;
+}
+
+.round-end__empty {
+    padding: 12px;
+    font-size: 18px;
+    color: #aaaaaa;
+}
+
+.round-end__footer {
+    flex-direction: row;
+    align-items: center;
+    height: 32px;
+    flex-shrink: 0;
+    padding: 0 24px;
+}
+
+.round-end__key {
+    font-size: 9px;
+    color: #161616;
+    background-color: #aaaaaa;
+    padding: 3px 5px;
+    margin-right: 8px;
+}
+
+.round-end__hint {
+    font-size: 17px;
+    color: #aaaaaa;
+}
+
+/* ---- Collapsed banner ---- */
+.round-end__banner {
+    position: absolute;
+    top: 40px;
+    width: 760px;
+    max-width: 92%;
+    left: 50%;
+    translate: -50% 0;
+    background-color: #161616;
+    border-width: 1px;
+    border-color: rgba(216, 216, 216, 0.18);
+}
+
+.round-end__banner-row {
+    flex-direction: row;
+    align-items: stretch;
+    height: 40px;
+}
+
+.round-end__banner-result {
+    justify-content: center;
+    padding: 0 14px;
+    background-color: #2a2a2e;
+    border-left-width: 4px;
+    flex-shrink: 0;
+}
+
+.round-end__banner-title {
+    height: 27px;
+    font-size: 16px;
+    margin-right: 0;
+}
+
+.round-end__banner-body {
+    flex-direction: row;
+    align-items: center;
+    flex-grow: 1;
+    flex-basis: 0;
+    min-width: 0;
+    padding: 0 14px;
+}
+
+.round-end__banner-body > * {
+    margin-right: 10px;
+}
+
+.round-end__banner-text {
+    font-size: 18px;
+    color: #d8d8d8;
+}
+
+.round-end__banner-dot {
+    font-size: 18px;
+    color: #717c7f;
+}
+
+.round-end__banner-end {
+    flex-direction: row;
+    align-items: center;
+    padding: 0 6px 0 12px;
+    flex-shrink: 0;
+}
+
+/* ---- Lobby Last Round tab ---- */
+.round-end--tab {
+    position: relative;
+    flex-grow: 1;
+    left: auto;
+    top: auto;
+    right: auto;
+    bottom: auto;
+    background-color: #353538;
+}
+
+.round-end--tab .round-end__header {
+    padding-right: 16px;
+}
+
+.round-end__tab-note {
+    font-size: 16px;
+    color: #aaaaaa;
+}
+
+.round-end__tab-empty {
+    flex-grow: 1;
+    align-items: center;
+    justify-content: center;
+}
+
+/* The reference reserves the bottom HUD at 720p and narrows the panel to 680px. */
+.round-end--compact .round-end__panel {
+    top: 16px;
+    bottom: 84px;
+    width: 680px;
+}
+.round-end--compact .round-end__banner {
+    top: 16px;
+    width: 680px;
+}
+.round-end--compact .round-end__panel .round-end__title {
+    height: 28px;
+    font-size: 28px;
+}
+.round-end__section-head .round-end__terminal {
+    font-size: 12px;
+}
+.round-end__banner-body .round-end__destroyed {
+    font-size: 9px;
+    padding: 4px 6px;
+    flex-shrink: 0;
+}
+.round-end__banner-body .round-end__fate,
+.round-end__countdown--short {
+    font-size: 13px;
+}
+.round-end__countdown--short {
+    margin-right: 10px;
+}
+.round-end__ops-grid .round-end__row {
+    padding: 0 10px;
+    border-bottom-color: transparent;
+}
+
+/* Badges/statuses use untracked arcade text in the reference. */
+.round-end__row-status,
+.round-end__you,
+.round-end__key,
+.round-end__objective-label,
+.round-end__paused,
+.round-end__banner-body .round-end__destroyed {
+    letter-spacing: 0;
+}
+
+.round-end__ops-grid .round-end__row-status,
+.round-end__ops-grid .round-end__you {
+    margin-left: 10px;
+}

@@ -55,7 +55,7 @@ namespace SS3D.Systems.Rounds
                 ShowMapStop(sender, pending, "");
                 return;
             }
-            RequestRoundEnd();
+            RequestRoundEnd(RoundEndRequest.Admin);
         }
 
         [ServerRpc(RequireOwnership = false)]
@@ -99,7 +99,7 @@ namespace SS3D.Systems.Rounds
             else if (choice == MapStopChoice.DiscardAndStop) _mapDiscardApproved = true;
             else return;
 
-            RequestRoundEnd();
+            RequestRoundEnd(RoundEndRequest.Admin);
         }
 
         private static bool ValidNewTemplateName(string name) => !string.IsNullOrWhiteSpace(name)

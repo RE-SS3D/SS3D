@@ -39,10 +39,18 @@ namespace SS3D.Systems.Roles
         private readonly Dictionary<string, Dictionary<string, JobPriority>> _preferences = new();
         private readonly Dictionary<string, HashSet<string>> _antagonistOptIns = new();
         private readonly Dictionary<Player, RoleData> _rolePlayers = new();
+        private readonly Dictionary<string, RoleData> _antagonistRoles = new();
+        private readonly List<Player> _operatives = new();
         private readonly System.Random _random = new();
 
         /// <summary>Replicated job list in authoring order.</summary>
         public IReadOnlyList<JobSlotInfo> Jobs => _jobs;
+
+        /// <summary>Server: this round's drawn Nuke Ops squad, in draw order. Empty outside a Nuke Ops round.</summary>
+        public IReadOnlyList<Player> Operatives => _operatives;
+
+        /// <summary>Server: the player was drawn into this round's squad.</summary>
+        public bool IsOperative(Player player) => player != null && _operatives.Contains(player);
 
         #region Setup
         public override void OnStartServer()
@@ -76,6 +84,7 @@ namespace SS3D.Systems.Roles
 
             _jobs.Clear();
             _roleData.Clear();
+            _antagonistRoles.Clear();
             foreach (RolesData role in _rolesAvailable.Roles)
             {
                 if (role.Data == null || _roleData.ContainsKey(role.Data.Name))
@@ -84,6 +93,13 @@ namespace SS3D.Systems.Roles
                 }
 
                 _roleData[role.Data.Name] = role.Data;
+                // Antagonist roles are assigned by a gamemode, never chosen in the lobby.
+                if (role.Data.IsAntagonist)
+                {
+                    _antagonistRoles[role.Data.AntagonistCategory] = role.Data;
+                    continue;
+                }
+
                 _jobs.Add(new JobSlotInfo
                 {
                     Name = role.Data.Name,
@@ -115,7 +131,8 @@ namespace SS3D.Systems.Roles
             {
                 string job = message.Jobs[i];
                 byte priority = message.Priorities[i];
-                if (job != null && _roleData.ContainsKey(job) && priority <= (byte)JobPriority.High)
+                if (job != null && _roleData.TryGetValue(job, out RoleData data) && !data.IsAntagonist
+                    && priority <= (byte)JobPriority.High)
                 {
                     priorities[job] = (JobPriority)priority;
                 }
@@ -170,6 +187,7 @@ namespace SS3D.Systems.Roles
             }
 
             _rolePlayers.Clear();
+            _operatives.Clear();
             RefreshJobCounts();
         }
         #endregion
@@ -177,11 +195,13 @@ namespace SS3D.Systems.Roles
         #region Assignment
         /// <summary>
         /// One resolution pass over the players spawning at round start. Replaces earlier assignments.
+        /// A Nuke Ops round draws its squad first; drawn players skip job resolution (Decision 11).
         /// </summary>
         [Server]
         public void ResolveRoundStartRoles(IReadOnlyList<Player> players)
         {
             _rolePlayers.Clear();
+            _operatives.Clear();
             RefreshJobCounts();
 
             Dictionary<string, Player> byCkey = new();
@@ -191,6 +211,14 @@ namespace SS3D.Systems.Roles
                 {
                     byCkey[player.Ckey] = player;
                 }
+            }
+
+            foreach (string ckey in DrawSquad(byCkey.Keys.ToList()))
+            {
+                Player operative = byCkey[ckey];
+                _operatives.Add(operative);
+                Assign(operative, _antagonistRoles[AntagonistCategories.NuclearOperative].Name);
+                byCkey.Remove(ckey);
             }
 
             Dictionary<string, IReadOnlyDictionary<string, JobPriority>> preferences = new();
@@ -210,6 +238,41 @@ namespace SS3D.Systems.Roles
             }
 
             RefreshJobCounts();
+        }
+
+        /// <summary>
+        /// Draws the squad when the configured mode runs Nuke Ops; tells the round to run as Extended when
+        /// too few players opted in. Latejoiners never reach this.
+        /// </summary>
+        [Server]
+        private IReadOnlyList<string> DrawSquad(IReadOnlyList<string> ckeys)
+        {
+            RoundSubSystem rounds = SubSystems.Get<RoundSubSystem>();
+            if (!rounds.ModeDrawsOperatives)
+            {
+                return Array.Empty<string>();
+            }
+
+            if (!_antagonistRoles.ContainsKey(AntagonistCategories.NuclearOperative))
+            {
+                Log.Error(this, "No antagonist role for {category} in the available roles; running Extended",
+                    Logs.ServerOnly, AntagonistCategories.NuclearOperative);
+                rounds.FallBackToExtended("No Nuclear Operative role is configured. This round runs as Extended.");
+                return Array.Empty<string>();
+            }
+
+            SquadDrawResult result = SquadDraw.Draw(ckeys,
+                ckey => IsAntagonistOptedIn(ckey, AntagonistCategories.NuclearOperative),
+                rounds.SettingsForServer.MinimumOperatives, _random);
+            if (result.FellBack)
+            {
+                rounds.FallBackToExtended(SquadDraw.FallbackNotice(rounds.SettingsForServer.Mode, result));
+                return Array.Empty<string>();
+            }
+
+            Log.Information(this, "Drew {count} operatives from {optedIn} opt-ins", Logs.ServerOnly,
+                result.Squad.Count, result.OptedIn);
+            return result.Squad;
         }
 
         [Server]
@@ -335,7 +398,6 @@ namespace SS3D.Systems.Roles
             HumanInventory inventory = entity.GetComponent<HumanInventory>();
 
             Dictionary<ContainerType, AttachedContainer> containers = new Dictionary<ContainerType, AttachedContainer>();
-            List<AttachedContainer> handContainers = hands.HandContainers;
 
             foreach (AttachedContainer inventoryContainer in inventory.Containers)
             {
@@ -360,14 +422,18 @@ namespace SS3D.Systems.Roles
                 }
             }
 
-            if (loadout.HandLeftAsset)
+            // By side, not list order: a two-handed rifle may only sit in its required hand.
+            AttachedContainer HandContainer(HandSide side) =>
+                hands.PlayerHands.FirstOrDefault(hand => hand != null && hand.Side == side)?.Container;
+
+            if (loadout.HandLeftAsset && HandContainer(HandSide.Left) is { } left)
             {
-                SpawnItemInSlot(loadout.HandLeftAsset, true, handContainers[0]);
+                SpawnItemInSlot(loadout.HandLeftAsset, true, left);
             }
 
-            if (loadout.HandRightAsset)
+            if (loadout.HandRightAsset && HandContainer(HandSide.Right) is { } right)
             {
-                SpawnItemInSlot(loadout.HandRightAsset, true, handContainers[1]);
+                SpawnItemInSlot(loadout.HandRightAsset, true, right);
             }
 
             inventory.TriggerInventorySetup();

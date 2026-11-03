@@ -36,7 +36,7 @@ Layered contributor-based disk persistence for station templates and server meta
 - New domain: implement `IPersistenceContributor`, register in `PersistenceSubSystem.RegisterBuiltInContributors()` or call `RegisterContributor` at startup; add a `DeserializePayload` arm for the DTO type.
 - Station template save/load: `SaveStationTemplate` / `LoadStationTemplate` / `LoadMostRecentStationTemplate`.
 - Server meta: `LoadServerMeta` (owned by `PersistenceSubSystem.OnStart` when server), `SaveServerMeta` (on `UserPermissionsChangedEvent`).
-- Round history: `AppendRoundHistory` — hooked from `RoundSubSystem.ProcessEndRound`.
+- Round history: `AppendRoundHistory` — hooked from `RoundSubSystem.ProcessEndRound` with the fixed `RoundOutcome`: mode, map, duration, `trigger`, `winner`, `operativeCkeys` and `fallbackMap` (true only when P2's Extended fallback ran).
 - **Deferred:** `RoundConfigPersistenceContributor` (blocked on round-config), round snapshot contributors (Phase 2), round-start `LoadStationTemplate(mapId)` from config pool.
 
 ## Pitfalls

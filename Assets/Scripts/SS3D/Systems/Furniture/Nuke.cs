@@ -6,6 +6,7 @@ using SS3D.Data;
 using SS3D.Data.Generated;
 using SS3D.Systems.Gamemodes;
 using SS3D.Systems.Inventory.Items.Generic;
+using SS3D.Systems.Rounds;
 using UnityEngine;
 
 namespace SS3D.Systems.Furniture
@@ -16,7 +17,7 @@ namespace SS3D.Systems.Furniture
         public void Detonate()
         {
             // Ends the round, regardless of how many objectives were completed
-            SubSystems.Get<GamemodeSubSystem>().EndRound();
+            SubSystems.Get<GamemodeSubSystem>().EndRound(RoundEndRequest.Detonation);
         }
 
         IInteraction[] IInteractionTarget.CreateTargetInteractions(InteractionEvent interactionEvent)

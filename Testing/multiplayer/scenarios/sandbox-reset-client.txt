@@ -1,9 +1,12 @@
 # Client side of sandbox-reset: a remote client survives one sandbox reset. It never readies or
 # starts a round; the server's auto-start and all-connected-ready rule put it in both rounds.
+# It also checks that the first round's outcome (trigger Timer, this player listed) reaches a remote
+# client before the station unloads (2026-11_round-end-loop P1); the overlay itself is visual review.
 wait_timeout 180
 wait_connected
 wait_round Ongoing
 assert_embarked
+assert_outcome Timer
 wait_round Stopped
 wait_round Ongoing
 assert_embarked

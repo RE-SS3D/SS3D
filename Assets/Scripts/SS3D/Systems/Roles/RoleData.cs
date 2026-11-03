@@ -26,8 +26,16 @@ namespace SS3D.Systems.Roles
         private ulong _startingAccessBits;
         [SerializeField]
         private RoleLoadout _loadout;
+        [SerializeField, Tooltip("An AntagonistCategories key (\"nukeop\"). Set for antagonist roles, which a " +
+             "gamemode assigns and which never appear in the lobby job list. Empty for jobs.")]
+        private string _antagonistCategory;
 
         public string Name => _roleName;
+
+        /// <summary>The <see cref="AntagonistCategories"/> key this role is drawn for; empty for jobs.</summary>
+        public string AntagonistCategory => _antagonistCategory ?? string.Empty;
+
+        public bool IsAntagonist => !string.IsNullOrEmpty(_antagonistCategory);
 
         public ObjectAssetReference IDCardAsset => _idCardAsset;
 

@@ -661,6 +661,11 @@ namespace SS3D.UI.Lobby
 
             _tabBar.Clear();
             AddTab(TabServerInfo, "Server Info", false);
+            if (_lastRound != null)
+            {
+                AddTab(TabLastRound, "Last Round", false);
+            }
+
             AddTab(TabJobs, "Jobs", false);
             AddTab(TabChat, "Chat", false);
             AddTab(TabPlayers, "Players", false);
@@ -707,12 +712,18 @@ namespace SS3D.UI.Lobby
             _tabContent.Clear();
             _tabContent.EnableInClassList(
                 "lobby-shell__tab-content--panel",
-                key == TabChat || key == TabPlayers);
+                key == TabChat || key == TabPlayers || key == TabLastRound);
             switch (key)
             {
                 case TabServerInfo:
                 {
                     BuildServerInfoTab(_tabContent);
+                    break;
+                }
+
+                case TabLastRound:
+                {
+                    BuildLastRoundTab(_tabContent);
                     break;
                 }
 

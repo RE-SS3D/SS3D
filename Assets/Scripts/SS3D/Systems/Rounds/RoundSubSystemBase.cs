@@ -175,15 +175,6 @@ namespace SS3D.Systems.Rounds
             }
         }
 
-        /// <summary>
-        /// Server-side round stop (gamemode triggers, dedicated server). Does not rely on client broadcast.
-        /// </summary>
-        [Server]
-        public void RequestRoundEnd()
-        {
-            RequestRoundStateChange(new ChangeRoundStateMessage(false));
-        }
-
         [Server]
         private async UniTaskVoid RunRoundStateChangeAsync(ChangeRoundStateMessage m)
         {

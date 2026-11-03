@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Coimbra;
 using SS3D.Systems.Gamemodes;
+using SS3D.Systems.Rounds;
 using SS3D.Utils;
 using UnityEngine;
 using Random = UnityEngine.Random;
@@ -73,9 +74,10 @@ namespace SS3D.Systems.GameModes.Modes
         public List<GamemodeObjective> GetPlayerObjectives(string assigneeCkey) => _roundObjectives?.Where(objective => objective.AssigneeCkey == assigneeCkey).ToList();
 
         /// <summary>
-        /// Initializes the gamemode, it is virtual so custom initialization is possible.
+        /// Initializes the gamemode, it is virtual so custom initialization is possible. Only antagonists hold
+        /// objectives (REVIEW_2026-10 Q32): the caller passes the round's antagonists, not every player.
         /// </summary>
-        /// <param name="spawnedPlayersCkeys">List of Ckeys for all players spawning at initialization.</param>
+        /// <param name="spawnedPlayersCkeys">Ckeys of the round's antagonists.</param>
 
         public virtual void InitializeGamemode(List<string> spawnedPlayersCkeys)
         {
@@ -105,8 +107,38 @@ namespace SS3D.Systems.GameModes.Modes
         }
 
         /// <summary>
-        /// Finalizes all objectives in the round. Checks their CheckCompletion,
-        /// because sometimes an item has to be in the hand of some player for an objective to be completed.
+        /// Resolves every objective at the instant the round's end trigger fires (<c>objectives.md</c> §2,
+        /// effort Decision 2): anything not met by then fails. Later calls change nothing.
+        /// </summary>
+        public virtual void ResolveObjectives(RoundEndRequest request)
+        {
+            if (_roundObjectives == null)
+            {
+                return;
+            }
+
+            CheckAllObjectivesCompletion();
+            FailOnGoingObjectives();
+        }
+
+        /// <summary>
+        /// The round's objectives as the summary lists them: one row per objective, so a team objective
+        /// held by the whole squad appears once.
+        /// </summary>
+        public IEnumerable<RoundOutcomeObjective> OutcomeObjectives() =>
+            (_roundObjectives ?? new List<GamemodeObjective>())
+                .GroupBy(objective => objective.Id)
+                .Select(group => group.First())
+                .Select(objective => new RoundOutcomeObjective
+                {
+                    Text = objective.Title,
+                    Result = objective.Succeeded ? ObjectiveResult.Met : ObjectiveResult.Failed,
+                })
+                .ToArray();
+
+        /// <summary>
+        /// Finalizes all objectives in the round. Normally already resolved by <see cref="ResolveObjectives"/>;
+        /// a round stopped without a trigger resolves them here.
         /// </summary>
         protected virtual void FinalizeObjectives()
         {
@@ -243,28 +275,19 @@ namespace SS3D.Systems.GameModes.Modes
         }
 
         /// <summary>
-        /// Creates an objective for a player that joined after the round started.
+        /// Gives every player in <paramref name="teamCkeys"/> a copy of <paramref name="template"/> under one
+        /// shared id: a team objective (<c>objectives.md</c> §2) that the summary lists once.
         /// </summary>
-        /// <param name="player">The player to assign the objective to.</param>
-        public virtual void CreateLateJoinObjective(string playerCkey)
+        protected void AssignTeamObjective(GamemodeObjective template, IEnumerable<string> teamCkeys)
         {
-            GamemodeObjective objective = GetRandomObjective();
-            AddObjectiveToRoundObjectives(_nextObjectiveId, objective);
-            AssignObjective(objective, playerCkey);
-            _nextObjectiveId++;
-        }
-
-        /// <summary>
-        /// Ensures that newly created objectives for a late join player have their listeners set.
-        /// </summary>
-        /// <param name="playerCkey">The player that has late joined</param>
-        public void AddEventListenersForLateJoinObjectives(string playerCkey)
-        {
-            List<GamemodeObjective> playerObjectives = GetPlayerObjectives(playerCkey);
-            foreach (GamemodeObjective objective in playerObjectives)
+            foreach (string ckey in teamCkeys)
             {
-                objective.AddEventListeners();
+                GamemodeObjective objective = ObjectiveFactory.Duplicate(template);
+                AddObjectiveToRoundObjectives(_nextObjectiveId, objective);
+                AssignObjective(objective, ckey);
             }
+
+            _nextObjectiveId++;
         }
 
         /// <summary>

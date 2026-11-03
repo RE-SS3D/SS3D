@@ -26,6 +26,8 @@ namespace SS3D.UI.Shell.Fonts
         {
             public FontAsset Asset;
             public Font Source;
+            /// <summary>The <see cref="Characters"/> this asset was baked with; a re-bake skips it while they match.</summary>
+            public string BakedCharacters;
         }
 
         [SerializeField]

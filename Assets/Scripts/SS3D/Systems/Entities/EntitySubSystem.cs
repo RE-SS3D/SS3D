@@ -310,7 +310,7 @@ namespace SS3D.Systems.Entities
                 SubSystems.Get<MindSubSystem>().TryCreateMind(player, out createdMind);
             }
 
-            Vector3 spawnPosition = ResolveSpawnPosition();
+            Vector3 spawnPosition = ResolveSpawnPosition(player);
             Entity entity = Instantiate(_humanPrefab[Random.Range(0, _humanPrefab.Count)], spawnPosition, Quaternion.identity);
             ServerManager.Spawn(entity.NetworkObject, player.Owner);
 
@@ -367,11 +367,18 @@ namespace SS3D.Systems.Entities
         }
 
         /// <summary>
-        /// Prefers the legacy inspector spawn transform; otherwise uses the first authored map spawn
-        /// marker; otherwise the hub transform (scene spawn points are gone after Phase 3h).
+        /// Operatives spawn on the map's Nuclear Operatives markers, spread over them in draw order.
+        /// Everyone else: the legacy inspector spawn transform; otherwise the first authored map spawn
+        /// marker; otherwise the hub transform (scene spawn points are gone after Phase 3h). Crew job
+        /// markers are not routed yet.
         /// </summary>
-        private Vector3 ResolveSpawnPosition()
+        private Vector3 ResolveSpawnPosition(Player player)
         {
+            if (TryResolveOperativeSpawn(player, out Vector3 operativeSpawn))
+            {
+                return operativeSpawn;
+            }
+
             if (_spawnPoint != null)
             {
                 return _spawnPoint.position;
@@ -385,6 +392,38 @@ namespace SS3D.Systems.Entities
             }
 
             return transform.position;
+        }
+
+        private static bool TryResolveOperativeSpawn(Player player, out Vector3 position)
+        {
+            position = default;
+            if (!SubSystems.TryGet(out RoleSubSystem roles) || !roles.IsOperative(player)
+                || !SubSystems.TryGet(out TileSubSystem tile) || tile.SpawnPoints == null)
+            {
+                return false;
+            }
+
+            List<SpawnPointRecord> markers = tile.SpawnPoints.Records
+                .Where(record => record.Kind == SpawnPointKind.Antagonist
+                    && record.AntagonistCategory == AntagonistSpawnCategory.NuclearOperatives)
+                .ToList();
+            if (markers.Count == 0)
+            {
+                return false;
+            }
+
+            int index = 0;
+            for (int i = 0; i < roles.Operatives.Count; i++)
+            {
+                if (roles.Operatives[i] == player)
+                {
+                    index = i;
+                    break;
+                }
+            }
+
+            position = markers[index % markers.Count].Position;
+            return true;
         }
 
         /// <summary>

@@ -58,6 +58,8 @@ namespace SS3D.Editor.Automation
         private static bool _entered;
         private static double _stepDeadline;
         private static double _started;
+        private static bool _endBeatShortened;
+        private static int _repliesBefore;
         private static bool _running;
         private static string _savedName;
         private static bool _sawStationLoading;
@@ -81,6 +83,9 @@ namespace SS3D.Editor.Automation
         private const string ChatProbe = "remoteprobe real keyboard";
         private static double _settleUntil;
         private static bool _pendingStartClick;
+
+        /// <summary>Round-end beat for every stop that isn't about the summary (see ServerHelpers.TestEndBeatSeconds).</summary>
+        private const int PilotEndBeatSeconds = 3;
 
         private sealed class Step
         {
@@ -165,6 +170,7 @@ namespace SS3D.Editor.Automation
                 _started = EditorApplication.timeSinceStartup;
                 _osInputsDone = 0;
                 _sawStationLoading = false;
+                _endBeatShortened = false;
                 _alternateStation = null;
                 _validationStation = null;
                 _clientWindow = null;
@@ -209,6 +215,11 @@ namespace SS3D.Editor.Automation
             try
             {
                 if (Remote) PerformOsInput();
+                if (!_endBeatShortened && Online() && Rounds() != null)
+                {
+                    Rounds().SetEndBeatSecondsForTesting(PilotEndBeatSeconds);
+                    _endBeatShortened = true;
+                }
                 if (Rounds() != null && Rounds().CurrentStationLoadState == StationLoadState.Loading
                     && Shell()?.Q<Label>("lobby-map-load-status")?.text.StartsWith("Loading map:") == true)
                 {
@@ -353,8 +364,14 @@ namespace SS3D.Editor.Automation
                 Name = "Reject out-of-range server configuration",
                 // A whole-form save round trip can lag behind the rapid UI edits on a small window.
                 Timeout = 120,
-                Enter = () => { ServerSettings invalid = Rounds().SettingsForServer; invalid.PlayerCap = 0; Rounds().CmdSaveServerSettings(invalid); },
-                Until = () => Rounds().AdminSettingsStatus.Contains("rejected"),
+                Enter = () =>
+                {
+                    _repliesBefore = Rounds().AdminActionReplies;
+                    ServerSettings invalid = Rounds().SettingsForServer;
+                    invalid.PlayerCap = 0;
+                    Rounds().CmdSaveServerSettings(invalid);
+                },
+                Until = () => Rounds().AdminActionReplies > _repliesBefore && Rounds().AdminSettingsStatus.Contains("rejected"),
                 Verify = () => Require(Rounds().SettingsForServer.PlayerCap == 24, "Invalid request leaves authoritative settings unchanged"),
             },
             new Step
@@ -513,11 +530,12 @@ namespace SS3D.Editor.Automation
                 Name = "Reject configuration changes during an active round",
                 Enter = () =>
                 {
+                    _repliesBefore = Rounds().AdminActionReplies;
                     ServerSettings settings = ServerSettings.Default;
                     settings.Map = _validationStation;
                     Rounds().CmdSaveServerSettings(settings);
                 },
-                Until = () => Rounds().AdminSettingsStatus.Contains("rejected"),
+                Until = () => Rounds().AdminActionReplies > _repliesBefore && Rounds().AdminSettingsStatus.Contains("rejected"),
                 Verify = () => Require(Rounds().SettingsForServer.RoundLengthMinutes == 1 && !Rounds().AllowLateJoin, "Active round configuration cannot change"),
             },
             new Step
@@ -893,20 +911,73 @@ namespace SS3D.Editor.Automation
                 Until = () => Rounds().MapStopToken != 0,
                 Verify = () => Require(Rounds().CurrentRoundState == RoundState.Ongoing, "Stop waits for the admin's choice"),
             },
+            // Guards: the round-end loop end to end in one host: the server's outcome reaches the overlay over a
+            // living player, the admin hold reaches the UI, the beat returns everyone to the lobby and the Last Round
+            // tab keeps the outcome (2026-11_round-end-loop P1) · Not cheaper because: overlay, shell and round state
+            // only meet in a running host; outcome rules, beat and hold are EditMode (RoundEndLoopTests). Screenshots
+            // are the visual review of the summary, banner, held state and Last Round tab (tier 4).
             new Step
             {
-                Name = "Stop round returns to lobby shell",
-                Enter = () => Rounds().CmdResolveMapStop(Rounds().MapStopToken, MapStopChoice.DiscardAndStop, ""),
-                Timeout = 30,
+                Name = "Round end shows the summary over the living player",
+                Enter = () =>
+                {
+                    // The real beat, so the countdown and bar look as players see them; the captures below happen
+                    // while held, and the resumed beat is the one ~30 s this pilot pays for the summary.
+                    Rounds().SetEndBeatSecondsForTesting(RoundEndBeat.Seconds);
+                    Rounds().CmdResolveMapStop(Rounds().MapStopToken, MapStopChoice.DiscardAndStop, "");
+                },
+                Until = () => Rounds().CurrentRoundState == RoundState.Ending && Shown(RoundEndPart("round-end-panel")),
+                Verify = () =>
+                {
+                    RoundOutcome outcome = Rounds().LastOutcome;
+                    Require(outcome != null && outcome.RoundId == Rounds().RoundId
+                        && outcome.Players.Any(p => p.Ckey == Local().Ckey && p.Alive), "The outcome lists the host, alive");
+                    Require(Shown(RoundEndPart("round-end-row-you")), "The viewer's own row is highlighted");
+                    Require(Spawned() && !Visible(Shell()), "The player keeps their body and the world during the beat");
+                    Capture("round-end-summary");
+                    Rounds().CmdRoundAdminAction(RoundAdminAction.HoldEnd);
+                },
+            },
+            new Step
+            {
+                Name = "Admin hold shows on the summary",
+                Until = () => Rounds().EndHeld && Shown(RoundEndPart("round-end-paused")),
+                Verify = () => Capture("round-end-held"),
+            },
+            new Step
+            {
+                Name = "Tab collapses the summary to a banner",
+                Enter = () => RoundEndUi().ToggleCollapsed(),
+                Until = () => Shown(RoundEndPart("round-end-banner")) && !Shown(RoundEndPart("round-end-panel")),
+                Verify = () => Capture("round-end-banner"),
+            },
+            new Step
+            {
+                Name = "Resumed summary returns to lobby shell",
+                Timeout = 60,
+                Enter = () =>
+                {
+                    Rounds().SetEndBeatSecondsForTesting(PilotEndBeatSeconds);
+                    Rounds().CmdRoundAdminAction(RoundAdminAction.ResumeEnd);
+                },
                 Until = () => Rounds().CurrentRoundState == RoundState.Stopped && !Spawned() && Visible(Shell()),
                 Verify = () =>
                 {
+                    Require(!Shown(RoundEndPart("round-end-panel")) && !Shown(RoundEndPart("round-end-banner")),
+                        "The summary overlay is gone in the lobby");
                     Require(!Visible(Creator()), "Return shows shell, not creator");
                     Require(BoothLive(), "Booth restored with RT bound");
                     Require(CharacterName() == _savedName, "Saved character name restored");
                     Require(AssignedRole() == null && Job("Security").Assigned == 0, "Round stop cleared job assignments");
                     Require(!TemplateExists(_validationStation + RoundSubSystem.AutosaveSuffix), "Discard and stop left no autosave");
                 },
+            },
+            new Step
+            {
+                Name = "Last Round tab shows the ended round",
+                Enter = () => Click(Shell().Q<Button>("tab-last-round")),
+                Until = () => Shown(Shell().Q("last-round")) && Shown(Shell().Q("last-round").Q("round-end-row-you")),
+                Verify = () => Capture("lobby-last-round"),
             },
             new Step { Name = "Ensure unready for late join", Enter = () => { if (IsReady()) Click(ReadyButton()); }, Until = () => !IsReady() },
             new Step { Name = "Open admin tab", Enter = () => Click(AdminButton()), Until = () => Shell().Q<Button>("server-start")?.enabledInHierarchy == true },
@@ -1338,6 +1409,25 @@ namespace SS3D.Editor.Automation
         private static VisualElement Root() => UnityEngine.Object.FindObjectsByType<UIDocument>(FindObjectsSortMode.None)
             .Select(d => d.rootVisualElement)
             .FirstOrDefault(r => r != null && r.Q("lobby-shell-surface") != null);
+
+        private static RoundEndUiSubSystem RoundEndUi() => SubSystems.TryGet(out RoundEndUiSubSystem ui) ? ui : null;
+
+        /// <summary>A named element of the round-end overlay (shared shell document, Overlay layer).</summary>
+        private static VisualElement RoundEndPart(string name)
+        {
+            RoundEndUiSubSystem ui = RoundEndUi();
+            return ui != null && ui.Overlay?.Root != null ? ui.Overlay.Root.Q(name) : null;
+        }
+
+        /// <summary>Displayed with every ancestor displayed; <see cref="Visible"/> checks the element alone.</summary>
+        private static bool Shown(VisualElement element)
+        {
+            if (element?.panel == null) return false;
+            for (VisualElement current = element; current != null; current = current.parent)
+                if (current.resolvedStyle.display == DisplayStyle.None || current.resolvedStyle.visibility == Visibility.Hidden)
+                    return false;
+            return true;
+        }
 
         private static VisualElement Swatch(string picker, int index)
         {

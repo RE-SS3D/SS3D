@@ -1,3 +1,4 @@
+using FishNet;
 using SS3D.Core;
 using SS3D.Systems.Entities;
 using SS3D.Systems.PlayerControl;
@@ -21,6 +22,22 @@ namespace SS3D.Tests
     {
         /// <summary>Ckey of the local player in single-process PlayMode tests (see PlayModeTest.SetApplicationSettings).</summary>
         public const string LocalCkey = "john";
+
+        /// <summary>
+        /// Round-end summary beat in PlayMode tests: the 3 s Ending delay rounds had before the 30 s summary,
+        /// so tests that stop a round for set-up or teardown don't each wait 30 s (testing philosophy D7).
+        /// </summary>
+        public const int TestEndBeatSeconds = 3;
+
+        /// <summary>Shortens the round-end beat to <see cref="TestEndBeatSeconds"/> for this server session. No-op off the server.</summary>
+        public static void UseTestEndBeat()
+        {
+            if (InstanceFinder.ServerManager != null && InstanceFinder.ServerManager.Started
+                && SubSystems.TryGet(out RoundSubSystem rounds))
+            {
+                rounds.SetEndBeatSecondsForTesting(TestEndBeatSeconds);
+            }
+        }
 
         public static RoundState CurrentRoundState => SubSystems.Get<RoundSubSystem>().CurrentRoundState;
 

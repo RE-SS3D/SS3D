@@ -407,6 +407,7 @@ namespace SS3D.Tests
             LoadStartupScene();
 
             yield return WaitForLobbyLoaded();
+            ServerHelpers.UseTestEndBeat();
 
             yield return new WaitForSeconds(1f);
         }

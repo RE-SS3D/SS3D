@@ -1,10 +1,13 @@
 using System;
 using System.Text;
+using Coimbra;
 using FishNet.Object;
 using FishNet.Object.Synchronizing;
 using SS3D.Data.Management;
 using SS3D.Data.Persistence;
 using SS3D.Logging;
+using SS3D.Networking;
+using SS3D.Networking.Settings;
 using UnityEngine;
 
 namespace SS3D.Systems.Rounds
@@ -88,6 +91,8 @@ namespace SS3D.Systems.Rounds
             SavedServerInfo saved = LocalStorage.LoadObject<SavedServerInfo>(PersistencePaths.ServerInfo);
             _serverSettings.ServerName = ServerInfoText.SanitizeName(saved?.serverName);
             _serverSettings.Motd = ServerInfoText.SanitizeMotd(saved?.motd);
+            if (ScriptableSettings.GetOrFind<NetworkSettings>().NetworkType == NetworkType.DedicatedServer)
+                _serverSettings = ServerSettings.ForDedicatedServer(_serverSettings);
             if (SandboxProfile.RequestedOnCommandLine)
             {
                 // In memory only: the saved server info and settings stay as they are.

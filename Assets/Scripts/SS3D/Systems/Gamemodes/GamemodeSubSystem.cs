@@ -13,6 +13,11 @@ using SS3D.Systems.Rounds;
 using SS3D.Systems.Rounds.Events;
 using UnityEngine;
 using SS3D.Systems.PlayerControl;
+using SS3D.Systems.Roles;
+using SS3D.Systems.Comms;
+using System;
+using System.Linq;
+using Cysharp.Threading.Tasks;
 
 namespace SS3D.Systems.Gamemodes
 {
@@ -37,7 +42,7 @@ namespace SS3D.Systems.Gamemodes
             get
             {
                 if (IsServer && SubSystems.TryGet(out RoundSubSystem rounds)
-                    && rounds.SettingsForServer.Mode == "Extended") return "Extended";
+                    && rounds.IsExtendedRound) return "Extended";
                 return _gamemode != null ? _gamemode.name : "unknown";
             }
         }
@@ -62,17 +67,17 @@ namespace SS3D.Systems.Gamemodes
         private void Setup()
         {   
             AddHandle(RoundStateUpdated.AddListener(HandleRoundStateUpdated));
-            AddHandle(SpawnedPlayersUpdated.AddListener(HandleSpawnedPlayersChanged));
             AddHandle(InitialPlayersSpawned.AddListener(HandleInitialPlayersSpawned));
         }
 
         /// <summary>
-        /// Initializes the gamemode.
+        /// Initializes the gamemode: the drawn squad gets its team objective and a briefing. Crew and
+        /// latejoiners hold no objective (Decision 13).
         /// </summary>
         [Server]
         private void InitializeGamemode()
         {
-            if (SubSystems.Get<RoundSubSystem>().SettingsForServer.Mode == "Extended") return;
+            if (SubSystems.Get<RoundSubSystem>().IsExtendedRound) return;
             // Secret currently resolves to the sole available antagonist mode.
             // Creates an instance of the SO, to avoid using the file. 
             _gamemode = Instantiate(_gamemode);
@@ -81,20 +86,11 @@ namespace SS3D.Systems.Gamemodes
             _gamemode.OnInitialized += HandleGamemodeInitialized;
             _gamemode.OnFinished += HandleGamemodeFinalized;
 
-            // Get systems we need to load player data
-            EntitySubSystem entitySystem = SubSystems.Get<EntitySubSystem>();
-            PlayerSubSystem playerSystem = SubSystems.Get<PlayerSubSystem>();
-
-            // Get list of players ready to spawn (by Ckey).
-            IReadOnlyList<Entity> playersToAssign = entitySystem.SpawnedPlayers;
-            List<string> playerCkeys = new List<string>();
-            for (int i = 0; i < playersToAssign.Count; i++)
-            {
-                playerCkeys.Add(playerSystem.GetCkey(playersToAssign[i].Owner));
-            }
+            IReadOnlyList<Player> squad = SubSystems.Get<RoleSubSystem>().Operatives;
+            List<string> squadCkeys = squad.Select(player => player.Ckey).ToList();
 
             // Actually initialize the gamemode
-            _gamemode.InitializeGamemode(playerCkeys);
+            _gamemode.InitializeGamemode(squadCkeys);
 
             // Add event listeners
             foreach (var objective in _gamemode.RoundObjectives)
@@ -111,6 +107,71 @@ namespace SS3D.Systems.Gamemodes
                 SendObjectiveToClients(gamemodeObjective);
             }
 
+            SendBriefingsAsync(squad).Forget();
+        }
+
+        /// <summary>Seconds after spawn before the briefing is sent, so the client's HUD feed exists to show it.</summary>
+        private const float BriefingDelaySeconds = 3f;
+
+        /// <summary>
+        /// A private feed message to each operative naming their role, objective and squadmates
+        /// (<c>objectives.md</c> §8, Decision 14).
+        /// </summary>
+        [Server]
+        private async UniTaskVoid SendBriefingsAsync(IReadOnlyList<Player> squad)
+        {
+            if (squad.Count == 0 || !SubSystems.TryGet(out EntitySubSystem entities))
+            {
+                return;
+            }
+
+            Dictionary<Player, string> names = new();
+            foreach (Entity entity in entities.SpawnedPlayers)
+            {
+                Player player = entity != null && entity.Mind != null ? entity.Mind.player : null;
+                if (player != null && squad.Contains(player))
+                {
+                    names[player] = entity.Mind.DisplayName;
+                }
+            }
+
+            List<Player> members = squad.ToList();
+            await UniTask.Delay(TimeSpan.FromSeconds(BriefingDelaySeconds), ignoreTimeScale: true);
+            if (!SubSystems.TryGet(out CommsSubSystem comms) || SubSystems.Get<RoundSubSystem>().CurrentRoundState != RoundState.Ongoing)
+            {
+                return;
+            }
+
+            foreach (Player member in members)
+            {
+                if (member == null || member.Owner == null || !member.Owner.IsActive)
+                {
+                    continue;
+                }
+
+                string role = SubSystems.Get<RoleSubSystem>().TryGetRole(member, out RoleData data) ? data.Name : "Operative";
+                List<GamemodeObjective> objectives = _gamemode?.GetPlayerObjectives(member.Ckey) ?? new List<GamemodeObjective>();
+                IEnumerable<string> squadmates = members.Where(other => other != member)
+                    .Select(other => names.TryGetValue(other, out string name) ? name : other.Ckey);
+                comms.SendPrivateFeed(member.Owner, OperativeBriefing.Header,
+                    OperativeBriefing.Text(role, objectives.Select(objective => objective.Title), squadmates));
+            }
+        }
+
+        /// <summary>
+        /// Resolves the objectives at the round's end trigger and returns them as the summary lists them.
+        /// Empty in a round without a gamemode (Extended).
+        /// </summary>
+        [Server]
+        public IEnumerable<RoundOutcomeObjective> ResolveObjectives(RoundEndRequest request)
+        {
+            if (_gamemode == null || !_gamemode.IsInitialized)
+            {
+                return Array.Empty<RoundOutcomeObjective>();
+            }
+
+            _gamemode.ResolveObjectives(request);
+            return _gamemode.OutcomeObjectives();
         }
 
         /// <summary>
@@ -136,12 +197,16 @@ namespace SS3D.Systems.Gamemodes
         }
 
         /// <summary>
-        /// Finishes the round.
+        /// The gamemode's end condition fired (<c>round-end.md</c> §2) with no winner of its own.
         /// </summary>
         [Server]
-        public void EndRound()
+        public void EndRound() => EndRound(new RoundEndRequest(RoundEndTrigger.GamemodeCondition));
+
+        /// <summary>The gamemode's end condition fired; the request carries its winner and wording.</summary>
+        [Server]
+        public void EndRound(RoundEndRequest request)
         {
-            SubSystems.Get<RoundSubSystem>().RequestRoundEnd();
+            SubSystems.Get<RoundSubSystem>().RequestRoundEnd(request);
         }
 
         /// <summary>
@@ -206,30 +271,6 @@ namespace SS3D.Systems.Gamemodes
         private void HandleInitialPlayersSpawned(ref EventContext context, in InitialPlayersSpawned e)
         {
             InitializeGamemode();   
-        }
-
-        /// <summary>
-        /// Called whenever a new player is spawned.
-        /// </summary>
-        [Server]
-        private void HandleSpawnedPlayersChanged(ref EventContext context, in SpawnedPlayersUpdated e)
-        {
-            // Exit early if the gamemode has not yet been initialized.
-            if (_gamemode == null || !_gamemode.IsInitialized)
-            {
-                return;
-            }
-
-            // Retrieve the Ckey of the newly spawned player.
-            EntitySubSystem entitySystem = SubSystems.Get<EntitySubSystem>();
-            string newPlayerCkey = SubSystems.Get<PlayerSubSystem>()?.GetCkey(entitySystem.LastSpawned.Owner);
-
-            // Assign late join objectives to the new player
-            if (newPlayerCkey != null)
-            {
-                _gamemode.CreateLateJoinObjective(newPlayerCkey);
-                _gamemode.AddEventListenersForLateJoinObjectives(newPlayerCkey);
-            }
         }
 
         /// <summary>
