@@ -1,8 +1,9 @@
-> Goal: A short bare-bones SS13 station shift — jobs, doors/power/atmos that matter, medical save path, Traitor or Extended, round end via timer/admin/evac
+> Goal: A short bare-bones SS13 station shift — jobs, doors/power/atmos that matter, medical save path, Traitors among the crew, round end via evac
 > Status: planned
 > Depends on: [mvp1-nuke-ops.md](mvp1-nuke-ops.md)
 > Current focus: blocked on MVP1
 > Roadmap: Station round — Play a short, bare-bones SS13 shift with jobs and antagonists
+> Pillars: 1, 3, 4, 5 — [vision.md](../design/vision.md) §2
 
 # MVP2 — Bare-bones station round
 
@@ -14,10 +15,11 @@ Done when players can lobby into ranked job prefs, staff a minimal department se
 - Station loop: doors/access, power shedding, atmos as a real threat when breached
 - Medical: field treatment + defib window (cloning/cryo latejoin as thin as needed)
 - Comms: radio channels on top of local speech
-- Traitor slice **or** Extended; objectives + round-end summary
-- Evac call / countdown / point-of-no-return as a shared end path
+- **Traitor** as the antagonist (pillar 3, hidden among the crew); objectives + round-end summary. Extended stays the low-population fallback, not the target
+- Security can **arrest**: stun, handcuff, take to the brig
+- **Thin evac** as the shared end path: call, countdown, the shuttle arrives (appears docked, no flight), people board, it departs and the round ends
 
-Expand this doc’s tree when MVP1 is in progress; slices below are a sketch only.
+The acceptance scenario (**Done when**) and full slices are written after MVP1's Playtest 1; slices below are a sketch only.
 
 ## Dependency tree
 
@@ -53,7 +55,7 @@ flowchart TB
   med -.-> cloning
   traitor --> objectives[Objectives_PDA_tab]
   traitor --> uplink
-  evac --> shuttleThin[Evac_shuttle_sequence]
+  evac --> shuttleThin[Thin_evac_shuttle_appears_departs]
   shuttleThin --> shuttles
 ```
 
@@ -75,10 +77,12 @@ Hidden blockers this sketch makes explicit (each its own future pass):
   is purged/awaiting redesign — so keep cloning as thin/deferred as the gate allows (dotted edge).
 - **Traitor needs the PDA/uplink stack MVP1 deferred.** Objectives have legacy scaffolding
   ([gamemodes-roles-traits](../architecture/systems/gamemodes-roles-traits.md)), but the uplink tab +
-  telecrystals ([antagonist-content.md](../design/antagonist-content.md) §3–§4) are net-new; Extended
-  (no antag) is the cheaper path to a first playable S5.
-- **Evac needs the shuttle framework, which is entirely unbuilt.** [shuttles.md](../design/shuttles.md)
-  has no architecture/system map yet — the single biggest unbuilt dependency under MVP2; the evac
+  telecrystals ([antagonist-content.md](../design/antagonist-content.md) §3–§4) are net-new. Traitor is
+  the target (pillar 3); Extended is only the low-population fallback.
+- **Evac is thin: the shuttle appears docked and departs, with no flight.** Existing shuttle code is outdated
+  and needs updating. [shuttles.md](../design/shuttles.md)
+  has no architecture/system map yet; keeping evac thin makes it a docked, boardable structure that
+  comes and goes rather than a flight system. The evac
   sequence itself is [round-end.md](../design/round-end.md) §3.
 
 ## Slices
@@ -89,8 +93,8 @@ Hidden blockers this sketch makes explicit (each its own future pass):
 | S2 | Station loop felt | pending — builds on MVP1 M8 env exposure + alarms; Area-id merge still out | [area.md](../design/area.md); [electricity.md](../design/electricity.md); [atmospherics.md](../design/atmospherics.md); [mvp1-nuke-ops.md](mvp1-nuke-ops.md) M8; id-access doors | The station runs: power, air and doors matter during a shift |
 | S3 | Medical shift thin | pending — defib (shipped) is the thin save path; cloning rides crafting rewrite | [health.md](../design/health.md); [death-cloning-respawn.md](../design/death-cloning-respawn.md) §3, §5; [crafting](../architecture/systems/crafting.md) (fabricator); reuses MVP1 death spine | Medical can save people (defibrillators work) |
 | S4 | Comms radio | partial — feed + Tab/slash compose + announce SFX + Chat purge shipped; OOC/LOOC/Admin chat shipped in the lobby/Escape shell (no in-round HUD feed yet); headset gating / PDA log / radial still open | [comms.md](../design/comms.md) §6; [2026-07_comms-non-diegetic-feed.md](../archive/architecture/2026-07_comms-non-diegetic-feed.md) | Radio and chat (radio feed and out-of-character chat work; headsets don't gate it yet) |
-| S5 | Traitor / Extended + objectives | pending — Extended is the cheap first path; Traitor needs deferred uplink | [antagonist-content.md](../design/antagonist-content.md) §2–§4; [objectives.md](../design/objectives.md); [round-config.md](../design/round-config.md) | Traitors or a calm Extended round, with objectives |
-| S6 | Evac end path | blocked — unbuilt shuttle framework | [round-end.md](../design/round-end.md) §3; [shuttles.md](../design/shuttles.md) (evac only) | The round can end by evacuation shuttle (no shuttles yet) |
+| S5 | Traitor + objectives + arrest (handcuffs) | pending — Traitor needs the deferred uplink; Extended is the low-population fallback only | [antagonist-content.md](../design/antagonist-content.md) §2–§4; [objectives.md](../design/objectives.md); [round-config.md](../design/round-config.md) | Traitors hide among the crew, with objectives; Security can arrest |
+| S6 | Thin evac end path: shuttle appears docked, boards, departs | pending — shuttle code is outdated and needs updating; no flight | [round-end.md](../design/round-end.md) §3; [shuttles.md](../design/shuttles.md) (evac only) | The round can end by evacuation shuttle |
 | S7 | Eng / cargo minimum | pending | electricity repair already partial; [cargo.md](../design/cargo.md) thin or mapped supply | Minimal engineering and cargo jobs |
 | S8 | MVP2 playable close | pending | depends S1–S7 + MVP1 | Finish line: all of the above, on top of a working Nuke Ops round |
 

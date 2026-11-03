@@ -23,7 +23,9 @@ An explosive event is: an epicenter tile, a yield (starting force), and a fallof
 **Overpressure needs air to carry it.** A blast stops at vacuum: set off a charge in space, or in a room that has already vented, and the shock wave has nothing to travel through. That makes a vented section genuinely safer from a second blast, and it's a real decision for an attacker.
 
 **What force does on arrival at a tile:**
-- A structural object present (wall, door, window) takes structural damage per §3. Machines and other furniture aren't structural in this pass (§9).
+- A structural object present (wall, door, window) takes structural damage per §3.
+- The floor of that tile takes damage per §3 (Floors).
+- Furniture and machines on that tile take damage per §3 (Furniture and machines).
 - A character present takes brute damage per §5.
 - Nothing present: the hop simply continues outward until force runs out.
 
@@ -42,11 +44,24 @@ Damage accumulates **per structural tile**, not room-wide. This is a deliberate 
 
 **Repair returns a damaged wall straight to Intact** — one ordinary repair with a welder, not a walk back through every stage. A Destroyed wall is rebuilt, not repaired. No explosion-specific repair tool. (Rebuilding is construction's job; `construction.md` is deferred.)
 
+**Floors.** Every tile has a floor, and blasts damage it. The station is a single plane (`vision.md` §3), so a hole in the floor opens to space, never to a deck below. A floor has two layers:
+
+| Layer | What it is | Air | When destroyed |
+|---|---|---|---|
+| Floor tile | The walkable surface | Not a seal: prying a tile up to reach the wiring never vents the room | Knocked loose, leaving bare plating |
+| Plating | The hull, with the tile's pipes and cables in it | Airtight | A hole to space: the room vents through it, and the pipes and cables in that tile are destroyed |
+
+A blast knocks floor tiles loose over a wider area than it breaches plating; only a strong blast, close to its epicenter, punches through the hull. Exposed plating shows its pipes and cables, which can be damaged on their own (`electricity.md` §6). Re-laying a floor tile is cosmetic. A hull hole is sealed by laying plating over it from metal sheets — a single placement (`construction.md` §3), not the construction ladder — after which the room can be repressurized (`atmospherics.md`).
+
+**Furniture and machines.** Furniture and machines take damage from blasts and heavy hits and break: a broken object stops working and leaves debris (a smashed table, a dead APC, a burst canister — whose contents then follow their own system's rules). They don't get a wall's staged warnings; they hold no air, so there is no breach to warn about. Repairing or rebuilding them is out of scope for this pass (§9).
+
 ## 4. Area & atmosphere consequences
 
 **A breach never changes areas.** A blown wall connects the air of two rooms, not their departments: each side keeps its area, its APC, its access and its cameras (`area.md` §3). A passable hole is not a department merger — security's armory stays security's armory even when there's a hole in its wall.
 
 Atmosphere connects or leaks exactly as any other breach already does — chemistry's gas hazard (§5 there) and a shuttle's hull breach (`shuttles.md` §6) both already established this same decoupled-but-adjacent relationship; a station wall breaching from an explosive is not a new atmospherics-adjacent mechanic, it's the same one firing again.
+
+A hull hole in a floor is the same: the tile keeps its area, and the room vents to space.
 
 What a breach *does* change is physical: air rushes through, people and loose items can pass, and the hole is a route. The station's map of rooms doesn't move.
 
@@ -109,12 +124,21 @@ No new permanent chrome.
 | 1 | A bad chemical mix resolves as an explosive consequence (`chemistry.md` §6) | Instead of a bespoke local effect, it now calls this doc's §2 resolution directly, epicenter at the container's tile, a small yield |
 | 2 | Chemistry's "assumes a lightweight effect exists elsewhere" note is resolved | It was deferring to this doc all along |
 
+**E — Breaching charge on a corridor floor:**
+
+| Step | What happens | System state |
+|---|---|---|
+| 1 | An operative sets a charge on the corridor floor and it goes off | §2 resolution runs, epicenter at that tile |
+| 2 | Floor tiles around the epicenter are knocked loose; the epicenter's plating breaks | A hull hole: the corridor vents to space; the cable in that tile is cut and the room beyond goes dark |
+| 3 | A table and a vending machine nearby break | Debris; the machine stops working |
+| 4 | An engineer in a suit lays plating over the hole and splices the cable | The hull is sealed; the corridor can be repressurized and the lights come back |
+
 ## 9. Out of scope for this pass
 
 - Exact numeric values — yields, falloff rates, per-material structural thresholds, defuse timing windows (a balancing pass, not a design decision)
-- Floor/ceiling destruction and multi-level exposure — no multi-deck/z-level system exists anywhere else in this project; explosions here affect walls, doors, and windows on the station's single level, not what might be "below." Worth its own pass only if a multi-level system ever gets designed
+- Ceiling destruction and multi-level exposure — the station is a single plane (`vision.md` §3); a floor hole opens to space, never to a deck below. Worth its own pass only if a multi-level system ever gets designed
 - General sustained fire propagation after ignition — this doc and electricity §6 both trigger fire as a consequence, but ongoing spread and duration stay atmospherics' domain (`atmospherics.md` §5)
-- Machines, furniture and other non-structural objects taking structural damage — walls, doors and windows only in this pass
+- Staged damage warnings on furniture and machines, and repairing or rebuilding them once broken
 - Staged repair and rebuilding (repair goes straight to Intact; construction is deferred)
 - Shrapnel as a distinct damage type or projectile simulation — folded into §5's blast brute damage, not a separate mechanic
 - Remote-trigger signal/frequency specifics (§6) — assumed to reuse comms' existing model, not detailed here

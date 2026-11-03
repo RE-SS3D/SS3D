@@ -1,8 +1,9 @@
 > Goal: A tester downloads a release, authors a map in a locally hosted build, playtests it in the same session, and hands it over; adopted maps ship in every release
 > Status: in-progress
-> Depends on: [test-server.md](test-server.md) T1 only (loadable build); feeds [mvp1-nuke-ops.md](mvp1-nuke-ops.md) M0 (the test station is this gate's acceptance map)
-> Current focus: A6 — testers build maps from the release using `TESTERS.md` (announced on Discord 2026-11)
+> Depends on: [test-server.md](test-server.md) T1 only (loadable build); can feed [mvp1-nuke-ops.md](mvp1-nuke-ops.md) M0 (a tester-built station may replace or join the in-house test station)
+> Current focus: maintenance — no build work queued; triage tester reports. A6 is off MVP1's critical path
 > Roadmap: Map authoring — Build your own station in a release build and hand it in
+> Pillars: enabler for [mvp1-nuke-ops.md](mvp1-nuke-ops.md) (station maps); pillar 5 for the testers who build
 
 # Map authoring — tester-built maps
 
@@ -19,7 +20,7 @@ An **authoring** gate, separate from the operational [test-server.md](test-serve
 - Find the map file, hand it to devs or other testers, and file a usable bug report (logs + map `.json`)
 - Load a map saved on an older release and be told what was dropped, never lose objects silently
 
-A tester-built Nuke Ops station adopted into the release is the closing proof (A6), and becomes MVP1 M0's test-station map.
+**Done when** a tester with no involvement in the project builds a Nuke Ops station from a release zip using only `TESTERS.md`, it passes the validator, a round starts on it, and it is adopted into the release with no blocker-severity issues open (A6). MVP1 doesn't wait for this: M0 builds its test station in-house, and an adopted tester station may replace or join it.
 
 Uses the **admin Map Editor on a local host session** ([creative-mode.md](../design/creative-mode.md) §1, §2); a Builder gamemode is a later pass (§15). Maps are the same station templates every round loads (§9), with areas painted in the editor (§7).
 
@@ -78,7 +79,7 @@ flowchart TB
 | A3 | Map validator: warn on save, block Start on hard failures | shipped — shared validator, save report and pre-countdown gate; shipped maps carry the required markers; in releases since v0.1.0 and used in the owner's release-build dogfood | [creative-mode.md](../design/creative-mode.md) §8; [rounds-lobby](../architecture/systems/rounds-lobby.md); [gamemodes-roles-traits](../architecture/systems/gamemodes-roles-traits.md) | The editor warns you about broken maps before you start a round |
 | A4 | Edit loop: map edits happen in-round; unsaved-changes prompt on admin Stop, autosave to `<map>-autosave` on any other round end | shipped — lifecycle pilot covers prompt, Cancel, Discard, Save and stop and autosave | [rounds-lobby](../architecture/systems/rounds-lobby.md); [tile](../architecture/systems/tile.md) | Switching between editing and playing doesn't lose your work |
 | A5 | Portability + intake: Open maps folder, load-loss summary, `TESTERS.md` in the zip, bug label, adoption checklist | shipped — Save & Export (zip), zip import, Open Maps Folder, load-loss toast and the Map editor bug form in releases since v0.2.0; `TESTERS.md` ships in both v0.5.0 client zips, updated for the main menu | [persistence](../architecture/systems/persistence.md); [map-editor-creative-hooks](../architecture/systems/map-editor-creative-hooks.md); [2026-10_game-versioning.md](../architecture/2026-10_game-versioning.md) | Easy to find, share and hand in your map files, with a testers' guide in the download |
-| A6 | Close: a tester builds the Nuke Ops station from a zip using only `TESTERS.md`; adopted as M0's map. Done = no blocker-severity issues open, not zero bugs | pending | depends A1–A5; [mvp1-nuke-ops.md](mvp1-nuke-ops.md) M0 | A tester builds the Nuke Ops station from the download using only the guide, and it becomes the official test map |
+| A6 | Close: a tester builds the Nuke Ops station from a zip using only `TESTERS.md`; adopted into the release, where it may replace or join M0's in-house station. Done = no blocker-severity issues open, not zero bugs | pending — off MVP1's critical path; waits on outside testers | depends A1–A5; [mvp1-nuke-ops.md](mvp1-nuke-ops.md) M0 | A tester builds a Nuke Ops station from the download using only the guide, and it ships with the game |
 | A7 | Windows/Linux client stable-release updaters with preserved local data and rollback | shipped — real-Windows end-to-end check (`updater-e2e.yml`) updates the previous stable release and launches the updated game and the rollback backup; Linux covered by fixture tests (best-effort); in-menu **Update and restart** gets its first packaged check on the release after v0.5.0 | [CI release pipeline](../architecture/2026-07_ci-develop-release-pipeline.md#windows-release-updates) | Close the game and run Update_SS3D.bat (Windows) or ./update_ss3d.sh (Linux) to get the latest stable release without losing maps; the previous build stays available |
 
 Order: A1 → A2 → A2.5 → A3, A4, A5, A7 in parallel → A6.
@@ -95,4 +96,4 @@ Order: A1 → A2 → A2.5 → A3, A4, A5, A7 in parallel → A6.
 
 ## Maintenance
 
-When child work ships, run `update-system-docs`: bump slice status + header `Current focus`, refresh [INDEX.md](INDEX.md). Keep A1 in sync with [test-server.md](test-server.md) T1. When A6 adopts a station, update MVP1 M0's map leaf. Gaps found during A2.5/A6 become new `A*` slices or deferred entries here; silent-failure bugs go into the owning system map's **Pitfalls**.
+When child work ships, run `update-system-docs`: bump slice status + header `Current focus`, refresh [INDEX.md](INDEX.md). Keep A1 in sync with [test-server.md](test-server.md) T1. When A6 adopts a station, update MVP1 M0's map leaf. Until then this gate is in maintenance: tester reports become GitHub Issues, and new `A*` slices only when a report shows a missing capability. Gaps found during A2.5/A6 become new `A*` slices or deferred entries here; silent-failure bugs go into the owning system map's **Pitfalls**.

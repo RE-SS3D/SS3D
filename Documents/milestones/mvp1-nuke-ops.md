@@ -1,26 +1,35 @@
-> Goal: A playable Nuclear Operatives round on a small authored test station — ops spawn geared, find/steal/load the disk, arm or defuse the nuke; fights and breaches feel real; environment can kill; round ends with a summary and restarts
+> Goal: Playtest 1 — eight players play Nuclear Operatives rounds on the 24/7 server: ops spawn geared and breach for the disk, a five-job crew fights back, keeps the hull and power up and patches the wounded, and every round ends with a summary and restarts
 > Status: in-progress
 > Depends on: —
-> Current focus: M0 (test map + loadouts + access + identity), M1p remainder (blood, knockdown/sprint clarity, strip debug chrome; aim IK deferred), M3 (nuke loop + locator + breaching + arm announce), M4 (objectives/win-lose), M5 (end screen + restart + spectator), M7 (drag body/carrier remainder), M8 (armor seal + internals + air alarms + fire response), M9 (station power/lights + readable damage) — session softlocks / doors-under-MP / admin wedge tools / smoke happy-path live on [test-server.md](test-server.md) T3–T4
+> Current focus: M5 (merge #131), M4 (win/lose rules), M1m (responsive movement), then M0, M1c, M3, M8/M9 thin — session stability, the 24/7 server and smoke live on [test-server.md](test-server.md) T3/T8
 > Roadmap: Nuclear Operatives round — Play a full Nuke Ops round from spawn to end screen
+> Pillars: 2, 4, 6 (1 thin) — [vision.md](../design/vision.md) §2
 
 # MVP1 — Nuclear Operatives round
 
 ## Playable definition
 
-Done when a small group can run a Nuke Ops–shaped round end-to-end on a **basic editor-built test station**:
+**Done when Playtest 1 passes.** Playtest 1 is a session announced on Discord about a week ahead: **8 players** (the squad draw gives 2 operatives and 6 crew) play **about 3 rounds** in one evening on the 24/7 Nuke Ops server ([test-server.md](test-server.md) T8). It passes when:
 
-- Each role (crew + ops) has a **basic spawn loadout** (including **ammo/mags**, **ID that matches vault/door access**, **defuse tools** for eng/CE, **internals** with env seal) and a way to **assign** it; ops start geared (no uplink)
-- **Ops vs crew identity** is readable at a glance (gear / IFF / nameplate) so friendly fire isn’t the default outcome
-- Fights are playable without prototype chrome: weapon VFX/decals/blood/sounds, aim IK matches weapon point, two-handed rules, reload/empty cues, knockdown recovery clarity, sprint/stamina usable under armor weight, **no hit-debug or other debug chrome** in normal play; hit feedback is diegetic (no floating damage numbers)
-- Crit collapses to ragdoll; health screen effects **composite**; thin field medicine can stabilize; bodies/disk carriers can be **dragged**
-- Walls take staged damage (readable at range); **breaching charges / explosions** open routes; APC brownout / dark rooms can matter on the test map
-- Ops have **some way to pinpoint the disk**; disk is behind a **real vault gate**; nuke + disk are map-placed; load/defuse are interruptible; **arm announces** to the station; countdown/state readable via examine / object
-- **Objectives + win/lose** actually resolve
-- Spacing / bad air / fire / temperature are **real health risks**; armor seal + internals protect; **air alarms** fire on bad environment; basic fire response exists
-- Round ends with an **end-game screen** ghosts can still see, then **restarts** cleanly
+- every round resolves and loops into the next with **no admin rescue**
+- **no blocker-severity bug** is filed from the session
+- players who have never played can **tell ops from crew, see who is shooting them, find their way in the dark using the lights, and read the nuke's state** without asking in chat ([vision.md](../design/vision.md) §3)
 
-Does **not** require full job economy, Traitor uplink, lobby redesign, shuttle-as-ops-gate, cloning/respawn, Area-id merge on breach, full radio/PDA, chemistry, or a finished station sim.
+Both win outcomes (operatives and crew) are proven reachable in the test harness before the session; they don't have to happen on the night.
+
+Why Nuke Ops first: it builds the round spine (pillar 4) and puts the simulation under pressure (pillar 2) with a win condition a playtest can judge. The crew side does SS13 jobs (pillar 1, thin), so it is a station under attack rather than a deathmatch with a bomb. Hidden antagonists (pillar 3) come with MVP2's Traitor.
+
+What a round needs:
+
+- **Crew jobs**: Captain (vault access), Security (armed first response, stun baton), Engineer (defuse tools; patches hull holes, restores power), Doctor (bandage, stop bleeding, defibrillate), Assistant. Ops spawn geared with no uplink. The disk stays in the vault.
+- **Identity** readable at a glance from outfit and examine ([combat.md](../design/combat.md) §6): ops wear a suit look the crew doesn't.
+- **Movement** that responds like a quick RPG: full speed and stop within about 0.1 s, animations blending at the same pace.
+- **Combat core**: a small ballistic arsenal, physical magazines ([combat.md](../design/combat.md) §3), C4 breaching, the stun baton ([combat.md](../design/combat.md) §5), weapon sounds, no debug chrome in normal play. Shots visibly leave the muzzle and land where the reticle is.
+- **Nuke loop**: breach to the vault, load the disk, arm or defuse, a station-wide arm announcement, state on examine ([antagonist-content.md](../design/antagonist-content.md) §6).
+- **Breaches that matter**: blasts break floors through to space and wreck furniture ([explosives-destruction.md](../design/explosives-destruction.md) §3); vacuum kills; suits and internals protect; an engineer lays plating to seal the hull; APC-driven lights make power loss felt.
+- **Objectives and win/lose** resolve, and the round ends with an **end screen** ghosts can see, then **restarts**.
+
+Crew wins by killing every operative in Playtest 1; restraints come with the station round ([combat.md](../design/combat.md) §11).
 
 ## Dependency tree
 
@@ -28,104 +37,111 @@ Edges mean “needs.” Leaves cite design / effort / plan — not full HOW.
 
 ```mermaid
 flowchart TB
-  mvp1[Play_Nuke_Ops]
-  map[Test_station_map]
-  loadout[Role_loadouts_assign]
+  mvp1[Playtest_1]
+  map[Test_station_in_house]
+  roles[Five_crew_jobs_loadouts]
   access[Vault_ID_access]
-  identity[Ops_crew_identity]
-  combat[Combat_foundation]
-  polish[Combat_feel_polish]
-  healthfeel[Health_feel_med_drag]
+  identity[Ops_suit_identity]
+  move[Responsive_movement]
+  combatcore[Combat_core]
+  arsenal[Four_guns_mags_sounds]
+  baton[Stun_baton]
+  c4[C4_breaching]
   struct[Structural_blast_API]
-  breach[Breaching_charges]
+  floors[Floor_furniture_damage]
   nuke[Nuke_disk_arm_defuse]
-  locator[Disk_pinpoint]
   announce[Arm_announce]
   mode[Objectives_winlose]
   roundend[End_screen_restart]
-  env[Env_to_health]
-  armorseal[Armor_env_seal]
-  internals[Internals_in_loadout]
-  alarms[Air_alarms]
-  fire[Fire_response]
+  vacuum[Vacuum_kills_suits_protect]
+  patch[Engineer_patches_hull]
   power[APC_lights_matter]
-  atmosvfx[Client_atmos_VFX]
+  server[Always_on_server_T8]
 
   mvp1 --> map
-  mvp1 --> loadout
-  mvp1 --> polish
-  mvp1 --> healthfeel
+  mvp1 --> roles
+  mvp1 --> move
+  mvp1 --> combatcore
   mvp1 --> nuke
   mvp1 --> mode
   mvp1 --> roundend
-  mvp1 --> env
-  mvp1 --> breach
+  mvp1 --> vacuum
   mvp1 --> power
-  map --> loadout
+  mvp1 --> server
   map --> access
-  loadout --> access
-  loadout --> identity
-  loadout --> internals
-  loadout --> breach
-  polish --> combat
-  nuke --> struct
-  nuke --> locator
-  nuke --> announce
+  roles --> access
+  roles --> identity
+  combatcore --> arsenal
+  combatcore --> baton
+  combatcore --> c4
+  c4 --> struct
+  c4 --> floors
   nuke --> access
-  breach --> struct
+  nuke --> announce
+  nuke --> c4
   mode --> roundend
-  env --> armorseal
-  env --> internals
-  env --> alarms
-  env --> fire
-  env --> atmosvfx
-  healthfeel --> roundend
+  vacuum --> floors
+  vacuum --> patch
+  vacuum --> identity
   power --> map
 ```
 
 **Shipped foundations** (not focus — do not re-open as blockers):
 
-- **Combat + thin armor absorption** — [combat](../architecture/systems/combat.md); plan Phase 3 + 5. Environmental seal pulled back as **M8**.
+- **Combat + thin armor absorption** — [combat](../architecture/systems/combat.md); plan Phase 3 + 5. Combat feel already shipped: muzzle flash, bullet-hole decals, SS14 gun and surface audio, fire/reload upper-body animations, two-handed M4, `rangeddebug` off by default, centered reticle hit-flash.
+- **Health feel** — crit ragdoll, screen-effect compositing, personal/hit SFX ([health-env-feel](../archive/architecture/2026-07_health-env-feel.md)).
 - **Structural damage + blast resolve API** — [structural-destruction](../architecture/systems/structural-destruction.md) Phase 1–4.
+- **Env→health exposure** — turf exposure and equal-pressure turf mixing ([atmospherics](../architecture/systems/atmospherics.md)).
 - **Death → spectator** — ghost detach wired ([entities](../architecture/systems/entities.md)). Full observer stays deferred.
-- **Client atmos VFX (Phase 1)** — dirty-chunk sync shipped ([2026-07_atmos-client-visualization-sync.md](../architecture/2026-07_atmos-client-visualization-sync.md)). Pure clients already see fog/fire/plasma; late-join bootstrap/AOI is Phase 2 polish, not an MVP1 blocker. Do **not** re-list “wire client atmos VFX” as work.
+- **Client atmos VFX (Phase 1)** — dirty-chunk sync shipped ([2026-07_atmos-client-visualization-sync.md](../architecture/2026-07_atmos-client-visualization-sync.md)). Do **not** re-list “wire client atmos VFX” as work.
 
 **What still unlocks the round:**
 
-- **Test station + loadouts + access + identity (M0)** — small Map Editor station with vault, disk, nuke, spawns, APCs/lights (the map itself comes from [map-authoring.md](map-authoring.md): A2 makes the vault's room access authorable, A6 adopts a tester-built station); per-role `RoleLoadout` + assignment; ID cards that actually gate the vault; ops/crew readable identity; ammo/mags; eng defuse tools; internals for seal ([gamemodes-roles-traits](../architecture/systems/gamemodes-roles-traits.md); [id-access](../architecture/systems/id-access.md); [2026-07_spawn-point-authoring.md](../archive/architecture/2026-07_spawn-point-authoring.md)).
-- **Combat feel (M1p)** — **partial:** muzzle flash, bullet-hole shreds, SS14 gun+surface audio, fire/reload Upper Body anims, two-hand M4, `rangeddebug` spheres off by default, reticle hit-flash centered ([combat](../architecture/systems/combat.md)). **Still open:** blood polish, aim IK (deferred), knockdown/stagger recovery clarity, sprint under encumbrance, strip hit-debug **and** other debug chrome (F2 screen-effects, atmos P-overlay, etc.) from normal play ([audio](../architecture/systems/audio.md); [screen-effects](../architecture/systems/screen-effects.md)).
-- **Health feel + thin med + drag (M7)** — crit ragdoll, screen-effect compositing, personal/hit SFX shipped ([health-env-feel](../archive/architecture/2026-07_health-env-feel.md)); bandage/bleed-stop enough to stabilize; **drag/grab body or disk carrier still open** ([health](../architecture/systems/health.md); [body-presentation-authority](../archive/architecture/2026-07_body-presentation-authority.md)).
-- **Nuke loop + locator + breaching + arm announce (M3)** — device/disk interactions; thin ops disk pinpoint; charges call `ResolveBlast`; station-wide arm alert; examine/object state for armed/disk-loaded/time left ([antagonist-content.md](../design/antagonist-content.md) §6; [explosives-destruction.md](../design/explosives-destruction.md) §2, §6–§7).
-- **Objectives + win/lose (M4)** — thin Nuke Ops mode that checks objectives and declares a winner.
-- **End screen + restart + spectator (M5)** — summary/reveal ghosts can still see; return-to-lobby / next round ([round-end.md](../design/round-end.md) §4–§6). **Shared with [test-server.md](test-server.md) T4.**
-- **Env→health remainder (M8)** — turf exposure shipped ([health-env-feel](../archive/architecture/2026-07_health-env-feel.md)); equal-pressure composition diffusion on turf shipped (breath pockets mix into the room — [atmospherics](../architecture/systems/atmospherics.md)); still need environmental armor seal ([armor.md](../design/armor.md) §3), air alarms that **actually alarm**, extinguisher / thin fire counter; internals ride M0 loadouts ([health](../architecture/systems/health.md)).
-- **Station power / readable damage (M9)** — test-map APCs drive lights so brownout is free intel; wall damage stages readable at range on authored prefabs ([area](../architecture/systems/area.md); [electricity](../architecture/systems/electricity.md); [structural-destruction](../architecture/systems/structural-destruction.md)).
-**On the test-server track (not duplicated as MVP1 slices):** round-start assignment that can’t fail silently; latejoin without softlock; doors/airlocks reliable for remote clients; host admin wedge tools (force-end, reassign, teleport disk); smoke covering spawn→fight→breach→arm→end→restart; performance floor on the test station. See [test-server.md](test-server.md) **T3 / T4**.
+- **Test station, jobs, access, identity (M0)** — built in-house in the Map Editor: vault, disk, nuke, spawns, APCs and lights ([map-authoring.md](map-authoring.md) A2 makes room access authorable; a tester station from A6 may replace or join it later). Five jobs with `RoleLoadout`s: ammo, ID cards that gate the vault, the Engineer's defuse tools and metal sheets, internals. The ops look comes from a suit model: the owner first checks for an existing nukie outfit; otherwise one suit with a syndicate variant and a standard EVA variant in crew lockers, which also serves M8's seal ([gamemodes-roles-traits](../architecture/systems/gamemodes-roles-traits.md); [id-access](../architecture/systems/id-access.md)). Weapon and explosive models are listed in [art-available-for-import.json](../art-available-for-import.json).
+- **Responsive movement (M1m)** — [entities](../architecture/systems/entities.md); [stamina](../architecture/systems/stamina.md) (sprint).
+- **Combat core (M1c)** — ops: C20R + Stechkin; Security: security pistol, M4 in the armory, stun baton. Ballistic only. Physical magazines that keep their leftover rounds; C4 for the ops; weapon sounds; debug chrome (hit-debug, F2 screen-effects, atmos P-overlay) stripped from normal play ([combat](../architecture/systems/combat.md); [audio](../architecture/systems/audio.md); [screen-effects](../architecture/systems/screen-effects.md)).
+- **Nuke loop thin + floors (M3)** — device/disk interactions, vault breach, arm announce, examine state; disk pinpointing stays thin. Blasts break floor tiles and plating and wreck furniture ([antagonist-content.md](../design/antagonist-content.md) §6; [explosives-destruction.md](../design/explosives-destruction.md) §3, §6).
+- **Objectives + win/lose (M4)** — thin Nuke Ops mode ([antagonist-content.md](../design/antagonist-content.md) §6); the squad draw and operative kit land with [#131](https://github.com/henkhooft/SS3D/pull/131).
+- **End screen + restart (M5)** — [round-end.md](../design/round-end.md) §4–§6, implemented in [#131](https://github.com/henkhooft/SS3D/pull/131). **Shared with [test-server.md](test-server.md) T4.**
+- **Vacuum and hull (M8 thin)** — vacuum kills, suit seal ([armor.md](../design/armor.md) §3) and internals protect, an engineer seals a hull hole with plating ([construction.md](../design/construction.md) §3) ([health](../architecture/systems/health.md); [atmospherics](../architecture/systems/atmospherics.md)).
+- **Power and light (M9 thin)** — test-map APCs drive lights, so a cut cable or dead APC darkens a room ([electricity](../architecture/systems/electricity.md); [area](../architecture/systems/area.md)).
+
+**On the test-server track (not duplicated as MVP1 slices):** doors for remote clients, admin force-end and teleport disk, nightly happy-path smoke, 8-client performance, the 24/7 server. See [test-server.md](test-server.md) **T3 / T8**.
 
 ## Slices
 
 | Id | Name | Status | Links | Player view |
 |----|------|--------|-------|-------------|
-| M0 | Test station + vault/disk/nuke + role loadouts (ammo, ID/access, defuse tools, internals) + assignment + ops/crew identity | partial — **focus** (job assignment: lobby preferences → one-pass resolution shipped, [rounds-lobby](../architecture/systems/rounds-lobby.md); ops/antag assignment pending M4) | [map-authoring.md](map-authoring.md) (station map); [creative-mode.md](../design/creative-mode.md) §2, §8; [2026-07_spawn-point-authoring.md](../archive/architecture/2026-07_spawn-point-authoring.md); [id-access](../architecture/systems/id-access.md); [gamemodes-roles-traits](../architecture/systems/gamemodes-roles-traits.md) | A test station with a vault, disk and nuke; every role spawns with the right gear and ID; ops and crew are easy to tell apart (job picking works) |
+| M0 | In-house test station + five jobs (Captain, Security, Engineer, Doctor, Assistant) with loadouts and vault access + ops suit identity. Done when every job spawns with its kit on the test station and a new player can tell ops from crew | partial — job preferences → one-pass assignment shipped ([rounds-lobby](../architecture/systems/rounds-lobby.md)); operative squad and kit in [#131](https://github.com/henkhooft/SS3D/pull/131); roster is still Security and Assistant | [creative-mode.md](../design/creative-mode.md) §2, §8; [id-access](../architecture/systems/id-access.md); [gamemodes-roles-traits](../architecture/systems/gamemodes-roles-traits.md) | A test station where every job spawns with the right gear and ID, and ops and crew are easy to tell apart (job picking works) |
 | M1 | Combat ranged + thin armor absorption | shipped | [combat.md](../design/combat.md); [combat_implementation_plan.md](../plans/combat_implementation_plan.md) Phase 3 + 5 | Guns shoot and hit; armor absorbs damage |
-| M1p | Combat feel polish (VFX, decals, blood, sounds, aim IK, two-hand, reload cues, knockdown clarity, sprint, no debug chrome) | partial — **focus** (muzzle/holes/SS14 audio/anims/two-hand/`rangeddebug`/reticle flash shipped; blood, knockdown, sprint, strip debug chrome open; aim IK deferred) | [combat](../architecture/systems/combat.md); [audio](../architecture/systems/audio.md); [entities](../architecture/systems/entities.md); [stamina](../architecture/systems/stamina.md) | Combat feels right: blood, knockdowns, sprinting, no debug overlays (muzzle flash, bullet holes and sounds work) |
+| M1m | Responsive movement. Done when: full speed within about 0.1 s of a key press and a stop within about 0.1 s of release with no visible slide; animations blend at that pace; walk/run while strafing has no pops or stuck states; sprint tuned with it | pending | [entities](../architecture/systems/entities.md); [stamina](../architecture/systems/stamina.md) | Walking and running respond instantly, like a quick RPG |
+| M1c | Combat core: C20R, Stechkin, security pistol, M4; physical magazines; C4; stun baton; weapon sounds; no debug chrome. Done when each job's weapon fires, reloads and sounds right, and shots leave the muzzle and land at the reticle | partial — M4 with muzzle flash, decals, SS14 audio, reload animation and two-hand rule shipped | [combat.md](../design/combat.md) §3, §5; [explosives-destruction.md](../design/explosives-destruction.md) §6; [combat](../architecture/systems/combat.md); [audio](../architecture/systems/audio.md) | Ops and Security each have their own guns, magazines, C4 and a stun baton (the rifle works) |
 | M2 | Structural damage + blast resolve API | shipped | [structural-destruction](../architecture/systems/structural-destruction.md); plan Phase 1–4 | Walls take damage and explosions tear through the station |
-| M3 | Nuke loop + disk pinpoint + breaching + arm announce + examine state | pending — **focus** | [antagonist-content.md](../design/antagonist-content.md) §6; [explosives-destruction.md](../design/explosives-destruction.md) §2, §6–§7; plan Phase 5 | The nuke itself: find the disk, breach the vault, arm or defuse, station-wide warning |
-| M4 | Objectives + win/lose (thin Nuke Ops gamemode) | pending — **focus** | [antagonist-content.md](../design/antagonist-content.md) §2, §6; [gamemodes-roles-traits](../architecture/systems/gamemodes-roles-traits.md) | Objectives exist and the round has a winner |
-| M5 | End-game screen + round restart + spectator sees outcome | pending — **focus**; **shared with [test-server.md](test-server.md) T4** | [round-end.md](../design/round-end.md) §4–§6; [entities](../architecture/systems/entities.md) | An end-of-round screen everyone sees, then the round restarts |
-| M7 | Health feel (crit ragdoll; screen-effect compositing; personal/hit SFX) + thin field med + drag body/carrier | partial — feel polish shipped ([health-env-feel](../archive/architecture/2026-07_health-env-feel.md)); drag still open | [health](../architecture/systems/health.md); [screen-effects](../architecture/systems/screen-effects.md); [audio](../architecture/systems/audio.md); [2026-07_body-presentation-authority.md](../archive/architecture/2026-07_body-presentation-authority.md) | Getting hurt feels real and you can drag bodies (ragdolls, screen effects and sounds work) |
-| M8 | Env→health + armor seal + internals + air alarms that alarm + thin fire response | partial — turf exposure shipped ([health-env-feel](../archive/architecture/2026-07_health-env-feel.md)); equal-P turf diffusion shipped; seal/internals/alarms/fire response open | [armor.md](../design/armor.md) §3; [health](../architecture/systems/health.md); [atmospherics](../architecture/systems/atmospherics.md); [area.md](../design/area.md) §5 | Space, bad air and fire hurt you; suits and internals protect you; air alarms go off (exposure damage works) |
-| M9 | Test-map power/lights matter + wall damage readable at range | pending — **focus** | [electricity](../architecture/systems/electricity.md); [area](../architecture/systems/area.md); [structural-destruction](../architecture/systems/structural-destruction.md) | Station power and lights matter; wall damage is visible from a distance |
-| M6 | MVP1 playable close | pending | depends M0–M5, M1p, M7–M9 | Finish line: all of the above work together in one round |
+| M3 | Nuke loop (thin) + floor and furniture damage. Done when ops can breach to the vault, load the disk and arm; crew can defuse; arming announces station-wide; examine shows the state; blasts break floors to space and wreck furniture | pending | [antagonist-content.md](../design/antagonist-content.md) §6; [explosives-destruction.md](../design/explosives-destruction.md) §3, §6–§7 | The nuke itself: breach the vault, arm or defuse, a station-wide warning, and blasts that tear up the floor |
+| M4 | Objectives + win/lose (thin Nuke Ops gamemode) | pending — **focus**; squad draw and team objective in [#131](https://github.com/henkhooft/SS3D/pull/131), win/lose rules next | [antagonist-content.md](../design/antagonist-content.md) §2, §6; [gamemodes-roles-traits](../architecture/systems/gamemodes-roles-traits.md) | Objectives exist and the round has a winner |
+| M5 | End-game screen + round restart + spectator sees outcome | partial — **focus**; implemented in [#131](https://github.com/henkhooft/SS3D/pull/131), not yet merged; **shared with [test-server.md](test-server.md) T4** | [round-end.md](../design/round-end.md) §4–§6; [entities](../architecture/systems/entities.md) | An end-of-round screen everyone sees, then the round restarts |
+| M8 | Vacuum and hull (thin): vacuum kills; suit seal and internals protect; an engineer seals a hull hole with plating | partial — turf exposure and equal-pressure turf mixing shipped ([health-env-feel](../archive/architecture/2026-07_health-env-feel.md)); seal, internals and plating open | [armor.md](../design/armor.md) §3; [construction.md](../design/construction.md) §3; [health](../architecture/systems/health.md); [atmospherics](../architecture/systems/atmospherics.md) | Space kills you, suits and internals protect you, and engineers can patch the hull (exposure damage works) |
+| M9 | Power and light (thin): test-map APCs drive the lights | pending | [electricity](../architecture/systems/electricity.md); [area](../architecture/systems/area.md) | Station power and lights matter: lose power and the room goes dark |
+| M6 | Playtest 1 | pending | depends M0–M5, M1m, M1c, M8, M9; [test-server.md](test-server.md) T3, T8 | Finish line: eight players play Nuke Ops rounds together on the always-on server |
 
 ## Explicitly deferred
 
+**Feel pass, after Playtest 1** — ordered by what testers report, not decided up front:
+
+- Aim IK at close range and when aiming at the floor
+- Blood, knockdown and stagger clarity
+- Dragging bodies and disk carriers (health feel already shipped)
+- Air alarms that alarm, fire response (extinguishers)
+- Frag grenades; energy weapons and ranged stuns ([combat.md](../design/combat.md) §11)
+- Wall damage readable at range on authored prefabs
+
 Off the critical path — do not treat as MVP1 blockers:
 
-- **Area-id merge on breach** — passable hole ≠ department merger. Atmos *exposure* is M8; Area-id rewrite is not.
-- **Client atmos VFX Phase 2** (late-join bootstrap / AOI) — Phase 1 is enough for playtests; polish later.
-- **Full observer/ghost**, **cloning/respawn**, **evac shuttle**, shuttle as ops gate, lobby UITK redesign, full PDA/uplink/Traitor, full radio stack, structural repair (plan Phase 6), chemistry, construction ladder, sec camera HUD, Malf-AI / Revolution.
+- **Handcuffs and arrest** — with the station round ([mvp2-station-round.md](mvp2-station-round.md)).
+- **Area-id merge on breach** — passable hole ≠ department merger.
+- **Client atmos VFX Phase 2** (late-join bootstrap / AOI).
+- **Disk pinpointing beyond thin**, **full observer/ghost**, **cloning/respawn**, **evac shuttle**, shuttle as ops gate, full PDA/uplink/Traitor, full radio stack, structural repair (plan Phase 6), the construction ladder beyond hull plating, chemistry, sec camera HUD, Malf-AI / Revolution.
 
 ## Maintenance
 
-When child work ships, run `update-system-docs`: bump slice status + header `Current focus`, refresh [INDEX.md](INDEX.md). Keep M5 ↔ test-server T4 in sync. Keep session softlocks, doors-under-MP, admin wedge tools, and happy-path smoke on test-server T3/T4. Disk-pinpoint and arm-announce HOW stay thin until commissioned — do not invent parallel design docs from this milestone.
+When child work ships, run `update-system-docs`: bump slice status + header `Current focus`, refresh [INDEX.md](INDEX.md). Keep M5 ↔ test-server T4 in sync. Keep session softlocks, doors-under-MP, admin wedge tools, happy-path smoke and the 24/7 server on test-server T3/T8. After Playtest 1, turn its reports into GitHub Issues and order the feel pass from them. Disk-pinpoint and arm-announce HOW stay thin until commissioned — do not invent parallel design docs from this milestone.

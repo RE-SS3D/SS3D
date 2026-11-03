@@ -15,17 +15,17 @@ do end to end. Each goal is split into **slices**, the smaller pieces that have 
 
 | Goal | What you'll be able to do | Progress |
 |------|---------------------------|----------|
-| [Test server](#test-server) | Download a release, click join, play with others on a live server | 5 of 7 done, 2 partial |
+| [Test server](#test-server) | Download a release, click join, play with others on a live server | 5 of 8 done, 2 partial |
 | [Map authoring](#map-authoring) | Build your own station in a release build and hand it in | 8 of 9 done |
 | [Nuclear Operatives round](#nuclear-operatives-round) | Play a full Nuke Ops round from spawn to end screen | 2 of 10 done, 4 partial |
-| [Station round](#station-round) | Play a short, bare-bones SS13 shift with jobs and antagonists | 0 of 7 done, 1 partial, 1 blocked |
+| [Station round](#station-round) | Play a short, bare-bones SS13 shift with jobs and antagonists | 0 of 7 done, 1 partial |
 
 What already works, system by system, is listed in
 [FORK_STATUS](Documents/FORK_STATUS.md#shipped-gameplay).
 
 ## Test server
 
-**Goal:** A stranger clicks the latest GitHub release link, downloads, and joins the live test server in a few clicks — no config files, no localhost editing, no technical setup. [Details](Documents/milestones/test-server.md)
+**Goal:** A stranger downloads the latest release and joins the 24/7 Nuke Ops server in a few clicks — no config files, no localhost editing, no technical setup. [Details](Documents/milestones/test-server.md)
 
 | | Slice | What it means for a player |
 |---|---|---|
@@ -36,8 +36,9 @@ What already works, system by system, is listed in
 | 🟡 | T4 | Rounds end with a summary screen and restart; you can join mid-round (joining mid-round works) |
 | ✅ | T6 | You can change volume, resolution and graphics quality, and they stay set |
 | ✅ | T7 | A separate server where everyone can build and fight, and the station resets every 20 minutes (live, address shared in Discord) |
+| ⬜ | T8 | A server that's always up running Nuke Ops rounds; hop in whenever |
 
-**Finish line (T5):** a stranger downloads the latest release and plays on the live test server.
+**Finish line (T5):** a stranger downloads the latest release and plays on the always-on Nuke Ops server.
 
 ## Map authoring
 
@@ -52,31 +53,31 @@ What already works, system by system, is listed in
 | ✅ | A3 | The editor warns you about broken maps before you start a round |
 | ✅ | A4 | Switching between editing and playing doesn't lose your work |
 | ✅ | A5 | Easy to find, share and hand in your map files, with a testers' guide in the download |
-| ⬜ | A6 | A tester builds the Nuke Ops station from the download using only the guide, and it becomes the official test map |
+| ⬜ | A6 | A tester builds a Nuke Ops station from the download using only the guide, and it ships with the game |
 | ✅ | A7 | Close the game and run Update_SS3D.bat (Windows) or ./update_ss3d.sh (Linux) to get the latest stable release without losing maps; the previous build stays available |
 
 ## Nuclear Operatives round
 
-**Goal:** A playable Nuclear Operatives round on a small authored test station — ops spawn geared, find/steal/load the disk, arm or defuse the nuke; fights and breaches feel real; environment can kill; round ends with a summary and restarts. [Details](Documents/milestones/mvp1-nuke-ops.md)
+**Goal:** Playtest 1 — eight players play Nuclear Operatives rounds on the 24/7 server: ops spawn geared and breach for the disk, a five-job crew fights back, keeps the hull and power up and patches the wounded, and every round ends with a summary and restarts. [Details](Documents/milestones/mvp1-nuke-ops.md)
 
 | | Slice | What it means for a player |
 |---|---|---|
-| 🟡 | M0 | A test station with a vault, disk and nuke; every role spawns with the right gear and ID; ops and crew are easy to tell apart (job picking works) |
+| 🟡 | M0 | A test station where every job spawns with the right gear and ID, and ops and crew are easy to tell apart (job picking works) |
 | ✅ | M1 | Guns shoot and hit; armor absorbs damage |
-| 🟡 | M1p | Combat feels right: blood, knockdowns, sprinting, no debug overlays (muzzle flash, bullet holes and sounds work) |
+| ⬜ | M1m | Walking and running respond instantly, like a quick RPG |
+| 🟡 | M1c | Ops and Security each have their own guns, magazines, C4 and a stun baton (the rifle works) |
 | ✅ | M2 | Walls take damage and explosions tear through the station |
-| ⬜ | M3 | The nuke itself: find the disk, breach the vault, arm or defuse, station-wide warning |
+| ⬜ | M3 | The nuke itself: breach the vault, arm or defuse, a station-wide warning, and blasts that tear up the floor |
 | ⬜ | M4 | Objectives exist and the round has a winner |
-| ⬜ | M5 | An end-of-round screen everyone sees, then the round restarts |
-| 🟡 | M7 | Getting hurt feels real and you can drag bodies (ragdolls, screen effects and sounds work) |
-| 🟡 | M8 | Space, bad air and fire hurt you; suits and internals protect you; air alarms go off (exposure damage works) |
-| ⬜ | M9 | Station power and lights matter; wall damage is visible from a distance |
+| 🟡 | M5 | An end-of-round screen everyone sees, then the round restarts |
+| 🟡 | M8 | Space kills you, suits and internals protect you, and engineers can patch the hull (exposure damage works) |
+| ⬜ | M9 | Station power and lights matter: lose power and the room goes dark |
 
-**Finish line (M6):** all of the above work together in one round.
+**Finish line (M6):** eight players play Nuke Ops rounds together on the always-on server.
 
 ## Station round
 
-**Goal:** A short bare-bones SS13 station shift — jobs, doors/power/atmos that matter, medical save path, Traitor or Extended, round end via timer/admin/evac. [Details](Documents/milestones/mvp2-station-round.md)
+**Goal:** A short bare-bones SS13 station shift — jobs, doors/power/atmos that matter, medical save path, Traitors among the crew, round end via evac. [Details](Documents/milestones/mvp2-station-round.md)
 
 | | Slice | What it means for a player |
 |---|---|---|
@@ -84,8 +85,8 @@ What already works, system by system, is listed in
 | ⬜ | S2 | The station runs: power, air and doors matter during a shift |
 | ⬜ | S3 | Medical can save people (defibrillators work) |
 | 🟡 | S4 | Radio and chat (radio feed and out-of-character chat work; headsets don't gate it yet) |
-| ⬜ | S5 | Traitors or a calm Extended round, with objectives |
-| ⛔ | S6 | The round can end by evacuation shuttle (no shuttles yet) |
+| ⬜ | S5 | Traitors hide among the crew, with objectives; Security can arrest |
+| ⬜ | S6 | The round can end by evacuation shuttle |
 | ⬜ | S7 | Minimal engineering and cargo jobs |
 
 **Finish line (S8):** all of the above, on top of a working Nuke Ops round.

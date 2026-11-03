@@ -5,48 +5,50 @@ Conventions: [Documents/SKILL.md](../SKILL.md) (Milestones section). Domain cove
 vs built) stays in [architecture/INDEX.md](../architecture/INDEX.md); structural risk in
 [TECH_DEBT.md](../architecture/TECH_DEBT.md).
 
+## North star
+
+A 3D Space Station 13. Every gate names the [vision](../design/vision.md) pillars it advances; enabler gates name the gameplay gate they serve.
+
 ## Current focus
 
-Three tracks run in parallel — an **operational** one that makes multiplayer playtests trustworthy, an **authoring** one that lets testers build maps, and the **gameplay** gate:
+**Target: Playtest 1** — 8 players play about 3 Nuke Ops rounds on the 24/7 server, in a session announced on Discord ([mvp1-nuke-ops.md](mvp1-nuke-ops.md) M6). Two tracks serve it:
 
-**Near-term operational push** — [test-server.md](test-server.md):
+**Gameplay** — [mvp1-nuke-ops.md](mvp1-nuke-ops.md), in this order:
 
-- **T1 shipped** — Release zips load and host (owner-verified on stable v0.3.x; no outside tester yet)
-- **T2 shipped** — Main menu with recent servers and one-click join (v0.5.0; owner joined the sandbox through it); public list follows when the sandbox goes public
-- **T3** — Session stability: doors under MP, remote drop/selection, remaining admin wedge tools (round controls + stop-cancels-start shipped), Nuke Ops happy-path smoke, test-station perf floor. Nightly CI smoke runs on TomNAS; harness contracts (scenarios, curated smoke, nightly budgets): [testing philosophy](../architecture/2026-11_testing-philosophy.md#harness-contracts)
-- **T4** — End-game screen + restart (**shared with M5**), implemented on `claude/round-end` and awaiting merge; latejoin without softlock shipped, including after an earlier round
-- **T7 shipped** — Invite-only sandbox live on TomNAS (loop, `/bug`/F8, first-session fixes #111–#118); build caps wait on tester-session numbers and gate a public listing
+1. **M5 + T4** — end screen and restart, with the operative squad: merge [#131](https://github.com/henkhooft/SS3D/pull/131)
+2. **M4** — Nuke Ops win/lose rules
+3. **M1m** — responsive movement: full speed and stop within about 0.1 s, matching animation blends, clean strafe transitions, sprint
+4. **M0** — in-house test station; Captain, Security, Engineer, Doctor, Assistant with loadouts and access; ops suit identity
+5. **M1c** — combat core: C20R, Stechkin, security pistol, M4, stun baton; physical magazines; C4; sounds; no debug chrome
+6. **M3** — nuke loop (thin) with floor and furniture damage
+7. **M8 + M9 (thin)** — vacuum kills, suit seal and internals protect, engineers patch hull holes; APC lights matter
 
-**Authoring track** — [map-authoring.md](map-authoring.md) (expect many gaps: map authoring in a build is largely untested):
+**Enabler** — [test-server.md](test-server.md), serves Playtest 1:
 
-- **A1 shipped** — Loadable local build, including packaged `Data/StationTemplates/` (shares test-server T1)
-- **A2 shipped** — Scripts → Rooms: painting, metadata, shared toolbar, undo/persistence and APC-facing membership; owner manually accepted in the editor
-- **A2.5 shipped** — Owner dogfooded the map editor and the F8 bug report in a release build
-- **A3, A4, A5, A7 shipped** — Map validator, edit loop, export/import + `TESTERS.md`, and stable-release updaters (real-Windows end-to-end check)
-- **A6** — Testers build maps from the release using `TESTERS.md` (announced on Discord 2026-11)
+- **T3** — exit line: doors for remote clients; admin force-end and teleport disk; Nuke Ops smoke green nightly; 8 clients through a breach without hitching
+- **T8** — 24/7 Nuke Ops server, separate from the sandbox; Extended below 4 ready players. Announcing it publicly closes the gate (T5)
 
-**Active gameplay gate** — [mvp1-nuke-ops.md](mvp1-nuke-ops.md) (M1 combat + M2 structural/blast API + client atmos VFX Phase 1 + equal-P turf diffusion shipped):
+**Maintenance** — [map-authoring.md](map-authoring.md): no build work queued; triage tester reports. A6 (a tester-built station) is off the critical path.
 
-- **M0** — Test station; vault/disk/nuke; loadouts (ammo, ID/access, defuse tools, internals); assignment; ops/crew identity
-- **M1p** — Combat feel **partial:** muzzle/holes/SS14 audio/anims/two-hand/`rangeddebug` shipped; still blood, knockdown clarity, sprint, strip debug chrome (aim IK deferred)
-- **M3** — Nuke loop + disk pinpoint + breaching + arm announce + examine state
-- **M4** — Objectives + win/lose
-- **M5** — End-game screen + restart; spectators still see the outcome
-- **M7** — Drag body/carrier remainder (crit ragdoll, screen FX, feel SFX shipped)
-- **M8** — Armor seal + internals + air alarms that alarm + thin fire response (turf→health exposure + equal-P turf mixing shipped)
-- **M9** — Test-map APC lights matter + wall damage readable at range
-Not focus: Area-id merge on breach, re-wiring client atmos VFX (already shipped), shuttle-as-ops-gate, full PDA/uplink/Traitor, cloning/respawn, evac shuttle, full radio, server browser / accounts.
+After Playtest 1, a **feel pass** ordered by what testers report: [mvp1-nuke-ops.md](mvp1-nuke-ops.md) **Explicitly deferred**.
 
-The **lobby UITK redesign** ([lobby.md](../design/lobby.md)) shipped 2026-10-31 ([rounds-lobby](../architecture/systems/rounds-lobby.md)); its deferred items (non-Human species, antag opt-in consumer) wait on MVP1 M4/M0.
+Not focus: Area-id merge on breach, shuttles, PDA/uplink/Traitor, handcuffs, ranged stuns, cloning/respawn, full radio, server browser and accounts.
 
 ## Gates
 
-| Gate | Status | Depends on | Doc |
-|------|--------|------------|-----|
-| Test server — hop-on/off playtest | in-progress | — (parallel; reuses MVP1 M5 loop) | [test-server.md](test-server.md) |
-| Map authoring — tester-built maps | in-progress | test-server T1 | [map-authoring.md](map-authoring.md) |
-| MVP1 — Nuclear Operatives round | in-progress | — | [mvp1-nuke-ops.md](mvp1-nuke-ops.md) |
-| MVP2 — Bare-bones station round | planned | MVP1 | [mvp2-station-round.md](mvp2-station-round.md) |
+| Gate | Status | Pillars | Depends on | Doc |
+|------|--------|---------|------------|-----|
+| Test server — hop-on/off playtest | in-progress | enabler for MVP1 | — (parallel; reuses MVP1 M5 loop) | [test-server.md](test-server.md) |
+| Map authoring — tester-built maps | in-progress | enabler for MVP1 (maintenance) | test-server T1 | [map-authoring.md](map-authoring.md) |
+| MVP1 — Nuclear Operatives round | in-progress | 2, 4, 6 (1 thin) | — | [mvp1-nuke-ops.md](mvp1-nuke-ops.md) |
+| MVP2 — Bare-bones station round | planned | 1, 3, 4, 5 | MVP1 | [mvp2-station-round.md](mvp2-station-round.md) |
+
+### Beyond MVP2
+
+A sketch, so every gate above sits on a path to a recognizable SS13 shift. No docs or slices until MVP2 is in progress.
+
+- **MVP3 — Departments with depth**: chemistry, a cargo economy, robotics, construction
+- **MVP4 — The full ensemble**: AI and cyborgs, the antagonist roster and evacuation drama on a MetaStation-scale map with 30+ players
 
 ## How to use
 

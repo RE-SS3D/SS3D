@@ -37,6 +37,8 @@ Each transition is one Tier 3 freeform combine action with a short visible timer
 
 Only relevant when building into previously-unclaimed open space rather than reconfiguring an existing interior, which already has floor as a map-authored given.
 
+**Patching a hull hole is not deferred.** Laying plating over a floor tile a blast broke through to space (`explosives-destruction.md` §3, Floors) is the one piece of this doc an engineer needs before construction itself: a single placement from a stack of metal sheets that seals the hull again. It's the same plating object as below. Nothing else in this doc comes with it: no girders, no walls and no claiming new footprint.
+
 **Deck plating is a new placeable tile object**, laid via the same freeform combine grammar, consuming metal sheet stock. It's a state change on a tile cell the station's logical grid already spans (unclaimed, unrendered, no Area) — not new coordinate space, the same "operates on an existing tile cell" assumption every other placeable system in this project already makes. Flagged as an assumption for Cursor to confirm against the actual tilemap implementation, not a redesign of the grid itself.
 
 **The one genuine order dependency in this doc:** a girder can't be framed onto a tile with no deck under it. Everywhere else in the ladder, order is staged for visibility, not gated by physics — here it actually is one.

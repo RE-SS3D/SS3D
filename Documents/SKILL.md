@@ -95,6 +95,8 @@ Hub: [milestones/INDEX.md](milestones/INDEX.md) (current focus + list of gates).
 - A gate is `planned` until one of its slices ships, then `in-progress` until the gate itself ships.
 - **Slice status** starts with one word: `shipped | partial | pending | blocked`, optionally followed by ` — <detail>`. Versioning and the roadmap generator both read that first word.
 - **Player view** (last Slices column) says what the slice means for a player, in plain language with no internal names: the outcome, then what already works in parentheses when `partial`. A closing slice that only checks the others together starts with `Finish line:` and is not counted as progress. Run `python3 Tools/generate_roadmap.py` after changing any slice status, Player view, or the `Goal`/`Roadmap` header; CI (`docs-check.yml`) fails when ROADMAP.md is stale.
+- Every gate names the [vision](design/vision.md) pillars it advances, or, for an enabler gate (servers, tooling, testing), the gameplay gate it serves. An enabler slice that serves no gameplay gate goes to **Explicitly deferred**.
+- **Playable definition** opens with a **Done when** acceptance scenario someone could run and fail; slices that aren't closing slices say what done means in their Name or Status.
 - Bugs live in GitHub Issues, not milestone docs. A slice may cite an issue that blocks it in its Links column.
 
 **Header template:**
@@ -105,6 +107,7 @@ Hub: [milestones/INDEX.md](milestones/INDEX.md) (current focus + list of gates).
 > Depends on: <other milestone paths, if any>
 > Current focus: <slice id or “blocked on X” — also mirrored on milestones INDEX>
 > Roadmap: <Player-facing name> — <one-line summary of what players will be able to do>
+> Pillars: <pillar numbers from design/vision.md §2 it advances> | enabler for <gameplay gate it serves>
 ```
 
 **Body sections (fixed order):** **Playable definition**, **Dependency tree** (mermaid and/or nested bullets; leaf nodes link to design§ / effort / plan — this is the primary artifact), **Slices** (status table for the same nodes; columns `Id | Name | Status | Links | Player view`, Status third), **Explicitly deferred**, **Maintenance**.
