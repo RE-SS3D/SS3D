@@ -15,8 +15,8 @@ do end to end. Each goal is split into **slices**, the smaller pieces that have 
 
 | Goal | What you'll be able to do | Progress |
 |------|---------------------------|----------|
-| [Test server](#test-server) | Download a release, click join, play with others on a live server | 3 of 7 done, 3 partial |
-| [Map authoring](#map-authoring) | Build your own station in a release build and hand it in | 5 of 9 done, 3 partial |
+| [Test server](#test-server) | Download a release, click join, play with others on a live server | 5 of 7 done, 2 partial |
+| [Map authoring](#map-authoring) | Build your own station in a release build and hand it in | 8 of 9 done |
 | [Nuclear Operatives round](#nuclear-operatives-round) | Play a full Nuke Ops round from spawn to end screen | 2 of 10 done, 4 partial |
 | [Station round](#station-round) | Play a short, bare-bones SS13 shift with jobs and antagonists | 0 of 7 done, 1 partial, 1 blocked |
 
@@ -31,11 +31,11 @@ What already works, system by system, is listed in
 |---|---|---|
 | ✅ | T0 | Releases are built automatically, so there's always a download |
 | ✅ | T1 | The downloaded build loads and runs |
-| ⬜ | T2 | The game opens to a main menu: paste a server address once, then join in one click |
+| ✅ | T2 | The game opens to a main menu: paste a server address once, then join in one click |
 | 🟡 | T3 | Multiplayer sessions stay stable: doors work, admins can unstick a round, no lag spikes |
 | 🟡 | T4 | Rounds end with a summary screen and restart; you can join mid-round (joining mid-round works) |
 | ✅ | T6 | You can change volume, resolution and graphics quality, and they stay set |
-| 🟡 | T7 | A separate server where everyone can build and fight, and the station resets every 20 minutes (live, address shared in Discord) |
+| ✅ | T7 | A separate server where everyone can build and fight, and the station resets every 20 minutes (live, address shared in Discord) |
 
 **Finish line (T5):** a stranger downloads the latest release and plays on the live test server.
 
@@ -49,11 +49,11 @@ What already works, system by system, is listed in
 | ✅ | A1 | The downloaded build loads, including the station templates |
 | ✅ | A2 | Paint rooms, name them, choose their department and control door access |
 | ✅ | A2.5 | A developer builds the Nuke Ops station first and fixes what breaks |
-| 🟡 | A3 | The editor warns you about broken maps before you start a round |
+| ✅ | A3 | The editor warns you about broken maps before you start a round |
 | ✅ | A4 | Switching between editing and playing doesn't lose your work |
-| 🟡 | A5 | Easy to find, share and hand in your map files, with a testers' guide in the download (export, import and the guide are in; release check pending) |
+| ✅ | A5 | Easy to find, share and hand in your map files, with a testers' guide in the download |
 | ⬜ | A6 | A tester builds the Nuke Ops station from the download using only the guide, and it becomes the official test map |
-| 🟡 | A7 | Close the game and run Update_SS3D.bat (Windows) or ./update_ss3d.sh (Linux) to get the latest stable release without losing maps; the previous build stays available |
+| ✅ | A7 | Close the game and run Update_SS3D.bat (Windows) or ./update_ss3d.sh (Linux) to get the latest stable release without losing maps; the previous build stays available |
 
 ## Nuclear Operatives round
 

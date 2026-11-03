@@ -110,8 +110,9 @@ original; an interrupted swap or failed restore leaves staging/backup files for 
 
 `Tools/updater/test-update.ps1` uses temporary fixtures and mocked downloads, with no Unity or
 network dependency. `.github/workflows/updater-tests.yml` checks relevant PRs on Windows
-PowerShell 5.1; `develop-release.yml` also requires that test job before publishing. Native
-Windows download/update and backup launch are still required in first-release dogfood.
+PowerShell 5.1; `develop-release.yml` also requires that test job before publishing.
+`updater-e2e.yml` covers a native Windows download/update and launches both the updated game
+and the backup ([Tools/updater/README.md](../../Tools/updater/README.md)).
 
 ### Linux client release updates
 

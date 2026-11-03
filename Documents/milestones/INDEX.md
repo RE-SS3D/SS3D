@@ -12,18 +12,18 @@ Three tracks run in parallel — an **operational** one that makes multiplayer p
 **Near-term operational push** — [test-server.md](test-server.md):
 
 - **T1 shipped** — Release zips load and host (owner-verified on stable v0.3.x; no outside tester yet)
-- **T2** — Main menu with one-click join ([main-menu.md](../design/main-menu.md)); replaces the IP-prompting `.bat` files
+- **T2 shipped** — Main menu with recent servers and one-click join (v0.5.0; owner joined the sandbox through it); public list follows when the sandbox goes public
 - **T3** — Session stability: doors under MP, remote drop/selection, remaining admin wedge tools (round controls + stop-cancels-start shipped), Nuke Ops happy-path smoke, test-station perf floor. Nightly CI smoke runs on TomNAS; harness contracts (scenarios, curated smoke, nightly budgets): [testing philosophy](../architecture/2026-11_testing-philosophy.md#harness-contracts)
-- **T4** — End-game screen + restart (**shared with M5**); latejoin without softlock shipped, including after an earlier round
-- **T7** — Sandbox server caps (live on TomNAS; loop, `/bug`/F8 and the owner's first-session fixes #111–#118 shipped)
+- **T4** — End-game screen + restart (**shared with M5**), implemented on `claude/round-end` and awaiting merge; latejoin without softlock shipped, including after an earlier round
+- **T7 shipped** — Invite-only sandbox live on TomNAS (loop, `/bug`/F8, first-session fixes #111–#118); build caps wait on tester-session numbers and gate a public listing
 
 **Authoring track** — [map-authoring.md](map-authoring.md) (expect many gaps: map authoring in a build is largely untested):
 
 - **A1 shipped** — Loadable local build, including packaged `Data/StationTemplates/` (shares test-server T1)
 - **A2 shipped** — Scripts → Rooms: painting, metadata, shared toolbar, undo/persistence and APC-facing membership; owner manually accepted in the editor
 - **A2.5 shipped** — Owner dogfooded the map editor and the F8 bug report in a release build
-- **A3 partial** — Map validation and save warnings implemented; Unity validation/render review pending
-- **A7 partial** — Windows/Linux client stable-release updaters implemented; packaged update and backup launch checks pending before public announcement
+- **A3, A4, A5, A7 shipped** — Map validator, edit loop, export/import + `TESTERS.md`, and stable-release updaters (real-Windows end-to-end check)
+- **A6** — Testers build maps from the release using `TESTERS.md` (announced on Discord 2026-11)
 
 **Active gameplay gate** — [mvp1-nuke-ops.md](mvp1-nuke-ops.md) (M1 combat + M2 structural/blast API + client atmos VFX Phase 1 + equal-P turf diffusion shipped):
 
