@@ -58,8 +58,8 @@ minutes.
 | Labels | `self-hosted`, `linux`/`Linux`, `x64`/`X64`, `unity` |
 | Install dir | `/home/cu6e/actions-runner` |
 | Service | user systemd `github-actions-runner.service` (`systemctl --user …`) |
-| Library stash (smoke) | `/home/cu6e/.cache/ss3d/Library` (same FS as `/home/cu6e` — `mv` is rename) |
-| Library stash (EditMode) | `/home/cu6e/.cache/ss3d/Library-editmode` (separate so a failed EditMode discard cannot wipe the warm build cache) |
+| Library stash (smoke) | `/home/cu6e/.cache/ss3d/Library` (restore copies it into the workspace, ~20 s; only a green job moves its Library back, so a failed or cancelled run keeps the last green stash) |
+| Library stash (EditMode) | `/home/cu6e/.cache/ss3d/Library-editmode` (separate so EditMode and builds don't overwrite each other's cache) |
 | Manual clone slot | `/home/cu6e/Dev/` (optional; CI checks out into runner `_work`) |
 
 Still required once was: docker group + linger + image pull (done Jul 2026). Pre-pull:
@@ -74,7 +74,7 @@ the user systemd unit dies when all `cu6e` sessions end.
 ### Workflow
 
 - [`.github/workflows/multiplayer-smoke-test.yml`](../../.github/workflows/multiplayer-smoke-test.yml):
-  `runs-on: [self-hosted, linux, x64, unity]`; restore/save Library stash via `mv`;
+  `runs-on: [self-hosted, linux, x64, unity]`; restore the Library stash with `cp -a`, save it with `mv` after a green job;
   **one** `unity-builder` step with `ClientAndServerBuildScript.BuildBothForCi`;
   `runAsHostUser: true`; nightly `cron: "0 4 * * *"`.
 - [`.github/workflows/editmodetestrunner.yml`](../../.github/workflows/editmodetestrunner.yml):

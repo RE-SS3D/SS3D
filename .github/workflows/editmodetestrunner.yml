@@ -94,7 +94,9 @@ jobs:
           if [[ -d "$stash" ]]; then
             echo "Restoring warm Library stash from $stash"
             du -sh "$stash" || true
-            mv "$stash" "$workspace_lib"
+            # Copy, not mv: a cancelled run skips both the save and the discard step, so a
+            # moved stash would be lost.
+            cp -a "$stash" "$workspace_lib"
           else
             echo "No Library stash at $stash — cold import this run"
           fi
@@ -151,7 +153,7 @@ jobs:
         if: needs.pick_runner.outputs.self_hosted == 'true' && failure()
         run: |
           set -euo pipefail
-          # Stash was already mv'd into workspace on restore; do not write a failed Library back.
+          # The stash still holds the last green Library; do not write a failed one back.
           rm -rf "${GITHUB_WORKSPACE}/Library"
           echo "Discarded workspace Library/ after failure"
       - name: Produce summary output

@@ -258,7 +258,9 @@ jobs:
           if [[ -d "$stash" ]]; then
             echo "Restoring warm Library stash from $stash"
             du -sh "$stash" || true
-            mv "$stash" "$workspace_lib"
+            # Copy, not mv: a cancelled run skips both the save and the discard step, so a
+            # moved stash would be lost.
+            cp -a "$stash" "$workspace_lib"
           else
             echo "No Library stash at $stash — cold import this run"
           fi
@@ -391,7 +393,9 @@ jobs:
           if [[ -d "$stash" ]]; then
             echo "Restoring warm Library stash from $stash"
             du -sh "$stash" || true
-            mv "$stash" "$workspace_lib"
+            # Copy, not mv: a cancelled run skips both the save and the discard step, so a
+            # moved stash would be lost.
+            cp -a "$stash" "$workspace_lib"
           else
             echo "No Library stash at $stash — cold import this run"
           fi
