@@ -1,7 +1,7 @@
 > Code paths: Assets/Scripts/SS3D/Systems/Electricity/
 > Entry points: ElectricitySubSystem
 > Status: partial
-> Verified: 441c9d2ba — 2026-10-30 (preview light ownership guard)
+> Verified: 504c22428 — 2026-11-03
 
 # Electricity
 
@@ -87,6 +87,8 @@ Power circuit simulation, APC channel gating, SMES storage, and tile-linked elec
 - **Client light fixtures ignore APC / wall-switch toggles:** Host `LightPower` can read live APC channels from the area registry; pure clients cannot. Fixture lit mode is a **server SyncVar** (`LightPower._fixtureVisual`); clients only apply it. Do not re-derive emit on clients from area/obsolete `IsSetUp`. `ApcController.OnChannelsChanged` refreshes fixtures on the server so the SyncVar updates immediately.
 - **Machine "Turn on" snaps facing to prefab/default:** `MachineVibrate` used to cache rest rotation in `OnStart`, then force it when Enable becomes true. Tile-placed machines (Pacman / `FuelPowerGenerator`) often get their final yaw later (spawn sync, `PlacedTileObject` direction). Capture rest pose when vibration starts, restore it when stopping — never from a stale Start snapshot.
 - **Solar aim visual vs placement yaw:** `SolarPanel` SyncVar aim drives world yaw independently of tile placement direction. Never assign `rotation = Euler(0, yaw, 0)` on an FBX armature bone — that zeros Blender rest pitch/roll and tumbles the rig toward north. Capture rest, strip world-Y, then `AngleAxis(yaw, up) * restNoYaw`. Prefer aim transform = `Model` (FBX root), not a skinned bone.
+
+- **`OnTick` handlers subscribed in `OnStartClient` must unsubscribe in `OnStopClient`.** A client that leaves an object's observer range and comes back runs `OnStartClient` again. `SmesBattery` unsubscribed only in `OnDestroyed`, so the first handler outlived the SMES and threw `MissingReferenceException` on its destroyed renderer every tick after a round reload. Hit 2026-11-03 by the space ragdoll scenario.
 
 ## Depends on / Used by
 

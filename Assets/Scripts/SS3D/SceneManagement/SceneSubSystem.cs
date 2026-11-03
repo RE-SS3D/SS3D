@@ -103,6 +103,18 @@ namespace SS3D.SceneManagement
 #else
             ApplicationSettings applicationSettings = ScriptableSettings.GetOrFind<ApplicationSettings>();
 
+            // An editor automation host (Multiplayer Play Mode's smoke: tags) must load Game the way
+            // a dedicated server does. Loading Intro/Launcher here races FishNet's online-scene load -
+            // the host's local client can time out before Game is up. Clients keep the Intro load:
+            // starting in Boot makes FishNet register Game's scene objects before they exist.
+            if (UnityEngine.Application.isEditor
+                && !string.IsNullOrEmpty(applicationSettings.ActiveTestScriptPath)
+                && !MultiplayerPlayModePlayer.IsVirtualPlayer)
+            {
+                Log.Debug(this, "Skipping the main scene for an automation host", Logs.Important);
+                return;
+            }
+
             bool isUsingCommandLineArgs = false;
 
             if (!UnityEngine.Application.isEditor)
@@ -111,8 +123,6 @@ namespace SS3D.SceneManagement
             }
 
             string sceneToLoad = isUsingCommandLineArgs ? Scenes.Intro : Scenes.Launcher;
-
-            Log.Debug(this, $"Loading main scene as {sceneToLoad}", Logs.Important);
 
             if (applicationSettings.ForceLauncher)
             {
@@ -129,6 +139,8 @@ namespace SS3D.SceneManagement
                     sceneToLoad = Scenes.Launcher;
                 }
             }
+
+            Log.Debug(this, $"Loading main scene as {sceneToLoad}", Logs.Important);
 
             // This call is async and not awaited. Hence the pragma disable.
 			#pragma warning disable CS4014

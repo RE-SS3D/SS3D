@@ -803,6 +803,40 @@ namespace SS3D.Systems.Interactions
             return state.Interaction.CanInteract(targetEvent);
         }
 
+#if UNITY_EDITOR
+        /// <summary>
+        /// Automation only: picks <paramref name="genericName"/> from the active hand's interactions on
+        /// <paramref name="target"/> at <paramref name="point"/> under <paramref name="intent"/>, then sends it
+        /// through the same server RPC as a click, so the server revalidates range, intent and gameplay gates.
+        /// Returns why it could not be sent, or null.
+        /// </summary>
+        [Client]
+        public string RunInteractionForTesting(GameObject target, Vector3 point, string genericName, IntentType intent)
+        {
+            if (_ownerIntent != intent)
+            {
+                RequestToggleIntent();
+            }
+
+            List<InteractionEntry> viable = GetViableInteractionsFromTarget(target, true, point, Vector3.up, out InteractionEvent interactionEvent);
+            InteractionEntry entry = viable.Find(e => e.Interaction.GetGenericName() == genericName);
+            if (entry.Interaction == null)
+            {
+                return $"No viable '{genericName}' on {target.name}; viable: "
+                    + string.Join(", ", viable.Select(e => e.Interaction.GetGenericName()));
+            }
+
+            interactionEvent.Target = entry.Target;
+            if (!TryGetNetworkTarget(interactionEvent, out NetworkObject networkTarget))
+            {
+                return $"'{genericName}' target on {target.name} has no NetworkObject";
+            }
+
+            CmdRunInteraction(networkTarget, point, entry.Id.GenericName, entry.Id.TargetComponentIndex);
+            return null;
+        }
+#endif
+
         /// <summary>
         /// Runs an interaction (chosen on the client) on the server. For reasons of serialization and security, some code is re-run.
         /// </summary>

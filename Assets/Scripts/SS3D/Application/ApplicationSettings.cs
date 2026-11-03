@@ -36,6 +36,15 @@ namespace SS3D.Application
         public string TestScriptPath;
 
         /// <summary>
+        /// The automation script this process runs: <see cref="TestScriptPath"/>, or in the editor
+        /// the script named by this Multiplayer Play Mode player's <c>smoke:</c> tag. Empty for
+        /// normal play.
+        /// </summary>
+        public string ActiveTestScriptPath => string.IsNullOrEmpty(TestScriptPath)
+            ? MultiplayerPlayModePlayer.TaggedScriptPath
+            : TestScriptPath;
+
+        /// <summary>
         /// Editor-only station template loaded at boot instead of the most recently saved one.
         /// Empty keeps the most-recent behaviour; built executables always ignore it.
         /// </summary>

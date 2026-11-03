@@ -1,7 +1,0 @@
-# Dedicated-server side of the atmos-client-sync scenario. Same shape as basic-round.txt — stay
-# up long enough for the client to embark, force an atmos change, and check its own client-side
-# snapshot before we tear down.
-wait_connected
-wait_round Ongoing
-wait_seconds 30
-disconnect

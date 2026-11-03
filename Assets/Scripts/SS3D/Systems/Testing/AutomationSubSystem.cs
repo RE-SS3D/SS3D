@@ -41,8 +41,14 @@ namespace SS3D.Systems.Testing
     /// </para>
     /// <para>
     /// Bootstrapped by <see cref="SS3D.Systems.Bootstrap.SystemsBootstrap"/> — a no-op unless
-    /// <see cref="ApplicationSettings.TestScriptPath"/> is set (the "-testscript=" CLI arg), so this
-    /// has zero effect on normal play.
+    /// <see cref="ApplicationSettings.ActiveTestScriptPath"/> is set (the "-testscript=" CLI arg, or
+    /// a Multiplayer Play Mode player's <c>smoke:</c> tag in the editor), so this has zero effect on
+    /// normal play.
+    /// </para>
+    /// <para>
+    /// In the editor the script never quits the process: it writes its result to
+    /// <see cref="MultiplayerPlayModePlayer.ResultDirectory"/> for the editor driver and stays in
+    /// Play Mode until the driver stops it.
     /// </para>
     /// </summary>
     public sealed class AutomationSubSystem : SubSystem
@@ -55,6 +61,8 @@ namespace SS3D.Systems.Testing
         private bool _clientConnected;
         private bool _serverStarted;
         private bool _scriptStarted;
+        private readonly List<string> _editorErrors = new();
+        private readonly HashSet<int> _clientsInStartScenes = new();
 
         protected override void OnAwake()
         {
@@ -67,7 +75,9 @@ namespace SS3D.Systems.Testing
         {
             ApplicationSettings applicationSettings = ScriptableSettings.GetOrFind<ApplicationSettings>();
 
-            if (string.IsNullOrEmpty(applicationSettings.TestScriptPath))
+            string scriptPath = applicationSettings.ActiveTestScriptPath;
+
+            if (string.IsNullOrEmpty(scriptPath))
             {
                 return;
             }
@@ -87,17 +97,66 @@ namespace SS3D.Systems.Testing
             UnityEngine.Application.SetStackTraceLogType(LogType.Warning, StackTraceLogType.Full);
             UnityEngine.Application.logMessageReceived += HandleUnityLogMessage;
 
+            if (UnityEngine.Application.isEditor)
+            {
+                UnityEngine.Application.logMessageReceived += CollectEditorError;
+            }
+
             SubscribeToConnectionEvents();
             AddHandle(RoundStateUpdated.AddListener(HandleRoundStateUpdated));
 
-            // IntroUIHelper skips auto-join when -testscript= is set so disconnect/reconnect
-            // is not raced by SkipIntro. Kick off the first client session here instead.
+            StartCoroutine(RunScriptAfterSession(scriptPath));
+        }
+
+        /// <summary>
+        /// IntroUIHelper skips auto-join when -testscript= is set so disconnect/reconnect is not
+        /// raced by SkipIntro. Kick off the first client session here instead - for an MPPM clone,
+        /// only once the host has its start scenes up (see <see cref="WaitForHost"/>).
+        /// </summary>
+        private IEnumerator RunScriptAfterSession(string scriptPath)
+        {
             if (!IsServerRole())
             {
+                if (UnityEngine.Application.isEditor && MultiplayerPlayModePlayer.IsVirtualPlayer)
+                {
+                    yield return WaitForHost();
+                }
+
                 SubSystems.Get<NetworkSessionSubSystem>().StartNetworkSession();
             }
 
-            StartCoroutine(RunScript(applicationSettings.TestScriptPath));
+            yield return RunScript(scriptPath);
+        }
+
+        private IEnumerator WaitForHost()
+        {
+            const float timeoutSeconds = 180f;
+            string marker = MultiplayerPlayModePlayer.HostReadyPath;
+            float deadline = Time.realtimeSinceStartup + timeoutSeconds;
+
+            while (!System.IO.File.Exists(marker) && Time.realtimeSinceStartup < deadline)
+            {
+                yield return null;
+            }
+
+            if (!System.IO.File.Exists(marker))
+            {
+                UnityEngine.Debug.LogWarning($"MPPM host did not report ready within {timeoutSeconds}s; connecting anyway");
+            }
+        }
+
+        protected override void OnDestroyed()
+        {
+            base.OnDestroyed();
+
+            // The editor keeps static delegates across Play Mode sessions (domain reload is off).
+            UnityEngine.Application.logMessageReceived -= HandleUnityLogMessage;
+            UnityEngine.Application.logMessageReceived -= CollectEditorError;
+
+            if (InstanceFinder.NetworkManager != null)
+            {
+                InstanceFinder.NetworkManager.SceneManager.OnClientLoadedStartScenes -= HandleClientLoadedStartScenes;
+            }
         }
 
         private void SubscribeToConnectionEvents()
@@ -106,6 +165,19 @@ namespace SS3D.Systems.Testing
 
             networkManager.ClientManager.OnClientConnectionState += HandleClientConnectionState;
             networkManager.ServerManager.OnServerConnectionState += HandleServerConnectionState;
+            networkManager.SceneManager.OnClientLoadedStartScenes += HandleClientLoadedStartScenes;
+        }
+
+        /// <summary>
+        /// Server side: a remote client has finished loading the start scenes (the online Game
+        /// scene). Starting the round before this drops scene objects for that client.
+        /// </summary>
+        private void HandleClientLoadedStartScenes(FishNet.Connection.NetworkConnection connection, bool asServer)
+        {
+            if (asServer && !connection.IsHost)
+            {
+                _clientsInStartScenes.Add(connection.ClientId);
+            }
         }
 
         private void HandleClientConnectionState(ClientConnectionStateArgs args)
@@ -121,6 +193,21 @@ namespace SS3D.Systems.Testing
         private void HandleRoundStateUpdated(ref EventContext context, in RoundStateUpdated e)
         {
             _currentRoundState = e.RoundState;
+        }
+
+        /// <summary>
+        /// The MPPM main editor hosts; its clones wait for this before connecting, so they never
+        /// receive Game scene spawns before they have Game (see HostReadyPath).
+        /// </summary>
+        private static void MarkHostReady()
+        {
+            if (!UnityEngine.Application.isEditor || MultiplayerPlayModePlayer.IsVirtualPlayer)
+            {
+                return;
+            }
+
+            System.IO.Directory.CreateDirectory(MultiplayerPlayModePlayer.ResultDirectory);
+            System.IO.File.WriteAllText(MultiplayerPlayModePlayer.HostReadyPath, "ready");
         }
 
         private bool IsRoundState(RoundState target)
@@ -157,8 +244,7 @@ namespace SS3D.Systems.Testing
 
             if (failureReason != null)
             {
-                TestSignal.Emit(this, "ScriptFailed", failureReason);
-                yield return QuitAfterDelay();
+                yield return Finish("ScriptFailed", failureReason);
                 yield break;
             }
 
@@ -224,14 +310,61 @@ namespace SS3D.Systems.Testing
 
                 if (failureReason != null)
                 {
-                    TestSignal.Emit(this, "ScriptFailed", failureReason);
-                    yield return QuitAfterDelay();
+                    yield return Finish("ScriptFailed", failureReason);
                     yield break;
                 }
             }
 
-            TestSignal.Emit(this, "ScriptComplete");
+            yield return Finish("ScriptComplete");
+        }
+
+        private IEnumerator Finish(string signal, string reason = "")
+        {
+            TestSignal.Emit(this, signal, reason);
+
+            if (UnityEngine.Application.isEditor)
+            {
+                WriteEditorResult(signal, reason);
+                yield break;
+            }
+
             yield return QuitAfterDelay();
+        }
+
+        /// <summary>
+        /// The editor's equivalent of the smoke harness's log gate: the signal plus every error
+        /// this player logged since the script started, for MultiplayerPlayModeSmoke to judge.
+        /// </summary>
+        private void WriteEditorResult(string signal, string reason)
+        {
+            EditorScriptResult result = new()
+            {
+                player = MultiplayerPlayModePlayer.Name,
+                signal = signal,
+                reason = reason,
+                errors = _editorErrors.ToArray(),
+            };
+
+            string directory = MultiplayerPlayModePlayer.ResultDirectory;
+            System.IO.Directory.CreateDirectory(directory);
+            System.IO.File.WriteAllText(System.IO.Path.Combine(directory, result.player + ".json"), JsonUtility.ToJson(result, true));
+        }
+
+        private void CollectEditorError(string condition, string stackTrace, LogType type)
+        {
+            if (type is LogType.Error or LogType.Exception or LogType.Assert)
+            {
+                _editorErrors.Add($"{type}: {condition}");
+            }
+        }
+
+        [Serializable]
+        private struct EditorScriptResult
+        {
+            public string player;
+            public string signal;
+            public string reason;
+            public string[] errors;
         }
 
         private IEnumerator RunInstruction(AutomationInstruction instruction)
@@ -258,7 +391,22 @@ namespace SS3D.Systems.Testing
                         yield return WaitUntil(IsLobbyReady, _waitTimeoutSeconds, "wait_lobby");
                     }
 
+                    // The MPPM main editor reports ready only once Game is loaded (see MarkHostReady).
+                    if (UnityEngine.Application.isEditor && !MultiplayerPlayModePlayer.IsVirtualPlayer)
+                    {
+                        yield return WaitUntil(IsGameSceneLoaded, _waitTimeoutSeconds, "wait_game_scene");
+                        MarkHostReady();
+                    }
+
                     TestSignal.Emit(this, IsServerRole() ? "ServerReady" : "ClientConnected");
+                    break;
+
+                // Server: N remote clients have finished loading the start scenes. Used by the
+                // Multiplayer Play Mode host, where starting the round before the clone's client
+                // has Game would drop the round's scene objects for it (FishNet SceneId errors).
+                case "wait_clients":
+                    int clientsInScenes = int.Parse(instruction.Args[0], System.Globalization.CultureInfo.InvariantCulture);
+                    yield return WaitUntil(() => _clientsInStartScenes.Count >= clientsInScenes, _waitTimeoutSeconds, "wait_clients");
                     break;
 
                 case "ready":
@@ -315,7 +463,21 @@ namespace SS3D.Systems.Testing
                     break;
 
                 case "console":
-                    RunConsoleCommand(instruction.ArgsJoined);
+                    RunConsoleCommand(ExpandVariables(instruction.ArgsJoined));
+                    break;
+
+                // Retries a console line until it stops throwing: waits on an Offline assert command
+                // (e.g. observesync) whose state another process changes.
+                case "wait_console":
+                    yield return WaitForConsole(ExpandVariables(instruction.ArgsJoined));
+                    TestSignal.Emit(this, "ConsoleCheckPassed", instruction.ArgsJoined);
+                    break;
+
+                // At least N player bodies are spawned, as this process sees them.
+                case "wait_players":
+                    int players = int.Parse(instruction.Args[0], System.Globalization.CultureInfo.InvariantCulture);
+                    yield return WaitUntil(() => CountSpawnedPlayers() >= players, _waitTimeoutSeconds, $"wait_players {players}");
+                    TestSignal.Emit(this, "PlayersSpawned", players.ToString(System.Globalization.CultureInfo.InvariantCulture));
                     break;
 
                 // Server: the sandbox wrote at least N reset-health lines (one per round reset).
@@ -398,6 +560,9 @@ namespace SS3D.Systems.Testing
 
         private bool IsConnected() => IsServerRole() ? _serverStarted : _clientConnected;
 
+        private static bool IsGameSceneLoaded() =>
+            UnityEngine.SceneManagement.SceneManager.GetSceneByName(Scenes.Game).isLoaded;
+
         private static bool IsLobbyReady()
         {
             if (!SubSystems.TryGet(out PlayerSubSystem playerSystem))
@@ -450,6 +615,61 @@ namespace SS3D.Systems.Testing
             StartClientConnectionFromSettings();
 
             yield return WaitUntil(() => _clientConnected, _waitTimeoutSeconds, "reconnect_started");
+        }
+
+        /// <summary>Replaces {ckey} with this connection's ckey, so scripts can target their own player.</summary>
+        private static string ExpandVariables(string commandLine)
+        {
+            if (!commandLine.Contains("{ckey}"))
+            {
+                return commandLine;
+            }
+
+            string ckey = SubSystems.Get<PlayerSubSystem>().GetCkey(InstanceFinder.ClientManager.Connection);
+            return commandLine.Replace("{ckey}", ckey);
+        }
+
+        private static int CountSpawnedPlayers()
+        {
+            int count = 0;
+            foreach (Entity entity in SubSystems.Get<EntitySubSystem>().SpawnedPlayers)
+            {
+                if (entity != null)
+                {
+                    count++;
+                }
+            }
+
+            return count;
+        }
+
+        private IEnumerator WaitForConsole(string commandLine)
+        {
+            float startTime = Time.time;
+            while (true)
+            {
+                string failure = null;
+                try
+                {
+                    RunConsoleCommand(commandLine);
+                }
+                catch (Exception ex)
+                {
+                    failure = ex.Message;
+                }
+
+                if (failure == null)
+                {
+                    yield break;
+                }
+
+                if (Time.time - startTime > _waitTimeoutSeconds)
+                {
+                    throw new TimeoutException($"Timed out after {_waitTimeoutSeconds}s waiting for '{commandLine}': {failure}");
+                }
+
+                yield return new WaitForSeconds(0.25f);
+            }
         }
 
         private void RunConsoleCommand(string commandLine)

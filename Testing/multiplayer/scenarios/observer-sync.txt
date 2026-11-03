@@ -1,0 +1,8 @@
+# Guards: state another player changes replicates to a second, observing client (held item, damage, door, area lights, atmos) · Not cheaper because: a Play Mode host is its own observer; this needs pure client processes against a UNITY_SERVER build
+# Dedicated-server side of observer-sync: observes only. Client 0 acts, client 1 checks what it
+# sees with `observesync` (ObserveSyncCommand). Replaces atmos-client-sync and the planned
+# light-sync scenario (2026-07_multiplayer-testing-self-hosted-ci.md Phase 2).
+wait_connected
+wait_round Ongoing
+wait_seconds 75
+disconnect

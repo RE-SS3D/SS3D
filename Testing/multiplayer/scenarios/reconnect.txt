@@ -1,4 +1,5 @@
-# Dedicated-server side of the reconnect scenario. Purely an observer, like basic-round.txt -
+# Guards: a client disconnects mid-round and reconnects with the same ckey to its body · Not cheaper because: needs a real transport drop between separate processes
+# Dedicated-server side of the reconnect scenario. Purely an observer, like late-join.txt -
 # a real UNITY_SERVER build has no ClientManager connection of its own. The client embarks,
 # disconnects, and reconnects with the same ckey; this just needs to stay up long enough for
 # that whole round trip (see reconnect-client.txt) before tearing down.

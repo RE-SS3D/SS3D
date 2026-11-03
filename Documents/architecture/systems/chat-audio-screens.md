@@ -1,7 +1,7 @@
 > Code paths: Assets/Scripts/SS3D/Systems/Comms/, Assets/Scripts/SS3D/Systems/Screens/, Assets/Content/Data/Comms/Channels/, Assets/Content/Systems/UI/Comms/
 > Entry points: CommsSubSystem, LocalSpeechBubbleController, CommsFeedController, PlayerCameraSubSystem, CameraSubSystem, CameraFollow
 > Status: partial
-> Verified: d7d70d1a5 — 2026-11-02
+> Verified: 504c22428 — 2026-11-03
 
 # Chat / audio / screens
 
@@ -99,7 +99,7 @@ HUD feed yet.
 
 ## Tests
 
-- `Testing/ui/validate.sh --steps compile,critical-speech` exercises healthy delivery, critical refusal, treatment recovery and corpse refusal for speak/whisper/shout, radio and announcements in a host session. Remote clients and OOC are outside this pilot.
+- `Testing/ui/validate.sh --steps compile,scenarios:Speech` (`SpeechScenarios`) exercises healthy delivery, critical refusal, treatment recovery and corpse refusal for speak/whisper/shout, radio and announcements in a host session. Remote clients and OOC are outside it.
 
 ## Depends on / Used by
 

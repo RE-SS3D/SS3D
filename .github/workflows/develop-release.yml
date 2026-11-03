@@ -363,11 +363,7 @@ jobs:
           SS3D_CLIENT_BIN_NAME: ${{ env.CLIENT_BIN_NAME }}
         run: |
           chmod +x "$SERVER_BUILD_DIR/$SERVER_BIN_NAME" "$CLIENT_BUILD_DIR/$CLIENT_BIN_NAME"
-          chmod +x Testing/multiplayer/run_smoketest.sh
-          ./Testing/multiplayer/run_smoketest.sh basic-round
-          ./Testing/multiplayer/run_smoketest.sh late-join 2
-          ./Testing/multiplayer/run_smoketest.sh reconnect
-          ./Testing/multiplayer/run_smoketest.sh atmos-client-sync
+          ./Testing/multiplayer/run_smoke_set.sh --skip-nightly-only
       - name: Upload harness logs
         uses: actions/upload-artifact@v4
         if: ${{ always() && needs.prepare.outputs.run_smoke == 'true' }}

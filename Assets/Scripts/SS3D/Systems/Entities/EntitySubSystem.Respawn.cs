@@ -121,14 +121,8 @@ namespace SS3D.Systems.Entities
                 return false;
             }
 
-            Mind mind = current.Mind;
-            _spawnedPlayers.Remove(current);
-            current.SetMind(null);
-            ServerManager.Despawn(current.NetworkObject);
-            current.GameObject.Dispose(true);
             _respawnCooldown.Forget(player.Ckey);
-
-            Entity body = SpawnPlayer(player, mind);
+            Entity body = ReplaceBody(player, current);
             if (body != null && _previousCorpseByPlayer.Remove(player.Ckey, out Entity corpse)
                 && settings.RemoveCorpseOnRespawn && corpse != null)
             {
@@ -141,6 +135,44 @@ namespace SS3D.Systems.Entities
             TargetRespawnWithdrawn(conn);
             return body != null;
         }
+
+        /// <summary>Server: despawns <paramref name="current"/> (a ghost) and spawns a fresh body carrying its mind.</summary>
+        [Server]
+        private Entity ReplaceBody(Player player, Entity current)
+        {
+            Mind mind = current.Mind;
+            _spawnedPlayers.Remove(current);
+            current.SetMind(null);
+            ServerManager.Despawn(current.NetworkObject);
+            current.GameObject.Dispose(true);
+            return SpawnPlayer(player, mind);
+        }
+
+#if UNITY_EDITOR
+        /// <summary>
+        /// Automation only, with <see cref="SpawnBodyForTesting"/>: takes a living player's body away,
+        /// skipping the respawn rules, so each PlayMode scenario starts from an undamaged, empty-handed body.
+        /// Despawns like round end does, without clearing the mind first: removing ownership and
+        /// despawning a Human in one tick makes the host client fail its nested spawns.
+        /// </summary>
+        [Server]
+        public Mind DespawnBodyForTesting(Player player)
+        {
+            Entity current = GetSpawnedEntity(player);
+            if (current == null)
+                return null;
+
+            Mind mind = current.Mind;
+            _spawnedPlayers.Remove(current);
+            ServerManager.Despawn(current.NetworkObject);
+            current.GameObject.Dispose(true);
+            return mind;
+        }
+
+        /// <summary>Automation only: spawns a player's body at a job spawn with <paramref name="mind"/>.</summary>
+        [Server]
+        public Entity SpawnBodyForTesting(Player player, Mind mind) => SpawnPlayer(player, mind);
+#endif
 
         /// <summary>Server, round end: despawns every corpse still in the world.</summary>
         [Server]

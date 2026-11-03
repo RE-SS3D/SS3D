@@ -1,7 +1,7 @@
 > Code paths: Assets/Scripts/SS3D/Systems/Entities/
 > Entry points: EntitySubSystem, MindSubSystem, HumanoidBodyStateMachine
 > Status: partial
-> Verified: b0df80aa9 — 2026-11-02
+> Verified: 504c22428 — 2026-11-03
 
 # Entities
 
@@ -95,11 +95,9 @@ Humanoid/silicon entity spawning, minds, and join/round ordering with [rounds-lo
 
 ## Tests
 
-- `Testing/ui/validate.sh --steps compile,critical-reclaim` exercises ownership loss/reclaim while critical, collapsed-before-network-start ordering and treatment recovery in a host. A separate-client transport reconnect remains outside the pilot.
+- `Testing/ui/validate.sh --steps compile,scenarios:Respawn` (`RespawnScenarios`) runs two death/respawn cycles in the test room: kill → ghost, the cooldown refuses and keeps the corpse, respawn removes it and leaves one Human, and the new body is owned and takes items. `SandboxServerTests` covers the profile/default/admin-save rule values.
 
-- `Testing/ui/validate.sh --steps compile,respawn-cleanup` checks two death/respawn cycles: refusal preserves the corpse, success removes it, and Human count stays flat. `SandboxServerTests` covers the profile/default/admin-save rule values.
-
-- `Testing/ui/validate.sh --steps compile,ragdoll-space` checks supported critical collapse, recovery, critical/dead zero-gravity stability and returning a corpse to deck in a host session. Remote physics ownership remains outside this pilot.
+- `Testing/ui/validate.sh --steps compile,scenarios:Environment` (`EnvironmentScenarios`) covers ragdoll gravity on the deck (critical from plasma), critical/dead weightlessness in open space and back on the deck, and ownership loss/reclaim while critical with collapsed-before-network-start ordering and treatment recovery. A separate-client transport reconnect and remote physics ownership stay outside it.
 
 ## Depends on / Used by
 

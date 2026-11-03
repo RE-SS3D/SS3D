@@ -1,10 +1,13 @@
-"""One-command validation for UI/session work. Use Testing/ui/validate.sh or compile.sh.
+"""Validation in the open editor. Use Testing/ui/validate.sh or compile.sh.
 
-Steps: preflight → compile → editmode → playmode → visual → lifecycle → sandbox (--full) → build (client and dedicated
-server, each if stale) → remote → smoke (Testing/multiplayer scenarios against both builds).
---quick skips playmode and stops after lifecycle. PlayMode failures in KnownIssueReproduction fixtures are reported
-separately against Testing/ui/playmode-known-issues.txt (expected failures), so known bugs neither
-fail the loop nor hide new failures. Every step has an expected duration and a timeout: past the
+Default: preflight → compile → editmode. Add focused steps with --steps (e.g. compile,editmode,scenarios:Medical).
+--nightly mirrors the nightly: editor tests, PlayMode, client+server build, multiplayer smoke.
+--weekly is the graphical set: lobby UI, lifecycle and remote client pilots (sandbox is on demand).
+scenarios:<category> runs the PlayMode tests in one NUnit category. mppm:<scenario> runs a multiplayer
+smoke scenario inside Multiplayer Play Mode (main editor hosts, Player2..4 joins as clients) - on
+demand only, since the built smoke stays the nightly gate. PlayMode failures in KnownIssueReproduction
+fixtures are reported separately against Testing/ui/playmode-known-issues.txt (expected failures), so known bugs
+neither fail the loop nor hide new failures. Every step has an expected duration and a timeout: past the
 expected duration the dialog watchdog runs every 30 s (a modal dialog fails the step at once);
 on timeout the last editor.log lines are printed. Exits nonzero on any failure and writes
 artifacts/ui/validate-<UTC>/summary.md.
@@ -29,12 +32,32 @@ UI = ROOT / "artifacts/ui"
 EDITOR_LOG = UI / "editor.log"
 COMPILE_RESULT = UI / "compile-result.json"
 BUILD_RESULTS = {"client": UI / "client-build-result.json", "server": UI / "server-build-result.json"}
-# The scenarios and client counts of .github/workflows/multiplayer-smoke-test.yml, plus sandbox-reset.
-SMOKE_SCENARIOS = [("basic-round", 1), ("late-join", 2), ("reconnect", 1), ("atmos-client-sync", 1),
-                   ("sandbox-reset", 1)]
+
+
+def smoke_scenarios():
+    """(scenario, clients) pairs from Testing/multiplayer/smoke-set.txt, the set the nightly runs."""
+    pairs = []
+    for line in (ROOT / "Testing/multiplayer/smoke-set.txt").read_text().splitlines():
+        fields = line.split("#", 1)[0].split()
+        if fields:
+            pairs.append((fields[0], int(fields[1])))
+    return pairs
+
+
 LOG_ERROR = re.compile(r"(: error [A-Za-z]+\d+:|error CS\d+)")
 ORDER = ["preflight", "compile", "editmode", "playmode", "visual", "lifecycle", "sandbox", "build", "remote", "smoke"]
-QUICK = ["preflight", "compile", "editmode", "visual", "lifecycle"]  # PlayMode is --full only (minutes)
+DEFAULT = ["preflight", "compile", "editmode"]
+NIGHTLY = ["preflight", "compile", "editmode", "playmode", "build", "smoke"]
+WEEKLY = ["preflight", "compile", "visual", "lifecycle", "build", "remote"]
+SCENARIOS = "scenarios:"  # scenarios:<NUnit category>
+MPPM = "mppm:"  # mppm:<scenario>, host + virtual players inside Multiplayer Play Mode
+# Scenario -> (host script for the main editor, client scripts for Player2..4). Scripts live in
+# Testing/multiplayer/mppm/ (MPPM-specific) or Testing/multiplayer/scenarios/ (shared with smoke).
+MPPM_SCENARIOS = {
+    "late-join": ("late-join-host", ["late-join-client-1"]),
+    "reconnect": ("reconnect-host", ["reconnect-client"]),
+}
+MPPM_RESULTS = ROOT / "Temp/mppm-automation"
 KNOWN_ISSUE_DIR = ROOT / "Assets/Scripts/Tests/KnownIssueReproduction"
 KNOWN_ISSUE_LIST = ROOT / "Testing/ui/playmode-known-issues.txt"
 PREFLIGHT = 'return string.Join("\\n", SS3D.Editor.Automation.AutomationPreflight.Check());'
@@ -90,8 +113,12 @@ class Editor:
         except Exception as error:
             return f"bridge unavailable ({str(error).splitlines()[0][:120]})"
 
-    async def wait_ready(self, timeout=180):
-        """Out of Play Mode, not compiling or importing, bridge answering."""
+    async def wait_ready(self, timeout=300):
+        """Out of Play Mode, not compiling or importing, bridge answering.
+
+        The in-editor MCP plugin can take a few minutes to re-register after a long player build
+        (seen: ~3 min after the 6.5 min server build), so the default allows for that.
+        """
         deadline = time.monotonic() + timeout
         reason = "?"
         while time.monotonic() < deadline:
@@ -192,10 +219,12 @@ async def step_compile(editor, ctx):
     return Done(f"no errors ({seconds:.1f}s compile)", rel(COMPILE_RESULT))
 
 
-async def run_test_job(editor, mode, expected, timeout):
+async def run_test_job(editor, mode, expected, timeout, category=None):
     """Run one Test Runner job through MCP; returns its data once the editor's scenes are restored."""
     await editor.wait_ready()
     args = {"mode": mode}
+    if category:
+        args["category_names"] = [category]
     if mode == "PlayMode":
         args["init_timeout"] = 120000  # entering Play Mode for the first test takes a while
     started = await editor.client.call_tool("run_tests", args, raise_on_error=False)
@@ -243,6 +272,19 @@ async def step_editmode(editor, ctx):
     report = ctx["out"] / "editmode.json"
     report.write_text(json.dumps(data, indent=2))
     summary = (data.get("result") or {}).get("summary") or {}
+    if not summary:
+        # The job sometimes reports done before its result is attached; count from its progress then.
+        progress = data.get("progress") or {}
+        failures = progress.get("failures_so_far") or []
+        total = progress.get("total") or 0
+        summary = {"total": total, "failed": len(failures), "passed": (progress.get("completed") or 0) - len(failures)}
+        if failures:
+            raise StepFailed(f"EditMode: {len(failures)} failed (from job progress; no result attached)\n  "
+                             + "\n  ".join(str(f)[:200] for f in failures[:30]), rel(report))
+        if (progress.get("completed") or 0) < total:
+            raise StepFailed(f"EditMode stopped at {progress.get('completed')}/{total} tests (no result attached)", rel(report))
+    if not summary.get("total"):
+        raise StepFailed(f"EditMode ran no tests: status {data.get('status')} {data.get('error') or ''}", rel(report))
     failed = summary.get("failed", 0)
     if data.get("status") != "succeeded" or failed:
         names = [t.get("fullName") or t.get("name") for t in failed_tests(data)]
@@ -273,12 +315,15 @@ def expected_failures():
     return [line for line in lines if line]
 
 
-async def step_playmode(editor, ctx):
-    data, problems = await run_test_job(editor, "PlayMode", 600, 2400)
-    report = ctx["out"] / "playmode.json"
+async def step_playmode(editor, ctx, category=None):
+    expected_seconds, timeout = (60, 1200) if category else (600, 2400)
+    data, problems = await run_test_job(editor, "PlayMode", expected_seconds, timeout, category)
+    report = ctx["out"] / (f"scenarios-{category}.json" if category else "playmode.json")
     report.write_text(json.dumps(data, indent=2))
     if data.get("status") == "error" or not (data.get("result") or {}).get("results"):
-        raise StepFailed(f"PlayMode run did not produce results: status {data.get('status')} {data.get('error') or ''}", rel(report))
+        what = f"category {category!r}" if category else "PlayMode run"
+        raise StepFailed(f"{what} did not produce results (no tests, or the run failed): status {data.get('status')} "
+                         f"{data.get('error') or ''}", rel(report))
 
     fixtures = known_issue_fixtures()
     expected = expected_failures()
@@ -307,7 +352,7 @@ async def step_playmode(editor, ctx):
                          ("Unlisted known-issue failures", new_known),
                          ("Listed but now passing (fixed? remove from the list)", now_passing)):
         lines += [f"## {title}: {len(tests)}", ""] + [f"- `{t['fullName']}`: {first_line(t)}" for t in tests] + [""]
-    (ctx["out"] / "playmode-known-issues.md").write_text("\n".join(lines))
+    (ctx["out"] / (f"scenarios-{category}-known-issues.md" if category else "playmode-known-issues.md")).write_text("\n".join(lines))
     ctx["sections"].append("\n".join(["#" + line if line.startswith("#") else line for line in lines]))
 
     passed = sum((t.get("state") or "").lower() == "passed" for t in regular)
@@ -323,7 +368,7 @@ async def step_playmode(editor, ctx):
     return Done(note, rel(report))
 
 
-async def run_pilot(editor, menu, pattern, expected, timeout):
+async def run_pilot(editor, menu, pattern, expected, timeout, screenshots=False):
     await editor.wait_ready()
     before = set(UI.glob(pattern))
     await editor.menu(menu)
@@ -338,11 +383,12 @@ async def run_pilot(editor, menu, pattern, expected, timeout):
         if data.get("errors"):
             detail += "\nCaptured errors:\n  " + "\n  ".join(e.splitlines()[0] for e in data["errors"][:10])
         raise StepFailed(f"{menu} failed: {detail}", report_path)
-    return Done(f"{len(data.get('checks') or [])} checks", report_path, tuple(sorted(rel(p) for p in path.parent.glob("*.png"))))
+    pngs = tuple(sorted(rel(p) for p in path.parent.glob("*.png"))) if screenshots else ()
+    return Done(f"{len(data.get('checks') or [])} checks", report_path, pngs)
 
 
 async def step_visual(editor, ctx):
-    return await run_pilot(editor, "SS3D/Testing/Run Lobby UI Pilot", "[0-9]*/status.json", 120, 300)
+    return await run_pilot(editor, "SS3D/Testing/Run Lobby UI Pilot", "[0-9]*/status.json", 120, 300, screenshots=True)
 
 
 async def step_lifecycle(editor, ctx):
@@ -350,7 +396,8 @@ async def step_lifecycle(editor, ctx):
 
 
 async def step_sandbox(editor, ctx):
-    # Two automatic sandbox rounds (2 + 1 minutes plus countdowns): --full only.
+    # Two automatic sandbox rounds (2 + 1 minutes plus countdowns): on demand (D6 keeps it out
+    # of --weekly; the nightly smoke covers the reset loop).
     return await run_pilot(editor, "SS3D/Testing/Run Sandbox Pilot", "sandbox-*/status.json", 300, 600)
 
 
@@ -402,7 +449,8 @@ async def step_smoke(editor, ctx):
             raise StepFailed(f"{stale}; run the build step first")
     script = ROOT / "Testing/multiplayer/run_smoketest.sh"
     results, failed = [], []
-    for scenario, clients in SMOKE_SCENARIOS:
+    scenarios = smoke_scenarios()
+    for scenario, clients in scenarios:
         log = ctx["out"] / f"smoke-{scenario}.log"
         started = time.monotonic()
         proc = await asyncio.create_subprocess_exec(
@@ -418,40 +466,126 @@ async def step_smoke(editor, ctx):
         text = log.read_text(errors="replace")
         verdict = "passed" if code == 0 else f"FAILED ({code})"
         results.append(f"{scenario}×{clients} {verdict} {seconds:.0f}s")
-        print(f"   {scenario} ({clients} client{'s' if clients > 1 else ''}): {verdict} in {seconds:.0f}s", flush=True)
         if code != 0:
+            print(f"   {scenario} ({clients} client{'s' if clients > 1 else ''}): {verdict} in {seconds:.0f}s", flush=True)
             errors = [line for line in text.splitlines() if line.startswith(("error:", "FAIL", "Client ", "Server "))]
             failed.append(f"{scenario}: {rel(log)}\n    " + "\n    ".join(errors[:8]))
     lines = ["## Multiplayer smoke", "", *[f"- {r}" for r in results], ""]
     ctx["sections"].append("\n".join(lines))
     if failed:
-        raise StepFailed(f"Multiplayer smoke: {len(failed)}/{len(SMOKE_SCENARIOS)} scenarios failed\n  " + "\n  ".join(failed))
+        raise StepFailed(f"Multiplayer smoke: {len(failed)}/{len(scenarios)} scenarios failed\n  " + "\n  ".join(failed))
     return Done(", ".join(results))
+
+
+async def mppm_players(editor):
+    """{player name: PlayerState} from the editor's Multiplayer Play Mode player list."""
+    text = await editor.execute("return SS3D.Editor.Automation.MultiplayerPlayModeSmoke.Status();") or ""
+    states = {}
+    for line in text.splitlines():
+        parts = line.split("|")
+        if len(parts) >= 2:
+            states[parts[0]] = parts[1]
+    return states
+
+
+def clone_logs_by_name():
+    """{MPPM player name: its virtual project's Editor.log} while MPPM has SystemData readable."""
+    try:
+        data = json.loads((ROOT / "Library/VP/SystemData.json").read_text())
+    except (OSError, json.JSONDecodeError):
+        return {}
+    logs = {}
+    for player in (data.get("Data") or {}).values():
+        ident = (player.get("TypeDependentPlayerInfo") or {}).get("VirtualProjectIdentifier")
+        if player.get("Active") and ident:
+            logs[player.get("Name")] = (
+                ROOT / "Library/VP" / f"{ident['m_Prefix']}{ident['m_Id']}" / "Logs" / "Editor.log")
+    return logs
+
+
+def clone_processes():
+    proc = subprocess.run(["pgrep", "-fc", "editor-mode com.unity.mppm.clone"], capture_output=True, text=True)
+    return int(proc.stdout.strip() or 0)
+
+
+async def stop_play(editor):
+    await editor.execute('if (EditorApplication.isPlayingOrWillChangePlaymode) EditorApplication.isPlaying = false; return "stopping";')
+
+    async def stopped():
+        return True if await editor.busy() is None else None
+
+    await wait_for(stopped, 20, 120, "Play Mode to stop")
+
+
+async def step_mppm(editor, ctx, scenario):
+    """Host + virtual players in one editor process group (Multiplayer Play Mode), each running
+    the script its smoke: tag names. The main editor hosts; Player2..4 join as clients. Each
+    player writes its result under Temp/mppm-automation; any logged error fails the run."""
+    await editor.wait_ready()
+    host, clients = MPPM_SCENARIOS[scenario]
+
+    # Start from stopped clones: a clone reads its smoke: tag at boot, so a reused clone would run
+    # the previous scenario's script. Stopping also makes "the expected players are up" mean the
+    # ones this run launched.
+    await editor.execute("return SS3D.Editor.Automation.MultiplayerPlayModeSmoke.Finish(true);")
+    started = time.time()
+    arguments = ", ".join(f'"{script}"' for script in [host, *clients])
+    error = await editor.execute(f"return SS3D.Editor.Automation.MultiplayerPlayModeSmoke.Prepare({arguments});")
+    if error:
+        raise StepFailed(f"MPPM prepare: {error}")
+
+    expected = len(clients) + 1
+    try:
+        async def launched():
+            # PlayerState sticks at 'Launching' on Linux even for a healthy clone (MPPM 2.0.2),
+            # so the clone's process and Editor.log are the readiness signals.
+            if clone_processes() < len(clients):
+                return None
+            logs = {name: log for name, log in clone_logs_by_name().items() if name.startswith("Player")}
+            if len(logs) < len(clients):
+                return None
+            for log in logs.values():
+                try:
+                    if log.stat().st_mtime < started or "Loaded scene" not in log.read_text(errors="replace"):
+                        return None
+                except OSError:
+                    return None
+            return True
+
+        await wait_for(launched, 90, 420, "MPPM clone editors to launch")
+        await editor.execute('EditorApplication.EnterPlaymode(); return "entering";')
+
+        async def results():
+            found = {}
+            for path in MPPM_RESULTS.glob("*.json"):
+                try:
+                    found[path.stem] = json.loads(path.read_text())
+                except (OSError, json.JSONDecodeError):
+                    return None
+            return found if len(found) >= expected else None
+
+        data = await wait_for(results, 90, 420, "MPPM script results")
+    finally:
+        await stop_play(editor)
+        await editor.execute("return SS3D.Editor.Automation.MultiplayerPlayModeSmoke.Finish(true);")
+
+    problems, verdicts = [], []
+    for player, result in sorted(data.items()):
+        (ctx["out"] / f"mppm-{scenario}-{player.replace(' ', '-')}.json").write_text(json.dumps(result, indent=2))
+        signal = result.get("signal")
+        verdicts.append(f"{player}: {signal}")
+        if signal != "ScriptComplete":
+            problems.append(f"{player}: {signal} {result.get('reason', '')}".strip())
+        for logged in result.get("errors") or []:
+            problems.append(f"{player}: {logged.splitlines()[0]}")
+    if problems:
+        raise StepFailed(f"MPPM {scenario}: {len(problems)} problem(s)\n  " + "\n  ".join(problems[:20]))
+    return Done(f"{scenario}: " + ", ".join(verdicts))
 
 
 async def step_round_reset(editor, ctx):
     return await run_pilot(editor, "SS3D/Testing/Run Round Reset Regressions",
                            "round-reset-regressions-*/status.json", 90, 300)
-
-
-async def step_ragdoll_space(editor, ctx):
-    return await run_pilot(editor, "SS3D/Testing/Run Ragdoll Space Regressions",
-                           "ragdoll-space-*/status.json", 90, 300)
-
-
-async def step_respawn_cleanup(editor, ctx):
-    return await run_pilot(editor, "SS3D/Testing/Run Respawn Cleanup Regressions",
-                           "respawn-cleanup-*/status.json", 90, 300)
-
-
-async def step_critical_speech(editor, ctx):
-    return await run_pilot(editor, "SS3D/Testing/Run Critical Speech Regressions",
-                           "critical-speech-*/status.json", 90, 300)
-
-
-async def step_critical_reclaim(editor, ctx):
-    return await run_pilot(editor, "SS3D/Testing/Run Critical Reclaim Regressions",
-                           "critical-reclaim-*/status.json", 90, 300)
 
 
 async def step_interaction_overlay(editor, ctx):
@@ -461,24 +595,45 @@ async def step_interaction_overlay(editor, ctx):
 
 STEPS = {name: globals()["step_" + name] for name in ORDER}
 STEPS["round-reset"] = step_round_reset
-STEPS["ragdoll-space"] = step_ragdoll_space
-STEPS["respawn-cleanup"] = step_respawn_cleanup
-STEPS["critical-speech"] = step_critical_speech
-STEPS["critical-reclaim"] = step_critical_reclaim
 STEPS["interaction-overlay"] = step_interaction_overlay
+
+
+# Lifecycle pilot partials replaced by scenarios (archived 2026-11_test-harness-rework Phase 3).
+RETIRED = {
+    "ragdoll-space": "scenarios:Environment",
+    "critical-reclaim": "scenarios:Environment",
+    "respawn-cleanup": "scenarios:Respawn",
+    "critical-speech": "scenarios:Speech",
+}
+
+
+def step_for(name):
+    if name.startswith(SCENARIOS) and len(name) > len(SCENARIOS):
+        category = name[len(SCENARIOS):]
+        return lambda editor, ctx: step_playmode(editor, ctx, category)
+    if name.startswith(MPPM) and len(name) > len(MPPM):
+        scenario = name[len(MPPM):]
+        if scenario in MPPM_SCENARIOS:
+            return lambda editor, ctx: step_mppm(editor, ctx, scenario)
+        return None
+    return STEPS.get(name)
 
 
 async def main():
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     mode = parser.add_mutually_exclusive_group()
-    mode.add_argument("--quick", action="store_true", help="preflight → lifecycle without playmode (default)")
-    mode.add_argument("--full", action="store_true", help="all steps: PlayMode, client+server build, remote pilot, multiplayer smoke")
-    mode.add_argument("--steps", help="comma-separated subset, e.g. compile or visual,remote")
+    mode.add_argument("--steps", help="comma-separated subset, e.g. compile,editmode,round-reset or scenarios:<category>")
+    mode.add_argument("--nightly", action="store_true", help="editor tests, PlayMode, client+server build, multiplayer smoke (~25 min)")
+    mode.add_argument("--weekly", action="store_true", help="graphical pilots: lobby UI, lifecycle, remote client")
     args = parser.parse_args()
-    steps = args.steps.split(",") if args.steps else ORDER if args.full else QUICK
-    unknown = [s for s in steps if s not in STEPS]
+    steps = args.steps.split(",") if args.steps else NIGHTLY if args.nightly else WEEKLY if args.weekly else DEFAULT
+    retired = [f"{s} is now {RETIRED[s]}" for s in steps if s in RETIRED]
+    if retired:
+        parser.error("retired steps: " + "; ".join(retired))
+    unknown = [s for s in steps if step_for(s) is None]
     if unknown:
-        parser.error(f"unknown steps {unknown}; choose from {ORDER}")
+        parser.error(f"unknown steps {unknown}; choose from {sorted(STEPS)}, {SCENARIOS}<category> "
+                     f"or {MPPM}<scenario> ({', '.join(sorted(MPPM_SCENARIOS))})")
 
     out = UI / ("validate-" + datetime.now(timezone.utc).strftime("%Y%m%d-%H%M%S"))
     out.mkdir(parents=True, exist_ok=True)
@@ -491,11 +646,10 @@ async def main():
         editor = Editor(client)
         await editor.connect()
         for name in steps:
-            print(f"== {name}", flush=True)
             started = time.monotonic()
             status, note, report = "passed", "", ""
             try:
-                done = await STEPS[name](editor, ctx)
+                done = await step_for(name)(editor, ctx)
                 note, report = done.note, done.report
                 pngs += done.pngs
             except (StepFailed, asyncio.TimeoutError, TimeoutError) as error:
@@ -503,8 +657,10 @@ async def main():
                 report = getattr(error, "report", None) or ""
             seconds = time.monotonic() - started
             rows.append((name, status, seconds, report))
-            print(f"   {status} in {seconds:.0f}s: {note}" + (f"\n   report: {report}" if report else ""), flush=True)
-            if status != "passed":
+            if status == "passed":
+                print(f"ok   {name} ({seconds:.0f}s): {note}", flush=True)
+            else:
+                print(f"FAIL {name} ({seconds:.0f}s): {note}" + (f"\n     report: {report}" if report else ""), flush=True)
                 failures.append((name, note))
                 break  # later steps depend on earlier ones (compiled code, a current build)
 
@@ -520,10 +676,12 @@ async def main():
     if pngs:
         text += ["## Screenshots to review", "", *[f"- {p}" for p in pngs], ""]
     (out / "summary.md").write_text("\n".join(text))
-    print("\n" + "\n".join(table))
+    if skipped:
+        print(f"not run: {', '.join(skipped)}")
     if pngs:
-        print(f"\n{len(pngs)} screenshots to review (listed in summary)")
-    print(f"\nSummary: {(out / 'summary.md').relative_to(ROOT)}")
+        print(f"{len(pngs)} screenshots to review:\n  " + "\n  ".join(pngs))
+    if failures:
+        print(f"Summary: {(out / 'summary.md').relative_to(ROOT)}")
     print("RESULT: " + ("FAILED at " + failures[0][0] if failures else "PASSED"))
     return 1 if failures else 0
 

@@ -35,8 +35,8 @@ Underlying pieces (do not restate their full docs — open them when needed):
 
 | Knob | Default |
 |------|---------|
-| Scenario | `basic-round` (1 client) |
-| Alt scenario | `late-join 2` if user asks |
+| Scenario | `late-join 2` |
+| Alt scenario | `observer-sync 2` (state sync to a second client) |
 | Unity | `6000.3.16f1` (`UNITY_EDITOR_PATH` / `SS3D_UNITY_VERSION`) |
 | Max fix cycles | **2** (build is expensive) |
 
@@ -56,8 +56,9 @@ Skip build only when the user says builds are current, or passes `--skip-build`.
 ## Step 2: Run smoke
 
 ```bash
-./Testing/multiplayer/run_smoketest.sh basic-round
-# or: ./Testing/multiplayer/run_smoketest.sh late-join 2
+./Testing/multiplayer/run_smoketest.sh late-join 2
+# or: ./Testing/multiplayer/run_smoketest.sh observer-sync 2
+# or the whole nightly set: ./Testing/multiplayer/run_smoke_set.sh
 ```
 
 - Block until finished (minutes). Staging uses hardlinks when possible.

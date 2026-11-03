@@ -24,6 +24,7 @@ import ctypes.util
 import fcntl
 import os
 import struct
+import subprocess
 import sys
 import time
 
@@ -90,6 +91,47 @@ def desktop_point(window=None, x=0, y=0):
         xlib.XCloseDisplay(display)
 
 
+def activate_window(window):
+    """Ask the window manager to raise/focus the client's frame.
+
+    XRaiseWindow alone does not move a reparented WM frame, and the weekly runner maximizes the
+    editor, so the frame can stay behind it. `windowactivate` is a WM message, not XTEST input, so
+    it does not trigger GNOME's remote-interaction portal.
+    """
+    try:
+        subprocess.run(["xdotool", "windowactivate", "--sync", str(window)],
+                       stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
+                       timeout=10, check=False)
+    except (OSError, subprocess.SubprocessError):
+        pass
+
+
+def raise_window(window):
+    """Bring the click target to the top and focus it (plain X requests; no XTEST/portal).
+
+    The built client's frame can sit behind the editor's window even though the client renders
+    offscreen (its screenshot still looks right), so the pointer click would land on the editor.
+    Raise the frame before every click.
+    """
+    activate_window(window)
+    xlib = ctypes.CDLL(ctypes.util.find_library("X11") or "libX11.so.6")
+    xlib.XOpenDisplay.restype = ctypes.c_void_p
+    xlib.XRaiseWindow.argtypes = [ctypes.c_void_p, ctypes.c_ulong]
+    xlib.XSetInputFocus.argtypes = [ctypes.c_void_p, ctypes.c_ulong, ctypes.c_int, ctypes.c_ulong]
+    xlib.XFlush.argtypes = [ctypes.c_void_p]
+    xlib.XCloseDisplay.argtypes = [ctypes.c_void_p]
+    display = xlib.XOpenDisplay(None)
+    if not display:
+        return
+    try:
+        xlib.XRaiseWindow(display, window)
+        # RevertToPointerRoot = 1, CurrentTime = 0; some WMs ignore the focus request.
+        xlib.XSetInputFocus(display, window, 1, 0)
+        xlib.XFlush(display)
+    finally:
+        xlib.XCloseDisplay(display)
+
+
 class VirtualDevice:
     def __init__(self, width, height):
         self.fd = os.open("/dev/uinput", os.O_WRONLY | os.O_NONBLOCK)
@@ -140,7 +182,9 @@ def perform(device, words):
     """Run one command on an existing device; returns a short description or raises ValueError."""
     command = words[0] if words else ""
     if command == "click" and len(words) == 4:
-        x, y, _, _ = desktop_point(int(words[1], 0), int(words[2]), int(words[3]))
+        window = int(words[1], 0)
+        raise_window(window)
+        x, y, _, _ = desktop_point(window, int(words[2]), int(words[3]))
         device.emit(EV_ABS, ABS_X, x)
         device.emit(EV_ABS, ABS_Y, y)
         device.sync()

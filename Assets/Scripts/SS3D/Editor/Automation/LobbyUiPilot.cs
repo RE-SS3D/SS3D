@@ -37,6 +37,7 @@ namespace SS3D.Editor.Automation
             EditorApplication.playModeStateChanged += OnPlayModeChanged;
         }
 
+        // Guards: lobby shell, settings and Character Creator render and respond (rounds-lobby UI contracts) · Not cheaper because: needs rendered UI Toolkit panels and screenshots a human reviews; weekly graphical run
         [MenuItem("SS3D/Testing/Run Lobby UI Pilot")]
         public static void Run()
         {

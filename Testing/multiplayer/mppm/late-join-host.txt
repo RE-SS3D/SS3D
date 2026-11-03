@@ -1,0 +1,16 @@
+# Guards: late-join under Multiplayer Play Mode (agent-local check) · Not cheaper because: needs a second editor process as the late client
+# Main editor (host) side of late-join under MPPM. The host plays late-join-client-0's part:
+# readies, starts the round and embarks first. Player2 runs scenarios/late-join-client-1.txt
+# unchanged. The host stays up after this script; MultiplayerPlayModeSmoke ends Play Mode.
+#
+# The clone editor enters Play Mode and loads Game a little after the main editor, so wait for
+# its client to finish loading the start scenes before starting the round: FishNet drops the
+# round's scene objects for a client that is still loading Game (SceneId "not found" errors).
+wait_timeout 180
+wait_connected
+wait_clients 1
+ready
+start_round
+wait_round Ongoing
+embark
+assert_embarked

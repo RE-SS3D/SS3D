@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
-"""Summarize Unity EditMode NUnit XML (artifacts/editmode-results.xml).
+"""Summarize Unity NUnit XML (artifacts/editmode-results.xml or artifacts/playmode-results.xml).
 
 Prints assembly totals, each failed/inconclusive case with message + truncated stack,
-and a suggested --filter string for Tools/run_editmode_tests.sh.
+and a suggested --filter string for the runner script (second argument, default
+Tools/run_editmode_tests.sh).
 
 Exit 0 if no failures/inconclusive; 1 otherwise; 2 if XML missing/unreadable.
 """
@@ -22,10 +23,11 @@ def text(el: ET.Element | None) -> str:
 
 def main() -> int:
     if len(sys.argv) < 2:
-        print("Usage: summarize_editmode_results.py <editmode-results.xml>", file=sys.stderr)
+        print("Usage: summarize_editmode_results.py <results.xml> [runner-script]", file=sys.stderr)
         return 2
 
     path = Path(sys.argv[1])
+    runner = sys.argv[2] if len(sys.argv) > 2 else "./Tools/run_editmode_tests.sh"
     if not path.is_file():
         print(f"error: results file not found: {path}", file=sys.stderr)
         return 2
@@ -44,7 +46,7 @@ def main() -> int:
     total = root.get("total", "?")
     result = root.get("result", "?")
 
-    print(f"=== EditMode results: {path} ===")
+    print(f"=== Test results: {path} ===")
     print(f"result={result}  passed={passed}  failed={failed}  inconclusive={inconclusive}  skipped={skipped}  total={total}")
 
     for suite in root.iter("test-suite"):
@@ -103,7 +105,7 @@ def main() -> int:
     if uniq:
         # Unity -testFilter is a regex; join with | for a focused re-run.
         joined = "|".join(uniq[:20])
-        print(f"re-run: ./Tools/run_editmode_tests.sh --filter '{joined}'")
+        print(f"re-run: {runner} --filter '{joined}'")
 
     return 1
 

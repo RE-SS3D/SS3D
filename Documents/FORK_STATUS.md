@@ -91,8 +91,9 @@ were **removed** from this fork. Remaining workflows:
   `develop`, PRs (`pull_request_target`), and manual dispatch; forces Node 24 for JS actions;
   validates `UNITY_LICENSE` / `UNITY_SERIAL` secrets before running; TomNAS-prefer with GitHub
   fallback ([2026-07_multiplayer-testing-self-hosted-ci.md](architecture/2026-07_multiplayer-testing-self-hosted-ci.md))
-- [multiplayer-smoke-test.yml](../.github/workflows/multiplayer-smoke-test.yml) — opt-in headless
-  multiplayer smoke (`basic-round` / `late-join`) against a real dedicated-server + client build
+- [multiplayer-smoke-test.yml](../.github/workflows/multiplayer-smoke-test.yml) — nightly PlayMode
+  scenarios plus the headless smoke set (`late-join`, `reconnect`, `observer-sync`;
+  `sandbox-reset` nightly only) against real dedicated-server + client builds
 
 Doc layer redesign (coverage table, strip prototyping prompts from design docs) merged via PR #2.
 Agent-first composition policy and UI path-catalog conventions live under
@@ -224,8 +225,11 @@ Upstream runs EditMode tests only. This fork adds (PRs #73–#84):
 - **PlayMode suite** repaired and extended, with server-side helpers and passing known-issue repros
   promoted into the regular suite
 - **One-command validation** (`Testing/ui/validate.sh`): compile check, EditMode, rendered UI pilots
-  through Unity MCP with real OS input, and with `--full` also PlayMode, a server build and smoke.
+  through Unity MCP with real OS input; `--nightly` adds PlayMode, client and server builds and smoke.
   See [Testing/ui/README.md](../Testing/ui/README.md)
+- **Multiplayer Play Mode checks** (`--steps mppm:<scenario>`): the same smoke scenario scripts in an
+  editor host + virtual-player pair, no build needed; the built smoke stays the nightly gate.
+  See [networking-session-testing.md](architecture/systems/networking-session-testing.md)
 
 Architecture: [2026-07_multiplayer-test-harness.md](archive/architecture/2026-07_multiplayer-test-harness.md),
 [2026-07_multiplayer-testing-self-hosted-ci.md](architecture/2026-07_multiplayer-testing-self-hosted-ci.md).

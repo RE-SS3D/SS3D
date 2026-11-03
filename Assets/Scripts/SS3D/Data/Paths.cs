@@ -1,10 +1,6 @@
 ﻿using JetBrains.Annotations;
 using System.IO;
 
-#if UNITY_EDITOR
-using ParrelSync;
-#endif
-
 namespace SS3D.Data
 {
 	/// <summary>
@@ -24,7 +20,7 @@ namespace SS3D.Data
 		[NotNull]
 		private static string FullGamePath =>
 #if UNITY_EDITOR
-            ClonesManager.IsClone() ? ClonesManager.GetOriginalProjectPath() : Path.GetFullPath(".");
+            Path.GetFullPath(".");
 #else
             _executableFolder ??= ExecutableFolder();
 #endif

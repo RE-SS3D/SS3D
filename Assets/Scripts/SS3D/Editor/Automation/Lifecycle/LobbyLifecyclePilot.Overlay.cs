@@ -22,6 +22,7 @@ namespace SS3D.Editor.Automation
         private static RadialInteractionMenuView _radialProbe;
         private static Vector2 _overlayProbePoint;
 
+        // Guards: armed and radial interaction overlays stay aligned under UI scaling · Not cheaper because: needs rendered panels at a real screen scale; stays a visual step (D6)
         [MenuItem("SS3D/Testing/Run Interaction Overlay Regressions")]
         public static void RunInteractionOverlayRegressions() => Start(InteractionOverlayMode);
 

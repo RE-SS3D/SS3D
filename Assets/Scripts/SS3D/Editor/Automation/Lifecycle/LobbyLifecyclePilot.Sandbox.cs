@@ -33,6 +33,7 @@ namespace SS3D.Editor.Automation
         private const string SandboxMode = "sandbox";
         private const string RoundResetRegressionMode = "round-reset-regressions";
 
+        // Guards: atmos and decals reset between sandbox rounds · Not cheaper because: needs two real round cycles in one host
         [MenuItem("SS3D/Testing/Run Round Reset Regressions")]
         public static void RunRoundResetRegressions() => Start(RoundResetRegressionMode);
 
@@ -45,6 +46,7 @@ namespace SS3D.Editor.Automation
             + "(no -sandbox flag in the editor). Two automatic round cycles; nobody presses Ready or Start. "
             + "Does not cover a remote client, non-admin sandbox players or a dedicated server build.";
 
+        // Guards: sandbox profile runs automatic rounds, wipes without autosave and saves local bug-report bundles (2026-11_sandbox-server) · Not cheaper because: two automatic round cycles plus the bug-report dialog; to be split per D6
         [MenuItem("SS3D/Testing/Run Sandbox Pilot")]
         public static void RunSandbox() => Start(SandboxMode);
 

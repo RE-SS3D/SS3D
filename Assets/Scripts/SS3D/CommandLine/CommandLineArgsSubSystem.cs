@@ -61,6 +61,23 @@ namespace SS3D.CommandLine
             {
                 ProcessCommandArg(arg);
             }
+
+            ApplyMultiplayerPlayModeRole();
+        }
+
+        /// <summary>
+        /// A Multiplayer Play Mode clone joins the main editor's host as a client under its own
+        /// ckey ("Player2"). The clone opens its project read-only, so this never reaches the asset.
+        /// </summary>
+        private void ApplyMultiplayerPlayModeRole()
+        {
+            if (!MultiplayerPlayModePlayer.IsVirtualPlayer)
+            {
+                return;
+            }
+
+            _networkSettings.NetworkType = NetworkType.Client;
+            _networkSettings.Ckey = MultiplayerPlayModePlayer.Name;
         }
 
         public bool HasCommandLineArgs()

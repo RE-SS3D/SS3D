@@ -8,7 +8,7 @@
 - [x] `multiplayer-smoke-test.yml` on self-hosted + Library stash + nightly
 - [ ] `workflow_dispatch` smoke on TomNAS; confirm a warm second run
 - [ ] Phase 1: harness SIGKILL + DSL + server-kill scenarios
-- [ ] Phase 2: `lightdebug` / `lightclientstatus` + light-sync scenarios
+- [x] Phase 2: folded into the `observer-sync` smoke scenario (2026-11): `lightdebug` switches the area lights, the observing client checks with `observesync lights-off` ([testing philosophy](2026-11_testing-philosophy.md#harness-contracts) D5)
 
 # Multiplayer testing on self-hosted CI (Jul 2026)
 
@@ -118,6 +118,10 @@ disconnect handling.
   from the server's perspective, transport timeout.
 
 ## Phase 2 — State-sync assert commands (headless, proven pattern)
+
+> Done differently (2026-11): no separate light-sync scenario. `observer-sync` checks lights, doors,
+> held items, damage and atmos from a second client; see
+> [networking-session-testing](systems/networking-session-testing.md#tests).
 
 Covers the **light-sync** desync. This is a near-verbatim reuse of the `atmos-client-sync`
 scenario: a console command forces a change, then a `...status assert` command **throws** when

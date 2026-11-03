@@ -35,9 +35,10 @@ namespace SS3D.Systems.Intro
         {
             ApplicationSettings applicationSettings = ScriptableSettings.GetOrFind<ApplicationSettings>();
 
-            // Multiplayer harness drives join/reconnect via AutomationSubSystem (-testscript=).
-            // Auto-starting here races that path while the script's reconnect is still pending.
-            if (!string.IsNullOrEmpty(applicationSettings.TestScriptPath))
+            // Multiplayer harness drives join/reconnect via AutomationSubSystem (-testscript= or an
+            // MPPM smoke: tag). Auto-starting here races that path while the script's reconnect is
+            // still pending.
+            if (!string.IsNullOrEmpty(applicationSettings.ActiveTestScriptPath))
             {
                 return;
             }

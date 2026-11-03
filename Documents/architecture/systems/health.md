@@ -1,7 +1,7 @@
 > Code paths: Assets/Scripts/SS3D/Systems/Health/
 > Entry points: HumanHealthController, HealthSimulation, OrganSimulation
 > Status: partial
-> Verified: e496b5a3e — 2026-11-01 (health, ghost vision and blackout action/layering contracts)
+> Verified: 504c22428 — 2026-11-03
 
 # Health
 
@@ -92,6 +92,12 @@ Phase 0d strips legacy health components from `Human.prefab` and rewires a thinn
 - **Pressure ≠ burn:** low/high/vacuum pressure damages **lungs** (`PressureLungDamage` → `OrganSimulation.ApplyLungDamage`). Hot/cold/fire burn **all zones** at per-zone rates. Do not dump pressure into chest burn or cascade ambient dermal burn into organ damage.
 - **`AudioType` ambiguous in Health:** `HumanHealthController` imports `UnityEngine` and `SS3D.Systems.Audio` — use `using AudioType = SS3D.Systems.Audio.AudioType;` (same as `InteractionController`) before `PlayAudioSource`.
 - **Melee self-hit / missed limbs:** connect and reticle must pass `excludeHealth` (attacker) into `TryResolveHoverZone`; include detachable `AnatomyNode` mesh colliders and check reach with `IsMeleeZoneReachInRange` (closest point), not the ray impact alone — see [combat](combat.md).
+
+## Tests
+
+- `Testing/ui/validate.sh --steps compile,editmode`: the health simulation, treatment and environment exposure EditMode tests.
+- `Testing/ui/validate.sh --steps compile,scenarios:Medical` (`MedicalScenarios`): bandaging a bleeding wound on yourself.
+- `Testing/ui/validate.sh --steps compile,scenarios:Environment` (`EnvironmentScenarios`): plasma in the room drives a body critical through the real atmos → health tick (~17 s: toxin intake is capped at 0.08/tick against 0.03/tick liver clearance, so more gas doesn't speed it up).
 
 ## Depends on / Used by
 

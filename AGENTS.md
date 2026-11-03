@@ -4,6 +4,10 @@ Instructions for AI agents working in this repository.
 
 This file inlines the **tripwires** — the mistakes that are high-frequency, high-cost, or silent, and that you must not make even on a first read. Everything else — doc layers, header blocks, section order, authoring rules — lives in [Documents/SKILL.md](Documents/SKILL.md), which is canonical. Read it before writing anything under `Documents/`. When in doubt about *where* something goes, SKILL.md decides; this file only tells you what to never do and where to start.
 
+## Session start: check the last nightly
+
+Run `gh issue list --label nightly-failure --state open` (and `--label weekly-failure` before UI or session work). An open issue means develop is already red: read it before you blame your change for a failure it lists, and don't add to a tier that is over its budget. The nightly opens these issues and closes them on the next green run; see [testing philosophy](Documents/architecture/2026-11_testing-philosophy.md#harness-contracts) D7 and D9.
+
 ## Navigate docs before searching code
 
 1. Read [Documents/architecture/INDEX.md](Documents/architecture/INDEX.md) to find the relevant domain. When the question is **what to build next** or **what's blocking a playable goal**, start at [Documents/milestones/INDEX.md](Documents/milestones/INDEX.md) instead (focus + dependency trees — see [Documents/SKILL.md](Documents/SKILL.md)).
@@ -68,7 +72,7 @@ Run the **`update-system-docs`** skill (`.cursor/skills/update-system-docs/SKILL
 
 **Versioning** — when a change breaks old saves or old clients, bump `PersistenceEnvelope.CurrentSchemaVersion` or `ProtocolVersion.Current`; when a commit completes a player-visible feature end to end, end its message with a `Version-Bump: minor` trailer. MAJOR stays the owner's call. Rules: [2026-10_game-versioning](Documents/architecture/2026-10_game-versioning.md).
 
-For UI/session work, run `Testing/ui/validate.sh` (`--full` when runtime/USS changed) with the editor open and review the listed screenshots; see [Testing/ui/README.md](Testing/ui/README.md).
+**Testing** — run targeted checks, not the full suite: `Testing/ui/validate.sh --steps compile,editmode` plus the focused steps for the systems you touched. Add `visual` (and read its screenshots) only for visual changes. Never run `--nightly` or `--weekly` unless the owner asks; they take ~25 min and run on TomNAS anyway. Which tier a test belongs in, and what expensive tests must justify: [2026-11_testing-philosophy.md](Documents/architecture/2026-11_testing-philosophy.md). Runbook: [Testing/ui/README.md](Testing/ui/README.md).
 
 ## Composition, prefabs, and UI
 

@@ -5,13 +5,14 @@ using UnityEngine.TestTools;
 
 namespace SS3D.Tests
 {
+    // Guards: GamemodeSubSystem.EndRound stops an Ongoing round on a dedicated server, without a client broadcast · Not cheaper because: needs the gamemode → RequestRoundEnd → StopRound path on a live server
     [Category(TestCategories.Lifecycle)]
+    [Category(TestCategories.Nightly)]
     public class RoundLifecycle_DedicatedServerEndRound_ServerPerspective : PlayModeTest
     {
         [UnitySetUp]
         public IEnumerator UnitySetUp()
         {
-            LogAssert.ignoreFailingMessages = true;
             yield return LoadAndSetInLobby(NetworkType.DedicatedServer);
             RoundLifecycleTestHelpers.StartObserving();
         }
@@ -19,7 +20,6 @@ namespace SS3D.Tests
         [UnityTearDown]
         public IEnumerator UnityTearDown()
         {
-            LogAssert.ignoreFailingMessages = true;
             ServerHelpers.ChangeRoundState(false);
             yield return RoundLifecycleTestHelpers.WaitUntilStopped(30f);
             RoundLifecycleTestHelpers.StopObserving();
@@ -28,7 +28,6 @@ namespace SS3D.Tests
         [UnityTest]
         public IEnumerator GamemodeEndRoundStopsActiveRound()
         {
-            LogAssert.ignoreFailingMessages = true;
             yield return LifecycleReproduction.GamemodeEndRoundStopsActiveRound();
         }
 

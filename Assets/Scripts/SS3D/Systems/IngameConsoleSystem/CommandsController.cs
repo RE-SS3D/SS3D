@@ -25,6 +25,9 @@ namespace SS3D.Systems.IngameConsoleSystem
         private const int TabLength = 20;
         [SerializeField] private ConsolePanelView _console;
 
+        /// <summary>Every answer this client shows in its console, local or from the server. Scenarios await it.</summary>
+        public event Action<string> AnswerShown;
+
         protected override void OnStart()
         {
             // Scan every loaded assembly, not just SS3D.Systems: UI assemblies (e.g. SS3D.UI.MainHud)
@@ -187,7 +190,7 @@ namespace SS3D.Systems.IngameConsoleSystem
         {
 	        FindCommand(commandName, out Command command);
 	        string answer = command.Perform(args);
-            _console.AddText(answer);
+            ShowAnswer(answer);
         }
 		/// <summary>
 		/// Send or print command's answer
@@ -200,14 +203,20 @@ namespace SS3D.Systems.IngameConsoleSystem
 	        }
 	        else
 	        {
-		        _console.AddText(answer);
+		        ShowAnswer(answer);
 	        }
         }
 
         [TargetRpc]
         private void RpcCommandAnswer(NetworkConnection conn, string answer)
         {
+            ShowAnswer(answer);
+        }
+
+        private void ShowAnswer(string answer)
+        {
             _console.AddText(answer);
+            AnswerShown?.Invoke(answer);
         }
         
         /// <returns>All available commands with short descriptions</returns>

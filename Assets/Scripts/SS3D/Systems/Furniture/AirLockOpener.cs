@@ -319,6 +319,20 @@ namespace SS3D.Systems.Furniture
             return true;
         }
 
+        /// <summary>Opens the door with no close timer, bypassing access. Debug/automation only (doordebug).</summary>
+        [Server]
+        public bool ServerDebugHoldOpen()
+        {
+            if (!IsPowered)
+            {
+                return false;
+            }
+
+            CancelCloseTimer();
+            SetOpen(true);
+            return true;
+        }
+
         [Server]
         public void ServerCloseFromInteraction()
         {

@@ -19,6 +19,9 @@ SPEC = [
     ":(exclude,glob)Assets/AddressableAssetsData/**",
     ":(exclude,glob)Assets/Content/Addressables/Linux*",
     ":(exclude,glob)Assets/Content/Addressables/Linux/**",
+    # Unity's Performance Testing package writes these on every editor test run; their timings
+    # change the hash without changing anything a player build uses.
+    ":(exclude,glob)Assets/Resources/PerformanceTestRun*",
 ]
 
 

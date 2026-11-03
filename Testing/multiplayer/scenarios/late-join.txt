@@ -1,5 +1,8 @@
-# Dedicated-server side of the late-join scenario. Same shape as basic-round.txt — stay up
-# after Ongoing so clients can finish embark/console before the server tears down.
+# Guards: clients join a dedicated server, start a round, embark (one of them late) and run a client<->server console round trip · Not cheaper because: needs two client processes against a UNITY_SERVER build
+# Dedicated-server side of the late-join scenario (absorbed basic-round). A real UNITY_SERVER
+# build has no client connection of its own, so this side only observes. Stay up after Ongoing
+# so clients can finish embark/console before the server tears down: disconnecting right after
+# Ongoing races the SyncVar and leaves a client stuck on wait_round (networking-session.md Pitfalls).
 wait_connected
 wait_round Ongoing
 wait_seconds 45

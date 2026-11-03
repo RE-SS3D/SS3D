@@ -84,13 +84,13 @@ Thin sync layer on top of existing types — no renderer rewrite.
 
 - EditMode: `Assets/Scripts/Tests/EditMode/Atmospherics/Atmos{DirtyChunkTracker,ChunkPatchBuilder,ChunkPatchSerializer,ClientAtlas}Tests.cs`.
 - Multiplayer test harness (real headless server + pure-client process, not just EditMode):
-  `Testing/multiplayer/scenarios/atmos-client-sync{,-client}.txt`, run via
-  `./Testing/multiplayer/run_smoketest.sh atmos-client-sync`. The client embarks, forces a fresh
-  dirty chunk with the new `atmosdebug heat` console command (headless equivalent of
-  `AtmosDebugController`'s GUI buttons), then asserts its own `AtmosRenderContext` snapshot is
-  valid with `atmosclientstatus assert` — a real regression check that a pure client receives
-  and applies chunk patches, not just that the render path compiles. Wired into
-  `develop-release.yml` and `multiplayer-smoke-test.yml`. See
+  the `observer-sync` smoke scenario (`Testing/multiplayer/scenarios/observer-sync*.txt`, run via
+  `./Testing/multiplayer/run_smoketest.sh observer-sync 2`). Client 0 forces a fresh dirty chunk
+  with `atmosdebug heat` (headless equivalent of `AtmosDebugController`'s GUI buttons; it also
+  changes a held item, health, a door and the area lights), and client 1 asserts its own
+  `AtmosRenderContext` snapshot is valid with `atmosclientstatus assert` — a real regression check
+  that a pure client receives and applies chunk patches, not just that the render path compiles.
+  Wired into the nightly `multiplayer-smoke-test.yml`. See
   [Multiplayer testing](systems/networking-session-testing.md).
 
 ## Related docs
@@ -100,4 +100,4 @@ Thin sync layer on top of existing types — no renderer rewrite.
 - Design (read-only): [atmospherics.md](../design/atmospherics.md) §9
 - [rendering.md](systems/rendering.md) — `AtmosRenderContext` / `AtmosRendererFeature`
 - [Multiplayer testing](systems/networking-session-testing.md) — headless
-  server+client regression coverage (`atmos-client-sync` scenario)
+  server+client regression coverage (`observer-sync` scenario)

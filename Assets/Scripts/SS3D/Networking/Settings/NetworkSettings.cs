@@ -3,10 +3,6 @@ using SS3D.Data;
 using SS3D.Logging;
 using UnityEngine;
 
-#if UNITY_EDITOR
-using ParrelSync;
-#endif
-
 namespace SS3D.Networking.Settings
 {
 	[ProjectSettings("SS3D/Core", "Network Settings")]
@@ -52,12 +48,7 @@ namespace SS3D.Networking.Settings
 
         public string Ckey
         {
-            get =>
-                #if UNITY_EDITOR
-                ClonesManager.IsClone() ? _ckey + ClonesManager.CloneNameSuffix : _ckey;
-                #else 
-                _ckey;
-                #endif
+            get => _ckey;
             set => _ckey = value;
         }
 

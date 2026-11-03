@@ -91,7 +91,7 @@ A separate dedicated instance where everyone can build and fight, with a 20-minu
 - Counters and limits from session data, chat refusal message, log line (Decision 15).
 - Tests: EditMode for each counter and the refusal path.
 
-Each phase runs `Testing/ui/validate.sh --full` before merge.
+Each phase runs targeted validation per [2026-11_testing-philosophy.md](2026-11_testing-philosophy.md); the full suite runs nightly.
 
 ## Implementation notes
 

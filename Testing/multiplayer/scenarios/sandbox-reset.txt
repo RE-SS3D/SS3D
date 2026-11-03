@@ -1,3 +1,4 @@
+# Guards: a -sandbox dedicated server runs automatic rounds and resets cleanly between them · Not cheaper because: needs the -sandbox flag on a UNITY_SERVER build; nightly only (D5)
 # Dedicated-server side of the sandbox-reset scenario (2026-11_sandbox-server.md P4). The server runs
 # with -sandbox and one-minute rounds (sandbox-reset.args): nobody presses Ready or Start. It waits for
 # the first automatic round to end, checks the reset wrote reset-health.jsonl, and stays up while the

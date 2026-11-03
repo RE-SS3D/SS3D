@@ -1,0 +1,108 @@
+# Weekly graphical run on the self-hosted runner: `Testing/ui/validate.sh --weekly`
+# (lobby UI, lifecycle core and remote client pilots, which need a rendered editor and real OS
+# input; the sandbox pilot is on demand and its reset loop runs in the nightly smoke set). The
+# runner provides a display and uinput for that input. The editor and its MCP server run from this
+# job's checkout, with the Library stash the nightly PlayMode job also uses.
+#
+# A failing run opens or updates one `weekly-failure` issue, closed by the next green run.
+# Budget: 20 min for the validate run (D7 in Documents/architecture/2026-11_testing-philosophy.md).
+name: Weekly Graphical Run
+on:
+  workflow_dispatch: {}
+  schedule:
+    # Sunday 02:17 UTC, clear of the 04:00 nightly and 05:00 release.
+    - cron: "17 2 * * 0"
+jobs:
+  weekly-graphical:
+    name: Graphical pilots (validate.sh --weekly)
+    # The nightly PlayMode job uses the same Library stash; never move it out from under it.
+    concurrency:
+      group: ss3d-editor-library
+      cancel-in-progress: false
+    runs-on: [self-hosted, linux, x64, unity]
+    timeout-minutes: 120
+    env:
+      SS3D_EDITOR_LIBRARY_STASH: ${{ runner.workspace }}/ss3d-library-editor
+      SS3D_MCP_VENV_CACHE: ${{ runner.workspace }}/ss3d-unity-mcp-venv
+      DISPLAY: ":0"
+      # A port reserved for this job's MCP server.
+      SS3D_MCP_URL: http://127.0.0.1:8097
+    steps:
+      - name: Checkout project code
+        uses: actions/checkout@v4
+        with:
+          lfs: false
+      - name: Restore editor Library stash
+        run: |
+          set -euo pipefail
+          rm -rf "$GITHUB_WORKSPACE/Library"
+          if [[ -d "$SS3D_EDITOR_LIBRARY_STASH" ]]; then
+            mv "$SS3D_EDITOR_LIBRARY_STASH" "$GITHUB_WORKSPACE/Library"
+          else
+            echo "No editor Library stash at $SS3D_EDITOR_LIBRARY_STASH; cold import this run"
+          fi
+      - name: MCP venv
+        run: |
+          set -euo pipefail
+          want=$(sha256sum Testing/ui/requirements-mcp.txt | cut -d' ' -f1)
+          if [[ "$(cat "$SS3D_MCP_VENV_CACHE/.requirements-sha" 2>/dev/null)" != "$want" ]]; then
+            rm -rf "$SS3D_MCP_VENV_CACHE"
+            python3 -m venv "$SS3D_MCP_VENV_CACHE"
+            "$SS3D_MCP_VENV_CACHE/bin/pip" install -q -r Testing/ui/requirements-mcp.txt
+            echo "$want" > "$SS3D_MCP_VENV_CACHE/.requirements-sha"
+          fi
+          mkdir -p artifacts/unity-mcp
+          ln -sfn "$SS3D_MCP_VENV_CACHE" artifacts/unity-mcp/venv
+      - name: Start MCP server and editor
+        # Refuses to start next to another editor (ss3d-dev); see the script.
+        run: Tools/ci/editor_session.sh start
+      - name: Run validate.sh --weekly
+        run: |
+          start=$(date +%s)
+          set +e
+          Testing/ui/validate.sh --weekly
+          code=$?
+          Tools/ci/budget.sh "Weekly graphical run" 20 "$start"
+          exit $code
+      - name: Close the editor
+        if: always()
+        run: Tools/ci/editor_session.sh stop
+      - name: Save editor Library stash
+        if: always()
+        run: |
+          set -euo pipefail
+          [[ -d "$GITHUB_WORKSPACE/Library/ScriptAssemblies" ]] || { echo "No usable Library to stash"; exit 0; }
+          rm -rf "$SS3D_EDITOR_LIBRARY_STASH"
+          mv "$GITHUB_WORKSPACE/Library" "$SS3D_EDITOR_LIBRARY_STASH"
+      - name: Upload validate reports
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: weekly-graphical
+          path: |
+            artifacts/ui
+            !artifacts/ui/**/*.blob
+          if-no-files-found: ignore
+          retention-days: 14
+
+  report:
+    name: Report weekly result
+    needs: weekly-graphical
+    if: always() && github.event_name == 'schedule'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      issues: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          sparse-checkout: Tools/ci
+      - name: Open, update or close the weekly-failure issue
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RESULT: ${{ needs.weekly-graphical.result }}
+        run: |
+          outcome=success
+          [[ "$RESULT" == success ]] || outcome=failure
+          Tools/ci/nightly_issue.sh weekly-failure "Weekly graphical run failing" "$outcome" \
+            "- validate.sh --weekly: $RESULT"$'\n\n'"Reports: the run's \`weekly-graphical\` artifact."

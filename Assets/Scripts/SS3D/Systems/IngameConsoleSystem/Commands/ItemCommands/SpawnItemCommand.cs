@@ -70,20 +70,12 @@ namespace SS3D.Systems.IngameConsoleSystem.Commands.ItemCommands
         }
 
         /// <summary>
-        /// Resolve by asset GUID (Items.* constants) or by prefab/object name.
+        /// Resolve by asset GUID (Items.* constants) or by prefab/object name. Assets.Get would log an error for a name, so only TryGet is used.
         /// </summary>
-        private static bool TryResolveItem(string itemNameOrId, out Item item, out string assetId)
+        internal static bool TryResolveItem(string itemNameOrId, out Item item, out string assetId)
         {
             if (Assets.TryGet(AssetDatabases.Items, itemNameOrId, out item) && item != null)
             {
-                assetId = itemNameOrId;
-                return true;
-            }
-
-            Item viaGet = Assets.Get<Item>(AssetDatabases.Items, itemNameOrId);
-            if (viaGet != null)
-            {
-                item = viaGet;
                 assetId = itemNameOrId;
                 return true;
             }

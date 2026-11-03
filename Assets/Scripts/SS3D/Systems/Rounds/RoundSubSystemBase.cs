@@ -164,17 +164,15 @@ namespace SS3D.Systems.Rounds
         [Server]
         protected void RequestRoundStateChange(ChangeRoundStateMessage m)
         {
-            // Reject stale/duplicate client requests before cancelling the active operation.
-            if (m.State && RoundState is not (RoundState.Stopped or RoundState.Ended)) return;
-            // A stop before the round is Ongoing cancels the start (station load or warmup countdown).
-            if (!m.State && RoundState is RoundState.Preparing or RoundState.WarmingUp)
+            switch (RoundRequestRules.Evaluate(RoundState, m.State))
             {
-                CancelCountdown();
-                return;
+                case RoundRequestOutcome.CancelCountdown:
+                    CancelCountdown();
+                    break;
+                case RoundRequestOutcome.Run:
+                    RunRoundStateChangeAsync(m).Forget();
+                    break;
             }
-
-            if (!m.State && RoundState != RoundState.Ongoing) return;
-            RunRoundStateChangeAsync(m).Forget();
         }
 
         /// <summary>

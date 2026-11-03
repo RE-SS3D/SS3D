@@ -38,6 +38,8 @@ FishNet session management — host/join, network type and port settings. Distin
 
 ## Pitfalls
 
+- **Play Mode host: server sees a spawn before the host's client does.** Despawning a freshly spawned Human before its `NetworkObject.ClientInitialized` makes the host client fail its nested spawns (`could not be found for a nested spawn`). Automation that swaps bodies waits for it; see `ScenarioFixture`. Hit 2026-11-03.
+
 - **No nightly run record means no job reached a runner.** GitHub schedules may be delayed/dropped even while active; keep cron off the hour, refresh its registration with a cron edit, and use the [manual nightly recovery](../2026-07_ci-develop-release-pipeline.md#workflow-githubworkflowsdevelop-releaseyml) to restore downloads. Nightly publication moves the floating tag to the built commit before replacing assets.
 
 - **Smoke round drops from Preparing to Stopped with no error:** round start validates the station template against the mode (Map Check). `run_smoketest.sh` used to stage only `Data/Tilemaps`, so the server ran on whatever `StationTemplates/ministation.json` the GameServer tree held: a stale copy without spawn markers, which was refused. The script now stages `Builds/Game/Data/StationTemplates` too, and `RoundSubSystem.FailStationLoad` logs `Round start aborted: <reason>` on the server. Hit 2026-11-01.
@@ -67,7 +69,7 @@ FishNet session management — host/join, network type and port settings. Distin
 ## Tests
 
 - [Multiplayer testing](networking-session-testing.md) owns smoke/load commands, DSL hooks, fixtures, log gates and coverage limits.
-- With the Editor open, `Testing/ui/validate.sh --full` also runs PlayMode and graphical pilots; [UI runbook](../../../Testing/ui/README.md).
+- With the Editor open, `Testing/ui/validate.sh --nightly` runs PlayMode, builds and smoke, and `--weekly` the graphical pilots; [UI runbook](../../../Testing/ui/README.md).
 - `Tools/updater/test-update.ps1` exercises stable release selection, download/hash refusal, data preservation, failed-swap restoration and runnable backups using temporary fake releases. Windows PowerShell 5.1 CI gates release publication; a real packaged Windows update/backup launch remains a manual release check.
 - `python3 -B Tools/updater/test_update_linux.py` covers the Linux equivalent, including executable permissions and archive/local-data link refusal. Runs in PR and release CI; native packaged game/backup launch remains manual.
 

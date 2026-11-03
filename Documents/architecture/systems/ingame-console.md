@@ -15,6 +15,7 @@ Dev/admin in-game console commands routed through `CommandsController`. Commands
 
 - `Assets/Scripts/SS3D/Systems/IngameConsoleSystem/CommandsController.cs` — command dispatch (offline, server, client)
 - `Assets/Scripts/SS3D/Systems/IngameConsoleSystem/Commands/Command.cs` — base class; subclasses auto-register
+- `Assets/Scripts/SS3D/Systems/IngameConsoleSystem/Commands/ItemCommands/SpawnInHandCommand.cs` — admin `spawninhand <item>` into the empty selected hand (scenarios use it to arm a body); shares `SpawnItemCommand.TryResolveItem`, which resolves names without `Assets.Get`'s missing-asset error
 - `Assets/Scripts/SS3D/Systems/IngameConsoleSystem/Commands/SpawnDummyCommand.cs` — admin `spawndummy` (combat test Human)
 - `Assets/Scripts/SS3D/Systems/IngameConsoleSystem/Commands/IdAccessCommands/` — `accesscheck`, `accessgrant`, `accessrevoke`, `accesspreset` dev helpers
 - `Assets/Scripts/SS3D/Systems/IngameConsoleSystem/Commands/ScreenEffectCommand.cs` — client `screeneffect` intensity setter
@@ -23,6 +24,8 @@ Dev/admin in-game console commands routed through `CommandsController`. Commands
 - `Assets/Scripts/SS3D/Systems/IngameConsoleSystem/Commands/AtmosDebugCommand.cs` — server `atmosdebug (heat|gas|wake)`, headless equivalent of `AtmosDebugController`'s GUI buttons, targets the caller's own tile
 - `Assets/Scripts/SS3D/Systems/IngameConsoleSystem/Commands/AtmosClientStatusCommand.cs` — offline `atmosclientstatus [assert]`, reports/asserts this process's `AtmosRenderContext` snapshot validity (multiplayer test harness use)
 - `Assets/Scripts/SS3D/UI/MainHud/Commands/AlertStackCommand.cs` — client `alertstack` hazard override (MainHud asm)
+
+**Awaiting answers:** `CommandsController.AnswerShown` fires for every answer the local console shows, local or from the server. `ScenarioConsole` (PlayMode tests) awaits it.
 
 ## Extension points
 

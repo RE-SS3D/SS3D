@@ -1,0 +1,8 @@
+# The curated multiplayer smoke set (D5 in Documents/architecture/2026-11_testing-philosophy.md).
+# One scenario per line: <scenario> <client-count> [nightly]. "nightly" lines are skipped by
+# run_smoke_set.sh --skip-nightly-only (labelled PRs, develop-release's opt-in smoke).
+# Read by run_smoke_set.sh, Testing/ui/validate.py (smoke step) and the workflows that call it.
+late-join 2
+reconnect 1
+observer-sync 2
+sandbox-reset 1 nightly

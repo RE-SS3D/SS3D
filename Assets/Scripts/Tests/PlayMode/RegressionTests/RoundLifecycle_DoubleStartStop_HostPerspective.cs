@@ -5,13 +5,14 @@ using UnityEngine.TestTools;
 
 namespace SS3D.Tests
 {
+    // Guards: rapid and double start/stop races in the round single-flight (cancellation, despawn, restart) · Not cheaper because: needs real UniTask cancellation and FishNet despawns; the pure gate is RoundRequestRulesTests
     [Category(TestCategories.Lifecycle)]
+    [Category(TestCategories.Nightly)]
     public class RoundLifecycle_DoubleStartStop_HostPerspective : PlayModeTest
     {
         [UnitySetUp]
         public IEnumerator UnitySetUp()
         {
-            LogAssert.ignoreFailingMessages = true;
             yield return LoadAndSetInLobby(NetworkType.Host);
             RoundLifecycleTestHelpers.StartObserving();
             ServerHelpers.SetPlayerReadiness("john", true);
@@ -20,7 +21,6 @@ namespace SS3D.Tests
         [UnityTearDown]
         public IEnumerator UnityTearDown()
         {
-            LogAssert.ignoreFailingMessages = true;
             ServerHelpers.ChangeRoundState(false);
             yield return RoundLifecycleTestHelpers.WaitUntilStopped(30f);
             RoundLifecycleTestHelpers.StopObserving();
@@ -29,21 +29,18 @@ namespace SS3D.Tests
         [UnityTest]
         public IEnumerator RapidStartThenStopEventuallyReachesStopped()
         {
-            LogAssert.ignoreFailingMessages = true;
             yield return LifecycleReproduction.RapidStartThenStopEventuallyReachesStopped();
         }
 
         [UnityTest]
         public IEnumerator DoubleStartCanBeStoppedCleanly()
         {
-            LogAssert.ignoreFailingMessages = true;
             yield return LifecycleReproduction.DoubleStartCanBeStoppedCleanly();
         }
 
         [UnityTest]
         public IEnumerator RoundCanRestartAfterRapidStartStop()
         {
-            LogAssert.ignoreFailingMessages = true;
             yield return LifecycleReproduction.RoundCanRestartAfterRapidStartStop();
         }
 

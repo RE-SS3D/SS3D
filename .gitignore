@@ -144,3 +144,12 @@ __pycache__/
 # Generated from git by BuildInfoGenerator (editor load / player build)
 /Assets/Content/Systems/UI/Lobby/Resources/BuildInfo.json
 /Assets/Content/Systems/UI/Lobby/Resources/BuildInfo.json.meta
+
+# Written by Unity's Performance Testing package on every editor test run.
+/Assets/Resources/PerformanceTestRunInfo.json
+/Assets/Resources/PerformanceTestRunInfo.json.meta
+/Assets/Resources/PerformanceTestRunSettings.json
+/Assets/Resources/PerformanceTestRunSettings.json.meta
+
+# Multiplayer Play Mode per-machine player tags
+ProjectSettings/VirtualProjectsConfig.json

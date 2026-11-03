@@ -6,6 +6,7 @@ using UnityEngine.TestTools;
 
 namespace SS3D.Tests
 {
+  // Guards: Boot → Intro → network session → Game for a Play Mode host, which every PlayMode fixture needs · Not cheaper because: the flow is scene loading and FishNet startup
   [Category(TestCategories.Prerequisites)]
   public class PlayModePrerequisites : PlayModeTest
   {
@@ -13,23 +14,8 @@ namespace SS3D.Tests
     [Order(-100)]
     public IEnumerator HostSession_ReachesLobby()
     {
-      LogAssert.ignoreFailingMessages = true;
       yield return LoadAndSetInLobby(NetworkType.Host);
       Assert.AreEqual("Game", SceneManager.GetActiveScene().name);
-    }
-
-    [UnityTest]
-    [Order(-90)]
-    [Category(TestCategories.RequiresCompiledBuild)]
-    public IEnumerator CompiledBuild_IsAvailableForExternalProcessTests()
-    {
-      LogAssert.ignoreFailingMessages = true;
-      if (!CompiledBuildPaths.HasCompiledBuild)
-      {
-        Assert.Ignore(CompiledBuildPaths.MissingBuildMessage);
-      }
-
-      yield return null;
     }
 
     protected override bool UseMockUpInputs() => false;

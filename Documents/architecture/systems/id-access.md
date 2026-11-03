@@ -1,7 +1,7 @@
 > Code paths: Assets/Scripts/SS3D/Systems/IdAccess/
 > Entry points: IdAccessSubSystem, AccessCredentialResolver
 > Status: partial
-> Verified: a675935e6 — 2026-10-31
+> Verified: 504c22428 — 2026-11-03
 
 # ID / access
 
@@ -32,6 +32,11 @@ Server-side crew identity rail and shared access checks per `Documents/design/id
 
 **Dev testing:** use in-game console commands or `IdAccessDevSettings.AllowConsoleAccessEditing` to bypass Change ID on the ID console.
 
+## Tests
+
+- EditMode: `Assets/Scripts/Tests/EditMode/IdAccessTests/`.
+- `Testing/ui/validate.sh --steps compile,scenarios:Access` (`AccessScenarios`): the test room's Security door refuses a body with no ID and one with an unprivileged ID, by click and by proximity, and opens once `accessgrant Security` updates the card's record.
+
 ## Depends on / Used by
 
 - **Depends on:** [inventory](inventory.md) (ID cards, PDA, `HumanInventory`), [roles](gamemodes-roles-traits.md) (spawn-time record creation)
@@ -41,4 +46,3 @@ Server-side crew identity rail and shared access checks per `Documents/design/id
 
 - Known design deltas: [REVIEW_2026-10 — Known delta](../../design/REVIEW_2026-10.md#known-delta-revised-design-vs-code) — rows: id-access (presented-ID rule, auth logs)
 - Design (read-only): [Documents/design/id-access.md](../../design/id-access.md)
-- Tests: `Assets/Scripts/Tests/EditMode/IdAccessTests/`

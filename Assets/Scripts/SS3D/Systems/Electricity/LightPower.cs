@@ -49,6 +49,9 @@ namespace SS3D.Systems.Electricity
         [SyncVar(OnChange = nameof(SyncFixtureVisual))]
         private FixtureVisual _fixtureVisual;
 
+        /// <summary>The fixture's replicated lit mode (what clients render).</summary>
+        public FixtureVisual Visual => _fixtureVisual;
+
         private float _poweredIntensity;
         private float _poweredFillIntensity;
         private float _poweredRange;

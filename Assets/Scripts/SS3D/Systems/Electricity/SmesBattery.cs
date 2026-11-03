@@ -37,6 +37,17 @@ namespace SS3D.Systems.Electricity
             SubSystems.Get<ElectricitySubSystem>().OnTick += HandleTick;
         }
 
+        // A client that leaves the SMES's observer range and comes back runs OnStartClient again;
+        // without this the first handler outlives the object and throws on its destroyed renderer.
+        public override void OnStopClient()
+        {
+            base.OnStopClient();
+            if (SubSystems.TryGet(out ElectricitySubSystem electricitySystem))
+            {
+                electricitySystem.OnTick -= HandleTick;
+            }
+        }
+
         protected override void OnDestroyed()
         {
             base.OnDestroyed();

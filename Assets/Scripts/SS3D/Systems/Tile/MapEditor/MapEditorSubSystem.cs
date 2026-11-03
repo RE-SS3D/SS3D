@@ -64,6 +64,8 @@ namespace SS3D.Systems.Tile.MapEditor
         private IInputHandle _mapEditorHandle;
         private VisualElement _overlayRoot;
         private bool _active;
+        /// <summary>OnStart finished; OnDestroyed may run first when a scene unloads mid-load.</summary>
+        private bool _started;
         /// <summary>Unscaled time at which the pending Map Check runs after an edit; negative when none is pending.</summary>
         private float _validationDueTime = -1f;
         /// <summary>Quiet period after an edit before re-validating, so drags and bursts of edits trigger one check.</summary>
@@ -178,6 +180,7 @@ namespace SS3D.Systems.Tile.MapEditor
             EnsureCommandServiceBound();
 
             ResolvePlayerCamera();
+            _started = true;
         }
 
         /// <summary>
@@ -231,7 +234,9 @@ namespace SS3D.Systems.Tile.MapEditor
                 _templatePersistence.StationTemplateSaved -= TemplateSaved;
                 _templatePersistence.StationTemplateLoaded -= TemplateLoaded;
             }
-            _controls.ToggleMenu.performed -= HandleToggleMenu;
+            // OnStart may not have run when the scene unloads mid-load (a client disconnecting).
+            if (_started)
+                _controls.ToggleMenu.performed -= HandleToggleMenu;
             SetGameplayInputBlocked(false);
             _lighting.Restore();
             _gameplayHud?.SetVisible(true);

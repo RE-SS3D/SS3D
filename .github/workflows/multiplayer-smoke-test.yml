@@ -1,15 +1,20 @@
 #https://game.ci/docs/github/builder
-# Builds a real headless dedicated-server binary and a real client binary, then runs them
-# against each other via Testing/multiplayer/run_smoketest.sh - the actual multiplayer test
-# harness. Opt-in for PRs (label test:multiplayer), manual dispatch, and nightly on develop.
-# Runs on the self-hosted TomNAS runner (labels: self-hosted,linux,x64,unity) with a warm
-# host Library stash — see Documents/architecture/2026-07_multiplayer-testing-self-hosted-ci.md.
+# The nightly on the self-hosted runner (labels: self-hosted,linux,x64,unity):
+#   1. playmode: tier 2 scenarios + nightly-only PlayMode tests in a batchmode host editor on the
+#      runner's headless GPU display (:0), with its own warm Library stash.
+#   2. multiplayer-smoke-test: builds a real headless dedicated-server binary and a real client
+#      binary, then runs the curated smoke set (Testing/multiplayer/smoke-set.txt) against them.
+#   3. report (scheduled runs only): opens, updates or closes the `nightly-failure` issue.
+# Each job prints its wall-clock time against its budget (D7/D9 in
+# Documents/architecture/2026-11_testing-philosophy.md). Opt-in for PRs (label test:multiplayer;
+# nightly-only smoke scenarios are skipped there), manual dispatch, and nightly on develop.
 #
 # Server+client are built in ONE Editor session (ClientAndServerBuildScript.BuildBothForCi).
 # Two sequential unity-builder steps share Library across Docker restarts and race PackageCache
 # (CS2001 / missing Unity.Cecil.Awesome.dll on the client step).
 #
-# See also Documents/architecture/systems/networking-session-testing.md and
+# See also Documents/architecture/systems/networking-session-testing.md,
+# Documents/architecture/2026-07_multiplayer-testing-self-hosted-ci.md and
 # Documents/architecture/2026-07_ci-develop-release-pipeline.md.
 name: Multiplayer Smoke Test
 on:
@@ -17,26 +22,87 @@ on:
     types: [labeled, synchronize, opened, reopened]
   workflow_dispatch: {}
   schedule:
-    # Nightly UTC — self-hosted minutes are free; keep the warm Library stash exercised.
+    # Nightly UTC — self-hosted minutes are free; keep the warm Library stashes exercised.
     - cron: "0 4 * * *"
 jobs:
+  playmode:
+    name: PlayMode tests (scenarios + nightly)
+    if: github.event_name != 'pull_request' || contains(github.event.pull_request.labels.*.name, 'test:multiplayer')
+    # weekly-graphical.yml uses the same Library stash; never move it out from under another job.
+    concurrency:
+      group: ss3d-editor-library
+      cancel-in-progress: false
+    runs-on: [self-hosted, linux, x64, unity]
+    timeout-minutes: 60
+    env:
+      # The host editor (not game-ci's container) keeps its own Library: a different project
+      # path and editor install would otherwise recompile the shared one on every switch.
+      # Shared with weekly-graphical.yml; outside the checkout so actions/checkout keeps it.
+      SS3D_EDITOR_LIBRARY_STASH: ${{ runner.workspace }}/ss3d-library-editor
+      DISPLAY: ":0"
+    steps:
+      - name: Start budget clock
+        run: echo "SS3D_JOB_START=$(date +%s)" >> "$GITHUB_ENV"
+      - name: Checkout project code
+        uses: actions/checkout@v4
+        with:
+          lfs: false
+      - name: Restore editor Library stash
+        run: |
+          set -euo pipefail
+          rm -rf "$GITHUB_WORKSPACE/Library"
+          if [[ -d "$SS3D_EDITOR_LIBRARY_STASH" ]]; then
+            mv "$SS3D_EDITOR_LIBRARY_STASH" "$GITHUB_WORKSPACE/Library"
+          else
+            echo "No editor Library stash at $SS3D_EDITOR_LIBRARY_STASH; cold import this run"
+          fi
+      - name: Run PlayMode tests
+        run: ./Tools/run_playmode_tests.sh
+      - name: Save editor Library stash
+        # Even a failing run leaves a warm import (and often compiled assemblies); only a Library
+        # with no ScriptAssemblies at all is not worth keeping.
+        if: always()
+        run: |
+          set -euo pipefail
+          [[ -d "$GITHUB_WORKSPACE/Library/ScriptAssemblies" ]] || { echo "No usable Library to stash"; exit 0; }
+          mkdir -p "$(dirname "$SS3D_EDITOR_LIBRARY_STASH")"
+          rm -rf "$SS3D_EDITOR_LIBRARY_STASH"
+          mv "$GITHUB_WORKSPACE/Library" "$SS3D_EDITOR_LIBRARY_STASH"
+      - name: Upload PlayMode results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: playmode-results
+          path: |
+            artifacts/playmode-results.xml
+            artifacts/playmode.log
+          if-no-files-found: ignore
+          retention-days: 7
+      - name: Budget
+        if: always()
+        run: Tools/ci/budget.sh "PlayMode (scenarios + nightly)" 15 "$SS3D_JOB_START"
+
   multiplayer-smoke-test:
     name: Build and run multiplayer smoke test
-    if: github.event_name != 'pull_request' || contains(github.event.pull_request.labels.*.name, 'test:multiplayer')
+    # After playmode, never alongside it; runs even when PlayMode failed.
+    needs: playmode
+    if: always() && (github.event_name != 'pull_request' || contains(github.event.pull_request.labels.*.name, 'test:multiplayer'))
     runs-on: [self-hosted, linux, x64, unity]
     environment:
       name: unity_tests
     env:
       FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
       # Host-side warm Library cache (same filesystem as the runner workdir — mv is rename).
-      # Created on TomNAS at /home/cu6e/.cache/ss3d/Library; never wipe between successful runs.
-      SS3D_UNITY_LIBRARY_STASH: /home/cu6e/.cache/ss3d/Library
+      # Never wipe between successful runs.
+      SS3D_UNITY_LIBRARY_STASH: ${{ runner.workspace }}/ss3d-library
       SERVER_BUILD_DIR: ${{ github.workspace }}/build/GameServer/StandaloneLinux64
       CLIENT_BUILD_DIR: ${{ github.workspace }}/build/Game/StandaloneLinux64
       # Unity 6 Linux players no longer append .x86_64; game-ci -customBuildPath uses buildName as-is.
       SERVER_BIN_NAME: SS3D-Server
       CLIENT_BIN_NAME: SS3D-Client
     steps:
+      - name: Start budget clock
+        run: echo "SS3D_JOB_START=$(date +%s)" >> "$GITHUB_ENV"
       - name: Checkout project code
         uses: actions/checkout@v4
         with:
@@ -123,14 +189,16 @@ jobs:
           SS3D_CLIENT_BUILD_DIR: ${{ env.CLIENT_BUILD_DIR }}
           SS3D_SERVER_BIN_NAME: ${{ env.SERVER_BIN_NAME }}
           SS3D_CLIENT_BIN_NAME: ${{ env.CLIENT_BIN_NAME }}
+          SMOKE_ARGS: ${{ github.event_name == 'pull_request' && '--skip-nightly-only' || '' }}
         run: |
           chmod +x "$SERVER_BUILD_DIR/$SERVER_BIN_NAME" "$CLIENT_BUILD_DIR/$CLIENT_BIN_NAME"
-          chmod +x Testing/multiplayer/run_smoketest.sh
-          ./Testing/multiplayer/run_smoketest.sh basic-round
-          ./Testing/multiplayer/run_smoketest.sh late-join 2
-          ./Testing/multiplayer/run_smoketest.sh reconnect
-          ./Testing/multiplayer/run_smoketest.sh atmos-client-sync
-          ./Testing/multiplayer/run_smoketest.sh sandbox-reset
+          echo "Client + server build: $(( ($(date +%s) - SS3D_JOB_START) / 60 ))m (outside the smoke budget)" | tee -a "$GITHUB_STEP_SUMMARY"
+          smoke_start=$(date +%s)
+          set +e
+          ./Testing/multiplayer/run_smoke_set.sh $SMOKE_ARGS
+          code=$?
+          Tools/ci/budget.sh "Multiplayer smoke set" 20 "$smoke_start"
+          exit $code
       - name: Upload harness logs
         uses: actions/upload-artifact@v4
         if: always()
@@ -139,3 +207,26 @@ jobs:
           path: Testing/multiplayer/.runs
           if-no-files-found: ignore
           retention-days: 7
+
+  report:
+    name: Report nightly result
+    needs: [playmode, multiplayer-smoke-test]
+    if: always() && github.event_name == 'schedule'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      issues: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          sparse-checkout: Tools/ci
+      - name: Open, update or close the nightly-failure issue
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PLAYMODE: ${{ needs.playmode.result }}
+          SMOKE: ${{ needs.multiplayer-smoke-test.result }}
+        run: |
+          outcome=success
+          [[ "$PLAYMODE" == success && "$SMOKE" == success ]] || outcome=failure
+          details=$(printf -- '- PlayMode (scenarios + nightly): %s\n- Build + multiplayer smoke: %s\n\nLogs: the run'"'"'s `playmode-results` and `multiplayer-smoke-test-logs` artifacts.' "$PLAYMODE" "$SMOKE")
+          Tools/ci/nightly_issue.sh nightly-failure "Nightly tests failing" "$outcome" "$details"

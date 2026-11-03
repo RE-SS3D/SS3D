@@ -107,7 +107,7 @@ Implementation notes (2026-10-31):
 
 - EditMode: model and store (Phase 1), conflict swap (Phase 3).
 - Lobby pilot: change one setting per tab, reload the store, and assert the value persisted; assert that the mixer parameter, `QualitySettings` level and binding override actually changed.
-- `Testing/ui/validate.sh --full`: screenshots of all three tabs and the revert prompt.
+- `Testing/ui/validate.sh --steps compile,visual`: screenshots of all three tabs and the revert prompt.
 - Then run `update-system-docs` to update the rounds-lobby and audio maps and add pitfalls.
 
 ## Parked

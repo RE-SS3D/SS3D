@@ -3,8 +3,8 @@ name: run-multiplayer-smoke
 description: >-
   Runs the headless multiplayer smoke harness (run_smoketest.sh) after a local
   client/server build. Use when the user asks to run smoke, kick off
-  basic-round or late-join, or start Testing/multiplayer after building via the
-  Editor menu.
+  late-join, reconnect or observer-sync, or start Testing/multiplayer after
+  building via the Editor menu.
 ---
 
 # Run multiplayer smoke
@@ -41,10 +41,13 @@ Overrides: `SS3D_SERVER_BUILD_DIR`, `SS3D_CLIENT_BUILD_DIR`, `SS3D_SERVER_BIN_NA
 
 | Scenario | Command | Notes |
 |----------|---------|-------|
-| `basic-round` (default) | `./Testing/multiplayer/run_smoketest.sh basic-round` | 1 client |
-| `late-join` | `./Testing/multiplayer/run_smoketest.sh late-join 2` | needs 2 clients |
+| `late-join` (default) | `./Testing/multiplayer/run_smoketest.sh late-join 2` | 2 clients; covers connect/ready/start/embark and a console round trip |
+| `reconnect` | `./Testing/multiplayer/run_smoketest.sh reconnect` | 1 client; reclaims its body after a disconnect |
+| `observer-sync` | `./Testing/multiplayer/run_smoketest.sh observer-sync 2` | 2 clients; client 1 checks client 0's held item, damage, door, lights and atmos |
 
-Ask the user only if they did not name a scenario; otherwise default to `basic-round`.
+Ask the user only if they did not name a scenario; otherwise default to `late-join 2`.
+The full nightly set is `./Testing/multiplayer/run_smoke_set.sh` (add `--skip-nightly-only`
+to drop `sandbox-reset`).
 
 ## Step 2: Run the harness
 
@@ -63,7 +66,7 @@ Ask the user only if they did not name a scenario; otherwise default to `basic-r
 Banner line looks like:
 
 ```text
-== Multiplayer smoke test: basic-round, 1 client(s) (run <RUN_ID>) ==
+== Multiplayer smoke test: late-join, 2 client(s) (run <RUN_ID>) ==
 ```
 
 End line:
