@@ -78,6 +78,12 @@ namespace SS3D.Systems.Combat.Editor
                 so.FindProperty("_profile.RequiresBothHands").boolValue = profile.RequiresBothHands;
                 so.FindProperty("_profile.RequiredHand").enumValueIndex = (int)profile.RequiredHand;
                 so.FindProperty("_muzzle").objectReferenceValue = muzzle;
+                SerializedProperty magazine = so.FindProperty("_magazine");
+                if (magazine.objectReferenceValue == null)
+                {
+                    magazine.objectReferenceValue = FindMagazine(root);
+                }
+
                 so.ApplyModifiedPropertiesWithoutUndo();
 
                 PrefabUtility.SaveAsPrefabAsset(root, path);
@@ -88,6 +94,20 @@ namespace SS3D.Systems.Combat.Editor
             {
                 PrefabUtility.UnloadPrefabContents(root);
             }
+        }
+
+        /// <summary>Direct child whose name ends in "Magazine" (e.g. M4Magazine); the reload clip hands it to the left hand.</summary>
+        private static Transform FindMagazine(GameObject root)
+        {
+            foreach (Transform child in root.transform)
+            {
+                if (child.name.EndsWith("Magazine", System.StringComparison.OrdinalIgnoreCase))
+                {
+                    return child;
+                }
+            }
+
+            return null;
         }
 
         /// <summary>

@@ -275,6 +275,9 @@ MonoBehaviour:
   _asset: {fileID: 11400000, guid: 2577eda4621dd6248b3c3813ef15ad76, type: 2}
   _name: hatchet
   _weight: 1
+  _sizeClass: 2
+  _maxStackSize: 1
+  _stackCount: 1
   _startingTraits: []
   _rigidbody: {fileID: 3368721005309584205}
   AttachmentPoint: {fileID: 7991373112210367801}
@@ -321,7 +324,7 @@ MonoBehaviour:
     BruteDamage: 16
     BurnDamage: 0
     WindupSeconds: 0.3
-    RecoverySeconds: 0.9
+    RecoverySeconds: 0.7
     StaminaCost: 11
     CanSever: 1
     StructuralForce: 28

@@ -94,7 +94,7 @@ namespace SS3D.Systems.Combat
             MaxRangeMeters = 50f,
             FireCooldownSeconds = 0.12f,
             MagazineSize = 30,
-            ReloadSeconds = 2.2f,
+            ReloadSeconds = RifleReloadClipTiming.ReadySeconds,
             StructuralForce = 12f,
             StaminaCost = 3f,
             ExhaustionSpreadDegrees = 1.6f,

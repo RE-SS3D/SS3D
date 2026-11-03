@@ -36,6 +36,14 @@ namespace SS3D.Systems.Stamina
         private HumanInventory _inventory;
         private float _pendingOxyDebt;
 
+        /// <summary>Owner-side sprint drain batched into one RPC per <see cref="DrainSendInterval"/> (was one per frame).</summary>
+        private float _pendingSprintDrain;
+        private float _sprintDrainSendTimer;
+        private const float DrainSendInterval = 0.2f;
+
+        /// <summary>Server: seconds since the last sprint drain arrived; regen waits <see cref="SprintExertion.RegenDelayAfterSprint"/>.</summary>
+        private float _secondsSinceSprintDrain = float.MaxValue;
+
         public float CurrentStamina => _currentStamina;
 
         /// <summary>0 rested .. 1 exhausted. Synced for client movement.</summary>
@@ -87,7 +95,12 @@ namespace SS3D.Systems.Stamina
             }
 
             RefreshModifiers();
-            _stamina.RechargeStamina(updateEvent.DeltaTime);
+            _secondsSinceSprintDrain += updateEvent.DeltaTime;
+            if (SprintExertion.ShouldRegenerate(_secondsSinceSprintDrain))
+            {
+                _stamina.RechargeStamina(updateEvent.DeltaTime);
+            }
+
             PublishState();
         }
 
@@ -127,22 +140,35 @@ namespace SS3D.Systems.Stamina
             PublishState();
         }
 
-        private void DepleteStamina(float rawAmountToDeplete)
+        private void DepleteStamina(float gaitSpeed)
         {
-            if (IsOwner)
+            if (!IsOwner || _player == null)
             {
-                CmdDepleteStaminaScaled(rawAmountToDeplete * Time.deltaTime);
+                return;
+            }
+
+            float fraction = SprintExertion.DrainFraction(gaitSpeed, _player.WalkAnimatorValue, _player.RunAnimatorValue);
+            _pendingSprintDrain += fraction * SprintExertion.SprintDrainPerSecond * Time.deltaTime;
+            _sprintDrainSendTimer += Time.deltaTime;
+
+            // Flush on the interval, or at once when the sprint ends so the server stops draining promptly.
+            if (_pendingSprintDrain > 0f && (_sprintDrainSendTimer >= DrainSendInterval || fraction <= 0f))
+            {
+                CmdDepleteStaminaScaled(_pendingSprintDrain);
+                _pendingSprintDrain = 0f;
+                _sprintDrainSendTimer = 0f;
             }
         }
 
         [ServerRpc]
         private void CmdDepleteStaminaScaled(float amountToDeplete)
         {
-            if (_stamina == null)
+            if (_stamina == null || amountToDeplete <= 0f)
             {
                 return;
             }
 
+            _secondsSinceSprintDrain = 0f;
             _stamina.ConsumeStamina(amountToDeplete);
             ApplyOverdrawOxyDebt();
             PublishState();

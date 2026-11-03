@@ -70,7 +70,7 @@ namespace SS3D.Systems.Entities.Humanoid
         /// <summary>Combat walk world-speed scale (keeps feet from skating on Mixamo combat walks).</summary>
         [SerializeField] private float _combatWalkSpeedFactor = 0.7f;
         /// <summary>Combat run world-speed scale — lower than walk; combat runs are slower clips.</summary>
-        [SerializeField] private float _combatRunSpeedFactor = 0.3f;
+        [SerializeField] private float _combatRunSpeedFactor = 0.5f;
         /// <summary>Ease world speed toward walk/run so movement does not outrun the locomotion blend.</summary>
         [SerializeField] private float _speedScaleLerp = 2.4f;
 
@@ -265,7 +265,7 @@ namespace SS3D.Systems.Entities.Humanoid
                 && _livingController.TryGetCombatAim(out aimYaw, out aimPitch, out aimPoint))
             {
                 hasCombatAim = true;
-                _bodyStateMachine.CmdSetAim(aimYaw, aimPitch);
+                _bodyStateMachine.SubmitAim(aimYaw, aimPitch);
                 _livingController.GetComponent<HumanoidIkController>()?.SetCombatAimPoint(aimPoint);
             }
 
@@ -379,7 +379,7 @@ namespace SS3D.Systems.Entities.Humanoid
             Vector3 moveDirection = GetCameraRelativeDirection(md.Horizontal, md.Vertical);
             float speedFactor = _healthController != null ? _healthController.Snapshot.MovementSpeedMultiplier : 1f;
             float exertionFactor = _staminaController != null
-                ? Mathf.Lerp(1f, 0.55f, _staminaController.ExertionPenalty)
+                ? SprintExertion.MovementSpeedFactor(_staminaController.ExertionPenalty)
                 : 1f;
             HumanoidCombatMode combatMode = _bodyStateMachine.CombatMode;
             float targetSpeedScale = GetTargetSpeedScale(md.IsRunning, combatMode);
@@ -431,7 +431,7 @@ namespace SS3D.Systems.Entities.Humanoid
             Vector3 moveDirection = GetCameraRelativeDirection(md.Horizontal, md.Vertical);
             float speedFactor = _healthController != null ? _healthController.Snapshot.MovementSpeedMultiplier : 1f;
             float exertionFactor = _staminaController != null
-                ? Mathf.Lerp(1f, 0.55f, _staminaController.ExertionPenalty)
+                ? SprintExertion.MovementSpeedFactor(_staminaController.ExertionPenalty)
                 : 1f;
             HumanoidCombatMode combatMode = _bodyStateMachine.CombatMode;
             float targetSpeedScale = GetTargetSpeedScale(md.IsRunning, combatMode);
@@ -484,7 +484,7 @@ namespace SS3D.Systems.Entities.Humanoid
                 Vector3 moveDirection = GetCameraRelativeDirection(md.Horizontal, md.Vertical);
                 float speedFactor = _healthController != null ? _healthController.Snapshot.MovementSpeedMultiplier : 1f;
                 float exertionFactor = _staminaController != null
-                    ? Mathf.Lerp(1f, 0.55f, _staminaController.ExertionPenalty)
+                    ? SprintExertion.MovementSpeedFactor(_staminaController.ExertionPenalty)
                     : 1f;
                 float speed = _movementSpeed * speedFactor * exertionFactor * _smoothedSpeedScale;
                 return moveDirection * speed;

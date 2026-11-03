@@ -275,6 +275,9 @@ MonoBehaviour:
   _asset: {fileID: 11400000, guid: f5a2860feace1434ea982b06d2445f9f, type: 2}
   _name: Kitchen knife
   _weight: 1
+  _sizeClass: 2
+  _maxStackSize: 1
+  _stackCount: 1
   _startingTraits: []
   _rigidbody: {fileID: 2709008034070362697}
   AttachmentPoint: {fileID: 8869951128713715569}
@@ -321,7 +324,7 @@ MonoBehaviour:
     BruteDamage: 12
     BurnDamage: 0
     WindupSeconds: 0.2
-    RecoverySeconds: 0.7
+    RecoverySeconds: 0.55
     StaminaCost: 9
     CanSever: 1
     StructuralForce: 4

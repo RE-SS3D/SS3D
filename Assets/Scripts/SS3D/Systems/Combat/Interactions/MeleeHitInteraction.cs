@@ -211,6 +211,22 @@ namespace SS3D.Systems.Combat.Interactions
             return base.ResolveMoveCheckPosition(interactionEvent);
         }
 
+        /// <summary>
+        /// Melee reach: horizontal distance from the attacker's chest to the struck surface (body-zone
+        /// collider or wall face). Arm plus a held tool reaches ~0.85 m past the body; the hand's 1.5 m
+        /// interaction range let swings land on walls from well over a metre away.
+        /// </summary>
+        public static readonly RangeLimit Reach = new(1.1f, 2f);
+
+        /// <summary>Entity chest, not the hand bone — the swinging hand moves through the reach check.</summary>
+        private static Vector3 ResolveReachOrigin(Hand hand)
+        {
+            Entity entity = hand.GetComponentInParent<Entity>();
+            return entity != null
+                ? entity.transform.position + Vector3.up * MeleeStructuralHitResolver.ReachHeight
+                : hand.InteractionOrigin;
+        }
+
         private static bool TryResolveConnectHit(Hand hand, out HumanHealthController health, out BodyZone zone)
         {
             health = null;
@@ -234,8 +250,8 @@ namespace SS3D.Systems.Combat.Interactions
             }
 
             return ZoneTargetResolver.IsMeleeZoneReachInRange(
-                hand.InteractionOrigin,
-                hand.GetInteractionRange(),
+                ResolveReachOrigin(hand),
+                Reach,
                 zoneCollider);
         }
 
@@ -253,7 +269,7 @@ namespace SS3D.Systems.Combat.Interactions
                 && MeleeStructuralHitResolver.TryResolve(
                     aimRay,
                     attackerPosition,
-                    hand.GetInteractionRange(),
+                    Reach,
                     out coord))
             {
                 return true;
@@ -265,6 +281,7 @@ namespace SS3D.Systems.Combat.Interactions
                 return MeleeStructuralHitResolver.TryResolveAdjacent(
                     attackerPosition,
                     entity.transform.forward,
+                    Reach,
                     out coord);
             }
 

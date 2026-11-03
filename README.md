@@ -20,7 +20,7 @@ still build-from-source in the Editor.
 |------|----------|
 | **Test server**: Download a release, click join, play with others on a live server | ✅✅✅✅✅✅🟡🟡 |
 | **Map authoring**: Build your own station in a release build and hand it in | ✅✅✅✅✅✅✅✅⬜ |
-| **Nuclear Operatives round**: Play a full Nuke Ops round from spawn to end screen | ✅✅✅🟡🟡🟡🟡⬜⬜⬜ |
+| **Nuclear Operatives round**: Play a full Nuke Ops round from spawn to end screen | ✅✅✅🟡🟡🟡🟡🟡⬜⬜ |
 | **Station round**: Play a short, bare-bones SS13 shift with jobs and antagonists | 🟡⬜⬜⬜⬜⬜⬜ |
 
 Each square is one slice of the goal: ✅ done · 🟡 partly there · ⬜ not started · ⛔ blocked.

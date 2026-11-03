@@ -15,11 +15,21 @@ namespace SS3D.Systems.Entities.Humanoid.Body
         public AnimationTriggerId ActiveTrigger;
         /// <summary>0–2 melee swing cycle index when <see cref="ActiveTrigger"/> is AttackSwing.</summary>
         public byte AttackVariant;
+        /// <summary>
+        /// Effective melee windup for the active AttackSwing, quantized by
+        /// <see cref="MeleeSwingAnimation.QuantizeWindup"/> (0 = unknown). Observers time the strike frame with it.
+        /// </summary>
+        public byte AttackWindup;
         public HumanoidCombatMode CombatMode;
         public LimpSide LimpSide;
         public float AimYaw;
         public float AimPitch;
+        /// <summary>Planar gait magnitude (walk 0.3, run 1.0), derived from <see cref="MovementVelX"/>/<see cref="MovementVelZ"/>.</summary>
         public float MovementSpeed;
+        /// <summary>Body-local strafe axis in gait units.</summary>
+        public float MovementVelX;
+        /// <summary>Body-local forward axis in gait units (negative = backpedal).</summary>
+        public float MovementVelZ;
         public float InjuredArmLeft;
         public float InjuredArmRight;
         /// <summary>Max left/right leg brute fraction — drives limp idle severity and additive weight.</summary>
@@ -46,6 +56,7 @@ namespace SS3D.Systems.Entities.Humanoid.Body
             if (IsDragging) packed |= 1u << 18;
             packed |= ((uint)AttackVariant & 0x3) << 19;
             if (MirrorUpperBody) packed |= 1u << 21;
+            packed |= ((uint)AttackWindup & 0x1F) << 22;
             return packed;
         }
 
@@ -53,7 +64,8 @@ namespace SS3D.Systems.Entities.Humanoid.Body
             uint packed,
             float aimYaw,
             float aimPitch,
-            float movementSpeed,
+            float movementVelX,
+            float movementVelZ,
             float injuredArmLeft,
             float injuredArmRight,
             float injuredLeg)
@@ -72,9 +84,12 @@ namespace SS3D.Systems.Entities.Humanoid.Body
                 IsDragging = (packed & (1u << 18)) != 0,
                 AttackVariant = (byte)((packed >> 19) & 0x3),
                 MirrorUpperBody = (packed & (1u << 21)) != 0,
+                AttackWindup = (byte)((packed >> 22) & 0x1F),
                 AimYaw = aimYaw,
                 AimPitch = aimPitch,
-                MovementSpeed = movementSpeed,
+                MovementSpeed = (float)Math.Sqrt(movementVelX * movementVelX + movementVelZ * movementVelZ),
+                MovementVelX = movementVelX,
+                MovementVelZ = movementVelZ,
                 InjuredArmLeft = injuredArmLeft,
                 InjuredArmRight = injuredArmRight,
                 InjuredLeg = injuredLeg,
@@ -86,7 +101,8 @@ namespace SS3D.Systems.Entities.Humanoid.Body
             return Pack() == other.Pack()
                 && Math.Abs(AimYaw - other.AimYaw) < 0.01f
                 && Math.Abs(AimPitch - other.AimPitch) < 0.01f
-                && Math.Abs(MovementSpeed - other.MovementSpeed) < 0.01f
+                && Math.Abs(MovementVelX - other.MovementVelX) < 0.01f
+                && Math.Abs(MovementVelZ - other.MovementVelZ) < 0.01f
                 && Math.Abs(InjuredArmLeft - other.InjuredArmLeft) < 0.01f
                 && Math.Abs(InjuredArmRight - other.InjuredArmRight) < 0.01f
                 && Math.Abs(InjuredLeg - other.InjuredLeg) < 0.01f;

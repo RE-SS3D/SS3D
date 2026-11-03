@@ -245,6 +245,9 @@ MonoBehaviour:
   _asset: {fileID: 11400000, guid: 9310ba3e563558e42bdbd19ee6b8440c, type: 2}
   _name: Crowbar
   _weight: 1
+  _sizeClass: 2
+  _maxStackSize: 1
+  _stackCount: 1
   _startingTraits: []
   _rigidbody: {fileID: 8316413619239954654}
   AttachmentPoint: {fileID: 4263568945307503621}
@@ -275,6 +278,26 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   key: {fileID: 11400000, guid: dbead8b9456722f4eb3d0a7be247e5c6, type: 2}
+--- !u!114 &9182736450123456801
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1888703706215615217}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f2a3b4c5d6e7489a0b1c2d3e4f5a6789, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _profile:
+    BruteDamage: 18
+    BurnDamage: 0
+    WindupSeconds: 0.35
+    RecoverySeconds: 0.8
+    StaminaCost: 12
+    CanSever: 0
+    StructuralForce: 35
 --- !u!1 &2468349444349537438
 GameObject:
   m_ObjectHideFlags: 0
@@ -306,23 +329,3 @@ Transform:
   m_Children: []
   m_Father: {fileID: 3201320306369427682}
   m_LocalEulerAnglesHint: {x: 90, y: 0, z: 0}
---- !u!114 &9182736450123456801
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1888703706215615217}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f2a3b4c5d6e7489a0b1c2d3e4f5a6789, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _profile:
-    BruteDamage: 18
-    BurnDamage: 0
-    WindupSeconds: 0.35
-    RecoverySeconds: 1
-    StaminaCost: 12
-    CanSever: 0
-    StructuralForce: 35

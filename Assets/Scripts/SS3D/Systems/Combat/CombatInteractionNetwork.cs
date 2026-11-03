@@ -97,7 +97,7 @@ namespace SS3D.Systems.Combat
                 BeginLocalSwingCycle(hand, hit.Profile);
             }
 
-            TryPlayMeleeSwingTelegraph(hit);
+            TryPlayMeleeSwingTelegraph(hit, hand);
             TrySyncMeleeAimToServer();
             CmdRunMeleeSwing();
             return true;
@@ -633,9 +633,9 @@ namespace SS3D.Systems.Combat
             return MeleeWeaponProfile.Fists;
         }
 
-        private void TryPlayMeleeSwingTelegraph(IInteraction interaction)
+        private void TryPlayMeleeSwingTelegraph(IInteraction interaction, Hand hand)
         {
-            if (interaction is not MeleeHitInteraction)
+            if (interaction is not MeleeHitInteraction hit)
             {
                 return;
             }
@@ -645,7 +645,12 @@ namespace SS3D.Systems.Combat
                 return;
             }
 
-            combat.RequestAttack(AnimationTriggerId.AttackSwing);
+            // Same exertion scaling as ServerBeginSwing (ExertionPenalty is a SyncVar), so the
+            // strike frame lands when the server connects.
+            StaminaController stamina = hand != null ? hand.GetComponentInParent<StaminaController>() : null;
+            float windup = hit.Profile.WindupSeconds
+                * MeleeHitInteraction.ComputeExertionTimeMultiplier(stamina != null ? stamina.ExertionPenalty : 0f);
+            combat.RequestAttack(AnimationTriggerId.AttackSwing, windup);
         }
 
         private void TryPlayRangedFireTelegraph()

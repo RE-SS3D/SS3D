@@ -34,15 +34,24 @@ namespace SS3D.Systems.Entities.Humanoid
 
         [Header("Movement Settings")]
         [SerializeField] protected float _movementSpeed;
-        [SerializeField] protected float _lerpMultiplier;
-        [SerializeField] protected float _rotationLerpMultiplier;
+        /// <summary>Seconds from standstill to full run speed (M1m: about 0.1 s). Walk gets there sooner.</summary>
+        [SerializeField] protected float _accelerationTime = 0.1f;
+        /// <summary>Seconds from full run speed to a stop. Shorter than acceleration so release reads as a plant, not a slide.</summary>
+        [SerializeField] protected float _decelerationTime = 0.08f;
+        /// <summary>Peaceful yaw slerp rate toward the move direction (higher = snappier facing, less sideways slide).</summary>
+        [SerializeField] protected float _facingTurnRate = 15f;
         /// <summary>Yaw turn rate while aiming in combat (lower than peaceful for less twitchy facing).</summary>
         [SerializeField] protected float _combatRotationLerpMultiplier = 3.5f;
         [SerializeField] protected float _turnVelocityScale = 4f;
         /// <summary>Combat gaits are slower than peaceful — scale world speed to match Mixamo cadence.</summary>
         [SerializeField] protected float _combatWalkSpeedFactor = 0.7f;
-        /// <summary>Combat run clips are especially slow vs peaceful run; keep separate from walk.</summary>
-        [SerializeField] protected float _combatRunSpeedFactor = 0.3f;
+        /// <summary>Combat run world speed factor (0.5 → 2.5 m/s). Melee/Ranged clip timeScales are calibrated from it: rerun SS3D → Animation → Rebuild Combat Stance Blend Trees after changing.</summary>
+        [SerializeField] protected float _combatRunSpeedFactor = 0.5f;
+        /// <summary>
+        /// Peaceful run (sprint) world speed factor (0.8 → 4 m/s). Mix_Running is authored at ~3.9 m/s,
+        /// so this also keeps the feet planted; peaceful walk is unscaled (1.5 m/s vs the clip's 1.57).
+        /// </summary>
+        [SerializeField] protected float _peacefulRunSpeedFactor = 0.8f;
 
         [Header("Movement IK Targets")]
         [SerializeField] private Transform _movementTarget;
@@ -53,7 +62,6 @@ namespace SS3D.Systems.Entities.Humanoid
         [Header("Debug Info")]
         protected Vector3 AbsoluteMovement;
         protected Vector2 Input;
-        protected Vector2 SmoothedInput;
         public Vector3 TargetMovement;
 
         private Actor _camera;
@@ -72,6 +80,12 @@ namespace SS3D.Systems.Entities.Humanoid
         public virtual float WalkAnimatorValue => _walkAnimatorValue;
         public virtual float RunAnimatorValue => _runAnimatorValue;
         public bool IsRunning => _isRunning;
+
+        /// <summary>
+        /// Locomotion clip playback multiplier for slowdowns the blend tree's calibrated speeds do
+        /// not know about (exhaustion). Read on every peer, so it must come from synced state.
+        /// </summary>
+        public virtual float LocomotionPlaybackRate => 1f;
         protected HumanoidBodyStateMachine BodyStateMachine => _bodyStateMachine;
         #endregion
 
@@ -256,51 +270,38 @@ namespace SS3D.Systems.Entities.Humanoid
         }
 
         /// <summary>
-        /// Moves the movement targets with the given input
+        /// Moves the movement target toward the camera-relative input at a constant rate, so full
+        /// speed and a stop both land within <see cref="_accelerationTime"/> /
+        /// <see cref="_decelerationTime"/> regardless of frame rate. <see cref="TargetMovement"/>
+        /// magnitude is in gait units (walk 0.3, run 1.0) and drives both world speed and the blend.
         /// </summary>
-        /// <param name="movementInput"></param>
-         protected void MoveMovementTarget(Vector2 movementInput, float multiplier = 1)
-         {
-             if (_camera == null)
-             {
-                 _camera = SubSystems.Get<CameraSubSystem>().PlayerCamera;
-             }
+        protected void MoveMovementTarget(Vector2 movementInput)
+        {
+            if (_camera == null)
+            {
+                _camera = SubSystems.Get<CameraSubSystem>().PlayerCamera;
+            }
 
-             Vector3 forwardBasis = _camera != null
-                 ? Vector3.Cross(_camera.Right, Vector3.up).normalized
-                 : Vector3.forward;
-             Vector3 rightBasis = _camera != null
-                 ? Vector3.Cross(Vector3.up, _camera.Forward).normalized
-                 : Vector3.right;
+            Vector3 forwardBasis = _camera != null
+                ? Vector3.Cross(_camera.Right, Vector3.up).normalized
+                : Vector3.forward;
+            Vector3 rightBasis = _camera != null
+                ? Vector3.Cross(Vector3.up, _camera.Forward).normalized
+                : Vector3.right;
 
-             //makes the movement align to the camera view
-             Vector3 newTargetMovement =
-                 movementInput.y * forwardBasis +
-                 movementInput.x * rightBasis;
+            //makes the movement align to the camera view
+            Vector3 newTargetMovement =
+                movementInput.y * forwardBasis +
+                movementInput.x * rightBasis;
 
-             float lerpRate = _lerpMultiplier * multiplier;
-             // Snap idle→walk; seed idle→run at walk speed so motion accelerates through the gait blend.
-             if (TargetMovement.sqrMagnitude < 0.0001f && newTargetMovement.sqrMagnitude > 0.0001f)
-             {
-                 float targetMag = newTargetMovement.magnitude;
-                 if (targetMag <= WalkAnimatorValue + 0.05f)
-                 {
-                     TargetMovement = newTargetMovement;
-                 }
-                 else
-                 {
-                     TargetMovement = newTargetMovement.normalized * WalkAnimatorValue;
-                 }
-             }
-             else
-             {
-                 TargetMovement = Vector3.Lerp(TargetMovement, newTargetMovement, Time.deltaTime * lerpRate);
-             }
+            bool slowing = newTargetMovement.sqrMagnitude < TargetMovement.sqrMagnitude;
+            float rampTime = Mathf.Max(0.001f, slowing ? _decelerationTime : _accelerationTime);
+            float maxStep = RunAnimatorValue / rampTime * Time.deltaTime;
+            TargetMovement = Vector3.MoveTowards(TargetMovement, newTargetMovement, maxStep);
 
-             Vector3 resultingMovement = TargetMovement + Position;
-            AbsoluteMovement = resultingMovement;
-             _movementTarget.position = AbsoluteMovement;
-         }
+            AbsoluteMovement = TargetMovement + Position;
+            _movementTarget.position = AbsoluteMovement;
+        }
 
         /// <summary>
         /// Rotates the player to the target movement
@@ -309,7 +310,7 @@ namespace SS3D.Systems.Entities.Humanoid
         {
             Quaternion lookRotation = Quaternion.LookRotation(TargetMovement);
 
-            transform.rotation = Quaternion.Slerp(Rotation, lookRotation, Time.deltaTime * _rotationLerpMultiplier);
+            transform.rotation = Quaternion.Slerp(Rotation, lookRotation, Time.deltaTime * _facingTurnRate);
         }
 
         /// <summary>
@@ -339,7 +340,6 @@ namespace SS3D.Systems.Entities.Humanoid
             float inputFilteredSpeed = FilterSpeed();
 
             Input = Vector2.ClampMagnitude(new Vector2(x, y), inputFilteredSpeed);
-            SmoothedInput = Vector2.Lerp(SmoothedInput, Input, Time.deltaTime * (_lerpMultiplier / 10));
 
             if (publishSpeed)
             {
@@ -402,7 +402,7 @@ namespace SS3D.Systems.Entities.Humanoid
                 return;
             }
 
-            _bodyStateMachine?.CmdSetAim(yaw, pitch);
+            _bodyStateMachine?.SubmitAim(yaw, pitch);
             GetComponent<HumanoidIkController>()?.SetCombatAimPoint(aimPoint);
 
             Quaternion lookRotation = Quaternion.Euler(0f, yaw, 0f);

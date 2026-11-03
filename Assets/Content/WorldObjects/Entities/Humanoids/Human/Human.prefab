@@ -7506,9 +7506,11 @@ MonoBehaviour:
   _movementController: {fileID: 571479044043330787}
   _bodyStateMachine: {fileID: 9100001001}
   _animator: {fileID: 1252106768682846670}
-  _lerpMultiplier: 2.4
+  _remoteLocomotionLerp: 14
+  _turnLerp: 10
   _ikController: {fileID: 9100001007}
   _upperBodyWeightLerp: 6
+  _additiveWeightLerp: 8
 --- !u!114 &5293420320943344825
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -7561,12 +7563,13 @@ MonoBehaviour:
   _networkObjectCache: {fileID: 2930813178971533500}
   _entity: {fileID: 5283895024578974260}
   _movementSpeed: 5
-  _lerpMultiplier: 2
-  _rotationLerpMultiplier: 6
+  _accelerationTime: 0.1
+  _decelerationTime: 0.08
+  _facingTurnRate: 15
   _combatRotationLerpMultiplier: 3.5
   _turnVelocityScale: 4
   _combatWalkSpeedFactor: 0.7
-  _combatRunSpeedFactor: 0.3
+  _combatRunSpeedFactor: 0.5
   _movementTarget: {fileID: 282733360052666326}
   TargetMovement: {x: 0, y: 0, z: 0}
   _characterController: {fileID: 3812744165389046210}
@@ -7608,6 +7611,15 @@ MonoBehaviour:
     CanUseArms: 1
     CriticalFlags: 0
     CanDefibrillate: 0
+    Environment:
+      HasSample: 0
+      IsVacuum: 0
+      AtmosphereBreathability: 1
+      TemperatureKelvin: 293.15
+      PressureKpa: 101.325
+      BurnIntensity: 0
+      PlasmaMoleFraction: 0
+      OxygenMoleFraction: 0.19998077
   _debugDetail:
     Head:
       Brute: 0
@@ -7788,6 +7800,7 @@ MonoBehaviour:
   _addedNetworkObject: {fileID: 2930813178971533500}
   _networkObjectCache: {fileID: 2930813178971533500}
   _armatureRoot: {fileID: 8356004225170572391}
+  _presentation: 0
   _standUpFaceUpClip: {fileID: 7400000, guid: 819462e6a707a0147a647482f5d2a038, type: 2}
   _standUpFaceDownClip: {fileID: 7400000, guid: 3b44d4082074d7f4cb19f2036c9c9a01, type: 2}
   _ragdollPartSyncInterval: 10
@@ -7834,7 +7847,8 @@ MonoBehaviour:
   _packedSnapshot: 0
   _aimYaw: 0
   _aimPitch: 0
-  _movementSpeed: 0
+  _movementVelX: 0
+  _movementVelZ: 0
   _injuredArmLeft: 0
   _injuredArmRight: 0
   _injuredLeg: 0
@@ -7864,7 +7878,7 @@ MonoBehaviour:
   _movementSpeed: 5
   _walkSpeedFactor: 0.3
   _combatWalkSpeedFactor: 0.7
-  _combatRunSpeedFactor: 0.3
+  _combatRunSpeedFactor: 0.5
   _speedScaleLerp: 2.4
 --- !u!114 &9100001003
 MonoBehaviour:

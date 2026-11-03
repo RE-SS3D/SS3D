@@ -1,10 +1,10 @@
 {
-  "generated_at": "2026-11-02T16:28:38.865155+00:00",
+  "generated_at": "2026-11-03T21:27:50.483197+00:00",
   "purpose": "Agent reference for locating SS3D art assets and determining import status.",
   "sources": {
     "in_game": {
       "root": "Assets/Art",
-      "file_count": 5224
+      "file_count": 5240
     },
     "ss3d_art": {
       "repo": "https://github.com/RE-SS3D/SS3D-Art",
@@ -13,11 +13,11 @@
     }
   },
   "summary": {
-    "in_game_files": 5224,
+    "in_game_files": 5240,
     "ss3d_art_files": 2480,
-    "unique_assets": 7490,
+    "unique_assets": 7506,
     "imported": 214,
-    "in_game_only": 5020,
+    "in_game_only": 5036,
     "ss3d_art_only": 2256,
     "available_for_import": 2041,
     "artwork_only": 215
@@ -25,10 +25,10 @@
   "categories": [
     {
       "path": "Animations",
-      "in_game": 131,
+      "in_game": 147,
       "ss3d_art": 21,
       "imported": 3,
-      "in_game_only": 131,
+      "in_game_only": 147,
       "ss3d_art_only": 18
     },
     {
@@ -183,6 +183,14 @@
       "ss3d_art": 0,
       "imported": 0,
       "in_game_only": 47,
+      "ss3d_art_only": 0
+    },
+    {
+      "path": "Animations/Pro Rifle Pack",
+      "in_game": 16,
+      "ss3d_art": 0,
+      "imported": 0,
+      "in_game_only": 16,
       "ss3d_art_only": 0
     },
     {
@@ -2878,7 +2886,7 @@
     "svg": 4248,
     "png": 2041,
     "blend": 677,
-    "fbx": 224,
+    "fbx": 240,
     "wav": 159,
     "ogg": 72,
     "mp3": 18,
@@ -4338,6 +4346,182 @@
       "extension": "fbx",
       "category": "Animations/Pro Melee Axe Pack",
       "in_game_path": "Assets/Art/Animations/Pro Melee Axe Pack/unarmed walk forward 1.fbx",
+      "ss3d_art_path": null,
+      "github_url": null,
+      "import_target_path": null,
+      "status": "in_game_only"
+    },
+    {
+      "name": "run backward left.fbx",
+      "stem": "run backward left",
+      "extension": "fbx",
+      "category": "Animations/Pro Rifle Pack",
+      "in_game_path": "Assets/Art/Animations/Pro Rifle Pack/run backward left.fbx",
+      "ss3d_art_path": null,
+      "github_url": null,
+      "import_target_path": null,
+      "status": "in_game_only"
+    },
+    {
+      "name": "run backward right.fbx",
+      "stem": "run backward right",
+      "extension": "fbx",
+      "category": "Animations/Pro Rifle Pack",
+      "in_game_path": "Assets/Art/Animations/Pro Rifle Pack/run backward right.fbx",
+      "ss3d_art_path": null,
+      "github_url": null,
+      "import_target_path": null,
+      "status": "in_game_only"
+    },
+    {
+      "name": "run backward.fbx",
+      "stem": "run backward",
+      "extension": "fbx",
+      "category": "Animations/Pro Rifle Pack",
+      "in_game_path": "Assets/Art/Animations/Pro Rifle Pack/run backward.fbx",
+      "ss3d_art_path": null,
+      "github_url": null,
+      "import_target_path": null,
+      "status": "in_game_only"
+    },
+    {
+      "name": "run forward left.fbx",
+      "stem": "run forward left",
+      "extension": "fbx",
+      "category": "Animations/Pro Rifle Pack",
+      "in_game_path": "Assets/Art/Animations/Pro Rifle Pack/run forward left.fbx",
+      "ss3d_art_path": null,
+      "github_url": null,
+      "import_target_path": null,
+      "status": "in_game_only"
+    },
+    {
+      "name": "run forward right.fbx",
+      "stem": "run forward right",
+      "extension": "fbx",
+      "category": "Animations/Pro Rifle Pack",
+      "in_game_path": "Assets/Art/Animations/Pro Rifle Pack/run forward right.fbx",
+      "ss3d_art_path": null,
+      "github_url": null,
+      "import_target_path": null,
+      "status": "in_game_only"
+    },
+    {
+      "name": "run forward.fbx",
+      "stem": "run forward",
+      "extension": "fbx",
+      "category": "Animations/Pro Rifle Pack",
+      "in_game_path": "Assets/Art/Animations/Pro Rifle Pack/run forward.fbx",
+      "ss3d_art_path": null,
+      "github_url": null,
+      "import_target_path": null,
+      "status": "in_game_only"
+    },
+    {
+      "name": "run left.fbx",
+      "stem": "run left",
+      "extension": "fbx",
+      "category": "Animations/Pro Rifle Pack",
+      "in_game_path": "Assets/Art/Animations/Pro Rifle Pack/run left.fbx",
+      "ss3d_art_path": null,
+      "github_url": null,
+      "import_target_path": null,
+      "status": "in_game_only"
+    },
+    {
+      "name": "run right.fbx",
+      "stem": "run right",
+      "extension": "fbx",
+      "category": "Animations/Pro Rifle Pack",
+      "in_game_path": "Assets/Art/Animations/Pro Rifle Pack/run right.fbx",
+      "ss3d_art_path": null,
+      "github_url": null,
+      "import_target_path": null,
+      "status": "in_game_only"
+    },
+    {
+      "name": "walk backward left.fbx",
+      "stem": "walk backward left",
+      "extension": "fbx",
+      "category": "Animations/Pro Rifle Pack",
+      "in_game_path": "Assets/Art/Animations/Pro Rifle Pack/walk backward left.fbx",
+      "ss3d_art_path": null,
+      "github_url": null,
+      "import_target_path": null,
+      "status": "in_game_only"
+    },
+    {
+      "name": "walk backward right.fbx",
+      "stem": "walk backward right",
+      "extension": "fbx",
+      "category": "Animations/Pro Rifle Pack",
+      "in_game_path": "Assets/Art/Animations/Pro Rifle Pack/walk backward right.fbx",
+      "ss3d_art_path": null,
+      "github_url": null,
+      "import_target_path": null,
+      "status": "in_game_only"
+    },
+    {
+      "name": "walk backward.fbx",
+      "stem": "walk backward",
+      "extension": "fbx",
+      "category": "Animations/Pro Rifle Pack",
+      "in_game_path": "Assets/Art/Animations/Pro Rifle Pack/walk backward.fbx",
+      "ss3d_art_path": null,
+      "github_url": null,
+      "import_target_path": null,
+      "status": "in_game_only"
+    },
+    {
+      "name": "walk forward left.fbx",
+      "stem": "walk forward left",
+      "extension": "fbx",
+      "category": "Animations/Pro Rifle Pack",
+      "in_game_path": "Assets/Art/Animations/Pro Rifle Pack/walk forward left.fbx",
+      "ss3d_art_path": null,
+      "github_url": null,
+      "import_target_path": null,
+      "status": "in_game_only"
+    },
+    {
+      "name": "walk forward right.fbx",
+      "stem": "walk forward right",
+      "extension": "fbx",
+      "category": "Animations/Pro Rifle Pack",
+      "in_game_path": "Assets/Art/Animations/Pro Rifle Pack/walk forward right.fbx",
+      "ss3d_art_path": null,
+      "github_url": null,
+      "import_target_path": null,
+      "status": "in_game_only"
+    },
+    {
+      "name": "walk forward.fbx",
+      "stem": "walk forward",
+      "extension": "fbx",
+      "category": "Animations/Pro Rifle Pack",
+      "in_game_path": "Assets/Art/Animations/Pro Rifle Pack/walk forward.fbx",
+      "ss3d_art_path": null,
+      "github_url": null,
+      "import_target_path": null,
+      "status": "in_game_only"
+    },
+    {
+      "name": "walk left.fbx",
+      "stem": "walk left",
+      "extension": "fbx",
+      "category": "Animations/Pro Rifle Pack",
+      "in_game_path": "Assets/Art/Animations/Pro Rifle Pack/walk left.fbx",
+      "ss3d_art_path": null,
+      "github_url": null,
+      "import_target_path": null,
+      "status": "in_game_only"
+    },
+    {
+      "name": "walk right.fbx",
+      "stem": "walk right",
+      "extension": "fbx",
+      "category": "Animations/Pro Rifle Pack",
+      "in_game_path": "Assets/Art/Animations/Pro Rifle Pack/walk right.fbx",
       "ss3d_art_path": null,
       "github_url": null,
       "import_target_path": null,

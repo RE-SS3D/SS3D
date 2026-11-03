@@ -19,10 +19,21 @@ namespace SS3D.Systems.Combat.Interactions
         [Tooltip("Barrel tip — muzzle flash and future aim alignment. Wired by RangedPrefabSetup.")]
         [SerializeField] private Transform _muzzle;
 
+        [Header("Reload magazine handoff")]
+        [Tooltip("Detachable magazine mesh (child of the weapon). The wielder's left hand carries it during the reload clip. Null keeps it on the gun.")]
+        [SerializeField] private Transform _magazine;
+        [Tooltip("Magazine position in the left hand bone's space while carried. M4 value is the pose where the reload clip's hand seats the mag.")]
+        [SerializeField] private Vector3 _magazineHandPosition = new Vector3(-0.0262f, 0.0370f, -0.0604f);
+        [Tooltip("Magazine rotation (Euler) in the left hand bone's space while carried.")]
+        [SerializeField] private Vector3 _magazineHandEuler = new Vector3(356.06f, 298.24f, 93.93f);
+
         private int _rounds;
         private float _recoilStacks;
         private float _cooldownUntil;
         private float _reloadUntil;
+        private float _reloadStartedAt;
+        /// <summary>Reload sound cues already played this reload: 0 none, 1 mag in, 2 bolt release.</summary>
+        private int _reloadCuesPlayed;
         private float _lastRecoilDecayTime;
         private bool _initialized;
         private NetworkObject _networkObject;
@@ -31,6 +42,15 @@ namespace SS3D.Systems.Combat.Interactions
 
         /// <summary>Barrel tip transform when the prefab recipe has wired one; otherwise null.</summary>
         public Transform Muzzle => _muzzle != null ? _muzzle : transform.Find("Muzzle");
+
+        /// <summary>Detachable magazine mesh, or null when the weapon has none.</summary>
+        public Transform Magazine => _magazine;
+
+        /// <summary>Carried magazine position in the left hand bone's local space.</summary>
+        public Vector3 MagazineHandPosition => _magazineHandPosition;
+
+        /// <summary>Carried magazine rotation in the left hand bone's local space.</summary>
+        public Quaternion MagazineHandRotation => Quaternion.Euler(_magazineHandEuler);
 
         public int RoundsRemaining => _rounds;
 
@@ -72,7 +92,8 @@ namespace SS3D.Systems.Combat.Interactions
 
         private void Update()
         {
-            // Ensure reload completion (and mag-in cue) fires even if nothing else polls this frame.
+            // Reload sound cues and completion fire even if nothing else polls this frame.
+            PlayDueReloadCues();
             TryCompleteReloadIfDue();
         }
 
@@ -150,11 +171,13 @@ namespace SS3D.Systems.Combat.Interactions
                 return false;
             }
 
-            _reloadUntil = Time.time + Mathf.Max(0.01f, _profile.ReloadSeconds);
+            _reloadStartedAt = Time.time;
+            _reloadCuesPlayed = 0;
+            _reloadUntil = _reloadStartedAt + Mathf.Max(0.01f, _profile.ReloadSeconds);
             return true;
         }
 
-        /// <summary>Completes a due reload. On server, plays mag-in (+ cock) once when the timer elapses.</summary>
+        /// <summary>Completes a due reload. On server, first plays any reload sound cue still pending.</summary>
         public bool TryCompleteReloadIfDue()
         {
             if (_reloadUntil <= 0f)
@@ -167,13 +190,9 @@ namespace SS3D.Systems.Combat.Interactions
                 return false;
             }
 
+            PlayDueReloadCues();
             _rounds = MagazineSize;
             _reloadUntil = 0f;
-            if (IsServerAuthority())
-            {
-                PlayReloadCompleteSounds();
-            }
-
             return true;
         }
 
@@ -210,7 +229,33 @@ namespace SS3D.Systems.Combat.Interactions
             return _networkObject != null && _networkObject.IsServer;
         }
 
-        private void PlayReloadCompleteSounds()
+        /// <summary>
+        /// Server: mag-in and bolt-release sounds at the moments the reload clip shows them
+        /// (<see cref="RifleReloadClipTiming"/>), clamped so a shorter reload still plays both.
+        /// </summary>
+        private void PlayDueReloadCues()
+        {
+            if (_reloadUntil <= 0f || _reloadCuesPlayed >= 2 || !IsServerAuthority())
+            {
+                return;
+            }
+
+            float elapsed = Time.time - _reloadStartedAt;
+            float duration = Mathf.Max(0.01f, _profile.ReloadSeconds);
+            if (_reloadCuesPlayed < 1 && elapsed >= Mathf.Min(RifleReloadClipTiming.MagazineInSeconds, duration))
+            {
+                _reloadCuesPlayed = 1;
+                PlayReloadCue(CombatAudioTrackIds.ReloadMagazineIn, 1f);
+            }
+
+            if (_reloadCuesPlayed < 2 && elapsed >= Mathf.Min(RifleReloadClipTiming.BoltReleaseSeconds, duration))
+            {
+                _reloadCuesPlayed = 2;
+                PlayReloadCue(CombatAudioTrackIds.ReloadCock, 0.95f);
+            }
+        }
+
+        private void PlayReloadCue(string trackId, float volume)
         {
             AudioSubSystem audio = SubSystems.Get<AudioSubSystem>();
             if (audio == null)
@@ -218,9 +263,7 @@ namespace SS3D.Systems.Combat.Interactions
                 return;
             }
 
-            Vector3 position = transform.position;
-            audio.PlayAudioSource(AudioType.Sfx, CombatAudioTrackIds.ReloadMagazineIn, position, null, false, 1f, 1f, 8f, 40f);
-            audio.PlayAudioSource(AudioType.Sfx, CombatAudioTrackIds.ReloadCock, position, null, false, 0.95f, 1f, 8f, 40f);
+            audio.PlayAudioSource(AudioType.Sfx, trackId, transform.position, null, false, volume, 1f, 8f, 40f);
         }
 
         private void EnsureInitialized()

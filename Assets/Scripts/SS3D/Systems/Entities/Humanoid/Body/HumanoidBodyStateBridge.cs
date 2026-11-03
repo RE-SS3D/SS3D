@@ -268,7 +268,7 @@ namespace SS3D.Systems.Entities.Humanoid
             // Owner prediction + server auth via existing trigger RPC path.
             if (_bodyStateMachine.IsOwner)
             {
-                _bodyStateMachine.CmdFireTrigger(AnimationTriggerId.Emote, 0);
+                _bodyStateMachine.CmdFireTrigger(AnimationTriggerId.Emote, 0, 0);
             }
         }
 

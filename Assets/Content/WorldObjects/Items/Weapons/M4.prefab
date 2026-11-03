@@ -294,13 +294,16 @@ MonoBehaviour:
     MaxRangeMeters: 50
     FireCooldownSeconds: 0.12
     MagazineSize: 30
-    ReloadSeconds: 2.2
+    ReloadSeconds: 2.7
     StructuralForce: 12
     StaminaCost: 3
     ExhaustionSpreadDegrees: 1.6
     RequiresBothHands: 1
     RequiredHand: 0
   _muzzle: {fileID: 7123456789012345678}
+  _magazine: {fileID: 8820324614539533550}
+  _magazineHandPosition: {x: -0.0262, y: 0.037, z: -0.0604}
+  _magazineHandEuler: {x: 356.06, y: 298.24, z: 93.93}
 --- !u!1 &6508855772059703352
 GameObject:
   m_ObjectHideFlags: 0

@@ -24,6 +24,11 @@ namespace SS3D.Systems.Entities.Humanoid
 
         public bool IsDragging { get; set; }
 
+        /// <summary>Exhausted bodies move slower; feet slow by the same factor (ExertionPenalty is a SyncVar, so remotes match).</summary>
+        public override float LocomotionPlaybackRate => _staminaController != null
+            ? SprintExertion.MovementSpeedFactor(_staminaController.ExertionPenalty)
+            : 1f;
+
         /// <summary>Planar coast while unsupported (no plenum). Used when predicted movement is disabled.</summary>
         private Vector3 _coastVelocity;
 
@@ -173,7 +178,6 @@ namespace SS3D.Systems.Entities.Humanoid
                 _characterController.Move(Physics.gravity);
             }
 
-            float gaitSpeed = FilterSpeed();
             if (Input.magnitude != 0)
             {
                 MoveMovementTarget(Input);
@@ -190,18 +194,19 @@ namespace SS3D.Systems.Entities.Humanoid
                 }
 
                 MovePlayer();
-                PublishLocomotionVelocity(TargetMovement, gaitSpeed);
+                // Eased magnitude, not the gait target: animation and world speed ramp together.
+                PublishLocomotionVelocity(TargetMovement, TargetMovement.magnitude);
             }
             else
             {
                 MovePlayer();
-                MoveMovementTarget(Vector2.zero, 5);
+                MoveMovementTarget(Vector2.zero);
                 if (IsCombatMode() && !IsDragging)
                 {
                     RotatePlayerToCombatAim();
                 }
 
-                PublishLocomotionVelocity(Vector3.zero, 0f);
+                PublishLocomotionVelocity(TargetMovement, TargetMovement.magnitude);
             }
         }
 
@@ -261,7 +266,7 @@ namespace SS3D.Systems.Entities.Humanoid
                 _characterController.Move(_coastVelocity * Time.deltaTime);
             }
 
-            MoveMovementTarget(Vector2.zero, 5);
+            MoveMovementTarget(Vector2.zero);
             if (IsCombatMode() && !IsDragging)
             {
                 RotatePlayerToCombatAim();
@@ -276,7 +281,6 @@ namespace SS3D.Systems.Entities.Humanoid
         /// </summary>
         private void ProcessUnknownAoiHold()
         {
-            float gaitSpeed = FilterSpeed();
             if (Input.magnitude != 0)
             {
                 MoveMovementTarget(Input);
@@ -293,18 +297,19 @@ namespace SS3D.Systems.Entities.Humanoid
                 }
 
                 MovePlayer();
-                PublishLocomotionVelocity(TargetMovement, gaitSpeed);
+                // Eased magnitude, not the gait target: animation and world speed ramp together.
+                PublishLocomotionVelocity(TargetMovement, TargetMovement.magnitude);
             }
             else
             {
                 MovePlayer();
-                MoveMovementTarget(Vector2.zero, 5);
+                MoveMovementTarget(Vector2.zero);
                 if (IsCombatMode() && !IsDragging)
                 {
                     RotatePlayerToCombatAim();
                 }
 
-                PublishLocomotionVelocity(Vector3.zero, 0f);
+                PublishLocomotionVelocity(TargetMovement, TargetMovement.magnitude);
             }
         }
 
@@ -347,17 +352,11 @@ namespace SS3D.Systems.Entities.Humanoid
             float healthMultiplier = _healthController != null
                 ? _healthController.Snapshot.MovementSpeedMultiplier
                 : 1f;
-            float combatFactor = 1f;
-            if (IsCombatMode())
-            {
-                combatFactor = IsRunning ? _combatRunSpeedFactor : _combatWalkSpeedFactor;
-            }
-
             float exertionFactor = _staminaController != null
-                ? Mathf.Lerp(1f, 0.55f, _staminaController.ExertionPenalty)
+                ? SprintExertion.MovementSpeedFactor(_staminaController.ExertionPenalty)
                 : 1f;
             float gait = FilterSpeed();
-            float speed = _movementSpeed * healthMultiplier * combatFactor * exertionFactor * gait;
+            float speed = _movementSpeed * healthMultiplier * GaitSpeedFactor() * exertionFactor * gait;
             return TargetMovement.normalized * speed;
         }
 
@@ -377,20 +376,26 @@ namespace SS3D.Systems.Entities.Humanoid
             float healthMultiplier = _healthController != null
                 ? _healthController.Snapshot.MovementSpeedMultiplier
                 : 1f;
-            float combatFactor = 1f;
-            // Combat walk/run clips are authored at the same cadence across stances (melee + ranged),
-            // so apply slow combat speed scaling for any combat mode.
-            if (IsCombatMode())
-            {
-                combatFactor = IsRunning ? _combatRunSpeedFactor : _combatWalkSpeedFactor;
-            }
-
             float exertionFactor = _staminaController != null
-                ? Mathf.Lerp(1f, 0.55f, _staminaController.ExertionPenalty)
+                ? SprintExertion.MovementSpeedFactor(_staminaController.ExertionPenalty)
                 : 1f;
 
             _characterController.Move(
-                TargetMovement * (_movementSpeed * healthMultiplier * combatFactor * exertionFactor * Time.deltaTime));
+                TargetMovement * (_movementSpeed * healthMultiplier * GaitSpeedFactor() * exertionFactor * Time.deltaTime));
+        }
+
+        /// <summary>
+        /// World speed scale for the current stance and gait, so each matches its clips' cadence.
+        /// Combat walk/run clips share a cadence across melee and ranged; peaceful walk is unscaled.
+        /// </summary>
+        private float GaitSpeedFactor()
+        {
+            if (IsCombatMode())
+            {
+                return IsRunning ? _combatRunSpeedFactor : _combatWalkSpeedFactor;
+            }
+
+            return IsRunning ? _peacefulRunSpeedFactor : 1f;
         }
     }
 

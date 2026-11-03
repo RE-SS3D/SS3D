@@ -11,6 +11,8 @@ namespace SS3D.Systems.Entities.Data
             public static readonly int VelX = Animator.StringToHash("VelX");
             public static readonly int VelZ = Animator.StringToHash("VelZ");
             public static readonly int Turn = Animator.StringToHash("Turn");
+            /// <summary>Base-layer locomotion playback multiplier (exhaustion); default 1 in the controller.</summary>
+            public static readonly int LocoRate = Animator.StringToHash("LocoRate");
             public static readonly int Floating = Animator.StringToHash("Floating");
             public static readonly int LimpSide = Animator.StringToHash("LimpSide");
             public static readonly int IsCrawling = Animator.StringToHash("IsCrawling");
@@ -27,6 +29,8 @@ namespace SS3D.Systems.Entities.Data
             public static readonly int AttackSwing = Animator.StringToHash("AttackSwing");
             public static readonly int AttackStab = Animator.StringToHash("AttackStab");
             public static readonly int AttackVariant = Animator.StringToHash("AttackVariant");
+            /// <summary>Melee swing state speed: wind-up rate until the strike frame, then 1. Default 1 in the controller.</summary>
+            public static readonly int AttackRate = Animator.StringToHash("AttackRate");
             public static readonly int MirrorUpperBody = Animator.StringToHash("MirrorUpperBody");
             public static readonly int Throw = Animator.StringToHash("Throw");
             public static readonly int Emote = Animator.StringToHash("Emote");

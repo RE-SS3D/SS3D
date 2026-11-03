@@ -17,7 +17,11 @@ namespace SS3D.Systems.Combat
         /// <summary>Same order of magnitude as <c>ZoneTargetResolver</c> camera hover rays.</summary>
         private const float MaxAimRayDistance = 8f;
         private const float AimSampleStep = 0.25f;
-        private const float ReachHeight = 1.2f;
+        /// <summary>Chest height above the entity root; melee reach is measured from here.</summary>
+        public const float ReachHeight = 1.2f;
+
+        /// <summary>Tiles are 1 m, centred on <c>TileToWorld</c>; structural turf fills its tile.</summary>
+        private const float TileHalfExtent = 0.5f;
 
         private static readonly string[] ExcludeLayerNames =
         {
@@ -55,7 +59,7 @@ namespace SS3D.Systems.Combat
 
             // Same idea as hurtstructure: standing tile + cardinal step along aim. Catches adjacent
             // walls when the camera ray grazes past thin colliders or range samples miss.
-            if (TryResolveCardinalAhead(attackerPosition, aimRay.direction, tiles, out coord))
+            if (TryResolveCardinalAhead(attackerPosition, aimRay.direction, range, tiles, out coord))
             {
                 return true;
             }
@@ -67,7 +71,7 @@ namespace SS3D.Systems.Combat
         /// Standing tile + one cardinal step along <paramref name="facingDirection"/> — same targeting
         /// as admin <c>hurtstructure</c>. Use when the attacker is adjacent and swinging into a wall.
         /// </summary>
-        public static bool TryResolveAdjacent(Vector3 attackerPosition, Vector3 facingDirection, out TileCoord coord)
+        public static bool TryResolveAdjacent(Vector3 attackerPosition, Vector3 facingDirection, RangeLimit range, out TileCoord coord)
         {
             coord = default;
 
@@ -76,7 +80,7 @@ namespace SS3D.Systems.Combat
                 return false;
             }
 
-            return TryResolveCardinalAhead(attackerPosition, facingDirection, tiles, out coord);
+            return TryResolveCardinalAhead(attackerPosition, facingDirection, range, tiles, out coord);
         }
 
         private static bool TryResolveFromRaycast(
@@ -141,8 +145,7 @@ namespace SS3D.Systems.Combat
                     continue;
                 }
 
-                Vector3 tileWorld = tiles.QueryService.TileToWorld(candidate) + Vector3.up * ReachHeight;
-                if (!range.IsInRange(reachOrigin, tileWorld))
+                if (!IsTileFaceInRange(tiles, candidate, reachOrigin, range))
                 {
                     continue;
                 }
@@ -157,6 +160,7 @@ namespace SS3D.Systems.Combat
         private static bool TryResolveCardinalAhead(
             Vector3 attackerPosition,
             Vector3 aimDirection,
+            RangeLimit range,
             TileSubSystem tiles,
             out TileCoord coord)
         {
@@ -178,8 +182,25 @@ namespace SS3D.Systems.Combat
                 return false;
             }
 
+            // The tile ahead can be up to a full tile away from the far side of the standing tile.
+            if (!IsTileFaceInRange(tiles, ahead, attackerPosition + Vector3.up * ReachHeight, range))
+            {
+                return false;
+            }
+
             coord = ahead;
             return true;
+        }
+
+        /// <summary>Reach to the nearest face of a structural tile (not its centre, which is half a tile deeper).</summary>
+        private static bool IsTileFaceInRange(TileSubSystem tiles, TileCoord tile, Vector3 reachOrigin, RangeLimit range)
+        {
+            Vector3 centre = tiles.QueryService.TileToWorld(tile);
+            Vector3 nearestFace = new(
+                Mathf.Clamp(reachOrigin.x, centre.x - TileHalfExtent, centre.x + TileHalfExtent),
+                reachOrigin.y,
+                Mathf.Clamp(reachOrigin.z, centre.z - TileHalfExtent, centre.z + TileHalfExtent));
+            return range.IsInRange(reachOrigin, nearestFace);
         }
 
         private static bool TryGetStructuralAt(TileSubSystem tiles, TileCoord candidate, out PlacedTileObject placed)

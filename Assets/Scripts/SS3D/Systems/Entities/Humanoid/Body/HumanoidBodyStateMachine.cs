@@ -33,8 +33,13 @@ namespace SS3D.Systems.Entities.Humanoid.Body
         /// <summary>Synced combat aim pitch (degrees). Used for melee connect-frame raycasts.</summary>
         public float AimPitch => _aimPitch;
 
-        [SyncVar(OnChange = nameof(SyncMovementSpeed))]
-        private float _movementSpeed;
+        /// <summary>Body-local strafe axis in gait units (walk 0.3, run 1.0); drives remote VelX.</summary>
+        [SyncVar(OnChange = nameof(SyncMovementVelocity))]
+        private float _movementVelX;
+
+        /// <summary>Body-local forward axis in gait units (negative = backpedal); drives remote VelZ.</summary>
+        [SyncVar(OnChange = nameof(SyncMovementVelocity))]
+        private float _movementVelZ;
 
         [SyncVar(OnChange = nameof(SyncInjuredArmLeft))]
         private float _injuredArmLeft;
@@ -58,6 +63,13 @@ namespace SS3D.Systems.Entities.Humanoid.Body
         private Transform _seatAnchor;
         private AnimationOrchestrator _orchestrator;
         private Ragdoll _ragdoll;
+
+        /// <summary>Owner-side coalescing: controllers publish locomotion several times a frame; send one RPC per change.</summary>
+        private Vector2 _pendingOwnerVelocity;
+        private Vector2 _sentOwnerVelocity = new(float.NaN, float.NaN);
+        private Vector2 _sentOwnerAim = new(float.NaN, float.NaN);
+        private const float LocomotionSendEpsilon = 0.01f;
+        private const float AimSendEpsilonDegrees = 0.1f;
 
         public BodyAnimationSnapshot Snapshot => _snapshot;
         public BodyCapabilities Capabilities => BodyCapabilities.ForState(_snapshot.State);
@@ -112,6 +124,11 @@ namespace SS3D.Systems.Entities.Humanoid.Body
         {
             if (!IsServer)
             {
+                if (IsOwner)
+                {
+                    FlushOwnerLocomotion();
+                }
+
                 return;
             }
 
@@ -125,21 +142,74 @@ namespace SS3D.Systems.Entities.Humanoid.Body
             }
         }
 
+        /// <summary>Forward-only gait (ghosts, predicted movement). Equivalent to <see cref="SetLocomotionVelocity"/>(0, speed).</summary>
         public void SetLocomotionSpeed(float speed)
+        {
+            SetLocomotionVelocity(0f, speed);
+        }
+
+        /// <summary>
+        /// Body-local locomotion in gait units, replicated so remotes play strafes and backpedals
+        /// instead of forward gait. Owner clients coalesce to one RPC per frame, only on change.
+        /// </summary>
+        public void SetLocomotionVelocity(float velX, float velZ)
         {
             if (IsServer)
             {
-                _movementSpeed = speed;
-                ApplyLocalSnapshot();
+                ServerApplyLocomotionVelocity(velX, velZ);
                 return;
             }
 
             if (IsOwner)
             {
                 // SyncVar is server-authoritative; do not apply snapshot locally here.
-                // AnimationOrchestrator drives Speed immediately from input on the owner.
-                CmdSetMovementSpeed(speed);
+                // AnimationOrchestrator drives VelX/VelZ immediately on the owner.
+                _pendingOwnerVelocity = new Vector2(velX, velZ);
             }
+        }
+
+        /// <summary>
+        /// Owner aim for combat facing and melee connect raycasts. Skips the RPC while the aim is
+        /// unchanged (it used to send every frame in combat mode).
+        /// </summary>
+        public void SubmitAim(float aimYaw, float aimPitch)
+        {
+            if (!float.IsNaN(_sentOwnerAim.x)
+                && Mathf.Abs(Mathf.DeltaAngle(_sentOwnerAim.x, aimYaw)) < AimSendEpsilonDegrees
+                && Mathf.Abs(_sentOwnerAim.y - aimPitch) < AimSendEpsilonDegrees)
+            {
+                return;
+            }
+
+            _sentOwnerAim = new Vector2(aimYaw, aimPitch);
+            CmdSetAim(aimYaw, aimPitch);
+        }
+
+        private void FlushOwnerLocomotion()
+        {
+            if (!float.IsNaN(_sentOwnerVelocity.x)
+                && Mathf.Abs(_pendingOwnerVelocity.x - _sentOwnerVelocity.x) < LocomotionSendEpsilon
+                && Mathf.Abs(_pendingOwnerVelocity.y - _sentOwnerVelocity.y) < LocomotionSendEpsilon)
+            {
+                return;
+            }
+
+            _sentOwnerVelocity = _pendingOwnerVelocity;
+            CmdSetLocomotionVelocity(_pendingOwnerVelocity.x, _pendingOwnerVelocity.y);
+        }
+
+        private void ServerApplyLocomotionVelocity(float velX, float velZ)
+        {
+            velX = Mathf.Clamp(velX, -1f, 1f);
+            velZ = Mathf.Clamp(velZ, -1f, 1f);
+            if (Mathf.Abs(_movementVelX - velX) < 0.0001f && Mathf.Abs(_movementVelZ - velZ) < 0.0001f)
+            {
+                return;
+            }
+
+            _movementVelX = velX;
+            _movementVelZ = velZ;
+            ApplyLocalSnapshot();
         }
 
         public void SetLocomotionMode(LocomotionMode mode)
@@ -242,10 +312,9 @@ namespace SS3D.Systems.Entities.Humanoid.Body
         }
 
         [ServerRpc]
-        public void CmdSetMovementSpeed(float speed)
+        private void CmdSetLocomotionVelocity(float velX, float velZ)
         {
-            _movementSpeed = speed;
-            ApplyLocalSnapshot();
+            ServerApplyLocomotionVelocity(velX, velZ);
         }
 
         [ServerRpc]
@@ -271,10 +340,11 @@ namespace SS3D.Systems.Entities.Humanoid.Body
         }
 
         [ServerRpc]
-        public void CmdFireTrigger(AnimationTriggerId trigger, byte attackVariant)
+        public void CmdFireTrigger(AnimationTriggerId trigger, byte attackVariant, byte attackWindup)
         {
             _snapshot.ActiveTrigger = trigger;
             _snapshot.AttackVariant = (byte)(attackVariant & 0x3);
+            _snapshot.AttackWindup = (byte)(attackWindup & MeleeSwingAnimation.WindupQuantizedMax);
             // Pack ActiveTrigger BEFORE bumping sequence — SyncVar OnChange rebuilds from
             // _packedSnapshot synchronously; sequence++ first wiped the trigger and remotes
             // never ConsumeTrigger (fire/reload invisible on host).
@@ -454,7 +524,9 @@ namespace SS3D.Systems.Entities.Humanoid.Body
                 return;
             }
 
-            _snapshot.MovementSpeed = _movementSpeed;
+            _snapshot.MovementVelX = _movementVelX;
+            _snapshot.MovementVelZ = _movementVelZ;
+            _snapshot.MovementSpeed = Mathf.Sqrt(_movementVelX * _movementVelX + _movementVelZ * _movementVelZ);
             _snapshot.AimYaw = _aimYaw;
             _snapshot.AimPitch = _aimPitch;
             _snapshot.InjuredArmLeft = _injuredArmLeft;
@@ -470,7 +542,8 @@ namespace SS3D.Systems.Entities.Humanoid.Body
                 _packedSnapshot,
                 _aimYaw,
                 _aimPitch,
-                _movementSpeed,
+                _movementVelX,
+                _movementVelZ,
                 _injuredArmLeft,
                 _injuredArmRight,
                 _injuredLeg);
@@ -505,7 +578,7 @@ namespace SS3D.Systems.Entities.Humanoid.Body
             RebuildSnapshotFromSyncVars();
         }
 
-        private void SyncMovementSpeed(float prev, float next, bool asServer)
+        private void SyncMovementVelocity(float prev, float next, bool asServer)
         {
             if (Mathf.Approximately(prev, next)) return;
             RebuildSnapshotFromSyncVars();

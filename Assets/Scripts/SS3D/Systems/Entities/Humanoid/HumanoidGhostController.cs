@@ -32,7 +32,7 @@ namespace SS3D.Systems.Entities.Humanoid
             else
             {
                 MovePlayer();
-                MoveMovementTarget(Vector2.zero, 5);
+                MoveMovementTarget(Vector2.zero);
             }
         }
 
