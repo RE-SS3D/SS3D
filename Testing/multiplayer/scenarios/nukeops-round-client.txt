@@ -1,0 +1,16 @@
+# Client side of nukeops-round. The client never sends lobby preferences (batchmode has no lobby UI),
+# so it is in the operative draw only through the default opt-in (Decision 22). It readies once per
+# round; auto-start starts both. The timer ends round one with the disk still on the station, so the
+# outcome must be a crew win (Decision 18) that lists this player on the antagonist roster.
+wait_timeout 240
+wait_connected
+ready
+wait_round Ongoing
+assert_embarked
+assert_outcome Timer Crew antagonist
+wait_round Stopped
+ready
+wait_round Ongoing
+assert_embarked
+wait_seconds 2
+disconnect

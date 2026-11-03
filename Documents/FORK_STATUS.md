@@ -93,7 +93,7 @@ were **removed** from this fork. Remaining workflows:
   fallback ([2026-07_multiplayer-testing-self-hosted-ci.md](architecture/2026-07_multiplayer-testing-self-hosted-ci.md))
 - [multiplayer-smoke-test.yml](../.github/workflows/multiplayer-smoke-test.yml) — nightly PlayMode
   scenarios plus the headless smoke set (`late-join`, `reconnect`, `observer-sync`;
-  `sandbox-reset` nightly only) against real dedicated-server + client builds
+  `sandbox-reset` and `nukeops-round` nightly only) against real dedicated-server + client builds
 
 Doc layer redesign (coverage table, strip prototyping prompts from design docs) merged via PR #2.
 Agent-first composition policy and UI path-catalog conventions live under

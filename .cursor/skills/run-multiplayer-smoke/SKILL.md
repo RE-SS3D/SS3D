@@ -47,7 +47,7 @@ Overrides: `SS3D_SERVER_BUILD_DIR`, `SS3D_CLIENT_BUILD_DIR`, `SS3D_SERVER_BIN_NA
 
 Ask the user only if they did not name a scenario; otherwise default to `late-join 2`.
 The full nightly set is `./Testing/multiplayer/run_smoke_set.sh` (add `--skip-nightly-only`
-to drop `sandbox-reset`).
+to drop `sandbox-reset` and `nukeops-round`).
 
 ## Step 2: Run the harness
 

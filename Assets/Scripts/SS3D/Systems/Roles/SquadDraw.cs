@@ -73,6 +73,18 @@ namespace SS3D.Systems.Roles
             return new SquadDrawResult(pool.Take(size).ToArray(), false, pool.Count, min);
         }
 
+        /// <summary>
+        /// Whether a round in <paramref name="configuredMode"/> has enough ready players to draw a squad
+        /// (Decision 23). Only Secret is gated: an admin who picks Nuclear Emergency gets Nuke Ops at any size.
+        /// </summary>
+        public static bool HasEnoughReady(string configuredMode, int readyPlayers, int minimumReady) =>
+            configuredMode != "Secret" || readyPlayers >= Math.Max(1, minimumReady);
+
+        /// <summary>The Admin chat and Server Settings notice when Secret has too few ready players.</summary>
+        public static string TooFewReadyNotice(int readyPlayers, int minimumReady) =>
+            $"Secret needs {minimumReady} ready player{(minimumReady == 1 ? "" : "s")} for Nuke Ops; " +
+            $"{readyPlayers} {(readyPlayers == 1 ? "was" : "were")} ready. This round runs as Extended.";
+
         /// <summary>The Admin chat and Server Settings notice for an Extended fallback.</summary>
         public static string FallbackNotice(string configuredMode, SquadDrawResult result) =>
             $"{configuredMode} needs {result.Minimum} Nuclear Operative opt-in{(result.Minimum == 1 ? "" : "s")} " +

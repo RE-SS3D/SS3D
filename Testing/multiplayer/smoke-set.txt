@@ -6,3 +6,4 @@ late-join 2
 reconnect 1
 observer-sync 2
 sandbox-reset 1 nightly
+nukeops-round 1 nightly

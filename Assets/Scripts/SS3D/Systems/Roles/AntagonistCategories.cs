@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+
 namespace SS3D.Systems.Roles
 {
     /// <summary>
@@ -19,6 +21,33 @@ namespace SS3D.Systems.Roles
             foreach ((string known, string _) in All)
             {
                 if (known == key)
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// Opt-in is on by default (round-end loop Decision 22): with no preferences sent
+        /// (<paramref name="sentOptIns"/> null) a player is in every known category; once sent, only the ticked ones.
+        /// </summary>
+        public static bool IsOptedIn(IReadOnlyCollection<string> sentOptIns, string category)
+        {
+            if (!IsKnown(category))
+            {
+                return false;
+            }
+
+            if (sentOptIns == null)
+            {
+                return true;
+            }
+
+            foreach (string key in sentOptIns)
+            {
+                if (key == category)
                 {
                     return true;
                 }

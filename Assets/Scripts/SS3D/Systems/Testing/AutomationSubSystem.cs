@@ -491,10 +491,16 @@ namespace SS3D.Systems.Testing
 
                 // Client: the server's round outcome reached this process (buffered RPC) with the given
                 // trigger, and lists this player. Not a UI check: the round-end overlay is visual review.
+                // Optional: the winner, then "antagonist" (this player is on the antagonist roster, i.e. was drawn).
                 case "assert_outcome":
                     RoundEndTrigger trigger = Enum.Parse<RoundEndTrigger>(instruction.Args[0], ignoreCase: true);
-                    yield return WaitUntil(() => OutcomeListsMe(trigger), _waitTimeoutSeconds, $"assert_outcome {trigger}");
-                    TestSignal.Emit(this, "OutcomeVerified", trigger.ToString());
+                    RoundWinner? winner = instruction.Args.Length > 1
+                        ? Enum.Parse<RoundWinner>(instruction.Args[1], ignoreCase: true) : null;
+                    bool antagonist = instruction.Args.Length > 2
+                        && string.Equals(instruction.Args[2], "antagonist", StringComparison.OrdinalIgnoreCase);
+                    yield return WaitUntil(() => OutcomeListsMe(trigger, winner, antagonist), _waitTimeoutSeconds,
+                        $"assert_outcome {instruction.ArgsJoined}");
+                    TestSignal.Emit(this, "OutcomeVerified", instruction.ArgsJoined);
                     break;
 
                 case "wait_seconds":
@@ -599,7 +605,7 @@ namespace SS3D.Systems.Testing
             entitySystem.CmdSpawnLatePlayer(player);
         }
 
-        private static bool OutcomeListsMe(RoundEndTrigger trigger)
+        private static bool OutcomeListsMe(RoundEndTrigger trigger, RoundWinner? winner = null, bool antagonist = false)
         {
             if (!SubSystems.TryGet(out RoundSubSystem rounds) || rounds.LastOutcome == null
                 || rounds.LastOutcome.Trigger != trigger || !SubSystems.TryGet(out PlayerSubSystem players))
@@ -607,8 +613,13 @@ namespace SS3D.Systems.Testing
                 return false;
             }
 
+            if (winner.HasValue && rounds.LastOutcome.Winner != winner.Value)
+            {
+                return false;
+            }
+
             string ckey = players.GetCkey(InstanceFinder.ClientManager.Connection);
-            return Array.Exists(rounds.LastOutcome.Players, p => p.Ckey == ckey);
+            return Array.Exists(rounds.LastOutcome.Players, p => p.Ckey == ckey && (!antagonist || p.Antagonist));
         }
 
         private bool IsEmbarked()

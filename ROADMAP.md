@@ -15,7 +15,7 @@ do end to end. Each goal is split into **slices**, the smaller pieces that have 
 
 | Goal | What you'll be able to do | Progress |
 |------|---------------------------|----------|
-| [Test server](#test-server) | Download a release, click join, play with others on a live server | 6 of 8 done, 1 partial |
+| [Test server](#test-server) | Download a release, click join, play with others on a live server | 6 of 8 done, 2 partial |
 | [Map authoring](#map-authoring) | Build your own station in a release build and hand it in | 8 of 9 done |
 | [Nuclear Operatives round](#nuclear-operatives-round) | Play a full Nuke Ops round from spawn to end screen | 3 of 10 done, 4 partial |
 | [Station round](#station-round) | Play a short, bare-bones SS13 shift with jobs and antagonists | 0 of 7 done, 1 partial |
@@ -36,7 +36,7 @@ What already works, system by system, is listed in
 | ✅ | T4 | Rounds end with a summary screen and restart; you can join mid-round (joining mid-round works) |
 | ✅ | T6 | You can change volume, resolution and graphics quality, and they stay set |
 | ✅ | T7 | A separate server where everyone can build and fight, and the station resets every 20 minutes (live, address shared in Discord) |
-| ⬜ | T8 | A server that's always up running Nuke Ops rounds; hop in whenever |
+| 🟡 | T8 | A server that's always up running Nuke Ops rounds; hop in whenever |
 
 **Finish line (T5):** a stranger downloads the latest release and plays on the always-on Nuke Ops server.
 

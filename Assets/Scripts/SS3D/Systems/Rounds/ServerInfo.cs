@@ -99,6 +99,16 @@ namespace SS3D.Systems.Rounds
                 _serverSettings = SandboxProfile.Apply(_serverSettings);
                 _allowLateJoin = _serverSettings.AllowLateJoin;
                 Log.Information(this, "Sandbox profile applied", Logs.ServerOnly);
+                if (NukeOpsProfile.RequestedOnCommandLine)
+                    Log.Warning(this, "Both -sandbox and -nukeops given; the sandbox profile wins", Logs.ServerOnly);
+            }
+            else if (NukeOpsProfile.RequestedOnCommandLine)
+            {
+                // In memory only, as above.
+                _serverSettings = NukeOpsProfile.Apply(_serverSettings);
+                _allowLateJoin = _serverSettings.AllowLateJoin;
+                Log.Information(this, "Nuke Ops profile applied: {minutes} min rounds, {ready} ready players for a squad",
+                    Logs.ServerOnly, _serverSettings.RoundLengthMinutes, _serverSettings.MinimumReadyForNukeOps);
             }
             ApplyServerRules();
             StartAutoStartLoop();

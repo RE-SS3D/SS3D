@@ -87,7 +87,8 @@ namespace SS3D.UI.Lobby
 
         // Missing jobs are Never: an empty list is the explicit "no preference" (lobby.md §3).
         private readonly Dictionary<string, JobPriority> _priorities = new();
-        private readonly HashSet<string> _antagSelected = new();
+        // Every antagonist role starts ticked (round-end loop Decision 22); the player opts out here.
+        private readonly HashSet<string> _antagSelected = new(AntagonistCategories.All.Select(role => role.Key));
         private JobSlotInfo[] _jobs = Array.Empty<JobSlotInfo>();
         private readonly HashSet<string> _collapsedDepts = new();
 
@@ -1217,7 +1218,7 @@ namespace SS3D.UI.Lobby
             divider.pickingMode = PickingMode.Ignore;
             panel.Add(divider);
 
-            Label hint = new("Affects eligibility only — checking a role does not guarantee it.");
+            Label hint = new("Ticked by default. Affects eligibility only — checking a role does not guarantee it.");
             hint.AddToClassList("lobby-shell__antag-hint");
             hint.AddToClassList("font-body");
             panel.Add(hint);

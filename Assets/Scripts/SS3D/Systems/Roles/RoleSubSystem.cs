@@ -154,10 +154,11 @@ namespace SS3D.Systems.Roles
 
         /// <summary>
         /// Whether the player opted into consideration for an antagonist category. Gamemodes
-        /// choose among opted-in players; opting in guarantees nothing.
+        /// choose among opted-in players; opting in guarantees nothing. A player who never sent
+        /// preferences is opted into every category (round-end loop Decision 22), as the lobby list starts ticked.
         /// </summary>
         public bool IsAntagonistOptedIn(string ckey, string category) =>
-            ckey != null && _antagonistOptIns.TryGetValue(ckey, out HashSet<string> set) && set.Contains(category);
+            ckey != null && AntagonistCategories.IsOptedIn(_antagonistOptIns.GetValueOrDefault(ckey), category);
 
         /// <summary>Automation: opts a player into an antagonist category without a lobby preferences message.</summary>
         [Server]
@@ -273,12 +274,19 @@ namespace SS3D.Systems.Roles
                 return Array.Empty<string>();
             }
 
+            ServerSettings settings = rounds.SettingsForServer;
+            if (!SquadDraw.HasEnoughReady(settings.Mode, ckeys.Count, settings.MinimumReadyForNukeOps))
+            {
+                rounds.FallBackToExtended(SquadDraw.TooFewReadyNotice(ckeys.Count, settings.MinimumReadyForNukeOps));
+                return Array.Empty<string>();
+            }
+
             SquadDrawResult result = SquadDraw.Draw(ckeys,
                 ckey => IsAntagonistOptedIn(ckey, AntagonistCategories.NuclearOperative),
-                rounds.SettingsForServer.MinimumOperatives, _random);
+                settings.MinimumOperatives, _random);
             if (result.FellBack)
             {
-                rounds.FallBackToExtended(SquadDraw.FallbackNotice(rounds.SettingsForServer.Mode, result));
+                rounds.FallBackToExtended(SquadDraw.FallbackNotice(settings.Mode, result));
                 return Array.Empty<string>();
             }
 

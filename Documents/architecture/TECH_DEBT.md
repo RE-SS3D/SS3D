@@ -144,7 +144,7 @@ installed Unity Editor; the scripts do not make runtime verification automatic a
 **CI configuration:** [editmodetestrunner.yml](../../.github/workflows/editmodetestrunner.yml)
 runs EditMode; [multiplayer-smoke-test.yml](../../.github/workflows/multiplayer-smoke-test.yml)
 runs PlayMode and then the smoke set (`late-join`, `reconnect`, `observer-sync`; `sandbox-reset`
-nightly only) against real client/server builds on manual dispatch, labeled PRs
+and `nukeops-round` nightly only) against real client/server builds on manual dispatch, labeled PRs
 (`test:multiplayer`) and a nightly schedule. PlayMode and the smoke set are nightly gates, not
 merge gates, and local full validation is not enforced before merge. The load/soak runner is local
 tooling, not a scheduled soak service
