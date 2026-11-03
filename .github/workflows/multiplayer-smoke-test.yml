@@ -38,11 +38,14 @@ jobs:
       # The host editor (not game-ci's container) keeps its own Library: a different project
       # path and editor install would otherwise recompile the shared one on every switch.
       # Shared with weekly-graphical.yml; outside the checkout so actions/checkout keeps it.
-      SS3D_EDITOR_LIBRARY_STASH: ${{ runner.workspace }}/ss3d-library-editor
+      # SS3D_EDITOR_LIBRARY_STASH is exported by the first step: the runner context is not
+      # available in job-level env (GitHub rejects the whole file).
       DISPLAY: ":0"
     steps:
       - name: Start budget clock
-        run: echo "SS3D_JOB_START=$(date +%s)" >> "$GITHUB_ENV"
+        run: |
+          echo "SS3D_JOB_START=$(date +%s)" >> "$GITHUB_ENV"
+          echo "SS3D_EDITOR_LIBRARY_STASH=$RUNNER_WORKSPACE/ss3d-library-editor" >> "$GITHUB_ENV"
       - name: Checkout project code
         uses: actions/checkout@v4
         with:
@@ -93,8 +96,8 @@ jobs:
     env:
       FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
       # Host-side warm Library cache (same filesystem as the runner workdir — mv is rename).
-      # Never wipe between successful runs.
-      SS3D_UNITY_LIBRARY_STASH: ${{ runner.workspace }}/ss3d-library
+      # Shared with develop-release.yml's self-hosted builds. Never wipe between successful runs.
+      SS3D_UNITY_LIBRARY_STASH: /home/cu6e/.cache/ss3d/Library
       SERVER_BUILD_DIR: ${{ github.workspace }}/build/GameServer/StandaloneLinux64
       CLIENT_BUILD_DIR: ${{ github.workspace }}/build/Game/StandaloneLinux64
       # Unity 6 Linux players no longer append .x86_64; game-ci -customBuildPath uses buildName as-is.
@@ -106,7 +109,8 @@ jobs:
       - name: Checkout project code
         uses: actions/checkout@v4
         with:
-          lfs: true
+          # No LFS-tracked files; git lfs fetch fails ("missing object") in the reused partial-clone workspace.
+          lfs: false
       - name: Restore Unity Library stash
         run: |
           set -euo pipefail
@@ -138,6 +142,11 @@ jobs:
             missing=1
           fi
           exit $missing
+      - name: Pre-create game-ci license dir as the runner user
+        # game-ci's entrypoint mkdirs $GITHUB_WORKSPACE/_activate-license~ as root, then su's to the
+        # host user (runAsHostUser), which cannot write UnityLicenseFile.ulf into it ("Permission
+        # denied"). mkdir -p keeps an existing dir, so creating it here gives the host user ownership.
+        run: rm -rf "$GITHUB_WORKSPACE/_activate-license~" && mkdir -p "$GITHUB_WORKSPACE/_activate-license~"
       - name: Build dedicated server and client
         uses: game-ci/unity-builder@v4
         env:

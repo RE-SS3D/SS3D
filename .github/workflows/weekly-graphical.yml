@@ -22,12 +22,16 @@ jobs:
     runs-on: [self-hosted, linux, x64, unity]
     timeout-minutes: 120
     env:
-      SS3D_EDITOR_LIBRARY_STASH: ${{ runner.workspace }}/ss3d-library-editor
-      SS3D_MCP_VENV_CACHE: ${{ runner.workspace }}/ss3d-unity-mcp-venv
       DISPLAY: ":0"
       # A port reserved for this job's MCP server.
       SS3D_MCP_URL: http://127.0.0.1:8097
     steps:
+      # The runner context is not available in job-level env (GitHub rejects the whole file),
+      # so the runner-workspace paths are exported from a step.
+      - name: Set cache paths
+        run: |
+          echo "SS3D_EDITOR_LIBRARY_STASH=$RUNNER_WORKSPACE/ss3d-library-editor" >> "$GITHUB_ENV"
+          echo "SS3D_MCP_VENV_CACHE=$RUNNER_WORKSPACE/ss3d-unity-mcp-venv" >> "$GITHUB_ENV"
       - name: Checkout project code
         uses: actions/checkout@v4
         with:

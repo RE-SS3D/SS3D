@@ -78,14 +78,13 @@ the user systemd unit dies when all `cu6e` sessions end.
   **one** `unity-builder` step with `ClientAndServerBuildScript.BuildBothForCi`;
   `runAsHostUser: true`; nightly `cron: "0 4 * * *"`.
 - [`.github/workflows/editmodetestrunner.yml`](../../.github/workflows/editmodetestrunner.yml):
-  `pick_runner` on `ubuntu-latest` queries whether `TomNAS-unity` is **online**; if so
-  `run_tests` uses `[self-hosted, linux, x64, unity]` + `Library-editmode` stash +
-  `runAsHostUser: true`, else falls back to `ubuntu-latest`. `workflow_dispatch` input
-  `runner: auto|tomnas|github` can force either side. Offline self-hosted would otherwise
-  queue forever (job `timeout-minutes` does not cover queue wait), so the API probe is
-  required for automatic fallback.
+  `run_tests` runs on `[self-hosted, linux, x64, unity]` + `Library-editmode` stash +
+  `runAsHostUser: true`; `workflow_dispatch` input `runner: tomnas|github` can pick
+  `ubuntu-latest` instead. There is no automatic fallback: `github.token` cannot list repo
+  runners (HTTP 403), so the old online probe always fell back. While TomNAS is offline, jobs
+  queue until it returns.
 - [`.github/workflows/develop-release.yml`](../../.github/workflows/develop-release.yml):
-  same TomNAS-prefer probe in `prepare`; Linux via **one** `BuildBothForCi` step; shares
+  same TomNAS default in `prepare`; Linux via **one** `BuildBothForCi` step; shares
   smoke’s `/home/cu6e/.cache/ss3d/Library` stash on self-hosted; nightly `cron: "0 5 * * *"`
   (Windows + Linux client/server → floating `develop-nightly`). Manual dispatch stays
   Windows-default with opt-in Linux.

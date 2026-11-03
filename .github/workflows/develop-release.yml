@@ -3,7 +3,7 @@
 # Tools/versioning/next_version.py — see Documents/architecture/2026-10_game-versioning.md).
 # Linux, EditMode, and smoke are opt-in. tag_suffix gives an unversioned develop-<suffix> test cut.
 # Nightly (05:17 UTC): Windows + Linux client + Linux dedicated server → floating develop-nightly.
-# Prefers TomNAS when online; falls back to ubuntu-latest. Not triggered on every develop merge.
+# Runs on TomNAS (dispatch runner=github for GitHub-hosted). Not triggered on every develop merge.
 # See Documents/architecture/2026-07_ci-develop-release-pipeline.md.
 name: Develop Release
 on:
@@ -42,13 +42,12 @@ on:
         type: string
         default: ''
       runner:
-        description: Runner preference (auto = TomNAS if online, else GitHub-hosted)
+        description: Runner (TomNAS self-hosted by default; github = GitHub-hosted ubuntu-latest)
         type: choice
         options:
-          - auto
           - tomnas
           - github
-        default: auto
+        default: tomnas
 
 concurrency:
   group: develop-release
@@ -59,8 +58,6 @@ jobs:
     name: Prepare flags + runner
     runs-on: ubuntu-latest
     permissions:
-      # No `administration` — not a valid GITHUB_TOKEN permission key (workflow fails validation).
-      # Listing runners may 403; pick step already falls back to ubuntu-latest on API failure.
       actions: read
       contents: read
     outputs:
@@ -139,12 +136,10 @@ jobs:
           echo "release_tag=v${version}" >> "$GITHUB_OUTPUT"
           echo "versioned=true" >> "$GITHUB_OUTPUT"
           echo "::notice::Releasing v${version} ($(echo "$out" | sed -n 's/^bump=//p'): $(echo "$out" | sed -n 's/^reasons=//p')"
-      - name: Prefer TomNAS when online
+      - name: Pick TomNAS unless GitHub-hosted is requested
         id: pick
         env:
-          GH_TOKEN: ${{ github.token }}
-          RUNNER_PREF: ${{ github.event_name == 'workflow_dispatch' && inputs.runner || 'auto' }}
-          RUNNER_NAME: TomNAS-unity
+          RUNNER_PREF: ${{ github.event_name == 'workflow_dispatch' && inputs.runner || 'tomnas' }}
         run: |
           set -euo pipefail
           tomnas_json='["self-hosted","linux","x64","unity"]'
@@ -158,39 +153,16 @@ jobs:
           pick_github() {
             echo "runs_on=${github_json}" >> "$GITHUB_OUTPUT"
             echo "self_hosted=false" >> "$GITHUB_OUTPUT"
-            echo "Selected ubuntu-latest (GitHub-hosted fallback)"
+            echo "Selected ubuntu-latest (GitHub-hosted)"
           }
 
-          case "$RUNNER_PREF" in
-            tomnas)
-              pick_tomnas
-              exit 0
-              ;;
-            github)
-              pick_github
-              exit 0
-              ;;
-          esac
-
-          if ! status=$(gh api "repos/${{ github.repository }}/actions/runners" \
-              --jq ".runners[] | select(.name==\"${RUNNER_NAME}\") | .status" 2>/tmp/pick-runner.err); then
-            echo "::warning::Could not list runners (falling back to GitHub-hosted): $(cat /tmp/pick-runner.err)"
+          # Always TomNAS unless GitHub-hosted is asked for explicitly. There is no online check:
+          # github.token cannot list repo runners (HTTP 403), so an "auto" check always fell back.
+          # If TomNAS is offline, the job queues until it is back.
+          if [ "$RUNNER_PREF" = "github" ]; then
             pick_github
-            exit 0
-          fi
-
-          if [ -z "$status" ]; then
-            echo "::warning::Runner ${RUNNER_NAME} not registered; falling back to GitHub-hosted"
-            pick_github
-            exit 0
-          fi
-
-          echo "TomNAS-unity status=${status}"
-          if [ "$status" = "online" ]; then
-            pick_tomnas
           else
-            echo "::notice::TomNAS-unity is ${status}; falling back to GitHub-hosted"
-            pick_github
+            pick_tomnas
           fi
 
   editmode:
@@ -303,6 +275,12 @@ jobs:
           fi
           exit $missing
       # One Editor session — two sequential unity-builder steps race PackageCache on TomNAS.
+      - name: Pre-create game-ci license dir as the runner user
+        # game-ci's entrypoint mkdirs $GITHUB_WORKSPACE/_activate-license~ as root, then su's to the
+        # host user (runAsHostUser), which cannot write UnityLicenseFile.ulf into it ("Permission
+        # denied"). mkdir -p keeps an existing dir, so creating it here gives the host user ownership.
+        if: needs.prepare.outputs.self_hosted == 'true'
+        run: rm -rf "$GITHUB_WORKSPACE/_activate-license~" && mkdir -p "$GITHUB_WORKSPACE/_activate-license~"
       - name: Build dedicated server and client
         uses: game-ci/unity-builder@v4
         env:
@@ -430,6 +408,12 @@ jobs:
           fi
           exit $missing
       # Default game-ci builder (not ClientBuildScript — that hardcodes StandaloneLinux64).
+      - name: Pre-create game-ci license dir as the runner user
+        # game-ci's entrypoint mkdirs $GITHUB_WORKSPACE/_activate-license~ as root, then su's to the
+        # host user (runAsHostUser), which cannot write UnityLicenseFile.ulf into it ("Permission
+        # denied"). mkdir -p keeps an existing dir, so creating it here gives the host user ownership.
+        if: needs.prepare.outputs.self_hosted == 'true'
+        run: rm -rf "$GITHUB_WORKSPACE/_activate-license~" && mkdir -p "$GITHUB_WORKSPACE/_activate-license~"
       - name: Build Windows client
         uses: game-ci/unity-builder@v4
         env:

@@ -2,8 +2,8 @@
 # pull_request (not pull_request_target): checkout and workflow YAML come from the PR head.
 # Same-repo PRs still get unity_tests secrets; fork PRs would need a separate trusted path.
 #
-# Prefer TomNAS (self-hosted, labels self-hosted/linux/x64/unity) when online; fall back to
-# ubuntu-latest when offline or the runners API is unreachable. See
+# Runs on TomNAS (self-hosted, labels self-hosted/linux/x64/unity); dispatch with runner=github
+# for GitHub-hosted ubuntu-latest. See
 # Documents/architecture/2026-07_multiplayer-testing-self-hosted-ci.md.
 name: Run Tests
 on:
@@ -13,32 +13,27 @@ on:
   workflow_dispatch:
     inputs:
       runner:
-        description: "Runner preference (auto = TomNAS if online, else GitHub-hosted)"
+        description: "Runner (TomNAS self-hosted by default; github = GitHub-hosted ubuntu-latest)"
         type: choice
         options:
-          - auto
           - tomnas
           - github
-        default: auto
+        default: tomnas
 jobs:
   pick_runner:
     name: Pick runner
     runs-on: ubuntu-latest
     permissions:
-      # No `administration` — not a valid GITHUB_TOKEN permission key (workflow fails validation).
-      # Listing runners may 403; pick step already falls back to ubuntu-latest on API failure.
       actions: read
       contents: read
     outputs:
       runs_on: ${{ steps.pick.outputs.runs_on }}
       self_hosted: ${{ steps.pick.outputs.self_hosted }}
     steps:
-      - name: Prefer TomNAS when online
+      - name: Pick TomNAS unless GitHub-hosted is requested
         id: pick
         env:
-          GH_TOKEN: ${{ github.token }}
-          RUNNER_PREF: ${{ github.event_name == 'workflow_dispatch' && inputs.runner || 'auto' }}
-          RUNNER_NAME: TomNAS-unity
+          RUNNER_PREF: ${{ github.event_name == 'workflow_dispatch' && inputs.runner || 'tomnas' }}
         run: |
           set -euo pipefail
           tomnas_json='["self-hosted","linux","x64","unity"]'
@@ -52,40 +47,16 @@ jobs:
           pick_github() {
             echo "runs_on=${github_json}" >> "$GITHUB_OUTPUT"
             echo "self_hosted=false" >> "$GITHUB_OUTPUT"
-            echo "Selected ubuntu-latest (GitHub-hosted fallback)"
+            echo "Selected ubuntu-latest (GitHub-hosted)"
           }
 
-          case "$RUNNER_PREF" in
-            tomnas)
-              pick_tomnas
-              exit 0
-              ;;
-            github)
-              pick_github
-              exit 0
-              ;;
-          esac
-
-          # auto: TomNAS if GitHub reports it online; otherwise GitHub-hosted.
-          if ! status=$(gh api "repos/${{ github.repository }}/actions/runners" \
-              --jq ".runners[] | select(.name==\"${RUNNER_NAME}\") | .status" 2>/tmp/pick-runner.err); then
-            echo "::warning::Could not list runners (falling back to GitHub-hosted): $(cat /tmp/pick-runner.err)"
+          # Always TomNAS unless GitHub-hosted is asked for explicitly. There is no online check:
+          # github.token cannot list repo runners (HTTP 403), so an "auto" check always fell back.
+          # If TomNAS is offline, the job queues until it is back.
+          if [ "$RUNNER_PREF" = "github" ]; then
             pick_github
-            exit 0
-          fi
-
-          if [ -z "$status" ]; then
-            echo "::warning::Runner ${RUNNER_NAME} not registered; falling back to GitHub-hosted"
-            pick_github
-            exit 0
-          fi
-
-          echo "TomNAS-unity status=${status}"
-          if [ "$status" = "online" ]; then
-            pick_tomnas
           else
-            echo "::notice::TomNAS-unity is ${status}; falling back to GitHub-hosted"
-            pick_github
+            pick_tomnas
           fi
 
   run_tests:
@@ -103,7 +74,9 @@ jobs:
       - name: Checkout project code
         uses: actions/checkout@v4
         with:
-          lfs: true
+          # No LFS-tracked files; git lfs fetch fails ("missing object") in the self-hosted
+          # runner's reused workspace, a partial clone left by develop-release's blob:none checkouts.
+          lfs: false
           # Explicit PR head (and its repo) so we never silently test the base branch.
           ref: ${{ github.event.pull_request.head.sha || github.sha }}
           repository: ${{ github.event.pull_request.head.repo.full_name || github.repository }}
@@ -140,6 +113,12 @@ jobs:
             missing=1
           fi
           exit $missing
+      - name: Pre-create game-ci license dir as the runner user
+        # game-ci's entrypoint mkdirs $GITHUB_WORKSPACE/_activate-license~ as root, then su's to the
+        # host user (runAsHostUser), which cannot write UnityLicenseFile.ulf into it ("Permission
+        # denied"). mkdir -p keeps an existing dir, so creating it here gives the host user ownership.
+        if: needs.pick_runner.outputs.self_hosted == 'true'
+        run: rm -rf "$GITHUB_WORKSPACE/_activate-license~" && mkdir -p "$GITHUB_WORKSPACE/_activate-license~"
       - name: Run tests
         id: run-tests
         uses: game-ci/unity-test-runner@v4

@@ -45,7 +45,7 @@ afterward; a manual recovery confirms publication, not future delivery of GitHub
 | `skip_release` | `false` | When true, skip Windows build and GitHub prerelease (Linux-only if `build_linux`). |
 | `version_bump` | `auto` | Release bump level; `auto` derives it from signals — see [2026-10_game-versioning](2026-10_game-versioning.md). |
 | `tag_suffix` | _(empty)_ | Unversioned test cut tagged `develop-<suffix>`; `nightly` forces the full nightly path. |
-| `runner` | `auto` | `auto` / `tomnas` / `github` — TomNAS when online, else `ubuntu-latest`. |
+| `runner` | `tomnas` | `tomnas` / `github` — TomNAS self-hosted, or GitHub-hosted `ubuntu-latest`. |
 
 **Jobs:**
 
@@ -142,8 +142,8 @@ a manual release check.
 - `multiplayer-smoke-test.yml` — label-gated PR + `workflow_dispatch` + nightly 04:00 UTC;
   TomNAS + `BuildBothForCi`. Prefer this (or `build_linux` + `run_smoke` on develop-release)
   when you need a smoke gate.
-- `editmodetestrunner.yml` — cheap PR/`develop` EditMode; prefers TomNAS when online,
-  else `ubuntu-latest`. Prefer this (or `run_editmode: true` on develop-release) when you
+- `editmodetestrunner.yml` — cheap PR/`develop` EditMode on TomNAS (dispatch `runner: github`
+  for `ubuntu-latest`). Prefer this (or `run_editmode: true` on develop-release) when you
   need an EditMode gate on a cut.
 - `main.yml` (Automated Build) — **removed**; Windows prereleases go through
   `develop-release.yml`. Upstream milestone/project YAML deleted (`23b75ad36`); ghost

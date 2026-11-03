@@ -85,7 +85,7 @@ were **removed** from this fork. Remaining workflows:
 - [develop-release.yml](../.github/workflows/develop-release.yml) — **manual** (`workflow_dispatch`)
   + **nightly** (`cron` 05:00 UTC → floating `develop-nightly` Windows+Linux client/server).
   Manual default: Windows client → GitHub **prerelease** (zip + launch bats; Config/Tilemaps
-  seeded). Linux / EditMode / smoke are opt-in; runner prefers TomNAS when online — see
+  seeded). Linux / EditMode / smoke are opt-in; runs on TomNAS (dispatch `runner: github` for GitHub-hosted) — see
   [2026-07_ci-develop-release-pipeline.md](architecture/2026-07_ci-develop-release-pipeline.md)
 - [editmodetestrunner.yml](../.github/workflows/editmodetestrunner.yml) — EditMode tests on push to
   `develop`, PRs (`pull_request_target`), and manual dispatch; forces Node 24 for JS actions;
