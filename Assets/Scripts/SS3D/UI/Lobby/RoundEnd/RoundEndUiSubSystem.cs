@@ -2,6 +2,7 @@ using SS3D.Core;
 using SS3D.Core.Behaviours;
 using SS3D.Systems.Inputs;
 using SS3D.Systems.Rounds;
+using SS3D.Systems.ScreenEffects;
 using SS3D.UI.Shell;
 using SS3D.UI.Shell.Catalog;
 using SS3D.UI.Shell.RoundEnd;
@@ -60,7 +61,8 @@ namespace SS3D.UI.Lobby
 
             RoundOutcome outcome = rounds.LastOutcome;
             bool ending = rounds.CurrentRoundState == RoundState.Ending && outcome != null && outcome.RoundId == rounds.RoundId;
-            if (!ending)
+            // A detonation shows its white-out first; the summary follows (Decision 19).
+            if (!ending || (outcome.StationDestroyed && StationDetonationPresentation.IsPlaying))
             {
                 Hide();
                 return;

@@ -159,6 +159,18 @@ namespace SS3D.Systems.Roles
         public bool IsAntagonistOptedIn(string ckey, string category) =>
             ckey != null && _antagonistOptIns.TryGetValue(ckey, out HashSet<string> set) && set.Contains(category);
 
+        /// <summary>Automation: opts a player into an antagonist category without a lobby preferences message.</summary>
+        [Server]
+        public void OptIntoAntagonistForTesting(string ckey, string category)
+        {
+            if (!_antagonistOptIns.TryGetValue(ckey, out HashSet<string> set))
+            {
+                _antagonistOptIns[ckey] = set = new HashSet<string>();
+            }
+
+            set.Add(category);
+        }
+
         public bool TryGetRole(Player player, out RoleData role)
         {
             role = null;

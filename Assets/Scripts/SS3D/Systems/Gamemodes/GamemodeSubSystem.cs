@@ -108,6 +108,46 @@ namespace SS3D.Systems.Gamemodes
             }
 
             SendBriefingsAsync(squad).Forget();
+
+            if (SubSystems.TryGet(out EntitySubSystem entities))
+            {
+                entities.ServerSpawnedPlayersChanged -= HandleSpawnedPlayersChanged;
+                entities.ServerSpawnedPlayersChanged += HandleSpawnedPlayersChanged;
+            }
+        }
+
+        /// <summary>
+        /// An entity changed (a death, a destroyed body, a join): checks the mode's end condition, e.g. the
+        /// Nuke Ops crew win (Decision 17). Only while the round is Ongoing.
+        /// </summary>
+        [Server]
+        private void HandleSpawnedPlayersChanged()
+        {
+            if (_gamemode == null || !_gamemode.IsInitialized
+                || !SubSystems.TryGet(out RoundSubSystem rounds) || rounds.CurrentRoundState != RoundState.Ongoing)
+            {
+                return;
+            }
+
+            if (_gamemode.TryGetEndCondition(out RoundEndRequest request))
+            {
+                EndRound(request);
+            }
+        }
+
+        /// <summary>
+        /// Gives a timer or admin end the mode's winner at the trigger instant (Nuke Ops: the disk, Decisions
+        /// 8 and 18). Unchanged in a round without a gamemode (Extended).
+        /// </summary>
+        [Server]
+        public RoundEndRequest ResolveEnd(RoundEndRequest request)
+        {
+            if (_gamemode == null || !_gamemode.IsInitialized)
+            {
+                return request;
+            }
+
+            return _gamemode.ResolveEnd(request);
         }
 
         /// <summary>Seconds after spawn before the briefing is sent, so the client's HUD feed exists to show it.</summary>
@@ -183,6 +223,11 @@ namespace SS3D.Systems.Gamemodes
             if (_gamemode == null || !_gamemode.IsInitialized)
             {
                 return;
+            }
+
+            if (SubSystems.TryGet(out EntitySubSystem entities))
+            {
+                entities.ServerSpawnedPlayersChanged -= HandleSpawnedPlayersChanged;
             }
 
             _gamemode.OnInitialized -= HandleGamemodeInitialized;

@@ -40,6 +40,8 @@ namespace SS3D.Tests
         public const string RoomStation = "scenario-testroom";
 
         private static bool _roomReady;
+        /// <summary>The mode the running round was booted in; a fixture that needs another one reboots.</summary>
+        private static string _bootedMode;
         private bool _setUpDone;
         private readonly HashSet<int> _objectsBeforeScenario = new();
         private readonly Stopwatch _scenarioClock = new();
@@ -60,13 +62,27 @@ namespace SS3D.Tests
 
         protected override bool UseMockUpInputs() => false;
 
+        /// <summary>The round's mode. A fixture that changes it reboots the room on its first scenario.</summary>
+        protected virtual string Mode => "Extended";
+
+        /// <summary>
+        /// False keeps the body the round start spawned (role, marker, loadout) instead of a fresh empty-handed
+        /// one per scenario; for fixtures whose subject is the round-start spawn.
+        /// </summary>
+        protected virtual bool FreshBodyPerScenario => true;
+
+        /// <summary>Server: runs after the round settings are applied and before the round starts (e.g. opt-ins).</summary>
+        protected virtual void BeforeRoundStart()
+        {
+        }
+
         [UnitySetUp]
         public IEnumerator ScenarioSetUp()
         {
             ChangesRoom = false;
             Body = null;
             _setUpDone = false;
-            if (!_roomReady || !RoundRunning())
+            if (!_roomReady || !RoundRunning() || _bootedMode != Mode)
             {
                 Stopwatch boot = Stopwatch.StartNew();
                 yield return BootIntoRoom();
@@ -76,7 +92,10 @@ namespace SS3D.Tests
             }
 
             Stopwatch setUp = Stopwatch.StartNew();
-            yield return GiveFreshBody();
+            if (FreshBodyPerScenario)
+                yield return GiveFreshBody();
+            else
+                yield return KeepRoundBody();
             Debug.Log($"[Scenario] fresh body in {setUp.Elapsed.TotalSeconds:F1}s");
             SnapshotSpawnedObjects();
             _setUpDone = true;
@@ -126,7 +145,10 @@ namespace SS3D.Tests
             yield return ServerHelpers.StopRound();
             yield return BootIntoRoom();
             ScenarioAtmos.AssertStationAir("after reloading the room");
-            yield return GiveFreshBody();
+            if (FreshBodyPerScenario)
+                yield return GiveFreshBody();
+            else
+                yield return KeepRoundBody();
             SnapshotSpawnedObjects();
         }
 
@@ -149,13 +171,15 @@ namespace SS3D.Tests
             RoundSubSystem rounds = SubSystems.Get<RoundSubSystem>();
             ServerSettings settings = rounds.SettingsForServer;
             settings.Map = RoomStation;
-            settings.Mode = "Extended";
+            settings.Mode = Mode;
             settings.RoundLengthMinutes = 120;
             settings.AutoStart = false;
             settings.AllowLateJoin = true;
             rounds.ApplyServerSettingsForTesting(settings);
 
+            BeforeRoundStart();
             ServerHelpers.SetPlayerReadiness(ServerHelpers.LocalCkey, true);
+            _bootedMode = Mode;
             ServerHelpers.ChangeRoundState(true);
             yield return ServerHelpers.WaitForRoundState(RoundState.WarmingUp, 60f);
             rounds.CmdRoundAdminAction(RoundAdminAction.ForceStart);
@@ -232,6 +256,14 @@ namespace SS3D.Tests
             yield return null;
 
             Body = body;
+        }
+
+        private IEnumerator KeepRoundBody()
+        {
+            Entity current = HostEntity;
+            Assert.IsNotNull(current, "The round start gave the host a body");
+            yield return WaitForClientSpawn(current, "The host's client spawned its round-start body");
+            Body = current;
         }
 
         private static IEnumerator WaitForClientSpawn(Entity entity, string what)

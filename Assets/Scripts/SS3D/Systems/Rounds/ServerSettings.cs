@@ -48,7 +48,7 @@ namespace SS3D.Systems.Rounds
 
         public static ServerSettings Default => new()
         {
-            Map = "", Mode = "Secret", PlayerCap = 32, RoundLengthMinutes = 90, AllowLateJoin = true, MinimumReady = 1,
+            Map = "", Mode = "Secret", PlayerCap = 32, RoundLengthMinutes = 30, AllowLateJoin = true, MinimumReady = 1,
             MinimumOperatives = 1,
             ServerName = ServerInfoText.DefaultName, Motd = ServerInfoText.DefaultMotd,
             RespawnCooldownSeconds = 30, MapPersistence = true,

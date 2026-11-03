@@ -9,7 +9,7 @@ namespace SS3D.Systems.GameModes.Modes
     /// <summary>
     /// Nuclear Emergency (<c>antagonist-content.md</c> §6, effort <c>2026-11_round-end-loop</c> Decision 13):
     /// the squad shares one team objective, detonating the station's device. Crew hold no objective.
-    /// The objective is met only when the round ends with the station destroyed.
+    /// The objective is met only when the round ends with the station destroyed. Who wins: <see cref="NukeOpsRules"/>.
     /// </summary>
     [CreateAssetMenu(menuName = "Gamemode/Modes/NukeGamemode", fileName = "NukeGamemode")]
     public class NukeGamemode : Gamemode
@@ -31,6 +31,14 @@ namespace SS3D.Systems.GameModes.Modes
 
             AssignTeamObjective(teamObjective, squadCkeys);
         }
+
+        /// <summary>Timer and admin ends get the §6 winner from the disk (Decisions 8, 18).</summary>
+        public override RoundEndRequest ResolveEnd(RoundEndRequest request) =>
+            NukeOpsRules.Resolve(request, NukeOpsWorld.Read());
+
+        /// <summary>Crew win once every operative is out (Decisions 16, 17).</summary>
+        public override bool TryGetEndCondition(out RoundEndRequest request) =>
+            NukeOpsRules.TryCrewWin(NukeOpsWorld.Read(), out request);
 
         public override void ResolveObjectives(RoundEndRequest request)
         {

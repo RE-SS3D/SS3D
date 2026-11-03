@@ -31,6 +31,9 @@ namespace SS3D.Systems.ScreenEffects
         private const float HitFlashDecay = 0.35f;
         private const float BlastFlashAttack = 0.04f;
         private const float BlastFlashDecay = 0.45f;
+        private const float WhiteoutAttack = 0.12f;
+        /// <summary>Exposure boost (EV) at the white-out's peak: enough to burn the frame to white.</summary>
+        private const float WhiteoutPeakExposure = 9f;
 
         private readonly Dictionary<ScreenEffectType, float> _targetIntensity = new();
         private readonly Dictionary<ScreenEffectType, float> _currentIntensity = new();
@@ -46,6 +49,8 @@ namespace SS3D.Systems.ScreenEffects
         private float _hitFlashTimer = -1f;
         private float _blastFlashTimer = -1f;
         private float _blastFlashStrength = 1f;
+        private float _whiteoutTimer = -1f;
+        private float _whiteoutSeconds;
         private float _uiBackdropBlurTarget;
         private float _uiBackdropBlurCurrent;
         private float _healthBackdropBlurCurrent;
@@ -132,6 +137,16 @@ namespace SS3D.Systems.ScreenEffects
         {
             _blastFlashTimer = 0f;
             _blastFlashStrength = Mathf.Clamp(strength, 0.05f, 1.5f);
+        }
+
+        /// <summary>
+        /// Full-screen white-out (station detonation): the frame burns to white in a moment, holds, then fades
+        /// back over <paramref name="seconds"/>. Same volume as the blast flash, pushed through exposure.
+        /// </summary>
+        public void TriggerWhiteout(float seconds = 2.5f)
+        {
+            _whiteoutTimer = 0f;
+            _whiteoutSeconds = Mathf.Max(WhiteoutAttack * 2f, seconds);
         }
 
         private void BuildVolume()
@@ -377,6 +392,12 @@ namespace SS3D.Systems.ScreenEffects
                 AddVignette(blastFlash, new Color(1f, 0.72f, 0.35f));
             }
 
+            float whiteout = ComputeWhiteout(deltaTime);
+            if (whiteout > 0f)
+            {
+                AddVignette(whiteout * 1.5f, Color.white);
+            }
+
             UpdateParticles(_emberParticles, fire, true);
             UpdateParticles(_frostParticles, freezing, false);
 
@@ -397,7 +418,8 @@ namespace SS3D.Systems.ScreenEffects
             _chromaticAberration.active = chromaticAberration > 0.001f;
             _chromaticAberration.intensity.value = Mathf.Clamp01(chromaticAberration);
 
-            _colorAdjustments.active = saturation < -0.001f || contrast < -0.001f;
+            _colorAdjustments.active = saturation < -0.001f || contrast < -0.001f || whiteout > 0.001f;
+            _colorAdjustments.postExposure.value = whiteout * WhiteoutPeakExposure;
             _colorAdjustments.saturation.value = Mathf.Clamp(saturation, -100f, 100f);
             _colorAdjustments.contrast.value = Mathf.Clamp(contrast, -100f, 100f);
 
@@ -457,6 +479,36 @@ namespace SS3D.Systems.ScreenEffects
             }
 
             return envelope * _blastFlashStrength;
+        }
+
+        /// <summary>Fast attack, a hold at full white for the first third, then an ease-out fade.</summary>
+        private float ComputeWhiteout(float deltaTime)
+        {
+            if (_whiteoutTimer < 0f)
+            {
+                return 0f;
+            }
+
+            _whiteoutTimer += deltaTime;
+            if (_whiteoutTimer >= _whiteoutSeconds)
+            {
+                _whiteoutTimer = -1f;
+                return 0f;
+            }
+
+            if (_whiteoutTimer < WhiteoutAttack)
+            {
+                return _whiteoutTimer / WhiteoutAttack;
+            }
+
+            float hold = _whiteoutSeconds / 3f;
+            if (_whiteoutTimer < hold)
+            {
+                return 1f;
+            }
+
+            float fade = (_whiteoutTimer - hold) / (_whiteoutSeconds - hold);
+            return 1f - fade * fade;
         }
 
         private void ApplyDepthOfField(float healthBlur)

@@ -107,6 +107,22 @@ namespace SS3D.Systems.GameModes.Modes
         }
 
         /// <summary>
+        /// Gives a trigger without a winner of its own (timer, admin) the mode's winner, at the trigger
+        /// instant. The base mode has no rule and keeps the request.
+        /// </summary>
+        public virtual RoundEndRequest ResolveEnd(RoundEndRequest request) => request;
+
+        /// <summary>
+        /// The mode's own end condition (<c>round-end.md</c> §2), checked whenever a player's entity changes.
+        /// The base mode has none.
+        /// </summary>
+        public virtual bool TryGetEndCondition(out RoundEndRequest request)
+        {
+            request = default;
+            return false;
+        }
+
+        /// <summary>
         /// Resolves every objective at the instant the round's end trigger fires (<c>objectives.md</c> §2,
         /// effort Decision 2): anything not met by then fails. Later calls change nothing.
         /// </summary>

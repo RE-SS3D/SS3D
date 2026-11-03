@@ -11,6 +11,7 @@ using SS3D.Systems.Entities;
 using SS3D.Systems.Entities.Humanoid;
 using SS3D.Systems.Gamemodes;
 using SS3D.Systems.Roles;
+using SS3D.Systems.ScreenEffects;
 using SS3D.Systems.Rounds.Messages;
 
 namespace SS3D.Systems.Rounds
@@ -73,13 +74,35 @@ namespace SS3D.Systems.Rounds
                 return;
 
             _pendingOutcome = BuildOutcome(request);
+            if (request.StationDestroyed)
+                AnnounceDetonation();
+
             RequestRoundStateChange(new ChangeRoundStateMessage(false));
         }
+
+        /// <summary>Station destroyed (Decision 19): a station-wide announcement and a white-out on every client.</summary>
+        [Server]
+        private void AnnounceDetonation()
+        {
+            if (SubSystems.TryGet(out CommsSubSystem comms))
+                comms.SendAnnouncement(DetonationAnnouncement);
+            RpcStationDetonated();
+        }
+
+        public const string DetonationAnnouncement = "The station's nuclear device has detonated.";
+
+        /// <summary>Clients only (host included); a dedicated server has nothing to show.</summary>
+        [ObserversRpc]
+        private void RpcStationDetonated() => StationDetonationPresentation.Play();
 
         [Server]
         private RoundOutcome BuildOutcome(RoundEndRequest request)
         {
             bool hasGamemodes = SubSystems.TryGet(out GamemodeSubSystem gamemodes);
+            // A timer or admin end takes the mode's winner (Nuke Ops: who holds the disk) at this instant.
+            if (hasGamemodes)
+                request = gamemodes.ResolveEnd(request);
+
             string mode = hasGamemodes ? gamemodes.CurrentGamemodeName : "";
             // Objectives resolve here, at the trigger instant, like everything else on the outcome.
             IEnumerable<RoundOutcomeObjective> objectives = hasGamemodes ? gamemodes.ResolveObjectives(request) : null;

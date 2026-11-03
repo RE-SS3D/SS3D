@@ -15,13 +15,12 @@ A 3D Space Station 13. Every gate names the [vision](../design/vision.md) pillar
 
 **Gameplay** — [mvp1-nuke-ops.md](mvp1-nuke-ops.md), in this order:
 
-1. **M5 + T4** — end screen and restart, with the operative squad: merge [#131](https://github.com/henkhooft/SS3D/pull/131)
-2. **M4** — Nuke Ops win/lose rules
-3. **M1m** — responsive movement: full speed and stop within about 0.1 s, matching animation blends, clean strafe transitions, sprint
-4. **M0** — in-house test station; Captain, Security, Engineer, Doctor, Assistant with loadouts and access; ops suit identity
-5. **M1c** — combat core: C20R, Stechkin, security pistol, M4, stun baton; physical magazines; C4; sounds; no debug chrome
-6. **M3** — nuke loop (thin) with floor and furniture damage
-7. **M8 + M9 (thin)** — vacuum kills, suit seal and internals protect, engineers patch hull holes; APC lights matter
+1. **M4** — Nuke Ops win/lose rules ([round-end loop](../architecture/2026-11_round-end-loop.md) P3); the end screen, restart and operative squad shipped in [#131](https://github.com/henkhooft/SS3D/pull/131)
+2. **M1m** — responsive movement: full speed and stop within about 0.1 s, matching animation blends, clean strafe transitions, sprint
+3. **M0** — in-house test station; Captain, Security, Engineer, Doctor, Assistant with loadouts and access; ops suit identity
+4. **M1c** — combat core: C20R, Stechkin, security pistol, M4, stun baton; physical magazines; C4; sounds; no debug chrome
+5. **M3** — nuke loop (thin) with floor and furniture damage
+6. **M8 + M9 (thin)** — vacuum kills, suit seal and internals protect, engineers patch hull holes; APC lights matter
 
 **Enabler** — [test-server.md](test-server.md), serves Playtest 1:
 

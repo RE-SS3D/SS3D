@@ -126,6 +126,12 @@ namespace SS3D.Systems.Entities
         public IReadOnlyList<Entity> SpawnedPlayers => _spawnedPlayers;
 
         /// <summary>
+        /// Server: a player's entity was added, removed or swapped (a death swaps the body for its ghost).
+        /// Raised synchronously, so during a death the new ghost may not hold its mind yet.
+        /// </summary>
+        public event Action ServerSpawnedPlayersChanged;
+
+        /// <summary>
         /// Returns the last spawned player.
         /// </summary>
         public Entity LastSpawned => _spawnedPlayers.Count != 0 ? _spawnedPlayers[^1] : null;
@@ -508,6 +514,11 @@ namespace SS3D.Systems.Entities
             if (op == SyncListOperation.Complete)
             {
                 return;
+            }
+
+            if (asServer)
+            {
+                ServerSpawnedPlayersChanged?.Invoke();
             }
 
 			if(op == SyncListOperation.Set)

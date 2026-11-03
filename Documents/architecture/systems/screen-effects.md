@@ -1,13 +1,13 @@
 > Code paths: Assets/Scripts/SS3D/Systems/ScreenEffects/
 > Entry points: ScreenEffectsSubSystem
 > Status: partial
-> Verified: e496b5a3e — 2026-11-01 (health, ghost vision and blackout action/layering contracts)
+> Verified: dde6992c8 — 2026-11-03
 
 # Screen-space effects
 
 ## Overview
 
-Client-only URP Volume overlays for diegetic feedback from [main-hud](../../design/main-hud.md) §5: temperature, fire/freezing, low oxygen, dying/critical, blood-loss tunnel vision, concussion, unconsciousness, plus momentary melee hit flash and blast flash. Driven by intensity (0..1) via `SetEffect` / `TriggerHitFlash` / `TriggerBlastFlash`. Also hosts `SetUiBackdropBlur`, which drives Dual Kawase fullscreen blur (`UiBackdropBlurContext` → [rendering](rendering.md) `UiBackdropBlurRendererFeature`) for soft world focus behind sharp UI Toolkit overlays — separate from `ScreenEffectType` so health clears do not wipe it. Diegetic panels also paint a dark UITK scrim on the overlay root.
+Client-only URP Volume overlays for diegetic feedback from [main-hud](../../design/main-hud.md) §5: temperature, fire/freezing, low oxygen, dying/critical, blood-loss tunnel vision, concussion, unconsciousness, plus momentary melee hit flash, blast flash and the station-detonation white-out. Driven by intensity (0..1) via `SetEffect` / `TriggerHitFlash` / `TriggerBlastFlash` / `TriggerWhiteout`. Also hosts `SetUiBackdropBlur`, which drives Dual Kawase fullscreen blur (`UiBackdropBlurContext` → [rendering](rendering.md) `UiBackdropBlurRendererFeature`) for soft world focus behind sharp UI Toolkit overlays — separate from `ScreenEffectType` so health clears do not wipe it. Diegetic panels also paint a dark UITK scrim on the overlay root.
 
 **Health wiring shipped:** local-owner [health](health.md) drives dying/blood-loss/oxy/concussion/unconscious via `HealthScreenEffectMapper`, and hit flash via `HumanHealthController` TargetRpc. While dying/critical is active, LowOxygen screen intensity is attenuated so the red heartbeat blink reads; unconscious uses a world-only flat blackout (no pulsed red veil). Dying pulses Dual Kawase via the same `UiBackdropBlurContext` as machine UI (max of UI vs health channels). Temperature/fire/frost are driven from synced `HealthSnapshot.Environment` via `AtmosScreenEffectMapper` (F1 → Screen Effects / `screeneffect` still for debug solos). Blast flash is fired by [structural-destruction](structural-destruction.md) `BlastVfxPresenter` (distance-gated).
 
@@ -17,7 +17,8 @@ Bootstraps itself with `RuntimeInitializeOnLoadMethod` (not in Boot.unity) so it
 
 ## Start here
 
-- `Assets/Scripts/SS3D/Systems/ScreenEffects/ScreenEffectsSubSystem.cs` — Volume + world blackout + ember/frost particles; `SetEffect` / `TriggerHitFlash` / `TriggerBlastFlash` / `SetUiBackdropBlur`
+- `Assets/Scripts/SS3D/Systems/ScreenEffects/ScreenEffectsSubSystem.cs` — Volume + world blackout + ember/frost particles; `SetEffect` / `TriggerHitFlash` / `TriggerBlastFlash` / `TriggerWhiteout` (post-exposure burn to white plus a white vignette) / `SetUiBackdropBlur`
+- `Assets/Scripts/SS3D/Systems/ScreenEffects/StationDetonationPresentation.cs` — station detonation ([2026-11_round-end-loop](../2026-11_round-end-loop.md) Decision 19): white-out plus a heavy `CameraFollow.AddImpulse`; the round-end overlay waits while `IsPlaying`
 - `Assets/Scripts/SS3D/Systems/ScreenEffects/ScreenEffectType.cs` — sustained effect enum
 - `Assets/Scripts/SS3D/Systems/Health/HealthScreenEffectMapper.cs` — `HealthSnapshot` → health-driven intensities
 - `Assets/Scripts/SS3D/Systems/ScreenEffects/ScreenEffectsDebugMenuView.cs` — Screen Effects tool opened from F1 (lazy uGUI build)

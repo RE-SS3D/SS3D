@@ -15,7 +15,8 @@ namespace SS3D.Tests.EditMode
     /// <summary>
     /// The scenario test room (<c>Testing/fixtures/stations/testroom.json</c>, harness rework D2) passes Map
     /// Check for Extended and still has what the scenarios rely on: a Security-access door between two
-    /// rooms, each with its own area, the side one tagged Security.
+    /// rooms, each with its own area, the side one tagged Security. It also passes Map Check for Nuclear
+    /// Emergency (operative marker, NukeCart, authentication disk) for the NukeOps scenarios.
     /// </summary>
     public sealed class TestRoomFixtureTests
     {
@@ -36,16 +37,20 @@ namespace SS3D.Tests.EditMode
         [Test]
         public void PassesMapCheckForExtended()
         {
-            RolesAvailable roles = AssetDatabase.LoadAssetAtPath<RolesAvailable>(StartingRolesPath);
-            Assert.IsNotNull(roles, StartingRolesPath);
-            // Crew jobs only, as MapValidationService gets them from RoleSubSystem.Jobs: antagonist roles
-            // (Operative) spawn on antagonist markers and are no job-spawn requirement.
-            string[] jobs = roles.Roles.Where(role => role.Data != null && !role.Data.IsAntagonist)
-                .Select(role => role.Data.Name).ToArray();
-
-            MapValidationReport report = MapValidator.Validate("Extended", jobs, SpawnPoints().ToList(), false, false);
+            MapValidationReport report = MapValidator.Validate("Extended", Jobs(), SpawnPoints().ToList(), false, false);
 
             Assert.IsTrue(report.CanStart, report.Describe("testroom", "Extended", saved: true));
+        }
+
+        [Test]
+        public void PassesMapCheckForNuclearEmergency()
+        {
+            bool hasNuke = Cells().Any(cell => cell.names.Contains("NukeCart"));
+            bool hasDisk = (_map.savedItemList ?? new SavedPlacedItemObject[0]).Any(item => item.itemName == "NuclearAuthenticationDisk");
+
+            MapValidationReport report = MapValidator.Validate("Nuclear Emergency", Jobs(), SpawnPoints().ToList(), hasNuke, hasDisk);
+
+            Assert.IsTrue(report.CanStart, report.Describe("testroom", "Nuclear Emergency", saved: true));
         }
 
         [Test]
@@ -63,6 +68,18 @@ namespace SS3D.Tests.EditMode
             string areas = Payload("areas");
             StringAssert.Contains("\"id\":2", areas, "a second area for the side room");
             StringAssert.Contains("\"parentTag\":\"Security\"", areas, "the side room is a Security area, so the door denies non-Security IDs");
+        }
+
+        /// <summary>
+        /// Crew jobs only, as MapValidationService gets them from RoleSubSystem.Jobs: antagonist roles
+        /// (Operative) spawn on antagonist markers and are no job-spawn requirement.
+        /// </summary>
+        private static string[] Jobs()
+        {
+            RolesAvailable roles = AssetDatabase.LoadAssetAtPath<RolesAvailable>(StartingRolesPath);
+            Assert.IsNotNull(roles, StartingRolesPath);
+            return roles.Roles.Where(role => role.Data != null && !role.Data.IsAntagonist)
+                .Select(role => role.Data.Name).ToArray();
         }
 
         private string Payload(string contributor) =>

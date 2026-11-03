@@ -25,5 +25,8 @@ namespace SS3D.Tests
         public const string Respawn = "Respawn";
 
         public const string Speech = "Speech";
+
+        /// <summary>A Nuclear Emergency round in the test room: operative spawn, detonation and squad-out outcomes.</summary>
+        public const string NukeOps = "NukeOps";
     }
 }

@@ -2,7 +2,7 @@
 > Touches systems: rounds-lobby, gamemodes-roles-traits, entities, persistence, chat-audio-screens, screen-effects, ui-shell
 > Status: active
 
-**Progress:** P1 implemented and validated on 2026-11-03 (lifecycle pilot, nightly `sandbox-reset` smoke). P2 implemented with EditMode coverage; its spawn checks move into P3's scenario fixture. Both are in [#131](https://github.com/henkhooft/SS3D/pull/131). P3 (Nuke Ops rules) is next, in its own PR; P4 (the 24/7 Nuke Ops server profile) follows. Advances [mvp1-nuke-ops.md](../milestones/mvp1-nuke-ops.md) M4 and M5 and [test-server.md](../milestones/test-server.md) T4 and T8. Tests follow the [testing philosophy](2026-11_testing-philosophy.md): each phase lists its checks by tier.
+**Progress:** P1 implemented and validated on 2026-11-03 (lifecycle pilot, nightly `sandbox-reset` smoke). P2 implemented with EditMode coverage; its spawn checks move into P3's scenario fixture. Both merged to develop in [#131](https://github.com/henkhooft/SS3D/pull/131) (`360ab4d60`). P3 (Nuke Ops rules) is implemented on `claude/nukeops-rules` with EditMode coverage and the `NukeOps` scenario fixture; its `nukeops-round` smoke line moves to P4, which ships the `-nukeops` profile it needs. P4 (the 24/7 Nuke Ops server profile) follows. Advances [mvp1-nuke-ops.md](../milestones/mvp1-nuke-ops.md) M4 and M5 and [test-server.md](../milestones/test-server.md) T4 and T8. Tests follow the [testing philosophy](2026-11_testing-philosophy.md): each phase lists its checks by tier.
 
 # Round-end loop and thin Nuke Ops outcome (Nov 2026)
 
@@ -101,7 +101,7 @@ Serves [test-server.md](../milestones/test-server.md) T8 and Playtest 1's "every
 - A `-nukeops` server profile on the `-sandbox` pattern (`SandboxProfile`, [2026-11_sandbox-server](2026-11_sandbox-server.md)): mode Secret, `AutoStart`, 30 min rounds (Decision 20), no map editing or sandbox resets, persistence as a normal server.
 - Minimum ready players for Nuke Ops, 4 in the profile (Decision 23); Nuclear Operative opt-in on by default (Decision 22).
 - Hosting on TomNAS next to the sandbox is outside this repo; the profile and its arguments are what this effort ships.
-- Tests: **EditMode** for the profile settings and the ready-player threshold. **Multiplayer:** P3's `nukeops-round` smoke runs with `-nukeops` and a lowered threshold, so no new smoke line.
+- Tests: **EditMode** for the profile settings and the ready-player threshold. **Multiplayer:** the `nukeops-round` smoke line (moved here from P3) runs with `-nukeops` and a lowered threshold: the draw on a real server, a remote operative spawning, the outcome reaching clients, the next round auto-starting. Check the D7 smoke budget before adding it.
 
 ## Parked
 
@@ -137,3 +137,15 @@ Serves [test-server.md](../milestones/test-server.md) T8 and Playtest 1's "every
 **Tests (2026-11-03).** Brought in line with the testing philosophy after develop's harness rework (#129). The first pass added `RoundEndBeat.Seconds` to every PlayMode stop helper and raised pilot timeouts. That would have charged every scenario room reload 30 s against D7's nightly budget. Automation now shortens the beat instead (Decision 24). Validating the merge found two unrelated bugs, both fixed:
 - `TestRoomFixtureTests` counted the Operative role as a required job spawn.
 - Server Settings' once-a-second refresh wiped an admin action's result before it could be read.
+
+**P3 (2026-11-03).** Code: `Systems/Gamemodes/NukeOpsRules.cs` (pure, `NukeOpsRulesTests`), `NukeOpsWorld.cs` (server adapter), `Gamemode.ResolveEnd` / `TryGetEndCondition`, `EntitySubSystem.ServerSpawnedPlayersChanged`, `ScreenEffects/StationDetonationPresentation.cs`; tier 2: `NukeOpsScenarios` (`scenarios:NukeOps`). Divergences and choices:
+
+- **Timer and admin ends keep their trigger** and take the §6 winner from the disk; the reason says which ("Ended by an admin with the disk still on the station."). `BuildOutcome` calls `GamemodeSubSystem.ResolveEnd` before objectives resolve, and before `FinalizeGamemode` runs on Ending, so the squad and disk are still live.
+- **Operative out = no entity, a ghost, or a Dead health state.** There is no voluntary ghost-out, so a ghost always means a dead body; Decision 16's "ghosted-out counts as alive" has no case to cover yet. SSD bodies keep their mind and count as up.
+- **The crew-win check runs on `ServerSpawnedPlayersChanged`** (a death swaps the corpse for its ghost in `SpawnedPlayers`; a destroyed body leaves it). It fires before the ghost holds the mind, so the adapter's lookup is null-safe.
+- **Disk held** = the disk's container chain (item → bag's item → … → body) ends at a living operative's entity. Several disks: any held one counts.
+- **Detonation presentation reuses the blast pieces**: `ScreenEffectsSubSystem.TriggerWhiteout` (post-exposure burn plus a white vignette in the existing volume) and `CameraFollow.AddImpulse` at station strength. The summary overlay waits for the 2.5 s white-out.
+- **30 min** is the `ServerSettings` default round length (Secret is the default mode); saved settings keep their value.
+- **The fixture keeps the round-start body** (`ScenarioFixture.FreshBodyPerScenario`), unlike D3's fresh body per scenario: the spawn path is the subject. Both outcome scenarios end the round and set `ChangesRoom`, so each starts from a fresh round. `ScenarioFixture` gained `Mode` (a fixture in another mode reboots) and `BeforeRoundStart` (the host's opt-in, via `RoleSubSystem.OptIntoAntagonistForTesting`).
+- **The test room** gained a NukeCart and the authentication disk so it passes Map Check for Nuclear Emergency (`TestRoomFixtureTests`).
+- **The `nukeops-round` smoke moved to P4**: a dedicated build only runs Nuclear Emergency through the `-nukeops` profile, and a remote client is only drawn with Decision 22's default opt-in.

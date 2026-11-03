@@ -1,7 +1,7 @@
 > Code paths: Assets/Scripts/SS3D/Systems/Rounds/, Assets/Scripts/SS3D/UI/Lobby/
 > Entry points: RoundSubSystem, ReadyPlayersSubSystem, RoundSubSystemBase, LobbyUiSubSystem
 > Status: partial
-> Verified: af6e71178 — 2026-11-02
+> Verified: dde6992c8 — 2026-11-03
 
 # Rounds / lobby
 
@@ -31,7 +31,7 @@ ping/account-age fields are absent.
 The UITK shell is the sole lobby UI. Do not restore the removed uGUI lobby/customizer or
 `GameScreens`; the round simulation remains live ([composition policy](../2026-07_agent-first-composition.md)).
 
-**Round end** ([2026-11_round-end-loop](../2026-11_round-end-loop.md) P1, [round-end.md](../../design/round-end.md) §2, §5–§6): every trigger (timer, gamemode condition via `GamemodeSubSystem.EndRound`, admin stop) calls `RoundSubSystem.RequestRoundEnd(RoundEndRequest)`, which fixes a `RoundOutcome` on the spot: trigger, winner, configured vs. resolved mode, reason, duration, and every player who took a body (name, job, alive; a ghost counts as dead). `Nuke.Detonate` ends as an Operatives win with the station destroyed. Ending posts the result to OOC, appends round history, sends the outcome to every client (buffered `ObserversRpc`, so latecomers get it) and runs a 30 s beat (`RoundEndBeat`) that an admin can hold and resume from Server Settings. The world keeps running during the beat. `RoundEndUiSubSystem` paints the summary over living and ghost players on the shell's Overlay layer; Tab or the chevron collapses it to a banner. The lobby shell keeps the outcome as a **Last Round** tab until the next round ends. `AutoStart` defaults on for a dedicated server (`NetworkType.DedicatedServer`) and waits for `MinimumReady` ready players; the admin form edits both.
+**Round end** ([2026-11_round-end-loop](../2026-11_round-end-loop.md) P1, [round-end.md](../../design/round-end.md) §2, §5–§6): every trigger (timer, gamemode condition via `GamemodeSubSystem.EndRound`, admin stop) calls `RoundSubSystem.RequestRoundEnd(RoundEndRequest)`, which fixes a `RoundOutcome` on the spot: trigger, winner, configured vs. resolved mode, reason, duration, and every player who took a body (name, job, alive; a ghost counts as dead). `Nuke.Detonate` ends as an Operatives win with the station destroyed: the server announces it station-wide and every client plays `StationDetonationPresentation` (white-out, shake); the summary opens once the white-out is over. A gamemode gives a timer or admin end its winner through `GamemodeSubSystem.ResolveEnd` (Nuke Ops: [gamemodes-roles-traits](gamemodes-roles-traits.md) `NukeOpsRules`). Default round length is 30 minutes (Decision 20). Ending posts the result to OOC, appends round history, sends the outcome to every client (buffered `ObserversRpc`, so latecomers get it) and runs a 30 s beat (`RoundEndBeat`) that an admin can hold and resume from Server Settings. The world keeps running during the beat. `RoundEndUiSubSystem` paints the summary over living and ghost players on the shell's Overlay layer; Tab or the chevron collapses it to a banner. The lobby shell keeps the outcome as a **Last Round** tab until the next round ends. `AutoStart` defaults on for a dedicated server (`NetworkType.DedicatedServer`) and waits for `MinimumReady` ready players; the admin form edits both.
 
 **Stopped** despawns the crew (`EntitySubSystem`) and then `RoundSubSystem.UnloadStation`
 clears the station (`TileMap.Clear`, load state `NotLoaded`); the next Start restores the template.
