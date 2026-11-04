@@ -136,7 +136,7 @@ Material:
     - _GlossMapScale: 1
     - _Glossiness: 0.1
     - _GlossyReflections: 1
-    - _HalfToon: 0
+    - _HalfToon: 1
     - _Lumin: 0
     - _MaxLight: 1
     - _Metallic: 0
@@ -146,7 +146,7 @@ Material:
     - _Offset: 0
     - _Parallax: 0.02
     - _QueueOffset: 0
-    - _RampStrength: 0.65
+    - _RampStrength: 0
     - _ReceiveShadows: 1
     - _Segmented: 1
     - _ShnIntense: 0
@@ -155,8 +155,8 @@ Material:
     - _ShnSmooth: 0
     - _Smoothness: 0.1
     - _SmoothnessTextureChannel: 0
-    - _SpecIntensity: 0
-    - _SpecPower: 32
+    - _SpecIntensity: 0.14
+    - _SpecPower: 24
     - _SpecularHighlights: 0
     - _SrcBlend: 1
     - _SrcBlendAlpha: 1
@@ -172,7 +172,7 @@ Material:
     - _BloodColor: {r: 0.6666667, g: 0, b: 0, a: 1}
     - _Color: {r: 0.8962264, g: 0.8962264, b: 0.8962264, a: 0}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
-    - _ShadowTint: {r: 1, g: 1, b: 1, a: 1}
+    - _ShadowTint: {r: 0.3, g: 0.35, b: 0.44, a: 1}
     - _ShnColor: {r: 1, g: 1, b: 0, a: 1}
     - _SpecColor: {r: 0.2, g: 0.2, b: 0.2, a: 1}
   m_BuildTextureStacks: []

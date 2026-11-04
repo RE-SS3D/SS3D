@@ -14,6 +14,7 @@ Material:
   m_ValidKeywords: []
   m_InvalidKeywords:
   - _GLOSSYREFLECTIONS_OFF
+  - _HALFTOON_ON
   - _SEGMENTED_ON
   - _SPECULARHIGHLIGHTS_OFF
   m_LightmapFlags: 4
@@ -54,10 +55,6 @@ Material:
         m_Texture: {fileID: 2800000, guid: 133dea153b15ed1418cfbadaf99ba3e1, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
-    - _ToonRamp:
-        m_Texture: {fileID: 2800000, guid: a8f3c2e19b4d4a6f9c1e7d2053ab8f42, type: 3}
-        m_Scale: {x: 1, y: 1}
-        m_Offset: {x: 0, y: 0}
     - _MetallicGlossMap:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
@@ -74,12 +71,14 @@ Material:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
+    - _ToonRamp:
+        m_Texture: {fileID: 2800000, guid: a8f3c2e19b4d4a6f9c1e7d2053ab8f42, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
     - _AmbientCol: 1
     - _BumpScale: 1
-    - _SpecIntensity: 0.2
-    - _SpecPower: 32
     - _Clipped: 0
     - _ColBright: 0
     - _ColIntense: 1
@@ -102,11 +101,13 @@ Material:
     - _RampStrength: 0.35
     - _Segmented: 1
     - _Shininess: 0.7
-    - _ShnIntense: 0.35
+    - _ShnIntense: 0.08
     - _ShnOverlap: 0
     - _ShnRange: 0.15
     - _ShnSmooth: 1
     - _SmoothnessTextureChannel: 0
+    - _SpecIntensity: 0.12
+    - _SpecPower: 32
     - _SpecularHighlights: 0
     - _SrcBlend: 1
     - _Steps: 1
@@ -118,7 +119,7 @@ Material:
     - _Emission: {r: 0, g: 0, b: 0, a: 0}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _OtlColor: {r: 0, g: 0, b: 0, a: 1}
-    - _ShadowTint: {r: 0.5, g: 0.52, b: 0.6, a: 1}
+    - _ShadowTint: {r: 0.3, g: 0.35, b: 0.44, a: 1}
     - _ShnColor: {r: 1, g: 1, b: 1, a: 1}
     - _SpecColor: {r: 0.2, g: 0.2, b: 0.2, a: 1}
   m_BuildTextureStacks: []

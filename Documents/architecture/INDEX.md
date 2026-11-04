@@ -49,7 +49,7 @@ One row per gameplay domain that has, or should eventually have, a design doc. A
 | persistence-save | [persistence-save](../design/persistence-save.md) | [persistence plan](../plans/persistence_architecture_design_2fe61864.plan.md) — in-progress | [persistence](systems/persistence.md) — partial |
 | player-accounts | [player-accounts](../design/player-accounts.md) | none yet | none yet |
 | rd-material-economy | none yet | none yet | none yet |
-| rendering-lighting | [rendering-lighting](../design/rendering-lighting.md) | [srp-batcher-gpu-instancing](2026-07_srp-batcher-gpu-instancing.md) — shipped; [urp-lighting-look-polish](2026-07_urp-lighting-look-polish.md) — planned | [rendering](systems/rendering.md) — partial |
+| rendering-lighting | [rendering-lighting](../design/rendering-lighting.md) | [srp-batcher-gpu-instancing](2026-07_srp-batcher-gpu-instancing.md) — shipped; [urp-lighting-look-polish](2026-07_urp-lighting-look-polish.md) — in-progress | [rendering](systems/rendering.md) — partial |
 | round-config | [round-config](../design/round-config.md) | [lobby-uitk-redesign](../archive/architecture/2026-08_lobby-uitk-redesign.md) — shipped | [rounds-lobby](systems/rounds-lobby.md) — partial |
 | round-end | [round-end](../design/round-end.md) | [round-end-loop](2026-11_round-end-loop.md) — active (P1 loop and P2 squad shipped; Nuke Ops rules P3) | [rounds-lobby](systems/rounds-lobby.md) — partial |
 | sandbox-server | [sandbox-server](../design/sandbox-server.md) | [sandbox-server](2026-11_sandbox-server.md) — in-progress | [rounds-lobby](systems/rounds-lobby.md), [map-editor-creative-hooks](systems/map-editor-creative-hooks.md), [entities](systems/entities.md) — partial |
@@ -128,7 +128,7 @@ Only work that is in flight, planned, or kept as standing reference. Everything 
 | [2026-07_ui-shell-consolidation](2026-07_ui-shell-consolidation.md) | shipped (cited by code) |
 | [2026-07_unity-framedebug-ai-tooling](2026-07_unity-framedebug-ai-tooling.md) | shipped (reference) |
 | [2026-07_unity-perf-ai-tooling](2026-07_unity-perf-ai-tooling.md) | shipped (reference) |
-| [2026-07_urp-lighting-look-polish](2026-07_urp-lighting-look-polish.md) | planned |
+| [2026-07_urp-lighting-look-polish](2026-07_urp-lighting-look-polish.md) | in-progress |
 | [2026-10_game-versioning](2026-10_game-versioning.md) | shipped (reference) |
 | [2026-10_player-settings](2026-10_player-settings.md) | in-progress |
 | [2026-11_sandbox-server](2026-11_sandbox-server.md) | in-progress |

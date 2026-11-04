@@ -20,7 +20,10 @@ float3x3 ST_CotangentFrame(float3 normalWS, float3 positionWS, float2 uv)
     float3 tangentWS = dp2perp * duv1.x + dp1perp * duv2.x;
     float3 bitangentWS = dp2perp * duv1.y + dp1perp * duv2.y;
 
-    float invMax = rsqrt(max(dot(tangentWS, tangentWS), dot(bitangentWS, bitangentWS)));
+    // Palette meshes can give every vertex the same swatch UV. Their UV
+    // derivatives are zero: rsqrt(0) made 0 * infinity tangents and NaN normals.
+    // Keep a finite frame so a flat normal map retains the geometric normal.
+    float invMax = rsqrt(max(max(dot(tangentWS, tangentWS), dot(bitangentWS, bitangentWS)), 1e-8));
     return float3x3(tangentWS * invMax, bitangentWS * invMax, normalWS);
 }
 

@@ -32,12 +32,9 @@ void ST_BuildInputData(STSurfaceInput surface, float4 positionCS, out InputData 
 #endif
 }
 
-AmbientOcclusionFactor ST_GetDefaultAmbientOcclusion()
+AmbientOcclusionFactor ST_GetAmbientOcclusion(InputData inputData)
 {
-    AmbientOcclusionFactor aoFactor;
-    aoFactor.directAmbientOcclusion = half(1.0);
-    aoFactor.indirectAmbientOcclusion = half(1.0);
-    return aoFactor;
+    return GetScreenSpaceAmbientOcclusion(inputData.normalizedScreenSpaceUV);
 }
 
 float4 ST_EvaluateDirectLight(
@@ -63,7 +60,12 @@ float4 ST_EvaluateDirectLight(
     // cast shadows as a pastel tint of the lit color (still looks fully lit).
     float toon = ST_Toon(ndotl, 1.0, settings);
 
-    float4 litCol = swapLightColorBlend
+    // Half-toon is fixture-driven: radiance must multiply albedo. The legacy
+    // full-toon blend can replace lightColor with _Color at _AmbientCol = 1,
+    // silently discarding fixture intensity and emergency/departmental tint.
+    float4 litCol = (_HalfToon > 0.5)
+        ? float4(_Color.rgb * lightColor, _Color.a)
+        : swapLightColorBlend
         ? ST_ColorBlend(_Color, float4(lightColor, 1.0), _AmbientCol)
         : ST_ColorBlend(float4(lightColor, 1.0), _Color, _AmbientCol);
     float4 texCol = SAMPLE_TEXTURE2D(_MainTex, sampler_MainTex, surface.uv) * litCol * _ColIntense + _ColBright;
@@ -79,7 +81,7 @@ float4 ST_EvaluateDirectLight(
         float3 viewDir = normalize(surface.viewDirWS);
         float3 halfDir = normalize(lightDir + viewDir);
         float spec = pow(saturate(dot(normal, halfDir)), _SpecPower) * _SpecIntensity;
-        postCol.rgb += spec * lightColor * texCol.rgb;
+        postCol.rgb += spec * texCol.rgb;
     }
 
     return postCol * lightAttenuation;
@@ -91,15 +93,15 @@ void ST_AccumulateLight(
     Light light,
     bool swapLightColorBlend)
 {
-    half lightAttenuation = light.shadowAttenuation * light.distanceAttenuation;
+    float distanceAttenuation = light.distanceAttenuation;
+    // Limit distance hotspots before applying visibility. Compressing the
+    // product would brighten partial shadows near the light source.
+    distanceAttenuation = distanceAttenuation / (1.0 + 1.75 * distanceAttenuation);
+    float lightAttenuation = light.shadowAttenuation * distanceAttenuation;
     if (dot(light.color, 1.0) <= 0.0 || lightAttenuation <= 0.0)
     {
         return;
     }
-
-    // URP point distanceAttenuation blows up near the source (unlike PR #857's custom
-    // deferred falloff). Soften the near field so overhead fills don't plasticize heads.
-    lightAttenuation = lightAttenuation / (1.0h + 1.75h * lightAttenuation);
 
     float4 lit = ST_EvaluateDirectLight(
         surface,
@@ -155,7 +157,7 @@ float4 ST_EvaluateLighting(
     ST_BuildInputData(surface, positionCS, inputData);
 
     half4 shadowMask = CalculateShadowMask(inputData);
-    AmbientOcclusionFactor aoFactor = ST_GetDefaultAmbientOcclusion();
+    AmbientOcclusionFactor aoFactor = ST_GetAmbientOcclusion(inputData);
 
 #if defined(_MAIN_LIGHT_SHADOWS) || defined(_MAIN_LIGHT_SHADOWS_CASCADE) || defined(_MAIN_LIGHT_SHADOWS_SCREEN)
     Light mainLight = GetMainLight(inputData, shadowMask, aoFactor);

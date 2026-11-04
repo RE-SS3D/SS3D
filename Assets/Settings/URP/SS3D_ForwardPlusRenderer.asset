@@ -174,16 +174,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f62c9c65cf3354c93be831c8bc075510, type: 3}
   m_Name: ScreenSpaceAmbientOcclusion
   m_EditorClassIdentifier: Unity.RenderPipelines.Universal.Runtime::UnityEngine.Rendering.Universal.ScreenSpaceAmbientOcclusion
-  m_Active: 0
+  m_Active: 1
   m_Settings:
     AOMethod: 0
-    Downsample: 0
+    Downsample: 1
     AfterOpaque: 0
     Source: 1
     NormalSamples: 1
-    Intensity: 1.5
-    DirectLightingStrength: 0.65
-    Radius: 0.28
+    Intensity: 1
+    DirectLightingStrength: 0.8
+    Radius: 0.32
     Samples: 1
     BlurQuality: 0
     Falloff: 100

@@ -28,10 +28,10 @@ STToonSettings ST_GetToonSettings()
 
 float ST_ApplyHalfToonCurve(float ndotl)
 {
-    // Prefer Lambert for reference contrast; light wrap only as a small floor.
-    float lambert = saturate(ndotl);
-    float wrap = saturate(ndotl * 0.5 + 0.5);
-    float lit = lerp(lambert, wrap, 0.25);
+    // Broad, smooth lit band like the original half-toon response. Keep the
+    // unlit side in the authored shadow tint instead of wrapping light around
+    // every face, which flattens curved characters under overlapping fixtures.
+    float lit = smoothstep(0.0, 0.75, saturate(ndotl));
 
     if (_RampStrength > 0.001)
     {

@@ -103,18 +103,18 @@ Material:
     - _GlossMapScale: 0
     - _Glossiness: 0.119
     - _GlossyReflections: 0
-    - _HalfToon: 0
+    - _HalfToon: 1
     - _LightingEnabled: 1
     - _Lumin: 1
     - _MaxLight: 1
     - _Metallic: 0
-    - _MinLight: 0.499
+    - _MinLight: 0
     - _Mode: 0
     - _OcclusionStrength: 1
     - _Offset: 0.737
     - _Parallax: 0.02
     - _QueueOffset: 0
-    - _RampStrength: 0.65
+    - _RampStrength: 0
     - _ReceiveShadows: 1
     - _Segmented: 1
     - _ShnIntense: 0
@@ -141,7 +141,7 @@ Material:
     - _CameraFadeParams: {r: 0, g: Infinity, b: 0, a: 0}
     - _Color: {r: 0.5, g: 0.2834079, b: 0.19103774, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
-    - _ShadowTint: {r: 1, g: 1, b: 1, a: 1}
+    - _ShadowTint: {r: 0.32, g: 0.37, b: 0.48, a: 1}
     - _ShnColor: {r: 1, g: 1, b: 0, a: 1}
     - _SoftParticleFadeParams: {r: 0, g: 0, b: 0, a: 0}
     - _SpecColor: {r: 0.2, g: 0.2, b: 0.2, a: 1}

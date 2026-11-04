@@ -7,10 +7,10 @@ todos:
     status: completed
   - id: half-toon-shader
     content: "Phase 1b: URP half-toon — ramp texture, tinted shadow band, specular tuning in STCore.hlsl"
-    status: pending
+    status: completed
   - id: material-migration
     content: "Phase 1c: Migrate station floor/wall materials from URP Lit to half-toon shader"
-    status: pending
+    status: completed
   - id: gameplay-volume
     content: "Phase 1d: Create SS3D_GameplayVolumeProfile (MKII port) and wire to in-round camera"
     status: pending
@@ -127,6 +127,13 @@ Goal: In-round scenes look like SS3D again — soft half-toon, pastel grade, blo
 - Remove main-light shadow cascade special-casing from tuning focus; fixture spot/point lights are the primary shadow casters (no directional sun).
 
 ### 1b. Half-toon shader (URP forward rewrite)
+
+Half-toon radiance multiplication and distance-before-shadow limiting are implemented
+in `STLighting.hlsl`; preserve these when retuning the ramp/falloff. Palette UV derivative frames are guarded against zero length. Skin/hair/cut and
+eight floor materials use half-toon; opaque ST consumes URP direct-light SSAO
+for contact grounding (a deliberate revision of the earlier AO-off baseline). Fixture spots now
+cast soft shadows, with weaker fills and a restrained gameplay grade; overall visual
+acceptance remains pending; see the [polish effort](../architecture/2026-07_urp-lighting-look-polish.md).
 
 Port the *visual intent* of upstream `DeferredShadingHalfToon.shader` (commit `5f7e737a`) into the existing Simple Toon URP stack under [Assets/Content/Resources/Simple Toon/Shaders/](Assets/Content/Resources/Simple%20Toon/Shaders/):
 
