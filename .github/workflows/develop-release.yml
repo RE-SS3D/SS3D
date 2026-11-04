@@ -2,14 +2,12 @@
 # Default dispatch: Windows client → versioned GitHub release vX.Y.Z (bump worked out by
 # Tools/versioning/next_version.py — see Documents/architecture/2026-10_game-versioning.md).
 # Linux, EditMode, and smoke are opt-in. tag_suffix gives an unversioned develop-<suffix> test cut.
-# Nightly (05:17 UTC): Windows + Linux client + Linux dedicated server → floating develop-nightly.
+# Nightly (05:17 UTC): Windows + Linux client + Linux dedicated server → floating develop-nightly,
+# started by an external workflow_dispatch (GitHub's `schedule` trigger was delayed/dropped).
 # Runs on TomNAS (dispatch runner=github for GitHub-hosted). Not triggered on every develop merge.
 # See Documents/architecture/2026-07_ci-develop-release-pipeline.md.
 name: Develop Release
 on:
-  schedule:
-    # After smoke (04:00 UTC); avoid the busy top of the hour, when GitHub may drop schedules.
-    - cron: "17 5 * * *"
   workflow_dispatch:
     inputs:
       build_linux:
@@ -80,11 +78,11 @@ jobs:
           fetch-depth: 0
           filter: blob:none
           lfs: false
-      - name: Resolve schedule vs dispatch flags
+      - name: Resolve dispatch flags
         id: flags
         run: |
           set -euo pipefail
-          if [ "${{ github.event_name == 'schedule' || inputs.tag_suffix == 'nightly' }}" = "true" ]; then
+          if [ "${{ inputs.tag_suffix == 'nightly' }}" = "true" ]; then
             echo "build_linux=true" >> "$GITHUB_OUTPUT"
             echo "skip_release=false" >> "$GITHUB_OUTPUT"
             echo "run_editmode=false" >> "$GITHUB_OUTPUT"

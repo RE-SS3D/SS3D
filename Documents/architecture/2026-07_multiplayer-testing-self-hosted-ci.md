@@ -85,8 +85,8 @@ the user systemd unit dies when all `cu6e` sessions end.
   queue until it returns.
 - [`.github/workflows/develop-release.yml`](../../.github/workflows/develop-release.yml):
   same TomNAS default in `prepare`; Linux via **one** `BuildBothForCi` step; shares
-  smoke’s `/home/cu6e/.cache/ss3d/Library` stash on self-hosted; nightly `cron: "0 5 * * *"`
-  (Windows + Linux client/server → floating `develop-nightly`). Manual dispatch stays
+  smoke’s `/home/cu6e/.cache/ss3d/Library` stash on self-hosted; nightly `workflow_dispatch`
+  at 05:17 UTC (Windows + Linux client/server → floating `develop-nightly`). Manual dispatch stays
   Windows-default with opt-in Linux.
 - Build methods for isolated server/client still exist for local/menu use; smoke / release
   Linux CI must not split them across two Editor sessions.

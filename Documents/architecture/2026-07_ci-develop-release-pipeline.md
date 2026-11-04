@@ -13,7 +13,7 @@ client/server (Linux is forced on, since both client updaters follow stable rele
 `tag_suffix` test cuts stay Windows-only prereleases unless `build_linux` is set. EditMode and
 multiplayer smoke are **opt-in** — day-to-day cuts should not pay for
 gates/`StandaloneLinux64` that `editmodetestrunner.yml` / `multiplayer-smoke-test.yml`
-already cover separately. A **nightly schedule** (05:17 UTC) always builds Windows + Linux
+already cover separately. A **nightly dispatch** (05:17 UTC) always builds Windows + Linux
 client + Linux dedicated server and publishes a floating `develop-nightly` prerelease.
 Not triggered on every develop merge (license cost + release spam at high PR volume).
 
@@ -21,19 +21,22 @@ Not triggered on every develop merge (license cost + release spam at high PR vol
 
 ### Workflow: `.github/workflows/develop-release.yml`
 
-**Triggers:** `workflow_dispatch` + nightly `cron: "17 5 * * *"` (after smoke at 04:00 so
-TomNAS `Library` is warm). `concurrency: develop-release` / `cancel-in-progress: false`.
+**Triggers:** `workflow_dispatch` only. The nightly is started by an external dispatcher at
+05:17 UTC via `workflow_dispatch` (after smoke at 04:00 so TomNAS `Library` is warm).
+`concurrency: develop-release` / `cancel-in-progress: false`.
 
-**Nightly (schedule or manual `tag_suffix=nightly`):** forces `build_linux=true`, `skip_release=false`, EditMode/smoke off,
+**Nightly (automated or manual `tag_suffix=nightly`):** forces `build_linux=true`, `skip_release=false`, EditMode/smoke off,
 `tag_suffix=nightly` → tag `develop-nightly` (overwritten each night). The tag is explicitly
 moved to the built commit before publication; a missing tag/release is recreated.
 
-The schedule runs away from the busy top of the hour to reduce delayed/dropped GitHub triggers.
-A cron edit on the default branch refreshes the scheduled actor registration. To recover a missing
-nightly immediately, run `gh workflow run develop-release.yml --ref develop -f tag_suffix=nightly`.
-This uses the same full-platform flags and nightly title as a scheduled run. It remains a
+GitHub's `schedule` trigger is deliberately not used: it was delayed by hours and sometimes
+dropped entirely. The external dispatcher runs at 05:17 UTC and is idempotent — it skips if a
+nightly already exists for the day — so a missed slot is caught up when the dispatcher is next
+available. To recover a missing nightly immediately, run
+`gh workflow run develop-release.yml --ref develop -f tag_suffix=nightly`.
+This uses the same full-platform flags and nightly title as an automated run. It remains a
 prerelease and is excluded from stable client updates. Check the run and all three release assets
-afterward; a manual recovery confirms publication, not future delivery of GitHub schedule events.
+afterward.
 
 **Inputs (manual; defaults favour a fast Windows cut):**
 
@@ -198,7 +201,7 @@ a manual release check.
 
 ## Out of scope
 
-- Auto-trigger on every `develop` push (nightly schedule only).
+- Auto-trigger on every `develop` push (nightly dispatch only).
 - Windows dedicated-server build / Windows smoke harness.
 - Wiring `known_unity_noise` into the harness fail gate.
 
