@@ -130,6 +130,7 @@ namespace EditorTests
             settings.Display.AntiAliasing = PlayerAntiAliasing.Taa;
             settings.Display.UiScale = 1.25f;
             settings.Display.ShowFps = true;
+            settings.Display.ShowLogIndicator = true;
             new PlayerSettingsStore(SettingsPath).Save(settings);
 
             PlayerDisplaySettings loaded = new PlayerSettingsStore(SettingsPath).Load().Display;
@@ -143,6 +144,7 @@ namespace EditorTests
             Assert.That(loaded.AntiAliasing, Is.EqualTo(PlayerAntiAliasing.Taa));
             Assert.That(loaded.UiScale, Is.EqualTo(1.25f));
             Assert.That(loaded.ShowFps, Is.True);
+            Assert.That(loaded.ShowLogIndicator, Is.True);
         }
 
         [Test]
@@ -160,6 +162,7 @@ namespace EditorTests
             Assert.That(display.AntiAliasing, Is.EqualTo(PlayerAntiAliasing.Smaa));
             Assert.That(display.UiScale, Is.EqualTo(1f));
             Assert.That(display.ShowFps, Is.False);
+            Assert.That(display.ShowLogIndicator, Is.False);
         }
 
         [Test]

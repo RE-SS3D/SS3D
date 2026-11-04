@@ -115,6 +115,7 @@ namespace SS3D.UI.Lobby
         public event Action<PlayerAntiAliasing> AntiAliasingChanged;
         public event Action<float> UiScaleChanged;
         public event Action<bool> ShowFpsChanged;
+        public event Action<bool> ShowLogIndicatorChanged;
         public event Action DisplayResetRequested;
         public event Action DisplayChangeKept;
         public event Action DisplayChangeReverted;
@@ -337,6 +338,7 @@ namespace SS3D.UI.Lobby
             AntiAliasingChanged = null;
             UiScaleChanged = null;
             ShowFpsChanged = null;
+            ShowLogIndicatorChanged = null;
             DisplayResetRequested = null;
             DisplayChangeKept = null;
             DisplayChangeReverted = null;
@@ -1676,6 +1678,8 @@ namespace SS3D.UI.Lobby
                 tooltip: plan.AntiAliasingLocked ? "STP upscaling requires TAA." : null));
             form.Add(UiScaleSlider());
             form.Add(SettingsToggle("showFps", "Show FPS", _display.ShowFps, value => ShowFpsChanged?.Invoke(value)));
+            form.Add(SettingsToggle("showLogIndicator", "Show Log Indicator", _display.ShowLogIndicator,
+                value => ShowLogIndicatorChanged?.Invoke(value)));
             form.Add(DisplayResetButton());
         }
 

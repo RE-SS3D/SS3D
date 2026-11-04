@@ -4,7 +4,9 @@
     "references": [
         "Coimbra",
         "Coimbra.Services.Events",
+        "Coimbra.Services.PlayerLoopEvents",
         "FishNet.Runtime",
+        "IngameDebugConsole.Runtime",
         "SS3D.Core",
         "SS3D.Interactions",
         "SS3D.Permissions",

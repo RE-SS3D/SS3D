@@ -124,6 +124,8 @@ namespace SS3D.Systems.Settings
         public float UiScale = 1f;
         /// <summary>Small frame-rate readout in the screen corner; off by default.</summary>
         public bool ShowFps;
+        /// <summary>The console's info/warning/error counter on the screen edge, for players without a debugger; off by default.</summary>
+        public bool ShowLogIndicator;
 
         public static float SnapUiScale(float value)
         {

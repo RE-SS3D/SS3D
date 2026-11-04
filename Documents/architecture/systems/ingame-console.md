@@ -11,6 +11,8 @@ Dev/admin in-game console commands routed through `CommandsController`. Commands
 
 **Condemned UI:** console panel uGUI — do not extend; move to UITK debug layer when UiShell lands ([agent-first composition](../2026-07_agent-first-composition.md)). Command dispatch is **not** condemned.
 
+**Log viewer:** the third-party `IngameDebugConsole` prefab in `Boot.unity` is separate from this command console. It shows Unity logs and toggles on `` ` ``; its corner counter is off unless Settings > Display > Show Log Indicator is on ([player settings](../2026-10_player-settings.md)). `IngameDebugConsole.Runtime` references `SS3D.Systems`, so code that touches `DebugLogManager` must live in a UI assembly, not Systems.
+
 ## Start here
 
 - `Assets/Scripts/SS3D/Systems/IngameConsoleSystem/CommandsController.cs` — command dispatch (offline, server, client)

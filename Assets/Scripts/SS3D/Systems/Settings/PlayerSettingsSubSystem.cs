@@ -184,6 +184,14 @@ namespace SS3D.Systems.Settings
             Changed?.Invoke();
         }
 
+        /// <summary>Display-only overlay toggle; LogIndicatorView applies it to the console.</summary>
+        public void SetShowLogIndicator(bool on)
+        {
+            Settings.Display.ShowLogIndicator = on;
+            ScheduleSave();
+            Changed?.Invoke();
+        }
+
         /// <summary>Called on slider release, not per drag step (Decision 8).</summary>
         public void SetUiScale(float scale)
         {

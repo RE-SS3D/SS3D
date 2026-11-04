@@ -698,9 +698,9 @@ MonoBehaviour:
   enableHorizontalResizing: 0
   resizeFromRight: 1
   minimumWidth: 240
-  enablePopup: 1
+  enablePopup: 0
   startInPopupMode: 1
-  startMinimized: 0
+  startMinimized: 1
   toggleWithKey: 1
   toggleKey: 96
   enableSearchbar: 1

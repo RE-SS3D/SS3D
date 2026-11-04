@@ -219,6 +219,7 @@ namespace SS3D.UI.Lobby
             _shellView.AntiAliasingChanged += settings.SetAntiAliasing;
             _shellView.UiScaleChanged += settings.SetUiScale;
             _shellView.ShowFpsChanged += settings.SetShowFps;
+            _shellView.ShowLogIndicatorChanged += settings.SetShowLogIndicator;
             _shellView.DisplayResetRequested += settings.ResetDisplay;
             _shellView.DisplayChangeKept += settings.ConfirmDisplayChange;
             _shellView.DisplayChangeReverted += settings.RevertDisplayChange;
