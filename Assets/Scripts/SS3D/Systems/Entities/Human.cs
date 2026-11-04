@@ -107,13 +107,8 @@ namespace SS3D.Systems.Entities
 			Entity originEntity = player.GetComponent<Entity>();
 			Entity ghostEntity = ghost.GetComponent<Entity>();
 
-            // Presentation must be Dead before mind-swap / component dispose.
-            // Ragdoll owns replicated BodyPresentationState; observers apply via SyncVar + OnStartNetwork.
-            if (TryGetComponent(out Ragdoll ragdoll))
-            {
-                ragdoll.ServerDeathRagdoll();
-            }
-
+            // Presentation is already Dead — Kill() applies it before mind-swap / component
+            // dispose. Ragdoll owns replicated BodyPresentationState.
             MindSubSystem mindSystem = SubSystems.Get<MindSubSystem>();
             mindSystem.SwapMinds(originEntity, ghostEntity);
 
@@ -161,6 +156,20 @@ namespace SS3D.Systems.Entities
             }
 
             _killStarted = true;
+
+            // Death presentation must not depend on the ghost hand-off. Mindless bodies (combat
+            // dummies) are never in EntitySubSystem's spawned-player list, so TryTransferEntity
+            // fails for them and the corpse would otherwise stay standing with kinematic bones.
+            if (TryGetComponent(out Ragdoll ragdoll))
+            {
+                ragdoll.ServerDeathRagdoll();
+            }
+
+            if (Mind == null || Mind == Mind.Empty)
+            {
+                // No player to transfer into a ghost — the body stays behind as a corpse.
+                return;
+            }
 
             _spawnedGhost = Instantiate(Ghost);
 			EntitySubSystem entitySystem = SubSystems.Get<EntitySubSystem>();

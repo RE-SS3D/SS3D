@@ -487,6 +487,14 @@ namespace SS3D.Systems.Entities.Humanoid
                 return IsServer;
             }
 
+            // Mindless bodies (combat dummies) have no owning client to simulate a living
+            // knockdown; without a server fallback the bones stay kinematic and the body
+            // freezes in its last animated pose. Observers must still stay kinematic.
+            if (!Owner.IsValid)
+            {
+                return IsServer;
+            }
+
             return IsOwner;
         }
 
