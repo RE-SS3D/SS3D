@@ -5,8 +5,8 @@ namespace SS3D.Systems.StructuralDamage
     public interface IStructuralDamageService
     {
         /// <summary>
-        /// Server-authoritative structural damage. Returns false if the tile has no structural turf.
-        /// Destroyed clears the Turf occupant via construction.
+        /// Server-authoritative structural damage. Returns false if the tile has no supported structure or steel table.
+        /// Destroyed clears the target from its own layer via construction.
         /// </summary>
         bool TryApplyStructuralDamage(TileCoord coord, float force, StructuralDamageSource source);
 

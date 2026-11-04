@@ -18,6 +18,28 @@ namespace SS3D.Systems.Examine
             if (stage == StructuralIntegrityStage.Intact || stage == StructuralIntegrityStage.Destroyed)
                 return;
 
+            if (SS3D.Systems.StructuralDamage.StructuralIntegrityRules.IsGlassTable(placed.tileObjectSO))
+            {
+                bool fractured = stage == StructuralIntegrityStage.Cracked;
+                sections.Add(new ExamineSection(LocalizedTextService.GetFormattedString(
+                    ExamineCanonicalKeyGenerator.ExamineTableName,
+                    fractured ? ExamineStructuralIntegrityKeys.FracturedGlass : ExamineStructuralIntegrityKeys.ChippedGlass,
+                    null,
+                    fractured ? ExamineStructuralIntegrityKeys.FracturedGlassFallback : ExamineStructuralIntegrityKeys.ChippedGlassFallback)));
+                return;
+            }
+
+            if (SS3D.Systems.StructuralDamage.StructuralIntegrityRules.IsWoodTable(placed.tileObjectSO))
+            {
+                bool split = stage == StructuralIntegrityStage.Cracked;
+                sections.Add(new ExamineSection(LocalizedTextService.GetFormattedString(
+                    ExamineCanonicalKeyGenerator.ExamineTableName,
+                    split ? ExamineStructuralIntegrityKeys.SplitWood : ExamineStructuralIntegrityKeys.GougedWood,
+                    null,
+                    split ? ExamineStructuralIntegrityKeys.SplitWoodFallback : ExamineStructuralIntegrityKeys.GougedWoodFallback)));
+                return;
+            }
+
             if (stage == StructuralIntegrityStage.Damaged)
             {
                 sections.Add(new ExamineSection(LocalizedTextService.GetFormattedString(
@@ -30,11 +52,14 @@ namespace SS3D.Systems.Examine
 
             if (stage == StructuralIntegrityStage.Cracked)
             {
+                bool metalObject = placed.GenericType == TileObjectGenericType.Door
+                    || SS3D.Systems.StructuralDamage.StructuralIntegrityRules.IsSteelTable(placed.tileObjectSO)
+                    || SS3D.Systems.StructuralDamage.StructuralIntegrityRules.IsMetalFurniture(placed.tileObjectSO);
                 sections.Add(new ExamineSection(LocalizedTextService.GetFormattedString(
                     ExamineCanonicalKeyGenerator.ExamineTableName,
-                    ExamineStructuralIntegrityKeys.Cracked,
+                    metalObject ? ExamineStructuralIntegrityKeys.TornMetal : ExamineStructuralIntegrityKeys.Cracked,
                     null,
-                    ExamineStructuralIntegrityKeys.CrackedFallback)));
+                    metalObject ? ExamineStructuralIntegrityKeys.TornMetalFallback : ExamineStructuralIntegrityKeys.CrackedFallback)));
             }
         }
     }

@@ -548,7 +548,10 @@ namespace SS3D.Systems.Tile
 
         private void NotifyIntegrityPresentation(StructuralIntegrityStage stage)
         {
-            if (TryGetComponent(out StructuralIntegrityPresenter presenter))
+            if (!TryGetComponent(out StructuralIntegrityPresenter presenter)
+                && SteelWallDamageVfx.SupportsOverlay(this))
+                presenter = gameObject.AddComponent<StructuralIntegrityPresenter>();
+            if (presenter != null)
                 presenter.Apply(stage);
         }
 

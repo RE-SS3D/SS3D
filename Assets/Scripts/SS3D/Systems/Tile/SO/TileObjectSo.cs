@@ -27,7 +27,10 @@ namespace SS3D.Systems.Tile
         [Tooltip("Extra height applied when the object is placed on the tile grid. Used for inset floor furniture such as vents.")]
         public float placementYOffset;
 
-        [Tooltip("Max structural HP for walls/doors/windows. 0 = use StructuralIntegrityRules defaults.")]
+        [Tooltip("Opt this FurnitureBase object into metal casing damage. Tables use their material automatically.")]
+        public bool structuralDamageEnabled;
+
+        [Tooltip("Max structural HP. 0 = use StructuralIntegrityRules defaults.")]
         public float structuralMaxIntegrity;
 
         /// <summary>

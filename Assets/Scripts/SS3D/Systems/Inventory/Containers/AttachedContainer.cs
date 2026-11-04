@@ -616,11 +616,11 @@ namespace SS3D.Systems.Inventory.Containers
 		/// Correctly remove a storeItem in the container at the given index. All removing should use this method, never do it directly.
 		/// </summary>
 		/// <param name="index">the index in the list at which the storedItem should be removed.</param>
-		private bool RemoveStoredItem(int index)
+		private bool RemoveStoredItem(int index, bool ignoreConditions = false)
 		{
             StoredItem storedItem = _storedItems[index];
 
-            if(!CanRemoveItem(storedItem.Item)) return false;
+            if (!ignoreConditions && !CanRemoveItem(storedItem.Item)) return false;
 
             storedItem.Item.SetContainer(null);
             lock (_modificationLock)
@@ -697,6 +697,15 @@ namespace SS3D.Systems.Inventory.Containers
                 RemoveStoredItem(i);
             }
 		}
+
+        /// <summary>Release contents before their owner is destroyed, bypassing access/removal locks.</summary>
+        [Server]
+        public void ReleaseForDestruction()
+        {
+            InvokeContainerDisabled();
+            for (int i = _storedItems.Count - 1; i >= 0; i--)
+                RemoveStoredItem(i, ignoreConditions: true);
+        }
 
 		/// <summary>
 		/// Destroys all items in this container

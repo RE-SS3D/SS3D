@@ -53,6 +53,8 @@ namespace SS3D.Systems.Tile.Connections
                 return;
 
             _filter.sharedMesh = info.Mesh;
+            if (TryGetComponent(out SS3D.Systems.StructuralDamage.StructuralIntegrityPresenter integrity))
+                integrity.RefreshWallOverlayMesh();
 
             Quaternion localRotation = transform.localRotation;
             Vector3 eulerRotation = localRotation.eulerAngles;

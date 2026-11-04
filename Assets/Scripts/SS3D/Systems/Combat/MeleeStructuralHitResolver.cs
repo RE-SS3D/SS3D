@@ -38,7 +38,14 @@ namespace SS3D.Systems.Combat
         /// <param name="range">Hand interaction range; applied from entity torso, not the hand bone.</param>
         public static bool TryResolve(Ray aimRay, Vector3 attackerPosition, RangeLimit range, out TileCoord coord)
         {
+            return TryResolve(aimRay, attackerPosition, range, out coord, out _);
+        }
+
+        public static bool TryResolve(Ray aimRay, Vector3 attackerPosition, RangeLimit range,
+            out TileCoord coord, out RaycastHit? contact)
+        {
             coord = default;
+            contact = null;
 
             if (!SubSystems.TryGet(out TileSubSystem tiles) || tiles.CurrentMap == null || tiles.QueryService == null)
             {
@@ -47,7 +54,7 @@ namespace SS3D.Systems.Combat
 
             Vector3 reachOrigin = attackerPosition + Vector3.up * ReachHeight;
 
-            if (TryResolveFromRaycast(aimRay, reachOrigin, range, tiles, out coord))
+            if (TryResolveFromRaycast(aimRay, reachOrigin, range, tiles, out coord, out contact))
             {
                 return true;
             }
@@ -88,9 +95,11 @@ namespace SS3D.Systems.Combat
             Vector3 reachOrigin,
             RangeLimit range,
             TileSubSystem tiles,
-            out TileCoord coord)
+            out TileCoord coord,
+            out RaycastHit? contact)
         {
             coord = default;
+            contact = null;
             int mask = ~LayerMask.GetMask(ExcludeLayerNames);
             RaycastHit[] hits = Physics.RaycastAll(aimRay, MaxAimRayDistance, mask, QueryTriggerInteraction.Ignore);
             if (hits.Length == 0)
@@ -116,6 +125,7 @@ namespace SS3D.Systems.Combat
                 }
 
                 coord = new TileCoord(tiles.CurrentMap.MapId, placed.WorldOrigin.x, placed.WorldOrigin.y);
+                contact = hit;
                 return true;
             }
 

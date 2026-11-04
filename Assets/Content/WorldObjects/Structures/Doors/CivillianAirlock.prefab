@@ -244,7 +244,6 @@ GameObject:
   - component: {fileID: 3215555771586221794}
   - component: {fileID: -8803244943247255707}
   - component: {fileID: -8029564040529664094}
-  - component: {fileID: 8526683676968070642}
   - component: {fileID: -4896503862241441811}
   - component: {fileID: -8800000000000000011}
   - component: {fileID: -8800000000000000012}
@@ -252,6 +251,8 @@ GameObject:
   - component: {fileID: 8811223344556677883}
   - component: {fileID: 8811223344556677884}
   - component: {fileID: 9125902878919742755}
+  - component: {fileID: 6710655088112593106}
+  - component: {fileID: 7796572788324649066}
   m_Layer: 0
   m_Name: CivillianAirlock
   m_TagString: Untagged
@@ -430,19 +431,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e00534faac6488c47893490f2bf4c5a2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &8526683676968070642
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7133738675197207439}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 38640bf88ae0c29409092a258bd36878, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  key: {fileID: 11400000, guid: 00e14286268ec42489b0ef82a97a859f, type: 2}
 --- !u!114 &-4896503862241441811
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -568,6 +556,33 @@ MonoBehaviour:
   _syncMapId: 0
   _syncIntegrityRemaining: -1
   _syncIntegrityStage: 0
+--- !u!114 &6710655088112593106
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7133738675197207439}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8497fbc0a2e5407588e8b4f873285d28, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: SS3D.Systems::SS3D.Systems.StructuralDamage.StructuralIntegrityPresenter
+  _crackedHiss: {fileID: 0}
+  _hissVolume: 0.35
+--- !u!114 &7796572788324649066
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7133738675197207439}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 23a78eb0cc1c4b01ad68f5123895213c, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: SS3D.Systems::SS3D.Systems.Examine.StructuralIntegrityExaminable
+  key: {fileID: 11400000, guid: 00e14286268ec42489b0ef82a97a859f, type: 2}
 --- !u!1001 &2157331936072973061
 PrefabInstance:
   m_ObjectHideFlags: 0

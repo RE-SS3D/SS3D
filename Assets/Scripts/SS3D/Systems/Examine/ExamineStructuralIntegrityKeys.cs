@@ -6,6 +6,19 @@ namespace SS3D.Systems.Examine
     public static class ExamineStructuralIntegrityKeys
     {
         public const string Damaged = "examine.structural.damaged";
+        public const string ChippedGlass = "examine.structural.chipped_glass";
+        public const string ChippedGlassFallback = "The glass is chipped, with a small star of cracks.";
+        public const string FracturedGlass = "examine.structural.fractured_glass";
+        public const string FracturedGlassFallback = "Branching fractures spread across the glass.";
+
+        public const string GougedWood = "examine.structural.gouged_wood";
+        public const string GougedWoodFallback = "The wood is gouged and chipped.";
+        public const string SplitWood = "examine.structural.split_wood";
+        public const string SplitWoodFallback = "Deep splits run along the wood grain, exposing splintered fibres.";
+
+        public const string TornMetal = "examine.structural.torn_metal";
+        public const string TornMetalFallback = "The metal is deeply dented and torn.";
+
         public const string Cracked = "examine.structural.cracked";
 
         public const string DamagedFallback = "It looks dented and scorched.";

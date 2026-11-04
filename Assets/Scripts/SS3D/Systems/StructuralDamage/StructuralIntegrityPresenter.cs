@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using SS3D.Systems.Tile;
 using SS3D.Systems.Audio;
 using UnityEngine;
@@ -5,7 +6,7 @@ using UnityEngine;
 namespace SS3D.Systems.StructuralDamage
 {
     /// <summary>
-    /// Client-visible structural stage feedback: MaterialPropertyBlock tint + optional Cracked hiss.
+    /// Client-visible structural stage feedback: Steel wall overlays, fallback tint, and optional Cracked hiss.
     /// Driven by <see cref="PlacedTileObject"/> integrity SyncVar / local writes — no HUD.
     /// </summary>
     [DisallowMultipleComponent]
@@ -28,6 +29,7 @@ namespace SS3D.Systems.StructuralDamage
         private Renderer[] _renderers;
         private MaterialPropertyBlock _block;
         private AudioSource _hissSource;
+        private List<(MeshRenderer Surface, MeshRenderer Overlay)> _wallOverlays;
         private StructuralIntegrityStage _applied = StructuralIntegrityStage.Intact;
 
         private void Awake()
@@ -41,7 +43,7 @@ namespace SS3D.Systems.StructuralDamage
             StopHiss();
         }
 
-        /// <summary>Provisional stage → multiply tint (tests + presenter).</summary>
+        /// <summary>Fallback tint for structural surfaces without a steel wall overlay.</summary>
         public static Color ResolveTint(StructuralIntegrityStage stage)
         {
             return stage switch
@@ -62,6 +64,13 @@ namespace SS3D.Systems.StructuralDamage
                 CacheRenderers();
 
             _applied = stage;
+
+            if (TryGetComponent(out PlacedTileObject wall) && SteelWallDamageVfx.SupportsOverlay(wall))
+            {
+                ApplyWallOverlays(stage);
+                UpdateHiss(stage);
+                return;
+            }
 
             // Intact: clear MPB so undamaged walls stay SRP Batcher / GPU Instancing friendly.
             if (stage == StructuralIntegrityStage.Intact)
@@ -92,7 +101,72 @@ namespace SS3D.Systems.StructuralDamage
                 renderer.SetPropertyBlock(_block);
             }
 
-            if (stage == StructuralIntegrityStage.Cracked)
+            UpdateHiss(stage);
+        }
+
+        private void ApplyWallOverlays(StructuralIntegrityStage stage)
+        {
+            bool marked = stage is StructuralIntegrityStage.Damaged or StructuralIntegrityStage.Cracked;
+            if (marked && _wallOverlays == null)
+            {
+                _wallOverlays = new();
+                foreach (Renderer renderer in _renderers)
+                {
+                    if (renderer is MeshRenderer surface
+                        && TryGetComponent(out PlacedTileObject placed)
+                        && SteelWallDamageVfx.IsDamageSurface(surface, placed)
+                        && SteelWallDamageVfx.CreateOverlay(surface) is { } overlay)
+                        _wallOverlays.Add((surface, overlay));
+                }
+            }
+
+            if (_wallOverlays == null)
+                return;
+
+            foreach (var (_, overlay) in _wallOverlays)
+                overlay.gameObject.SetActive(marked);
+
+            RefreshWallOverlayMesh();
+        }
+
+        internal void RefreshWallOverlayMesh()
+        {
+            if (_wallOverlays == null || _applied is not (StructuralIntegrityStage.Damaged or StructuralIntegrityStage.Cracked))
+                return;
+
+            foreach (var (surface, overlay) in _wallOverlays)
+            {
+                if (surface.TryGetComponent(out MeshFilter filter) && filter.sharedMesh != null)
+                {
+                    SteelWallDamageVfx.SetStage(overlay, filter.sharedMesh, _applied == StructuralIntegrityStage.Cracked);
+                    if (TryGetComponent(out PlacedTileObject placed))
+                        SteelWallDamageVfx.ConfigureSurface(overlay, filter.sharedMesh, placed);
+                }
+            }
+
+            SyncWallOverlayVisibility();
+        }
+
+        private void LateUpdate()
+        {
+            if (_applied is StructuralIntegrityStage.Damaged or StructuralIntegrityStage.Cracked)
+                SyncWallOverlayVisibility();
+        }
+
+        private void SyncWallOverlayVisibility()
+        {
+            if (_wallOverlays == null)
+                return;
+
+            // Construction variants and host AOI can toggle the source renderer independently.
+            foreach (var (surface, overlay) in _wallOverlays)
+                overlay.forceRenderingOff = !surface.enabled || surface.forceRenderingOff;
+        }
+
+        private void UpdateHiss(StructuralIntegrityStage stage)
+        {
+            if (stage == StructuralIntegrityStage.Cracked
+                && TryGetComponent(out PlacedTileObject placed) && placed.GenericType == TileObjectGenericType.Wall)
                 EnsureHissPlaying();
             else
                 StopHiss();

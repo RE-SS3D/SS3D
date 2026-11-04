@@ -1289,7 +1289,8 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 257391100000000020
-    m_Localized: He is missing his {0} and seems to be hurt and bleeding from the {1}.
+    m_Localized: He is missing his {0} and seems to be hurt and bleeding from the
+      {1}.
     m_Metadata:
       m_Items: []
   - m_Id: 257391100000000021
@@ -1362,6 +1363,26 @@ MonoBehaviour:
       m_Items: []
   - m_Id: 257391100000000038
     m_Localized: I can't move my {0}.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 295629502976073728
+    m_Localized: The metal is deeply dented and torn.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 295631575918551040
+    m_Localized: The wood is gouged and chipped.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 295631575939522560
+    m_Localized: Deep splits run along the wood grain, exposing splintered fibres.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 295634111387901952
+    m_Localized: The glass is chipped, with a small star of cracks.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 295634111404679168
+    m_Localized: Branching fractures spread across the glass.
     m_Metadata:
       m_Items: []
   references:

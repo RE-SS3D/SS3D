@@ -18,7 +18,7 @@ namespace SS3D.Systems.StructuralDamage.Editor
 
             EditorUtility.DisplayDialog(
                 "Structural Damage Recipes",
-                $"Blast VFX assets ensured.\nWall integrity presentation: updated {integrity} prefab(s).",
+                $"Blast VFX assets ensured.\nStructural integrity presentation: updated {integrity} prefab(s).",
                 "OK");
         }
 

@@ -1,7 +1,7 @@
 > Code paths: Assets/Scripts/SS3D/Systems/Inventory/, Assets/Scripts/SS3D/UI/MainHud/, Assets/Scripts/SS3D/UI/StoragePanel/, Assets/Scripts/SS3D/Systems/Stamina/
 > Entry points: ItemSubSystem, MainHudSubSystem, StoragePanelHost, StaminaController
 > Status: partial
-> Verified: fe1eb0389 — 2026-11-02 (ghost HUD visibility and hand-hotkey cleanup)
+> Verified: 45e9647dc — 2026-11-04
 
 # Inventory
 
@@ -54,6 +54,8 @@ Items, containers, hands, identification cards (`IDCard`, `PDA`), on-demand stor
 - `Assets/Scripts/SS3D/UI/MainHud/Commands/AlertStackCommand.cs` — `alertstack` console command (MainHud asm)
 
 ## Extension points
+
+- Structural destruction calls `AttachedContainer.ReleaseForDestruction()` before clearing supported furniture: close viewers and release items despite removal locks. Do not apply it recursively to containers owned by stored items.
 
 - **New container-opening entry point:** `ContainerViewer.ShowContainerUI(container)` only — do not invent a second open path.
 - **Open another character's paperdoll:** `SearchInteraction` via `HandSearchExtension` on hand prefabs (Discover/`CmdRunInteraction`); Shift+Click is a shortcut in `InteractionController`. UI opens client-side through `ExamineSubSystem.RequestCharacterWindow`.

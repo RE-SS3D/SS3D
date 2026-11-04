@@ -275,7 +275,8 @@ namespace SS3D.Systems.Combat
                 float force = weapon.Profile.ResolveStructuralForce();
                 if (force > 0f
                     && SubSystems.TryGet(out StructuralDamageSubSystem structural)
-                    && structural.TryApplyStructuralDamage(structuralCoord, force, StructuralDamageSource.Ranged))
+                    && structural.TryApplyStructuralDamage(structuralCoord, force, StructuralDamageSource.Ranged,
+                        impactPoint, impactNormal))
                 {
                     landed = true;
                 }

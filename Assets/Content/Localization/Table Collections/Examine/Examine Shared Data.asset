@@ -1351,6 +1351,26 @@ MonoBehaviour:
     m_Key: examine.health.feel.limb_useless
     m_Metadata:
       m_Items: []
+  - m_Id: 295629502976073728
+    m_Key: examine.structural.torn_metal
+    m_Metadata:
+      m_Items: []
+  - m_Id: 295631575918551040
+    m_Key: examine.structural.gouged_wood
+    m_Metadata:
+      m_Items: []
+  - m_Id: 295631575939522560
+    m_Key: examine.structural.split_wood
+    m_Metadata:
+      m_Items: []
+  - m_Id: 295634111387901952
+    m_Key: examine.structural.chipped_glass
+    m_Metadata:
+      m_Items: []
+  - m_Id: 295634111404679168
+    m_Key: examine.structural.fractured_glass
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

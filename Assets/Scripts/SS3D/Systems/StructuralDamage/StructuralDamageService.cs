@@ -48,9 +48,19 @@ namespace SS3D.Systems.StructuralDamage
 
             if (stage == StructuralIntegrityStage.Destroyed)
             {
+                if (placed.Layer == TileLayer.FurnitureBase)
+                {
+                    foreach (var container in placed.GetComponentsInChildren<SS3D.Systems.Inventory.Containers.AttachedContainer>(true))
+                    {
+                        // A stored backpack's contents belong to the backpack, not to this casing.
+                        if (container.GetComponentInParent<SS3D.Systems.Inventory.Items.Item>() == null)
+                            container.ReleaseForDestruction();
+                    }
+                }
+                SteelWreckageRecord wreckage = SteelWreckageRecord.Capture(placed, coord);
                 placed.ServerSetIntegrity(0f, StructuralIntegrityStage.Destroyed);
                 Vector3 world = _query.TileToWorld(coord);
-                ClearResult clear = _construction.TryClearTile(world, TileLayer.Turf, placed.Direction);
+                ClearResult clear = _construction.TryClearTile(world, placed.Layer, placed.Direction);
                 if (!clear.Success)
                 {
                     Log.Warning(nameof(StructuralDamageService),
@@ -58,7 +68,9 @@ namespace SS3D.Systems.StructuralDamage
                         Logs.Generic, coord);
                 }
 
-                // Debris spawn deferred until rubble art exists.
+                if (clear.Success && wreckage.Kind != 0
+                    && SS3D.Core.SubSystems.TryGet(out TileSubSystem tiles) && tiles.IsServer)
+                    tiles.ServerAddSteelWreckage(wreckage);
                 Log.Information(nameof(StructuralDamageService),
                     "Structural Destroyed at {coord} via {source} (force {force})",
                     Logs.Generic, coord, source, force);
@@ -67,7 +79,7 @@ namespace SS3D.Systems.StructuralDamage
 
             placed.ServerSetIntegrity(remaining, stage);
 
-            if (stage != previous && StructuralIntegrityRules.LeaksAtmosphere(stage))
+            if (placed.Layer == TileLayer.Turf && stage != previous && StructuralIntegrityRules.LeaksAtmosphere(stage))
             {
                 Vector3 world = _query.TileToWorld(coord);
                 // Atmos/vision refresh; Area still blocked by the wall until Destroyed.
@@ -79,18 +91,7 @@ namespace SS3D.Systems.StructuralDamage
 
         private bool TryGetStructural(TileCoord coord, out PlacedTileObject placed)
         {
-            placed = null;
-            if (_query == null)
-                return false;
-
-            if (!_query.TryGetOccupant(coord, TileLayer.Turf, Direction.North, out ITileOccupant occupant))
-                return false;
-
-            if (occupant is not PlacedTileObject tileObject || !StructuralIntegrityRules.IsStructural(tileObject))
-                return false;
-
-            placed = tileObject;
-            return true;
+            return StructuralIntegrityRules.TryGetTarget(_query, coord, out placed);
         }
 
         private static void EnsureInitialized(PlacedTileObject placed, float max)

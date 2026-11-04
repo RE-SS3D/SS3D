@@ -26,7 +26,7 @@ namespace SS3D.Systems.Tile
     /// <summary>
     /// Manages and keeps an inventory of all placed tiles. This is where all others scripts that use the tilemap should interact with.
     /// </summary>
-    public class TileSubSystem : NetworkSubSystem
+    public partial class TileSubSystem : NetworkSubSystem
     {
 	    public const string savePath = PersistencePaths.StationTemplates;
 
@@ -86,6 +86,7 @@ namespace SS3D.Systems.Tile
 	        TileMap map = TileMap.Create(mapName);
 	        map.transform.SetParent(transform);
 	        _currentMap = map;
+            map.RegisterMutationObserver(new WreckageMutationObserver(this));
 	        _queryService = new TileQueryService(map);
 	        _constructionService = new ConstructionService(map, _queryService);
             OnMapCreated?.Invoke();
@@ -314,6 +315,19 @@ namespace SS3D.Systems.Tile
             BlastVfxPresenter.Play(worldPosition, yield);
         }
 
+        [Server]
+        public void ServerNotifyStructuralImpact(Vector3 point, Vector3 normal, byte material)
+        {
+            RpcStructuralImpact(point, normal, material);
+        }
+
+        [ObserversRpc(RunLocally = true)]
+        private void RpcStructuralImpact(Vector3 point, Vector3 normal, byte material)
+        {
+            if (IsClient)
+                SteelWallDamageVfx.PlayImpact(point, normal, material);
+        }
+
         [Serializable]
         private struct SyncedFloorDecalChunk
         {
@@ -519,7 +533,11 @@ namespace SS3D.Systems.Tile
         /// Clears authored spawn markers. Called from <see cref="TileMap.Clear"/> so map wipe /
         /// template restore cannot leave stale points when a template lacks a spawn chunk.
         /// </summary>
-        public void ClearSpawnPoints() => _spawnPoints.Clear();
+        public void ClearSpawnPoints()
+        {
+            _spawnPoints.Clear();
+            if (IsServer) _steelWreckage.Clear();
+        }
 
         public bool MapNameAlreadyExist(string name)
         {

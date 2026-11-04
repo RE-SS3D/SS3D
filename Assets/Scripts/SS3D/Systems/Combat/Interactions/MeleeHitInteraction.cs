@@ -155,12 +155,13 @@ namespace SS3D.Systems.Combat.Interactions
                 health.ApplyDamage(zone, _profile.ToDamagePacket());
                 landed = true;
             }
-            else if (TryResolveStructuralConnect(hand, out TileCoord structuralCoord))
+            else if (TryResolveStructuralConnect(hand, out TileCoord structuralCoord, out RaycastHit? contact))
             {
                 float force = _profile.ResolveStructuralForce();
                 if (force > 0f
                     && SubSystems.TryGet(out StructuralDamageSubSystem structural)
-                    && structural.TryApplyStructuralDamage(structuralCoord, force, StructuralDamageSource.Melee))
+                    && structural.TryApplyStructuralDamage(structuralCoord, force, StructuralDamageSource.Melee,
+                        contact?.point ?? default, contact?.normal ?? default))
                 {
                     landed = true;
                 }
@@ -255,9 +256,10 @@ namespace SS3D.Systems.Combat.Interactions
                 zoneCollider);
         }
 
-        private static bool TryResolveStructuralConnect(Hand hand, out TileCoord coord)
+        private static bool TryResolveStructuralConnect(Hand hand, out TileCoord coord, out RaycastHit? contact)
         {
             coord = default;
+            contact = null;
 
             // Reach from entity root — swinging hand bone often sits past RangeLimit at connect.
             Entity entity = hand.GetComponentInParent<Entity>();
@@ -270,7 +272,8 @@ namespace SS3D.Systems.Combat.Interactions
                     aimRay,
                     attackerPosition,
                     Reach,
-                    out coord))
+                    out coord,
+                    out contact))
             {
                 return true;
             }
