@@ -193,6 +193,8 @@ A final run after merging develop's item gravity read 183 / 259 KB/s and 3.81 / 
 - **Tick cost rose.** Over five Editor runs, p50 was 3.36–3.76 ms with items and 3.01–3.21 ms without, and peak was 7.09–7.68 ms against 6.28–6.52 ms. So items add about 0.4 ms at p50 and 1 ms at peak, with safety checks on. `AtmosSimulation.Tick` is unchanged. The whole tick's peak was already over 4 ms, as phase 3 records, and this widens that gap.
 - **Not measured:** the scan on a map with thousands of items, and 8 clients.
 
+**Bodies nobody owns.** Upright wind moves a living body on its owner, so a combat dummy or any other unowned body used to ignore wind below `KnockdownSpeed`. The server now moves those bodies. Non-owners must keep `CharacterController` off, so `Ragdoll.TickWind` turns it on only for the `Move`, which keeps collisions without adding a capsule to server raycasts. Wind is zero over vacuum and an unowned body has no coast, so one that is still upright stops at the edge of a hole rather than drifting out.
+
 ## Risks
 
 - **Sloshing:** too little friction makes pressure ring between rooms and keeps cells awake. Phase 1's oscillation test catches it.

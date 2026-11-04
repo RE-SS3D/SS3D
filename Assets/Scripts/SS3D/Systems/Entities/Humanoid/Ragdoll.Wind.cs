@@ -71,9 +71,20 @@ namespace SS3D.Systems.Entities.Humanoid
             if (target == Vector3.zero && _windFelt.sqrMagnitude < 0.0001f) _windFelt = Vector3.zero;
 
             // Living bodies move owner-side; HumanoidPredictedMovement is off on Human.prefab.
-            if (_currentState == RagdollState.Walking && IsOwner
-                && _characterController != null && _characterController.enabled)
-                _characterController.Move(_windFelt * seconds);
+            if (_currentState != RagdollState.Walking || !IsRagdollPhysicsAuthority() || _characterController == null)
+                return;
+
+            if (IsOwner)
+            {
+                if (_characterController.enabled) _characterController.Move(_windFelt * seconds);
+                return;
+            }
+
+            // Nobody owns this body, so the server moves it. The controller stays on only for the move,
+            // so that it never adds a capsule to server raycasts or blocks a teleport.
+            _characterController.enabled = true;
+            _characterController.Move(_windFelt * seconds);
+            _characterController.enabled = false;
         }
 
         private void FixedUpdate()

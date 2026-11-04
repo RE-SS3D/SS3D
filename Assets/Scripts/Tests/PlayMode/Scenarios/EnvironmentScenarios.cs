@@ -163,6 +163,41 @@ namespace SS3D.Tests
             Assert.That(largestStep, Is.LessThan(0.25f), "no per-tick jumps");
         }
 
+        // Guards: a body nobody owns (combat dummy) drifts in wind under the server's authority and still stops at walls.
+        // Not cheaper because: the unowned path needs a spawned body, its CharacterController and the tile colliders.
+        [UnityTest]
+        public IEnumerator GentleWind_DriftsUnownedDummy_UpToTheWall()
+        {
+            float wallFace = ScenarioAtmos.MainRoom.xMin - 0.5f;
+            var spawn = new Vector3(0f, Body.transform.position.y, ScenarioAtmos.MainRoom.yMin + 2f);
+            Entity dummy = SubSystems.Get<EntitySubSystem>().ServerSpawnCombatDummy(spawn, Quaternion.identity);
+            try
+            {
+                Ragdoll ragdoll = dummy.GetComponent<Ragdoll>();
+                float nextUpdate = 0f;
+                for (float elapsed = 0f; elapsed < 2f; elapsed += Time.deltaTime)
+                {
+                    if (elapsed >= nextUpdate)
+                    {
+                        ragdoll.ServerApplyWind(Vector3.left * 3f);
+                        nextUpdate += AtmosConstants.TickInterval;
+                    }
+
+                    yield return null;
+                }
+
+                Assert.That(ragdoll.Presentation, Is.EqualTo(BodyPresentationState.Locomotion), "below knockdown strength");
+                Assert.That(dummy.transform.position.x, Is.LessThan(wallFace + 1f), "the wind carries the dummy to the wall");
+                Assert.That(dummy.transform.position.x, Is.GreaterThan(wallFace), "the wall stops it");
+                Assert.IsFalse(dummy.GetComponent<CharacterController>().enabled,
+                    "An unowned body keeps its controller off between pushes");
+            }
+            finally
+            {
+                InstanceFinder.ServerManager.Despawn(dummy.NetworkObject);
+            }
+        }
+
         // Guards: a real hull breach reaches both consumers: the shared flow atlas shows wind toward the hole
         // and client streaks appear from it, with no wind traffic of their own.
         // Not cheaper because: needs the tile observer, the host atlas and the render context running together.
