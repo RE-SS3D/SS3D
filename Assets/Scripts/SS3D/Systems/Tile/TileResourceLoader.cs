@@ -6,6 +6,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.Rendering;
 
 namespace SS3D.Systems.Tile
 {
@@ -23,6 +24,20 @@ namespace SS3D.Systems.Tile
         public void Awake()
         {
             LoadAssets();
+            SetupOcclusion();
+        }
+
+        private void SetupOcclusion()
+        {
+            if (SystemInfo.graphicsDeviceType == GraphicsDeviceType.Null)
+            {
+                return;
+            }
+
+            if (!TryGetComponent(out TileOcclusionSubSystem _))
+            {
+                gameObject.AddComponent<TileOcclusionSubSystem>();
+            }
         }
 
         private void LoadAssets()
