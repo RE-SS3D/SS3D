@@ -78,6 +78,17 @@ namespace SS3D.Systems.Atmospherics
 
         private void Update()
         {
+            if (AtmosRenderContext.IsRenderingSuppressed)
+            {
+                // Expire every streak so none resume mid-flight when the editor closes.
+                for (int streak = 0; streak < StreakCount; streak++)
+                    _age[streak] = _life[streak];
+
+                _renderer.enabled = false;
+                VisibleStreaks = 0;
+                return;
+            }
+
             if (!AtmosRenderContext.TryGetRequest(out AtmosRenderContext.Request request)
                 || !AtmosRenderContext.TryGetSnapshot(out AtmosRenderContext.Snapshot snapshot)
                 || snapshot.FlowData == null)

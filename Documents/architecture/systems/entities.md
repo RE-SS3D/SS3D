@@ -1,7 +1,7 @@
 > Code paths: Assets/Scripts/SS3D/Systems/Entities/
 > Entry points: EntitySubSystem, MindSubSystem, HumanoidBodyStateMachine
 > Status: partial
-> Verified: 319a1db1b — 2026-11-04
+> Verified: 6d309c079 — 2026-11-04 (remote space coast, root alignment fallback)
 
 # Entities
 
@@ -53,7 +53,7 @@ Humanoid/silicon entity spawning, minds, and join/round ordering with [rounds-lo
 - **Animator vs code:** swing exit times, limp transitions, masks are animator-owned ([animation-polish](../../archive/architecture/2026-07_animation-polish.md)). Code sets parameters/triggers and look-at only — no swing duration constants.
 - **Ragdoll gravity:** `Ragdoll` checks support at the hips while down; unsupported bones disable gravity and discard downward settling velocity. Returning to a plenum restores gravity. Root alignment only snaps to nearby floor under supported bodies.
 - **Collapse / death:** write `Ragdoll.ServerSetPresentation` (or wrappers); readers use `Ragdoll.Presentation`.
-- **Space float:** living bodies — confirmed no plenum (`Unsupported`) → `SetFloating(true)`, skip gravity/WASD, coast. Client AOI lag / incomplete plenum (`Unknown`) must not enter float; skip gravity only while no physical floor collider is underfoot (raycast), then resume normal loco so spawn is not soft-locked when the map is visible but occupancy is still Unknown. Keep coasting only if SyncVar already Floating (deep space). Server occupancy-miss is Unsupported only after `TileMapLoaded`; `ServerReconcileSpaceSupport` clears Floating while Unknown and packs it for remotes. **`HumanoidPredictedMovement` is disabled on `Human.prefab`**; `HumanoidLivingController` owns the live path. Ghosts still set Floating on spawn.
+- **Space float:** living bodies — confirmed no plenum (`Unsupported`) → `SetFloating(true)`, skip gravity/WASD, coast. Client AOI lag / incomplete plenum (`Unknown`) must not enter float; skip gravity only while no physical floor collider is underfoot (raycast), then resume normal loco so spawn is not soft-locked when the map is visible but occupancy is still Unknown. Keep coasting only if SyncVar already Floating (deep space). Server occupancy-miss is Unsupported only after `TileMapLoaded`; `ServerReconcileSpaceSupport` clears Floating while Unknown and packs it for remotes. A remote client cannot see `Unsupported`, so `HumanoidLivingController` keeps the last supported frame's velocity and adopts it when Floating arrives first (`ResolveCoastVelocity`). **`HumanoidPredictedMovement` is disabled on `Human.prefab`**; `HumanoidLivingController` owns the live path. Ghosts still set Floating on spawn.
 
 ## Pitfalls
 
@@ -62,6 +62,9 @@ Humanoid/silicon entity spawning, minds, and join/round ordering with [rounds-lo
 - **Critical rejoin T-pose:** ownership changes do not change presentation. `Ragdoll.OnOwnershipClient` must reapply collapsed/dead presentation so the new owner simulates bones and observers stay kinematic. Initial SyncVars may collapse before `OnStartNetwork`; preserve the original NetworkAnimator enabled state instead of recapturing its suppressed value.
 
 - **Spaced ragdolls falling below the deck:** dynamic bones must update `useGravity` from plenum support, including after death transfers physics to the server. Unknown client occupancy preserves known Floating or probes nearby floor; never use an unlimited alignment ray or count bodies/items as floor.
+
+- **Remote client stops dead at the ledge:** a pure client never reads `Unsupported` (client AOI returns `Unknown`), so the server's Floating SyncVar arrives first and `TryProcessSpaceFloat` reached the coast branch with a zero `_coastVelocity`. Keep `_lastGroundedVelocity` from supported frames and adopt it when already floating with no local capture. Hit 2026-11-04 (#124).
+- **`AlignToHips` keeps the previous root Y when support is known but the floor ray misses:** otherwise the root would stay at hip height with nothing pulling a recovered body down. Only unsupported bodies follow the hips. This does not explain the server/client height offset in #127: for a living owned body `AlignToHips` runs on the owner, not the server (`IsRagdollPhysicsAuthority`). The offset did not reproduce on a dedicated server after collapse and recovery or while floating (2026-11-04); #127 stays open.
 
 - **Critical movement:** the living movement loop also checks health presentation intent and clears pending movement when incapacitated; do not rely on component disabling alone (Coimbra update subscriptions can still fire).
 - **Ranged fire resets feet / snaps every shot:** FireRifle + Reload must stay on **Upper Body** (mask excludes hips/legs) — Base oneshots restart FreeformCartesian and pop foot phase. Keep Upper Body **weighted for the whole Ranged stance** on **Rifle Aim Idle**; oneshots return there. Pulsing layer weight 0→1→0 per shot (or exiting into Hold Default) is the arm snap/twitch.
@@ -109,6 +112,7 @@ Humanoid/silicon entity spawning, minds, and join/round ordering with [rounds-lo
 - `Testing/ui/validate.sh --steps compile,scenarios:Respawn` (`RespawnScenarios`) runs two death/respawn cycles in the test room: kill → ghost, the cooldown refuses and keeps the corpse, respawn removes it and leaves one Human, and the new body is owned and takes items. `SandboxServerTests` covers the profile/default/admin-save rule values.
 
 - `Testing/ui/validate.sh --steps compile,scenarios:Environment` (`EnvironmentScenarios`) covers ragdoll gravity on the deck (critical from plasma), critical/dead weightlessness in open space and back on the deck, and ownership loss/reclaim while critical with collapsed-before-network-start ordering and treatment recovery. A separate-client transport reconnect and remote physics ownership stay outside it.
+- EditMode `HumanoidSpaceCoastTests` covers the coast-velocity fallback used when the server's Floating SyncVar outruns client AOI (#124).
 
 ## Depends on / Used by
 

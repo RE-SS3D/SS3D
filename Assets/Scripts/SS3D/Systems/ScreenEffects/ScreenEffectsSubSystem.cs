@@ -55,6 +55,7 @@ namespace SS3D.Systems.ScreenEffects
         private float _uiBackdropBlurCurrent;
         private float _healthBackdropBlurCurrent;
         private bool _debugOverrideActive;
+        private bool _gameplayFeedbackSuppressed;
 
         /// <summary>
         /// When true, health/atmos mappers must not call <see cref="SetEffect"/> for their channels —
@@ -65,6 +66,38 @@ namespace SS3D.Systems.ScreenEffects
         public void SetDebugOverrideActive(bool active)
         {
             _debugOverrideActive = active;
+        }
+
+        /// <summary>
+        /// When true, all gameplay-driven feedback (health, atmos, hit/blast flashes) is hidden
+        /// immediately, but the authored targets are kept so the effects fade back in when the
+        /// suppression ends. The map editor sets this while it is open: the editor camera must
+        /// not carry the in-body camera's damage overlay. UI backdrop blur stays independent.
+        /// </summary>
+        public bool IsGameplayFeedbackSuppressed => _gameplayFeedbackSuppressed;
+
+        public void SetGameplayFeedbackSuppressed(bool suppressed)
+        {
+            if (_gameplayFeedbackSuppressed == suppressed)
+            {
+                return;
+            }
+
+            _gameplayFeedbackSuppressed = suppressed;
+            if (!suppressed)
+            {
+                return;
+            }
+
+            foreach (ScreenEffectType type in _targetIntensity.Keys)
+            {
+                _currentIntensity[type] = 0f;
+            }
+
+            _hitFlashTimer = -1f;
+            _blastFlashTimer = -1f;
+            _whiteoutTimer = -1f;
+            _healthBackdropBlurCurrent = 0f;
         }
 
         private sealed class ScreenParticle
@@ -127,6 +160,11 @@ namespace SS3D.Systems.ScreenEffects
         /// </summary>
         public void TriggerHitFlash()
         {
+            if (_gameplayFeedbackSuppressed)
+            {
+                return;
+            }
+
             _hitFlashTimer = 0f;
         }
 
@@ -135,6 +173,11 @@ namespace SS3D.Systems.ScreenEffects
         /// </summary>
         public void TriggerBlastFlash(float strength = 1f)
         {
+            if (_gameplayFeedbackSuppressed)
+            {
+                return;
+            }
+
             _blastFlashTimer = 0f;
             _blastFlashStrength = Mathf.Clamp(strength, 0.05f, 1.5f);
         }
@@ -145,6 +188,11 @@ namespace SS3D.Systems.ScreenEffects
         /// </summary>
         public void TriggerWhiteout(float seconds = 2.5f)
         {
+            if (_gameplayFeedbackSuppressed)
+            {
+                return;
+            }
+
             _whiteoutTimer = 0f;
             _whiteoutSeconds = Mathf.Max(WhiteoutAttack * 2f, seconds);
         }
@@ -256,6 +304,31 @@ namespace SS3D.Systems.ScreenEffects
         {
             float deltaTime = Time.deltaTime;
             float time = Time.time;
+
+            if (_gameplayFeedbackSuppressed)
+            {
+                foreach (ScreenEffectType type in _targetIntensity.Keys)
+                {
+                    _currentIntensity[type] = 0f;
+                }
+
+                _vignette.active = false;
+                _chromaticAberration.active = false;
+                _colorAdjustments.active = false;
+                ApplyDepthOfField(0f);
+                UpdateParticles(_emberParticles, 0f, true);
+                UpdateParticles(_frostParticles, 0f, false);
+
+                // The UI channel is not gameplay feedback — keep it live for panels opened from the
+                // world, but the health-driven blur and blackout must not follow the editor camera.
+                _uiBackdropBlurCurrent = Mathf.MoveTowards(
+                    _uiBackdropBlurCurrent,
+                    _uiBackdropBlurTarget,
+                    10f * deltaTime);
+                UiBackdropBlurContext.Intensity = _uiBackdropBlurCurrent;
+                UiBackdropBlurContext.BlackoutIntensity = 0f;
+                return;
+            }
 
             foreach (ScreenEffectType type in _targetIntensity.Keys)
             {

@@ -1,13 +1,15 @@
 > Parent map: [tile.md](tile.md)
 > Code paths: Assets/Scripts/SS3D/Systems/Tile/MapEditor/, Assets/Scripts/SS3D/Systems/Tile/SpawnPoints/
 > Status: partial
-> Verified: e87d38958 — 2026-11-01
+> Verified: 5834bcdac — 2026-11-04
 
 # Map Editor — creative mode extension hooks
 
 ## Overview
 
 Reserved extension points shipped with map editor v1 for [creative-mode.md](../../design/creative-mode.md) Phase 2. Spawn Placements and Area metadata now have authoring UI; the remaining reserved hooks are unselected.
+
+Opening the editor suspends per-tick world sims and calls `ApplyEditorVisualSuppression`: health/atmos/hit/blast screen feedback is hidden and the atmos fullscreen passes plus wind streaks stop drawing. Closing restores both; the static atmos flag is also cleared in `OnDestroyed` so a scene unload cannot latch it.
 
 Unsaved-change tracking (A4): `MapEditorUndoStack` keeps revision-based save points through undo/redo,
 branches and the bounded history. Successful persistence saves/loads set the template identity

@@ -8,6 +8,7 @@ using SS3D.Core;
 using SS3D.Core.Behaviours;
 using SS3D.Data.AssetDatabases;
 using SS3D.Logging;
+using SS3D.Rendering.URP;
 using SS3D.Systems.Area;
 using SS3D.Systems.Atmospherics;
 using SS3D.Systems.Electricity;
@@ -16,6 +17,7 @@ using SS3D.Systems.Furniture.Disposal;
 using SS3D.Systems.Inputs;
 using SS3D.Systems.Rounds;
 using SS3D.Systems.Screens;
+using SS3D.Systems.ScreenEffects;
 using SS3D.Systems.Persistence;
 using SS3D.Systems.Tile.MapEditor.Commands;
 using SS3D.Systems.Tile.FloorVisuals;
@@ -250,6 +252,8 @@ namespace SS3D.Systems.Tile.MapEditor
             if (_active)
             {
                 _active = false;
+                // Static render suppression would survive a scene unload; never leave it latched.
+                ApplyEditorVisualSuppression(false);
                 EditorClosed?.Invoke();
             }
 
@@ -391,6 +395,7 @@ namespace SS3D.Systems.Tile.MapEditor
                 _gameplayHud.SetVisible(false);
                 SpawnPointEditorView.EnsureExists().SetEditorOpen(true);
                 BeginWorldSimsSuspend();
+                ApplyEditorVisualSuppression(true);
                 RefreshTileHostVisibility();
                 EditorOpened?.Invoke();
                 RpcRequestUndoState(LocalConnection);
@@ -413,10 +418,25 @@ namespace SS3D.Systems.Tile.MapEditor
                 _mapEditorHandle = null;
                 ShutdownDocument();
                 EndWorldSimsSuspend();
+                ApplyEditorVisualSuppression(false);
                 // IsActive is already false — re-apply HashGrid AOI host visibility.
                 RefreshTileHostVisibility();
                 EditorClosed?.Invoke();
             }
+        }
+
+        /// <summary>
+        /// The editor camera is not the player's in-body camera: hide the health/damage overlays and
+        /// the animated atmos volume/wind streaks while authoring, then restore them on close.
+        /// </summary>
+        private static void ApplyEditorVisualSuppression(bool suppressed)
+        {
+            if (SubSystems.TryGet(out ScreenEffectsSubSystem screenEffects))
+            {
+                screenEffects.SetGameplayFeedbackSuppressed(suppressed);
+            }
+
+            AtmosRenderContext.SetRenderingSuppressed(suppressed);
         }
 
         /// <summary>

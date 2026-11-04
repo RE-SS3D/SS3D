@@ -131,7 +131,7 @@ namespace SS3D.Rendering.URP
 
         public override void AddRenderPasses(ScriptableRenderer renderer, ref RenderingData renderingData)
         {
-            if (!_enabled)
+            if (!_enabled || AtmosRenderContext.IsRenderingSuppressed)
                 return;
 
             if (!AtmosRenderContext.TryGetRequest(out AtmosRenderContext.Request request))

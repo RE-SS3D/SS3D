@@ -591,9 +591,20 @@ namespace SS3D.Systems.Entities.Humanoid
             Vector3 originalHipsPosition = _hips.position;
             Vector3 newPosition = _hips.position;
             // Get the lowest position
-            if (HasFloorSupport() && TryGetFloorBelow(_hips.position, out RaycastHit hitInfo))
+            Vector3 previousRootPosition = _character.position;
+            if (HasFloorSupport())
             {
-                newPosition.y = hitInfo.point.y + AlignmentYDelta;
+                if (TryGetFloorBelow(_hips.position, out RaycastHit hitInfo))
+                {
+                    newPosition.y = hitInfo.point.y + AlignmentYDelta;
+                }
+                else
+                {
+                    // Support is known but the ray missed. Never lift the root to the hips' height:
+                    // that would leave a body about a metre above the deck after it recovers, with
+                    // nothing pulling it back down.
+                    newPosition.y = previousRootPosition.y;
+                }
             }
             _character.position = newPosition;
             _hips.position = originalHipsPosition;

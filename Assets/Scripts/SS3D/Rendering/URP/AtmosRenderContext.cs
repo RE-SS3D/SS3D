@@ -38,6 +38,18 @@ namespace SS3D.Rendering.URP
         static Request? s_Request;
         static Snapshot? s_Snapshot;
         static bool s_DebugSnapshotOverride;
+        static bool s_RenderingSuppressed;
+
+        /// <summary>
+        /// When true, the atmos fullscreen passes and wind streaks are not drawn. The map editor
+        /// sets this while it is open so the authoring view stays clean; simulation is unaffected.
+        /// </summary>
+        public static bool IsRenderingSuppressed => s_RenderingSuppressed;
+
+        public static void SetRenderingSuppressed(bool suppressed)
+        {
+            s_RenderingSuppressed = suppressed;
+        }
 
         public static void SetRequest(Request request)
         {

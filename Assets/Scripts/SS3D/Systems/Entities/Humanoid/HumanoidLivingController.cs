@@ -32,6 +32,13 @@ namespace SS3D.Systems.Entities.Humanoid
         /// <summary>Planar coast while unsupported (no plenum). Used when predicted movement is disabled.</summary>
         private Vector3 _coastVelocity;
 
+        /// <summary>
+        /// Last frame's planar locomotion velocity while standing on support. A pure client never
+        /// sees <see cref="HumanoidSupportState.Unsupported"/> (its AOI cannot prove open space), so
+        /// when the server flips the Floating SyncVar first this is the velocity the body coasts with.
+        /// </summary>
+        private Vector3 _lastGroundedVelocity;
+
         public override void OnStartClient()
         {
             base.OnStartClient();
@@ -223,42 +230,50 @@ namespace SS3D.Systems.Entities.Humanoid
 
             if (support == HumanoidSupportState.Supported)
             {
+                // Remember the walk/run velocity in case the server flips Floating before this
+                // peer can see the open tile (remote clients never return Unsupported).
+                _lastGroundedVelocity = CaptureLivingCoastVelocity();
+
+                // Always clear: a pure client adopts a coast only while this is zero, so a value
+                // kept through landing would launch its next float in the old direction.
+                _coastVelocity = Vector3.zero;
+
                 if (wasFloating)
                 {
                     BodyStateMachine.SetFloating(false);
-                    if (Input.magnitude < 0.01f)
-                    {
-                        _coastVelocity = Vector3.zero;
-                    }
                 }
 
                 return false;
             }
 
-            if (support == HumanoidSupportState.Unknown)
+            if (support == HumanoidSupportState.Unknown && !wasFloating)
             {
-                if (!wasFloating)
+                // Tile knowledge incomplete (!HasPlenum / AOI miss). Do not float.
+                // If floor colliders already mirrored, resume normal loco — holding forever
+                // soft-locks spawn after the map is visible but occupancy still Unknown.
+                if (HasPhysicalFloorUnderfoot())
                 {
-                    // Tile knowledge incomplete (!HasPlenum / AOI miss). Do not float.
-                    // If floor colliders already mirrored, resume normal loco — holding forever
-                    // soft-locks spawn after the map is visible but occupancy still Unknown.
-                    if (HasPhysicalFloorUnderfoot())
-                    {
-                        ApplyCharacterControllerOwnership();
-                        return false;
-                    }
-
-                    // No colliders yet: no gravity (fall-through), but allow planar walk and
-                    // keep the owner CharacterController enabled.
                     ApplyCharacterControllerOwnership();
-                    ProcessUnknownAoiHold();
-                    return true;
+                    return false;
                 }
+
+                // No colliders yet: no gravity (fall-through), but allow planar walk and
+                // keep the owner CharacterController enabled.
+                ApplyCharacterControllerOwnership();
+                ProcessUnknownAoiHold();
+                return true;
             }
-            else if (!wasFloating)
+
+            if (!wasFloating)
             {
                 _coastVelocity = CaptureLivingCoastVelocity();
                 BodyStateMachine?.SetFloating(true);
+            }
+            else if (_coastVelocity.sqrMagnitude <= 0.0001f)
+            {
+                // The server already flipped Floating while this peer still reads Unknown: the
+                // local capture branch never ran. Coast with the last supported frame's velocity.
+                _coastVelocity = ResolveCoastVelocity(_coastVelocity, _lastGroundedVelocity);
             }
 
             if (_coastVelocity.sqrMagnitude > 0.0001f)
@@ -341,6 +356,13 @@ namespace SS3D.Systems.Entities.Humanoid
                 && BodyStateMachine != null
                 && BodyStateMachine.Snapshot.IsFloating;
         }
+
+        /// <summary>
+        /// Coast velocity on entering space float: a locally captured velocity wins; otherwise the
+        /// last supported-frame velocity is used (server Floating SyncVar outran local AOI).
+        /// </summary>
+        public static Vector3 ResolveCoastVelocity(Vector3 captured, Vector3 lastGrounded) =>
+            captured.sqrMagnitude > 0.0001f ? captured : lastGrounded;
 
         private Vector3 CaptureLivingCoastVelocity()
         {

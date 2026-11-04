@@ -5,6 +5,7 @@
         "UnityEngine.TestRunner",
         "UnityEditor.TestRunner",
         "SS3D.Systems",
+        "SS3D.Rendering.URP",
         "SS3D.Core",
         "SS3D.Application",
         "FishNet.Runtime",

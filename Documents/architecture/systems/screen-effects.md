@@ -1,7 +1,7 @@
 > Code paths: Assets/Scripts/SS3D/Systems/ScreenEffects/
 > Entry points: ScreenEffectsSubSystem
 > Status: partial
-> Verified: dde6992c8 — 2026-11-03
+> Verified: 5834bcdac — 2026-11-04
 
 # Screen-space effects
 
@@ -39,6 +39,7 @@ Bootstraps itself with `RuntimeInitializeOnLoadMethod` (not in Boot.unity) so it
 - **Critical washed out by LowOxy + Unconscious:** mapper attenuates LowOxygen under dying; compositor scales oxy vignette. Dying is a hard heartbeat blink (vignette + Dual Kawase), not a soft continuous red. Unconscious blackout stays flat opaque black — do not pulse/tint it with dying (that looked worse than the old ending).
 - **Kawase is shared:** `SetUiBackdropBlur` (machine UI) and health dying both write channels; `UiBackdropBlurContext.Intensity = max(ui, health)`. Do not have health call `SetUiBackdropBlur` directly or it will fight panel open/close.
 - **Debug panel / screeneffect wiped by health:** live `HealthScreenEffectMapper.Apply` overwrites health channels every snapshot. The Screen Effects panel holds `SetDebugOverrideActive(true)` while open; `screeneffect` engages the same override until `screeneffect release` or panel close. Mappers must no-op Apply/Clear while override is active.
+- **Map editor camera carried the player's damage overlay:** the editor camera is not the in-body camera, but health/atmos mappers kept writing intensities every snapshot. `MapEditorSubSystem` now toggles `SetGameplayFeedbackSuppressed`; suppressed frames zero *current* intensities and hide hit/blast/whiteout while keeping authored targets, so effects fade back after close. Do not clear targets on suppression. Hit 2026-11-04 (#126).
 
 ## Tests
 

@@ -1,7 +1,7 @@
 > Code paths: Assets/Scripts/SS3D/Systems/Atmospherics/, Assets/Scripts/SS3D/Rendering/URP/Atmos*
 > Entry points: AtmosSubSystem, AtmosSimulation, AtmosRendererFeature
 > Status: partial
-> Verified: ab8e396ec — 2026-11-04
+> Verified: 557058016 — 2026-11-04
 
 # Atmospherics
 
@@ -55,6 +55,9 @@ Destroyed walls automatically produce pressure-driven wind through open gas edge
 - **Chunk borders were one-way valves:** `CreateChunk` linked a new chunk to existing ones, but existing border cells never linked back, and a cell only pushes gas through its own links. Rooms crossing a border stayed at full pressure beside a depleted row, with no error. `RebuildBordersAround` now refreshes them. Compare both directions of `Neighbours` when gas stops at a straight line on a multiple of 16. Hit 2026-11-04.
 - **Flow atlas must fill before it reads neighbours:** the AOI path wrote flow in the same pass as pressure, so +X/+Z neighbours read empty and host flow became a constant diagonal. Flow also used to be normalized, uphill and treated walls as 0 kPa. Encode through `AtmosCellVisualEncoding.EncodeFlow`, passing the cell's own pressure for walls.
 - **A green streak count is not visible streaks:** `VisibleStreaks` passed while one-pixel streaks were invisible, then near-camera ones became planks. Review a live breach screenshot after changing `AtmosWindView` tuning.
+- **Render-context consumers need a request in PlayMode scenarios:** the batchmode harness never renders the player camera, so `AtmosCamera` never calls `AtmosRenderContext.SetRequest` and `AtmosWindView.VisibleStreaks` stays zero. `HullBreach_FillsFlowAtlas_AndShowsWindStreaks` registers a look-down test camera and clears the request in `finally`; use the same pattern for any scenario asserting a render-context consumer.
+
+- **Map editor must suppress atmos visuals, not only the sim:** pausing `AtmosSubSystem.SimulationPaused` stops the server tick but leaves the last GPU snapshot in `AtmosRenderContext`, so the shaders keep animating and `AtmosWindView` keeps drawing streaks; a remote client's editor cannot pause the server at all. `MapEditorSubSystem.SetActive` toggles `AtmosRenderContext.SetRenderingSuppressed`; both `AtmosRendererFeature` and `AtmosWindView` early-out on it, and the wind view expires its streaks so none resume mid-flight. Hit 2026-11-04 (#147).
 
 - **Round restarts must dispose the previous simulation before restoring a template:** readiness resets outlive the subsystem. Keeping `_simulation` makes the initialization guard accept old turf/pipe gas as ready. Unregister both observers, dispose simulation/world, reset dirty tracking and tick/debug state, then seed the restored map.
 
