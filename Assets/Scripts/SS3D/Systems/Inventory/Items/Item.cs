@@ -11,6 +11,7 @@ using SS3D.Data.AssetDatabases;
 using SS3D.Interactions;
 using SS3D.Interactions.Interfaces;
 using SS3D.Logging;
+using SS3D.Systems.Atmospherics;
 using SS3D.Systems.Inventory.Containers;
 using SS3D.Systems.Inventory.Interactions;
 using SS3D.Systems.Combat;
@@ -273,6 +274,13 @@ namespace SS3D.Systems.Inventory.Items
         {
             base.OnStartServer();
             _traits.AddRange(_startingTraits);
+            if (_rigidbody != null) AtmosLooseBodies.Register(_rigidbody);
+        }
+
+        public override void OnStopServer()
+        {
+            if (_rigidbody != null) AtmosLooseBodies.Unregister(_rigidbody);
+            base.OnStopServer();
         }
 
         public override void Update()

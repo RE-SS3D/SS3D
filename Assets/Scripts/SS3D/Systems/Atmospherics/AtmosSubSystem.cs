@@ -28,6 +28,10 @@ namespace SS3D.Systems.Atmospherics
         private static readonly ProfilerMarker UploadPerformanceMarker = new("SS3D.Atmos.Upload");
         private static readonly ProfilerMarker NetworkSyncPerformanceMarker = new("SS3D.Atmos.NetworkSync");
 
+        // Keeps a client under 300 KB/s of patches with room for transport overhead, however much of
+        // the station changes at once. Chunks over the cap wait their turn, oldest first.
+        private const int MaxPatchesPerTick = 16;
+
         [SerializeField] private GasRegistry _gasRegistry;
 
         private AtmosWorld _atmosWorld;
@@ -64,6 +68,15 @@ namespace SS3D.Systems.Atmospherics
 
         public bool SimulationPaused { get; set; }
         public float LastTickMilliseconds { get; private set; }
+
+        /// <summary>Cost of <see cref="AtmosSimulation.Tick"/> alone in the last tick.</summary>
+        public float LastSimulationMilliseconds { get; private set; }
+
+        /// <summary>Chunk patches the last tick sent to clients.</summary>
+        public int LastPatchChunks { get; private set; }
+
+        /// <summary>Atmos ticks run on this server so far.</summary>
+        public int TickCount { get; private set; }
 
         public override void OnStartServer()
         {
@@ -175,6 +188,7 @@ namespace SS3D.Systems.Atmospherics
                 gasTypeCount,
                 specificHeats,
                 molarMasses);
+            LooseBodies = new AtmosLooseBodies();
             _tileObserver = new AtmosTileObserver(_simulation);
             tileSubSystem.RegisterTileMutationObserver(_tileObserver);
 
@@ -259,6 +273,7 @@ namespace SS3D.Systems.Atmospherics
 
             _simulation?.Dispose();
             _simulation = null;
+            LooseBodies = null;
             _tileObserver = null;
             _pipeObserver = null;
             _pipeSimulation = null;
@@ -320,6 +335,7 @@ namespace SS3D.Systems.Atmospherics
             using (SimPerformanceMarker.Auto())
             {
                 _simulation.Tick(AtmosConstants.TickInterval);
+                LastSimulationMilliseconds = (Time.realtimeSinceStartup - started) * 1000f;
                 _pipeSimulation?.Tick(AtmosConstants.TickInterval);
                 _portRegistry.TickDevices(_pipeSimulation, _simulation, AtmosConstants.TickInterval);
                 TickWind();
@@ -336,6 +352,8 @@ namespace SS3D.Systems.Atmospherics
             {
                 BroadcastDirtyChunks();
             }
+
+            TickCount++;
         }
 
         /// <summary>
@@ -347,6 +365,7 @@ namespace SS3D.Systems.Atmospherics
         /// </summary>
         private void BroadcastDirtyChunks()
         {
+            LastPatchChunks = 0;
             if (_dirtyChunkTracker == null || _patchBuilder == null)
                 return;
 
@@ -354,7 +373,7 @@ namespace SS3D.Systems.Atmospherics
                 return;
 
             _dirtyChunkTracker.Update(_simulation);
-            _dirtyChunkTracker.ConsumeDirtyChunks(_dirtyChunkBuffer);
+            _dirtyChunkTracker.ConsumeDirtyChunks(_dirtyChunkBuffer, MaxPatchesPerTick);
             if (_dirtyChunkBuffer.Count == 0)
                 return;
 
@@ -365,6 +384,7 @@ namespace SS3D.Systems.Atmospherics
 
                 AtmosChunkPatch patch = _patchBuilder.Build(_simulation, chunkIndex, chunkKey);
                 RpcApplyChunkPatch(patch);
+                LastPatchChunks++;
             }
         }
 

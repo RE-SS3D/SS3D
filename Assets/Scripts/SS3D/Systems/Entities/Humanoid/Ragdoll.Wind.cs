@@ -23,11 +23,11 @@ namespace SS3D.Systems.Entities.Humanoid
         public Vector3 WindSamplePosition => _hips != null && IsKnockedDown ? _hips.position : transform.position;
 
         [Server]
-        public void ServerApplyWind(Vector3 gradient)
+        public void ServerApplyWind(Vector3 wind)
         {
-            if (gradient.sqrMagnitude < AtmosWind.MinPressure * AtmosWind.MinPressure) return;
+            if (wind.sqrMagnitude < AtmosWind.MinSpeed * AtmosWind.MinSpeed) return;
             // Do not convert an existing health-owned timeless collapse to a timed knockdown.
-            if (!IsKnockedDown && gradient.magnitude >= AtmosWind.KnockdownPressure)
+            if (!IsKnockedDown && wind.magnitude >= AtmosWind.KnockdownSpeed)
             {
                 _windKnockdown = true;
                 ServerKnockdown(3f);
@@ -35,7 +35,6 @@ namespace SS3D.Systems.Entities.Humanoid
             else if (_isKnockdownTimed)
                 _knockdownTimer = Mathf.Max(_knockdownTimer, 2f);
 
-            Vector3 wind = AtmosWind.Velocity(gradient);
             if (_deathRagdoll || !Owner.IsValid)
             {
                 if (IsKnockedDown) ApplyPresentation(_presentation, false);

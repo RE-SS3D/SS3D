@@ -5,18 +5,33 @@ using UnityEngine;
 namespace SS3D.Systems.Atmospherics
 {
     /// <summary>
-    /// Pressure-driven wind through the same open edges used by gas sharing. The simulation owns
-    /// the field per tile; everything here turns it into something continuous in space and time.
+    /// Wind is what the simulation's edge flows do to whatever stands in them, in metres per second:
+    /// their air speed times <see cref="AirSpeedGain"/>. The simulation owns the field per tile;
+    /// everything here turns it into something continuous in space and time.
     /// </summary>
     public static class AtmosWind
     {
-        public const float KnockdownPressure = 8f;
-        public const float MinPressure = 0.5f;
-        public const float MaxAcceleration = 35f;
+        /// <summary>Run speed. Below this, wind adds to movement and can be fought.</summary>
+        public const float KnockdownSpeed = 5f;
 
-        /// <summary>Wind speed reached at <see cref="SpeedPerPressure"/> × kPa, capped here.</summary>
+        /// <summary>
+        /// Felt wind per metre per second of air. A room's drain time fixes how much air leaves, so
+        /// true air speed is too low to feel past the hole: 0.3 m/s mid-room in a 10x10 breach. This
+        /// is the one place that gap is bridged, and it scales distance from a breach, not drain time.
+        /// </summary>
+        public const float AirSpeedGain = 3f;
+
+        /// <summary>Bodies ignore wind slower than this.</summary>
+        public const float MinSpeed = 0.3f;
+
+        public const float MaxAcceleration = 35f;
         public const float MaxSpeed = 7f;
-        public const float SpeedPerPressure = 0.6f;
+
+        /// <summary>
+        /// Thinner cells count as this dense, so speed fades with the gas instead of blowing up as
+        /// moles approach zero. About <see cref="AtmosFluxConstants.MinSimulationPressure"/> at room heat.
+        /// </summary>
+        public const float MinDensityMoles = 5f;
 
         /// <summary>How quickly a body's felt wind follows the 5 Hz field, per second.</summary>
         public const float ResponseRate = 8f;
@@ -69,10 +84,6 @@ namespace SS3D.Systems.Atmospherics
             2 => Vector3.back, _ => Vector3.left,
         };
 
-        /// <summary>The air speed a pressure gradient drives, in metres per second.</summary>
-        public static Vector3 Velocity(Vector3 pressureGradient) =>
-            Vector3.ClampMagnitude(pressureGradient * SpeedPerPressure, MaxSpeed);
-
         /// <summary>Frame-rate independent step of a body's felt wind toward the field.</summary>
         public static Vector3 Follow(Vector3 current, Vector3 target, float seconds) =>
             Vector3.Lerp(current, target, 1f - Mathf.Exp(-ResponseRate * seconds));
@@ -90,22 +101,32 @@ namespace SS3D.Systems.Atmospherics
             return direction * Mathf.Min(Mathf.Max(0f, shortfall) * DragRate, MaxAcceleration);
         }
 
-        private static Vector3 SampleCell(AtmosSimulation simulation, int index)
+        /// <summary>
+        /// <see cref="DragAcceleration"/> for a loose object: the same push moves a 1 kg item at full
+        /// rate, and lighter or heavier ones in proportion.
+        /// </summary>
+        public static Vector3 LooseBodyAcceleration(Vector3 wind, Vector3 bodyVelocity, float mass) =>
+            Vector3.ClampMagnitude(DragAcceleration(wind, bodyVelocity) / mass, MaxAcceleration);
+
+        /// <summary>
+        /// Wind at a tile centre: the mean flow through opposite edges, per mole held here, scaled by
+        /// <see cref="AirSpeedGain"/>.
+        /// </summary>
+        public static Vector3 SampleCell(AtmosSimulation simulation, int index)
         {
             AtmosCellMeta cell = simulation.CellMeta[index];
             if (cell.State == AtmosCellState.Blocked || cell.State == AtmosCellState.Vacuum)
                 return Vector3.zero;
-            float pressure = simulation.GetCellPressure(index);
-            Vector3 gradient = Vector3.zero;
-            for (int d = 0; d < 4; d++)
-            {
-                int neighbour = simulation.Neighbours[index].Get(d);
-                if (neighbour < 0 || simulation.CellMeta[neighbour].State == AtmosCellState.Blocked) continue;
-                float drop = pressure - simulation.GetCellPressure(neighbour);
-                if (drop <= MinPressure) continue;
-                gradient += Direction(d) * drop;
-            }
-            return gradient;
+
+            AtmosEdgeFlow own = simulation.EdgeFlow[index];
+            AtmosNeighbours neighbours = simulation.Neighbours[index];
+            int south = neighbours.Get(2);
+            int west = neighbours.Get(3);
+            float north = own.North + (south >= 0 ? simulation.EdgeFlow[south].North : 0f);
+            float east = own.East + (west >= 0 ? simulation.EdgeFlow[west].East : 0f);
+
+            float density = Mathf.Max(simulation.GetCellMoles(index), MinDensityMoles);
+            return Vector3.ClampMagnitude(new Vector3(east, 0f, north) * (0.5f * AirSpeedGain / density), MaxSpeed);
         }
 
         private static int OpenNeighbour(AtmosSimulation simulation, int index, int direction)

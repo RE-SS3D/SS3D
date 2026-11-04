@@ -28,5 +28,8 @@ namespace SS3D.Tests
 
         /// <summary>A Nuclear Emergency round in the test room: operative spawn, detonation and squad-out outcomes.</summary>
         public const string NukeOps = "NukeOps";
+
+        /// <summary>Map Editor effects on the live networked world.</summary>
+        public const string MapEditor = "MapEditor";
     }
 }

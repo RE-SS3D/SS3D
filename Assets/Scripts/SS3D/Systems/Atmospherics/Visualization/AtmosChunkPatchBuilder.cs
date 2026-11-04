@@ -51,14 +51,14 @@ namespace SS3D.Systems.Atmospherics.Visualization
                         chunkKey.x * AtmosConstants.ChunkSize + localX,
                         chunkKey.y * AtmosConstants.ChunkSize + localZ);
 
-                    BuildCell(simulation, patch, cellIndex, local, coord);
+                    BuildCell(simulation, patch, cellIndex, local);
                 }
             }
 
             return patch;
         }
 
-        private void BuildCell(AtmosSimulation simulation, AtmosChunkPatch patch, int cellIndex, int local, TileCoord coord)
+        private void BuildCell(AtmosSimulation simulation, AtmosChunkPatch patch, int cellIndex, int local)
         {
             AtmosCellMeta meta = simulation.CellMeta[cellIndex];
             float pressure = simulation.GetCellPressure(cellIndex);
@@ -74,25 +74,8 @@ namespace SS3D.Systems.Atmospherics.Visualization
             patch.Mask[local] = AtmosCellVisualEncoding.EncodeMask(meta.State);
             patch.Composition[local] = AtmosCellVisualEncoding.EncodeComposition(simulation.MolesRead, cellIndex);
 
-            Vector2 flow = meta.State == AtmosCellState.Blocked
-                ? Vector2.zero
-                : AtmosCellVisualEncoding.EncodeFlow(
-                    SamplePressureOffset(simulation, coord, 1, 0, pressure),
-                    SamplePressureOffset(simulation, coord, -1, 0, pressure),
-                    SamplePressureOffset(simulation, coord, 0, 1, pressure),
-                    SamplePressureOffset(simulation, coord, 0, -1, pressure));
-            AtmosCellVisualEncoding.PackFlow(flow, patch.Flow, local);
-        }
-
-        private static float SamplePressureOffset(AtmosSimulation simulation, TileCoord coord, int offsetX, int offsetZ, float self)
-        {
-            var neighbourCoord = new TileCoord(coord.MapId, coord.Grid.x + offsetX, coord.Grid.y + offsetZ);
-            if (!simulation.TryGetCellIndex(neighbourCoord, out int neighbourIndex))
-                return self;
-
-            return simulation.CellMeta[neighbourIndex].State == AtmosCellState.Blocked
-                ? self
-                : simulation.GetCellPressure(neighbourIndex);
+            AtmosCellVisualEncoding.PackFlow(
+                AtmosCellVisualEncoding.EncodeFlow(AtmosWind.SampleCell(simulation, cellIndex)), patch.Flow, local);
         }
 
         private void EnsureCapacity(int cellCount)

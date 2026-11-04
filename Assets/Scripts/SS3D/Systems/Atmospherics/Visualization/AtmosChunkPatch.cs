@@ -12,6 +12,9 @@ namespace SS3D.Systems.Atmospherics.Visualization
     {
         public const int CellCount = AtmosConstants.CellsPerChunk;
 
+        /// <summary>Serialized size of one patch: map id, chunk key, then the per-cell channels.</summary>
+        public const int WireBytes = 12 + CellCount * (2 + 2 + 4 + 2 + 1 + 1);
+
         public int MapId;
 
         /// <summary>Chunk grid key (tile coord / ChunkSize), matching <see cref="TileChunkRef.ChunkKey"/>.</summary>
@@ -21,7 +24,7 @@ namespace SS3D.Systems.Atmospherics.Visualization
         public float[] Temperature;
         public Color32[] Composition;
 
-        /// <summary>Packed 0..1 pressure-gradient direction, 2 floats (x, z) per cell.</summary>
+        /// <summary>Packed 0..1 wind, 2 floats (x, z) per cell; see <see cref="AtmosCellVisualEncoding.PackFlow"/>.</summary>
         public float[] Flow;
         public float[] FireIntensity;
         public byte[] Mask;

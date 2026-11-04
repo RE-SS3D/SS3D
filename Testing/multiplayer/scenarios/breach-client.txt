@@ -9,4 +9,5 @@ embark
 assert_embarked
 assert_wind_felt
 wait_seconds 1
+screenshot breach-wind
 disconnect

@@ -3,21 +3,11 @@ namespace SS3D.Systems.Atmospherics.ECS
     public static class AtmosFluxConstants
     {
         public const float GasConstant = 8.314f;
-        public const float SimSpeed = 1.0f;
-
-        // Cells venting into vacuum have no neighbour to overfill, so there is no stability
-        // limit: drain them far faster than normal diffusion so a breach empties quickly.
-        public const float VacuumVentSpeed = 5.0f;
-
-        // Hard cap on the fraction of a cell's gas that can vent through a single vacuum edge in one
-        // tick. Prevents a cell from fully emptying in a single step (which collapses its heat
-        // capacity to ~0 and makes its temperature oscillate); the residual drains next tick.
-        public const float MaxVentFraction = 0.5f;
         public const float PressureEpsilon = 1.0f;
 
         // Equal-pressure composition mixing: when total pressures match within PressureEpsilon,
         // still exchange moles along partial-pressure gradients so breath / scrubber pockets
-        // dilute into the room. Slower than bulk SimSpeed so stable rooms do not thrash.
+        // dilute into the room. Stays slow so stable rooms do not thrash.
         public const float DiffusionSpeed = 0.15f;
 
         // Ignore tiny partial-pressure gaps so a nearly-uniform room can sleep.
@@ -42,8 +32,38 @@ namespace SS3D.Systems.Atmospherics.ECS
         // anywhere. Applied as a direct temperature relaxation so it keeps cooling even a cell
         // that has vented to near-vacuum (where an energy-based update would divide by ~0).
         public const float SpaceConductionRate = 1.0f;
-        public const float BreachPressureThreshold = 50f;
         public const int MaxBreachSubsteps = 4;
+
+        // --- Edge flow (bulk transport with momentum, Documents/architecture/2026-11_atmos-edge-flow.md) ---
+        // How fast a pressure wave crosses open tiles at EdgeFlowReferenceTemperature, tiles/s.
+        // Wave speed rises with the square root of temperature, as sound does.
+        public const float EdgeFlowWaveSpeed = 12f;
+        public const float EdgeFlowReferenceTemperature = 293.15f;
+
+        // Upper bound on (wave speed × dt)² for the explicit 2D update. An edge that would exceed
+        // it, because it is hot or runs on a long calm step, is stiffened no further.
+        public const float EdgeFlowStabilityLimit = 0.49f;
+
+        // Friction per second. Above 2π·c/L the longest mode of a room of L tiles stops ringing.
+        public const float EdgeFlowFriction = 8f;
+
+        // Fastest gas may cross an open edge, tiles/s. Flow is capped at this speed × upwind moles.
+        public const float EdgeFlowMaxSpeed = 30f;
+
+        // The same cap on an edge into vacuum; it stands in for choked flow.
+        public const float EdgeFlowVacuumMaxSpeed = 6f;
+
+        // Fraction of a cell's gas that may leave it in one substep, across all its edges. A cell
+        // that fully empties has ~zero heat capacity, and its temperature loses any stable basis.
+        public const float EdgeFlowMaxOutflowFraction = 0.5f;
+
+        // An edge below both of these has settled: its flow is zeroed so both cells can sleep.
+        public const float EdgeFlowSettledPressure = 0.1f;
+        public const float EdgeFlowSettledFlow = 1f;
+
+        // Above either of these anywhere in the active set, the tick runs MaxBreachSubsteps.
+        public const float EdgeFlowSubstepPressure = 0.5f;
+        public const float EdgeFlowSubstepFlow = 20f;
 
         // --- Near-vacuum temperature stabilization ---
         // Below this many moles a cell is treated as effectively empty and its temperature is

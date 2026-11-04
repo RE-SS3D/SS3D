@@ -252,12 +252,18 @@ namespace SS3D.Systems.Tile
 
         /// <summary>
         /// FishNet's spawn/observer paths call <see cref="NetworkObject.SetRenderersVisible"/> directly
-        /// (bypassing this method) and can re-enable MeshRenderers after underfloor hide.
+        /// (bypassing this method) and can re-enable MeshRenderers after underfloor hide. They can also
+        /// hide a tile outside the player's AOI straight after <see cref="OnStartServer"/> showed it,
+        /// which Map Editor authoring must undo: placed but invisible, until the next full refresh.
         /// </summary>
         private void HandleHostVisibilityUpdated(bool _, bool nextVisible)
         {
             if (!nextVisible)
+            {
+                if (IsMapEditorAuthoring())
+                    RefreshHostVisibility();
                 return;
+            }
 
             // Re-apply cover-hide (forceRenderingOff). FishNet may have set enabled=true for AOI.
             if (ShouldHideUnderfloorMeshes())

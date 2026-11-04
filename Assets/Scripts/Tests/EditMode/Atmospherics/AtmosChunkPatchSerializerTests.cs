@@ -17,6 +17,7 @@ namespace EditorTests.Atmospherics
             writer.WriteAtmosChunkPatch(original);
 
             ArraySegment<byte> segment = writer.GetArraySegment();
+            Assert.That(segment.Count, Is.LessThanOrEqualTo(AtmosChunkPatch.WireBytes), "the traffic budget is counted in WireBytes");
             using PooledReader reader = ReaderPool.Retrieve(segment, null);
             AtmosChunkPatch roundTripped = reader.ReadAtmosChunkPatch();
 
@@ -31,15 +32,15 @@ namespace EditorTests.Atmospherics
 
             for (int i = 0; i < AtmosChunkPatch.CellCount; i++)
             {
-                Assert.AreEqual(original.Pressure[i], roundTripped.Pressure[i], 1e-5f);
-                Assert.AreEqual(original.Temperature[i], roundTripped.Temperature[i], 1e-5f);
+                Assert.AreEqual(original.Pressure[i], roundTripped.Pressure[i], original.Pressure[i] / 1000f);
+                Assert.AreEqual(original.Temperature[i], roundTripped.Temperature[i], original.Temperature[i] / 1000f);
                 Assert.AreEqual(original.Composition[i], roundTripped.Composition[i]);
-                Assert.AreEqual(original.FireIntensity[i], roundTripped.FireIntensity[i], 1e-5f);
+                Assert.AreEqual(original.FireIntensity[i], roundTripped.FireIntensity[i], 0.5f / 254f);
                 Assert.AreEqual(original.Mask[i], roundTripped.Mask[i]);
             }
 
             for (int i = 0; i < AtmosChunkPatch.CellCount * 2; i++)
-                Assert.AreEqual(original.Flow[i], roundTripped.Flow[i], 1e-5f);
+                Assert.AreEqual(original.Flow[i], roundTripped.Flow[i], 0.5f / 254f);
         }
 
         private static AtmosChunkPatch CreatePatch()

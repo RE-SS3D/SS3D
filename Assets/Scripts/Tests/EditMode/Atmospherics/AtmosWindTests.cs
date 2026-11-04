@@ -30,11 +30,13 @@ namespace EditorTests.Atmospherics
             sim.QueueCellRefresh(new TileCoord(map, 4, 2));
             for (int tick = 0; tick < 3; tick++) sim.Tick(AtmosConstants.TickInterval);
             Vector3 wind = AtmosWind.Sample(sim, inside);
-            Assert.That(wind.x, Is.GreaterThan(AtmosWind.MinPressure));
+            Assert.That(wind.x, Is.GreaterThan(AtmosWind.MinSpeed));
             Assert.That(Mathf.Abs(wind.z), Is.LessThan(wind.x));
             TileMapTestUtilities.PlaceAirtightWall(context, breach);
             sim.UpdateCell(new TileCoord(map, 4, 2));
-            Assert.That(AtmosWind.Sample(sim, inside).x, Is.LessThanOrEqualTo(0f));
+            // Moving air keeps its momentum briefly, so the wind dies with the flow rather than at once.
+            for (int tick = 0; tick < 25; tick++) sim.Tick(AtmosConstants.TickInterval);
+            Assert.That(AtmosWind.Sample(sim, inside).magnitude, Is.LessThan(AtmosWind.MinSpeed));
         }
 
         [Test]
@@ -52,20 +54,32 @@ namespace EditorTests.Atmospherics
             sim.UpdateCell(new TileCoord(context.Map.MapId, 1, 2));
             sim.UpdateCell(new TileCoord(context.Map.MapId, 2, 1));
             sim.UpdateCell(new TileCoord(context.Map.MapId, 2, 3));
-            Assert.That(AtmosWind.Sample(sim, cell).x, Is.GreaterThan(AtmosWind.KnockdownPressure));
+            for (int tick = 0; tick < 2; tick++) sim.Tick(AtmosConstants.TickInterval);
+            Assert.That(AtmosWind.Sample(sim, cell).x, Is.GreaterThan(AtmosWind.MinSpeed));
             Assert.That(AtmosWind.Sample(sim, new TileCoord(context.Map.MapId, 900, 900)), Is.EqualTo(Vector3.zero));
             for (int tick = 0; tick < 200; tick++) sim.Tick(AtmosConstants.TickInterval);
-            Assert.That(AtmosWind.Sample(sim, cell).magnitude, Is.LessThan(AtmosWind.MinPressure));
+            Assert.That(AtmosWind.Sample(sim, cell).magnitude, Is.LessThan(AtmosWind.MinSpeed));
         }
 
 
         [Test]
-        public void WindVelocity_IsBoundedAndScalesWithPressure()
+        public void Wind_StaysBoundedThroughAWholeDrain_AndEndsStill()
         {
-            Assert.That(AtmosWind.Velocity(Vector3.right * 10000f).magnitude,
-                Is.EqualTo(AtmosWind.MaxSpeed).Within(0.001f));
-            Assert.That(AtmosWind.Velocity(Vector3.zero), Is.EqualTo(Vector3.zero));
-            Assert.That(AtmosWind.Velocity(Vector3.right * 2f).x, Is.LessThan(AtmosWind.Velocity(Vector3.right * 4f).x));
+            var context = TileMapTestUtilities.CreateContext(_objects);
+            using var sim = OpenBreach(context, out int map);
+            var hole = new TileCoord(map, 4, 2);
+            var inside = new TileCoord(map, 3, 2);
+            float peak = 0f;
+            for (int tick = 0; tick < 300; tick++)
+            {
+                sim.Tick(AtmosConstants.TickInterval);
+                float speed = Mathf.Max(AtmosWind.Sample(sim, hole).magnitude, AtmosWind.Sample(sim, inside).magnitude);
+                Assert.That(float.IsNaN(speed), Is.False, $"tick {tick}");
+                peak = Mathf.Max(peak, speed);
+            }
+
+            Assert.That(peak, Is.GreaterThan(AtmosWind.MinSpeed).And.LessThanOrEqualTo(AtmosWind.MaxSpeed));
+            Assert.That(AtmosWind.Sample(sim, hole).magnitude, Is.LessThan(AtmosWind.MinSpeed), "thin gas stays still");
         }
 
         [Test]
@@ -90,7 +104,7 @@ namespace EditorTests.Atmospherics
             using var sim = OpenBreach(context, out int map);
             // z = 3 is the top row and z = 4 the wall, so leaning into the wall must not dilute the wind.
             Vector3 centre = AtmosWind.SampleAt(sim, new Vector3(3, 0, 3));
-            Assume.That(centre.magnitude, Is.GreaterThan(AtmosWind.MinPressure));
+            Assume.That(centre.magnitude, Is.GreaterThan(AtmosWind.MinSpeed));
             AssertClose(AtmosWind.SampleAt(sim, new Vector3(3, 0, 3.45f)), centre);
             Assert.That(AtmosWind.SampleAt(sim, new Vector3(3, 0, 4)), Is.EqualTo(Vector3.zero));
         }
@@ -115,15 +129,15 @@ namespace EditorTests.Atmospherics
         }
 
         [Test]
-        public void FlowEncoding_PointsDownhill_AndKeepsStrength()
+        public void FlowEncoding_KeepsDirectionAndStrength()
         {
-            Vector2 gentle = AtmosCellVisualEncoding.EncodeFlow(99f, 101f, 100f, 100f);
-            Vector2 violent = AtmosCellVisualEncoding.EncodeFlow(0f, 100f, 50f, 50f);
-            Assert.That(gentle.x, Is.GreaterThan(0f), "wind blows from high pressure to low");
+            Vector2 gentle = AtmosCellVisualEncoding.EncodeFlow(Vector3.right * 0.5f);
+            Vector2 violent = AtmosCellVisualEncoding.EncodeFlow(Vector3.right * 50f);
+            Assert.That(gentle.x, Is.GreaterThan(0f));
             Assert.That(gentle.y, Is.EqualTo(0f).Within(0.0001f));
             Assert.That(gentle.magnitude, Is.LessThan(violent.magnitude));
             Assert.That(violent.magnitude, Is.EqualTo(1f).Within(0.001f));
-            Assert.That(AtmosCellVisualEncoding.EncodeFlow(100f, 100f, 100f, 100f), Is.EqualTo(Vector2.zero));
+            Assert.That(AtmosCellVisualEncoding.EncodeFlow(Vector3.zero), Is.EqualTo(Vector2.zero));
         }
 
         [Test]

@@ -20,22 +20,21 @@ namespace SS3D.Systems.Atmospherics.Visualization
         public const byte MaskVacuum = 2;
         public const byte MaskBlocked = 3;
 
-        /// <summary>Downhill pressure drop per tile (kPa) at which encoded flow reaches full strength.</summary>
-        public const float FlowFullScaleKpa = AtmosWind.KnockdownPressure;
+        /// <summary>Wind speed (m/s) at which encoded flow reaches full strength.</summary>
+        public const float FlowFullScaleSpeed = AtmosWind.KnockdownSpeed;
 
         /// <summary>
-        /// Wind in -1..1 from the four neighbour pressures: it points downhill, and length grows with
-        /// the square root of the slope so a gentle draught still reads. Callers pass the cell's own
-        /// pressure for a wall or unknown neighbour, so walls add no slope.
+        /// Wind in -1..1 from a tile's air speed: it keeps direction, and length grows with the
+        /// square root of speed so a gentle draught still reads.
         /// </summary>
-        public static Vector2 EncodeFlow(float east, float west, float north, float south)
+        public static Vector2 EncodeFlow(Vector3 wind)
         {
-            var slope = new Vector2(west - east, south - north) * 0.5f;
-            float magnitude = slope.magnitude;
-            if (magnitude <= 1e-4f)
+            var planar = new Vector2(wind.x, wind.z);
+            float speed = planar.magnitude;
+            if (speed <= 1e-4f)
                 return Vector2.zero;
 
-            return slope / magnitude * Mathf.Sqrt(Mathf.Min(magnitude / FlowFullScaleKpa, 1f));
+            return planar / speed * Mathf.Sqrt(Mathf.Min(speed / FlowFullScaleSpeed, 1f));
         }
 
         /// <summary>Stores encoded flow as 0..1 RG, where 0.5 is still air.</summary>

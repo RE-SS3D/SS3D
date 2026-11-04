@@ -130,20 +130,25 @@ namespace EditorTests
         /// cannot drain the room through open cardinal edges.
         /// Interior occupies (origin+1, origin+1) through (origin+size, origin+size).
         /// </summary>
-        internal static void BuildWalledRoom(MapContext context, int originX, int originZ, int interiorSize)
+        internal static void BuildWalledRoom(MapContext context, int originX, int originZ, int interiorSize) =>
+            BuildWalledRoom(context, originX, originZ, interiorSize, interiorSize);
+
+        /// <summary>Rectangular <see cref="BuildWalledRoom(MapContext,int,int,int)"/>; may span chunks.</summary>
+        internal static void BuildWalledRoom(MapContext context, int originX, int originZ, int interiorWidth, int interiorDepth)
         {
-            int outerSize = interiorSize + 2;
-            for (int x = 0; x < outerSize; x++)
+            int outerWidth = interiorWidth + 2;
+            int outerDepth = interiorDepth + 2;
+            for (int x = 0; x < outerWidth; x++)
             {
-                for (int z = 0; z < outerSize; z++)
+                for (int z = 0; z < outerDepth; z++)
                     PlacePlenum(context, new Vector3(originX + x, 0, originZ + z));
             }
 
-            for (int x = 0; x < outerSize; x++)
+            for (int x = 0; x < outerWidth; x++)
             {
-                for (int z = 0; z < outerSize; z++)
+                for (int z = 0; z < outerDepth; z++)
                 {
-                    bool isPerimeter = x == 0 || z == 0 || x == outerSize - 1 || z == outerSize - 1;
+                    bool isPerimeter = x == 0 || z == 0 || x == outerWidth - 1 || z == outerDepth - 1;
                     if (!isPerimeter)
                         continue;
 

@@ -19,7 +19,7 @@ One row per gameplay domain that has, or should eventually have, a design doc. A
 | antagonist-content | [antagonist-content](../design/antagonist-content.md) | [round-end-loop](2026-11_round-end-loop.md) — active (squad draw P2 shipped; win/lose rules P3) | [gamemodes-roles-traits](systems/gamemodes-roles-traits.md) — partial |
 | area | [area](../design/area.md) | [area-foundation](../archive/architecture/2026-07_area-foundation.md) — shipped | [area](systems/area.md) — partial |
 | armor | [armor](../design/armor.md) | [combat plan](../plans/combat_implementation_plan.md) Phase 5 — in-progress | [combat](systems/combat.md) — partial |
-| atmospherics | [atmospherics](../design/atmospherics.md) | [atmos-ecs-foundation](../archive/architecture/2026-07_atmos-ecs-foundation.md) — shipped; [atmos-client-visualization-sync](2026-07_atmos-client-visualization-sync.md) — shipped; [atmos-edge-flow](2026-11_atmos-edge-flow.md) — planned; [metastation-scale-perf](../archive/architecture/2026-07_metastation-scale-perf.md) — shipped | [atmospherics](systems/atmospherics.md) — partial |
+| atmospherics | [atmospherics](../design/atmospherics.md) | [atmos-ecs-foundation](../archive/architecture/2026-07_atmos-ecs-foundation.md) — shipped; [atmos-client-visualization-sync](2026-07_atmos-client-visualization-sync.md) — shipped; [atmos-edge-flow](2026-11_atmos-edge-flow.md) — in-progress; [metastation-scale-perf](../archive/architecture/2026-07_metastation-scale-perf.md) — shipped | [atmospherics](systems/atmospherics.md) — partial |
 | audio | [audio](../design/audio.md) | [audio-foundation](2026-07_audio-foundation.md) — in-progress | [audio](systems/audio.md) — partial |
 | cargo | [cargo](../design/cargo.md) | none yet | none yet |
 | chemistry | [chemistry](../design/chemistry.md) | [substances-foundation](../archive/architecture/2026-07_substances-foundation.md) — shipped | [substances](systems/substances.md) — partial |
@@ -69,7 +69,7 @@ Infrastructure and gameplay maps, including the ones with no design doc (interac
 | [application](systems/application.md) | stub | `ApplicationInitializerSubSystem`; Boot as launch pad |
 | [area](systems/area.md) | partial | APC default areas, authored painting ([area-authoring](systems/area-authoring.md)), lighting snapshot |
 | [asset-organization](systems/asset-organization.md) | partial | Art/Content/Data folder taxonomy, icon placement |
-| [atmospherics](systems/atmospherics.md) | partial | ECS turf gas sim, pressure-driven wind/knockdown, client VFX sync, host AOI |
+| [atmospherics](systems/atmospherics.md) | partial | ECS turf gas sim, pressure-driven wind/knockdown, loose items in wind, client VFX sync, host AOI |
 | [audio](systems/audio.md) | partial | SFX pool, occlusion, ambience, personal audio cues; child map [audio-content](systems/audio-content.md) for clips |
 | [chat-audio-screens](systems/chat-audio-screens.md) | partial | Comms hub: local speech, radio/announce feed, compose |
 | [combat](systems/combat.md) | partial | Melee, ranged hitscan, armor absorption, combat feel |
@@ -132,7 +132,7 @@ Only work that is in flight, planned, or kept as standing reference. Everything 
 | [2026-10_game-versioning](2026-10_game-versioning.md) | shipped (reference) |
 | [2026-10_player-settings](2026-10_player-settings.md) | in-progress |
 | [2026-11_sandbox-server](2026-11_sandbox-server.md) | in-progress |
-| [2026-11_atmos-edge-flow](2026-11_atmos-edge-flow.md) | planned |
+| [2026-11_atmos-edge-flow](2026-11_atmos-edge-flow.md) | in-progress |
 | [2026-11_round-end-loop](2026-11_round-end-loop.md) | active (P1–P2 shipped) |
 | [2026-11_testing-philosophy](2026-11_testing-philosophy.md) | shipped (standing policy) |
 | [agent_validation_loop.plan](../plans/agent_validation_loop.plan.md) | shipped (reference) |

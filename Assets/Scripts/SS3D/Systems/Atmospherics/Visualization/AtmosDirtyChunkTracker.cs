@@ -8,27 +8,35 @@ using UnityEngine;
 namespace SS3D.Systems.Atmospherics.Visualization
 {
     /// <summary>
-    /// Tracks which atmos chunks changed enough visually (pressure, temperature, composition,
+    /// Tracks which atmos chunks changed enough visually (pressure, temperature, composition, wind,
     /// fire, or state) to be worth re-sending to clients. Reused per tick so only chunks with a
     /// meaningful delta get a network patch, instead of broadcasting the whole map. Server-only.
     /// Scans <see cref="AtmosSimulation.ActiveCells"/> only — stagnant Inactive/Vacuum/Blocked
-    /// tiles do not wake the dirty set.
+    /// tiles do not wake the dirty set. A cell compares against the values it last reported, not
+    /// last tick's: a big room's slow drain changes each tick by less than any threshold, and
+    /// clients would never hear of it. Chunks queue oldest first, so a cap on chunks per tick
+    /// delays changes evenly instead of starving a chunk.
     /// </summary>
     public sealed class AtmosDirtyChunkTracker
     {
-        private const float PressureEpsilonKpa = 0.05f;
+        private const float PressureEpsilonKpa = 0.5f;
         private const float TemperatureEpsilonKelvin = 0.5f;
         private const float FireEpsilon = 0.02f;
         private const float CompositionEpsilon = 0.02f;
+
+        // Encoded wind, 0..1. Encoding follows the square root of speed, so a draught dying away counts.
+        private const float FlowEpsilon = 0.04f;
         private const int CompositionChannels = AtmosCellVisualEncoding.CompositionGasChannels;
 
         private float[] _prevPressure = Array.Empty<float>();
         private float[] _prevTemperature = Array.Empty<float>();
         private float[] _prevFire = Array.Empty<float>();
+        private Vector2[] _prevFlow = Array.Empty<Vector2>();
         private float[] _prevComposition = Array.Empty<float>();
         private byte[] _prevMask = Array.Empty<byte>();
 
         private readonly HashSet<Vector2Int> _dirtyChunks = new();
+        private readonly Queue<Vector2Int> _dirtyOrder = new();
 
         public void Update(AtmosSimulation simulation)
         {
@@ -54,7 +62,7 @@ namespace SS3D.Systems.Atmospherics.Visualization
 
                 int chunkIndex = cellIndex / AtmosConstants.CellsPerChunk;
                 if (chunkIndex >= 0 && chunkIndex < chunks.Count)
-                    _dirtyChunks.Add(chunks[chunkIndex].ChunkKey);
+                    MarkDirty(chunks[chunkIndex].ChunkKey);
             }
         }
 
@@ -73,17 +81,29 @@ namespace SS3D.Systems.Atmospherics.Visualization
                 }
 
                 if (dirty)
-                    _dirtyChunks.Add(chunks[chunkIndex].ChunkKey);
+                    MarkDirty(chunks[chunkIndex].ChunkKey);
             }
         }
 
-        /// <summary>Moves the accumulated dirty set into <paramref name="results"/> and clears it.</summary>
-        public void ConsumeDirtyChunks(List<Vector2Int> results)
+        /// <summary>
+        /// Moves up to <paramref name="maxChunks"/> of the longest-waiting dirty chunks into
+        /// <paramref name="results"/>. The rest stay queued for the next call.
+        /// </summary>
+        public void ConsumeDirtyChunks(List<Vector2Int> results, int maxChunks = int.MaxValue)
         {
             results.Clear();
-            foreach (Vector2Int chunk in _dirtyChunks)
+            while (results.Count < maxChunks && _dirtyOrder.Count > 0)
+            {
+                Vector2Int chunk = _dirtyOrder.Dequeue();
+                _dirtyChunks.Remove(chunk);
                 results.Add(chunk);
-            _dirtyChunks.Clear();
+            }
+        }
+
+        private void MarkDirty(Vector2Int chunk)
+        {
+            if (_dirtyChunks.Add(chunk))
+                _dirtyOrder.Enqueue(chunk);
         }
 
         private bool UpdateCell(AtmosSimulation simulation, int cellIndex)
@@ -98,24 +118,36 @@ namespace SS3D.Systems.Atmospherics.Visualization
             if (!meta.IsSimulated)
                 return changed;
 
-            float pressure = simulation.GetCellPressure(cellIndex);
-            if (Mathf.Abs(pressure - _prevPressure[cellIndex]) > PressureEpsilonKpa)
+            if (Changed(simulation.GetCellPressure(cellIndex), ref _prevPressure[cellIndex], PressureEpsilonKpa))
                 changed = true;
-            _prevPressure[cellIndex] = pressure;
 
-            if (Mathf.Abs(meta.Temperature - _prevTemperature[cellIndex]) > TemperatureEpsilonKelvin)
+            if (Changed(meta.Temperature, ref _prevTemperature[cellIndex], TemperatureEpsilonKelvin))
                 changed = true;
-            _prevTemperature[cellIndex] = meta.Temperature;
 
             float fire = simulation.BurnIntensity.IsCreated ? simulation.BurnIntensity[cellIndex] : 0f;
-            if (Mathf.Abs(fire - _prevFire[cellIndex]) > FireEpsilon)
+            if (Changed(fire, ref _prevFire[cellIndex], FireEpsilon))
                 changed = true;
-            _prevFire[cellIndex] = fire;
+
+            Vector2 flow = AtmosCellVisualEncoding.EncodeFlow(AtmosWind.SampleCell(simulation, cellIndex));
+            if ((flow - _prevFlow[cellIndex]).sqrMagnitude > FlowEpsilon * FlowEpsilon)
+            {
+                _prevFlow[cellIndex] = flow;
+                changed = true;
+            }
 
             if (UpdateComposition(simulation, cellIndex))
                 changed = true;
 
             return changed;
+        }
+
+        private static bool Changed(float value, ref float reported, float epsilon)
+        {
+            if (Mathf.Abs(value - reported) <= epsilon)
+                return false;
+
+            reported = value;
+            return true;
         }
 
         private bool UpdateComposition(AtmosSimulation simulation, int cellIndex)
@@ -139,10 +171,8 @@ namespace SS3D.Systems.Atmospherics.Visualization
             bool changed = false;
             for (int gasId = 0; gasId < CompositionChannels; gasId++)
             {
-                int index = compositionBase + gasId;
-                if (Mathf.Abs(fractions[gasId] - _prevComposition[index]) > CompositionEpsilon)
+                if (Changed(fractions[gasId], ref _prevComposition[compositionBase + gasId], CompositionEpsilon))
                     changed = true;
-                _prevComposition[index] = fractions[gasId];
             }
 
             return changed;
@@ -156,6 +186,7 @@ namespace SS3D.Systems.Atmospherics.Visualization
             Grow(ref _prevPressure, cellCount);
             Grow(ref _prevTemperature, cellCount);
             Grow(ref _prevFire, cellCount);
+            Grow(ref _prevFlow, cellCount);
             Grow(ref _prevMask, cellCount);
             Grow(ref _prevComposition, cellCount * CompositionChannels);
         }

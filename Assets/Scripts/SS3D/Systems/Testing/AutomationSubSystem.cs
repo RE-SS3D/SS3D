@@ -2,6 +2,7 @@ using Coimbra;
 using Coimbra.Services.Events;
 using FishNet;
 using FishNet.Managing;
+using FishNet.Managing.Statistic;
 using FishNet.Transporting;
 using SS3D.Application;
 using SS3D.Application.Events;
@@ -12,9 +13,12 @@ using SS3D.Data.Generated;
 using SS3D.Networking;
 using SS3D.Networking.Settings;
 using SS3D.Systems.Atmospherics;
+using SS3D.Systems.Atmospherics.ECS;
+using SS3D.Systems.Atmospherics.Visualization;
 using SS3D.Systems.Entities;
 using SS3D.Systems.Entities.Humanoid;
 using SS3D.Systems.IngameConsoleSystem;
+using SS3D.Systems.Inventory.Items;
 using SS3D.Systems.PlayerControl;
 using SS3D.Systems.Rounds;
 using SS3D.Systems.Rounds.Messages;
@@ -511,6 +515,34 @@ namespace SS3D.Systems.Testing
                     TestSignal.Emit(this, "BreachOpened", BreachBesideClient());
                     break;
 
+                // Host: the next round loads this map and mode. Map names may not contain spaces here.
+                case "use_station":
+                    UseStation(instruction.Args[0], instruction.Args[1]);
+                    yield return new WaitForSeconds(1);
+                    break;
+
+                // Server: opens a one-tile hole in the hull, the way destruction does: the wall goes
+                // and the plenum stays, so the hole is a neck between the air and space.
+                case "breach_hull":
+                    TestSignal.Emit(this, "BreachOpened", BreachHull());
+                    break;
+
+                // Server: spawns this many loose items on the air tiles nearest the last breach_hull.
+                case "scatter_items":
+                    ScatterItems(int.Parse(instruction.Args[0]));
+                    TestSignal.Emit(this, "ItemsScattered");
+                    break;
+
+                // Server: records atmos tick cost and patch traffic for this many seconds.
+                case "atmos_budget":
+                    yield return SampleAtmosBudget(float.Parse(instruction.Args[0], System.Globalization.CultureInfo.InvariantCulture));
+                    break;
+
+                // Client: records the bytes this process really received from the server for this many seconds.
+                case "client_traffic":
+                    yield return SampleClientTraffic(float.Parse(instruction.Args[0], System.Globalization.CultureInfo.InvariantCulture));
+                    break;
+
                 // Client: this process drew wind streaks and its own body was pushed by the wind.
                 case "assert_wind_felt":
                     yield return AssertWindFelt();
@@ -652,6 +684,134 @@ namespace SS3D.Systems.Testing
             }
 
             throw new InvalidOperationException("breach_beside_client: no remote body");
+        }
+
+        private static void UseStation(string map, string mode)
+        {
+            RoundSubSystem rounds = SubSystems.Get<RoundSubSystem>();
+            ServerSettings settings = rounds.SettingsForServer;
+            settings.Map = map;
+            settings.Mode = mode;
+            rounds.CmdUpdateServerSetting(ServerSetting.Map, settings);
+            rounds.CmdUpdateServerSetting(ServerSetting.Mode, settings);
+        }
+
+        private static Vector3 _lastBreach;
+
+        private static void ScatterItems(int count)
+        {
+            AtmosSimulation simulation = SubSystems.Get<AtmosSubSystem>().Simulation;
+            TileSubSystem tiles = SubSystems.Get<TileSubSystem>();
+            ItemSubSystem items = SubSystems.Get<ItemSubSystem>();
+            var open = new List<Vector3>();
+            simulation.ForEachCell((coord, index) =>
+            {
+                if (simulation.CellMeta[index].State != AtmosCellState.Vacuum && simulation.CellMeta[index].State != AtmosCellState.Blocked)
+                    open.Add(tiles.QueryService.TileToWorld(coord));
+            });
+            open.Sort((a, b) => (a - _lastBreach).sqrMagnitude.CompareTo((b - _lastBreach).sqrMagnitude));
+            for (int i = 0; i < count; i++)
+                items.SpawnItem(Items.Wrench, open[i % open.Count] + Vector3.up * 0.2f, Quaternion.identity);
+        }
+
+        private static string BreachHull()
+        {
+            AtmosSimulation simulation = SubSystems.Get<AtmosSubSystem>().Simulation;
+            TileSubSystem tiles = SubSystems.Get<TileSubSystem>();
+            string hole = null;
+            int candidates = 0;
+            simulation.ForEachCell((coord, index) =>
+            {
+                if (hole != null || !IsHullBetweenAirAndSpace(simulation, coord, index)) return;
+                candidates++;
+                Vector3 world = tiles.QueryService.TileToWorld(coord);
+                if (!tiles.Construction.TryClearTile(world, TileLayer.Turf, Direction.North).Success) return;
+                hole = world.ToString();
+                _lastBreach = world;
+            });
+            return hole ?? throw new InvalidOperationException($"breach_hull: {candidates} hull walls between air and space, none cleared");
+        }
+
+        private static bool IsHullBetweenAirAndSpace(AtmosSimulation simulation, TileCoord coord, int index)
+        {
+            if (simulation.CellMeta[index].State != AtmosCellState.Blocked) return false;
+            return IsAirAcross(simulation, coord, 1, 0) || IsAirAcross(simulation, coord, 0, 1);
+        }
+
+        private static bool IsAirAcross(AtmosSimulation simulation, TileCoord coord, int x, int z)
+        {
+            var east = new TileCoord(simulation.MapId, coord.Grid.x + x, coord.Grid.y + z);
+            var west = new TileCoord(simulation.MapId, coord.Grid.x - x, coord.Grid.y - z);
+            if (!simulation.TryGetCellIndex(east, out int a) || !simulation.TryGetCellIndex(west, out int b)) return false;
+            AtmosCellMeta metaA = simulation.CellMeta[a];
+            AtmosCellMeta metaB = simulation.CellMeta[b];
+            return (metaA.State == AtmosCellState.Vacuum && metaB.IsSimulated) || (metaB.State == AtmosCellState.Vacuum && metaA.IsSimulated);
+        }
+
+        private IEnumerator SampleAtmosBudget(float seconds)
+        {
+            AtmosSubSystem atmos = SubSystems.Get<AtmosSubSystem>();
+            var tick = new List<float>();
+            var sim = new List<float>();
+            var chunks = new List<int>();
+            int maxActive = 0;
+            int maxPushed = 0;
+            var sent = new List<float>();
+            void OnTraffic(NetworkTrafficArgs traffic) => sent.Add(traffic.FromServerBytes / 1024f);
+            NetworkTraficStatistics statistics = InstanceFinder.NetworkManager.StatisticsManager.NetworkTraffic;
+            statistics.OnServerNetworkTraffic += OnTraffic;
+            int lastTick = atmos.TickCount;
+            float end = Time.realtimeSinceStartup + seconds;
+            while (Time.realtimeSinceStartup < end)
+            {
+                yield return null;
+                if (atmos.TickCount == lastTick) continue;
+                lastTick = atmos.TickCount;
+                tick.Add(atmos.LastTickMilliseconds);
+                sim.Add(atmos.LastSimulationMilliseconds);
+                chunks.Add(atmos.LastPatchChunks);
+                maxActive = Mathf.Max(maxActive, atmos.Simulation.ActiveCellCount);
+                maxPushed = Mathf.Max(maxPushed, atmos.LooseBodies.PushedCount);
+            }
+
+            statistics.OnServerNetworkTraffic -= OnTraffic;
+            int totalChunks = 0;
+            int maxChunks = 0;
+            foreach (int count in chunks)
+            {
+                totalChunks += count;
+                maxChunks = Mathf.Max(maxChunks, count);
+            }
+
+            float bytesPerSecond = AtmosChunkPatch.WireBytes / AtmosConstants.TickInterval;
+            string report = $"ticks={tick.Count} tick p50/max={Percentile(tick, 0.5f):F2}/{Percentile(tick, 1f):F2} ms " +
+                $"sim p50/max={Percentile(sim, 0.5f):F2}/{Percentile(sim, 1f):F2} ms active max={maxActive} " +
+                $"chunks mean/max={(float)totalChunks / Mathf.Max(tick.Count, 1):F1}/{maxChunks} " +
+                $"traffic mean/max={bytesPerSecond * totalChunks / Mathf.Max(tick.Count, 1) / 1024f:F0}/{bytesPerSecond * maxChunks / 1024f:F0} KB/s " +
+                $"sent to all connections p50/max={Percentile(sent, 0.5f):F0}/{Percentile(sent, 1f):F0} KB/s pushed max={maxPushed} adrift={atmos.LooseBodies.AdriftCount}";
+            Debug.Log($"[atmos-budget] {report}");
+            TestSignal.Emit(this, "AtmosBudget", report);
+        }
+
+        private IEnumerator SampleClientTraffic(float seconds)
+        {
+            var received = new List<float>();
+            void OnTraffic(NetworkTrafficArgs traffic) => received.Add(traffic.FromServerBytes / 1024f);
+            NetworkTraficStatistics statistics = InstanceFinder.NetworkManager.StatisticsManager.NetworkTraffic;
+            statistics.OnClientNetworkTraffic += OnTraffic;
+            yield return new WaitForSeconds(seconds);
+            statistics.OnClientNetworkTraffic -= OnTraffic;
+            string series = string.Join(" ", received.ConvertAll(kilobytes => kilobytes.ToString("F0")));
+            string report = $"received p50/p90/max={Percentile(received, 0.5f):F0}/{Percentile(received, 0.9f):F0}/{Percentile(received, 1f):F0} KB/s";
+            Debug.Log($"[atmos-budget] client {report} per second: {series}");
+            TestSignal.Emit(this, "ClientTraffic", report);
+        }
+
+        private static float Percentile(List<float> samples, float fraction)
+        {
+            if (samples.Count == 0) return 0f;
+            samples.Sort();
+            return samples[Mathf.Clamp(Mathf.CeilToInt(samples.Count * fraction) - 1, 0, samples.Count - 1)];
         }
 
         private IEnumerator AssertWindFelt()

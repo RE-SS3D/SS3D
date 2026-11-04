@@ -17,6 +17,7 @@ import asyncio
 import json
 import os
 import re
+import shutil
 import signal
 import subprocess
 import time
@@ -57,7 +58,11 @@ MPPM_SCENARIOS = {
     "late-join": ("late-join-host", ["late-join-client-1"]),
     "reconnect": ("reconnect-host", ["reconnect-client"]),
     "breach": ("breach-host", ["breach-client"]),
+    "breach-budget": ("breach-budget-host", ["breach-budget-client"]),
 }
+# Scenario -> station fixture its host loads, copied in for the run: rounds read Data/StationTemplates.
+MPPM_STATIONS = {"breach-budget": "atmostest.json"}
+STATION_TEMPLATES = ROOT / "Builds/Game/Data/StationTemplates"
 MPPM_RESULTS = ROOT / "Temp/mppm-automation"
 KNOWN_ISSUE_DIR = ROOT / "Assets/Scripts/Tests/KnownIssueReproduction"
 KNOWN_ISSUE_LIST = ROOT / "Testing/ui/playmode-known-issues.txt"
@@ -552,6 +557,9 @@ async def step_mppm(editor, ctx, scenario):
         raise StepFailed(f"MPPM prepare: {error}")
 
     expected = len(clients) + 1
+    station = MPPM_STATIONS.get(scenario)
+    if station:
+        shutil.copy(ROOT / "Testing/fixtures/stations" / station, STATION_TEMPLATES / station)
     try:
         async def launched():
             # PlayerState sticks at 'Launching' on Linux even for a healthy clone (MPPM 2.0.2),
@@ -585,6 +593,8 @@ async def step_mppm(editor, ctx, scenario):
     finally:
         await stop_play(editor)
         await editor.execute("return SS3D.Editor.Automation.MultiplayerPlayModeSmoke.Finish(true);")
+        if station:
+            (STATION_TEMPLATES / station).unlink(missing_ok=True)
 
     problems, verdicts = [], []
     for player, result in sorted(data.items()):

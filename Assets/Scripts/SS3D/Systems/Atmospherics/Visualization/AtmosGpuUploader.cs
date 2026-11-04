@@ -40,13 +40,11 @@ namespace SS3D.Systems.Atmospherics.Visualization
 
         // Cached method-group delegates so Refresh does not allocate closures each tick.
         private readonly Action<TileCoord, int> _fillCellTexel;
-        private readonly Action<TileCoord, int> _writeFlowTexel;
         private AtmosSimulation _activeSimulation;
 
         public AtmosGpuUploader()
         {
             _fillCellTexel = FillCellTexel;
-            _writeFlowTexel = WriteFlowTexel;
         }
 
         public bool IsValid => _valid;
@@ -102,10 +100,7 @@ namespace SS3D.Systems.Atmospherics.Visualization
             if (aoiMinX.HasValue)
                 FillWindow(simulation, minX, minZ, maxX, maxZ);
             else
-            {
                 simulation.ForEachCell(_fillCellTexel);
-                simulation.ForEachCell(_writeFlowTexel);
-            }
 
             _activeSimulation = null;
             UploadTextures();
@@ -124,17 +119,6 @@ namespace SS3D.Systems.Atmospherics.Visualization
                         continue;
 
                     _fillCellTexel(coord, cellIndex);
-                }
-            }
-
-            // Flow reads all four neighbours, so it needs every cell filled first.
-            for (int z = minZ; z <= maxZ; z++)
-            {
-                for (int x = minX; x <= maxX; x++)
-                {
-                    TileCoord coord = new TileCoord(mapId, new Vector2Int(x, z));
-                    if (simulation.TryGetCellIndex(coord, out int cellIndex))
-                        _writeFlowTexel(coord, cellIndex);
                 }
             }
         }
@@ -219,39 +203,8 @@ namespace SS3D.Systems.Atmospherics.Visualization
             _fireScratch[texel] = visualFire;
             _maskScratch[texel] = AtmosCellVisualEncoding.EncodeMask(meta.State);
             _compositionScratch[texel] = AtmosCellVisualEncoding.EncodeComposition(simulation.MolesRead, cellIndex);
-        }
-
-        private void WriteFlowTexel(TileCoord coord, int _)
-        {
-            int texel = GetTexelIndex(coord.Grid.x - _minTileX, coord.Grid.y - _minTileZ);
-            if (texel < 0)
-                return;
-
-            byte mask = _maskScratch[texel];
-            if (mask == AtmosCellVisualEncoding.MaskEmpty || mask == AtmosCellVisualEncoding.MaskBlocked)
-                return;
-
-            int x = coord.Grid.x;
-            int z = coord.Grid.y;
-            float self = _pressureScratch[texel];
-            Vector2 flow = AtmosCellVisualEncoding.EncodeFlow(
-                SamplePressureOffset(x + 1, z, self),
-                SamplePressureOffset(x - 1, z, self),
-                SamplePressureOffset(x, z + 1, self),
-                SamplePressureOffset(x, z - 1, self));
-            AtmosCellVisualEncoding.PackFlow(flow, _flowScratch, texel);
-        }
-
-        private float SamplePressureOffset(int tileX, int tileZ, float self)
-        {
-            int texel = GetTexelIndex(tileX - _minTileX, tileZ - _minTileZ);
-            if (texel < 0)
-                return self;
-
-            byte mask = _maskScratch[texel];
-            return mask == AtmosCellVisualEncoding.MaskEmpty || mask == AtmosCellVisualEncoding.MaskBlocked
-                ? self
-                : _pressureScratch[texel];
+            AtmosCellVisualEncoding.PackFlow(
+                AtmosCellVisualEncoding.EncodeFlow(AtmosWind.SampleCell(simulation, cellIndex)), _flowScratch, texel);
         }
 
         private int GetTexelIndex(int localX, int localZ)

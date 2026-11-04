@@ -49,7 +49,7 @@ Coverage means how much of the design intent is playable today, not “code exis
 | [Station lighting (URP)](#urp-lighting-phase-1) | partial | Fixture-driven half-toon Forward+ look; client SyncVar fixture visuals; visual plate polish still open |
 | [Areas + station power](#area-foundation) | partial | APC-seeded areas, kWh cells, channel shedding, area lights/switches; [solar panels + tracker](#solar-generation); live remesh pending |
 | [Machine interfaces](#machine-interfaces) | shipped | Diegetic UITK APC/SMES/atmos ports/vending; engineering ID swipe; host-echo TargetRpc gate |
-| [Atmospherics](#atmospherics-ecs-foundation) | partial | Turf gas ECS + fire + equal-P composition diffusion; pipe networks + ports; Phase 1 dirty-chunk client VFX sync (AOI / late-join deferred) |
+| [Atmospherics](#atmospherics-ecs-foundation) | partial | Turf gas ECS + fire + per-edge bulk flow + equal-P composition diffusion; pipe networks + ports; Phase 1 dirty-chunk client VFX sync (AOI / late-join deferred) |
 | [ID / access](#id-access-foundation) | partial | Crew records, door + machine gates, ID console; auth logs / broader design pending |
 | [Tilemap / construction](#tilemap-and-adjacency-engine) | shipped | Adjacency engine, construction service, AOI tile sync, layer visibility |
 | [Map Editor](#map-editor-replacement) | partial | Full-screen UITK Map Editor + spawn-point authoring/persistence; Builder / instant place / round-config pool / runtime spawn pick deferred |

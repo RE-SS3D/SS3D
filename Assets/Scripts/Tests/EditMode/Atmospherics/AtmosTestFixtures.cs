@@ -41,22 +41,39 @@ namespace EditorTests.Atmospherics
             int size,
             out int mapId)
         {
+            return CreateSealedRoomSimulation(context, size, size, out mapId);
+        }
+
+        /// <summary>A sealed rectangular room at the map origin; every chunk it touches is simulated.</summary>
+        internal static AtmosSimulation CreateSealedRoomSimulation(
+            TileMapTestUtilities.MapContext context,
+            int width,
+            int depth,
+            out int mapId)
+        {
             const int origin = 0;
-            TileMapTestUtilities.BuildWalledRoom(context, origin, origin, size);
+            TileMapTestUtilities.BuildWalledRoom(context, origin, origin, width, depth);
 
             mapId = context.Map.MapId;
             var simulation = new AtmosSimulation(context.Query, mapId, AtmosConstants.DefaultGasCount);
-            simulation.CreateChunk(new TileChunkRef
+            int outerWidth = width + 2;
+            int outerDepth = depth + 2;
+            for (int chunkX = 0; chunkX * AtmosConstants.ChunkSize < outerWidth; chunkX++)
             {
-                MapId = mapId,
-                ChunkKey = Vector2Int.zero,
-                Origin = Vector3.zero,
-            });
+                for (int chunkZ = 0; chunkZ * AtmosConstants.ChunkSize < outerDepth; chunkZ++)
+                {
+                    simulation.CreateChunk(new TileChunkRef
+                    {
+                        MapId = mapId,
+                        ChunkKey = new Vector2Int(chunkX, chunkZ),
+                        Origin = new Vector3(chunkX * AtmosConstants.ChunkSize, 0f, chunkZ * AtmosConstants.ChunkSize),
+                    });
+                }
+            }
 
-            int outerSize = size + 2;
-            for (int x = 0; x < outerSize; x++)
+            for (int x = 0; x < outerWidth; x++)
             {
-                for (int z = 0; z < outerSize; z++)
+                for (int z = 0; z < outerDepth; z++)
                     simulation.UpdateCell(new TileCoord(mapId, origin + x, origin + z));
             }
 

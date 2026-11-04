@@ -1,0 +1,10 @@
+# Client side of mppm:breach-budget: one remote body, so the host sends patches to a real connection.
+wait_timeout 60
+wait_connected
+wait_round Ongoing
+wait_seconds 1
+ready
+embark
+assert_embarked
+client_traffic 55
+disconnect
