@@ -138,7 +138,8 @@ float2 AtmosSampleFlow(float2 worldXZ)
     return packed * 2.0 - 1.0;
 }
 
-// Scroll procedural noise by the flow field so fog and plasma appear to move with gas.
+// Scroll noise with the wind. Two half-cycle-offset layers restart in turn, so a changing flow never
+// shifts accumulated scroll: multiplying flow by _Time.y directly would jump the noise on every tick.
 float AtmosFlowModulation(float2 worldXZ, float fire)
 {
     if (_AtmosTurbulenceStrength <= 0.0)
@@ -149,9 +150,14 @@ float AtmosFlowModulation(float2 worldXZ, float fire)
     if (flowMag <= 0.001 && fire <= 0.001)
         return 1.0;
 
-    float2 rise = float2(flow.x, abs(flow.y) + fire * _AtmosFireRiseStrength);
-    float2 noiseCoord = worldXZ * _AtmosFlowNoiseScale + rise * _Time.y * _AtmosFlowSpeed;
-    float noise = AtmosDistortionNoise(noiseCoord) * 2.0 - 1.0;
+    float2 drift = (flow + float2(0.0, fire * _AtmosFireRiseStrength)) * _AtmosFlowSpeed;
+    float2 noiseCoord = worldXZ * _AtmosFlowNoiseScale;
+    float phaseA = frac(_Time.y);
+    float phaseB = frac(_Time.y + 0.5);
+    float weightA = 1.0 - abs(phaseA * 2.0 - 1.0);
+    float noiseA = AtmosDistortionNoise(noiseCoord - drift * phaseA);
+    float noiseB = AtmosDistortionNoise(noiseCoord - drift * phaseB + float2(17.3, 9.1));
+    float noise = lerp(noiseB, noiseA, weightA) * 2.0 - 1.0;
     float drive = max(flowMag, fire * 0.5);
     return 1.0 + noise * _AtmosTurbulenceStrength * drive;
 }

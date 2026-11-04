@@ -20,6 +20,62 @@ namespace SS3D.Systems.Atmospherics.Visualization
         public const byte MaskVacuum = 2;
         public const byte MaskBlocked = 3;
 
+        /// <summary>Downhill pressure drop per tile (kPa) at which encoded flow reaches full strength.</summary>
+        public const float FlowFullScaleKpa = AtmosWind.KnockdownPressure;
+
+        /// <summary>
+        /// Wind in -1..1 from the four neighbour pressures: it points downhill, and length grows with
+        /// the square root of the slope so a gentle draught still reads. Callers pass the cell's own
+        /// pressure for a wall or unknown neighbour, so walls add no slope.
+        /// </summary>
+        public static Vector2 EncodeFlow(float east, float west, float north, float south)
+        {
+            var slope = new Vector2(west - east, south - north) * 0.5f;
+            float magnitude = slope.magnitude;
+            if (magnitude <= 1e-4f)
+                return Vector2.zero;
+
+            return slope / magnitude * Mathf.Sqrt(Mathf.Min(magnitude / FlowFullScaleKpa, 1f));
+        }
+
+        /// <summary>Stores encoded flow as 0..1 RG, where 0.5 is still air.</summary>
+        public static void PackFlow(Vector2 flow, float[] target, int texel)
+        {
+            target[texel * 2] = flow.x * 0.5f + 0.5f;
+            target[texel * 2 + 1] = flow.y * 0.5f + 0.5f;
+        }
+
+        /// <summary>
+        /// Bilinear CPU read of a packed flow atlas, matching what the shader sees. Tile centres sit on
+        /// whole world coordinates. Returns still air outside the atlas.
+        /// </summary>
+        public static Vector2 SampleFlow(float[] packed, Vector4 atlasBounds, float worldX, float worldZ)
+        {
+            int width = (int)atlasBounds.z;
+            int height = (int)atlasBounds.w;
+            float localX = worldX - atlasBounds.x;
+            float localZ = worldZ - atlasBounds.y;
+            if (packed == null || localX < 0f || localZ < 0f || localX > width - 1 || localZ > height - 1)
+                return Vector2.zero;
+
+            int x = Mathf.Min((int)localX, width - 2);
+            int z = Mathf.Min((int)localZ, height - 2);
+            if (x < 0 || z < 0)
+                return Vector2.zero;
+
+            float fractionX = localX - x;
+            float fractionZ = localZ - z;
+            Vector2 near = Vector2.Lerp(ReadFlow(packed, x, z, width), ReadFlow(packed, x + 1, z, width), fractionX);
+            Vector2 far = Vector2.Lerp(ReadFlow(packed, x, z + 1, width), ReadFlow(packed, x + 1, z + 1, width), fractionX);
+            return Vector2.Lerp(near, far, fractionZ);
+        }
+
+        private static Vector2 ReadFlow(float[] packed, int x, int z, int width)
+        {
+            int index = (z * width + x) * 2;
+            return new Vector2(packed[index] * 2f - 1f, packed[index + 1] * 2f - 1f);
+        }
+
         public static byte EncodeMask(AtmosCellState state)
         {
             return state switch

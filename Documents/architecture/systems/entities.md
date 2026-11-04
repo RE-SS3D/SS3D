@@ -1,7 +1,7 @@
 > Code paths: Assets/Scripts/SS3D/Systems/Entities/
 > Entry points: EntitySubSystem, MindSubSystem, HumanoidBodyStateMachine
 > Status: partial
-> Verified: 18a9e1421 — 2026-11-03
+> Verified: 319a1db1b — 2026-11-04
 
 # Entities
 
@@ -30,6 +30,7 @@ Humanoid/silicon entity spawning, minds, and join/round ordering with [rounds-lo
 - `Assets/Scripts/SS3D/Systems/Entities/Humanoid/Body/HumanoidSpaceSupport.cs` — `GetSupportAt` / `HumanoidSupportState` (Unknown / Supported / Unsupported)
 - `Assets/Scripts/SS3D/Systems/Entities/Humanoid/Body/AnimationOrchestrator.cs` — snapshot → Animator; Melee/Ranged Upper Body weight; Ranged CrossFade to Rifle Aim Idle; `SetPosingSuppressed` for collapse
 - `Assets/Scripts/SS3D/Systems/Entities/Humanoid/BodyPresentationState.cs` — locomotion / collapsed / dead enum
+- `Assets/Scripts/SS3D/Systems/Entities/Humanoid/Ragdoll.Wind.cs` — server wind → owner per-frame drift or bone drag; enables the prefab-disabled component; registry lifecycle needs no prefab changes. Wind knockdowns recover on floor support; ejected bodies keep tumbling.
 - `Assets/Scripts/SS3D/Systems/Entities/Humanoid/Ragdoll.cs` — presentation authority (`ServerSetPresentation` / `ApplyPresentation`)
 - `Assets/Scripts/SS3D/Systems/Entities/Humanoid/Body/HumanoidIkController.cs` — combat look-at; torso IK off during Attack Swing
 - `Assets/Scripts/SS3D/Systems/Entities/Humanoid/Body/HumanoidBodyStateBridge.cs` — holds, stance, limp + `InjuredLeg` / arms, rare hurt Emote, `MirrorUpperBody`; suppresses while `Presentation != Locomotion`
@@ -55,6 +56,8 @@ Humanoid/silicon entity spawning, minds, and join/round ordering with [rounds-lo
 - **Space float:** living bodies — confirmed no plenum (`Unsupported`) → `SetFloating(true)`, skip gravity/WASD, coast. Client AOI lag / incomplete plenum (`Unknown`) must not enter float; skip gravity only while no physical floor collider is underfoot (raycast), then resume normal loco so spawn is not soft-locked when the map is visible but occupancy is still Unknown. Keep coasting only if SyncVar already Floating (deep space). Server occupancy-miss is Unsupported only after `TileMapLoaded`; `ServerReconcileSpaceSupport` clears Floating while Unknown and packs it for remotes. **`HumanoidPredictedMovement` is disabled on `Human.prefab`**; `HumanoidLivingController` owns the live path. Ghosts still set Floating on spawn.
 
 ## Pitfalls
+
+- **Wind must reach the physics authority:** server transforms do not simulate living owners’ bones. Send wind velocity to the owner; server applies corpse/unowned wind physics. Upright drift runs owner-side only because `HumanoidPredictedMovement` is disabled on `Human.prefab`; enabling it means moving wind into the replicate step. Never convert a health-owned timeless collapse into a timed wind knockdown.
 
 - **Critical rejoin T-pose:** ownership changes do not change presentation. `Ragdoll.OnOwnershipClient` must reapply collapsed/dead presentation so the new owner simulates bones and observers stay kinematic. Initial SyncVars may collapse before `OnStartNetwork`; preserve the original NetworkAnimator enabled state instead of recapturing its suppressed value.
 

@@ -1,7 +1,7 @@
 > Code paths: Assets/Scripts/SS3D/Systems/StructuralDamage/ (plus integrity stage, occupancy and blast VFX Rpc hooks in Systems/Tile/, mapped by [tile](tile.md))
 > Entry points: StructuralDamageSubSystem, StructuralDamageService, BlastResolutionService, BlastVfxPresenter, StructuralIntegrityPresenter, HurtStructureCommand, BlastCommand
 > Status: partial
-> Verified: bf0356444 — 2026-11-04
+> Verified: 319a1db1b — 2026-11-04
 
 # Structural destruction
 
@@ -10,6 +10,8 @@
 Per-tile integrity for Turf walls, doors, windows, and FurnitureBase steel/wood/glass tables and opted-in metal furniture per [explosives-destruction.md](../../design/explosives-destruction.md) §3. Phase 1–3: accumulate force → stages → Destroyed clear; melee StructuralForce; hop blast BFS + crew brute. Phase 4: all structural wall variants, including windows and the girder, show a dent at Damaged and a torn seam at Cracked. Steel tables use tabletop-only dents/tears; wooden tables use chipped gouges and grain-following splits with exposed fibres; glass tables grow an impact star into branching fractures; lockers mark body/door meshes; opted-in machines mark side casings to preserve front displays; civilian and security airlocks mark each moving leaf, excluding control panels and generated floors. Bounds-based placement has stable per-tile variation. Other supported surfaces use MPB tint. Cracked walls add a hiss; steel tables/airlocks use torn-metal examine feedback, wood uses gouged/split-wood text, and glass uses chipped/fractured-glass text. Tables and airlocks do not play the hull-leak hiss. Confirmed melee and ranged contacts emit metal flecks/dust, wood chips/dust, or pale glass chips according to material. Impact RPC carries the material byte (0 metal, 1 wood, 2 glass; protocol 13). Blast detonation VFX: epicenter fireball wash (atmos-fire palette), point light, boom SFX, scorch decals, distance-scaled shake + blast screen flash — via `TileSubSystem` ObserversRpc. Explosive items and repair remaining: [station_structural_damage.plan.md](../../plans/station_structural_damage.plan.md).
 
 Steel walls (including reinforced steel) and steel tables now leave deterministic procedural faceted folded-panel wreckage after a short accelerating fall with a small impact bounce. Breakup emits a soft mottled dust cloud followed by a wider ground-impact puff; both expand and fade within roughly 1.7 seconds and only play for live destruction, not late joins. No matching rubble models exist in the art indexes. Wreckage has no collision or occupancy, is replicated for late joiners, and is session-only (not saved or salvageable). Rebuilding on the same tile/layer removes it; map clear and disconnect clean it up. Other materials retain the existing removal behavior.
+
+Wall removal also opens the existing atmos edges: [atmospherics](atmospherics.md) now drives wind streaks, pressure-driven knockdown and pull from the resulting gradient, without a separate destruction impulse.
 
 ## Start here
 

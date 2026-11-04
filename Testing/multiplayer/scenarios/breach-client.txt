@@ -1,0 +1,12 @@
+# Client side of mppm:breach: joins the running round, then proves the host's breach reached this
+# process as wind on its own body and as streaks drawn from the chunk patches it received.
+wait_timeout 60
+wait_connected
+wait_round Ongoing
+wait_seconds 1
+ready
+embark
+assert_embarked
+assert_wind_felt
+wait_seconds 1
+disconnect

@@ -70,7 +70,7 @@ What already works, system by system, is listed in
 | 🟡 | M3 | The nuke itself: breach the vault, arm or defuse, a station-wide warning, and blasts that tear up the floor (tables, lockers and supported machines take damage; steel walls and tables leave wreckage) |
 | 🟡 | M4 | Objectives exist and the round has a winner (an operative squad is drawn and briefed) |
 | ✅ | M5 | An end-of-round screen everyone sees, then the round restarts |
-| 🟡 | M8 | Space kills you, suits and internals protect you, and engineers can patch the hull (exposure damage works) |
+| 🟡 | M8 | Space kills you, suits and internals protect you, and engineers can patch the hull (exposure damage and breach wind with knockdown/pull work) |
 | ⬜ | M9 | Station power and lights matter: lose power and the room goes dark |
 
 **Finish line (M6):** eight players play Nuke Ops rounds together on the always-on server.

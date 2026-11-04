@@ -1,0 +1,15 @@
+# Guards: breach wind reaches a remote owner, as bone or CharacterController motion plus streaks from networked atlas patches (agent-local check) · Not cheaper because: remote ownership and chunk patches need a second process
+# Main editor (host) side. Opens a hole beside the remote body once it is settled, so the client's
+# baseline is taken before the wind starts. Player2 runs scenarios/breach-client.txt.
+wait_timeout 180
+wait_connected
+wait_clients 1
+ready
+start_round
+wait_round Ongoing
+embark
+assert_embarked
+wait_players 2
+wait_seconds 4
+breach_beside_client
+wait_seconds 8

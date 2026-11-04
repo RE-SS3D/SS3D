@@ -56,6 +56,7 @@ MPPM = "mppm:"  # mppm:<scenario>, host + virtual players inside Multiplayer Pla
 MPPM_SCENARIOS = {
     "late-join": ("late-join-host", ["late-join-client-1"]),
     "reconnect": ("reconnect-host", ["reconnect-client"]),
+    "breach": ("breach-host", ["breach-client"]),
 }
 MPPM_RESULTS = ROOT / "Temp/mppm-automation"
 KNOWN_ISSUE_DIR = ROOT / "Assets/Scripts/Tests/KnownIssueReproduction"

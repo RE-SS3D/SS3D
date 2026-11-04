@@ -10,7 +10,7 @@ The recurring test: is this a real simulation, or a shortcut wearing a science c
 
 - **Real properties, not authored flags.** A gas has a real molar mass and specific heat, and the simulation reads them. A player could in principle predict what a gas will do from what it is.
 - **A curated set of gases.** The station's atmosphere is made of a small, deliberate list of gases, each one there because it does something a player cares about — something to breathe, something to suffocate in, something that burns. A gas can be **linked to a reagent** where that link is meaningful (plasma gas and liquid plasma are the same substance to chemistry and to atmosphere), but not every reagent can become a gas.
-- **Two real techniques, not one stretched to cover both.** An open room is diffusion-limited; a sealed, pump-driven pipe is bulk flow. Forcing one model to cover both would misrepresent whichever case it wasn't built for.
+- **Air moves as air.** A pressure difference pushes bulk flow through open rooms and through pipes alike, so a breach pulls a room empty rather than letting it slowly seep. Pipes stay a separate model because a sealed, pump-driven run behaves like one shared, well-mixed volume; open rooms keep tile-by-tile flow, because where the air is matters there.
 - **Telegraphed catastrophe over instant catastrophe.** Same standard explosives' structural stages run — a fire spreads, a pipe strains before it bursts, and someone has time to notice.
 
 ## 2. Open-tile simulation
@@ -18,6 +18,7 @@ The recurring test: is this a real simulation, or a shortcut wearing a science c
 Every tile carries a gas mixture: an amount of each gas present, and one temperature.
 
 - **Pressure equalizes** between adjacent open tiles per the ideal gas law. Walls and closed doors block it; an open door, a breach or a vent lets it through.
+- **Moving air is wind.** Flow between tiles has speed and direction. It pushes people and loose items toward low pressure: a tug across the room, irresistible close to a breach. It carries the gas with it, so a burning or poisoned mixture travels with the draught.
 - **Gases mix by their own share of the pressure.** Two neighbouring tiles at the same total pressure still exchange gases if their mixtures differ — a pocket of breathable air in a room full of nitrogen doesn't sit there forever just because the pressures match. It thins out.
 - **Heat equalizes** per each gas's own specific heat, so a hot, thin mixture cools quickly and a dense one holds its heat.
 - **Space is a sink.** A tile open to space loses its gas outward until it's vacuum; that's what makes a hull breach dangerous.
@@ -54,7 +55,7 @@ The first-pass response to a fire is the thin one: air alarms detect it (§4), p
 
 ## 6. Pipe networks — bulk flow vs. open diffusion
 
-Two genuinely different physical regimes: an open room is diffusion-limited (real, but slow over distance); a sealed, pump-driven pipe is bulk flow, which at game-tick timescales behaves close to one shared, well-mixed volume. Modeling them differently isn't a shortcut — it's the physically correct call for each case.
+Two regimes: open rooms keep pressure and gas per tile, so a gradient, a front and a draught all exist; a sealed, pump-driven pipe at game-tick timescales behaves close to one shared, well-mixed volume. Modeling them differently isn't a shortcut, it's the physically correct call for each case.
 
 **A pipe network** is a connected run of pipe segments (one tile per segment), holding one pooled mixture and total volume. Welding a segment in or cutting one out changes which pipes form one network.
 

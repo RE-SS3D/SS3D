@@ -124,7 +124,17 @@ namespace SS3D.Systems.Atmospherics.Visualization
                         continue;
 
                     _fillCellTexel(coord, cellIndex);
-                    _writeFlowTexel(coord, cellIndex);
+                }
+            }
+
+            // Flow reads all four neighbours, so it needs every cell filled first.
+            for (int z = minZ; z <= maxZ; z++)
+            {
+                for (int x = minX; x <= maxX; x++)
+                {
+                    TileCoord coord = new TileCoord(mapId, new Vector2Int(x, z));
+                    if (simulation.TryGetCellIndex(coord, out int cellIndex))
+                        _writeFlowTexel(coord, cellIndex);
                 }
             }
         }
@@ -137,6 +147,7 @@ namespace SS3D.Systems.Atmospherics.Visualization
                 Temperature = _temperature,
                 Composition = _composition,
                 Flow = _flow,
+                FlowData = _flowScratch,
                 FireIntensity = _fireIntensity,
                 Mask = _mask,
                 AtlasBounds = new Vector4(_minTileX, _minTileZ, _atlasWidth, _atlasHeight),
@@ -213,30 +224,34 @@ namespace SS3D.Systems.Atmospherics.Visualization
         private void WriteFlowTexel(TileCoord coord, int _)
         {
             int texel = GetTexelIndex(coord.Grid.x - _minTileX, coord.Grid.y - _minTileZ);
-            if (texel < 0 || _maskScratch[texel] == AtmosCellVisualEncoding.MaskEmpty)
+            if (texel < 0)
                 return;
 
-            float pressure = _pressureScratch[texel];
-            float gradientX = SamplePressureOffset(coord.Grid.x, coord.Grid.y, 1, 0) - pressure;
-            float gradientZ = SamplePressureOffset(coord.Grid.x, coord.Grid.y, 0, 1) - pressure;
+            byte mask = _maskScratch[texel];
+            if (mask == AtmosCellVisualEncoding.MaskEmpty || mask == AtmosCellVisualEncoding.MaskBlocked)
+                return;
 
-            Vector2 gradient = new Vector2(gradientX, gradientZ);
-            if (gradient.sqrMagnitude > 1e-6f)
-                gradient = gradient.normalized;
-
-            // Pack -1..1 into 0..1 for RG storage; shader unpacks in Phase 2.
-            int flowIndex = texel * 2;
-            _flowScratch[flowIndex] = gradient.x * 0.5f + 0.5f;
-            _flowScratch[flowIndex + 1] = gradient.y * 0.5f + 0.5f;
+            int x = coord.Grid.x;
+            int z = coord.Grid.y;
+            float self = _pressureScratch[texel];
+            Vector2 flow = AtmosCellVisualEncoding.EncodeFlow(
+                SamplePressureOffset(x + 1, z, self),
+                SamplePressureOffset(x - 1, z, self),
+                SamplePressureOffset(x, z + 1, self),
+                SamplePressureOffset(x, z - 1, self));
+            AtmosCellVisualEncoding.PackFlow(flow, _flowScratch, texel);
         }
 
-        private float SamplePressureOffset(int tileX, int tileZ, int offsetX, int offsetZ)
+        private float SamplePressureOffset(int tileX, int tileZ, float self)
         {
-            int texel = GetTexelIndex(tileX + offsetX - _minTileX, tileZ + offsetZ - _minTileZ);
-            if (texel < 0 || _maskScratch[texel] == AtmosCellVisualEncoding.MaskEmpty)
-                return 0f;
+            int texel = GetTexelIndex(tileX - _minTileX, tileZ - _minTileZ);
+            if (texel < 0)
+                return self;
 
-            return _pressureScratch[texel];
+            byte mask = _maskScratch[texel];
+            return mask == AtmosCellVisualEncoding.MaskEmpty || mask == AtmosCellVisualEncoding.MaskBlocked
+                ? self
+                : _pressureScratch[texel];
         }
 
         private int GetTexelIndex(int localX, int localZ)

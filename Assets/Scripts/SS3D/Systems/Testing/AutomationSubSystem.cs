@@ -11,11 +11,14 @@ using SS3D.Core.Settings;
 using SS3D.Data.Generated;
 using SS3D.Networking;
 using SS3D.Networking.Settings;
+using SS3D.Systems.Atmospherics;
 using SS3D.Systems.Entities;
+using SS3D.Systems.Entities.Humanoid;
 using SS3D.Systems.IngameConsoleSystem;
 using SS3D.Systems.PlayerControl;
 using SS3D.Systems.Rounds;
 using SS3D.Systems.Rounds.Messages;
+using SS3D.Systems.Tile;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -503,6 +506,17 @@ namespace SS3D.Systems.Testing
                     TestSignal.Emit(this, "OutcomeVerified", instruction.ArgsJoined);
                     break;
 
+                // Server: opens a hole to space beside the first body this process does not own.
+                case "breach_beside_client":
+                    TestSignal.Emit(this, "BreachOpened", BreachBesideClient());
+                    break;
+
+                // Client: this process drew wind streaks and its own body was pushed by the wind.
+                case "assert_wind_felt":
+                    yield return AssertWindFelt();
+                    TestSignal.Emit(this, "WindFelt");
+                    break;
+
                 case "wait_seconds":
                     yield return new WaitForSeconds(float.Parse(instruction.Args[0]));
                     break;
@@ -620,6 +634,39 @@ namespace SS3D.Systems.Testing
 
             string ckey = players.GetCkey(InstanceFinder.ClientManager.Connection);
             return Array.Exists(rounds.LastOutcome.Players, p => p.Ckey == ckey && (!antagonist || p.Antagonist));
+        }
+
+        private string BreachBesideClient()
+        {
+            foreach (Entity body in SubSystems.Get<EntitySubSystem>().SpawnedPlayers)
+            {
+                if (body == null || body.IsOwner)
+                    continue;
+
+                TileSubSystem tiles = SubSystems.Get<TileSubSystem>();
+                TileCoord beside = tiles.QueryService.WorldToTile(body.transform.position + Vector3.right * 2f, tiles.CurrentMap.MapId);
+                Vector3 hole = tiles.QueryService.TileToWorld(beside);
+                tiles.Construction.TryClearTile(hole, TileLayer.Turf, Direction.North);
+                tiles.Construction.TryClearTile(hole, TileLayer.Plenum, Direction.North);
+                return hole.ToString();
+            }
+
+            throw new InvalidOperationException("breach_beside_client: no remote body");
+        }
+
+        private IEnumerator AssertWindFelt()
+        {
+            yield return WaitUntil(IsEmbarked, _waitTimeoutSeconds, "assert_wind_felt embarked");
+            SubSystems.Get<EntitySubSystem>().TryGetOwnedEntity(InstanceFinder.ClientManager.Connection, out Entity entity);
+            Ragdoll body = entity.GetComponent<Ragdoll>();
+            AtmosWindView view = SubSystems.Get<AtmosSubSystem>().GetComponent<AtmosWindView>();
+            Vector3 start = body.WindSamplePosition;
+            bool sawStreaks = false;
+            yield return WaitUntil(() =>
+            {
+                sawStreaks |= view != null && view.VisibleStreaks > 0;
+                return sawStreaks && Vector3.Distance(body.WindSamplePosition, start) > 0.3f;
+            }, _waitTimeoutSeconds, "assert_wind_felt");
         }
 
         private bool IsEmbarked()

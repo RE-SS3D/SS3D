@@ -122,6 +122,27 @@ namespace EditorTests.Atmospherics
             return new AtmosSimulation(context.Query, context.Map.MapId, AtmosConstants.DefaultGasCount);
         }
 
+        [TestCase(0, 1)]
+        [TestCase(1, 0)]
+        public void ChunkBorder_LinksBothWays_WhicheverChunkLoadsFirst(int first, int second)
+        {
+            TileMapTestUtilities.MapContext context = TileMapTestUtilities.CreateContext(_instantiated);
+            int border = AtmosConstants.ChunkSize - 1;
+            TileMapTestUtilities.PlacePlenum(context, new Vector3(border, 0, 2));
+            TileMapTestUtilities.PlacePlenum(context, new Vector3(border + 1, 0, 2));
+
+            using var simulation = new AtmosSimulation(context.Query, context.Map.MapId, AtmosConstants.DefaultGasCount);
+            simulation.CreateChunk(CreateChunkRef(context.Map, new Vector2Int(first, 0)));
+            simulation.CreateChunk(CreateChunkRef(context.Map, new Vector2Int(second, 0)));
+
+            var west = new TileCoord(context.Map.MapId, border, 2);
+            var east = new TileCoord(context.Map.MapId, border + 1, 2);
+            Assert.IsTrue(simulation.TryGetCellDebugInfo(west, out AtmosCellDebugInfo westInfo));
+            Assert.IsTrue(simulation.TryGetCellDebugInfo(east, out AtmosCellDebugInfo eastInfo));
+            Assert.That(westInfo.Neighbours.Get(1), Is.GreaterThanOrEqualTo(0), "West cell links east across the border");
+            Assert.That(eastInfo.Neighbours.Get(3), Is.GreaterThanOrEqualTo(0), "East cell links west across the border");
+        }
+
         private static TileChunkRef CreateChunkRef(TileMap map, Vector2Int chunkKey)
         {
             return new TileChunkRef

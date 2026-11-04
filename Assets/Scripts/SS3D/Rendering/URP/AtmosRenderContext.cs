@@ -22,6 +22,9 @@ namespace SS3D.Rendering.URP
             public Texture2D FireIntensity;
             public Texture2D Mask;
 
+            /// <summary>CPU copy of <see cref="Flow"/> (packed RG per texel) for world-space wind effects.</summary>
+            public float[] FlowData;
+
             /// <summary>minX, minZ, width, height in world tile coordinates.</summary>
             public Vector4 AtlasBounds;
             public int MapId;

@@ -16,7 +16,7 @@ namespace SS3D.Systems.Entities.Humanoid
     /// animator suppress, and movement gating. Health and combat write intent via
     /// <see cref="ServerSetPresentation"/>; other systems read <see cref="Presentation"/>.
     /// </summary>
-	public class Ragdoll : NetworkBehaviour
+	public partial class Ragdoll : NetworkBehaviour
 	{
         [SerializeField]
 		private Transform _armatureRoot;
@@ -122,6 +122,7 @@ namespace SS3D.Systems.Entities.Humanoid
         public override void OnStartNetwork()
 		{
 			base.OnStartNetwork();
+            WindBodies.Add(this);
 
             // Initial SyncVars may already have applied collapse and disabled the drivers.
             // Preserve the original NetworkAnimator enabled state captured by that application.
@@ -201,12 +202,13 @@ namespace SS3D.Systems.Entities.Humanoid
             if (IsServer && _isKnockdownTimed && IsKnockedDown && !_deathRagdoll)
             {
                 _knockdownTimer -= Time.deltaTime;
-                if (_knockdownTimer <= 0)
+                if (_knockdownTimer <= 0 && (!_windKnockdown || HasFloorSupport()))
                 {
                     // Must call ServerRecover — Recover() is a ServerRpc and is a no-op from server.
                     ServerRecover();
                 }
             }
+            TickWind(Time.deltaTime);
             switch (_currentState)
             {
                 case RagdollState.Walking:
@@ -265,6 +267,7 @@ namespace SS3D.Systems.Entities.Humanoid
 
                 _isKnockdownTimed = false;
                 _knockdownTimer = 0f;
+                _windKnockdown = false;
             }
 
             EnsureAnimatorCached();
@@ -620,6 +623,7 @@ namespace SS3D.Systems.Entities.Humanoid
             _elapsedResetBonesTime = 0;
 
             ToggleSyncRagdoll(false);
+            ToggleKinematic(true);
             
             // Only the owner handles ragdoll's physics
             if (!IsOwner)

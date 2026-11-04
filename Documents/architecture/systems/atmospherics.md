@@ -1,7 +1,7 @@
 > Code paths: Assets/Scripts/SS3D/Systems/Atmospherics/, Assets/Scripts/SS3D/Rendering/URP/Atmos*
 > Entry points: AtmosSubSystem, AtmosSimulation, AtmosRendererFeature
 > Status: partial
-> Verified: 4f732584a — 2026-11-02
+> Verified: ab8e396ec — 2026-11-04
 
 # Atmospherics
 
@@ -9,9 +9,12 @@
 
 Server-authoritative open-tile gas simulation on the turf grid. Each walkable cell holds a sparse gas mixture; pressure equalizes between neighbours via ideal-gas-law sharing, and when total pressures already match, composition still mixes via slower partial-pressure diffusion (`DiffusionSpeed`). Heat conducts per gas specific heat, and plasma burns with oxygen into CO₂. Runs in a dedicated ECS world with Burst jobs, driven by tilemap mutation notifications. GPU textures feed URP scatter/glow/distortion passes for fog, fire, and plasma visuals. **Pipe layer:** vents, scrubbers, and pumps register with `AtmosPortRegistry` and exchange gas with turf cells after pipe bulk sim; ports cache network IDs against `GasPipeNetworkRegistry.TopologyVersion` so steady ticks do not re-walk the tilemap. **Air alarms** sample the turf cell in front of the wall mount (APC-style tile resolution), discover area vents/scrubbers via a mutation-driven `areaId → ports` index (`AtmosAreaPortIndex`, invalidated on port register/unregister and area reflood), and dispatch preset modes to real port devices. Port commands are validated against the air alarm’s resolved area to avoid cross-area toggles on shared wall tiles. **Client VFX:** Phase 1 dirty-chunk sync shipped ([2026-07_atmos-client-visualization-sync.md](../2026-07_atmos-client-visualization-sync.md)) — pure clients build atlases from `AtmosChunkPatch` RPCs via `AtmosClientVisualizationBridge`; late-join bootstrap / AOI remain Phase 2.
 
+Destroyed walls automatically produce pressure-driven wind through open gas edges. The server samples `AtmosWind.SampleAt` per body, blended through open edges; strong gusts collapse bodies, and bodies ease toward wind speed every frame. Clients draw wind as `AtmosWindView` streaks from the same flow atlas the gas shaders read, so wind visuals add no traffic of their own; atlas flow keeps direction and strength. Wind decays with the gas gradient and respects closed edges. Protocol 15 adds the owner wind RPC. Wind affects humanoids; loose item wind physics remains open. Rooms still drain by diffusion, slowly, which lags design §1, §2 and §6: the planned fix is [2026-11_atmos-edge-flow.md](../2026-11_atmos-edge-flow.md).
+
 ## Start here
 
 - `Assets/Scripts/SS3D/Systems/Atmospherics/AtmosSubSystem.cs` — tick loop; `IWorldReady`; awaits `TileMapLoaded` then notifies `AtmosReady` (`SS3D.Atmos.Sim` / `Upload` markers)
+- `Assets/Scripts/SS3D/Systems/Atmospherics/AtmosWind.cs` / `AtmosSubSystem.Wind.cs` / `AtmosWindView.cs` — edge-aware continuous wind sampling, body dispatch and atlas-driven client streaks
 - `Assets/Scripts/SS3D/Systems/Atmospherics/AtmosSimulation.cs` — native cell buffers, active-cell scheduling, job dispatch
 - `Assets/Scripts/SS3D/Systems/Atmospherics/Bridge/AtmosTileObserver.cs` — `ITileMutationObserver`; refreshes cells on placement, clear, and door state
 - `Assets/Scripts/SS3D/Systems/Atmospherics/ECS/Jobs/ShareGasJob.cs` — pressure-driven mole sharing + equal-pressure composition diffusion
@@ -49,6 +52,10 @@ Server-authoritative open-tile gas simulation on the turf grid. Each walkable ce
 
 ## Pitfalls
 
+- **Chunk borders were one-way valves:** `CreateChunk` linked a new chunk to existing ones, but existing border cells never linked back, and a cell only pushes gas through its own links. Rooms crossing a border stayed at full pressure beside a depleted row, with no error. `RebuildBordersAround` now refreshes them. Compare both directions of `Neighbours` when gas stops at a straight line on a multiple of 16. Hit 2026-11-04.
+- **Flow atlas must fill before it reads neighbours:** the AOI path wrote flow in the same pass as pressure, so +X/+Z neighbours read empty and host flow became a constant diagonal. Flow also used to be normalized, uphill and treated walls as 0 kPa. Encode through `AtmosCellVisualEncoding.EncodeFlow`, passing the cell's own pressure for walls.
+- **A green streak count is not visible streaks:** `VisibleStreaks` passed while one-pixel streaks were invisible, then near-camera ones became planks. Review a live breach screenshot after changing `AtmosWindView` tuning.
+
 - **Round restarts must dispose the previous simulation before restoring a template:** readiness resets outlive the subsystem. Keeping `_simulation` makes the initialization guard accept old turf/pipe gas as ready. Unregister both observers, dispose simulation/world, reset dirty tracking and tick/debug state, then seed the restored map.
 
 - **Host `SS3D.Atmos.Upload` on large maps:** full-chunk AABB + `ForEachCell` + six `Texture2D.Apply` every tick dominated Metastation (~10 ms/tick). Host upload now fills only local HashGrid AOI tile bounds (+1 chunk pad). Dedicated server skips GPU publish. Network dirty-chunk Phase 2 AOI still open. Hit 2026-07-28.
@@ -66,6 +73,8 @@ Server-authoritative open-tile gas simulation on the turf grid. Each walkable ce
 
 ## Tests
 
+- `AtmosWindTests` covers sealed edges, destruction/repair, vacuum fade, continuous sampling, drag and flow encoding. `AtmosNeighbourTests` covers chunk borders in both load orders. `scenarios:Environment` covers owner gust knockdown, upright drift, and a live hull breach through to streaks and pull. `Testing/ui/validate.sh --steps mppm:breach` proves the same on a remote owner. Wind tuning is in `AtmosWind`; streak tuning is in `AtmosWindView`; visuals use `Assets/Resources/Atmospherics/Wind.shader`.
+
 - `Testing/ui/validate.sh --steps compile,round-reset` runs a focused host stop/restart, depletes a cell before Stop and checks oxygen returns in a fresh simulation. The sandbox pilot also carries this regression. Remote dedicated-server replay remains required for release acceptance.
 
 ## Depends on / Used by
@@ -79,6 +88,7 @@ Server-authoritative open-tile gas simulation on the turf grid. Each walkable ce
 - Design (read-only): [Documents/design/atmospherics.md](../../design/atmospherics.md)
 - Effort: [2026-07_atmos-ecs-foundation.md](../../archive/architecture/2026-07_atmos-ecs-foundation.md)
 - Effort: [2026-07_atmos-client-visualization-sync.md](../2026-07_atmos-client-visualization-sync.md) — Phase 1 shipped; Phase 2 late-join/AOI open; Phase 3 host AOI atlas partial via [metastation-scale-perf](../../archive/architecture/2026-07_metastation-scale-perf.md)
+- Effort: [2026-11_atmos-edge-flow.md](../2026-11_atmos-edge-flow.md) — planned; room-scale bulk flow
 - Effort: [2026-07_session-world-lifecycle.md](../../archive/architecture/2026-07_session-world-lifecycle.md)
 - [tile](tile.md) — occupancy and mutation hooks
 - [rendering](rendering.md) — URP feature wiring

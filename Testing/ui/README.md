@@ -53,6 +53,7 @@ Testing/ui/validate.sh --steps compile,editmode,scenarios:<category>   # PlayMod
 Testing/ui/validate.sh --steps compile,editmode,scenarios:Medical   # e.g. the medical scenarios; scenarios:Scenarios runs them all
 Testing/ui/validate.sh --steps mppm:late-join   # multiplayer scenario in Multiplayer Play Mode (no build needed)
 Testing/ui/validate.sh --steps mppm:reconnect
+Testing/ui/validate.sh --steps mppm:breach   # breach wind on a remote owner: pushed body and streaks
 Testing/ui/compile.sh             # = --steps compile
 Testing/ui/validate.sh --nightly  # owner only: + PlayMode, client+server build if stale, multiplayer smoke
 Testing/ui/validate.sh --weekly   # owner only: compile, visual, lifecycle, build, remote pilots

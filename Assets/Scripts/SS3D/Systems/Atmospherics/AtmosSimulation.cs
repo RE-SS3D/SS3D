@@ -267,6 +267,7 @@ namespace SS3D.Systems.Atmospherics
             }
 
             RebuildChunkNeighbours(baseIndex);
+            RebuildBordersAround(chunkRef);
         }
 
         public void UpdateCell(TileCoord coord)
@@ -514,6 +515,26 @@ namespace SS3D.Systems.Atmospherics
                 int cellIndex = baseIndex + localIndex;
                 TileCoord coord = IndexToCoord(cellIndex);
                 AtmosNeighbourBuilder.RebuildNeighbours(cellIndex, coord, _coordToIndex, _query, _neighbours);
+            }
+        }
+
+        /// <summary>
+        /// Links cells of already-created chunks back into a new chunk. Each cell only pushes gas
+        /// through its own links, so a missing return link makes the chunk border a one-way valve.
+        /// </summary>
+        private void RebuildBordersAround(TileChunkRef chunkRef)
+        {
+            int minX = chunkRef.ChunkKey.x * AtmosConstants.ChunkSize;
+            int minY = chunkRef.ChunkKey.y * AtmosConstants.ChunkSize;
+            int maxX = minX + AtmosConstants.ChunkSize - 1;
+            int maxY = minY + AtmosConstants.ChunkSize - 1;
+
+            for (int offset = 0; offset < AtmosConstants.ChunkSize; offset++)
+            {
+                RebuildNeighboursForCoord(new TileCoord(chunkRef.MapId, minX - 1, minY + offset));
+                RebuildNeighboursForCoord(new TileCoord(chunkRef.MapId, maxX + 1, minY + offset));
+                RebuildNeighboursForCoord(new TileCoord(chunkRef.MapId, minX + offset, minY - 1));
+                RebuildNeighboursForCoord(new TileCoord(chunkRef.MapId, minX + offset, maxY + 1));
             }
         }
 
