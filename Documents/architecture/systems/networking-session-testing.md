@@ -1,7 +1,7 @@
 > Parent map: [networking-session.md](networking-session.md)
 > Code paths: Assets/Scripts/SS3D/Systems/Testing/, Testing/multiplayer/
 > Status: partial
-> Verified: ce69181d3 — 2026-11-01
+> Verified: e2f86cf20 — 2026-11-05
 
 # Multiplayer testing
 
@@ -19,7 +19,7 @@ exercises the `UNITY_SERVER` code paths. Graphical UI/session pilots have a sepa
 
 - `Tools/build_client_and_server.sh` — Unity batchmode Linux builds; installed Unity required, project Editor closed. Outputs `Builds/Game/SS3D.x86_64` and `Builds/GameServer/SS3D.x86_64`.
 - `Testing/multiplayer/run_smoketest.sh` — `<scenario> [client-count]`; server script is `<scenario>.txt`, client scripts prefer `<scenario>-client-N.txt`, then `<scenario>-client.txt`
-- `Testing/multiplayer/smoke-set.txt` + `run_smoke_set.sh` — the curated set the nightly, `develop-release` and `validate.sh` run; `--skip-nightly-only` drops `sandbox-reset` and `nukeops-round`
+- `Testing/multiplayer/smoke-set.txt` + `run_smoke_set.sh` — the curated set the nightly, `develop-release`'s opt-in smoke and `validate.sh` run; `--skip-nightly-only` drops `sandbox-reset` and `nukeops-round`
 - `Testing/multiplayer/run_loadtest.sh` — `--clients N --duration SECONDS --stagger SECONDS`; defaults 8, 300 and 0
 - `Testing/multiplayer/lib/process.sh` — port allocation, build staging and process lifecycle
 - `Testing/multiplayer/lib/logwait.sh` — signal waits and log failure gates
@@ -27,14 +27,16 @@ exercises the `UNITY_SERVER` code paths. Graphical UI/session pilots have a sepa
 - `Assets/Scripts/SS3D/Systems/Testing/AutomationSubSystem.cs` — code-bootstrapped DSL runner, enabled by `-testscript=<path>` or (in the editor) an MPPM `smoke:<name>` tag
 - `Assets/Scripts/SS3D/Application/MultiplayerPlayModePlayer.cs` — which MPPM player this editor is (`Main` or `Player 2..4`), its `smoke:` script, and the result directory
 - `Assets/Scripts/SS3D/Editor/Automation/MultiplayerPlayModeSmoke.cs` — tags players, launches/parks the clones, and lists their state through MPPM internals by reflection
-- `Testing/multiplayer/mppm/` — host scripts that replace the dedicated-server side under MPPM; the clone runs the normal `scenarios/` client script
+- `Testing/multiplayer/mppm/` — host scripts that replace the dedicated-server side under MPPM; the clone runs a `scenarios/` client script, or an `mppm/` one when the scenario has no built smoke (`breach-budget-client`)
+- `Testing/ui/validate.py` `MPPM_SCENARIOS` — maps each `mppm:<scenario>` to its host and client scripts; `MPPM_STATIONS` copies a `Testing/fixtures/stations/` map into `Builds/Game/Data/StationTemplates` for the run and removes it after
 - `Assets/Scripts/SS3D/Systems/Testing/AutomationScript.cs` — instruction parsing
 - `Assets/Scripts/SS3D/Systems/Testing/TestSignal.cs` — structured readiness/completion signals
 - `.github/workflows/multiplayer-smoke-test.yml` — the nightly: PlayMode job, then build + smoke set, then the `nightly-failure` issue; also manual and labelled-PR
 
 ## Extension points
 
-- Add server/client scenario text under `Testing/multiplayer/scenarios/`. Use `wait_connected`, `wait_clients` (server: N remote clients loaded their start scenes), `ready`, `start_round`, `wait_round`, `embark`, `assert_embarked`, `wait_players` (N bodies spawned, as this process sees them), `reconnect`, `console`, `wait_console` (retry a console line until it stops throwing), `wait_timeout`, `wait_seconds`, `assert_reset_health` (server: N lines in `reset-health.jsonl`), `assert_outcome <Trigger> [Winner] [antagonist]` (client: the last round outcome arrived with that trigger, and winner if given, and lists this player, as an antagonist if asked) and `disconnect`. `{ckey}` in a `console`/`wait_console` line expands to the process's own ckey. A scenario's optional `scenarios/<name>.conf` (sourced) sets `SERVER_EXTRA_ARGS` and `CLIENT_TIMEOUT`; `embark` requests spawning, `assert_embarked` confirms control of a body.
+- Add server/client scenario text under `Testing/multiplayer/scenarios/`. Use `wait_connected`, `wait_clients` (server: N remote clients loaded their start scenes), `ready`, `start_round`, `wait_round`, `embark`, `assert_embarked`, `wait_players` (N bodies spawned, as this process sees them), `reconnect`, `console`, `wait_console` (retry a console line until it stops throwing), `wait_timeout`, `wait_seconds`, `assert_reset_health` (server: N lines in `reset-health.jsonl`), `assert_outcome <Trigger> [Winner] [antagonist]` (client: the last round outcome arrived with that trigger, and winner if given, and lists this player, as an antagonist if asked) and `disconnect`. Atmos breach checks: `use_station <map> <mode>` (host: the next round's map and mode; no spaces in the map name), `breach_hull` and `breach_beside_client` (server: open a hole to space), `scatter_items N` (server: loose items by the last `breach_hull`), `atmos_budget S` / `client_traffic S` (server tick cost and patch traffic / client received bytes, logged as `[atmos-budget]`) and `assert_wind_felt` (client: streaks drawn and its own body pushed). `{ckey}` in a `console`/`wait_console` line expands to the process's own ckey. A scenario's optional `scenarios/<name>.conf` (sourced) sets `SERVER_EXTRA_ARGS` and `CLIENT_TIMEOUT`; `embark` requests spawning, `assert_embarked` confirms control of a body.
+- Add an MPPM scenario by registering it in `validate.py` `MPPM_SCENARIOS` (and `MPPM_STATIONS` if its host loads a fixture map with `use_station`).
 - Expose deterministic assertions through `console` commands or DSL instructions. Emit distinctive signals and throw on failed assertions so the runner emits `ScriptFailed`.
 - Graphical clients also accept `ui_wait`, `ui_text`, `ui_submit`, `os_click`, `os_type`, `os_key` and `screenshot`. `ui_submit` is synthetic navigation; the remote pilot services `os_*` through the OS-input bridge.
 - Override builds with `SS3D_SERVER_BUILD_DIR`, `SS3D_CLIENT_BUILD_DIR`, `SS3D_SERVER_BIN_NAME` and `SS3D_CLIENT_BIN_NAME`. Both runners accept `SS3D_TILEMAP_FIXTURES` and `SS3D_STATION_FIXTURES` for map data.
@@ -105,7 +107,7 @@ GitHub disables scheduled workflows after 60 days without repo activity; check
 The graphical remote pilot also files a bug report over client/server broadcasts, verifies the server-attributed JSONL and reduced JPEG, and checks the reopened dialog's cooldown; see the [UI runbook](../../../Testing/ui/README.md#lobby-remote-client-pilot).
 
 With the Editor open, `Testing/ui/validate.sh --nightly` runs compile, EditMode, PlayMode, stale
-builds and smoke; `--weekly` runs the visual, lifecycle, sandbox and remote pilots. Reports live under `artifacts/ui/`;
+builds and smoke; `--weekly` runs the visual, lifecycle and remote pilots (rebuilding stale builds); the sandbox pilot is on demand (`--steps sandbox`). Reports live under `artifacts/ui/`;
 smoke logs are preserved under `Testing/multiplayer/.runs/`.
 
 Agent-local multiplayer check without a build, in Multiplayer Play Mode (needs the
@@ -115,6 +117,8 @@ only open SS3D editor):
 ```bash
 Testing/ui/validate.sh --steps mppm:late-join
 Testing/ui/validate.sh --steps mppm:reconnect
+Testing/ui/validate.sh --steps mppm:breach         # breach wind reaches a remote owner
+Testing/ui/validate.sh --steps mppm:breach-budget  # atmos tick cost and traffic on atmostest, logged
 ```
 
 The main editor hosts and runs `Testing/multiplayer/mppm/<scenario>-host.txt`; Player 2 joins as a
@@ -124,7 +128,7 @@ before connecting, so the ordering matches the built smoke's `ServerReady` gate.
 `Temp/mppm-automation/<player>.json` (`signal`, `reason`, `errors`); the step fails on anything but
 `ScriptComplete` or on any logged error, like the smoke log gate. Result copies land in the validate
 folder as `mppm-<scenario>-<player>.json`. Rough warm timings: launch ~30–60 s, late-join ~1 min,
-reconnect ~1 min. These are on demand only; the built smoke stays the nightly gate.
+reconnect ~1 min. `breach-budget` has no thresholds; it only logs the numbers. These are on demand only; the built smoke stays the nightly gate.
 
 Load example: `./Testing/multiplayer/run_loadtest.sh --clients 8 --duration 300 --stagger 2`.
 Logs/`metrics.csv` live under `.runs/load-*`. Every 10 s the runner samples server RSS/CPU/threads
@@ -136,7 +140,7 @@ the complete Nuke Ops loop, and Windows clients. The headless runner cannot prov
 
 ## Depends on / Used by
 
-- **Depends on:** [networking-session](networking-session.md), [permissions](permissions.md), Linux builds, `jq`
+- **Depends on:** [networking-session](networking-session.md), [permissions](permissions.md), [rounds-lobby](rounds-lobby.md) (round control, `-sandbox`/`-nukeops`), [atmospherics](atmospherics.md) (breach scenarios), Linux builds, `jq`
 - **Used by:** release/smoke CI, [UI validation](../../../Testing/ui/README.md), multiplayer triage skills
 
 ## Related docs

@@ -1,7 +1,7 @@
 > Code paths: Assets/Scripts/SS3D/UI/Shell/
 > Entry points: UiShellSubSystem, UiLayer, IUiSurface, UiShellAssetCatalog
 > Status: partial
-> Verified: f21a4d0b4 — 2026-11-02
+> Verified: e2f86cf20 — 2026-11-05
 
 # UI shell
 
@@ -56,7 +56,7 @@ The shell's own catalog (`UiShellAssetPaths` / `UiShellAssetCatalog`), the lobby
 - New UI is UITK only. Resolve the shell with `SubSystems.Get<UiShellSubSystem>()`, attach via `TryGetLayer`, and implement `IUiSurface`. The effort doc's agent checklist covers the steps.
 - A surface that needs its own asset catalog derives from `UiAssetCatalogBase` and registers with `UiCatalogBuilderKit` and the umbrella rebuild menu ([editor-tooling-tiers](../2026-07_editor-tooling-tiers.md)), not a per-surface MenuItem.
 - `UiShellSubSystem` creates the document itself, so Boot and Game scenes need no `UIDocument` host.
-
+- A screen-space host with its own `PanelSettings` calls `PlayerSettingsSubSystem.RegisterUiPanel` or UI Scale never reaches it; `LobbyUiSubSystem` registers the shell's shared panel.
 - Debug tools: register a named tool through `Core/Debugging/DebugTools.Get(DebugToolNames.X)`, subscribe/unsubscribe `Invoked`, and set `IsOn` for toggles. The F1 window lists available tools in Editor/development builds; do not add per-tool keys. Remaining host work: [TECH_DEBT §1.13](../TECH_DEBT.md#113-debug-tools-centralized-ui-host-consolidation-remains).
 
 ## Pitfalls
@@ -66,6 +66,7 @@ The shell's own catalog (`UiShellAssetPaths` / `UiShellAssetCatalog`), the lobby
 - **`Application` inside `SS3D.*` namespaces resolves to the `SS3D.Application` namespace**, not `UnityEngine.Application`, in assemblies that reference it (`SS3D.Systems`, `SS3D.Editor`). Write `UnityEngine.Application.…` there.
 - **A modal surface's scrim must take picks.** The bug report scrim was `picking-mode="Ignore"` in the fixture; on the shared document that lets clicks fall through to the lobby shell underneath.
 
+- **Per-frame FishNet lookups on the main menu:** `InstanceFinder` logs and rescans scenes on every miss when no `NetworkManager` exists yet. Surfaces that poll each frame (bug report, lobby) check `NetworkManager.Instances.Count > 0` first.
 - **White text-input rectangles on Linux:** rounded input borders can render the clipped contents solid white even when their resolved background colours are correct. Keep bug-report inputs square (`border-radius: 0`); see the [lobby rendering pitfall](rounds-lobby.md#pitfalls). Check runtime screenshots, including typed text.
 
 ## Tests
@@ -74,7 +75,7 @@ The shell's own catalog (`UiShellAssetPaths` / `UiShellAssetCatalog`), the lobby
 
 ## Depends on / Used by
 
-- **Depends on:** [inputs](inputs.md) (`InputInterface` document registration)
+- **Depends on:** [inputs](inputs.md) (`InputInterface` document registration), `PlayerSettingsSubSystem` (UI Scale; [2026-10_player-settings](../2026-10_player-settings.md))
 - **Used by:** every surface in the tables above; [machine-interface](machine-interface.md) and the Main HUD once migrated
 
 ## Related docs

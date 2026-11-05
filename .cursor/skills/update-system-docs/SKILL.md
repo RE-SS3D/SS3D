@@ -56,7 +56,7 @@ Update only what changed:
 - **Related docs** — link new plans or effort docs
 - **Status** — bump `stub` → `partial` → `shipped` when appropriate; use `condemned` (or a Condemned UI / Prefab composition debt subsection) per [Documents/SKILL.md](../../../Documents/SKILL.md) and [2026-07_agent-first-composition.md](../../../Documents/architecture/2026-07_agent-first-composition.md)
 - **Overview** — revise if the system's role changed materially
-- **Verified** — bump the header `> Verified: <short-sha> — <date>` to current `HEAD` **only on maps you actually re-checked against code this session.** Never bump a map you didn't touch — the gap between its stamp and `HEAD` is the staleness signal, and a false-fresh stamp destroys it.
+- **Verified** — bump the header `> Verified: <short-sha> — <date>` **only on maps you actually re-checked against code this session.** Never bump a map you didn't touch — the gap between its stamp and `HEAD` is the staleness signal, and a false-fresh stamp destroys it. The SHA must survive the squash merge: on a feature branch stamp `git merge-base HEAD origin/develop`, on `develop` stamp `HEAD` (rule and how to read an old stamp: [Documents/SKILL.md](../../../Documents/SKILL.md) **Verified stamp**).
 
 Keep each map under ~80 lines (Pitfalls exempt). Do not duplicate design doc content — link instead.
 
@@ -112,7 +112,7 @@ Do not restate design rules or implementation HOW in milestone docs — cite onl
 
 - Every file listed under **Start here** exists in the repo
 - INDEX links resolve to existing system map files
-- Every `Verified` stamp you bumped points at a commit you actually checked the map against
+- Every `Verified` stamp you bumped points at a commit you actually checked the map against, and that commit is on `develop` (`git merge-base --is-ancestor <sha> origin/develop`)
 - Any `Pitfalls` entry you added describes real, current behavior
 - Milestone links resolve; hub current focus matches the active gate header
 - No edits were made to `Documents/design/`

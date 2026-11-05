@@ -1,8 +1,8 @@
 > Implements: Documents/design/round-end.md §2, §4–§6; Documents/design/antagonist-content.md §2, §6 (first pass, How the round ends); Documents/design/objectives.md §2, §4, §8 (team objective, assignment, spawn briefing); Documents/design/lobby.md §4, §7 (opt-in list, self-starting round)
 > Touches systems: rounds-lobby, gamemodes-roles-traits, entities, persistence, chat-audio-screens, screen-effects, ui-shell
-> Status: active
+> Status: shipped
 
-**Progress:** P1 implemented and validated on 2026-11-03 (lifecycle pilot, nightly `sandbox-reset` smoke). P2 implemented with EditMode coverage; its spawn checks move into P3's scenario fixture. Both merged to develop in [#131](https://github.com/henkhooft/SS3D/pull/131) (`360ab4d60`). P3 (Nuke Ops rules) merged in [#136](https://github.com/henkhooft/SS3D/pull/136) with EditMode coverage and the `NukeOps` scenario fixture. P4 (the `-nukeops` 24/7 profile, Decisions 22–23, the `nukeops-round` smoke) is implemented on `claude/nukeops-profile`. The effort ships once that line is green in a nightly run. Advances [mvp1-nuke-ops.md](../milestones/mvp1-nuke-ops.md) M4 and M5 and [test-server.md](../milestones/test-server.md) T4 and T8. Tests follow the [testing philosophy](2026-11_testing-philosophy.md): each phase lists its checks by tier.
+**Progress:** P1–P4 shipped: P1 and P2 in [#131](https://github.com/henkhooft/SS3D/pull/131), P3 in [#136](https://github.com/henkhooft/SS3D/pull/136), P4 in [#137](https://github.com/henkhooft/SS3D/pull/137). The `nukeops-round` smoke passed in the 2026-11-04 nightly. Live contracts moved to [rounds-lobby](../../architecture/systems/rounds-lobby.md) and [gamemodes-roles-traits](../../architecture/systems/gamemodes-roles-traits.md); parked items to [mvp1-nuke-ops.md](../../milestones/mvp1-nuke-ops.md) **Explicitly deferred**.
 
 # Round-end loop and thin Nuke Ops outcome (Nov 2026)
 
@@ -11,7 +11,7 @@ A round ends with a legible outcome, everyone sees a summary, and the server ret
 ## Starting state (2026-11-02, `06c7e4045`)
 
 - **Ending the round:** `RoundSubSystem.ProcessEndRound` sets `Ending`, posts "The round has ended." to OOC, calls `AppendRoundHistory`, waits 3 s, then `StopRound` despawns everyone and unloads the station. There is no outcome, no summary and no return to a fresh round unless `AutoStart` is on.
-- **Self-starting rounds** exist as the `AutoStart` server setting (`RoundAutoStart`, 20 s countdown once at least one player is ready, admin hold/cancel), built for the sandbox ([2026-11_sandbox-server](2026-11_sandbox-server.md) Decision 2). Only `-sandbox` turns it on.
+- **Self-starting rounds** exist as the `AutoStart` server setting (`RoundAutoStart`, 20 s countdown once at least one player is ready, admin hold/cancel), built for the sandbox ([2026-11_sandbox-server](../../architecture/2026-11_sandbox-server.md) Decision 2). Only `-sandbox` turns it on.
 - **Round length** is enforced in `RoundSubSystem`'s tick with 5- and 1-minute warnings for every timed round.
 - **Nuke:** `Nuke.Detonate()` (via `NukeDetonateInteraction`) calls `GamemodeSubSystem.EndRound()` instantly. No arming, countdown or disk check (that is M3).
 - **Gamemode:** `NukeGamemode` is an empty `Gamemode` subclass. Legacy objectives (`DetonateNukeObjective`, `GetItemObjective`) go to every spawned player, complete on pickup, and `ObjectiveStatus` has four states.
@@ -46,14 +46,14 @@ A round ends with a legible outcome, everyone sees a summary, and the server ret
 | 20 | Nuke Ops default round length is **30 minutes** (server setting). Gamemode-specific lengths stay deferred. |
 | 21 | The gamemode-identity leak to clients (round-config §4 delta) stays parked; the summary shows the resolved mode regardless. |
 | 22 | **Nuclear Operative opt-in is on by default** (owner, 2026-11-03): a player who never opened the antagonist list is in the draw; they can opt out. Without it, a public server where nobody ticks the box runs every round as Extended. |
-| 23 | **Nuke Ops needs a minimum number of ready players** before the draw runs, a server setting the 24/7 profile sets to 4 ([test-server.md](../milestones/test-server.md) T8). Fewer runs the round as Extended with the same admin notice as Decision 11. Distinct from Decision 10's minimum squad size. |
-| 24 | **Tests stay in the cheapest tier** ([testing philosophy](2026-11_testing-philosophy.md)). Outcome rules, the draw and the beat are EditMode; behaviour across roles, spawning, inventory, comms and the round end is one tier-2 scenario fixture; client delivery is a nightly smoke line; screenshots only for the summary's visuals. Automation runs a 3 s beat (`SetEndBeatSecondsForTesting`) except where the summary is the subject. |
+| 23 | **Nuke Ops needs a minimum number of ready players** before the draw runs, a server setting the 24/7 profile sets to 4 ([test-server.md](../../milestones/test-server.md) T8). Fewer runs the round as Extended with the same admin notice as Decision 11. Distinct from Decision 10's minimum squad size. |
+| 24 | **Tests stay in the cheapest tier** ([testing philosophy](../../architecture/2026-11_testing-philosophy.md)). Outcome rules, the draw and the beat are EditMode; behaviour across roles, spawning, inventory, comms and the round end is one tier-2 scenario fixture; client delivery is a nightly smoke line; screenshots only for the summary's visuals. Automation runs a 3 s beat (`SetEndBeatSecondsForTesting`) except where the summary is the subject. |
 
 ## Shape
 
 - **Outcome.** A plain serializable `RoundOutcome` built on the server by one entry point that every trigger calls (gamemode condition, timer, admin stop). Nuke Ops rules live in a **pure resolver** (`NukeOpsOutcomeRules` or similar) that takes squad states and disk location and returns the winner. `RoundSubSystem` owns the outcome's lifetime and sends it to clients when `Ending` begins and to anyone who connects while it is the last round.
 - **Ending beat.** `ProcessEndRound` replaces its 3 s delay with the 30 s beat plus admin hold, then `StopRound` continues unchanged (map-editor autosave, despawn, unload). Admin stop requests during Ongoing go through the same outcome entry point with trigger `Admin`.
-- **Summary UI** follows the UiShell view/subsystem split ([ui-shell](systems/ui-shell.md)): a round-end view on a layer above the HUD, collapsible to a banner, and a "Last round" card in `LobbyShellView`. Visuals come from the separate design pass.
+- **Summary UI** follows the UiShell view/subsystem split ([ui-shell](../../architecture/systems/ui-shell.md)): a round-end view on a layer above the HUD, collapsible to a banner, and a "Last round" card in `LobbyShellView`. Visuals come from the separate design pass.
 - **Squad and roles** extend `RoleSubSystem.ResolveRoundStartRoles` with a draw step before `JobResolver`, and teach `EntitySubSystem.ResolveSpawnPosition` the operative marker. The draw itself is a pure function for EditMode tests.
 - **Objectives** reshape `GamemodeSubSystem`/`Gamemode` around antagonist-only assignment and a resolve-at-end pass. Keep `GamemodeObjectivesView` on the `Networked View` prefab untouched unless it breaks.
 - **Detonation** goes through `CommsSubSystem.SendAnnouncement` and a screen-effects pulse sent to every client.
@@ -78,7 +78,7 @@ A round ends with a legible outcome, everyone sees a summary, and the server ret
 
 - Opt-in list from enabled modes (Decision 15).
 - Draw, size, minimum and Extended fallback with admin notice (Decisions 10, 11).
-- Operative role, marker spawn, loadout (Decision 12). The kit (M4 rifle, engineering jumpsuit) is a **placeholder**: [mvp1-nuke-ops.md](../milestones/mvp1-nuke-ops.md) M1c gives operatives the C20R and Stechkin and the M4 to Security, and M0 adds the ops suit and a real Engineer job. Swap the kit when those land.
+- Operative role, marker spawn, loadout (Decision 12). The kit (M4 rifle, engineering jumpsuit) is a **placeholder**: [mvp1-nuke-ops.md](../../milestones/mvp1-nuke-ops.md) M1c gives operatives the C20R and Stechkin and the M4 to Security, and M0 adds the ops suit and a real Engineer job. Swap the kit when those land.
 - Team objective replaces legacy objectives (Decision 13); spawn briefing (Decision 14).
 - Tests (as shipped): **EditMode** `SquadDrawTests` (size, opt-in only, fallback, latejoiners never drawn) and `GamemodeTests` (team objective). "A non-opted player gets a job" is the draw plus `JobResolver`, both EditMode. The spawn path (drawn host → Operative role → marker → kit → briefing → team objective) is not a pilot. It becomes the first check in P3's Nuke Ops scenario fixture, which pays the same setup.
 
@@ -96,9 +96,9 @@ A round ends with a legible outcome, everyone sees a summary, and the server ret
 
 ### P4 — 24/7 Nuke Ops server profile
 
-Serves [test-server.md](../milestones/test-server.md) T8 and Playtest 1's "every round loops with no admin rescue".
+Serves [test-server.md](../../milestones/test-server.md) T8 and Playtest 1's "every round loops with no admin rescue".
 
-- A `-nukeops` server profile on the `-sandbox` pattern (`SandboxProfile`, [2026-11_sandbox-server](2026-11_sandbox-server.md)): mode Secret, `AutoStart`, 30 min rounds (Decision 20), no map editing or sandbox resets, persistence as a normal server.
+- A `-nukeops` server profile on the `-sandbox` pattern (`SandboxProfile`, [2026-11_sandbox-server](../../architecture/2026-11_sandbox-server.md)): mode Secret, `AutoStart`, 30 min rounds (Decision 20), no map editing or sandbox resets, persistence as a normal server.
 - Minimum ready players for Nuke Ops, 4 in the profile (Decision 23); Nuclear Operative opt-in on by default (Decision 22).
 - Hosting on TomNAS next to the sandbox is outside this repo; the profile and its arguments are what this effort ships.
 - Tests: **EditMode** for the profile settings and the ready-player threshold. **Multiplayer:** the `nukeops-round` smoke line (moved here from P3) runs with `-nukeops` and a lowered threshold: the draw on a real server, a remote operative spawning, the outcome reaching clients, the next round auto-starting. Check the D7 smoke budget before adding it.
@@ -113,14 +113,14 @@ Serves [test-server.md](../milestones/test-server.md) T8 and Playtest 1's "every
 
 ## Implementation notes
 
-**P1 (2026-11-02).** Code: `Systems/Rounds/RoundEnd.cs`, `Systems/Rounds/Outcome/`, `UI/Lobby/RoundEnd/`; map: [rounds-lobby](systems/rounds-lobby.md). Divergences from the decisions above and the design pass:
+**P1 (2026-11-02).** Code: `Systems/Rounds/RoundEnd.cs`, `Systems/Rounds/Outcome/`, `UI/Lobby/RoundEnd/`; map: [rounds-lobby](../../architecture/systems/rounds-lobby.md). Divergences from the decisions above and the design pass:
 
 - **Last round lives in a lobby tab, not a sidebar card** (Decision 6). The design's card sits in a wide left sidebar; the real lobby's sidebar is the 280 px character preview column. The Last Round tab (after Server Info) renders the same ledger as the overlay. The shell opens it once per ended round, but not while the player is on Server Settings or Chat.
 - **Lobby players read the summary in that tab during the beat.** The overlay sits on the shell's Overlay layer, below the lobby window (Modal), so only players with a body or ghost see the overlay itself (Decision 4).
 - **Dedicated means `NetworkType.DedicatedServer`.** A listen host (editor, main-menu Host) keeps `AutoStart` off. The admin form gained an Auto Start toggle and a Minimum Ready field (Decision 7).
 - **Admin hold** is a Hold Summary / Resume Summary pair in Server Settings → Round Controls, posted to Admin chat (Decision 5).
 - **The outcome reaches clients through a buffered `ObserversRpc`**, so a client connecting later still gets the last round. `fallbackMap` is written from a flag that P2's Extended fallback sets.
-- **Tab** is a code-defined `ToggleRoundSummary` system action, live in the Global, Gameplay, TileMenu and MapEditor contexts ([inputs](systems/inputs.md)).
+- **Tab** is a code-defined `ToggleRoundSummary` system action, live in the Global, Gameplay, TileMenu and MapEditor contexts ([inputs](../../architecture/systems/inputs.md)).
 
 **P2 (2026-11-02).** Code: `Systems/Roles/SquadDraw.cs` (pure draw, `SquadDrawTests`), `RoleSubSystem.DrawSquad`, `RoundSubSystem.FallBackToExtended`, `Gamemodes/OperativeBriefing.cs`, `NukeGamemode`; data: `Roles/Operative.asset`, `Roles/Loadouts/OperativeLoadout.asset`. Divergences and choices:
 

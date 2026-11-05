@@ -1,7 +1,7 @@
 > Code paths: Assets/Scripts/SS3D/Systems/Area/
 > Entry points: AreaSubSystem, AreaFloodFillService, AreaBoundaryEvaluator
 > Status: partial
-> Verified: 1497d55e1 — 2026-10-31
+> Verified: e2f86cf20 — 2026-11-05
 
 # Area
 
@@ -44,8 +44,8 @@ Per-consumer power gating and **area-scoped APC cell drain** via [electricity](e
 - Resolve area for wall-mounted devices: `AreaSubSystem.TryGetAreaForDevice` (tile in front of `Direction`).
 - Resolve area record by id: `AreaSubSystem.TryGetArea`.
 - Client / no-registry area id: `TryResolveAreaIdForDevice` — server/host with live map uses `TryGetAreaForDevice` only (sticky None); pure clients use `FloorVisualCache`.
-- Register APC origins: implement `IAreaApcOrigin` (see `ApcController`).
-- Server room metadata APIs: `AreaSubSystem.RenameArea`, `SetParentTag`, `SetDefaultRequiredAccess`; Map Editor Scripts → Rooms tab selects or creates rooms and edits these via admin-checked RPCs (`MapEditorArea.cs`; owner manually accepted in the editor; release dogfood pending).
+- Register APC origins: implement `IAreaApcOrigin` (see `ApcController`); register in `OnStartServer`, unregister in `OnStopServer`.
+- Server room metadata APIs: `AreaSubSystem.RenameArea`, `SetParentTag`, `SetDefaultRequiredAccess`; Map Editor Scripts → Rooms tab selects or creates rooms and edits these via RPCs gated by `MapEditorPermissions.TryAuthorize` (admin, or anyone on `-openbuild`/`-sandbox`) in `MapEditorArea.cs`.
 - Resolve effective APC for a device: `AreaSubSystem.TryGetEffectiveApcForDevice`.
 - Area rebuild / APC lifecycle invalidates electricity's per-APC consumer index and atmos's area→port index via `InvalidateAreaMembershipIndexes`.
 - Query lighting by tile: `IAreaLightingStateSource.TryGetLightingStateForTile`.
@@ -68,6 +68,7 @@ Per-consumer power gating and **area-scoped APC cell drain** via [electricity](e
 - **Live structural clear must not reflood inside `OnTileCleared`:** `TileMap` notifies before occupant removal. `AreaSubSystem` sets `_pendingLiveBoundaryRecompute` and flushes on next `UpdateEvent` ([structural-destruction](structural-destruction.md)).
 - **Light switch usable from across the room:** prefab had no collider, selection never resolved a point, and `RangeCheck` treated zero point as unlimited — see [interactions-framework](interactions-framework.md) Pitfalls. LightSwitch now has a BoxCollider; RangeCheck falls back to target transform.
 - **Client fixtures stay stuck on/off (host OK):** Host fixture logic can read the area APC; pure clients cannot. `LightPower` is a `NetworkActor` with SyncVar `_fixtureVisual` — server computes Off/Normal/Emergency, clients only apply. Do not gate client visuals on obsolete `IsSetUp` or re-derive emit from floor-cache alone.
+- **Deleted APC keeps its room and blocks a replacement:** unregister APCs in `OnStopServer`, not an `IsServer`-gated `OnDestroyed`; room linking also skips Unity-null APCs (`AreaPaintingService.IsLive`). Details: [electricity](electricity.md) Pitfalls.
 - **Act before flood:** registration ≠ readiness — await `WorldReadyPhase.AreasFlooded` (see [core-subsystems](core-subsystems.md)).
 - **Device→area resolve must not re-walk the map every call:** `TryGetAreaForDevice` builds `TileCoord`s and walks the registry. Electricity used to call it twice per consumer per tick — Metastation deep profiles showed ~12k `TryGetAreaId`/inflated-frame. Prefer mutation-driven indexes (electricity APC→consumers, atmos area→ports) for membership lists; the StructureVersion device cache is a sticky resolve for incidental callers, cleared on reflood / structure bump. Hit 2026-07-29.
 - **`TryResolveAreaIdForDevice` must not fall through to floor-cache on server miss:** live `TryGetAreaForDevice` already sticky-caches None. Falling through made unassigned devices pay registry + floor-cache forever. Server/host with `_map` returns false on miss; pure clients still use `FloorVisualCache`. Hit 2026-07-29.

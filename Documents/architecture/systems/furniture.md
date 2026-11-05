@@ -1,7 +1,7 @@
 > Code paths: Assets/Scripts/SS3D/Systems/Furniture/, Assets/Content/WorldObjects/Furniture/
 > Entry points: (various world object behaviours); AirLockProximityService
 > Status: partial
-> Verified: bf0356444 — 2026-11-04
+> Verified: e2f86cf20 — 2026-11-05
 
 # Furniture / world objects
 
@@ -22,8 +22,9 @@ Steel tables leave procedural collapsed tops and legs through [structural-destru
 - `Assets/Scripts/SS3D/UI/MachineInterface/VendingMachineController.cs` — vending machines (machine-interface controller)
 - `Assets/Scripts/SS3D/Systems/Audio/Boombox.cs` — jukebox toggle; stops audio on power loss
 - `Assets/Content/WorldObjects/Furniture/Machines/Vendors/` — vending machine prefabs
+- `Assets/Scripts/SS3D/Systems/Furniture/AirLockAccessGate.cs` — door access from assigned room / department defaults ([id-access](id-access.md))
+- `Assets/Scripts/SS3D/Systems/Furniture/Nuke.cs` — nuke device; `Detonate` is a `[Server]` entry that ends the round ([rounds-lobby](rounds-lobby.md))
 - Disposal: see [disposal](disposal.md) (`DisposalBin`, `DisposalOutlet`, `DisposalSubSystem`)
-
 - `Assets/Scripts/SS3D/Systems/StructuralDamage/Editor/StructuralIntegrityPrefabSetup.cs` — tier-B presentation/examine recipe for supported tables, lockers, machines and civilian/security airlocks
 
 ## Extension points
@@ -32,12 +33,11 @@ Steel tables leave procedural collapsed tops and legs through [structural-destru
 - Powered machines: attach `MachinePowerConsumer` or `BasicPowerConsumer` + `ElectricDeviceAdjacencyConnector`; add `ConsumerPowerVisual` when emissive meshes should dim unpowered (see [electricity](electricity.md)).
 - Panel-driven machines: subclass `MachineInterfaceBehaviour` and register UI per [machine-interface](machine-interface.md) extension recipe.
 - Wall light switches: use [area](area.md) `LightSwitchController`, not furniture scripts.
+- Debug/automation door hold: `AirLockOpener.ServerDebugHoldOpen` (powered doors only; `doordebug` console command).
 
 ## Pitfalls
 
 - **Room access edits do not affect doors:** civilian/security skins serialized fixed masks and disabled area defaults. `AirLockAccessGate` now resolves assigned-room explicit access, then department defaults; legacy skin masks (migrated via `FormerlySerializedAs`) are only fallbacks for unassigned doors. Public assigned rooms stay public.
-
-
 - **SS13-scale airlock FixedUpdate:** hundreds of doors each calling `SpawnedPlayers.ToList()` + `GetComponent` every physics tick (~814× on Metastation). Proximity is owned by `AirLockProximityService` (HashGrid neighborhood of players only). Empty close passes use `_pendingEmptyPass` (doors with occupants), not a walk of all `_openerCells` — `EmptyPassSweep` must stay O(pending). Do not re-add per-door `FixedUpdate`. Hit 2026-07-28 (perf capture).
 - **Airlock proximity GC per tick:** do not prune `_deniedOccupants` with `RemoveWhere` capturing `_proximityScratch` (allocates a display class + delegate every call). Use a list prune. Do not `TryGet` MapEditor/EntitySubSystem inside each door — hoist in the service and pass `SpawnedPlayers`. Do not read `renderer.sharedMaterials` on door-light updates (new array every call); resolve color property once and set via MPB material index. Hit 2026-07-29.
 - **Airlock panel SMR vs bones:** `AirlockPanel` uses `SkinnedMeshRenderer` for blend shapes (`Confirm`/`On`), not skeletal bones. That path breaks SRP Batcher grouping vs `MeshRenderer`. Replacing with MeshRenderer + MPB/emissive is a content change, not a zero-cost swap. Hit 2026-07-29.
@@ -47,6 +47,10 @@ Steel tables leave procedural collapsed tops and legs through [structural-destru
 - **Access-denied spam at a locked door:** unauthorized players in the padded proximity volume must only trigger deny once per approach (`_deniedOccupants` edge). Calling `ServerPlayAccessDenied` every FixedUpdate floods SFX/blinks. Clear the denied set when they leave or on power loss. Hit 2026-07-26 (design).
 - **Security cannot open civilian airlocks:** Security role preset omitted `AccessLevel.Civilian` (bit 128). Civilian doors require that bit; host and client both fail access. SecurityOfficer preset + `Security.asset` include Civilian. Hit 2026-07-26.
 - **Airlocks stuck open after leaving the trigger:** `AirLockOpener` closes on `OnPowerStatusUpdated(Inactive)`. If [electricity](electricity.md) `PowerAreaConsumers` writes `Inactive` then `Powered` every tick (~0.2s), the SyncVar OnChange restarts the 2s close timer forever. Assign final `PowerStatus` once per consumer; never clear-then-set. Defense: `ScheduleCloseAfterDelay` must not restart an already-running timer. Regression test: `PowerAreaConsumers_AssignsFinalStatusOnceWithoutFlicker`. Hit three times (91b053c1d, Jul 16 uncommitted, 2026-07-18).
+
+## Tests
+
+`Assets/Scripts/Tests/EditMode/Furniture/` (`AirLockProximityServiceTests`, `AirLockAreaAccessTests`); PlayMode `Scenarios/AccessScenarios.cs` covers door access in the test room.
 
 ## Depends on / Used by
 

@@ -1,7 +1,7 @@
 > Code paths: Assets/Scripts/SS3D/Systems/Health/
 > Entry points: HumanHealthController, HealthSimulation, OrganSimulation
 > Status: partial
-> Verified: 504c22428 — 2026-11-03
+> Verified: e2f86cf20 — 2026-11-05
 
 # Health
 
@@ -11,11 +11,11 @@ Greenfield rewrite per [health_implementation_plan.md](../../plans/health_implem
 
 Local-owner [screen-effects](screen-effects.md) are driven from `HealthSnapshot` via `HealthScreenEffectMapper` (dying/critical, blood-loss tunnel vision, oxy debt, concussion, unconscious) plus hit flash on `ApplyDamage`, and turf temp/fire via `AtmosScreenEffectMapper` from `HealthSnapshot.Environment`. Main HUD alert icons merge `HealthAlertStackMapper` + `AtmosAlertStackMapper` (Hot/Cold/pressure/Fire + LowOxygen from debt or turf). Personal [audio](audio.md): heartbeat + labored breathing (`HealthPersonalAudioMapper`, max-merged with stamina); alert ding; positional flesh/blood/gasp/scream on damage and critical/vacuum edges. Server `TickHealthFromEnvironment` samples the occupant tile each 1 Hz tick: O₂ partial-pressure breathability, O₂→CO₂ breath exchange, plasma toxin intake, hot/cold/fire burn on **all zones**, and low/high/vacuum pressure → **lung** barotrauma (not chest burn). `atmosdamage off` / Health Debug checkbox skips turf coupling (`HealthEnvironmentSettings.AtmosphericDamageDisabled`). Examine Tier 0/1 health lines shipped via `CharacterExamineHealthBuilder` (see [examine](examine.md)); vitals cluster UITK remains Phase 6 remainder.
 
-**Stamina Phase 7a core shipped:** see [stamina](stamina.md) — push-past-empty calls `ApplyOxyDebt`; obsolete `StaminaBar` purged from PlayerCanvas. Combat stamina costs still deferred.
+**Stamina Phase 7a core shipped:** see [stamina](stamina.md) — push-past-empty calls `ApplyOxyDebt`; obsolete `StaminaBar` purged from PlayerCanvas. Melee swings and ranged fire drain stamina ([combat](combat.md)); block drain is deferred.
 
 Phase 0d strips legacy health components from `Human.prefab` and rewires a thinner root — do not dual-stack or grow the mega-prefab ([agent-first composition](../2026-07_agent-first-composition.md), [health_implementation_plan.md](../../plans/health_implementation_plan.md) Phase 0d).
 
-**Body presentation:** Health emits collapse intent only (`BodyPresentationIntent` → `Ragdoll.ServerSetPresentation`). Death is `Human.Kill` → `ServerDeathRagdoll`. Do not add a parallel collapse path — see [2026-07_body-presentation-authority.md](../../archive/architecture/2026-07_body-presentation-authority.md) (shipped).
+**Body presentation:** Health emits collapse intent only (`BodyPresentationIntent` → `Ragdoll.ServerSetPresentation`). Death is `Human.Kill` → `ServerDeathRagdoll`, applied before the ghost hand-off so mindless bodies (combat dummies) ragdoll too ([entities](entities.md)). Do not add a parallel collapse path — see [2026-07_body-presentation-authority.md](../../archive/architecture/2026-07_body-presentation-authority.md) (shipped).
 
 ## Start here
 

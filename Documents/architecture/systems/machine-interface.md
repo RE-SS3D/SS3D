@@ -1,7 +1,7 @@
 > Code paths: Assets/Scripts/SS3D/UI/MachineInterface/, Assets/Content/Systems/UI/MachineInterface/
 > Entry points: MachineInterfaceSubSystem, MachineInterfaceHost, MachineInterfaceRegistry, MachineUiAssetCatalog
 > Status: shipped
-> Verified: f04093919 — 2026-10-31
+> Verified: e2f86cf20 — 2026-11-05
 
 # Machine interface UI
 
@@ -52,11 +52,16 @@ Dev harness: `MachineInterfaceDevHarness.cs`; editor previews via `SS3D → Mach
 - **Do not hide Main HUD / storage from MI:** chrome visibility is owned by [inventory](inventory.md) `MainHudSubSystem` and `StoragePanelHost` observing `InterfaceOpened` / `InterfaceClosed` (asmdef is MainHud/StoragePanel → MI; reverse would cycle). That owner currently fully hides the HUD rather than layering MI on top of it, a known fork deviation from `main-hud.md` — see [inventory](inventory.md) § Fork deviation. Don't reimplement visibility logic here either way.
 - **Open interface from across the room on air alarm:** prefab lacked a collider; unresolved interaction point made `RangeCheck` pass everywhere — see [interactions-framework](interactions-framework.md). AirAlarm now has a BoxCollider.
 - **Client open also opens MI on listen-server host:** `TargetRpc(RunLocally = true)` re-enters on the server for every send. `DispatchClientOpen`/`Refresh`/`Close` must call `ShouldApplyTargetedUi(conn)` so only the local client connection applies UI (host opening for self still works).
+- **Deleted APC keeps powering its room:** FishNet clears `IsServer` during despawn, before `OnDestroy`, so an `IsServer`-gated unregister in `OnDestroyed` never runs (and a replacement APC is refused). Do server-side unregistration (area, electricity) in `OnStopServer`; keep only event unsubscribes in `OnDestroyed`.
+
+## Tests
+
+- EditMode: `MachineInterfaceSnapshotTests`, `MachineInterfaceAccessReaderTests`, `AirAlarmInterfaceInteractionTests`.
 
 ## Depends on / Used by
 
 - **Depends on:** [electricity](electricity.md), [area](area.md), [atmospherics](atmospherics.md), [id-access](id-access.md), [interactions-framework](interactions-framework.md), [selection](selection.md), [inventory](inventory.md), [screen-effects](screen-effects.md) (diegetic backdrop blur)
-- **Used by:** `ApcController`, `SmesController`, `VendingMachineController`, `AirAlarmInterfaceController`, `ScrubberInterfaceController`, `VentInterfaceController`, `PumpInterfaceController`; Main HUD observes open/close for suppress
+- **Used by:** `ApcController`, `SmesController`, `VendingMachineController`, `IdConsoleController` (debug ID console, [id-access](id-access.md)), `AirAlarmInterfaceController`, `ScrubberInterfaceController`, `VentInterfaceController`, `PumpInterfaceController`; Main HUD observes open/close for suppress
 
 ## Related docs
 

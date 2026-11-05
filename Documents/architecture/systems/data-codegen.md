@@ -1,7 +1,7 @@
 > Code paths: Assets/Scripts/SS3D/Data/
 > Entry points: AssetDatabase, AssetDatabasesCodeGenerator, AssetProvider
 > Status: partial
-> Verified: f1c9476af — 2026-07-25
+> Verified: e2f86cf20 — 2026-11-05
 
 # Data / codegen
 
@@ -9,7 +9,9 @@
 
 ScriptableObject asset catalogs, codegen writers producing typed references (`Generated/Scenes.cs`,
 `Items.cs`, etc.), shared disk I/O helpers under `Data/Management/`, and dual-path asset loading
-(eager serialized refs vs Addressables async via `AssetProvider`).
+(eager serialized refs vs Addressables async via `AssetProvider`). `AssetDatabase.TryGet<T>` for a
+`Component` type returns that component from a stored prefab. `Data/Persistence/` belongs to the
+[persistence](persistence.md) map.
 
 ## Start here
 
@@ -22,9 +24,11 @@ ScriptableObject asset catalogs, codegen writers producing typed references (`Ge
 - `Assets/Scripts/SS3D/Data/AssetsInitializationTrigger.cs` — loads DBs + async preload on `ApplicationInitializing`
 - `Assets/Scripts/SS3D/Data/AssetDatabases/AssetDatabasesCodeGenerator.cs` — codegen entry
 - `Assets/Scripts/SS3D/Data/Generated/AssetDatabases.cs` — generated database refs
-- `Assets/Scripts/SS3D/Data/Management/LocalStorage.cs` — `JsonUtility` file I/O, append JSONL, legacy path helpers
-- `Assets/Scripts/SS3D/Editor/UiCatalogRebuildAll.cs` — **SS3D → Data → Rebuild All UI Catalogs** (MI / Main HUD / UI Shell / Storage Panel)
-- Tests: `Assets/Scripts/Tests/EditMode/AssetProviderTests.cs` (ref-count / missing key / concurrent missing / preload cache)
+- `Assets/Scripts/SS3D/Data/Management/LocalStorage.cs` — `JsonUtility` file I/O, append/read JSONL, legacy path helpers
+- `Assets/Scripts/SS3D/Data/Paths.cs` + `GamePaths.cs` — `Config/` / `Data/` roots (Editor: `Builds/Game`; player: beside the executable)
+- `Assets/Scripts/SS3D/Editor/UiCatalogRebuildAll.cs` — **SS3D → Data → Rebuild All UI Catalogs** (Machine UI, Main HUD, UI Shell, Storage Panel, Lobby, Bug Report, Main Menu, Round End)
+- `Assets/Scripts/SS3D/Editor/Interactions/InteractionIconSpriteBuilder.cs` — interaction icon sprite rebuild
+
 ## Extension points
 
 - New asset categories: extend asset database settings and rerun codegen.
@@ -33,11 +37,15 @@ ScriptableObject asset catalogs, codegen writers producing typed references (`Ge
 
 ## Pitfalls
 
-- **Built players need CWD `Config/` + `Data/Tilemaps/` beside the binary.** `Paths.GetPath` uses process CWD (`BuiltGameFilePath` empty; Editor uses `/Builds/Game`). Unity does not pack those trees — missing them → no `permissions.txt`, host log `No station templates found to load`. CI seeds from tracked `Builds/Game/` in [develop-release](../2026-07_ci-develop-release-pipeline.md); never ship `Data/ServerMeta/`.
+- **Built players need `Config/` + `Data/Tilemaps/` beside the executable.** `Paths` resolves the parent of `<product>_Data` (cached on `SubsystemRegistration` because `Application.dataPath` is main-thread only), so the working directory no longer matters; Editor uses `Builds/Game`. Unity does not pack those trees — missing them → no `permissions.txt`, host log `No station templates found to load`. CI seeds from tracked `Builds/Game/` in [develop-release](../2026-07_ci-develop-release-pipeline.md); never ship `Data/ServerMeta/`.
 - **`Sprite.Create` NativeFormat icons go null in AssetDatabase:** InteractionIcons audit failed when Recycle was authored via `Sprite.Create` + `CreateAsset` (empty `RenderDataKey` / unloadable sprite). Clone the texture’s imported sprite (`Object.Instantiate` of the PNG sub-asset) or use Editor-authored NativeFormat sprites — never commit a one-shot `Sprite.Create` rebuild as the source of truth.
 - **AddressablesAsync sync Get needs preload:** `Assets.Get` for an async DB reads `AssetProvider` cache only. Call `Assets.PreloadAddressableDatabases()` after `LoadAssetDatabases()` (done in `AssetsInitializationTrigger`) or icons resolve null with a log and no throw.
 - **Missing-key load must not `TrySetException` on an unawaited Loading TCS:** `AssetProvider.AcquireAsync` failure with no concurrent waiters used to `TrySetException` then rethrow — UniTask’s unobserved fault logged `[Exception]` and Unity EditMode `LogAssert` failed a later unrelated test. On failure: `TrySetResult(false)`, clear `Loading`, rethrow; waiters already check `Asset == null`. Await UniTask faults in tests (do not rely on `Assert.ThrowsAsync` alone).
 - **EditMode fake-backend delay must not use `UniTask.Delay`:** under `-batchmode` EditMode there is no reliable PlayerLoop; even `DelayType.Realtime` can stall (~100s+) or hit the 180s NUnit timeout (`ConcurrentMissingKeyDoesNotLeakUnobservedException`). Use `Task.Delay` in `AssetProviderTests` fakes.
+
+## Tests
+
+- EditMode `Assets/Scripts/Tests/EditMode/AssetProviderTests.cs` (ref-count / missing key / concurrent missing / preload cache); `Assets/Scripts/Tests/AssetAudit/` runs asset, prefab, scene and taxonomy audits (incl. interaction icon sprites).
 
 ## Depends on / Used by
 
@@ -46,7 +54,6 @@ ScriptableObject asset catalogs, codegen writers producing typed references (`Ge
 ## Related docs
 
 - Structural debt: [TECH_DEBT.md](../TECH_DEBT.md) §1.4 / §1.5 (catalog rebuild pipeline), §1.15 (Addressables partial)
-
 - [INDEX.md](../INDEX.md)
 - Related catalog debt: [ui-shell-consolidation](../2026-07_ui-shell-consolidation.md) § Explicit non-goals (shared path-catalog helper); [2026-07_editor-tooling-tiers.md](../2026-07_editor-tooling-tiers.md)
 - [2026-07_addressables-expansion-migration](../2026-07_addressables-expansion-migration.md) — Phases 1–3 done; 4–6 open

@@ -1,7 +1,7 @@
 > Code paths: Assets/Scripts/SS3D/Systems/Electricity/
 > Entry points: ElectricitySubSystem
 > Status: partial
-> Verified: 504c22428 — 2026-11-03
+> Verified: e2f86cf20 — 2026-11-05
 
 # Electricity
 
@@ -46,7 +46,7 @@ Power circuit simulation, APC channel gating, SMES storage, and tile-linked elec
 - `Assets/Scripts/SS3D/Systems/Electricity/ConsumerPowerVisual.cs` — emissive/panel dimming for generic consumers
 - `Assets/Scripts/SS3D/Systems/Electricity/BasicPowerConsumer.cs` — constant-load consumer
 - `Assets/Scripts/SS3D/Systems/Electricity/MachinePowerConsumer.cs` — idle/in-use load consumer
-- `Assets/Scripts/SS3D/Systems/Electricity/FuelPowerGenerator.cs` — Pacman generator (`IPowerProducer` + toggle FX)
+- `Assets/Scripts/SS3D/Systems/Electricity/FuelPowerGenerator.cs` — Pacman generator (`IPowerProducer` + toggle FX; running loop via buffered `RpcSyncRunningSound`)
 - `Assets/Scripts/SS3D/Systems/Electricity/SolarCycle.cs` — stub sun azimuth / intensity / eclipse for solar output
 - `Assets/Scripts/SS3D/Systems/Electricity/SolarPanel.cs` — solar `IPowerProducer` + Rotate aim
 - `Assets/Scripts/SS3D/Systems/Electricity/SolarTrackingBeacon.cs` — auto-aim nearby panels (Toggle, no MI)
@@ -89,6 +89,11 @@ Power circuit simulation, APC channel gating, SMES storage, and tile-linked elec
 - **Solar aim visual vs placement yaw:** `SolarPanel` SyncVar aim drives world yaw independently of tile placement direction. Never assign `rotation = Euler(0, yaw, 0)` on an FBX armature bone — that zeros Blender rest pitch/roll and tumbles the rig toward north. Capture rest, strip world-Y, then `AngleAxis(yaw, up) * restNoYaw`. Prefer aim transform = `Model` (FBX root), not a skinned bone.
 
 - **`OnTick` handlers subscribed in `OnStartClient` must unsubscribe in `OnStopClient`.** A client that leaves an object's observer range and comes back runs `OnStartClient` again. `SmesBattery` unsubscribed only in `OnDestroyed`, so the first handler outlived the SMES and threw `MissingReferenceException` on its destroyed renderer every tick after a round reload. Hit 2026-11-03 by the space ragdoll scenario.
+- **Generator silent on remote clients and late joiners:** `AudioSubSystem.PlayAudioSource`/`StopAudioSource` are `[Server]`, so a client SyncVar hook calling them only logs and returns, and a one-shot play reaches only observers present at that moment. Start/stop looping machine sounds from the server through a `BufferLast` ObserversRpc that calls the `*Local` variants (`FuelPowerGenerator.RpcSyncRunningSound`). Hit 2026-11-05 (#153).
+
+## Tests
+
+`Assets/Scripts/Tests/EditMode/ElectricityTests/`: circuit distribution, cable connectivity, consumer allocation, `PowerGate`, APC status/consumer index, area APC distribution and lighting state/fixture policy, solar generation. Run `Testing/ui/validate.sh --steps compile,editmode`.
 
 ## Depends on / Used by
 

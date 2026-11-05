@@ -1,7 +1,7 @@
 > Code paths: Assets/Scripts/SS3D/Networking/, Assets/Scripts/SS3D/Editor/ServerBuildScript.cs, Assets/Scripts/SS3D/Editor/ClientBuildScript.cs, Assets/Scripts/SS3D/Systems/Testing/, Testing/multiplayer/
 > Entry points: NetworkSessionSubSystem, ClientConnectionRecovery, NetworkSystemsHub, SS3D.Systems.Testing.AutomationSubSystem
 > Status: partial
-> Verified: f21a4d0b4 — 2026-11-02
+> Verified: e2f86cf20 — 2026-11-05
 
 # Networking (session)
 
@@ -53,7 +53,7 @@ FishNet session management — host/join, network type and port settings. Distin
 - **Stopped dedicated server never starts again:** no client connection finishes its disconnect, so the session sat in `Disconnecting` and `CanStart` refused the next session (PlayMode tests restarting between cases). `ClientConnectionRecovery` sets `Cold` directly when `NetworkType` is `DedicatedServer`.
 - **Intro auto-join is Cold-only** (`IntroUIHelper` checks `SessionState.Cold`).
 - **`SubSystems.Get` during Disconnecting / WaitingForServer** is silent (`SetSuppressMissingErrors`) — prefer `TryGet`. Suppress starts on Disconnecting so hub/device `OnDestroy` during `StopConnection` does not Error before WaitingForServer.
-- **OnGUI recovery when Empty offline:** NetworkSession is DDOL — CCR shows OnGUI when Intro/Boot/Launcher are not loaded (not when NetworkSession is missing).
+- **OnGUI recovery when Empty offline:** NetworkSession is DDOL — CCR shows OnGUI when Intro/Boot/Launcher are not loaded (not when NetworkSession is missing), or when they are loaded but `DefaultScene` is about to swap them for Empty (`WillLoadEmptyOfflineScene`). Without that check a server rejection (version mismatch) left a black screen: Intro was still loaded when the client stopped, then Empty replaced it one frame later. Hit 2026-11-02.
 - See also prior harness / headless pitfalls below (unchanged).
 - **After `ScriptComplete`, hard-exit — do not `Application.Quit`.** Quit still unloads scenes and re-enters `ApplicationInitializing`, so NetworkSession re-joins and (without a guard) automation re-runs → harness Error/Fatal + RoleSubSystem duplicate-key. `AutomationSubSystem` runs the script once and `Environment.Exit(0)` after emitting the final signal.
 - **`TileResourceLoader` / `Item.GenerateIcon` preview cameras break `-nographics` clients.** `IconPreviewGenerator` → `RuntimePreviewGenerator` recreates URP on NullGfxDevice → GraphicsBuffer/Blitter spam that fails the harness exception check. Skip icon generation when `Application.isBatchMode` or `GraphicsDeviceType.Null` (dedicated server already skipped via `UNITY_SERVER`).

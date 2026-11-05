@@ -15,12 +15,13 @@ A 3D Space Station 13. Every gate names the [vision](../design/vision.md) pillar
 
 **Gameplay** — [mvp1-nuke-ops.md](mvp1-nuke-ops.md), in this order:
 
-1. **M4** — Nuke Ops win/lose rules ([round-end loop](../architecture/2026-11_round-end-loop.md) P3); the end screen, restart and operative squad shipped in [#131](https://github.com/henkhooft/SS3D/pull/131)
-2. **M1m** — responsive movement: full speed and stop within about 0.1 s, matching animation blends, clean strafe transitions, sprint
-3. **M0** — in-house test station; Captain, Security, Engineer, Doctor, Assistant with loadouts and access; ops suit identity
-4. **M1c** — combat core: C20R, Stechkin, security pistol, M4, stun baton; physical magazines; C4; sounds; no debug chrome
-5. **M3** — nuke loop (thin) with floor and furniture damage
-6. **M8 + M9 (thin)** — vacuum kills, suit seal and internals protect, engineers patch hull holes; APC lights matter
+1. **M1m** — responsive movement: finish the peaceful drag gait (ramps, blends, strafes and sprint shipped in [#138](https://github.com/henkhooft/SS3D/pull/138))
+2. **M0** — in-house test station; Captain, Security, Engineer, Doctor, Assistant with loadouts and access; ops suit identity
+3. **M1c** — combat core: C20R, Stechkin, security pistol, M4, stun baton; physical magazines; C4; sounds; no debug chrome
+4. **M3** — nuke loop (thin) with floor and furniture damage
+5. **M8 + M9 (thin)** — vacuum kills, suit seal and internals protect, engineers patch hull holes; APC lights matter
+
+M4 (win/lose) and M5 (end screen, restart) shipped: [round-end loop](../archive/architecture/2026-11_round-end-loop.md), [#131](https://github.com/henkhooft/SS3D/pull/131)–[#137](https://github.com/henkhooft/SS3D/pull/137).
 
 **Enabler** — [test-server.md](test-server.md), serves Playtest 1:
 

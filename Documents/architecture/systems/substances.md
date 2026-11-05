@@ -1,7 +1,7 @@
 > Code paths: Assets/Scripts/SS3D/Systems/Substances/
 > Entry points: SubstancesSubSystem, SubstanceContainer, ReactionResolver, TransferSubstanceInteraction, PourSubstanceInteraction
 > Status: partial
-> Verified: f04093919 — 2026-10-31
+> Verified: e2f86cf20 — 2026-11-05
 
 # Substances
 
@@ -19,12 +19,12 @@ Volume-first liquid vessels with networked mixture entries, pour-triggered fixed
 - `Assets/Scripts/SS3D/Systems/Substances/Interactions/PourSubstanceInteraction.cs` — Tier 3 Combine pour
 - `Assets/Scripts/SS3D/Systems/Substances/SubstanceContainerExaminable.cs` — free properties only (color / approx volume / temp band)
 - `Assets/Content/Systems/Substances/CoreReagentRegistry.asset` — core reagents + vertical-slice recipes
-- Editor: `SS3D/Substances/Run Content Prefab Recipes` (`SubstancesContentPrefabRecipes`)
+- Editor: `SS3D/Substances/Run Content Prefab Recipes` (`SubstancesContentPrefabRecipes`) runs `SubstancesContentPrefabSetup` and `HumanSubstanceContainerStrip`; `ReagentRegistryGenerator` has no menu item (called from batch or the recipes)
 
 ## Extension points
 
 - Add reagents/recipes via `ReagentRegistryGenerator` / registry asset; assign registry on hub `SubstancesSubSystem`.
-- Wire hazard consumers to `SubstanceContainer.HazardOccurred` (stub logs today).
+- Wire hazard consumers to the static `SubstanceContainer.HazardOccurred` (only `SubstancesSubSystem`'s logging stub listens today).
 - Prefab consumers: register on `SubstancesContentPrefabSetup` / Human strip on `HumanPrefabRecipes`.
 
 ## Pitfalls
@@ -32,6 +32,10 @@ Volume-first liquid vessels with networked mixture entries, pour-triggered fixed
 - **GC on mixture views:** do not call `List.AsReadOnly()` per hot read — container caches the view; mutators use `_working` / `_entries` directly.
 - **Never seed `InitialMixture` from Unity `Start` on clients:** SyncVar/SyncList writes must be server-only (`OnStartServer`). Pure clients writing fail the smoke denylist.
 - **Namespace is `SS3D.Systems.Substances`** (folder under `Systems/Substances/`). Legacy `SS3D.Substances` enum/SO stack is gone.
+
+## Tests
+
+- EditMode: `SubstanceContainerTests` (capacity, proportional removal, exact recipe yield and thermal delta, heat-gated near-miss, incompatible-pair hazard). Networked transfer/pour interactions have no automated coverage.
 
 ## Depends on / Used by
 

@@ -1,7 +1,7 @@
 > Code paths: Assets/Scripts/SS3D/Systems/Entities/
 > Entry points: EntitySubSystem, MindSubSystem, HumanoidBodyStateMachine
 > Status: partial
-> Verified: 6d309c079 — 2026-11-04 (remote space coast, root alignment fallback)
+> Verified: e2f86cf20 — 2026-11-05
 
 # Entities
 
@@ -19,7 +19,7 @@ Humanoid/silicon entity spawning, minds, and join/round ordering with [rounds-lo
 
 - [Entity prefab recipes](entities-prefab-recipes.md) — domain wiring, aggregator, nested FishNet constraints and integrity checks
 
-- `Assets/Scripts/SS3D/Systems/Entities/EntitySubSystem.cs` — entity spawn/management; `TryReclaimEntity` re-links a reconnecting player's existing body (see [player-control](player-control.md)); `ServerSpawnCombatDummy` for mindless test Humans
+- `Assets/Scripts/SS3D/Systems/Entities/EntitySubSystem.cs` — entity spawn/management; `TryReclaimEntity` re-links a reconnecting player's existing body (see [player-control](player-control.md)); `ServerSpawnCombatDummy` for mindless test Humans; `ResolveSpawnPosition` puts Nuke Ops operatives on the map's Nuclear Operatives markers (crew job markers not routed yet); `ServerSpawnedPlayersChanged` (server, synchronous — a dying body's ghost may not hold its mind yet) feeds [gamemode](gamemodes-roles-traits.md) win/lose checks
 - `Assets/Scripts/SS3D/Systems/Entities/EntitySubSystem.Respawn.cs` — respawn ([sandbox](../2026-11_sandbox-server.md)): death offers a respawn (`RecordPlayerDeath`), `CmdRespawn` checks `ServerSettings.RespawnEnabled` + `RespawnCooldown`, despawns the ghost and re-runs `SpawnPlayer` with the ghost's Mind; `RemoveCorpseOnRespawn` removes the previous corpse only after a successful respawn (sandbox default); remaining corpses are tracked and despawned at round end. `RespawnPrompt` is the ghost-HUD button (UiShell Hud layer, added on client start)
 - `Assets/Scripts/SS3D/Systems/Entities/MindSubSystem.cs` — mind/player mind assignment; `Mind.DisplayName` (lobby character name, else ckey) is the in-world speaker/record name
 - `Assets/Scripts/SS3D/Systems/Entities/Human.cs` — replicated `CharacterAppearance` from the lobby (morphs on the armature, hair/beard/eyebrows and skin/eye/style colors) — see [rounds-lobby](rounds-lobby.md)
@@ -30,7 +30,7 @@ Humanoid/silicon entity spawning, minds, and join/round ordering with [rounds-lo
 - `Assets/Scripts/SS3D/Systems/Entities/Humanoid/Body/HumanoidSpaceSupport.cs` — `GetSupportAt` / `HumanoidSupportState` (Unknown / Supported / Unsupported)
 - `Assets/Scripts/SS3D/Systems/Entities/Humanoid/Body/AnimationOrchestrator.cs` — snapshot → Animator; Melee/Ranged Upper Body weight; Ranged CrossFade to Rifle Aim Idle; `SetPosingSuppressed` for collapse
 - `Assets/Scripts/SS3D/Systems/Entities/Humanoid/BodyPresentationState.cs` — locomotion / collapsed / dead enum
-- `Assets/Scripts/SS3D/Systems/Entities/Humanoid/Ragdoll.Wind.cs` — server wind → owner per-frame drift or bone drag; enables the prefab-disabled component; registry lifecycle needs no prefab changes. Wind knockdowns recover on floor support; ejected bodies keep tumbling.
+- `Assets/Scripts/SS3D/Systems/Entities/Humanoid/Ragdoll.Wind.cs` — server wind → owner per-frame drift or bone drag; the server drifts unowned upright bodies (combat dummies) itself; enables the prefab-disabled component; registry lifecycle needs no prefab changes. Wind knockdowns recover on floor support; ejected bodies keep tumbling.
 - `Assets/Scripts/SS3D/Systems/Entities/Humanoid/Ragdoll.cs` — presentation authority (`ServerSetPresentation` / `ApplyPresentation`)
 - `Assets/Scripts/SS3D/Systems/Entities/Humanoid/Body/HumanoidIkController.cs` — combat look-at; torso IK off during Attack Swing
 - `Assets/Scripts/SS3D/Systems/Entities/Humanoid/Body/HumanoidBodyStateBridge.cs` — holds, stance, limp + `InjuredLeg` / arms, rare hurt Emote, `MirrorUpperBody`; suppresses while `Presentation != Locomotion`
@@ -57,7 +57,7 @@ Humanoid/silicon entity spawning, minds, and join/round ordering with [rounds-lo
 
 ## Pitfalls
 
-- **Wind must reach the physics authority:** server transforms do not simulate living owners’ bones. Send wind velocity to the owner; server applies corpse/unowned wind physics. Upright drift runs owner-side only because `HumanoidPredictedMovement` is disabled on `Human.prefab`; enabling it means moving wind into the replicate step. Never convert a health-owned timeless collapse into a timed wind knockdown.
+- **Wind must reach the physics authority:** server transforms do not simulate living owners’ bones. Send wind velocity to the owner; server applies corpse/unowned wind physics. Upright drift runs owner-side because `HumanoidPredictedMovement` is disabled on `Human.prefab` (enabling it means moving wind into the replicate step). For an unowned upright body the server enables its `CharacterController` only for the `Move` call: left on, it adds a capsule to server raycasts and blocks teleports. Never convert a health-owned timeless collapse into a timed wind knockdown.
 
 - **Critical rejoin T-pose:** ownership changes do not change presentation. `Ragdoll.OnOwnershipClient` must reapply collapsed/dead presentation so the new owner simulates bones and observers stay kinematic. Initial SyncVars may collapse before `OnStartNetwork`; preserve the original NetworkAnimator enabled state instead of recapturing its suppressed value.
 

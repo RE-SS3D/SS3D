@@ -1,7 +1,7 @@
 > Parent map: [entities.md](entities.md)
 > Code paths: Assets/Scripts/SS3D/Systems/Entities/Editor/, Assets/Scripts/SS3D/Systems/Inventory/Containers/Editor/
 > Status: shipped
-> Verified: 0c02a25d1 — 2026-11-04
+> Verified: e2f86cf20 — 2026-11-05
 
 # Entity prefab recipes
 
@@ -13,8 +13,8 @@ Run **SS3D → Entities → Run All Human Prefab Recipes**, or use the batch ent
 Close the project's Editor before starting a separate batchmode process.
 
 The aggregator removes dev hacks, strips head/torso world-container interactions, wires hands,
-ensures local speech and combat networking, strips the obsolete Human substance container, and
-resyncs nested body-part instances last. It is scoped to Human/body-part prefabs; storage-item and
+ensures local speech and combat networking, strips the obsolete Human substance container, wires
+the ExoSuit slot and worn renderer, and resyncs nested body-part instances last. It is scoped to Human/body-part prefabs; storage-item and
 hand-tool recipes belong to their own domain aggregators.
 
 ## Start here
@@ -40,6 +40,7 @@ hand-tool recipes belong to their own domain aggregators.
 
 - **Dangling stripped mirrors after body-part edits:** changing a nested prefab does not refresh Human's serialized mirror automatically. Resave/resync Human after all recipes run.
 - **Body-part behaviours disappear from FishNet's list:** flat-prefab collectors stop at every child `NetworkObject`. Human collection must traverse children marked nested and stop only at separate spawn roots.
+- **Worn clothing renderer must not carry its own `NetworkObject`:** clothing is addressed by `ClothType`, and a new empty nested Nob on a renderer like `Overwear` does not resolve reliably. `ExoSuitPrefabSetup` removes it and rebuilds the root's behaviour list; do the same for any new worn slot.
 - **Hand Search is missing despite correct hand order:** the hand recipe also ensures `HandSearchExtension` on both hand assets; run the aggregator rather than editing only `PlayerHands`.
 
 ## Tests

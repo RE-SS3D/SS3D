@@ -1,7 +1,7 @@
 > Code paths: Assets/Scripts/SS3D/Systems/Comms/, Assets/Scripts/SS3D/Systems/Screens/, Assets/Content/Data/Comms/Channels/, Assets/Content/Systems/UI/Comms/
 > Entry points: CommsSubSystem, LocalSpeechBubbleController, CommsFeedController, PlayerCameraSubSystem, CameraSubSystem, CameraFollow
 > Status: partial
-> Verified: 504c22428 — 2026-11-03
+> Verified: e2f86cf20 — 2026-11-05
 
 # Chat / audio / screens
 
@@ -33,7 +33,8 @@ HUD feed yet.
 ## Start here
 
 - `CommsSubSystem.cs` — local + radio/announce hub; `SendAnnouncement` / `HandleAnnouncementRequest`;
-  `TryResolveComposePrefix`; transcript `Logs/Comms.txt` on server.
+  `TryResolveComposePrefix`; transcript `Logs/Comms.txt` on server. `SendPrivateFeed` (server) puts one line
+  in a single player's radio feed under a custom header, overheard by nobody (Nuke Ops `OperativeBriefing`).
 - `CommsSubSystem.Ooc.cs` — `SendOoc` / `RequestOocHistory` (client), `PostOocSystem` (server); `OocChat.cs` — messages, `OocChatRules`, `OocRateLimiter`, `OocChatHistory` (EditMode-tested in `OocChatTests`).
 - `LocalSpeechEmitter` — `CmdSpeak` / `CmdSendRadio` / `CmdSendAnnouncement` on the speaking Entity; `CanSpeak` reads health. All three server handlers refuse critical, unconscious, arrested or dead speakers; OOC remains separate.
 - `CommsComposePrefix` — pure `/token` parse/strip (EditMode-tested).
@@ -104,7 +105,7 @@ HUD feed yet.
 ## Depends on / Used by
 
 - **Depends on:** [health](health.md) (speech capability), [player-control](player-control.md), [inputs](inputs.md), [ui-shell](ui-shell.md)
-- **Used by:** [rounds-lobby](rounds-lobby.md) (announcements), [tile](tile.md) (map editor camera),
+- **Used by:** [rounds-lobby](rounds-lobby.md) (announcements), [gamemodes](gamemodes-roles-traits.md) (operative briefing), [tile](tile.md) (map editor camera),
   [interactions-runtime](interactions-runtime.md)
 
 ## Related docs

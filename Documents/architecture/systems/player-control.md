@@ -1,7 +1,7 @@
 > Code paths: Assets/Scripts/SS3D/Systems/PlayerControl/
 > Entry points: PlayerSubSystem
 > Status: partial
-> Verified: b0df80aa9 — 2026-11-02
+> Verified: e2f86cf20 — 2026-11-05
 
 # Player control
 
@@ -15,7 +15,7 @@ Connect/disconnect lifecycle, server-side:
 
 1. `ServerManager.OnRemoteConnectionState` fires nothing on connect; `SceneManager.OnClientLoadedStartScenes` → `HandleClientLoadedStartScenes` → `ProcessPlayerJoin` spawns a temporary `UnauthorizedPlayer` for the new connection.
 2. The client's `UnauthorizedPlayer.Setup()` immediately broadcasts `UserAuthorizationMessage` with its ckey (no real login — see TODO in `ProcessAuthorizePlayer`).
-3. `ProcessAuthorizePlayer` rejects a new online identity when the configured Server Settings player cap is reached, then finds-or-creates the `_serverPlayers[ckey]` `Player` object, gives the connection ownership of it, adds it to `_onlinePlayers`, **reconnects it to any existing body** via `EntitySubSystem.TryReclaimEntity` if `IsPlayerSpawned(player)` is true (i.e. they disconnected mid-round and are rejoining), then despawns the `UnauthorizedPlayer`.
+3. `ProcessAuthorizePlayer` rejects a new online identity when the configured Server Settings player cap is reached, and a remote login under an Administrator+ name without a matching admin token (`AdminTokens`, see [permissions](permissions.md); the host is never checked). It then finds-or-creates the `_serverPlayers[ckey]` `Player` object, gives the connection ownership of it, adds it to `_onlinePlayers`, **reconnects it to any existing body** via `EntitySubSystem.TryReclaimEntity` if `IsPlayerSpawned(player)` is true (i.e. they disconnected mid-round and are rejoining), then despawns the `UnauthorizedPlayer`.
 4. `ServerManager.OnRemoteConnectionState` → `Stopped` → `ProcessPlayerDisconnect` calls `RemoveOwnership()` on every `NetworkObject` the connection owns (the `Player`, and separately the controlled `Entity`/body if one was spawned) and removes the ckey from `_onlinePlayers`. The body itself is **not** despawned here — it's left ownerless in the world until either the owning player reconnects (step 3) or the round ends (`EntitySubSystem.DestroySpawnedPlayers`).
 
 ## Start here
@@ -31,7 +31,7 @@ Connect/disconnect lifecycle, server-side:
   - §2's diegetic tell (idle animation slackens/stops while disconnected) is **not implemented** — a disconnected body currently looks identical to an idle player-controlled one; nothing currently signals "unpiloted" on the model itself.
   - §5's capacity check is **partially implemented**: `ProcessAuthorizePlayer` rejects a new online ckey when `_onlinePlayers.Count >= RoundSubSystem.PlayerCap`; already-online keys bypass that check. A full-server reason is not sent to the client.
   - The `cryogenics.md` §4 grace-period handoff this doc's §3 window is supposed to expire into does not exist yet (`cryogenics` has no architecture/system map — see INDEX.md coverage table) — so today a reconnect window never actually closes; a body left unclaimed sits ownerless until round end, not until some grace period elapses.
-- No real authentication (`ProcessAuthorizePlayer` trusts the client-supplied ckey wholesale) — flagged in-code as a TODO, out of scope here.
+- No real authentication: `ProcessAuthorizePlayer` trusts the client-supplied ckey; only admin names need a token. Flagged in-code as a TODO, out of scope here.
 
 ## Pitfalls
 
@@ -45,7 +45,7 @@ Connect/disconnect lifecycle, server-side:
 
 ## Depends on / Used by
 
-- **Depends on:** [entities](entities.md), [inputs](inputs.md)
+- **Depends on:** [entities](entities.md), [inputs](inputs.md), [permissions](permissions.md) (`AdminTokens`), [rounds-lobby](rounds-lobby.md) (`RoundSubSystem.PlayerCap`)
 - **Used by:** [interactions-runtime](interactions-runtime.md), [rounds-lobby](rounds-lobby.md)
 
 ## Related docs

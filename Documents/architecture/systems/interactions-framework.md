@@ -1,7 +1,7 @@
 > Code paths: Assets/Scripts/SS3D/Interactions/
 > Entry points: IInteraction, IInteractionSource, IInteractionTarget, InteractionPipeline, InteractionIdentifier
 > Status: shipped
-> Verified: 0499ab7cd — 2026-07-23
+> Verified: e2f86cf20 — 2026-11-05
 
 # Interactions (framework)
 
@@ -21,8 +21,8 @@ RPCs identify interactions with `InteractionIdentifier` (`genericName` + `target
 - `Assets/Scripts/SS3D/Interactions/Interfaces/IInteractionSourceExtension.cs` — source extensions; Discover contract in XML remarks
 - `Assets/Scripts/SS3D/Interactions/InteractionEntry.cs` — target + interaction + wire identifier; `IsSourceOnly` / `SourceOnly()`
 - `Assets/Scripts/SS3D/Interactions/InteractionIdentifier.cs` — stable RPC wire ID
-- `Assets/Scripts/SS3D/Interactions/InteractionPipeline.cs` — discover → filter → sort; `TryEvaluateOutlineInteractability`; `FilterForOutline`
-- `Assets/Scripts/SS3D/Interactions/InteractionEvent.cs` — source/target/`HasPoint`/point/normal; `WithTarget` / `WithSource`
+- `Assets/Scripts/SS3D/Interactions/InteractionPipeline.cs` — discover → filter → sort; `MatchesIntent`; `TryEvaluateOutlineInteractability`; `FilterForOutline`
+- `Assets/Scripts/SS3D/Interactions/InteractionEvent.cs` — source/target/`HasPoint`/point/normal; `WithTarget` / `WithSource`; hot-path `SetResolvedHit` / `ClearResolvedHit` (outline reuse)
 - `Assets/Scripts/SS3D/Interactions/InteractionTier.cs` — instant / targeted / folder tiers for radial menu
 - `Assets/Scripts/SS3D/Interactions/Interfaces/IInteractionTierProvider.cs` — per-interaction tier override
 - `Assets/Scripts/SS3D/Interactions/Extensions/InteractionExtensions.cs` — `RangeCheck` (uses `HasPoint`), `GetInteractionTier()`
@@ -48,6 +48,11 @@ RPCs identify interactions with `InteractionIdentifier` (`genericName` + `target
 - **Source-only vs outline:** Drop is `IsSourceOnly`. Outline LateUpdate must use `TryEvaluateOutlineInteractability` (skips source discovery) or `FilterForOutline` — never treat full Discover as “available on this hover.”
 - **Unresolved point:** build events with the two-arg ctor (`HasPoint = false`), not `Point = Vector3.zero`. World-origin hits use the four-arg ctor with `Point = zero` and `HasPoint = true`.
 - **Unconditional source `Add` pollutes Discover:** any extension that adds for every target lights yellow outlines / menus on every hover when that source is active. Gate at discover time. Historical example: empty-hand `Craft` → `OpenCraftingMenu` (purged with [crafting](crafting.md) / TECH_DEBT 1.6).
+- **Outline evaluation reuses the event and may get cached arrays:** `TryEvaluateOutlineInteractability` sets `interactionEvent.Target` in place per candidate (restored on return), and hot targets such as `AirLockOpener` return a cached `IInteraction[]`. `CreateTargetInteractions` / `CanInteract` must not keep the event, and callers must not mutate the returned array.
+
+## Tests
+
+- EditMode: `InteractionPipelineTests`, `InteractionRangeCheckTests` (`Assets/Scripts/Tests/EditMode/`); dispatch matching lives in runtime's `InteractionDispatchTests`.
 
 ## Depends on / Used by
 
@@ -60,5 +65,4 @@ RPCs identify interactions with `InteractionIdentifier` (`genericName` + `target
 - Effort: [2026-07_interaction-system-hardening](../../archive/architecture/2026-07_interaction-system-hardening.md)
 - Plan: [interaction_system_improvements_9e14ae22.plan.md](../../archive/plans/interaction_system_improvements_9e14ae22.plan.md)
 - Plan: [radial_menu_implementation_5a83bdf9.plan.md](../../plans/radial_menu_implementation_5a83bdf9.plan.md)
-- Design (read-only): [Documents/design/main-hud.md](../../design/main-hud.md) § intent chording
-- Tests: `Assets/Scripts/Tests/EditMode/InteractionPipelineTests.cs`, `InteractionRangeCheckTests.cs`
+- Design (read-only): [Documents/design/main-hud.md](../../design/main-hud.md) §7 intent

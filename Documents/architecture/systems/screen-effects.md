@@ -1,7 +1,7 @@
 > Code paths: Assets/Scripts/SS3D/Systems/ScreenEffects/
 > Entry points: ScreenEffectsSubSystem
 > Status: partial
-> Verified: 5834bcdac — 2026-11-04
+> Verified: e2f86cf20 — 2026-11-05
 
 # Screen-space effects
 
@@ -18,7 +18,7 @@ Bootstraps itself with `RuntimeInitializeOnLoadMethod` (not in Boot.unity) so it
 ## Start here
 
 - `Assets/Scripts/SS3D/Systems/ScreenEffects/ScreenEffectsSubSystem.cs` — Volume + world blackout + ember/frost particles; `SetEffect` / `TriggerHitFlash` / `TriggerBlastFlash` / `TriggerWhiteout` (post-exposure burn to white plus a white vignette) / `SetUiBackdropBlur`
-- `Assets/Scripts/SS3D/Systems/ScreenEffects/StationDetonationPresentation.cs` — station detonation ([2026-11_round-end-loop](../2026-11_round-end-loop.md) Decision 19): white-out plus a heavy `CameraFollow.AddImpulse`; the round-end overlay waits while `IsPlaying`
+- `Assets/Scripts/SS3D/Systems/ScreenEffects/StationDetonationPresentation.cs` — station detonation ([2026-11_round-end-loop](../../archive/architecture/2026-11_round-end-loop.md) Decision 19): white-out plus a heavy `CameraFollow.AddImpulse`; the round-end overlay waits while `IsPlaying`
 - `Assets/Scripts/SS3D/Systems/ScreenEffects/ScreenEffectType.cs` — sustained effect enum
 - `Assets/Scripts/SS3D/Systems/Health/HealthScreenEffectMapper.cs` — `HealthSnapshot` → health-driven intensities
 - `Assets/Scripts/SS3D/Systems/ScreenEffects/ScreenEffectsDebugMenuView.cs` — Screen Effects tool opened from F1 (lazy uGUI build)
@@ -43,12 +43,13 @@ Bootstraps itself with `RuntimeInitializeOnLoadMethod` (not in Boot.unity) so it
 
 ## Tests
 
+- `validate.sh --steps scenarios:NukeOps` (`NukeOpsScenarios`) checks the host client plays the detonation white-out.
 - `LobbyLifecyclePilot.RunHealthRegressions()` runs a short host scenario for critical item drop/pickup refusal and recovery, blackout with Escape open, ghost FOV and respawn. The full sandbox pilot includes the same checks. Review `sandbox-blackout-menu.png`.
 
 ## Depends on / Used by
 
 - **Depends on:** URP Volume stack on the player camera
-- **Used by:** [health](health.md) (local-owner snapshot + hit flash + `AtmosScreenEffectMapper` from Environment); [structural-destruction](structural-destruction.md) (blast flash); [machine-interface](machine-interface.md) (diegetic backdrop blur); [ingame-console](ingame-console.md) debug commands
+- **Used by:** [health](health.md) (local-owner snapshot + hit flash + `AtmosScreenEffectMapper` from Environment); [structural-destruction](structural-destruction.md) (blast flash); [machine-interface](machine-interface.md) (diegetic backdrop blur); [rounds-lobby](rounds-lobby.md) (`RoundSubSystem` RPC plays the detonation white-out; round-end overlay waits on it); [tile](tile.md) map editor (`SetGameplayFeedbackSuppressed`); [ingame-console](ingame-console.md) debug commands
 
 ## Related docs
 

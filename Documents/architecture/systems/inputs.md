@@ -1,7 +1,7 @@
 > Code paths: Assets/Scripts/SS3D/Systems/Inputs/, Assets/Content/Systems/Input/
 > Entry points: InputSubSystem, InputArbiter, InputInterface
 > Status: partial
-> Verified: ce69181d3 — 2026-11-01
+> Verified: e2f86cf20 — 2026-11-05
 
 # Inputs
 
@@ -37,7 +37,7 @@ bindings. Arbitration model: [2026-07_input-arbitration.md](../../archive/archit
 - `Assets/Scripts/SS3D/Systems/Inputs/InputArbiter.cs` — pure resolution engine (unit tested).
 - `Assets/Scripts/SS3D/Systems/Inputs/InputContext.cs` — the context enum (value = priority).
 - `Assets/Scripts/SS3D/Systems/Inputs/InputInterface.cs` — unified pointer query + document registry.
-- `Assets/Scripts/SS3D/Systems/Inputs/InputTextEntryScope.cs` — shared focus helper for text fields.
+- `Assets/Scripts/SS3D/Systems/Inputs/InputTextEntryScope.cs` — shared focus helper for text fields; holds `TextEntry` by default, or the context passed in (the console field holds `Console`).
 - `Assets/Scripts/SS3D/Systems/Inputs/InputSubSystem.Keybinds.cs` — player rebinding ([2026-10_player-settings](../2026-10_player-settings.md) Phase 3): `BuildKeybindRows` (the Controls tab's fixed visible list; every other live binding becomes a hidden read-only row, so it is reserved), `Rebind`, override save/load/reset and `CaptureNextButton`. Pure conflict/swap rules: `KeybindRules.cs` (`KeybindRulesTests`).
 
 ## Extension points
@@ -56,9 +56,9 @@ bindings. Arbitration model: [2026-07_input-arbitration.md](../../archive/archit
   `InputSubSystem`'s `System` map (see `UiCancel`, `ToggleIntent`, `OpenLocalSpeechCompose`,
   `ToggleDebugMenu`), include it in the contexts that should enable it, and subscribe to `performed`.
   Prefer a console command first for debug; hotkey panels are debt — [TECH_DEBT.md](../TECH_DEBT.md) §1.13.
-- **Tab ownership:** compose channel cycle owns Tab while drafting (Keyboard poll in
-  `LocalSpeechBubbleController`). Legacy objectives `Other/Fade` Tab binding is erased at startup.
-  Unused `Other/Attack` + `Show Owner` (both were F) are also erased so `ToggleIntent` owns F.
+- **Tab ownership:** `ToggleRoundSummary` owns Tab outside text entry; compose channel cycle owns it
+  while drafting (Keyboard poll in `LocalSpeechBubbleController`, under `TextEntry`). Legacy `Other/Fade`
+  and `Spawn Cans` Tab bindings, and unused `Other/Attack` + `Show Owner` (F), are erased at startup.
 
 ### Conventions
 
@@ -95,6 +95,7 @@ bindings. Arbitration model: [2026-07_input-arbitration.md](../../archive/archit
 - **Escape owners:** `Other/Toggle Menu` = in-round lobby menu (`LobbyUiSubSystem`, `Menu` context);
   `UiCancel` = machine panel; armed interactions poll the key and win (the lobby menu skips while armed);
   the bug report dialog pushes `InputContext.Dialog` (every action off) and polls Escape / Ctrl+Enter itself.
+- **Console context follows field focus, not Open/Close:** `ConsolePanelView` holds `InputContext.Console` through an `InputTextEntryScope` on the field's select/deselect, and F12 `Open` toggles. Open and Close share F12 inside `Console`, so a press-scoped handle could fire both in either order and leave the console open over a live Gameplay context (T/B opened chat or the map editor, #154).
 - **Regenerating `Controls.cs`:** re-apply Caps / Backspace (and startup erasures, including the retired F6 debug binding) if the generator
   restores old paths — asset + generated wrapper must match [2026-07_default-input-scheme.md](../../archive/architecture/2026-07_default-input-scheme.md).
 
@@ -108,7 +109,8 @@ bindings. Arbitration model: [2026-07_input-arbitration.md](../../archive/archit
 - **Used by:** [player-control](player-control.md), [interactions-runtime](interactions-runtime.md),
   [machine-interface](machine-interface.md), [chat-audio-screens](chat-audio-screens.md),
   [tile](tile.md), [examine](examine.md), [ingame-console](ingame-console.md), [inventory](inventory.md),
-  [entities](entities.md) (intent toggle), [rounds-lobby](rounds-lobby.md) (Escape menu, `Menu` context)
+  [entities](entities.md) (intent toggle), [rounds-lobby](rounds-lobby.md) (Escape menu, `Menu` context;
+  round summary Tab), [ui-shell](ui-shell.md) (bug report F8, `Dialog` context)
 
 ## Related docs
 

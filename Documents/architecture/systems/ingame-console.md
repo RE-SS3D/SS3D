@@ -1,7 +1,7 @@
 > Code paths: Assets/Scripts/SS3D/Systems/IngameConsoleSystem/
 > Entry points: CommandsController
 > Status: partial
-> Verified: 965d40550 — 2026-07-26
+> Verified: e2f86cf20 — 2026-11-05
 
 # In-game console
 
@@ -17,6 +17,7 @@ Dev/admin in-game console commands routed through `CommandsController`. Commands
 
 - `Assets/Scripts/SS3D/Systems/IngameConsoleSystem/CommandsController.cs` — command dispatch (offline, server, client)
 - `Assets/Scripts/SS3D/Systems/IngameConsoleSystem/Commands/Command.cs` — base class; subclasses auto-register
+- `Assets/Scripts/SS3D/Systems/IngameConsoleSystem/ConsolePanelView.cs` — condemned uGUI panel; F12 open/close, Console input context while the field is focused
 - `Assets/Scripts/SS3D/Systems/IngameConsoleSystem/Commands/ItemCommands/SpawnInHandCommand.cs` — admin `spawninhand <item>` into the empty selected hand (scenarios use it to arm a body); shares `SpawnItemCommand.TryResolveItem`, which resolves names without `Assets.Get`'s missing-asset error
 - `Assets/Scripts/SS3D/Systems/IngameConsoleSystem/Commands/SpawnDummyCommand.cs` — admin `spawndummy` (combat test Human)
 - `Assets/Scripts/SS3D/Systems/IngameConsoleSystem/Commands/IdAccessCommands/` — `accesscheck`, `accessgrant`, `accessrevoke`, `accesspreset` dev helpers
@@ -25,6 +26,8 @@ Dev/admin in-game console commands routed through `CommandsController`. Commands
 - `Assets/Scripts/SS3D/Systems/IngameConsoleSystem/Commands/ScreenEffectHitFlashCommand.cs` — client hit-flash trigger
 - `Assets/Scripts/SS3D/Systems/IngameConsoleSystem/Commands/AtmosDebugCommand.cs` — server `atmosdebug (heat|gas|wake)`, headless equivalent of `AtmosDebugController`'s GUI buttons, targets the caller's own tile
 - `Assets/Scripts/SS3D/Systems/IngameConsoleSystem/Commands/AtmosClientStatusCommand.cs` — offline `atmosclientstatus [assert]`, reports/asserts this process's `AtmosRenderContext` snapshot validity (multiplayer test harness use)
+- `Assets/Scripts/SS3D/Systems/IngameConsoleSystem/Commands/DoorDebugCommand.cs` / `LightDebugCommand.cs` — admin `doordebug open|close` (nearest airlock, bypasses access) and `lightdebug on|off` (caller's area switch) for headless automation
+- `Assets/Scripts/SS3D/Systems/IngameConsoleSystem/Commands/ObserveSyncCommand.cs` — offline `observesync …` asserts another player's actions replicated here; throws until they hold, so the harness's `wait_console` retries it (observer-sync smoke)
 - `Assets/Scripts/SS3D/UI/MainHud/Commands/AlertStackCommand.cs` — client `alertstack` hazard override (MainHud asm)
 
 **Awaiting answers:** `CommandsController.AnswerShown` fires for every answer the local console shows, local or from the server. `ScenarioConsole` (PlayMode tests) awaits it.
@@ -41,9 +44,18 @@ Dev/admin in-game console commands routed through `CommandsController`. Commands
 
 **Alert-stack debug:** client `alertstack` lives in [inventory](inventory.md) MainHud; F4 menu is the alternate path (F3 is local-speech debug).
 
+## Pitfalls
+
+- **T/B open chat or the map editor while typing in the console:** Open and Close both sit on F12, so one press could run them in either order and leave the gameplay context live. `ConsolePanelView` ties the Console input context to the text field's focus (`InputTextEntryScope`) and treats Open as a toggle; keep context ownership on focus, not on Open/Close.
+
+## Tests
+
+- PlayMode scenarios drive commands through `ScenarioConsole` (`Tests/PlayMode/Framework/Scenarios/`), which awaits `AnswerShown`.
+- Multiplayer smoke: `Testing/multiplayer/scenarios/observer-sync*.txt` use `doordebug`, `lightdebug` and `observesync`.
+
 ## Depends on / Used by
 
-- **Depends on:** [permissions](permissions.md), [id-access](id-access.md) (access dev commands), [entities](entities.md), [inventory](inventory.md) (incl. MainHud-hosted `alertstack`), [screen-effects](screen-effects.md)
+- **Depends on:** [permissions](permissions.md), [id-access](id-access.md) (access dev commands), [entities](entities.md), [inventory](inventory.md) (incl. MainHud-hosted `alertstack`), [screen-effects](screen-effects.md), [inputs](inputs.md) (Console context)
 
 ## Related docs
 

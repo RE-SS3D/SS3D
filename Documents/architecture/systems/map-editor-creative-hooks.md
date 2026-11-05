@@ -1,7 +1,7 @@
 > Parent map: [tile.md](tile.md)
 > Code paths: Assets/Scripts/SS3D/Systems/Tile/MapEditor/, Assets/Scripts/SS3D/Systems/Tile/SpawnPoints/
 > Status: partial
-> Verified: 5834bcdac — 2026-11-04
+> Verified: e2f86cf20 — 2026-11-05
 
 # Map Editor — creative mode extension hooks
 
@@ -26,7 +26,7 @@ Spawn Placements authoring:
 - Effort: [2026-07_spawn-point-authoring](../../archive/architecture/2026-07_spawn-point-authoring.md)
 - Still stubbed: RandomSpawners, Triggers, Atmospherics Scripting rails
 
-Area metadata: `MapEditorArea.cs` adds admin-checked inspect/apply RPCs and server undo/redo; `UI/MapEditorAreaView.cs` edits the selected room. Names, department tags and explicit access masks persist through the existing area contributor. Room editing is selected through **Scripts → Rooms**. Its palette uses the standard Construct/Select/Dropper/Delete toolbar; New room is a distinct + palette entry, with numbered room names and creation/first stroke grouped in undo. Scripts markers default off and follow entry/exit of the Scripts category. `MapEditorAreaOverlay` renders the synced area membership with the gizmo color palette (one mesh per chunk; Resources shader). Areas is off by default in Layer View Mode, enabled by Scripts → Rooms across its existing toolbar tools and hidden on other tabs/editor close. Room and layer controls reuse `MapEditorView.SwitchRow`. Department mode previews read-only access bits and retains the custom override. Areas also shows UI Toolkit room-name labels anchored on a tile near each room center; names sync through a buffered snapshot and refresh on rename/undo. Painted boundaries, APC-less room creation and reversible line/rectangle strokes are implemented and manually accepted by the owner in the editor ([area-authoring](area-authoring.md)); release dogfood remains A2.5.
+Area metadata: `MapEditorArea.cs` adds `MapEditorPermissions.TryAuthorize`-gated inspect/apply RPCs and server undo/redo; `UI/MapEditorAreaView.cs` edits the selected room. Names, department tags and explicit access masks persist through the existing area contributor. Room editing is selected through **Scripts → Rooms**. Its palette uses the standard Construct/Select/Dropper/Delete toolbar; New room is a distinct + palette entry, with numbered room names and creation/first stroke grouped in undo. Scripts markers default off and follow entry/exit of the Scripts category. `MapEditorAreaOverlay` renders the synced area membership with the gizmo color palette (one mesh per chunk; Resources shader). Areas is off by default in Layer View Mode, enabled by Scripts → Rooms across its existing toolbar tools and hidden on other tabs/editor close. Room and layer controls reuse `MapEditorView.SwitchRow`. Department mode previews read-only access bits and retains the custom override. Areas also shows UI Toolkit room-name labels anchored on a tile near each room center; names sync through a buffered snapshot and refresh on rename/undo. Painted boundaries, APC-less room creation and reversible line/rectangle strokes are implemented and manually accepted by the owner in the editor ([area-authoring](area-authoring.md)); release dogfood remains A2.5.
 
 Sharing (A5): the Save popover's **Save & Export** saves, then zips the template into `Data/Exports/` on the server's disk (`RpcExportMap` → `MapFileSharing.TryExport`). On a host it opens the file manager with the zip selected and copies its path to the clipboard; a remote client only gets a toast, because the file is on the server. The Load popover's **Open Maps Folder** opens `StationTemplates/` (host only); zips dropped there import on the next list. A Load reports objects this build doesn't have (`TileMap.LastLoadSkipped`). Testers' guide: `Builds/TESTERS.md`, shipped in the release zips.
 
@@ -43,7 +43,7 @@ The same policy blocks round Start; see [rounds-lobby](rounds-lobby.md). Validat
 
 | Hook | Location | v1 default | Phase 2 use |
 |------|----------|------------|-------------|
-| `IMapEditorAuthorizer` | `MapEditor/Authorizers/` | `AdminMapEditorAuthorizer`; `OpenBuildMapEditorAuthorizer` with `-openbuild` | Builder role in creative-mode session |
+| `IMapEditorAuthorizer` | `MapEditor/Authorizers/` | `AdminMapEditorAuthorizer`; `OpenBuildMapEditorAuthorizer` with `-openbuild` or `-sandbox` | Builder role in creative-mode session |
 | `MapEditorPlacementMode` | `MapEditorPlacementMode.cs` | `Normal` | `CreativeInstant` skips construction ladder |
 | `MapEditorSaveTarget` | `MapEditorSaveTarget.cs` | `LocalTemplate` | `RoundConfigPool` when round-config lands |
 | Scripts → Rooms | `MapEditorAreaPainting.cs`, `UI/MapEditorAreaView.cs` | Standard Construct / Select / Dropper / Delete for rooms | Rich region selection / stamps |
@@ -66,8 +66,7 @@ Data contracts for Phase 2 vertical slice (per creative-mode §10):
 - `MapEditorCommandRevertTests`: save points across undo/redo, branches, the history limit and new-map/load resets; undo ownership for sandbox players.
 - `SandboxServerTests`: sandbox profile, persistence gate, capabilities, denylist and catalog filter.
 - `MapFileSharingTests`, `MapLoadSkippedSummaryTests`, `MapEditorRateLimiterTests`, `AdminTokensTests`: export/import round trip, load-loss summary text, edit throttling, admin-name tokens.
-
-- `MapEditorAreaViewTests`: room drafts survive toast/undo-state refresh; department defaults and explicit access submit distinct masks; read-only department previews preserve custom overrides; Areas follows the Rooms category across its standard tools; overlay meshes preserve tile positions and gizmo colors. Compile + EditMode passed (`artifacts/ui/validate-20261031-145101/summary.md`: succeeded; all 2149 tests completed); owner manual editor acceptance confirmed; release dogfood remains A2.5.
+- `MapEditorAreaViewTests`: room drafts survive toast/undo-state refresh; department defaults and explicit access submit distinct masks; read-only department previews preserve custom overrides; Areas follows the Rooms category across its standard tools; overlay meshes preserve tile positions and gizmo colors. Run `Testing/ui/validate.sh --steps compile,editmode`; release dogfood remains A2.5.
 
 ## Related docs
 

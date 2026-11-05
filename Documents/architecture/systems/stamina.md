@@ -1,7 +1,7 @@
 > Code paths: Assets/Scripts/SS3D/Systems/Stamina/
 > Entry points: StaminaController, StaminaFactory
 > Status: partial
-> Verified: 18a9e1421 — 2026-11-03
+> Verified: e2f86cf20 — 2026-11-05
 
 # Stamina
 
@@ -9,7 +9,7 @@
 
 Phase **7a-core** rewrite per [stamina.md](../../design/stamina.md) and health plan Phase 7a. Fast exertion pool with health-modulated regen (heart/lungs/blood), carried-weight encumbrance from [inventory](inventory.md) `HumanInventory.CarriedWeight`, sprint drain via `HumanoidController.OnSpeedChangeEvent`, and push-past-empty → `HumanHealthController.ApplyOxyDebt`. **No permanent stamina bar** — obsolete `StaminaBarView` / PlayerCanvas bar purged.
 
-Actions are **not** hard-locked at zero (`CanCommenceInteraction` / `CanContinueInteraction` always true). Sprint (M1m): only gait above walk drains (`SprintExertion.DrainFraction`, 1 stamina/s at run, so a full pool lasts about 10 s), the owner batches drain into one RPC per 0.2 s, and the server pauses regen until 1 s after the last sprint drain. Movement reads `ExertionPenalty` through `SprintExertion.MovementSpeedFactor` — full speed down to 25 % stamina, then a ramp to 0.55× at empty — in `HumanoidLivingController` / `HumanoidPredictedMovement`. The linear penalty still feeds combat: — per combat plan Phase 4 — to combat performance: `RangedWeaponProfile.ExhaustionSpreadDegrees` widens the ranged accuracy cone and `MeleeHitInteraction.ComputeExertionTimeMultiplier` (up to 1.6x) lengthens melee windup/recovery. Ranged fire and melee swings both drain via `StaminaController.ServerDepleteStamina` (`RangedWeaponProfile.StaminaCost` / `MeleeWeaponProfile.StaminaCost`). Block stamina drain and dedicated winded screen FX are still deferred (block itself has no interaction yet — combat plan Phase 6, optional for MVP).
+Actions are **not** hard-locked at zero (`CanCommenceInteraction` / `CanContinueInteraction` always true). Sprint (M1m): only gait above walk drains (`SprintExertion.DrainFraction`, 1 stamina/s at run, so a full pool lasts about 10 s), the owner batches drain into one RPC per 0.2 s, and the server pauses regen until 1 s after the last sprint drain. Movement reads `ExertionPenalty` through `SprintExertion.MovementSpeedFactor` — full speed down to 25 % stamina, then a ramp to 0.55× at empty — in `HumanoidLivingController` / `HumanoidPredictedMovement`; the same factor drives `LocomotionPlaybackRate` (animator `LocoRate`), so exhausted feet slow on every peer. The linear penalty feeds combat performance (combat plan Phase 4): `RangedWeaponProfile.ExhaustionSpreadDegrees` widens the ranged accuracy cone and `MeleeHitInteraction.ComputeExertionTimeMultiplier` (up to 1.6x) lengthens melee windup/recovery. Ranged fire and melee swings both drain via `StaminaController.ServerDepleteStamina` (`RangedWeaponProfile.StaminaCost` / `MeleeWeaponProfile.StaminaCost`). Block stamina drain and dedicated winded screen FX are still deferred (block itself has no interaction yet — combat plan Phase 6, optional for MVP).
 
 ## Start here
 
@@ -18,6 +18,7 @@ Actions are **not** hard-locked at zero (`CanCommenceInteraction` / `CanContinue
 - `Assets/Scripts/SS3D/Systems/Stamina/StaminaFactory.cs` — defaults
 - `Assets/Scripts/SS3D/Systems/Stamina/SprintExertion.cs` — sprint drain, regen delay and movement slowdown curve (pure, EditMode-tested in `SprintExertionTests`)
 - `Assets/Scripts/SS3D/Systems/Health/HumanHealthController.cs` — `ApplyOxyDebt` / `ApplyOxyRelief`
+- `Assets/Scripts/SS3D/Systems/Stamina/StaminaPersonalAudioMapper.cs` — stamina → personal breathing intensity
 
 ## Extension points
 
@@ -31,6 +32,10 @@ Actions are **not** hard-locked at zero (`CanCommenceInteraction` / `CanContinue
 - **Regen delay is sprint-only:** `CmdDepleteStaminaScaled` resets the regen timer; combat `ServerDepleteStamina` does not, so swings and shots do not pause regen. Change both together if that rule widens.
 - **Movement slowdown is not the linear penalty:** reticle bloom and melee timing scale with `ExertionPenalty` from the first point spent; movement must go through `SprintExertion.MovementSpeedFactor`, or the "sluggish at half stamina" feel returns.
 - **Modifier refresh is server-tick:** `CarriedWeight` and organ function are read each server update — clients see synced `CurrentStamina` / `ExertionPenalty` SyncVars.
+
+## Tests
+
+- `Testing/ui/validate.sh --steps compile,editmode`: `StaminaTests` (pool math), `SprintExertionTests` (drain fraction, regen delay, slowdown curve), `StaminaPersonalAudioMapperTests`.
 
 ## Depends on / Used by
 

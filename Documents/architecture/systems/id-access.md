@@ -1,7 +1,7 @@
 > Code paths: Assets/Scripts/SS3D/Systems/IdAccess/
 > Entry points: IdAccessSubSystem, AccessCredentialResolver
 > Status: partial
-> Verified: 504c22428 — 2026-11-03
+> Verified: e2f86cf20 — 2026-11-05
 
 # ID / access
 

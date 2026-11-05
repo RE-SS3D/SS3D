@@ -1,6 +1,6 @@
 > Parent map: [area.md](area.md)
 > Status: partial
-> Verified: 1497d55e1 — 2026-10-31
+> Verified: e2f86cf20 — 2026-11-05
 
 # Area authoring
 
@@ -29,7 +29,7 @@ Room controls and Layer View Mode both use `MapEditorView.SwitchRow` via `AddSwi
 - Chunk `areaIds` already persist tile membership. `SavedAreaRecord.authored` and the area chunk’s `authored` flag prevent restore-time reflood (the chunk flag survives deletion of the final room); `noApc` keeps unpowered rooms out of the APC-position lookup. The flat legacy map carries `hasAuthoredAreas` through migration. Empty authored maps remain empty; missing flags preserve legacy APC-default behavior; no envelope schema bump is required for these additive fields.
 - Only records with floor/door membership are broadcast into the room-name palette. Map clear resets registries, authored state, buffered area/name/ambience/lighting snapshots and client editor selection. Do not leave records from the previous map alive.
 - Membership changes invalidate device, electricity and atmos membership indexes and refresh lighting/visual snapshots.
-- Wire protocol is 3 (painting and selection RPC changes).
+- Room RPCs authorize through `MapEditorPermissions.TryAuthorize` and execute commands with the caller's `ClientId`, so open-build players can undo only their own strokes/properties. Map Check re-validates automatically after a room paint.
 
 ## Pitfalls
 
@@ -39,7 +39,7 @@ Room controls and Layer View Mode both use `MapEditorView.SwitchRow` via `AddSwi
 
 ## Tests
 
-`Assets/Scripts/Tests/EditMode/Area/AreaPaintingTests.cs`: transfer/erase undo, walls/space, APC relinking/removal, atomic multi-APC rejection, metadata + chunk membership JSON round-trip, legacy defaults and bounded stroke geometry. `MapEditorAreaViewTests` covers labels, layer/category state, shared layer/room switches, room palette controls and read-only department access. Compile + EditMode passed (`artifacts/ui/validate-20261031-145101/summary.md`: succeeded; all 2149 tests completed). Manual playtesting remains owner-run.
+`Assets/Scripts/Tests/EditMode/Area/AreaPaintingTests.cs`: transfer/erase undo, walls/space, APC relinking/removal, atomic multi-APC rejection, metadata + chunk membership JSON round-trip, legacy defaults and bounded stroke geometry. `MapEditorAreaViewTests` covers labels, layer/category state, shared layer/room switches, room palette controls and read-only department access. Run with `Testing/ui/validate.sh --steps compile,editmode`. Release-build dogfood (milestone A2.5) remains owner-run.
 
 ## Depends on / Used by
 

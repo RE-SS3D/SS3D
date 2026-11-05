@@ -84,7 +84,7 @@ flowchart LR
 
 **Explosive items before repair.** Grenades/charges only need Phase 3’s blast service — no crafting dependency.
 
-**Repair last, gated on construction/crafting.** Welder + sheets repair (Damaged/Cracked → Intact) needs the Tier-3 freeform combine/use-with + material-stock stack from [construction.md](Documents/design/construction.md) / crafting. That stack is unbuilt (crafting map is condemned; staged ladder unbuilt). Do not invent a one-off repair interaction path ahead of it — Phase 6 waits on that effort, then meets damage only at Intact.
+**Repair last, gated on construction/crafting.** Welder + sheets repair (Damaged/Cracked → Intact) needs the Tier-3 freeform combine/use-with + material-stock stack from [construction.md](Documents/design/construction.md) / crafting. That stack is unbuilt (crafting has no runtime code; staged ladder unbuilt). Do not invent a one-off repair interaction path ahead of it — Phase 6 waits on that effort, then meets damage only at Intact.
 
 ---
 

@@ -1,7 +1,7 @@
 > Code paths: Assets/Scripts/SS3D/Systems/Audio/
 > Entry points: AudioSubSystem, AmbienceSubSystem, PersonalAudioSubSystem
 > Status: partial
-> Verified: ee090d4f3 — 2026-07-26
+> Verified: e2f86cf20 — 2026-11-05
 
 # Audio
 
@@ -18,7 +18,7 @@ sound *for a given listener*, which the server's "play clip X at position P" RPC
 
 ## Start here
 
-- `Assets/Scripts/SS3D/Systems/Audio/AudioSubSystem.cs` — pool: `PlayAudioSource` / `StopAudioSource` / `SetTimeAudioSource` (server) → `RpcPlayAudioSource` (observers); pool sizing and periodic purge
+- `Assets/Scripts/SS3D/Systems/Audio/AudioSubSystem.cs` — pool: `PlayAudioSource` / `StopAudioSource` / `SetTimeAudioSource` (server) → `RpcPlayAudioSource` (observers); `PlayAudioSourceLocal` / `StopAudioSourceLocal` play on this machine's pool only (no-op on the server), for a domain's own buffered state RPC; pool sizing and periodic purge
 - `Assets/Scripts/SS3D/Systems/Audio/AudioSourceOcclusion.cs` — client-local occlusion (§3, a `SS3D.Utils.LineOfSight` consumer), added to every pooled source and primed by `PrepareForPlayback` before each `Play()`; pure math in `AudioOcclusionState.cs` (`AudioOcclusionStateTests`)
 - `Assets/Scripts/SS3D/Systems/Audio/AmbienceSubSystem.cs` — Phase 2 per-Area ambience crossfade (§2); self-bootstrapped, polls the local player's area every 0.5 s, two non-positional sources, no occlusion. Replaces legacy `AmbienceHandler.cs`.
 - `Assets/Scripts/SS3D/Systems/Audio/PersonalAudioSubSystem.cs` — Phase 3 owner-only heartbeat, breathing and alert ding (§4), non-positional. Driven by `HealthPersonalAudioMapper` / `StaminaPersonalAudioMapper` from each domain's existing local-owner hook.
@@ -34,9 +34,11 @@ sound *for a given listener*, which the server's "play clip X at position P" RPC
 - Positional sound: `SubSystems.Get<AudioSubSystem>().PlayAudioSource(AudioType, clipId, position, parent, ...)` (server-only). Route anything that should occlude through the pool.
 - Area ambience: `AreaSubSystem.SetAreaAmbienceTrackId(areaId, trackId)` (server). In game, the `areaambience (trackId|clear)` console command (`AreaAmbienceCommand`) targets the caller's own area. Syncs via `RpcSyncAreaAmbience` (BufferLast).
 - Personal cues (e.g. virology symptoms, audio.md §4): `SetHeartbeatIntensity`, `SetStaminaBreathingIntensity` / `SetHealthBreathingIntensity` (max-merge). Build no parallel non-positional path.
-- Code-built `AudioSource`: set `outputAudioMixerGroup = MainAudioMixer.FindGroup(...)` so the player's category slider reaches it. Unrouted sources play under Master only (`CommsFeedController`'s announce source still does).
+- Code-built `AudioSource`: set `outputAudioMixerGroup = MainAudioMixer.FindGroup(...)` so the player's category slider reaches it (ambience, personal, footsteps, blast, structural hiss, the comms chime and main-menu music all do). Unrouted sources play under Master only.
+- Looping machine sound (e.g. `FuelPowerGenerator`): sync the running state with an `[ObserversRpc(BufferLast = true)]` that calls `PlayAudioSourceLocal` / `StopAudioSourceLocal`.
 - Volume settings: `SubSystems.Get<PlayerSettingsSubSystem>().SetVolume(PlayerVolume, linear)`; never `SetFloat` the exposed volumes from elsewhere, the next settings apply overwrites them.
-- Not built yet: power-gated ambience, PDA notification cues, lobby music (Phase 5); see [audio-foundation](../2026-07_audio-foundation.md).
+- Main-menu music is `SS3D.Launcher.MainMenuMusic` (non-positional, Music group, tracks from the main-menu catalog), outside this folder.
+- Not built yet: power-gated ambience, PDA notification cues, in-game lobby music bed (Phase 5); see [audio-foundation](../2026-07_audio-foundation.md).
 
 ## Pitfalls
 
@@ -98,10 +100,18 @@ sound *for a given listener*, which the server's "play clip X at position P" RPC
   sidesteps this the way `ScreenEffectsSubSystem` does: it never watches for disconnect itself — the
   driving consumer (`HumanHealthController.ClearScreenEffectsIfDriving`, same call site as the
   screen-effect clear) zeroes the intensity on ownership loss instead.
+- **`PlayAudioSource` reaches only the observers present at that moment.** A loop started that way
+  (machine hum, generator) is silent for late joiners and clients re-entering AOI. Persist the state in
+  a `BufferLast` ObserversRpc that calls `PlayAudioSourceLocal`; and call `PlayAudioSource` /
+  `StopAudioSource` from server code only (from a client they log "server is not active" and return).
+
+## Tests
+
+- EditMode: `AudioOcclusionStateTests`, `HealthPersonalAudioMapperTests`, `StaminaPersonalAudioMapperTests`, `AlertStackAudioMapperTests`, `PlayerAudioMixTests`, `PlayerSettingsStoreTests`. Pool playback, occlusion and ambience have no automated coverage; check them in Play Mode.
 
 ## Depends on / Used by
 
-- **Depends on:** [area](area.md) (`AreaRecord.AmbienceTrackId`, `TryResolveAreaIdForWorldPosition`, `TryGetAmbienceTrackId`), [electricity](electricity.md) (`MachinePowerConsumer` gates Boombox), [entities](entities.md) (`LocalPlayerObjectChanged` — `ListenerPosition` / `AmbienceSubSystem`)
+- **Depends on:** [area](area.md) (`AreaRecord.AmbienceTrackId`, `TryResolveAreaIdForWorldPosition`, `TryGetAmbienceTrackId`), [electricity](electricity.md) (`MachinePowerConsumer` gates Boombox; `FuelPowerGenerator` loop), [entities](entities.md) (`LocalPlayerObjectChanged` — `ListenerPosition` / `AmbienceSubSystem`)
 - **Used by:** [chat-audio-screens](chat-audio-screens.md); [health](health.md) (`HealthPersonalAudioMapper`, hit/gasp/blood via pool); [stamina](stamina.md) (`StaminaPersonalAudioMapper`); [inventory](inventory.md) (`AlertStackAudioMapper` / `MainHudSubSystem.PushAlertState`); [combat](combat.md) (gunfire/reload + `FleshHit`); [furniture](furniture.md) (airlock open/close/deny + boombox; structural-destruction ad-hoc emitters are consolidation candidates)
 
 ## Related docs

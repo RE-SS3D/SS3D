@@ -1,7 +1,7 @@
 > Parent map: [health.md](health.md)
 > Code paths: Assets/Scripts/SS3D/Systems/Health/
 > Status: partial
-> Verified: a675935e6 — 2026-10-31
+> Verified: e2f86cf20 — 2026-11-05
 
 # Health anatomy map
 
@@ -18,9 +18,7 @@ The `Human.fbx` / `Human.prefab` anatomy contract for the health rewrite: which 
 | `HumanArmLeft` / `HumanArmRight` | Upper limb | Yes | LeftArm / RightArm |
 | `HumanHandLeft` / `HumanHandRight` | Hand | Yes (child of arm) | LeftArm / RightArm |
 | `HumanLegLeft` / `HumanLegRight` | Upper leg | Yes | LeftLeg / RightLeg |
-| `Human Foot Left` / `Human Foot Right` | Foot mesh | Part of leg tree | LeftLeg / RightLeg |
-
-`HumanEarLeft` / `HumanEarRight` prefabs exist but are **not wired** in Human.prefab — out of scope for v1.
+| `HumanFootLeft` / `HumanFootRight` | Foot mesh | Part of leg tree | LeftLeg / RightLeg |
 
 Each body-part prefab carries **`AnatomyNode`** (replaces legacy `HumanBodypart` scripts). Phase 5b: severance hides the nested subtree on the character and spawns a world **`Item`** copy via `HumanAnatomyController` + `ItemSubSystem`.
 
@@ -72,6 +70,8 @@ Surgical access: chest (heart, lungs, liver); head (brain) per [surgery.md](../.
 
 ## Start here
 
+Files are under `Assets/Scripts/SS3D/Systems/Health/`; prefabs under `Assets/Content/WorldObjects/Entities/Humanoids/Human/` (`HumanBodyParts/`, `HumanOrgans/`).
+
 | File | Role |
 |------|------|
 | `HumanHealthController.cs` | Server 1 Hz tick, zone damage, pools, snapshot SyncVar |
@@ -82,18 +82,20 @@ Surgical access: chest (heart, lungs, liver); head (brain) per [surgery.md](../.
 | `OrganInstance.cs` | Organ registration |
 | `WoundVfx.cs` | Bleed VFX: bone anchors; intensity/cadence from snapshot bleed rates |
 
-Stamina relocated to `Assets/Scripts/SS3D/Systems/Stamina/` — health bridge ships Phase 7a.
-
 ## Extension points
-
 
 ### Asset gaps
 
 | Gap | V1 approach |
 |-----|-------------|
-| Kidneys missing from FBX | `clearance = liverFn × 0.5` interim in `HealthSimulation.LiverClearance` |
+| Kidneys missing from FBX | Renal clearance = liver function × `RenalClearanceFactor` (0.5), added in `HealthSimulation.LiverClearance` |
 | Ears not wired in Human.prefab | Out of scope v1 |
 | Wound blendshapes on FBX | Bleed particles + material tint first; art pass later |
+
+## Depends on / Used by
+
+- **Depends on:** [entities](entities.md) (`Human.prefab` nested body-part prefabs), items (`ItemSubSystem` world drops)
+- **Used by:** [health](health.md), [combat](combat.md) (zone raycasts), dev console `sever` / `destroybodypart`
 
 ## Related docs
 
