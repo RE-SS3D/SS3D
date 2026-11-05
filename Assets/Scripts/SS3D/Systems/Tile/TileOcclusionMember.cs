@@ -26,6 +26,17 @@ namespace SS3D.Systems.Tile
 
         public Vector2Int GridPosition => _gridPosition;
 
+        public bool IsVisible => _isVisible;
+
+        /// <summary>
+        /// Helper to configure layer and position in tests without relying on serialized fields.
+        /// </summary>
+        public void SetupForTesting(TileLayer layer, Vector2Int gridPosition)
+        {
+            _layer = layer;
+            _gridPosition = gridPosition;
+        }
+
         /// <summary>
         /// Toggles the visibility of all renderers on this tile object.
         /// </summary>

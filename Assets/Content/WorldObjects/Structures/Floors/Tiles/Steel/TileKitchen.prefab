@@ -16,6 +16,7 @@ GameObject:
   - component: {fileID: 121780152226316693}
   - component: {fileID: 2162692529022263333}
   - component: {fileID: -1515705713001572490}
+  - component: {fileID: 5047353403991261829}
   m_Layer: 0
   m_Name: TileKitchen
   m_TagString: Untagged
@@ -172,3 +173,16 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   key: {fileID: 11400000, guid: 3dbcc19b5cd7dff4abdf7389d6a58873, type: 2}
+--- !u!114 &5047353403991261829
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6767447678079105841}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e9eb95b3b0f74714aa2f40a750b0b8b8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _layer: 1

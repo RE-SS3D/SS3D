@@ -47,6 +47,13 @@ namespace SS3D.Systems.Tile
             }
         }
 
+        protected override void OnDestroyed()
+        {
+            base.OnDestroyed();
+            _turfCounts.Clear();
+            _coverableMembers.Clear();
+        }
+
         /// <summary>
         /// Registers a tile member when it spawns on the client.
         /// </summary>
@@ -73,7 +80,10 @@ namespace SS3D.Systems.Tile
                 _coverableMembers.Add(position, members);
             }
 
-            members.Add(member);
+            if (!members.Contains(member))
+            {
+                members.Add(member);
+            }
 
             // Immediately set visibility based on current coverage state
             bool isCovered = IsFullyCovered(position);
@@ -134,6 +144,22 @@ namespace SS3D.Systems.Tile
             }
 
             return true;
+        }
+
+        /// <summary>
+        /// Returns the number of registered turfs at the specified position.
+        /// </summary>
+        public int GetTurfCount(Vector2Int position)
+        {
+            return _turfCounts.TryGetValue(position, out int count) ? count : 0;
+        }
+
+        /// <summary>
+        /// Returns the number of coverable members registered at the specified position.
+        /// </summary>
+        public int GetCoverableCount(Vector2Int position)
+        {
+            return _coverableMembers.TryGetValue(position, out List<TileOcclusionMember> members) ? members.Count : 0;
         }
 
         /// <summary>
