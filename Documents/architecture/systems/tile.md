@@ -1,7 +1,7 @@
 > Code paths: Assets/Scripts/SS3D/Systems/Tile/
 > Entry points: TileSubSystem, AdjacencyEngine, ConstructionService, TileQueryService, MapEditorSubSystem, MapImportPlanner
 > Status: partial
-> Verified: bf0356444 — 2026-11-04
+> Verified: f481dc3b1 — 2026-11-05
 
 # Tile / construction
 
@@ -70,6 +70,7 @@ Steel wall/table debris is separate from tile occupancy: `TileSubSystem.Wreckage
 
 ## Pitfalls
 
+- **Client tile removal must not call `DestroySelf`:** `OnStopClient` runs because FishNet is already despawning the object. `TryClearPlacedObject` then called the server-only `Despawn`, and FishNet logged one warning with a stack trace per tile. 354 of them froze the client for 1.5 s when a chunk left its view, with nothing but a long frame to show for it. `RemoveClientPlacedObject` uses `TryForgetPlacedObject`. Hit 2026-11-05.
 - **Tile prefab without `PlacedTileObject` → invisible to remote clients:** `PlacedTileObject.Create` AddComponents it at runtime when the prefab lacks it. A NetworkBehaviour added after Instantiate is not in the NetworkObject, so pure clients never get it and the tile never enters the client tilemap (build checks report missing plenum, layer hide and Delete ignore floors/plenums/furniture). Host play hides this. Every networked tile prefab must carry it: tier-B `TilePlacedObjectPrefabSetup.SetupAll`, guarded by AssetAudit `NetworkedTilePrefabsCarryPlacedTileObject`; `Create` now warns on the fallback. The component sits after sibling connectors on those prefabs, and `AbstractHorizontalConnector.OnStartClient` reads `GenericType`; `PlacedTileObject` therefore applies its synced identity in `OnStartNetwork` (runs for all behaviours before any `OnStartClient`) — otherwise the NRE aborts the client spawn packet and later objects never initialize. `PlacedItemObject` still has the same shape (server-only), so layer hide on pure clients falls back to loose `Item`s. Hit 2026-10-31 (Linux dedicated server build).
 - **Map editor popover painted under Map Check:** UI Toolkit paints in hierarchy order and ignores `z-index`. Popovers were children of their toolbar wrapper, so Map Check (a later sibling in the right column) covered the Layers/Settings popovers, even collapsed. Popovers now live in `MapEditorView`'s `popover-layer` (last child of the HUD layer) and `PlacePopover` positions them from the anchor's `worldBound`. Don't parent new floating panels under a region. Popovers and Map Check drag by their header through `PanelDragManipulator` (`style.translate`, so flex layout is untouched). Hit 2026-11-01.
 - **Wall-mount ghost on the wrong face:** `ConstructionHologram` composes yaw with the prefab root rotation (needed for items such as the M4), but `PlacedTileObject.Create` overwrites it with yaw only. The APC prefab root carries 180°, so its ghost showed the opposite face from where it landed. `CreateHologram` now zeroes the root rotation for `TileObjectSo`; tile-prefab root rotations are ignored everywhere. Hit 2026-11-01.

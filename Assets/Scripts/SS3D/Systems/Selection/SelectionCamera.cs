@@ -26,6 +26,9 @@ namespace SS3D.Systems.Selection
         private Texture2D _readbackTexture;
         private SelectionSubSystem _system;
         private InputSubSystem _inputSystem;
+        private System.Action<AsyncGPUReadbackRequest> _onReadback;
+        private bool _readbackPending;
+        private Color32 _latestPick = Color.black;
         private bool _debugMode;
 
         protected override void OnStart()
@@ -33,6 +36,7 @@ namespace SS3D.Systems.Selection
             // PlayerCamera lives in Game before NetworkSystemsHub exists; Selection registers Online.
             SubSystems.TryGet(out _system);
             SubSystems.TryGet(out _inputSystem);
+            _onReadback = OnPickReadback;
             _camera = GetComponent<Camera>();
             _playerCamera = transform.parent.GetComponent<Camera>();
 
@@ -161,15 +165,53 @@ namespace SS3D.Systems.Selection
                 && SelectionPickContext.TryGetRequest(out _)
                 && TryGetMousePixel(out int x, out int y))
             {
-                RenderTexture previous = RenderTexture.active;
-                RenderTexture.active = _renderTexture;
-                _readbackTexture.ReadPixels(new Rect(x, y, 1, 1), 0, 0, false);
-                _readbackTexture.Apply(false, false);
-                RenderTexture.active = previous;
-                col = _readbackTexture.GetPixel(0, 0);
+                col = SystemInfo.supportsAsyncGPUReadback ? ReadPickAsync(x, y) : ReadPickNow(x, y);
+            }
+            else
+            {
+                _latestPick = Color.black;
             }
 
             _system.UpdateColourFromCamera(col);
+        }
+
+        /// <summary>
+        /// A synchronous read of even one pixel makes the main thread wait for the GPU to finish the
+        /// frame. This returns the newest finished read, so hover trails the cursor by a few frames.
+        /// </summary>
+        private Color32 ReadPickAsync(int x, int y)
+        {
+            if (!_readbackPending)
+            {
+                _readbackPending = true;
+                AsyncGPUReadback.Request(_renderTexture, 0, x, 1, y, 1, 0, 1, _renderTexture.graphicsFormat, _onReadback);
+            }
+
+            return _latestPick;
+        }
+
+        private void OnPickReadback(AsyncGPUReadbackRequest request)
+        {
+            _readbackPending = false;
+            if (request.hasError || _readbackTexture == null)
+            {
+                return;
+            }
+
+            // Same format as the target: picks are matched by exact colour, so decode as ReadPickNow does.
+            _readbackTexture.LoadRawTextureData(request.GetData<byte>());
+            _latestPick = _readbackTexture.GetPixel(0, 0);
+        }
+
+        /// <summary>Stalls on the GPU: only for platforms without async readback, such as headless players.</summary>
+        private Color32 ReadPickNow(int x, int y)
+        {
+            RenderTexture previous = RenderTexture.active;
+            RenderTexture.active = _renderTexture;
+            _readbackTexture.ReadPixels(new Rect(x, y, 1, 1), 0, 0, false);
+            _readbackTexture.Apply(false, false);
+            RenderTexture.active = previous;
+            return _readbackTexture.GetPixel(0, 0);
         }
 
         private bool TryGetMouseScreenPosition(out Vector2 screenPosition)

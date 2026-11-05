@@ -147,6 +147,9 @@ namespace SS3D.Rendering.URP
                 return;
 
             bool debugActive = _debugView != DebugView.Off;
+            if (snapshot.Calm && !debugActive)
+                return;
+
             bool scatterActive = debugActive || _scatterStrength > 0f || HasCompositionScatter(snapshot);
             bool glowActive = !debugActive && _glowStrength > 0f
                 && snapshot.Temperature != null

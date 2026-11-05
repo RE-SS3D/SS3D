@@ -1,7 +1,7 @@
 > Code paths: Assets/Scripts/SS3D/Rendering/, Assets/Content/Resources/Simple Toon/, Assets/Scripts/SS3D/Systems/Vision/, Assets/Content/Resources/Vision/
 > Entry points: SelectionPickRendererFeature, AtmosRendererFeature, VisionRendererFeature
 > Status: partial
-> Verified: 5834bcdac — 2026-11-04 (atmos render suppression in the map editor)
+> Verified: f481dc3b1 — 2026-11-05
 
 # Rendering
 
@@ -40,6 +40,7 @@ Client FOV / fog-of-war is a hard black mask driven by batched physics raycasts 
 
 ## Pitfalls
 
+- **SSAO blue noise shimmers:** URP swaps the blue-noise texture every frame, expecting TAA to resolve it, so contact shading boils under SMAA with a still camera. It reads as shadow jitter, but turning shadows off changes nothing. `SS3D_ForwardPlusRenderer` uses Interleaved Gradient, which is static (changed pixels between frames 1.58 % to 0.29 %). Hit 2026-11-05.
 - **Carpet/vendor surfaces break into streaks:** constant palette-swatch UVs produce zero derivatives in `ST_CotangentFrame`; unguarded `rsqrt(0)` creates NaN normals. Clamp the squared tangent length before reciprocal square root so flat normal maps retain geometric normals.
 
 - **Half-toon fixtures lose color and intensity:** legacy `_AmbientCol: 1` blends light radiance away in opaque materials. Half-toon must multiply albedo by `light.color`; keep the legacy color blend only for full toon. Specular uses the already-lit texture color once, avoiding squared light intensity.

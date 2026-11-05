@@ -29,6 +29,9 @@ namespace SS3D.Rendering.URP
             public Vector4 AtlasBounds;
             public int MapId;
             public bool Valid;
+
+            /// <summary>Nothing in the atlas can change a pixel, so the fullscreen passes are skipped.</summary>
+            public bool Calm;
             public float IgnitionTemperature;
             public Vector4[] GasScatter;
             public Vector4[] GasEmission;

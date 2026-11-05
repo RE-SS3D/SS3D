@@ -11,6 +11,36 @@ namespace EditorTests
     public class TileMapPhase1Tests : EditModeTest
     {
         [Test]
+        public void ForgetPlacedObject_SingleLocation_EmptiesSlotAndLeavesObjectToFishNet()
+        {
+            CreateGameObject(out GameObject go, out PlacedTileObject placed);
+            SingleTileLocation location = new(TileLayer.Turf, 0, 0);
+            location.AddPlacedObject(placed);
+
+            Assert.IsTrue(location.TryForgetPlacedObject());
+
+            Assert.IsTrue(location.IsEmpty());
+            Assert.IsTrue(go != null, "The despawning object stays alive for FishNet to destroy.");
+            Assert.IsFalse(location.TryForgetPlacedObject());
+        }
+
+        [Test]
+        public void ForgetPlacedObject_CardinalLocation_EmptiesOnlyThatDirection()
+        {
+            CreateGameObject(out GameObject northGo, out PlacedTileObject north);
+            CreateGameObject(out GameObject _, out PlacedTileObject east);
+            CardinalTileLocation location = new(TileLayer.WallMountHigh, 0, 0);
+            location.AddPlacedObject(north, Direction.North);
+            location.AddPlacedObject(east, Direction.East);
+
+            Assert.IsTrue(location.TryForgetPlacedObject(Direction.North));
+
+            Assert.IsTrue(location.IsEmpty(Direction.North));
+            Assert.IsFalse(location.IsEmpty(Direction.East));
+            Assert.IsTrue(northGo != null, "The despawning object stays alive for FishNet to destroy.");
+        }
+
+        [Test]
         public void ApplySyncedIdentity_ResolvesTileFromCatalogAssetId()
         {
             TileObjectSo floorSo = CreateNamedTestSo("Phase1IdentityFloor", TileLayer.Turf);

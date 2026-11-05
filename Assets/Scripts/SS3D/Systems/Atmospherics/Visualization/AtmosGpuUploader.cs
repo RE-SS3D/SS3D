@@ -137,6 +137,7 @@ namespace SS3D.Systems.Atmospherics.Visualization
                 AtlasBounds = new Vector4(_minTileX, _minTileZ, _atlasWidth, _atlasHeight),
                 MapId = _mapId,
                 Valid = _valid,
+                Calm = AtmosVisualActivity.IsCalm(_temperatureScratch, _compositionScratch, _fireScratch, gasProfiles),
                 IgnitionTemperature = AtmosFluxConstants.PlasmaIgnitionTemperature,
                 GasScatter = gasProfiles.Scatter,
                 GasEmission = gasProfiles.Emission,

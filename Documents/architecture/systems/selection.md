@@ -1,7 +1,7 @@
 > Code paths: Assets/Scripts/SS3D/Systems/Selection/, Assets/Scripts/SS3D/Rendering/URP/
 > Entry points: SelectionSubSystem, SelectionController, SelectionPickRendererFeature
 > Status: shipped
-> Verified: 73a838a3b — 2026-11-01
+> Verified: f481dc3b1 — 2026-11-05
 
 # Selection
 
@@ -18,7 +18,7 @@ Outline shells and other auxiliary meshes use `SelectionRenderingLayers.ExcludeF
 - `Assets/Scripts/SS3D/Systems/Selection/SelectionSubSystem.cs` — subsystem entry point
 - `Assets/Scripts/SS3D/Systems/Selection/SelectionController.cs` — per-frame hover/update logic
 - `Assets/Scripts/SS3D/Systems/Selection/Selectable.cs` — component marking pickable meshes; `PickWorldCenter` / `PreferAlwaysScan`
-- `Assets/Scripts/SS3D/Systems/Selection/SelectionCamera.cs` — pick buffer readback
+- `Assets/Scripts/SS3D/Systems/Selection/SelectionCamera.cs` — async pick buffer readback
 - `Assets/Scripts/SS3D/Systems/Selection/SelectionTargetUtility.cs` — ray / closest-point interaction point for range checks
 - `Assets/Scripts/SS3D/Rendering/URP/SelectionPickRendererFeature.cs` — URP render feature for ID pass
 - `Assets/Scripts/SS3D/Rendering/URP/SelectionPickContext.cs` — pick context, spatial index, ray/frustum cull
@@ -34,6 +34,7 @@ Outline shells and other auxiliary meshes use `SelectionRenderingLayers.ExcludeF
 
 ## Pitfalls
 
+- **Pick readback must stay async:** a synchronous `ReadPixels` of even one pixel waits for the GPU, so the CPU and GPU stop overlapping and the frame costs their sum: 5 ms of a 7 ms frame at 1440p. `SelectionCamera` uses `AsyncGPUReadback`, so hover trails the cursor by a few frames, and falls back to `ReadPixels` only where async is unsupported, such as headless players. Results load into `_readbackTexture` in the target's own format because picks match by exact `Color32`; no Y flip is needed (1,081 comparisons on Vulkan, 0 mismatches). Hit 2026-11-05.
 - **Do not write `_SelectionColor` onto MeshRenderer MPBs:** permanent selection MPBs break SRP Batcher / GPU Instancing on every tile. Register via `SelectionPickContext` and let the pick pass supply colour per `DrawMesh`. SkinnedMeshRenderer is the exception (DrawRenderer needs the block). Hit 2026-07-28 (Metastation).
 - **`DrawMesh` pick is not frustum-culled by Unity:** AOI/underfloor only disables off-observer `Selectable`/MeshRenderers. Without `SelectionPickContext.IsInPickFrustum` in `CollectPickDraws`, every AOI-visible tile is `DrawMesh`'d (Metastation ~5 ms/frame). Keep the pick-camera plane test; do not confuse it with HashGrid AOI. Hit 2026-07-28.
 - **Inline ray test alone does not cut CPU:** `IsNearPickCursor` inside `Selectable.CollectPickDraws` still walks every registered source (~47k on Metastation) and pays Unity null-check marshalling. Keep the **4 m pick-grid spatial index** in `SelectionPickContext.CollectPickDraws` (ray DDA + Moore pad); the IntersectRay test is the final filter only. Hit 2026-07-29 (deep profile).

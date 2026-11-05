@@ -131,7 +131,6 @@ namespace SS3D.Systems.Tile
 
             TileLayer layer = placed.Layer;
             Vector2Int worldOrigin = placed.WorldOrigin;
-            // Capture before TryClearPlacedObject destroys the NetworkBehaviour.
             List<Vector2Int> gridOffsets = placed.GridOffsetList;
             Vector3 origin = new Vector3(worldOrigin.x, 0, worldOrigin.y);
 
@@ -141,7 +140,9 @@ namespace SS3D.Systems.Tile
                 if (!TryGetTileLocation(placed.Layer, cell, out ITileLocation location))
                     continue;
 
-                location.TryClearPlacedObject(placed.Direction);
+                // FishNet is already despawning it. DestroySelf would call the server-only Despawn,
+                // and one warning per tile froze the client when a chunk left its view.
+                location.TryForgetPlacedObject(placed.Direction);
             }
 
             NotifyTileCleared(placed, origin, layer);

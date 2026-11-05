@@ -72,14 +72,32 @@ namespace SS3D.Systems.Tile
                 return false;
             }
 
-            PlacedTileObject placedObject = _cardinalPlacedTileObject[DirToIndex(direction)];
+            int index = DirToIndex(direction);
+            PlacedTileObject placedObject = _cardinalPlacedTileObject[index];
             if (placedObject != null)
             {
                 placedObject.DestroySelf();
-                placedObject = null;
+                _cardinalPlacedTileObject[index] = null;
                 return true;
             }
             return false;
+        }
+
+        public bool TryForgetPlacedObject(Direction direction = Direction.North)
+        {
+            if (!TileHelper.IsCardinalDirection(direction))
+            {
+                return false;
+            }
+
+            int index = DirToIndex(direction);
+            if (_cardinalPlacedTileObject[index] == null)
+            {
+                return false;
+            }
+
+            _cardinalPlacedTileObject[index] = null;
+            return true;
         }
 
         public bool TryGetPlacedObject(out PlacedTileObject placedObject, Direction direction = Direction.North)
