@@ -3,10 +3,12 @@ using FishNet.Object;
 using SS3D.Core;
 using SS3D.Interactions;
 using SS3D.Interactions.Interfaces;
+using SS3D.Systems.Audio;
 using SS3D.Systems.Tile;
 using SS3D.Systems.Tile.Connections;
 using SS3D.Systems.Electricity;
 using UnityEngine;
+using AudioType = SS3D.Systems.Audio.AudioType;
 
 namespace SS3D.Systems.Area
 {
@@ -17,6 +19,9 @@ namespace SS3D.Systems.Area
     [RequireComponent(typeof(ElectricDeviceAdjacencyConnector))]
     public sealed class LightSwitchController : InteractionTargetNetworkBehaviour, IToggleable
     {
+        private const float ClickVolume = 0.5f;
+        private const float ClickMinRange = 1f;
+        private const float ClickMaxRange = 8f;
 
         [SerializeField]
         private BasicPowerConsumer _powerConsumer;
@@ -77,6 +82,17 @@ namespace SS3D.Systems.Area
             if (areaSubSystem.ToggleAreaLightingSwitch(_areaId))
             {
                 SyncSwitchState();
+                PlayClick();
+            }
+        }
+
+        [Server]
+        private void PlayClick()
+        {
+            if (SubSystems.TryGet(out AudioSubSystem audio))
+            {
+                audio.PlayAudioSource(AudioType.Sfx, LightSwitchAudioTrackIds.Click, transform.position, null,
+                    false, ClickVolume, 1f, ClickMinRange, ClickMaxRange);
             }
         }
 

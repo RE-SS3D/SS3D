@@ -127,6 +127,7 @@ GameObject:
   - component: {fileID: 798806817747551534}
   - component: {fileID: 3379094397588441500}
   - component: {fileID: -1332326336199895530}
+  - component: {fileID: 969198695513429455}
   m_Layer: 10
   m_Name: IDCard
   m_TagString: Untagged
@@ -276,12 +277,19 @@ MonoBehaviour:
   _asset: {fileID: 11400000, guid: d4a76ab7d8dbea34cb528fc2b784fd70, type: 2}
   _name: 
   _weight: 1
+  _sizeClass: 2
+  _maxStackSize: 1
+  _stackCount: 1
   _startingTraits:
   - {fileID: 11400000, guid: e5b749c01fdf96d429a02713921efca7, type: 2}
   _rigidbody: {fileID: 3483542684610536844}
   AttachmentPoint: {fileID: 7760506997891073340}
   AttachmentPointAlt: {fileID: 7000645782498805431}
   _container: {fileID: 0}
+  _boundRecordId: 0
+  _ownerName: 
+  _roleName: 
+  _department: 0
 --- !u!114 &3379094397588441500
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -307,6 +315,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   key: {fileID: 11400000, guid: 838300e26d806024a9b45d9d54782546, type: 2}
+--- !u!114 &969198695513429455
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5261116577612792016}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c1ed2939192a85040bcf588bd471b6c7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: SS3D.Systems::SS3D.Systems.Audio.NoisyCollision
+  _material: 4
 --- !u!1 &7525193168266007956
 GameObject:
   m_ObjectHideFlags: 0

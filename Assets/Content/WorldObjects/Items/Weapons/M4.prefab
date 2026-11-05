@@ -18,6 +18,7 @@ GameObject:
   - component: {fileID: 3769753042901807984}
   - component: {fileID: 8290816172357947520}
   - component: {fileID: 9182736450123456901}
+  - component: {fileID: 4173397973592644625}
   m_Layer: 10
   m_Name: M4
   m_TagString: Untagged
@@ -304,6 +305,19 @@ MonoBehaviour:
   _magazine: {fileID: 8820324614539533550}
   _magazineHandPosition: {x: -0.0262, y: 0.037, z: -0.0604}
   _magazineHandEuler: {x: 356.06, y: 298.24, z: 93.93}
+--- !u!114 &4173397973592644625
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4945023127613724458}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c1ed2939192a85040bcf588bd471b6c7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: SS3D.Systems::SS3D.Systems.Audio.NoisyCollision
+  _material: 0
 --- !u!1 &6508855772059703352
 GameObject:
   m_ObjectHideFlags: 0

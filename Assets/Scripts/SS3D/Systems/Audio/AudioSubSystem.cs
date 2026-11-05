@@ -41,8 +41,13 @@ namespace SS3D.Systems.Audio
         [SerializeField]
         private int _purgeFrequency = 2;
 
+        private const float CollisionMinRange = 2f;
+        private const float CollisionMaxRange = 30f;
+
+        private readonly CollisionSoundLimiter _collisionLimiter = new();
+
         private List<AudioSourcesList> _audioSourcesLists;
-        
+
         protected override void OnAwake()
         {
             base.OnAwake();
@@ -83,6 +88,24 @@ namespace SS3D.Systems.Audio
             bool isLooping = false, float volume = 0.7f, float pitch = 1f, float minRange = 1f, float maxRange = 500f)
         {
             RpcPlayAudioSource(audioType, audioClipId, position, parent, isLooping, volume, pitch, minRange, maxRange);
+        }
+
+        /// <summary>
+        /// Plays a collision sound for a material unless <see cref="CollisionSoundLimiter"/> holds
+        /// it back. <paramref name="sourceReadyTime"/> is the source's own cooldown state.
+        /// </summary>
+        [Server]
+        public void TryPlayCollisionSound(ItemCollisionMaterial material, Vector3 position, float volume,
+            ref float sourceReadyTime)
+        {
+            if (!_collisionLimiter.TryPlay(Time.time, ref sourceReadyTime))
+            {
+                return;
+            }
+
+            string[] clips = ItemCollisionAudioTrackIds.ClipsFor(material);
+            PlayAudioSource(AudioType.Sfx, clips[Random.Range(0, clips.Length)], position, null,
+                false, volume, Random.Range(0.92f, 1.08f), CollisionMinRange, CollisionMaxRange);
         }
 
         [Server]
@@ -267,9 +290,10 @@ namespace SS3D.Systems.Audio
 
                 // Sfx only — Music (jukebox) must not get the 800Hz occlusion lowpass or it reads
                 // as permanently muddled even in the same room (furniture/wall false hits on Default).
-                if (AudioType is AudioType.Sfx)
+                if (AudioType is AudioType.Sfx or AudioType.Music)
                 {
-                    newAudioSource.gameObject.AddComponent<AudioSourceOcclusion>();
+                    AudioSourceOcclusion occlusion = newAudioSource.gameObject.AddComponent<AudioSourceOcclusion>();
+                    occlusion.IgnoresWalls = AudioType is AudioType.Music;
                 }
 
                 List.Add(newAudioSource);

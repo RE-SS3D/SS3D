@@ -239,6 +239,7 @@ GameObject:
   - component: {fileID: 9006176345843005737}
   - component: {fileID: 1034747657592807112}
   - component: {fileID: -3033005221563599559}
+  - component: {fileID: 1372115991701717483}
   m_Layer: 10
   m_Name: SteelReinforcedSheet
   m_TagString: Untagged
@@ -389,6 +390,9 @@ MonoBehaviour:
   _asset: {fileID: 11400000, guid: 05cd3679ee853174fb8651304e81f0cd, type: 2}
   _name: Steel reinforced sheet
   _weight: 1
+  _sizeClass: 2
+  _maxStackSize: 1
+  _stackCount: 1
   _startingTraits: []
   _rigidbody: {fileID: 1539314608044912900}
   AttachmentPoint: {fileID: 8309000899177645629}
@@ -419,6 +423,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   key: {fileID: 11400000, guid: b9e9ac1fc0c7dc7458e470bbe32d0984, type: 2}
+--- !u!114 &1372115991701717483
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7125681683583715523}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c1ed2939192a85040bcf588bd471b6c7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: SS3D.Systems::SS3D.Systems.Audio.NoisyCollision
+  _material: 0
 --- !u!1 &7393894785072713980
 GameObject:
   m_ObjectHideFlags: 0

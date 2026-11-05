@@ -32,6 +32,7 @@ namespace SS3D.Systems.Audio
         private HumanInventory _inventory;
         private Ragdoll _ragdoll;
         private AudioSource _source;
+        private AudioSourceOcclusion _occlusion;
 
         private float _ownerSpeed;
         private Vector3 _lastPosition;
@@ -56,6 +57,7 @@ namespace SS3D.Systems.Audio
             _source.dopplerLevel = 0f;
             _source.volume = Volume;
             _source.outputAudioMixerGroup = MainAudioMixer.FindGroup(MainAudioMixer.SfxGroup);
+            _occlusion = gameObject.AddComponent<AudioSourceOcclusion>();
         }
 
         private void OnEnable()
@@ -110,6 +112,7 @@ namespace SS3D.Systems.Audio
 
             if (!_source.isPlaying)
             {
+                _occlusion.PrepareForPlayback(Volume);
                 _source.time = 0f;
                 _source.Play();
             }

@@ -5,6 +5,8 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using UnityEditor;
+using UnityEditor.SceneManagement;
+using UnityEngine.SceneManagement;
 
 namespace SS3D.Editor.Automation
 {
@@ -23,6 +25,7 @@ namespace SS3D.Editor.Automation
     public static class MultiplayerPlayModeSmoke
     {
         private const string TagPrefix = "smoke:";
+        private const string BootScenePath = "Assets/Content/Scenes/Boot.unity";
         private const BindingFlags Any = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.Instance;
 
         public static string ResultDirectory => Path.Combine(Directory.GetCurrentDirectory(), "Temp", "mppm-automation");
@@ -41,6 +44,19 @@ namespace SS3D.Editor.Automation
             if (clientScripts.Length > 3)
             {
                 return "MPPM has at most three clones";
+            }
+
+            // Play starts from the open scene, and every other one has no NetworkManager: the host
+            // never comes up and the clones sit at the launcher. Clones follow this scene.
+            Scene openScene = SceneManager.GetActiveScene();
+            if (openScene.path != BootScenePath)
+            {
+                if (openScene.isDirty)
+                {
+                    return $"{openScene.path} has unsaved changes; Play must start from Boot";
+                }
+
+                EditorSceneManager.OpenScene(BootScenePath);
             }
 
             if (Directory.Exists(ResultDirectory))

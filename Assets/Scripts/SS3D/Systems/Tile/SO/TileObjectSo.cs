@@ -33,6 +33,9 @@ namespace SS3D.Systems.Tile
         [Tooltip("Max structural HP. 0 = use StructuralIntegrityRules defaults.")]
         public float structuralMaxIntegrity;
 
+        [Tooltip("Sound and debris material when this differs from what genericType and specificType imply, e.g. a window typed as a steel wall.")]
+        public StructuralMaterialOverride impactMaterial;
+
         /// <summary>
         /// World position for a tile grid anchor, including any placement height offset.
         /// </summary>

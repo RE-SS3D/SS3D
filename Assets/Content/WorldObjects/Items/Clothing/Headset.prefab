@@ -50,6 +50,7 @@ GameObject:
   - component: {fileID: 4111475043132229960}
   - component: {fileID: 2296607117492175576}
   - component: {fileID: -662551539427050504}
+  - component: {fileID: 7841077584236051518}
   m_Layer: 10
   m_Name: Headset
   m_TagString: Untagged
@@ -254,6 +255,9 @@ MonoBehaviour:
   _asset: {fileID: 11400000, guid: f2914f9670967764e93aa1b262968344, type: 2}
   _name: Headset
   _weight: 1
+  _sizeClass: 2
+  _maxStackSize: 1
+  _stackCount: 1
   _startingTraits:
   - {fileID: 11400000, guid: 5f051f2619c7c6a41938d7c2ac95c921, type: 2}
   - {fileID: 11400000, guid: ebb958676aabcb647b8d1b51b1ed8098, type: 2}
@@ -328,3 +332,16 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   key: {fileID: 11400000, guid: 259d94a39826e25419b58aafe44707c1, type: 2}
+--- !u!114 &7841077584236051518
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8712940276313799639}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c1ed2939192a85040bcf588bd471b6c7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: SS3D.Systems::SS3D.Systems.Audio.NoisyCollision
+  _material: 4

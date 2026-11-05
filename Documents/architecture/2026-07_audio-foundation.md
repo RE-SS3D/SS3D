@@ -2,7 +2,7 @@
 > Touches systems: audio, area, electricity, health, stamina, main-hud, rounds-lobby, structural-destruction, furniture
 > Status: in-progress
 
-**Progress:** Phase 1–4 shipped; Phase 5 (lobby music bed) pending. Phase 0 and Phase 5's volume sliders moved to [2026-10_player-settings](2026-10_player-settings.md) Phase 1, which shipped them 2026-10-31.
+**Progress:** Phase 1–4 shipped; Phase 5 (lobby music bed) pending. Ambience content, power gating and object and destruction sounds moved to [2026-11_ambience-and-impact-audio](../archive/architecture/2026-11_ambience-and-impact-audio.md). Phase 0 and Phase 5's volume sliders moved to [2026-10_player-settings](2026-10_player-settings.md) Phase 1, which shipped them 2026-10-31.
 
 # Audio foundation (Jul 2026)
 

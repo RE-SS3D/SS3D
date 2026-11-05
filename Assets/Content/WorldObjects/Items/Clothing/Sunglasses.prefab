@@ -49,6 +49,7 @@ GameObject:
   - component: {fileID: -8110830878206171978}
   - component: {fileID: 5903053600117115308}
   - component: {fileID: 622373174144228207}
+  - component: {fileID: 5335949732459743624}
   m_Layer: 10
   m_Name: Sunglasses
   m_TagString: Untagged
@@ -225,7 +226,7 @@ MonoBehaviour:
   _networkBehaviours:
   - {fileID: 8951036715112724943}
   - {fileID: -2012658674781697945}
-  - {fileID: -2199555817236745270}
+  - {fileID: 0}
   <ParentNetworkObject>k__BackingField: {fileID: 0}
   <ChildNetworkObjects>k__BackingField: []
   SerializedTransformProperties:
@@ -254,6 +255,9 @@ MonoBehaviour:
   _asset: {fileID: 11400000, guid: c0a5c4fc200a5ae4693d9b02fee23b49, type: 2}
   _name: sunglasses
   _weight: 1
+  _sizeClass: 2
+  _maxStackSize: 1
+  _stackCount: 1
   _startingTraits:
   - {fileID: 11400000, guid: aad6862af822986498365c59cf83067a, type: 2}
   _rigidbody: {fileID: 556647876245847021}
@@ -311,3 +315,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e00534faac6488c47893490f2bf4c5a2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &5335949732459743624
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2667451333340596270}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c1ed2939192a85040bcf588bd471b6c7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: SS3D.Systems::SS3D.Systems.Audio.NoisyCollision
+  _material: 4

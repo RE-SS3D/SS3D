@@ -10,7 +10,13 @@ namespace SS3D.Systems.Area
 
         public IAreaApcOrigin Apc;
 
-        public string AmbienceTrackId;
+        /// <summary>Optional override of the department's ambience (area.md §5).</summary>
+        public string AmbienceProfileId;
+
+        /// <summary>The ambience this room asks for: its override, else its department. Empty means generic.</summary>
+        public string EffectiveAmbienceProfileId => !string.IsNullOrEmpty(AmbienceProfileId)
+            ? AmbienceProfileId
+            : ParentTag?.ToLowerInvariant() ?? string.Empty;
 
         public bool HasDepartmentalLightTint;
 

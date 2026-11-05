@@ -1,5 +1,6 @@
 # Client side of mppm:breach: joins the running round, then proves the host's breach reached this
-# process as wind on its own body and as streaks drawn from the chunk patches it received.
+# process as wind on its own body, as streaks drawn from the chunk patches it received, and as wind and
+# thinning air in what it hears, from those same patches.
 wait_timeout 60
 wait_connected
 wait_round Ongoing

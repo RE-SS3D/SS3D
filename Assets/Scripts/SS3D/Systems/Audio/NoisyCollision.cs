@@ -1,83 +1,37 @@
-﻿using UnityEngine;
-using FishNet.Object;
-using SS3D.Core;
-using SS3D.Logging;
 using FishNet;
-using SS3D.Data.AssetDatabases;
-using UnityEngine.Serialization;
+using SS3D.Core;
+using UnityEngine;
 
 namespace SS3D.Systems.Audio
 {
     /// <summary>
-    /// Put this script on stuff that make sound when they collide.
+    /// Makes a loose rigidbody sound when it hits something hard enough. Only the server simulates
+    /// items, so the server decides and every sound is a message, held down by
+    /// <see cref="CollisionSoundLimiter"/>. Added to item prefabs by <c>AudioContentPrefabRecipes</c>.
     /// </summary>
     public class NoisyCollision : MonoBehaviour
     {
+        /// <summary>Slower contacts are silent, which keeps settling and rolling quiet.</summary>
+        public const float MinImpactSpeed = 1f;
 
-        //Variables!!! Wow!
-        [Header("Collision Noises Setup")]
-        [Range(0f, 1f)]
-        [SerializeField]
-        [Tooltip("How loud sounds will play when colliding.")]
-        private float _collisionVolume = 0.7f;
+        /// <summary>At this speed and above an impact plays at full volume.</summary>
+        public const float FullImpactSpeed = 7.5f;
 
-        [SerializeField]
-        [Range(0, 2)]
-        [Tooltip("The base pitch of the sound effect. Default is 1, lower pitch is 0, higher pitch is 2.")]
-        private float _basePitch = 1;
+        private const float QuietestVolume = 0.3f;
+        private const float LoudestVolume = 0.85f;
 
         [SerializeField]
-        [Range(0f, 0.5f)]
-        [Tooltip("How much lower pitch can the sound play?")]
-        private float _pitchModulationLow = 0;
+        [Tooltip("Which set of clips this object plays when it hits something.")]
+        private ItemCollisionMaterial _material = ItemCollisionMaterial.Metal;
 
-        [SerializeField]
-        [Range(0f, 0.5f)]
-        [Tooltip("How much higher pitch can the sound play?")]
-        private float _pitchModulationHigh = 0;
+        private float _nextSoundTime;
 
-        [SerializeField]
-        [Tooltip("How fast this object must hit another in order to make a light impact sound.")]
-        private float _lightImpactVelocity = 1;
+        public ItemCollisionMaterial Material => _material;
 
-        [SerializeField]
-        [Tooltip("Does this object make a different sound being struck at a high velocity?")]
-        private bool _useHardImpactSounds = false;
-
-        [SerializeField]
-        [Tooltip("How fast this object must hit another in order to make a hard impact sound.")]
-        private float _hardImpactVelocity = 7.5f;
-
-        // [SerializeField]
-        // [Tooltip("List of possible sounds that will play when this object collides lightly.")]
-        // private AudioClip[] _lightImpactSounds;
-        
-        [SerializeField]
-        [Tooltip("List of references of possible sounds that will play when this object collides lightly.")]
-        private ObjectAssetReference[] _lightImpactSoundReferences;
-
-        // [SerializeField]
-        // [Tooltip("List of possible sounds that will play when this object collides heavily.")]
-        // private AudioClip[] _hardImpactSounds;
-
-        [SerializeField]
-        [Tooltip("List of references of possible sounds that will play when this object collides heavily.")]
-        private ObjectAssetReference[] _hardImpactSoundReferences;
-
-        //For some reason, this is needed to have an enable/disable feature. Peculiar.
-        private void FixedUpdate() { }
-
-        private void OnValidate()
+        /// <summary>The volume of an impact at this speed: harder hits are louder.</summary>
+        public static float VolumeForSpeed(float speed)
         {
-            // Throw a warning if the user configured it retardedly.
-            if ((!(_lightImpactVelocity > _hardImpactVelocity)) && (!_useHardImpactSounds || _hardImpactSoundReferences != null) && (_lightImpactSoundReferences != null))
-            {
-                return;
-            }
-
-            Log.Warning(this, "{gameObjectName} is configured to make collision sounds, but cannot. Make sure the Noisy Collision script is configured correctly.",
-                Logs.Generic, gameObject.name);
-            enabled = false;
+            return Mathf.Lerp(QuietestVolume, LoudestVolume, Mathf.InverseLerp(MinImpactSpeed, FullImpactSpeed, speed));
         }
 
         private void OnCollisionEnter(Collision other)
@@ -87,35 +41,11 @@ namespace SS3D.Systems.Audio
                 return;
             }
 
-            //Only execute this code if we're supposed to make collision noises.
-            if (_useHardImpactSounds && other.relativeVelocity.magnitude > _hardImpactVelocity)
+            float speed = other.relativeVelocity.magnitude;
+            if (speed > MinImpactSpeed && SubSystems.TryGet(out AudioSubSystem audio))
             {
-                PlayCollisionSound(_hardImpactSoundReferences);
+                audio.TryPlayCollisionSound(_material, transform.position, VolumeForSpeed(speed), ref _nextSoundTime);
             }
-            else if (other.relativeVelocity.magnitude > _lightImpactVelocity)
-            {
-                PlayCollisionSound(_lightImpactSoundReferences);
-            }
-        }
-
-        /// <summary>
-        /// Play some collision sound from the available sounds with some random pitch change.
-        /// </summary>
-        /// <param name="soundPool"></param>
-        [Server]
-        private void PlayCollisionSound(ObjectAssetReference[] soundPool)
-        {
-            float pitch = Random.Range(_basePitch - _pitchModulationLow, _basePitch + _pitchModulationHigh);
-            SubSystems.Get<AudioSubSystem>().PlayAudioSource(AudioType.Sfx, PickSound(soundPool).Id, gameObject.transform.position, null,
-                false, _collisionVolume, pitch);
-        }
-
-        private ObjectAssetReference PickSound(ObjectAssetReference[] availableSounds)
-        {
-            // Pick a clip from the supplied array and return it
-            ObjectAssetReference currentClipReference = availableSounds[Random.Range(0, availableSounds.Length)];
-
-            return currentClipReference;
         }
     }
 }

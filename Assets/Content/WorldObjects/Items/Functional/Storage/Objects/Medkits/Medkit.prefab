@@ -52,7 +52,6 @@ MonoBehaviour:
   _automaticContainerSetUp: 1
   ContainerInteractive: {fileID: 7199567936746149742}
   ContainerItemDisplay: {fileID: 0}
-  ContainerUi: {fileID: 0}
   _attachmentOffset: {x: 0, y: 0, z: 0}
   _onlyStoreWhenOpen: 1
   _openWhenContainerViewed: 0
@@ -71,6 +70,8 @@ MonoBehaviour:
   _hideItems: 1
   _type: -1
   _startFilter: {fileID: 0}
+  _maxSizeClass: 4
+  _maxWeight: 20
 --- !u!114 &57976260605683709
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -363,6 +364,7 @@ GameObject:
   - component: {fileID: -594752012234974818}
   - component: {fileID: 9182736450123456794}
   - component: {fileID: 9182736450123456795}
+  - component: {fileID: 4912498753241042264}
   m_Layer: 10
   m_Name: Medkit
   m_TagString: Untagged
@@ -434,6 +436,9 @@ MonoBehaviour:
   _asset: {fileID: 11400000, guid: d9cc887ee78f4f64f9c399b8aaffe9f9, type: 2}
   _name: Medkit
   _weight: 1
+  _sizeClass: 2
+  _maxStackSize: 1
+  _stackCount: 1
   _startingTraits: []
   _rigidbody: {fileID: 2081909342595332650}
   AttachmentPoint: {fileID: 6311512130502363032}
@@ -609,6 +614,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 827fe93ada04b99ab248ee4959d13738, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &4912498753241042264
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5533951594911835035}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c1ed2939192a85040bcf588bd471b6c7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: SS3D.Systems::SS3D.Systems.Audio.NoisyCollision
+  _material: 4
 --- !u!1 &8066562249021099569
 GameObject:
   m_ObjectHideFlags: 0

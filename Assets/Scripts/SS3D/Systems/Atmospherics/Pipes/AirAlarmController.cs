@@ -1,5 +1,6 @@
 using FishNet.Object;
 using FishNet.Object.Synchronizing;
+using SS3D.Systems.Audio;
 using SS3D.Core;
 using SS3D.Systems.Area;
 using SS3D.Systems.Examine;
@@ -29,7 +30,7 @@ namespace SS3D.Systems.Atmospherics.Pipes
     [RequireComponent(typeof(PlacedTileObject))]
     [RequireComponent(typeof(BasicPowerConsumer))]
     [RequireComponent(typeof(ElectricDeviceAdjacencyConnector))]
-    public sealed class AirAlarmController : NetworkBehaviour
+    public sealed class AirAlarmController : NetworkBehaviour, IAmbientLoopState
     {
 
         [SerializeField]
@@ -73,6 +74,8 @@ namespace SS3D.Systems.Atmospherics.Pipes
         private bool _powerEventsSubscribed;
 
         public AirAlarmState AlarmState => _alarmState;
+
+        public bool IsLoopRunning => _alarmState != AirAlarmState.None && IsPowered();
 
         public AirAlarmPresetMode ActiveMode => (AirAlarmPresetMode)_activeMode;
 

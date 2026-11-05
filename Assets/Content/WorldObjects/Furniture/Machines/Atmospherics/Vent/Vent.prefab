@@ -103,6 +103,7 @@ GameObject:
   - component: {fileID: 3409554715360446247}
   - component: {fileID: 9018827270936400976}
   - component: {fileID: 7551927119831908791}
+  - component: {fileID: 2293443202380502657}
   - component: {fileID: -2473204136432335067}
   - component: {fileID: 1278048393882565784}
   - component: {fileID: -9109099915246017288}
@@ -436,3 +437,16 @@ MonoBehaviour:
   m_EditorClassIdentifier: SS3D.Systems::SS3D.Systems.IdAccess.AuthLogDeviceBehaviour
   _deviceId: Vent
   _logCapacity: 32
+--- !u!114 &2293443202380502657
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9154955770433736351}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e3a888f0183bca1cda8899b6b48e89a3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: SS3D.Systems::SS3D.Systems.Audio.AmbientLoopSource
+  _kind: 0

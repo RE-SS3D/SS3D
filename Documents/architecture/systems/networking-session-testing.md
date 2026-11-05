@@ -1,7 +1,7 @@
 > Parent map: [networking-session.md](networking-session.md)
 > Code paths: Assets/Scripts/SS3D/Systems/Testing/, Testing/multiplayer/
 > Status: partial
-> Verified: e2f86cf20 — 2026-11-05
+> Verified: 25802878f — 2026-11-05
 
 # Multiplayer testing
 
@@ -35,7 +35,7 @@ exercises the `UNITY_SERVER` code paths. Graphical UI/session pilots have a sepa
 
 ## Extension points
 
-- Add server/client scenario text under `Testing/multiplayer/scenarios/`. Use `wait_connected`, `wait_clients` (server: N remote clients loaded their start scenes), `ready`, `start_round`, `wait_round`, `embark`, `assert_embarked`, `wait_players` (N bodies spawned, as this process sees them), `reconnect`, `console`, `wait_console` (retry a console line until it stops throwing), `wait_timeout`, `wait_seconds`, `assert_reset_health` (server: N lines in `reset-health.jsonl`), `assert_outcome <Trigger> [Winner] [antagonist]` (client: the last round outcome arrived with that trigger, and winner if given, and lists this player, as an antagonist if asked) and `disconnect`. Atmos breach checks: `use_station <map> <mode>` (host: the next round's map and mode; no spaces in the map name), `breach_hull` and `breach_beside_client` (server: open a hole to space), `scatter_items N` (server: loose items by the last `breach_hull`), `atmos_budget S` / `client_traffic S` (server tick cost and patch traffic / client received bytes, logged as `[atmos-budget]`) and `assert_wind_felt` (client: streaks drawn and its own body pushed). `{ckey}` in a `console`/`wait_console` line expands to the process's own ckey. A scenario's optional `scenarios/<name>.conf` (sourced) sets `SERVER_EXTRA_ARGS` and `CLIENT_TIMEOUT`; `embark` requests spawning, `assert_embarked` confirms control of a body.
+- Add server/client scenario text under `Testing/multiplayer/scenarios/`. Use `wait_connected`, `wait_clients` (server: N remote clients loaded their start scenes), `ready`, `start_round`, `wait_round`, `embark`, `assert_embarked`, `wait_players` (N bodies spawned, as this process sees them), `reconnect`, `console`, `wait_console` (retry a console line until it stops throwing), `wait_timeout`, `wait_seconds`, `assert_reset_health` (server: N lines in `reset-health.jsonl`), `assert_outcome <Trigger> [Winner] [antagonist]` (client: the last round outcome arrived with that trigger, and winner if given, and lists this player, as an antagonist if asked) and `disconnect`. Atmos breach checks: `use_station <map> <mode>` (host: the next round's map and mode; no spaces in the map name), `breach_hull` and `breach_beside_client` (server: open a hole to space), `scatter_items N` (server: loose items by the last `breach_hull`), `atmos_budget S` / `client_traffic S` (server tick cost and patch traffic / client received bytes, logged as `[atmos-budget]`) and `assert_wind_felt` (client: streaks drawn, its own body pushed, and wind and thinning air heard). `{ckey}` in a `console`/`wait_console` line expands to the process's own ckey. A scenario's optional `scenarios/<name>.conf` (sourced) sets `SERVER_EXTRA_ARGS` and `CLIENT_TIMEOUT`; `embark` requests spawning, `assert_embarked` confirms control of a body.
 - Add an MPPM scenario by registering it in `validate.py` `MPPM_SCENARIOS` (and `MPPM_STATIONS` if its host loads a fixture map with `use_station`).
 - Expose deterministic assertions through `console` commands or DSL instructions. Emit distinctive signals and throw on failed assertions so the runner emits `ScriptFailed`.
 - Graphical clients also accept `ui_wait`, `ui_text`, `ui_submit`, `os_click`, `os_type`, `os_key` and `screenshot`. `ui_submit` is synthetic navigation; the remote pilot services `os_*` through the OS-input bridge.
@@ -66,6 +66,8 @@ exercises the `UNITY_SERVER` code paths. Graphical UI/session pilots have a sepa
 - **MPPM's player control is internal:** `MultiplayerPlayModeSmoke` reaches `PlayMode.Editor.MultiplayerPlaymode`
   and `UnityPlayer` by reflection; an editor upgrade can rename them, and the step fails with
   `MPPM internals changed`. `CurrentPlayer.Tags` / `IsMainEditor` are the public API.
+- **MPPM starts from the open scene:** a restarted Editor reopens its last scene, and any scene but Boot has no NetworkManager, so the host never starts and Player 2 sits at the launcher. `MultiplayerPlayModeSmoke.Prepare` opens Boot first. Hit 2026-11-05.
+- **A clone's log follows the main editor's `-logFile`:** started through `open-unity.sh`, Player 2 logs to `artifacts/ui/editor.log-<virtual project>.txt` and `Library/VP/<virtual project>/Logs/Editor.log` goes stale, so waiting on that file alone times out at 420 s with a healthy clone. `clone_logs_by_name` takes the newer of the two. Hit 2026-11-05.
 - **A clone opens the virtual project read-only:** `NetworkSettings` role/ckey overrides for a
   clone are in-memory only (`CommandLineArgsSubSystem.ApplyMultiplayerPlayModeRole`), never written
   to the shared asset.

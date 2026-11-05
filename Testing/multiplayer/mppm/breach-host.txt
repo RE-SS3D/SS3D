@@ -12,4 +12,4 @@ assert_embarked
 wait_players 2
 wait_seconds 4
 breach_beside_client
-wait_seconds 8
+wait_seconds 14

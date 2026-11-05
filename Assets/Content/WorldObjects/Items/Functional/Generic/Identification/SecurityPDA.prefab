@@ -130,6 +130,7 @@ GameObject:
   - component: {fileID: 8691169782362177299}
   - component: {fileID: 3379094397588441500}
   - component: {fileID: -6257197335083171068}
+  - component: {fileID: 6791930658514929076}
   m_Layer: 10
   m_Name: SecurityPDA
   m_TagString: Untagged
@@ -281,13 +282,15 @@ MonoBehaviour:
   _asset: {fileID: 11400000, guid: 4f09dc7f882c18542b750da80a29720f, type: 2}
   _name: 
   _weight: 1
+  _sizeClass: 2
+  _maxStackSize: 1
+  _stackCount: 1
   _startingTraits:
   - {fileID: 11400000, guid: 855eb54ff561f8242bac7f3fd97821c2, type: 2}
   _rigidbody: {fileID: 3483542684610536844}
   AttachmentPoint: {fileID: 7760506997891073340}
   AttachmentPointAlt: {fileID: 7938302722024457138}
   _container: {fileID: 0}
-  testPermission: {fileID: 11400000, guid: 6f6e80ff9f87f7e4d810b2e9dcb013df, type: 2}
   StartingIDCard: {fileID: 0}
 --- !u!114 &-3412952555245330052
 MonoBehaviour:
@@ -307,7 +310,6 @@ MonoBehaviour:
   _automaticContainerSetUp: 0
   ContainerInteractive: {fileID: 8691169782362177299}
   ContainerItemDisplay: {fileID: 0}
-  ContainerUi: {fileID: 0}
   _attachmentOffset: {x: 0, y: 0, z: 0}
   _onlyStoreWhenOpen: 0
   _openWhenContainerViewed: 0
@@ -326,6 +328,8 @@ MonoBehaviour:
   _hideItems: 1
   _type: 0
   _startFilter: {fileID: 11400000, guid: 092a6d8cb786ce94fb359f11b0da6f29, type: 2}
+  _maxSizeClass: 4
+  _maxWeight: 20
 --- !u!95 &8953388663960336043
 Animator:
   serializedVersion: 7
@@ -391,6 +395,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   key: {fileID: 11400000, guid: 0dabe7c9e55169f4684cb75cd887ba8b, type: 2}
+--- !u!114 &6791930658514929076
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5261116577612792016}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c1ed2939192a85040bcf588bd471b6c7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: SS3D.Systems::SS3D.Systems.Audio.NoisyCollision
+  _material: 4
 --- !u!1 &5927379166768225886
 GameObject:
   m_ObjectHideFlags: 0

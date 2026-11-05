@@ -17,7 +17,7 @@ namespace SS3D.UI.MachineInterface
 {
     [RequireComponent(typeof(Selectable))]
     [RequireComponent(typeof(MachinePowerConsumer))]
-    public sealed class VendingMachineController : MachineInterfaceBehaviour
+    public sealed class VendingMachineController : MachineInterfaceBehaviour, IAmbientLoopState
     {
         private readonly struct TrayEntry
         {
@@ -476,6 +476,8 @@ namespace SS3D.UI.MachineInterface
 
             return snapshot;
         }
+
+        public bool IsLoopRunning => IsPowered();
 
         private bool IsPowered()
         {

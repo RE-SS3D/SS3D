@@ -1,10 +1,10 @@
 {
-  "generated_at": "2026-11-05T14:14:15.768992+00:00",
+  "generated_at": "2026-11-05T17:24:58.334946+00:00",
   "purpose": "Agent reference for locating SS3D art assets and determining import status.",
   "sources": {
     "in_game": {
       "root": "Assets/Art",
-      "file_count": 5292
+      "file_count": 5371
     },
     "ss3d_art": {
       "repo": "https://github.com/RE-SS3D/SS3D-Art",
@@ -13,13 +13,13 @@
     }
   },
   "summary": {
-    "in_game_files": 5292,
+    "in_game_files": 5371,
     "ss3d_art_files": 2480,
-    "unique_assets": 7558,
-    "imported": 214,
-    "in_game_only": 5088,
-    "ss3d_art_only": 2256,
-    "available_for_import": 2041,
+    "unique_assets": 7610,
+    "imported": 241,
+    "in_game_only": 5140,
+    "ss3d_art_only": 2229,
+    "available_for_import": 2014,
     "artwork_only": 215
   },
   "categories": [
@@ -65,10 +65,10 @@
     },
     {
       "path": "Icons",
-      "in_game": 4742,
+      "in_game": 4743,
       "ss3d_art": 0,
       "imported": 0,
-      "in_game_only": 4742,
+      "in_game_only": 4743,
       "ss3d_art_only": 0
     },
     {
@@ -81,11 +81,11 @@
     },
     {
       "path": "Sound",
-      "in_game": 93,
+      "in_game": 171,
       "ss3d_art": 218,
-      "imported": 62,
-      "in_game_only": 31,
-      "ss3d_art_only": 156
+      "imported": 89,
+      "in_game_only": 82,
+      "ss3d_art_only": 129
     },
     {
       "path": "Textures",
@@ -603,10 +603,10 @@
     },
     {
       "path": "Icons/Alerts",
-      "in_game": 14,
+      "in_game": 15,
       "ss3d_art": 0,
       "imported": 0,
-      "in_game_only": 14,
+      "in_game_only": 15,
       "ss3d_art_only": 0
     },
     {
@@ -2098,12 +2098,28 @@
       "ss3d_art_only": 1
     },
     {
-      "path": "Sound/Furniture/Machines/Engineering",
+      "path": "Sound/Furniture/Machines",
       "in_game": 1,
+      "ss3d_art": 0,
+      "imported": 0,
+      "in_game_only": 1,
+      "ss3d_art_only": 0
+    },
+    {
+      "path": "Sound/Furniture/Machines/Atmospherics",
+      "in_game": 3,
+      "ss3d_art": 0,
+      "imported": 0,
+      "in_game_only": 3,
+      "ss3d_art_only": 0
+    },
+    {
+      "path": "Sound/Furniture/Machines/Engineering",
+      "in_game": 2,
       "ss3d_art": 3,
-      "imported": 1,
+      "imported": 2,
       "in_game_only": 0,
-      "ss3d_art_only": 2
+      "ss3d_art_only": 1
     },
     {
       "path": "Sound/Furniture/Machines/Interacting Sounds",
@@ -2267,11 +2283,43 @@
     },
     {
       "path": "Sound/World/Ambience/Alarms",
-      "in_game": 0,
+      "in_game": 1,
       "ss3d_art": 1,
-      "imported": 0,
+      "imported": 1,
       "in_game_only": 0,
-      "ss3d_art_only": 1
+      "ss3d_art_only": 0
+    },
+    {
+      "path": "Sound/World/Ambience/Engineering",
+      "in_game": 5,
+      "ss3d_art": 0,
+      "imported": 0,
+      "in_game_only": 5,
+      "ss3d_art_only": 0
+    },
+    {
+      "path": "Sound/World/Ambience/Maintenance",
+      "in_game": 6,
+      "ss3d_art": 0,
+      "imported": 0,
+      "in_game_only": 6,
+      "ss3d_art_only": 0
+    },
+    {
+      "path": "Sound/World/Ambience/Medical",
+      "in_game": 1,
+      "ss3d_art": 0,
+      "imported": 0,
+      "in_game_only": 1,
+      "ss3d_art_only": 0
+    },
+    {
+      "path": "Sound/World/Ambience/Morgue",
+      "in_game": 2,
+      "ss3d_art": 0,
+      "imported": 0,
+      "in_game_only": 2,
+      "ss3d_art_only": 0
     },
     {
       "path": "Sound/World/Ambience/Power",
@@ -2291,10 +2339,10 @@
     },
     {
       "path": "Sound/World/Ambience/Station",
-      "in_game": 15,
+      "in_game": 16,
       "ss3d_art": 14,
       "imported": 14,
-      "in_game_only": 1,
+      "in_game_only": 2,
       "ss3d_art_only": 0
     },
     {
@@ -2307,35 +2355,43 @@
     },
     {
       "path": "Sound/World/Collisions/Metal Thick",
-      "in_game": 0,
+      "in_game": 2,
       "ss3d_art": 2,
-      "imported": 0,
+      "imported": 2,
       "in_game_only": 0,
-      "ss3d_art_only": 2
+      "ss3d_art_only": 0
     },
     {
       "path": "Sound/World/Collisions/Metal Thin",
-      "in_game": 0,
+      "in_game": 12,
       "ss3d_art": 29,
-      "imported": 0,
+      "imported": 12,
       "in_game_only": 0,
-      "ss3d_art_only": 29
+      "ss3d_art_only": 17
     },
     {
       "path": "Sound/World/Collisions/Plastic",
-      "in_game": 0,
+      "in_game": 5,
       "ss3d_art": 5,
-      "imported": 0,
+      "imported": 5,
       "in_game_only": 0,
-      "ss3d_art_only": 5
+      "ss3d_art_only": 0
     },
     {
       "path": "Sound/World/Collisions/Wood",
-      "in_game": 0,
+      "in_game": 6,
       "ss3d_art": 7,
-      "imported": 0,
+      "imported": 6,
       "in_game_only": 0,
-      "ss3d_art_only": 7
+      "ss3d_art_only": 1
+    },
+    {
+      "path": "Sound/World/Destruction",
+      "in_game": 32,
+      "ss3d_art": 0,
+      "imported": 0,
+      "in_game_only": 32,
+      "ss3d_art_only": 0
     },
     {
       "path": "Sound/World/Fluids",
@@ -2916,11 +2972,11 @@
   ],
   "extensions": {
     "svg": 4248,
-    "png": 2080,
+    "png": 2081,
     "blend": 677,
     "fbx": 247,
     "wav": 159,
-    "ogg": 72,
+    "ogg": 123,
     "mp3": 18,
     "ma": 13,
     "mp4": 12,
@@ -15775,6 +15831,17 @@
       "extension": "png",
       "category": "Icons/Alerts",
       "in_game_path": "Assets/Art/Icons/Alerts/restrained-cuffs.png",
+      "ss3d_art_path": null,
+      "github_url": null,
+      "import_target_path": null,
+      "status": "in_game_only"
+    },
+    {
+      "name": "seal-breach.png",
+      "stem": "seal-breach",
+      "extension": "png",
+      "category": "Icons/Alerts",
+      "in_game_path": "Assets/Art/Icons/Alerts/seal-breach.png",
       "ss3d_art_path": null,
       "github_url": null,
       "import_target_path": null,
@@ -77084,6 +77151,50 @@
       "status": "ss3d_art_only"
     },
     {
+      "name": "LightSwitch.ogg",
+      "stem": "lightswitch",
+      "extension": "ogg",
+      "category": "Sound/Furniture/Machines",
+      "in_game_path": "Assets/Art/Sound/Furniture/Machines/LightSwitch.ogg",
+      "ss3d_art_path": null,
+      "github_url": null,
+      "import_target_path": null,
+      "status": "in_game_only"
+    },
+    {
+      "name": "GasPump.ogg",
+      "stem": "gaspump",
+      "extension": "ogg",
+      "category": "Sound/Furniture/Machines/Atmospherics",
+      "in_game_path": "Assets/Art/Sound/Furniture/Machines/Atmospherics/GasPump.ogg",
+      "ss3d_art_path": null,
+      "github_url": null,
+      "import_target_path": null,
+      "status": "in_game_only"
+    },
+    {
+      "name": "GasVent.ogg",
+      "stem": "gasvent",
+      "extension": "ogg",
+      "category": "Sound/Furniture/Machines/Atmospherics",
+      "in_game_path": "Assets/Art/Sound/Furniture/Machines/Atmospherics/GasVent.ogg",
+      "ss3d_art_path": null,
+      "github_url": null,
+      "import_target_path": null,
+      "status": "in_game_only"
+    },
+    {
+      "name": "PortableScrubber.ogg",
+      "stem": "portablescrubber",
+      "extension": "ogg",
+      "category": "Sound/Furniture/Machines/Atmospherics",
+      "in_game_path": "Assets/Art/Sound/Furniture/Machines/Atmospherics/PortableScrubber.ogg",
+      "ss3d_art_path": null,
+      "github_url": null,
+      "import_target_path": null,
+      "status": "in_game_only"
+    },
+    {
       "name": "FuelPowerGenerator.ogg",
       "stem": "fuelpowergenerator",
       "extension": "ogg",
@@ -77110,11 +77221,11 @@
       "stem": "machinery2",
       "extension": "wav",
       "category": "Sound/Furniture/Machines/Engineering",
-      "in_game_path": null,
+      "in_game_path": "Assets/Art/Sound/Furniture/Machines/Engineering/Machinery2.wav",
       "ss3d_art_path": "Assets/Sound/Furniture/Machines/Engineering/Machinery2.wav",
       "github_url": "https://github.com/RE-SS3D/SS3D-Art/blob/main/Assets/Sound/Furniture/Machines/Engineering/Machinery2.wav",
       "import_target_path": "Assets/Art/Sound/Furniture/Machines/Engineering/Machinery2.wav",
-      "status": "ss3d_art_only"
+      "status": "imported"
     },
     {
       "name": "Knob Clicks.wav",
@@ -77946,11 +78057,165 @@
       "stem": "alarm 1",
       "extension": "wav",
       "category": "Sound/World/Ambience/Alarms",
-      "in_game_path": null,
+      "in_game_path": "Assets/Art/Sound/World/Ambience/Alarms/Alarm 1.wav",
       "ss3d_art_path": "Assets/Sound/World/Ambience/Alarms/Alarm 1.wav",
       "github_url": "https://github.com/RE-SS3D/SS3D-Art/blob/main/Assets/Sound/World/Ambience/Alarms/Alarm 1.wav",
       "import_target_path": "Assets/Art/Sound/World/Ambience/Alarms/Alarm 1.wav",
-      "status": "ss3d_art_only"
+      "status": "imported"
+    },
+    {
+      "name": "AmbiAtmos1.ogg",
+      "stem": "ambiatmos1",
+      "extension": "ogg",
+      "category": "Sound/World/Ambience/Engineering",
+      "in_game_path": "Assets/Art/Sound/World/Ambience/Engineering/AmbiAtmos1.ogg",
+      "ss3d_art_path": null,
+      "github_url": null,
+      "import_target_path": null,
+      "status": "in_game_only"
+    },
+    {
+      "name": "AmbiAtmos2.ogg",
+      "stem": "ambiatmos2",
+      "extension": "ogg",
+      "category": "Sound/World/Ambience/Engineering",
+      "in_game_path": "Assets/Art/Sound/World/Ambience/Engineering/AmbiAtmos2.ogg",
+      "ss3d_art_path": null,
+      "github_url": null,
+      "import_target_path": null,
+      "status": "in_game_only"
+    },
+    {
+      "name": "AmbiTech1.ogg",
+      "stem": "ambitech1",
+      "extension": "ogg",
+      "category": "Sound/World/Ambience/Engineering",
+      "in_game_path": "Assets/Art/Sound/World/Ambience/Engineering/AmbiTech1.ogg",
+      "ss3d_art_path": null,
+      "github_url": null,
+      "import_target_path": null,
+      "status": "in_game_only"
+    },
+    {
+      "name": "AmbiTech2.ogg",
+      "stem": "ambitech2",
+      "extension": "ogg",
+      "category": "Sound/World/Ambience/Engineering",
+      "in_game_path": "Assets/Art/Sound/World/Ambience/Engineering/AmbiTech2.ogg",
+      "ss3d_art_path": null,
+      "github_url": null,
+      "import_target_path": null,
+      "status": "in_game_only"
+    },
+    {
+      "name": "AmbiTech3.ogg",
+      "stem": "ambitech3",
+      "extension": "ogg",
+      "category": "Sound/World/Ambience/Engineering",
+      "in_game_path": "Assets/Art/Sound/World/Ambience/Engineering/AmbiTech3.ogg",
+      "ss3d_art_path": null,
+      "github_url": null,
+      "import_target_path": null,
+      "status": "in_game_only"
+    },
+    {
+      "name": "AmbiMaint1.ogg",
+      "stem": "ambimaint1",
+      "extension": "ogg",
+      "category": "Sound/World/Ambience/Maintenance",
+      "in_game_path": "Assets/Art/Sound/World/Ambience/Maintenance/AmbiMaint1.ogg",
+      "ss3d_art_path": null,
+      "github_url": null,
+      "import_target_path": null,
+      "status": "in_game_only"
+    },
+    {
+      "name": "AmbiMaint2.ogg",
+      "stem": "ambimaint2",
+      "extension": "ogg",
+      "category": "Sound/World/Ambience/Maintenance",
+      "in_game_path": "Assets/Art/Sound/World/Ambience/Maintenance/AmbiMaint2.ogg",
+      "ss3d_art_path": null,
+      "github_url": null,
+      "import_target_path": null,
+      "status": "in_game_only"
+    },
+    {
+      "name": "AmbiMaint3.ogg",
+      "stem": "ambimaint3",
+      "extension": "ogg",
+      "category": "Sound/World/Ambience/Maintenance",
+      "in_game_path": "Assets/Art/Sound/World/Ambience/Maintenance/AmbiMaint3.ogg",
+      "ss3d_art_path": null,
+      "github_url": null,
+      "import_target_path": null,
+      "status": "in_game_only"
+    },
+    {
+      "name": "AmbiMaint4.ogg",
+      "stem": "ambimaint4",
+      "extension": "ogg",
+      "category": "Sound/World/Ambience/Maintenance",
+      "in_game_path": "Assets/Art/Sound/World/Ambience/Maintenance/AmbiMaint4.ogg",
+      "ss3d_art_path": null,
+      "github_url": null,
+      "import_target_path": null,
+      "status": "in_game_only"
+    },
+    {
+      "name": "AmbiMaint5.ogg",
+      "stem": "ambimaint5",
+      "extension": "ogg",
+      "category": "Sound/World/Ambience/Maintenance",
+      "in_game_path": "Assets/Art/Sound/World/Ambience/Maintenance/AmbiMaint5.ogg",
+      "ss3d_art_path": null,
+      "github_url": null,
+      "import_target_path": null,
+      "status": "in_game_only"
+    },
+    {
+      "name": "MaintAmbience.ogg",
+      "stem": "maintambience",
+      "extension": "ogg",
+      "category": "Sound/World/Ambience/Maintenance",
+      "in_game_path": "Assets/Art/Sound/World/Ambience/Maintenance/MaintAmbience.ogg",
+      "ss3d_art_path": null,
+      "github_url": null,
+      "import_target_path": null,
+      "status": "in_game_only"
+    },
+    {
+      "name": "AmbiNice.ogg",
+      "stem": "ambinice",
+      "extension": "ogg",
+      "category": "Sound/World/Ambience/Medical",
+      "in_game_path": "Assets/Art/Sound/World/Ambience/Medical/AmbiNice.ogg",
+      "ss3d_art_path": null,
+      "github_url": null,
+      "import_target_path": null,
+      "status": "in_game_only"
+    },
+    {
+      "name": "AmbiMo1.ogg",
+      "stem": "ambimo1",
+      "extension": "ogg",
+      "category": "Sound/World/Ambience/Morgue",
+      "in_game_path": "Assets/Art/Sound/World/Ambience/Morgue/AmbiMo1.ogg",
+      "ss3d_art_path": null,
+      "github_url": null,
+      "import_target_path": null,
+      "status": "in_game_only"
+    },
+    {
+      "name": "AmbiMo2.ogg",
+      "stem": "ambimo2",
+      "extension": "ogg",
+      "category": "Sound/World/Ambience/Morgue",
+      "in_game_path": "Assets/Art/Sound/World/Ambience/Morgue/AmbiMo2.ogg",
+      "ss3d_art_path": null,
+      "github_url": null,
+      "import_target_path": null,
+      "status": "in_game_only"
     },
     {
       "name": "PowerHum.wav",
@@ -77995,6 +78260,17 @@
       "github_url": "https://github.com/RE-SS3D/SS3D-Art/blob/main/Assets/Sound/World/Ambience/Space/SpaceAmbience3.ogg",
       "import_target_path": "Assets/Art/Sound/World/Ambience/Space/SpaceAmbience3.ogg",
       "status": "imported"
+    },
+    {
+      "name": "ShipAmbience.ogg",
+      "stem": "shipambience",
+      "extension": "ogg",
+      "category": "Sound/World/Ambience/Station",
+      "in_game_path": "Assets/Art/Sound/World/Ambience/Station/ShipAmbience.ogg",
+      "ss3d_art_path": null,
+      "github_url": null,
+      "import_target_path": null,
+      "status": "in_game_only"
     },
     {
       "name": "StationAmbience1.ogg",
@@ -78298,44 +78574,44 @@
       "stem": "dropping metal thick1",
       "extension": "wav",
       "category": "Sound/World/Collisions/Metal Thick",
-      "in_game_path": null,
+      "in_game_path": "Assets/Art/Sound/World/Collisions/Metal Thick/Dropping Metal Thick1.wav",
       "ss3d_art_path": "Assets/Sound/World/Collisions/Metal Thick/Dropping Metal Thick1.wav",
       "github_url": "https://github.com/RE-SS3D/SS3D-Art/blob/main/Assets/Sound/World/Collisions/Metal Thick/Dropping Metal Thick1.wav",
       "import_target_path": "Assets/Art/Sound/World/Collisions/Metal Thick/Dropping Metal Thick1.wav",
-      "status": "ss3d_art_only"
+      "status": "imported"
     },
     {
       "name": "Dropping Metal Thick2.wav",
       "stem": "dropping metal thick2",
       "extension": "wav",
       "category": "Sound/World/Collisions/Metal Thick",
-      "in_game_path": null,
+      "in_game_path": "Assets/Art/Sound/World/Collisions/Metal Thick/Dropping Metal Thick2.wav",
       "ss3d_art_path": "Assets/Sound/World/Collisions/Metal Thick/Dropping Metal Thick2.wav",
       "github_url": "https://github.com/RE-SS3D/SS3D-Art/blob/main/Assets/Sound/World/Collisions/Metal Thick/Dropping Metal Thick2.wav",
       "import_target_path": "Assets/Art/Sound/World/Collisions/Metal Thick/Dropping Metal Thick2.wav",
-      "status": "ss3d_art_only"
+      "status": "imported"
     },
     {
       "name": "Dropping Metal Thin1.wav",
       "stem": "dropping metal thin1",
       "extension": "wav",
       "category": "Sound/World/Collisions/Metal Thin",
-      "in_game_path": null,
+      "in_game_path": "Assets/Art/Sound/World/Collisions/Metal Thin/Dropping Metal Thin1.wav",
       "ss3d_art_path": "Assets/Sound/World/Collisions/Metal Thin/Dropping Metal Thin1.wav",
       "github_url": "https://github.com/RE-SS3D/SS3D-Art/blob/main/Assets/Sound/World/Collisions/Metal Thin/Dropping Metal Thin1.wav",
       "import_target_path": "Assets/Art/Sound/World/Collisions/Metal Thin/Dropping Metal Thin1.wav",
-      "status": "ss3d_art_only"
+      "status": "imported"
     },
     {
       "name": "Dropping Metal Thin10.wav",
       "stem": "dropping metal thin10",
       "extension": "wav",
       "category": "Sound/World/Collisions/Metal Thin",
-      "in_game_path": null,
+      "in_game_path": "Assets/Art/Sound/World/Collisions/Metal Thin/Dropping Metal Thin10.wav",
       "ss3d_art_path": "Assets/Sound/World/Collisions/Metal Thin/Dropping Metal Thin10.wav",
       "github_url": "https://github.com/RE-SS3D/SS3D-Art/blob/main/Assets/Sound/World/Collisions/Metal Thin/Dropping Metal Thin10.wav",
       "import_target_path": "Assets/Art/Sound/World/Collisions/Metal Thin/Dropping Metal Thin10.wav",
-      "status": "ss3d_art_only"
+      "status": "imported"
     },
     {
       "name": "Dropping Metal Thin11.wav",
@@ -78364,44 +78640,44 @@
       "stem": "dropping metal thin2",
       "extension": "wav",
       "category": "Sound/World/Collisions/Metal Thin",
-      "in_game_path": null,
+      "in_game_path": "Assets/Art/Sound/World/Collisions/Metal Thin/Dropping Metal Thin2.wav",
       "ss3d_art_path": "Assets/Sound/World/Collisions/Metal Thin/Dropping Metal Thin2.wav",
       "github_url": "https://github.com/RE-SS3D/SS3D-Art/blob/main/Assets/Sound/World/Collisions/Metal Thin/Dropping Metal Thin2.wav",
       "import_target_path": "Assets/Art/Sound/World/Collisions/Metal Thin/Dropping Metal Thin2.wav",
-      "status": "ss3d_art_only"
+      "status": "imported"
     },
     {
       "name": "Dropping Metal Thin3.wav",
       "stem": "dropping metal thin3",
       "extension": "wav",
       "category": "Sound/World/Collisions/Metal Thin",
-      "in_game_path": null,
+      "in_game_path": "Assets/Art/Sound/World/Collisions/Metal Thin/Dropping Metal Thin3.wav",
       "ss3d_art_path": "Assets/Sound/World/Collisions/Metal Thin/Dropping Metal Thin3.wav",
       "github_url": "https://github.com/RE-SS3D/SS3D-Art/blob/main/Assets/Sound/World/Collisions/Metal Thin/Dropping Metal Thin3.wav",
       "import_target_path": "Assets/Art/Sound/World/Collisions/Metal Thin/Dropping Metal Thin3.wav",
-      "status": "ss3d_art_only"
+      "status": "imported"
     },
     {
       "name": "Dropping Metal Thin4.wav",
       "stem": "dropping metal thin4",
       "extension": "wav",
       "category": "Sound/World/Collisions/Metal Thin",
-      "in_game_path": null,
+      "in_game_path": "Assets/Art/Sound/World/Collisions/Metal Thin/Dropping Metal Thin4.wav",
       "ss3d_art_path": "Assets/Sound/World/Collisions/Metal Thin/Dropping Metal Thin4.wav",
       "github_url": "https://github.com/RE-SS3D/SS3D-Art/blob/main/Assets/Sound/World/Collisions/Metal Thin/Dropping Metal Thin4.wav",
       "import_target_path": "Assets/Art/Sound/World/Collisions/Metal Thin/Dropping Metal Thin4.wav",
-      "status": "ss3d_art_only"
+      "status": "imported"
     },
     {
       "name": "Dropping Metal Thin5.wav",
       "stem": "dropping metal thin5",
       "extension": "wav",
       "category": "Sound/World/Collisions/Metal Thin",
-      "in_game_path": null,
+      "in_game_path": "Assets/Art/Sound/World/Collisions/Metal Thin/Dropping Metal Thin5.wav",
       "ss3d_art_path": "Assets/Sound/World/Collisions/Metal Thin/Dropping Metal Thin5.wav",
       "github_url": "https://github.com/RE-SS3D/SS3D-Art/blob/main/Assets/Sound/World/Collisions/Metal Thin/Dropping Metal Thin5.wav",
       "import_target_path": "Assets/Art/Sound/World/Collisions/Metal Thin/Dropping Metal Thin5.wav",
-      "status": "ss3d_art_only"
+      "status": "imported"
     },
     {
       "name": "Dropping Metal Thin6.wav",
@@ -78430,22 +78706,22 @@
       "stem": "dropping metal thin8",
       "extension": "wav",
       "category": "Sound/World/Collisions/Metal Thin",
-      "in_game_path": null,
+      "in_game_path": "Assets/Art/Sound/World/Collisions/Metal Thin/Dropping Metal Thin8.wav",
       "ss3d_art_path": "Assets/Sound/World/Collisions/Metal Thin/Dropping Metal Thin8.wav",
       "github_url": "https://github.com/RE-SS3D/SS3D-Art/blob/main/Assets/Sound/World/Collisions/Metal Thin/Dropping Metal Thin8.wav",
       "import_target_path": "Assets/Art/Sound/World/Collisions/Metal Thin/Dropping Metal Thin8.wav",
-      "status": "ss3d_art_only"
+      "status": "imported"
     },
     {
       "name": "Dropping Metal Thin9.wav",
       "stem": "dropping metal thin9",
       "extension": "wav",
       "category": "Sound/World/Collisions/Metal Thin",
-      "in_game_path": null,
+      "in_game_path": "Assets/Art/Sound/World/Collisions/Metal Thin/Dropping Metal Thin9.wav",
       "ss3d_art_path": "Assets/Sound/World/Collisions/Metal Thin/Dropping Metal Thin9.wav",
       "github_url": "https://github.com/RE-SS3D/SS3D-Art/blob/main/Assets/Sound/World/Collisions/Metal Thin/Dropping Metal Thin9.wav",
       "import_target_path": "Assets/Art/Sound/World/Collisions/Metal Thin/Dropping Metal Thin9.wav",
-      "status": "ss3d_art_only"
+      "status": "imported"
     },
     {
       "name": "Fist Metal Thin.wav",
@@ -78595,132 +78871,132 @@
       "stem": "medium hit metal thin1",
       "extension": "wav",
       "category": "Sound/World/Collisions/Metal Thin",
-      "in_game_path": null,
+      "in_game_path": "Assets/Art/Sound/World/Collisions/Metal Thin/Medium Hit Metal Thin1.wav",
       "ss3d_art_path": "Assets/Sound/World/Collisions/Metal Thin/Medium Hit Metal Thin1.wav",
       "github_url": "https://github.com/RE-SS3D/SS3D-Art/blob/main/Assets/Sound/World/Collisions/Metal Thin/Medium Hit Metal Thin1.wav",
       "import_target_path": "Assets/Art/Sound/World/Collisions/Metal Thin/Medium Hit Metal Thin1.wav",
-      "status": "ss3d_art_only"
+      "status": "imported"
     },
     {
       "name": "Medium Hit Metal Thin2.wav",
       "stem": "medium hit metal thin2",
       "extension": "wav",
       "category": "Sound/World/Collisions/Metal Thin",
-      "in_game_path": null,
+      "in_game_path": "Assets/Art/Sound/World/Collisions/Metal Thin/Medium Hit Metal Thin2.wav",
       "ss3d_art_path": "Assets/Sound/World/Collisions/Metal Thin/Medium Hit Metal Thin2.wav",
       "github_url": "https://github.com/RE-SS3D/SS3D-Art/blob/main/Assets/Sound/World/Collisions/Metal Thin/Medium Hit Metal Thin2.wav",
       "import_target_path": "Assets/Art/Sound/World/Collisions/Metal Thin/Medium Hit Metal Thin2.wav",
-      "status": "ss3d_art_only"
+      "status": "imported"
     },
     {
       "name": "Medium Hit Metal Thin3.wav",
       "stem": "medium hit metal thin3",
       "extension": "wav",
       "category": "Sound/World/Collisions/Metal Thin",
-      "in_game_path": null,
+      "in_game_path": "Assets/Art/Sound/World/Collisions/Metal Thin/Medium Hit Metal Thin3.wav",
       "ss3d_art_path": "Assets/Sound/World/Collisions/Metal Thin/Medium Hit Metal Thin3.wav",
       "github_url": "https://github.com/RE-SS3D/SS3D-Art/blob/main/Assets/Sound/World/Collisions/Metal Thin/Medium Hit Metal Thin3.wav",
       "import_target_path": "Assets/Art/Sound/World/Collisions/Metal Thin/Medium Hit Metal Thin3.wav",
-      "status": "ss3d_art_only"
+      "status": "imported"
     },
     {
       "name": "Medium Hit Metal Thin4.wav",
       "stem": "medium hit metal thin4",
       "extension": "wav",
       "category": "Sound/World/Collisions/Metal Thin",
-      "in_game_path": null,
+      "in_game_path": "Assets/Art/Sound/World/Collisions/Metal Thin/Medium Hit Metal Thin4.wav",
       "ss3d_art_path": "Assets/Sound/World/Collisions/Metal Thin/Medium Hit Metal Thin4.wav",
       "github_url": "https://github.com/RE-SS3D/SS3D-Art/blob/main/Assets/Sound/World/Collisions/Metal Thin/Medium Hit Metal Thin4.wav",
       "import_target_path": "Assets/Art/Sound/World/Collisions/Metal Thin/Medium Hit Metal Thin4.wav",
-      "status": "ss3d_art_only"
+      "status": "imported"
     },
     {
       "name": "Dropping Plastic1.wav",
       "stem": "dropping plastic1",
       "extension": "wav",
       "category": "Sound/World/Collisions/Plastic",
-      "in_game_path": null,
+      "in_game_path": "Assets/Art/Sound/World/Collisions/Plastic/Dropping Plastic1.wav",
       "ss3d_art_path": "Assets/Sound/World/Collisions/Plastic/Dropping Plastic1.wav",
       "github_url": "https://github.com/RE-SS3D/SS3D-Art/blob/main/Assets/Sound/World/Collisions/Plastic/Dropping Plastic1.wav",
       "import_target_path": "Assets/Art/Sound/World/Collisions/Plastic/Dropping Plastic1.wav",
-      "status": "ss3d_art_only"
+      "status": "imported"
     },
     {
       "name": "Dropping Plastic2.wav",
       "stem": "dropping plastic2",
       "extension": "wav",
       "category": "Sound/World/Collisions/Plastic",
-      "in_game_path": null,
+      "in_game_path": "Assets/Art/Sound/World/Collisions/Plastic/Dropping Plastic2.wav",
       "ss3d_art_path": "Assets/Sound/World/Collisions/Plastic/Dropping Plastic2.wav",
       "github_url": "https://github.com/RE-SS3D/SS3D-Art/blob/main/Assets/Sound/World/Collisions/Plastic/Dropping Plastic2.wav",
       "import_target_path": "Assets/Art/Sound/World/Collisions/Plastic/Dropping Plastic2.wav",
-      "status": "ss3d_art_only"
+      "status": "imported"
     },
     {
       "name": "Dropping Plastic3.wav",
       "stem": "dropping plastic3",
       "extension": "wav",
       "category": "Sound/World/Collisions/Plastic",
-      "in_game_path": null,
+      "in_game_path": "Assets/Art/Sound/World/Collisions/Plastic/Dropping Plastic3.wav",
       "ss3d_art_path": "Assets/Sound/World/Collisions/Plastic/Dropping Plastic3.wav",
       "github_url": "https://github.com/RE-SS3D/SS3D-Art/blob/main/Assets/Sound/World/Collisions/Plastic/Dropping Plastic3.wav",
       "import_target_path": "Assets/Art/Sound/World/Collisions/Plastic/Dropping Plastic3.wav",
-      "status": "ss3d_art_only"
+      "status": "imported"
     },
     {
       "name": "Dropping Plastic4.wav",
       "stem": "dropping plastic4",
       "extension": "wav",
       "category": "Sound/World/Collisions/Plastic",
-      "in_game_path": null,
+      "in_game_path": "Assets/Art/Sound/World/Collisions/Plastic/Dropping Plastic4.wav",
       "ss3d_art_path": "Assets/Sound/World/Collisions/Plastic/Dropping Plastic4.wav",
       "github_url": "https://github.com/RE-SS3D/SS3D-Art/blob/main/Assets/Sound/World/Collisions/Plastic/Dropping Plastic4.wav",
       "import_target_path": "Assets/Art/Sound/World/Collisions/Plastic/Dropping Plastic4.wav",
-      "status": "ss3d_art_only"
+      "status": "imported"
     },
     {
       "name": "Dropping Plastic5.wav",
       "stem": "dropping plastic5",
       "extension": "wav",
       "category": "Sound/World/Collisions/Plastic",
-      "in_game_path": null,
+      "in_game_path": "Assets/Art/Sound/World/Collisions/Plastic/Dropping Plastic5.wav",
       "ss3d_art_path": "Assets/Sound/World/Collisions/Plastic/Dropping Plastic5.wav",
       "github_url": "https://github.com/RE-SS3D/SS3D-Art/blob/main/Assets/Sound/World/Collisions/Plastic/Dropping Plastic5.wav",
       "import_target_path": "Assets/Art/Sound/World/Collisions/Plastic/Dropping Plastic5.wav",
-      "status": "ss3d_art_only"
+      "status": "imported"
     },
     {
       "name": "Dropping Wood1.wav",
       "stem": "dropping wood1",
       "extension": "wav",
       "category": "Sound/World/Collisions/Wood",
-      "in_game_path": null,
+      "in_game_path": "Assets/Art/Sound/World/Collisions/Wood/Dropping Wood1.wav",
       "ss3d_art_path": "Assets/Sound/World/Collisions/Wood/Dropping Wood1.wav",
       "github_url": "https://github.com/RE-SS3D/SS3D-Art/blob/main/Assets/Sound/World/Collisions/Wood/Dropping Wood1.wav",
       "import_target_path": "Assets/Art/Sound/World/Collisions/Wood/Dropping Wood1.wav",
-      "status": "ss3d_art_only"
+      "status": "imported"
     },
     {
       "name": "Dropping Wood2.wav",
       "stem": "dropping wood2",
       "extension": "wav",
       "category": "Sound/World/Collisions/Wood",
-      "in_game_path": null,
+      "in_game_path": "Assets/Art/Sound/World/Collisions/Wood/Dropping Wood2.wav",
       "ss3d_art_path": "Assets/Sound/World/Collisions/Wood/Dropping Wood2.wav",
       "github_url": "https://github.com/RE-SS3D/SS3D-Art/blob/main/Assets/Sound/World/Collisions/Wood/Dropping Wood2.wav",
       "import_target_path": "Assets/Art/Sound/World/Collisions/Wood/Dropping Wood2.wav",
-      "status": "ss3d_art_only"
+      "status": "imported"
     },
     {
       "name": "Dropping Wood3.wav",
       "stem": "dropping wood3",
       "extension": "wav",
       "category": "Sound/World/Collisions/Wood",
-      "in_game_path": null,
+      "in_game_path": "Assets/Art/Sound/World/Collisions/Wood/Dropping Wood3.wav",
       "ss3d_art_path": "Assets/Sound/World/Collisions/Wood/Dropping Wood3.wav",
       "github_url": "https://github.com/RE-SS3D/SS3D-Art/blob/main/Assets/Sound/World/Collisions/Wood/Dropping Wood3.wav",
       "import_target_path": "Assets/Art/Sound/World/Collisions/Wood/Dropping Wood3.wav",
-      "status": "ss3d_art_only"
+      "status": "imported"
     },
     {
       "name": "Light Hit Wood on Thin Metal1.wav",
@@ -78738,33 +79014,385 @@
       "stem": "light hit wood1",
       "extension": "wav",
       "category": "Sound/World/Collisions/Wood",
-      "in_game_path": null,
+      "in_game_path": "Assets/Art/Sound/World/Collisions/Wood/Light Hit Wood1.wav",
       "ss3d_art_path": "Assets/Sound/World/Collisions/Wood/Light Hit Wood1.wav",
       "github_url": "https://github.com/RE-SS3D/SS3D-Art/blob/main/Assets/Sound/World/Collisions/Wood/Light Hit Wood1.wav",
       "import_target_path": "Assets/Art/Sound/World/Collisions/Wood/Light Hit Wood1.wav",
-      "status": "ss3d_art_only"
+      "status": "imported"
     },
     {
       "name": "Light Hit Wood2.wav",
       "stem": "light hit wood2",
       "extension": "wav",
       "category": "Sound/World/Collisions/Wood",
-      "in_game_path": null,
+      "in_game_path": "Assets/Art/Sound/World/Collisions/Wood/Light Hit Wood2.wav",
       "ss3d_art_path": "Assets/Sound/World/Collisions/Wood/Light Hit Wood2.wav",
       "github_url": "https://github.com/RE-SS3D/SS3D-Art/blob/main/Assets/Sound/World/Collisions/Wood/Light Hit Wood2.wav",
       "import_target_path": "Assets/Art/Sound/World/Collisions/Wood/Light Hit Wood2.wav",
-      "status": "ss3d_art_only"
+      "status": "imported"
     },
     {
       "name": "Medium Hit Wood1.wav",
       "stem": "medium hit wood1",
       "extension": "wav",
       "category": "Sound/World/Collisions/Wood",
-      "in_game_path": null,
+      "in_game_path": "Assets/Art/Sound/World/Collisions/Wood/Medium Hit Wood1.wav",
       "ss3d_art_path": "Assets/Sound/World/Collisions/Wood/Medium Hit Wood1.wav",
       "github_url": "https://github.com/RE-SS3D/SS3D-Art/blob/main/Assets/Sound/World/Collisions/Wood/Medium Hit Wood1.wav",
       "import_target_path": "Assets/Art/Sound/World/Collisions/Wood/Medium Hit Wood1.wav",
-      "status": "ss3d_art_only"
+      "status": "imported"
+    },
+    {
+      "name": "Explosion1.ogg",
+      "stem": "explosion1",
+      "extension": "ogg",
+      "category": "Sound/World/Destruction",
+      "in_game_path": "Assets/Art/Sound/World/Destruction/Explosion1.ogg",
+      "ss3d_art_path": null,
+      "github_url": null,
+      "import_target_path": null,
+      "status": "in_game_only"
+    },
+    {
+      "name": "Explosion2.ogg",
+      "stem": "explosion2",
+      "extension": "ogg",
+      "category": "Sound/World/Destruction",
+      "in_game_path": "Assets/Art/Sound/World/Destruction/Explosion2.ogg",
+      "ss3d_art_path": null,
+      "github_url": null,
+      "import_target_path": null,
+      "status": "in_game_only"
+    },
+    {
+      "name": "Explosion3.ogg",
+      "stem": "explosion3",
+      "extension": "ogg",
+      "category": "Sound/World/Destruction",
+      "in_game_path": "Assets/Art/Sound/World/Destruction/Explosion3.ogg",
+      "ss3d_art_path": null,
+      "github_url": null,
+      "import_target_path": null,
+      "status": "in_game_only"
+    },
+    {
+      "name": "ExplosionFar.ogg",
+      "stem": "explosionfar",
+      "extension": "ogg",
+      "category": "Sound/World/Destruction",
+      "in_game_path": "Assets/Art/Sound/World/Destruction/ExplosionFar.ogg",
+      "ss3d_art_path": null,
+      "github_url": null,
+      "import_target_path": null,
+      "status": "in_game_only"
+    },
+    {
+      "name": "GlassBreak1.ogg",
+      "stem": "glassbreak1",
+      "extension": "ogg",
+      "category": "Sound/World/Destruction",
+      "in_game_path": "Assets/Art/Sound/World/Destruction/GlassBreak1.ogg",
+      "ss3d_art_path": null,
+      "github_url": null,
+      "import_target_path": null,
+      "status": "in_game_only"
+    },
+    {
+      "name": "GlassBreak2.ogg",
+      "stem": "glassbreak2",
+      "extension": "ogg",
+      "category": "Sound/World/Destruction",
+      "in_game_path": "Assets/Art/Sound/World/Destruction/GlassBreak2.ogg",
+      "ss3d_art_path": null,
+      "github_url": null,
+      "import_target_path": null,
+      "status": "in_game_only"
+    },
+    {
+      "name": "GlassBreak3.ogg",
+      "stem": "glassbreak3",
+      "extension": "ogg",
+      "category": "Sound/World/Destruction",
+      "in_game_path": "Assets/Art/Sound/World/Destruction/GlassBreak3.ogg",
+      "ss3d_art_path": null,
+      "github_url": null,
+      "import_target_path": null,
+      "status": "in_game_only"
+    },
+    {
+      "name": "GlassBreak4.ogg",
+      "stem": "glassbreak4",
+      "extension": "ogg",
+      "category": "Sound/World/Destruction",
+      "in_game_path": "Assets/Art/Sound/World/Destruction/GlassBreak4.ogg",
+      "ss3d_art_path": null,
+      "github_url": null,
+      "import_target_path": null,
+      "status": "in_game_only"
+    },
+    {
+      "name": "GlassCrack1.ogg",
+      "stem": "glasscrack1",
+      "extension": "ogg",
+      "category": "Sound/World/Destruction",
+      "in_game_path": "Assets/Art/Sound/World/Destruction/GlassCrack1.ogg",
+      "ss3d_art_path": null,
+      "github_url": null,
+      "import_target_path": null,
+      "status": "in_game_only"
+    },
+    {
+      "name": "GlassCrack2.ogg",
+      "stem": "glasscrack2",
+      "extension": "ogg",
+      "category": "Sound/World/Destruction",
+      "in_game_path": "Assets/Art/Sound/World/Destruction/GlassCrack2.ogg",
+      "ss3d_art_path": null,
+      "github_url": null,
+      "import_target_path": null,
+      "status": "in_game_only"
+    },
+    {
+      "name": "GlassCrack3.ogg",
+      "stem": "glasscrack3",
+      "extension": "ogg",
+      "category": "Sound/World/Destruction",
+      "in_game_path": "Assets/Art/Sound/World/Destruction/GlassCrack3.ogg",
+      "ss3d_art_path": null,
+      "github_url": null,
+      "import_target_path": null,
+      "status": "in_game_only"
+    },
+    {
+      "name": "GlassCrack4.ogg",
+      "stem": "glasscrack4",
+      "extension": "ogg",
+      "category": "Sound/World/Destruction",
+      "in_game_path": "Assets/Art/Sound/World/Destruction/GlassCrack4.ogg",
+      "ss3d_art_path": null,
+      "github_url": null,
+      "import_target_path": null,
+      "status": "in_game_only"
+    },
+    {
+      "name": "GlassSmack.ogg",
+      "stem": "glasssmack",
+      "extension": "ogg",
+      "category": "Sound/World/Destruction",
+      "in_game_path": "Assets/Art/Sound/World/Destruction/GlassSmack.ogg",
+      "ss3d_art_path": null,
+      "github_url": null,
+      "import_target_path": null,
+      "status": "in_game_only"
+    },
+    {
+      "name": "MetalBreak1.ogg",
+      "stem": "metalbreak1",
+      "extension": "ogg",
+      "category": "Sound/World/Destruction",
+      "in_game_path": "Assets/Art/Sound/World/Destruction/MetalBreak1.ogg",
+      "ss3d_art_path": null,
+      "github_url": null,
+      "import_target_path": null,
+      "status": "in_game_only"
+    },
+    {
+      "name": "MetalBreak2.ogg",
+      "stem": "metalbreak2",
+      "extension": "ogg",
+      "category": "Sound/World/Destruction",
+      "in_game_path": "Assets/Art/Sound/World/Destruction/MetalBreak2.ogg",
+      "ss3d_art_path": null,
+      "github_url": null,
+      "import_target_path": null,
+      "status": "in_game_only"
+    },
+    {
+      "name": "MetalBreak3.ogg",
+      "stem": "metalbreak3",
+      "extension": "ogg",
+      "category": "Sound/World/Destruction",
+      "in_game_path": "Assets/Art/Sound/World/Destruction/MetalBreak3.ogg",
+      "ss3d_art_path": null,
+      "github_url": null,
+      "import_target_path": null,
+      "status": "in_game_only"
+    },
+    {
+      "name": "MetalBreak4.ogg",
+      "stem": "metalbreak4",
+      "extension": "ogg",
+      "category": "Sound/World/Destruction",
+      "in_game_path": "Assets/Art/Sound/World/Destruction/MetalBreak4.ogg",
+      "ss3d_art_path": null,
+      "github_url": null,
+      "import_target_path": null,
+      "status": "in_game_only"
+    },
+    {
+      "name": "MetalBreak5.ogg",
+      "stem": "metalbreak5",
+      "extension": "ogg",
+      "category": "Sound/World/Destruction",
+      "in_game_path": "Assets/Art/Sound/World/Destruction/MetalBreak5.ogg",
+      "ss3d_art_path": null,
+      "github_url": null,
+      "import_target_path": null,
+      "status": "in_game_only"
+    },
+    {
+      "name": "MetalCrunch.ogg",
+      "stem": "metalcrunch",
+      "extension": "ogg",
+      "category": "Sound/World/Destruction",
+      "in_game_path": "Assets/Art/Sound/World/Destruction/MetalCrunch.ogg",
+      "ss3d_art_path": null,
+      "github_url": null,
+      "import_target_path": null,
+      "status": "in_game_only"
+    },
+    {
+      "name": "MetalScrape1.ogg",
+      "stem": "metalscrape1",
+      "extension": "ogg",
+      "category": "Sound/World/Destruction",
+      "in_game_path": "Assets/Art/Sound/World/Destruction/MetalScrape1.ogg",
+      "ss3d_art_path": null,
+      "github_url": null,
+      "import_target_path": null,
+      "status": "in_game_only"
+    },
+    {
+      "name": "MetalScrape2.ogg",
+      "stem": "metalscrape2",
+      "extension": "ogg",
+      "category": "Sound/World/Destruction",
+      "in_game_path": "Assets/Art/Sound/World/Destruction/MetalScrape2.ogg",
+      "ss3d_art_path": null,
+      "github_url": null,
+      "import_target_path": null,
+      "status": "in_game_only"
+    },
+    {
+      "name": "MetalScrape3.ogg",
+      "stem": "metalscrape3",
+      "extension": "ogg",
+      "category": "Sound/World/Destruction",
+      "in_game_path": "Assets/Art/Sound/World/Destruction/MetalScrape3.ogg",
+      "ss3d_art_path": null,
+      "github_url": null,
+      "import_target_path": null,
+      "status": "in_game_only"
+    },
+    {
+      "name": "MetalThud1.ogg",
+      "stem": "metalthud1",
+      "extension": "ogg",
+      "category": "Sound/World/Destruction",
+      "in_game_path": "Assets/Art/Sound/World/Destruction/MetalThud1.ogg",
+      "ss3d_art_path": null,
+      "github_url": null,
+      "import_target_path": null,
+      "status": "in_game_only"
+    },
+    {
+      "name": "MetalThud2.ogg",
+      "stem": "metalthud2",
+      "extension": "ogg",
+      "category": "Sound/World/Destruction",
+      "in_game_path": "Assets/Art/Sound/World/Destruction/MetalThud2.ogg",
+      "ss3d_art_path": null,
+      "github_url": null,
+      "import_target_path": null,
+      "status": "in_game_only"
+    },
+    {
+      "name": "MetalThud3.ogg",
+      "stem": "metalthud3",
+      "extension": "ogg",
+      "category": "Sound/World/Destruction",
+      "in_game_path": "Assets/Art/Sound/World/Destruction/MetalThud3.ogg",
+      "ss3d_art_path": null,
+      "github_url": null,
+      "import_target_path": null,
+      "status": "in_game_only"
+    },
+    {
+      "name": "WindowShatter1.ogg",
+      "stem": "windowshatter1",
+      "extension": "ogg",
+      "category": "Sound/World/Destruction",
+      "in_game_path": "Assets/Art/Sound/World/Destruction/WindowShatter1.ogg",
+      "ss3d_art_path": null,
+      "github_url": null,
+      "import_target_path": null,
+      "status": "in_game_only"
+    },
+    {
+      "name": "WindowShatter2.ogg",
+      "stem": "windowshatter2",
+      "extension": "ogg",
+      "category": "Sound/World/Destruction",
+      "in_game_path": "Assets/Art/Sound/World/Destruction/WindowShatter2.ogg",
+      "ss3d_art_path": null,
+      "github_url": null,
+      "import_target_path": null,
+      "status": "in_game_only"
+    },
+    {
+      "name": "WindowShatter3.ogg",
+      "stem": "windowshatter3",
+      "extension": "ogg",
+      "category": "Sound/World/Destruction",
+      "in_game_path": "Assets/Art/Sound/World/Destruction/WindowShatter3.ogg",
+      "ss3d_art_path": null,
+      "github_url": null,
+      "import_target_path": null,
+      "status": "in_game_only"
+    },
+    {
+      "name": "WoodDestroy1.ogg",
+      "stem": "wooddestroy1",
+      "extension": "ogg",
+      "category": "Sound/World/Destruction",
+      "in_game_path": "Assets/Art/Sound/World/Destruction/WoodDestroy1.ogg",
+      "ss3d_art_path": null,
+      "github_url": null,
+      "import_target_path": null,
+      "status": "in_game_only"
+    },
+    {
+      "name": "WoodDestroy2.ogg",
+      "stem": "wooddestroy2",
+      "extension": "ogg",
+      "category": "Sound/World/Destruction",
+      "in_game_path": "Assets/Art/Sound/World/Destruction/WoodDestroy2.ogg",
+      "ss3d_art_path": null,
+      "github_url": null,
+      "import_target_path": null,
+      "status": "in_game_only"
+    },
+    {
+      "name": "WoodDestroy3.ogg",
+      "stem": "wooddestroy3",
+      "extension": "ogg",
+      "category": "Sound/World/Destruction",
+      "in_game_path": "Assets/Art/Sound/World/Destruction/WoodDestroy3.ogg",
+      "ss3d_art_path": null,
+      "github_url": null,
+      "import_target_path": null,
+      "status": "in_game_only"
+    },
+    {
+      "name": "WoodDestroyHeavy1.ogg",
+      "stem": "wooddestroyheavy1",
+      "extension": "ogg",
+      "category": "Sound/World/Destruction",
+      "in_game_path": "Assets/Art/Sound/World/Destruction/WoodDestroyHeavy1.ogg",
+      "ss3d_art_path": null,
+      "github_url": null,
+      "import_target_path": null,
+      "status": "in_game_only"
     },
     {
       "name": "Blood1.ogg",

@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 18b51fa8f56ae93a2bf0d869389ad42d, type: 3}
+  m_Name: Maintenance
+  m_EditorClassIdentifier: SS3D.Systems::SS3D.Systems.Audio.AmbienceProfile
+  _id: maintenance
+  _bed: {fileID: 8300000, guid: 92f19c2b43c54b598ade2aed5b92d78a, type: 3}
+  _bedVolume: 0.5
+  _powerGated: 0
+  _occasional:
+  - {fileID: 8300000, guid: 66f1e52cffa4229639519ae6167b5514, type: 3}
+  - {fileID: 8300000, guid: 20532c3773cfcc800b17bee23b529e2c, type: 3}
+  - {fileID: 8300000, guid: 9c271e0a6af03afc39180babb4feff13, type: 3}
+  - {fileID: 8300000, guid: 784a32a9a565a2d45befca37c72c7edb, type: 3}
+  - {fileID: 8300000, guid: bde476a3b4750e5249e5fa13f3e88d2b, type: 3}
+  _occasionalVolume: 0.5

@@ -35,6 +35,7 @@ namespace SS3D.Systems.Area
         private readonly List<IAreaApcOrigin> _registeredApcs = new();
         private readonly HashSet<IAreaApcOrigin> _overlapFlaggedApcs = new();
         private readonly Dictionary<AreaId, AreaLightingState> _lightingStates = new();
+        private readonly Dictionary<AreaId, bool> _equipmentPowered = new();
         private readonly Dictionary<AreaId, bool> _lightingSwitchOn = new();
         private readonly Dictionary<PlacedTileObject, AreaId> _deviceAreaIdCache = new();
         private int _deviceAreaCacheStructureVersion = -1;
@@ -163,6 +164,10 @@ namespace SS3D.Systems.Area
 
             return TryGetLightingState(record.Id, out state);
         }
+
+        /// <summary>False only when the area is known to have no Equipment power. Works on clients.</summary>
+        public bool IsAreaEquipmentPowered(AreaId areaId) =>
+            !_equipmentPowered.TryGetValue(areaId, out bool powered) || powered;
 
         public bool TryGetAreaLightingSwitchOn(AreaId areaId, out bool on)
         {
@@ -331,15 +336,15 @@ namespace SS3D.Systems.Area
         /// Ambience track id (audio.md §2) from live registry (host) or floor-cache snapshot
         /// (clients). Empty/missing means the area has no authored ambience track.
         /// </summary>
-        public bool TryGetAmbienceTrackId(AreaId areaId, out string trackId)
+        public bool TryGetAmbienceProfileId(AreaId areaId, out string profileId)
         {
-            if (_registry.TryGet(areaId, out AreaRecord record) && !string.IsNullOrEmpty(record.AmbienceTrackId))
+            if (_registry.TryGet(areaId, out AreaRecord record) && !string.IsNullOrEmpty(record.EffectiveAmbienceProfileId))
             {
-                trackId = record.AmbienceTrackId;
+                profileId = record.EffectiveAmbienceProfileId;
                 return true;
             }
 
-            return FloorVisualCache.TryGetAmbienceTrackId(areaId.Value, out trackId);
+            return FloorVisualCache.TryGetAmbienceProfileId(areaId.Value, out profileId);
         }
 
         public bool TryGetAreaApc(AreaId areaId, out IApcChannelSource apc)
@@ -473,16 +478,7 @@ namespace SS3D.Systems.Area
                 _registry.Unregister(existingArea);
             }
 
-            AreaId areaId = _registry.AllocateId();
-            var record = new AreaRecord
-            {
-                Id = areaId,
-                DisplayName = string.IsNullOrWhiteSpace(apc.DisplayName) ? "Unnamed Area" : apc.DisplayName,
-                ParentTag = string.Empty,
-                Apc = apc,
-            };
-            _registry.Register(record);
-            _lightingSwitchOn[areaId] = record.LightingSwitchOn;
+            AreaId areaId = RegisterStartingArea(apc);
 
             var claimedTiles = BuildClaimedTilesExcluding(areaId);
             _floodFill.FloodFromApc(apc, areaId, claimedTiles);
@@ -527,6 +523,7 @@ namespace SS3D.Systems.Area
             _registry.Clear();
             _overlapFlaggedApcs.Clear();
             _lightingStates.Clear();
+            _equipmentPowered.Clear();
             _lightingSwitchOn.Clear();
 
             List<IAreaApcOrigin> apcs = _registeredApcs
@@ -538,16 +535,7 @@ namespace SS3D.Systems.Area
 
             foreach (IAreaApcOrigin apc in apcs)
             {
-                AreaId areaId = _registry.AllocateId();
-                var record = new AreaRecord
-                {
-                    Id = areaId,
-                    DisplayName = string.IsNullOrWhiteSpace(apc.DisplayName) ? "Unnamed Area" : apc.DisplayName,
-                    ParentTag = string.Empty,
-                    Apc = apc,
-                };
-                _registry.Register(record);
-                _lightingSwitchOn[areaId] = record.LightingSwitchOn;
+                AreaId areaId = RegisterStartingArea(apc);
                 _floodFill.FloodFromApc(apc, areaId, claimedTiles);
             }
 
@@ -570,16 +558,7 @@ namespace SS3D.Systems.Area
                 _registry.Unregister(existingArea);
             }
 
-            AreaId areaId = _registry.AllocateId();
-            var record = new AreaRecord
-            {
-                Id = areaId,
-                DisplayName = string.IsNullOrWhiteSpace(apc.DisplayName) ? "Unnamed Area" : apc.DisplayName,
-                ParentTag = string.Empty,
-                Apc = apc,
-            };
-            _registry.Register(record);
-            _lightingSwitchOn[areaId] = record.LightingSwitchOn;
+            AreaId areaId = RegisterStartingArea(apc);
 
             var claimedTiles = BuildClaimedTilesExcluding(areaId);
             _floodFill.FloodFromApc(apc, areaId, claimedTiles);
@@ -616,16 +595,7 @@ namespace SS3D.Systems.Area
                 if (!_registry.TryGetApcArea(apc, out AreaId areaId))
                 {
                     // APC registered during deferred load without a saved record — allocate one.
-                    areaId = _registry.AllocateId();
-                    var record = new AreaRecord
-                    {
-                        Id = areaId,
-                        DisplayName = string.IsNullOrWhiteSpace(apc.DisplayName) ? "Unnamed Area" : apc.DisplayName,
-                        ParentTag = string.Empty,
-                        Apc = apc,
-                    };
-                    _registry.Register(record);
-                    _lightingSwitchOn[areaId] = record.LightingSwitchOn;
+                    areaId = RegisterStartingArea(apc);
                 }
 
                 _floodFill.FloodFromApc(apc, areaId, claimedTiles);
@@ -634,6 +604,22 @@ namespace SS3D.Systems.Area
             _floodFill.AssignDoorTileAreas();
             UpdateOverlapWarnings();
             InvalidateAreaMembershipIndexes();
+        }
+
+        /// <summary>A flooded area gets a neutral name and no department: an APC's label says nothing about the room (area.md §3).</summary>
+        private AreaId RegisterStartingArea(IAreaApcOrigin apc)
+        {
+            AreaId areaId = _registry.AllocateId();
+            var record = new AreaRecord
+            {
+                Id = areaId,
+                DisplayName = _painting.NextRoomName(),
+                ParentTag = string.Empty,
+                Apc = apc,
+            };
+            _registry.Register(record);
+            _lightingSwitchOn[areaId] = record.LightingSwitchOn;
+            return areaId;
         }
 
         [Server]
@@ -652,7 +638,8 @@ namespace SS3D.Systems.Area
             if (!_registry.TryGet(areaId, out AreaRecord record))
                 return;
 
-            record.ParentTag = tag ?? string.Empty;
+            record.ParentTag = AreaDepartments.Normalize(tag);
+            SyncAreaAmbience();
         }
 
         [Server]
@@ -667,17 +654,17 @@ namespace SS3D.Systems.Area
         }
 
         /// <summary>
-        /// Authors the per-area ambience track id (audio.md §2). Thin setter — no Map Editor UI
-        /// yet; content/dev-console driven until an authoring surface lands.
+        /// Authors the area's ambience override (audio.md §2). Empty goes back to the department.
+        /// No Map Editor UI yet; the <c>areaambience</c> console command reaches it.
         /// </summary>
         [Server]
-        public void SetAreaAmbienceTrackId(AreaId areaId, string trackId)
+        public void SetAreaAmbienceProfileId(AreaId areaId, string profileId)
         {
             if (!_registry.TryGet(areaId, out AreaRecord record))
                 return;
 
-            record.AmbienceTrackId = trackId ?? string.Empty;
-            NotifyAreaVisualsChanged();
+            record.AmbienceProfileId = profileId ?? string.Empty;
+            SyncAreaAmbience();
         }
 
         [Server]
@@ -1014,6 +1001,7 @@ namespace SS3D.Systems.Area
                 if (record.Apc is not IApcChannelSource areaApc || record.Apc is not IElectricDevice)
                 {
                     if (HasAuthoredAreas && ApplyLightingStateChange(record.Id, AreaLightingState.Dark)) anyChanged = true;
+                    if (HasAuthoredAreas && ApplyEquipmentPowerChange(record.Id, false)) anyChanged = true;
                     continue;
                 }
 
@@ -1025,6 +1013,11 @@ namespace SS3D.Systems.Area
 
                 AreaLightingState newState = AreaLightingStateDeriver.Derive(stats, areaApc.Channels, record.LightingSwitchOn);
                 if (ApplyLightingStateChange(record.Id, newState))
+                {
+                    anyChanged = true;
+                }
+
+                if (ApplyEquipmentPowerChange(record.Id, AreaLightingStateDeriver.DeriveEquipmentPowered(stats, areaApc.Channels)))
                 {
                     anyChanged = true;
                 }
@@ -1052,6 +1045,18 @@ namespace SS3D.Systems.Area
 
             _lightingStates[areaId] = newState;
             OnAreaLightingStateChanged?.Invoke(areaId, newState);
+            return true;
+        }
+
+        /// <returns>True when the stored state changed.</returns>
+        private bool ApplyEquipmentPowerChange(AreaId areaId, bool powered)
+        {
+            if (_equipmentPowered.TryGetValue(areaId, out bool previous) && previous == powered)
+            {
+                return false;
+            }
+
+            _equipmentPowered[areaId] = powered;
             return true;
         }
 
@@ -1083,6 +1088,7 @@ namespace SS3D.Systems.Area
                     areaId = areaId.Value,
                     state = state,
                     lightingSwitchOn = switchOn,
+                    equipmentPowered = IsAreaEquipmentPowered(areaId),
                 };
             }
 
@@ -1103,6 +1109,7 @@ namespace SS3D.Systems.Area
 
             var nextStates = new Dictionary<AreaId, AreaLightingState>();
             var nextSwitches = new Dictionary<AreaId, bool>();
+            _equipmentPowered.Clear();
             if (entries != null)
             {
                 foreach (SyncedAreaLighting entry in entries)
@@ -1110,6 +1117,7 @@ namespace SS3D.Systems.Area
                     var areaId = new AreaId(entry.areaId);
                     nextStates[areaId] = entry.state;
                     nextSwitches[areaId] = entry.lightingSwitchOn;
+                    _equipmentPowered[areaId] = entry.equipmentPowered;
                 }
             }
 
@@ -1211,20 +1219,32 @@ namespace SS3D.Systems.Area
 
             RpcSyncAreaFloorVisuals(rpcTints, rpcChunks.ToArray());
 
-            // Separate broadcast channel (audio.md §2) from tint/chunk data above — ambience
-            // authoring shouldn't need to touch the floor-stripe snapshot format.
-            var trackList = new List<(ushort areaId, string trackId)>();
+            SyncAreaAmbience();
+        }
+
+        /// <summary>
+        /// Separate broadcast channel (audio.md §2) from tint and chunk data, so tagging a room
+        /// doesn't resend the floor snapshot. Clients get the resolved id and no department data.
+        /// </summary>
+        [Server]
+        private void SyncAreaAmbience()
+        {
+            if (_map == null)
+                return;
+
+            var profileList = new List<(ushort areaId, string profileId)>();
             var rpcAmbience = new List<SyncedAreaAmbience>();
             foreach (AreaRecord record in _registry.GetAllAreas())
             {
-                if (string.IsNullOrEmpty(record.AmbienceTrackId))
+                string profileId = record.EffectiveAmbienceProfileId;
+                if (string.IsNullOrEmpty(profileId))
                     continue;
 
-                trackList.Add((record.Id.Value, record.AmbienceTrackId));
-                rpcAmbience.Add(new SyncedAreaAmbience { areaId = record.Id.Value, trackId = record.AmbienceTrackId });
+                profileList.Add((record.Id.Value, profileId));
+                rpcAmbience.Add(new SyncedAreaAmbience { areaId = record.Id.Value, profileId = profileId });
             }
 
-            FloorVisualCache.ReplaceAmbienceTrackIds(trackList);
+            FloorVisualCache.ReplaceAmbienceProfileIds(profileList);
             RpcSyncAreaAmbience(rpcAmbience.ToArray());
         }
 
@@ -1262,19 +1282,19 @@ namespace SS3D.Systems.Area
         }
 
         [ObserversRpc(BufferLast = true)]
-        private void RpcSyncAreaAmbience(SyncedAreaAmbience[] tracks)
+        private void RpcSyncAreaAmbience(SyncedAreaAmbience[] profiles)
         {
             if (IsServer)
                 return;
 
-            var trackList = new List<(ushort areaId, string trackId)>();
-            if (tracks != null)
+            var profileList = new List<(ushort areaId, string profileId)>();
+            if (profiles != null)
             {
-                foreach (SyncedAreaAmbience track in tracks)
-                    trackList.Add((track.areaId, track.trackId));
+                foreach (SyncedAreaAmbience profile in profiles)
+                    profileList.Add((profile.areaId, profile.profileId));
             }
 
-            FloorVisualCache.ReplaceAmbienceTrackIds(trackList);
+            FloorVisualCache.ReplaceAmbienceProfileIds(profileList);
         }
 
         [ObserversRpc(BufferLast = true)]
@@ -1327,13 +1347,14 @@ namespace SS3D.Systems.Area
             public ushort areaId;
             public AreaLightingState state;
             public bool lightingSwitchOn;
+            public bool equipmentPowered;
         }
 
         [Serializable]
         private struct SyncedAreaAmbience
         {
             public ushort areaId;
-            public string trackId;
+            public string profileId;
         }
     }
 }

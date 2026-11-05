@@ -1,3 +1,5 @@
+using SS3D.Systems.Audio;
+using System.Linq;
 using NUnit.Framework;
 using SS3D.Systems.IdAccess;
 using SS3D.Systems.Tile;
@@ -183,7 +185,7 @@ namespace EditorTests
             EditorWindow window = ScriptableObject.CreateInstance<EditorWindow>();
             window.Show();
             ulong submitted = ulong.MaxValue;
-            view.AreaApplyRequested += (_, _, _, bits) => submitted = bits;
+            view.AreaApplyRequested += (_, _, _, _, bits) => submitted = bits;
             try
             {
                 view.Build(window.rootVisualElement);
@@ -193,6 +195,31 @@ namespace EditorTests
                 view.Root.Q<MapEditorView.SwitchRow>("area-default-access").Value = true;
                 Submit(view.Root.Q<Button>("area-apply"));
                 Assert.AreEqual(0UL, submitted);
+            }
+            finally { view.Destroy(); window.Close(); }
+        }
+
+        [Test]
+        public void RoomFormOffersTheFixedDepartmentsAndSubmitsTheAmbience()
+        {
+            MapEditorViewModel model = new();
+            MapEditorView view = new(null, null, model, new MapEditorCatalog(), null);
+            EditorWindow window = ScriptableObject.CreateInstance<EditorWindow>();
+            window.Show();
+            string submitted = null;
+            view.AreaApplyRequested += (_, _, _, ambience, _) => submitted = ambience;
+            try
+            {
+                view.Build(window.rootVisualElement);
+                view.ShowAreaProperties(Vector3.zero, "Bay", "", 0, AmbienceProfileCatalog.GenericProfileId);
+                CollectionAssert.AreEquivalent(AreaDepartments.All.Prepend(""), view.Root.Q<DropdownField>("area-department").choices);
+                DropdownField ambience = view.Root.Q<DropdownField>("area-ambience");
+                Assert.AreEqual(AmbienceProfileCatalog.GenericProfileId, ambience.value);
+                Submit(view.Root.Q<Button>("area-apply"));
+                Assert.AreEqual(AmbienceProfileCatalog.GenericProfileId, submitted);
+                ambience.index = 0;
+                Submit(view.Root.Q<Button>("area-apply"));
+                Assert.AreEqual("", submitted);
             }
             finally { view.Destroy(); window.Close(); }
         }

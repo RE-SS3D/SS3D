@@ -158,6 +158,7 @@ GameObject:
   - component: {fileID: 6351433192589740835}
   - component: {fileID: 8613419490928921116}
   - component: {fileID: -4555762578122410573}
+  - component: {fileID: 7999235250926200434}
   m_Layer: 10
   m_Name: NuclearAuthenticationDisk
   m_TagString: Untagged
@@ -200,6 +201,9 @@ MonoBehaviour:
   _asset: {fileID: 11400000, guid: 50284e9bdc2ff2943ba806e8d5ce8f9f, type: 2}
   _name: 
   _weight: 1
+  _sizeClass: 2
+  _maxStackSize: 1
+  _stackCount: 1
   _startingTraits: []
   _rigidbody: {fileID: 6351433192589740835}
   AttachmentPoint: {fileID: 4619531351315044860}
@@ -336,3 +340,16 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   key: {fileID: 11400000, guid: 4a91e8bdc53d39d4da862071ddd536cc, type: 2}
+--- !u!114 &7999235250926200434
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6891363543938182813}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c1ed2939192a85040bcf588bd471b6c7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: SS3D.Systems::SS3D.Systems.Audio.NoisyCollision
+  _material: 4

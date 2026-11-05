@@ -49,6 +49,7 @@ GameObject:
   - component: {fileID: 5289822754746829837}
   - component: {fileID: 926079960710381547}
   - component: {fileID: 1357399863125752432}
+  - component: {fileID: 2124157645870926894}
   m_Layer: 10
   m_Name: Welder
   m_TagString: Untagged
@@ -274,6 +275,9 @@ MonoBehaviour:
   _asset: {fileID: 11400000, guid: 715777b8c0a0f1b4cb29ee4dab0326e4, type: 2}
   _name: Welder
   _weight: 1
+  _sizeClass: 2
+  _maxStackSize: 1
+  _stackCount: 1
   _startingTraits:
   - {fileID: 11400000, guid: 9fce2bd65c51b5b40ad2346bedb63121, type: 2}
   _rigidbody: {fileID: 7971893193691774296}
@@ -305,3 +309,16 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   key: {fileID: 11400000, guid: 7aa5d3607b524d1448e4c5c0356c6c19, type: 2}
+--- !u!114 &2124157645870926894
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7393721560307922778}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c1ed2939192a85040bcf588bd471b6c7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: SS3D.Systems::SS3D.Systems.Audio.NoisyCollision
+  _material: 0

@@ -13,6 +13,7 @@ using SS3D.Data.Generated;
 using SS3D.Networking;
 using SS3D.Networking.Settings;
 using SS3D.Systems.Atmospherics;
+using SS3D.Systems.Audio;
 using SS3D.Systems.Atmospherics.ECS;
 using SS3D.Systems.Atmospherics.Visualization;
 using SS3D.Systems.Entities;
@@ -543,7 +544,7 @@ namespace SS3D.Systems.Testing
                     yield return SampleClientTraffic(float.Parse(instruction.Args[0], System.Globalization.CultureInfo.InvariantCulture));
                     break;
 
-                // Client: this process drew wind streaks and its own body was pushed by the wind.
+                // Client: this process drew wind streaks, its own body was pushed, and it heard the wind and the air thinning.
                 case "assert_wind_felt":
                     yield return AssertWindFelt();
                     TestSignal.Emit(this, "WindFelt");
@@ -814,6 +815,9 @@ namespace SS3D.Systems.Testing
             return samples[Mathf.Clamp(Mathf.CeilToInt(samples.Count * fraction) - 1, 0, samples.Count - 1)];
         }
 
+        private const float MinHeardWindSpeed = 0.5f;
+        private const float MaxHeardAir = 0.95f;
+
         private IEnumerator AssertWindFelt()
         {
             yield return WaitUntil(IsEmbarked, _waitTimeoutSeconds, "assert_wind_felt embarked");
@@ -821,12 +825,18 @@ namespace SS3D.Systems.Testing
             Ragdoll body = entity.GetComponent<Ragdoll>();
             AtmosWindView view = SubSystems.Get<AtmosSubSystem>().GetComponent<AtmosWindView>();
             Vector3 start = body.WindSamplePosition;
+            AmbienceSubSystem ambience = SubSystems.Get<AmbienceSubSystem>();
             bool sawStreaks = false;
+            bool heardWind = false;
             yield return WaitUntil(() =>
             {
                 sawStreaks |= view != null && view.VisibleStreaks > 0;
-                return sawStreaks && Vector3.Distance(body.WindSamplePosition, start) > 0.3f;
+                heardWind |= ambience.ListenerWindSpeed > MinHeardWindSpeed;
+                return sawStreaks && heardWind && Vector3.Distance(body.WindSamplePosition, start) > 0.3f;
             }, _waitTimeoutSeconds, "assert_wind_felt");
+
+            yield return WaitUntil(() => AudioSourceOcclusion.ListenerAir < MaxHeardAir, _waitTimeoutSeconds,
+                "assert_wind_felt thin air");
         }
 
         private bool IsEmbarked()

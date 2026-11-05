@@ -50,6 +50,7 @@ GameObject:
   - component: {fileID: 643085470722933952}
   - component: {fileID: 234574913902294794}
   - component: {fileID: 6165322108927456680}
+  - component: {fileID: 5233762443156084200}
   m_Layer: 10
   m_Name: FacewearGasMask
   m_TagString: Untagged
@@ -254,6 +255,9 @@ MonoBehaviour:
   _asset: {fileID: 11400000, guid: 4a50e327a934cd3438e1b88d2bb547cb, type: 2}
   _name: Facewear gas mask
   _weight: 1
+  _sizeClass: 2
+  _maxStackSize: 1
+  _stackCount: 1
   _startingTraits:
   - {fileID: 11400000, guid: 6169d80297e73ad44b394b52547ac805, type: 2}
   _rigidbody: {fileID: 6826443317434021945}
@@ -324,3 +328,16 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   key: {fileID: 11400000, guid: 1e04a445661c6cd4a8c13cfee7546926, type: 2}
+--- !u!114 &5233762443156084200
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1687938131941834081}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c1ed2939192a85040bcf588bd471b6c7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: SS3D.Systems::SS3D.Systems.Audio.NoisyCollision
+  _material: 4

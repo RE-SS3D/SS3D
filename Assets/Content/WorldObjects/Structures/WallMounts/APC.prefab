@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 171083310264975561}
   - component: {fileID: 5864608339448331312}
   - component: {fileID: 8822334455667788993}
+  - component: {fileID: 873307975506040153}
   - component: {fileID: -5633820156739102180}
   - component: {fileID: 5345374821986185081}
   - component: {fileID: -1796937761032253921}
@@ -255,3 +256,16 @@ MonoBehaviour:
   _updateHostVisibility: 1
   _observerConditions:
   - {fileID: 11400000, guid: cc503f7541ebd424c94541e6a767efee, type: 2}
+--- !u!114 &873307975506040153
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5287103069661579500}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e3a888f0183bca1cda8899b6b48e89a3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: SS3D.Systems::SS3D.Systems.Audio.AmbientLoopSource
+  _kind: 4

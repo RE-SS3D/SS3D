@@ -18,7 +18,6 @@ namespace SS3D.Systems.IdAccess
                 "science" => AccessMask.FromLevels(AccessLevel.Science),
                 "cargo" => AccessMask.FromLevels(AccessLevel.Cargo),
                 "service" => AccessMask.FromLevels(AccessLevel.Service),
-                "civilian" => AccessMask.FromLevels(AccessLevel.Civilian),
                 _ => AccessMask.None,
             };
         }

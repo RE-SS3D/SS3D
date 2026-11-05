@@ -1,0 +1,34 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 18b51fa8f56ae93a2bf0d869389ad42d, type: 3}
+  m_Name: Station
+  m_EditorClassIdentifier: SS3D.Systems::SS3D.Systems.Audio.AmbienceProfile
+  _id: station
+  _bed: {fileID: 8300000, guid: a452e5b7969905c5faa6815a2f0aa24c, type: 3}
+  _bedVolume: 0.5
+  _powerGated: 0
+  _occasional:
+  - {fileID: 8300000, guid: 3ac82573ec5f0d348ab19e17034652cc, type: 3}
+  - {fileID: 8300000, guid: a70b110dec56e014b931330b1ca5c65c, type: 3}
+  - {fileID: 8300000, guid: 29a245743ff768c4999f6711e9772762, type: 3}
+  - {fileID: 8300000, guid: 57b79e2b8a7201f40919eedb4f3e3578, type: 3}
+  - {fileID: 8300000, guid: 0441ca9b543489941899a6fa3b2f8f65, type: 3}
+  - {fileID: 8300000, guid: b70057a637a8ee64d8a103ba5d018f95, type: 3}
+  - {fileID: 8300000, guid: f8a3241ea4fb08e4ba3d00eb52e1851a, type: 3}
+  - {fileID: 8300000, guid: 2b85732af2d7157478c8daa7d6d7d4d3, type: 3}
+  - {fileID: 8300000, guid: d2d714b9b8e42c34bb42b0fadbffc15f, type: 3}
+  - {fileID: 8300000, guid: 2b959ad2b21ddce4a80d805c3da9211a, type: 3}
+  - {fileID: 8300000, guid: ce7bb62cf1ee25340bfbb7b5b575dac6, type: 3}
+  - {fileID: 8300000, guid: 98eb53d65c1232b48ba860d25836533b, type: 3}
+  - {fileID: 8300000, guid: 899dfb5c8eaee314e82a81129a272b39, type: 3}
+  - {fileID: 8300000, guid: 375dede0fea4b604bbc4333c4f2d5071, type: 3}
+  _occasionalVolume: 0.5

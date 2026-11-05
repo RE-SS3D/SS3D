@@ -103,6 +103,7 @@ GameObject:
   - component: {fileID: 3409554715360446247}
   - component: {fileID: 9018827270936400976}
   - component: {fileID: 4484013068238330198}
+  - component: {fileID: 3287235226083417176}
   - component: {fileID: -1764620254179843544}
   - component: {fileID: 118605385810179959}
   - component: {fileID: -7485152300816284691}
@@ -436,3 +437,16 @@ MonoBehaviour:
   m_EditorClassIdentifier: SS3D.Systems::SS3D.Systems.IdAccess.AuthLogDeviceBehaviour
   _deviceId: Scrubber
   _logCapacity: 32
+--- !u!114 &3287235226083417176
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9154955770433736351}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e3a888f0183bca1cda8899b6b48e89a3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: SS3D.Systems::SS3D.Systems.Audio.AmbientLoopSource
+  _kind: 1

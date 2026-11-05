@@ -14,6 +14,7 @@ GameObject:
   - component: {fileID: 2658310835758749968}
   - component: {fileID: 1871071288925904272}
   - component: {fileID: 8905492951320375787}
+  - component: {fileID: 7172048528614670373}
   - component: {fileID: -8220440043154804263}
   - component: {fileID: 8320483876716032414}
   - component: {fileID: -6290800912275539549}
@@ -441,3 +442,16 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!114 &7172048528614670373
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2658310835758749969}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e3a888f0183bca1cda8899b6b48e89a3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: SS3D.Systems::SS3D.Systems.Audio.AmbientLoopSource
+  _kind: 3

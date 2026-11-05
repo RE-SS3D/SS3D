@@ -1,19 +1,18 @@
 using Coimbra;
 using System.Collections;
-using SS3D.Systems.Audio;
 using UnityEngine;
 
 namespace SS3D.Systems.StructuralDamage
 {
     /// <summary>
-    /// Short-lived fireball wash at a blast epicenter: particles, Effect-tier point light, boom SFX.
+    /// Short-lived fireball wash at a blast epicenter: particles and an Effect-tier point light.
+    /// The boom plays from <see cref="StructuralAudioPresenter"/>, on the occluded pool.
     /// Configures particle systems in code so the prefab stays thin.
     /// </summary>
     [DisallowMultipleComponent]
     public sealed class BlastExplosionEffect : MonoBehaviour
     {
         private Light _light;
-        private AudioSource _audio;
         private ParticleSystem _core;
         private ParticleSystem _smoke;
         private bool _configured;
@@ -48,14 +47,6 @@ namespace SS3D.Systems.StructuralDamage
                 StartCoroutine(FadeLight(catalog.LightDuration, catalog.LightIntensity * scale));
             }
 
-            if (_audio != null && catalog != null && catalog.BoomClip != null)
-            {
-                _audio.clip = catalog.BoomClip;
-                _audio.volume = Mathf.Clamp01(0.55f + 0.35f * scale);
-                _audio.pitch = Random.Range(0.92f, 1.08f);
-                _audio.Play();
-            }
-
             float lifetime = catalog != null ? catalog.EffectLifetime : 1.2f;
             StartCoroutine(DisposeAfter(lifetime * Mathf.Lerp(0.9f, 1.3f, (scale - 0.35f) / 2.15f)));
         }
@@ -83,17 +74,6 @@ namespace SS3D.Systems.StructuralDamage
 
             _light.color = BlastVfxCatalog.FireCoreColor;
             _light.enabled = false;
-
-            _audio = GetComponent<AudioSource>();
-            if (_audio == null)
-                _audio = gameObject.AddComponent<AudioSource>();
-
-            _audio.playOnAwake = false;
-            _audio.spatialBlend = 1f;
-            _audio.rolloffMode = AudioRolloffMode.Linear;
-            _audio.minDistance = 2f;
-            _audio.maxDistance = 40f;
-            _audio.outputAudioMixerGroup = MainAudioMixer.FindGroup(MainAudioMixer.SfxGroup);
 
             _core = FindOrCreateBurst("FireballCore", isSmoke: false, catalog);
             _smoke = FindOrCreateBurst("FireballSmoke", isSmoke: true, catalog);

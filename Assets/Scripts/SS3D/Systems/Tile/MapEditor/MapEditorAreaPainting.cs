@@ -114,7 +114,7 @@ namespace SS3D.Systems.Tile.MapEditor
             }
             _commandService.Execute(new CreateRoomCommand(areas, room, stroke, wasAuthored), conn.ClientId);
             _inspectedRooms[conn] = room;
-            TargetAreaProperties(conn, room.Id.Value, Vector3.zero, room.DisplayName, room.ParentTag, 0);
+            TargetAreaProperties(conn, room.Id.Value, Vector3.zero, room.DisplayName, room.ParentTag, room.AmbienceProfileId, 0);
             TargetSyncUndoState(conn, _commandService.UndoDepth, _commandService.RedoDepth, true);
         }
 

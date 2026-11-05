@@ -9,11 +9,13 @@ namespace SS3D.Systems.Tile
     {
         [SyncObject] private readonly SyncList<SteelWreckageRecord> _steelWreckage = new();
         private SteelWreckageView _wreckageView;
+        private StructuralAudioPresenter _structuralAudio;
 
         public override void OnStartClient()
         {
             base.OnStartClient();
             _wreckageView = gameObject.AddComponent<SteelWreckageView>();
+            _structuralAudio = gameObject.AddComponent<StructuralAudioPresenter>();
             _steelWreckage.OnChange += OnWreckageChanged;
             RefreshWreckage();
         }
@@ -22,6 +24,7 @@ namespace SS3D.Systems.Tile
         {
             _steelWreckage.OnChange -= OnWreckageChanged;
             if (_wreckageView != null) Destroy(_wreckageView);
+            if (_structuralAudio != null) Destroy(_structuralAudio);
             base.OnStopClient();
         }
 
@@ -50,6 +53,8 @@ namespace SS3D.Systems.Tile
         private void RpcSteelBreakup(SteelWreckageRecord record)
         {
             if (IsClient && _wreckageView != null) _wreckageView.BreakApart(record);
+            if (IsClient && _structuralAudio != null)
+                _structuralAudio.OnSteelBreakup(record.Position + Vector3.up * Mathf.Min(record.Size.y * 0.5f, 1f));
         }
 
         private void RemoveWreckage(TileCoord coord, TileLayer layer)

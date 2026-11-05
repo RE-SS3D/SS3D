@@ -145,6 +145,7 @@ GameObject:
   - component: {fileID: 8868060696172007296}
   - component: {fileID: 8006545930481202674}
   - component: {fileID: -4296955913176570747}
+  - component: {fileID: 4950656681103283328}
   m_Layer: 10
   m_Name: PowerCell
   m_TagString: Untagged
@@ -294,6 +295,9 @@ MonoBehaviour:
   _asset: {fileID: 11400000, guid: 4d84c9a7bcbaa564d8958c6875c8c02d, type: 2}
   _name: PowerCell
   _weight: 1
+  _sizeClass: 2
+  _maxStackSize: 1
+  _stackCount: 1
   _startingTraits: []
   _rigidbody: {fileID: 3368721005309584205}
   AttachmentPoint: {fileID: 7991373112210367801}
@@ -345,6 +349,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   key: {fileID: 11400000, guid: 5f62fad4d1f834142a93aa7307a23571, type: 2}
+--- !u!114 &4950656681103283328
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2402587210622244651}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c1ed2939192a85040bcf588bd471b6c7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: SS3D.Systems::SS3D.Systems.Audio.NoisyCollision
+  _material: 0
 --- !u!1 &3296752347747623008
 GameObject:
   m_ObjectHideFlags: 0

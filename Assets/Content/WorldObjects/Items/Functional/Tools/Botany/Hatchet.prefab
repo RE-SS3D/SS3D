@@ -50,6 +50,7 @@ GameObject:
   - component: {fileID: 8006545930481202674}
   - component: {fileID: 2132217192414121469}
   - component: {fileID: 9182736450123456802}
+  - component: {fileID: 1329516731573887521}
   m_Layer: 10
   m_Name: Hatchet
   m_TagString: Untagged
@@ -328,3 +329,16 @@ MonoBehaviour:
     StaminaCost: 11
     CanSever: 1
     StructuralForce: 28
+--- !u!114 &1329516731573887521
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2402587210622244651}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c1ed2939192a85040bcf588bd471b6c7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: SS3D.Systems::SS3D.Systems.Audio.NoisyCollision
+  _material: 0

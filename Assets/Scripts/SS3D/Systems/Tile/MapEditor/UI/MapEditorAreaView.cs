@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using SS3D.Systems.IdAccess;
 using SS3D.Systems.Area;
+using SS3D.Systems.Audio;
 using SS3D.Systems.Inputs;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -11,9 +12,12 @@ namespace SS3D.Systems.Tile.MapEditor.UI
     public sealed partial class MapEditorView
     {
         private Vector3 _areaPosition;
-        private string _areaName, _areaDepartment;
+        private const string DepartmentAmbience = "Department default";
+
+        private string _areaName, _areaDepartment, _areaAmbience;
         private ulong _areaAccess;
-        public event Action<Vector3, string, string, ulong> AreaApplyRequested;
+        /// <summary>Position, room name, department, ambience override (empty for none), access.</summary>
+        public event Action<Vector3, string, string, string, ulong> AreaApplyRequested;
         public event Action<ushort> RoomPaletteSelected;
         private readonly Dictionary<ushort, string> _roomPaletteNames = new();
 
@@ -75,11 +79,12 @@ namespace SS3D.Systems.Tile.MapEditor.UI
             if (_vm.IsRoomCategory) RebuildGrid();
         }
 
-        public void ShowAreaProperties(Vector3 position, string roomName, string department, ulong access)
+        public void ShowAreaProperties(Vector3 position, string roomName, string department, ulong access, string ambience = "")
         {
             _areaPosition = position;
             _areaName = roomName;
             _areaDepartment = department;
+            _areaAmbience = ambience;
             _areaAccess = access;
             OpenPopover("area");
         }
@@ -139,13 +144,18 @@ namespace SS3D.Systems.Tile.MapEditor.UI
             name.AddToClassList("map-editor-area-field");
             WireTextEntryField(name);
             container.Add(name);
-            List<string> departments = new() { "", "Command", "Security", "Engineering", "Medical", "Science", "Cargo", "Service", "Civilian" };
-            if (!departments.Contains(_areaDepartment ?? ""))
-                departments.Add(_areaDepartment);
+            List<string> departments = new() { "" };
+            departments.AddRange(AreaDepartments.All);
             container.Add(new Label("Department"));
             DropdownField department = new(departments, Math.Max(0, departments.IndexOf(_areaDepartment ?? ""))) { name = "area-department" };
             department.AddToClassList("map-editor-area-field");
             container.Add(department);
+            List<string> ambiences = new() { DepartmentAmbience };
+            ambiences.AddRange(AmbienceProfileCatalog.Instance.ProfileIds);
+            container.Add(new Label("Ambience"));
+            DropdownField ambience = new(ambiences, Math.Max(0, ambiences.IndexOf(_areaAmbience ?? ""))) { name = "area-ambience" };
+            ambience.AddToClassList("map-editor-area-field");
+            container.Add(ambience);
             SwitchRow useDefault = AddSwitchRow(container, "Use department access", _areaAccess == 0, null);
             useDefault.name = "area-default-access";
             Label hint = new("All selected access levels are required. Department access applies when no override is selected.");
@@ -185,7 +195,8 @@ namespace SS3D.Systems.Tile.MapEditor.UI
                     hint.text = "Select at least one access level, or use department access.";
                     return;
                 }
-                AreaApplyRequested?.Invoke(_areaPosition, name.value, department.value, useDefault.Value ? 0 : bits);
+                AreaApplyRequested?.Invoke(_areaPosition, name.value, department.value,
+                    ambience.index == 0 ? "" : ambience.value, useDefault.Value ? 0 : bits);
             }) { text = "Apply room properties", name = "area-apply" };
             apply.AddToClassList("map-editor-action-btn");
             apply.AddToClassList("map-editor-action-btn--primary");

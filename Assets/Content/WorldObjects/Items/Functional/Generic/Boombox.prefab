@@ -19,6 +19,7 @@ GameObject:
   - component: {fileID: 3684970640593888479}
   - component: {fileID: 6232149895420462588}
   - component: {fileID: -2580189880636271799}
+  - component: {fileID: 1508061180671395829}
   m_Layer: 10
   m_Name: Boombox
   m_TagString: Untagged
@@ -352,6 +353,9 @@ MonoBehaviour:
   _asset: {fileID: 11400000, guid: d81d46f903aad014aa4728a8b47ab7ea, type: 2}
   _name: Boombox
   _weight: 1
+  _sizeClass: 2
+  _maxStackSize: 1
+  _stackCount: 1
   _startingTraits: []
   _rigidbody: {fileID: 3236041210663208848}
   AttachmentPoint: {fileID: 2804866248626254785}
@@ -382,6 +386,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   key: {fileID: 11400000, guid: c29d9bd4b2537794d853d40450283289, type: 2}
+--- !u!114 &1508061180671395829
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8197868818743549203}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c1ed2939192a85040bcf588bd471b6c7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: SS3D.Systems::SS3D.Systems.Audio.NoisyCollision
+  _material: 4
 --- !u!1 &8730915866332464111
 GameObject:
   m_ObjectHideFlags: 0

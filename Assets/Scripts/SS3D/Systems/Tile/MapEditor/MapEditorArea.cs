@@ -2,6 +2,7 @@ using FishNet.Connection;
 using FishNet.Object;
 using SS3D.Core;
 using SS3D.Systems.Area;
+using SS3D.Systems.Audio;
 using SS3D.Systems.IdAccess;
 using SS3D.Systems.Tile.MapEditor.Commands;
 using SS3D.Systems.Tile.MapEditor.UI;
@@ -22,8 +23,8 @@ namespace SS3D.Systems.Tile.MapEditor
                 RpcInspectSelectedArea(_selectedPaintAreaId, _viewModel.OpenPopover == "area", LocalConnection);
         }
 
-        private void OnAreaApplyRequested(Vector3 position, string roomName, string department, ulong access) =>
-            RpcApplyArea(_selectedPaintAreaId, roomName, department, access, LocalConnection);
+        private void OnAreaApplyRequested(Vector3 position, string roomName, string department, string ambience, ulong access) =>
+            RpcApplyArea(_selectedPaintAreaId, roomName, department, ambience, access, LocalConnection);
 
         [ServerRpc(RequireOwnership = false)]
         private void RpcInspectArea(Vector3 position, bool showEditor, bool useConstruct, NetworkConnection conn = null)
@@ -37,7 +38,7 @@ namespace SS3D.Systems.Tile.MapEditor
                 return;
             }
             _inspectedRooms[conn] = room;
-            TargetAreaProperties(conn, room.Id.Value, position, room.DisplayName, room.ParentTag, room.DefaultRequiredAccess.Value, showEditor, useConstruct);
+            TargetAreaProperties(conn, room.Id.Value, position, room.DisplayName, room.ParentTag, room.AmbienceProfileId, room.DefaultRequiredAccess.Value, showEditor, useConstruct);
         }
 
         [ServerRpc(RequireOwnership = false)]
@@ -51,19 +52,18 @@ namespace SS3D.Systems.Tile.MapEditor
                 return;
             }
             _inspectedRooms[conn] = room;
-            TargetAreaProperties(conn, room.Id.Value, Vector3.zero, room.DisplayName, room.ParentTag, room.DefaultRequiredAccess.Value, showEditor);
+            TargetAreaProperties(conn, room.Id.Value, Vector3.zero, room.DisplayName, room.ParentTag, room.AmbienceProfileId, room.DefaultRequiredAccess.Value, showEditor);
         }
 
         [ServerRpc(RequireOwnership = false)]
-        private void RpcApplyArea(ushort areaId, string roomName, string department, ulong access,
+        private void RpcApplyArea(ushort areaId, string roomName, string department, string ambience, ulong access,
             NetworkConnection conn = null)
         {
             if (!MapEditorPermissions.TryAuthorize(conn))
                 return;
-            if (string.IsNullOrWhiteSpace(roomName) || roomName.Length > 80 ||
-                department == null || department.Length > 40)
+            if (string.IsNullOrWhiteSpace(roomName) || roomName.Length > 80)
             {
-                TargetToast(conn, "Enter a room name (up to 80 characters) and department (up to 40).");
+                TargetToast(conn, "Enter a room name (up to 80 characters).");
                 return;
             }
             ulong known = 0;
@@ -83,16 +83,17 @@ namespace SS3D.Systems.Tile.MapEditor
             }
             EnsureCommandServiceBound();
             if (!_commandService.Execute(new EditAreaPropertiesCommand(areas, room,
-                    roomName.Trim(), department.Trim(), access), conn.ClientId))
+                    roomName.Trim(), AreaDepartments.Normalize(department),
+                    AmbienceProfileCatalog.Instance.TryGet(ambience, out AmbienceProfile profile) ? profile.Id : string.Empty, access), conn.ClientId))
                 return;
             TargetSyncUndoState(conn, _commandService.UndoDepth, _commandService.RedoDepth, true);
             TargetToast(conn, "Room properties applied. Save the map to keep them.");
-            TargetAreaProperties(conn, room.Id.Value, Vector3.zero, room.DisplayName, room.ParentTag, room.DefaultRequiredAccess.Value);
+            TargetAreaProperties(conn, room.Id.Value, Vector3.zero, room.DisplayName, room.ParentTag, room.AmbienceProfileId, room.DefaultRequiredAccess.Value);
         }
 
         [TargetRpc]
         private void TargetAreaProperties(NetworkConnection conn, ushort areaId, Vector3 position, string roomName,
-            string department, ulong access, bool showEditor = true, bool useConstruct = false)
+            string department, string ambience, ulong access, bool showEditor = true, bool useConstruct = false)
         {
             if (_active && IsRoomCategory)
             {
@@ -100,7 +101,7 @@ namespace SS3D.Systems.Tile.MapEditor
                 _viewModel.AreaRoomName = roomName;
                 _viewModel.AreaRoomId = areaId;
                 if (useConstruct) OnToolSelected(MapEditorTool.Edit);
-                if (showEditor) _view.ShowAreaProperties(position, roomName, department, access);
+                if (showEditor) _view.ShowAreaProperties(position, roomName, department, access, ambience);
                 else _viewModel.NotifyChanged();
             }
         }
@@ -123,32 +124,35 @@ namespace SS3D.Systems.Tile.MapEditor
         {
             private readonly AreaSubSystem _areas;
             private readonly AreaRecord _room;
-            private readonly string _beforeName, _beforeDepartment, _afterName, _afterDepartment;
+            private readonly string _beforeName, _beforeDepartment, _beforeAmbience, _afterName, _afterDepartment, _afterAmbience;
             private readonly ulong _beforeAccess, _afterAccess;
 
             public EditAreaPropertiesCommand(AreaSubSystem areas, AreaRecord room,
-                string name, string department, ulong access)
+                string name, string department, string ambience, ulong access)
             {
                 _areas = areas;
                 _room = room;
                 _beforeName = room.DisplayName;
                 _beforeDepartment = room.ParentTag;
+                _beforeAmbience = room.AmbienceProfileId;
                 _beforeAccess = room.DefaultRequiredAccess.Value;
                 _afterName = name;
                 _afterDepartment = department;
+                _afterAmbience = ambience;
                 _afterAccess = access;
             }
 
             public MapEditorCommandDto ToDto() => throw new System.NotSupportedException("Room edits are server-local commands.");
-            public void Apply(MapEditorCommandContext ctx) => Set(_afterName, _afterDepartment, _afterAccess);
-            public void Revert(MapEditorCommandContext ctx) => Set(_beforeName, _beforeDepartment, _beforeAccess);
+            public void Apply(MapEditorCommandContext ctx) => Set(_afterName, _afterDepartment, _afterAmbience, _afterAccess);
+            public void Revert(MapEditorCommandContext ctx) => Set(_beforeName, _beforeDepartment, _beforeAmbience, _beforeAccess);
 
-            private void Set(string name, string department, ulong access)
+            private void Set(string name, string department, string ambience, ulong access)
             {
                 if (!_areas.TryGetArea(_room.Id, out AreaRecord current) || !ReferenceEquals(current, _room))
                     return;
                 _areas.RenameArea(current.Id, name);
                 _areas.SetParentTag(current.Id, department);
+                _areas.SetAreaAmbienceProfileId(current.Id, ambience);
                 _areas.SetDefaultRequiredAccess(current.Id, new AccessMask(access));
             }
         }

@@ -25,6 +25,12 @@ namespace SS3D.Rendering.URP
             /// <summary>CPU copy of <see cref="Flow"/> (packed RG per texel) for world-space wind effects.</summary>
             public float[] FlowData;
 
+            /// <summary>CPU copy of <see cref="Pressure"/> in kPa, for what the listener hears.</summary>
+            public float[] PressureData;
+
+            /// <summary>CPU copy of <see cref="Mask"/>, which says whether a pressure can be trusted.</summary>
+            public byte[] MaskData;
+
             /// <summary>minX, minZ, width, height in world tile coordinates.</summary>
             public Vector4 AtlasBounds;
             public int MapId;

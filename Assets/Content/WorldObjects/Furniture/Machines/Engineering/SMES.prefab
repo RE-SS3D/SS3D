@@ -9,6 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8033135651520204425}
+  - component: {fileID: 3892405132348698506}
   - component: {fileID: -5414623717715724467}
   - component: {fileID: -4242734897733728731}
   - component: {fileID: 6345351447614513914}
@@ -363,3 +364,16 @@ SkinnedMeshRenderer:
     m_Center: {x: -0.000000014901161, y: 0.48807514, z: 0.025044113}
     m_Extent: {x: 0.41364294, y: 0.48807514, z: 0.43868694}
   m_DirtyAABB: 0
+--- !u!114 &3892405132348698506
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1918783493706165866}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e3a888f0183bca1cda8899b6b48e89a3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: SS3D.Systems::SS3D.Systems.Audio.AmbientLoopSource
+  _kind: 5

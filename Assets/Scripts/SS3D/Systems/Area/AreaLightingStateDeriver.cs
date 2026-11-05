@@ -34,5 +34,12 @@ namespace SS3D.Systems.Area
 
             return AreaLightingState.Dark;
         }
+
+        /// <summary>
+        /// Whether the area's machines are running: the Equipment channel is on and the grid covers
+        /// the load. A battery only carries the lights, so this goes first when the grid fails.
+        /// </summary>
+        public static bool DeriveEquipmentPowered(CircuitStats stats, ApcControlFlags channels) =>
+            (channels & ApcControlFlags.Equipment) != 0 && stats.TotalSupplyKw > 0f && stats.GridMeetsLoad;
     }
 }

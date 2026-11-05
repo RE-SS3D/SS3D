@@ -59,17 +59,25 @@ namespace SS3D.Systems.StructuralDamage
             if (service == null)
                 return false;
 
-            StructuralIntegrityRules.TryGetTarget(_boundQuery, coord, out PlacedTileObject placed);
-            bool showImpact = placed != null && impactNormal.sqrMagnitude > 0.0001f
-                && SteelWallDamageVfx.SupportsOverlay(placed);
-            byte material = placed != null && StructuralIntegrityRules.IsWoodTable(placed.tileObjectSO) ? (byte)1
-                : placed != null && StructuralIntegrityRules.IsGlassTable(placed.tileObjectSO) ? (byte)2 : (byte)0;
+            if (!StructuralIntegrityRules.TryGetTarget(_boundQuery, coord, out PlacedTileObject placed))
+                return false;
+
+            bool hasSurface = impactNormal.sqrMagnitude > 0.0001f;
+            bool showParticles = hasSurface && SteelWallDamageVfx.SupportsOverlay(placed);
+            StructuralMaterial material = StructuralMaterials.Resolve(placed.tileObjectSO);
+            StructuralIntegrityStage before = placed.IntegrityStage;
+            Vector3 point = hasSurface ? impactPoint : placed.transform.position + Vector3.up;
 
             if (!service.TryApplyStructuralDamage(coord, force, source))
                 return false;
 
-            if (showImpact && SubSystems.TryGet(out TileSubSystem tiles) && tiles.IsServer)
-                tiles.ServerNotifyStructuralImpact(impactPoint, impactNormal, material);
+            StructuralIntegrityStage after = placed == null ? StructuralIntegrityStage.Destroyed : placed.IntegrityStage;
+            StructuralImpactCue cue = StructuralImpactCues.Resolve(before, after, material, source);
+            if ((showParticles || cue != StructuralImpactCue.None)
+                && SubSystems.TryGet(out TileSubSystem tiles) && tiles.IsServer)
+            {
+                tiles.ServerNotifyStructuralImpact(point, showParticles ? impactNormal : Vector3.zero, material, cue);
+            }
 
             return true;
         }

@@ -79,6 +79,8 @@ namespace SS3D.Systems.Atmospherics.Visualization
                 Composition = _composition,
                 Flow = _flow,
                 FlowData = _flowScratch,
+                PressureData = _pressureScratch,
+                MaskData = _maskScratch,
                 FireIntensity = _fireIntensity,
                 Mask = _mask,
                 AtlasBounds = new Vector4(_minTileX, _minTileZ, _atlasWidth, _atlasHeight),

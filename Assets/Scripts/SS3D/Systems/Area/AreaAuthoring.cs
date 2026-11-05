@@ -59,6 +59,7 @@ namespace SS3D.Systems.Area
             _registeredApcs.Clear();
             _registry.Clear();
             _lightingStates.Clear();
+            _equipmentPowered.Clear();
             _lightingSwitchOn.Clear();
             _overlapFlaggedApcs.Clear();
             _pendingSavedByApcPosition = null;

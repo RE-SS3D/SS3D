@@ -110,6 +110,32 @@ namespace EditorTests
         }
 
         [Test]
+        public void AmbienceOverrideSurvivesSaveAndLoad()
+        {
+            Assert.IsTrue(_registry.TryGet(new AreaId(2), out AreaRecord vault));
+            vault.AmbienceProfileId = "morgue";
+            _painting.TryPaint(2, new[] { Vector2Int.zero }, out _, out _);
+
+            SavedAreaChunkPayload payload = new() { authored = true, records = _painting.CaptureRecords() };
+            SavedAreaChunkPayload loaded = JsonUtility.FromJson<SavedAreaChunkPayload>(JsonUtility.ToJson(payload));
+            _painting.RestoreRecords(loaded.records, loaded.authored);
+
+            Assert.IsTrue(_registry.TryGet(new AreaId(2), out AreaRecord restored));
+            Assert.AreEqual("morgue", restored.AmbienceProfileId);
+        }
+
+        [TestCase("ENGINEERING", "Engineering")]
+        [TestCase("Civilian", "")]
+        [TestCase("eng", "")]
+        public void SavedDepartmentLoadsAsAListedOneOrNone(string saved, string expected)
+        {
+            _painting.RestoreRecords(new[] { new SavedAreaRecord { id = 5, displayName = "Bay", parentTag = saved } });
+
+            Assert.IsTrue(_registry.TryGet(new AreaId(5), out AreaRecord room));
+            Assert.AreEqual(expected, room.ParentTag);
+        }
+
+        [Test]
         public void CenteringCameraPreservesAngleAndZoom()
         {
             GameObject go = new("Room camera test");

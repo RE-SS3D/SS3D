@@ -194,13 +194,14 @@ namespace SS3D.Systems.StructuralDamage
                 _hissSource.minDistance = 1f;
                 _hissSource.maxDistance = 12f;
                 _hissSource.outputAudioMixerGroup = MainAudioMixer.FindGroup(MainAudioMixer.SfxGroup);
+                gameObject.AddComponent<AudioSourceOcclusion>();
             }
 
             if (_hissSource.isPlaying && _hissSource.clip == _crackedHiss)
                 return;
 
             _hissSource.clip = _crackedHiss;
-            _hissSource.volume = _hissVolume;
+            GetComponent<AudioSourceOcclusion>().PrepareForPlayback(_hissVolume);
             _hissSource.Play();
         }
 

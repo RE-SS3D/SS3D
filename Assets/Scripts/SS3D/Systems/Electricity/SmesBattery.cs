@@ -1,5 +1,6 @@
 using FishNet.Object;
 using SS3D.Core;
+using SS3D.Systems.Audio;
 using UnityEngine;
 using UnityEngine.Serialization;
 
@@ -8,7 +9,7 @@ namespace SS3D.Systems.Electricity
     /// <summary>
     /// Script for SMES battery, mostly to handle displaying visual indicators on the SMES models.
     /// </summary>
-    public class SmesBattery : BasicBattery
+    public class SmesBattery : BasicBattery, IAmbientLoopState
     {
         [FormerlySerializedAs("SmesSkinnedMesh")]
         [SerializeField]
@@ -28,6 +29,8 @@ namespace SS3D.Systems.Electricity
         [SerializeField]
         private int _updateLightPeriod = 3;
         private int _updateCount = 0;
+
+        public bool IsLoopRunning => _isOn && StoredEnergyKwh > 0f;
 
         public override void OnStartClient()
         {

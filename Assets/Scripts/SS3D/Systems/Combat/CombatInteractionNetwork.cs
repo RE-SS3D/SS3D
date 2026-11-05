@@ -284,7 +284,12 @@ namespace SS3D.Systems.Combat
 
             if (hasImpact && !hitLiving)
             {
-                PlaySurfaceHitSound(impactPoint);
+                // A landed structural hit already plays its material's sound from the impact message.
+                if (!landed)
+                {
+                    PlaySurfaceHitSound(impactPoint);
+                }
+
                 ObserversNotifyBulletHole(impactPoint, impactNormal);
             }
 

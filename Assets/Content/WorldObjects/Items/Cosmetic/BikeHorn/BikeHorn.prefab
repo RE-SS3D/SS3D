@@ -184,6 +184,7 @@ GameObject:
   - component: {fileID: -1808419688812875912}
   - component: {fileID: 8613419490928921116}
   - component: {fileID: 2689380027240677461}
+  - component: {fileID: 8095799782265010478}
   m_Layer: 10
   m_Name: BikeHorn
   m_TagString: Untagged
@@ -226,6 +227,9 @@ MonoBehaviour:
   _asset: {fileID: 11400000, guid: 3747dddbc41cad94bbbfc43bfed384c3, type: 2}
   _name: 
   _weight: 1
+  _sizeClass: 2
+  _maxStackSize: 1
+  _stackCount: 1
   _startingTraits: []
   _rigidbody: {fileID: 6351433192589740835}
   AttachmentPoint: {fileID: 4619531351315044860}
@@ -431,3 +435,16 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   key: {fileID: 11400000, guid: 71368b829dabc4042bc1ed56eb8afecf, type: 2}
+--- !u!114 &8095799782265010478
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6891363543938182813}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c1ed2939192a85040bcf588bd471b6c7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: SS3D.Systems::SS3D.Systems.Audio.NoisyCollision
+  _material: 4

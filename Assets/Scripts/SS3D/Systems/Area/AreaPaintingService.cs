@@ -34,6 +34,7 @@ namespace SS3D.Systems.Area
                 {
                     id = room.Id.Value, authored = HasAuthoredAreas, noApc = room.Apc == null,
                     displayName = room.DisplayName, parentTag = room.ParentTag,
+                    ambienceProfileId = room.AmbienceProfileId,
                     apcWorldPosition = room.Apc != null ? _query.TileToWorld(room.Apc.OriginTile) : Vector3.zero,
                     hasDepartmentalLightTint = room.HasDepartmentalLightTint,
                     departmentalLightTint = room.DepartmentalLightTint,
@@ -54,7 +55,9 @@ namespace SS3D.Systems.Area
                 if (room.id == AreaId.None) continue;
                 _registry.Register(new AreaRecord
                 {
-                    Id = new AreaId(room.id), DisplayName = room.displayName, ParentTag = room.parentTag,
+                    Id = new AreaId(room.id), DisplayName = room.displayName,
+                    ParentTag = AreaDepartments.Normalize(room.parentTag),
+                    AmbienceProfileId = room.ambienceProfileId,
                     HasDepartmentalLightTint = room.hasDepartmentalLightTint,
                     DepartmentalLightTint = room.departmentalLightTint,
                     DefaultRequiredAccess = new IdAccess.AccessMask(room.defaultRequiredAccessBits),

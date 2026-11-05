@@ -12,6 +12,7 @@ namespace SS3D.Systems.Tile
         public ushort id;
         public string displayName;
         public string parentTag;
+        public string ambienceProfileId;
         public Vector3 apcWorldPosition;
         public bool hasDepartmentalLightTint;
         public Color departmentalLightTint;

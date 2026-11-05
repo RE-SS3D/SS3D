@@ -29,14 +29,14 @@ namespace SS3D.Systems.Area
 
         private readonly Dictionary<ushort, Color> _tints = new();
         private readonly Dictionary<Vector2Int, ushort[]> _chunkAreaIds = new();
-        private readonly Dictionary<ushort, string> _ambienceTrackIds = new();
+        private readonly Dictionary<ushort, string> _ambienceProfileIds = new();
 
         public void Clear()
         {
             _names.Clear();
             _tints.Clear();
             _chunkAreaIds.Clear();
-            _ambienceTrackIds.Clear();
+            _ambienceProfileIds.Clear();
             OnDirty?.Invoke();
         }
 
@@ -91,33 +91,33 @@ namespace SS3D.Systems.Area
         public bool TryGetTint(ushort areaId, out Color tint) => _tints.TryGetValue(areaId, out tint);
 
         /// <summary>
-        /// Server-populated (host) or ObserversRpc-synced (client) per-area ambience track id
-        /// (audio.md §2 / <c>AreaRecord.AmbienceTrackId</c>). Separate broadcast channel from
+        /// Server-populated (host) or ObserversRpc-synced (client) per-area ambience profile id
+        /// (audio.md §2 / <c>AreaRecord.AmbienceProfileId</c>). Separate broadcast channel from
         /// tint/chunk data so it can be updated (e.g. on ambience authoring) without touching the
         /// floor-stripe snapshot.
         /// </summary>
-        public void SetAmbienceTrackId(ushort areaId, string trackId)
+        public void SetAmbienceProfileId(ushort areaId, string profileId)
         {
             if (areaId == AreaId.None)
                 return;
 
-            if (string.IsNullOrEmpty(trackId))
-                _ambienceTrackIds.Remove(areaId);
+            if (string.IsNullOrEmpty(profileId))
+                _ambienceProfileIds.Remove(areaId);
             else
-                _ambienceTrackIds[areaId] = trackId;
+                _ambienceProfileIds[areaId] = profileId;
         }
 
-        public bool TryGetAmbienceTrackId(ushort areaId, out string trackId) =>
-            _ambienceTrackIds.TryGetValue(areaId, out trackId);
+        public bool TryGetAmbienceProfileId(ushort areaId, out string profileId) =>
+            _ambienceProfileIds.TryGetValue(areaId, out profileId);
 
-        public void ReplaceAmbienceTrackIds(IReadOnlyList<(ushort areaId, string trackId)> tracks)
+        public void ReplaceAmbienceProfileIds(IReadOnlyList<(ushort areaId, string profileId)> profiles)
         {
-            _ambienceTrackIds.Clear();
+            _ambienceProfileIds.Clear();
 
-            if (tracks != null)
+            if (profiles != null)
             {
-                foreach ((ushort areaId, string trackId) in tracks)
-                    SetAmbienceTrackId(areaId, trackId);
+                foreach ((ushort areaId, string profileId) in profiles)
+                    SetAmbienceProfileId(areaId, profileId);
             }
 
             OnDirty?.Invoke();

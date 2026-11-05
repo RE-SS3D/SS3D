@@ -13,6 +13,19 @@ namespace SS3D.Systems.Atmospherics.Visualization
     /// </summary>
     public static class AtmosCellVisualEncoding
     {
+        /// <summary>What an atlas knows about a tile.</summary>
+        public enum CellRead
+        {
+            /// <summary>No data. A pure client only holds chunks that changed since it joined.</summary>
+            Unknown,
+
+            /// <summary>A wall or closed door, which holds no gas of its own.</summary>
+            Blocked,
+
+            /// <summary>A real reading, which is 0 kPa in vacuum.</summary>
+            Open,
+        }
+
         public const int CompositionGasChannels = 4;
 
         public const byte MaskEmpty = 0;
@@ -67,6 +80,39 @@ namespace SS3D.Systems.Atmospherics.Visualization
             Vector2 near = Vector2.Lerp(ReadFlow(packed, x, z, width), ReadFlow(packed, x + 1, z, width), fractionX);
             Vector2 far = Vector2.Lerp(ReadFlow(packed, x, z + 1, width), ReadFlow(packed, x + 1, z + 1, width), fractionX);
             return Vector2.Lerp(near, far, fractionZ);
+        }
+
+        /// <summary>Wind speed in m/s from <see cref="SampleFlow"/>, the inverse of <see cref="EncodeFlow"/>.</summary>
+        public static float DecodeWindSpeed(Vector2 flow) =>
+            Mathf.Min(flow.sqrMagnitude, 1f) * FlowFullScaleSpeed;
+
+        /// <summary>
+        /// The one tile under a world position, not blended: blending would read a wall as low pressure
+        /// and leak vacuum through the hull.
+        /// </summary>
+        public static CellRead ReadCell(float[] pressure, byte[] mask, Vector4 atlasBounds, float worldX, float worldZ,
+            out float pressureKpa)
+        {
+            pressureKpa = 0f;
+            int width = (int)atlasBounds.z;
+            int x = Mathf.RoundToInt(worldX - atlasBounds.x);
+            int z = Mathf.RoundToInt(worldZ - atlasBounds.y);
+            if (pressure == null || mask == null || x < 0 || z < 0 || x >= width || z >= (int)atlasBounds.w)
+                return CellRead.Unknown;
+
+            int texel = z * width + x;
+            switch (mask[texel])
+            {
+                case MaskBlocked:
+                    return CellRead.Blocked;
+                case MaskVacuum:
+                    return CellRead.Open;
+                case MaskSimulated:
+                    pressureKpa = pressure[texel];
+                    return CellRead.Open;
+                default:
+                    return CellRead.Unknown;
+            }
         }
 
         private static Vector2 ReadFlow(float[] packed, int x, int z, int width)

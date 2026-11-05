@@ -18,9 +18,9 @@ namespace EditorTests
         }
 
         [Test]
-        public void EmptyStaminaProducesFullBreathing()
+        public void EmptyStaminaStopsAtTheExertionCap()
         {
-            Assert.AreEqual(1f, StaminaPersonalAudioMapper.ComputeBreathingIntensity(0f), 0.001f);
+            Assert.AreEqual(StaminaPersonalAudioMapper.MaxIntensity, StaminaPersonalAudioMapper.ComputeBreathingIntensity(0f), 0.001f);
         }
 
         [Test]
@@ -28,7 +28,7 @@ namespace EditorTests
         {
             float half = StaminaPersonalAudioMapper.ComputeBreathingIntensity(StaminaPersonalAudioMapper.AudibleThreshold * 0.5f);
             Assert.Greater(half, 0f);
-            Assert.Less(half, 1f);
+            Assert.Less(half, StaminaPersonalAudioMapper.MaxIntensity);
         }
     }
 }

@@ -21,6 +21,7 @@ namespace SS3D.Systems.Audio
     {
         private const float IntensityLerpPerSecond = 4f;
         private const float AlertCueVolumeScale = 0.8f;
+        private const float CalmBreathingVolume = 0.35f;
 
         /// <summary>Minimum gap between alert cues — a burst of chips appearing together (or in
         /// quick succession) still reads as one restrained "ding," not a machine-gun (audio.md §6).</summary>
@@ -28,12 +29,14 @@ namespace SS3D.Systems.Audio
 
         private AudioSource _heartbeatSource;
         private AudioSource _breathingSource;
+        private AudioSource _calmBreathingSource;
         private AudioSource _alertCueSource;
 
         private float _heartbeatTarget;
         private float _staminaBreathingTarget;
         private float _healthBreathingTarget;
         private float _breathingTarget;
+        private float _calmBreathingTarget;
         private float _nextAlertCueTime;
 
         protected override void OnAwake()
@@ -42,6 +45,7 @@ namespace SS3D.Systems.Audio
 
             _heartbeatSource = BuildPersonalSource("HeartbeatSource");
             _breathingSource = BuildPersonalSource("BreathingSource");
+            _calmBreathingSource = BuildPersonalSource("CalmBreathingSource");
             _alertCueSource = BuildPersonalSource("AlertCueSource", loop: false);
 
             AddHandle(UpdateEvent.AddListener(HandleUpdate));
@@ -98,6 +102,16 @@ namespace SS3D.Systems.Audio
             SetHealthBreathingIntensity(0f);
         }
 
+        /// <summary>
+        /// Calm breathing where no air carries anything else (audio.md §2, "Outside the station").
+        /// Heavy breathing takes over from it as stamina or health drive that one up.
+        /// </summary>
+        public void SetCalmBreathingIntensity(float intensity)
+        {
+            _calmBreathingTarget = Mathf.Clamp01(intensity);
+            EnsurePlayingIfAudible(_calmBreathingSource, AudioTrackIds.Breathing, _calmBreathingTarget);
+        }
+
         private void RefreshBreathingTarget()
         {
             _breathingTarget = Mathf.Max(_staminaBreathingTarget, _healthBreathingTarget);
@@ -146,8 +160,12 @@ namespace SS3D.Systems.Audio
             _heartbeatSource.volume = Mathf.MoveTowards(_heartbeatSource.volume, _heartbeatTarget, step);
             _breathingSource.volume = Mathf.MoveTowards(_breathingSource.volume, _breathingTarget, step);
 
+            float calmTarget = CalmBreathingVolume * Mathf.Max(_calmBreathingTarget - _breathingTarget, 0f);
+            _calmBreathingSource.volume = Mathf.MoveTowards(_calmBreathingSource.volume, calmTarget, step);
+
             StopIfSilent(_heartbeatSource, _heartbeatTarget);
             StopIfSilent(_breathingSource, _breathingTarget);
+            StopIfSilent(_calmBreathingSource, _calmBreathingTarget);
         }
 
         private static void StopIfSilent(AudioSource source, float target)

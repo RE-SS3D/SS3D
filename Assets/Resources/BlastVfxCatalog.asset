@@ -15,7 +15,6 @@ MonoBehaviour:
   _burstPrefab: {fileID: 9200000000000000001, guid: 74e88e3ff3994b30b2f6cc1015e7da19, type: 3}
   _scorchFloorPrefab: {fileID: 9100000000000000001, guid: ca2e6e857e424717bc7a528fbe8b1319, type: 3}
   _scorchDecalMaterial: {fileID: 2100000, guid: b64485b107c849c2a30aca850bfb0da3, type: 2}
-  _boomClip: {fileID: 0}
   _particleMaterial: {fileID: 2100000, guid: af5a53a5bf82c30439df60069f07f424, type: 2}
   _shakeFullRange: 4
   _shakeMaxRange: 18

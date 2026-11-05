@@ -1,6 +1,7 @@
 using FishNet.Connection;
 using FishNet.Object;
 using FishNet.Object.Synchronizing;
+using SS3D.Systems.Audio;
 using SS3D.Core;
 using SS3D.Systems.Area;
 using SS3D.Systems.IdAccess;
@@ -17,7 +18,7 @@ namespace SS3D.UI.MachineInterface
     /// </summary>
     [RequireComponent(typeof(ElectricDeviceAdjacencyConnector))]
     [RequireComponent(typeof(AuthLogDeviceBehaviour))]
-    public sealed class ApcController : AccessGatedMachineInterfaceBehaviour, IApcChannelSource, IPowerStorage, IAreaApcOrigin
+    public sealed class ApcController : AccessGatedMachineInterfaceBehaviour, IApcChannelSource, IPowerStorage, IAreaApcOrigin, IAmbientLoopState
     {
         [SerializeField]
         private string _title = "APC · ENGINEERING BAY";
@@ -77,6 +78,8 @@ namespace SS3D.UI.MachineInterface
         public float MaxChargeRateKw => _maxChargeRateKw;
 
         public bool IsOn => true;
+
+        public bool IsLoopRunning => _storedEnergyKwh > 0f;
 
         public float MaxDeliverableKw(float tickSeconds) =>
             PowerStorageMath.MaxDeliverableKw(_storedEnergyKwh, _maxDischargeRateKw, tickSeconds);

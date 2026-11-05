@@ -50,6 +50,7 @@ GameObject:
   - component: {fileID: 5464842264619517571}
   - component: {fileID: 2986267657943188832}
   - component: {fileID: 9182736450123456803}
+  - component: {fileID: 7288519122837885757}
   m_Layer: 10
   m_Name: KitchenKnife
   m_TagString: Untagged
@@ -328,3 +329,16 @@ MonoBehaviour:
     StaminaCost: 9
     CanSever: 1
     StructuralForce: 4
+--- !u!114 &7288519122837885757
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3794527162878356835}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c1ed2939192a85040bcf588bd471b6c7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: SS3D.Systems::SS3D.Systems.Audio.NoisyCollision
+  _material: 0

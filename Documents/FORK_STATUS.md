@@ -44,7 +44,7 @@ Coverage means how much of the design intent is playable today, not “code exis
 | [Structural destruction](#structural-destruction) | partial | Per-tile integrity, melee force, blast BFS, tint/examine VFX; debris spawn / Area local remesh deferred |
 | [Body animation](#player-body-animation-foundation) | partial | Peaceful / melee / ranged stance; injured limp; Ragdoll owns collapsed/dead/critical presentation; ranged aim IK deferred |
 | [Screen effects](#screen-space-effects) | partial | Health overlays + hit/blast flash; turf temp/fire from `HealthSnapshot.Environment` |
-| [Audio](#audio-foundation) | partial | SFX occlusion, Area ambience, personal heartbeat/breathing, alert cues, footsteps; music/volume categories pending |
+| [Audio](#audio-foundation) | partial | SFX occlusion, impact and machine sounds, department room tone, wind and sound needs air, personal heartbeat/breathing, alert cues, footsteps; music/volume categories pending |
 | [Vision / FOV](#vision-fov) | shipped | Hard black fog-of-war from viewpoint raycasts (hot-path GC cut) |
 | [Station lighting (URP)](#urp-lighting-phase-1) | partial | Fixture-driven half-toon Forward+ look; client SyncVar fixture visuals; visual plate polish still open |
 | [Areas + station power](#area-foundation) | partial | APC-seeded areas, kWh cells, channel shedding, area lights/switches; [solar panels + tracker](#solar-generation); live remesh pending |
@@ -884,6 +884,10 @@ PR #54 (`claude/sound-effects-plan-w8m93y`) ships Phases 1–4 of
 - **Area ambience** crossfade (replaces legacy knobbed `AmbienceHandler`)
 - **Personal** heartbeat / breathing (health + stamina max-merge) and alert cues
 - Footsteps and diegetic pool consumers gain occlusion for free
+
+[ambience-and-impact-audio](archive/architecture/2026-11_ambience-and-impact-audio.md) adds material
+impacts, blasts, item collisions, machine hums, department room tone, wind and sound that thins with
+the air. Protocol 18.
 
 Deferred: Phase 0 content audit leftovers, Phase 5 music / volume-category polish.
 System map: [audio.md](architecture/systems/audio.md) (split from chat-audio-screens).

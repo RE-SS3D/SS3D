@@ -49,6 +49,7 @@ GameObject:
   - component: {fileID: 6377164133976095912}
   - component: {fileID: 5464842264619517571}
   - component: {fileID: 2986267657943188832}
+  - component: {fileID: 2339314836376900352}
   m_Layer: 10
   m_Name: HealthScanner
   m_TagString: Untagged
@@ -276,6 +277,9 @@ MonoBehaviour:
   _asset: {fileID: 11400000, guid: 8b24dd8aaf23acb41b038d6e4394f749, type: 2}
   _name: Health Scanner
   _weight: 1
+  _sizeClass: 2
+  _maxStackSize: 1
+  _stackCount: 1
   _startingTraits: []
   _rigidbody: {fileID: 2709008034070362697}
   AttachmentPoint: {fileID: 8869951128713715569}
@@ -306,6 +310,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   key: {fileID: 11400000, guid: 678e507453497de4ab04c6904eebdd6d, type: 2}
+--- !u!114 &2339314836376900352
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3794527162878356835}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c1ed2939192a85040bcf588bd471b6c7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: SS3D.Systems::SS3D.Systems.Audio.NoisyCollision
+  _material: 4
 --- !u!1 &5237778949470897495
 GameObject:
   m_ObjectHideFlags: 0

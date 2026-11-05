@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 5041371310304072632}
   - component: {fileID: 3171418811477866802}
   - component: {fileID: 6757050621484211566}
+  - component: {fileID: 6267259793026366969}
   - component: {fileID: -8800000000000000006}
   - component: {fileID: -752502555905215929}
   - component: {fileID: -125513957344249411}
@@ -290,3 +291,16 @@ MonoBehaviour:
   _deviceTitle: AA-07
   _subtitle: "Engineering Bay 3 \u2014 Air Alarm"
   _powerConsumer: {fileID: -8800000000000000001}
+--- !u!114 &6267259793026366969
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6961426338783081091}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e3a888f0183bca1cda8899b6b48e89a3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: SS3D.Systems::SS3D.Systems.Audio.AmbientLoopSource
+  _kind: 6

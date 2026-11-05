@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-11-05T14:14:15.768992+00:00",
+  "generated_at": "2026-11-05T17:24:58.334946+00:00",
   "purpose": "Game-ready SS3D-Art assets not yet imported into Assets/Art/.",
-  "count": 2041,
+  "count": 2014,
   "assets": [
     {
       "name": "HumanAnimRig.ma",
@@ -12991,15 +12991,6 @@
       "github_url": "https://github.com/RE-SS3D/SS3D-Art/blob/main/Assets/Sound/Furniture/Machines/Engineering/Machinery1.wav"
     },
     {
-      "name": "Machinery2.wav",
-      "stem": "machinery2",
-      "extension": "wav",
-      "category": "Sound/Furniture/Machines/Engineering",
-      "ss3d_art_path": "Assets/Sound/Furniture/Machines/Engineering/Machinery2.wav",
-      "import_target_path": "Assets/Art/Sound/Furniture/Machines/Engineering/Machinery2.wav",
-      "github_url": "https://github.com/RE-SS3D/SS3D-Art/blob/main/Assets/Sound/Furniture/Machines/Engineering/Machinery2.wav"
-    },
-    {
       "name": "Knob Clicks.wav",
       "stem": "knob clicks",
       "extension": "wav",
@@ -13360,51 +13351,6 @@
       "github_url": "https://github.com/RE-SS3D/SS3D-Art/blob/main/Assets/Sound/World/Ambience/Air/Pipe Hiss Low.wav"
     },
     {
-      "name": "Alarm 1.wav",
-      "stem": "alarm 1",
-      "extension": "wav",
-      "category": "Sound/World/Ambience/Alarms",
-      "ss3d_art_path": "Assets/Sound/World/Ambience/Alarms/Alarm 1.wav",
-      "import_target_path": "Assets/Art/Sound/World/Ambience/Alarms/Alarm 1.wav",
-      "github_url": "https://github.com/RE-SS3D/SS3D-Art/blob/main/Assets/Sound/World/Ambience/Alarms/Alarm 1.wav"
-    },
-    {
-      "name": "Dropping Metal Thick1.wav",
-      "stem": "dropping metal thick1",
-      "extension": "wav",
-      "category": "Sound/World/Collisions/Metal Thick",
-      "ss3d_art_path": "Assets/Sound/World/Collisions/Metal Thick/Dropping Metal Thick1.wav",
-      "import_target_path": "Assets/Art/Sound/World/Collisions/Metal Thick/Dropping Metal Thick1.wav",
-      "github_url": "https://github.com/RE-SS3D/SS3D-Art/blob/main/Assets/Sound/World/Collisions/Metal Thick/Dropping Metal Thick1.wav"
-    },
-    {
-      "name": "Dropping Metal Thick2.wav",
-      "stem": "dropping metal thick2",
-      "extension": "wav",
-      "category": "Sound/World/Collisions/Metal Thick",
-      "ss3d_art_path": "Assets/Sound/World/Collisions/Metal Thick/Dropping Metal Thick2.wav",
-      "import_target_path": "Assets/Art/Sound/World/Collisions/Metal Thick/Dropping Metal Thick2.wav",
-      "github_url": "https://github.com/RE-SS3D/SS3D-Art/blob/main/Assets/Sound/World/Collisions/Metal Thick/Dropping Metal Thick2.wav"
-    },
-    {
-      "name": "Dropping Metal Thin1.wav",
-      "stem": "dropping metal thin1",
-      "extension": "wav",
-      "category": "Sound/World/Collisions/Metal Thin",
-      "ss3d_art_path": "Assets/Sound/World/Collisions/Metal Thin/Dropping Metal Thin1.wav",
-      "import_target_path": "Assets/Art/Sound/World/Collisions/Metal Thin/Dropping Metal Thin1.wav",
-      "github_url": "https://github.com/RE-SS3D/SS3D-Art/blob/main/Assets/Sound/World/Collisions/Metal Thin/Dropping Metal Thin1.wav"
-    },
-    {
-      "name": "Dropping Metal Thin10.wav",
-      "stem": "dropping metal thin10",
-      "extension": "wav",
-      "category": "Sound/World/Collisions/Metal Thin",
-      "ss3d_art_path": "Assets/Sound/World/Collisions/Metal Thin/Dropping Metal Thin10.wav",
-      "import_target_path": "Assets/Art/Sound/World/Collisions/Metal Thin/Dropping Metal Thin10.wav",
-      "github_url": "https://github.com/RE-SS3D/SS3D-Art/blob/main/Assets/Sound/World/Collisions/Metal Thin/Dropping Metal Thin10.wav"
-    },
-    {
       "name": "Dropping Metal Thin11.wav",
       "stem": "dropping metal thin11",
       "extension": "wav",
@@ -13423,42 +13369,6 @@
       "github_url": "https://github.com/RE-SS3D/SS3D-Art/blob/main/Assets/Sound/World/Collisions/Metal Thin/Dropping Metal Thin12.wav"
     },
     {
-      "name": "Dropping Metal Thin2.wav",
-      "stem": "dropping metal thin2",
-      "extension": "wav",
-      "category": "Sound/World/Collisions/Metal Thin",
-      "ss3d_art_path": "Assets/Sound/World/Collisions/Metal Thin/Dropping Metal Thin2.wav",
-      "import_target_path": "Assets/Art/Sound/World/Collisions/Metal Thin/Dropping Metal Thin2.wav",
-      "github_url": "https://github.com/RE-SS3D/SS3D-Art/blob/main/Assets/Sound/World/Collisions/Metal Thin/Dropping Metal Thin2.wav"
-    },
-    {
-      "name": "Dropping Metal Thin3.wav",
-      "stem": "dropping metal thin3",
-      "extension": "wav",
-      "category": "Sound/World/Collisions/Metal Thin",
-      "ss3d_art_path": "Assets/Sound/World/Collisions/Metal Thin/Dropping Metal Thin3.wav",
-      "import_target_path": "Assets/Art/Sound/World/Collisions/Metal Thin/Dropping Metal Thin3.wav",
-      "github_url": "https://github.com/RE-SS3D/SS3D-Art/blob/main/Assets/Sound/World/Collisions/Metal Thin/Dropping Metal Thin3.wav"
-    },
-    {
-      "name": "Dropping Metal Thin4.wav",
-      "stem": "dropping metal thin4",
-      "extension": "wav",
-      "category": "Sound/World/Collisions/Metal Thin",
-      "ss3d_art_path": "Assets/Sound/World/Collisions/Metal Thin/Dropping Metal Thin4.wav",
-      "import_target_path": "Assets/Art/Sound/World/Collisions/Metal Thin/Dropping Metal Thin4.wav",
-      "github_url": "https://github.com/RE-SS3D/SS3D-Art/blob/main/Assets/Sound/World/Collisions/Metal Thin/Dropping Metal Thin4.wav"
-    },
-    {
-      "name": "Dropping Metal Thin5.wav",
-      "stem": "dropping metal thin5",
-      "extension": "wav",
-      "category": "Sound/World/Collisions/Metal Thin",
-      "ss3d_art_path": "Assets/Sound/World/Collisions/Metal Thin/Dropping Metal Thin5.wav",
-      "import_target_path": "Assets/Art/Sound/World/Collisions/Metal Thin/Dropping Metal Thin5.wav",
-      "github_url": "https://github.com/RE-SS3D/SS3D-Art/blob/main/Assets/Sound/World/Collisions/Metal Thin/Dropping Metal Thin5.wav"
-    },
-    {
       "name": "Dropping Metal Thin6.wav",
       "stem": "dropping metal thin6",
       "extension": "wav",
@@ -13475,24 +13385,6 @@
       "ss3d_art_path": "Assets/Sound/World/Collisions/Metal Thin/Dropping Metal Thin7.wav",
       "import_target_path": "Assets/Art/Sound/World/Collisions/Metal Thin/Dropping Metal Thin7.wav",
       "github_url": "https://github.com/RE-SS3D/SS3D-Art/blob/main/Assets/Sound/World/Collisions/Metal Thin/Dropping Metal Thin7.wav"
-    },
-    {
-      "name": "Dropping Metal Thin8.wav",
-      "stem": "dropping metal thin8",
-      "extension": "wav",
-      "category": "Sound/World/Collisions/Metal Thin",
-      "ss3d_art_path": "Assets/Sound/World/Collisions/Metal Thin/Dropping Metal Thin8.wav",
-      "import_target_path": "Assets/Art/Sound/World/Collisions/Metal Thin/Dropping Metal Thin8.wav",
-      "github_url": "https://github.com/RE-SS3D/SS3D-Art/blob/main/Assets/Sound/World/Collisions/Metal Thin/Dropping Metal Thin8.wav"
-    },
-    {
-      "name": "Dropping Metal Thin9.wav",
-      "stem": "dropping metal thin9",
-      "extension": "wav",
-      "category": "Sound/World/Collisions/Metal Thin",
-      "ss3d_art_path": "Assets/Sound/World/Collisions/Metal Thin/Dropping Metal Thin9.wav",
-      "import_target_path": "Assets/Art/Sound/World/Collisions/Metal Thin/Dropping Metal Thin9.wav",
-      "github_url": "https://github.com/RE-SS3D/SS3D-Art/blob/main/Assets/Sound/World/Collisions/Metal Thin/Dropping Metal Thin9.wav"
     },
     {
       "name": "Fist Metal Thin.wav",
@@ -13612,114 +13504,6 @@
       "github_url": "https://github.com/RE-SS3D/SS3D-Art/blob/main/Assets/Sound/World/Collisions/Metal Thin/Light Hit Metal Thin4.wav"
     },
     {
-      "name": "Medium Hit Metal Thin1.wav",
-      "stem": "medium hit metal thin1",
-      "extension": "wav",
-      "category": "Sound/World/Collisions/Metal Thin",
-      "ss3d_art_path": "Assets/Sound/World/Collisions/Metal Thin/Medium Hit Metal Thin1.wav",
-      "import_target_path": "Assets/Art/Sound/World/Collisions/Metal Thin/Medium Hit Metal Thin1.wav",
-      "github_url": "https://github.com/RE-SS3D/SS3D-Art/blob/main/Assets/Sound/World/Collisions/Metal Thin/Medium Hit Metal Thin1.wav"
-    },
-    {
-      "name": "Medium Hit Metal Thin2.wav",
-      "stem": "medium hit metal thin2",
-      "extension": "wav",
-      "category": "Sound/World/Collisions/Metal Thin",
-      "ss3d_art_path": "Assets/Sound/World/Collisions/Metal Thin/Medium Hit Metal Thin2.wav",
-      "import_target_path": "Assets/Art/Sound/World/Collisions/Metal Thin/Medium Hit Metal Thin2.wav",
-      "github_url": "https://github.com/RE-SS3D/SS3D-Art/blob/main/Assets/Sound/World/Collisions/Metal Thin/Medium Hit Metal Thin2.wav"
-    },
-    {
-      "name": "Medium Hit Metal Thin3.wav",
-      "stem": "medium hit metal thin3",
-      "extension": "wav",
-      "category": "Sound/World/Collisions/Metal Thin",
-      "ss3d_art_path": "Assets/Sound/World/Collisions/Metal Thin/Medium Hit Metal Thin3.wav",
-      "import_target_path": "Assets/Art/Sound/World/Collisions/Metal Thin/Medium Hit Metal Thin3.wav",
-      "github_url": "https://github.com/RE-SS3D/SS3D-Art/blob/main/Assets/Sound/World/Collisions/Metal Thin/Medium Hit Metal Thin3.wav"
-    },
-    {
-      "name": "Medium Hit Metal Thin4.wav",
-      "stem": "medium hit metal thin4",
-      "extension": "wav",
-      "category": "Sound/World/Collisions/Metal Thin",
-      "ss3d_art_path": "Assets/Sound/World/Collisions/Metal Thin/Medium Hit Metal Thin4.wav",
-      "import_target_path": "Assets/Art/Sound/World/Collisions/Metal Thin/Medium Hit Metal Thin4.wav",
-      "github_url": "https://github.com/RE-SS3D/SS3D-Art/blob/main/Assets/Sound/World/Collisions/Metal Thin/Medium Hit Metal Thin4.wav"
-    },
-    {
-      "name": "Dropping Plastic1.wav",
-      "stem": "dropping plastic1",
-      "extension": "wav",
-      "category": "Sound/World/Collisions/Plastic",
-      "ss3d_art_path": "Assets/Sound/World/Collisions/Plastic/Dropping Plastic1.wav",
-      "import_target_path": "Assets/Art/Sound/World/Collisions/Plastic/Dropping Plastic1.wav",
-      "github_url": "https://github.com/RE-SS3D/SS3D-Art/blob/main/Assets/Sound/World/Collisions/Plastic/Dropping Plastic1.wav"
-    },
-    {
-      "name": "Dropping Plastic2.wav",
-      "stem": "dropping plastic2",
-      "extension": "wav",
-      "category": "Sound/World/Collisions/Plastic",
-      "ss3d_art_path": "Assets/Sound/World/Collisions/Plastic/Dropping Plastic2.wav",
-      "import_target_path": "Assets/Art/Sound/World/Collisions/Plastic/Dropping Plastic2.wav",
-      "github_url": "https://github.com/RE-SS3D/SS3D-Art/blob/main/Assets/Sound/World/Collisions/Plastic/Dropping Plastic2.wav"
-    },
-    {
-      "name": "Dropping Plastic3.wav",
-      "stem": "dropping plastic3",
-      "extension": "wav",
-      "category": "Sound/World/Collisions/Plastic",
-      "ss3d_art_path": "Assets/Sound/World/Collisions/Plastic/Dropping Plastic3.wav",
-      "import_target_path": "Assets/Art/Sound/World/Collisions/Plastic/Dropping Plastic3.wav",
-      "github_url": "https://github.com/RE-SS3D/SS3D-Art/blob/main/Assets/Sound/World/Collisions/Plastic/Dropping Plastic3.wav"
-    },
-    {
-      "name": "Dropping Plastic4.wav",
-      "stem": "dropping plastic4",
-      "extension": "wav",
-      "category": "Sound/World/Collisions/Plastic",
-      "ss3d_art_path": "Assets/Sound/World/Collisions/Plastic/Dropping Plastic4.wav",
-      "import_target_path": "Assets/Art/Sound/World/Collisions/Plastic/Dropping Plastic4.wav",
-      "github_url": "https://github.com/RE-SS3D/SS3D-Art/blob/main/Assets/Sound/World/Collisions/Plastic/Dropping Plastic4.wav"
-    },
-    {
-      "name": "Dropping Plastic5.wav",
-      "stem": "dropping plastic5",
-      "extension": "wav",
-      "category": "Sound/World/Collisions/Plastic",
-      "ss3d_art_path": "Assets/Sound/World/Collisions/Plastic/Dropping Plastic5.wav",
-      "import_target_path": "Assets/Art/Sound/World/Collisions/Plastic/Dropping Plastic5.wav",
-      "github_url": "https://github.com/RE-SS3D/SS3D-Art/blob/main/Assets/Sound/World/Collisions/Plastic/Dropping Plastic5.wav"
-    },
-    {
-      "name": "Dropping Wood1.wav",
-      "stem": "dropping wood1",
-      "extension": "wav",
-      "category": "Sound/World/Collisions/Wood",
-      "ss3d_art_path": "Assets/Sound/World/Collisions/Wood/Dropping Wood1.wav",
-      "import_target_path": "Assets/Art/Sound/World/Collisions/Wood/Dropping Wood1.wav",
-      "github_url": "https://github.com/RE-SS3D/SS3D-Art/blob/main/Assets/Sound/World/Collisions/Wood/Dropping Wood1.wav"
-    },
-    {
-      "name": "Dropping Wood2.wav",
-      "stem": "dropping wood2",
-      "extension": "wav",
-      "category": "Sound/World/Collisions/Wood",
-      "ss3d_art_path": "Assets/Sound/World/Collisions/Wood/Dropping Wood2.wav",
-      "import_target_path": "Assets/Art/Sound/World/Collisions/Wood/Dropping Wood2.wav",
-      "github_url": "https://github.com/RE-SS3D/SS3D-Art/blob/main/Assets/Sound/World/Collisions/Wood/Dropping Wood2.wav"
-    },
-    {
-      "name": "Dropping Wood3.wav",
-      "stem": "dropping wood3",
-      "extension": "wav",
-      "category": "Sound/World/Collisions/Wood",
-      "ss3d_art_path": "Assets/Sound/World/Collisions/Wood/Dropping Wood3.wav",
-      "import_target_path": "Assets/Art/Sound/World/Collisions/Wood/Dropping Wood3.wav",
-      "github_url": "https://github.com/RE-SS3D/SS3D-Art/blob/main/Assets/Sound/World/Collisions/Wood/Dropping Wood3.wav"
-    },
-    {
       "name": "Light Hit Wood on Thin Metal1.wav",
       "stem": "light hit wood on thin metal1",
       "extension": "wav",
@@ -13727,33 +13511,6 @@
       "ss3d_art_path": "Assets/Sound/World/Collisions/Wood/Light Hit Wood on Thin Metal1.wav",
       "import_target_path": "Assets/Art/Sound/World/Collisions/Wood/Light Hit Wood on Thin Metal1.wav",
       "github_url": "https://github.com/RE-SS3D/SS3D-Art/blob/main/Assets/Sound/World/Collisions/Wood/Light Hit Wood on Thin Metal1.wav"
-    },
-    {
-      "name": "Light Hit Wood1.wav",
-      "stem": "light hit wood1",
-      "extension": "wav",
-      "category": "Sound/World/Collisions/Wood",
-      "ss3d_art_path": "Assets/Sound/World/Collisions/Wood/Light Hit Wood1.wav",
-      "import_target_path": "Assets/Art/Sound/World/Collisions/Wood/Light Hit Wood1.wav",
-      "github_url": "https://github.com/RE-SS3D/SS3D-Art/blob/main/Assets/Sound/World/Collisions/Wood/Light Hit Wood1.wav"
-    },
-    {
-      "name": "Light Hit Wood2.wav",
-      "stem": "light hit wood2",
-      "extension": "wav",
-      "category": "Sound/World/Collisions/Wood",
-      "ss3d_art_path": "Assets/Sound/World/Collisions/Wood/Light Hit Wood2.wav",
-      "import_target_path": "Assets/Art/Sound/World/Collisions/Wood/Light Hit Wood2.wav",
-      "github_url": "https://github.com/RE-SS3D/SS3D-Art/blob/main/Assets/Sound/World/Collisions/Wood/Light Hit Wood2.wav"
-    },
-    {
-      "name": "Medium Hit Wood1.wav",
-      "stem": "medium hit wood1",
-      "extension": "wav",
-      "category": "Sound/World/Collisions/Wood",
-      "ss3d_art_path": "Assets/Sound/World/Collisions/Wood/Medium Hit Wood1.wav",
-      "import_target_path": "Assets/Art/Sound/World/Collisions/Wood/Medium Hit Wood1.wav",
-      "github_url": "https://github.com/RE-SS3D/SS3D-Art/blob/main/Assets/Sound/World/Collisions/Wood/Medium Hit Wood1.wav"
     },
     {
       "name": "Palette.png",

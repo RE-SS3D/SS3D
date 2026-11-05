@@ -58,6 +58,8 @@ namespace SS3D.Systems.StructuralDamage
                     }
                 }
                 SteelWreckageRecord wreckage = SteelWreckageRecord.Capture(placed, coord);
+                StructuralMaterial material = StructuralMaterials.Resolve(placed.tileObjectSO);
+                Vector3 breakPoint = placed.transform.position + Vector3.up;
                 placed.ServerSetIntegrity(0f, StructuralIntegrityStage.Destroyed);
                 Vector3 world = _query.TileToWorld(coord);
                 ClearResult clear = _construction.TryClearTile(world, placed.Layer, placed.Direction);
@@ -68,9 +70,16 @@ namespace SS3D.Systems.StructuralDamage
                         Logs.Generic, coord);
                 }
 
-                if (clear.Success && wreckage.Kind != 0
-                    && SS3D.Core.SubSystems.TryGet(out TileSubSystem tiles) && tiles.IsServer)
-                    tiles.ServerAddSteelWreckage(wreckage);
+                if (clear.Success && SS3D.Core.SubSystems.TryGet(out TileSubSystem tiles) && tiles.IsServer)
+                {
+                    // Steel's breakup carries its break sound. Anything else has no message of its
+                    // own, so it borrows the impact message with no surface and no particles.
+                    if (wreckage.Kind != 0)
+                        tiles.ServerAddSteelWreckage(wreckage);
+                    else
+                        tiles.ServerNotifyStructuralImpact(breakPoint, Vector3.zero, material, StructuralImpactCue.Break);
+                }
+
                 Log.Information(nameof(StructuralDamageService),
                     "Structural Destroyed at {coord} via {source} (force {force})",
                     Logs.Generic, coord, source, force);

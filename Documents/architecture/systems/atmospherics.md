@@ -1,7 +1,7 @@
 > Code paths: Assets/Scripts/SS3D/Systems/Atmospherics/, Assets/Scripts/SS3D/Rendering/URP/Atmos*
 > Entry points: AtmosSubSystem, AtmosSimulation, AtmosRendererFeature
 > Status: partial
-> Verified: f481dc3b1 — 2026-11-05
+> Verified: 25802878f — 2026-11-05
 
 # Atmospherics
 
@@ -89,14 +89,14 @@ Destroyed walls automatically produce wind, because wind is the air speed the ed
 
 ## Tests
 
-- `AtmosWindTests` covers sealed edges, destruction/repair, vacuum fade, continuous sampling, drag and flow encoding. `AtmosNeighbourTests` covers chunk borders in both load orders. `AtmosEdgeFlowTests` covers edge flow's conservation, stability, sleep, doors and chunk borders. `AtmosEdgeFlowReferenceTests` asserts room-scale drain time, far-field onset and knockdown reach against the design targets, and logs the numbers as `[edge-flow-ref]`. `Testing/fixtures/stations/atmostest.json` is the sealed map for atmos budget runs. `AtmosLooseBodiesTests` covers mass scaling, the cap, held bodies and drift. `scenarios:Environment` covers owner gust knockdown, upright drift, a live hull breach through to streaks and pull, and an item blown through the hole to rest in space. `Testing/ui/validate.sh --steps mppm:breach` proves the same on a remote owner and saves `breach-wind.png` from the client. `--steps mppm:breach-budget` measures tick cost and traffic on that map with 64 loose items and a real client, logged as `[atmos-budget]`, with what the client really received in Player 2's log. Wind tuning is in `AtmosWind`; streak tuning is in `AtmosWindView`; visuals use `Assets/Resources/Atmospherics/Wind.shader`.
+- `AtmosWindTests` covers sealed edges, destruction/repair, vacuum fade, continuous sampling, drag and flow encoding. `AtmosNeighbourTests` covers chunk borders in both load orders. `AtmosEdgeFlowTests` covers edge flow's conservation, stability, sleep, doors and chunk borders. `AtmosEdgeFlowReferenceTests` asserts room-scale drain time, far-field onset and knockdown reach against the design targets, and logs the numbers as `[edge-flow-ref]`. `Testing/fixtures/stations/atmostest.json` is the sealed map for atmos budget runs. `AtmosLooseBodiesTests` covers mass scaling, the cap, held bodies and drift. `scenarios:Environment` covers owner gust knockdown, upright drift, a live hull breach through to streaks and pull, and an item blown through the hole to rest in space. `Testing/ui/validate.sh --steps mppm:breach` proves the same on a remote owner, including wind and thin air in what it hears, and saves `breach-wind.png` from the client. `--steps mppm:breach-budget` measures tick cost and traffic on that map with 64 loose items and a real client, logged as `[atmos-budget]`, with what the client really received in Player 2's log. Wind tuning is in `AtmosWind`; streak tuning is in `AtmosWindView`; visuals use `Assets/Resources/Atmospherics/Wind.shader`.
 
 - `Testing/ui/validate.sh --steps compile,round-reset` runs a focused host stop/restart, depletes a cell before Stop and checks oxygen returns in a fresh simulation. The sandbox pilot also carries this regression. Remote dedicated-server replay remains required for release acceptance.
 
 ## Depends on / Used by
 
 - **Depends on:** [tile](tile.md) (`ITileQueryService`, `ITileMutationObserver`, `IDynamicTileOccupant`, `TileCoord`), [rendering](rendering.md) (`AtmosRendererFeature`), [area](area.md) (air-alarm area membership and tile-in-front resolution)
-- **Used by:** [machine-interface](machine-interface.md) (air alarm / scrubber / vent / pump panels), [health](health.md) (turf sample → breathability / O₂↔CO₂ / env burn; armor seal still deferred), (future) [substances](substances.md)
+- **Used by:** [audio](audio.md) (`Snapshot.PressureData`, `MaskData` and `FlowData` drive wind and sound-needs-air at the listener), [machine-interface](machine-interface.md) (air alarm / scrubber / vent / pump panels), [health](health.md) (turf sample → breathability / O₂↔CO₂ / env burn; armor seal still deferred), (future) [substances](substances.md)
 
 ## Related docs
 

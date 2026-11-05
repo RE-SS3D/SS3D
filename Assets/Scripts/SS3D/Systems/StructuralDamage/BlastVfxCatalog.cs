@@ -12,7 +12,6 @@ namespace SS3D.Systems.StructuralDamage
         [SerializeField] private GameObject _burstPrefab;
         [SerializeField] private GameObject _scorchFloorPrefab;
         [SerializeField] private Material _scorchDecalMaterial;
-        [SerializeField] private AudioClip _boomClip;
         [SerializeField] private Material _particleMaterial;
 
         [Header("Falloff")]
@@ -49,7 +48,6 @@ namespace SS3D.Systems.StructuralDamage
         public GameObject BurstPrefab => _burstPrefab;
         public GameObject ScorchFloorPrefab => _scorchFloorPrefab;
         public Material ScorchDecalMaterial => _scorchDecalMaterial;
-        public AudioClip BoomClip => _boomClip;
         public Material ParticleMaterial => _particleMaterial;
 
         public float ShakeFullRange => _shakeFullRange;

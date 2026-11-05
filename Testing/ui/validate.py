@@ -520,9 +520,16 @@ def clone_logs_by_name():
     for player in (data.get("Data") or {}).values():
         ident = (player.get("TypeDependentPlayerInfo") or {}).get("VirtualProjectIdentifier")
         if player.get("Active") and ident:
-            logs[player.get("Name")] = (
-                ROOT / "Library/VP" / f"{ident['m_Prefix']}{ident['m_Id']}" / "Logs" / "Editor.log")
+            name = f"{ident['m_Prefix']}{ident['m_Id']}"
+            logs[player.get("Name")] = newest_log(
+                ROOT / "Library/VP" / name / "Logs" / "Editor.log",
+                ROOT / f"artifacts/ui/editor.log-{name}.txt")
     return logs
+
+
+def newest_log(*paths):
+    """An editor started with -logFile (open-unity.sh) sends each clone's log beside its own; a Hub one doesn't."""
+    return max(paths, key=lambda path: path.stat().st_mtime if path.exists() else 0)
 
 
 def clone_processes():

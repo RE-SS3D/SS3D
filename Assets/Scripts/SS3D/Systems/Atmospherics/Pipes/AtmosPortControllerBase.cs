@@ -1,5 +1,6 @@
 using FishNet.Object;
 using FishNet.Object.Synchronizing;
+using SS3D.Systems.Audio;
 using SS3D.Core;
 using SS3D.Interactions;
 using SS3D.Interactions.Interfaces;
@@ -14,7 +15,7 @@ namespace SS3D.Systems.Atmospherics.Pipes
     /// Shared toggle, pipe resolution, animator sync, and port registration for vents and scrubbers.
     /// </summary>
     [RequireComponent(typeof(PlacedTileObject))]
-    public abstract class AtmosPortControllerBase : InteractionTargetNetworkBehaviour, IAtmosPortDevice, IToggleable
+    public abstract class AtmosPortControllerBase : InteractionTargetNetworkBehaviour, IAtmosPortDevice, IToggleable, IAmbientLoopState
     {
         private static readonly int DeviceActiveId = Animator.StringToHash("deviceActive");
 
@@ -45,6 +46,8 @@ namespace SS3D.Systems.Atmospherics.Pipes
         public bool IsEnabled => _enabled;
 
         public bool IsPortFlowing => _portFlowing;
+
+        public bool IsLoopRunning => _portFlowing;
 
         public bool TryGetConnectedNetwork(out GasPipeNetworkId networkId)
         {

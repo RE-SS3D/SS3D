@@ -8,7 +8,7 @@ Phase 1 consolidation moved Heroicons, Inventory, Rendered, and Alerts here;
 `interaction-icons` still lives under Graphics until Phase 2 (see
 [2026-07_asset-file-structure-taxonomy.md](architecture/2026-07_asset-file-structure-taxonomy.md)).
 
-**Generated:** 2026-11-05T14:18:09.897737+00:00
+**Generated:** 2026-11-05T17:24:58.616159+00:00
 
 ## When to use
 

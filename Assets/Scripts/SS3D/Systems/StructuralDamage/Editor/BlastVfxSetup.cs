@@ -194,13 +194,6 @@ namespace SS3D.Systems.StructuralDamage.Editor
             point.shadows = LightShadows.None;
             point.enabled = false;
 
-            AudioSource audio = go.AddComponent<AudioSource>();
-            audio.playOnAwake = false;
-            audio.spatialBlend = 1f;
-            audio.rolloffMode = AudioRolloffMode.Linear;
-            audio.minDistance = 2f;
-            audio.maxDistance = 40f;
-
             go.AddComponent<BlastExplosionEffect>();
 
             GameObject prefab = PrefabUtility.SaveAsPrefabAsset(go, BurstPrefabPath);

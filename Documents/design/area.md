@@ -13,7 +13,8 @@ Same principle already applied everywhere else in this project: reuse one real s
 **Area record:**
 - `id` — stable, unique
 - `display name` — e.g. "Engineering — main bay"
-- `department` — optional, organizational (e.g. "Engineering"), used for display/query grouping and the department's colour (§5), never for spatial resolution
+- `department` — optional, picked from a fixed list: Command, Security, Engineering, Medical, Science, Service, Cargo, Maintenance, Hallways. Used for display/query grouping, the department's colour and its default ambience (§5), never for spatial resolution
+- `ambience` — optional override of the department's ambience, for a room that should differ from it (§5)
 - `access` — what the area's doors require by default (§5)
 - `tile set` — which tiles belong to this area
 
@@ -27,7 +28,7 @@ Given a tile, its area is always immediately known — every consumer below asks
 
 **Doors are boundaries.** Every door, open or closed, is a seam between areas — which is also where power and access already care about the transition.
 
-**A default for imported maps.** A map without authored areas (for example one imported from SS13, `creative-mode.md` §11) gets a starting set by spreading outward from each APC until walls and doors stop it. Tiles no APC reaches start with no area. The author then repaints from there.
+**A default for imported maps.** A map without authored areas (for example one imported from SS13, `creative-mode.md` §11) gets a starting set by spreading outward from each APC until walls and doors stop it. Tiles no APC reaches start with no area. These starting areas get neutral names and no department, because an APC's own label says nothing about the room. The author then repaints from there.
 
 **Areas don't change during a round.** A wall blown open connects two rooms' air, not their departments. A hole is not a merger: the tiles on each side keep their area, their APC, their access and their camera group (`explosives-destruction.md` §4).
 
@@ -49,7 +50,7 @@ What *does* use areas is atmospheric **equipment**. An air alarm watches the air
 
 **Alarms & announcements.** An area is the default alarm/announcement scope — a fire alarm pulled in an area scopes to that area, with the department as the mechanism for bubbling a critical alert up to the whole department or station. The AI or crew target lockdowns/announcements at an area or its department.
 
-**Ambience/audio.** An area carries an ambience track id; the player's current area (one tile lookup) drives ambient audio, crossfading at boundaries. `audio.md` §2 owns the full spec, including which tracks are power-dependent.
+**Ambience/audio.** An area sounds like its department unless it overrides that, and an area with no department gets a generic station sound. The player's current area (one tile lookup) drives ambient audio, crossfading at boundaries. `audio.md` §2 owns the full spec, including which sounds are power-dependent.
 
 ## 6. Worked example — Engineering, main bay
 
@@ -60,7 +61,7 @@ What *does* use areas is atmospheric **equipment**. An air alarm watches the air
 | Cameras | All cameras on its tiles register to the "Engineering — main bay" network group, filed under the "Engineering" department on the security console |
 | Access | Doors into it default to requiring Engineering access; one door (workshop) is overridden to also require an additional cert |
 | Alarms | A fire alarm here scopes locally by default; a station-wide emergency can additionally target the "Engineering" department to hit every area in it |
-| Ambience | Plays the "engineering — machinery hum" track; crossfades on crossing into the adjacent hallway's area |
+| Ambience | Plays Engineering's department ambience, a machinery hum; crossfades on crossing into the adjacent hallway's area |
 
 ## 7. Touchpoint back to the HUD
 

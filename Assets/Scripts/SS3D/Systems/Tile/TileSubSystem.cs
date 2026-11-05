@@ -313,19 +313,30 @@ namespace SS3D.Systems.Tile
         private void RpcBlastDetonated(Vector3 worldPosition, float yield)
         {
             BlastVfxPresenter.Play(worldPosition, yield);
+            if (IsClient && _structuralAudio != null)
+                _structuralAudio.OnBlast(worldPosition, yield);
         }
 
         [Server]
-        public void ServerNotifyStructuralImpact(Vector3 point, Vector3 normal, byte material)
+        public void ServerNotifyStructuralImpact(Vector3 point, Vector3 normal, StructuralMaterial material,
+            StructuralImpactCue cue)
         {
-            RpcStructuralImpact(point, normal, material);
+            RpcStructuralImpact(point, normal, material, cue);
         }
 
         [ObserversRpc(RunLocally = true)]
-        private void RpcStructuralImpact(Vector3 point, Vector3 normal, byte material)
+        private void RpcStructuralImpact(Vector3 point, Vector3 normal, StructuralMaterial material,
+            StructuralImpactCue cue)
         {
-            if (IsClient)
-                SteelWallDamageVfx.PlayImpact(point, normal, material);
+            if (!IsClient)
+                return;
+
+            // A zero normal means no measured surface, so this impact is sound only.
+            if (normal.sqrMagnitude > 0.0001f)
+                SteelWallDamageVfx.PlayImpact(point, normal, (byte)material);
+
+            if (_structuralAudio != null)
+                _structuralAudio.OnImpact(point, material, cue);
         }
 
         [Serializable]

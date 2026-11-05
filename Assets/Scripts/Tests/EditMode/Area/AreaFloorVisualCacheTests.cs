@@ -43,45 +43,45 @@ namespace EditorTests
         }
 
         [Test]
-        public void TryGetAmbienceTrackId_ReturnsFalseWhenNotSet()
+        public void TryGetAmbienceProfileId_ReturnsFalseWhenNotSet()
         {
             var cache = new AreaFloorVisualCache();
-            Assert.IsFalse(cache.TryGetAmbienceTrackId(1, out _));
+            Assert.IsFalse(cache.TryGetAmbienceProfileId(1, out _));
         }
 
         [Test]
-        public void SetAmbienceTrackId_ThenGet_RoundTrips()
+        public void SetAmbienceProfileId_ThenGet_RoundTrips()
         {
             var cache = new AreaFloorVisualCache();
-            cache.SetAmbienceTrackId(3, "engineering_hum");
+            cache.SetAmbienceProfileId(3, "engineering_hum");
 
-            Assert.IsTrue(cache.TryGetAmbienceTrackId(3, out string trackId));
+            Assert.IsTrue(cache.TryGetAmbienceProfileId(3, out string trackId));
             Assert.AreEqual("engineering_hum", trackId);
         }
 
         [Test]
-        public void SetAmbienceTrackId_EmptyTrackId_Clears()
+        public void SetAmbienceProfileId_EmptyTrackId_Clears()
         {
             var cache = new AreaFloorVisualCache();
-            cache.SetAmbienceTrackId(3, "engineering_hum");
-            cache.SetAmbienceTrackId(3, string.Empty);
+            cache.SetAmbienceProfileId(3, "engineering_hum");
+            cache.SetAmbienceProfileId(3, string.Empty);
 
-            Assert.IsFalse(cache.TryGetAmbienceTrackId(3, out _));
+            Assert.IsFalse(cache.TryGetAmbienceProfileId(3, out _));
         }
 
         [Test]
-        public void ReplaceAmbienceTrackIds_ReplacesPreviousEntries()
+        public void ReplaceAmbienceProfileIds_ReplacesPreviousEntries()
         {
             var cache = new AreaFloorVisualCache();
-            cache.SetAmbienceTrackId(1, "stale_track");
+            cache.SetAmbienceProfileId(1, "stale_track");
 
-            cache.ReplaceAmbienceTrackIds(new (ushort areaId, string trackId)[]
+            cache.ReplaceAmbienceProfileIds(new (ushort areaId, string trackId)[]
             {
                 (2, "medbay_quiet"),
             });
 
-            Assert.IsFalse(cache.TryGetAmbienceTrackId(1, out _));
-            Assert.IsTrue(cache.TryGetAmbienceTrackId(2, out string trackId));
+            Assert.IsFalse(cache.TryGetAmbienceProfileId(1, out _));
+            Assert.IsTrue(cache.TryGetAmbienceProfileId(2, out string trackId));
             Assert.AreEqual("medbay_quiet", trackId);
         }
     }

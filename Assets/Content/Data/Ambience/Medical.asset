@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 18b51fa8f56ae93a2bf0d869389ad42d, type: 3}
+  m_Name: Medical
+  m_EditorClassIdentifier: SS3D.Systems::SS3D.Systems.Audio.AmbienceProfile
+  _id: medical
+  _bed: {fileID: 8300000, guid: a452e5b7969905c5faa6815a2f0aa24c, type: 3}
+  _bedVolume: 0.3
+  _powerGated: 0
+  _occasional:
+  - {fileID: 8300000, guid: 0c9372506160affc6b1eeafd66482630, type: 3}
+  _occasionalVolume: 0.5

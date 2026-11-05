@@ -265,6 +265,10 @@ server past-map conclusions on `TileMapLoaded`, and keep sparse-client *conseque
 
 ---
 
+### 1.18 Structural impact traffic unmeasured
+
+Every landed hit on a structure now sends `RpcStructuralImpact`, and any non-steel break sends one per destroyed tile. A shot on a structure drops its `RpcPlayAudioSource`, so gunfire traffic should fall, but nobody has measured the net change; the owner dropped that measurement from [ambience-and-impact-audio](../archive/architecture/2026-11_ambience-and-impact-audio.md). Measure it if [test-server.md](../milestones/test-server.md) T3 runs over budget during a firefight.
+
 ## 2. Hot-path GC / performance debt (tracked, partially paid down)
 
 PR #13 fixed a first wave of per-tick allocation ([FORK_STATUS.md](../FORK_STATUS.md) § Hot-path
