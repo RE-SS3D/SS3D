@@ -3,12 +3,14 @@ using System;
 using System.Linq;
 using SS3D.Data.AssetDatabases;
 using SS3D.Systems.Combat;
+using SS3D.Systems.Examine;
 using SS3D.Systems.Health;
 using SS3D.Systems.Inventory.Items;
 using SS3D.Systems.Roles;
 using UnityEditor;
 using UnityEditor.AddressableAssets;
 using UnityEngine;
+using UnityEngine.Localization;
 using DB = UnityEditor.AssetDatabase;
 
 namespace SS3D.Systems.Inventory.Containers.Editor
@@ -49,12 +51,14 @@ namespace SS3D.Systems.Inventory.Containers.Editor
             var suit = Build(model, target, "SyndicateHardsuit", "SyndicateHardsuitItem", "JumpsuitGrey", ClothType.ExoSuit, trait, materials);
             var helmet = Build(model, target, "SyndicateHardsuitHelmet", null, "TruckerCap", ClothType.Head,
                 DB.LoadAssetAtPath<Trait>("Assets/Content/Data/Traits/Wearables/Hat.asset"), materials);
+            var magboot = BuildMagboot(model, target, materials);
             var loadout = DB.LoadAssetAtPath<RoleLoadout>("Assets/Content/Data/Roles/Loadouts/OperativeLoadout.asset");
             loadout.EquipmentAssets[ContainerType.ExoSuit] = suit;
             loadout.EquipmentAssets[ContainerType.Head] = helmet;
+            loadout.EquipmentAssets[ContainerType.ShoeLeft] = magboot;
             EditorUtility.SetDirty(loadout);
             DB.SaveAssets();
-            return 2;
+            return 3;
         }
 
         private static T EnsureAsset<T>(string path) where T : ScriptableObject
@@ -70,62 +74,19 @@ namespace SS3D.Systems.Inventory.Containers.Editor
             string foldedName, string template, ClothType type, Trait trait, Material[] materials)
         {
             var source = model.GetComponentsInChildren<SkinnedMeshRenderer>(true).First(r => r.name == name);
-            var adapted = AdaptMesh(source, target);
-            string meshPath = Art + name + "Worn.asset";
-            var mesh = DB.LoadAssetAtPath<Mesh>(meshPath);
-            if (mesh == null) { mesh = adapted; DB.CreateAsset(mesh, meshPath); }
-            else { EditorUtility.CopySerialized(adapted, mesh); UnityEngine.Object.DestroyImmediate(adapted); }
-            string path = Clothing + name + ".prefab";
-            if (DB.LoadAssetAtPath<GameObject>(path) == null)
-                DB.CopyAsset(Clothing + template + ".prefab", path);
-            var reference = EnsureAsset<ObjectAssetReference>("Assets/Content/Data/ObjectAssetReferences/" + name + ".asset");
-            reference.Id = DB.AssetPathToGUID(path);
-            reference.Database = "c2644d7b34e956743a0bc485e7ca5e37";
-            EditorUtility.SetDirty(reference);
+            var mesh = SaveMesh(AdaptMesh(source, target), Art + name + "Worn.asset");
+            var reference = EnsurePrefab(name, template, out string path);
             var root = PrefabUtility.LoadPrefabContents(path);
             try
             {
                 root.name = name;
-                // Retain root physics/network/item; replace the template's visual and attachment children.
-                foreach (Transform child in root.transform.Cast<Transform>().ToArray())
-                    UnityEngine.Object.DestroyImmediate(child.gameObject);
-                foreach (var collider in root.GetComponents<Collider>()) UnityEngine.Object.DestroyImmediate(collider);
-                var worn = new GameObject("WornShape");
-                worn.transform.SetParent(root.transform, false);
-                var baked = new Mesh(); source.BakeMesh(baked);
-                baked.name = name + "Preview";
-                // BakeMesh is in source local coordinates (FBX units); adapt the display into metres.
-                var previewVertices = baked.vertices;
-                for (int i = 0; i < previewVertices.Length; i++) previewVertices[i] = model.transform.worldToLocalMatrix.MultiplyPoint3x4(source.transform.TransformPoint(previewVertices[i]));
-                baked.vertices = previewVertices; baked.RecalculateBounds(); baked.RecalculateNormals();
-                string previewPath = Art + name + "Preview.asset";
-                var preview = DB.LoadAssetAtPath<Mesh>(previewPath);
-                if (preview == null) { preview = baked; DB.CreateAsset(preview, previewPath); }
-                else { EditorUtility.CopySerialized(baked, preview); UnityEngine.Object.DestroyImmediate(baked); }
-                worn.AddComponent<MeshFilter>().sharedMesh = preview;
-                worn.AddComponent<MeshRenderer>().sharedMaterials = materials;
-                var world = new GameObject("WorldShape"); world.transform.SetParent(root.transform, false);
-                Mesh worldMesh;
-                if (foldedName != null)
-                {
-                    var folded = model.GetComponentsInChildren<MeshFilter>(true).First(f => f.name == foldedName);
-                    worldMesh = folded.sharedMesh;
-                    world.transform.localScale = folded.transform.lossyScale;
-                    world.transform.localRotation = folded.transform.rotation;
-                }
-                else
-                {
-                    var helm = DB.LoadAssetAtPath<GameObject>(Art + "HardsuitHelmet.fbx").GetComponentInChildren<MeshFilter>();
-                    worldMesh = helm.sharedMesh;
-                    world.transform.localScale = helm.transform.lossyScale;
-                    world.transform.localRotation = helm.transform.rotation;
-                }
-                world.AddComponent<MeshFilter>().sharedMesh = worldMesh;
-                var renderer = world.AddComponent<MeshRenderer>(); renderer.sharedMaterials = materials;
-                world.transform.position -= renderer.bounds.center - root.transform.position;
-                var box = root.AddComponent<BoxCollider>();
-                box.center = Vector3.zero; box.size = renderer.bounds.size;
-                var attachment = new GameObject("Attachment"); attachment.transform.SetParent(root.transform, false);
+                var preview = SaveMesh(BakePreview(model, source, name + "Preview"), Art + name + "Preview.asset");
+                // A helmet does not fold, so it looks the same on the head, in the hand and on the floor.
+                var folded = foldedName != null
+                    ? model.GetComponentsInChildren<MeshFilter>(true).First(f => f.name == foldedName)
+                    : null;
+                ReplaceShapes(root, preview, folded != null ? folded.sharedMesh : preview, folded != null ? folded.transform : root.transform,
+                    materials, out var worn, out var world, out var attachment);
                 var item = root.GetComponent<Item>();
                 var itemSo = new SerializedObject(item);
                 itemSo.FindProperty("_name").stringValue = type == ClothType.Head ? "Syndicate Hardsuit Helmet" : "Syndicate Hardsuit";
@@ -150,12 +111,7 @@ namespace SS3D.Systems.Inventory.Containers.Editor
                 occluded.arraySize = hidden.Length;
                 for (int i = 0; i < hidden.Length; i++) occluded.GetArrayElementAtIndex(i).stringValue = hidden[i];
                 so.ApplyModifiedPropertiesWithoutUndo();
-                var presentation = root.GetComponent<ClothingItemPresentation>();
-                if (presentation == null) presentation = root.AddComponent<ClothingItemPresentation>();
-                so = new SerializedObject(presentation);
-                so.FindProperty("_worldRoot").objectReferenceValue = world;
-                so.FindProperty("_wornShapedRoot").objectReferenceValue = worn;
-                so.ApplyModifiedPropertiesWithoutUndo(); worn.SetActive(false);
+                WirePresentation(root, world, worn);
                 var armor = root.GetComponent<ArmorItemExtension>();
                 if (armor == null) armor = root.AddComponent<ArmorItemExtension>();
                 so = new SerializedObject(armor);
@@ -165,16 +121,184 @@ namespace SS3D.Systems.Inventory.Containers.Editor
                 so.FindProperty("_profile.CoveredZones").intValue = (int)(type == ClothType.Head ? BodyZoneMask.Head : ArmorProfile.SecurityJumpsuit.CoveredZones);
                 so.ApplyModifiedPropertiesWithoutUndo();
                 if (root.GetComponent<SealedGearItemExtension>() == null) root.AddComponent<SealedGearItemExtension>();
+                WireExamine(root, name, type == ClothType.Head ? "syndicate_hardsuit_helmet" : "syndicate_hardsuit");
                 StorageContainerPrefabSetup.RebuildNetworkBehaviours(root.GetComponent<FishNet.Object.NetworkObject>());
                 PrefabUtility.SaveAsPrefabAsset(root, path);
             }
             finally { PrefabUtility.UnloadPrefabContents(root); }
+            RegisterItem(reference, path, name);
+            return reference;
+        }
+
+        /// <summary>One Item is the whole pair, like every shoe; the pair in the FBX becomes a mesh per side.</summary>
+        private static ObjectAssetReference BuildMagboot(GameObject model, SkinnedMeshRenderer target, Material[] materials)
+        {
+            const string name = "SyndicateMagboots";
+            var source = model.GetComponentsInChildren<SkinnedMeshRenderer>(true).First(r => r.name == name);
+            bool[] left = source.sharedMesh.boneWeights.Select(w => source.bones[w.boneIndex0].name.EndsWith("_l")).ToArray();
+            var adapted = AdaptMesh(source, target);
+            var leftMesh = SaveMesh(KeepVertices(adapted, i => left[i], name + "WornLeft"), Art + name + "WornLeft.asset");
+            var rightMesh = SaveMesh(KeepVertices(adapted, i => !left[i], name + "WornRight"), Art + name + "WornRight.asset");
+            UnityEngine.Object.DestroyImmediate(adapted);
+
+            var reference = EnsurePrefab(name, "ShoeJackboots", out string path);
+            var root = PrefabUtility.LoadPrefabContents(path);
+            try
+            {
+                root.name = name;
+                // The worn stance puts the boots in line with the icon camera, so both forms use the item pose.
+                var item = model.GetComponentsInChildren<MeshFilter>(true).First(f => f.name == name + "Item");
+                ReplaceShapes(root, item.sharedMesh, item.sharedMesh, item.transform, materials, out var worn, out var world, out var attachment);
+                worn.transform.SetLocalPositionAndRotation(world.transform.localPosition, world.transform.localRotation);
+                worn.transform.localScale = world.transform.localScale;
+
+                var itemSo = new SerializedObject(root.GetComponent<Item>());
+                itemSo.FindProperty("_name").stringValue = "Syndicate Magboots";
+                itemSo.FindProperty("_asset").objectReferenceValue = reference;
+                itemSo.FindProperty("_weight").floatValue = 2f;
+                itemSo.FindProperty("AttachmentPoint").objectReferenceValue = attachment.transform;
+                itemSo.FindProperty("AttachmentPointAlt").objectReferenceValue = attachment.transform;
+                itemSo.ApplyModifiedPropertiesWithoutUndo();
+
+                var so = new SerializedObject(root.GetComponent<Cloth>());
+                var list = so.FindProperty("_clothMeshes._list");
+                list.arraySize = 2;
+                list.GetArrayElementAtIndex(0).FindPropertyRelative("_key").intValue = (int)ClothType.ShoeLeft;
+                list.GetArrayElementAtIndex(0).FindPropertyRelative("_value").objectReferenceValue = leftMesh;
+                list.GetArrayElementAtIndex(1).FindPropertyRelative("_key").intValue = (int)ClothType.ShoeRight;
+                list.GetArrayElementAtIndex(1).FindPropertyRelative("_value").objectReferenceValue = rightMesh;
+                var mats = so.FindProperty("_wornMaterials");
+                mats.arraySize = materials.Length;
+                for (int i = 0; i < materials.Length; i++) mats.GetArrayElementAtIndex(i).objectReferenceValue = materials[i];
+                so.ApplyModifiedPropertiesWithoutUndo();
+
+                WirePresentation(root, world, worn);
+                if (root.GetComponent<MagbootItemExtension>() == null) root.AddComponent<MagbootItemExtension>();
+                WireExamine(root, name, "syndicate_magboots");
+                PrefabUtility.SaveAsPrefabAsset(root, path);
+            }
+            finally { PrefabUtility.UnloadPrefabContents(root); }
+            RegisterItem(reference, path, name);
+            return reference;
+        }
+
+        private static ObjectAssetReference EnsurePrefab(string name, string template, out string path)
+        {
+            path = Clothing + name + ".prefab";
+            if (DB.LoadAssetAtPath<GameObject>(path) == null)
+                DB.CopyAsset(Clothing + template + ".prefab", path);
+            var reference = EnsureAsset<ObjectAssetReference>("Assets/Content/Data/ObjectAssetReferences/" + name + ".asset");
+            reference.Id = DB.AssetPathToGUID(path);
+            reference.Database = "c2644d7b34e956743a0bc485e7ca5e37";
+            EditorUtility.SetDirty(reference);
+            return reference;
+        }
+
+        private static void RegisterItem(ObjectAssetReference reference, string path, string name)
+        {
             var db = DB.LoadAssetAtPath<SS3D.Data.AssetDatabases.AssetDatabase>("Assets/Content/Data/Databases/Items.asset");
             var settings = AddressableAssetSettingsDefaultObject.Settings;
             settings.CreateOrMoveEntry(reference.Id, db.AssetGroup).address = name;
             db.Assets[reference.Id] = DB.LoadAssetAtPath<GameObject>(path);
             EditorUtility.SetDirty(db);
-            return reference;
+        }
+
+        /// <summary>Retains root physics/network/item; replaces the template's visual and attachment children.</summary>
+        private static void ReplaceShapes(GameObject root, Mesh preview, Mesh worldMesh, Transform worldPose, Material[] materials,
+            out GameObject worn, out GameObject world, out GameObject attachment)
+        {
+            foreach (Transform child in root.transform.Cast<Transform>().ToArray())
+                UnityEngine.Object.DestroyImmediate(child.gameObject);
+            foreach (var collider in root.GetComponents<Collider>()) UnityEngine.Object.DestroyImmediate(collider);
+            // Some templates draw on their root, and that mesh would stay on over the new shapes.
+            foreach (var renderer in root.GetComponents<MeshRenderer>()) UnityEngine.Object.DestroyImmediate(renderer);
+            foreach (var filter in root.GetComponents<MeshFilter>()) UnityEngine.Object.DestroyImmediate(filter);
+            worn = new GameObject("WornShape");
+            worn.transform.SetParent(root.transform, false);
+            worn.AddComponent<MeshFilter>().sharedMesh = preview;
+            worn.AddComponent<MeshRenderer>().sharedMaterials = materials;
+            world = new GameObject("WorldShape"); world.transform.SetParent(root.transform, false);
+            world.transform.localScale = worldPose.lossyScale;
+            world.transform.localRotation = worldPose.rotation;
+            world.AddComponent<MeshFilter>().sharedMesh = worldMesh;
+            var worldRenderer = world.AddComponent<MeshRenderer>(); worldRenderer.sharedMaterials = materials;
+            world.transform.position -= worldRenderer.bounds.center - root.transform.position;
+            var box = root.AddComponent<BoxCollider>();
+            box.center = Vector3.zero; box.size = worldRenderer.bounds.size;
+            attachment = new GameObject("Attachment"); attachment.transform.SetParent(root.transform, false);
+        }
+
+        /// <summary>The template's key names the template, so each piece gets its own. Text lives in ExamineIdentificationKeySetup.</summary>
+        private static void WireExamine(GameObject root, string name, string key)
+        {
+            var data = EnsureAsset<ExamineData>("Assets/Content/Data/Examine/String/Items/Clothing/" + name + ".asset");
+            data.Name = new LocalizedString("Examine", "items.clothing." + key + ".name");
+            data.Description = new LocalizedString("Examine", "items.clothing." + key + ".desc");
+            EditorUtility.SetDirty(data);
+            var examine = new SerializedObject(root.GetComponent<SimpleExaminable>());
+            examine.FindProperty("key").objectReferenceValue = data;
+            examine.ApplyModifiedPropertiesWithoutUndo();
+        }
+
+        private static void WirePresentation(GameObject root, GameObject world, GameObject worn)
+        {
+            var presentation = root.GetComponent<ClothingItemPresentation>();
+            if (presentation == null) presentation = root.AddComponent<ClothingItemPresentation>();
+            var so = new SerializedObject(presentation);
+            so.FindProperty("_worldRoot").objectReferenceValue = world;
+            so.FindProperty("_wornShapedRoot").objectReferenceValue = worn;
+            so.ApplyModifiedPropertiesWithoutUndo(); worn.SetActive(false);
+        }
+
+        private static Mesh BakePreview(GameObject model, SkinnedMeshRenderer source, string name)
+        {
+            var baked = new Mesh(); source.BakeMesh(baked);
+            baked.name = name;
+            // BakeMesh is in source local coordinates (FBX units); adapt the display into metres.
+            var previewVertices = baked.vertices;
+            for (int i = 0; i < previewVertices.Length; i++) previewVertices[i] = model.transform.worldToLocalMatrix.MultiplyPoint3x4(source.transform.TransformPoint(previewVertices[i]));
+            baked.vertices = previewVertices; baked.RecalculateBounds(); baked.RecalculateNormals();
+            return baked;
+        }
+
+        private static Mesh SaveMesh(Mesh built, string path)
+        {
+            var mesh = DB.LoadAssetAtPath<Mesh>(path);
+            if (mesh == null) { DB.CreateAsset(built, path); return built; }
+            EditorUtility.CopySerialized(built, mesh);
+            UnityEngine.Object.DestroyImmediate(built);
+            return mesh;
+        }
+
+        /// <summary>Copies the triangles whose corners all pass, keeping submeshes, skinning and vertex order.</summary>
+        private static Mesh KeepVertices(Mesh mesh, Func<int, bool> keep, string name)
+        {
+            int[] remap = new int[mesh.vertexCount];
+            int kept = 0;
+            for (int i = 0; i < remap.Length; i++) remap[i] = keep(i) ? kept++ : -1;
+            T[] Pick<T>(T[] all) => all.Length == 0 ? all : all.Where((_, i) => remap[i] >= 0).ToArray();
+
+            var part = new Mesh { name = name };
+            part.vertices = Pick(mesh.vertices);
+            part.normals = Pick(mesh.normals);
+            part.tangents = Pick(mesh.tangents);
+            part.uv = Pick(mesh.uv);
+            part.boneWeights = Pick(mesh.boneWeights);
+            part.bindposes = mesh.bindposes;
+            part.subMeshCount = mesh.subMeshCount;
+            for (int sub = 0; sub < mesh.subMeshCount; sub++)
+            {
+                int[] triangles = mesh.GetTriangles(sub);
+                var indices = new System.Collections.Generic.List<int>();
+                for (int i = 0; i < triangles.Length; i += 3)
+                {
+                    if (remap[triangles[i]] >= 0 && remap[triangles[i + 1]] >= 0 && remap[triangles[i + 2]] >= 0)
+                        indices.AddRange(new[] { remap[triangles[i]], remap[triangles[i + 1]], remap[triangles[i + 2]] });
+                }
+                part.SetTriangles(indices, sub);
+            }
+            part.RecalculateBounds();
+            return part;
         }
 
         private static Mesh AdaptMesh(SkinnedMeshRenderer source, SkinnedMeshRenderer target)

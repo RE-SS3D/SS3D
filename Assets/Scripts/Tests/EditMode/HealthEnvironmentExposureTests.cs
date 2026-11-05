@@ -206,5 +206,99 @@ namespace EditorTests
             Assert.AreEqual(0f, none, 0.001f);
             Assert.Less(Mathf.Abs(half - full * 0.5f), 0.001f);
         }
+
+        private static readonly GasTankMix OxygenTank = new() { OxygenMoles = 45f };
+        private static readonly GasTankMix PlasmaTank = new() { PlasmaMoles = 45f };
+
+        [Test]
+        public void OxygenTankGivesAFullBreathInVacuumButLeavesThePressure()
+        {
+            HealthEnvironmentState env = HealthEnvironmentExposure.BreatheFromTank(
+                HealthEnvironmentExposure.FromVacuumCell(3f, burnIntensity: 0f),
+                OxygenTank,
+                tankFill: 1f);
+
+            Assert.IsTrue(env.OnInternals);
+            Assert.AreEqual(1f, env.AtmosphereBreathability);
+            Assert.IsTrue(env.IsVacuum);
+            Assert.Greater(HealthEnvironmentExposure.PressureLungDamage(env.PressureKpa, env.IsVacuum, env.IsSealed), 0f);
+        }
+
+        [Test]
+        public void PlasmaTankSuppliesNoBreathAndPoisons()
+        {
+            HealthEnvironmentState env = HealthEnvironmentExposure.BreatheFromTank(
+                HealthEnvironmentState.SafeDefault,
+                PlasmaTank,
+                tankFill: 1f);
+
+            Assert.AreEqual(0f, env.AtmosphereBreathability);
+            Assert.Greater(HealthEnvironmentExposure.ToxinIntakeFromPlasma(env.PlasmaMoleFraction), 0f);
+        }
+
+        [Test]
+        public void TankAirKeepsRoomPlasmaOut()
+        {
+            HealthEnvironmentState room = HealthEnvironmentState.SafeDefault;
+            room.PlasmaMoleFraction = 0.5f;
+
+            HealthEnvironmentState env = HealthEnvironmentExposure.BreatheFromTank(room, OxygenTank, tankFill: 1f);
+
+            Assert.AreEqual(0f, HealthEnvironmentExposure.ToxinIntakeFromPlasma(env.PlasmaMoleFraction));
+        }
+
+        [Test]
+        public void EmptyTankStopsTheBreathEvenInGoodAir()
+        {
+            HealthEnvironmentState env = HealthEnvironmentExposure.BreatheFromTank(
+                HealthEnvironmentState.SafeDefault,
+                default,
+                tankFill: 0f);
+
+            Assert.AreEqual(0f, env.AtmosphereBreathability);
+            Assert.AreEqual(0f, HealthEnvironmentExposure.ToxinIntakeFromPlasma(env.PlasmaMoleFraction));
+        }
+
+        [Test]
+        public void InternalsLeaveTheSealAlone()
+        {
+            HealthEnvironmentState sealedRoom = HealthEnvironmentExposure.FromVacuumCell(3f, burnIntensity: 0f);
+            sealedRoom.IsSealed = true;
+            sealedRoom.HeatProtection = 0.7f;
+
+            HealthEnvironmentState env = HealthEnvironmentExposure.BreatheFromTank(sealedRoom, OxygenTank, tankFill: 1f);
+
+            Assert.IsTrue(env.IsSealed);
+            Assert.AreEqual(0.7f, env.HeatProtection);
+        }
+
+        [Test]
+        public void DrawingFromATankKeepsItsMix()
+        {
+            GasTankMix mix = new GasTankMix { OxygenMoles = 30f, PlasmaMoles = 10f }.Without(20f);
+
+            Assert.AreEqual(15f, mix.OxygenMoles, 0.001f);
+            Assert.AreEqual(5f, mix.PlasmaMoles, 0.001f);
+            Assert.AreEqual(0.25f, mix.PlasmaFraction, 0.001f);
+        }
+
+        [Test]
+        public void DrawingMoreThanATankHoldsEmptiesIt()
+        {
+            GasTankMix mix = OxygenTank.Without(100f);
+
+            Assert.AreEqual(0f, mix.TotalMoles);
+            Assert.AreEqual(0f, mix.OxygenFraction);
+        }
+
+        [Test]
+        public void FullTankLastsFifteenMinutesOfHealthyBreathing()
+        {
+            float secondsOfBreath = OxygenTank.TotalMoles
+                / HealthEnvironmentExposure.BreathOxygenMoles(1f, 1f)
+                * HealthConstants.TickIntervalSeconds;
+
+            Assert.AreEqual(15f * 60f, secondsOfBreath, 0.5f);
+        }
     }
 }

@@ -330,6 +330,7 @@ namespace SS3D.UI.MainHud.Dev
                 case AlertHazard.Bleeding: _state.Bleeding = severity; break;
                 case AlertHazard.CardiacArrest: _state.CardiacArrest = severity; break;
                 case AlertHazard.SealBreach: _state.SealBreach = severity; break;
+                case AlertHazard.TankLow: _state.TankLow = severity; break;
             }
         }
 
@@ -344,6 +345,7 @@ namespace SS3D.UI.MainHud.Dev
             AlertHazard.Dying => "Dying / critical",
             AlertHazard.CardiacArrest => "Cardiac arrest",
             AlertHazard.SealBreach => "Seal breach",
+            AlertHazard.TankLow => "Tank low",
             _ => hazard.ToString(),
         };
 

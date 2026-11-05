@@ -1379,6 +1379,34 @@ MonoBehaviour:
     m_Key: examine.seal.breached
     m_Metadata:
       m_Items: []
+  - m_Id: 296089487001546752
+    m_Key: examine.tank.fill
+    m_Metadata:
+      m_Items: []
+  - m_Id: 296112289708535808
+    m_Key: items.clothing.syndicate_magboots.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 296112289742090240
+    m_Key: items.clothing.syndicate_magboots.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 296137613293887488
+    m_Key: items.clothing.syndicate_hardsuit.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 296137613323247616
+    m_Key: items.clothing.syndicate_hardsuit.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 296137613323247617
+    m_Key: items.clothing.syndicate_hardsuit_helmet.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 296137613323247618
+    m_Key: items.clothing.syndicate_hardsuit_helmet.desc
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

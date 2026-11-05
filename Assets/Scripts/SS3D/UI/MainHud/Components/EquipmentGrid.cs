@@ -6,7 +6,7 @@ using UnityEngine.UIElements;
 namespace SS3D.UI.MainHud.Components
 {
     /// <summary>
-    /// Bottom-left worn-equipment doll: head/eyes/face-cover/ears on top, gloves/shirt/suit/feet below.
+    /// Bottom-left worn-equipment doll: head/eyes/face-cover/ears on top, gloves/shirt/suit/feet below, with suit storage beside the feet while a suit is worn.
     /// Gloves and feet are one slot each, covering both the left and right containers.
     /// Click transfers with the active hand; drag participates in storage-panel cross-surface DnD.
     /// </summary>
@@ -22,6 +22,7 @@ namespace SS3D.UI.MainHud.Components
             Shirt,
             Feet,
             Suit,
+            SuitStorage,
         }
 
         public event Action<Slot> SlotClicked;
@@ -37,6 +38,7 @@ namespace SS3D.UI.MainHud.Components
         private readonly InventorySlot _shirt;
         private readonly InventorySlot _feet;
         private readonly InventorySlot _suit;
+        private readonly InventorySlot _suitStorage;
 
         private Slot? _dragSlot;
         private bool _dragMoved;
@@ -53,11 +55,19 @@ namespace SS3D.UI.MainHud.Components
             _shirt = CreateSlot(Slot.Shirt, "Shirt", icons.Shirt);
             _feet = CreateSlot(Slot.Feet, "Feet", icons.Feet);
             _suit = CreateSlot(Slot.Suit, "Suit", icons.Shirt);
+            _suitStorage = CreateSlot(Slot.SuitStorage, "Suit Storage", icons.Shirt);
+            SetSuitStorageVisible(false);
 
             Add(BuildRow(BuildSpacer(), _head, BuildSpacer()));
             Add(BuildRow(_eyes, _face, _ears));
             Add(BuildRow(_gloves, _shirt, _suit));
-            Add(BuildRow(BuildSpacer(), _feet, BuildSpacer()));
+            Add(BuildRow(BuildSpacer(), _feet, _suitStorage));
+        }
+
+        /// <summary>Suit storage exists only while a suit is worn; the slot keeps its place in the grid.</summary>
+        public void SetSuitStorageVisible(bool visible)
+        {
+            _suitStorage.style.visibility = visible ? Visibility.Visible : Visibility.Hidden;
         }
 
         public void SetIcon(Slot slot, Sprite itemIcon)
@@ -95,6 +105,7 @@ namespace SS3D.UI.MainHud.Components
             Slot.Shirt => _shirt,
             Slot.Feet => _feet,
             Slot.Suit => _suit,
+            Slot.SuitStorage => _suitStorage,
             _ => null,
         };
 
@@ -108,6 +119,7 @@ namespace SS3D.UI.MainHud.Components
             Slot.Shirt => "Shirt",
             Slot.Feet => "Feet",
             Slot.Suit => "Suit",
+            Slot.SuitStorage => "Suit Storage",
             _ => string.Empty,
         };
 

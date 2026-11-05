@@ -7,13 +7,13 @@ todos:
     status: completed
   - id: internals
     content: "PR 2: GasTankItemExtension, EvaGearController internals, SuitStorage slot, internals chip, tank content, crew pocket loadouts, oxygen treatment draws from the tank"
-    status: pending
+    status: completed
   - id: magboots
     content: "PR 3: SyndicateMagboots content with per-foot split, EvaGearController anchor, wind early-out, movement cost, chip, audio"
-    status: pending
+    status: completed
   - id: docs-sync
     content: "Each PR: update-system-docs for touched maps; M8 milestone row when the slice ships"
-    status: pending
+    status: completed
 isProject: false
 ---
 
@@ -33,7 +33,7 @@ Implements `Documents/design/armor.md` §1, §3, §6, `Documents/design/inventor
 
 **Tanks:** `GasTankItemExtension` holds server-side moles per gas and syncs a fill fraction. There is no pressure model or atmos link. Breathing uses the tank's mix. No CO₂ is exhaled while on internals, so tanks never wake atmos cells.
 
-**Body state:** one `EvaGearController` on `Human`, built by recipe, holds the internals and magboot toggles. The server turns internals off when the mask, helmet or tank goes away. Tank priority is suit storage, pocket, hand. Magboots need both feet, because shoes are one item per foot.
+**Body state:** one `EvaGearController` on `Human`, built by recipe, holds the internals and magboot toggles. The server turns internals off when the mask, helmet or tank goes away. Tank priority is suit storage, pocket, hand. Magboots need both feet, and shoes are one item per pair.
 
 **Suit storage:** `ContainerType.SuitStorage` is appended to the enum and gated by `IStorageCondition`. A suit cannot be removed while storage holds a tank, following the belt and jumpsuit rule. `EquipmentGrid` shows the slot only while a suit is worn. Loadouts spawn it after the suit.
 
@@ -64,11 +64,22 @@ Starting values, reviewed after Playtest 1.
 ## Deviations
 
 - Magboots get a chip beside the internals chip. Deviates from `armor.md` §6, which names only the internals chip, because the boots need a visible on/off state.
+- The chips sit to the right of the hands, not beside the alert stack, because they are buttons and the stack is status only. Both switches need `CanUseArms`, so a critical body keeps whatever state it collapsed in.
 - No milestone or design text relies on locker contents any more: `savedItemList` in station templates stores no container contents, so crew gear comes from loadouts.
+
+- Pockets drop from `Huge` to `Small`. `armor.md` §3 only allows a tank in a pocket "if it is small enough", so this also stops every larger item fitting a pocket. The gas mask becomes `Small` so crew can carry it.
+- Internals toggle with `N`, and the character paperdoll gains a suit storage well, because the tank would otherwise block looting the suit.
+- The emergency tank shares the oxygen tank's examine text.
+- Magboots toggle with `G`, and the Controls tab lists both EVA toggles. The internals key was reserved but could not be rebound until this PR.
+- There is no new footstep clip: while the boots hold, the boots clip plays at the speed factor, so steps slow with the gait and land lower. The toggle clunk is `MetalHit1` pitched down.
 
 ## Implementation notes
 
 The breach alert is a warning while the air is safe and critical once pressure or cold would reach the body. It clears when the breached piece comes off. Breach through `ApplyArmorAbsorption` is covered by a PlayMode scenario.
+
+Internals draw `0.05 mol/s` scaled by lung function. The low-tank alert warns at 25% and turns critical at 10%, while internals are on. A dry tank stays selected until it is moved, so a spare in a pocket does not take over from a dry tank in suit storage.
+
+A pair of magboots is one Item. It needs both feet, and the switch turns off when the pair comes off or a foot goes. The switch stays on while the wearer is down or floating, and the boots hold again once upright over a floor. Slowing also scales clip playback, so feet stay planted.
 
 ## Tests
 

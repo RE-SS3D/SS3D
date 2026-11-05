@@ -243,7 +243,7 @@ MonoBehaviour:
   _addedNetworkObject: {fileID: 8663352389375050187}
   _networkObjectCache: {fileID: 8663352389375050187}
   _asset: {fileID: 11400000, guid: 7877ae994c8a31244bf59b1b971caaa5, type: 2}
-  _name: Shoe Hi Top
+  _name: High Top Sneakers
   _weight: 1
   _startingTraits:
   - {fileID: 11400000, guid: c753b1913c89a5745806c17b77d57b6d, type: 2}

@@ -24,6 +24,7 @@ namespace SS3D.Systems.Health
             public Severity HighPressure;
             public Severity LowOxygen;
             public Severity SealBreach;
+            public Severity TankLow;
         }
 
         public static AtmosAlertSignals Compute(HealthEnvironmentState env)
@@ -40,8 +41,9 @@ namespace SS3D.Systems.Health
                 Cold = env.IsSealed ? Severity.None : ComputeCold(env),
                 LowPressure = env.IsSealed ? Severity.None : ComputeLowPressure(env),
                 HighPressure = env.IsSealed ? Severity.None : ComputeHighPressure(env),
-                LowOxygen = ComputeLowOxygen(env),
+                LowOxygen = env.OnInternals ? ComputeTankBreath(env) : ComputeLowOxygen(env),
                 SealBreach = ComputeSealBreach(env),
+                TankLow = ComputeTankLow(env),
             };
         }
 
@@ -56,6 +58,26 @@ namespace SS3D.Systems.Health
                 || ComputeLowPressure(env) != Severity.None
                 || ComputeHighPressure(env) != Severity.None;
             return exposed ? Severity.Critical : Severity.Warning;
+        }
+
+        private static Severity ComputeTankBreath(HealthEnvironmentState env)
+        {
+            if (env.AtmosphereBreathability <= 0f)
+            {
+                return Severity.Critical;
+            }
+
+            return env.AtmosphereBreathability < 1f ? Severity.Warning : Severity.None;
+        }
+
+        private static Severity ComputeTankLow(HealthEnvironmentState env)
+        {
+            if (!env.OnInternals || env.TankFill > HealthConstants.TankLowFill)
+            {
+                return Severity.None;
+            }
+
+            return env.TankFill > HealthConstants.TankCriticalFill ? Severity.Warning : Severity.Critical;
         }
 
         private static Severity ComputeFire(HealthEnvironmentState env)

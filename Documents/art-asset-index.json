@@ -1,10 +1,10 @@
 {
-  "generated_at": "2026-11-05T17:24:58.334946+00:00",
+  "generated_at": "2026-11-05T19:01:41.161158+00:00",
   "purpose": "Agent reference for locating SS3D art assets and determining import status.",
   "sources": {
     "in_game": {
       "root": "Assets/Art",
-      "file_count": 5371
+      "file_count": 5374
     },
     "ss3d_art": {
       "repo": "https://github.com/RE-SS3D/SS3D-Art",
@@ -13,11 +13,11 @@
     }
   },
   "summary": {
-    "in_game_files": 5371,
+    "in_game_files": 5374,
     "ss3d_art_files": 2480,
-    "unique_assets": 7610,
+    "unique_assets": 7613,
     "imported": 241,
-    "in_game_only": 5140,
+    "in_game_only": 5143,
     "ss3d_art_only": 2229,
     "available_for_import": 2014,
     "artwork_only": 215
@@ -65,10 +65,10 @@
     },
     {
       "path": "Icons",
-      "in_game": 4743,
+      "in_game": 4746,
       "ss3d_art": 0,
       "imported": 0,
-      "in_game_only": 4743,
+      "in_game_only": 4746,
       "ss3d_art_only": 0
     },
     {
@@ -603,10 +603,10 @@
     },
     {
       "path": "Icons/Alerts",
-      "in_game": 15,
+      "in_game": 18,
       "ss3d_art": 0,
       "imported": 0,
-      "in_game_only": 15,
+      "in_game_only": 18,
       "ss3d_art_only": 0
     },
     {
@@ -2972,7 +2972,7 @@
   ],
   "extensions": {
     "svg": 4248,
-    "png": 2081,
+    "png": 2084,
     "blend": 677,
     "fbx": 247,
     "wav": 159,
@@ -15771,11 +15771,33 @@
       "status": "in_game_only"
     },
     {
+      "name": "internals.png",
+      "stem": "internals",
+      "extension": "png",
+      "category": "Icons/Alerts",
+      "in_game_path": "Assets/Art/Icons/Alerts/internals.png",
+      "ss3d_art_path": null,
+      "github_url": null,
+      "import_target_path": null,
+      "status": "in_game_only"
+    },
+    {
       "name": "low-oxygen.png",
       "stem": "low-oxygen",
       "extension": "png",
       "category": "Icons/Alerts",
       "in_game_path": "Assets/Art/Icons/Alerts/low-oxygen.png",
+      "ss3d_art_path": null,
+      "github_url": null,
+      "import_target_path": null,
+      "status": "in_game_only"
+    },
+    {
+      "name": "magboots.png",
+      "stem": "magboots",
+      "extension": "png",
+      "category": "Icons/Alerts",
+      "in_game_path": "Assets/Art/Icons/Alerts/magboots.png",
       "ss3d_art_path": null,
       "github_url": null,
       "import_target_path": null,
@@ -15842,6 +15864,17 @@
       "extension": "png",
       "category": "Icons/Alerts",
       "in_game_path": "Assets/Art/Icons/Alerts/seal-breach.png",
+      "ss3d_art_path": null,
+      "github_url": null,
+      "import_target_path": null,
+      "status": "in_game_only"
+    },
+    {
+      "name": "tank-low.png",
+      "stem": "tank-low",
+      "extension": "png",
+      "category": "Icons/Alerts",
+      "in_game_path": "Assets/Art/Icons/Alerts/tank-low.png",
       "ss3d_art_path": null,
       "github_url": null,
       "import_target_path": null,

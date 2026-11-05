@@ -1,6 +1,7 @@
 ﻿using Coimbra;
 using SS3D.Data.AssetDatabases;
 using SS3D.Systems.Inventory.Containers;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace SS3D.Systems.Roles
@@ -15,5 +16,7 @@ namespace SS3D.Systems.Roles
         public ObjectAssetReference HandRightAsset;
 
         public SerializableDictionary<ContainerType, ObjectAssetReference> EquipmentAssets;
+
+        public List<ObjectAssetReference> PocketAssets = new();
     }
 }

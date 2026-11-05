@@ -192,6 +192,14 @@ namespace SS3D.Systems.Inventory.Containers
             {
                 _clothedBodyParts.Add(new(container.ClothType, item));
             }
+
+            // A pair dresses both sides, as long as the other side is still on the body.
+            if (PairedClothing.TryGetOtherSide(container.ClothType, out ClothType otherCloth, out ContainerType otherContainer)
+                && _inventory.TryGetTypeContainer(otherContainer, 0, out _)
+                && TryGetClothedBodyPart(otherCloth, out _))
+            {
+                _clothedBodyParts.Add(new(otherCloth, item));
+            }
         }
 
         /// <summary>
@@ -207,10 +215,14 @@ namespace SS3D.Systems.Inventory.Containers
                 return;
             }
 
-            ClothType containerClothType = container.ClothType;
-            ClothDisplayData clothData = _clothedBodyParts.Find(data => data.Type == containerClothType);
-
-            _clothedBodyParts.Remove(clothData);
+            // A pair shows on both sides, so remove everything this item dresses.
+            for (int i = _clothedBodyParts.Count - 1; i >= 0; i--)
+            {
+                if (_clothedBodyParts[i].ClothToDisplay == item)
+                {
+                    _clothedBodyParts.RemoveAt(i);
+                }
+            }
         }
     }
 }

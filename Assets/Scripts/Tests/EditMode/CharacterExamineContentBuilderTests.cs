@@ -11,7 +11,7 @@ namespace EditorTests
         {
             IReadOnlyList<CharacterExamineSlotContent> slots = CharacterExamineContentBuilder.BuildSlots(null);
 
-            Assert.AreEqual(14, slots.Count);
+            Assert.AreEqual(15, slots.Count);
             foreach (CharacterExamineSlotContent content in slots)
             {
                 Assert.IsNull(content.ItemIcon);

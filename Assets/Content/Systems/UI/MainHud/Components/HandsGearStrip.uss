@@ -34,3 +34,86 @@
     width: 78%;
     height: 78%;
 }
+
+/* EVA switches: wells to the right of the hands, out of the zone's layout so the strip stays centered. */
+.gear-toggles {
+    position: absolute;
+    left: 100%;
+    bottom: 4px;
+    flex-direction: row;
+    overflow: visible;
+}
+
+.gear-chip {
+    position: relative;
+    margin-left: var(--ss3d-space-2);
+    overflow: visible;
+}
+
+.gear-chip__well {
+    width: 64px;
+    height: 64px;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--ss3d-surface-hud);
+    border-radius: 10px;
+    border-width: 2px;
+    border-color: var(--ss3d-border-default);
+}
+
+.gear-chip:hover .gear-chip__well {
+    border-color: var(--ss3d-text-secondary);
+}
+
+.gear-chip__glyph {
+    width: 38px;
+    height: 38px;
+    -unity-background-image-tint-color: var(--ss3d-text-secondary);
+}
+
+.gear-chip--on .gear-chip__well,
+.gear-chip--on:hover .gear-chip__well {
+    border-color: var(--ss3d-feedback-success);
+}
+
+.gear-chip--on .gear-chip__glyph {
+    -unity-background-image-tint-color: var(--ss3d-feedback-success);
+}
+
+.gear-chip--locked {
+    opacity: 0.45;
+}
+
+.gear-chip--locked:hover .gear-chip__well {
+    border-color: var(--ss3d-border-default);
+}
+
+/* Full-width host + flex-center so the chip recenters when text changes (translate -50% does not). */
+.gear-chip__label-host {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 100%;
+    margin-bottom: var(--ss3d-space-2);
+    align-items: center;
+}
+
+.gear-chip__label {
+    white-space: nowrap;
+    opacity: 0;
+    background-color: var(--ss3d-surface-hud);
+    color: var(--ss3d-text-secondary);
+    font-size: 11px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    padding: 2px 8px;
+    border-radius: var(--ss3d-radius-sm);
+    border-width: 1px;
+    border-color: var(--ss3d-border-subtle);
+    transition-property: opacity;
+    transition-duration: var(--ss3d-duration-fast);
+}
+
+.gear-chip:hover .gear-chip__label {
+    opacity: 1;
+}

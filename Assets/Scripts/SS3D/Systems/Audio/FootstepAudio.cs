@@ -4,6 +4,7 @@ using SS3D.Data.Generated;
 using SS3D.Logging;
 using SS3D.Systems.Entities.Humanoid;
 using SS3D.Systems.Entities.Humanoid.Body;
+using SS3D.Systems.Health;
 using SS3D.Systems.Inventory.Containers;
 using SS3D.Systems.Inventory.Items;
 using UnityEngine;
@@ -31,6 +32,7 @@ namespace SS3D.Systems.Audio
         private HumanoidBodyStateMachine _bodyStateMachine;
         private HumanInventory _inventory;
         private Ragdoll _ragdoll;
+        private EvaGearController _evaGear;
         private AudioSource _source;
         private AudioSourceOcclusion _occlusion;
 
@@ -46,6 +48,7 @@ namespace SS3D.Systems.Audio
             _bodyStateMachine = GetComponent<HumanoidBodyStateMachine>();
             _inventory = GetComponent<HumanInventory>();
             _ragdoll = GetComponent<Ragdoll>();
+            _evaGear = GetComponent<EvaGearController>();
 
             _source = gameObject.AddComponent<AudioSource>();
             _source.playOnAwake = false;
@@ -110,6 +113,8 @@ namespace SS3D.Systems.Audio
                 return;
             }
 
+            // Steps slow with the gait and land heavier while the boots hold (armor.md §6).
+            _source.pitch = _evaGear != null ? _evaGear.MovementSpeedFactor : 1f;
             if (!_source.isPlaying)
             {
                 _occlusion.PrepareForPlayback(Volume);

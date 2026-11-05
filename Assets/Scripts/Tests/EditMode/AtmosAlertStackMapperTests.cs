@@ -152,5 +152,50 @@ namespace EditorTests
                 HealthEnvironmentSettings.AtmosphericDamageDisabled = previous;
             }
         }
+
+        private static HealthEnvironmentState OnTank(float fill, bool empty = false)
+        {
+            return HealthEnvironmentExposure.BreatheFromTank(
+                HealthEnvironmentExposure.FromVacuumCell(3f, burnIntensity: 0f),
+                empty ? default : new GasTankMix { OxygenMoles = 45f },
+                fill);
+        }
+
+        [Test]
+        public void TankBreathClearsLowOxygenButNotThePressureWarning()
+        {
+            AtmosAlertStackMapper.AtmosAlertSignals signals = AtmosAlertStackMapper.Compute(OnTank(1f));
+
+            Assert.AreEqual(AtmosAlertStackMapper.Severity.None, signals.LowOxygen);
+            Assert.AreEqual(AtmosAlertStackMapper.Severity.Critical, signals.LowPressure);
+        }
+
+        [Test]
+        public void EmptyTankIsCriticalOnBothAlerts()
+        {
+            AtmosAlertStackMapper.AtmosAlertSignals signals = AtmosAlertStackMapper.Compute(OnTank(0f, empty: true));
+
+            Assert.AreEqual(AtmosAlertStackMapper.Severity.Critical, signals.LowOxygen);
+            Assert.AreEqual(AtmosAlertStackMapper.Severity.Critical, signals.TankLow);
+        }
+
+        [TestCase(1f, AtmosAlertStackMapper.Severity.None)]
+        [TestCase(0.26f, AtmosAlertStackMapper.Severity.None)]
+        [TestCase(0.25f, AtmosAlertStackMapper.Severity.Warning)]
+        [TestCase(0.11f, AtmosAlertStackMapper.Severity.Warning)]
+        [TestCase(0.1f, AtmosAlertStackMapper.Severity.Critical)]
+        public void TankLowFollowsTheFillWhileBreathing(float fill, AtmosAlertStackMapper.Severity expected)
+        {
+            Assert.AreEqual(expected, AtmosAlertStackMapper.Compute(OnTank(fill)).TankLow);
+        }
+
+        [Test]
+        public void TankLowStaysQuietWithInternalsOff()
+        {
+            HealthEnvironmentState env = HealthEnvironmentState.SafeDefault;
+            env.HasSample = true;
+
+            Assert.AreEqual(AtmosAlertStackMapper.Severity.None, AtmosAlertStackMapper.Compute(env).TankLow);
+        }
     }
 }

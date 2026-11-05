@@ -429,7 +429,9 @@ namespace SS3D.Systems.Roles
                 containers.Add(inventoryContainer.ContainerType, inventoryContainer);
             }
 
-            foreach (KeyValuePair<ContainerType, ObjectAssetReference> itemToEquip in loadout.EquipmentAssets)
+            // Suit storage only accepts a tank once the suit is on.
+            foreach (KeyValuePair<ContainerType, ObjectAssetReference> itemToEquip in loadout.EquipmentAssets
+                .OrderBy(equipment => equipment.Key == ContainerType.SuitStorage))
             {
                 if (!itemToEquip.Value)
                 {
@@ -439,6 +441,14 @@ namespace SS3D.Systems.Roles
                 if (containers.TryGetValue(itemToEquip.Key, out AttachedContainer container))
                 {
                     SpawnItemInSlot(itemToEquip.Value, true, container);
+                }
+            }
+
+            if (containers.TryGetValue(ContainerType.Pocket, out AttachedContainer pocket))
+            {
+                foreach (ObjectAssetReference pocketAsset in loadout.PocketAssets)
+                {
+                    SpawnItemInSlot(pocketAsset, true, pocket);
                 }
             }
 

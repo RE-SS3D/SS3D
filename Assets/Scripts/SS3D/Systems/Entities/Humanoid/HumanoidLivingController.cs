@@ -19,15 +19,22 @@ namespace SS3D.Systems.Entities.Humanoid
         [Header("Components")]
         [SerializeField] private CharacterController _characterController;
         [SerializeField] private StaminaController _staminaController;
+        private EvaGearController _evaGear;
         private HumanHealthController _healthController;
         [SerializeField] private HumanoidPredictedMovement _predictedMovement;
 
         public bool IsDragging { get; set; }
 
         /// <summary>Exhausted bodies move slower; feet slow by the same factor (ExertionPenalty is a SyncVar, so remotes match).</summary>
-        public override float LocomotionPlaybackRate => _staminaController != null
+        public override float LocomotionPlaybackRate => GearSpeedFactor * (_staminaController != null
             ? SprintExertion.MovementSpeedFactor(_staminaController.ExertionPenalty)
-            : 1f;
+            : 1f);
+
+        /// <summary>The run toggle survives, so sprinting returns when the boots let go (armor.md §3).</summary>
+        public override bool IsRunning => base.IsRunning && (_evaGear == null || !_evaGear.MagbootsAnchored);
+
+        /// <summary>World speed scale from worn gear. Reads synced state, because movement is owner-side.</summary>
+        public float GearSpeedFactor => _evaGear != null ? _evaGear.MovementSpeedFactor : 1f;
 
         /// <summary>Planar coast while unsupported (no plenum). Used when predicted movement is disabled.</summary>
         private Vector3 _coastVelocity;
@@ -43,6 +50,7 @@ namespace SS3D.Systems.Entities.Humanoid
         {
             base.OnStartClient();
             _healthController = GetComponent<HumanHealthController>();
+            _evaGear = GetComponent<EvaGearController>();
             if (_predictedMovement == null)
             {
                 _predictedMovement = GetComponent<HumanoidPredictedMovement>();
@@ -403,7 +411,7 @@ namespace SS3D.Systems.Entities.Humanoid
                 : 1f;
 
             _characterController.Move(
-                TargetMovement * (_movementSpeed * healthMultiplier * GaitSpeedFactor() * exertionFactor * Time.deltaTime));
+                TargetMovement * (_movementSpeed * healthMultiplier * GaitSpeedFactor() * exertionFactor * GearSpeedFactor * Time.deltaTime));
         }
 
         /// <summary>

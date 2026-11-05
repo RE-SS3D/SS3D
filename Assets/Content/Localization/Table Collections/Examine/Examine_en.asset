@@ -391,11 +391,11 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 252934895022239835
-    m_Localized: Insulated Glove
+    m_Localized: Insulated Gloves
     m_Metadata:
       m_Items: []
   - m_Id: 252934895022239836
-    m_Localized: A single insulated glove, looks to be for the hands.
+    m_Localized: A pair of insulated gloves.
     m_Metadata:
       m_Items: []
   - m_Id: 252934895022239837
@@ -447,7 +447,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 252934895022239849
-    m_Localized: High Top Sneaker
+    m_Localized: High Top Sneakers
     m_Metadata:
       m_Items: []
   - m_Id: 252934895022239850
@@ -455,11 +455,11 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 252934895022239851
-    m_Localized: Jackboot
+    m_Localized: Jackboots
     m_Metadata:
       m_Items: []
   - m_Id: 252934895022239852
-    m_Localized: Jackboot for a foot.
+    m_Localized: A pair of jackboots.
     m_Metadata:
       m_Items: []
   - m_Id: 252934895022239853
@@ -1391,6 +1391,37 @@ MonoBehaviour:
       m_Items: []
   - m_Id: 252937831064399874
     m_Localized: 'Seal: breached.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 296089487001546752
+    m_Localized: 'Tank: {0}% full.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 296112289708535808
+    m_Localized: Syndicate Magboots
+    m_Metadata:
+      m_Items: []
+  - m_Id: 296112289742090240
+    m_Localized: Magnetic boots. Switched on, they hold you to the deck against moving
+      air.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 296137613293887488
+    m_Localized: Syndicate Hardsuit
+    m_Metadata:
+      m_Items: []
+  - m_Id: 296137613323247616
+    m_Localized: Armored pressure suit. Sealed with its helmet it keeps out vacuum
+      and cold, but it does not supply air.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 296137613323247617
+    m_Localized: Syndicate Hardsuit Helmet
+    m_Metadata:
+      m_Items: []
+  - m_Id: 296137613323247618
+    m_Localized: Armored sealed helmet. It completes the hardsuit's seal and doubles
+      as a mask for internals.
     m_Metadata:
       m_Items: []
   references:

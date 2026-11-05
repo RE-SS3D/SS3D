@@ -11,6 +11,7 @@ namespace EditorTests
         [TestCase(CharacterExamineSlot.Face, ContainerType.Mask, ContainerType.None)]
         [TestCase(CharacterExamineSlot.Ears, ContainerType.EarLeft, ContainerType.EarRight)]
         [TestCase(CharacterExamineSlot.Suit, ContainerType.ExoSuit, ContainerType.None)]
+        [TestCase(CharacterExamineSlot.SuitStorage, ContainerType.SuitStorage, ContainerType.None)]
         [TestCase(CharacterExamineSlot.Shirt, ContainerType.Jumpsuit, ContainerType.None)]
         [TestCase(CharacterExamineSlot.Gloves, ContainerType.GloveLeft, ContainerType.GloveRight)]
         [TestCase(CharacterExamineSlot.Back, ContainerType.Bag, ContainerType.None)]

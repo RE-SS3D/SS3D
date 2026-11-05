@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using FishNet.Connection;
 using FishNet.Object;
 using SS3D.Systems.Atmospherics;
+using SS3D.Systems.Health;
 using UnityEngine;
 
 namespace SS3D.Systems.Entities.Humanoid
@@ -26,6 +27,8 @@ namespace SS3D.Systems.Entities.Humanoid
         public void ServerApplyWind(Vector3 wind)
         {
             if (wind.sqrMagnitude < AtmosWind.MinSpeed * AtmosWind.MinSpeed) return;
+            // Boots hold an upright body; wind it already felt fades by itself (armor.md §3).
+            if (TryGetComponent(out EvaGearController gear) && gear.ServerAnchored()) return;
             // Do not convert an existing health-owned timeless collapse to a timed knockdown.
             if (!IsKnockedDown && wind.magnitude >= AtmosWind.KnockdownSpeed)
             {

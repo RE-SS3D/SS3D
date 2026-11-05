@@ -70,6 +70,10 @@ namespace SS3D.Systems.Examine
                     primary = ContainerType.Pocket;
                     secondary = ContainerType.None;
                     return true;
+                case CharacterExamineSlot.SuitStorage:
+                    primary = ContainerType.SuitStorage;
+                    secondary = ContainerType.None;
+                    return true;
                 default:
                     primary = ContainerType.None;
                     secondary = ContainerType.None;

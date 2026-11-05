@@ -25,6 +25,7 @@ hand-tool recipes belong to their own domain aggregators.
 - `Assets/Scripts/SS3D/Systems/Inventory/Containers/Editor/HandsPrefabSetup.cs` — Left/Right hand order and `HandSearchExtension`
 - `Assets/Scripts/SS3D/Systems/Combat/Editor/CombatInteractionNetworkPrefabSetup.cs` — combat network sibling wiring
 - `Assets/Scripts/SS3D/Systems/Substances/Editor/HumanSubstanceContainerStrip.cs` — obsolete root substance-container strip
+- `Assets/Scripts/SS3D/Systems/Entities/Editor/SuitStoragePrefabSetup.cs` — suit storage slot and its two storage conditions, `EvaGearController` on Human, and the pocket size limit on HumanTorso (run after ExoSuitPrefabSetup)
 - `Assets/Scripts/SS3D/Systems/Entities/Editor/ExoSuitPrefabSetup.cs` — ExoSuit container/filter (without the jumpsuit belt lock) and type-addressed worn Overwear renderer (requires inventory content assets first)
 - `Assets/Scripts/Tests/EditMode/HumanPrefabIntegrityTests.cs` — committed prefab integrity assertions
 

@@ -21,6 +21,7 @@ GameObject:
   - component: {fileID: 1034747657592807112}
   - component: {fileID: -11363172995805795}
   - component: {fileID: 9182736450123456792}
+  - component: {fileID: 5525194735417104611}
   - component: {fileID: 4004439981662833907}
   m_Layer: 10
   m_Name: OxygenTank
@@ -210,7 +211,7 @@ MonoBehaviour:
   NetworkObserver: {fileID: 0}
   <PrefabId>k__BackingField: 121
   <SpawnableCollectionId>k__BackingField: 0
-  _scenePathHash: 0
+  _scenePathHash: 2074225719
   <SceneId>k__BackingField: 0
   <AssetPathHash>k__BackingField: 10565479850675779047
   <IsNested>k__BackingField: 0
@@ -220,6 +221,7 @@ MonoBehaviour:
   - {fileID: 2717170585512287581}
   - {fileID: 2885876316184551953}
   - {fileID: -4941992892754288966}
+  - {fileID: 5525194735417104611}
   <ParentNetworkObject>k__BackingField: {fileID: 0}
   <ChildNetworkObjects>k__BackingField: []
   SerializedTransformProperties:
@@ -247,8 +249,8 @@ MonoBehaviour:
   _networkObjectCache: {fileID: 8767567404870203102}
   _asset: {fileID: 11400000, guid: b42f227c43baa2141938339b7dda3f71, type: 2}
   _name: Oxygen Tank
-  _weight: 1
-  _sizeClass: 2
+  _weight: 5
+  _sizeClass: 4
   _maxStackSize: 1
   _stackCount: 1
   _startingTraits: []
@@ -331,6 +333,25 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ce2b4cfd2ac58d8887edeb2e38b9bb35, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &5525194735417104611
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7125681683583715523}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3896e883f9c0c92f085ad99c169e481a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: SS3D.Systems::SS3D.Systems.Health.GasTankItemExtension
+  _componentIndexCache: 3
+  _addedNetworkObject: {fileID: 8767567404870203102}
+  _networkObjectCache: {fileID: 8767567404870203102}
+  _contents:
+    OxygenMoles: 45
+    PlasmaMoles: 0
+  _fill: 1
 --- !u!114 &4004439981662833907
 MonoBehaviour:
   m_ObjectHideFlags: 0

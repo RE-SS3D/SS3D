@@ -1,7 +1,7 @@
 > Code paths: Assets/Scripts/SS3D/Systems/Audio/
 > Entry points: AudioSubSystem, AmbienceSubSystem, PersonalAudioSubSystem
 > Status: partial
-> Verified: 25802878f — 2026-11-05
+> Verified: ae1a54ed1 — 2026-11-05
 
 # Audio
 
@@ -25,7 +25,7 @@ sound *for a given listener*, which the server's "play clip X at position P" RPC
 - `Assets/Scripts/SS3D/Systems/Audio/AmbientLoopSubSystem.cs` — machine hums (§3): 12 client-local voices lent to the nearest running `AmbientLoopSource`s, each occluded through `AudioSourceOcclusion`; choice is pure in `AmbientLoopSelection.cs`, and each kind's clip, level and reach in `AmbientLoopTrackIds.cs`
 - `Assets/Scripts/SS3D/Systems/Audio/PersonalAudioSubSystem.cs` — Phase 3 owner-only heartbeat, breathing and alert ding (§4), non-positional. Driven by `HealthPersonalAudioMapper` / `StaminaPersonalAudioMapper` from each domain's existing local-owner hook.
 - `Assets/Scripts/SS3D/UI/MainHud/Components/AlertStackAudioMapper.cs` — Phase 4 (§6): `HasNewAlert` diff; `MainHudSubSystem.PushAlertState` is the single funnel that calls `PlayAlertCue()`
-- `Assets/Scripts/SS3D/Systems/Audio/FootstepAudio.cs` — footwear footsteps on a **client-local** loop, not the pool (host `Move(default)` clears server locomotion every tick); skips while floating
+- `Assets/Scripts/SS3D/Systems/Audio/FootstepAudio.cs` — footwear footsteps on a **client-local** loop, not the pool (host `Move(default)` clears server locomotion every tick); skips while floating, and pitches down with the gait while magboots hold
 - `Assets/Scripts/SS3D/Systems/Audio/NoisyCollision.cs` — server-side item collision sounds; `CollisionSoundLimiter.cs` caps them per item and overall, through `AudioSubSystem.TryPlayCollisionSound`
 - `Boombox.cs`, `ChangeMusicInteraction.cs`, `ListenerPosition.cs`, `AudioType.cs` — jukebox, music swap, listener follow, `Sfx`/`Music`/`Ambient` enum
 - `Assets/Content/Systems/Audio/Resources/MainMixer.mixer` — `Master` → `Music`/`SFX`/`Ambience`/`Personal` groups, each with an exposed volume (`MasterVolume`, `MusicVolume`, `SFXVolume`, `AmbienceVolume`, `PersonalVolume`) driven by `PlayerSettingsSubSystem` ([2026-10_player-settings](../2026-10_player-settings.md)). Pool prefabs (`SFXAudioSource.prefab`, `MusicAudioSource.prefab`) target their groups by reference.
@@ -39,7 +39,7 @@ sound *for a given listener*, which the server's "play clip X at position P" RPC
 - A new item's collision sound: add it to `Materials` or `SilentItems` in `Audio/Editor/AudioContentPrefabRecipes.cs`, then call `SetupItemCollisions` (or **SS3D → Audio → Run Content Prefab Recipes**). `ItemPrefabs_MatchTheRecipeLists` fails until you do. A prefab variant inherits its base's entry.
 - Area ambience: tag the room's department, or set an override in the Map Editor room form or with `AreaSubSystem.SetAreaAmbienceProfileId(areaId, profileId)` (server). In game, the `areaambience (profileId|clear)` console command (`AreaAmbienceCommand`) targets the caller's own area. Syncs via `RpcSyncAreaAmbience` (BufferLast).
 - Machine hum: implement `IAmbientLoopState` from synced state, add an `AmbientLoopKind`, and list the prefab in `AudioContentPrefabRecipes.MachineLoops`. `MachinePrefabs_MatchTheRecipeList` fails if a prefab with that state isn't listed.
-- Personal cues (e.g. virology symptoms, audio.md §4): `SetHeartbeatIntensity`, `SetStaminaBreathingIntensity` / `SetHealthBreathingIntensity` (max-merge). Build no parallel non-positional path.
+- Personal cues (e.g. virology symptoms, audio.md §4): `SetHeartbeatIntensity`, `SetStaminaBreathingIntensity` / `SetHealthBreathingIntensity` (max-merge), `SetCalmBreathingIntensity` and `SetInternalsBreathingIntensity`, a separate calm loop heard on internals alongside any labored breathing. Build no parallel non-positional path.
 - Code-built `AudioSource`: set `outputAudioMixerGroup = MainAudioMixer.FindGroup(...)` so the player's category slider reaches it (ambience, personal, footsteps, blast, structural hiss, the comms chime and main-menu music all do). Unrouted sources play under Master only.
 - Looping machine sound (e.g. `FuelPowerGenerator`): sync the running state with an `[ObserversRpc(BufferLast = true)]` that calls `PlayAudioSourceLocal` / `StopAudioSourceLocal`.
 - New positional source: add `AudioSourceOcclusion` and call `PrepareForPlayback` before `Play()`, or it ignores walls and keeps playing in vacuum. Set `IgnoresWalls` for one that should only take the air.

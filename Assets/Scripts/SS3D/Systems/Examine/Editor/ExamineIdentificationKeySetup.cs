@@ -35,6 +35,18 @@ namespace SS3D.Systems.Examine.Editor
             UpsertEntry(englishTable, ExamineStructuralIntegrityKeys.FracturedGlass, ExamineStructuralIntegrityKeys.FracturedGlassFallback);
             UpsertEntry(englishTable, ExamineSealKeys.Intact, ExamineSealKeys.IntactFallback);
             UpsertEntry(englishTable, ExamineSealKeys.Breached, ExamineSealKeys.BreachedFallback);
+            UpsertEntry(englishTable, ExamineTankKeys.Fill, ExamineTankKeys.FillFallback);
+            UpsertEntry(englishTable, "items.clothing.glove_insulated.name", "Insulated Gloves");
+            UpsertEntry(englishTable, "items.clothing.glove_insulated.desc", "A pair of insulated gloves.");
+            UpsertEntry(englishTable, "items.clothing.shoe_hi_tops.name", "High Top Sneakers");
+            UpsertEntry(englishTable, "items.clothing.shoe_jackboots.name", "Jackboots");
+            UpsertEntry(englishTable, "items.clothing.shoe_jackboots.desc", "A pair of jackboots.");
+            UpsertEntry(englishTable, "items.clothing.syndicate_hardsuit.name", "Syndicate Hardsuit");
+            UpsertEntry(englishTable, "items.clothing.syndicate_hardsuit.desc", "Armored pressure suit. Sealed with its helmet it keeps out vacuum and cold, but it does not supply air.");
+            UpsertEntry(englishTable, "items.clothing.syndicate_hardsuit_helmet.name", "Syndicate Hardsuit Helmet");
+            UpsertEntry(englishTable, "items.clothing.syndicate_hardsuit_helmet.desc", "Armored sealed helmet. It completes the hardsuit's seal and doubles as a mask for internals.");
+            UpsertEntry(englishTable, "items.clothing.syndicate_magboots.name", "Syndicate Magboots");
+            UpsertEntry(englishTable, "items.clothing.syndicate_magboots.desc", "Magnetic boots. Switched on, they hold you to the deck against moving air.");
 
             EditorUtility.SetDirty(englishTable);
             EditorUtility.SetDirty(englishTable.SharedData);

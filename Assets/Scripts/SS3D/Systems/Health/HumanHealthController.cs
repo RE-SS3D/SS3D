@@ -42,6 +42,7 @@ namespace SS3D.Systems.Health
         private Ragdoll _ragdoll;
         private HumanoidCombatController _combatController;
         private HumanInventory _inventory;
+        private EvaGearController _evaGear;
         private bool _deathTriggered;
         private bool _healthCollapseActive;
         private bool _drivingLocalPresentation;
@@ -102,6 +103,7 @@ namespace SS3D.Systems.Health
             InitializeDefaults();
             _entity = GetComponent<Entity>();
             _inventory = GetComponent<HumanInventory>();
+            _evaGear = GetComponent<EvaGearController>();
             _woundVfx = GetComponent<WoundVfx>();
             if (_woundVfx == null)
             {
@@ -562,7 +564,7 @@ namespace SS3D.Systems.Health
             if (audio == null)
             {
                 _previousAudioHealthState = snapshot.State;
-                _previousAudioVacuum = snapshot.Environment.IsVacuum;
+                _previousAudioVacuum = BreathingVacuum(snapshot.Environment);
                 return;
             }
 
@@ -571,7 +573,7 @@ namespace SS3D.Systems.Health
                 && snapshot.IsConscious
                 && !snapshot.IsCardiacArrest;
 
-            bool enteredVacuum = snapshot.Environment.IsVacuum && !_previousAudioVacuum;
+            bool enteredVacuum = BreathingVacuum(snapshot.Environment) && !_previousAudioVacuum;
 
             if (enteredCritical || enteredVacuum)
             {
@@ -597,8 +599,10 @@ namespace SS3D.Systems.Health
             }
 
             _previousAudioHealthState = snapshot.State;
-            _previousAudioVacuum = snapshot.Environment.IsVacuum;
+            _previousAudioVacuum = BreathingVacuum(snapshot.Environment);
         }
+
+        private static bool BreathingVacuum(HealthEnvironmentState env) => env.IsVacuum && !env.OnInternals;
 
         [Server]
         public void TickHealth(float atmosphereO2 = 1f, float toxinIntake = HealthConstants.BaseToxinIntake)
@@ -648,7 +652,7 @@ namespace SS3D.Systems.Health
                 return;
             }
 
-            _environment = ApplyWornSeal(SampleEnvironmentAtBody());
+            _environment = ApplyInternals(ApplyWornSeal(SampleEnvironmentAtBody()));
             ApplyEnvironmentalExposure(_environment);
             ApplyBreathExchange(_environment);
 
@@ -674,6 +678,30 @@ namespace SS3D.Systems.Health
             }
 
             return env;
+        }
+
+        /// <summary>
+        /// While internals are on, the breath comes from the tank and is drawn from it (armor.md §3).
+        /// </summary>
+        [Server]
+        private HealthEnvironmentState ApplyInternals(HealthEnvironmentState env)
+        {
+            GasTankItemExtension tank = _evaGear != null ? _evaGear.ServerBreathingTank() : null;
+            if (tank == null)
+            {
+                return env;
+            }
+
+            GasTankMix breathed = tank.Contents;
+            tank.ServerDraw(HealthEnvironmentExposure.BreathOxygenMoles(1f, LungFunction01()));
+            return HealthEnvironmentExposure.BreatheFromTank(env, breathed, tank.Fill);
+        }
+
+        private float LungFunction01()
+        {
+            return (HealthSimulation.GetOrganFunction(_organs, OrganType.LeftLung, _pools.BloodVolumeRatio)
+                    + HealthSimulation.GetOrganFunction(_organs, OrganType.RightLung, _pools.BloodVolumeRatio))
+                * 0.005f;
         }
 
         private SealedGearItemExtension FindWornSeal(ContainerType slot)
@@ -813,7 +841,8 @@ namespace SS3D.Systems.Health
         [Server]
         private void ApplyBreathExchange(HealthEnvironmentState env)
         {
-            if (!env.HasSample || env.IsVacuum || env.AtmosphereBreathability <= 0f)
+            // Internals breathe from the tank and exhale nothing into the room, so atmos cells stay asleep.
+            if (!env.HasSample || env.IsVacuum || env.OnInternals || env.AtmosphereBreathability <= 0f)
             {
                 return;
             }
@@ -826,13 +855,9 @@ namespace SS3D.Systems.Health
                 return;
             }
 
-            float lungFunction =
-                (HealthSimulation.GetOrganFunction(_organs, OrganType.LeftLung, _pools.BloodVolumeRatio)
-                 + HealthSimulation.GetOrganFunction(_organs, OrganType.RightLung, _pools.BloodVolumeRatio))
-                * 0.005f;
             float request = HealthEnvironmentExposure.BreathOxygenMoles(
                 env.AtmosphereBreathability,
-                lungFunction);
+                LungFunction01());
             if (request <= 0f)
             {
                 return;

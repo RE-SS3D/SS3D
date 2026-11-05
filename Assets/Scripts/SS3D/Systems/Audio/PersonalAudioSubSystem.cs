@@ -29,6 +29,7 @@ namespace SS3D.Systems.Audio
 
         private AudioSource _heartbeatSource;
         private AudioSource _breathingSource;
+        private AudioSource _internalsSource;
         private AudioSource _calmBreathingSource;
         private AudioSource _alertCueSource;
 
@@ -36,6 +37,7 @@ namespace SS3D.Systems.Audio
         private float _staminaBreathingTarget;
         private float _healthBreathingTarget;
         private float _breathingTarget;
+        private float _internalsTarget;
         private float _calmBreathingTarget;
         private float _nextAlertCueTime;
 
@@ -45,6 +47,7 @@ namespace SS3D.Systems.Audio
 
             _heartbeatSource = BuildPersonalSource("HeartbeatSource");
             _breathingSource = BuildPersonalSource("BreathingSource");
+            _internalsSource = BuildPersonalSource("InternalsSource");
             _calmBreathingSource = BuildPersonalSource("CalmBreathingSource");
             _alertCueSource = BuildPersonalSource("AlertCueSource", loop: false);
 
@@ -103,8 +106,17 @@ namespace SS3D.Systems.Audio
         }
 
         /// <summary>
+        /// Calm breathing through the mask while on internals, alongside any labored breathing.
+        /// </summary>
+        public void SetInternalsBreathingIntensity(float intensity)
+        {
+            _internalsTarget = Mathf.Clamp01(intensity);
+            EnsurePlayingIfAudible(_internalsSource, AudioTrackIds.Breathing, _internalsTarget);
+        }
+
+        /// <summary>
         /// Calm breathing where no air carries anything else (audio.md §2, "Outside the station").
-        /// Heavy breathing takes over from it as stamina or health drive that one up.
+        /// Heavy breathing takes over from it as stamina or health drive that one up, and so do internals.
         /// </summary>
         public void SetCalmBreathingIntensity(float intensity)
         {
@@ -159,12 +171,14 @@ namespace SS3D.Systems.Audio
 
             _heartbeatSource.volume = Mathf.MoveTowards(_heartbeatSource.volume, _heartbeatTarget, step);
             _breathingSource.volume = Mathf.MoveTowards(_breathingSource.volume, _breathingTarget, step);
+            _internalsSource.volume = Mathf.MoveTowards(_internalsSource.volume, _internalsTarget, step);
 
-            float calmTarget = CalmBreathingVolume * Mathf.Max(_calmBreathingTarget - _breathingTarget, 0f);
+            float calmTarget = CalmBreathingVolume * Mathf.Max(_calmBreathingTarget - Mathf.Max(_breathingTarget, _internalsTarget), 0f);
             _calmBreathingSource.volume = Mathf.MoveTowards(_calmBreathingSource.volume, calmTarget, step);
 
             StopIfSilent(_heartbeatSource, _heartbeatTarget);
             StopIfSilent(_breathingSource, _breathingTarget);
+            StopIfSilent(_internalsSource, _internalsTarget);
             StopIfSilent(_calmBreathingSource, _calmBreathingTarget);
         }
 

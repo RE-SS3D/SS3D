@@ -377,7 +377,7 @@ namespace SS3D.Systems.Entities.Humanoid
             }
 
             Vector3 moveDirection = GetCameraRelativeDirection(md.Horizontal, md.Vertical);
-            float speedFactor = _healthController != null ? _healthController.Snapshot.MovementSpeedMultiplier : 1f;
+            float speedFactor = BodySpeedFactor();
             float exertionFactor = _staminaController != null
                 ? SprintExertion.MovementSpeedFactor(_staminaController.ExertionPenalty)
                 : 1f;
@@ -429,7 +429,7 @@ namespace SS3D.Systems.Entities.Humanoid
             }
 
             Vector3 moveDirection = GetCameraRelativeDirection(md.Horizontal, md.Vertical);
-            float speedFactor = _healthController != null ? _healthController.Snapshot.MovementSpeedMultiplier : 1f;
+            float speedFactor = BodySpeedFactor();
             float exertionFactor = _staminaController != null
                 ? SprintExertion.MovementSpeedFactor(_staminaController.ExertionPenalty)
                 : 1f;
@@ -477,12 +477,18 @@ namespace SS3D.Systems.Entities.Humanoid
                 QueryTriggerInteraction.Ignore);
         }
 
+        private float BodySpeedFactor()
+        {
+            float health = _healthController != null ? _healthController.Snapshot.MovementSpeedMultiplier : 1f;
+            return _livingController != null ? health * _livingController.GearSpeedFactor : health;
+        }
+
         private Vector3 CaptureCoastVelocity(MoveData md)
         {
             if (md.Horizontal != 0f || md.Vertical != 0f)
             {
                 Vector3 moveDirection = GetCameraRelativeDirection(md.Horizontal, md.Vertical);
-                float speedFactor = _healthController != null ? _healthController.Snapshot.MovementSpeedMultiplier : 1f;
+                float speedFactor = BodySpeedFactor();
                 float exertionFactor = _staminaController != null
                     ? SprintExertion.MovementSpeedFactor(_staminaController.ExertionPenalty)
                     : 1f;
@@ -493,7 +499,7 @@ namespace SS3D.Systems.Entities.Humanoid
             // Idle at the edge — keep residual gait along facing if any.
             if (_smoothedSpeedScale > 0.01f)
             {
-                float speedFactor = _healthController != null ? _healthController.Snapshot.MovementSpeedMultiplier : 1f;
+                float speedFactor = BodySpeedFactor();
                 float speed = _movementSpeed * speedFactor * _smoothedSpeedScale;
                 Vector3 facing = transform.forward;
                 facing.y = 0f;

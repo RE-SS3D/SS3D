@@ -1,7 +1,7 @@
 > Code paths: Assets/Scripts/SS3D/Systems/Health/
 > Entry points: HumanHealthController, HealthSimulation, OrganSimulation
 > Status: partial
-> Verified: e2f86cf20 — 2026-11-05
+> Verified: ae1a54ed1 — 2026-11-05
 
 # Health
 
@@ -25,6 +25,9 @@ Phase 0d strips legacy health components from `Human.prefab` and rewires a thinn
 - `Assets/Scripts/SS3D/Systems/Health/HealthScreenEffectMapper.cs` — local-owner snapshot → `ScreenEffectsSubSystem` intensities
 - `Assets/Scripts/SS3D/Systems/Health/HealthAlertStackMapper.cs` — snapshot → health alert signals (no MainHud types); Main HUD merges with atmos
 - `Assets/Scripts/SS3D/Systems/Health/HealthEnvironmentExposure.cs` / `HealthEnvironmentState.cs` — turf breathability, env burn, breath moles
+- `Assets/Scripts/SS3D/Systems/Health/EvaGearController.cs` — internals and magboot switches on Human; finds the tank (suit storage, pocket, hand), and turns a switch off when its gear goes away. `MagbootsAnchored` reads synced state, so the owner's movement and every peer's footsteps agree with the server's wind check
+- `Assets/Scripts/SS3D/Systems/Health/MagbootItemExtension.cs` — marks one boot; `EvaGearController` needs one on each foot
+- `Assets/Scripts/SS3D/Systems/Health/GasTankItemExtension.cs` / `GasTankMix.cs` — server-side moles per gas with a synced fill fraction; no pressure model or atmos link
 - `Assets/Scripts/SS3D/Systems/Health/AtmosAlertStackMapper.cs` / `AtmosScreenEffectMapper.cs` — synced Environment → alerts / HotRoom/Cold/Fire screens
 - `Assets/Scripts/SS3D/Systems/IngameConsoleSystem/Commands/AtmosDamageCommand.cs` — `atmosdamage [on|off|status]`
 - `Assets/Scripts/SS3D/Systems/Health/HumanAnatomyController.cs` — limb severance visuals, world drops, head mind-swap (Phase 5b)
@@ -86,6 +89,8 @@ Phase 0d strips legacy health components from `Human.prefab` and rewires a thinn
 - **Screen-effect/personal-audio Clear from other bodies:** only clear when `_drivingLocalPresentation` — other players' mind unassign must not wipe the local owner's Volume intensities or heartbeat cue.
 - **Ghost still gets hit flash after death:** `SwapMinds` used to leave FishNet ownership on the corpse (`SetMind(null)` early-returned). `ApplyDamage` then `RpcHitFlash(Owner)` to the ghost. Clear ownership on null/`Mind.Empty`; skip hit flash when `_deathTriggered` / `HealthState.Dead`; `RpcHitFlash` also requires `IsLocalOwnerMind()`.
 - **Host alert/screen gap:** raise HUD consumers from `PublishSnapshot` as well as SyncVar OnChange — FishNet may skip OnChange on server assigns (same reason screen effects apply in `PublishSnapshot`).
+- **Internals replace the air, not the room:** `HealthEnvironmentExposure.BreatheFromTank` swaps breathability and gas fractions for the tank's mix, and leaves pressure and temperature for the seal. An empty tank therefore suffocates the wearer in good air, and `ApplyBreathExchange` skips the room, so no CO₂ wakes atmos cells.
+- **Magboots are a switch, not a state:** `MagbootsOn` stays set while the wearer is down or floating, and the boots hold again once upright over a floor. Read `MagbootsAnchored` for the effect, and `ServerAnchored` on the server, which also catches a lost foot.
 - **No tile/atmos yet ≠ vacuum:** `SampleEnvironmentAtBody` returns `HealthEnvironmentState.SafeDefault` (breathable) when Tile/Atmos aren't ready — do not treat missing samples as vacuum or lobby spawns suffocate. `atmosdamage off` forces SafeDefault every tick. `HumanoidSupportState.Unknown` (map missing / not ready) also → SafeDefault.
 - **Off-map / past atmos chunks is vacuum:** once Tile+Atmos are ready, `HumanoidSupportState.Unsupported` (server: no plenum, or occupancy-miss **after** `TileMapLoaded`) keeps exposure as vacuum even when `TryGetCellDebugInfo` fails outside `_coordToIndex`. Do not fall back to SafeDefault there or deep-space float becomes breathable. Client `!HasPlenum` / occupancy-miss is Unknown (AOI), not Unsupported — see [entities](entities.md) and [TECH_DEBT.md](../TECH_DEBT.md) §1.17.
 - **LowOxygen flicker in station air:** turf hypoxia uses O₂ **partial pressure** (mole% × kPa), not raw mole fraction or `OxyDebt > 0`. Comfortable ≥18 kPa PO₂ (station ~20); alert soft-start for systemic debt is `LowOxygenAlertSoftStart`.

@@ -47,10 +47,11 @@ namespace SS3D.Systems.Examine
             CharacterExamineSlot.Belt,
             CharacterExamineSlot.IdCard,
             CharacterExamineSlot.Pocket,
+            CharacterExamineSlot.SuitStorage,
         };
 
         /// <summary>
-        /// Builds all 14 paperdoll slots (12 container-backed + 2 hands). Covered/obscured-slot
+        /// Builds all 15 paperdoll slots (13 container-backed + 2 hands). Covered/obscured-slot
         /// filtering is not implemented yet — no existing item/clothing data tracks "visually hidden by
         /// an outer layer", so every equipped item currently shows. See examine.md fork-deviations.
         /// </summary>

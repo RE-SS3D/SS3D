@@ -28,6 +28,12 @@ namespace SS3D.Systems.Health
         /// <summary>A worn suit or helmet is punctured, so the seal cannot hold until it is replaced.</summary>
         public bool IsBreached;
 
+        /// <summary>Breathing from a tank, so the air fields above describe the tank's mix, not the room.</summary>
+        public bool OnInternals;
+
+        /// <summary>Remaining share of the tank being breathed; only meaningful while <see cref="OnInternals"/>.</summary>
+        public float TankFill;
+
         /// <summary>Assumed safe station air when atmos/tile is unavailable (lobby, map load).</summary>
         public static HealthEnvironmentState SafeDefault => new()
         {

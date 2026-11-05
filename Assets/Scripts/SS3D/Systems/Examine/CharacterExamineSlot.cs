@@ -23,5 +23,6 @@ namespace SS3D.Systems.Examine
         Pocket,
         HandLeft,
         HandRight,
+        SuitStorage,
     }
 }

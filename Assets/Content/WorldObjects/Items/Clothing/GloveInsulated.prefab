@@ -252,7 +252,7 @@ MonoBehaviour:
   _addedNetworkObject: {fileID: 4692070367735979832}
   _networkObjectCache: {fileID: 4692070367735979832}
   _asset: {fileID: 11400000, guid: 55deb25596d5d314b8b7dd58eafb8aec, type: 2}
-  _name: Glove Insulated
+  _name: Insulated Gloves
   _weight: 1
   _startingTraits:
   - {fileID: 11400000, guid: 6dc4b6b828749aa49aa1f52e147f2003, type: 2}

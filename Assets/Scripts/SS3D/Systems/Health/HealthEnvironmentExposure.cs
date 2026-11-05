@@ -1,4 +1,5 @@
 using System;
+using SS3D.Systems.Atmospherics;
 using SS3D.Systems.Atmospherics.Pipes;
 using UnityEngine;
 
@@ -163,6 +164,23 @@ namespace SS3D.Systems.Health
                 PlasmaMoleFraction = 0f,
                 OxygenMoleFraction = 0f,
             };
+        }
+
+        /// <summary>
+        /// Replaces room air with the tank's mix, leaving pressure and temperature to the seal.
+        /// An empty tank supplies nothing, however good the room is (armor.md §3).
+        /// </summary>
+        public static HealthEnvironmentState BreatheFromTank(HealthEnvironmentState env, GasTankMix mix, float tankFill)
+        {
+            env.OnInternals = true;
+            env.TankFill = tankFill;
+            env.OxygenMoleFraction = mix.OxygenFraction;
+            env.PlasmaMoleFraction = mix.PlasmaFraction;
+            env.AtmosphereBreathability = NormalizeBreathability(
+                mix.OxygenFraction,
+                AtmosConstants.StandardPressure,
+                isVacuum: false);
+            return env;
         }
 
         /// <summary>

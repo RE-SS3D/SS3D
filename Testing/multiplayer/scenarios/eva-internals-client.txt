@@ -1,0 +1,10 @@
+# Client side of eva-internals. The default opt-in draws this client as an operative (Decision 22),
+# so its hardsuit helmet and suit storage tank offer internals with nothing else set up.
+wait_timeout 240
+wait_connected
+ready
+wait_round Ongoing
+assert_embarked
+assert_internals_toggle
+wait_seconds 2
+disconnect

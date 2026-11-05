@@ -21,6 +21,8 @@ namespace SS3D.Systems.Health
         /// <summary>Oxy debt at full breathing intensity.</summary>
         public const float BreathingOxyDebtFull = HealthConstants.CriticalOxyDebt;
 
+        private const float InternalsBreathingIntensity = 0.4f;
+
         public static float ComputeHeartbeatIntensity(HealthSnapshot snapshot)
         {
             // IsCardiacArrest is the operative flag (mirrors HealthScreenEffectMapper.ComputeDyingCritical,
@@ -70,6 +72,16 @@ namespace SS3D.Systems.Health
             return Mathf.Max(fromOxy, fromCritical);
         }
 
+        /// <summary>Internals are audible while the tank still gives a breath (armor.md §6).</summary>
+        public static float ComputeInternalsIntensity(HealthSnapshot snapshot)
+        {
+            bool breathing = snapshot.Environment.OnInternals
+                && snapshot.Environment.TankFill > 0f
+                && snapshot.IsConscious
+                && snapshot.State != HealthState.Dead;
+            return breathing ? InternalsBreathingIntensity : 0f;
+        }
+
         public static void Apply(HealthSnapshot snapshot, PersonalAudioSubSystem personalAudio)
         {
             if (personalAudio == null)
@@ -79,6 +91,7 @@ namespace SS3D.Systems.Health
 
             personalAudio.SetHeartbeatIntensity(ComputeHeartbeatIntensity(snapshot));
             personalAudio.SetHealthBreathingIntensity(ComputeBreathingIntensity(snapshot));
+            personalAudio.SetInternalsBreathingIntensity(ComputeInternalsIntensity(snapshot));
         }
 
         public static void Clear(PersonalAudioSubSystem personalAudio)

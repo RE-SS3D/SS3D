@@ -1,7 +1,7 @@
 > Code paths: Assets/Scripts/SS3D/Systems/Entities/
 > Entry points: EntitySubSystem, MindSubSystem, HumanoidBodyStateMachine
 > Status: partial
-> Verified: e2f86cf20 — 2026-11-05
+> Verified: ae1a54ed1 — 2026-11-05
 
 # Entities
 
@@ -30,7 +30,7 @@ Humanoid/silicon entity spawning, minds, and join/round ordering with [rounds-lo
 - `Assets/Scripts/SS3D/Systems/Entities/Humanoid/Body/HumanoidSpaceSupport.cs` — `GetSupportAt` / `HumanoidSupportState` (Unknown / Supported / Unsupported)
 - `Assets/Scripts/SS3D/Systems/Entities/Humanoid/Body/AnimationOrchestrator.cs` — snapshot → Animator; Melee/Ranged Upper Body weight; Ranged CrossFade to Rifle Aim Idle; `SetPosingSuppressed` for collapse
 - `Assets/Scripts/SS3D/Systems/Entities/Humanoid/BodyPresentationState.cs` — locomotion / collapsed / dead enum
-- `Assets/Scripts/SS3D/Systems/Entities/Humanoid/Ragdoll.Wind.cs` — server wind → owner per-frame drift or bone drag; the server drifts unowned upright bodies (combat dummies) itself; enables the prefab-disabled component; registry lifecycle needs no prefab changes. Wind knockdowns recover on floor support; ejected bodies keep tumbling.
+- `Assets/Scripts/SS3D/Systems/Entities/Humanoid/Ragdoll.Wind.cs` — server wind → owner per-frame drift or bone drag, skipped while `EvaGearController.ServerAnchored` holds; the server drifts unowned upright bodies (combat dummies) itself; enables the prefab-disabled component; registry lifecycle needs no prefab changes. Wind knockdowns recover on floor support; ejected bodies keep tumbling.
 - `Assets/Scripts/SS3D/Systems/Entities/Humanoid/Ragdoll.cs` — presentation authority (`ServerSetPresentation` / `ApplyPresentation`)
 - `Assets/Scripts/SS3D/Systems/Entities/Humanoid/Body/HumanoidIkController.cs` — combat look-at; torso IK off during Attack Swing
 - `Assets/Scripts/SS3D/Systems/Entities/Humanoid/Body/HumanoidBodyStateBridge.cs` — holds, stance, limp + `InjuredLeg` / arms, rare hurt Emote, `MirrorUpperBody`; suppresses while `Presentation != Locomotion`
@@ -52,6 +52,7 @@ Humanoid/silicon entity spawning, minds, and join/round ordering with [rounds-lo
 - `HumanoidCombatMode` is 2 bits; **`F` toggles Help/Harm intent** (combat stance follows Harm via `InteractionController` / `InputSubSystem.ToggleIntent`). Inventory picks Melee vs Ranged while in combat (`RangedWeaponItemExtension` preferred over trait name match). `LimpSide != 0` → Injured locomotion; `InjuredLeg` drives idle severity + additive weight.
 - **Animator vs code:** swing exit times, limp transitions, masks are animator-owned ([animation-polish](../../archive/architecture/2026-07_animation-polish.md)). Code sets parameters/triggers and look-at only — no swing duration constants.
 - **Ragdoll gravity:** `Ragdoll` checks support at the hips while down; unsupported bones disable gravity and discard downward settling velocity. Returning to a plenum restores gravity. Root alignment only snaps to nearby floor under supported bodies.
+- **`IsRunning` is the effective gait:** `HumanoidLivingController` overrides it to false while magboots hold. The player's run toggle survives underneath, so sprinting returns when the boots let go.
 - **Collapse / death:** write `Ragdoll.ServerSetPresentation` (or wrappers); readers use `Ragdoll.Presentation`.
 - **Space float:** living bodies — confirmed no plenum (`Unsupported`) → `SetFloating(true)`, skip gravity/WASD, coast. Client AOI lag / incomplete plenum (`Unknown`) must not enter float; skip gravity only while no physical floor collider is underfoot (raycast), then resume normal loco so spawn is not soft-locked when the map is visible but occupancy is still Unknown. Keep coasting only if SyncVar already Floating (deep space). Server occupancy-miss is Unsupported only after `TileMapLoaded`; `ServerReconcileSpaceSupport` clears Floating while Unknown and packs it for remotes. A remote client cannot see `Unsupported`, so `HumanoidLivingController` keeps the last supported frame's velocity and adopts it when Floating arrives first (`ResolveCoastVelocity`). **`HumanoidPredictedMovement` is disabled on `Human.prefab`**; `HumanoidLivingController` owns the live path. Ghosts still set Floating on spawn.
 

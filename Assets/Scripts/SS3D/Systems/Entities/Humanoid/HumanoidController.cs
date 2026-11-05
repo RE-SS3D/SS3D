@@ -79,7 +79,7 @@ namespace SS3D.Systems.Entities.Humanoid
         #region Properties
         public virtual float WalkAnimatorValue => _walkAnimatorValue;
         public virtual float RunAnimatorValue => _runAnimatorValue;
-        public bool IsRunning => _isRunning;
+        public virtual bool IsRunning => _isRunning;
 
         /// <summary>
         /// Locomotion clip playback multiplier for slowdowns the blend tree's calibrated speeds do

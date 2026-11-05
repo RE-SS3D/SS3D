@@ -16,6 +16,7 @@ namespace SS3D.Systems.Inventory.Containers.Editor
         {
             int clothing = ClothingPrefabSetup.SetupAll();
             clothing += SyndicateHardsuitSetup.SetupAll();
+            clothing += GasTankSetup.SetupAll();
             int storage = StorageContainerPrefabSetup.HookUpAll();
 
             EditorUtility.DisplayDialog(
@@ -30,6 +31,7 @@ namespace SS3D.Systems.Inventory.Containers.Editor
         {
             int clothing = ClothingPrefabSetup.SetupAll();
             clothing += SyndicateHardsuitSetup.SetupAll();
+            clothing += GasTankSetup.SetupAll();
             int storage = StorageContainerPrefabSetup.HookUpAll();
             Debug.Log(
                 $"[InventoryContentPrefabRecipes] Clothing {clothing}; Storage {storage}.");

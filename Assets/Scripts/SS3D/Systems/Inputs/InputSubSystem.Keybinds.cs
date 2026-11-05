@@ -86,6 +86,8 @@ namespace SS3D.Systems.Inputs
             Plain("Hotkeys", hotkeys.SwapHands, "Swap Hands");
             Plain("Hotkeys", hotkeys.Use, "Use");
             Plain("Hotkeys", hotkeys.Drop, "Drop");
+            Plain("Hotkeys", hotkeys.ToggleInternals, "Toggle Internals");
+            Plain("Hotkeys", hotkeys.ToggleMagboots, "Toggle Magboots");
 
             Controls.InteractionsActions interactions = Inputs.Interactions;
             Plain("Interactions", interactions.RunPrimary, "Interact", readOnly: true);

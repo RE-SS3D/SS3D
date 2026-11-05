@@ -34,6 +34,7 @@ namespace SS3D.UI.Examine.Components
             CharacterExamineSlot.Pocket,
             CharacterExamineSlot.HandLeft,
             CharacterExamineSlot.HandRight,
+            CharacterExamineSlot.SuitStorage,
         };
 
         public CharacterPaperdollGrid(float slotSize, CharacterExamineIconSet icons)
@@ -52,6 +53,7 @@ namespace SS3D.UI.Examine.Components
             InventorySlot belt = CreateSlot(CharacterExamineSlot.Belt, icons.Belt, slotSize);
             InventorySlot idCard = CreateSlot(CharacterExamineSlot.IdCard, icons.IdCard, slotSize);
             InventorySlot pocket = CreateSlot(CharacterExamineSlot.Pocket, icons.Pocket, slotSize);
+            InventorySlot suitStorage = CreateSlot(CharacterExamineSlot.SuitStorage, icons.Suit, slotSize);
             InventorySlot handLeft = CreateSlot(CharacterExamineSlot.HandLeft, icons.HandLeft, slotSize);
             InventorySlot handRight = CreateSlot(CharacterExamineSlot.HandRight, icons.HandRight, slotSize);
 
@@ -64,7 +66,7 @@ namespace SS3D.UI.Examine.Components
             Add(BuildRow(eyes, face, ears));
             Add(BuildRow(suit, shirt, gloves));
             Add(BuildRow(back, feet, belt));
-            Add(BuildRow(idCard, pocket, BuildSpacer(slotSize)));
+            Add(BuildRow(idCard, pocket, suitStorage));
 
             VisualElement handRow = BuildRow(handLeft, handRight);
             handRow.AddToClassList("character-paperdoll-grid__hand-row");
@@ -114,6 +116,7 @@ namespace SS3D.UI.Examine.Components
             CharacterExamineSlot.Belt => "Belt",
             CharacterExamineSlot.IdCard => "ID Card",
             CharacterExamineSlot.Pocket => "Pocket",
+            CharacterExamineSlot.SuitStorage => "Suit Storage",
             CharacterExamineSlot.HandLeft => "Left Hand",
             CharacterExamineSlot.HandRight => "Right Hand",
             _ => string.Empty,

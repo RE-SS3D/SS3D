@@ -155,6 +155,11 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 2ba59995b958400888f44509d7530731
+    m_Address: SyndicateMagboots
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 2bc6f6a968d5ba04c919ba56d0ccdab4
     m_Address: Assets/Content/WorldObjects/Entities/Humanoids/Human/HumanOrgans/HumanStomach.prefab
     m_ReadOnly: 0
@@ -777,6 +782,11 @@ MonoBehaviour:
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: e02f11b9239b52748a5ed5afd1c5cbd3
     m_Address: Assets/Content/WorldObjects/Entities/Humanoids/Human/HumanBodyParts/HumanEarLeft.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: e220e4181141f914aa994d7672ed6ec5
+    m_Address: EmergencyOxygenTank
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0

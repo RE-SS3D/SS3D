@@ -28,6 +28,7 @@ namespace SS3D.Systems.Inventory.Containers
         EarRight = 1 << 14,
         Belt = 1 << 15,
         Pda = 1 << 16,
+        SuitStorage = 1 << 17,
     }
 
     public static class ContainerTypeExtensions

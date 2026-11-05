@@ -20,6 +20,7 @@ GameObject:
   - component: {fileID: 474999666510061020}
   - component: {fileID: 1034747657592807112}
   - component: {fileID: -773726277121776347}
+  - component: {fileID: 4222792056967195300}
   - component: {fileID: 5576167570157325932}
   m_Layer: 10
   m_Name: PlasmaTank
@@ -209,7 +210,7 @@ MonoBehaviour:
   NetworkObserver: {fileID: 0}
   <PrefabId>k__BackingField: 65535
   <SpawnableCollectionId>k__BackingField: 0
-  _scenePathHash: 0
+  _scenePathHash: 759050829
   <SceneId>k__BackingField: 0
   <AssetPathHash>k__BackingField: 3657703697684581563
   <IsNested>k__BackingField: 0
@@ -219,6 +220,7 @@ MonoBehaviour:
   - {fileID: 2717170585512287581}
   - {fileID: 2885876316184551953}
   - {fileID: -4941992892754288966}
+  - {fileID: 4222792056967195300}
   <ParentNetworkObject>k__BackingField: {fileID: 0}
   <ChildNetworkObjects>k__BackingField: []
   SerializedTransformProperties:
@@ -246,8 +248,8 @@ MonoBehaviour:
   _networkObjectCache: {fileID: 8767567404870203102}
   _asset: {fileID: 11400000, guid: a34baef34dca37c449a6f5872216edfc, type: 2}
   _name: Plasma Tank
-  _weight: 1
-  _sizeClass: 2
+  _weight: 5
+  _sizeClass: 4
   _maxStackSize: 1
   _stackCount: 1
   _startingTraits: []
@@ -318,6 +320,25 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   key: {fileID: 11400000, guid: b80fb0721da632e458ff630904fc721b, type: 2}
+--- !u!114 &4222792056967195300
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7125681683583715523}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3896e883f9c0c92f085ad99c169e481a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: SS3D.Systems::SS3D.Systems.Health.GasTankItemExtension
+  _componentIndexCache: 3
+  _addedNetworkObject: {fileID: 8767567404870203102}
+  _networkObjectCache: {fileID: 8767567404870203102}
+  _contents:
+    OxygenMoles: 0
+    PlasmaMoles: 45
+  _fill: 1
 --- !u!114 &5576167570157325932
 MonoBehaviour:
   m_ObjectHideFlags: 0

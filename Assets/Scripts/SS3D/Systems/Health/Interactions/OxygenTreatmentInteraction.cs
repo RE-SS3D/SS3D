@@ -3,6 +3,7 @@ using SS3D.Data.Generated;
 using SS3D.Interactions;
 using SS3D.Interactions.Extensions;
 using SS3D.Interactions.Interfaces;
+using SS3D.Systems.Inventory.Items;
 using UnityEngine;
 
 namespace SS3D.Systems.Health.Interactions
@@ -36,7 +37,9 @@ namespace SS3D.Systems.Health.Interactions
 
         public bool CanInteract(InteractionEvent interactionEvent)
         {
-            if (!MedicalInteractionUtility.TryGetTreatmentItem<OxygenTankItemExtension>(interactionEvent.Source, out _))
+            if (!MedicalInteractionUtility.TryGetTreatmentItem<OxygenTankItemExtension>(interactionEvent.Source, out Item item)
+                || !item.TryGetComponent(out GasTankItemExtension tank)
+                || tank.IsEmpty)
             {
                 return false;
             }
@@ -68,6 +71,13 @@ namespace SS3D.Systems.Health.Interactions
                 return false;
             }
 
+            if (!MedicalInteractionUtility.TryGetTreatmentItem<OxygenTankItemExtension>(interactionEvent.Source, out Item item)
+                || !item.TryGetComponent(out GasTankItemExtension tank))
+            {
+                return false;
+            }
+
+            tank.ServerDraw(HealthConstants.OxygenTreatmentMoles);
             health.ApplyOxyRelief();
             return false;
         }

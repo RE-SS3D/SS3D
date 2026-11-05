@@ -613,6 +613,24 @@ namespace SS3D.Systems.Inputs
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Toggle Internals"",
+                    ""type"": ""Button"",
+                    ""id"": ""7d3f6c1e-52a8-4b0e-9a64-2e1c8f40b7d5"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Toggle Magboots"",
+                    ""type"": ""Button"",
+                    ""id"": ""3cdc3d5d-e142-4b65-b57c-d59edfbc616c"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -657,6 +675,28 @@ namespace SS3D.Systems.Inputs
                     ""processors"": """",
                     ""groups"": """",
                     ""action"": ""Toggle Internal Clothing"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""c4e8a917-6f2d-4d35-b1a7-93d05e7c2f16"",
+                    ""path"": ""<Keyboard>/n"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Toggle Internals"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""5d0dbcba-bbed-4711-80d0-cf57bd25d421"",
+                    ""path"": ""<Keyboard>/g"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Toggle Magboots"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -1195,6 +1235,8 @@ namespace SS3D.Systems.Inputs
             m_Hotkeys_Use = m_Hotkeys.FindAction("Use", throwIfNotFound: true);
             m_Hotkeys_Drop = m_Hotkeys.FindAction("Drop", throwIfNotFound: true);
             m_Hotkeys_ToggleInternalClothing = m_Hotkeys.FindAction("Toggle Internal Clothing", throwIfNotFound: true);
+            m_Hotkeys_ToggleInternals = m_Hotkeys.FindAction("Toggle Internals", throwIfNotFound: true);
+            m_Hotkeys_ToggleMagboots = m_Hotkeys.FindAction("Toggle Magboots", throwIfNotFound: true);
             // Other
             m_Other = asset.FindActionMap("Other", throwIfNotFound: true);
             m_Other_Fade = m_Other.FindAction("Fade", throwIfNotFound: true);
@@ -1701,6 +1743,8 @@ namespace SS3D.Systems.Inputs
         private readonly InputAction m_Hotkeys_Use;
         private readonly InputAction m_Hotkeys_Drop;
         private readonly InputAction m_Hotkeys_ToggleInternalClothing;
+        private readonly InputAction m_Hotkeys_ToggleInternals;
+        private readonly InputAction m_Hotkeys_ToggleMagboots;
         /// <summary>
         /// Provides access to input actions defined in input action map "Hotkeys".
         /// </summary>
@@ -1728,6 +1772,14 @@ namespace SS3D.Systems.Inputs
             /// Provides access to the underlying input action "Hotkeys/ToggleInternalClothing".
             /// </summary>
             public InputAction @ToggleInternalClothing => m_Wrapper.m_Hotkeys_ToggleInternalClothing;
+            /// <summary>
+            /// Provides access to the underlying input action "Hotkeys/ToggleInternals".
+            /// </summary>
+            public InputAction @ToggleInternals => m_Wrapper.m_Hotkeys_ToggleInternals;
+            /// <summary>
+            /// Provides access to the underlying input action "Hotkeys/ToggleMagboots".
+            /// </summary>
+            public InputAction @ToggleMagboots => m_Wrapper.m_Hotkeys_ToggleMagboots;
             /// <summary>
             /// Provides access to the underlying input action map instance.
             /// </summary>
@@ -1766,6 +1818,12 @@ namespace SS3D.Systems.Inputs
                 @ToggleInternalClothing.started += instance.OnToggleInternalClothing;
                 @ToggleInternalClothing.performed += instance.OnToggleInternalClothing;
                 @ToggleInternalClothing.canceled += instance.OnToggleInternalClothing;
+                @ToggleInternals.started += instance.OnToggleInternals;
+                @ToggleInternals.performed += instance.OnToggleInternals;
+                @ToggleInternals.canceled += instance.OnToggleInternals;
+                @ToggleMagboots.started += instance.OnToggleMagboots;
+                @ToggleMagboots.performed += instance.OnToggleMagboots;
+                @ToggleMagboots.canceled += instance.OnToggleMagboots;
             }
 
             /// <summary>
@@ -1789,6 +1847,12 @@ namespace SS3D.Systems.Inputs
                 @ToggleInternalClothing.started -= instance.OnToggleInternalClothing;
                 @ToggleInternalClothing.performed -= instance.OnToggleInternalClothing;
                 @ToggleInternalClothing.canceled -= instance.OnToggleInternalClothing;
+                @ToggleInternals.started -= instance.OnToggleInternals;
+                @ToggleInternals.performed -= instance.OnToggleInternals;
+                @ToggleInternals.canceled -= instance.OnToggleInternals;
+                @ToggleMagboots.started -= instance.OnToggleMagboots;
+                @ToggleMagboots.performed -= instance.OnToggleMagboots;
+                @ToggleMagboots.canceled -= instance.OnToggleMagboots;
             }
 
             /// <summary>
@@ -2473,6 +2537,20 @@ namespace SS3D.Systems.Inputs
             /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
             /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
             void OnToggleInternalClothing(InputAction.CallbackContext context);
+            /// <summary>
+            /// Method invoked when associated input action "Toggle Internals" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+            /// </summary>
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+            void OnToggleInternals(InputAction.CallbackContext context);
+            /// <summary>
+            /// Method invoked when associated input action "Toggle Magboots" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+            /// </summary>
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+            void OnToggleMagboots(InputAction.CallbackContext context);
         }
         /// <summary>
         /// Interface to implement callback methods for all input action callbacks associated with input actions defined by "Other" which allows adding and removing callbacks.
