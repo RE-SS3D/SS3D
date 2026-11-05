@@ -60,8 +60,11 @@ namespace SS3D.Launcher
         private DateTime? _checkedAt;
         private bool _presentPending;
         private MainMenuMusic _music;
+        private MainMenuVideoWallpaper _video;
+        private MainMenuWallpaperRotation _rotation;
         private AudioListener _listener;
         private float _nextListenerCheck;
+        private int _lastWallpaper = -1;
 #if UNITY_EDITOR
         private (NetworkType Type, string Ckey, string Address, ushort Port)? _editorNetworkSettings;
 #endif
@@ -139,6 +142,8 @@ namespace SS3D.Launcher
                 RequestPresent();
             }
 
+            TickWallpaper();
+
             _query?.Tick();
             if (_presentPending && !IsEditingServerList())
             {
@@ -174,7 +179,6 @@ namespace SS3D.Launcher
                 }
 
                 _portText = _state.LocalPort.ToString();
-                _model.Wallpaper = _catalog.WallpaperCount > 0 ? Random.Range(0, _catalog.WallpaperCount) : 0;
             }
 
             ClientConnectionRecovery.FailureUiOwnedElsewhere = true;
@@ -186,6 +190,15 @@ namespace SS3D.Launcher
             _view.FieldChanged += HandleField;
             _view.Attach(layer);
             _model.Screen = MainMenuScreen.Menu;
+            _video ??= new MainMenuVideoWallpaper(gameObject);
+            ChangeWallpaper();
+            // A video opens on black: its fallback still would flash up before the first frame.
+            _rotation = new MainMenuWallpaperRotation(Time.unscaledTime);
+            _model.WallpaperVeiled = _catalog.WallpaperVideo(_model.Wallpaper) != null;
+            if (_model.WallpaperVeiled)
+            {
+                _rotation.Reveal(Time.unscaledTime);
+            }
             _music ??= new MainMenuMusic(gameObject, _catalog.Music);
             // A fresh launcher visit starts the current track from the beginning.
             _music.Stop();
@@ -201,6 +214,7 @@ namespace SS3D.Launcher
         {
             Unsubscribe();
             _music?.SetAudible(false);
+            _video?.Stop();
             if (_listener != null)
             {
                 Destroy(_listener);
@@ -715,6 +729,7 @@ namespace SS3D.Launcher
             }
 
             UpdateMusic();
+            UpdateVideo();
             _model.MusicOn = _state.MusicOn;
             _model.MusicTitle = _music?.Title ?? "";
             _model.MusicVolume = SubSystems.TryGet(out PlayerSettingsSubSystem playerSettings) ? playerSettings.Settings.Audio.Music : 0.8f;
@@ -764,6 +779,57 @@ namespace SS3D.Launcher
         {
             bool screen = _model.Screen is MainMenuScreen.Menu or MainMenuScreen.Servers or MainMenuScreen.Settings or MainMenuScreen.Connecting;
             _music?.SetAudible(_view != null && _state.MusicOn && screen);
+        }
+
+        /// <summary>Video plays behind the menu; the operation dialogs hold its frame for their blurred backdrop.</summary>
+        private void UpdateVideo()
+        {
+            _video?.SetPlaying(IsBrowsing);
+            _model.VideoWallpaper = _video?.Frame;
+        }
+
+        private bool IsBrowsing => _model.Screen is MainMenuScreen.Menu or MainMenuScreen.Servers or MainMenuScreen.Settings;
+
+        private void ChangeWallpaper()
+        {
+            _lastWallpaper = _model.Wallpaper = PickOtherWallpaper(_catalog, _lastWallpaper, () => Random.value);
+            _video?.Load(_catalog.WallpaperVideo(_model.Wallpaper));
+        }
+
+        /// <summary>A random wallpaper other than <paramref name="previous"/>; -1 allows any.</summary>
+        public static int PickOtherWallpaper(MainMenuAssetCatalog catalog, int previous, Func<float> roll)
+        {
+            int pick = catalog.PickWallpaper(roll(), roll());
+            for (int attempt = 0; attempt < 16 && pick == previous; attempt++)
+            {
+                pick = catalog.PickWallpaper(roll(), roll());
+            }
+
+            return pick != previous ? pick : (previous + 1) % catalog.WallpaperCount;
+        }
+
+        private void TickWallpaper()
+        {
+            bool frameChanged = _video != null && _video.Tick();
+            bool ready = _catalog.WallpaperVideo(_model.Wallpaper) == null || _video?.Frame != null;
+            switch (_rotation.Tick(Time.unscaledTime, IsBrowsing, ready))
+            {
+                case MainMenuWallpaperStep.FadeOut:
+                    _model.WallpaperVeiled = true;
+                    break;
+                case MainMenuWallpaperStep.Swap:
+                    ChangeWallpaper();
+                    break;
+                case MainMenuWallpaperStep.FadeIn:
+                    _model.WallpaperVeiled = false;
+                    break;
+                default:
+                    if (!frameChanged) return;
+                    break;
+            }
+
+            UpdateVideo();
+            _view.PresentWallpaper(_model);
         }
 
         /// <summary>A failed join swaps the Launcher scene (and its camera's listener) for Empty; keep the music audible.</summary>

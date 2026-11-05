@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using FishNet;
+using FishNet.Managing;
 using SS3D.Core;
 using SS3D.Systems.Entities;
 using SS3D.Systems.Networking;
@@ -112,7 +113,7 @@ namespace SS3D.Systems.Furniture
 
         private void FixedUpdate()
         {
-            if (!InstanceFinder.IsServer || _openerCells.Count == 0)
+            if (NetworkManager.Instances.Count == 0 || !InstanceFinder.IsServer || _openerCells.Count == 0)
                 return;
 
             if (SubSystems.TryGet(out MapEditorSubSystem editor) && editor.IsActive)

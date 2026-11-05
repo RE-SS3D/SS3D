@@ -1,10 +1,10 @@
 {
-  "generated_at": "2026-11-03T21:27:50.483197+00:00",
+  "generated_at": "2026-11-05T12:55:33.664963+00:00",
   "purpose": "Agent reference for locating SS3D art assets and determining import status.",
   "sources": {
     "in_game": {
       "root": "Assets/Art",
-      "file_count": 5240
+      "file_count": 5290
     },
     "ss3d_art": {
       "repo": "https://github.com/RE-SS3D/SS3D-Art",
@@ -13,11 +13,11 @@
     }
   },
   "summary": {
-    "in_game_files": 5240,
+    "in_game_files": 5290,
     "ss3d_art_files": 2480,
-    "unique_assets": 7506,
+    "unique_assets": 7556,
     "imported": 214,
-    "in_game_only": 5036,
+    "in_game_only": 5086,
     "ss3d_art_only": 2256,
     "available_for_import": 2041,
     "artwork_only": 215
@@ -25,10 +25,10 @@
   "categories": [
     {
       "path": "Animations",
-      "in_game": 147,
+      "in_game": 152,
       "ss3d_art": 21,
       "imported": 3,
-      "in_game_only": 147,
+      "in_game_only": 152,
       "ss3d_art_only": 18
     },
     {
@@ -89,11 +89,19 @@
     },
     {
       "path": "Textures",
-      "in_game": 89,
+      "in_game": 128,
       "ss3d_art": 579,
       "imported": 66,
-      "in_game_only": 29,
+      "in_game_only": 68,
       "ss3d_art_only": 513
+    },
+    {
+      "path": "Videos",
+      "in_game": 6,
+      "ss3d_art": 0,
+      "imported": 0,
+      "in_game_only": 6,
+      "ss3d_art_only": 0
     }
   ],
   "subcategories": [
@@ -191,6 +199,14 @@
       "ss3d_art": 0,
       "imported": 0,
       "in_game_only": 16,
+      "ss3d_art_only": 0
+    },
+    {
+      "path": "Animations/Pro Sword and Shield Pack",
+      "in_game": 5,
+      "ss3d_art": 0,
+      "imported": 0,
+      "in_game_only": 5,
       "ss3d_art_only": 0
     },
     {
@@ -2659,10 +2675,10 @@
     },
     {
       "path": "Textures/UI/Wallpapers",
-      "in_game": 2,
+      "in_game": 41,
       "ss3d_art": 0,
       "imported": 0,
-      "in_game_only": 2,
+      "in_game_only": 41,
       "ss3d_art_only": 0
     },
     {
@@ -2880,19 +2896,28 @@
       "imported": 0,
       "in_game_only": 0,
       "ss3d_art_only": 4
+    },
+    {
+      "path": "Videos/Wallpapers",
+      "in_game": 6,
+      "ss3d_art": 0,
+      "imported": 0,
+      "in_game_only": 6,
+      "ss3d_art_only": 0
     }
   ],
   "extensions": {
     "svg": 4248,
-    "png": 2041,
+    "png": 2080,
     "blend": 677,
-    "fbx": 240,
+    "fbx": 245,
     "wav": 159,
     "ogg": 72,
     "mp3": 18,
     "ma": 13,
     "mp4": 12,
     "ttf": 12,
+    "webm": 6,
     "jpg": 5,
     "gif": 3,
     "otf": 3,
@@ -4522,6 +4547,61 @@
       "extension": "fbx",
       "category": "Animations/Pro Rifle Pack",
       "in_game_path": "Assets/Art/Animations/Pro Rifle Pack/walk right.fbx",
+      "ss3d_art_path": null,
+      "github_url": null,
+      "import_target_path": null,
+      "status": "in_game_only"
+    },
+    {
+      "name": "chop overhead.fbx",
+      "stem": "chop overhead",
+      "extension": "fbx",
+      "category": "Animations/Pro Sword and Shield Pack",
+      "in_game_path": "Assets/Art/Animations/Pro Sword and Shield Pack/chop overhead.fbx",
+      "ss3d_art_path": null,
+      "github_url": null,
+      "import_target_path": null,
+      "status": "in_game_only"
+    },
+    {
+      "name": "run left.fbx",
+      "stem": "run left",
+      "extension": "fbx",
+      "category": "Animations/Pro Sword and Shield Pack",
+      "in_game_path": "Assets/Art/Animations/Pro Sword and Shield Pack/run left.fbx",
+      "ss3d_art_path": null,
+      "github_url": null,
+      "import_target_path": null,
+      "status": "in_game_only"
+    },
+    {
+      "name": "run right.fbx",
+      "stem": "run right",
+      "extension": "fbx",
+      "category": "Animations/Pro Sword and Shield Pack",
+      "in_game_path": "Assets/Art/Animations/Pro Sword and Shield Pack/run right.fbx",
+      "ss3d_art_path": null,
+      "github_url": null,
+      "import_target_path": null,
+      "status": "in_game_only"
+    },
+    {
+      "name": "slash backhand.fbx",
+      "stem": "slash backhand",
+      "extension": "fbx",
+      "category": "Animations/Pro Sword and Shield Pack",
+      "in_game_path": "Assets/Art/Animations/Pro Sword and Shield Pack/slash backhand.fbx",
+      "ss3d_art_path": null,
+      "github_url": null,
+      "import_target_path": null,
+      "status": "in_game_only"
+    },
+    {
+      "name": "slash horizontal.fbx",
+      "stem": "slash horizontal",
+      "extension": "fbx",
+      "category": "Animations/Pro Sword and Shield Pack",
+      "in_game_path": "Assets/Art/Animations/Pro Sword and Shield Pack/slash horizontal.fbx",
       "ss3d_art_path": null,
       "github_url": null,
       "import_target_path": null,
@@ -81836,6 +81916,160 @@
       "status": "ss3d_art_only"
     },
     {
+      "name": "Bar.png",
+      "stem": "bar",
+      "extension": "png",
+      "category": "Textures/UI/Wallpapers",
+      "in_game_path": "Assets/Art/Textures/UI/Wallpapers/Bar.png",
+      "ss3d_art_path": null,
+      "github_url": null,
+      "import_target_path": null,
+      "status": "in_game_only"
+    },
+    {
+      "name": "Beeer.png",
+      "stem": "beeer",
+      "extension": "png",
+      "category": "Textures/UI/Wallpapers",
+      "in_game_path": "Assets/Art/Textures/UI/Wallpapers/Beeer.png",
+      "ss3d_art_path": null,
+      "github_url": null,
+      "import_target_path": null,
+      "status": "in_game_only"
+    },
+    {
+      "name": "Campfire.png",
+      "stem": "campfire",
+      "extension": "png",
+      "category": "Textures/UI/Wallpapers",
+      "in_game_path": "Assets/Art/Textures/UI/Wallpapers/Campfire.png",
+      "ss3d_art_path": null,
+      "github_url": null,
+      "import_target_path": null,
+      "status": "in_game_only"
+    },
+    {
+      "name": "CargoAnimals.png",
+      "stem": "cargoanimals",
+      "extension": "png",
+      "category": "Textures/UI/Wallpapers",
+      "in_game_path": "Assets/Art/Textures/UI/Wallpapers/CargoAnimals.png",
+      "ss3d_art_path": null,
+      "github_url": null,
+      "import_target_path": null,
+      "status": "in_game_only"
+    },
+    {
+      "name": "Chase.png",
+      "stem": "chase",
+      "extension": "png",
+      "category": "Textures/UI/Wallpapers",
+      "in_game_path": "Assets/Art/Textures/UI/Wallpapers/Chase.png",
+      "ss3d_art_path": null,
+      "github_url": null,
+      "import_target_path": null,
+      "status": "in_game_only"
+    },
+    {
+      "name": "Closet.png",
+      "stem": "closet",
+      "extension": "png",
+      "category": "Textures/UI/Wallpapers",
+      "in_game_path": "Assets/Art/Textures/UI/Wallpapers/Closet.png",
+      "ss3d_art_path": null,
+      "github_url": null,
+      "import_target_path": null,
+      "status": "in_game_only"
+    },
+    {
+      "name": "Clownin.png",
+      "stem": "clownin",
+      "extension": "png",
+      "category": "Textures/UI/Wallpapers",
+      "in_game_path": "Assets/Art/Textures/UI/Wallpapers/Clownin.png",
+      "ss3d_art_path": null,
+      "github_url": null,
+      "import_target_path": null,
+      "status": "in_game_only"
+    },
+    {
+      "name": "CreationOfGreytide.png",
+      "stem": "creationofgreytide",
+      "extension": "png",
+      "category": "Textures/UI/Wallpapers",
+      "in_game_path": "Assets/Art/Textures/UI/Wallpapers/CreationOfGreytide.png",
+      "ss3d_art_path": null,
+      "github_url": null,
+      "import_target_path": null,
+      "status": "in_game_only"
+    },
+    {
+      "name": "CultRising.png",
+      "stem": "cultrising",
+      "extension": "png",
+      "category": "Textures/UI/Wallpapers",
+      "in_game_path": "Assets/Art/Textures/UI/Wallpapers/CultRising.png",
+      "ss3d_art_path": null,
+      "github_url": null,
+      "import_target_path": null,
+      "status": "in_game_only"
+    },
+    {
+      "name": "CultRitual.png",
+      "stem": "cultritual",
+      "extension": "png",
+      "category": "Textures/UI/Wallpapers",
+      "in_game_path": "Assets/Art/Textures/UI/Wallpapers/CultRitual.png",
+      "ss3d_art_path": null,
+      "github_url": null,
+      "import_target_path": null,
+      "status": "in_game_only"
+    },
+    {
+      "name": "Drifting.png",
+      "stem": "drifting",
+      "extension": "png",
+      "category": "Textures/UI/Wallpapers",
+      "in_game_path": "Assets/Art/Textures/UI/Wallpapers/Drifting.png",
+      "ss3d_art_path": null,
+      "github_url": null,
+      "import_target_path": null,
+      "status": "in_game_only"
+    },
+    {
+      "name": "DrunkOfficer.png",
+      "stem": "drunkofficer",
+      "extension": "png",
+      "category": "Textures/UI/Wallpapers",
+      "in_game_path": "Assets/Art/Textures/UI/Wallpapers/DrunkOfficer.png",
+      "ss3d_art_path": null,
+      "github_url": null,
+      "import_target_path": null,
+      "status": "in_game_only"
+    },
+    {
+      "name": "EngineringGang.png",
+      "stem": "engineringgang",
+      "extension": "png",
+      "category": "Textures/UI/Wallpapers",
+      "in_game_path": "Assets/Art/Textures/UI/Wallpapers/EngineringGang.png",
+      "ss3d_art_path": null,
+      "github_url": null,
+      "import_target_path": null,
+      "status": "in_game_only"
+    },
+    {
+      "name": "FloatingSpace1.png",
+      "stem": "floatingspace1",
+      "extension": "png",
+      "category": "Textures/UI/Wallpapers",
+      "in_game_path": "Assets/Art/Textures/UI/Wallpapers/FloatingSpace1.png",
+      "ss3d_art_path": null,
+      "github_url": null,
+      "import_target_path": null,
+      "status": "in_game_only"
+    },
+    {
       "name": "FloatingSpace2.png",
       "stem": "floatingspace2",
       "extension": "png",
@@ -81852,6 +82086,281 @@
       "extension": "png",
       "category": "Textures/UI/Wallpapers",
       "in_game_path": "Assets/Art/Textures/UI/Wallpapers/FloatingSpace3.png",
+      "ss3d_art_path": null,
+      "github_url": null,
+      "import_target_path": null,
+      "status": "in_game_only"
+    },
+    {
+      "name": "Friends.png",
+      "stem": "friends",
+      "extension": "png",
+      "category": "Textures/UI/Wallpapers",
+      "in_game_path": "Assets/Art/Textures/UI/Wallpapers/Friends.png",
+      "ss3d_art_path": null,
+      "github_url": null,
+      "import_target_path": null,
+      "status": "in_game_only"
+    },
+    {
+      "name": "Gibber.png",
+      "stem": "gibber",
+      "extension": "png",
+      "category": "Textures/UI/Wallpapers",
+      "in_game_path": "Assets/Art/Textures/UI/Wallpapers/Gibber.png",
+      "ss3d_art_path": null,
+      "github_url": null,
+      "import_target_path": null,
+      "status": "in_game_only"
+    },
+    {
+      "name": "Heck.png",
+      "stem": "heck",
+      "extension": "png",
+      "category": "Textures/UI/Wallpapers",
+      "in_game_path": "Assets/Art/Textures/UI/Wallpapers/Heck.png",
+      "ss3d_art_path": null,
+      "github_url": null,
+      "import_target_path": null,
+      "status": "in_game_only"
+    },
+    {
+      "name": "Janitor.png",
+      "stem": "janitor",
+      "extension": "png",
+      "category": "Textures/UI/Wallpapers",
+      "in_game_path": "Assets/Art/Textures/UI/Wallpapers/Janitor.png",
+      "ss3d_art_path": null,
+      "github_url": null,
+      "import_target_path": null,
+      "status": "in_game_only"
+    },
+    {
+      "name": "Kitchen.png",
+      "stem": "kitchen",
+      "extension": "png",
+      "category": "Textures/UI/Wallpapers",
+      "in_game_path": "Assets/Art/Textures/UI/Wallpapers/Kitchen.png",
+      "ss3d_art_path": null,
+      "github_url": null,
+      "import_target_path": null,
+      "status": "in_game_only"
+    },
+    {
+      "name": "Library.png",
+      "stem": "library",
+      "extension": "png",
+      "category": "Textures/UI/Wallpapers",
+      "in_game_path": "Assets/Art/Textures/UI/Wallpapers/Library.png",
+      "ss3d_art_path": null,
+      "github_url": null,
+      "import_target_path": null,
+      "status": "in_game_only"
+    },
+    {
+      "name": "LostMiner.png",
+      "stem": "lostminer",
+      "extension": "png",
+      "category": "Textures/UI/Wallpapers",
+      "in_game_path": "Assets/Art/Textures/UI/Wallpapers/LostMiner.png",
+      "ss3d_art_path": null,
+      "github_url": null,
+      "import_target_path": null,
+      "status": "in_game_only"
+    },
+    {
+      "name": "Malf.png",
+      "stem": "malf",
+      "extension": "png",
+      "category": "Textures/UI/Wallpapers",
+      "in_game_path": "Assets/Art/Textures/UI/Wallpapers/Malf.png",
+      "ss3d_art_path": null,
+      "github_url": null,
+      "import_target_path": null,
+      "status": "in_game_only"
+    },
+    {
+      "name": "Medic.png",
+      "stem": "medic",
+      "extension": "png",
+      "category": "Textures/UI/Wallpapers",
+      "in_game_path": "Assets/Art/Textures/UI/Wallpapers/Medic.png",
+      "ss3d_art_path": null,
+      "github_url": null,
+      "import_target_path": null,
+      "status": "in_game_only"
+    },
+    {
+      "name": "MedicalScience.png",
+      "stem": "medicalscience",
+      "extension": "png",
+      "category": "Textures/UI/Wallpapers",
+      "in_game_path": "Assets/Art/Textures/UI/Wallpapers/MedicalScience.png",
+      "ss3d_art_path": null,
+      "github_url": null,
+      "import_target_path": null,
+      "status": "in_game_only"
+    },
+    {
+      "name": "PipesAndGates.png",
+      "stem": "pipesandgates",
+      "extension": "png",
+      "category": "Textures/UI/Wallpapers",
+      "in_game_path": "Assets/Art/Textures/UI/Wallpapers/PipesAndGates.png",
+      "ss3d_art_path": null,
+      "github_url": null,
+      "import_target_path": null,
+      "status": "in_game_only"
+    },
+    {
+      "name": "Quartermaster.png",
+      "stem": "quartermaster",
+      "extension": "png",
+      "category": "Textures/UI/Wallpapers",
+      "in_game_path": "Assets/Art/Textures/UI/Wallpapers/Quartermaster.png",
+      "ss3d_art_path": null,
+      "github_url": null,
+      "import_target_path": null,
+      "status": "in_game_only"
+    },
+    {
+      "name": "Reply.png",
+      "stem": "reply",
+      "extension": "png",
+      "category": "Textures/UI/Wallpapers",
+      "in_game_path": "Assets/Art/Textures/UI/Wallpapers/Reply.png",
+      "ss3d_art_path": null,
+      "github_url": null,
+      "import_target_path": null,
+      "status": "in_game_only"
+    },
+    {
+      "name": "Researcher.png",
+      "stem": "researcher",
+      "extension": "png",
+      "category": "Textures/UI/Wallpapers",
+      "in_game_path": "Assets/Art/Textures/UI/Wallpapers/Researcher.png",
+      "ss3d_art_path": null,
+      "github_url": null,
+      "import_target_path": null,
+      "status": "in_game_only"
+    },
+    {
+      "name": "Scientist.png",
+      "stem": "scientist",
+      "extension": "png",
+      "category": "Textures/UI/Wallpapers",
+      "in_game_path": "Assets/Art/Textures/UI/Wallpapers/Scientist.png",
+      "ss3d_art_path": null,
+      "github_url": null,
+      "import_target_path": null,
+      "status": "in_game_only"
+    },
+    {
+      "name": "Security.png",
+      "stem": "security",
+      "extension": "png",
+      "category": "Textures/UI/Wallpapers",
+      "in_game_path": "Assets/Art/Textures/UI/Wallpapers/Security.png",
+      "ss3d_art_path": null,
+      "github_url": null,
+      "import_target_path": null,
+      "status": "in_game_only"
+    },
+    {
+      "name": "ShoeStealer.png",
+      "stem": "shoestealer",
+      "extension": "png",
+      "category": "Textures/UI/Wallpapers",
+      "in_game_path": "Assets/Art/Textures/UI/Wallpapers/ShoeStealer.png",
+      "ss3d_art_path": null,
+      "github_url": null,
+      "import_target_path": null,
+      "status": "in_game_only"
+    },
+    {
+      "name": "Slime.png",
+      "stem": "slime",
+      "extension": "png",
+      "category": "Textures/UI/Wallpapers",
+      "in_game_path": "Assets/Art/Textures/UI/Wallpapers/Slime.png",
+      "ss3d_art_path": null,
+      "github_url": null,
+      "import_target_path": null,
+      "status": "in_game_only"
+    },
+    {
+      "name": "Spaced.png",
+      "stem": "spaced",
+      "extension": "png",
+      "category": "Textures/UI/Wallpapers",
+      "in_game_path": "Assets/Art/Textures/UI/Wallpapers/Spaced.png",
+      "ss3d_art_path": null,
+      "github_url": null,
+      "import_target_path": null,
+      "status": "in_game_only"
+    },
+    {
+      "name": "SpaceEngineer1.png",
+      "stem": "spaceengineer1",
+      "extension": "png",
+      "category": "Textures/UI/Wallpapers",
+      "in_game_path": "Assets/Art/Textures/UI/Wallpapers/SpaceEngineer1.png",
+      "ss3d_art_path": null,
+      "github_url": null,
+      "import_target_path": null,
+      "status": "in_game_only"
+    },
+    {
+      "name": "SpaceEngineer2.png",
+      "stem": "spaceengineer2",
+      "extension": "png",
+      "category": "Textures/UI/Wallpapers",
+      "in_game_path": "Assets/Art/Textures/UI/Wallpapers/SpaceEngineer2.png",
+      "ss3d_art_path": null,
+      "github_url": null,
+      "import_target_path": null,
+      "status": "in_game_only"
+    },
+    {
+      "name": "Spessmen.png",
+      "stem": "spessmen",
+      "extension": "png",
+      "category": "Textures/UI/Wallpapers",
+      "in_game_path": "Assets/Art/Textures/UI/Wallpapers/Spessmen.png",
+      "ss3d_art_path": null,
+      "github_url": null,
+      "import_target_path": null,
+      "status": "in_game_only"
+    },
+    {
+      "name": "Station1.png",
+      "stem": "station1",
+      "extension": "png",
+      "category": "Textures/UI/Wallpapers",
+      "in_game_path": "Assets/Art/Textures/UI/Wallpapers/Station1.png",
+      "ss3d_art_path": null,
+      "github_url": null,
+      "import_target_path": null,
+      "status": "in_game_only"
+    },
+    {
+      "name": "TheLastBrunch.png",
+      "stem": "thelastbrunch",
+      "extension": "png",
+      "category": "Textures/UI/Wallpapers",
+      "in_game_path": "Assets/Art/Textures/UI/Wallpapers/TheLastBrunch.png",
+      "ss3d_art_path": null,
+      "github_url": null,
+      "import_target_path": null,
+      "status": "in_game_only"
+    },
+    {
+      "name": "TimeAssassinDark.png",
+      "stem": "timeassassindark",
+      "extension": "png",
+      "category": "Textures/UI/Wallpapers",
+      "in_game_path": "Assets/Art/Textures/UI/Wallpapers/TimeAssassinDark.png",
       "ss3d_art_path": null,
       "github_url": null,
       "import_target_path": null,
@@ -85464,6 +85973,72 @@
       "github_url": "https://github.com/RE-SS3D/SS3D-Art/blob/main/Assets/Textures/World/VFX/Tracks/Vehicle/TireMarksSingleOffset.png",
       "import_target_path": "Assets/Art/Textures/World/VFX/Tracks/Vehicle/TireMarksSingleOffset.png",
       "status": "ss3d_art_only"
+    },
+    {
+      "name": "Bug_420Hydro.webm",
+      "stem": "bug_420hydro",
+      "extension": "webm",
+      "category": "Videos/Wallpapers",
+      "in_game_path": "Assets/Art/Videos/Wallpapers/Bug_420Hydro.webm",
+      "ss3d_art_path": null,
+      "github_url": null,
+      "import_target_path": null,
+      "status": "in_game_only"
+    },
+    {
+      "name": "Bug_Animation.webm",
+      "stem": "bug_animation",
+      "extension": "webm",
+      "category": "Videos/Wallpapers",
+      "in_game_path": "Assets/Art/Videos/Wallpapers/Bug_Animation.webm",
+      "ss3d_art_path": null,
+      "github_url": null,
+      "import_target_path": null,
+      "status": "in_game_only"
+    },
+    {
+      "name": "Bug_Hydroponics.webm",
+      "stem": "bug_hydroponics",
+      "extension": "webm",
+      "category": "Videos/Wallpapers",
+      "in_game_path": "Assets/Art/Videos/Wallpapers/Bug_Hydroponics.webm",
+      "ss3d_art_path": null,
+      "github_url": null,
+      "import_target_path": null,
+      "status": "in_game_only"
+    },
+    {
+      "name": "Bug_Pandemic.webm",
+      "stem": "bug_pandemic",
+      "extension": "webm",
+      "category": "Videos/Wallpapers",
+      "in_game_path": "Assets/Art/Videos/Wallpapers/Bug_Pandemic.webm",
+      "ss3d_art_path": null,
+      "github_url": null,
+      "import_target_path": null,
+      "status": "in_game_only"
+    },
+    {
+      "name": "Bug_SpaceJunk.webm",
+      "stem": "bug_spacejunk",
+      "extension": "webm",
+      "category": "Videos/Wallpapers",
+      "in_game_path": "Assets/Art/Videos/Wallpapers/Bug_SpaceJunk.webm",
+      "ss3d_art_path": null,
+      "github_url": null,
+      "import_target_path": null,
+      "status": "in_game_only"
+    },
+    {
+      "name": "Bug_Syndie.webm",
+      "stem": "bug_syndie",
+      "extension": "webm",
+      "category": "Videos/Wallpapers",
+      "in_game_path": "Assets/Art/Videos/Wallpapers/Bug_Syndie.webm",
+      "ss3d_art_path": null,
+      "github_url": null,
+      "import_target_path": null,
+      "status": "in_game_only"
     }
   ]
 }

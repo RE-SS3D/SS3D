@@ -1,6 +1,8 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements">
     <ui:VisualElement name="main-menu" class="main-menu">
         <ui:VisualElement name="wallpaper" class="main-menu__wallpaper" picking-mode="Ignore" />
+        <ui:VisualElement name="video-wallpaper" class="main-menu__wallpaper main-menu__video-wallpaper" picking-mode="Ignore" />
+        <ui:VisualElement name="wallpaper-veil" class="main-menu__wallpaper main-menu__wallpaper-veil" picking-mode="Ignore" />
         <ui:ScrollView name="sidebar" class="main-menu__sidebar" horizontal-scroller-visibility="Hidden" vertical-scroller-visibility="Auto">
             <ui:VisualElement name="logo" class="main-menu__logo" picking-mode="Ignore" />
             <ui:VisualElement name="update-banner" class="main-menu__update main-menu__hidden">

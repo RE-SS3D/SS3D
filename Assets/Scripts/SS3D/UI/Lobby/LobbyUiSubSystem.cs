@@ -2,6 +2,7 @@ using SS3D.Core;
 using System.Linq;
 using FishNet;
 using FishNet.Connection;
+using FishNet.Managing;
 using SS3D.Permissions;
 using SS3D.Systems.Comms;
 using SS3D.Systems.Entities;
@@ -281,7 +282,7 @@ namespace SS3D.UI.Lobby
                 _lastStationName = rounds.StationName;
             }
             _nextSessionRefresh = Time.unscaledTime + 0.2f;
-            bool online = InstanceFinder.ClientManager != null && InstanceFinder.ClientManager.Started;
+            bool online = NetworkManager.Instances.Count > 0 && InstanceFinder.ClientManager != null && InstanceFinder.ClientManager.Started;
             bool connected = online && SubSystems.TryGet(out PlayerSubSystem _) && SubSystems.TryGet(out RoundSubSystem _);
             SubSystems.TryGet(out PlayerSubSystem players);
             SubSystems.TryGet(out ReadyPlayersSubSystem ready);

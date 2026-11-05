@@ -16,7 +16,7 @@ namespace SS3D.UI.Shell.MainMenu
         public VisualElement Root { get; }
         private readonly MainMenuAssetCatalog _catalog;
         private Texture2D _blurredWallpaper;
-        private Texture2D _blurredSource;
+        private Texture _blurredSource;
         private MainMenuPresentation _model = new();
 
         /// <summary>A button or link; server commands pass the server id, others an empty string.</summary>
@@ -77,23 +77,57 @@ namespace SS3D.UI.Shell.MainMenu
             Root.Q("music-volume-fill").style.width = Length.Percent(Mathf.Clamp01(value) * 100f);
         }
 
+        /// <summary>The wallpaper alone: unlike <see cref="Present"/> it leaves the server list and its focus alone.</summary>
+        public void PresentWallpaper(MainMenuPresentation model)
+        {
+            bool operation = model.Screen is MainMenuScreen.Connecting or MainMenuScreen.Hosting or MainMenuScreen.Updating;
+            Texture2D still = _catalog.Wallpaper(model.Wallpaper);
+            Root.Q("wallpaper").style.backgroundImage = still;
+            if (operation)
+            {
+                Texture source = model.VideoWallpaper != null ? model.VideoWallpaper : still;
+                if (_blurredWallpaper == null || _blurredSource != source)
+                {
+                    DestroyBlur();
+                    _blurredSource = source;
+                    _blurredWallpaper = MainMenuWallpaper.Blur(source);
+                }
+                Root.Q("wallpaper").style.backgroundImage = _blurredWallpaper;
+            }
+            else
+            {
+                DestroyBlur(); // A video has moved on by the next dialog.
+            }
+            PresentVideo(model.VideoWallpaper, operation);
+            Root.Q("wallpaper-veil").EnableInClassList("main-menu__wallpaper-veil--on", model.WallpaperVeiled);
+        }
+
+        private void PresentVideo(Texture frame, bool operation)
+        {
+            VisualElement video = Root.Q("video-wallpaper");
+            if (frame is RenderTexture target) video.style.backgroundImage = new StyleBackground(Background.FromRenderTexture(target));
+            video.EnableInClassList("main-menu__video-wallpaper--visible", frame != null && !operation);
+        }
+
         public void Attach(VisualElement layerRoot) { Detach(); layerRoot.Add(Root); }
         public void Detach()
         {
             Root.RemoveFromHierarchy();
-            if (_blurredWallpaper != null)
-            {
-                if (UnityEngine.Application.isPlaying) Object.Destroy(_blurredWallpaper);
-                else Object.DestroyImmediate(_blurredWallpaper);
-                _blurredWallpaper = null;
-                _blurredSource = null;
-            }
+            DestroyBlur();
+        }
+
+        private void DestroyBlur()
+        {
+            if (_blurredWallpaper == null) return;
+            if (UnityEngine.Application.isPlaying) Object.Destroy(_blurredWallpaper);
+            else Object.DestroyImmediate(_blurredWallpaper);
+            _blurredWallpaper = null;
+            _blurredSource = null;
         }
 
         public void Present(MainMenuPresentation model)
         {
             _model = model;
-            Root.Q("wallpaper").style.backgroundImage = _catalog.Wallpaper(model.Wallpaper);
             SetText("player-name", model.PlayerName);
             SetText("port", model.Port);
             Root.Q<Label>("version").text = $"v{model.Version} pre-alpha";
@@ -133,21 +167,7 @@ namespace SS3D.UI.Shell.MainMenu
             bool settings = model.Screen == MainMenuScreen.Settings;
             Root.Q("settings").EnableInClassList("main-menu__nav--selected", settings);
             bool operation = model.Screen is MainMenuScreen.Connecting or MainMenuScreen.Hosting or MainMenuScreen.Updating;
-            if (operation)
-            {
-                Texture2D source = _catalog.Wallpaper(model.Wallpaper);
-                if (_blurredWallpaper == null || _blurredSource != source)
-                {
-                    if (_blurredWallpaper != null)
-                    {
-                        if (UnityEngine.Application.isPlaying) Object.Destroy(_blurredWallpaper);
-                        else Object.DestroyImmediate(_blurredWallpaper);
-                    }
-                    _blurredSource = source;
-                    _blurredWallpaper = MainMenuWallpaper.Blur(source);
-                }
-                Root.Q("wallpaper").style.backgroundImage = _blurredWallpaper;
-            }
+            PresentWallpaper(model);
             Show("sidebar", !operation);
             Show("side-panel", servers || settings);
             Show("server-scroll", servers);

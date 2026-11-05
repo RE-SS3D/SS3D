@@ -1,5 +1,6 @@
 using System.Linq;
 using FishNet;
+using FishNet.Managing;
 using FishNet.Transporting.Tugboat.Server;
 using SS3D.Core;
 using SS3D.Core.Behaviours;
@@ -47,7 +48,7 @@ namespace SS3D.Systems.Rounds
             }
 
             _nextRefresh = Time.unscaledTime + RefreshSeconds;
-            _reply = InstanceFinder.IsServer ? ServerStatusPacket.EncodeReply(CurrentStatus()) : null;
+            _reply = NetworkManager.Instances.Count > 0 && InstanceFinder.IsServer ? ServerStatusPacket.EncodeReply(CurrentStatus()) : null;
         }
 
         private static ServerStatus CurrentStatus()

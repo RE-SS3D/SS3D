@@ -46,6 +46,7 @@ ART_EXTENSIONS = {
     "svg",
     "ttf",
     "wav",
+    "webm",
 }
 
 EXCLUDE_PATH_PREFIXES = (

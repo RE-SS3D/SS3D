@@ -3,6 +3,7 @@ using System.Collections;
 using System.IO;
 using System.Linq;
 using FishNet;
+using FishNet.Managing;
 using FishNet.Managing.Client;
 using SS3D.Core;
 using SS3D.Core.Behaviours;
@@ -183,6 +184,10 @@ namespace SS3D.Systems.BugReports
 
         private void BindClient()
         {
+            // InstanceFinder logs and rescans the scenes on every miss, and this runs each frame.
+            if (NetworkManager.Instances.Count == 0)
+                return;
+
             ClientManager client = InstanceFinder.ClientManager;
             if (client == null || client == _clientManager)
                 return;

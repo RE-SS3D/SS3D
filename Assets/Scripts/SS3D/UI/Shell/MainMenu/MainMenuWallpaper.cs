@@ -5,7 +5,7 @@ namespace SS3D.UI.Shell.MainMenu
     /// <summary>Small cached Gaussian backdrop for operation dialogs; never modifies the source artwork.</summary>
     internal static class MainMenuWallpaper
     {
-        public static Texture2D Blur(Texture2D source)
+        public static Texture2D Blur(Texture source)
         {
             const int width = 120;
             const int height = 68;

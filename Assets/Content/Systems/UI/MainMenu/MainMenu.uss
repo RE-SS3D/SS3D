@@ -9,6 +9,10 @@
 .main-menu__text { margin: 0; padding: 0; }
 .main-menu Button { margin: 0; border-width: 0; color: white; -unity-font-style: normal; }
 .main-menu__wallpaper { position: absolute; left: 0; right: 0; top: 0; bottom: 0; -unity-background-scale-mode: scale-and-crop; }
+.main-menu__video-wallpaper { opacity: 0; transition: opacity 0.5s; }
+.main-menu__video-wallpaper--visible { opacity: 1; }
+.main-menu__wallpaper-veil { background-color: black; opacity: 0; transition: opacity 0.5s; }
+.main-menu__wallpaper-veil--on { opacity: 1; }
 .main-menu__sidebar { position: absolute; left: 0; top: 0; bottom: 0; width: 400px; background-color: rgba(34,34,34,0.97); border-right-width: 1px; border-right-color: var(--menu-border); }
 
 .main-menu__logo { height: 140.625px; width: 300px; margin: 32px 49px 8px; flex-shrink: 0; -unity-background-scale-mode: scale-to-fit; }
