@@ -1,3 +1,5 @@
+using FishNet.Connection;
+using FishNet.Object;
 using UnityEngine;
 
 namespace SS3D.Systems.Entities.Humanoid
@@ -34,6 +36,27 @@ namespace SS3D.Systems.Entities.Humanoid
                 MovePlayer();
                 MoveMovementTarget(Vector2.zero);
             }
+        }
+
+        /// <summary>
+        /// Server: moves the ghost to <paramref name="position"/>. Ghost movement is driven by the
+        /// owning client, so the owner is told to move too; a server-only write would be overwritten
+        /// by the owner's next position update.
+        /// </summary>
+        [Server]
+        public void ServerTeleport(Vector3 position)
+        {
+            transform.position = position;
+            if (Owner != null && Owner.IsValid)
+            {
+                TargetTeleport(Owner, position);
+            }
+        }
+
+        [TargetRpc]
+        private void TargetTeleport(NetworkConnection conn, Vector3 position)
+        {
+            transform.position = position;
         }
 
         /// <summary>

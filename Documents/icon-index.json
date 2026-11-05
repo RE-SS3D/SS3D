@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-05T19:01:41.452416+00:00",
+  "generated_at": "2026-11-05T20:20:22.354157+00:00",
   "purpose": "Agent reference for locating icon assets under Assets/Art/Icons/ (plus Phase 2 InteractionIcons scatter; see asset-file-structure-taxonomy).",
   "sources": [
     {
@@ -36,11 +36,16 @@
       "source": "alert-stack",
       "count": 18,
       "root": "Assets/Art/Icons/Alerts"
+    },
+    {
+      "source": "lobby-icons",
+      "count": 17,
+      "root": "Assets/Art/Icons/Lobby"
     }
   ],
   "summary": {
-    "total_icons": 4782,
-    "source_count": 7,
+    "total_icons": 4799,
+    "source_count": 8,
     "pack_count": 36,
     "svg_count": 4219
   },
@@ -55974,6 +55979,193 @@
       "tags": [
         "thirst",
         "droplet"
+      ]
+    },
+    {
+      "name": "DropdownArrow.png",
+      "stem": "DropdownArrow",
+      "extension": "png",
+      "source": "lobby-icons",
+      "pack": "Lobby",
+      "path": "Assets/Art/Icons/Lobby/DropdownArrow.png",
+      "tags": [
+        "dropdownarrow"
+      ]
+    },
+    {
+      "name": "Bartender.png",
+      "stem": "Bartender",
+      "extension": "png",
+      "source": "lobby-icons",
+      "pack": "Jobs",
+      "path": "Assets/Art/Icons/Lobby/Jobs/Bartender.png",
+      "tags": [
+        "bartender"
+      ]
+    },
+    {
+      "name": "Captain.png",
+      "stem": "Captain",
+      "extension": "png",
+      "source": "lobby-icons",
+      "pack": "Jobs",
+      "path": "Assets/Art/Icons/Lobby/Jobs/Captain.png",
+      "tags": [
+        "captain"
+      ]
+    },
+    {
+      "name": "CargoTechnician.png",
+      "stem": "CargoTechnician",
+      "extension": "png",
+      "source": "lobby-icons",
+      "pack": "Jobs",
+      "path": "Assets/Art/Icons/Lobby/Jobs/CargoTechnician.png",
+      "tags": [
+        "cargotechnician"
+      ]
+    },
+    {
+      "name": "Chef.png",
+      "stem": "Chef",
+      "extension": "png",
+      "source": "lobby-icons",
+      "pack": "Jobs",
+      "path": "Assets/Art/Icons/Lobby/Jobs/Chef.png",
+      "tags": [
+        "chef"
+      ]
+    },
+    {
+      "name": "Chemist.png",
+      "stem": "Chemist",
+      "extension": "png",
+      "source": "lobby-icons",
+      "pack": "Jobs",
+      "path": "Assets/Art/Icons/Lobby/Jobs/Chemist.png",
+      "tags": [
+        "chemist"
+      ]
+    },
+    {
+      "name": "ChiefEngineer.png",
+      "stem": "ChiefEngineer",
+      "extension": "png",
+      "source": "lobby-icons",
+      "pack": "Jobs",
+      "path": "Assets/Art/Icons/Lobby/Jobs/ChiefEngineer.png",
+      "tags": [
+        "chiefengineer"
+      ]
+    },
+    {
+      "name": "Doctor.png",
+      "stem": "Doctor",
+      "extension": "png",
+      "source": "lobby-icons",
+      "pack": "Jobs",
+      "path": "Assets/Art/Icons/Lobby/Jobs/Doctor.png",
+      "tags": [
+        "doctor"
+      ]
+    },
+    {
+      "name": "Engineer.png",
+      "stem": "Engineer",
+      "extension": "png",
+      "source": "lobby-icons",
+      "pack": "Jobs",
+      "path": "Assets/Art/Icons/Lobby/Jobs/Engineer.png",
+      "tags": [
+        "engineer"
+      ]
+    },
+    {
+      "name": "Janitor.png",
+      "stem": "Janitor",
+      "extension": "png",
+      "source": "lobby-icons",
+      "pack": "Jobs",
+      "path": "Assets/Art/Icons/Lobby/Jobs/Janitor.png",
+      "tags": [
+        "janitor"
+      ]
+    },
+    {
+      "name": "Miner.png",
+      "stem": "Miner",
+      "extension": "png",
+      "source": "lobby-icons",
+      "pack": "Jobs",
+      "path": "Assets/Art/Icons/Lobby/Jobs/Miner.png",
+      "tags": [
+        "miner"
+      ]
+    },
+    {
+      "name": "Plumber.png",
+      "stem": "Plumber",
+      "extension": "png",
+      "source": "lobby-icons",
+      "pack": "Jobs",
+      "path": "Assets/Art/Icons/Lobby/Jobs/Plumber.png",
+      "tags": [
+        "plumber"
+      ]
+    },
+    {
+      "name": "Roboticist.png",
+      "stem": "Roboticist",
+      "extension": "png",
+      "source": "lobby-icons",
+      "pack": "Jobs",
+      "path": "Assets/Art/Icons/Lobby/Jobs/Roboticist.png",
+      "tags": [
+        "roboticist"
+      ]
+    },
+    {
+      "name": "SecurityOfficer.png",
+      "stem": "SecurityOfficer",
+      "extension": "png",
+      "source": "lobby-icons",
+      "pack": "Jobs",
+      "path": "Assets/Art/Icons/Lobby/Jobs/SecurityOfficer.png",
+      "tags": [
+        "securityofficer"
+      ]
+    },
+    {
+      "name": "Warden.png",
+      "stem": "Warden",
+      "extension": "png",
+      "source": "lobby-icons",
+      "pack": "Jobs",
+      "path": "Assets/Art/Icons/Lobby/Jobs/Warden.png",
+      "tags": [
+        "warden"
+      ]
+    },
+    {
+      "name": "PnJanitor.png",
+      "stem": "PnJanitor",
+      "extension": "png",
+      "source": "lobby-icons",
+      "pack": "Lobby",
+      "path": "Assets/Art/Icons/Lobby/PnJanitor.png",
+      "tags": [
+        "pnjanitor"
+      ]
+    },
+    {
+      "name": "PnSecurity.png",
+      "stem": "PnSecurity",
+      "extension": "png",
+      "source": "lobby-icons",
+      "pack": "Lobby",
+      "path": "Assets/Art/Icons/Lobby/PnSecurity.png",
+      "tags": [
+        "pnsecurity"
       ]
     }
   ]

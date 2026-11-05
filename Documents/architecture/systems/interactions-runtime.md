@@ -66,6 +66,7 @@ Discover / `HasPoint` contract: [interactions-framework](interactions-framework.
 - Character paperdoll open: `SearchInteraction` via `HandSearchExtension` (Discover/`CmdRunInteraction`); Shift+Click is only a shortcut — do not re-add overlay click bypasses.
 - UI-started delayed takes (character examine): `InteractionController.RequestTakeFromCharacter` — do not force paperdoll slots through Discover/`CmdRunInteraction`.
 - Harm primary combat: `CombatInteractionNetwork` on Human — see [combat](combat.md).
+- Reach through walls: `InteractionExtensions.RangeCheck` fails when the hand-to-target segment crosses an `IReachBlocker` that isn't the target. `PlacedTileObject` blocks for `Wall` (walls, windows, girders) and `Door` generic types. Make a new solid structure block by giving it one of those types or its own `IReachBlocker`; don't add per-interaction wall raycasts. Wall mounts implement `IReachSurface` through `PlacedTileObject`: their tile is the wall's, so reach is measured to the wall face on the side they face.
 
 ## Pitfalls
 
@@ -85,6 +86,8 @@ Discover / `HasPoint` contract: [interactions-framework](interactions-framework.
 - **Harm must not fall through to world verbs:** `HandleRunPrimary` always returns after the melee attempt in Harm — never resume the Help path when recovery blocks the swing. Unrestricted interactions are Help-default in `MatchesIntent`; Drop hotkey also checks Help.
 - **Radial shows icons but petal clicks no-op after first close:** `Disappear` unsubscribes `InteractionSelected`/`CloseRequested` (avoids double-fire during hide). The UiShell-backed menu view is reused, so `ShowInteractionsMenu` must call `BindMenuViewHandlers` every open — otherwise the second hold-RMB session looks fine (icons populate) but petals never route. Not Addressables-related.
 - **Hover outline and examine tooltip flicker at some angles:** the outline hull used to draw at `Geometry-1` with `ZWrite On`. The selection pick pass reuses scene depth after opaques, so where the expanded hull poked in front of the object's own surface the object failed its own pick, lost hover, hid the outline and regained hover next frame. `InteractionOutline.shader` now draws at `Geometry+1` with `ZWrite Off`; keep it from writing depth.
+- **Reach cast only sees the Default layer:** wall and door solids sit on Default; the Walls layer holds only the vision-obstacle child boxes. The cast stops 5 cm short of each end and runs both ways, so an origin inside a wall still blocks. A blocker that is (or contains) the target never blocks, so walls and airlocks stay interactable from their own side. Many targets, airlocks included, aren't `IGameObjectProvider`s, so resolve a target's transform with `GetTargetTransform`, not `GetGameObject()` alone.
+- **Wall mounts sit inside the wall's 1 m solid:** a mount shares its wall's tile and its colliders are centred there, so a picked point is 0.4 m inside the wall. Reach goes through `IReachSurface` to the face in the mount's `dir`, the side `BuildChecker` keeps free of walls.
 - **New interaction icons:** image assets belong under `Assets/Art/Icons/`; consult the [icon index](../../icon-index.md). The legacy interaction icon builder still targets `Assets/Art/Graphics/UI/Interactions/InteractionIcons/` and must be updated before using it for new images.
 
 ## Tests

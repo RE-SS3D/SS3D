@@ -1,5 +1,6 @@
 ﻿using Coimbra;
 using SS3D.Systems.Inventory.Items;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Assertions;
 
@@ -21,6 +22,34 @@ namespace SS3D.Systems.Inventory.Containers
         /// The list of items displayed in the container;
         /// </summary>
         private Item[] _displayedItems;
+
+        /// <summary>
+        /// Grips set before the character's Animator has posed the hand bone. The pivot is a child of
+        /// the hand, so a grip set against the bind pose (a loadout item at spawn) stays wrong until
+        /// the item is picked up again (#158). Re-set once the hand has been animated.
+        /// </summary>
+        private readonly List<PendingGrip> _pendingGrips = new();
+
+        /// <summary>Re-set the grip anyway after this many frames, so an Animator that never starts can't leak entries.</summary>
+        private const int MaxGripWaitFrames = 60;
+
+        private readonly struct PendingGrip
+        {
+            public readonly Transform Pivot;
+            public readonly Transform CharacterRoot;
+            public readonly Quaternion AttachmentRotation;
+            public readonly Animator Animator;
+            public readonly int AttachedFrame;
+
+            public PendingGrip(Transform pivot, Transform characterRoot, Quaternion attachmentRotation, Animator animator, int attachedFrame)
+            {
+                Pivot = pivot;
+                CharacterRoot = characterRoot;
+                AttachmentRotation = attachmentRotation;
+                Animator = animator;
+                AttachedFrame = attachedFrame;
+            }
+        }
 
         public void Awake()
         {
@@ -80,6 +109,13 @@ namespace SS3D.Systems.Inventory.Containers
                 temporaryPoint.transform.rotation = characterRoot.rotation * attachmentPoint.localRotation;
                 itemTransform.localRotation = Quaternion.identity;
                 itemTransform.localPosition = -attachmentPoint.localPosition;
+
+                _pendingGrips.Add(new PendingGrip(
+                    temporaryPoint.transform,
+                    characterRoot,
+                    attachmentPoint.localRotation,
+                    display.GetComponentInParent<Animator>(),
+                    Time.frameCount));
             }
             else
             {
@@ -89,6 +125,33 @@ namespace SS3D.Systems.Inventory.Containers
             }
 
             _displayedItems[index] = item;
+        }
+
+        private void LateUpdate()
+        {
+            for (int i = _pendingGrips.Count - 1; i >= 0; i--)
+            {
+                PendingGrip grip = _pendingGrips[i];
+                if (grip.Pivot == null || grip.CharacterRoot == null)
+                {
+                    _pendingGrips.RemoveAt(i);
+                    continue;
+                }
+
+                int waited = Time.frameCount - grip.AttachedFrame;
+                bool handAnimated = grip.Animator == null
+                    || (grip.Animator.isActiveAndEnabled && grip.Animator.isInitialized);
+
+                // LateUpdate runs after the Animator, so from the frame after attach the hand bone
+                // holds a real animated pose rather than the bind pose.
+                if (waited < 1 || (!handAnimated && waited < MaxGripWaitFrames))
+                {
+                    continue;
+                }
+
+                grip.Pivot.rotation = grip.CharacterRoot.rotation * grip.AttachmentRotation;
+                _pendingGrips.RemoveAt(i);
+            }
         }
 
         private void ContainerOnItemDetached(object sender, Item item)

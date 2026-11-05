@@ -73,6 +73,133 @@ namespace EditorTests
             Assert.IsFalse(InteractionExtensions.RangeCheck(unset));
         }
 
+        [Test]
+        public void RangeCheck_WallBetweenSourceAndPoint_Blocks()
+        {
+            StubInteractionSource source = CreateSourceAtOrigin();
+            CreateWall(new Vector3(0.6f, 0f, 0f), blocksReach: true);
+            CreateGameObject(out GameObject targetObject, out TargetComponent target);
+            targetObject.transform.position = new Vector3(1.2f, 0f, 0f);
+            Physics.SyncTransforms();
+
+            Assert.IsFalse(InteractionExtensions.RangeCheck(new InteractionEvent(source, target, new Vector3(1.2f, 0f, 0f), Vector3.left)));
+            Assert.IsFalse(InteractionExtensions.RangeCheck(new InteractionEvent(source, target)));
+        }
+
+        [Test]
+        public void RangeCheck_NonBlockingColliderBetween_DoesNotBlock()
+        {
+            StubInteractionSource source = CreateSourceAtOrigin();
+            CreateWall(new Vector3(0.6f, 0f, 0f), blocksReach: false);
+            CreateGameObject(out GameObject targetObject, out TargetComponent target);
+            targetObject.transform.position = new Vector3(1.2f, 0f, 0f);
+            Physics.SyncTransforms();
+
+            Assert.IsTrue(InteractionExtensions.RangeCheck(new InteractionEvent(source, target, new Vector3(1.2f, 0f, 0f), Vector3.left)));
+        }
+
+        [Test]
+        public void RangeCheck_TargetIsTheBlocker_IsReachable()
+        {
+            StubInteractionSource source = CreateSourceAtOrigin();
+            GameObject wall = CreateWall(new Vector3(1f, 0f, 0f), blocksReach: true);
+            TargetComponent target = wall.AddComponent<TargetComponent>();
+            Physics.SyncTransforms();
+
+            // Point on the wall's near face, and the unresolved-point fallback.
+            Assert.IsTrue(InteractionExtensions.RangeCheck(new InteractionEvent(source, target, new Vector3(0.9f, 0f, 0f), Vector3.left)));
+            Assert.IsTrue(InteractionExtensions.RangeCheck(new InteractionEvent(source, target)));
+        }
+
+        [Test]
+        public void RangeCheck_WallMount_ReachableOnNearFaceOnly()
+        {
+            StubInteractionSource source = CreateSourceAtOrigin();
+            // Wall spans x 0.9..1.1.
+            CreateWall(new Vector3(1f, 0f, 0f), blocksReach: true);
+
+            CreateGameObject(out GameObject nearMount, out TargetComponent nearTarget);
+            nearMount.transform.position = new Vector3(0.89f, 0f, 0f);
+            CreateGameObject(out GameObject farMount, out TargetComponent farTarget);
+            farMount.transform.position = new Vector3(1.11f, 0f, 0f);
+            Physics.SyncTransforms();
+
+            Assert.IsTrue(InteractionExtensions.RangeCheck(new InteractionEvent(source, nearTarget, new Vector3(0.89f, 0f, 0f), Vector3.left)));
+            Assert.IsFalse(InteractionExtensions.RangeCheck(new InteractionEvent(source, farTarget, new Vector3(1.11f, 0f, 0f), Vector3.left)));
+        }
+
+        [Test]
+        public void RangeCheck_BlockerIsATargetWithoutGameObjectProvider_IsReachable()
+        {
+            StubInteractionSource source = CreateSourceAtOrigin();
+            GameObject door = CreateWall(new Vector3(1f, 0f, 0f), blocksReach: true);
+            BareTargetComponent target = door.AddComponent<BareTargetComponent>();
+            Physics.SyncTransforms();
+
+            // A point inside the door, past its near face, as an airlock click gives.
+            Assert.IsTrue(InteractionExtensions.RangeCheck(new InteractionEvent(source, target, new Vector3(1f, 0f, 0f), Vector3.left)));
+        }
+
+        [Test]
+        public void RangeCheck_MountInsideWallSolid_ReachableOnlyFromItsFace()
+        {
+            // Mount at the wall's centre, facing the source; wall spans x 0.9..1.1.
+            StubInteractionSource source = CreateSourceAtOrigin();
+            CreateWall(new Vector3(1f, 0f, 0f), blocksReach: true);
+            CreateGameObject(out GameObject facingUs, out SurfaceTargetComponent facingTarget);
+            facingUs.transform.position = new Vector3(1f, 0f, 0f);
+            facingTarget.Face = new Vector3(0.9f, 0f, 0f);
+            CreateGameObject(out GameObject facingAway, out SurfaceTargetComponent awayTarget);
+            facingAway.transform.position = new Vector3(1f, 0f, 0f);
+            awayTarget.Face = new Vector3(1.1f, 0f, 0f);
+            Physics.SyncTransforms();
+
+            Assert.IsTrue(InteractionExtensions.RangeCheck(new InteractionEvent(source, facingTarget, new Vector3(1f, 0f, 0f), Vector3.left)));
+            Assert.IsFalse(InteractionExtensions.RangeCheck(new InteractionEvent(source, awayTarget, new Vector3(1f, 0f, 0f), Vector3.left)));
+        }
+
+        private StubInteractionSource CreateSourceAtOrigin()
+        {
+            CreateGameObject(out GameObject sourceObject, out RangeLimitBehaviour rangeLimit);
+            sourceObject.transform.position = Vector3.zero;
+            rangeLimit.Origin = Vector3.zero;
+            rangeLimit.Range = new RangeLimit(1.5f, 2f);
+            return new StubInteractionSource(sourceObject);
+        }
+
+        /// <summary>A 0.2 m thick, 2 m tall slab across the X axis, on the Default layer like a real wall.</summary>
+        private GameObject CreateWall(Vector3 centre, bool blocksReach)
+        {
+            CreateGameObject(out GameObject wall, out ReachBlockerBehaviour blocker);
+            blocker.Blocks = blocksReach;
+            wall.transform.position = centre;
+            BoxCollider box = wall.AddComponent<BoxCollider>();
+            box.size = new Vector3(0.2f, 2f, 2f);
+            return wall;
+        }
+
+        /// <summary>Like an airlock: a target that isn't an <see cref="IGameObjectProvider"/>.</summary>
+        private sealed class BareTargetComponent : MonoBehaviour, IInteractionTarget
+        {
+            public IInteraction[] CreateTargetInteractions(InteractionEvent interactionEvent) => System.Array.Empty<IInteraction>();
+        }
+
+        private sealed class SurfaceTargetComponent : MonoBehaviour, IInteractionTarget, IReachSurface
+        {
+            public Vector3 Face;
+
+            public Vector3 GetReachPoint(Vector3 point) => Face;
+
+            public IInteraction[] CreateTargetInteractions(InteractionEvent interactionEvent) => System.Array.Empty<IInteraction>();
+        }
+
+        private sealed class ReachBlockerBehaviour : MonoBehaviour, IReachBlocker
+        {
+            public bool Blocks = true;
+
+            public bool BlocksReach => Blocks;
+        }
+
         private sealed class RangeLimitBehaviour : MonoBehaviour, IInteractionRangeLimit, IInteractionOriginProvider
         {
             public RangeLimit Range = new(1.5f, 2f);

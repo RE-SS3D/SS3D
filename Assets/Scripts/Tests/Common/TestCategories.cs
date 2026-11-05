@@ -20,6 +20,12 @@ namespace SS3D.Tests
 
         public const string Access = "Access";
 
+        /// <summary>Reach through walls, doors and wall mounts on real station geometry.</summary>
+        public const string Reach = "Reach";
+
+        /// <summary>Console tools for playtest wedges: the disk teleport and the ghost jump.</summary>
+        public const string ConsoleTools = "ConsoleTools";
+
         /// <summary>Atmos reaching a body: critical collapse, ragdoll physics on deck and in space, reclaim while critical.</summary>
         public const string Environment = "Environment";
 

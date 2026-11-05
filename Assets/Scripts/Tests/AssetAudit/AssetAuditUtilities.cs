@@ -34,6 +34,7 @@ namespace AssetAudit
         {
             ".png", ".jpg", ".jpeg", ".tga", ".psd", ".tif", ".tiff", ".bmp", ".gif",
             ".svg", ".wav", ".mp3", ".ogg", ".fbx", ".blend", ".ttf", ".otf",
+            ".webm", ".mp4", ".mov", ".ogv",
         };
 
         // Third-party/vendored trees are exempt from this fork's taxonomy entirely — never

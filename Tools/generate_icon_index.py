@@ -31,6 +31,7 @@ ICON_ROOTS: list[tuple[str, str]] = [
     ("inventory-icons", "Assets/Art/Icons/Inventory"),
     ("rendered-icons", "Assets/Art/Icons/Rendered"),
     ("alert-stack", "Assets/Art/Icons/Alerts"),
+    ("lobby-icons", "Assets/Art/Icons/Lobby"),
 ]
 
 

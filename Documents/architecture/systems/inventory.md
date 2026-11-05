@@ -77,6 +77,8 @@ Items, containers, hands, identification cards (`IDCard`, `PDA`), on-demand stor
 
 ## Pitfalls
 
+- **Held items attached at spawn keep a wrong angle (#158):** `ContainerItemDisplay` parents the item to a pivot under the hand bone and sets the pivot's world rotation from the character root. The offset from the hand is fixed at that moment, so an item attached before the Animator has posed the hand (loadout at spawn) keeps the bind-pose angle until it is picked up again. The display re-sets the grip in `LateUpdate` once the Animator is initialized (at most 60 frames later). Keep grips relative to the character root, and don't remove that re-set.
+
 - **ExoSuit invisible / cannot unequip with belt worn:** clothing sync must resolve local renderers by `ClothType`, rather than an empty nested NetworkObject reference. A slot copied from Jumpsuit must strip `JumpsuitStorageCondition`; that rule intentionally locks jumpsuit removal while wearing a belt, and does not belong on outer suits.
 - **Clothing HUD icon contains two shapes:** icon clones must discard the unused world/worn branch before baking; keep both shapes only on the live Item. `ClothingItemPresentation.PrepareIconPreview` is clone-only.
 

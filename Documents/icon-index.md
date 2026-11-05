@@ -8,7 +8,7 @@ Phase 1 consolidation moved Heroicons, Inventory, Rendered, and Alerts here;
 `interaction-icons` still lives under Graphics until Phase 2 (see
 [2026-07_asset-file-structure-taxonomy.md](architecture/2026-07_asset-file-structure-taxonomy.md)).
 
-**Generated:** 2026-11-05T19:01:41.452416+00:00
+**Generated:** 2026-11-05T20:20:22.354157+00:00
 
 ## When to use
 
@@ -51,8 +51,8 @@ grep -i "wrench" Documents/icon-index.json
 
 | Metric | Count |
 |--------|------:|
-| Total icons | 4782 |
-| Sources | 7 |
+| Total icons | 4799 |
+| Sources | 8 |
 | Contributor packs (`external` source) | 36 |
 | SVG icons | 4219 |
 
@@ -67,6 +67,7 @@ grep -i "wrench" Documents/icon-index.json
 | inventory-icons | 19 | `Assets/Art/Icons/Inventory` |
 | rendered-icons | 13 | `Assets/Art/Icons/Rendered` |
 | alert-stack | 18 | `Assets/Art/Icons/Alerts` |
+| lobby-icons | 17 | `Assets/Art/Icons/Lobby` |
 
 All sources except `interaction-icons` live under `Assets/Art/Icons/`.
 `interaction-icons` remains Phase 2 scatter (folder-name collision with the Content catalog).

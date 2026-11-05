@@ -34,7 +34,7 @@ When building UI that needs icon sprites (buttons, HUD, panels, machine interfac
 1. Read [Documents/icon-index.md](Documents/icon-index.md).
 2. Search [Documents/icon-index.json](Documents/icon-index.json) by name, tag, or pack.
 3. Icons live in `Assets/Art/Icons/` — game-icons.net SVGs under `External/` (by contributor pack), plus
-   `Heroicons/`, `Inventory/`, `Alerts/`, `Rendered/`, `map-editor/`, and Phase 2 leftover
+   `Heroicons/`, `Inventory/`, `Alerts/`, `Rendered/`, `Lobby/`, `map-editor/`, and Phase 2 leftover
    `Art/Graphics/UI/Interactions/InteractionIcons/` (see index for exact paths).
 
 **All icon image assets (SVG/PNG) belong under `Assets/Art/Icons/` — never add a new icon folder under
