@@ -63,23 +63,42 @@ namespace SS3D.Systems.Electricity
 
         private void SyncGeneratorToggle(bool oldValue, bool newValue, bool asServer)
         {
-            if (asServer) return;
+            if (asServer)
+            {
+                // Playback is server-owned: the audio subsystem's play/stop entry points are
+                // [Server], so a client calling them only logs "server is not active" and
+                // returns. Broadcast from here instead.
+                RpcSyncRunningSound(newValue);
+                return;
+            }
 
-            HandleSound(newValue);
             HandleLights(newValue);
             HandlePowerGenerated(newValue);
             GetComponent<MachineVibrate>().Enable = newValue;
         }
 
-        private void HandleSound(bool isEnabled)
+        /// <summary>
+        /// Buffered so a client that joins, or comes back into AOI, while the generator is
+        /// already running starts the loop. The audio subsystem's play call is one-shot and
+        /// only reaches observers that existed at that moment.
+        /// </summary>
+        [ObserversRpc(BufferLast = true)]
+        private void RpcSyncRunningSound(bool isEnabled)
         {
-            if (!isEnabled)
+            AudioSubSystem audio = SubSystems.Get<AudioSubSystem>();
+            if (audio == null)
             {
-                SubSystems.Get<AudioSubSystem>().StopAudioSource(NetworkObject);
+                return;
+            }
+
+            if (isEnabled)
+            {
+                audio.PlayAudioSourceLocal(AudioType.Music, Sounds.FuelPowerGenerator, Position, NetworkObject,
+                    true, 0.7f, 1, 1, 10);
             }
             else
             {
-                SubSystems.Get<AudioSubSystem>().PlayAudioSource(AudioType.Music, Sounds.FuelPowerGenerator, Position, NetworkObject, true, 0.7f, 1, 1, 10);
+                audio.StopAudioSourceLocal(NetworkObject);
             }
         }
 

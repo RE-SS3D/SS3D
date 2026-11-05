@@ -13,7 +13,13 @@ namespace SS3D.Systems.Furniture
 {
     public class Nuke : InteractionSource, IInteractionTarget
     {
-        [ServerRpc(RequireOwnership = false)]
+        /// <summary>
+        /// Server entry. Deliberately not a <c>ServerRpc</c>: the detonate interaction's
+        /// <c>Start</c> already runs on the server, and FishNet drops a ServerRpc invoked from
+        /// server code on a dedicated server (the generated writer returns when <c>!IsClient</c>),
+        /// so detonation silently did nothing there. Only the server ever calls this.
+        /// </summary>
+        [Server]
         public void Detonate()
         {
             // Ends the round, regardless of how many objectives were completed

@@ -107,6 +107,21 @@ namespace SS3D.Systems.Audio
         public void RpcPlayAudioSource(AudioType type, string audioClipID, Vector3 position, NetworkObject parent,
             bool isLooping = false, float volume = 0.7f, float pitch = 1f, float minRange = 1f, float maxRange = 500f)
         {
+            PlayAudioSourceLocal(type, audioClipID, position, parent, isLooping, volume, pitch, minRange, maxRange);
+        }
+
+        /// <summary>
+        /// Plays a clip from the local audio pool. Shared by the observers RPC and by per-object
+        /// buffered state RPCs (a machine's looping sound must also reach late observers).
+        /// </summary>
+        [ServerOrClient]
+        public void PlayAudioSourceLocal(AudioType type, string audioClipID, Vector3 position, NetworkObject parent,
+            bool isLooping = false, float volume = 0.7f, float pitch = 1f, float minRange = 1f, float maxRange = 500f)
+        {
+            // The server never builds a pool (see Start); only clients have one.
+            if (_audioSourcesLists == null)
+                return;
+
             AudioSource audioSource = FindAvailableAudioSource(type);
 
             audioSource.gameObject.transform.position = position;
@@ -140,6 +155,15 @@ namespace SS3D.Systems.Audio
 
         [ObserversRpc]
         public void RpcStopAudioSource(NetworkObject parent)
+        {
+            StopAudioSourceLocal(parent);
+        }
+
+        /// <summary>
+        /// Stops the audio source parented to <paramref name="parent"/>, if this client has one.
+        /// </summary>
+        [ServerOrClient]
+        public void StopAudioSourceLocal(NetworkObject parent)
         {
             AudioSource audioSource = parent.GetComponentInChildren<AudioSource>();
             audioSource?.Stop();
