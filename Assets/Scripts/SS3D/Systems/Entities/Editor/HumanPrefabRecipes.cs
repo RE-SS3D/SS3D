@@ -35,6 +35,7 @@ namespace SS3D.Systems.Entities.Editor
             // above) don't retroactively refresh Human.prefab's own stripped mirror of that instance —
             // always resync last regardless of what the other recipes did. See HumanPrefabHygiene
             // .ResyncNestedPrefabInstances and entities.md § Pitfalls.
+            ExoSuitPrefabSetup.Wire();
             HumanPrefabHygiene.ResyncNestedPrefabInstances();
 
             EditorUtility.DisplayDialog(
@@ -58,6 +59,7 @@ namespace SS3D.Systems.Entities.Editor
             bool speechEmitterAdded = HumanPrefabHygiene.EnsureLocalSpeechEmitter();
             bool combatNetworkWired = CombatInteractionNetworkPrefabSetup.Wire();
             bool substanceContainerStripped = SS3D.Systems.Substances.Editor.HumanSubstanceContainerStrip.Strip();
+            ExoSuitPrefabSetup.Wire();
             HumanPrefabHygiene.ResyncNestedPrefabInstances();
 
             UnityEngine.Debug.Log(

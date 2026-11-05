@@ -525,6 +525,11 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 9ae653f88306f6f55bc8000fcbfc2b67
+    m_Address: SyndicateHardsuitHelmet
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 9b8a1328991fc2846bc55a3d9a82e5c0
     m_Address: Assets/Content/WorldObjects/Structures/Floors/Tiles/Carpet/FancyCarpetRed.prefab
     m_ReadOnly: 0
@@ -787,6 +792,11 @@ MonoBehaviour:
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: e4281cb43d1443d4388737777fdd98d8
     m_Address: Assets/Content/WorldObjects/Items/Consumable/Drinks/Soda/SodaCanCannedAir.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: e5e035169e67c766b8bc119007b84634
+    m_Address: SyndicateHardsuit
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0

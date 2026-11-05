@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using Coimbra;
@@ -659,7 +659,11 @@ namespace SS3D.Systems.Inventory.Items
                 previewObject = Instantiate(transform, null, false);
                 RemoveInteractionOutlines(previewObject);
                 Item previewItem = previewObject.GetComponent<Item>();
-                if (useWornShapedForm && previewItem.TryGetComponent(out ClothingItemPresentation presentation))
+                if (previewItem.TryGetComponent(out ClothingItemPresentation presentation))
+                {
+                    presentation.PrepareIconPreview(useWornShapedForm);
+                }
+                if (useWornShapedForm && presentation != null)
                 {
                     // Bypass SetVisibility — that re-applies world (folded) form.
                     presentation.ApplyWornShapedForm();

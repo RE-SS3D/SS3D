@@ -1,7 +1,7 @@
 > Code paths: Assets/Scripts/SS3D/Systems/Gamemodes/, Assets/Scripts/SS3D/Systems/Roles/, Assets/Scripts/SS3D/Systems/Traits/
 > Entry points: GamemodeSubSystem, RoleSubSystem
 > Status: partial
-> Verified: 3174bdc18 — 2026-11-03
+> Verified: 0c02a25d1 — 2026-11-04
 
 # Gamemodes / roles / traits
 
@@ -27,6 +27,8 @@ initialization; Secret uses the sole existing antagonist mode. The runtime gamem
 is server-side (no SyncVar); authorized settings use the rounds subsystem's TargetRpc.
 Map validation uses the same Secret → nuclear mapping and requires all offered job markers before countdown ([rounds-lobby](rounds-lobby.md)).
 Weighted mode pools remain deferred; see [rounds-lobby](rounds-lobby.md).
+
+The operative loadout includes the Syndicate hardsuit (ExoSuit) and helmet (Head), authored by the [inventory content recipe](inventory.md#overview). Armor absorption is wired; these items do not yet provide a vacuum seal.
 
 ## Extension points
 

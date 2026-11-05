@@ -61,6 +61,18 @@ namespace SS3D.Systems.Inventory.Containers
             }
         }
 
+        /// <summary>Only call on disposable icon clones: retain exactly one visual shape.</summary>
+        public void PrepareIconPreview(bool worn)
+        {
+            GameObject excluded = worn ? _worldRoot : _wornShapedRoot;
+            if (excluded != null)
+            {
+                DestroyImmediate(excluded);
+            }
+            if (worn) ApplyWornShapedForm();
+            else ApplyWorldForm();
+        }
+
         /// <summary>
         /// Worn slots hide via <see cref="Item.SetVisibility"/>; body mesh is
         /// <see cref="ClothesDisplayer"/>. Child activity can stay on world form.

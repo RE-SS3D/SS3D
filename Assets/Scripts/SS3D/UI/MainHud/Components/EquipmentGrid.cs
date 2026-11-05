@@ -6,7 +6,7 @@ using UnityEngine.UIElements;
 namespace SS3D.UI.MainHud.Components
 {
     /// <summary>
-    /// Bottom-left worn-equipment doll: head/eyes/face-cover/ears on top, gloves/shirt/feet below.
+    /// Bottom-left worn-equipment doll: head/eyes/face-cover/ears on top, gloves/shirt/suit/feet below.
     /// Gloves and feet are one slot each, covering both the left and right containers.
     /// Click transfers with the active hand; drag participates in storage-panel cross-surface DnD.
     /// </summary>
@@ -21,6 +21,7 @@ namespace SS3D.UI.MainHud.Components
             Gloves,
             Shirt,
             Feet,
+            Suit,
         }
 
         public event Action<Slot> SlotClicked;
@@ -35,6 +36,7 @@ namespace SS3D.UI.MainHud.Components
         private readonly InventorySlot _gloves;
         private readonly InventorySlot _shirt;
         private readonly InventorySlot _feet;
+        private readonly InventorySlot _suit;
 
         private Slot? _dragSlot;
         private bool _dragMoved;
@@ -50,10 +52,11 @@ namespace SS3D.UI.MainHud.Components
             _gloves = CreateSlot(Slot.Gloves, "Gloves", icons.Gloves);
             _shirt = CreateSlot(Slot.Shirt, "Shirt", icons.Shirt);
             _feet = CreateSlot(Slot.Feet, "Feet", icons.Feet);
+            _suit = CreateSlot(Slot.Suit, "Suit", icons.Shirt);
 
             Add(BuildRow(BuildSpacer(), _head, BuildSpacer()));
             Add(BuildRow(_eyes, _face, _ears));
-            Add(BuildRow(_gloves, _shirt, BuildSpacer()));
+            Add(BuildRow(_gloves, _shirt, _suit));
             Add(BuildRow(BuildSpacer(), _feet, BuildSpacer()));
         }
 
@@ -91,6 +94,7 @@ namespace SS3D.UI.MainHud.Components
             Slot.Gloves => _gloves,
             Slot.Shirt => _shirt,
             Slot.Feet => _feet,
+            Slot.Suit => _suit,
             _ => null,
         };
 
@@ -103,6 +107,7 @@ namespace SS3D.UI.MainHud.Components
             Slot.Gloves => "Gloves",
             Slot.Shirt => "Shirt",
             Slot.Feet => "Feet",
+            Slot.Suit => "Suit",
             _ => string.Empty,
         };
 

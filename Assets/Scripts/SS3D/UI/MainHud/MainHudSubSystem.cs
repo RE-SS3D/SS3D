@@ -1158,6 +1158,7 @@ namespace SS3D.UI.MainHud
             EquipmentGrid.Slot.Ears => ContainerType.EarLeft,
             EquipmentGrid.Slot.Gloves => ContainerType.GloveLeft,
             EquipmentGrid.Slot.Shirt => ContainerType.Jumpsuit,
+            EquipmentGrid.Slot.Suit => ContainerType.ExoSuit,
             EquipmentGrid.Slot.Feet => ContainerType.ShoeLeft,
             _ => ContainerType.None,
         };
@@ -1240,6 +1241,7 @@ namespace SS3D.UI.MainHud
                 ContainerType.GloveLeft,
                 ContainerType.GloveRight);
             SetEquipment(EquipmentGrid.Slot.Shirt, ContainerType.Jumpsuit);
+            SetEquipment(EquipmentGrid.Slot.Suit, ContainerType.ExoSuit);
             SetEquipmentAlternate(
                 EquipmentGrid.Slot.Feet,
                 ContainerType.ShoeLeft,

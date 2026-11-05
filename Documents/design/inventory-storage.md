@@ -33,16 +33,16 @@ Cargo's crate (`cargo.md` §5) and disposal's locked units (`disposal.md` §2) a
 
 Two different things, easy to conflate:
 
-- **Equip slots** — fixed, named mounts on the character, one item each: head, mask, eyes, ears, uniform, suit (outerwear/armor), gloves, shoes, back, belt, ID, plus two always-present pocket slots. **The ID slot holds a bare ID card or a PDA** (with a card inside it, `id-access.md` §3) — there's no separate PDA slot. Each slot only accepts items tagged for its category. Most render visibly on the character model the moment they're worn — a helmet, gloves, a jumpsuit are visible the same way armor's wear already is (`armor.md` §6), because the model is the doll now, per main HUD §1.
+- **Equip slots** — fixed, named mounts on the character, one item each: head, mask, eyes, ears, uniform, suit (outerwear/armor), suit storage, gloves, shoes, back, belt, ID, plus two always-present pocket slots. **Suit storage exists only while a suit is worn** and holds a full gas tank, so a suited player keeps their backpack (`armor.md` §3). **The ID slot holds a bare ID card or a PDA** (with a card inside it, `id-access.md` §3) — there's no separate PDA slot. Each slot only accepts items tagged for its category. Most render visibly on the character model the moment they're worn — a helmet, gloves, a jumpsuit are visible the same way armor's wear already is (`armor.md` §6), because the model is the doll now, per main HUD §1.
 - **Containers** — the multi-item holding capacity from §2. Several equip slots exist specifically to hold one: **back** holds a backpack, **belt** can hold a tool belt (itself a small Container), and the two **pocket** slots are just small built-in Containers that exist regardless of what's worn — no uniform-specific pocket variance modeled this pass (§13).
 
-Quick-access subset: hands, belt, ID, a pocket, and back stay visible as gear-strip icons (`main-hud.md` §8). The rest (head, mask, eyes, ears, uniform, suit, gloves, shoes) don't get gear-strip icons — they're equipped and removed through the storage panel (§6).
+Quick-access subset: hands, belt, ID, a pocket, and back stay visible as gear-strip icons (`main-hud.md` §8). The rest (head, mask, eyes, ears, uniform, suit, suit storage, gloves, shoes) don't get gear-strip icons — they're equipped and removed through the storage panel (§6).
 
 ## 4. Size class & fit
 
 This doc is the natural home for a size-class taxonomy other docs have already assumed without defining. Disposal's chute keys its accept check off "physical size" / "collider class" without naming tiers (`disposal.md` §2). This doc names them, and disposal should read this same field once both are implemented — one property on an item, two consumers, not a redefinition per system.
 
-**Five tiers:** tiny (a pen, a coin), small (a multitool, a flashlight), normal (most handheld tools and weapons), bulky (a fire extinguisher, a toolbox), huge (a full oxygen tank, a stretcher).
+**Five tiers:** tiny (a pen, a coin), small (a multitool, a flashlight, an emergency gas tank), normal (most handheld tools and weapons), bulky (a fire extinguisher, a toolbox), huge (a full oxygen tank, a stretcher).
 
 **Fit check:** a container declares the largest size class it accepts and a number of slots. An item fits if its size class is at or below that ceiling **and** there's a free slot — flat, binary, no partial-fit fuzziness, and no weight limit. A satchel capped at small can't take a fire extinguisher no matter how many empty slots it has; the extinguisher goes in a hand or on the back instead. Same "physical logic over hidden math" instinct armor's absorption values already run on.
 
@@ -110,7 +110,7 @@ No new permanent chrome — same discipline as every doc in this project.
 |---|---|---|
 | 1 | Engineer opens their backpack from the gear strip | Panel opens: 6 slots, small-max, currently empty |
 | 2 | Drags a toolbox (bulky) toward the bag | Highlight shows an invalid target — exceeds the bag's size ceiling; toolbox has to go in a hand instead |
-| 3 | Drags a spare O2 tank (huge) the same way | Same rejection — the tank occupies the back equip slot directly, not the bag |
+| 3 | Drags a spare O2 tank (huge) the same way | Same rejection — a full tank rides in suit storage or a hand, not the bag |
 | 4 | Packs six small tools instead | All six fit; weight readout climbs, still under their stamina-affecting threshold |
 | 5 | Player checks their load | Stamina cap is marginally lower than empty-handed — same honest cost armor's weight already applies |
 

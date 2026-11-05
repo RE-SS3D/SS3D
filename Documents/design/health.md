@@ -35,7 +35,7 @@ The environment damages the body directly, without a weapon:
 - **Low pressure** — oxy debt (nothing to breathe) plus damage to the lungs themselves.
 - **Toxic gas** — toxin, through the lungs.
 
-A sealed suit blocks the pressure and gas effects entirely (`armor.md` §3).
+A sealed suit blocks the pressure effects on the lungs; internals supply breath and keep toxic gas out (`armor.md` §3).
 
 ### What connects the two tiers
 

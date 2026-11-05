@@ -18,7 +18,7 @@ The recurring test: is this a real simulation, or a shortcut wearing a science c
 Every tile carries a gas mixture: an amount of each gas present, and one temperature.
 
 - **Pressure equalizes** between adjacent open tiles per the ideal gas law. Walls and closed doors block it; an open door, a breach or a vent lets it through.
-- **Moving air is wind.** Flow between tiles has speed and direction. It pushes people and loose items toward low pressure: a tug across the room, irresistible close to a breach. It carries the gas with it, so a burning or poisoned mixture travels with the draught.
+- **Moving air is wind.** Flow between tiles has speed and direction. It pushes people and loose items toward low pressure: a tug across the room, irresistible close to a breach unless you are wearing active magboots (`armor.md` §3). It carries the gas with it, so a burning or poisoned mixture travels with the draught.
 - **Gases mix by their own share of the pressure.** Two neighbouring tiles at the same total pressure still exchange gases if their mixtures differ — a pocket of breathable air in a room full of nitrogen doesn't sit there forever just because the pressures match. It thins out.
 - **Heat equalizes** per each gas's own specific heat, so a hot, thin mixture cools quickly and a dense one holds its heat.
 - **Space is a sink.** A tile open to space loses its gas outward until it's vacuum; that's what makes a hull breach dangerous.
@@ -89,7 +89,7 @@ No per-tile objects. Gas that's dense enough or coloured enough to see shows as 
 |---|---|---|
 | `area.md` | §4 | Air alarms work per area; gas flow ignores areas. |
 | `health.md` | §2 | Breathing, pressure damage to the lungs, toxin from plasma, burns from heat and cold. |
-| `armor.md` | §1, §3 | Seals block pressure and gas effects; environmental protection scales heat and cold. |
+| `armor.md` | §1, §3 | Seals block pressure effects and cold, and scale heat; internals breathe from a tank instead of the tile; magboots anchor against wind. |
 | `chemistry.md` | §6 | Gas release adds a linked gas to the tile's mixture. |
 | `explosives-destruction.md` | §2, §4 | A breach connects air; a blast needs air to carry it and can ignite a mixture. |
 | `shuttles.md` | §6 | Hull breach into atmosphere. |

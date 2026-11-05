@@ -63,7 +63,8 @@ Given §4's hold-to-peek constraint, examine content is capped at a name/title l
 | Stack (sheets, ammo, meds) | Name, count, size class |
 | Manifest-labeled container (crate) | Name, printed manifest (truncated per §6), lock state if present |
 | Gun | Name, rounds in the loaded magazine |
-| Armor or sealed suit | Name, condition, seal intact or breached, tank level |
+| Armor or sealed suit | Name, condition, seal intact or breached |
+| Gas tank | Name, what it holds, level remaining |
 | Ordinary container (backpack, box, pocket) | Name only — contents stay closed (§5) |
 | Locked device (crate, chute, locker) | Name, "locked"/"unlocked" only — no access detail (§5) |
 | ID card | Name, job, department color (`id-access.md` §3) — never access levels |

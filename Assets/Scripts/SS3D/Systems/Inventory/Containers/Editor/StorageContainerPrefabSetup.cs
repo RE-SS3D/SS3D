@@ -180,7 +180,7 @@ namespace SS3D.Systems.Inventory.Containers.Editor
         /// Mirrors FishNet's UpdateNetworkBehaviours for prefab assets: collect NetworkBehaviours on
         /// this object and descendants that do not have their own NetworkObject, then rewrite indices.
         /// </summary>
-        private static void RebuildNetworkBehaviours(NetworkObject networkObject)
+        public static void RebuildNetworkBehaviours(NetworkObject networkObject)
         {
             List<NetworkBehaviour> behaviours = new();
             CollectNetworkBehaviours(networkObject.transform, behaviours);

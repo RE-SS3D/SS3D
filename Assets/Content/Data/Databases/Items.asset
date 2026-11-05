@@ -14,6 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   DatabaseName: Items
   DatabaseID: c2644d7b34e956743a0bc485e7ca5e37
+  LoadMode: 0
+  AssetKeys: []
   AssetGroup: {fileID: 11400000, guid: 8e95016540bf27c4eb11580ec096568a, type: 2}
   Assets:
     _list:
@@ -357,4 +359,8 @@ MonoBehaviour:
       _value: {fileID: 9154955770433736351, guid: bb2ccbe283c7a7d459f283a7483e04b9, type: 3}
     - _key: b25f51097d8c9b35ba76f8697fefa2ca
       _value: {fileID: 4945023127613724458, guid: b25f51097d8c9b35ba76f8697fefa2ca, type: 3}
+    - _key: e5e035169e67c766b8bc119007b84634
+      _value: {fileID: 624365323667193292, guid: e5e035169e67c766b8bc119007b84634, type: 3}
+    - _key: 9ae653f88306f6f55bc8000fcbfc2b67
+      _value: {fileID: 2601952054522247362, guid: 9ae653f88306f6f55bc8000fcbfc2b67, type: 3}
     _new: 

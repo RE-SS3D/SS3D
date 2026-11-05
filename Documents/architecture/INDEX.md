@@ -18,7 +18,7 @@ One row per gameplay domain that has, or should eventually have, a design doc. A
 | ai-cyborgs | [ai-cyborgs](../design/ai-cyborgs.md) | none yet | none yet |
 | antagonist-content | [antagonist-content](../design/antagonist-content.md) | [round-end-loop](2026-11_round-end-loop.md) — active (squad draw P2 shipped; win/lose rules P3) | [gamemodes-roles-traits](systems/gamemodes-roles-traits.md) — partial |
 | area | [area](../design/area.md) | [area-foundation](../archive/architecture/2026-07_area-foundation.md) — shipped | [area](systems/area.md) — partial |
-| armor | [armor](../design/armor.md) | [combat plan](../plans/combat_implementation_plan.md) Phase 5 — in-progress | [combat](systems/combat.md) — partial |
+| armor | [armor](../design/armor.md) | [combat plan](../plans/combat_implementation_plan.md) Phase 5 — in-progress; [EVA gear plan](../plans/eva-gear.plan.md) — in-progress | [combat](systems/combat.md) — partial |
 | atmospherics | [atmospherics](../design/atmospherics.md) | [atmos-ecs-foundation](../archive/architecture/2026-07_atmos-ecs-foundation.md) — shipped; [atmos-client-visualization-sync](2026-07_atmos-client-visualization-sync.md) — shipped; [atmos-edge-flow](2026-11_atmos-edge-flow.md) — in-progress; [metastation-scale-perf](../archive/architecture/2026-07_metastation-scale-perf.md) — shipped | [atmospherics](systems/atmospherics.md) — partial |
 | audio | [audio](../design/audio.md) | [audio-foundation](2026-07_audio-foundation.md) — in-progress | [audio](systems/audio.md) — partial |
 | cargo | [cargo](../design/cargo.md) | none yet | none yet |
@@ -88,7 +88,7 @@ Infrastructure and gameplay maps, including the ones with no design doc (interac
 | [inputs](systems/inputs.md) | partial | Input arbitration, default scheme, pointer authority |
 | [interactions-framework](systems/interactions-framework.md) | shipped | `IInteraction` contracts, Discover, pipeline |
 | [interactions-runtime](systems/interactions-runtime.md) | shipped | `InteractionController`, radial/armed menus, outlines |
-| [inventory](systems/inventory.md) | partial | Items, containers, hands, Main HUD, StoragePanel |
+| [inventory](systems/inventory.md) | partial | Items, containers, hands, Main HUD, StoragePanel, Syndicate hardsuit content |
 | [localization](systems/localization.md) | partial | `LocalizedTextService`, string tables |
 | [logging](systems/logging.md) | shipped | Serilog structured logging |
 | [machine-interface](systems/machine-interface.md) | shipped | Diegetic APC/SMES/atmos/vending UI |
@@ -136,6 +136,7 @@ Only work that is in flight, planned, or kept as standing reference. Everything 
 | [2026-11_round-end-loop](2026-11_round-end-loop.md) | active (P1–P2 shipped) |
 | [2026-11_testing-philosophy](2026-11_testing-philosophy.md) | shipped (standing policy) |
 | [agent_validation_loop.plan](../plans/agent_validation_loop.plan.md) | shipped (reference) |
+| [eva-gear.plan](../plans/eva-gear.plan.md) | in-progress |
 | [combat_implementation_plan](../plans/combat_implementation_plan.md) | in-progress |
 | [health_implementation_plan](../plans/health_implementation_plan.md) | in-progress |
 | [persistence_architecture_design_2fe61864.plan](../plans/persistence_architecture_design_2fe61864.plan.md) | in-progress |

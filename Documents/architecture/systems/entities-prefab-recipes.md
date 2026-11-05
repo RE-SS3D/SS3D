@@ -1,7 +1,7 @@
 > Parent map: [entities.md](entities.md)
 > Code paths: Assets/Scripts/SS3D/Systems/Entities/Editor/, Assets/Scripts/SS3D/Systems/Inventory/Containers/Editor/
 > Status: shipped
-> Verified: 259787487 — 2026-11-01
+> Verified: 0c02a25d1 — 2026-11-04
 
 # Entity prefab recipes
 
@@ -25,6 +25,7 @@ hand-tool recipes belong to their own domain aggregators.
 - `Assets/Scripts/SS3D/Systems/Inventory/Containers/Editor/HandsPrefabSetup.cs` — Left/Right hand order and `HandSearchExtension`
 - `Assets/Scripts/SS3D/Systems/Combat/Editor/CombatInteractionNetworkPrefabSetup.cs` — combat network sibling wiring
 - `Assets/Scripts/SS3D/Systems/Substances/Editor/HumanSubstanceContainerStrip.cs` — obsolete root substance-container strip
+- `Assets/Scripts/SS3D/Systems/Entities/Editor/ExoSuitPrefabSetup.cs` — ExoSuit container/filter (without the jumpsuit belt lock) and type-addressed worn Overwear renderer (requires inventory content assets first)
 - `Assets/Scripts/Tests/EditMode/HumanPrefabIntegrityTests.cs` — committed prefab integrity assertions
 
 ## Extension points

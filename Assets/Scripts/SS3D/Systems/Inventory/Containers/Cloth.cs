@@ -1,4 +1,4 @@
-﻿using Coimbra;
+using Coimbra;
 using SS3D.Logging;
 using UnityEngine;
 
@@ -13,6 +13,18 @@ namespace SS3D.Systems.Inventory.Containers
     {
         [SerializeField]
         private SerializableDictionary<ClothType, Mesh> _clothMeshes;
+
+        [SerializeField]
+        private Material[] _wornMaterials;
+
+        [SerializeField]
+        private string[] _occludedBodyRenderers;
+
+        /// <summary>Opaque equipment can conceal underlying body/clothing surfaces to prevent clipping.</summary>
+        public string[] OccludedBodyRenderers => _occludedBodyRenderers;
+
+        /// <summary>Optional per-item materials; empty preserves the body's palette material.</summary>
+        public Material[] WornMaterials => _wornMaterials;
 
         /// <summary>
         /// Get the mesh associated to a cloth type.

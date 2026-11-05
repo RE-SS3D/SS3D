@@ -1,4 +1,5 @@
-﻿using System.Linq;
+using System.Linq;
+using System.Collections.Generic;
 using SS3D.Core.Behaviours;
 using SS3D.Logging;
 using SS3D.Systems.Entities;
@@ -21,12 +22,12 @@ namespace SS3D.Systems.Inventory.Containers
         /// </summary>
         private struct ClothDisplayData
         {
-            public NetworkObject BodyPart;
+            public ClothType Type;
             public Item ClothToDisplay;
 
-            public ClothDisplayData(NetworkObject bodyPart, Item clothToDisplay)
+            public ClothDisplayData(ClothType type, Item clothToDisplay)
             {
-                BodyPart = bodyPart;
+                Type = type;
                 ClothToDisplay = clothToDisplay;
             }
         }
@@ -42,6 +43,29 @@ namespace SS3D.Systems.Inventory.Containers
         [SyncObject]
         private readonly SyncList<ClothDisplayData> _clothedBodyParts = new SyncList<ClothDisplayData>();
 
+        private readonly HashSet<Renderer> _occludedRenderers = new();
+
+        private void RefreshOcclusion()
+        {
+            foreach (Renderer renderer in _occludedRenderers)
+            {
+                if (renderer != null) renderer.forceRenderingOff = false;
+            }
+            _occludedRenderers.Clear();
+            Renderer[] renderers = GetComponentsInChildren<Renderer>(true);
+            foreach (ClothDisplayData data in _clothedBodyParts)
+            {
+                if (data.ClothToDisplay == null || !data.ClothToDisplay.TryGetComponent(out Cloth cloth)
+                    || cloth.OccludedBodyRenderers == null) continue;
+                foreach (Renderer renderer in renderers)
+                {
+                    if (!cloth.OccludedBodyRenderers.Contains(renderer.name)) continue;
+                    renderer.forceRenderingOff = true;
+                    _occludedRenderers.Add(renderer);
+                }
+            }
+        }
+
         public override void OnStartServer()
         {
             base.OnStartServer();
@@ -52,6 +76,28 @@ namespace SS3D.Systems.Inventory.Containers
         {
             base.OnStartClient();
             _clothedBodyParts.OnChange += ClothedBodyPartsOnChange;
+            foreach (ClothDisplayData data in _clothedBodyParts)
+            {
+                ClothedBodyPartsOnChange(SyncListOperation.Add, 0, default, data, false);
+            }
+        }
+
+        private bool TryGetClothedBodyPart(ClothType type, out ClothedBodyPart part)
+        {
+            part = GetComponentsInChildren<ClothedBodyPart>(true).FirstOrDefault(candidate => candidate.Type == type);
+            return part != null;
+        }
+
+        public override void OnStopClient()
+        {
+            _clothedBodyParts.OnChange -= ClothedBodyPartsOnChange;
+            base.OnStopClient();
+        }
+
+        public override void OnStopServer()
+        {
+            _inventory.OnContainerContentChanged -= HandleContainerContentChanged;
+            base.OnStopServer();
         }
 
         /// <summary>
@@ -66,14 +112,14 @@ namespace SS3D.Systems.Inventory.Containers
             {
                 // Show the new cloth on the player
                 case SyncListOperation.Add:
-                    if (!newData.BodyPart.TryGetComponent(out ClothedBodyPart newClothedBodyPart) || !newData.ClothToDisplay.TryGetComponent(out Cloth newCloth))
+                    if (!TryGetClothedBodyPart(newData.Type, out ClothedBodyPart newClothedBodyPart) || !newData.ClothToDisplay.TryGetComponent(out Cloth newCloth))
                     {
                         Log.Error(this, "Error getting components to display cloth on player");
 
                         return;
                     }
 
-                    if (!newData.BodyPart.TryGetComponent(out SkinnedMeshRenderer meshRenderer))
+                    if (!newClothedBodyPart.TryGetComponent(out SkinnedMeshRenderer meshRenderer))
                     {
                         Log.Warning(this, $"no skinned mesh renderer on game object {newClothedBodyPart}, can't display cloth");
 
@@ -82,6 +128,7 @@ namespace SS3D.Systems.Inventory.Containers
 
                     newClothedBodyPart.gameObject.SetActive(true);
                     meshRenderer.sharedMesh = newCloth.GetClothMesh(newClothedBodyPart.Type);
+                    newClothedBodyPart.ApplyMaterials(meshRenderer, newCloth.WornMaterials);
                     // A new sharedMesh starts with zero shape-key weights; keep it fitted to the body.
                     if (TryGetComponent(out Human human))
                     {
@@ -92,11 +139,14 @@ namespace SS3D.Systems.Inventory.Containers
 
                 // Stop displaying cloth on the player
                 case SyncListOperation.RemoveAt:
-                    NetworkObject oldBodyPart = oldData.BodyPart;
-                    oldBodyPart.gameObject.SetActive(false);
+                    if (TryGetClothedBodyPart(oldData.Type, out ClothedBodyPart oldBodyPart))
+                    {
+                        oldBodyPart.gameObject.SetActive(false);
+                    }
 
                     break;
             }
+            RefreshOcclusion();
         }
 
         /// <summary>
@@ -138,13 +188,9 @@ namespace SS3D.Systems.Inventory.Containers
                 return;
             }
 
-            ClothType containerClothType = container.ClothType;
-            ClothedBodyPart[] clothedBodyParts = GetComponentsInChildren<ClothedBodyPart>(true);
-            ClothedBodyPart bodyPart = clothedBodyParts.First(part => part.Type == containerClothType);
-
-            if (bodyPart.gameObject.TryGetComponent(out NetworkObject networkedBodyPart))
+            if (TryGetClothedBodyPart(container.ClothType, out _))
             {
-                _clothedBodyParts.Add(new(networkedBodyPart, item));
+                _clothedBodyParts.Add(new(container.ClothType, item));
             }
         }
 
@@ -162,7 +208,7 @@ namespace SS3D.Systems.Inventory.Containers
             }
 
             ClothType containerClothType = container.ClothType;
-            ClothDisplayData clothData = _clothedBodyParts.Find(data => data.BodyPart.gameObject.GetComponent<ClothedBodyPart>().Type == containerClothType);
+            ClothDisplayData clothData = _clothedBodyParts.Find(data => data.Type == containerClothType);
 
             _clothedBodyParts.Remove(clothData);
         }

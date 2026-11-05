@@ -32,4 +32,8 @@ MonoBehaviour:
       _value: {fileID: 11400000, guid: 9cf2801a7b335074190840fc9112d582, type: 2}
     - _key: 4
       _value: {fileID: 11400000, guid: 9435365903a79d64184af9ee71e060e5, type: 2}
+    - _key: 1024
+      _value: {fileID: 11400000, guid: 07875cb9b07567f608c409b35f917fd6, type: 2}
+    - _key: 256
+      _value: {fileID: 11400000, guid: 08db124c308ef12468512352cb307c60, type: 2}
     _new: 0
