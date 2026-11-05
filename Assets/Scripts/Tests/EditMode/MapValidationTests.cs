@@ -126,6 +126,103 @@ namespace EditorTests
             Assert.AreEqual("Nuclear device", nuclear.Checks.Single(check => !check.IsMet).Label);
         }
 
+        private static RoomDeviceRecord Device(RoomDeviceKind kind, float x, ushort area, string room = "Bar",
+            bool apc = true, bool pipe = true) => new(kind, new Vector3(x, 0, 2), area, room, apc, pipe);
+
+        private static RoomDeviceRecord Vent(float x, ushort area, string room = "Bar") => Device(RoomDeviceKind.Vent, x, area, room);
+
+        private static RoomDeviceRecord Scrubber(float x, ushort area, string room = "Bar") => Device(RoomDeviceKind.Scrubber, x, area, room);
+
+        private static RoomDeviceRecord Alarm(float x, ushort area, string room = "Bar") => Device(RoomDeviceKind.AirAlarm, x, area, room);
+
+        private static MapValidationReport RoomChecks(params RoomDeviceRecord[] devices)
+        {
+            MapValidationReport report = new();
+            MapValidator.AddRoomDeviceChecks(report, devices, paintedRooms: false);
+            return report;
+        }
+
+        [Test]
+        public void CompleteRoomRaisesNoWarning()
+        {
+            Assert.IsFalse(RoomChecks(Vent(1, 3), Scrubber(2, 3), Alarm(3, 3)).HasIssues);
+        }
+
+        [Test]
+        public void RoomWithoutAnAirAlarmWarnsOnceAndLocatesADevice()
+        {
+            MapValidationReport report = RoomChecks(Vent(4, 3), Vent(1, 3), Scrubber(2, 3));
+            MapValidationIssue issue = report.Issues.Single();
+            Assert.IsTrue(issue.IsWarning);
+            Assert.IsTrue(report.CanStart);
+            Assert.AreEqual("No air alarm in Bar (1, 2)", issue.Title);
+            StringAssert.Contains("2 vents and 1 scrubber", issue.Body);
+            Assert.IsTrue(issue.HasPosition);
+            Assert.AreEqual(1f, issue.Position.x);
+        }
+
+        [Test]
+        public void RoomsSharingANameGetTitlesThatTellThemApart()
+        {
+            MapValidationReport report = RoomChecks(
+                Vent(1, 3, "APC"), Scrubber(2, 3, "APC"), Vent(8, 4, "APC"), Scrubber(9, 4, "APC"));
+            Assert.AreEqual(2, report.Issues.Select(issue => issue.Title).Distinct().Count());
+        }
+
+        [Test]
+        public void AnAirAlarmOnlyCoversItsOwnRoom()
+        {
+            MapValidationReport report = RoomChecks(Vent(1, 3), Scrubber(2, 3), Alarm(3, 3),
+                Vent(5, 4, "Kitchen"), Scrubber(6, 4, "Kitchen"));
+            StringAssert.StartsWith("No air alarm in Kitchen", report.Issues.Single().Title);
+        }
+
+        [Test]
+        public void DevicesOutsideEveryRoomShareOneRowThatNamesTheFixForTheMapKind()
+        {
+            MapValidationReport report = RoomChecks(Vent(2, 0, null), Vent(1, 0, null), Scrubber(3, 0, null),
+                Alarm(4, 3), Vent(5, 3), Scrubber(6, 3));
+            MapValidationIssue issue = report.Issues.Single();
+            Assert.IsTrue(report.CanStart);
+            Assert.AreEqual("2 vents and 1 scrubber outside every room", issue.Title);
+            Assert.AreEqual(1f, issue.Position.x);
+            StringAssert.Contains("Add an APC", issue.Body);
+
+            MapValidationReport painted = new();
+            MapValidator.AddRoomDeviceChecks(painted, new[] { Vent(1, 0, null) }, paintedRooms: true);
+            StringAssert.DoesNotContain("Add an APC", painted.Issues.Single().Body);
+        }
+
+        [Test]
+        public void AirAlarmFacingNoRoomWarnsEvenThoughItHasNoDevices()
+        {
+            MapValidationIssue issue = RoomChecks(Alarm(1, 0, null)).Issues.Single();
+            StringAssert.Contains("Air alarm at (1, 2) faces no room", issue.Title);
+            Assert.IsTrue(issue.HasPosition);
+        }
+
+        [Test]
+        public void PortWithoutAPipeWarnsEvenInACompleteRoom()
+        {
+            MapValidationReport report = RoomChecks(Device(RoomDeviceKind.Vent, 1, 3, pipe: false), Scrubber(2, 3), Alarm(3, 3));
+            StringAssert.Contains("Vent at (1, 2) has no pipe", report.Issues.Single().Title);
+        }
+
+        [Test]
+        public void RoomMissingOneHalfOfItsAirLoopNamesWhatIsMissing()
+        {
+            StringAssert.StartsWith("No scrubber in Bar", RoomChecks(Vent(1, 3), Alarm(2, 3)).Issues.Single().Title);
+            StringAssert.StartsWith("No vent in Bar", RoomChecks(Scrubber(1, 3), Alarm(2, 3)).Issues.Single().Title);
+        }
+
+        [Test]
+        public void RoomWithoutAnApcWarnsOnlyWhenADeviceNeedsPower()
+        {
+            MapValidationIssue issue = RoomChecks(Device(RoomDeviceKind.Light, 1, 3, apc: false)).Issues.Single();
+            StringAssert.StartsWith("No APC in Bar", issue.Title);
+            Assert.IsFalse(RoomChecks(Device(RoomDeviceKind.Light, 1, 3)).HasIssues);
+        }
+
         [Test]
         public void MapCheckFiltersIgnoresWarningsAndRestoresWithoutChangingServerPolicy()
         {

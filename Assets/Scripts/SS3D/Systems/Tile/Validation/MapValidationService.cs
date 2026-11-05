@@ -1,5 +1,9 @@
+using System.Collections.Generic;
 using System.Linq;
 using SS3D.Core;
+using SS3D.Systems.Area;
+using SS3D.Systems.Atmospherics.Pipes;
+using SS3D.Systems.Electricity;
 using SS3D.Systems.Furniture;
 using SS3D.Systems.Inventory.Items.Generic;
 using SS3D.Systems.Roles;
@@ -21,8 +25,9 @@ namespace SS3D.Systems.Tile.Validation
             }
 
             TileMap map = tiles.CurrentMap;
-            bool hasNuke = map.GetAllChunks().SelectMany(chunk => chunk.GetAllTilePlacedObjects())
-                .Any(placed => placed != null && placed.GetComponentInChildren<Nuke>(true) != null);
+            PlacedTileObject[] tileObjects = map.GetAllChunks().SelectMany(chunk => chunk.GetAllTilePlacedObjects())
+                .Where(placed => placed != null).ToArray();
+            bool hasNuke = tileObjects.Any(placed => placed.GetComponentInChildren<Nuke>(true) != null);
             bool hasDisk = map.PlacedItems.Any(placed => placed != null
                 && placed.GetComponentInChildren<NukeCard>(true) != null);
             string[] jobs = SubSystems.TryGet(out RoleSubSystem roles)
@@ -39,7 +44,47 @@ namespace SS3D.Systems.Tile.Validation
                         spawn.Position, true);
                 }
             }
+            CheckRoomDevices(report, map, tileObjects);
             return report;
+        }
+
+        private static void CheckRoomDevices(MapValidationReport report, TileMap map, IEnumerable<PlacedTileObject> tileObjects)
+        {
+            if (!SubSystems.TryGet(out AreaSubSystem areas))
+                return;
+
+            List<RoomDeviceRecord> devices = new();
+            foreach (PlacedTileObject placed in tileObjects)
+            {
+                if (!TryGetRoomDeviceKind(placed, out RoomDeviceKind kind))
+                    continue;
+
+                // The same lookup these devices use at runtime, so a wall mount counts for the room it faces.
+                bool inRoom = areas.TryGetAreaForDevice(placed, out AreaRecord room) && !room.Id.IsNone;
+                string roomName = !inRoom ? null
+                    : string.IsNullOrWhiteSpace(room.DisplayName) ? "Unnamed room" : room.DisplayName;
+                bool isPort = kind is RoomDeviceKind.Vent or RoomDeviceKind.Scrubber;
+                devices.Add(new RoomDeviceRecord(kind, placed.transform.position, inRoom ? room.Id.Value : AreaId.None, roomName,
+                    inRoom && areas.TryGetAreaApc(room.Id, out _),
+                    !isPort || AtmosDevicePipeResolver.HasPipeSegment(map, new TileCoord(placed.MapId, placed.WorldOrigin))));
+            }
+            MapValidator.AddRoomDeviceChecks(report, devices, areas.HasAuthoredAreas);
+        }
+
+        private static bool TryGetRoomDeviceKind(PlacedTileObject placed, out RoomDeviceKind kind)
+        {
+            kind = default;
+            if (placed.TryGetComponent(out VentController _))
+                kind = RoomDeviceKind.Vent;
+            else if (placed.TryGetComponent(out ScrubberController _))
+                kind = RoomDeviceKind.Scrubber;
+            else if (placed.TryGetComponent(out AirAlarmController _))
+                kind = RoomDeviceKind.AirAlarm;
+            else if (placed.TryGetComponent(out LightPower _) || placed.TryGetComponent(out LightSwitchController _))
+                kind = RoomDeviceKind.Light;
+            else
+                return false;
+            return true;
         }
     }
 }

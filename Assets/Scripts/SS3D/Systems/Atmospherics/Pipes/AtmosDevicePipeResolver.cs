@@ -57,6 +57,31 @@ namespace SS3D.Systems.Atmospherics.Pipes
             return false;
         }
 
+        /// <summary>
+        /// Whether a pipe sits where <see cref="TryResolveNetwork(TileMap, GasPipeNetworkRegistry, TileCoord, out GasPipeNetworkId, out GasPipeSegmentKey)"/>
+        /// looks for one. Reads the tilemap, so it needs no running atmos simulation.
+        /// </summary>
+        public static bool HasPipeSegment(TileMap map, TileCoord deviceCoord)
+        {
+            return HasSegmentAt(map, deviceCoord)
+                || HasSegmentAt(map, Offset(deviceCoord, 0, 1))
+                || HasSegmentAt(map, Offset(deviceCoord, 1, 0))
+                || HasSegmentAt(map, Offset(deviceCoord, 0, -1))
+                || HasSegmentAt(map, Offset(deviceCoord, -1, 0));
+        }
+
+        private static bool HasSegmentAt(TileMap map, TileCoord coord)
+        {
+            TileLayer[] layers = AtmosPipeConnectivity.GasPipeLayers;
+            for (int i = 0; i < layers.Length; i++)
+            {
+                if (AtmosPipeConnectivity.TryGetSegment(map, coord, layers[i], out _))
+                    return true;
+            }
+
+            return false;
+        }
+
         private static TileCoord Offset(TileCoord coord, int dx, int dy) =>
             new TileCoord(coord.MapId, coord.Grid.x + dx, coord.Grid.y + dy);
 

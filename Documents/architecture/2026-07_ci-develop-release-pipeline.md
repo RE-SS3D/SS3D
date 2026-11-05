@@ -73,8 +73,7 @@ afterward.
    beside `Game/SS3D.exe` (its main menu hosts and joins; there are no launch scripts), plus fixtures
    `Game/Config/` (`network.json`, and `permissions.txt` copied from the tracked `permissions.default.txt`, since the live file is gitignored), `Game/Data/Tilemaps/`, and `Game/Data/StationTemplates/`
    copied from git-tracked [`Builds/Game/`](../../Builds/Game/) (Unity does not pack these;
-   `Paths.cs` reads them from the folder holding the player binary). Never ships `Data/ServerMeta/` (runtime) or
-   `StationTemplates/Metastation v2.json` (broken; kept in git only for the multiplayer loadtest).
+   `Paths.cs` reads them from the folder holding the player binary). Never ships `Data/ServerMeta/` (runtime).
    Linux zips use the same shape when Linux was built: `SS3D-Linux-Client-<tag>/` holds
    `update_ss3d.sh`, `update_ss3d.py`,
    `.ss3d-release.json`, `TESTERS.md`, `README.txt` and `Game/` (binary `SS3D-Client`);

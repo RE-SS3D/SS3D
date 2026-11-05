@@ -39,7 +39,7 @@ namespace SS3D.Systems.BugReports
         private const int NetworkScreenshotWidth = 960;
 
         /// <summary>Maps that ship in <c>Builds/Game/Data/StationTemplates/</c>; any other map defaults the map option on.</summary>
-        private static readonly string[] ShippedMaps = { "ministation", "Metastation v2" };
+        private static readonly string[] ShippedMaps = { "ministation", "classic-ministation" };
 
         private BugReportAssetCatalog _catalog;
         private bool _catalogFailed;

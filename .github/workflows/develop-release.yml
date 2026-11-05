@@ -574,9 +574,6 @@ jobs:
             cp Builds/Game/Config/permissions.default.txt "${dest}/Config/permissions.txt"
             cp -a Builds/Game/Data/Tilemaps/. "${dest}/Data/Tilemaps/"
             cp -a Builds/Game/Data/StationTemplates/. "${dest}/Data/StationTemplates/"
-            # Metastation v2 is a broken map kept only for the multiplayer loadtest; never ship it.
-            rm -f "${dest}/Data/StationTemplates/Metastation v2.json"
-            test ! -e "${dest}/Data/StationTemplates/Metastation v2.json"
           }
 
           # Burst's debug symbols are a few MB the player never reads.

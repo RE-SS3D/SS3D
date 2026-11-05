@@ -84,6 +84,126 @@ namespace SS3D.Systems.Tile.Validation
             }
             return report;
         }
+
+        /// <summary>
+        /// Warns about devices that are placed but cannot do their job. "Room" here is an area
+        /// (the editor's Scripts → Rooms): an APC's flood fill bounded by walls and doors, or a
+        /// painted room once the map is authored. Device names can repeat across rooms, so
+        /// titles carry a position.
+        /// </summary>
+        public static void AddRoomDeviceChecks(MapValidationReport report,
+            IEnumerable<RoomDeviceRecord> devices, bool paintedRooms)
+        {
+            RoomDeviceRecord[] ordered = devices
+                .OrderBy(device => device.Position.x).ThenBy(device => device.Position.z).ToArray();
+            string assignRoom = paintedRooms ? "Paint the tile into a room under Scripts → Rooms."
+                : "Add an APC to that space, or paint it into a room under Scripts → Rooms.";
+
+            foreach (RoomDeviceRecord device in ordered)
+            {
+                Vector2Int cell = SpawnPointRegistry.TileKey(device.Position);
+                string name = KindName(device.Kind);
+                string place = $"{cell.x}:{cell.y}";
+                if (IsPort(device.Kind) && !device.HasPipe)
+                    AddWarning(report, $"pipe:{device.Kind}:{place}", device,
+                        $"{name} at ({cell.x}, {cell.y}) has no pipe",
+                        "so it can't move any gas. Run a pipe to it.");
+                if (device.AreaId == 0 && device.Kind == RoomDeviceKind.AirAlarm)
+                    AddWarning(report, $"alarm-room:{place}", device,
+                        $"{name} at ({cell.x}, {cell.y}) faces no room",
+                        "so it controls nothing. Check which way it faces. " + assignRoom);
+            }
+
+            // One row for all of them: a map without APCs would otherwise list every device.
+            // Locate goes to the first, and fixing it moves Locate on to the next.
+            RoomDeviceRecord[] roomless = ordered.Where(device => device.AreaId == 0 && IsPort(device.Kind)).ToArray();
+            if (roomless.Length > 0)
+                AddWarning(report, "air-alarm-room", roomless[0],
+                    $"{Counted(roomless.Count(device => device.Kind == RoomDeviceKind.Vent), "vent", roomless.Count(device => device.Kind == RoomDeviceKind.Scrubber), "scrubber")} outside every room",
+                    $"so no air alarm can control {(roomless.Length == 1 ? "it" : "them")}. " + assignRoom);
+
+            foreach (IGrouping<ushort, RoomDeviceRecord> room in ordered.Where(device => device.AreaId != 0)
+                .GroupBy(device => device.AreaId).OrderBy(room => room.Key))
+            {
+                RoomDeviceRecord[] ports = room.Where(device => IsPort(device.Kind)).ToArray();
+                int vents = ports.Count(device => device.Kind == RoomDeviceKind.Vent);
+                int scrubbers = ports.Length - vents;
+                if (ports.Length > 0 && room.All(device => device.Kind != RoomDeviceKind.AirAlarm))
+                    AddWarning(report, $"air-alarm:{room.Key}", ports[0], $"No air alarm in {RoomLabel(ports[0])}",
+                        $"so nothing controls its {Counted(vents, "vent", scrubbers, "scrubber")}. "
+                        + "Place one on a wall facing into the room.");
+                if (vents > 0 && scrubbers == 0)
+                    AddWarning(report, $"no-scrubber:{room.Key}", ports[0], $"No scrubber in {RoomLabel(ports[0])}",
+                        "so bad air can't be cleaned out of it. Place a scrubber on a pipe.");
+                else if (scrubbers > 0 && vents == 0)
+                    AddWarning(report, $"no-vent:{room.Key}", ports[0], $"No vent in {RoomLabel(ports[0])}",
+                        "so lost air can't be replaced. Place a vent on a pipe.");
+
+                RoomDeviceRecord first = room.First();
+                if (!first.RoomHasApc)
+                    AddWarning(report, $"no-apc:{room.Key}", first, $"No APC in {RoomLabel(first)}",
+                        "so nothing here gets local power. Place an APC in the room.");
+            }
+        }
+
+        private static void AddWarning(MapValidationReport report, string id, RoomDeviceRecord device, string title, string consequence) =>
+            report.AddIssue(id, true, "Atmos", title, $"{title}, {consequence}", device.Position, true);
+
+        private static bool IsPort(RoomDeviceKind kind) => kind is RoomDeviceKind.Vent or RoomDeviceKind.Scrubber;
+
+        private static string KindName(RoomDeviceKind kind) => kind switch
+        {
+            RoomDeviceKind.Vent => "Vent",
+            RoomDeviceKind.Scrubber => "Scrubber",
+            RoomDeviceKind.AirAlarm => "Air alarm",
+            _ => "Light",
+        };
+
+        private static string RoomLabel(RoomDeviceRecord device)
+        {
+            Vector2Int cell = SpawnPointRegistry.TileKey(device.Position);
+            return $"{device.AreaName} ({cell.x}, {cell.y})";
+        }
+
+        private static string Counted(int first, string firstName, int second, string secondName)
+        {
+            string[] parts =
+            {
+                first > 0 ? $"{first} {firstName}{(first == 1 ? "" : "s")}" : null,
+                second > 0 ? $"{second} {secondName}{(second == 1 ? "" : "s")}" : null,
+            };
+            return string.Join(" and ", parts.Where(part => part != null));
+        }
+    }
+
+    public enum RoomDeviceKind
+    {
+        Vent,
+        Scrubber,
+        AirAlarm,
+        Light,
+    }
+
+    /// <summary>A placed device and the room it belongs to (area 0 means no room).</summary>
+    public readonly struct RoomDeviceRecord
+    {
+        public readonly RoomDeviceKind Kind;
+        public readonly Vector3 Position;
+        public readonly ushort AreaId;
+        public readonly string AreaName;
+        public readonly bool RoomHasApc;
+        public readonly bool HasPipe;
+
+        public RoomDeviceRecord(RoomDeviceKind kind, Vector3 position, ushort areaId, string areaName,
+            bool roomHasApc = true, bool hasPipe = true)
+        {
+            Kind = kind;
+            Position = position;
+            AreaId = areaId;
+            AreaName = areaName;
+            RoomHasApc = roomHasApc;
+            HasPipe = hasPipe;
+        }
     }
 
     [Serializable]
