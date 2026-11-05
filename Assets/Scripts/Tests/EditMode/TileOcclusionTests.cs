@@ -5,260 +5,288 @@ using UnityEngine;
 
 namespace EditorTests
 {
+    /// <summary>
+    /// Behavioral tests: visibility is asserted on the real <see cref="Renderer.enabled"/> flag of real
+    /// MeshRenderers (root and child), never on an internal flag. No test-only members exist in production code.
+    /// </summary>
     public class TileOcclusionTests
     {
+        private readonly List<GameObject> _spawnedObjects = new();
         private GameObject _systemHolder;
         private TileOcclusionSubSystem _subsystem;
-        private readonly List<GameObject> _spawnedObjects = new();
 
         [SetUp]
         public void SetUp()
         {
             _systemHolder = new GameObject("Test_TileOcclusionSubSystem");
             _subsystem = _systemHolder.AddComponent<TileOcclusionSubSystem>();
-            _spawnedObjects.Clear();
         }
 
         [TearDown]
         public void TearDown()
         {
-            for (int i = 0; i < _spawnedObjects.Count; i++)
+            foreach (GameObject spawned in _spawnedObjects)
             {
-                if (_spawnedObjects[i] != null)
+                if (spawned != null)
                 {
-                    Object.DestroyImmediate(_spawnedObjects[i]);
+                    Object.DestroyImmediate(spawned);
                 }
             }
 
             _spawnedObjects.Clear();
-
-            if (_systemHolder != null)
-            {
-                Object.DestroyImmediate(_systemHolder);
-            }
-        }
-
-        private TileOcclusionMember CreateMember(TileLayer layer, Vector2Int position)
-        {
-            GameObject go = new($"Test_Member_{layer}_{position}");
-            _spawnedObjects.Add(go);
-            TileOcclusionMember member = go.AddComponent<TileOcclusionMember>();
-            member.SetupForTesting(layer, position);
-            return member;
-        }
-
-        private void PlaceTurfGridAround(Vector2Int center)
-        {
-            for (int dx = -1; dx <= 1; dx++)
-            {
-                for (int dy = -1; dy <= 1; dy++)
-                {
-                    Vector2Int pos = new(center.x + dx, center.y + dy);
-                    TileOcclusionMember turf = CreateMember(TileLayer.Turf, pos);
-                    _subsystem.RegisterMember(turf, pos, TileLayer.Turf);
-                }
-            }
-        }
-
-        #region Tests
-
-        [Test]
-        public void IsCoverableLayer_ReturnsTrue_ForUnderFloorLayers()
-        {
-            Assert.IsTrue(TileOcclusionSubSystem.IsCoverableLayer(TileLayer.Plenum));
-            Assert.IsTrue(TileOcclusionSubSystem.IsCoverableLayer(TileLayer.Wire));
-            Assert.IsTrue(TileOcclusionSubSystem.IsCoverableLayer(TileLayer.Disposal));
-            Assert.IsTrue(TileOcclusionSubSystem.IsCoverableLayer(TileLayer.PipeSurface));
-            Assert.IsTrue(TileOcclusionSubSystem.IsCoverableLayer(TileLayer.PipeMiddle));
-            Assert.IsTrue(TileOcclusionSubSystem.IsCoverableLayer(TileLayer.PipeLeft));
-            Assert.IsTrue(TileOcclusionSubSystem.IsCoverableLayer(TileLayer.PipeRight));
+            Object.DestroyImmediate(_systemHolder);
         }
 
         [Test]
-        public void IsCoverableLayer_ReturnsFalse_ForNonUnderFloorLayers()
+        public void SetVisible_False_DisablesRootAndChildRenderers_AndTrueRestoresThem()
         {
-            Assert.IsFalse(TileOcclusionSubSystem.IsCoverableLayer(TileLayer.Turf));
-            Assert.IsFalse(TileOcclusionSubSystem.IsCoverableLayer(TileLayer.FurnitureBase));
-            Assert.IsFalse(TileOcclusionSubSystem.IsCoverableLayer(TileLayer.FurnitureTop));
-            Assert.IsFalse(TileOcclusionSubSystem.IsCoverableLayer(TileLayer.Overlays));
-            Assert.IsFalse(TileOcclusionSubSystem.IsCoverableLayer(TileLayer.WallMountHigh));
-            Assert.IsFalse(TileOcclusionSubSystem.IsCoverableLayer(TileLayer.WallMountLow));
+            TileOcclusionMember member = CreateMember(out Renderer[] renderers);
+
+            member.SetVisible(false);
+            Assert.IsTrue(AllRenderers(renderers, false), "every renderer, including the child, must be disabled");
+
+            member.SetVisible(true);
+            Assert.IsTrue(AllRenderers(renderers, true), "every renderer must be enabled again");
         }
 
         [Test]
-        public void IsFullyCovered_ReturnsFalse_WhenEmpty()
+        public void IsFullyCovered_IsFalse_WhenNothingIsPlaced()
         {
             Assert.IsFalse(_subsystem.IsFullyCovered(Vector2Int.zero));
         }
 
         [Test]
-        public void IsFullyCovered_ReturnsFalse_WhenOnlyCenterTurfPresent()
+        public void IsFullyCovered_IsFalse_WhenOnlyCenterTurfExists()
         {
-            Vector2Int pos = Vector2Int.zero;
-            TileOcclusionMember turf = CreateMember(TileLayer.Turf, pos);
-            _subsystem.RegisterMember(turf, pos, TileLayer.Turf);
+            PlaceTurf(Vector2Int.zero);
 
-            Assert.IsFalse(_subsystem.IsFullyCovered(pos));
+            Assert.IsFalse(_subsystem.IsFullyCovered(Vector2Int.zero));
         }
 
         [Test]
-        public void IsFullyCovered_ReturnsFalse_WhenEightNeighborsCoveredButOneMissing()
+        public void IsFullyCovered_IsTrue_OnlyWhenAllNineCellsHaveTurf()
         {
-            Vector2Int center = Vector2Int.zero;
+            PlaceTurfBlock(Vector2Int.zero, null);
 
-            for (int dx = -1; dx <= 1; dx++)
-            {
-                for (int dy = -1; dy <= 1; dy++)
-                {
-                    // Skip (1, 1) to test partial coverage
-                    if (dx == 1 && dy == 1)
-                    {
-                        continue;
-                    }
+            Assert.IsTrue(_subsystem.IsFullyCovered(Vector2Int.zero));
+        }
 
-                    Vector2Int pos = new(center.x + dx, center.y + dy);
-                    TileOcclusionMember turf = CreateMember(TileLayer.Turf, pos);
-                    _subsystem.RegisterMember(turf, pos, TileLayer.Turf);
-                }
-            }
+        [Test]
+        public void IsFullyCovered_IsFalse_WhenAnySingleCellOfTheBlockIsMissing([Range(-1, 1)] int missingDx, [Range(-1, 1)] int missingDy)
+        {
+            Vector2Int center = new(7, -4);
+            PlaceTurfBlock(center, new Vector2Int(center.x + missingDx, center.y + missingDy));
 
             Assert.IsFalse(_subsystem.IsFullyCovered(center));
         }
 
-        [Test]
-        public void IsFullyCovered_ReturnsTrue_WhenAllNinePositionsCovered()
+        [TestCase(TileLayer.Plenum, true)]
+        [TestCase(TileLayer.Wire, true)]
+        [TestCase(TileLayer.Disposal, true)]
+        [TestCase(TileLayer.PipeSurface, true)]
+        [TestCase(TileLayer.PipeMiddle, true)]
+        [TestCase(TileLayer.PipeLeft, true)]
+        [TestCase(TileLayer.PipeRight, true)]
+        [TestCase(TileLayer.Turf, false)]
+        [TestCase(TileLayer.WallMountHigh, false)]
+        [TestCase(TileLayer.WallMountLow, false)]
+        [TestCase(TileLayer.FurnitureBase, false)]
+        [TestCase(TileLayer.FurnitureTop, false)]
+        [TestCase(TileLayer.Overlays, false)]
+        public void ObjectUnderFullTurfCoverage_IsHiddenOnlyIfItsLayerIsCoverable(TileLayer layer, bool expectedHidden)
         {
-            Vector2Int center = Vector2Int.zero;
-            PlaceTurfGridAround(center);
+            Vector2Int cell = new(2, 2);
+            PlaceTurfBlock(cell, null);
 
-            Assert.IsTrue(_subsystem.IsFullyCovered(center));
+            TileOcclusionMember member = CreateMember(out Renderer[] renderers);
+            _subsystem.RegisterMember(member, cell, layer);
+
+            Assert.AreEqual(!expectedHidden, AllRenderers(renderers, true));
         }
 
         [Test]
-        public void RegisterMember_HidesCoverableMember_WhenUnderFloorLayerPlacedUnderTurf()
+        public void ObjectPlacedInOpenSpace_StaysVisible()
         {
-            Vector2Int center = new(3, 3);
-            PlaceTurfGridAround(center);
+            TileOcclusionMember wire = CreateMember(out Renderer[] renderers);
 
-            TileOcclusionMember pipe = CreateMember(TileLayer.PipeSurface, center);
-            _subsystem.RegisterMember(pipe, center, TileLayer.PipeSurface);
+            _subsystem.RegisterMember(wire, Vector2Int.zero, TileLayer.Wire);
 
-            Assert.IsFalse(pipe.IsVisible);
+            Assert.IsTrue(AllRenderers(renderers, true));
         }
 
         [Test]
-        public void RegisterMember_LeavesMemberVisible_WhenPlacedInOpenSpace()
+        public void PlacingTheNinthTurf_HidesAnAlreadyPlacedPipe()
         {
-            Vector2Int center = new(0, 0);
+            Vector2Int cell = new(10, 10);
+            Vector2Int lastTurfCell = new(11, 11);
+            TileOcclusionMember pipe = CreateMember(out Renderer[] renderers);
+            _subsystem.RegisterMember(pipe, cell, TileLayer.Disposal);
 
-            TileOcclusionMember wire = CreateMember(TileLayer.Wire, center);
-            _subsystem.RegisterMember(wire, center, TileLayer.Wire);
+            PlaceTurfBlock(cell, lastTurfCell);
+            Assert.IsTrue(AllRenderers(renderers, true), "eight of nine turfs must not hide the pipe");
 
-            Assert.IsTrue(wire.IsVisible);
+            PlaceTurf(lastTurfCell);
+            Assert.IsTrue(AllRenderers(renderers, false), "the ninth turf must hide the pipe");
         }
 
         [Test]
-        public void TurfPlacement_AfterPipePlacement_HidesPipeWhenNinthTurfPlaced()
+        public void RemovingOneSurroundingTurf_RevealsThePipeAgain()
         {
-            Vector2Int center = new(10, 10);
-            TileOcclusionMember pipe = CreateMember(TileLayer.Disposal, center);
-            _subsystem.RegisterMember(pipe, center, TileLayer.Disposal);
+            Vector2Int cell = Vector2Int.zero;
+            Dictionary<Vector2Int, TileOcclusionMember> turfs = PlaceTurfBlock(cell, null);
+            TileOcclusionMember pipe = CreateMember(out Renderer[] renderers);
+            _subsystem.RegisterMember(pipe, cell, TileLayer.Plenum);
+            Assert.IsTrue(AllRenderers(renderers, false), "precondition: pipe starts hidden");
 
-            Assert.IsTrue(pipe.IsVisible);
+            Vector2Int removed = new(0, 1);
+            _subsystem.UnregisterMember(turfs[removed], removed, TileLayer.Turf);
 
-            // Place 8 turfs around center (all except (11, 11))
+            Assert.IsTrue(AllRenderers(renderers, true));
+        }
+
+        [Test]
+        public void RemovingATurf_OnlyRevealsObjectsWithinOneCell()
+        {
+            Dictionary<Vector2Int, TileOcclusionMember> turfs = PlaceTurfBlock(new Vector2Int(0, 0), null);
+            PlaceTurfBlock(new Vector2Int(10, 0), null);
+            TileOcclusionMember near = CreateMember(out Renderer[] nearRenderers);
+            TileOcclusionMember far = CreateMember(out Renderer[] farRenderers);
+            _subsystem.RegisterMember(near, new Vector2Int(0, 0), TileLayer.Wire);
+            _subsystem.RegisterMember(far, new Vector2Int(10, 0), TileLayer.Wire);
+
+            _subsystem.UnregisterMember(turfs[new Vector2Int(1, 0)], new Vector2Int(1, 0), TileLayer.Turf);
+
+            Assert.IsTrue(AllRenderers(nearRenderers, true));
+            Assert.IsTrue(AllRenderers(farRenderers, false), "a distant covered object must be unaffected");
+        }
+
+        [Test]
+        public void TwoTurfsOnTheSameCell_KeepCoverageUntilTheLastOneIsRemoved()
+        {
+            Vector2Int cell = Vector2Int.zero;
+            PlaceTurfBlock(cell, null);
+            TileOcclusionMember secondTurf = PlaceTurf(cell);
+            TileOcclusionMember wire = CreateMember(out Renderer[] renderers);
+            _subsystem.RegisterMember(wire, cell, TileLayer.Wire);
+
+            _subsystem.UnregisterMember(secondTurf, cell, TileLayer.Turf);
+
+            Assert.IsTrue(_subsystem.IsFullyCovered(cell));
+            Assert.IsTrue(AllRenderers(renderers, false), "the original turf still covers the wire");
+        }
+
+        [Test]
+        public void RegisteringTheSameTurfTwice_DoesNotLeavePhantomCoverageAfterItIsRemoved()
+        {
+            Vector2Int cell = Vector2Int.zero;
+            Dictionary<Vector2Int, TileOcclusionMember> turfs = PlaceTurfBlock(cell, null);
+            _subsystem.RegisterMember(turfs[cell], cell, TileLayer.Turf);
+
+            _subsystem.UnregisterMember(turfs[cell], cell, TileLayer.Turf);
+
+            Assert.IsFalse(_subsystem.IsFullyCovered(cell), "one removal must remove the only turf on the cell");
+        }
+
+        [Test]
+        public void UnregisteredCoverableMember_IsNoLongerUpdated()
+        {
+            Vector2Int cell = Vector2Int.zero;
+            TileOcclusionMember wire = CreateMember(out Renderer[] renderers);
+            _subsystem.RegisterMember(wire, cell, TileLayer.Wire);
+            _subsystem.RegisterMember(wire, cell, TileLayer.Wire);
+
+            _subsystem.UnregisterMember(wire, cell, TileLayer.Wire);
+            PlaceTurfBlock(cell, null);
+
+            Assert.IsTrue(AllRenderers(renderers, true), "a single unregister must drop a doubly-registered member");
+        }
+
+        [Test]
+        public void DestroyedMember_DoesNotBreakUpdatesOfItsNeighbors()
+        {
+            Vector2Int cell = Vector2Int.zero;
+            TileOcclusionMember destroyed = CreateMember(out _);
+            TileOcclusionMember survivor = CreateMember(out Renderer[] survivorRenderers);
+            _subsystem.RegisterMember(destroyed, cell, TileLayer.Wire);
+            _subsystem.RegisterMember(survivor, cell, TileLayer.Disposal);
+            Object.DestroyImmediate(destroyed.gameObject);
+
+            Assert.DoesNotThrow(() => PlaceTurfBlock(cell, null));
+            Assert.IsTrue(AllRenderers(survivorRenderers, false), "the surviving object must still be hidden");
+        }
+
+        [Test]
+        public void UnregisteringAMemberThatWasNeverRegistered_IsIgnored()
+        {
+            TileOcclusionMember stranger = CreateMember(out _);
+
+            Assert.DoesNotThrow(() => _subsystem.UnregisterMember(stranger, Vector2Int.zero, TileLayer.Turf));
+            Assert.DoesNotThrow(() => _subsystem.UnregisterMember(stranger, Vector2Int.zero, TileLayer.Wire));
+            Assert.IsFalse(_subsystem.IsFullyCovered(Vector2Int.zero));
+        }
+
+        private static bool AllRenderers(Renderer[] renderers, bool enabled)
+        {
+            foreach (Renderer renderer in renderers)
+            {
+                if (renderer.enabled != enabled)
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        private TileOcclusionMember CreateMember(out Renderer[] renderers)
+        {
+            GameObject root = new("Test_Member");
+            GameObject child = new("Child");
+            child.transform.SetParent(root.transform);
+            _spawnedObjects.Add(root);
+
+            renderers = new Renderer[]
+            {
+                AddMeshRenderer(root),
+                AddMeshRenderer(child),
+            };
+
+            return root.AddComponent<TileOcclusionMember>();
+        }
+
+        private static Renderer AddMeshRenderer(GameObject target)
+        {
+            target.AddComponent<MeshFilter>();
+            return target.AddComponent<MeshRenderer>();
+        }
+
+        private TileOcclusionMember PlaceTurf(Vector2Int cell)
+        {
+            TileOcclusionMember turf = CreateMember(out _);
+            _subsystem.RegisterMember(turf, cell, TileLayer.Turf);
+            return turf;
+        }
+
+        private Dictionary<Vector2Int, TileOcclusionMember> PlaceTurfBlock(Vector2Int center, Vector2Int? skip)
+        {
+            Dictionary<Vector2Int, TileOcclusionMember> turfs = new();
+
             for (int dx = -1; dx <= 1; dx++)
             {
                 for (int dy = -1; dy <= 1; dy++)
                 {
-                    if (dx == 1 && dy == 1)
+                    Vector2Int cell = new(center.x + dx, center.y + dy);
+
+                    if (skip.HasValue && skip.Value == cell)
                     {
                         continue;
                     }
 
-                    Vector2Int pos = new(center.x + dx, center.y + dy);
-                    TileOcclusionMember turf = CreateMember(TileLayer.Turf, pos);
-                    _subsystem.RegisterMember(turf, pos, TileLayer.Turf);
+                    turfs[cell] = PlaceTurf(cell);
                 }
             }
 
-            // Still visible because 1 neighbor turf is missing
-            Assert.IsTrue(pipe.IsVisible);
-
-            // Now place the 9th turf at (11, 11)
-            Vector2Int lastPos = new(11, 11);
-            TileOcclusionMember lastTurf = CreateMember(TileLayer.Turf, lastPos);
-            _subsystem.RegisterMember(lastTurf, lastPos, TileLayer.Turf);
-
-            // Now fully covered, pipe should be hidden
-            Assert.IsFalse(pipe.IsVisible);
+            return turfs;
         }
-
-        [Test]
-        public void TurfDestruction_RevealsPipeImmediately()
-        {
-            Vector2Int center = new(0, 0);
-            TileOcclusionMember pipe = CreateMember(TileLayer.Plenum, center);
-            _subsystem.RegisterMember(pipe, center, TileLayer.Plenum);
-
-            Dictionary<Vector2Int, TileOcclusionMember> turfs = new();
-            for (int dx = -1; dx <= 1; dx++)
-            {
-                for (int dy = -1; dy <= 1; dy++)
-                {
-                    Vector2Int pos = new(center.x + dx, center.y + dy);
-                    TileOcclusionMember turf = CreateMember(TileLayer.Turf, pos);
-                    turfs[pos] = turf;
-                    _subsystem.RegisterMember(turf, pos, TileLayer.Turf);
-                }
-            }
-
-            Assert.IsFalse(pipe.IsVisible);
-
-            // Destroy one neighbor turf at (0, 1)
-            Vector2Int targetPos = new(0, 1);
-            TileOcclusionMember destroyedTurf = turfs[targetPos];
-            _subsystem.UnregisterMember(destroyedTurf, targetPos, TileLayer.Turf);
-
-            // Pipe should now be visible again
-            Assert.IsTrue(pipe.IsVisible);
-        }
-
-        [Test]
-        public void MultipleTurfsOnSameCell_MaintainsCoverageUntilLastTurfRemoved()
-        {
-            Vector2Int center = new(0, 0);
-            PlaceTurfGridAround(center);
-
-            // Add a second turf at center
-            TileOcclusionMember secondTurf = CreateMember(TileLayer.Turf, center);
-            _subsystem.RegisterMember(secondTurf, center, TileLayer.Turf);
-
-            Assert.AreEqual(2, _subsystem.GetTurfCount(center));
-
-            TileOcclusionMember wire = CreateMember(TileLayer.Wire, center);
-            _subsystem.RegisterMember(wire, center, TileLayer.Wire);
-            Assert.IsFalse(wire.IsVisible);
-
-            // Remove only one turf at center
-            _subsystem.UnregisterMember(secondTurf, center, TileLayer.Turf);
-            Assert.AreEqual(1, _subsystem.GetTurfCount(center));
-            Assert.IsTrue(_subsystem.IsFullyCovered(center));
-            Assert.IsFalse(wire.IsVisible);
-        }
-
-        [Test]
-        public void DuplicateRegistration_DoesNotCreateDuplicateEntries()
-        {
-            Vector2Int pos = new(5, 5);
-            TileOcclusionMember wire = CreateMember(TileLayer.Wire, pos);
-
-            _subsystem.RegisterMember(wire, pos, TileLayer.Wire);
-            _subsystem.RegisterMember(wire, pos, TileLayer.Wire);
-
-            Assert.AreEqual(1, _subsystem.GetCoverableCount(pos));
-        }
-
-        #endregion
     }
 }

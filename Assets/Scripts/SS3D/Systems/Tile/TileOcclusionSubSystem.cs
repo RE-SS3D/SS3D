@@ -15,6 +15,7 @@ namespace SS3D.Systems.Tile
     {
         private readonly Dictionary<Vector2Int, int> _turfCounts = new();
         private readonly Dictionary<Vector2Int, List<TileOcclusionMember>> _coverableMembers = new();
+        private readonly HashSet<TileOcclusionMember> _registeredTurfs = new();
 
         /// <summary>
         /// Checks whether a given tile layer is eligible to be hidden under turfs.
@@ -51,6 +52,7 @@ namespace SS3D.Systems.Tile
         {
             base.OnDestroyed();
             _turfCounts.Clear();
+            _registeredTurfs.Clear();
             _coverableMembers.Clear();
         }
 
@@ -61,6 +63,11 @@ namespace SS3D.Systems.Tile
         {
             if (layer == TileLayer.Turf)
             {
+                if (!_registeredTurfs.Add(member))
+                {
+                    return;
+                }
+
                 _turfCounts.TryGetValue(position, out int count);
                 _turfCounts[position] = count + 1;
 
@@ -97,6 +104,11 @@ namespace SS3D.Systems.Tile
         {
             if (layer == TileLayer.Turf)
             {
+                if (!_registeredTurfs.Remove(member))
+                {
+                    return;
+                }
+
                 if (_turfCounts.TryGetValue(position, out int count))
                 {
                     if (count <= 1)
@@ -144,22 +156,6 @@ namespace SS3D.Systems.Tile
             }
 
             return true;
-        }
-
-        /// <summary>
-        /// Returns the number of registered turfs at the specified position.
-        /// </summary>
-        public int GetTurfCount(Vector2Int position)
-        {
-            return _turfCounts.TryGetValue(position, out int count) ? count : 0;
-        }
-
-        /// <summary>
-        /// Returns the number of coverable members registered at the specified position.
-        /// </summary>
-        public int GetCoverableCount(Vector2Int position)
-        {
-            return _coverableMembers.TryGetValue(position, out List<TileOcclusionMember> members) ? members.Count : 0;
         }
 
         /// <summary>
