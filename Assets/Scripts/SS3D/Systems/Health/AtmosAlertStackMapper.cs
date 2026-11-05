@@ -23,6 +23,7 @@ namespace SS3D.Systems.Health
             public Severity LowPressure;
             public Severity HighPressure;
             public Severity LowOxygen;
+            public Severity SealBreach;
         }
 
         public static AtmosAlertSignals Compute(HealthEnvironmentState env)
@@ -36,11 +37,25 @@ namespace SS3D.Systems.Health
             {
                 Fire = ComputeFire(env),
                 Hot = ComputeHot(env),
-                Cold = ComputeCold(env),
-                LowPressure = ComputeLowPressure(env),
-                HighPressure = ComputeHighPressure(env),
+                Cold = env.IsSealed ? Severity.None : ComputeCold(env),
+                LowPressure = env.IsSealed ? Severity.None : ComputeLowPressure(env),
+                HighPressure = env.IsSealed ? Severity.None : ComputeHighPressure(env),
                 LowOxygen = ComputeLowOxygen(env),
+                SealBreach = ComputeSealBreach(env),
             };
+        }
+
+        private static Severity ComputeSealBreach(HealthEnvironmentState env)
+        {
+            if (!env.IsBreached)
+            {
+                return Severity.None;
+            }
+
+            bool exposed = ComputeCold(env) != Severity.None
+                || ComputeLowPressure(env) != Severity.None
+                || ComputeHighPressure(env) != Severity.None;
+            return exposed ? Severity.Critical : Severity.Warning;
         }
 
         private static Severity ComputeFire(HealthEnvironmentState env)

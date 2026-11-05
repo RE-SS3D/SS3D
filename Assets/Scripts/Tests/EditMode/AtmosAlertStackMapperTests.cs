@@ -36,6 +36,55 @@ namespace EditorTests
         }
 
         [Test]
+        public void BreachInSafeAirIsAWarning()
+        {
+            HealthEnvironmentState env = HealthEnvironmentState.SafeDefault;
+            env.HasSample = true;
+            env.IsBreached = true;
+
+            Assert.AreEqual(AtmosAlertStackMapper.Severity.Warning, AtmosAlertStackMapper.Compute(env).SealBreach);
+        }
+
+        [Test]
+        public void BreachInVacuumIsCritical()
+        {
+            HealthEnvironmentState env = HealthEnvironmentExposure.FromVacuumCell(
+                AtmosConstants.SpaceTemperature,
+                burnIntensity: 0f);
+            env.IsBreached = true;
+
+            AtmosAlertStackMapper.AtmosAlertSignals signals = AtmosAlertStackMapper.Compute(env);
+
+            Assert.AreEqual(AtmosAlertStackMapper.Severity.Critical, signals.SealBreach);
+            Assert.AreEqual(AtmosAlertStackMapper.Severity.Critical, signals.LowPressure);
+        }
+
+        [Test]
+        public void NoBreachRaisesNoBreachAlert()
+        {
+            HealthEnvironmentState env = HealthEnvironmentExposure.FromVacuumCell(
+                AtmosConstants.SpaceTemperature,
+                burnIntensity: 0f);
+
+            Assert.AreEqual(AtmosAlertStackMapper.Severity.None, AtmosAlertStackMapper.Compute(env).SealBreach);
+        }
+
+        [Test]
+        public void SealedVacuumRaisesOnlyLowOxygen()
+        {
+            HealthEnvironmentState env = HealthEnvironmentExposure.FromVacuumCell(
+                AtmosConstants.SpaceTemperature,
+                burnIntensity: 0f);
+            env.IsSealed = true;
+
+            AtmosAlertStackMapper.AtmosAlertSignals signals = AtmosAlertStackMapper.Compute(env);
+
+            Assert.AreEqual(AtmosAlertStackMapper.Severity.None, signals.LowPressure);
+            Assert.AreEqual(AtmosAlertStackMapper.Severity.None, signals.Cold);
+            Assert.AreEqual(AtmosAlertStackMapper.Severity.Critical, signals.LowOxygen);
+        }
+
+        [Test]
         public void HotRoomRaisesHotAlert()
         {
             HealthEnvironmentState env = HealthEnvironmentState.SafeDefault;

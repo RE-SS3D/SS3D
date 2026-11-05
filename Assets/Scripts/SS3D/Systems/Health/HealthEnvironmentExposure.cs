@@ -60,11 +60,14 @@ namespace SS3D.Systems.Health
 
         /// <summary>
         /// Per-zone burn from ambient temperature and fire. Pressure is not burn —
-        /// use <see cref="PressureLungDamage"/> for barotrauma.
+        /// use <see cref="PressureLungDamage"/> for barotrauma. A seal stops cold and
+        /// scales heat and fire down by <paramref name="heatProtection"/> (armor.md §1, §3).
         /// </summary>
         public static float EnvironmentalBurnDamage(
             float temperatureKelvin,
-            float burnIntensity)
+            float burnIntensity,
+            bool isSealed = false,
+            float heatProtection = 0f)
         {
             float burn = 0f;
 
@@ -74,7 +77,7 @@ namespace SS3D.Systems.Health
                     * HealthConstants.HotDamageBurnPerKelvin;
             }
 
-            if (temperatureKelvin <= HealthConstants.ColdDamageTemperatureKelvin)
+            if (!isSealed && temperatureKelvin <= HealthConstants.ColdDamageTemperatureKelvin)
             {
                 burn += (HealthConstants.ColdDamageTemperatureKelvin - temperatureKelvin)
                     * HealthConstants.ColdDamageBurnPerKelvin;
@@ -85,15 +88,21 @@ namespace SS3D.Systems.Health
                 burn += burnIntensity * HealthConstants.FireBurnPerIntensity;
             }
 
-            return Math.Min(burn, HealthConstants.MaxEnvironmentalBurnPerZonePerTick);
+            float exposed = Math.Min(burn, HealthConstants.MaxEnvironmentalBurnPerZonePerTick);
+            return isSealed ? exposed * (1f - Mathf.Clamp01(heatProtection)) : exposed;
         }
 
         /// <summary>
         /// Lung function drain from vacuum / low / high pressure (barotrauma).
-        /// Station pressure returns 0. Applied equally to left and right lung.
+        /// Station pressure returns 0. Applied equally to left and right lung. A seal stops it.
         /// </summary>
-        public static float PressureLungDamage(float pressureKpa, bool isVacuum)
+        public static float PressureLungDamage(float pressureKpa, bool isVacuum, bool isSealed = false)
         {
+            if (isSealed)
+            {
+                return 0f;
+            }
+
             if (isVacuum || pressureKpa <= 0f)
             {
                 return Math.Min(

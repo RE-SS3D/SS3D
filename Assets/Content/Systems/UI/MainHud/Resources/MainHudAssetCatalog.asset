@@ -46,3 +46,4 @@ MonoBehaviour:
   _alertDying: {fileID: 21300000, guid: ab8990ca57cd474a8e9c935fd243684e, type: 3}
   _alertBleeding: {fileID: 21300000, guid: 1d2dbb9bb06c437b82ae213a5bca7a70, type: 3}
   _alertCardiacArrest: {fileID: 21300000, guid: 5f3e03921ca04a2fb3b265376ea5ef90, type: 3}
+  _alertSealBreach: {fileID: 21300000, guid: 7cb5d8629ed9460d8345de5043b28aff, type: 3}

@@ -19,6 +19,15 @@ namespace SS3D.Systems.Health
         public float PlasmaMoleFraction;
         public float OxygenMoleFraction;
 
+        /// <summary>A worn seal holds, so pressure and cold are not reaching the body.</summary>
+        public bool IsSealed;
+
+        /// <summary>Share of heat and fire stopped by the seal; 0 when unsealed.</summary>
+        public float HeatProtection;
+
+        /// <summary>A worn suit or helmet is punctured, so the seal cannot hold until it is replaced.</summary>
+        public bool IsBreached;
+
         /// <summary>Assumed safe station air when atmos/tile is unavailable (lobby, map load).</summary>
         public static HealthEnvironmentState SafeDefault => new()
         {

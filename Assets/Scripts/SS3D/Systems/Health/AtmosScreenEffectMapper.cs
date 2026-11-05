@@ -36,7 +36,7 @@ namespace SS3D.Systems.Health
                     env.TemperatureKelvin));
             }
 
-            if (env.TemperatureKelvin <= HealthConstants.ColdWarningTemperatureKelvin)
+            if (!env.IsSealed && env.TemperatureKelvin <= HealthConstants.ColdWarningTemperatureKelvin)
             {
                 cold = Mathf.Clamp01(Mathf.InverseLerp(
                     HealthConstants.ColdWarningTemperatureKelvin,
@@ -44,7 +44,7 @@ namespace SS3D.Systems.Health
                     env.TemperatureKelvin));
             }
 
-            if (env.TemperatureKelvin <= HealthConstants.FreezingTemperatureKelvin)
+            if (!env.IsSealed && env.TemperatureKelvin <= HealthConstants.FreezingTemperatureKelvin)
             {
                 freezing = Mathf.Clamp01(Mathf.InverseLerp(
                     HealthConstants.ColdDamageTemperatureKelvin,

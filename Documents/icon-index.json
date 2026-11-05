@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-23T12:47:02.814889+00:00",
+  "generated_at": "2026-11-05T14:18:09.897737+00:00",
   "purpose": "Agent reference for locating icon assets under Assets/Art/Icons/ (plus Phase 2 InteractionIcons scatter; see asset-file-structure-taxonomy).",
   "sources": [
     {
@@ -19,7 +19,7 @@
     },
     {
       "source": "interaction-icons",
-      "count": 51,
+      "count": 53,
       "root": "Assets/Art/Graphics/UI/Interactions/InteractionIcons"
     },
     {
@@ -34,12 +34,12 @@
     },
     {
       "source": "alert-stack",
-      "count": 14,
+      "count": 15,
       "root": "Assets/Art/Icons/Alerts"
     }
   ],
   "summary": {
-    "total_icons": 4776,
+    "total_icons": 4779,
     "source_count": 7,
     "pack_count": 36,
     "svg_count": 4219
@@ -55127,6 +55127,17 @@
       ]
     },
     {
+      "name": "Lock.png",
+      "stem": "Lock",
+      "extension": "png",
+      "source": "interaction-icons",
+      "pack": "InteractionIcons",
+      "path": "Assets/Art/Graphics/UI/Interactions/InteractionIcons/Lock.png",
+      "tags": [
+        "lock"
+      ]
+    },
+    {
       "name": "Lockpick.png",
       "stem": "Lockpick",
       "extension": "png",
@@ -55366,6 +55377,17 @@
       "path": "Assets/Art/Graphics/UI/Interactions/InteractionIcons/Type.png",
       "tags": [
         "type"
+      ]
+    },
+    {
+      "name": "Unlock.png",
+      "stem": "Unlock",
+      "extension": "png",
+      "source": "interaction-icons",
+      "pack": "InteractionIcons",
+      "path": "Assets/Art/Graphics/UI/Interactions/InteractionIcons/Unlock.png",
+      "tags": [
+        "unlock"
       ]
     },
     {
@@ -55894,6 +55916,18 @@
       "tags": [
         "restrained",
         "cuffs"
+      ]
+    },
+    {
+      "name": "seal-breach.png",
+      "stem": "seal-breach",
+      "extension": "png",
+      "source": "alert-stack",
+      "pack": "Alerts",
+      "path": "Assets/Art/Icons/Alerts/seal-breach.png",
+      "tags": [
+        "seal",
+        "breach"
       ]
     },
     {

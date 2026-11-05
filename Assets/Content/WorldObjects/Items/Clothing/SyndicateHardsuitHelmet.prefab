@@ -202,6 +202,7 @@ GameObject:
   - component: {fileID: -8219830496143806192}
   - component: {fileID: 461124676409172761}
   - component: {fileID: 2810625140250249590}
+  - component: {fileID: 7312904568126640251}
   - component: {fileID: 5920131108600490182}
   m_Layer: 10
   m_Name: SyndicateHardsuitHelmet
@@ -382,6 +383,7 @@ MonoBehaviour:
   - {fileID: -3359041045153695440}
   - {fileID: -1938953542191470901}
   - {fileID: 2810625140250249590}
+  - {fileID: 7312904568126640251}
   <ParentNetworkObject>k__BackingField: {fileID: 0}
   <ChildNetworkObjects>k__BackingField: []
   SerializedTransformProperties:
@@ -500,6 +502,23 @@ MonoBehaviour:
     MaxIntegrity: 80
     CoveredZones: 1
   _integrity: 0
+--- !u!114 &7312904568126640251
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2601952054522247362}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fc20bbdafc31f1ed6aacb11834586ed6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: SS3D.Systems::SS3D.Systems.Combat.SealedGearItemExtension
+  _componentIndexCache: 3
+  _addedNetworkObject: {fileID: -1921154974467191097}
+  _networkObjectCache: {fileID: -1921154974467191097}
+  _heatProtection: 0.7
+  _breached: 0
 --- !u!65 &5920131108600490182
 BoxCollider:
   m_ObjectHideFlags: 0

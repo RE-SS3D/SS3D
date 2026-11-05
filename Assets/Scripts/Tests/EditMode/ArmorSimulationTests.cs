@@ -1,6 +1,7 @@
 using NUnit.Framework;
 using SS3D.Systems.Combat;
 using SS3D.Systems.Health;
+using SS3D.Systems.Inventory.Containers;
 
 namespace EditorTests
 {
@@ -65,6 +66,21 @@ namespace EditorTests
             Assert.AreEqual(8f, remainingBrute);
             Assert.AreEqual(2f, remainingBurn);
             Assert.AreEqual(0f, integrityLoss);
+        }
+
+        [Test]
+        public void LayerRankPutsTheSuitOutsideTheJumpsuit()
+        {
+            Assert.Less(ArmorSimulation.LayerRank(ContainerType.ExoSuit), ArmorSimulation.LayerRank(ContainerType.Jumpsuit));
+            Assert.Less(ArmorSimulation.LayerRank(ContainerType.Head), ArmorSimulation.LayerRank(ContainerType.Jumpsuit));
+        }
+
+        [TestCase(1f, 0f, true)]
+        [TestCase(0f, 1f, true)]
+        [TestCase(0f, 0f, false)]
+        public void OnlyDamageLeftAfterEveryLayerReachesTheLimb(float brute, float burn, bool expected)
+        {
+            Assert.AreEqual(expected, ArmorSimulation.ReachesLimb(brute, burn));
         }
     }
 }

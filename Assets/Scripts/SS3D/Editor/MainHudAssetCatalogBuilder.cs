@@ -60,6 +60,7 @@ namespace SS3D.Editor
                 Dying = LoadRequiredAlertSprite("dying-heartbeat", missing),
                 Bleeding = LoadRequiredAlertSprite("bleeding-droplet", missing),
                 CardiacArrest = LoadRequiredAlertSprite("cardiac-arrest", missing),
+                SealBreach = LoadRequiredAlertSprite("seal-breach", missing),
             };
 
             if (missing.Count > 0)

@@ -1,6 +1,7 @@
 using FishNet.Connection;
 using FishNet.Object;
 using FishNet.Object.Synchronizing;
+using System.Linq;
 using Coimbra.Services.Events;
 using Coimbra.Services.PlayerLoopEvents;
 using SS3D.Core;
@@ -285,8 +286,9 @@ namespace SS3D.Systems.Health
 
         /// <summary>
         /// Runs incoming damage through every worn armor piece covering this zone before it reaches
-        /// the limb model (Documents/design/armor.md §2). Pieces are layered — each one's absorption
-        /// reduces the running remainder before the next piece sees it.
+        /// the limb model (Documents/design/armor.md §2). Pieces are layered outermost first — each
+        /// one's absorption reduces the running remainder before the next piece sees it. Damage left
+        /// after every layer punctures the outermost sealed piece covering the zone (armor.md §3).
         /// </summary>
         [Server]
         private (float Brute, float Burn) ApplyArmorAbsorption(BodyZone zone, float brute, float burn)
@@ -296,13 +298,12 @@ namespace SS3D.Systems.Health
                 return (brute, burn);
             }
 
-            foreach (AttachedContainer container in _inventory.Containers)
-            {
-                if (!container.Type.IsWornSlot())
-                {
-                    continue;
-                }
+            SealedGearItemExtension outermostSeal = null;
 
+            foreach (AttachedContainer container in _inventory.Containers
+                .Where(worn => worn.Type.IsWornSlot())
+                .OrderBy(worn => ArmorSimulation.LayerRank(worn.Type)))
+            {
                 foreach (Item item in container.Items)
                 {
                     if (!item.TryGetComponent(out ArmorItemExtension armor) || !armor.Profile.CoveredZones.Contains(zone))
@@ -310,8 +311,18 @@ namespace SS3D.Systems.Health
                         continue;
                     }
 
+                    if (outermostSeal == null)
+                    {
+                        item.TryGetComponent(out outermostSeal);
+                    }
+
                     (brute, burn) = armor.ServerAbsorb(brute, burn);
                 }
+            }
+
+            if (outermostSeal != null && ArmorSimulation.ReachesLimb(brute, burn))
+            {
+                outermostSeal.ServerBreach();
             }
 
             return (brute, burn);
@@ -637,13 +648,58 @@ namespace SS3D.Systems.Health
                 return;
             }
 
-            _environment = SampleEnvironmentAtBody();
+            _environment = ApplyWornSeal(SampleEnvironmentAtBody());
             ApplyEnvironmentalExposure(_environment);
             ApplyBreathExchange(_environment);
 
             float toxinIntake = HealthEnvironmentExposure.ToxinIntakeFromPlasma(
                 _environment.PlasmaMoleFraction);
             TickHealth(_environment.AtmosphereBreathability, toxinIntake);
+        }
+
+        /// <summary>
+        /// Suit and helmet seal together; a missing or breached piece breaks the whole seal (armor.md §3).
+        /// </summary>
+        [Server]
+        private HealthEnvironmentState ApplyWornSeal(HealthEnvironmentState env)
+        {
+            SealedGearItemExtension suit = FindWornSeal(ContainerType.ExoSuit);
+            SealedGearItemExtension helmet = FindWornSeal(ContainerType.Head);
+
+            env.IsBreached = (suit != null && suit.IsBreached) || (helmet != null && helmet.IsBreached);
+            if (suit != null && helmet != null && !env.IsBreached)
+            {
+                env.IsSealed = true;
+                env.HeatProtection = Mathf.Min(suit.HeatProtection, helmet.HeatProtection);
+            }
+
+            return env;
+        }
+
+        private SealedGearItemExtension FindWornSeal(ContainerType slot)
+        {
+            if (_inventory == null)
+            {
+                return null;
+            }
+
+            foreach (AttachedContainer container in _inventory.Containers)
+            {
+                if (container.Type != slot)
+                {
+                    continue;
+                }
+
+                foreach (Item item in container.Items)
+                {
+                    if (item.TryGetComponent(out SealedGearItemExtension seal))
+                    {
+                        return seal;
+                    }
+                }
+            }
+
+            return null;
         }
 
         [Server]
@@ -708,7 +764,9 @@ namespace SS3D.Systems.Health
             // Heat / cold / fire: surface burn across the whole body (slow per zone).
             float burn = HealthEnvironmentExposure.EnvironmentalBurnDamage(
                 env.TemperatureKelvin,
-                env.BurnIntensity);
+                env.BurnIntensity,
+                env.IsSealed,
+                env.HeatProtection);
             if (burn > 0f)
             {
                 for (int zone = 0; zone < _zones.Length; zone++)
@@ -720,7 +778,8 @@ namespace SS3D.Systems.Health
             // Pressure extremes: lung barotrauma — not chest burn.
             float lungDamage = HealthEnvironmentExposure.PressureLungDamage(
                 env.PressureKpa,
-                env.IsVacuum);
+                env.IsVacuum,
+                env.IsSealed);
             if (lungDamage > 0f)
             {
                 OrganSimulation.ApplyLungDamage(_organs, lungDamage);

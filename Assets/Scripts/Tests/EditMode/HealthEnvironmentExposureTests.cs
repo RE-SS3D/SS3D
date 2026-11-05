@@ -72,6 +72,54 @@ namespace EditorTests
         }
 
         [Test]
+        public void SealStopsColdBurn()
+        {
+            float burn = HealthEnvironmentExposure.EnvironmentalBurnDamage(
+                HealthConstants.ColdDamageTemperatureKelvin - 20f,
+                burnIntensity: 0f,
+                isSealed: true,
+                heatProtection: 0.7f);
+
+            Assert.AreEqual(0f, burn);
+        }
+
+        [Test]
+        public void SealScalesFireDown()
+        {
+            float exposed = HealthEnvironmentExposure.EnvironmentalBurnDamage(
+                AtmosConstants.StandardTemperature,
+                burnIntensity: 1f);
+            float sealedBurn = HealthEnvironmentExposure.EnvironmentalBurnDamage(
+                AtmosConstants.StandardTemperature,
+                burnIntensity: 1f,
+                isSealed: true,
+                heatProtection: 0.7f);
+
+            Assert.AreEqual(exposed * 0.3f, sealedBurn, 0.0001f);
+        }
+
+        [Test]
+        public void HeatProtectionNeedsASeal()
+        {
+            float exposed = HealthEnvironmentExposure.EnvironmentalBurnDamage(
+                AtmosConstants.StandardTemperature,
+                burnIntensity: 1f);
+            float unsealed = HealthEnvironmentExposure.EnvironmentalBurnDamage(
+                AtmosConstants.StandardTemperature,
+                burnIntensity: 1f,
+                isSealed: false,
+                heatProtection: 0.7f);
+
+            Assert.AreEqual(exposed, unsealed);
+        }
+
+        [Test]
+        public void SealStopsPressureLungDamage()
+        {
+            Assert.AreEqual(0f, HealthEnvironmentExposure.PressureLungDamage(0f, isVacuum: true, isSealed: true));
+        }
+
+        [Test]
         public void HotTemperatureProducesBurnDamage()
         {
             float burn = HealthEnvironmentExposure.EnvironmentalBurnDamage(

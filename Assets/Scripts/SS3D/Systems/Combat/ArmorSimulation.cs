@@ -1,3 +1,5 @@
+using SS3D.Systems.Inventory.Containers;
+
 namespace SS3D.Systems.Combat
 {
     /// <summary>
@@ -37,6 +39,22 @@ namespace SS3D.Systems.Combat
 
             return (remainingBrute, remainingBurn, totalAbsorbed);
         }
+
+        /// <summary>
+        /// Sort key for layering: a hit meets the outermost piece first (armor.md §2).
+        /// </summary>
+        public static int LayerRank(ContainerType slot) => slot switch
+        {
+            ContainerType.ExoSuit => 0,
+            ContainerType.Jumpsuit => 2,
+            _ => 1,
+        };
+
+        /// <summary>
+        /// True when damage is left after every layer: the same event punctures a seal (armor.md §3).
+        /// </summary>
+        public static bool ReachesLimb(float remainingBrute, float remainingBurn) =>
+            remainingBrute > 0f || remainingBurn > 0f;
 
         private static float Min(float a, float b) => a < b ? a : b;
 

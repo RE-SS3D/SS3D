@@ -10,7 +10,7 @@ namespace SS3D.UI.MainHud.Components
     /// CardiacArrest are fork additions (health vitals) not yet in that design table.
     /// Health hazards (LowOxygen, Dying, Bleeding, CardiacArrest) are live via
     /// <see cref="SS3D.Systems.Health.HealthAlertStackMapper"/>; turf Hot/Cold/pressure/Fire
-    /// (+ turf LowOxygen) via <see cref="SS3D.Systems.Health.AtmosAlertStackMapper"/>. Remaining
+    /// (+ turf LowOxygen) and SealBreach via <see cref="SS3D.Systems.Health.AtmosAlertStackMapper"/>. Remaining
     /// hazards stay None until those systems exist (F4 / <c>alertstack</c> full-stack override).
     /// </summary>
     public enum AlertHazard
@@ -29,6 +29,7 @@ namespace SS3D.UI.MainHud.Components
         Dying,
         Bleeding,
         CardiacArrest,
+        SealBreach,
     }
 
     /// <summary>
@@ -65,6 +66,7 @@ namespace SS3D.UI.MainHud.Components
         public AlertSeverity Dying;
         public AlertSeverity Bleeding;
         public AlertSeverity CardiacArrest;
+        public AlertSeverity SealBreach;
 
         public AlertSeverity this[AlertHazard hazard] => hazard switch
         {
@@ -82,6 +84,7 @@ namespace SS3D.UI.MainHud.Components
             AlertHazard.Dying => Dying,
             AlertHazard.Bleeding => Bleeding,
             AlertHazard.CardiacArrest => CardiacArrest,
+            AlertHazard.SealBreach => SealBreach,
             _ => AlertSeverity.None,
         };
     }
@@ -110,6 +113,7 @@ namespace SS3D.UI.MainHud.Components
             (AlertHazard.Dying, "Dying / Critical"),
             (AlertHazard.Bleeding, "Bleeding"),
             (AlertHazard.CardiacArrest, "Cardiac Arrest"),
+            (AlertHazard.SealBreach, "Seal Breach"),
         };
 
         private readonly AlertChip[] _chips;

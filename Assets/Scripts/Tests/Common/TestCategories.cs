@@ -14,6 +14,8 @@ namespace SS3D.Tests
 
         public const string Medical = "Medical";
 
+        public const string EvaGear = "EvaGear";
+
         public const string Atmos = "Atmos";
 
         public const string Access = "Access";

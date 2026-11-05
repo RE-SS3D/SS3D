@@ -1371,6 +1371,14 @@ MonoBehaviour:
     m_Key: examine.structural.fractured_glass
     m_Metadata:
       m_Items: []
+  - m_Id: 252937831064399873
+    m_Key: examine.seal.intact
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252937831064399874
+    m_Key: examine.seal.breached
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

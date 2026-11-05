@@ -1385,6 +1385,14 @@ MonoBehaviour:
     m_Localized: Branching fractures spread across the glass.
     m_Metadata:
       m_Items: []
+  - m_Id: 252937831064399873
+    m_Localized: 'Seal: intact.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252937831064399874
+    m_Localized: 'Seal: breached.'
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

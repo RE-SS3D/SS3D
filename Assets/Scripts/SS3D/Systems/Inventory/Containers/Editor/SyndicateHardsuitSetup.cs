@@ -164,6 +164,7 @@ namespace SS3D.Systems.Inventory.Containers.Editor
                 so.FindProperty("_profile.MaxIntegrity").floatValue = type == ClothType.Head ? 80f : 160f;
                 so.FindProperty("_profile.CoveredZones").intValue = (int)(type == ClothType.Head ? BodyZoneMask.Head : ArmorProfile.SecurityJumpsuit.CoveredZones);
                 so.ApplyModifiedPropertiesWithoutUndo();
+                if (root.GetComponent<SealedGearItemExtension>() == null) root.AddComponent<SealedGearItemExtension>();
                 StorageContainerPrefabSetup.RebuildNetworkBehaviours(root.GetComponent<FishNet.Object.NetworkObject>());
                 PrefabUtility.SaveAsPrefabAsset(root, path);
             }

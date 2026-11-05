@@ -524,6 +524,7 @@ namespace SS3D.UI.MainHud
                 Cold = ToAlertSeverity(atmos.Cold),
                 LowPressure = ToAlertSeverity(atmos.LowPressure),
                 HighPressure = ToAlertSeverity(atmos.HighPressure),
+                SealBreach = ToAlertSeverity(atmos.SealBreach),
             };
         }
 
@@ -1509,6 +1510,7 @@ namespace SS3D.UI.MainHud
                     Dying = LoadAlertSprite("dying-heartbeat"),
                     Bleeding = LoadAlertSprite("bleeding-droplet"),
                     CardiacArrest = LoadAlertSprite("cardiac-arrest"),
+                    SealBreach = LoadAlertSprite("seal-breach"),
                 };
             }
 

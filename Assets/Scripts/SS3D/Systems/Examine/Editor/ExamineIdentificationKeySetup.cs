@@ -33,6 +33,8 @@ namespace SS3D.Systems.Examine.Editor
             UpsertEntry(englishTable, ExamineStructuralIntegrityKeys.SplitWood, ExamineStructuralIntegrityKeys.SplitWoodFallback);
             UpsertEntry(englishTable, ExamineStructuralIntegrityKeys.ChippedGlass, ExamineStructuralIntegrityKeys.ChippedGlassFallback);
             UpsertEntry(englishTable, ExamineStructuralIntegrityKeys.FracturedGlass, ExamineStructuralIntegrityKeys.FracturedGlassFallback);
+            UpsertEntry(englishTable, ExamineSealKeys.Intact, ExamineSealKeys.IntactFallback);
+            UpsertEntry(englishTable, ExamineSealKeys.Breached, ExamineSealKeys.BreachedFallback);
 
             EditorUtility.SetDirty(englishTable);
             EditorUtility.SetDirty(englishTable.SharedData);
