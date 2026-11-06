@@ -15,18 +15,18 @@ namespace SS3D.Systems.StructuralDamage
         [SerializeField] private Material _particleMaterial;
 
         [Header("Falloff")]
-        [SerializeField] private float _shakeFullRange = 4f;
-        [SerializeField] private float _shakeMaxRange = 18f;
-        [SerializeField] private float _flashFullRange = 3f;
-        [SerializeField] private float _flashMaxRange = 14f;
+        [SerializeField] private float _shakeFullRange = 6f;
+        [SerializeField] private float _shakeMaxRange = 24f;
+        [SerializeField] private float _flashFullRange = 4f;
+        [SerializeField] private float _flashMaxRange = 20f;
 
         [Header("Shake")]
-        [SerializeField] private float _shakeAmplitude = 0.22f;
-        [SerializeField] private float _shakeDuration = 0.35f;
+        [SerializeField] private float _shakeAmplitude = 0.75f;
+        [SerializeField] private float _shakeDuration = 0.85f;
 
         [Header("Light")]
-        [SerializeField] private float _lightIntensity = 8f;
-        [SerializeField] private float _lightRange = 10f;
+        [SerializeField] private float _lightIntensity = 35f;
+        [SerializeField] private float _lightRange = 14f;
         [SerializeField] private float _lightDuration = 0.4f;
 
         [Header("Lifetime")]

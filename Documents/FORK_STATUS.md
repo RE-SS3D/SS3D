@@ -782,8 +782,10 @@ MVP1 M2 station integrity + blast (PR #46, `cursor/structural-damage-plan`; plen
 - Presentation: integrity tint + optional WindLight; examine Damaged/Cracked sections; blast VFX /
   screen flash
 - Consoles: `hurtstructure`, `blast`
+- Explosives content: timed C4 and X4 charges and the Syndicate minibomb; blast damage to flooring
+  and hull plating; bodies thrown away from blasts
 
-Deferred: debris spawn, true local-region Area remesh, full explosives content.
+Deferred: debris spawn, true local-region Area remesh.
 Architecture: [2026-07_structural-destruction.md](architecture/2026-07_structural-destruction.md).
 System map: [structural-destruction.md](architecture/systems/structural-destruction.md).
 

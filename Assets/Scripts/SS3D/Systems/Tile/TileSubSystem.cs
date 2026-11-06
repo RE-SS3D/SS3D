@@ -304,17 +304,17 @@ namespace SS3D.Systems.Tile
         /// Server entry for blast detonation VFX. One-shot — do not BufferLast.
         /// </summary>
         [Server]
-        public void ServerNotifyBlastDetonated(Vector3 worldPosition, float yield)
+        public void ServerNotifyBlastDetonated(Vector3 worldPosition, float yield, bool smallSound = false)
         {
-            RpcBlastDetonated(worldPosition, yield);
+            RpcBlastDetonated(worldPosition, yield, smallSound);
         }
 
         [ObserversRpc(RunLocally = true)]
-        private void RpcBlastDetonated(Vector3 worldPosition, float yield)
+        private void RpcBlastDetonated(Vector3 worldPosition, float yield, bool smallSound)
         {
             BlastVfxPresenter.Play(worldPosition, yield);
             if (IsClient && _structuralAudio != null)
-                _structuralAudio.OnBlast(worldPosition, yield);
+                _structuralAudio.OnBlast(worldPosition, yield, smallSound);
         }
 
         [Server]

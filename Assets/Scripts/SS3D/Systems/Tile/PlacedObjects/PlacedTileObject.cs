@@ -123,6 +123,7 @@ namespace SS3D.Systems.Tile
         private IAdjacencyConnector _connector;
         private Vector2Int _worldOrigin;
         private bool _clientRegistered;
+        private bool _underfloorHidden;
 
         /// <summary>
         /// Returns a list of all grids positions that object occupies.
@@ -297,8 +298,14 @@ namespace SS3D.Systems.Tile
             if (ShouldHideUnderfloorMeshes())
                 ApplyUnderfloorOcclusion();
             else if (_tileObjectSo != null && TileUnderfloorVisibility.IsUnderfloorLayer(Layer))
+            {
                 TileUnderfloorVisibility.SetCoverRenderingHidden(gameObject, hidden: false);
+                _underfloorHidden = false;
+            }
         }
+
+        /// <summary>The last applied cover-hide no longer matches this object's cell and surroundings.</summary>
+        public bool IsUnderfloorHideOutOfDate => ShouldHideUnderfloorMeshes() != _underfloorHidden;
 
         /// <summary>
         /// HashGrid AOI drives host MeshRenderer visibility in play; Map Editor authoring
@@ -337,6 +344,7 @@ namespace SS3D.Systems.Tile
             }
 
             bool shouldHide = ShouldHideUnderfloorMeshes();
+            _underfloorHidden = shouldHide;
 
             if (shouldHide)
             {
@@ -377,14 +385,11 @@ namespace SS3D.Systems.Tile
             {
                 EnableAllChildRenderers();
                 SetSelectableEnabled(true);
+                _underfloorHidden = false;
                 return;
             }
 
-            if (!ShouldHideUnderfloorMeshes())
-                return;
-
-            TileUnderfloorVisibility.SetCoverRenderingHidden(gameObject, hidden: true);
-            SetSelectableEnabled(false);
+            ApplyUnderfloorOcclusion();
         }
 
         private void ApplyUnderfloorOcclusion()
@@ -395,6 +400,7 @@ namespace SS3D.Systems.Tile
             // Do not set Renderer.enabled — FishNet AOI owns that. Cover-hide uses forceRenderingOff.
             TileUnderfloorVisibility.SetCoverRenderingHidden(gameObject, hidden: true);
             SetSelectableEnabled(false);
+            _underfloorHidden = true;
         }
 
         private bool ShouldHideUnderfloorMeshes()
@@ -411,11 +417,11 @@ namespace SS3D.Systems.Tile
             // Prefer live transform; WorldOrigin can lag SyncVar apply on pure clients.
             Vector3 world = transform.position;
             world.y = 0f;
-            if (TileUnderfloorVisibility.ShouldHideUnderfloor(tiles.CurrentMap, world, mapEditorAuthoring: false))
+            if (TileUnderfloorVisibility.ShouldHideUnderfloor(tiles.CurrentMap, world, Layer, mapEditorAuthoring: false))
                 return true;
 
             Vector3 synced = new Vector3(WorldOrigin.x, 0f, WorldOrigin.y);
-            return TileUnderfloorVisibility.ShouldHideUnderfloor(tiles.CurrentMap, synced, mapEditorAuthoring: false);
+            return TileUnderfloorVisibility.ShouldHideUnderfloor(tiles.CurrentMap, synced, Layer, mapEditorAuthoring: false);
         }
 
         private void SetSelectableEnabled(bool enabled)

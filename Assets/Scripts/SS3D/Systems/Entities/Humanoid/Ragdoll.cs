@@ -25,6 +25,8 @@ namespace SS3D.Systems.Entities.Humanoid
         private Animator _animator; 
         private NetworkAnimator _networkAnimator; 
         private bool _networkAnimatorInitiallyEnabled;
+        private HumanoidPredictedMovement _predictedMovement;
+        private bool _predictedMovementInitiallyEnabled;
         private HumanoidLivingController _humanoidLivingController; 
         private CharacterController _characterController; 
         private Transform[] _ragdollParts;
@@ -209,6 +211,7 @@ namespace SS3D.Systems.Entities.Humanoid
                 }
             }
             TickWind(Time.deltaTime);
+            TickBlastShove(Time.deltaTime);
             switch (_currentState)
             {
                 case RagdollState.Walking:
@@ -368,6 +371,12 @@ namespace SS3D.Systems.Entities.Humanoid
             {
                 _networkAnimator = GetComponent<NetworkAnimator>();
                 _networkAnimatorInitiallyEnabled = _networkAnimator != null && _networkAnimator.enabled;
+            }
+
+            if (_predictedMovement == null)
+            {
+                _predictedMovement = GetComponent<HumanoidPredictedMovement>();
+                _predictedMovementInitiallyEnabled = _predictedMovement != null && _predictedMovement.enabled;
             }
         }
 
@@ -780,9 +789,11 @@ namespace SS3D.Systems.Entities.Humanoid
                 _characterController.enabled = enable && IsOwner;
             }
 
-            if (TryGetComponent(out HumanoidPredictedMovement predictedMovement))
+            // Human.prefab ships this off. Turning it on at recovery has the server replay a remote
+            // owner's inputs against a controller that is off there, logging an error every tick.
+            if (_predictedMovement != null)
             {
-                predictedMovement.enabled = enable;
+                _predictedMovement.enabled = enable && _predictedMovementInitiallyEnabled;
             }
         }
         private void ToggleAnimator(bool enable)

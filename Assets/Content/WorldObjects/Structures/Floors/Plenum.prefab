@@ -197,9 +197,10 @@ GameObject:
   - component: {fileID: 9057318044260736153}
   - component: {fileID: -5171608925130170487}
   - component: {fileID: -5218382646515949466}
-  - component: {fileID: -7928552370738798750}
   - component: {fileID: -2330226756981021432}
   - component: {fileID: 7131977341072132757}
+  - component: {fileID: 506289522472329070}
+  - component: {fileID: 3930338469337892180}
   m_Layer: 0
   m_Name: Plenum
   m_TagString: Untagged
@@ -397,19 +398,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e00534faac6488c47893490f2bf4c5a2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &-7928552370738798750
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8028539322119499722}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 38640bf88ae0c29409092a258bd36878, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  key: {fileID: 11400000, guid: 8158a12d6b88d6f46b377483f4cf22cf, type: 2}
 --- !u!114 &-2330226756981021432
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -454,3 +442,30 @@ MonoBehaviour:
   _syncMapId: 0
   _syncIntegrityRemaining: -1
   _syncIntegrityStage: 0
+--- !u!114 &506289522472329070
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8028539322119499722}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8497fbc0a2e5407588e8b4f873285d28, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: SS3D.Systems::SS3D.Systems.StructuralDamage.StructuralIntegrityPresenter
+  _crackedHiss: {fileID: 0}
+  _hissVolume: 0.35
+--- !u!114 &3930338469337892180
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8028539322119499722}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 23a78eb0cc1c4b01ad68f5123895213c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: SS3D.Systems::SS3D.Systems.Examine.StructuralIntegrityExaminable
+  key: {fileID: 11400000, guid: 8158a12d6b88d6f46b377483f4cf22cf, type: 2}

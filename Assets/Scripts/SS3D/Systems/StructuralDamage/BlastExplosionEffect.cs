@@ -16,6 +16,8 @@ namespace SS3D.Systems.StructuralDamage
         private ParticleSystem _core;
         private ParticleSystem _smoke;
         private bool _configured;
+        private Material _smokeMaterial;
+        private Material _fireMaterial;
 
         public void Play(float yieldScale, BlastVfxCatalog catalog)
         {
@@ -25,15 +27,15 @@ namespace SS3D.Systems.StructuralDamage
             if (_core != null)
             {
                 ParticleSystem.MainModule main = _core.main;
-                main.startSizeMultiplier = scale;
-                main.startSpeedMultiplier = scale;
+                main.startSizeMultiplier *= scale;
+                main.startSpeedMultiplier *= scale;
                 _core.Play(true);
             }
 
             if (_smoke != null)
             {
                 ParticleSystem.MainModule smokeMain = _smoke.main;
-                smokeMain.startSizeMultiplier = scale;
+                smokeMain.startSizeMultiplier *= scale;
                 _smoke.Play(true);
             }
 
@@ -47,7 +49,7 @@ namespace SS3D.Systems.StructuralDamage
                 StartCoroutine(FadeLight(catalog.LightDuration, catalog.LightIntensity * scale));
             }
 
-            float lifetime = catalog != null ? catalog.EffectLifetime : 1.2f;
+            float lifetime = catalog != null ? Mathf.Max(3.5f, catalog.EffectLifetime) : 3.5f;
             StartCoroutine(DisposeAfter(lifetime * Mathf.Lerp(0.9f, 1.3f, (scale - 0.35f) / 2.15f)));
         }
 
@@ -77,6 +79,18 @@ namespace SS3D.Systems.StructuralDamage
 
             _core = FindOrCreateBurst("FireballCore", isSmoke: false, catalog);
             _smoke = FindOrCreateBurst("FireballSmoke", isSmoke: true, catalog);
+            Shader fire = Resources.Load<Shader>("StructuralDamage/BlastFire");
+            if (fire != null)
+            {
+                _fireMaterial = new Material(fire);
+                _core.GetComponent<ParticleSystemRenderer>().sharedMaterial = _fireMaterial;
+            }
+            Shader dust = Resources.Load<Shader>("StructuralDamage/CollapseDust");
+            if (dust != null)
+            {
+                _smokeMaterial = new Material(dust);
+                _smoke.GetComponent<ParticleSystemRenderer>().sharedMaterial = _smokeMaterial;
+            }
         }
 
         private ParticleSystem FindOrCreateBurst(string childName, bool isSmoke, BlastVfxCatalog catalog)
@@ -111,26 +125,26 @@ namespace SS3D.Systems.StructuralDamage
             main.loop = false;
             main.duration = isSmoke ? 0.55f : 0.28f;
             main.startLifetime = isSmoke
-                ? new ParticleSystem.MinMaxCurve(0.45f, 0.85f)
-                : new ParticleSystem.MinMaxCurve(0.18f, 0.35f);
+                ? new ParticleSystem.MinMaxCurve(1.8f, 2.8f)
+                : new ParticleSystem.MinMaxCurve(0.22f, 0.45f);
             main.startSpeed = isSmoke
-                ? new ParticleSystem.MinMaxCurve(0.4f, 1.2f)
+                ? new ParticleSystem.MinMaxCurve(0.8f, 2.4f)
                 : new ParticleSystem.MinMaxCurve(2.5f, 6f);
             main.startSize = isSmoke
-                ? new ParticleSystem.MinMaxCurve(0.6f, 1.4f)
-                : new ParticleSystem.MinMaxCurve(0.35f, 0.9f);
+                ? new ParticleSystem.MinMaxCurve(0.8f, 1.8f)
+                : new ParticleSystem.MinMaxCurve(0.9f, 1.8f);
             main.startColor = isSmoke
                 ? new Color(0.25f, 0.22f, 0.2f, 0.55f)
                 : Color.white;
             main.gravityModifier = isSmoke ? -0.15f : -0.05f;
             main.simulationSpace = ParticleSystemSimulationSpace.World;
-            main.maxParticles = isSmoke ? 24 : 48;
+            main.maxParticles = isSmoke ? 32 : 64;
 
             ParticleSystem.EmissionModule emission = ps.emission;
             emission.rateOverTime = 0f;
             emission.SetBursts(new[]
             {
-                new ParticleSystem.Burst(0f, (short)(isSmoke ? 10 : 28)),
+                new ParticleSystem.Burst(0f, (short)(isSmoke ? 20 : 48)),
             });
 
             ParticleSystem.ShapeModule shape = ps.shape;
@@ -177,7 +191,9 @@ namespace SS3D.Systems.StructuralDamage
 
             ParticleSystem.SizeOverLifetimeModule sizeOverLifetime = ps.sizeOverLifetime;
             sizeOverLifetime.enabled = true;
-            sizeOverLifetime.size = new ParticleSystem.MinMaxCurve(1f, AnimationCurve.EaseInOut(0f, 1f, 1f, isSmoke ? 1.6f : 0.2f));
+            sizeOverLifetime.size = new ParticleSystem.MinMaxCurve(1f, isSmoke
+                ? AnimationCurve.EaseInOut(0f, 1f, 1f, 3.2f)
+                : new AnimationCurve(new Keyframe(0f, 0.4f), new Keyframe(0.2f, 1f), new Keyframe(1f, 2f)));
 
             ParticleSystem.VelocityOverLifetimeModule velocity = ps.velocityOverLifetime;
             velocity.enabled = true;
@@ -188,6 +204,12 @@ namespace SS3D.Systems.StructuralDamage
             renderer.renderMode = ParticleSystemRenderMode.Billboard;
             if (catalog != null && catalog.ParticleMaterial != null)
                 renderer.sharedMaterial = catalog.ParticleMaterial;
+        }
+
+        private void OnDestroy()
+        {
+            if (_smokeMaterial != null) Destroy(_smokeMaterial);
+            if (_fireMaterial != null) Destroy(_fireMaterial);
         }
 
         private IEnumerator FadeLight(float duration, float startIntensity)

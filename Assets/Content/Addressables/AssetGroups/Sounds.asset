@@ -15,68 +15,8 @@ MonoBehaviour:
   m_GroupName: Sounds
   m_GUID: 5a93ce093ec9bfc4aab900a7ff98e41a
   m_SerializeEntries:
-  - m_GUID: e18d13637373424e80cb345f0503b37b
-    m_Address: Assets/Art/Sound/Entities/Humanoid/Personal/Heartbeat.wav
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: b17ea6aba01249a183507785b28ca73c
-    m_Address: Assets/Art/Sound/Entities/Humanoid/Personal/HeavyBreathing.wav
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: d6487a9829df4ceaa6afc34160b91d3c
-    m_Address: Assets/Art/Sound/Entities/Humanoid/Personal/Breathing.wav
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 9c25cbf72a814b7daecb30325916da0a
-    m_Address: Assets/Art/Sound/UI/Health/Beep1.ogg
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: d6baab8c168a439ba6e13e00d7941e2e
-    m_Address: Assets/Art/Sound/World/Fluids/Blood1.ogg
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: bbc50505d2224753aabe5f1dc915dcb1
-    m_Address: Assets/Art/Sound/World/Fluids/Splat.ogg
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 6fab86354b054a54b8b4828f689970e4
-    m_Address: Assets/Art/Sound/Entities/Humanoid/Combat/Punch1.ogg
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 82588e82537544f59a9a0d330ff3d7ee
-    m_Address: Assets/Art/Sound/Entities/Humanoid/Combat/Punch2.ogg
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 36c53e237ddb426ea20825ce79dd1737
-    m_Address: Assets/Art/Sound/Entities/Humanoid/Combat/GenHit1.ogg
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: d592855338f1467d897447bbfee4dc11
-    m_Address: Assets/Art/Sound/Entities/Humanoid/Combat/WeakHit1.ogg
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: af894a169f7d4c48a994fb179522120a
-    m_Address: Assets/Art/Sound/Entities/Humanoids/Human/Vocal/Choke&Gasp/Choke1.wav
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: df444e0d1e054fc2adf0962a9fff737b
-    m_Address: Assets/Art/Sound/Entities/Humanoids/Human/Vocal/Choke&Gasp/Choke2.wav
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 1def14b96f674142b91b19ef80f8936d
-    m_Address: Assets/Art/Sound/Entities/Humanoids/Human/Vocal/Choke&Gasp/Choke3.wav
+  - m_GUID: 1342f00d3f3444ba9d135ac709a632b4
+    m_Address: Assets/Art/Sound/Entities/Humanoid/Footsteps/Socks.mp3
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
@@ -85,33 +25,18 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: dbf6b684f1e247489f2e02739ac9c27b
-    m_Address: Assets/Art/Sound/Entities/Humanoids/Human/Vocal/Scream/MaleScream1.wav
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 9731827fc0204964ade3d0d8083813b0
-    m_Address: Assets/Art/Sound/Furniture/Machines/Vendors/VendingMachine.wav
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 1342f00d3f3444ba9d135ac709a632b4
-    m_Address: Assets/Art/Sound/Entities/Humanoid/Footsteps/Socks.mp3
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 762218e71c4b4521936af533b2ee6998
-    m_Address: Assets/Art/Sound/Entities/Humanoid/Footsteps/Shoes.mp3
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 52e21acb637e4160beb8747b8834cceb
-    m_Address: Assets/Art/Sound/Entities/Humanoid/Footsteps/Boots.mp3
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 1a34c805f84be3b4caac14d7de790607
     m_Address: Assets/Art/Sound/World/Collisions/can1.mp3
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 1def14b96f674142b91b19ef80f8936d
+    m_Address: Assets/Art/Sound/Entities/Humanoids/Human/Vocal/Choke&Gasp/Choke3.wav
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 32bf9af821e047a49907cd5d1b76d077
+    m_Address: EnergyFleshHit1
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
@@ -120,13 +45,58 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 36c53e237ddb426ea20825ce79dd1737
+    m_Address: Assets/Art/Sound/Entities/Humanoid/Combat/GenHit1.ogg
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 3f51862f0b88a5243a8cceb97147489d
     m_Address: Assets/Art/Sound/World/Music/title2.ogg
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 46d1ebcf19d64594a03b8053351b1a3a
+    m_Address: TaserFire
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 50c0d1513489644d89165a0f5fe757a4
+    m_Address: ChargeCountdown
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 52e21acb637e4160beb8747b8834cceb
+    m_Address: Assets/Art/Sound/Entities/Humanoid/Footsteps/Boots.mp3
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 59b65ecaf8dffbf49876ab2768490b59
     m_Address: Assets/Art/Sound/Furniture/Machines/Engineering/FuelPowerGenerator.ogg
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 5f478263e83487f00b850ad152ba8db5
+    m_Address: ExplosiveCountdown
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 6fab86354b054a54b8b4828f689970e4
+    m_Address: Assets/Art/Sound/Entities/Humanoid/Combat/Punch1.ogg
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 762218e71c4b4521936af533b2ee6998
+    m_Address: Assets/Art/Sound/Entities/Humanoid/Footsteps/Shoes.mp3
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 7d8f7f4005a7408dac34329b02c5c252
+    m_Address: LaserFire
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 82588e82537544f59a9a0d330ff3d7ee
+    m_Address: Assets/Art/Sound/Entities/Humanoid/Combat/Punch2.ogg
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
@@ -140,8 +110,98 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 9731827fc0204964ade3d0d8083813b0
+    m_Address: Assets/Art/Sound/Furniture/Machines/Vendors/VendingMachine.wav
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 9c25cbf72a814b7daecb30325916da0a
+    m_Address: Assets/Art/Sound/UI/Health/Beep1.ogg
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 9cdf48ea33f0c0cc4adc4608a51d0185
+    m_Address: C4Defused
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: a583ecd799d040728b40947e8e4287d1
+    m_Address: MinibombExplosion
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: a6351208c22943d8a9e52e4a37bf9ced
+    m_Address: EnergyHit1
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: a7f3e91c2b4d4856a1c0e8f92d35b647
+    m_Address: Assets/Art/Sound/World/Airlocks/AirlockDeny.ogg
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: af894a169f7d4c48a994fb179522120a
+    m_Address: Assets/Art/Sound/Entities/Humanoids/Human/Vocal/Choke&Gasp/Choke1.wav
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: b17ea6aba01249a183507785b28ca73c
+    m_Address: Assets/Art/Sound/Entities/Humanoid/Personal/HeavyBreathing.wav
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: b315c4abdef36244fb211c5f643d411a
     m_Address: Assets/Art/Sound/World/Collisions/can3.mp3
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: bbc50505d2224753aabe5f1dc915dcb1
+    m_Address: Assets/Art/Sound/World/Fluids/Splat.ogg
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: bfcb361d68ba498eade01a32f2ff5037
+    m_Address: EnergyFleshHit2
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: d592855338f1467d897447bbfee4dc11
+    m_Address: Assets/Art/Sound/Entities/Humanoid/Combat/WeakHit1.ogg
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: d6487a9829df4ceaa6afc34160b91d3c
+    m_Address: Assets/Art/Sound/Entities/Humanoid/Personal/Breathing.wav
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: d6baab8c168a439ba6e13e00d7941e2e
+    m_Address: Assets/Art/Sound/World/Fluids/Blood1.ogg
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: dbf6b684f1e247489f2e02739ac9c27b
+    m_Address: Assets/Art/Sound/Entities/Humanoids/Human/Vocal/Scream/MaleScream1.wav
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: df444e0d1e054fc2adf0962a9fff737b
+    m_Address: Assets/Art/Sound/Entities/Humanoids/Human/Vocal/Choke&Gasp/Choke2.wav
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: e18d13637373424e80cb345f0503b37b
+    m_Address: Assets/Art/Sound/Entities/Humanoid/Personal/Heartbeat.wav
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: e3295dd9bef344db9b30b15847417c41
+    m_Address: EnergyReady
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: e48acffcbdc544129677ae54abbfd947
+    m_Address: EnergyHit2
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
@@ -155,13 +215,13 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: fc2485e75c5d3ab4e86e814043c9e9cb
-    m_Address: Assets/Art/Sound/World/Airlocks/AirlockClose.ogg
+  - m_GUID: f1ba387ba8d9495fbb8df0b2bfd99a0c
+    m_Address: IonFire
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: a7f3e91c2b4d4856a1c0e8f92d35b647
-    m_Address: Assets/Art/Sound/World/Airlocks/AirlockDeny.ogg
+  - m_GUID: fc2485e75c5d3ab4e86e814043c9e9cb
+    m_Address: Assets/Art/Sound/World/Airlocks/AirlockClose.ogg
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0

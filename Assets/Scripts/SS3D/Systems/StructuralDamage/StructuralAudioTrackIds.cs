@@ -94,6 +94,8 @@ namespace SS3D.Systems.StructuralDamage
             "ad24268af0904c68851b7d487c65fdae", // MetalThud3
         };
 
+        public const string BlastSmall = "a583ecd799d040728b40947e8e4287d1"; // MinibombExplosion
+
         /// <summary>The boom, heard from close by.</summary>
         public static readonly string[] BlastNear =
         {

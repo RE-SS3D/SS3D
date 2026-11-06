@@ -20,11 +20,17 @@ namespace SS3D.Systems.Audio.Editor
         private static readonly Dictionary<string, ItemCollisionMaterial> Materials = new()
         {
             { "Crowbar", ItemCollisionMaterial.Metal },
+            { "C4", ItemCollisionMaterial.Plastic },
+            { "X4", ItemCollisionMaterial.Plastic },
+            { "SyndicateMiniBomb", ItemCollisionMaterial.Metal },
             { "FlashlightBlue", ItemCollisionMaterial.Metal },
             { "FloorTile", ItemCollisionMaterial.Metal },
             { "Hatchet", ItemCollisionMaterial.Metal },
             { "KitchenKnife", ItemCollisionMaterial.Metal },
             { "M4", ItemCollisionMaterial.Metal },
+            { "IonRifle", ItemCollisionMaterial.Metal },
+            { "LaserRifle", ItemCollisionMaterial.Metal },
+            { "Taser", ItemCollisionMaterial.Metal },
             { "MatterBin", ItemCollisionMaterial.Metal },
             { "MicroLaser", ItemCollisionMaterial.Metal },
             { "Multitool", ItemCollisionMaterial.Metal },

@@ -19,6 +19,11 @@ namespace SS3D.Systems.Examine
         public const string TornMetal = "examine.structural.torn_metal";
         public const string TornMetalFallback = "The metal is deeply dented and torn.";
 
+        public const string FracturedFloor = "examine.structural.fractured_floor";
+        public const string FracturedFloorFallback = "The flooring is badly cracked and scorched.";
+        public const string DamagedPlating = "examine.structural.damaged_plating";
+        public const string DamagedPlatingFallback = "The hull plating is badly damaged, but remains sealed.";
+
         public const string Cracked = "examine.structural.cracked";
 
         public const string DamagedFallback = "It looks dented and scorched.";

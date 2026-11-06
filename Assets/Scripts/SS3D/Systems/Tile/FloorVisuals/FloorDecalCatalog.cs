@@ -89,6 +89,8 @@ namespace SS3D.Systems.Tile.FloorVisuals
             if (_byId.Count == 0)
             {
                 FloorDecalDefinition placeholder = ScriptableObject.CreateInstance<FloorDecalDefinition>();
+                // Cached across scene opens, which destroy runtime assets left at HideFlags.None.
+                placeholder.hideFlags = HideFlags.HideAndDontSave;
                 placeholder.Id = 1;
                 placeholder.DisplayName = "Department Corner";
                 placeholder.Texture = FloorVisualMesh.GetStripeCornerTexture();

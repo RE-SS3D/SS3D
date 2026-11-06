@@ -245,13 +245,17 @@ namespace SS3D.Systems.Combat.Interactions
             if (_reloadCuesPlayed < 1 && elapsed >= Mathf.Min(RifleReloadClipTiming.MagazineInSeconds, duration))
             {
                 _reloadCuesPlayed = 1;
-                PlayReloadCue(CombatAudioTrackIds.ReloadMagazineIn, 1f);
+                PlayReloadCue(_profile.VisualStyle == RangedVisualStyle.Ballistic
+                    ? CombatAudioTrackIds.ReloadMagazineIn : CombatAudioTrackIds.EnergyReady, 1f);
             }
 
             if (_reloadCuesPlayed < 2 && elapsed >= Mathf.Min(RifleReloadClipTiming.BoltReleaseSeconds, duration))
             {
                 _reloadCuesPlayed = 2;
-                PlayReloadCue(CombatAudioTrackIds.ReloadCock, 0.95f);
+                if (_profile.VisualStyle == RangedVisualStyle.Ballistic)
+                {
+                    PlayReloadCue(CombatAudioTrackIds.ReloadCock, 0.95f);
+                }
             }
         }
 

@@ -21,6 +21,8 @@ using SS3D.Systems.Tile.MapEditor;
 using SS3D.UI.MainHud;
 using SS3D.UI.MainHud.Components;
 using UnityEngine;
+using UnityEngine.InputSystem;
+using UnityEngine.InputSystem.LowLevel;
 using UnityEngine.TestTools;
 using Debug = UnityEngine.Debug;
 
@@ -190,6 +192,59 @@ namespace SS3D.Tests
             Assert.IsTrue(BonesKinematic(false), "Only the owner runs living ragdoll physics");
             yield return WaitFor(() => ragdoll.Presentation == BodyPresentationState.Locomotion,
                 "the conscious body recovers after the wind stops", 8f);
+        }
+
+        // Guards: recovery hands walking back to HumanoidLivingController instead of a HumanoidPredictedMovement that was never given input · Not cheaper because: the bug is the two movement paths' live enable state, and only real key input shows it
+        [UnityTest]
+        public IEnumerator KnockedDownOwner_WalksAgainAfterRecovering()
+        {
+            Ragdoll ragdoll = Body.GetComponent<Ragdoll>();
+            // The editor running this is rarely the focused window, and unfocused it drops device input.
+            InputSettings.BackgroundBehavior background = InputSystem.settings.backgroundBehavior;
+            InputSettings.EditorInputBehaviorInPlayMode editor = InputSystem.settings.editorInputBehaviorInPlayMode;
+            InputSystem.settings.backgroundBehavior = InputSettings.BackgroundBehavior.IgnoreFocus;
+            InputSystem.settings.editorInputBehaviorInPlayMode = InputSettings.EditorInputBehaviorInPlayMode.AllDeviceInputAlwaysGoesToGameView;
+            Keyboard keyboard = InputSystem.AddDevice<Keyboard>();
+            try
+            {
+                yield return WalkAFewSteps(ragdoll, keyboard, "before the knockdown, so a failure below is not the test's key press");
+
+                ragdoll.ServerKnockdown(1f);
+                yield return WaitFor(() => ragdoll.IsKnockedDown, "the body goes down");
+                yield return WaitFor(() => !ragdoll.IsKnockedDown, "the body recovers", 8f);
+
+                yield return WalkAFewSteps(ragdoll, keyboard, "after standing back up");
+            }
+            finally
+            {
+                InputSystem.RemoveDevice(keyboard);
+                InputSystem.settings.backgroundBehavior = background;
+                InputSystem.settings.editorInputBehaviorInPlayMode = editor;
+            }
+        }
+
+        private static IEnumerator WalkAFewSteps(Ragdoll ragdoll, Keyboard keyboard, string when)
+        {
+            Vector3 start = ragdoll.transform.position;
+            bool forward = true;
+            try
+            {
+                float elapsed = 0f;
+                while (Vector3.Distance(ragdoll.transform.position, start) < 0.3f && elapsed < 8f)
+                {
+                    // Turn round now and then so that a wall cannot end the test.
+                    if (Mathf.Repeat(elapsed, 2f) < Time.deltaTime) forward = !forward;
+                    InputSystem.QueueStateEvent(keyboard, new KeyboardState(forward ? Key.W : Key.S));
+                    elapsed += Time.deltaTime;
+                    yield return null;
+                }
+
+                Assert.That(Vector3.Distance(ragdoll.transform.position, start), Is.GreaterThanOrEqualTo(0.3f), $"The owner can walk {when}");
+            }
+            finally
+            {
+                InputSystem.QueueStateEvent(keyboard, new KeyboardState());
+            }
         }
 
         // Guards: wind wakes the disabled-by-prefab Ragdoll and pushes an upright body a little every

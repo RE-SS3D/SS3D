@@ -3,10 +3,26 @@ namespace SS3D.Systems.Combat
     /// <summary>
     /// <c>AssetDatabases.Sounds</c> clip ids for combat SFX. M4 gunshot/foley + surface impacts
     /// are SS14 CC-BY-SA-3.0 imports under <c>Assets/Art/Sound/Items/Weapons/Firearms/SS14/</c>
-    /// — see <c>Assets/Art/Sound/ATTRIBUTIONS.md</c>.
+    /// Energy reports and impacts live under <c>Items/Weapons/Energy/SS14/</c>.
+    /// See <c>Assets/Art/Sound/ATTRIBUTIONS.md</c> for per-clip sources and licenses.
     /// </summary>
     public static class CombatAudioTrackIds
     {
+        public static string[] FireFor(RangedVisualStyle style) => style switch
+        {
+            RangedVisualStyle.Laser => LaserFire,
+            RangedVisualStyle.Ion => IonFire,
+            RangedVisualStyle.Taser => TaserFire,
+            _ => GunFire,
+        };
+
+        public static readonly string[] LaserFire = { "7d8f7f4005a7408dac34329b02c5c252" };
+        public static readonly string[] IonFire = { "f1ba387ba8d9495fbb8df0b2bfd99a0c" };
+        public static readonly string[] TaserFire = { "46d1ebcf19d64594a03b8053351b1a3a" };
+        public static readonly string[] EnergyHit = { "a6351208c22943d8a9e52e4a37bf9ced", "e48acffcbdc544129677ae54abbfd947" };
+        public static readonly string[] EnergyFleshHit = { "32bf9af821e047a49907cd5d1b76d077", "bfcb361d68ba498eade01a32f2ff5037" };
+        public const string EnergyReady = "e3295dd9bef344db9b30b15847417c41";
+
         /// <summary>SS14 rifle/rifle2 gunshot variety for M4 fire reports.</summary>
         public static readonly string[] GunFire =
         {

@@ -1,7 +1,7 @@
 > Code paths: Assets/Scripts/SS3D/Systems/IngameConsoleSystem/
 > Entry points: CommandsController
 > Status: partial
-> Verified: e2f86cf20 — 2026-11-05
+> Verified: 7785df8dc — 2026-11-06
 
 # In-game console
 
@@ -22,6 +22,7 @@ Dev/admin in-game console commands routed through `CommandsController`. Commands
 - `Assets/Scripts/SS3D/Systems/IngameConsoleSystem/Commands/SpawnDummyCommand.cs` — admin `spawndummy` (combat test Human)
 - `Assets/Scripts/SS3D/Systems/IngameConsoleSystem/Commands/IdAccessCommands/` — `accesscheck`, `accessgrant`, `accessrevoke`, `accesspreset` dev helpers
 - `Assets/Scripts/SS3D/Systems/IngameConsoleSystem/Commands/ScreenEffectCommand.cs` — client `screeneffect` intensity setter
+- `Assets/Scripts/SS3D/Systems/IngameConsoleSystem/Commands/EnergyVfxCommand.cs` — client `energyvfx laser|ion|taser|off`, local shot presentation override; damage/ammo/audio remain authoritative and unchanged.
 - `Assets/Scripts/SS3D/Systems/IngameConsoleSystem/Commands/RangedDebugCommand.cs` — client `rangeddebug on|off|status` (gold/grey hitscan impact spheres)
 - `Assets/Scripts/SS3D/Systems/IngameConsoleSystem/Commands/ScreenEffectHitFlashCommand.cs` — client hit-flash trigger
 - `Assets/Scripts/SS3D/Systems/IngameConsoleSystem/Commands/AtmosDebugCommand.cs` — server `atmosdebug (heat|gas|wake)`, headless equivalent of `AtmosDebugController`'s GUI buttons, targets the caller's own tile

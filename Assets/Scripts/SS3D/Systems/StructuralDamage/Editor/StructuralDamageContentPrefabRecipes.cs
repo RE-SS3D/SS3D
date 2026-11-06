@@ -14,6 +14,7 @@ namespace SS3D.Systems.StructuralDamage.Editor
         public static void RunAllMenu()
         {
             BlastVfxSetup.SetupAll();
+            ExplosivePrefabSetup.SetupAll();
             int integrity = StructuralIntegrityPrefabSetup.SetupAll();
 
             EditorUtility.DisplayDialog(
@@ -26,6 +27,7 @@ namespace SS3D.Systems.StructuralDamage.Editor
         public static void RunAllBatch()
         {
             BlastVfxSetup.SetupAll();
+            ExplosivePrefabSetup.SetupAll();
             int integrity = StructuralIntegrityPrefabSetup.SetupAll();
             Debug.Log($"[StructuralDamageContentPrefabRecipes] Blast VFX done; integrity {integrity}.");
 

@@ -39,5 +39,8 @@ namespace SS3D.Tests
 
         /// <summary>Map Editor effects on the live networked world.</summary>
         public const string MapEditor = "MapEditor";
+
+        /// <summary>Charges going off in the test room: hull, floors and air.</summary>
+        public const string Explosives = "Explosives";
     }
 }

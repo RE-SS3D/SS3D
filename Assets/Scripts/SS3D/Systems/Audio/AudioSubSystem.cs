@@ -138,12 +138,13 @@ namespace SS3D.Systems.Audio
         /// buffered state RPCs (a machine's looping sound must also reach late observers).
         /// </summary>
         [ServerOrClient]
-        public void PlayAudioSourceLocal(AudioType type, string audioClipID, Vector3 position, NetworkObject parent,
-            bool isLooping = false, float volume = 0.7f, float pitch = 1f, float minRange = 1f, float maxRange = 500f)
+        public AudioSource PlayAudioSourceLocal(AudioType type, string audioClipID, Vector3 position, NetworkObject parent,
+            bool isLooping = false, float volume = 0.7f, float pitch = 1f, float minRange = 1f, float maxRange = 500f,
+            float startTime = 0f)
         {
             // The server never builds a pool (see Start); only clients have one.
             if (_audioSourcesLists == null)
-                return;
+                return null;
 
             AudioSource audioSource = FindAvailableAudioSource(type);
 
@@ -152,7 +153,7 @@ namespace SS3D.Systems.Audio
             if (audioSource.clip == null)
             {
                 // Missing Sounds.asset ref (common after hand-adding files) — don't Play() a null clip.
-                return;
+                return null;
             }
 
             audioSource.volume = volume;
@@ -173,7 +174,9 @@ namespace SS3D.Systems.Audio
             // starts sampling occlusion fresh (audio.md §3 — client-local, seventh LineOfSight consumer).
             audioSource.GetComponent<AudioSourceOcclusion>()?.PrepareForPlayback(volume);
 
+            audioSource.time = Mathf.Clamp(startTime, 0f, Mathf.Max(0f, audioSource.clip.length - 0.001f));
             audioSource.Play();
+            return audioSource;
         }
 
         [ObserversRpc]

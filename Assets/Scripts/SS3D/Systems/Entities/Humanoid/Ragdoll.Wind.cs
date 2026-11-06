@@ -77,16 +77,21 @@ namespace SS3D.Systems.Entities.Humanoid
             if (_currentState != RagdollState.Walking || !IsRagdollPhysicsAuthority() || _characterController == null)
                 return;
 
+            MoveUpright(_windFelt * seconds);
+        }
+
+        private void MoveUpright(Vector3 motion)
+        {
             if (IsOwner)
             {
-                if (_characterController.enabled) _characterController.Move(_windFelt * seconds);
+                if (_characterController.enabled) _characterController.Move(motion);
                 return;
             }
 
             // Nobody owns this body, so the server moves it. The controller stays on only for the move,
             // so that it never adds a capsule to server raycasts or blocks a teleport.
             _characterController.enabled = true;
-            _characterController.Move(_windFelt * seconds);
+            _characterController.Move(motion);
             _characterController.enabled = false;
         }
 

@@ -1,4 +1,5 @@
 using SS3D.Core;
+using SS3D.Systems.Audio;
 using SS3D.Systems.ScreenEffects;
 using SS3D.Systems.Screens;
 using UnityEngine;
@@ -45,10 +46,10 @@ namespace SS3D.Systems.StructuralDamage
 
         private static void ApplyLocalFeedback(Vector3 epicenter, float yieldScale, BlastVfxCatalog catalog)
         {
-            float shakeFull = catalog != null ? catalog.ShakeFullRange : 4f;
-            float shakeMax = catalog != null ? catalog.ShakeMaxRange : 18f;
-            float flashFull = catalog != null ? catalog.FlashFullRange : 3f;
-            float flashMax = catalog != null ? catalog.FlashMaxRange : 14f;
+            float shakeFull = catalog != null ? catalog.ShakeFullRange : 6f;
+            float shakeMax = catalog != null ? catalog.ShakeMaxRange : 24f;
+            float flashFull = catalog != null ? catalog.FlashFullRange : 4f;
+            float flashMax = catalog != null ? catalog.FlashMaxRange : 20f;
 
             if (!TryGetListenerPosition(out Vector3 listener))
                 return;
@@ -61,8 +62,8 @@ namespace SS3D.Systems.StructuralDamage
                 CameraFollow follow = Object.FindFirstObjectByType<CameraFollow>();
                 if (follow != null)
                 {
-                    float amplitude = (catalog != null ? catalog.ShakeAmplitude : 0.22f) * yieldScale * shakeAttenuation;
-                    float duration = catalog != null ? catalog.ShakeDuration : 0.35f;
+                    float amplitude = (catalog != null ? catalog.ShakeAmplitude : 0.75f) * yieldScale * shakeAttenuation;
+                    float duration = catalog != null ? catalog.ShakeDuration : 0.85f;
                     follow.AddImpulse(amplitude, duration);
                 }
             }
@@ -77,6 +78,9 @@ namespace SS3D.Systems.StructuralDamage
 
         private static bool TryGetListenerPosition(out Vector3 position)
         {
+            // The listener follows the controlled body; the orbiting camera can be 15 m away.
+            if (AudioSourceOcclusion.TryGetListenerPosition(out position))
+                return true;
             if (SubSystems.TryGet(out CameraSubSystem cameras) && cameras.PlayerCamera != null)
             {
                 position = cameras.PlayerCamera.Position;

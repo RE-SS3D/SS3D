@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-11-06T11:09:40.563324+00:00",
+  "generated_at": "2026-11-06T19:08:35.446709+00:00",
   "purpose": "Game-ready SS3D-Art assets not yet imported into Assets/Art/.",
-  "count": 2014,
+  "count": 2008,
   "assets": [
     {
       "name": "HumanAnimRig.ma",
@@ -10660,15 +10660,6 @@
       "github_url": "https://github.com/RE-SS3D/SS3D-Art/blob/main/Assets/Models/Items/Weapons/Explosive/BreachingCharge.blend"
     },
     {
-      "name": "C4.blend",
-      "stem": "c4",
-      "extension": "blend",
-      "category": "Models/Items/Weapons/Explosive",
-      "ss3d_art_path": "Assets/Models/Items/Weapons/Explosive/C4.blend",
-      "import_target_path": "Assets/Art/Models/Items/Weapons/Explosive/C4.fbx",
-      "github_url": "https://github.com/RE-SS3D/SS3D-Art/blob/main/Assets/Models/Items/Weapons/Explosive/C4.blend"
-    },
-    {
       "name": "FlashBangV2.blend",
       "stem": "flashbangv2",
       "extension": "blend",
@@ -10721,24 +10712,6 @@
       "ss3d_art_path": "Assets/Models/Items/Weapons/Explosive/Rockets.blend",
       "import_target_path": "Assets/Art/Models/Items/Weapons/Explosive/Rockets.fbx",
       "github_url": "https://github.com/RE-SS3D/SS3D-Art/blob/main/Assets/Models/Items/Weapons/Explosive/Rockets.blend"
-    },
-    {
-      "name": "SyndicateMiniBomb.blend",
-      "stem": "syndicateminibomb",
-      "extension": "blend",
-      "category": "Models/Items/Weapons/Explosive",
-      "ss3d_art_path": "Assets/Models/Items/Weapons/Explosive/SyndicateMiniBomb.blend",
-      "import_target_path": "Assets/Art/Models/Items/Weapons/Explosive/SyndicateMiniBomb.fbx",
-      "github_url": "https://github.com/RE-SS3D/SS3D-Art/blob/main/Assets/Models/Items/Weapons/Explosive/SyndicateMiniBomb.blend"
-    },
-    {
-      "name": "X4.blend",
-      "stem": "x4",
-      "extension": "blend",
-      "category": "Models/Items/Weapons/Explosive",
-      "ss3d_art_path": "Assets/Models/Items/Weapons/Explosive/X4.blend",
-      "import_target_path": "Assets/Art/Models/Items/Weapons/Explosive/X4.fbx",
-      "github_url": "https://github.com/RE-SS3D/SS3D-Art/blob/main/Assets/Models/Items/Weapons/Explosive/X4.blend"
     },
     {
       "name": "FLRRocketLauncher.blend",
@@ -11173,15 +11146,6 @@
       "github_url": "https://github.com/RE-SS3D/SS3D-Art/blob/main/Assets/Models/Items/Weapons/Ranged/Energy/EnergyHandguns/PulsePistol.blend"
     },
     {
-      "name": "Taser.blend",
-      "stem": "taser",
-      "extension": "blend",
-      "category": "Models/Items/Weapons/Ranged/Energy/EnergyHandguns",
-      "ss3d_art_path": "Assets/Models/Items/Weapons/Ranged/Energy/EnergyHandguns/Taser.blend",
-      "import_target_path": "Assets/Art/Models/Items/Weapons/Ranged/Energy/EnergyHandguns/Taser.fbx",
-      "github_url": "https://github.com/RE-SS3D/SS3D-Art/blob/main/Assets/Models/Items/Weapons/Ranged/Energy/EnergyHandguns/Taser.blend"
-    },
-    {
       "name": "EnergyRifle.blend",
       "stem": "energyrifle",
       "extension": "blend",
@@ -11189,15 +11153,6 @@
       "ss3d_art_path": "Assets/Models/Items/Weapons/Ranged/Energy/EnergyRifles/EnergyRifle.blend",
       "import_target_path": "Assets/Art/Models/Items/Weapons/Ranged/Energy/EnergyRifles/EnergyRifle.fbx",
       "github_url": "https://github.com/RE-SS3D/SS3D-Art/blob/main/Assets/Models/Items/Weapons/Ranged/Energy/EnergyRifles/EnergyRifle.blend"
-    },
-    {
-      "name": "IonRifle.blend",
-      "stem": "ionrifle",
-      "extension": "blend",
-      "category": "Models/Items/Weapons/Ranged/Energy/EnergyRifles",
-      "ss3d_art_path": "Assets/Models/Items/Weapons/Ranged/Energy/EnergyRifles/IonRifle.blend",
-      "import_target_path": "Assets/Art/Models/Items/Weapons/Ranged/Energy/EnergyRifles/IonRifle.fbx",
-      "github_url": "https://github.com/RE-SS3D/SS3D-Art/blob/main/Assets/Models/Items/Weapons/Ranged/Energy/EnergyRifles/IonRifle.blend"
     },
     {
       "name": "JS77EnergyRifle.blend",
@@ -11243,15 +11198,6 @@
       "ss3d_art_path": "Assets/Models/Items/Weapons/Ranged/Energy/EnergyRifles/LaserCarbine.blend",
       "import_target_path": "Assets/Art/Models/Items/Weapons/Ranged/Energy/EnergyRifles/LaserCarbine.fbx",
       "github_url": "https://github.com/RE-SS3D/SS3D-Art/blob/main/Assets/Models/Items/Weapons/Ranged/Energy/EnergyRifles/LaserCarbine.blend"
-    },
-    {
-      "name": "LaserRifle.blend",
-      "stem": "laserrifle",
-      "extension": "blend",
-      "category": "Models/Items/Weapons/Ranged/Energy/EnergyRifles",
-      "ss3d_art_path": "Assets/Models/Items/Weapons/Ranged/Energy/EnergyRifles/LaserRifle.blend",
-      "import_target_path": "Assets/Art/Models/Items/Weapons/Ranged/Energy/EnergyRifles/LaserRifle.fbx",
-      "github_url": "https://github.com/RE-SS3D/SS3D-Art/blob/main/Assets/Models/Items/Weapons/Ranged/Energy/EnergyRifles/LaserRifle.blend"
     },
     {
       "name": "TeslaRifle.blend",

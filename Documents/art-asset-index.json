@@ -1,10 +1,10 @@
 {
-  "generated_at": "2026-11-06T11:09:40.563324+00:00",
+  "generated_at": "2026-11-06T19:08:35.446709+00:00",
   "purpose": "Agent reference for locating SS3D art assets and determining import status.",
   "sources": {
     "in_game": {
       "root": "Assets/Art",
-      "file_count": 5375
+      "file_count": 5393
     },
     "ss3d_art": {
       "repo": "https://github.com/RE-SS3D/SS3D-Art",
@@ -13,13 +13,13 @@
     }
   },
   "summary": {
-    "in_game_files": 5375,
+    "in_game_files": 5393,
     "ss3d_art_files": 2480,
-    "unique_assets": 7614,
-    "imported": 241,
-    "in_game_only": 5144,
-    "ss3d_art_only": 2229,
-    "available_for_import": 2014,
+    "unique_assets": 7626,
+    "imported": 247,
+    "in_game_only": 5156,
+    "ss3d_art_only": 2223,
+    "available_for_import": 2008,
     "artwork_only": 215
   },
   "categories": [
@@ -73,18 +73,18 @@
     },
     {
       "path": "Models",
-      "in_game": 87,
+      "in_game": 93,
       "ss3d_art": 749,
-      "imported": 77,
+      "imported": 83,
       "in_game_only": 10,
-      "ss3d_art_only": 672
+      "ss3d_art_only": 666
     },
     {
       "path": "Sound",
-      "in_game": 171,
+      "in_game": 183,
       "ss3d_art": 218,
       "imported": 89,
-      "in_game_only": 82,
+      "in_game_only": 94,
       "ss3d_art_only": 129
     },
     {
@@ -1747,11 +1747,11 @@
     },
     {
       "path": "Models/Items/Weapons/Explosive",
-      "in_game": 0,
+      "in_game": 3,
       "ss3d_art": 10,
-      "imported": 0,
+      "imported": 3,
       "in_game_only": 0,
-      "ss3d_art_only": 10
+      "ss3d_art_only": 7
     },
     {
       "path": "Models/Items/Weapons/Explosive/Launchers",
@@ -1795,19 +1795,19 @@
     },
     {
       "path": "Models/Items/Weapons/Ranged/Energy/EnergyHandguns",
-      "in_game": 0,
+      "in_game": 1,
       "ss3d_art": 11,
-      "imported": 0,
+      "imported": 1,
       "in_game_only": 0,
-      "ss3d_art_only": 11
+      "ss3d_art_only": 10
     },
     {
       "path": "Models/Items/Weapons/Ranged/Energy/EnergyRifles",
-      "in_game": 0,
+      "in_game": 2,
       "ss3d_art": 10,
-      "imported": 0,
+      "imported": 2,
       "in_game_only": 0,
-      "ss3d_art_only": 10
+      "ss3d_art_only": 8
     },
     {
       "path": "Models/Items/Weapons/Ranged/Other",
@@ -2208,6 +2208,22 @@
       "imported": 0,
       "in_game_only": 0,
       "ss3d_art_only": 2
+    },
+    {
+      "path": "Sound/Items/Weapons/Energy/SS14",
+      "in_game": 8,
+      "ss3d_art": 0,
+      "imported": 0,
+      "in_game_only": 8,
+      "ss3d_art_only": 0
+    },
+    {
+      "path": "Sound/Items/Weapons/Explosive/SS14",
+      "in_game": 4,
+      "ss3d_art": 0,
+      "imported": 0,
+      "in_game_only": 4,
+      "ss3d_art_only": 0
     },
     {
       "path": "Sound/Items/Weapons/Firearms",
@@ -2973,10 +2989,10 @@
   "extensions": {
     "svg": 4248,
     "png": 2085,
-    "blend": 677,
-    "fbx": 247,
+    "blend": 671,
+    "fbx": 253,
     "wav": 159,
-    "ogg": 123,
+    "ogg": 135,
     "mp3": 18,
     "ma": 13,
     "mp4": 12,
@@ -73950,15 +73966,15 @@
       "status": "ss3d_art_only"
     },
     {
-      "name": "C4.blend",
+      "name": "C4.fbx",
       "stem": "c4",
-      "extension": "blend",
+      "extension": "fbx",
       "category": "Models/Items/Weapons/Explosive",
-      "in_game_path": null,
+      "in_game_path": "Assets/Art/Models/Items/Weapons/Explosive/C4.fbx",
       "ss3d_art_path": "Assets/Models/Items/Weapons/Explosive/C4.blend",
       "github_url": "https://github.com/RE-SS3D/SS3D-Art/blob/main/Assets/Models/Items/Weapons/Explosive/C4.blend",
       "import_target_path": "Assets/Art/Models/Items/Weapons/Explosive/C4.fbx",
-      "status": "ss3d_art_only"
+      "status": "imported"
     },
     {
       "name": "FlashBangV2.blend",
@@ -74027,26 +74043,26 @@
       "status": "ss3d_art_only"
     },
     {
-      "name": "SyndicateMiniBomb.blend",
+      "name": "SyndicateMiniBomb.fbx",
       "stem": "syndicateminibomb",
-      "extension": "blend",
+      "extension": "fbx",
       "category": "Models/Items/Weapons/Explosive",
-      "in_game_path": null,
+      "in_game_path": "Assets/Art/Models/Items/Weapons/Explosive/SyndicateMiniBomb.fbx",
       "ss3d_art_path": "Assets/Models/Items/Weapons/Explosive/SyndicateMiniBomb.blend",
       "github_url": "https://github.com/RE-SS3D/SS3D-Art/blob/main/Assets/Models/Items/Weapons/Explosive/SyndicateMiniBomb.blend",
       "import_target_path": "Assets/Art/Models/Items/Weapons/Explosive/SyndicateMiniBomb.fbx",
-      "status": "ss3d_art_only"
+      "status": "imported"
     },
     {
-      "name": "X4.blend",
+      "name": "X4.fbx",
       "stem": "x4",
-      "extension": "blend",
+      "extension": "fbx",
       "category": "Models/Items/Weapons/Explosive",
-      "in_game_path": null,
+      "in_game_path": "Assets/Art/Models/Items/Weapons/Explosive/X4.fbx",
       "ss3d_art_path": "Assets/Models/Items/Weapons/Explosive/X4.blend",
       "github_url": "https://github.com/RE-SS3D/SS3D-Art/blob/main/Assets/Models/Items/Weapons/Explosive/X4.blend",
       "import_target_path": "Assets/Art/Models/Items/Weapons/Explosive/X4.fbx",
-      "status": "ss3d_art_only"
+      "status": "imported"
     },
     {
       "name": "FLRRocketLauncher.blend",
@@ -74577,15 +74593,15 @@
       "status": "ss3d_art_only"
     },
     {
-      "name": "Taser.blend",
+      "name": "Taser.fbx",
       "stem": "taser",
-      "extension": "blend",
+      "extension": "fbx",
       "category": "Models/Items/Weapons/Ranged/Energy/EnergyHandguns",
-      "in_game_path": null,
+      "in_game_path": "Assets/Art/Models/Items/Weapons/Ranged/Energy/EnergyHandguns/Taser.fbx",
       "ss3d_art_path": "Assets/Models/Items/Weapons/Ranged/Energy/EnergyHandguns/Taser.blend",
       "github_url": "https://github.com/RE-SS3D/SS3D-Art/blob/main/Assets/Models/Items/Weapons/Ranged/Energy/EnergyHandguns/Taser.blend",
       "import_target_path": "Assets/Art/Models/Items/Weapons/Ranged/Energy/EnergyHandguns/Taser.fbx",
-      "status": "ss3d_art_only"
+      "status": "imported"
     },
     {
       "name": "EnergyRifle.blend",
@@ -74599,15 +74615,15 @@
       "status": "ss3d_art_only"
     },
     {
-      "name": "IonRifle.blend",
+      "name": "IonRifle.fbx",
       "stem": "ionrifle",
-      "extension": "blend",
+      "extension": "fbx",
       "category": "Models/Items/Weapons/Ranged/Energy/EnergyRifles",
-      "in_game_path": null,
+      "in_game_path": "Assets/Art/Models/Items/Weapons/Ranged/Energy/EnergyRifles/IonRifle.fbx",
       "ss3d_art_path": "Assets/Models/Items/Weapons/Ranged/Energy/EnergyRifles/IonRifle.blend",
       "github_url": "https://github.com/RE-SS3D/SS3D-Art/blob/main/Assets/Models/Items/Weapons/Ranged/Energy/EnergyRifles/IonRifle.blend",
       "import_target_path": "Assets/Art/Models/Items/Weapons/Ranged/Energy/EnergyRifles/IonRifle.fbx",
-      "status": "ss3d_art_only"
+      "status": "imported"
     },
     {
       "name": "JS77EnergyRifle.blend",
@@ -74665,15 +74681,15 @@
       "status": "ss3d_art_only"
     },
     {
-      "name": "LaserRifle.blend",
+      "name": "LaserRifle.fbx",
       "stem": "laserrifle",
-      "extension": "blend",
+      "extension": "fbx",
       "category": "Models/Items/Weapons/Ranged/Energy/EnergyRifles",
-      "in_game_path": null,
+      "in_game_path": "Assets/Art/Models/Items/Weapons/Ranged/Energy/EnergyRifles/LaserRifle.fbx",
       "ss3d_art_path": "Assets/Models/Items/Weapons/Ranged/Energy/EnergyRifles/LaserRifle.blend",
       "github_url": "https://github.com/RE-SS3D/SS3D-Art/blob/main/Assets/Models/Items/Weapons/Ranged/Energy/EnergyRifles/LaserRifle.blend",
       "import_target_path": "Assets/Art/Models/Items/Weapons/Ranged/Energy/EnergyRifles/LaserRifle.fbx",
-      "status": "ss3d_art_only"
+      "status": "imported"
     },
     {
       "name": "TeslaRifle.blend",
@@ -77677,6 +77693,138 @@
       "github_url": "https://github.com/RE-SS3D/SS3D-Art/blob/main/Assets/Sound/Items/Weapons/EnergySwordOn.ogg",
       "import_target_path": "Assets/Art/Sound/Items/Weapons/EnergySwordOn.ogg",
       "status": "ss3d_art_only"
+    },
+    {
+      "name": "EnergyFleshHit1.ogg",
+      "stem": "energyfleshhit1",
+      "extension": "ogg",
+      "category": "Sound/Items/Weapons/Energy/SS14",
+      "in_game_path": "Assets/Art/Sound/Items/Weapons/Energy/SS14/EnergyFleshHit1.ogg",
+      "ss3d_art_path": null,
+      "github_url": null,
+      "import_target_path": null,
+      "status": "in_game_only"
+    },
+    {
+      "name": "EnergyFleshHit2.ogg",
+      "stem": "energyfleshhit2",
+      "extension": "ogg",
+      "category": "Sound/Items/Weapons/Energy/SS14",
+      "in_game_path": "Assets/Art/Sound/Items/Weapons/Energy/SS14/EnergyFleshHit2.ogg",
+      "ss3d_art_path": null,
+      "github_url": null,
+      "import_target_path": null,
+      "status": "in_game_only"
+    },
+    {
+      "name": "EnergyHit1.ogg",
+      "stem": "energyhit1",
+      "extension": "ogg",
+      "category": "Sound/Items/Weapons/Energy/SS14",
+      "in_game_path": "Assets/Art/Sound/Items/Weapons/Energy/SS14/EnergyHit1.ogg",
+      "ss3d_art_path": null,
+      "github_url": null,
+      "import_target_path": null,
+      "status": "in_game_only"
+    },
+    {
+      "name": "EnergyHit2.ogg",
+      "stem": "energyhit2",
+      "extension": "ogg",
+      "category": "Sound/Items/Weapons/Energy/SS14",
+      "in_game_path": "Assets/Art/Sound/Items/Weapons/Energy/SS14/EnergyHit2.ogg",
+      "ss3d_art_path": null,
+      "github_url": null,
+      "import_target_path": null,
+      "status": "in_game_only"
+    },
+    {
+      "name": "EnergyReady.ogg",
+      "stem": "energyready",
+      "extension": "ogg",
+      "category": "Sound/Items/Weapons/Energy/SS14",
+      "in_game_path": "Assets/Art/Sound/Items/Weapons/Energy/SS14/EnergyReady.ogg",
+      "ss3d_art_path": null,
+      "github_url": null,
+      "import_target_path": null,
+      "status": "in_game_only"
+    },
+    {
+      "name": "IonFire.ogg",
+      "stem": "ionfire",
+      "extension": "ogg",
+      "category": "Sound/Items/Weapons/Energy/SS14",
+      "in_game_path": "Assets/Art/Sound/Items/Weapons/Energy/SS14/IonFire.ogg",
+      "ss3d_art_path": null,
+      "github_url": null,
+      "import_target_path": null,
+      "status": "in_game_only"
+    },
+    {
+      "name": "LaserFire.ogg",
+      "stem": "laserfire",
+      "extension": "ogg",
+      "category": "Sound/Items/Weapons/Energy/SS14",
+      "in_game_path": "Assets/Art/Sound/Items/Weapons/Energy/SS14/LaserFire.ogg",
+      "ss3d_art_path": null,
+      "github_url": null,
+      "import_target_path": null,
+      "status": "in_game_only"
+    },
+    {
+      "name": "TaserFire.ogg",
+      "stem": "taserfire",
+      "extension": "ogg",
+      "category": "Sound/Items/Weapons/Energy/SS14",
+      "in_game_path": "Assets/Art/Sound/Items/Weapons/Energy/SS14/TaserFire.ogg",
+      "ss3d_art_path": null,
+      "github_url": null,
+      "import_target_path": null,
+      "status": "in_game_only"
+    },
+    {
+      "name": "C4Defused.ogg",
+      "stem": "c4defused",
+      "extension": "ogg",
+      "category": "Sound/Items/Weapons/Explosive/SS14",
+      "in_game_path": "Assets/Art/Sound/Items/Weapons/Explosive/SS14/C4Defused.ogg",
+      "ss3d_art_path": null,
+      "github_url": null,
+      "import_target_path": null,
+      "status": "in_game_only"
+    },
+    {
+      "name": "ChargeCountdown.ogg",
+      "stem": "chargecountdown",
+      "extension": "ogg",
+      "category": "Sound/Items/Weapons/Explosive/SS14",
+      "in_game_path": "Assets/Art/Sound/Items/Weapons/Explosive/SS14/ChargeCountdown.ogg",
+      "ss3d_art_path": null,
+      "github_url": null,
+      "import_target_path": null,
+      "status": "in_game_only"
+    },
+    {
+      "name": "ExplosiveCountdown.ogg",
+      "stem": "explosivecountdown",
+      "extension": "ogg",
+      "category": "Sound/Items/Weapons/Explosive/SS14",
+      "in_game_path": "Assets/Art/Sound/Items/Weapons/Explosive/SS14/ExplosiveCountdown.ogg",
+      "ss3d_art_path": null,
+      "github_url": null,
+      "import_target_path": null,
+      "status": "in_game_only"
+    },
+    {
+      "name": "MinibombExplosion.ogg",
+      "stem": "minibombexplosion",
+      "extension": "ogg",
+      "category": "Sound/Items/Weapons/Explosive/SS14",
+      "in_game_path": "Assets/Art/Sound/Items/Weapons/Explosive/SS14/MinibombExplosion.ogg",
+      "ss3d_art_path": null,
+      "github_url": null,
+      "import_target_path": null,
+      "status": "in_game_only"
     },
     {
       "name": "Gun Firing1.wav",

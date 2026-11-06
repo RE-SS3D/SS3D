@@ -16,7 +16,7 @@ namespace SS3D.Systems.StructuralDamage.Editor
         private const string BurstPrefabPath = ContentRoot + "/BlastExplosion.prefab";
         private const string ScorchPrefabPath = ContentRoot + "/ScorchFloorDecal.prefab";
         private const string ScorchMatPath = ContentRoot + "/ScorchDecal.mat";
-        private const string ScorchTexPath = ContentRoot + "/ScorchMask.png";
+        private const string ScorchTexPath = "Assets/Art/Textures/World/VFX/Structural/ScorchMask.png";
         private const string BloodDecalMatPath = "Assets/Content/WorldObjects/World/VFX/Health/BloodDecal.mat";
         private const string BloodParticleMatPath = "Assets/Content/WorldObjects/World/VFX/Health/BloodParticle.mat";
 
@@ -31,6 +31,7 @@ namespace SS3D.Systems.StructuralDamage.Editor
         public static void SetupAll()
         {
             EnsureFolder(ContentRoot);
+            EnsureFolder(Path.GetDirectoryName(ScorchTexPath).Replace('\\', '/'));
 
             Texture2D scorchTex = EnsureScorchTexture();
             Material scorchMat = EnsureScorchMaterial(scorchTex);
@@ -218,6 +219,14 @@ namespace SS3D.Systems.StructuralDamage.Editor
             so.FindProperty("_scorchDecalMaterial").objectReferenceValue = scorchMat;
             so.FindProperty("_particleMaterial").objectReferenceValue =
                 AssetDatabase.LoadAssetAtPath<Material>(BloodParticleMatPath);
+            so.FindProperty("_shakeFullRange").floatValue = 6f;
+            so.FindProperty("_shakeMaxRange").floatValue = 24f;
+            so.FindProperty("_flashFullRange").floatValue = 4f;
+            so.FindProperty("_flashMaxRange").floatValue = 20f;
+            so.FindProperty("_shakeAmplitude").floatValue = 0.75f;
+            so.FindProperty("_shakeDuration").floatValue = 0.85f;
+            so.FindProperty("_lightIntensity").floatValue = 35f;
+            so.FindProperty("_lightRange").floatValue = 14f;
             so.ApplyModifiedPropertiesWithoutUndo();
             EditorUtility.SetDirty(catalog);
         }

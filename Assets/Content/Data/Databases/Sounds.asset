@@ -14,6 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   DatabaseName: Sounds
   DatabaseID: 43b69e36c49203a44bf20042cd83de81
+  LoadMode: 0
+  AssetKeys: []
   AssetGroup: {fileID: 11400000, guid: d640c8e212e7a5349999a9ddd6ffb5b5, type: 2}
   Assets:
     _list:
@@ -301,4 +303,28 @@ MonoBehaviour:
       _value: {fileID: 8300000, guid: 89185afdd1154c6aa893b8f814af572c, type: 3}
     - _key: 2a746820b0ba427db91369a66632bf9f
       _value: {fileID: 8300000, guid: 2a746820b0ba427db91369a66632bf9f, type: 3}
+    - _key: a6351208c22943d8a9e52e4a37bf9ced
+      _value: {fileID: 8300000, guid: a6351208c22943d8a9e52e4a37bf9ced, type: 3}
+    - _key: e48acffcbdc544129677ae54abbfd947
+      _value: {fileID: 8300000, guid: e48acffcbdc544129677ae54abbfd947, type: 3}
+    - _key: e3295dd9bef344db9b30b15847417c41
+      _value: {fileID: 8300000, guid: e3295dd9bef344db9b30b15847417c41, type: 3}
+    - _key: f1ba387ba8d9495fbb8df0b2bfd99a0c
+      _value: {fileID: 8300000, guid: f1ba387ba8d9495fbb8df0b2bfd99a0c, type: 3}
+    - _key: 7d8f7f4005a7408dac34329b02c5c252
+      _value: {fileID: 8300000, guid: 7d8f7f4005a7408dac34329b02c5c252, type: 3}
+    - _key: 46d1ebcf19d64594a03b8053351b1a3a
+      _value: {fileID: 8300000, guid: 46d1ebcf19d64594a03b8053351b1a3a, type: 3}
+    - _key: 32bf9af821e047a49907cd5d1b76d077
+      _value: {fileID: 8300000, guid: 32bf9af821e047a49907cd5d1b76d077, type: 3}
+    - _key: bfcb361d68ba498eade01a32f2ff5037
+      _value: {fileID: 8300000, guid: bfcb361d68ba498eade01a32f2ff5037, type: 3}
+    - _key: 9cdf48ea33f0c0cc4adc4608a51d0185
+      _value: {fileID: 8300000, guid: 9cdf48ea33f0c0cc4adc4608a51d0185, type: 3}
+    - _key: 5f478263e83487f00b850ad152ba8db5
+      _value: {fileID: 8300000, guid: 5f478263e83487f00b850ad152ba8db5, type: 3}
+    - _key: a583ecd799d040728b40947e8e4287d1
+      _value: {fileID: 8300000, guid: a583ecd799d040728b40947e8e4287d1, type: 3}
+    - _key: 50c0d1513489644d89165a0f5fe757a4
+      _value: {fileID: 8300000, guid: 50c0d1513489644d89165a0f5fe757a4, type: 3}
     _new:

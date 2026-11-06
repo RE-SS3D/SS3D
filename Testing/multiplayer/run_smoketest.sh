@@ -124,7 +124,7 @@ else
     echo "warning: no tilemap fixtures at $TILEMAP_FIXTURES — scenarios that need a station map may fail" >&2
 fi
 
-# Round start loads Data/StationTemplates/<map> (default ministation) and refuses a map that fails
+# Round start loads Data/StationTemplates/<map> (default classic-ministation) and refuses a map that fails
 # Map Check (missing job/antag spawns). Always overwrite with the committed templates: a GameServer
 # tree can carry a stale copy from before the spawn markers were authored, and the round then
 # drops from Preparing straight back to Stopped.

@@ -50,10 +50,31 @@ namespace SS3D.Systems.StructuralDamage.Editor
                 EditorApplication.Exit(updated > 0 ? 0 : 1);
         }
 
+        public static int SetupFloors()
+        {
+            UnityEditor.Localization.StringTableCollection collection = UnityEditor.Localization.LocalizationEditorSettings.GetStringTableCollection("Examine");
+            if (collection != null && collection.GetTable(new UnityEngine.Localization.LocaleIdentifier("en")) is UnityEngine.Localization.Tables.StringTable table)
+            {
+                table.AddEntry(ExamineStructuralIntegrityKeys.FracturedFloor, ExamineStructuralIntegrityKeys.FracturedFloorFallback);
+                table.AddEntry(ExamineStructuralIntegrityKeys.DamagedPlating, ExamineStructuralIntegrityKeys.DamagedPlatingFallback);
+                EditorUtility.SetDirty(table);
+                EditorUtility.SetDirty(table.SharedData);
+            }
+            int updated = 0;
+            foreach (string guid in AssetDatabase.FindAssets("t:Prefab", new string[] { "Assets/Content/WorldObjects/Structures/Floors" }))
+            {
+                string path = AssetDatabase.GUIDToAssetPath(guid);
+                GameObject prefab = AssetDatabase.LoadAssetAtPath<GameObject>(path);
+                if (prefab.GetComponent<PlacedTileObject>() != null && SetupPrefab(path, null)) updated++;
+            }
+            AssetDatabase.SaveAssets();
+            return updated;
+        }
+
         public static int SetupAll()
         {
             AudioClip hiss = AssetDatabase.LoadAssetAtPath<AudioClip>(WindLightClip);
-            int updated = 0;
+            int updated = SetupFloors();
             for (int i = 0; i < PrefabPaths.Length; i++)
             {
                 if (SetupPrefab(PrefabPaths[i], hiss))

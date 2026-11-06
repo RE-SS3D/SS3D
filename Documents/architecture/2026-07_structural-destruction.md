@@ -1,8 +1,10 @@
-> Implements: Documents/design/explosives-destruction.md §2 (blast BFS), §3 (structural stages), §4 (atmos on Destroyed; areas unchanged since the 2026-10 review), §5 (crew brute), §1/§7 (world presentation)
+> Implements: Documents/design/explosives-destruction.md §2 (blast BFS), §3 (structural stages, floor/plenum blast damage), §4 (atmos on Destroyed; areas unchanged since the 2026-10 review), §5 (crew brute), §1/§7 (world presentation), §6 (C4/X4 charges and syndicate minibomb)
 > Touches systems: structural-destruction, tile, area, atmospherics, health, examine, screen-effects
 > Status: in-progress
 
 # Structural destruction — integrity + blast
+
+**Progress:** Integrity, blast resolution and world presentation implemented; C4/X4 timed charges with wall/door attachment, recorded countdown and wirecutter defuse, plus a throwable five-second syndicate minibomb implemented. Floor/plenum damage now strips flooring and breaches the hull with infrastructure cleanup and atmosphere loss. Remote triggers, other grenades, proximity alert and repair remain.
 
 ## Goal
 

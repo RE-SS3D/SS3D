@@ -67,6 +67,7 @@ Data contracts for Phase 2 vertical slice (per creative-mode §10):
 
 ## Pitfalls
 
+- **A new item is missing from the library with no error:** the palette and saved maps only see assets under `Content/Data/TileMap/Resources`, so a prefab with an `ObjectAssetReference` but no `ItemObjectSo` works in play and cannot be placed. `MapEditorCatalog.Build` passes no asset path, so name keywords in `MapEditorCatalogHeuristics.ClassifyItem` decide the subcategory, not the `Items/Weapons/` folder. `AssetAudit.TileMapTests` checks this for `Items/Weapons/` only. Hit 2026-11-06 (C4, X4, energy weapons).
 - **A form test sees no edits outside a live panel:** UI Toolkit fields raise `ChangeEvent` only when attached to a panel, so `view.Build(new VisualElement())` passes the build and silently drops every edit. Host the view in an `EditorWindow`, as `GasMarkerAuthoringTests` and `MapEditorAreaViewTests` do. Hit 2026-11-05.
 - **The gas marker form closes itself off its rail:** `RebuildGrid` closes it whenever the subcategory isn't Atmospherics, and any view model change can rebuild. A test must select the rail first or the form is gone by the next query. Hit 2026-11-05.
 - **Room form shows blank labels / default white controls:** runtime panels do not inherit the Editor theme; the room form needs an explicit font, text colors and field/input styles in `MapEditor.uss`. Use stacked labels and bounded scrolling; toolbar tools need baked icon references.

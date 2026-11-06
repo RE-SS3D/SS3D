@@ -33,6 +33,7 @@ namespace SS3D.Systems.Combat.Editor
                 updated++;
             }
 
+            updated += EnergyWeaponPrefabSetup.SetupAll();
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
             return updated;
@@ -49,42 +50,7 @@ namespace SS3D.Systems.Combat.Editor
 
             try
             {
-                if (!root.TryGetComponent(out RangedWeaponItemExtension extension))
-                {
-                    extension = root.AddComponent<RangedWeaponItemExtension>();
-                }
-
-                Transform muzzle = EnsureMuzzle(root);
-
-                SerializedObject so = new(extension);
-                so.FindProperty("_profile.BruteDamage").floatValue = profile.BruteDamage;
-                so.FindProperty("_profile.BurnDamage").floatValue = profile.BurnDamage;
-                so.FindProperty("_profile.CanSever").boolValue = profile.CanSever;
-                so.FindProperty("_profile.BaseSpreadDegrees").floatValue = profile.BaseSpreadDegrees;
-                so.FindProperty("_profile.RecoilClimbDegrees").floatValue = profile.RecoilClimbDegrees;
-                so.FindProperty("_profile.RecoilPerShot").floatValue = profile.RecoilPerShot;
-                so.FindProperty("_profile.RecoilDecayPerSecond").floatValue = profile.RecoilDecayPerSecond;
-                so.FindProperty("_profile.MovementBloomPerSpeed").floatValue = profile.MovementBloomPerSpeed;
-                so.FindProperty("_profile.FalloffStartMeters").floatValue = profile.FalloffStartMeters;
-                so.FindProperty("_profile.FalloffEndMeters").floatValue = profile.FalloffEndMeters;
-                so.FindProperty("_profile.FalloffExtraSpreadDegrees").floatValue = profile.FalloffExtraSpreadDegrees;
-                so.FindProperty("_profile.MaxRangeMeters").floatValue = profile.MaxRangeMeters;
-                so.FindProperty("_profile.FireCooldownSeconds").floatValue = profile.FireCooldownSeconds;
-                so.FindProperty("_profile.MagazineSize").intValue = profile.MagazineSize;
-                so.FindProperty("_profile.ReloadSeconds").floatValue = profile.ReloadSeconds;
-                so.FindProperty("_profile.StructuralForce").floatValue = profile.StructuralForce;
-                so.FindProperty("_profile.StaminaCost").floatValue = profile.StaminaCost;
-                so.FindProperty("_profile.ExhaustionSpreadDegrees").floatValue = profile.ExhaustionSpreadDegrees;
-                so.FindProperty("_profile.RequiresBothHands").boolValue = profile.RequiresBothHands;
-                so.FindProperty("_profile.RequiredHand").enumValueIndex = (int)profile.RequiredHand;
-                so.FindProperty("_muzzle").objectReferenceValue = muzzle;
-                SerializedProperty magazine = so.FindProperty("_magazine");
-                if (magazine.objectReferenceValue == null)
-                {
-                    magazine.objectReferenceValue = FindMagazine(root);
-                }
-
-                so.ApplyModifiedPropertiesWithoutUndo();
+                Configure(root, profile);
 
                 PrefabUtility.SaveAsPrefabAsset(root, path);
                 Debug.Log($"[RangedPrefabSetup] Ranged weapon on {path}");
@@ -94,6 +60,48 @@ namespace SS3D.Systems.Combat.Editor
             {
                 PrefabUtility.UnloadPrefabContents(root);
             }
+        }
+
+        public static void Configure(GameObject root, RangedWeaponProfile profile)
+        {
+            if (!root.TryGetComponent(out RangedWeaponItemExtension extension))
+            {
+                extension = root.AddComponent<RangedWeaponItemExtension>();
+            }
+
+            Transform muzzle = EnsureMuzzle(root);
+
+            SerializedObject so = new(extension);
+            so.FindProperty("_profile.VisualStyle").enumValueIndex = (int)profile.VisualStyle;
+            so.FindProperty("_profile.BruteDamage").floatValue = profile.BruteDamage;
+            so.FindProperty("_profile.BurnDamage").floatValue = profile.BurnDamage;
+            so.FindProperty("_profile.StaminaDamage").floatValue = profile.StaminaDamage;
+            so.FindProperty("_profile.CanSever").boolValue = profile.CanSever;
+            so.FindProperty("_profile.BaseSpreadDegrees").floatValue = profile.BaseSpreadDegrees;
+            so.FindProperty("_profile.RecoilClimbDegrees").floatValue = profile.RecoilClimbDegrees;
+            so.FindProperty("_profile.RecoilPerShot").floatValue = profile.RecoilPerShot;
+            so.FindProperty("_profile.RecoilDecayPerSecond").floatValue = profile.RecoilDecayPerSecond;
+            so.FindProperty("_profile.MovementBloomPerSpeed").floatValue = profile.MovementBloomPerSpeed;
+            so.FindProperty("_profile.FalloffStartMeters").floatValue = profile.FalloffStartMeters;
+            so.FindProperty("_profile.FalloffEndMeters").floatValue = profile.FalloffEndMeters;
+            so.FindProperty("_profile.FalloffExtraSpreadDegrees").floatValue = profile.FalloffExtraSpreadDegrees;
+            so.FindProperty("_profile.MaxRangeMeters").floatValue = profile.MaxRangeMeters;
+            so.FindProperty("_profile.FireCooldownSeconds").floatValue = profile.FireCooldownSeconds;
+            so.FindProperty("_profile.MagazineSize").intValue = profile.MagazineSize;
+            so.FindProperty("_profile.ReloadSeconds").floatValue = profile.ReloadSeconds;
+            so.FindProperty("_profile.StructuralForce").floatValue = profile.StructuralForce;
+            so.FindProperty("_profile.StaminaCost").floatValue = profile.StaminaCost;
+            so.FindProperty("_profile.ExhaustionSpreadDegrees").floatValue = profile.ExhaustionSpreadDegrees;
+            so.FindProperty("_profile.RequiresBothHands").boolValue = profile.RequiresBothHands;
+            so.FindProperty("_profile.RequiredHand").enumValueIndex = (int)profile.RequiredHand;
+            so.FindProperty("_muzzle").objectReferenceValue = muzzle;
+            SerializedProperty magazine = so.FindProperty("_magazine");
+            if (magazine.objectReferenceValue == null)
+            {
+                magazine.objectReferenceValue = FindMagazine(root);
+            }
+
+            so.ApplyModifiedPropertiesWithoutUndo();
         }
 
         /// <summary>Direct child whose name ends in "Magazine" (e.g. M4Magazine); the reload clip hands it to the left hand.</summary>

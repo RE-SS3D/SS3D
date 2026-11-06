@@ -1,7 +1,7 @@
 > Code paths: Assets/Scripts/SS3D/Systems/Tile/
 > Entry points: TileSubSystem, AdjacencyEngine, ConstructionService, TileQueryService, MapEditorSubSystem, MapImportPlanner
 > Status: partial
-> Verified: 41fd036ed — 2026-11-05
+> Verified: 7785df8dc — 2026-11-06
 
 # Tile / construction
 
@@ -70,6 +70,8 @@ Steel wall/table debris is separate from tile occupancy: `TileSubSystem.Wreckage
 
 ## Pitfalls
 
+- **Cascaded clears need mutation notifications:** removing plenum also removes supported occupants. Notify each of those occupants before destruction, so cable/pipe/gas observers disconnect them; notify the cascaded object, not just the original support tile.
+
 - **Map Editor Piping delete takes pipes before wires:** the tab holds both, so `MapEditorDeleteTargeting` clears the tile's pipes first and its wire on the next delete. All pipe lines on a tile still go together. Hit 2026-11-05.
 - **A connector-less device beside pipes must tell them to redraw:** `IPipePortDevice` is how `TileMap` knows, on place through `UpdateAdjacenciesFor` and on clear through `AdjacencyEngine.QueueNeighbours`. Without it a pipe keeps the last shape it drew. Hit 2026-11-05.
 
@@ -82,7 +84,7 @@ Steel wall/table debris is separate from tile occupancy: `TileSubSystem.Wreckage
 - **Blank library icons (TileGrey/TileWhite):** `Unlit/ObjectIcon` outputs `texture.a * _Color.a`; some floor materials ship `_Color.a = 0`, which the opaque toon shader ignores. `IconPreviewGenerator` forces alpha 1 for opaque-queue materials. Hit 2026-10-31.
 - **`TileMap.StructureVersion`:** bumped on place/clear/chunk/clear-map and when bulk mutation ends — not on door `NotifyTileStateChanged`. [area](area.md) device→area cache keys off this; do not bump on cosmetic state or every adjacency refresh.
 - **Adjacency must assign `sharedMesh`, not `.mesh`:** `_filter.mesh =` unique-copies the FBX and blocks GPU Instancing on walls/plenum/pipes/carpet. Use `sharedMesh`. Hit 2026-07-28 (Metastation).
-- **Underfloor hide must not fight FishNet `MeshRenderer.enabled`:** host cover uses `UnderfloorCoverCondition` (AND with `GridCondition` on Plenum/Wire/Disposal/PipeLeft|Middle|Right prefabs). Covered host fails the condition → removed from Observers → `SetRenderersVisible(false)`. Remotes always pass the cover condition (keep NO for client occupancy) and use `Renderer.forceRenderingOff` + disable `Selectable` — do **not** `SetActive(false)` the root or set `.enabled` for cover. Never call `SetRenderersVisible(true)` while covered. Turf place/clear must `RebuildObservers` via `RefreshUnderfloorAt` (timed alone is too slow). Template/DMM load: `RebuildObservers` + `RefreshAllHostVisibility` after turfs exist. Map Editor skips hide. `PipeSurface` and `PipeManifold` stay visible. Hit 2026-07-28 / fixed 2026-07-29 (Metastation `Render.Mesh`).
+- **Underfloor hide must not fight FishNet `MeshRenderer.enabled`:** host cover uses `UnderfloorCoverCondition` (AND with `GridCondition` on Plenum/Wire/Disposal/PipeLeft|Middle|Right prefabs). Covered host fails the condition → removed from Observers → `SetRenderersVisible(false)`. Remotes always pass the cover condition (keep NO for client occupancy) and use `Renderer.forceRenderingOff` + disable `Selectable` — do **not** `SetActive(false)` the root or set `.enabled` for cover. Never call `SetRenderersVisible(true)` while covered. Turf place/clear must `RebuildObservers` via `RefreshUnderfloorAt` (timed alone is too slow). Template/DMM load: `RebuildObservers` + `RefreshAllHostVisibility` after turfs exist. Map Editor skips hide. `PipeSurface` and `PipeManifold` stay visible. Hit 2026-07-28 / fixed 2026-07-29 (Metastation `Render.Mesh`). A plenum also stays drawn when any of its eight surrounding cells lacks covering turf, otherwise space shows under the neighbouring floor at an angle; wires and pipes follow their own cell only. `RefreshUnderfloorAt` refreshes those neighbours only when `IsUnderfloorHideOutOfDate`, so a chunk spawn does not redo renderer work eight times per floor. Clearing a plenum must also refresh, because the turf above goes through the cascade and not the turf branch.
 - **`OnDestroyed` before `OnStart`:** a client disconnecting while Game unloads can destroy
   `MapEditorSubSystem` before `OnStart` set `_controls`; the unconditional unsubscribe threw a
   NullReferenceException (hit by the MPPM reconnect scenario). Guarded with `_started`.

@@ -11,6 +11,7 @@ using SS3D.Systems.Tile.GasMarkers;
 using SS3D.Systems.Tile.MapEditor;
 using SS3D.Systems.Tile.MapEditor.Commands;
 using SS3D.Systems.Tile.TileMapCreator;
+using SS3D.Systems.Tile.Validation;
 using UnityEngine;
 using UnityEngine.TestTools;
 
@@ -62,6 +63,19 @@ namespace SS3D.Tests
         {
             Assert.IsTrue(Atmos.PipeRegistry.TryGetNetwork(id, out GasPipeNetworkRecord record));
             return record;
+        }
+
+        // Guards: the default map must start in every mode; a round refuses one that fails Map Check with no recovery.
+        [UnityTest]
+        public IEnumerator ClassicMiniStation_PassesMapCheckInEveryMode()
+        {
+            foreach (string mode in new[] { "Secret", "Extended", "Nuclear Emergency" })
+            {
+                MapValidationReport report = MapValidationService.Validate(SubSystems.Get<TileSubSystem>(), mode);
+                Assert.IsTrue(report.CanStart, report.Describe("classic-ministation", mode, saved: false));
+            }
+
+            yield break;
         }
 
         // Guards: a loaded station starts with Supply filled, the chamber at its fixed mix, the intake parted from Supply by the air pump, and every room scrubber on one Waste line (AtmosGasMarkers, AtmosDevicePipeResolver, manifolds, inline ports) · Not cheaper because: needs the importer's real template loaded through the tilemap, with devices spawned and ticking

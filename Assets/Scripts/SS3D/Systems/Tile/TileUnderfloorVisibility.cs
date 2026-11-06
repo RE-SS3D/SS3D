@@ -21,6 +21,13 @@ namespace SS3D.Systems.Tile
             TileLayer.PipeRight,
         };
 
+        private static readonly Vector3[] SurroundingCells =
+        {
+            new(-1f, 0f, -1f), new(0f, 0f, -1f), new(1f, 0f, -1f),
+            new(-1f, 0f, 0f), new(1f, 0f, 0f),
+            new(-1f, 0f, 1f), new(0f, 0f, 1f), new(1f, 0f, 1f),
+        };
+
         public static bool IsUnderfloorLayer(TileLayer layer) =>
             layer is TileLayer.Plenum
                 or TileLayer.Wire
@@ -49,20 +56,33 @@ namespace SS3D.Systems.Tile
         }
 
         /// <summary>
-        /// Whether play-mode should hide underfloor MeshRenderers at this cell.
+        /// Whether play-mode should hide underfloor MeshRenderers of <paramref name="layer"/> at this cell.
+        /// A plenum beside an uncovered cell stays drawn: the gap under the neighbouring floor would
+        /// otherwise show space when seen at an angle.
         /// </summary>
-        public static bool ShouldHideUnderfloor(TileMap map, Vector3 worldPosition, bool mapEditorAuthoring)
+        public static bool ShouldHideUnderfloor(TileMap map, Vector3 worldPosition, TileLayer layer, bool mapEditorAuthoring)
         {
-            if (mapEditorAuthoring)
+            if (mapEditorAuthoring || !CellHasCoveringTurf(map, worldPosition))
                 return false;
 
-            return CellHasCoveringTurf(map, worldPosition);
+            if (layer != TileLayer.Plenum)
+                return true;
+
+            for (int i = 0; i < SurroundingCells.Length; i++)
+            {
+                if (!CellHasCoveringTurf(map, worldPosition + SurroundingCells[i]))
+                    return false;
+            }
+
+            return true;
         }
 
         /// <summary>
         /// Re-apply underfloor visibility for every underfloor object on a cell
         /// (after turf place/clear so cover state stays in sync). Server also rebuilds
         /// FishNet observers so <c>UnderfloorCoverCondition</c> re-evaluates immediately.
+        /// Surrounding plenums refresh only when the change flips them, because chunk spawns and
+        /// map loads come through here once per floor.
         /// </summary>
         public static void RefreshUnderfloorAt(TileMap map, Vector3 worldPosition)
         {
@@ -77,16 +97,32 @@ namespace SS3D.Systems.Tile
                 if (!location.TryGetPlacedObject(out PlacedTileObject placed) || placed == null)
                     continue;
 
-                if (InstanceFinder.IsServer
-                    && placed.NetworkObject != null
-                    && placed.NetworkObject.IsSpawned
-                    && InstanceFinder.ServerManager?.Objects != null)
-                {
-                    InstanceFinder.ServerManager.Objects.RebuildObservers(placed.NetworkObject, timedOnly: false);
-                }
-
-                placed.RefreshHostVisibility();
+                RefreshPlaced(placed);
             }
+
+            for (int i = 0; i < SurroundingCells.Length; i++)
+            {
+                if (map.TryGetTileLocation(TileLayer.Plenum, worldPosition + SurroundingCells[i], out ITileLocation location)
+                    && location.TryGetPlacedObject(out PlacedTileObject plenum)
+                    && plenum != null
+                    && plenum.IsUnderfloorHideOutOfDate)
+                {
+                    RefreshPlaced(plenum);
+                }
+            }
+        }
+
+        private static void RefreshPlaced(PlacedTileObject placed)
+        {
+            if (InstanceFinder.IsServer
+                && placed.NetworkObject != null
+                && placed.NetworkObject.IsSpawned
+                && InstanceFinder.ServerManager?.Objects != null)
+            {
+                InstanceFinder.ServerManager.Objects.RebuildObservers(placed.NetworkObject, timedOnly: false);
+            }
+
+            placed.RefreshHostVisibility();
         }
 
         /// <summary>

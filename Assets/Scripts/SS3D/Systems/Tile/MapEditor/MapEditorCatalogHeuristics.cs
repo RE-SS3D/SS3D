@@ -111,7 +111,7 @@ namespace SS3D.Systems.Tile.MapEditor
             if (MatchesAny(haystack,
                     "/weapons/",
                     "security", "weapon", "gun", "rifle", "pistol", "taser", "baton", "handcuff",
-                    "m4", "jackboot"))
+                    "m4", "jackboot", "c4", "x4", "bomb"))
                 return MapEditorSubcategory.Security;
 
             if (MatchesAny(haystack,

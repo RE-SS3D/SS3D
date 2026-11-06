@@ -54,6 +54,7 @@ Testing/ui/validate.sh --steps compile,editmode,scenarios:Medical   # e.g. the m
 Testing/ui/validate.sh --steps mppm:late-join   # multiplayer scenario in Multiplayer Play Mode (no build needed)
 Testing/ui/validate.sh --steps mppm:reconnect
 Testing/ui/validate.sh --steps mppm:breach   # breach wind on a remote owner: pushed body and streaks
+Testing/ui/validate.sh --steps mppm:blast   # blast on a remote owner: shoved upright, then floored and thrown
 Testing/ui/validate.sh --steps mppm:breach-budget   # atmos tick cost and traffic during a hull breach with loose items, logged as [atmos-budget]
 Testing/ui/compile.sh             # = --steps compile
 Testing/ui/validate.sh --nightly  # owner only: + PlayMode, client+server build if stale, multiplayer smoke

@@ -567,6 +567,7 @@ jobs:
             test -f Builds/Game/Config/network.json
             test -d Builds/Game/Data/Tilemaps
             test -f Builds/Game/Data/StationTemplates/ministation.json
+            test -f Builds/Game/Data/StationTemplates/classic-ministation.json
             mkdir -p "${dest}/Config" "${dest}/Data/Tilemaps" "${dest}/Data/StationTemplates"
             cp -a Builds/Game/Config/. "${dest}/Config/"
             # The live permissions.txt is gitignored; ship the tracked defaults under the live name too,

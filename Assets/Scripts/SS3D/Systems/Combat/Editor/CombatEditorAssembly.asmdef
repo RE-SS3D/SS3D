@@ -4,7 +4,15 @@
     "references": [
         "GUID:ca7dfa56d1d490249a5fe56aee92a13c",
         "GUID:7c88a4a7926ee5145ad2dfa06f454c67",
-        "GUID:eb242eaf9f292954eb8c6fbd63c46deb"
+        "GUID:eb242eaf9f292954eb8c6fbd63c46deb",
+        "SS3D.Data",
+        "Unity.Addressables.Editor",
+        "Unity.Addressables",
+        "Unity.ResourceManager",
+        "Unity.Localization",
+        "Unity.Localization.Editor",
+        "SS3D.Interactions",
+        "Coimbra"
     ],
     "includePlatforms": [
         "Editor"

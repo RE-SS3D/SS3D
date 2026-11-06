@@ -258,8 +258,9 @@ namespace SS3D.Systems.Rounds
             TargetServerSettings(sender, _serverSettings, maps, string.IsNullOrEmpty(status) ? _serverSettingsError : status, refresh);
         }
 
-        private static string DefaultStation(string[] maps) => maps.Contains("ministation")
-            ? "ministation" : maps.FirstOrDefault() ?? "";
+        /// <summary>The map a server plays until an admin picks another: Classic MiniStation, else the first one saved.</summary>
+        public static string DefaultStation(string[] maps) => maps.Contains("classic-ministation")
+            ? "classic-ministation" : maps.FirstOrDefault() ?? "";
 
         [TargetRpc]
         private void TargetServerSettings(NetworkConnection target, ServerSettings settings, string[] maps, string status, bool refresh)

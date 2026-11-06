@@ -32,7 +32,7 @@ namespace SS3D.Systems.Inventory.Containers.Editor
         private static readonly Target[] Targets =
         {
             // Design inventory-storage.md §12: backpack 6 slots, small-max.
-            new("Assets/Content/WorldObjects/Items/Clothing/Backpack.prefab", 3, 2, SizeClass.Small, 20f),
+            new("Assets/Content/WorldObjects/Items/Clothing/Backpack.prefab", 3, 2, SizeClass.Normal, 20f),
             new("Assets/Content/WorldObjects/Items/Clothing/Toolbelt.prefab", 4, 1, SizeClass.Small, 10f),
             new("Assets/Content/WorldObjects/Furniture/Storage/Lockers/Locker.prefab", 4, 4, SizeClass.Bulky, 80f),
             new("Assets/Content/WorldObjects/Furniture/Storage/Lockers/LockerSecure.prefab", 4, 4, SizeClass.Bulky, 80f),

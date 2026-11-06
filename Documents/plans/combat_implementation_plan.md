@@ -135,6 +135,8 @@ Single primary path per [combat.md](../design/combat.md) §2:
 
 ### Phase 3 — Ranged
 
+Current energy content: ion rifle, laser rifle and taser share the hitscan/refill path with their own models, effects and SS14 audio. The taser drains available stamina; forced knockdown, EMP and removable cells remain unimplemented. Content recipes and current tuning: [combat map](../architecture/systems/combat.md).
+
 - Weapon-intrinsic **accuracy cone** ([combat.md](../design/combat.md) §3): base spread,
   recoil climb, movement bloom, range falloff; narrow when still/braced. Readable via recoil
   + reticle bloom — no hidden roll.

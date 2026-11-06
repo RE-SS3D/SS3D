@@ -185,6 +185,11 @@ try/catch turns into a `ScriptFailed` the harness already fails on — no new DS
   `workflow_dispatch` or restart `github-actions-runner.service` on TomNAS.
 - **Separate EditMode Library stash.** EditMode uses `Library-editmode`; smoke uses `Library`.
   Sharing would let a failed EditMode discard wipe the warm build cache.
+- **EditMode imports in its own editor session first.** The stash lacks a PR's new assets, and
+  an `AssetDatabase` that imports before them keeps bare `Object` references until the next
+  domain reload. A failed run discards its Library, so a re-run hits the same state. The
+  workflow therefore runs one `unity-test-runner` step with a filter that matches no test, then
+  the real run in a fresh editor.
 
 ## Out of scope
 

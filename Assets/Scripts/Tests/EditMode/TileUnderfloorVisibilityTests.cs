@@ -72,7 +72,7 @@ namespace SS3D.Tests.EditMode
             TileMapTestUtilities.PlacePlenum(context, position);
 
             Assert.IsFalse(TileUnderfloorVisibility.CellHasCoveringTurf(context.Map, position));
-            Assert.IsFalse(TileUnderfloorVisibility.ShouldHideUnderfloor(context.Map, position, mapEditorAuthoring: false));
+            Assert.IsFalse(TileUnderfloorVisibility.ShouldHideUnderfloor(context.Map, position, TileLayer.Wire, mapEditorAuthoring: false));
         }
 
         [Test]
@@ -100,7 +100,7 @@ namespace SS3D.Tests.EditMode
             PlaceTurf(context, position, TileObjectGenericType.Floor, "AuthoringFloor");
 
             Assert.IsTrue(TileUnderfloorVisibility.CellHasCoveringTurf(context.Map, position));
-            Assert.IsFalse(TileUnderfloorVisibility.ShouldHideUnderfloor(context.Map, position, mapEditorAuthoring: true));
+            Assert.IsFalse(TileUnderfloorVisibility.ShouldHideUnderfloor(context.Map, position, TileLayer.Wire, mapEditorAuthoring: true));
         }
 
         [Test]
@@ -110,7 +110,38 @@ namespace SS3D.Tests.EditMode
             Vector3 position = new Vector3(5f, 0f, 5f);
             PlaceTurf(context, position, TileObjectGenericType.Floor, "PlayFloor");
 
-            Assert.IsTrue(TileUnderfloorVisibility.ShouldHideUnderfloor(context.Map, position, mapEditorAuthoring: false));
+            Assert.IsTrue(TileUnderfloorVisibility.ShouldHideUnderfloor(context.Map, position, TileLayer.Wire, mapEditorAuthoring: false));
+        }
+
+        [Test]
+        public void ShouldHideUnderfloor_Plenum_RequiresAllEightSurroundingCellsCovered()
+        {
+            TileMapTestUtilities.MapContext context = TileMapTestUtilities.CreateContext(_instantiated);
+            Vector3 centre = new Vector3(5f, 0f, 5f);
+            for (int x = -1; x <= 1; x++)
+                for (int z = -1; z <= 1; z++)
+                {
+                    if (x == 1 && z == 1)
+                        continue;
+                    PlaceTurf(context, centre + new Vector3(x, 0f, z), TileObjectGenericType.Floor, "Floor");
+                }
+
+            Assert.IsFalse(TileUnderfloorVisibility.ShouldHideUnderfloor(context.Map, centre, TileLayer.Plenum, mapEditorAuthoring: false),
+                "A diagonal gap exposes the plenum");
+            Assert.IsTrue(TileUnderfloorVisibility.ShouldHideUnderfloor(context.Map, centre, TileLayer.Wire, mapEditorAuthoring: false),
+                "Other underfloor layers follow their own cell");
+
+            PlaceTurf(context, centre + new Vector3(1f, 0f, 1f), TileObjectGenericType.Wall, "Wall");
+
+            Assert.IsTrue(TileUnderfloorVisibility.ShouldHideUnderfloor(context.Map, centre, TileLayer.Plenum, mapEditorAuthoring: false));
+        }
+
+        [Test]
+        public void ShouldHideUnderfloor_Plenum_FalseOnBareCellItself()
+        {
+            TileMapTestUtilities.MapContext context = TileMapTestUtilities.CreateContext(_instantiated);
+            Vector3 centre = new Vector3(5f, 0f, 5f);
+            Assert.IsFalse(TileUnderfloorVisibility.ShouldHideUnderfloor(context.Map, centre, TileLayer.Plenum, mapEditorAuthoring: false));
         }
 
         private void PlaceTurf(

@@ -1,7 +1,7 @@
 > Code paths: Assets/Scripts/SS3D/Systems/Combat/, Assets/Scripts/SS3D/Systems/Entities/Humanoid/Body/, Assets/Scripts/SS3D/Utils/LineOfSight.cs
 > Entry points: Harm primary → `CombatInteractionNetwork.TryRunRangedFirePrimary` / `CmdRunRangedFire` (held `RangedWeaponItemExtension`) else `TryRunMeleeSwingPrimary` / `CmdRunMeleeSwing`
 > Status: partial
-> Verified: e2f86cf20 — 2026-11-05
+> Verified: 7785df8dc — 2026-11-06
 
 # Combat
 
@@ -12,6 +12,8 @@ Phase 0–1 melee + Phase 3 ranged + Phase 5 armor slice per [combat_implementat
 **Melee:** Harm primary always swings (windup → connect → recovery) via `CombatInteractionNetwork.CmdRunMeleeSwing`. Connect resolves from synced camera aim (exclude self); living zone or structural Turf within melee's own 1.1 m reach. Swing clips strike at the connect frame (`MeleeSwingAnimation`, M1m; see [entities](entities.md) pitfalls). Fists / improvised / crowbar·hatchet·knife. Successful melee and ranged hits on steel walls use their measured surface contact for the [structural impact burst](structural-destruction.md#overview).
 
 **Ranged (Phase 3 + M1p feel subset):** Holding `RangedWeaponItemExtension` (M4) — Harm LMB **fires** hitscan inside a weapon accuracy cone (base + recoil + movement bloom + range falloff). Server samples cone, resolves a living zone first, then checks shared `LineOfSight` (Default + Walls) only to that limb; otherwise structural turf / soft surface. Mag + fire cooldown + timed reload (E / Use, or empty-mag fire). Reticle bloom tracks current spread at aim distance; damaging hits flash the cross. **Diegetic impact:** muzzle flash + bullet holes; gold/grey debug spheres are **off by default** (`rangeddebug on|off`). **Muzzle flash:** procedural point light + particle burst at the weapon `Muzzle` socket (`MuzzleFlashVfx`), broadcast via `ObserversNotifyMuzzleFlash` so all observers see it. **Bullet holes:** non-living impacts spawn a capped URP `DecalProjector` (`BulletHoleDecalSpawner`, shreds under `Assets/Art/Textures/World/VFX/BulletHoles/`) via `ObserversNotifyBulletHole`; living hits skip holes. **Fire/reload anim:** `RequestAttack(FireRifle|Reload)` on **Upper Body** over **Rifle Aim Idle** (`Mix_AimingIdle` / `Mix_FiringRifle` / `Mix_Reloading`) — Base Ranged loco keeps feet; do not pulse Upper Body weight per shot. **Two-hand M4:** `RequiresBothHands` + `RequiredHand=Right` — may only occupy the right hand; left is reserved while wielded (`TwoHandedWeaponRules` via hand `CanContainItem`). **Pickup UX:** active left + empty right still offers Pick up / HUD drop — auto-routes into right and selects that hand; left well shows a reserved ban badge while the rifle is held, and hand-swap / HUD select cannot move onto that reserved hand. Fire/reload/stance/bloom resolve from the right-held rifle; `MirrorUpperBody` stays false. **Rifle aim (M1m):** after animation `HumanoidIkController` turns spine and chest so the muzzle points at the aim point; the reload carries the magazine in the left hand (`ReloadMagazineHandoff`), timed by `RifleReloadClipTiming`. No projectile travel or loose ammo this pass.
+
+**Energy-shot VFX:** `RangedWeaponProfile.VisualStyle` selects Ballistic (serialized default), Laser (red beam), Ion (cyan helix), or Taser (blue jittering arc with a fork). `ObserversNotifyMuzzleFlash` carries the server-resolved endpoint/contact normal and style; clients attach the start to their live muzzle. `EnergyWeaponVfx` caps live shots at 24, fades each within 0.32 s, and uses an additive depth-tested Resources shader, surface corona and shadowless muzzle light. Content prefabs `IonRifle`, `LaserRifle` and `Taser` are spawnable through the Items database and FishNet collection. The rifles deal burn damage (16 / 24); the taser drains up to 65 available stamina without oxy overdraw, burn or structural damage. Both rifles reserve the off-hand; the taser is single-hand. All reuse the rifle fire/reload animation and timed refill (12 / 20 / 6 charges). Taser-specific handheld animations await owner-supplied clips. No forced stun, EMP or removable battery system. Client `energyvfx laser|ion|taser|off` previews these looks on existing firearms without changing their damage/audio/ammo.
 
 **Armor (Phase 5):** `HumanHealthController.ApplyDamage(BodyZone, float, float)` — the single chokepoint both melee and ranged funnel through — runs incoming brute/burn through every worn armor piece covering the hit zone before it reaches the limb model. Worn pieces are discovered from existing clothing containers (`ContainerType.IsWornSlot()`), no new equip UI. `ArmorItemExtension` (per-item, `SyncVar` integrity) depletes by the amount actually absorbed; a depleted piece stops absorbing. Pure math in `ArmorSimulation.ResolveAbsorption`. Pieces resolve outermost first (`ArmorSimulation.LayerRank`). Damage left after every layer punctures the outermost sealed piece covering the zone (`SealedGearItemExtension`). The seal holds while `ExoSuit` and `Head` both hold intact sealed pieces; `HumanHealthController.ApplyWornSeal` writes it onto `HealthEnvironmentState`, whose fields stay raw, so burn, lung damage, alerts and screen effects each check `IsSealed`. A worn breached piece sets `IsBreached`, which `AtmosAlertStackMapper` turns into the **SealBreach** chip: a warning in safe air, critical once pressure or cold would reach the body. The piece shows its seal state on examine.
 
@@ -31,7 +33,8 @@ stamina drain), projectile/thrown.
 - `Assets/Scripts/SS3D/Systems/Interactions/InteractionController.cs` — routes Harm primary to `CombatInteractionNetwork`; owns intent SyncVar
 - `Assets/Scripts/SS3D/Systems/Combat/Interactions/RangedWeaponItemExtension.cs` — profile, mag, recoil, cooldown, reload
 - `Assets/Scripts/SS3D/Systems/Combat/RangedWeaponProfile.cs` / `AccuracyCone.cs` / `RangedHitscanResolver.cs` / `RangedShotFeedback.cs` / `MuzzleFlashVfx.cs` / `TwoHandedWeaponRules.cs` / `BulletHoleDecalSpawner.cs` / `BulletHoleVfxCatalog.cs`
-- `Assets/Scripts/SS3D/Systems/Combat/CombatAudioTrackIds.cs` — `AssetDatabases.Sounds` clip ids (SS14 rifle fire/empty/mag/cock + surface ricochet set) registered under `Assets/Art/Sound/Items/Weapons/Firearms/SS14/`; `CombatInteractionNetwork` plays fire/empty/surface via `AudioSubSystem.PlayAudioSource`, reload-complete mag-in/cock from `RangedWeaponItemExtension.TryCompleteReloadIfDue` (Sfx — gains occlusion via [audio](audio.md) `AudioSourceOcclusion` for free)
+- `Assets/Scripts/SS3D/Systems/Combat/EnergyWeaponVfx.cs` + `Assets/Resources/Combat/EnergyWeapon.shader` — bounded energy-shot rendering; `EnergyVfxCommand` is a local look-development override.
+- `Assets/Scripts/SS3D/Systems/Combat/CombatAudioTrackIds.cs` — `AssetDatabases.Sounds` clip ids (SS14 rifle fire/empty/mag/cock + surface ricochet set) registered under `Assets/Art/Sound/Items/Weapons/Firearms/SS14/`; energy clips under `Items/Weapons/Energy/SS14/` use `FireFor(VisualStyle)`, separate flesh/surface sets and ready beeps in place of magazine/bolt foley; `CombatInteractionNetwork` plays fire/empty/surface via `AudioSubSystem.PlayAudioSource`, reload-complete mag-in/cock from `RangedWeaponItemExtension.TryCompleteReloadIfDue` (Sfx — gains occlusion via [audio](audio.md) `AudioSourceOcclusion` for free)
 - `Assets/Scripts/SS3D/Utils/LineOfSight.cs` — shared occlusion (Drop, LocalSpeech, combat)
 - `Assets/Scripts/SS3D/Systems/Combat/Interactions/MeleeHitInteraction.cs` — melee swing + connect
 - `Assets/Scripts/SS3D/Systems/Combat/Interactions/MeleeWeaponItemExtension.cs` / `HandMeleeExtension.cs`
@@ -39,7 +42,7 @@ stamina drain), projectile/thrown.
 - `Assets/Scripts/SS3D/Systems/Combat/RifleReloadClipTiming.cs` — reload clip moments (reload length, sound cues)
 - `Assets/Scripts/SS3D/Systems/Entities/Humanoid/Body/MeleeSwingAnimation.cs` / `ReloadMagazineHandoff.cs` / `HumanoidIkController.cs` — swing clip table, reload magazine pose, rifle aim correction
 - `Assets/Scripts/SS3D/Systems/Combat/Editor/CombatContentPrefabRecipes.cs` — **SS3D → Combat → Run Content Prefab Recipes**
-- `Assets/Scripts/SS3D/Systems/Combat/Editor/RangedPrefabSetup.cs` — ranged M4 statics (tier B)
+- `Assets/Scripts/SS3D/Systems/Combat/Editor/RangedPrefabSetup.cs` — shared profile wiring; invokes `EnergyWeaponPrefabSetup` for the three energy prefabs, model/material adaptation, localized examine, Items/Sounds database and Addressables registration. `Tools/export_energy_weapons.py` exports only the named source meshes from a local SS3D-Art checkout (tier B).
 - `Assets/Scripts/SS3D/Systems/Combat/Editor/MeleePrefabSetup.cs` — melee hands/tools statics (tier B)
 - `Assets/Scripts/SS3D/Systems/Combat/CombatDummyBootstrap.cs` + `spawndummy` — freezes controls; equips `JumpsuitSecurity` for armor tests
 - `Assets/Scripts/SS3D/Systems/Combat/ArmorProfile.cs` / `ArmorSimulation.cs` / `ArmorItemExtension.cs` — per-zone absorption data, math, per-item integrity
@@ -49,12 +52,15 @@ stamina drain), projectile/thrown.
 ## Extension points
 
 - New firearm: add `RangedWeaponItemExtension` + profile via `RangedPrefabSetup` / **SS3D → Combat → Run Content Prefab Recipes** — do not hand-edit `Human.prefab`.
+- Energy presentation: set `RangedWeaponProfile.VisualStyle` through the owning content recipe; server-selected energy styles skip ballistic holes. Preview overrides suppress new holes locally; existing holes remain. Keep the shader in Resources so builds retain it.
 - New armor piece: add `ArmorItemExtension` + profile via `ArmorPrefabSetup` / same aggregator on a clothing item prefab — do not hand-edit `Human.prefab`; coverage is `BodyZoneMask`, independent of which clothing slot the item occupies.
 - Harm primary / aim / muzzle / recovery RPCs: extend `CombatInteractionNetwork` — do not grow `InteractionController` for combat.
 - Stance: `HumanoidBodyStateBridge.ResolveCombatStance` prefers the extension component.
 - Shared LOS: call `LineOfSight.HasLineOfSight` / `TryGetFirstHit` — do not fork parallel raycasts.
 
 ## Pitfalls
+
+- **Energy weapons point backward in hand:** `ContainerItemDisplay` applies `Attachment.localRotation` directly, rather than inverting a socket pose. Imported +Z-forward meshes need the M4 attachment × muzzle basis (currently +90° X), not −90° X. `EnergyWeaponPrefabSetup` derives this from the M4; `HeldBarrelBasis_MatchesM4` checks forward and roll.
 
 - **Incapacitated attacks:** hand capability gates apply to ranged fire/reload, melee start and the scheduled connect frame. A queued swing must not deal damage after the attacker collapses.
 
@@ -85,22 +91,25 @@ stamina drain), projectile/thrown.
 
 ## Tests
 
+`EnergyWeaponContentTests` checks imported mesh scale, own muzzle/profile, no inherited magazine, database registration, stamina-only taser and resolvable energy sound ids. Spawn with `spawninhand IonRifle`, `spawninhand LaserRifle`, or `spawninhand Taser` (empty hand, admin); Harm fires and E refills. Check held grip/aim, pickups, walls/targets, empty charge, reload and observer VFX/audio.
+
 EditMode (`--steps compile,editmode`): `MeleeReachTests`, `MeleeSwingAnimationTests`, `MeleeWeaponProfileStructuralForceTests`, `RifleReloadClipTimingTests`, `AccuracyConeAndLineOfSightTests`, `ArmorSimulationTests`, `ZoneTargetResolverTests`. No PlayMode combat scenario yet; manual checks:
 
 1. Host admin: `spawndummy`; Harm + empty hand — melee as before.
 2. Spawn/give M4 (left active is fine if right is empty — auto-routes to right and selects it); Harm — Ranged stance settles on Rifle Aim Idle (no weird Hold Weapon pose); LMB fires; zone damage at range; reticle blooms with movement/recoil; hit flash sits on the reticle dot; muzzle flash pops at the barrel tip (visible to other clients too); wall/floor impacts leave bullet-hole shreds. Left hand well shows a reserved badge and cannot be selected or receive items while the M4 is held. Optional: `rangeddebug on` for gold/grey impact spheres.
-3. Wall between you and dummy — shot blocked (no limb damage); wall may take structural force.
-4. Empty mag or **E** — timed reload, then fire again. Help does not fire.
-5. Help + M4 must not swing/fire; Harm must not Drop.
-6. `spawndummy` equips `JumpsuitSecurity` automatically; Harm-melee/ranged covered zones
+3. VFX preview: `energyvfx laser`, `energyvfx ion`, `energyvfx taser` while firing the M4; compare silhouettes, fades, muzzle attachment and wall/floor contacts. Fire into empty space: no impact corona. `energyvfx off` restores ballistic flash/holes. Preview is local; authored profile styles must be checked with a second observer client.
+4. Wall between you and dummy — shot blocked (no limb damage); wall may take structural force.
+5. Empty mag or **E** — timed reload, then fire again. Help does not fire.
+6. Help + M4 must not swing/fire; Harm must not Drop.
+7. `spawndummy` equips `JumpsuitSecurity` automatically; Harm-melee/ranged covered zones
    (chest/limbs) take reduced brute, head (uncovered) takes full damage; enough hits deplete
    integrity and damage reverts to unmitigated. Unequip/drop keeps the same Item (armor SyncVar)
    and restores folded world form. Equipment-doll HUD icons use the worn-shaped mesh; hands show folded.
-7. Fire/swing repeatedly until stamina is low — ranged spread should visibly widen and melee windup/recovery should visibly slow versus a fresh attack at full stamina.
+8. Fire/swing repeatedly until stamina is low — ranged spread should visibly widen and melee windup/recovery should visibly slow versus a fresh attack at full stamina.
 
 ## Depends on / Used by
 
-- **Depends on:** [health](health.md), [stamina](stamina.md) (melee + ranged fire costs, exertion feedback into windup/cone; armor weight also feeds `CarriedWeight`), [interactions-runtime](interactions-runtime.md), [entities](entities.md), [inventory](inventory.md) (worn armor lookup via `HumanInventory`/`ContainerType`), [structural-destruction](structural-destruction.md), [audio](audio.md) (`AudioSubSystem.PlayAudioSource` — gunfire/reload SFX), [ingame-console](ingame-console.md) (`rangeddebug`)
+- **Depends on:** [health](health.md), [stamina](stamina.md) (melee + ranged fire costs, exertion feedback into windup/cone; armor weight also feeds `CarriedWeight`), [interactions-runtime](interactions-runtime.md), [entities](entities.md), [inventory](inventory.md) (worn armor lookup via `HumanInventory`/`ContainerType`), [structural-destruction](structural-destruction.md), [audio](audio.md) (`AudioSubSystem.PlayAudioSource` — gunfire/reload SFX), [ingame-console](ingame-console.md) (`rangeddebug`, `energyvfx`)
 - **Used by:** Harm-intent Run Primary; Hotkeys Use (reload)
 
 ## Related docs

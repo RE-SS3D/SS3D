@@ -233,7 +233,8 @@ namespace SS3D.Systems.Combat
                 aimRay = new Ray(origin, direction);
             }
 
-            PlayGunfireSound(aimRay.origin);
+            weapon.GetMuzzleWorldPose(out Vector3 firePosition, out _);
+            PlayGunfireSound(firePosition, weapon.Profile.VisualStyle);
 
             float maxRange = Mathf.Max(1f, weapon.Profile.MaxRangeMeters);
             float aimDistance = maxRange;
@@ -267,7 +268,23 @@ namespace SS3D.Systems.Combat
             bool landed = false;
             if (resolved && hitLiving && health != null)
             {
-                health.ApplyDamage(zone, weapon.Profile.ToDamagePacket());
+                if (weapon.Profile.BruteDamage > 0f || weapon.Profile.BurnDamage > 0f)
+                {
+                    health.ApplyDamage(zone, weapon.Profile.ToDamagePacket());
+                }
+                if (weapon.Profile.StaminaDamage > 0f)
+                {
+                    StaminaController targetStamina = health.GetComponentInParent<StaminaController>();
+                    if (targetStamina != null)
+                    {
+                        targetStamina.ServerDepleteStamina(Mathf.Min(weapon.Profile.StaminaDamage,
+                            Mathf.Max(0f, targetStamina.CurrentStamina)));
+                    }
+                }
+                if (weapon.Profile.VisualStyle != RangedVisualStyle.Ballistic)
+                {
+                    PlaySurfaceHitSound(impactPoint, weapon.Profile.VisualStyle, true);
+                }
                 landed = true;
             }
             else if (resolved && hitStructural)
@@ -287,14 +304,18 @@ namespace SS3D.Systems.Combat
                 // A landed structural hit already plays its material's sound from the impact message.
                 if (!landed)
                 {
-                    PlaySurfaceHitSound(impactPoint);
+                    PlaySurfaceHitSound(impactPoint, weapon.Profile.VisualStyle);
                 }
 
-                ObserversNotifyBulletHole(impactPoint, impactNormal);
+                if (weapon.Profile.VisualStyle == RangedVisualStyle.Ballistic)
+                {
+                    ObserversNotifyBulletHole(impactPoint, impactNormal);
+                }
             }
 
             ClearMeleeAimPoint();
-            ServerNotifyRangedFireState(weapon, landed, hasImpact, impactPoint, shotDirection);
+            ServerNotifyRangedFireState(weapon, landed, hasImpact, impactPoint, shotDirection,
+                hasImpact ? impactPoint : aimRay.origin + shotDirection * maxRange, impactNormal);
         }
 
         [ServerRpc]
@@ -316,9 +337,9 @@ namespace SS3D.Systems.Combat
         }
 
         [Server]
-        private void PlayGunfireSound(Vector3 position)
+        private void PlayGunfireSound(Vector3 position, RangedVisualStyle style)
         {
-            string[] clips = CombatAudioTrackIds.GunFire;
+            string[] clips = CombatAudioTrackIds.FireFor(style);
             string clipId = clips[UnityEngine.Random.Range(0, clips.Length)];
             float pitch = UnityEngine.Random.Range(0.95f, 1.05f);
             SubSystems.Get<AudioSubSystem>()?.PlayAudioSource(
@@ -335,13 +356,16 @@ namespace SS3D.Systems.Combat
             }
 
             SubSystems.Get<AudioSubSystem>()?.PlayAudioSource(
-                AudioType.Sfx, CombatAudioTrackIds.GunEmpty, position, null, false, 1f, 1f, 8f, 40f);
+                AudioType.Sfx, weapon != null && weapon.Profile.VisualStyle != RangedVisualStyle.Ballistic
+                    ? CombatAudioTrackIds.EnergyReady : CombatAudioTrackIds.GunEmpty, position, null, false, 1f, 1f, 8f, 40f);
         }
 
         [Server]
-        private static void PlaySurfaceHitSound(Vector3 impactPoint)
+        private static void PlaySurfaceHitSound(Vector3 impactPoint, RangedVisualStyle style, bool living = false)
         {
-            string[] clips = CombatAudioTrackIds.SurfaceHit;
+            string[] clips = style == RangedVisualStyle.Ballistic
+                ? CombatAudioTrackIds.SurfaceHit
+                : living ? CombatAudioTrackIds.EnergyFleshHit : CombatAudioTrackIds.EnergyHit;
             string clipId = clips[UnityEngine.Random.Range(0, clips.Length)];
             float pitch = UnityEngine.Random.Range(0.92f, 1.08f);
             SubSystems.Get<AudioSubSystem>()?.PlayAudioSource(
@@ -357,7 +381,8 @@ namespace SS3D.Systems.Combat
             }
 
             SubSystems.Get<AudioSubSystem>()?.PlayAudioSource(
-                AudioType.Sfx, CombatAudioTrackIds.ReloadMagazineOut, transform.position, null, false, 1f, 1f, 8f, 40f);
+                AudioType.Sfx, weapon.Profile.VisualStyle == RangedVisualStyle.Ballistic
+                    ? CombatAudioTrackIds.ReloadMagazineOut : CombatAudioTrackIds.EnergyReady, transform.position, null, false, 1f, 1f, 8f, 40f);
 
             TargetNotifyRangedReload(
                 Owner,
@@ -372,7 +397,9 @@ namespace SS3D.Systems.Combat
             bool landed,
             bool hasImpact,
             Vector3 impactPoint,
-            Vector3 shotDirection)
+            Vector3 shotDirection,
+            Vector3 endpoint,
+            Vector3 impactNormal)
         {
             if (Owner == null || weapon == null)
             {
@@ -380,7 +407,8 @@ namespace SS3D.Systems.Combat
             }
 
             weapon.GetMuzzleWorldPose(out Vector3 muzzlePosition, out Vector3 muzzleForward);
-            ObserversNotifyMuzzleFlash(muzzlePosition, muzzleForward);
+            ObserversNotifyMuzzleFlash(muzzlePosition, muzzleForward, weapon.Profile.VisualStyle,
+                endpoint, hasImpact, impactNormal);
 
             TargetNotifyRangedFireState(
                 Owner,
@@ -394,8 +422,17 @@ namespace SS3D.Systems.Combat
         }
 
         [ObserversRpc(RunLocally = true)]
-        private void ObserversNotifyMuzzleFlash(Vector3 fallbackPosition, Vector3 fallbackForward)
+        private void ObserversNotifyMuzzleFlash(Vector3 fallbackPosition, Vector3 fallbackForward,
+            RangedVisualStyle style, Vector3 endpoint, bool hasImpact, Vector3 impactNormal)
         {
+            style = EnergyWeaponVfx.PreviewStyle ?? style;
+            if (style != RangedVisualStyle.Ballistic)
+            {
+                Transform socket = TryGetHeldRangedWeapon(out _, out RangedWeaponItemExtension energyWeapon)
+                    ? energyWeapon.Muzzle : null;
+                EnergyWeaponVfx.Play(style, socket, fallbackPosition, endpoint, hasImpact, impactNormal);
+                return;
+            }
             if (TryGetHeldRangedWeapon(out _, out RangedWeaponItemExtension weapon))
             {
                 Transform muzzle = weapon.Muzzle;
@@ -414,7 +451,10 @@ namespace SS3D.Systems.Combat
         [ObserversRpc(RunLocally = true)]
         private void ObserversNotifyBulletHole(Vector3 impactPoint, Vector3 impactNormal)
         {
-            BulletHoleDecalSpawner.Spawn(impactPoint, impactNormal);
+            if (EnergyWeaponVfx.PreviewStyle is null or RangedVisualStyle.Ballistic)
+            {
+                BulletHoleDecalSpawner.Spawn(impactPoint, impactNormal);
+            }
         }
 
         [TargetRpc]

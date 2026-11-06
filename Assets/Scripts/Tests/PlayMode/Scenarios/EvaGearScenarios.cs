@@ -159,6 +159,10 @@ namespace SS3D.Tests
             Assert.AreEqual(BodyPresentationState.Locomotion, ragdoll.Presentation, "A violent gust cannot knock an anchored body down");
             Assert.That(Vector3.Distance(ragdoll.WindSamplePosition, start), Is.LessThan(0.01f), "Nor pull it");
 
+            ragdoll.ServerApplyBlast(Vector3.right * 2f, knockdown: false);
+            yield return Hold(0.5f);
+            Assert.That(Vector3.Distance(ragdoll.WindSamplePosition, start), Is.LessThan(0.01f), "Boots hold through a distant blast");
+
             ragdoll.ServerKnockdown(1f);
             yield return WaitFor(() => ragdoll.IsKnockedDown, "something else floors the wearer");
             Assert.IsFalse(gear.MagbootsAnchored, "Boots on the floor hold nothing");

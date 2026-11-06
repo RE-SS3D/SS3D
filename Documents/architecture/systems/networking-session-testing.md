@@ -1,7 +1,7 @@
 > Parent map: [networking-session.md](networking-session.md)
 > Code paths: Assets/Scripts/SS3D/Systems/Testing/, Testing/multiplayer/
 > Status: partial
-> Verified: ae1a54ed1 — 2026-11-05
+> Verified: 7785df8dc — 2026-11-06
 
 # Multiplayer testing
 
@@ -120,6 +120,7 @@ only open SS3D editor):
 Testing/ui/validate.sh --steps mppm:late-join
 Testing/ui/validate.sh --steps mppm:reconnect
 Testing/ui/validate.sh --steps mppm:breach         # breach wind reaches a remote owner
+Testing/ui/validate.sh --steps mppm:blast          # blast shoves, throws and recovers a remote owner
 Testing/ui/validate.sh --steps mppm:breach-budget  # atmos tick cost and traffic on atmostest, logged
 ```
 

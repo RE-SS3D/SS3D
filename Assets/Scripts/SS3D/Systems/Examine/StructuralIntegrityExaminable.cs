@@ -52,6 +52,16 @@ namespace SS3D.Systems.Examine
 
             if (stage == StructuralIntegrityStage.Cracked)
             {
+                if (SS3D.Systems.StructuralDamage.StructuralIntegrityRules.IsBlastFloor(placed.tileObjectSO))
+                {
+                    bool plating = placed.Layer == TileLayer.Plenum;
+                    sections.Add(new ExamineSection(LocalizedTextService.GetFormattedString(
+                        ExamineCanonicalKeyGenerator.ExamineTableName,
+                        plating ? ExamineStructuralIntegrityKeys.DamagedPlating : ExamineStructuralIntegrityKeys.FracturedFloor,
+                        null,
+                        plating ? ExamineStructuralIntegrityKeys.DamagedPlatingFallback : ExamineStructuralIntegrityKeys.FracturedFloorFallback)));
+                    return;
+                }
                 bool metalObject = placed.GenericType == TileObjectGenericType.Door
                     || SS3D.Systems.StructuralDamage.StructuralIntegrityRules.IsSteelTable(placed.tileObjectSO)
                     || SS3D.Systems.StructuralDamage.StructuralIntegrityRules.IsMetalFurniture(placed.tileObjectSO);

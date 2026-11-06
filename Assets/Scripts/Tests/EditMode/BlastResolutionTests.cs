@@ -23,6 +23,42 @@ namespace EditorTests
         }
 
         [Test]
+        public void Cone_BreachesTargetAndDamagesBehindIt_WithoutSideOrRearDamage()
+        {
+            TileMapTestUtilities.MapContext context = TileMapTestUtilities.CreateContext(_instantiated);
+            for (int x = -3; x <= 4; x++)
+                for (int z = -3; z <= 3; z++) PlaceFloor(context, x, z);
+            foreach (Vector3 position in new[] { Vector3.zero, new Vector3(3, 0, 0), new Vector3(-2, 0, 0), new Vector3(0, 0, 2) })
+                TileMapTestUtilities.PlaceAirtightWall(context, position);
+            StructuralDamageService structural = new(context.Query, context.Construction);
+            BlastResolutionService blast = new(context.Query, structural);
+            TileCoord origin = context.Query.WorldToTile(Vector3.zero);
+            blast.ResolveCone(origin, 200f, 40f, Vector2.right);
+            Assert.False(structural.TryGetIntegrity(origin, out _, out _, out _), "The attached target is breached");
+            Assert.True(structural.TryGetIntegrity(context.Query.WorldToTile(new Vector3(3, 0, 0)), out _, out float remaining, out float max));
+            Assert.Less(remaining, max, "Cone reaches through the target");
+            foreach (Vector3 position in new[] { new Vector3(-2, 0, 0), new Vector3(0, 0, 2) })
+            {
+                Assert.True(structural.TryGetIntegrity(context.Query.WorldToTile(position), out _, out remaining, out max));
+                Assert.AreEqual(max, remaining, "Additional cone force never leaks to the rear or side");
+            }
+        }
+
+        [Test]
+        public void Cone_StopsAtSurvivingBarrier()
+        {
+            TileMapTestUtilities.MapContext context = TileMapTestUtilities.CreateContext(_instantiated);
+            for (int x = 0; x <= 3; x++) PlaceFloor(context, x, 0);
+            TileMapTestUtilities.PlaceAirtightWall(context, new Vector3(1, 0, 0));
+            TileMapTestUtilities.PlaceAirtightWall(context, new Vector3(2, 0, 0));
+            StructuralDamageService structural = new(context.Query, context.Construction);
+            BlastResolutionService blast = new(context.Query, structural);
+            blast.ResolveCone(context.Query.WorldToTile(Vector3.zero), 100f, 40f, Vector2.right);
+            Assert.True(structural.TryGetIntegrity(context.Query.WorldToTile(new Vector3(2, 0, 0)), out _, out float remaining, out float max));
+            Assert.AreEqual(max, remaining, "Directional force still obeys structural occlusion");
+        }
+
+        [Test]
         public void Corridor_OpenPath_ReachesPastBend_AndHitsSideWall()
         {
             TileMapTestUtilities.MapContext context = TileMapTestUtilities.CreateContext(_instantiated);

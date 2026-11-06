@@ -18,5 +18,19 @@ namespace EditorTests
             settings.RoundLengthMinutes = minutes;
             Assert.AreEqual(expected, settings.IsValid);
         }
+
+        [Test]
+        public void ClassicMiniStationIsTheDefaultMap()
+        {
+            Assert.AreEqual("classic-ministation",
+                RoundSubSystem.DefaultStation(new[] { "AtmosTest", "ministation", "classic-ministation" }));
+        }
+
+        [Test]
+        public void DefaultMapFallsBackToTheFirstSavedMap()
+        {
+            Assert.AreEqual("AtmosTest", RoundSubSystem.DefaultStation(new[] { "AtmosTest", "ministation" }));
+            Assert.AreEqual("", RoundSubSystem.DefaultStation(System.Array.Empty<string>()));
+        }
     }
 }

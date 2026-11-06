@@ -9,7 +9,7 @@ namespace SS3D.Systems.Tile.Observing
     /// <summary>
     /// FishNet observer condition for underfloor tile NetworkObjects (plenum/wires/pipes/disposal).
     /// <list type="bullet">
-    /// <item>Host + covered by floor/wall/door → fail (FishNet <c>SetRenderersVisible(false)</c>).</item>
+    /// <item>Host + covered by floor/wall/door → fail (FishNet <c>SetRenderersVisible(false)</c>); plenums also need all eight surrounding cells covered.</item>
     /// <item>Remote clients → always pass (keep object spawned for client tile occupancy).</item>
     /// <item>Map Editor authoring → always pass.</item>
     /// </list>
@@ -50,13 +50,13 @@ namespace SS3D.Systems.Tile.Observing
 
             Vector3 world = NetworkObject.transform.position;
             world.y = 0f;
-            if (TileUnderfloorVisibility.ShouldHideUnderfloor(tiles.CurrentMap, world, mapEditorAuthoring: false))
+            if (TileUnderfloorVisibility.ShouldHideUnderfloor(tiles.CurrentMap, world, placed.Layer, mapEditorAuthoring: false))
                 return false;
 
             Vector2Int origin = placed.WorldOrigin;
             Vector3 synced = new Vector3(origin.x, 0f, origin.y);
             return !TileUnderfloorVisibility.ShouldHideUnderfloor(
-                tiles.CurrentMap, synced, mapEditorAuthoring: false);
+                tiles.CurrentMap, synced, placed.Layer, mapEditorAuthoring: false);
         }
 
         public override ObserverConditionType GetConditionType() => ObserverConditionType.Timed;

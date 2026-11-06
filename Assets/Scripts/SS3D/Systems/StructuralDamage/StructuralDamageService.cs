@@ -5,9 +5,9 @@ using UnityEngine;
 namespace SS3D.Systems.StructuralDamage
 {
     /// <summary>
-    /// Applies per-tile structural integrity damage and clears Destroyed turf.
+    /// Applies per-tile structural integrity damage and clears destroyed occupants.
     /// </summary>
-    public sealed class StructuralDamageService : IStructuralDamageService
+    public sealed partial class StructuralDamageService : IStructuralDamageService
     {
         private readonly ITileQueryService _query;
         private readonly IConstructionService _construction;

@@ -1,6 +1,7 @@
 using SS3D.Core;
 using SS3D.Core.Behaviours;
 using SS3D.Systems.Entities;
+using SS3D.Systems.Entities.Humanoid;
 using SS3D.Systems.Health;
 using SS3D.Systems.Tile;
 using System.Collections.Generic;
@@ -96,7 +97,7 @@ namespace SS3D.Systems.StructuralDamage
         /// Server blast BFS from <paramref name="epicenter"/>. No-op if tile services are unbound.
         /// Broadcasts client VFX via <see cref="TileSubSystem"/> after resolution.
         /// </summary>
-        public void ResolveBlast(TileCoord epicenter, float yield, float falloff)
+        public void ResolveBlast(TileCoord epicenter, float yield, float falloff, bool smallSound = false)
         {
             IBlastResolutionService blast = Blast;
             if (blast == null)
@@ -112,7 +113,17 @@ namespace SS3D.Systems.StructuralDamage
             }
 
             Vector3 world = _boundQuery.TileToWorld(epicenter);
-            tiles.ServerNotifyBlastDetonated(world, yield);
+            tiles.ServerNotifyBlastDetonated(world, yield, smallSound);
+        }
+
+        /// <summary>X4's stronger radial blast plus extra force beyond its attached target; one audiovisual event.</summary>
+        public void ResolveShapedCharge(TileCoord target, Vector2 direction)
+        {
+            EnsureServiceBound();
+            if (_blast == null) return;
+            _blast.ResolveShaped(target, 240f, 60f, 180f, 40f, direction);
+            if (SubSystems.TryGet(out TileSubSystem tiles) && tiles.IsServer)
+                tiles.ServerNotifyBlastDetonated(_boundQuery.TileToWorld(target), 300f);
         }
 
         private void EnsureServiceBound()
@@ -139,7 +150,7 @@ namespace SS3D.Systems.StructuralDamage
             _boundQuery = tiles.QueryService;
             _boundConstruction = tiles.Construction;
             _service = new StructuralDamageService(_boundQuery, _boundConstruction);
-            _blast = new BlastResolutionService(_boundQuery, _service, ApplyCrewBlastBrute);
+            _blast = new BlastResolutionService(_boundQuery, _service, ApplyCrewBlastBrute, _service.ApplyBlastFloorDamage, ApplyCrewBlastPush);
         }
 
         private void ApplyCrewBlastBrute(TileCoord coord, float force)
@@ -181,6 +192,32 @@ namespace SS3D.Systems.StructuralDamage
                 }
 
                 TryDamageIfOnTile(health, coord, force);
+            }
+        }
+
+        /// <summary>Runs once all passes are done, so a body gets one push from one detonation.</summary>
+        private void ApplyCrewBlastPush(TileCoord epicenter, IReadOnlyDictionary<TileCoord, float> forces)
+        {
+            if (_boundQuery == null)
+            {
+                return;
+            }
+
+            Vector3 origin = _boundQuery.TileToWorld(epicenter);
+            foreach (Ragdoll body in Ragdoll.WindBodies)
+            {
+                if (body == null || !body.IsServer)
+                {
+                    continue;
+                }
+
+                Vector3 position = body.WindSamplePosition;
+                if (!forces.TryGetValue(_boundQuery.WorldToTile(position, epicenter.MapId), out float force))
+                {
+                    continue;
+                }
+
+                body.ServerApplyBlast(BlastPush.Velocity(origin, position, -body.transform.forward, force), BlastPush.KnocksDown(force));
             }
         }
 

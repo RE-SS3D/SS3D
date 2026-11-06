@@ -1,5 +1,8 @@
 using NUnit.Framework;
+using SS3D.Systems.Inventory.Containers;
+using SS3D.Systems.Inventory.Items;
 using SS3D.Systems.Tile;
+using System.Linq;
 using System.Text;
 using UnityEditor;
 using UnityEngine;
@@ -46,6 +49,27 @@ namespace AssetAudit
             Assert.IsNotNull(prefab.GetComponent<PlacedTileObject>(),
                 $"Tile prefab '{prefab.name}' ({tile.name}) lacks PlacedTileObject; run TilePlacedObjectPrefabSetup.SetupAll.\n");
         }
+        /// <summary>
+        /// The map editor library and saved maps only know items with an ItemObjectSo under
+        /// Content/Data/TileMap/Resources, so a weapon without one cannot be found or placed.
+        /// </summary>
+        [Test, TestCaseSource(nameof(AllWeaponPrefabs))]
+        public void EveryWeaponHasAnItemObjectSo(GameObject weapon)
+        {
+            Assert.IsTrue(AllItemObjectSo().Any(item => item.PrefabAsset != null && item.NameString == weapon.name),
+                $"Weapon '{weapon.name}' has no ItemObjectSo under Content/Data/TileMap/Resources/Items/Weapons.\n");
+        }
+
+        /// <summary>A weapon must fit a backpack, whatever it is.</summary>
+        [Test, TestCaseSource(nameof(AllWeaponPrefabs))]
+        public void EveryWeaponFitsTheBackpack(GameObject weapon)
+        {
+            GameObject backpack = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Content/WorldObjects/Items/Clothing/Backpack.prefab");
+            AttachedContainer storage = backpack.GetComponentsInChildren<AttachedContainer>(true).First(container => container.HasUi);
+
+            Assert.LessOrEqual(weapon.GetComponent<Item>().SizeClass, storage.MaxSizeClass,
+                $"Weapon '{weapon.name}' is larger than the backpack accepts.\n");
+        }
         #endregion
 
         #region Helper functions
@@ -53,6 +77,13 @@ namespace AssetAudit
         public static TileObjectSo[] AllTileObjectSo()
         {
             return AssetAuditUtilities.AllTileObjectSo();
+        }
+
+        public static GameObject[] AllWeaponPrefabs()
+        {
+            return AssetDatabase.FindAssets("t:Prefab", new[] { "Assets/Content/WorldObjects/Items/Weapons" })
+                .Select(guid => AssetDatabase.LoadAssetAtPath<GameObject>(AssetDatabase.GUIDToAssetPath(guid)))
+                .ToArray();
         }
 
         public static ItemObjectSo[] AllItemObjectSo()

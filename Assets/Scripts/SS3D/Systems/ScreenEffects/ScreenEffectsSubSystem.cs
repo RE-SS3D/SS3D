@@ -30,7 +30,8 @@ namespace SS3D.Systems.ScreenEffects
         private const float HitFlashAttack = 0.03f;
         private const float HitFlashDecay = 0.35f;
         private const float BlastFlashAttack = 0.04f;
-        private const float BlastFlashDecay = 0.45f;
+        private const float BlastFlashDecay = 0.65f;
+        private const float BlastFlashPeakExposure = 6f;
         private const float WhiteoutAttack = 0.12f;
         /// <summary>Exposure boost (EV) at the white-out's peak: enough to burn the frame to white.</summary>
         private const float WhiteoutPeakExposure = 9f;
@@ -462,7 +463,7 @@ namespace SS3D.Systems.ScreenEffects
             float blastFlash = ComputeBlastFlash(deltaTime);
             if (blastFlash > 0f)
             {
-                AddVignette(blastFlash, new Color(1f, 0.72f, 0.35f));
+                AddVignette(blastFlash * 0.6f, new Color(1f, 0.94f, 0.82f));
             }
 
             float whiteout = ComputeWhiteout(deltaTime);
@@ -491,8 +492,8 @@ namespace SS3D.Systems.ScreenEffects
             _chromaticAberration.active = chromaticAberration > 0.001f;
             _chromaticAberration.intensity.value = Mathf.Clamp01(chromaticAberration);
 
-            _colorAdjustments.active = saturation < -0.001f || contrast < -0.001f || whiteout > 0.001f;
-            _colorAdjustments.postExposure.value = whiteout * WhiteoutPeakExposure;
+            _colorAdjustments.active = saturation < -0.001f || contrast < -0.001f || whiteout > 0.001f || blastFlash > 0.001f;
+            _colorAdjustments.postExposure.value = Mathf.Max(whiteout * WhiteoutPeakExposure, blastFlash * BlastFlashPeakExposure);
             _colorAdjustments.saturation.value = Mathf.Clamp(saturation, -100f, 100f);
             _colorAdjustments.contrast.value = Mathf.Clamp(contrast, -100f, 100f);
 

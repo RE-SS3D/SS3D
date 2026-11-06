@@ -72,7 +72,7 @@ Infrastructure and gameplay maps, including the ones with no design doc (interac
 | [atmospherics](systems/atmospherics.md) | partial | ECS turf gas sim, pressure-driven wind/knockdown, loose items in wind, client VFX sync, host AOI |
 | [audio](systems/audio.md) | partial | SFX pool, occlusion, room tone, wind and sound needs air, personal audio cues; child map [audio-content](systems/audio-content.md) for clips |
 | [chat-audio-screens](systems/chat-audio-screens.md) | partial | Comms hub: local speech, radio/announce feed, compose |
-| [combat](systems/combat.md) | partial | Melee, ranged hitscan, armor absorption, combat feel |
+| [combat](systems/combat.md) | partial | Melee, ranged hitscan, armor absorption, combat feel, ion/laser/taser content and VFX |
 | [core-subsystems](systems/core-subsystems.md) | partial | `SubSystems.Get<T>()`, bootstrap, world-readiness graph |
 | [crafting](systems/crafting.md) | stub | Nothing live; awaits redesign |
 | [data-codegen](systems/data-codegen.md) | partial | Asset databases, generated refs, Addressables |
@@ -103,7 +103,7 @@ Infrastructure and gameplay maps, including the ones with no design doc (interac
 | [screen-effects](systems/screen-effects.md) | partial | URP Volume overlays driven by health/atmos |
 | [selection](systems/selection.md) | shipped | Shader-ID mesh picking, pick-grid index |
 | [stamina](systems/stamina.md) | partial | Regen, encumbrance, sprint, exertion |
-| [structural-destruction](systems/structural-destruction.md) | partial | Turf/table/opt-in furniture integrity, wall/table/airlock damage visuals, steel wall/table breakup and wreckage, structural force, blasts |
+| [structural-destruction](systems/structural-destruction.md) | partial | Turf/table/opt-in furniture integrity, wall/table/airlock damage visuals, steel wall/table breakup and wreckage, structural force, blast floor/plenum damage, C4/X4 and syndicate minibomb ([explosive items](systems/structural-destruction-explosives.md)) |
 | [substances](systems/substances.md) | partial | Networked containers, reactions, heat |
 | [tile](systems/tile.md) | partial | Tilemap, adjacency, Map Editor with persistent Map Check, SS13 DMM import |
 | [ui-shell](systems/ui-shell.md) | partial | UITK composition root, shared catalog/binder, bug report dialog (F8) on the Modal layer; [main menu](systems/ui-shell-main-menu.md) (join/host/status/update); F1 debug host still separate |

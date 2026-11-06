@@ -1,26 +1,33 @@
 > Code paths: Assets/Scripts/SS3D/Systems/StructuralDamage/ (plus integrity stage, occupancy and blast VFX Rpc hooks in Systems/Tile/, mapped by [tile](tile.md))
 > Entry points: StructuralDamageSubSystem, StructuralDamageService, BlastResolutionService, BlastVfxPresenter, StructuralIntegrityPresenter, HurtStructureCommand, BlastCommand
 > Status: partial
-> Verified: e2f86cf20 — 2026-11-05
+> Verified: 7785df8dc — 2026-11-06
 
 # Structural destruction
 
 ## Overview
 
-Per-tile integrity for Turf walls, doors, windows, and FurnitureBase steel/wood/glass tables and opted-in metal furniture per [explosives-destruction.md](../../design/explosives-destruction.md) §3. Phase 1–3: accumulate force → stages → Destroyed clear; melee StructuralForce; hop blast BFS + crew brute. Phase 4: all structural wall variants, including windows and the girder, show a dent at Damaged and a torn seam at Cracked. Steel tables use tabletop-only dents/tears; wooden tables use chipped gouges and grain-following splits with exposed fibres; glass tables grow an impact star into branching fractures; lockers mark body/door meshes; opted-in machines mark side casings to preserve front displays; civilian and security airlocks mark each moving leaf, excluding control panels and generated floors. Bounds-based placement has stable per-tile variation. Other supported surfaces use MPB tint. Cracked walls add a hiss; steel tables/airlocks use torn-metal examine feedback, wood uses gouged/split-wood text, and glass uses chipped/fractured-glass text. Tables and airlocks do not play the hull-leak hiss. Confirmed melee and ranged contacts emit metal flecks/dust, wood chips/dust, or pale glass chips according to material. Impact RPC carries the material and a sound cue (protocol 17). Material comes from `StructuralMaterials.Resolve`, which reads `impactMaterial` on `TileObjectSo` for exceptions such as windows. Every landed melee, ranged or console hit sounds like its material on all clients, reaching Cracked adds a strain, and a break plays the material's break sound. Steel wreckage thuds when it lands. A blast is one boom, or a distant rumble past 30 m, with a tail of at most three breaks nearest the listener. Blast detonation VFX: epicenter fireball wash (atmos-fire palette), point light, scorch decals, distance-scaled shake + blast screen flash — via `TileSubSystem` ObserversRpc. Explosive items and repair remaining: [station_structural_damage.plan.md](../../plans/station_structural_damage.plan.md).
+Per-tile integrity for Turf walls, doors, windows, and FurnitureBase steel/wood/glass tables and opted-in metal furniture per [explosives-destruction.md](../../design/explosives-destruction.md) §3. Phase 1–3: accumulate force → stages → Destroyed clear; melee StructuralForce; hop blast BFS + crew brute and [body push](structural-destruction-explosives.md). Phase 4: all structural wall variants, including windows and the girder, show a dent at Damaged and a torn seam at Cracked. Steel tables use tabletop-only dents/tears; wooden tables use chipped gouges and grain-following splits with exposed fibres; glass tables grow an impact star into branching fractures; lockers mark body/door meshes; opted-in machines mark side casings to preserve front displays; civilian and security airlocks mark each moving leaf, excluding control panels and generated floors. Bounds-based placement has stable per-tile variation. Other supported surfaces use MPB tint. Cracked walls add a hiss; steel tables/airlocks use torn-metal examine feedback, wood uses gouged/split-wood text, and glass uses chipped/fractured-glass text. Tables and airlocks do not play the hull-leak hiss. Confirmed melee and ranged contacts emit metal flecks/dust, wood chips/dust, or pale glass chips according to material. Impact RPC carries the material and a sound cue (protocol 17). Material comes from `StructuralMaterials.Resolve`, which reads `impactMaterial` on `TileObjectSo` for exceptions such as windows. Every landed melee, ranged or console hit sounds like its material on all clients, reaching Cracked adds a strain, and a break plays the material's break sound. Steel wreckage thuds when it lands. A blast is one boom, or a distant rumble past 30 m, with a tail of at most three breaks nearest the listener. Blast detonation VFX: epicenter fireball wash with expanding mottled smoke lasting about three seconds (atmos-fire palette), point light, scorch decals, body-distance-scaled heavy shake (0.75 m base amplitude, 0.85 s) + full-frame exposure flash — via `TileSubSystem` ObserversRpc. C4, X4 and syndicate minibomb content are mapped in [explosive items](structural-destruction-explosives.md): replicated countdown audio, attachment, X4 directional force and a throwable five-second minibomb. Proximity alert, remote triggers and repair remain in [station_structural_damage.plan.md](../../plans/station_structural_damage.plan.md).
 
 Steel walls (including reinforced steel) and steel tables now leave deterministic procedural faceted folded-panel wreckage after a short accelerating fall with a small impact bounce. Breakup emits a soft mottled dust cloud followed by a wider ground-impact puff; both expand and fade within roughly 1.7 seconds and only play for live destruction, not late joins. No matching rubble models exist in the art indexes. Wreckage has no collision or occupancy, is replicated for late joiners, and is session-only (not saved or salvageable). Rebuilding on the same tile/layer removes it; map clear and disconnect clean it up. Other materials retain the existing removal behavior.
 
 Wall removal also opens the existing atmos edges: [atmospherics](atmospherics.md) now drives wind streaks, pressure-driven knockdown and pull from the resulting gradient, without a separate destruction impulse.
 
+Blast floors and the hull beneath them now take independent accumulated damage: weaker blasts expose plating; stronger blasts open holes to space, destroy supported infrastructure and vent the room. See [floor and hull damage](structural-destruction-floors.md).
+
 ## Start here
+
+- [Floor and hull damage](structural-destruction-floors.md) — deferred blast damage, floor/plenum integrity, vacuum consequences and floor prefab recipe
+
+- `Assets/Scripts/SS3D/Systems/StructuralDamage/TimedCharge.cs` / `ChargeCountdownDisplay.cs` — explosive profiles, fuse/attach/throw/defuse interactions, recorded countdown and physical LED readout
+- [Explosive items](structural-destruction-explosives.md) — C4/X4/minibomb behavior, countdown lifecycle, content recipe and tests
 
 - `Assets/Scripts/SS3D/Systems/StructuralDamage/StructuralDamageSubSystem.cs` — self-bootstrap; `TryApplyStructuralDamage` / `TryGetIntegrity` / `ResolveBlast` (+ VFX broadcast)
 - `Assets/Scripts/SS3D/Systems/StructuralDamage/StructuralDamageService.cs` — server apply + Destroyed clear
 - `Assets/Scripts/SS3D/Systems/StructuralDamage/SteelWreckageRecord.cs` / `SteelWreckageView.cs` — pre-clear bounds capture, procedural folded steel and collapse animation
 - `Assets/Scripts/SS3D/Systems/Tile/TileSubSystem.Wreckage.cs` — session wreckage SyncList, unbuffered breakup RPC, placement cleanup
 - `Assets/Scripts/SS3D/Systems/StructuralDamage/BlastResolutionService.cs` — BFS blast spread
-- `Assets/Scripts/SS3D/Systems/StructuralDamage/BlastVfxPresenter.cs` — client detonation FX (catalog-driven)
+- `Assets/Scripts/SS3D/Systems/StructuralDamage/BlastVfxPresenter.cs` — client detonation FX (catalog-driven); `Assets/Resources/StructuralDamage/BlastFire.shader` supplies the additive fireball, `CollapseDust.shader` the smoke
 - `Assets/Scripts/SS3D/Systems/StructuralDamage/BlastVfxCatalog.cs` — Resources catalog + falloff tuning
 - `Assets/Scripts/SS3D/Systems/StructuralDamage/StructuralAudioPresenter.cs` — client sounds for impacts, breaks and blasts, added by `TileSubSystem`; clip ids in `StructuralAudioTrackIds.cs`
 - `Assets/Scripts/SS3D/Systems/StructuralDamage/StructuralSoundScheduler.cs` — pure timing: break hold, thud delay, capped blast debris
@@ -53,6 +60,15 @@ Wall removal also opens the existing atmos edges: [atmospherics](atmospherics.md
 
 ## Pitfalls
 
+- **Opening holes during BFS erases the blast's own path:** defer floor/plenum damage until traversal finishes. X4 must finish both radial and cone passes before applying their combined floor force.
+
+- **Orbiting camera position is not blast distance:** camera zoom can put it 15 m from a nearby explosion and suppress feedback. Use the audio listener, which follows the controlled body, before falling back to a camera.
+
+- **Defuse must redeclare `IInteraction` on the `DelayedInteraction` subclass:** otherwise its `Priority` property is ignored by interface dispatch (default 0) and pickup wins over the tool action. `TimedChargeTests` guards the dispatch.
+
+- **Unspawned charge previews have no FishNet behaviour cache:** `NetworkBehaviour.TimeManager` can throw before initialization, even in a null check. Query the root `NetworkObject.TimeManager` safely, and skip runtime Update until spawned.
+- **C4 FBX has scale/axis conversion on its imported root:** baking only `model.worldToLocalMatrix * mesh.localToWorldMatrix` drops it, leaving a tiny upright mesh. Bake the mesh transform including the model root; content tests check dimensions and floor orientation.
+
 - **Area reflood must not run inside `OnTileCleared` synchronously:** `TileMap` notifies before the occupant is removed; immediate flood still sees the wall/door. Area queues `_pendingLiveBoundaryRecompute` and flushes next `UpdateEvent`; authored maps then skip the reflood (same class of bug as `AtmosTileObserver` defer).
 - **Cracked still blocks Area expansion and blast hops:** only Destroyed (clear) opens boundaries; Cracked only flips `IsAirtight` for atmos.
 - **Cracked is not a slow room↔room leak yet:** design wants a slow vent; `IsAirtight=false` only changes the wall cell's atmos state. Neighbour `CanFlow` still uses binary `BlockedEdges` — real permeability deferred (document fork until ShareGasJob / edge rate exists).
@@ -73,15 +89,17 @@ Wall removal also opens the existing atmos edges: [atmospherics](atmospherics.md
 
 ## Tests
 
+- `TimedChargeTests`: physical content scale, countdown/clip wiring, wirecutter-only defuse, expiry gating. Cone propagation and barrier tests are in `BlastResolutionTests`; separate-client acceptance remains.
+
 - `StructuralAudioTests`: material resolve, cue rules, clip registration, break hold, debris cap, frame hitch.
-- `StructuralDamageTests`: steel/wood-table stages and destruction preserve flooring/plenum; table material eligibility includes glass.
+- `StructuralDamageTests`: direct steel/wood-table hits preserve flooring/plenum; table material eligibility includes glass. `BlastFloorDamageTests` covers the separate blast-floor path and atmosphere consequences.
 - `StructuralIntegrityPresentationTests`: tabletop/leaf selection, moving surface inheritance, stage changes, repair clearing, and wall adjacency regression.
 - Run `Testing/ui/validate.sh --steps compile,editmode,visual`; inspect object renders separately from the lobby visual smoke.
 
 ## Depends on / Used by
 
-- **Depends on:** [inventory](inventory.md) (release storage contents), [tile](tile.md), [area](area.md), [atmospherics](atmospherics.md) (observer refresh), [health](health.md) (blast crew brute), [examine](examine.md), [screen-effects](screen-effects.md) (blast flash), [core-subsystems](core-subsystems.md)
-- **Used by:** [combat](combat.md) melee connect; Phase 5+ explosive items; [furniture](furniture.md) (tables, lockers, machines, airlocks)
+- **Depends on:** [inventory](inventory.md) (release storage contents), [tile](tile.md), [area](area.md), [atmospherics](atmospherics.md) (observer refresh), [health](health.md) (blast crew brute), [entities](entities.md) (blast push), [examine](examine.md), [screen-effects](screen-effects.md) (blast flash), [core-subsystems](core-subsystems.md)
+- **Used by:** [combat](combat.md) melee connect; C4/X4/minibomb items; [furniture](furniture.md) (tables, lockers, machines, airlocks)
 
 ## Related docs
 

@@ -1,0 +1,11 @@
+# Client side of mppm:blast: joins the running round, then proves the host's blasts moved its own body.
+wait_timeout 60
+wait_connected
+wait_round Ongoing
+wait_seconds 1
+ready
+embark
+assert_embarked
+assert_blast_felt
+wait_seconds 8
+disconnect

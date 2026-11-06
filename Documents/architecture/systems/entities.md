@@ -1,7 +1,7 @@
 > Code paths: Assets/Scripts/SS3D/Systems/Entities/
 > Entry points: EntitySubSystem, MindSubSystem, HumanoidBodyStateMachine
 > Status: partial
-> Verified: ae1a54ed1 — 2026-11-05
+> Verified: 7785df8dc — 2026-11-06
 
 # Entities
 
@@ -31,6 +31,7 @@ Humanoid/silicon entity spawning, minds, and join/round ordering with [rounds-lo
 - `Assets/Scripts/SS3D/Systems/Entities/Humanoid/Body/AnimationOrchestrator.cs` — snapshot → Animator; Melee/Ranged Upper Body weight; Ranged CrossFade to Rifle Aim Idle; `SetPosingSuppressed` for collapse
 - `Assets/Scripts/SS3D/Systems/Entities/Humanoid/BodyPresentationState.cs` — locomotion / collapsed / dead enum
 - `Assets/Scripts/SS3D/Systems/Entities/Humanoid/Ragdoll.Wind.cs` — server wind → owner per-frame drift or bone drag, skipped while `EvaGearController.ServerAnchored` holds; the server drifts unowned upright bodies (combat dummies) itself; enables the prefab-disabled component; registry lifecycle needs no prefab changes. Wind knockdowns recover on floor support; ejected bodies keep tumbling.
+- `Assets/Scripts/SS3D/Systems/Entities/Humanoid/Ragdoll.Blast.cs` — one-shot blast velocity on wind's routing: owner bone launch or upright shove, server for corpses and unowned bodies; see [explosive items](structural-destruction-explosives.md)
 - `Assets/Scripts/SS3D/Systems/Entities/Humanoid/Ragdoll.cs` — presentation authority (`ServerSetPresentation` / `ApplyPresentation`)
 - `Assets/Scripts/SS3D/Systems/Entities/Humanoid/Body/HumanoidIkController.cs` — combat look-at; torso IK off during Attack Swing
 - `Assets/Scripts/SS3D/Systems/Entities/Humanoid/Body/HumanoidBodyStateBridge.cs` — holds, stance, limp + `InjuredLeg` / arms, rare hurt Emote, `MirrorUpperBody`; suppresses while `Presentation != Locomotion`
@@ -82,6 +83,7 @@ Humanoid/silicon entity spawning, minds, and join/round ordering with [rounds-lo
 - **Remote CharacterController must stay disabled:** client-authoritative NetworkTransform cannot move the server transform while CC is enabled (teleports are ignored). Keep CC on only for `IsOwner`; otherwise server-side proximity (airlocks) never sees remotes. Hit 2026-07-26.
 - **Reclaim must fire `LocalPlayerObjectChanged`:** `TryReclaimEntity` restores ownership without Mind SyncVar change. `Entity.OnOwnershipClient` invokes the event so HUD/lobby leave the menu — see [player-control](player-control.md). Hit 2026-07-26.
 - **`Ragdoll.OnDisable` must not `Recover()`:** ownership/network teardown would stand a corpse back into locomotion.
+- **Unable to walk after any ragdoll, with no error on the owner:** `Ragdoll.ToggleController` turned on `HumanoidPredictedMovement`, which `Human.prefab` ships off. `HumanoidLivingController` then stands aside for it, but it takes its input subscription in `OnOwnershipClient` while enabled, so it never had one and nothing moved the body. On a remote owner the server also logged `CharacterController.Move called on inactive controller` every tick. Recovery now restores the prefab's state, like `_networkAnimatorInitiallyEnabled`. `KnockedDownOwner_WalksAgainAfterRecovering` presses real keys; it has to set `InputSystem.settings` to ignore focus, because an unfocused editor drops device input. Hit 2026-11-06.
 - **Timed knockdown from server:** call `ServerRecover`, not `Recover()` (ServerRpc is a no-op from server).
 - **Melee swing torso fight:** Upper Body mask must include spine/chest; head stays unmasked for look-at. Do not reintroduce C# swing duration timers — use AttackSwing + `AttackVariant` (0–2: horizontal / downward / backhand).
 - **Swing strike lands at connect:** `MeleeSwingAnimation.Variants` is the single table for swing clips (file, trim frames, strike frame). The rebuild imports and trims the FBXs from it. `AnimationOrchestrator` sets `AttackRate` (swing state speed) so the strike frame plays at the weapon's effective windup, then sets it back to 1 for the follow-through. The windup rides the snapshot (`AttackWindup`, 5 bits, 20 ms steps) so observers match the owner. Long full-body clips (the axe swings struck at ~1 s against 0.2–0.35 s windups) make the target flinch before the arm moves. New swings must strike within 2.5× of the shortest windup (`MeleeSwingAnimationTests`). Swings exit straight to Hold Item / Hold Weapon / Hold Default by `ArmHold`.

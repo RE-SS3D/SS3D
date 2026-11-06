@@ -1,6 +1,6 @@
 ---
 name: Station Structural Damage
-overview: Implement design-aligned structural damage for walls, doors, and windows only — integrity stages first (melee-playable), then blast BFS, then explosive items; repair comes last because it depends on the construction/crafting freeform stack.
+overview: Implement design-aligned structural damage for walls, doors, windows, flooring and hull plenum — integrity stages first (melee-playable), then blast BFS, then explosive items; repair comes last because it depends on the construction/crafting freeform stack.
 todos:
   - id: phase1-integrity
     content: "Phase 1: StructuralDamageSubSystem + stages, Destroyed→TryClearTile, Cracked airtightness, Area live local recompute, console hurt + EditMode tests"
@@ -11,12 +11,15 @@ todos:
   - id: phase3-blast
     content: "Phase 3: Blast BFS Resolve(epicenter, yield, falloff); cascade on Destroyed; crew brute; geometry EditMode tests"
     status: completed
+  - id: blast-floors
+    content: "Blast damage to floor/plenum, deferred traversal, hull breaches, infrastructure cleanup and pressure loss"
+    status: completed
   - id: phase4-presentation
     content: "Phase 4: World visuals for stages + examine; optional atmos slow-leak for Cracked"
     status: completed
   - id: phase5-items
-    content: "Phase 5: Grenade, breaching charge, timed charge + defuse, remote detonator → Blast Resolve; proximity alert"
-    status: pending
+    content: "Phase 5: C4/X4 sticky timed charges + defuse and throwable five-second syndicate minibomb implemented; remote detonator, other grenades and proximity alert remain"
+    status: in_progress
   - id: phase6-repair
     content: "Phase 6: Welder/sheets repair Damaged/Cracked → Intact — gated on construction/crafting freeform stack shipping first"
     status: pending
@@ -39,7 +42,7 @@ isProject: false
 
 **Scope for this effort:** Turf-layer structural objects (`TileObjectGenericType.Wall` / `Door`, including windows via existing `IsWindow`). Steel/wood/glass tables and recipe-opted-in lockers/machines additionally use this integrity/presentation path; other furniture remains out.
 
-**Explicitly deferred:** staged build ladder (Open→Framed→Plated→Sealed), deconstruction, deck plating, furniture integrity, floor/ceiling/z-level, balance numbers, explosive crafting recipes. Repair (Phase 6) is in-plan but **blocked** until construction/crafting freeform ships.
+**Explicitly deferred:** staged build ladder (Open→Framed→Plated→Sealed), deconstruction, hull rebuilding, remaining furniture, ceiling/z-level, balance numbers, explosive crafting recipes. Repair (Phase 6) is in-plan but **blocked** until construction/crafting freeform ships.
 
 ---
 
@@ -161,15 +164,19 @@ Optional this phase: Effect-tier flash hook if lighting API is ready; else stub 
 
 ---
 
+Bodies in a blast are pushed away from the epicenter and knocked down close to it; see [explosive items](../architecture/systems/structural-destruction-explosives.md).
+
+Floor/hull blast damage now uses independent accumulated integrity (defaults 60/200) and runs after traversal; X4 combines both passes first. Hull removal releases world storage, notifies infrastructure clears and opens vacuum through the existing atmos observer. Floor presenters and sealed-plating examine strings are recipe-managed. Hull rebuilding remains deferred.
+
 ## Phase 5 — Explosive items
 
 **Goal:** Content that only calls Phase 3 (no construction/crafting dependency).
 
 | Item | Behavior |
 |------|----------|
-| Grenade | Fuse / impact → Resolve at tile |
-| Breaching charge | Place on wall/door (use-with), timer, yield tuned to Destroy target tile |
-| Timed charge | Free place, visible countdown, defuse interaction |
+| Grenade | Syndicate minibomb implemented: arm/throw, five-second fuse, small shared blast; other grenade variants remain |
+| Breaching charge | C4/X4 wall/door attachment implemented; X4 adds a stronger blast and extra cone force behind the target |
+| Timed charge | C4/X4 implemented: 15-second physical LED countdown, a recorded full-fuse countdown, 3-second wirecutter defuse, shared blast resolver; multiplayer acceptance pending |
 | Remote detonator | Paired trigger (comms frequency reuse flagged — stub pairing if comms not ready) |
 
 Proximity alert-stack entry when armed charge nears detonation (one HUD touchpoint from design §7).

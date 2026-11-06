@@ -18,4 +18,4 @@ MonoBehaviour:
   SkipIntro: 1
   ForceLauncher: 0
   TestScriptPath: 
-  EditorStationTemplate: ministation
+  EditorStationTemplate: classic-ministation

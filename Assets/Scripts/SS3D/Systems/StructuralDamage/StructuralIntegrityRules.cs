@@ -11,6 +11,8 @@ namespace SS3D.Systems.StructuralDamage
         public const float DefaultDoorMaxIntegrity = 80f;
         public const float DefaultWindowMaxIntegrity = 50f;
         public const float DefaultTableMaxIntegrity = 100f;
+        public const float DefaultFloorMaxIntegrity = 60f;
+        public const float DefaultPlenumMaxIntegrity = 200f;
 
         /// <summary>Remaining fraction at or below which the tile becomes Damaged.</summary>
         public const float DamagedFraction = 0.7f;
@@ -58,7 +60,7 @@ namespace SS3D.Systems.StructuralDamage
                 && (so.genericType == TileObjectGenericType.Wall || so.genericType == TileObjectGenericType.Door)));
         }
 
-        /// <summary>Prefer structural turf, then supported furniture; flooring is never a damage target.</summary>
+        /// <summary>Direct-hit lookup prefers structural turf, then furniture; floors use the deferred blast-floor path.</summary>
         public static bool TryGetTarget(ITileQueryService query, TileCoord coord, out PlacedTileObject placed)
         {
             placed = null;
@@ -75,6 +77,9 @@ namespace SS3D.Systems.StructuralDamage
             return placed != null;
         }
 
+        public static bool IsBlastFloor(TileObjectSo so) => so != null
+            && (so.layer == TileLayer.Plenum || (so.layer == TileLayer.Turf && so.genericType == TileObjectGenericType.Floor));
+
         public static float ResolveMaxIntegrity(TileObjectSo tileObjectSo)
         {
             if (tileObjectSo == null)
@@ -82,6 +87,11 @@ namespace SS3D.Systems.StructuralDamage
 
             if (tileObjectSo.structuralMaxIntegrity > 0f)
                 return tileObjectSo.structuralMaxIntegrity;
+
+            if (tileObjectSo.layer == TileLayer.Plenum)
+                return DefaultPlenumMaxIntegrity;
+            if (tileObjectSo.layer == TileLayer.Turf && tileObjectSo.genericType == TileObjectGenericType.Floor)
+                return DefaultFloorMaxIntegrity;
 
             if (IsGlassTable(tileObjectSo))
                 return DefaultWindowMaxIntegrity;

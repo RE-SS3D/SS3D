@@ -440,5 +440,5 @@ MonoBehaviour:
   _hideItems: 1
   _type: 0
   _startFilter: {fileID: 0}
-  _maxSizeClass: 1
+  _maxSizeClass: 2
   _maxWeight: 20

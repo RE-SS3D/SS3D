@@ -11,8 +11,14 @@ namespace SS3D.Systems.Combat
     [Serializable]
     public struct RangedWeaponProfile
     {
+        /// <summary>Client presentation; Ballistic preserves existing firearms.</summary>
+        public RangedVisualStyle VisualStyle;
+
         public float BruteDamage;
         public float BurnDamage;
+
+        /// <summary>Hostile exhaustion, clamped to available stamina so it cannot create oxy debt.</summary>
+        public float StaminaDamage;
         public bool CanSever;
 
         /// <summary>Base half-angle of the accuracy cone in degrees.</summary>
@@ -101,5 +107,28 @@ namespace SS3D.Systems.Combat
             RequiresBothHands = true,
             RequiredHand = HandSide.Right,
         };
+        public static RangedWeaponProfile LaserRifle => Energy(RangedVisualStyle.Laser, 24f, 0f, 20, 0.3f, 40f);
+        public static RangedWeaponProfile IonRifle => Energy(RangedVisualStyle.Ion, 16f, 0f, 12, 0.6f, 30f);
+        public static RangedWeaponProfile Taser => Energy(RangedVisualStyle.Taser, 0f, 65f, 6, 0.75f, 12f);
+
+        private static RangedWeaponProfile Energy(RangedVisualStyle style, float burn, float stamina,
+            int capacity, float cooldown, float range)
+        {
+            RangedWeaponProfile profile = M4;
+            profile.VisualStyle = style;
+            profile.BruteDamage = 0f;
+            profile.BurnDamage = burn;
+            profile.StaminaDamage = stamina;
+            profile.StructuralForce = style == RangedVisualStyle.Taser ? 0f : 6f;
+            profile.MagazineSize = capacity;
+            profile.FireCooldownSeconds = cooldown;
+            profile.MaxRangeMeters = range;
+            profile.FalloffStartMeters = range * 0.5f;
+            profile.FalloffEndMeters = range;
+            profile.RecoilPerShot = 0.3f;
+            profile.StaminaCost = 2f;
+            profile.RequiresBothHands = style != RangedVisualStyle.Taser;
+            return profile;
+        }
     }
 }

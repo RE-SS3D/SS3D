@@ -1449,6 +1449,8 @@ MonoBehaviour:
       m_Items: []
   - m_Id: 296342594936610820
     m_Key: structures.pipes.atmos_injector.desc
+    m_Metadata:
+      m_Items: []
   - m_Id: 296089487001546752
     m_Key: examine.tank.fill
     m_Metadata:
@@ -1475,6 +1477,62 @@ MonoBehaviour:
       m_Items: []
   - m_Id: 296137613323247618
     m_Key: items.clothing.syndicate_hardsuit_helmet.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 296406898272608256
+    m_Key: items.weapons.ionrifle.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 296406898314551296
+    m_Key: items.weapons.ionrifle.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 296407231195488256
+    m_Key: items.weapons.laserrifle.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 296407231203876864
+    m_Key: items.weapons.laserrifle.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 296407234903252992
+    m_Key: items.weapons.taser.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 296407234903252993
+    m_Key: items.weapons.taser.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 296422524005359616
+    m_Key: items.weapons.c4.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 296422524022136832
+    m_Key: items.weapons.c4.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 296446533984034816
+    m_Key: items.weapons.x4.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 296446534005006336
+    m_Key: items.weapons.x4.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 296446538652295168
+    m_Key: items.weapons.syndicateminibomb.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 296446538652295169
+    m_Key: items.weapons.syndicateminibomb.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 296457849096347648
+    m_Key: examine.structural.fractured_floor
+    m_Metadata:
+      m_Items: []
+  - m_Id: 296457849121513472
+    m_Key: examine.structural.damaged_plating
     m_Metadata:
       m_Items: []
   m_Metadata:

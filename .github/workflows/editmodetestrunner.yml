@@ -121,6 +121,27 @@ jobs:
         # denied"). mkdir -p keeps an existing dir, so creating it here gives the host user ownership.
         if: needs.pick_runner.outputs.self_hosted == 'true'
         run: rm -rf "$GITHUB_WORKSPACE/_activate-license~" && mkdir -p "$GITHUB_WORKSPACE/_activate-license~"
+      - name: Import changed assets in their own editor session
+        # The stash only holds the last green Library, so a PR's new assets import during startup.
+        # If a database imports before the assets it lists, its dictionary keeps bare Object
+        # references for them until the next domain reload, and tests in that same session see
+        # them as the wrong type. This filter matches no test, which Unity exits 0 on.
+        uses: game-ci/unity-test-runner@v4
+        with:
+          testMode: editmode
+          unityVersion: 6000.3.16f1
+          customParameters: -testFilter ImportPassMatchesNoTest
+          # Host UID for Docker mounts on TomNAS; unused/harmless on GitHub-hosted.
+          runAsHostUser: ${{ needs.pick_runner.outputs.self_hosted == 'true' }}
+        env:
+          UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
+          UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
+          UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
+          UNITY_SERIAL: ${{ secrets.UNITY_SERIAL }}
+      - name: Recreate game-ci license dir for the test run
+        # The import pass does not leave this dir usable by the host user, so repeat the step above.
+        if: needs.pick_runner.outputs.self_hosted == 'true'
+        run: rm -rf "$GITHUB_WORKSPACE/_activate-license~" && mkdir -p "$GITHUB_WORKSPACE/_activate-license~"
       - name: Run tests
         id: run-tests
         uses: game-ci/unity-test-runner@v4

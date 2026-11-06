@@ -96,7 +96,7 @@ namespace SS3D.Systems.StructuralDamage
             _scheduler.OnBreak(position, StructuralMaterial.Metal, true, Time.time);
         }
 
-        public void OnBlast(Vector3 epicenter, float yield)
+        public void OnBlast(Vector3 epicenter, float yield, bool smallSound = false)
         {
             _scheduler.OnBlast(Time.time);
 
@@ -109,7 +109,10 @@ namespace SS3D.Systems.StructuralDamage
                 return;
             }
 
-            Play(StructuralAudioTrackIds.BlastNear, epicenter, volume, BlastNearMinRange, BlastNearMaxRange);
+            if (smallSound)
+                PlayClip(StructuralAudioTrackIds.BlastSmall, epicenter, volume, 5f, 45f, 1f);
+            else
+                PlayClip(StructuralAudioTrackIds.BlastNear[0], epicenter, volume, BlastNearMinRange, BlastNearMaxRange, 1f);
         }
 
         private void Update()
