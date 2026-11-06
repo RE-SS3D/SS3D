@@ -1,4 +1,4 @@
-#if UNITY_EDITOR
+﻿#if UNITY_EDITOR
 using SS3D.Logging;
 using UnityEditor;
 using UnityEngine;

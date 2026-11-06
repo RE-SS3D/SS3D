@@ -1,4 +1,4 @@
-using SS3D.Core.Behaviours;
+﻿using SS3D.Core.Behaviours;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Rendering;
@@ -39,13 +39,14 @@ namespace SS3D.Systems.Tile
 
         protected override void OnAwake()
         {
-            base.OnAwake();
-
-            // Self-dispose on headless dedicated servers
+            // Self-dispose on headless dedicated servers before subsystem registration
             if (SystemInfo.graphicsDeviceType == GraphicsDeviceType.Null)
             {
                 Destroy(this);
+                return;
             }
+
+            base.OnAwake();
         }
 
         protected override void OnDestroyed()

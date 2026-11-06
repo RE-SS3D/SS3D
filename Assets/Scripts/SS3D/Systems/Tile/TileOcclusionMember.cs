@@ -1,4 +1,4 @@
-using FishNet.Object;
+﻿using FishNet.Object;
 using SS3D.Core;
 using SS3D.Core.Behaviours;
 using UnityEngine;
