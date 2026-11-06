@@ -45,6 +45,12 @@ namespace SS3D.Systems.Furniture
         /// </summary>
         private const float ProximityPadding = 0.85f;
 
+        /// <summary>
+        /// Seconds a door keeps animating off-camera after a state change. Covers the longest
+        /// open/close clip (1.08 s) plus a margin.
+        /// </summary>
+        private const float PanelMotionTime = 1.5f;
+
         private const int DoorLightMaterialIndex = 1;
         private const int DenyBlinkPulseCount = 3;
         private const float DenyBlinkHalfPeriod = 0.22f;
@@ -97,12 +103,18 @@ namespace SS3D.Systems.Furniture
         private AirLockAccessGate _accessGate;
         private Coroutine _closeTimer;
         private Coroutine _denyBlinkTimer;
+        private Coroutine _panelMotionTimer;
+        private AnimatorCullingMode _restingCullingMode;
+        private bool _animatedOpen;
 
         public ReadOnlyCollection<MeshRenderer> MeshesToColor => _meshesToColor.AsReadOnly();
 
         public ReadOnlyCollection<SkinnedMeshRenderer> SkinnedMeshesToColor => _skinnedMeshesToColor.AsReadOnly();
 
         public bool IsOpen => _isOpen;
+
+        /// <summary>True while the door animates regardless of camera visibility, because its panels are moving.</summary>
+        public bool PanelsInMotion => _panelMotionTimer != null;
 
         public bool IsPowered => PowerGate.IsPowered(_powerConsumer, NullConsumerPolicy.Allow);
 
@@ -112,6 +124,11 @@ namespace SS3D.Systems.Furniture
 
         private void Awake()
         {
+            if (_animator != null)
+            {
+                _restingCullingMode = _animator.cullingMode;
+            }
+
             if (_proximityVolume == null)
             {
                 Collider[] colliders = GetComponentsInChildren<Collider>(true);
@@ -510,10 +527,45 @@ namespace SS3D.Systems.Furniture
 
         private void UpdateAnimator()
         {
-            if (_animator != null)
+            if (_animator == null)
             {
-                _animator.SetBool(OpenId, _isOpen);
+                return;
             }
+
+            _animator.SetBool(OpenId, _isOpen);
+            if (_animatedOpen != _isOpen)
+            {
+                _animatedOpen = _isOpen;
+                AnimatePanelMotion();
+            }
+        }
+
+        /// <summary>
+        /// The solid colliders ride on the animated panels, so a culled animator leaves an open door
+        /// physically shut, and a dedicated server never has a camera to un-cull it. Idle doors stay
+        /// culled because big maps hold too many of them to animate all the time.
+        /// </summary>
+        private void AnimatePanelMotion()
+        {
+            if (!isActiveAndEnabled)
+            {
+                return;
+            }
+
+            if (_panelMotionTimer != null)
+            {
+                StopCoroutine(_panelMotionTimer);
+            }
+
+            _animator.cullingMode = AnimatorCullingMode.AlwaysAnimate;
+            _panelMotionTimer = StartCoroutine(RunPanelMotion());
+        }
+
+        private IEnumerator RunPanelMotion()
+        {
+            yield return new WaitForSeconds(PanelMotionTime);
+            _animator.cullingMode = _restingCullingMode;
+            _panelMotionTimer = null;
         }
 
         private void NotifyTileStateChanged()

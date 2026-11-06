@@ -13,7 +13,7 @@ using UnityEngine.TestTools;
 
 namespace SS3D.Tests
 {
-    // Guards: #167 reach through walls and doors, without losing the door or wall mount itself · Not cheaper because: the failures came from real prefab layouts (mounts inside the wall solid, door targets without a GameObject provider) that stub geometry doesn't have
+    // Guards: #167 reach through walls and doors, without losing the door or wall mount itself; off-camera doors moving their solid panels while idle doors stay culled · Not cheaper because: the failures came from real prefab layouts (mounts inside the wall solid, door targets without a GameObject provider) that stub geometry doesn't have
     [Category(TestCategories.Scenarios)]
     [Category(TestCategories.Reach)]
     public class ReachScenarios : ScenarioFixture
@@ -41,10 +41,35 @@ namespace SS3D.Tests
             ChangesRoom = true;
             yield return Console.Expect("doordebug open", "Opened");
             yield return WaitFor(() => door.IsOpen, "the door opens", 3f);
-            yield return Hold(1.5f);
+            yield return WaitFor(() => !door.PanelsInMotion, "the door's panels settle", 3f);
             Physics.SyncTransforms();
             Assert.IsTrue(InteractionExtensions.IsReachUnobstructed(hand.InteractionOrigin, beyond, null),
                 "An open airlock leaves the doorway clear");
+
+            yield return Console.Expect("doordebug close", "Closed");
+            yield return WaitFor(() => !door.IsOpen, "the door closes", 3f);
+            yield return WaitFor(() => !door.PanelsInMotion, "the door's panels settle", 3f);
+            Physics.SyncTransforms();
+            Assert.IsFalse(InteractionExtensions.IsReachUnobstructed(hand.InteractionOrigin, beyond, null),
+                "A closed airlock blocks reach again");
+        }
+
+        [UnityTest]
+        public IEnumerator Airlock_IdleDoorsStayCulled()
+        {
+            AirLockOpener door = Object.FindObjectsByType<AirLockOpener>(FindObjectsSortMode.None).Single();
+            Animator animator = door.GetComponent<Animator>();
+            yield return WaitFor(() => door.IsPowered, "the door's APC powers it");
+            yield return WaitFor(() => !door.PanelsInMotion, "the door is idle", 3f);
+            Assert.AreEqual(AnimatorCullingMode.CullCompletely, animator.cullingMode, "An idle door is culled");
+
+            ChangesRoom = true;
+            yield return Console.Expect("doordebug open", "Opened");
+            yield return WaitFor(() => door.PanelsInMotion, "the panels start moving", 3f);
+            Assert.AreEqual(AnimatorCullingMode.AlwaysAnimate, animator.cullingMode, "A moving door animates off-camera");
+
+            yield return WaitFor(() => !door.PanelsInMotion, "the door's panels settle", 3f);
+            Assert.AreEqual(AnimatorCullingMode.CullCompletely, animator.cullingMode, "A settled door is culled again");
         }
 
         [UnityTest]
