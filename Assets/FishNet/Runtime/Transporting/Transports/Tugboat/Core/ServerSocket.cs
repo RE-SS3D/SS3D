@@ -141,6 +141,8 @@ namespace FishNet.Transporting.Tugboat.Server
 
             _server = new NetManager(listener, _packetLayer);
             _server.UnconnectedMessagesEnabled = true;
+            // SS3D patch: answer status queries on arrival (see UnconnectedRequestHandler).
+            _server.UnsyncedUnconnectedEvent = true;
             _server.MtuOverride = (_mtu + NetConstants.FragmentedHeaderTotalSize);
 
             UpdateTimeout(_timeout);

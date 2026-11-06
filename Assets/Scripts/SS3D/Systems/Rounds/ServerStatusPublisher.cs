@@ -14,13 +14,14 @@ namespace SS3D.Systems.Rounds
     /// <summary>
     /// Answers the main menu's status query (<see cref="ServerStatusPacket"/>) on the game port while
     /// this process runs a server (dedicated or host). The reply is rebuilt here on the main thread
-    /// once a second; the transport's handler may run on its socket thread and only reads the cached
-    /// bytes. Process-wide, created by <c>SystemsBootstrap</c>.
+    /// once a second; the transport's handler runs on its receive thread (so a probe is answered the
+    /// moment it arrives, not at the next server tick) and only reads the cached bytes. Process-wide, created by <c>SystemsBootstrap</c>.
     /// </summary>
     public sealed class ServerStatusPublisher : SubSystem
     {
         private const float RefreshSeconds = 1f;
         private static volatile byte[] _reply;
+        private static volatile byte[] _probeReply;
         private float _nextRefresh;
 
         protected override void OnAwake()
@@ -37,6 +38,7 @@ namespace SS3D.Systems.Rounds
             }
 
             _reply = null;
+            _probeReply = null;
             base.OnDestroyed();
         }
 
@@ -48,7 +50,17 @@ namespace SS3D.Systems.Rounds
             }
 
             _nextRefresh = Time.unscaledTime + RefreshSeconds;
-            _reply = NetworkManager.Instances.Count > 0 && InstanceFinder.IsServer ? ServerStatusPacket.EncodeReply(CurrentStatus()) : null;
+            if (NetworkManager.Instances.Count > 0 && InstanceFinder.IsServer)
+            {
+                ServerStatus status = CurrentStatus();
+                _reply = ServerStatusPacket.EncodeReply(status);
+                _probeReply = ServerStatusPacket.EncodeReply(status, 0);
+            }
+            else
+            {
+                _reply = null;
+                _probeReply = null;
+            }
         }
 
         private static ServerStatus CurrentStatus()
@@ -70,6 +82,16 @@ namespace SS3D.Systems.Rounds
             return new ServerStatus(ProtocolVersion.Current, UnityEngine.Application.version, name, players, cap);
         }
 
-        private static byte[] HandleRequest(byte[] request) => ServerStatusPacket.IsRequest(request) ? _reply : null;
+        /// <summary>Runs on the transport's receive thread: only reads the cached bytes, never Unity state.</summary>
+        private static byte[] HandleRequest(byte[] request)
+        {
+            if (ServerStatusPacket.TryReadRequestNonce(request, out uint nonce))
+            {
+                byte[] template = _probeReply;
+                return template == null ? null : ServerStatusPacket.WithNonce(template, nonce);
+            }
+
+            return ServerStatusPacket.IsRequest(request) ? _reply : null;
+        }
     }
 }

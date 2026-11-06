@@ -283,15 +283,96 @@ namespace SS3D.Tests.EditMode
         }
 
         [Test]
-        public void StatusQuery_ReadsAReplyOverLoopback()
+        public void StatusProbe_EchoesNonce_AndStaysReadableAsAReply()
+        {
+            ServerStatus status = new(9, "0.5.0", "Sandbox", 3, 16);
+            byte[] request = ServerStatusPacket.Request(0xDEADBEEF);
+            Assert.IsTrue(ServerStatusPacket.TryReadRequestNonce(request, out uint nonce));
+            Assert.AreEqual(0xDEADBEEF, nonce);
+            Assert.IsFalse(ServerStatusPacket.IsRequest(request), "a probe is not the original request");
+            Assert.IsFalse(ServerStatusPacket.TryReadRequestNonce(ServerStatusPacket.Request(), out _), "the original request has no nonce");
+            Assert.IsFalse(ServerStatusPacket.TryReadRequestNonce(request[..^1], out _), "truncated probe");
+            Assert.IsFalse(ServerStatusPacket.TryReadRequestNonce(null, out _));
+
+            byte[] reply = ServerStatusPacket.EncodeReply(status, 1);
+            byte[] stamped = ServerStatusPacket.WithNonce(reply, nonce);
+            Assert.AreEqual(1u, ReplyNonce(reply), "WithNonce must not touch the template");
+            Assert.AreEqual(0xDEADBEEF, ReplyNonce(stamped));
+            Assert.IsTrue(ServerStatusPacket.TryDecodeReply(stamped, out ServerStatus decoded, out bool hasNonce, out _));
+            Assert.IsTrue(hasNonce);
+            Assert.AreEqual("Sandbox", decoded.Name);
+            Assert.AreEqual(16, decoded.PlayerCap);
+
+            Assert.IsTrue(ServerStatusPacket.TryDecodeReply(ServerStatusPacket.EncodeReply(status), out _, out bool legacyHasNonce, out _));
+            Assert.IsFalse(legacyHasNonce, "the original reply carries no nonce");
+            Assert.IsFalse(ServerStatusPacket.TryDecodeReply(stamped[..^3], out _, out _, out _), "truncated probe reply");
+            Assert.IsFalse(ServerStatusPacket.TryDecodeReply(reply[..5], out _, out _, out _), "reply cut inside the header");
+        }
+
+        private static uint ReplyNonce(byte[] reply)
+        {
+            Assert.IsTrue(ServerStatusPacket.TryDecodeReply(reply, out _, out bool hasNonce, out uint nonce));
+            Assert.IsTrue(hasNonce);
+            return nonce;
+        }
+
+        [Test]
+        public void StatusQuery_ReadsAReplyOverLoopback_AndSendsEveryProbe()
+        {
+            ServerStatusResult? result = RunQuery(answerProbes: true, answerOriginal: true, out int probes, out int originals);
+
+            Assert.IsTrue(result.HasValue, "no reply within 5 s");
+            Assert.IsTrue(result.Value.Reachable);
+            Assert.AreEqual("Loopback", result.Value.Status.Name);
+            Assert.AreEqual(ServerStatusQuery.ProbeCount, probes, "one probe per sample");
+            Assert.AreEqual(0, originals, "a server that answers probes never needs the fallback");
+            Assert.GreaterOrEqual(result.Value.PingMilliseconds, 1);
+            Assert.Less(result.Value.PingMilliseconds, 1000);
+        }
+
+        [Test]
+        public void StatusQuery_FallsBackToTheOriginalRequest_ForServersThatPredateProbes()
+        {
+            ServerStatusResult? result = RunQuery(answerProbes: false, answerOriginal: true, out _, out int originals);
+
+            Assert.IsTrue(result.HasValue, "no reply within 5 s");
+            Assert.IsTrue(result.Value.Reachable, "an older server must still list as online");
+            Assert.AreEqual("Loopback", result.Value.Status.Name);
+            Assert.AreEqual(1, originals);
+        }
+
+        [Test]
+        public void StatusQuery_ReportsUnreachable_WhenNothingAnswers()
+        {
+            ServerStatusResult? result = RunQuery(answerProbes: false, answerOriginal: false, out _, out _);
+
+            Assert.IsTrue(result.HasValue, "the query must give up, not hang");
+            Assert.IsFalse(result.Value.Reachable);
+        }
+
+        /// <summary>Runs one query against a loopback fake server that answers only the request forms asked for.</summary>
+        private static ServerStatusResult? RunQuery(bool answerProbes, bool answerOriginal, out int probesSeen, out int originalsSeen)
         {
             EventBasedNetListener listener = new();
             NetManager server = new(listener) { UnconnectedMessagesEnabled = true };
-            byte[] reply = ServerStatusPacket.EncodeReply(new ServerStatus(9, "0.5.0", "Loopback", 1, 4));
+            ServerStatus status = new(9, "0.5.0", "Loopback", 1, 4);
+            byte[] originalReply = ServerStatusPacket.EncodeReply(status);
+            int probes = 0;
+            int originals = 0;
             listener.NetworkReceiveUnconnectedEvent += (remote, reader, type) =>
             {
-                if (ServerStatusPacket.IsRequest(reader.GetRemainingBytes())) server.SendUnconnectedMessage(reply, remote);
+                byte[] request = reader.GetRemainingBytes();
                 reader.Recycle();
+                if (ServerStatusPacket.TryReadRequestNonce(request, out uint nonce))
+                {
+                    probes++;
+                    if (answerProbes) server.SendUnconnectedMessage(ServerStatusPacket.EncodeReply(status, nonce), remote);
+                }
+                else if (ServerStatusPacket.IsRequest(request))
+                {
+                    originals++;
+                    if (answerOriginal) server.SendUnconnectedMessage(originalReply, remote);
+                }
             };
             Assert.IsTrue(server.Start(IPAddress.Loopback, IPAddress.IPv6Loopback, 0));
             using ServerStatusQuery query = new();
@@ -301,11 +382,11 @@ namespace SS3D.Tests.EditMode
             {
                 query.Query("loopback", "127.0.0.1", (ushort)server.LocalPort);
                 System.Diagnostics.Stopwatch clock = System.Diagnostics.Stopwatch.StartNew();
-                while (result == null && clock.Elapsed.TotalSeconds < 5)
+                while (result == null && clock.Elapsed.TotalSeconds < ServerStatusQuery.TimeoutSeconds + 2)
                 {
                     server.PollEvents();
                     query.Tick();
-                    System.Threading.Thread.Sleep(10);
+                    System.Threading.Thread.Sleep(5);
                 }
             }
             finally
@@ -313,9 +394,9 @@ namespace SS3D.Tests.EditMode
                 server.Stop();
             }
 
-            Assert.IsTrue(result.HasValue, "no reply within 5 s");
-            Assert.IsTrue(result.Value.Reachable);
-            Assert.AreEqual("Loopback", result.Value.Status.Name);
+            probesSeen = probes;
+            originalsSeen = originals;
+            return result;
         }
 
         [TestCase("GatewayToTheForest", "Gateway to the Forest")]
