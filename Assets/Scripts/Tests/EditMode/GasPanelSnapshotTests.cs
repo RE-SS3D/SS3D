@@ -55,12 +55,14 @@ namespace EditorTests
         {
             MeterInterfaceSnapshot original = CreateMeter(101.3f, 0.2f, 0.8f, 0f, 0f);
             original.History = new[] { 90f, 95f, 101.3f };
+            original.Subtitle = "Atmospherics — Pipe Gas Meter";
 
             using PooledWriter writer = WriterPool.Retrieve();
             writer.WriteMeterInterfaceSnapshot(original);
             using PooledReader reader = ReaderPool.Retrieve(writer.GetArraySegment(), null);
             MeterInterfaceSnapshot read = reader.ReadMeterInterfaceSnapshot();
 
+            Assert.AreEqual(original.Subtitle, read.Subtitle);
             Assert.AreEqual(original.LineLabel, read.LineLabel);
             Assert.AreEqual(original.TemperatureKelvin, read.TemperatureKelvin);
             CollectionAssert.AreEqual(original.History, read.History);

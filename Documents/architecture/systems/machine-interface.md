@@ -25,6 +25,7 @@ UI Toolkit panels for station machines, networked via FishNet snapshots. Templat
 - `Assets/Scripts/SS3D/UI/MachineInterface/Components/DiegeticDeviceShell.cs` — diegetic chassis shell
 - `Assets/Scripts/SS3D/UI/MachineInterface/GasPanelReadings.cs` / `GasPanelViews.cs` — gas table, line readings and mix text shared by gas panels; `Components/GasPortCard.cs`, `GasMixBar.cs`, `GasFilterRow.cs`, `GasCompositionRow.cs`, `GasHistoryBars.cs` draw them
 - `Assets/Content/Systems/UI/MachineInterface/Tokens/diegetic-tokens.uss` — diegetic design tokens
+- `Assets/Scripts/SS3D/UI/MachineInterface/MachineAreaLabel.cs` — server-side panel location label: `"{room name} — {device kind}"` from the device's [area](area.md) (wall mounts use the tile in front); APC title `"APC · {ROOM}"`, air alarm `ZONE {ROOM}` line
 
 ## Extension points
 
@@ -38,6 +39,9 @@ UI Toolkit panels for station machines, networked via FishNet snapshots. Templat
 7. Optional: dev harness scenario / editor preview.
 
 **Engineering ID gate (two UI variants):** subclass `AccessGatedMachineInterfaceBehaviour`; wire `ReadId` action in binder. Full-screen: `AccessGatedRegion` + `AccessGatePanel` + `AccessStrip` (APC/SMES). Inline: `AtmosIdReaderRow` in a `panel-section` (pump/vent/scrubber/air alarm). Snapshots must include `AccessGranted`, `AccessScanning`, and `AccessDenied`.
+
+**Panel location labels:** prefabs author only the device kind (`_deviceKind`, e.g. "Atmospheric Vent"); never bake a room name into a prefab. Build the subtitle in the server snapshot with `MachineAreaLabel.ComposeForDevice(this, _deviceKind)` so the panel follows the room the device sits in, and falls back to the kind alone outside any room. Renaming a room shows on the next open/refresh.
+Connection-row text comes from `MachineStatusLine` (APC/SMES grid feed, vending power) — do not author invented node/port ids.
 
 **UI Toolkit masking:** never combine `border-radius` and `overflow: hidden` on the same `VisualElement` (renders as a flat white block). Split painted and clipping layers — see `DiegeticDeviceShell` (`_screen` vs `_screenContent`) and `PanelSection` (`panel-section` vs `panel-section__clip`).
 

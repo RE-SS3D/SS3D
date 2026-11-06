@@ -10,6 +10,8 @@ namespace SS3D.UI.MachineInterface
 
         public string DeviceTitle;
 
+        public string Subtitle;
+
         public string LineLabel;
 
         public bool Connected;

@@ -10,6 +10,7 @@ namespace SS3D.UI.MachineInterface
             writer.WriteString(snapshot.InterfaceId);
             writer.WriteString(snapshot.ModelLabel);
             writer.WriteString(snapshot.DeviceTitle);
+            writer.WriteString(snapshot.Subtitle);
             writer.WriteString(snapshot.LineLabel);
             writer.WriteBoolean(snapshot.Connected);
             writer.WriteSingle(snapshot.TemperatureKelvin);
@@ -34,6 +35,7 @@ namespace SS3D.UI.MachineInterface
                 InterfaceId = reader.ReadString(),
                 ModelLabel = reader.ReadString(),
                 DeviceTitle = reader.ReadString(),
+                Subtitle = reader.ReadString(),
                 LineLabel = reader.ReadString(),
                 Connected = reader.ReadBoolean(),
                 TemperatureKelvin = reader.ReadSingle(),

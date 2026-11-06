@@ -16,6 +16,9 @@ namespace SS3D.UI.MachineInterface
 
         public string Subtitle;
 
+        /// <summary>Display name of the room the alarm watches; empty when unassigned.</summary>
+        public string AreaName;
+
         public bool PowerOk;
 
         public byte Scenario;

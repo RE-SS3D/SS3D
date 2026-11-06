@@ -12,6 +12,9 @@ namespace SS3D.UI.MachineInterface
 
         public string Title;
 
+        /// <summary>Display name of the room this APC powers; empty when unassigned.</summary>
+        public string AreaName;
+
         public ApcControlFlags Channels;
 
         public byte PowerState;

@@ -799,7 +799,7 @@ MonoBehaviour:
   _title: "PUMP \xB7 ATMOSPHERICS"
   _modelLabel: "PMP-22 \xB7 pipe pump unit"
   _deviceTitle: PMP-22
-  _subtitle: "Engineering Bay 3 \u2014 Pipe Pump"
+  _deviceKind: Pipe Pump
   _powerConsumer: {fileID: 8827364519023341190}
 --- !u!114 &3704510414340258197
 MonoBehaviour:

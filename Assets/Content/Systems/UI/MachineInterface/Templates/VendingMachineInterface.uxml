@@ -24,10 +24,10 @@
         power-ok="true"
         style="align-self: center; margin-top: 24px;">
         <ss3d:ConnectionStatusRow name="connection-row"
-            status-text="WIRED · VEND BUS · PORT J1"
+            status-text="WIRED · POWER NET"
             readout-text="0 of 0 items stocked" />
         <ss3d:DeviceIdentityBlock name="identity"
-            title="GALLEY VENDOMAT"
+            title="VENDOMAT"
             subtitle="Crew Mess — Sundries Dispenser" />
         <ui:VisualElement name="id-reader-section" class="panel-section">
             <ui:VisualElement class="panel-section__clip">

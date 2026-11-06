@@ -51,9 +51,9 @@ namespace SS3D.UI.MachineInterface
 
         public string DeviceTitle { get; set; } = "AA-07";
 
-        public string Subtitle { get; set; } = "Engineering Bay 3 — Air Alarm";
+        public string Subtitle { get; set; } = "Air Alarm";
 
-        public string ConnectionStatus { get; set; } = "WIRED · ATMOS NET · ZONE ENGINEERING BAY 3";
+        public string ConnectionStatus { get; set; } = "WIRED · ATMOS NET · NO ZONE";
 
         public string DeviceCountText { get; set; } = "4 devices linked";
 

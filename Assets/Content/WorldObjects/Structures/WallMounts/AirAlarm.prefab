@@ -289,7 +289,7 @@ MonoBehaviour:
   _title: "AIR ALARM \xB7 ATMOSPHERICS"
   _modelLabel: "AA-07 \xB7 atmospheric alarm control unit"
   _deviceTitle: AA-07
-  _subtitle: "Engineering Bay 3 \u2014 Air Alarm"
+  _deviceKind: Air Alarm
   _powerConsumer: {fileID: -8800000000000000001}
 --- !u!114 &6267259793026366969
 MonoBehaviour:

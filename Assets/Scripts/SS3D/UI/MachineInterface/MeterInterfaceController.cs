@@ -21,6 +21,10 @@ namespace SS3D.UI.MachineInterface
         [SerializeField]
         private string _deviceTitle = "GM-02";
 
+        [SerializeField]
+        [Tooltip("Device kind shown after the room name, e.g. \"Medbay — Pipe Gas Meter\".")]
+        private string _deviceKind = MeterInterfaceViewModel.DefaultDeviceKind;
+
         private readonly float[] _history = new float[AtmosMeterController.HistoryLength];
         private AtmosMeterController _meter;
 
@@ -65,6 +69,7 @@ namespace SS3D.UI.MachineInterface
                 InterfaceId = InterfaceId,
                 ModelLabel = _modelLabel,
                 DeviceTitle = _deviceTitle,
+                Subtitle = MachineAreaLabel.ComposeForDevice(this, _deviceKind),
                 LineLabel = connected ? FormatLine(line) : string.Empty,
                 Connected = connected,
                 TemperatureKelvin = connected ? line.Temperature : 0f,

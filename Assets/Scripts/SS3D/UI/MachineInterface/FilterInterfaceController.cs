@@ -4,6 +4,7 @@ using SS3D.Systems.Atmospherics;
 using SS3D.Systems.Atmospherics.Pipes;
 using SS3D.Systems.Electricity;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace SS3D.UI.MachineInterface
 {
@@ -22,7 +23,9 @@ namespace SS3D.UI.MachineInterface
         private string _deviceTitle = "FLT-04";
 
         [SerializeField]
-        private string _subtitle = "Atmospherics Distro — Gas Filter";
+        [Tooltip("Device kind shown after the room name, e.g. \"Medbay — Gas Filter\".")]
+        [FormerlySerializedAs("_subtitle")]
+        private string _deviceKind = "Gas Filter";
 
         [SerializeField]
         private BasicPowerConsumer _powerConsumer;
@@ -134,7 +137,7 @@ namespace SS3D.UI.MachineInterface
                 InterfaceId = InterfaceId,
                 ModelLabel = _modelLabel,
                 DeviceTitle = _deviceTitle,
-                Subtitle = _subtitle,
+                Subtitle = MachineAreaLabel.ComposeForDevice(this, _deviceKind),
                 PowerOk = powerOk,
                 Powered = powered,
                 Connected = connected,

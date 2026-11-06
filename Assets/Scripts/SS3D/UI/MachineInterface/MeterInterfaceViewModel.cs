@@ -19,7 +19,9 @@ namespace SS3D.UI.MachineInterface
 
         public string DeviceTitle { get; set; } = "GM-02";
 
-        public string Subtitle { get; set; } = "Atmospherics — Pipe Gas Meter";
+        public const string DefaultDeviceKind = "Pipe Gas Meter";
+
+        public string Subtitle { get; set; } = DefaultDeviceKind;
 
         public string LineLabel { get; set; } = "NO LINE";
 

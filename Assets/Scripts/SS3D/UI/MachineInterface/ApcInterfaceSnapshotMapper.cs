@@ -5,11 +5,15 @@ namespace SS3D.UI.MachineInterface
 {
     public static class ApcInterfaceSnapshotMapper
     {
+        public const string UnassignedSubtitle = "No assigned room";
+
         public static ApcInterfaceViewModel ToViewModel(ApcInterfaceSnapshot snapshot)
         {
             ApcInterfaceViewModel model = new()
             {
                 Title = snapshot.Title,
+                ConnectionStatus = MachineStatusLine.GridFeed(snapshot.GridInputKw > 0f),
+                Subtitle = string.IsNullOrEmpty(snapshot.AreaName) ? UnassignedSubtitle : snapshot.AreaName,
                 State = (ApcPowerState)snapshot.PowerState,
                 GridInputKw = snapshot.GridInputKw,
                 LoadOutputKw = snapshot.LoadOutputKw,

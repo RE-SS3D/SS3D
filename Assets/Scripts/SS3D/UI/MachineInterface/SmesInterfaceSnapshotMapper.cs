@@ -7,6 +7,8 @@ namespace SS3D.UI.MachineInterface
             SmesInterfaceViewModel model = new()
             {
                 Title = snapshot.Title,
+                Subtitle = string.IsNullOrEmpty(snapshot.Subtitle) ? SmesInterfaceViewModel.DefaultDeviceKind : snapshot.Subtitle,
+                ConnectionStatus = MachineStatusLine.GridFeed(snapshot.InputActive),
                 State = (SmesPowerState)snapshot.PowerState,
                 ChargePct = snapshot.ChargePct,
                 ChargeTrend = (SmesChargeTrend)snapshot.ChargeTrend,

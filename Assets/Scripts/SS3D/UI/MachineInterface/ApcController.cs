@@ -21,7 +21,8 @@ namespace SS3D.UI.MachineInterface
     public sealed class ApcController : AccessGatedMachineInterfaceBehaviour, IApcChannelSource, IPowerStorage, IAreaApcOrigin, IAmbientLoopState
     {
         [SerializeField]
-        private string _title = "APC · ENGINEERING BAY";
+        [Tooltip("Title prefix; the panel shows \"APC · {ROOM NAME}\" once the APC has a room.")]
+        private string _title = "APC";
 
         [SerializeField]
         private float _maxCapacityKwh = 5f;
@@ -348,11 +349,13 @@ namespace SS3D.UI.MachineInterface
             ApcPowerState powerState = DerivePowerState(stats);
             ApcBatteryState batteryState = DeriveBatteryState(stats);
 
+            string areaName = MachineAreaLabel.GetAreaNameOrNull(this);
             ApcInterfaceSnapshot snapshot = new()
             {
                 MachineObjectId = NetworkObject.ObjectId,
                 InterfaceId = InterfaceId,
-                Title = _title,
+                Title = ComposeTitle(areaName),
+                AreaName = areaName ?? string.Empty,
                 Channels = _channels,
                 PowerState = (byte)powerState,
                 GridInputKw = stats.TotalSupplyKw,
@@ -371,6 +374,9 @@ namespace SS3D.UI.MachineInterface
             ApplyDiagnostics(ref snapshot, stats, powerState, batteryState);
             return snapshot;
         }
+
+        private string ComposeTitle(string areaName) =>
+            string.IsNullOrEmpty(areaName) ? _title : $"{_title} · {areaName.ToUpperInvariant()}";
 
         private void OnAreaSystemSetup()
         {

@@ -15,6 +15,7 @@ namespace SS3D.UI.MachineInterface
             writer.WriteString(snapshot.ModelLabel);
             writer.WriteString(snapshot.DeviceTitle);
             writer.WriteString(snapshot.Subtitle);
+            writer.WriteString(snapshot.AreaName);
             writer.WriteBoolean(snapshot.PowerOk);
             writer.WriteByte(snapshot.Scenario);
             writer.WriteBoolean(snapshot.AccessGranted);
@@ -47,6 +48,7 @@ namespace SS3D.UI.MachineInterface
                 ModelLabel = reader.ReadString(),
                 DeviceTitle = reader.ReadString(),
                 Subtitle = reader.ReadString(),
+                AreaName = reader.ReadString(),
                 PowerOk = reader.ReadBoolean(),
                 Scenario = reader.ReadByte(),
                 AccessGranted = reader.ReadBoolean(),

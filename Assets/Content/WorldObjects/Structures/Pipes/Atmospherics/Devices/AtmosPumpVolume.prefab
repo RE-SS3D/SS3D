@@ -710,7 +710,7 @@ MonoBehaviour:
   _title: "VOLUME PUMP \xB7 ATMOSPHERICS"
   _modelLabel: "PMV-14 \xB7 pipe volume pump"
   _deviceTitle: PMV-14
-  _subtitle: Pipe Volume Pump
+  _deviceKind: Pipe Volume Pump
   _powerConsumer: {fileID: 4523330491073425824}
 --- !u!114 &7367973802438667278
 MonoBehaviour:

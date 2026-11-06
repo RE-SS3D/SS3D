@@ -22,6 +22,9 @@ namespace SS3D.UI.MachineInterface
             model.ModelLabel = snapshot.ModelLabel;
             model.DeviceTitle = snapshot.DeviceTitle;
             model.Subtitle = snapshot.Subtitle;
+            model.ConnectionStatus = string.IsNullOrEmpty(snapshot.AreaName)
+                ? "WIRED · ATMOS NET · NO ZONE"
+                : $"WIRED · ATMOS NET · ZONE {snapshot.AreaName.ToUpperInvariant()}";
             model.ChassisPowerOk = snapshot.PowerOk;
             model.AccessGranted = snapshot.AccessGranted;
             model.AccessScanning = snapshot.AccessScanning;

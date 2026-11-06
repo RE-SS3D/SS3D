@@ -23,6 +23,10 @@ namespace SS3D.UI.MachineInterface
         [SerializeField]
         private string _title = "SMES · ENERGY STORAGE";
 
+        [SerializeField]
+        [Tooltip("Device kind shown after the room name, e.g. \"Engineering — Substation Storage Bank\".")]
+        private string _deviceKind = SmesInterfaceViewModel.DefaultDeviceKind;
+
         [SyncVar(OnChange = nameof(OnBoolControlChanged))]
         private bool _inputEnabled = true;
 
@@ -208,6 +212,7 @@ namespace SS3D.UI.MachineInterface
                 MachineObjectId = NetworkObject.ObjectId,
                 InterfaceId = InterfaceId,
                 Title = _title,
+                Subtitle = MachineAreaLabel.ComposeForDevice(this, _deviceKind),
                 PowerState = (byte)powerState,
                 ChargePct = chargePct,
                 ChargeTrend = (byte)chargeTrend,

@@ -4,13 +4,13 @@ namespace SS3D.UI.MachineInterface
 {
     public class VendingInterfaceViewModel : IMachineInterfaceViewModel
     {
-        public string Title { get; set; } = "GALLEY VENDOMAT";
+        public string Title { get; set; } = "VENDOMAT";
 
-        public string Subtitle { get; set; } = "Crew Mess — Sundries Dispenser";
+        public string Subtitle { get; set; } = "Vending Machine";
 
         public string ModelLabel { get; set; } = "VND-7 · ration & sundries dispenser";
 
-        public string ConnectionStatus { get; set; } = "WIRED · VEND BUS · PORT J1";
+        public string ConnectionStatus { get; set; } = MachineStatusLine.Unpowered;
 
         public string StockedReadout { get; set; } = "0 of 0 items stocked";
 
@@ -32,10 +32,10 @@ namespace SS3D.UI.MachineInterface
         {
             return new VendingInterfaceViewModel
             {
-                Title = "GALLEY VENDOMAT 7",
-                Subtitle = "Crew Mess — Sundries Dispenser",
-                ModelLabel = "VND-7 · ration & sundries dispenser",
-                ConnectionStatus = "WIRED · VEND BUS · PORT J1",
+                Title = "YOUTOOL VENDOMAT",
+                Subtitle = "Engineering — Tool Dispenser",
+                ModelLabel = "VND-7 · tool dispenser",
+                ConnectionStatus = MachineStatusLine.Powered,
                 StockedReadout = "7 of 9 items stocked",
                 PowerOk = true,
                 Products = new List<VendingProductViewData>

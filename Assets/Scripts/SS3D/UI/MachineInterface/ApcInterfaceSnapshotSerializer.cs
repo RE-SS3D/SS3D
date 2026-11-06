@@ -9,6 +9,7 @@ namespace SS3D.UI.MachineInterface
             writer.WriteInt32(snapshot.MachineObjectId);
             writer.WriteString(snapshot.InterfaceId);
             writer.WriteString(snapshot.Title);
+            writer.WriteString(snapshot.AreaName);
             writer.WriteByte((byte)snapshot.Channels);
             writer.WriteByte(snapshot.PowerState);
             writer.WriteSingle(snapshot.GridInputKw);
@@ -43,6 +44,7 @@ namespace SS3D.UI.MachineInterface
                 MachineObjectId = reader.ReadInt32(),
                 InterfaceId = reader.ReadString(),
                 Title = reader.ReadString(),
+                AreaName = reader.ReadString(),
                 Channels = (SS3D.Systems.Electricity.ApcControlFlags)reader.ReadByte(),
                 PowerState = reader.ReadByte(),
                 GridInputKw = reader.ReadSingle(),

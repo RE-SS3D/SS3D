@@ -3,6 +3,7 @@ using FishNet.Object;
 using SS3D.Systems.Atmospherics.Pipes;
 using SS3D.Systems.Electricity;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace SS3D.UI.MachineInterface
 {
@@ -22,7 +23,9 @@ namespace SS3D.UI.MachineInterface
         private string _deviceTitle = "PMP-22";
 
         [SerializeField]
-        private string _subtitle = "Engineering Bay 3 — Pipe Pump";
+        [Tooltip("Device kind shown after the room name, e.g. \"Medbay — Pipe Pump\".")]
+        [FormerlySerializedAs("_subtitle")]
+        private string _deviceKind = "Pipe Pump";
 
         [SerializeField]
         private BasicPowerConsumer _powerConsumer;
@@ -157,7 +160,7 @@ namespace SS3D.UI.MachineInterface
                 Title = _title,
                 ModelLabel = _modelLabel,
                 DeviceTitle = _deviceTitle,
-                Subtitle = _subtitle,
+                Subtitle = MachineAreaLabel.ComposeForDevice(this, _deviceKind),
                 PowerOk = powerOk,
                 Powered = powered,
                 Connected = connected,

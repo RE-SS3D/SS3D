@@ -17,7 +17,7 @@ namespace SS3D.UI.MachineInterface
 
         public string DeviceTitle { get; set; } = "MIX-11";
 
-        public string Subtitle { get; set; } = "Atmospherics Distro — Gas Mixer";
+        public string Subtitle { get; set; } = "Gas Mixer";
 
         public string ConnectionStatus { get; set; } = "WIRED · PIPE NET · PORT M1";
 

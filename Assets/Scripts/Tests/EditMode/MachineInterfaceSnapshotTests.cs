@@ -26,6 +26,7 @@ namespace EditorTests
             Assert.AreEqual(original.MachineObjectId, roundTripped.MachineObjectId);
             Assert.AreEqual(original.InterfaceId, roundTripped.InterfaceId);
             Assert.AreEqual(original.Title, roundTripped.Title);
+            Assert.AreEqual(original.AreaName, roundTripped.AreaName);
             Assert.AreEqual(original.Channels, roundTripped.Channels);
             Assert.AreEqual(original.PowerState, roundTripped.PowerState);
             Assert.AreEqual(original.GridInputKw, roundTripped.GridInputKw);
@@ -60,6 +61,7 @@ namespace EditorTests
             Assert.AreEqual(original.MachineObjectId, roundTripped.MachineObjectId);
             Assert.AreEqual(original.InterfaceId, roundTripped.InterfaceId);
             Assert.AreEqual(original.Title, roundTripped.Title);
+            Assert.AreEqual(original.Subtitle, roundTripped.Subtitle);
             Assert.AreEqual(original.PowerState, roundTripped.PowerState);
             Assert.AreEqual(original.ChargePct, roundTripped.ChargePct);
             Assert.AreEqual(original.ChargeTrend, roundTripped.ChargeTrend);
@@ -186,6 +188,7 @@ namespace EditorTests
                 MachineObjectId = 12,
                 InterfaceId = MachineInterfaceIds.AirAlarm,
                 Title = "AIR ALARM",
+                AreaName = "Medbay",
                 ActiveMode = (byte)AirAlarmPresetMode.Panic,
                 HasSample = true,
                 PressureKpa = 101.3f,
@@ -223,6 +226,7 @@ namespace EditorTests
             AirAlarmInterfaceSnapshot roundTripped = reader.ReadAirAlarmInterfaceSnapshot();
 
             Assert.AreEqual(original.MachineObjectId, roundTripped.MachineObjectId);
+            Assert.AreEqual(original.AreaName, roundTripped.AreaName);
             Assert.AreEqual(original.ActiveMode, roundTripped.ActiveMode);
             Assert.AreEqual(original.HasSample, roundTripped.HasSample);
             Assert.AreEqual(original.PlasmaFraction, roundTripped.PlasmaFraction);
@@ -292,6 +296,7 @@ namespace EditorTests
                 MachineObjectId = 42,
                 InterfaceId = MachineInterfaceIds.Apc,
                 Title = "APC · TEST",
+                AreaName = "Test Room",
                 Channels = ApcControlFlags.Lighting | ApcControlFlags.Equipment,
                 PowerState = (byte)ApcPowerState.Nominal,
                 GridInputKw = 12.4f,
@@ -322,6 +327,7 @@ namespace EditorTests
                 MachineObjectId = 84,
                 InterfaceId = MachineInterfaceIds.Smes,
                 Title = "SMES · TEST",
+                Subtitle = "Engineering — Substation Storage Bank",
                 PowerState = (byte)SmesPowerState.Nominal,
                 ChargePct = 0.72f,
                 ChargeTrend = (byte)SmesChargeTrend.Steady,
@@ -422,7 +428,7 @@ namespace EditorTests
                 Title = "PUMP · TEST",
                 ModelLabel = "PMP-22 · pipe pump unit",
                 DeviceTitle = "PMP-22",
-                Subtitle = "Engineering Bay 3 — Pipe Pump",
+                Subtitle = "Room 1 — Pipe Pump",
                 PowerOk = true,
                 Powered = true,
                 Connected = true,
@@ -443,10 +449,10 @@ namespace EditorTests
             {
                 MachineObjectId = 126,
                 InterfaceId = MachineInterfaceIds.Vending,
-                Title = "GALLEY VENDOMAT",
-                Subtitle = "Crew Mess — Sundries Dispenser",
-                ModelLabel = "VND-7 · ration & sundries dispenser",
-                ConnectionStatus = "WIRED · VEND BUS · PORT J1",
+                Title = "YOUTOOL VENDOMAT",
+                Subtitle = "Room 2 — Tool Dispenser",
+                ModelLabel = "VND-7 · tool dispenser",
+                ConnectionStatus = MachineStatusLine.Powered,
                 StockedReadout = "2 of 2 items stocked",
                 PowerOk = true,
                 IdScanned = true,

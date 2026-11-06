@@ -236,7 +236,7 @@ MonoBehaviour:
   _componentIndexCache: 0
   _addedNetworkObject: {fileID: -5633820156739102180}
   _networkObjectCache: {fileID: -5633820156739102180}
-  _title: APC · ENGINEERING BAY
+  _title: APC
   _maxCapacityKwh: 5
   _maxDischargeRateKw: 10
   _maxChargeRateKw: 10

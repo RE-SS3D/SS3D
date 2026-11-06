@@ -394,7 +394,7 @@ MonoBehaviour:
   _title: "VENT \xB7 ATMOSPHERICS"
   _modelLabel: "VT-14 \xB7 atmospheric vent unit"
   _deviceTitle: VT-14
-  _subtitle: "Engineering Bay 3 \u2014 Atmospheric Vent"
+  _deviceKind: Atmospheric Vent
   _powerConsumer: {fileID: 8827364519023341192}
 --- !u!114 &3704510414340258197
 MonoBehaviour:

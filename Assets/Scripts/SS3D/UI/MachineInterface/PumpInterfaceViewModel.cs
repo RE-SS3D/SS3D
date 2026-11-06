@@ -17,7 +17,7 @@ namespace SS3D.UI.MachineInterface
 
         public string DeviceTitle { get; set; } = "PMP-22";
 
-        public string Subtitle { get; set; } = "Engineering Bay 3 — Pipe Pump";
+        public string Subtitle { get; set; } = "Pipe Pump";
 
         public string ConnectionStatus { get; set; } = "WIRED · PIPE NET · PORT P1";
 

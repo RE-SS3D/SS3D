@@ -410,7 +410,7 @@ MonoBehaviour:
   _accessDenied: 0
   _modelLabel: "FLT-04 \xB7 gas filter unit"
   _deviceTitle: FLT-04
-  _subtitle: "Atmospherics Distro \u2014 Gas Filter"
+  _deviceKind: Gas Filter
   _powerConsumer: {fileID: 8227658909305339162}
 --- !u!1 &2446052109699418498
 GameObject:

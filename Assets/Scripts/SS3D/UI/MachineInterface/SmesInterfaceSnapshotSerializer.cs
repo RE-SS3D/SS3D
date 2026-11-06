@@ -9,6 +9,7 @@ namespace SS3D.UI.MachineInterface
             writer.WriteInt32(snapshot.MachineObjectId);
             writer.WriteString(snapshot.InterfaceId);
             writer.WriteString(snapshot.Title);
+            writer.WriteString(snapshot.Subtitle);
             writer.WriteByte(snapshot.PowerState);
             writer.WriteSingle(snapshot.ChargePct);
             writer.WriteByte(snapshot.ChargeTrend);
@@ -33,6 +34,7 @@ namespace SS3D.UI.MachineInterface
                 MachineObjectId = reader.ReadInt32(),
                 InterfaceId = reader.ReadString(),
                 Title = reader.ReadString(),
+                Subtitle = reader.ReadString(),
                 PowerState = reader.ReadByte(),
                 ChargePct = reader.ReadSingle(),
                 ChargeTrend = reader.ReadByte(),

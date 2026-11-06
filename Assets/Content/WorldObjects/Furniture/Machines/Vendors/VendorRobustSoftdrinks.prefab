@@ -202,10 +202,9 @@ MonoBehaviour:
     Stock: 10
     RequiresId: 0
   _dispensingTransform: {fileID: 5160227759105755511}
-  _title: GALLEY VENDOMAT
-  _subtitle: "Crew Mess \u2014 Sundries Dispenser"
-  _modelLabel: "VND-7 \xB7 ration & sundries dispenser"
-  _connectionStatus: "WIRED \xB7 VEND BUS \xB7 PORT J1"
+  _title: ROBUST SOFTDRINKS
+  _deviceKind: Soft Drinks Dispenser
+  _modelLabel: "VND-7 \xB7 soft drinks dispenser"
 --- !u!114 &3665146264900623842
 MonoBehaviour:
   m_ObjectHideFlags: 0

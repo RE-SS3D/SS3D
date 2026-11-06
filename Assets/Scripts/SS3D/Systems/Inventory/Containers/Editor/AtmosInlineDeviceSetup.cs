@@ -406,7 +406,7 @@ namespace SS3D.Systems.Atmospherics.Editor
             panel.FindProperty("_title").stringValue = title;
             panel.FindProperty("_modelLabel").stringValue = modelLabel;
             panel.FindProperty("_deviceTitle").stringValue = deviceTitle;
-            panel.FindProperty("_subtitle").stringValue = subtitle;
+            panel.FindProperty("_deviceKind").stringValue = subtitle;
             panel.ApplyModifiedPropertiesWithoutUndo();
         }
 

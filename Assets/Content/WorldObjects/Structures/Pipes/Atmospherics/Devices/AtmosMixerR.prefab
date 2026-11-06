@@ -320,7 +320,7 @@ MonoBehaviour:
   _accessDenied: 0
   _modelLabel: "MIX-11 \xB7 gas mixer unit"
   _deviceTitle: MIX-11
-  _subtitle: "Atmospherics Distro \u2014 Gas Mixer"
+  _deviceKind: Gas Mixer
   _powerConsumer: {fileID: 8680866232847809711}
 --- !u!1 &1575329774233915103
 GameObject:

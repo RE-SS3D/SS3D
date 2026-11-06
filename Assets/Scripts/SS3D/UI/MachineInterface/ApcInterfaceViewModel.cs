@@ -5,15 +5,15 @@ namespace SS3D.UI.MachineInterface
 {
     public class ApcInterfaceViewModel : IMachineInterfaceViewModel, IAccessGatedInterfaceViewModel
     {
-        public string Title { get; set; } = "APC · ENGINEERING BAY";
+        public string Title { get; set; } = "APC";
 
         public string ModelLabel { get; set; } = "APC-7 · area power controller";
 
         public string DeviceTitle { get; set; } = "APC-ENG-03";
 
-        public string Subtitle { get; set; } = "Engineering Bay 3";
+        public string Subtitle { get; set; } = ApcInterfaceSnapshotMapper.UnassignedSubtitle;
 
-        public string ConnectionStatus { get; set; } = "WIRED · POWER NET · NODE E-12";
+        public string ConnectionStatus { get; set; } = MachineStatusLine.NoGridFeed;
 
         public string HeaderReadout { get; set; } = "GRID FEED NOMINAL";
 

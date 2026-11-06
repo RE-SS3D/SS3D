@@ -257,7 +257,7 @@ MonoBehaviour:
   _title: "VALVE \xB7 ATMOSPHERICS"
   _modelLabel: "VLV-10 \xB7 digital pipe valve"
   _deviceTitle: VLV-10
-  _subtitle: Digital Pipe Valve
+  _deviceKind: Digital Pipe Valve
   _powerConsumer: {fileID: 810611742929447724}
 --- !u!114 &319655170132200264
 MonoBehaviour:

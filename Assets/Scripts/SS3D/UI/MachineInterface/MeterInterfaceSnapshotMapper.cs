@@ -62,6 +62,7 @@ namespace SS3D.UI.MachineInterface
                 Scenario = scenario,
                 ModelLabel = snapshot.ModelLabel,
                 DeviceTitle = snapshot.DeviceTitle,
+                Subtitle = string.IsNullOrEmpty(snapshot.Subtitle) ? MeterInterfaceViewModel.DefaultDeviceKind : snapshot.Subtitle,
                 LineLabel = snapshot.Connected ? snapshot.LineLabel : "NO LINE",
                 FooterText = $"SS3D Atmospherics — Gas Meter Model {snapshot.DeviceTitle}",
                 ConnectionTone = scenario == MeterScenario.Vacuum ? StatusTone.Neutral : StatusTone.Success,

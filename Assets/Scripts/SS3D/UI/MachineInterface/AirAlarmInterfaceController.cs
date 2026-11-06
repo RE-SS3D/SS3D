@@ -4,6 +4,7 @@ using SS3D.Systems.Atmospherics.Pipes;
 using System.Collections.Generic;
 using SS3D.Systems.Electricity;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace SS3D.UI.MachineInterface
 {
@@ -23,7 +24,9 @@ namespace SS3D.UI.MachineInterface
         private string _deviceTitle = "AA-07";
 
         [SerializeField]
-        private string _subtitle = "Engineering Bay 3 — Air Alarm";
+        [Tooltip("Device kind shown after the room name, e.g. \"Medbay — Air Alarm\".")]
+        [FormerlySerializedAs("_subtitle")]
+        private string _deviceKind = "Air Alarm";
 
         [SerializeField]
         private BasicPowerConsumer _powerConsumer;
@@ -253,6 +256,7 @@ namespace SS3D.UI.MachineInterface
 
             List<AirAlarmDeviceSnapshot> connectedDevices = new();
             PopulateConnectedDevicesFromWorld(connectedDevices);
+            string areaName = MachineAreaLabel.GetAreaNameOrNull(this);
 
             return new AirAlarmInterfaceSnapshot
             {
@@ -261,7 +265,8 @@ namespace SS3D.UI.MachineInterface
                 Title = _title,
                 ModelLabel = _modelLabel,
                 DeviceTitle = _deviceTitle,
-                Subtitle = _subtitle,
+                Subtitle = MachineAreaLabel.Compose(areaName, _deviceKind),
+                AreaName = areaName ?? string.Empty,
                 PowerOk = powerOk,
                 Scenario = (byte)scenario,
                 AccessGranted = AccessGranted,

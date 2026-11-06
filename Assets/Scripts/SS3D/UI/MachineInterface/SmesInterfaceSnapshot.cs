@@ -8,6 +8,8 @@ namespace SS3D.UI.MachineInterface
 
         public string Title;
 
+        public string Subtitle;
+
         public byte PowerState;
 
         public float ChargePct;

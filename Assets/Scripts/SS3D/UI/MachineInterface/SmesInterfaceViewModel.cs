@@ -8,9 +8,11 @@ namespace SS3D.UI.MachineInterface
 
         public string DeviceTitle { get; set; } = "SMES-02";
 
-        public string Subtitle { get; set; } = "Engineering — Substation Storage Bank";
+        public const string DefaultDeviceKind = "Substation Storage Bank";
 
-        public string ConnectionStatus { get; set; } = "WIRED · POWER NET · PORT J1";
+        public string Subtitle { get; set; } = DefaultDeviceKind;
+
+        public string ConnectionStatus { get; set; } = MachineStatusLine.NoGridFeed;
 
         public string FooterText { get; set; } = "SS3D Superconducting Magnetic Energy Storage — Model SMES-02";
 

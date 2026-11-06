@@ -18,7 +18,7 @@ namespace SS3D.UI.MachineInterface
 
         public string DeviceTitle { get; set; } = "SCB-09";
 
-        public string Subtitle { get; set; } = "Engineering Bay 3 — Atmospheric Scrubber";
+        public string Subtitle { get; set; } = "Atmospheric Scrubber";
 
         public string ConnectionStatus { get; set; } = "WIRED · PIPE NET · PORT S2";
 
