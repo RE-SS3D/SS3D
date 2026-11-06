@@ -5,6 +5,7 @@ using System.Threading;
 using Cysharp.Threading.Tasks;
 using FishNet.Object;
 using SS3D.Logging;
+using SS3D.Networking;
 using UnityEngine;
 
 namespace SS3D.Systems.Rounds
@@ -115,8 +116,16 @@ namespace SS3D.Systems.Rounds
             Log.Information(this, "Round limit {rounds} reached; exiting for a fresh process", Logs.ServerOnly, _lifetime.ExitAfterRounds);
             StopServerLifetime();
 #if !UNITY_EDITOR
-            UnityEngine.Application.Quit(0);
+            ConnectionNotices.DisconnectAll(NetworkManager, DisconnectCode.ServerRestarting);
+            QuitOnceClientsAreTold().Forget();
 #endif
+        }
+
+        /// <summary>The notice goes out on a later tick; quitting in this frame would drop the reason.</summary>
+        private static async UniTaskVoid QuitOnceClientsAreTold()
+        {
+            await UniTask.Delay(TimeSpan.FromSeconds(ConnectionNotices.GraceSeconds), ignoreTimeScale: true);
+            UnityEngine.Application.Quit(0);
         }
     }
 }

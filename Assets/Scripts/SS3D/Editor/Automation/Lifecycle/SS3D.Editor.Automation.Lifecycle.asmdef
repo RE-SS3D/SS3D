@@ -2,6 +2,7 @@
     "name": "SS3D.Editor.Automation.Lifecycle",
     "rootNamespace": "SS3D.Editor.Automation",
     "references": [
+        "SS3D.Networking",
         "SS3D.Core",
         "Coimbra",
         "SS3D.UI.Lobby",

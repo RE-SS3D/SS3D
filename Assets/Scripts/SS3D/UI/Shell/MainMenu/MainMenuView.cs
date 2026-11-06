@@ -50,6 +50,8 @@ namespace SS3D.UI.Shell.MainMenu
             Command("credits", MainMenuCommand.Credits);
             Command("update", MainMenuCommand.Update);
             Command("cancel", MainMenuCommand.Cancel);
+            Command("retry", MainMenuCommand.Retry);
+            Command("back-to-servers", MainMenuCommand.Back);
             Command("music-toggle", MainMenuCommand.ToggleMusic);
             Command("music-next", MainMenuCommand.NextTrack);
             Slider musicVolume = Root.Q<Slider>("music-volume");
@@ -64,6 +66,13 @@ namespace SS3D.UI.Shell.MainMenu
             });
             Field("player-name", MainMenuField.PlayerName);
             Field("port", MainMenuField.Port);
+            Field("overlay-token", MainMenuField.OperationToken);
+            Root.Q<TextField>("overlay-token").RegisterCallback<KeyDownEvent>(e =>
+            {
+                if (e.keyCode is not (KeyCode.Return or KeyCode.KeypadEnter)) return;
+                Issue(MainMenuCommand.Retry);
+                e.StopPropagation();
+            }, TrickleDown.TrickleDown);
             Root.RegisterCallback<KeyDownEvent>(e =>
             {
                 if (e.keyCode != KeyCode.Escape) return;
@@ -329,25 +338,42 @@ namespace SS3D.UI.Shell.MainMenu
             string title = "CONNECTING";
             if (updating) title = "UPDATE AND RESTART";
             else if (hosting) title = "STARTING LOCAL SESSION";
+            else if (model.OperationLost) title = "CONNECTION LOST";
             Root.Q<Label>("overlay-title").text = title;
             Root.Q<Label>("overlay-name").text = model.OperationName;
             Root.Q<Label>("overlay-address").text = model.OperationAddress;
-            Show("cancel", !updating);
+            Show("cancel", !updating && !model.OperationFailed);
+            Show("retry", model.OperationFailed);
+            Show("back-to-servers", model.OperationFailed);
+            Show("overlay-token-row", model.OperationNeedsToken);
+            if (model.OperationNeedsToken) SetText("overlay-token", model.OperationToken);
             VisualElement steps = Root.Q("progress-steps"); steps.Clear();
-            string[] labels = { "Contacting server", "Checking version", "Loading world" };
+            if (model.OperationLost)
+            {
+                Reason(steps, model.OperationReason);
+                return;
+            }
+            string[] labels = { "Contacting server", "Checking version", "Loading world", "Logging in" };
             if (updating) labels = new string[] { "Downloading update", "Keeping maps and settings", "Restarting" };
             else if (hosting) labels = new string[] { "Starting host", "Loading world", "Opening lobby" };
             for (int i = 0; i < labels.Length; i++)
             {
                 VisualElement row = Element(steps, "main-menu__step");
                 Text(row, labels[i], i > model.OperationStep ? "main-menu__secondary" : "");
+                bool failed = model.OperationFailed && i == model.OperationStep;
                 string progress = "";
                 if (i < model.OperationStep) progress = "OK";
+                else if (failed) progress = "FAILED";
                 else if (i == model.OperationStep) progress = "…";
                 Label mark = Text(row, progress, "main-menu__mono");
                 if (i < model.OperationStep) mark.style.color = ColorCode("#a8cf8c");
+                else if (failed) mark.style.color = ColorCode("#d17a7a");
+                if (failed) Reason(steps, model.OperationReason);
             }
         }
+
+        private static void Reason(VisualElement parent, string reason) =>
+            Text(Element(parent, "main-menu__step-reason"), reason, "main-menu__wrap");
 
         private void Show(string name, bool visible) => Root.Q(name).EnableInClassList("main-menu__hidden", !visible);
         private void SetText(string name, string value)

@@ -4,6 +4,7 @@
 # Read by run_smoke_set.sh, Testing/ui/validate.py (smoke step) and the workflows that call it.
 late-join 2
 reconnect 1
+connection-refused 1
 observer-sync 2
 sandbox-reset 1 nightly
 nukeops-round 1 nightly

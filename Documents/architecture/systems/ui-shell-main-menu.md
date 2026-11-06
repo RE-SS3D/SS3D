@@ -1,6 +1,6 @@
 > Parent map: [ui-shell.md](ui-shell.md)
 > Status: partial
-> Verified: ad9c1fef8 — 2026-11-05
+> Verified: db359c989 — 2026-11-06
 
 # Main menu
 
@@ -10,13 +10,14 @@ Client main menu, built from the owner's **SS3D Main menu design(1).zip** refere
 (DDOL, created by `SystemsBootstrap` by type name, never on dedicated servers or batch/Null-GFX
 clients) attaches `MainMenuView` to the shell's Modal layer whenever the **Launcher** scene loads:
 a build started without command-line args, `-forceLauncher`, or the editor **Launcher** toolbar
-toggle. Launches with args still go through Intro and `ServerConnectionView`. The lobby's **Quit to
+toggle. Launches with args, and editor Play with the toggle off, still go through Intro and `ServerConnectionView`, which keeps that scene's own failure screen (see Pitfalls). The lobby's **Quit to
 menu** returns here from any session (`NetworkSessionSubSystem.LeaveToMainMenu`).
 
 What is live: name (defaults to the OS user name), join a recent server or a pasted
 `host[:port]` / `[ipv6]:port`, play locally on the Advanced port (default 1151), per-server label
 and admin token, Remove, a status query per recent server (version, players/cap, ping), the
-Connecting / Starting local session / Update dialogs with real progress steps, refusal rows and
+Connecting / Starting local session / Update dialogs with real progress steps, one dialog for joining,
+refusals and lost connections (Retry, Back to servers, a token field on an admin-token refusal), refusal rows and
 direct-connect errors, the GitHub update banner and **Update and restart**, Quit, the music bar
 (on/off, track title, Next, volume) and links to the SS3D Discord and the SS3D-Art repo.
 
@@ -30,12 +31,12 @@ backend), and Settings shows the reference placeholder, not the live settings ta
 
 **Wallpaper:** half of the picks are a looping silent video, the rest a still (`MainMenuAssetCatalog.PickWallpaper`), never the same one twice in a row. A new pick lands on every visit to the Launcher and every 60 s on the menu, server list and settings: the screen dips to black, swaps, and lifts once a new video has a frame (`MainMenuWallpaperRotation`, 1.5 s timeout). Dialogs hold the timer. A video opens on the same black until it has a frame, because showing its fallback still first read as a wrong wallpaper jumping to a video. A video's index wraps onto that still, which stays if the video fails or misses the timeout. Connecting, Starting local session and Update pause the video and blur its current frame. It stops and frees its render texture when Game loads, and restarts on return. Stills load lazily; each one shown stays loaded until the next scene load.
 
-This diverges from [main-menu.md](../../design/main-menu.md), on the owner's request (2026-11-05): §11 lists an animated background as out of scope and §8 asks for one wallpaper per launch, ten to fifteen of them, with no gore and Halloween art only in October. The set has 41 stills and 6 videos that rotate, with no seasonal filtering. The owner reviewed it against the no-gore rule on 2026-11-05: `MurderGrinderA` was removed, and `Bug_Pandemic` and `Malf` stay.
+This diverges from [main-menu.md](../../design/main-menu.md), on the owner's request (2026-11-05): §11 lists an animated background as out of scope and §8 asks for one wallpaper per launch, ten to fifteen of them, with no gore and Halloween art only in October. The set has 40 stills and 6 videos that rotate, with no seasonal filtering. The owner reviewed it against the no-gore rule on 2026-11-05: `MurderGrinderA` was removed, and `Bug_Pandemic` and `Malf` stay. `Gibber` was removed on 2026-11-06.
 
 ## Start here
 
 - `Assets/Scripts/SS3D/Launcher/MainMenuSubSystem.cs` — controller: show on Launcher, hide on Game, join/host/cancel, status refresh, update check
-- `Assets/Scripts/SS3D/Launcher/MainMenuState.cs` — `MainMenuState` / `RecentServer` (newest five) and `MainMenuStore` (`persistentDataPath/Settings/main-menu.json`; tokens in plain text)
+- `Assets/Scripts/SS3D/Launcher/MainMenuState.cs` — `MainMenuJoinAttempt` (one join, kept for Retry), `MainMenuState` / `RecentServer` (newest five) and `MainMenuStore` (`persistentDataPath/Settings/main-menu.json`; tokens in plain text)
 - `Assets/Scripts/SS3D/Launcher/MainMenuAddress.cs`, `MainMenuServers.cs` — address parsing; status → row (`Classify` by protocol and capacity)
 - `Assets/Scripts/SS3D/Launcher/ReleaseCheck.cs` — newest stable `vX.Y.Z` with this platform's zip; `IsNewer` (dev builds of the same version are older; `0.0.0-*` never updates)
 - `Assets/Scripts/SS3D/Launcher/MainMenuMusic.cs` — source, fades, track order, readable titles (`TitleOf`)
@@ -63,8 +64,11 @@ This diverges from [main-menu.md](../../design/main-menu.md), on the owner's req
 
 - **Rounded `overflow: hidden` containers render solid white at runtime on Linux.** The server panel and progress dialog were white rectangles in Play Mode, though the editor preview looked right. The panel and dialog no longer clip; the header carries its own top radii. Check Play Mode screenshots, not only the preview.
 - **A failed join from the menu used to reload Boot.** Before the client transport reaches Started, FishNet's offline scene is still Boot, so `DefaultScene` replaced the Launcher scene with Boot (duplicate NetworkManager destroyed). `BeginSession` calls `ClientConnectionRecovery.ArmEmptyOfflineScene()` first; a failure now lands on Empty and the DDOL menu returns to the server list.
-- **The menu owns connection failures.** While it is attached, `ClientConnectionRecovery.FailureUiOwnedElsewhere` hides the OnGUI Retry/Quit box. Refusals that happen after the Game scene loads (full server, wrong admin token: `PlayerSubSystem` just disconnects) still end on that box.
-- **An admin can't give a token before the first join.** A server enters the list (and gets a token field) only after a successful join, and a dedicated server refuses an admin name without its token. Workaround: start the player with `-ip= -port= -ckey= -token=`. Deferred on purpose: admin identity belongs to [player-accounts](../../design/player-accounts.md), not to more menu UI.
+- **The menu owns connection failures, and a join isn't done until the login is accepted.** The dialog stays up over the loaded Game scene through the Logging in step, until `ConnectionNotices.LoginAccepted`; only then does the menu hide and `Remember` the server, so a refused join saves nothing. A refusal swaps Game for Empty under the dialog, with no need to reload Launcher. A session lost with no menu up raises `ClientConnectionRecovery.ConnectionLost`: `HandleConnectionLost` leaves to the Launcher scene and `Show` opens the dialog titled CONNECTION LOST, name and reason, no steps. There is no in-game overlay.
+- **Intro keeps its own failure screen.** `ServerConnectionView` stays because Intro is reachable by more than `-ip=` launches (any command-line arg, and editor Play with the Launcher toggle off). It only owns a failure while Intro stays loaded; a rejection after the transport started swaps to Empty and goes to the menu dialog.
+- **A host whose own client drops goes to the menu, which stops its server.** There is no dialog or Retry for that case, only a Play Locally error; with the old box the host could reconnect to its running server. Tests that drop a host's client on purpose set `FailureUiOwnedElsewhere` (`LobbyLifecyclePilot`).
+- **Lost-session Retry uses the menu's name.** After a `-ip= -ckey=` launch the dialog's Retry joins as the menu's saved player name, not the `-ckey`.
+- **The token field is in the dialog.** An admin-token refusal shows it next to Retry, so a first-time address needs no prior join: `MainMenuJoinAttempt` holds the token and writes it to the new row once the login is accepted. On a known server it saves to the row as it is typed.
 - **Wallpaper changes use `MainMenuView.PresentWallpaper`, not `Present`.** A full present rebuilds the server list and is deferred while a field in it has focus, which would leave the veil black.
 - **The ping is timed on the receive thread, not in `Tick`.** `ServerStatusQuery` runs its socket with `UnsyncedEvents` and stamps each reply when it arrives; the nonce matches it to its probe. Reading replies in `Update` once put frame time (video wallpaper, list rebuilds) into the number, so a LAN server's ping jumped by tens of ms per refresh. Shown ping is the median of up to 4 probes, never below 1 ms. A server that predates probes only answers the original request: it gets one fallback request after 0.75 s and a single-sample ping.
 - **The server must answer on arrival too.** Tugboat's server `NetManager` only processed unconnected packets in `PollEvents` (once per FishNet tick), adding up to a tick to every reply. The SS3D patch sets `UnsyncedUnconnectedEvent` (new in our vendored LiteNetLib) so `UnconnectedRequestHandler` runs on the receive thread; it must only read the cached bytes. Re-apply with the other `SS3D patch` edits on a FishNet upgrade.
@@ -88,14 +92,21 @@ This diverges from [main-menu.md](../../design/main-menu.md), on the owner's req
 
 ## Tests
 
-- `MainMenuTests` (EditMode): wallpaper index order and fallback stills, the video/still split, no repeat picks, rotation timing (timeout, dialogs), wallpaper import settings, videos silent and untranscoded VP8, track titles, status packet round trip and clipping, classification, row naming, address parsing, recent-server ordering/cap, store round trip and broken file, release selection and `IsNewer`, and status queries over loopback (probe path, fallback to the original request for older servers, unreachable) with the nonce wire format.
+- `MainMenuTests` (EditMode): wallpaper index order and fallback stills, the video/still split, no repeat picks, rotation timing (timeout, dialogs), wallpaper import settings, videos silent and untranscoded VP8, track titles, status packet round trip and clipping, classification, row naming, address parsing, recent-server ordering/cap, join attempts (refusal adds no row, token kept for Retry and written on success), reason rendering, the dialog's joining, refused and lost states, store round trip and broken file, release selection and `IsNewer`, and status queries over loopback (probe path, fallback to the original request for older servers, unreachable) with the nonce wire format.
 - `python3 -B Tools/updater/test_update_linux.py` and `Tools/updater/test-update.ps1` cover `--wait-pid` / `-WaitPid` and `--restart`.
 - Play Mode check (2026-11-02, ad hoc): Launcher toggle on, menu → Join → direct connect to a closed port returns to the list with the error and no OnGUI box (scene Empty); Play Locally reaches the lobby; a raw UDP status query to the host returned protocol, name, 1/32 players. Music (same day): plays on the Music group, Next and the toggle change track/fade, keeps playing after the failed join (menu listener added), and has faded to silence once the lobby loads; editor NetworkSettings were unchanged after Play Mode. Quit to menu: host → lobby → Quit to menu → host again → Quit to menu in one process, and an Intro-started host → Quit to menu, all without errors. Not yet covered: a real join to a remote server through the menu, and an in-game update of a packaged build.
+
+- Play Mode check (2026-11-06, ad hoc, real dedicated server): first-time address with an admin name → held over Game on Logging in → refused with the token field, no row added → wrong token refused → Back shows the reason at direct connect → right token accepted, row saved with the token → server kick → CONNECTION LOST with the message on the row → Retry rejoins. Commands went through `HandleCommand`/`HandleField`, so real mouse and keyboard input on these buttons and the token field is unverified.
+- Smoke `connection-refused`: refused twice with the right code, no leftover `UnauthorizedPlayer`, joins with the token, then kicked with the message.
 
 ## Depends on / Used by
 
 - **Depends on:** [ui-shell](ui-shell.md) layers/catalogs; [networking-session](networking-session.md) (`NetworkSessionSubSystem`, `ClientConnectionRecovery`, Tugboat status patch); release updaters ([CI release pipeline](../2026-07_ci-develop-release-pipeline.md#windows-release-updates)).
 - **Used by:** players launching a build without arguments.
+
+## Divergence from design
+
+[main-menu.md](../../design/main-menu.md) keeps networking.md §6's **Retry / Quit** choice after losing a server. The dialog's second button is **Back to servers**, which is that spec's "Quit returns to the menu" under a clearer name.
 
 ## Related docs
 

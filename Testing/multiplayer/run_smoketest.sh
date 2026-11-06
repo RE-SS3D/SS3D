@@ -45,9 +45,11 @@ RUN_DIR="$REPO_ROOT/Testing/multiplayer/.runs/$RUN_ID"
 
 SERVER_SCRIPT="$SCRIPT_DIR/scenarios/${SCENARIO}.txt"
 # Optional per-scenario settings, sourced from scenarios/<scenario>.conf: SERVER_EXTRA_ARGS (array of
-# extra server arguments, e.g. -sandbox) and CLIENT_TIMEOUT (seconds each client gets to finish).
+# extra server arguments, e.g. -sandbox), CLIENT_TIMEOUT (seconds each client gets to finish) and
+# CLIENT_NO_TOKEN=1 (clients start without their -token, so an admin name is refused until set_token).
 SERVER_EXTRA_ARGS=()
 CLIENT_TIMEOUT=90
+CLIENT_NO_TOKEN=0
 if [[ -f "$SCRIPT_DIR/scenarios/${SCENARIO}.conf" ]]; then
     # shellcheck source=/dev/null
     source "$SCRIPT_DIR/scenarios/${SCENARIO}.conf"
@@ -188,9 +190,12 @@ for ((i = 0; i < CLIENT_COUNT; i++)); do
     unity_log="$workdir/unity.log"
     json_log="$workdir/Logs/LogClient${ckey}.json"
 
+    token_args=(-token="smoke-${ckey}")
+    [[ "$CLIENT_NO_TOKEN" -eq 1 ]] && token_args=()
+
     echo "Starting client $i (ckey=$ckey)..."
     spawn_process "$workdir" "$workdir/$CLIENT_BIN_NAME" "$unity_log" \
-        -batchmode -nographics -ip=127.0.0.1 -port="$PORT" -ckey="$ckey" -token="smoke-${ckey}" -skipintro -testscript="${CLIENT_SCRIPTS[$i]}"
+        -batchmode -nographics -ip=127.0.0.1 -port="$PORT" -ckey="$ckey" "${token_args[@]}" -skipintro -testscript="${CLIENT_SCRIPTS[$i]}"
 
     CLIENT_PIDS+=("$(last_tracked_pid)")
     CLIENT_JSON_LOGS+=("$json_log")

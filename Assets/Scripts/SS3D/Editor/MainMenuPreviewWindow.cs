@@ -12,7 +12,8 @@ namespace SS3D.Editor
     {
         public enum PreviewState { ReturningOutOfDate, ReturningCurrent, FirstLaunch, EmptyName, AdvancedPort,
             Servers, ServersOutOfDate, ServerDetails, FirstJoin, PublicEmpty, PublicUnavailable, AddressError,
-            RefusedFull, RefusedTimeout, RefusedUnreachable, Settings, Connecting, Hosting, Updating }
+            RefusedFull, RefusedTimeout, RefusedUnreachable, Settings, Connecting, Hosting, Updating,
+            LoggingIn, RefusedToken, ConnectionLost }
         public enum PreviewResolution { HD1080, HD720, Ultrawide }
         private PreviewState _state;
         private PreviewResolution _resolution;
@@ -129,7 +130,8 @@ namespace SS3D.Editor
             model.Screen = state switch
             {
                 PreviewState.Settings => MainMenuScreen.Settings,
-                PreviewState.Connecting => MainMenuScreen.Connecting,
+                PreviewState.Connecting or PreviewState.LoggingIn or PreviewState.RefusedToken
+                    or PreviewState.ConnectionLost => MainMenuScreen.Connecting,
                 PreviewState.Hosting => MainMenuScreen.Hosting,
                 PreviewState.Updating => MainMenuScreen.Updating,
                 PreviewState.Servers or PreviewState.ServersOutOfDate or PreviewState.ServerDetails or PreviewState.FirstJoin or PreviewState.PublicEmpty
@@ -157,6 +159,15 @@ namespace SS3D.Editor
                 sandbox.RefusalTime = "21:48";
             }
             if (state == PreviewState.Hosting) { model.OperationName = "Local session"; model.OperationAddress = "Port 1151"; }
+            if (state is PreviewState.LoggingIn or PreviewState.RefusedToken) model.OperationStep = 3;
+            if (state is PreviewState.RefusedToken or PreviewState.ConnectionLost)
+            {
+                model.OperationFailed = true;
+                model.OperationNeedsToken = state == PreviewState.RefusedToken;
+                model.OperationLost = state == PreviewState.ConnectionLost;
+                model.OperationReason = state == PreviewState.RefusedToken
+                    ? "This name is an admin name on this server. Enter its admin token." : "Connection to the server was lost.";
+            }
             if (state == PreviewState.Updating) { model.OperationName = "v0.5.0"; model.OperationAddress = "Keeps maps and settings"; }
             return model;
         }

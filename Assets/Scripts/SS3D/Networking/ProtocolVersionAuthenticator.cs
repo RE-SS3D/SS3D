@@ -1,10 +1,12 @@
 using System;
+using System.Collections;
 using FishNet.Authenticating;
 using FishNet.Broadcast;
 using FishNet.Connection;
 using FishNet.Managing;
 using FishNet.Transporting;
 using SS3D.Logging;
+using UnityEngine;
 
 namespace SS3D.Networking
 {
@@ -15,7 +17,10 @@ namespace SS3D.Networking
         public string Version;
     }
 
-    /// <summary>Server → client: accept/reject plus the server's own build, so a rejected client can say why.</summary>
+    /// <summary>
+    /// Server → client: accept/reject plus the server's own build, so a rejected client can say why.
+    /// Unlike every other message this one crosses versions, so its name and fields must not change.
+    /// </summary>
     public struct ProtocolResultBroadcast : IBroadcast
     {
         public bool Accepted;
@@ -31,9 +36,6 @@ namespace SS3D.Networking
     public sealed class ProtocolVersionAuthenticator : Authenticator
     {
         public override event Action<NetworkConnection, bool> OnAuthenticationResult;
-
-        /// <summary>Set on the client when the server rejected it; cleared on the next connect attempt.</summary>
-        public static string LastRejection { get; private set; }
 
         private static string LocalVersion => UnityEngine.Application.version;
 
@@ -58,6 +60,8 @@ namespace SS3D.Networking
             NetworkManager.ClientManager.OnClientConnectionState += HandleClientConnectionState;
             NetworkManager.ServerManager.RegisterBroadcast<ProtocolHelloBroadcast>(HandleHello, false);
             NetworkManager.ClientManager.RegisterBroadcast<ProtocolResultBroadcast>(HandleResult);
+            NetworkManager.ClientManager.RegisterBroadcast<DisconnectBroadcast>(HandleDisconnect);
+            NetworkManager.ClientManager.RegisterBroadcast<LoginAcceptedBroadcast>(HandleLoginAccepted);
         }
 
         private void OnDestroy()
@@ -70,6 +74,8 @@ namespace SS3D.Networking
             NetworkManager.ClientManager.OnClientConnectionState -= HandleClientConnectionState;
             NetworkManager.ServerManager.UnregisterBroadcast<ProtocolHelloBroadcast>(HandleHello);
             NetworkManager.ClientManager.UnregisterBroadcast<ProtocolResultBroadcast>(HandleResult);
+            NetworkManager.ClientManager.UnregisterBroadcast<DisconnectBroadcast>(HandleDisconnect);
+            NetworkManager.ClientManager.UnregisterBroadcast<LoginAcceptedBroadcast>(HandleLoginAccepted);
         }
 
         private void HandleClientConnectionState(ClientConnectionStateArgs args)
@@ -79,7 +85,7 @@ namespace SS3D.Networking
                 return;
             }
 
-            LastRejection = null;
+            ConnectionNotices.Clear();
             NetworkManager.ClientManager.Broadcast(new ProtocolHelloBroadcast
             {
                 Protocol = ProtocolVersion.Current,
@@ -91,7 +97,7 @@ namespace SS3D.Networking
         {
             if (conn.Authenticated)
             {
-                conn.Disconnect(true);
+                ConnectionNotices.Disconnect(conn, DisconnectCode.Kicked, "duplicate protocol hello");
                 return;
             }
 
@@ -119,8 +125,30 @@ namespace SS3D.Networking
                 return;
             }
 
-            LastRejection = ProtocolVersion.Describe(result.ServerVersion, result.ServerProtocol, LocalVersion, ProtocolVersion.Current);
-            Log.Error(this, "{reason}", Logs.Important, LastRejection);
+            string reason = ProtocolVersion.Describe(result.ServerVersion, result.ServerProtocol, LocalVersion, ProtocolVersion.Current);
+            ConnectionNotices.Record(DisconnectCode.VersionMismatch, reason);
+            Log.Error(this, "{reason}", Logs.Important, reason);
         }
+
+        private void HandleDisconnect(DisconnectBroadcast notice)
+        {
+            ConnectionNotices.Record(notice.Code, notice.Text);
+            Log.Information(this, "Server is disconnecting us: {reason}", Logs.Important, ConnectionNotices.LastReason);
+            NetworkManager.ClientManager.StopConnection();
+        }
+
+        /// <summary>Server: the fallback for a client that was told to leave and doesn't.</summary>
+        internal void CloseAfterGrace(NetworkConnection conn) => StartCoroutine(CloseAfterGraceRoutine(conn));
+
+        private static IEnumerator CloseAfterGraceRoutine(NetworkConnection conn)
+        {
+            yield return new WaitForSecondsRealtime(ConnectionNotices.GraceSeconds);
+            if (conn.IsActive)
+            {
+                conn.Disconnect(false);
+            }
+        }
+
+        private void HandleLoginAccepted(LoginAcceptedBroadcast accepted) => ConnectionNotices.RaiseLoginAccepted();
     }
 }

@@ -135,7 +135,7 @@ namespace SS3D.Networking
                 case NetworkType.Host:
                     // Built -host bats historically omit -ip=; ResetOnBuiltApplication clears
                     // ServerAddress. Empty → LiteNetLib DNS (IPv6-first) → link-local fe80::…
-                    // instead of loopback; host client then flaps and CCR shows Retry/Quit.
+                    // instead of loopback; host client then flaps and the session drops.
                     string hostClientAddress = string.IsNullOrWhiteSpace(ServerAddress)
                         ? "127.0.0.1"
                         : ServerAddress;
@@ -226,7 +226,7 @@ namespace SS3D.Networking
             _leaving = true;
             Log.Information(this, "Leaving the session for the main menu", Logs.Important);
 
-            // The player chose to leave: no Retry/Quit box. The menu keeps this set while it is open.
+            // A chosen leave is not a lost connection. The menu keeps this set while it is open.
             ClientConnectionRecovery.FailureUiOwnedElsewhere = true;
             NetworkManager networkManager = InstanceFinder.NetworkManager;
             if (networkManager != null)

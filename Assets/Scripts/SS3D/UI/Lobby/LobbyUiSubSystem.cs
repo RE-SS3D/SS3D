@@ -344,7 +344,7 @@ namespace SS3D.UI.Lobby
             bool admin = CanAdmin();
             if (SubSystems.TryGet(out CommsSubSystem comms))
                 _shellView.SetChat(comms.OocLog, comms.OocLogVersion, connected && admin);
-            if (admin && rounds != null && connected)
+            if (ShouldReadAdminSettings(admin, rounds != null, local != null))
             {
                 if (Time.unscaledTime >= _nextAdminRefresh)
                 {
@@ -457,6 +457,13 @@ namespace SS3D.UI.Lobby
         }
 
         private float _nextAdminRefresh;
+
+        /// <summary>
+        /// Logged in, not merely connected: a refused admin name stays connected through the disconnect
+        /// grace, and the server has no name for that connection to check.
+        /// </summary>
+        public static bool ShouldReadAdminSettings(bool canAdmin, bool hasRounds, bool loggedIn) =>
+            canAdmin && hasRounds && loggedIn;
 
         private bool CanAdmin() => SubSystems.TryGet(out PermissionSubSystem permissions)
             && permissions.HasLoadedPermissions

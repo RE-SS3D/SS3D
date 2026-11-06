@@ -5,6 +5,7 @@ using Coimbra;
 using FishNet;
 using FishNet.Managing;
 using FishNet.Transporting;
+using SS3D.Application;
 using SS3D.Core;
 using SS3D.Core.Behaviours;
 using SS3D.Core.Settings;
@@ -29,8 +30,9 @@ namespace SS3D.Launcher
     /// Client main menu. Shows <see cref="MainMenuView"/> on the shell's Modal layer whenever the
     /// Launcher scene loads (no command-line args, or <c>-forceLauncher</c> / the editor Launcher
     /// toggle), and drives join, local host, server status and the update button from it. The view
-    /// is DDOL with the shell, so a rejected join that swaps the scenes for Empty still lands back
-    /// on the server list. It hides when the Game scene loads.
+    /// is DDOL with the shell, so a rejected join that swaps the scenes for Empty keeps its dialog.
+    /// A join stays on that dialog, over the loaded Game scene, until the server accepts the login;
+    /// a lost session comes back to it from the Game scene with the reason.
     /// </summary>
     public sealed class MainMenuSubSystem : SubSystem
     {
@@ -39,6 +41,8 @@ namespace SS3D.Launcher
         private const string ArtCreditsUrl = "https://github.com/RE-SS3D/SS3D-Art";
         private const string RebuildMenuPath = "SS3D → Data → Rebuild All UI Catalogs";
         private const int MaxNameLength = 32;
+
+        private const int LoggingInStep = 3;
 
         private enum Operation { None = 0, Joining = 1, Hosting = 2, Updating = 3 }
 
@@ -70,10 +74,9 @@ namespace SS3D.Launcher
 #endif
 
         private Operation _operation;
-        private string _operationHost = "";
         private ushort _operationPort;
-        private string _operationServerId;
-        private string _operationName = "";
+        private MainMenuJoinAttempt _join;
+        private bool _lostPending;
         private bool _subscribed;
 
         public bool IsVisible => _view != null;
@@ -89,11 +92,15 @@ namespace SS3D.Launcher
             }
 
             SceneManager.sceneLoaded += HandleSceneLoaded;
+            ClientConnectionRecovery.ConnectionLost += HandleConnectionLost;
+            ConnectionNotices.LoginAccepted += HandleLoginAccepted;
         }
 
         protected override void OnDestroyed()
         {
             SceneManager.sceneLoaded -= HandleSceneLoaded;
+            ClientConnectionRecovery.ConnectionLost -= HandleConnectionLost;
+            ConnectionNotices.LoginAccepted -= HandleLoginAccepted;
             Hide();
 #if UNITY_EDITOR
             // NetworkSettings is an asset: Play Mode writes would otherwise outlive the session.
@@ -115,11 +122,49 @@ namespace SS3D.Launcher
             {
                 Show();
             }
-            else if (scene.name == Scenes.Game && IsVisible)
+            else if (scene.name == Scenes.Game && IsVisible && !_model.OperationFailed)
+            {
+                if (_operation == Operation.Joining)
+                {
+                    // Not joined yet: the login can still be refused. Game brings its own listener.
+                    RemoveListener();
+                    SetStep(LoggingInStep);
+                    return;
+                }
+
+                CompleteOperation();
+                Hide();
+            }
+        }
+
+        private void HandleLoginAccepted()
+        {
+            if (_operation == Operation.Joining)
             {
                 CompleteOperation();
                 Hide();
             }
+        }
+
+        /// <summary>A session dropped with no menu up: go back to it and open the dialog there.</summary>
+        private void HandleConnectionLost()
+        {
+            if (!string.IsNullOrEmpty(ScriptableSettings.GetOrFind<ApplicationSettings>().ActiveTestScriptPath)
+                || !SubSystems.TryGet(out NetworkSessionSubSystem session))
+            {
+                return;
+            }
+
+            if (ScriptableSettings.GetOrFind<NetworkSettings>().NetworkType == NetworkType.Client)
+            {
+                _lostPending = true;
+            }
+            else
+            {
+                _localError = "The local session ended unexpectedly.";
+            }
+
+            session.LeaveToMainMenu();
         }
 
         private void Update()
@@ -207,6 +252,11 @@ namespace SS3D.Launcher
             _query.Completed += HandleStatus;
             RefreshStatuses();
             StartUpdateCheck();
+            if (_lostPending)
+            {
+                ShowConnectionLost();
+            }
+
             Present();
         }
 
@@ -215,12 +265,7 @@ namespace SS3D.Launcher
             Unsubscribe();
             _music?.SetAudible(false);
             _video?.Stop();
-            if (_listener != null)
-            {
-                Destroy(_listener);
-                _listener = null;
-            }
-
+            RemoveListener();
             if (_query != null)
             {
                 _query.Completed -= HandleStatus;
@@ -262,7 +307,22 @@ namespace SS3D.Launcher
                     _model.Screen = MainMenuScreen.Settings;
                     break;
                 case MainMenuCommand.Back:
-                    _model.Screen = MainMenuScreen.Menu;
+                    if (_model.OperationFailed)
+                    {
+                        BackToServers();
+                    }
+                    else
+                    {
+                        _model.Screen = MainMenuScreen.Menu;
+                    }
+
+                    break;
+                case MainMenuCommand.Retry:
+                    if (_model.OperationFailed)
+                    {
+                        StartJoin(_join.Host, _join.Port, _join.Token, _join.Name);
+                    }
+
                     break;
                 case MainMenuCommand.Quit:
                     Quit();
@@ -289,7 +349,7 @@ namespace SS3D.Launcher
                 case MainMenuCommand.ServerJoin:
                     if (_state.Find(id) is { } server)
                     {
-                        StartJoin(server.Host, (ushort)server.Port, server.Id, server.AdminToken, DisplayName(server));
+                        StartJoin(server.Host, (ushort)server.Port, server.AdminToken, DisplayName(server));
                     }
 
                     break;
@@ -369,6 +429,14 @@ namespace SS3D.Launcher
                     }
 
                     break;
+                case MainMenuField.OperationToken:
+                    if (_join != null && _join.SetToken(_state, value))
+                    {
+                        Save();
+                    }
+
+                    _model.OperationToken = value ?? "";
+                    break;
                 case MainMenuField.AdminToken:
                     if (_state.Find(id) is { } tokened)
                     {
@@ -389,10 +457,10 @@ namespace SS3D.Launcher
             }
 
             RecentServer known = _state.Find($"{host}:{port}");
-            StartJoin(host, port, known?.Id, known?.AdminToken ?? "", known != null ? DisplayName(known) : "Direct connect");
+            StartJoin(host, port, known?.AdminToken ?? "", known != null ? DisplayName(known) : "Direct connect");
         }
 
-        private void StartJoin(string host, ushort port, string serverId, string token, string displayName)
+        private void StartJoin(string host, ushort port, string token, string displayName)
         {
             if (string.IsNullOrWhiteSpace(_state.PlayerName) || !TryGetSession(out NetworkSessionSubSystem session))
             {
@@ -407,11 +475,9 @@ namespace SS3D.Launcher
             LocalPlayer.UpdateAccessToken(string.IsNullOrEmpty(token) ? null : token);
 
             _operation = Operation.Joining;
-            _operationHost = host;
-            _operationPort = port;
-            _operationServerId = serverId;
-            _operationName = displayName;
+            _join = new MainMenuJoinAttempt(host, port, displayName, token);
             _addressError = "";
+            ClearFailure();
             _model.Screen = MainMenuScreen.Connecting;
             _model.OperationName = displayName;
             _model.OperationAddress = MainMenuAddress.Format(host, port);
@@ -444,6 +510,7 @@ namespace SS3D.Launcher
             _operation = Operation.Hosting;
             _operationPort = port;
             _localError = "";
+            ClearFailure();
             _model.Screen = MainMenuScreen.Hosting;
             _model.OperationName = "Local session";
             _model.OperationAddress = $"Port {port}";
@@ -504,8 +571,21 @@ namespace SS3D.Launcher
             {
                 Fail(_operation == Operation.Hosting
                     ? $"Couldn't start a local session on port {_operationPort}."
-                    : ProtocolVersionAuthenticator.LastRejection ?? "Couldn't reach the server. Check the address and that it is running.");
+                    : JoinFailureReason());
             }
+        }
+
+        private string JoinFailureReason()
+        {
+            if (ConnectionNotices.HasReason)
+            {
+                return ConnectionNotices.LastReason;
+            }
+
+            // Past the first step the transport had connected, so the server was there.
+            return _model.OperationStep == 0
+                ? "Couldn't reach the server. Check the address and that it is running."
+                : ConnectionNotices.Lost;
         }
 
         private void HandleServerState(ServerConnectionStateArgs args)
@@ -553,23 +633,59 @@ namespace SS3D.Launcher
             }
             else
             {
-                RecentServer server = _operationServerId == null ? null : _state.Find(_operationServerId);
-                if (server != null)
-                {
-                    server.Refusal = reason;
-                    server.RefusalTime = DateTime.Now.ToString("HH:mm");
-                    Save();
-                }
-                else
-                {
-                    _addressError = reason;
-                }
-
-                _model.Screen = MainMenuScreen.Servers;
-                RefreshStatuses();
+                ShowFailure(reason);
             }
 
             Present();
+        }
+
+        /// <summary>Holds the dialog on the failure until the player retries or goes back.</summary>
+        private void ShowFailure(string reason)
+        {
+            _model.Screen = MainMenuScreen.Connecting;
+            _model.OperationFailed = true;
+            _model.OperationReason = reason;
+            _model.OperationNeedsToken = ConnectionNotices.LastCode == DisconnectCode.AdminToken;
+            _model.OperationToken = _join.Token;
+            if (_join.RecordRefusal(_state, reason, DateTime.Now.ToString("HH:mm")))
+            {
+                Save();
+            }
+        }
+
+        private void ShowConnectionLost()
+        {
+            _lostPending = false;
+            NetworkSettings settings = ScriptableSettings.GetOrFind<NetworkSettings>();
+            string address = MainMenuAddress.Format(settings.ServerAddress, settings.ServerPort);
+            RecentServer known = _state.Find($"{settings.ServerAddress}:{settings.ServerPort}");
+            _join = new MainMenuJoinAttempt(settings.ServerAddress, settings.ServerPort,
+                known != null ? DisplayName(known) : address, known?.AdminToken ?? LocalPlayer.AccessToken);
+            _model.OperationName = _join.Name;
+            _model.OperationAddress = address;
+            _model.OperationLost = true;
+            ShowFailure(ConnectionNotices.LastReason);
+        }
+
+        private void BackToServers()
+        {
+            // A first-time address has no row to carry the reason.
+            if (_state.Find(_join.Id) == null)
+            {
+                _addressError = _model.OperationReason;
+            }
+
+            ClearFailure();
+            _model.Screen = MainMenuScreen.Servers;
+            RefreshStatuses();
+        }
+
+        private void ClearFailure()
+        {
+            _model.OperationFailed = false;
+            _model.OperationLost = false;
+            _model.OperationNeedsToken = false;
+            _model.OperationReason = "";
         }
 
         private void CancelOperation()
@@ -601,14 +717,13 @@ namespace SS3D.Launcher
             }
         }
 
-        /// <summary>Game loaded: the join worked, so remember the server (newest first).</summary>
+        /// <summary>The join worked (login accepted, or a local session's Game loaded): remember the server, newest first.</summary>
         private void CompleteOperation()
         {
             if (_operation == Operation.Joining)
             {
-                string id = $"{_operationHost}:{_operationPort}";
-                string reported = _results.TryGetValue(id, out ServerStatusResult result) && result.Reachable ? result.Status.Name : "";
-                _state.Remember(_operationHost, _operationPort, reported);
+                string reported = _results.TryGetValue(_join.Id, out ServerStatusResult result) && result.Reachable ? result.Status.Name : "";
+                _join.Complete(_state, reported);
                 Save();
             }
 
@@ -838,6 +953,15 @@ namespace SS3D.Launcher
             if (_listener == null && FindAnyObjectByType<AudioListener>() == null)
             {
                 _listener = gameObject.AddComponent<AudioListener>();
+            }
+        }
+
+        private void RemoveListener()
+        {
+            if (_listener != null)
+            {
+                Destroy(_listener);
+                _listener = null;
             }
         }
 

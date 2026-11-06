@@ -28,10 +28,11 @@ namespace SS3D.UI.Shell.MainMenu
         ServerRemove = 15,
         ToggleMusic = 16,
         NextTrack = 17,
+        Retry = 18,
     }
 
     /// <summary>Editable fields the view reports; server fields carry the server id.</summary>
-    public enum MainMenuField { PlayerName = 0, Port = 1, Address = 2, ServerName = 3, AdminToken = 4, MusicVolume = 5 }
+    public enum MainMenuField { PlayerName = 0, Port = 1, Address = 2, ServerName = 3, AdminToken = 4, MusicVolume = 5, OperationToken = 6 }
 
     /// <summary>Presentation data only. Does not query servers or persist credentials.</summary>
     public sealed class MainMenuPresentation
@@ -68,6 +69,14 @@ namespace SS3D.UI.Shell.MainMenu
         public string OperationName = "";
         public string OperationAddress = "";
         public int OperationStep;
+        /// <summary>The Connecting dialog shows a failure: Retry and Back replace Cancel.</summary>
+        public bool OperationFailed;
+        /// <summary>A session dropped: the dialog is titled CONNECTION LOST and shows no steps.</summary>
+        public bool OperationLost;
+        public string OperationReason = "";
+        /// <summary>The server asked for an admin token: the dialog offers a field for one.</summary>
+        public bool OperationNeedsToken;
+        public string OperationToken = "";
     }
 
     public sealed class MainMenuServerPresentation

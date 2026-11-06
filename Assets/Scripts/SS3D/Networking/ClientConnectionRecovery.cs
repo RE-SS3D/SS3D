@@ -14,26 +14,28 @@ namespace SS3D.Networking
 {
     /// <summary>
     /// Session lifecycle owner (DDOL on NetworkManager). Tracks <see cref="SessionState"/>,
-    /// arms Empty as FishNet offline after the first successful connect, and offers OnGUI
-    /// Retry/Quit when Boot is gone. Intro failure UI stays on <see cref="ServerConnectionView"/>;
-    /// the main menu owns its own (<see cref="FailureUiOwnedElsewhere"/>).
+    /// arms Empty as FishNet offline after the first successful connect, and reports a dropped
+    /// session through <see cref="ConnectionLost"/>, which sends the client to the main menu. Intro
+    /// failure UI stays on <see cref="ServerConnectionView"/>; the main menu owns its own
+    /// (<see cref="FailureUiOwnedElsewhere"/>).
     /// </summary>
     public sealed class ClientConnectionRecovery : MonoBehaviour
     {
         private bool _reachedOnline;
-        private bool _recoveryVisible;
-        private string _status = "Disconnected from server.";
-        private GUIStyle _labelStyle;
-        private GUIStyle _buttonStyle;
 
         public SessionState State { get; private set; } = SessionState.Cold;
 
         public static ClientConnectionRecovery Instance { get; private set; }
 
         /// <summary>
-        /// Set while another UI shows connection failures itself (the main menu's Connecting dialog
-        /// returns to the server list with the reason). The OnGUI Retry/Quit box then stays hidden,
-        /// including when a rejected join swaps the scenes for Empty.
+        /// The session ended with no screen left to say so. <see cref="ConnectionNotices"/> holds the
+        /// reason, if the server gave one. Not raised on a dedicated server.
+        /// </summary>
+        public static event Action ConnectionLost;
+
+        /// <summary>
+        /// Set while a stopped client needs no <see cref="ConnectionLost"/>: the main menu's dialog is up
+        /// and shows the failure itself, the player chose to leave, or a PlayMode test ends the session.
         /// </summary>
         public static bool FailureUiOwnedElsewhere { get; set; }
 
@@ -121,8 +123,8 @@ namespace SS3D.Networking
         /// </summary>
         public void NotifySessionStartAttempted()
         {
+            ConnectionNotices.Clear();
             SetState(SessionState.Connecting);
-            _recoveryVisible = false;
         }
 
         /// <summary>
@@ -169,7 +171,6 @@ namespace SS3D.Networking
             {
                 case LocalConnectionState.Started:
                     EnterOnline();
-                    _recoveryVisible = false;
                     return;
 
                 case LocalConnectionState.Stopping when State == SessionState.Online:
@@ -199,18 +200,17 @@ namespace SS3D.Networking
             }
 
             // Intro/Boot still loaded: ServerConnectionView owns retry. After Empty offline,
-            // those scenes are gone — show OnGUI even though NetworkSession is DDOL now.
-            // Intro can still be loaded here yet about to go: a server rejection (version
-            // mismatch) stops the client after the transport Started armed Empty, and
-            // DefaultScene swaps Intro for Empty right after this event. Then OnGUI owns it.
+            // those scenes are gone, so the main menu takes over. Intro can still be loaded here
+            // yet about to go: a server rejection (version mismatch) stops the client after the
+            // transport Started armed Empty, and DefaultScene swaps Intro for Empty right after
+            // this event.
             if (FailureUiOwnedElsewhere || (IsConnectionUiSceneLoaded() && !WillLoadEmptyOfflineScene()))
             {
                 return;
             }
 
-            _status = ProtocolVersionAuthenticator.LastRejection ?? "Could not connect, or connection to the server was lost.";
-            _recoveryVisible = true;
-            Log.Information(this, "{status}", Logs.Important, _status);
+            Log.Information(this, "{status}", Logs.Important, ConnectionNotices.LastReason);
+            ConnectionLost?.Invoke();
         }
 
         private static bool IsConnectionUiSceneLoaded()
@@ -289,180 +289,6 @@ namespace SS3D.Networking
 
             defaultScene.SetOfflineScene(Scenes.EmptyPath);
             Log.Debug(this, "Armed Empty offline scene for disconnect (avoid Boot/Intro reload storm)", Logs.Important);
-        }
-
-        private void OnGUI()
-        {
-            if (!_recoveryVisible)
-            {
-                return;
-            }
-
-            EnsureGuiStyles();
-
-            const float width = 420f;
-            const float height = 140f;
-            Rect area = new(
-                (Screen.width - width) * 0.5f,
-                (Screen.height - height) * 0.5f,
-                width,
-                height);
-
-            GUILayout.BeginArea(area, GUI.skin.box);
-            GUILayout.Label(_status, _labelStyle);
-            GUILayout.Space(12f);
-
-            if (GUILayout.Button("Retry connection", _buttonStyle, GUILayout.Height(32f)))
-            {
-                Retry();
-            }
-
-            if (GUILayout.Button("Quit", _buttonStyle, GUILayout.Height(28f)))
-            {
-                UnityEngine.Application.Quit();
-#if UNITY_EDITOR
-                UnityEditor.EditorApplication.isPlaying = false;
-#endif
-            }
-
-            GUILayout.EndArea();
-        }
-
-        /// <summary>
-        /// Player IMGUI default (LegacyRuntime) is missing under Wine and some stripped
-        /// players — empty Retry/Quit labels plus per-frame font warnings. Prefer OS fonts
-        /// that exist on the current platform (Segoe UI is Windows-only).
-        /// </summary>
-        private void EnsureGuiStyles()
-        {
-            if (_labelStyle != null)
-            {
-                return;
-            }
-
-            Font font = ResolveImguiFont();
-            _labelStyle = new GUIStyle(GUI.skin.label)
-            {
-                font = font,
-                fontSize = 14,
-                wordWrap = true,
-            };
-            _labelStyle.normal.textColor = Color.white;
-            _buttonStyle = new GUIStyle(GUI.skin.button)
-            {
-                font = font,
-                fontSize = 14,
-            };
-        }
-
-        private static Font ResolveImguiFont()
-        {
-            // Builtin LegacyRuntime often exists as an asset but fails to resolve a face in
-            // Wine / some players ("Unable to load font face for [LegacyRuntime]").
-            // CreateDynamicFontFromOSFont(string[]) still binds the first name even when that
-            // face is missing (Segoe UI on Linux → blank buttons + per-frame spam). Pick a
-            // family that is actually installed.
-            string[] preferred = PreferredOsFontFamilies();
-            string[] installed = Font.GetOSInstalledFontNames();
-            if (installed != null && installed.Length > 0)
-            {
-                for (int i = 0; i < preferred.Length; i++)
-                {
-                    string match = FindInstalledFontFamily(preferred[i], installed);
-                    if (match == null)
-                        continue;
-
-                    Font font = Font.CreateDynamicFontFromOSFont(match, 14);
-                    if (font != null)
-                        return font;
-                }
-            }
-
-            Font fallback = Font.CreateDynamicFontFromOSFont(preferred, 14);
-            if (fallback != null)
-                return fallback;
-
-            return Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
-        }
-
-        private static string[] PreferredOsFontFamilies()
-        {
-#if UNITY_EDITOR_LINUX || UNITY_STANDALONE_LINUX
-            return new[]
-            {
-                "DejaVu Sans",
-                "Liberation Sans",
-                "Noto Sans",
-                "Inter",
-                "FreeSans",
-                "Ubuntu",
-                "Cantarell",
-                "Arial",
-            };
-#elif UNITY_EDITOR_OSX || UNITY_STANDALONE_OSX
-            return new[] { "Helvetica", "Helvetica Neue", "Arial", "Lucida Grande" };
-#else
-            return new[] { "Segoe UI", "Arial", "Tahoma", "DejaVu Sans", "Liberation Sans" };
-#endif
-        }
-
-        private static string FindInstalledFontFamily(string preferred, string[] installed)
-        {
-            for (int i = 0; i < installed.Length; i++)
-            {
-                if (string.Equals(installed[i], preferred, StringComparison.OrdinalIgnoreCase))
-                    return installed[i];
-            }
-
-            // Some distros report "DejaVu Sans Book" etc.
-            for (int i = 0; i < installed.Length; i++)
-            {
-                if (installed[i].StartsWith(preferred, StringComparison.OrdinalIgnoreCase))
-                    return installed[i];
-            }
-
-            return null;
-        }
-
-        private void Retry()
-        {
-            NetworkManager networkManager = InstanceFinder.NetworkManager;
-            if (networkManager == null)
-            {
-                return;
-            }
-
-            if (!CanStart)
-            {
-                _status = "Connection still settling — wait a moment, then retry.";
-                return;
-            }
-
-            _recoveryVisible = false;
-
-            if (!SubSystems.TryGet(out NetworkSessionSubSystem session))
-            {
-                // Boot was unloaded (offline Empty). Start from NetworkSettings directly.
-                NetworkSettings settings = ScriptableSettings.GetOrFind<NetworkSettings>();
-                string address = string.IsNullOrWhiteSpace(settings.ServerAddress)
-                    ? "127.0.0.1"
-                    : settings.ServerAddress;
-                LocalPlayer.UpdateCkey(settings.Ckey);
-                NotifySessionStartAttempted();
-                bool started = networkManager.ClientManager.StartConnection(
-                    address,
-                    settings.ServerPort);
-                if (!started)
-                {
-                    _status = "Failed to start client connection.";
-                    _recoveryVisible = true;
-                    SetState(SessionState.WaitingForServer);
-                }
-
-                return;
-            }
-
-            session.StartNetworkSession();
         }
     }
 }

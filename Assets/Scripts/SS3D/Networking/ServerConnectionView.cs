@@ -116,7 +116,7 @@ namespace SS3D.Networking
             _loadingIcon.gameObject.SetActive(false);
             _buttonsUiFade.ProcessFade();
 
-            UpdateMessageText(ProtocolVersionAuthenticator.LastRejection ?? ApplicationMessages.Network.ConnectionFailed);
+            UpdateMessageText(ConnectionNotices.HasReason ? ConnectionNotices.LastReason : ApplicationMessages.Network.ConnectionFailed);
         }
     }
 }

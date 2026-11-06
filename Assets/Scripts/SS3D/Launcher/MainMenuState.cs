@@ -20,6 +20,68 @@ namespace SS3D.Launcher
         public string Address => MainMenuAddress.Format(Host, (ushort)Port);
     }
 
+    /// <summary>
+    /// One join from the menu, kept for its Retry. A server joins the recent list only once its login is
+    /// accepted, so a first-time address has no row until then and its token waits here.
+    /// </summary>
+    public sealed class MainMenuJoinAttempt
+    {
+        public string Host { get; }
+        public ushort Port { get; }
+        public string Name { get; }
+        public string Token { get; private set; }
+
+        public string Id => $"{Host}:{Port}";
+
+        public MainMenuJoinAttempt(string host, ushort port, string name, string token)
+        {
+            Host = host;
+            Port = port;
+            Name = name;
+            Token = token ?? "";
+        }
+
+        /// <summary>Saves the reason on the server's row. False when the server has no row yet.</summary>
+        public bool RecordRefusal(MainMenuState state, string reason, string time)
+        {
+            RecentServer server = state.Find(Id);
+            if (server == null)
+            {
+                return false;
+            }
+
+            server.Refusal = reason;
+            server.RefusalTime = time;
+            return true;
+        }
+
+        /// <summary>Takes a token typed into the dialog. True when it went on a row that needs saving.</summary>
+        public bool SetToken(MainMenuState state, string token)
+        {
+            Token = token ?? "";
+            RecentServer server = state.Find(Id);
+            if (server == null)
+            {
+                return false;
+            }
+
+            server.AdminToken = Token;
+            return true;
+        }
+
+        /// <summary>The login was accepted: remember the server, with the token that got in.</summary>
+        public RecentServer Complete(MainMenuState state, string reportedName)
+        {
+            RecentServer server = state.Remember(Host, Port, reportedName);
+            if (Token.Length > 0)
+            {
+                server.AdminToken = Token;
+            }
+
+            return server;
+        }
+    }
+
     /// <summary>What the main menu remembers between launches (<see cref="MainMenuStore"/>).</summary>
     [Serializable]
     public sealed class MainMenuState

@@ -584,6 +584,48 @@ namespace SS3D.Systems.Testing
                     TestSignal.Emit(this, "MagbootsHeld");
                     break;
 
+                // Client: the server ended this connection with this reason code (DisconnectCode).
+                case "wait_disconnect_reason":
+                    DisconnectCode expectedCode = Enum.Parse<DisconnectCode>(instruction.Args[0]);
+                    yield return WaitUntil(() => ConnectionNotices.LastCode == expectedCode && IsClientFullyStopped(),
+                        _waitTimeoutSeconds, "wait_disconnect_reason");
+                    break;
+
+                case "assert_login_accepted":
+                    if (!ConnectionNotices.LoginWasAccepted)
+                    {
+                        throw new InvalidOperationException("The server never accepted this client's login.");
+                    }
+
+                    break;
+
+                // Client: the admin token the next reconnect presents; {ckey} is this client's name.
+                case "set_token":
+                    LocalPlayer.UpdateAccessToken(instruction.Args[0].Replace("{ckey}", LocalPlayer.Ckey));
+                    break;
+
+                // Server: at least N players have logged in.
+                case "wait_online_players":
+                    int online = int.Parse(instruction.Args[0], System.Globalization.CultureInfo.InvariantCulture);
+                    yield return WaitUntil(() => System.Linq.Enumerable.Count(SubSystems.Get<PlayerSubSystem>().OnlinePlayers) >= online,
+                        _waitTimeoutSeconds, "wait_online_players");
+                    break;
+
+                // Server: a refused login leaves no placeholder behind (PlayerSubSystem.ProcessPlayerDisconnect).
+                case "assert_no_unauthorized":
+                    int leftOver = FindObjectsByType<UnauthorizedPlayer>(FindObjectsSortMode.None).Length;
+                    if (leftOver != 0)
+                    {
+                        throw new InvalidOperationException($"{leftOver} UnauthorizedPlayer objects left over.");
+                    }
+
+                    break;
+
+                // Server: kicks every client, with the rest of the line as the message.
+                case "kick_all":
+                    ConnectionNotices.DisconnectAll(InstanceFinder.NetworkManager, DisconnectCode.Kicked, instruction.ArgsJoined);
+                    break;
+
                 case "wait_seconds":
                     yield return new WaitForSeconds(float.Parse(instruction.Args[0]));
                     break;

@@ -4,7 +4,7 @@
   "sources": {
     "in_game": {
       "root": "Assets/Art",
-      "file_count": 5393
+      "file_count": 5392
     },
     "ss3d_art": {
       "repo": "https://github.com/RE-SS3D/SS3D-Art",
@@ -13,11 +13,11 @@
     }
   },
   "summary": {
-    "in_game_files": 5393,
+    "in_game_files": 5392,
     "ss3d_art_files": 2480,
-    "unique_assets": 7626,
+    "unique_assets": 7625,
     "imported": 247,
-    "in_game_only": 5156,
+    "in_game_only": 5155,
     "ss3d_art_only": 2223,
     "available_for_import": 2008,
     "artwork_only": 215
@@ -2427,10 +2427,10 @@
     },
     {
       "path": "Textures",
-      "in_game": 0,
+      "in_game": -1,
       "ss3d_art": 5,
       "imported": 0,
-      "in_game_only": 0,
+      "in_game_only": -1,
       "ss3d_art_only": 5
     },
     {
@@ -2755,10 +2755,10 @@
     },
     {
       "path": "Textures/UI/Wallpapers",
-      "in_game": 41,
+      "in_game": 40,
       "ss3d_art": 0,
       "imported": 0,
-      "in_game_only": 41,
+      "in_game_only": 40,
       "ss3d_art_only": 0
     },
     {
@@ -2988,7 +2988,7 @@
   ],
   "extensions": {
     "svg": 4248,
-    "png": 2085,
+    "png": 2084,
     "blend": 671,
     "fbx": 253,
     "wav": 159,
@@ -82947,17 +82947,6 @@
       "extension": "png",
       "category": "Textures/UI/Wallpapers",
       "in_game_path": "Assets/Art/Textures/UI/Wallpapers/Friends.png",
-      "ss3d_art_path": null,
-      "github_url": null,
-      "import_target_path": null,
-      "status": "in_game_only"
-    },
-    {
-      "name": "Gibber.png",
-      "stem": "gibber",
-      "extension": "png",
-      "category": "Textures/UI/Wallpapers",
-      "in_game_path": "Assets/Art/Textures/UI/Wallpapers/Gibber.png",
       "ss3d_art_path": null,
       "github_url": null,
       "import_target_path": null,

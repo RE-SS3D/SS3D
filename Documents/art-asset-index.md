@@ -59,7 +59,7 @@ Full list: [`art-available-for-import.json`](art-available-for-import.json)
 | Metric | Count |
 |--------|------:|
 | Already imported (in-game + SS3D-Art) | 247 |
-| In-game only | 5156 |
+| In-game only | 5155 |
 | Available for import | 2008 |
 | Promotional artwork (not game-ready) | 215 |
 

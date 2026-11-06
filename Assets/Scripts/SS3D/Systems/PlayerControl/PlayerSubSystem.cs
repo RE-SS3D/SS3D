@@ -7,6 +7,7 @@ using FishNet.Transporting;
 using SS3D.Core;
 using SS3D.Core.Behaviours;
 using SS3D.Logging;
+using SS3D.Networking;
 using SS3D.Permissions;
 using SS3D.Systems.Entities;
 using SS3D.Systems.PlayerControl.Events;
@@ -196,7 +197,7 @@ namespace SS3D.Systems.PlayerControl
                 && _onlinePlayers.Count >= rounds.PlayerCap
                 && !_onlinePlayers.ContainsKey(userAuthorizationMessage.Ckey))
             {
-                conn.Disconnect(true);
+                ConnectionNotices.Disconnect(conn, DisconnectCode.ServerFull);
                 return;
             }
             string ckey = userAuthorizationMessage.Ckey;
@@ -207,7 +208,7 @@ namespace SS3D.Systems.PlayerControl
                 && !AdminTokens.IsAdmitted(role, ckey, userAuthorizationMessage.Token, IsServerOnly, out string reason))
             {
                 Log.Warning(this, "Rejected login from client {clientId}: {reason}", Logs.Important, conn.ClientId, reason);
-                conn.Disconnect(true);
+                ConnectionNotices.Disconnect(conn, DisconnectCode.AdminToken);
                 return;
             }
 
@@ -269,6 +270,7 @@ namespace SS3D.Systems.PlayerControl
             }
 
             DespawnUnauthorizedPlayer(conn);
+            ConnectionNotices.AcceptLogin(conn);
         }
 
         [Server]
@@ -308,6 +310,13 @@ namespace SS3D.Systems.PlayerControl
             {
                 Log.Debug(this, "Client {connectionAddress}'s owned object: {networkIdentity}",
                     Logs.ServerOnly, conn.GetAddress(), networkIdentity.name);
+
+                // A login that never passed leaves this placeholder. It must not outlive its connection.
+                if (networkIdentity.GetComponent<UnauthorizedPlayer>() != null)
+                {
+                    ServerManager.Despawn(networkIdentity);
+                    continue;
+                }
 
                 Player player = networkIdentity.GetComponent<Player>();
                 if (player != null)

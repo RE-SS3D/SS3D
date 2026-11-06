@@ -3,10 +3,12 @@ using System.Net;
 using LiteNetLib;
 using NUnit.Framework;
 using SS3D.Launcher;
+using SS3D.Networking;
 using SS3D.Networking.Status;
 using SS3D.UI.Shell.MainMenu;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.UIElements;
 using UnityEngine.Video;
 
 namespace SS3D.Tests.EditMode
@@ -224,6 +226,116 @@ namespace SS3D.Tests.EditMode
             Assert.AreEqual("", again.Refusal);
             Assert.AreEqual("secret", again.AdminToken);
             Assert.AreEqual("Renamed", again.Name, "the player's label wins over the reported name");
+        }
+
+        [Test]
+        public void JoinAttempt_RefusalOnAFirstTimeAddress_AddsNoRow_AndKeepsTheToken()
+        {
+            MainMenuState state = new();
+            MainMenuJoinAttempt join = new("new.example", 1151, "Direct connect", "");
+
+            Assert.IsFalse(join.RecordRefusal(state, "refused", "21:00"));
+            Assert.IsFalse(join.SetToken(state, "typed"));
+            Assert.IsEmpty(state.Recent, "only an accepted login joins the list");
+            Assert.AreEqual("typed", join.Token, "Retry sends it");
+
+            RecentServer server = join.Complete(state, "Reported");
+            Assert.AreEqual("typed", server.AdminToken, "written once the login is accepted");
+            Assert.AreEqual("Reported", server.Name);
+            Assert.AreSame(server, state.Recent[0]);
+        }
+
+        [Test]
+        public void JoinAttempt_OnAKnownServer_SavesRefusalAndTokenToItsRow_AndSuccessClearsTheRefusal()
+        {
+            MainMenuState state = new();
+            RecentServer server = state.Remember("known.example", 1151, "Known");
+            MainMenuJoinAttempt join = new("known.example", 1151, "Known", "");
+
+            Assert.IsTrue(join.RecordRefusal(state, "refused", "21:00"));
+            Assert.AreEqual("refused", server.Refusal);
+            Assert.AreEqual("21:00", server.RefusalTime);
+            Assert.IsTrue(join.SetToken(state, "typed"));
+            Assert.AreEqual("typed", server.AdminToken);
+
+            join.Complete(state, "");
+            Assert.AreEqual("", server.Refusal);
+            Assert.AreEqual("typed", server.AdminToken);
+        }
+
+        [Test]
+        public void JoinAttempt_WithNoToken_KeepsTheRowsToken()
+        {
+            MainMenuState state = new();
+            state.Remember("known.example", 1151, "Known").AdminToken = "saved";
+            new MainMenuJoinAttempt("known.example", 1151, "Known", "").Complete(state, "");
+            Assert.AreEqual("saved", state.Recent[0].AdminToken);
+        }
+
+        [TestCase(DisconnectCode.ServerFull, null, "The server is full.")]
+        [TestCase(DisconnectCode.AdminToken, null, "This name is an admin name on this server. Enter its admin token.")]
+        [TestCase(DisconnectCode.ServerRestarting, null, "The server is restarting.")]
+        [TestCase(DisconnectCode.Kicked, null, "You were kicked from the server.")]
+        [TestCase(DisconnectCode.Kicked, "griefing", "You were kicked: griefing")]
+        [TestCase(DisconnectCode.VersionMismatch, "server is 1.0", "server is 1.0")]
+        [TestCase(DisconnectCode.None, null, ConnectionNotices.Lost)]
+        public void DisconnectCode_RendersOnTheClient(DisconnectCode code, string text, string expected)
+        {
+            Assert.AreEqual(expected, ConnectionNotices.Describe(code, text));
+        }
+
+        private static MainMenuView DialogView(MainMenuPresentation model)
+        {
+            MainMenuAssetCatalog catalog = Resources.Load<MainMenuAssetCatalog>(MainMenuAssetPaths.ResourcesCatalogName);
+            MainMenuView view = new(catalog);
+            model.Screen = MainMenuScreen.Connecting;
+            view.Present(model);
+            return view;
+        }
+
+        private static bool Shown(MainMenuView view, string name) =>
+            !view.Root.Q(name).ClassListContains("main-menu__hidden");
+
+        [Test]
+        public void Dialog_WhileJoining_OffersCancelOnly_AndCountsTheLoginStep()
+        {
+            MainMenuView view = DialogView(new MainMenuPresentation { OperationStep = 3 });
+            Assert.IsTrue(Shown(view, "cancel"));
+            Assert.IsFalse(Shown(view, "retry"));
+            Assert.IsFalse(Shown(view, "back-to-servers"));
+            Assert.IsFalse(Shown(view, "overlay-token-row"));
+            Assert.AreEqual(4, view.Root.Q("progress-steps").childCount);
+            Assert.AreEqual("CONNECTING", view.Root.Q<Label>("overlay-title").text);
+        }
+
+        [Test]
+        public void Dialog_OnATokenRefusal_MarksTheStep_AndOffersRetryBackAndToken()
+        {
+            MainMenuView view = DialogView(new MainMenuPresentation
+            {
+                OperationStep = 3, OperationFailed = true, OperationNeedsToken = true,
+                OperationReason = "why", OperationToken = "typed",
+            });
+            Assert.IsFalse(Shown(view, "cancel"));
+            Assert.IsTrue(Shown(view, "retry"));
+            Assert.IsTrue(Shown(view, "back-to-servers"));
+            Assert.IsTrue(Shown(view, "overlay-token-row"));
+            Assert.AreEqual("typed", view.Root.Q<TextField>("overlay-token").value);
+            Assert.IsTrue(view.Root.Q<TextField>("overlay-token").isPasswordField);
+            System.Collections.Generic.List<string> texts = view.Root.Q("progress-steps").Query<Label>().ToList().ConvertAll(label => label.text);
+            CollectionAssert.Contains(texts, "FAILED");
+            CollectionAssert.Contains(texts, "why");
+        }
+
+        [Test]
+        public void Dialog_OnALostConnection_ShowsOnlyTheReason()
+        {
+            MainMenuView view = DialogView(new MainMenuPresentation { OperationFailed = true, OperationLost = true, OperationReason = "why" });
+            Assert.AreEqual("CONNECTION LOST", view.Root.Q<Label>("overlay-title").text);
+            Assert.IsTrue(Shown(view, "retry"));
+            Label reason = view.Root.Q("progress-steps").Q<Label>();
+            Assert.AreEqual("why", reason.text);
+            Assert.AreEqual(1, view.Root.Q("progress-steps").childCount);
         }
 
         [Test]

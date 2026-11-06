@@ -1044,7 +1044,12 @@ namespace SS3D.Editor.Automation
             new Step
             {
                 Name = "Client disconnect hides lobby",
-                Enter = () => InstanceFinder.ClientManager.StopConnection(),
+                Enter = () =>
+                {
+                    // On purpose: a lost host session would otherwise go to the main menu and stop the server.
+                    SS3D.Networking.ClientConnectionRecovery.FailureUiOwnedElsewhere = true;
+                    InstanceFinder.ClientManager.StopConnection();
+                },
                 Until = () => !InstanceFinder.ClientManager.Started && !Visible(Shell()) && !Visible(Creator()),
                 Verify = () => Require(!BoothLive(), "Booth deactivated offline"),
             },
@@ -1052,10 +1057,11 @@ namespace SS3D.Editor.Automation
             {
                 Name = "Client reconnect restores lobby",
                 Timeout = 60,
-                // Like the recovery overlay's Retry: a start issued while Tugboat is still stopping is dropped.
+                // A start issued while Tugboat is still stopping is dropped.
                 Until = () => RetryConnection() && Online() && Local() != null && Visible(Shell()) && CountLabel() == "0/1 ready" && ReadyButton().enabledInHierarchy,
                 Verify = () =>
                 {
+                    SS3D.Networking.ClientConnectionRecovery.FailureUiOwnedElsewhere = false;
                     Require(BoothLive(), "Booth restored after reconnect");
                     Require(CountLabel() == "0/1 ready", "Player list repopulated after reconnect");
                     Require(ReadyButton().enabledInHierarchy, "Ready usable after reconnect");

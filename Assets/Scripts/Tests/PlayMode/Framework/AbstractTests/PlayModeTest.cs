@@ -209,6 +209,8 @@ namespace SS3D.Tests
 
         protected IEnumerator PrepareNetworkTestEnvironment()
         {
+            // Tests end sessions on purpose; a lost-connection trip to the main menu would unload them.
+            ClientConnectionRecovery.FailureUiOwnedElsewhere = true;
             CloseActiveNetworkSession();
             lobbySceneLoaded = false;
             setUpOnce = false;
