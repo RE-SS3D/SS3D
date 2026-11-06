@@ -257,26 +257,29 @@ float4 AtmosDebugColor(float3 worldPos)
     return float4(atlasUV, 0, inside ? 1 : 0);
 }
 
-float3 AtmosUnproject(float2 uv, float deviceDepth, float4x4 invViewProj)
+float3 AtmosUnproject(float2 positionCS, float deviceDepth, float4x4 invViewProj)
 {
-    float4 positionCS = float4(uv * 2.0 - 1.0, deviceDepth, 1.0);
-#if UNITY_UV_STARTS_AT_TOP
-    positionCS.y = -positionCS.y;
-#endif
-    float4 positionWS = mul(invViewProj, positionCS);
+    float4 positionWS = mul(invViewProj, float4(positionCS, deviceDepth, 1.0));
     return positionWS.xyz / max(positionWS.w, 1e-6);
 }
 
-// Non-jittered matrix — stable for debug plane projection.
+// Non-jittered matrix — stable for debug plane projection. It comes straight from the camera,
+// so it has no render-target flip and clip Y has to be flipped here.
 float3 AtmosComputeWorldPosition(float2 uv, float deviceDepth)
 {
-    return AtmosUnproject(uv, deviceDepth, _AtmosInvViewProj);
+    float2 positionCS = uv * 2.0 - 1.0;
+#if UNITY_UV_STARTS_AT_TOP
+    positionCS.y = -positionCS.y;
+#endif
+    return AtmosUnproject(positionCS, deviceDepth, _AtmosInvViewProj);
 }
 
-// Depth-buffer matrix — must match SampleSceneDepth for scatter ray clipping.
+// Depth-buffer matrix — must match SampleSceneDepth for scatter ray clipping. URP bakes the
+// render-target flip into it, and uv is this pixel's own clip position remapped to 0..1.
+// Flipping here too mirrors every ray across the screen's horizontal centre line.
 float3 AtmosComputeWorldPositionFromDepth(float2 uv, float deviceDepth)
 {
-    return AtmosUnproject(uv, deviceDepth, UNITY_MATRIX_I_VP);
+    return AtmosUnproject(uv * 2.0 - 1.0, deviceDepth, UNITY_MATRIX_I_VP);
 }
 
 void AtmosComputeViewRay(float2 uv, out float3 rayOrigin, out float3 rayDir)

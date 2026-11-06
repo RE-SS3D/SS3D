@@ -40,6 +40,7 @@ Client FOV / fog-of-war is a hard black mask driven by batched physics raycasts 
 
 ## Pitfalls
 
+- **`UNITY_MATRIX_I_VP` already holds the render-target flip:** only the camera's own matrix needs clip Y flipped by hand. Flipping both mirrored every atmos ray across the screen's horizontal centre line, so gas showed as clouds in space and held upside-down silhouettes, while the debug views stayed correct because they use the camera matrix. `AtmosScatterPlacementTests` renders through the real feature. It needs a graphics device, so it skips in headless CI. Hit 2026-11-06.
 - **SSAO blue noise shimmers:** URP swaps the blue-noise texture every frame, expecting TAA to resolve it, so contact shading boils under SMAA with a still camera. It reads as shadow jitter, but turning shadows off changes nothing. `SS3D_ForwardPlusRenderer` uses Interleaved Gradient, which is static (changed pixels between frames 1.58 % to 0.29 %). Hit 2026-11-05.
 - **Carpet/vendor surfaces break into streaks:** constant palette-swatch UVs produce zero derivatives in `ST_CotangentFrame`; unguarded `rsqrt(0)` creates NaN normals. Clamp the squared tangent length before reciprocal square root so flat normal maps retain geometric normals.
 
