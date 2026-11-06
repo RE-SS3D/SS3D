@@ -54,7 +54,6 @@ namespace SS3D.UI.MachineInterface
             ["O2"] = true,
             ["N2"] = true,
             ["CO2"] = true,
-            ["Plasma"] = false,
             ["Toxins"] = true,
         };
 

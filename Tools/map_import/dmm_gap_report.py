@@ -13,7 +13,7 @@ PATH_RE = re.compile(r"(/[a-zA-Z0-9_/\-]+)")
 
 INFRA_KIND_DEFAULTS = {
     "cable": "Cables",
-    "pipe": "AtmosPipesL3",
+    "pipe": "AtmosPipesWaste",
     "disposal": "DisposalPipes",
     "disposalterminal": "DisposalBin",
     "vent": "Vent",

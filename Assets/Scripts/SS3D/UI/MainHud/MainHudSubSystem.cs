@@ -532,6 +532,7 @@ namespace SS3D.UI.MainHud
                 LowPressure = ToAlertSeverity(atmos.LowPressure),
                 HighPressure = ToAlertSeverity(atmos.HighPressure),
                 SealBreach = ToAlertSeverity(atmos.SealBreach),
+                Invincible = EntityInvincibility.LocalPlayerInvincible ? AlertSeverity.Warning : AlertSeverity.None,
                 TankLow = ToAlertSeverity(atmos.TankLow),
             };
         }

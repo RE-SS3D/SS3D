@@ -32,8 +32,15 @@ namespace SS3D.Systems.Tile.Connections
                 return;
 
             QueueUpdate(tile);
+            QueueNeighbours(tile.Layer, tile.transform.position);
+        }
 
-            PlacedTileObject[] neighbours = _map.GetNeighbourPlacedObjects(tile.Layer, tile.transform.position);
+        /// <summary>
+        /// Queues what surrounds a tile, which needs no object there: a removed one is already gone.
+        /// </summary>
+        public void QueueNeighbours(TileLayer layer, Vector3 worldPosition)
+        {
+            PlacedTileObject[] neighbours = _map.GetNeighbourPlacedObjects(layer, worldPosition);
             foreach (PlacedTileObject neighbour in neighbours)
             {
                 if (neighbour != null && neighbour.TryGetComponent<IEngineDrivenAdjacency>(out _))
@@ -82,7 +89,8 @@ namespace SS3D.Systems.Tile.Connections
             for (Direction direction = Direction.North; direction <= Direction.NorthWest; direction++)
             {
                 PlacedTileObject neighbour = neighbours[(int)direction];
-                bool connected = rule.IsConnected(tile, neighbour);
+                bool connected = rule.IsConnected(tile, neighbour)
+                    || (rule is ICrossLayerConnectionRule crossLayer && crossLayer.IsConnectedAcrossLayers(tile, direction, map));
                 adjacencyMap.SetConnection(direction,
                     new AdjacencyData(TileObjectGenericType.None, TileObjectSpecificType.None, connected));
             }

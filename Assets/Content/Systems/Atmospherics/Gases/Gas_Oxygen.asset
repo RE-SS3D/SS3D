@@ -24,3 +24,8 @@ MonoBehaviour:
     EmissionIntensity: 0
     DistortionScale: 0
     TurbulenceScale: 0
+  _symbol: O2
+  _panelColor:
+    serializedVersion: 2
+    rgba: 4292386671
+  _toxic: 0

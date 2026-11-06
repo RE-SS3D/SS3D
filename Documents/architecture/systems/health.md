@@ -74,6 +74,7 @@ Phase 0d strips legacy health components from `Human.prefab` and rewires a thinn
 
 ## Pitfalls
 
+- **Invincibility must not blank the environment:** map editor invincibility outlives the editor, and `TickHealthFromEnvironment` used to return `SafeDefault` for it, so the snapshot said 101 kPa in vacuum and no alert showed, with no error. It now samples and skips only the harm; `HasSample` false means no reading, not safe air. Hit 2026-11-06.
 - **Critical patients can still act despite collapsing:** snapshot `CanUseArms` and `MovementSpeedMultiplier` must include systemic critical, consciousness, arrest and death checks, not only limb injury. `PublishSnapshot` drops held items on loss of arm control; recovery restores capabilities.
 - **Blood decals vanish after setting Surface Type Transparent:** URP `Decal` shadergraph materials must stay **Opaque**. Alpha already blends via the DBuffer/Screen Space passes (`SrcAlpha OneMinusSrcAlpha`); flipping `_Surface` / render queue 3000 / `_SURFACE_TYPE_TRANSPARENT` makes projectors stop drawing. Keep `BloodDecal.mat` Opaque like the package `Decal.mat` default.
 - **White / untinted splatters:** most `Assets/Art/Textures/World/VFX/Splatters/Splatter*.png` are white masks. URP Decal has no Base Color multiply (only `Base_Map` → albedo). `BleedingVfxCatalog.CreateDecalMaterial` tints those masks at runtime; do not “fix” white by switching the material to Transparent.

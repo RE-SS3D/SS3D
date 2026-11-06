@@ -267,10 +267,18 @@ namespace SS3D.UI.MachineInterface
                 && controlId == MachineInterfaceControlIds.Atmos.TargetPressure
                 && pump.AccessGranted)
             {
-                pump.TargetOutletPressureKpa = Math.Clamp(
-                    pump.TargetOutletPressureKpa + (int)MathF.Round(delta * 100f),
-                    0,
-                    9000);
+                int step = (int)MathF.Round(delta * 100f);
+                if (pump.Regulation == PumpRegulation.Volume)
+                {
+                    pump.TargetLitresPerSecond = Math.Clamp(
+                        pump.TargetLitresPerSecond + step,
+                        0,
+                        AtmosPortConstants.VolumePumpMaxLitresPerSecond);
+                }
+                else
+                {
+                    pump.TargetOutletPressureKpa = Math.Clamp(pump.TargetOutletPressureKpa + step, 0, 9000);
+                }
             }
         }
 
@@ -279,6 +287,105 @@ namespace SS3D.UI.MachineInterface
             if (model is PumpInterfaceViewModel pump && controlId == MachineInterfaceControlIds.Atmos.ReadId)
             {
                 AccessGatedOptimisticHelpers.ToggleAccessScan(pump);
+            }
+        }
+    }
+
+    internal sealed class FilterOptimisticControlHandler : IMachineOptimisticControlHandler
+    {
+        public Type ViewModelType => typeof(FilterInterfaceViewModel);
+
+        public void ApplyBool(object model, byte controlId, bool isOn, MachineOptimisticControlCallbacks callbacks)
+        {
+            if (model is FilterInterfaceViewModel filter
+                && controlId == MachineInterfaceControlIds.Atmos.Power
+                && filter.AccessGranted)
+            {
+                filter.Powered = isOn;
+            }
+        }
+
+        public void ApplyNumeric(object model, byte controlId, float delta, MachineOptimisticControlCallbacks callbacks)
+        {
+            if (model is FilterInterfaceViewModel filter
+                && controlId == MachineInterfaceControlIds.Atmos.FlowRate
+                && filter.AccessGranted)
+            {
+                filter.FlowLitresPerSecond = Math.Clamp(
+                    filter.FlowLitresPerSecond + (int)MathF.Round(delta) * 5,
+                    0,
+                    AtmosPortConstants.FilterMaxLitresPerSecond);
+            }
+        }
+
+        public void ApplyAction(object model, byte controlId, int value, MachineOptimisticControlCallbacks callbacks)
+        {
+            if (model is not FilterInterfaceViewModel filter)
+            {
+                return;
+            }
+
+            if (controlId == MachineInterfaceControlIds.Atmos.ReadId)
+            {
+                AccessGatedOptimisticHelpers.ToggleAccessScan(filter);
+                return;
+            }
+
+            if (controlId != MachineInterfaceControlIds.Atmos.DeviceFilter || !filter.AccessGranted)
+            {
+                return;
+            }
+
+            foreach (GasFilterRowView gas in filter.Gases)
+            {
+                if (gas.Id == value)
+                {
+                    gas.Selected = !gas.Selected;
+                }
+            }
+        }
+    }
+
+    internal sealed class MixerOptimisticControlHandler : IMachineOptimisticControlHandler
+    {
+        public Type ViewModelType => typeof(MixerInterfaceViewModel);
+
+        public void ApplyBool(object model, byte controlId, bool isOn, MachineOptimisticControlCallbacks callbacks)
+        {
+            if (model is MixerInterfaceViewModel mixer
+                && controlId == MachineInterfaceControlIds.Atmos.Power
+                && mixer.AccessGranted)
+            {
+                mixer.Powered = isOn;
+            }
+        }
+
+        public void ApplyNumeric(object model, byte controlId, float delta, MachineOptimisticControlCallbacks callbacks)
+        {
+            if (model is not MixerInterfaceViewModel mixer || !mixer.AccessGranted)
+            {
+                return;
+            }
+
+            int steps = (int)MathF.Round(delta);
+            if (controlId == MachineInterfaceControlIds.Atmos.TargetPressure)
+            {
+                mixer.TargetOutletPressureKpa = Math.Clamp(
+                    mixer.TargetOutletPressureKpa + steps * 100,
+                    0,
+                    AtmosPortConstants.MaxTargetPressureKpa);
+            }
+            else if (controlId == MachineInterfaceControlIds.Atmos.InletRatio)
+            {
+                mixer.Inlet1Percent = Math.Clamp(mixer.Inlet1Percent + steps * 5, 0, 100);
+            }
+        }
+
+        public void ApplyAction(object model, byte controlId, int value, MachineOptimisticControlCallbacks callbacks)
+        {
+            if (model is MixerInterfaceViewModel mixer && controlId == MachineInterfaceControlIds.Atmos.ReadId)
+            {
+                AccessGatedOptimisticHelpers.ToggleAccessScan(mixer);
             }
         }
     }

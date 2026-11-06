@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using SS3D.Systems.Tile.GasMarkers;
+using SS3D.Systems.Tile.MapEditor;
 using SS3D.Systems.Tile.SpawnPoints;
 
 namespace SS3D.Systems.Tile.Validation
@@ -104,10 +106,20 @@ namespace SS3D.Systems.Tile.Validation
                 Vector2Int cell = SpawnPointRegistry.TileKey(device.Position);
                 string name = KindName(device.Kind);
                 string place = $"{cell.x}:{cell.y}";
-                if (IsPort(device.Kind) && !device.HasPipe)
+                if (!device.HasPipe && IsInline(device.Kind))
                     AddWarning(report, $"pipe:{device.Kind}:{place}", device,
-                        $"{name} at ({cell.x}, {cell.y}) has no pipe",
-                        "so it can't move any gas. Run a pipe to it.");
+                        $"{name} at ({cell.x}, {cell.y}) needs a Surface pipe at both ports",
+                        "so it can't move any gas. Run one up to its front and its back.");
+                else if (!device.HasPipe && device.Kind == RoomDeviceKind.ThreeWay)
+                    AddWarning(report, $"pipe:{device.Kind}:{place}", device,
+                        $"{name} at ({cell.x}, {cell.y}) can't tell which pipe line it's on",
+                        "so it can't move any gas. Its line needs a pipe at all three ports and none under it, and only one line may fit.");
+                else if (!device.HasPipe)
+                    AddWarning(report, $"pipe:{device.Kind}:{place}", device,
+                        $"{name} at ({cell.x}, {cell.y}) has no {PipeLineName(device.Kind)} pipe on its tile",
+                        device.Kind == RoomDeviceKind.LineReader
+                            ? "so it has no line to work on. Run one under it."
+                            : "so it can't move any gas. Run one under it.");
                 if (device.AreaId == 0 && device.Kind == RoomDeviceKind.AirAlarm)
                     AddWarning(report, $"alarm-room:{place}", device,
                         $"{name} at ({cell.x}, {cell.y}) faces no room",
@@ -146,15 +158,41 @@ namespace SS3D.Systems.Tile.Validation
             }
         }
 
+        /// <summary>A source or room air marker whose room is open to space, or too large to be a room.</summary>
+        public static void AddUnsealedGasMarker(MapValidationReport report, GasMarkerRecord marker)
+        {
+            Vector2Int cell = SpawnPointRegistry.TileKey(marker.Position);
+            string title = $"{MapEditorGasMarkerCatalog.DisplayName(marker.Kind)} at ({cell.x}, {cell.y}) isn't in a sealed room";
+            string consequence = marker.Kind == GasMarkerKind.Source
+                ? "so its gas pours out for the whole round. Close the room with walls and doors."
+                : "so it leaks away from round start. Close the room with walls and doors.";
+            report.AddIssue($"gas-marker:{cell.x}:{cell.y}", true, "Atmos", title, $"{title}, {consequence}", marker.Position, true);
+        }
+
         private static void AddWarning(MapValidationReport report, string id, RoomDeviceRecord device, string title, string consequence) =>
             report.AddIssue(id, true, "Atmos", title, $"{title}, {consequence}", device.Position, true);
 
         private static bool IsPort(RoomDeviceKind kind) => kind is RoomDeviceKind.Vent or RoomDeviceKind.Scrubber;
 
+        private static bool IsInline(RoomDeviceKind kind) => kind is RoomDeviceKind.GasPump or RoomDeviceKind.Valve;
+
+        private static string PipeLineName(RoomDeviceKind kind) => kind switch
+        {
+            RoomDeviceKind.Vent => "Supply or Mixed",
+            RoomDeviceKind.Scrubber => "Waste or Mixed",
+            RoomDeviceKind.LineReader => "gas",
+            _ => "matching",
+        };
+
         private static string KindName(RoomDeviceKind kind) => kind switch
         {
             RoomDeviceKind.Vent => "Vent",
             RoomDeviceKind.Scrubber => "Scrubber",
+            RoomDeviceKind.GasPump => "Gas pump",
+            RoomDeviceKind.Valve => "Valve",
+            RoomDeviceKind.LineFill => "Line fill",
+            RoomDeviceKind.ThreeWay => "Filter or mixer",
+            RoomDeviceKind.LineReader => "Meter or injector",
             RoomDeviceKind.AirAlarm => "Air alarm",
             _ => "Light",
         };
@@ -180,8 +218,17 @@ namespace SS3D.Systems.Tile.Validation
     {
         Vent,
         Scrubber,
+        GasPump,
+        Valve,
         AirAlarm,
         Light,
+        LineFill,
+
+        /// <summary>A filter or mixer: three ports on one line.</summary>
+        ThreeWay,
+
+        /// <summary>A meter or injector: any line on its tile.</summary>
+        LineReader,
     }
 
     /// <summary>A placed device and the room it belongs to (area 0 means no room).</summary>

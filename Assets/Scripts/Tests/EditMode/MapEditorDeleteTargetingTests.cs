@@ -1,3 +1,4 @@
+using System.Linq;
 using EditorTests;
 using NUnit.Framework;
 using SS3D.Systems.Tile;
@@ -67,7 +68,7 @@ namespace SS3D.Tests.EditMode
         }
 
         [Test]
-        public void Resolve_Piping_IncludesWireAndPipes_NotDisposal()
+        public void Resolve_Piping_TakesPipesBeforeTheWireOnTheirTile_NotDisposal()
         {
             ITileLocation[] locations = CreateLocations();
             PlaceOn(locations, TileLayer.Wire, TileObjectGenericType.None, "Cable", Direction.North);
@@ -76,10 +77,18 @@ namespace SS3D.Tests.EditMode
 
             MapEditorDeleteTargeting.Resolve(MapEditorSubcategory.Piping, Direction.North, locations, _targets);
 
-            Assert.AreEqual(2, _targets.Count);
-            Assert.That(_targets.Exists(t => t.AssetName == "Cable"));
-            Assert.That(_targets.Exists(t => t.AssetName == "Pipe"));
-            Assert.That(!_targets.Exists(t => t.AssetName == "Disp"));
+            Assert.AreEqual("Pipe", _targets.Single().AssetName);
+        }
+
+        [Test]
+        public void Resolve_Piping_TakesTheWireOnceNoPipeIsLeft()
+        {
+            ITileLocation[] locations = CreateLocations();
+            PlaceOn(locations, TileLayer.Wire, TileObjectGenericType.None, "Cable", Direction.North);
+
+            MapEditorDeleteTargeting.Resolve(MapEditorSubcategory.Piping, Direction.North, locations, _targets);
+
+            Assert.AreEqual("Cable", _targets.Single().AssetName);
         }
 
         [Test]

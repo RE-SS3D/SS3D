@@ -1,3 +1,4 @@
+using SS3D.Systems.Atmospherics.Pipes;
 using SS3D.UI.MachineInterface.Components;
 using System;
 using UnityEngine.UIElements;
@@ -24,6 +25,8 @@ namespace SS3D.UI.MachineInterface.Bindings
         private readonly ToggleSwitch _powerToggle;
         private readonly Label _targetGatedHint;
         private readonly NumericStepper _targetStepper;
+        private readonly VisualElement _targetColumn;
+        private readonly Label _targetTitle;
         private readonly DeviceFooter _footer;
 
         public PumpInterfaceBinder(VisualElement root)
@@ -40,6 +43,8 @@ namespace SS3D.UI.MachineInterface.Bindings
             _powerToggle = queryRoot.Q<ToggleSwitch>("power-toggle");
             _targetGatedHint = queryRoot.Q<Label>("target-gated-hint");
             _targetStepper = queryRoot.Q<NumericStepper>("target-stepper");
+            _targetColumn = queryRoot.Q<VisualElement>("target-column");
+            _targetTitle = queryRoot.Q<Label>("target-title");
             _footer = queryRoot.Q<DeviceFooter>("footer");
 
             if (_shell != null)
@@ -128,9 +133,19 @@ namespace SS3D.UI.MachineInterface.Bindings
 
             if (_targetStepper != null)
             {
-                _targetStepper.ValueText = $"{model.TargetOutletPressureKpa} kPa";
+                _targetStepper.ValueText = model.TargetValueText;
                 _targetStepper.HintText = string.Empty;
                 _targetStepper.Locked = locked;
+            }
+
+            if (_targetColumn != null)
+            {
+                _targetColumn.style.display = model.Regulation == PumpRegulation.None ? DisplayStyle.None : DisplayStyle.Flex;
+            }
+
+            if (_targetTitle != null)
+            {
+                _targetTitle.text = model.TargetTitle;
             }
 
             if (_footer != null)

@@ -63,6 +63,11 @@ namespace SS3D.Systems.Tile.TileMapCreator
             {
                 col.enabled = false;
             }
+            foreach (HologramOnly hologramOnly in ghostObject.GetComponentsInChildren<HologramOnly>(true))
+            {
+                hologramOnly.gameObject.SetActive(true);
+            }
+
             ChangeHologramColor(mode);
         }
 

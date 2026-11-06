@@ -644,10 +644,17 @@ namespace SS3D.Systems.Health
         [Server]
         private void TickHealthFromEnvironment()
         {
-            if (HealthEnvironmentSettings.AtmosphericDamageDisabled
-                || EntityInvincibility.IsInvincible(this))
+            if (HealthEnvironmentSettings.AtmosphericDamageDisabled)
             {
                 _environment = HealthEnvironmentState.SafeDefault;
+                TickHealth(atmosphereO2: 1f, toxinIntake: HealthConstants.BaseToxinIntake);
+                return;
+            }
+
+            // Invincibility stops the harm, not the reading: its owner still sees what the air is doing.
+            if (EntityInvincibility.IsInvincible(this))
+            {
+                _environment = ApplyInternals(ApplyWornSeal(SampleEnvironmentAtBody()));
                 TickHealth(atmosphereO2: 1f, toxinIntake: HealthConstants.BaseToxinIntake);
                 return;
             }

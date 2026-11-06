@@ -365,6 +365,8 @@ namespace SS3D.Systems.Tile
                     return new SingleTileLocation(layer, x, y);
                 case TileLayer.PipeLeft:
                     return new SingleTileLocation(layer, x, y);
+                case TileLayer.PipeManifold:
+                    return new SingleTileLocation(layer, x, y);
                 case TileLayer.WallMountHigh:
                     return new CardinalTileLocation(layer, x, y);
                 case TileLayer.WallMountLow:

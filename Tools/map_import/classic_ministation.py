@@ -1,14 +1,18 @@
 #!/usr/bin/env python3
-"""Rebuild the 2021 MiniStation (RE-SS3D PR #857) as a current station template.
+"""One-time build of the 2021 MiniStation (RE-SS3D PR #857) as a station template.
+
+Builds/Game/Data/StationTemplates/classic-ministation.json is the source of truth now, edited in
+the in-game map editor. This script predates those edits and rebuilding throws them away, so it
+writes nothing unless asked with --overwrite-map-edits. Change the map in the editor instead.
 
 The source map was deleted in c8c0997dc, so it is read from git history: tiles from the
 old save file, loose items from the old scene. Everything the source lacks and a round
-needs today (power plant, cable runs, spawn markers, nuke, disk) is listed in ADDED_*.
+needs today (power plant, atmos room, cable runs, spawn markers, nuke, disk) is listed in
+ADDED_* and add_atmos_room.
 
-    python3 Tools/map_import/classic_ministation.py [--check]
+    python3 Tools/map_import/classic_ministation.py --overwrite-map-edits
 
-Writes Builds/Game/Data/StationTemplates/classic-ministation.json and prints what could
-not be carried over. --check fails instead of writing when the output would change.
+Writes the template and prints what could not be carried over.
 """
 import argparse
 import collections
@@ -40,7 +44,8 @@ LAYERS = {
     "PlasticChair": 7, "PlasticChairGrey": 7, "SMES": 7, "Scrubber": 7, "TableBoozeDispenser": 7, "TableGlass": 7,
     "TablePoker": 7, "TableSteel": 7, "TableWood": 7, "VendorHotDrinks": 7, "VendorRobustSoftdrinks": 7,
     "VendorSecTech": 7, "VendorYouTool": 7, "Vent": 7,
-    "AtmosPipesL1": 10, "AtmosPipesL3": 11,
+    "AtmosPipesMixed": 9, "AtmosPipesSupply": 10, "AtmosPipesWaste": 11, "AtmosPipesSurface": 4,
+    "GasPump": 4, "AtmosValveManual": 4, "AtmosManifold4": 12,
 }
 
 TILE_RENAMES = {
@@ -49,7 +54,7 @@ TILE_RENAMES = {
     "BarStool": "PlasticChairGrey", "BoozeVendor": "TableBoozeDispenser", "ChemicalHeater": "MachineFrame",
     "CigaretteVendor": "VendorYouTool", "ConsoleCrewMonitor": "MachineFrame", "ConsoleOff": "MachineFrame",
     "Cryotube - Blue": "Cryotube", "FilingCabinet": "Locker", "Jukebox": "JukeboxBlueGreen",
-    "PipesLayer1": "AtmosPipesL1", "PipesLayer3": "AtmosPipesL3", "SnackVendor": "VendorHotDrinks",
+    "PipesLayer1": "AtmosPipesSupply", "PipesLayer3": "AtmosPipesWaste", "SnackVendor": "VendorHotDrinks",
     "SodaVendor": "VendorRobustSoftdrinks", "Stove": "Microwave", "fridge": "Locker",
 }
 # No current asset is close enough to stand in.
@@ -72,6 +77,46 @@ ADDED_TILES = [
     ("SMES", -11, 12, 0), ("SMES", -11, 11, 0),
     ("DisposalOutlet", -11, -8, 4),  # the old pipe run ends here, at the maintenance edge
     ("NukeCart", 7, 11, 4),
+]
+# South of the corridor: a 7x3 atmos room, a wall with windows, then a sealed 7x2 air chamber.
+ROOM_COLUMNS = range(-1, 6)
+ROOM_FLOOR_ROWS = range(-8, -5)
+CHAMBER_FLOOR_ROWS = range(-11, -9)
+ROOM_DOOR = (2, -5)
+ROOM_WINDOWS = {(0, -9), (4, -9)}
+ROOM_SHELL = sorted(
+    {(x, y) for x in range(-2, 7) for y in (-9, -12)} | {(x, y) for x in (-2, 6) for y in range(-12, -5)}
+)
+WASTE_OUTLET_VENT = (7, -8)  # on a catwalk outside the east wall, open to space
+ADDED_SUPPLY_PIPES = [
+    *((x, -3) for x in range(8, 16)),  # over the catwalk to the east wing
+    (2, -4), (2, -5), (2, -6),  # from the corridor into the room
+    (1, -6), (0, -6), (0, -7), (0, -8),  # down to the air pump's outlet
+    (3, -6), (4, -6), (4, -7),  # the room's own vent
+]
+ADDED_WASTE_PIPES = [
+    *((x, -3) for x in range(8, 16)),  # over the catwalk, so every scrubber shares one outlet
+    (5, -4), (5, -5), (5, -6),  # from the corridor into the room
+]
+ADDED_MIXED_PIPES = [
+    *((2, y) for y in range(-8, -12, -1)),  # from the chamber's intake up to the air pump's inlet
+    (5, -8), (6, -8), WASTE_OUTLET_VENT,  # from the waste valve out through the hull
+]
+ADDED_SURFACE_PIPES = [(2, -8), (0, -8), (5, -6), (5, -8)]  # each sits on a manifold, at a device's port
+ADDED_ATMOS_TILES = [
+    ("Scrubber", 2, -10, 0),  # the chamber's intake
+    ("AtmosManifold4", 2, -8, 0), ("GasPump", 1, -8, 6), ("AtmosManifold4", 0, -8, 0),  # chamber to Supply
+    ("AtmosManifold4", 5, -6, 0), ("AtmosValveManual", 5, -7, 4), ("AtmosManifold4", 5, -8, 0),  # Waste to space
+    ("Vent", 4, -7, 0),
+    ("Vent", *WASTE_OUTLET_VENT, 0),
+    ("APC", 1, -9, 4), ("APC", 3, -9, 0),
+    ("LightBulbFixture", -2, -7, 2), ("LightBulbFixture", 6, -7, 6), ("LightBulbFixture", -2, -10, 2),
+]
+AIR = [20.79, 83.17, 0.0, 0.0]  # gas fractions by id, the map's own air
+PIPE_LEFT = 10  # TileLayer.PipeLeft, the Supply line
+ADDED_GAS_MARKERS = [
+    (0, 3, -10, 0, 500.0),  # Source: the chamber
+    (1, 3, -6, PIPE_LEFT, 300.0),  # LineFill: Supply starts charged
 ]
 ADDED_ITEMS = [
     ("NuclearAuthenticationDisk", 5.0, 0.8, 7.0),
@@ -161,6 +206,37 @@ def convert_tiles(source, report):
     return cells
 
 
+def add_atmos_room(cells):
+    """Air chamber and atmos room south of the corridor, with the Supply line fed from the chamber.
+
+    The intake scrubber fills a short Mixed run that a manifold lifts to the Surface line, where the
+    air pump feeds Supply through a second manifold. Waste ends at a manual valve, then a vent out
+    through the hull. The valve starts closed: until scrubbers leave room air alone, an open outlet
+    would bleed the station into space faster than the intake can replace it.
+    """
+    for x, y in ROOM_SHELL:
+        wall = "SteelWindowReinforced" if (x, y) in ROOM_WINDOWS else "SteelWallReinforced"
+        cells[(x, y)] = [("Plenum", 0), (wall, 0)]
+    for y in ROOM_FLOOR_ROWS:
+        for x in ROOM_COLUMNS:
+            cells[(x, y)] = [("Plenum", 0), ("TileGreyDark", 0)]
+    for y in CHAMBER_FLOOR_ROWS:
+        for x in ROOM_COLUMNS:
+            cells[(x, y)] = [("Plenum", 0), ("TileReinforced", 0)]
+    cells[ROOM_DOOR] = [("Plenum", 0), ("CivillianAirlock", 0)]
+    cells[WASTE_OUTLET_VENT] = [("Catwalk", 0)]
+    for line, pipes in (
+        ("AtmosPipesSupply", ADDED_SUPPLY_PIPES),
+        ("AtmosPipesWaste", ADDED_WASTE_PIPES),
+        ("AtmosPipesMixed", ADDED_MIXED_PIPES),
+        ("AtmosPipesSurface", ADDED_SURFACE_PIPES),
+    ):
+        for cell in pipes:
+            cells[cell].append((line, 0))
+    for name, x, y, direction in ADDED_ATMOS_TILES:
+        cells[(x, y)].append((name, direction))
+
+
 def is_solid(cells, cell):
     return any("Wall" in name or "Window" in name for name, _ in cells.get(cell, []))
 
@@ -178,11 +254,15 @@ def orient_doors(cells):
 
 
 def route_cables(cells):
-    """Grows a cable tree from the plant to every APC; a cable under an APC links it to the grid."""
+    """Grows a cable tree from the plant to every APC and the waste outlet, which no APC covers.
+
+    A cable under a device links it to the grid.
+    """
     routable = {cell for cell, placed in cells.items() if any(name in ("Plenum", "Catwalk") for name, _ in placed)}
     plant = sorted((x, y) for name, x, y, _ in ADDED_TILES if name in ("PacManGenerator", "SMES"))
     tree = {plant[0]}
-    targets = set(plant) | {cell for cell, placed in cells.items() if any(name == "APC" for name, _ in placed)}
+    targets = set(plant) | {WASTE_OUTLET_VENT}
+    targets |= {cell for cell, placed in cells.items() if any(name == "APC" for name, _ in placed)}
     while targets - tree:
         frontier = collections.deque(sorted(tree))
         came_from = {cell: None for cell in tree}
@@ -272,6 +352,13 @@ def build_items(report):
     return items
 
 
+def build_gas_markers():
+    return {"records": [
+        {"Kind": kind, "Position": {"x": float(x), "y": 0.0, "z": float(y)}, "Line": line, "PressureKpa": pressure, "GasFractions": AIR}
+        for kind, x, y, line, pressure in ADDED_GAS_MARKERS
+    ]}
+
+
 def build_spawns():
     records = []
     for job, x, y in ADDED_SPAWNS:
@@ -288,13 +375,16 @@ def build_spawns():
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    parser.add_argument("--check", action="store_true", help="fail if the checked-in template is out of date")
+    parser.add_argument("--overwrite-map-edits", action="store_true", help="replace the template, losing its map editor edits")
     args = parser.parse_args()
+    if not args.overwrite_map_edits:
+        sys.exit(f"{OUTPUT} is edited in the map editor; rebuilding loses those edits. See --help.")
 
     report = collections.Counter()
     cells = convert_tiles(read_tiles(), report)
     for name, x, y, direction in ADDED_TILES:
         cells[(x, y)].append((name, direction))
+    add_atmos_room(cells)
     orient_doors(cells)
     cable_count = route_cables(cells)
 
@@ -306,13 +396,10 @@ def main():
         "chunks": [
             {"contributorId": "tilemap", "payloadJson": json.dumps(build_tilemap(cells, build_items(report)), separators=(",", ":"))},
             {"contributorId": "spawn-points", "payloadJson": json.dumps(build_spawns(), separators=(",", ":"))},
+            {"contributorId": "gas-markers", "payloadJson": json.dumps(build_gas_markers(), separators=(",", ":"))},
         ],
     }
     text = json.dumps(template, separators=(",", ":"))
-    if args.check:
-        if not OUTPUT.exists() or OUTPUT.read_text(encoding="utf8") != text:
-            sys.exit(f"{OUTPUT} is out of date; rerun {pathlib.Path(__file__).name}")
-        return
     OUTPUT.write_text(text, encoding="utf8", newline="\n")
     print(f"wrote {OUTPUT}: {len(cells)} cells, {cable_count} cabled cells")
     for line, count in sorted(report.items()):

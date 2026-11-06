@@ -14,7 +14,9 @@ namespace SS3D.UI.MainHud.Components
         {
             foreach (AlertHazard hazard in (AlertHazard[])Enum.GetValues(typeof(AlertHazard)))
             {
-                if (previous[hazard] == AlertSeverity.None && current[hazard] != AlertSeverity.None)
+                // A status the player chose, not a danger, so it stays quiet.
+                if (hazard != AlertHazard.Invincible
+                    && previous[hazard] == AlertSeverity.None && current[hazard] != AlertSeverity.None)
                 {
                     return true;
                 }

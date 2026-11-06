@@ -211,7 +211,6 @@ namespace EditorTests
                         Kind = (byte)AirAlarmConnectedDeviceKind.Scrubber,
                         Powered = false,
                         FilterCo2 = true,
-                        FilterPlasma = true,
                     },
                 },
             };
@@ -231,7 +230,6 @@ namespace EditorTests
             Assert.AreEqual(2, roundTripped.ConnectedDevices.Count);
             Assert.AreEqual("101", roundTripped.ConnectedDevices[0].Id);
             Assert.AreEqual("Scrubber — South", roundTripped.ConnectedDevices[1].Name);
-            Assert.IsTrue(roundTripped.ConnectedDevices[1].FilterPlasma);
         }
 
         [Test]
@@ -272,7 +270,6 @@ namespace EditorTests
                 FilterO2 = false,
                 FilterN2 = true,
                 FilterCo2 = true,
-                FilterPlasma = true,
                 FilterToxins = false,
             };
 
@@ -284,7 +281,6 @@ namespace EditorTests
             ScrubberInterfaceSnapshot roundTripped = reader.ReadScrubberInterfaceSnapshot();
 
             Assert.AreEqual(original.FilterO2, roundTripped.FilterO2);
-            Assert.AreEqual(original.FilterPlasma, roundTripped.FilterPlasma);
             Assert.AreEqual(original.FilterToxins, roundTripped.FilterToxins);
             Assert.AreEqual(7, roundTripped.FlowRate);
         }
@@ -348,6 +344,8 @@ namespace EditorTests
         public void PumpInterfaceSnapshotSerializer_RoundTrips()
         {
             PumpInterfaceSnapshot original = CreatePumpSnapshot();
+            original.Regulation = (byte)PumpRegulation.Volume;
+            original.TargetLitresPerSecond = 750;
 
             using PooledWriter writer = WriterPool.Retrieve();
             writer.WritePumpInterfaceSnapshot(original);
@@ -355,6 +353,8 @@ namespace EditorTests
             ArraySegment<byte> segment = writer.GetArraySegment();
             using PooledReader reader = ReaderPool.Retrieve(segment, null);
             PumpInterfaceSnapshot roundTripped = reader.ReadPumpInterfaceSnapshot();
+            Assert.AreEqual(original.Regulation, roundTripped.Regulation);
+            Assert.AreEqual(original.TargetLitresPerSecond, roundTripped.TargetLitresPerSecond);
 
             Assert.AreEqual(original.MachineObjectId, roundTripped.MachineObjectId);
             Assert.AreEqual(original.InterfaceId, roundTripped.InterfaceId);
@@ -380,6 +380,37 @@ namespace EditorTests
             Assert.AreEqual(PumpScenario.Pumping, model.Scenario);
             Assert.AreEqual("PUMPING", model.StatusBadgeText);
             Assert.AreEqual("Flowing — 12.3 L/s", model.FlowStatusText);
+        }
+
+        [Test]
+        public void PumpSnapshotMapper_VolumePump_ShowsItsSetRate_AndNeverHoldsForATarget()
+        {
+            PumpInterfaceSnapshot snapshot = CreatePumpSnapshot();
+            snapshot.Regulation = (byte)PumpRegulation.Volume;
+            snapshot.TargetOutletPressureKpa = 0;
+            snapshot.TargetLitresPerSecond = 500;
+            snapshot.Powered = true;
+            snapshot.Connected = true;
+            snapshot.OutletPressureKpa = 900f;
+
+            PumpInterfaceViewModel model = PumpInterfaceSnapshotMapper.ToViewModel(snapshot);
+
+            Assert.AreEqual("500 L/s", model.TargetValueText);
+            Assert.AreEqual("Set flow rate", model.TargetTitle);
+            StringAssert.DoesNotContain("holding", model.StatusSubline);
+        }
+
+        [TestCase(false, "Closed — no throughput.")]
+        [TestCase(true, "Open — both sides at the same pressure.")]
+        public void PumpSnapshotMapper_Valve_DescribesItsPosition(bool open, string expected)
+        {
+            PumpInterfaceSnapshot snapshot = CreatePumpSnapshot();
+            snapshot.Regulation = (byte)PumpRegulation.None;
+            snapshot.TargetOutletPressureKpa = 0;
+            snapshot.Powered = open;
+            snapshot.Connected = true;
+
+            Assert.AreEqual(expected, PumpInterfaceSnapshotMapper.ToViewModel(snapshot).StatusSubline);
         }
 
         private static PumpInterfaceSnapshot CreatePumpSnapshot()

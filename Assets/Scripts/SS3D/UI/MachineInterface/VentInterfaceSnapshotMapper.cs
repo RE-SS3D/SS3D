@@ -1,3 +1,5 @@
+using SS3D.Systems.Atmospherics.Pipes;
+
 namespace SS3D.UI.MachineInterface
 {
     public static class VentInterfaceSnapshotMapper
@@ -23,6 +25,19 @@ namespace SS3D.UI.MachineInterface
             model.AccessScanning = snapshot.AccessScanning;
             model.AccessDenied = snapshot.AccessDenied;
             model.TargetPressureKpa = snapshot.TargetPressureKpa;
+            model.ExternalPressureText = $"{snapshot.RoomPressureKpa:F1} kPa";
+            model.InternalPressureText = $"{snapshot.LinePressureKpa:F1} kPa";
+            model.ExternalTone = snapshot.RoomPressureKpa < AirAlarmConstants.LowPressureKpa
+                || snapshot.RoomPressureKpa > AirAlarmConstants.HighPressureKpa
+                ? StatusTone.Warning
+                : StatusTone.Success;
+
+            if (scenario == VentScenario.Idle)
+            {
+                model.StatusSubline = !snapshot.Powered ? "Vent off."
+                    : snapshot.RoomPressureKpa >= snapshot.TargetPressureKpa - 1f ? "Pressure equalized."
+                    : "No flow from pipe network.";
+            }
 
             if (!snapshot.Connected && scenario is VentScenario.Pressurizing or VentScenario.Depressurizing)
             {

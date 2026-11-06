@@ -27,7 +27,6 @@ namespace SS3D.UI.MachineInterface.Bindings
         private readonly CompactFilterToggle _o2Filter;
         private readonly CompactFilterToggle _n2Filter;
         private readonly CompactFilterToggle _co2Filter;
-        private readonly CompactFilterToggle _plasmaFilter;
         private readonly CompactFilterToggle _toxinsFilter;
         private readonly NumericStepper _flowStepper;
         private readonly DeviceFooter _footer;
@@ -48,7 +47,6 @@ namespace SS3D.UI.MachineInterface.Bindings
             _o2Filter = queryRoot.Q<CompactFilterToggle>("filter-o2");
             _n2Filter = queryRoot.Q<CompactFilterToggle>("filter-n2");
             _co2Filter = queryRoot.Q<CompactFilterToggle>("filter-co2");
-            _plasmaFilter = queryRoot.Q<CompactFilterToggle>("filter-plasma");
             _toxinsFilter = queryRoot.Q<CompactFilterToggle>("filter-toxins");
             _flowStepper = queryRoot.Q<NumericStepper>("flow-stepper");
             _footer = queryRoot.Q<DeviceFooter>("footer");
@@ -76,7 +74,6 @@ namespace SS3D.UI.MachineInterface.Bindings
             WireFilter(_o2Filter, OnO2FilterChanged);
             WireFilter(_n2Filter, OnN2FilterChanged);
             WireFilter(_co2Filter, OnCo2FilterChanged);
-            WireFilter(_plasmaFilter, OnPlasmaFilterChanged);
             WireFilter(_toxinsFilter, OnToxinsFilterChanged);
         }
 
@@ -133,7 +130,6 @@ namespace SS3D.UI.MachineInterface.Bindings
             BindFilter(_o2Filter, "O2", model, locked);
             BindFilter(_n2Filter, "N2", model, locked);
             BindFilter(_co2Filter, "CO2", model, locked);
-            BindFilter(_plasmaFilter, "Plasma", model, locked);
             BindFilter(_toxinsFilter, "Toxins", model, locked);
 
             if (_flowStepper != null)
@@ -174,7 +170,6 @@ namespace SS3D.UI.MachineInterface.Bindings
             UnwireFilter(_o2Filter, OnO2FilterChanged);
             UnwireFilter(_n2Filter, OnN2FilterChanged);
             UnwireFilter(_co2Filter, OnCo2FilterChanged);
-            UnwireFilter(_plasmaFilter, OnPlasmaFilterChanged);
             UnwireFilter(_toxinsFilter, OnToxinsFilterChanged);
         }
 
@@ -198,9 +193,7 @@ namespace SS3D.UI.MachineInterface.Bindings
 
         private void OnCo2FilterChanged(bool _) => HandleFilterChanged(2);
 
-        private void OnPlasmaFilterChanged(bool _) => HandleFilterChanged(3);
-
-        private void OnToxinsFilterChanged(bool _) => HandleFilterChanged(4);
+        private void OnToxinsFilterChanged(bool _) => HandleFilterChanged(3);
 
         private static void WireFilter(CompactFilterToggle toggle, Action<bool> handler)
         {

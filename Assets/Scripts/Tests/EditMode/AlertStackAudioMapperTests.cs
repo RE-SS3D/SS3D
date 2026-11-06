@@ -56,5 +56,11 @@ namespace EditorTests
 
             Assert.IsTrue(AlertStackAudioMapper.HasNewAlert(previous, current));
         }
+
+        [Test]
+        public void InvincibleBadge_StaysQuiet()
+        {
+            Assert.IsFalse(AlertStackAudioMapper.HasNewAlert(default, new AlertStackState { Invincible = AlertSeverity.Warning }));
+        }
     }
 }

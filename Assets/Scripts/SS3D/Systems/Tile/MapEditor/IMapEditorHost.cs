@@ -1,3 +1,4 @@
+using SS3D.Systems.Tile.GasMarkers;
 using UnityEngine;
 
 namespace SS3D.Systems.Tile.MapEditor
@@ -12,6 +13,9 @@ namespace SS3D.Systems.Tile.MapEditor
         bool IsDeleting { get; }
         bool IsOrbiting { get; }
         MapEditorTool CurrentTool { get; }
+
+        /// <summary>The gas marker the next placement writes, set in the marker form.</summary>
+        GasMarkerRecord GasMarkerDraft { get; }
 
         /// <summary>Camera used for placement picks while the editor is open.</summary>
         Camera PickCamera { get; }

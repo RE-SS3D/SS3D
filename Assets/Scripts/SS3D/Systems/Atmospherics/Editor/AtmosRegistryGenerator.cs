@@ -41,6 +41,9 @@ namespace SS3D.Systems.Atmospherics.Editor
                 serialized.FindProperty("_displayName").stringValue = gas.DisplayName;
                 serialized.FindProperty("_molarMass").floatValue = gas.MolarMass;
                 serialized.FindProperty("_specificHeat").floatValue = gas.SpecificHeat;
+                serialized.FindProperty("_symbol").stringValue = gas.Symbol;
+                serialized.FindProperty("_panelColor").colorValue = gas.PanelColor;
+                serialized.FindProperty("_toxic").boolValue = gas.Toxic;
 
                 GasVisualProfile visualProfile = GasVisualProfileBuilder.CoreDefaultProfile(gas.Id);
                 SerializedProperty visual = serialized.FindProperty("_visualProfile");

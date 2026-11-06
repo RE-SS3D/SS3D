@@ -21,5 +21,6 @@ namespace SS3D.Systems.Tile
         PipeMiddle,
         PipeLeft,
         PipeRight,
+        PipeManifold,
     }
 }

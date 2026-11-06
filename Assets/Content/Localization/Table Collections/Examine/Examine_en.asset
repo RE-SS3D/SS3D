@@ -1024,19 +1024,21 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 252934895022239992
-    m_Localized: An atmospheric pipe positioned on the 1st layer.
+    m_Localized: An atmospheric pipe on the supply line. Vents connect to it.
     m_Metadata:
       m_Items: []
   - m_Id: 252934895022239993
-    m_Localized: An atmospheric pipe positioned on the 2nd layer.
+    m_Localized: An atmospheric pipe on the mixed line. Vents and scrubbers both
+      connect to it.
     m_Metadata:
       m_Items: []
   - m_Id: 252934895022239994
-    m_Localized: An atmospheric pipe positioned on the 3rd layer.
+    m_Localized: An atmospheric pipe on the waste line. Scrubbers connect to it.
     m_Metadata:
       m_Items: []
   - m_Id: 252934895022239995
-    m_Localized: An atmospheric pipe positioned on the 4th layer.
+    m_Localized: An atmospheric pipe on the floor. Only inline devices connect to
+      it.
     m_Metadata:
       m_Items: []
   - m_Id: 252934895022239996
@@ -1188,8 +1190,8 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 252934895022240033
-    m_Localized: A gas pump. Moves gases between a turf cell and the connected pipe
-      network.
+    m_Localized: A gas pump. Moves gas from the pipe behind it to the pipe in front,
+      up to a target pressure.
     m_Metadata:
       m_Items: []
   - m_Id: 252937831022456832
@@ -1393,6 +1395,84 @@ MonoBehaviour:
     m_Localized: 'Seal: breached.'
     m_Metadata:
       m_Items: []
+  - m_Id: 296172240830177280
+    m_Localized: Volume Pump
+    m_Metadata:
+      m_Items: []
+  - m_Id: 296172240855343104
+    m_Localized: A gas pump that moves a set volume of gas each second, from the
+      pipe behind it to the pipe in front.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 296172240855343105
+    m_Localized: Manual Valve
+    m_Metadata:
+      m_Items: []
+  - m_Id: 296172240855343106
+    m_Localized: A hand-turned pipe valve. Connects the pipes on either side while
+      open.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 296172240855343107
+    m_Localized: Digital Valve
+    m_Metadata:
+      m_Items: []
+  - m_Id: 296172240855343108
+    m_Localized: A powered pipe valve, switched from its panel. Connects the pipes
+      on either side while open.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 296172240855343109
+    m_Localized: Pipe Manifold
+    m_Metadata:
+      m_Items: []
+  - m_Id: 296172240855343110
+    m_Localized: Joins the underfloor pipes running through this tile into one line.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 296172240855343111
+    m_Localized: Pipe Manifold
+    m_Metadata:
+      m_Items: []
+  - m_Id: 296172240855343112
+    m_Localized: Joins the pipes running through this tile, the Surface line included,
+      into one line.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 296342594903056384
+    m_Localized: Gas Filter
+    m_Metadata:
+      m_Items: []
+  - m_Id: 296342594932416512
+    m_Localized: Sends the gases it's set to out of its side port. Everything else
+      carries straight on.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 296342594932416513
+    m_Localized: Gas Mixer
+    m_Metadata:
+      m_Items: []
+  - m_Id: 296342594936610816
+    m_Localized: Combines two lines at a set ratio, up to a target pressure. Stops
+      if a line it needs runs dry.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 296342594936610817
+    m_Localized: Gas Meter
+    m_Metadata:
+      m_Items: []
+  - m_Id: 296342594936610818
+    m_Localized: 'Reads the pipe line it sits on: pressure, temperature and what
+      the gas is made of.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 296342594936610819
+    m_Localized: Gas Injector
+    m_Metadata:
+      m_Items: []
+  - m_Id: 296342594936610820
+    m_Localized: A floor nozzle that releases a pipe line's gas into the room while
+      it's open.
   - m_Id: 296089487001546752
     m_Localized: 'Tank: {0}% full.'
     m_Metadata:

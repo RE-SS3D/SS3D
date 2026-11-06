@@ -26,7 +26,10 @@ namespace SS3D.UI.MachineInterface
             model.AccessGranted = snapshot.AccessGranted;
             model.AccessScanning = snapshot.AccessScanning;
             model.AccessDenied = snapshot.AccessDenied;
+            model.Regulation = (PumpRegulation)snapshot.Regulation;
             model.TargetOutletPressureKpa = snapshot.TargetOutletPressureKpa;
+            model.TargetLitresPerSecond = snapshot.TargetLitresPerSecond;
+            model.FooterText = $"SS3D Atmospherics — Model {snapshot.DeviceTitle}";
 
             model.InletPressureText = $"{snapshot.InletPressureKpa:F1} kPa";
             model.OutletPressureText = $"{snapshot.OutletPressureKpa:F1} kPa";
@@ -60,7 +63,9 @@ namespace SS3D.UI.MachineInterface
             }
             else if (!snapshot.Powered)
             {
-                model.StatusSubline = "Powered off — no throughput.";
+                model.StatusSubline = model.Regulation == PumpRegulation.None
+                    ? "Closed — no throughput."
+                    : "Powered off — no throughput.";
                 model.FlowStatusText = "No flow";
             }
             else if (!snapshot.Connected)
@@ -69,7 +74,13 @@ namespace SS3D.UI.MachineInterface
                 model.StatusSubline = "Awaiting pipe network link.";
                 model.FlowStatusText = "No flow";
             }
-            else if (!AtmosPumpController.ShouldPumpToOutlet(snapshot.OutletPressureKpa, snapshot.TargetOutletPressureKpa))
+            else if (model.Regulation == PumpRegulation.None)
+            {
+                model.StatusSubline = "Open — both sides at the same pressure.";
+                model.FlowStatusText = "No flow";
+            }
+            else if (model.Regulation == PumpRegulation.OutletPressure
+                && !AtmosPumpController.ShouldPumpToOutlet(snapshot.OutletPressureKpa, snapshot.TargetOutletPressureKpa))
             {
                 model.StatusSubline = "Outlet at or above target — pump holding.";
                 model.FlowStatusText = "No flow";

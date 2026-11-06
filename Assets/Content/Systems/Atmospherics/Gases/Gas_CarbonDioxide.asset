@@ -24,3 +24,8 @@ MonoBehaviour:
     EmissionIntensity: 0
     DistortionScale: 0
     TurbulenceScale: 0
+  _symbol: CO2
+  _panelColor:
+    serializedVersion: 2
+    rgba: 4287333245
+  _toxic: 0

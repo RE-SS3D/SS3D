@@ -24,3 +24,8 @@ MonoBehaviour:
     EmissionIntensity: 0
     DistortionScale: 0
     TurbulenceScale: 0
+  _symbol: N2
+  _panelColor:
+    serializedVersion: 2
+    rgba: 4290952377
+  _toxic: 0

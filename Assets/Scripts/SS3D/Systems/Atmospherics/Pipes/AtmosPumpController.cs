@@ -1,16 +1,20 @@
 using FishNet.Object;
 using FishNet.Object.Synchronizing;
-using SS3D.Systems.Tile;
+using SS3D.Systems.Audio;
 using UnityEngine;
 
 namespace SS3D.Systems.Atmospherics.Pipes
 {
     /// <summary>
-    /// Turf→pipe pump with target outlet pressure (design §7). Not area-linked — operates on its tile and pipe network only.
+    /// Inline pump (design §7): moves gas from the network behind it to the one in front, towards a
+    /// target outlet pressure or at a set volume. Not area-linked.
     /// </summary>
-    public sealed class AtmosPumpController : AtmosPortControllerBase
+    public sealed class AtmosPumpController : AtmosInlineDeviceBase, IAmbientLoopState
     {
         private static readonly int PumpActiveId = Animator.StringToHash("pumpActive");
+
+        [SerializeField]
+        private PumpRegulation _pumpRegulation = PumpRegulation.OutletPressure;
 
         [SerializeField]
         private float _ratedMaxFlowMoles = AtmosPortConstants.PumpRatedFlowMolesPerSecond;
@@ -19,13 +23,12 @@ namespace SS3D.Systems.Atmospherics.Pipes
         private float _maxDifferentialKpa = AtmosPortConstants.PumpMaxDifferentialKpa;
 
         [SyncVar]
-        private int _targetOutletPressureKpa = 4500;
+        private int _targetOutletPressureKpa = AtmosPortConstants.PumpDefaultTargetKpa;
 
-        private float _lastFlowMolesPerSecond;
-        private float _lastDifferentialKpa;
-        private float _lastInletPressureKpa;
-        private float _lastOutletPressureKpa;
-        private bool _lastStalled;
+        [SyncVar]
+        private int _targetLitresPerSecond = AtmosPortConstants.VolumePumpDefaultLitresPerSecond;
+
+        public override PumpRegulation Regulation => _pumpRegulation;
 
         public float RatedMaxFlowMolesPerSecond =>
             _ratedMaxFlowMoles > 0f ? _ratedMaxFlowMoles : AtmosPortConstants.PumpRatedFlowMolesPerSecond;
@@ -35,18 +38,76 @@ namespace SS3D.Systems.Atmospherics.Pipes
 
         public int TargetOutletPressureKpa => _targetOutletPressureKpa;
 
-        public float LastFlowMolesPerSecond => _lastFlowMolesPerSecond;
-
-        public float LastDifferentialKpa => _lastDifferentialKpa;
-
-        public float LastInletPressureKpa => _lastInletPressureKpa;
-
-        public float LastOutletPressureKpa => _lastOutletPressureKpa;
-
-        public bool LastStalled => _lastStalled;
+        public int TargetLitresPerSecond => _targetLitresPerSecond;
 
         public static bool ShouldPumpToOutlet(float outletPressureKpa, int targetOutletPressureKpa) =>
             targetOutletPressureKpa > 0 && outletPressureKpa < targetOutletPressureKpa;
+
+        /// <summary>
+        /// Moles a pressure pump moves this tick: the pump curve, stopping at the target.
+        /// </summary>
+        public static float ComputePressureMoles(
+            float inletPressureKpa,
+            GasPipeNetworkRecord outlet,
+            int targetOutletPressureKpa,
+            float ratedMaxFlowMoles,
+            float maxDifferentialKpa,
+            float deltaTime,
+            out float differentialKpa,
+            out bool stalled)
+        {
+            float outletPressure = outlet.GetPressure(AtmosConstants.DefaultGasCount);
+            differentialKpa = 0f;
+            stalled = false;
+
+            if (!ShouldPumpToOutlet(outletPressure, targetOutletPressureKpa))
+                return 0f;
+
+            float curveMoles = AtmosPortFlow.ComputePumpFlowMoles(
+                inletPressureKpa,
+                outletPressure,
+                ratedMaxFlowMoles,
+                maxDifferentialKpa,
+                deltaTime,
+                out differentialKpa,
+                out stalled);
+
+            return Mathf.Min(curveMoles, AtmosPortFlow.ComputeMolesToTarget(
+                outletPressure,
+                targetOutletPressureKpa,
+                outlet.Temperature,
+                outlet.Volume));
+        }
+
+        /// <summary>
+        /// Moles a volume pump moves this tick: its set volume of inlet gas, up to what the pump
+        /// curve allows, so it stalls against backpressure like any other pump.
+        /// </summary>
+        public static float ComputeVolumeMoles(
+            GasPipeNetworkRecord inlet,
+            float outletPressureKpa,
+            int litresPerSecond,
+            float ratedMaxFlowMoles,
+            float maxDifferentialKpa,
+            float deltaTime,
+            out float differentialKpa,
+            out bool stalled)
+        {
+            float curveMoles = AtmosPortFlow.ComputePumpFlowMoles(
+                inlet.GetPressure(AtmosConstants.DefaultGasCount),
+                outletPressureKpa,
+                ratedMaxFlowMoles,
+                maxDifferentialKpa,
+                deltaTime,
+                out differentialKpa,
+                out stalled);
+
+            return Mathf.Min(curveMoles, AtmosPortFlow.ComputeVolumeMoles(
+                inlet.GetTotalMoles(AtmosConstants.DefaultGasCount),
+                inlet.Volume,
+                litresPerSecond,
+                deltaTime));
+        }
 
         [Server]
         public void ServerSetTargetOutletPressureKpa(int targetKpa)
@@ -54,50 +115,48 @@ namespace SS3D.Systems.Atmospherics.Pipes
             _targetOutletPressureKpa = Mathf.Clamp(targetKpa, 0, 9000);
         }
 
+        [Server]
+        public void ServerSetTargetLitresPerSecond(int litresPerSecond)
+        {
+            _targetLitresPerSecond = Mathf.Clamp(litresPerSecond, 0, AtmosPortConstants.VolumePumpMaxLitresPerSecond);
+        }
+
         protected override bool ShouldAnimateWhileIdle() => false;
 
-        protected override bool RunPortTick(
-            AtmosPipeSimulation pipeSimulation,
-            AtmosSimulation turfSimulation,
+        protected override bool RunInlineTick(
+            GasPipeNetworkRegistry registry,
+            GasPipeNetworkRecord inlet,
+            GasPipeNetworkRecord outlet,
             float deltaTime)
         {
-            _lastFlowMolesPerSecond = 0f;
-            _lastDifferentialKpa = 0f;
-            _lastStalled = false;
+            float inletPressure = inlet.GetPressure(AtmosConstants.DefaultGasCount);
+            float outletPressure = outlet.GetPressure(AtmosConstants.DefaultGasCount);
+            float differentialKpa;
+            bool stalled;
 
-            TileCoord turfCell = OriginTile;
-            _lastInletPressureKpa = turfSimulation.GetCellPressure(turfCell);
+            float moles = _pumpRegulation == PumpRegulation.Volume
+                ? ComputeVolumeMoles(
+                    inlet,
+                    outletPressure,
+                    _targetLitresPerSecond,
+                    RatedMaxFlowMolesPerSecond,
+                    MaxDifferentialKpa,
+                    deltaTime,
+                    out differentialKpa,
+                    out stalled)
+                : ComputePressureMoles(
+                    inletPressure,
+                    outlet,
+                    _targetOutletPressureKpa,
+                    RatedMaxFlowMolesPerSecond,
+                    MaxDifferentialKpa,
+                    deltaTime,
+                    out differentialKpa,
+                    out stalled);
 
-            if (!TryGetConnectedNetwork(out GasPipeNetworkId networkId)
-                || !pipeSimulation.Registry.TryGetNetwork(networkId, out GasPipeNetworkRecord network))
-            {
-                _lastOutletPressureKpa = 0f;
-                return false;
-            }
-
-            float outletPressure = network.GetPressure(AtmosConstants.DefaultGasCount);
-            _lastOutletPressureKpa = outletPressure;
-
-            if (!ShouldPumpToOutlet(outletPressure, _targetOutletPressureKpa))
-                return false;
-
-            float budgetMoles = AtmosPortFlow.ComputePumpFlowMoles(
-                _lastInletPressureKpa,
-                outletPressure,
-                RatedMaxFlowMolesPerSecond,
-                MaxDifferentialKpa,
-                deltaTime,
-                out float differentialKpa,
-                out bool stalled);
-
-            _lastDifferentialKpa = differentialKpa;
-            _lastStalled = stalled;
-            _lastFlowMolesPerSecond = deltaTime > 0f ? budgetMoles / deltaTime : 0f;
-
-            if (budgetMoles <= 0f)
-                return false;
-
-            return PullTurfToNetwork(pipeSimulation, turfSimulation, networkId, turfCell, budgetMoles);
+            LastDifferentialKpa = differentialKpa;
+            LastStalled = stalled;
+            return RecordFlow(registry.MoveGas(inlet, outlet, moles), inletPressure, outletPressure, deltaTime);
         }
 
         protected override void ApplyDeviceSpecificAnimatorState(bool flowing)
@@ -106,54 +165,6 @@ namespace SS3D.Systems.Atmospherics.Pipes
                 return;
 
             _animator.SetBool(PumpActiveId, flowing);
-        }
-
-        private static bool PullTurfToNetwork(
-            AtmosPipeSimulation pipeSimulation,
-            AtmosSimulation turfSimulation,
-            GasPipeNetworkId networkId,
-            TileCoord turfCell,
-            float budgetMoles)
-        {
-            float totalMoles = 0f;
-            for (int gasId = 0; gasId < AtmosConstants.DefaultGasCount; gasId++)
-            {
-                if (turfSimulation.TryGetGasMoles(turfCell, new GasId((ushort)gasId), out float available))
-                    totalMoles += available;
-            }
-
-            if (totalMoles <= 0f)
-                return false;
-
-            budgetMoles = Mathf.Min(budgetMoles, totalMoles);
-            bool movedAny = false;
-            float remainingBudget = budgetMoles;
-
-            for (int gasId = 0; gasId < AtmosConstants.DefaultGasCount; gasId++)
-            {
-                if (remainingBudget <= 0f)
-                    break;
-
-                if (!turfSimulation.TryGetGasMoles(turfCell, new GasId((ushort)gasId), out float available) || available <= 0f)
-                    continue;
-
-                float share = available / totalMoles;
-                float request = Mathf.Min(remainingBudget, budgetMoles * share);
-                if (pipeSimulation.TryTransferMoles(
-                        networkId,
-                        new GasId((ushort)gasId),
-                        request,
-                        turfCell,
-                        PipeTransferDirection.ToNetwork,
-                        out float moved)
-                    && moved > 0f)
-                {
-                    remainingBudget -= moved;
-                    movedAny = true;
-                }
-            }
-
-            return movedAny;
         }
     }
 }

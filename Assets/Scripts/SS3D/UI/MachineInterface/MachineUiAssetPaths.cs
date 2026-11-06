@@ -76,6 +76,24 @@ namespace SS3D.UI.MachineInterface
         public const string VentTemplateStyle =
             "Assets/Content/Systems/UI/MachineInterface/Templates/VentUnitInterface.uss";
 
+        public const string FilterTemplate =
+            "Assets/Content/Systems/UI/MachineInterface/Templates/FilterUnitInterface.uxml";
+
+        public const string FilterTemplateStyle =
+            "Assets/Content/Systems/UI/MachineInterface/Templates/FilterUnitInterface.uss";
+
+        public const string MixerTemplate =
+            "Assets/Content/Systems/UI/MachineInterface/Templates/MixerUnitInterface.uxml";
+
+        public const string MixerTemplateStyle =
+            "Assets/Content/Systems/UI/MachineInterface/Templates/MixerUnitInterface.uss";
+
+        public const string MeterTemplate =
+            "Assets/Content/Systems/UI/MachineInterface/Templates/GasMeterInterface.uxml";
+
+        public const string MeterTemplateStyle =
+            "Assets/Content/Systems/UI/MachineInterface/Templates/GasMeterInterface.uss";
+
         public static readonly string[] ApcComponentStyles =
         {
             "Assets/Content/Systems/UI/MachineInterface/Components/DiegeticDeviceShell.uss",
@@ -167,11 +185,21 @@ namespace SS3D.UI.MachineInterface
             "Assets/Content/Systems/UI/MachineInterface/Components/PressureFlowReadout.uss",
         };
 
-        public static string[] BuildAtmosComponentStyles(bool includeAirAlarm, bool includeVent)
+        public static readonly string[] GasLineExtraComponentStyles =
+        {
+            "Assets/Content/Systems/UI/MachineInterface/Components/GasMixBar.uss",
+            "Assets/Content/Systems/UI/MachineInterface/Components/GasPortCard.uss",
+            "Assets/Content/Systems/UI/MachineInterface/Components/GasFilterRow.uss",
+            "Assets/Content/Systems/UI/MachineInterface/Components/GasCompositionRow.uss",
+            "Assets/Content/Systems/UI/MachineInterface/Components/GasHistoryBars.uss",
+        };
+
+        public static string[] BuildAtmosComponentStyles(bool includeAirAlarm, bool includeVent, bool includeGasLine = false)
         {
             int count = AtmosBaseComponentStyles.Length
                 + (includeAirAlarm ? AirAlarmExtraComponentStyles.Length : 0)
-                + (includeVent ? VentExtraComponentStyles.Length : 0);
+                + (includeVent ? VentExtraComponentStyles.Length : 0)
+                + (includeGasLine ? GasLineExtraComponentStyles.Length : 0);
 
             string[] paths = new string[count];
             int index = 0;
@@ -193,6 +221,14 @@ namespace SS3D.UI.MachineInterface
                 for (int i = 0; i < VentExtraComponentStyles.Length; i++)
                 {
                     paths[index++] = VentExtraComponentStyles[i];
+                }
+            }
+
+            if (includeGasLine)
+            {
+                for (int i = 0; i < GasLineExtraComponentStyles.Length; i++)
+                {
+                    paths[index++] = GasLineExtraComponentStyles[i];
                 }
             }
 

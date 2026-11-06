@@ -11,6 +11,7 @@ using SS3D.Systems.Inputs;
 using SS3D.Systems.Tile.FloorVisuals;
 using SS3D.Systems.Tile.MapEditor;
 using SS3D.Systems.Tile.MapEditor.Commands;
+using SS3D.Systems.Tile.GasMarkers;
 using SS3D.Systems.Tile.SpawnPoints;
 using SS3D.Utils;
 using System;
@@ -64,7 +65,7 @@ namespace SS3D.Systems.Tile.TileMapCreator
         private bool _pressStartedOverUi;
         private GenericObjectSo _selectedObject;
         private FloorDecalDefinition _selectedFloorDecal;
-        private string _selectedSpawnAssetName;
+        private string _selectedMarkerAssetName;
         /// <summary>
         /// List of build ghosts currently displaying in game.
         /// </summary>
@@ -84,7 +85,7 @@ namespace SS3D.Systems.Tile.TileMapCreator
             CancelPlacementGesture(resetHolograms: false);
             _selectedObject = null;
             _selectedFloorDecal = null;
-            _selectedSpawnAssetName = null;
+            _selectedMarkerAssetName = null;
             _deleteGhostAssetName = null;
             DestroyHolograms();
         }
@@ -97,7 +98,7 @@ namespace SS3D.Systems.Tile.TileMapCreator
             CancelPlacementGesture(resetHolograms: false);
             _selectedObject = null;
             _selectedFloorDecal = null;
-            _selectedSpawnAssetName = null;
+            _selectedMarkerAssetName = null;
             _isPlacingItem = false;
             _deleteGhostAssetName = null;
             DestroyHolograms();
@@ -117,7 +118,7 @@ namespace SS3D.Systems.Tile.TileMapCreator
         {
             CancelPlacementGesture(resetHolograms: false);
             _selectedFloorDecal = null;
-            _selectedSpawnAssetName = null;
+            _selectedMarkerAssetName = null;
             _deleteGhostAssetName = null;
             _isPlacingItem = genericObjectSo switch
             {
@@ -134,7 +135,7 @@ namespace SS3D.Systems.Tile.TileMapCreator
         /// <summary>
         /// World point under the cursor for placement. Tile objects snap to the tile centre; items do not.
         /// </summary>
-        private Vector3 GetPlacementPoint(bool forceTileSnap = false)
+        public Vector3 GetPlacementPoint(bool forceTileSnap = false)
         {
             // Tile objects always sit on the grid; items are placed freely.
             bool snapToTile = forceTileSnap || !_isPlacingItem;
@@ -180,20 +181,20 @@ namespace SS3D.Systems.Tile.TileMapCreator
         {
             _selectedFloorDecal = definition;
             _selectedObject = null;
-            _selectedSpawnAssetName = null;
+            _selectedMarkerAssetName = null;
             _isPlacingItem = false;
             DestroyHolograms();
             CreateFloorDecalHologram(TileHelper.GetPointedPosition(true));
         }
 
-        public void SetSelectedSpawnPoint(string spawnAssetName)
+        public void SetSelectedMarker(string markerAssetName)
         {
-            _selectedSpawnAssetName = spawnAssetName;
+            _selectedMarkerAssetName = markerAssetName;
             _selectedObject = null;
             _selectedFloorDecal = null;
             _isPlacingItem = false;
             DestroyHolograms();
-            CreateSpawnPointHologram(GetPlacementPoint(forceTileSnap: true));
+            CreateMarkerHologram(GetPlacementPoint(forceTileSnap: true));
         }
 
         protected override void OnAwake()
@@ -237,7 +238,7 @@ namespace SS3D.Systems.Tile.TileMapCreator
             {
                 if (_placePressActive || _isDragging)
                     CancelPlacementGesture(resetHolograms: _selectedObject != null || _selectedFloorDecal != null ||
-                        _selectedSpawnAssetName != null ||
+                        _selectedMarkerAssetName != null ||
                         (_mapEditor != null && _mapEditor.IsDeleting));
                 // Non-construct tools (Select/Dropper/Move) used to leave the last ghost frozen in-world
                 // because this path returned without tearing holograms down.
@@ -270,7 +271,7 @@ namespace SS3D.Systems.Tile.TileMapCreator
             Vector2Int cursorTile = ToTile(position);
 
             bool hasPlacementSelection = _selectedObject != null || _selectedFloorDecal != null ||
-                                         _selectedSpawnAssetName != null;
+                                         _selectedMarkerAssetName != null;
             bool deleteMode = _mapEditor != null && _mapEditor.IsDeleting;
 
             // Move hologram, that sticks to the mouse. Currently it exists only if player is not dragging.
@@ -374,14 +375,14 @@ namespace SS3D.Systems.Tile.TileMapCreator
             if (_selectedFloorDecal != null)
                 return CreateFloorDecalHologram(Vector3.zero, addToActive: false);
 
-            if (_selectedSpawnAssetName != null)
-                return CreateSpawnPointHologram(Vector3.zero, addToActive: false);
+            if (_selectedMarkerAssetName != null)
+                return CreateMarkerHologram(Vector3.zero, addToActive: false);
 
             if (_selectedObject != null)
                 return CreateHologram(_selectedObject.PrefabAsset, Vector3.zero, addToActive: false);
 
             if (IsSpawnDeleteMode())
-                return CreateSpawnPointHologram(Vector3.zero, addToActive: false);
+                return CreateMarkerHologram(Vector3.zero, addToActive: false);
 
             return CreateDeleteMarkerHologram(Vector3.zero, addToActive: false);
         }
@@ -502,10 +503,10 @@ namespace SS3D.Systems.Tile.TileMapCreator
                 return;
             }
 
-            if (_selectedSpawnAssetName != null)
+            if (_selectedMarkerAssetName != null)
             {
                 DestroyHolograms();
-                CreateSpawnPointHologram(GetPlacementPoint(forceTileSnap: true));
+                CreateMarkerHologram(GetPlacementPoint(forceTileSnap: true));
                 return;
             }
 
@@ -563,9 +564,9 @@ namespace SS3D.Systems.Tile.TileMapCreator
             return hologram;
         }
 
-        public ConstructionHologram CreateSpawnPointHologram(Vector3 position, bool addToActive = true)
+        public ConstructionHologram CreateMarkerHologram(Vector3 position, bool addToActive = true)
         {
-            var root = new GameObject("SpawnPointHologram");
+            var root = new GameObject("MarkerHologram");
             root.transform.position = position + Vector3.up * 0.15f;
 
             GameObject stem = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
@@ -580,10 +581,20 @@ namespace SS3D.Systems.Tile.TileMapCreator
             head.transform.localPosition = Vector3.up * 0.95f;
             UnityEngine.Object.Destroy(head.GetComponent<Collider>());
 
-            Color color = MapEditorSpawnCatalog.TryDecode(_selectedSpawnAssetName, out SpawnPointKind kind, out _, out _)
-                          && kind == SpawnPointKind.Antagonist
-                ? new Color(1f, 0.35f, 0.25f, 0.7f)
-                : new Color(0.25f, 0.75f, 1f, 0.7f);
+            Color color;
+            if (MapEditorGasMarkerCatalog.TryDecode(_selectedMarkerAssetName, out GasMarkerKind gasKind))
+            {
+                color = MapEditorGasMarkerCatalog.PinColor(gasKind);
+                color.a = 0.7f;
+            }
+            else
+            {
+                color = MapEditorSpawnCatalog.TryDecode(_selectedMarkerAssetName, out SpawnPointKind kind, out _, out _)
+                        && kind == SpawnPointKind.Antagonist
+                    ? new Color(1f, 0.35f, 0.25f, 0.7f)
+                    : new Color(0.25f, 0.75f, 1f, 0.7f);
+            }
+
             ApplyHologramColor(stem, color);
             ApplyHologramColor(head, color);
 
@@ -684,9 +695,9 @@ namespace SS3D.Systems.Tile.TileMapCreator
                 return;
             }
 
-            if (_selectedSpawnAssetName != null)
+            if (_selectedMarkerAssetName != null)
             {
-                CreateSpawnPointHologram(GetPlacementPoint(forceTileSnap: true));
+                CreateMarkerHologram(GetPlacementPoint(forceTileSnap: true));
                 return;
             }
 
@@ -716,7 +727,7 @@ namespace SS3D.Systems.Tile.TileMapCreator
         {
             TileSubSystem tileSystem = SubSystems.Get<TileSubSystem>();
             if (tileSystem == null || _mapEditor == null ||
-                (_selectedObject == null && _selectedFloorDecal == null && _selectedSpawnAssetName == null))
+                (_selectedObject == null && _selectedFloorDecal == null && _selectedMarkerAssetName == null))
                 return;
 
             bool isReplacing = _controls.Replace.phase == InputActionPhase.Performed;
@@ -753,7 +764,7 @@ namespace SS3D.Systems.Tile.TileMapCreator
                     return;
                 }
 
-                if (_selectedSpawnAssetName != null)
+                if (_selectedMarkerAssetName != null)
                 {
                     if (!HasPlenumAt(tileSystem.CurrentMap, position))
                     {
@@ -761,10 +772,24 @@ namespace SS3D.Systems.Tile.TileMapCreator
                         return;
                     }
 
+                    if (MapEditorGasMarkerCatalog.TryDecode(_selectedMarkerAssetName, out _))
+                    {
+                        GasMarkerRecord marker = _mapEditor.GasMarkerDraft;
+                        marker.Position = position;
+                        commands.Add(new MapEditorCommandDto
+                        {
+                            Kind = MapEditorCommandKind.PlaceGasMarker,
+                            AssetName = _selectedMarkerAssetName,
+                            Position = position,
+                            GasMarker = marker,
+                        });
+                        return;
+                    }
+
                     commands.Add(new MapEditorCommandDto
                     {
                         Kind = MapEditorCommandKind.PlaceSpawnPoint,
-                        AssetName = _selectedSpawnAssetName,
+                        AssetName = _selectedMarkerAssetName,
                         Position = position,
                         Direction = direction,
                     });
@@ -925,6 +950,19 @@ namespace SS3D.Systems.Tile.TileMapCreator
                 return true;
             }
 
+            if (subcategory == MapEditorSubcategory.Atmospherics)
+            {
+                if (tileSystem.GasMarkers == null || !tileSystem.GasMarkers.HasAt(position))
+                    return false;
+
+                into.Add(new MapEditorCommandDto
+                {
+                    Kind = MapEditorCommandKind.ClearGasMarker,
+                    Position = position,
+                });
+                return true;
+            }
+
             if (!map.TryGetTileLocations(position, out ITileLocation[] locations))
                 return false;
 
@@ -994,7 +1032,7 @@ namespace SS3D.Systems.Tile.TileMapCreator
                 return;
             }
 
-            if (_selectedSpawnAssetName != null)
+            if (_selectedMarkerAssetName != null)
             {
                 TileSubSystem tileSystem = SubSystems.Get<TileSubSystem>();
                 bool canPlace = HasPlenumAt(tileSystem?.CurrentMap, hologram.TargetPosition);
@@ -1118,6 +1156,14 @@ namespace SS3D.Systems.Tile.TileMapCreator
                     hintAsset = "spawn-point";
                 }
             }
+            else if (map != null && subcategory == MapEditorSubcategory.Atmospherics)
+            {
+                if (tileSystem.GasMarkers != null && tileSystem.GasMarkers.HasAt(position))
+                {
+                    _deleteTargets.Add(MapEditorDeleteTarget.SpawnPoint);
+                    hintAsset = "spawn-point";
+                }
+            }
             else if (map != null && map.TryGetTileLocations(position, out ITileLocation[] locations))
             {
                 MapEditorDeleteTargeting.Resolve(subcategory, _lastRegisteredDirection, locations, _deleteTargets);
@@ -1129,7 +1175,7 @@ namespace SS3D.Systems.Tile.TileMapCreator
             {
                 MaybeSwapDeleteGhostPrefab(hintAsset, position);
             }
-            else if (subcategory == MapEditorSubcategory.SpawnPlacements)
+            else if (subcategory is MapEditorSubcategory.SpawnPlacements or MapEditorSubcategory.Atmospherics)
             {
                 // Same pin ghost as placing a spawn, tinted red by the delete colouring below.
                 ResetDeleteGhostToSpawnPin(position);
@@ -1223,7 +1269,7 @@ namespace SS3D.Systems.Tile.TileMapCreator
 
         private bool IsSpawnDeleteMode() =>
             _mapEditor != null && _mapEditor.IsDeleting
-            && _mapEditor.CurrentSubcategory == MapEditorSubcategory.SpawnPlacements;
+            && _mapEditor.CurrentSubcategory is MapEditorSubcategory.SpawnPlacements or MapEditorSubcategory.Atmospherics;
 
         private void ResetDeleteGhostToSpawnPin(Vector3 position)
         {
@@ -1231,7 +1277,7 @@ namespace SS3D.Systems.Tile.TileMapCreator
                 return;
 
             DestroyHolograms();
-            CreateSpawnPointHologram(position);
+            CreateMarkerHologram(position);
             _deleteGhostAssetName = SpawnPinDeleteGhost;
         }
 

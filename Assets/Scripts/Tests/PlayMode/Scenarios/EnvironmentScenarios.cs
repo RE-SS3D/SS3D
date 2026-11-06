@@ -18,6 +18,8 @@ using SS3D.Systems.Inventory.Items;
 using SS3D.Systems.ScreenEffects;
 using SS3D.Systems.Tile;
 using SS3D.Systems.Tile.MapEditor;
+using SS3D.UI.MainHud;
+using SS3D.UI.MainHud.Components;
 using UnityEngine;
 using UnityEngine.TestTools;
 using Debug = UnityEngine.Debug;
@@ -52,6 +54,63 @@ namespace SS3D.Tests
             yield return WaitFor(() => Body.GetComponent<Ragdoll>().Presentation == BodyPresentationState.Collapsed,
                 "the critical body collapses");
             AssertRagdollGravity(Body, true, "A body collapsed on the deck falls with gravity");
+        }
+
+        // Guards: a room pumped down with no breach reaches the HUD as low pressure, through the tile sample path a vacuum cell skips (HumanHealthController.SampleEnvironmentAtBody, AtmosAlertStackMapper, MainHudSubSystem) · Not cheaper because: needs the server health tick, the snapshot and the bound HUD on a live body
+        [UnityTest]
+        public IEnumerator RoomPumpedDown_ShowsLowPressureOnTheHud()
+        {
+            ChangesRoom = true;
+            HumanHealthController health = Body.GetComponent<HumanHealthController>();
+            MainHudSubSystem hud = SubSystems.Get<MainHudSubSystem>();
+            AtmosSimulation simulation = SubSystems.Get<AtmosSubSystem>().Simulation;
+            simulation.ForEachCoord(coord =>
+            {
+                simulation.TryGetGasMoles(coord, AtmosConstants.Oxygen, out float oxygen);
+                simulation.TryGetGasMoles(coord, AtmosConstants.Nitrogen, out float nitrogen);
+                simulation.TryRemoveMoles(coord, AtmosConstants.Oxygen, oxygen * 0.7f, out _, out _);
+                simulation.TryRemoveMoles(coord, AtmosConstants.Nitrogen, nitrogen * 0.7f, out _, out _);
+            });
+
+            yield return Hold(3f);
+
+            HealthEnvironmentState environment = health.Snapshot.Environment;
+            FieldInfo alerts = typeof(MainHudSubSystem).GetField("_lastAlertState", BindingFlags.NonPublic | BindingFlags.Instance);
+            AlertStackState shown = (AlertStackState)alerts.GetValue(hud);
+            Debug.Log($"[Scenario] pumped down: sample={environment.HasSample} vacuum={environment.IsVacuum} {environment.PressureKpa:F1} kPa {environment.TemperatureKelvin:F0} K hudLowPressure={shown.LowPressure} hudLowOxygen={shown.LowOxygen}");
+            Assert.IsTrue(environment.HasSample, "The body samples its tile");
+            Assert.Less(environment.PressureKpa, 40f, "The snapshot carries the thin air");
+            Assert.AreEqual(AlertSeverity.Warning, shown.LowPressure, "The HUD warns of low pressure");
+        }
+
+        // Guards: session invincibility stops the harm but not the reading, so an admin who opened the map editor still sees low pressure (TickHealthFromEnvironment, EntityInvincibility) · Not cheaper because: needs the server health tick and a connection's flag on a live body
+        [UnityTest]
+        public IEnumerator InvincibleBody_StillReadsThinAir_AndTakesNoHarm()
+        {
+            ChangesRoom = true;
+            int clientId = InstanceFinder.ClientManager.Connection.ClientId;
+            HumanHealthController health = Body.GetComponent<HumanHealthController>();
+            AtmosSimulation simulation = SubSystems.Get<AtmosSubSystem>().Simulation;
+            float brain = health.Snapshot.BrainFunctionPercent;
+            EntityInvincibility.SetServer(clientId, true);
+            try
+            {
+                simulation.ForEachCoord(coord =>
+                {
+                    simulation.TryRemoveMoles(coord, AtmosConstants.Oxygen, float.MaxValue, out _, out _);
+                    simulation.TryRemoveMoles(coord, AtmosConstants.Nitrogen, float.MaxValue, out _, out _);
+                });
+
+                yield return WaitFor(() => health.Snapshot.Environment.HasSample && health.Snapshot.Environment.PressureKpa < 1f,
+                    "the invincible body reads the empty room");
+                yield return Hold(2f);
+                Assert.AreEqual(AtmosAlertStackMapper.Severity.Critical, AtmosAlertStackMapper.Compute(health.Snapshot.Environment).LowPressure);
+                Assert.AreEqual(brain, health.Snapshot.BrainFunctionPercent, "Invincible means no harm");
+            }
+            finally
+            {
+                EntityInvincibility.ClearServer(clientId);
+            }
         }
 
         // Guards: a critical or dead ragdoll in open space floats near deck height and regains gravity back on the deck (the old ragdoll-space pilot) · Not cheaper because: needs ragdoll physics on a live networked body and the station's floor support
@@ -267,8 +326,13 @@ namespace SS3D.Tests
                 Assert.IsTrue(effects.IsGameplayFeedbackSuppressed, "Body feedback is hidden in the editor");
                 Assert.IsTrue(AtmosRenderContext.IsRenderingSuppressed, "Atmos rendering is hidden in the editor");
                 Assert.That(view.VisibleStreaks, Is.Zero, "No wind streaks in the editor");
+                Assert.IsTrue(EntityInvincibility.LocalPlayerInvincible, "The editor protects its builder");
 
                 setActive.Invoke(editor, new object[] { false });
+                Assert.IsTrue(EntityInvincibility.LocalPlayerInvincible, "Invincibility outlives the editor for play-testing");
+                FieldInfo alerts = typeof(MainHudSubSystem).GetField("_lastAlertState", BindingFlags.NonPublic | BindingFlags.Instance);
+                yield return WaitFor(() => ((AlertStackState)alerts.GetValue(SubSystems.Get<MainHudSubSystem>())).Invincible == AlertSeverity.Warning,
+                    "the HUD badges invincibility left on by the editor");
                 Assert.IsFalse(effects.IsGameplayFeedbackSuppressed, "Body feedback returns on close");
                 Assert.IsFalse(AtmosRenderContext.IsRenderingSuppressed, "Atmos rendering returns on close");
                 yield return WaitFor(() => view.VisibleStreaks > 0, "wind streaks resume after close", 5f);

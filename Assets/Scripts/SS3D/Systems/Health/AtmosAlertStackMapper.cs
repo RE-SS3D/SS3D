@@ -127,7 +127,7 @@ namespace SS3D.Systems.Health
 
         private static Severity ComputeLowPressure(HealthEnvironmentState env)
         {
-            if (env.IsVacuum || env.PressureKpa <= 0f)
+            if (env.IsVacuum || env.PressureKpa < HealthConstants.LowPressureCriticalKpa)
             {
                 return Severity.Critical;
             }

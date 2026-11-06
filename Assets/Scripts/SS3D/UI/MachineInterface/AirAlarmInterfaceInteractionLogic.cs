@@ -8,7 +8,7 @@ namespace SS3D.UI.MachineInterface
     /// </summary>
     public static class AirAlarmInterfaceInteractionLogic
     {
-        private static readonly string[] FilterKeys = { "O2", "N2", "CO2", "Plasma", "Toxins" };
+        private static readonly string[] FilterKeys = { "O2", "N2", "CO2", "Toxins" };
 
         public static void ApplyAction(AirAlarmInterfaceViewModel model, byte controlId, int value)
         {
@@ -102,6 +102,11 @@ namespace SS3D.UI.MachineInterface
                     case AirAlarmPresetMode.Filtering:
                     {
                         device.Powered = true;
+                        if (device.Kind != AirAlarmConnectedDeviceKind.Vent)
+                        {
+                            SetScrubberFilters(device, o2: false, n2: false, co2: true, toxins: false);
+                        }
+
                         break;
                     }
 
@@ -114,7 +119,7 @@ namespace SS3D.UI.MachineInterface
                         else
                         {
                             device.Powered = true;
-                            SetScrubberFilters(device, o2: false, n2: false, co2: false, plasma: true, toxins: false);
+                            SetScrubberFilters(device, o2: true, n2: true, co2: true, toxins: true);
                         }
 
                         break;
@@ -223,14 +228,12 @@ namespace SS3D.UI.MachineInterface
             bool o2,
             bool n2,
             bool co2,
-            bool plasma,
             bool toxins)
         {
             device.Filters ??= new Dictionary<string, bool>();
             device.Filters["O2"] = o2;
             device.Filters["N2"] = n2;
             device.Filters["CO2"] = co2;
-            device.Filters["Plasma"] = plasma;
             device.Filters["Toxins"] = toxins;
         }
     }

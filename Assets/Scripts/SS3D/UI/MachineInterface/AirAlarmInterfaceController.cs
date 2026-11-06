@@ -192,7 +192,6 @@ namespace SS3D.UI.MachineInterface
                     selected.Filters.TryGetValue("O2", out bool o2) && o2,
                     selected.Filters.TryGetValue("N2", out bool n2) && n2,
                     selected.Filters.TryGetValue("CO2", out bool co2) && co2,
-                    selected.Filters.TryGetValue("Plasma", out bool plasma) && plasma,
                     selected.Filters.TryGetValue("Toxins", out bool toxins) && toxins);
             }
         }

@@ -1,6 +1,6 @@
 using SS3D.Core;
 using SS3D.Systems.Inventory.Items;
-using SS3D.Systems.Tile.SpawnPoints;
+using SS3D.Systems.Tile.MapEditor;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Rendering;
@@ -104,7 +104,7 @@ namespace SS3D.Systems.Tile.TileMapCreator
 
             if (TileLayerCategoryMapping.IsScriptsCategory(category))
             {
-                SpawnPointEditorView.SetScriptsLayerVisible(visible);
+                MapMarkerEditorView.SetScriptsLayerVisible(visible);
                 return;
             }
 

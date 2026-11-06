@@ -76,6 +76,7 @@ namespace SS3D.Systems.Tile.TileMapCreator
                     TileLayer.PipeRight,
                     TileLayer.PipeSurface,
                     TileLayer.PipeMiddle,
+                    TileLayer.PipeManifold,
                 },
                 TileLayerCategory.FloorDecals => Array.Empty<TileLayer>(),
                 TileLayerCategory.Items => Array.Empty<TileLayer>(),

@@ -95,14 +95,14 @@ namespace SS3D.Tests.EditMode.MapImport
         {
             var atom = new DmmAtom { Path = "/obj/machinery/atmospherics/pipe/smart/manifold4w/supply" };
             atom.Vars["piping_layer"] = "3";
-            Assert.AreEqual(MapImportPipeResolver.AtmosPipesL1, MapImportPipeResolver.Resolve(atom.Path, atom));
+            Assert.AreEqual(MapImportPipeResolver.AtmosPipesSupply, MapImportPipeResolver.Resolve(atom.Path, atom));
 
             atom = new DmmAtom { Path = "/obj/machinery/atmospherics/pipe/smart/manifold4w/scrubbers" };
-            Assert.AreEqual(MapImportPipeResolver.AtmosPipesL2, MapImportPipeResolver.Resolve(atom.Path, atom));
+            Assert.AreEqual(MapImportPipeResolver.AtmosPipesMixed, MapImportPipeResolver.Resolve(atom.Path, atom));
 
             atom = new DmmAtom { Path = "/obj/machinery/atmospherics/pipe/smart/pipe" };
             atom.Vars["piping_layer"] = "4";
-            Assert.AreEqual(MapImportPipeResolver.AtmosPipesL4, MapImportPipeResolver.Resolve(atom.Path, atom));
+            Assert.AreEqual(MapImportPipeResolver.AtmosPipesSurface, MapImportPipeResolver.Resolve(atom.Path, atom));
         }
 
         [Test]
@@ -208,8 +208,8 @@ namespace SS3D.Tests.EditMode.MapImport
             MapImportCellPlan cableCell = plan.Cells.Find(c =>
                 c.Placements.Any(p => p.SoName == "Cables"));
             Assert.IsNotNull(cableCell);
-            Assert.IsTrue(cableCell.Placements.Any(p => p.SoName == MapImportPipeResolver.AtmosPipesL1));
-            Assert.IsTrue(cableCell.Placements.Any(p => p.SoName == MapImportPipeResolver.AtmosPipesL2));
+            Assert.IsTrue(cableCell.Placements.Any(p => p.SoName == MapImportPipeResolver.AtmosPipesSupply));
+            Assert.IsTrue(cableCell.Placements.Any(p => p.SoName == MapImportPipeResolver.AtmosPipesMixed));
 
             MapImportCellPlan disposalCell = plan.Cells.Find(c =>
                 c.Placements.Any(p => p.SoName == "DisposalPipes"));
@@ -244,7 +244,7 @@ namespace SS3D.Tests.EditMode.MapImport
             Assert.AreEqual(Direction.South, doorCell.Placements[1].Direction);
 
             MapImportCellPlan layer4Cell = plan.Cells.Find(c =>
-                c.Placements.Any(p => p.SoName == MapImportPipeResolver.AtmosPipesL4));
+                c.Placements.Any(p => p.SoName == MapImportPipeResolver.AtmosPipesSurface));
             Assert.IsNotNull(layer4Cell);
         }
 

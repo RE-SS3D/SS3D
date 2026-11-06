@@ -1,0 +1,186 @@
+
+.gas-meter-title-row {
+    flex-direction: row;
+    align-items: center;
+    margin-bottom: 14px;
+}
+
+.gas-meter-title-row #identity {
+    flex-shrink: 0;
+    margin-right: 16px;
+}
+
+.gas-meter-title-row__status {
+    flex-grow: 1;
+    flex-basis: 0;
+    min-width: 0;
+}
+
+.gas-meter-columns {
+    flex-direction: row;
+    align-items: flex-start;
+}
+
+.gas-meter-columns__column {
+    flex-grow: 1;
+    flex-basis: 0;
+    min-width: 0;
+}
+
+.gas-meter-columns__column--first {
+    margin-right: 14px;
+}
+
+.gas-meter-pressure {
+    flex-direction: column;
+    padding: 14px;
+    background-color: var(--ss3d-diegetic-inset);
+    border-width: 1px;
+    border-color: var(--ss3d-border-subtle);
+    border-radius: var(--ss3d-radius-sm);
+    margin-bottom: 12px;
+}
+
+.gas-meter-pressure--over {
+    border-color: var(--ss3d-feedback-danger);
+}
+
+.gas-meter-pressure__header {
+    flex-direction: row;
+    align-items: flex-end;
+    justify-content: space-between;
+    margin-bottom: 10px;
+}
+
+.gas-meter-pressure__label {
+    font-size: 9px;
+    letter-spacing: 2px;
+    color: var(--ss3d-text-tertiary);
+    padding: 0;
+    background-color: rgba(0, 0, 0, 0);
+}
+
+.gas-meter-pressure__reading {
+    flex-direction: row;
+    align-items: flex-end;
+}
+
+.gas-meter-pressure__value {
+    font-size: 34px;
+    padding: 0;
+    margin-right: 6px;
+    background-color: rgba(0, 0, 0, 0);
+}
+
+.gas-meter-pressure__unit {
+    font-size: 13px;
+    color: var(--ss3d-text-secondary);
+    padding: 0;
+    background-color: rgba(0, 0, 0, 0);
+}
+
+/* Painted track: radius and border only, as on every other bar here. */
+.gas-meter-track {
+    height: 8px;
+    margin-bottom: 4px;
+    background-color: var(--ss3d-diegetic-screen-bg);
+    border-width: 1px;
+    border-color: var(--ss3d-border-subtle);
+    border-radius: var(--ss3d-radius-sm);
+}
+
+.gas-meter-track__clip {
+    flex-grow: 1;
+    overflow: hidden;
+}
+
+.gas-meter-track__safe {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    background-color: var(--ss3d-feedback-success-bg);
+}
+
+.gas-meter-track__fill {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    opacity: 0.85;
+    background-color: var(--ss3d-text-secondary);
+}
+
+.gas-meter-track__fill.tone-success {
+    background-color: var(--ss3d-feedback-success);
+}
+
+.gas-meter-track__fill.tone-warning {
+    background-color: var(--ss3d-feedback-warning);
+}
+
+.gas-meter-track__fill.tone-danger {
+    background-color: var(--ss3d-feedback-danger);
+}
+
+.gas-meter-scale {
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+.gas-meter-scale__text {
+    font-size: 10px;
+    color: var(--ss3d-text-tertiary);
+    padding: 0;
+    background-color: rgba(0, 0, 0, 0);
+}
+
+.gas-meter-stats {
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+.gas-meter-stat {
+    flex-direction: column;
+    width: 32%;
+    padding: 10px 12px;
+    background-color: var(--ss3d-diegetic-panel-raised);
+    border-width: 1px;
+    border-color: var(--ss3d-border-strong);
+    border-radius: var(--ss3d-radius-sm);
+}
+
+.gas-meter-stat__label {
+    font-size: 8px;
+    letter-spacing: 2px;
+    color: var(--ss3d-text-tertiary);
+    margin-bottom: 4px;
+    padding: 0;
+    background-color: rgba(0, 0, 0, 0);
+}
+
+.gas-meter-stat__value {
+    font-size: 15px;
+    color: var(--ss3d-text-primary);
+    padding: 0;
+    background-color: rgba(0, 0, 0, 0);
+}
+
+.gas-meter-stat__value.tone-neutral {
+    color: var(--ss3d-text-primary);
+}
+
+.gas-meter-registry {
+    font-size: 10.5px;
+    color: var(--ss3d-text-tertiary);
+    padding: 0;
+    background-color: rgba(0, 0, 0, 0);
+}
+
+.gas-meter-mix {
+    height: 10px;
+    margin-bottom: 10px;
+}
+
+.gas-meter-gases {
+    flex-direction: column;
+}

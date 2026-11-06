@@ -72,12 +72,12 @@
                             <ss3d:ToggleSwitch name="power-toggle" is-on="true" on-label="ON" off-label="OFF" />
                             <ui:Label text="Pwr" class="atmos-power-caption font-arcade" />
                         </ui:VisualElement>
-                        <ui:VisualElement class="pump-target-column">
+                        <ui:VisualElement name="target-column" class="pump-target-column">
                             <ui:VisualElement class="pump-target-labels">
-                                <ui:Label text="Target outlet pressure" class="pump-target-title font-body" />
+                                <ui:Label name="target-title" text="Target outlet pressure" class="pump-target-title font-body" />
                                 <ui:Label name="target-gated-hint" class="pump-gated-hint font-terminal" text="" />
                             </ui:VisualElement>
-                            <ss3d:NumericStepper name="target-stepper" value-text="4500 kPa" />
+                            <ss3d:NumericStepper name="target-stepper" value-text="101 kPa" />
                         </ui:VisualElement>
                     </ui:VisualElement>
                 </ui:VisualElement>

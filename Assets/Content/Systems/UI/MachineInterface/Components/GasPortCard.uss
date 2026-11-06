@@ -1,0 +1,103 @@
+
+.gas-port-card {
+    flex-direction: column;
+    padding: 10px 12px;
+    background-color: var(--ss3d-diegetic-inset);
+    border-width: 1px;
+    border-color: var(--ss3d-border-subtle);
+    border-radius: var(--ss3d-radius-sm);
+}
+
+.gas-port-card--raised {
+    background-color: var(--ss3d-diegetic-panel-raised);
+    border-color: var(--ss3d-border-strong);
+}
+
+.gas-port-card--warn {
+    border-color: var(--ss3d-feedback-warning);
+}
+
+.gas-port-card__header {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 6px;
+}
+
+.gas-port-card__label {
+    font-size: 9px;
+    letter-spacing: 2px;
+    color: var(--ss3d-text-tertiary);
+    padding: 0;
+    background-color: rgba(0, 0, 0, 0);
+}
+
+.gas-port-card__pressure {
+    font-size: 15px;
+    color: var(--ss3d-text-primary);
+    padding: 0;
+    background-color: rgba(0, 0, 0, 0);
+}
+
+.gas-port-card--warn .gas-port-card__pressure {
+    color: var(--ss3d-feedback-warning);
+}
+
+.gas-port-card__mix {
+    font-size: 10.5px;
+    color: var(--ss3d-text-secondary);
+    margin-top: 6px;
+    padding: 0;
+    white-space: normal;
+    background-color: rgba(0, 0, 0, 0);
+}
+
+.gas-port-card__mix--warn {
+    color: var(--ss3d-feedback-warning);
+}
+
+.gas-port-card__capacity {
+    flex-direction: column;
+    margin-top: 6px;
+    padding-top: 6px;
+    border-top-width: 1px;
+    border-top-color: var(--ss3d-border-subtle);
+}
+
+.gas-port-card__capacity .gas-port-card__header {
+    margin-bottom: 4px;
+}
+
+.gas-port-card__capacity-label {
+    font-size: 8px;
+    letter-spacing: 2px;
+    color: var(--ss3d-text-tertiary);
+    padding: 0;
+    background-color: rgba(0, 0, 0, 0);
+}
+
+.gas-port-card__capacity-text {
+    font-size: 10.5px;
+    color: var(--ss3d-text-secondary);
+    padding: 0;
+    background-color: rgba(0, 0, 0, 0);
+}
+
+.gas-port-card__capacity-track {
+    height: 4px;
+    background-color: var(--ss3d-diegetic-screen-bg);
+}
+
+.gas-port-card__capacity-fill {
+    height: 100%;
+    width: 0;
+    background-color: var(--ss3d-text-secondary);
+}
+
+.gas-port-card__capacity--full .gas-port-card__capacity-text {
+    color: var(--ss3d-feedback-warning);
+}
+
+.gas-port-card__capacity--full .gas-port-card__capacity-fill {
+    background-color: var(--ss3d-feedback-warning);
+}

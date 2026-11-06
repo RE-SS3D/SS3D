@@ -32,6 +32,10 @@ namespace SS3D.Systems.Atmospherics.Pipes
     [RequireComponent(typeof(ElectricDeviceAdjacencyConnector))]
     public sealed class AirAlarmController : NetworkBehaviour, IAmbientLoopState
     {
+        /// <summary>Seconds lit and seconds dark while alarming.</summary>
+        private const float FlashSeconds = 0.4f;
+
+        private static readonly int EmissionColorId = Shader.PropertyToID("_EmissionColor");
 
         [SerializeField]
         private BasicPowerConsumer _powerConsumer;
@@ -70,8 +74,10 @@ namespace SS3D.Systems.Atmospherics.Pipes
         private AreaId _areaId;
         private bool _hasArea;
         private EmissiveMaterialSlots _emissiveSlots;
-        private Color _alarmEmission = new(1f, 0.15f, 0.1f, 1f);
+        private Color _alarmEmission = new(3f, 0.3f, 0.2f, 1f);
         private bool _powerEventsSubscribed;
+        private bool _flashing;
+        private bool _flashLit;
 
         public AirAlarmState AlarmState => _alarmState;
 
@@ -348,7 +354,7 @@ namespace SS3D.Systems.Atmospherics.Pipes
         private void CacheEmissiveMaterials()
         {
             _emissiveSlots ??= new EmissiveMaterialSlots();
-            _emissiveSlots.Cache(_emissiveRenderers, material => material.IsKeywordEnabled("_EMISSION"));
+            _emissiveSlots.Cache(_emissiveRenderers, GlowsWhenPowered);
         }
 
         private void RefreshVisuals()
@@ -358,14 +364,40 @@ namespace SS3D.Systems.Atmospherics.Pipes
 
             bool powered = IsPowered();
             bool alarming = _alarmState != AirAlarmState.None;
+            SetFlashing(powered && alarming);
             if (!powered)
                 _emissiveSlots.ApplyPowered(false);
-            else if (alarming)
-                _emissiveSlots.ApplyEmissionOverride(1f, _alarmEmission);
-            else
+            else if (!alarming)
                 _emissiveSlots.Apply(0.35f, Color.white * 0.35f);
         }
 
+        private void SetFlashing(bool flashing)
+        {
+            if (_flashing == flashing)
+                return;
+
+            _flashing = flashing;
+            if (flashing)
+            {
+                _flashLit = false;
+                InvokeRepeating(nameof(ToggleFlash), 0f, FlashSeconds);
+            }
+            else
+            {
+                CancelInvoke(nameof(ToggleFlash));
+            }
+        }
+
+        private void ToggleFlash()
+        {
+            _flashLit = !_flashLit;
+            _emissiveSlots.ApplyEmissionOverride(1f, _flashLit ? _alarmEmission : Color.black);
+        }
+
         private bool IsPowered() => AtmosPortPower.IsPowered(_powerConsumer);
+
+        /// <summary>The face of the alarm: materials authored with a glow, not the casing's black emission.</summary>
+        public static bool GlowsWhenPowered(Material material) =>
+            material.HasProperty(EmissionColorId) && material.GetColor(EmissionColorId).maxColorComponent > 0f;
     }
 }

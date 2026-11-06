@@ -23,7 +23,6 @@ namespace SS3D.UI.MachineInterface
             writer.WriteBoolean(snapshot.FilterO2);
             writer.WriteBoolean(snapshot.FilterN2);
             writer.WriteBoolean(snapshot.FilterCo2);
-            writer.WriteBoolean(snapshot.FilterPlasma);
             writer.WriteBoolean(snapshot.FilterToxins);
         }
 
@@ -48,7 +47,6 @@ namespace SS3D.UI.MachineInterface
                 FilterO2 = reader.ReadBoolean(),
                 FilterN2 = reader.ReadBoolean(),
                 FilterCo2 = reader.ReadBoolean(),
-                FilterPlasma = reader.ReadBoolean(),
                 FilterToxins = reader.ReadBoolean(),
             };
         }

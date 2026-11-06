@@ -75,7 +75,9 @@ namespace SS3D.Systems.Audio.Editor
         {
             { "Assets/Content/WorldObjects/Furniture/Machines/Atmospherics/Vent/Vent.prefab", AmbientLoopKind.Vent },
             { "Assets/Content/WorldObjects/Furniture/Machines/Atmospherics/Scrubber/Scrubber.prefab", AmbientLoopKind.Scrubber },
+            { "Assets/Content/WorldObjects/Furniture/Machines/Atmospherics/Scrubber/ScrubberIntake.prefab", AmbientLoopKind.Scrubber },
             { "Assets/Content/WorldObjects/Furniture/Machines/Atmospherics/GasPump/GasPump.prefab", AmbientLoopKind.GasPump },
+            { "Assets/Content/WorldObjects/Structures/Pipes/Atmospherics/Devices/AtmosPumpVolume.prefab", AmbientLoopKind.GasPump },
             { "Assets/Content/WorldObjects/Furniture/Machines/Engineering/SMES.prefab", AmbientLoopKind.Smes },
             { "Assets/Content/WorldObjects/Furniture/Machines/Vendors/VendorHotDrinks.prefab", AmbientLoopKind.Vendor },
             { "Assets/Content/WorldObjects/Furniture/Machines/Vendors/VendorRobustSoftdrinks.prefab", AmbientLoopKind.Vendor },

@@ -1,0 +1,100 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:ss3d="SS3D.UI.MachineInterface.Components" editor-extension-mode="False">
+    <ui:Style src="project://database/Assets/Content/Systems/UI/Tokens/ss3d-tokens.uss" />
+    <ui:Style src="project://database/Assets/Content/Systems/UI/Tokens/ss3d-typography.uss" />
+    <ui:Style src="project://database/Assets/Content/Systems/UI/MachineInterface/Tokens/diegetic-tokens.uss" />
+    <ui:Style src="project://database/Assets/Content/Systems/UI/MachineInterface/Tokens/diegetic-tones.uss" />
+    <ui:Style src="project://database/Assets/Content/Systems/UI/MachineInterface/Components/DiegeticDeviceShell.uss" />
+    <ui:Style src="project://database/Assets/Content/Systems/UI/MachineInterface/Components/StatusDot.uss" />
+    <ui:Style src="project://database/Assets/Content/Systems/UI/MachineInterface/Components/ConnectionStatusRow.uss" />
+    <ui:Style src="project://database/Assets/Content/Systems/UI/MachineInterface/Components/DeviceIdentityBlock.uss" />
+    <ui:Style src="project://database/Assets/Content/Systems/UI/MachineInterface/Components/GlanceableStatusChip.uss" />
+    <ui:Style src="project://database/Assets/Content/Systems/UI/MachineInterface/Components/PanelSection.uss" />
+    <ui:Style src="project://database/Assets/Content/Systems/UI/MachineInterface/Components/GasMixBar.uss" />
+    <ui:Style src="project://database/Assets/Content/Systems/UI/MachineInterface/Components/GasCompositionRow.uss" />
+    <ui:Style src="project://database/Assets/Content/Systems/UI/MachineInterface/Components/GasHistoryBars.uss" />
+    <ui:Style src="project://database/Assets/Content/Systems/UI/MachineInterface/Components/StatusBadge.uss" />
+    <ui:Style src="project://database/Assets/Content/Systems/UI/MachineInterface/Components/DeviceFooter.uss" />
+    <ui:Style src="project://database/Assets/Content/Systems/UI/MachineInterface/Templates/GasMeterInterface.uss" />
+
+    <ss3d:DiegeticDeviceShell name="device-shell"
+        class="diegetic-device-shell--meter"
+        model-label="GM-02 · pipe gas meter"
+        power-ok="true"
+        style="align-self: center; margin-top: 24px;">
+        <ss3d:ConnectionStatusRow name="connection-row" status-text="NO LINE" />
+
+        <ui:VisualElement class="gas-meter-title-row">
+            <ss3d:DeviceIdentityBlock name="identity"
+                title="GM-02"
+                subtitle="Atmospherics — Pipe Gas Meter" />
+            <ss3d:GlanceableStatusChip name="status-chip" class="gas-meter-title-row__status" />
+        </ui:VisualElement>
+
+        <ui:VisualElement class="gas-meter-columns">
+            <ui:VisualElement class="panel-section gas-meter-columns__column gas-meter-columns__column--first" name="line-section">
+                <ui:VisualElement class="panel-section__clip">
+                    <ui:VisualElement class="panel-section__header">
+                        <ui:Label class="panel-section__header-title font-titling" text="Line Conditions" />
+                    </ui:VisualElement>
+                    <ui:VisualElement class="panel-section__content">
+                        <ui:VisualElement name="pressure-card" class="gas-meter-pressure">
+                            <ui:VisualElement class="gas-meter-pressure__header">
+                                <ui:Label text="Pressure" class="gas-meter-pressure__label font-arcade" />
+                                <ui:VisualElement class="gas-meter-pressure__reading">
+                                    <ui:Label name="pressure-value" text="0.00" class="gas-meter-pressure__value font-terminal" />
+                                    <ui:Label text="kPa" class="gas-meter-pressure__unit font-terminal" />
+                                </ui:VisualElement>
+                            </ui:VisualElement>
+                            <ui:VisualElement class="gas-meter-track">
+                                <ui:VisualElement class="gas-meter-track__clip">
+                                    <ui:VisualElement name="pressure-safe" class="gas-meter-track__safe" />
+                                    <ui:VisualElement name="pressure-fill" class="gas-meter-track__fill" />
+                                </ui:VisualElement>
+                            </ui:VisualElement>
+                            <ui:VisualElement class="gas-meter-scale">
+                                <ui:Label text="0" class="gas-meter-scale__text font-terminal" />
+                                <ui:Label name="scale-mid" text="2250" class="gas-meter-scale__text font-terminal" />
+                                <ui:Label name="scale-max" text="4500 kPa" class="gas-meter-scale__text font-terminal" />
+                            </ui:VisualElement>
+                            <ss3d:GasHistoryBars name="history" />
+                            <ui:VisualElement class="gas-meter-scale">
+                                <ui:Label text="−40 s" class="gas-meter-scale__text font-terminal" />
+                                <ui:Label name="trend" text="steady" class="gas-meter-scale__text font-terminal" />
+                                <ui:Label text="now" class="gas-meter-scale__text font-terminal" />
+                            </ui:VisualElement>
+                        </ui:VisualElement>
+                        <ui:VisualElement class="gas-meter-stats">
+                                <ui:VisualElement class="gas-meter-stat">
+                                    <ui:Label text="Temp" class="gas-meter-stat__label font-arcade" />
+                                    <ui:Label name="stat-temperature" text="—" class="gas-meter-stat__value font-terminal" />
+                                </ui:VisualElement>
+                                <ui:VisualElement class="gas-meter-stat">
+                                    <ui:Label text="Moles" class="gas-meter-stat__label font-arcade" />
+                                    <ui:Label name="stat-moles" text="—" class="gas-meter-stat__value font-terminal" />
+                                </ui:VisualElement>
+                                <ui:VisualElement class="gas-meter-stat">
+                                    <ui:Label text="Volume" class="gas-meter-stat__label font-arcade" />
+                                    <ui:Label name="stat-volume" text="—" class="gas-meter-stat__value font-terminal" />
+                                </ui:VisualElement>
+                        </ui:VisualElement>
+                    </ui:VisualElement>
+                </ui:VisualElement>
+            </ui:VisualElement>
+
+            <ui:VisualElement class="panel-section gas-meter-columns__column" name="composition-section">
+                <ui:VisualElement class="panel-section__clip">
+                    <ui:VisualElement class="panel-section__header panel-section__header--split">
+                        <ui:Label class="panel-section__header-title font-titling" text="Composition" />
+                        <ui:Label name="registry-text" class="gas-meter-registry font-terminal" text="" />
+                    </ui:VisualElement>
+                    <ui:VisualElement class="panel-section__content">
+                        <ss3d:GasMixBar name="mix-bar" class="gas-meter-mix" />
+                        <ui:VisualElement name="gas-list" class="gas-meter-gases" />
+                    </ui:VisualElement>
+                </ui:VisualElement>
+            </ui:VisualElement>
+        </ui:VisualElement>
+
+        <ss3d:DeviceFooter name="footer" text="SS3D Atmospherics — Gas Meter Model GM-02" />
+    </ss3d:DiegeticDeviceShell>
+</ui:UXML>

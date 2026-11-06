@@ -35,6 +35,19 @@ namespace EditorTests
             Assert.AreEqual(AtmosAlertStackMapper.Severity.Critical, signals.LowOxygen);
         }
 
+        [TestCase(70f, AtmosAlertStackMapper.Severity.Warning)]
+        [TestCase(20f, AtmosAlertStackMapper.Severity.Warning)]
+        [TestCase(19.9f, AtmosAlertStackMapper.Severity.Critical)]
+        [TestCase(1f, AtmosAlertStackMapper.Severity.Critical)]
+        public void LowPressureTurnsCriticalBelowTwentyKilopascals(float pressureKpa, AtmosAlertStackMapper.Severity expected)
+        {
+            HealthEnvironmentState env = HealthEnvironmentState.SafeDefault;
+            env.HasSample = true;
+            env.PressureKpa = pressureKpa;
+
+            Assert.AreEqual(expected, AtmosAlertStackMapper.Compute(env).LowPressure);
+        }
+
         [Test]
         public void BreachInSafeAirIsAWarning()
         {

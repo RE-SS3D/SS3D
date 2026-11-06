@@ -7,9 +7,9 @@ using UnityEngine;
 namespace SS3D.UI.MachineInterface
 {
     /// <summary>
-    /// Networked pump unit machine interface. Pumps are not area-linked — they operate on their own tile and pipe network.
+    /// Machine interface for inline pipe devices: pumps, and digital valves with the set point
+    /// hidden. Not area-linked; they work on the two networks at their ports.
     /// </summary>
-    [RequireComponent(typeof(AtmosPumpController))]
     public sealed class PumpInterfaceController : AtmosMachineInterfaceBehaviour
     {
         [SerializeField]
@@ -27,13 +27,16 @@ namespace SS3D.UI.MachineInterface
         [SerializeField]
         private BasicPowerConsumer _powerConsumer;
 
-        private AtmosPumpController _pump;
+        private AtmosInlineDeviceBase _device;
+
+        private AtmosInlineDeviceBase Device => _device != null ? _device : _device = GetComponent<AtmosInlineDeviceBase>();
+
+        private AtmosPumpController Pump => Device as AtmosPumpController;
 
         public override string InterfaceId => MachineInterfaceIds.Pump;
 
         public override void OnStartServer()
         {
-            _pump = GetComponent<AtmosPumpController>();
             if (_powerConsumer == null)
             {
                 TryGetComponent(out _powerConsumer);
@@ -49,17 +52,12 @@ namespace SS3D.UI.MachineInterface
                 return false;
             }
 
-            if (_pump == null)
+            if (Device == null || Device.GetState() == value)
             {
-                _pump = GetComponent<AtmosPumpController>();
+                return Device != null;
             }
 
-            if (_pump == null || _pump.GetState() == value)
-            {
-                return _pump != null;
-            }
-
-            _pump.Toggle();
+            Device.Toggle();
             RefreshAllViewers();
             return true;
         }
@@ -71,16 +69,21 @@ namespace SS3D.UI.MachineInterface
                 return false;
             }
 
-            if (_pump == null)
+            if (Pump == null)
             {
-                _pump = GetComponent<AtmosPumpController>();
+                return false;
             }
 
-            int next = Mathf.Clamp(
-                (_pump != null ? _pump.TargetOutletPressureKpa : 0) + Mathf.RoundToInt(delta * 100f),
-                0,
-                9000);
-            _pump?.ServerSetTargetOutletPressureKpa(next);
+            int step = Mathf.RoundToInt(delta * 100f);
+            if (Pump.Regulation == PumpRegulation.Volume)
+            {
+                Pump.ServerSetTargetLitresPerSecond(Pump.TargetLitresPerSecond + step);
+            }
+            else
+            {
+                Pump.ServerSetTargetOutletPressureKpa(Pump.TargetOutletPressureKpa + step);
+            }
+
             RefreshAllViewers();
             return true;
         }
@@ -109,20 +112,17 @@ namespace SS3D.UI.MachineInterface
 
         private PumpInterfaceSnapshot BuildSnapshot()
         {
-            if (_pump == null)
-            {
-                _pump = GetComponent<AtmosPumpController>();
-            }
-
             bool powerOk = PowerGate.IsPowered(_powerConsumer, NullConsumerPolicy.Allow);
-            bool powered = _pump != null && _pump.IsEnabled;
-            bool connected = _pump != null && _pump.TryGetConnectedNetwork(out _);
-            bool flowing = _pump != null && _pump.IsPortFlowing;
-            bool stalled = _pump != null && _pump.LastStalled;
-            float inletPressure = _pump != null ? _pump.LastInletPressureKpa : 0f;
-            float outletPressure = _pump != null ? _pump.LastOutletPressureKpa : 0f;
-            int targetPressure = _pump != null ? _pump.TargetOutletPressureKpa : 0;
-            float flowMoles = _pump != null ? _pump.LastFlowMolesPerSecond : 0f;
+            bool powered = Device != null && Device.IsEnabled;
+            bool connected = Device != null && Device.TryGetConnectedNetwork(out _);
+            bool flowing = Device != null && Device.IsPortFlowing;
+            bool stalled = Device != null && Device.LastStalled;
+            PumpRegulation regulation = Device != null ? Device.Regulation : PumpRegulation.None;
+            float inletPressure = connected ? Device.LastInletPressureKpa : 0f;
+            float outletPressure = connected ? Device.LastOutletPressureKpa : 0f;
+            int targetPressure = regulation == PumpRegulation.OutletPressure ? Pump.TargetOutletPressureKpa : 0;
+            int targetLitres = regulation == PumpRegulation.Volume ? Pump.TargetLitresPerSecond : 0;
+            float flowMoles = Device != null ? Device.LastFlowMolesPerSecond : 0f;
 
             PumpScenario scenario;
             if (!powerOk)
@@ -137,7 +137,7 @@ namespace SS3D.UI.MachineInterface
             {
                 scenario = PumpScenario.Fault;
             }
-            else if (stalled || (powered && inletPressure < 20f && !flowing))
+            else if (stalled || (Pump != null && connected && powered && inletPressure < 20f && !flowing))
             {
                 scenario = PumpScenario.Starved;
             }
@@ -165,7 +165,9 @@ namespace SS3D.UI.MachineInterface
                 AccessGranted = AccessGranted,
                 AccessScanning = AccessScanning,
                 AccessDenied = AccessDenied,
+                Regulation = (byte)regulation,
                 TargetOutletPressureKpa = targetPressure,
+                TargetLitresPerSecond = targetLitres,
                 InletPressureKpa = inletPressure,
                 OutletPressureKpa = outletPressure,
                 FlowMolesPerSecond = flowMoles,

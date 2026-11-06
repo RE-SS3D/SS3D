@@ -100,6 +100,33 @@ namespace SS3D.UI.MachineInterface
         [SerializeField]
         private StyleSheet[] _ventComponentStyles;
 
+        [SerializeField]
+        private VisualTreeAsset _filterTemplate;
+
+        [SerializeField]
+        private StyleSheet _filterTemplateStyle;
+
+        [SerializeField]
+        private StyleSheet[] _filterComponentStyles;
+
+        [SerializeField]
+        private VisualTreeAsset _mixerTemplate;
+
+        [SerializeField]
+        private StyleSheet _mixerTemplateStyle;
+
+        [SerializeField]
+        private StyleSheet[] _mixerComponentStyles;
+
+        [SerializeField]
+        private VisualTreeAsset _meterTemplate;
+
+        [SerializeField]
+        private StyleSheet _meterTemplateStyle;
+
+        [SerializeField]
+        private StyleSheet[] _meterComponentStyles;
+
         public PanelSettings PanelSettings => _panelSettings;
         public StyleSheet MachineWindowStyle => _machineWindowStyle;
         public StyleSheet Ss3dTokensStyle => _ss3dTokensStyle;
@@ -134,6 +161,15 @@ namespace SS3D.UI.MachineInterface
                 VentTemplate = _ventTemplate,
                 VentTemplateStyle = _ventTemplateStyle,
                 VentComponentStyles = _ventComponentStyles,
+                FilterTemplate = _filterTemplate,
+                FilterTemplateStyle = _filterTemplateStyle,
+                FilterComponentStyles = _filterComponentStyles,
+                MixerTemplate = _mixerTemplate,
+                MixerTemplateStyle = _mixerTemplateStyle,
+                MixerComponentStyles = _mixerComponentStyles,
+                MeterTemplate = _meterTemplate,
+                MeterTemplateStyle = _meterTemplateStyle,
+                MeterComponentStyles = _meterComponentStyles,
             };
         }
 
@@ -202,7 +238,16 @@ namespace SS3D.UI.MachineInterface
             StyleSheet[] scrubberComponentStyles,
             VisualTreeAsset ventTemplate,
             StyleSheet ventTemplateStyle,
-            StyleSheet[] ventComponentStyles)
+            StyleSheet[] ventComponentStyles,
+            VisualTreeAsset filterTemplate,
+            StyleSheet filterTemplateStyle,
+            StyleSheet[] filterComponentStyles,
+            VisualTreeAsset mixerTemplate,
+            StyleSheet mixerTemplateStyle,
+            StyleSheet[] mixerComponentStyles,
+            VisualTreeAsset meterTemplate,
+            StyleSheet meterTemplateStyle,
+            StyleSheet[] meterComponentStyles)
         {
             _panelSettings = panelSettings;
             _machineWindowStyle = machineWindowStyle;
@@ -233,6 +278,15 @@ namespace SS3D.UI.MachineInterface
             _ventTemplate = ventTemplate;
             _ventTemplateStyle = ventTemplateStyle;
             _ventComponentStyles = ventComponentStyles;
+            _filterTemplate = filterTemplate;
+            _filterTemplateStyle = filterTemplateStyle;
+            _filterComponentStyles = filterComponentStyles;
+            _mixerTemplate = mixerTemplate;
+            _mixerTemplateStyle = mixerTemplateStyle;
+            _mixerComponentStyles = mixerComponentStyles;
+            _meterTemplate = meterTemplate;
+            _meterTemplateStyle = meterTemplateStyle;
+            _meterComponentStyles = meterComponentStyles;
         }
 #endif
     }

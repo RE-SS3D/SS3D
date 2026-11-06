@@ -8,7 +8,7 @@ namespace SS3D.UI.MachineInterface.Bindings
 {
     public class AirAlarmInterfaceBinder : IMachineInterfaceBinder
     {
-        private static readonly string[] FilterKeys = { "O2", "N2", "CO2", "Plasma", "Toxins" };
+        private static readonly string[] FilterKeys = { "O2", "N2", "CO2", "Toxins" };
 
         public event Action CloseRequested;
 

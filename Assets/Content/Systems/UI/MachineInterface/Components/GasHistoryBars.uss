@@ -1,0 +1,30 @@
+
+.gas-history-bars {
+    flex-direction: row;
+    align-items: flex-end;
+    height: 44px;
+    margin-top: 6px;
+    padding-top: 6px;
+    border-top-width: 1px;
+    border-top-color: var(--ss3d-border-subtle);
+}
+
+.gas-history-bars__bar {
+    flex-grow: 1;
+    flex-basis: 0;
+    min-width: 0;
+    margin-right: 2px;
+    background-color: #6b6b70;
+}
+
+.gas-history-bars__bar--newest.tone-success {
+    background-color: var(--ss3d-feedback-success);
+}
+
+.gas-history-bars__bar--newest.tone-warning {
+    background-color: var(--ss3d-feedback-warning);
+}
+
+.gas-history-bars__bar--newest.tone-danger {
+    background-color: var(--ss3d-feedback-danger);
+}

@@ -23,7 +23,7 @@ using SS3D.Systems.Tile.MapEditor.Commands;
 using SS3D.Systems.Tile.FloorVisuals;
 using SS3D.Systems.Tile.MapEditor.Persistence;
 using SS3D.Systems.Tile.MapEditor.UI;
-using SS3D.Systems.Tile.SpawnPoints;
+using SS3D.Systems.Tile.GasMarkers;
 using SS3D.Systems.Tile.TileMapCreator;
 using System;
 using System.Collections.Generic;
@@ -220,7 +220,8 @@ namespace SS3D.Systems.Tile.MapEditor
                 new ConstructionService(_tileSystem.CurrentMap, _tileSystem.QueryService),
                 () => _tileSystem.SyncFloorDecalsToClients(),
                 _tileSystem.SpawnPoints,
-                () => SpawnPointEditorView.RefreshAll());
+                () => MapMarkerEditorView.RefreshAll(),
+                _tileSystem.GasMarkers);
         }
 
         protected override void OnEnabled()
@@ -301,6 +302,7 @@ namespace SS3D.Systems.Tile.MapEditor
             _view.ValidationLocateRequested += OnValidationLocateRequested;
             _view.ToolSelected += OnToolSelected;
             _view.AreaApplyRequested += OnAreaApplyRequested;
+            _view.GasMarkerApplyRequested += OnGasMarkerApplyRequested;
             _view.RoomPaletteSelected += OnRoomPaletteSelected;
             _view.UndoRequested += OnUndoRequested;
             _view.RedoRequested += OnRedoRequested;
@@ -393,7 +395,7 @@ namespace SS3D.Systems.Tile.MapEditor
                 _lighting.Apply();
                 SetMouseOverUI(false);
                 _gameplayHud.SetVisible(false);
-                SpawnPointEditorView.EnsureExists().SetEditorOpen(true);
+                MapMarkerEditorView.EnsureExists().SetEditorOpen(true);
                 BeginWorldSimsSuspend();
                 ApplyEditorVisualSuppression(true);
                 RefreshTileHostVisibility();
@@ -405,7 +407,7 @@ namespace SS3D.Systems.Tile.MapEditor
             else
             {
                 _gameplayHud.SetVisible(true);
-                SpawnPointEditorView.EnsureExists().SetEditorOpen(false);
+                MapMarkerEditorView.EnsureExists().SetEditorOpen(false);
                 _hologramManager.DestroyHolograms();
                 _hologramManager.enabled = false;
                 _session.Exit();
@@ -523,7 +525,14 @@ namespace SS3D.Systems.Tile.MapEditor
             if (MapEditorSpawnCatalog.IsSpawnKey(entry.AssetName) &&
                 _viewModel.CurrentTool == MapEditorTool.Edit)
             {
-                _hologramManager.SetSelectedSpawnPoint(entry.AssetName);
+                _hologramManager.SetSelectedMarker(entry.AssetName);
+                return;
+            }
+
+            if (MapEditorGasMarkerCatalog.TryDecode(entry.AssetName, out GasMarkerKind gasKind) &&
+                _viewModel.CurrentTool == MapEditorTool.Edit)
+            {
+                SelectGasMarkerKind(gasKind);
                 return;
             }
 
@@ -622,6 +631,9 @@ namespace SS3D.Systems.Tile.MapEditor
 
         private void HandleSelectClick()
         {
+            if (TryPickGasMarker(MapEditorTool.Select))
+                return;
+
             if (!MapEditorCursorPick.TryPick(PickCamera, _tileSystem.CurrentMap, _viewModel,
                     out PlacedTileObject placed, out PlacedItemObject item))
                 return;
@@ -647,6 +659,9 @@ namespace SS3D.Systems.Tile.MapEditor
         /// </summary>
         private void HandleDropperClick()
         {
+            if (TryPickGasMarker(MapEditorTool.Dropper))
+                return;
+
             if (!MapEditorCursorPick.TryPick(PickCamera, _tileSystem.CurrentMap, _viewModel,
                     out PlacedTileObject placed, out PlacedItemObject item))
                 return;
@@ -770,6 +785,7 @@ namespace SS3D.Systems.Tile.MapEditor
             _view.ValidationLocateRequested -= OnValidationLocateRequested;
             _view.ToolSelected -= OnToolSelected;
             _view.AreaApplyRequested -= OnAreaApplyRequested;
+            _view.GasMarkerApplyRequested -= OnGasMarkerApplyRequested;
             _view.RoomPaletteSelected -= OnRoomPaletteSelected;
             _view.UndoRequested -= OnUndoRequested;
             _view.RedoRequested -= OnRedoRequested;
@@ -1146,7 +1162,8 @@ namespace SS3D.Systems.Tile.MapEditor
 
                 GenericObjectSo asset = null;
                 if (MapEditorFloorDecalCatalog.TryDecode(entry.AssetName, out _) ||
-                    MapEditorSpawnCatalog.IsSpawnKey(entry.AssetName))
+                    MapEditorSpawnCatalog.IsSpawnKey(entry.AssetName) ||
+                    MapEditorGasMarkerCatalog.TryDecode(entry.AssetName, out _))
                 {
                     HandleAssetSelected(entry, null);
                     return;
@@ -1327,11 +1344,11 @@ namespace SS3D.Systems.Tile.MapEditor
                 return;
 
             _tileSystem.CurrentMap.Clear();
-            _tileSystem.ClearSpawnPoints();
+            _tileSystem.ClearMarkers();
             _commandService.MarkNewMap();
             EditingTemplateName = null;
             _hologramManager.DestroyHolograms();
-            SpawnPointEditorView.RefreshAll();
+            MapMarkerEditorView.RefreshAll();
             TargetSyncUndoState(conn, 0, 0, false);
             SendMapValidation(conn, true);
             TargetToast(conn, "Started a new empty map.");
@@ -1388,7 +1405,8 @@ namespace SS3D.Systems.Tile.MapEditor
             foreach (MapEditorCommandDto dto in commands)
             {
                 if (dto.Kind is MapEditorCommandKind.PlaceTile or MapEditorCommandKind.PlaceItem
-                    or MapEditorCommandKind.SetFloorDecal or MapEditorCommandKind.PlaceSpawnPoint)
+                    or MapEditorCommandKind.SetFloorDecal or MapEditorCommandKind.PlaceSpawnPoint
+                    or MapEditorCommandKind.PlaceGasMarker)
                 {
                     MapEditorCommandFactory.TryCreatePlaceCommands(dto, ctx, list);
                     continue;

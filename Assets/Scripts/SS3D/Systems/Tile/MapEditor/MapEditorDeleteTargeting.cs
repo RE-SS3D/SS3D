@@ -37,11 +37,11 @@ namespace SS3D.Systems.Tile.MapEditor
     {
         private static readonly TileLayer[] PipeLayers =
         {
-            TileLayer.Wire,
             TileLayer.PipeLeft,
             TileLayer.PipeRight,
             TileLayer.PipeMiddle,
             TileLayer.PipeSurface,
+            TileLayer.PipeManifold,
         };
 
         /// <summary>
@@ -90,6 +90,10 @@ namespace SS3D.Systems.Tile.MapEditor
                 case MapEditorSubcategory.Piping:
                     foreach (TileLayer layer in PipeLayers)
                         CollectLayer(locations, layer, into);
+
+                    // The tab holds both, so a wire on a pipe's tile waits until the pipes are gone.
+                    if (into.Count == 0)
+                        CollectLayer(locations, TileLayer.Wire, into);
                     break;
                 case MapEditorSubcategory.Disposals:
                     CollectLayer(locations, TileLayer.Disposal, into);

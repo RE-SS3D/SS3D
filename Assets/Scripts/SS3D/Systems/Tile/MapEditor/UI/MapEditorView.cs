@@ -2,6 +2,7 @@ using SS3D.Data.AssetDatabases;
 using SS3D.Systems.Inputs;
 using SS3D.Systems.Tile.FloorVisuals;
 using SS3D.Systems.Tile.MapEditor.Persistence;
+using SS3D.Systems.Tile.GasMarkers;
 using SS3D.Systems.Tile.SpawnPoints;
 using SS3D.Systems.Tile.TileMapCreator;
 using System;
@@ -493,7 +494,7 @@ namespace SS3D.Systems.Tile.MapEditor.UI
             }
 
             // Keep unsaved room fields intact when toasts/undo state refresh the chrome.
-            if (_vm.OpenPopover != "area" || _activePopover == null)
+            if (_vm.OpenPopover is not ("area" or GasMarkerPopover) || _activePopover == null)
                 RefreshPopover();
         }
 
@@ -539,6 +540,9 @@ namespace SS3D.Systems.Tile.MapEditor.UI
 
             _grid.Clear();
 
+            if (_vm.OpenPopover == GasMarkerPopover && _vm.CurrentSubcategory != MapEditorSubcategory.Atmospherics)
+                ClosePopover();
+
             if (_vm.CurrentMode == MapEditorMode.Scripting && _vm.CurrentSubcategory == MapEditorSubcategory.Rooms)
             {
                 BuildAreaPalette(_grid);
@@ -549,7 +553,7 @@ namespace SS3D.Systems.Tile.MapEditor.UI
                 MapEditorCatalog.IsUnavailableScriptingSubcategory(_vm.CurrentSubcategory))
             {
                 Label stub = new(
-                    "Not available yet — trigger and atmos scripting is a later pass.")
+                    "Not available yet — random spawners and triggers are a later pass.")
                 {
                     style = { whiteSpace = WhiteSpace.Normal },
                 };
@@ -628,9 +632,10 @@ namespace SS3D.Systems.Tile.MapEditor.UI
             bool isFloorDecal = !entry.IsEraser &&
                                MapEditorFloorDecalCatalog.TryDecode(entry.AssetName, out decalId);
             bool isSpawn = !entry.IsEraser && MapEditorSpawnCatalog.IsSpawnKey(entry.AssetName);
+            bool isGasMarker = MapEditorGasMarkerCatalog.TryDecode(entry.AssetName, out GasMarkerKind gasKind) && !entry.IsEraser;
 
             // Virtual catalog keys (floor decals / spawn markers) are not TileResourceLoader assets.
-            GenericObjectSo asset = entry.IsEraser || isFloorDecal || isSpawn
+            GenericObjectSo asset = entry.IsEraser || isFloorDecal || isSpawn || isGasMarker
                 ? null
                 : _loader.GetAsset(entry.AssetName);
 
@@ -673,6 +678,11 @@ namespace SS3D.Systems.Tile.MapEditor.UI
                                   && kind == SpawnPointKind.Antagonist;
                 icon.AddToClassList(antagonist ? "map-editor-slot__icon--spawn-antag" : "map-editor-slot__icon--spawn-job");
             }
+            else if (isGasMarker && _icons?.GetSubcategoryIcon(MapEditorSubcategory.Atmospherics) is VectorImage gasIcon)
+            {
+                icon.style.backgroundImage = new StyleBackground(gasIcon);
+                icon.style.unityBackgroundImageTintColor = MapEditorGasMarkerCatalog.PinColor(gasKind);
+            }
             else if (asset?.icon != null)
             {
                 icon.style.backgroundImage = new StyleBackground(asset.icon);
@@ -686,7 +696,9 @@ namespace SS3D.Systems.Tile.MapEditor.UI
                     ? floorDecal.DisplayName
                     : isSpawn
                         ? MapEditorSpawnCatalog.DisplayName(entry.AssetName)
-                        : entry.AssetName;
+                        : isGasMarker
+                            ? MapEditorGasMarkerCatalog.DisplayName(gasKind)
+                            : entry.AssetName;
             Label label = new(labelText)
             {
                 pickingMode = PickingMode.Ignore,
@@ -715,7 +727,7 @@ namespace SS3D.Systems.Tile.MapEditor.UI
             _vm.NotifyChanged();
         }
 
-        private static bool IsLeftPopover(string key) => key is "maps" or "saveMenu" or "area";
+        private static bool IsLeftPopover(string key) => key is "maps" or "saveMenu" or "area" or GasMarkerPopover;
 
         private void RefreshPopover()
         {
@@ -728,7 +740,7 @@ namespace SS3D.Systems.Tile.MapEditor.UI
 
             VisualElement anchor = _vm.OpenPopover switch
             {
-                "maps" or "saveMenu" or "area" => _leftPopoverAnchor,
+                "maps" or "saveMenu" or "area" or GasMarkerPopover => _leftPopoverAnchor,
                 "camera" => _cameraPopoverAnchor,
                 _ => _rightPopoverAnchor,
             };
@@ -813,6 +825,7 @@ namespace SS3D.Systems.Tile.MapEditor.UI
             key switch
             {
                 "area" => "Room properties",
+                GasMarkerPopover => "Gas marker",
                 "maps" => "Map Selection",
                 "saveMenu" => "Save Map",
                 "layers" => "Layer View Mode",
@@ -827,6 +840,9 @@ namespace SS3D.Systems.Tile.MapEditor.UI
             {
                 case "area":
                     BuildAreaPopover(container);
+                    break;
+                case GasMarkerPopover:
+                    BuildGasMarkerPopover(container);
                     break;
                 case "maps":
                     BuildMapsPopover(container);

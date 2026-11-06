@@ -20,7 +20,6 @@ namespace SS3D.UI.MachineInterface
                     ["O2"] = record.FilterO2,
                     ["N2"] = record.FilterN2,
                     ["CO2"] = record.FilterCo2,
-                    ["Plasma"] = record.FilterPlasma,
                     ["Toxins"] = record.FilterToxins,
                 },
             };

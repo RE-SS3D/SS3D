@@ -24,6 +24,15 @@ namespace SS3D.UI.MachineInterface
             Register<PumpInterfaceSnapshot>(
                 GetPumpInterfaceId,
                 PumpInterfaceSnapshotMapper.ToViewModel);
+            Register<FilterInterfaceSnapshot>(
+                snapshot => snapshot.InterfaceId,
+                FilterInterfaceSnapshotMapper.ToViewModel);
+            Register<MixerInterfaceSnapshot>(
+                snapshot => snapshot.InterfaceId,
+                MixerInterfaceSnapshotMapper.ToViewModel);
+            Register<MeterInterfaceSnapshot>(
+                snapshot => snapshot.InterfaceId,
+                MeterInterfaceSnapshotMapper.ToViewModel);
             Register<AirAlarmInterfaceSnapshot>(
                 GetAirAlarmInterfaceId,
                 AirAlarmInterfaceSnapshotMapper.ToViewModel);

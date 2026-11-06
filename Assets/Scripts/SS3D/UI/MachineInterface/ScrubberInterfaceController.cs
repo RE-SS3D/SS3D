@@ -161,7 +161,6 @@ namespace SS3D.UI.MachineInterface
             bool filterO2 = true;
             bool filterN2 = true;
             bool filterCo2 = true;
-            bool filterPlasma = false;
             bool filterToxins = true;
             if (_scrubber != null)
             {
@@ -169,7 +168,6 @@ namespace SS3D.UI.MachineInterface
                     out filterO2,
                     out filterN2,
                     out filterCo2,
-                    out filterPlasma,
                     out filterToxins);
             }
 
@@ -192,7 +190,6 @@ namespace SS3D.UI.MachineInterface
                 FilterO2 = filterO2,
                 FilterN2 = filterN2,
                 FilterCo2 = filterCo2,
-                FilterPlasma = filterPlasma,
                 FilterToxins = filterToxins,
             };
         }

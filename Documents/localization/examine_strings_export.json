@@ -1,6 +1,6 @@
 {
     "Version": 1,
-    "ExportedAt": "2026-07-09T13:05:28.3556090Z",
+    "ExportedAt": "2026-11-05T20:34:09.7589900Z",
     "Entries": [
         {
             "AssetPath": "Assets/Content/Data/Examine/String/Entities/Humanoids/Human.asset",
@@ -122,6 +122,13 @@
             "EnDescription": "Dispenses cold water."
         },
         {
+            "AssetPath": "Assets/Content/Data/Examine/String/Furniture/Machines/Atmospherics/GasPump.asset",
+            "NameKey": "furniture.machines.atmospherics.gas_pump.name",
+            "DescriptionKey": "furniture.machines.atmospherics.gas_pump.desc",
+            "EnName": "Gas Pump",
+            "EnDescription": "A gas pump. Moves gas from the pipe behind it to the pipe in front, up to a target pressure."
+        },
+        {
             "AssetPath": "Assets/Content/Data/Examine/String/Furniture/Machines/Atmospherics/Scrubber.asset",
             "NameKey": "furniture.machines.atmospherics.scrubber.name",
             "DescriptionKey": "furniture.machines.atmospherics.scrubber.desc",
@@ -134,13 +141,6 @@
             "DescriptionKey": "furniture.machines.atmospherics.vent.desc",
             "EnName": "Vent",
             "EnDescription": "An air vent. Provides rooms with an air supply."
-        },
-        {
-            "AssetPath": "Assets/Content/Data/Examine/String/Furniture/Machines/Atmospherics/GasPump.asset",
-            "NameKey": "furniture.machines.atmospherics.gas_pump.name",
-            "DescriptionKey": "furniture.machines.atmospherics.gas_pump.desc",
-            "EnName": "Gas Pump",
-            "EnDescription": "A gas pump. Moves gases between a turf cell and the connected pipe network."
         },
         {
             "AssetPath": "Assets/Content/Data/Examine/String/Furniture/Machines/Engineering/PacManGenerator.asset",
@@ -878,32 +878,67 @@
             "EnDescription": "Planks of wood combined into a floor tile."
         },
         {
-            "AssetPath": "Assets/Content/Data/Examine/String/Structures/Pipes/AtmosPipesL1.asset",
-            "NameKey": "structures.pipes.atmos_pipe.name",
-            "DescriptionKey": "structures.pipes.atmos_pipes_l1.desc",
-            "EnName": "Atmospheric Pipe",
-            "EnDescription": "An atmospheric pipe positioned on the 1st layer."
+            "AssetPath": "Assets/Content/Data/Examine/String/Structures/Pipes/AtmosManifold3.asset",
+            "NameKey": "structures.pipes.atmos_manifold_3.name",
+            "DescriptionKey": "structures.pipes.atmos_manifold_3.desc",
+            "EnName": "Pipe Manifold",
+            "EnDescription": "Joins the underfloor pipes running through this tile into one line."
         },
         {
-            "AssetPath": "Assets/Content/Data/Examine/String/Structures/Pipes/AtmosPipesL2.asset",
-            "NameKey": "structures.pipes.atmos_pipe.name",
-            "DescriptionKey": "structures.pipes.atmos_pipes_l2.desc",
-            "EnName": "Atmospheric Pipe",
-            "EnDescription": "An atmospheric pipe positioned on the 2nd layer."
+            "AssetPath": "Assets/Content/Data/Examine/String/Structures/Pipes/AtmosManifold4.asset",
+            "NameKey": "structures.pipes.atmos_manifold_4.name",
+            "DescriptionKey": "structures.pipes.atmos_manifold_4.desc",
+            "EnName": "Pipe Manifold",
+            "EnDescription": "Joins the pipes running through this tile, the Surface line included, into one line."
         },
         {
-            "AssetPath": "Assets/Content/Data/Examine/String/Structures/Pipes/AtmosPipesL3.asset",
+            "AssetPath": "Assets/Content/Data/Examine/String/Structures/Pipes/AtmosPipesMixed.asset",
             "NameKey": "structures.pipes.atmos_pipe.name",
-            "DescriptionKey": "structures.pipes.atmos_pipes_l3.desc",
+            "DescriptionKey": "structures.pipes.atmos_pipes_mixed.desc",
             "EnName": "Atmospheric Pipe",
-            "EnDescription": "An atmospheric pipe positioned on the 3rd layer."
+            "EnDescription": "An atmospheric pipe on the mixed line. Vents and scrubbers both connect to it."
         },
         {
-            "AssetPath": "Assets/Content/Data/Examine/String/Structures/Pipes/AtmosPipesL4.asset",
+            "AssetPath": "Assets/Content/Data/Examine/String/Structures/Pipes/AtmosPipesSupply.asset",
             "NameKey": "structures.pipes.atmos_pipe.name",
-            "DescriptionKey": "structures.pipes.atmos_pipes_l4.desc",
+            "DescriptionKey": "structures.pipes.atmos_pipes_supply.desc",
             "EnName": "Atmospheric Pipe",
-            "EnDescription": "An atmospheric pipe positioned on the 4th layer."
+            "EnDescription": "An atmospheric pipe on the supply line. Vents connect to it."
+        },
+        {
+            "AssetPath": "Assets/Content/Data/Examine/String/Structures/Pipes/AtmosPipesSurface.asset",
+            "NameKey": "structures.pipes.atmos_pipe.name",
+            "DescriptionKey": "structures.pipes.atmos_pipes_surface.desc",
+            "EnName": "Atmospheric Pipe",
+            "EnDescription": "An atmospheric pipe on the floor. Only inline devices connect to it."
+        },
+        {
+            "AssetPath": "Assets/Content/Data/Examine/String/Structures/Pipes/AtmosPipesWaste.asset",
+            "NameKey": "structures.pipes.atmos_pipe.name",
+            "DescriptionKey": "structures.pipes.atmos_pipes_waste.desc",
+            "EnName": "Atmospheric Pipe",
+            "EnDescription": "An atmospheric pipe on the waste line. Scrubbers connect to it."
+        },
+        {
+            "AssetPath": "Assets/Content/Data/Examine/String/Structures/Pipes/AtmosPumpVolume.asset",
+            "NameKey": "structures.pipes.atmos_pump_volume.name",
+            "DescriptionKey": "structures.pipes.atmos_pump_volume.desc",
+            "EnName": "Volume Pump",
+            "EnDescription": "A gas pump that moves a set volume of gas each second, from the pipe behind it to the pipe in front."
+        },
+        {
+            "AssetPath": "Assets/Content/Data/Examine/String/Structures/Pipes/AtmosValveDigital.asset",
+            "NameKey": "structures.pipes.atmos_valve_digital.name",
+            "DescriptionKey": "structures.pipes.atmos_valve_digital.desc",
+            "EnName": "Digital Valve",
+            "EnDescription": "A powered pipe valve, switched from its panel. Connects the pipes on either side while open."
+        },
+        {
+            "AssetPath": "Assets/Content/Data/Examine/String/Structures/Pipes/AtmosValveManual.asset",
+            "NameKey": "structures.pipes.atmos_valve_manual.name",
+            "DescriptionKey": "structures.pipes.atmos_valve_manual.desc",
+            "EnName": "Manual Valve",
+            "EnDescription": "A hand-turned pipe valve. Connects the pipes on either side while open."
         },
         {
             "AssetPath": "Assets/Content/Data/Examine/String/Structures/Pipes/DisposalPipes.asset",

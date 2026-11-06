@@ -20,6 +20,8 @@ namespace SS3D.UI.MachineInterface
             writer.WriteBoolean(snapshot.AccessScanning);
             writer.WriteBoolean(snapshot.AccessDenied);
             writer.WriteInt32(snapshot.TargetPressureKpa);
+            writer.WriteSingle(snapshot.RoomPressureKpa);
+            writer.WriteSingle(snapshot.LinePressureKpa);
         }
 
         public static VentInterfaceSnapshot ReadVentInterfaceSnapshot(this Reader reader)
@@ -40,6 +42,8 @@ namespace SS3D.UI.MachineInterface
                 AccessScanning = reader.ReadBoolean(),
                 AccessDenied = reader.ReadBoolean(),
                 TargetPressureKpa = reader.ReadInt32(),
+                RoomPressureKpa = reader.ReadSingle(),
+                LinePressureKpa = reader.ReadSingle(),
             };
         }
     }

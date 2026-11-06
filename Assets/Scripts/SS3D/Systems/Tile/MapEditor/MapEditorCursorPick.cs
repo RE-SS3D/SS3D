@@ -21,6 +21,7 @@ namespace SS3D.Systems.Tile.MapEditor
             TileLayer.FurnitureBase,
             TileLayer.WallMountHigh,
             TileLayer.WallMountLow,
+            TileLayer.PipeManifold,
             TileLayer.PipeSurface,
             TileLayer.PipeMiddle,
             TileLayer.PipeLeft,

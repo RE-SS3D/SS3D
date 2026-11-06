@@ -1,5 +1,7 @@
-using FishNet.Object;
 using FishNet.Object.Synchronizing;
+using FishNet.Object;
+using SS3D.Core;
+using SS3D.Systems.Audio;
 using SS3D.Systems.Tile;
 using UnityEngine;
 
@@ -8,7 +10,7 @@ namespace SS3D.Systems.Atmospherics.Pipes
     /// <summary>
     /// Pushes connected pipe network gas into the turf cell at the device coordinate.
     /// </summary>
-    public sealed class VentController : AtmosPortControllerBase
+    public sealed class VentController : AtmosPortControllerBase, IAmbientLoopState
     {
         private static readonly int VentActiveId = Animator.StringToHash("ventActive");
 
@@ -25,6 +27,24 @@ namespace SS3D.Systems.Atmospherics.Pipes
         {
             _targetPressureKpa = Mathf.Clamp(targetKpa, 0, 200);
         }
+
+        /// <summary>Pressure in the room and in the line this vent draws on; the line reads 0 with no pipe.</summary>
+        public void GetPressures(out float roomKpa, out float lineKpa)
+        {
+            roomKpa = 0f;
+            lineKpa = 0f;
+            if (!SubSystems.TryGet(out AtmosSubSystem atmos) || atmos.Simulation == null)
+                return;
+
+            roomKpa = atmos.Simulation.GetCellPressure(OriginTile);
+            if (TryGetConnectedNetwork(out GasPipeNetworkId networkId)
+                && atmos.PipeRegistry.TryGetNetwork(networkId, out GasPipeNetworkRecord network))
+            {
+                lineKpa = network.GetPressure(AtmosConstants.DefaultGasCount);
+            }
+        }
+
+        public override TileLayer[] PipeLayers => AtmosDevicePipeResolver.VentLayers;
 
         protected override bool RunPortTick(
             AtmosPipeSimulation pipeSimulation,
@@ -49,41 +69,10 @@ namespace SS3D.Systems.Atmospherics.Pipes
                 networkPressure,
                 turfPressure,
                 AtmosPortConstants.VentRatedFlowMolesPerSecond,
-                AtmosPortConstants.PortMaxDifferentialKpa,
+                AtmosPortConstants.VentFullFlowDifferentialKpa,
                 deltaTime);
 
-            if (budgetMoles <= 0f)
-                return false;
-
-            float totalMoles = network.GetTotalMoles(AtmosConstants.DefaultGasCount);
-            if (totalMoles <= 0f)
-                return false;
-
-            budgetMoles = Mathf.Min(budgetMoles, totalMoles);
-            bool movedAny = false;
-
-            for (int gasId = 0; gasId < AtmosConstants.DefaultGasCount; gasId++)
-            {
-                float gasMoles = network.Moles[gasId];
-                if (gasMoles <= 0f)
-                    continue;
-
-                float share = gasMoles / totalMoles;
-                float request = budgetMoles * share;
-                if (pipeSimulation.TryTransferMoles(
-                        networkId,
-                        new GasId((ushort)gasId),
-                        request,
-                        turfCell,
-                        PipeTransferDirection.ToTurf,
-                        out float moved)
-                    && moved > 0f)
-                {
-                    movedAny = true;
-                }
-            }
-
-            return movedAny;
+            return ReleaseToTurf(pipeSimulation, networkId, network, budgetMoles);
         }
 
         protected override void ApplyDeviceSpecificAnimatorState(bool flowing)

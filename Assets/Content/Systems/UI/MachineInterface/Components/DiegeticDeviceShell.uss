@@ -171,3 +171,15 @@
 .diegetic-device-shell--pump {
     width: var(--ss3d-diegetic-width-pump);
 }
+
+.diegetic-device-shell--filter {
+    width: var(--ss3d-diegetic-width-filter);
+}
+
+.diegetic-device-shell--mixer {
+    width: var(--ss3d-diegetic-width-mixer);
+}
+
+.diegetic-device-shell--meter {
+    width: var(--ss3d-diegetic-width-meter);
+}

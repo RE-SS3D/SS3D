@@ -55,6 +55,11 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 0f9043fa6769666faaa893d26d564355
+    m_Address: Assets/Content/WorldObjects/Structures/Pipes/Atmospherics/Devices/AtmosManifold3.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 11a2276338ebc64429dfc565b491e437
     m_Address: Assets/Content/WorldObjects/Structures/WallMounts/AirAlarm.prefab
     m_ReadOnly: 0
@@ -85,8 +90,18 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 1927b699e71f9833a82ed74dffe4acfd
+    m_Address: Assets/Content/WorldObjects/Structures/Pipes/Atmospherics/Devices/AtmosPumpVolume.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 1ae18785d74e9fa4699b6f6de889c243
     m_Address: Assets/Content/WorldObjects/Items/Functional/Tools/Command/NuclearAuthenticationDisk.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 1c71957ab86ed6acaacd79fb484b1fa2
+    m_Address: Assets/Content/WorldObjects/Structures/Pipes/Atmospherics/Devices/AtmosMixerL.prefab
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
@@ -135,8 +150,13 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 24f10fc508009b222a4dd482d4f5fb28
+    m_Address: Assets/Content/WorldObjects/Structures/Pipes/Atmospherics/Devices/AtmosMixerR.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 251dc2a5fbda518429c8205c3b62165f
-    m_Address: Assets/Content/WorldObjects/Structures/Pipes/Atmospherics/AtmosPipesL2.prefab
+    m_Address: Assets/Content/WorldObjects/Structures/Pipes/Atmospherics/AtmosPipesMixed.prefab
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
@@ -236,7 +256,7 @@ MonoBehaviour:
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 48efd00c91c310e4bb965d025c63b3ba
-    m_Address: Assets/Content/WorldObjects/Structures/Pipes/Atmospherics/AtmosPipesL4.prefab
+    m_Address: Assets/Content/WorldObjects/Structures/Pipes/Atmospherics/AtmosPipesSurface.prefab
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
@@ -305,6 +325,11 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 52003a6b5233e43fca012e400adbeea6
+    m_Address: Assets/Content/WorldObjects/Structures/Pipes/Atmospherics/Devices/AtmosValveDigital.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 535ed7c02b5cbdc43ae2b234a963c5cc
     m_Address: Assets/Content/WorldObjects/Items/Clothing/ShoeJackboots.prefab
     m_ReadOnly: 0
@@ -312,6 +337,11 @@ MonoBehaviour:
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 5479411218b869144b7d09d6db6dc58e
     m_Address: Assets/Content/WorldObjects/Items/Functional/Generic/Tanks/OxygenTank.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 56a01152a193a795c8bd85889e556118
+    m_Address: Assets/Content/WorldObjects/Structures/Pipes/Atmospherics/Devices/AtmosMeter.prefab
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
@@ -332,6 +362,11 @@ MonoBehaviour:
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 5dba4171f2124fb48b0e32c0e10841e0
     m_Address: Assets/Content/WorldObjects/Structures/Walls/SteelGirderUnbolted.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 5e0b09c25d237e2ac9d24483a28a58d7
+    m_Address: Assets/Content/WorldObjects/Structures/Pipes/Atmospherics/Devices/AtmosFilterR.prefab
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
@@ -485,6 +520,11 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 8612d44a1543bec729e78a0ec8d626c0
+    m_Address: Assets/Content/WorldObjects/Furniture/Machines/Atmospherics/Scrubber/ScrubberIntake.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 8686fbdb413e33b4395a775c4f2ba990
     m_Address: Assets/Content/WorldObjects/Structures/Floors/Tiles/TilePlating.prefab
     m_ReadOnly: 0
@@ -497,6 +537,11 @@ MonoBehaviour:
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 8dc5399c58290d54f9a6cc2f6c1c9d9f
     m_Address: Assets/Content/WorldObjects/Furniture/Generic/JukeboxBlueGreen.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 8eb79a916f17f4339888eeb43288ad4e
+    m_Address: Assets/Content/WorldObjects/Structures/Pipes/Atmospherics/Devices/AtmosValveManual.prefab
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
@@ -616,7 +661,7 @@ MonoBehaviour:
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: adc07a7f0fee8304691f45a201509b13
-    m_Address: Assets/Content/WorldObjects/Structures/Pipes/Atmospherics/AtmosPipesL3.prefab
+    m_Address: Assets/Content/WorldObjects/Structures/Pipes/Atmospherics/AtmosPipesWaste.prefab
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
@@ -725,6 +770,11 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: d4bb90462bc4749cdaa3796b227902b9
+    m_Address: Assets/Content/WorldObjects/Structures/Pipes/Atmospherics/Devices/AtmosManifold4.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: d675e0c37e3147a4b8501314b5106f13
     m_Address: Assets/Content/WorldObjects/Furniture/Machines/Generic/Tanks/WaterTank.prefab
     m_ReadOnly: 0
@@ -750,6 +800,11 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: dcc88642be56594528a53c74eb601601
+    m_Address: Assets/Content/WorldObjects/Structures/Pipes/Atmospherics/Devices/AtmosFilterR2.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: dceb056e41b5c634f9933423de8e075c
     m_Address: Assets/Content/WorldObjects/Items/Consumable/Drinks/Soda/SodaCanCannedLaughter.prefab
     m_ReadOnly: 0
@@ -771,7 +826,7 @@ MonoBehaviour:
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: de6f06ad18d50134295959f438ba9c5d
-    m_Address: Assets/Content/WorldObjects/Structures/Pipes/Atmospherics/AtmosPipesL1.prefab
+    m_Address: Assets/Content/WorldObjects/Structures/Pipes/Atmospherics/AtmosPipesSupply.prefab
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
@@ -812,6 +867,11 @@ MonoBehaviour:
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: e60ba1e09be8316448e419ecbdfb64a6
     m_Address: Assets/Content/WorldObjects/Entities/Humanoids/Human/HumanBodyParts/HumanFootRight.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: e833d4cec8da5e6abaddd92b3829ad9c
+    m_Address: Assets/Content/WorldObjects/Structures/Pipes/Atmospherics/Devices/AtmosFilterL2.prefab
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
@@ -857,6 +917,16 @@ MonoBehaviour:
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: f6528d8afa18fa14998a0158260ef26c
     m_Address: Assets/Content/WorldObjects/Items/DoodadTestItem.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: f662bf52ef0cc6e64866de255913b88d
+    m_Address: Assets/Content/WorldObjects/Structures/Pipes/Atmospherics/Devices/AtmosFilterL.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: f71edbe17e151c82aad1ec265ffa9d23
+    m_Address: Assets/Content/WorldObjects/Structures/Pipes/Atmospherics/Devices/AtmosInjector.prefab
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0

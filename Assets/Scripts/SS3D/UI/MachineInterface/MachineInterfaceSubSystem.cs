@@ -192,6 +192,8 @@ namespace SS3D.UI.MachineInterface
                 or ScrubberInterfaceViewModel
                 or VentInterfaceViewModel
                 or PumpInterfaceViewModel
+                or FilterInterfaceViewModel
+                or MixerInterfaceViewModel
                 or AirAlarmInterfaceViewModel
                 or ApcInterfaceViewModel
                 or SmesInterfaceViewModel)

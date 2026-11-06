@@ -20,6 +20,7 @@ Layered contributor-based disk persistence for station templates and server meta
 - `Assets/Scripts/SS3D/Systems/Persistence/AreaPersistenceContributor.cs` — area metadata chunk
 - `Assets/Scripts/SS3D/Systems/Persistence/SpawnPointPersistenceContributor.cs` — spawn markers chunk (`spawn-points`, load order 110)
 - `Assets/Scripts/SS3D/Systems/Tile/SpawnPoints/SavedSpawnPointRecord.cs` — spawn DTO payload
+- `Assets/Scripts/SS3D/Systems/Persistence/GasMarkerPersistenceContributor.cs` — gas markers chunk (`gas-markers`, load order 115)
 - `Assets/Scripts/SS3D/Systems/Persistence/PermissionsPersistenceContributor.cs` — admin permissions chunk
 - `Assets/Scripts/SS3D/Systems/Persistence/RoundHistoryStore.cs` / `RoundHistoryEntry.cs` — append-only round history JSONL and its row
 - `Assets/Scripts/SS3D/Systems/Persistence/LegacyTileMapMigrator.cs` — flat tilemap JSON → envelope

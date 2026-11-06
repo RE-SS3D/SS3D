@@ -45,6 +45,17 @@ namespace SS3D.Systems.Atmospherics.Pipes
             return totalMoles * ECS.AtmosFluxConstants.GasConstant * temperature / volume / 1000f;
         }
 
+        /// <summary>
+        /// Moles that raise a pool of this volume and temperature by <paramref name="pressureKpa"/>.
+        /// </summary>
+        public static float GetMolesForPressure(float pressureKpa, float temperature, float volume)
+        {
+            if (temperature <= 0f)
+                return 0f;
+
+            return pressureKpa * 1000f * volume / (ECS.AtmosFluxConstants.GasConstant * temperature);
+        }
+
         public static float BlendTemperature(
             float currentTemperature,
             float currentHeatCapacity,
@@ -55,7 +66,15 @@ namespace SS3D.Systems.Atmospherics.Pipes
             if (addedMoles <= 0f)
                 return currentTemperature;
 
-            float addedCapacity = addedMoles * addedSpecificHeat;
+            return BlendTemperature(currentTemperature, currentHeatCapacity, addedTemperature, addedMoles * addedSpecificHeat);
+        }
+
+        public static float BlendTemperature(
+            float currentTemperature,
+            float currentHeatCapacity,
+            float addedTemperature,
+            float addedCapacity)
+        {
             float totalCapacity = currentHeatCapacity + addedCapacity;
             if (totalCapacity <= 0f)
                 return addedTemperature;

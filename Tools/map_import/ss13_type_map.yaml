@@ -2,8 +2,8 @@
 # Extend this file as gap reports show frequent unmapped paths.
 #
 # Pipe kind: so: is a fallback; MapImportPipeResolver overrides from path
-# network type (supply→AtmosPipesL1, scrubbers→L2, waste/general/yellow→L3)
-# or piping_layer 1–4 → L1–L4, else L3.
+# network type (supply→AtmosPipesSupply, scrubbers→AtmosPipesMixed, waste/general/yellow→AtmosPipesWaste)
+# or piping_layer 1–4 → Supply, Mixed, Waste, Surface; else Waste.
 #
 # Wall mounts (APC/lights): MetaStation uses /directional/north|south|east|west path
 # suffixes. MapImportDirection parses those; mounts are offset onto the wall tile and
@@ -93,7 +93,7 @@ prefixes:
     so: Vent
   - match: /obj/machinery/atmospherics/pipe
     kind: pipe
-    so: AtmosPipesL3
+    so: AtmosPipesWaste
   - match: /obj/machinery/power/apc
     kind: apc
     so: APC

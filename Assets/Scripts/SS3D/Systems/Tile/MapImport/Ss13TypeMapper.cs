@@ -126,7 +126,7 @@ namespace SS3D.Systems.Tile.MapImport
 
             if (path.StartsWith("/obj/machinery/atmospherics/pipe", StringComparison.Ordinal))
             {
-                match = new Ss13TypeMatch(MapImportKind.Pipe, MapImportPipeResolver.AtmosPipesL3, "(default pipe)");
+                match = new Ss13TypeMatch(MapImportKind.Pipe, MapImportPipeResolver.AtmosPipesWaste, "(default pipe)");
                 return true;
             }
 

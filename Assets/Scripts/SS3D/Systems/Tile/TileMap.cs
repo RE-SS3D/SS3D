@@ -556,6 +556,7 @@ namespace SS3D.Systems.Tile
             if (placed != null)
             {
                 NotifyTileCleared(placed, placePosition, layer);
+                TileLayer[] portLines = placed.TryGetComponent(out IPipePortDevice device) ? device.PortLines : null;
 
                 if (placed.TryGetComponent(out IAdjacencyConnector connector))
                 {
@@ -566,6 +567,9 @@ namespace SS3D.Systems.Tile
                 {
                     tileLocation.TryClearPlacedObject(dir);
                 }
+
+                if (portLines != null)
+                    RedrawPipesBeside(portLines, placePosition);
             }
 
             // Remove any invalid tile combinations
@@ -705,7 +709,7 @@ namespace SS3D.Systems.Tile
             // Template restore skips missing spawn chunks — wipe markers with the map so stale
             // points cannot survive a load that has no spawn-points contributor payload.
             if (SubSystems.TryGet(out TileSubSystem tileSubSystem) && tileSubSystem.CurrentMap == this)
-                tileSubSystem.ClearSpawnPoints();
+                tileSubSystem.ClearMarkers();
         }
 
         /// <summary>
@@ -805,7 +809,7 @@ namespace SS3D.Systems.Tile
                 {
                     foreach (SavedPlacedTileObject savedObject in savedTile.GetPlacedObjects())
                     {
-                        TileObjectSo toBePlaced = tileSystem.GetAsset(savedObject.tileObjectSOName) as TileObjectSo;
+                        TileObjectSo toBePlaced = tileSystem.GetAsset(RenamedTileObjects.Resolve(savedObject.tileObjectSOName)) as TileObjectSo;
                         if (toBePlaced == null)
                         {
                             Log.Warning(this,
@@ -932,10 +936,20 @@ namespace SS3D.Systems.Tile
 
         private void UpdateAdjacenciesFor(PlacedTileObject placedObject)
         {
-            if (placedObject.TryGetComponent<IEngineDrivenAdjacency>(out _))
+            if (placedObject.TryGetComponent(out IPipePortDevice device))
+                RedrawPipesBeside(device.PortLines, placedObject.transform.position);
+            else if (placedObject.TryGetComponent<IEngineDrivenAdjacency>(out _))
                 _adjacencyEngine.QueueCascadeFrom(placedObject);
             else
                 placedObject.UpdateAdjacencies();
+        }
+
+        private void RedrawPipesBeside(TileLayer[] lines, Vector3 position)
+        {
+            foreach (TileLayer line in lines)
+                _adjacencyEngine.QueueNeighbours(line, position);
+
+            _adjacencyEngine.ProcessQueue();
         }
 
         /// <summary>

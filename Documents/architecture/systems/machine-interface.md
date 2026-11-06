@@ -1,13 +1,13 @@
 > Code paths: Assets/Scripts/SS3D/UI/MachineInterface/, Assets/Content/Systems/UI/MachineInterface/
 > Entry points: MachineInterfaceSubSystem, MachineInterfaceHost, MachineInterfaceRegistry, MachineUiAssetCatalog
 > Status: shipped
-> Verified: e2f86cf20 — 2026-11-05
+> Verified: 41fd036ed — 2026-11-06
 
 # Machine interface UI
 
 ## Overview
 
-UI Toolkit panels for station machines, networked via FishNet snapshots. Templates and styles load from a committed `MachineUiAssetCatalog` (`Resources.Load`) rebuilt from `MachineUiAssetPaths` — not Game.unity SerializeFields. APC and SMES use the diegetic `DiegeticDeviceShell` with full-screen engineering ID access gates; atmospheric devices use an inline ID reader row. Both variants share server-side credential checks and expose idle, scanning, granted, and denied UI states. Vending uses the diegetic shell without an access gate. Shared view-model/binder pattern with `MachineUiCatalog` registration and `IMachineOptimisticControlHandler` for client optimistic controls. Open is server-only via validated interaction (`ServerHandleOpenRequest`); there is no open ServerRpc. Air alarm panels discover real area vents/scrubbers, apply preset modes server-side, and read the turf cell in front of the wall mount. Scrubber panels persist per-gas filter toggles into `ScrubberController` simulation state. Vent target pressure is enforced in `VentController`. Pump panels control `AtmosPumpController` directly — pumps are not area-linked. Diegetic open dims the overlay scrim and softens the 3D world via `ScreenEffectsSubSystem.SetUiBackdropBlur` (UITK chassis stays sharp), with a DOTween bring-up/dismiss (opacity, scale, translate). Close awaits the dismiss tween before disabling the `UIDocument`.
+UI Toolkit panels for station machines, networked via FishNet snapshots. Templates and styles load from a committed `MachineUiAssetCatalog` (`Resources.Load`) rebuilt from `MachineUiAssetPaths` — not Game.unity SerializeFields. APC and SMES use the diegetic `DiegeticDeviceShell` with full-screen engineering ID access gates; atmospheric devices use an inline ID reader row. Both variants share server-side credential checks and expose idle, scanning, granted, and denied UI states. Vending uses the diegetic shell without an access gate. Shared view-model/binder pattern with `MachineUiCatalog` registration and `IMachineOptimisticControlHandler` for client optimistic controls. Open is server-only via validated interaction (`ServerHandleOpenRequest`); there is no open ServerRpc. Air alarm panels discover real area vents/scrubbers, apply preset modes server-side, and read the turf cell in front of the wall mount. Scrubber panels persist per-gas filter toggles into `ScrubberController` simulation state. Vent target pressure is enforced in `VentController`. Pump panels control `AtmosPumpController` directly — pumps are not area-linked. The same panel drives volume pumps, and digital valves with the set point hidden (`PumpRegulation`). Filter, mixer and meter panels read gas through `GasPanelReadings`: each snapshot carries its own gas table (`GasPanelRow`), so a client needs no registry. The meter is read-only and has no ID gate. Diegetic open dims the overlay scrim and softens the 3D world via `ScreenEffectsSubSystem.SetUiBackdropBlur` (UITK chassis stays sharp), with a DOTween bring-up/dismiss (opacity, scale, translate). Close awaits the dismiss tween before disabling the `UIDocument`.
 
 ## Start here
 
@@ -23,6 +23,7 @@ UI Toolkit panels for station machines, networked via FishNet snapshots. Templat
 - `Assets/Scripts/SS3D/UI/MachineInterface/AccessGatedMachineInterfaceBehaviour.cs` — server ID scan; syncs access states
 - `Assets/Scripts/SS3D/UI/MachineInterface/OpenMachineInterfaceInteraction.cs` — open panel (server-validated only)
 - `Assets/Scripts/SS3D/UI/MachineInterface/Components/DiegeticDeviceShell.cs` — diegetic chassis shell
+- `Assets/Scripts/SS3D/UI/MachineInterface/GasPanelReadings.cs` / `GasPanelViews.cs` — gas table, line readings and mix text shared by gas panels; `Components/GasPortCard.cs`, `GasMixBar.cs`, `GasFilterRow.cs`, `GasCompositionRow.cs`, `GasHistoryBars.cs` draw them
 - `Assets/Content/Systems/UI/MachineInterface/Tokens/diegetic-tokens.uss` — diegetic design tokens
 
 ## Extension points
@@ -44,6 +45,7 @@ Dev harness: `MachineInterfaceDevHarness.cs`; editor previews via `SS3D → Mach
 
 ## Pitfalls
 
+- **The preview window can't show the game's fonts:** `SS3D → Machine Interface → Preview …` logs `Advanced text system cannot render using static font asset` and draws Terminal, Arcade and Titling text blank, on every panel. Layout reads true; check text in Play Mode. Leave no preview open before `validate.sh`: its untitled window fails a step as a modal dialog. Hit 2026-11-06.
 - **Missing catalog in builds:** host loads `Resources/MachineUiAssetCatalog`. If the asset was never rebuilt/committed, Play Mode and builds fail at awake with an explicit error — not a silent null at panel open (that was the old `EnsureEditorAssets` trap). Main HUD now has the same trap/fix class (`MainHudAssetCatalog`); do not grow a third copy — see [ui-shell-consolidation](../2026-07_ui-shell-consolidation.md) § Explicit non-goals.
 - **New UXML without rebuild:** adding paths in C# without running **SS3D → Data → Rebuild All UI Catalogs** leaves the committed SO stale; Editor Play Mode uses the SO, not `AssetDatabase` path strings.
 - **Editor asmdef:** builders live in `SS3D.Editor` and must reference the UI assemblies for catalog types. Do not add another per-surface rebuild MenuItem.
@@ -56,12 +58,13 @@ Dev harness: `MachineInterfaceDevHarness.cs`; editor previews via `SS3D → Mach
 
 ## Tests
 
-- EditMode: `MachineInterfaceSnapshotTests`, `MachineInterfaceAccessReaderTests`, `AirAlarmInterfaceInteractionTests`.
+- EditMode: `MachineInterfaceSnapshotTests`, `GasPanelSnapshotTests`, `MachineInterfaceAccessReaderTests`, `AirAlarmInterfaceInteractionTests`.
+- PlayMode: `AtmosDeviceScenarios` opens the filter, mixer and meter panels through their snapshot RPCs.
 
 ## Depends on / Used by
 
 - **Depends on:** [electricity](electricity.md), [area](area.md), [atmospherics](atmospherics.md), [id-access](id-access.md), [interactions-framework](interactions-framework.md), [selection](selection.md), [inventory](inventory.md), [screen-effects](screen-effects.md) (diegetic backdrop blur)
-- **Used by:** `ApcController`, `SmesController`, `VendingMachineController`, `IdConsoleController` (debug ID console, [id-access](id-access.md)), `AirAlarmInterfaceController`, `ScrubberInterfaceController`, `VentInterfaceController`, `PumpInterfaceController`; Main HUD observes open/close for suppress
+- **Used by:** `ApcController`, `SmesController`, `VendingMachineController`, `IdConsoleController` (debug ID console, [id-access](id-access.md)), `AirAlarmInterfaceController`, `ScrubberInterfaceController`, `VentInterfaceController`, `PumpInterfaceController`, `FilterInterfaceController`, `MixerInterfaceController`, `MeterInterfaceController`; Main HUD observes open/close for suppress
 
 ## Related docs
 

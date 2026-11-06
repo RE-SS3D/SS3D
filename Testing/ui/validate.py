@@ -31,6 +31,7 @@ ROOT = Path(__file__).resolve().parents[2]
 MCP_URL = os.environ.get("SS3D_MCP_URL", "http://127.0.0.1:8080")
 UI = ROOT / "artifacts/ui"
 EDITOR_LOG = UI / "editor.log"
+LOG_TAIL_BYTES = 32 * 1024 * 1024
 COMPILE_RESULT = UI / "compile-result.json"
 BUILD_RESULTS = {"client": UI / "client-build-result.json", "server": UI / "server-build-result.json"}
 
@@ -139,10 +140,20 @@ def rel(path):
     return str(Path(path).relative_to(ROOT))
 
 
-def log_lines():
-    if not EDITOR_LOG.exists():
+def log_size():
+    return EDITOR_LOG.stat().st_size if EDITOR_LOG.exists() else 0
+
+
+def log_lines(start=0):
+    """Lines from byte `start`, capped at the log's tail: it reaches gigabytes, and reading all of it has run the machine out of memory."""
+    size = log_size()
+    if size == 0:
         return []
-    return EDITOR_LOG.read_text(errors="replace").splitlines()
+    if start > size:
+        start = 0
+    with EDITOR_LOG.open("rb") as log:
+        log.seek(max(start, size - LOG_TAIL_BYTES))
+        return log.read().decode(errors="replace").splitlines()
 
 
 def watchdog():
@@ -199,7 +210,7 @@ async def step_preflight(editor, ctx):
 
 async def step_compile(editor, ctx):
     await editor.wait_ready()
-    marker = len(log_lines())
+    marker = log_size()
     requested = int(time.time() * 1000)
     await editor.execute("AssetDatabase.Refresh(); UnityEditor.Compilation.CompilationPipeline.RequestScriptCompilation(); return \"ok\";")
 
@@ -212,7 +223,7 @@ async def step_compile(editor, ctx):
     result = await wait_for(finished, 90, 600, "script compilation")
     errors = list(result.get("errors", []))
     seen = set(errors)
-    for line in log_lines()[marker:]:
+    for line in log_lines(marker):
         if LOG_ERROR.search(line) and line.strip() not in seen:
             errors.append(line.strip())
             seen.add(line.strip())

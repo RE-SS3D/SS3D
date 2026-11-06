@@ -21,6 +21,11 @@ namespace SS3D.Systems.Atmospherics.Pipes
                 {
                     case AirAlarmPresetMode.Filtering:
                         port.ServerSetEnabled(true);
+                        if (port is ScrubberController normalScrubber)
+                        {
+                            normalScrubber.ServerApplyNormalSettings();
+                        }
+
                         break;
 
                     case AirAlarmPresetMode.Panic:
@@ -33,7 +38,7 @@ namespace SS3D.Systems.Atmospherics.Pipes
                             port.ServerSetEnabled(true);
                             if (port is ScrubberController scrubber)
                             {
-                                scrubber.ServerSetFilters(o2: false, n2: false, co2: false, plasma: true, toxins: false);
+                                scrubber.ServerApplyPanicSettings();
                             }
                         }
 

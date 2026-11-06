@@ -1,5 +1,6 @@
 using SS3D.Data.AssetDatabases;
 using SS3D.Systems.Tile.FloorVisuals;
+using SS3D.Systems.Tile.GasMarkers;
 using SS3D.Systems.Tile.SpawnPoints;
 using System;
 using System.Collections.Generic;
@@ -71,6 +72,7 @@ namespace SS3D.Systems.Tile.MapEditor
 
             AppendFloorDecals(mapped);
             AppendSpawnPlacements(mapped);
+            AppendGasMarkers();
         }
 
         private void AppendFloorDecals(HashSet<string> mapped)
@@ -97,6 +99,22 @@ namespace SS3D.Systems.Tile.MapEditor
                 };
                 _entries.Add(entry);
                 _byAssetName[assetName] = entry;
+            }
+        }
+
+        private void AppendGasMarkers()
+        {
+            foreach (GasMarkerKind kind in Enum.GetValues(typeof(GasMarkerKind)))
+            {
+                var entry = new MapEditorCatalogEntry
+                {
+                    AssetName = MapEditorGasMarkerCatalog.Encode(kind),
+                    Mode = MapEditorMode.Scripting,
+                    Subcategory = MapEditorSubcategory.Atmospherics,
+                    SearchTags = new[] { "gas", "atmos", MapEditorGasMarkerCatalog.DisplayName(kind) },
+                };
+                _entries.Add(entry);
+                _byAssetName[entry.AssetName] = entry;
             }
         }
 
@@ -176,12 +194,10 @@ namespace SS3D.Systems.Tile.MapEditor
                 or MapEditorSubcategory.Rooms;
 
         /// <summary>
-        /// Scripting rails that still show the stub message (spawn placements are live).
+        /// Scripting rails that still show the stub message.
         /// </summary>
         public static bool IsUnavailableScriptingSubcategory(MapEditorSubcategory subcategory) =>
-            subcategory is MapEditorSubcategory.Atmospherics
-                or MapEditorSubcategory.RandomSpawners
-                or MapEditorSubcategory.Triggers;
+            subcategory is MapEditorSubcategory.RandomSpawners or MapEditorSubcategory.Triggers;
 
         public static MapEditorSubcategory[] GetSubcategories(MapEditorMode mode) =>
             mode switch

@@ -25,6 +25,7 @@ namespace SS3D.UI.MainHud
         public Sprite Bleeding;
         public Sprite CardiacArrest;
         public Sprite SealBreach;
+        public Sprite Invincible;
         public Sprite TankLow;
 
         /// <summary>The internals chip beside the hands; it is not a hazard.</summary>
@@ -50,6 +51,7 @@ namespace SS3D.UI.MainHud
             Components.AlertHazard.Bleeding => Bleeding,
             Components.AlertHazard.CardiacArrest => CardiacArrest,
             Components.AlertHazard.SealBreach => SealBreach,
+            Components.AlertHazard.Invincible => Invincible,
             Components.AlertHazard.TankLow => TankLow,
             _ => null,
         };

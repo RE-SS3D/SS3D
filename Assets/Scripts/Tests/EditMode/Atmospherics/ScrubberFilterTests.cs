@@ -55,7 +55,7 @@ namespace EditorTests.Atmospherics
 
             ScrubberController scrubber = CreateScrubberAt(new Vector2Int(5, 5));
             // Only toxins filter enabled.
-            scrubber.ServerSetFilters(o2: false, n2: false, co2: false, plasma: false, toxins: true);
+            scrubber.ServerSetFilters(o2: false, n2: false, co2: false, toxins: true);
 
             // Force-connect scrubber to this network for the test.
             SetPrivateField(scrubber, "_networkId", networkId);
@@ -68,6 +68,45 @@ namespace EditorTests.Atmospherics
             // Assert: turf plasma reduced and pipe network gained plasma.
             float after = turf.DebugGetMoles(cell, AtmosConstants.Plasma);
             Assert.Less(after, before);
+        }
+
+        [Test]
+        public void Scrubber_ToxinsTakesEveryToxicGas_AndLeavesTheRest()
+        {
+            TileMapTestUtilities.MapContext context = TileMapTestUtilities.CreateContext(_instantiated);
+            TileMapTestUtilities.PlacePlenum(context, new Vector3(5, 0, 5));
+            PlacedTileObject pipe = CreateGasPipeAt(new Vector2Int(5, 5), TileLayer.PipeMiddle);
+            RegisterOnMap(context.Map, pipe, TileLayer.PipeMiddle, new Vector3(5, 0, 5));
+
+            using var turf = new AtmosSimulation(context.Query, context.Map.MapId, AtmosConstants.DefaultGasCount);
+            turf.CreateChunk(new TileChunkRef { MapId = context.Map.MapId, ChunkKey = Vector2Int.zero, Origin = Vector3.zero });
+            TileCoord cell = new TileCoord(context.Map.MapId, 5, 5);
+            turf.UpdateCell(cell);
+            turf.DebugAddMoles(cell, AtmosConstants.Plasma, 10f);
+            turf.DebugAddMoles(cell, AtmosConstants.CarbonDioxide, 10f);
+
+            var registry = new GasPipeNetworkRegistry(AtmosConstants.DefaultGasCount);
+            registry.RebuildAll(context.Map);
+            registry.TryGetNetworkForSegment(GasPipeSegmentKey.From(pipe), out GasPipeNetworkId networkId, out _);
+            var observer = new AtmosPipeObserver(context.Map, registry);
+
+            // CO₂ marked toxic here and plasma not, so only the flag decides.
+            var pipeSimulation = new AtmosPipeSimulation(
+                registry,
+                turf,
+                null,
+                AtmosConstants.DefaultGasCount,
+                observer,
+                1UL << AtmosConstants.CarbonDioxide.Value);
+
+            ScrubberController scrubber = CreateScrubberAt(new Vector2Int(5, 5));
+            scrubber.ServerSetFilters(o2: false, n2: false, co2: false, toxins: true);
+            SetPrivateField(scrubber, "_networkId", networkId);
+
+            scrubber.ServerTick(pipeSimulation, turf, deltaTime: 1f);
+
+            Assert.Less(turf.DebugGetMoles(cell, AtmosConstants.CarbonDioxide), 10f);
+            Assert.AreEqual(10f, turf.DebugGetMoles(cell, AtmosConstants.Plasma), 0.001f);
         }
 
         private PlacedTileObject CreateGasPipeAt(Vector2Int worldOrigin, TileLayer layer)

@@ -1,4 +1,5 @@
 using SS3D.Data.AssetDatabases;
+using SS3D.Systems.Tile.GasMarkers;
 using SS3D.Systems.Tile.SpawnPoints;
 using System;
 
@@ -18,6 +19,7 @@ namespace SS3D.Systems.Tile.MapEditor.Commands
         public ConstructionService Construction { get; }
         public MapEditorPlacementMode PlacementMode { get; set; } = MapEditorPlacementMode.Normal;
         public SpawnPointRegistry SpawnPoints { get; set; }
+        public GasMarkerRegistry GasMarkers { get; set; }
 
         /// <summary>Optional override for EditMode tests (bypasses <see cref="Loader"/>).</summary>
         public Func<string, GenericObjectSo> AssetResolver { get; set; }

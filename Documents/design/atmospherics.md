@@ -38,7 +38,7 @@ Breathing reads this mixture directly (`health.md` §2): too little oxygen and o
 The station keeps its own air breathable, room by room.
 
 - **Vents** push air from the distribution pipe network into a room, up to a target pressure.
-- **Scrubbers** pull unwanted gases (carbon dioxide, plasma) out of a room into a waste network.
+- **Scrubbers** pull unwanted gases (carbon dioxide and anything toxic, such as plasma) out of a room into a waste network.
 - **Air alarms** are the room's brain. Each one watches the air in **its area** (`area.md` §4) and drives that area's vents and scrubbers. It has a small set of **presets** — normal operation, siphon the room, refill after a breach, panic — that an engineer switches between on its screen.
 
 **An alarm actually alarms.** When its area's air goes bad — pressure dropping, oxygen low, plasma present, too hot — it sounds and lights up, so the people inside know to leave or put a mask on. That's the cheapest, most legible survival information on the station, and it costs no HUD chrome: the alarm on the wall is the readout.
@@ -61,6 +61,36 @@ Two regimes: open rooms keep pressure and gas per tile, so a gradient, a front a
 
 - **Distribution and waste are separate networks** on a normal station: vents draw from one, scrubbers feed the other (§4).
 - **Gas pipes only, in this pass.** Liquid plumbing is a later pass (§12).
+- **Gas stays when the plumbing changes.** Joining two networks pools their gas, splitting one shares its gas between the pieces, and a removed segment lets its share out into the room.
+
+### Pipe lines
+
+Each tile carries up to four lines, and a pipe's name says what plugs into it, so an engineer can read a run without tracing it.
+
+- **Supply** feeds vents.
+- **Waste** takes what scrubbers pull.
+- **Mixed** takes both, so a scrubber can feed a vent directly.
+- **Surface** runs above the floor, where people can reach it. Pumps, valves and the larger machines sit on this line.
+
+The first three run under the floor. A vent or scrubber connects to the matching line on its own tile by itself; a pipe it can't use may pass through that tile without touching it.
+
+### Where station air comes from
+
+**Storage chambers** are rooms held at a fixed mix that never runs out, so oxygen and nitrogen are places on the map, with intakes, pumps and mixers feeding the distribution network from them. A chamber opened to the station keeps pouring gas into it until someone seals the breach. A map can also start a line already filled, so a station has air from the first moment of the shift.
+
+### Pipe devices
+
+Every device sits where a pipe would, with fixed ports, so its facing decides which way gas moves. Filters and mixers have a flat form that sits on the floor over an underfloor line, reachable without lifting the floor, and a machine form on the Surface line.
+
+- **Manifolds** sit across the pipes running through a tile and join those lines into one network. They are how an underfloor line reaches the Surface line.
+- **Valves** connect two networks while open and part them while closed. A manual valve is turned by hand; a digital valve is switched from its panel and needs power.
+- **Filters** split a stream: the gases an engineer selects leave by the side port and everything else carries straight on. They offer every gas individually, unlike a scrubber, which also has a broad toxins setting. If either outlet is full, the filter stops.
+- **Mixers** combine two inlets at a set ratio up to a target outlet pressure, and stop if either inlet runs dry, so a bad mix can't slip out unnoticed.
+- **Volume pumps** move a set amount of gas rather than chasing a target pressure.
+- **Meters** read a line's pressure on the device itself, the same "world carries the information" convention as a pump's gauge (§7).
+- **Injectors** release a line's gas into the room through a floor nozzle.
+- **Ignitors** make a spark on demand (§5).
+- **Connector ports** let a portable canister plug into a line, as both a source and a store of gas.
 
 ## 7. Pumps — flow as a function of differential
 
@@ -69,7 +99,7 @@ Two real stats on a pump, not one flat rate:
 - **Rated max flow** — how much it moves per second under ideal, no-backpressure conditions. The property a better pump upgrades.
 - **Max differential** — how much backpressure the motor can push against before stalling.
 
-Actual flow tapers toward zero as the two sides equalize, and stalls outright if backpressure exceeds the motor's rated differential.
+A pump runs at rated flow while its inlet is at or above its outlet. As the outlet climbs past the inlet, actual flow tapers toward zero, and the pump stalls outright if backpressure exceeds the motor's rated differential.
 
 **A pump's gauge is a physical readout on the device itself** — current flow, and how hard it's working against differential — the "world carries the information" convention, not a hidden number.
 
@@ -121,7 +151,7 @@ No per-tile objects. Gas that's dense enough or coloured enough to see shows as 
 
 | Step | What happens | System state |
 |---|---|---|
-| 1 | A pump feeds a network already near the receiving side's pressure | Differential is small |
+| 1 | A pump feeds a network already well above its inlet pressure | Backpressure is close to the motor's rated differential |
 | 2 | Actual flow tapers toward zero | Gauge shows the pump straining, low actual throughput |
 | 3 | Receiving side is deliberately pressurized further, exceeding rated differential | Pump stalls outright — visible on the gauge |
 

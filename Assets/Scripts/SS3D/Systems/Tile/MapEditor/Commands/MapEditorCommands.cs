@@ -1,4 +1,5 @@
 using SS3D.Data.AssetDatabases;
+using SS3D.Systems.Tile.GasMarkers;
 using SS3D.Systems.Tile.SpawnPoints;
 using UnityEngine;
 
@@ -359,6 +360,74 @@ namespace SS3D.Systems.Tile.MapEditor.Commands
 
             if (ctx.SpawnPoints.TryPlace(_previous))
                 ctx.NotifySpawnPointsChanged();
+        }
+    }
+
+    /// <summary>
+    /// Places or replaces a gas marker. Snapshots the previous marker at the tile for undo.
+    /// </summary>
+    public sealed class PlaceGasMarkerCommand : IMapEditorCommand
+    {
+        private readonly GasMarkerRecord _record;
+        private readonly bool _hadPrevious;
+        private readonly GasMarkerRecord _previous;
+
+        public PlaceGasMarkerCommand(GasMarkerRecord record, bool hadPrevious, GasMarkerRecord previous)
+        {
+            _record = record;
+            _hadPrevious = hadPrevious;
+            _previous = previous;
+        }
+
+        public MapEditorCommandDto ToDto() =>
+            new()
+            {
+                Kind = MapEditorCommandKind.PlaceGasMarker,
+                AssetName = MapEditorGasMarkerCatalog.Encode(_record.Kind),
+                Position = _record.Position,
+                GasMarker = _record,
+            };
+
+        public void Apply(MapEditorCommandContext ctx) => ctx.GasMarkers?.TryPlace(_record);
+
+        public void Revert(MapEditorCommandContext ctx)
+        {
+            if (_hadPrevious)
+                ctx.GasMarkers?.TryPlace(_previous);
+            else
+                ctx.GasMarkers?.TryClearAt(_record.Position, out _);
+        }
+    }
+
+    /// <summary>
+    /// Clears a gas marker. Snapshots the cleared record for undo.
+    /// </summary>
+    public sealed class ClearGasMarkerCommand : IMapEditorCommand
+    {
+        private readonly Vector3 _position;
+        private readonly bool _hadPrevious;
+        private readonly GasMarkerRecord _previous;
+
+        public ClearGasMarkerCommand(Vector3 position, bool hadPrevious, GasMarkerRecord previous)
+        {
+            _position = position;
+            _hadPrevious = hadPrevious;
+            _previous = previous;
+        }
+
+        public MapEditorCommandDto ToDto() =>
+            new()
+            {
+                Kind = MapEditorCommandKind.ClearGasMarker,
+                Position = _position,
+            };
+
+        public void Apply(MapEditorCommandContext ctx) => ctx.GasMarkers?.TryClearAt(_position, out _);
+
+        public void Revert(MapEditorCommandContext ctx)
+        {
+            if (_hadPrevious)
+                ctx.GasMarkers?.TryPlace(_previous);
         }
     }
 

@@ -48,7 +48,7 @@ namespace SS3D.Systems.Audio
             AmbientLoopKind.Vendor => new AmbientLoopSettings(PowerHum, 0.2f, 5f),
             AmbientLoopKind.Apc => new AmbientLoopSettings(PowerHum, 0.12f, 4f),
             AmbientLoopKind.Smes => new AmbientLoopSettings(Machinery, 0.35f, 9f),
-            AmbientLoopKind.AirAlarm => new AmbientLoopSettings(Alarm, 0.5f, 14f),
+            AmbientLoopKind.AirAlarm => new AmbientLoopSettings(Alarm, 0.8f, 14f),
             _ => default,
         };
     }

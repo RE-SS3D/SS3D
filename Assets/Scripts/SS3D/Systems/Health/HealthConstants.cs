@@ -55,6 +55,9 @@
         public const float ColdDamageBurnPerKelvin = 0.01f;
         public const float FireBurnPerIntensity = 0.75f;
         public const float MaxEnvironmentalBurnPerZonePerTick = 2.5f;
+        /// <summary>Below this the air is too thin to survive unprotected, so low pressure reads as critical.</summary>
+        public const float LowPressureCriticalKpa = 20f;
+
         // Pressure extremes → lung barotrauma (function % drain per lung per tick).
         // Distinct from hypoxia (breathability / oxy debt) and from zone burn.
         public const float VacuumLungDamagePerTick = 4f;

@@ -29,7 +29,6 @@ namespace SS3D.UI.MachineInterface
                 snapshot.FilterO2,
                 snapshot.FilterN2,
                 snapshot.FilterCo2,
-                snapshot.FilterPlasma,
                 snapshot.FilterToxins,
                 model.Filters);
 

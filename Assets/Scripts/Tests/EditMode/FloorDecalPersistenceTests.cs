@@ -73,7 +73,8 @@ namespace SS3D.Tests.EditMode
             Assert.AreEqual(9, (int)TileLayer.PipeMiddle);
             Assert.AreEqual(10, (int)TileLayer.PipeLeft);
             Assert.AreEqual(11, (int)TileLayer.PipeRight);
-            Assert.AreEqual(12, TileHelper.GetTileLayers().Length);
+            Assert.AreEqual(12, (int)TileLayer.PipeManifold);
+            Assert.AreEqual(13, TileHelper.GetTileLayers().Length);
         }
     }
 }

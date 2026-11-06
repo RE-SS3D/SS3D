@@ -205,7 +205,54 @@ namespace EditorTests
         public void PortWithoutAPipeWarnsEvenInACompleteRoom()
         {
             MapValidationReport report = RoomChecks(Device(RoomDeviceKind.Vent, 1, 3, pipe: false), Scrubber(2, 3), Alarm(3, 3));
-            StringAssert.Contains("Vent at (1, 2) has no pipe", report.Issues.Single().Title);
+            StringAssert.Contains("Vent at (1, 2) has no Supply or Mixed pipe on its tile", report.Issues.Single().Title);
+        }
+
+        [Test]
+        public void LineFillWithoutItsPipeWarnsWithoutCountingAsARoomPort()
+        {
+            MapValidationReport report = RoomChecks(Device(RoomDeviceKind.LineFill, 1, 3, pipe: false));
+            StringAssert.Contains("Line fill at (1, 2) has no matching pipe on its tile", report.Issues.Single().Title);
+        }
+
+        [Test]
+        public void GasPumpWithoutSurfacePipesWarnsWithoutCountingAsARoomPort()
+        {
+            MapValidationReport report = RoomChecks(Device(RoomDeviceKind.GasPump, 1, 3, pipe: false), Alarm(2, 3));
+            StringAssert.Contains("Gas pump at (1, 2) needs a Surface pipe at both ports", report.Issues.Single().Title);
+        }
+
+        [Test]
+        public void ValveWithoutSurfacePipesWarns()
+        {
+            MapValidationReport report = RoomChecks(Device(RoomDeviceKind.Valve, 1, 3, pipe: false), Alarm(2, 3));
+            StringAssert.Contains("Valve at (1, 2) needs a Surface pipe at both ports", report.Issues.Single().Title);
+        }
+
+        [Test]
+        public void ThreeWayDevice_WithNoSingleLine_SaysWhatItNeeds()
+        {
+            var report = new MapValidationReport();
+
+            MapValidator.AddRoomDeviceChecks(
+                report,
+                new[] { new RoomDeviceRecord(RoomDeviceKind.ThreeWay, new Vector3(1, 0, 2), 1, "Atmos", hasPipe: false) },
+                paintedRooms: true);
+
+            Assert.That(report.Issues.Select(issue => issue.Title), Has.Some.Contains("Filter or mixer at (1, 2) can't tell which pipe line"));
+        }
+
+        [Test]
+        public void Meter_WithNoPipe_HasNoLineToWorkOn()
+        {
+            var report = new MapValidationReport();
+
+            MapValidator.AddRoomDeviceChecks(
+                report,
+                new[] { new RoomDeviceRecord(RoomDeviceKind.LineReader, new Vector3(1, 0, 2), 1, "Atmos", hasPipe: false) },
+                paintedRooms: true);
+
+            Assert.That(report.Issues.Select(issue => issue.Title), Has.Some.Contains("Meter or injector at (1, 2) has no gas pipe"));
         }
 
         [Test]

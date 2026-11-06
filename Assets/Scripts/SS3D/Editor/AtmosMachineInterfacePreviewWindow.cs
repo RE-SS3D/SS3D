@@ -16,6 +16,9 @@ namespace SS3D.Editor
             Scrubber,
             Vent,
             Pump,
+            Filter,
+            Mixer,
+            Meter,
         }
 
         private PreviewPanel _panel = PreviewPanel.AirAlarm;
@@ -28,11 +31,17 @@ namespace SS3D.Editor
         private VentInterfaceBinder _ventBinder;
 
         private PumpInterfaceBinder _pumpBinder;
+        private FilterInterfaceBinder _filterBinder;
+        private MixerInterfaceBinder _mixerBinder;
+        private MeterInterfaceBinder _meterBinder;
 
         private AirAlarmInterfaceViewModel _airAlarmModel = AirAlarmInterfaceViewModel.CreateNormal();
         private ScrubberInterfaceViewModel _scrubberModel = ScrubberInterfaceViewModel.CreateFiltering();
         private VentInterfaceViewModel _ventModel = VentInterfaceViewModel.CreateIdle();
         private PumpInterfaceViewModel _pumpModel = PumpInterfaceViewModel.CreateIdle();
+        private FilterInterfaceViewModel _filterModel = FilterInterfaceViewModel.CreatePreview(FilterScenario.Filtering);
+        private MixerInterfaceViewModel _mixerModel = MixerInterfaceViewModel.CreatePreview(MixerScenario.Mixing);
+        private MeterInterfaceViewModel _meterModel = MeterInterfaceViewModel.CreatePreview(MeterScenario.Nominal);
 
         [MenuItem("SS3D/Machine Interface/Preview Air Alarm Panel")]
         public static void OpenAirAlarm()
@@ -50,6 +59,24 @@ namespace SS3D.Editor
         public static void OpenVent()
         {
             Open(PreviewPanel.Vent);
+        }
+
+        [MenuItem("SS3D/Machine Interface/Preview Filter Panel")]
+        public static void OpenFilter()
+        {
+            Open(PreviewPanel.Filter);
+        }
+
+        [MenuItem("SS3D/Machine Interface/Preview Mixer Panel")]
+        public static void OpenMixer()
+        {
+            Open(PreviewPanel.Mixer);
+        }
+
+        [MenuItem("SS3D/Machine Interface/Preview Meter Panel")]
+        public static void OpenMeter()
+        {
+            Open(PreviewPanel.Meter);
         }
 
         [MenuItem("SS3D/Machine Interface/Preview Pump Panel")]
@@ -97,6 +124,9 @@ namespace SS3D.Editor
             toolbar.Add(CreatePanelButton("Scrubber", PreviewPanel.Scrubber));
             toolbar.Add(CreatePanelButton("Vent", PreviewPanel.Vent));
             toolbar.Add(CreatePanelButton("Pump", PreviewPanel.Pump));
+            toolbar.Add(CreatePanelButton("Filter", PreviewPanel.Filter));
+            toolbar.Add(CreatePanelButton("Mixer", PreviewPanel.Mixer));
+            toolbar.Add(CreatePanelButton("Meter", PreviewPanel.Meter));
             toolbar.Add(CreateActionButton("Toggle ID Access", ToggleAccess));
             toolbar.Add(CreateActionButton("Select Device", CycleSelectedDevice));
 
@@ -147,6 +177,25 @@ namespace SS3D.Editor
                     CreateScenarioButton("Overload", () => SetScrubberScenario(ScrubberInterfaceViewModel.CreateOverloaded())),
                     CreateScenarioButton("Fault", () => SetScrubberScenario(ScrubberInterfaceViewModel.CreateFault())),
                 },
+                PreviewPanel.Filter => new[]
+                {
+                    CreateScenarioButton("Idle", () => SetFilterScenario(FilterScenario.Idle)),
+                    CreateScenarioButton("Filtering", () => SetFilterScenario(FilterScenario.Filtering)),
+                    CreateScenarioButton("Stalled", () => SetFilterScenario(FilterScenario.Stalled)),
+                },
+                PreviewPanel.Mixer => new[]
+                {
+                    CreateScenarioButton("Idle", () => SetMixerScenario(MixerScenario.Idle)),
+                    CreateScenarioButton("Mixing", () => SetMixerScenario(MixerScenario.Mixing)),
+                    CreateScenarioButton("Stopped", () => SetMixerScenario(MixerScenario.Stopped)),
+                },
+                PreviewPanel.Meter => new[]
+                {
+                    CreateScenarioButton("Nominal", () => SetMeterScenario(MeterScenario.Nominal)),
+                    CreateScenarioButton("Over", () => SetMeterScenario(MeterScenario.Overpressure)),
+                    CreateScenarioButton("Toxic", () => SetMeterScenario(MeterScenario.Contaminated)),
+                    CreateScenarioButton("Vacuum", () => SetMeterScenario(MeterScenario.Vacuum)),
+                },
                 PreviewPanel.Pump => new[]
                 {
                     CreateScenarioButton("Idle", () => SetPumpScenario(PumpInterfaceViewModel.CreateIdle())),
@@ -189,6 +238,14 @@ namespace SS3D.Editor
                 case PreviewPanel.Scrubber:
                     _scrubberModel.AccessGranted = !_scrubberModel.AccessGranted;
                     _scrubberBinder?.Bind(_scrubberModel);
+                    break;
+                case PreviewPanel.Filter:
+                    _filterModel.AccessGranted = !_filterModel.AccessGranted;
+                    _filterBinder?.Bind(_filterModel);
+                    break;
+                case PreviewPanel.Mixer:
+                    _mixerModel.AccessGranted = !_mixerModel.AccessGranted;
+                    _mixerBinder?.Bind(_mixerModel);
                     break;
                 case PreviewPanel.Pump:
                     _pumpModel.AccessGranted = !_pumpModel.AccessGranted;
@@ -278,6 +335,28 @@ namespace SS3D.Editor
             _scrubberBinder?.Bind(_scrubberModel);
         }
 
+        private void SetFilterScenario(FilterScenario scenario)
+        {
+            bool granted = _filterModel.AccessGranted;
+            _filterModel = FilterInterfaceViewModel.CreatePreview(scenario);
+            _filterModel.AccessGranted = granted;
+            _filterBinder?.Bind(_filterModel);
+        }
+
+        private void SetMixerScenario(MixerScenario scenario)
+        {
+            bool granted = _mixerModel.AccessGranted;
+            _mixerModel = MixerInterfaceViewModel.CreatePreview(scenario);
+            _mixerModel.AccessGranted = granted;
+            _mixerBinder?.Bind(_mixerModel);
+        }
+
+        private void SetMeterScenario(MeterScenario scenario)
+        {
+            _meterModel = MeterInterfaceViewModel.CreatePreview(scenario);
+            _meterBinder?.Bind(_meterModel);
+        }
+
         private void SetPumpScenario(PumpInterfaceViewModel model)
         {
             model.AccessGranted = _pumpModel.AccessGranted;
@@ -301,6 +380,9 @@ namespace SS3D.Editor
                 PreviewPanel.Scrubber => "Assets/Content/Systems/UI/MachineInterface/Templates/ScrubberUnitInterface.uxml",
                 PreviewPanel.Vent => "Assets/Content/Systems/UI/MachineInterface/Templates/VentUnitInterface.uxml",
                 PreviewPanel.Pump => "Assets/Content/Systems/UI/MachineInterface/Templates/PumpUnitInterface.uxml",
+                PreviewPanel.Filter => MachineUiAssetPaths.FilterTemplate,
+                PreviewPanel.Mixer => MachineUiAssetPaths.MixerTemplate,
+                PreviewPanel.Meter => MachineUiAssetPaths.MeterTemplate,
                 _ => "Assets/Content/Systems/UI/MachineInterface/Templates/AirAlarmInterface.uxml",
             };
 
@@ -324,6 +406,18 @@ namespace SS3D.Editor
                 case PreviewPanel.Vent:
                     _ventBinder = new VentInterfaceBinder(_panelRoot);
                     _ventBinder.Bind(_ventModel);
+                    break;
+                case PreviewPanel.Filter:
+                    _filterBinder = new FilterInterfaceBinder(_panelRoot);
+                    _filterBinder.Bind(_filterModel);
+                    break;
+                case PreviewPanel.Mixer:
+                    _mixerBinder = new MixerInterfaceBinder(_panelRoot);
+                    _mixerBinder.Bind(_mixerModel);
+                    break;
+                case PreviewPanel.Meter:
+                    _meterBinder = new MeterInterfaceBinder(_panelRoot);
+                    _meterBinder.Bind(_meterModel);
                     break;
                 case PreviewPanel.Pump:
                     _pumpBinder = new PumpInterfaceBinder(_panelRoot);
@@ -425,6 +519,9 @@ namespace SS3D.Editor
                 PreviewPanel.Scrubber => "Scrubber Unit",
                 PreviewPanel.Vent => "Vent Unit",
                 PreviewPanel.Pump => "Pump Unit",
+                PreviewPanel.Filter => "Filter Unit",
+                PreviewPanel.Mixer => "Mixer Unit",
+                PreviewPanel.Meter => "Gas Meter",
                 _ => "Air Alarm",
             };
         }

@@ -33,6 +33,12 @@ namespace SS3D.Systems.Atmospherics
         /// </summary>
         public const float MinDensityMoles = 5f;
 
+        /// <summary>
+        /// Moles in a tile of station air. Thin gas races out of a hole just as fast but barely pushes:
+        /// force goes with density × speed², so felt speed scales with the root of density below this.
+        /// </summary>
+        private const float StationCellMoles = AtmosConstants.StationOxygenMoles + AtmosConstants.StationNitrogenMoles;
+
         /// <summary>How quickly a body's felt wind follows the 5 Hz field, per second.</summary>
         public const float ResponseRate = 8f;
 
@@ -125,8 +131,10 @@ namespace SS3D.Systems.Atmospherics
             float north = own.North + (south >= 0 ? simulation.EdgeFlow[south].North : 0f);
             float east = own.East + (west >= 0 ? simulation.EdgeFlow[west].East : 0f);
 
-            float density = Mathf.Max(simulation.GetCellMoles(index), MinDensityMoles);
-            return Vector3.ClampMagnitude(new Vector3(east, 0f, north) * (0.5f * AirSpeedGain / density), MaxSpeed);
+            float moles = simulation.GetCellMoles(index);
+            float density = Mathf.Max(moles, MinDensityMoles);
+            float push = Mathf.Sqrt(Mathf.Min(moles / StationCellMoles, 1f));
+            return Vector3.ClampMagnitude(new Vector3(east, 0f, north) * (0.5f * AirSpeedGain * push / density), MaxSpeed);
         }
 
         private static int OpenNeighbour(AtmosSimulation simulation, int index, int direction)

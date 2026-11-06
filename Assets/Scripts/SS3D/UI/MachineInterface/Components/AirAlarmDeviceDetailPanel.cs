@@ -24,7 +24,6 @@ namespace SS3D.UI.MachineInterface.Components
         private readonly CompactFilterToggle _o2Filter;
         private readonly CompactFilterToggle _n2Filter;
         private readonly CompactFilterToggle _co2Filter;
-        private readonly CompactFilterToggle _plasmaFilter;
         private readonly CompactFilterToggle _toxinsFilter;
         private bool _controlsLocked;
 
@@ -98,19 +97,16 @@ namespace SS3D.UI.MachineInterface.Components
             _o2Filter = CreateFilter("O2");
             _n2Filter = CreateFilter("N2");
             _co2Filter = CreateFilter("CO2");
-            _plasmaFilter = CreateFilter("Plasma");
             _toxinsFilter = CreateFilter("Toxins");
 
             WireFilter(_o2Filter, "O2");
             WireFilter(_n2Filter, "N2");
             WireFilter(_co2Filter, "CO2");
-            WireFilter(_plasmaFilter, "Plasma");
             WireFilter(_toxinsFilter, "Toxins");
 
             filterRow.Add(_o2Filter);
             filterRow.Add(_n2Filter);
             filterRow.Add(_co2Filter);
-            filterRow.Add(_plasmaFilter);
             filterRow.Add(_toxinsFilter);
 
             _scrubberControls.Add(scrubberHint);
@@ -174,7 +170,6 @@ namespace SS3D.UI.MachineInterface.Components
                 _o2Filter.Locked = value;
                 _n2Filter.Locked = value;
                 _co2Filter.Locked = value;
-                _plasmaFilter.Locked = value;
                 _toxinsFilter.Locked = value;
             }
         }
@@ -186,7 +181,6 @@ namespace SS3D.UI.MachineInterface.Components
                 "O2" => _o2Filter,
                 "N2" => _n2Filter,
                 "CO2" => _co2Filter,
-                "Plasma" => _plasmaFilter,
                 "Toxins" => _toxinsFilter,
                 _ => null,
             };

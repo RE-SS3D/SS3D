@@ -5,10 +5,23 @@ namespace SS3D.Data.Generated
     {
         public const string AirAlarm = "11a2276338ebc64429dfc565b491e437";
         public const string APC = "4c966398d6624164c910cd29c1faa980";
-        public const string AtmosPipesL1 = "de6f06ad18d50134295959f438ba9c5d";
-        public const string AtmosPipesL2 = "251dc2a5fbda518429c8205c3b62165f";
-        public const string AtmosPipesL3 = "adc07a7f0fee8304691f45a201509b13";
-        public const string AtmosPipesL4 = "48efd00c91c310e4bb965d025c63b3ba";
+        public const string AtmosFilterL = "f662bf52ef0cc6e64866de255913b88d";
+        public const string AtmosFilterL2 = "e833d4cec8da5e6abaddd92b3829ad9c";
+        public const string AtmosFilterR = "5e0b09c25d237e2ac9d24483a28a58d7";
+        public const string AtmosFilterR2 = "dcc88642be56594528a53c74eb601601";
+        public const string AtmosInjector = "f71edbe17e151c82aad1ec265ffa9d23";
+        public const string AtmosManifold3 = "0f9043fa6769666faaa893d26d564355";
+        public const string AtmosManifold4 = "d4bb90462bc4749cdaa3796b227902b9";
+        public const string AtmosMeter = "56a01152a193a795c8bd85889e556118";
+        public const string AtmosMixerL = "1c71957ab86ed6acaacd79fb484b1fa2";
+        public const string AtmosMixerR = "24f10fc508009b222a4dd482d4f5fb28";
+        public const string AtmosPipesMixed = "251dc2a5fbda518429c8205c3b62165f";
+        public const string AtmosPipesSupply = "de6f06ad18d50134295959f438ba9c5d";
+        public const string AtmosPipesSurface = "48efd00c91c310e4bb965d025c63b3ba";
+        public const string AtmosPipesWaste = "adc07a7f0fee8304691f45a201509b13";
+        public const string AtmosPumpVolume = "1927b699e71f9833a82ed74dffe4acfd";
+        public const string AtmosValveDigital = "52003a6b5233e43fca012e400adbeea6";
+        public const string AtmosValveManual = "8eb79a916f17f4339888eeb43288ad4e";
         public const string Backpack = "ddaa28fac1956b2428aff1dac1d89707";
         public const string BikeHorn = "11f824c472e04854e95065dda095e8f4";
         public const string Blender = "5a09b3e93f0022b468da150e3c4a78c6";
@@ -35,6 +48,7 @@ namespace SS3D.Data.Generated
         public const string FlashlightBlue = "781dd9024aaa53444bc3deeaa9708fbb";
         public const string FloorTile = "404443f7c306fc8469698745624fa3bf";
         public const string FuelTank = "852d57bdb0508494fb6047f36e813c69";
+        public const string GasPump = "cb3c5f7550674ca4895c24c93c9a7eb4";
         public const string Gibber = "ad055c3d74a711a4b9d9b31217883a03";
         public const string GlassReinforcedSheet = "a1a7407e08bb2914c97f431063bf83e2";
         public const string GlassShard = "5cab1a9f6c7f74948b84d0d625319efe";
@@ -111,6 +125,7 @@ namespace SS3D.Data.Generated
         public const string PowerCellCharger = "d32855055305ce5489c69379e2219a7d";
         public const string ScrewdriverBlue = "9c8363ee7f934bd4b8ee5a2e30da1269";
         public const string Scrubber = "be5174cd6c3daf64a9739aff0f747a91";
+        public const string ScrubberIntake = "8612d44a1543bec729e78a0ec8d626c0";
         public const string SecurityAirlock = "d25b39d1e2379b64cba47629530ada78";
         public const string SecurityIDCard = "ff95abc9c2b779340a1b50f1a128a934";
         public const string SecurityLocker = "dd3ce5340ed4aba4babae7020f737084";
@@ -140,6 +155,8 @@ namespace SS3D.Data.Generated
         public const string SteelWindow = "b9c224febb4233f4e912745553097652";
         public const string SteelWindowReinforced = "f2493b5478dd8e946ba98861f533362e";
         public const string Sunglasses = "9b9f6bd470226a74b903e74dbe9e423a";
+        public const string SyndicateHardsuit = "e5e035169e67c766b8bc119007b84634";
+        public const string SyndicateHardsuitHelmet = "9ae653f88306f6f55bc8000fcbfc2b67";
         public const string TableBoozeDispenser = "7b74e45100446b440b4b0a12cd6d05ef";
         public const string TableFrameSteel = "e9009aff81f29eb429148fd71961539f";
         public const string TableFrameWood = "672b544ba53de0144aab307a16b085cb";

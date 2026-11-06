@@ -119,6 +119,10 @@ namespace SS3D.UI.MachineInterface
             bool connected = _vent != null && _vent.TryGetConnectedNetwork(out _);
             bool flowing = _vent != null && _vent.IsPortFlowing;
 
+            float roomPressure = 0f;
+            float linePressure = 0f;
+            _vent?.GetPressures(out roomPressure, out linePressure);
+
             VentScenario scenario;
             if (!powerOk)
             {
@@ -153,6 +157,8 @@ namespace SS3D.UI.MachineInterface
                 AccessScanning = AccessScanning,
                 AccessDenied = AccessDenied,
                 TargetPressureKpa = TargetPressureKpa,
+                RoomPressureKpa = roomPressure,
+                LinePressureKpa = linePressure,
             };
         }
     }

@@ -1,3 +1,4 @@
+using SS3D.Systems.Tile.GasMarkers;
 using SS3D.Data.AssetDatabases;
 using SS3D.Systems.Tile.TileMapCreator;
 using SS3D.Systems.Tile.Validation;
@@ -63,6 +64,9 @@ namespace SS3D.Systems.Tile.MapEditor.UI
 
         public string ToastMessage { get; set; }
         public string OpenPopover { get; set; }
+
+        /// <summary>What the next placed gas marker writes, or what the marker form is editing.</summary>
+        public GasMarkerRecord GasMarkerDraft { get; set; } = GasMarkerRecord.Default(GasMarkerKind.Source);
         public string SaveMapName { get; set; } = "Untitled Map";
         public Direction CurrentRotation { get; set; } = Direction.North;
         public MapEditorSaveTarget SaveTarget { get; set; } = MapEditorSaveTarget.LocalTemplate;
@@ -204,7 +208,8 @@ namespace SS3D.Systems.Tile.MapEditor.UI
 
             if (CurrentMode == MapEditorMode.Lower
                 || layer is TileLayer.Plenum or TileLayer.Turf or TileLayer.Wire or TileLayer.Disposal
-                    or TileLayer.PipeLeft or TileLayer.PipeMiddle or TileLayer.PipeRight or TileLayer.PipeSurface)
+                    or TileLayer.PipeLeft or TileLayer.PipeMiddle or TileLayer.PipeRight or TileLayer.PipeSurface
+                    or TileLayer.PipeManifold)
                 return "Hold Shift and drag to fill a rectangle — plain drag places a line";
 
             return "Drag to place a line, Shift+drag to fill a rectangle — R to rotate";

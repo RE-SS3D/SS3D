@@ -1,0 +1,108 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:ss3d="SS3D.UI.MachineInterface.Components" editor-extension-mode="False">
+    <ui:Style src="project://database/Assets/Content/Systems/UI/Tokens/ss3d-tokens.uss" />
+    <ui:Style src="project://database/Assets/Content/Systems/UI/Tokens/ss3d-typography.uss" />
+    <ui:Style src="project://database/Assets/Content/Systems/UI/MachineInterface/Tokens/diegetic-tokens.uss" />
+    <ui:Style src="project://database/Assets/Content/Systems/UI/MachineInterface/Tokens/diegetic-tones.uss" />
+    <ui:Style src="project://database/Assets/Content/Systems/UI/MachineInterface/Components/DiegeticDeviceShell.uss" />
+    <ui:Style src="project://database/Assets/Content/Systems/UI/MachineInterface/Components/StatusDot.uss" />
+    <ui:Style src="project://database/Assets/Content/Systems/UI/MachineInterface/Components/ConnectionStatusRow.uss" />
+    <ui:Style src="project://database/Assets/Content/Systems/UI/MachineInterface/Components/DeviceIdentityBlock.uss" />
+    <ui:Style src="project://database/Assets/Content/Systems/UI/MachineInterface/Components/GlanceableStatusChip.uss" />
+    <ui:Style src="project://database/Assets/Content/Systems/UI/MachineInterface/Components/PanelSection.uss" />
+    <ui:Style src="project://database/Assets/Content/Systems/UI/MachineInterface/Components/GasMixBar.uss" />
+    <ui:Style src="project://database/Assets/Content/Systems/UI/MachineInterface/Components/GasPortCard.uss" />
+    <ui:Style src="project://database/Assets/Content/Systems/UI/MachineInterface/Components/AtmosIdReaderRow.uss" />
+    <ui:Style src="project://database/Assets/Content/Systems/UI/MachineInterface/Components/ToggleSwitch.uss" />
+    <ui:Style src="project://database/Assets/Content/Systems/UI/MachineInterface/Components/NumericStepper.uss" />
+    <ui:Style src="project://database/Assets/Content/Systems/UI/MachineInterface/Components/SteelButton.uss" />
+    <ui:Style src="project://database/Assets/Content/Systems/UI/MachineInterface/Components/StatusBadge.uss" />
+    <ui:Style src="project://database/Assets/Content/Systems/UI/MachineInterface/Components/DeviceFooter.uss" />
+    <ui:Style src="project://database/Assets/Content/Systems/UI/MachineInterface/Templates/MixerUnitInterface.uss" />
+
+    <ss3d:DiegeticDeviceShell name="device-shell"
+        class="diegetic-device-shell--mixer"
+        model-label="MIX-11 · gas mixer unit"
+        power-ok="true"
+        style="align-self: center; margin-top: 24px;">
+        <ss3d:ConnectionStatusRow name="connection-row"
+            status-text="WIRED · PIPE NET · PORT M1" />
+        <ss3d:DeviceIdentityBlock name="identity"
+            title="MIX-11"
+            subtitle="Atmospherics Distro — Gas Mixer" />
+        <ss3d:GlanceableStatusChip name="status-chip" />
+
+        <ui:VisualElement class="panel-section" name="pressure-readouts-section">
+            <ui:VisualElement class="panel-section__clip">
+                <ui:VisualElement class="panel-section__header">
+                    <ui:Label class="panel-section__header-title font-titling" text="Pressure Readouts" />
+                </ui:VisualElement>
+                <ui:VisualElement class="panel-section__content">
+                    <ui:VisualElement class="gas-flow-row">
+                        <ui:VisualElement class="gas-flow-row__stack">
+                            <ss3d:GasPortCard name="inlet-1-card" />
+                            <ss3d:GasPortCard name="inlet-2-card" class="gas-flow-row__next" />
+                        </ui:VisualElement>
+                        <ui:Label name="flow-glyph" class="gas-flow-row__glyph" text="·" />
+                        <ui:VisualElement class="gas-flow-row__single mixer-outlet">
+                            <ss3d:GasPortCard name="outlet-card" raised="true" />
+                            <ui:Label name="outlet-target" class="mixer-outlet__target font-terminal" text="Target 101 kPa" />
+                        </ui:VisualElement>
+                    </ui:VisualElement>
+                </ui:VisualElement>
+            </ui:VisualElement>
+        </ui:VisualElement>
+
+        <ui:VisualElement class="panel-section" name="id-reader-section">
+            <ui:VisualElement class="panel-section__clip">
+                <ui:VisualElement class="panel-section__header">
+                    <ui:Label class="panel-section__header-title font-titling" text="ID Reader" />
+                </ui:VisualElement>
+                <ui:VisualElement class="panel-section__content">
+                    <ss3d:AtmosIdReaderRow name="id-reader" />
+                </ui:VisualElement>
+            </ui:VisualElement>
+        </ui:VisualElement>
+
+        <ui:VisualElement class="panel-section" name="controls-section">
+            <ui:VisualElement class="panel-section__clip">
+                <ui:VisualElement class="panel-section__header">
+                    <ui:Label class="panel-section__header-title font-titling" text="Mixer Controls" />
+                </ui:VisualElement>
+                <ui:VisualElement class="panel-section__content">
+                    <ui:VisualElement class="gas-controls-row">
+                        <ui:VisualElement class="gas-power-group">
+                            <ss3d:ToggleSwitch name="power-toggle" is-on="true" on-label="ON" off-label="OFF" />
+                            <ui:Label text="Pwr" class="gas-power-caption font-arcade" />
+                        </ui:VisualElement>
+                        <ui:VisualElement class="gas-target-group">
+                            <ui:VisualElement class="gas-target-labels">
+                                <ui:Label text="Target outlet pressure" class="gas-target-title font-body" />
+                                <ui:Label name="target-gated-hint" class="gas-gated-hint font-terminal" text="" />
+                            </ui:VisualElement>
+                            <ss3d:NumericStepper name="target-stepper" value-text="101 kPa" />
+                        </ui:VisualElement>
+                    </ui:VisualElement>
+
+                    <ui:VisualElement class="mixer-ratio">
+                        <ui:VisualElement class="mixer-ratio__header">
+                            <ui:Label text="INLET RATIO" class="mixer-ratio__title font-titling" />
+                            <ui:Label name="ratio-gated-hint" class="gas-gated-hint font-terminal" text="" />
+                        </ui:VisualElement>
+                        <ui:VisualElement class="mixer-ratio__row">
+                            <ui:Button name="ratio-down" text="−" class="numeric-stepper__button font-terminal" />
+                            <ui:Label name="ratio-1-text" text="IN1 50%" class="mixer-ratio__text font-terminal" />
+                            <ui:VisualElement name="ratio-bar" class="mixer-ratio-bar">
+                                <ui:VisualElement name="ratio-1-fill" class="mixer-ratio-bar__fill" />
+                                <ui:VisualElement name="ratio-2-fill" class="mixer-ratio-bar__fill" />
+                            </ui:VisualElement>
+                            <ui:Label name="ratio-2-text" text="50% IN2" class="mixer-ratio__text mixer-ratio__text--end font-terminal" />
+                            <ui:Button name="ratio-up" text="+" class="numeric-stepper__button font-terminal" />
+                        </ui:VisualElement>
+                    </ui:VisualElement>
+                </ui:VisualElement>
+            </ui:VisualElement>
+        </ui:VisualElement>
+
+        <ss3d:DeviceFooter name="footer" text="SS3D Atmospherics — Mixer Unit Model MIX-11" />
+    </ss3d:DiegeticDeviceShell>
+</ui:UXML>

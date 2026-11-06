@@ -24,3 +24,8 @@ MonoBehaviour:
     EmissionIntensity: 1
     DistortionScale: 1
     TurbulenceScale: 1
+  _symbol: Plasma
+  _panelColor:
+    serializedVersion: 2
+    rgba: 4292243396
+  _toxic: 1

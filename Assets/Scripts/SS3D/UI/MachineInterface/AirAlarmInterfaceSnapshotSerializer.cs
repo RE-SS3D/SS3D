@@ -87,7 +87,6 @@ namespace SS3D.UI.MachineInterface
                 FilterO2 = device.Filters.TryGetValue("O2", out bool o2) && o2,
                 FilterN2 = device.Filters.TryGetValue("N2", out bool n2) && n2,
                 FilterCo2 = device.Filters.TryGetValue("CO2", out bool co2) && co2,
-                FilterPlasma = device.Filters.TryGetValue("Plasma", out bool plasma) && plasma,
                 FilterToxins = device.Filters.TryGetValue("Toxins", out bool toxins) && toxins,
             };
         }
@@ -106,7 +105,6 @@ namespace SS3D.UI.MachineInterface
                     ["O2"] = snapshot.FilterO2,
                     ["N2"] = snapshot.FilterN2,
                     ["CO2"] = snapshot.FilterCo2,
-                    ["Plasma"] = snapshot.FilterPlasma,
                     ["Toxins"] = snapshot.FilterToxins,
                 },
             };
@@ -122,7 +120,6 @@ namespace SS3D.UI.MachineInterface
             writer.WriteBoolean(device.FilterO2);
             writer.WriteBoolean(device.FilterN2);
             writer.WriteBoolean(device.FilterCo2);
-            writer.WriteBoolean(device.FilterPlasma);
             writer.WriteBoolean(device.FilterToxins);
         }
 
@@ -138,7 +135,6 @@ namespace SS3D.UI.MachineInterface
                 FilterO2 = reader.ReadBoolean(),
                 FilterN2 = reader.ReadBoolean(),
                 FilterCo2 = reader.ReadBoolean(),
-                FilterPlasma = reader.ReadBoolean(),
                 FilterToxins = reader.ReadBoolean(),
             };
         }

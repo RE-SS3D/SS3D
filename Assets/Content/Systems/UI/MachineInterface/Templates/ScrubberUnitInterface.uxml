@@ -75,7 +75,6 @@
                             <ss3d:CompactFilterToggle name="filter-o2" filter-label="O2" is-on="true" />
                             <ss3d:CompactFilterToggle name="filter-n2" filter-label="N2" is-on="true" />
                             <ss3d:CompactFilterToggle name="filter-co2" filter-label="CO2" is-on="true" />
-                            <ss3d:CompactFilterToggle name="filter-plasma" filter-label="Plasma" />
                             <ss3d:CompactFilterToggle name="filter-toxins" filter-label="Toxins" is-on="true" />
                         </ui:VisualElement>
                     </ui:VisualElement>

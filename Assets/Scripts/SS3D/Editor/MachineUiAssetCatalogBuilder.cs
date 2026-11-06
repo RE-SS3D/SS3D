@@ -83,6 +83,23 @@ namespace SS3D.Editor
                 MachineUiAssetPaths.BuildAtmosComponentStyles(includeAirAlarm: false, includeVent: true),
                 missing);
 
+            string[] gasLineStyles = MachineUiAssetPaths.BuildAtmosComponentStyles(
+                includeAirAlarm: false,
+                includeVent: false,
+                includeGasLine: true);
+
+            VisualTreeAsset filterTemplate = LoadRequired<VisualTreeAsset>(MachineUiAssetPaths.FilterTemplate, missing);
+            StyleSheet filterStyle = LoadRequired<StyleSheet>(MachineUiAssetPaths.FilterTemplateStyle, missing);
+            StyleSheet[] filterComponents = LoadStyleSheets(gasLineStyles, missing);
+
+            VisualTreeAsset mixerTemplate = LoadRequired<VisualTreeAsset>(MachineUiAssetPaths.MixerTemplate, missing);
+            StyleSheet mixerStyle = LoadRequired<StyleSheet>(MachineUiAssetPaths.MixerTemplateStyle, missing);
+            StyleSheet[] mixerComponents = LoadStyleSheets(gasLineStyles, missing);
+
+            VisualTreeAsset meterTemplate = LoadRequired<VisualTreeAsset>(MachineUiAssetPaths.MeterTemplate, missing);
+            StyleSheet meterStyle = LoadRequired<StyleSheet>(MachineUiAssetPaths.MeterTemplateStyle, missing);
+            StyleSheet[] meterComponents = LoadStyleSheets(gasLineStyles, missing);
+
             if (missing.Count > 0)
             {
                 error = "Machine UI asset catalog rebuild failed. Missing assets:\n- "
@@ -134,7 +151,16 @@ namespace SS3D.Editor
                 scrubberComponents,
                 ventTemplate,
                 ventStyle,
-                ventComponents);
+                ventComponents,
+                filterTemplate,
+                filterStyle,
+                filterComponents,
+                mixerTemplate,
+                mixerStyle,
+                mixerComponents,
+                meterTemplate,
+                meterStyle,
+                meterComponents);
 
             EditorUtility.SetDirty(catalog);
             AssetDatabase.SaveAssets();

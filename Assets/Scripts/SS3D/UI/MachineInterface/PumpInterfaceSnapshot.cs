@@ -28,7 +28,12 @@ namespace SS3D.UI.MachineInterface
 
         public bool AccessDenied;
 
+        /// <summary>A <see cref="SS3D.Systems.Atmospherics.Pipes.PumpRegulation"/>: which set point applies, if any.</summary>
+        public byte Regulation;
+
         public int TargetOutletPressureKpa;
+
+        public int TargetLitresPerSecond;
 
         public float InletPressureKpa;
 

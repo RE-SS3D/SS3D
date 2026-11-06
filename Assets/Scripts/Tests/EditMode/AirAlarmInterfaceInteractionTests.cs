@@ -33,5 +33,19 @@ namespace EditorTests
 
             Assert.AreEqual(AirAlarmPresetMode.Panic, model.ActiveMode);
         }
+
+        [Test]
+        public void PanicThenFiltering_SiphonsEverything_ThenGoesBackToCarbonDioxide()
+        {
+            AirAlarmInterfaceViewModel model = AirAlarmInterfaceViewModel.CreateNormal();
+            var scrubber = new AirAlarmConnectedDevice { Kind = AirAlarmConnectedDeviceKind.Scrubber };
+            model.ConnectedDevices.Add(scrubber);
+
+            AirAlarmInterfaceInteractionLogic.ApplyPresetMode(model, AirAlarmPresetMode.Panic);
+            Assert.That(ScrubberGasFilters.Keys, Has.All.Matches<string>(key => scrubber.Filters[key]));
+
+            AirAlarmInterfaceInteractionLogic.ApplyPresetMode(model, AirAlarmPresetMode.Filtering);
+            Assert.That(ScrubberGasFilters.Keys, Has.All.Matches<string>(key => scrubber.Filters[key] == (key == "CO2")));
+        }
     }
 }

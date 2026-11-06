@@ -38,6 +38,18 @@ namespace SS3D.UI.MachineInterface
         public VisualTreeAsset VentTemplate { get; init; }
         public StyleSheet VentTemplateStyle { get; init; }
         public StyleSheet[] VentComponentStyles { get; init; }
+
+        public VisualTreeAsset FilterTemplate { get; init; }
+        public StyleSheet FilterTemplateStyle { get; init; }
+        public StyleSheet[] FilterComponentStyles { get; init; }
+
+        public VisualTreeAsset MixerTemplate { get; init; }
+        public StyleSheet MixerTemplateStyle { get; init; }
+        public StyleSheet[] MixerComponentStyles { get; init; }
+
+        public VisualTreeAsset MeterTemplate { get; init; }
+        public StyleSheet MeterTemplateStyle { get; init; }
+        public StyleSheet[] MeterComponentStyles { get; init; }
     }
 
     /// <summary>
@@ -125,6 +137,36 @@ namespace SS3D.UI.MachineInterface
                 ComponentStyles = assets.VentComponentStyles,
                 ShellKind = MachineInterfaceShellKind.DiegeticDevice,
                 CreateBinder = root => new VentInterfaceBinder(root),
+            });
+
+            MachineInterfaceRegistry.RegisterUi(new MachineInterfaceUiRegistration
+            {
+                InterfaceId = MachineInterfaceIds.Filter,
+                Template = assets.FilterTemplate,
+                TemplateStyle = assets.FilterTemplateStyle,
+                ComponentStyles = assets.FilterComponentStyles,
+                ShellKind = MachineInterfaceShellKind.DiegeticDevice,
+                CreateBinder = root => new FilterInterfaceBinder(root),
+            });
+
+            MachineInterfaceRegistry.RegisterUi(new MachineInterfaceUiRegistration
+            {
+                InterfaceId = MachineInterfaceIds.Mixer,
+                Template = assets.MixerTemplate,
+                TemplateStyle = assets.MixerTemplateStyle,
+                ComponentStyles = assets.MixerComponentStyles,
+                ShellKind = MachineInterfaceShellKind.DiegeticDevice,
+                CreateBinder = root => new MixerInterfaceBinder(root),
+            });
+
+            MachineInterfaceRegistry.RegisterUi(new MachineInterfaceUiRegistration
+            {
+                InterfaceId = MachineInterfaceIds.Meter,
+                Template = assets.MeterTemplate,
+                TemplateStyle = assets.MeterTemplateStyle,
+                ComponentStyles = assets.MeterComponentStyles,
+                ShellKind = MachineInterfaceShellKind.DiegeticDevice,
+                CreateBinder = root => new MeterInterfaceBinder(root),
             });
         }
     }

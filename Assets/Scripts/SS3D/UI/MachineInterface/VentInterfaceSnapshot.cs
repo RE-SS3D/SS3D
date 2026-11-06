@@ -29,5 +29,9 @@ namespace SS3D.UI.MachineInterface
         public bool AccessDenied;
 
     public int TargetPressureKpa;
+
+    public float RoomPressureKpa;
+
+    public float LinePressureKpa;
   }
 }

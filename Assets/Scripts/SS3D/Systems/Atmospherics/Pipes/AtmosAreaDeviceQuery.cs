@@ -22,7 +22,6 @@ namespace SS3D.Systems.Atmospherics.Pipes
         public readonly bool FilterO2;
         public readonly bool FilterN2;
         public readonly bool FilterCo2;
-        public readonly bool FilterPlasma;
         public readonly bool FilterToxins;
 
         public AtmosAreaPortRecord(
@@ -33,9 +32,7 @@ namespace SS3D.Systems.Atmospherics.Pipes
             float targetKpa,
             bool filterO2,
             bool filterN2,
-            bool filterCo2,
-            bool filterPlasma,
-            bool filterToxins)
+            bool filterCo2,            bool filterToxins)
         {
             ObjectId = objectId;
             Kind = kind;
@@ -45,7 +42,6 @@ namespace SS3D.Systems.Atmospherics.Pipes
             FilterO2 = filterO2;
             FilterN2 = filterN2;
             FilterCo2 = filterCo2;
-            FilterPlasma = filterPlasma;
             FilterToxins = filterToxins;
         }
     }
@@ -189,19 +185,15 @@ namespace SS3D.Systems.Atmospherics.Pipes
                 targetKpa = vent.TargetPressureKpa;
             }
 
-            bool filterO2 = true;
-            bool filterN2 = true;
-            bool filterCo2 = true;
-            bool filterPlasma = false;
-            bool filterToxins = true;
+            bool filterO2 = false;
+            bool filterN2 = false;
+            bool filterCo2 = true;            bool filterToxins = false;
             if (!isVent && controller.TryGetComponent(out ScrubberController scrubber))
             {
                 scrubber.GetFilterStates(
                     out filterO2,
                     out filterN2,
-                    out filterCo2,
-                    out filterPlasma,
-                    out filterToxins);
+                    out filterCo2,                    out filterToxins);
             }
 
             return new AtmosAreaPortRecord(
@@ -213,7 +205,6 @@ namespace SS3D.Systems.Atmospherics.Pipes
                 filterO2,
                 filterN2,
                 filterCo2,
-                filterPlasma,
                 filterToxins);
         }
 

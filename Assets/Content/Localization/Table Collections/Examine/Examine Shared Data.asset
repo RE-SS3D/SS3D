@@ -1012,19 +1012,19 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 252934895022239992
-    m_Key: structures.pipes.atmos_pipes_l1.desc
+    m_Key: structures.pipes.atmos_pipes_supply.desc
     m_Metadata:
       m_Items: []
   - m_Id: 252934895022239993
-    m_Key: structures.pipes.atmos_pipes_l2.desc
+    m_Key: structures.pipes.atmos_pipes_mixed.desc
     m_Metadata:
       m_Items: []
   - m_Id: 252934895022239994
-    m_Key: structures.pipes.atmos_pipes_l3.desc
+    m_Key: structures.pipes.atmos_pipes_waste.desc
     m_Metadata:
       m_Items: []
   - m_Id: 252934895022239995
-    m_Key: structures.pipes.atmos_pipes_l4.desc
+    m_Key: structures.pipes.atmos_pipes_surface.desc
     m_Metadata:
       m_Items: []
   - m_Id: 252934895022239996
@@ -1379,6 +1379,76 @@ MonoBehaviour:
     m_Key: examine.seal.breached
     m_Metadata:
       m_Items: []
+  - m_Id: 296172240830177280
+    m_Key: structures.pipes.atmos_pump_volume.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 296172240855343104
+    m_Key: structures.pipes.atmos_pump_volume.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 296172240855343105
+    m_Key: structures.pipes.atmos_valve_manual.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 296172240855343106
+    m_Key: structures.pipes.atmos_valve_manual.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 296172240855343107
+    m_Key: structures.pipes.atmos_valve_digital.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 296172240855343108
+    m_Key: structures.pipes.atmos_valve_digital.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 296172240855343109
+    m_Key: structures.pipes.atmos_manifold_3.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 296172240855343110
+    m_Key: structures.pipes.atmos_manifold_3.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 296172240855343111
+    m_Key: structures.pipes.atmos_manifold_4.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 296172240855343112
+    m_Key: structures.pipes.atmos_manifold_4.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 296342594903056384
+    m_Key: structures.pipes.atmos_filter.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 296342594932416512
+    m_Key: structures.pipes.atmos_filter.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 296342594932416513
+    m_Key: structures.pipes.atmos_mixer.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 296342594936610816
+    m_Key: structures.pipes.atmos_mixer.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 296342594936610817
+    m_Key: structures.pipes.atmos_meter.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 296342594936610818
+    m_Key: structures.pipes.atmos_meter.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 296342594936610819
+    m_Key: structures.pipes.atmos_injector.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 296342594936610820
+    m_Key: structures.pipes.atmos_injector.desc
   - m_Id: 296089487001546752
     m_Key: examine.tank.fill
     m_Metadata:

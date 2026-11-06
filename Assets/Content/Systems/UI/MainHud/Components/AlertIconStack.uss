@@ -54,6 +54,7 @@
     transition-duration: var(--ss3d-duration-fast);
 }
 
-.alert-chip--hovered .alert-chip__label {
+.alert-chip--hovered .alert-chip__label,
+.alert-chip--labelled .alert-chip__label {
     opacity: 1;
 }

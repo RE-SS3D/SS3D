@@ -51,6 +51,8 @@ namespace SS3D.UI.MachineInterface
             Register(new ScrubberOptimisticControlHandler());
             Register(new VentOptimisticControlHandler());
             Register(new PumpOptimisticControlHandler());
+            Register(new FilterOptimisticControlHandler());
+            Register(new MixerOptimisticControlHandler());
             Register(new AirAlarmOptimisticControlHandler());
             _registered = true;
         }

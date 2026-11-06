@@ -1,3 +1,4 @@
+using SS3D.Systems.Atmospherics.Pipes;
 namespace SS3D.UI.MachineInterface
 {
     public enum PumpScenario
@@ -59,7 +60,16 @@ namespace SS3D.UI.MachineInterface
 
         public bool Powered { get; set; } = true;
 
-        public int TargetOutletPressureKpa { get; set; } = 4500;
+        public PumpRegulation Regulation { get; set; }
+
+        public int TargetOutletPressureKpa { get; set; } = AtmosPortConstants.PumpDefaultTargetKpa;
+
+        public int TargetLitresPerSecond { get; set; }
+
+        public string TargetTitle => Regulation == PumpRegulation.Volume ? "Set flow rate" : "Target outlet pressure";
+
+        public string TargetValueText =>
+            Regulation == PumpRegulation.Volume ? $"{TargetLitresPerSecond} L/s" : $"{TargetOutletPressureKpa} kPa";
 
         public static PumpInterfaceViewModel CreateIdle()
         {

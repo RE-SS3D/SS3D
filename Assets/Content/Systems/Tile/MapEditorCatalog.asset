@@ -33,29 +33,120 @@ MonoBehaviour:
     SearchTags:
     - wall mount
     IsEraser: 0
-  - AssetName: AtmosPipesL1
+  - AssetName: AtmosManifold3
+    Mode: 1
+    Subcategory: 6
+    SearchTags:
+    - pipe
+    - device
+    IsEraser: 0
+  - AssetName: AtmosManifold4
+    Mode: 1
+    Subcategory: 6
+    SearchTags:
+    - pipe
+    - device
+    IsEraser: 0
+  - AssetName: AtmosPipesMixed
     Mode: 1
     Subcategory: 6
     SearchTags:
     - pipe
     IsEraser: 0
-  - AssetName: AtmosPipesL2
+  - AssetName: AtmosPipesSupply
     Mode: 1
     Subcategory: 6
     SearchTags:
     - pipe
     IsEraser: 0
-  - AssetName: AtmosPipesL3
+  - AssetName: AtmosPipesSurface
     Mode: 1
     Subcategory: 6
     SearchTags:
     - pipe
     IsEraser: 0
-  - AssetName: AtmosPipesL4
+  - AssetName: AtmosPipesWaste
     Mode: 1
     Subcategory: 6
     SearchTags:
     - pipe
+    IsEraser: 0
+  - AssetName: AtmosPumpVolume
+    Mode: 1
+    Subcategory: 6
+    SearchTags:
+    - pipe
+    - device
+    IsEraser: 0
+  - AssetName: AtmosValveDigital
+    Mode: 1
+    Subcategory: 6
+    SearchTags:
+    - pipe
+    - device
+    IsEraser: 0
+  - AssetName: AtmosFilterL
+    Mode: 1
+    Subcategory: 6
+    SearchTags:
+    - pipe
+    - device
+    IsEraser: 0
+  - AssetName: AtmosFilterL2
+    Mode: 1
+    Subcategory: 6
+    SearchTags:
+    - pipe
+    - device
+    IsEraser: 0
+  - AssetName: AtmosFilterR
+    Mode: 1
+    Subcategory: 6
+    SearchTags:
+    - pipe
+    - device
+    IsEraser: 0
+  - AssetName: AtmosFilterR2
+    Mode: 1
+    Subcategory: 6
+    SearchTags:
+    - pipe
+    - device
+    IsEraser: 0
+  - AssetName: AtmosInjector
+    Mode: 1
+    Subcategory: 6
+    SearchTags:
+    - pipe
+    - device
+    IsEraser: 0
+  - AssetName: AtmosMeter
+    Mode: 1
+    Subcategory: 6
+    SearchTags:
+    - pipe
+    - device
+    IsEraser: 0
+  - AssetName: AtmosMixerL
+    Mode: 1
+    Subcategory: 6
+    SearchTags:
+    - pipe
+    - device
+    IsEraser: 0
+  - AssetName: AtmosMixerR
+    Mode: 1
+    Subcategory: 6
+    SearchTags:
+    - pipe
+    - device
+    IsEraser: 0
+  - AssetName: AtmosValveManual
+    Mode: 1
+    Subcategory: 6
+    SearchTags:
+    - pipe
+    - device
     IsEraser: 0
   - AssetName: Backpack
     Mode: 2
@@ -242,10 +333,11 @@ MonoBehaviour:
     - furniture
     IsEraser: 0
   - AssetName: GasPump
-    Mode: 0
-    Subcategory: 4
+    Mode: 1
+    Subcategory: 6
     SearchTags:
-    - furniture
+    - pipe
+    - device
     IsEraser: 0
   - AssetName: Gibber
     Mode: 0
@@ -623,6 +715,12 @@ MonoBehaviour:
     - ScrewdriverBlue
     IsEraser: 0
   - AssetName: Scrubber
+    Mode: 0
+    Subcategory: 4
+    SearchTags:
+    - furniture
+    IsEraser: 0
+  - AssetName: ScrubberIntake
     Mode: 0
     Subcategory: 4
     SearchTags:

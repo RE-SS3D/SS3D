@@ -19,7 +19,9 @@ namespace SS3D.Systems.Tile.Connections
             get
             {
                 Setup();
-                return new SimpleConnectionRule(PlacedObject.GenericType, PlacedObject.SpecificType);
+                return PlacedObject.GenericType == TileObjectGenericType.Pipe
+                    ? new PipeConnectionRule(PlacedObject.GenericType, PlacedObject.SpecificType)
+                    : new SimpleConnectionRule(PlacedObject.GenericType, PlacedObject.SpecificType);
             }
         }
     }

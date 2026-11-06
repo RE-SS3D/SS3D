@@ -541,12 +541,13 @@ namespace SS3D.Systems.Tile
         }
 
         /// <summary>
-        /// Clears authored spawn markers. Called from <see cref="TileMap.Clear"/> so map wipe /
-        /// template restore cannot leave stale points when a template lacks a spawn chunk.
+        /// Clears authored spawn and gas markers. Called from <see cref="TileMap.Clear"/> so map wipe /
+        /// template restore cannot leave stale markers when a template lacks their chunk.
         /// </summary>
-        public void ClearSpawnPoints()
+        public void ClearMarkers()
         {
             _spawnPoints.Clear();
+            _gasMarkers.Clear();
             if (IsServer) _steelWreckage.Clear();
         }
 

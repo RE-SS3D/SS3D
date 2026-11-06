@@ -18,8 +18,6 @@ namespace SS3D.UI.MachineInterface
 
         public bool FilterCo2;
 
-        public bool FilterPlasma;
-
         public bool FilterToxins;
     }
 }

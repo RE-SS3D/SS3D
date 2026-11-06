@@ -4,43 +4,43 @@ using SS3D.Systems.Tile.MapImport.Dmm;
 namespace SS3D.Systems.Tile.MapImport
 {
     /// <summary>
-    /// Collapses SS13 pipe network types / piping_layer onto SS3D AtmosPipesL1–L4.
+    /// Collapses SS13 pipe network types / piping_layer onto the SS3D pipe lines.
     /// Network type in the path beats the numeric piping_layer var.
     /// </summary>
     public static class MapImportPipeResolver
     {
-        public const string AtmosPipesL1 = "AtmosPipesL1";
-        public const string AtmosPipesL2 = "AtmosPipesL2";
-        public const string AtmosPipesL3 = "AtmosPipesL3";
-        public const string AtmosPipesL4 = "AtmosPipesL4";
+        public const string AtmosPipesSupply = "AtmosPipesSupply";
+        public const string AtmosPipesMixed = "AtmosPipesMixed";
+        public const string AtmosPipesWaste = "AtmosPipesWaste";
+        public const string AtmosPipesSurface = "AtmosPipesSurface";
 
         public static string Resolve(string path, DmmAtom atom)
         {
             if (!string.IsNullOrEmpty(path))
             {
                 if (ContainsSegment(path, "/supply"))
-                    return AtmosPipesL1;
+                    return AtmosPipesSupply;
                 if (ContainsSegment(path, "/scrubbers"))
-                    return AtmosPipesL2;
+                    return AtmosPipesMixed;
                 if (ContainsSegment(path, "/waste") ||
                     ContainsSegment(path, "/general") ||
                     ContainsSegment(path, "/yellow"))
-                    return AtmosPipesL3;
+                    return AtmosPipesWaste;
             }
 
             if (atom != null && atom.TryGetInt("piping_layer", out int layer))
             {
                 return layer switch
                 {
-                    1 => AtmosPipesL1,
-                    2 => AtmosPipesL2,
-                    3 => AtmosPipesL3,
-                    4 => AtmosPipesL4,
-                    _ => AtmosPipesL3,
+                    1 => AtmosPipesSupply,
+                    2 => AtmosPipesMixed,
+                    3 => AtmosPipesWaste,
+                    4 => AtmosPipesSurface,
+                    _ => AtmosPipesWaste,
                 };
             }
 
-            return AtmosPipesL3;
+            return AtmosPipesWaste;
         }
 
         private static bool ContainsSegment(string path, string segment) =>

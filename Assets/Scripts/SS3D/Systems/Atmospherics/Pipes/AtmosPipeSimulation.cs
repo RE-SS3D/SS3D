@@ -1,4 +1,5 @@
 using SS3D.Systems.Tile;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace SS3D.Systems.Atmospherics.Pipes
@@ -16,23 +17,32 @@ namespace SS3D.Systems.Atmospherics.Pipes
 
         public GasPipeNetworkRegistry Registry => _registry;
 
+        /// <summary>Bit n is set when gas id n is toxic, for a scrubber's Toxins setting.</summary>
+        public ulong ToxicGases { get; }
+
+        /// <summary>How many gas slots a network holds.</summary>
+        public int GasTypeCount => _gasTypeCount;
+
         public AtmosPipeSimulation(
             GasPipeNetworkRegistry registry,
             AtmosSimulation turf,
             float[] specificHeats,
             int gasTypeCount,
-            AtmosPipeObserver observer)
+            AtmosPipeObserver observer,
+            ulong? toxicGases = null)
         {
             _registry = registry;
             _turf = turf;
             _specificHeats = specificHeats;
             _gasTypeCount = gasTypeCount;
             _observer = observer;
+            ToxicGases = toxicGases ?? 1UL << AtmosConstants.Plasma.Value;
         }
 
         public void Tick(float deltaTime)
         {
             _observer?.FlushPendingRebuilds();
+            ReleaseRemovedSegmentGas();
             UpdateNetworkTemperatures();
         }
 
@@ -138,6 +148,21 @@ namespace SS3D.Systems.Atmospherics.Pipes
 
             _turf.ActivateRegion(turfCell, 1);
             return true;
+        }
+
+        private void ReleaseRemovedSegmentGas()
+        {
+            IReadOnlyList<PipeGasRelease> releases = _registry.PendingReleases;
+            for (int i = 0; i < releases.Count; i++)
+            {
+                PipeGasRelease release = releases[i];
+                for (int gasId = 0; gasId < _gasTypeCount; gasId++)
+                    _turf.TryAddMolesAtTemperature(release.Coord, new GasId((ushort)gasId), release.Moles[gasId], release.Temperature);
+
+                _turf.ActivateRegion(release.Coord, 1);
+            }
+
+            _registry.ClearPendingReleases();
         }
 
         private void UpdateNetworkTemperatures()

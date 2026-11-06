@@ -42,6 +42,8 @@ namespace SS3D.Tests
         private static bool _roomReady;
         /// <summary>The mode the running round was booted in; a fixture that needs another one reboots.</summary>
         private static string _bootedMode;
+        /// <summary>The station the running round was booted on; a fixture that needs another one reboots.</summary>
+        private static string _bootedStation;
         private bool _setUpDone;
         private readonly HashSet<int> _objectsBeforeScenario = new();
         private readonly Stopwatch _scenarioClock = new();
@@ -65,6 +67,12 @@ namespace SS3D.Tests
         /// <summary>The round's mode. A fixture that changes it reboots the room on its first scenario.</summary>
         protected virtual string Mode => "Extended";
 
+        /// <summary>Checked-in station template to run in, relative to the project root.</summary>
+        protected virtual string StationFixture => RoomFixturePath;
+
+        /// <summary>False skips the checks that the room still holds station air, which only fit the test room.</summary>
+        protected virtual bool ChecksRoomAir => true;
+
         /// <summary>
         /// False keeps the body the round start spawned (role, marker, loadout) instead of a fresh empty-handed
         /// one per scenario; for fixtures whose subject is the round-start spawn.
@@ -82,12 +90,13 @@ namespace SS3D.Tests
             ChangesRoom = false;
             Body = null;
             _setUpDone = false;
-            if (!_roomReady || !RoundRunning() || _bootedMode != Mode)
+            if (!_roomReady || !RoundRunning() || _bootedMode != Mode || _bootedStation != StationFixture)
             {
                 Stopwatch boot = Stopwatch.StartNew();
                 yield return BootIntoRoom();
                 Debug.Log($"[Scenario] booted into {RoomStation} in {boot.Elapsed.TotalSeconds:F1}s");
-                ScenarioAtmos.AssertStationAir("after loading the room");
+                if (ChecksRoomAir)
+                    ScenarioAtmos.AssertStationAir("after loading the room");
                 _roomReady = true;
             }
 
@@ -113,7 +122,7 @@ namespace SS3D.Tests
 
             Debug.Log($"[Scenario] {TestContext.CurrentContext.Test.Name} took {_scenarioClock.Elapsed.TotalSeconds:F1}s");
             DespawnScenarioObjects();
-            if (!ChangesRoom && ScenarioAtmos.CheckUnchanged(TestContext.CurrentContext.Test.Name))
+            if (ChecksRoomAir && !ChangesRoom && ScenarioAtmos.CheckUnchanged(TestContext.CurrentContext.Test.Name))
             {
                 Debug.Log($"[Scenario] CO₂ from breathing passed the threshold; reloading the room: {ScenarioAtmos.Read()}");
                 ChangesRoom = true;
@@ -167,7 +176,7 @@ namespace SS3D.Tests
                 yield return ServerHelpers.StopRound();
             }
 
-            CopyRoomStation();
+            CopyRoomStation(StationFixture);
             RoundSubSystem rounds = SubSystems.Get<RoundSubSystem>();
             ServerSettings settings = rounds.SettingsForServer;
             settings.Map = RoomStation;
@@ -180,6 +189,7 @@ namespace SS3D.Tests
             BeforeRoundStart();
             ServerHelpers.SetPlayerReadiness(ServerHelpers.LocalCkey, true);
             _bootedMode = Mode;
+            _bootedStation = StationFixture;
             ServerHelpers.ChangeRoundState(true);
             yield return ServerHelpers.WaitForRoundState(RoundState.WarmingUp, 60f);
             rounds.CmdRoundAdminAction(RoundAdminAction.ForceStart);
@@ -315,10 +325,10 @@ namespace SS3D.Tests
         private static string RoomStationFile() =>
             Paths.GetPath(GamePaths.Data, true) + PersistencePaths.StationTemplates + "/" + RoomStation + ".json";
 
-        private static void CopyRoomStation()
+        private static void CopyRoomStation(string fixture)
         {
-            string source = Path.GetFullPath(RoomFixturePath);
-            Assert.IsTrue(File.Exists(source), $"Test room fixture exists at {RoomFixturePath}");
+            string source = Path.GetFullPath(fixture);
+            Assert.IsTrue(File.Exists(source), $"Station fixture exists at {fixture}");
             string target = RoomStationFile();
             Directory.CreateDirectory(Path.GetDirectoryName(target)!);
             File.Copy(source, target, overwrite: true);

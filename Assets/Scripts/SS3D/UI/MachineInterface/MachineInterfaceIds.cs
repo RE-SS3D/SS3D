@@ -17,5 +17,11 @@ namespace SS3D.UI.MachineInterface
         public const string Scrubber = "atmos.scrubber";
 
         public const string Vent = "atmos.vent";
+
+        public const string Filter = "atmos.gas-filter";
+
+        public const string Mixer = "atmos.gas-mixer";
+
+        public const string Meter = "atmos.gas-meter";
     }
 }

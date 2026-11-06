@@ -1,3 +1,4 @@
+using SS3D.Systems.Tile.GasMarkers;
 using System;
 using UnityEngine;
 
@@ -16,6 +17,8 @@ namespace SS3D.Systems.Tile.MapEditor.Commands
         ClearFloorDecal,
         PlaceSpawnPoint,
         ClearSpawnPoint,
+        PlaceGasMarker,
+        ClearGasMarker,
     }
 
     [Serializable]
@@ -29,6 +32,7 @@ namespace SS3D.Systems.Tile.MapEditor.Commands
         public Direction PreviousDirection;
         public bool ReplaceExisting;
         public ushort DecalId;
+        public GasMarkerRecord GasMarker;
     }
 
     [Serializable]

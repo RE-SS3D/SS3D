@@ -12,7 +12,7 @@ namespace EditorTests
             "Assets/Content/Data/Examine/String/Structures/Walls/SteelWall.asset";
 
         private const string AtmosPipeAssetPath =
-            "Assets/Content/Data/Examine/String/Structures/Pipes/AtmosPipesL1.asset";
+            "Assets/Content/Data/Examine/String/Structures/Pipes/AtmosPipesSupply.asset";
 
         [Test]
         public void GetNameKeyUsesAssetPathForLegacyProseKeys()
@@ -35,7 +35,7 @@ namespace EditorTests
         {
             string key = ExamineCanonicalKeyGenerator.GetDescriptionKey(AtmosPipeAssetPath);
 
-            Assert.AreEqual("structures.pipes.atmos_pipes_l1.desc", key);
+            Assert.AreEqual("structures.pipes.atmos_pipes_supply.desc", key);
         }
 
         [Test]
@@ -49,7 +49,7 @@ namespace EditorTests
         [Test]
         public void ToSnakeCaseSplitsPascalCaseAndDigits()
         {
-            Assert.AreEqual("atmos_pipes_l1", ExamineCanonicalKeyGenerator.ToSnakeCase("AtmosPipesL1"));
+            Assert.AreEqual("atmos_pipes_supply", ExamineCanonicalKeyGenerator.ToSnakeCase("AtmosPipesSupply"));
             Assert.AreEqual("jumpsuit_botany", ExamineCanonicalKeyGenerator.ToSnakeCase("JumpsuitBotany"));
         }
     }
