@@ -109,9 +109,17 @@ namespace SS3D.Tests
             yield return Hold(0.5f);
 
             ragdoll.ServerApplyBlast(Vector3.right * BlastPush.MaxSpeed, knockdown: true);
-            yield return Hold(1f);
 
-            Assert.That(ragdoll.WindSamplePosition.x, Is.InRange(x - 1.2f, x + 0.5f), "The body reaches the wall and stops there");
+            // A body collapses away from the wall after it hits, so where it ends up proves nothing.
+            float furthest = float.MinValue;
+            float start = Time.time;
+            while (Time.time - start < 1f)
+            {
+                furthest = Mathf.Max(furthest, ragdoll.WindSamplePosition.x);
+                yield return null;
+            }
+
+            Assert.That(furthest, Is.InRange(x - 0.75f, x + 0.5f), "The body reaches the wall and never passes it");
         }
 
         // Guards: force too low to floor anyone still shoves an upright owner, which is CharacterController motion and not bone physics · Not cheaper because: the controller path needs a live owned body
