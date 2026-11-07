@@ -30,7 +30,7 @@ Prefer the CLI scripts over asking the user to paste Test Runner output.
 ./Tools/run_editmode_tests.sh --assembly SS3D.Tests.EditMode
 ```
 
-- Unity: `6000.3.16f1` (override with `UNITY_EDITOR_PATH` / `SS3D_UNITY_VERSION`).
+- Unity: `6000.3.28f1` (override with `UNITY_EDITOR_PATH` / `SS3D_UNITY_VERSION`).
 - Writes `artifacts/editmode-results.xml` + `artifacts/editmode.log` (same layout as CI
   `.github/workflows/editmodetestrunner.yml`).
 - Full suite can take several minutes (~300+ `[Test]`s). Set a high shell block time.

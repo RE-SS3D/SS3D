@@ -17,7 +17,7 @@ For doc authoring conventions see [SKILL.md](SKILL.md).
 | | Upstream (`RE-SS3D/SS3D`) | This fork (`henkhooft/SS3D`) |
 |---|---|---|
 | Default branch | `develop` | `develop` |
-| Unity version | 2021.3.15f1 | **6000.3.16f1** (Unity 6) |
+| Unity version | 2021.3.15f1 | **6000.3.28f1** (Unity 6) |
 | Render pipeline | Built-in | **URP 17** |
 | Release channel | Tagged releases on GitHub | **Manual + nightly prereleases** via `develop-release.yml` (Windows zip + bats by default; nightly Windows+Linux → `develop-nightly`; Linux / EditMode / smoke opt-in on dispatch) — day-to-day still build-from-source |
 | Documentation | GitBook ([ss3d.gitbook.io](https://ss3d.gitbook.io/dev-guide/)) | `Documents/design/` + `Documents/architecture/` + system maps + [milestones](milestones/INDEX.md) |
@@ -118,7 +118,7 @@ These changes touch nearly every asset and are the largest structural divergence
 
 Merged via `archive/develop-unity6`. Includes:
 
-- Editor upgrade to **6000.3.16f1**
+- Editor upgrade to **6000.3.16f1** (bumped to **6000.3.28f1** in Nov 2026)
 - Asset and ProjectSettings reserialization to Unity 6 format
 - ugui 2.0 / TMP Essential Resources import
 - Addressables 2.x cleanup (legacy Built In Data entries removed)

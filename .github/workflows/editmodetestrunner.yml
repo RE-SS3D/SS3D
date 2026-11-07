@@ -129,7 +129,7 @@ jobs:
         uses: game-ci/unity-test-runner@v4
         with:
           testMode: editmode
-          unityVersion: 6000.3.16f1
+          unityVersion: 6000.3.28f1
           customParameters: -testFilter ImportPassMatchesNoTest
           # Host UID for Docker mounts on TomNAS; unused/harmless on GitHub-hosted.
           runAsHostUser: ${{ needs.pick_runner.outputs.self_hosted == 'true' }}
@@ -147,7 +147,7 @@ jobs:
         uses: game-ci/unity-test-runner@v4
         with:
           testMode: editmode
-          unityVersion: 6000.3.16f1
+          unityVersion: 6000.3.28f1
           # Host UID for Docker mounts on TomNAS; unused/harmless on GitHub-hosted.
           runAsHostUser: ${{ needs.pick_runner.outputs.self_hosted == 'true' }}
         env:

@@ -10,13 +10,13 @@
 #   artifacts/editmode-results.xml
 #   artifacts/editmode.log
 #
-# Requires Unity 6000.3.16f1 (project version) on PATH via UNITY_EDITOR_PATH, or the
-# default Hub install under ~/Unity/Hub/Editor/6000.3.16f1/Editor/Unity.
+# Requires Unity 6000.3.28f1 (project version) on PATH via UNITY_EDITOR_PATH, or the
+# default Hub install under ~/Unity/Hub/Editor/6000.3.28f1/Editor/Unity.
 
 set -euo pipefail
 
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-UNITY_VERSION="${SS3D_UNITY_VERSION:-6000.3.16f1}"
+UNITY_VERSION="${SS3D_UNITY_VERSION:-6000.3.28f1}"
 UNITY_EDITOR="${UNITY_EDITOR_PATH:-$HOME/Unity/Hub/Editor/${UNITY_VERSION}/Editor/Unity}"
 
 FILTER=""

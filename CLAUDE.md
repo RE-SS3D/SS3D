@@ -4,7 +4,7 @@
 
 ## What this is
 
-**henkhooft/SS3D** is a development fork of [RE-SS3D/SS3D](https://github.com/RE-SS3D/SS3D), a 3D take on Space Station 13. It targets Unity 6 (`6000.3.16f1`) + URP with [FishNet](https://fish-networking.com/) networking. Upstream is still on Unity 2021.3 + Built-in RP, so the codebases have diverged substantially; the divergence log is [Documents/FORK_STATUS.md](Documents/FORK_STATUS.md). Active branch: `develop`.
+**henkhooft/SS3D** is a development fork of [RE-SS3D/SS3D](https://github.com/RE-SS3D/SS3D), a 3D take on Space Station 13. It targets Unity 6 (`6000.3.28f1`) + URP with [FishNet](https://fish-networking.com/) networking. Upstream is still on Unity 2021.3 + Built-in RP, so the codebases have diverged substantially; the divergence log is [Documents/FORK_STATUS.md](Documents/FORK_STATUS.md). Active branch: `develop`.
 
 ## Build, run, and test
 

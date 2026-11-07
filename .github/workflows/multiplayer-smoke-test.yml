@@ -162,7 +162,7 @@ jobs:
           targetPlatform: StandaloneLinux64
           buildMethod: SS3D.Editor.ClientAndServerBuildScript.BuildBothForCi
           versioning: None
-          unityVersion: 6000.3.16f1
+          unityVersion: 6000.3.28f1
           runAsHostUser: true
       - name: Verify server binary exists
         run: |

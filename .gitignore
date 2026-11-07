@@ -158,3 +158,4 @@ __pycache__/
 
 # Multiplayer Play Mode per-machine player tags
 ProjectSettings/VirtualProjectsConfig.json
+/Assets/Content/Addressables/Windows.meta

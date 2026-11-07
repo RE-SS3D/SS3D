@@ -37,7 +37,7 @@ Underlying pieces (do not restate their full docs — open them when needed):
 |------|---------|
 | Scenario | `late-join 2` |
 | Alt scenario | `observer-sync 2` (state sync to a second client) |
-| Unity | `6000.3.16f1` (`UNITY_EDITOR_PATH` / `SS3D_UNITY_VERSION`) |
+| Unity | `6000.3.28f1` (`UNITY_EDITOR_PATH` / `SS3D_UNITY_VERSION`) |
 | Max fix cycles | **2** (build is expensive) |
 
 Skip build only when the user says builds are current, or passes `--skip-build`.

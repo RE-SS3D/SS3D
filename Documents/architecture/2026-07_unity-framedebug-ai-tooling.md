@@ -22,7 +22,7 @@ Sibling to [2026-07_unity-perf-ai-tooling.md](2026-07_unity-perf-ai-tooling.md) 
 - Binding: [`FrameDebuggerReflection.cs`](../../Assets/Scripts/SS3D/Editor/Perf/FrameDebuggerReflection.cs)
 - Output: `Logs/framedebug/<scenario>.md` (covered by `/[Ll]ogs/` in `.gitignore`)
 - APIs: reflection on `UnityEditorInternal.FrameDebuggerInternal.FrameDebuggerUtility`
-  (verified Editor `6000.3.16f1`); public `UnityEngine.FrameDebugger.enabled` for gating
+  (verified Editor `6000.3.28f1`); public `UnityEngine.FrameDebugger.enabled` for gating
 
 Report sections (stable contract for the skill):
 

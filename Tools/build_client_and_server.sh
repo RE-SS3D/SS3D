@@ -9,13 +9,13 @@
 #   Builds/GameServer/SS3D.x86_64
 #   Builds/Game/SS3D.x86_64
 #
-# Requires Unity 6000.3.16f1 (override with UNITY_EDITOR_PATH / SS3D_UNITY_VERSION).
+# Requires Unity 6000.3.28f1 (override with UNITY_EDITOR_PATH / SS3D_UNITY_VERSION).
 # Close the Editor on this project first — batchmode cannot lock an open project.
 
 set -euo pipefail
 
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-UNITY_VERSION="${SS3D_UNITY_VERSION:-6000.3.16f1}"
+UNITY_VERSION="${SS3D_UNITY_VERSION:-6000.3.28f1}"
 UNITY_EDITOR="${UNITY_EDITOR_PATH:-$HOME/Unity/Hub/Editor/${UNITY_VERSION}/Editor/Unity}"
 METHOD="SS3D.Editor.ClientAndServerBuildScript.BuildBothBatch"
 

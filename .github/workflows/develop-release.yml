@@ -197,7 +197,7 @@ jobs:
         uses: game-ci/unity-test-runner@v4
         with:
           testMode: editmode
-          unityVersion: 6000.3.16f1
+          unityVersion: 6000.3.28f1
         env:
           UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
           UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
@@ -295,7 +295,7 @@ jobs:
           buildMethod: SS3D.Editor.ClientAndServerBuildScript.BuildBothForCi
           versioning: None
           customParameters: -ss3dVersion ${{ needs.prepare.outputs.version }}
-          unityVersion: 6000.3.16f1
+          unityVersion: 6000.3.28f1
           runAsHostUser: ${{ needs.prepare.outputs.self_hosted == 'true' }}
       - name: Verify lobby change log was generated
         run: |
@@ -429,7 +429,7 @@ jobs:
           targetPlatform: StandaloneWindows64
           versioning: None
           customParameters: -ss3dVersion ${{ needs.prepare.outputs.version }}
-          unityVersion: 6000.3.16f1
+          unityVersion: 6000.3.28f1
           runAsHostUser: ${{ needs.prepare.outputs.self_hosted == 'true' }}
       - name: Verify lobby change log was generated
         run: |

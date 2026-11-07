@@ -32,7 +32,7 @@ cd SS3D
 git checkout develop
 ```
 
-Open the project in Unity Hub with editor **`6000.3.16f1`**. The game is written in C# and uses
+Open the project in Unity Hub with editor **`6000.3.28f1`**. The game is written in C# and uses
 [FishNet](https://fish-networking.com/) for networking.
 
 Upstream's [dev guide](https://ss3d.gitbook.io/dev-guide/) may still help with generic Unity and FishNet concepts,

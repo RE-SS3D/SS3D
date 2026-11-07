@@ -56,7 +56,7 @@ afterward.
    `Tools/versioning/next_version.py` (full-history checkout; [2026-10_game-versioning](2026-10_game-versioning.md));
    probe whether `TomNAS-unity` is online and set `runs_on` / `self_hosted` for build jobs.
    Both builder steps pass `customParameters: -ss3dVersion <version>`.
-2. **EditMode** (opt-in) — same `game-ci/unity-test-runner@v4` / `6000.3.16f1` pattern as
+2. **EditMode** (opt-in) — same `game-ci/unity-test-runner@v4` / `6000.3.28f1` pattern as
    `editmodetestrunner.yml`, including secret preflight and `environment: unity_tests`.
    Skipped when `run_editmode` is false (always skipped on nightly).
 3. **Linux build** (nightly, or opt-in via `build_linux`) — **one** `unity-builder` step with

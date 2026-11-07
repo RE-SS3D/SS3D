@@ -65,11 +65,24 @@ minutes.
 Still required once was: docker group + linger + image pull (done Jul 2026). Pre-pull:
 
 ```bash
-ssh tomnas 'docker pull unityci/editor:ubuntu-6000.3.16f1-linux-il2cpp-3'
+ssh tomnas 'docker pull unityci/editor:ubuntu-6000.3.28f1-linux-il2cpp-3'
 ```
 
 Without the docker group, `game-ci/unity-builder` fails on the daemon socket. Without linger,
 the user systemd unit dies when all `cu6e` sessions end.
+
+The PlayMode job (`multiplayer-smoke-test.yml` and `weekly-graphical.yml`) does not use Docker. It
+runs a host editor at `~/Unity/Hub/Editor/<ProjectVersion>/Editor/Unity` on TomNAS, which has no
+Unity Hub. Every editor bump needs that install as well as the image pull, or PlayMode fails at
+once with `Unity Editor not found/executable`:
+
+```bash
+ssh tomnas 'v=6000.3.28f1; c=8f082d2fe476; d=~/Unity/Hub/Editor/$v; mkdir -p $d.partial &&
+  curl -fsSL https://download.unity3d.com/download_unity/$c/LinuxEditorInstaller/Unity-$v.tar.xz |
+  tar -xJ -C $d.partial && mv $d.partial $d && echo $v > $d/version'
+```
+
+The changeset `c` is the hash in `m_EditorVersionWithRevision` in `ProjectSettings/ProjectVersion.txt`.
 
 ### Workflow
 

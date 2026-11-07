@@ -8,7 +8,7 @@ This repository is **[henkhooft/SS3D](https://github.com/henkhooft/SS3D)** — a
 [RE-SS3D/SS3D](https://github.com/RE-SS3D/SS3D) project. It is an active experiment in redesigning core gameplay
 systems and development foundations at a faster pace than upstream's current review capacity supports.
 
-Compared to upstream it targets **Unity 6** (`6000.3.16f1`) + **URP**, with rewritten gameplay systems
+Compared to upstream it targets **Unity 6** (`6000.3.28f1`) + **URP**, with rewritten gameplay systems
 (interactions, health, combat melee, inventory, atmos, areas/power, Map Editor, and more). Day-to-day play is
 still build-from-source in the Editor.
 
@@ -67,7 +67,7 @@ cd SS3D
 git checkout develop
 ```
 
-Open the project in **Unity Hub** with editor **`6000.3.16f1`** (see
+Open the project in **Unity Hub** with editor **`6000.3.28f1`** (see
 [Documents/CONTRIBUTING.md](Documents/CONTRIBUTING.md) for setup notes).
 
 ***Note:*** *This fork is in active development. Systems, interactions, and design docs are evolving — what you

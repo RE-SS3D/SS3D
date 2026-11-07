@@ -1,7 +1,7 @@
 # Unity MCP and lobby pilot
 
 Pinned integration: CoplayDev Unity MCP 10.3.0, commit
-`aa5fc638d623f56178d50329d9ad8c541a57fe66`, on Unity `6000.3.16f1`.
+`aa5fc638d623f56178d50329d9ad8c541a57fe66`, on Unity `6000.3.28f1`.
 The Unity package is pinned in `Packages/manifest.json`; the Python environment is
 local/ignored under `artifacts/unity-mcp/venv`. `requirements-mcp.txt` records the
 tested Python 3.14 environment. No server or tooling is added to release builds by
