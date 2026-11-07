@@ -120,7 +120,7 @@ namespace SS3D.UI.MainHud.Components
             (AlertHazard.Bleeding, "Bleeding"),
             (AlertHazard.CardiacArrest, "Cardiac Arrest"),
             (AlertHazard.SealBreach, "Seal Breach"),
-            (AlertHazard.Invincible, "Invincible (Map Editor)"),
+            (AlertHazard.Invincible, "Invincible - Editor"),
             (AlertHazard.TankLow, "Tank Low"),
         };
 

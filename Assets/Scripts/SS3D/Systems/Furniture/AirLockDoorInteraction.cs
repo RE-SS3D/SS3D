@@ -55,14 +55,14 @@ namespace SS3D.Systems.Furniture
 
         public bool Start(InteractionEvent interactionEvent, InteractionReference reference)
         {
+            Entity entity = interactionEvent.Source.GetComponentInParent<Entity>();
+            HumanInventory inventory = entity != null ? entity.GetComponent<HumanInventory>() : null;
             if (_airLock.IsOpen)
             {
-                _airLock.ServerCloseFromInteraction();
+                _airLock.ServerCloseFromInteraction(inventory);
                 return true;
             }
 
-            Entity entity = interactionEvent.Source.GetComponentInParent<Entity>();
-            HumanInventory inventory = entity != null ? entity.GetComponent<HumanInventory>() : null;
             _airLock.TryServerOpenFromInteraction(inventory);
             return true;
         }

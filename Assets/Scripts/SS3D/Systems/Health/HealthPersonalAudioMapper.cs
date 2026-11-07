@@ -103,6 +103,7 @@ namespace SS3D.Systems.Health
 
             personalAudio.SetHeartbeatIntensity(0f);
             personalAudio.ClearHealthBreathing();
+            personalAudio.SetInternalsBreathingIntensity(0f);
         }
     }
 }

@@ -4,6 +4,7 @@
     "references": [
         "FishNet.Runtime",
         "SS3D.Core",
+        "SS3D.Data",
         "SS3D.Interactions",
         "SS3D.Systems",
         "SS3D.UI.MachineInterface"

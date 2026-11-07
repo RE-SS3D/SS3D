@@ -20,7 +20,12 @@ namespace SS3D.Systems.Inventory.Interactions
             _attachedContainer = attachedContainer;
         }
 
-        public int Priority => 25;
+        /// <summary>
+        /// One above View/Open/Take (25): Store is only viable with an item in hand that fits, and
+        /// then a plain click on the container should put it in. The tie used to resolve by an
+        /// unstable sort, so the click often opened or viewed the container instead.
+        /// </summary>
+        public int Priority => 26;
 
         public string GetName(InteractionEvent interactionEvent)
         {

@@ -58,3 +58,11 @@
 .alert-chip--labelled .alert-chip__label {
     opacity: 1;
 }
+
+/* The always-on label is wider than its chip, and the stack ends near the right screen edge:
+ * hang it from the chip's right edge instead of centring it, so it grows leftward only. */
+.alert-chip--labelled .alert-chip__label {
+    left: auto;
+    right: 0;
+    translate: 0 0;
+}

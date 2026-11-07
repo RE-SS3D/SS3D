@@ -91,6 +91,12 @@ namespace SS3D.Systems.Furniture
 
         private readonly HashSet<HumanInventory> _authorizedOccupants = new();
         private readonly HashSet<HumanInventory> _deniedOccupants = new();
+
+        /// <summary>
+        /// Occupants who were in the volume when someone clicked Close. They don't reopen the door
+        /// until they leave the volume; anyone else arriving still opens it.
+        /// </summary>
+        private readonly HashSet<HumanInventory> _closeHeldOccupants = new();
         private readonly HashSet<HumanInventory> _proximityScratch = new();
         private readonly List<HumanInventory> _deniedPruneScratch = new();
 
@@ -120,7 +126,7 @@ namespace SS3D.Systems.Furniture
 
         /// <summary>True when this door still needs a proximity pass after players leave its HashGrid neighborhood.</summary>
         internal bool NeedsEmptyProximityPass =>
-            _authorizedOccupants.Count > 0 || _deniedOccupants.Count > 0;
+            _authorizedOccupants.Count > 0 || _deniedOccupants.Count > 0 || _closeHeldOccupants.Count > 0;
 
         private void Awake()
         {
@@ -330,6 +336,7 @@ namespace SS3D.Systems.Furniture
                 return false;
             }
 
+            _closeHeldOccupants.Clear();
             CancelCloseTimer();
             SetOpen(true);
             ScheduleCloseAfterDelay();
@@ -345,14 +352,27 @@ namespace SS3D.Systems.Furniture
                 return false;
             }
 
+            _closeHeldOccupants.Clear();
             CancelCloseTimer();
             SetOpen(true);
             return true;
         }
 
+        /// <summary>
+        /// Closes the door and keeps it closed for everyone currently in the doorway (and
+        /// <paramref name="closer"/>), until they step out of the volume.
+        /// </summary>
         [Server]
-        public void ServerCloseFromInteraction()
+        public void ServerCloseFromInteraction(HumanInventory closer = null)
         {
+            CancelCloseTimer();
+            _closeHeldOccupants.Clear();
+            _closeHeldOccupants.UnionWith(_authorizedOccupants);
+            if (closer != null)
+            {
+                _closeHeldOccupants.Add(closer);
+            }
+
             SetOpen(false);
         }
 
@@ -380,6 +400,7 @@ namespace SS3D.Systems.Furniture
                 }
 
                 _deniedOccupants.Clear();
+                _closeHeldOccupants.Clear();
                 return;
             }
 
@@ -434,14 +455,17 @@ namespace SS3D.Systems.Furniture
             }
 
             PruneDeniedOccupants();
+            _closeHeldOccupants.RemoveWhere(held => held == null || !_proximityScratch.Contains(held));
 
             bool isEmpty = _authorizedOccupants.Count == 0;
             if (!isEmpty)
             {
-                // Re-open if someone closed while authorized occupants remain (click Close).
                 CancelCloseTimer();
-                if (!_isOpen)
+
+                // A click Close holds for whoever was in the doorway then; a newcomer still opens it.
+                if (!_isOpen && !_closeHeldOccupants.IsSupersetOf(_authorizedOccupants))
                 {
+                    _closeHeldOccupants.Clear();
                     SetOpen(true);
                 }
             }

@@ -1,7 +1,7 @@
 > Code paths: Assets/Scripts/SS3D/Systems/Furniture/, Assets/Content/WorldObjects/Furniture/
 > Entry points: (various world object behaviours); AirLockProximityService
 > Status: partial
-> Verified: e2f86cf20 — 2026-11-05
+> Verified: 407953d97 — 2026-11-06
 
 # Furniture / world objects
 
@@ -45,6 +45,7 @@ Steel tables leave procedural collapsed tops and legs through [structural-destru
 - **Open door still physically shut:** the solid colliders ride on the animated `LeftDoor`/`RightDoor`, and the prefabs use `CullCompletely` (Metastation animator cost). A culled animator leaves `IsOpen` true with the panels shut, always on a dedicated server (no camera). `AirLockOpener` holds `AlwaysAnimate` only for `PanelMotionTime` after a state change, then restores the prefab's mode, so idle doors stay culled in rounds and the map editor. `CullUpdateTransforms` is not enough: it skips the same transforms.
 - **Airlock `CreateTargetInteractions` alloc on hover:** returning `new IInteraction[] { new AirLockDoorInteraction(...) }` every outline probe GC-spikes when looking at doors. Cache the interaction instance + array on the opener; only refresh `Name`. Hit 2026-07-28.
 - **Client airlocks never open:** remotes are NetworkTransformed on the server — `CharacterController.Move` never runs for them, so Unity triggers / CC Overlap miss. Disable CC when `!IsOwner` so NT can drive the server transform. Probe `EntitySubSystem.SpawnedPlayers` with `Collider.ClosestPoint` + padding (~0.85m): closed door solids stop characters just outside the trigger OBB, so a strict contains check never fires. Drive `Animator.Open` from the `_isOpen` SyncVar OnChange. Hit 2026-07-26.
+- **Click Close reopened at once:** the proximity tick reopened any closed door with an authorized occupant, so closing a door you stand in did nothing. `ServerCloseFromInteraction` now records the doorway's occupants (plus the closer) in `_closeHeldOccupants`; they don't reopen it until they leave the volume, and anyone else arriving still does. Keep that set in `NeedsEmptyProximityPass` so it drains once players walk away.
 - **Access-denied spam at a locked door:** unauthorized players in the padded proximity volume must only trigger deny once per approach (`_deniedOccupants` edge). Calling `ServerPlayAccessDenied` every FixedUpdate floods SFX/blinks. Clear the denied set when they leave or on power loss. Hit 2026-07-26 (design).
 - **Security cannot open civilian airlocks:** Security role preset omitted `AccessLevel.Civilian` (bit 128). Civilian doors require that bit; host and client both fail access. SecurityOfficer preset + `Security.asset` include Civilian. Hit 2026-07-26.
 - **Airlocks stuck open after leaving the trigger:** `AirLockOpener` closes on `OnPowerStatusUpdated(Inactive)`. If [electricity](electricity.md) `PowerAreaConsumers` writes `Inactive` then `Powered` every tick (~0.2s), the SyncVar OnChange restarts the 2s close timer forever. Assign final `PowerStatus` once per consumer; never clear-then-set. Defense: `ScheduleCloseAfterDelay` must not restart an already-running timer. Regression test: `PowerAreaConsumers_AssignsFinalStatusOnceWithoutFlicker`. Hit three times (91b053c1d, Jul 16 uncommitted, 2026-07-18).

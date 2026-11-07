@@ -2,6 +2,7 @@ using SS3D.Systems.Settings;
 using System.Collections.Generic;
 using SS3D.Core;
 using SS3D.Core.Behaviours;
+using SS3D.Data.Generated;
 using SS3D.Systems.Combat;
 using SS3D.Systems.Inputs;
 using SS3D.Systems.Inventory.Containers;
@@ -9,6 +10,7 @@ using SS3D.Systems.Inventory.Items;
 using SS3D.Systems.Screens;
 using SS3D.UI.MachineInterface;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UIElements;
 
 namespace SS3D.UI.StoragePanel
@@ -94,6 +96,7 @@ namespace SS3D.UI.StoragePanel
 
             BuildRoot();
             InputInterface.RegisterDocument(_document);
+            SceneManager.sceneUnloaded += HandleSceneUnloaded;
         }
 
         protected override void OnStart()
@@ -112,6 +115,7 @@ namespace SS3D.UI.StoragePanel
 
         protected override void OnDestroyed()
         {
+            SceneManager.sceneUnloaded -= HandleSceneUnloaded;
             UnsubscribeMachineUi();
             UnsubscribeMenu();
             InputInterface.UnregisterDocument(_document);
@@ -334,6 +338,34 @@ namespace SS3D.UI.StoragePanel
             {
                 ClosePanel(container);
             }
+        }
+
+        /// <summary>
+        /// This host lives across scenes, and leaving to the main menu doesn't always reach
+        /// <see cref="UnbindContainerViewer"/> (the local body's ownership is already gone when it
+        /// despawns). Once Game unloads every container is gone, so drop whatever panels and drag
+        /// state are left rather than leave them drawn over the launcher.
+        /// </summary>
+        private void HandleSceneUnloaded(Scene scene)
+        {
+            if (scene.name != Scenes.Game)
+            {
+                return;
+            }
+
+            CleanupDrag();
+            UnbindContainerViewer();
+            _pendingAnchors.Clear();
+            _pendingBreadcrumbs.Clear();
+
+            // Panels whose container was destroyed before the close could run.
+            foreach (StoragePanelView view in new List<StoragePanelView>(_openPanels.Values))
+            {
+                view.RemoveFromHierarchy();
+            }
+
+            _openPanels.Clear();
+            _cascadeIndex = 0;
         }
 
         /// <summary>

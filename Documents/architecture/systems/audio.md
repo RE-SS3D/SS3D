@@ -100,9 +100,12 @@ sound *for a given listener*, which the server's "play clip X at position P" RPC
   does, so it clears its own `_lastResolvedAreaId`/`_currentTrackId` when `LocalPlayerObjectChanged`
   reports no body — otherwise ambience loops the last live area's track forever with nothing left to
   poll, and a fresh map's `AreaId`s can numerically collide with the old ones. `PersonalAudioSubSystem`
-  sidesteps this the way `ScreenEffectsSubSystem` does: it never watches for disconnect itself — the
-  driving consumer (`HumanHealthController.ClearScreenEffectsIfDriving`, same call site as the
-  screen-effect clear) zeroes the intensity on ownership loss instead.
+  used to trust its driving consumers alone (`HumanHealthController.ClearScreenEffectsIfDriving`), but
+  stamina never pushes a final zero and the health clear skipped internals, so breathing kept looping
+  under the launcher after Leave. It now zeroes every target when `LocalPlayerObjectChanged` names a
+  different (or no) body, and stops every source outright on `SceneManager.sceneUnloaded` for Game.
+  Do not rely on `LocalPlayerObjectChanged(false)` alone at session end: `Entity.OnDestroyed` checks
+  `IsOwner`, which is already false by then.
 - **`PlayAudioSource` reaches only the observers present at that moment.** A loop started that way
   (machine hum, generator) is silent for late joiners and clients re-entering AOI. Persist the state in
   a `BufferLast` ObserversRpc that calls `PlayAudioSourceLocal`; and call `PlayAudioSource` /

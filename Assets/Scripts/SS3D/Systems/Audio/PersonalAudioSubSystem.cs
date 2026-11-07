@@ -3,7 +3,9 @@ using Coimbra.Services.PlayerLoopEvents;
 using SS3D.Core.Behaviours;
 using SS3D.Data;
 using SS3D.Data.Generated;
+using SS3D.Systems.Entities.Events;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace SS3D.Systems.Audio
 {
@@ -40,6 +42,7 @@ namespace SS3D.Systems.Audio
         private float _internalsTarget;
         private float _calmBreathingTarget;
         private float _nextAlertCueTime;
+        private GameObject _localPlayerObject;
 
         protected override void OnAwake()
         {
@@ -52,6 +55,77 @@ namespace SS3D.Systems.Audio
             _alertCueSource = BuildPersonalSource("AlertCueSource", loop: false);
 
             AddHandle(UpdateEvent.AddListener(HandleUpdate));
+            AddHandle(LocalPlayerObjectChanged.AddListener(HandleLocalPlayerObjectChanged));
+            SceneManager.sceneUnloaded += HandleSceneUnloaded;
+        }
+
+        protected override void OnDestroyed()
+        {
+            SceneManager.sceneUnloaded -= HandleSceneUnloaded;
+            base.OnDestroyed();
+        }
+
+        /// <summary>
+        /// The domain mappers only push on change, so a body that goes away (despawn, ghosting,
+        /// leaving the round) never pushes its last zero. Whoever drives the next body re-pushes
+        /// its own intensities, so dropping the old ones here is safe.
+        /// </summary>
+        private void HandleLocalPlayerObjectChanged(ref EventContext context, in LocalPlayerObjectChanged e)
+        {
+            GameObject next = e.PlayerHasObject ? e.PlayerObject : null;
+            if (next == _localPlayerObject)
+            {
+                return;
+            }
+
+            _localPlayerObject = next;
+            ClearTargets();
+        }
+
+        /// <summary>
+        /// Leaving to the main menu unloads Game. This subsystem lives across scenes, so cut every
+        /// loop dead there rather than letting it fade (or never fade) under the launcher.
+        /// </summary>
+        private void HandleSceneUnloaded(Scene scene)
+        {
+            if (scene.name != Scenes.Game)
+            {
+                return;
+            }
+
+            _localPlayerObject = null;
+            SilenceAll();
+        }
+
+        /// <summary>Zeroes every loop target; the sources fade out and stop on their own.</summary>
+        public void ClearTargets()
+        {
+            _heartbeatTarget = 0f;
+            _staminaBreathingTarget = 0f;
+            _healthBreathingTarget = 0f;
+            _breathingTarget = 0f;
+            _internalsTarget = 0f;
+            _calmBreathingTarget = 0f;
+        }
+
+        /// <summary>Zeroes every loop target and stops every source immediately.</summary>
+        public void SilenceAll()
+        {
+            ClearTargets();
+            AudioSource[] sources = { _heartbeatSource, _breathingSource, _internalsSource, _calmBreathingSource, _alertCueSource };
+            foreach (AudioSource source in sources)
+            {
+                if (source == null)
+                {
+                    continue;
+                }
+
+                source.Stop();
+                if (source.loop)
+                {
+                    source.volume = 0f;
+                }
+            }
         }
 
         private AudioSource BuildPersonalSource(string name, bool loop = true)

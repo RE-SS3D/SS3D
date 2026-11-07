@@ -960,6 +960,11 @@ namespace SS3D.UI.MainHud
             }
 
             Item item = container.Items.FirstOrDefault();
+            if (TryStoreHeldItemIn(item))
+            {
+                return;
+            }
+
             if (item != null && _view != null)
             {
                 Rect bound = _view.GetGearSlotWorldBound(slot);
@@ -988,6 +993,11 @@ namespace SS3D.UI.MainHud
             }
 
             Item item = container.Items.FirstOrDefault();
+            if (TryStoreHeldItemIn(item))
+            {
+                return;
+            }
+
             if (item != null && _view?.Equipment != null)
             {
                 Rect bound = _view.Equipment.GetSlotWorldBound(slot);
@@ -998,6 +1008,35 @@ namespace SS3D.UI.MainHud
             }
 
             _inventory.ClientInteractWithContainerSlot(container, Vector2Int.zero);
+        }
+
+        /// <summary>
+        /// Clicking a worn bag with something in the active hand puts it in the bag, the same as
+        /// clicking the bag in the world. Returns false (caller opens the bag) when the hand is
+        /// empty, the item has no storage of its own, or the held item doesn't fit.
+        /// </summary>
+        private bool TryStoreHeldItemIn(Item wornItem)
+        {
+            Hand hand = _hands?.SelectedHand;
+            Item held = hand != null ? hand.ItemInHand : null;
+            if (held == null
+                || held == wornItem
+                || !TryGetStorageContainerOnItem(wornItem, out AttachedContainer storage)
+                || storage.GetComponentInParent<Item>() == held
+                || !storage.IsAccessibleBy(_inventory)
+                || !storage.TryFindPositionFor(held, out Vector2Int position))
+            {
+                return false;
+            }
+
+            IStorageAccessGate gate = storage.GetComponentInParent<IStorageAccessGate>();
+            if (gate != null && !gate.AllowsStorageAccess)
+            {
+                return false;
+            }
+
+            _inventory.ClientTransferItem(held, position, storage);
+            return true;
         }
 
         /// <summary>

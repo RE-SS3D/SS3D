@@ -58,7 +58,8 @@
 .round-end__panel {
     position: absolute;
     top: 40px;
-    bottom: 112px;
+    /* Clears the bottom HUD (hands strip: 80px well + slot label + 20px gutter, about 120px). */
+    bottom: 140px;
     width: 760px;
     max-width: 92%;
     left: 50%;
@@ -533,10 +534,10 @@
     justify-content: center;
 }
 
-/* The reference reserves the bottom HUD at 720p and narrows the panel to 680px. */
+/* At 720p the panel narrows to 680px. The HUD keeps its pixel size, so the bottom reserve does not shrink. */
 .round-end--compact .round-end__panel {
     top: 16px;
-    bottom: 84px;
+    bottom: 136px;
     width: 680px;
 }
 .round-end--compact .round-end__banner {
