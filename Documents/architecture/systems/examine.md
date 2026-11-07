@@ -7,7 +7,7 @@
 
 ## Overview
 
-Hover tooltips and shift-hold detailed examine panels, range-gated off the [selection](selection.md) system's current `IExaminable`. Supports text and image panel variants. Localization uses a unified Examine string table and `LocalizedTextService`; dynamic content via `IExamineContentProvider` (multi-provider on one GameObject) and character health builders.
+Hover tooltips and shift-hold detailed examine panels, range-gated off the [selection](selection.md) system's current `IExaminable`. A target under the FOV mask counts as no target ([design §2](../../design/examine.md): what you can see, you can examine): `ExamineOverlaySubSystem` asks `VisionSubSystem.IsVisible` about the point under the cursor, on hover change and every 0.1 s, since doors and walking change visibility with no selection event. Supports text and image panel variants. Localization uses a unified Examine string table and `LocalizedTextService`; dynamic content via `IExamineContentProvider` (multi-provider on one GameObject) and character health builders.
 
 Glance examine (hover + Shift-hold) is **not** an `IInteraction` — `ExaminableBase` is read by `ExamineSubSystem` from the current selection. Opening another character's paperdoll **is** the **Search** interaction (`SearchInteraction` / `HandSearchExtension` on hand prefabs; icon `InteractionIcons.Search`).
 
@@ -62,10 +62,12 @@ Paths are under `Assets/Scripts/SS3D/Systems/` unless they start with `UI/` (`As
 - **Clothing pick hides CHARACTER:** walk ancestors via `CharacterExamineTargetUtility`.
 - **Zone severity for remote examine** reads synced `HealthDebugDetail` (name is historical) — do not expand `HealthSnapshot` just for examine lines.
 - **No `box-shadow` in USS:** UI Toolkit rejects it.
+- **The pick pass ignores the FOV mask:** selection still reports targets under the black, so anything showing hover information has to ask `VisionSubSystem.IsVisible`. Do not gate examine with `LineOfSight`: it stops at windows, which the FOV sees through, and at furniture, which it doesn't, so it would disagree with the screen.
 
 ## Tests
 
-- EditMode: `ExamineContentResolverTests`, `ExamineCanonicalKeyGeneratorTests`, `CharacterExamineHealthBuilderTests`, `CharacterExamineContentBuilderTests`, `CharacterExamineSlotContainerMapTests`, `CharacterLootUtilityTests`, `SearchInteractionTests`.
+- EditMode: `ExamineContentResolverTests`, `ExamineCanonicalKeyGeneratorTests`, `CharacterExamineHealthBuilderTests`, `CharacterExamineContentBuilderTests`, `CharacterExamineSlotContainerMapTests`, `CharacterLootUtilityTests`, `SearchInteractionTests`, `VisionFovTests` (FOV depth lookup).
+- PlayMode: `VisionScenarios` (`IsVisible` against real walls).
 - AssetAudit: `ExamineDataTests`.
 
 ## Depends on / Used by

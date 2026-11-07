@@ -61,6 +61,21 @@ namespace SS3D.Systems.Vision
         /// </summary>
         private const int MaxOccluderSkips = 64;
 
+        /// <summary>Radial slack added in <c>VisionSampleWallDepth</c> (Vision.hlsl). Keep the two equal.</summary>
+        public const float ShaderDepthSlack = 0.05f;
+
+        // With ShaderDepthSlack, 0.45 m into the occluder, about its centre line. Colliders are far
+        // thicker than what they draw: a wall's face is 0.28 m behind its near collider face and
+        // an airlock's far face 0.57 m past it, so this lights near faces and hides far ones.
+        private const float OccluderSlackPerpendicular = 0.4f;
+
+        // Slack for a ray that glances along the wall, where a fixed depth would need a long ray.
+        // Also the most any ray gets.
+        private const float OccluderSlackMax = 1.1f;
+
+        // A collider thinner than this along the hit normal is a jamb cap, not the wall's thickness.
+        private const float ThinOccluder = 0.25f;
+
         [SerializeField]
         [Tooltip("Fallback cast origin offset when the target has no Entity.ViewPoint")]
         private Vector3 detectionOffset = Vector3.zero;
@@ -99,6 +114,10 @@ namespace SS3D.Systems.Vision
         private static readonly ProfilerMarker PointsPerformanceMarker = new("Vision.ViewPoints");
 
         private bool _clientVisionInitialized;
+
+        // Pose of the rays behind _depthBuffer, for answering IsVisible between casts.
+        private Vector3 _castCenter;
+        private float _castYaw;
 
         /// <summary>
         /// When true, FOV composite is dropped (map editor / other meta views). Cleared by the owner.
@@ -223,6 +242,47 @@ namespace SS3D.Systems.Vision
             Shader.SetGlobalTexture("_VisionMap", Texture2D.blackTexture);
         }
 
+        /// <summary>
+        /// False when the FOV mask hides <paramref name="worldPoint"/>, using the depths the mask
+        /// draws from so gameplay agrees with what is on screen. Always true with no mask showing:
+        /// ghosts, the map editor, and before the first cast.
+        /// </summary>
+        public bool IsVisible(Vector3 worldPoint)
+        {
+            if (!VisionRenderContext.Enabled || _depthBuffer == null)
+                return true;
+
+            return IsWithinDepths(_depthBuffer, stepCount, viewRange, viewConeWidth, _castCenter, _castYaw, worldPoint);
+        }
+
+        /// <summary>
+        /// CPU side of <c>VisionIsVisibleWorld</c> in Vision.hlsl. Reads the nearest bin rather than
+        /// filtering, so the two can differ by a bin (a third of a degree) along a mask edge.
+        /// </summary>
+        public static bool IsWithinDepths(
+            float[] depths,
+            int count,
+            float range,
+            float coneWidth,
+            Vector3 center,
+            float yaw,
+            Vector3 worldPoint)
+        {
+            Vector2 offset = new(worldPoint.x - center.x, worldPoint.z - center.z);
+            float distance = offset.magnitude;
+
+            float angle = Mathf.Atan2(offset.x, offset.y) * Mathf.Rad2Deg;
+            float fromConeStart = Mathf.Repeat(angle - yaw + (coneWidth * 0.5f), 360f);
+
+            // Same bubble as the shader: a point this close shows even outside a narrow cone.
+            const float alwaysInConeDistance = 1f;
+            if (fromConeStart >= coneWidth)
+                return distance <= alwaysInConeDistance;
+
+            int bin = Mathf.Clamp(Mathf.FloorToInt(fromConeStart / coneWidth * count), 0, count - 1);
+            return distance <= (depths[bin] * range) + ShaderDepthSlack;
+        }
+
         public Vector3 DirectionFromAngle(float angleInDegrees, bool angleIsGlobal)
         {
             if (!angleIsGlobal && target != null)
@@ -266,6 +326,8 @@ namespace SS3D.Systems.Vision
             float stepAngleSize = viewConeWidth / stepCount;
             float halfCone = viewConeWidth * 0.5f;
             float yaw = target.eulerAngles.y;
+            _castCenter = origin;
+            _castYaw = yaw;
 
             // Sample bin centers so bilinear UV lookups align with ray angles (reduces
             // crawling vertical stripes when rotating past flat walls).
@@ -319,10 +381,6 @@ namespace SS3D.Systems.Vision
             if (resultArray.Length < count)
                 throw new ArgumentException("Results can't be smaller than count", nameof(resultArray));
 
-            // Push past the collider hit so the occluder's own mesh (often slightly behind the
-            // collider) stays visible. Without this, walls paint black while still correctly
-            // hiding everything beyond them.
-            const float occluderSurfaceBias = 0.75f;
             const float skin = 0.05f;
 
             QueryParameters query = new(obstacleMask, false, QueryTriggerInteraction.Ignore, false);
@@ -375,7 +433,9 @@ namespace SS3D.Systems.Vision
                     Collider collider = hit.collider;
                     if (collider != null && IsVisionOccluder(collider))
                     {
-                        float visibleDistance = Mathf.Min(distanceFromOrigin + occluderSurfaceBias, viewRange);
+                        Vector3 normal = OcclusionNormal(hit.normal, collider.bounds.size);
+                        float slack = OccluderSlack(_rayDirections[ray], normal);
+                        float visibleDistance = Mathf.Min(distanceFromOrigin + slack, viewRange);
                         resultArray[ray] = new ViewCastInfo(
                             true,
                             origin + (_rayDirections[ray] * visibleDistance),
@@ -393,6 +453,38 @@ namespace SS3D.Systems.Vision
 
                 activeCount = nextActive;
             }
+        }
+
+        /// <summary>
+        /// How far past a collider hit a ray stays lit, so the occluder's own mesh (well behind the
+        /// collider) does not paint black. A fixed depth into the wall along
+        /// <paramref name="occluderNormal"/>, so a glancing ray gets more length, which keeps the
+        /// recessed faces of a wall you hug lit while what is behind it stays hidden.
+        /// </summary>
+        public static float OccluderSlack(Vector3 rayDirection, Vector3 occluderNormal)
+        {
+            float cosine = Mathf.Abs(Vector3.Dot(rayDirection, occluderNormal));
+            if (cosine * OccluderSlackMax <= OccluderSlackPerpendicular)
+                return OccluderSlackMax;
+
+            return OccluderSlackPerpendicular / cosine;
+        }
+
+        /// <summary>
+        /// The axis to measure a hit's depth along. A door jamb's cap is thin along the wall, so a
+        /// ray hitting its side gets a normal that runs along the wall: measured that way, slack
+        /// would either cross the wall behind it or black out the wall beside the door. Such a hit
+        /// uses the other horizontal axis, the wall's thickness. Tile occluders are axis-aligned,
+        /// so <paramref name="occluderSize"/> is the collider's world bounds.
+        /// </summary>
+        public static Vector3 OcclusionNormal(Vector3 hitNormal, Vector3 occluderSize)
+        {
+            bool alongX = Mathf.Abs(hitNormal.x) >= Mathf.Abs(hitNormal.z);
+            float thickness = alongX ? occluderSize.x : occluderSize.z;
+            if (thickness >= ThinOccluder)
+                return hitNormal;
+
+            return alongX ? Vector3.forward : Vector3.right;
         }
 
         /// <summary>

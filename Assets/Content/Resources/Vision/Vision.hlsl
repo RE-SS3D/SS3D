@@ -96,9 +96,9 @@ float VisionSampleWallDepth(float2 viewUV)
     if (abs(neighborWorld - centerWorld) < 2.5)
         center = max(center, maxNeighbor);
 
-    // Extra slack so wall meshes that sit slightly past the collider / polar sample stay lit
-    // (especially at glancing angles where XZ depth and ray depth disagree a little).
-    return center * _ViewRange + 0.4;
+    // Covers rounding in the polar sample. The real occluder slack is angle-aware and lives in
+    // VisionSubSystem.OccluderSlack; this value is its ShaderDepthSlack, so keep the two equal.
+    return center * _ViewRange + 0.05;
 }
 
 bool VisionIsVisibleWorld(float3 posWorld)

@@ -11,7 +11,9 @@ using SS3D.Systems.Health;
 using SS3D.Systems.Inputs;
 using SS3D.Systems.Interactions;
 using SS3D.Systems.Inventory.Containers;
+using SS3D.Systems.Screens;
 using SS3D.Systems.Selection;
+using SS3D.Systems.Vision;
 using SS3D.UI.Shell;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -55,6 +57,8 @@ namespace SS3D.UI.Examine
         private IExaminable _cachedExaminable;
         private ExamineContent _cachedContent;
         private bool _hasCachedContent;
+        private bool _targetHidden;
+        private float _nextVisibilityCheck;
         private bool _examineEventsBound;
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
@@ -118,6 +122,13 @@ namespace SS3D.UI.Examine
             if (_inputSystem == null)
             {
                 SubSystems.TryGet(out _inputSystem);
+            }
+
+            // The hover target can leave the FOV with no selection change: a door shuts, or the
+            // player walks behind a wall.
+            if (Time.unscaledTime >= _nextVisibilityCheck && UpdateTargetVisibility())
+            {
+                RefreshGenericDisplay();
             }
 
             bool detailedHeld = IsDetailedExamineHeld();
@@ -236,6 +247,8 @@ namespace SS3D.UI.Examine
                 _currentExaminable = characterExaminable;
                 _hoveredCharacterInventory = inventory;
             }
+
+            UpdateTargetVisibility();
 
             if (!EnsureViews())
             {
@@ -575,7 +588,7 @@ namespace SS3D.UI.Examine
             }
 
             // No-target Shift → self (examine.md §2 / health Tier 0+1).
-            if (_currentExaminable?.GetData() == null)
+            if (_targetHidden || _currentExaminable?.GetData() == null)
             {
                 if (IsDetailedExamineHeld()
                     && TryResolveLocalCharacter(out IExaminable selfExaminable, out HumanInventory selfInventory))
@@ -687,6 +700,47 @@ namespace SS3D.UI.Examine
             imageSize = data.DetailedImageSize;
             caption = content.Description;
             return true;
+        }
+
+        /// <summary>Re-reads whether the FOV hides the hover target. Returns true if that changed.</summary>
+        private bool UpdateTargetVisibility()
+        {
+            const float checkInterval = 0.1f;
+            _nextVisibilityCheck = Time.unscaledTime + checkInterval;
+
+            bool hidden = IsHoverPointHiddenByVision();
+            bool changed = hidden != _targetHidden;
+            _targetHidden = hidden;
+            return changed;
+        }
+
+        /// <summary>
+        /// Examine sees what the player sees (examine.md §2). Tests the point under the cursor, not
+        /// the object's center, so a long wall stays examinable where it shows. The pick pass does
+        /// not know about the FOV mask, so it still reports targets under the black.
+        /// </summary>
+        private bool IsHoverPointHiddenByVision()
+        {
+            if (_currentExaminable == null
+                || !SubSystems.TryGet(out VisionSubSystem vision)
+                || !SubSystems.TryGet(out SelectionSubSystem selection)
+                || !selection.TryGetCurrentSelectable(out Selectable selectable))
+            {
+                return false;
+            }
+
+            Camera camera = null;
+            if (SubSystems.TryGet(out CameraSubSystem cameras) && cameras.PlayerCamera != null)
+            {
+                camera = cameras.PlayerCamera.GetComponent<Camera>();
+            }
+
+            if (!SelectionTargetUtility.TryResolveInteractionPoint(camera, selectable, out Vector3 point, out _))
+            {
+                point = selectable.PickWorldCenter;
+            }
+
+            return !vision.IsVisible(point);
         }
 
         private bool IsWithinDetailedImageRange(IExaminable examinable, ExamineData data)
