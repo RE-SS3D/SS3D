@@ -352,8 +352,8 @@ MonoBehaviour:
   _networkObjectCache: {fileID: 6348062478285535548}
   _asset: {fileID: 11400000, guid: d81d46f903aad014aa4728a8b47ab7ea, type: 2}
   _name: Boombox
-  _weight: 1
-  _sizeClass: 2
+  _weight: 3
+  _sizeClass: 3
   _maxStackSize: 1
   _stackCount: 1
   _startingTraits: []

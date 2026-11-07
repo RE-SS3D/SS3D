@@ -31,12 +31,14 @@ namespace SS3D.Systems.Inventory.Containers.Editor
 
         private static readonly Target[] Targets =
         {
-            // Design inventory-storage.md §12: backpack 6 slots, small-max.
-            new("Assets/Content/WorldObjects/Items/Clothing/Backpack.prefab", 3, 2, SizeClass.Normal, 20f),
-            new("Assets/Content/WorldObjects/Items/Clothing/Toolbelt.prefab", 4, 1, SizeClass.Small, 10f),
-            new("Assets/Content/WorldObjects/Furniture/Storage/Lockers/Locker.prefab", 4, 4, SizeClass.Bulky, 80f),
-            new("Assets/Content/WorldObjects/Furniture/Storage/Lockers/LockerSecure.prefab", 4, 4, SizeClass.Bulky, 80f),
-            new("Assets/Content/WorldObjects/Furniture/Storage/Lockers/SecurityLocker.prefab", 4, 4, SizeClass.Bulky, 80f),
+            // plans/item-size-weight-balance.plan.md: backpack 4x3 takes Normal (it is a Bulky item itself, so
+            // bags never nest in bags), toolbelt 5x1 Small, lockers take anything including full gas tanks.
+            // Medkit and toolbox grids live in ItemSizeWeightTable.Containers: they are openable and keep their flags.
+            new("Assets/Content/WorldObjects/Items/Clothing/Backpack.prefab", 4, 3, SizeClass.Normal, 25f),
+            new("Assets/Content/WorldObjects/Items/Clothing/Toolbelt.prefab", 5, 1, SizeClass.Small, 6f),
+            new("Assets/Content/WorldObjects/Furniture/Storage/Lockers/Locker.prefab", 4, 4, SizeClass.Huge, 80f),
+            new("Assets/Content/WorldObjects/Furniture/Storage/Lockers/LockerSecure.prefab", 4, 4, SizeClass.Huge, 80f),
+            new("Assets/Content/WorldObjects/Furniture/Storage/Lockers/SecurityLocker.prefab", 4, 4, SizeClass.Huge, 80f),
         };
 
         /// <summary>BatchMode: <c>-executeMethod SS3D.Systems.Inventory.Containers.Editor.StorageContainerPrefabSetup.HookUpBatch</c>

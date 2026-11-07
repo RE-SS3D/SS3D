@@ -185,8 +185,8 @@ MonoBehaviour:
   _networkObjectCache: {fileID: 7970185317444620997}
   _asset: {fileID: 11400000, guid: cb8a18ff6b582ec45a3aa1f689a18564, type: 2}
   _name: Flashlight blue
-  _weight: 1
-  _sizeClass: 2
+  _weight: 0.4
+  _sizeClass: 1
   _maxStackSize: 1
   _stackCount: 1
   _startingTraits: []

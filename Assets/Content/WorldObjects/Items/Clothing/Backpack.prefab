@@ -227,8 +227,8 @@ MonoBehaviour:
   _networkObjectCache: {fileID: 2090837846029440516}
   _asset: {fileID: 11400000, guid: 9435365903a79d64184af9ee71e060e5, type: 2}
   _name: Backpack
-  _weight: 1
-  _sizeClass: 2
+  _weight: 0.6
+  _sizeClass: 3
   _maxStackSize: 1
   _stackCount: 1
   _startingTraits:
@@ -436,9 +436,9 @@ MonoBehaviour:
   _displays: []
   _numberDisplay: 0
   _displayAsSlotInUI: 0
-  _size: {x: 3, y: 2}
+  _size: {x: 4, y: 3}
   _hideItems: 1
   _type: 0
   _startFilter: {fileID: 0}
   _maxSizeClass: 2
-  _maxWeight: 20
+  _maxWeight: 25

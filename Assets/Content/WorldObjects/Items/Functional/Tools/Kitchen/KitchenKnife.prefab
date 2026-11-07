@@ -275,8 +275,8 @@ MonoBehaviour:
   _networkObjectCache: {fileID: 261983550380735922}
   _asset: {fileID: 11400000, guid: f5a2860feace1434ea982b06d2445f9f, type: 2}
   _name: Kitchen knife
-  _weight: 1
-  _sizeClass: 2
+  _weight: 0.5
+  _sizeClass: 1
   _maxStackSize: 1
   _stackCount: 1
   _startingTraits: []

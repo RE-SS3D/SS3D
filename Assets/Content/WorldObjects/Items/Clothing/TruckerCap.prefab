@@ -254,7 +254,8 @@ MonoBehaviour:
   _networkObjectCache: {fileID: -1921154974467191097}
   _asset: {fileID: 11400000, guid: e53ebba96eeba474e8478131c8d24085, type: 2}
   _name: Trucker Cap
-  _weight: 1
+  _weight: 0.2
+  _sizeClass: 1
   _startingTraits:
   - {fileID: 11400000, guid: 4fd47d47c95ea9d4bbfa168e63538ba1, type: 2}
   _rigidbody: {fileID: 950155378762729286}

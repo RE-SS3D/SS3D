@@ -91,7 +91,8 @@ namespace SS3D.Systems.Inventory.Containers.Editor
                 var itemSo = new SerializedObject(item);
                 itemSo.FindProperty("_name").stringValue = type == ClothType.Head ? "Syndicate Hardsuit Helmet" : "Syndicate Hardsuit";
                 itemSo.FindProperty("_asset").objectReferenceValue = reference;
-                itemSo.FindProperty("_weight").floatValue = type == ClothType.Head ? 2f : 8f;
+                itemSo.FindProperty("_weight").floatValue = ItemSizeWeightTable.WeightOf("Clothing/" + name);
+                itemSo.FindProperty("_sizeClass").enumValueIndex = (int)ItemSizeWeightTable.SizeOf("Clothing/" + name);
                 var traits = itemSo.FindProperty("_startingTraits"); traits.arraySize = 1; traits.GetArrayElementAtIndex(0).objectReferenceValue = trait;
                 itemSo.FindProperty("AttachmentPoint").objectReferenceValue = attachment.transform;
                 itemSo.FindProperty("AttachmentPointAlt").objectReferenceValue = attachment.transform;
@@ -155,7 +156,8 @@ namespace SS3D.Systems.Inventory.Containers.Editor
                 var itemSo = new SerializedObject(root.GetComponent<Item>());
                 itemSo.FindProperty("_name").stringValue = "Syndicate Magboots";
                 itemSo.FindProperty("_asset").objectReferenceValue = reference;
-                itemSo.FindProperty("_weight").floatValue = 2f;
+                itemSo.FindProperty("_weight").floatValue = ItemSizeWeightTable.WeightOf("Clothing/" + name);
+                itemSo.FindProperty("_sizeClass").enumValueIndex = (int)ItemSizeWeightTable.SizeOf("Clothing/" + name);
                 itemSo.FindProperty("AttachmentPoint").objectReferenceValue = attachment.transform;
                 itemSo.FindProperty("AttachmentPointAlt").objectReferenceValue = attachment.transform;
                 itemSo.ApplyModifiedPropertiesWithoutUndo();

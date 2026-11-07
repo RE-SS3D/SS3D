@@ -274,7 +274,8 @@ MonoBehaviour:
   _networkObjectCache: {fileID: -2900402353996906960}
   _asset: {fileID: 11400000, guid: 8ec2a780fae01344a9431a9cb06d8a7c, type: 2}
   _name: Brute patch
-  _weight: 1
+  _weight: 0.1
+  _sizeClass: 0
   _startingTraits: []
   _rigidbody: {fileID: 8913767733420869930}
   AttachmentPoint: {fileID: 3486532436751009279}

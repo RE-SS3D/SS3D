@@ -194,8 +194,8 @@ MonoBehaviour:
   _networkObjectCache: {fileID: 1602098408367427586}
   _asset: {fileID: 11400000, guid: 57ac37b5fd825134a8d8d08b9d87ba70, type: 2}
   _name: Micro Laser
-  _weight: 1
-  _sizeClass: 2
+  _weight: 0.2
+  _sizeClass: 1
   _maxStackSize: 1
   _stackCount: 1
   _startingTraits: []

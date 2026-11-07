@@ -222,7 +222,8 @@ MonoBehaviour:
   _networkObjectCache: {fileID: 7421556062366613563}
   _asset: {fileID: 11400000, guid: 7514f2bc5fd84a14095929761da0a4dd, type: 2}
   _name: Jackboots
-  _weight: 1
+  _weight: 1.2
+  _sizeClass: 2
   _startingTraits:
   - {fileID: 11400000, guid: c753b1913c89a5745806c17b77d57b6d, type: 2}
   - {fileID: 11400000, guid: 144a9ec15419baf49ba8c376f97628c6, type: 2}

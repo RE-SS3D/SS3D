@@ -170,8 +170,8 @@ MonoBehaviour:
   _networkObjectCache: {fileID: 2527334834019670621}
   _asset: {fileID: 11400000, guid: 07875cb9b07567f608c409b35f917fd6, type: 2}
   _name: Syndicate Hardsuit
-  _weight: 8
-  _sizeClass: 2
+  _weight: 6
+  _sizeClass: 3
   _maxStackSize: 1
   _stackCount: 1
   _startingTraits:

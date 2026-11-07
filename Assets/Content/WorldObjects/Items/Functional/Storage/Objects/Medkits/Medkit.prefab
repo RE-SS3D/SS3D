@@ -66,12 +66,12 @@ MonoBehaviour:
   _displays: []
   _numberDisplay: 0
   _displayAsSlotInUI: 0
-  _size: {x: 6, y: 6}
+  _size: {x: 3, y: 2}
   _hideItems: 1
   _type: -1
   _startFilter: {fileID: 0}
-  _maxSizeClass: 4
-  _maxWeight: 20
+  _maxSizeClass: 2
+  _maxWeight: 6
 --- !u!114 &57976260605683709
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -435,7 +435,7 @@ MonoBehaviour:
   _networkObjectCache: {fileID: 3258417366846669140}
   _asset: {fileID: 11400000, guid: d9cc887ee78f4f64f9c399b8aaffe9f9, type: 2}
   _name: Medkit
-  _weight: 1
+  _weight: 0.6
   _sizeClass: 2
   _maxStackSize: 1
   _stackCount: 1

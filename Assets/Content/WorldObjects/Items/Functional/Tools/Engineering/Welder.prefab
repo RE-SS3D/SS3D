@@ -274,8 +274,8 @@ MonoBehaviour:
   _networkObjectCache: {fileID: 7923090970201565529}
   _asset: {fileID: 11400000, guid: 715777b8c0a0f1b4cb29ee4dab0326e4, type: 2}
   _name: Welder
-  _weight: 1
-  _sizeClass: 2
+  _weight: 0.5
+  _sizeClass: 1
   _maxStackSize: 1
   _stackCount: 1
   _startingTraits:

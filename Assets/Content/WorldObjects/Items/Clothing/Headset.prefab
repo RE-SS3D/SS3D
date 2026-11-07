@@ -254,8 +254,8 @@ MonoBehaviour:
   _networkObjectCache: {fileID: 3346295071430447723}
   _asset: {fileID: 11400000, guid: f2914f9670967764e93aa1b262968344, type: 2}
   _name: Headset
-  _weight: 1
-  _sizeClass: 2
+  _weight: 0.2
+  _sizeClass: 1
   _maxStackSize: 1
   _stackCount: 1
   _startingTraits:

@@ -273,8 +273,8 @@ MonoBehaviour:
   _networkObjectCache: {fileID: 1602098408367427586}
   _asset: {fileID: 11400000, guid: 9e4b9aa465bc48d4faa9b53cd0132f11, type: 2}
   _name: screwdriver
-  _weight: 1
-  _sizeClass: 2
+  _weight: 0.2
+  _sizeClass: 1
   _maxStackSize: 1
   _stackCount: 1
   _startingTraits: []

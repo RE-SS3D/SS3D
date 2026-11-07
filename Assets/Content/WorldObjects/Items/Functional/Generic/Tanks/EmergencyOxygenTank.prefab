@@ -249,7 +249,7 @@ MonoBehaviour:
   _networkObjectCache: {fileID: 8767567404870203102}
   _asset: {fileID: 11400000, guid: 4f4a376e135b3e46dbe041dbca673357, type: 2}
   _name: Emergency Oxygen Tank
-  _weight: 1
+  _weight: 0.8
   _sizeClass: 1
   _maxStackSize: 1
   _stackCount: 1

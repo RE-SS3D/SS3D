@@ -21,13 +21,14 @@ namespace SS3D.Systems.Inventory.Containers.Editor
         private const string ItemsDatabase = "c2644d7b34e956743a0bc485e7ca5e37";
         private const float FullTankMoles = 45f;
         private const float EmergencyTankMoles = 9f;
-        private const float FullTankWeight = 5f;
-        private const float EmergencyTankWeight = 1f;
+        private const string FullOxygenEntry = "Functional/Generic/Tanks/OxygenTank";
+        private const string FullPlasmaEntry = "Functional/Generic/Tanks/PlasmaTank";
+        private const string EmergencyEntry = "Functional/Generic/Tanks/EmergencyOxygenTank";
 
         public static int SetupAll()
         {
-            Configure(Tanks + "OxygenTank.prefab", SizeClass.Huge, FullTankWeight, new GasTankMix { OxygenMoles = FullTankMoles });
-            Configure(Tanks + "PlasmaTank.prefab", SizeClass.Huge, FullTankWeight, new GasTankMix { PlasmaMoles = FullTankMoles });
+            Configure(Tanks + "OxygenTank.prefab", FullOxygenEntry, new GasTankMix { OxygenMoles = FullTankMoles });
+            Configure(Tanks + "PlasmaTank.prefab", FullPlasmaEntry, new GasTankMix { PlasmaMoles = FullTankMoles });
             ObjectAssetReference emergency = BuildEmergencyTank();
 
             GameObject mask = PrefabUtility.LoadPrefabContents(GasMaskPath);
@@ -55,14 +56,15 @@ namespace SS3D.Systems.Inventory.Containers.Editor
             return 4;
         }
 
-        private static void Configure(string path, SizeClass size, float weight, GasTankMix contents, string name = null)
+        /// <summary>Size and weight come from <see cref="ItemSizeWeightTable"/>; edit them there.</summary>
+        private static void Configure(string path, string tableEntry, GasTankMix contents, string name = null)
         {
             GameObject root = PrefabUtility.LoadPrefabContents(path);
             try
             {
-                SetSize(root, size);
+                SetSize(root, ItemSizeWeightTable.SizeOf(tableEntry));
                 var item = new SerializedObject(root.GetComponent<Item>());
-                item.FindProperty("_weight").floatValue = weight;
+                item.FindProperty("_weight").floatValue = ItemSizeWeightTable.WeightOf(tableEntry);
                 if (name != null) item.FindProperty("_name").stringValue = name;
                 item.ApplyModifiedPropertiesWithoutUndo();
 
@@ -122,7 +124,7 @@ namespace SS3D.Systems.Inventory.Containers.Editor
             }
             finally { PrefabUtility.UnloadPrefabContents(root); }
 
-            Configure(path, SizeClass.Small, EmergencyTankWeight, new GasTankMix { OxygenMoles = EmergencyTankMoles }, "Emergency Oxygen Tank");
+            Configure(path, EmergencyEntry, new GasTankMix { OxygenMoles = EmergencyTankMoles }, "Emergency Oxygen Tank");
 
             var db = DB.LoadAssetAtPath<SS3D.Data.AssetDatabases.AssetDatabase>("Assets/Content/Data/Databases/Items.asset");
             AddressableAssetSettingsDefaultObject.Settings.CreateOrMoveEntry(reference.Id, db.AssetGroup).address = name;

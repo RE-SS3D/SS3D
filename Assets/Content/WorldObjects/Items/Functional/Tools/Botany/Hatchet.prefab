@@ -275,7 +275,7 @@ MonoBehaviour:
   _networkObjectCache: {fileID: 1602098408367427586}
   _asset: {fileID: 11400000, guid: 2577eda4621dd6248b3c3813ef15ad76, type: 2}
   _name: hatchet
-  _weight: 1
+  _weight: 1.2
   _sizeClass: 2
   _maxStackSize: 1
   _stackCount: 1

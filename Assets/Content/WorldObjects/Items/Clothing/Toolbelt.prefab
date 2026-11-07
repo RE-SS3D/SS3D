@@ -227,8 +227,8 @@ MonoBehaviour:
   _networkObjectCache: {fileID: 7384563213340008115}
   _asset: {fileID: 11400000, guid: 9cf2801a7b335074190840fc9112d582, type: 2}
   _name: Belt
-  _weight: 1
-  _sizeClass: 2
+  _weight: 0.5
+  _sizeClass: 3
   _maxStackSize: 1
   _stackCount: 1
   _startingTraits:
@@ -436,9 +436,9 @@ MonoBehaviour:
   _displays: []
   _numberDisplay: 0
   _displayAsSlotInUI: 0
-  _size: {x: 4, y: 1}
+  _size: {x: 5, y: 1}
   _hideItems: 1
   _type: 0
   _startFilter: {fileID: 0}
   _maxSizeClass: 1
-  _maxWeight: 10
+  _maxWeight: 6

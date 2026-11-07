@@ -275,8 +275,8 @@ MonoBehaviour:
   _networkObjectCache: {fileID: 1773710978803455870}
   _asset: {fileID: 11400000, guid: 61cd16bb4793cd544836dea40a2450f8, type: 2}
   _name: Cable
-  _weight: 1
-  _sizeClass: 2
+  _weight: 0.3
+  _sizeClass: 1
   _maxStackSize: 1
   _stackCount: 1
   _startingTraits: []

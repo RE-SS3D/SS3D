@@ -200,8 +200,8 @@ MonoBehaviour:
   _networkObjectCache: {fileID: 4819234911439508660}
   _asset: {fileID: 11400000, guid: 50284e9bdc2ff2943ba806e8d5ce8f9f, type: 2}
   _name: 
-  _weight: 1
-  _sizeClass: 2
+  _weight: 0.1
+  _sizeClass: 0
   _maxStackSize: 1
   _stackCount: 1
   _startingTraits: []

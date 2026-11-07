@@ -255,7 +255,7 @@ MonoBehaviour:
   _networkObjectCache: {fileID: 6115335805774105745}
   _asset: {fileID: 11400000, guid: 4a50e327a934cd3438e1b88d2bb547cb, type: 2}
   _name: Facewear gas mask
-  _weight: 1
+  _weight: 0.5
   _sizeClass: 1
   _maxStackSize: 1
   _stackCount: 1

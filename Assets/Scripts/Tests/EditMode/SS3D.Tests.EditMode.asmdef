@@ -29,7 +29,8 @@
         "Unity.ResourceManager",
         "SS3D.Networking",
         "SS3D.Launcher",
-        "SS3D.UI.Shell"
+        "SS3D.UI.Shell",
+        "ContainerEditorAssembly"
     ],
     "includePlatforms": [
         "Editor"

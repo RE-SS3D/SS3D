@@ -274,7 +274,8 @@ MonoBehaviour:
   _networkObjectCache: {fileID: 885347571389710399}
   _asset: {fileID: 11400000, guid: e28b644ad26ceae45acf3ceb84b8cbff, type: 2}
   _name: Burnpatch
-  _weight: 1
+  _weight: 0.1
+  _sizeClass: 0
   _startingTraits: []
   _rigidbody: {fileID: 8913767733420869930}
   AttachmentPoint: {fileID: 3486532436751009279}

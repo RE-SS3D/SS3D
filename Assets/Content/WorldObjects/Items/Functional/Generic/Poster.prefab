@@ -273,7 +273,8 @@ MonoBehaviour:
   _networkObjectCache: {fileID: 1491149956516498634}
   _asset: {fileID: 11400000, guid: cd3268046db629240800ee48b64a9810, type: 2}
   _name: Poster
-  _weight: 1
+  _weight: 0.1
+  _sizeClass: 1
   _startingTraits: []
   _rigidbody: {fileID: 8712720992454278083}
   AttachmentPoint: {fileID: 104152118591794821}

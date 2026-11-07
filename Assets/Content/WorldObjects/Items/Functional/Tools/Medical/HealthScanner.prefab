@@ -276,8 +276,8 @@ MonoBehaviour:
   _networkObjectCache: {fileID: 261983550380735922}
   _asset: {fileID: 11400000, guid: 8b24dd8aaf23acb41b038d6e4394f749, type: 2}
   _name: Health Scanner
-  _weight: 1
-  _sizeClass: 2
+  _weight: 0.4
+  _sizeClass: 1
   _maxStackSize: 1
   _stackCount: 1
   _startingTraits: []

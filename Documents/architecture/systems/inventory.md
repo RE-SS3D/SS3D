@@ -17,7 +17,9 @@ Items, containers, hands, identification cards (`IDCard`, `PDA`), on-demand stor
 
 **Storage panel UI:** `StoragePanelHost` manages N simultaneous `StoragePanelView` panels. Opened when an *item that is itself storage* is clicked (backpack on back, bag in hand, world `ViewContainerInteraction`), via pocket hotkey / gear-strip **Pocket** well (`ToggleInternalClothing` → pockets), or nested click. Hand / gear / clothing slots do **not** open the 1-slot equip container — click equip/unequips (or selects hand) unless the held/worn item has its own `AttachedContainer`. Drag to another slot transfers; drag into the world (not over UI) places via `HumanInventory.ClientPlaceItemInWorld` (DropInteraction rules). Panel width follows container columns; header drag uses UITK pointer capture with the host on `InputInterface`. HUD slots register as `HudDropTarget` peers for panel↔HUD transfers.
 
-**Content storage prefabs:** Backpack (`3×2`, Normal, so weapons fit; the worked example in `inventory-storage.md` §12 still reads small-max), Toolbelt (`4×1`, Small), and Lockers (`4×4`, Bulky) each have a `Storage` child `AttachedContainer` (`HasUi`, not `DisplayAsSlotInUI`) plus root `ContainerInteractive`. Re-run **SS3D → Inventory → Run Content Prefab Recipes** (`InventoryContentPrefabRecipes` / `StorageContainerPrefabSetup`) if those flags drift.
+**Content storage prefabs:** Backpack (`4×3`, takes Normal, is itself a Bulky item so bags never nest in bags), Toolbelt (`5×1`, Small), and Lockers (`4×4`, Huge, so a full gas tank fits) each have a `Storage` child `AttachedContainer` (`HasUi`, not `DisplayAsSlotInUI`) plus root `ContainerInteractive`. Medkit (`3×2`, Normal) and toolbox (`4×2`, Bulky) are openable and keep their own flags; only their grid, ceiling and weight readout are set, from `ItemSizeWeightTable.Containers`. Re-run **SS3D → Inventory → Run Content Prefab Recipes** (`InventoryContentPrefabRecipes` / `StorageContainerPrefabSetup` / `ItemSizeWeightRecipe`) if those flags drift.
+
+**Item size and weight:** every handheld, wearable and material item has an explicit tier and weight from `ItemSizeWeightTable` (weight is roughly kg, per unit, a multiple of 0.1; the panel prints one decimal; stamina is full at 40). Organs, body parts and `Doodad` are untouched. Rubric is under Extension points.
 
 **Main HUD:** equipment/gear click = equip/unequip vs active hand, or open item storage if the worn item is a bag (with an item in the active hand that fits, the click stores it in the bag instead: `MainHudSubSystem.TryStoreHeldItemIn`); hands select active hand (and open held bag if any). Cross-surface drag via `StoragePanelHost.BeginHudDrag` / `EndHudDrag`. Two-hand firearms (M4) auto-route into the required hand on pickup/HUD drop and mark the off-hand well `inventory-slot--reserved` while wielded ([combat](combat.md)). Visibility: `ApplyVisibility` (local body + in-game round; ghosts hide the complete body HUD, with respawn restoring it; suppressed while [machine-interface](machine-interface.md) is open or the [map editor](tile.md) is open). Storage panels use the same MI suppress (`StoragePanelHost.ApplyMachineUiVisibility` — hide root, keep panels bound). Catalog via `Resources.Load` (**SS3D → Data → Rebuild All UI Catalogs**). **Equipment doll** has one **Gloves** slot (pair-of-hands icon) covering `GloveLeft`/`GloveRight`, like **Feet** for shoes. **Intent chip** tracks `IIntentProvider.CurrentIntent` (`F` and chip click → `RequestToggleIntent`); only the `F` hint shows until Ctrl/disarm and Alt/grab clicks exist. **Zone reticle:** Harm-intent only. `ZoneReticleDriver` composes one `ZoneReticleFrame` per tick (color priority Recharging > Valid > Idle; bracket recharge; connect cross flash; ranged accuracy **bloom** via `SetBloomInput`); `ZoneTargetReticle.Apply` is the only USS writer. Hidden in Help, over armed Tier 2–3 overlay, or when HUD suppressed.
 
@@ -44,7 +46,8 @@ Items, containers, hands, identification cards (`IDCard`, `PDA`), on-demand stor
 - `Assets/Scripts/SS3D/Systems/Inventory/Containers/AttachedContainerLock.cs` — ID-gated world lock
 - `Assets/Scripts/SS3D/Systems/Inventory/Containers/HumanInventory.cs` — on-person containers, `CarriedWeight`
 - `Assets/Scripts/SS3D/Systems/Inventory/Containers/Cloth.cs` / `ClothesDisplayer.cs` / `ClothingItemPresentation.cs` — worn body mesh + folded world/hand form
-- `Assets/Scripts/SS3D/Systems/Inventory/Containers/Editor/InventoryContentPrefabRecipes.cs` — **SS3D → Inventory → Run Content Prefab Recipes** (clothing + storage)
+- `Assets/Scripts/SS3D/Systems/Inventory/Containers/Editor/InventoryContentPrefabRecipes.cs` — **SS3D → Inventory → Run Content Prefab Recipes** (clothing + storage + size/weight)
+- `Assets/Scripts/SS3D/Systems/Inventory/Containers/Editor/ItemSizeWeightTable.cs` / `ItemSizeWeightRecipe.cs` — the size/weight source of truth and the recipe that applies it
 - `Assets/Scripts/SS3D/Systems/Inventory/Containers/Editor/ClothingPrefabSetup.cs` — clothing world presentation statics (tier B)
 - `Assets/Scripts/SS3D/Systems/Inventory/Containers/Editor/BodyPartContainerInteractiveStrip.cs` — strip head/torso world CI (via Human recipes)
 - `Assets/Scripts/SS3D/Systems/Inventory/Containers/Editor/HandsPrefabSetup.cs` — (re)wires `Hands.PlayerHands` + ensures `HandSearchExtension` (via Human recipes)
@@ -63,6 +66,17 @@ Items, containers, hands, identification cards (`IDCard`, `PDA`), on-demand stor
 
 ## Extension points
 
+- **New item:** add a row to `ItemSizeWeightTable.Entries` (path under `Items/`, tier, weight) and run **Run Content Prefab Recipes**; `ItemSizeWeightTableTests` fails for an `Item` prefab with no row (variants inherit their base's row and must not override it). Pick the tier and weight from this rubric. Edit the table, not the prefab: the recipe reapplies it.
+
+  | Tier | Reads as | Weight band | Examples |
+  |---|---|---|---|
+  | Tiny | fits a closed fist | 0.1-0.2 | ID card, patch, disk, glass shard |
+  | Small | pocket or belt tool | 0.1-0.8 | screwdriver, mask, soda can, power cell, emergency tank |
+  | Normal | one-handed, fits a backpack | 0.5-2.0 (weapons up to 3.5) | crowbar, medkit, jumpsuit, boots, sheets, every weapon |
+  | Bulky | needs a hand or a locker | at least 0.5 | toolbox, boombox, hardsuit, backpack |
+  | Huge | rides in suit storage or a hand | 5 and up | full gas tanks |
+
+  Loads are sized against the stamina cap of 40: everyday kit about 10%, EVA kit 40-50%, only deliberate hauling near 100%. Stack caps are not set here (weight is per unit).
 - Structural destruction calls `AttachedContainer.ReleaseForDestruction()` before clearing supported furniture: close viewers and release items despite removal locks. Do not apply it recursively to containers owned by stored items.
 
 - **New container-opening entry point:** `ContainerViewer.ShowContainerUI(container)` only — do not invent a second open path.
@@ -76,6 +90,10 @@ Items, containers, hands, identification cards (`IDCard`, `PDA`), on-demand stor
 - **World spawn/drop facing:** use `Item.GetWorldFacing(yaw)` (or `ComposeWorldFacing` with the prefab rest) — never yaw-only or `Quaternion.identity`, or long items (M4, knives, tools) stand upright. Map-editor place goes through `PlacedItemObject.Create` (composes rest); holograms use `ConstructionHologram.TargetWorldRotation`.
 
 ## Pitfalls
+
+- **Hand-edited sizes and weights revert:** `ItemSizeWeightRecipe` (and `GasTankSetup` / `SyndicateHardsuitSetup`, which now read the same table) reapply `ItemSizeWeightTable` on every **Run Content Prefab Recipes**, and `ItemSizeWeightTableTests.PrefabsMatchTable` fails on drift. Change the table, not the Inspector.
+- **Do not put the medkit or toolbox in `StorageContainerPrefabSetup.Targets`:** it forces `_isOpenable` off and `_onlyStoreWhenOpen` off, which breaks them. Their grids live in `ItemSizeWeightTable.Containers`.
+- **A Bulky item cannot go in a backpack:** that is intended (toolbox, backpack, toolbelt). Weapons are never Bulky: `TileMapTests.EveryWeaponFitsTheBackpack`. A new bag must be Bulky or it nests in itself.
 
 - **Held items attached at spawn keep a wrong angle (#158):** `ContainerItemDisplay` parents the item to a pivot under the hand bone and sets the pivot's world rotation from the character root. The offset from the hand is fixed at that moment, so an item attached before the Animator has posed the hand (loadout at spawn) keeps the bind-pose angle until it is picked up again. The display re-sets the grip in `LateUpdate` once the Animator is initialized (at most 60 frames later). Keep grips relative to the character root, and don't remove that re-set.
 
@@ -134,7 +152,7 @@ Items, containers, hands, identification cards (`IDCard`, `PDA`), on-demand stor
 
 ## Tests
 
-- EditMode `HumanPrefabIntegrityTests` covers hand order and head/torso interaction exclusions; container/stack/lock suites live under `Assets/Scripts/Tests/EditMode/`.
+- EditMode `HumanPrefabIntegrityTests` covers hand order and head/torso interaction exclusions; container/stack/lock suites live under `Assets/Scripts/Tests/EditMode/`. `ItemSizeWeightTableTests` covers table coverage, prefab-matches-table, tier bands, backpack/pocket/locker fit rules and the everyday/EVA encumbrance bands.
 - **Outstanding acceptance checklist:** compile in Unity; confirm HUD/storage catalogs resolve; exercise equip/unequip, both hands, panel↔panel and panel↔HUD transfers, nested/world containers and character Search; check carried weight, stamina encumbrance and overdraw oxygen debt in Play Mode.
 - Check pocket/container state across stop/start with a real remote client; headless smoke does not cover that round trip. No passing run is claimed by archiving the implementation plan.
 - Current feature gaps: stack splitting, bulk loot, item footprints, full FDU locks and persistent inventory. Runtime extension paths are above; design scope remains [inventory-storage](../../design/inventory-storage.md).

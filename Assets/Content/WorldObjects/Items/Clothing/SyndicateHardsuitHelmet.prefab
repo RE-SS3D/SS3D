@@ -170,7 +170,7 @@ MonoBehaviour:
   _networkObjectCache: {fileID: -1921154974467191097}
   _asset: {fileID: 11400000, guid: 08db124c308ef12468512352cb307c60, type: 2}
   _name: Syndicate Hardsuit Helmet
-  _weight: 2
+  _weight: 1.5
   _sizeClass: 2
   _maxStackSize: 1
   _stackCount: 1

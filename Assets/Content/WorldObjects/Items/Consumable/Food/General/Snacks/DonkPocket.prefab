@@ -273,7 +273,8 @@ MonoBehaviour:
   _networkObjectCache: {fileID: 6810177589324280848}
   _asset: {fileID: 11400000, guid: 5ebf0777f77019c469729ac80e12720b, type: 2}
   _name: DonkPocket
-  _weight: 1
+  _weight: 0.2
+  _sizeClass: 0
   _startingTraits: []
   _rigidbody: {fileID: 2748903352563225919}
   AttachmentPoint: {fileID: 8693672357343424519}

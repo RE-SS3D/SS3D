@@ -236,7 +236,7 @@ MonoBehaviour:
   _networkObjectCache: {fileID: 3705697856645950051}
   _asset: {fileID: 11400000, guid: ca4d73170d4d43419bc8e4f6f73b92b6, type: 2}
   _name: M4
-  _weight: 1
+  _weight: 3.5
   _sizeClass: 2
   _maxStackSize: 1
   _stackCount: 1
