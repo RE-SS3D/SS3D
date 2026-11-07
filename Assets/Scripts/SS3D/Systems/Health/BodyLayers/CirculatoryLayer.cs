@@ -1,15 +1,16 @@
-﻿using FishNet.Object;
-using SS3D.Core;
-using SS3D.Logging;
-using SS3D.Substances;
 using System.Collections.Generic;
 using System.Linq;
-
+using FishNet.Object;
+using SS3D.Core;
+using SS3D.Data;
+using SS3D.Data.Generated;
+using SS3D.Logging;
+using SS3D.Substances;
 
 namespace SS3D.Systems.Health
 {
     public class CirculatoryLayer : BodyLayer, IOxygenConsumer, IOxygenNeeder
-	{
+    {
         /// <summary>
         /// MilliMole quantity this layer can contain of oxygen.
         /// </summary>
@@ -34,33 +35,36 @@ namespace SS3D.Systems.Health
             private set => SetOxygenNeeded();
             get => _oxygenNeeded;
         }
-        
-		public override BodyLayerType LayerType
-		{
-			get { return BodyLayerType.Circulatory; }
-		}
 
-        /// <summary>
-        /// </summary>
-        /// <param name="bodyPart"></param>
+        public override BodyLayerType LayerType
+        {
+            get { return BodyLayerType.Circulatory; }
+        }
+
+        /// <param name="bodyPart">The bodypart this bodylayer belongs to.</param>
         /// <param name="oxygenReserveFactor">The oxygen reserve factor defines how much oxygen this bodylayer can store.
         /// In normal conditions, it should roughly be equal to the time in seconds of reserve</param>
-		public CirculatoryLayer(BodyPart bodyPart, float oxygenReserveFactor) : base(bodyPart)
-		{
+        public CirculatoryLayer(BodyPart bodyPart, float oxygenReserveFactor) : base(bodyPart)
+        {
             // Should approximately correspond to "OxygenSecondOfReserveInNormalConditions * oxygenReserveFactor"
             // seconds of oxygen reserve at 60 bmp heart rate.
             Init(bodyPart, oxygenReserveFactor);
         }
 
-		public CirculatoryLayer(BodyPart bodyPart,
-		DamagesContainer damages, float oxygenReserveFactor)
-		: base(bodyPart, damages)
-		{
+        /// <summary>
+        /// Initializes a new circulatory layer with existing damages and modifiers, and loads its base data from the asset database.
+        /// </summary>
+        public CirculatoryLayer(BodyPart bodyPart, Dictionary<DamageType, float> damages,
+            Dictionary<DamageType, float> susceptibilityModifiers, Dictionary<DamageType, float> resistanceModifiers,
+            float oxygenReserveFactor)
+            : base(bodyPart, damages, susceptibilityModifiers, resistanceModifiers)
+        {
             Init(bodyPart, oxygenReserveFactor);
         }
 
         private void Init(BodyPart bodyPart, float oxygenReserveFactor)
         {
+            _bodyLayerData = Assets.Get<BodyLayerData>(AssetDatabases.BodyLayers, BodyLayers.Circulatory);
             _oxygenMaxCapacity = BodyPart.Volume * HealthConstants.MilliMolesOfOxygenPerMillilitersOfBody * oxygenReserveFactor;
             _oxygenReserve = _oxygenMaxCapacity;
 
@@ -70,9 +74,9 @@ namespace SS3D.Systems.Health
             SetOxygenNeeded();
 
             RegisterToOxygenConsumerSystem();
-            if(bodyPart.TryGetComponent(out BleedingBodyPart bleedingBodyPart))
+            if (bodyPart.TryGetComponent(out BleedingBodyPart bleedingBodyPart))
             {
-                _bleedingHandler = bleedingBodyPart; 
+                _bleedingHandler = bleedingBodyPart;
             }
             else
             {
@@ -81,28 +85,13 @@ namespace SS3D.Systems.Health
             }
         }
 
-        protected override void SetDamagesContainer()
-        {
-            Damages[DamageType.Crush] = new (DamageType.Crush);
-            Damages[DamageType.Slash] = new (DamageType.Slash);
-            Damages[DamageType.Puncture] = new (DamageType.Puncture, 0f, 2f);
-            Damages[DamageType.Pressure] = new (DamageType.Pressure);
-            Damages[DamageType.Heat] = new (DamageType.Heat);
-            Damages[DamageType.Cold] = new (DamageType.Cold);
-            Damages[DamageType.Shock] = new (DamageType.Shock);
-            Damages[DamageType.Rad] = new (DamageType.Rad);
-            Damages[DamageType.Acid] = new (DamageType.Acid);
-            Damages[DamageType.Toxic] = new (DamageType.Toxic, 0f, 1.5f);
-            Damages[DamageType.Oxy] = new (DamageType.Oxy);
-        }
-
         /// <summary>
         /// Consume oxygen and inflict damages if not enough oxygen is present.
         /// </summary>
         [Server]
         public void ConsumeOxygen()
         {
-            float fractionOfNeededOxygen =(float)(_oxygenReserve / _oxygenNeeded);
+            float fractionOfNeededOxygen = (float)(_oxygenReserve / _oxygenNeeded);
 
             if (_oxygenNeeded > _oxygenReserve)
             {
@@ -115,8 +104,6 @@ namespace SS3D.Systems.Health
             }
         }
 
-
-
         /// <summary>
         /// Inflict Oxy damage to all body layers needing oxygen, in proportion of what's left in reserve.
         /// </summary>
@@ -124,18 +111,18 @@ namespace SS3D.Systems.Health
         [Server]
         private void InflictOxyDamage(float fractionOfNeededOxygen)
         {
-            var consumers = BodyPart.BodyLayers.OfType<IOxygenNeeder>();
+            IEnumerable<IOxygenNeeder> consumers = BodyPart.BodyLayers.OfType<IOxygenNeeder>();
             foreach (BodyLayer layer in consumers)
             {
                 BodyPart.TryInflictDamage(layer.LayerType,
-                    new(DamageType.Oxy, (1- fractionOfNeededOxygen) * HealthConstants.DamageWithNoOxygen));
+                    new DamageTypeQuantity(DamageType.Oxy, (1 - fractionOfNeededOxygen) * HealthConstants.DamageWithNoOxygen));
             }
         }
 
         [Server]
         public void ReceiveOxygen(double mole)
         {
-            if(_oxygenReserve + mole > _oxygenMaxCapacity)
+            if (_oxygenReserve + mole > _oxygenMaxCapacity)
             {
                 _oxygenReserve = _oxygenMaxCapacity;
             }
@@ -166,7 +153,7 @@ namespace SS3D.Systems.Health
             {
                 _bleedingHandler.isBleeding = true;
             }
-            else if ((_bleedingHandler.isBleeding && RelativeDamage == 0))
+            else if (_bleedingHandler.isBleeding && RelativeDamage == 0)
             {
                 _bleedingHandler.isBleeding = false;
             }

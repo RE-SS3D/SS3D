@@ -1,4 +1,4 @@
-﻿using FishNet.Connection;
+using FishNet.Connection;
 using FishNet.Object;
 using SS3D.Permissions;
 using System.Collections.Generic;
@@ -24,12 +24,12 @@ namespace SS3D.Systems.IngameConsoleSystem.Commands
             if (!ReceiveCheckResponse(args, out CheckArgsResponse response, out CalculatedValues values)) return response.InvalidArgs;
 
             string answer = "";
-            foreach(BodyLayer layer in values.BodyParts.First().BodyLayers)
+            foreach (BodyLayer layer in values.BodyParts.First().BodyLayers)
             {
                 answer += layer + ": ";
-                foreach (BodyDamageInfo damage in layer.Damages.DamagesInfo.Values)
+                foreach (KeyValuePair<DamageType, float> damage in layer.Damages)
                 {
-                    answer += damage.InjuryType + " " + damage.Quantity;
+                    answer += damage.Key + " " + damage.Value + " ";
                 }
                 answer += "\n";
             }
