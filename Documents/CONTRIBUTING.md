@@ -17,6 +17,9 @@ This fork maintains its own docs in `Documents/`, independent of upstream's GitB
 - [design/](design/) — gameplay design specs (what and why; owner-maintained)
 - [architecture/](architecture/) — dated implementation effort docs (how and in what order)
 - [plans/](plans/) — temporary implementation plans (updated when work ships)
+- [archive/](archive/) — shipped efforts and completed plans, for the *why* behind a design choice
+- [ROADMAP.md](../ROADMAP.md) — player-facing progress, generated from `milestones/` by
+  `python3 Tools/generate_roadmap.py` (never edit by hand; CI checks it)
 - [AGENTS.md](../AGENTS.md) — instructions for AI agents (docs-first navigation)
 
 If a design doc exists for the system you are changing, align with it or state the deviation in your PR.
@@ -38,15 +41,34 @@ Open the project in Unity Hub with editor **`6000.3.28f1`**. The game is written
 Upstream's [dev guide](https://ss3d.gitbook.io/dev-guide/) may still help with generic Unity and FishNet concepts,
 but project direction, milestones, and gameplay specs for this fork live in `Documents/` — not GitBook.
 
+### Editor toolbar
+
+The fork adds **Scene Switcher** (left), and **Launcher** toggle and **Network Settings** (right) to
+Unity's main toolbar. Unity hides custom toolbar elements until you enable them: if they're missing,
+right-click the toolbar and enable them under **Tools**.
+
+## Testing and conventions
+
+- **Tests**: EditMode and PlayMode suites live under `Assets/Scripts/Tests/`; run them from
+  **Window > General > Test Runner**. CI runs EditMode on every PR.
+- **Validation**: run targeted checks, `Testing/ui/validate.sh --steps compile,editmode` plus focused
+  steps for what you touched ([Testing/ui/README.md](../Testing/ui/README.md),
+  [testing philosophy](architecture/2026-11_testing-philosophy.md)).
+- **Code style**: `.editorconfig` (`_camelCase` private fields, `PascalCase` events, block-scoped
+  namespaces). Match the surrounding code.
+- **Versioning**: bump the save or protocol version when a change breaks old saves or clients; see
+  [game versioning](architecture/2026-10_game-versioning.md).
+
 ## Running The Game
 
-This fork does not publish official releases. Day-to-day: build from source in Unity. Maintainers can
-optionally cut a manual Windows prerelease via **Develop Release** (Linux / EditMode / smoke are
-opt-in) — see [architecture/2026-07_ci-develop-release-pipeline.md](architecture/2026-07_ci-develop-release-pipeline.md).
+To just play, download the latest [release](https://github.com/henkhooft/SS3D/releases/latest), unzip it and
+run `Game\SS3D.exe` (Linux: `Game/SS3D-Client`). The main menu hosts a local game or joins a server. CI
+publishes numbered releases as stable, and the in-game **Update and restart** or the bundled updater
+scripts keep an install current ([updater README](../Tools/updater/README.md)). The
+[testers' guide](../Builds/TESTERS.md) covers map building and bug reports.
 
-Running the game is still more involved than it should be. Until fork-specific run instructions land here, upstream's
-[running the project](https://ss3d.gitbook.io/dev-guide/guides/running-the-project) guide covers the basic host/join
-flow — steps may drift as this fork changes.
+For development, run the game from the Unity Editor. Maintainers publish a numbered release by running
+**Develop Release** manually; see [architecture/2026-07_ci-develop-release-pipeline.md](architecture/2026-07_ci-develop-release-pipeline.md).
 
 ## Questions
 

@@ -8,7 +8,7 @@ current review capacity supports.
 This document is the plain-language divergence log. It is updated periodically — not per-commit.
 For doc authoring conventions see [SKILL.md](SKILL.md).
 
-**Last updated:** 2026-10-31
+**Last updated:** 2026-11-07
 
 ---
 
@@ -19,7 +19,7 @@ For doc authoring conventions see [SKILL.md](SKILL.md).
 | Default branch | `develop` | `develop` |
 | Unity version | 2021.3.15f1 | **6000.3.28f1** (Unity 6) |
 | Render pipeline | Built-in | **URP 17** |
-| Release channel | Tagged releases on GitHub | **Manual + nightly prereleases** via `develop-release.yml` (Windows zip + bats by default; nightly Windows+Linux → `develop-nightly`; Linux / EditMode / smoke opt-in on dispatch) — day-to-day still build-from-source |
+| Release channel | Tagged releases on GitHub | **Stable numbered releases** (`vMAJOR.MINOR.PATCH`, Windows + Linux client/server) cut manually via `develop-release.yml`, with an in-game and scripted updater; nightlies (`develop-nightly`) and `develop-<suffix>` test cuts stay prereleases |
 | Documentation | GitBook ([ss3d.gitbook.io](https://ss3d.gitbook.io/dev-guide/)) | `Documents/design/` + `Documents/architecture/` + system maps + [milestones](milestones/INDEX.md) |
 | Commits ahead of upstream | — | **~1056** (1 behind as of 2026-10-31: upstream #1491 "Port Vision System") |
 | Files changed vs upstream | — | ~16.1k files, +1.65M / −322k lines |
@@ -66,6 +66,8 @@ Details and deferred work for each row live under [Shipped on `develop`](#shippe
 ### Presentation
 
 - [README.md](../README.md) and [CONTRIBUTING.md](CONTRIBUTING.md) describe this fork, not upstream.
+  The README leads with playing a release; its roadmap block and [ROADMAP.md](../ROADMAP.md) are
+  generated from [milestones/](milestones/) by `Tools/generate_roadmap.py`.
 - Issue templates and the PR checklist point contributors at `Documents/` rather than GitBook.
 - [ISSUE_TEMPLATE/Config.yml](../.github/ISSUE_TEMPLATE/Config.yml) links discussions and this file
   instead of upstream milestones.
@@ -84,8 +86,9 @@ were **removed** from this fork. Remaining workflows:
 
 - [develop-release.yml](../.github/workflows/develop-release.yml) — **manual** (`workflow_dispatch`)
   + **nightly** (`cron` 05:00 UTC → floating `develop-nightly` Windows+Linux client/server).
-  Manual default: Windows client → GitHub **prerelease** (zip + launch bats; Config/Tilemaps
-  seeded). Linux / EditMode / smoke are opt-in; runs on TomNAS (dispatch `runner: github` for GitHub-hosted) — see
+  A plain manual dispatch publishes the next **stable** `vX.Y.Z` release (Windows zip + updater
+  scripts, Linux client + server forced on; Config/Tilemaps seeded) that the updaters pick up.
+  `tag_suffix` cuts and nightlies stay prereleases. EditMode / smoke are opt-in; runs on TomNAS (dispatch `runner: github` for GitHub-hosted) — see
   [2026-07_ci-develop-release-pipeline.md](architecture/2026-07_ci-develop-release-pipeline.md)
 - [editmodetestrunner.yml](../.github/workflows/editmodetestrunner.yml) — EditMode tests on push to
   `develop`, PRs (`pull_request_target`), and manual dispatch; forces Node 24 for JS actions;
@@ -94,6 +97,15 @@ were **removed** from this fork. Remaining workflows:
 - [multiplayer-smoke-test.yml](../.github/workflows/multiplayer-smoke-test.yml) — nightly PlayMode
   scenarios plus the headless smoke set (`late-join`, `reconnect`, `observer-sync`;
   `sandbox-reset` and `nukeops-round` nightly only) against real dedicated-server + client builds
+- [weekly-graphical.yml](../.github/workflows/weekly-graphical.yml) — weekly `Testing/ui/validate.sh --weekly`
+  on the self-hosted runner (lobby UI and lifecycle pilots that need a rendered editor and real input)
+- [updater-tests.yml](../.github/workflows/updater-tests.yml) and
+  [updater-e2e.yml](../.github/workflows/updater-e2e.yml) — client updater regression tests on PRs, and a
+  real-Windows previous-stable → latest-stable update after numbered releases
+  ([Tools/updater/README.md](../Tools/updater/README.md))
+- [docs-check.yml](../.github/workflows/docs-check.yml) — fails when `ROADMAP.md` or the README roadmap
+  block is out of date with `Documents/milestones/`
+- [asset-hygiene.yml](../.github/workflows/asset-hygiene.yml) — fails on orphan `.meta` files under `Assets/`
 
 Doc layer redesign (coverage table, strip prototyping prompts from design docs) merged via PR #2.
 Agent-first composition policy and UI path-catalog conventions live under
@@ -1086,8 +1098,8 @@ Feature branches not yet on `develop`: `git branch -r --no-merged origin/develop
 
 ## What upstream still has that we don't automatically inherit
 
-- Official releases and the [ss3d.space](https://ss3d.space/) download channel (this fork's
-  prereleases are manual/nightly GitHub Actions cuts, not the same channel)
+- Official releases and the [ss3d.space](https://ss3d.space/) download channel (this fork publishes
+  its own numbered releases on GitHub; they are not the official RE:SS3D channel)
 - GitBook documentation and devblogs
 - Active milestone/project board automation
 - Discord CI notifications
