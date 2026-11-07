@@ -29,6 +29,7 @@ namespace SS3D.Systems.Tile
         private string _mapName;
         private int _bulkMutationDepth;
         private int _structureVersion;
+        private List<RemovedTileRecord> _removalRecord;
 
         /// <summary>Placements between yields during time-sliced <see cref="LoadRoutine"/> / DMM apply.</summary>
         public const int BulkLoadYieldEveryPlacements = 64;
@@ -186,6 +187,51 @@ namespace SS3D.Systems.Tile
         }
 
         public bool IsBulkMutationActive => _bulkMutationDepth > 0;
+
+        /// <summary>
+        /// Records every tile object <see cref="ClearTileObject"/> removes into <paramref name="into"/>,
+        /// cascaded dependents included, until the scope is disposed. Undo uses it to put back
+        /// what a clear or replace took with it, such as the wall mounts on a cleared wall.
+        /// </summary>
+        public RemovalRecordingScope RecordRemovals(List<RemovedTileRecord> into)
+        {
+            List<RemovedTileRecord> previous = _removalRecord;
+            _removalRecord = into;
+            return new RemovalRecordingScope(this, previous);
+        }
+
+        public readonly struct RemovalRecordingScope : IDisposable
+        {
+            private readonly TileMap _map;
+            private readonly List<RemovedTileRecord> _previous;
+
+            internal RemovalRecordingScope(TileMap map, List<RemovedTileRecord> previous)
+            {
+                _map = map;
+                _previous = previous;
+            }
+
+            public void Dispose()
+            {
+                if (_map != null)
+                    _map._removalRecord = _previous;
+            }
+        }
+
+        private void RecordRemoval(PlacedTileObject placed)
+        {
+            if (_removalRecord == null || placed == null || placed.tileObjectSO == null)
+                return;
+
+            var record = new RemovedTileRecord(
+                placed.tileObjectSO,
+                new Vector3(placed.WorldOrigin.x, 0f, placed.WorldOrigin.y),
+                placed.Direction);
+
+            // A multi-cell object is cleared once per cell; keep one record.
+            if (!_removalRecord.Contains(record))
+                _removalRecord.Add(record);
+        }
 
         /// <summary>
         /// Monotonic counter bumped when place/clear/chunk/clear-map changes occupancy.
@@ -480,7 +526,8 @@ namespace SS3D.Systems.Tile
                     dir,
                     gridPosition,
                     GetNeighbourPlacedObjects(TileLayer.Turf, gridPosition),
-                    replaceExisting);
+                    replaceExisting,
+                    this);
 
                 foreach (BuildFailReason failure in cellFailures)
                 {
@@ -512,9 +559,10 @@ namespace SS3D.Systems.Tile
                     Vector3 gridPosition = new(placePosition.x + gridOffset.x, 0, placePosition.z + gridOffset.y);
                     chunk = GetOrCreateChunk(gridPosition);
 
-                    // Remove an existing object if there
+                    // Swap out an existing object without the dependency cascade: the turf is
+                    // only empty for this instant, so a wall swap must keep its wall mounts.
                     if (replaceExisting)
-                        ClearTileObject(gridPosition, tileObjectSo.layer, dir);
+                        ClearTileObject(gridPosition, tileObjectSo.layer, dir, cascade: false);
 
                     // Place new object
                     chunk.GetTileObject(tileObjectSo.layer, gridPosition).AddPlacedObject(placedObject, dir);
@@ -527,6 +575,17 @@ namespace SS3D.Systems.Tile
                     _adjacencyEngine.ProcessQueue();
                 }
 
+                // Now drop the dependents the new object cannot hold (wall mounts on a floor).
+                if (replaceExisting)
+                {
+                    foreach (Vector2Int gridOffset in tileObjectSo.GetGridOffsetList(dir))
+                    {
+                        Vector3 gridPosition = new(placePosition.x + gridOffset.x, 0, placePosition.z + gridOffset.y);
+                        TryGetTileLocations(gridPosition, out ITileLocation[] cellLocations);
+                        ClearLocations(BuildChecker.GetInvalidatedByReplace(cellLocations, tileObjectSo.layer), gridPosition);
+                    }
+                }
+
                 placedObjectGo = placedObject.gameObject;
                 NotifyTilePlaced(placedObject, placePosition);
 
@@ -537,7 +596,14 @@ namespace SS3D.Systems.Tile
             return canBuild;
         }
 
-        public void ClearTileObject(Vector3 placePosition, TileLayer layer, Direction dir)
+        public void ClearTileObject(Vector3 placePosition, TileLayer layer, Direction dir) =>
+            ClearTileObject(placePosition, layer, dir, cascade: true);
+
+        /// <param name="cascade">
+        /// Also remove the objects this one supported (wall mounts on a wall, everything on a plenum).
+        /// Only a replace passes false, and it checks the dependents itself once the new object is in.
+        /// </param>
+        private void ClearTileObject(Vector3 placePosition, TileLayer layer, Direction dir, bool cascade)
         {
             TryGetTileLocations(placePosition, out ITileLocation[] tileLocations);
             ITileLocation tileLocation = tileLocations[(int)layer];
@@ -556,6 +622,7 @@ namespace SS3D.Systems.Tile
 
             if (placed != null)
             {
+                RecordRemoval(placed);
                 NotifyTileCleared(placed, placePosition, layer);
                 TileLayer[] portLines = placed.TryGetComponent(out IPipePortDevice device) ? device.PortLines : null;
 
@@ -574,11 +641,24 @@ namespace SS3D.Systems.Tile
             }
 
             // Remove any invalid tile combinations
-            List<ITileLocation> toClearLocations = BuildChecker.GetToBeClearedLocations(tileLocations);
+            if (cascade)
+                ClearLocations(BuildChecker.GetToBeClearedLocations(tileLocations), placePosition);
 
+            if (underfloorRefreshCells != null)
+            {
+                for (int i = 0; i < underfloorRefreshCells.Count; i++)
+                    TileUnderfloorVisibility.RefreshUnderfloorAt(this, underfloorRefreshCells[i]);
+            }
+        }
+
+        private void ClearLocations(List<ITileLocation> toClearLocations, Vector3 placePosition)
+        {
             foreach (ITileLocation clearLocation in toClearLocations)
             {
                 var allPlaced = clearLocation.GetAllPlacedObject();
+
+                foreach (PlacedTileObject removed in allPlaced)
+                    RecordRemoval(removed);
 
                 // Cascaded removal must reach gas, cable and pipe observers just like a direct clear.
                 foreach (PlacedTileObject removed in allPlaced)
@@ -594,12 +674,6 @@ namespace SS3D.Systems.Tile
                 }
 
                 clearLocation.ClearAllPlacedObject();
-            }
-
-            if (underfloorRefreshCells != null)
-            {
-                for (int i = 0; i < underfloorRefreshCells.Count; i++)
-                    TileUnderfloorVisibility.RefreshUnderfloorAt(this, underfloorRefreshCells[i]);
             }
         }
 

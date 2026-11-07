@@ -1,6 +1,8 @@
 using SS3D.Data.AssetDatabases;
 using SS3D.Systems.Tile.GasMarkers;
 using SS3D.Systems.Tile.SpawnPoints;
+using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace SS3D.Systems.Tile.MapEditor.Commands
@@ -13,6 +15,7 @@ namespace SS3D.Systems.Tile.MapEditor.Commands
         private readonly bool _replaceExisting;
         private readonly string _previousAssetName;
         private readonly Direction _previousDirection;
+        private readonly List<RemovedTileRecord> _displaced = new();
 
         public PlaceTileCommand(
             string assetName,
@@ -40,7 +43,8 @@ namespace SS3D.Systems.Tile.MapEditor.Commands
                 ReplaceExisting = _replaceExisting,
             };
 
-        public void Apply(MapEditorCommandContext ctx) => Execute(ctx, _position, _direction);
+        public void Apply(MapEditorCommandContext ctx) =>
+            DisplacedTiles.Capture(ctx, _displaced, () => Execute(ctx, _position, _direction));
 
         public void Revert(MapEditorCommandContext ctx)
         {
@@ -48,17 +52,20 @@ namespace SS3D.Systems.Tile.MapEditor.Commands
             if (asset is not TileObjectSo tile)
                 return;
 
-            ctx.Construction.TryClearTile(_position, tile.layer, _direction);
-
-            if (string.IsNullOrEmpty(_previousAssetName))
-                return;
-
-            GenericObjectSo previous = ctx.ResolveAsset(_previousAssetName);
-            if (previous is TileObjectSo previousTile)
+            // Swap the previous object back in rather than clear-then-place: a clear would cascade
+            // and take the wall mounts with it.
+            if (!string.IsNullOrEmpty(_previousAssetName)
+                && ctx.ResolveAsset(_previousAssetName) is TileObjectSo previousTile)
             {
                 ctx.Construction.TryPlaceTile(
                     previousTile, _position, _previousDirection, replaceExisting: true, skipBuildCheck: false);
             }
+            else
+            {
+                ctx.Construction.TryClearTile(_position, tile.layer, _direction);
+            }
+
+            DisplacedTiles.Restore(ctx, _displaced);
         }
 
         private void Execute(MapEditorCommandContext ctx, Vector3 position, Direction direction)
@@ -115,6 +122,8 @@ namespace SS3D.Systems.Tile.MapEditor.Commands
         private readonly Vector3 _position;
         private readonly Direction _direction;
 
+        private readonly List<RemovedTileRecord> _displaced = new();
+
         public ClearTileCommand(string assetName, Vector3 position, Direction direction)
         {
             _assetName = assetName;
@@ -135,11 +144,23 @@ namespace SS3D.Systems.Tile.MapEditor.Commands
         {
             GenericObjectSo asset = ctx.ResolveAsset(_assetName);
             if (asset is TileObjectSo tile)
-                ctx.Construction.TryClearTile(_position, tile.layer, _direction);
+            {
+                DisplacedTiles.Capture(ctx, _displaced,
+                    () => ctx.Construction.TryClearTile(_position, tile.layer, _direction));
+            }
         }
 
-        public void Revert(MapEditorCommandContext ctx) =>
-            new PlaceTileCommand(_assetName, _position, _direction, replaceExisting: true).Apply(ctx);
+        /// <summary>Puts back the cleared object and everything its clear cascaded to (mounts on a wall).</summary>
+        public void Revert(MapEditorCommandContext ctx)
+        {
+            if (_displaced.Count == 0)
+            {
+                new PlaceTileCommand(_assetName, _position, _direction, replaceExisting: true).Apply(ctx);
+                return;
+            }
+
+            DisplacedTiles.Restore(ctx, _displaced);
+        }
     }
 
     public sealed class ClearItemCommand : IMapEditorCommand
@@ -181,6 +202,7 @@ namespace SS3D.Systems.Tile.MapEditor.Commands
         private readonly Vector3 _from;
         private readonly Vector3 _to;
         private readonly Direction _direction;
+        private readonly List<RemovedTileRecord> _displaced = new();
 
         public MoveTileCommand(string assetName, Vector3 from, Vector3 to, Direction direction)
         {
@@ -200,9 +222,14 @@ namespace SS3D.Systems.Tile.MapEditor.Commands
                 Direction = _direction,
             };
 
-        public void Apply(MapEditorCommandContext ctx) => Move(ctx, _from, _to);
+        public void Apply(MapEditorCommandContext ctx) =>
+            DisplacedTiles.Capture(ctx, _displaced, () => Move(ctx, _from, _to));
 
-        public void Revert(MapEditorCommandContext ctx) => Move(ctx, _to, _from);
+        public void Revert(MapEditorCommandContext ctx)
+        {
+            Move(ctx, _to, _from);
+            DisplacedTiles.Restore(ctx, _displaced);
+        }
 
         private void Move(MapEditorCommandContext ctx, Vector3 from, Vector3 to)
         {
@@ -428,6 +455,54 @@ namespace SS3D.Systems.Tile.MapEditor.Commands
         {
             if (_hadPrevious)
                 ctx.GasMarkers?.TryPlace(_previous);
+        }
+    }
+
+    /// <summary>
+    /// Undo support for the clear cascade: a tile command records every object its edit removed,
+    /// dependents included, and its revert places back the ones whose slot is still empty.
+    /// </summary>
+    internal static class DisplacedTiles
+    {
+        public static void Capture(MapEditorCommandContext ctx, List<RemovedTileRecord> into, Action edit)
+        {
+            into.Clear();
+            if (ctx.Map == null)
+            {
+                edit();
+                return;
+            }
+
+            using (ctx.Map.RecordRemovals(into))
+                edit();
+        }
+
+        public static void Restore(MapEditorCommandContext ctx, List<RemovedTileRecord> records)
+        {
+            if (ctx.Map == null || ctx.Construction == null || records.Count == 0)
+                return;
+
+            // Lower layers first: a plenum before its turf, a wall before its mounts.
+            var ordered = new List<RemovedTileRecord>(records);
+            ordered.Sort((a, b) => a.Tile.layer.CompareTo(b.Tile.layer));
+
+            foreach (RemovedTileRecord record in ordered)
+            {
+                if (record.Tile == null)
+                    continue;
+
+                // The command's own revert may already have put this slot back.
+                if (ctx.Map.TryGetTileLocation(record.Tile.layer, record.Origin, out ITileLocation location)
+                    && !location.IsEmpty(record.Direction))
+                {
+                    continue;
+                }
+
+                // These objects stood here before the edit, so skip the build rules: a neighbour
+                // rule must not refuse to restore the exact state the map was in.
+                ctx.Construction.TryPlaceTile(
+                    record.Tile, record.Origin, record.Direction, replaceExisting: false, skipBuildCheck: true);
+            }
         }
     }
 

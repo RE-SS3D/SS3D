@@ -22,6 +22,85 @@ namespace SS3D.Tests.EditMode
             _instantiated.Clear();
         }
 
+        // A sits west of B. A mount's direction is the side it sticks out of, into the next cell.
+        private static readonly Vector3 CellA = new(20, 0, 20);
+        private static readonly Vector3 CellB = new(21, 0, 20);
+
+        [Test]
+        public void Preview_WallFacingNeighbourMount_FailsWithNeighbourMountBlocks()
+        {
+            TileMapTestUtilities.MapContext context = WallBesideMountedWall(Direction.West);
+
+            PreviewResult preview = context.Construction.TryPreviewTile(
+                CreateWall("WallIntoMount"), CellA, Direction.North, replaceExisting: false);
+
+            Assert.IsFalse(preview.CanBuild);
+            CollectionAssert.Contains(preview.Failures, BuildFailReason.NeighbourWallMountBlocksWall);
+        }
+
+        [Test]
+        public void Preview_WallBesideMountFacingAway_Succeeds()
+        {
+            TileMapTestUtilities.MapContext context = WallBesideMountedWall(Direction.East);
+
+            PreviewResult preview = context.Construction.TryPreviewTile(
+                CreateWall("WallBesideMount"), CellA, Direction.North, replaceExisting: false);
+
+            Assert.IsTrue(preview.CanBuild, string.Join(", ", preview.Failures));
+        }
+
+        [Test]
+        public void Preview_ReplaceWallInMountedRow_Succeeds()
+        {
+            // A wall row where B carries a mount facing away from A: swapping A's wall must not be refused.
+            TileMapTestUtilities.MapContext context = WallBesideMountedWall(Direction.North);
+            TileMapTestUtilities.PlaceAirtightWall(context, CellA);
+
+            PreviewResult preview = context.Construction.TryPreviewTile(
+                CreateWall("ReinforcedRowWall"), CellA, Direction.North, replaceExisting: true);
+
+            Assert.IsTrue(preview.CanBuild, string.Join(", ", preview.Failures));
+        }
+
+        [Test]
+        public void Preview_MountFacingNeighbourWall_FailsWithBlockedByNeighbourWall()
+        {
+            TileMapTestUtilities.MapContext context = TileMapTestUtilities.CreateContext(_instantiated);
+            TileMapTestUtilities.PlacePlenum(context, CellA);
+            TileMapTestUtilities.PlacePlenum(context, CellB);
+            TileMapTestUtilities.PlaceAirtightWall(context, CellA);
+            TileMapTestUtilities.PlaceAirtightWall(context, CellB);
+
+            TileObjectSo mount = TileMapTestUtilities.CreateTileSo(TileLayer.WallMountHigh, "MountIntoWall");
+
+            PreviewResult intoWall = context.Construction.TryPreviewTile(mount, CellB, Direction.West, replaceExisting: false);
+            PreviewResult away = context.Construction.TryPreviewTile(mount, CellB, Direction.East, replaceExisting: false);
+
+            Assert.IsFalse(intoWall.CanBuild);
+            CollectionAssert.Contains(intoWall.Failures, BuildFailReason.WallMountBlockedByNeighbourWall);
+            Assert.IsTrue(away.CanBuild, string.Join(", ", away.Failures));
+        }
+
+        private TileMapTestUtilities.MapContext WallBesideMountedWall(Direction mountFacing)
+        {
+            TileMapTestUtilities.MapContext context = TileMapTestUtilities.CreateContext(_instantiated);
+            TileMapTestUtilities.PlacePlenum(context, CellA);
+            TileMapTestUtilities.PlacePlenum(context, CellB);
+            TileMapTestUtilities.PlaceAirtightWall(context, CellB);
+
+            TileObjectSo mount = TileMapTestUtilities.CreateTileSo(TileLayer.WallMountHigh, "NeighbourMount");
+            Assert.IsTrue(context.Map.PlaceTileObject(mount, CellB, mountFacing,
+                skipBuildCheck: true, replaceExisting: false, skipAdjacency: true, out GameObject _));
+            return context;
+        }
+
+        private static TileObjectSo CreateWall(string name)
+        {
+            TileObjectSo wall = TileMapTestUtilities.CreateTileSo(TileLayer.Turf, name);
+            wall.genericType = TileObjectGenericType.Wall;
+            return wall;
+        }
+
         [Test]
         public void Preview_FloorWithoutPlenum_FailsWithMissingPlenum()
         {
