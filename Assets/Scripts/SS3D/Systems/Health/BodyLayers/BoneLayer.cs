@@ -1,55 +1,48 @@
-﻿using DG.Tweening.Core.Easing;
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;
+using SS3D.Data;
+using SS3D.Data.Generated;
 
 namespace SS3D.Systems.Health
 {
-	public class BoneLayer : BodyLayer
-	{
-		public override BodyLayerType LayerType
-		{
-			get { return BodyLayerType.Bone; }
-		}
-
-		public BoneLayer(BodyPart bodyPart) : base(bodyPart)
-		{
-
-		}
-
-		public BoneLayer(BodyPart bodyPart, DamagesContainer damages)
-		: base(bodyPart, damages)
-		{
-
-		}
-
-        protected override void SetDamagesContainer()
+    /// <summary>
+    /// Structural body layer representing bones. When destroyed, detachable body parts are severed.
+    /// </summary>
+    public class BoneLayer : BodyLayer
+    {
+        public override BodyLayerType LayerType
         {
-            Damages.DamagesInfo.Add(DamageType.Crush, new BodyDamageInfo(DamageType.Crush, 0f, 2f, 0f));
-            Damages.DamagesInfo.Add(DamageType.Slash, new BodyDamageInfo(DamageType.Slash, 0f, 1f, 0f));
-            Damages.DamagesInfo.Add(DamageType.Puncture, new BodyDamageInfo(DamageType.Puncture, 0f, 1.5f, 0f));
-            Damages.DamagesInfo.Add(DamageType.Pressure, new BodyDamageInfo(DamageType.Pressure, 0f, 0.2f, 0f));
-            Damages.DamagesInfo.Add(DamageType.Heat, new BodyDamageInfo(DamageType.Heat, 0f, 1f, 0f));
-            Damages.DamagesInfo.Add(DamageType.Cold, new BodyDamageInfo(DamageType.Cold, 0f, 0.5f, 0f));
-            Damages.DamagesInfo.Add(DamageType.Shock, new BodyDamageInfo(DamageType.Shock, 0f, 0.5f, 0f));
-            Damages.DamagesInfo.Add(DamageType.Rad, new BodyDamageInfo(DamageType.Rad, 0f, 1f, 0f));
-            Damages.DamagesInfo.Add(DamageType.Acid, new BodyDamageInfo(DamageType.Acid, 0f, 1f, 0f));
-            Damages.DamagesInfo.Add(DamageType.Toxic, new BodyDamageInfo(DamageType.Toxic, 0f, 0.8f, 0f));
-            Damages.DamagesInfo.Add(DamageType.Oxy, new BodyDamageInfo(DamageType.Oxy, 0f, 0f, 0f));
+            get { return BodyLayerType.Bone; }
         }
 
-		/// <summary>
-		/// Generate a certain amount of blood and put it in the circulatory system if there's one.
-		/// </summary>
-		public virtual void ProduceBlood()
-		{
-			throw new NotImplementedException();
-		}
+        /// <summary>
+        /// Initializes a new bone layer and loads its base resistances and susceptibilities from the asset database.
+        /// </summary>
+        public BoneLayer(BodyPart bodyPart) : base(bodyPart)
+        {
+            _bodyLayerData = Assets.Get<BodyLayerData>(AssetDatabases.BodyLayers, BodyLayers.Bone);
+        }
+
+        /// <summary>
+        /// Initializes a new bone layer with existing damages and modifiers, and loads its base data from the asset database.
+        /// </summary>
+        public BoneLayer(BodyPart bodyPart, Dictionary<DamageType, float> damages,
+            Dictionary<DamageType, float> susceptibilityModifiers, Dictionary<DamageType, float> resistanceModifiers)
+            : base(bodyPart, damages, susceptibilityModifiers, resistanceModifiers)
+        {
+            _bodyLayerData = Assets.Get<BodyLayerData>(AssetDatabases.BodyLayers, BodyLayers.Bone);
+        }
+
+        /// <summary>
+        /// Generate a certain amount of blood and put it in the circulatory system if there's one.
+        /// </summary>
+        public virtual void ProduceBlood()
+        {
+            throw new NotImplementedException();
+        }
 
         public override void Cleanlayer()
         {
-            
         }
     }
 }

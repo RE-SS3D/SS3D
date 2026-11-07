@@ -1,0 +1,30 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3c9b6c8ad6324c838c1743c2a2e2abc4, type: 3}
+  m_Name: BodyLayers
+  m_EditorClassIdentifier: 
+  DatabaseName: BodyLayers
+  DatabaseID: d1e2f3a4b5c647899a0b1c2d3e4f5c01
+  AssetGroup: {fileID: 11400000, guid: c1d2e3f4a5b647899a0b1c2d3e4f5b01, type: 2}
+  Assets:
+    _list:
+    - _key: b1a2c3d4e5f647899a0b1c2d3e4f5a01
+      _value: {fileID: 11400000, guid: b1a2c3d4e5f647899a0b1c2d3e4f5a01, type: 2}
+    - _key: b1a2c3d4e5f647899a0b1c2d3e4f5a02
+      _value: {fileID: 11400000, guid: b1a2c3d4e5f647899a0b1c2d3e4f5a02, type: 2}
+    - _key: b1a2c3d4e5f647899a0b1c2d3e4f5a03
+      _value: {fileID: 11400000, guid: b1a2c3d4e5f647899a0b1c2d3e4f5a03, type: 2}
+    - _key: b1a2c3d4e5f647899a0b1c2d3e4f5a04
+      _value: {fileID: 11400000, guid: b1a2c3d4e5f647899a0b1c2d3e4f5a04, type: 2}
+    - _key: b1a2c3d4e5f647899a0b1c2d3e4f5a05
+      _value: {fileID: 11400000, guid: b1a2c3d4e5f647899a0b1c2d3e4f5a05, type: 2}
+    _new: 

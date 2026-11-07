@@ -1,47 +1,41 @@
-﻿using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;
+using SS3D.Data;
+using SS3D.Data.Generated;
 
 namespace SS3D.Systems.Health
 {
-	public class OrganLayer : BodyLayer, IOxygenNeeder
+    /// <summary>
+    /// Body layer present on internal organs (such as brain, heart, and lungs).
+    /// </summary>
+    public class OrganLayer : BodyLayer, IOxygenNeeder
     {
+        /// <summary>
+        /// Initializes a new organ layer and loads its base resistances and susceptibilities from the asset database.
+        /// </summary>
         public OrganLayer(BodyPart bodyPart) : base(bodyPart)
-		{
-		}
+        {
+            _bodyLayerData = Assets.Get<BodyLayerData>(AssetDatabases.BodyLayers, BodyLayers.Organ);
+        }
 
-		public OrganLayer(BodyPart bodyPart,
-		DamagesContainer damages)
-		: base(bodyPart, damages)
-		{
+        /// <summary>
+        /// Initializes a new organ layer with existing damages and modifiers, and loads its base data from the asset database.
+        /// </summary>
+        public OrganLayer(BodyPart bodyPart, Dictionary<DamageType, float> damages,
+            Dictionary<DamageType, float> susceptibilityModifiers, Dictionary<DamageType, float> resistanceModifiers)
+            : base(bodyPart, damages, susceptibilityModifiers, resistanceModifiers)
+        {
+            _bodyLayerData = Assets.Get<BodyLayerData>(AssetDatabases.BodyLayers, BodyLayers.Organ);
+        }
 
-		}
-
-		public override BodyLayerType LayerType { get => BodyLayerType.Organ; }
+        public override BodyLayerType LayerType => BodyLayerType.Organ;
 
         public double GetOxygenNeeded()
         {
             return HealthConstants.MilliMolesOfOxygenPerMillilitersOfBody * BodyPart.Volume;
         }
 
-        protected override void SetDamagesContainer()
-        {
-            Damages.DamagesInfo.Add(DamageType.Crush, new BodyDamageInfo(DamageType.Crush, 0f, 1f, 0f));
-            Damages.DamagesInfo.Add(DamageType.Slash, new BodyDamageInfo(DamageType.Slash, 0f, 2f, 0f));
-            Damages.DamagesInfo.Add(DamageType.Puncture, new BodyDamageInfo(DamageType.Puncture, 0f, 1.5f, 0f));
-            Damages.DamagesInfo.Add(DamageType.Pressure, new BodyDamageInfo(DamageType.Pressure, 0f, 1f, 0f));
-            Damages.DamagesInfo.Add(DamageType.Heat, new BodyDamageInfo(DamageType.Heat, 0f, 1.5f, 0f));
-            Damages.DamagesInfo.Add(DamageType.Cold, new BodyDamageInfo(DamageType.Cold, 0f, 1.5f, 0f));
-            Damages.DamagesInfo.Add(DamageType.Shock, new BodyDamageInfo(DamageType.Shock, 0f, 1.5f, 0f));
-            Damages.DamagesInfo.Add(DamageType.Rad, new BodyDamageInfo(DamageType.Rad, 0f, 1.5f, 0f));
-            Damages.DamagesInfo.Add(DamageType.Acid, new BodyDamageInfo(DamageType.Acid, 0f, 1.5f, 0f));
-            Damages.DamagesInfo.Add(DamageType.Toxic, new BodyDamageInfo(DamageType.Toxic, 0f, 1.5f, 0f));
-            Damages.DamagesInfo.Add(DamageType.Oxy, new BodyDamageInfo(DamageType.Oxy, 0f, 1f, 0f));
-        }
-
         public override void Cleanlayer()
         {
-
         }
     }
 }
