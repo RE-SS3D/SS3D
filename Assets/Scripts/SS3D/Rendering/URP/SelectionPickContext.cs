@@ -61,6 +61,12 @@ namespace SS3D.Rendering.URP
             /// that may leave their registered cell between frames).
             /// </summary>
             bool PreferAlwaysScan { get; }
+
+            /// <summary>
+            /// When true, the index re-reads <see cref="PickWorldCenter"/> every pick. Without it a
+            /// source stays in the cell it registered in, and goes unpickable once it moves away.
+            /// </summary>
+            bool CanMove { get; }
         }
 
         static Request? s_Request;
@@ -68,6 +74,7 @@ namespace SS3D.Rendering.URP
         static readonly Dictionary<Vector2Int, List<ISelectionPickSource>> s_ByCell = new();
         static readonly Dictionary<ISelectionPickSource, Vector2Int> s_SourceCells = new();
         static readonly List<ISelectionPickSource> s_AlwaysScan = new();
+        static readonly List<ISelectionPickSource> s_Movable = new();
         static readonly HashSet<ISelectionPickSource> s_CollectScratch = new();
         static readonly List<Vector2Int> s_RayCellsScratch = new();
         static readonly Plane[] s_FrustumPlanes = new Plane[6];
@@ -98,6 +105,7 @@ namespace SS3D.Rendering.URP
             s_ByCell.Clear();
             s_SourceCells.Clear();
             s_AlwaysScan.Clear();
+            s_Movable.Clear();
             s_CollectScratch.Clear();
             s_RayCellsScratch.Clear();
         }
@@ -133,6 +141,9 @@ namespace SS3D.Rendering.URP
 
             if (source.PreferAlwaysScan && !s_AlwaysScan.Contains(source))
                 s_AlwaysScan.Add(source);
+
+            if (source.CanMove)
+                s_Movable.Add(source);
         }
 
         public static void UnregisterSource(ISelectionPickSource source)
@@ -142,6 +153,7 @@ namespace SS3D.Rendering.URP
 
             s_Sources.Remove(source);
             s_AlwaysScan.Remove(source);
+            s_Movable.Remove(source);
             if (s_SourceCells.TryGetValue(source, out Vector2Int cell))
             {
                 s_SourceCells.Remove(source);
@@ -205,6 +217,11 @@ namespace SS3D.Rendering.URP
         static void CollectFromSpatialIndex(List<PickDraw> buffer)
         {
             s_CollectScratch.Clear();
+
+            // Before the cell walk, so a source that moved this frame is found where it is now.
+            for (int i = 0; i < s_Movable.Count; i++)
+                ReindexIfMoved(s_Movable[i]);
+
             FillRayCells(s_PickRay, s_RayCellsScratch);
 
             for (int c = 0; c < s_RayCellsScratch.Count; c++)
@@ -234,7 +251,6 @@ namespace SS3D.Rendering.URP
                 if (source == null)
                     continue;
 
-                ReindexIfMoved(source);
                 s_CollectScratch.Add(source);
             }
 
@@ -244,6 +260,9 @@ namespace SS3D.Rendering.URP
 
         static void ReindexIfMoved(ISelectionPickSource source)
         {
+            if (source == null)
+                return;
+
             Vector2Int newCell = GetPickCell(source.PickWorldCenter);
             if (!s_SourceCells.TryGetValue(source, out Vector2Int oldCell) || oldCell == newCell)
                 return;

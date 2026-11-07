@@ -227,24 +227,159 @@ namespace EditorTests
             }
         }
 
+        [Test]
+        public void CollectPickDraws_MovableSource_IsCollectedWhereItMovedTo()
+        {
+            var cameraGo = new GameObject("PickMovedSourceCamera");
+            try
+            {
+                Camera camera = PickCamera(cameraGo);
+
+                // Registered far from the ray, like an item spawned away from where it gets dropped.
+                var moved = new StubPickSource(new Vector3(80f, 0f, 0f), Color.green, canMove: true);
+                SelectionPickContext.RegisterSource(moved);
+                moved.Center = Vector3.zero;
+
+                CollectAtScreenCenter(camera);
+
+                Assert.AreEqual(1, moved.CollectCalls, "A source that moved onto the ray must be collected");
+            }
+            finally
+            {
+                Object.DestroyImmediate(cameraGo);
+            }
+        }
+
+        [Test]
+        public void CollectPickDraws_MovableSource_LeavesTheCellItMovedFrom()
+        {
+            var cameraGo = new GameObject("PickLeftCellCamera");
+            try
+            {
+                Camera camera = PickCamera(cameraGo);
+
+                var moved = new StubPickSource(Vector3.zero, Color.green, canMove: true);
+                SelectionPickContext.RegisterSource(moved);
+                moved.Center = new Vector3(80f, 0f, 0f);
+
+                CollectAtScreenCenter(camera);
+
+                Assert.AreEqual(0, moved.CollectCalls, "A source that left the ray must not be collected");
+            }
+            finally
+            {
+                Object.DestroyImmediate(cameraGo);
+            }
+        }
+
+        [Test]
+        public void UnregisterSource_MovableSource_IsNoLongerPolled()
+        {
+            var cameraGo = new GameObject("PickUnregisterCamera");
+            try
+            {
+                Camera camera = PickCamera(cameraGo);
+
+                var moved = new StubPickSource(Vector3.zero, Color.green, canMove: true);
+                SelectionPickContext.RegisterSource(moved);
+                SelectionPickContext.UnregisterSource(moved);
+                moved.Center = new Vector3(80f, 0f, 0f);
+                int readsAtUnregister = moved.CenterReads;
+
+                CollectAtScreenCenter(camera);
+
+                Assert.AreEqual(readsAtUnregister, moved.CenterReads, "An unregistered source must not be polled");
+            }
+            finally
+            {
+                Object.DestroyImmediate(cameraGo);
+            }
+        }
+
+        [Test]
+        public void CollectPickDraws_FixedSource_IsNotPolled()
+        {
+            var cameraGo = new GameObject("PickFixedSourceCamera");
+            try
+            {
+                Camera camera = PickCamera(cameraGo);
+
+                var tile = new StubPickSource(Vector3.zero, Color.red);
+                SelectionPickContext.RegisterSource(tile);
+                int readsAtRegister = tile.CenterReads;
+
+                CollectAtScreenCenter(camera);
+
+                Assert.AreEqual(1, tile.CollectCalls);
+                Assert.AreEqual(readsAtRegister, tile.CenterReads, "Tile sources dominate the index and must not be polled");
+            }
+            finally
+            {
+                Object.DestroyImmediate(cameraGo);
+            }
+        }
+
+        // Center screen ray travels near world origin along +Z.
+        static Camera PickCamera(GameObject cameraGo)
+        {
+            Camera camera = cameraGo.AddComponent<Camera>();
+            camera.transform.SetPositionAndRotation(new Vector3(0f, 0f, -10f), Quaternion.identity);
+            camera.fieldOfView = 60f;
+            camera.nearClipPlane = 0.3f;
+            camera.farClipPlane = 100f;
+            camera.pixelRect = new Rect(0f, 0f, 200f, 200f);
+            return camera;
+        }
+
+        static void CollectAtScreenCenter(Camera camera)
+        {
+            SelectionPickContext.SetRequest(new SelectionPickContext.Request
+            {
+                SourceCamera = camera,
+                Target = null,
+                DebugView = false,
+                ScreenPosition = new Vector2(100f, 100f),
+                HasScreenPosition = true,
+            });
+
+            SelectionPickContext.CollectPickDraws(new List<SelectionPickContext.PickDraw>());
+        }
+
         sealed class StubPickSource : SelectionPickContext.ISelectionPickSource
         {
-            readonly Vector3 _center;
             readonly Color32 _color;
             readonly bool _preferAlwaysScan;
+            Vector3 _center;
 
             public int CollectCalls { get; private set; }
 
-            public StubPickSource(Vector3 center, Color color, bool preferAlwaysScan = false)
+            public int CenterReads { get; private set; }
+
+            public Vector3 Center
+            {
+                set => _center = value;
+            }
+
+            public StubPickSource(Vector3 center, Color color, bool preferAlwaysScan = false, bool canMove = false)
             {
                 _center = center;
                 _color = color;
                 _preferAlwaysScan = preferAlwaysScan;
+                CanMove = canMove;
             }
 
-            public Vector3 PickWorldCenter => _center;
+            public Vector3 PickWorldCenter
+            {
+                get
+                {
+                    CenterReads++;
+                    return _center;
+                }
+            }
 
             public bool PreferAlwaysScan => _preferAlwaysScan;
+
+            public bool CanMove { get; }
 
             public void CollectPickDraws(List<SelectionPickContext.PickDraw> buffer)
             {

@@ -2,6 +2,7 @@
 using SS3D.Core;
 using SS3D.Core.Behaviours;
 using SS3D.Rendering.URP;
+using SS3D.Systems.Tile;
 using UnityEngine;
 using UnityEngine.Rendering;
 
@@ -17,6 +18,7 @@ namespace SS3D.Systems.Selection
         readonly List<MeshRenderer> _meshRenderers = new();
         readonly List<SkinnedMeshRenderer> _skinnedRenderers = new();
         bool _pickCacheBuilt;
+        bool _canMove;
 
         /// <summary>
         /// The color that this Selectable will be rendered by the Selection Camera
@@ -38,11 +40,18 @@ namespace SS3D.Systems.Selection
             }
         }
 
+        /// <summary>
+        /// Anything not placed on the tile map: items, characters and other free objects. Tile
+        /// objects make up nearly every source and stay put, so the pick index never polls them.
+        /// </summary>
+        public bool CanMove => _canMove;
+
         protected override void OnStart()
         {
             base.OnStart();
             _selectionColor = SubSystems.Get<SelectionSubSystem>().RegisterSelectable(this);
             EnsurePickCache();
+            _canMove = GetComponentInParent<PlacedTileObject>(true) == null;
             SelectionPickContext.RegisterSource(this);
         }
 
