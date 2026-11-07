@@ -8,11 +8,13 @@ namespace SS3D.Systems.Tile.TileMapCreator
     /// </summary>
     public enum TileLayerCategory
     {
-        Plenums,
+        Subfloor,
         Turfs,
         Furniture,
         WallMounts,
-        WiresAndPipes,
+        Cables,
+        GasPipes,
+        Disposals,
         FloorDecals,
         Items,
         Scripts,
@@ -30,11 +32,13 @@ namespace SS3D.Systems.Tile.TileMapCreator
         public static string GetDisplayName(TileLayerCategory category) =>
             category switch
             {
-                TileLayerCategory.Plenums => "Plenums",
+                TileLayerCategory.Subfloor => "Subfloor",
                 TileLayerCategory.Turfs => "Turfs",
                 TileLayerCategory.Furniture => "Furniture",
                 TileLayerCategory.WallMounts => "Wall mounts",
-                TileLayerCategory.WiresAndPipes => "Wires and pipes",
+                TileLayerCategory.Cables => "Cables",
+                TileLayerCategory.GasPipes => "Gas pipes",
+                TileLayerCategory.Disposals => "Disposals",
                 TileLayerCategory.FloorDecals => "Floor decals",
                 TileLayerCategory.Items => "Items",
                 TileLayerCategory.Scripts => "Scripts",
@@ -45,7 +49,7 @@ namespace SS3D.Systems.Tile.TileMapCreator
         public static TileLayerCategory FromDropdownIndex(int index)
         {
             if (index < 0 || index >= AllCategories.Length)
-                return TileLayerCategory.Plenums;
+                return TileLayerCategory.Subfloor;
 
             return AllCategories[index];
         }
@@ -64,14 +68,14 @@ namespace SS3D.Systems.Tile.TileMapCreator
         public static IReadOnlyList<TileLayer> GetLayers(TileLayerCategory category) =>
             category switch
             {
-                TileLayerCategory.Plenums => new[] { TileLayer.Plenum },
+                TileLayerCategory.Subfloor => new[] { TileLayer.Plenum },
                 TileLayerCategory.Turfs => new[] { TileLayer.Turf },
                 TileLayerCategory.Furniture => new[] { TileLayer.FurnitureBase, TileLayer.FurnitureTop },
                 TileLayerCategory.WallMounts => new[] { TileLayer.WallMountLow, TileLayer.WallMountHigh },
-                TileLayerCategory.WiresAndPipes => new[]
+                TileLayerCategory.Cables => new[] { TileLayer.Wire },
+                TileLayerCategory.Disposals => new[] { TileLayer.Disposal },
+                TileLayerCategory.GasPipes => new[]
                 {
-                    TileLayer.Wire,
-                    TileLayer.Disposal,
                     TileLayer.PipeLeft,
                     TileLayer.PipeRight,
                     TileLayer.PipeSurface,

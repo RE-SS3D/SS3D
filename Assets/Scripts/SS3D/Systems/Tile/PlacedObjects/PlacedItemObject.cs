@@ -139,6 +139,7 @@ namespace SS3D.Systems.Tile
         {
             return new SavedPlacedItemObject
             {
+                id = SavedAssetLookup.IdOf(_itemSo),
                 itemName = _itemSo.NameString,
                 worldPosition = _worldPosition,
                 rotation = _rotation,

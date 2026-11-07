@@ -141,7 +141,7 @@ namespace SS3D.Tests.EditMode
             catalog.Build(System.Array.Empty<SS3D.Systems.Tile.GenericObjectSo>(), null);
 
             int Spawns() => System.Linq.Enumerable.Count(
-                catalog.Query(MapEditorMode.Scripting, MapEditorSubcategory.SpawnPlacements, null));
+                catalog.Query(MapEditorMode.Scripting, MapEditorSubcategory.SpawnPoints, null));
 
             Assert.Greater(Spawns(), 0);
             catalog.HideSandboxDenied = true;

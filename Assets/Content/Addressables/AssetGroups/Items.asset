@@ -246,7 +246,7 @@ MonoBehaviour:
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 41d7af24659a0d3439668aeb4c46d9bc
-    m_Address: Assets/Content/WorldObjects/Furniture/Flora/PottedPlants/Plant0.prefab
+    m_Address: Assets/Content/WorldObjects/Furniture/Flora/PottedPlants/PlantEarth.prefab
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
@@ -541,7 +541,7 @@ MonoBehaviour:
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 8ae2f499d25bfcd41bf26b735c852ab1
-    m_Address: Assets/Content/WorldObjects/Furniture/Flora/PottedPlants/Plant7.prefab
+    m_Address: Assets/Content/WorldObjects/Furniture/Flora/PottedPlants/PlantExotic.prefab
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0

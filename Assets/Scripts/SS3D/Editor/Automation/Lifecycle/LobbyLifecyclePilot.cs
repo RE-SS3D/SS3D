@@ -1644,7 +1644,7 @@ namespace SS3D.Editor.Automation
                 SavedTileMap map = JsonUtility.FromJson<SavedTileMap>(envelope.chunks.Single(chunk => chunk.contributorId == "tilemap").payloadJson);
                 Vector3[] floors = map.savedChunkList.SelectMany(chunk => chunk.savedTiles
                     .Where(tile => tile != null && tile.GetPlacedObjects().Any(placed =>
-                        tiles.GetAsset(placed.tileObjectSOName) is TileObjectSo asset && asset.layer == TileLayer.Plenum))
+                        tiles.GetSavedAsset(placed.id, placed.tileObjectSOName) is TileObjectSo asset && asset.layer == TileLayer.Plenum))
                     .Select(tile => chunk.originPosition + new Vector3(tile.Location.x, 0, tile.Location.y)))
                     .Distinct().ToArray();
                 Require(floors.Length > SubSystems.Get<RoleSubSystem>().Jobs.Count,

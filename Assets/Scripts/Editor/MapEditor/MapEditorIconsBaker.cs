@@ -1,4 +1,5 @@
 #if UNITY_EDITOR
+using System.Linq;
 using UnityEditor;
 using UnityEngine;
 
@@ -44,6 +45,24 @@ namespace SS3D.Editor.MapEditor
                 }
             }
 
+            string[] subTabIconPaths = Systems.Tile.MapEditor.MapEditorSubTabs.All
+                .Select(row => row.IconPath).Distinct().ToArray();
+            SerializedProperty subTabIcons = serialized.FindProperty("_subTabIcons");
+            subTabIcons.arraySize = subTabIconPaths.Length;
+            for (int i = 0; i < subTabIconPaths.Length; i++)
+            {
+                UnityEngine.UIElements.VectorImage image =
+                    AssetDatabase.LoadAssetAtPath<UnityEngine.UIElements.VectorImage>(subTabIconPaths[i]);
+                SerializedProperty element = subTabIcons.GetArrayElementAtIndex(i);
+                element.FindPropertyRelative("Path").stringValue = subTabIconPaths[i];
+                element.FindPropertyRelative("Image").objectReferenceValue = image;
+                if (image == null)
+                {
+                    missing++;
+                    Debug.LogWarning($"Could not load vector icon at {subTabIconPaths[i]}.");
+                }
+            }
+
             serialized.ApplyModifiedPropertiesWithoutUndo();
             EditorUtility.SetDirty(icons);
             AssetDatabase.SaveAssets();
@@ -84,25 +103,6 @@ namespace SS3D.Editor.MapEditor
             ("_modeLower", Systems.Tile.MapEditor.MapEditorIconsSo.Paths.ModeLower),
             ("_modeItems", Systems.Tile.MapEditor.MapEditorIconsSo.Paths.ModeItems),
             ("_modeScripting", Systems.Tile.MapEditor.MapEditorIconsSo.Paths.ModeScripting),
-            ("_subFlooring", Systems.Tile.MapEditor.MapEditorIconsSo.Paths.SubFlooring),
-            ("_subTurfs", Systems.Tile.MapEditor.MapEditorIconsSo.Paths.SubTurfs),
-            ("_subOverlays", Systems.Tile.MapEditor.MapEditorIconsSo.Paths.SubOverlays),
-            ("_subWalls", Systems.Tile.MapEditor.MapEditorIconsSo.Paths.SubWalls),
-            ("_subDoors", Systems.Tile.MapEditor.MapEditorIconsSo.Paths.SubDoors),
-            ("_subTileObjects", Systems.Tile.MapEditor.MapEditorIconsSo.Paths.SubTileObjects),
-            ("_subWallAttachments", Systems.Tile.MapEditor.MapEditorIconsSo.Paths.SubWallAttachments),
-            ("_subPiping", Systems.Tile.MapEditor.MapEditorIconsSo.Paths.SubPiping),
-            ("_subDisposals", Systems.Tile.MapEditor.MapEditorIconsSo.Paths.SubDisposals),
-            ("_subBaseTiles", Systems.Tile.MapEditor.MapEditorIconsSo.Paths.SubBaseTiles),
-            ("_subFoodDrink", Systems.Tile.MapEditor.MapEditorIconsSo.Paths.SubFoodDrink),
-            ("_subTools", Systems.Tile.MapEditor.MapEditorIconsSo.Paths.SubTools),
-            ("_subMedical", Systems.Tile.MapEditor.MapEditorIconsSo.Paths.SubMedical),
-            ("_subSecurity", Systems.Tile.MapEditor.MapEditorIconsSo.Paths.SubSecurity),
-            ("_subMisc", Systems.Tile.MapEditor.MapEditorIconsSo.Paths.SubMisc),
-            ("_subAtmospherics", Systems.Tile.MapEditor.MapEditorIconsSo.Paths.SubAtmospherics),
-            ("_subSpawnPlacements", Systems.Tile.MapEditor.MapEditorIconsSo.Paths.SubSpawnPlacements),
-            ("_subRandomSpawners", Systems.Tile.MapEditor.MapEditorIconsSo.Paths.SubRandomSpawners),
-            ("_subTriggers", Systems.Tile.MapEditor.MapEditorIconsSo.Paths.SubTriggers),
             ("_spawnAssistant", Systems.Tile.MapEditor.MapEditorIconsSo.Paths.SpawnAssistant),
             ("_spawnSecurity", Systems.Tile.MapEditor.MapEditorIconsSo.Paths.SpawnSecurity),
             ("_spawnTraitor", Systems.Tile.MapEditor.MapEditorIconsSo.Paths.SpawnTraitor),

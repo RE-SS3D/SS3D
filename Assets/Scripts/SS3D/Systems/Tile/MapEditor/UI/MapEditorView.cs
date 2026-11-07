@@ -7,6 +7,7 @@ using SS3D.Systems.Tile.SpawnPoints;
 using SS3D.Systems.Tile.TileMapCreator;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.UIElements;
@@ -33,6 +34,8 @@ namespace SS3D.Systems.Tile.MapEditor.UI
         private const float GridSlotOuterWidthPx = 120f;
         /// <summary>Slot height (104) + vertical margins (8) + border (3).</summary>
         private const float GridSlotOuterHeightPx = 115f;
+        /// <summary>Width of a compact-view side heading (<c>.map-editor-grid-side-heading</c>: 24 + right margin 4).</summary>
+        private const float GridSideHeadingOuterWidthPx = 28f;
 
         private readonly StyleSheet _styleSheet;
         private readonly MapEditorIconsSo _icons;
@@ -353,7 +356,7 @@ namespace SS3D.Systems.Tile.MapEditor.UI
             search.AddToClassList("map-editor-search");
             _searchField = new TextField { value = string.Empty };
             _searchField.AddToClassList("map-editor-search-field");
-            _searchField.textEdition.placeholder = "Search tags, names, keyword";
+            _searchField.textEdition.placeholder = "Search every tab";
             _searchField.textEdition.hidePlaceholderOnFocus = true;
             _searchField.RegisterValueChangedCallback(evt => SearchChanged?.Invoke(evt.newValue));
             WireTextEntryField(_searchField);
@@ -464,6 +467,9 @@ namespace SS3D.Systems.Tile.MapEditor.UI
                 pair.Value.EnableInClassList("map-editor-mode-tab--active", pair.Key == _vm.CurrentMode);
             }
 
+            if (_searchField != null && _searchField.value != _vm.SearchText)
+                _searchField.SetValueWithoutNotify(_vm.SearchText ?? string.Empty);
+
             RebuildSubcategories();
             ApplyPaletteMode();
 
@@ -514,21 +520,18 @@ namespace SS3D.Systems.Tile.MapEditor.UI
             _subcatRow.Clear();
             _subcatButtons.Clear();
 
-            MapEditorSubcategory[] subs = MapEditorCatalog.GetSubcategories(_vm.CurrentMode);
-            foreach (MapEditorSubcategory sub in subs)
+            // Sandbox-restricted and empty sub-tabs are not drawn (MapEditorCatalog.IsShown).
+            foreach (MapEditorSubTab row in _vm.ShownSubTabs(_vm.CurrentMode))
             {
-                if (sub == MapEditorSubcategory.SpawnPlacements && _vm.Capabilities.RestrictedPalette)
-                    continue;
-
-                Button tab = CreateSubcategoryTab(sub);
-                _subcatButtons[sub] = tab;
+                Button tab = CreateSubcategoryTab(row.Id);
+                _subcatButtons[row.Id] = tab;
                 _subcatRow.Add(tab);
             }
 
             if (_windowTitle != null)
             {
-                string mode = MapEditorCatalog.GetModeLabel(_vm.CurrentMode).ToUpperInvariant();
-                string sub = MapEditorCatalog.GetSubcategoryLabel(_vm.CurrentSubcategory).ToUpperInvariant();
+                string mode = MapEditorSubTabs.ModeLabel(_vm.CurrentMode).ToUpperInvariant();
+                string sub = MapEditorSubTabs.LabelOf(_vm.CurrentSubcategory).ToUpperInvariant();
                 _windowTitle.text = $"Object Library — {mode} / {sub}";
             }
         }
@@ -540,61 +543,117 @@ namespace SS3D.Systems.Tile.MapEditor.UI
 
             _grid.Clear();
 
-            if (_vm.OpenPopover == GasMarkerPopover && _vm.CurrentSubcategory != MapEditorSubcategory.Atmospherics)
+            if (_vm.OpenPopover == GasMarkerPopover && _vm.CurrentSubcategory != MapEditorSubcategory.StartingAir)
                 ClosePopover();
 
-            if (_vm.CurrentMode == MapEditorMode.Scripting && _vm.CurrentSubcategory == MapEditorSubcategory.Rooms)
+            if (_vm.IsSearching)
+            {
+                BuildSearchResults();
+                return;
+            }
+
+            if (_vm.CurrentSubcategory == MapEditorSubcategory.Rooms)
             {
                 BuildAreaPalette(_grid);
                 return;
             }
 
-            if (_vm.CurrentMode == MapEditorMode.Scripting &&
-                MapEditorCatalog.IsUnavailableScriptingSubcategory(_vm.CurrentSubcategory))
-            {
-                Label stub = new(
-                    "Not available yet — random spawners and triggers are a later pass.")
-                {
-                    style = { whiteSpace = WhiteSpace.Normal },
-                };
-                stub.AddToClassList("map-editor-stub-message");
-                _grid.Add(stub);
-                return;
-            }
-
-            List<MapEditorCatalogEntry> entryList = new();
-            foreach (MapEditorCatalogEntry entry in _catalog.Query(
-                         _vm.CurrentMode, _vm.CurrentSubcategory, _vm.SearchText))
-            {
-                entryList.Add(entry);
-            }
-
+            List<MapEditorCatalogEntry> entryList = _catalog
+                .Query(_vm.CurrentMode, _vm.CurrentSubcategory, null)
+                .ToList();
             if (entryList.Count == 0)
             {
-                Label empty = new($"No matches for \"{_vm.SearchText}\".");
-                empty.AddToClassList("map-editor-stub-message");
-                _grid.Add(empty);
+                AddGridMessage("Nothing here yet.");
                 return;
             }
 
-            int maxColumns = GetMaxGridColumns();
-            if (maxColumns <= 0)
-                maxColumns = Math.Max(1, entryList.Count);
+            IReadOnlyList<MapEditorHeadingGroup> groups =
+                MapEditorCatalog.GroupByHeading(MapEditorSubTabs.Get(_vm.CurrentSubcategory), entryList);
+            // Headings count entries, not slots; families fold within each heading.
+            foreach (MapEditorHeadingGroup group in groups)
+                AddHeadedGroup(group.Heading, "grid-heading-" + group.Heading, MapEditorCatalog.GroupFamilies(group.Entries));
+        }
 
-            int columnCount = maxColumns;
-            int usedRows = (entryList.Count + columnCount - 1) / columnCount;
-            VisualElement[] rows = new VisualElement[usedRows];
-            for (int rowIndex = 0; rowIndex < usedRows; rowIndex++)
+        /// <summary>Palette-wide search: every tab's matches, each group headed with where it lives.</summary>
+        private void BuildSearchResults()
+        {
+            IReadOnlyList<MapEditorSearchGroup> groups = _catalog.Search(_vm.SearchText, _vm.Capabilities.RestrictedPalette);
+            if (groups.Count == 0)
             {
-                VisualElement row = new() { pickingMode = PickingMode.Position };
-                row.AddToClassList("map-editor-grid-row");
-                rows[rowIndex] = row;
-                _grid.Add(row);
+                AddGridMessage($"No matches for \"{_vm.SearchText.Trim()}\" in any tab.");
+                return;
             }
 
-            for (int index = 0; index < entryList.Count; index++)
+            foreach (MapEditorSearchGroup group in groups)
+                AddHeadedGroup(group.Heading, "search-group-" + group.SubTab.Id, _catalog.SlotsFor(group.Entries));
+        }
+
+        /// <summary>
+        /// A group's slots under its heading. The compact view shows one slot row, so a heading above it would
+        /// overflow; there the heading runs up the left of the group's first row instead.
+        /// </summary>
+        private void AddHeadedGroup(string heading, string name, IReadOnlyList<MapEditorPaletteSlot> slots)
+        {
+            if (heading == null)
             {
-                rows[index / columnCount].Add(BuildSlot(entryList[index]));
+                AddSlotRows(slots);
+                return;
+            }
+
+            if (_paletteMode == PaletteMode.Normal)
+            {
+                AddSlotRows(slots, heading, name);
+                return;
+            }
+
+            Label label = new(heading.ToUpperInvariant()) { name = name };
+            label.AddToClassList("map-editor-grid-heading");
+            _grid.Add(label);
+            AddSlotRows(slots);
+        }
+
+        private static VisualElement SideHeading(string heading, string name)
+        {
+            VisualElement column = new() { pickingMode = PickingMode.Ignore };
+            column.AddToClassList("map-editor-grid-side-heading");
+            if (heading == null)
+                return column;
+
+            column.name = name;
+            column.tooltip = heading;
+            Label label = new(heading.ToUpperInvariant()) { pickingMode = PickingMode.Ignore };
+            label.AddToClassList("map-editor-grid-side-heading__label");
+            column.Add(label);
+            return column;
+        }
+
+        private void AddGridMessage(string text)
+        {
+            Label message = new(text);
+            message.AddToClassList("map-editor-stub-message");
+            _grid.Add(message);
+        }
+
+        /// <param name="sideHeading">Compact view: the heading beside the first row; later rows get an empty column so slots line up.</param>
+        private void AddSlotRows(IReadOnlyList<MapEditorPaletteSlot> slots, string sideHeading = null, string headingName = null)
+        {
+            int columnCount = GetMaxGridColumns(sideHeading != null ? GridSideHeadingOuterWidthPx : 0f);
+            if (columnCount <= 0)
+                columnCount = Math.Max(1, slots.Count);
+
+            VisualElement row = null;
+            for (int index = 0; index < slots.Count; index++)
+            {
+                if (index % columnCount == 0)
+                {
+                    row = new VisualElement { pickingMode = PickingMode.Position };
+                    row.AddToClassList("map-editor-grid-row");
+                    if (sideHeading != null)
+                        row.Add(SideHeading(index == 0 ? sideHeading : null, headingName));
+                    _grid.Add(row);
+                }
+
+                row.Add(BuildSlot(slots[index]));
             }
         }
 
@@ -615,7 +674,7 @@ namespace SS3D.Systems.Tile.MapEditor.UI
             ApplyGridScrollHeight();
         }
 
-        private int GetMaxGridColumns()
+        private int GetMaxGridColumns(float reservedWidth = 0f)
         {
             float width = _gridScroll?.contentViewport?.layout.width ?? 0f;
             if (width <= 1f)
@@ -623,19 +682,19 @@ namespace SS3D.Systems.Tile.MapEditor.UI
             if (width <= 1f)
                 return 0;
 
-            return Math.Max(1, Mathf.FloorToInt(width / GridSlotOuterWidthPx));
+            return Math.Max(1, Mathf.FloorToInt((width - reservedWidth) / GridSlotOuterWidthPx));
         }
 
-        private Button BuildSlot(MapEditorCatalogEntry entry)
+        private Button BuildSlot(MapEditorPaletteSlot paletteSlot)
         {
+            MapEditorCatalogEntry entry = _vm.ShownVariant(paletteSlot);
             ushort decalId = 0;
-            bool isFloorDecal = !entry.IsEraser &&
-                               MapEditorFloorDecalCatalog.TryDecode(entry.AssetName, out decalId);
-            bool isSpawn = !entry.IsEraser && MapEditorSpawnCatalog.IsSpawnKey(entry.AssetName);
-            bool isGasMarker = MapEditorGasMarkerCatalog.TryDecode(entry.AssetName, out GasMarkerKind gasKind) && !entry.IsEraser;
+            bool isFloorDecal = MapEditorFloorDecalCatalog.TryDecode(entry.AssetName, out decalId);
+            bool isSpawn = MapEditorSpawnCatalog.IsSpawnKey(entry.AssetName);
+            bool isGasMarker = MapEditorGasMarkerCatalog.TryDecode(entry.AssetName, out GasMarkerKind gasKind);
 
             // Virtual catalog keys (floor decals / spawn markers) are not TileResourceLoader assets.
-            GenericObjectSo asset = entry.IsEraser || isFloorDecal || isSpawn || isGasMarker
+            GenericObjectSo asset = isFloorDecal || isSpawn || isGasMarker
                 ? null
                 : _loader.GetAsset(entry.AssetName);
 
@@ -645,15 +704,12 @@ namespace SS3D.Systems.Tile.MapEditor.UI
 
             Button slot = new(() => AssetSelected?.Invoke(entry, asset));
             slot.AddToClassList("map-editor-slot");
-            if (!entry.IsEraser)
-            {
-                if (floorDecal != null)
-                    slot.tooltip = floorDecal.DisplayName;
-                else if (isSpawn)
-                    slot.tooltip = MapEditorSpawnCatalog.DisplayName(entry.AssetName);
-                else
-                    slot.tooltip = entry.AssetName;
-            }
+            if (floorDecal != null)
+                slot.tooltip = floorDecal.DisplayName;
+            else if (isSpawn)
+                slot.tooltip = MapEditorSpawnCatalog.DisplayName(entry.AssetName);
+            else
+                slot.tooltip = entry.AssetName;
             bool active = _vm.SelectedEntry != null &&
                           string.Equals(_vm.SelectedEntry.AssetName, entry.AssetName, StringComparison.OrdinalIgnoreCase);
             slot.EnableInClassList("map-editor-slot--active", active);
@@ -663,11 +719,7 @@ namespace SS3D.Systems.Tile.MapEditor.UI
 
             VisualElement icon = new();
             icon.AddToClassList("map-editor-slot__icon");
-            if (entry.IsEraser)
-            {
-                icon.AddToClassList("map-editor-slot__icon--eraser");
-            }
-            else if (floorDecal?.Texture != null)
+            if (floorDecal?.Texture != null)
             {
                 icon.style.backgroundImage = new StyleBackground(floorDecal.Texture);
             }
@@ -678,7 +730,7 @@ namespace SS3D.Systems.Tile.MapEditor.UI
                                   && kind == SpawnPointKind.Antagonist;
                 icon.AddToClassList(antagonist ? "map-editor-slot__icon--spawn-antag" : "map-editor-slot__icon--spawn-job");
             }
-            else if (isGasMarker && _icons?.GetSubcategoryIcon(MapEditorSubcategory.Atmospherics) is VectorImage gasIcon)
+            else if (isGasMarker && _icons?.GetSubcategoryIcon(MapEditorSubcategory.StartingAir) is VectorImage gasIcon)
             {
                 icon.style.backgroundImage = new StyleBackground(gasIcon);
                 icon.style.unityBackgroundImageTintColor = MapEditorGasMarkerCatalog.PinColor(gasKind);
@@ -690,24 +742,68 @@ namespace SS3D.Systems.Tile.MapEditor.UI
 
             iconFrame.Add(icon);
 
-            string labelText = entry.IsEraser
-                ? "Eraser"
-                : floorDecal != null
-                    ? floorDecal.DisplayName
-                    : isSpawn
-                        ? MapEditorSpawnCatalog.DisplayName(entry.AssetName)
-                        : isGasMarker
-                            ? MapEditorGasMarkerCatalog.DisplayName(gasKind)
-                            : entry.AssetName;
+            string labelText = MapEditorCatalog.DisplayLabel(entry);
+            slot.Add(iconFrame);
+            if (paletteSlot.IsFamily)
+            {
+                AddFamilyChrome(slot, iconFrame, paletteSlot, entry);
+                return slot;
+            }
+
             Label label = new(labelText)
             {
                 pickingMode = PickingMode.Ignore,
             };
             label.AddToClassList("map-editor-slot__label");
-
-            slot.Add(iconFrame);
             slot.Add(label);
             return slot;
+        }
+
+        /// <summary>
+        /// A family slot: family on line 1, variant on line 2, an "n/N" badge, and ‹ › arrows
+        /// (shown on hover or while held) that pick the neighbouring variant.
+        /// </summary>
+        private void AddFamilyChrome(Button slot, VisualElement iconFrame, MapEditorPaletteSlot paletteSlot, MapEditorCatalogEntry shown)
+        {
+            slot.AddToClassList("map-editor-slot--family");
+            slot.tooltip = $"{paletteSlot.Family}: {shown.VariantLabel} ({shown.AssetName}) — V / Shift+V for the next variant";
+
+            VisualElement label = new() { pickingMode = PickingMode.Ignore };
+            label.AddToClassList("map-editor-slot__label");
+            label.AddToClassList("map-editor-slot__label--family");
+            Label family = new(paletteSlot.Family) { pickingMode = PickingMode.Ignore };
+            family.AddToClassList("map-editor-slot__family");
+            Label variant = new(shown.VariantLabel) { pickingMode = PickingMode.Ignore };
+            variant.AddToClassList("map-editor-slot__variant");
+            label.Add(family);
+            label.Add(variant);
+            slot.Add(label);
+
+            Label badge = new($"{paletteSlot.IndexOf(shown) + 1}/{paletteSlot.Variants.Count}") { pickingMode = PickingMode.Ignore };
+            badge.AddToClassList("map-editor-slot__badge");
+            slot.Add(badge);
+
+            iconFrame.Add(VariantArrow(paletteSlot, shown, -1, "\u2039", "map-editor-slot__cycle--previous"));
+            iconFrame.Add(VariantArrow(paletteSlot, shown, 1, "\u203A", "map-editor-slot__cycle--next"));
+        }
+
+        private Button VariantArrow(MapEditorPaletteSlot paletteSlot, MapEditorCatalogEntry shown, int step, string glyph, string className)
+        {
+            Button arrow = new(() =>
+            {
+                MapEditorCatalogEntry next = paletteSlot.Step(shown, step);
+                AssetSelected?.Invoke(next, _loader.GetAsset(next.AssetName));
+            })
+            {
+                text = glyph,
+                tooltip = step < 0 ? "Previous variant (Shift+V)" : "Next variant (V)",
+            };
+            arrow.AddToClassList("map-editor-slot__cycle");
+            arrow.AddToClassList(className);
+            // The slot is a Button too: keep this press from also picking the shown variant.
+            arrow.RegisterCallback<PointerDownEvent>(evt => evt.StopPropagation());
+            arrow.RegisterCallback<ClickEvent>(evt => evt.StopPropagation());
+            return arrow;
         }
 
         private void TogglePopover(string key)
@@ -1107,7 +1203,7 @@ namespace SS3D.Systems.Tile.MapEditor.UI
 
             VisualElement icon = CreateIconElement(_icons?.GetModeIcon(mode));
             icon.AddToClassList("map-editor-mode-tab__icon");
-            Label label = new(MapEditorCatalog.GetModeLabel(mode).ToUpperInvariant());
+            Label label = new(MapEditorSubTabs.ModeLabel(mode).ToUpperInvariant());
             label.AddToClassList("map-editor-mode-tab__label");
             label.pickingMode = PickingMode.Ignore;
             surface.Add(icon);
@@ -1128,7 +1224,7 @@ namespace SS3D.Systems.Tile.MapEditor.UI
 
             VisualElement icon = CreateIconElement(_icons?.GetSubcategoryIcon(subcategory));
             icon.AddToClassList("map-editor-subcat-tab__icon");
-            Label label = new(MapEditorCatalog.GetSubcategoryLabel(subcategory).ToUpperInvariant());
+            Label label = new(MapEditorSubTabs.LabelOf(subcategory).ToUpperInvariant());
             label.AddToClassList("map-editor-subcat-tab__label");
             label.pickingMode = PickingMode.Ignore;
             surface.Add(icon);

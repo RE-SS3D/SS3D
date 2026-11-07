@@ -133,6 +133,23 @@ namespace SS3D.Systems.Tile.TileMapCreator
         }
 
         /// <summary>
+        /// V / Shift+V: swap the held object for another variant the way R rotates,
+        /// keeping a drag in progress. The ghosts rebuild with the new prefab on the next update.
+        /// </summary>
+        public void SwapSelectedObject(GenericObjectSo genericObjectSo)
+        {
+            if (!_isDragging || genericObjectSo is not TileObjectSo || _selectedObject is not TileObjectSo)
+            {
+                SetSelectedObject(genericObjectSo);
+                return;
+            }
+
+            _selectedObject = genericObjectSo;
+            DestroyHolograms();
+            _hasDragEndTile = false;
+        }
+
+        /// <summary>
         /// World point under the cursor for placement. Tile objects snap to the tile centre; items do not.
         /// </summary>
         public Vector3 GetPlacementPoint(bool forceTileSnap = false)
@@ -313,8 +330,7 @@ namespace SS3D.Systems.Tile.TileMapCreator
         }
 
         /// <summary>
-        /// Edit places/erases via a selected asset or the Eraser catalog entry; Delete is a
-        /// dedicated always-erasing tool that reuses the same drag/hologram pipeline with no
+        /// Edit places the selected asset; Delete is a dedicated always-erasing tool that reuses the same drag/hologram pipeline with no
         /// selected asset (see <see cref="IMapEditorHost.IsDeleting"/>).
         /// </summary>
         private static bool IsActiveTool(MapEditorTool tool) =>
@@ -538,7 +554,7 @@ namespace SS3D.Systems.Tile.TileMapCreator
             {
                 RefreshDeleteCursorHologram(GetPlacementPoint(forceTileSnap: true));
                 _mapEditor.SetPlacementHint(
-                    $"Delete {MapEditorCatalog.GetSubcategoryLabel(_mapEditor.CurrentSubcategory)} ({_lastRegisteredDirection}) — R to change face");
+                    $"Delete {MapEditorSubTabs.LabelOf(_mapEditor.CurrentSubcategory)} ({_lastRegisteredDirection}) — R to change face");
             }
         }
 
@@ -877,14 +893,7 @@ namespace SS3D.Systems.Tile.TileMapCreator
 
             MapEditorSubcategory subcategory = _mapEditor.CurrentSubcategory;
 
-            if (MapEditorDeleteTargeting.RequiresSubcategorySelection(subcategory))
-            {
-                _mapEditor.ShowLocalToast("Select a subcategory to delete");
-                return;
-            }
-
-            if (MapEditorDeleteTargeting.IsItemSubcategory(subcategory) ||
-                _mapEditor.CurrentMode == MapEditorMode.Items)
+            if (MapEditorDeleteTargeting.ScopeOf(subcategory) == MapEditorDeleteScope.ItemUnderCursor)
             {
                 FindAndDeleteItem();
                 return;
@@ -922,8 +931,9 @@ namespace SS3D.Systems.Tile.TileMapCreator
                 return false;
 
             int before = into.Count;
+            MapEditorDeleteScope scope = MapEditorDeleteTargeting.ScopeOf(subcategory);
 
-            if (subcategory == MapEditorSubcategory.Overlays)
+            if (scope == MapEditorDeleteScope.FloorDecal)
             {
                 if (!map.TryGetFloorDecalId(position, out ushort decalId) || decalId == 0)
                     return false;
@@ -936,7 +946,7 @@ namespace SS3D.Systems.Tile.TileMapCreator
                 return true;
             }
 
-            if (subcategory == MapEditorSubcategory.SpawnPlacements)
+            if (scope == MapEditorDeleteScope.SpawnPoint)
             {
                 SpawnPointRegistry spawnPoints = tileSystem.SpawnPoints;
                 if (spawnPoints == null || !spawnPoints.HasAt(position))
@@ -950,7 +960,7 @@ namespace SS3D.Systems.Tile.TileMapCreator
                 return true;
             }
 
-            if (subcategory == MapEditorSubcategory.Atmospherics)
+            if (scope == MapEditorDeleteScope.GasMarker)
             {
                 if (tileSystem.GasMarkers == null || !tileSystem.GasMarkers.HasAt(position))
                     return false;
@@ -966,7 +976,7 @@ namespace SS3D.Systems.Tile.TileMapCreator
             if (!map.TryGetTileLocations(position, out ITileLocation[] locations))
                 return false;
 
-            MapEditorDeleteTargeting.Resolve(subcategory, _lastRegisteredDirection, locations, _deleteTargets);
+            MapEditorDeleteTargeting.Resolve(scope, _lastRegisteredDirection, locations, _deleteTargets);
             if (_deleteTargets.Count == 0)
                 return false;
 
@@ -1137,10 +1147,11 @@ namespace SS3D.Systems.Tile.TileMapCreator
             TileSubSystem tileSystem = SubSystems.Get<TileSubSystem>();
             TileMap map = tileSystem?.CurrentMap;
             MapEditorSubcategory subcategory = _mapEditor.CurrentSubcategory;
+            MapEditorDeleteScope scope = MapEditorDeleteTargeting.ScopeOf(subcategory);
             _deleteTargets.Clear();
 
             string hintAsset = null;
-            if (map != null && subcategory == MapEditorSubcategory.Overlays)
+            if (map != null && scope == MapEditorDeleteScope.FloorDecal)
             {
                 if (map.TryGetFloorDecalId(position, out ushort id) && id != 0)
                 {
@@ -1148,7 +1159,7 @@ namespace SS3D.Systems.Tile.TileMapCreator
                     hintAsset = "floor-decal";
                 }
             }
-            else if (map != null && subcategory == MapEditorSubcategory.SpawnPlacements)
+            else if (map != null && scope == MapEditorDeleteScope.SpawnPoint)
             {
                 if (tileSystem.SpawnPoints != null && tileSystem.SpawnPoints.HasAt(position))
                 {
@@ -1156,7 +1167,7 @@ namespace SS3D.Systems.Tile.TileMapCreator
                     hintAsset = "spawn-point";
                 }
             }
-            else if (map != null && subcategory == MapEditorSubcategory.Atmospherics)
+            else if (map != null && scope == MapEditorDeleteScope.GasMarker)
             {
                 if (tileSystem.GasMarkers != null && tileSystem.GasMarkers.HasAt(position))
                 {
@@ -1166,7 +1177,7 @@ namespace SS3D.Systems.Tile.TileMapCreator
             }
             else if (map != null && map.TryGetTileLocations(position, out ITileLocation[] locations))
             {
-                MapEditorDeleteTargeting.Resolve(subcategory, _lastRegisteredDirection, locations, _deleteTargets);
+                MapEditorDeleteTargeting.Resolve(scope, _lastRegisteredDirection, locations, _deleteTargets);
                 if (_deleteTargets.Count > 0 && !_deleteTargets[0].IsFloorDecal && !_deleteTargets[0].IsSpawnPoint)
                     hintAsset = _deleteTargets[0].AssetName;
             }
@@ -1175,7 +1186,7 @@ namespace SS3D.Systems.Tile.TileMapCreator
             {
                 MaybeSwapDeleteGhostPrefab(hintAsset, position);
             }
-            else if (subcategory is MapEditorSubcategory.SpawnPlacements or MapEditorSubcategory.Atmospherics)
+            else if (scope is MapEditorDeleteScope.SpawnPoint or MapEditorDeleteScope.GasMarker)
             {
                 // Same pin ghost as placing a spawn, tinted red by the delete colouring below.
                 ResetDeleteGhostToSpawnPin(position);
@@ -1187,7 +1198,7 @@ namespace SS3D.Systems.Tile.TileMapCreator
             else if (_mapEditor.TryGetSubcategoryPrototypeAssetName(subcategory, out string prototype))
             {
                 // Show a representative prefab for this subcategory immediately (e.g. Wall
-                // Attachments tab) — do not wait until the cursor finds a mounted object.
+                // Mounts tab) — do not wait until the cursor finds a mounted object.
                 MaybeSwapDeleteGhostPrefab(prototype, position);
             }
             else
@@ -1203,16 +1214,13 @@ namespace SS3D.Systems.Tile.TileMapCreator
 
             if (_deleteTargets.Count == 0)
             {
-                string empty = MapEditorDeleteTargeting.RequiresSubcategorySelection(subcategory)
-                    ? "Select a subcategory to delete"
-                    : MapEditorDeleteTargeting.EmptyHint(subcategory, _lastRegisteredDirection);
-                _mapEditor.SetPlacementHint(empty);
+                _mapEditor.SetPlacementHint(MapEditorDeleteTargeting.EmptyHint(subcategory, _lastRegisteredDirection));
             }
             else
             {
-                string label = MapEditorCatalog.GetSubcategoryLabel(subcategory);
+                string label = MapEditorSubTabs.LabelOf(subcategory);
                 _mapEditor.SetPlacementHint(
-                    subcategory == MapEditorSubcategory.WallAttachments
+                    scope == MapEditorDeleteScope.WallMountFace
                         ? $"Delete {label} ({_lastRegisteredDirection}) — R to change face"
                         : $"Delete {label}");
             }
@@ -1225,8 +1233,7 @@ namespace SS3D.Systems.Tile.TileMapCreator
         private bool IsItemDeleteMode() =>
             _mapEditor != null
             && _mapEditor.IsDeleting
-            && (_mapEditor.CurrentMode == MapEditorMode.Items
-                || MapEditorDeleteTargeting.IsItemSubcategory(_mapEditor.CurrentSubcategory));
+            && MapEditorDeleteTargeting.ScopeOf(_mapEditor.CurrentSubcategory) == MapEditorDeleteScope.ItemUnderCursor;
 
         private void RefreshItemDeleteCursor()
         {
@@ -1269,7 +1276,7 @@ namespace SS3D.Systems.Tile.TileMapCreator
 
         private bool IsSpawnDeleteMode() =>
             _mapEditor != null && _mapEditor.IsDeleting
-            && _mapEditor.CurrentSubcategory is MapEditorSubcategory.SpawnPlacements or MapEditorSubcategory.Atmospherics;
+            && MapEditorDeleteTargeting.ScopeOf(_mapEditor.CurrentSubcategory) is MapEditorDeleteScope.SpawnPoint or MapEditorDeleteScope.GasMarker;
 
         private void ResetDeleteGhostToSpawnPin(Vector3 position)
         {

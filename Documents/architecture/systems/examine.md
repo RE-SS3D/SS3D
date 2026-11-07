@@ -47,6 +47,7 @@ Paths are under `Assets/Scripts/SS3D/Systems/` unless they start with `UI/` (`As
 
 - `SimpleExaminable` / `ImageExaminable` / multiple `IExamineContentProvider`s on one GameObject.
 - Character health: extend `CharacterExamineHealthBuilder` (no Human prefab component).
+- `ExamineSubSystem.SetCursorLabelOverride(text)`: while non-null the hover badge shows that text and examines nothing (detailed examine off; empty hides the badge). The Map Editor uses it to name what Edit is about to place; it must pass null when it closes.
 - Follow-ups: obscured-slot filtering; restrained loot; StoragePanel foreign-loot; medical scanner (virology).
 
 ## Pitfalls
@@ -73,7 +74,7 @@ Paths are under `Assets/Scripts/SS3D/Systems/` unless they start with `UI/` (`As
 ## Depends on / Used by
 
 - **Depends on:** [selection](selection.md), [localization](localization.md), [inputs](inputs.md), [inventory](inventory.md), [health](health.md), [interactions-framework](interactions-framework.md), [interactions-runtime](interactions-runtime.md), [ui-shell](ui-shell.md), [core-subsystems](core-subsystems.md)
-- **Used by:** Most world objects with examine content; [structural-destruction](structural-destruction.md) integrity lines, [id-access](id-access.md) card lines
+- **Used by:** Most world objects with examine content; [tile](tile.md) Map Editor (cursor label override); [structural-destruction](structural-destruction.md) integrity lines, [id-access](id-access.md) card lines
 
 ## Related docs
 

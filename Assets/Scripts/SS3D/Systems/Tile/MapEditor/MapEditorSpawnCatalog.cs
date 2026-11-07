@@ -70,6 +70,12 @@ namespace SS3D.Systems.Tile.MapEditor
                 : $"Antag: {FormatAntagonist(category)}";
         }
 
+        /// <summary>
+        /// Antagonists that enter the round at a marker, and so get a palette entry. Traitor and Malfunctioning AI are
+        /// assigned to a crew member or the AI already aboard, so a marker for them would do nothing.
+        /// </summary>
+        public static readonly AntagonistSpawnCategory[] MarkerAntagonists = { AntagonistSpawnCategory.NuclearOperatives };
+
         public static string FormatAntagonist(AntagonistSpawnCategory category) =>
             category switch
             {

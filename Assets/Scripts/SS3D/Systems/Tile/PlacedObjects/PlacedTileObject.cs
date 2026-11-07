@@ -635,6 +635,7 @@ namespace SS3D.Systems.Tile
         {
             return new SavedPlacedTileObject
             {
+                id = SavedAssetLookup.IdOf(_tileObjectSo),
                 tileObjectSOName = _tileObjectSo.NameString,
                 origin = _origin,
                 dir = _dir,

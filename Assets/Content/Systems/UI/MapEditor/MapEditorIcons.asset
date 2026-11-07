@@ -37,25 +37,31 @@ MonoBehaviour:
   _modeLower: {fileID: 7388822144124034973, guid: 44349bbcdb53c1217a3bfaafc54a5a40, type: 3}
   _modeItems: {fileID: 7388822144124034973, guid: 3345fc0f1528d1ca1b704f083e78148f, type: 3}
   _modeScripting: {fileID: 7388822144124034973, guid: 5d5ab8e0a5b65bbcba03493815981cb7, type: 3}
-  _subFlooring: {fileID: 7388822144124034973, guid: fa24165f243afb33792e14e5ba0e44c7, type: 3}
-  _subTurfs: {fileID: 7388822144124034973, guid: 9b73d9a18d11e9afc8fcf9550e17cc8c, type: 3}
-  _subOverlays: {fileID: 7388822144124034973, guid: 6b1afc38e37a4ad4781a0ac10cb5ab74, type: 3}
-  _subWalls: {fileID: 7388822144124034973, guid: 41a35a27b113ae238b7750214849f86e, type: 3}
-  _subDoors: {fileID: 7388822144124034973, guid: 5bb9413eab508e210b0c2a4807f625fb, type: 3}
-  _subTileObjects: {fileID: 7388822144124034973, guid: 265b46093e309c4c8a8b3dd727e22dc5, type: 3}
-  _subWallAttachments: {fileID: 7388822144124034973, guid: 41a35a27b113ae238b7750214849f86e, type: 3}
-  _subPiping: {fileID: 7388822144124034973, guid: bc06b383f02d69538b7a2e0a21488060, type: 3}
-  _subDisposals: {fileID: 7388822144124034973, guid: fb7bf1b35d17501369f394a9e8e11a13, type: 3}
-  _subBaseTiles: {fileID: 7388822144124034973, guid: c128cd8f86d8b4aa19b7a7831cabf741, type: 3}
-  _subFoodDrink: {fileID: 7388822144124034973, guid: 3345fc0f1528d1ca1b704f083e78148f, type: 3}
-  _subTools: {fileID: 7388822144124034973, guid: 1aeda4b24f664d348af21d625225f576, type: 3}
-  _subMedical: {fileID: 7388822144124034973, guid: 265b46093e309c4c8a8b3dd727e22dc5, type: 3}
-  _subSecurity: {fileID: 7388822144124034973, guid: 99f76c5ad3eaff1a6b5eaeb71d5d3666, type: 3}
-  _subMisc: {fileID: 7388822144124034973, guid: c128cd8f86d8b4aa19b7a7831cabf741, type: 3}
-  _subAtmospherics: {fileID: 7388822144124034973, guid: bc06b383f02d69538b7a2e0a21488060, type: 3}
-  _subSpawnPlacements: {fileID: 7388822144124034973, guid: e42e5f1a6d5ae88779a25bc3dc312d63, type: 3}
-  _subRandomSpawners: {fileID: 7388822144124034973, guid: f2f48a9e2ef92f56c8b720580a47e684, type: 3}
-  _subTriggers: {fileID: 7388822144124034973, guid: 99f76c5ad3eaff1a6b5eaeb71d5d3666, type: 3}
+  _subTabIcons:
+  - Path: Assets/Art/Icons/map-editor/grid.svg
+    Image: {fileID: 7388822144124034973, guid: fa24165f243afb33792e14e5ba0e44c7, type: 3}
+  - Path: Assets/Art/Icons/map-editor/bracket.svg
+    Image: {fileID: 7388822144124034973, guid: 41a35a27b113ae238b7750214849f86e, type: 3}
+  - Path: Assets/Art/Icons/map-editor/door.svg
+    Image: {fileID: 7388822144124034973, guid: 5bb9413eab508e210b0c2a4807f625fb, type: 3}
+  - Path: Assets/Art/Icons/map-editor/pin.svg
+    Image: {fileID: 7388822144124034973, guid: e42e5f1a6d5ae88779a25bc3dc312d63, type: 3}
+  - Path: Assets/Art/Icons/map-editor/cube.svg
+    Image: {fileID: 7388822144124034973, guid: 265b46093e309c4c8a8b3dd727e22dc5, type: 3}
+  - Path: Assets/Art/Icons/map-editor/settings.svg
+    Image: {fileID: 7388822144124034973, guid: 1aeda4b24f664d348af21d625225f576, type: 3}
+  - Path: Assets/Art/Icons/map-editor/layers.svg
+    Image: {fileID: 7388822144124034973, guid: 6b1afc38e37a4ad4781a0ac10cb5ab74, type: 3}
+  - Path: Assets/Art/Icons/map-editor/dots9.svg
+    Image: {fileID: 7388822144124034973, guid: c128cd8f86d8b4aa19b7a7831cabf741, type: 3}
+  - Path: Assets/Art/Icons/map-editor/bolt.svg
+    Image: {fileID: 7388822144124034973, guid: 99f76c5ad3eaff1a6b5eaeb71d5d3666, type: 3}
+  - Path: Assets/Art/Icons/map-editor/pipe.svg
+    Image: {fileID: 7388822144124034973, guid: bc06b383f02d69538b7a2e0a21488060, type: 3}
+  - Path: Assets/Art/Icons/map-editor/trash.svg
+    Image: {fileID: 7388822144124034973, guid: fb7bf1b35d17501369f394a9e8e11a13, type: 3}
+  - Path: Assets/Art/Icons/map-editor/box.svg
+    Image: {fileID: 7388822144124034973, guid: 3345fc0f1528d1ca1b704f083e78148f, type: 3}
   _spawnAssistant: {fileID: 7388822144124034973, guid: 05a2eaa02b8cc3f0d881840632b4bfd6, type: 3}
   _spawnSecurity: {fileID: 7388822144124034973, guid: a329af8d1a6738ba4b7750ba45a72a88, type: 3}
   _spawnTraitor: {fileID: 7388822144124034973, guid: d9cefe08cafd7c20192fe4a0a44e5e4d, type: 3}

@@ -409,7 +409,7 @@ Full-screen **UI Toolkit** Map Editor replacing the DynamicPanels TileMap Creato
 Deferred: creative-mode Builder role / instant placement, area merge/split tool, round-config map
 pool save, Scripting & Placements backends beyond spawn points, runtime job-aware spawn pick.
 
-**Spawn point authoring** (PR #29): Map Editor Scripting → Spawn Placements places job- and
+**Spawn point authoring** (PR #29): Map Editor Scripts → Spawn Points places job- and
 antagonist-tagged markers (`spawn:job:*` / `spawn:antag:*`); `SpawnPointPersistenceContributor`
 persists them in station templates. Runtime `EntitySubSystem` role→spawn resolution still deferred.
 

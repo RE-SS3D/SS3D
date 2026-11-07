@@ -1,3 +1,5 @@
+using System;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -39,27 +41,8 @@ namespace SS3D.Systems.Tile.MapEditor
             public const string ModeLower = Root + "chevronDown.svg";
             public const string ModeItems = Root + "box.svg";
             public const string ModeScripting = Root + "script.svg";
-            public const string SubFlooring = Root + "grid.svg";
-            public const string SubTurfs = Root + "terrain.svg";
-            public const string SubOverlays = Root + "layers.svg";
-            public const string SubWalls = Root + "bracket.svg";
-            public const string SubDoors = Root + "door.svg";
-            public const string SubTileObjects = Root + "cube.svg";
-            public const string SubWallAttachments = Root + "bracket.svg";
-            public const string SubPiping = Root + "pipe.svg";
-            public const string SubDisposals = Root + "trash.svg";
-            public const string SubBaseTiles = Root + "dots9.svg";
-            public const string SubFoodDrink = Root + "box.svg";
-            public const string SubTools = Root + "settings.svg";
-            public const string SubMedical = Root + "cube.svg";
-            public const string SubSecurity = Root + "bolt.svg";
-            public const string SubMisc = Root + "dots9.svg";
-            public const string SubAtmospherics = Root + "pipe.svg";
-            public const string SubSpawnPlacements = Root + "pin.svg";
-            public const string SubRandomSpawners = Root + "dice.svg";
-            public const string SubTriggers = Root + "bolt.svg";
 
-            // Spawn Placements library slots (game-icons.net glyphs, tinted per spawn kind in USS).
+            // Spawn Points library slots (game-icons.net glyphs, tinted per spawn kind in USS).
             private const string External = "Assets/Art/Icons/External/";
             public const string SpawnAssistant = External + "delapouite/person.svg";
             public const string SpawnSecurity = External + "delapouite/police-officer-head.svg";
@@ -94,25 +77,8 @@ namespace SS3D.Systems.Tile.MapEditor
         [SerializeField] private VectorImage _modeLower;
         [SerializeField] private VectorImage _modeItems;
         [SerializeField] private VectorImage _modeScripting;
-        [SerializeField] private VectorImage _subFlooring;
-        [SerializeField] private VectorImage _subTurfs;
-        [SerializeField] private VectorImage _subOverlays;
-        [SerializeField] private VectorImage _subWalls;
-        [SerializeField] private VectorImage _subDoors;
-        [SerializeField] private VectorImage _subTileObjects;
-        [SerializeField] private VectorImage _subWallAttachments;
-        [SerializeField] private VectorImage _subPiping;
-        [SerializeField] private VectorImage _subDisposals;
-        [SerializeField] private VectorImage _subBaseTiles;
-        [SerializeField] private VectorImage _subFoodDrink;
-        [SerializeField] private VectorImage _subTools;
-        [SerializeField] private VectorImage _subMedical;
-        [SerializeField] private VectorImage _subSecurity;
-        [SerializeField] private VectorImage _subMisc;
-        [SerializeField] private VectorImage _subAtmospherics;
-        [SerializeField] private VectorImage _subSpawnPlacements;
-        [SerializeField] private VectorImage _subRandomSpawners;
-        [SerializeField] private VectorImage _subTriggers;
+        /// <summary>One per distinct <see cref="MapEditorSubTab.IconPath"/>; the baker fills it from the sub-tab table.</summary>
+        [SerializeField] private List<BakedIcon> _subTabIcons = new();
         [SerializeField] private VectorImage _spawnAssistant;
         [SerializeField] private VectorImage _spawnSecurity;
         [SerializeField] private VectorImage _spawnTraitor;
@@ -142,30 +108,7 @@ namespace SS3D.Systems.Tile.MapEditor
             };
 
         public VectorImage GetSubcategoryIcon(MapEditorSubcategory subcategory) =>
-            subcategory switch
-            {
-                MapEditorSubcategory.Flooring => Resolve(_subFlooring, Paths.SubFlooring),
-                MapEditorSubcategory.Turfs => Resolve(_subTurfs, Paths.SubTurfs),
-                MapEditorSubcategory.Overlays => Resolve(_subOverlays, Paths.SubOverlays),
-                MapEditorSubcategory.Walls => Resolve(_subWalls, Paths.SubWalls),
-                MapEditorSubcategory.Doors => Resolve(_subDoors, Paths.SubDoors),
-                MapEditorSubcategory.TileObjects => Resolve(_subTileObjects, Paths.SubTileObjects),
-                MapEditorSubcategory.WallAttachments => Resolve(_subWallAttachments, Paths.SubWallAttachments),
-                MapEditorSubcategory.Piping => Resolve(_subPiping, Paths.SubPiping),
-                MapEditorSubcategory.Disposals => Resolve(_subDisposals, Paths.SubDisposals),
-                MapEditorSubcategory.BaseTiles => Resolve(_subBaseTiles, Paths.SubBaseTiles),
-                MapEditorSubcategory.FoodDrink => Resolve(_subFoodDrink, Paths.SubFoodDrink),
-                MapEditorSubcategory.Tools => Resolve(_subTools, Paths.SubTools),
-                MapEditorSubcategory.Medical => Resolve(_subMedical, Paths.SubMedical),
-                MapEditorSubcategory.Security => Resolve(_subSecurity, Paths.SubSecurity),
-                MapEditorSubcategory.Misc => Resolve(_subMisc, Paths.SubMisc),
-                MapEditorSubcategory.Atmospherics => Resolve(_subAtmospherics, Paths.SubAtmospherics),
-                MapEditorSubcategory.SpawnPlacements => Resolve(_subSpawnPlacements, Paths.SubSpawnPlacements),
-                MapEditorSubcategory.RandomSpawners => Resolve(_subRandomSpawners, Paths.SubRandomSpawners),
-                MapEditorSubcategory.Triggers => Resolve(_subTriggers, Paths.SubTriggers),
-                MapEditorSubcategory.Rooms => Resolve(_subFlooring, Paths.SubFlooring),
-                _ => null,
-            };
+            MapEditorSubTabs.TryGet(subcategory, out MapEditorSubTab row) ? ResolveBaked(row.IconPath) : null;
 
         /// <summary>Library icon for a spawn catalog key; jobs without their own glyph fall back to the map pin.</summary>
         public VectorImage GetSpawnIcon(string spawnAssetName)
@@ -180,14 +123,14 @@ namespace SS3D.Systems.Tile.MapEditor
                     SpawnPoints.AntagonistSpawnCategory.Traitor => Resolve(_spawnTraitor, Paths.SpawnTraitor),
                     SpawnPoints.AntagonistSpawnCategory.MalfunctioningAI => Resolve(_spawnMalfunctioningAI, Paths.SpawnMalfunctioningAI),
                     SpawnPoints.AntagonistSpawnCategory.NuclearOperatives => Resolve(_spawnNuclearOperatives, Paths.SpawnNuclearOperatives),
-                    _ => Resolve(_subSpawnPlacements, Paths.SubSpawnPlacements),
+                    _ => GetSubcategoryIcon(MapEditorSubcategory.SpawnPoints),
                 };
 
             return jobName switch
             {
                 "Assistant" => Resolve(_spawnAssistant, Paths.SpawnAssistant),
                 "Security" => Resolve(_spawnSecurity, Paths.SpawnSecurity),
-                _ => Resolve(_subSpawnPlacements, Paths.SubSpawnPlacements),
+                _ => GetSubcategoryIcon(MapEditorSubcategory.SpawnPoints),
             };
         }
 
@@ -212,6 +155,24 @@ namespace SS3D.Systems.Tile.MapEditor
         /// the F7 hotkey — the toolbar no longer has an explicit Hide UI button).
         /// </summary>
         public VectorImage ShowUi => Resolve(_eyeOff, Paths.EyeOff);
+
+        private VectorImage ResolveBaked(string path)
+        {
+            foreach (BakedIcon icon in _subTabIcons)
+            {
+                if (icon.Image != null && string.Equals(icon.Path, path, StringComparison.Ordinal))
+                    return icon.Image;
+            }
+
+            return MapEditorIconLoader.Load(path);
+        }
+
+        [Serializable]
+        public struct BakedIcon
+        {
+            public string Path;
+            public VectorImage Image;
+        }
 
         private static VectorImage Resolve(VectorImage baked, string path) =>
             baked != null ? baked : MapEditorIconLoader.Load(path);

@@ -16,7 +16,7 @@ do end to end. Each goal is split into **slices**, the smaller pieces that have 
 | Goal | What you'll be able to do | Progress |
 |------|---------------------------|----------|
 | [Test server](#test-server) | Download a release, click join, play with others on a live server | 6 of 8 done, 2 partial |
-| [Map authoring](#map-authoring) | Build your own station in a release build and hand it in | 8 of 9 done |
+| [Map authoring](#map-authoring) | Build your own station in a release build and hand it in | 9 of 10 done |
 | [Nuclear Operatives round](#nuclear-operatives-round) | Play a full Nuke Ops round from spawn to end screen | 4 of 10 done, 5 partial |
 | [Station round](#station-round) | Play a short, bare-bones SS13 shift with jobs and antagonists | 0 of 7 done, 1 partial |
 
@@ -55,6 +55,7 @@ What already works, system by system, is listed in
 | ✅ | A5 | Easy to find, share and hand in your map files, with a testers' guide in the download |
 | ⬜ | A6 | A tester builds a Nuke Ops station from the download using only the guide, and it ships with the game |
 | ✅ | A7 | Close the game and run Update_SS3D.bat (Windows) or ./update_ss3d.sh (Linux) to get the latest stable release without losing maps; the previous build stays available |
+| ✅ | A8 | Every object in the editor's palette sits in a tab named for where it goes, and search finds anything from any tab (objects are filed under their new tabs, search finds them from any tab, Furniture and Machines are split under headings, and an object's variants share one slot that V cycles) |
 
 ## Nuclear Operatives round
 

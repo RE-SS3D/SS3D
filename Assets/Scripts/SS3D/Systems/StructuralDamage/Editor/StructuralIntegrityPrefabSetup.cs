@@ -29,16 +29,27 @@ namespace SS3D.Systems.StructuralDamage.Editor
             "Assets/Content/WorldObjects/Structures/Doors/SecurityAirlock.prefab",
         };
 
+        // Tile asset paths under Resources/Furniture. Machine tile folders are named for palette headings
+        // (Power, General), so they no longer mirror the WorldObjects prefab folders; PrefabDefinition maps back.
         private static readonly string[] MetalFurnitureDefinitions =
         {
             "Storage/Lockers/Locker", "Storage/Lockers/SecureLocker", "Storage/Lockers/SecurityLocker",
             "Machines/Vendors/VendorYouTool", "Machines/Vendors/VendorSecTech",
             "Machines/Vendors/VendorRobustSoftdrinks", "Machines/Vendors/VendorHotDrinks",
-            "Machines/Engineering/SMES", "Machines/Engineering/PacManGenerator",
-            "Machines/Engineering/PowerCellCharger", "Machines/Medical/ChemicalDispenser",
+            "Machines/Power/SMES", "Machines/Power/PacManGenerator",
+            "Machines/Power/PowerCellCharger", "Machines/Medical/ChemicalDispenser",
             "Machines/Kitchen/Microwave", "Machines/Kitchen/Blender", "Machines/Kitchen/Gibber",
-            "Machines/Kitchen/TableBoozeDispenser", "Machines/Generic/SlotMachine",
+            "Machines/Kitchen/TableBoozeDispenser", "Machines/General/SlotMachine",
         };
+
+        private static string PrefabDefinition(string tileDefinition) =>
+            tileDefinition switch
+            {
+                "Storage/Lockers/SecureLocker" => "Storage/Lockers/LockerSecure",
+                _ => tileDefinition
+                    .Replace("Machines/Power/", "Machines/Engineering/")
+                    .Replace("Machines/General/", "Machines/Generic/"),
+            };
 
         /// <summary>BatchMode: <c>-executeMethod SS3D.Systems.StructuralDamage.Editor.StructuralIntegrityPrefabSetup.SetupBatch</c>
         /// Prefer <see cref="StructuralDamageContentPrefabRecipes.RunAllBatch"/> for domain re-runs.</summary>
@@ -95,8 +106,7 @@ namespace SS3D.Systems.StructuralDamage.Editor
                     so.structuralDamageEnabled = true;
                     EditorUtility.SetDirty(so);
                 }
-                string prefabDefinition = definition == "Storage/Lockers/SecureLocker"
-                    ? "Storage/Lockers/LockerSecure" : definition;
+                string prefabDefinition = PrefabDefinition(definition);
                 if (SetupPrefab($"Assets/Content/WorldObjects/Furniture/{prefabDefinition}.prefab", null))
                     updated++;
             }

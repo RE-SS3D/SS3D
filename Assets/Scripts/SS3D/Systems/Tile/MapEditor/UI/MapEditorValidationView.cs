@@ -19,6 +19,8 @@ namespace SS3D.Systems.Tile.MapEditor.UI
         private bool _renderedValidationStale;
 
         public event Action<MapValidationIssue> ValidationLocateRequested;
+        /// <summary>Show in palette: search for the issue's <see cref="MapValidationIssue.EntryKey"/>.</summary>
+        public event Action<string> ValidationShowInPaletteRequested;
 
         private void BuildMapCheck(VisualElement column)
         {
@@ -43,15 +45,13 @@ namespace SS3D.Systems.Tile.MapEditor.UI
                 _expandedIssue = null;
                 _renderedValidationContext = _vm.ValidationContext;
             }
-            bool firstCheck = _renderedValidationRevision == 0 && _vm.ValidationChecked;
             _renderedValidationRevision = _vm.ValidationRevision;
             _renderedValidationStale = _vm.ValidationStale;
             MapValidationIssue[] live = _vm.ValidationIssues
                 .Where(issue => !issue.IsWarning || !_ignoredWarnings.Contains(issue.Id)).ToArray();
             int errors = live.Count(issue => !issue.IsWarning);
             int warnings = live.Length - errors;
-            if (firstCheck && live.Length > 0)
-                _expandedIssue = live[0].Id;
+            // Issues start closed: a long list is read by title, and one opens on click.
 
             _mapCheck.Clear();
             _mapCheck.EnableInClassList("map-check--collapsed", _checkCollapsed);
@@ -163,6 +163,17 @@ namespace SS3D.Systems.Tile.MapEditor.UI
                         () => ValidationLocateRequested?.Invoke(issue));
                     locate.tooltip = "Move the camera to this spot on the map";
                     actions.Add(locate);
+                }
+                if (!string.IsNullOrEmpty(issue.EntryKey))
+                {
+                    Button show = CheckButton("Show in palette", "map-check-show-" + issue.Id, () =>
+                    {
+                        if (_paletteMode == PaletteMode.Min)
+                            TogglePaletteMode(PaletteMode.Min);
+                        ValidationShowInPaletteRequested?.Invoke(issue.EntryKey);
+                    });
+                    show.tooltip = "Search the palette for what this needs";
+                    actions.Add(show);
                 }
                 if (issue.IsWarning)
                     actions.Add(CheckButton("Ignore", "map-check-ignore-" + issue.Id, () =>

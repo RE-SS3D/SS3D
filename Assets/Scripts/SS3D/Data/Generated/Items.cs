@@ -110,8 +110,8 @@ namespace SS3D.Data.Generated
         public const string OxygenTank = "5479411218b869144b7d09d6db6dc58e";
         public const string PacManGenerator = "45cc43b84ee58e644b9523cb27682b39";
         public const string PDA = "79260483ae5d3e04fa272e092b49abac";
-        public const string Plant0 = "41d7af24659a0d3439668aeb4c46d9bc";
-        public const string Plant7 = "8ae2f499d25bfcd41bf26b735c852ab1";
+        public const string PlantEarth = "41d7af24659a0d3439668aeb4c46d9bc";
+        public const string PlantExotic = "8ae2f499d25bfcd41bf26b735c852ab1";
         public const string PlasmaTank = "e3fb39f0a84acf541b6ee828550a1708";
         public const string PlasticChair = "4a1bd08646e8e1f4a861960d9b7485f8";
         public const string PlasticChairBlue = "ad124dd2ec7d83344a20a44fad208ca0";

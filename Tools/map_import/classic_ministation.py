@@ -22,10 +22,13 @@ import re
 import subprocess
 import sys
 
+from asset_ids import SCHEMA_VERSION, load_asset_ids, saved_entry
+
 SOURCE_COMMIT = "5f7e737a238412838decebc88c0e4274b6a31f12"
 SOURCE_SAVE = "Assets/StreamingAssets/Saves/MiniStation.txt"
 SOURCE_SCENE = "Assets/Content/Scenes/Maps/MiniStation.unity"
 OUTPUT = pathlib.Path("Builds/Game/Data/StationTemplates/classic-ministation.json")
+ASSET_IDS = load_asset_ids()
 
 CHUNK_SIZE = 16
 WALL_MOUNT_LAYERS = (5, 6)  # TileLayer.WallMountHigh, WallMountLow
@@ -305,7 +308,7 @@ def build_tilemap(cells, items):
         key, (x, y) = location(cell)
         mounts = collections.defaultdict(list)
         for name, direction in sorted(cells[cell], key=lambda placed: LAYERS[placed[0]]):
-            saved = {"tileObjectSOName": name, "origin": {"x": x, "y": y}, "dir": direction}
+            saved = saved_entry("tileObjectSOName", name, ASSET_IDS, origin={"x": x, "y": y}, dir=direction)
             if LAYERS[name] in WALL_MOUNT_LAYERS:
                 mounts[LAYERS[name]].append(saved)
             else:
@@ -342,13 +345,13 @@ def build_items(report):
             raise SystemExit(f"No mapping for item {name}")
         if ITEM_RENAMES[name] != name:
             report[f"{name} -> {ITEM_RENAMES[name]}"] += 1
-        items.append({
-            "itemName": ITEM_RENAMES[name],
-            "worldPosition": dict(zip("xyz", position)),
-            "rotation": dict(zip("xyzw", rotation if any(rotation) else [0.0, 0.0, 0.0, 1.0])),
-        })
+        items.append(saved_entry(
+            "itemName", ITEM_RENAMES[name], ASSET_IDS,
+            worldPosition=dict(zip("xyz", position)),
+            rotation=dict(zip("xyzw", rotation if any(rotation) else [0.0, 0.0, 0.0, 1.0])),
+        ))
     for name, x, y, z in ADDED_ITEMS:
-        items.append({"itemName": name, "worldPosition": {"x": x, "y": y, "z": z}, "rotation": {"x": 0.0, "y": 0.0, "z": 0.0, "w": 1.0}})
+        items.append(saved_entry("itemName", name, ASSET_IDS, worldPosition={"x": x, "y": y, "z": z}, rotation={"x": 0.0, "y": 0.0, "z": 0.0, "w": 1.0}))
     return items
 
 
@@ -389,7 +392,7 @@ def main():
     cable_count = route_cables(cells)
 
     template = {
-        "schemaVersion": 1,
+        "schemaVersion": SCHEMA_VERSION,
         "envelopeType": "station-template",
         "createdAt": "2026-11-05T00:00:00.0000000Z",
         "gameVersion": "0.0.7.6",

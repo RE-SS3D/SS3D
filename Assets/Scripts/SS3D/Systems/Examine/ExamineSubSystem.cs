@@ -24,6 +24,26 @@ namespace SS3D.Systems.Examine
 
         public delegate void ExaminableChangedHandler(IExaminable examinable);
 
+        /// <summary>Fired when <see cref="CursorLabelOverride"/> changes.</summary>
+        public event System.Action OnCursorLabelOverrideChanged;
+
+        /// <summary>
+        /// While non-null, the cursor badge shows this text instead of examining what is under the pointer, and
+        /// detailed examine stays off; empty hides the badge. The Map Editor sets it to what it is about to place.
+        /// </summary>
+        public string CursorLabelOverride { get; private set; }
+
+        public void SetCursorLabelOverride(string label)
+        {
+            if (label == CursorLabelOverride)
+            {
+                return;
+            }
+
+            CursorLabelOverride = label;
+            OnCursorLabelOverrideChanged?.Invoke();
+        }
+
         private SelectionSubSystem _selectionSystem;
         private bool _selectionEventsBound;
 

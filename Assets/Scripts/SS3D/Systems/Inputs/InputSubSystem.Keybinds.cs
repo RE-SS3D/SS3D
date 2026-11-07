@@ -108,6 +108,7 @@ namespace SS3D.Systems.Inputs
             Controls.TileCreatorActions tile = Inputs.TileCreator;
             Plain("Map Editor", tile.ToggleMenu, "Build Menu");
             Plain("Map Editor", tile.Rotate, "Rotate");
+            Plain("Map Editor", tile.CycleVariant, "Next Variant (Shift: previous)");
             Plain("Map Editor", tile.Replace, "Replace (hold)");
             Plain("Map Editor", tile.SquareDrag, "Square Drag (hold)");
             Plain("Map Editor", tile.Place, "Place", readOnly: true);

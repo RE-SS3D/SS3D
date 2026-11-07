@@ -41,6 +41,8 @@ Layered contributor-based disk persistence for station templates and server meta
 - Round history: `AppendRoundHistory` — hooked from `RoundSubSystem.ProcessEndRound` with the fixed `RoundOutcome`: mode, map, player count, duration, `trigger`, `winner`, `operativeCkeys` and `fallbackMap` (true only when P2's Extended fallback ran).
 - **Deferred:** `RoundConfigPersistenceContributor` (blocked on round-config), round snapshot contributors (Phase 2), round-start `LoadStationTemplate(mapId)` from config pool.
 
+- Placed tile objects and items (schema 2) save `id`, the prefab's `ObjectAssetReference.Id`, beside the name; loading resolves by id, then by name through `RenamedTileObjects` (`SavedAssetLookup`). A map file written outside the game (`Tools/map_import/`, fixtures) gets its ids from `python3 Tools/map_import/asset_ids.py <files>`; `SavedAssetLookupTests.ShippedMaps_StoreAnIdMatchingEachName` fails on a shipped map without them.
+
 ## Pitfalls
 
 - **Station template restore blocks FishNet if sync:** MetaStation-scale `TileMap.Load` without yields freezes Host. Play Mode / Map Editor use `LoadStationTemplateAsync` → `LoadRoutine` + `BeginBulkMutation`. Sync `LoadStationTemplate` remains for EditMode tests only. Hit 2026-07-28.

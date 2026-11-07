@@ -41,7 +41,7 @@ namespace SS3D.Tests.EditMode
         public void TryGetCategoryForLayer_ReturnsExpectedGroups()
         {
             Assert.IsTrue(TileLayerCategoryMapping.TryGetCategoryForLayer(TileLayer.Wire, out TileLayerCategory wireCategory));
-            Assert.AreEqual(TileLayerCategory.WiresAndPipes, wireCategory);
+            Assert.AreEqual(TileLayerCategory.Cables, wireCategory);
 
             Assert.IsTrue(TileLayerCategoryMapping.TryGetCategoryForLayer(TileLayer.FurnitureTop, out TileLayerCategory furnitureCategory));
             Assert.AreEqual(TileLayerCategory.Furniture, furnitureCategory);
@@ -50,7 +50,40 @@ namespace SS3D.Tests.EditMode
             Assert.AreEqual(0, TileLayerCategoryMapping.GetLayers(TileLayerCategory.FloorDecals).Count);
 
             Assert.IsTrue(TileLayerCategoryMapping.TryGetCategoryForLayer(TileLayer.PipeMiddle, out TileLayerCategory pipeCategory));
-            Assert.AreEqual(TileLayerCategory.WiresAndPipes, pipeCategory);
+            Assert.AreEqual(TileLayerCategory.GasPipes, pipeCategory);
+
+            Assert.IsTrue(TileLayerCategoryMapping.TryGetCategoryForLayer(TileLayer.PipeManifold, out TileLayerCategory manifoldCategory));
+            Assert.AreEqual(TileLayerCategory.GasPipes, manifoldCategory);
+
+            Assert.IsTrue(TileLayerCategoryMapping.TryGetCategoryForLayer(TileLayer.Disposal, out TileLayerCategory disposalCategory));
+            Assert.AreEqual(TileLayerCategory.Disposals, disposalCategory);
+
+            Assert.IsTrue(TileLayerCategoryMapping.TryGetCategoryForLayer(TileLayer.Plenum, out TileLayerCategory plenumCategory));
+            Assert.AreEqual(TileLayerCategory.Subfloor, plenumCategory);
+        }
+
+        [Test]
+        public void EveryTileLayer_MapsToOneCategoryOnly()
+        {
+            foreach (TileLayer layer in TileHelper.GetTileLayers())
+            {
+                int count = 0;
+                foreach (TileLayerCategory category in TileLayerCategoryMapping.AllCategories)
+                    foreach (TileLayer mapped in TileLayerCategoryMapping.GetLayers(category))
+                        if (mapped == layer) count++;
+
+                Assert.AreEqual(1, count, $"{layer} is in {count} layer groups");
+            }
+        }
+
+        [Test]
+        public void LowerGroups_UsePlainWords()
+        {
+            // creative-mode.md §2: plain words, matching the Lower tab's sub-tabs.
+            Assert.AreEqual("Subfloor", TileLayerCategoryMapping.GetDisplayName(TileLayerCategory.Subfloor));
+            Assert.AreEqual("Cables", TileLayerCategoryMapping.GetDisplayName(TileLayerCategory.Cables));
+            Assert.AreEqual("Gas pipes", TileLayerCategoryMapping.GetDisplayName(TileLayerCategory.GasPipes));
+            Assert.AreEqual("Disposals", TileLayerCategoryMapping.GetDisplayName(TileLayerCategory.Disposals));
         }
 
         [Test]

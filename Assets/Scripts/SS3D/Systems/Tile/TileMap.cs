@@ -814,7 +814,7 @@ namespace SS3D.Systems.Tile
                 {
                     foreach (SavedPlacedTileObject savedObject in savedTile.GetPlacedObjects())
                     {
-                        TileObjectSo toBePlaced = tileSystem.GetAsset(RenamedTileObjects.Resolve(savedObject.tileObjectSOName)) as TileObjectSo;
+                        TileObjectSo toBePlaced = tileSystem.GetSavedAsset(savedObject.id, savedObject.tileObjectSOName) as TileObjectSo;
                         if (toBePlaced == null)
                         {
                             Log.Warning(this,
@@ -856,7 +856,7 @@ namespace SS3D.Systems.Tile
             SavedPlacedItemObject[] savedItems = saveObject.savedItemList ?? Array.Empty<SavedPlacedItemObject>();
             foreach (SavedPlacedItemObject savedItem in savedItems)
             {
-                if (tileSystem.GetAsset(savedItem.itemName) is not ItemObjectSo toBePlaced)
+                if (tileSystem.GetSavedAsset(savedItem.id, savedItem.itemName) is not ItemObjectSo toBePlaced)
                 {
                     Log.Warning(this, "Skipping unknown or removed item asset '{assetName}' while loading map",
                         Logs.Generic, savedItem.itemName);
