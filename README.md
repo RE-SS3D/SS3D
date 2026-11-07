@@ -32,7 +32,7 @@ Each square is one slice of the goal: ✅ done · 🟡 partly there · ⬜ not s
 ## Play
 
 1. Download the latest **[release](https://github.com/henkhooft/SS3D/releases/latest)**:
-   `SS3D-Windows-<version>.zip` (Linux client and server zips are attached when built).
+   `SS3D-Windows-<version>.zip`, or the Linux client or server zip.
 2. Unzip it and run **`Game\SS3D.exe`** (Linux: `Game/SS3D-Client`).
 3. From the main menu, **Play locally** to host on your PC (you're admin, so the map editor works), or
    paste a server address and join.
