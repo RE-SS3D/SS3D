@@ -60,6 +60,8 @@ minutes.
 | Service | user systemd `github-actions-runner.service` (`systemctl --user …`) |
 | Library stash (smoke) | `/home/cu6e/.cache/ss3d/Library` (restore copies it into the workspace, ~20 s; only a green job moves its Library back, so a failed or cancelled run keeps the last green stash) |
 | Library stash (EditMode) | `/home/cu6e/.cache/ss3d/Library-editmode` (separate so EditMode and builds don't overwrite each other's cache) |
+| UPM package cache | `/home/cu6e/.cache/ss3d/upm`, shared by every game-ci Unity container (`.github/actions/persistent-upm-cache`), so registry packages are downloaded once, not on every job |
+| game-ci CLI cache | `/home/tmp -> /tmp` symlink on TomNAS. The cache entry is saved by GitHub-hosted runners with paths relative to a workspace one level shallower, so without it the restore fails and every job downloads the CLI from GitHub |
 | Manual clone slot | `/home/cu6e/Dev/` (optional; CI checks out into runner `_work`) |
 
 Still required once was: docker group + linger + image pull (done Jul 2026). Pre-pull:
@@ -198,6 +200,12 @@ try/catch turns into a `ScriptFailed` the harness already fails on — no new DS
   `workflow_dispatch` or restart `github-actions-runner.service` on TomNAS.
 - **Separate EditMode Library stash.** EditMode uses `Library-editmode`; smoke uses `Library`.
   Sharing would let a failed EditMode discard wipe the warm build cache.
+- **Keep downloads out of the job.** The NAS reaches the internet through a VPN with bursty
+  loss, and GitHub itself is often slow or returns 5xx. A Unity container with a throwaway home
+  re-downloaded every package and failed with `could not be added ... aborted`, so registry
+  packages persist via `UPM_CACHE_ROOT`. game-ci forwards only a fixed env list into its
+  container, so the composite action puts a `docker` wrapper on PATH that adds the mount and env
+  to `unityci/editor` containers only.
 - **EditMode imports in its own editor session first.** The stash lacks a PR's new assets, and
   an `AssetDatabase` that imports before them keeps bare `Object` references until the next
   domain reload. A failed run discards its Library, so a re-run hits the same state. The
