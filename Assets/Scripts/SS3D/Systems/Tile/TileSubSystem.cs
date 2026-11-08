@@ -157,6 +157,12 @@ namespace SS3D.Systems.Tile
         [ServerOrClient]
         public GenericObjectSo GetAsset(ushort assetId) => Loader?.GetAsset(assetId);
 
+        /// <summary>
+        /// Resolves a saved tile object or item by prefab id, then by name (see <see cref="SavedAssetLookup"/>).
+        /// </summary>
+        [ServerOrClient]
+        public GenericObjectSo GetSavedAsset(string id, string savedName) => Loader?.GetSavedAsset(id, savedName);
+
         [ServerOrClient]
         public ushort TryGetAssetId(GenericObjectSo asset) => Loader?.Catalog.TryGetAssetId(asset) ?? TileAssetCatalog.InvalidAssetId;
 

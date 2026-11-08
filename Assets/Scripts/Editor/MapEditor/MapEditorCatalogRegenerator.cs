@@ -1,5 +1,4 @@
 #if UNITY_EDITOR
-using SS3D.Systems.Tile;
 using SS3D.Systems.Tile.MapEditor;
 using System.Collections.Generic;
 using System.IO;
@@ -11,11 +10,11 @@ using UnityAssetDatabase = UnityEditor.AssetDatabase;
 namespace SS3D.Editor.MapEditor
 {
     /// <summary>
-    /// Regenerates a MapEditorCatalogSo from loaded tile assets using heuristics.
+    /// Regenerates <c>MapEditorCatalog.asset</c> from the tile assets under <c>Resources</c> (tier B, editor-tooling-tiers).
     /// </summary>
     public static class MapEditorCatalogRegenerator
     {
-        private const string DefaultCatalogPath = "Assets/Content/Systems/Tile/MapEditorCatalog.asset";
+        private const string DefaultCatalogPath = MapEditorCatalogGeneration.CatalogPath;
 
         [MenuItem("SS3D/Map Editor/Regenerate Catalog")]
         public static void RegenerateCatalog()
@@ -34,15 +33,7 @@ namespace SS3D.Editor.MapEditor
                 UnityAssetDatabase.CreateAsset(catalog, DefaultCatalogPath);
             }
 
-            GenericObjectSo[] assets = Resources.LoadAll<GenericObjectSo>("");
-            List<MapEditorCatalogEntry> entries = new() { MapEditorCatalogHeuristics.CreateEraserEntry() };
-
-            foreach (GenericObjectSo asset in assets.OrderBy(a => a.NameString))
-            {
-                string path = UnityAssetDatabase.GetAssetPath(asset);
-                entries.Add(MapEditorCatalogHeuristics.Infer(asset, path));
-            }
-
+            List<MapEditorCatalogEntry> entries = MapEditorCatalogGeneration.BuildEntries();
             catalog.Entries = entries;
             EditorUtility.SetDirty(catalog);
             UnityAssetDatabase.SaveAssets();

@@ -13,6 +13,7 @@ using SS3D.Systems.Area;
 using SS3D.Systems.Atmospherics;
 using SS3D.Systems.Electricity;
 using SS3D.Systems.Entities;
+using SS3D.Systems.Examine;
 using SS3D.Systems.Furniture.Disposal;
 using SS3D.Systems.Inputs;
 using SS3D.Systems.Rounds;
@@ -60,12 +61,14 @@ namespace SS3D.Systems.Tile.MapEditor
         private IMapEditorPersistence _persistence;
         private InputSubSystem _inputSystem;
         private Controls.TileCreatorActions _controls;
+        private ExamineSubSystem _examine;
         private TileSubSystem _tileSystem;
         private CameraFollow _cameraFollow;
         private Camera _playerCamera;
         private IInputHandle _mapEditorHandle;
         private VisualElement _overlayRoot;
         private bool _active;
+        private bool _lastTabRestored;
         /// <summary>OnStart finished; OnDestroyed may run first when a scene unloads mid-load.</summary>
         private bool _started;
         /// <summary>Unscaled time at which the pending Map Check runs after an edit; negative when none is pending.</summary>
@@ -117,12 +120,8 @@ namespace SS3D.Systems.Tile.MapEditor
 
         public bool IsOrbiting => _session.IsOrbiting;
 
-        /// <summary>
-        /// True for the dedicated Delete tool (always erases, no selected asset), or for the
-        /// legacy Edit-tool-plus-Eraser-catalog-entry combination.
-        /// </summary>
-        public bool IsDeleting => _viewModel.CurrentTool == MapEditorTool.Delete ||
-            (_viewModel.IsEraserSelected && _viewModel.CurrentTool == MapEditorTool.Edit);
+        /// <summary>True for the Delete tool, which erases whatever the open sub-tab's delete scope covers.</summary>
+        public bool IsDeleting => _viewModel.CurrentTool == MapEditorTool.Delete;
         public MapEditorTool CurrentTool => _viewModel.CurrentTool;
         public bool IsRoomCategory => _viewModel.IsRoomCategory;
         public MapEditorMode CurrentMode => _viewModel.CurrentMode;
@@ -300,6 +299,7 @@ namespace SS3D.Systems.Tile.MapEditor
         private void WireViewEvents()
         {
             _view.ValidationLocateRequested += OnValidationLocateRequested;
+            _view.ValidationShowInPaletteRequested += OnValidationShowInPaletteRequested;
             _view.ToolSelected += OnToolSelected;
             _view.AreaApplyRequested += OnAreaApplyRequested;
             _view.GasMarkerApplyRequested += OnGasMarkerApplyRequested;
@@ -325,7 +325,7 @@ namespace SS3D.Systems.Tile.MapEditor
             _view.ModeSelected += OnModeSelected;
             _view.SubcategorySelected += OnSubcategorySelected;
             _view.SearchChanged += OnSearchChanged;
-            _view.AssetSelected += HandleAssetSelected;
+            _view.AssetSelected += OnPaletteEntryPicked;
         }
 
         private void RebuildCatalog()
@@ -334,6 +334,7 @@ namespace SS3D.Systems.Tile.MapEditor
                 return;
 
             _catalog.Build(_tileSystem.Loader.Assets, _catalogAsset);
+            _viewModel.Catalog = _catalog;
             _viewModel.NotifyChanged();
         }
 
@@ -361,6 +362,16 @@ namespace SS3D.Systems.Tile.MapEditor
                 && entities.IsPlayerSpawned(local);
         }
 
+        /// <summary>The first open of a session reopens the tab used last on this machine (creative-mode §2).</summary>
+        private void RestoreLastTab()
+        {
+            if (_lastTabRestored)
+                return;
+
+            _lastTabRestored = true;
+            _viewModel.OpenSubTab(MapEditorLastTab.Load(_viewModel.IsSubTabShown));
+        }
+
         private void SetActive(bool active)
         {
             _active = active;
@@ -370,6 +381,7 @@ namespace SS3D.Systems.Tile.MapEditor
                 _viewModel.HideUI = false;
                 EnableDocument();
                 RebuildCatalog();
+                RestoreLastTab();
                 EnsureCommandServiceBound();
                 _viewModel.EnsureLayerDefaults();
                 MapEditorLayerVisibility.Activate();
@@ -423,6 +435,7 @@ namespace SS3D.Systems.Tile.MapEditor
                 ApplyEditorVisualSuppression(false);
                 // IsActive is already false — re-apply HashGrid AOI host visibility.
                 RefreshTileHostVisibility();
+                ReleaseCursorLabel();
                 EditorClosed?.Invoke();
             }
         }
@@ -508,12 +521,6 @@ namespace SS3D.Systems.Tile.MapEditor
 
             _viewModel.SelectEntry(entry, asset);
 
-            if (entry.IsEraser)
-            {
-                _hologramManager.EnterDeleteMode();
-                return;
-            }
-
             if (MapEditorFloorDecalCatalog.TryDecode(entry.AssetName, out ushort decalId) &&
                 FloorDecalCatalog.Get()?.TryGet(decalId, out FloorDecalDefinition definition) == true &&
                 _viewModel.CurrentTool == MapEditorTool.Edit)
@@ -585,6 +592,8 @@ namespace SS3D.Systems.Tile.MapEditor
                 CancelAreaStroke();
                 SetMouseOverUI(false);
             }
+
+            SyncCursorLabel();
             if (Keyboard.current != null)
             {
                 if (Keyboard.current.f7Key.wasPressedThisFrame)
@@ -596,6 +605,7 @@ namespace SS3D.Systems.Tile.MapEditor
                 if (!InputInterface.IsCapturingText)
                 {
                     HandleToolHotkeys();
+                    HandleVariantHotkey();
 
                     if (IsChordModifierPressed(Keyboard.current) && Keyboard.current.zKey.wasPressedThisFrame)
                         RpcUndo(LocalConnection);
@@ -672,10 +682,8 @@ namespace SS3D.Systems.Tile.MapEditor
         private void CopyIntoActiveSelection(string assetName)
         {
             GenericObjectSo asset = _tileSystem.GetAsset(assetName);
-            _viewModel.SelectEntry(new MapEditorCatalogEntry { AssetName = assetName }, asset);
             _viewModel.SetTool(MapEditorTool.Edit);
-            if (asset != null)
-                _hologramManager.SetSelectedObject(asset);
+            SelectAsset(new MapEditorCatalogEntry { AssetName = assetName }, asset);
             _viewModel.ShowToast($"Copied {assetName}");
             _toastTimer = 1.6f;
         }
@@ -725,6 +733,49 @@ namespace SS3D.Systems.Tile.MapEditor
             RpcMoveObject(_moveAssetName, _moveSource.Value, destination, _moveDirection, _moveIsItem, LocalConnection);
             _moveSource = null;
             _moveAssetName = null;
+        }
+
+        /// <summary>
+        /// The examine badge by the cursor names what Edit is about to place ("Office Chair (Blue)", the room being
+        /// painted) instead of examining the object under the pointer, which is rarely what you're building with.
+        /// Other tools, the pointer over the editor's UI, and F7's hidden UI show no badge.
+        /// </summary>
+        private void SyncCursorLabel()
+        {
+            if (_examine == null && !SubSystems.TryGet(out _examine))
+                return;
+
+            string label = string.Empty;
+            if (!_viewModel.HideUI && !_mouseOverUI && _viewModel.CurrentTool == MapEditorTool.Edit)
+            {
+                if (IsRoomCategory)
+                    label = _viewModel.AreaRoomName ?? string.Empty;
+                else if (_viewModel.SelectedEntry != null)
+                    label = PlacingLabel(_viewModel.SelectedEntry);
+            }
+
+            _examine.SetCursorLabelOverride(label);
+        }
+
+        // One string per held entry, not one per frame.
+        private MapEditorCatalogEntry _placingLabelEntry;
+        private string _placingLabel;
+
+        private string PlacingLabel(MapEditorCatalogEntry entry)
+        {
+            if (!ReferenceEquals(entry, _placingLabelEntry))
+            {
+                _placingLabelEntry = entry;
+                _placingLabel = MapEditorCatalog.PlacingLabel(entry);
+            }
+
+            return _placingLabel;
+        }
+
+        private void ReleaseCursorLabel()
+        {
+            if (_examine != null || SubSystems.TryGet(out _examine))
+                _examine.SetCursorLabelOverride(null);
         }
 
         private void UpdateMouseOverUI()
@@ -783,6 +834,7 @@ namespace SS3D.Systems.Tile.MapEditor
                 return;
 
             _view.ValidationLocateRequested -= OnValidationLocateRequested;
+            _view.ValidationShowInPaletteRequested -= OnValidationShowInPaletteRequested;
             _view.ToolSelected -= OnToolSelected;
             _view.AreaApplyRequested -= OnAreaApplyRequested;
             _view.GasMarkerApplyRequested -= OnGasMarkerApplyRequested;
@@ -808,7 +860,7 @@ namespace SS3D.Systems.Tile.MapEditor
             _view.ModeSelected -= OnModeSelected;
             _view.SubcategorySelected -= OnSubcategorySelected;
             _view.SearchChanged -= OnSearchChanged;
-            _view.AssetSelected -= HandleAssetSelected;
+            _view.AssetSelected -= OnPaletteEntryPicked;
         }
 
         private void OnToolSelected(MapEditorTool tool)
@@ -847,6 +899,35 @@ namespace SS3D.Systems.Tile.MapEditor
             }
 
             HandleAssetSelected(entry, _viewModel.SelectedAsset);
+        }
+
+        /// <summary>
+        /// V next variant, Shift+V previous. With no family held it does nothing;
+        /// mid-drag it swaps the ghosts' prefab and keeps the drag, as R keeps it when rotating.
+        /// </summary>
+        private void HandleVariantHotkey()
+        {
+            if (!_controls.CycleVariant.WasPressedThisFrame() || !_viewModel.HoldsFamily)
+                return;
+
+            Keyboard keyboard = Keyboard.current;
+            bool previous = keyboard != null && keyboard.shiftKey.isPressed;
+            StepVariant(_catalog.SlotOf(_viewModel.SelectedEntry), previous ? -1 : 1);
+        }
+
+        private void StepVariant(MapEditorPaletteSlot slot, int step)
+        {
+            if (slot == null || !slot.IsFamily)
+                return;
+
+            MapEditorCatalogEntry next = slot.Step(_viewModel.SelectedEntry, step);
+            _catalog.TryGetAsset(next.AssetName, _tileSystem.Loader, out GenericObjectSo asset);
+            if (asset == null)
+                return;
+
+            _viewModel.SelectEntry(next, asset);
+            if (_viewModel.CurrentTool == MapEditorTool.Edit)
+                _hologramManager.SwapSelectedObject(asset);
         }
 
         private void HandleToolHotkeys()
@@ -1070,25 +1151,79 @@ namespace SS3D.Systems.Tile.MapEditor
             MapEditorLayerVisibility.Apply(_viewModel);
         }
 
+        // Clicking a tab means browsing it, so it ends a palette-wide search.
         private void OnModeSelected(MapEditorMode mode)
         {
+            _viewModel.SearchText = string.Empty;
             _viewModel.SetMode(mode);
+            AfterSubTabChanged();
+        }
+
+        private void OnSubcategorySelected(MapEditorSubcategory sub)
+        {
+            _viewModel.SearchText = string.Empty;
+            _viewModel.SetSubcategory(sub);
+            AfterSubTabChanged();
+        }
+
+        /// <summary>Opens a sub-tab in any mode, as a search pick or Show in palette does.</summary>
+        private void OpenSubTab(MapEditorSubcategory sub)
+        {
+            if (_viewModel.CurrentSubcategory == sub)
+                return;
+
+            _viewModel.OpenSubTab(sub);
+            AfterSubTabChanged();
+        }
+
+        private void AfterSubTabChanged()
+        {
             TileLayerVisibilityService.SetGroupVisible(TileLayerCategory.Scripts,
                 _viewModel.IsLayerCategoryVisible(TileLayerCategory.Scripts));
             SyncTurfsLayerVisibility();
             OnToolSelected(_viewModel.CurrentTool);
             SyncHologramToLibrarySelection();
+            MapEditorLastTab.Save(_viewModel.CurrentSubcategory);
         }
 
-        private void OnSubcategorySelected(MapEditorSubcategory sub)
+        /// <summary>
+        /// A palette click. Search results come from every tab, so the entry's sub-tab opens first:
+        /// delete scope, forms and hints all key off the open sub-tab.
+        /// </summary>
+        private void OnPaletteEntryPicked(MapEditorCatalogEntry entry, GenericObjectSo asset) => SelectAsset(entry, asset);
+
+        /// <summary>
+        /// Dropper, search and Show in palette all select through here: the asset's family
+        /// slot shows it as the current variant, its sub-tab opens, and the ghost follows in Edit.
+        /// </summary>
+        private void SelectAsset(MapEditorCatalogEntry entry, GenericObjectSo asset)
         {
-            _viewModel.SetSubcategory(sub);
-            SyncTurfsLayerVisibility();
-            OnToolSelected(_viewModel.CurrentTool);
-            SyncHologramToLibrarySelection();
+            if (entry == null)
+                return;
+
+            if (_viewModel.SelectAsset(entry, asset))
+                AfterSubTabChanged();
+            HandleAssetSelected(_viewModel.SelectedEntry, asset);
         }
 
-        /// <summary>Piping/Disposals tabs toggle Turfs in the view model; only re-dim when it changed (walks the map).</summary>
+        /// <summary>Map Check's Show in palette: search for the entry and select it in the sub-tab it lives in.</summary>
+        private void OnValidationShowInPaletteRequested(string entryKey)
+        {
+            if (string.IsNullOrEmpty(entryKey) || !_catalog.TryGetEntry(entryKey, out MapEditorCatalogEntry entry))
+            {
+                _viewModel.ShowToast("That isn't in this build's palette.");
+                return;
+            }
+
+            _viewModel.SearchText = MapEditorCatalog.SearchTermFor(entry.AssetName);
+            GenericObjectSo asset = null;
+            if (!MapEditorCatalog.IsVirtualKey(entry.AssetName))
+                _catalog.TryGetAsset(entry.AssetName, _tileSystem.Loader, out asset);
+            SelectAsset(entry, asset);
+            _viewModel.NotifyChanged();
+        }
+
+        /// <summary>Lower run tabs (Cables, Gas Pipes, Disposal Pipes) toggle Turfs in the view model; only re-dim when it changed (walks the map).</summary>
         private void SyncTurfsLayerVisibility()
         {
             bool visible = _viewModel.IsLayerCategoryVisible(TileLayerCategory.Turfs);
@@ -1116,7 +1251,7 @@ namespace SS3D.Systems.Tile.MapEditor
         }
 
         /// <summary>
-        /// First placeable catalog entry for the active subcategory (skips Eraser / floor-decal slots).
+        /// First placeable catalog entry for the active subcategory (skips floor-decal slots).
         /// Used as the Delete-tool ghost prototype when the cursor is not over a matching target.
         /// </summary>
         public bool TryGetSubcategoryPrototypeAssetName(MapEditorSubcategory subcategory, out string assetName)
@@ -1125,15 +1260,14 @@ namespace SS3D.Systems.Tile.MapEditor
             if (_catalog == null)
                 return false;
 
-            if (subcategory == MapEditorSubcategory.Overlays ||
-                MapEditorCatalog.IsScriptingSubcategory(subcategory) ||
-                MapEditorDeleteTargeting.RequiresSubcategorySelection(subcategory) ||
-                MapEditorDeleteTargeting.IsItemSubcategory(subcategory))
+            // Only tile-layer scopes have a prefab to ghost; decals, markers, items and rooms don't.
+            if (!MapEditorSubTabs.TryGet(subcategory, out MapEditorSubTab row) ||
+                !MapEditorDeleteTargeting.IsTileScope(row.DeleteScope))
                 return false;
 
-            foreach (MapEditorCatalogEntry entry in _catalog.Query(_viewModel.CurrentMode, subcategory, null))
+            foreach (MapEditorCatalogEntry entry in _catalog.Query(row.Mode, subcategory, null))
             {
-                if (entry.IsEraser || MapEditorFloorDecalCatalog.TryDecode(entry.AssetName, out _))
+                if (MapEditorFloorDecalCatalog.TryDecode(entry.AssetName, out _))
                     continue;
 
                 assetName = entry.AssetName;
@@ -1147,7 +1281,6 @@ namespace SS3D.Systems.Tile.MapEditor
         {
             MapEditorSubcategory sub = _viewModel.CurrentSubcategory;
             if (_viewModel.SelectedEntry != null &&
-                !_viewModel.SelectedEntry.IsEraser &&
                 _viewModel.SelectedEntry.Subcategory == sub)
             {
                 // Already holding something from this tab — keep it, but refresh the ghost.
@@ -1157,9 +1290,6 @@ namespace SS3D.Systems.Tile.MapEditor
 
             foreach (MapEditorCatalogEntry entry in _catalog.Query(_viewModel.CurrentMode, sub, _viewModel.SearchText))
             {
-                if (entry.IsEraser)
-                    continue;
-
                 GenericObjectSo asset = null;
                 if (MapEditorFloorDecalCatalog.TryDecode(entry.AssetName, out _) ||
                     MapEditorSpawnCatalog.IsSpawnKey(entry.AssetName) ||

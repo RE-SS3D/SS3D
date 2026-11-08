@@ -20,6 +20,29 @@ An admin opens it from the in-game admin tools. While it's open, the admin flies
 
 **The palette is grouped by what you're placing** — floors, walls, wall attachments (lights, alarms, APCs), furniture and devices, items, pipes and cables, and markers (spawn points, areas). The groups follow how a map is layered, so it's always clear what a placement will sit on top of or replace.
 
+### The palette's layout
+
+**Written for someone who has never mapped SS13.** The first people outside the project to build a station arrive with no SS13 vocabulary, so tab and sub-tab names are plain words (*Subfloor*, not *Plenum*; *Starting Air*, not gas markers). The entries themselves keep their in-game names (an SMES is called SMES), which is what an SS13 veteran searches for and what examining the object in a round shows.
+
+**An object goes where it sits, not with the system it serves.** An APC is a wall attachment even though it belongs to the power network; a vent stands on the floor with the machines even though it belongs to atmospherics. This keeps the layering promise above: the tab you took something from tells you what it occupies. When an object exists both as a placed structure and as something you carry (a floor tile, a cable coil, a sheet of steel), what you place decides: the placed form follows its layer, the carried form is an item.
+
+Four tabs, each sub-tab in the order a room gets built (§13 example A):
+
+| Tab | What it holds | Sub-tabs |
+|---|---|---|
+| **Upper** | Everything the crew walks on, through, or past | **Floors** · **Walls & Windows** · **Doors** · **Wall Mounts** (lights, switches, alarms, APCs, posters) · **Furniture** (tables, seats, plants, lockers, crates) · **Machines** (anything powered or interactive that stands on the floor: vendors, kitchen and medical machines, SMES and generators, vents and scrubbers, disposal bins) · **Decals** |
+| **Lower** | The runs laid under the floor, dragged out tile by tile | **Subfloor** (plenum, lattice, catwalk) · **Cables** · **Gas Pipes** (with the valves, pumps, filters, mixers and meters that sit inline on them) · **Disposal Pipes** |
+| **Items** | Anything lying loose at round start, grouped by what it *is*, not who uses it | **Tools** · **Materials & Parts** · **Clothing** · **Medical** · **Food & Drink** · **Devices** (IDs, PDAs, headsets, radios) · **Weapons** · **Misc** |
+| **Scripts** | The markers of §2's list — things a player never sees as an object | **Spawn Points** (jobs and antagonists) · **Rooms** (areas, §7) · **Starting Air** |
+
+Lower mirrors §4's three run types one for one, under the subfloor they all rest on. Items are grouped by kind because each item then has exactly one obvious home; a crowbar belongs to every department but is only ever a tool. Objects a mode's fit check requires (§8), such as the nuclear device and its disk, are filed like anything else — the device with the machines, the disk with the devices — and the fit check names what's missing so search can find it.
+
+**Search reaches the whole palette.** Typing a name finds the entry in any tab and shows which tab it lives in, so knowing where something is filed is never a requirement for placing it. Searching by department ("security") turns up that department's items, which covers stocking a room without grouping items by department.
+
+**Big sub-tabs get headings, not more tabs.** Once a sub-tab passes roughly twenty entries it is divided under headings (Machines under Atmos, Power, Kitchen, Medical, Vendors, Disposal; Clothing under uniforms, shoes, headwear and so on), which gives the per-department view a veteran mapper expects. A heading becomes its own sub-tab only when it holds about a dozen entries *and* a newcomer can tell which side of the line an object falls on. A sub-tab with nothing in it is not shown, and nothing appears in the palette ahead of the system that makes it work. The editor reopens on the tab last used, and on Upper › Floors the first time.
+
+**The eraser is not a palette entry.** It's a tool beside the others, because it clears every kind of placement the same way (below).
+
 **Placing works like placing anything in the game.** A selected entry follows the cursor as a preview on the tile it would occupy; rotate it, then click to place. What gets placed is the **finished object** — a sealed wall, a working door, a device in its default state — with no material cost and no build stages. Placing onto a tile resolves adjacency (wall joins, pipe connections) exactly as a normal build would.
 
 **The eraser applies uniformly** — a tile, a device, an item or a pipe segment clears the same way, straight back to absent.

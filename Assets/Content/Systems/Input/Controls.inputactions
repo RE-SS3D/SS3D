@@ -953,6 +953,15 @@
                     "initialStateCheck": false
                 },
                 {
+                    "name": "Cycle Variant",
+                    "type": "Button",
+                    "id": "0fdbbf3c-4c42-4aa9-850e-bf3ee3c79e55",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
                     "name": "Delete",
                     "type": "Button",
                     "id": "f4257e8f-54a4-4181-839c-930d11200e42",
@@ -1002,6 +1011,17 @@
                     "processors": "",
                     "groups": "",
                     "action": "Rotate",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "f513d011-7d00-4c68-980d-24e3eb7abde7",
+                    "path": "<Keyboard>/v",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Cycle Variant",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },

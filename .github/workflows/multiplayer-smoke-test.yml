@@ -143,6 +143,8 @@ jobs:
             missing=1
           fi
           exit $missing
+      - name: Keep the Unity package cache between jobs
+        uses: ./.github/actions/persistent-upm-cache
       - name: Pre-create game-ci license dir as the runner user
         # game-ci's entrypoint mkdirs $GITHUB_WORKSPACE/_activate-license~ as root, then su's to the
         # host user (runAsHostUser), which cannot write UnityLicenseFile.ulf into it ("Permission

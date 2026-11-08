@@ -18,7 +18,7 @@ GameObject:
   - component: {fileID: -5512011697963230755}
   - component: {fileID: 6975437505511336300}
   m_Layer: 0
-  m_Name: Plant0
+  m_Name: PlantEarth
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -135,7 +135,7 @@ MonoBehaviour:
   <SpawnableCollectionId>k__BackingField: 0
   _scenePathHash: 0
   <SceneId>k__BackingField: 0
-  <AssetPathHash>k__BackingField: 7650098214070938027
+  <AssetPathHash>k__BackingField: 16483145598508119743
   <IsNested>k__BackingField: 0
   <ComponentIndex>k__BackingField: 0
   <PredictedSpawn>k__BackingField: {fileID: 0}

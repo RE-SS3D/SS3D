@@ -18,12 +18,12 @@ namespace SS3D.Systems.Tile.MapEditor
         }
 
         /// <summary>
-        /// On the Atmospherics rail, Select opens the marker under the cursor and Dropper copies it. Off that
+        /// On the Starting Air rail, Select opens the marker under the cursor and Dropper copies it. Off that
         /// rail this does nothing, and markers stay out of the way of the ordinary pick.
         /// </summary>
         private bool TryPickGasMarker(MapEditorTool tool)
         {
-            if (_viewModel.CurrentSubcategory != MapEditorSubcategory.Atmospherics)
+            if (_viewModel.CurrentSubcategory != MapEditorSubcategory.StartingAir)
                 return false;
 
             if (!_tileSystem.GasMarkers.TryGetAt(_hologramManager.GetPlacementPoint(forceTileSnap: true), out GasMarkerRecord marker))

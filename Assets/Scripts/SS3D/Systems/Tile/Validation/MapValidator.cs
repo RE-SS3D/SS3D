@@ -11,6 +11,19 @@ namespace SS3D.Systems.Tile.Validation
     /// <summary>Shared save-warning and round-start policy. No scene-wide object searches.</summary>
     public static class MapValidator
     {
+        // Palette paths come from the sub-tab table, so renaming a tab never leaves stale advice here.
+        private static string SpawnPointsPath => MapEditorSubTabs.PathOf(MapEditorSubcategory.SpawnPoints);
+        private static string RoomsPath => MapEditorSubTabs.PathOf(MapEditorSubcategory.Rooms);
+
+        // Catalog asset names behind Show in palette; MapEditorCatalogMappingTests checks each one exists.
+        public const string NukeEntry = "NukeCart";
+        public const string DiskEntry = "NuclearAuthenticationDisk";
+        public const string AirAlarmEntry = "AirAlarm";
+        public const string ScrubberEntry = "Scrubber";
+        public const string VentEntry = "Vent";
+        public const string ApcEntry = "APC";
+        private static string OperativeEntry => MapEditorSpawnCatalog.EncodeAntagonist(AntagonistSpawnCategory.NuclearOperatives);
+
         public static MapValidationReport Validate(string mode, IEnumerable<string> jobs,
             IReadOnlyList<SpawnPointRecord> spawns, bool hasNuke, bool hasDisk)
         {
@@ -23,7 +36,8 @@ namespace SS3D.Systems.Tile.Validation
             {
                 if (!spawns.Any(spawn => spawn.Kind == SpawnPointKind.Job && spawn.JobName == job))
                     report.AddIssue("job:" + job, false, "Jobs", $"Missing job spawn: {job}",
-                        $"Missing job spawn: {job}. Add it under Scripts → Spawn Placements.");
+                        $"Missing job spawn: {job}. Add it under {SpawnPointsPath}.",
+                        entryKey: MapEditorSpawnCatalog.EncodeJob(job));
             }
 
             // Secret resolves to the sole existing antagonist mode, just as GamemodeSubSystem does.
@@ -32,13 +46,13 @@ namespace SS3D.Systems.Tile.Validation
                 if (!spawns.Any(spawn => spawn.Kind == SpawnPointKind.Antagonist
                     && spawn.AntagonistCategory == AntagonistSpawnCategory.NuclearOperatives))
                     report.AddIssue("operative", false, "Game Modes", "Missing Nuclear Operatives spawn",
-                        "Missing Nuclear Operatives spawn. Add it under Scripts → Spawn Placements.");
+                        $"Missing Nuclear Operatives spawn. Add it under {SpawnPointsPath}.", entryKey: OperativeEntry);
                 if (!hasNuke)
                     report.AddIssue("nuke", false, "Game Modes", "Missing nuclear device",
-                        "Missing nuclear device. Place a NukeCart on the map.");
+                        $"Missing nuclear device. Place a {NukeEntry} on the map.", entryKey: NukeEntry);
                 if (!hasDisk)
                     report.AddIssue("disk", false, "Game Modes", "Missing authentication disk",
-                        "Missing authentication disk. Place a NuclearAuthenticationDisk on the map.");
+                        $"Missing authentication disk. Place a {DiskEntry} on the map.", entryKey: DiskEntry);
             }
             else if (mode != "Extended")
                 report.AddIssue("mode", false, "Game Modes", "Unsupported game mode",
@@ -57,11 +71,13 @@ namespace SS3D.Systems.Tile.Validation
             // failures into a single expandable checklist, including requirements already met.
             if (report.Issues.Any(issue => issue.Id.StartsWith("job:", StringComparison.Ordinal)))
             {
+                string firstMissing = report.Issues.First(issue => issue.Id.StartsWith("job:", StringComparison.Ordinal)).EntryKey;
                 report.Issues.RemoveAll(issue => issue.Id.StartsWith("job:", StringComparison.Ordinal));
                 report.Issues.Insert(0, new MapValidationIssue
                 {
                     Id = "job-spawns", Category = "Jobs", Title = "Offered jobs missing spawn markers",
-                    Body = "Every offered job needs an authored spawn marker.",
+                    Body = $"Every offered job needs an authored spawn marker. Add them under {SpawnPointsPath}.",
+                    EntryKey = firstMissing,
                     Checks = requiredJobs.Select(job => new MapValidationCheck
                     {
                         Label = job, IsMet = spawns.Any(spawn => spawn.Kind == SpawnPointKind.Job && spawn.JobName == job),
@@ -70,11 +86,14 @@ namespace SS3D.Systems.Tile.Validation
             }
             if (report.Issues.Any(issue => issue.Id is "operative" or "nuke" or "disk"))
             {
+                string firstUnmet = report.Issues.First(issue => issue.Id is "operative" or "nuke" or "disk").EntryKey;
                 report.Issues.RemoveAll(issue => issue.Id is "operative" or "nuke" or "disk");
                 report.Issues.Add(new MapValidationIssue
                 {
                     Id = "nuclear", Category = "Game Modes", Title = "Nuclear requirements incomplete",
-                    Body = "Nuclear Emergency and Secret require an operative marker, nuclear device and authentication disk.",
+                    Body = "Nuclear Emergency and Secret require an operative marker, nuclear device and authentication disk. "
+                        + $"The operative marker is under {SpawnPointsPath}.",
+                    EntryKey = firstUnmet,
                     Checks = new[]
                     {
                         new MapValidationCheck { Label = "Operative marker", IsMet = spawns.Any(spawn => spawn.Kind == SpawnPointKind.Antagonist
@@ -89,7 +108,7 @@ namespace SS3D.Systems.Tile.Validation
 
         /// <summary>
         /// Warns about devices that are placed but cannot do their job. "Room" here is an area
-        /// (the editor's Scripts → Rooms): an APC's flood fill bounded by walls and doors, or a
+        /// (the editor's Rooms sub-tab): an APC's flood fill bounded by walls and doors, or a
         /// painted room once the map is authored. Device names can repeat across rooms, so
         /// titles carry a position.
         /// </summary>
@@ -98,8 +117,8 @@ namespace SS3D.Systems.Tile.Validation
         {
             RoomDeviceRecord[] ordered = devices
                 .OrderBy(device => device.Position.x).ThenBy(device => device.Position.z).ToArray();
-            string assignRoom = paintedRooms ? "Paint the tile into a room under Scripts → Rooms."
-                : "Add an APC to that space, or paint it into a room under Scripts → Rooms.";
+            string assignRoom = paintedRooms ? $"Paint the tile into a room under {RoomsPath}."
+                : $"Add an APC to that space, or paint it into a room under {RoomsPath}.";
 
             foreach (RoomDeviceRecord device in ordered)
             {
@@ -143,18 +162,18 @@ namespace SS3D.Systems.Tile.Validation
                 if (ports.Length > 0 && room.All(device => device.Kind != RoomDeviceKind.AirAlarm))
                     AddWarning(report, $"air-alarm:{room.Key}", ports[0], $"No air alarm in {RoomLabel(ports[0])}",
                         $"so nothing controls its {Counted(vents, "vent", scrubbers, "scrubber")}. "
-                        + "Place one on a wall facing into the room.");
+                        + "Place one on a wall facing into the room.", AirAlarmEntry);
                 if (vents > 0 && scrubbers == 0)
                     AddWarning(report, $"no-scrubber:{room.Key}", ports[0], $"No scrubber in {RoomLabel(ports[0])}",
-                        "so bad air can't be cleaned out of it. Place a scrubber on a pipe.");
+                        "so bad air can't be cleaned out of it. Place a scrubber on a pipe.", ScrubberEntry);
                 else if (scrubbers > 0 && vents == 0)
                     AddWarning(report, $"no-vent:{room.Key}", ports[0], $"No vent in {RoomLabel(ports[0])}",
-                        "so lost air can't be replaced. Place a vent on a pipe.");
+                        "so lost air can't be replaced. Place a vent on a pipe.", VentEntry);
 
                 RoomDeviceRecord first = room.First();
                 if (!first.RoomHasApc)
                     AddWarning(report, $"no-apc:{room.Key}", first, $"No APC in {RoomLabel(first)}",
-                        "so nothing here gets local power. Place an APC in the room.");
+                        "so nothing here gets local power. Place an APC in the room.", ApcEntry);
             }
         }
 
@@ -169,8 +188,9 @@ namespace SS3D.Systems.Tile.Validation
             report.AddIssue($"gas-marker:{cell.x}:{cell.y}", true, "Atmos", title, $"{title}, {consequence}", marker.Position, true);
         }
 
-        private static void AddWarning(MapValidationReport report, string id, RoomDeviceRecord device, string title, string consequence) =>
-            report.AddIssue(id, true, "Atmos", title, $"{title}, {consequence}", device.Position, true);
+        private static void AddWarning(MapValidationReport report, string id, RoomDeviceRecord device, string title,
+            string consequence, string entryKey = null) =>
+            report.AddIssue(id, true, "Atmos", title, $"{title}, {consequence}", device.Position, true, entryKey);
 
         private static bool IsPort(RoomDeviceKind kind) => kind is RoomDeviceKind.Vent or RoomDeviceKind.Scrubber;
 
@@ -273,6 +293,8 @@ namespace SS3D.Systems.Tile.Validation
         public Vector3 Position;
         public bool HasPosition;
         public MapValidationCheck[] Checks;
+        /// <summary>Palette entry that fixes the issue (a catalog asset name or marker key); drives Show in palette.</summary>
+        public string EntryKey;
     }
 
     public sealed class MapValidationReport
@@ -280,10 +302,10 @@ namespace SS3D.Systems.Tile.Validation
         public List<MapValidationIssue> Issues { get; } = new();
 
         public void AddIssue(string id, bool warning, string category, string title, string body,
-            Vector3 position = default, bool hasPosition = false)
+            Vector3 position = default, bool hasPosition = false, string entryKey = null)
         {
             Issues.Add(new MapValidationIssue { Id = id, IsWarning = warning, Category = category,
-                Title = title, Body = body, Position = position, HasPosition = hasPosition });
+                Title = title, Body = body, Position = position, HasPosition = hasPosition, EntryKey = entryKey });
             (warning ? Warnings : Errors).Add(body);
         }
 

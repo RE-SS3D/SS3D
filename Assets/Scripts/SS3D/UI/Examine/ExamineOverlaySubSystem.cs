@@ -203,6 +203,7 @@ namespace SS3D.UI.Examine
             _examineSystem.OnExaminableChanged += HandleExaminableChanged;
             _examineSystem.OnDetailedExamineRequested += HandleDetailedExamineRequested;
             _examineSystem.OnCharacterWindowRequested += HandleWindowRequested;
+            _examineSystem.OnCursorLabelOverrideChanged += RefreshGenericDisplay;
             _examineEventsBound = true;
 
             // Catch up whatever is under the cursor so hover is not blank until selection moves.
@@ -219,6 +220,7 @@ namespace SS3D.UI.Examine
                 _examineSystem.OnExaminableChanged -= HandleExaminableChanged;
                 _examineSystem.OnDetailedExamineRequested -= HandleDetailedExamineRequested;
                 _examineSystem.OnCharacterWindowRequested -= HandleWindowRequested;
+                _examineSystem.OnCursorLabelOverrideChanged -= RefreshGenericDisplay;
             }
 
             _examineSystem = null;
@@ -584,6 +586,26 @@ namespace SS3D.UI.Examine
             if (_windowView != null && _windowView.IsOpen)
             {
                 _genericView.Hide();
+                return;
+            }
+
+            // Map Editor: the badge names what is about to be placed; nothing under the pointer is examined.
+            string labelOverride = _examineSystem != null ? _examineSystem.CursorLabelOverride : null;
+            if (labelOverride != null)
+            {
+                _quickLookView?.Hide();
+                if (labelOverride.Length == 0)
+                {
+                    _genericView.Hide();
+                    return;
+                }
+
+                _genericView.ShowHoverName(labelOverride);
+                if (Mouse.current != null)
+                {
+                    _genericView.UpdateAnchor(Mouse.current.position.ReadValue());
+                }
+
                 return;
             }
 

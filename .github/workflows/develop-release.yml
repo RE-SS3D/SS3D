@@ -275,6 +275,9 @@ jobs:
           fi
           exit $missing
       # One Editor session — two sequential unity-builder steps race PackageCache on TomNAS.
+      - name: Keep the Unity package cache between jobs
+        if: needs.prepare.outputs.self_hosted == 'true'
+        uses: ./.github/actions/persistent-upm-cache
       - name: Pre-create game-ci license dir as the runner user
         # game-ci's entrypoint mkdirs $GITHUB_WORKSPACE/_activate-license~ as root, then su's to the
         # host user (runAsHostUser), which cannot write UnityLicenseFile.ulf into it ("Permission
@@ -410,6 +413,9 @@ jobs:
           fi
           exit $missing
       # Default game-ci builder (not ClientBuildScript — that hardcodes StandaloneLinux64).
+      - name: Keep the Unity package cache between jobs
+        if: needs.prepare.outputs.self_hosted == 'true'
+        uses: ./.github/actions/persistent-upm-cache
       - name: Pre-create game-ci license dir as the runner user
         # game-ci's entrypoint mkdirs $GITHUB_WORKSPACE/_activate-license~ as root, then su's to the
         # host user (runAsHostUser), which cannot write UnityLicenseFile.ulf into it ("Permission

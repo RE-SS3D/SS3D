@@ -6,7 +6,10 @@ namespace SS3D.Data.Persistence
     [Serializable]
     public class PersistenceEnvelope
     {
-        public const int CurrentSchemaVersion = 1;
+        /// <summary>
+        /// 2: placed tile objects and items carry their prefab <c>id</c> beside the name. Version 1 saves load by name.
+        /// </summary>
+        public const int CurrentSchemaVersion = 2;
 
         public const string StationTemplateType = "station-template";
 

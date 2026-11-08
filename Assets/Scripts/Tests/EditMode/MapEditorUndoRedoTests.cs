@@ -16,6 +16,7 @@ namespace SS3D.Tests.EditMode
         [TearDown]
         public void TearDown()
         {
+
             for (int i = _instantiated.Count - 1; i >= 0; i--)
             {
                 if (_instantiated[i] != null)
@@ -156,6 +157,96 @@ namespace SS3D.Tests.EditMode
             Assert.AreEqual("ClearableFloor", GetOccupantName(mapCtx, TileLayer.Turf, pos));
         }
 
+        [Test]
+        public void ReplaceWall_KeepsWallMounts_AndUndoKeepsThem()
+        {
+            TileMapTestUtilities.MapContext mapCtx = TileMapTestUtilities.CreateContext(_instantiated);
+            Vector3 pos = new(7, 0, 7);
+            TileMapTestUtilities.PlacePlenum(mapCtx, pos);
+
+            TileObjectSo steel = RegisterTile(TileLayer.Turf, "SteelWallUndo", TileObjectGenericType.Wall);
+            TileObjectSo reinforced = RegisterTile(TileLayer.Turf, "ReinforcedWallUndo", TileObjectGenericType.Wall);
+            TileObjectSo mount = RegisterTile(TileLayer.WallMountHigh, "WallMountUndo", TileObjectGenericType.None);
+            MapEditorCommandService service = CreateService(mapCtx);
+
+            Assert.IsTrue(service.Execute(new PlaceTileCommand(steel.NameString, pos, Direction.North, false)));
+            Assert.IsTrue(service.Execute(new PlaceTileCommand(mount.NameString, pos, Direction.North, false)));
+            Assert.IsTrue(HasOccupant(mapCtx, TileLayer.WallMountHigh, pos), "mount should build on the wall");
+
+            Assert.IsTrue(service.Execute(Replace(service, reinforced, pos)));
+            Assert.AreEqual("ReinforcedWallUndo", GetOccupantName(mapCtx, TileLayer.Turf, pos));
+            Assert.IsTrue(HasOccupant(mapCtx, TileLayer.WallMountHigh, pos), "a wall-for-wall swap keeps its mounts");
+
+            Assert.IsTrue(service.Undo());
+            Assert.AreEqual("SteelWallUndo", GetOccupantName(mapCtx, TileLayer.Turf, pos));
+            Assert.IsTrue(HasOccupant(mapCtx, TileLayer.WallMountHigh, pos), "undoing the swap keeps the mounts");
+
+            Assert.IsTrue(service.Redo());
+            Assert.AreEqual("ReinforcedWallUndo", GetOccupantName(mapCtx, TileLayer.Turf, pos));
+            Assert.IsTrue(HasOccupant(mapCtx, TileLayer.WallMountHigh, pos));
+        }
+
+        [Test]
+        public void ReplaceWallWithFloor_DropsMounts_UndoRestoresThem()
+        {
+            TileMapTestUtilities.MapContext mapCtx = TileMapTestUtilities.CreateContext(_instantiated);
+            Vector3 pos = new(8, 0, 8);
+            TileMapTestUtilities.PlacePlenum(mapCtx, pos);
+
+            TileObjectSo wall = RegisterTile(TileLayer.Turf, "WallToFloor", TileObjectGenericType.Wall);
+            TileObjectSo floor = RegisterTile(TileLayer.Turf, "FloorFromWall", TileObjectGenericType.Floor);
+            TileObjectSo mount = RegisterTile(TileLayer.WallMountLow, "LowMountUndo", TileObjectGenericType.None);
+            MapEditorCommandService service = CreateService(mapCtx);
+
+            Assert.IsTrue(service.Execute(new PlaceTileCommand(wall.NameString, pos, Direction.North, false)));
+            Assert.IsTrue(service.Execute(new PlaceTileCommand(mount.NameString, pos, Direction.East, false)));
+
+            Assert.IsTrue(service.Execute(Replace(service, floor, pos)));
+            Assert.AreEqual("FloorFromWall", GetOccupantName(mapCtx, TileLayer.Turf, pos));
+            Assert.IsFalse(HasOccupant(mapCtx, TileLayer.WallMountLow, pos, Direction.East), "a floor holds no mounts");
+
+            Assert.IsTrue(service.Undo());
+            Assert.AreEqual("WallToFloor", GetOccupantName(mapCtx, TileLayer.Turf, pos));
+            Assert.IsTrue(HasOccupant(mapCtx, TileLayer.WallMountLow, pos, Direction.East), "undo brings the mount back");
+        }
+
+        [Test]
+        public void ClearWall_Undo_RestoresWallMounts_Redo_ClearsThemAgain()
+        {
+            TileMapTestUtilities.MapContext mapCtx = TileMapTestUtilities.CreateContext(_instantiated);
+            Vector3 pos = new(9, 0, 9);
+            TileMapTestUtilities.PlacePlenum(mapCtx, pos);
+
+            TileObjectSo wall = RegisterTile(TileLayer.Turf, "ClearedWall", TileObjectGenericType.Wall);
+            TileObjectSo mount = RegisterTile(TileLayer.WallMountHigh, "ClearedWallMount", TileObjectGenericType.None);
+            MapEditorCommandService service = CreateService(mapCtx);
+
+            Assert.IsTrue(service.Execute(new PlaceTileCommand(wall.NameString, pos, Direction.North, false)));
+            Assert.IsTrue(service.Execute(new PlaceTileCommand(mount.NameString, pos, Direction.South, false)));
+
+            Assert.IsTrue(service.Execute(new ClearTileCommand(wall.NameString, pos, Direction.North)));
+            Assert.IsFalse(HasOccupant(mapCtx, TileLayer.Turf, pos));
+            Assert.IsFalse(HasOccupant(mapCtx, TileLayer.WallMountHigh, pos, Direction.South), "clearing a wall drops its mounts");
+
+            Assert.IsTrue(service.Undo());
+            Assert.AreEqual("ClearedWall", GetOccupantName(mapCtx, TileLayer.Turf, pos));
+            Assert.IsTrue(HasOccupant(mapCtx, TileLayer.WallMountHigh, pos, Direction.South), "undo brings the mount back");
+
+            Assert.IsTrue(service.Redo());
+            Assert.IsFalse(HasOccupant(mapCtx, TileLayer.Turf, pos));
+            Assert.IsFalse(HasOccupant(mapCtx, TileLayer.WallMountHigh, pos, Direction.South));
+        }
+
+        private static IMapEditorCommand Replace(MapEditorCommandService service, TileObjectSo tile, Vector3 pos) =>
+            MapEditorCommandFactory.FromDto(new MapEditorCommandDto
+            {
+                Kind = MapEditorCommandKind.PlaceTile,
+                AssetName = tile.NameString,
+                Position = pos,
+                Direction = Direction.North,
+                ReplaceExisting = true,
+            }, service.Context);
+
         private MapEditorCommandService CreateService(TileMapTestUtilities.MapContext mapCtx)
         {
             var service = new MapEditorCommandService();
@@ -173,9 +264,10 @@ namespace SS3D.Tests.EditMode
             return so;
         }
 
-        private static bool HasOccupant(TileMapTestUtilities.MapContext ctx, TileLayer layer, Vector3 pos) =>
+        private static bool HasOccupant(TileMapTestUtilities.MapContext ctx, TileLayer layer, Vector3 pos,
+            Direction direction = Direction.North) =>
             ctx.Map.TryGetTileLocation(layer, pos, out ITileLocation location)
-            && location.TryGetPlacedObject(out PlacedTileObject placed)
+            && location.TryGetPlacedObject(out PlacedTileObject placed, direction)
             && placed != null;
 
         private static string GetOccupantName(TileMapTestUtilities.MapContext ctx, TileLayer layer, Vector3 pos)

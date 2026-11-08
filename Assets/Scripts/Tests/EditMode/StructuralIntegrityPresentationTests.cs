@@ -125,11 +125,11 @@ namespace EditorTests
             Assert.IsFalse(overlay.gameObject.activeSelf);
         }
 
-        [TestCase("Assets/Content/WorldObjects/Furniture/Generic/Surfaces/Tables/TableSteel.prefab", "Assets/Content/Data/TileMap/Resources/Furniture/Generic/Surfaces/Tables/TableSteel.asset", 1, 1f)]
+        [TestCase("Assets/Content/WorldObjects/Furniture/Generic/Surfaces/Tables/TableSteel.prefab", "Assets/Content/Data/TileMap/Resources/Furniture/Generic/Tables/TableSteel.asset", 1, 1f)]
         [TestCase("Assets/Content/WorldObjects/Structures/Doors/CivillianAirlock.prefab", "Assets/Content/Data/TileMap/Resources/Structures/Doors/AirlockCivilian.asset", 2, 2f)]
         [TestCase("Assets/Content/WorldObjects/Structures/Doors/SecurityAirlock.prefab", "Assets/Content/Data/TileMap/Resources/Structures/Doors/AirlockSecurity.asset", 2, 2f)]
-        [TestCase("Assets/Content/WorldObjects/Furniture/Generic/Surfaces/Tables/TableWood.prefab", "Assets/Content/Data/TileMap/Resources/Furniture/Generic/Surfaces/Tables/TableWood.asset", 1, 1f)]
-        [TestCase("Assets/Content/WorldObjects/Furniture/Generic/Surfaces/Tables/TableGlass.prefab", "Assets/Content/Data/TileMap/Resources/Furniture/Generic/Surfaces/Tables/TableGlass.asset", 1, 1f)]
+        [TestCase("Assets/Content/WorldObjects/Furniture/Generic/Surfaces/Tables/TableWood.prefab", "Assets/Content/Data/TileMap/Resources/Furniture/Generic/Tables/TableWood.asset", 1, 1f)]
+        [TestCase("Assets/Content/WorldObjects/Furniture/Generic/Surfaces/Tables/TableGlass.prefab", "Assets/Content/Data/TileMap/Resources/Furniture/Generic/Tables/TableGlass.asset", 1, 1f)]
         public void Objects_OverlayFollowsSurfaceAndClearsOnRepair(string prefabPath, string soPath, int count, float mode)
         {
             var root = Object.Instantiate(AssetDatabase.LoadAssetAtPath<GameObject>(prefabPath));

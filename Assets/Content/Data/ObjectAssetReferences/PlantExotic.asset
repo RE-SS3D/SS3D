@@ -9,14 +9,8 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4584c35d672b8a74797cc5efa123ce16, type: 3}
-  m_Name: Plant7
+  m_Script: {fileID: 11500000, guid: d8ba336da0014235becfe02dce35b6ca, type: 3}
+  m_Name: PlantExotic
   m_EditorClassIdentifier: 
-  PrefabAsset: {fileID: 11400000, guid: 9f69d24f5d22e8a4ebc1e60eb6c74d98, type: 2}
-  icon: {fileID: 0}
-  layer: 7
-  genericType: 0
-  specificType: 0
-  width: 1
-  height: 1
-  isLarge: 0
+  Id: 8ae2f499d25bfcd41bf26b735c852ab1
+  Database: c2644d7b34e956743a0bc485e7ca5e37

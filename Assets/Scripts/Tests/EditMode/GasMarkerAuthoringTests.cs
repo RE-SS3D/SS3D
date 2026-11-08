@@ -136,12 +136,12 @@ namespace EditorTests
         }
 
         [Test]
-        public void Catalog_OffersEveryKindOnTheLiveAtmosRail()
+        public void Catalog_OffersEveryKindUnderStartingAir()
         {
             var catalog = new MapEditorCatalog();
             catalog.Build(new GenericObjectSo[0], null);
-            Assert.IsFalse(MapEditorCatalog.IsUnavailableScriptingSubcategory(MapEditorSubcategory.Atmospherics));
-            Assert.AreEqual(3, catalog.Query(MapEditorMode.Scripting, MapEditorSubcategory.Atmospherics, null).Count());
+            Assert.AreEqual(3, catalog.Query(MapEditorMode.Scripting, MapEditorSubcategory.StartingAir, null).Count());
+            Assert.IsTrue(catalog.IsShown(MapEditorSubTabs.Get(MapEditorSubcategory.StartingAir), restrictedPalette: true));
         }
 
         [Test]
@@ -173,7 +173,7 @@ namespace EditorTests
             try
             {
                 view.Build(window.rootVisualElement);
-                OpenAtmosRail(model);
+                OpenStartingAir(model);
                 view.ShowGasMarkerProperties(editingPlaced: false);
                 TextField pressure = view.Root.Q<TextField>("gas-marker-pressure");
                 pressure.value = "750";
@@ -195,7 +195,7 @@ namespace EditorTests
             try
             {
                 view.Build(window.rootVisualElement);
-                OpenAtmosRail(model);
+                OpenStartingAir(model);
                 GasMarkerRecord? applied = null;
                 view.GasMarkerApplyRequested += marker => applied = marker;
 
@@ -227,7 +227,7 @@ namespace EditorTests
             try
             {
                 view.Build(new VisualElement());
-                OpenAtmosRail(model);
+                OpenStartingAir(model);
                 view.ShowGasMarkerProperties(editingPlaced: false);
                 model.SetSubcategory(MapEditorSubcategory.Rooms);
                 Assert.IsNull(model.OpenPopover);
@@ -235,10 +235,10 @@ namespace EditorTests
             finally { view.Destroy(); }
         }
 
-        private static void OpenAtmosRail(MapEditorViewModel model)
+        private static void OpenStartingAir(MapEditorViewModel model)
         {
             model.SetMode(MapEditorMode.Scripting);
-            model.SetSubcategory(MapEditorSubcategory.Atmospherics);
+            model.SetSubcategory(MapEditorSubcategory.StartingAir);
         }
 
         private static GasMarkerRecord At(GasMarkerKind kind, float x, float z)

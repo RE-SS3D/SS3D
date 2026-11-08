@@ -17,15 +17,16 @@ namespace SS3D.Systems.Tile
         /// Checks whether the tile object can be built at the given position.
         /// </summary>
         public static bool CanBuild(ITileLocation[] tileLocations, TileObjectSo tileObjectSo, Direction dir, Vector3 gridPosition,
-            PlacedTileObject[] adjacentObjects, bool replaceExisting) =>
-            Evaluate(tileLocations, tileObjectSo, dir, gridPosition, adjacentObjects, replaceExisting).Length == 0;
+            PlacedTileObject[] adjacentObjects, bool replaceExisting, TileMap map = null) =>
+            Evaluate(tileLocations, tileObjectSo, dir, gridPosition, adjacentObjects, replaceExisting, map).Length == 0;
 
         /// <summary>
         /// Returns every failing rule for this placement (empty when valid).
         /// Order is stable and suitable for toasting the first entry as the primary reason.
         /// </summary>
+        /// <param name="map">Map the cell belongs to, for the neighbour wall-mount rule. Null falls back to the current map.</param>
         public static BuildFailReason[] Evaluate(ITileLocation[] tileLocations, TileObjectSo tileObjectSo, Direction dir,
-            Vector3 gridPosition, PlacedTileObject[] adjacentObjects, bool replaceExisting)
+            Vector3 gridPosition, PlacedTileObject[] adjacentObjects, bool replaceExisting, TileMap map = null)
         {
             if (tileLocations == null || tileObjectSo == null)
                 return EmptyFailures;
@@ -86,7 +87,7 @@ namespace SS3D.Systems.Tile
                         failures.Add(BuildFailReason.NoWallsOnFurniture);
                     }
 
-                    if (!NoNeighbouringWallMount(gridPosition))
+                    if (!NoNeighbouringWallMount(map, gridPosition))
                         failures.Add(BuildFailReason.NeighbourWallMountBlocksWall);
                     break;
                 }
@@ -123,15 +124,20 @@ namespace SS3D.Systems.Tile
         }
 
         /// <summary>
-        /// Check if any wall mount is present as a neighbour of the tile found at the grid position.
+        /// Check that no wall mount on a side neighbour faces the tile at the grid position, since a wall
+        /// there would collide with it. Mounts facing elsewhere and diagonal neighbours do not block.
         /// </summary>
-        private static bool NoNeighbouringWallMount(Vector3 gridPosition)
+        private static bool NoNeighbouringWallMount(TileMap map, Vector3 gridPosition)
         {
-            TileSubSystem tileSystem = SubSystems.Get<TileSubSystem>();
-            if (tileSystem?.CurrentMap == null)
+            if (map == null)
+            {
+                TileSubSystem tileSystem = SubSystems.Get<TileSubSystem>();
+                map = tileSystem != null ? tileSystem.CurrentMap : null;
+            }
+
+            if (map == null)
                 return true;
 
-            TileMap map = tileSystem.CurrentMap;
             PlacedTileObject[] neighboursHigh = map.GetNeighbourPlacedObjects(TileLayer.WallMountHigh, gridPosition);
             PlacedTileObject[] neighboursLow = map.GetNeighbourPlacedObjects(TileLayer.WallMountLow, gridPosition);
             return !neighboursHigh.Any(x => x != null) && !neighboursLow.Any(x => x != null);
@@ -173,6 +179,42 @@ namespace SS3D.Systems.Tile
             }
 
             return toBeDestroyedList;
+        }
+
+        /// <summary>
+        /// Returns the dependents a replace on <paramref name="replacedLayer"/> left invalid. A replace swaps the
+        /// object without the clear cascade, so a wall swapped for a wall keeps its mounts; this catches the swaps
+        /// that change what the cell can hold, such as a wall replaced by a floor or a window.
+        /// </summary>
+        public static List<ITileLocation> GetInvalidatedByReplace(ITileLocation[] tileObjects, TileLayer replacedLayer)
+        {
+            List<ITileLocation> invalid = GetToBeClearedLocations(tileObjects);
+
+            switch (replacedLayer)
+            {
+                case TileLayer.Plenum when tileObjects[(int)TileLayer.Plenum] is SingleTileLocation plenum
+                                           && !CanBuildOnPlenum(plenum):
+                {
+                    for (int i = 1; i < tileObjects.Length; i++)
+                        invalid.Add(tileObjects[i]);
+                    break;
+                }
+                case TileLayer.Turf when tileObjects[(int)TileLayer.Turf] is SingleTileLocation turf:
+                {
+                    if (!IsWall(turf))
+                    {
+                        invalid.Add(tileObjects[(int)TileLayer.WallMountHigh]);
+                        invalid.Add(tileObjects[(int)TileLayer.WallMountLow]);
+                    }
+                    else if (turf.PlacedObject.NameString.Contains("Window"))
+                    {
+                        invalid.Add(tileObjects[(int)TileLayer.WallMountLow]);
+                    }
+                    break;
+                }
+            }
+
+            return invalid;
         }
     }
 }

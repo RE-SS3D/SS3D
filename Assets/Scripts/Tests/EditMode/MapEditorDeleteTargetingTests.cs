@@ -16,6 +16,38 @@ namespace SS3D.Tests.EditMode
         private static readonly MethodInfo SetupMethod = typeof(PlacedTileObject).GetMethod(
             "Setup", BindingFlags.Instance | BindingFlags.NonPublic);
 
+        /// <summary>The Shape table's "Delete clears" column, written out independently of the sub-tab table.</summary>
+        private static readonly Dictionary<MapEditorSubcategory, MapEditorDeleteScope> ExpectedScopes = new()
+        {
+            { MapEditorSubcategory.Floors, MapEditorDeleteScope.FloorTurf },
+            { MapEditorSubcategory.WallsAndWindows, MapEditorDeleteScope.WallTurf },
+            { MapEditorSubcategory.Doors, MapEditorDeleteScope.DoorTurf },
+            { MapEditorSubcategory.WallMounts, MapEditorDeleteScope.WallMountFace },
+            { MapEditorSubcategory.Furniture, MapEditorDeleteScope.FurnitureLayers },
+            { MapEditorSubcategory.Machines, MapEditorDeleteScope.FurnitureLayers },
+            { MapEditorSubcategory.Decals, MapEditorDeleteScope.FloorDecal },
+            { MapEditorSubcategory.Subfloor, MapEditorDeleteScope.Plenum },
+            { MapEditorSubcategory.Cables, MapEditorDeleteScope.Wire },
+            { MapEditorSubcategory.GasPipes, MapEditorDeleteScope.PipeLayers },
+            { MapEditorSubcategory.DisposalPipes, MapEditorDeleteScope.Disposal },
+            { MapEditorSubcategory.Tools, MapEditorDeleteScope.ItemUnderCursor },
+            { MapEditorSubcategory.MaterialsAndParts, MapEditorDeleteScope.ItemUnderCursor },
+            { MapEditorSubcategory.Clothing, MapEditorDeleteScope.ItemUnderCursor },
+            { MapEditorSubcategory.Medical, MapEditorDeleteScope.ItemUnderCursor },
+            { MapEditorSubcategory.FoodAndDrink, MapEditorDeleteScope.ItemUnderCursor },
+            { MapEditorSubcategory.Devices, MapEditorDeleteScope.ItemUnderCursor },
+            { MapEditorSubcategory.Weapons, MapEditorDeleteScope.ItemUnderCursor },
+            { MapEditorSubcategory.Misc, MapEditorDeleteScope.ItemUnderCursor },
+            { MapEditorSubcategory.SpawnPoints, MapEditorDeleteScope.SpawnPoint },
+            { MapEditorSubcategory.Rooms, MapEditorDeleteScope.Area },
+            { MapEditorSubcategory.StartingAir, MapEditorDeleteScope.GasMarker },
+        };
+
+        private static readonly TileObjectGenericType[] TurfKinds =
+            { TileObjectGenericType.Floor, TileObjectGenericType.Wall, TileObjectGenericType.Door };
+
+        private static IEnumerable<MapEditorSubcategory> AllRows => MapEditorSubTabs.All.Select(row => row.Id);
+
         [TearDown]
         public void TearDown()
         {
@@ -30,37 +62,49 @@ namespace SS3D.Tests.EditMode
         }
 
         [Test]
-        public void Resolve_Flooring_ClearsFloorTurf()
+        public void EveryRow_DeclaresTheShapeTableScope()
         {
-            ITileLocation[] locations = CreateLocations();
-            PlaceOn(locations, TileLayer.Turf, TileObjectGenericType.Floor, "Floor", Direction.North);
+            CollectionAssert.AreEquivalent(ExpectedScopes.Keys, AllRows.ToArray());
+            foreach (MapEditorSubTab row in MapEditorSubTabs.All)
+                Assert.AreEqual(ExpectedScopes[row.Id], row.DeleteScope, row.Label);
+        }
 
-            MapEditorDeleteTargeting.Resolve(MapEditorSubcategory.Flooring, Direction.North, locations, _targets);
+        /// <summary>
+        /// A tile with something on every layer: each row's Delete takes exactly the layers its scope names,
+        /// so Cables never takes a pipe and Gas Pipes never takes a cable.
+        /// </summary>
+        [TestCaseSource(nameof(AllRows))]
+        public void Resolve_EveryRow_ClearsOnlyItsOwnLayers(MapEditorSubcategory row)
+        {
+            foreach (TileObjectGenericType turfKind in TurfKinds)
+            {
+                ITileLocation[] locations = CreateLocations();
+                foreach (TileLayer layer in TileHelper.GetTileLayers())
+                {
+                    if (layer == TileLayer.Turf)
+                        PlaceOn(locations, layer, turfKind, "Turf" + turfKind, Direction.South);
+                    else
+                        PlaceOn(locations, layer, TileObjectGenericType.None, layer.ToString(), Direction.South);
+                }
 
-            Assert.AreEqual(1, _targets.Count);
-            Assert.AreEqual("Floor", _targets[0].AssetName);
+                MapEditorDeleteTargeting.Resolve(row, Direction.South, locations, _targets);
+
+                CollectionAssert.AreEquivalent(
+                    ExpectedNames(ExpectedScopes[row], turfKind),
+                    _targets.Select(target => target.AssetName).ToArray(),
+                    $"{row} over a {turfKind} turf");
+            }
         }
 
         [Test]
-        public void Resolve_Walls_IgnoresFloorTurf()
-        {
-            ITileLocation[] locations = CreateLocations();
-            PlaceOn(locations, TileLayer.Turf, TileObjectGenericType.Floor, "Floor", Direction.North);
-
-            MapEditorDeleteTargeting.Resolve(MapEditorSubcategory.Walls, Direction.North, locations, _targets);
-
-            Assert.IsEmpty(_targets);
-        }
-
-        [Test]
-        public void Resolve_WallAttachments_OnlyMatchingFace()
+        public void Resolve_WallMounts_OnlyMatchingFace()
         {
             ITileLocation[] locations = CreateLocations();
             PlaceOn(locations, TileLayer.WallMountLow, TileObjectGenericType.None, "MountS", Direction.South);
             PlaceOn(locations, TileLayer.WallMountLow, TileObjectGenericType.None, "MountN", Direction.North);
 
             MapEditorDeleteTargeting.Resolve(
-                MapEditorSubcategory.WallAttachments, Direction.South, locations, _targets);
+                MapEditorSubcategory.WallMounts, Direction.South, locations, _targets);
 
             Assert.AreEqual(1, _targets.Count);
             Assert.AreEqual("MountS", _targets[0].AssetName);
@@ -68,40 +112,35 @@ namespace SS3D.Tests.EditMode
         }
 
         [Test]
-        public void Resolve_Piping_TakesPipesBeforeTheWireOnTheirTile_NotDisposal()
+        public void EmptyHint_NamesTheSubTabByItsPath()
         {
-            ITileLocation[] locations = CreateLocations();
-            PlaceOn(locations, TileLayer.Wire, TileObjectGenericType.None, "Cable", Direction.North);
-            PlaceOn(locations, TileLayer.PipeMiddle, TileObjectGenericType.Pipe, "Pipe", Direction.North);
-            PlaceOn(locations, TileLayer.Disposal, TileObjectGenericType.Disposal, "Disp", Direction.North);
-
-            MapEditorDeleteTargeting.Resolve(MapEditorSubcategory.Piping, Direction.North, locations, _targets);
-
-            Assert.AreEqual("Pipe", _targets.Single().AssetName);
+            Assert.AreEqual("Nothing to delete on Lower → Cables",
+                MapEditorDeleteTargeting.EmptyHint(MapEditorSubcategory.Cables, Direction.North));
+            Assert.AreEqual("Nothing to delete on Upper → Wall Mounts (East)",
+                MapEditorDeleteTargeting.EmptyHint(MapEditorSubcategory.WallMounts, Direction.East));
         }
 
-        [Test]
-        public void Resolve_Piping_TakesTheWireOnceNoPipeIsLeft()
-        {
-            ITileLocation[] locations = CreateLocations();
-            PlaceOn(locations, TileLayer.Wire, TileObjectGenericType.None, "Cable", Direction.North);
+        private static string[] ExpectedNames(MapEditorDeleteScope scope, TileObjectGenericType turfKind) =>
+            scope switch
+            {
+                MapEditorDeleteScope.FloorTurf => TurfIf(turfKind, TileObjectGenericType.Floor),
+                MapEditorDeleteScope.WallTurf => TurfIf(turfKind, TileObjectGenericType.Wall),
+                MapEditorDeleteScope.DoorTurf => TurfIf(turfKind, TileObjectGenericType.Door),
+                MapEditorDeleteScope.WallMountFace => Names(TileLayer.WallMountLow, TileLayer.WallMountHigh),
+                MapEditorDeleteScope.FurnitureLayers => Names(TileLayer.FurnitureBase, TileLayer.FurnitureTop),
+                MapEditorDeleteScope.Plenum => Names(TileLayer.Plenum),
+                MapEditorDeleteScope.Wire => Names(TileLayer.Wire),
+                MapEditorDeleteScope.PipeLayers => Names(TileLayer.PipeLeft, TileLayer.PipeRight, TileLayer.PipeMiddle,
+                    TileLayer.PipeSurface, TileLayer.PipeManifold),
+                MapEditorDeleteScope.Disposal => Names(TileLayer.Disposal),
+                // Decals, markers, items and rooms are cleared from their own registries, not tile layers.
+                _ => new string[0],
+            };
 
-            MapEditorDeleteTargeting.Resolve(MapEditorSubcategory.Piping, Direction.North, locations, _targets);
+        private static string[] TurfIf(TileObjectGenericType placed, TileObjectGenericType wanted) =>
+            placed == wanted ? new[] { "Turf" + placed } : new string[0];
 
-            Assert.AreEqual("Cable", _targets.Single().AssetName);
-        }
-
-        [Test]
-        public void Resolve_Uncategorized_IsEmpty()
-        {
-            ITileLocation[] locations = CreateLocations();
-            PlaceOn(locations, TileLayer.Turf, TileObjectGenericType.Floor, "Floor", Direction.North);
-
-            MapEditorDeleteTargeting.Resolve(
-                MapEditorSubcategory.Uncategorized, Direction.North, locations, _targets);
-
-            Assert.IsEmpty(_targets);
-        }
+        private static string[] Names(params TileLayer[] layers) => layers.Select(layer => layer.ToString()).ToArray();
 
         private static ITileLocation[] CreateLocations()
         {

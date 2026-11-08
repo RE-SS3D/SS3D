@@ -730,6 +730,46 @@
     flex-shrink: 0;
 }
 
+/* Search groups ("UPPER › MACHINES") and folder headings ("POWER") in a sub-tab grid. */
+.map-editor-grid-heading {
+    flex-shrink: 0;
+    color: var(--ss3d-text-secondary);
+    font-size: 11px;
+    letter-spacing: 1px;
+    -unity-font-style: bold;
+    padding: 6px 4px 2px 4px;
+}
+
+/* Compact view: the heading runs bottom-to-top beside its group's first row, so the row keeps the slot height. */
+.map-editor-grid-side-heading {
+    width: 24px;
+    height: 104px;
+    margin: 4px 4px 4px 0;
+    flex-shrink: 0;
+    border-right-width: 1px;
+    border-color: var(--ss3d-border-default);
+}
+
+/* Laid out 104 × 24, then turned a quarter about its centre to fill the 24 × 104 column. */
+.map-editor-grid-side-heading__label {
+    position: absolute;
+    width: 104px;
+    height: 24px;
+    left: -40px;
+    top: 40px;
+    rotate: -90deg;
+    transform-origin: center;
+    color: var(--ss3d-text-secondary);
+    font-size: 9px;
+    letter-spacing: 1px;
+    -unity-font-style: bold;
+    -unity-text-align: middle-center;
+    white-space: normal;
+    overflow: hidden;
+    margin: 0;
+    padding: 0;
+}
+
 .map-editor-slot {
     width: 108px;
     height: 104px;
@@ -750,32 +790,27 @@
 }
 
 .map-editor-slot__icon-frame {
-    width: 74px;
-    height: 74px;
+    width: 60px;
+    height: 60px;
     flex-shrink: 0;
     align-items: center;
     justify-content: center;
-    margin-bottom: 4px;
+    margin-bottom: 3px;
 }
 
 .map-editor-slot__icon {
-    width: 70px;
-    height: 70px;
+    width: 56px;
+    height: 56px;
     background-color: rgba(0, 0, 0, 0);
     border-radius: 6px;
     -unity-background-scale-mode: scale-to-fit;
 }
 
-.map-editor-slot__icon--eraser {
-    background-color: rgba(179, 51, 51, 0.35);
-    border-radius: 6px;
-}
-
 /* Spawn marker glyphs: tinted like the in-world spawn pins (blue job, red antagonist). */
 .map-editor-slot__icon--spawn-job,
 .map-editor-slot__icon--spawn-antag {
-    width: 52px;
-    height: 52px;
+    width: 44px;
+    height: 44px;
 }
 .map-editor-slot__icon--spawn-job { -unity-background-image-tint-color: rgb(64, 191, 255); }
 .map-editor-slot__icon--spawn-antag { -unity-background-image-tint-color: rgb(255, 89, 64); }
@@ -783,12 +818,13 @@
 .map-editor-slot__label {
     font-size: 10.5px;
     color: var(--ss3d-text-secondary);
-    -unity-text-align: middle-center;
-    white-space: nowrap;
+    /* Two lines of words (MapEditorCatalog.PaletteLabel); longer names still end in an ellipsis. */
+    -unity-text-align: upper-center;
+    white-space: normal;
     overflow: hidden;
     text-overflow: ellipsis;
     max-width: 100%;
-    height: 13px;
+    height: 25px;
     min-height: 0;
     flex-shrink: 0;
     flex-grow: 0;
@@ -796,6 +832,59 @@
     margin-bottom: 0;
     padding-top: 0;
     padding-bottom: 0;
+}
+
+/* Variant families (palette S6): family on line 1, variant on line 2, "n/N" badge, ‹ › on hover or while held. */
+.map-editor-slot__label--family {
+    flex-direction: column;
+    align-items: stretch;
+}
+.map-editor-slot__family,
+.map-editor-slot__variant {
+    font-size: 10.5px;
+    -unity-text-align: upper-center;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    height: 12.5px;
+    margin: 0;
+    padding: 0;
+}
+.map-editor-slot__family { color: var(--ss3d-text-secondary); }
+.map-editor-slot__variant { color: var(--ss3d-text-primary); }
+.map-editor-slot__badge {
+    position: absolute;
+    top: 3px;
+    right: 4px;
+    font-size: 9px;
+    padding: 0 3px;
+    margin: 0;
+    border-radius: 4px;
+    color: var(--ss3d-text-secondary);
+    background-color: var(--ss3d-surface-inset);
+}
+.map-editor-slot__cycle {
+    display: none;
+    position: absolute;
+    top: 18px;
+    width: 18px;
+    height: 24px;
+    margin: 0;
+    padding: 0;
+    font-size: 16px;
+    -unity-font-style: bold;
+    -unity-text-align: middle-center;
+    border-width: 0;
+    border-radius: 4px;
+    color: var(--ss3d-text-primary);
+    background-color: var(--ss3d-surface-inset);
+}
+.map-editor-slot__cycle--previous { left: -14px; }
+.map-editor-slot__cycle--next { right: -14px; }
+.map-editor-slot__cycle:hover { color: var(--map-editor-accent); }
+.map-editor-slot--family:hover .map-editor-slot__cycle,
+.map-editor-slot--family.map-editor-slot--active .map-editor-slot__cycle {
+    display: flex;
 }
 
 /* Lives in the view's popover layer; MapEditorView.PlacePopover sets top/left/right beside its anchor. */
@@ -1102,13 +1191,14 @@
     background-color: transparent;
     border-width: 0;
     border-radius: 0;
-    padding: 10px 12px;
+    padding: 5px 10px;
     margin: 0;
 }
-.map-check__heading { flex-grow: 1; flex-shrink: 1; margin-left: 10px; margin-right: 6px; }
-.map-check__issue-title { white-space: normal; color: var(--ss3d-text-primary); font-size: 13px; }
-.map-check__category { color: var(--ss3d-text-tertiary); font-size: 11px; margin-top: 2px; }
-.map-check__detail { padding: 0 12px 12px 38px; }
+/* One line per closed issue: title, then its category on the right. */
+.map-check__heading { flex-direction: row; align-items: flex-start; flex-grow: 1; flex-shrink: 1; margin-left: 8px; margin-right: 6px; }
+.map-check__issue-title { flex-grow: 1; flex-shrink: 1; white-space: normal; color: var(--ss3d-text-primary); font-size: 12px; }
+.map-check__category { flex-shrink: 0; color: var(--ss3d-text-tertiary); font-size: 10px; margin-left: 6px; margin-top: 1px; }
+.map-check__detail { padding: 0 10px 8px 30px; }
 .map-check__body { white-space: normal; color: var(--ss3d-text-secondary); font-size: 12px; }
 .map-check__actions { flex-direction: row; margin-top: 10px; }
 .map-check__footer { flex-direction: row; align-items: center; flex-wrap: wrap; flex-shrink: 0; padding: 8px; border-top-width: 1px; border-top-color: var(--ss3d-border-subtle); }

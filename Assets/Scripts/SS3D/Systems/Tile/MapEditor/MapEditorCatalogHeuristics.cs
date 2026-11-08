@@ -1,174 +1,271 @@
-using SS3D.Data.AssetDatabases;
 using SS3D.Systems.Tile.Connections;
 using System;
+using System.Collections.Generic;
+using System.Text.RegularExpressions;
 
 namespace SS3D.Systems.Tile.MapEditor
 {
     /// <summary>
-    /// Heuristic mapping from tile assets to library taxonomy when not explicitly cataloged.
+    /// Files a tile asset under its palette sub-tab. Tile objects go by the layer they sit on
+    /// (+ <see cref="TileObjectGenericType"/> for turfs); items go by their folder under <c>Items/</c>.
+    /// The regenerator bakes the result into <c>MapEditorCatalog.asset</c>. A misfiled asset is fixed
+    /// by moving it, never by a name rule here.
     /// </summary>
     public static class MapEditorCatalogHeuristics
     {
+        /// <summary>Furniture-layer folders that hold furniture; every other furniture-layer object is a machine.</summary>
+        private static readonly string[] FurnitureFolders =
+        {
+            "Furniture/Generic/",
+            "Furniture/Flora/",
+            "Furniture/Storage/",
+        };
+
+        /// <summary><c>Items/</c> folder → sub-tab. First match wins; anything unlisted is Misc.</summary>
+        private static readonly (string Folder, MapEditorSubcategory SubTab)[] ItemFolders =
+        {
+            ("Items/Clothing/", MapEditorSubcategory.Clothing),
+            ("Items/Consumables/Chemical/", MapEditorSubcategory.Medical),
+            ("Items/Functional/Medical/", MapEditorSubcategory.Medical),
+            ("Items/Consumables/Food/", MapEditorSubcategory.FoodAndDrink),
+            ("Items/Functional/Tools/", MapEditorSubcategory.Tools),
+            ("Items/Functional/Materials/", MapEditorSubcategory.MaterialsAndParts),
+            ("Items/Functional/Parts/", MapEditorSubcategory.MaterialsAndParts),
+            ("Items/Functional/Devices/", MapEditorSubcategory.Devices),
+            ("Items/Weapons/", MapEditorSubcategory.Weapons),
+        };
+
+        /// <summary>
+        /// Sub-tab → the folders its headings come from (creative-mode §2): the folder just below
+        /// a root is the heading, and a file directly in a root, or outside every root, is under <see cref="GeneralHeading"/>.
+        /// A sub-tab with no roots has no headings. Rename a folder to change a heading; never add a rule here.
+        /// </summary>
+        private static readonly (MapEditorSubcategory SubTab, string[] Roots)[] HeadingRoots =
+        {
+            (MapEditorSubcategory.Furniture, FurnitureFolders),
+            (MapEditorSubcategory.Machines, new[] { "Furniture/Machines/" }),
+        };
+
+        public const string GeneralHeading = "General";
+
+        private const string ResourcesRoot = "/Resources/";
+
         public static MapEditorCatalogEntry Infer(GenericObjectSo asset) =>
             Infer(asset, assetPath: null);
 
         /// <param name="assetPath">
-        /// Optional Unity asset path (e.g. from <c>AssetDatabase.GetAssetPath</c>). Folder segments
-        /// under <c>Items/</c> are preferred over bare name keywords when classifying items.
+        /// Unity asset path (<c>AssetDatabase.GetAssetPath</c>). Without it (runtime fallback for an
+        /// asset missing from the baked catalog) items land in Misc and furniture-layer objects in Machines.
         /// </param>
+        /// <returns>Null when the asset has no sub-tab (a turf of an unknown kind, or not a tile asset).</returns>
         public static MapEditorCatalogEntry Infer(GenericObjectSo asset, string assetPath)
         {
+            if (asset == null)
+                return null;
+
             string assetName = ResolveAssetName(asset);
 
             if (asset is ItemObjectSo)
-                return InferItem(assetName, assetPath);
+                return Entry(assetName, ClassifyItem(assetPath), assetPath, "item");
 
             if (asset is not TileObjectSo tile)
-                return Uncategorized(assetName);
+                return null;
 
-            return tile.layer switch
-            {
-                TileLayer.Turf when tile.genericType == TileObjectGenericType.Wall =>
-                    Entry(assetName, MapEditorMode.Upper, MapEditorSubcategory.Walls, "wall"),
-                TileLayer.Turf when tile.genericType == TileObjectGenericType.Door =>
-                    Entry(assetName, MapEditorMode.Upper, MapEditorSubcategory.Doors, "door"),
-                TileLayer.Turf when tile.genericType == TileObjectGenericType.Floor =>
-                    Entry(assetName, MapEditorMode.Upper, MapEditorSubcategory.Flooring, "floor", "plating"),
-                TileLayer.Turf =>
-                    Entry(assetName, MapEditorMode.Upper, MapEditorSubcategory.Turfs, "turf"),
-                TileLayer.Plenum when tile.genericType == TileObjectGenericType.Plenum =>
-                    Entry(assetName, MapEditorMode.Lower, MapEditorSubcategory.BaseTiles, "plenum"),
-                TileLayer.Plenum =>
-                    Entry(assetName, MapEditorMode.Lower, MapEditorSubcategory.BaseTiles, "lattice", "catwalk", "base"),
-                TileLayer.FurnitureBase or TileLayer.FurnitureTop =>
-                    Entry(assetName, MapEditorMode.Upper, MapEditorSubcategory.TileObjects, "furniture"),
-                TileLayer.WallMountLow or TileLayer.WallMountHigh =>
-                    Entry(assetName, MapEditorMode.Upper, MapEditorSubcategory.WallAttachments, "wall mount"),
-                TileLayer.Disposal =>
-                    Entry(assetName, MapEditorMode.Lower, MapEditorSubcategory.Disposals, "disposal"),
-                TileLayer.Wire =>
-                    Entry(assetName, MapEditorMode.Lower, MapEditorSubcategory.Piping, "wire", "cable"),
-                TileLayer.PipeLeft or TileLayer.PipeRight or TileLayer.PipeSurface or TileLayer.PipeMiddle
-                    when tile.genericType == TileObjectGenericType.Pipe =>
-                    Entry(assetName, MapEditorMode.Lower, MapEditorSubcategory.Piping, "pipe"),
-                TileLayer.PipeSurface or TileLayer.PipeManifold =>
-                    Entry(assetName, MapEditorMode.Lower, MapEditorSubcategory.Piping, "pipe", "device"),
-                _ => Uncategorized(assetName),
-            };
+            MapEditorSubcategory? subTab = ClassifyTile(tile.layer, tile.genericType, assetPath);
+            return subTab.HasValue ? Entry(assetName, subTab.Value, assetPath) : null;
         }
 
-        private static string ResolveAssetName(GenericObjectSo asset)
-        {
-            if (asset == null)
-                return string.Empty;
-
-            if (asset.PrefabAsset != null)
-                return asset.NameString;
-
-            return string.IsNullOrEmpty(asset.name) ? string.Empty : asset.name;
-        }
-
-        public static MapEditorCatalogEntry CreateEraserEntry() =>
-            new()
+        public static MapEditorSubcategory? ClassifyTile(TileLayer layer, TileObjectGenericType genericType, string assetPath = null) =>
+            layer switch
             {
-                AssetName = "__eraser__",
-                Mode = MapEditorMode.Upper,
-                Subcategory = MapEditorSubcategory.Walls,
-                SearchTags = new[] { "eraser", "delete", "clear" },
-                IsEraser = true,
+                TileLayer.Turf => genericType switch
+                {
+                    TileObjectGenericType.Floor => MapEditorSubcategory.Floors,
+                    TileObjectGenericType.Wall => MapEditorSubcategory.WallsAndWindows,
+                    TileObjectGenericType.Door => MapEditorSubcategory.Doors,
+                    _ => null,
+                },
+                TileLayer.WallMountLow or TileLayer.WallMountHigh => MapEditorSubcategory.WallMounts,
+                TileLayer.FurnitureBase or TileLayer.FurnitureTop => IsUnderAny(assetPath, FurnitureFolders)
+                    ? MapEditorSubcategory.Furniture
+                    : MapEditorSubcategory.Machines,
+                TileLayer.Plenum => MapEditorSubcategory.Subfloor,
+                TileLayer.Wire => MapEditorSubcategory.Cables,
+                TileLayer.PipeLeft or TileLayer.PipeRight or TileLayer.PipeMiddle
+                    or TileLayer.PipeSurface or TileLayer.PipeManifold => MapEditorSubcategory.GasPipes,
+                TileLayer.Disposal => MapEditorSubcategory.DisposalPipes,
+                _ => null,
             };
 
-        /// <summary>
-        /// Classifies an item by Resources folder path when available, else by name keywords.
-        /// Mirrors <c>Assets/Content/Data/TileMap/Resources/Items/</c> taxonomy.
-        /// </summary>
-        public static MapEditorCatalogEntry InferItem(string assetName, string assetPath = null)
+        /// <summary>The item's sub-tab from its folder under <c>Items/</c>; Misc when unlisted or unknown.</summary>
+        public static MapEditorSubcategory ClassifyItem(string assetPath)
         {
-            MapEditorSubcategory subcategory = ClassifyItem(assetName, assetPath);
-            return Entry(
-                assetName,
-                MapEditorMode.Items,
-                subcategory,
-                BuildItemTags(assetName, subcategory));
-        }
-
-        public static MapEditorSubcategory ClassifyItem(string assetName, string assetPath = null)
-        {
-            string haystack = BuildItemHaystack(assetName, assetPath);
-
-            // Path / name order: medical and food before broad "tool" matches.
-            if (MatchesAny(haystack,
-                    "/consumables/chemical/", "/tools/medical/",
-                    "medkit", "medicalpatch", "brutepatch", "burnpatch",
-                    "healthscanner", "syringe", "bandage", "pill"))
-                return MapEditorSubcategory.Medical;
-
-            if (MatchesAny(haystack,
-                    "/consumables/food/", "/food/", "/drinks/",
-                    "sodacan", "donkpocket", "mug", "food", "drink", "snack"))
-                return MapEditorSubcategory.FoodDrink;
-
-            if (MatchesAny(haystack,
-                    "/weapons/",
-                    "security", "weapon", "gun", "rifle", "pistol", "taser", "baton", "handcuff",
-                    "m4", "jackboot", "c4", "x4", "bomb"))
-                return MapEditorSubcategory.Security;
-
-            if (MatchesAny(haystack,
-                    "/functional/tools/", "/functional/materials/", "/functional/parts/",
-                    "crowbar", "wrench", "screwdriver", "wirecutter", "welder", "multitool",
-                    "hatchet", "knife", "toolbox", "toolbelt", "flashlight",
-                    "cable", "wire", "sheet", "rod", "plank", "powercell", "matterbin",
-                    "microlaser", "steel", "glass", "wood"))
-                return MapEditorSubcategory.Tools;
+            string relative = RelativeToResources(assetPath);
+            foreach ((string folder, MapEditorSubcategory subTab) in ItemFolders)
+            {
+                if (relative.StartsWith(folder, StringComparison.OrdinalIgnoreCase))
+                    return subTab;
+            }
 
             return MapEditorSubcategory.Misc;
         }
 
-        private static string BuildItemHaystack(string assetName, string assetPath)
+        /// <summary>
+        /// The grid heading an asset sits under in its sub-tab: "Furniture/Machines/Power/SMES.asset" → "Power".
+        /// Empty for a sub-tab without heading roots.
+        /// </summary>
+        public static string HeadingOf(MapEditorSubcategory subTab, string assetPath)
         {
-            string name = assetName ?? string.Empty;
-            string path = assetPath ?? string.Empty;
-            // Normalize so "/Items/Functional/Tools/Medical/X" and "Crowbar" both match.
-            return (path + "/" + name).Replace('\\', '/').ToLowerInvariant();
+            string[] roots = null;
+            foreach ((MapEditorSubcategory headed, string[] headedRoots) in HeadingRoots)
+            {
+                if (headed == subTab)
+                    roots = headedRoots;
+            }
+
+            if (roots == null)
+                return string.Empty;
+
+            string relative = RelativeToResources(assetPath);
+            foreach (string root in roots)
+            {
+                if (!relative.StartsWith(root, StringComparison.OrdinalIgnoreCase))
+                    continue;
+
+                int folderEnd = relative.IndexOf('/', root.Length);
+                return folderEnd > root.Length
+                    ? MapEditorCatalog.PaletteLabel(relative.Substring(root.Length, folderEnd - root.Length))
+                    : GeneralHeading;
+            }
+
+            return GeneralHeading;
         }
 
-        private static bool MatchesAny(string haystack, params string[] needles)
+        /// <summary>Folder-name suffix that makes a folder a variant family.</summary>
+        public const string FamilySuffix = "Variants";
+
+        /// <summary>Variant label of a family's base asset, the one named only by the shared prefix.</summary>
+        public const string StandardVariant = "Standard";
+
+        /// <summary>
+        /// The family folder an asset sits directly in, relative to <c>Resources</c>
+        /// ("Furniture/Generic/Seats/Chairs/OfficeChairVariants"), or null when its folder is not a family.
+        /// </summary>
+        public static string FamilyFolderOf(string assetPath)
         {
-            foreach (string needle in needles)
+            string relative = RelativeToResources(assetPath);
+            int slash = relative.LastIndexOf('/');
+            if (slash <= 0)
+                return null;
+
+            string folder = relative.Substring(0, slash);
+            string name = folder.Substring(folder.LastIndexOf('/') + 1);
+            return name.Length > FamilySuffix.Length && name.EndsWith(FamilySuffix, StringComparison.Ordinal) ? folder : null;
+        }
+
+        /// <summary>"…/OfficeChairVariants" → "Office Chair".</summary>
+        public static string FamilyLabelOf(string familyFolder)
+        {
+            string name = familyFolder.Substring(familyFolder.LastIndexOf('/') + 1);
+            return MapEditorCatalog.PaletteLabel(name.Substring(0, name.Length - FamilySuffix.Length));
+        }
+
+        /// <summary>
+        /// Each member's label: its name minus the prefix all members share (cut back to a word start).
+        /// "L"/"R" (with any digits) read Left/Right; an empty remainder is <see cref="StandardVariant"/>.
+        /// </summary>
+        public static string[] VariantLabels(IReadOnlyList<string> assetNames)
+        {
+            int prefix = SharedWordPrefix(assetNames);
+            string[] labels = new string[assetNames.Count];
+            for (int i = 0; i < assetNames.Count; i++)
             {
-                if (haystack.Contains(needle, StringComparison.Ordinal))
+                string rest = assetNames[i].Substring(prefix);
+                Match side = Regex.Match(rest, "^([LR])[0-9]*$");
+                labels[i] = rest.Length == 0 ? StandardVariant
+                    : side.Success ? (side.Groups[1].Value == "L" ? "Left" : "Right")
+                    : MapEditorCatalog.PaletteLabel(rest);
+            }
+
+            return labels;
+        }
+
+        private static int SharedWordPrefix(IReadOnlyList<string> names)
+        {
+            if (names.Count == 0)
+                return 0;
+
+            int length = names[0].Length;
+            foreach (string name in names)
+            {
+                int common = 0;
+                while (common < length && common < name.Length && name[common] == names[0][common])
+                    common++;
+
+                length = common;
+            }
+
+            // Back up while the cut falls inside a word ("PlantE|arth" → "Plant|Earth").
+            while (length > 0 && SplitsAWord(names, length))
+                length--;
+
+            return length;
+        }
+
+        private static bool SplitsAWord(IReadOnlyList<string> names, int at)
+        {
+            foreach (string name in names)
+            {
+                if (at < name.Length && char.IsLower(name[at]))
                     return true;
             }
 
             return false;
         }
 
-        private static string[] BuildItemTags(string assetName, MapEditorSubcategory subcategory)
+        private static bool IsUnderAny(string assetPath, string[] folders)
         {
-            string categoryTag = subcategory switch
+            string relative = RelativeToResources(assetPath);
+            foreach (string folder in folders)
             {
-                MapEditorSubcategory.FoodDrink => "food",
-                MapEditorSubcategory.Tools => "tool",
-                MapEditorSubcategory.Medical => "medical",
-                MapEditorSubcategory.Security => "security",
-                MapEditorSubcategory.Misc => "misc",
-                _ => "item",
-            };
+                if (relative.StartsWith(folder, StringComparison.OrdinalIgnoreCase))
+                    return true;
+            }
 
-            return new[] { "item", categoryTag, assetName };
+            return false;
         }
 
-        private static MapEditorCatalogEntry Entry(string name, MapEditorMode mode, MapEditorSubcategory sub, params string[] tags) =>
-            new()
+        /// <summary>"Assets/…/TileMap/Resources/Items/Weapons/M4.asset" → "Items/Weapons/M4.asset".</summary>
+        private static string RelativeToResources(string assetPath)
+        {
+            if (string.IsNullOrEmpty(assetPath))
+                return string.Empty;
+
+            string path = assetPath.Replace('\\', '/');
+            int root = path.LastIndexOf(ResourcesRoot, StringComparison.OrdinalIgnoreCase);
+            return root >= 0 ? path.Substring(root + ResourcesRoot.Length) : path;
+        }
+
+        private static string ResolveAssetName(GenericObjectSo asset)
+        {
+            if (asset.PrefabAsset != null)
+                return asset.NameString;
+
+            return string.IsNullOrEmpty(asset.name) ? string.Empty : asset.name;
+        }
+
+        private static MapEditorCatalogEntry Entry(string name, MapEditorSubcategory subTab, string assetPath, string extraTag = null)
+        {
+            MapEditorSubTab row = MapEditorSubTabs.Get(subTab);
+            string label = row.Label.ToLowerInvariant();
+            return new MapEditorCatalogEntry
             {
                 AssetName = name,
-                Mode = mode,
-                Subcategory = sub,
-                SearchTags = tags,
+                Mode = row.Mode,
+                Subcategory = subTab,
+                Heading = HeadingOf(subTab, assetPath),
+                SearchTags = extraTag == null ? new[] { label } : new[] { extraTag, label },
             };
-
-        private static MapEditorCatalogEntry Uncategorized(string name) =>
-            Entry(name, MapEditorMode.Upper, MapEditorSubcategory.Uncategorized, "uncategorized");
+        }
     }
 }

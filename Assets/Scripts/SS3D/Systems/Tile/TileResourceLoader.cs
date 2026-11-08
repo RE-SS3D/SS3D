@@ -23,6 +23,8 @@ namespace SS3D.Systems.Tile
 
         public TileAssetCatalog Catalog { get; } = new();
 
+        private readonly Dictionary<string, GenericObjectSo> _assetsById = new(StringComparer.Ordinal);
+
         public void Awake()
         {
             LoadAssets();
@@ -37,6 +39,18 @@ namespace SS3D.Systems.Tile
             GenericObjectSo[] tempAssets = Resources.LoadAll<GenericObjectSo>("");
             foreach (GenericObjectSo asset in tempAssets)
                 Assets.Add(asset);
+
+            _assetsById.Clear();
+            foreach (GenericObjectSo asset in Assets)
+            {
+                string id = SavedAssetLookup.IdOf(asset);
+                if (string.IsNullOrEmpty(id))
+                    continue;
+
+                if (!_assetsById.TryAdd(id, asset))
+                    Log.Error(this, "Tile assets {first} and {second} share prefab id {id}; saved maps load the first",
+                        Logs.Generic, _assetsById[id].name, asset.name, id);
+            }
 
             Catalog.Build(Assets);
             IsInitialized = true;
@@ -111,6 +125,20 @@ namespace SS3D.Systems.Tile
 
             return genericObjectSo;
         }
+
+        /// <summary>
+        /// The asset whose prefab has this <see cref="ObjectAssetReference.Id"/>, or null. Logs nothing, so a caller can fall back.
+        /// </summary>
+        [CanBeNull]
+        public GenericObjectSo GetAssetById(string id) =>
+            id != null && _assetsById.TryGetValue(id, out GenericObjectSo asset) ? asset : null;
+
+        /// <summary>
+        /// Resolves a saved object: by id, then by name through <see cref="RenamedTileObjects"/>.
+        /// </summary>
+        [CanBeNull]
+        public GenericObjectSo GetSavedAsset(string id, string savedName) =>
+            SavedAssetLookup.Resolve(id, savedName, GetAssetById, GetAsset);
 
         [CanBeNull]
         public GenericObjectSo GetAsset(ObjectAssetReference asset)

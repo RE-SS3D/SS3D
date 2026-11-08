@@ -30,7 +30,7 @@ namespace EditorTests
                 Assert.IsTrue(model.IsLayerCategoryVisible(TileLayerCategory.Areas));
                 Assert.AreEqual(tool, model.CurrentTool);
             }
-            model.SetSubcategory(MapEditorSubcategory.SpawnPlacements);
+            model.SetSubcategory(MapEditorSubcategory.SpawnPoints);
             Assert.IsFalse(model.IsLayerCategoryVisible(TileLayerCategory.Areas));
         }
 
@@ -113,15 +113,15 @@ namespace EditorTests
             model.SetSubcategory(MapEditorSubcategory.Rooms);
             Assert.AreEqual(MapEditorTool.Edit, model.CurrentTool);
             Assert.IsTrue(model.IsLayerCategoryVisible(TileLayerCategory.Areas));
-            model.SetSubcategory(MapEditorSubcategory.SpawnPlacements);
+            model.SetSubcategory(MapEditorSubcategory.SpawnPoints);
             Assert.AreEqual(MapEditorTool.Edit, model.CurrentTool);
             Assert.IsFalse(model.IsLayerCategoryVisible(TileLayerCategory.Areas));
             Assert.IsTrue(model.IsLayerCategoryVisible(TileLayerCategory.Scripts));
             model.SetMode(MapEditorMode.Upper);
             Assert.IsFalse(model.IsLayerCategoryVisible(TileLayerCategory.Scripts));
             Assert.IsFalse(model.IsLayerCategoryVisible(TileLayerCategory.Areas));
-            CollectionAssert.Contains(MapEditorCatalog.GetSubcategories(MapEditorMode.Scripting), MapEditorSubcategory.Rooms);
-            Assert.IsFalse(MapEditorCatalog.IsUnavailableScriptingSubcategory(MapEditorSubcategory.Rooms));
+            CollectionAssert.Contains(
+                MapEditorSubTabs.InMode(MapEditorMode.Scripting).Select(row => row.Id).ToArray(), MapEditorSubcategory.Rooms);
         }
 
         [Test]

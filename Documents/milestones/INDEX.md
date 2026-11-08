@@ -28,7 +28,7 @@ M4 (win/lose) and M5 (end screen, restart) shipped: [round-end loop](../archive/
 - **T3** — exit line: doors for remote clients; admin force-end and teleport disk; Nuke Ops smoke green nightly; 8 clients through a breach without hitching
 - **T8** — 24/7 Nuke Ops server, separate from the sandbox; Extended below 4 ready players. Announcing it publicly closes the gate (T5)
 
-**Maintenance** — [map-authoring.md](map-authoring.md): no build work queued; triage tester reports. A6 (a tester-built station) is off the critical path.
+**Maintenance** — [map-authoring.md](map-authoring.md): A8 palette layout (S1–S3 done; S4 layer groups next); triage tester reports. A6 (a tester-built station) is off the critical path.
 
 After Playtest 1, a **feel pass** ordered by what testers report: [mvp1-nuke-ops.md](mvp1-nuke-ops.md) **Explicitly deferred**.
 

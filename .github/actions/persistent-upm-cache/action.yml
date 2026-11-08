@@ -1,0 +1,35 @@
+name: Persistent Unity package cache
+description: >
+  Self-hosted only. Puts a docker wrapper first on PATH so game-ci's Unity containers mount a
+  host UPM cache and set UPM_CACHE_ROOT to it. Without it the container's home is throwaway and
+  every job downloads all registry packages again, and a dropped download fails the job
+  ("could not be added ... aborted"). game-ci forwards a fixed env list into the container, so
+  UPM_CACHE_ROOT cannot be passed any other way.
+inputs:
+  cache-dir:
+    description: Host directory that keeps the UPM cache between jobs.
+    default: /home/cu6e/.cache/ss3d/upm
+runs:
+  using: composite
+  steps:
+    - shell: bash
+      env:
+        UPM_HOST_CACHE: ${{ inputs.cache-dir }}
+      run: |
+        set -euo pipefail
+        mkdir -p "$UPM_HOST_CACHE"
+        shim_dir="$RUNNER_TEMP/upm-cache-shim"
+        mkdir -p "$shim_dir"
+        real_docker="$(command -v docker)"
+        cat > "$shim_dir/docker" <<SHIM
+        #!/usr/bin/env bash
+        # Only Unity editor containers get the cache; every other docker call passes through.
+        if [[ "\${1:-}" == run ]] && [[ "\$*" == *unityci/editor:* ]]; then
+          shift
+          exec "$real_docker" run -v "$UPM_HOST_CACHE:/upm-cache" -e UPM_CACHE_ROOT=/upm-cache "\$@"
+        fi
+        exec "$real_docker" "\$@"
+        SHIM
+        chmod +x "$shim_dir/docker"
+        echo "$shim_dir" >> "$GITHUB_PATH"
+        echo "UPM cache: $UPM_HOST_CACHE ($(du -sh "$UPM_HOST_CACHE" | cut -f1))"

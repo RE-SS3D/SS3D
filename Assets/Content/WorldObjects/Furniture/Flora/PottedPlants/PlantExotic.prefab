@@ -18,7 +18,7 @@ GameObject:
   - component: {fileID: -78181008761524262}
   - component: {fileID: 4481000698836081787}
   m_Layer: 0
-  m_Name: Plant7
+  m_Name: PlantExotic
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -136,7 +136,7 @@ MonoBehaviour:
   <SpawnableCollectionId>k__BackingField: 0
   _scenePathHash: 0
   <SceneId>k__BackingField: 0
-  <AssetPathHash>k__BackingField: 15970512929180177305
+  <AssetPathHash>k__BackingField: 17311827483720771773
   <IsNested>k__BackingField: 0
   <ComponentIndex>k__BackingField: 0
   <PredictedSpawn>k__BackingField: {fileID: 0}
