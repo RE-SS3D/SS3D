@@ -389,7 +389,7 @@ namespace SS3D.Systems.Tile.MapEditor
 
                 _mapEditorHandle ??= _inputSystem.PushContext(InputContext.MapEditor);
 
-                // Stop CameraFollow BEFORE taking the camera — its UpdateEvent still fires
+                // Stop CameraFollow BEFORE taking the camera — its LateUpdateEvent still fires
                 // while disabled unless it early-outs, and it was overwriting orbit every frame.
                 SetGameplayInputBlocked(true);
 

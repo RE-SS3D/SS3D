@@ -127,7 +127,10 @@ namespace SS3D.Systems.Screens
             _inputSystem = SubSystems.Get<InputSubSystem>();
             _controls = _inputSystem.Inputs.Camera;
 
-            AddHandle(UpdateEvent.AddListener(HandleUpdate));
+            // LateUpdate, not Update: Coimbra gives no order between Update listeners, and this one
+            // registers before the player spawns, so it read last frame's body position and the
+            // owner's body jittered on screen by one frame of uneven movement.
+            AddHandle(LateUpdateEvent.AddListener(HandleLateUpdate));
         }
 
         protected override void OnEnabled()
@@ -159,9 +162,9 @@ namespace SS3D.Systems.Screens
             _gameplayHandle = null;
         }
 
-        private void HandleUpdate(ref EventContext context, in UpdateEvent updateEvent)
+        private void HandleLateUpdate(ref EventContext context, in LateUpdateEvent lateUpdateEvent)
         {
-            // Coimbra UpdateEvent keeps firing after enabled=false (same pitfall as
+            // Coimbra player-loop events keep firing after enabled=false (same pitfall as
             // AnimationOrchestrator). Without this guard, ProcessCameraPosition overwrites
             // MapEditorSession's orbit every frame and hologram picks stay locked to the
             // follow-camera axes (mouse X = world east/west regardless of editor yaw).

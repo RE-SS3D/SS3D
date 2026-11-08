@@ -92,7 +92,8 @@ HUD feed yet.
   hidden until the PDA objectives tab ships.
 - **UITK:** do not combine `border-radius` + `overflow: hidden` on the same element.
 - **Occlusion:** shared `SS3D.Utils.LineOfSight` — no private raycast in `LocalSpeechListener`.
-- **`CameraFollow` ignores `enabled = false`:** Coimbra `UpdateEvent` needs `isActiveAndEnabled` early-out.
+- **`CameraFollow` ignores `enabled = false`:** Coimbra `LateUpdateEvent` needs `isActiveAndEnabled` early-out.
+- **Follow the body in LateUpdate:** Coimbra does not order `UpdateEvent` listeners, and `CameraFollow` registers before the player spawns, so in Update it read the previous frame's body position and the owner's body jittered on screen with uneven frame times (noticed while hosting). Keep `CameraFollow` on `LateUpdateEvent`, after all movement.
 - Radio/Announcement **head-chip** CSS is draft/preview only; live path is `CommsFeedView`.
 
 - **OOC sender identity:** never trust a client-supplied name. The server resolves the ckey from the connection. Chat labels set `enableRichText = false`.
