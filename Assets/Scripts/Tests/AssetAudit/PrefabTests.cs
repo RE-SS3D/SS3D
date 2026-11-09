@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Reflection;
 using System.Text;
 using NUnit.Framework;
@@ -6,6 +7,7 @@ using SS3D.Attributes;
 using SS3D.Interactions.Interfaces;
 using SS3D.Systems.Examine;
 using SS3D.Systems.Inventory.Containers;
+using SS3D.Systems.Inventory.Items;
 using SS3D.Systems.Roles;
 using SS3D.Systems.Selection;
 using UnityEditor;
@@ -41,6 +43,28 @@ namespace AssetAudit
             StringBuilder sb = new();
             bool allScriptsExist = AssetAuditUtilities.CheckGameObjectForMissingScripts(prefab, ref sb);
             Assert.IsTrue(allScriptsExist, sb.ToString());
+        }
+
+        /// <summary>
+        /// An item's rigidbody must not interpolate. Held or stored, the item is kinematic and parented to its
+        /// container's display point, but an interpolated body keeps writing its own last physics pose over the
+        /// transform every frame, so the item hangs where it was simulated and trails behind the holder (the
+        /// soda cans did this from #1197 until 2026-11).
+        /// </summary>
+        [Test, TestCaseSource(nameof(AllPrefabs))]
+        public void ItemRigidbodiesDoNotInterpolate(GameObject prefab)
+        {
+            if (prefab.GetComponentInChildren<Item>(true) == null)
+            {
+                return;
+            }
+
+            string[] interpolated = prefab.GetComponentsInChildren<Rigidbody>(true)
+                .Where(body => body.interpolation != RigidbodyInterpolation.None)
+                .Select(body => $"{body.name} ({body.interpolation})")
+                .ToArray();
+            Assert.IsEmpty(interpolated,
+                $"{prefab.name}: set Interpolate to None on {string.Join(", ", interpolated)}");
         }
 
         /// <summary>
