@@ -15,6 +15,7 @@ using SS3D.Systems.Entities.Humanoid;
 using SS3D.Systems.Examine;
 using SS3D.Systems.Entities.Humanoid.Body;
 using SS3D.Systems.Combat;
+using SS3D.Systems.Construction;
 using SS3D.Systems.Screens;
 using SS3D.Systems.Selection;
 using SS3D.Systems.Inventory.Containers;
@@ -57,6 +58,9 @@ namespace SS3D.Systems.Interactions
 
         public IntentType CurrentIntent => IsOwner ? _ownerIntent : _currentIntent;
 
+        /// <summary>The local player's controller (owning client), or null.</summary>
+        public static InteractionController Local { get; private set; }
+
         /// <summary>
         /// Fired on the owning client when a character-examine take windup is accepted by the server.
         /// </summary>
@@ -78,11 +82,17 @@ namespace SS3D.Systems.Interactions
 
             if (IsOwner)
             {
+                Local = this;
                 SubscribeToInput();
                 _armedSystem.EvaluateTarget += EvaluateArmedTarget;
             }
             else if (prevOwner.Equals(LocalConnection))
             {
+                if (Local == this)
+                {
+                    Local = null;
+                }
+
                 UnsubscribeFromInput();
                 _armedSystem.EvaluateTarget -= EvaluateArmedTarget;
             }
@@ -197,9 +207,24 @@ namespace SS3D.Systems.Interactions
             _gameplayHandle = null;
         }
 
+        protected override void OnDestroyed()
+        {
+            if (Local == this)
+            {
+                Local = null;
+            }
+
+            base.OnDestroyed();
+        }
+
         [Client]
         private void HandleCancelInteraction(InputAction.CallbackContext callbackContext)
         {
+            if (SubSystems.TryGet(out ConstructionPlacementSubSystem construction) && construction.TryCancelLocal())
+            {
+                return;
+            }
+
             if (!_delayedTracker.HasClientActive)
             {
                 return;
@@ -253,6 +278,14 @@ namespace SS3D.Systems.Interactions
 
             List<InteractionEntry> viableInteractions = FilterRadialInteractions(
                 GetViableInteractionsFromSelection(out InteractionEvent interactionEvent));
+
+            // A construction ghost (sheets over a hull hole) outranks Drop, not a real target interaction.
+            if ((viableInteractions.Count <= 0 || viableInteractions[0].IsSourceOnly)
+                && SubSystems.TryGet(out ConstructionPlacementSubSystem construction)
+                && construction.TryHandlePrimaryClick())
+            {
+                return;
+            }
 
             if (viableInteractions.Count <= 0)
             {

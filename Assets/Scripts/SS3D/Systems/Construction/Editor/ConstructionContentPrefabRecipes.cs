@@ -31,8 +31,11 @@ namespace SS3D.Systems.Construction.Editor
         private static string RunAll()
         {
             int items = ConstructionItemRecipe.SetupAll();
+            bool hub = ConstructionHubRecipe.SetupAll();
             bool purged = LoadingBarPurge.Run();
-            return $"Construction items: updated {items} prefab(s).\nLoadingBar purge: {(purged ? "cleaned up" : "nothing left")}.";
+            return $"Construction items: updated {items} prefab(s).\n"
+                + $"NetworkSystemsHub: {(hub ? "added ConstructionPlacementSubSystem" : "already set up")}.\n"
+                + $"LoadingBar purge: {(purged ? "cleaned up" : "nothing left")}.";
         }
     }
 }

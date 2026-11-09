@@ -59,7 +59,7 @@ Checked by three read-only explorations against code; the [tile](systems/tile.md
 - [x] `DelayedCancelReason`, `CancelOnDamage`; owner-client cancel RPC with reason
 - [x] UITK progress ring presenter (running, done, cancelled + reason) in the overlay layer; purge `LoadingBar` and its prefab; `InteractionOptimisticFeedback` adopts the ring. Defuse uses it unchanged
 - [x] `ConstructionRecipes` table + resolve-all EditMode test
-- [ ] `ConstructionPlacementSubSystem`: active-hand watch, cell pick (ground plane where there is no plenum), ghost via `ConstructionHologram` with fail reason and "n / m" cost tag, ServerRpc with range, rule, `BuildChecker` and material checks, timed completion via the same cancel rules
+- [x] `ConstructionPlacementSubSystem`: active-hand watch, cell pick (ground plane where there is no plenum), ghost via `ConstructionHologram` with fail reason and "n / m" cost tag, ServerRpc with range, rule, `BuildChecker` and material checks, timed completion via the same cancel rules
 - [x] D11 outline change
 - Validation: `compile,editmode`
 
