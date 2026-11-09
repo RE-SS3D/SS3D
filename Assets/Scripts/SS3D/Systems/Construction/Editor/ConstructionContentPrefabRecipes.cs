@@ -31,7 +31,8 @@ namespace SS3D.Systems.Construction.Editor
         private static string RunAll()
         {
             int items = ConstructionItemRecipe.SetupAll();
-            return $"Construction items: updated {items} prefab(s).";
+            bool purged = LoadingBarPurge.Run();
+            return $"Construction items: updated {items} prefab(s).\nLoadingBar purge: {(purged ? "cleaned up" : "nothing left")}.";
         }
     }
 }

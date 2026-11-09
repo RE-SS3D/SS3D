@@ -39,7 +39,7 @@ namespace SS3D.Systems.Combat.Interactions
         public int Priority => 100;
 
         /// <summary>
-        /// Melee uses swing telegraph + reticle lock-on recharge — never the world-space LoadingBar.
+        /// Melee uses swing telegraph + reticle lock-on recharge — never the progress ring.
         /// </summary>
         public override IClientInteraction CreateClient(InteractionEvent interactionEvent) => null;
 

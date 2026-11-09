@@ -207,7 +207,7 @@ namespace SS3D.Systems.Interactions
 
             int referenceId = _delayedTracker.ClientActiveReferenceId;
             ClearClientActiveInteractionTracking();
-            InteractionOptimisticFeedback.Clear(transform);
+            InteractionOptimisticFeedback.CancelLocal();
             InteractionOutlineView.ClearPending();
             TakeFromCharacterEnded?.Invoke();
             CmdCancelInteraction(referenceId);
@@ -377,7 +377,7 @@ namespace SS3D.Systems.Interactions
 
             int referenceId = _delayedTracker.ClientActiveReferenceId;
             ClearClientActiveInteractionTracking();
-            InteractionOptimisticFeedback.Clear(transform);
+            InteractionOptimisticFeedback.CancelLocal();
             InteractionOutlineView.ClearPending();
             TakeFromCharacterEnded?.Invoke();
             CmdCancelInteraction(referenceId);
@@ -1220,7 +1220,7 @@ namespace SS3D.Systems.Interactions
         private void TargetRejectInteraction(NetworkConnection connection)
         {
             ClearClientActiveInteractionTracking();
-            InteractionOptimisticFeedback.Clear(transform);
+            InteractionOptimisticFeedback.ClearAll();
             InteractionOutlineView.ClearPending();
             TakeFromCharacterEnded?.Invoke();
         }
