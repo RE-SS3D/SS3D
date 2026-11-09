@@ -103,6 +103,25 @@ namespace EditorTests
         }
 
         [Test]
+        public void Occupancy_BareGirderIsSeeThrough_PlatedIsNot()
+        {
+            TileMapTestUtilities.MapContext context = TileMapTestUtilities.CreateContext(_objects);
+            Vector3 bare = Vector3.zero, plated = new(2, 0, 0);
+            TileMapTestUtilities.PlacePlenum(context, bare);
+            TileMapTestUtilities.PlacePlenum(context, plated);
+            TileObjectSo girderSo = WallSo(ConstructionNames.Girder, airtight: false);
+            girderSo.blocksVision = false;
+            Place(context, girderSo, bare);
+            Place(context, WallSo(ConstructionNames.GirderPlated, airtight: false), plated);
+
+            Assert.True(context.Query.TryGetOccupancy(context.Query.WorldToTile(bare), out TileOccupancy girder));
+            Assert.False(girder.BlocksVision, "You see through a bare girder");
+            Assert.True(girder.HasWall, "but cannot walk through it");
+            Assert.True(context.Query.TryGetOccupancy(context.Query.WorldToTile(plated), out TileOccupancy platedOccupancy));
+            Assert.True(platedOccupancy.BlocksVision);
+        }
+
+        [Test]
         public void Girder_GoesOnClearFloorOrBarePlating_ReplacingTheFloorTile()
         {
             TileMapTestUtilities.MapContext context = TileMapTestUtilities.CreateContext(_objects);
@@ -168,6 +187,9 @@ namespace EditorTests
 
             Assert.IsFalse(AssetDatabase.LoadAssetAtPath<TileObjectSo>(GirderStageRecipe.GirderTile).airtight);
             Assert.IsFalse(AssetDatabase.LoadAssetAtPath<TileObjectSo>(GirderStageRecipe.PlatedTile).airtight);
+            Assert.IsFalse(AssetDatabase.LoadAssetAtPath<TileObjectSo>(GirderStageRecipe.GirderTile).blocksVision,
+                "A bare girder is open framework");
+            Assert.IsTrue(AssetDatabase.LoadAssetAtPath<TileObjectSo>(GirderStageRecipe.PlatedTile).blocksVision);
         }
     }
 }

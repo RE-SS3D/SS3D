@@ -225,7 +225,24 @@ namespace SS3D.Systems.Entities.Humanoid.Body
                     return DoorReach;
                 case "DefuseC4":
                 case "Perform CPR":
+                // Construction floor work (ConstructionRecipes generic names): down on one knee for the step.
+                case "ConstructionPlacePlating":
+                case "ConstructionPlaceFloorTile":
+                case "ConstructionPryTile":
+                case "ConstructionRepairPlating":
+                case "ConstructionClearWreckage":
                     return Kneel;
+                // Construction wall work: the arm goes out to the wall as the step starts.
+                case "ConstructionRepairStructure":
+                case "ConstructionPlaceGirder":
+                case "ConstructionPlateGirder":
+                case "ConstructionWeldSeams":
+                case "ConstructionGlazeGirder":
+                case "ConstructionCutSeams":
+                case "ConstructionPullPlate":
+                case "ConstructionLiftPane":
+                case "ConstructionDismantleGirder":
+                    return DoorReach;
                 default:
                     return None;
             }

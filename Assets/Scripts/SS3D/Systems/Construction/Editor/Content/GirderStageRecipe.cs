@@ -22,7 +22,7 @@ namespace SS3D.Systems.Construction.Editor
     /// <item><c>SteelGirder</c>: <c>GirderShape</c> only. The reinforced, window-sheet, support and strut
     /// layers stay in <c>SteelWalls.fbx</c> for reinforced building later.</item>
     /// </list>
-    /// Both tile assets are <c>airtight = false</c>; the map editor catalog is regenerated. Idempotent.
+    /// Both tile assets are <c>airtight = false</c>, and the bare girder is <c>blocksVision = false</c>; the map editor catalog is regenerated. Idempotent.
     /// </summary>
     public static class GirderStageRecipe
     {
@@ -68,9 +68,10 @@ namespace SS3D.Systems.Construction.Editor
             changed += KeepOnly(PlatedPrefab, "SteelGirderPlated", new string[] { GirderShape, WallSheets }, platedTile) ? 1 : 0;
             changed += KeepOnly(GirderPrefab, null, new string[] { GirderShape }, null) ? 1 : 0;
 
-            if (girderTile.airtight)
+            if (girderTile.airtight || girderTile.blocksVision)
             {
                 girderTile.airtight = false;
+                girderTile.blocksVision = false;
                 EditorUtility.SetDirty(girderTile);
                 changed++;
             }
@@ -220,6 +221,7 @@ namespace SS3D.Systems.Construction.Editor
             tile.structuralMaxIntegrity = girder.structuralMaxIntegrity;
             tile.impactMaterial = girder.impactMaterial;
             tile.airtight = false;
+            tile.blocksVision = true;
             EditorUtility.SetDirty(tile);
 
             if (database != null && database.AssetGroup != null)

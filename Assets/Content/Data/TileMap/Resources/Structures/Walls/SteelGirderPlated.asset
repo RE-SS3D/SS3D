@@ -24,5 +24,6 @@ MonoBehaviour:
   structuralDamageEnabled: 0
   structuralMaxIntegrity: 0
   airtight: 0
+  blocksVision: 1
   reinforced: 0
   impactMaterial: 0

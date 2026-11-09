@@ -3,6 +3,7 @@ using System.Linq;
 using NUnit.Framework;
 using SS3D.Systems.Construction;
 using SS3D.Systems.Construction.Editor;
+using SS3D.Systems.Entities.Humanoid.Body;
 using SS3D.Systems.Inventory.Items;
 using SS3D.Systems.Tile;
 using UnityEditor;
@@ -85,6 +86,20 @@ namespace EditorTests
                 {
                     Assert.AreEqual(0, rule.Cost, $"{rule.GenericName}: tools are not spent");
                 }
+            }
+        }
+
+        [Test]
+        public void EveryRule_HasABodyAnimation()
+        {
+            foreach (ConstructionRule rule in ConstructionRecipes.Rules)
+            {
+                int clip = InteractionAnimation.ChooseClip(rule.GenericName);
+                int expected = rule.Layer == TileLayer.Plenum || rule.Target is ConstructionTargetKind.FloorTurf
+                    or ConstructionTargetKind.BarePlating or ConstructionTargetKind.Wreckage
+                    ? InteractionAnimation.Kneel
+                    : InteractionAnimation.DoorReach;
+                Assert.AreEqual(expected, clip, $"{rule.GenericName}: floor work kneels, wall work reaches");
             }
         }
 

@@ -7,6 +7,7 @@ using SS3D.Data;
 using SS3D.Interactions;
 using SS3D.Interactions.Extensions;
 using SS3D.Interactions.Interfaces;
+using SS3D.Systems.Entities.Humanoid.Body;
 using SS3D.Systems.Inputs;
 using SS3D.Systems.Interactions;
 using SS3D.Systems.Inventory.Containers;
@@ -52,6 +53,7 @@ namespace SS3D.Systems.Construction
             public IDamageNotifier Damage;
             public bool Damaged;
             public int CueId;
+            public InteractionController Controller;
 
             public void HandleDamaged() => Damaged = true;
         }
@@ -123,8 +125,8 @@ namespace SS3D.Systems.Construction
         #region Client
 
         /// <summary>
-        /// Primary click with a ghost up. Called by <see cref="InteractionController"/> when nothing
-        /// target-bound outranks the cell action (Drop does not). Returns true when the click is used.
+        /// Primary click with a ghost up. <see cref="InteractionController"/> asks first, before any target
+        /// interaction; the ghost is hidden while the hovered target has one. Returns true when the click is used.
         /// </summary>
         [Client]
         public bool TryHandlePrimaryClick()
@@ -142,6 +144,14 @@ namespace SS3D.Systems.Construction
             if (!TryGetLocalHand(out Hands _, out Hand hand, out Item _))
             {
                 return true;
+            }
+
+            // Wall work reaches out at once; the kneel for floor work is the server's replicated body state.
+            int clip = InteractionAnimation.ChooseClip(_ghostRule.GenericName);
+            InteractionController owner = InteractionController.Local;
+            if (clip != InteractionAnimation.Kneel && owner != null)
+            {
+                owner.BeginOwnerHandAction(clip, _ghostGrid);
             }
 
             _clientRingKey = DelayedProgressFeedback.KeyFor(hand.GameObject.transform);
@@ -200,7 +210,8 @@ namespace SS3D.Systems.Construction
 
             InteractionController controller = InteractionController.Local;
             if (controller == null || controller.CurrentIntent != IntentType.Help || HasLocalAction
-                || controller.HasActiveDelayedInteraction || InputInterface.IsPointerOverInterface())
+                || controller.HasActiveDelayedInteraction || controller.HoveredTargetHasInteraction
+                || InputInterface.IsPointerOverInterface())
             {
                 return false;
             }
@@ -492,6 +503,11 @@ namespace SS3D.Systems.Construction
             }
 
             _pending[conn] = action;
+            action.Controller = hands.GetComponentInParent<InteractionController>();
+            if (action.Controller != null)
+            {
+                action.Controller.ServerBeginStepAnimation(rule.GenericName, grid);
+            }
             action.CueId = ServerBeginWorkCue(grid + Vector3.up * 0.1f, hands.transform.position, rule.Input, rule.Seconds);
             TargetCellActionStarted(conn, action.Id);
         }
@@ -587,6 +603,11 @@ namespace SS3D.Systems.Construction
         private void EndAction(PendingCellAction action, bool completed, DelayedCancelReason reason)
         {
             ReleaseDamage(action);
+            if (action.Controller != null)
+            {
+                action.Controller.ServerEndStepAnimation();
+            }
+
             ServerEndWorkCue(action.CueId);
             _pending.Remove(action.Connection);
             if (action.Connection != null && action.Connection.IsActive)

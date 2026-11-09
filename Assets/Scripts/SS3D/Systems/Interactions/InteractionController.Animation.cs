@@ -202,6 +202,29 @@ namespace SS3D.Systems.Interactions
             }
         }
 
+        /// <summary>
+        /// Server, for a timed step that is not an <see cref="IInteraction"/> (a construction cell action): kneels
+        /// for the step's duration when its clip is the kneel, else plays the clip on the other peers. The owner
+        /// plays a oneshot itself through <see cref="BeginOwnerHandAction"/>.
+        /// </summary>
+        [Server]
+        public void ServerBeginStepAnimation(string genericName, Vector3 targetPoint)
+        {
+            int clip = InteractionAnimation.ChooseClip(genericName);
+            if (clip == InteractionAnimation.Kneel)
+            {
+                SetServerKneel(true);
+            }
+            else if (clip != InteractionAnimation.None)
+            {
+                RpcPlayInteractionAnimation((byte)clip, YawToward(targetPoint));
+            }
+        }
+
+        /// <summary>Server: ends what <see cref="ServerBeginStepAnimation"/> started.</summary>
+        [Server]
+        public void ServerEndStepAnimation() => SetServerKneel(false);
+
         [Server]
         private void SetServerKneel(bool kneel)
         {

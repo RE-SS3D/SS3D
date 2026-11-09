@@ -76,6 +76,9 @@ namespace SS3D.Systems.Interactions
         /// </summary>
         public bool HasActiveDelayedInteraction => IsClient && _delayedTracker.HasClientActive;
 
+        /// <summary>Owner: the hovered target has its own interaction for the held item (its outline is Available).</summary>
+        public bool HoveredTargetHasInteraction => _outlineDriver.HoveredHasInteraction;
+
         public override void OnOwnershipClient(NetworkConnection prevOwner)
         {
             base.OnOwnershipClient(prevOwner);
@@ -283,16 +286,15 @@ namespace SS3D.Systems.Interactions
                 return;
             }
 
-            List<InteractionEntry> viableInteractions = FilterRadialInteractions(
-                GetViableInteractionsFromSelection(out InteractionEvent interactionEvent));
-
-            // A construction ghost (sheets over a hull hole) outranks Drop, not a real target interaction.
-            if ((viableInteractions.Count <= 0 || viableInteractions[0].IsSourceOnly)
-                && SubSystems.TryGet(out ConstructionPlacementSubSystem construction)
-                && construction.TryHandlePrimaryClick())
+            // A visible construction ghost takes the click. It hides itself while the hovered target has its
+            // own interaction for the held item, so what the ghost shows is what the click does.
+            if (SubSystems.TryGet(out ConstructionPlacementSubSystem construction) && construction.TryHandlePrimaryClick())
             {
                 return;
             }
+
+            List<InteractionEntry> viableInteractions = FilterRadialInteractions(
+                GetViableInteractionsFromSelection(out InteractionEvent interactionEvent));
 
             if (viableInteractions.Count <= 0)
             {
