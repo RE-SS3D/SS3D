@@ -10,6 +10,15 @@ namespace SS3D.Systems.Entities.Humanoid
     public partial class Ragdoll
     {
         internal static readonly HashSet<Ragdoll> WindBodies = new();
+
+        /// <summary>
+        /// Time on the ground after a gust knocks a body down. 3 s lay still too long before the get-up
+        /// (owner hand test, 2026-11-09). Recovery still waits for floor support.
+        /// </summary>
+        private const float WindKnockdownSeconds = 1.5f;
+
+        /// <summary>A gust while already down keeps the body down at least this long.</summary>
+        private const float WindKnockdownHoldSeconds = 1f;
         private bool _windKnockdown;
         private Vector3 _windTarget;
         private Vector3 _windFelt;
@@ -33,10 +42,10 @@ namespace SS3D.Systems.Entities.Humanoid
             if (!IsKnockedDown && wind.magnitude >= AtmosWind.KnockdownSpeed)
             {
                 _windKnockdown = true;
-                ServerKnockdown(3f);
+                ServerKnockdown(WindKnockdownSeconds);
             }
             else if (_isKnockdownTimed)
-                _knockdownTimer = Mathf.Max(_knockdownTimer, 2f);
+                _knockdownTimer = Mathf.Max(_knockdownTimer, WindKnockdownHoldSeconds);
 
             if (_deathRagdoll || !Owner.IsValid)
             {

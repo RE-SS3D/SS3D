@@ -412,6 +412,7 @@ namespace SS3D.Editor
             WireLimpExit(injured, melee, 1);
             WireLimpExit(injured, ranged, 2);
 
+            WireGetUpStates(baseMachine, peaceful, melee, ranged);
             WireJumpAndTurnOneshots(controller, baseMachine, peaceful, melee, ranged, injured);
             WireInjuredWaveEmote(baseMachine, injured);
 
@@ -512,7 +513,7 @@ namespace SS3D.Editor
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
 
-            return "OK: Rebuilt stance blends; injured idle severity; limp Jump/Turn90; Injured Wave Emote; "
+            return "OK: Rebuilt stance blends; get-up states; injured idle severity; limp Jump/Turn90; Injured Wave Emote; "
                    + "AttackSwing variants + MirrorUpperBody; stance-aware Flinch (GettingHit/gut/HitReaction); "
                    + "Ranged Upper Body Aim Idle + FireRifle/Reload; Floating → Mix_Floating.";
         }
@@ -1125,6 +1126,57 @@ namespace SS3D.Editor
         /// </summary>
         private static void ConfigureMeleeSwingImports()
         {
+            ConfigureOneshotImports(
+                MeleeSwingAnimation.Variants.Select(s => (s.File, s.ClipName, s.FirstFrame, s.LastFrame)));
+        }
+
+        /// <summary>
+        /// Get-up states from <see cref="GetUpAnimation"/>: trimmed Mixamo clips at the table's playback rate,
+        /// leaving at <see cref="GetUpAnimation.BlendOutStart"/> into the locomotion state for the current
+        /// stance and blending over the rest of the clip. <c>Ragdoll</c> plays them by state name.
+        /// </summary>
+        private static void WireGetUpStates(
+            AnimatorStateMachine baseMachine, AnimatorState peaceful, AnimatorState melee, AnimatorState ranged)
+        {
+            ConfigureOneshotImports(GetUpAnimation.All.Select(c => (c.File, c.ClipName, c.FirstFrame, c.LastFrame)));
+            for (int index = 0; index < GetUpAnimation.All.Length; index++)
+            {
+                GetUpAnimation.Clip getUp = GetUpAnimation.All[index];
+                AnimationClip clip = LoadPackClip($"{AnimationsRoot}/{getUp.File}", getUp.ClipName);
+                AnimatorState state = FindOrCreateState(baseMachine, getUp.StateName, new Vector3(50, 50 + 60 * index, 0));
+                if (clip == null)
+                {
+                    Debug.LogError($"[HumanoidLocomotionBlendSetup] Missing get-up clip '{getUp.ClipName}' in {getUp.File}");
+                    continue;
+                }
+
+                state.motion = clip;
+                state.speed = getUp.PlaybackRate;
+                state.speedParameterActive = false;
+                state.writeDefaultValues = true;
+                state.iKOnFeet = false;
+
+                ClearTransitions(state);
+                AnimatorState[] stanceStates = { peaceful, melee, ranged };
+                for (int stance = 0; stance < stanceStates.Length; stance++)
+                {
+                    AnimatorStateTransition exit = state.AddTransition(stanceStates[stance]);
+                    exit.hasExitTime = true;
+                    exit.exitTime = GetUpAnimation.BlendOutStart;
+                    exit.hasFixedDuration = true;
+                    exit.duration = getUp.BlendOutSeconds;
+                    exit.AddCondition(AnimatorConditionMode.Equals, stance, "CombatStance");
+                }
+            }
+        }
+
+        /// <summary>
+        /// Humanoid import for non-looping Mixamo oneshots: X Bot avatar, trimmed to the given source frames,
+        /// root baked into the pose. Reimports only on change.
+        /// </summary>
+        private static void ConfigureOneshotImports(
+            IEnumerable<(string File, string ClipName, int FirstFrame, int LastFrame)> entries)
+        {
             Avatar xBot = AssetDatabase.LoadAllAssetsAtPath(XBotAvatarPath).OfType<Avatar>().FirstOrDefault();
             if (xBot == null)
             {
@@ -1132,12 +1184,12 @@ namespace SS3D.Editor
                 return;
             }
 
-            foreach (MeleeSwingAnimation.Swing swing in MeleeSwingAnimation.Variants)
+            foreach ((string file, string clipName, int firstFrame, int lastFrame) in entries)
             {
-                string path = $"{AnimationsRoot}/{swing.File}";
+                string path = $"{AnimationsRoot}/{file}";
                 if (AssetImporter.GetAtPath(path) is not ModelImporter importer)
                 {
-                    Debug.LogError($"[HumanoidLocomotionBlendSetup] Missing swing FBX {path}");
+                    Debug.LogError($"[HumanoidLocomotionBlendSetup] Missing FBX {path}");
                     continue;
                 }
 
@@ -1147,9 +1199,9 @@ namespace SS3D.Editor
                     && importer.avatarSetup == ModelImporterAvatarSetup.CopyFromOther
                     && importer.sourceAvatar == xBot
                     && clips.Length == 1
-                    && clip.name == swing.ClipName
-                    && Mathf.Approximately(clip.firstFrame, swing.FirstFrame)
-                    && Mathf.Approximately(clip.lastFrame, swing.LastFrame)
+                    && clip.name == clipName
+                    && Mathf.Approximately(clip.firstFrame, firstFrame)
+                    && Mathf.Approximately(clip.lastFrame, lastFrame)
                     && !clip.loopTime
                     && clip.lockRootRotation && clip.lockRootHeightY && clip.lockRootPositionXZ;
                 if (unchanged)
@@ -1161,10 +1213,10 @@ namespace SS3D.Editor
                 importer.avatarSetup = ModelImporterAvatarSetup.CopyFromOther;
                 importer.sourceAvatar = xBot;
                 importer.importAnimation = true;
-                clip.name = swing.ClipName;
+                clip.name = clipName;
                 clip.takeName = importer.defaultClipAnimations[0].takeName;
-                clip.firstFrame = swing.FirstFrame;
-                clip.lastFrame = swing.LastFrame;
+                clip.firstFrame = firstFrame;
+                clip.lastFrame = lastFrame;
                 clip.loopTime = false;
                 clip.lockRootRotation = true;
                 clip.lockRootHeightY = true;
@@ -1175,7 +1227,7 @@ namespace SS3D.Editor
                 clip.mirror = false;
                 importer.clipAnimations = new[] { clip };
                 importer.SaveAndReimport();
-                Debug.Log($"[HumanoidLocomotionBlendSetup] Imported swing {swing.ClipName} frames {swing.FirstFrame}-{swing.LastFrame}");
+                Debug.Log($"[HumanoidLocomotionBlendSetup] Imported {clipName} frames {firstFrame}-{lastFrame}");
             }
         }
 

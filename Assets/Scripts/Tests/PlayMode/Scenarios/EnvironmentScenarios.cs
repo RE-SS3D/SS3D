@@ -238,6 +238,90 @@ namespace SS3D.Tests
             }
         }
 
+        // Guards: the stand-up blends the ragdoll into the clip's lying first frame instead of the avatar's T-pose,
+        // without dragging the body, and hands movement back on the table's schedule (animation pass Phase 1).
+        // Not cheaper because: the blend runs on live ragdoll bones after a FishNet recovery.
+        [UnityTest]
+        public IEnumerator KnockedDownBody_StandsUpFromItsLyingPose_FaceUp() => StandsUpFromItsLyingPose(faceDown: false);
+
+        [UnityTest]
+        public IEnumerator KnockedDownBody_StandsUpFromItsLyingPose_FaceDown() => StandsUpFromItsLyingPose(faceDown: true);
+
+        private IEnumerator StandsUpFromItsLyingPose(bool faceDown)
+        {
+            Ragdoll ragdoll = Body.GetComponent<Ragdoll>();
+            yield return LayBodyDown(ragdoll, faceDown);
+            Transform hips = Body.GetComponent<Animator>().GetBoneTransform(HumanBodyBones.Hips);
+            Vector3 lyingHips = hips.position;
+
+            ragdoll.ServerRecover();
+            Stopwatch getUp = Stopwatch.StartNew();
+            float highestBlendHips = 0f;
+            float blendDrift = 0f;
+            int blendFrames = 0;
+            while (ragdoll.IsGettingUp && getUp.Elapsed.TotalSeconds < 10f)
+            {
+                if (!Body.GetComponent<Animator>().enabled)
+                {
+                    // The bone blend: the Animator stays off until the clip starts.
+                    blendFrames++;
+                    highestBlendHips = Mathf.Max(highestBlendHips, hips.position.y - ragdoll.transform.position.y);
+                    blendDrift = Mathf.Max(blendDrift, Vector3.ProjectOnPlane(hips.position - lyingHips, Vector3.up).magnitude);
+                }
+
+                yield return null;
+            }
+
+            GetUpAnimation.Clip clip = GetUpAnimation.For(faceDown);
+            float seconds = (float)getUp.Elapsed.TotalSeconds;
+            Debug.Log($"[Scenario] {clip.StateName}: control back after {seconds:F2}s, blend hips peak {highestBlendHips:F2} m, drift {blendDrift:F2} m");
+            Assert.Greater(blendFrames, 0, "Recovery blends the bones before the clip");
+            Assert.Less(highestBlendHips, 0.35f, "The blend stays lying down (a T-pose target lifts the hips to standing height)");
+            Assert.Less(blendDrift, 0.2f, "The blend does not drag the body across the floor");
+            float expected = GetUpAnimation.BlendInSeconds + clip.DurationSeconds * GetUpAnimation.BlendOutStart;
+            Assert.That(seconds, Is.EqualTo(expected).Within(0.4f), "Movement returns at the clip's blend-out point");
+            Assert.IsTrue(Body.GetComponent<HumanoidLivingController>().enabled, "The owner can move again");
+        }
+
+        // Guards: a hit while standing up knocks the body down again, as for anyone standing (combat §5, Decision 3).
+        // Not cheaper because: needs the live get-up states and ragdoll physics authority.
+        [UnityTest]
+        public IEnumerator BodyGettingUp_IsKnockedDownAgainByAHit()
+        {
+            Ragdoll ragdoll = Body.GetComponent<Ragdoll>();
+            yield return LayBodyDown(ragdoll, faceDown: false);
+            ragdoll.ServerRecover();
+            yield return WaitFor(() => ragdoll.IsGettingUp && Body.GetComponent<Animator>().enabled, "the stand-up clip plays");
+
+            ragdoll.ServerKnockdown(1f);
+            Assert.IsTrue(ragdoll.IsKnockedDown, "The hit collapses the body");
+            Assert.IsFalse(ragdoll.IsGettingUp, "The stand-up is abandoned");
+            yield return Hold(0.25f);
+            Assert.IsTrue(BonesKinematic(false), "The owner simulates the bones again");
+            yield return WaitFor(() => !ragdoll.IsKnockedDown && !ragdoll.IsGettingUp, "the body stands up after the second knockdown", 10f);
+        }
+
+        /// <summary>Collapses the owner and turns the ragdoll onto its back or front, then lets it settle.</summary>
+        private IEnumerator LayBodyDown(Ragdoll ragdoll, bool faceDown)
+        {
+            ragdoll.ServerKnockdownTimeless();
+            yield return WaitFor(() => BonesKinematic(false), "the owner simulates the collapsed bones");
+            Transform hips = Body.GetComponent<Animator>().GetBoneTransform(HumanBodyBones.Hips);
+            Vector3 heading = Vector3.ProjectOnPlane(ragdoll.transform.forward, Vector3.up).normalized;
+            // Hips forward is the belly, hips up runs toward the head: lie along the heading.
+            hips.SetPositionAndRotation(
+                new Vector3(hips.position.x, ragdoll.transform.position.y + 0.15f, hips.position.z),
+                Quaternion.LookRotation(faceDown ? Vector3.down : Vector3.up, heading));
+            foreach (Rigidbody bone in Body.GetComponentsInChildren<RagdollPart>(true).Select(part => part.GetComponent<Rigidbody>()))
+            {
+                bone.linearVelocity = Vector3.zero;
+                bone.angularVelocity = Vector3.zero;
+            }
+
+            yield return Hold(2f);
+            Assert.AreEqual(faceDown, hips.forward.y < 0f, faceDown ? "The body settles face down" : "The body settles face up");
+        }
+
         private static IEnumerator WalkAFewSteps(Ragdoll ragdoll, Keyboard keyboard, string when)
         {
             Vector3 start = ragdoll.transform.position;
