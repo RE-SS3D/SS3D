@@ -58,6 +58,13 @@ namespace SS3D.Systems.Entities.Humanoid
         private float _swingStrikeTime = float.NegativeInfinity;
         /// <summary>Time.time until which a throw holds the Upper Body layer up (it is off in Peaceful).</summary>
         private float _throwLayerUntil = float.NegativeInfinity;
+        /// <summary>Time.time until which an interaction reach holds the Upper Body layer up.</summary>
+        private float _interactUpperUntil = float.NegativeInfinity;
+        /// <summary>Time.time until which a floor bend plays on the Base Layer (Upper Body held down).</summary>
+        private float _interactFullBodyUntil = float.NegativeInfinity;
+        private bool _hasInteractParameters;
+        /// <summary>The kneel loop is playing (replicated <see cref="BodyAnimationSnapshot.InteractKneel"/> while on foot).</summary>
+        private bool _kneeling;
         private bool _hasPistolHoldParameter;
         private bool _hasRangedVelXParameter;
         private float _pistolHold;
@@ -91,8 +98,16 @@ namespace SS3D.Systems.Entities.Humanoid
         /// <summary>Upper Body fade rate around a throw: fast enough that the wind-up shows from its first frames.</summary>
         private const float ThrowLayerWeightLerp = 12f;
 
+        /// <summary>
+        /// Upper Body fade-out after an interaction reach in Peaceful: the hold pose and the locomotion arms differ,
+        /// so a throw-fast drop reads as a snap at the end of the reach.
+        /// </summary>
+        private const float InteractionLayerFadeOutLerp = 1f / InteractionAnimation.LayerFadeOutSeconds;
+
         [SerializeField] private float _additiveWeightLerp = 8f;
 
+        private static readonly int[] SwingStateHashes = Array.ConvertAll(
+            MeleeSwingAnimation.Variants, swing => Animator.StringToHash(swing.StateName));
         private static readonly int RifleAimIdleStateHash = Animator.StringToHash("Rifle Aim Idle");
         private static readonly int PistolAimIdleStateHash = Animator.StringToHash(PistolStanceAnimation.AimIdleState);
         private static readonly int FireRifleStateHash = Animator.StringToHash("Fire Rifle");
@@ -122,6 +137,7 @@ namespace SS3D.Systems.Entities.Humanoid
             _hasAttackRateParameter = HasFloatParameter(Animations.Humanoid.AttackRate);
             _hasPistolHoldParameter = HasFloatParameter(Animations.Humanoid.PistolHold);
             _hasRangedVelXParameter = HasFloatParameter(Animations.Humanoid.RangedVelX);
+            _hasInteractParameters = HasParameter(Animations.Humanoid.InteractClip, AnimatorControllerParameterType.Int);
             if (_animator != null && _animator.runtimeAnimatorController != null)
             {
                 _offHandLeftLayer = _animator.GetLayerIndex(PistolStanceAnimation.OffHandLeftLayer);
@@ -146,7 +162,9 @@ namespace SS3D.Systems.Entities.Humanoid
             }
         }
 
-        private bool HasFloatParameter(int hash)
+        private bool HasFloatParameter(int hash) => HasParameter(hash, AnimatorControllerParameterType.Float);
+
+        private bool HasParameter(int hash, AnimatorControllerParameterType type)
         {
             if (_animator == null || _animator.runtimeAnimatorController == null)
             {
@@ -155,7 +173,7 @@ namespace SS3D.Systems.Entities.Humanoid
 
             foreach (AnimatorControllerParameter parameter in _animator.parameters)
             {
-                if (parameter.nameHash == hash && parameter.type == AnimatorControllerParameterType.Float)
+                if (parameter.nameHash == hash && parameter.type == type)
                 {
                     return true;
                 }
@@ -450,6 +468,71 @@ namespace SS3D.Systems.Entities.Humanoid
             _throwLayerUntil = Time.time + ThrowAnimation.PlaySeconds(variant);
         }
 
+        /// <summary>
+        /// Plays an interaction clip (<see cref="InteractionAnimation"/>) on this peer, or nothing when the upper
+        /// body is busy (a swing, a throw, the kneel, an aimed rifle) or the body is not up. The interaction's
+        /// effect does not wait for it. Returns the clip played, after the moving fallback, or None.
+        /// </summary>
+        public int PlayInteraction(int clip)
+        {
+            if (_animator == null || !_hasInteractParameters)
+            {
+                return InteractionAnimation.None;
+            }
+
+            BodyAnimationSnapshot snapshot = _lastSnapshot;
+            bool up = snapshot.State == BodyState.Locomotion || snapshot.State == BodyState.Seated;
+            bool aimedRifle = snapshot.CombatMode == HumanoidCombatMode.Ranged && !snapshot.PistolHold;
+            if (!up || _kneeling || aimedRifle || IsUpperBodyOneshotPlaying())
+            {
+                return InteractionAnimation.None;
+            }
+
+            bool standing = snapshot.State == BodyState.Locomotion && !snapshot.IsFloating && !snapshot.IsCrawling;
+            int played = InteractionAnimation.ResolvePlayback(clip, _currentSpeed > InteractionAnimation.MoveExitSpeed, standing);
+            if (!InteractionAnimation.TryGetClip(played, out InteractionAnimation.Clip entry)
+                || (!entry.FullBody && Time.time < _interactFullBodyUntil))
+            {
+                // A reach cannot show over a floor bend (Upper Body is held down); a new bend restarts the bend.
+                return InteractionAnimation.None;
+            }
+
+            _animator.SetInteger(Animations.Humanoid.InteractClip, played);
+            _animator.ResetTrigger(Animations.Humanoid.Interact);
+            _animator.SetTrigger(Animations.Humanoid.Interact);
+            float until = Time.time + entry.PlaySeconds;
+            if (entry.FullBody)
+            {
+                _interactFullBodyUntil = until;
+            }
+            else
+            {
+                _interactUpperUntil = until;
+            }
+
+            return played;
+        }
+
+        /// <summary>A floor bend or the kneel owns the whole body; upper-body posing and aim IK stand aside.</summary>
+        public bool IsFullBodyInteractionPlaying => _kneeling || Time.time < _interactFullBodyUntil;
+
+        private bool IsUpperBodyOneshotPlaying()
+        {
+            if (Time.time < _throwLayerUntil)
+            {
+                return true;
+            }
+
+            if (_animator.layerCount <= 1)
+            {
+                return false;
+            }
+
+            int current = _animator.GetCurrentAnimatorStateInfo(1).shortNameHash;
+            int next = _animator.IsInTransition(1) ? _animator.GetNextAnimatorStateInfo(1).shortNameHash : 0;
+            return Array.IndexOf(SwingStateHashes, current) >= 0 || Array.IndexOf(SwingStateHashes, next) >= 0;
+        }
+
         private void TickUpperBodyWeight()
         {
             if (_animator == null || _animator.layerCount <= 1)
@@ -457,13 +540,20 @@ namespace SS3D.Systems.Entities.Humanoid
                 return;
             }
 
-            bool throwing = Time.time < _throwLayerUntil && _lastSnapshot.State != BodyState.Ragdoll;
-            bool throwFading = !throwing && _upperBodyWeightTarget < _upperBodyWeight
-                && Time.time < _throwLayerUntil + 1f / ThrowLayerWeightLerp;
+            bool alive = _lastSnapshot.State != BodyState.Ragdoll;
+            bool fullBody = alive && IsFullBodyInteractionPlaying;
+            bool oneshotUp = alive && !fullBody && (Time.time < _throwLayerUntil || Time.time < _interactUpperUntil);
+            float oneshotEnd = Mathf.Max(_throwLayerUntil, Mathf.Max(_interactUpperUntil, _interactFullBodyUntil));
+            bool interactionLast = _interactUpperUntil >= _throwLayerUntil;
+            float fadeOut = interactionLast ? InteractionLayerFadeOutLerp : ThrowLayerWeightLerp;
+            bool oneshotFading = !oneshotUp && !fullBody && Time.time < oneshotEnd + 1f / fadeOut;
+            float rate = oneshotUp || fullBody ? ThrowLayerWeightLerp
+                : oneshotFading ? fadeOut
+                : _upperBodyWeightLerp;
             _upperBodyWeight = Mathf.MoveTowards(
                 _upperBodyWeight,
-                throwing ? 1f : _upperBodyWeightTarget,
-                Time.deltaTime * (throwing || throwFading ? ThrowLayerWeightLerp : _upperBodyWeightLerp));
+                fullBody ? 0f : oneshotUp ? 1f : _upperBodyWeightTarget,
+                Time.deltaTime * rate);
             _animator.SetLayerWeight(1, _upperBodyWeight);
         }
 
@@ -488,13 +578,15 @@ namespace SS3D.Systems.Entities.Humanoid
 
             if (_offHandLeftLayer >= 0)
             {
-                _offHandLeftWeight = Mathf.MoveTowards(_offHandLeftWeight, _offHandLeftTarget, step);
+                _offHandLeftWeight = Mathf.MoveTowards(
+                    _offHandLeftWeight, IsFullBodyInteractionPlaying ? 0f : _offHandLeftTarget, step);
                 _animator.SetLayerWeight(_offHandLeftLayer, _offHandLeftWeight);
             }
 
             if (_offHandRightLayer >= 0)
             {
-                _offHandRightWeight = Mathf.MoveTowards(_offHandRightWeight, _offHandRightTarget, step);
+                _offHandRightWeight = Mathf.MoveTowards(
+                    _offHandRightWeight, IsFullBodyInteractionPlaying ? 0f : _offHandRightTarget, step);
                 _animator.SetLayerWeight(_offHandRightLayer, _offHandRightWeight);
             }
         }
@@ -609,6 +701,12 @@ namespace SS3D.Systems.Entities.Humanoid
             _animator.SetInteger(Animations.Humanoid.ArmHold, (int)snapshot.ArmHold);
             _animator.SetBool(Animations.Humanoid.IsSeated, snapshot.IsSeated);
             _animator.SetBool(Animations.Humanoid.MirrorUpperBody, snapshot.MirrorUpperBody);
+            _kneeling = snapshot.InteractKneel && snapshot.State == BodyState.Locomotion
+                && !snapshot.IsFloating && !snapshot.IsCrawling;
+            if (_hasInteractParameters)
+            {
+                _animator.SetBool(Animations.Humanoid.InteractKneel, _kneeling);
+            }
 
             if (_animator.layerCount <= 1)
             {

@@ -156,6 +156,9 @@ namespace SS3D.Editor
             (PistolStanceAnimation.HoldParameter, AnimatorControllerParameterType.Float),
             (PistolStanceAnimation.StrafeParameter, AnimatorControllerParameterType.Float),
             ("Throw", AnimatorControllerParameterType.Trigger),
+            (InteractionAnimation.TriggerParameter, AnimatorControllerParameterType.Trigger),
+            (InteractionAnimation.ClipParameter, AnimatorControllerParameterType.Int),
+            (InteractionAnimation.KneelParameter, AnimatorControllerParameterType.Bool),
             ("Emote", AnimatorControllerParameterType.Trigger),
             ("Flinch", AnimatorControllerParameterType.Trigger),
             ("FireRifle", AnimatorControllerParameterType.Trigger),
@@ -430,6 +433,7 @@ namespace SS3D.Editor
             MuteAnyStateTrigger(baseMachine, "FireRifle");
             MuteAnyStateTrigger(baseMachine, "Reload");
             MuteAnyStateTrigger(baseMachine, "Throw");
+            WireInteractionBaseStates(baseMachine, peaceful, melee, ranged);
 
             // Upper-body Attack Swing variants (cycle via AttackVariant 0/1/2); exit-time → Hold Default.
             if (controller.layers.Length > 1)
@@ -481,6 +485,7 @@ namespace SS3D.Editor
                 }
 
                 WireThrowStates(upper, holdDefault, holdItemPose, holdWeaponPose);
+                WireInteractionUpperStates(upper, holdDefault, holdItemPose, holdWeaponPose);
 
                 // Mixamo holds are authored for the right hand — mirror when active hand is left.
                 foreach (string holdName in new[] { "Hold Default", "Hold Item", "Hold Weapon" })
@@ -527,7 +532,8 @@ namespace SS3D.Editor
 
             return "OK: Rebuilt stance blends; get-up states; injured idle severity; limp Jump/Turn90; Injured Wave Emote; "
                    + "AttackSwing variants + MirrorUpperBody; stance-aware Flinch (GettingHit/gut/HitReaction); "
-                   + "Ranged Upper Body Aim Idle + FireRifle/Reload; pistol hold + Off Hand layers; Floating → Mix_Floating.";
+                   + "Ranged Upper Body Aim Idle + FireRifle/Reload; pistol hold + Off Hand layers; interaction reaches, "
+                   + "floor bends and kneel; Floating → Mix_Floating.";
         }
 
         /// <summary>
@@ -1205,6 +1211,251 @@ namespace SS3D.Editor
                     exit.duration = ThrowAnimation.ExitSeconds;
                     exit.AddCondition(AnimatorConditionMode.Equals, armHold, "ArmHold");
                 }
+            }
+        }
+
+        /// <summary>
+        /// Upper Body interaction reaches from <see cref="InteractionAnimation"/>: entered from Any State on the
+        /// Interact trigger with InteractClip picking the clip (a new reach restarts it), mirrored for the left
+        /// hand, and leaving for the hold pose of whatever the hand now holds. The orchestrator raises the
+        /// Upper Body layer while one plays, since Peaceful keeps it at zero.
+        /// </summary>
+        private static void WireInteractionUpperStates(
+            AnimatorStateMachine upper, AnimatorState holdDefault, AnimatorState holdItem, AnimatorState holdWeapon)
+        {
+            ConfigureInteractionImports();
+            for (int index = 0; index < InteractionAnimation.All.Length; index++)
+            {
+                InteractionAnimation.Clip entry = InteractionAnimation.All[index];
+                if (entry.FullBody)
+                {
+                    continue;
+                }
+
+                AnimatorState state = CreateInteractionState(upper, entry, new Vector3(1150, 40 + 60 * index, 0));
+                if (state == null)
+                {
+                    continue;
+                }
+
+                EnableMirrorParameter(state, "MirrorUpperBody");
+                WireInteractionEntry(upper, state, index);
+                ClearTransitions(state);
+
+                // A take with a hold in the middle: play its own lowering next, then leave for the hold pose.
+                AnimatorState leaving = state;
+                if (entry.HasReturn)
+                {
+                    AnimatorState back = CreateInteractionState(
+                        upper, entry.ReturnStateName, entry.ReturnClipName, entry, new Vector3(1400, 40 + 60 * index, 0));
+                    if (back != null)
+                    {
+                        EnableMirrorParameter(back, "MirrorUpperBody");
+                        ClearTransitions(back);
+                        AnimatorStateTransition chain = state.AddTransition(back);
+                        chain.hasExitTime = true;
+                        chain.exitTime = 1f - InteractionAnimation.ReturnBlendSeconds / Mathf.Max(0.01f, entry.LengthSeconds);
+                        chain.hasFixedDuration = true;
+                        chain.duration = InteractionAnimation.ReturnBlendSeconds;
+                        leaving = back;
+                    }
+                }
+
+                foreach ((AnimatorState hold, int armHold) in new[] { (holdItem, 1), (holdWeapon, 2), (holdDefault, 0) })
+                {
+                    if (hold == null)
+                    {
+                        continue;
+                    }
+
+                    AnimatorStateTransition exit = leaving.AddTransition(hold);
+                    exit.hasExitTime = true;
+                    exit.exitTime = InteractionAnimation.UpperExitTime;
+                    exit.hasFixedDuration = true;
+                    exit.duration = InteractionAnimation.ExitSeconds;
+                    exit.AddCondition(AnimatorConditionMode.Equals, armHold, "ArmHold");
+                }
+            }
+        }
+
+        /// <summary>
+        /// Base Layer interaction states: the floor bends as oneshots on the Interact trigger, which leave for
+        /// the stance's locomotion at their exit time or as soon as the body moves, and the kneel loop, held
+        /// while InteractKneel is true. The orchestrator drops the Upper Body layer while either plays.
+        /// </summary>
+        private static void WireInteractionBaseStates(
+            AnimatorStateMachine baseMachine, AnimatorState peaceful, AnimatorState melee, AnimatorState ranged)
+        {
+            ConfigureInteractionImports();
+            AnimatorState[] stanceStates = { peaceful, melee, ranged };
+            for (int index = 0; index < InteractionAnimation.All.Length; index++)
+            {
+                InteractionAnimation.Clip entry = InteractionAnimation.All[index];
+                if (!entry.FullBody)
+                {
+                    continue;
+                }
+
+                AnimatorState state = CreateInteractionState(baseMachine, entry, new Vector3(50, 300 + 60 * index, 0));
+                if (state == null)
+                {
+                    continue;
+                }
+
+                state.iKOnFeet = false;
+                ClearTransitions(state);
+                if (entry.Loop)
+                {
+                    AnimatorStateTransition enter = FindAnyStateTransitionTo(baseMachine, state);
+                    if (enter == null)
+                    {
+                        enter = baseMachine.AddAnyStateTransition(state);
+                    }
+
+                    enter.conditions = new AnimatorCondition[0];
+                    enter.hasExitTime = false;
+                    enter.hasFixedDuration = true;
+                    enter.duration = InteractionAnimation.KneelBlendSeconds;
+                    enter.canTransitionToSelf = false;
+                    enter.mute = false;
+                    enter.AddCondition(AnimatorConditionMode.If, 0f, InteractionAnimation.KneelParameter);
+                    for (int stance = 0; stance < stanceStates.Length; stance++)
+                    {
+                        AnimatorStateTransition leave = state.AddTransition(stanceStates[stance]);
+                        leave.hasExitTime = false;
+                        leave.hasFixedDuration = true;
+                        leave.duration = InteractionAnimation.KneelBlendSeconds;
+                        leave.AddCondition(AnimatorConditionMode.IfNot, 0f, InteractionAnimation.KneelParameter);
+                        leave.AddCondition(AnimatorConditionMode.Equals, stance, "CombatStance");
+                    }
+
+                    continue;
+                }
+
+                // The bends reach with the right hand; mirroring the whole body puts the left hand down instead.
+                EnableMirrorParameter(state, "MirrorUpperBody");
+                WireInteractionEntry(baseMachine, state, index);
+                for (int stance = 0; stance < stanceStates.Length; stance++)
+                {
+                    AnimatorStateTransition exit = state.AddTransition(stanceStates[stance]);
+                    exit.hasExitTime = true;
+                    exit.exitTime = InteractionAnimation.ExitTime;
+                    exit.hasFixedDuration = true;
+                    exit.duration = InteractionAnimation.ExitSeconds;
+                    exit.AddCondition(AnimatorConditionMode.Equals, stance, "CombatStance");
+
+                    AnimatorStateTransition moved = state.AddTransition(stanceStates[stance]);
+                    moved.hasExitTime = false;
+                    moved.hasFixedDuration = true;
+                    moved.duration = InteractionAnimation.EntrySeconds;
+                    moved.AddCondition(AnimatorConditionMode.Greater, InteractionAnimation.MoveExitSpeed, "Speed");
+                    moved.AddCondition(AnimatorConditionMode.Equals, stance, "CombatStance");
+                }
+            }
+        }
+
+        private static AnimatorState CreateInteractionState(
+            AnimatorStateMachine machine, InteractionAnimation.Clip entry, Vector3 position) =>
+            CreateInteractionState(machine, entry.StateName, entry.ClipName, entry, position);
+
+        private static AnimatorState CreateInteractionState(
+            AnimatorStateMachine machine, string stateName, string clipName, InteractionAnimation.Clip entry, Vector3 position)
+        {
+            AnimationClip clip = LoadPackClip($"{AnimationsRoot}/{entry.File}", clipName);
+            if (clip == null)
+            {
+                Debug.LogError($"[HumanoidLocomotionBlendSetup] Missing interaction clip '{clipName}' in {entry.File}");
+                return null;
+            }
+
+            AnimatorState state = FindOrCreateState(machine, stateName, position);
+            state.motion = clip;
+            state.speed = entry.PlaybackRate;
+            state.speedParameterActive = false;
+            state.writeDefaultValues = true;
+            return state;
+        }
+
+        private static void WireInteractionEntry(AnimatorStateMachine machine, AnimatorState state, int index)
+        {
+            EnsureAnyStateTriggerWithInt(
+                machine, state, InteractionAnimation.TriggerParameter, InteractionAnimation.ClipParameter, index,
+                canTransitionToSelf: true);
+            AnimatorStateTransition entry = FindAnyStateTransitionTo(machine, state);
+            if (entry != null)
+            {
+                entry.hasFixedDuration = true;
+                entry.duration = InteractionAnimation.EntrySeconds;
+            }
+        }
+
+        private static AnimatorStateTransition FindAnyStateTransitionTo(AnimatorStateMachine machine, AnimatorState state) =>
+            machine.anyStateTransitions.FirstOrDefault(t => t.destinationState == state);
+
+        /// <summary>
+        /// Humanoid import for the interaction clips. Several clips can come from one FBX (the locker takes),
+        /// so each file gets every clip the table names for it. Reimports only on change.
+        /// </summary>
+        private static void ConfigureInteractionImports()
+        {
+            Avatar xBot = AssetDatabase.LoadAllAssetsAtPath(XBotAvatarPath).OfType<Avatar>().FirstOrDefault();
+            if (xBot == null)
+            {
+                Debug.LogError($"[HumanoidLocomotionBlendSetup] Missing avatar in {XBotAvatarPath}");
+                return;
+            }
+
+            foreach (IGrouping<string, InteractionAnimation.Clip> file in InteractionAnimation.All.GroupBy(c => c.File))
+            {
+                string path = $"{AnimationsRoot}/{file.Key}";
+                if (AssetImporter.GetAtPath(path) is not ModelImporter importer)
+                {
+                    Debug.LogError($"[HumanoidLocomotionBlendSetup] Missing FBX {path}");
+                    continue;
+                }
+
+                (string Name, int First, int Last, bool Loop)[] wanted = file
+                    .SelectMany(c => c.HasReturn
+                        ? new[] { (c.ClipName, c.FirstFrame, c.LastFrame, c.Loop), (c.ReturnClipName, c.ReturnFirstFrame, c.ReturnLastFrame, false) }
+                        : new[] { (c.ClipName, c.FirstFrame, c.LastFrame, c.Loop) })
+                    .ToArray();
+                ModelImporterClipAnimation[] current = importer.clipAnimations;
+                bool unchanged = importer.animationType == ModelImporterAnimationType.Human
+                    && importer.avatarSetup == ModelImporterAvatarSetup.CopyFromOther
+                    && importer.sourceAvatar == xBot
+                    && current.Length == wanted.Length
+                    && wanted.All(w => current.Any(c => c.name == w.Name
+                        && Mathf.Approximately(c.firstFrame, w.First)
+                        && Mathf.Approximately(c.lastFrame, w.Last)
+                        && c.loopTime == w.Loop));
+                if (unchanged)
+                {
+                    continue;
+                }
+
+                importer.animationType = ModelImporterAnimationType.Human;
+                importer.avatarSetup = ModelImporterAvatarSetup.CopyFromOther;
+                importer.sourceAvatar = xBot;
+                importer.importAnimation = true;
+                string takeName = importer.defaultClipAnimations[0].takeName;
+                importer.clipAnimations = wanted.Select(w => new ModelImporterClipAnimation
+                {
+                    name = w.Name,
+                    takeName = takeName,
+                    firstFrame = w.First,
+                    lastFrame = w.Last,
+                    loopTime = w.Loop,
+                    loopPose = w.Loop,
+                    lockRootRotation = true,
+                    lockRootHeightY = true,
+                    lockRootPositionXZ = true,
+                    keepOriginalOrientation = true,
+                    keepOriginalPositionY = true,
+                    keepOriginalPositionXZ = true,
+                    mirror = false,
+                }).ToArray();
+                importer.SaveAndReimport();
+                Debug.Log($"[HumanoidLocomotionBlendSetup] Imported {string.Join(", ", wanted.Select(w => w.Name))} from {file.Key}");
             }
         }
 

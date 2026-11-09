@@ -79,7 +79,9 @@ namespace SS3D.Systems.Entities.Humanoid
         [SerializeField] private float _throwTwistSpineShare = 0.4f;
         [SerializeField] private float _throwTwistBlendRate = 8f;
 
-        private static readonly int[] ThrowStateHashes = BuildThrowStateHashes();
+        /// <summary>Upper Body states that twist the torso toward a target: the throws and the interaction reaches.</summary>
+        private static readonly int[] TwistStateHashes = BuildTwistStateHashes();
+        private AnimationOrchestrator _orchestrator;
         private float _throwTwistBlend;
         private float _appliedThrowYaw;
         /// <summary>Owner's own throw yaw, used until the replicated aim catches up.</summary>
@@ -95,6 +97,7 @@ namespace SS3D.Systems.Entities.Humanoid
             }
 
             _bodyStateMachine = GetComponent<HumanoidBodyStateMachine>();
+            _orchestrator = GetComponentInParent<AnimationOrchestrator>();
         }
 
         /// <summary>
@@ -279,7 +282,8 @@ namespace SS3D.Systems.Entities.Humanoid
         private void ApplyRangedAimCorrection()
         {
             bool wantCorrection = _rangedAimActive && _combatLookActive && _animator != null
-                && _animator.enabled && _animator.isHuman && !IsUpperBodyReloading();
+                && _animator.enabled && _animator.isHuman && !IsUpperBodyReloading()
+                && (_orchestrator == null || !_orchestrator.IsFullBodyInteractionPlaying);
             _rangedAimBlend = Mathf.MoveTowards(_rangedAimBlend, wantCorrection ? 1f : 0f, Time.deltaTime * _rangedAimBlendRate);
             if (_rangedAimBlend <= 0.001f || !_combatLookActive || !TryGetWieldedWeapon(out RangedWeaponItemExtension weapon))
             {
@@ -370,7 +374,10 @@ namespace SS3D.Systems.Entities.Humanoid
 
         private bool IsUpperBodyReloading() => UpperBodyReloadNormalizedTime() >= 0f;
 
-        /// <summary>Owner: the yaw the current throw aims at (the snapshot's AimYaw carries it to observers).</summary>
+        /// <summary>
+        /// The yaw the current throw or interaction aims at. The owner sets it for a throw (the snapshot's AimYaw
+        /// carries it to observers); every peer sets it for an interaction, whose RPC carries the yaw.
+        /// </summary>
         public void SetThrowAimYaw(float yaw)
         {
             _localThrowYaw = yaw;
@@ -384,7 +391,7 @@ namespace SS3D.Systems.Entities.Humanoid
         private void ApplyThrowTwist()
         {
             bool canPose = _animator != null && _animator.enabled && _animator.isHuman && _bodyStateMachine != null;
-            bool throwing = canPose && IsUpperBodyIn(ThrowStateHashes);
+            bool throwing = canPose && IsUpperBodyIn(TwistStateHashes);
             _throwTwistBlend = Mathf.MoveTowards(_throwTwistBlend, throwing ? 1f : 0f, Time.deltaTime * _throwTwistBlendRate);
             if (!canPose || _throwTwistBlend <= 0.001f)
             {
@@ -419,15 +426,27 @@ namespace SS3D.Systems.Entities.Humanoid
             return System.Array.IndexOf(stateHashes, current) >= 0 || System.Array.IndexOf(stateHashes, next) >= 0;
         }
 
-        private static int[] BuildThrowStateHashes()
+        private static int[] BuildTwistStateHashes()
         {
-            int[] hashes = new int[ThrowAnimation.Variants.Length];
-            for (int i = 0; i < hashes.Length; i++)
+            var hashes = new System.Collections.Generic.List<int>();
+            foreach (ThrowAnimation.Clip clip in ThrowAnimation.Variants)
             {
-                hashes[i] = Animator.StringToHash(ThrowAnimation.Variants[i].StateName);
+                hashes.Add(Animator.StringToHash(clip.StateName));
             }
 
-            return hashes;
+            foreach (InteractionAnimation.Clip clip in InteractionAnimation.All)
+            {
+                if (!clip.FullBody)
+                {
+                    hashes.Add(Animator.StringToHash(clip.StateName));
+                    if (clip.HasReturn)
+                    {
+                        hashes.Add(Animator.StringToHash(clip.ReturnStateName));
+                    }
+                }
+            }
+
+            return hashes.ToArray();
         }
 
         /// <summary>Normalized time of the Upper Body reload state (entering it counts), or -1 when not reloading.</summary>

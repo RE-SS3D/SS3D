@@ -44,6 +44,8 @@ namespace SS3D.Systems.Entities.Humanoid.Body
         public bool PistolHold;
         /// <summary>With <see cref="PistolHold"/>: the other hand holds an item, so its arm leaves the grip.</summary>
         public bool OffHandBusy;
+        /// <summary>The body kneels for a delayed interaction (defuse, CPR) while this is set (server).</summary>
+        public bool InteractKneel;
 
         public uint Pack()
         {
@@ -63,6 +65,7 @@ namespace SS3D.Systems.Entities.Humanoid.Body
             packed |= ((uint)AttackWindup & 0x1F) << 22;
             if (PistolHold) packed |= 1u << 27;
             if (OffHandBusy) packed |= 1u << 28;
+            if (InteractKneel) packed |= 1u << 29;
             return packed;
         }
 
@@ -93,6 +96,7 @@ namespace SS3D.Systems.Entities.Humanoid.Body
                 AttackWindup = (byte)((packed >> 22) & 0x1F),
                 PistolHold = (packed & (1u << 27)) != 0,
                 OffHandBusy = (packed & (1u << 28)) != 0,
+                InteractKneel = (packed & (1u << 29)) != 0,
                 AimYaw = aimYaw,
                 AimPitch = aimPitch,
                 MovementSpeed = (float)Math.Sqrt(movementVelX * movementVelX + movementVelZ * movementVelZ),

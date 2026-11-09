@@ -344,6 +344,12 @@ namespace SS3D.Systems.Inventory.Containers
                 return;
             }
 
+            if (TryGetComponent(out InteractionController interactions) && !interactions.BeginOwnerHandAction(
+                    Entities.Humanoid.Body.InteractionAnimation.ChooseClip("Drop", point.y - transform.position.y), point))
+            {
+                return;
+            }
+
             CmdPlaceItemInWorld(item.gameObject, point, surfaceNormal);
         }
 
@@ -394,10 +400,26 @@ namespace SS3D.Systems.Inventory.Containers
                 return;
             }
 
+            // The item leaves the hand when the hand reaches the surface (animation pass Phase 4).
+            if (!TryGetComponent(out InteractionController interactions))
+            {
+                ServerPlaceItemInWorld(item, point);
+                return;
+            }
+
+            int clip = Entities.Humanoid.Body.InteractionAnimation.ChooseClip("Drop", point.y - transform.position.y);
+            interactions.ServerRunHandAction(clip, point,
+                () => item != null && Hands != null && Hands.SelectedHand != null && Hands.SelectedHand.CanUseHand
+                    && CanPlaceInventoryItemInWorld(item, point, surfaceNormal),
+                () => ServerPlaceItemInWorld(item, point));
+        }
+
+        [Server]
+        private void ServerPlaceItemInWorld(Item item, Vector3 point)
+        {
             Hands hands = GetComponent<Hands>();
             Hand hand = hands != null ? hands.SelectedHand : null;
             Quaternion rotation = item.GetWorldFacing(transform.eulerAngles.y);
-
             if (hand != null && hand.ItemInHand == item)
             {
                 hand.PlaceHeldItemOutOfHand(point, rotation);

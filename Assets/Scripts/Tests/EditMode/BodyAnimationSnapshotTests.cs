@@ -29,6 +29,21 @@ namespace SS3D.Tests.EditMode
         }
 
         [Test]
+        public void Pack_RoundTripsInteractKneel_NextToTheRangedHoldBits()
+        {
+            BodyAnimationSnapshot snapshot = BodyAnimationSnapshot.Default;
+            snapshot.InteractKneel = true;
+            snapshot.OffHandBusy = true;
+
+            BodyAnimationSnapshot unpacked = BodyAnimationSnapshot.Unpack(snapshot.Pack(), 0f, 0f, 0f, 0f, 0f, 0f, 0f);
+
+            Assert.IsTrue(unpacked.InteractKneel);
+            Assert.IsTrue(unpacked.OffHandBusy);
+            Assert.IsFalse(unpacked.PistolHold);
+            Assert.IsFalse(BodyAnimationSnapshot.Default.Equals(snapshot), "A kneel change republishes the snapshot");
+        }
+
+        [Test]
         public void Pack_RoundTripsAttackWindup_WithoutDisturbingVariantOrMirror()
         {
             BodyAnimationSnapshot snapshot = BodyAnimationSnapshot.Default;

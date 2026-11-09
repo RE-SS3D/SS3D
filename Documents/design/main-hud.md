@@ -83,12 +83,15 @@ SS13's four-way intent selector (help / harm / disarm / grab) collapses to a two
 | Tap toggle key | Flips persistent help/harm state |
 | Hold Ctrl + click | Disarm attempt |
 | Hold Alt + click | Grab / escalate an existing grab |
+| Tap R, then click | Throw the active hand's item at the clicked point |
 
 Ctrl and Alt were picked deliberately: SS13 already trains players to ctrl-click and alt-click objects for shortcuts, so this reuses existing muscle memory rather than teaching a new one.
 
 **Why this isn't just a rebind.** In SS13, switching from help to grab mid-fight costs an extra input — you have to change intent before you can act. Chording removes that tax: Alt+click grabs and Ctrl+click disarms regardless of what the base toggle is set to. Shift is not an intent modifier: it's examine (`examine.md` §4).
 
 **Grab escalation stays on Alt+click, never falls through to plain click.** Once a grab is active, it's tempting to let a plain click on the grabbed target escalate it. Don't — that makes plain click mean different things depending on hidden state. Initiate and escalate use the identical gesture (Alt+click), so there's no silent context-switching for the player to trip over.
+
+**Throw is a mode, not a chord.** R arms a throw; the next click throws the active hand's item at the point under the cursor, in help or harm alike, and the mode ends. A click with an empty hand or Esc ends it too. It's a toggle rather than a held modifier because aiming a throw takes a moment of looking: holding a key while you pick a spot is a worse hand position than tapping once. While armed, the world shows the throw itself instead of a cursor badge: a dashed arc from the hand to where the item will land, and a ring on the floor there. The arc stops short, in a warning colour, when the target is past what that item's weight lets you throw; heavy enough items can't be thrown at all and show only a red ring. Same SS13 lineage as the other verbs (SS13's throw toggle), minus its silent "the next click might be a throw" state, since the arc is on screen the whole time the mode is live.
 
 **The cost is discoverability, and it needs a mitigation.** A four-icon selector is self-documenting — every option is visible, every time. A toggle plus three invisible modifiers is faster but only for players who already know the modifiers exist, which is exactly the kind of thing that ends up wiki-only knowledge in SS13. Mitigate with fading hints: show modifier labels (ctrl — disarm / alt — grab / shift — examine) next to the intent pip for new or infrequent players, and shrink them to unlabeled ticks once a player's demonstrably used each one a few times.
 

@@ -11,6 +11,7 @@ using SS3D.Logging;
 using SS3D.Systems.Combat;
 using SS3D.Systems.Inputs;
 using SS3D.Systems.Interactions;
+using SS3D.Systems.Entities.Humanoid.Body;
 using SS3D.Systems.Inventory.Items;
 using UnityEditor;
 using UnityEngine;
@@ -237,6 +238,13 @@ namespace SS3D.Systems.Inventory.Containers
             IIntentProvider intentProvider = GetComponentInParent<IIntentProvider>()
                 ?? GetComponent<IIntentProvider>();
             if (intentProvider != null && intentProvider.CurrentIntent != IntentType.Help)
+            {
+                return;
+            }
+
+            InteractionController interactions = GetComponentInParent<InteractionController>();
+            if (interactions != null && !interactions.BeginOwnerHandAction(
+                    InteractionAnimation.FloorPutDown, InteractionAnimation.DropPointAhead(interactions.transform)))
             {
                 return;
             }
