@@ -1,4 +1,4 @@
-using FishNet.Object;
+﻿using FishNet.Object;
 using SS3D.Core;
 using SS3D.Data;
 using SS3D.Data.Generated;
@@ -192,6 +192,9 @@ namespace SS3D.Systems.Combat.Interactions
         /// and never begin recovery, so walking felt like no cooldown.
         /// </summary>
         protected override bool CancelOnMove => false;
+
+        /// <summary>Getting hit mid-swing does not abort it; recovery and stamina gate the exchange.</summary>
+        public override bool CancelOnDamage => false;
 
         /// <summary>
         /// Hands animate during the swing — if cancel-on-move is re-enabled, use entity root

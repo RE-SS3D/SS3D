@@ -347,6 +347,13 @@ namespace EditorTests
             {
             }
 
+
+            public void CancelInteraction(InteractionReference reference, DelayedCancelReason reason)
+
+            {
+
+            }
+
             public void ClientInteract(InteractionEvent interactionEvent, IInteraction interaction, InteractionReference reference)
             {
             }

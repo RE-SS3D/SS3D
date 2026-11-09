@@ -54,13 +54,13 @@ Checked by three read-only explorations against code; the [tile](systems/tile.md
 
 ### S1: foundations
 
-- [ ] `Item.TryConsume`, `_initialStackCount`, stack limits and initial counts on `SteelSheet`, `GlassSheet`, `FloorTile` (editor recipe). EditMode: consume to zero deletes; merge respects the limit
-- [ ] `ConstructionTool` component + recipe on `Welder` and `Crowbar`
-- [ ] `DelayedCancelReason`, `CancelOnDamage`; owner-client cancel RPC with reason
+- [x] `Item.TryConsume`, `_initialStackCount`, stack limits and initial counts on `SteelSheet`, `GlassSheet`, `FloorTile` (editor recipe). EditMode: consume to zero deletes; merge respects the limit
+- [x] `ConstructionTool` component + recipe on `Welder` and `Crowbar`
+- [x] `DelayedCancelReason`, `CancelOnDamage`; owner-client cancel RPC with reason
 - [ ] UITK progress ring presenter (running, done, cancelled + reason) in the overlay layer; purge `LoadingBar` and its prefab; `InteractionOptimisticFeedback` adopts the ring. Defuse uses it unchanged
-- [ ] `ConstructionRecipes` table + resolve-all EditMode test
+- [x] `ConstructionRecipes` table + resolve-all EditMode test
 - [ ] `ConstructionPlacementSubSystem`: active-hand watch, cell pick (ground plane where there is no plenum), ghost via `ConstructionHologram` with fail reason and "n / m" cost tag, ServerRpc with range, rule, `BuildChecker` and material checks, timed completion via the same cancel rules
-- [ ] D11 outline change
+- [x] D11 outline change
 - Validation: `compile,editmode`
 
 ### S2: floor and hull (closes M8's patch)

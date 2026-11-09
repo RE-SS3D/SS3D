@@ -63,6 +63,9 @@ namespace SS3D.Systems.Inventory.Items
         [Tooltip("If greater than 1, identical items (same source asset) collapse into one stack up to this count."), SerializeField]
         private int _maxStackSize = 1;
 
+        [Tooltip("Stack count a freshly spawned instance starts with (loadouts, map-placed stock). Clamped to the stack size."), SerializeField]
+        private int _initialStackCount = 1;
+
         /// <summary>
         /// How many units this item instance currently represents. Only meaningful when MaxStackSize > 1.
         /// </summary>
@@ -137,6 +140,8 @@ namespace SS3D.Systems.Inventory.Items
         public bool IsStackable => _maxStackSize > 1;
 
         public int StackCount => _stackCount;
+
+        public int InitialStackCount => _initialStackCount;
 
         public ReadOnlyCollection<Trait> Traits => ((List<Trait>) _traits.Collection).AsReadOnly();
 
@@ -275,6 +280,11 @@ namespace SS3D.Systems.Inventory.Items
         {
             base.OnStartServer();
             _traits.AddRange(_startingTraits);
+            // Salvage and merges call SetStackCount after spawn, which overrides this.
+            if (_initialStackCount > 1 && _stackCount == 1)
+            {
+                _stackCount = ItemStackRules.ClampCount(_initialStackCount, _maxStackSize);
+            }
             if (_rigidbody != null) AtmosLooseBodies.Register(_rigidbody);
         }
 
@@ -369,7 +379,10 @@ namespace SS3D.Systems.Inventory.Items
         [Server]
         public void Delete()
         {
-            Container.RemoveItem(this);
+            if (Container != null)
+            {
+                Container.RemoveItem(this);
+            }
 
             if (GameObject != null)
             {
@@ -605,7 +618,29 @@ namespace SS3D.Systems.Inventory.Items
         [Server]
         public void SetStackCount(int count)
         {
-            _stackCount = Mathf.Max(1, count);
+            _stackCount = ItemStackRules.ClampCount(count, _maxStackSize);
+        }
+
+        /// <summary>
+        /// Spends <paramref name="amount"/> units of this stack. Deletes the item when the stack is used up.
+        /// Returns false and spends nothing when the stack holds fewer.
+        /// </summary>
+        [Server]
+        public bool TryConsume(int amount)
+        {
+            if (!ItemStackRules.TryResolveConsume(_stackCount, amount, out int remaining, out bool deleteItem))
+            {
+                return false;
+            }
+
+            if (deleteItem)
+            {
+                Delete();
+                return true;
+            }
+
+            _stackCount = remaining;
+            return true;
         }
 
        

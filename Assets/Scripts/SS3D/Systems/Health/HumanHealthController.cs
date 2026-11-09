@@ -6,6 +6,7 @@ using Coimbra.Services.Events;
 using Coimbra.Services.PlayerLoopEvents;
 using SS3D.Core;
 using SS3D.Core.Behaviours;
+using SS3D.Interactions.Interfaces;
 using SS3D.Systems.Atmospherics;
 using SS3D.Systems.Atmospherics.ECS;
 using SS3D.Systems.Atmospherics.Pipes;
@@ -28,7 +29,7 @@ namespace SS3D.Systems.Health
     /// <summary>
     /// Server-authoritative health controller for humanoids. Owns zone damage, organs, and systemic pools.
     /// </summary>
-    public class HumanHealthController : NetworkActor
+    public class HumanHealthController : NetworkActor, IDamageNotifier
     {
         private readonly ZoneDamageState[] _zones = new ZoneDamageState[HealthConstants.ZoneCount];
         private readonly List<OrganState> _organs = new();
@@ -63,6 +64,12 @@ namespace SS3D.Systems.Health
         /// Main HUD and other local-owner consumers subscribe here.
         /// </summary>
         public event Action<HealthSnapshot> SnapshotChanged;
+
+        /// <summary>
+        /// Server only: raised when a hit lands (brute or burn above zero). Timed steps cancel on it
+        /// (<see cref="SS3D.Interactions.DelayedInteraction.CancelOnDamage"/>).
+        /// </summary>
+        public event Action ServerDamaged;
 
         public HealthSnapshot Snapshot => _snapshot;
 
@@ -233,6 +240,11 @@ namespace SS3D.Systems.Health
             OrganSimulation.ApplyZoneDamageToOrgans(zone, brute, burn, _organs);
 
             PublishSnapshot();
+
+            if (brute + burn > 0f)
+            {
+                ServerDamaged?.Invoke();
+            }
 
             // Dead / unminded corpses must not flash the ghost's screen — Owner may still be valid
             // briefly if SetMind(null) has not run yet; never TargetRpc after death latch.
