@@ -33,7 +33,7 @@ namespace SS3D.Systems.Combat
                 return false;
             }
 
-            int mask = ~LayerMask.GetMask(ExcludeLayerNames);
+            int mask = StationBounds.WithoutCeiling(~LayerMask.GetMask(ExcludeLayerNames));
             RaycastHit[] hits = Physics.RaycastAll(shotRay, maxDistance, mask, QueryTriggerInteraction.Ignore);
             if (hits.Length == 0)
             {

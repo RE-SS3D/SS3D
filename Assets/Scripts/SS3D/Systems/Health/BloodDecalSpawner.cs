@@ -1,4 +1,5 @@
 using Coimbra;
+using SS3D.Core;
 using SS3D.Data;
 using SS3D.Data.Generated;
 using SS3D.Rendering.URP;
@@ -54,7 +55,8 @@ namespace SS3D.Systems.Health
                 if (_surfaceMask < 0)
                 {
                     // Floors/tiles live on Default; never stamp onto the bleeding body itself.
-                    _surfaceMask = ~LayerMask.GetMask("Characters", "BodyParts", "Items", "UI", "TransparentFX", "Ignore Raycast");
+                    _surfaceMask = ~LayerMask.GetMask("Characters", "BodyParts", "Items", "UI", "TransparentFX", "Ignore Raycast",
+                        StationBounds.CeilingLayerName);
                 }
 
                 return _surfaceMask;

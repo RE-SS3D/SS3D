@@ -469,7 +469,7 @@ namespace SS3D.Systems.Inventory.Containers
                     direction,
                     out RaycastHit hit,
                     distance + 0.25f,
-                    Physics.DefaultRaycastLayers,
+                    StationBounds.WithoutCeiling(Physics.DefaultRaycastLayers),
                     QueryTriggerInteraction.Ignore))
             {
                 return false;

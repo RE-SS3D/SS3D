@@ -195,7 +195,8 @@ namespace SS3D.Systems.StructuralDamage
             bool found = false;
             foreach (Collider collider in target.GetComponentsInChildren<Collider>())
             {
-                if (collider.isTrigger || !collider.enabled || !collider.Raycast(ray, out RaycastHit hit, nearest)) continue;
+                if (collider.isTrigger || !collider.enabled || StationBounds.IsCeiling(collider)
+                    || !collider.Raycast(ray, out RaycastHit hit, nearest)) continue;
                 nearest = hit.distance;
                 point = hit.point;
                 normal = hit.normal;

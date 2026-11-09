@@ -1,3 +1,4 @@
+using SS3D.Core;
 using SS3D.Systems.Tile.MapEditor.UI;
 using SS3D.Systems.Tile.TileMapCreator;
 using UnityEngine;
@@ -81,7 +82,7 @@ namespace SS3D.Systems.Tile.MapEditor
             ray = camera.ScreenPointToRay(Mouse.current != null
                 ? Mouse.current.position.ReadValue()
                 : (Vector2)Input.mousePosition);
-            return Physics.Raycast(ray, out hit, 500f);
+            return Physics.Raycast(ray, out hit, 500f, StationBounds.WithoutCeiling(Physics.DefaultRaycastLayers));
         }
 
         private static bool IsWallMount(PlacedTileObject placed) =>

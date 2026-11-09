@@ -20,6 +20,7 @@ using SS3D.Systems.Entities;
 using SS3D.Systems.Entities.Humanoid.Body;
 using SS3D.Systems.Health;
 using SS3D.Systems.Selection;
+using SS3D.Systems.Tile;
 using SS3D.Utils;
 using System.Linq;
 using UnityEngine;
@@ -299,7 +300,25 @@ namespace SS3D.Systems.Inventory.Items
             }
 
             _nextSupportCheckTime = now + SupportCheckInterval;
+            KeepInStation();
             ApplySupportGravity();
+        }
+
+        /// <summary>A loose item above the ceiling or below the deck goes back onto the nearest floor.</summary>
+        [Server]
+        private void KeepInStation()
+        {
+            Vector3 position = transform.position;
+            if (!StationBoundsRescue.IsOutOfBounds(position)
+                || !StationBoundsRescue.TryGetRescuePosition(position, out Vector3 rescue))
+            {
+                return;
+            }
+
+            StationBoundsRescue.LogRescue(this, position, _rigidbody.linearVelocity, rescue);
+            _rigidbody.linearVelocity = Vector3.zero;
+            _rigidbody.angularVelocity = Vector3.zero;
+            ItemUtility.Place(this, rescue, transform.rotation);
         }
 
         /// <summary>

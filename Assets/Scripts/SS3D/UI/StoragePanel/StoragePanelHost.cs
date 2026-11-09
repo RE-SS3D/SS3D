@@ -676,7 +676,7 @@ namespace SS3D.UI.StoragePanel
 
             Ray ray = camera.ScreenPointToRay(InputInterface.GetPointerScreenPosition());
             // Match gameplay interaction rays: hit whatever the camera sees (tiles are often not on Default).
-            if (!Physics.Raycast(ray, out RaycastHit hit, 100f, Physics.DefaultRaycastLayers, QueryTriggerInteraction.Ignore))
+            if (!Physics.Raycast(ray, out RaycastHit hit, 100f, StationBounds.WithoutCeiling(Physics.DefaultRaycastLayers), QueryTriggerInteraction.Ignore))
             {
                 return;
             }

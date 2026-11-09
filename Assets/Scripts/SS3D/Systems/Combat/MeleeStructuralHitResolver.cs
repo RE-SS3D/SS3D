@@ -100,7 +100,7 @@ namespace SS3D.Systems.Combat
         {
             coord = default;
             contact = null;
-            int mask = ~LayerMask.GetMask(ExcludeLayerNames);
+            int mask = StationBounds.WithoutCeiling(~LayerMask.GetMask(ExcludeLayerNames));
             RaycastHit[] hits = Physics.RaycastAll(aimRay, MaxAimRayDistance, mask, QueryTriggerInteraction.Ignore);
             if (hits.Length == 0)
             {

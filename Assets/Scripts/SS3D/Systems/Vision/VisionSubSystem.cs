@@ -143,7 +143,8 @@ namespace SS3D.Systems.Vision
             if (obstacleMask == 0)
             {
                 obstacleMask = ~LayerMask.GetMask(
-                    "TransparentFX", "Ignore Raycast", "Water", "UI", "Items", "Characters", "BodyParts");
+                    "TransparentFX", "Ignore Raycast", "Water", "UI", "Items", "Characters", "BodyParts",
+                    StationBounds.CeilingLayerName);
             }
 
             _wallsLayer = LayerMask.NameToLayer("Walls");

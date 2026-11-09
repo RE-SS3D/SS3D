@@ -375,7 +375,7 @@ namespace SS3D.UI.MainHud
 
             Vector2 screenPosition = InputInterface.GetPointerScreenPosition();
             Ray ray = camera.ScreenPointToRay(screenPosition);
-            if (Physics.Raycast(ray, out RaycastHit hit, maxRange, ~0, QueryTriggerInteraction.Collide))
+            if (Physics.Raycast(ray, out RaycastHit hit, maxRange, StationBounds.WithoutCeiling(~0), QueryTriggerInteraction.Collide))
             {
                 return hit.distance;
             }

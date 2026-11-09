@@ -1,4 +1,5 @@
 using System;
+using SS3D.Core;
 using SS3D.Systems.Combat;
 using UnityEngine;
 using UnityEngine.Rendering;
@@ -27,7 +28,7 @@ namespace SS3D.Systems.Testing
                 for (int y = 1; y < 8; y++)
                 {
                     Ray ray = camera.ViewportPointToRay(new Vector3(x / 8f, y / 8f, 0f));
-                    if (!Physics.Raycast(ray, out RaycastHit hit, 30f, ~0, QueryTriggerInteraction.Ignore))
+                    if (!Physics.Raycast(ray, out RaycastHit hit, 30f, StationBounds.WithoutCeiling(~0), QueryTriggerInteraction.Ignore))
                         continue;
 
                     BulletHoleDecalSpawner.Spawn(hit.point, hit.normal);

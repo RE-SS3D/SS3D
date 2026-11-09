@@ -1,4 +1,5 @@
 using FishNet.Connection;
+using SS3D.Core;
 using SS3D.Systems.Entities.Humanoid.Body;
 using SS3D.Systems.Health;
 using SS3D.Systems.Stamina;
@@ -192,6 +193,15 @@ namespace SS3D.Systems.Entities.Humanoid
             {
                 _characterController.Move(Physics.gravity);
             }
+            else
+            {
+                // Stranded above the deck (e.g. recovered from a ragdoll over the station): fall back down.
+                float drop = HumanoidSpaceSupport.GetDropToDeck(transform.position, -Physics.gravity.y * Time.deltaTime);
+                if (drop > 0f)
+                {
+                    _characterController.Move(Vector3.down * drop);
+                }
+            }
 
             if (Input.magnitude != 0)
             {
@@ -349,7 +359,7 @@ namespace SS3D.Systems.Entities.Humanoid
 
             float probe = (_characterController.height * 0.5f) + _characterController.skinWidth + 0.2f;
             Vector3 origin = transform.position + Vector3.up * 0.05f;
-            return Physics.Raycast(origin, Vector3.down, probe, Physics.DefaultRaycastLayers,
+            return Physics.Raycast(origin, Vector3.down, probe, StationBounds.WithoutCeiling(Physics.DefaultRaycastLayers),
                 QueryTriggerInteraction.Ignore);
         }
 

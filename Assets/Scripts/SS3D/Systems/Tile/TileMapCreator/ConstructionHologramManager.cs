@@ -176,7 +176,7 @@ namespace SS3D.Systems.Tile.TileMapCreator
                 return floorPoint;
 
             Ray ray = camera.ScreenPointToRay(Mouse.current.position.ReadValue());
-            if (!Physics.Raycast(ray, out RaycastHit hit, 500f, Physics.DefaultRaycastLayers, QueryTriggerInteraction.Ignore))
+            if (!Physics.Raycast(ray, out RaycastHit hit, 500f, StationBounds.WithoutCeiling(Physics.DefaultRaycastLayers), QueryTriggerInteraction.Ignore))
                 return floorPoint;
 
             PlacedTileObject placed = hit.collider.GetComponentInParent<PlacedTileObject>();
@@ -1255,7 +1255,7 @@ namespace SS3D.Systems.Tile.TileMapCreator
                 return false;
 
             Ray ray = camera.ScreenPointToRay(Mouse.current.position.ReadValue());
-            if (!Physics.Raycast(ray, out RaycastHit hitInfo, 500f, Physics.DefaultRaycastLayers, QueryTriggerInteraction.Ignore))
+            if (!Physics.Raycast(ray, out RaycastHit hitInfo, 500f, StationBounds.WithoutCeiling(Physics.DefaultRaycastLayers), QueryTriggerInteraction.Ignore))
                 return false;
 
             item = hitInfo.collider.GetComponentInParent<PlacedItemObject>();

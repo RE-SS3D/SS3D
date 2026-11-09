@@ -1,3 +1,4 @@
+using SS3D.Core;
 using SS3D.Systems.Combat;
 using SS3D.Systems.Combat.Interactions;
 using SS3D.Systems.Entities.Humanoid.Body;
@@ -109,7 +110,8 @@ namespace SS3D.Systems.Entities.Humanoid
         /// </summary>
         public bool HasStandUpHeadroom()
         {
-            return !Physics.Raycast(transform.position + Vector3.up * 0.1f, Vector3.up, _blockedStandUpHeadroom);
+            return !Physics.Raycast(transform.position + Vector3.up * 0.1f, Vector3.up, _blockedStandUpHeadroom,
+                StationBounds.WithoutCeiling(Physics.DefaultRaycastLayers));
         }
 
         /// <summary>

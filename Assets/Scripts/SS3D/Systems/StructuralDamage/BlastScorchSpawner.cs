@@ -1,4 +1,5 @@
 using Coimbra;
+using SS3D.Core;
 using SS3D.Rendering.URP;
 using SS3D.Systems.Health;
 using System.Collections.Generic;
@@ -26,7 +27,7 @@ namespace SS3D.Systems.StructuralDamage
                 if (_surfaceMask < 0)
                 {
                     _surfaceMask = ~LayerMask.GetMask(
-                        "Characters", "BodyParts", "Items", "UI", "TransparentFX", "Ignore Raycast");
+                        "Characters", "BodyParts", "Items", "UI", "TransparentFX", "Ignore Raycast", StationBounds.CeilingLayerName);
                 }
 
                 return _surfaceMask;

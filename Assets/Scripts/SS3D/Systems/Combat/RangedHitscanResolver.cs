@@ -1,3 +1,4 @@
+using SS3D.Core;
 using SS3D.Systems.Health;
 using SS3D.Systems.Tile;
 using SS3D.Utils;
@@ -118,7 +119,7 @@ namespace SS3D.Systems.Combat
                 return false;
             }
 
-            if (Physics.Raycast(shotRay, out RaycastHit anyHit, maxRange, ~0, QueryTriggerInteraction.Ignore))
+            if (Physics.Raycast(shotRay, out RaycastHit anyHit, maxRange, StationBounds.WithoutCeiling(~0), QueryTriggerInteraction.Ignore))
             {
                 impactPoint = anyHit.point;
                 impactNormal = anyHit.normal;

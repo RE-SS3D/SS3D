@@ -140,6 +140,21 @@ namespace SS3D.Tests
             AssertRagdollGravity(Body, true, "A corpse back on the deck falls with gravity");
         }
 
+        // Guards: a walker stranded metres above the station (a wind ragdoll that got up over it) falls back to the deck instead of walking on air (#193; HumanoidSpaceSupport.GetDropToDeck) · Not cheaper because: needs the owner's CharacterController, the station's floor colliders and its tile map together
+        [UnityTest]
+        public IEnumerator StrandedAboveStation_FallsBackToDeck()
+        {
+            Vector3 deck = Body.transform.position;
+            Teleport(Body, deck + (Vector3.up * 5f));
+            yield return Hold(0.1f);
+            Assert.AreEqual(HumanoidSupportState.Supported, HumanoidSpaceSupport.GetSupportAt(Body.transform.position),
+                "Tile support ignores height, so the body still counts as over the station");
+
+            yield return WaitFor(() => Body.transform.position.y < deck.y + 0.3f, "the stranded body falls back to the deck", 5f);
+            yield return Hold(0.5f);
+            Assert.AreEqual(deck.y, Body.transform.position.y, 0.3f, "The body stays on the deck");
+        }
+
         // Guards: a critical body keeps its collapse through ownership loss and reclaim, and treatment restores animation (reconnect while critical; the old critical-reclaim pilot) · Not cheaper because: needs FishNet ownership changes on a live body
         [UnityTest]
         public IEnumerator CriticalOwner_KeepsCollapseThroughReclaim_AndRecovers()

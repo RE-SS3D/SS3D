@@ -496,7 +496,7 @@ namespace SS3D.Systems.Entities.Humanoid
         private bool TryResolveAimPoint(Ray ray, float maxDistance, float fallbackDistance, out Vector3 aimPoint)
         {
             aimPoint = ray.GetPoint(fallbackDistance);
-            RaycastHit[] hits = Physics.RaycastAll(ray, maxDistance, Physics.DefaultRaycastLayers, QueryTriggerInteraction.Ignore);
+            RaycastHit[] hits = Physics.RaycastAll(ray, maxDistance, StationBounds.WithoutCeiling(Physics.DefaultRaycastLayers), QueryTriggerInteraction.Ignore);
             if (hits.Length == 0)
             {
                 return true;

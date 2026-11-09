@@ -1,6 +1,7 @@
 using FishNet.Object;
 using FishNet.Object.Synchronizing;
 using SS3D.Core.Behaviours;
+using SS3D.Core;
 using SS3D.Systems.Entities.Humanoid;
 using System;
 using UnityEngine;
@@ -469,7 +470,7 @@ namespace SS3D.Systems.Entities.Humanoid.Body
             foreach (Vector3 offset in offsets)
             {
                 Vector3 candidate = _seatAnchor.position + offset;
-                if (!Physics.CheckSphere(candidate, 0.25f, ~0, QueryTriggerInteraction.Ignore))
+                if (!Physics.CheckSphere(candidate, 0.25f, StationBounds.WithoutCeiling(~0), QueryTriggerInteraction.Ignore))
                 {
                     return candidate;
                 }

@@ -73,6 +73,29 @@ namespace SS3D.Systems.Entities.Humanoid.Body
         public static bool IsUnsupportedAt(Vector3 worldPosition) =>
             GetSupportAt(worldPosition) == HumanoidSupportState.Unsupported;
 
+        /// <summary>Height above the deck past which a supported walker with no floor collider underfoot is stranded.</summary>
+        public const float StrandedHeightAboveDeck = 0.5f;
+
+        /// <summary>
+        /// How far a supported walker with no floor collider underfoot should drop this step: towards the deck,
+        /// at most <paramref name="maxDrop"/>. Tile support ignores height, so a body that got up from a ragdoll
+        /// metres above the station would otherwise walk on air for good (#193). Zero at or below the deck: a
+        /// body below it must not fall forever (#152).
+        /// </summary>
+        public static float GetDropToDeck(Vector3 worldPosition, float maxDrop)
+        {
+            if (!SubSystems.TryGet(out TileSubSystem tiles)
+                || tiles.CurrentMap == null
+                || tiles.QueryService == null)
+            {
+                return 0f;
+            }
+
+            TileCoord coord = tiles.QueryService.WorldToTile(worldPosition, tiles.CurrentMap.MapId);
+            float aboveDeck = worldPosition.y - tiles.QueryService.TileToWorld(coord).y;
+            return aboveDeck > StrandedHeightAboveDeck ? Mathf.Min(maxDrop, aboveDeck) : 0f;
+        }
+
         private static bool IsServerTileWorldReady(TileSubSystem tiles)
         {
             if (SubSystems.TryGet(out WorldReadinessSubSystem readiness)

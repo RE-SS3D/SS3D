@@ -238,7 +238,7 @@ namespace SS3D.Systems.Combat
 
             float maxRange = Mathf.Max(1f, weapon.Profile.MaxRangeMeters);
             float aimDistance = maxRange;
-            if (Physics.Raycast(aimRay, out RaycastHit aimHit, maxRange, ~0, QueryTriggerInteraction.Ignore))
+            if (Physics.Raycast(aimRay, out RaycastHit aimHit, maxRange, StationBounds.WithoutCeiling(~0), QueryTriggerInteraction.Ignore))
             {
                 aimDistance = aimHit.distance;
             }

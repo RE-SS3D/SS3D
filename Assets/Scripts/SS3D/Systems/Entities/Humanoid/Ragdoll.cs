@@ -1,4 +1,5 @@
 ﻿using FishNet.Component.Animating;
+using SS3D.Core;
 using SS3D.Systems.Entities.Data;
 using SS3D.Systems.Entities.Humanoid.Body;
 using FishNet.Component.Transforming;
@@ -530,7 +531,7 @@ namespace SS3D.Systems.Entities.Humanoid
                 if (_floorSupportMask == -1)
                 {
                     _floorSupportMask = ~LayerMask.GetMask(
-                        "Characters", "BodyParts", "Items", "UI", "TransparentFX", "Ignore Raycast");
+                        "Characters", "BodyParts", "Items", "UI", "TransparentFX", "Ignore Raycast", StationBounds.CeilingLayerName);
                 }
 
                 return _floorSupportMask;
