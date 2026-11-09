@@ -111,6 +111,11 @@ namespace SS3D.Systems.Entities.Humanoid
                 return;
             }
 
+            // A pure client instantiates the body at the origin and FishNet then writes the spawn
+            // position to the transform. With auto sync transforms off, an already-enabled controller
+            // keeps the origin, and its first Move puts the owner there (and, client-authoritative,
+            // the server too). Re-enabling rebuilds it at the transform.
+            _characterController.enabled = false;
             _characterController.enabled = true;
         }
 
