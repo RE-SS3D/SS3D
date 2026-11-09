@@ -1,9 +1,12 @@
 # Guards: breach wind reaches a remote owner, as bone or CharacterController motion plus streaks from networked atlas patches (agent-local check) · Not cheaper because: remote ownership and chunk patches need a second process
 # Main editor (host) side. Opens a hole beside the remote body once it is settled, so the client's
 # baseline is taken before the wind starts. Player2 runs scenarios/breach-client.txt.
+# testroom: on Classic MiniStation the spawn is in the big hallway and the distro loop refills it,
+# so one hole never thins the air enough to hear.
 wait_timeout 180
 wait_connected
 wait_clients 1
+use_station testroom Extended
 ready
 start_round
 wait_round Ongoing
