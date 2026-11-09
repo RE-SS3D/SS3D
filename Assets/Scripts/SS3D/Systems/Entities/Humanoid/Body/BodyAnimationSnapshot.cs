@@ -40,6 +40,10 @@ namespace SS3D.Systems.Entities.Humanoid.Body
         public bool IsDragging;
         /// <summary>True when the active hand is Left — mirrors Upper Body Mixamo holds/swings.</summary>
         public bool MirrorUpperBody;
+        /// <summary>True when the wielded gun uses the pistol hold (Pistol Aim Idle and the pistol leg tree).</summary>
+        public bool PistolHold;
+        /// <summary>With <see cref="PistolHold"/>: the other hand holds an item, so its arm leaves the grip.</summary>
+        public bool OffHandBusy;
 
         public uint Pack()
         {
@@ -57,6 +61,8 @@ namespace SS3D.Systems.Entities.Humanoid.Body
             packed |= ((uint)AttackVariant & 0x3) << 19;
             if (MirrorUpperBody) packed |= 1u << 21;
             packed |= ((uint)AttackWindup & 0x1F) << 22;
+            if (PistolHold) packed |= 1u << 27;
+            if (OffHandBusy) packed |= 1u << 28;
             return packed;
         }
 
@@ -85,6 +91,8 @@ namespace SS3D.Systems.Entities.Humanoid.Body
                 AttackVariant = (byte)((packed >> 19) & 0x3),
                 MirrorUpperBody = (packed & (1u << 21)) != 0,
                 AttackWindup = (byte)((packed >> 22) & 0x1F),
+                PistolHold = (packed & (1u << 27)) != 0,
+                OffHandBusy = (packed & (1u << 28)) != 0,
                 AimYaw = aimYaw,
                 AimPitch = aimPitch,
                 MovementSpeed = (float)Math.Sqrt(movementVelX * movementVelX + movementVelZ * movementVelZ),

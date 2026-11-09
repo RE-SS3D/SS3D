@@ -42,5 +42,8 @@ namespace SS3D.Tests
 
         /// <summary>Charges going off in the test room: hull, floors and air.</summary>
         public const string Explosives = "Explosives";
+
+        /// <summary>Weapons in a live body's hands: hold pose and aim.</summary>
+        public const string Combat = "Combat";
     }
 }

@@ -249,6 +249,19 @@ namespace SS3D.Systems.Entities.Humanoid.Body
             PublishSnapshot();
         }
 
+        public void SetRangedHold(bool pistolHold, bool offHandBusy)
+        {
+            offHandBusy &= pistolHold;
+            if (_snapshot.PistolHold == pistolHold && _snapshot.OffHandBusy == offHandBusy)
+            {
+                return;
+            }
+
+            _snapshot.PistolHold = pistolHold;
+            _snapshot.OffHandBusy = offHandBusy;
+            PublishSnapshot();
+        }
+
         public void SetInjuredArms(float left, float right)
         {
             // SyncVars are server-authoritative. Assigning on a pure client spam-logs

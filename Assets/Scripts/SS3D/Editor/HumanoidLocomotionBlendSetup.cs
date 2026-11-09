@@ -12,7 +12,7 @@ namespace SS3D.Editor
     /// Rebuilds Base Layer locomotion into Peaceful / Melee / Ranged / Injured
     /// 2D locomotion blend trees (Peaceful/Injured Cartesian, Melee/Ranged Directional) switched by CombatStance and LimpSide.
     /// </summary>
-    public static class HumanoidLocomotionBlendSetup
+    public static partial class HumanoidLocomotionBlendSetup
     {
         private const string ControllerPath =
             "Assets/Content/WorldObjects/Entities/Humanoids/Human/HumanCharacterAnimator.controller";
@@ -153,6 +153,8 @@ namespace SS3D.Editor
             ("AttackVariant", AnimatorControllerParameterType.Int),
             (AttackRateParameter, AnimatorControllerParameterType.Float),
             ("MirrorUpperBody", AnimatorControllerParameterType.Bool),
+            (PistolStanceAnimation.HoldParameter, AnimatorControllerParameterType.Float),
+            (PistolStanceAnimation.StrafeParameter, AnimatorControllerParameterType.Float),
             ("Throw", AnimatorControllerParameterType.Trigger),
             ("Emote", AnimatorControllerParameterType.Trigger),
             ("Flinch", AnimatorControllerParameterType.Trigger),
@@ -364,8 +366,9 @@ namespace SS3D.Editor
             BlendTree rangedTree = BuildBlendTree(
                 controller, "Ranged Locomotion 2D", AnimationsRoot, RangedClips,
                 BlendTreeType.FreeformDirectional2D, CombatTargetSpeed, humanScale);
+            BlendTree pistolTree = BuildPistolBlendTree(controller, CombatTargetSpeed, humanScale);
             BlendTree injuredTree = BuildInjuredBlendTree(controller);
-            if (peacefulTree == null || meleeTree == null || rangedTree == null || injuredTree == null)
+            if (peacefulTree == null || meleeTree == null || rangedTree == null || pistolTree == null || injuredTree == null)
             {
                 return "ERROR: Failed to build one or more stance blend trees (check Mix_* clip names after reimport).";
             }
@@ -376,7 +379,11 @@ namespace SS3D.Editor
             AnimatorState injured = FindOrCreateState(baseMachine, "Injured Locomotion", new Vector3(550, 120, 0));
             peaceful.motion = peacefulTree;
             melee.motion = meleeTree;
-            ranged.motion = rangedTree;
+            rangedTree.blendParameter = PistolStanceAnimation.StrafeParameter;
+            ranged.motion = BuildRangedHoldBlend(controller, rangedTree, pistolTree);
+            // Only one-handed guns set MirrorUpperBody (two-handed rifles never mirror), so this mirrors
+            // the legs for a left-hand pistol alone. See PistolStanceAnimation.StrafeParameter.
+            EnableMirrorParameter(ranged, "MirrorUpperBody");
             injured.motion = injuredTree;
             foreach (AnimatorState locomotionState in new[] { peaceful, melee, ranged, injured })
             {
@@ -489,6 +496,8 @@ namespace SS3D.Editor
                 AnimatorState aimIdle = WireRangedAimIdle(upper, holdDefault, holdItem, holdWeapon);
                 WireRangedFireOneshot(upper, aimIdle);
                 WireRangedReloadOneshot(upper, aimIdle);
+                WirePistolAimIdle(upper, aimIdle, holdDefault, holdItem, holdWeapon);
+                WireOffHandLayers(controller);
             }
 
             RemapStateMotion(
@@ -515,7 +524,7 @@ namespace SS3D.Editor
 
             return "OK: Rebuilt stance blends; get-up states; injured idle severity; limp Jump/Turn90; Injured Wave Emote; "
                    + "AttackSwing variants + MirrorUpperBody; stance-aware Flinch (GettingHit/gut/HitReaction); "
-                   + "Ranged Upper Body Aim Idle + FireRifle/Reload; Floating → Mix_Floating.";
+                   + "Ranged Upper Body Aim Idle + FireRifle/Reload; pistol hold + Off Hand layers; Floating → Mix_Floating.";
         }
 
         /// <summary>
@@ -1103,6 +1112,7 @@ namespace SS3D.Editor
         {
             "Peaceful Locomotion 2D", "Melee Locomotion 2D", "Ranged Locomotion 2D",
             "Injured Locomotion 2D", "Injured Idle Severity", "Injured Jump Blend",
+            PistolTreeName, RangedHoldTreeName,
         };
 
         private static void AddSwingExit(AnimatorState swing, AnimatorState destination, int armHold)

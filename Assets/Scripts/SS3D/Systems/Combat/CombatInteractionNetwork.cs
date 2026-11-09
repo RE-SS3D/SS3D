@@ -426,6 +426,12 @@ namespace SS3D.Systems.Combat
             RangedVisualStyle style, Vector3 endpoint, bool hasImpact, Vector3 impactNormal)
         {
             style = EnergyWeaponVfx.PreviewStyle ?? style;
+            HumanoidIkController ik = GetComponentInChildren<HumanoidIkController>();
+            if (ik != null)
+            {
+                ik.PlayShotKick();
+            }
+
             if (style != RangedVisualStyle.Ballistic)
             {
                 Transform socket = TryGetHeldRangedWeapon(out _, out RangedWeaponItemExtension energyWeapon)

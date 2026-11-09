@@ -334,6 +334,7 @@ MonoBehaviour:
     ExhaustionSpreadDegrees: 1.6
     RequiresBothHands: 0
     RequiredHand: 0
+    HoldStyle: 1
   _muzzle: {fileID: 7415623014796263347}
   _magazine: {fileID: 0}
   _magazineHandPosition: {x: -0.0262, y: 0.037, z: -0.0604}

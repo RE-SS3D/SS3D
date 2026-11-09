@@ -214,6 +214,8 @@ namespace SS3D.Systems.Entities.Humanoid
             }
 
             _bodyStateMachine.SetMirrorUpperBody(TwoHandedWeaponRules.ShouldMirrorUpperBody(_hands));
+            bool pistol = TwoHandedWeaponRules.IsPistolHold(_hands, out bool offHandBusy);
+            _bodyStateMachine.SetRangedHold(pistol, offHandBusy);
         }
 
         private void UpdateLimp()

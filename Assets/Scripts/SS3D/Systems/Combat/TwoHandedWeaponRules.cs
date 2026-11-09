@@ -257,6 +257,24 @@ namespace SS3D.Systems.Combat
             return active != null && active.Side == HandSide.Left;
         }
 
+        /// <summary>
+        /// True when the wielded gun uses <see cref="WeaponHoldStyle.Pistol"/>. <paramref name="offHandBusy"/>
+        /// is true when the other hand holds an item, so that arm keeps its own hold pose instead of the grip.
+        /// </summary>
+        public static bool IsPistolHold(Hands hands, out bool offHandBusy)
+        {
+            offHandBusy = false;
+            if (!TryGetWieldedRangedWeapon(hands, out Hand holdingHand, out RangedWeaponItemExtension weapon)
+                || weapon.Profile.HoldStyle != WeaponHoldStyle.Pistol)
+            {
+                return false;
+            }
+
+            Hand offHand = FindOtherHand(hands, holdingHand);
+            offHandBusy = offHand != null && !offHand.IsEmpty();
+            return true;
+        }
+
         private static Hand FindOtherHand(Hands hands, Hand hand)
         {
             if (hands?.PlayerHands == null || hand == null)

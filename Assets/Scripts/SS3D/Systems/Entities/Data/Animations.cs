@@ -32,6 +32,10 @@ namespace SS3D.Systems.Entities.Data
             /// <summary>Melee swing state speed: wind-up rate until the strike frame, then 1. Default 1 in the controller.</summary>
             public static readonly int AttackRate = Animator.StringToHash("AttackRate");
             public static readonly int MirrorUpperBody = Animator.StringToHash("MirrorUpperBody");
+            /// <summary>0 rifle hold, 1 pistol hold; blended by the orchestrator over <see cref="PistolStanceAnimation.BlendSeconds"/>.</summary>
+            public static readonly int PistolHold = Animator.StringToHash(PistolStanceAnimation.HoldParameter);
+            /// <summary>VelX for the Ranged Locomotion trees, negated while a left-hand gun mirrors that state.</summary>
+            public static readonly int RangedVelX = Animator.StringToHash(PistolStanceAnimation.StrafeParameter);
             public static readonly int Throw = Animator.StringToHash("Throw");
             public static readonly int Emote = Animator.StringToHash("Emote");
             public static readonly int Flinch = Animator.StringToHash("Flinch");

@@ -67,6 +67,8 @@ namespace SS3D.Systems.Entities.Humanoid
         private float _appliedAimYaw;
         private float _appliedAimPitch;
         private readonly ReloadMagazineHandoff _magazineHandoff = new ReloadMagazineHandoff();
+        private HumanoidBodyStateMachine _bodyStateMachine;
+        private float _shotKickStartTime = float.NegativeInfinity;
 
         private void Awake()
         {
@@ -75,6 +77,17 @@ namespace SS3D.Systems.Entities.Humanoid
             {
                 _rig = GetComponent<HumanoidRigReferences>();
             }
+
+            _bodyStateMachine = GetComponent<HumanoidBodyStateMachine>();
+        }
+
+        /// <summary>
+        /// A shot was fired (muzzle flash RPC, every peer). With a pistol hold the forearms kick up; rifles
+        /// have their own fire clip, so this does nothing for them.
+        /// </summary>
+        public void PlayShotKick()
+        {
+            _shotKickStartTime = Time.time;
         }
 
         /// <summary>Ranged stance with a body that can pose: enables post-animation rifle aim correction.</summary>
@@ -191,7 +204,46 @@ namespace SS3D.Systems.Entities.Humanoid
         private void LateUpdate()
         {
             ApplyRangedAimCorrection();
+            ApplyShotKick();
             UpdateMagazineHandoff();
+        }
+
+        /// <summary>
+        /// Pitches the gun forearm (and the gripping off-hand forearm) up around the body's right axis.
+        /// Both forearms point forward to the same grip, so the same world rotation keeps the hands together.
+        /// Reads the replicated snapshot, so observers kick the same arm as the owner.
+        /// </summary>
+        private void ApplyShotKick()
+        {
+            float kick = PistolStanceAnimation.EvaluateShotKick(Time.time - _shotKickStartTime);
+            if (kick <= 0f || _bodyStateMachine == null || _animator == null || !_animator.enabled || !_animator.isHuman)
+            {
+                return;
+            }
+
+            BodyAnimationSnapshot snapshot = _bodyStateMachine.Snapshot;
+            if (!snapshot.PistolHold || snapshot.CombatMode != HumanoidCombatMode.Ranged)
+            {
+                return;
+            }
+
+            bool gunInLeft = snapshot.MirrorUpperBody;
+            Vector3 right = Vector3.Cross(Vector3.up, Flatten(transform.forward));
+            Quaternion pitchUp = Quaternion.AngleAxis(-kick, right.normalized);
+            KickBone(gunInLeft ? HumanBodyBones.LeftLowerArm : HumanBodyBones.RightLowerArm, pitchUp);
+            if (!snapshot.OffHandBusy)
+            {
+                KickBone(gunInLeft ? HumanBodyBones.RightLowerArm : HumanBodyBones.LeftLowerArm, pitchUp);
+            }
+        }
+
+        private void KickBone(HumanBodyBones bone, Quaternion rotation)
+        {
+            Transform transformToKick = _animator.GetBoneTransform(bone);
+            if (transformToKick != null)
+            {
+                transformToKick.rotation = rotation * transformToKick.rotation;
+            }
         }
 
         /// <summary>

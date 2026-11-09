@@ -56,6 +56,17 @@ namespace SS3D.Systems.Entities.Humanoid
         private bool _hasAttackRateParameter;
         /// <summary>Time.time at which the active swing reaches its strike frame; AttackRate returns to 1 after.</summary>
         private float _swingStrikeTime = float.NegativeInfinity;
+        private bool _hasPistolHoldParameter;
+        private bool _hasRangedVelXParameter;
+        private float _pistolHold;
+        private float _pistolHoldTarget;
+        /// <summary>Off Hand layer indices, -1 on controllers without them (silicon, preview).</summary>
+        private int _offHandLeftLayer = -1;
+        private int _offHandRightLayer = -1;
+        private float _offHandLeftWeight;
+        private float _offHandRightWeight;
+        private float _offHandLeftTarget;
+        private float _offHandRightTarget;
 
         /// <summary>Horizontal / downward / backhand cycle for melee AttackSwing.</summary>
         private static int MeleeSwingVariantCount => MeleeSwingAnimation.Variants.Length;
@@ -78,6 +89,7 @@ namespace SS3D.Systems.Entities.Humanoid
         [SerializeField] private float _additiveWeightLerp = 8f;
 
         private static readonly int RifleAimIdleStateHash = Animator.StringToHash("Rifle Aim Idle");
+        private static readonly int PistolAimIdleStateHash = Animator.StringToHash(PistolStanceAnimation.AimIdleState);
         private static readonly int FireRifleStateHash = Animator.StringToHash("Fire Rifle");
         private static readonly int ReloadRifleStateHash = Animator.StringToHash("Reload Rifle");
         private static readonly int HoldDefaultStateHash = Animator.StringToHash("Hold Default");
@@ -103,6 +115,13 @@ namespace SS3D.Systems.Entities.Humanoid
             LogMissingAnimatorParametersOnce();
             _hasLocoRateParameter = HasFloatParameter(Animations.Humanoid.LocoRate);
             _hasAttackRateParameter = HasFloatParameter(Animations.Humanoid.AttackRate);
+            _hasPistolHoldParameter = HasFloatParameter(Animations.Humanoid.PistolHold);
+            _hasRangedVelXParameter = HasFloatParameter(Animations.Humanoid.RangedVelX);
+            if (_animator != null && _animator.runtimeAnimatorController != null)
+            {
+                _offHandLeftLayer = _animator.GetLayerIndex(PistolStanceAnimation.OffHandLeftLayer);
+                _offHandRightLayer = _animator.GetLayerIndex(PistolStanceAnimation.OffHandRightLayer);
+            }
             SubscribeToEvents();
 
             if (_bodyStateMachine != null)
@@ -259,6 +278,7 @@ namespace SS3D.Systems.Entities.Humanoid
             TickSwingTempo();
             TickUpperBodyWeight();
             TickAdditiveWeight();
+            TickPistolHold();
         }
 
         /// <summary>
@@ -360,6 +380,13 @@ namespace SS3D.Systems.Entities.Humanoid
             }
 
             byte variant = 0;
+            if (IsRifleOnlyOneshot(trigger))
+            {
+                // The pistol has no fire or reload clip: the IK kick and the timed refill stand in.
+                _ownerPredictedAttack = true;
+                return 0;
+            }
+
             if (trigger == AnimationTriggerId.AttackSwing)
             {
                 variant = (byte)(_nextAttackVariant % MeleeSwingVariantCount);
@@ -417,6 +444,38 @@ namespace SS3D.Systems.Entities.Humanoid
                 _upperBodyWeightTarget,
                 Time.deltaTime * _upperBodyWeightLerp);
             _animator.SetLayerWeight(1, _upperBodyWeight);
+        }
+
+        /// <summary>
+        /// The rifle fire and reload clips would yank a pistol into the rifle pose. Skip their triggers
+        /// rather than gate them in the animator: an unconsumed trigger stays latched and fires later.
+        /// </summary>
+        private bool IsRifleOnlyOneshot(AnimationTriggerId trigger)
+        {
+            return _lastSnapshot.PistolHold
+                && (trigger == AnimationTriggerId.FireRifle || trigger == AnimationTriggerId.Reload);
+        }
+
+        private void TickPistolHold()
+        {
+            float step = Time.deltaTime / PistolStanceAnimation.BlendSeconds;
+            if (_hasPistolHoldParameter)
+            {
+                _pistolHold = Mathf.MoveTowards(_pistolHold, _pistolHoldTarget, step);
+                _animator.SetFloat(Animations.Humanoid.PistolHold, _pistolHold);
+            }
+
+            if (_offHandLeftLayer >= 0)
+            {
+                _offHandLeftWeight = Mathf.MoveTowards(_offHandLeftWeight, _offHandLeftTarget, step);
+                _animator.SetLayerWeight(_offHandLeftLayer, _offHandLeftWeight);
+            }
+
+            if (_offHandRightLayer >= 0)
+            {
+                _offHandRightWeight = Mathf.MoveTowards(_offHandRightWeight, _offHandRightTarget, step);
+                _animator.SetLayerWeight(_offHandRightLayer, _offHandRightWeight);
+            }
         }
 
         private void TickAdditiveWeight()
@@ -501,6 +560,10 @@ namespace SS3D.Systems.Entities.Humanoid
             _currentTurn = Mathf.Lerp(_currentTurn, _targetTurn, Mathf.Clamp01(Time.deltaTime * _turnLerp));
 
             _animator.SetFloat(Animations.Humanoid.VelX, _currentVelX);
+            if (_hasRangedVelXParameter)
+            {
+                _animator.SetFloat(Animations.Humanoid.RangedVelX, _lastSnapshot.MirrorUpperBody ? -_currentVelX : _currentVelX);
+            }
             _animator.SetFloat(Animations.Humanoid.VelZ, _currentVelZ);
             _animator.SetFloat(Animations.Humanoid.Turn, _currentTurn);
             _animator.SetFloat(Animations.Humanoid.MovementSpeed, _currentSpeed);
@@ -538,6 +601,16 @@ namespace SS3D.Systems.Entities.Humanoid
             bool needsUpperBodyLayer = snapshot.State != BodyState.Ragdoll
                 && snapshot.CombatMode.IsCombat();
             _upperBodyWeightTarget = needsUpperBodyLayer ? 1f : 0f;
+
+            // Pistol with a full off-hand: that arm's Off Hand layer overrides the two-handed grip.
+            // The gun is in the left hand when the upper body mirrors, so the off-hand is then the right.
+            bool pistolStance = needsUpperBodyLayer && snapshot.PistolHold
+                && snapshot.CombatMode == HumanoidCombatMode.Ranged;
+            bool offHandPose = pistolStance && snapshot.OffHandBusy
+                && snapshot.State != BodyState.Seated && snapshot.State != BodyState.Crawling;
+            _pistolHoldTarget = snapshot.PistolHold ? 1f : 0f;
+            _offHandLeftTarget = offHandPose && !snapshot.MirrorUpperBody ? 1f : 0f;
+            _offHandRightTarget = offHandPose && snapshot.MirrorUpperBody ? 1f : 0f;
         }
 
         private void ApplyCombat(BodyAnimationSnapshot snapshot)
@@ -555,7 +628,7 @@ namespace SS3D.Systems.Entities.Humanoid
             if (snapshot.CombatMode == HumanoidCombatMode.Ranged
                 && _lastAppliedCombatMode != HumanoidCombatMode.Ranged)
             {
-                EnsureUpperBodyState(RifleAimIdleStateHash, 0.1f);
+                EnsureUpperBodyState(snapshot.PistolHold ? PistolAimIdleStateHash : RifleAimIdleStateHash, 0.1f);
             }
             else if (snapshot.CombatMode == HumanoidCombatMode.Melee
                      && _lastAppliedCombatMode == HumanoidCombatMode.Ranged)
@@ -653,6 +726,12 @@ namespace SS3D.Systems.Entities.Humanoid
             }
 
             _lastConsumedTrigger = trigger;
+            if (IsRifleOnlyOneshot(trigger))
+            {
+                OnTriggerFired?.Invoke(trigger);
+                return;
+            }
+
             if (trigger == AnimationTriggerId.AttackSwing)
             {
                 _animator.SetInteger(Animations.Humanoid.AttackVariant, attackVariant & 0x3);

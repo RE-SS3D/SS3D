@@ -4,6 +4,13 @@ using SS3D.Systems.Inventory.Containers;
 
 namespace SS3D.Systems.Combat
 {
+    /// <summary>Which animation set a wielded gun uses. Serialized on prefabs: append, never reorder.</summary>
+    public enum WeaponHoldStyle : byte
+    {
+        Rifle = 0,
+        Pistol = 1,
+    }
+
     /// <summary>
     /// Hitscan firearm profile. Accuracy cone is weapon-intrinsic and readable via reticle bloom.
     /// Mag refill is timed reload (no loose ammo items this pass).
@@ -71,6 +78,12 @@ namespace SS3D.Systems.Combat
         /// <summary>Primary grip hand for two-hand firearms (M4: Right).</summary>
         public HandSide RequiredHand;
 
+        /// <summary>
+        /// Body pose while wielded. Presentation only: <see cref="RequiresBothHands"/> stays the gameplay
+        /// rule, and the pose is never inferred from it.
+        /// </summary>
+        public WeaponHoldStyle HoldStyle;
+
         public MeleeDamagePacket ToDamagePacket() => new(BruteDamage, BurnDamage, CanSever);
 
         public float ResolveStructuralForce()
@@ -128,6 +141,7 @@ namespace SS3D.Systems.Combat
             profile.RecoilPerShot = 0.3f;
             profile.StaminaCost = 2f;
             profile.RequiresBothHands = style != RangedVisualStyle.Taser;
+            profile.HoldStyle = style == RangedVisualStyle.Taser ? WeaponHoldStyle.Pistol : WeaponHoldStyle.Rifle;
             return profile;
         }
     }
