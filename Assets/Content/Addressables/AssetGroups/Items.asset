@@ -570,6 +570,11 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 8f6164375bf37b8eb808a806323104ea
+    m_Address: Assets/Content/WorldObjects/Structures/Walls/SteelGirderPlated.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 92d3eb280886ba74cb1e19f4e01669a7
     m_Address: Assets/Content/WorldObjects/Structures/Wires/Cables.prefab
     m_ReadOnly: 0

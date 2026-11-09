@@ -242,6 +242,7 @@ GameObject:
   - component: {fileID: 1034747657592807112}
   - component: {fileID: 4129408090615520002}
   - component: {fileID: 1303543065789181335}
+  - component: {fileID: 7337931440867688036}
   m_Layer: 10
   m_Name: GlassSheet
   m_TagString: Untagged
@@ -394,7 +395,8 @@ MonoBehaviour:
   _name: Steel sheet
   _weight: 1
   _sizeClass: 2
-  _maxStackSize: 1
+  _maxStackSize: 50
+  _initialStackCount: 20
   _stackCount: 1
   _startingTraits: []
   _rigidbody: {fileID: 3882670034855778047}
@@ -439,6 +441,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: SS3D.Systems::SS3D.Systems.Audio.NoisyCollision
   _material: 5
+--- !u!114 &7337931440867688036
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7125681683583715523}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ded81d8b6058635f0b8f04b6295b4143, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: SS3D.Systems::SS3D.Systems.Construction.ConstructionMaterial
+  _kind: 1
 --- !u!1 &7393894785072713980
 GameObject:
   m_ObjectHideFlags: 0

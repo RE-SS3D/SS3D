@@ -20,6 +20,7 @@ GameObject:
   - component: {fileID: -2383566575337408285}
   - component: {fileID: 9182736450123456801}
   - component: {fileID: 4696141545573681775}
+  - component: {fileID: 4263627822862672430}
   m_Layer: 10
   m_Name: Crowbar
   m_TagString: Untagged
@@ -248,6 +249,7 @@ MonoBehaviour:
   _weight: 1
   _sizeClass: 2
   _maxStackSize: 1
+  _initialStackCount: 1
   _stackCount: 1
   _startingTraits: []
   _rigidbody: {fileID: 8316413619239954654}
@@ -312,6 +314,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: SS3D.Systems::SS3D.Systems.Audio.NoisyCollision
   _material: 0
+--- !u!114 &4263627822862672430
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1888703706215615217}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 16f5a7ca8102be3eea726b2f1eb28b5e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: SS3D.Systems::SS3D.Systems.Construction.ConstructionTool
+  _kind: 1
 --- !u!1 &2468349444349537438
 GameObject:
   m_ObjectHideFlags: 0

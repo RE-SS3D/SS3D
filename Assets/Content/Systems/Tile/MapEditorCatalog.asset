@@ -1114,6 +1114,14 @@ MonoBehaviour:
     VariantLabel: 
     SearchTags:
     - walls & windows
+  - AssetName: SteelGirderPlated
+    Mode: 0
+    Subcategory: 101
+    Heading: 
+    Family: 
+    VariantLabel: 
+    SearchTags:
+    - walls & windows
   - AssetName: SteelGirderUnbolted
     Mode: 2
     Subcategory: 301

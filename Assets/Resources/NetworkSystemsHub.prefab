@@ -29,7 +29,6 @@ GameObject:
   - component: {fileID: 7940338062880343993}
   - component: {fileID: 9100501647995449836}
   - component: {fileID: 2704830289899808022}
-  - component: {fileID: 8831365089977646638}
   - component: {fileID: 6009669659697083544}
   - component: {fileID: 242730867129844347}
   - component: {fileID: 7841343881523922060}
@@ -41,6 +40,8 @@ GameObject:
   - component: {fileID: 1773152946861829430}
   - component: {fileID: 3796406931252978182}
   - component: {fileID: 2629140244360501243}
+  - component: {fileID: 6100110011001100123}
+  - component: {fileID: 3002766317706055259}
   m_Layer: 0
   m_Name: NetworkSystemsHub
   m_TagString: Untagged
@@ -78,7 +79,7 @@ MonoBehaviour:
   NetworkObserver: {fileID: 0}
   <PrefabId>k__BackingField: 0
   <SpawnableCollectionId>k__BackingField: 0
-  _scenePathHash: 2499635508
+  _scenePathHash: 3274141384
   <SceneId>k__BackingField: 0
   <AssetPathHash>k__BackingField: 3472240870793085569
   <IsNested>k__BackingField: 0
@@ -105,6 +106,7 @@ MonoBehaviour:
   - {fileID: 8445038736280552500}
   - {fileID: 5355501408288632448}
   - {fileID: 1773152946861829430}
+  - {fileID: 3002766317706055259}
   <ParentNetworkObject>k__BackingField: {fileID: 0}
   <ChildNetworkObjects>k__BackingField: []
   SerializedTransformProperties:
@@ -298,6 +300,21 @@ MonoBehaviour:
   _roundState: 0
   _currentTimerSeconds: 0
   _warmupSeconds: 5
+  _autoStartEnabled: 0
+  _autoStartHeld: 0
+  _autoStartSeconds: 0
+  _endSecondsLeft: 0
+  _endHeld: 0
+  _roundId: 0
+  _serverName: SS3D Server
+  _motd: "Welcome aboard. This is a community-maintained pre-alpha build \u2014 expect
+    things to break, and report what you find."
+  _publicMode: Secret
+  _serverBuild: 
+  _serverStartedUnix: 0
+  _allowLateJoin: 1
+  _stationLoadState: 0
+  _stationName: 
 --- !u!114 &1960809383459953346
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -382,6 +399,7 @@ MonoBehaviour:
   _addedNetworkObject: {fileID: 100004}
   _networkObjectCache: {fileID: 100004}
   _rolesAvailable: {fileID: 11400000, guid: 1ac202e4643a5ee41b99ccfe7dcc0092, type: 2}
+  _fallbackRole: Assistant
 --- !u!114 &9100501647995449836
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -442,19 +460,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: SS3D.Systems::SS3D.Systems.Comms.LocalSpeechBubbleController
   _bubbleStyleSheet: {fileID: 7433441132597879392, guid: 748a61f2204743ec8607f66ccb8b20d2, type: 3}
   _config: {fileID: 11400000, guid: 9c42426bc8ce465799af4da38d195944, type: 2}
---- !u!114 &6100110011001100123
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 100001}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fad600f79f17468582d3c405ebc8ad03, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: SS3D.Systems::SS3D.Systems.Comms.CommsFeedController
-  _styleSheet: {fileID: 7433441132597879392, guid: 2534ecf24e7b40a89a13455358fd68eb, type: 3}
 --- !u!114 &7841343881523922060
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -589,3 +594,32 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: SS3D.UI.MachineInterface::SS3D.UI.MachineInterface.MachineInterfaceHost
   _document: {fileID: 4690266239727906291}
+--- !u!114 &6100110011001100123
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 100001}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fad600f79f17468582d3c405ebc8ad03, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: SS3D.Systems::SS3D.Systems.Comms.CommsFeedController
+  _styleSheet: {fileID: 7433441132597879392, guid: 2534ecf24e7b40a89a13455358fd68eb, type: 3}
+  _radioIcon: {fileID: 0}
+--- !u!114 &3002766317706055259
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 100001}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 476a1d0d3e7ff5c28aa0dbb2a5cdd1da, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: SS3D.Systems::SS3D.Systems.Construction.ConstructionPlacementSubSystem
+  _componentIndexCache: 20
+  _addedNetworkObject: {fileID: 100004}
+  _networkObjectCache: {fileID: 100004}

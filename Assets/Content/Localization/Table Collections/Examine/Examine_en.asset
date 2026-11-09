@@ -1614,6 +1614,41 @@ MonoBehaviour:
     m_Localized: It's smashed and dead. Sparks spit from the broken casing.
     m_Metadata:
       m_Items: []
+  - m_Id: 297583453850017792
+    m_Localized: A crowbar would pry the tile up.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 297583453879377920
+    m_Localized: Bare hull plating. Floor tiles would cover it.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 297583453879377921
+    m_Localized: A welder would repair it.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 297583453879377922
+    m_Localized: A bare steel girder. Steel sheets would plate it, glass sheets would
+      glaze it; a welder would cut it apart.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 297583453879377923
+    m_Localized: 'Plated girder. Seams unwelded: a welder would seal it, a crowbar
+      would pull the plate off.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 297583453879377924
+    m_Localized: A welder could cut its seams.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 297583453879377925
+    m_Localized: A crowbar could lift the pane out.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 297583453879377926
+    m_Localized: Reinforced. A welder can patch it, but only explosives will take
+      it apart.
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []
