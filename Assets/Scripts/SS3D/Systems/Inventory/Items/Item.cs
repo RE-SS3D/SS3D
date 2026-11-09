@@ -243,6 +243,43 @@ namespace SS3D.Systems.Inventory.Items
             set => _sprite = value;
         }
         
+        /// <summary>
+        /// The item's own scale, from its prefab. Hands sit under the character's armature, which the
+        /// height morph scales by 0.88–1.12. Attaching keeps the item's local scale (so held and worn
+        /// gear scales with the body) and detaching keeps its world scale, so without a reset every
+        /// pickup and drop multiplied the item by the holder's height.
+        /// </summary>
+        private Vector3 _restScale = Vector3.one;
+
+        protected override void OnAwake()
+        {
+            base.OnAwake();
+            _restScale = transform.localScale;
+        }
+
+        /// <summary>
+        /// Sets the local scale so the item's world scale is its own again, whatever its parent's scale.
+        /// Containers call it when an item leaves them.
+        /// </summary>
+        public void ApplyRestScale()
+        {
+            Transform parent = transform.parent;
+            if (parent == null)
+            {
+                transform.localScale = _restScale;
+                return;
+            }
+
+            Vector3 parentScale = parent.lossyScale;
+            transform.localScale = new Vector3(
+                SafeDivide(_restScale.x, parentScale.x),
+                SafeDivide(_restScale.y, parentScale.y),
+                SafeDivide(_restScale.z, parentScale.z));
+        }
+
+        private static float SafeDivide(float value, float divisor) =>
+            Mathf.Approximately(divisor, 0f) ? value : value / divisor;
+
         protected override void OnStart()
         {
             base.OnStart();

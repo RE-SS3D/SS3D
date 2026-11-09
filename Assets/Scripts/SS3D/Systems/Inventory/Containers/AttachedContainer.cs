@@ -386,6 +386,7 @@ namespace SS3D.Systems.Inventory.Containers
             ProcessItemDetached(item);
             if (!movedOn)
             {
+                item.ApplyRestScale();
                 item.Unfreeze();
             }
         }
