@@ -48,6 +48,42 @@ namespace SS3D.Systems.Construction
                 Input = ConstructionInput.Welder, Target = ConstructionTargetKind.DamagedStructure, Layer = TileLayer.Turf,
                 Seconds = 4f, Outcome = ConstructionOutcome.Repair,
             },
+
+            // Girder ladder and windows (S4). Girder to sealed is about 15 s across three steps (§10).
+            new ConstructionRule
+            {
+                Step = ConstructionStep.PlaceGirder, GenericName = "ConstructionPlaceGirder", Verb = "Build girder",
+                Input = ConstructionInput.SteelSheet, Target = ConstructionTargetKind.ClearFloor, Layer = TileLayer.Turf,
+                Cost = 2, Seconds = 5f, Outcome = ConstructionOutcome.Place, ResultName = ConstructionNames.Girder,
+                IsCellAction = true,
+            },
+            new ConstructionRule
+            {
+                Step = ConstructionStep.PlateGirder, GenericName = "ConstructionPlateGirder", Verb = "Plate girder",
+                Input = ConstructionInput.SteelSheet, Target = ConstructionTargetKind.NamedTile, TargetName = ConstructionNames.Girder,
+                Layer = TileLayer.Turf, Cost = 2, Seconds = 5f, Outcome = ConstructionOutcome.Replace,
+                ResultName = ConstructionNames.GirderPlated,
+            },
+            new ConstructionRule
+            {
+                Step = ConstructionStep.WeldPlated, GenericName = "ConstructionWeldSeams", Verb = "Weld seams",
+                Input = ConstructionInput.Welder, Target = ConstructionTargetKind.NamedTile, TargetName = ConstructionNames.GirderPlated,
+                Layer = TileLayer.Turf, Seconds = 5f, Outcome = ConstructionOutcome.Replace, ResultName = ConstructionNames.Wall,
+            },
+            new ConstructionRule
+            {
+                Step = ConstructionStep.GlazeGirder, GenericName = "ConstructionGlazeGirder", Verb = "Fit pane",
+                Input = ConstructionInput.GlassSheet, Target = ConstructionTargetKind.NamedTile, TargetName = ConstructionNames.Girder,
+                Layer = TileLayer.Turf, Cost = 2, Seconds = 7f, Outcome = ConstructionOutcome.Replace,
+                ResultName = ConstructionNames.Window,
+            },
+            new ConstructionRule
+            {
+                Step = ConstructionStep.ClearWreckage, GenericName = "ConstructionClearWreckage", Verb = "Clear wreckage",
+                Input = ConstructionInput.Crowbar, Target = ConstructionTargetKind.Wreckage, Layer = TileLayer.Turf,
+                Seconds = 3f, Outcome = ConstructionOutcome.ClearWreckage,
+                ReturnItemName = ConstructionNames.SteelSheetItem, ReturnCount = 2, IsCellAction = true,
+            },
         };
 
         public static ConstructionRule Get(ConstructionStep step)

@@ -1,3 +1,4 @@
+using SS3D.Core;
 using SS3D.Interactions;
 using SS3D.Interactions.Extensions;
 using SS3D.Interactions.Interfaces;
@@ -19,6 +20,7 @@ namespace SS3D.Systems.Construction
     {
         private readonly ConstructionRule _rule;
         private readonly PlacedTileObject _target;
+        private int _cueId;
 
         public ConstructionStepInteraction(ConstructionRule rule, PlacedTileObject target)
         {
@@ -56,8 +58,24 @@ namespace SS3D.Systems.Construction
             return DelayedCancelReason.Interrupted;
         }
 
+        public override bool Start(InteractionEvent interactionEvent, InteractionReference reference)
+        {
+            bool started = base.Start(interactionEvent, reference);
+            if (started && _target != null && SubSystems.TryGet(out ConstructionPlacementSubSystem cues))
+            {
+                Vector3 point = interactionEvent.HasPoint ? interactionEvent.Point : _target.transform.position + Vector3.up;
+                Vector3 worker = interactionEvent.Source.GetRootSource() is IGameObjectProvider root && root.GameObject != null
+                    ? root.GameObject.transform.position
+                    : point;
+                _cueId = cues.ServerBeginWorkCue(point, worker, _rule.Input, _rule.Seconds);
+            }
+
+            return started;
+        }
+
         protected override void StartDelayed(InteractionEvent interactionEvent, InteractionReference reference)
         {
+            EndCue();
             if (!HoldsInput(interactionEvent, out Item item))
             {
                 return;
@@ -67,7 +85,17 @@ namespace SS3D.Systems.Construction
             ConstructionApply.TryApplyObject(_rule, _target, item, hand);
         }
 
-        public override void Cancel(InteractionEvent interactionEvent, InteractionReference reference) { }
+        public override void Cancel(InteractionEvent interactionEvent, InteractionReference reference) => EndCue();
+
+        private void EndCue()
+        {
+            if (_cueId > 0 && SubSystems.TryGet(out ConstructionPlacementSubSystem cues))
+            {
+                cues.ServerEndWorkCue(_cueId);
+            }
+
+            _cueId = 0;
+        }
 
         private bool HoldsInput(InteractionEvent interactionEvent, out Item item)
         {

@@ -25,13 +25,26 @@ namespace SS3D.Systems.Construction
             {
                 case ConstructionOutcome.Place:
                 {
-                    if (result == null)
+                    if (result == null || tiles.CurrentMap == null)
                     {
                         return false;
                     }
 
-                    PlaceResult placed = tiles.Construction.TryPlaceTile(result, grid, Direction.North, replaceExisting: false);
-                    if (!placed.Success)
+                    bool replace = ConstructionCellRules.ReplacesExisting(tiles.CurrentMap, rule, grid);
+                    using (tiles.KeepWreckage())
+                    {
+                        if (!tiles.Construction.TryPlaceTile(result, grid, Direction.North, replace).Success)
+                        {
+                            return false;
+                        }
+                    }
+
+                    break;
+                }
+                case ConstructionOutcome.ClearWreckage:
+                {
+                    if (tiles.CurrentMap == null
+                        || !tiles.RemoveWreckage(ConstructionCellRules.CoordOf(tiles.CurrentMap, grid), TileLayer.Turf))
                     {
                         return false;
                     }
@@ -43,6 +56,7 @@ namespace SS3D.Systems.Construction
             }
 
             Spend(rule, item);
+            GiveReturns(rule, hand, grid);
             return true;
         }
 
@@ -67,6 +81,24 @@ namespace SS3D.Systems.Construction
                     if (!tiles.Construction.TryClearTile(world, rule.Layer, target.Direction).Success)
                     {
                         return false;
+                    }
+
+                    break;
+                }
+                case ConstructionOutcome.Replace:
+                {
+                    // A stage step swaps the tile (D1): identity syncs, saves and reaches late joiners.
+                    if (tiles.GetAsset(rule.ResultName) is not TileObjectSo next)
+                    {
+                        return false;
+                    }
+
+                    using (tiles.KeepWreckage())
+                    {
+                        if (!tiles.Construction.TryPlaceTile(next, world, target.Direction, replaceExisting: true).Success)
+                        {
+                            return false;
+                        }
                     }
 
                     break;

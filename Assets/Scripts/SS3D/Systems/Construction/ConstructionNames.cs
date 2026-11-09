@@ -9,6 +9,10 @@ namespace SS3D.Systems.Construction
         // Tile objects
         public const string Plenum = "Plenum";
         public const string FloorTurf = "TileGrey";
+        public const string Girder = "SteelGirder";
+        public const string GirderPlated = "SteelGirderPlated";
+        public const string Wall = "SteelWall";
+        public const string Window = "SteelWindow";
 
         // Items
         public const string SteelSheetItem = "SteelSheet";

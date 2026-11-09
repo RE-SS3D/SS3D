@@ -28,6 +28,20 @@ namespace SS3D.Systems.Construction
                 return true;
             }
 
+            if (placed.NameString == ConstructionNames.Girder)
+            {
+                key = ExamineConstructionKeys.Girder;
+                fallback = ExamineConstructionKeys.GirderFallback;
+                return true;
+            }
+
+            if (placed.NameString == ConstructionNames.GirderPlated)
+            {
+                key = ExamineConstructionKeys.GirderPlated;
+                fallback = ExamineConstructionKeys.GirderPlatedFallback;
+                return true;
+            }
+
             if (placed.Layer == TileLayer.Turf && placed.GenericType == TileObjectGenericType.Floor)
             {
                 key = ExamineConstructionKeys.FloorPry;

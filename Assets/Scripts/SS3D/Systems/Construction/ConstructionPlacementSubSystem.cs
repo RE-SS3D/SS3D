@@ -31,7 +31,7 @@ namespace SS3D.Systems.Construction
     /// (weld, plate, pry) are ordinary interactions, see <see cref="ConstructionInteractions"/>.
     /// Lives on the NetworkSystemsHub (added by <c>ConstructionHubRecipe</c>).
     /// </summary>
-    public sealed class ConstructionPlacementSubSystem : NetworkSubSystem
+    public sealed partial class ConstructionPlacementSubSystem : NetworkSubSystem
     {
         private const float CheckInterval = 0.2f;
         private const float GhostLift = 0.02f;
@@ -51,6 +51,7 @@ namespace SS3D.Systems.Construction
             public Vector3 StartBody;
             public IDamageNotifier Damage;
             public bool Damaged;
+            public int CueId;
 
             public void HandleDamaged() => Damaged = true;
         }
@@ -115,6 +116,7 @@ namespace SS3D.Systems.Construction
             if (IsClient)
             {
                 UpdateGhost();
+                UpdateWorkCues();
             }
         }
 
@@ -237,7 +239,7 @@ namespace SS3D.Systems.Construction
 
             foreach (ConstructionRule candidate in _cellRules)
             {
-                if (!ConstructionCellRules.Matches(map, candidate, grid))
+                if (!ConstructionCellRules.Matches(map, candidate, grid, tiles.HasWreckage))
                 {
                     continue;
                 }
@@ -245,7 +247,7 @@ namespace SS3D.Systems.Construction
                 rule = candidate;
                 result = ResolveResult(tiles, candidate);
                 // Area ids are server-only; the server repeats the station check.
-                message = ConstructionCellRules.Validate(map, candidate, grid, result, checkStation: IsServer)
+                message = ConstructionCellRules.Validate(map, candidate, grid, result, checkStation: IsServer, tiles.HasWreckage)
                     ?? CheckHolder(candidate, hands, item, grid);
                 valid = message == null;
                 message = FormatGhostText(candidate, item, message);
@@ -490,6 +492,7 @@ namespace SS3D.Systems.Construction
             }
 
             _pending[conn] = action;
+            action.CueId = ServerBeginWorkCue(grid + Vector3.up * 0.1f, hands.transform.position, rule.Input, rule.Seconds);
             TargetCellActionStarted(conn, action.Id);
         }
 
@@ -584,6 +587,7 @@ namespace SS3D.Systems.Construction
         private void EndAction(PendingCellAction action, bool completed, DelayedCancelReason reason)
         {
             ReleaseDamage(action);
+            ServerEndWorkCue(action.CueId);
             _pending.Remove(action.Connection);
             if (action.Connection != null && action.Connection.IsActive)
             {
@@ -615,7 +619,7 @@ namespace SS3D.Systems.Construction
             }
 
             result = ResolveResult(tiles, rule);
-            return ConstructionCellRules.Validate(tiles.CurrentMap, rule, grid, result, checkStation: true)
+            return ConstructionCellRules.Validate(tiles.CurrentMap, rule, grid, result, checkStation: true, tiles.HasWreckage)
                 ?? CheckHolder(rule, hands, item, grid);
         }
 

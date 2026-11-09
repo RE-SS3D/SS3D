@@ -6,7 +6,8 @@ namespace SS3D.Systems.Construction.Editor
 {
     /// <summary>
     /// Domain recipe aggregator for construction content (tier B — see 2026-07_editor-tooling-tiers.md).
-    /// Lives in the Systems assembly (no editor asmdef) so EditMode tests can read the recipe tables.
+    /// Lives in <c>ConstructionEditorAssembly</c> because the stage recipe needs the Addressables editor
+    /// API; the item, hub and purge recipes stay in the Systems assembly so EditMode tests can read their tables.
     /// </summary>
     public static class ConstructionContentPrefabRecipes
     {
@@ -32,9 +33,11 @@ namespace SS3D.Systems.Construction.Editor
         {
             int items = ConstructionItemRecipe.SetupAll();
             bool hub = ConstructionHubRecipe.SetupAll();
+            int stages = GirderStageRecipe.SetupAll();
             bool purged = LoadingBarPurge.Run();
             return $"Construction items: updated {items} prefab(s).\n"
                 + $"NetworkSystemsHub: {(hub ? "added ConstructionPlacementSubSystem" : "already set up")}.\n"
+                + $"Girder stages: {stages} change(s).\n"
                 + $"LoadingBar purge: {(purged ? "cleaned up" : "nothing left")}.";
         }
     }

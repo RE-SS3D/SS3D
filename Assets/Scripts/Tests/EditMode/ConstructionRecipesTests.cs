@@ -45,7 +45,8 @@ namespace EditorTests
         public void PlacedResults_AreTileObjectsOnTheRuleLayer()
         {
             Dictionary<string, GenericObjectSo> catalog = LoadCatalog();
-            foreach (ConstructionRule rule in ConstructionRecipes.Rules.Where(r => r.Outcome == ConstructionOutcome.Place))
+            foreach (ConstructionRule rule in ConstructionRecipes.Rules.Where(r =>
+                         r.Outcome == ConstructionOutcome.Place || r.Outcome == ConstructionOutcome.Replace))
             {
                 Assert.IsTrue(catalog.TryGetValue(rule.ResultName, out GenericObjectSo asset), rule.GenericName);
                 TileObjectSo tile = asset as TileObjectSo;

@@ -33,6 +33,9 @@ namespace SS3D.Systems.Tile
         [Tooltip("Max structural HP. 0 = use StructuralIntegrityRules defaults.")]
         public float structuralMaxIntegrity;
 
+        [Tooltip("False for structures air passes through: a girder or an unwelded plated girder (construction.md §6). Read by TileOccupancyEvaluator.")]
+        public bool airtight = true;
+
         [Tooltip("Sound and debris material when this differs from what genericType and specificType imply, e.g. a window typed as a steel wall.")]
         public StructuralMaterialOverride impactMaterial;
 

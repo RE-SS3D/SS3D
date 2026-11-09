@@ -81,14 +81,14 @@ Checked by three read-only explorations against code; the [tile](systems/tile.md
 
 ### S4: girder ladder and windows
 
-- [ ] `TileObjectSo.airtight`, evaluator reads it; girder and plated set false
-- [ ] Editor recipe: strip `SteelGirder` to `GirderShape`; build `SteelGirderPlated` (`GirderShape` + `SteelWallSheets`, both adjacency-driven); new `SteelGirderPlated.asset`; Map Editor catalog entry
-- [ ] Cell action: steel sheets on a clear floor turf → girder (blocks movement; air and light pass)
-- [ ] Interactions: steel sheets on girder → plated; welder on plated → `SteelWall`; glass sheets on girder → `SteelWindow` (longer timer)
-- [ ] D9 wreckage: `BuildFailReason.WreckageInTheWay`, observer change, public `RemoveWreckage`, crowbar clear cell action with salvage
+- [x] `TileObjectSo.airtight`, evaluator reads it; girder and plated set false
+- [x] Editor recipe: strip `SteelGirder` to `GirderShape`; build `SteelGirderPlated` (`GirderShape` + `SteelWallSheets`, both adjacency-driven); new `SteelGirderPlated.asset`; Map Editor catalog entry
+- [x] Cell action: steel sheets on a clear floor turf → girder (blocks movement; air and light pass)
+- [x] Interactions: steel sheets on girder → plated; welder on plated → `SteelWall`; glass sheets on girder → `SteelWindow` (longer timer)
+- [x] D9 wreckage: `BuildFailReason.WreckageInTheWay`, observer change, public `RemoveWreckage`, crowbar clear cell action with salvage
 - [ ] Owner check in editor: does plated read as unfinished next to sealed? If not, commission seam art (design §6)
-- [ ] Welding sparks/hiss and crowbar scrape cues
-- [ ] EditMode: ladder transitions, occupancy per stage, wreckage blocks girder
+- [x] Welding sparks/hiss and crowbar scrape cues
+- [x] EditMode: ladder transitions, occupancy per stage, wreckage blocks girder
 - Validation: `compile,editmode` + `visual` (stage meshes)
 
 ### S5: deconstruction and reinforced

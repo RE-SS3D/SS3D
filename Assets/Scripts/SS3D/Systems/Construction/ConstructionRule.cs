@@ -10,6 +10,11 @@ namespace SS3D.Systems.Construction
         PryFloorTile = 2,
         RepairPlating = 3,
         RepairStructure = 4,
+        PlaceGirder = 5,
+        PlateGirder = 6,
+        WeldPlated = 7,
+        GlazeGirder = 8,
+        ClearWreckage = 9,
     }
 
     /// <summary>What a rule acts on. Name-matched kinds also read <see cref="ConstructionRule.TargetName"/>.</summary>
@@ -25,6 +30,12 @@ namespace SS3D.Systems.Construction
         DamagedPlenum = 3,
         /// <summary>A Damaged or Cracked wall, window or reinforced wall.</summary>
         DamagedStructure = 4,
+        /// <summary>Plating with nothing on Turf or a walkable floor, and no furniture (construction.md §6).</summary>
+        ClearFloor = 5,
+        /// <summary>A cell with steel wreckage on Turf.</summary>
+        Wreckage = 6,
+        /// <summary>The tile named <see cref="ConstructionRule.TargetName"/>.</summary>
+        NamedTile = 7,
     }
 
     public enum ConstructionOutcome : byte
@@ -35,6 +46,10 @@ namespace SS3D.Systems.Construction
         Remove = 1,
         /// <summary>Set the target's integrity back to Intact.</summary>
         Repair = 2,
+        /// <summary>Replace the target with <see cref="ConstructionRule.ResultName"/> (a stage step).</summary>
+        Replace = 3,
+        /// <summary>Remove the cell's wreckage.</summary>
+        ClearWreckage = 4,
     }
 
     /// <summary>
