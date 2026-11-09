@@ -13,13 +13,13 @@ Implements [explosives-destruction.md §6–§7](../../design/explosives-destruc
 |---|---|---|
 | C4 | 15 seconds | Place and arm from its menu, or hold and use on a wall/door to attach and arm. Radial yield 180, falloff 45. |
 | X4 | 15 seconds | Hold and use on a wall/door to attach and arm. Radial yield 240/falloff 60, plus yield 180/falloff 40 in a 90-degree cone through the far side of its target. |
-| Syndicate minibomb | 5 seconds | Arm in hand using Use, or choose Throw minibomb, then a landing point. Throwing pulls the pin if needed; an already running fuse is preserved. Small radial yield 90/falloff 45. |
+| Syndicate minibomb | 5 seconds | Arm in hand using Use, or throw it with throw mode (R, [combat](combat.md)). It arms as it leaves the hand; an already running fuse is preserved. Small radial yield 90/falloff 45. |
 
 Floor and plenum damage is applied after all blast passes; see [floor and hull damage](structural-destruction-floors.md).
 
 The values above are provisional content tuning. X4's additional force uses the same BFS, structural apply path and crew damage as radial blasts; it still stops at surviving structure. Both passes produce one audiovisual detonation. The direction is captured from the attached surface, pointing into the target. Picking up an attached charge dislodges it: its blast then follows the item, without the attached X4 cone.
 
-C4/X4 have physical LED countdowns and a three-second wirecutter defuse. Movement, range loss or losing the tool cancels; expiry wins a same-frame defuse. Minibombs cannot be defused. Throws use server Rigidbody physics, cap the target distance at 10 m and start clear of nearby walls. No new throw key or permanent HUD surface is added.
+C4/X4 have physical LED countdowns and a three-second wirecutter defuse. Movement, range loss or losing the tool cancels; expiry wins a same-frame defuse. Minibombs cannot be defused. Throwing is the general held-item throw ([combat](combat.md)); explosives use the grenade lob, and a minibomb's 0.5 kg carries the full 10 m.
 
 `Effects/minibombcountdown.ogg` is imported as `ExplosiveCountdown.ogg` for the five-second minibomb. C4/X4 use `ChargeCountdown.ogg`, a fifteen-second version with ten steady opening cues followed by the original accelerating five-second finale. One non-looping recording starts at arming; a client seeks from the replicated deadline when it first observes an armed charge. Playback follows the item through the SFX pool with normal occlusion. Defuse/despawn stops and detaches that voice. C4/X4 reuse registered SS14 `explosion1.ogg`; minibombs use `explosion_small1.ogg`. Distant listeners retain the existing blast rumble.
 
@@ -29,7 +29,7 @@ Remote triggers, a proximity alert, other grenades and separate-client acceptanc
 
 ## Start here
 
-- `Assets/Scripts/SS3D/Systems/StructuralDamage/TimedCharge.cs` — profiles, server fuse, arm/attach/throw/defuse interactions and local countdown voice
+- `Assets/Scripts/SS3D/Systems/StructuralDamage/TimedCharge.cs` — profiles, server fuse, arm/attach/defuse interactions, arm-on-throw (`IThrowReleaseHandler`) and local countdown voice
 - `Assets/Scripts/SS3D/Systems/StructuralDamage/ChargeCountdownDisplay.cs` — physical LED segments
 - `Assets/Scripts/SS3D/Systems/StructuralDamage/Editor/ExplosivePrefabSetup.cs` — repeatable FBX mesh bake, prefabs, item/sound database registration and examine text
 - `Assets/Scripts/SS3D/Systems/StructuralDamage/StructuralDamageSubSystem.cs` — radial blast and `ResolveShapedCharge`
@@ -60,6 +60,7 @@ Remote triggers, a proximity alert, other grenades and separate-client acceptanc
 - `BlastPushTests`: direction, force scaling and cap, the on-epicenter fallback, the knockdown line and one push from X4's two passes.
 - `ExplosivesScenarios`: owner floored and thrown then recovered, upright shove, unowned body, and a launch at `MaxSpeed` stopping at a wall. `EvaGearScenarios` covers boots against a shove. `Testing/ui/validate.sh --steps mppm:blast` proves the shove, throw and recovery on a remote owner. Its throw check is peak planar speed: a plain collapse can end half a metre to the side.
 - `BlastResolutionTests`: directional force reaches behind a breached target, excludes rear/side tiles and stops at a surviving barrier.
+- `ThrowScenarios` (`scenarios:Combat`) covers a minibomb arming at release and staying unarmed when a knockdown interrupts the throw.
 - Host acceptance exercises minibomb arming/throw/fuse preservation and X4 attachment, countdown seek and target breach. Separate-client/late-observer acceptance remains pending.
 - Run `Testing/ui/validate.sh --steps compile,editmode`; visual changes also require `visual` plus inspecting item renders.
 

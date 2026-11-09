@@ -260,15 +260,19 @@ namespace SS3D.Systems.Testing
 
             foreach (AutomationInstruction instruction in instructions)
             {
-                IEnumerator step = RunInstruction(instruction);
-
-                while (true)
+                // Drive nested enumerators ourselves, at any depth (an assert's WaitUntil sits two
+                // levels down). Yielding one to Unity lets its TimeoutException escape through
+                // SetupCoroutine instead of our catch, and the script never reports.
+                var stack = new Stack<IEnumerator>();
+                stack.Push(RunInstruction(instruction));
+                while (stack.Count > 0)
                 {
+                    IEnumerator top = stack.Peek();
                     bool moved;
 
                     try
                     {
-                        moved = step.MoveNext();
+                        moved = top.MoveNext();
                     }
                     catch (Exception ex)
                     {
@@ -278,43 +282,15 @@ namespace SS3D.Systems.Testing
 
                     if (!moved)
                     {
-                        break;
+                        stack.Pop();
                     }
-
-                    // Drive nested enumerators ourselves (e.g. WaitUntil). Yielding them to Unity
-                    // lets TimeoutException escape through SetupCoroutine instead of our catch.
-                    if (step.Current is IEnumerator nested)
+                    else if (top.Current is IEnumerator nested)
                     {
-                        while (true)
-                        {
-                            bool nestedMoved;
-
-                            try
-                            {
-                                nestedMoved = nested.MoveNext();
-                            }
-                            catch (Exception ex)
-                            {
-                                failureReason = $"{instruction.Opcode}:{ex.Message}";
-                                break;
-                            }
-
-                            if (!nestedMoved)
-                            {
-                                break;
-                            }
-
-                            yield return nested.Current;
-                        }
-
-                        if (failureReason != null)
-                        {
-                            break;
-                        }
+                        stack.Push(nested);
                     }
                     else
                     {
-                        yield return step.Current;
+                        yield return top.Current;
                     }
                 }
 
@@ -362,6 +338,14 @@ namespace SS3D.Systems.Testing
 
         private void CollectEditorError(string condition, string stackTrace, LogType type)
         {
+            // Since Unity 6000.3.28f1, an asset refresh in the main editor during Play Mode makes MPPM
+            // re-import in each clone, and the clone logs Unity's analyzer .ruleset layout notices as
+            // errors from CloneInternalRuntime. They are editor noise, not game errors.
+            if (stackTrace != null && stackTrace.Contains("Unity.Multiplayer.PlayMode.Editor.CloneInternalRuntime"))
+            {
+                return;
+            }
+
             if (type is LogType.Error or LogType.Exception or LogType.Assert)
             {
                 _editorErrors.Add($"{type}: {condition}");

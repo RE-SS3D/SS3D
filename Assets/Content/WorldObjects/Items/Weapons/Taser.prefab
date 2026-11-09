@@ -315,7 +315,8 @@ MonoBehaviour:
     VisualStyle: 3
     BruteDamage: 0
     BurnDamage: 0
-    StaminaDamage: 65
+    StaminaDamage: 6.5
+    KnockdownSeconds: 2.5
     CanSever: 0
     BaseSpreadDegrees: 0.32
     RecoilClimbDegrees: 0.2
@@ -327,8 +328,8 @@ MonoBehaviour:
     FalloffExtraSpreadDegrees: 1.4
     MaxRangeMeters: 12
     FireCooldownSeconds: 0.75
-    MagazineSize: 6
-    ReloadSeconds: 2.7
+    MagazineSize: 3
+    ReloadSeconds: 9
     StructuralForce: 0
     StaminaCost: 2
     ExhaustionSpreadDegrees: 1.6

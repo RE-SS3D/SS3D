@@ -70,6 +70,24 @@ namespace SS3D.Systems.Entities.Humanoid
         private HumanoidBodyStateMachine _bodyStateMachine;
         private float _shotKickStartTime = float.NegativeInfinity;
 
+        [Header("Throw twist")]
+        /// <summary>
+        /// Walking in Peaceful a throw keeps the legs on the walk, so the spine and chest turn the throw
+        /// toward its target. Largest twist (degrees); beyond it the throw reads as over the shoulder.
+        /// </summary>
+        [SerializeField] private float _throwMaxTwist = 70f;
+        [SerializeField] private float _throwTwistSpineShare = 0.4f;
+        [SerializeField] private float _throwTwistBlendRate = 8f;
+
+        /// <summary>Upper Body states that twist the torso toward a target: the throws and the interaction reaches.</summary>
+        private static readonly int[] TwistStateHashes = BuildTwistStateHashes();
+        private AnimationOrchestrator _orchestrator;
+        private float _throwTwistBlend;
+        private float _appliedThrowYaw;
+        /// <summary>Owner's own throw yaw, used until the replicated aim catches up.</summary>
+        private float _localThrowYaw;
+        private float _localThrowYawUntil = float.NegativeInfinity;
+
         private void Awake()
         {
             _animator = GetComponent<Animator>();
@@ -79,6 +97,7 @@ namespace SS3D.Systems.Entities.Humanoid
             }
 
             _bodyStateMachine = GetComponent<HumanoidBodyStateMachine>();
+            _orchestrator = GetComponentInParent<AnimationOrchestrator>();
         }
 
         /// <summary>
@@ -204,6 +223,7 @@ namespace SS3D.Systems.Entities.Humanoid
         private void LateUpdate()
         {
             ApplyRangedAimCorrection();
+            ApplyThrowTwist();
             ApplyShotKick();
             UpdateMagazineHandoff();
         }
@@ -262,7 +282,8 @@ namespace SS3D.Systems.Entities.Humanoid
         private void ApplyRangedAimCorrection()
         {
             bool wantCorrection = _rangedAimActive && _combatLookActive && _animator != null
-                && _animator.enabled && _animator.isHuman && !IsUpperBodyReloading();
+                && _animator.enabled && _animator.isHuman && !IsUpperBodyReloading()
+                && (_orchestrator == null || !_orchestrator.IsFullBodyInteractionPlaying);
             _rangedAimBlend = Mathf.MoveTowards(_rangedAimBlend, wantCorrection ? 1f : 0f, Time.deltaTime * _rangedAimBlendRate);
             if (_rangedAimBlend <= 0.001f || !_combatLookActive || !TryGetWieldedWeapon(out RangedWeaponItemExtension weapon))
             {
@@ -352,6 +373,81 @@ namespace SS3D.Systems.Entities.Humanoid
         }
 
         private bool IsUpperBodyReloading() => UpperBodyReloadNormalizedTime() >= 0f;
+
+        /// <summary>
+        /// The yaw the current throw or interaction aims at. The owner sets it for a throw (the snapshot's AimYaw
+        /// carries it to observers); every peer sets it for an interaction, whose RPC carries the yaw.
+        /// </summary>
+        public void SetThrowAimYaw(float yaw)
+        {
+            _localThrowYaw = yaw;
+            _localThrowYawUntil = Time.time + 2f;
+        }
+
+        /// <summary>
+        /// During a throw state, turns spine and chest toward the throw's yaw by whatever the body's facing
+        /// leaves (zero when the body already faces the target), capped at <see cref="_throwMaxTwist"/>.
+        /// </summary>
+        private void ApplyThrowTwist()
+        {
+            bool canPose = _animator != null && _animator.enabled && _animator.isHuman && _bodyStateMachine != null;
+            bool throwing = canPose && IsUpperBodyIn(TwistStateHashes);
+            _throwTwistBlend = Mathf.MoveTowards(_throwTwistBlend, throwing ? 1f : 0f, Time.deltaTime * _throwTwistBlendRate);
+            if (!canPose || _throwTwistBlend <= 0.001f)
+            {
+                _appliedThrowYaw = 0f;
+                return;
+            }
+
+            Transform spine = _rig != null && _rig.Spine != null ? _rig.Spine : _animator.GetBoneTransform(HumanBodyBones.Spine);
+            Transform chest = _rig != null && _rig.Chest != null ? _rig.Chest : _animator.GetBoneTransform(HumanBodyBones.Chest);
+            if (spine == null || chest == null)
+            {
+                return;
+            }
+
+            float aimYaw = Time.time < _localThrowYawUntil ? _localThrowYaw : _bodyStateMachine.Snapshot.AimYaw;
+            float error = Mathf.DeltaAngle(transform.eulerAngles.y, aimYaw);
+            float target = Mathf.Clamp(error, -_throwMaxTwist, _throwMaxTwist) * _throwTwistBlend;
+            _appliedThrowYaw = Mathf.Lerp(_appliedThrowYaw, target, 1f - Mathf.Exp(-_rangedAimSmoothing * Time.deltaTime));
+            spine.rotation = Quaternion.AngleAxis(_appliedThrowYaw * _throwTwistSpineShare, Vector3.up) * spine.rotation;
+            chest.rotation = Quaternion.AngleAxis(_appliedThrowYaw * (1f - _throwTwistSpineShare), Vector3.up) * chest.rotation;
+        }
+
+        private bool IsUpperBodyIn(int[] stateHashes)
+        {
+            if (_animator.layerCount <= UpperBodyLayer)
+            {
+                return false;
+            }
+
+            int current = _animator.GetCurrentAnimatorStateInfo(UpperBodyLayer).shortNameHash;
+            int next = _animator.IsInTransition(UpperBodyLayer) ? _animator.GetNextAnimatorStateInfo(UpperBodyLayer).shortNameHash : 0;
+            return System.Array.IndexOf(stateHashes, current) >= 0 || System.Array.IndexOf(stateHashes, next) >= 0;
+        }
+
+        private static int[] BuildTwistStateHashes()
+        {
+            var hashes = new System.Collections.Generic.List<int>();
+            foreach (ThrowAnimation.Clip clip in ThrowAnimation.Variants)
+            {
+                hashes.Add(Animator.StringToHash(clip.StateName));
+            }
+
+            foreach (InteractionAnimation.Clip clip in InteractionAnimation.All)
+            {
+                if (!clip.FullBody)
+                {
+                    hashes.Add(Animator.StringToHash(clip.StateName));
+                    if (clip.HasReturn)
+                    {
+                        hashes.Add(Animator.StringToHash(clip.ReturnStateName));
+                    }
+                }
+            }
+
+            return hashes.ToArray();
+        }
 
         /// <summary>Normalized time of the Upper Body reload state (entering it counts), or -1 when not reloading.</summary>
         private float UpperBodyReloadNormalizedTime()

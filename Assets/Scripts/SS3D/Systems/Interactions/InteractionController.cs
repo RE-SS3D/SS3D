@@ -34,7 +34,7 @@ namespace SS3D.Systems.Interactions
     /// Discovery/dispatch/outline helpers: <see cref="InteractionDiscovery"/>,
     /// <see cref="InteractionDispatch"/>, <see cref="InteractionOutlineDriver"/>.
     /// </summary>
-    public sealed class InteractionController : NetworkActor, IIntentProvider
+    public sealed partial class InteractionController : NetworkActor, IIntentProvider
     {
         private Controls.InteractionsActions _controls;
         private Controls.HotkeysActions _hotkeysControls;
@@ -138,6 +138,7 @@ namespace SS3D.Systems.Interactions
             if (IsServer)
             {
                 RefreshServerDelayedInteractionTracking();
+                TickPendingHandAction();
             }
 
             if (!IsOwner)
@@ -256,6 +257,12 @@ namespace SS3D.Systems.Interactions
                 return;
             }
 
+            // Throw mode (R) replaces this click's interaction, in Help and Harm alike.
+            if (GetCombatNetwork()?.TryRunThrowPrimary() == true)
+            {
+                return;
+            }
+
             if (_armedSystem.IsArmed)
             {
                 TryResolveArmedInteraction();
@@ -297,6 +304,11 @@ namespace SS3D.Systems.Interactions
 
             Log.Information(this, "Running interaction {interactionId} on target {target}", Logs.Generic, interaction.Id.GenericName, interaction.Target);
             if (!TryGetNetworkTargetForDispatch(interaction, interactionEvent, out NetworkObject networkTarget))
+            {
+                return;
+            }
+
+            if (!BeginOwnerInteraction(interaction.Interaction, interactionEvent))
             {
                 return;
             }
@@ -358,6 +370,11 @@ namespace SS3D.Systems.Interactions
 
             interactionEvent.Target = searchEntry.Target ?? ResolveFallbackTarget(interactionEvent, searchEntry);
             if (!TryGetNetworkTargetForDispatch(searchEntry, interactionEvent, out NetworkObject networkTarget))
+            {
+                return false;
+            }
+
+            if (!BeginOwnerInteraction(searchEntry.Interaction, interactionEvent))
             {
                 return false;
             }
@@ -632,6 +649,11 @@ namespace SS3D.Systems.Interactions
                     return;
                 }
 
+                if (!BeginOwnerInteraction(entry.Interaction, interactionEvent))
+                {
+                    return;
+                }
+
                 InteractionOptimisticFeedback.TryBeginDelayed(entry.Interaction, interactionEvent);
                 InteractionOutlineView.TryBeginPending(entry.Interaction, interactionEvent);
                 CmdRunInteraction(networkTarget, interactionEvent.Point, entry.Id.GenericName, entry.Id.TargetComponentIndex);
@@ -691,6 +713,11 @@ namespace SS3D.Systems.Interactions
                         return;
                     }
 
+                    if (!BeginOwnerInteraction(entry.Interaction, interactionEvent))
+                    {
+                        return;
+                    }
+
                     InteractionOptimisticFeedback.TryBeginDelayed(entry.Interaction, interactionEvent);
                     InteractionOutlineView.TryBeginPending(entry.Interaction, interactionEvent);
                     CmdRunInventoryInteraction(target, sourceObject, entry.Id.GenericName, entry.Id.TargetComponentIndex);
@@ -701,6 +728,11 @@ namespace SS3D.Systems.Interactions
             else
             {
                 InteractionEntry firstEntry = entries.First();
+                if (!BeginOwnerInteraction(firstEntry.Interaction, interactionEvent))
+                {
+                    return;
+                }
+
                 InteractionOptimisticFeedback.TryBeginDelayed(firstEntry.Interaction, interactionEvent);
                 InteractionOutlineView.TryBeginPending(firstEntry.Interaction, interactionEvent);
                 CmdRunInventoryInteraction(target, sourceObject, firstEntry.Id.GenericName, firstEntry.Id.TargetComponentIndex);
@@ -791,6 +823,11 @@ namespace SS3D.Systems.Interactions
                 return false;
             }
 
+            if (!BeginOwnerInteraction(entry.Interaction, targetEvent))
+            {
+                return false;
+            }
+
             InteractionOptimisticFeedback.TryBeginDelayed(entry.Interaction, targetEvent);
             InteractionOutlineView.TryBeginPending(entry.Interaction, targetEvent);
             _armedSystem.Cancel();
@@ -865,6 +902,11 @@ namespace SS3D.Systems.Interactions
                 return $"'{genericName}' target on {target.name} has no NetworkObject";
             }
 
+            if (!BeginOwnerInteraction(entry.Interaction, interactionEvent))
+            {
+                return $"'{genericName}' dropped: a hand action is still in flight";
+            }
+
             CmdRunInteraction(networkTarget, point, entry.Id.GenericName, entry.Id.TargetComponentIndex);
             return null;
         }
@@ -902,9 +944,16 @@ namespace SS3D.Systems.Interactions
 
             interactionEvent.Target = interaction.Target;
 
-            InteractionReference reference = interactionEvent.Source.Interact(interactionEvent, interaction.Interaction);
-            TrackActiveInteraction(interactionEvent.Source, reference, interaction.Interaction);
-            RpcExecuteClientInteraction(target, point, genericName, targetComponentIndex, reference.Id);
+            bool accepted = ServerRunWithAnimation(interaction.Interaction, interactionEvent, () =>
+            {
+                InteractionReference reference = interactionEvent.Source.Interact(interactionEvent, interaction.Interaction);
+                TrackActiveInteraction(interactionEvent.Source, reference, interaction.Interaction);
+                RpcExecuteClientInteraction(target, point, genericName, targetComponentIndex, reference.Id);
+            });
+            if (!accepted)
+            {
+                TargetRejectInteraction(Owner);
+            }
         }
 
         /// <summary>
@@ -1111,11 +1160,18 @@ namespace SS3D.Systems.Interactions
 
             interactionEvent.Target = chosenEntry.Target;
 
-            InteractionReference reference = interactionEvent.Source.Interact(interactionEvent, chosenEntry.Interaction);
-            TrackActiveInteraction(source, reference, chosenEntry.Interaction);
-            if (chosenEntry.Interaction is IClientInteractionSource)
+            bool accepted = ServerRunWithAnimation(chosenEntry.Interaction, interactionEvent, () =>
             {
-                RpcExecuteClientInventoryInteraction(target, sourceObject, genericName, targetComponentIndex, reference.Id);
+                InteractionReference reference = interactionEvent.Source.Interact(interactionEvent, chosenEntry.Interaction);
+                TrackActiveInteraction(source, reference, chosenEntry.Interaction);
+                if (chosenEntry.Interaction is IClientInteractionSource)
+                {
+                    RpcExecuteClientInventoryInteraction(target, sourceObject, genericName, targetComponentIndex, reference.Id);
+                }
+            });
+            if (!accepted)
+            {
+                TargetRejectInteraction(Owner);
             }
         }
 
@@ -1175,12 +1231,14 @@ namespace SS3D.Systems.Interactions
         private void TrackActiveInteraction(IInteractionSource source, InteractionReference reference, IInteraction interaction)
         {
             _delayedTracker.TrackServer(source, reference, interaction);
+            UpdateInteractionKneel(interaction);
         }
 
         [Server]
         private void ClearActiveInteractionTracking()
         {
             _delayedTracker.ClearServer();
+            SetServerKneel(false);
             CombatInteractionNetwork combat = GetCombatNetwork();
             combat?.ClearPendingMeleeConnect();
             combat?.ClearMeleeAimPoint();
@@ -1198,6 +1256,8 @@ namespace SS3D.Systems.Interactions
             {
                 return;
             }
+
+            SetServerKneel(false);
 
             // Combat connect may still be pending when a DelayedInteraction ends.
             CombatInteractionNetwork combat = GetCombatNetwork();

@@ -63,7 +63,7 @@ MPPM_SCENARIOS = {
     "blast": ("blast-host", ["blast-client"]),
 }
 # Scenario -> station fixture its host loads, copied in for the run: rounds read Data/StationTemplates.
-MPPM_STATIONS = {"breach-budget": "atmostest.json"}
+MPPM_STATIONS = {"breach-budget": "atmostest.json", "breach": "testroom.json"}
 STATION_TEMPLATES = ROOT / "Builds/Game/Data/StationTemplates"
 MPPM_RESULTS = ROOT / "Temp/mppm-automation"
 KNOWN_ISSUE_DIR = ROOT / "Assets/Scripts/Tests/KnownIssueReproduction"

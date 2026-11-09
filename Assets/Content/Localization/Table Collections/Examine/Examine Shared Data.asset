@@ -1535,6 +1535,46 @@ MonoBehaviour:
     m_Key: examine.structural.damaged_plating
     m_Metadata:
       m_Items: []
+  - m_Id: 297502203608068096
+    m_Key: items.parts.light_bulb.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 297502203650011136
+    m_Key: items.parts.light_bulb.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 297502208683175936
+    m_Key: items.parts.light_bulb_broken.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 297502208683175937
+    m_Key: items.parts.light_bulb_broken.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 297502212634210304
+    m_Key: items.parts.light_tube.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 297502212634210305
+    m_Key: items.parts.light_tube.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 297502216304226304
+    m_Key: items.parts.light_tube_broken.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 297502216304226305
+    m_Key: items.parts.light_tube_broken.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 297530947802525696
+    m_Key: examine.device.dented
+    m_Metadata:
+      m_Items: []
+  - m_Id: 297530947844468736
+    m_Key: examine.device.broken
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

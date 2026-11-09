@@ -115,3 +115,16 @@
     color: var(--ss3d-text-on-accent);
     font-size: 9px;
 }
+
+/* Throw mode (R): the flight arc and landing ring take their colour from `color` (ThrowModeOverlayView). */
+.throw-mode-arc {
+    color: var(--ss3d-ramp-green-400);
+}
+
+.throw-mode-arc--clamped {
+    color: var(--ss3d-accent-rust);
+}
+
+.throw-mode-arc--blocked {
+    color: var(--ss3d-feedback-danger);
+}

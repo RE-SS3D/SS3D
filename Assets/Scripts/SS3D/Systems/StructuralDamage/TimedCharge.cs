@@ -17,7 +17,7 @@ namespace SS3D.Systems.StructuralDamage
     public enum ExplosiveKind { C4, X4, Minibomb }
 
     /// <summary>Server-owned explosive fuse; clients seek one countdown recording from the replicated deadline.</summary>
-    public sealed class TimedCharge : InteractionTargetNetworkBehaviour, IInteractionSourceExtension
+    public sealed class TimedCharge : InteractionTargetNetworkBehaviour, IInteractionSourceExtension, IThrowReleaseHandler
     {
         public const float FuseSeconds = 15f;
         public const float DefuseSeconds = 3f;
@@ -55,12 +55,8 @@ namespace SS3D.Systems.StructuralDamage
 
         public void GetSourceInteractions(IInteractionTarget[] targets, List<InteractionEntry> entries, InteractionEvent context)
         {
-            if (HeldHand(context) == null) return;
-            if (_kind == ExplosiveKind.Minibomb)
-            {
-                entries.Add(InteractionEntry.SourceOnly(new ThrowInteraction(this)));
-                return;
-            }
+            // The minibomb is thrown like any held item (throw mode) and arms at release.
+            if (HeldHand(context) == null || _kind == ExplosiveKind.Minibomb) return;
             if (_armed || _spent) return;
             HashSet<PlacedTileObject> seen = new();
             foreach (IInteractionTarget target in targets)
@@ -111,6 +107,16 @@ namespace SS3D.Systems.StructuralDamage
             }
             _countdown = null;
             _playingDeadline = 0d;
+        }
+
+        /// <summary>Explosives are lobbed, not thrown overhand.</summary>
+        public bool UsesGrenadeThrow => true;
+
+        /// <summary>A thrown minibomb arms as it leaves the hand; an interrupted throw keeps it unarmed.</summary>
+        [Server]
+        public void ServerOnThrown()
+        {
+            if (_kind == ExplosiveKind.Minibomb) Arm();
         }
 
         [Server]
@@ -257,39 +263,6 @@ namespace SS3D.Systems.StructuralDamage
                 ItemUtility.SetWorldPose(item.transform, contact + normal * (thickness * 0.5f + 0.01f), rotation);
                 item.GetComponent<Rigidbody>().isKinematic = true;
                 _charge._attached = true;
-                _charge.Arm();
-                return false;
-            }
-        }
-
-        private sealed class ThrowInteraction : IInteraction, ITargetedInteraction
-        {
-            private readonly TimedCharge _charge;
-            public ThrowInteraction(TimedCharge charge) => _charge = charge;
-            public int Priority => 10;
-            public string GetName(InteractionEvent e) => "Throw minibomb";
-            public string GetGenericName() => "ThrowMinibomb";
-            public Sprite GetIcon(InteractionEvent e) => InteractionIconLookup.Discard;
-            public InteractionTier GetTier(InteractionEvent e) => InteractionTier.Targeted;
-            public bool CanInteract(InteractionEvent e) => _charge != null && !_charge._spent && _charge.HeldHand(e) != null;
-            public bool CanTarget(InteractionEvent origin, InteractionEvent target) => CanInteract(origin)
-                && target.HasPoint && Vector3.Distance(origin.Source.GetRootSource().GameObject.transform.position, target.Point) <= 10f;
-            public bool Start(InteractionEvent e, InteractionReference reference)
-            {
-                if (!CanInteract(e) || !CanTarget(e, e)) return false;
-                Hand hand = _charge.HeldHand(e);
-                Transform person = hand.GetComponentInParent<HumanInventory>().transform;
-                Vector3 origin = person.position + Vector3.up * 1.2f;
-                float clearance = Physics.SphereCast(origin, 0.08f, person.forward, out RaycastHit obstacle,
-                    0.45f, LayerMask.GetMask("Default"), QueryTriggerInteraction.Ignore)
-                    ? Mathf.Max(0f, obstacle.distance - 0.01f) : 0.45f;
-                origin += person.forward * clearance;
-                float flight = Mathf.Clamp(Vector3.Distance(origin, e.Point) / 8f, 0.3f, 1.2f);
-                hand.PlaceHeldItemOutOfHand(origin, Quaternion.identity);
-                Rigidbody body = _charge.GetComponent<Rigidbody>();
-                body.collisionDetectionMode = CollisionDetectionMode.ContinuousDynamic;
-                Vector3 gravity = body.useGravity ? Physics.gravity : Vector3.zero;
-                body.linearVelocity = (e.Point - origin) / flight - gravity * (0.5f * flight);
                 _charge.Arm();
                 return false;
             }

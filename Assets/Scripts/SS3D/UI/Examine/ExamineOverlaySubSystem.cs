@@ -124,6 +124,16 @@ namespace SS3D.UI.Examine
                 SubSystems.TryGet(out _inputSystem);
             }
 
+            // The hover target can be destroyed with no selection change (a disconnect despawns the
+            // round's objects). The interface null check misses a destroyed Unity object.
+            if (_currentExaminable is UnityEngine.Object target && target == null)
+            {
+                _currentExaminable = null;
+                _hoveredCharacterInventory = null;
+                InvalidateContentCache();
+                RefreshGenericDisplay();
+            }
+
             // The hover target can leave the FOV with no selection change: a door shuts, or the
             // player walks behind a wall.
             if (Time.unscaledTime >= _nextVisibilityCheck && UpdateTargetVisibility())

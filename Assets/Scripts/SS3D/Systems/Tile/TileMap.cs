@@ -9,6 +9,7 @@ using SS3D.Systems.Inventory.Items;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using UnityEngine;
 
@@ -854,6 +855,9 @@ namespace SS3D.Systems.Tile
                 yield break;
             }
 
+            Stopwatch loadTimer = Stopwatch.StartNew();
+            int startFrame = Time.frameCount;
+
             // Clear TileMap data first (this clears the _items list)
             Clear();
             _loadedAreaRecords.Clear();
@@ -869,6 +873,8 @@ namespace SS3D.Systems.Tile
             SavedTileChunk[] savedChunks = saveObject.savedChunkList ?? Array.Empty<SavedTileChunk>();
             int sinceYield = 0;
             int chunkIndex = 0;
+            int placedTiles = 0;
+            int placedItems = 0;
 
             foreach (SavedTileChunk savedChunk in savedChunks)
             {
@@ -903,6 +909,7 @@ namespace SS3D.Systems.Tile
 
                         // Skipping build check here to allow loading tile objects in a non-valid order
                         PlaceTileObject(toBePlaced, placePosition, savedObject.dir, true, false, true, out GameObject placedObject);
+                        placedTiles++;
                         sinceYield++;
 
                         if (yieldFrames && sinceYield >= BulkLoadYieldEveryPlacements)
@@ -939,6 +946,7 @@ namespace SS3D.Systems.Tile
                 }
 
                 PlaceItemObject(savedItem.worldPosition, savedItem.rotation, toBePlaced);
+                placedItems++;
                 sinceYield++;
                 if (yieldFrames && sinceYield >= BulkLoadYieldEveryPlacements)
                 {
@@ -947,6 +955,8 @@ namespace SS3D.Systems.Tile
                 }
             }
 
+            long placeMs = loadTimer.ElapsedMilliseconds;
+
             if (invokeMapLoadedEvent)
             {
                 OnMapLoaded?.Invoke(this, EventArgs.Empty);
@@ -954,7 +964,9 @@ namespace SS3D.Systems.Tile
 
             if (yieldFrames)
                 yield return null;
+            long adjacencyStartMs = loadTimer.ElapsedMilliseconds;
             RefreshAllAdjacencies();
+            long adjacencyMs = loadTimer.ElapsedMilliseconds - adjacencyStartMs;
 
             if (yieldFrames)
                 yield return null;
@@ -977,6 +989,21 @@ namespace SS3D.Systems.Tile
                     RefreshAllHostVisibility();
                 }
             }
+
+            loadTimer.Stop();
+            // Wall time includes the frames spent yielding, so it is how long the load took, not pure
+            // CPU. Placement covers clear + tiles + items; adjacency is the one-shot refresh after.
+            Log.Information(this,
+                "Map load finished: {chunks} chunks, {tiles} tiles, {items} items, {skipped} skipped in {totalMs} ms over {frames} frames (placement {placeMs} ms, adjacency {adjacencyMs} ms)",
+                Logs.ServerOnly,
+                savedChunks.Length,
+                placedTiles,
+                placedItems,
+                _lastLoadSkipped.Values.Sum(),
+                loadTimer.ElapsedMilliseconds,
+                Time.frameCount - startFrame,
+                placeMs,
+                adjacencyMs);
         }
 
         /// <summary>

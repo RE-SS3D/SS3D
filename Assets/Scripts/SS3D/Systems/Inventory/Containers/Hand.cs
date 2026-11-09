@@ -10,6 +10,8 @@ using SS3D.Core;
 using SS3D.Systems.Stamina;
 using SS3D.Systems.Health;
 using SS3D.Systems.Entities.Humanoid;
+using SS3D.Systems.Interactions;
+using SS3D.Systems.Entities.Humanoid.Body;
 
 namespace SS3D.Systems.Inventory.Containers
 {
@@ -180,9 +182,28 @@ namespace SS3D.Systems.Inventory.Containers
                 return;
             }
 
+            InteractionController interactions = GetComponentInParent<InteractionController>();
+            if (interactions == null)
+            {
+                DumpHeldItem();
+                return;
+            }
+
+            // The item leaves the hand when the put-down reaches the floor (animation pass Phase 4).
+            Item item = ItemInHand;
+            interactions.ServerRunHandAction(
+                InteractionAnimation.FloorPutDown,
+                InteractionAnimation.DropPointAhead(interactions.transform),
+                () => ItemInHand == item,
+                DumpHeldItem);
+		}
+
+        [Server]
+        private void DumpHeldItem()
+        {
 			Container.Dump();
             ItemInHand?.GiveOwnership(null);
-		}
+        }
 
 
         /// <summary>

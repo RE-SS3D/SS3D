@@ -45,8 +45,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f1e2d3c4b5a6978869504132a3b4c5d6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _document: {fileID: 6013659950546819738}
-  _overlayStyleSheet: {fileID: 7433441132597879393, guid: e6f7a8b9c0d14990a1b2c3d4e5f60b04, type: 3}
+  _overlayStyleSheet: {fileID: 7433441132597879392, guid: e6f7a8b9c0d14990a1b2c3d4e5f60b04, type: 3}
 --- !u!114 &6013659950546819738
 MonoBehaviour:
   m_ObjectHideFlags: 0

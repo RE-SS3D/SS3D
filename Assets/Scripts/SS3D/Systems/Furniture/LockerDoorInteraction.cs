@@ -20,6 +20,9 @@ namespace SS3D.Systems.Furniture
 
         public int Priority => _locker.IsOpen ? 15 : 30;
 
+        /// <summary>True when running this opens the door, false when it shuts it.</summary>
+        public bool OpensDoor => !_locker.IsOpen;
+
         public string GetName(InteractionEvent interactionEvent)
         {
             if (!string.IsNullOrEmpty(Name))

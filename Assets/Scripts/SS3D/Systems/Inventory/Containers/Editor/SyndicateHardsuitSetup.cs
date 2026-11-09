@@ -120,6 +120,7 @@ namespace SS3D.Systems.Inventory.Containers.Editor
                 so.FindProperty("_profile.BurnAbsorption").floatValue = 5f;
                 so.FindProperty("_profile.MaxIntegrity").floatValue = type == ClothType.Head ? 80f : 160f;
                 so.FindProperty("_profile.CoveredZones").intValue = (int)(type == ClothType.Head ? BodyZoneMask.Head : ArmorProfile.SecurityJumpsuit.CoveredZones);
+                so.FindProperty("_profile.BlocksStun").boolValue = true;
                 so.ApplyModifiedPropertiesWithoutUndo();
                 if (root.GetComponent<SealedGearItemExtension>() == null) root.AddComponent<SealedGearItemExtension>();
                 WireExamine(root, name, type == ClothType.Head ? "syndicate_hardsuit_helmet" : "syndicate_hardsuit");

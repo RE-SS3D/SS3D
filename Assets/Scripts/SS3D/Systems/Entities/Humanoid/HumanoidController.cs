@@ -72,6 +72,8 @@ namespace SS3D.Systems.Entities.Humanoid
         private HumanoidBodyStateMachine _bodyStateMachine;
         private bool _inputSubscribed;
         private float _previousYaw;
+        private float _heldFacingYaw;
+        private float _heldFacingUntil = float.NegativeInfinity;
         private const float _walkAnimatorValue = .3f;
         private const float _runAnimatorValue = 1f;
         #endregion
@@ -303,11 +305,43 @@ namespace SS3D.Systems.Entities.Humanoid
             _movementTarget.position = AbsoluteMovement;
         }
 
+        /// <summary>True while the owner is pressing a movement direction.</summary>
+        public bool HasMovementInput => Input.sqrMagnitude > 0.0001f;
+
+        /// <summary>
+        /// Snaps the body to <paramref name="yaw"/> and keeps it there for <paramref name="seconds"/>,
+        /// overriding combat facing and a standing body (a throw faces its target until the item leaves
+        /// the hand). Walking in Peaceful ends the hold: its legs only have forward clips, so a held
+        /// sideways facing would play idle under a moving body. Owner only.
+        /// </summary>
+        public void HoldFacing(float yaw, float seconds)
+        {
+            _heldFacingYaw = yaw;
+            _heldFacingUntil = Time.time + Mathf.Max(0f, seconds);
+            transform.rotation = Quaternion.Euler(0f, yaw, 0f);
+        }
+
+        public bool IsFacingHeld => Time.time < _heldFacingUntil;
+
+        /// <summary>Applies a held facing in place of the usual rotation; false when none is held.</summary>
+        private bool TryApplyHeldFacing()
+        {
+            if (!IsFacingHeld)
+            {
+                return false;
+            }
+
+            transform.rotation = Quaternion.Euler(0f, _heldFacingYaw, 0f);
+            return true;
+        }
+
         /// <summary>
         /// Rotates the player to the target movement
         /// </summary>
         protected void RotatePlayerToMovement()
         {
+            _heldFacingUntil = float.NegativeInfinity;
+
             Quaternion lookRotation = Quaternion.LookRotation(TargetMovement);
 
             transform.rotation = Quaternion.Slerp(Rotation, lookRotation, Time.deltaTime * _facingTurnRate);
@@ -404,6 +438,10 @@ namespace SS3D.Systems.Entities.Humanoid
 
             _bodyStateMachine?.SubmitAim(yaw, pitch);
             GetComponent<HumanoidIkController>()?.SetCombatAimPoint(aimPoint);
+            if (TryApplyHeldFacing())
+            {
+                return;
+            }
 
             Quaternion lookRotation = Quaternion.Euler(0f, yaw, 0f);
             transform.rotation = Quaternion.Slerp(Rotation, lookRotation, Time.deltaTime * _combatRotationLerpMultiplier);
@@ -414,6 +452,11 @@ namespace SS3D.Systems.Entities.Humanoid
         /// </summary>
         public void ApplyCombatAimYaw(float aimYaw, float deltaTime)
         {
+            if (TryApplyHeldFacing())
+            {
+                return;
+            }
+
             Quaternion lookRotation = Quaternion.Euler(0f, aimYaw, 0f);
             transform.rotation = Quaternion.Slerp(transform.rotation, lookRotation, deltaTime * _combatRotationLerpMultiplier);
         }

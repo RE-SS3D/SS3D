@@ -37,6 +37,9 @@ namespace SS3D.Systems.Entities.Data
             /// <summary>VelX for the Ranged Locomotion trees, negated while a left-hand gun mirrors that state.</summary>
             public static readonly int RangedVelX = Animator.StringToHash(PistolStanceAnimation.StrafeParameter);
             public static readonly int Throw = Animator.StringToHash("Throw");
+            public static readonly int Interact = Animator.StringToHash(InteractionAnimation.TriggerParameter);
+            public static readonly int InteractClip = Animator.StringToHash(InteractionAnimation.ClipParameter);
+            public static readonly int InteractKneel = Animator.StringToHash(InteractionAnimation.KneelParameter);
             public static readonly int Emote = Animator.StringToHash("Emote");
             public static readonly int Flinch = Animator.StringToHash("Flinch");
             public static readonly int FireRifle = Animator.StringToHash("FireRifle");

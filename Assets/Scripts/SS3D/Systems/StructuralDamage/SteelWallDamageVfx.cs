@@ -127,6 +127,20 @@ namespace SS3D.Systems.StructuralDamage
                 new Color(0.54f, 0.49f, 0.43f, 0.5f), ParticleSystemRenderMode.Billboard);
         }
 
+        /// <summary>A short shower of bright, falling sparks: a machine shorting out as it breaks.</summary>
+        public static void PlaySparks(Vector3 point, Vector3 normal)
+        {
+            if (!EnsureMaterials())
+                return;
+
+            Quaternion rotation = Quaternion.LookRotation(normal);
+            Vector3 origin = point + normal * 0.03f;
+            Emit(origin, rotation, "Sparks", 28, 3.4f, 0.45f, 0.03f, 1.6f,
+                new Color(1f, 0.86f, 0.45f, 1f), ParticleSystemRenderMode.Stretch);
+            Emit(origin, rotation, "Sparks smoke", 6, 0.35f, 0.9f, 0.16f, -0.05f,
+                new Color(0.35f, 0.35f, 0.38f, 0.4f), ParticleSystemRenderMode.Billboard);
+        }
+
         private static bool EnsureMaterials()
         {
             if (_dent != null)

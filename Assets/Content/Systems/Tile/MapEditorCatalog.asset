@@ -580,6 +580,24 @@ MonoBehaviour:
     VariantLabel: 
     SearchTags:
     - subfloor
+  - AssetName: LightBulb
+    Mode: 2
+    Subcategory: 301
+    Heading: 
+    Family: 
+    VariantLabel: 
+    SearchTags:
+    - item
+    - materials & parts
+  - AssetName: LightBulbBroken
+    Mode: 2
+    Subcategory: 301
+    Heading: 
+    Family: 
+    VariantLabel: 
+    SearchTags:
+    - item
+    - materials & parts
   - AssetName: LightBulbFixture
     Mode: 0
     Subcategory: 103
@@ -596,6 +614,24 @@ MonoBehaviour:
     VariantLabel: 
     SearchTags:
     - wall mounts
+  - AssetName: LightTube
+    Mode: 2
+    Subcategory: 301
+    Heading: 
+    Family: 
+    VariantLabel: 
+    SearchTags:
+    - item
+    - materials & parts
+  - AssetName: LightTubeBroken
+    Mode: 2
+    Subcategory: 301
+    Heading: 
+    Family: 
+    VariantLabel: 
+    SearchTags:
+    - item
+    - materials & parts
   - AssetName: LightTubeFixture
     Mode: 0
     Subcategory: 103

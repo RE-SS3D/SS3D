@@ -262,6 +262,18 @@ namespace SS3D.Systems.Entities.Humanoid.Body
             PublishSnapshot();
         }
 
+        /// <summary>Server: kneels the body for a delayed interaction until cleared.</summary>
+        public void SetInteractKneel(bool kneel)
+        {
+            if (!IsServer || _snapshot.InteractKneel == kneel)
+            {
+                return;
+            }
+
+            _snapshot.InteractKneel = kneel;
+            PublishSnapshot();
+        }
+
         public void SetInjuredArms(float left, float right)
         {
             // SyncVars are server-authoritative. Assigning on a pure client spam-logs

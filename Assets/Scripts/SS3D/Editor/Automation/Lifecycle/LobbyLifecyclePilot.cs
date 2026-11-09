@@ -606,7 +606,7 @@ namespace SS3D.Editor.Automation
                     Rounds().CmdSaveServerSettings(settings);
                 },
                 Until = () => Rounds().SettingsForServer.PlayerCap == 32 && Rounds().AllowLateJoin
-                    && Shell().Q<Toggle>("server-late-join").value && Shell().Q<IntegerField>("server-round-length").value == 90,
+                    && Shell().Q<Toggle>("server-late-join").value && Shell().Q<IntegerField>("server-round-length").value == ServerSettings.Default.RoundLengthMinutes,
             },
             new Step { Name = "Leave admin before lifecycle", Enter = () => Click(AdminButton()), Until = () => Shell().Q("server-settings-form") == null },
             new Step { Name = "Ready", Enter = () => Click(ReadyButton()), Until = () => IsReady() && ReadyButton().text.Contains("READY") && CountLabel() == "1/1 ready",

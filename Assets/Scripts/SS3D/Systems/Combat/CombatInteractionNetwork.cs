@@ -14,6 +14,7 @@ using SS3D.Systems.Combat.Interactions;
 using SS3D.Systems.Entities;
 using SS3D.Systems.Entities.Humanoid;
 using SS3D.Systems.Entities.Humanoid.Body;
+using SS3D.Systems.Electricity;
 using SS3D.Systems.Health;
 using SS3D.Systems.Interactions;
 using SS3D.Systems.Inventory.Containers;
@@ -31,7 +32,7 @@ namespace SS3D.Systems.Combat
     /// Intent and delayed-interaction tracking stay on <see cref="InteractionController"/>.
     /// </summary>
     [RequireComponent(typeof(InteractionController))]
-    public sealed class CombatInteractionNetwork : NetworkActor
+    public sealed partial class CombatInteractionNetwork : NetworkActor
     {
         [SerializeField] private InteractionController _interactionController;
 
@@ -60,6 +61,7 @@ namespace SS3D.Systems.Combat
             base.OnStartServer();
             // Owner-only Update() never runs on a dedicated server — schedule melee connect here.
             AddHandle(UpdateEvent.AddListener(HandleServerMeleeConnectUpdate));
+            AddHandle(UpdateEvent.AddListener(HandleServerThrowUpdate));
         }
 
         private void Update()
@@ -70,6 +72,7 @@ namespace SS3D.Systems.Combat
             }
 
             TrySyncMeleeAimDuringSwing();
+            TickThrowMode();
         }
 
         /// <summary>
@@ -265,38 +268,56 @@ namespace SS3D.Systems.Combat
                 out bool hasImpact,
                 out Vector3 shotDirection);
 
+            // The aim ray starts at the camera; tests along the shot start level with the muzzle so nothing
+            // behind the shooter is hit. Wall mounts sit inside their wall's full-tile collider, so a wall hit
+            // still reaches a mounted bulb or machine.
+            float stop = hasImpact ? Vector3.Distance(aimRay.origin, impactPoint) : maxRange;
+            if (hitStructural)
+            {
+                stop += LightFixtureBulb.WallInset;
+            }
+
+            float start = Mathf.Clamp(Vector3.Dot(firePosition - aimRay.origin, shotDirection), 0f, stop);
+            Ray shot = new(aimRay.origin + shotDirection * start, shotDirection);
+            float structuralForce = weapon.Profile.ResolveStructuralForce();
+
             bool landed = false;
             if (resolved && hitLiving && health != null)
             {
-                if (weapon.Profile.BruteDamage > 0f || weapon.Profile.BurnDamage > 0f)
-                {
-                    health.ApplyDamage(zone, weapon.Profile.ToDamagePacket());
-                }
-                if (weapon.Profile.StaminaDamage > 0f)
-                {
-                    StaminaController targetStamina = health.GetComponentInParent<StaminaController>();
-                    if (targetStamina != null)
-                    {
-                        targetStamina.ServerDepleteStamina(Mathf.Min(weapon.Profile.StaminaDamage,
-                            Mathf.Max(0f, targetStamina.CurrentStamina)));
-                    }
-                }
+                ServerApplyLivingHit(weapon.Profile, health, zone);
                 if (weapon.Profile.VisualStyle != RangedVisualStyle.Ballistic)
                 {
                     PlaySurfaceHitSound(impactPoint, weapon.Profile.VisualStyle, true);
                 }
                 landed = true;
             }
+            else if (structuralForce > 0f
+                && BreakableDeviceResolver.TryFind(shot, stop - start, out BreakableDevice device, out RaycastHit deviceHit))
+            {
+                // A machine on the wall (an APC) takes the round instead of the wall behind it.
+                device.ServerApplyDamage(structuralForce, StructuralDamageSource.Ranged, deviceHit.point, deviceHit.normal);
+                impactPoint = deviceHit.point;
+                impactNormal = deviceHit.normal;
+                hasImpact = true;
+                landed = true;
+                stop = start + deviceHit.distance;
+            }
             else if (resolved && hitStructural)
             {
-                float force = weapon.Profile.ResolveStructuralForce();
-                if (force > 0f
+                if (structuralForce > 0f
                     && SubSystems.TryGet(out StructuralDamageSubSystem structural)
-                    && structural.TryApplyStructuralDamage(structuralCoord, force, StructuralDamageSource.Ranged,
+                    && structural.TryApplyStructuralDamage(structuralCoord, structuralForce, StructuralDamageSource.Ranged,
                         impactPoint, impactNormal))
                 {
                     landed = true;
                 }
+            }
+
+            // The round goes through a bulb's glass, so it still lands where it was resolved to.
+            if ((weapon.Profile.BruteDamage > 0f || weapon.Profile.BurnDamage > 0f)
+                && LightFixtureBulb.TryFindStruck(shot, stop - start, out LightFixtureBulb bulb))
+            {
+                bulb.ServerBreak();
             }
 
             if (hasImpact && !hitLiving)
@@ -316,6 +337,36 @@ namespace SS3D.Systems.Combat
             ClearMeleeAimPoint();
             ServerNotifyRangedFireState(weapon, landed, hasImpact, impactPoint, shotDirection,
                 hasImpact ? impactPoint : aimRay.origin + shotDirection * maxRange, impactNormal);
+        }
+
+        /// <summary>
+        /// Server only: what a shot that lands on a living body does to it (damage, stamina, knockdown).
+        /// A stun on a zone shielded by <see cref="ArmorProfile.BlocksStun"/> armor only drains part of the stamina.
+        /// </summary>
+        public static void ServerApplyLivingHit(RangedWeaponProfile profile, HumanHealthController health, BodyZone zone)
+        {
+            bool stunBlocked = profile.KnockdownSeconds > 0f && health.ServerZoneBlocksStun(zone);
+            if (profile.BruteDamage > 0f || profile.BurnDamage > 0f)
+            {
+                health.ApplyDamage(zone, profile.ToDamagePacket());
+            }
+            if (profile.StaminaDamage > 0f)
+            {
+                StaminaController targetStamina = health.GetComponentInParent<StaminaController>();
+                if (targetStamina != null)
+                {
+                    float drain = profile.StaminaDamage * (stunBlocked ? RangedWeaponProfile.StunBlockedStaminaFactor : 1f);
+                    targetStamina.ServerDepleteStamina(Mathf.Min(drain, targetStamina.ServerCurrentStaminaAbsolute));
+                }
+            }
+            if (profile.KnockdownSeconds > 0f && !stunBlocked)
+            {
+                Ragdoll targetRagdoll = health.GetComponentInParent<Ragdoll>();
+                if (targetRagdoll != null)
+                {
+                    targetRagdoll.ServerKnockdownAtLeast(profile.KnockdownSeconds);
+                }
+            }
         }
 
         [ServerRpc]

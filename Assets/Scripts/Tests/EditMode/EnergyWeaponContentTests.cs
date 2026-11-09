@@ -60,7 +60,32 @@ namespace SS3D.Tests.EditMode
             Assert.Zero(profile.BurnDamage);
             Assert.Zero(profile.ResolveStructuralForce());
             Assert.Greater(profile.StaminaDamage, 0f);
+            Assert.That(profile.KnockdownSeconds, Is.InRange(2f, 3f), "A taser hit is a knockdown (combat.md §5)");
+            Assert.Zero(RangedWeaponProfile.LaserRifle.KnockdownSeconds);
+            Assert.Zero(RangedWeaponProfile.IonRifle.KnockdownSeconds);
+            Assert.Zero(RangedWeaponProfile.M4.KnockdownSeconds);
             Assert.IsFalse(profile.RequiresBothHands);
+        }
+
+        [Test]
+        public void TaserPrefab_CarriesTheStunBalance()
+        {
+            RangedWeaponProfile code = RangedWeaponProfile.Taser;
+            RangedWeaponProfile prefab = DB.LoadAssetAtPath<GameObject>("Assets/Content/WorldObjects/Items/Weapons/Taser.prefab")
+                .GetComponent<RangedWeaponItemExtension>().Profile;
+            Assert.AreEqual(code.KnockdownSeconds, prefab.KnockdownSeconds);
+            Assert.AreEqual(code.MagazineSize, prefab.MagazineSize);
+            Assert.AreEqual(code.ReloadSeconds, prefab.ReloadSeconds);
+            Assert.That(code.ReloadSeconds, Is.GreaterThan(RangedWeaponProfile.LaserRifle.ReloadSeconds), "The taser recharges slowly");
+        }
+
+        [TestCase("SyndicateHardsuit", true)]
+        [TestCase("SyndicateHardsuitHelmet", true)]
+        [TestCase("JumpsuitSecurity", false)]
+        public void OnlyRigidSuits_BlockStuns(string name, bool blocks)
+        {
+            GameObject prefab = DB.LoadAssetAtPath<GameObject>("Assets/Content/WorldObjects/Items/Clothing/" + name + ".prefab");
+            Assert.AreEqual(blocks, prefab.GetComponent<ArmorItemExtension>().Profile.BlocksStun);
         }
 
         [Test]

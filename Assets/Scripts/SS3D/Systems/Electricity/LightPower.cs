@@ -45,12 +45,30 @@ namespace SS3D.Systems.Electricity
         private float _emergencyRangeMultiplier = 0.45f;
         [SerializeField]
         private Color _emergencyTint = new Color(1f, 0.25f, 0.2f);
+        [SerializeField]
+        private LightFixtureBulb _bulb;
+        [SerializeField]
+        [Tooltip("How long the fixture's own cell keeps it on emergency light once its APC can't.")]
+        private float _cellRunSeconds = 120f;
+        [SerializeField]
+        [Tooltip("How long a flat fixture cell takes to fill again while lit from mains.")]
+        private float _cellRechargeSeconds = 60f;
 
         [SyncVar(OnChange = nameof(SyncFixtureVisual))]
         private FixtureVisual _fixtureVisual;
 
         /// <summary>The fixture's replicated lit mode (what clients render).</summary>
         public FixtureVisual Visual => _fixtureVisual;
+
+        /// <summary>Server: the fixture's own battery, under the APC's cell.</summary>
+        public FixtureEmergencyCell EmergencyCell => _cell ??= new FixtureEmergencyCell(_cellRunSeconds, _cellRechargeSeconds);
+
+        /// <summary>Server: lit by its own cell because the APC can no longer light it.</summary>
+        public bool IsOnEmergencyCell => _onCell;
+
+        private FixtureEmergencyCell _cell;
+        private bool _onCell;
+        private float _lastCellTime = -1f;
 
         private float _poweredIntensity;
         private float _poweredFillIntensity;
@@ -290,7 +308,25 @@ namespace SS3D.Systems.Electricity
                 CacheAreaId();
             }
 
+            UpdateEmergencyCell();
             RefreshVisuals();
+        }
+
+        /// <summary>Server, each electricity tick: charge the cell on mains, drain it while it carries the light.</summary>
+        private void UpdateEmergencyCell()
+        {
+            float now = Time.time;
+            float seconds = _lastCellTime < 0f ? 0f : now - _lastCellTime;
+            _lastCellTime = now;
+
+            if (_onCell)
+            {
+                EmergencyCell.Drain(seconds);
+            }
+            else if (_fixtureVisual == FixtureVisual.Normal)
+            {
+                EmergencyCell.OnMains(seconds);
+            }
         }
 
         public static void RefreshAllFixtures()
@@ -334,12 +370,29 @@ namespace SS3D.Systems.Electricity
 
         private FixtureVisual ComputeFixtureVisual()
         {
-            if (!ShouldBeLit(out bool useEmergencyVisuals))
+            if (_bulb == null)
             {
+                TryGetComponent(out _bulb);
+            }
+
+            if (_bulb != null && !LightBulbRules.CanEmit(_bulb.State))
+            {
+                _onCell = false;
                 return FixtureVisual.Off;
             }
 
-            return useEmergencyVisuals ? FixtureVisual.Emergency : FixtureVisual.Normal;
+            if (ShouldBeLit(out bool useEmergencyVisuals))
+            {
+                _onCell = false;
+                return useEmergencyVisuals ? FixtureVisual.Emergency : FixtureVisual.Normal;
+            }
+
+            // The APC can't light it (cell flat, lighting shed or switched off at the APC, APC broken or gone):
+            // the fixture's own cell takes over until it runs down. The wall switch is a choice, not a power cut.
+            _onCell = _fixtureCapability == LightFixtureCapability.EmergencyCapable
+                && EmergencyCell.CanLight
+                && !IsSwitchedOffAtWall();
+            return _onCell ? FixtureVisual.Emergency : FixtureVisual.Off;
         }
 
         private void ApplyFixtureVisual(FixtureVisual visual)
@@ -415,6 +468,14 @@ namespace SS3D.Systems.Electricity
                 _fixtureCapability,
                 consumerStatus,
                 out useEmergencyVisuals);
+        }
+
+        private bool IsSwitchedOffAtWall()
+        {
+            return _hasArea
+                && SubSystems.TryGet(out AreaSubSystem areaSubSystem)
+                && areaSubSystem.TryGetAreaLightingSwitchOn(_areaId, out bool on)
+                && !on;
         }
 
         private bool IsFixtureLightingChannelOpen()

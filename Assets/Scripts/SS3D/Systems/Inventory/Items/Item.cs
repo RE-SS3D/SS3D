@@ -379,6 +379,7 @@ namespace SS3D.Systems.Inventory.Items
         [Server]
         public void Delete()
         {
+            // A loose item (dropped, thrown, map-placed) has no container to leave.
             if (Container != null)
             {
                 Container.RemoveItem(this);

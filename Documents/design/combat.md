@@ -53,11 +53,13 @@ Free continuous movement (confirmed, not tile-stepped) makes combat inherently m
 Hits interrupt, not just subtract. Two levels:
 
 - **Stagger** — a heavy hit (a big melee weapon, a point-blank shot) briefly interrupts the victim: their current windup or action is cancelled and they stumble. A fraction of a second, no loss of control beyond that.
-- **Knockdown** — a shove (disarm, `main-hud.md` §7), a stun baton hit (below), collapsing from exhaustion (`stamina.md` §3) or a nearby blast (`explosives-destruction.md` §1) puts the victim on the ground for roughly **2–3 seconds**. They drop to prone visibly, get a HUD alert (`main-hud.md` §9), and stand back up when it ends. Knockdown is the window where a disarm, a grab or a finishing blow lands.
+- **Knockdown** — a shove (disarm, `main-hud.md` §7), a stun baton or taser hit (below), collapsing from exhaustion (`stamina.md` §3) or a nearby blast (`explosives-destruction.md` §1) puts the victim on the ground for roughly **2–3 seconds**. They drop to prone visibly, get a HUD alert (`main-hud.md` §9), and stand back up when it ends. Knockdown is the window where a disarm, a grab or a finishing blow lands.
 
 Knockdown is always legible: the victim sees themselves fall and sees when they can stand, and everyone around sees a body on the floor. Critical-state collapse (`health.md` §4) is a different, longer state, not a knockdown.
 
 **Stun baton.** Security's signature weapon, and its non-lethal one. It is an ordinary melee weapon under §2 (windup, recovery, deterministic hit), except that a charged hit knocks the target down as above instead of mainly dealing damage. It holds a charge that each knockdown hit spends; empty, it is a club. Armor doesn't make anyone immune: an operative in a hardsuit goes down like anyone else. A stun is a window for whoever follows up, not an arrest — restraints are out of scope for this pass (§11).
+
+**Taser.** The baton's ranged counterpart, and the other half of security's non-lethal kit. A hit on an unarmored body knocks it down as above and drains most of its stamina; it does no brute or burn damage and never harms structures. Unlike the baton, it is stopped by rigid armor: the prongs can't reach skin through a hardsuit, so a hit on a zone covered by an intact hardsuit piece only drains part of the stamina. A spent piece (`armor.md` §2: integrity at zero) no longer stops it, and a hardsuit without its helmet leaves the head open. So against an operative the taser is a follow-up once the suit has been damaged, not an opener. Stunning at range is strong, so the taser is limited by charges rather than fire rate: a few shots, enough for one engagement with a miss or a second target, then a long recharge. Repeated hits keep a body down for the knockdown time but do not stack it. Its exact numbers are a playtest question; the interim values live in the weapon's profile.
 
 ## 6. Friendly fire and telling sides apart
 
@@ -106,7 +108,7 @@ Armor mitigation per zone is designed in `armor.md`.
 - Bracing and crouching for accuracy
 - Loose rounds and reloading magazines round by round
 - Restraints (handcuffs) and arrest — they belong with an open station round, where a stunned suspect is taken to the brig rather than finished off
-- Ranged stun weapons (taser, disabler) — stun at range is a much stronger tool than the baton and needs its own balance pass
+- Other ranged stun weapons (disabler, stun shotgun)
 - Weapon sway as an exhaustion read (needs aim IK — see `stamina.md` §4)
 - Death, cloning, and respawn (see `death-cloning-respawn.md`)
 - Weapon crafting or attachments

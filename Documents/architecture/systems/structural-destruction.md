@@ -56,6 +56,8 @@ Blast floors and the hull beneath them now take independent accumulated damage: 
 - Wall/window, supported table, locker, machine and airlock prefabs + blast assets: **SS3D → Structural Damage → Run Content Prefab Recipes**.
 - Give an object a different impact sound with `TileObjectSo.impactMaterial`. New clips go in `StructuralAudioTrackIds`.
 
+- Wall-mounted machines that break rather than clear (the APC): add `BreakableDevice`. Ranged and melee find it by its collider (`BreakableDeviceResolver`) before the wall behind; `StructuralDamageService` passes blast force to the wall mounts on each tile it hits, before the wall itself (a destroyed wall still takes its mounts with it).
+
 - Metal furniture is opt-in via `TileObjectSo.structuralDamageEnabled` on FurnitureBase; `StructuralIntegrityPrefabSetup` owns the explicit locker/machine asset list. Tables opt in by generic/specific material.
 
 ## Pitfalls

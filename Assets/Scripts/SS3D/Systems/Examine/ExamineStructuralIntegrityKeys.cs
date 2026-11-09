@@ -6,6 +6,10 @@ namespace SS3D.Systems.Examine
     public static class ExamineStructuralIntegrityKeys
     {
         public const string Damaged = "examine.structural.damaged";
+        public const string DentedDevice = "examine.device.dented";
+        public const string DentedDeviceFallback = "Its casing is dented and scorched.";
+        public const string BrokenDevice = "examine.device.broken";
+        public const string BrokenDeviceFallback = "It's smashed and dead. Sparks spit from the broken casing.";
         public const string ChippedGlass = "examine.structural.chipped_glass";
         public const string ChippedGlassFallback = "The glass is chipped, with a small star of cracks.";
         public const string FracturedGlass = "examine.structural.fractured_glass";

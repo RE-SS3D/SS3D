@@ -24,8 +24,15 @@ namespace SS3D.Systems.Combat
         public float BruteDamage;
         public float BurnDamage;
 
-        /// <summary>Hostile exhaustion, clamped to available stamina so it cannot create oxy debt.</summary>
+        /// <summary>
+        /// Hostile exhaustion in absolute stamina points (a default body holds StaminaFactory.DefaultMax = 10),
+        /// clamped to available stamina so it cannot create oxy debt.
+        /// </summary>
         public float StaminaDamage;
+
+        /// <summary>Seconds a living hit knocks the target down (combat.md §5); 0 never floors anyone.</summary>
+        public float KnockdownSeconds;
+
         public bool CanSever;
 
         /// <summary>Base half-angle of the accuracy cone in degrees.</summary>
@@ -122,7 +129,27 @@ namespace SS3D.Systems.Combat
         };
         public static RangedWeaponProfile LaserRifle => Energy(RangedVisualStyle.Laser, 24f, 0f, 20, 0.3f, 40f);
         public static RangedWeaponProfile IonRifle => Energy(RangedVisualStyle.Ion, 16f, 0f, 12, 0.6f, 30f);
-        public static RangedWeaponProfile Taser => Energy(RangedVisualStyle.Taser, 0f, 65f, 6, 0.75f, 12f);
+        public static RangedWeaponProfile Taser
+        {
+            get
+            {
+                RangedWeaponProfile profile = Energy(RangedVisualStyle.Taser, 0f, 6.5f, 3, 0.75f, 12f);
+                profile.KnockdownSeconds = TaserKnockdownSeconds;
+                profile.ReloadSeconds = TaserRechargeSeconds;
+                return profile;
+            }
+        }
+
+        // First-guess taser balance, to tune from playtests: every unarmored hit floors the target, so the
+        // limit is charges. Three covers one engagement with a miss or a second target, then a long recharge.
+
+        /// <summary>A stun baton's knockdown (combat.md §5: roughly 2–3 s), delivered at range.</summary>
+        public const float TaserKnockdownSeconds = 2.5f;
+
+        public const float TaserRechargeSeconds = 9f;
+
+        /// <summary>Share of a stun's stamina drain that still lands through armor that blocks the knockdown.</summary>
+        public const float StunBlockedStaminaFactor = 0.5f;
 
         private static RangedWeaponProfile Energy(RangedVisualStyle style, float burn, float stamina,
             int capacity, float cooldown, float range)

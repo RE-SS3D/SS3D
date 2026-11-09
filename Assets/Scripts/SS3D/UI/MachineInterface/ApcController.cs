@@ -8,7 +8,10 @@ using SS3D.Systems.IdAccess;
 using SS3D.Systems.Tile;
 using SS3D.Systems.Tile.Connections;
 using System.Collections.Generic;
+using SS3D.Interactions;
+using SS3D.Interactions.Interfaces;
 using SS3D.Systems.Electricity;
+using SS3D.Systems.StructuralDamage;
 using UnityEngine;
 
 namespace SS3D.UI.MachineInterface
@@ -41,11 +44,20 @@ namespace SS3D.UI.MachineInterface
 
         private bool _multipleApcsInArea;
 
+        private BreakableDevice _breakable;
+
         public override string InterfaceId => MachineInterfaceIds.Apc;
 
         protected override byte ReadIdControlId => MachineInterfaceControlIds.Apc.ReadId;
 
-        public ApcControlFlags Channels => _channels;
+        /// <summary>A broken APC feeds nothing: every channel reads off, whatever its breakers say.</summary>
+        public ApcControlFlags Channels => IsBroken ? ApcControlFlags.None : _channels;
+
+        /// <summary>Smashed by rounds, swings or a blast (<see cref="BreakableDevice"/>); it stays on the wall, dead.</summary>
+        public bool IsBroken => Breakable != null && Breakable.IsBroken;
+
+        // Looked up lazily as well as in OnAwake: EditMode instances never run Awake.
+        private BreakableDevice Breakable => _breakable != null ? _breakable : _breakable = GetComponent<BreakableDevice>();
 
         public PlacedTileObject TileObject => this ? GetComponent<PlacedTileObject>() : null;
 
@@ -80,10 +92,26 @@ namespace SS3D.UI.MachineInterface
 
         public bool IsOn => true;
 
-        public bool IsLoopRunning => _storedEnergyKwh > 0f;
+        public bool IsLoopRunning => !IsBroken && _storedEnergyKwh > 0f;
 
-        public float MaxDeliverableKw(float tickSeconds) =>
-            PowerStorageMath.MaxDeliverableKw(_storedEnergyKwh, _maxDischargeRateKw, tickSeconds);
+        public float MaxDeliverableKw(float tickSeconds) => IsBroken
+            ? 0f
+            : PowerStorageMath.MaxDeliverableKw(_storedEnergyKwh, _maxDischargeRateKw, tickSeconds);
+
+        public override IInteraction[] CreateTargetInteractions(InteractionEvent interactionEvent)
+        {
+            // Nothing to open on a dead panel.
+            return IsBroken ? System.Array.Empty<IInteraction>() : base.CreateTargetInteractions(interactionEvent);
+        }
+
+        protected override void OnAwake()
+        {
+            base.OnAwake();
+            if (TryGetComponent(out _breakable))
+            {
+                _breakable.OnBrokenChanged += HandleBrokenChanged;
+            }
+        }
 
         public void SetMultipleApcsInArea(bool value)
         {
@@ -119,16 +147,18 @@ namespace SS3D.UI.MachineInterface
             }
         }
 
-        public float AddPowerKw(float requestedKw, float tickSeconds) =>
-            PowerStorageMath.AddPowerKw(
+        public float AddPowerKw(float requestedKw, float tickSeconds) => IsBroken
+            ? 0f
+            : PowerStorageMath.AddPowerKw(
                 ref _storedEnergyKwh,
                 _maxCapacityKwh,
                 _maxChargeRateKw,
                 requestedKw,
                 tickSeconds);
 
-        public float RemovePowerKw(float requestedKw, float tickSeconds) =>
-            PowerStorageMath.RemovePowerKw(
+        public float RemovePowerKw(float requestedKw, float tickSeconds) => IsBroken
+            ? 0f
+            : PowerStorageMath.RemovePowerKw(
                 ref _storedEnergyKwh,
                 _maxDischargeRateKw,
                 requestedKw,
@@ -146,7 +176,7 @@ namespace SS3D.UI.MachineInterface
 
         protected override bool ApplyControl(byte controlId, bool value)
         {
-            if (!AccessGranted)
+            if (!AccessGranted || IsBroken)
             {
                 return false;
             }
@@ -191,6 +221,9 @@ namespace SS3D.UI.MachineInterface
 
         protected override void OnDestroyed()
         {
+            if (_breakable != null)
+                _breakable.OnBrokenChanged -= HandleBrokenChanged;
+
             if (SubSystems.TryGet(out AreaSubSystem areaSubSystem))
                 areaSubSystem.WhenReady -= OnAreaSystemSetup;
 
@@ -356,7 +389,7 @@ namespace SS3D.UI.MachineInterface
                 InterfaceId = InterfaceId,
                 Title = ComposeTitle(areaName),
                 AreaName = areaName ?? string.Empty,
-                Channels = _channels,
+                Channels = Channels,
                 PowerState = (byte)powerState,
                 GridInputKw = stats.TotalSupplyKw,
                 LoadOutputKw = stats.TotalDemandKw,
@@ -401,13 +434,24 @@ namespace SS3D.UI.MachineInterface
             electricitySystem.AddElectricalElement(this);
         }
 
+        private void HandleBrokenChanged(bool broken)
+        {
+            if (IsServer)
+            {
+                RefreshAfterChannelsChange();
+            }
+        }
+
         private void OnChannelsChanged(ApcControlFlags oldValue, ApcControlFlags newValue, bool asServer)
         {
-            if (!asServer)
+            if (asServer)
             {
-                return;
+                RefreshAfterChannelsChange();
             }
+        }
 
+        private void RefreshAfterChannelsChange()
+        {
             if (SubSystems.TryGet(out AreaSubSystem areaSubSystem))
             {
                 areaSubSystem.RefreshAreaLightingStates();

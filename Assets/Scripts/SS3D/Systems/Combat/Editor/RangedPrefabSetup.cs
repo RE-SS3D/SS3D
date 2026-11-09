@@ -76,6 +76,7 @@ namespace SS3D.Systems.Combat.Editor
             so.FindProperty("_profile.BruteDamage").floatValue = profile.BruteDamage;
             so.FindProperty("_profile.BurnDamage").floatValue = profile.BurnDamage;
             so.FindProperty("_profile.StaminaDamage").floatValue = profile.StaminaDamage;
+            so.FindProperty("_profile.KnockdownSeconds").floatValue = profile.KnockdownSeconds;
             so.FindProperty("_profile.CanSever").boolValue = profile.CanSever;
             so.FindProperty("_profile.BaseSpreadDegrees").floatValue = profile.BaseSpreadDegrees;
             so.FindProperty("_profile.RecoilClimbDegrees").floatValue = profile.RecoilClimbDegrees;
