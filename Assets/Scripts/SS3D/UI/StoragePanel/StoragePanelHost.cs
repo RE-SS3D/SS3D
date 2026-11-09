@@ -574,6 +574,10 @@ namespace SS3D.UI.StoragePanel
                 return;
             }
 
+            // A drag whose release never arrived (released while the window was unfocused) would
+            // otherwise leave its ghost drawn with nothing referencing it, across scenes too.
+            CleanupDrag();
+
             _dragItem = item;
             _dragSourceContainer = sourceContainer;
             _dragSourcePanel = sourcePanel;
@@ -840,6 +844,31 @@ namespace SS3D.UI.StoragePanel
             }
 
             return null;
+        }
+
+        /// <summary>
+        /// Tabbing out mid-drag means the mouse release happens outside the game and never reaches
+        /// UI Toolkit, so drop the drag and the capture its source slot still holds.
+        /// </summary>
+        private void OnApplicationFocus(bool hasFocus)
+        {
+            if (hasFocus || _dragGhost == null)
+            {
+                return;
+            }
+
+            ReleaseMouseCapture(_root?.panel);
+            foreach (HudDropTarget target in _hudDropTargets)
+            {
+                ReleaseMouseCapture(target.Element?.panel);
+            }
+
+            CleanupDrag();
+        }
+
+        private static void ReleaseMouseCapture(IPanel panel)
+        {
+            panel?.GetCapturingElement(PointerId.mousePointerId)?.ReleasePointer(PointerId.mousePointerId);
         }
 
         private void CleanupDrag()
