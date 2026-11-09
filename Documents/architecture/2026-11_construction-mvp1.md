@@ -65,7 +65,8 @@ What the first Editor session needs to know; fold into the system maps with `upd
 - **Cell actions.** `ConstructionPlacementSubSystem` is a `NetworkSubSystem` on the hub. The ghost takes a primary click only when nothing target-bound outranks it (Drop does not). The Cancel key cancels a running cell action first. `InteractionController.Local` is new.
 - **Girder stages.** `GirderStageRecipe` copies the girder prefab before stripping it; it calls FishNet `ManagedObjects.InitializePrefab` on the copy so it gets its own prefab id. Check the plated prefab spawns on a remote client (tile Pitfall: networked tile prefabs must carry `PlacedTileObject`, which the copy does).
 - **Atmos through stages.** A non-airtight wall gets `BlockedEdges = 0`, not only `IsAirtight = false`: neighbour flow reads edges, so a girder now passes air like open floor.
-- **Not checked.** Whether floor tiles and plating carry a `Selectable`; object steps on them need one to dispatch. Whether `StringTable.AddEntry` updates an existing key's English text.
+- **Not checked.** Whether `StringTable.AddEntry` updates an existing key's English text. (Plating does dispatch object steps: the scenario welds it through the client interaction path.)
+- **First editor session (2026-11-09).** Recipes run and committed; four compile errors fixed. Girder stages are `Wall` turf with `airtight = false`, and `TileUnderfloorVisibility` now treats only airtight walls as covering, so plating stays drawn under an open girder.
 
 ## Phases
 
@@ -118,7 +119,7 @@ What the first Editor session needs to know; fold into the system maps with `upd
 ### S6: test station and acceptance
 
 - [ ] M0 test station: supply network to its vents and an air alarm per breach-prone room; engineering closet with sheets, glass and floor tiles; Engineer loadout with welder, crowbar and stacks (lands with M0's Engineer)
-- [ ] Scenario `scenarios:Construction`: blast a hull hole, patch it, pressure climbs back; destroy a wall, clear wreckage, rebuild to sealed, rooms separate
+- [x] Scenario `scenarios:Construction` (`ConstructionScenarios`, test room): weld cracked plating and retile; patch a hull hole cell by cell in magboots, the room holds its air; destroy a wall, clear wreckage, rebuild to sealed, the wall blocks air. The test room has no vents, so "pressure climbs back" waits for the M0 station's supply network
 - [ ] Separate-client multiplayer check: ghost, ring, cancel reasons, stage swaps and wreckage visible to a remote client
 - [ ] `update-system-docs`: tile, structural-destruction, interactions, inventory maps; M8/M10 slices
 - Validation: `compile,editmode` + the new scenario + multiplayer smoke
