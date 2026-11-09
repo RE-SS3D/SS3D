@@ -24,9 +24,14 @@ namespace SS3D.UI.StoragePanel
     /// a storage panel needs (screen-space slot-to-slot dragging — see
     /// Documents/architecture/systems/inventory.md § Overview on why this is a
     /// new UITK implementation rather than the world-space InteractionTier.Combine grammar).
+    /// A press becomes a drag once the pointer moves <see cref="DragThresholdPx"/>; a release before that is a
+    /// click (Documents/design/inventory-storage.md §6).
     /// </summary>
     public class StorageSlot : InventorySlot
     {
+        /// <summary>How far a press has to move before it becomes a drag rather than a click.</summary>
+        public const float DragThresholdPx = 6f;
+
         /// <summary>Fired when a drag gesture starts on a bound (non-empty) slot. Position is panel-space.</summary>
         public event Action<StorageSlot, Vector2> DragStarted;
 
@@ -37,13 +42,17 @@ namespace SS3D.UI.StoragePanel
         public event Action<StorageSlot, Vector2> DragEnded;
 
         /// <summary>
-        /// Fired on a plain click of a slot bound to an item that is itself a container (e.g. a
-        /// lockbox sitting in an open locker) — opens it as a nested panel
-        /// (Documents/design/inventory-storage.md §7).
+        /// Fired on a left click (press and release without dragging), bound or empty. The int is the click count:
+        /// 2 for the second click of a double-click.
         /// </summary>
-        public event Action<StorageSlot> NestedOpenRequested;
+        public event Action<StorageSlot, int> Clicked;
 
         private readonly Label _stackLabel;
+
+        private int _pressPointerId = -1;
+        private Vector2 _pressPosition;
+        private int _pressClickCount;
+        private bool _dragging;
 
         public Vector2Int Position { get; set; }
 
@@ -64,7 +73,7 @@ namespace SS3D.UI.StoragePanel
             RegisterCallback<PointerDownEvent>(OnPointerDown);
             RegisterCallback<PointerMoveEvent>(OnPointerMove);
             RegisterCallback<PointerUpEvent>(OnPointerUp);
-            RegisterCallback<ClickEvent>(OnClicked);
+            RegisterCallback<PointerCaptureOutEvent>(_ => ResetPress());
         }
 
         /// <summary>Binds this slot to a stored item, or clears it to the empty placeholder state.</summary>
@@ -88,21 +97,35 @@ namespace SS3D.UI.StoragePanel
 
         private void OnPointerDown(PointerDownEvent evt)
         {
-            if (BoundItem == null)
+            if (evt.button != 0)
             {
                 return;
             }
 
+            _pressPointerId = evt.pointerId;
+            _pressPosition = evt.position;
+            _pressClickCount = evt.clickCount;
+            _dragging = false;
             this.CapturePointer(evt.pointerId);
-            DragStarted?.Invoke(this, evt.position);
             evt.StopPropagation();
         }
 
         private void OnPointerMove(PointerMoveEvent evt)
         {
-            if (!this.HasPointerCapture(evt.pointerId))
+            if (evt.pointerId != _pressPointerId || !this.HasPointerCapture(evt.pointerId))
             {
                 return;
+            }
+
+            if (!_dragging)
+            {
+                if (BoundItem == null || ((Vector2)evt.position - _pressPosition).magnitude < DragThresholdPx)
+                {
+                    return;
+                }
+
+                _dragging = true;
+                DragStarted?.Invoke(this, _pressPosition);
             }
 
             DragMoved?.Invoke(this, evt.position);
@@ -110,21 +133,32 @@ namespace SS3D.UI.StoragePanel
 
         private void OnPointerUp(PointerUpEvent evt)
         {
-            if (!this.HasPointerCapture(evt.pointerId))
+            if (evt.pointerId != _pressPointerId || !this.HasPointerCapture(evt.pointerId))
             {
                 return;
             }
 
+            bool dragging = _dragging;
+            int clickCount = _pressClickCount;
+            ResetPress();
             this.ReleasePointer(evt.pointerId);
-            DragEnded?.Invoke(this, evt.position);
+
+            if (dragging)
+            {
+                DragEnded?.Invoke(this, evt.position);
+                return;
+            }
+
+            if (worldBound.Contains(evt.position))
+            {
+                Clicked?.Invoke(this, clickCount);
+            }
         }
 
-        private void OnClicked(ClickEvent evt)
+        private void ResetPress()
         {
-            if (BoundItem != null && BoundItem.GetComponent<AttachedContainer>() != null)
-            {
-                NestedOpenRequested?.Invoke(this);
-            }
+            _pressPointerId = -1;
+            _dragging = false;
         }
     }
 }

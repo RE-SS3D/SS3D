@@ -362,20 +362,32 @@ namespace SS3D.Systems.Inventory.Containers
 
 			if (item == null) return;
 
-            // Restore visibility
-            if (HideItems)
+            // A move between two containers (pocket to toolbox) syncs two network objects, and a client can
+            // get the new container's add first. The item then already belongs to that container: showing,
+            // unparenting or unfreezing it here would leave it visible, physical and stuck to the new holder.
+            bool movedOn = item.LocalHolder != null && item.LocalHolder != this;
+            if (!movedOn)
             {
-                item.SetVisibility(true);
-            }
+                item.LocalHolder = null;
 
-            // Remove parent if child of this
-            if (item.transform.parent == transform)
-            {
-                item.transform.SetParent(null, true);
+                // Restore visibility
+                if (HideItems)
+                {
+                    item.SetVisibility(true);
+                }
+
+                // Remove parent if child of this
+                if (item.transform.parent == transform)
+                {
+                    item.transform.SetParent(null, true);
+                }
             }
 
             ProcessItemDetached(item);
-            item.Unfreeze();
+            if (!movedOn)
+            {
+                item.Unfreeze();
+            }
         }
 
         [ServerOrClient]
@@ -383,6 +395,7 @@ namespace SS3D.Systems.Inventory.Containers
         {
 			if (item == null) return;
 
+            item.LocalHolder = this;
 			item.Freeze();
 
             // Remove PlacedItemObject component if it exists to prevent saving items in containers
@@ -779,8 +792,29 @@ namespace SS3D.Systems.Inventory.Containers
                     && CanHoldItem(item)
                     && item.SizeClass <= _maxSizeClass // Flat size-class fit check (Documents/design/inventory-storage.md §4)
                     && !item.GetComponentsInChildren<AttachedContainer>().AsEnumerable().Contains(this) // Can't put an item in its own container
+                    && CanNestStorage(_hasUi ? GetComponentInParent<Item>() : null, item)
                     && !(bool)GetComponents<IStorageCondition>()?.Any(x => !x.CanStore(this, item))
                     && CanAcceptInHandSlot(item);
+        }
+
+        /// <summary>
+        /// Storage items only nest into strictly larger storage items, so a carrier can never hold
+        /// another of its own kind (no toolbox-in-a-toolbox chains). Every nesting step drops a size
+        /// tier, which bounds the depth. <paramref name="carrier"/> is the item owning the receiving
+        /// storage container, or null when the receiver isn't storage on an item (hand and worn slots,
+        /// which sit on body-part items, and lockers): those take any storage item that fits. Only
+        /// containers with a storage panel (<see cref="HasUi"/>) count as storage on either side, so a
+        /// PDA's card slot doesn't trigger the rule (Documents/design/inventory-storage.md §7).
+        /// </summary>
+        public static bool CanNestStorage(Item carrier, Item item)
+        {
+            if (carrier == null || carrier == item)
+            {
+                return true;
+            }
+
+            bool itemIsStorage = item.GetComponentsInChildren<AttachedContainer>(true).Any(container => container.HasUi);
+            return !itemIsStorage || item.SizeClass < carrier.SizeClass;
         }
 
         /// <summary>

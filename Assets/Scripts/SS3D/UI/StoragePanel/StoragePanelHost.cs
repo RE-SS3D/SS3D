@@ -61,8 +61,12 @@ namespace SS3D.UI.StoragePanel
         private readonly Dictionary<AttachedContainer, string> _pendingBreadcrumbs = new();
         private readonly List<HudDropTarget> _hudDropTargets = new();
 
+        /// <summary>How long a click on a container item waits for a second click (open) before taking it.</summary>
+        private const long DoubleClickWindowMs = 300;
+
         private VisualElement _root;
         private HumanInventory _localInventory;
+        private IVisualElementScheduledItem _pendingContainerTake;
         private int _cascadeIndex;
 
         // Active drag state (panel slot and/or HUD-origin drag).
@@ -430,7 +434,7 @@ namespace SS3D.UI.StoragePanel
             view.SlotDragStarted += HandleSlotDragStarted;
             view.SlotDragMoved += HandleSlotDragMoved;
             view.SlotDragEnded += HandleSlotDragEnded;
-            view.SlotNestedOpenRequested += HandleSlotNestedOpenRequested;
+            view.SlotClicked += HandleSlotClicked;
             view.Bind(container);
 
             _root.Add(view);
@@ -711,6 +715,53 @@ namespace SS3D.UI.StoragePanel
             }
 
             return false;
+        }
+
+        /// <summary>
+        /// A click on a panel slot does what a click on a HUD slot does: with the active hand empty it takes the
+        /// item, with something held it stores that item in an empty slot it fits, else nothing
+        /// (<see cref="HumanInventory.ClientInteractWithContainerSlot"/>). A double-click opens a container item as a
+        /// nested panel, so its single click waits out the double-click window before taking it
+        /// (Documents/design/inventory-storage.md §6, §7).
+        /// </summary>
+        private void HandleSlotClicked(StoragePanelView panel, StorageSlot slot, int clickCount)
+        {
+            _pendingContainerTake?.Pause();
+            _pendingContainerTake = null;
+
+            if (_localInventory == null || panel.Container == null)
+            {
+                return;
+            }
+
+            bool opensNested = slot.BoundItem != null && slot.BoundItem.GetComponent<AttachedContainer>() != null;
+            if (clickCount >= 2)
+            {
+                // Anything that isn't a container went to the hand on the first click; don't put it straight back.
+                if (opensNested)
+                {
+                    HandleSlotNestedOpenRequested(panel, slot);
+                }
+
+                return;
+            }
+
+            AttachedContainer container = panel.Container;
+            Vector2Int position = slot.Position;
+            if (!opensNested)
+            {
+                _localInventory.ClientInteractWithContainerSlot(container, position);
+                return;
+            }
+
+            _pendingContainerTake = _root.schedule.Execute(() =>
+            {
+                _pendingContainerTake = null;
+                if (_localInventory != null && container != null)
+                {
+                    _localInventory.ClientInteractWithContainerSlot(container, position);
+                }
+            }).StartingIn(DoubleClickWindowMs);
         }
 
         private void HandleSlotNestedOpenRequested(StoragePanelView panel, StorageSlot slot)
