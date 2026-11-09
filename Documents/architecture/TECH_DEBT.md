@@ -269,6 +269,14 @@ server past-map conclusions on `TileMapLoaded`, and keep sparse-client *conseque
 
 Every landed hit on a structure now sends `RpcStructuralImpact`, and any non-steel break sends one per destroyed tile. A shot on a structure drops its `RpcPlayAudioSource`, so gunfire traffic should fall, but nobody has measured the net change; the owner dropped that measurement from [ambience-and-impact-audio](../archive/architecture/2026-11_ambience-and-impact-audio.md). Measure it if [test-server.md](../milestones/test-server.md) T3 runs over budget during a firefight.
 
+### 1.19 Every container's contents replicate to every client
+
+**Blast radius: medium — trend: stable**
+
+`AttachedContainer._storedItems` is a SyncList sent to every observer, so a client holds the contents of every pocket, bag and locker it observes, whatever the UI shows. Examine's closed-container rule and Search's hidden pockets ([examine.md](../design/examine.md) §5) are therefore enforced in the UI only; a modified client reads them. Closing it needs per-container observer conditions (contents sent only to whoever opens, carries or legitimately sees them), which touches all of inventory and FishNet observer setup — its own effort, not part of [2026-11_examine-and-action-feedback](2026-11_examine-and-action-feedback.md).
+
+- Related: [inventory.md](systems/inventory.md), [examine.md](systems/examine.md)
+
 ## 2. Hot-path GC / performance debt (tracked, partially paid down)
 
 PR #13 fixed a first wave of per-tick allocation ([FORK_STATUS.md](../FORK_STATUS.md) § Hot-path
@@ -310,8 +318,8 @@ Several intentional divergences from design docs are already recorded as accepte
 rework, each directly in its owning system map: Main HUD fully hides rather than layers under machine
 UI ([inventory.md](systems/inventory.md) § Fork deviation), Area is APC-seeded rather than
 auto-detected ([area.md](systems/area.md)), combat's primary click always swings rather than requiring
-a hover target ([combat.md](systems/combat.md)), and examine always shows the name tooltip on plain
-hover rather than gating everything behind the hold key ([examine.md](systems/examine.md)). Listed
+a hover target ([combat.md](systems/combat.md)). Examine's hover name tooltip used to be listed here; the
+2026-11 revision of [examine.md](../design/examine.md) §4 made it the design. Listed
 here only so this doc doesn't accidentally get read as "these are bugs" — they are direction calls,
 not quality problems.
 

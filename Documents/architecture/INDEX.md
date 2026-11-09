@@ -14,7 +14,7 @@ One row per gameplay domain that has, or should eventually have, a design doc. A
 
 | Domain | Design | Architecture | System map |
 |---|---|---|---|
-| action-messages | [action-messages](../design/action-messages.md) | none yet | none yet |
+| action-messages | [action-messages](../design/action-messages.md) | [examine-and-action-feedback](2026-11_examine-and-action-feedback.md) — planned | none yet |
 | admin-tools | [admin-tools](../design/admin-tools.md) | none yet | [ingame-console](systems/ingame-console.md) — partial |
 | ai-cyborgs | [ai-cyborgs](../design/ai-cyborgs.md) | none yet | none yet |
 | antagonist-content | [antagonist-content](../design/antagonist-content.md) | [round-end-loop](../archive/architecture/2026-11_round-end-loop.md) — shipped | [gamemodes-roles-traits](systems/gamemodes-roles-traits.md) — partial |
@@ -25,7 +25,7 @@ One row per gameplay domain that has, or should eventually have, a design doc. A
 | cargo | [cargo](../design/cargo.md) | none yet | none yet |
 | chemistry | [chemistry](../design/chemistry.md) | [substances-foundation](../archive/architecture/2026-07_substances-foundation.md) — shipped | [substances](systems/substances.md) — partial |
 | combat | [combat](../design/combat.md) | [combat plan](../plans/combat_implementation_plan.md) — in-progress; [player-body-animation](../archive/architecture/2026-07_player-body-animation.md), [animation-polish](../archive/architecture/2026-07_animation-polish.md) — shipped; [humanoid-animation-pass](2026-11_humanoid-animation-pass.md) — in-progress | [combat](systems/combat.md) — partial |
-| comms | [comms](../design/comms.md) | [comms-non-diegetic-feed](../archive/architecture/2026-07_comms-non-diegetic-feed.md) — shipped | [chat-audio-screens](systems/chat-audio-screens.md) — partial |
+| comms | [comms](../design/comms.md) | [comms-non-diegetic-feed](../archive/architecture/2026-07_comms-non-diegetic-feed.md) — shipped; [OOC column plan](../plans/ooc-column.plan.md) — planned | [chat-audio-screens](systems/chat-audio-screens.md) — partial |
 | construction | [construction](../design/construction.md) | none yet | [tile](systems/tile.md) — partial |
 | crafting | [crafting](../design/crafting.md) | none yet | [crafting](systems/crafting.md) — stub |
 | creative-mode | [creative-mode](../design/creative-mode.md) | [map-editor-replacement](../archive/architecture/2026-07_map-editor-replacement.md), [spawn-point-authoring](../archive/architecture/2026-07_spawn-point-authoring.md), [ss13-map-import](../archive/architecture/2026-07_ss13-map-import.md), [ss13-map-import-infrastructure](../archive/architecture/2026-07_ss13-map-import-infrastructure.md) — shipped ; [map-editor-palette-layout](../archive/architecture/2026-11_map-editor-palette-layout.md) — shipped | [tile](systems/tile.md) — partial; [map-editor-creative-hooks](systems/map-editor-creative-hooks.md) |
@@ -33,7 +33,7 @@ One row per gameplay domain that has, or should eventually have, a design doc. A
 | death-cloning-respawn | [death-cloning-respawn](../design/death-cloning-respawn.md) | none yet | none yet |
 | disposal | [disposal](../design/disposal.md) | [disposal-item-network](../archive/architecture/2026-07_disposal-item-network.md) — shipped | [disposal](systems/disposal.md) — partial |
 | electricity | [electricity](../design/electricity.md) | [solar-generation](../archive/architecture/2026-07_solar-generation.md), [mi-area-electricity-debt](../archive/architecture/2026-07_mi-area-electricity-debt.md) — shipped | [electricity](systems/electricity.md) — partial |
-| examine | [examine](../design/examine.md) | none yet | [examine](systems/examine.md) — partial |
+| examine | [examine](../design/examine.md) | [examine-and-action-feedback](2026-11_examine-and-action-feedback.md) — planned | [examine](systems/examine.md) — partial |
 | explosives-destruction | [explosives-destruction](../design/explosives-destruction.md) | [structural-destruction](2026-07_structural-destruction.md) — in-progress | [structural-destruction](systems/structural-destruction.md) — partial |
 | hacking-interface | [hacking-interface](../design/hacking-interface.md) | none yet | none yet |
 | health | [health](../design/health.md) | [health plan](../plans/health_implementation_plan.md) — in-progress; [body-presentation-authority](../archive/architecture/2026-07_body-presentation-authority.md), [health-env-feel](../archive/architecture/2026-07_health-env-feel.md) — shipped | [health](systems/health.md) — partial |
@@ -135,9 +135,12 @@ Only work that is in flight, planned, or kept as standing reference. Everything 
 | [2026-11_sandbox-server](2026-11_sandbox-server.md) | in-progress |
 | [2026-11_atmos-edge-flow](2026-11_atmos-edge-flow.md) | in-progress |
 | [2026-11_humanoid-animation-pass](2026-11_humanoid-animation-pass.md) | in-progress |
+| [2026-11_examine-and-action-feedback](2026-11_examine-and-action-feedback.md) | planned |
 | [2026-11_testing-philosophy](2026-11_testing-philosophy.md) | shipped (standing policy) |
 | [agent_validation_loop.plan](../plans/agent_validation_loop.plan.md) | shipped (reference) |
 | [eva-gear.plan](../plans/eva-gear.plan.md) | in-progress |
+| [ooc-column.plan](../plans/ooc-column.plan.md) | planned |
+| [examine-feedback-visual-brief](../plans/examine-feedback-visual-brief.md) | Claude Design brief |
 | [combat_implementation_plan](../plans/combat_implementation_plan.md) | in-progress |
 | [health_implementation_plan](../plans/health_implementation_plan.md) | in-progress |
 | [persistence_architecture_design_2fe61864.plan](../plans/persistence_architecture_design_2fe61864.plan.md) | in-progress |

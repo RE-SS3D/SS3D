@@ -13,13 +13,13 @@ Glance examine (hover + Shift-hold) is **not** an `IInteraction` — `Examinable
 
 **Rendering is UI Toolkit** (`ExamineOverlaySubSystem`, `Assets/Scripts/SS3D/UI/Examine/`) — the previous uGUI trio has been deleted, not ported (Phase 0 purge). Surfaces: `GenericExamineHoverView`; `CharacterQuickLookView` / `CharacterExamineWindowView` (character paperdoll).
 
-**Fork deviations from** [examine.md](../../design/examine.md): design is hold-to-peek with no hover/click-lock (§1/§4); shipped code shows the name tooltip on plain hover, with Shift gating richer detail. Accepted. Design §5 says others never get internal vitals — shipped **Tier 0** public lines (bleed / severed / wound+ / conscious-state) are model-visible facts; organ bands and bruise-only lines are **Tier 1 self-only**. Medical scanner (numeric pools) stays out.
+**Gaps against the revised design** ([examine.md](../../design/examine.md), 2026-11 grill): hover / Shift / Search now *is* the design. Still to build, in [2026-11_examine-and-action-feedback](../2026-11_examine-and-action-feedback.md): keyword colours and range bands (`ExamineSection` is plain text), the live panel (non-character content is cached while held), the bare-`Item` fallback (28 item prefabs show nothing), self-examine on your own model and the vitals cluster (code still falls back to self with no target), the examine cue, Search hiding pockets on conscious targets and checking reach. Tier 0 public health lines match design §5's visible injuries; Tier 1 is self-only, as designed. Medical scanner (numeric pools) stays out.
 
 **Character examine** (design §7): no new `Human.prefab` component — `Human.asset` is `Type: CHARACTER`; overlay reads sibling `HumanInventory` / `HumanHealthController`. Do **not** reintroduce `CharacterExaminable` ([TECH_DEBT.md](../TECH_DEBT.md) §1.1).
 
 - **Hover** → name tooltip only (identity from ID when visible). Works on self and others.
 - **Shift (hold)** → name + `ExamineData` details + health lines. Tier 0 (self + others): state + one consolidated appearance sentence (`I` vs `he`). Tier 1 (self only): short feel lines (`I feel dizzy`). Quiet when healthy. Health rebuilds each frame while held. Does not open the paperdoll.
-- **Shift, no target** → self detailed examine (design §2 fallback).
+- **Shift, no target** → self detailed examine. Removed by the revised design §2; still in code.
 - **Search** (radial petal or **Shift+Click** shortcut) → persistent paperdoll on **other** characters only. Same Discover/`CmdRunInteraction` path; client opens UI via `SearchClientInteraction` → `ExamineSubSystem.RequestCharacterWindow`.
 - **Click-to-take** — ~1.5s `TakeFromCharacterInteraction`; gated by `CharacterLootUtility.IsLootable` (dead/unconscious; restrained deferred).
 - **Covered/obscured-slot filtering** not implemented. Slot↔`ContainerType`: `CharacterExamineSlotContainerMap`.
@@ -79,6 +79,7 @@ Paths are under `Assets/Scripts/SS3D/Systems/` unless they start with `UI/` (`As
 ## Related docs
 
 - Known design deltas: [REVIEW_2026-10 — Known delta](../../design/REVIEW_2026-10.md#known-delta-revised-design-vs-code) — rows: id-access (examine names only a bare card)
+- Effort: [2026-11_examine-and-action-feedback](../2026-11_examine-and-action-feedback.md) — planned
 - Plan: [examine_localization_design_5ca361a6.plan.md](../../archive/plans/examine_localization_design_5ca361a6.plan.md), [health_implementation_plan.md](../../plans/health_implementation_plan.md) Phase 6
 - Design (read-only): [Documents/design/examine.md](../../design/examine.md), [health.md](../../design/health.md) §7
 - Defaults: [2026-07_default-input-scheme.md](../../archive/architecture/2026-07_default-input-scheme.md)
