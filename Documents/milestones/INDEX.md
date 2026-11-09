@@ -20,6 +20,7 @@ A 3D Space Station 13. Every gate names the [vision](../design/vision.md) pillar
 3. **M1c** — combat core: C20R, Stechkin, security pistol, M4, stun baton; physical magazines; C4/X4 and minibomb (implemented; multiplayer acceptance pending); sounds; no debug chrome
 4. **M3** — nuke loop (thin) with floor and furniture damage
 5. **M8 + M9 (thin)** — vacuum kills, suit seal and internals protect, engineers patch hull holes; APC lights matter
+6. **M10 (thin)** — construction: engineers repair and rebuild floors, walls and windows; the crew can barricade ([construction.md](../design/construction.md))
 
 M4 (win/lose) and M5 (end screen, restart) shipped: [round-end loop](../archive/architecture/2026-11_round-end-loop.md), [#131](https://github.com/henkhooft/SS3D/pull/131)–[#137](https://github.com/henkhooft/SS3D/pull/137).
 

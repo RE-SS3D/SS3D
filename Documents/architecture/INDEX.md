@@ -58,7 +58,7 @@ One row per gameplay domain that has, or should eventually have, a design doc. A
 | surgery | [surgery](../design/surgery.md) | none yet | none yet |
 | virology | [virology](../design/virology.md) | none yet | none yet |
 
-Every design doc is `Status: active` unless its own header says otherwise. Deferred (design stands, no milestone up to MVP2 needs it): ai-cyborgs, construction, crafting, cryogenics, hacking-interface, pda, surgery, virology. The 2026-10 design review is recorded in [REVIEW_2026-10](../design/REVIEW_2026-10.md).
+Every design doc is `Status: active` unless its own header says otherwise. Deferred (design stands, no milestone up to MVP2 needs it): ai-cyborgs, crafting, cryogenics, hacking-interface, pda, surgery, virology. The 2026-10 design review is recorded in [REVIEW_2026-10](../design/REVIEW_2026-10.md).
 
 ## System maps
 

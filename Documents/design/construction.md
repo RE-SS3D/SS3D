@@ -1,143 +1,208 @@
 # Construction — design document
 
-> Status: deferred
+> Status: active
+> Supersedes: the deferred draft of this file (pre-2026-10 review), which built every structure on a combine grammar that no longer exists and re-zoned areas when walls closed
 
-**Changed by the 2026-10 review.** This doc is deferred and its body predates the review. These points no longer hold or have moved; read them before building on anything below:
+Covers what an engineer does with a toolbelt and a stack of sheets: re-lay a floor, patch a hull hole, weld a cracked wall back to whole, rebuild a wall or window a charge took out, put up a barricade, and take one down again. It is the constructive half of the structure explosives already breaks (`explosives-destruction.md` §3). Fabricating machines, doors and new deck into space are not part of this pass (§14).
 
-- Areas don't change during a round (`area.md` §3): building or sealing walls never re-zones areas or re-derives door access (§4, §5 here).
-- Cracked walls no longer leak room-to-room (`explosives-destruction.md` §3), so "leaks same as Cracked/venting" (§2) no longer means a leak.
-- There is one cable type (`electricity.md` §3); there is no thick cable or required SMES path (§3 here).
-- The Tier 3 combine grammar is gone; items move by plain drag (`inventory-storage.md` §6).
-- Repair returns a damaged wall straight to Intact (`explosives-destruction.md` §3).
-- **Believable first pass:** rebuild a Destroyed wall, door or window in a few timed tool steps (girder → plate → weld); no deck-plating expansion; the tile keeps its painted area.
-
-Resolves two things this project has been carrying as open items since early docs. First, Area's own flagged-but-unconfirmed question about whether live geometry changes should recompute area boundaries (`area.md` §3) — explosives already answered that from the destructive direction (`explosives-destruction.md` §4); this doc answers it from the constructive direction, and the two meet at the same technique. Second, crafting's deliberately deferred deconstruction item (`crafting.md` §9: "plausible future hook, not designed here"). Builds on the Tier 3 freeform combine grammar already established for cable-laying and pipe-laying (`electricity.md` §3, `disposal.md` §3), the four-stage structural model explosives already established for damage (`explosives-destruction.md` §3), and the shared access-check function doors already call automatically (`id-access.md` §6).
+The first round this serves is Nuclear Operatives: operatives blow walls, floors and the hull open, and this doc is how the crew answers.
 
 ## 1. Design philosophy
 
-The native-vs-leftover test, aimed at construction: SS13's build order (wrench girder, secure plating, weld, wire) is a memorized tool-sequence puzzle whose ordering mostly exists to gate speed, not to model anything real. Two things in that sequence are genuinely real and worth keeping — a wall visibly passing through distinguishable physical states, and a handful of real physical dependencies (you can't weld a plate to a girder that isn't there yet, can't erect a girder on open vacuum with nothing under it). Everything else in the classic sequence is order-as-puzzle rather than order-as-physics, and doesn't survive the test.
+The native-vs-leftover test, aimed at construction: SS13's build order (wrench the girder, secure the plating, weld it, wire it) is a memorized tool sequence whose order mostly exists to slow you down. Two things in it are real and worth keeping: a wall visibly passes through states you can tell apart, and a few real physical dependencies (you can't plate a girder that isn't there, can't stand a girder in wreckage). The rest is order as a puzzle, and it goes.
 
-Two decisions fall out of that:
+Four decisions fall out of that:
 
-- **The construction ladder is staged, not a single "place wall" action** — same reasoning explosives used for damage being tiered visible warning rather than a hidden HP counter (`explosives-destruction.md` §1).
-- **Construction and destruction are two regimes on one object, not two objects.** A wall has exactly one shared state where the two systems meet — Sealed, which is explosives' Intact — and don't cross anywhere else. Same "two regimes, one system" move stamina made for exertion and oxy debt (`stamina.md` §1), applied here instead to building up versus breaking down.
+- **Building is staged, not one "place wall" action.** A wall goes up in steps you can see, the same reason explosives makes damage a visible ladder rather than a hidden counter (`explosives-destruction.md` §1).
+- **The object is the readout.** What a structure needs next is visible on the structure and in its examine text, never in a build menu or a progress panel (`crafting.md` §2's rule, kept).
+- **Few tools, each with a clear job.** Two tools and three materials cover everything in this doc (§2).
+- **Construction and destruction meet at one state.** A finished wall is explosives' Intact. The building ladder and the damage ladder never cross anywhere else (§9).
 
-## 2. The construction ladder — from open tile to sealed wall
+## 2. Tools and materials
 
-| Stage | What it looks like | System effect |
-|---|---|---|
-| Open | Bare tile (with or without deck plating, §3) | Fully permeable — walkable, no occlusion, no atmosphere boundary |
-| Framed | A girder kit combined onto the tile — skeletal lattice model | Blocks casual movement (impassable terrain) but not light, sightline, or atmosphere — air and light pass through the gaps the same way an unfinished scaffold would |
-| Plated (unsealed) | A metal plate bolted to the frame — solid-looking, visible unwelded seams | Blocks light, sightline, and occlusion fully, same as a finished wall for those systems — but still leaks atmosphere at a slow rate, the same leak treatment Cracked/venting already gets (`explosives-destruction.md` §3) |
-| Sealed | Final weld pass closes the seams | Fully airtight; counts as a real wall for flood fill, occlusion, and Area boundary purposes — this is explosives' **Intact** state, arrived at from the opposite direction |
-
-Each transition is one Tier 3 freeform combine action with a short visible timer, interruptible by moving away or taking a hit — the identical pattern crafting's multi-step assembly already runs (`crafting.md` §2), not a new interaction to learn.
-
-## 3. Deck plating — extending the footprint
-
-Only relevant when building into previously-unclaimed open space rather than reconfiguring an existing interior, which already has floor as a map-authored given.
-
-**Patching a hull hole is not deferred.** Laying plating over a floor tile a blast broke through to space (`explosives-destruction.md` §3, Floors) is the one piece of this doc an engineer needs before construction itself: a single placement from a stack of metal sheets that seals the hull again. It's the same plating object as below. Nothing else in this doc comes with it: no girders, no walls and no claiming new footprint.
-
-**Deck plating is a new placeable tile object**, laid via the same freeform combine grammar, consuming metal sheet stock. It's a state change on a tile cell the station's logical grid already spans (unclaimed, unrendered, no Area) — not new coordinate space, the same "operates on an existing tile cell" assumption every other placeable system in this project already makes. Flagged as an assumption for Cursor to confirm against the actual tilemap implementation, not a redesign of the grid itself.
-
-**The one genuine order dependency in this doc:** a girder can't be framed onto a tile with no deck under it. Everywhere else in the ladder, order is staged for visibility, not gated by physics — here it actually is one.
-
-**Real stakes while unsealed.** Until every wall segment enclosing a new region reaches Sealed, the space inside it is exposed to vacuum — reusing whatever vacuum-exposure hazard already exists rather than inventing one, the same assumption disposal's own phase-2 note already made ("reusing whatever vacuum-exposure hazard already exists," `disposal.md` §8). A crew building a hull extension is racing a real, physical risk to themselves the whole time, not filling in an abstract progress bar.
-
-**Connectivity is free, not authored.** Deck plating laid adjacent to existing structure joins the same tile grid the station already uses, so it inherits Area, power, and access resolution the moment it's enclosed (§4). A deliberately disconnected remote plating cluster is legal but stays cut off from the main power backbone until a physical corridor connects it — electricity's own rule already covers this ("an SMES with no live thick-cable path back to any generator gets nothing," `electricity.md` §3). No new design needed for isolated outposts; the existing connectivity rules already produce that behavior.
-
-## 4. Area recompute — the construction direction
-
-The moment a wall or door segment reaches Sealed and completes an enclosure, the same local recompute Area's own doc proposed and explosives already confirmed runs again — re-running flood fill only for the region touching the changed tile (`area.md` §3, `explosives-destruction.md` §4).
-
-Two cases, one code path:
-
-- **Subdividing an existing area** — the local flood fill finds a smaller enclosed region inside what was one Area and splits it off as a new unnamed Area. This is the automatic version of the manual split Area's own doc already allows for real cases the geometry alone can't decide (`area.md` §3) — now triggered by geometry actually changing, not just authored by hand.
-- **Claiming new footprint** — deck plating laid into open space and fully walled produces a new unnamed Area from tiles that belonged to no Area at all. This is the identical operation Area's own map-authoring flood fill already performs at round start (`area.md` §3), just running locally and mid-round instead of once, station-wide, at authoring time.
-
-No new area-creation logic to design — both cases call the function Area's doc already specified. Once the Area exists, everything derived from membership re-derives automatically: power, cameras, alarm scope, access defaults, ambience — the identical "falls out of Area already being the single source of truth" point explosives already made for the destructive direction (`explosives-destruction.md` §4), true here for the same reason.
-
-## 5. Doors
-
-A door is a branch off the same ladder, not a separate system: at Framed, instead of continuing to Plated, a girder can receive a door-assembly kit (Tier 3 combine) and finishes into a functional door the same way a wall finishes into Sealed.
-
-**Access resolves automatically, with no separate authoring step.** The moment the door's Area membership is known — immediately after §4's recompute — the shared access-check function reads that Area's default requirement exactly the way it does for any map-authored door (`id-access.md` §6, `area.md` §5). A player-built door is exactly as secure as any other door in its Area from the instant it's sealed. A per-door override is available at the ID console afterward for a real exception, same as everywhere else.
-
-## 6. Deconstruction — the clean counterpart to destruction
-
-Resolves crafting's deferred item (`crafting.md` §9).
-
-**The ladder runs in reverse, tool-by-tool:** Sealed → unweld → Plated → unbolt → Framed → dismantle → Open, recovering a real proportion of the original material at each step. Each step is an ordinary interruptible freeform action, same as construction going forward.
-
-**Meets the damage ladder at exactly one state.** Deconstruction only ever starts from Sealed — the same state explosives calls Intact. A Damaged or Cracked/venting wall has to be repaired back to Intact first (already established, `explosives-destruction.md` §3) before it can be deliberately deconstructed. The two ladders don't cross anywhere else, kept deliberately separate rather than merged into one combined state machine — a wall's accidental-damage recovery path and its deliberate-teardown path never have to reconcile against each other.
-
-**The contrast is the point.** Deconstruction is slow, tool-gated, and generates no debris. An explosive breach is fast, violent, and terminal, spawning rubble and skipping straight past every intermediate stage. Same object, two entirely different exit paths — not a bespoke third mechanic, just the two regimes this doc and explosives each already own, meeting cleanly at one shared state.
-
-## 7. Materials
-
-Real, countable stock — metal sheets and bars — the same treatment crafting already established for every other freeform material (`crafting.md` §5). Girder kits and deck-plating segments are ordinary freeform recipes: known from the start, no research gate, for the same reason crafting already gave for why simple assembly isn't gated (`crafting.md` §4).
-
-**Windows and reinforced glass are a material variant on the same ladder** — a transparent plate substituted at the Plated step — not a separate system.
-
-## 8. HUD touchpoints
-
-No new permanent chrome.
-
-- Partial states render on the tile/object itself — frame, unsealed plate with visible seams, final weld pass — the same "the object is the readout" discipline crafting's partial-construction state and armor's wear already follow.
-- Vacuum exposure during unsealed hull construction surfaces through whatever hazard indicator already exists elsewhere for vacuum exposure — not reinvented here.
-- A new or split Area produced by §4's recompute is one more real trigger for Area's own flagged-but-unbuilt transient area-name popup (`area.md` §7) — this doc doesn't newly justify building that hook, just adds a trigger for it whenever it does land.
-- The PDA construction guide (`crafting.md` §2) gains wall, door, and deck-plating recipes as ordinary entries — no new tab.
-
-## 9. Worked examples
-
-**A — Subdividing Engineering's main bay:**
-
-| Step | What happens | System state |
-|---|---|---|
-| 1 | An engineer lays a line of girders across the open bay | Each tile blocks movement; light, sightline, atmosphere unaffected |
-| 2 | Plates go up one tile at a time | Bay is now visually and optically split, still leaking slowly along the seam |
-| 3 | Final weld pass finishes the last tile | §4 recompute runs on the enclosed side; a new unnamed Area splits off |
-| 4 | Power, cameras, and access re-derive automatically | The new sub-bay needs its own APC placed to actually have power — Area membership alone doesn't conjure one |
-
-**B — Extending the hull, a new science annex:**
-
-| Step | What happens | System state |
-|---|---|---|
-| 1 | A suited crew member lays deck plating out from an existing airlock into open space | Each plated tile joins the station's tile grid; still exposed, no walls yet |
-| 2 | Girders go up around the perimeter | Impassable frame outline, still fully exposed to vacuum inside |
-| 3 | Plating follows, seams unsealed | Sightline and light now contained; slow leak persists; the crew inside is still working in a real vacuum risk the whole time |
-| 4 | Final weld on the last wall segment | §4 recompute claims the enclosed tiles as a brand-new Area; whatever handles atmospherics fill takes over from here, not this doc |
-
-**C — Deconstruction versus an explosive breach, side by side:**
-
-| | Deconstruction | Explosive breach |
-|---|---|---|
-| Speed | Slow, several tool-gated steps | Instant on detonation |
-| Material | Recovered, real proportion | Lost, spawns debris instead |
-| Path | Sealed → Plated → Framed → Open | Intact → Damaged → Cracked/venting → Destroyed |
-| Intent | Deliberate, orderly | Violent, often hostile |
-
-## 10. Integration notes
-
-| Construction element | Touches existing / needed system |
+| Item | What it does here |
 |---|---|
-| Girder, plate, weld steps | Tier 3 combine/use-with grammar (`main-hud.md` §8), crafting's freeform pattern (`crafting.md` §2) |
-| Deck plating | Existing tilemap grid (assumption flagged for Cursor), material stock (`crafting.md` §5) |
-| Sealed state | Explosives' Intact state (`explosives-destruction.md` §3) — same representation, arrived at from the opposite direction |
-| Area recompute on enclosure | Area's local recompute (`area.md` §3), reused wholesale from explosives (`explosives-destruction.md` §4) |
-| Door access | Shared access-check function (`id-access.md` §6), Area default requirement (`area.md` §5) |
-| Vacuum exposure mid-build | Existing vacuum-exposure hazard (not redesigned here, per `disposal.md` §8's identical assumption) |
-| Power for a new sub-area | APC placement is a separate, still-required action (`area.md` §5, `electricity.md` §4) |
-| Deconstruction | Reverse of the construction ladder, meets damage ladder only at Sealed/Intact |
+| **Welder** | Repairs damaged walls, windows and plating; seals a plated wall; cuts a finished wall's seams and a bare girder apart |
+| **Crowbar** | Pries floor tiles up; clears wreckage; pulls a cut plate off a girder |
+| **Steel sheets** | Hull plating, girders, wall plates |
+| **Glass sheets** | Window panes |
+| **Floor tiles** | The walkable surface over plating |
 
-## 11. Out of scope for this pass
+Sheets and tiles are real, countable stacks (`inventory-storage.md` §5). There is no wrench, screwdriver or rod step in this pass.
 
-- Exact material costs, build times, and deck-plating costs (a balancing pass, not a design decision)
-- Editor/admin tooling for map-authoring-time construction — Area's own doc already scoped this out for its authoring pass (`area.md` §8), not reopened here
-- Atmospherics' actual air-filling/pressurization mechanic for a newly sealed room — decoupled per Area §4, assumed to exist elsewhere
-- Multi-deck/z-level construction — no z-level system exists anywhere in this project, the same note explosives already made (`explosives-destruction.md` §9)
-- RCD-style instant-build tooling — explicitly decided against for this pass; construction stays staged freeform only
-- Blueprint/template stamping for multi-tile room layouts — a plausible future addition, not core to this pass
-- Structural load-bearing simulation beyond the four-stage ladder — not modeled, the same grain explosives already chose for its own damage model
+**Anyone can build.** Holding the right tool and material is the only requirement; nobody builds faster for their job. The Engineer's advantage is kit and access: a toolbelt, sheets and tiles in their loadout, and the engineering storage. An Assistant who picks up a welder can help.
 
+## 3. How a player builds
+
+Everything in this doc is one action: **use the item in your active hand on a target in the world.** Sheets on a hull hole, a welder on a cracked wall, a crowbar on wreckage. It is the same "use item on item" action crafting needs (`crafting.md`'s 2026-10 note), not a new grammar.
+
+**A placement ghost shows where a placeable item will go.** While the item in your active hand can be placed (sheets over a hull hole or over open floor, floor tiles over bare plating), the hovered tile shows a ghost of the result: green where it can go, red with a short reason where it can't ("Clear the wreckage first", "Needs plating underneath"), and what it will use against what you hold ("2 / 14 steel sheets"). Steps on something already there, like plating a girder or welding a wall, need no ghost: you use the tool on the object.
+
+**Valid targets light up.** While a tool or material is in your active hand, the things it can act on are outlined, in a style distinct from the ordinary selection outline.
+
+**Every step is timed and interruptible.** Moving away, being knocked down (by wind too) or taking a hit cancels it. **Nothing is spent until a step finishes**, so a cancelled step costs time, never sheets.
+
+**There is no build menu.** No recipe list performs an action; the world does.
+
+## 4. Floors and the hull
+
+A floor has two layers, as `explosives-destruction.md` §3 defines: the floor tile you walk on, and the plating under it, which is the hull and holds the tile's pipes and cables.
+
+| Situation | Action | Result |
+|---|---|---|
+| Hull hole (no plating) | Steel sheets on the hole, one placement | Plating; the tile is airtight again at once |
+| Damaged or Cracked plating | Welder | Plating back to Intact |
+| Bare plating | Floor tiles | A walkable floor; cosmetic, you can already walk on plating |
+| Floor tile, on purpose | Crowbar | The tile comes up into your hands; the plating, pipes and cables underneath are exposed |
+
+The floor is built from the bottom up and every layer shows. Prying a tile never vents a room; only a missing plating layer does.
+
+**Patching a hole is fast enough to do in the wind.** The room is still venting while you work, and the wind can knock you down and cancel the step (§3). Patching a breach in a suit, ideally with magboots, is meant to be the heroic moment (`armor.md` §3).
+
+**No new deck into space.** Plating goes only where the station already has a floor tile cell. Extending the hull outward is out of scope (§14).
+
+## 5. Air after a patch
+
+**A patched room gets its air back by itself.** Once the hole is sealed, the area's vents push air back in from the distribution network up to their normal target pressure (`atmospherics.md` §4), at a rate you can watch on the air alarm. An engineer can set the air alarm to its refill-after-a-breach preset to speed that up.
+
+Without this, patching a hull hole would save nobody without a suit for the rest of the round, and the patch would mean nothing.
+
+## 6. The wall ladder
+
+| Stage | How you get there | What it looks like | Movement | Light and sight | Air |
+|---|---|---|---|---|---|
+| Open | — | Floor | passes | passes | passes |
+| Girder | Steel sheets on a clear floor tile | A steel frame that joins up with neighbouring girders and walls | blocked | passes | passes |
+| Plated | Steel sheets on a girder | Sheets bolted onto the frame, seams unwelded | blocked | blocked | **passes** |
+| Sealed | Welder on a plated girder | A finished wall | blocked | blocked | sealed |
+
+**Only the weld seals.** A plated wall looks solid and blocks the view, but air goes through its seams as if it were open. There is no slow leak to track: either the seams are welded or they aren't. The review already dropped partial leaks from cracked walls (`explosives-destruction.md` §3); this keeps the same single rule. The plated stage must look visibly unfinished, through seams, bolts or bare frame edges, so a player can tell it from a sealed wall at a glance.
+
+**Sealed is Intact.** A wall the crew built is a wall like any other: it takes damage, cracks and breaks exactly as `explosives-destruction.md` §3 describes.
+
+**Build anywhere on existing floor.** A girder can go on any clear floor tile, not only where a wall used to be. Crews can barricade a corridor, close off a breach route or wall in a choke point. Build time, not a placement rule, keeps the crew from turning the vault into a fortress before the operatives arrive (§10). Requiring "a wall used to be here" would need a hidden memory of the map, which breaks "the object is the readout".
+
+**Areas never change.** A new wall separates the air on its two sides, but both sides keep their area, power, access and cameras (`area.md` §3). Construction never re-zones the station, the same rule explosives follows for breaches (`explosives-destruction.md` §4).
+
+## 7. Windows
+
+**The material decides wall or window.** Steel sheets on a girder make a wall; **glass sheets on a girder make a window**, finished in one step with no weld. There is no grille and no separate low-wall step. A window is the transparent plate substituted at the plated step, sealed on completion, on a slightly longer timer than plating a wall.
+
+A window blocks movement and air and lets light and sight through. Plain glass only; reinforced windows are out of scope (§14).
+
+## 8. Wreckage and salvage
+
+A destroyed wall or window leaves wreckage (`explosives-destruction.md` §3).
+
+- **Wreckage blocks building.** A girder can't go on a tile with wreckage on it. This is a real physical dependency, not an imposed order.
+- **Crowbar the wreckage to clear it**, and you get back some of the steel sheets that went into it.
+
+Materials are finite: a loadout's stacks plus a stocked engineering closet. Salvage is the only other source, so an operative breach feeds the crew's repairs, and "do we fix the vault wall or the corridor floor first?" is a real choice.
+
+## 9. Repair and deconstruction
+
+**Repair.** A welder returns a Damaged or Cracked wall, window or plating straight to Intact in one step (`explosives-destruction.md` §3). A Destroyed one is rebuilt (§6, §7), not repaired.
+
+**Deconstruction runs the ladder backwards, from Intact only.** A damaged wall is repaired first; it can't be taken apart while damaged.
+
+| From | Action | To | Returns |
+|---|---|---|---|
+| Sealed wall | Welder: cut the seams | Plated | — |
+| Plated | Crowbar: pull the plate off | Girder | steel sheets |
+| Window | Crowbar: lift the pane out | Girder | glass sheets |
+| Girder | Welder: cut it apart | Open | steel sheets |
+
+Deconstruction takes clearly longer than building, and it makes no debris. Anyone can do it, operatives included: quietly cutting through a side wall instead of blowing it is fair play.
+
+**Reinforced walls can be repaired, not deconstructed or built.** The vault and other reinforced walls still need explosives to open, so the vault stays the operatives' C4 problem.
+
+**The contrast is the point.** Deconstruction is slow, quiet, tool-gated and gives material back. A breach is instant, loud, and leaves only wreckage. Same structure, two exits.
+
+## 10. Feel targets
+
+Exact numbers are a balancing pass. These set the intended feel for a short round:
+
+| Action | Target |
+|---|---|
+| Lay a floor tile | ~1 s |
+| Patch a hull hole | ~3 s, short enough to finish in the wind |
+| Weld a repair | ~4 s |
+| Rebuild a wall, girder to sealed | ~15 s across its three steps |
+| Deconstruct | about twice the build time |
+
+Patching a breach is fast and heroic; fortifying costs real time while the operatives are on the clock.
+
+## 11. HUD touchpoints
+
+No new permanent chrome. Everything below is temporary or lives on the object.
+
+- **Progress ring** over the target while a timed step runs, for every timed action in the game (defusing and medical too). It shows done, and on a cancel a brief reason ("Knocked down", "Moved away").
+- **Placement ghost** with its fail reason and cost (§3).
+- **Valid-target outline** while a tool or material is in the active hand (§3).
+- **Examine** shows a structure's stage and its next step with the tool or material it needs, e.g. "Plated girder. Seams unwelded: a welder would seal it." (`examine.md` §5, §7).
+- **Radial menu verbs** for each action where one target offers more than one: Repair, Weld seams, Cut seams, Pry tile, Clear wreckage, Pull plate, Dismantle girder.
+- **Sound and sparks** carry the work: welding hisses and throws sparks, a crowbar scrapes. They are the primary feedback alongside the ring.
+- **The air alarm on the wall** is the readout for a room refilling after a patch (§5).
+
+A paper engineering quick reference in the engineering closet is a possible later aid if testers can't work out the steps. The PDA construction guide waits for the PDA (`crafting.md` §2).
+
+## 12. Worked examples
+
+**A — Patching a breached corridor:**
+
+| Step | What happens | System state |
+|---|---|---|
+| 1 | A charge on a wall next to the corridor blows the floor through to space (`explosives-destruction.md` §8 E) | Hull hole; the corridor vents; wind pulls toward the hole |
+| 2 | An engineer in a suit and magboots holds steel sheets over the hole | Green ghost, "1 / 20 steel sheets" |
+| 3 | The wind knocks them down halfway through | Step cancelled, "Knocked down"; no sheets spent |
+| 4 | They brace and patch it in ~3 s | Plating; the hole is sealed |
+| 5 | The corridor's vents refill it; the engineer sets the air alarm to refill | Pressure climbs back on the alarm; the crew can take their masks off |
+| 6 | Floor tiles go down over the bare plating | Cosmetic; the corridor looks whole |
+
+**B — Rebuilding the blown wall:**
+
+| Step | What happens | System state |
+|---|---|---|
+| 1 | The wall the charge took out is wreckage | Open to the next room; no girder can go here |
+| 2 | Crowbar on the wreckage | Cleared; a few steel sheets recovered |
+| 3 | Steel sheets on the tile | Girder: blocks movement; air and sight pass |
+| 4 | Steel sheets on the girder | Plated: blocks sight; air still passes |
+| 5 | Welder on the plate | Sealed: an Intact wall; the two rooms' air is separate again; both keep their areas |
+
+**C — A barricade, and an operative's answer:**
+
+| Step | What happens | System state |
+|---|---|---|
+| 1 | Two crew build a line of girders and plates across the corridor to the vault | Sight blocked; air passes until welded |
+| 2 | They weld it before the operatives arrive | A sealed wall on what was open floor |
+| 3 | An operative cuts the seams with a welder and pulls a plate off | Slow and quiet, but a route opens without spending a charge |
+| 4 | The vault's reinforced wall can't be cut | The vault still needs C4 |
+
+## 13. Integration notes
+
+| Construction element | Touches |
+|---|---|
+| Floor tile and plating layers, hull holes, wreckage | `explosives-destruction.md` §3 |
+| Sealed = Intact; damage on built walls; repair to Intact | `explosives-destruction.md` §3 |
+| No re-zoning when walls go up or come down | `area.md` §3, `explosives-destruction.md` §4 |
+| Refill after a patch | `atmospherics.md` §4 (vents, air alarm presets) |
+| Working in vacuum and wind | `armor.md` §3 (suit seal, magboots), `atmospherics.md` |
+| Stacks of sheets and tiles | `inventory-storage.md` §5 |
+| Use-item-on-target action | shared with `crafting.md` |
+| Examine stage and next-step text | `examine.md` §5, §7 |
+| Radial verbs, outlines | `main-hud.md` |
+
+## 14. Out of scope for this pass
+
+- **Doors.** Rebuilding or building a door needs electronics and access, the start of machine fabrication. A destroyed door stays destroyed this pass
+- **Machine and furniture fabrication or repair**, including broken tables and machines (`explosives-destruction.md` §9)
+- **New deck into space**: lattice, catwalks, plating beyond the station's existing floor, hull extensions
+- **Reinforced walls and windows**: building or deconstructing them (repairing them is in)
+- **Grilles**
+- **Wrench, screwdriver and rod steps**
+- **A build menu, blueprints or multi-tile templates**, and RCD-style instant building
+- **The PDA construction guide**, until the PDA exists
+- **Area changes from construction**, by the 2026-10 review (`area.md` §3)
+- Exact material costs and timings (a balancing pass; §10 sets the feel)
+- Multi-deck construction: the station is a single plane (`vision.md` §3)
+- Load-bearing structure beyond the stages above

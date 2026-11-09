@@ -1,7 +1,7 @@
 > Goal: Playtest 1 — eight players play Nuclear Operatives rounds on the 24/7 server: ops spawn geared and breach for the disk, a five-job crew fights back, keeps the hull and power up and patches the wounded, and every round ends with a summary and restarts
 > Status: in-progress
 > Depends on: —
-> Current focus: [humanoid animation pass](../architecture/2026-11_humanoid-animation-pass.md) (get-up, pistol stance and throwing, for M1c), then M0, M1c, M3, M8/M9 thin — session stability, the 24/7 server and smoke live on [test-server.md](test-server.md) T3/T8
+> Current focus: [humanoid animation pass](../architecture/2026-11_humanoid-animation-pass.md) (get-up, pistol stance and throwing, for M1c), then M0, M1c, M3, M8/M9 thin, M10 construction thin — session stability, the 24/7 server and smoke live on [test-server.md](test-server.md) T3/T8
 > Roadmap: Nuclear Operatives round — Play a full Nuke Ops round from spawn to end screen
 > Pillars: 2, 4, 6 (1 thin) — [vision.md](../design/vision.md) §2
 
@@ -21,12 +21,12 @@ Why Nuke Ops first: it builds the round spine (pillar 4) and puts the simulation
 
 What a round needs:
 
-- **Crew jobs**: Captain (vault access), Security (armed first response, stun baton), Engineer (defuse tools; patches hull holes, restores power), Doctor (bandage, stop bleeding, defibrillate), Assistant. Ops spawn geared with no uplink. The disk stays in the vault.
+- **Crew jobs**: Captain (vault access), Security (armed first response, stun baton), Engineer (defuse tools; patches hull holes, repairs and rebuilds walls, restores power), Doctor (bandage, stop bleeding, defibrillate), Assistant. Ops spawn geared with no uplink. The disk stays in the vault.
 - **Identity** readable at a glance from outfit and examine ([combat.md](../design/combat.md) §6): ops wear a suit look the crew doesn't.
 - **Movement** that responds like a quick RPG: full speed and stop within about 0.1 s, animations blending at the same pace.
 - **Combat core**: a small ballistic arsenal, physical magazines ([combat.md](../design/combat.md) §3), C4 breaching, the stun baton ([combat.md](../design/combat.md) §5), weapon sounds, no debug chrome in normal play. Shots visibly leave the muzzle and land where the reticle is.
 - **Nuke loop**: breach to the vault, load the disk, arm or defuse, a station-wide arm announcement, state on examine ([antagonist-content.md](../design/antagonist-content.md) §6).
-- **Breaches that matter**: blasts break floors through to space and wreck furniture ([explosives-destruction.md](../design/explosives-destruction.md) §3); vacuum kills; suits and internals protect; an engineer lays plating to seal the hull; APC-driven lights make power loss felt.
+- **Breaches that matter**: blasts break floors through to space and wreck furniture ([explosives-destruction.md](../design/explosives-destruction.md) §3); vacuum kills; suits and internals protect; an engineer lays plating to seal the hull and the room refills; walls and windows can be repaired, rebuilt, barricaded and taken down ([construction.md](../design/construction.md)); APC-driven lights make power loss felt.
 - **Objectives and win/lose** resolve, and the round ends with an **end screen** ghosts can see, then **restarts**.
 
 Crew wins by killing every operative in Playtest 1; restraints come with the station round ([combat.md](../design/combat.md) §11).
@@ -55,6 +55,7 @@ flowchart TB
   roundend[End_screen_restart]
   vacuum[Vacuum_kills_suits_protect]
   patch[Engineer_patches_hull]
+  build[Repair_rebuild_walls]
   power[APC_lights_matter]
   server[Always_on_server_T8]
 
@@ -82,6 +83,8 @@ flowchart TB
   mode --> roundend
   vacuum --> floors
   vacuum --> patch
+  mvp1 --> build
+  build --> floors
   vacuum --> identity
   power --> map
 ```
@@ -104,6 +107,7 @@ flowchart TB
 - **Nuke loop thin + floors (M3)** — device/disk interactions, vault breach, arm announce, examine state; disk pinpointing stays thin. Blasts break floor tiles and plating and wreck furniture ([antagonist-content.md](../design/antagonist-content.md) §6; [explosives-destruction.md](../design/explosives-destruction.md) §3, §6).
 - **Vacuum and hull (M8 thin)** — vacuum kills, suit seal ([armor.md](../design/armor.md) §3) and internals protect, an engineer seals a hull hole with plating ([construction.md](../design/construction.md) §3) ([health](../architecture/systems/health.md); [atmospherics](../architecture/systems/atmospherics.md)).
 - **Power and light (M9 thin)** — test-map APCs drive lights, so a cut cable or dead APC darkens a room ([electricity](../architecture/systems/electricity.md); [area](../architecture/systems/area.md)).
+- **Construction (M10 thin)** — floors, hull, wall/window repair and rebuild, barricades, deconstruction and salvage, with a placement ghost and a timed-action progress ring; no doors or fabrication ([construction.md](../design/construction.md)). Repair supersedes [station structural damage](../plans/station_structural_damage.plan.md) Phase 6's gate ([structural-destruction](../architecture/systems/structural-destruction.md); [tile](../architecture/systems/tile.md)).
 
 **On the test-server track (not duplicated as MVP1 slices):** doors for remote clients, admin force-end and teleport disk, nightly happy-path smoke, 8-client performance, the 24/7 server. See [test-server.md](test-server.md) **T3 / T8**.
 
@@ -121,7 +125,8 @@ flowchart TB
 | M5 | End-game screen + round restart + spectator sees outcome | shipped in [#131](https://github.com/henkhooft/SS3D/pull/131); **shared with [test-server.md](test-server.md) T4** | [round-end.md](../design/round-end.md) §4–§6; [entities](../architecture/systems/entities.md) | An end-of-round screen everyone sees, then the round restarts |
 | M8 | Vacuum and hull (thin): vacuum kills; suit seal and internals protect; an engineer seals a hull hole with plating | partial — breach wind, knockdown/pull, loose items in the wind, wind and muffling you can hear, turf exposure and equal-pressure turf mixing shipped ([health-env-feel](../archive/architecture/2026-07_health-env-feel.md)); seal, internals and magboots shipped ([EVA gear plan](../plans/eva-gear.plan.md)); plating open, and hull work has no dedicated gear until M0 adds the Engineer | [armor.md](../design/armor.md) §3; [construction.md](../design/construction.md) §3; [health](../architecture/systems/health.md); [atmospherics](../architecture/systems/atmospherics.md); [ambience-and-impact-audio](../archive/architecture/2026-11_ambience-and-impact-audio.md) | Space kills you, suits and internals protect you, and engineers can patch the hull (exposure damage and breach wind with knockdown/pull work) |
 | M9 | Power and light (thin): test-map APCs drive the lights | pending | [electricity](../architecture/systems/electricity.md); [area](../architecture/systems/area.md) | Station power and lights matter: lose power and the room goes dark |
-| M6 | Playtest 1 | pending | depends M0–M5, M1m, M1c, M8, M9; [test-server.md](test-server.md) T3, T8 | Finish line: eight players play Nuke Ops rounds together on the always-on server |
+| M10 | Construction (thin): re-lay floors, weld walls, windows and plating back to Intact, rebuild a destroyed wall (girder → plate → weld) or window (girder → glass), barricade on any floor, deconstruct plain walls, salvage wreckage. Done when a crew member can rebuild a blown wall and a patched room refills | pending — design revised 2026-11; no architecture effort yet | [construction.md](../design/construction.md) §2–§11; [structural-destruction](../architecture/systems/structural-destruction.md); [tile](../architecture/systems/tile.md) | Engineers repair and rebuild what the ops blow up, and the crew can barricade |
+| M6 | Playtest 1 | pending | depends M0–M5, M1m, M1c, M8, M9, M10; [test-server.md](test-server.md) T3, T8 | Finish line: eight players play Nuke Ops rounds together on the always-on server |
 
 ## Explicitly deferred
 
@@ -140,7 +145,7 @@ Off the critical path — do not treat as MVP1 blockers:
 - **Area-id merge on breach** — passable hole ≠ department merger.
 - **Client atmos VFX Phase 2** (late-join bootstrap / AOI).
 - **Round-end follow-ons** (parked by the [round-end loop](../archive/architecture/2026-11_round-end-loop.md)): cause of death on the summary, the objectives Notes panel, the gamemode-identity leak to clients, crew spawning on job markers, gamemode-specific round lengths, and the evacuation trigger and escape roster (MVP2).
-- **Disk pinpointing beyond thin**, **full observer/ghost**, **cloning/respawn**, **evac shuttle**, shuttle as ops gate, full PDA/uplink/Traitor, full radio stack, structural repair (plan Phase 6), the construction ladder beyond hull plating, chemistry, sec camera HUD, Malf-AI / Revolution.
+- **Disk pinpointing beyond thin**, **full observer/ghost**, **cloning/respawn**, **evac shuttle**, shuttle as ops gate, full PDA/uplink/Traitor, full radio stack, door rebuilding, machine fabrication, new deck into space and reinforced building ([construction.md](../design/construction.md) §14), chemistry, sec camera HUD, Malf-AI / Revolution.
 
 ## Maintenance
 
