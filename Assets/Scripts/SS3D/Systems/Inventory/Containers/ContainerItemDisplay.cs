@@ -24,6 +24,7 @@ namespace SS3D.Systems.Inventory.Containers
         private Item[] _displayedItems;
 
         /// <summary>
+        /// Legacy path only (display without a calibrated <see cref="GripSocket"/>).
         /// Grips set before the character's Animator has posed the hand bone. The pivot is a child of
         /// the hand, so a grip set against the bind pose (a loadout item at spawn) stays wrong until
         /// the item is picked up again (#158). Re-set once the hand has been animated.
@@ -95,27 +96,40 @@ namespace SS3D.Systems.Inventory.Containers
 
             if (attachmentPoint != null)
             {
-                // #1226 used attachmentPoint.root (the ITEM) * localRotation — mid-air tumble became the grip.
-                // Absolute world (identity * att) freezes world axes so hand-local drifts with facing.
-                // Use the hand display's character root: hold ≈ character.facing * Attachment (stable).
                 GameObject temporaryPoint = new GameObject("TempPivotPoint");
                 Transform display = attachedContainer.Displays[index].transform;
-                Transform characterRoot = display.root;
 
                 temporaryPoint.transform.SetParent(display, false);
                 temporaryPoint.transform.localPosition = Vector3.zero;
 
                 itemTransform.SetParent(temporaryPoint.transform, false);
-                temporaryPoint.transform.rotation = characterRoot.rotation * attachmentPoint.localRotation;
                 itemTransform.localRotation = Quaternion.identity;
                 itemTransform.localPosition = -attachmentPoint.localPosition;
 
-                _pendingGrips.Add(new PendingGrip(
-                    temporaryPoint.transform,
-                    characterRoot,
-                    attachmentPoint.localRotation,
-                    display.GetComponentInParent<Animator>(),
-                    Time.frameCount));
+                if (display.TryGetComponent(out GripSocket socket) && socket.IsCalibrated)
+                {
+                    // Constant hand-local grip from the calibrated socket: the same whatever pose the hand is in
+                    // right now (spawn, mid-walk, Harm stance). Documents/plans/item-orientation.plan.md Phase A.
+                    temporaryPoint.transform.localRotation =
+                        HeldItemGrip.PivotLocalRotation(socket.ReferenceRotation, attachmentPoint.localRotation);
+                }
+                else
+                {
+                    // Legacy grip for uncalibrated displays (run SS3D → Inventory → Calibrate Hand Grip Sockets).
+                    // #1226 used attachmentPoint.root (the ITEM) * localRotation — mid-air tumble became the grip.
+                    // Absolute world (identity * att) freezes world axes so hand-local drifts with facing.
+                    // Character root * Attachment is stable in facing but bakes the hand's current pose.
+                    Transform characterRoot = display.root;
+                    temporaryPoint.transform.rotation =
+                        HeldItemGrip.LegacyPivotWorldRotation(characterRoot.rotation, attachmentPoint.localRotation);
+
+                    _pendingGrips.Add(new PendingGrip(
+                        temporaryPoint.transform,
+                        characterRoot,
+                        attachmentPoint.localRotation,
+                        display.GetComponentInParent<Animator>(),
+                        Time.frameCount));
+                }
             }
             else
             {
@@ -149,7 +163,7 @@ namespace SS3D.Systems.Inventory.Containers
                     continue;
                 }
 
-                grip.Pivot.rotation = grip.CharacterRoot.rotation * grip.AttachmentRotation;
+                grip.Pivot.rotation = HeldItemGrip.LegacyPivotWorldRotation(grip.CharacterRoot.rotation, grip.AttachmentRotation);
                 _pendingGrips.RemoveAt(i);
             }
         }
