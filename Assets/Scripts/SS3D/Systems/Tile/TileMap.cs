@@ -509,6 +509,33 @@ namespace SS3D.Systems.Tile
             EvaluateBuild(tileObjectSo, placePosition, dir, replaceExisting).Length == 0;
 
         /// <summary>
+        /// Whether a player body stands in the given cell. A wall or a closed door built there spawns its
+        /// colliders on the body, and the character controller then pushes it out into the next wall.
+        /// Defaults to the spawned players; EditMode tests swap it, since they have no entities.
+        /// </summary>
+        public Func<Vector3, bool> IsBodyInCell { get; set; } = IsSpawnedPlayerInCell;
+
+        private static bool IsSolidTurf(TileObjectSo tileObjectSo) =>
+            tileObjectSo.layer == TileLayer.Turf
+            && tileObjectSo.genericType is TileObjectGenericType.Wall or TileObjectGenericType.Door;
+
+        private static bool IsSpawnedPlayerInCell(Vector3 gridPosition)
+        {
+            if (!SubSystems.TryGet(out SS3D.Systems.Entities.EntitySubSystem entities))
+                return false;
+
+            Vector3 cell = TileHelper.GetClosestPosition(gridPosition);
+            IReadOnlyList<SS3D.Systems.Entities.Entity> players = entities.SpawnedPlayers;
+            for (int i = 0; i < players.Count; i++)
+            {
+                if (players[i] != null && TileHelper.GetClosestPosition(players[i].transform.position) == cell)
+                    return true;
+            }
+
+            return false;
+        }
+
+        /// <summary>
         /// Aggregates <see cref="BuildChecker"/> failures across every cell the object occupies.
         /// </summary>
         public BuildFailReason[] EvaluateBuild(TileObjectSo tileObjectSo, Vector3 placePosition, Direction dir, bool replaceExisting)
@@ -529,6 +556,9 @@ namespace SS3D.Systems.Tile
                     GetNeighbourPlacedObjects(TileLayer.Turf, gridPosition),
                     replaceExisting,
                     this);
+
+                if (IsSolidTurf(tileObjectSo) && IsBodyInCell(gridPosition) && !failures.Contains(BuildFailReason.BodyInTheWay))
+                    failures.Add(BuildFailReason.BodyInTheWay);
 
                 foreach (BuildFailReason failure in cellFailures)
                 {

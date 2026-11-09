@@ -16,6 +16,7 @@ namespace SS3D.Systems.Tile
         NoFurnitureInWalls,
         NoWallsOnFurniture,
         NeighbourWallMountBlocksWall,
+        BodyInTheWay,
     }
 
     /// <summary>
@@ -35,6 +36,7 @@ namespace SS3D.Systems.Tile
                 BuildFailReason.NoFurnitureInWalls => "Cannot place furniture inside a wall",
                 BuildFailReason.NoWallsOnFurniture => "Cannot place a wall on furniture",
                 BuildFailReason.NeighbourWallMountBlocksWall => "A neighbouring wall mount blocks this wall",
+                BuildFailReason.BodyInTheWay => "Someone is standing there",
                 _ => "Cannot place here",
             };
 

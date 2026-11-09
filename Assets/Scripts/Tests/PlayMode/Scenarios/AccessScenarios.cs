@@ -1,4 +1,4 @@
-using System.Collections;
+﻿using System.Collections;
 using System.Linq;
 using NUnit.Framework;
 using SS3D.Core;
@@ -55,6 +55,43 @@ namespace SS3D.Tests
             yield return Console.Expect("accessrevoke Security", "Revoked");
             Teleport(Body, BesideDoor(door, tiles: 3f));
             yield return WaitFor(() => !door.IsOpen, "the door closes once nobody authorised stands at it", 6f);
+        }
+
+        // Playtest bug "Noclipping doors": clicking Close while standing in the doorway slid the
+        // panels' colliders across the body, which the character controller resolved by pushing it
+        // sideways into the wall. The door now waits for the doorway to clear.
+        [UnityTest]
+        public IEnumerator Door_ClickedClosed_WaitsForTheBodyInTheDoorway()
+        {
+            AirLockOpener door = Object.FindObjectsByType<AirLockOpener>(FindObjectsSortMode.None).SingleOrDefault();
+            Assert.IsNotNull(door, "The test room has one airlock");
+            yield return WaitFor(() => door.IsPowered, "the door's APC powers it");
+
+            HumanInventory inventory = Body.GetComponent<HumanInventory>();
+            if (!AccessCredentialResolver.TryResolveBoundRecord(inventory, out _, out _))
+            {
+                yield return Console.Expect("spawninhand IDCard", "spawned in hand");
+                IDCard card = inventory.Hands.SelectedHand.ItemInHand.GetComponent<IDCard>();
+                IdAccessSubSystem idAccess = SubSystems.Get<IdAccessSubSystem>();
+                CrewRecord record = idAccess.CreateCrewRecord("Scenario", "Assistant", Department.Civilian, AccessMask.None);
+                idAccess.BindIdCard(card, record.Id);
+            }
+
+            yield return Console.Expect("accessgrant Security", "Granted");
+            Teleport(Body, BesideDoor(door));
+            yield return WaitFor(() => door.IsOpen, "the door opens for the granted body beside it", 3f);
+            yield return Hold(1.5f); // let the panels finish sliding open before stepping in
+            Teleport(Body, new Vector3(door.transform.position.x, Body.transform.position.y, door.transform.position.z));
+            yield return Hold(0.5f);
+
+            yield return ClickDoor(door);
+            yield return Hold(1.5f);
+            Assert.IsTrue(door.IsOpen, "The door does not close on the body in its doorway");
+
+            Teleport(Body, BesideDoor(door, tiles: 3f));
+            yield return WaitFor(() => !door.IsOpen, "the clicked close goes through once the doorway is clear", 3f);
+
+            yield return Console.Expect("accessrevoke Security", "Revoked");
         }
 
         private IEnumerator ClickDoor(AirLockOpener door)

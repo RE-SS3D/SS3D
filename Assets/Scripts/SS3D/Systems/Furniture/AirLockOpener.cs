@@ -51,6 +51,15 @@ namespace SS3D.Systems.Furniture
         /// </summary>
         private const float PanelMotionTime = 1.5f;
 
+        /// <summary>
+        /// Reach past the door volume when testing for a body in the doorway. The volume already spans
+        /// the panels' depth, so this only covers the body's own width at the volume's edge.
+        /// </summary>
+        private const float DoorwayBodyMargin = 0.1f;
+
+        /// <summary>Seconds between doorway checks while a close waits for a body to clear it.</summary>
+        private const float BlockedCloseRetryInterval = 0.25f;
+
         private const int DoorLightMaterialIndex = 1;
         private const int DenyBlinkPulseCount = 3;
         private const float DenyBlinkHalfPeriod = 0.22f;
@@ -108,6 +117,7 @@ namespace SS3D.Systems.Furniture
 
         private AirLockAccessGate _accessGate;
         private Coroutine _closeTimer;
+        private Coroutine _blockedCloseTimer;
         private Coroutine _denyBlinkTimer;
         private Coroutine _panelMotionTimer;
         private AnimatorCullingMode _restingCullingMode;
@@ -462,11 +472,19 @@ namespace SS3D.Systems.Furniture
             {
                 CancelCloseTimer();
 
-                // A click Close holds for whoever was in the doorway then; a newcomer still opens it.
-                if (!_isOpen && !_closeHeldOccupants.IsSupersetOf(_authorizedOccupants))
+                // A click Close holds for whoever was in the doorway then; a newcomer still opens it,
+                // or keeps it open if the close is still waiting for the doorway to clear.
+                if (!_closeHeldOccupants.IsSupersetOf(_authorizedOccupants))
                 {
-                    _closeHeldOccupants.Clear();
-                    SetOpen(true);
+                    if (!_isOpen)
+                    {
+                        _closeHeldOccupants.Clear();
+                        SetOpen(true);
+                    }
+                    else
+                    {
+                        CancelBlockedClose();
+                    }
                 }
             }
             else if (!wasEmpty)
@@ -539,8 +557,89 @@ namespace SS3D.Systems.Furniture
                 return;
             }
 
+            if (open)
+            {
+                CancelBlockedClose();
+            }
+            else if (_isOpen && IsDoorwayBlocked())
+            {
+                // The panels' colliders slide across the doorway. Closing them on a body made the
+                // character controller push it out sideways, into the wall beside the door, where it
+                // could walk out anywhere. Wait until the doorway is clear instead.
+                _blockedCloseTimer ??= StartCoroutine(RunBlockedClose());
+                return;
+            }
+
             _isOpen = open;
             UpdateAnimator();
+        }
+
+        private IEnumerator RunBlockedClose()
+        {
+            WaitForSeconds wait = new(BlockedCloseRetryInterval);
+            do
+            {
+                yield return wait;
+            }
+            while (IsDoorwayBlocked());
+
+            _blockedCloseTimer = null;
+            _isOpen = false;
+            UpdateAnimator();
+        }
+
+        private void CancelBlockedClose()
+        {
+            if (_blockedCloseTimer == null)
+            {
+                return;
+            }
+
+            StopCoroutine(_blockedCloseTimer);
+            _blockedCloseTimer = null;
+        }
+
+        /// <summary>
+        /// True while any player body, authorized or not, stands where the closed panels would be.
+        /// </summary>
+        private bool IsDoorwayBlocked()
+        {
+            if (_proximityVolume == null || !SubSystems.TryGet(out EntitySubSystem entities))
+            {
+                return false;
+            }
+
+            IReadOnlyList<Entity> players = entities.SpawnedPlayers;
+            for (int i = 0; i < players.Count; i++)
+            {
+                Entity entity = players[i];
+                if (entity != null && IsInDoorway(entity.transform.position + Vector3.up * OccupantSampleHeight))
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        private bool IsInDoorway(Vector3 worldPoint)
+        {
+            if (_proximityVolume is BoxCollider box)
+            {
+                Vector3 local = box.transform.InverseTransformPoint(worldPoint) - box.center;
+                return IsInsideBox(local, box.size * 0.5f, DoorwayBodyMargin);
+            }
+
+            Vector3 closest = _proximityVolume.ClosestPoint(worldPoint);
+            return (closest - worldPoint).sqrMagnitude <= DoorwayBodyMargin * DoorwayBodyMargin;
+        }
+
+        /// <summary>Whether a point in a box's local space lies within its half extents plus a margin.</summary>
+        private static bool IsInsideBox(Vector3 localPoint, Vector3 halfExtents, float margin)
+        {
+            return Mathf.Abs(localPoint.x) <= halfExtents.x + margin
+                && Mathf.Abs(localPoint.y) <= halfExtents.y + margin
+                && Mathf.Abs(localPoint.z) <= halfExtents.z + margin;
         }
 
         private void OnOpenChanged(bool _, bool __, bool asServer)
