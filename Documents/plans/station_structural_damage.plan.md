@@ -21,7 +21,7 @@ todos:
     content: "Phase 5: C4/X4 sticky timed charges + defuse and throwable five-second syndicate minibomb implemented; remote detonator, other grenades and proximity alert remain"
     status: in_progress
   - id: phase6-repair
-    content: "Phase 6: Welder/sheets repair Damaged/Cracked → Intact — gated on construction/crafting freeform stack shipping first"
+    content: "Phase 6: Welder/sheets repair Damaged/Cracked → Intact — moved to Documents/architecture/2026-11_construction-mvp1.md S3"
     status: pending
   - id: docs-sync
     content: "On each phase ship: architecture effort, structural-destruction system map, INDEX + update-system-docs"
@@ -186,6 +186,8 @@ Breaching-charge / timed-charge **placement** can use a minimal place-on-tile / 
 ---
 
 ## Phase 6 — Repair to Intact (gated)
+
+**Moved (2026-11-09):** repair is now [construction-mvp1](../architecture/2026-11_construction-mvp1.md) S3, which builds its own use-on-target path instead of waiting for crafting. The text below is kept for history.
 
 **Prerequisite:** Player-facing construction/crafting freeform stack (Tier-3 combine/use-with, metal sheet stock) must exist. Until that ships, leave Damaged/Cracked walls unrepaired in gameplay (console-only reset is fine for testing).
 

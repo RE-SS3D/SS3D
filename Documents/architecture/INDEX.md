@@ -25,7 +25,7 @@ One row per gameplay domain that has, or should eventually have, a design doc. A
 | chemistry | [chemistry](../design/chemistry.md) | [substances-foundation](../archive/architecture/2026-07_substances-foundation.md) — shipped | [substances](systems/substances.md) — partial |
 | combat | [combat](../design/combat.md) | [combat plan](../plans/combat_implementation_plan.md) — in-progress; [player-body-animation](../archive/architecture/2026-07_player-body-animation.md), [animation-polish](../archive/architecture/2026-07_animation-polish.md) — shipped; [humanoid-animation-pass](2026-11_humanoid-animation-pass.md) — in-progress | [combat](systems/combat.md) — partial |
 | comms | [comms](../design/comms.md) | [comms-non-diegetic-feed](../archive/architecture/2026-07_comms-non-diegetic-feed.md) — shipped | [chat-audio-screens](systems/chat-audio-screens.md) — partial |
-| construction | [construction](../design/construction.md) | none yet | [tile](systems/tile.md) — partial |
+| construction | [construction](../design/construction.md) | [construction-mvp1](2026-11_construction-mvp1.md) — planned | [tile](systems/tile.md) — partial |
 | crafting | [crafting](../design/crafting.md) | none yet | [crafting](systems/crafting.md) — stub |
 | creative-mode | [creative-mode](../design/creative-mode.md) | [map-editor-replacement](../archive/architecture/2026-07_map-editor-replacement.md), [spawn-point-authoring](../archive/architecture/2026-07_spawn-point-authoring.md), [ss13-map-import](../archive/architecture/2026-07_ss13-map-import.md), [ss13-map-import-infrastructure](../archive/architecture/2026-07_ss13-map-import-infrastructure.md) — shipped ; [map-editor-palette-layout](../archive/architecture/2026-11_map-editor-palette-layout.md) — shipped | [tile](systems/tile.md) — partial; [map-editor-creative-hooks](systems/map-editor-creative-hooks.md) |
 | cryogenics | [cryogenics](../design/cryogenics.md) | none yet | none yet |
@@ -134,6 +134,7 @@ Only work that is in flight, planned, or kept as standing reference. Everything 
 | [2026-11_sandbox-server](2026-11_sandbox-server.md) | in-progress |
 | [2026-11_atmos-edge-flow](2026-11_atmos-edge-flow.md) | in-progress |
 | [2026-11_humanoid-animation-pass](2026-11_humanoid-animation-pass.md) | in-progress |
+| [2026-11_construction-mvp1](2026-11_construction-mvp1.md) | planned |
 | [2026-11_testing-philosophy](2026-11_testing-philosophy.md) | shipped (standing policy) |
 | [agent_validation_loop.plan](../plans/agent_validation_loop.plan.md) | shipped (reference) |
 | [eva-gear.plan](../plans/eva-gear.plan.md) | in-progress |
