@@ -171,6 +171,12 @@ namespace SS3D.Systems.StructuralDamage
             return hand != null && hand.ItemInHand == GetComponent<Item>() ? hand : null;
         }
 
+        /// <summary>Pose for a charge on a wall with horizontal outward <paramref name="normal"/>.</summary>
+        /// <remarks>The broad back is -Y, so the readout (+Y) faces the person attaching it. Digit tops are +Z;
+        /// pinning +Z to world up keeps the countdown level on every wall facing. FromToRotation left the roll
+        /// to the shortest arc, so the digits read upright, sideways or upside down depending on the wall.</remarks>
+        public static Quaternion WallMountRotation(Vector3 normal) => Quaternion.LookRotation(Vector3.up, normal);
+
         private static PlacedTileObject AttachmentTarget(InteractionEvent e) =>
             TryAttachmentSurface(e, out PlacedTileObject target, out _, out _) ? target : null;
 
@@ -244,8 +250,7 @@ namespace SS3D.Systems.StructuralDamage
                 _charge._targetTile = tiles.QueryService.WorldToTile(target.transform.position, tiles.CurrentMap.MapId);
                 _charge._coneDirection = new Vector2(-normal.x, -normal.z);
                 Item item = _charge.GetComponent<Item>();
-                // The charge's broad back is -Y; its readout (+Y) faces the person attaching it.
-                Quaternion rotation = Quaternion.FromToRotation(Vector3.up, normal);
+                Quaternion rotation = WallMountRotation(normal);
                 float thickness = item.GetComponent<BoxCollider>().size.y;
                 _charge.HeldHand(e).PlaceHeldItemOutOfHand(contact + normal * (thickness * 0.5f + 0.01f), rotation);
                 // ItemUtility.Place lifts floor drops; a wall charge needs the exact contact pose.

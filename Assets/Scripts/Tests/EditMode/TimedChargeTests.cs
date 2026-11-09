@@ -89,5 +89,20 @@ namespace EditorTests
             }
             finally { Object.DestroyImmediate(chargeObject); Object.DestroyImmediate(cutters); Object.DestroyImmediate(crowbar); }
         }
+
+        [TestCase(1f, 0f)]
+        [TestCase(-1f, 0f)]
+        [TestCase(0f, 1f)]
+        [TestCase(0f, -1f)]
+        [TestCase(0.6f, -0.8f)]
+        public void WallMountRotation_KeepsCountdownLevelOnEveryWallFacing(float x, float z)
+        {
+            Vector3 normal = new(x, 0f, z);
+            Quaternion rotation = TimedCharge.WallMountRotation(normal);
+            Assert.That(Vector3.Angle(rotation * Vector3.up, normal), Is.LessThan(0.1f), "Readout faces out of the wall");
+            Assert.That(Vector3.Angle(rotation * Vector3.forward, Vector3.up), Is.LessThan(0.1f), "Digit tops point up");
+            Assert.That(Vector3.Angle(rotation * Vector3.right, Vector3.Cross(normal, Vector3.up)), Is.LessThan(0.1f),
+                "Digits read left to right for someone facing the wall");
+        }
     }
 }
