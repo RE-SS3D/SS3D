@@ -72,11 +72,12 @@ namespace EditorTests
         }
 
         [Test]
-        public void IsFullyCovered_IsFalse_WhenAnySingleCellOfTheBlockIsMissing([Range(-1, 1)] int missingDx, [Range(-1, 1)] int missingDy)
+        public void IsFullyCovered_IsFalse_WhenAnySingleCellOfTheBlockIsMissing(
+            [NUnit.Framework.Range(-1, 1)] int missingDx,
+            [NUnit.Framework.Range(-1, 1)] int missingDy)
         {
             Vector2Int center = new(7, -4);
             PlaceTurfBlock(center, new Vector2Int(center.x + missingDx, center.y + missingDy));
-
             Assert.IsFalse(_subsystem.IsFullyCovered(center));
         }
 
@@ -277,7 +278,7 @@ namespace EditorTests
                 {
                     Vector2Int cell = new(center.x + dx, center.y + dy);
 
-                    if (skip.HasValue && skip.Value == cell)
+                    if (skip == cell)
                     {
                         continue;
                     }
