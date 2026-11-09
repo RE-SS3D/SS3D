@@ -251,7 +251,7 @@ namespace SS3D.Systems.Interactions
         private void BuildElements(Ring ring)
         {
             ring.Root = new VisualElement { name = "delayed-progress-ring", pickingMode = PickingMode.Ignore };
-            ring.Root.style.position = Position.Absolute;
+            ring.Root.style.position = UnityEngine.UIElements.Position.Absolute;
             ring.Root.style.width = RingSize;
             ring.Root.style.alignItems = Align.Center;
 
@@ -262,7 +262,7 @@ namespace SS3D.Systems.Interactions
 
             // Wider than the ring so "Not enough materials" fits on one line, centred under it.
             ring.Caption = new Label { pickingMode = PickingMode.Ignore };
-            ring.Caption.style.position = Position.Absolute;
+            ring.Caption.style.position = UnityEngine.UIElements.Position.Absolute;
             ring.Caption.style.top = RingSize + 2f;
             ring.Caption.style.width = 200f;
             ring.Caption.style.left = (RingSize - 200f) * 0.5f;
@@ -289,7 +289,7 @@ namespace SS3D.Systems.Interactions
             }
 
             _container = new VisualElement { name = "delayed-progress-rings", pickingMode = PickingMode.Ignore };
-            _container.style.position = Position.Absolute;
+            _container.style.position = UnityEngine.UIElements.Position.Absolute;
             _container.style.left = 0f;
             _container.style.top = 0f;
             _container.style.right = 0f;

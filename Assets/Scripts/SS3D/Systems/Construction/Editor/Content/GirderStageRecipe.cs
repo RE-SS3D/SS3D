@@ -65,8 +65,8 @@ namespace SS3D.Systems.Construction.Editor
             }
 
             TileObjectSo platedTile = RegisterPlatedTile(girderTile);
-            changed += KeepOnly(PlatedPrefab, "SteelGirderPlated", new[] { GirderShape, WallSheets }, platedTile) ? 1 : 0;
-            changed += KeepOnly(GirderPrefab, null, new[] { GirderShape }, null) ? 1 : 0;
+            changed += KeepOnly(PlatedPrefab, "SteelGirderPlated", new string[] { GirderShape, WallSheets }, platedTile) ? 1 : 0;
+            changed += KeepOnly(GirderPrefab, null, new string[] { GirderShape }, null) ? 1 : 0;
 
             if (girderTile.airtight)
             {
@@ -179,8 +179,7 @@ namespace SS3D.Systems.Construction.Editor
                     return false;
                 }
 
-                NetworkObject networkObject = root.GetComponent<NetworkObject>();
-                if (networkObject != null)
+                if (root.TryGetComponent(out NetworkObject networkObject))
                 {
                     RebuildNetworkBehaviours(networkObject);
                     if (rootName != null)

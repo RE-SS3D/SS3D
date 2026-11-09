@@ -123,7 +123,7 @@ namespace EditorTests
             GameObject go = new("FloorTiles");
             _objects.Add(go);
             Item tiles = go.AddComponent<Item>();
-            tiles.Init("FloorTile", 1f, new List<Trait>());
+            tiles.Init("FloorTile", 1f, new List<SS3D.Systems.Trait>());
             int before = tiles.StackCount;
 
             ConstructionRule lay = Rule(ConstructionStep.PlaceFloorTile);

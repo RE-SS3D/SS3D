@@ -328,7 +328,7 @@ namespace SS3D.Systems.Construction
             }
 
             _ghostLabel = new Label { name = "construction-ghost-label", pickingMode = PickingMode.Ignore };
-            _ghostLabel.style.position = Position.Absolute;
+            _ghostLabel.style.position = UnityEngine.UIElements.Position.Absolute;
             _ghostLabel.style.width = 300f;
             _ghostLabel.style.unityTextAlign = TextAnchor.LowerCenter;
             _ghostLabel.style.fontSize = 13f;
