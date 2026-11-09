@@ -28,6 +28,27 @@ namespace SS3D.Systems.Construction
                 return true;
             }
 
+            if (placed.tileObjectSO.reinforced)
+            {
+                key = ExamineConstructionKeys.Reinforced;
+                fallback = ExamineConstructionKeys.ReinforcedFallback;
+                return true;
+            }
+
+            if (placed.NameString == ConstructionNames.Wall)
+            {
+                key = ExamineConstructionKeys.WallCutSeams;
+                fallback = ExamineConstructionKeys.WallCutSeamsFallback;
+                return true;
+            }
+
+            if (placed.NameString == ConstructionNames.Window)
+            {
+                key = ExamineConstructionKeys.WindowLiftPane;
+                fallback = ExamineConstructionKeys.WindowLiftPaneFallback;
+                return true;
+            }
+
             if (placed.NameString == ConstructionNames.Girder)
             {
                 key = ExamineConstructionKeys.Girder;

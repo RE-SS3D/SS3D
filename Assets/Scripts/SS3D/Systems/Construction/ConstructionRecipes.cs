@@ -84,6 +84,37 @@ namespace SS3D.Systems.Construction
                 Seconds = 3f, Outcome = ConstructionOutcome.ClearWreckage,
                 ReturnItemName = ConstructionNames.SteelSheetItem, ReturnCount = 2, IsCellAction = true,
             },
+
+            // Deconstruction (S5): the ladder backwards, from Intact only, about twice the build time,
+            // never on reinforced (§9). No debris.
+            new ConstructionRule
+            {
+                Step = ConstructionStep.CutSeams, GenericName = "ConstructionCutSeams", Verb = "Cut seams",
+                Input = ConstructionInput.Welder, Target = ConstructionTargetKind.NamedTile, TargetName = ConstructionNames.Wall,
+                Layer = TileLayer.Turf, Seconds = 10f, Outcome = ConstructionOutcome.Replace,
+                ResultName = ConstructionNames.GirderPlated, RequiresIntact = true, RefusesReinforced = true,
+            },
+            new ConstructionRule
+            {
+                Step = ConstructionStep.PullPlate, GenericName = "ConstructionPullPlate", Verb = "Pull plate",
+                Input = ConstructionInput.Crowbar, Target = ConstructionTargetKind.NamedTile, TargetName = ConstructionNames.GirderPlated,
+                Layer = TileLayer.Turf, Seconds = 10f, Outcome = ConstructionOutcome.Replace, ResultName = ConstructionNames.Girder,
+                ReturnItemName = ConstructionNames.SteelSheetItem, ReturnCount = 2, RequiresIntact = true, RefusesReinforced = true,
+            },
+            new ConstructionRule
+            {
+                Step = ConstructionStep.LiftPane, GenericName = "ConstructionLiftPane", Verb = "Lift pane",
+                Input = ConstructionInput.Crowbar, Target = ConstructionTargetKind.NamedTile, TargetName = ConstructionNames.Window,
+                Layer = TileLayer.Turf, Seconds = 14f, Outcome = ConstructionOutcome.Replace, ResultName = ConstructionNames.Girder,
+                ReturnItemName = ConstructionNames.GlassSheetItem, ReturnCount = 2, RequiresIntact = true, RefusesReinforced = true,
+            },
+            new ConstructionRule
+            {
+                Step = ConstructionStep.DismantleGirder, GenericName = "ConstructionDismantleGirder", Verb = "Dismantle girder",
+                Input = ConstructionInput.Welder, Target = ConstructionTargetKind.NamedTile, TargetName = ConstructionNames.Girder,
+                Layer = TileLayer.Turf, Seconds = 10f, Outcome = ConstructionOutcome.Remove,
+                ReturnItemName = ConstructionNames.SteelSheetItem, ReturnCount = 2, RequiresIntact = true, RefusesReinforced = true,
+            },
         };
 
         public static ConstructionRule Get(ConstructionStep step)

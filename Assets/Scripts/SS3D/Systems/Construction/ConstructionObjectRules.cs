@@ -25,7 +25,8 @@ namespace SS3D.Systems.Construction
                 ConstructionTargetKind.DamagedPlenum => placed.GenericType == TileObjectGenericType.Plenum && IsDamaged(placed),
                 ConstructionTargetKind.DamagedStructure => placed.GenericType == TileObjectGenericType.Wall && IsDamaged(placed),
                 ConstructionTargetKind.NamedTile => placed.NameString == rule.TargetName
-                    && (!rule.RequiresIntact || !IsDamaged(placed)),
+                    && (!rule.RequiresIntact || !IsDamaged(placed))
+                    && (!rule.RefusesReinforced || !placed.tileObjectSO.reinforced),
                 _ => false,
             };
         }

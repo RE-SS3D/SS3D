@@ -15,6 +15,10 @@ namespace SS3D.Systems.Construction
         WeldPlated = 7,
         GlazeGirder = 8,
         ClearWreckage = 9,
+        CutSeams = 10,
+        PullPlate = 11,
+        LiftPane = 12,
+        DismantleGirder = 13,
     }
 
     /// <summary>What a rule acts on. Name-matched kinds also read <see cref="ConstructionRule.TargetName"/>.</summary>

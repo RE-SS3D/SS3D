@@ -1,8 +1,8 @@
 > Implements: Documents/design/construction.md §2 (tools and materials), §3 (use-on-target, placement ghost, timed interruptible steps), §4 (floors and hull), §5 (air after a patch), §6 (wall ladder), §7 (windows), §8 (wreckage and salvage), §9 (repair and deconstruction), §10 (feel targets), §11 (HUD touchpoints); Documents/design/explosives-destruction.md §3 (repair to Intact, floor layers)
 > Touches systems: tile, structural-destruction, interactions-framework, interactions-runtime, inventory, atmospherics, ui-shell, gamemodes-roles-traits
-> Status: planned
+> Status: in progress
 
-**Progress:** Grilled with the owner on 2026-11-09, after the gameplay grill that revised [construction.md](../design/construction.md). Serves [mvp1-nuke-ops.md](../milestones/mvp1-nuke-ops.md) M10, and S2 closes M8's "an engineer seals a hull hole". Takes over [station structural damage](../plans/station_structural_damage.plan.md) Phase 6 (repair). No phase started.
+**Progress:** Grilled with the owner on 2026-11-09, after the gameplay grill that revised [construction.md](../design/construction.md). Serves [mvp1-nuke-ops.md](../milestones/mvp1-nuke-ops.md) M10, and S2 closes M8's "an engineer seals a hull hole". Takes over [station structural damage](../plans/station_structural_damage.plan.md) Phase 6 (repair). S1–S5 written, not compiled or tested; first Editor session: compile, run setup scripts, validate.sh --steps compile,editmode, S4 visual check.
 
 # Construction for MVP1: floors, hull, walls, windows (Nov 2026)
 
@@ -49,6 +49,23 @@ Checked by three read-only explorations against code; the [tile](systems/tile.md
 - **construction.md §3, valid targets light up:** MVP1 outlines only the hovered target (D11). Full candidate highlighting while a tool is held is post-playtest.
 - **construction.md §5, a patched room refills from its vents:** the patched cell itself starts with station air (D8), and the air alarm's refill preset doesn't make vents faster, it only stops scrubbers.
 - **Girder prefab:** its reinforced, window-sheet, support and strut layers move out (D1). They stay in `SteelWalls.fbx` for reinforced building later.
+- **construction.md §11, welding hisses:** no weld hiss clip or spark effect exists in the project. The welder cue is the structural metal contact flecks plus quiet, high-pitched metal hits; the crowbar plays the metal-scrape clips. A real hiss clip and spark VFX are an art follow-up.
+- **construction.md §6, a girder on "any clear floor tile":** it also goes on bare plating, and building one on a floored cell removes that floor tile with no return. Dismantling a girder leaves bare plating.
+- **construction.md §4, plating only where the station had a floor:** "inside the station" means the cell has an area id. Area ids do not replicate, so a client ghost can read green over open space; the server refuses ("Outside the station") and the label shows it briefly.
+
+## Implementation notes (S1–S5, written blind)
+
+What the first Editor session needs to know; fold into the system maps with `update-system-docs` in S6.
+
+- **Setup scripts.** Run **SS3D → Construction → Run Content Prefab Recipes** (stack limits and markers, hub subsystem, girder stages, reinforced flags, LoadingBar cleanup), then **SS3D → Structural Damage → Run Content Prefab Recipes** (seeds the `examine.construction.*` keys through `SetupFloors`). Commit the prefabs, assets and the regenerated `MapEditorCatalog.asset`. Until then `ConstructionRecipesTests`, `ConstructionLadderTests.StagePrefabs_*`, `ConstructionDeconstructionTests.ReinforcedAssets_*` and `MapEditorCatalogMappingTests.CommittedCatalog_MatchesRegeneration` fail by design.
+- **Assemblies.** Construction runtime code and the item, hub, reinforced and purge recipes live in `SS3D.Systems` (`Systems/Construction/`, editor files behind `#if UNITY_EDITOR`). `GirderStageRecipe` and the aggregator are in the new `ConstructionEditorAssembly` (`Systems/Construction/Editor/Content/`) because they need the Addressables editor API; the EditMode test asmdef references it by name.
+- **Materials.** `ConstructionMaterial` (steel, glass, floor tiles) is a second marker beside D5's `ConstructionTool`; both are plain MonoBehaviours and both implement `IInteractionSourceExtension` and the new `IOutlineSourceExtension` (D11).
+- **Cancel reasons.** `IInteractionSource.CancelInteraction(reference, reason)`; `RpcCancelInteraction` stays an ObserversRpc carrying the reason, and only the client holding the client instance (the one that started the step) acts on it. `DelayedCancelReason.Interrupted` was added for target-gone and out-of-reach. Damage reaches `DelayedInteraction` through `IDamageNotifier` (on `HumanHealthController`), so the interactions assembly stays free of health. Melee opts out of cancel-on-damage. `ProtocolVersion` is 33.
+- **Ring.** `DelayedProgressRingSubSystem` self-bootstraps on clients and registers itself on `DelayedProgressFeedback.Presenter`; each ring has an id so a late cancel for a replaced step cannot touch the new ring. Check that `Painter2D` arcs render and that the caption picks up the shell font.
+- **Cell actions.** `ConstructionPlacementSubSystem` is a `NetworkSubSystem` on the hub. The ghost takes a primary click only when nothing target-bound outranks it (Drop does not). The Cancel key cancels a running cell action first. `InteractionController.Local` is new.
+- **Girder stages.** `GirderStageRecipe` copies the girder prefab before stripping it; it calls FishNet `ManagedObjects.InitializePrefab` on the copy so it gets its own prefab id. Check the plated prefab spawns on a remote client (tile Pitfall: networked tile prefabs must carry `PlacedTileObject`, which the copy does).
+- **Atmos through stages.** A non-airtight wall gets `BlockedEdges = 0`, not only `IsAirtight = false`: neighbour flow reads edges, so a girder now passes air like open floor.
+- **Not checked.** Whether floor tiles and plating carry a `Selectable`; object steps on them need one to dispatch. Whether `StringTable.AddEntry` updates an existing key's English text.
 
 ## Phases
 
@@ -93,9 +110,9 @@ Checked by three read-only explorations against code; the [tile](systems/tile.md
 
 ### S5: deconstruction and reinforced
 
-- [ ] `TileObjectSo.reinforced` on reinforced wall and window; `structuralMaxIntegrity` override on the reinforced wall
-- [ ] Interactions from Intact only: welder cuts seams (wall → plated), crowbar pulls plate (plated → girder, sheets back), crowbar lifts pane (window → girder, glass back), welder cuts girder (→ open, sheets back); about twice the build time; refused on reinforced and on damaged
-- [ ] EditMode: reverse ladder, refusals, returns
+- [x] `TileObjectSo.reinforced` on reinforced wall and window; `structuralMaxIntegrity` override on the reinforced wall
+- [x] Interactions from Intact only: welder cuts seams (wall → plated), crowbar pulls plate (plated → girder, sheets back), crowbar lifts pane (window → girder, glass back), welder cuts girder (→ open, sheets back); about twice the build time; refused on reinforced and on damaged
+- [x] EditMode: reverse ladder, refusals, returns
 - Validation: `compile,editmode`
 
 ### S6: test station and acceptance

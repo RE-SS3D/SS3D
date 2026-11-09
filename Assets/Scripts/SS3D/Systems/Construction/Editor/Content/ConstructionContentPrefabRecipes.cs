@@ -34,10 +34,12 @@ namespace SS3D.Systems.Construction.Editor
             int items = ConstructionItemRecipe.SetupAll();
             bool hub = ConstructionHubRecipe.SetupAll();
             int stages = GirderStageRecipe.SetupAll();
+            int reinforced = ConstructionReinforcedRecipe.SetupAll();
             bool purged = LoadingBarPurge.Run();
             return $"Construction items: updated {items} prefab(s).\n"
                 + $"NetworkSystemsHub: {(hub ? "added ConstructionPlacementSubSystem" : "already set up")}.\n"
                 + $"Girder stages: {stages} change(s).\n"
+                + $"Reinforced flags: updated {reinforced} asset(s).\n"
                 + $"LoadingBar purge: {(purged ? "cleaned up" : "nothing left")}.";
         }
     }
