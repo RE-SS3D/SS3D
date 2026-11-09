@@ -440,6 +440,8 @@ namespace SS3D.Systems.Inventory.Containers.Editor
             SerializedProperty hidden = so.FindProperty("_occludedBodyRenderers");
             hidden.arraySize = occluded.Length;
             for (int i = 0; i < occluded.Length; i++) hidden.GetArrayElementAtIndex(i).stringValue = occluded[i];
+            // New garments start as a copy of JumpsuitGrey; its ankle-only leg meshes fit only the standard jumpsuits.
+            so.FindProperty("_bodyMeshOverrides").arraySize = 0;
             so.ApplyModifiedPropertiesWithoutUndo();
         }
 
