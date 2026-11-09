@@ -60,12 +60,24 @@ A bubble means "this is happening at this physical point" — radio isn't a phys
 
 ## 7. Non-diegetic channels
 
-OOC, LOOC, dead chat, and admin messages have no in-world speaker to anchor a bubble to — a ghost has no body, and OOC isn't happening in-character at all. They appear in the **same feed** as radio, during the round and in the lobby alike, with distinct typography per channel (e.g. bracketed/italic for OOC) so it's visually obvious "this isn't happening in the world," not just differently coloured text. Each channel can be **filtered** out of the feed by a player who'd rather not see it. The same channels also live in the **Chat tab** of the lobby and the Escape menu, for longer reading.
+OOC, LOOC, dead chat, and admin messages have no in-world speaker to anchor a bubble to — a ghost has no body, and OOC isn't happening in-character at all. They get **their own column on the right edge of the screen**, apart from everything in-character. Where a line appears tells you whether it's happening in the world, before you read a word: the bottom-left feed (§6, §9), subtitles and action lines (`action-messages.md`) are in-character; the right edge never is. Typography alone, in one shared feed, was the earlier answer — space is the stronger signal, and it keeps the in-character history clean for investigation.
+
+**The column is quiet when idle.** A new line appears, then fades after a few seconds; with nothing new, the column is empty — minimal chrome, per `main-hud.md` §1 rule 3. A key or hovering the column brings back recent lines to read. A player setting keeps it always visible instead, for those who want it.
+
+**Every line carries its channel.** A short tag and colour per channel (OOC, LOOC, DEAD, ADMIN), so four channels in one column stay distinct. OOC and admin lines show the sender's **account name**, never their character, so OOC can't casually tie a player to who they're playing. LOOC shows both — "Marcus Voss (henk)" — since it's about the people around you.
+
+**Admin messages can't be missed.** A message from an admin to you persists in the column until you dismiss it, with its own sound. Server and system notices (a round restarting, a bug-report confirmation) sit in the same column in neutral grey.
+
+Each channel can be **filtered** out of the column by a player who'd rather not see it. The same channels also live in the **Chat tab** of the lobby and the Escape menu, for longer reading.
 
 - **OOC** — out of character, server-wide. **Rate-limited**: a player can't post more than a few messages in a short window, so a playtest's OOC stays readable.
 - **LOOC** — local out of character: reaches players within about **10 m** of the speaker. For "sorry, lagged" and "how do I open this?" without breaking the scene for the whole server.
 - **Dead chat** — ghosts only (`observer.md` §4).
 - **Admin help** — a two-way conversation between one player and the admins (`admin-tools.md` §3). Admins also have an admin-only channel among themselves.
+
+- **Admins can mute OOC mid-round** from the server settings (`round-config.md` §2) — a common guard against out-of-character coordination. LOOC, dead chat and admin messages are never muted by it.
+
+**Out-of-character messages use the same compose box** (§5): the channel tag and slash words route them, and the box takes the destination channel's **colour** as well as its tag, so "you are typing in OOC" is unmistakable before you send — typing in the wrong world is the mistake worth designing against. A dedicated "talk OOC" key exists for those who want one, unbound by default.
 
 ## 8. Communication modes
 
@@ -95,6 +107,9 @@ Nothing here assumes audio exists. If voice chat gets added later, it runs as an
 | Radio & channels | Headset and its issued access (`id-access.md`) |
 | Admin help | `admin-tools.md` §3 |
 | Dead chat | `observer.md` §4 |
+| Out-of-character column placement | `main-hud.md` §4 |
+| OOC mute | `round-config.md` §2 |
+| Action lines in the feed and history | `action-messages.md` §5–§6 |
 | Announcements | `antagonist-content.md` §6, `round-end.md` |
 | History | The feed's scrollback; later a PDA tab (`pda.md`) |
 
