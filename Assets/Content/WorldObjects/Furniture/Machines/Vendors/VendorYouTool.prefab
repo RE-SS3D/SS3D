@@ -192,6 +192,12 @@ MonoBehaviour:
   - Product: {fileID: 11400000, guid: 58b1ed19ea55c074cb719ae4c4791cf1, type: 2}
     Stock: 5
     RequiresId: 0
+  - Product: {fileID: 11400000, guid: 50bec7028c69ea616890b5ff68db7a5c, type: 2}
+    Stock: 10
+    RequiresId: 0
+  - Product: {fileID: 11400000, guid: 10ea99af9a6adff2e88f2641f248ffbe, type: 2}
+    Stock: 10
+    RequiresId: 0
   _dispensingTransform: {fileID: 5160227759105755511}
   _title: YOUTOOL VENDOMAT
   _deviceKind: Tool Dispenser

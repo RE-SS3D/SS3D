@@ -33,6 +33,8 @@ namespace SS3D.Systems.Examine.Editor
             UpsertEntry(englishTable, ExamineStructuralIntegrityKeys.SplitWood, ExamineStructuralIntegrityKeys.SplitWoodFallback);
             UpsertEntry(englishTable, ExamineStructuralIntegrityKeys.ChippedGlass, ExamineStructuralIntegrityKeys.ChippedGlassFallback);
             UpsertEntry(englishTable, ExamineStructuralIntegrityKeys.FracturedGlass, ExamineStructuralIntegrityKeys.FracturedGlassFallback);
+            UpsertEntry(englishTable, ExamineStructuralIntegrityKeys.DentedDevice, ExamineStructuralIntegrityKeys.DentedDeviceFallback);
+            UpsertEntry(englishTable, ExamineStructuralIntegrityKeys.BrokenDevice, ExamineStructuralIntegrityKeys.BrokenDeviceFallback);
             UpsertEntry(englishTable, ExamineSealKeys.Intact, ExamineSealKeys.IntactFallback);
             UpsertEntry(englishTable, ExamineSealKeys.Breached, ExamineSealKeys.BreachedFallback);
             UpsertEntry(englishTable, ExamineTankKeys.Fill, ExamineTankKeys.FillFallback);
@@ -79,6 +81,8 @@ namespace SS3D.Systems.Examine.Editor
             UpsertEntry(englishTable, ExamineStructuralIntegrityKeys.SplitWood, ExamineStructuralIntegrityKeys.SplitWoodFallback);
             UpsertEntry(englishTable, ExamineStructuralIntegrityKeys.ChippedGlass, ExamineStructuralIntegrityKeys.ChippedGlassFallback);
             UpsertEntry(englishTable, ExamineStructuralIntegrityKeys.FracturedGlass, ExamineStructuralIntegrityKeys.FracturedGlassFallback);
+            UpsertEntry(englishTable, ExamineStructuralIntegrityKeys.DentedDevice, ExamineStructuralIntegrityKeys.DentedDeviceFallback);
+            UpsertEntry(englishTable, ExamineStructuralIntegrityKeys.BrokenDevice, ExamineStructuralIntegrityKeys.BrokenDeviceFallback);
 
             EditorUtility.SetDirty(englishTable);
             EditorUtility.SetDirty(englishTable.SharedData);

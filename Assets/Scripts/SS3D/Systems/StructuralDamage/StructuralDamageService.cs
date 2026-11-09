@@ -36,6 +36,11 @@ namespace SS3D.Systems.StructuralDamage
 
         public bool TryApplyStructuralDamage(TileCoord coord, float force, StructuralDamageSource source)
         {
+            // A blast reaches the machines mounted on a wall as well as the wall. Hit them first: if the wall goes,
+            // its mounts go with it. Direct hits find a mount by its own collider instead (BreakableDeviceResolver).
+            if (source == StructuralDamageSource.Blast && force > 0f)
+                DamageMountedDevices(coord, force);
+
             if (force <= 0f || !TryGetStructural(coord, out PlacedTileObject placed))
                 return false;
 
@@ -114,6 +119,28 @@ namespace SS3D.Systems.StructuralDamage
             // Prefer TileSubSystem when registered (Play Mode); EditMode tests pass a map-backed notify via construction map.
             if (SS3D.Core.SubSystems.TryGet(out TileSubSystem tiles))
                 tiles.NotifyTileStateChanged(world);
+        }
+
+        private static readonly TileLayer[] MountLayers = { TileLayer.WallMountHigh, TileLayer.WallMountLow };
+        private static readonly Direction[] MountFacings = { Direction.North, Direction.East, Direction.South, Direction.West };
+
+        private void DamageMountedDevices(TileCoord coord, float force)
+        {
+            if (_query == null)
+                return;
+
+            foreach (TileLayer layer in MountLayers)
+            {
+                foreach (Direction facing in MountFacings)
+                {
+                    if (_query.TryGetOccupant(coord, layer, facing, out ITileOccupant occupant)
+                        && occupant is PlacedTileObject mount
+                        && mount.TryGetComponent(out BreakableDevice device))
+                    {
+                        device.ServerApplyDamage(force, StructuralDamageSource.Blast);
+                    }
+                }
+            }
         }
     }
 }

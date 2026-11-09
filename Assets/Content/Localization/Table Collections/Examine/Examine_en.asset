@@ -1574,6 +1574,46 @@ MonoBehaviour:
     m_Localized: The hull plating is badly damaged, but remains sealed.
     m_Metadata:
       m_Items: []
+  - m_Id: 297502203608068096
+    m_Localized: Light bulb
+    m_Metadata:
+      m_Items: []
+  - m_Id: 297502203650011136
+    m_Localized: A replacement bulb for a small light fixture.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 297502208683175936
+    m_Localized: Broken light bulb
+    m_Metadata:
+      m_Items: []
+  - m_Id: 297502208683175937
+    m_Localized: The shattered remains of a light bulb. Mind your fingers.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 297502212634210304
+    m_Localized: Light tube
+    m_Metadata:
+      m_Items: []
+  - m_Id: 297502212634210305
+    m_Localized: A replacement fluorescent tube for a light fixture.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 297502216304226304
+    m_Localized: Broken light tube
+    m_Metadata:
+      m_Items: []
+  - m_Id: 297502216304226305
+    m_Localized: What's left of a fluorescent tube.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 297530947802525696
+    m_Localized: Its casing is dented and scorched.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 297530947844468736
+    m_Localized: It's smashed and dead. Sparks spit from the broken casing.
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

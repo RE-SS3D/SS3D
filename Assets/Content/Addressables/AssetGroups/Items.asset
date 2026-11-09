@@ -380,6 +380,11 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 5e28eb34e0e0fb387955aff4d4c287d9
+    m_Address: LightBulb
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 5e8a02c5ce0073644ac01bdb55d72a70
     m_Address: Assets/Content/WorldObjects/Furniture/Generic/Surfaces/Tables/TableWood.prefab
     m_ReadOnly: 0
@@ -415,6 +420,11 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 695d43ceb053fda4eb5045c81b18877e
+    m_Address: LightTubeBroken
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 6c2559c2017ada740b245951a23c2e1d
     m_Address: Assets/Content/WorldObjects/Structures/Walls/SteelGirder.prefab
     m_ReadOnly: 0
@@ -422,6 +432,11 @@ MonoBehaviour:
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 6caa99f8281726e40a793826d5c047db
     m_Address: Assets/Content/WorldObjects/Furniture/Generic/Surfaces/Tables/TableSteel.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 6d54ade56133736a3aae1a4341530af3
+    m_Address: LightBulbBroken
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
@@ -637,6 +652,11 @@ MonoBehaviour:
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: a38ee818c953a404787757d8d20d2851
     m_Address: Assets/Content/WorldObjects/Items/Clothing/HeadsetSecurity.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: a4cdaa01c2e4e802585967ddf6aa83ed
+    m_Address: LightTube
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0

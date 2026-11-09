@@ -22,6 +22,8 @@ GameObject:
   - component: {fileID: -8800000000000000003}
   - component: {fileID: -8800000000000000004}
   - component: {fileID: -8800000000000000005}
+  - component: {fileID: 3715665413234286169}
+  - component: {fileID: 6086683748230013247}
   m_Layer: 0
   m_Name: AirAlarm
   m_TagString: Untagged
@@ -102,6 +104,19 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!114 &6267259793026366969
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6961426338783081091}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e3a888f0183bca1cda8899b6b48e89a3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: SS3D.Systems::SS3D.Systems.Audio.AmbientLoopSource
+  _kind: 6
 --- !u!65 &-8800000000000000006
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -121,8 +136,8 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 0.5, y: 0.6, z: 0.2}
-  m_Center: {x: 0, y: 0.3, z: 0}
+  m_Size: {x: 0.7887753, y: 0.4549328, z: 0.18257949}
+  m_Center: {x: -0.00000013411045, y: 1.4592116, z: 0.32287735}
 --- !u!114 &-752502555905215929
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -149,6 +164,7 @@ MonoBehaviour:
   - {fileID: -8800000000000000002}
   - {fileID: -8800000000000000004}
   - {fileID: -8800000000000000005}
+  - {fileID: 3715665413234286169}
   <ParentNetworkObject>k__BackingField: {fileID: 0}
   <ChildNetworkObjects>k__BackingField: []
   SerializedTransformProperties:
@@ -271,6 +287,11 @@ MonoBehaviour:
   _samplePressureKpa: 0
   _sampleOxygenFraction: 0
   _sampleCarbonDioxideFraction: 0
+  _sampleNitrogenFraction: 0
+  _samplePlasmaFraction: 0
+  _sampleTemperatureKelvin: 0
+  _hasSample: 0
+  _activeMode: 0
 --- !u!114 &-8800000000000000005
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -286,12 +307,15 @@ MonoBehaviour:
   _componentIndexCache: 3
   _addedNetworkObject: {fileID: -752502555905215929}
   _networkObjectCache: {fileID: -752502555905215929}
+  _accessGranted: 0
+  _accessScanning: 0
+  _accessDenied: 0
   _title: "AIR ALARM \xB7 ATMOSPHERICS"
   _modelLabel: "AA-07 \xB7 atmospheric alarm control unit"
   _deviceTitle: AA-07
   _deviceKind: Air Alarm
   _powerConsumer: {fileID: -8800000000000000001}
---- !u!114 &6267259793026366969
+--- !u!114 &3715665413234286169
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -300,7 +324,35 @@ MonoBehaviour:
   m_GameObject: {fileID: 6961426338783081091}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e3a888f0183bca1cda8899b6b48e89a3, type: 3}
+  m_Script: {fileID: 11500000, guid: ff65a9dda1ef18f4cbc16ee4d1aee066, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: SS3D.Systems::SS3D.Systems.Audio.AmbientLoopSource
-  _kind: 6
+  m_EditorClassIdentifier: SS3D.Systems::SS3D.Systems.Tile.PlacedTileObject
+  _componentIndexCache: 4
+  _addedNetworkObject: {fileID: -752502555905215929}
+  _networkObjectCache: {fileID: -752502555905215929}
+  _asset: {fileID: 0}
+  _tileObjectSo: {fileID: 0}
+  _syncAssetId: 65535
+  _syncOriginX: 0
+  _syncOriginY: 0
+  _syncWorldOriginX: 0
+  _syncWorldOriginY: 0
+  _syncDirection: 0
+  _syncLayer: 0
+  _syncMapId: 0
+  _syncIntegrityRemaining: -1
+  _syncIntegrityStage: 0
+--- !u!114 &6086683748230013247
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6961426338783081091}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c8f9a0b1d2e3f4a5b6c7d8e9f0a1b2c3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: SS3D.Systems::SS3D.Systems.IdAccess.AuthLogDeviceBehaviour
+  _deviceId: AirAlarm
+  _logCapacity: 32

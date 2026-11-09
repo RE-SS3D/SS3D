@@ -20,6 +20,8 @@ GameObject:
   - component: {fileID: 8822334455667788991}
   - component: {fileID: 8822334455667788992}
   - component: {fileID: -3535122389528252537}
+  - component: {fileID: 8423553807158611063}
+  - component: {fileID: 2728738507427774926}
   m_Layer: 0
   m_Name: APC
   m_TagString: Untagged
@@ -119,8 +121,21 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 0.5, y: 0.8, z: 0.2}
-  m_Center: {x: 0, y: 0.4, z: 0}
+  m_Size: {x: 0.5011511, y: 0.4030912, z: 0.17517908}
+  m_Center: {x: 0.0036267638, y: 1.429552, z: 0.26029274}
+--- !u!114 &873307975506040153
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5287103069661579500}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e3a888f0183bca1cda8899b6b48e89a3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: SS3D.Systems::SS3D.Systems.Audio.AmbientLoopSource
+  _kind: 4
 --- !u!114 &-5633820156739102180
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -143,9 +158,10 @@ MonoBehaviour:
   <ComponentIndex>k__BackingField: 0
   <PredictedSpawn>k__BackingField: {fileID: 0}
   _networkBehaviours:
-  - {fileID: 8822334455667788992}
-  - {fileID: 8822334455667788991}
   - {fileID: 8822334455667788990}
+  - {fileID: 8822334455667788991}
+  - {fileID: 8822334455667788992}
+  - {fileID: 2728738507427774926}
   <ParentNetworkObject>k__BackingField: {fileID: 0}
   <ChildNetworkObjects>k__BackingField: []
   SerializedTransformProperties:
@@ -193,12 +209,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ff65a9dda1ef18f4cbc16ee4d1aee066, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _componentIndexCache: 2
+  _componentIndexCache: 0
   _addedNetworkObject: {fileID: -5633820156739102180}
   _networkObjectCache: {fileID: -5633820156739102180}
   _asset: {fileID: 11400000, guid: cd7e56a30be55964da66a4dc51f532d1, type: 2}
   _tileObjectSo: {fileID: 11400000, guid: 99c19ee319960474eadd3099a306ebed, type: 2}
-  _syncAssetName: 
+  _syncAssetId: 65535
   _syncOriginX: 0
   _syncOriginY: 0
   _syncWorldOriginX: 0
@@ -206,6 +222,8 @@ MonoBehaviour:
   _syncDirection: 0
   _syncLayer: 6
   _syncMapId: 0
+  _syncIntegrityRemaining: -1
+  _syncIntegrityStage: 0
 --- !u!114 &8822334455667788991
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -233,13 +251,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a7c4e8f21b3d5e6490a1b2c3d4e5f607, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _componentIndexCache: 0
+  _componentIndexCache: 2
   _addedNetworkObject: {fileID: -5633820156739102180}
   _networkObjectCache: {fileID: -5633820156739102180}
+  _accessGranted: 0
+  _accessScanning: 0
+  _accessDenied: 0
   _title: APC
   _maxCapacityKwh: 5
   _maxDischargeRateKw: 10
   _maxChargeRateKw: 10
+  _channels: 7
+  _storedEnergyKwh: 0
 --- !u!114 &-3535122389528252537
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -256,7 +279,7 @@ MonoBehaviour:
   _updateHostVisibility: 1
   _observerConditions:
   - {fileID: 11400000, guid: cc503f7541ebd424c94541e6a767efee, type: 2}
---- !u!114 &873307975506040153
+--- !u!114 &8423553807158611063
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -265,7 +288,28 @@ MonoBehaviour:
   m_GameObject: {fileID: 5287103069661579500}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e3a888f0183bca1cda8899b6b48e89a3, type: 3}
+  m_Script: {fileID: 11500000, guid: c8f9a0b1d2e3f4a5b6c7d8e9f0a1b2c3, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: SS3D.Systems::SS3D.Systems.Audio.AmbientLoopSource
-  _kind: 4
+  m_EditorClassIdentifier: SS3D.Systems::SS3D.Systems.IdAccess.AuthLogDeviceBehaviour
+  _deviceId: APC
+  _logCapacity: 32
+--- !u!114 &2728738507427774926
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5287103069661579500}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 76e082ade948b08beadb20e857b954d8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: SS3D.Systems::SS3D.Systems.StructuralDamage.BreakableDevice
+  _componentIndexCache: 3
+  _addedNetworkObject: {fileID: -5633820156739102180}
+  _networkObjectCache: {fileID: -5633820156739102180}
+  _maxIntegrity: 60
+  _emissiveRenderers:
+  - {fileID: 5864608339448331312}
+  _damage: 0
+  _broken: 0

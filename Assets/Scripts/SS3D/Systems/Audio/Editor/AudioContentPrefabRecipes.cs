@@ -66,6 +66,10 @@ namespace SS3D.Systems.Audio.Editor
             { "Sunglasses", ItemCollisionMaterial.Plastic },
             { "GlassReinforcedSheet", ItemCollisionMaterial.Glass },
             { "GlassShard", ItemCollisionMaterial.Glass },
+            { "LightBulb", ItemCollisionMaterial.Glass },
+            { "LightBulbBroken", ItemCollisionMaterial.Glass },
+            { "LightTube", ItemCollisionMaterial.Glass },
+            { "LightTubeBroken", ItemCollisionMaterial.Glass },
             { "GlassSheet", ItemCollisionMaterial.Glass },
             { "Mug", ItemCollisionMaterial.Glass },
         };

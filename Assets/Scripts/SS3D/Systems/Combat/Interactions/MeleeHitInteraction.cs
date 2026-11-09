@@ -155,6 +155,12 @@ namespace SS3D.Systems.Combat.Interactions
                 health.ApplyDamage(zone, _profile.ToDamagePacket());
                 landed = true;
             }
+            else if (_profile.ResolveStructuralForce() > 0f && TryResolveDeviceConnect(hand, out BreakableDevice device, out RaycastHit deviceHit))
+            {
+                // A machine on the wall (an APC) takes the swing instead of the wall behind it.
+                landed = device.ServerApplyDamage(_profile.ResolveStructuralForce(), StructuralDamageSource.Melee,
+                    deviceHit.point, deviceHit.normal);
+            }
             else if (TryResolveStructuralConnect(hand, out TileCoord structuralCoord, out RaycastHit? contact))
             {
                 float force = _profile.ResolveStructuralForce();
@@ -255,6 +261,25 @@ namespace SS3D.Systems.Combat.Interactions
                 Reach,
                 zoneCollider);
         }
+
+        /// <summary>A working breakable machine under the aim ray whose casing is within melee reach of the chest.</summary>
+        private static bool TryResolveDeviceConnect(Hand hand, out BreakableDevice device, out RaycastHit hit)
+        {
+            device = null;
+            hit = default;
+            if (!TryBuildConnectAimRay(hand, out Ray aimRay)
+                || !BreakableDeviceResolver.TryFind(aimRay, MeleeAimRayLength, out device, out hit))
+            {
+                return false;
+            }
+
+            Vector3 chest = ResolveReachOrigin(hand);
+            Vector3 surface = hit.collider.ClosestPoint(chest);
+            return Reach.IsInRange(chest, surface);
+        }
+
+        /// <summary>Camera aim rays start well behind an orbiting camera's subject; reach is checked separately.</summary>
+        private const float MeleeAimRayLength = 8f;
 
         private static bool TryResolveStructuralConnect(Hand hand, out TileCoord coord, out RaycastHit? contact)
         {

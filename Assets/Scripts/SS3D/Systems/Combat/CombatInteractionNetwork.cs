@@ -14,6 +14,7 @@ using SS3D.Systems.Combat.Interactions;
 using SS3D.Systems.Entities;
 using SS3D.Systems.Entities.Humanoid;
 using SS3D.Systems.Entities.Humanoid.Body;
+using SS3D.Systems.Electricity;
 using SS3D.Systems.Health;
 using SS3D.Systems.Interactions;
 using SS3D.Systems.Inventory.Containers;
@@ -267,6 +268,19 @@ namespace SS3D.Systems.Combat
                 out bool hasImpact,
                 out Vector3 shotDirection);
 
+            // The aim ray starts at the camera; tests along the shot start level with the muzzle so nothing
+            // behind the shooter is hit. Wall mounts sit inside their wall's full-tile collider, so a wall hit
+            // still reaches a mounted bulb or machine.
+            float stop = hasImpact ? Vector3.Distance(aimRay.origin, impactPoint) : maxRange;
+            if (hitStructural)
+            {
+                stop += LightFixtureBulb.WallInset;
+            }
+
+            float start = Mathf.Clamp(Vector3.Dot(firePosition - aimRay.origin, shotDirection), 0f, stop);
+            Ray shot = new(aimRay.origin + shotDirection * start, shotDirection);
+            float structuralForce = weapon.Profile.ResolveStructuralForce();
+
             bool landed = false;
             if (resolved && hitLiving && health != null)
             {
@@ -277,16 +291,33 @@ namespace SS3D.Systems.Combat
                 }
                 landed = true;
             }
+            else if (structuralForce > 0f
+                && BreakableDeviceResolver.TryFind(shot, stop - start, out BreakableDevice device, out RaycastHit deviceHit))
+            {
+                // A machine on the wall (an APC) takes the round instead of the wall behind it.
+                device.ServerApplyDamage(structuralForce, StructuralDamageSource.Ranged, deviceHit.point, deviceHit.normal);
+                impactPoint = deviceHit.point;
+                impactNormal = deviceHit.normal;
+                hasImpact = true;
+                landed = true;
+                stop = start + deviceHit.distance;
+            }
             else if (resolved && hitStructural)
             {
-                float force = weapon.Profile.ResolveStructuralForce();
-                if (force > 0f
+                if (structuralForce > 0f
                     && SubSystems.TryGet(out StructuralDamageSubSystem structural)
-                    && structural.TryApplyStructuralDamage(structuralCoord, force, StructuralDamageSource.Ranged,
+                    && structural.TryApplyStructuralDamage(structuralCoord, structuralForce, StructuralDamageSource.Ranged,
                         impactPoint, impactNormal))
                 {
                     landed = true;
                 }
+            }
+
+            // The round goes through a bulb's glass, so it still lands where it was resolved to.
+            if ((weapon.Profile.BruteDamage > 0f || weapon.Profile.BurnDamage > 0f)
+                && LightFixtureBulb.TryFindStruck(shot, stop - start, out LightFixtureBulb bulb))
+            {
+                bulb.ServerBreak();
             }
 
             if (hasImpact && !hitLiving)

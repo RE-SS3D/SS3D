@@ -17,7 +17,7 @@ do end to end. Each goal is split into **slices**, the smaller pieces that have 
 |------|---------------------------|----------|
 | [Test server](#test-server) | Download a release, click join, play with others on a live server | 6 of 8 done, 2 partial |
 | [Map authoring](#map-authoring) | Build your own station in a release build and hand it in | 9 of 10 done |
-| [Nuclear Operatives round](#nuclear-operatives-round) | Play a full Nuke Ops round from spawn to end screen | 5 of 10 done, 4 partial |
+| [Nuclear Operatives round](#nuclear-operatives-round) | Play a full Nuke Ops round from spawn to end screen | 5 of 10 done, 5 partial |
 | [Station round](#station-round) | Play a short, bare-bones SS13 shift with jobs and antagonists | 0 of 7 done, 1 partial |
 
 What already works, system by system, is listed in
@@ -68,11 +68,11 @@ What already works, system by system, is listed in
 | ✅ | M1m | Walking and running respond instantly, like a quick RPG |
 | 🟡 | M1c | Ops and Security each have their own guns, magazines, C4 and a stun baton (the rifle works; C4/X4 attach to walls with a visible timer and wirecutter defuse; the minibomb can be thrown) |
 | ✅ | M2 | Walls take damage and explosions tear through the station |
-| 🟡 | M3 | The nuke itself: breach the vault, arm or defuse, a station-wide warning, and blasts that tear up the floor (blasts strip flooring and breach hull plating; tables, lockers and supported machines take damage; steel walls and tables leave wreckage) |
+| 🟡 | M3 | The nuke itself: breach the vault, arm or defuse, a station-wide warning, and blasts that tear up the floor (blasts strip flooring and breach hull plating; tables, lockers and supported machines take damage; APCs break and stay dead on the wall; steel walls and tables leave wreckage) |
 | ✅ | M4 | An operative squad is drawn and briefed, and every round has a winner |
 | ✅ | M5 | An end-of-round screen everyone sees, then the round restarts |
 | 🟡 | M8 | Space kills you, suits and internals protect you, and engineers can patch the hull (exposure damage and breach wind with knockdown/pull work) |
-| ⬜ | M9 | Station power and lights matter: lose power and the room goes dark |
+| 🟡 | M9 | Station power and lights matter: lose power and the room goes dark (smash an APC or shoot out the lights, and the room goes red, then black; fixtures can be relamped) |
 
 **Finish line (M6):** eight players play Nuke Ops rounds together on the always-on server.
 
