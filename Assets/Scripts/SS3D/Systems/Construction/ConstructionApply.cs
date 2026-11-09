@@ -60,20 +60,8 @@ namespace SS3D.Systems.Construction
             switch (rule.Outcome)
             {
                 case ConstructionOutcome.Repair:
-                {
-                    StructuralIntegrityStage previous = target.IntegrityStage;
-                    // The presenter clears the stage overlays from ServerSetIntegrity.
-                    target.ServerSetIntegrity(StructuralIntegrityRules.ResolveMaxIntegrity(target.tileObjectSO),
-                        StructuralIntegrityStage.Intact);
-
-                    // A Cracked wall was not airtight; let atmos and occupancy see it sealed again.
-                    if (target.Layer == TileLayer.Turf && StructuralIntegrityRules.LeaksAtmosphere(previous))
-                    {
-                        tiles.NotifyTileStateChanged(world);
-                    }
-
+                    Repair(target, tiles.NotifyTileStateChanged);
                     break;
-                }
                 case ConstructionOutcome.Remove:
                 {
                     if (!tiles.Construction.TryClearTile(world, rule.Layer, target.Direction).Success)
@@ -90,6 +78,23 @@ namespace SS3D.Systems.Construction
             Spend(rule, item);
             GiveReturns(rule, hand, world);
             return true;
+        }
+
+        /// <summary>
+        /// Weld repair (structural plan Phase 6): straight back to Intact at full integrity. The presenter
+        /// clears the stage overlays from <see cref="PlacedTileObject.ServerSetIntegrity"/>; a Cracked wall
+        /// leaked, so <paramref name="notifyStateChanged"/> lets atmos and occupancy see it sealed again.
+        /// </summary>
+        public static void Repair(PlacedTileObject target, System.Action<Vector3> notifyStateChanged)
+        {
+            StructuralIntegrityStage previous = target.IntegrityStage;
+            target.ServerSetIntegrity(StructuralIntegrityRules.ResolveMaxIntegrity(target.tileObjectSO),
+                StructuralIntegrityStage.Intact);
+
+            if (target.Layer == TileLayer.Turf && StructuralIntegrityRules.LeaksAtmosphere(previous))
+            {
+                notifyStateChanged?.Invoke(GridWorld(target));
+            }
         }
 
         /// <summary>

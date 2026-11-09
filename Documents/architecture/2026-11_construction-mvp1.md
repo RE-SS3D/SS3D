@@ -75,8 +75,8 @@ Checked by three read-only explorations against code; the [tile](systems/tile.md
 
 ### S3: weld repair (structural plan Phase 6)
 
-- [ ] Interaction: welder on a Damaged/Cracked wall, window or reinforced wall → `ServerSetIntegrity(max, Intact)` (~4 s); presenter clears the stage visuals; atmos refreshes a Cracked wall
-- [ ] Examine next-step text for damaged structures
+- [x] Interaction: welder on a Damaged/Cracked wall, window or reinforced wall → `ServerSetIntegrity(max, Intact)` (~4 s); presenter clears the stage visuals; atmos refreshes a Cracked wall
+- [x] Examine next-step text for damaged structures
 - Validation: `compile,editmode`
 
 ### S4: girder ladder and windows
