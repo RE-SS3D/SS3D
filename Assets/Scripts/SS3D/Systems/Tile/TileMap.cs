@@ -729,11 +729,13 @@ namespace SS3D.Systems.Tile
             // Create new PlacedItemObject and add to tracking
             PlacedItemObject placedItem = PlacedItemObject.Create(worldPosition, rotation, itemObjectSo, existingItem);
             placedItem.transform.SetParent(transform);
+            placedItem.Owner = this;
             _items.Add(placedItem);
         }
 
         public void ClearItemObject(Vector3 worldPosition, ItemObjectSo itemObjectSo)
         {
+            PruneDestroyedItems();
             List<PlacedItemObject> placedItems = _items.FindAll(item => item.NameString == itemObjectSo.NameString);
             PlacedItemObject toRemove = null;
 
@@ -745,8 +747,37 @@ namespace SS3D.Systems.Tile
                 }
             }
 
-            toRemove?.DestroySelf();
+            if (toRemove == null)
+                return;
+
             _items.Remove(toRemove);
+            toRemove.DestroySelf();
+        }
+
+        /// <summary>
+        /// Called by <see cref="PlacedItemObject"/> when its GameObject is destroyed (despawned by a
+        /// detonation, consumed, etc.) so the list never holds dead entries. Uses reference equality
+        /// so the match never depends on Unity's destroyed-object null semantics mid-teardown.
+        /// </summary>
+        internal void ForgetDestroyedItem(PlacedItemObject placedItemObject)
+        {
+            if (_items == null)
+                return;
+
+            for (int i = _items.Count - 1; i >= 0; i--)
+            {
+                if (ReferenceEquals(_items[i], placedItemObject))
+                    _items.RemoveAt(i);
+            }
+        }
+
+        /// <summary>
+        /// Drops entries whose GameObject was destroyed without going through the map
+        /// (backstop for <see cref="ForgetDestroyedItem"/>).
+        /// </summary>
+        private void PruneDestroyedItems()
+        {
+            _items.RemoveAll(item => item == null);
         }
 
         /// <summary>
@@ -774,16 +805,15 @@ namespace SS3D.Systems.Tile
             _chunks.Clear();
             BumpStructureVersion();
 
-            // Clear items list safely, checking for null references
+            // Take each entry out before destroying it: destruction calls back into ForgetDestroyedItem.
             while (_items.Count > 0)
             {
-                PlacedItemObject item = _items.First();
-                if (item != null && item.gameObject != null)
+                PlacedItemObject item = _items[_items.Count - 1];
+                _items.RemoveAt(_items.Count - 1);
+                if (item != null)
                 {
                     item.DestroySelf();
                 }
-                
-                _items.RemoveAt(0);
             }
 
             // Template restore skips missing spawn chunks — wipe markers with the map so stale
@@ -808,6 +838,8 @@ namespace SS3D.Systems.Tile
                 chunkObjectSaveList.Add(chunk.Save());
             }
 
+            // Exploded/despawned items must not be written back into the save.
+            PruneDestroyedItems();
             foreach (PlacedItemObject item in _items)
             {
                 itemSaveList.Add(item.Save());
