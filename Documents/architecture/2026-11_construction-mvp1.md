@@ -1,6 +1,6 @@
 > Implements: Documents/design/construction.md §2 (tools and materials), §3 (use-on-target, placement ghost, timed interruptible steps), §4 (floors and hull), §5 (air after a patch), §6 (wall ladder), §7 (windows), §8 (wreckage and salvage), §9 (repair and deconstruction), §10 (feel targets), §11 (HUD touchpoints); Documents/design/explosives-destruction.md §3 (repair to Intact, floor layers)
 > Touches systems: tile, structural-destruction, interactions-framework, interactions-runtime, inventory, atmospherics, ui-shell, gamemodes-roles-traits
-> Status: in progress
+> Status: in-progress
 
 **Progress:** Grilled with the owner on 2026-11-09, after the gameplay grill that revised [construction.md](../design/construction.md). Serves [mvp1-nuke-ops.md](../milestones/mvp1-nuke-ops.md) M10, and S2 closes M8's "an engineer seals a hull hole". Takes over [station structural damage](../plans/station_structural_damage.plan.md) Phase 6 (repair). S1–S5 written, not compiled or tested; first Editor session: compile, run setup scripts, validate.sh --steps compile,editmode, S4 visual check.
 
