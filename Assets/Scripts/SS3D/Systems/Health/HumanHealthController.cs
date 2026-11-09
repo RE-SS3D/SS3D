@@ -330,6 +330,32 @@ namespace SS3D.Systems.Health
             return (brute, burn);
         }
 
+        /// <summary>Whether an intact worn piece with <see cref="ArmorProfile.BlocksStun"/> covers this zone.</summary>
+        [Server]
+        public bool ServerZoneBlocksStun(BodyZone zone)
+        {
+            if (_inventory == null)
+            {
+                return false;
+            }
+
+            foreach (AttachedContainer container in _inventory.Containers.Where(worn => worn.Type.IsWornSlot()))
+            {
+                foreach (Item item in container.Items)
+                {
+                    if (item.TryGetComponent(out ArmorItemExtension armor)
+                        && armor.Profile.BlocksStun
+                        && armor.Integrity > 0f
+                        && armor.Profile.CoveredZones.Contains(zone))
+                    {
+                        return true;
+                    }
+                }
+            }
+
+            return false;
+        }
+
         [Server]
         public void ApplyTreatment(BodyZone zone, float bruteHeal = 0f, float burnHeal = 0f, bool stopBleeding = false, bool applySplint = false)
         {

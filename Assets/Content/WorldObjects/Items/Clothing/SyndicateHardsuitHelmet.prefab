@@ -260,6 +260,7 @@ MonoBehaviour:
     BurnAbsorption: 5
     MaxIntegrity: 80
     CoveredZones: 1
+    BlocksStun: 1
   _integrity: 0
 --- !u!114 &7312904568126640251
 MonoBehaviour:

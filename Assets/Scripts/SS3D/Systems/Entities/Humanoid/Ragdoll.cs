@@ -360,6 +360,23 @@ namespace SS3D.Systems.Entities.Humanoid
         }
 
         /// <summary>
+        /// Timed knockdown that keeps the longer of the current and the new time instead of stacking,
+        /// so repeated hits keep a body down without chaining it there. An untimed collapse stays untimed.
+        /// </summary>
+        [Server]
+        public void ServerKnockdownAtLeast(float seconds)
+        {
+            if (!IsKnockedDown)
+            {
+                ServerKnockdown(seconds);
+            }
+            else if (_isKnockdownTimed)
+            {
+                _knockdownTimer = Mathf.Max(_knockdownTimer, seconds);
+            }
+        }
+
+        /// <summary>
         /// Client-owned request for timed knockdown.
         /// </summary>
         [ServerRpc(RequireOwnership = false)]

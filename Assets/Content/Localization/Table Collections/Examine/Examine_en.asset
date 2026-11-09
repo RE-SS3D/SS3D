@@ -1529,8 +1529,9 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 296407234903252993
-    m_Localized: A short-range electrical weapon. Drains stamina without burn damage
-      or a forced knockdown. Use to replenish its charge.
+    m_Localized: A short-range electrical weapon. Knocks an unarmored target down
+      and drains stamina; a hardsuit stops the knockdown. Holds three charges and
+      recharges slowly. Use to replenish its charge.
     m_Metadata:
       m_Items: []
   - m_Id: 296422524005359616

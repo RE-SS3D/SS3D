@@ -30,7 +30,7 @@ namespace SS3D.Systems.Combat.Editor
             Build("LaserRifle", "Laser Rifle", "EnergyRifles", RangedWeaponProfile.LaserRifle,
                 "A focused laser rifle. Delivers burn damage. Use to replenish its charge.");
             Build("Taser", "Taser", "EnergyHandguns", RangedWeaponProfile.Taser,
-                "A short-range electrical weapon. Drains stamina without burn damage or a forced knockdown. Use to replenish its charge.");
+                "A short-range electrical weapon. Knocks an unarmored target down and drains stamina; a hardsuit stops the knockdown. Holds three charges and recharges slowly. Use to replenish its charge.");
             DB.SaveAssets();
             return 3;
         }

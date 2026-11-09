@@ -16,8 +16,13 @@ namespace SS3D.Systems.Combat
     /// </summary>
     public sealed class CombatDummyBootstrap : MonoBehaviour
     {
+        private Ragdoll _ragdoll;
+        private HumanoidLivingController[] _livingControllers;
+
         public void ConfigureAsDummy()
         {
+            _ragdoll = GetComponentInChildren<Ragdoll>(true);
+            _livingControllers = GetComponentsInChildren<HumanoidLivingController>(true);
             DisableBehavioursInChildren<HumanoidPredictedMovement>();
             DisableBehavioursInChildren<HumanoidLivingController>();
             DisableBehavioursInChildren<InteractionController>();
@@ -67,6 +72,24 @@ namespace SS3D.Systems.Combat
 
             ItemSubSystem items = SubSystems.Get<ItemSubSystem>();
             items.SpawnItemInContainer(Items.JumpsuitSecurity, jumpsuitSlot);
+        }
+
+        private void LateUpdate()
+        {
+            // Standing up from a knockdown (taser, shove, blast) re-enables the living controller.
+            // Freeze it again so the dummy stays a dummy once it is upright.
+            if (_ragdoll == null || _ragdoll.IsKnockedDown || _ragdoll.IsGettingUp)
+            {
+                return;
+            }
+
+            foreach (HumanoidLivingController controller in _livingControllers)
+            {
+                if (controller != null && controller.enabled)
+                {
+                    controller.enabled = false;
+                }
+            }
         }
 
         private void DisableBehavioursInChildren<T>() where T : Behaviour

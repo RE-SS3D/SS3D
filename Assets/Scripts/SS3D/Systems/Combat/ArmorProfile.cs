@@ -15,6 +15,12 @@ namespace SS3D.Systems.Combat
         public float MaxIntegrity;
         public BodyZoneMask CoveredZones;
 
+        /// <summary>
+        /// Rigid shell that taser prongs cannot reach skin through: while intact, stun hits on its zones
+        /// do not knock down. Contact stuns (the baton, combat.md §5) are not affected.
+        /// </summary>
+        public bool BlocksStun;
+
         public static ArmorProfile SecurityJumpsuit => new()
         {
             BruteAbsorption = 5f,

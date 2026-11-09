@@ -46,6 +46,9 @@ namespace SS3D.Systems.Stamina
 
         public float CurrentStamina => _currentStamina;
 
+        /// <summary>Server: stamina left in the units <see cref="ServerDepleteStamina"/> takes (CurrentStamina is 0..1).</summary>
+        public float ServerCurrentStaminaAbsolute => _stamina?.CurrentAbsolute ?? 0f;
+
         /// <summary>0 rested .. 1 exhausted. Synced for client movement.</summary>
         public float ExertionPenalty => IsServerOnly && _stamina != null ? _stamina.ExertionPenalty : _exertionPenalty;
 
