@@ -18,6 +18,7 @@ GameObject:
   - component: {fileID: -3146616955965142812}
   - component: {fileID: 5974748117383969709}
   - component: {fileID: 5385272248723591395}
+  - component: {fileID: 5643326947820145503}
   m_Layer: 0
   m_Name: SteelWindow
   m_TagString: Untagged
@@ -229,3 +230,16 @@ MonoBehaviour:
   _networkObjectCache: {fileID: -2900075557854325373}
   _asset: {fileID: 11400000, guid: 72ff3e5319a440c448928af8af541920, type: 2}
   _tileObjectSo: {fileID: 11400000, guid: b46f02d975d975b4abe91f4bb650e04f, type: 2}
+--- !u!114 &5643326947820145503
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3591147544166670882}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e9eb95b3b0f74714aa2f40a750b0b8b8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _layer: 1

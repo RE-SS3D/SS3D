@@ -16,6 +16,7 @@ GameObject:
   - component: {fileID: -6887884230110343619}
   - component: {fileID: 7585959251487580224}
   - component: {fileID: 2391523257411065744}
+  - component: {fileID: 7318791632798272399}
   m_Layer: 0
   m_Name: TilePlating
   m_TagString: Untagged
@@ -172,3 +173,16 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   key: {fileID: 11400000, guid: d927f25d393eb4249973126f63ec724e, type: 2}
+--- !u!114 &7318791632798272399
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6767447678079105841}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e9eb95b3b0f74714aa2f40a750b0b8b8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _layer: 1
