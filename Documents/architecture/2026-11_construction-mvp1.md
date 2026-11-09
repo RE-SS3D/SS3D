@@ -65,12 +65,12 @@ Checked by three read-only explorations against code; the [tile](systems/tile.md
 
 ### S2: floor and hull (closes M8's patch)
 
-- [ ] Cell action: steel sheets on an empty Plenum location → plating (~3 s). Atmos re-seals through the existing observer
-- [ ] Cell action: floor tiles on bare plating → floor turf (~1 s)
-- [ ] Interaction: crowbar on a floor tile → tile removed, a floor tile item to the hand or the floor
-- [ ] Interaction: welder on Damaged/Cracked plating → Intact (~4 s)
-- [ ] Examine stage and next-step text for floor and plating (`StructuralIntegrityExaminable`)
-- [ ] EditMode: rules, consumption, cancel without spend; scenario: blast a hole, patch it, the cell turns airtight
+- [x] Cell action: steel sheets on an empty Plenum location → plating (~3 s). Atmos re-seals through the existing observer
+- [x] Cell action: floor tiles on bare plating → floor turf (~1 s)
+- [x] Interaction: crowbar on a floor tile → tile removed, a floor tile item to the hand or the floor
+- [x] Interaction: welder on Damaged/Cracked plating → Intact (~4 s)
+- [x] Examine stage and next-step text for floor and plating (`StructuralIntegrityExaminable`)
+- [x] EditMode: rules, consumption, cancel without spend; scenario: blast a hole, patch it, the cell turns airtight
 - Validation: `compile,editmode` + `scenarios:Explosives`
 
 ### S3: weld repair (structural plan Phase 6)

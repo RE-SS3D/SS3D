@@ -1,11 +1,13 @@
 using System.Collections.Generic;
 using SS3D.Localization;
+using SS3D.Systems.Construction;
 using SS3D.Systems.Tile;
 
 namespace SS3D.Systems.Examine
 {
     /// <summary>
-    /// Appends Damaged / Cracked integrity lines when examining structural Turf.
+    /// Appends Damaged / Cracked integrity lines when examining structural Turf, then the next
+    /// construction step (<see cref="ConstructionExamineText"/>).
     /// </summary>
     public class StructuralIntegrityExaminable : SimpleExaminable, IExamineContentProvider
     {
@@ -14,6 +16,17 @@ namespace SS3D.Systems.Examine
             if (!TryGetComponent(out PlacedTileObject placed))
                 return;
 
+            AppendDamageSections(placed, sections);
+
+            if (ConstructionExamineText.TryGetNextStep(placed, out string key, out string fallback))
+            {
+                sections.Add(new ExamineSection(LocalizedTextService.GetFormattedString(
+                    ExamineCanonicalKeyGenerator.ExamineTableName, key, null, fallback)));
+            }
+        }
+
+        private static void AppendDamageSections(PlacedTileObject placed, List<ExamineSection> sections)
+        {
             StructuralIntegrityStage stage = placed.IntegrityStage;
             if (stage == StructuralIntegrityStage.Intact || stage == StructuralIntegrityStage.Destroyed)
                 return;

@@ -86,8 +86,9 @@ namespace SS3D.Systems.Construction
             return delta.sqrMagnitude <= ReachMeters * ReachMeters;
         }
 
+        /// <summary>Plating, not a catwalk or lattice. Same name test as <see cref="BuildChecker"/>.</summary>
         public static bool IsPlating(ITileLocation plenum) =>
             plenum is SingleTileLocation single && !single.IsEmpty()
-            && single.PlacedObject != null && single.PlacedObject.NameString == ConstructionNames.Plenum;
+            && single.PlacedObject != null && single.PlacedObject.NameString.Contains(ConstructionNames.Plenum);
     }
 }
