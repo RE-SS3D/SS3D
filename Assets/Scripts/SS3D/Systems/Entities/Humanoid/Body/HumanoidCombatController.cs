@@ -139,7 +139,7 @@ namespace SS3D.Systems.Entities.Humanoid
         /// <param name="windupSeconds">
         /// Effective melee windup (exertion-scaled) so the swing's strike frame lands at connect; 0 plays at natural speed.
         /// </param>
-        public void RequestAttack(AnimationTriggerId attackType, float windupSeconds = 0f)
+        public void RequestAttack(AnimationTriggerId attackType, float windupSeconds = 0f, byte throwVariant = 0)
         {
             if (!_bodyStateMachine.CanPerformAction())
             {
@@ -150,8 +150,8 @@ namespace SS3D.Systems.Entities.Humanoid
 
             // Play immediately on the owning client — don't wait for ServerRpc + SyncVar.
             byte variant = _orchestrator != null
-                ? _orchestrator.PlayAttackTrigger(attackType, windup)
-                : (byte)0;
+                ? _orchestrator.PlayAttackTrigger(attackType, windup, throwVariant)
+                : (attackType == AnimationTriggerId.Throw ? throwVariant : (byte)0);
             _bodyStateMachine.CmdFireTrigger(attackType, variant, windup);
         }
     }

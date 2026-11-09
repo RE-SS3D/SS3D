@@ -649,6 +649,16 @@ namespace SS3D.Systems.Inputs
                     ""interactions"": """",
                     ""initialStateCheck"": false,
                     ""priority"": 0
+                },
+                {
+                    ""name"": ""Throw Mode"",
+                    ""type"": ""Button"",
+                    ""id"": ""5988662e-6ee9-409b-9fd3-e0c48c31ede4"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false,
+                    ""priority"": 0
                 }
             ],
             ""bindings"": [
@@ -715,6 +725,17 @@ namespace SS3D.Systems.Inputs
                     ""processors"": """",
                     ""groups"": """",
                     ""action"": ""Toggle Magboots"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""eaa0daec-1942-41f8-ad5e-c70de811d0f9"",
+                    ""path"": ""<Keyboard>/r"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Throw Mode"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -1299,6 +1320,7 @@ namespace SS3D.Systems.Inputs
             m_Hotkeys_ToggleInternalClothing = m_Hotkeys.FindAction("Toggle Internal Clothing", throwIfNotFound: true);
             m_Hotkeys_ToggleInternals = m_Hotkeys.FindAction("Toggle Internals", throwIfNotFound: true);
             m_Hotkeys_ToggleMagboots = m_Hotkeys.FindAction("Toggle Magboots", throwIfNotFound: true);
+            m_Hotkeys_ThrowMode = m_Hotkeys.FindAction("Throw Mode", throwIfNotFound: true);
             // Other
             m_Other = asset.FindActionMap("Other", throwIfNotFound: true);
             m_Other_Fade = m_Other.FindAction("Fade", throwIfNotFound: true);
@@ -1808,6 +1830,7 @@ namespace SS3D.Systems.Inputs
         private readonly InputAction m_Hotkeys_ToggleInternalClothing;
         private readonly InputAction m_Hotkeys_ToggleInternals;
         private readonly InputAction m_Hotkeys_ToggleMagboots;
+        private readonly InputAction m_Hotkeys_ThrowMode;
         /// <summary>
         /// Provides access to input actions defined in input action map "Hotkeys".
         /// </summary>
@@ -1843,6 +1866,10 @@ namespace SS3D.Systems.Inputs
             /// Provides access to the underlying input action "Hotkeys/ToggleMagboots".
             /// </summary>
             public InputAction @ToggleMagboots => m_Wrapper.m_Hotkeys_ToggleMagboots;
+            /// <summary>
+            /// Provides access to the underlying input action "Hotkeys/ThrowMode".
+            /// </summary>
+            public InputAction @ThrowMode => m_Wrapper.m_Hotkeys_ThrowMode;
             /// <summary>
             /// Provides access to the underlying input action map instance.
             /// </summary>
@@ -1887,6 +1914,9 @@ namespace SS3D.Systems.Inputs
                 @ToggleMagboots.started += instance.OnToggleMagboots;
                 @ToggleMagboots.performed += instance.OnToggleMagboots;
                 @ToggleMagboots.canceled += instance.OnToggleMagboots;
+                @ThrowMode.started += instance.OnThrowMode;
+                @ThrowMode.performed += instance.OnThrowMode;
+                @ThrowMode.canceled += instance.OnThrowMode;
             }
 
             /// <summary>
@@ -1916,6 +1946,9 @@ namespace SS3D.Systems.Inputs
                 @ToggleMagboots.started -= instance.OnToggleMagboots;
                 @ToggleMagboots.performed -= instance.OnToggleMagboots;
                 @ToggleMagboots.canceled -= instance.OnToggleMagboots;
+                @ThrowMode.started -= instance.OnThrowMode;
+                @ThrowMode.performed -= instance.OnThrowMode;
+                @ThrowMode.canceled -= instance.OnThrowMode;
             }
 
             /// <summary>
@@ -2625,6 +2658,13 @@ namespace SS3D.Systems.Inputs
             /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
             /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
             void OnToggleMagboots(InputAction.CallbackContext context);
+            /// <summary>
+            /// Method invoked when associated input action "Throw Mode" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+            /// </summary>
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+            void OnThrowMode(InputAction.CallbackContext context);
         }
         /// <summary>
         /// Interface to implement callback methods for all input action callbacks associated with input actions defined by "Other" which allows adding and removing callbacks.

@@ -231,6 +231,12 @@ namespace SS3D.Systems.Interactions
                 return;
             }
 
+            // Throw mode (R) replaces this click's interaction, in Help and Harm alike.
+            if (GetCombatNetwork()?.TryRunThrowPrimary() == true)
+            {
+                return;
+            }
+
             if (_armedSystem.IsArmed)
             {
                 TryResolveArmedInteraction();

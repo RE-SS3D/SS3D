@@ -429,6 +429,7 @@ namespace SS3D.Editor
             MuteAnyStateTrigger(baseMachine, "AttackSwing");
             MuteAnyStateTrigger(baseMachine, "FireRifle");
             MuteAnyStateTrigger(baseMachine, "Reload");
+            MuteAnyStateTrigger(baseMachine, "Throw");
 
             // Upper-body Attack Swing variants (cycle via AttackVariant 0/1/2); exit-time → Hold Default.
             if (controller.layers.Length > 1)
@@ -478,6 +479,8 @@ namespace SS3D.Editor
                     AddSwingExit(upperAttack, holdWeaponPose, armHold: 2);
                     AddSwingExit(upperAttack, holdDefault, armHold: 0);
                 }
+
+                WireThrowStates(upper, holdDefault, holdItemPose, holdWeaponPose);
 
                 // Mixamo holds are authored for the right hand — mirror when active hand is left.
                 foreach (string holdName in new[] { "Hold Default", "Hold Item", "Hold Weapon" })
@@ -1138,6 +1141,71 @@ namespace SS3D.Editor
         {
             ConfigureOneshotImports(
                 MeleeSwingAnimation.Variants.Select(s => (s.File, s.ClipName, s.FirstFrame, s.LastFrame)));
+        }
+
+        /// <summary>
+        /// Upper Body throw states from <see cref="ThrowAnimation"/>: entered from Any State on the Throw
+        /// trigger with AttackVariant picking the clip, mirrored for the left hand, and leaving for the hold
+        /// pose of whatever the hand holds after the release (usually nothing). The orchestrator raises the
+        /// Upper Body layer for the throw, since Peaceful keeps it at zero.
+        /// </summary>
+        private static void WireThrowStates(
+            AnimatorStateMachine upper, AnimatorState holdDefault, AnimatorState holdItem, AnimatorState holdWeapon)
+        {
+            ConfigureOneshotImports(ThrowAnimation.Variants.Select(c => (c.File, c.ClipName, c.FirstFrame, c.LastFrame)));
+
+            // The pre-2026-11 Throw entry had no variant condition and played a baked clip that posed nothing.
+            foreach (AnimatorStateTransition stale in upper.anyStateTransitions
+                         .Where(t => t.conditions.Any(c => c.parameter == "Throw")
+                                     && t.conditions.All(c => c.parameter != "AttackVariant"))
+                         .ToArray())
+            {
+                upper.RemoveAnyStateTransition(stale);
+            }
+
+            for (int variant = 0; variant < ThrowAnimation.Variants.Length; variant++)
+            {
+                ThrowAnimation.Clip throwClip = ThrowAnimation.Variants[variant];
+                AnimationClip clip = LoadPackClip($"{AnimationsRoot}/{throwClip.File}", throwClip.ClipName);
+                AnimatorState state = FindOrCreateState(upper, throwClip.StateName, new Vector3(900, 40 + 60 * variant, 0));
+                if (clip == null)
+                {
+                    Debug.LogError($"[HumanoidLocomotionBlendSetup] Missing throw clip '{throwClip.ClipName}' in {throwClip.File}");
+                    continue;
+                }
+
+                state.motion = clip;
+                state.speed = 1f;
+                state.speedParameterActive = false;
+                state.writeDefaultValues = true;
+                EnableMirrorParameter(state, "MirrorUpperBody");
+
+                EnsureAnyStateTriggerWithInt(upper, state, "Throw", "AttackVariant", variant, canTransitionToSelf: false);
+                foreach (AnimatorStateTransition entry in upper.anyStateTransitions)
+                {
+                    if (entry.destinationState == state)
+                    {
+                        entry.hasFixedDuration = true;
+                        entry.duration = ThrowAnimation.EntrySeconds;
+                    }
+                }
+
+                ClearTransitions(state);
+                foreach ((AnimatorState hold, int armHold) in new[] { (holdItem, 1), (holdWeapon, 2), (holdDefault, 0) })
+                {
+                    if (hold == null)
+                    {
+                        continue;
+                    }
+
+                    AnimatorStateTransition exit = state.AddTransition(hold);
+                    exit.hasExitTime = true;
+                    exit.exitTime = ThrowAnimation.ExitTime;
+                    exit.hasFixedDuration = true;
+                    exit.duration = ThrowAnimation.ExitSeconds;
+                    exit.AddCondition(AnimatorConditionMode.Equals, armHold, "ArmHold");
+                }
+            }
         }
 
         /// <summary>

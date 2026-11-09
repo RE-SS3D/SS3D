@@ -56,6 +56,8 @@ namespace SS3D.Systems.Entities.Humanoid
         private bool _hasAttackRateParameter;
         /// <summary>Time.time at which the active swing reaches its strike frame; AttackRate returns to 1 after.</summary>
         private float _swingStrikeTime = float.NegativeInfinity;
+        /// <summary>Time.time until which a throw holds the Upper Body layer up (it is off in Peaceful).</summary>
+        private float _throwLayerUntil = float.NegativeInfinity;
         private bool _hasPistolHoldParameter;
         private bool _hasRangedVelXParameter;
         private float _pistolHold;
@@ -85,6 +87,9 @@ namespace SS3D.Systems.Entities.Humanoid
         /// Swing clip lifetime is Animator exit-time owned — do not add swing duration constants here.
         /// </summary>
         [SerializeField] private float _upperBodyWeightLerp = 6f;
+
+        /// <summary>Upper Body fade rate around a throw: fast enough that the wind-up shows from its first frames.</summary>
+        private const float ThrowLayerWeightLerp = 12f;
 
         [SerializeField] private float _additiveWeightLerp = 8f;
 
@@ -364,9 +369,10 @@ namespace SS3D.Systems.Entities.Humanoid
         }
 
         /// <summary>
-        /// Owner-side immediate attack playback. Returns the swing variant used (0–2) for AttackSwing.
+        /// Owner-side immediate attack playback. Returns the swing variant used (0–2) for AttackSwing,
+        /// or <paramref name="throwVariant"/> for Throw.
         /// </summary>
-        public byte PlayAttackTrigger(AnimationTriggerId trigger, byte attackWindup = 0)
+        public byte PlayAttackTrigger(AnimationTriggerId trigger, byte attackWindup = 0, byte throwVariant = 0)
         {
             if (_animator == null)
             {
@@ -393,6 +399,11 @@ namespace SS3D.Systems.Entities.Humanoid
                 _nextAttackVariant = (_nextAttackVariant + 1) % MeleeSwingVariantCount;
                 _animator.SetInteger(Animations.Humanoid.AttackVariant, variant);
                 BeginSwingTempo(variant, attackWindup);
+            }
+            else if (trigger == AnimationTriggerId.Throw)
+            {
+                variant = (byte)(throwVariant & 0x3);
+                BeginThrow(variant);
             }
 
             _ownerPredictedAttack = true;
@@ -432,6 +443,13 @@ namespace SS3D.Systems.Entities.Humanoid
             _animator.SetFloat(Animations.Humanoid.AttackRate, 1f);
         }
 
+        /// <summary>Selects the throw clip and keeps the Upper Body layer up while it plays.</summary>
+        private void BeginThrow(int variant)
+        {
+            _animator.SetInteger(Animations.Humanoid.AttackVariant, variant);
+            _throwLayerUntil = Time.time + ThrowAnimation.PlaySeconds(variant);
+        }
+
         private void TickUpperBodyWeight()
         {
             if (_animator == null || _animator.layerCount <= 1)
@@ -439,10 +457,13 @@ namespace SS3D.Systems.Entities.Humanoid
                 return;
             }
 
+            bool throwing = Time.time < _throwLayerUntil && _lastSnapshot.State != BodyState.Ragdoll;
+            bool throwFading = !throwing && _upperBodyWeightTarget < _upperBodyWeight
+                && Time.time < _throwLayerUntil + 1f / ThrowLayerWeightLerp;
             _upperBodyWeight = Mathf.MoveTowards(
                 _upperBodyWeight,
-                _upperBodyWeightTarget,
-                Time.deltaTime * _upperBodyWeightLerp);
+                throwing ? 1f : _upperBodyWeightTarget,
+                Time.deltaTime * (throwing || throwFading ? ThrowLayerWeightLerp : _upperBodyWeightLerp));
             _animator.SetLayerWeight(1, _upperBodyWeight);
         }
 
@@ -736,6 +757,10 @@ namespace SS3D.Systems.Entities.Humanoid
             {
                 _animator.SetInteger(Animations.Humanoid.AttackVariant, attackVariant & 0x3);
                 BeginSwingTempo(attackVariant & 0x3, attackWindup);
+            }
+            else if (trigger == AnimationTriggerId.Throw)
+            {
+                BeginThrow(attackVariant & 0x3);
             }
 
             int hash = Animations.Humanoid.GetTriggerHash(trigger);

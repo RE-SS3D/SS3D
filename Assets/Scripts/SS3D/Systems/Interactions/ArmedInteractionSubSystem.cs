@@ -23,6 +23,9 @@ namespace SS3D.Systems.Interactions
 
         [SerializeField] private StyleSheet _overlayStyleSheet;
 
+        /// <summary>Shared by the throw-mode overlay, which uses the same reticle and chip look.</summary>
+        public StyleSheet OverlayStyleSheet => _overlayStyleSheet;
+
         private ArmedInteractionOverlayView _overlayView;
         private SelectionSubSystem _selectionSystem;
         private ArmedInteractionState _state;

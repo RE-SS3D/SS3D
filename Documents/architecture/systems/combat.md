@@ -21,16 +21,19 @@ Phase 0–1 melee + Phase 3 ranged + Phase 5 armor slice per [combat_implementat
 
 **Syndicate armor content:** the operative suit and helmet use `ArmorItemExtension` and `SealedGearItemExtension` through [inventory content recipes](inventory.md#overview), with provisional absorption/integrity values. The suit covers the existing SecurityJumpsuit zones and the helmet covers Head.
 
+**Throwing ([animation pass](../2026-11_humanoid-animation-pass.md) Phase 3):** `R` toggles throw mode; the next primary click, in Help or Harm, throws the active hand's item at the point under the cursor (`CombatInteractionNetwork.Throw.cs`). Range falls with weight (`ThrowRules`); the overlay draws the flight arc and a landing ring, rust when the aim is past max range. The server launches at the throw clip's release frame (`ThrowAnimation`) and cancels if the item left the active hand, the hand became unusable, or the body was staggered first. Items implementing `IThrowReleaseHandler` choose the grenade lob and are told at release (the minibomb arms). No damage on hit.
+
 **Intent ↔ stance:** Harm → Melee/Ranged from inventory (`RangedWeaponItemExtension` preferred over trait name); Help → Peaceful. Harm never falls through to Drop/Open/MI.
 
 **Combat stamina (Phase 4; block drain deferred):** melee swings and ranged shots drain their profile's `StaminaCost` via `StaminaController.ServerDepleteStamina`. `ExertionPenalty` widens the ranged cone (`RangedWeaponProfile.ExhaustionSpreadDegrees` in `AccuracyCone.ComputeSpreadDegrees`) and scales melee windup and recovery up to 1.6x (`MeleeHitInteraction.ComputeExertionTimeMultiplier`); Main HUD reticle bloom reads the same value.
 
 Deferred: disarm/grab, armor wear visuals, blocking (including block
-stamina drain), projectile/thrown.
+stamina drain), projectile travel, thrown-item damage.
 
 ## Start here
 
 - `Assets/Scripts/SS3D/Systems/Combat/CombatInteractionNetwork.cs` — Harm primary: ranged fire/reload Cmds; melee swing; aim + Target/Observers Rpcs (sibling of `InteractionController` on Human)
+- `Assets/Scripts/SS3D/Systems/Combat/CombatInteractionNetwork.Throw.cs` / `Inventory/Items/ThrowRules.cs` / `Interactions/UI/ThrowModeOverlayView.cs` / `Entities/Humanoid/Body/ThrowAnimation.cs` — throw mode, server release, weight-to-range rules, overlay, clip table
 - `Assets/Scripts/SS3D/Systems/Combat/Editor/CombatInteractionNetworkPrefabSetup.cs` — ensure component on Human via **SS3D → Entities → Run All Human Prefab Recipes** (not a standalone MenuItem)
 - `Assets/Scripts/SS3D/Systems/Interactions/InteractionController.cs` — routes Harm primary to `CombatInteractionNetwork`; owns intent SyncVar
 - `Assets/Scripts/SS3D/Systems/Combat/Interactions/RangedWeaponItemExtension.cs` — profile, mag, recoil, cooldown, reload
@@ -95,7 +98,7 @@ stamina drain), projectile/thrown.
 
 `EnergyWeaponContentTests` checks imported mesh scale, own muzzle/profile, no inherited magazine, database registration, the taser's stamina + knockdown-only profile and resolvable energy sound ids. Spawn with `spawninhand IonRifle`, `spawninhand LaserRifle`, or `spawninhand Taser` (empty hand, admin); Harm fires and E refills. Check held grip/aim, pickups, walls/targets, a taser hit flooring a `spawndummy` dummy that then stands back up, empty charge, reload and observer VFX/audio.
 
-EditMode (`--steps compile,editmode`): `MeleeReachTests`, `MeleeSwingAnimationTests`, `MeleeWeaponProfileStructuralForceTests`, `RifleReloadClipTimingTests`, `AccuracyConeAndLineOfSightTests`, `ArmorSimulationTests`, `ZoneTargetResolverTests`. No PlayMode combat scenario yet; manual checks:
+EditMode (`--steps compile,editmode`): `MeleeReachTests`, `MeleeSwingAnimationTests`, `MeleeWeaponProfileStructuralForceTests`, `RifleReloadClipTimingTests`, `AccuracyConeAndLineOfSightTests`, `ArmorSimulationTests`, `ZoneTargetResolverTests`, `ThrowRulesTests`. PlayMode `scenarios:Combat` runs `PistolHoldScenarios` and `ThrowScenarios` (release timing, landing on the aim point and at max range, minibomb arming, knockdown cancel). Manual checks:
 
 1. Host admin: `spawndummy`; Harm + empty hand — melee as before.
 2. Spawn/give M4 (left active is fine if right is empty — auto-routes to right and selects it); Harm — Ranged stance settles on Rifle Aim Idle (no weird Hold Weapon pose); LMB fires; zone damage at range; reticle blooms with movement/recoil; hit flash sits on the reticle dot; muzzle flash pops at the barrel tip (visible to other clients too); wall/floor impacts leave bullet-hole shreds. Left hand well shows a reserved badge and cannot be selected or receive items while the M4 is held. Optional: `rangeddebug on` for gold/grey impact spheres.

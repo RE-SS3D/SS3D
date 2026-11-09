@@ -31,7 +31,7 @@ namespace SS3D.Systems.Combat
     /// Intent and delayed-interaction tracking stay on <see cref="InteractionController"/>.
     /// </summary>
     [RequireComponent(typeof(InteractionController))]
-    public sealed class CombatInteractionNetwork : NetworkActor
+    public sealed partial class CombatInteractionNetwork : NetworkActor
     {
         [SerializeField] private InteractionController _interactionController;
 
@@ -60,6 +60,7 @@ namespace SS3D.Systems.Combat
             base.OnStartServer();
             // Owner-only Update() never runs on a dedicated server — schedule melee connect here.
             AddHandle(UpdateEvent.AddListener(HandleServerMeleeConnectUpdate));
+            AddHandle(UpdateEvent.AddListener(HandleServerThrowUpdate));
         }
 
         private void Update()
@@ -70,6 +71,7 @@ namespace SS3D.Systems.Combat
             }
 
             TrySyncMeleeAimDuringSwing();
+            TickThrowMode();
         }
 
         /// <summary>
