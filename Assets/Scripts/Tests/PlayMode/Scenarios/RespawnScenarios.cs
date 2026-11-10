@@ -1,12 +1,21 @@
+using System;
 using System.Collections;
+using System.Collections.Generic;
+using System.Reflection;
 using FishNet;
 using NUnit.Framework;
 using SS3D.Core;
+using SS3D.Data.Generated;
+using SS3D.Networking;
 using SS3D.Systems.Entities;
 using SS3D.Systems.Entities.Humanoid;
+using SS3D.Systems.Inputs;
 using SS3D.Systems.Rounds;
 using UnityEngine;
+using UnityEngine.InputSystem;
+using UnityEngine.SceneManagement;
 using UnityEngine.TestTools;
+using Object = UnityEngine.Object;
 
 namespace SS3D.Tests
 {
@@ -27,7 +36,9 @@ namespace SS3D.Tests
         [UnityTearDown]
         public IEnumerator RestoreSettings()
         {
-            Rounds.ApplyServerSettingsForTesting(_settingsBefore);
+            // Gone after a scenario that leaves the session; the next boot loads the settings again.
+            if (SubSystems.TryGet(out RoundSubSystem rounds))
+                rounds.ApplyServerSettingsForTesting(_settingsBefore);
             yield break;
         }
 
@@ -63,6 +74,58 @@ namespace SS3D.Tests
                 yield return Console.Run("spawninhand MedicalPatch");
                 StringAssert.Contains("not empty", Console.LastAnswer, $"Life {life}: the new body's hand holds what it was given");
             }
+        }
+
+        // #215: when a session ended (leaving to the main menu), the body's controllers had already lost ownership
+        // by OnDisable and skipped unsubscribing, so every later click NRE'd in the destroyed controller.
+        [UnityTest]
+        public IEnumerator LeavingToMainMenu_LeavesNoInputCallbacksBehind()
+        {
+            yield return WaitFor(() => Body.IsOwner, "the host owns the scenario body");
+            Entity body = Body;
+            InputActionAsset inputs = SubSystems.Get<InputSubSystem>().Inputs.asset;
+
+            SubSystems.Get<NetworkSessionSubSystem>().LeaveToMainMenu();
+            yield return WaitFor(() => body == null && SceneManager.GetActiveScene().name == Scenes.Launcher,
+                "the session ends, the body is destroyed and the main menu loads", 30f);
+            yield return null;
+
+            List<string> stale = CallbacksOnDestroyedObjects(inputs);
+            Assert.IsEmpty(stale, "Input callbacks still bound to destroyed objects:\n" + string.Join("\n", stale));
+        }
+
+        private static readonly string[] CallbackFields = { "m_OnStarted", "m_OnPerformed", "m_OnCanceled" };
+
+        private static List<string> CallbacksOnDestroyedObjects(InputActionAsset asset)
+        {
+            List<string> stale = new();
+            foreach (InputAction action in asset)
+            {
+                foreach (string fieldName in CallbackFields)
+                {
+                    // CallbackArray<T> is internal to the Input System; read it by reflection.
+                    object callbacks = typeof(InputAction)
+                        .GetField(fieldName, BindingFlags.Instance | BindingFlags.NonPublic)
+                        ?.GetValue(action);
+                    Assert.IsNotNull(callbacks, $"InputAction.{fieldName} not found (Input System internals changed?)");
+                    Type type = callbacks.GetType();
+                    int length = (int)type.GetProperty("length").GetValue(callbacks);
+                    PropertyInfo indexer = type.GetProperty("Item");
+                    for (int i = 0; i < length; i++)
+                    {
+                        foreach (Delegate callback in ((Delegate)indexer.GetValue(callbacks, new object[] { i })).GetInvocationList())
+                        {
+                            if (callback.Target is Object target && target == null)
+                            {
+                                stale.Add($"{action.actionMap?.name}/{action.name} {fieldName}: "
+                                    + $"{callback.Method.DeclaringType?.Name}.{callback.Method.Name}");
+                            }
+                        }
+                    }
+                }
+            }
+
+            return stale;
         }
 
         private static RoundSubSystem Rounds => SubSystems.Get<RoundSubSystem>();

@@ -52,6 +52,8 @@ namespace SS3D.Systems.Interactions
 
         private CombatInteractionNetwork _combatNetwork;
 
+        private bool _armedEvaluatorSubscribed;
+
         private readonly InteractionOutlineDriver _outlineDriver = new();
         private readonly DelayedInteractionTracker _delayedTracker = new();
 
@@ -79,12 +81,10 @@ namespace SS3D.Systems.Interactions
             if (IsOwner)
             {
                 SubscribeToInput();
-                _armedSystem.EvaluateTarget += EvaluateArmedTarget;
             }
             else if (prevOwner.Equals(LocalConnection))
             {
                 UnsubscribeFromInput();
-                _armedSystem.EvaluateTarget -= EvaluateArmedTarget;
             }
         }
 
@@ -167,14 +167,22 @@ namespace SS3D.Systems.Interactions
 
             if (IsOwner)
             {
-                UnsubscribeFromInput();
                 _outlineDriver.Clear();
-                _armedSystem.EvaluateTarget -= EvaluateArmedTarget;
             }
+
+            // Not gated on IsOwner: when the session ends, ownership is already gone by the time the body is
+            // torn down, but the input actions outlive it and would keep calling into the destroyed controller.
+            UnsubscribeFromInput();
         }
 
         private void SubscribeToInput()
         {
+            if (!_armedEvaluatorSubscribed && _armedSystem != null)
+            {
+                _armedSystem.EvaluateTarget += EvaluateArmedTarget;
+                _armedEvaluatorSubscribed = true;
+            }
+
             // OnEnabled and OnOwnershipClient can both fire for an owner; subscribe exactly once.
             if (_gameplayHandle != null)
             {
@@ -190,6 +198,16 @@ namespace SS3D.Systems.Interactions
 
         private void UnsubscribeFromInput()
         {
+            if (_armedEvaluatorSubscribed)
+            {
+                if (_armedSystem != null)
+                {
+                    _armedSystem.EvaluateTarget -= EvaluateArmedTarget;
+                }
+
+                _armedEvaluatorSubscribed = false;
+            }
+
             _controls.RunPrimary.performed -= HandleRunPrimary;
             _controls.ViewInteractions.performed -= HandleView;
             _cancelInteractionAction.performed -= HandleCancelInteraction;

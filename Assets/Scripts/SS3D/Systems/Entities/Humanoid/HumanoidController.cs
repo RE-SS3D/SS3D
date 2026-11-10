@@ -142,10 +142,9 @@ namespace SS3D.Systems.Entities.Humanoid
         {
             base.OnDisabled();
 
-            if (IsOwner)
-            {
-                UnsubscribeFromInput();
-            }
+            // Not gated on IsOwner: ownership is already gone when a session ends and the body is torn down,
+            // which leaked the Gameplay input context into the main menu.
+            UnsubscribeFromInput();
 
             TargetMovement = Vector3.zero;
         }

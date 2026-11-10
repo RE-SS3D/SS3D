@@ -120,6 +120,12 @@ namespace SS3D.Tests
                 yield break;
             }
 
+            if (InstanceFinder.ServerManager == null || !InstanceFinder.ServerManager.Started)
+            {
+                _roomReady = false; // the scenario ended the session (e.g. left to the main menu); boot again next time
+                yield break;
+            }
+
             Debug.Log($"[Scenario] {TestContext.CurrentContext.Test.Name} took {_scenarioClock.Elapsed.TotalSeconds:F1}s");
             DespawnScenarioObjects();
             if (ChecksRoomAir && !ChangesRoom && ScenarioAtmos.CheckUnchanged(TestContext.CurrentContext.Test.Name))
