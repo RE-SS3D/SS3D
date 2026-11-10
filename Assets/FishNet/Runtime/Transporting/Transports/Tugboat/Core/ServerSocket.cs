@@ -21,6 +21,13 @@ namespace FishNet.Transporting.Tugboat.Server
         /// </summary>
         public static Func<byte[], byte[]> UnconnectedRequestHandler;
 
+        /// <summary>
+        /// SS3D patch: per-address and global limit on answered status queries (<see cref="UnconnectedRequestLimiter"/>).
+        /// </summary>
+        public static readonly UnconnectedRequestLimiter UnconnectedLimiter = new();
+
+        private static readonly System.Diagnostics.Stopwatch UnconnectedClock = System.Diagnostics.Stopwatch.StartNew();
+
         #region Public.
         /// <summary>
         /// Gets the current ConnectionState of a remote client on the server.
@@ -383,6 +390,10 @@ namespace FishNet.Transporting.Tugboat.Server
             {
                 Func<byte[], byte[]> handler = UnconnectedRequestHandler;
                 if (handler == null || messageType != UnconnectedMessageType.BasicMessage)
+                    return;
+
+                // SS3D patch: drop floods before building a reply (tech-debt P1.8).
+                if (!UnconnectedLimiter.TryAcquire(remoteEndPoint?.Address, UnconnectedClock.Elapsed.TotalSeconds))
                     return;
 
                 byte[] reply = handler(reader.GetRemainingBytes());
