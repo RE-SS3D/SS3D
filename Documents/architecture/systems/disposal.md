@@ -11,7 +11,7 @@ Server-authoritative **item** disposal network: pipe segments on `TileLayer.Disp
 
 ## Start here
 
-- `Assets/Scripts/SS3D/Systems/Furniture/Disposal/DisposalSubSystem.cs` — registry owner; `IWorldReady`; awaits `TileMapLoaded` then rebuilds + notifies `DisposalReady`; capsule tick (`CapsulesPaused` for Map Editor); spill-on-cut
+- `Assets/Scripts/SS3D/Systems/Furniture/Disposal/DisposalSubSystem.cs` — registry owner; `IWorldReady`; awaits `TileMapLoaded` then rebuilds + notifies `DisposalReady`; capsule tick (never paused; the Map Editor pauses nothing since tech-debt P2.2); spill-on-cut
 - `Assets/Scripts/SS3D/Systems/Furniture/Disposal/DisposalPipeConnectivity.cs` — BFS walk + `TryFindRoute`
 - `Assets/Scripts/SS3D/Systems/Furniture/Disposal/DisposalPipeObserver.cs` — rebuilds topology on pipe or disposal-furniture place/clear; `SuspendRebuilds` queues coords during bulk edits
 - `Assets/Scripts/SS3D/Systems/Furniture/DisposalBin.cs` — chute; `AcceptsSize` / `MaxSizeClass`; drop-in + tagger interactions
