@@ -473,6 +473,10 @@ reference Systems:
   assembly, and `UI.Shell` is accumulating feature views (BugReport, RoundEnd, MainMenu) because it is
   the only UI assembly Systems may reference.
 
+**Guardrail (tech-debt G4):** `SystemsFolderCycleTests` counts pairs of `Systems/*` folders whose runtime
+`using SS3D.Systems.X` lines point both ways (52 on 2026-11-10 by its own count; the audit's 53 used a slightly
+different scan) and fails if the count rises.
+
 That removes ~25k lines from the recompile set (L). Also: `SS3D.Systems.asmdef` references the base
 `SS3D.UI` assembly with zero uses (§1.29).
 
