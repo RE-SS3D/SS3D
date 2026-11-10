@@ -1,7 +1,6 @@
 #if UNITY_EDITOR
 using System.Collections.Generic;
 using FishNet.Object;
-using SS3D.Hacks;
 using SS3D.Systems.Comms;
 using UnityEditor;
 using UnityEngine;
@@ -57,25 +56,37 @@ namespace SS3D.Systems.Entities.Editor
                     return 0;
                 }
 
-                RagdollWhenPressingButton[] hacks = prefabRoot.GetComponentsInChildren<RagdollWhenPressingButton>(true);
-                foreach (RagdollWhenPressingButton hack in hacks)
+                List<MonoBehaviour> hacks = new();
+                foreach (MonoBehaviour behaviour in prefabRoot.GetComponentsInChildren<MonoBehaviour>(true))
+                {
+                    if (IsDevHack(behaviour))
+                    {
+                        hacks.Add(behaviour);
+                    }
+                }
+
+                foreach (MonoBehaviour hack in hacks)
                 {
                     UnityEngine.Object.DestroyImmediate(hack, true);
                 }
 
-                if (hacks.Length > 0)
+                if (hacks.Count > 0)
                 {
                     RebuildNetworkBehaviours(rootNetworkObject);
                     PrefabUtility.SaveAsPrefabAsset(prefabRoot, HumanPrefabPath);
                 }
 
-                return hacks.Length;
+                return hacks.Count;
             }
             finally
             {
                 PrefabUtility.UnloadPrefabContents(prefabRoot);
             }
         }
+
+        /// <summary>A debug component from the <c>SS3D.Hacks</c> assembly, which must never ship on Human.</summary>
+        public static bool IsDevHack(MonoBehaviour behaviour) =>
+            behaviour != null && behaviour.GetType().Assembly.GetName().Name == "SS3D.Hacks";
 
         /// <summary>
         /// Reloads <c>Human.prefab</c> against the current on-disk state of its nested body-part prefabs

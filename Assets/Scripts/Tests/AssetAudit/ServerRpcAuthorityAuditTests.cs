@@ -53,9 +53,6 @@ namespace SS3D.Tests.AssetAudit
             { "EntitySubSystem.CmdSpawnLatePlayer", AuthorityCheck.OwnerOfArgument },
             { "EntitySubSystem.CmdRespawn", AuthorityCheck.ServerDerived },
             { "MindSubSystem.CmdSwapMinds", AuthorityCheck.NoClientOwner },
-            { "Ragdoll.KnockdownTimeless", AuthorityCheck.Unchecked }, // P1.2
-            { "Ragdoll.Knockdown", AuthorityCheck.Unchecked }, // P1.2
-            { "Ragdoll.Recover", AuthorityCheck.Unchecked }, // P1.2
             { "HumanoidBodyStateMachine.CmdTrySit", AuthorityCheck.Revalidated },
             { "Draggable.SetDragServer", AuthorityCheck.Unchecked }, // P1.4: client-supplied dragger
 
@@ -121,9 +118,6 @@ namespace SS3D.Tests.AssetAudit
         {
             "CombatInteractionNetwork.CmdSyncMeleeAim",
             "CombatInteractionNetwork.CmdThrow",
-            "Ragdoll.KnockdownTimeless",
-            "Ragdoll.Knockdown",
-            "Ragdoll.Recover",
             "Draggable.SetDragServer",
             "ItemSubSystem.CmdSpawnItem",
             "ItemSubSystem.CmdSpawnItemInContainer",

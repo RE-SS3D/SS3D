@@ -350,15 +350,13 @@ chunks batched per command group; keep one full snapshot for late joiners (M).
 **Blast radius: high (public sandbox server) — trend: getting worse (each feature adds RPCs)**
 
 43 of 74 ServerRpcs use `RequireOwnership = false`. Most check permissions (`ServerSettings`,
-`MapEditorRoundStop`, `EntitySubSystem.CmdSpawnLatePlayer`), but these do not:
+`MapEditorRoundStop`, `EntitySubSystem.CmdSpawnLatePlayer`), but these do not. `ServerRpcAuthorityAuditTests` (tech-debt G1) lists every
+ServerRpc of this kind with its check; the holes below are its `Unchecked` entries.
 
 - **Ranged shot origin:** `CmdSyncMeleeAim(rayOrigin, aimPoint)` stores the client's origin unchecked
   (`CombatInteractionNetwork.cs:848-854`); `RangedHitscanResolver` fires and checks line of sight from it
   (`:52`, `:64`). A modified client can shoot from anywhere, through walls. Derive the origin on the
   server (muzzle/eye) and take only a clamped direction from the client.
-- **`Ragdoll.Knockdown` / `KnockdownTimeless` / `Recover`** (`Ragdoll.cs:347`, `:382`, `:817`): any
-  client can knock down or stand up any body. The only caller is `Hacks/RagdollWhenPressingButton`;
-  admin paths use the `Server*` variants. Delete the RPCs.
 - **`ItemSubSystem.CmdSpawnItem` / `CmdSpawnItemInContainer`** (`ItemSubSystem.cs:23`, `:63`): no
   permission check. Gate on admin (the console command calls the server method anyway).
 - **Console commands at `AccessLevel User` run on the server for any player**, in release builds

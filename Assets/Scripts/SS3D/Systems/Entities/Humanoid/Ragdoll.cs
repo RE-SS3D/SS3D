@@ -224,7 +224,7 @@ namespace SS3D.Systems.Entities.Humanoid
                 _knockdownTimer -= Time.deltaTime;
                 if (_knockdownTimer <= 0 && (!_windKnockdown || HasFloorSupport()))
                 {
-                    // Must call ServerRecover — Recover() is a ServerRpc and is a no-op from server.
+                    // Server-side recovery: ServerRecover is the only way up.
                     ServerRecover();
                 }
             }
@@ -333,21 +333,12 @@ namespace SS3D.Systems.Entities.Humanoid
 
         /// <summary>
         /// Knockdown that does not expire until Recover(). Safe to call from server code
-        /// (admin). Prefer this over the ServerRpc from server authority paths.
+        /// (admin). Clients can't request a knockdown (networking §2).
         /// </summary>
         [Server]
         public void ServerKnockdownTimeless()
         {
             ServerSetPresentation(BodyPresentationState.Collapsed);
-        }
-
-        /// <summary>
-        /// Client-owned request for timeless knockdown.
-        /// </summary>
-        [ServerRpc(RequireOwnership = false)]
-        public void KnockdownTimeless()
-        {
-            ServerKnockdownTimeless();
         }
 
         /// <summary>
@@ -374,15 +365,6 @@ namespace SS3D.Systems.Entities.Humanoid
             {
                 _knockdownTimer = Mathf.Max(_knockdownTimer, seconds);
             }
-        }
-
-        /// <summary>
-        /// Client-owned request for timed knockdown.
-        /// </summary>
-        [ServerRpc(RequireOwnership = false)]
-        public void Knockdown(float seconds)
-        {
-            ServerKnockdown(seconds);
         }
 
         private void EnsureAnimatorCached()
@@ -812,12 +794,6 @@ namespace SS3D.Systems.Entities.Humanoid
         public void ServerRecover()
         {
             ServerSetPresentation(BodyPresentationState.Locomotion);
-        }
-
-        [ServerRpc(RequireOwnership = false)]
-        public void Recover()
-        {
-            ServerRecover();
         }
         
 		/// <summary>
