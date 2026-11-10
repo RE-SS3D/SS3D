@@ -2,7 +2,7 @@
 > Touches systems: core-subsystems, combat, entities, interactions-runtime, inventory, health, tile, map-editor-creative-hooks, area, structural-destruction, atmospherics, electricity, persistence, rounds-lobby, ui-shell, machine-interface, examine, ingame-console, networking-session, application
 > Status: in-progress
 
-**Progress:** Planned on 2026-11-09 from the code audit that refreshed [TECH_DEBT.md](TECH_DEBT.md) §1.19–§1.30; the owner answered Decisions 9–12 the same day. Phases 0–2 started 2026-11-10 as one stacked PR per item. Shipped: Phase 0 except G2 (with the console rework); Phase 1 except the console half of P1.3 (waits on the console-rework PR #223), the P1.1 aim cone and P1.9 steps 2–3 (both wait on Q5), with `mppm:late-join` passed at its end; Phase 2 (P2.7 awaits an owner hand check). Four [open questions](#open-questions-for-the-owner) remain.
+**Progress:** Planned on 2026-11-09 from the code audit that refreshed [TECH_DEBT.md](TECH_DEBT.md) §1.19–§1.30; the owner answered Decisions 9–12 the same day and 13–16 on 2026-11-10. Phases 0–2 started 2026-11-10 as one stacked PR per item. Shipped: Phase 0 except G2 (with the console rework); Phase 1 except the console half of P1.3 (the console rework merged as #223 on 2026-11-10; its coverage check is next), the P1.1 aim cone and P1.9 steps 2–3 (both wait on playtest numbers, Decision 13), with `mppm:late-join` passed at its end; Phase 2 (P2.7 awaits an owner hand check). No open questions remain.
 
 # Tech-debt paydown (Nov 2026)
 
@@ -40,6 +40,13 @@ Settled with the owner on 2026-11-09:
 10. **The Map Editor is admin-only, except on the sandbox.** `-sandbox` stays the one open mode (sandbox-server §5). The standalone `-openbuild` switch goes away (P1.11). **Editing pauses nothing**: only map load, clear and import suspend simulations (P2.2). The owner may revisit pausing for sessions whose main goal is map building. That would be an explicit, admin-only "freeze world" control, not a side effect of opening the editor.
 11. **Delete `HumanoidPredictedMovement`** (P3.2). It is unused and keeps being maintained by mistake.
 12. **Console access is owned by the open console-rework branch,** which separates player and admin commands. This effort doesn't change command access levels. G2 and the console half of P1.3 hand over to that branch; check it covers `accessgrant`, `accessrevoke`, `accesspreset`, `spawnitem` and the unknown-command crash before closing §1.19.
+
+Settled with the owner on 2026-11-10:
+
+13. **Lag slack comes from measurement** (P1.1, P1.9). Ship P1.9's diagnostics, then set the LOS distance, range margin and gun aim cone from the refusal lines playtests log, not from a guess. One rule needs no number and ships first: a drop's LOS ray counts when it hits the same collider the client clicked. The rejection hint reads **"Can't reach that."**, matching the Map Editor's "Can't move that there."
+14. **The analyzer gate fails CI on structure and warns on style** (P9.1). It fails on `SubSystems.Get<T>()?.` (zero left after P2.3), on `ServerRpc(RequireOwnership = false)` without `[AuthorityCheck(...)]` (replaces G1's allowlist) and on `FindObject*` in non-Editor `SS3D.Systems` code (grandfather list that only shrinks, like G3). `.editorconfig` naming only warns until existing violations reach zero, then fails too.
+15. **Release builds strip test automation** (P8.1). `develop-release.yml` builds without `SS3D_AUTOMATION` by default and takes a workflow input to build a debug variant with it, for remote debugging.
+16. **Delete `UiBinderBase`** (P7.8). Nothing derives from it. If moving the MI binders shows a real shared need, P7.8 adds a base class shaped by that need.
 
 ## Phase overview
 
@@ -85,7 +92,7 @@ Public servers are the Playtest 1 enabler, so trust holes are gameplay bugs ther
 
 - **P1.1 — Ranged shot origin from the server.** `CombatInteractionNetwork.CmdSyncMeleeAim` (`:848`) stores a client ray origin that `RangedHitscanResolver` fires and checks line of sight from (`:52`, `:64`).
   - The server takes the origin from the body's `ViewPoint` (combat §3: line of sight from the eye) and only the aim point or direction from the client.
-  - Reject an aim point that isn't finite or is beyond weapon range, and clamp the direction to a cone around the server-side facing; Q5 sets the margin.
+  - Reject an aim point that isn't finite or is beyond weapon range, and clamp the direction to a cone around the server-side facing; Decision 13: the margin comes from playtest logs.
   - Melee uses the same origin.
   - Test: EditMode on a pure resolver seam taking `(serverOrigin, clientAim)`; `scenarios:Combat`.
 - **P1.2 — Remove client-callable knockdown.** Delete `Ragdoll.Knockdown`, `KnockdownTimeless` and `Recover` as ServerRpcs (`Ragdoll.cs:347`, `:382`, `:817`); callers use the existing `Server*` methods. Delete `Hacks/RagdollWhenPressingButton` (no prefab or scene uses it). Networking §2: nobody else drives your body.
@@ -103,8 +110,8 @@ Public servers are the Playtest 1 enabler, so trust holes are gameplay bugs ther
 - **P1.8 — Server status rate limit.** Per-endpoint token bucket and a global cap in the vendored Tugboat unconnected-message path (`Assets/FishNet/.../Tugboat/Core/ServerSocket.cs:139-145`, `:378-395`; `ServerStatusPublisher.cs:86-95`). Record the patch in [FORK_STATUS.md](../FORK_STATUS.md) next to the existing vendored change.
 - **P1.9 — Interaction re-validation margin (#192).**
   - Step 1, diagnostics: when `TryResolveDispatchedInteraction` fails, log which check failed (no entry with that name vs. `CanInteract` false). For Drop, also log the LOS hit distance and the server/client `ViewPoint` delta.
-  - Step 2: give server re-validation a named margin. The LOS hit counts if it is on the same collider or within the margin, and range gets a margin (Q5).
-  - Step 3: `TargetRejectInteraction` shows a short "can't reach that" hint (Q5, owner wording).
+  - Step 2: give server re-validation a named margin (Decision 13). The LOS hit counts if it is on the same collider (ships first) or within the margin, and range gets a margin; both numbers come from step 1's logs.
+  - Step 3: `TargetRejectInteraction` shows the hint "Can't reach that." (Decision 13).
   - Test: EditMode on the margin rule; a `scenarios:Reach` case with the FishNet latency simulator at 100 ms dropping onto a table while strafing.
 - **P1.10 — Owner-only RPCs.** `RpcExecuteClientInteraction`, `RpcExecuteClientInventoryInteraction` and `RpcExecuteMeleeSwing` broadcast to everyone, and non-owners ignore them → `TargetRpc` to the owner.
 - **P1.11 — Map Editor admin-only outside the sandbox (Decision 10).**
@@ -299,7 +306,7 @@ Follows the order the [UI shell consolidation](2026-07_ui-shell-consolidation.md
   - Main HUD and Storage Panel → `UiLayer.Hud`, after P7.2 and P7.3.
   - Machine UI last.
   - Retire the hand-picked sorting orders (−10 / 2000 / 3000). Update [TECH_DEBT §1.13](TECH_DEBT.md#113-debug-tools-centralized-ui-host-consolidation-remains) and `ui-shell.md`.
-- **P7.8 — Gameplay out of the MI assembly.** The 11 device controllers (~2.8k lines, e.g. `FilterInterfaceController` calling `Filter.Toggle()`) move to their domain folders in Systems behind a narrow interface the MI binders call. Content prefabs then stop depending on a UI assembly. Script GUIDs move with the `.meta` files, so prefab references survive. Q8 decides `UiBinderBase`: adopt it for the MI binders as this move rewrites them, or delete it.
+- **P7.8 — Gameplay out of the MI assembly.** The 11 device controllers (~2.8k lines, e.g. `FilterInterfaceController` calling `Filter.Toggle()`) move to their domain folders in Systems behind a narrow interface the MI binders call. Content prefabs then stop depending on a UI assembly. Script GUIDs move with the `.meta` files, so prefab references survive. Delete `UiBinderBase` as part of this move (Decision 16).
 - **P7.9 — Polling and inline styles.** `RespawnPrompt` → USS and event-driven text (`:70-84`, `:96-127`). `StoragePanelHost.Update` (`:113-118`) and `RoundEndUiSubSystem.Update` subscribe instead of polling. Hand-rolled DOTween panel sequences (`MainHudView.cs:259-332`, `MachineInterfaceHost.cs:398-497`) move onto `PanelAnimator`.
 - **Tests:** `compile,editmode,visual` per PR; `lifecycle` for P7.4 and P7.5; `scenarios` for the inventory flows that P7.1 and P7.2 touch.
 
@@ -308,7 +315,7 @@ Follows the order the [UI shell consolidation](2026-07_ui-shell-consolidation.md
 Mechanical once Phases 5–7 have cut the reverse references. Each new assembly references `SS3D.Systems`; nothing in Systems references it back. G4 drops with each step.
 
 - **P8.1 — `SS3D.Automation`.**
-  - `Systems/Testing/AutomationSubSystem.cs` (1,328 lines) and its helpers move into an asmdef compiled only with `SS3D_AUTOMATION` defined. The validation harness and CI build scripts (`Tools/build_client_and_server.sh`, the smoke and nightly workflows) set the define; release builds don't (Q7).
+  - `Systems/Testing/AutomationSubSystem.cs` (1,328 lines) and its helpers move into an asmdef compiled only with `SS3D_AUTOMATION` defined. The validation harness and CI build scripts (`Tools/build_client_and_server.sh`, the smoke and nightly workflows) set the define; release builds don't, unless the release workflow's debug input asks for it (Decision 15).
   - `SystemsBootstrap.cs:88` stops creating it, and the automation assembly bootstraps itself under the define.
   - Check that `-testscript=` paths in `multiplayer-smoke-test.yml` and the nightly still find it.
 - **P8.2 — `SS3D.MapEditor`.**
@@ -331,7 +338,7 @@ Mechanical once Phases 5–7 have cut the reverse references. Each new assembly 
 
 ### Phase 9 — Lock-in
 
-- **P9.1 — An analyzer gate** ([TECH_DEBT §1.11](TECH_DEBT.md#111-stylecop-disabled-repo-wide-with-no-replacement-gate)), with the rule set decided in Q6. Proposed minimum, as Roslyn analyzers in the empty `Analysers` assembly or a DLL, run in the EditMode CI job:
+- **P9.1 — An analyzer gate** ([TECH_DEBT §1.11](TECH_DEBT.md#111-stylecop-disabled-repo-wide-with-no-replacement-gate)), with the rule set from Decision 14, as Roslyn analyzers in the empty `Analysers` assembly or a DLL, run in the EditMode CI job:
   - `.editorconfig` naming
   - no `FindObject*` in non-Editor `SS3D.Systems` code
   - no `ServerRpc(RequireOwnership = false)` without an `[AuthorityCheck(...)]` attribute; this turns G1's allowlist into an attribute next to the code
@@ -352,9 +359,4 @@ Mechanical once Phases 5–7 have cut the reverse references. Each new assembly 
 
 ## Open questions for the owner
 
-Questions 1–4 were settled as Decisions 9–12.
-
-5. **How much lag slack the server's re-checks allow (P1.1, P1.9).** The server re-checks clicks and shots against its own copy of the player, which trails the client by the network delay. Today the checks are exact: a drop needs the server's line-of-sight ray to land within 10 cm of the clicked point, so a moving player's drop can be refused (#192). Recommended: ship P1.9's diagnostics first, which log how far off the server's copy really is. Then set the slack (LOS distance, range margin, aim cone for guns) from what playtests measure, instead of guessing now. Also, what should the "can't reach that" hint say?
-6. **Analyzer gate (P9.1):** which rules, and does it fail CI or only warn at first?
-7. **Automation in release builds (P8.1):** strip test automation from release builds (recommended), or keep `-testscript=` working on shipped builds for remote debugging?
-8. **`UiBinderBase`:** adopt it for the Machine UI binders during P7.8, or delete it?
+None. Questions 1–8 were settled as Decisions 9–16.
