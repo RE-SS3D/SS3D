@@ -362,9 +362,6 @@ ServerRpc of this kind with its check; the holes below are its `Unchecked` entri
   tech-debt P1.6 the server replicates one only while the matching swing, shot, reload or throw it accepted is
   under way (`ClientTriggerRules`), and it picks melee vs ranged stance from its own inventory. Server-fired
   one-shots are P4.2.
-- **Server status query** (vendored Tugboat patch, `ServerSocket.cs:139-145`, `:378-395`;
-  `ServerStatusPublisher.cs:86-95`) answers unconnected UDP with no per-endpoint rate limit, and
-  replies are larger than requests. Add a token bucket.
 
 **The opposite failure:** server re-validation runs the same strict `CanInteract` (for Drop, a 0.1 m
 LOS hit tolerance) against a server pose that lags the client, with no tolerance and no player
