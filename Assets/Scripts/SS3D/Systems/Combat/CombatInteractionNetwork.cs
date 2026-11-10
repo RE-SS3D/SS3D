@@ -614,11 +614,15 @@ namespace SS3D.Systems.Combat
             ServerScheduleMeleeConnect(hand, hit.Profile, effectiveWindupSeconds);
 
             _meleeSwingSerial++;
-            RpcExecuteMeleeSwing(_meleeSwingSerial);
+            if (Owner.IsValid)
+            {
+                TargetExecuteMeleeSwing(Owner, _meleeSwingSerial);
+            }
         }
 
-        [ObserversRpc(RunLocally = true)]
-        private void RpcExecuteMeleeSwing(int swingId)
+        /// <summary>Owner only: start the client-side swing. Non-owners have nothing to run.</summary>
+        [TargetRpc(RunLocally = true)]
+        private void TargetExecuteMeleeSwing(NetworkConnection conn, int swingId)
         {
             if (!IsOwner)
             {
