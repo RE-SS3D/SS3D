@@ -763,7 +763,8 @@ namespace SS3D.Systems.Tile
             _items.Add(placedItem);
         }
 
-        public void ClearItemObject(Vector3 worldPosition, ItemObjectSo itemObjectSo)
+        /// <returns>True when an item was found and removed.</returns>
+        public bool ClearItemObject(Vector3 worldPosition, ItemObjectSo itemObjectSo)
         {
             PruneDestroyedItems();
             // The nearest match, not the last one in range: in a pile of the same item the map editor
@@ -784,10 +785,11 @@ namespace SS3D.Systems.Tile
             }
 
             if (toRemove == null)
-                return;
+                return false;
 
             _items.Remove(toRemove);
             toRemove.DestroySelf();
+            return true;
         }
 
         /// <summary>
