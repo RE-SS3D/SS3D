@@ -45,7 +45,7 @@ Discover / `HasPoint` contract: [interactions-framework](interactions-framework.
 
 ## Start here
 
-- `Assets/Scripts/SS3D/Systems/Interactions/InteractionController.cs` — thin router: primary-click policy, radial/armed, intent SyncVar, world/inventory/examine RPCs, delayed tracking; editor-only `RunInteractionForTesting` sends a named verb through `CmdRunInteraction` for scenarios
+- `Assets/Scripts/SS3D/Systems/Interactions/InteractionController.cs` — router plus server hand-action scheduling (the `.Animation.cs` partial: one pending hand action, effect at the clip's contact frame; tech-debt P4.1 moves it to a `HandActionScheduler`): primary-click policy, radial/armed, intent SyncVar, world/inventory/examine RPCs, delayed tracking; editor-only `RunInteractionForTesting` sends a named verb through `CmdRunInteraction` for scenarios
 - `Assets/Scripts/SS3D/Systems/Interactions/InteractionDiscovery.cs` / `InteractionDispatch.cs` — shared discover/resolve helpers (client + server revalidation)
 - `Assets/Scripts/SS3D/Systems/Interactions/InteractionOutlineDriver.cs` / `DelayedInteractionTracker.cs` — outline LateUpdate + active delayed refs
 - `Assets/Scripts/SS3D/Systems/Interactions/RadialInteractionSubSystem.cs` — three-tier radial menu subsystem
