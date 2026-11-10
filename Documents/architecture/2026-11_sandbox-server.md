@@ -10,13 +10,13 @@ A separate dedicated instance where everyone can build and fight, with a 20-minu
 
 ## Starting state (2026-11-01, `17c1009db`)
 
-- **`-openbuild`** (`OpenBuildMapEditorAuthorizer`) already lets every player edit, throttled by `MapEditorRateLimiter`, with own-edit undo, and `MapEditorPermissions.MayReplaceMapFile` stops overwriting other players' saves. Admin names need a `-token` from `Config/admin-tokens.txt` on dedicated servers.
+- **`-openbuild`** (`OpenBuildMapEditorAuthorizer`; the switch was removed in tech-debt P1.11, and only `-sandbox` selects this authorizer now) already lets every player edit, throttled by `MapEditorRateLimiter`, with own-edit undo, and `MapEditorPermissions.MayReplaceMapFile` stops overwriting other players' saves. Admin names need a `-token` from `Config/admin-tokens.txt` on dedicated servers.
 - **Round length** is enforced: `RoundSubSystem` requests a round end at `ServerSettings.RoundLengthMinutes`. Nothing warns before it.
 - **No automatic start.** A round only starts from an admin's `ChangeRoundStateMessage` (`RoundSubSystemBase.HandleRequestStartRound`); [lobby.md](../design/lobby.md) §7's self-starting countdown is unbuilt. After a round, the server sits in Stopped.
 - **Ready is cleared** once a round spawns its players (`ReadyPlayersSubSystem.InvokeSpawnReadyPlayers`).
 - **A ghost counts as a spawned player.** `Human` swaps the ghost into `EntitySubSystem._spawnedPlayers` via `TryTransferEntity`, so `SpawnLatePlayer` refuses ghosts: there is no respawn path.
 - **Editor server RPCs check only the authorizer**, never for a body. The client's `MapEditorSubSystem.CanOpenEditor` asks `IsPlayerSpawned`, which is true for a ghost; ghost editing is untested at runtime.
-- **Player invincibility** is a per-client toggle in `MapEditorSettings` (`EntityInvincibility.SetServer`), authorized with `MapEditorPermissions.TryAuthorize` — anyone on `-openbuild`. It persists after closing the editor until disconnect.
+- **Player invincibility** is a per-client toggle in `MapEditorSettings` (`EntityInvincibility.SetServer`), authorized with `MapEditorPermissions.TryAuthorize` — anyone on `-sandbox`. It persists after closing the editor until disconnect.
 - **Persistence calls** are separate server RPCs on `MapEditorSubSystem`: `RpcSaveMap`, `RpcExportMap`, `RpcLoadMap`, `RpcDeleteMap`, `RpcNewMap`. Round-end autosave lives in `MapEditorRoundStop`.
 - **Spawn points** have their own command kinds (`PlaceSpawnPoint`, `ClearSpawnPoint` in `MapEditorCommandKind`).
 - **TomNAS** already runs Docker and user systemd with linger for the CI runner ([2026-07_multiplayer-testing-self-hosted-ci](2026-07_multiplayer-testing-self-hosted-ci.md)).
@@ -25,11 +25,11 @@ A separate dedicated instance where everyone can build and fight, with a 20-minu
 
 | # | Decision |
 |---|---|
-| 1 | One **`-sandbox`** flag. It implies `-openbuild` and applies the profile **in memory** at boot: Extended, `RoundLengthMinutes` 20, latejoin on, `PlayerCap` 16, respawn on, persistence off, auto-start on. It never writes the saved server settings. Each rule is its own setting in code so other servers or a later gamemode can reuse it. Admins can still extend or end rounds. |
+| 1 | One **`-sandbox`** flag. It opens the map editor to every non-Restricted player (it implied `-openbuild` until tech-debt P1.11 removed that switch) and applies the profile **in memory** at boot: Extended, `RoundLengthMinutes` 20, latejoin on, `PlayerCap` 16, respawn on, persistence off, auto-start on. It never writes the saved server settings. Each rule is its own setting in code so other servers or a later gamemode can reuse it. Admins can still extend or end rounds. |
 | 2 | Auto-start is the general [lobby.md](../design/lobby.md) §7 mechanism behind an **`AutoStart`** server setting: a countdown starts once at least 1 player is ready. The sandbox is its first user. |
 | 3 | On the sandbox, **every connected player who isn't observing counts as ready** at round start. Ready flags are not remembered across rounds. |
 | 4 | Respawn is general: **`RespawnEnabled`** and **`RespawnCooldownSeconds`** (sandbox: on, ~30 s). A **Respawn** button with countdown on the ghost screen calls the server, which despawns the ghost and runs the normal `SpawnPlayer` path: always a fresh body at a spawn point ([sandbox-server.md](../design/sandbox-server.md) §4). The corpse remains during the cooldown; `RemoveCorpseOnRespawn` (sandbox: on, otherwise off) removes it after a successful respawn. The cooldown starts at death. |
-| 5 | **Anyone authorized may edit as a ghost** — admins anywhere, everyone on `-openbuild`. No sandbox-only check. Work is a runtime check of the ghost path, then fixing what breaks (camera handover, `CanOpenEditor` after the body swap). |
+| 5 | **Anyone authorized may edit as a ghost** — admins anywhere, everyone on `-sandbox`. No sandbox-only check. Work is a runtime check of the ghost path, then fixing what breaks (camera handover, `CanOpenEditor` after the body swap). |
 | 6 | Invincibility is **refused server-side and hidden** for `IsSandboxPlayer` connections. Admins and the host keep it. |
 | 7 | One server-side gate (e.g. `MapEditorPermissions.PersistenceAllowed`) blocks Save, Export, Load, Delete, **New** and the round-end autosave. Load and New are blocked because they replace the station for everyone. A replicated flag hides those buttons. |
 | 8 | A **code-side denylist** for sandbox players: the `PlaceSpawnPoint`/`ClearSpawnPoint` command kinds and the nuclear device and disk asset IDs. Refused in `RpcExecuteCommands`, filtered from the palette. Area painting stays allowed. |
@@ -44,7 +44,7 @@ A separate dedicated instance where everyone can build and fight, with a 20-minu
 
 ## Shape
 
-- **Profile.** A small server-only `SandboxProfile` reads `-sandbox` (next to `OpenBuildMapEditorAuthorizer.RequestedOnCommandLine`) and, on server start, overlays the in-memory `ServerSettings` and the new flags (`AutoStart`, `RespawnEnabled`, `RespawnCooldownSeconds`, `PersistenceAllowed`). Everything else reads those settings, never the flag, so a test can set them directly.
+- **Profile.** A small server-only `SandboxProfile` reads `-sandbox` (`SandboxProfile.RequestedIn`, which also picks the map editor authorizer) and, on server start, overlays the in-memory `ServerSettings` and the new flags (`AutoStart`, `RespawnEnabled`, `RespawnCooldownSeconds`, `PersistenceAllowed`). Everything else reads those settings, never the flag, so a test can set them directly.
 - **Map editor gates** stay in `MapEditorPermissions`: `PersistenceAllowed`, the denylist check (beside `IsSandboxPlayer`), and the invincibility refusal in `MapEditorSettings`. Client UI reads a replicated capability snapshot rather than re-deriving rules.
 - **Round cycle** in `RoundSubSystem`/`ReadyPlayersSubSystem`: an auto-start countdown while Stopped with `AutoStart` on, the sandbox all-ready rule at spawn time, and warnings in the Ongoing tick.
 - **Respawn** in `EntitySubSystem`: a server RPC that validates `RespawnEnabled`, the cooldown and that the caller's entity is a ghost, then replaces the ghost in `_spawnedPlayers` with a fresh `SpawnPlayer` body. The ghost-screen button follows the UiShell view/subsystem split.
@@ -99,7 +99,7 @@ Where the built code differs from the plan above, or adds to it:
 
 - **Settings.** The rules are `ServerSettings` fields: `AutoStart`, `AllConnectedReady`, `RespawnEnabled`, `RespawnCooldownSeconds`, `RemoveCorpseOnRespawn`, `MapPersistence`. The admin form doesn't edit them; `ServerSettings.WithRulesOf` keeps them through a whole-form save. `SandboxProfile` (`Systems/Rounds/`) applies them at boot; `RoundSubSystem.ApplyServerRules` pushes `MapPersistence` into `MapEditorPermissions.PersistenceAllowed`. `-sandbox-round-minutes=N` overrides the 20-minute length (tests).
 - **Persistence gate** applies to everyone, admins included; a Stop with unsaved edits doesn't prompt when it's off. The editor learns what to hide from a per-connection `MapEditorCapabilities` TargetRpc sent when it opens, not a SyncVar.
-- **Denylist** (`MapEditorSandboxRules`): spawn-point command kinds and the `NukeCart` / `NuclearAuthenticationDisk` assets, also in `RpcMoveObject`. Applies to every `IsSandboxPlayer`, so plain `-openbuild` servers get it too.
+- **Denylist** (`MapEditorSandboxRules`): spawn-point command kinds and the `NukeCart` / `NuclearAuthenticationDisk` assets, also in `RpcMoveObject`. Applies to every `IsSandboxPlayer`, the same set as the open authorizer.
 - **Auto-start**: 20 s idle countdown (`AutoStartCountdown`), then the normal Start (station load, warmup). An admin Cancel (warmup or idle countdown) or a failed station load **holds** auto-start until an admin Start; the hold is announced in Admin chat. Warnings go out as an announcement banner and an OOC line (`RoundEndWarnings`); rounds shorter than 5 or 1 minute skip that warning.
 - **All-ready** counts every online player; observers don't exist yet, so none are left out.
 - **Respawn** (`EntitySubSystem.Respawn.cs`, `RespawnPrompt`): the ghost's Mind moves to the new body. The sandbox profile removes the prior corpse after success, indexed by the server-attributed player ckey; a refusal keeps it. The prompt is a code-built panel on the UiShell HUD layer; a reconnecting ghost isn't re-offered a respawn until it dies again.
