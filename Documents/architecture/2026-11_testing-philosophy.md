@@ -70,9 +70,10 @@ and stay in force. Code, CI and `AGENTS.md` cite them by number.
 | D6 | Pilots run on demand; the lobby UI, lifecycle core and remote client pilots also run in the weekly graphical set. |
 | D7 | Wall-clock budgets on TomNAS (N100): nightly PlayMode 15 min, smoke 20 min, weekly graphical 20 min. Each job prints its time against its budget (`Tools/ci/budget.sh`). Over budget means cull before that tier gets anything new. |
 | D8 | Each tier 2–4 check has a header: `Guards: <contract or issue #> · Not cheaper because: <reason>` (rule 4). |
-| D9 | A red scheduled nightly or weekly opens or updates one issue labelled `nightly-failure` / `weekly-failure` (`Tools/ci/nightly_issue.sh`), closed by the next green run. Agents check it at session start. |
+| D9 | A red scheduled nightly or weekly opens or updates one issue labelled `nightly-failure` / `weekly-failure` (`Tools/ci/nightly_issue.sh`), closed by the next green run. The nightly EditMode run on `develop` uses its own label, `editmode-nightly-failure`. Agents check both at session start. |
 | D10 | Each system map's **Tests** section names the validate step and scenario category for its domain. |
 | D11 | Multiplayer Play Mode (`validate.sh --steps mppm:<scenario>`) is for agent-local multiplayer checks only; the built smoke stays the nightly gate because it exercises `UNITY_SERVER` code paths. |
+| D12 | One CI run per change. Agents run `compile,editmode` locally before pushing, so the PR run is the record, not the first check. `Run Tests` runs on PRs into `develop` only, so a stacked PR runs once its base becomes `develop`. A newer push cancels the PR's older run, and docs-only PRs skip it. Merges don't trigger a run. A nightly run on `develop` catches PRs that pass alone but break together, and is skipped when `develop` hasn't moved since the last green nightly. |
 
 ## Current state
 
