@@ -29,7 +29,7 @@ namespace SS3D.Systems.Tile.MapEditor
         [ServerRpc(RequireOwnership = false)]
         private void RpcInspectArea(Vector3 position, bool showEditor, bool useConstruct, NetworkConnection conn = null)
         {
-            if (!MapEditorPermissions.TryAuthorize(conn))
+            if (!RpcInput.IsInStation(position) || !MapEditorPermissions.TryAuthorize(conn))
                 return;
             if (!SubSystems.TryGet(out AreaSubSystem areas) ||
                 !areas.TryGetAreaForWorldPosition(position, out AreaRecord room))

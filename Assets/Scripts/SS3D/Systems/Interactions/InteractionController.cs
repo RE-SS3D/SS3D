@@ -903,6 +903,12 @@ namespace SS3D.Systems.Interactions
         [ServerRpc]
         private void CmdRunInteraction(NetworkObject target, Vector3 point, string genericName, int targetComponentIndex)
         {
+            if (!RpcInput.IsInStation(point))
+            {
+                TargetRejectInteraction(Owner);
+                return;
+            }
+
             if (!TryValidateInteractionTarget(target, out GameObject targetGameObject))
             {
                 return;

@@ -1526,6 +1526,12 @@ namespace SS3D.Systems.Tile.MapEditor
             if (commands == null || commands.Length == 0 || _commandService.Context == null)
                 return;
 
+            foreach (MapEditorCommandDto dto in commands)
+            {
+                if (!RpcInput.IsInStation(dto.Position) || !RpcInput.IsInStation(dto.PreviousPosition))
+                    return;
+            }
+
             commands = FilterDeniedCommands(commands, conn);
             if (commands.Length == 0)
                 return;
@@ -1600,7 +1606,7 @@ namespace SS3D.Systems.Tile.MapEditor
         private void RpcMoveObject(string assetName, Vector3 from, Vector3 to, Direction direction, bool isItem,
             NetworkConnection conn = null)
         {
-            if (!MapEditorPermissions.TryAuthorize(conn))
+            if (!RpcInput.IsInStation(from) || !RpcInput.IsInStation(to) || !MapEditorPermissions.TryAuthorize(conn))
                 return;
 
             if (MapEditorPermissions.IsSandboxPlayer(conn) && MapEditorSandboxRules.IsDeniedAsset(assetName))

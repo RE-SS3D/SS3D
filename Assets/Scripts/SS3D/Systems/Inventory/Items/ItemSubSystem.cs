@@ -27,7 +27,7 @@ namespace SS3D.Systems.Inventory.Items
         [ServerRpc(RequireOwnership = false)]
         public void CmdSpawnItem(string id, Vector3 position, Quaternion rotation, NetworkConnection conn = null)
         {
-            if (!IsAdministrator(conn))
+            if (!RpcInput.IsInStation(position) || !IsAdministrator(conn))
             {
                 return;
             }

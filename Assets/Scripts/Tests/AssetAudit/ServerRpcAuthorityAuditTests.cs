@@ -47,7 +47,7 @@ namespace SS3D.Tests.AssetAudit
         {
             // Combat
             { "CombatInteractionNetwork.CmdSyncMeleeAim", AuthorityCheck.Unchecked }, // P1.1: client ray origin
-            { "CombatInteractionNetwork.CmdThrow", AuthorityCheck.Unchecked }, // P1.5: target height and NaN unchecked
+            { "CombatInteractionNetwork.CmdThrow", AuthorityCheck.Revalidated }, // RpcInput + ThrowRules.ClampToRange
 
             // Entities and body
             { "EntitySubSystem.CmdSpawnLatePlayer", AuthorityCheck.OwnerOfArgument },
@@ -111,7 +111,6 @@ namespace SS3D.Tests.AssetAudit
         private static readonly HashSet<string> Phase1Unchecked = new()
         {
             "CombatInteractionNetwork.CmdSyncMeleeAim",
-            "CombatInteractionNetwork.CmdThrow",
         };
 
         private static readonly Type[] TrustedArgumentTypes =
