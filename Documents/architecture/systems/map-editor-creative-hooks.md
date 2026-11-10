@@ -9,7 +9,7 @@
 
 Reserved extension points shipped with map editor v1 for [creative-mode.md](../../design/creative-mode.md) Phase 2. The Scripts tab's three sub-tabs (Spawn Points, Rooms, Starting Air) have authoring UI; the remaining reserved hooks are unselected.
 
-Opening the editor suspends per-tick world sims and calls `ApplyEditorVisualSuppression`: health/atmos/hit/blast screen feedback is hidden and the atmos fullscreen passes plus wind streaks stop drawing. Closing restores both; the static atmos flag is also cleared in `OnDestroyed` so a scene unload cannot latch it.
+Opening the editor pauses no simulation (tech-debt P2.2, plan Decision 10: only map load, clear and import take a `WorldSimSuspension` scope). It calls `ApplyEditorVisualSuppression`: health/atmos/hit/blast screen feedback is hidden and the atmos fullscreen passes plus wind streaks stop drawing. Closing restores both; the static atmos flag is also cleared in `OnDestroyed` so a scene unload cannot latch it.
 
 Unsaved-change tracking (A4): `MapEditorUndoStack` keeps revision-based save points through undo/redo,
 branches and the bounded history. Successful persistence saves/loads set the template identity
