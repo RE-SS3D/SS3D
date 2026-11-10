@@ -13,12 +13,14 @@ Humanoid/silicon entity spawning, minds, and join/round ordering with [rounds-lo
 [Entity prefab recipes](entities-prefab-recipes.md); remaining structural work is tracked in
 [TECH_DEBT §1.1](../TECH_DEBT.md#11-humanprefab-mega-prefab).
 
-**Body presentation:** `Ragdoll` owns replicated `BodyPresentationState` (`Locomotion` / `Collapsed` / `Dead`) and is the sole applier. Movement, bridge, and orchestrator read `Presentation` — do not invent a parallel collapse path ([2026-07_body-presentation-authority.md](../../archive/architecture/2026-07_body-presentation-authority.md), shipped).
+**Body presentation:** `Ragdoll` owns replicated `BodyPresentationState` (`Locomotion` / `Collapsed` / `Dead`) and is the sole applier. Movement and the bridge read `Presentation`; `AnimationOrchestrator` does not: it keys off the snapshot's `BodyState.Ragdoll` and `Ragdoll` calling its `SetPosingSuppressed` (tech-debt P4.2 folds both into one model). Do not invent a parallel collapse path ([2026-07_body-presentation-authority.md](../../archive/architecture/2026-07_body-presentation-authority.md), shipped).
 
 ## Start here
 
 - [Entity prefab recipes](entities-prefab-recipes.md) — domain wiring, aggregator, nested FishNet constraints and integrity checks
 
+- `Assets/Scripts/SS3D/Systems/Entities/Humanoid/Body/InteractionAnimation.cs` — which hand clip an interaction plays (`ChooseClip`, matched by generic name) and its contact frame
+- `Assets/Scripts/SS3D/Systems/Interactions/InteractionController.Animation.cs` — server hand-action scheduling: `ServerRunWithAnimation` / `ServerRunHandAction` run an interaction's effect at the clip's contact frame and re-check it then
 - `Assets/Scripts/SS3D/Systems/Entities/EntitySubSystem.cs` — entity spawn/management; `TryReclaimEntity` re-links a reconnecting player's existing body (see [player-control](player-control.md)); `ServerSpawnCombatDummy` for mindless test Humans; `ResolveSpawnPosition` puts Nuke Ops operatives on the map's Nuclear Operatives markers (crew job markers not routed yet); `ServerSpawnedPlayersChanged` (server, synchronous — a dying body's ghost may not hold its mind yet) feeds [gamemode](gamemodes-roles-traits.md) win/lose checks
 - `Assets/Scripts/SS3D/Systems/Entities/EntitySubSystem.Respawn.cs` — respawn ([sandbox](../2026-11_sandbox-server.md)): death offers a respawn (`RecordPlayerDeath`), `CmdRespawn` checks `ServerSettings.RespawnEnabled` + `RespawnCooldown`, despawns the ghost and re-runs `SpawnPlayer` with the ghost's Mind; `RemoveCorpseOnRespawn` removes the previous corpse only after a successful respawn (sandbox default); remaining corpses are tracked and despawned at round end. `RespawnPrompt` is the ghost-HUD button (UiShell Hud layer, added on client start)
 - `Assets/Scripts/SS3D/Systems/Entities/MindSubSystem.cs` — mind/player mind assignment; `Mind.DisplayName` (lobby character name, else ckey) is the in-world speaker/record name
