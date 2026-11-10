@@ -61,7 +61,7 @@ namespace SS3D.Systems.Tile.Connections
 
         public void UpdateAllConnections()
         {
-            TileMap map = SubSystems.Get<TileSubSystem>()?.CurrentMap;
+            TileMap map = SubSystems.GetOrNull<TileSubSystem>()?.CurrentMap;
             if (map == null)
                 return;
 
@@ -71,7 +71,7 @@ namespace SS3D.Systems.Tile.Connections
 
         public bool UpdateSingleConnection(Direction dir, PlacedTileObject neighbourObject, bool updateNeighbour)
         {
-            TileMap map = SubSystems.Get<TileSubSystem>()?.CurrentMap;
+            TileMap map = SubSystems.GetOrNull<TileSubSystem>()?.CurrentMap;
             if (map == null)
                 return false;
 

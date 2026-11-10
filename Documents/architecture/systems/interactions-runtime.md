@@ -45,7 +45,7 @@ Discover / `HasPoint` contract: [interactions-framework](interactions-framework.
 
 ## Start here
 
-- `Assets/Scripts/SS3D/Systems/Interactions/InteractionController.cs` — thin router: primary-click policy, radial/armed, intent SyncVar, world/inventory/examine RPCs, delayed tracking; editor-only `RunInteractionForTesting` sends a named verb through `CmdRunInteraction` for scenarios
+- `Assets/Scripts/SS3D/Systems/Interactions/InteractionController.cs` — router plus server hand-action scheduling (the `.Animation.cs` partial: one pending hand action, effect at the clip's contact frame; tech-debt P4.1 moves it to a `HandActionScheduler`): primary-click policy, radial/armed, intent SyncVar, world/inventory/examine RPCs, delayed tracking; editor-only `RunInteractionForTesting` sends a named verb through `CmdRunInteraction` for scenarios
 - `Assets/Scripts/SS3D/Systems/Interactions/InteractionDiscovery.cs` / `InteractionDispatch.cs` — shared discover/resolve helpers (client + server revalidation)
 - `Assets/Scripts/SS3D/Systems/Interactions/InteractionOutlineDriver.cs` / `DelayedInteractionTracker.cs` — outline LateUpdate + active delayed refs
 - `Assets/Scripts/SS3D/Systems/Interactions/RadialInteractionSubSystem.cs` — three-tier radial menu subsystem
@@ -69,6 +69,8 @@ Discover / `HasPoint` contract: [interactions-framework](interactions-framework.
 - Reach through walls: `InteractionExtensions.RangeCheck` fails when the hand-to-target segment crosses an `IReachBlocker` that isn't the target. `PlacedTileObject` blocks for `Wall` (walls, windows, girders) and `Door` generic types. Make a new solid structure block by giving it one of those types or its own `IReachBlocker`; don't add per-interaction wall raycasts. Wall mounts implement `IReachSurface` through `PlacedTileObject`: their tile is the wall's, so reach is measured to the wall face on the side they face.
 
 ## Pitfalls
+
+- **Server refuses what the client offered (#192):** the server re-runs `CanInteract` against its own, lagging copy of the body with no margin. `CmdRunInteraction` logs a warning `Server refused <name> … : <reason>` (`InteractionPipeline.ExplainNotViable`: `NoSuchInteraction`, `CannotInteract`, `WrongIntent`, `SourceRefused`); for Drop it adds the LOS miss and the server/client eye delta. Read those numbers before tuning a margin (tech-debt P1.9, plan Q5). The client's eye in that RPC is for the log only.
 
 - **Armed CPR labels drift at scaled resolutions:** raw mouse pixels are not UI Toolkit units. Armed/radial surfaces fill the overlay layer and convert via `InputInterface.ScreenToPanel` then into surface-local coordinates. Position chips after layout from their measured size, and keep them inside panel bounds. The terminal font lacks em-dash/arrow glyphs; armed captions use an ASCII separator.
 

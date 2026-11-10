@@ -87,13 +87,12 @@ in-body visuals.
 There are now nine `*AssetPaths` + catalog pairs (checked `06316a98`). Four derive from
 `UiAssetCatalogBase` (UiShell, BugReport, MainMenu, RoundEnd — new surfaces do adopt it); five are
 still plain `ScriptableObject`s (MachineUi, MainHud, StoragePanel, Lobby, Examine), and only four
-Editor builders use `UiCatalogBuilderKit`. **Examine is missing from the umbrella**
-`UiCatalogRebuildAll.TryRebuildAll` and keeps its own `SS3D/Examine/Rebuild Examine Asset Catalog`
-MenuItem (`ExamineOverlayAssetCatalogBuilder.cs:16`), so "Rebuild All UI Catalogs" silently skips it.
-Each copy shares the same failure mode: a stale catalog after adding a UXML path without running
+Editor builders use `UiCatalogBuilderKit`. Since tech-debt P2.6 every catalog, Examine included, is rebuilt by
+the umbrella `UiCatalogRebuildAll.TryRebuildAll`, and `UiCatalogUmbrellaTests` (G5) fails when a new
+`*AssetCatalog` isn't. Each copy shares the same failure mode: a stale catalog after adding a UXML path without running
 the rebuild.
 
-**Next steps:** fold Examine into the umbrella (S); migrate the five legacy catalogs onto the base.
+**Next steps:** migrate the five legacy catalogs onto the base (plan P7.6).
 
 - Related: [ui-shell.md](systems/ui-shell.md), [2026-07_ui-shell-consolidation.md](2026-07_ui-shell-consolidation.md) § Explicit non-goals (the migration phases), [machine-interface.md](systems/machine-interface.md), [inventory.md](systems/inventory.md), [rounds-lobby.md](systems/rounds-lobby.md)
 
@@ -171,10 +170,9 @@ checks. Sizes at `06316a98` (including partials):
 | `Ragdoll` | 1,224 | see §1.20 |
 | `MainMenuSubSystem` | 1,013 | `MainMenuConnectionFlow` (no UI), ambience |
 
-**Bug-class risk in MainHud:** `Update` → `RefreshZoneReticle` calls
-`ranged.ServerCompleteReloadIfDue()` (`MainHudSubSystem.cs:317`) and `CurrentSpreadDegrees` (which
-decays recoil) every frame, even with the reticle hidden. On a host, the HUD completes reloads on the
-server. Combat should expose a read-only readout for the HUD (S).
+**MainHud reads, never writes, weapons** (fixed in tech-debt P2.1): the reticle reads `ICombatReadout`, whose
+members are pure; recoil is a function of time (`RangedWeaponItemExtension.RecoilAt`), and the weapon's own
+`Update` completes reloads on every peer. The reticle skips its raycasts and reads while hidden.
 
 **Lobby polling:** `LobbyUiSubSystem.RefreshSession` polls at 5 Hz for the whole session, including
 in-round, and sends the job-preference / appearance / OOC handshakes and polls `CmdReadServerSettings`
@@ -183,6 +181,10 @@ from there. That handshake belongs in a client-session service in Systems.
 - Related: [interactions-runtime.md](systems/interactions-runtime.md), [inventory.md](systems/inventory.md)
 - Effort (interactions): [2026-07_interaction-controller-decomposition.md](../archive/architecture/2026-07_interaction-controller-decomposition.md) — shipped
 - Effort (MainHud): none yet
+
+**Guardrail (tech-debt G3):** `ClassSizeRatchetTests` stores today's line count for every type over 900 lines
+(partial files summed). A listed type may grow at most 10 % past its entry, and an unlisted one may not pass 900, so
+growth shows up as a diff in review.
 
 ### 1.10 Play Mode / multiplayer verification is optional in practice
 
@@ -236,15 +238,9 @@ missing-subsystem errors are suppressed (Disconnecting / WaitingForServer); pref
 world-readiness gates. A registry/event-based replacement for the Item/Locker scans remains open.
 
 More gameplay scans found at `06316a98`:
-- `StructuralDamageSubSystem.cs:185` — `FindObjectsByType<HumanHealthController>` **once per tile** a
-  blast reaches, with a fresh `HashSet` each call. A tile revisited with more force damages its
-  bodies twice. `ApplyCrewBlastPush` already runs once per blast over the force map; brute damage
-  should too.
 - `TileSubSystem.cs:291` (every decal sync), `TileLayerVisibilityService.cs:151` (every layer toggle),
   `MapEditorSettings.cs:68`, `BlastVfxPresenter.cs:62`, `SolarTrackingBeacon.cs:78`,
   `LightPower.cs:334`, `RoundObservability.cs:137-141` (all GameObjects, every round reset).
-- `AudioSourceOcclusion.cs:68-80` — every playing source rescans for an `AudioListener` **every
-  frame** while none exists, because the miss is not cached.
 - `TileMap.ClearUntrackedItems` still uses the deprecated `FindObjectsOfType` and `DestroyImmediate`s
   networked items (`TileMap.cs:1195-1216`).
 
@@ -366,7 +362,9 @@ ServerRpc of this kind with its check; the holes below are its `Unchecked` entri
 **The opposite failure:** server re-validation runs the same strict `CanInteract` (for Drop, a 0.1 m
 LOS hit tolerance) against a server pose that lags the client, with no tolerance and no player
 feedback — the likely cause of [#192](https://github.com/henkhooft/SS3D/issues/192). One rule for both:
-the server derives positions itself and validates with an explicit lag margin.
+the server derives positions itself and validates with an explicit lag margin. Since tech-debt P1.9 step 1, a refused
+interaction logs the failing check (`InteractionPipeline.ExplainNotViable`) and, for Drop, the LOS miss and the
+server/client eye delta; the margin itself waits on playtest logs (plan Q5).
 
 ### 1.20 Hand actions and upper-body pose have no single owner
 
@@ -380,7 +378,7 @@ the server derives positions itself and validates with an explicit lag margin.
   (`.Throw.cs:343`, `.Animation.cs:121`), against the animation pass's "one pending hand action" rule.
 - **"Can act" is defined five ways:** `Hand.CanUseHand` (`Hand.cs:58-66`),
   `HumanoidBodyStateMachine.CanPerformAction` (`:449`), `CombatDummyBootstrap.cs:81`, and the two timers.
-  Only the dummy considers `IsGettingUp`, so a body can shoot or melee during the 2.2 s stand-up.
+  `Hand.CanUseHand` also blocks the 2.2 s stand-up since tech-debt P2.8 (it used to let a body shoot or melee then); the five rules still need merging (P4.1).
 - **Pose:** `AnimationOrchestrator` arbitrates priority from its own timers (`:476-558`);
   `HumanoidIkController` reads Animator state hashes with a hard-coded swing list (`:17-22`) while the
   orchestrator derives its list from the swing table (`:109`); `Ragdoll` writes the Animator and
@@ -408,8 +406,7 @@ The #208 fix guards out-of-order network arrival with a per-peer `Item.LocalHold
 (`AttachedContainer.cs:368`) instead of one replicated holder.
 
 **Fix:** a replicated holder on `Item`, applied by one routine on every peer; one
-`ServerReleaseToWorld` for drop, place and throw (M–L). Also: `HumanInventory.CmdTransferItem`'s error
-branch dereferences a null container (`:538-540`).
+`ServerReleaseToWorld` for drop, place and throw (M–L).
 
 ### 1.22 Map Editor trusts the client's partial map and assumes every command succeeded
 
@@ -422,26 +419,13 @@ branch dereferences a null container (`:538-540`).
   on a pure client item picking (`MapEditorCursorPick.cs:54`, `ConstructionHologramManager.cs:1261`)
   never finds one and selects the tile under it. Let the server decide validity; show "unknown" when a
   chunk is missing; anchor observer visibility to the editor camera.
-- **Undo:** `MoveTileCommand.Move` (`MapEditorCommands.cs:241-249`) clears the source, then places with
-  a build check. If the place fails the object is gone, yet `RpcMoveObject` reports success
-  (`MapEditorSubSystem.cs:1615`) and undo clears whatever blocked the destination.
-  `ClearTileCommand.Revert` / `ClearItemCommand.Revert` (`:154-161`, `:194-195`) re-place with
-  `replaceExisting: true` even when nothing was cleared. `RpcMoveObject` skips the rate limiter. Record
-  `Apply` success; route moves through `RpcExecuteCommands` (S–M).
 - **`MapEditorView` rebuilds on any state change** (`_vm.StateChanged += Refresh`, `:100`, including
   toasts and undo state), rebuilding the palette grid and open popovers. This is the root cause of three
   Pitfalls in [map-editor-creative-hooks.md](systems/map-editor-creative-hooks.md). Split the event (M).
 
-### 1.23 World-simulation suspension copied four times and cannot nest
+### 1.23 World-simulation suspension — resolved 2026-11-10
 
-**Blast radius: medium — trend: new**
-
-The same pause/restore block lives in `MapEditorSubSystem.cs:461-497`, `TileSubSystem.cs:466-515`,
-`PersistenceSubSystem.cs:370-436` and `MapImportApplier.cs:94-202`.
-`ElectricitySubSystem.SuspendCircuitUpdates(bool)` (`:197`) is a plain flag, so loading a map with the
-editor open turns circuits back on while the editor is still open. Opening the editor is a local UI
-action, yet on a host it pauses atmos and power for everyone, and a remote editor pauses nothing.
-**Fix:** one ref-counted, disposable `WorldSimSuspension` scope, decided by the server (S–M).
+See §6.
 
 ### 1.24 `SS3D.Systems` is one tangled assembly
 
@@ -467,22 +451,16 @@ reference Systems:
   assembly, and `UI.Shell` is accumulating feature views (BugReport, RoundEnd, MainMenu) because it is
   the only UI assembly Systems may reference.
 
+**Guardrail (tech-debt G4):** `SystemsFolderCycleTests` counts pairs of `Systems/*` folders whose runtime
+`using SS3D.Systems.X` lines point both ways (52 on 2026-11-10 by its own count; the audit's 53 used a slightly
+different scan) and fails if the count rises.
+
 That removes ~25k lines from the recompile set (L). Also: `SS3D.Systems.asmdef` references the base
 `SS3D.UI` assembly with zero uses (§1.29).
 
-### 1.25 `SubSystems` registry lifecycle bugs and `Get` misuse
+### 1.25 `SubSystems` registry lifecycle bugs and `Get` misuse — resolved 2026-11-10
 
-**Blast radius: medium (silent nulls, wrong instance) — trend: stable**
-
-- `Core/Subsystems.cs:33-36`: `_isQuitting` is set by `Application.quitting` and never reset. Domain
-  reload is on in project settings, but the MCP / Test-Runner path enters Play Mode without one
-  ([application.md](systems/application.md)); there `Get` returns null for the rest of the session.
-  `_suppressMissingErrors` and the dictionary also survive. Reset on `SubsystemRegistration`.
-- `Unregister` (`:115`) removes **by type**, so a destroyed duplicate (content-prefab SubSystem vs.
-  hub/bootstrap instance) evicts the live one. Remove only when the registered instance matches.
-- `TryGet` (`:50-53`) returns true for a destroyed instance. Add a Unity-null check.
-- 35 sites write `SubSystems.Get<T>()?.` — they expect a miss but call `Get`, which on a miss runs
-  `FindObjectOfType` and logs an Error. Codemod to `TryGet` (S).
+See §6.
 
 ### 1.26 `com.unity.entities` installed for one unused World
 
@@ -504,8 +482,7 @@ Coimbra `FixedUpdateEvent` with `_timeElapsed = 0` discarding the remainder
 (`HumanHealthController.cs:653-666`); `UniTask.Delay` loops in Rounds; FishNet `TimeManager.OnTick` for
 movement. `ElectricitySubSystem.RpcInvokeOnTick` (`:685-688`) is a payload-less `ObserversRpc` sent to
 every client 5×/s so client visuals can tick. **Fix:** one `SimulationClock` on `TimeManager.OnTick`
-with fixed-rate channels; clients tick locally (M). Health also allocates `_organs.ToArray()` once
-per modifier per tick (`HumanHealthController.cs:641`, §2).
+with fixed-rate channels; clients tick locally (M).
 
 ### 1.28 Persistence contributors deserialized by a central switch
 
@@ -520,8 +497,8 @@ Let `IPersistenceContributor` deserialize its own payload (S).
 **Blast radius: medium, compounding — trend: getting worse**
 
 - HUD/menu/MI visibility handling is copy-pasted (`MainHudSubSystem.cs:757-892` vs.
-  `StoragePanelHost.cs:204-306`) and has drifted: StoragePanel never subscribes to the map editor, so
-  storage panels stay up during map editing while the HUD hides.
+  `StoragePanelHost.cs:204-306`) and had drifted (StoragePanel didn't hide for the map editor until
+  tech-debt P2.7 added the same subscription). One arbiter replaces both copies in P7.2.
 - Window drag exists three times (`StoragePanelView.cs:180-252`, `MachineWindow.cs:71-130`, the new
   `PanelDragManipulator`); the press-to-drag threshold three times with different values (5 px in
   `EquipmentGrid` / `HandsGearStrip`, 6 px in `StorageSlot`).
@@ -543,8 +520,9 @@ The component is `m_Enabled: 0` on `Human.prefab`, yet its 612 lines are still m
 space-float / coast code duplicates `HumanoidLivingController` (`HumanoidPredictedMovement.cs:304-352` vs.
 `HumanoidLivingController.cs:250-304`) and has already drifted (the #124 fallback exists only in the
 living path). Delete it, or schedule it as the replacement for client-authoritative movement (S–M).
-Related small cleanups: `HumanHealthController.ApplyKnockback` is dead (only caller passes 0); `.Throw.cs` allocates every frame
-in throw mode (`RaycastAll`, `SphereCastAll`, `LayerMask.GetMask` by string at `:260`, `:286`, `:445`).
+Related small cleanup: `HumanHealthController.ApplyKnockback` is dead (only caller passes 0). (The throw-mode
+per-frame allocations, the per-tick organ copy, the uncached missing `AudioListener` and the
+`CmdTransferItem` null dereference went in tech-debt P2.9.)
 
 ## 2. Hot-path GC / performance debt (tracked, partially paid down)
 
@@ -662,3 +640,27 @@ Session FSM, Empty offline, world-readiness graph, `PrepareRound` gate, `Systems
 - **Deferred elsewhere (do not reopen this item):** reconnect exponential backoff; UI-host bootstrap
   consolidation.
 - Related: [networking-session.md](systems/networking-session.md), [core-subsystems.md](systems/core-subsystems.md)
+
+### 1.23 World-simulation suspension — 2026-11-10
+
+`Core/WorldSimSuspension` is one ref-counted, disposable scope. Map load (`TileSubSystem`), station template
+restore (`PersistenceSubSystem`) and DMM import (`MapImportApplier`) each take one; atmos and electricity check
+`IsSuspended` every tick, and electricity rebuilds its graph once the last scope closes. A load inside another
+load no longer resumes the sims early. Opening the Map Editor takes no scope (plan Decision 10), so a host's editor
+no longer pauses atmos and power for everyone; `DisposalSubSystem.CapsulesPaused` went with it.
+
+- **Closed by:** tech-debt P2.2 (`WorldSimSuspensionTests`).
+- **Not in this close:** pausing channels instead of systems waits for the `SimulationClock` (P6.1); an admin
+  "freeze world" control is the owner's call.
+- Related: [map-editor-creative-hooks.md](systems/map-editor-creative-hooks.md), [tile.md](systems/tile.md)
+
+### 1.25 `SubSystems` registry lifecycle — 2026-11-10
+
+`SubSystems` resets its quit flag, error suppression and registry on `SubsystemRegistration`, so Play Mode
+without a domain reload no longer inherits a quit that makes every `Get` return null. `Unregister` removes only
+the registered instance, `TryGet` / `Get` treat a destroyed Unity object as missing, and the 35
+`SubSystems.Get<T>()?.` sites use the new silent `GetOrNull<T>()`.
+
+- **Closed by:** tech-debt P2.3 (`SubSystemsRegistryTests`).
+- **Not in this close:** removing the `FindObjectOfType` fallback from `Get` (P6.4, after a period of logging hits).
+- Related: [core-subsystems.md](systems/core-subsystems.md)

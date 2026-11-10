@@ -57,8 +57,8 @@ namespace SS3D.Systems.Tile
             if (_map == null || itemObject == null)
                 return ClearResult.Failed;
 
-            _map.ClearItemObject(worldPosition, itemObject);
-            return new ClearResult { Success = true };
+            // Success means an item was actually removed (the map editor's undo relies on it, tech-debt P2.4).
+            return new ClearResult { Success = _map.ClearItemObject(worldPosition, itemObject) };
         }
 
         public PreviewResult TryPreviewTile(TileObjectSo tileObject, Vector3 worldPosition, Direction direction, bool replaceExisting)

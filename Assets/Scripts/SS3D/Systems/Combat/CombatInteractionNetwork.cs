@@ -411,7 +411,7 @@ namespace SS3D.Systems.Combat
             string[] clips = CombatAudioTrackIds.FireFor(style);
             string clipId = clips[UnityEngine.Random.Range(0, clips.Length)];
             float pitch = UnityEngine.Random.Range(0.95f, 1.05f);
-            SubSystems.Get<AudioSubSystem>()?.PlayAudioSource(
+            SubSystems.GetOrNull<AudioSubSystem>()?.PlayAudioSource(
                 AudioType.Sfx, clipId, position, null, false, 1f, pitch, 14f, 90f);
         }
 
@@ -424,7 +424,7 @@ namespace SS3D.Systems.Combat
                 weapon.GetMuzzleWorldPose(out position, out _);
             }
 
-            SubSystems.Get<AudioSubSystem>()?.PlayAudioSource(
+            SubSystems.GetOrNull<AudioSubSystem>()?.PlayAudioSource(
                 AudioType.Sfx, weapon != null && weapon.Profile.VisualStyle != RangedVisualStyle.Ballistic
                     ? CombatAudioTrackIds.EnergyReady : CombatAudioTrackIds.GunEmpty, position, null, false, 1f, 1f, 8f, 40f);
         }
@@ -437,7 +437,7 @@ namespace SS3D.Systems.Combat
                 : living ? CombatAudioTrackIds.EnergyFleshHit : CombatAudioTrackIds.EnergyHit;
             string clipId = clips[UnityEngine.Random.Range(0, clips.Length)];
             float pitch = UnityEngine.Random.Range(0.92f, 1.08f);
-            SubSystems.Get<AudioSubSystem>()?.PlayAudioSource(
+            SubSystems.GetOrNull<AudioSubSystem>()?.PlayAudioSource(
                 AudioType.Sfx, clipId, impactPoint, null, false, 0.95f, pitch, 6f, 50f);
         }
 
@@ -449,7 +449,7 @@ namespace SS3D.Systems.Combat
                 return;
             }
 
-            SubSystems.Get<AudioSubSystem>()?.PlayAudioSource(
+            SubSystems.GetOrNull<AudioSubSystem>()?.PlayAudioSource(
                 AudioType.Sfx, weapon.Profile.VisualStyle == RangedVisualStyle.Ballistic
                     ? CombatAudioTrackIds.ReloadMagazineOut : CombatAudioTrackIds.EnergyReady, transform.position, null, false, 1f, 1f, 8f, 40f);
 

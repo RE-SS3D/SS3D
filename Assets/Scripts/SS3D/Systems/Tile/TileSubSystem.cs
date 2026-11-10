@@ -390,23 +390,14 @@ namespace SS3D.Systems.Tile
 
         private IEnumerator LoadLegacyMapRoutine(SavedTileMap mapSave, bool timeSlice)
         {
-            bool hasElectricity = SubSystems.TryGet(out Electricity.ElectricitySubSystem electricity);
-            bool hasAtmos = SubSystems.TryGet(out Atmospherics.AtmosSubSystem atmos);
             bool hasDisposal = SubSystems.TryGet(out Furniture.Disposal.DisposalSubSystem disposal);
-            bool priorAtmosPaused = false;
 
             if (SubSystems.TryGet(out AreaSubSystem areaSubSystem))
             {
                 areaSubSystem.BeginDeferredAreaFlood();
             }
 
-            if (hasElectricity)
-                electricity.SuspendCircuitUpdates(true);
-            if (hasAtmos)
-            {
-                priorAtmosPaused = atmos.SimulationPaused;
-                atmos.SimulationPaused = true;
-            }
+            WorldSimSuspension.Scope simsPaused = WorldSimSuspension.Begin("map load");
 
             if (hasDisposal)
                 disposal.BeginDeferredNetworkRebuild();
@@ -431,10 +422,7 @@ namespace SS3D.Systems.Tile
 
                 if (hasDisposal)
                     disposal.EndDeferredNetworkRebuild();
-                if (hasElectricity)
-                    electricity.SuspendCircuitUpdates(false);
-                if (hasAtmos)
-                    atmos.SimulationPaused = priorAtmosPaused;
+                simsPaused.Dispose();
 
                 if (SubSystems.TryGet(out AreaSubSystem areaAfterLoad))
                 {

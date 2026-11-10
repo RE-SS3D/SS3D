@@ -297,7 +297,7 @@ namespace SS3D.Systems.Entities
                 string job = SubSystems.Get<RoleSubSystem>().TryGetRole(player, out RoleData role)
                     ? role.Name.ToLowerInvariant()
                     : "crew";
-                SubSystems.Get<CommsSubSystem>()?.SendAnnouncement(
+                SubSystems.GetOrNull<CommsSubSystem>()?.SendAnnouncement(
                     $"{entity.Mind.DisplayName}, {job}, has joined the ship");
             }
         }

@@ -180,7 +180,7 @@ namespace SS3D.Systems.Rounds
             RoundSeconds = 0;
             RoundState = RoundState.Ongoing;
             Log.Information(this, "Round {roundId} started", Logs.ServerOnly, _roundId);
-            SubSystems.Get<CommsSubSystem>()?.SendAnnouncement(
+            SubSystems.GetOrNull<CommsSubSystem>()?.SendAnnouncement(
                 "Welcome to the station crew, enjoy your stay.",
                 CommsAudioTrackIds.StationWelcome);
             if (SubSystems.TryGet(out CommsSubSystem comms)) comms.PostOocSystem(OocChannel.Ooc, "The round has started.");

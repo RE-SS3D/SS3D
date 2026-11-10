@@ -94,7 +94,7 @@ namespace SS3D.Systems.Tile.Connections
             PlacedTileObject neighbour,
             int selfCardinalConnectionCount)
         {
-            TileMap map = SubSystems.Get<TileSubSystem>()?.CurrentMap;
+            TileMap map = SubSystems.GetOrNull<TileSubSystem>()?.CurrentMap;
             if (!TryGetDisposalElementAbovePipe(map, self, out IDisposalElement aboveDisposalFurniture))
                 return false;
 

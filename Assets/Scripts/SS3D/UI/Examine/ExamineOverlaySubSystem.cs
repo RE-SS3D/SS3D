@@ -909,7 +909,7 @@ namespace SS3D.UI.Examine
             {
                 Debug.LogError(
                     $"ExamineOverlaySubSystem could not load Resources/{ExamineOverlayAssetPaths.ResourcesCatalogName}. "
-                    + "Run SS3D → Examine → Rebuild Examine Asset Catalog and commit the asset.",
+                    + "Run SS3D → Data → Rebuild All UI Catalogs and commit the asset.",
                     this);
                 return false;
             }
@@ -918,7 +918,7 @@ namespace SS3D.UI.Examine
             {
                 Debug.LogError(
                     $"ExamineOverlayAssetCatalog is missing required assets ({missingField}). "
-                    + "Run SS3D → Examine → Rebuild Examine Asset Catalog.",
+                    + "Run SS3D → Data → Rebuild All UI Catalogs.",
                     this);
                 return false;
             }

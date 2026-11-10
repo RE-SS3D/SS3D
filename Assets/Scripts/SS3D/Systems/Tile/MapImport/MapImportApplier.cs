@@ -83,20 +83,12 @@ namespace SS3D.Systems.Tile.MapImport
                 throw new ArgumentNullException(nameof(tileSystem));
 
             bool hasElectricity = SubSystems.TryGet(out ElectricitySubSystem electricity);
-            bool hasAtmos = SubSystems.TryGet(out AtmosSubSystem atmos);
             bool hasArea = SubSystems.TryGet(out AreaSubSystem area);
             bool hasDisposal = SubSystems.TryGet(out DisposalSubSystem disposal);
-            bool priorAtmosPaused = false;
             bool deferredAreaFlood = false;
             bool deferredDisposal = false;
 
-            if (hasElectricity)
-                electricity.SuspendCircuitUpdates(true);
-            if (hasAtmos)
-            {
-                priorAtmosPaused = atmos.SimulationPaused;
-                atmos.SimulationPaused = true;
-            }
+            WorldSimSuspension.Scope simsPaused = WorldSimSuspension.Begin("map import");
 
             if (hasArea)
             {
@@ -196,10 +188,7 @@ namespace SS3D.Systems.Tile.MapImport
                 // Rebuild disposal topology once after adjacency refresh (avoids mid-place NRE / thrash).
                 if (deferredDisposal)
                     disposal.EndDeferredNetworkRebuild();
-                if (hasElectricity)
-                    electricity.SuspendCircuitUpdates(false);
-                if (hasAtmos)
-                    atmos.SimulationPaused = priorAtmosPaused;
+                simsPaused.Dispose();
             }
 
             onProgress?.Invoke("Done.");

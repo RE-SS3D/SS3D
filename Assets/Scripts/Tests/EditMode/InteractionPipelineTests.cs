@@ -29,6 +29,32 @@ namespace EditorTests
         }
 
         [Test]
+        public void ExplainNotViable_NamesTheFailingCheck()
+        {
+            StubInteractionSource source = new();
+            InteractionEvent e = new(source, null, Vector3.zero, Vector3.up);
+            List<InteractionEntry> entries = new()
+            {
+                CreateEntry(new HarmOnlyInteraction(), "Hit"),
+                CreateEntry("Pickup", 10),
+                CreateEntry(new RefusingInteraction(), "Drop"),
+            };
+            InteractionIdentifier drop = new("Drop", InteractionIdentifier.SyntheticTargetIndex);
+            InteractionIdentifier hit = new("Hit", InteractionIdentifier.SyntheticTargetIndex);
+            InteractionIdentifier pickup = new("Pickup", InteractionIdentifier.SyntheticTargetIndex);
+            InteractionIdentifier missing = new("Climb", InteractionIdentifier.SyntheticTargetIndex);
+
+            Assert.AreEqual(InteractionPipeline.ViabilityFailure.WrongIntent,
+                InteractionPipeline.ExplainNotViable(source, entries, e, IntentType.Help, hit));
+            Assert.AreEqual(InteractionPipeline.ViabilityFailure.None,
+                InteractionPipeline.ExplainNotViable(source, entries, e, IntentType.Help, pickup));
+            Assert.AreEqual(InteractionPipeline.ViabilityFailure.CannotInteract,
+                InteractionPipeline.ExplainNotViable(source, entries, e, IntentType.Help, drop));
+            Assert.AreEqual(InteractionPipeline.ViabilityFailure.NoSuchInteraction,
+                InteractionPipeline.ExplainNotViable(source, entries, e, IntentType.Help, missing));
+        }
+
+        [Test]
         public void FilterAndSort_ExcludesInteractionsThatFailIntent()
         {
             StubInteractionSource source = new();
@@ -291,6 +317,15 @@ namespace EditorTests
             public bool CanInteract(InteractionEvent interactionEvent) => true;
 
             public bool Start(InteractionEvent interactionEvent, InteractionReference reference) => false;
+        }
+
+        private sealed class RefusingInteraction : NamedInteraction, IInteraction
+        {
+            public RefusingInteraction() : base("Drop", 5)
+            {
+            }
+
+            bool IInteraction.CanInteract(InteractionEvent interactionEvent) => false;
         }
 
         private sealed class HarmOnlyInteraction : NamedInteraction, IIntentRestrictedInteraction

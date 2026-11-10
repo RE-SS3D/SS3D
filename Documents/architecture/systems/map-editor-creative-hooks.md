@@ -9,7 +9,7 @@
 
 Reserved extension points shipped with map editor v1 for [creative-mode.md](../../design/creative-mode.md) Phase 2. The Scripts tab's three sub-tabs (Spawn Points, Rooms, Starting Air) have authoring UI; the remaining reserved hooks are unselected.
 
-Opening the editor suspends per-tick world sims and calls `ApplyEditorVisualSuppression`: health/atmos/hit/blast screen feedback is hidden and the atmos fullscreen passes plus wind streaks stop drawing. Closing restores both; the static atmos flag is also cleared in `OnDestroyed` so a scene unload cannot latch it.
+Opening the editor pauses no simulation (tech-debt P2.2, plan Decision 10: only map load, clear and import take a `WorldSimSuspension` scope). It calls `ApplyEditorVisualSuppression`: health/atmos/hit/blast screen feedback is hidden and the atmos fullscreen passes plus wind streaks stop drawing. Closing restores both; the static atmos flag is also cleared in `OnDestroyed` so a scene unload cannot latch it.
 
 Unsaved-change tracking (A4): `MapEditorUndoStack` keeps revision-based save points through undo/redo,
 branches and the bounded history. Successful persistence saves/loads set the template identity
@@ -65,6 +65,8 @@ Data contracts for Phase 2 vertical slice (per creative-mode §10):
 3. Save via `IMapEditorPersistence` (`MapEditor/Persistence/MapEditorPersistence.cs`) targeting round-config map pool (blocked on persistence Phase 1b)
 
 ## Pitfalls
+
+- **A command that changed nothing must not undo anything:** tile, item and move commands implement `IReportsChange`. A refused place or move and an empty clear report `Changed == false`; `MapEditorCommandService.Execute` then returns false and pushes no undo step, and their `Revert` does nothing (before tech-debt P2.4, undoing a blocked place cleared whatever blocked it, and a blocked move deleted the source). `TryClearTile` reports success on an empty slot, so tile clears read the recorded removals instead; `TryClearItem` reports whether it removed one. `RpcMoveObject` toasts "Can't move that there." on a refusal.
 
 - **A new item is missing from the library with no error:** the palette and saved maps only see assets under `Content/Data/TileMap/Resources`, so a prefab with an `ObjectAssetReference` but no `ItemObjectSo` works in play and cannot be placed. An item missing from the baked `MapEditorCatalog.asset` is inferred at runtime without its asset path, so it lands in Items › Misc, not its folder's sub-tab, until the catalog is regenerated. `AssetAudit.TileMapTests` checks this for `Items/Weapons/` only. Hit 2026-11-06 (C4, X4, energy weapons).
 - **A form test sees no edits outside a live panel:** UI Toolkit fields raise `ChangeEvent` only when attached to a panel, so `view.Build(new VisualElement())` passes the build and silently drops every edit. Host the view in an `EditorWindow`, as `GasMarkerAuthoringTests` and `MapEditorAreaViewTests` do. Hit 2026-11-05.

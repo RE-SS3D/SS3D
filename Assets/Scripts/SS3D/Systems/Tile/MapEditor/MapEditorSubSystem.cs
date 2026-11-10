@@ -11,7 +11,6 @@ using SS3D.Logging;
 using SS3D.Rendering.URP;
 using SS3D.Systems.Area;
 using SS3D.Systems.Atmospherics;
-using SS3D.Systems.Electricity;
 using SS3D.Systems.Entities;
 using SS3D.Systems.Examine;
 using SS3D.Systems.Furniture.Disposal;
@@ -75,8 +74,6 @@ namespace SS3D.Systems.Tile.MapEditor
         private float _validationDueTime = -1f;
         /// <summary>Quiet period after an edit before re-validating, so drags and bursts of edits trigger one check.</summary>
         private const float ValidationDebounceSeconds = 0.4f;
-        private bool _hadWorldSimsSuspend;
-        private bool _restoredAtmosPaused;
         private bool _mouseOverUI;
         private bool _documentRegistered;
         private float _toastTimer;
@@ -408,7 +405,6 @@ namespace SS3D.Systems.Tile.MapEditor
                 SetMouseOverUI(false);
                 _gameplayHud.SetVisible(false);
                 MapMarkerEditorView.EnsureExists().SetEditorOpen(true);
-                BeginWorldSimsSuspend();
                 ApplyEditorVisualSuppression(true);
                 RefreshTileHostVisibility();
                 EditorOpened?.Invoke();
@@ -431,7 +427,6 @@ namespace SS3D.Systems.Tile.MapEditor
                 _mapEditorHandle?.Dispose();
                 _mapEditorHandle = null;
                 ShutdownDocument();
-                EndWorldSimsSuspend();
                 ApplyEditorVisualSuppression(false);
                 // IsActive is already false — re-apply HashGrid AOI host visibility.
                 RefreshTileHostVisibility();
@@ -452,45 +447,6 @@ namespace SS3D.Systems.Tile.MapEditor
             }
 
             AtmosRenderContext.SetRenderingSuppressed(suppressed);
-        }
-
-        /// <summary>
-        /// Full-station authoring keeps MeshRenderers on; pause per-tick world sims so Metastation-scale
-        /// maps stay interactive in the editor.
-        /// </summary>
-        private void BeginWorldSimsSuspend()
-        {
-            if (_hadWorldSimsSuspend)
-                return;
-
-            _hadWorldSimsSuspend = true;
-            if (SubSystems.TryGet(out AtmosSubSystem atmos))
-            {
-                _restoredAtmosPaused = atmos.SimulationPaused;
-                atmos.SimulationPaused = true;
-            }
-
-            if (SubSystems.TryGet(out ElectricitySubSystem electricity))
-                electricity.SuspendCircuitUpdates(true);
-
-            if (SubSystems.TryGet(out DisposalSubSystem disposal))
-                disposal.CapsulesPaused = true;
-        }
-
-        private void EndWorldSimsSuspend()
-        {
-            if (!_hadWorldSimsSuspend)
-                return;
-
-            _hadWorldSimsSuspend = false;
-            if (SubSystems.TryGet(out AtmosSubSystem atmos))
-                atmos.SimulationPaused = _restoredAtmosPaused;
-
-            if (SubSystems.TryGet(out ElectricitySubSystem electricity))
-                electricity.SuspendCircuitUpdates(false);
-
-            if (SubSystems.TryGet(out DisposalSubSystem disposal))
-                disposal.CapsulesPaused = false;
         }
 
         /// <summary>
@@ -1619,16 +1575,13 @@ namespace SS3D.Systems.Tile.MapEditor
                 return;
 
             IMapEditorCommand command = isItem
-                ? new CompoundCommand(new IMapEditorCommand[]
-                {
-                    new ClearItemCommand(assetName, from, direction),
-                    new PlaceItemCommand(assetName, to, direction),
-                })
+                ? new MoveItemCommand(assetName, from, to, direction)
                 : new MoveTileCommand(assetName, from, to, direction);
 
-            _commandService.Execute(command, conn.ClientId);
+            // A refused move changes nothing and adds no undo step (tech-debt P2.4).
+            bool moved = _commandService.Execute(command, conn.ClientId);
             TargetSyncUndoState(conn, _commandService.UndoDepth, _commandService.RedoDepth, true);
-            TargetToast(conn, "Moved object.");
+            TargetToast(conn, moved ? "Moved object." : "Can't move that there.");
         }
 
         [ServerRpc(RequireOwnership = false)]

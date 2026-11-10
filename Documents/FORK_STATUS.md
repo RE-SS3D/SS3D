@@ -541,7 +541,7 @@ APC flood-fill now deferred until station template load finishes, instead of rac
 
 Server-authoritative open-tile gas simulation on the turf grid:
 
-- **ECS world** — `AtmosSimulation` with native cell buffers, active-cell sleep/wake, Burst jobs
+- **Burst jobs on native buffers** (no ECS World; `com.unity.entities` is only installed for an unused one, tech-debt P3.1) — `AtmosSimulation` with native cell buffers, active-cell sleep/wake, Burst jobs
   (`ShareGasJob`, `ConductHeatJob`, `ReactAtmosJob` for plasma combustion)
 - **Tile bridge** — `AtmosTileObserver` on `ITileMutationObserver`; dynamic airlock occupancy via
   `IDynamicTileOccupant` reopens/closes gas paths when doors move
