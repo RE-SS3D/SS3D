@@ -166,8 +166,20 @@ def prefab_names():
     return names
 
 
+def parent_offset(documents, parent_id):
+    """World position of a scene-root, unrotated parent transform; the items' positions are local to it."""
+    if parent_id == "0":
+        return [0.0, 0.0, 0.0]
+    document = next((d for d in documents if d.startswith(f"!u!4 &{parent_id}\n")), None)
+    if document is None or "m_Father: {fileID: 0}" not in document \
+            or not re.search(r"m_LocalRotation: \{x: -?0, y: -?0, z: -?0, w: 1\}", document):
+        raise SystemExit(f"Items parent {parent_id} is not an unrotated scene root; apply its full transform")
+    position = re.search(r"m_LocalPosition: \{x: ([-\de.]+), y: ([-\de.]+), z: ([-\de.]+)\}", document)
+    return [float(value) for value in position.groups()]
+
+
 def read_items():
-    """Returns [(prefab name, x, y, z, rotation)] for prefab instances under the scene's Items root."""
+    """Returns [(prefab name, world position, rotation)] for prefab instances under the scene's Items root."""
     prefabs = prefab_names()
     documents = re.split(r"^--- ", git_show(SOURCE_SCENE), flags=re.M)
     items = []
@@ -179,7 +191,10 @@ def read_items():
         if "/Items/" not in path and not path.endswith(("/microwave", "/CellCharger")):
             continue
         values = {key: float(value) for key, value in re.findall(r"propertyPath: (m_Local(?:Position|Rotation)\.\w)\n\s+value: ([-\de.]+)", document)}
-        position = [values.get(f"m_LocalPosition.{axis}", 0.0) for axis in "xyz"]
+        if not all(f"m_LocalPosition.{axis}" in values for axis in "xyz"):
+            raise SystemExit(f"{path}: the scene doesn't override every position axis; read the prefab's own value")
+        offset = parent_offset(documents, re.search(r"m_TransformParent: \{fileID: (\d+)\}", document).group(1))
+        position = [values[f"m_LocalPosition.{axis}"] + offset[i] for i, axis in enumerate("xyz")]
         rotation = [values.get(f"m_LocalRotation.{axis}", 0.0) for axis in "xyzw"]
         items.append((path.rsplit("/", 1)[-1], position, rotation))
     return sorted(items, key=lambda item: (item[0], item[1]))
