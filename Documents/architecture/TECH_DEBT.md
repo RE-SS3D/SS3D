@@ -384,7 +384,7 @@ server/client eye delta; the margin itself waits on playtest logs (plan Q5).
   (`.Throw.cs:343`, `.Animation.cs:121`), against the animation pass's "one pending hand action" rule.
 - **"Can act" is defined five ways:** `Hand.CanUseHand` (`Hand.cs:58-66`),
   `HumanoidBodyStateMachine.CanPerformAction` (`:449`), `CombatDummyBootstrap.cs:81`, and the two timers.
-  Only the dummy considers `IsGettingUp`, so a body can shoot or melee during the 2.2 s stand-up.
+  `Hand.CanUseHand` also blocks the 2.2 s stand-up since tech-debt P2.8 (it used to let a body shoot or melee then); the five rules still need merging (P4.1).
 - **Pose:** `AnimationOrchestrator` arbitrates priority from its own timers (`:476-558`);
   `HumanoidIkController` reads Animator state hashes with a hard-coded swing list (`:17-22`) while the
   orchestrator derives its list from the swing table (`:109`); `Ragdoll` writes the Animator and
