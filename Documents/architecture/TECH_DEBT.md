@@ -184,6 +184,10 @@ from there. That handshake belongs in a client-session service in Systems.
 - Effort (interactions): [2026-07_interaction-controller-decomposition.md](../archive/architecture/2026-07_interaction-controller-decomposition.md) — shipped
 - Effort (MainHud): none yet
 
+**Guardrail (tech-debt G3):** `ClassSizeRatchetTests` stores today's line count for every type over 900 lines
+(partial files summed). A listed type may grow at most 10 % past its entry, and an unlisted one may not pass 900, so
+growth shows up as a diff in review.
+
 ### 1.10 Play Mode / multiplayer verification is optional in practice
 
 **Blast radius: high — trend: mixed (local loop stronger; CI health last recorded as failing)**
