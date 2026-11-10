@@ -11,6 +11,7 @@ using SS3D.Interactions.Extensions;
 using SS3D.Interactions.Interfaces;
 using SS3D.Logging;
 using SS3D.Systems.Inputs;
+using SS3D.Systems.Entities;
 using SS3D.Systems.Entities.Humanoid;
 using SS3D.Systems.Examine;
 using SS3D.Systems.Entities.Humanoid.Body;
@@ -300,7 +301,7 @@ namespace SS3D.Systems.Interactions
 
             InteractionOptimisticFeedback.TryBeginDelayed(interaction.Interaction, interactionEvent);
             InteractionOutlineView.TryBeginPending(interaction.Interaction, interactionEvent);
-            CmdRunInteraction(networkTarget, interactionEvent.Point, interaction.Id.GenericName, interaction.Id.TargetComponentIndex);
+            SendRunInteraction(networkTarget, interactionEvent.Point, interaction.Id.GenericName, interaction.Id.TargetComponentIndex);
         }
 
         /// <summary>
@@ -366,7 +367,7 @@ namespace SS3D.Systems.Interactions
 
             InteractionOptimisticFeedback.TryBeginDelayed(searchEntry.Interaction, interactionEvent);
             InteractionOutlineView.TryBeginPending(searchEntry.Interaction, interactionEvent);
-            CmdRunInteraction(networkTarget, interactionEvent.Point, searchEntry.Id.GenericName, searchEntry.Id.TargetComponentIndex);
+            SendRunInteraction(networkTarget, interactionEvent.Point, searchEntry.Id.GenericName, searchEntry.Id.TargetComponentIndex);
             return true;
         }
 
@@ -641,7 +642,7 @@ namespace SS3D.Systems.Interactions
 
                 InteractionOptimisticFeedback.TryBeginDelayed(entry.Interaction, interactionEvent);
                 InteractionOutlineView.TryBeginPending(entry.Interaction, interactionEvent);
-                CmdRunInteraction(networkTarget, interactionEvent.Point, entry.Id.GenericName, entry.Id.TargetComponentIndex);
+                SendRunInteraction(networkTarget, interactionEvent.Point, entry.Id.GenericName, entry.Id.TargetComponentIndex);
             }
 
             _radialView.SetInteractions(interactions, interactionEvent, Mouse.current.position.ReadValue());
@@ -816,7 +817,7 @@ namespace SS3D.Systems.Interactions
             InteractionOptimisticFeedback.TryBeginDelayed(entry.Interaction, targetEvent);
             InteractionOutlineView.TryBeginPending(entry.Interaction, targetEvent);
             _armedSystem.Cancel();
-            CmdRunInteraction(networkTarget, targetEvent.Point, entry.Id.GenericName, entry.Id.TargetComponentIndex);
+            SendRunInteraction(networkTarget, targetEvent.Point, entry.Id.GenericName, entry.Id.TargetComponentIndex);
             return true;
         }
 
@@ -892,16 +893,29 @@ namespace SS3D.Systems.Interactions
                 return $"'{genericName}' dropped: a hand action is still in flight";
             }
 
-            CmdRunInteraction(networkTarget, point, entry.Id.GenericName, entry.Id.TargetComponentIndex);
+            SendRunInteraction(networkTarget, point, entry.Id.GenericName, entry.Id.TargetComponentIndex);
             return null;
         }
 #endif
 
+        /// <summary>Client: <see cref="CmdRunInteraction"/> with this client's eye, which the server only logs (P1.9).</summary>
+        [Client]
+        private void SendRunInteraction(NetworkObject target, Vector3 point, string genericName, int targetComponentIndex) =>
+            CmdRunInteraction(target, point, genericName, targetComponentIndex, EyePosition());
+
+        /// <summary>The body's eye on this peer: <see cref="Entity.ViewPoint"/>, else the root.</summary>
+        private Vector3 EyePosition()
+        {
+            Entity entity = GetComponent<Entity>();
+            return entity != null && entity.ViewPoint != null ? entity.ViewPoint.transform.position : transform.position;
+        }
+
         /// <summary>
         /// Runs an interaction (chosen on the client) on the server. For reasons of serialization and security, some code is re-run.
+        /// <paramref name="clientEye"/> is diagnostics only: the server never acts on it (tech-debt P1.9, #192).
         /// </summary>
         [ServerRpc]
-        private void CmdRunInteraction(NetworkObject target, Vector3 point, string genericName, int targetComponentIndex)
+        private void CmdRunInteraction(NetworkObject target, Vector3 point, string genericName, int targetComponentIndex, Vector3 clientEye)
         {
             if (!RpcInput.IsInStation(point))
             {
@@ -919,9 +933,7 @@ namespace SS3D.Systems.Interactions
 
             if (!TryResolveDispatchedInteraction(viableInteractions, id, out InteractionEntry interaction))
             {
-                Log.Error(this, "Failed to resolve interaction {genericName} at target index {targetIndex} on {target}",
-                    Logs.Generic, genericName, targetComponentIndex, targetGameObject);
-
+                LogRevalidationFailure(targetGameObject, point, id, clientEye);
                 TargetRejectInteraction(Owner);
                 return;
             }
@@ -1029,6 +1041,40 @@ namespace SS3D.Systems.Interactions
         /// falls back to generic name when the client hovered a child Selectable (body part) but the RPC
         /// revalidates against the parent NetworkObject root (different target-component indices).
         /// </summary>
+        /// <summary>
+        /// Server diagnostics for #192 (tech-debt P1.9 step 1): why the server's copy of the body refused an interaction
+        /// the client offered. Logs the failing check, and for Drop how far the eye's line of sight missed the clicked
+        /// point and how far the server's eye is from the client's. Changes nothing.
+        /// </summary>
+        [Server]
+        private void LogRevalidationFailure(GameObject targetGameObject, Vector3 point, InteractionIdentifier id, Vector3 clientEye)
+        {
+            InteractionPipeline.ViabilityFailure reason = InteractionPipeline.ViabilityFailure.NoSuchInteraction;
+            IInteractionSource source = GetActiveInteractionSource();
+            if (source != null)
+            {
+                List<IInteractionTarget> targets = InteractionDiscovery.GetTargetsFromGameObject(source, targetGameObject);
+                InteractionEvent interactionEvent = new(source, targets.Count > 0 ? targets[0] : null, point, Vector3.zero);
+                List<InteractionEntry> discovered = InteractionPipeline.Discover(source, targets, interactionEvent);
+                reason = InteractionPipeline.ExplainNotViable(source, discovered, interactionEvent, CurrentIntent, id);
+            }
+
+            Vector3 serverEye = EyePosition();
+            float eyeDelta = RpcInput.IsFinite(clientEye) ? Vector3.Distance(serverEye, clientEye) : -1f;
+            if (id.GenericName == "Drop")
+            {
+                Log.Warning(this,
+                    "Server refused {genericName} on {target}: {reason}. LOS miss {losMiss:F3} m (allowed {losTolerance} m), server/client eye delta {eyeDelta:F3} m",
+                    Logs.Generic, id.GenericName, targetGameObject, reason,
+                    DropInteraction.LineOfSightMiss(serverEye, point), DropInteraction.LineOfSightTolerance, eyeDelta);
+                return;
+            }
+
+            Log.Warning(this,
+                "Server refused {genericName} at target index {targetIndex} on {target}: {reason}. Server/client eye delta {eyeDelta:F3} m",
+                Logs.Generic, id.GenericName, id.TargetComponentIndex, targetGameObject, reason, eyeDelta);
+        }
+
         private static bool TryResolveDispatchedInteraction(
             List<InteractionEntry> viableInteractions,
             InteractionIdentifier id,

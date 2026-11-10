@@ -366,7 +366,9 @@ ServerRpc of this kind with its check; the holes below are its `Unchecked` entri
 **The opposite failure:** server re-validation runs the same strict `CanInteract` (for Drop, a 0.1 m
 LOS hit tolerance) against a server pose that lags the client, with no tolerance and no player
 feedback — the likely cause of [#192](https://github.com/henkhooft/SS3D/issues/192). One rule for both:
-the server derives positions itself and validates with an explicit lag margin.
+the server derives positions itself and validates with an explicit lag margin. Since tech-debt P1.9 step 1, a refused
+interaction logs the failing check (`InteractionPipeline.ExplainNotViable`) and, for Drop, the LOS miss and the
+server/client eye delta; the margin itself waits on playtest logs (plan Q5).
 
 ### 1.20 Hand actions and upper-body pose have no single owner
 
