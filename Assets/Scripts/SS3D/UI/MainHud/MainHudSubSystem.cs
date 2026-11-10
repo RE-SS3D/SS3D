@@ -290,8 +290,15 @@ namespace SS3D.UI.MainHud
                 }
             }
 
-            TryGetSelectedHandRecovery(out float lockReadyProgress01, out bool recharging);
-            float bloom01 = GetSelectedRangedBloom01();
+            float lockReadyProgress01 = 1f;
+            bool recharging = false;
+            float bloom01 = 0f;
+            if (visible)
+            {
+                TryGetSelectedHandRecovery(out lockReadyProgress01, out recharging);
+                bloom01 = GetSelectedRangedBloom01();
+            }
+
             _view.ApplyZoneReticle(
                 visible,
                 screenPosition,
@@ -312,11 +319,12 @@ namespace SS3D.UI.MainHud
             readyProgress01 = 1f;
             recharging = false;
 
+            // Read-only (ICombatReadout): the weapon completes its own reloads; the HUD must not (tech-debt P2.1).
             if (TwoHandedWeaponRules.TryGetWieldedRangedWeapon(_hands, out _, out RangedWeaponItemExtension ranged))
             {
-                ranged.ServerCompleteReloadIfDue();
-                recharging = ranged.IsBusy;
-                readyProgress01 = ranged.ReadyProgress01;
+                ICombatReadout readout = ranged;
+                recharging = readout.IsBusy;
+                readyProgress01 = readout.ReadyProgress01;
                 return true;
             }
 
@@ -354,7 +362,7 @@ namespace SS3D.UI.MainHud
             float maxRange = Mathf.Max(1f, ranged.Profile.MaxRangeMeters);
             float aimDistance = EstimateRangedAimDistance(maxRange);
             float exertionPenalty = _stamina != null ? _stamina.ExertionPenalty : 0f;
-            float spread = ranged.CurrentSpreadDegrees(horizontalSpeed, aimDistance, exertionPenalty);
+            float spread = ((ICombatReadout)ranged).CurrentSpreadDegrees(horizontalSpeed, aimDistance, exertionPenalty);
             // Map current cone into 0–1 using a readable reference (~still + light move at mid range).
             float bloomRef = Mathf.Max(
                 2.5f,
