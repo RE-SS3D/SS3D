@@ -426,12 +426,6 @@ branch dereferences a null container (`:538-540`).
   on a pure client item picking (`MapEditorCursorPick.cs:54`, `ConstructionHologramManager.cs:1261`)
   never finds one and selects the tile under it. Let the server decide validity; show "unknown" when a
   chunk is missing; anchor observer visibility to the editor camera.
-- **Undo:** `MoveTileCommand.Move` (`MapEditorCommands.cs:241-249`) clears the source, then places with
-  a build check. If the place fails the object is gone, yet `RpcMoveObject` reports success
-  (`MapEditorSubSystem.cs:1615`) and undo clears whatever blocked the destination.
-  `ClearTileCommand.Revert` / `ClearItemCommand.Revert` (`:154-161`, `:194-195`) re-place with
-  `replaceExisting: true` even when nothing was cleared. `RpcMoveObject` skips the rate limiter. Record
-  `Apply` success; route moves through `RpcExecuteCommands` (S–M).
 - **`MapEditorView` rebuilds on any state change** (`_vm.StateChanged += Refresh`, `:100`, including
   toasts and undo state), rebuilding the palette grid and open popovers. This is the root cause of three
   Pitfalls in [map-editor-creative-hooks.md](systems/map-editor-creative-hooks.md). Split the event (M).

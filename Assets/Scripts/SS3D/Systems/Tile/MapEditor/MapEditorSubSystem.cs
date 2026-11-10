@@ -1575,16 +1575,13 @@ namespace SS3D.Systems.Tile.MapEditor
                 return;
 
             IMapEditorCommand command = isItem
-                ? new CompoundCommand(new IMapEditorCommand[]
-                {
-                    new ClearItemCommand(assetName, from, direction),
-                    new PlaceItemCommand(assetName, to, direction),
-                })
+                ? new MoveItemCommand(assetName, from, to, direction)
                 : new MoveTileCommand(assetName, from, to, direction);
 
-            _commandService.Execute(command, conn.ClientId);
+            // A refused move changes nothing and adds no undo step (tech-debt P2.4).
+            bool moved = _commandService.Execute(command, conn.ClientId);
             TargetSyncUndoState(conn, _commandService.UndoDepth, _commandService.RedoDepth, true);
-            TargetToast(conn, "Moved object.");
+            TargetToast(conn, moved ? "Moved object." : "Can't move that there.");
         }
 
         [ServerRpc(RequireOwnership = false)]
