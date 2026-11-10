@@ -391,6 +391,9 @@ namespace SS3D.Systems.Inventory.Containers
         [ServerRpc]
         private void CmdPlaceItemInWorld(GameObject itemObject, Vector3 point, Vector3 surfaceNormal)
         {
+            if (!RpcInput.IsInStation(point) || !RpcInput.IsDirection(surfaceNormal))
+                return;
+
             if (Hands == null || Hands.SelectedHand == null || !Hands.SelectedHand.CanUseHand)
                 return;
 

@@ -340,7 +340,7 @@ namespace SS3D.Systems.Combat
         [ServerRpc]
         private void CmdThrow(Vector3 aimPoint)
         {
-            if (HasPendingThrow)
+            if (HasPendingThrow || !RpcInput.IsFinite(aimPoint))
             {
                 return;
             }

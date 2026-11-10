@@ -852,6 +852,11 @@ namespace SS3D.Systems.Combat
         [ServerRpc(RequireOwnership = true)]
         private void CmdSyncMeleeAim(Vector3 rayOrigin, Vector3 aimPoint)
         {
+            if (!RpcInput.IsInStation(rayOrigin) || !RpcInput.IsInStation(aimPoint))
+            {
+                return;
+            }
+
             _meleeAimRayOrigin = rayOrigin;
             _meleeAimPoint = aimPoint;
             _hasMeleeAimRay = true;

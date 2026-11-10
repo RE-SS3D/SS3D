@@ -104,7 +104,7 @@ namespace SS3D.UI.MachineInterface
         [ServerRpc(RequireOwnership = false)]
         public void CmdSetNumericControl(byte controlId, float delta, NetworkConnection conn = null)
         {
-            if (conn == null || !conn.IsValid || !_viewers.Contains(conn))
+            if (conn == null || !conn.IsValid || !_viewers.Contains(conn) || !RpcInput.IsFinite(delta))
             {
                 return;
             }
