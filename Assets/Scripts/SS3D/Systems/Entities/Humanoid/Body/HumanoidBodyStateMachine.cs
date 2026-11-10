@@ -340,6 +340,11 @@ namespace SS3D.Systems.Entities.Humanoid.Body
         [ServerRpc]
         private void CmdSetLocomotionVelocity(float velX, float velZ)
         {
+            if (!RpcInput.IsFinite(velX) || !RpcInput.IsFinite(velZ))
+            {
+                return;
+            }
+
             ServerApplyLocomotionVelocity(velX, velZ);
         }
 
@@ -353,6 +358,11 @@ namespace SS3D.Systems.Entities.Humanoid.Body
         [ServerRpc]
         public void CmdSetAimYaw(float aimYaw)
         {
+            if (!RpcInput.IsFinite(aimYaw))
+            {
+                return;
+            }
+
             _aimYaw = aimYaw;
             ApplyLocalSnapshot();
         }
@@ -360,6 +370,11 @@ namespace SS3D.Systems.Entities.Humanoid.Body
         [ServerRpc]
         public void CmdSetAim(float aimYaw, float aimPitch)
         {
+            if (!RpcInput.IsFinite(aimYaw) || !RpcInput.IsFinite(aimPitch))
+            {
+                return;
+            }
+
             _aimYaw = aimYaw;
             _aimPitch = Mathf.Clamp(aimPitch, -60f, 60f);
             ApplyLocalSnapshot();
