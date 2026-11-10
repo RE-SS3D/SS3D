@@ -871,6 +871,9 @@ namespace SS3D.Systems.Entities.Humanoid
             OnTriggerFired?.Invoke(trigger);
         }
 
+        /// <summary>Owner: the server refused the one-shot this client predicted, so don't skip the next echo.</summary>
+        public void DropOwnerPrediction() => _ownerPredictedAttack = false;
+
         public void FireLocalTrigger(AnimationTriggerId trigger)
         {
             _bodyStateMachine?.CmdFireTrigger(trigger, 0, 0);

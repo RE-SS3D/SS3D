@@ -181,12 +181,13 @@ namespace SS3D.Systems.Combat
                 GetComponentInChildren<HumanoidIkController>()?.SetThrowAimYaw(yaw);
             }
 
+            // CmdThrow first: the server must hold the pending throw when the telegraph's trigger arrives.
+            CmdThrow(aimPoint);
             if (TryGetComponent(out HumanoidCombatController combat))
             {
                 combat.RequestAttack(AnimationTriggerId.Throw, 0f, (byte)variant);
             }
 
-            CmdThrow(aimPoint);
             SetThrowMode(false);
             return true;
         }

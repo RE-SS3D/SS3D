@@ -358,9 +358,10 @@ ServerRpc of this kind with its check; the holes below are its `Unchecked` entri
   `accesspreset` (any access level, on yourself or on another ckey) and `spawnitem`. Sandbox-server §5
   says players get no console. An unknown command name throws, because `FindCommand`'s result is
   ignored (`:144`).
-- **Combat one-shots** start via client `HumanoidBodyStateMachine.CmdFireTrigger` (`:369`), and the
-  combat stance is computed on the client and sent unvalidated
-  (`HumanoidBodyStateBridge.cs:161-178`). The server already knows the intent and the inventory.
+- **Combat one-shots** are still named by the client (`HumanoidBodyStateMachine.CmdFireTrigger`), but since
+  tech-debt P1.6 the server replicates one only while the matching swing, shot, reload or throw it accepted is
+  under way (`ClientTriggerRules`), and it picks melee vs ranged stance from its own inventory. Server-fired
+  one-shots are P4.2.
 - **Server status query** (vendored Tugboat patch, `ServerSocket.cs:139-145`, `:378-395`;
   `ServerStatusPublisher.cs:86-95`) answers unconnected UDP with no per-endpoint rate limit, and
   replies are larger than requests. Add a token bucket.
