@@ -540,7 +540,7 @@ namespace SS3D.Systems.Inventory.Containers
 
             if (container == null)
             {
-                Log.Error(this, $"Client sent invalid container reference: NetId {container.ObjectId}");
+                Log.Error(this, "Client sent a null or despawned container to transfer into");
                 return;
             }
 

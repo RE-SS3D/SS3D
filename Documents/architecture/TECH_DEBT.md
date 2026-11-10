@@ -245,8 +245,6 @@ More gameplay scans found at `06316a98`:
 - `TileSubSystem.cs:291` (every decal sync), `TileLayerVisibilityService.cs:151` (every layer toggle),
   `MapEditorSettings.cs:68`, `BlastVfxPresenter.cs:62`, `SolarTrackingBeacon.cs:78`,
   `LightPower.cs:334`, `RoundObservability.cs:137-141` (all GameObjects, every round reset).
-- `AudioSourceOcclusion.cs:68-80` — every playing source rescans for an `AudioListener` **every
-  frame** while none exists, because the miss is not cached.
 - `TileMap.ClearUntrackedItems` still uses the deprecated `FindObjectsOfType` and `DestroyImmediate`s
   networked items (`TileMap.cs:1195-1216`).
 
@@ -412,8 +410,7 @@ The #208 fix guards out-of-order network arrival with a per-peer `Item.LocalHold
 (`AttachedContainer.cs:368`) instead of one replicated holder.
 
 **Fix:** a replicated holder on `Item`, applied by one routine on every peer; one
-`ServerReleaseToWorld` for drop, place and throw (M–L). Also: `HumanInventory.CmdTransferItem`'s error
-branch dereferences a null container (`:538-540`).
+`ServerReleaseToWorld` for drop, place and throw (M–L).
 
 ### 1.22 Map Editor trusts the client's partial map and assumes every command succeeded
 
@@ -489,8 +486,7 @@ Coimbra `FixedUpdateEvent` with `_timeElapsed = 0` discarding the remainder
 (`HumanHealthController.cs:653-666`); `UniTask.Delay` loops in Rounds; FishNet `TimeManager.OnTick` for
 movement. `ElectricitySubSystem.RpcInvokeOnTick` (`:685-688`) is a payload-less `ObserversRpc` sent to
 every client 5×/s so client visuals can tick. **Fix:** one `SimulationClock` on `TimeManager.OnTick`
-with fixed-rate channels; clients tick locally (M). Health also allocates `_organs.ToArray()` once
-per modifier per tick (`HumanHealthController.cs:641`, §2).
+with fixed-rate channels; clients tick locally (M).
 
 ### 1.28 Persistence contributors deserialized by a central switch
 
@@ -528,8 +524,9 @@ The component is `m_Enabled: 0` on `Human.prefab`, yet its 612 lines are still m
 space-float / coast code duplicates `HumanoidLivingController` (`HumanoidPredictedMovement.cs:304-352` vs.
 `HumanoidLivingController.cs:250-304`) and has already drifted (the #124 fallback exists only in the
 living path). Delete it, or schedule it as the replacement for client-authoritative movement (S–M).
-Related small cleanups: `HumanHealthController.ApplyKnockback` is dead (only caller passes 0); `.Throw.cs` allocates every frame
-in throw mode (`RaycastAll`, `SphereCastAll`, `LayerMask.GetMask` by string at `:260`, `:286`, `:445`).
+Related small cleanup: `HumanHealthController.ApplyKnockback` is dead (only caller passes 0). (The throw-mode
+per-frame allocations, the per-tick organ copy, the uncached missing `AudioListener` and the
+`CmdTransferItem` null dereference went in tech-debt P2.9.)
 
 ## 2. Hot-path GC / performance debt (tracked, partially paid down)
 
