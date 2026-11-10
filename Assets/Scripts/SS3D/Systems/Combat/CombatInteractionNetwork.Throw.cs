@@ -266,7 +266,8 @@ namespace SS3D.Systems.Combat
             points.Clear();
             float flight = ThrowRules.FlightSeconds(origin, target);
             Vector3 velocity = ThrowRules.LaunchVelocity(origin, target, Physics.gravity, flight);
-            int mask = DefaultLayerMask;
+            // The ceiling and the airlock lintels stop a real throw, so the preview arc ends on them too.
+            int mask = DefaultLayerMask | StationBounds.CeilingMask;
             Vector3 previous = origin;
             points.Add(origin);
             for (int i = 1; i <= ArcSamples; i++)
