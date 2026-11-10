@@ -357,8 +357,6 @@ ServerRpc of this kind with its check; the holes below are its `Unchecked` entri
   (`CombatInteractionNetwork.cs:848-854`); `RangedHitscanResolver` fires and checks line of sight from it
   (`:52`, `:64`). A modified client can shoot from anywhere, through walls. Derive the origin on the
   server (muzzle/eye) and take only a clamped direction from the client.
-- **`ItemSubSystem.CmdSpawnItem` / `CmdSpawnItemInContainer`** (`ItemSubSystem.cs:23`, `:63`): no
-  permission check. Gate on admin (the console command calls the server method anyway).
 - **Console commands at `AccessLevel User` run on the server for any player**, in release builds
   (`CommandsController.CmdProcessOnlineCommand`). These include `accessgrant` / `accessrevoke` /
   `accesspreset` (any access level, on yourself or on another ckey) and `spawnitem`. Sandbox-server §5
