@@ -87,6 +87,8 @@ namespace SS3D.Systems.Inventory.Containers.Editor
                     : null;
                 ReplaceShapes(root, preview, folded != null ? folded.sharedMesh : preview, folded != null ? folded.transform : root.transform,
                     materials, out var worn, out var world, out var attachment);
+                // The folded pile lies flat; hold it on edge against the leg rather than as a tray across the body.
+                if (folded != null) attachment.transform.localRotation = Quaternion.Euler(0f, 0f, 90f);
                 var item = root.GetComponent<Item>();
                 var itemSo = new SerializedObject(item);
                 itemSo.FindProperty("_name").stringValue = type == ClothType.Head ? "Syndicate Hardsuit Helmet" : "Syndicate Hardsuit";

@@ -95,12 +95,19 @@ namespace SS3D.Systems.Inventory.Items
         /// </summary>
         /// <param name="id">The item ID to spawn.</param>
         /// <param name="container">The container to spawn into.</param>
+        /// <returns>The spawned item, or null when the container refused it (the item is despawned).</returns>
         [Server]
         public Item SpawnItemInContainer(GameObject item, AttachedContainer attachedContainer)
         {
             Item itemInstance = Instantiate(item, Vector3.zero, Quaternion.identity).GetComponent<Item>();
             ServerManager.Spawn(itemInstance.GameObject);
-            attachedContainer.AddItem(itemInstance);
+            if (!attachedContainer.AddItem(itemInstance))
+            {
+                // Don't leave a refused item lying at the spawn point (the world origin).
+                Log.Warning(this, "Item {item} does not fit in container {container}", Logs.ServerOnly, itemInstance.name, attachedContainer.ContainerName);
+                ServerManager.Despawn(itemInstance.GameObject);
+                return null;
+            }
 
             Log.Information(this, "Item {item} spawned in container {container}", Logs.ServerOnly, itemInstance.name, attachedContainer.ContainerName);
             return itemInstance;

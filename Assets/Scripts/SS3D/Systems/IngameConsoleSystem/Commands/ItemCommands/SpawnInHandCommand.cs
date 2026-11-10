@@ -1,5 +1,6 @@
 using FishNet.Connection;
 using SS3D.Core;
+using SS3D.Systems.Combat;
 using SS3D.Permissions;
 using SS3D.Systems.Entities;
 using SS3D.Systems.Inventory.Containers;
@@ -11,7 +12,7 @@ namespace SS3D.Systems.IngameConsoleSystem.Commands.ItemCommands
     public class SpawnInHandCommand : Command
     {
         public override string ShortDescription => "Spawn item in your selected hand";
-        public override string LongDescription => "Spawn an item by name or asset id into the selected hand, which must be empty";
+        public override string LongDescription => "Spawn an item by name or asset id into the selected hand, which must be empty. Two-handed rifles go to their grip hand, which needs both hands free";
         public override string Usage => "(item)\nexample: spawninhand MedicalPatch";
         public override ServerRoleTypes AccessLevel => ServerRoleTypes.Administrator;
         public override CommandType Type => CommandType.Server;
@@ -26,16 +27,24 @@ namespace SS3D.Systems.IngameConsoleSystem.Commands.ItemCommands
                 return "Connection does not own any entity registered in entity system.";
 
             HumanInventory inventory = entity.GetComponentInParent<HumanInventory>();
-            Hand hand = inventory != null ? inventory.Hands.SelectedHand : null;
-            if (hand == null)
+            Hands hands = inventory != null ? inventory.Hands : null;
+            Hand selected = hands != null ? hands.SelectedHand : null;
+            if (selected == null)
                 return "This entity has no hands.";
 
-            if (!hand.IsEmpty())
-                return "Your selected hand is not empty.";
-
             SpawnItemCommand.TryResolveItem(args[0], out Item prefab, out _);
+
+            // A two-handed rifle only fits its grip hand, so the selected hand would refuse it and the
+            // item would stay where it spawned, at the origin. Route it the way a pickup does.
+            if (!TwoHandedWeaponRules.TryResolveHandForItem(hands, prefab, selected, out Hand hand))
+            {
+                return TwoHandedWeaponRules.RequiresBothHands(prefab, out _)
+                    ? $"{prefab.Name} needs both hands free."
+                    : "Your selected hand is not empty.";
+            }
+
             Item item = SubSystems.Get<ItemSubSystem>().SpawnItemInContainer(prefab.GameObject, hand.Container);
-            return $"item {item.Name} spawned in hand";
+            return item != null ? $"item {item.Name} spawned in hand" : $"{prefab.Name} does not fit in your hand.";
         }
 
         protected override CheckArgsResponse CheckArgs(string[] args)
