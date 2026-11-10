@@ -87,13 +87,12 @@ in-body visuals.
 There are now nine `*AssetPaths` + catalog pairs (checked `06316a98`). Four derive from
 `UiAssetCatalogBase` (UiShell, BugReport, MainMenu, RoundEnd — new surfaces do adopt it); five are
 still plain `ScriptableObject`s (MachineUi, MainHud, StoragePanel, Lobby, Examine), and only four
-Editor builders use `UiCatalogBuilderKit`. **Examine is missing from the umbrella**
-`UiCatalogRebuildAll.TryRebuildAll` and keeps its own `SS3D/Examine/Rebuild Examine Asset Catalog`
-MenuItem (`ExamineOverlayAssetCatalogBuilder.cs:16`), so "Rebuild All UI Catalogs" silently skips it.
-Each copy shares the same failure mode: a stale catalog after adding a UXML path without running
+Editor builders use `UiCatalogBuilderKit`. Since tech-debt P2.6 every catalog, Examine included, is rebuilt by
+the umbrella `UiCatalogRebuildAll.TryRebuildAll`, and `UiCatalogUmbrellaTests` (G5) fails when a new
+`*AssetCatalog` isn't. Each copy shares the same failure mode: a stale catalog after adding a UXML path without running
 the rebuild.
 
-**Next steps:** fold Examine into the umbrella (S); migrate the five legacy catalogs onto the base.
+**Next steps:** migrate the five legacy catalogs onto the base (plan P7.6).
 
 - Related: [ui-shell.md](systems/ui-shell.md), [2026-07_ui-shell-consolidation.md](2026-07_ui-shell-consolidation.md) § Explicit non-goals (the migration phases), [machine-interface.md](systems/machine-interface.md), [inventory.md](systems/inventory.md), [rounds-lobby.md](systems/rounds-lobby.md)
 
