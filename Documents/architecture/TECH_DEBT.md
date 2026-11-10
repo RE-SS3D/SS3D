@@ -497,8 +497,8 @@ Let `IPersistenceContributor` deserialize its own payload (S).
 **Blast radius: medium, compounding — trend: getting worse**
 
 - HUD/menu/MI visibility handling is copy-pasted (`MainHudSubSystem.cs:757-892` vs.
-  `StoragePanelHost.cs:204-306`) and has drifted: StoragePanel never subscribes to the map editor, so
-  storage panels stay up during map editing while the HUD hides.
+  `StoragePanelHost.cs:204-306`) and had drifted (StoragePanel didn't hide for the map editor until
+  tech-debt P2.7 added the same subscription). One arbiter replaces both copies in P7.2.
 - Window drag exists three times (`StoragePanelView.cs:180-252`, `MachineWindow.cs:71-130`, the new
   `PanelDragManipulator`); the press-to-drag threshold three times with different values (5 px in
   `EquipmentGrid` / `HandsGearStrip`, 6 px in `StorageSlot`).
