@@ -5,11 +5,25 @@
 # Runs on TomNAS (self-hosted, labels self-hosted/linux/x64/unity); dispatch with runner=github
 # for GitHub-hosted ubuntu-latest. See
 # Documents/architecture/2026-07_multiplayer-testing-self-hosted-ci.md.
+#
+# One run per change (testing philosophy D12). Agents already ran compile + EditMode locally, so CI
+# is the record, not the first check:
+# - PRs into develop only. A stacked PR runs once its base becomes develop ("edited" with a base
+#   change); other edits (title, body) are ignored. A newer push cancels the PR's older run.
+# - Docs-only PRs skip Unity.
+# - No run per merge. A nightly run on develop catches PRs that pass alone but break together, and
+#   is skipped when develop has not moved since the last green nightly.
 name: Run Tests
 on:
-  push:
-    branches: [develop]
   pull_request:
+    branches: [develop]
+    types: [opened, synchronize, reopened, ready_for_review, edited]
+    paths-ignore:
+      - "Documents/**"
+      - "**/*.md"
+  schedule:
+    # Before the 04:00 smoke nightly, which shares the TomNAS runner.
+    - cron: "30 2 * * *"
   workflow_dispatch:
     inputs:
       runner:
@@ -19,9 +33,18 @@ on:
           - tomnas
           - github
         default: tomnas
+concurrency:
+  # One group per PR, so a new push cancels the older run. An edit that is not a base change gets a
+  # group of its own, so it cannot cancel a real run before its jobs are skipped.
+  group: >-
+    run-tests-${{ github.event.pull_request.number || github.ref }}${{
+    github.event.action == 'edited' && !github.event.changes.base && format('-edit-{0}', github.run_id) || '' }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 jobs:
   pick_runner:
     name: Pick runner
+    # A PR edit only matters when it moved the base (a stacked PR now targeting develop).
+    if: github.event.action != 'edited' || github.event.changes.base
     runs-on: ubuntu-latest
     permissions:
       actions: read
@@ -29,7 +52,26 @@ jobs:
     outputs:
       runs_on: ${{ steps.pick.outputs.runs_on }}
       self_hosted: ${{ steps.pick.outputs.self_hosted }}
+      run: ${{ steps.moved.outputs.run }}
     steps:
+      - name: Skip a nightly when develop has not moved since the last green one
+        id: moved
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          if [ "${{ github.event_name }}" != "schedule" ]; then
+            echo "run=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          last=$(gh api "repos/${{ github.repository }}/actions/workflows/editmodetestrunner.yml/runs?event=schedule&status=success&per_page=1" \
+            --jq '.workflow_runs[0].head_sha // ""')
+          if [ "$last" = "${{ github.sha }}" ]; then
+            echo "develop is still at $last, which the last green nightly tested. Skipping."
+            echo "run=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "run=true" >> "$GITHUB_OUTPUT"
+          fi
       - name: Pick TomNAS unless GitHub-hosted is requested
         id: pick
         env:
@@ -62,6 +104,13 @@ jobs:
   run_tests:
     name: Run tests
     needs: pick_runner
+    if: needs.pick_runner.outputs.run == 'true'
+    permissions:
+      contents: read
+      # game-ci's test runner posts the results as a check run.
+      checks: write
+      # The nightly opens or closes its failure issue.
+      issues: write
     runs-on: ${{ fromJSON(needs.pick_runner.outputs.runs_on) }}
     environment:
       name: unity_tests
@@ -192,3 +241,12 @@ jobs:
         with:
           name: Test results
           path: artifacts
+      - name: Open or close the nightly failure issue (D9)
+        if: github.event_name == 'schedule' && (success() || failure())
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          outcome=success
+          [ "${{ steps.run-tests.outcome }}" = success ] || outcome=failure
+          Tools/ci/nightly_issue.sh editmode-nightly-failure "Nightly EditMode tests failing on develop" "$outcome" \
+            "EditMode on develop at ${{ github.sha }}: ${{ steps.run-tests.outcome }}. Logs: the run's \`Test results\` artifact."

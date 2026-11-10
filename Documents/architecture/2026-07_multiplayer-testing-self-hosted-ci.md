@@ -98,6 +98,9 @@ The changeset `c` is the hash in `m_EditorVersionWithRevision` in `ProjectSettin
   `ubuntu-latest` instead. There is no automatic fallback: `github.token` cannot list repo
   runners (HTTP 403), so the old online probe always fell back. While TomNAS is offline, jobs
   queue until it returns.
+  Triggers follow [testing D12](2026-11_testing-philosophy.md#harness-contracts): PRs into
+  `develop` (not docs-only, newer push cancels the older run) and a 02:30 UTC nightly on
+  `develop` that skips an unchanged `develop`; no run per merge.
 - [`.github/workflows/develop-release.yml`](../../.github/workflows/develop-release.yml):
   same TomNAS default in `prepare`; Linux via **one** `BuildBothForCi` step; shares
   smoke’s `/home/cu6e/.cache/ss3d/Library` stash on self-hosted; nightly `workflow_dispatch`
