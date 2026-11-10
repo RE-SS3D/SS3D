@@ -39,7 +39,34 @@ namespace SS3D.Systems.Tile
                 return true;
             }
 
-            for (int radius = 0; radius <= SearchRadius; radius++)
+            if (TryFindWalkableDeck(query, near, SearchRadius, out Vector3 deckTile))
+            {
+                rescue = deckTile;
+            }
+
+            return true;
+        }
+
+        /// <summary>
+        /// The middle of the walkable floor tile (floor, no wall or door) nearest <paramref name="position"/>, searching
+        /// outward even from open space. False without a map or with no such tile within <paramref name="radius"/>.
+        /// </summary>
+        public static bool TryFindWalkableDeck(Vector3 position, int radius, out Vector3 deck)
+        {
+            deck = default;
+            if (!SubSystems.TryGet(out TileSubSystem tiles) || tiles.CurrentMap == null || tiles.QueryService == null)
+            {
+                return false;
+            }
+
+            return TryFindWalkableDeck(tiles.QueryService, tiles.QueryService.WorldToTile(position, tiles.CurrentMap.MapId),
+                radius, out deck);
+        }
+
+        private static bool TryFindWalkableDeck(ITileQueryService query, TileCoord near, int searchRadius, out Vector3 deck)
+        {
+            deck = default;
+            for (int radius = 0; radius <= searchRadius; radius++)
             {
                 for (int dx = -radius; dx <= radius; dx++)
                 {
@@ -54,14 +81,14 @@ namespace SS3D.Systems.Tile
                         if (query.TryGetOccupancy(candidate, out TileOccupancy occupancy)
                             && occupancy.HasPlenum && !occupancy.HasWall && !occupancy.IsDoor)
                         {
-                            rescue = query.TileToWorld(candidate);
+                            deck = query.TileToWorld(candidate);
                             return true;
                         }
                     }
                 }
             }
 
-            return true;
+            return false;
         }
 
         public static void LogRescue(Object target, Vector3 from, Vector3 velocity, Vector3 to) =>
