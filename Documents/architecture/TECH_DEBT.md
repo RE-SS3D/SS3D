@@ -238,10 +238,6 @@ missing-subsystem errors are suppressed (Disconnecting / WaitingForServer); pref
 world-readiness gates. A registry/event-based replacement for the Item/Locker scans remains open.
 
 More gameplay scans found at `06316a98`:
-- `StructuralDamageSubSystem.cs:185` — `FindObjectsByType<HumanHealthController>` **once per tile** a
-  blast reaches, with a fresh `HashSet` each call. A tile revisited with more force damages its
-  bodies twice. `ApplyCrewBlastPush` already runs once per blast over the force map; brute damage
-  should too.
 - `TileSubSystem.cs:291` (every decal sync), `TileLayerVisibilityService.cs:151` (every layer toggle),
   `MapEditorSettings.cs:68`, `BlastVfxPresenter.cs:62`, `SolarTrackingBeacon.cs:78`,
   `LightPower.cs:334`, `RoundObservability.cs:137-141` (all GameObjects, every round reset).

@@ -136,9 +136,27 @@ namespace SS3D.Systems.Health
             ApplyScreenEffectsFromSnapshot(_snapshot);
         }
 
+        /// <summary>
+        /// Server: every spawned body with health, so a blast finds them without a scene scan (tech-debt P2.5; P6.4
+        /// generalizes this into a registry).
+        /// </summary>
+        public static IReadOnlyCollection<HumanHealthController> ServerInstances => ServerBodies;
+
+        private static readonly HashSet<HumanHealthController> ServerBodies = new();
+
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+        private static void ResetServerBodies() => ServerBodies.Clear();
+
+        public override void OnStopServer()
+        {
+            base.OnStopServer();
+            ServerBodies.Remove(this);
+        }
+
         public override void OnStartServer()
         {
             base.OnStartServer();
+            ServerBodies.Add(this);
             EnsureBuiltinOrgans();
             OrganSimulation.EnsureDefaultOrgans(_organs);
             PublishSnapshot();
@@ -146,6 +164,7 @@ namespace SS3D.Systems.Health
 
         protected override void OnDestroyed()
         {
+            ServerBodies.Remove(this);
             if (_entity != null)
             {
                 _entity.OnMindChanged -= HandleMindChangedForLocalFeedback;

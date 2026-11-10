@@ -153,6 +153,10 @@ namespace SS3D.Systems.StructuralDamage
             _blast = new BlastResolutionService(_boundQuery, _service, ApplyCrewBlastBrute, _service.ApplyBlastFloorDamage, ApplyCrewBlastPush);
         }
 
+        /// <summary>
+        /// Called once per tile with the blast's final force there (<see cref="BlastResolutionService"/>), so a body takes
+        /// one hit per detonation. Bodies come from <see cref="HumanHealthController.ServerInstances"/>, not a scene scan.
+        /// </summary>
         private void ApplyCrewBlastBrute(TileCoord coord, float force)
         {
             if (force < BlastResolutionService.MinUsefulForce || _boundQuery == null)
@@ -160,38 +164,12 @@ namespace SS3D.Systems.StructuralDamage
                 return;
             }
 
-            var hit = new HashSet<HumanHealthController>();
-
-            if (SubSystems.TryGet(out EntitySubSystem entities) && entities.SpawnedPlayers != null)
+            foreach (HumanHealthController health in HumanHealthController.ServerInstances)
             {
-                for (int i = 0; i < entities.SpawnedPlayers.Count; i++)
+                if (health != null)
                 {
-                    Entity entity = entities.SpawnedPlayers[i];
-                    if (entity == null)
-                    {
-                        continue;
-                    }
-
-                    HumanHealthController health = entity.GetComponentInChildren<HumanHealthController>();
-                    if (health == null || !hit.Add(health))
-                    {
-                        continue;
-                    }
-
                     TryDamageIfOnTile(health, coord, force);
                 }
-            }
-
-            HumanHealthController[] all = Object.FindObjectsByType<HumanHealthController>(FindObjectsSortMode.None);
-            for (int i = 0; i < all.Length; i++)
-            {
-                HumanHealthController health = all[i];
-                if (health == null || !hit.Add(health))
-                {
-                    continue;
-                }
-
-                TryDamageIfOnTile(health, coord, force);
             }
         }
 
