@@ -65,8 +65,8 @@ namespace SS3D.Tests.AssetAudit
             { "HumanInventory.CmdTransferItem", AuthorityCheck.Revalidated },
             { "Hands.CmdSetActiveHand", AuthorityCheck.OwnerOfArgument },
             { "ContainerViewer.CmdContainerClose", AuthorityCheck.ServerDerived },
-            { "ItemSubSystem.CmdSpawnItem", AuthorityCheck.Unchecked }, // P1.3
-            { "ItemSubSystem.CmdSpawnItemInContainer", AuthorityCheck.Unchecked }, // P1.3
+            { "ItemSubSystem.CmdSpawnItem", AuthorityCheck.Admin },
+            { "ItemSubSystem.CmdSpawnItemInContainer", AuthorityCheck.Admin },
 
             // Rounds, gamemodes, console
             { "GamemodeSubSystem.CmdGetCurrentClientObjectives", AuthorityCheck.ReadOnly },
@@ -119,8 +119,6 @@ namespace SS3D.Tests.AssetAudit
             "CombatInteractionNetwork.CmdSyncMeleeAim",
             "CombatInteractionNetwork.CmdThrow",
             "Draggable.SetDragServer",
-            "ItemSubSystem.CmdSpawnItem",
-            "ItemSubSystem.CmdSpawnItemInContainer",
             "TileSubSystem.RpcPlaceObject",
             "TileSubSystem.RpcClearTileObject",
             "TileSubSystem.RpcClearItemObject",

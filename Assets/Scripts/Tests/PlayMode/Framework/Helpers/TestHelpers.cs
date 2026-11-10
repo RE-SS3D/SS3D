@@ -177,7 +177,14 @@ namespace SS3D.Tests
             {
                 Item itemToSpawn = Assets.Get<GameObject>(AssetDatabases.Items, item)?.GetComponent<Item>();
 
-                itemSystem.CmdSpawnItemInContainer(itemToSpawn, hand.Container);
+                if (InstanceFinder.IsServer)
+                {
+                    itemSystem.SpawnItemInContainer(itemToSpawn.Name, hand.Container);
+                }
+                else
+                {
+                    itemSystem.CmdSpawnItemInContainer(itemToSpawn, hand.Container);
+                }
 
                 return hand.Container;
             }
