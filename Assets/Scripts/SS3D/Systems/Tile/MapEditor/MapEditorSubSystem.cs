@@ -1548,17 +1548,24 @@ namespace SS3D.Systems.Tile.MapEditor
             if (list.Count == 0)
                 return;
 
-            if (MapEditorPermissions.IsSandboxPlayer(conn)
-                && !_rateLimiter.TryConsume(conn.ClientId, list.Count, Time.unscaledTimeAsDouble))
-            {
-                Log.Warning(this, "Throttled map edits from client {clientId} ({count} operations)",
-                    Logs.ServerOnly, conn.ClientId, list.Count);
-                TargetToast(conn, "Slow down: too many edits at once. Try again in a few seconds.");
+            if (IsThrottled(conn, list.Count))
                 return;
-            }
 
             _commandService.ExecuteCompound(list, conn.ClientId);
             TargetSyncUndoState(conn, _commandService.UndoDepth, _commandService.RedoDepth, true);
+        }
+
+        /// <summary>Sandbox players share one edit budget across every edit RPC (sandbox-server §6).</summary>
+        private bool IsThrottled(NetworkConnection conn, int operations)
+        {
+            if (!MapEditorPermissions.IsSandboxPlayer(conn)
+                || _rateLimiter.TryConsume(conn.ClientId, operations, Time.unscaledTimeAsDouble))
+                return false;
+
+            Log.Warning(this, "Throttled map edits from client {clientId} ({count} operations)",
+                Logs.ServerOnly, conn.ClientId, operations);
+            TargetToast(conn, "Slow down: too many edits at once. Try again in a few seconds.");
+            return true;
         }
 
         /// <summary>Sandbox players may only undo their own edits; admins and hosts undo anything.</summary>
@@ -1601,6 +1608,9 @@ namespace SS3D.Systems.Tile.MapEditor
                 TargetToastFor(conn, MapEditorSandboxRules.DeniedMessage, 4f);
                 return;
             }
+
+            if (IsThrottled(conn, 1))
+                return;
 
             IMapEditorCommand command = isItem
                 ? new CompoundCommand(new IMapEditorCommand[]

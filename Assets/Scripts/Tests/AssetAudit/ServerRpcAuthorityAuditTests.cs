@@ -78,12 +78,6 @@ namespace SS3D.Tests.AssetAudit
             { "CommandsController.CmdProcessOnlineCommand", AuthorityCheck.ConsoleAccessLevel },
 
             // Tile and Map Editor
-            { "TileSubSystem.RpcPlaceObject", AuthorityCheck.Unchecked }, // P1.7: dead, bypasses sandbox rules
-            { "TileSubSystem.RpcClearTileObject", AuthorityCheck.Unchecked }, // P1.7
-            { "TileSubSystem.RpcClearItemObject", AuthorityCheck.Unchecked }, // P1.7
-            { "TileSubSystem.RpcSetFloorDecal", AuthorityCheck.Unchecked }, // P1.7
-            { "TileSubSystem.RpcClearFloorDecal", AuthorityCheck.Unchecked }, // P1.7
-            { "ConstructionHologramManager.RpcSendCanBuild", AuthorityCheck.Unchecked }, // P1.7
             { "MapEditorSubSystem.RpcInspectArea", AuthorityCheck.MapEditorPermission },
             { "MapEditorSubSystem.RpcInspectSelectedArea", AuthorityCheck.MapEditorPermission },
             { "MapEditorSubSystem.RpcApplyArea", AuthorityCheck.MapEditorPermission },
@@ -100,7 +94,7 @@ namespace SS3D.Tests.AssetAudit
             { "MapEditorSubSystem.RpcExecuteCommands", AuthorityCheck.MapEditorPermission },
             { "MapEditorSubSystem.RpcUndo", AuthorityCheck.MapEditorPermission },
             { "MapEditorSubSystem.RpcRedo", AuthorityCheck.MapEditorPermission },
-            { "MapEditorSubSystem.RpcMoveObject", AuthorityCheck.Unchecked }, // P1.7: authorized but skips the rate limiter
+            { "MapEditorSubSystem.RpcMoveObject", AuthorityCheck.MapEditorPermission },
             { "MapEditorSubSystem.RpcRequestUndoState", AuthorityCheck.MapEditorPermission },
 
             // Machine interfaces
@@ -119,13 +113,6 @@ namespace SS3D.Tests.AssetAudit
             "CombatInteractionNetwork.CmdSyncMeleeAim",
             "CombatInteractionNetwork.CmdThrow",
             "Draggable.SetDragServer",
-            "TileSubSystem.RpcPlaceObject",
-            "TileSubSystem.RpcClearTileObject",
-            "TileSubSystem.RpcClearItemObject",
-            "TileSubSystem.RpcSetFloorDecal",
-            "TileSubSystem.RpcClearFloorDecal",
-            "ConstructionHologramManager.RpcSendCanBuild",
-            "MapEditorSubSystem.RpcMoveObject",
         };
 
         private static readonly Type[] TrustedArgumentTypes =
