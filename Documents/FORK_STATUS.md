@@ -973,6 +973,9 @@ Genuine Server-subtarget Linux build (not a client launched with `-serveronly`):
   spawned renderers/lights under `#if UNITY_SERVER`
 - Docker Compose + start scripts under `Builds/`
 - Windows release zips seed **Config/Tilemaps** so packaged playtests load maps (PR #56)
+- **Vendored FishNet patch** (`SS3D patch` in Tugboat's `ServerSocket`): the main menu's status query is answered on
+  the game port, on the receive thread, and rate-limited per source address and globally by
+  `UnconnectedRequestLimiter` (tech-debt P1.8) so the reply can't be used to reflect a flood. Re-apply on FishNet upgrades.
 
 Known gaps: selection outline and drop interaction against a real client still broken (not
 root-caused). An automated multiplayer harness now exists — see below.
