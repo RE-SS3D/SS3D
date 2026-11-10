@@ -63,6 +63,7 @@ stamina drain), projectile travel, thrown-item damage.
 - Stance: `HumanoidBodyStateBridge.ResolveCombatStance` prefers the extension component.
 - Shared LOS: call `LineOfSight.HasLineOfSight` / `TryGetFirstHit` — do not fork parallel raycasts.
 - Aim: the client syncs only its aim point (`CmdSyncMeleeAim`); the server builds the ray from the body's eye (`ServerEyePosition`, `Entity.ViewPoint`) through it with `CombatAimRay.TryBuild`. Never take a ray origin, muzzle or eye position from a client (tech-debt P1.1). An aim cone around the server's facing waits on the plan's open question 5.
+- One-shots: a client's combat `CmdFireTrigger` replicates only while the server holds the matching action (`IClientTriggerGate` on `CombatInteractionNetwork`). Send the action RPC (`CmdRunMeleeSwing`, `CmdRunRangedFire`, `CmdRunRangedReload`, `CmdThrow`) **before** `HumanoidCombatController.RequestAttack`, or the trigger arrives first and is refused (tech-debt P1.6). Stance (melee vs ranged) is resolved on the server.
 
 ## Pitfalls
 
