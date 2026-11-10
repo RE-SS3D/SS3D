@@ -54,7 +54,7 @@ namespace SS3D.Tests.AssetAudit
             { "EntitySubSystem.CmdRespawn", AuthorityCheck.ServerDerived },
             { "MindSubSystem.CmdSwapMinds", AuthorityCheck.NoClientOwner },
             { "HumanoidBodyStateMachine.CmdTrySit", AuthorityCheck.Revalidated },
-            { "Draggable.SetDragServer", AuthorityCheck.Unchecked }, // P1.4: client-supplied dragger
+            { "Draggable.CmdSetDrag", AuthorityCheck.ServerDerived },
 
             // Interactions and inventory
             { "InteractionController.CmdStartTakeFromCharacter", AuthorityCheck.Revalidated },
@@ -112,7 +112,6 @@ namespace SS3D.Tests.AssetAudit
         {
             "CombatInteractionNetwork.CmdSyncMeleeAim",
             "CombatInteractionNetwork.CmdThrow",
-            "Draggable.SetDragServer",
         };
 
         private static readonly Type[] TrustedArgumentTypes =

@@ -362,7 +362,6 @@ ServerRpc of this kind with its check; the holes below are its `Unchecked` entri
   `accesspreset` (any access level, on yourself or on another ckey) and `spawnitem`. Sandbox-server §5
   says players get no console. An unknown command name throws, because `FindCommand`'s result is
   ignored (`:144`).
-- **`Draggable.SetDragServer(bool, NetworkObject)`**: trusts a client-supplied dragger.
 - **Throw target height** is unbounded and NaN isn't rejected (`ThrowRules.cs:71-84` clamps
   horizontal distance only).
 - **Combat one-shots** start via client `HumanoidBodyStateMachine.CmdFireTrigger` (`:369`), and the
