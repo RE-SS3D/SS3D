@@ -133,7 +133,8 @@ namespace SS3D.UI.StoragePanel
 
         private void OnPointerUp(PointerUpEvent evt)
         {
-            if (evt.pointerId != _pressPointerId || !this.HasPointerCapture(evt.pointerId))
+            // A drag is a left press; releasing another button mid-drag must not drop the item.
+            if (evt.button != (int)MouseButton.LeftMouse || evt.pointerId != _pressPointerId || !this.HasPointerCapture(evt.pointerId))
             {
                 return;
             }

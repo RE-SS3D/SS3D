@@ -455,6 +455,13 @@ namespace SS3D.UI.StoragePanel
                 return;
             }
 
+            // Closing the panel a drag started from takes the source slot and its pointer capture with it, so the
+            // release never arrives and the ghost would stay on screen until the next drag or focus loss.
+            if (ReferenceEquals(_dragSourcePanel, view))
+            {
+                CleanupDrag();
+            }
+
             ((IContainerPanel)view).Close();
             _openPanels.Remove(container);
 
