@@ -199,7 +199,7 @@ namespace SS3D.Systems.ScreenEffects
                 }
 
                 valueLabel.text = value.ToString("0.00");
-                SubSystems.Get<ScreenEffectsSubSystem>()?.SetEffect(type, value);
+                SubSystems.GetOrNull<ScreenEffectsSubSystem>()?.SetEffect(type, value);
             });
         }
 
@@ -216,7 +216,7 @@ namespace SS3D.Systems.ScreenEffects
 
             Button button = buttonHost.AddComponent<Button>();
             button.targetGraphic = background;
-            button.onClick.AddListener(() => SubSystems.Get<ScreenEffectsSubSystem>()?.TriggerHitFlash());
+            button.onClick.AddListener(() => SubSystems.GetOrNull<ScreenEffectsSubSystem>()?.TriggerHitFlash());
 
             AddLabel(buttonHost.transform, "Hit Flash", 14);
         }

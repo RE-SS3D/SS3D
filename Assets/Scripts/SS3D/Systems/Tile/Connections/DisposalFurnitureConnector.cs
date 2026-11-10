@@ -42,7 +42,7 @@ namespace SS3D.Systems.Tile.Connections
         {
             Setup();
 
-            TileMap map = SubSystems.Get<TileSubSystem>()?.CurrentMap;
+            TileMap map = SubSystems.GetOrNull<TileSubSystem>()?.CurrentMap;
             if (map == null)
                 return;
 
@@ -54,7 +54,7 @@ namespace SS3D.Systems.Tile.Connections
         {
             Setup();
 
-            TileMap map = SubSystems.Get<TileSubSystem>()?.CurrentMap;
+            TileMap map = SubSystems.GetOrNull<TileSubSystem>()?.CurrentMap;
             if (map == null || neighbourObject == null)
                 return false;
 
@@ -75,7 +75,7 @@ namespace SS3D.Systems.Tile.Connections
         {
             Setup();
 
-            TileMap map = SubSystems.Get<TileSubSystem>()?.CurrentMap;
+            TileMap map = SubSystems.GetOrNull<TileSubSystem>()?.CurrentMap;
             if (map != null && TryGetPipeBelow(map, out PlacedTileObject pipe))
                 return new List<PlacedTileObject> { pipe };
 

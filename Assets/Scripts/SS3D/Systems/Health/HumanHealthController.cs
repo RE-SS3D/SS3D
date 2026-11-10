@@ -570,7 +570,7 @@ namespace SS3D.Systems.Health
             }
 
             _nextScreamTime = Time.time + HealthConstants.ScreamCooldownSeconds;
-            SubSystems.Get<AudioSubSystem>()?.PlayAudioSource(
+            SubSystems.GetOrNull<AudioSubSystem>()?.PlayAudioSource(
                 AudioType.Sfx,
                 HealthAudioTrackIds.MaleScream,
                 Transform.position,
@@ -978,7 +978,7 @@ namespace SS3D.Systems.Health
                 return;
             }
 
-            SubSystems.Get<ScreenEffectsSubSystem>()?.TriggerHitFlash();
+            SubSystems.GetOrNull<ScreenEffectsSubSystem>()?.TriggerHitFlash();
         }
 
         private void ApplyScreenEffectsFromSnapshot(HealthSnapshot snapshot)

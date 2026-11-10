@@ -455,7 +455,7 @@ namespace SS3D.Systems.Tile
             if (_tileObjectSo == null)
                 return;
 
-            ushort assetId = SubSystems.Get<TileSubSystem>()?.TryGetAssetId(_tileObjectSo) ?? TileAssetCatalog.InvalidAssetId;
+            ushort assetId = SubSystems.GetOrNull<TileSubSystem>()?.TryGetAssetId(_tileObjectSo) ?? TileAssetCatalog.InvalidAssetId;
             if (assetId == TileAssetCatalog.InvalidAssetId)
             {
                 Log.Warning(this, "Could not resolve compact asset id for {tileName}", Logs.Generic, _tileObjectSo.NameString);
@@ -538,7 +538,7 @@ namespace SS3D.Systems.Tile
                 return;
 
             _clientRegistered = true;
-            SubSystems.Get<TileSubSystem>()?.NotifyClientPlacedObjectStarted(this);
+            SubSystems.GetOrNull<TileSubSystem>()?.NotifyClientPlacedObjectStarted(this);
         }
 
         public override void OnStopClient()
@@ -552,7 +552,7 @@ namespace SS3D.Systems.Tile
                 return;
 
             _clientRegistered = false;
-            SubSystems.Get<TileSubSystem>()?.NotifyClientPlacedObjectStopped(this);
+            SubSystems.GetOrNull<TileSubSystem>()?.NotifyClientPlacedObjectStopped(this);
         }
 
         /// <summary>

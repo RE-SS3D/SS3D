@@ -120,7 +120,7 @@ namespace SS3D.UI.MainHud.Dev
             _visible = !_visible;
             if (_visible)
             {
-                _state = SubSystems.Get<MainHudSubSystem>()?.DebugAlertOverride ?? default;
+                _state = SubSystems.GetOrNull<MainHudSubSystem>()?.DebugAlertOverride ?? default;
                 RefreshAllButtons();
             }
 
@@ -129,7 +129,7 @@ namespace SS3D.UI.MainHud.Dev
 
         private void BuildUi()
         {
-            _state = SubSystems.Get<MainHudSubSystem>()?.DebugAlertOverride ?? default;
+            _state = SubSystems.GetOrNull<MainHudSubSystem>()?.DebugAlertOverride ?? default;
 
             _document = gameObject.AddComponent<UIDocument>();
             _document.panelSettings = ResolvePanelSettings();
@@ -169,7 +169,7 @@ namespace SS3D.UI.MainHud.Dev
             Button clear = new(() =>
             {
                 _state = default;
-                SubSystems.Get<MainHudSubSystem>()?.ClearDebugAlertOverride();
+                SubSystems.GetOrNull<MainHudSubSystem>()?.ClearDebugAlertOverride();
                 RefreshAllButtons();
             })
             {
@@ -239,7 +239,7 @@ namespace SS3D.UI.MainHud.Dev
             Button button = new(() =>
             {
                 SetSeverity(hazard, severity);
-                SubSystems.Get<MainHudSubSystem>()?.SetDebugAlertOverride(_state);
+                SubSystems.GetOrNull<MainHudSubSystem>()?.SetDebugAlertOverride(_state);
                 RefreshRowButtons(hazard);
             })
             {

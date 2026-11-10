@@ -693,7 +693,7 @@ namespace SS3D.Systems.Furniture
 
         private void NotifyTileStateChanged()
         {
-            SubSystems.Get<TileSubSystem>()?.NotifyTileStateChanged(transform.position);
+            SubSystems.GetOrNull<TileSubSystem>()?.NotifyTileStateChanged(transform.position);
         }
 
         private void HandlePowerStatusUpdated(object sender, PowerStatus newStatus)

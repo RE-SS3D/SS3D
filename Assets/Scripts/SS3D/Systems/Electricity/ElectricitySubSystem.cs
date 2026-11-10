@@ -89,7 +89,7 @@ namespace SS3D.Systems.Electricity
                 readiness.PhaseChanged -= HandleReadinessPhaseChanged;
             }
 
-            SubSystems.Get<TileSubSystem>()?.UnregisterTileMutationObserver(this);
+            SubSystems.GetOrNull<TileSubSystem>()?.UnregisterTileMutationObserver(this);
             base.OnDestroyed();
         }
 
