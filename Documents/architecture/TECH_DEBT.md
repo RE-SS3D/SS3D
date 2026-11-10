@@ -353,10 +353,6 @@ chunks batched per command group; keep one full snapshot for late joiners (M).
 `MapEditorRoundStop`, `EntitySubSystem.CmdSpawnLatePlayer`), but these do not. `ServerRpcAuthorityAuditTests` (tech-debt G1) lists every
 ServerRpc of this kind with its check; the holes below are its `Unchecked` entries.
 
-- **Ranged shot origin:** `CmdSyncMeleeAim(rayOrigin, aimPoint)` stores the client's origin unchecked
-  (`CombatInteractionNetwork.cs:848-854`); `RangedHitscanResolver` fires and checks line of sight from it
-  (`:52`, `:64`). A modified client can shoot from anywhere, through walls. Derive the origin on the
-  server (muzzle/eye) and take only a clamped direction from the client.
 - **Console commands at `AccessLevel User` run on the server for any player**, in release builds
   (`CommandsController.CmdProcessOnlineCommand`). These include `accessgrant` / `accessrevoke` /
   `accesspreset` (any access level, on yourself or on another ckey) and `spawnitem`. Sandbox-server §5

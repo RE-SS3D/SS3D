@@ -62,6 +62,7 @@ stamina drain), projectile travel, thrown-item damage.
 - Harm primary / aim / muzzle / recovery RPCs: extend `CombatInteractionNetwork` — do not grow `InteractionController` for combat.
 - Stance: `HumanoidBodyStateBridge.ResolveCombatStance` prefers the extension component.
 - Shared LOS: call `LineOfSight.HasLineOfSight` / `TryGetFirstHit` — do not fork parallel raycasts.
+- Aim: the client syncs only its aim point (`CmdSyncMeleeAim`); the server builds the ray from the body's eye (`ServerEyePosition`, `Entity.ViewPoint`) through it with `CombatAimRay.TryBuild`. Never take a ray origin, muzzle or eye position from a client (tech-debt P1.1). An aim cone around the server's facing waits on the plan's open question 5.
 
 ## Pitfalls
 
