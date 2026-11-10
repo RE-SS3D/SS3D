@@ -32,7 +32,7 @@ namespace SS3D.Systems.Combat
     /// Intent and delayed-interaction tracking stay on <see cref="InteractionController"/>.
     /// </summary>
     [RequireComponent(typeof(InteractionController))]
-    public sealed partial class CombatInteractionNetwork : NetworkActor
+    public sealed partial class CombatInteractionNetwork : NetworkActor, IClientTriggerGate
     {
         [SerializeField] private InteractionController _interactionController;
 
@@ -99,9 +99,11 @@ namespace SS3D.Systems.Combat
                 BeginLocalSwingCycle(hand, hit.Profile);
             }
 
-            TryPlayMeleeSwingTelegraph(hit, hand);
+            // The action RPC goes first so the server has accepted it when the telegraph's CmdFireTrigger arrives
+            // (ClientTriggerRules); both play in this frame locally.
             TrySyncMeleeAimToServer();
             CmdRunMeleeSwing();
+            TryPlayMeleeSwingTelegraph(hit, hand);
             return true;
         }
 
@@ -128,13 +130,13 @@ namespace SS3D.Systems.Combat
                     weapon.BeginLocalReload(weapon.Profile.ReloadSeconds);
                 }
 
+                TrySyncMeleeAimToServer();
+                CmdRunRangedFire();
                 if (startingReload)
                 {
                     TryPlayRangedReloadTelegraph();
                 }
 
-                TrySyncMeleeAimToServer();
-                CmdRunRangedFire();
                 return true;
             }
 
@@ -148,9 +150,9 @@ namespace SS3D.Systems.Combat
                 weapon.BeginLocalFireCooldown();
             }
 
-            TryPlayRangedFireTelegraph();
             TrySyncMeleeAimToServer();
             CmdRunRangedFire();
+            TryPlayRangedFireTelegraph();
             return true;
         }
 
@@ -172,8 +174,8 @@ namespace SS3D.Systems.Combat
                 weapon.BeginLocalReload(weapon.Profile.ReloadSeconds);
             }
 
-            TryPlayRangedReloadTelegraph();
             CmdRunRangedReload();
+            TryPlayRangedReloadTelegraph();
             return true;
         }
 
@@ -362,6 +364,26 @@ namespace SS3D.Systems.Combat
                 {
                     targetRagdoll.ServerKnockdownAtLeast(profile.KnockdownSeconds);
                 }
+            }
+        }
+
+        /// <summary>Server: a client's combat one-shot plays for others only while its action is under way here.</summary>
+        [Server]
+        public bool ServerAcceptsClientTrigger(AnimationTriggerId trigger)
+        {
+            switch (trigger)
+            {
+                case AnimationTriggerId.AttackSwing:
+                case AnimationTriggerId.AttackStab:
+                    return _pendingMeleeHand != null;
+                case AnimationTriggerId.Throw:
+                    return HasPendingThrow;
+                case AnimationTriggerId.FireRifle:
+                    return TryGetHeldRangedWeapon(out _, out RangedWeaponItemExtension firing) && firing.IsOnCooldown;
+                case AnimationTriggerId.Reload:
+                    return TryGetHeldRangedWeapon(out _, out RangedWeaponItemExtension reloading) && reloading.IsReloading;
+                default:
+                    return false;
             }
         }
 

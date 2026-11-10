@@ -1,3 +1,4 @@
+using FishNet.Connection;
 using FishNet.Object;
 using FishNet.Object.Synchronizing;
 using SS3D.Core.Behaviours;
@@ -348,9 +349,20 @@ namespace SS3D.Systems.Entities.Humanoid.Body
             ServerApplyLocomotionVelocity(velX, velZ);
         }
 
+        /// <summary>
+        /// The client chooses combat or peaceful (its intent); the server picks melee or ranged from its own copy of the
+        /// inventory (tech-debt P1.6).
+        /// </summary>
         [ServerRpc]
         public void CmdSetCombatMode(HumanoidCombatMode mode)
         {
+            if (mode.IsCombat())
+            {
+                mode = TryGetComponent(out HumanoidBodyStateBridge bridge)
+                    ? bridge.ResolveCombatStance()
+                    : HumanoidCombatMode.Melee;
+            }
+
             _snapshot.CombatMode = mode;
             ApplyLocalSnapshot();
         }
@@ -380,9 +392,23 @@ namespace SS3D.Systems.Entities.Humanoid.Body
             ApplyLocalSnapshot();
         }
 
+        /// <summary>
+        /// The owner's predicted one-shot, replicated to everyone else only when <see cref="ClientTriggerRules"/> allows
+        /// it. A refused trigger clears the owner's prediction so it doesn't swallow the next real one.
+        /// </summary>
         [ServerRpc]
         public void CmdFireTrigger(AnimationTriggerId trigger, byte attackVariant, byte attackWindup)
         {
+            if (!ClientTriggerRules.MayClientStart(trigger, GetComponent<IClientTriggerGate>()))
+            {
+                if (Owner.IsValid)
+                {
+                    TargetDropPredictedTrigger(Owner);
+                }
+
+                return;
+            }
+
             _snapshot.ActiveTrigger = trigger;
             _snapshot.AttackVariant = (byte)(attackVariant & 0x3);
             _snapshot.AttackWindup = (byte)(attackWindup & MeleeSwingAnimation.WindupQuantizedMax);
@@ -391,6 +417,15 @@ namespace SS3D.Systems.Entities.Humanoid.Body
             // never ConsumeTrigger (fire/reload invisible on host).
             ApplyLocalSnapshot();
             _triggerSequence++;
+        }
+
+        [TargetRpc]
+        private void TargetDropPredictedTrigger(NetworkConnection conn)
+        {
+            if (TryGetComponent(out AnimationOrchestrator orchestrator))
+            {
+                orchestrator.DropOwnerPrediction();
+            }
         }
 
         [ServerRpc]
