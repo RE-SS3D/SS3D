@@ -1,10 +1,13 @@
 ﻿using Coimbra.Services.Events;
 using Coimbra.Services.PlayerLoopEvents;
+using FishNet.Connection;
 using FishNet.Object;
 using FishNet.Object.Synchronizing;
+using SS3D.Core;
 using SS3D.Core.Behaviours;
 using SS3D.Interactions;
 using SS3D.Interactions.Interfaces;
+using SS3D.Systems.Entities;
 using SS3D.Systems.Furniture;
 using SS3D.Systems.Inventory.Interactions;
 using SS3D.Systems.Selection;
@@ -25,6 +28,12 @@ public class Draggable : NetworkActor, IInteractionTarget, IGameObjectProvider
     private bool _dragged;
 
     public bool Dragged => _dragged;
+
+    /// <summary>
+    /// How far (horizontally) the server lets a client's body be from this object when it starts a drag. Generous,
+    /// because the object's pivot can sit well past the edge the player clicked, and the server's copy of the body lags.
+    /// </summary>
+    public const float MaxDragStartDistance = 3f;
 
     public IInteraction[] CreateTargetInteractions(InteractionEvent interactionEvent)
     {
@@ -54,16 +63,40 @@ public class Draggable : NetworkActor, IInteractionTarget, IGameObjectProvider
             return;
         }
 
-        NetworkObject draggerObject = dragger != null
-            ? dragger.GetComponentInParent<NetworkObject>()
-            : null;
-        SetDragServer(drag, draggerObject);
+        CmdSetDrag(drag);
     }
 
+    /// <summary>
+    /// The dragger is always the caller's own body, resolved on the server (networking §2). Starting needs that body
+    /// within <see cref="MaxDragStartDistance"/>; only the body dragging the object may let go of it.
+    /// </summary>
     [ServerRpc(RequireOwnership = false)]
-    private void SetDragServer(bool drag, NetworkObject draggerObject)
+    private void CmdSetDrag(bool drag, NetworkConnection conn = null)
     {
-        ApplyDrag(drag, draggerObject != null ? draggerObject.transform : null);
+        if (!SubSystems.TryGet(out EntitySubSystem entities) || !entities.TryGetOwnedEntity(conn, out Entity entity))
+            return;
+
+        if (!MayChangeDrag(drag, entity.transform, _dragged ? _dragger : null, transform.position))
+            return;
+
+        ApplyDrag(drag, entity.transform);
+    }
+
+    /// <summary>Server rule for a client's drag request; pure, so EditMode can test it.</summary>
+    public static bool MayChangeDrag(bool drag, Transform caller, Transform currentDragger, Vector3 draggedPosition)
+    {
+        if (caller == null)
+            return false;
+
+        if (!drag)
+            return currentDragger == null || currentDragger == caller;
+
+        if (currentDragger != null && currentDragger != caller)
+            return false;
+
+        Vector3 offset = draggedPosition - caller.position;
+        offset.y = 0f;
+        return offset.sqrMagnitude <= MaxDragStartDistance * MaxDragStartDistance;
     }
 
     private void ApplyDrag(bool drag, Transform dragger)
