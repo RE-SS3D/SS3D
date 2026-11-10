@@ -1,8 +1,7 @@
-using FishNet.Connection;
+using System.Collections.Generic;
 using SS3D.Core;
 using SS3D.Permissions;
 using SS3D.Systems.ScreenEffects;
-using System;
 
 namespace SS3D.Systems.IngameConsoleSystem.Commands
 {
@@ -12,54 +11,48 @@ namespace SS3D.Systems.IngameConsoleSystem.Commands
     /// </summary>
     public class ScreenEffectCommand : Command
     {
-        public override string ShortDescription => "Set a screen-space effect's intensity";
-        public override string Usage => "(effect name) (intensity 0-1) | release\n"
-            + "effects: hotroom, onfire, coldroom, freezing, lowoxygen, dyingcritical, bloodlosstunnelvision, concussion, unconscious\n"
-            + "example: screeneffect onfire 0.8\n"
-            + "screeneffect release — return control to health/atmos mappers";
+        private IReadOnlyList<Subcommand> _subcommands;
+
+        public override string Name => "screeneffect";
+        public override CommandCategory Category => CommandCategory.Debug;
+        public override string Description => "Override a screen-space effect's intensity on your own screen";
         public override ServerRoleTypes AccessLevel => ServerRoleTypes.User;
         public override CommandType Type => CommandType.Client;
+        public override string Example => "set onfire 0.8";
 
-        private record CalculatedValues(bool Release, ScreenEffectType Type, float Intensity) : ICalculatedValues;
-
-        public override string Perform(string[] args, NetworkConnection conn = null)
+        public override IReadOnlyList<Subcommand> Subcommands => _subcommands ??= new[]
         {
-            if (!ReceiveCheckResponse(args, out CheckArgsResponse response, out CalculatedValues values)) return response.InvalidArgs;
+            new Subcommand("set", "Turn the debug override on and set one effect", PerformSet,
+                P.Enum<ScreenEffectType>("effect"), P.Float("intensity").Range(0, 1)),
+            new Subcommand("release", "Return control to the health and atmos mappers", PerformRelease),
+        };
 
+        private static CommandResult PerformSet(CommandContext context, CommandArgs args)
+        {
             ScreenEffectsSubSystem effects = SubSystems.Get<ScreenEffectsSubSystem>();
             if (effects == null)
             {
-                return "ScreenEffectsSubSystem unavailable";
+                return CommandResult.Error("ScreenEffectsSubSystem unavailable");
             }
 
-            if (values.Release)
-            {
-                effects.SetDebugOverrideActive(false);
-                return "Screen-effect debug override released";
-            }
-
+            ScreenEffectType type = args.Get<ScreenEffectType>("effect");
+            float intensity = args.Float("intensity");
             effects.SetDebugOverrideActive(true);
-            effects.SetEffect(values.Type, values.Intensity);
+            effects.SetEffect(type, intensity);
 
-            return $"{values.Type} set to {values.Intensity:0.00} (debug override on)";
+            return CommandResult.Success($"{type} set to {intensity:0.00} (debug override on)");
         }
 
-        protected override CheckArgsResponse CheckArgs(string[] args)
+        private static CommandResult PerformRelease(CommandContext context, CommandArgs args)
         {
-            CheckArgsResponse response = new();
-
-            if (args.Length == 1 && args[0].Equals("release", StringComparison.OrdinalIgnoreCase))
+            ScreenEffectsSubSystem effects = SubSystems.Get<ScreenEffectsSubSystem>();
+            if (effects == null)
             {
-                return response.MakeValid(new CalculatedValues(true, default, 0f));
+                return CommandResult.Error("ScreenEffectsSubSystem unavailable");
             }
 
-            if (args.Length != 2) return response.MakeInvalid(WrongArgsText);
-
-            if (!Enum.TryParse(args[0], true, out ScreenEffectType type)) return response.MakeInvalid("Invalid effect name");
-
-            if (!float.TryParse(args[1], out float intensity)) return response.MakeInvalid("Invalid intensity");
-
-            return response.MakeValid(new CalculatedValues(false, type, intensity));
+            effects.SetDebugOverrideActive(false);
+            return CommandResult.Success("Screen-effect debug override released");
         }
     }
 }

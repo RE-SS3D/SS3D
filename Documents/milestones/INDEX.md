@@ -25,7 +25,7 @@ M4 (win/lose) and M5 (end screen, restart) shipped: [round-end loop](../archive/
 
 **Enabler** — [test-server.md](test-server.md), serves Playtest 1:
 
-- **T3** — exit line: doors for remote clients; admin force-end and teleport disk; Nuke Ops smoke green nightly; 8 clients through a breach without hitching
+- **T3** — exit line: doors for remote clients (admin force-end and disk teleport shipped as `round end` and `disk`); Nuke Ops smoke green nightly; 8 clients through a breach without hitching
 - **T8** — 24/7 Nuke Ops server, separate from the sandbox; Extended below 4 ready players. Announcing it publicly closes the gate (T5)
 
 **Maintenance** — [map-authoring.md](map-authoring.md): A8 palette layout (S1–S3 done; S4 layer groups next); triage tester reports. A6 (a tester-built station) is off the critical path.

@@ -20,6 +20,7 @@ using SS3D.Systems.Entities;
 using SS3D.Systems.Entities.Humanoid;
 using SS3D.Systems.Health;
 using SS3D.Systems.IngameConsoleSystem;
+using SS3D.Systems.IngameConsoleSystem.Commands;
 using SS3D.Systems.Inventory.Items;
 using SS3D.Systems.PlayerControl;
 using SS3D.Systems.Rounds;
@@ -457,10 +458,17 @@ namespace SS3D.Systems.Testing
                     break;
 
                 case "console":
-                    RunConsoleCommand(ExpandVariables(instruction.ArgsJoined));
+                    // A Local command answers at once; a failed one (e.g. observesync) fails the script.
+                    // Server and Client commands answer later, so they can't fail it here.
+                    CommandResult? consoleResult = RunConsoleCommand(ExpandVariables(instruction.ArgsJoined));
+                    if (consoleResult.HasValue && !consoleResult.Value.Ok)
+                    {
+                        throw new InvalidOperationException(consoleResult.Value.Message);
+                    }
+
                     break;
 
-                // Retries a console line until it stops throwing: waits on an Offline assert command
+                // Retries a console line until it returns an Ok result: waits on a Local assert command
                 // (e.g. observesync) whose state another process changes.
                 case "wait_console":
                     yield return WaitForConsole(ExpandVariables(instruction.ArgsJoined));
@@ -1079,7 +1087,11 @@ namespace SS3D.Systems.Testing
                 string failure = null;
                 try
                 {
-                    RunConsoleCommand(commandLine);
+                    CommandResult? result = RunConsoleCommand(commandLine);
+                    if (result.HasValue && !result.Value.Ok)
+                    {
+                        failure = result.Value.Message;
+                    }
                 }
                 catch (Exception ex)
                 {
@@ -1100,7 +1112,7 @@ namespace SS3D.Systems.Testing
             }
         }
 
-        private void RunConsoleCommand(string commandLine)
+        private CommandResult? RunConsoleCommand(string commandLine)
         {
             CommandsController commandsController = FindFirstObjectByType<CommandsController>();
 
@@ -1109,7 +1121,7 @@ namespace SS3D.Systems.Testing
                 throw new InvalidOperationException("No CommandsController found in the scene to run a console instruction against.");
             }
 
-            commandsController.ClientProcessCommand(commandLine);
+            return commandsController.ClientProcessCommand(commandLine);
         }
 
         private void Disconnect()

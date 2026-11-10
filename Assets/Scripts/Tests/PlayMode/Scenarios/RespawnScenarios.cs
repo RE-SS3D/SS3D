@@ -70,8 +70,8 @@ namespace SS3D.Tests
                 Assert.IsTrue(fresh.IsOwner, $"Life {life}: the host owns the new body");
                 EmptyHands(fresh);
                 yield return null;
-                yield return Console.Expect("spawninhand MedicalPatch", "spawned in hand");
-                yield return Console.Run("spawninhand MedicalPatch");
+                yield return Console.Expect("spawn MedicalPatch hand", "spawned in hand");
+                yield return Console.Run("spawn MedicalPatch hand");
                 StringAssert.Contains("not empty", Console.LastAnswer, $"Life {life}: the new body's hand holds what it was given");
             }
         }

@@ -88,7 +88,7 @@ flowchart TB
 
 **Shipped foundations** (not focus — do not re-open as blockers):
 
-- **Combat + thin armor absorption** — [combat](../architecture/systems/combat.md); plan Phase 3 + 5. Combat feel already shipped: muzzle flash, bullet-hole decals, SS14 gun and surface audio, fire/reload upper-body animations, two-handed M4, `rangeddebug` off by default, centered reticle hit-flash.
+- **Combat + thin armor absorption** — [combat](../architecture/systems/combat.md); plan Phase 3 + 5. Combat feel already shipped: muzzle flash, bullet-hole decals, SS14 gun and surface audio, fire/reload upper-body animations, two-handed M4, `rangedmarkers` off by default, centered reticle hit-flash.
 - **Round end, squad and win/lose (M4, M5)** — summary, restart, operative draw and kit, team objective, §6 win/lose table and the `-nukeops` profile ([round-end loop](../archive/architecture/2026-11_round-end-loop.md); [rounds-lobby](../architecture/systems/rounds-lobby.md); [gamemodes-roles-traits](../architecture/systems/gamemodes-roles-traits.md)). M5 is **shared with [test-server.md](test-server.md) T4.**
 - **Health feel** — crit ragdoll, screen-effect compositing, personal/hit SFX ([health-env-feel](../archive/architecture/2026-07_health-env-feel.md)).
 - **Structural damage + blast resolve API** — [structural-destruction](../architecture/systems/structural-destruction.md) Phase 1–4.

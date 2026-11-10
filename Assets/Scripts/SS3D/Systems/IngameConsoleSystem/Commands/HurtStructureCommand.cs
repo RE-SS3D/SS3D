@@ -1,4 +1,3 @@
-using FishNet.Connection;
 using FishNet.Object;
 using SS3D.Core;
 using SS3D.Permissions;
@@ -6,6 +5,7 @@ using SS3D.Systems.Entities;
 using SS3D.Systems.StructuralDamage;
 using SS3D.Systems.Tile;
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace SS3D.Systems.IngameConsoleSystem.Commands
@@ -17,44 +17,40 @@ namespace SS3D.Systems.IngameConsoleSystem.Commands
     {
         private const float DefaultForce = 40f;
 
-        public override string ShortDescription => "Damage structural turf in front of you";
-        public override string LongDescription =>
-            "Applies structural integrity damage to the wall/door/window on the cardinal tile ahead of your standing tile. Usage: hurtstructure [force] (default 40).";
-        public override string Usage => "[force]";
+        private static readonly IReadOnlyList<CommandParameter> Declared = new[]
+        {
+            P.Float("force").Default(DefaultForce).Range(0.01, 100000),
+        };
+
+        public override string Name => "hurtstructure";
+        public override CommandCategory Category => CommandCategory.Debug;
+        public override string Description => "Apply structural damage to the wall, door or window on the tile ahead of you";
         public override ServerRoleTypes AccessLevel => ServerRoleTypes.Administrator;
         public override CommandType Type => CommandType.Server;
+        public override IReadOnlyList<CommandParameter> Parameters => Declared;
+        public override string Example => "100";
 
         [Server]
-        public override string Perform(string[] args, NetworkConnection conn = null)
+        public override CommandResult Perform(CommandContext context, CommandArgs args)
         {
-            CheckArgsResponse check = CheckArgs(args);
-            if (!check.IsValid)
-            {
-                return check.InvalidArgs;
-            }
+            float force = args.Float("force");
 
-            float force = DefaultForce;
-            if (args.Length == 1)
+            Entity entity = context.CallerEntity;
+            if (entity == null)
             {
-                float.TryParse(args[0], out force);
-            }
-
-            EntitySubSystem entities = SubSystems.Get<EntitySubSystem>();
-            if (entities == null || !entities.TryGetOwnedEntity(conn, out Entity entity))
-            {
-                return "Connection does not own any entity";
+                return CommandResult.Error("you have no body");
             }
 
             TileSubSystem tiles = SubSystems.Get<TileSubSystem>();
             if (tiles == null || tiles.CurrentMap == null || tiles.QueryService == null)
             {
-                return "TileSubSystem / map not ready";
+                return CommandResult.Error("TileSubSystem / map not ready");
             }
 
             StructuralDamageSubSystem structural = SubSystems.Get<StructuralDamageSubSystem>();
             if (structural == null)
             {
-                return "StructuralDamageSubSystem not registered";
+                return CommandResult.Error("StructuralDamageSubSystem not registered");
             }
 
             // Standing-tile + one cardinal step ahead — not world-position + forward*distance,
@@ -66,41 +62,15 @@ namespace SS3D.Systems.IngameConsoleSystem.Commands
 
             if (!structural.TryApplyStructuralDamage(ahead, force, StructuralDamageSource.Console))
             {
-                return $"No structural turf ahead at {ahead.Grid.x},{ahead.Grid.y} map {mapId} (standing {standing.Grid.x},{standing.Grid.y} facing {facing})";
+                return CommandResult.Error($"No structural turf ahead at {ahead.Grid.x},{ahead.Grid.y} map {mapId} (standing {standing.Grid.x},{standing.Grid.y} facing {facing})");
             }
 
             if (!structural.TryGetIntegrity(ahead, out StructuralIntegrityStage stage, out float remaining, out float max))
             {
-                return $"Structural Destroyed at {ahead.Grid.x},{ahead.Grid.y}";
+                return CommandResult.Success($"Structural Destroyed at {ahead.Grid.x},{ahead.Grid.y}");
             }
 
-            return $"Structure at {ahead.Grid.x},{ahead.Grid.y}: {stage} ({remaining:0.#}/{max:0.#})";
-        }
-
-        protected override CheckArgsResponse CheckArgs(string[] args)
-        {
-            CheckArgsResponse response = new();
-
-            if (args.Length > 1)
-            {
-                return response.MakeInvalid("Usage: hurtstructure [force]");
-            }
-
-            if (args.Length == 1)
-            {
-                if (!float.TryParse(args[0], out float parsedForce))
-                {
-                    return response.MakeInvalid("Invalid force amount");
-                }
-
-                if (parsedForce <= 0f)
-                {
-                    return response.MakeInvalid("Force must be positive");
-                }
-            }
-
-            response.IsValid = true;
-            return response;
+            return CommandResult.Success($"Structure at {ahead.Grid.x},{ahead.Grid.y}: {stage} ({remaining:0.#}/{max:0.#})");
         }
 
         private static Direction CardinalFromForward(Vector3 forward)

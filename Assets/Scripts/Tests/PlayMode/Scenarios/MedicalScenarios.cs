@@ -18,7 +18,7 @@ namespace SS3D.Tests
         public IEnumerator BandageOnSelf_StopsBleeding([Values(BodyZone.Chest, BodyZone.LeftLeg)] BodyZone zone)
         {
             HumanHealthController health = Body.GetComponent<HumanHealthController>();
-            yield return Console.Expect("spawninhand MedicalPatch", "spawned in hand");
+            yield return Console.Expect("spawn MedicalPatch hand", "spawned in hand");
             yield return Console.Expect($"hurt {ServerHelpers.LocalCkey} {zone} 30 0", "Player hurt");
             yield return WaitFor(() => health.Snapshot.IsZoneBleeding(zone), $"the {zone} wound bleeds");
 

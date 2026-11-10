@@ -14,7 +14,7 @@ One row per gameplay domain that has, or should eventually have, a design doc. A
 
 | Domain | Design | Architecture | System map |
 |---|---|---|---|
-| admin-tools | [admin-tools](../design/admin-tools.md) | none yet | [ingame-console](systems/ingame-console.md) — partial |
+| admin-tools | [admin-tools](../design/admin-tools.md) | [console-commands](../archive/architecture/2026-11_console-commands.md) — shipped | [ingame-console](systems/ingame-console.md) — partial |
 | ai-cyborgs | [ai-cyborgs](../design/ai-cyborgs.md) | none yet | none yet |
 | antagonist-content | [antagonist-content](../design/antagonist-content.md) | [round-end-loop](../archive/architecture/2026-11_round-end-loop.md) — shipped | [gamemodes-roles-traits](systems/gamemodes-roles-traits.md) — partial |
 | area | [area](../design/area.md) | [area-foundation](../archive/architecture/2026-07_area-foundation.md) — shipped | [area](systems/area.md) — partial |

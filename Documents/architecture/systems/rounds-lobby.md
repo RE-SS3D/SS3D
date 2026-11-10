@@ -43,7 +43,7 @@ character ships (`CharacterCreatorMockData.Loadouts`).
 
 Server Settings now has the reference state card, countdown actions, map/mode selectors,
 player cap/round-length inputs and rule checkboxes. `ServerSettings.cs` extends the existing
-round subsystem: permission-checked ServerRpcs and admin-only TargetRpc snapshots. Late-join policy and station load state/name are publicly
+round subsystem: permission-checked ServerRpcs and admin-only TargetRpc snapshots. Round actions (`RoundAdminAction`) apply through `ServerRoundAdminAction`, which `CmdRoundAdminAction` and the console's `round` command ([ingame-console](ingame-console.md)) share; it returns false when the round isn't in a state the action applies to. Late-join policy and station load state/name are publicly
 replicated; gamemode identity stays protected. Configuration is editable while stopped, retained
 across rounds in memory, and not yet persisted to disk. Map options come from saved station
 templates. Session boot creates an empty tile container without restoring any station; Start

@@ -234,7 +234,7 @@ namespace SS3D.Tests
 
         /// <summary>Fully heals the host's body through the <c>heal</c> console command.</summary>
         protected IEnumerator HealFully() =>
-            Console.Expect($"heal {ServerHelpers.LocalCkey} all 999 999", "Player fully healed");
+            Console.Expect($"heal {ServerHelpers.LocalCkey}", "Player fully healed");
 
         /// <summary>Deletes whatever the body holds; the job loadout fills a hand (Security's toolbox).</summary>
         protected static void EmptyHands(Entity body)

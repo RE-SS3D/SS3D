@@ -1,210 +1,211 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 using FishNet.Connection;
 using FishNet.Object;
 using SS3D.Core;
 using SS3D.Core.Behaviours;
+using SS3D.Core.Settings;
+using SS3D.Logging;
 using SS3D.Permissions;
+using SS3D.Systems.Entities;
 using SS3D.Systems.IngameConsoleSystem.Commands;
 using SS3D.Systems.PlayerControl;
 using UnityEngine;
 
 namespace SS3D.Systems.IngameConsoleSystem
 {
+    /// <summary>
+    /// Network shell around <see cref="CommandRegistry"/>: routes a typed line to where its command runs,
+    /// checks the caller's role on the server, writes the admin action log, and shows answers.
+    /// </summary>
     public class CommandsController : NetworkActor
     {
-        /// <summary>
-        /// Contains all command infos and their names in lowercase
-        /// </summary>
-        private readonly Dictionary<string, Command> _allCommands = new();
-        /// <summary>
-        /// Length of space between columns in help command
-        /// </summary>
-        private const int TabLength = 20;
         [SerializeField] private ConsolePanelView _console;
+
+        private readonly CommandResolver _resolver = new();
+        private CommandRegistry _registry;
 
         /// <summary>Every answer this client shows in its console, local or from the server. Scenarios await it.</summary>
         public event Action<string> AnswerShown;
 
+        public CommandRegistry Registry => _registry ??= new CommandRegistry(CommandRegistry.DiscoverCommands());
+
         protected override void OnStart()
         {
-            // Scan every loaded assembly, not just SS3D.Systems: UI assemblies (e.g. SS3D.UI.MainHud)
-            // may host Command subclasses that cannot live in Systems without recreating an asmdef cycle
-            // (MainHud → Systems already; Systems → MainHud is forbidden).
-            foreach (Type command in DiscoverCommandTypes())
+            _ = Registry;
+        }
+
+        /// <summary>
+        /// Run a typed line. <c>help</c>, unknown commands and Local commands answer immediately and return their
+        /// result; Server and Client commands go through the server and return null (their answer arrives
+        /// through <see cref="AnswerShown"/>). The harness's <c>wait_console</c> retries while this returns a
+        /// result that isn't <see cref="CommandResult.Ok"/>.
+        /// </summary>
+        public CommandResult? ClientProcessCommand(string commandLine)
+        {
+            if (!CommandRegistry.TrySplitLine(commandLine, out string name, out string[] args))
             {
-                Command instance = (Command)Activator.CreateInstance(command);
-                _allCommands.Add(GetCommandName(command), instance);
+                return null;
             }
-        }
 
-        private static IEnumerable<Type> DiscoverCommandTypes()
-        {
-            Type commandBase = typeof(Command);
-            foreach (Assembly assembly in AppDomain.CurrentDomain.GetAssemblies())
+            ServerRoleTypes role = LocalRole();
+            if (name == CommandRegistry.HelpCommandName)
             {
-                Type[] types;
-                try
-                {
-                    types = assembly.GetTypes();
-                }
-                catch (ReflectionTypeLoadException e)
-                {
-                    types = e.Types.Where(t => t != null).ToArray();
-                }
-
-                foreach (Type type in types)
-                {
-                    if (type.IsClass && !type.IsAbstract && type.IsSubclassOf(commandBase))
-                    {
-                        yield return type;
-                    }
-                }
+                return Show(CommandResult.Success(Registry.HelpAnswer(args, role)));
             }
-        }
 
-        /// <summary>
-        /// Treat a command, either going through the server if the client is connected, or
-        /// executing it on the disconnected client if the command type allows it.
-        /// </summary>
-        [Client]
-        public void ClientProcessCommand(string command)
-        {
-	        if (GetCommandName(command) == "help")
-	        {
-		        CommandAnswer(HelpCommand());
-		        return;
-	        }
-	        
-	        if (!FindCommand(GetCommandName(command), out Command commandObject))
-	        {
-		        CommandAnswer("No such command exists");
-		        return;
-	        }
-	        
-	        string[] splitCommand = command.Split(' ');
-	        if (splitCommand.Length > 1)
-	        {
-		        if (splitCommand[1] == "help")
-		        {
-			        CommandAnswer(LongHelpCommand(commandObject));
-                    return;
-                }
-	        }
-
-	        string[] args = GetCommandArgs(command);
-	        if(_allCommands[GetCommandName(command)].Type == CommandType.Offline)
+            if (!Registry.TryGet(name, out Command command))
             {
-                OfflineProcessCommand(commandObject, args); 
-                return;
+                return Show(CommandResult.Failure(Registry.UnknownCommandText(name, role)));
             }
-	        CmdProcessOnlineCommand(GetCommandName(command), args);
+
+            if (command.Type == CommandType.Local)
+            {
+                CommandContext context = new(null, LocalPlayer.Ckey, role, LocalEntity(), commandLine);
+                return Show(Registry.Execute(command, args, context, _resolver, out _));
+            }
+
+            if (!IsClient)
+            {
+                return Show(CommandResult.Error($"{name} needs a connection to a server"));
+            }
+
+            CmdProcessOnlineCommand(commandLine);
+            return null;
         }
 
-        /// <summary>
-        /// Get command name out of string with args
-        /// </summary>
-        private string GetCommandName(string command)
-        {
-            string[] splitCommand = command.Split(' ');
-            return splitCommand[0].ToLower();
-        }
-
-        /// <summary>
-        /// Get command name out of command type
-        /// </summary>
-        private string GetCommandName(Type command)
-        {
-            string name = command.Name.ToLower();
-            // Remove "Command" suffix
-            return name.Substring(0, name.Length - 7);
-        }
-        
-        private string[] GetCommandArgs(string command)
-        {
-	        return command.Split().Skip(1).ToArray();
-        }
-        /// <summary>
-        /// Perform command without sending a request to server.
-        /// </summary>
-        private void OfflineProcessCommand(Command command, string[] args)
-        {
-	        CommandAnswer(command.Perform(args));
-        }
-
-        /// <summary>
-        /// Check user permission and either perform command on server or on client
-        /// </summary>
+        /// <summary>Check the caller's role, then run the command here or on the caller's client.</summary>
         [ServerRpc(RequireOwnership = false)]
-        private void CmdProcessOnlineCommand(string commandName, string[] args, NetworkConnection conn = null)
+        private void CmdProcessOnlineCommand(string commandLine, NetworkConnection conn = null)
         {
+            if (!CommandRegistry.TrySplitLine(commandLine, out string name, out string[] args))
+            {
+                return;
+            }
+
             string ckey = SubSystems.Get<PlayerSubSystem>().GetCkey(conn);
-            FindCommand(commandName, out Command command);
-
-            if (!SubSystems.Get<PermissionSubSystem>().TryGetUserRole(ckey, out ServerRoleTypes userPermission))
+            if (!SubSystems.Get<PermissionSubSystem>().TryGetUserRole(ckey, out ServerRoleTypes role))
             {
-                CommandAnswer(string.Format("No role found for user {0}, can't process command", ckey), conn);
-                return;
-            }
-            
-            if (userPermission < command.AccessLevel)
-            {
-                CommandAnswer("Your permission level is too low, can't perform the command", conn);
+                CommandAnswer(CommandResult.Error($"no role found for {ckey}, can't run commands").Message, conn);
                 return;
             }
 
-            // Either execute command on server or call on client.
-            // Offline commands go through server if client is connected to server. 
+            if (!Registry.TryGet(name, out Command command))
+            {
+                CommandAnswer(Registry.UnknownCommandText(name, role), conn);
+                return;
+            }
+
+            if (!CommandRegistry.CanRun(command, role))
+            {
+                CommandAnswer(CommandResult.Error($"{name} needs {command.AccessLevel}; you are {role}").Message, conn);
+                return;
+            }
+
             switch (command.Type)
             {
                 case CommandType.Server:
-                    CommandAnswer(command.Perform(args, conn), conn);
+                    CommandContext context = new(conn, ckey, role, CallerEntity(conn), commandLine);
+                    CommandResult result = Registry.Execute(command, args, context, _resolver, out CommandArgs bound);
+                    if (result.Ok && command.AccessLevel >= ServerRoleTypes.Administrator)
+                    {
+                        LogAdminAction(ckey, commandLine, bound);
+                    }
+
+                    CommandAnswer(result.Message, conn);
                     break;
 
                 case CommandType.Client:
-                    RpcPerformOnClient(conn, commandName, args);
+                    RpcPerformOnClient(conn, commandLine, role);
+                    break;
+
+                case CommandType.Local:
+                    // Local commands never reach the server; run them in place rather than drop the line.
+                    CommandAnswer(Registry.Execute(command, args, new CommandContext(conn, ckey, role, CallerEntity(conn), commandLine), _resolver, out _).Message, conn);
                     break;
             }
         }
+
         /// <summary>
-        /// Find command by name
+        /// admin-tools.md §1: every admin action writes a line naming who, what and to whom. Permission checks are not logged.
         /// </summary>
-        /// <returns>Is given command found</returns>
-        private bool FindCommand(string commandName, out Command command)
+        private void LogAdminAction(string ckey, string commandLine, CommandArgs bound)
         {
-            if (!_allCommands.ContainsKey(commandName))
+            string targets = bound != null && bound.Targets.Count > 0
+                ? string.Join(", ", bound.Targets.Select(t => t.DisplayName))
+                : "-";
+            Log.Information(this, "AdminAction {admin} ran \"{line}\" targeting {targets}", Logs.ServerOnly, ckey, commandLine, targets);
+        }
+
+        /// <summary>Run a Client command on the caller's client once the server has checked the role.</summary>
+        [TargetRpc]
+        private void RpcPerformOnClient(NetworkConnection conn, string commandLine, ServerRoleTypes role)
+        {
+            if (!CommandRegistry.TrySplitLine(commandLine, out string name, out string[] args)
+                || !Registry.TryGet(name, out Command command))
             {
-	            command = null;
-                return false;
+                return;
             }
-            command = _allCommands[commandName];
-            return true;
+
+            CommandContext context = new(null, LocalPlayer.Ckey, role, LocalEntity(), commandLine);
+            Show(Registry.Execute(command, args, context, _resolver, out _));
         }
-		/// <summary>
-		/// Perform command on client
-		/// </summary>
-		[TargetRpc]
-        private void RpcPerformOnClient(NetworkConnection conn, string commandName, string[] args)
+
+        private static Entity CallerEntity(NetworkConnection conn)
         {
-	        FindCommand(commandName, out Command command);
-	        string answer = command.Perform(args);
-            ShowAnswer(answer);
+            if (conn == null || !SubSystems.TryGet(out EntitySubSystem entities))
+            {
+                return null;
+            }
+
+            if (entities.TryGetSpawnedEntity(conn, out Entity entity) && entity != null)
+            {
+                return entity;
+            }
+
+            return entities.TryGetOwnedEntity(conn, out entity) ? entity : null;
         }
-		/// <summary>
-		/// Send or print command's answer
-		/// </summary>
+
+        private Entity LocalEntity()
+        {
+            if (!IsClient)
+            {
+                return null;
+            }
+
+            return CallerEntity(LocalConnection);
+        }
+
+        /// <summary>The local player's role for filtering help; User when there is no session yet.</summary>
+        private static ServerRoleTypes LocalRole()
+        {
+            if (!string.IsNullOrEmpty(LocalPlayer.Ckey)
+                && SubSystems.TryGet(out PermissionSubSystem permissions)
+                && permissions.TryGetUserRole(LocalPlayer.Ckey, out ServerRoleTypes role))
+            {
+                return role;
+            }
+
+            return ServerRoleTypes.User;
+        }
+
+        private CommandResult Show(CommandResult result)
+        {
+            ShowAnswer(result.Message);
+            return result;
+        }
+
+        /// <summary>Send an answer to the caller, or show it here when there is no remote caller.</summary>
         private void CommandAnswer(string answer, NetworkConnection conn = null)
         {
-	        if ((IsServer) && (conn != null))
-	        {
-		        RpcCommandAnswer(conn, answer);
-	        }
-	        else
-	        {
-		        ShowAnswer(answer);
-	        }
+            if (IsServer && conn != null)
+            {
+                RpcCommandAnswer(conn, answer);
+            }
+            else
+            {
+                ShowAnswer(answer);
+            }
         }
 
         [TargetRpc]
@@ -215,27 +216,12 @@ namespace SS3D.Systems.IngameConsoleSystem
 
         private void ShowAnswer(string answer)
         {
-            _console.AddText(answer);
-            AnswerShown?.Invoke(answer);
-        }
-        
-        /// <returns>All available commands with short descriptions</returns>
-        private string HelpCommand()
-        {
-            string ret = "";
-            foreach (KeyValuePair<string, Command> i in _allCommands)
+            if (_console != null)
             {
-                string tabulation = new(' ', TabLength - i.Key.Length);
-                ret += i.Key + tabulation + i.Value.ShortDescription + "\n";
+                _console.AddText(answer);
             }
 
-            return ret;
-        }
-        
-        /// <returns>Long help and usage for given command</returns>
-        private string LongHelpCommand(Command command)
-        {
-            return command.LongDescription + "\nUsage: " + GetCommandName(command.GetType()) + ' ' + command.Usage;
+            AnswerShown?.Invoke(answer);
         }
     }
 }

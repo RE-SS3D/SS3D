@@ -1,6 +1,6 @@
 # Client 1 of observer-sync, the observer: late-joins, records how many fixtures are lit and
 # airlocks open, then waits (wait_console retries until the check holds) for each piece of client
-# 0's state to reach this process. atmosclientstatus checks that the heat change's chunk patch arrived.
+# 0's state to reach this process. observesync atmos checks that the heat change's chunk patch arrived.
 wait_connected
 wait_round Ongoing
 ready
@@ -11,5 +11,5 @@ wait_console observesync held Toolbox
 wait_console observesync hurt
 wait_console observesync door-opened
 wait_console observesync lights-off
-wait_console atmosclientstatus assert
+wait_console observesync atmos assert
 disconnect

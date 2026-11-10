@@ -1,73 +1,46 @@
-﻿using FishNet.Connection;
-using FishNet.Object;
-using SS3D.Core;
+using System.Collections.Generic;
 using SS3D.Permissions;
-using SS3D.Systems.Entities;
 using SS3D.Systems.Entities.Humanoid;
-using SS3D.Systems.PlayerControl;
-using System.Globalization;
 
 namespace SS3D.Systems.IngameConsoleSystem.Commands
 {
-	public class RagdollCommand : Command
-	{
-		public override string ShortDescription => "Toggle player's ragdoll";
-        public override string Usage => "(ckey) [time]. Time is a float type and should be written as 0.5";
-		public override ServerRoleTypes AccessLevel => ServerRoleTypes.Administrator;
-		public override CommandType Type => CommandType.Server;
+    public class RagdollCommand : Command
+    {
+        private static readonly IReadOnlyList<CommandParameter> Params = new[]
+        {
+            P.Target(),
+            P.Float("seconds").Range(0.1, 600).Optional(),
+        };
 
-        private record CalculatedValues(Entity Entity, float Time) : ICalculatedValues;
+        public override string Name => "ragdoll";
+        public override CommandCategory Category => CommandCategory.Admin;
+        public override string Description => "Knock the target down for some seconds, or toggle ragdoll with no time";
+        public override ServerRoleTypes AccessLevel => ServerRoleTypes.Administrator;
+        public override CommandType Type => CommandType.Server;
+        public override IReadOnlyList<CommandParameter> Parameters => Params;
+        public override string Example => "me 2.5";
 
-        [Server]
-		public override string Perform(string[] args, NetworkConnection conn = null)
-		{
-            if (!ReceiveCheckResponse(args, out CheckArgsResponse response, out CalculatedValues values)) return response.InvalidArgs;
-			Ragdoll ragdoll = values.Entity.GetComponent<Ragdoll>();
-
-			if (args.Length > 1)
-			{
-				ragdoll.ServerKnockdown(values.Time);
-			}
-			else
-			{
-				if (ragdoll.IsKnockedDown)
-				{
-					ragdoll.ServerRecover();
-				}
-				else
-				{
-					ragdoll.ServerKnockdownTimeless();
-				}
-			}
-			return "Player ragdolled";
-		}
-        
-		[Server]
-		protected override CheckArgsResponse CheckArgs(string[] args)
-		{
-			CheckArgsResponse response = new();
-			if (args.Length < 1 || args.Length > 2) return response.MakeInvalid("Invalid number of arguments");
-			
-			string ckey = args[0];
-			Player player = SubSystems.Get<PlayerSubSystem>().GetPlayer(ckey);
-			if (player == null) return response.MakeInvalid("This player doesn't exist");
-			
-			Entity entity = SubSystems.Get<EntitySubSystem>().GetSpawnedEntity(player);
-			if (entity == null) return response.MakeInvalid("This entity doesn't exist");
-
-            float time = 0;
-			if (args.Length > 1)
-			{
-                // Use dot as separator
-				NumberFormatInfo nfi = new();
-				nfi.NumberDecimalSeparator = ".";
-                if (float.TryParse(args[1], NumberStyles.Any, nfi, out time))
-				{
-					if (time <= 0) return response.MakeInvalid("Invalid time");
-                }
-				else return response.MakeInvalid("Invalid time");
+        public override CommandResult Perform(CommandContext context, CommandArgs args)
+        {
+            if (!args.Target().TryGetComponent(out Ragdoll ragdoll))
+            {
+                return CommandResult.Error($"{args.Target().DisplayName} can't ragdoll");
             }
-			return response.MakeValid(new CalculatedValues(entity, time));
-		}
-	}
+
+            if (args.Has("seconds"))
+            {
+                ragdoll.ServerKnockdown(args.Float("seconds"));
+            }
+            else if (ragdoll.IsKnockedDown)
+            {
+                ragdoll.ServerRecover();
+            }
+            else
+            {
+                ragdoll.ServerKnockdownTimeless();
+            }
+
+            return CommandResult.Success("Player ragdolled");
+        }
+    }
 }

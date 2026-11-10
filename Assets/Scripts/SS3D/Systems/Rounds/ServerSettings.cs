@@ -207,34 +207,47 @@ namespace SS3D.Systems.Rounds
         public void CmdRoundAdminAction(RoundAdminAction action, NetworkConnection sender = null)
         {
             if (!IsAdministrator(sender)) return;
+            ServerRoundAdminAction(action, sender);
+        }
+
+        /// <summary>
+        /// Apply an admin round action for an already-authorized caller (the lobby view through
+        /// <see cref="CmdRoundAdminAction"/>, or the <c>round</c> console command). False when the round
+        /// isn't in a state the action applies to.
+        /// </summary>
+        [Server]
+        public bool ServerRoundAdminAction(RoundAdminAction action, NetworkConnection sender)
+        {
             switch (action)
             {
                 case RoundAdminAction.Start when CurrentRoundState is RoundState.Stopped or RoundState.Ended:
                     SetAutoStartHeld(false, "an admin started a round");
                     RequestRoundStateChange(new ChangeRoundStateMessage(true));
-                    break;
+                    return true;
                 case RoundAdminAction.ForceStart when IsWarmingUp:
                     _forceStart = true;
-                    break;
+                    return true;
                 case RoundAdminAction.ExtendTimer when IsWarmingUp:
                     RoundSeconds = Math.Min(RoundSeconds + 60, 3600);
-                    break;
+                    return true;
                 case RoundAdminAction.CancelCountdown when IsWarmingUp:
                     CancelCountdown();
                     SetAutoStartHeld(true, "an admin cancelled the countdown");
-                    break;
+                    return true;
                 case RoundAdminAction.CancelCountdown when _autoStart.SecondsLeft > 0:
                     SetAutoStartHeld(true, "an admin cancelled the countdown");
-                    break;
+                    return true;
                 case RoundAdminAction.Stop when IsOngoing:
                     RequestPlayerRoundStop(sender);
-                    break;
+                    return true;
                 case RoundAdminAction.HoldEnd when CurrentRoundState == RoundState.Ending:
                     SetEndHeld(true, SubSystems.Get<PlayerSubSystem>().GetCkey(sender));
-                    break;
+                    return true;
                 case RoundAdminAction.ResumeEnd when CurrentRoundState == RoundState.Ending:
                     SetEndHeld(false, SubSystems.Get<PlayerSubSystem>().GetCkey(sender));
-                    break;
+                    return true;
+                default:
+                    return false;
             }
         }
 

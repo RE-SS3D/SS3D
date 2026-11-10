@@ -1,59 +1,37 @@
-using FishNet.Connection;
+using System.Collections.Generic;
 using SS3D.Permissions;
 using SS3D.Systems.Combat;
 
 namespace SS3D.Systems.IngameConsoleSystem.Commands
 {
     /// <summary>
-    /// Local preview of energy shot visuals on existing firearms.
+    /// Local preview of energy shot visuals on existing firearms. Damage, ammo and audio stay authoritative.
     /// </summary>
     public class EnergyVfxCommand : Command
     {
-        public override string ShortDescription => "Preview energy weapon effects";
-        public override string Usage => "laser|ion|taser|off — preview local shot visuals; off restores weapon defaults";
+        private static readonly IReadOnlyList<CommandParameter> Declared = new[]
+        {
+            P.Choice("style", "laser", "ion", "taser", "off").Default("off"),
+        };
+
+        public override string Name => "energyvfx";
+        public override CommandCategory Category => CommandCategory.Debug;
+        public override string Description => "Preview energy shot visuals locally; off restores weapon defaults";
         public override ServerRoleTypes AccessLevel => ServerRoleTypes.User;
         public override CommandType Type => CommandType.Client;
+        public override IReadOnlyList<CommandParameter> Parameters => Declared;
+        public override string Example => "laser";
 
-        private record CalculatedValues(string Mode) : ICalculatedValues;
-
-        public override string Perform(string[] args, NetworkConnection conn = null)
+        public override CommandResult Perform(CommandContext context, CommandArgs args)
         {
-            if (!ReceiveCheckResponse(args, out CheckArgsResponse response, out CalculatedValues values))
-            {
-                return response.InvalidArgs;
-            }
-
-            EnergyWeaponVfx.PreviewStyle = values.Mode switch
+            EnergyWeaponVfx.PreviewStyle = args.Text("style") switch
             {
                 "laser" => RangedVisualStyle.Laser,
                 "ion" => RangedVisualStyle.Ion,
                 "taser" => RangedVisualStyle.Taser,
                 _ => null,
             };
-            return $"Local shot VFX: {EnergyWeaponVfx.PreviewStyle?.ToString() ?? "weapon default"}. Damage and audio unchanged.";
-        }
-
-        protected override CheckArgsResponse CheckArgs(string[] args)
-        {
-            CheckArgsResponse response = new();
-
-            if (args.Length == 0)
-            {
-                return response.MakeValid(new CalculatedValues("off"));
-            }
-
-            if (args.Length != 1)
-            {
-                return response.MakeInvalid(WrongArgsText);
-            }
-
-            string mode = args[0].ToLowerInvariant();
-            if (mode is not ("laser" or "ion" or "taser" or "off"))
-            {
-                return response.MakeInvalid("Expected laser, ion, taser, or off");
-            }
-
-            return response.MakeValid(new CalculatedValues(mode));
+            return CommandResult.Success($"Local shot VFX: {EnergyWeaponVfx.PreviewStyle?.ToString() ?? "weapon default"}. Damage and audio unchanged.");
         }
     }
 }

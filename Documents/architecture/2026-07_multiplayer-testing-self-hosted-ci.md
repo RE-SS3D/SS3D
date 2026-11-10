@@ -8,7 +8,7 @@
 - [x] `multiplayer-smoke-test.yml` on self-hosted + Library stash + nightly
 - [ ] `workflow_dispatch` smoke on TomNAS; confirm a warm second run
 - [ ] Phase 1: harness SIGKILL + DSL + server-kill scenarios
-- [x] Phase 2: folded into the `observer-sync` smoke scenario (2026-11): `lightdebug` switches the area lights, the observing client checks with `observesync lights-off` ([testing philosophy](2026-11_testing-philosophy.md#harness-contracts) D5)
+- [x] Phase 2: folded into the `observer-sync` smoke scenario (2026-11): `lights off` switches the area lights, the observing client checks with `observesync lights-off` ([testing philosophy](2026-11_testing-philosophy.md#harness-contracts) D5)
 
 # Multiplayer testing on self-hosted CI (Jul 2026)
 
@@ -143,8 +143,8 @@ the client's replicated state disagrees with server truth, which `AutomationSubS
 try/catch turns into a `ScriptFailed` the harness already fails on — no new DSL or
 `run_smoketest.sh` changes needed.
 
-- Add lighting/electricity debug + assert console commands paralleling `AtmosDebugCommand` /
-  `AtmosClientStatusCommand` (see the atmos-client-sync entry in
+- Add lighting/electricity debug + assert console commands paralleling `AtmosCommand` /
+  `observesync atmos` (see the atmos-client-sync entry in
   [Multiplayer testing](systems/networking-session-testing.md)): force a known
   power/light state server-side, then have the client assert its `LightPower` SyncVar / area
   lighting snapshot matches. See [electricity](systems/electricity.md) (LightPower SyncVar) and

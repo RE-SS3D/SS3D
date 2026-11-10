@@ -39,14 +39,14 @@ namespace SS3D.Tests
                 "A shut airlock blocks reach past it");
 
             ChangesRoom = true;
-            yield return Console.Expect("doordebug open", "Opened");
+            yield return Console.Expect("door open", "Opened");
             yield return WaitFor(() => door.IsOpen, "the door opens", 3f);
             yield return WaitFor(() => !door.PanelsInMotion, "the door's panels settle", 3f);
             Physics.SyncTransforms();
             Assert.IsTrue(InteractionExtensions.IsReachUnobstructed(hand.InteractionOrigin, beyond, null),
                 "An open airlock leaves the doorway clear");
 
-            yield return Console.Expect("doordebug close", "Closed");
+            yield return Console.Expect("door close", "Closed");
             yield return WaitFor(() => !door.IsOpen, "the door closes", 3f);
             yield return WaitFor(() => !door.PanelsInMotion, "the door's panels settle", 3f);
             Physics.SyncTransforms();
@@ -64,7 +64,7 @@ namespace SS3D.Tests
             Assert.AreEqual(AnimatorCullingMode.CullCompletely, animator.cullingMode, "An idle door is culled");
 
             ChangesRoom = true;
-            yield return Console.Expect("doordebug open", "Opened");
+            yield return Console.Expect("door open", "Opened");
             yield return WaitFor(() => door.PanelsInMotion, "the panels start moving", 3f);
             Assert.AreEqual(AnimatorCullingMode.AlwaysAnimate, animator.cullingMode, "A moving door animates off-camera");
 

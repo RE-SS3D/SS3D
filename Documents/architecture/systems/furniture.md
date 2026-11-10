@@ -33,7 +33,7 @@ Steel tables leave procedural collapsed tops and legs through [structural-destru
 - Powered machines: attach `MachinePowerConsumer` or `BasicPowerConsumer` + `ElectricDeviceAdjacencyConnector`; add `ConsumerPowerVisual` when emissive meshes should dim unpowered (see [electricity](electricity.md)).
 - Panel-driven machines: subclass `MachineInterfaceBehaviour` and register UI per [machine-interface](machine-interface.md) extension recipe.
 - Wall light switches: use [area](area.md) `LightSwitchController`, not furniture scripts.
-- Debug/automation door hold: `AirLockOpener.ServerDebugHoldOpen` (powered doors only; `doordebug` console command).
+- Debug/automation door hold: `AirLockOpener.ServerDebugHoldOpen` (powered doors only; `door` console command).
 
 ## Pitfalls
 

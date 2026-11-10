@@ -1,57 +1,54 @@
 using System.Collections.Generic;
 using System.Text;
-using FishNet.Connection;
 using SS3D.Core;
 using SS3D.Systems.Entities;
 using SS3D.Systems.IdAccess;
 using SS3D.Systems.Inventory.Containers;
 using SS3D.Systems.Inventory.Items;
 using SS3D.Systems.Inventory.Items.Generic;
-using SS3D.Systems.PlayerControl;
 
 namespace SS3D.Systems.IngameConsoleSystem.Commands.IdAccessCommands
 {
     public static class IdAccessCommandUtilities
     {
-        public static bool TryResolveTarget(
-            NetworkConnection conn,
-            string optionalCkey,
-            out HumanInventory inventory,
-            out string error)
+        /// <summary>The target's inventory, which holds the ID cards the access resolver reads.</summary>
+        public static bool TryGetInventory(CommandTarget target, out HumanInventory inventory, out string error)
         {
-            inventory = null;
             error = string.Empty;
-
-            PlayerSubSystem playerSystem = SubSystems.Get<PlayerSubSystem>();
-            EntitySubSystem entitySystem = SubSystems.Get<EntitySubSystem>();
-
-            Player player = string.IsNullOrWhiteSpace(optionalCkey)
-                ? playerSystem.GetPlayer(conn)
-                : playerSystem.GetPlayer(optionalCkey);
-
-            if (player == null)
+            if (!target.TryGetComponent(out inventory))
             {
-                error = string.IsNullOrWhiteSpace(optionalCkey)
-                    ? "Could not resolve the calling player."
-                    : $"No player found for ckey '{optionalCkey}'.";
-                return false;
-            }
-
-            Entity entity = entitySystem.GetSpawnedEntity(player);
-            if (entity == null)
-            {
-                error = $"Player '{player.Ckey}' has no spawned entity.";
-                return false;
-            }
-
-            inventory = entity.GetComponent<HumanInventory>();
-            if (inventory == null)
-            {
-                error = $"Player '{player.Ckey}' has no HumanInventory.";
+                error = $"{target.DisplayName} has no inventory to hold an ID card.";
                 return false;
             }
 
             return true;
+        }
+
+        /// <summary>Change the access mask of the record bound to the target's active ID card.</summary>
+        public static CommandResult UpdateRecordAccess(CommandTarget target, System.Func<AccessMask, AccessMask> change, string verb)
+        {
+            if (!TryGetInventory(target, out HumanInventory inventory, out string error))
+            {
+                return CommandResult.Error(error);
+            }
+
+            if (!AccessCredentialResolver.TryResolveBoundRecord(inventory, out CrewRecordId recordId, out _))
+            {
+                return CommandResult.Error("no bound ID card found on person.");
+            }
+
+            if (!SubSystems.Get<IdAccessSubSystem>().TryGetRecord(recordId, out CrewRecord record))
+            {
+                return CommandResult.Error($"card points to missing crew record {recordId}.");
+            }
+
+            AccessMask updated = change(record.Access);
+            if (!TrySetRecordAccess(inventory, updated, out string setError))
+            {
+                return CommandResult.Error(setError);
+            }
+
+            return CommandResult.Success($"{verb}. Record access is now: {FormatAccessMask(updated)}");
         }
 
         public static bool TryParseAccessLevel(string name, out AccessLevel level, out string error)

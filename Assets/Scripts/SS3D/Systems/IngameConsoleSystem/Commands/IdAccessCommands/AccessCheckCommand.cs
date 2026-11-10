@@ -1,67 +1,44 @@
-using FishNet.Connection;
 using SS3D.Permissions;
 using SS3D.Systems.IdAccess;
+using System.Collections.Generic;
 
 namespace SS3D.Systems.IngameConsoleSystem.Commands.IdAccessCommands
 {
+    /// <summary>
+    /// Lists every ID card on the target, which one the access resolver picks, the bound record's
+    /// access, and optionally whether it passes a level.
+    /// </summary>
     public class AccessCheckCommand : Command
     {
-        public override string ShortDescription => "Show on-person ID credential state";
-        public override string LongDescription =>
-            "Lists every ID card on the target player, which one the access resolver picks, "
-            + "the bound crew record's access mask, and optionally tests a required level.";
-        public override string Usage => "[ckey] [level]";
-        public override ServerRoleTypes AccessLevel => ServerRoleTypes.User;
+        private static readonly IReadOnlyList<CommandParameter> Params = new[] { P.Target(), P.Text("level").Optional() };
+
+        public override string Name => "accesscheck";
+        public override CommandCategory Category => CommandCategory.Admin;
+        public override string Description => "Show the target's ID cards and record access, optionally testing a level";
+        public override ServerRoleTypes AccessLevel => ServerRoleTypes.Administrator;
         public override CommandType Type => CommandType.Server;
+        public override IReadOnlyList<CommandParameter> Parameters => Params;
+        public override string Example => "me Engineering";
 
-        private record CalculatedValues(string Ckey, AccessLevel? TestLevel) : ICalculatedValues;
-
-        public override string Perform(string[] args, NetworkConnection conn = null)
+        public override CommandResult Perform(CommandContext context, CommandArgs args)
         {
-            if (!ReceiveCheckResponse(args, out CheckArgsResponse response, out CalculatedValues values))
-            {
-                return response.InvalidArgs;
-            }
-
-            if (!IdAccessCommandUtilities.TryResolveTarget(conn, values.Ckey, out var inventory, out string error))
-            {
-                return error;
-            }
-
-            return IdAccessCommandUtilities.BuildCredentialReport(inventory, values.TestLevel);
-        }
-
-        protected override CheckArgsResponse CheckArgs(string[] args)
-        {
-            CheckArgsResponse response = new();
-
-            if (args.Length > 2)
-            {
-                return response.MakeInvalid("Invalid number of arguments");
-            }
-
-            string ckey = args.Length >= 1 ? args[0] : null;
             AccessLevel? testLevel = null;
-
-            if (args.Length == 2)
+            if (args.Has("level"))
             {
-                if (!IdAccessCommandUtilities.TryParseAccessLevel(args[1], out AccessLevel level, out string error))
+                if (!IdAccessCommandUtilities.TryParseAccessLevel(args.Text("level"), out AccessLevel level, out string levelError))
                 {
-                    return response.MakeInvalid(error);
+                    return CommandResult.Error(levelError);
                 }
 
                 testLevel = level;
             }
-            else if (args.Length == 1)
+
+            if (!IdAccessCommandUtilities.TryGetInventory(args.Target(), out var inventory, out string error))
             {
-                if (IdAccessCommandUtilities.TryParseAccessLevel(args[0], out AccessLevel level, out _))
-                {
-                    ckey = null;
-                    testLevel = level;
-                }
+                return CommandResult.Error(error);
             }
 
-            return response.MakeValid(new CalculatedValues(ckey, testLevel));
+            return CommandResult.Success(IdAccessCommandUtilities.BuildCredentialReport(inventory, testLevel));
         }
     }
 }

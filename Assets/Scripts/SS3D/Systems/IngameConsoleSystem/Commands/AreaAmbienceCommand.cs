@@ -1,4 +1,4 @@
-using FishNet.Connection;
+using System.Collections.Generic;
 using FishNet.Object;
 using SS3D.Core;
 using SS3D.Permissions;
@@ -12,61 +12,62 @@ namespace SS3D.Systems.IngameConsoleSystem.Commands
     /// Thin dev-console authoring surface for <see cref="AreaSubSystem.SetAreaAmbienceProfileId"/>
     /// (audio.md §2) — no Map Editor UI exists yet. Always targets the area the calling player
     /// currently stands in, same "no mouse to click a tile with" reasoning as
-    /// <see cref="AtmosDebugCommand"/>.
+    /// <see cref="AtmosCommand"/>.
     /// </summary>
     public class AreaAmbienceCommand : Command
     {
-        public override string ShortDescription => "Set the ambience profile of the area you're standing in";
-        public override string Usage => "(profileId | clear)\nexample: areaambience engineering\nexample: areaambience clear";
+        private const string ClearToken = "clear";
+
+        private static readonly IReadOnlyList<CommandParameter> Declared = new[]
+        {
+            P.Text("profile"),
+        };
+
+        public override string Name => "areaambience";
+        public override CommandCategory Category => CommandCategory.Debug;
+        public override string Description => "Set the ambience profile of the area you're standing in, or clear the override with 'clear'";
         public override ServerRoleTypes AccessLevel => ServerRoleTypes.Administrator;
         public override CommandType Type => CommandType.Server;
-
-        private record CalculatedValues(string ProfileId) : ICalculatedValues;
+        public override IReadOnlyList<CommandParameter> Parameters => Declared;
+        public override string Example => "engineering";
 
         [Server]
-        public override string Perform(string[] args, NetworkConnection conn = null)
+        public override CommandResult Perform(CommandContext context, CommandArgs args)
         {
-            if (!ReceiveCheckResponse(args, out CheckArgsResponse response, out CalculatedValues values))
+            string requested = args.Text("profile");
+            string profileId;
+            if (requested.Equals(ClearToken, System.StringComparison.OrdinalIgnoreCase))
             {
-                return response.InvalidArgs;
+                profileId = string.Empty;
+            }
+            else
+            {
+                AmbienceProfileCatalog catalog = AmbienceProfileCatalog.Instance;
+                if (!catalog.TryGet(requested, out AmbienceProfile profile))
+                {
+                    return CommandResult.Error($"No ambience profile '{requested}'. Available: {string.Join(", ", catalog.ProfileIds)}");
+                }
+
+                profileId = profile.Id;
             }
 
-            if (!SubSystems.Get<EntitySubSystem>().TryGetSpawnedEntity(conn, out Entity entity))
+            Entity entity = context.CallerEntity;
+            if (entity == null)
             {
-                return "You have no spawned entity to target from — embark first";
+                return CommandResult.Error("you have no body to target from — embark first");
             }
 
             AreaSubSystem areaSubSystem = SubSystems.Get<AreaSubSystem>();
             if (areaSubSystem == null || !areaSubSystem.TryResolveAreaIdForWorldPosition(entity.Transform.position, out AreaId areaId))
             {
-                return "Your current position isn't inside a claimed area";
+                return CommandResult.Error("Your current position isn't inside a claimed area");
             }
 
-            areaSubSystem.SetAreaAmbienceProfileId(areaId, values.ProfileId);
+            areaSubSystem.SetAreaAmbienceProfileId(areaId, profileId);
 
-            return string.IsNullOrEmpty(values.ProfileId)
+            return CommandResult.Success(string.IsNullOrEmpty(profileId)
                 ? $"Cleared the ambience override for area {areaId.Value}"
-                : $"Area {areaId.Value} ambience set to '{values.ProfileId}'";
-        }
-
-        protected override CheckArgsResponse CheckArgs(string[] args)
-        {
-            CheckArgsResponse response = new();
-
-            if (args.Length != 1)
-            {
-                return response.MakeInvalid(WrongArgsText);
-            }
-
-            if (args[0].Equals("clear", System.StringComparison.OrdinalIgnoreCase))
-            {
-                return response.MakeValid(new CalculatedValues(string.Empty));
-            }
-
-            AmbienceProfileCatalog catalog = AmbienceProfileCatalog.Instance;
-            return catalog.TryGet(args[0], out AmbienceProfile profile)
-                ? response.MakeValid(new CalculatedValues(profile.Id))
-                : response.MakeInvalid($"No ambience profile '{args[0]}'. Available: {string.Join(", ", catalog.ProfileIds)}");
+                : $"Area {areaId.Value} ambience set to '{profileId}'");
         }
     }
 }

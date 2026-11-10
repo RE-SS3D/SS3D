@@ -46,7 +46,7 @@ namespace SS3D.Tests
         {
             ChangesRoom = true;
             HumanHealthController health = Body.GetComponent<HumanHealthController>();
-            yield return Console.Expect($"atmosdebug gas plasma {PlasmaMoles}", "Added");
+            yield return Console.Expect($"atmos gas plasma {PlasmaMoles}", "Added");
 
             Stopwatch exposure = Stopwatch.StartNew();
             yield return WaitFor(() => health.Snapshot.State == HealthState.Critical, "plasma drives the body critical", 60f);

@@ -1,5 +1,3 @@
-using FishNet.Connection;
-using FishNet.Object;
 using SS3D.Core;
 using SS3D.Permissions;
 using SS3D.Systems.Entities;
@@ -7,55 +5,37 @@ using UnityEngine;
 
 namespace SS3D.Systems.IngameConsoleSystem.Commands
 {
+    /// <summary>Spawns a mindless Human with frozen controls, wearing JumpsuitSecurity, for melee, armor and interaction tests.</summary>
     public class SpawnDummyCommand : Command
     {
         private const float SpawnDistance = 2f;
 
-        public override string ShortDescription => "Spawn a standing combat dummy in front of you";
-        public override string LongDescription =>
-            "Spawns a mindless Human with player controls frozen for melee/interaction tests. Equips JumpsuitSecurity for armor absorption tests. Usage: spawndummy";
-        public override string Usage => "";
+        public override string Name => "spawndummy";
+        public override CommandCategory Category => CommandCategory.Admin;
+        public override string Description => "Spawn a standing combat dummy in front of you; target it with nearest";
         public override ServerRoleTypes AccessLevel => ServerRoleTypes.Administrator;
         public override CommandType Type => CommandType.Server;
+        public override string Example => "";
 
-        [Server]
-        public override string Perform(string[] args, NetworkConnection conn = null)
+        public override CommandResult Perform(CommandContext context, CommandArgs args)
         {
-            CheckArgsResponse checkArgsResponse = CheckArgs(args);
-            if (!checkArgsResponse.IsValid)
+            Entity entity = context.CallerEntity;
+            if (entity == null)
             {
-                return checkArgsResponse.InvalidArgs;
-            }
-
-            EntitySubSystem entities = SubSystems.Get<EntitySubSystem>();
-            if (!entities.TryGetOwnedEntity(conn, out Entity entity))
-            {
-                return "Connection does not own any entity registered in entity system.";
+                return CommandResult.Error("you have no body to spawn a dummy in front of");
             }
 
             Transform transform = entity.transform;
             Vector3 spawnPosition = transform.position + transform.forward * SpawnDistance;
             Quaternion spawnRotation = Quaternion.LookRotation(-transform.forward, Vector3.up);
 
-            Entity dummy = entities.ServerSpawnCombatDummy(spawnPosition, spawnRotation);
+            Entity dummy = SubSystems.Get<EntitySubSystem>().ServerSpawnCombatDummy(spawnPosition, spawnRotation);
             if (dummy == null)
             {
-                return "Failed to spawn combat dummy (no human prefab configured).";
+                return CommandResult.Error("failed to spawn combat dummy (no human prefab configured)");
             }
 
-            return $"Combat dummy spawned at {spawnPosition} (wearing JumpsuitSecurity)";
-        }
-
-        protected override CheckArgsResponse CheckArgs(string[] args)
-        {
-            CheckArgsResponse response = new();
-            if (args.Length != 0)
-            {
-                return response.MakeInvalid("spawndummy takes no arguments");
-            }
-
-            response.IsValid = true;
-            return response;
+            return CommandResult.Success($"Combat dummy spawned at {spawnPosition} (wearing JumpsuitSecurity)");
         }
     }
 }

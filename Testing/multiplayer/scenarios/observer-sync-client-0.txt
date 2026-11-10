@@ -1,7 +1,7 @@
 # Client 0 of observer-sync, the actor: starts the round, waits until the observer has a body,
 # gives it a moment to take its baseline, then changes things the observer must see. Its Assistant
 # loadout already puts a toolbox in a hand; client 1 checks that held item replicated (no
-# spawninhand needed, and the selected hand is not empty).
+# spawn needed, and the selected hand is not empty).
 wait_connected
 ready
 start_round
@@ -11,9 +11,9 @@ assert_embarked
 wait_players 2
 wait_seconds 3
 console hurt {ckey} Chest 30 0
-console doordebug open
-console lightdebug off
-console atmosdebug heat 500
+console door open
+console lights off
+console atmos heat 500
 console playerlist
 wait_seconds 30
 disconnect
