@@ -32,6 +32,7 @@ namespace SS3D.Systems.Health
     {
         private readonly ZoneDamageState[] _zones = new ZoneDamageState[HealthConstants.ZoneCount];
         private readonly List<OrganState> _organs = new();
+        private OrganState[] _organBuffer = System.Array.Empty<OrganState>();
         private readonly List<IHealthEffectModifier> _modifiers = new();
 
         private SystemicPools _pools = SystemicPools.Default;
@@ -636,9 +637,17 @@ namespace SS3D.Systems.Health
             OrganSimulation.TickOrganFunction(_pools, _organs);
             _pools = HealthSimulation.TickPools(_pools, _zones, _organs, atmosphereO2, toxinIntake);
 
-            for (int i = 0; i < _modifiers.Count; i++)
+            if (_modifiers.Count > 0)
             {
-                _modifiers[i].ApplyTick(ref _pools, _organs.ToArray());
+                // One copy per tick, into a reused buffer: modifiers read organ state and their writes were never kept.
+                if (_organBuffer.Length != _organs.Count)
+                    _organBuffer = new OrganState[_organs.Count];
+
+                _organs.CopyTo(_organBuffer);
+                for (int i = 0; i < _modifiers.Count; i++)
+                {
+                    _modifiers[i].ApplyTick(ref _pools, _organBuffer);
+                }
             }
 
             HealthState state = HealthSimulation.EvaluateHealthState(_pools, _organs);
