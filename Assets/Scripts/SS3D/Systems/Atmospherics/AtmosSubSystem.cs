@@ -305,7 +305,7 @@ namespace SS3D.Systems.Atmospherics
 
         private void Update()
         {
-            if (!IsServer || _simulation == null || SimulationPaused)
+            if (!IsServer || _simulation == null || SimulationPaused || WorldSimSuspension.IsSuspended)
                 return;
 
             _tickTimer += Time.deltaTime;

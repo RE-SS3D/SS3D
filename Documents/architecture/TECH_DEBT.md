@@ -436,16 +436,9 @@ branch dereferences a null container (`:538-540`).
   toasts and undo state), rebuilding the palette grid and open popovers. This is the root cause of three
   Pitfalls in [map-editor-creative-hooks.md](systems/map-editor-creative-hooks.md). Split the event (M).
 
-### 1.23 World-simulation suspension copied four times and cannot nest
+### 1.23 World-simulation suspension — resolved 2026-11-10
 
-**Blast radius: medium — trend: new**
-
-The same pause/restore block lives in `MapEditorSubSystem.cs:461-497`, `TileSubSystem.cs:466-515`,
-`PersistenceSubSystem.cs:370-436` and `MapImportApplier.cs:94-202`.
-`ElectricitySubSystem.SuspendCircuitUpdates(bool)` (`:197`) is a plain flag, so loading a map with the
-editor open turns circuits back on while the editor is still open. Opening the editor is a local UI
-action, yet on a host it pauses atmos and power for everyone, and a remote editor pauses nothing.
-**Fix:** one ref-counted, disposable `WorldSimSuspension` scope, decided by the server (S–M).
+See §6.
 
 ### 1.24 `SS3D.Systems` is one tangled assembly
 
@@ -670,3 +663,16 @@ Session FSM, Empty offline, world-readiness graph, `PrepareRound` gate, `Systems
 - **Deferred elsewhere (do not reopen this item):** reconnect exponential backoff; UI-host bootstrap
   consolidation.
 - Related: [networking-session.md](systems/networking-session.md), [core-subsystems.md](systems/core-subsystems.md)
+
+### 1.23 World-simulation suspension — 2026-11-10
+
+`Core/WorldSimSuspension` is one ref-counted, disposable scope. Map load (`TileSubSystem`), station template
+restore (`PersistenceSubSystem`) and DMM import (`MapImportApplier`) each take one; atmos and electricity check
+`IsSuspended` every tick, and electricity rebuilds its graph once the last scope closes. A load inside another
+load no longer resumes the sims early. Opening the Map Editor takes no scope (plan Decision 10), so a host's editor
+no longer pauses atmos and power for everyone; `DisposalSubSystem.CapsulesPaused` went with it.
+
+- **Closed by:** tech-debt P2.2 (`WorldSimSuspensionTests`).
+- **Not in this close:** pausing channels instead of systems waits for the `SimulationClock` (P6.1); an admin
+  "freeze world" control is the owner's call.
+- Related: [map-editor-creative-hooks.md](systems/map-editor-creative-hooks.md), [tile.md](systems/tile.md)
