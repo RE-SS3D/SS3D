@@ -105,7 +105,7 @@ namespace SS3D.Systems.Interactions
             _armedSystem = SubSystems.Get<ArmedInteractionSubSystem>();
             _selectionSystem = SubSystems.Get<SelectionSubSystem>();
 
-            Actor playerCamera = SubSystems.Get<CameraSubSystem>()?.PlayerCamera;
+            Actor playerCamera = SubSystems.GetOrNull<CameraSubSystem>()?.PlayerCamera;
             if (playerCamera != null)
             {
                 _camera = playerCamera.GetComponent<Camera>();

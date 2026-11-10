@@ -511,7 +511,7 @@ namespace SS3D.UI.MainHud
         {
             if (AlertStackAudioMapper.HasNewAlert(_lastAlertState, newState))
             {
-                SubSystems.Get<PersonalAudioSubSystem>()?.PlayAlertCue();
+                SubSystems.GetOrNull<PersonalAudioSubSystem>()?.PlayAlertCue();
             }
 
             _lastAlertState = newState;

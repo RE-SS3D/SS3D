@@ -404,7 +404,7 @@ namespace SS3D.Systems.Inventory.Containers
             if (placedItemObject != null)
             {
                 // Remove from TileMap tracking
-                TileMap tileMap = SubSystems.Get<TileSubSystem>()?.CurrentMap;
+                TileMap tileMap = SubSystems.GetOrNull<TileSubSystem>()?.CurrentMap;
                 if (tileMap != null)
                 {
                     tileMap.RemovePlacedItemFromTracking(placedItemObject);

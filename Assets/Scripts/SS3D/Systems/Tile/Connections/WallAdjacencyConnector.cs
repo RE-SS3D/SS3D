@@ -19,7 +19,7 @@ namespace SS3D.Systems.Tile.Connections
         {
             get
             {
-                TileMap map = SubSystems.Get<TileSubSystem>()?.CurrentMap;
+                TileMap map = SubSystems.GetOrNull<TileSubSystem>()?.CurrentMap;
                 return new WallConnectionRule(map);
             }
         }

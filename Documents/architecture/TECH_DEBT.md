@@ -471,19 +471,9 @@ different scan) and fails if the count rises.
 That removes ~25k lines from the recompile set (L). Also: `SS3D.Systems.asmdef` references the base
 `SS3D.UI` assembly with zero uses (§1.29).
 
-### 1.25 `SubSystems` registry lifecycle bugs and `Get` misuse
+### 1.25 `SubSystems` registry lifecycle bugs and `Get` misuse — resolved 2026-11-10
 
-**Blast radius: medium (silent nulls, wrong instance) — trend: stable**
-
-- `Core/Subsystems.cs:33-36`: `_isQuitting` is set by `Application.quitting` and never reset. Domain
-  reload is on in project settings, but the MCP / Test-Runner path enters Play Mode without one
-  ([application.md](systems/application.md)); there `Get` returns null for the rest of the session.
-  `_suppressMissingErrors` and the dictionary also survive. Reset on `SubsystemRegistration`.
-- `Unregister` (`:115`) removes **by type**, so a destroyed duplicate (content-prefab SubSystem vs.
-  hub/bootstrap instance) evicts the live one. Remove only when the registered instance matches.
-- `TryGet` (`:50-53`) returns true for a destroyed instance. Add a Unity-null check.
-- 35 sites write `SubSystems.Get<T>()?.` — they expect a miss but call `Get`, which on a miss runs
-  `FindObjectOfType` and logs an Error. Codemod to `TryGet` (S).
+See §6.
 
 ### 1.26 `com.unity.entities` installed for one unused World
 
@@ -676,3 +666,14 @@ no longer pauses atmos and power for everyone; `DisposalSubSystem.CapsulesPaused
 - **Not in this close:** pausing channels instead of systems waits for the `SimulationClock` (P6.1); an admin
   "freeze world" control is the owner's call.
 - Related: [map-editor-creative-hooks.md](systems/map-editor-creative-hooks.md), [tile.md](systems/tile.md)
+
+### 1.25 `SubSystems` registry lifecycle — 2026-11-10
+
+`SubSystems` resets its quit flag, error suppression and registry on `SubsystemRegistration`, so Play Mode
+without a domain reload no longer inherits a quit that makes every `Get` return null. `Unregister` removes only
+the registered instance, `TryGet` / `Get` treat a destroyed Unity object as missing, and the 35
+`SubSystems.Get<T>()?.` sites use the new silent `GetOrNull<T>()`.
+
+- **Closed by:** tech-debt P2.3 (`SubSystemsRegistryTests`).
+- **Not in this close:** removing the `FindObjectOfType` fallback from `Get` (P6.4, after a period of logging hits).
+- Related: [core-subsystems.md](systems/core-subsystems.md)
