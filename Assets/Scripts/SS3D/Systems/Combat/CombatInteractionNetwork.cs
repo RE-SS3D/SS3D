@@ -36,7 +36,6 @@ namespace SS3D.Systems.Combat
     {
         [SerializeField] private InteractionController _interactionController;
 
-        private Vector3 _meleeAimRayOrigin;
         private Vector3 _meleeAimPoint;
         private bool _hasMeleeAimRay;
 
@@ -229,11 +228,8 @@ namespace SS3D.Systems.Combat
             if (!TryGetMeleeAimRay(out Ray aimRay))
             {
                 Entity entity = GetComponent<Entity>();
-                Vector3 origin = entity != null
-                    ? entity.transform.position + Vector3.up * 1.5f
-                    : transform.position + Vector3.up * 1.5f;
                 Vector3 direction = entity != null ? entity.transform.forward : transform.forward;
-                aimRay = new Ray(origin, direction);
+                aimRay = new Ray(ServerEyePosition(), direction);
             }
 
             weapon.GetMuzzleWorldPose(out Vector3 firePosition, out _);
@@ -781,32 +777,34 @@ namespace SS3D.Systems.Combat
         }
 
         /// <summary>
-        /// Client-synced camera aim ray for the active melee swing (matches zone reticle; not hand bone).
+        /// Aim ray for the active shot or swing: from the body's eye on the server through the point the client
+        /// synced (the zone reticle's point). The client never chooses the origin (<see cref="CombatAimRay"/>).
         /// </summary>
         [Server]
         public bool TryGetMeleeAimRay(out Ray aimRay)
         {
             aimRay = default;
-            if (!_hasMeleeAimRay)
+            return _hasMeleeAimRay && CombatAimRay.TryBuild(ServerEyePosition(), _meleeAimPoint, out aimRay);
+        }
+
+        /// <summary>The body's eye on the server: <see cref="Entity.ViewPoint"/>, else a fixed height above the root.</summary>
+        [Server]
+        public Vector3 ServerEyePosition()
+        {
+            Entity entity = GetComponent<Entity>();
+            if (entity != null && entity.ViewPoint != null)
             {
-                return false;
+                return entity.ViewPoint.transform.position;
             }
 
-            Vector3 direction = _meleeAimPoint - _meleeAimRayOrigin;
-            if (direction.sqrMagnitude < 0.0001f)
-            {
-                return false;
-            }
-
-            aimRay = new Ray(_meleeAimRayOrigin, direction.normalized);
-            return true;
+            Transform root = entity != null ? entity.transform : transform;
+            return root.position + Vector3.up * CombatAimRay.FallbackEyeHeight;
         }
 
         [Server]
         public void ClearMeleeAimPoint()
         {
             _hasMeleeAimRay = false;
-            _meleeAimRayOrigin = default;
             _meleeAimPoint = default;
         }
 
@@ -846,18 +844,18 @@ namespace SS3D.Systems.Combat
                 return;
             }
 
-            CmdSyncMeleeAim(aimRay.origin, aimPoint);
+            CmdSyncMeleeAim(aimPoint);
         }
 
+        /// <summary>The client sends only where it aims; the server supplies the origin (<see cref="TryGetMeleeAimRay"/>).</summary>
         [ServerRpc(RequireOwnership = true)]
-        private void CmdSyncMeleeAim(Vector3 rayOrigin, Vector3 aimPoint)
+        private void CmdSyncMeleeAim(Vector3 aimPoint)
         {
-            if (!RpcInput.IsInStation(rayOrigin) || !RpcInput.IsInStation(aimPoint))
+            if (!RpcInput.IsInStation(aimPoint))
             {
                 return;
             }
 
-            _meleeAimRayOrigin = rayOrigin;
             _meleeAimPoint = aimPoint;
             _hasMeleeAimRay = true;
         }

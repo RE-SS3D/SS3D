@@ -46,7 +46,7 @@ namespace SS3D.Tests.AssetAudit
         private static readonly Dictionary<string, AuthorityCheck> Allowlist = new()
         {
             // Combat
-            { "CombatInteractionNetwork.CmdSyncMeleeAim", AuthorityCheck.Unchecked }, // P1.1: client ray origin
+            { "CombatInteractionNetwork.CmdSyncMeleeAim", AuthorityCheck.ServerDerived }, // aim point only; origin is the server eye
             { "CombatInteractionNetwork.CmdThrow", AuthorityCheck.Revalidated }, // RpcInput + ThrowRules.ClampToRange
 
             // Entities and body
@@ -110,7 +110,6 @@ namespace SS3D.Tests.AssetAudit
         /// </summary>
         private static readonly HashSet<string> Phase1Unchecked = new()
         {
-            "CombatInteractionNetwork.CmdSyncMeleeAim",
         };
 
         private static readonly Type[] TrustedArgumentTypes =
