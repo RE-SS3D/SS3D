@@ -368,11 +368,6 @@ ServerRpc of this kind with its check; the holes below are its `Unchecked` entri
 - **Combat one-shots** start via client `HumanoidBodyStateMachine.CmdFireTrigger` (`:369`), and the
   combat stance is computed on the client and sent unvalidated
   (`HumanoidBodyStateBridge.cs:161-178`). The server already knows the intent and the inventory.
-- **Dead but reachable:** `TileSubSystem.RpcPlaceObject` / `RpcClearTileObject` / `RpcClearItemObject`
-  / `RpcSetFloorDecal` / `RpcClearFloorDecal` (`:192-261`) and
-  `ConstructionHologramManager.RpcSendCanBuild` (`:1373-1418`) have zero callers. Under
-  `-openbuild` / `-sandbox` they let any non-Restricted player bypass `MapEditorSandboxRules`, the rate
-  limiter and undo. Their XML comments ("Requires Administrator") are wrong. Delete them.
 - **Server status query** (vendored Tugboat patch, `ServerSocket.cs:139-145`, `:378-395`;
   `ServerStatusPublisher.cs:86-95`) answers unconnected UDP with no per-endpoint rate limit, and
   replies are larger than requests. Add a token bucket.
