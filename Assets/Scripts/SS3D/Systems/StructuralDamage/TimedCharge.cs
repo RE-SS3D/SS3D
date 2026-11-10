@@ -72,6 +72,13 @@ namespace SS3D.Systems.StructuralDamage
         {
             if (!GetComponent<NetworkObject>().IsSpawned) return;
             if (IsServer && _attached && GetComponent<Item>().Container != null) _attached = false;
+            // The wall or door it was stuck to is gone (often blown by another charge in the same pile): fall
+            // instead of hanging in the air.
+            if (IsServer && _attached && !AttachedSurfaceStands())
+            {
+                _attached = false;
+                GetComponent<Rigidbody>().isKinematic = false;
+            }
             if (_attached && GetComponent<Item>().Container == null)
                 GetComponent<Rigidbody>().isKinematic = true;
             if (IsServer && _armed && !_spent && Now >= _deadline)
@@ -163,6 +170,15 @@ namespace SS3D.Systems.StructuralDamage
             Item item = GetComponent<Item>();
             if (item.Container != null) item.Container.RemoveItem(item);
             ServerManager.Despawn(gameObject);
+        }
+
+        private bool AttachedSurfaceStands()
+        {
+            if (!SubSystems.TryGet(out TileSubSystem tiles) || tiles.CurrentMap == null || tiles.QueryService == null)
+                return true;
+            return tiles.QueryService.TryGetOccupant(_targetTile, TileLayer.Turf, Direction.North, out ITileOccupant occupant)
+                && occupant is PlacedTileObject placed
+                && (placed.GenericType == TileObjectGenericType.Wall || placed.GenericType == TileObjectGenericType.Door);
         }
 
         private bool HasCutters(InteractionEvent e)
