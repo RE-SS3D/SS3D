@@ -170,10 +170,9 @@ checks. Sizes at `06316a98` (including partials):
 | `Ragdoll` | 1,224 | see §1.20 |
 | `MainMenuSubSystem` | 1,013 | `MainMenuConnectionFlow` (no UI), ambience |
 
-**Bug-class risk in MainHud:** `Update` → `RefreshZoneReticle` calls
-`ranged.ServerCompleteReloadIfDue()` (`MainHudSubSystem.cs:317`) and `CurrentSpreadDegrees` (which
-decays recoil) every frame, even with the reticle hidden. On a host, the HUD completes reloads on the
-server. Combat should expose a read-only readout for the HUD (S).
+**MainHud reads, never writes, weapons** (fixed in tech-debt P2.1): the reticle reads `ICombatReadout`, whose
+members are pure; recoil is a function of time (`RangedWeaponItemExtension.RecoilAt`), and the weapon's own
+`Update` completes reloads on every peer. The reticle skips its raycasts and reads while hidden.
 
 **Lobby polling:** `LobbyUiSubSystem.RefreshSession` polls at 5 Hz for the whole session, including
 in-round, and sends the job-preference / appearance / OOC handshakes and polls `CmdReadServerSettings`
