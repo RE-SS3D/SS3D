@@ -2,7 +2,7 @@
 > Touches systems: core-subsystems, combat, entities, interactions-runtime, inventory, health, tile, map-editor-creative-hooks, area, structural-destruction, atmospherics, electricity, persistence, rounds-lobby, ui-shell, machine-interface, examine, ingame-console, networking-session, application
 > Status: planned
 
-**Progress:** Planned on 2026-11-09 from the code audit that refreshed [TECH_DEBT.md](TECH_DEBT.md) §1.19–§1.30; the owner answered Decisions 9–12 the same day. Phases 0–2 started 2026-11-10 as one stacked PR per item. Shipped: G1, G3, G4 (52 mutual folder pairs, measured by the test), D1; Phase 1 except the console half of P1.3 (waits on the console-rework PR #223), the P1.1 aim cone and P1.9 steps 2–3 (both wait on Q5); `mppm:late-join` passed at the end of Phase 1. Four [open questions](#open-questions-for-the-owner) remain.
+**Progress:** Planned on 2026-11-09 from the code audit that refreshed [TECH_DEBT.md](TECH_DEBT.md) §1.19–§1.30; the owner answered Decisions 9–12 the same day. Phases 0–2 started 2026-11-10 as one stacked PR per item. Shipped: Phase 0 except G2 (with the console rework); Phase 1 except the console half of P1.3 (waits on the console-rework PR #223), the P1.1 aim cone and P1.9 steps 2–3 (both wait on Q5), with `mppm:late-join` passed at its end; P2.6. Four [open questions](#open-questions-for-the-owner) remain.
 
 # Tech-debt paydown (Nov 2026)
 

@@ -5,7 +5,7 @@ namespace SS3D.UI.Examine
 {
     /// <summary>
     /// Committed resolved refs for the examine overlay UI. Rebuild via
-    /// <c>SS3D → Examine → Rebuild Examine Asset Catalog</c>. Loaded at runtime with
+    /// <c>SS3D → Data → Rebuild All UI Catalogs</c>. Loaded at runtime with
     /// <c>Resources.Load</c> so <see cref="ExamineOverlaySubSystem"/> can self-bootstrap without any
     /// scene/prefab placement (same pattern as <c>UiShellAssetCatalog</c>/<c>MainHudAssetCatalog</c>).
     /// </summary>

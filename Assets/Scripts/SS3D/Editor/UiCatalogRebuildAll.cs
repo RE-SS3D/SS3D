@@ -21,10 +21,10 @@ namespace SS3D.Editor
                 return;
             }
 
-            Debug.Log("Rebuilt Machine UI, Main HUD, UI Shell, Storage Panel, Lobby, Bug Report, Main Menu, and Round End asset catalogs.");
+            Debug.Log("Rebuilt Machine UI, Main HUD, UI Shell, Storage Panel, Lobby, Bug Report, Main Menu, Round End, and Examine asset catalogs.");
             EditorUtility.DisplayDialog(
                 "UI Catalogs",
-                "Rebuilt Machine UI, Main HUD, UI Shell, Storage Panel, Lobby, Bug Report, Main Menu, and Round End asset catalogs.",
+                "Rebuilt Machine UI, Main HUD, UI Shell, Storage Panel, Lobby, Bug Report, Main Menu, Round End, and Examine asset catalogs.",
                 "OK");
         }
 
@@ -87,6 +87,11 @@ namespace SS3D.Editor
             }
 
             if (!RoundEndAssetCatalogBuilder.TryRebuildCatalog(out error))
+            {
+                return false;
+            }
+
+            if (!ExamineOverlayAssetCatalogBuilder.TryRebuildCatalog(out error))
             {
                 return false;
             }

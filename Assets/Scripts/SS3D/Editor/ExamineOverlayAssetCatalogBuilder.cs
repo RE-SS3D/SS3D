@@ -13,19 +13,7 @@ namespace SS3D.Editor
     /// </summary>
     public static class ExamineOverlayAssetCatalogBuilder
     {
-        [MenuItem("SS3D/Examine/Rebuild Examine Asset Catalog")]
-        public static void RebuildCatalogMenu()
-        {
-            if (!TryRebuildCatalog(out string error))
-            {
-                Debug.LogError(error);
-                EditorUtility.DisplayDialog("Examine Asset Catalog", error, "OK");
-                return;
-            }
-
-            Debug.Log($"Rebuilt examine overlay asset catalog at {ExamineOverlayAssetPaths.CatalogAssetPath}");
-        }
-
+        /// <summary>Called by <see cref="UiCatalogRebuildAll.TryRebuildAll"/> (SS3D → Data → Rebuild All UI Catalogs).</summary>
         public static bool TryRebuildCatalog(out string error)
         {
             error = null;

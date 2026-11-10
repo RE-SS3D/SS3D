@@ -2,7 +2,7 @@ namespace SS3D.UI.Examine
 {
     /// <summary>
     /// Stable asset paths for the examine overlay UI (generic hover/detail + character paperdoll).
-    /// Rebuild the committed catalog with <c>SS3D → Examine → Rebuild Examine Asset Catalog</c>.
+    /// Rebuild the committed catalog with <c>SS3D → Data → Rebuild All UI Catalogs</c>.
     /// </summary>
     public static class ExamineOverlayAssetPaths
     {
