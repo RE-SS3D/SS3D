@@ -107,6 +107,9 @@ jobs:
     if: needs.pick_runner.outputs.run == 'true'
     permissions:
       contents: read
+      # game-ci's test runner posts the results as a check run.
+      checks: write
+      # The nightly opens or closes its failure issue.
       issues: write
     runs-on: ${{ fromJSON(needs.pick_runner.outputs.runs_on) }}
     environment:
