@@ -933,7 +933,10 @@ namespace SS3D.Systems.Interactions
             {
                 InteractionReference reference = interactionEvent.Source.Interact(interactionEvent, interaction.Interaction);
                 TrackActiveInteraction(interactionEvent.Source, reference, interaction.Interaction);
-                RpcExecuteClientInteraction(target, point, genericName, targetComponentIndex, reference.Id);
+                if (Owner.IsValid)
+                {
+                    TargetExecuteClientInteraction(Owner, target, point, genericName, targetComponentIndex, reference.Id);
+                }
             });
             if (!accepted)
             {
@@ -942,10 +945,10 @@ namespace SS3D.Systems.Interactions
         }
 
         /// <summary>
-        /// Confirms an interaction issued by a client
+        /// Confirms an interaction issued by a client. Sent to the owner only.
         /// </summary>
-        [ObserversRpc(RunLocally = true)]
-        private void RpcExecuteClientInteraction(NetworkObject target, Vector3 point, string genericName, int targetComponentIndex, int referenceId)
+        [TargetRpc(RunLocally = true)]
+        private void TargetExecuteClientInteraction(NetworkConnection conn, NetworkObject target, Vector3 point, string genericName, int targetComponentIndex, int referenceId)
         {
             if (!IsOwner)
             {
@@ -1151,7 +1154,10 @@ namespace SS3D.Systems.Interactions
                 TrackActiveInteraction(source, reference, chosenEntry.Interaction);
                 if (chosenEntry.Interaction is IClientInteractionSource)
                 {
-                    RpcExecuteClientInventoryInteraction(target, sourceObject, genericName, targetComponentIndex, reference.Id);
+                    if (Owner.IsValid)
+                    {
+                        TargetExecuteClientInventoryInteraction(Owner, target, sourceObject, genericName, targetComponentIndex, reference.Id);
+                    }
                 }
             });
             if (!accepted)
@@ -1167,8 +1173,8 @@ namespace SS3D.Systems.Interactions
         /// <param name="sourceObject"></param>
         /// <param name="interactionName"></param>
         /// <param name="referenceId"></param>
-        [ObserversRpc(RunLocally = true)]
-        private void RpcExecuteClientInventoryInteraction(GameObject target, GameObject sourceObject, string genericName, int targetComponentIndex, int referenceId)
+        [TargetRpc(RunLocally = true)]
+        private void TargetExecuteClientInventoryInteraction(NetworkConnection conn, GameObject target, GameObject sourceObject, string genericName, int targetComponentIndex, int referenceId)
         {
             if (!IsOwner)
             {
