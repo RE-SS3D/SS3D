@@ -42,7 +42,7 @@ namespace SS3D.Systems.Inventory.Containers.Editor
         private readonly List<string> _names = new();
         private readonly List<int> _filtered = new();
         private readonly Texture2D[] _views = new Texture2D[5];
-        private readonly Stack<(string Path, ItemPoseEdit.Snapshot Before)> _undo = new();
+        private readonly Stack<(string Path, string Label, System.Action<Item> Undo)> _undo = new();
 
         private string _search = string.Empty;
         private int _selected = -1;
@@ -214,7 +214,12 @@ namespace SS3D.Systems.Inventory.Containers.Editor
 
             DrawPoseRow(item, ItemPose.Rest, "Rest (floor)", "world axes, Y = up");
             DrawPoseRow(item, ItemPose.Icon, "Icon", item.OverridesIconRotation ? "world axes, overridden" : "world axes, follows Rest");
-            DrawPoseRow(item, ItemPose.HeldRight, "Held, right hand", "character axes: X right, Y up, Z forward");
+            bool shared = ItemPoseEdit.LeftHandShared(item);
+            DrawPoseRow(
+                item,
+                ItemPose.HeldRight,
+                shared ? "Held, both hands" : "Held, right hand",
+                "character axes: X right, Y up, Z forward" + (shared ? "; the left hand shares this grip" : string.Empty));
             DrawPoseRow(item, ItemPose.HeldLeft, "Held, left hand", "character axes: X right, Y up, Z forward");
 
             EditorGUILayout.Space();
@@ -279,6 +284,19 @@ namespace SS3D.Systems.Inventory.Containers.Editor
                     }
                 }
 
+                if (pose == ItemPose.HeldLeft && item.AttachmentPoint != null)
+                {
+                    bool shared = ItemPoseEdit.LeftHandShared(item);
+                    if (shared && GUILayout.Button("Split", GUILayout.Width(80f)))
+                    {
+                        bool altWasAttachmentPoint = item.AttachmentPointAlt == item.AttachmentPoint;
+                        Edit(
+                            "split the left-hand grip",
+                            ItemPoseEdit.SplitLeftHand,
+                            undo => ItemPoseEdit.JoinLeftHand(undo, altWasAttachmentPoint));
+                    }
+                }
+
                 if (pose == ItemPose.Icon)
                 {
                     using (new EditorGUI.DisabledScope(!item.OverridesIconRotation))
@@ -295,35 +313,41 @@ namespace SS3D.Systems.Inventory.Containers.Editor
             EditorGUILayout.Space(4f);
         }
 
+        /// <summary>Edit one pose; undo puts back the snapshot taken just before.</summary>
         private void Edit(ItemPose pose, System.Action<Item> edit)
         {
-            string path = SelectedPath;
             ItemPoseEdit.Snapshot before = default;
-            bool ok = ItemPoseEdit.EditPrefab(
-                path,
+            Edit(
+                pose.ToString(),
                 item =>
                 {
                     before = ItemPoseEdit.Capture(item, pose);
                     edit(item);
                 },
-                out string error);
+                item => ItemPoseEdit.Restore(item, before));
+        }
+
+        private void Edit(string label, System.Action<Item> edit, System.Action<Item> undo)
+        {
+            string path = SelectedPath;
+            bool ok = ItemPoseEdit.EditPrefab(path, edit, out string error);
             if (!ok)
             {
                 _status = error;
                 return;
             }
 
-            _undo.Push((path, before));
-            _status = $"Saved {pose} on {_names[_selected]}.";
+            _undo.Push((path, label, undo));
+            _status = $"Saved {label} on {_names[_selected]}.";
             QueueRender();
         }
 
         private void UndoLast()
         {
-            (string path, ItemPoseEdit.Snapshot before) = _undo.Pop();
-            bool ok = ItemPoseEdit.EditPrefab(path, item => ItemPoseEdit.Restore(item, before), out string error);
+            (string path, string label, System.Action<Item> undo) = _undo.Pop();
+            bool ok = ItemPoseEdit.EditPrefab(path, undo, out string error);
             int index = _paths.IndexOf(path);
-            _status = ok ? $"Undid {before.Pose} on {(index >= 0 ? _names[index] : path)}." : error;
+            _status = ok ? $"Undid {label} on {(index >= 0 ? _names[index] : path)}." : error;
             if (index >= 0 && index != _selected)
             {
                 Select(index);

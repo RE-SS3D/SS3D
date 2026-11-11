@@ -61,13 +61,57 @@ namespace SS3D.Systems.Inventory.Containers.Editor
             return new Vector3(CleanAngle(euler.x), CleanAngle(euler.y), CleanAngle(euler.z));
         }
 
+        /// <summary>
+        /// True when the left hand holds the item by the right hand's <see cref="Item.AttachmentPoint"/>: no
+        /// <see cref="Item.AttachmentPointAlt"/>, or one that is the same transform (most items). Turning the right-hand
+        /// grip then turns both hands.
+        /// </summary>
+        public static bool LeftHandShared(Item item) =>
+            item.AttachmentPointAlt == null || item.AttachmentPointAlt == item.AttachmentPoint;
+
         /// <summary>Why <paramref name="pose"/> cannot be edited on <paramref name="item"/>, or null if it can.</summary>
         public static string WhyNotEditable(Item item, ItemPose pose) => pose switch
         {
             ItemPose.HeldRight when item.AttachmentPoint == null => "No AttachmentPoint: the item sits at the hand's origin.",
-            ItemPose.HeldLeft when item.AttachmentPointAlt == null => "No AttachmentPointAlt: the left hand uses the right-hand AttachmentPoint.",
+            ItemPose.HeldLeft when item.AttachmentPointAlt == null && item.AttachmentPoint == null =>
+                "No AttachmentPoint: the item sits at the hand's origin.",
+            ItemPose.HeldLeft when LeftHandShared(item) =>
+                "Shares the right-hand grip, so turning that turns both hands. Split to turn the left hand alone.",
             _ => null,
         };
+
+        /// <summary>
+        /// Give the left hand its own grip: a new <c>AttachmentPointAlt</c> next to the <c>AttachmentPoint</c>, at the
+        /// same position and rotation, so the item looks the same until the left grip is turned.
+        /// </summary>
+        public static void SplitLeftHand(Item item)
+        {
+            if (item.AttachmentPoint == null || !LeftHandShared(item))
+            {
+                throw new InvalidOperationException("The left hand already has its own grip, or there is no AttachmentPoint to copy.");
+            }
+
+            Transform source = item.AttachmentPoint;
+            Transform alt = new GameObject("AttachmentPointAlt").transform;
+            alt.SetParent(source.parent, false);
+            alt.SetLocalPositionAndRotation(source.localPosition, source.localRotation);
+            alt.SetSiblingIndex(source.GetSiblingIndex() + 1);
+            item.AttachmentPointAlt = alt;
+        }
+
+        /// <summary>
+        /// Undo <see cref="SplitLeftHand"/>: delete the left grip and share the right one again, either through the
+        /// same transform (<paramref name="altWasAttachmentPoint"/>) or with no Alt at all.
+        /// </summary>
+        public static void JoinLeftHand(Item item, bool altWasAttachmentPoint)
+        {
+            if (item.AttachmentPointAlt != null && item.AttachmentPointAlt != item.AttachmentPoint)
+            {
+                UnityEngine.Object.DestroyImmediate(item.AttachmentPointAlt.gameObject);
+            }
+
+            item.AttachmentPointAlt = altWasAttachmentPoint ? item.AttachmentPoint : null;
+        }
 
         /// <summary>The pose's current rotation. Icon reads the rest pose while not overridden.</summary>
         public static Quaternion Current(Item item, ItemPose pose) => pose switch

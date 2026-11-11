@@ -96,6 +96,45 @@ namespace SS3D.Tests.EditMode
             Assert.Throws<InvalidOperationException>(() => ItemPoseEdit.Turn(_item, ItemPose.HeldLeft, Vector3.up, 90f));
         }
 
+        [Test]
+        public void HeldLeft_SharingTheAttachmentPointTransform_IsNotEditable()
+        {
+            _item.AttachmentPointAlt = _item.AttachmentPoint;
+
+            Assert.IsTrue(ItemPoseEdit.LeftHandShared(_item));
+            Assert.IsNotNull(ItemPoseEdit.WhyNotEditable(_item, ItemPose.HeldLeft));
+        }
+
+        [Test]
+        public void SplitLeftHand_CopiesTheGrip_AndTurnsIndependently()
+        {
+            _item.AttachmentPointAlt = _item.AttachmentPoint;
+
+            ItemPoseEdit.SplitLeftHand(_item);
+            ItemPoseEdit.Turn(_item, ItemPose.HeldLeft, Vector3.up, 90f);
+
+            Assert.IsFalse(ItemPoseEdit.LeftHandShared(_item));
+            Assert.AreEqual(GripPosition, _item.AttachmentPointAlt.localPosition);
+            Assert.AreSame(_item.AttachmentPoint.parent, _item.AttachmentPointAlt.parent);
+            Assert.Less(Quaternion.Angle(Quaternion.Euler(Grip), _item.AttachmentPoint.localRotation), Tolerance);
+            Quaternion expected = Quaternion.AngleAxis(90f, Vector3.up) * Quaternion.Euler(Grip);
+            Assert.Less(Quaternion.Angle(expected, _item.AttachmentPointAlt.localRotation), Tolerance);
+        }
+
+        [TestCase(true)]
+        [TestCase(false)]
+        public void JoinLeftHand_UndoesTheSplit(bool altWasAttachmentPoint)
+        {
+            _item.AttachmentPointAlt = altWasAttachmentPoint ? _item.AttachmentPoint : null;
+            int children = _go.transform.childCount;
+
+            ItemPoseEdit.SplitLeftHand(_item);
+            ItemPoseEdit.JoinLeftHand(_item, altWasAttachmentPoint);
+
+            Assert.AreEqual(children, _go.transform.childCount);
+            Assert.AreEqual(altWasAttachmentPoint ? _item.AttachmentPoint : null, _item.AttachmentPointAlt);
+        }
+
         [TestCase(ItemPose.Rest)]
         [TestCase(ItemPose.Icon)]
         [TestCase(ItemPose.HeldRight)]
