@@ -165,14 +165,8 @@ namespace SS3D.Systems.Inventory.Containers.Editor
                     return false;
                 }
 
-                Dictionary<Transform, Quaternion> bindRotations = new();
-                foreach (Transform display in handDisplays)
-                {
-                    bindRotations[display] = display.rotation;
-                }
-
                 Dictionary<string, Quaternion> measured = references;
-                void Record()
+                return WithReferencePose(instance, handDisplays, () =>
                 {
                     Quaternion rootRotation = instance.transform.rotation;
                     foreach (Transform display in displays)
@@ -180,20 +174,48 @@ namespace SS3D.Systems.Inventory.Containers.Editor
                         measured[IndexPath(instance.transform, display)] =
                             HeldItemGrip.ReferenceRotation(display.rotation, rootRotation);
                     }
-                }
-
-                if (PoseWithAnimator(animator, handDisplays, bindRotations))
-                {
-                    Record();
-                    return true;
-                }
-
-                return PoseWithDefaultStateClip(instance, animator, handDisplays, bindRotations, Record, out error);
+                }, out error);
             }
             finally
             {
                 Object.DestroyImmediate(instance);
             }
+        }
+
+        /// <summary>
+        /// Pose a Human instance in the reference pose and run <paramref name="whilePosed"/> while it holds.
+        /// Every transform in <paramref name="mustMove"/> has to turn away from the bind pose, or nothing runs
+        /// and this returns false. The pose can revert after this returns (AnimationMode fallback). Shared
+        /// with <c>ItemPoseContactSheet</c>, so the sheet shows held items in the calibrated pose.
+        /// </summary>
+        public static bool WithReferencePose(
+            GameObject instance,
+            IReadOnlyList<Transform> mustMove,
+            System.Action whilePosed,
+            out string error)
+        {
+            error = null;
+            Animator animator = instance.GetComponent<Animator>();
+            if (animator == null || animator.runtimeAnimatorController == null || !animator.isHuman)
+            {
+                error = "Human.prefab needs an Animator with a controller and a humanoid avatar.";
+                return false;
+            }
+
+            List<Transform> moving = new(mustMove);
+            Dictionary<Transform, Quaternion> bindRotations = new();
+            foreach (Transform transform in moving)
+            {
+                bindRotations[transform] = transform.rotation;
+            }
+
+            if (PoseWithAnimator(animator, moving, bindRotations))
+            {
+                whilePosed();
+                return true;
+            }
+
+            return PoseWithDefaultStateClip(instance, animator, moving, bindRotations, whilePosed, out error);
         }
 
         /// <summary>Evaluate the controller's default state at t=0, as the runtime Animator does on spawn.</summary>

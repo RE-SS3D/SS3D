@@ -157,6 +157,17 @@ public static class RuntimePreviewGenerator
 		set { m_previewRotation = value; }
 	}
 
+	private static Transform m_boundsTarget = null;
+	/// <summary>
+	/// SS3D: frame the camera on this descendant of the model instead of the whole model (null: the model).
+	/// The item pose contact sheet frames the held item while the whole Human renders around it.
+	/// </summary>
+	public static Transform BoundsTarget
+	{
+		get { return m_boundsTarget; }
+		set { m_boundsTarget = value; }
+	}
+
 	private static bool m_useLocalBounds = false;
 	public static bool UseLocalBounds
 	{
@@ -316,7 +327,8 @@ public static class RuntimePreviewGenerator
 
 			Quaternion cameraRotation = Quaternion.LookRotation( previewObject.rotation * m_previewDirection, Vector3.up );
 			Bounds previewBounds = new Bounds();
-			if( !CalculateBounds( previewObject, shouldIgnoreParticleSystems, cameraRotation, out previewBounds ) )
+			Transform boundsTarget = m_boundsTarget != null && !shouldCloneModel && m_boundsTarget.IsChildOf( previewObject ) ? m_boundsTarget : previewObject;
+			if( !CalculateBounds( boundsTarget, shouldIgnoreParticleSystems, cameraRotation, out previewBounds ) )
 			{
 #if UNITY_2018_2_OR_NEWER
 				if( asyncCallback != null )

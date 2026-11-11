@@ -43,6 +43,7 @@ Items, containers, hands, identification cards (`IDCard`, `PDA`), on-demand stor
 - `Assets/Scripts/SS3D/Systems/Inventory/Items/Item.cs` — `WorldRestRotation` / `GetWorldFacing`; `GenerateIcon` → `IconPreviewGenerator`
 - `Assets/Scripts/SS3D/Systems/Inventory/Containers/ContainerItemDisplay.cs` / `GripSocket.cs` / `HeldItemGrip.cs` — held-item grip; a calibrated `GripSocket` on each display makes the grip hand-local and pose-independent ([item orientation plan](../../plans/item-orientation.plan.md) Phase A)
 - `Assets/Scripts/SS3D/Systems/Inventory/Containers/Editor/HandGripSocketCalibration.cs` — **SS3D → Inventory → Calibrate Hand Grip Sockets** (also in Run All Human Prefab Recipes)
+- `Assets/Scripts/SS3D/Systems/Inventory/Containers/Editor/ItemPoseContactSheet.cs` — **SS3D → Inventory → Render Item Pose Contact Sheet**: icon, right hand, left hand and floor view of every Item prefab in one PNG (`artifacts/item-poses/`, plus a CSV index). Review it after changing an `AttachmentPoint`, a rest rotation or the icon path
 - `Assets/Scripts/SS3D/Utils/IconPreviewGenerator.cs` — bright `Unlit/ObjectIcon` for HUD/tile icons
 - `Assets/Scripts/SS3D/Systems/Inventory/Containers/AttachedContainer.cs` — container primitive
 - `Assets/Scripts/SS3D/Systems/Inventory/Containers/AttachedContainerLock.cs` — ID-gated world lock

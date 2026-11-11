@@ -19,7 +19,7 @@ todos:
     status: completed
   - id: d-contact-sheet
     content: "D1: SS3D → Inventory → Render Item Pose Contact Sheet: icon, held (idle) and floor pose of every Item prefab in one PNG"
-    status: pending
+    status: completed
   - id: b-pose-fields
     content: "B1: Item.RestRotation / IconRotation fields, migrated from the root rotation by a recipe; Icon defaults to Rest"
     status: pending
@@ -98,3 +98,4 @@ An Item Pose inspector on `Item` previews the three contexts (item in a Human ha
 - A1–A3 landed without a Unity Editor in the session. The runtime code falls back to the legacy grip until A4 runs the recipe, so the build behaves as before until then. `HandGripSocketContentTests` fails until the recipe has been run and `Human.prefab` committed: that failure is the reminder.
 - A4 (2026-11-11): recipe run in the Editor after merging develop; it calibrated `hold.r`, `hold.l` and `IDHold` and added three `GripSocket`s to `Human.prefab`. `validate.sh --steps compile,editmode,scenarios:Combat` passed (EditMode 4407/4407, Combat 20/20). Owner hand test passed the same day: held items look right; the taser icon is still upside down, as expected until B3.
 - A5 (2026-11-11): removed the legacy grip, `PendingGrip` and the `LateUpdate` re-grip. `TestHuman.prefab` nests the same hands without sockets; it has no InteractionController and nothing spawns it, so it was left uncalibrated.
+- D1 (2026-11-11): `ItemPoseContactSheet` renders 107 Item prefabs (Assets/Content) as icon, right hand, left hand and floor cells into `artifacts/item-poses/item-pose-contact-sheet.png`, with a CSV index (flags, whether `AttachmentPointAlt` is set). It reuses the real paths: `Item.GenerateIcon`, `ContainerItemDisplay.PlaceAtDisplay` (extracted from the attach handler) on `Human.prefab` posed by `HandGripSocketCalibration.WithReferencePose`. `RuntimePreviewGenerator.BoundsTarget` frames the held item while the whole body renders. First sheet: 3 prefabs lack an `AttachmentPoint` (HumanEarRight, HumanTorso, HumanBrain); 91 of 107 have an `AttachmentPointAlt`. Body-part items frame the whole body (their skinned bounds span it).

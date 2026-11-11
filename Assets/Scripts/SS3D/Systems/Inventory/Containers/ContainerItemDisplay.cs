@@ -59,40 +59,44 @@ namespace SS3D.Systems.Inventory.Containers
                 return;
             }
 
-            Transform itemTransform = item.transform;
+            Transform display = attachedContainer.Displays[index].transform;
+            PlaceAtDisplay(item, display, Mirrored, ReferenceRotation(display));
+            _displayedItems[index] = item;
+        }
 
-            // Check if a custom attachment point should be used
+        /// <summary>
+        /// Parent <paramref name="item"/> to <paramref name="display"/> at its grip: the item's
+        /// <c>AttachmentPoint</c> (or <c>AttachmentPointAlt</c> when <paramref name="mirrored"/>) sits on the
+        /// display, turned by the display's calibrated reference rotation. Constant hand-local, so the same
+        /// whatever pose the hand is in right now (spawn, mid-walk, Harm stance). Also used by the item pose
+        /// contact sheet. Documents/plans/item-orientation.plan.md Phase A.
+        /// </summary>
+        public static void PlaceAtDisplay(Item item, Transform display, bool mirrored, Quaternion referenceRotation)
+        {
+            Transform itemTransform = item.transform;
             Transform attachmentPoint = item.AttachmentPoint;
-            if (Mirrored && item.AttachmentPointAlt != null)
+            if (mirrored && item.AttachmentPointAlt != null)
             {
                 attachmentPoint = item.AttachmentPointAlt;
             }
 
-            if (attachmentPoint != null)
+            if (attachmentPoint == null)
             {
-                GameObject temporaryPoint = new GameObject("TempPivotPoint");
-                Transform display = attachedContainer.Displays[index].transform;
-
-                temporaryPoint.transform.SetParent(display, false);
-                temporaryPoint.transform.localPosition = Vector3.zero;
-
-                itemTransform.SetParent(temporaryPoint.transform, false);
-                itemTransform.localRotation = Quaternion.identity;
-                itemTransform.localPosition = -attachmentPoint.localPosition;
-
-                // Constant hand-local grip from the calibrated socket: the same whatever pose the hand is in
-                // right now (spawn, mid-walk, Harm stance). Documents/plans/item-orientation.plan.md Phase A.
-                temporaryPoint.transform.localRotation =
-                    HeldItemGrip.PivotLocalRotation(ReferenceRotation(display), attachmentPoint.localRotation);
-            }
-            else
-            {
-                itemTransform.SetParent(attachedContainer.Displays[index].transform, false);
+                itemTransform.SetParent(display, false);
                 itemTransform.localPosition = Vector3.zero;
                 itemTransform.localRotation = Quaternion.identity;
+                return;
             }
 
-            _displayedItems[index] = item;
+            GameObject temporaryPoint = new GameObject("TempPivotPoint");
+            temporaryPoint.transform.SetParent(display, false);
+            temporaryPoint.transform.localPosition = Vector3.zero;
+
+            itemTransform.SetParent(temporaryPoint.transform, false);
+            itemTransform.localRotation = Quaternion.identity;
+            itemTransform.localPosition = -attachmentPoint.localPosition;
+            temporaryPoint.transform.localRotation =
+                HeldItemGrip.PivotLocalRotation(referenceRotation, attachmentPoint.localRotation);
         }
 
         private Quaternion ReferenceRotation(Transform display)
