@@ -71,18 +71,9 @@ namespace SS3D.Systems.BugReports
         /// <summary>Path of the last local bundle, or null.</summary>
         public string LastBundlePath => _lastBundlePath;
 
-        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
-        private static void Bootstrap()
-        {
-            if (UnityEngine.Application.isBatchMode || SystemInfo.graphicsDeviceType == UnityEngine.Rendering.GraphicsDeviceType.Null)
-                return;
-            if (SubSystems.TryGet(out BugReportSubSystem _))
-                return;
-
-            GameObject host = new(nameof(BugReportSubSystem));
-            DontDestroyOnLoad(host);
-            host.AddComponent<BugReportSubSystem>();
-        }
+        /// <summary>Bug reports need a screen to capture; <see cref="Bootstrap.SystemsBootstrap"/> skips them otherwise.</summary>
+        public static bool IsSupported =>
+            !UnityEngine.Application.isBatchMode && SystemInfo.graphicsDeviceType != UnityEngine.Rendering.GraphicsDeviceType.Null;
 
         protected override void OnAwake()
         {

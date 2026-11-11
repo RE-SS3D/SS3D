@@ -20,17 +20,6 @@ namespace SS3D.Systems.StructuralDamage
         private ITileQueryService _boundQuery;
         private IConstructionService _boundConstruction;
 
-        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
-        private static void Bootstrap()
-        {
-            if (SubSystems.TryGet(out StructuralDamageSubSystem _))
-                return;
-
-            GameObject host = new(nameof(StructuralDamageSubSystem));
-            DontDestroyOnLoad(host);
-            host.AddComponent<StructuralDamageSubSystem>();
-        }
-
         /// <summary>
         /// Resolves against the current <see cref="TileSubSystem"/> map services.
         /// Do not cache at Awake — tile map is created later in TileSubSystem.OnStart.

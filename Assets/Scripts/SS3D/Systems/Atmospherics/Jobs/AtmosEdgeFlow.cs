@@ -1,4 +1,4 @@
-namespace SS3D.Systems.Atmospherics.ECS
+namespace SS3D.Systems.Atmospherics.Jobs
 {
     /// <summary>
     /// Signed bulk flow in moles per second across the two edges a cell owns. Positive flow leaves

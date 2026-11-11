@@ -12,12 +12,23 @@ namespace SS3D.Systems.Area
     /// </summary>
     public sealed class AreaFloorStripeView : MonoBehaviour
     {
+        /// <summary>The one live view, or null before cold start.</summary>
+        public static AreaFloorStripeView Instance { get; private set; }
+
         private AreaSubSystem _areaSubSystem;
         private Transform _root;
         private readonly List<GameObject> _spawned = new();
         private readonly Dictionary<Color, Material> _materialsByTint = new();
         private bool _subscribed;
         private Vector2Int? _lastAoiCell;
+
+        private void Awake() => Instance = this;
+
+        private void OnDestroy()
+        {
+            if (Instance == this)
+                Instance = null;
+        }
 
         private void OnEnable()
         {
@@ -139,10 +150,10 @@ namespace SS3D.Systems.Area
             _spawned.Clear();
         }
 
-        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
-        private static void EnsureInstance()
+        /// <summary>Creates the process-wide view; called by <c>SystemsBootstrap</c> at cold start.</summary>
+        public static void EnsureInstance()
         {
-            if (FindFirstObjectByType<AreaFloorStripeView>() != null)
+            if (Instance != null)
                 return;
 
             var go = new GameObject(nameof(AreaFloorStripeView));

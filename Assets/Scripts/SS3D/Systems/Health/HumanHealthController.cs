@@ -7,7 +7,7 @@ using Coimbra.Services.PlayerLoopEvents;
 using SS3D.Core;
 using SS3D.Core.Behaviours;
 using SS3D.Systems.Atmospherics;
-using SS3D.Systems.Atmospherics.ECS;
+using SS3D.Systems.Atmospherics.Jobs;
 using SS3D.Systems.Atmospherics.Pipes;
 using SS3D.Systems.Audio;
 using AudioType = SS3D.Systems.Audio.AudioType;
@@ -303,7 +303,7 @@ namespace SS3D.Systems.Health
             float t = Mathf.Clamp01(brute / HealthConstants.BloodSprayFullBrute);
             // Keep stagger through most of the flinch clip so Additive Flinch weight can lerp out softly.
             float staggerSeconds = Mathf.Lerp(0.55f, 0.85f, t);
-            _combatController.OnHitReceived(Vector3.zero, knockbackForce: 0f, staggerSeconds);
+            _combatController.OnHitReceived(staggerSeconds);
         }
 
         /// <summary>

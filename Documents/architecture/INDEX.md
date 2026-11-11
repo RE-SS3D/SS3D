@@ -133,7 +133,7 @@ Only work that is in flight, planned, or kept as standing reference. Everything 
 | [2026-10_player-settings](2026-10_player-settings.md) | in-progress |
 | [2026-11_sandbox-server](2026-11_sandbox-server.md) | in-progress |
 | [2026-11_atmos-edge-flow](2026-11_atmos-edge-flow.md) | in-progress |
-| [2026-11_humanoid-animation-pass](2026-11_humanoid-animation-pass.md) | in-progress |
+| [2026-11_humanoid-animation-pass](2026-11_humanoid-animation-pass.md) | shipped |
 | [2026-11_testing-philosophy](2026-11_testing-philosophy.md) | shipped (standing policy) |
 | [2026-11_tech-debt-paydown](2026-11_tech-debt-paydown.md) | in-progress (Phases 0–2 done, awaiting review) |
 | [agent_validation_loop.plan](../plans/agent_validation_loop.plan.md) | shipped (reference) |

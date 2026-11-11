@@ -14,7 +14,7 @@ using SS3D.Networking;
 using SS3D.Networking.Settings;
 using SS3D.Systems.Atmospherics;
 using SS3D.Systems.Audio;
-using SS3D.Systems.Atmospherics.ECS;
+using SS3D.Systems.Atmospherics.Jobs;
 using SS3D.Systems.Atmospherics.Visualization;
 using SS3D.Systems.Entities;
 using SS3D.Systems.Entities.Humanoid;

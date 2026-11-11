@@ -43,9 +43,7 @@ high-value first; the large splits after the contracts they depend on exist.
    `SubSystems` registry ([§1.25](#125-subsystems-registry-lifecycle-bugs-and-get-misuse)), Map Editor undo
    ([§1.22](#122-map-editor-trusts-the-clients-partial-map-and-assumes-every-command-succeeded)), HUD
    weapon-state mutation ([§1.9](#19-god-classes-forming-in-hot-uiinteraction-code)), Examine catalog outside the umbrella rebuild ([§1.4](#14-ui-asset-catalog-pattern-copy-pasted-three-times-no-shared-infrastructure)).
-3. **Dead code:** `com.unity.entities` ([§1.26](#126-comunityentities-installed-for-one-unused-world)),
-   `HumanoidPredictedMovement` ([§1.30](#130-humanoidpredictedmovement-disabled-but-maintained)),
-   base `SS3D.UI` assembly, unused `UiBinderBase` ([§1.29](#129-ui-widget-and-host-duplication)).
+3. **Dead code:** done in tech-debt Phase 3 except unused `UiBinderBase` ([§1.29](#129-ui-widget-and-host-duplication)), which goes with P7.8.
 4. **Ownership contracts:** hand actions + upper-body pose ([§1.20](#120-hand-actions-and-upper-body-pose-have-no-single-owner)),
    item holder ([§1.21](#121-item-holder-and-visibility-are-written-by-many-classes)).
 5. **Assembly split by edge** ([§1.24](#124-ss3dsystems-is-one-tangled-assembly)), then the god-class
@@ -122,14 +120,12 @@ time, not at PR time. Do not add another per-surface rebuild MenuItem; use the u
 `RuntimeInitializeOnLoad` self-bootstraps (UiShell / MainHud / StoragePanel) stay under agent-first
 follow-on **(b)**, not this item.
 
-**Regressing (checked `06316a98`):** seven Systems types self-bootstrap DDOL hosts with
-`AfterSceneLoad` again, bypassing `SystemsBootstrap` and its Test-Runner-scene guard:
-`BugReportSubSystem`, `StructuralDamageSubSystem`, `AirLockProximityService`, `FloorDecalView`,
-`AreaFloorStripeView`, `LocalSpeechDebugTrigger`, `ScreenEffectsDebugMenuView`. This is why
-`TileSubSystem.cs:291` has to `FindFirstObjectByType<FloorDecalView>()`. Move them into
-`SystemsBootstrap.EnsureProcessWideServices` (S). `SystemsBootstrap.cs:23-29` still loads
-`NetworkSessionSubSystem` by type-name string "to avoid asmdef cycles", but Systems already
-references SS3D.Networking — the indirection is stale.
+The seven Systems types that had gone back to `AfterSceneLoad` self-bootstraps (`BugReportSubSystem`,
+`StructuralDamageSubSystem`, `AirLockProximityService`, `FloorDecalView`, `AreaFloorStripeView`, and the
+debug-build-only `LocalSpeechDebugTrigger` / `ScreenEffectsDebugMenuView`) are created by
+`SystemsBootstrap.EnsureProcessWideServices` again since tech-debt P3.4, and `NetworkSessionSubSystem` is
+created by type. `TileSubSystem` reads `FloorDecalView.Instance` instead of scanning the scene. Only
+`CommandLineArgsSubSystem` and the main menu stay type-name strings (Systems references neither assembly).
 
 ### 1.8 Condemned UI remains; legacy tile UI partly purged
 
@@ -349,11 +345,11 @@ chunks batched per command group; keep one full snapshot for late joiners (M).
 `MapEditorRoundStop`, `EntitySubSystem.CmdSpawnLatePlayer`), but these do not. `ServerRpcAuthorityAuditTests` (tech-debt G1) lists every
 ServerRpc of this kind with its check; the holes below are its `Unchecked` entries.
 
-- **Console commands at `AccessLevel User` run on the server for any player**, in release builds
-  (`CommandsController.CmdProcessOnlineCommand`). These include `accessgrant` / `accessrevoke` /
-  `accesspreset` (any access level, on yourself or on another ckey) and `spawnitem`. Sandbox-server §5
-  says players get no console. An unknown command name throws, because `FindCommand`'s result is
-  ignored (`:144`).
+- ~~Console commands at `AccessLevel User` run on the server for any player.~~ Fixed by the console
+  rework (#223): `accessgrant`, `accessrevoke`, `accesspreset` and `spawn` need Administrator, and an unknown
+  command gets an answer instead of throwing. `CommandRegistryTests.RealCommands_ServerCommandsBelowAdminAreSelfOnly`
+  (tech-debt G2) fails on any new server command below Administrator that isn't listed as self-only
+  (today only `ghostjump`).
 - **Combat one-shots** are still named by the client (`HumanoidBodyStateMachine.CmdFireTrigger`), but since
   tech-debt P1.6 the server replicates one only while the matching swing, shot, reload or throw it accepted is
   under way (`ClientTriggerRules`), and it picks melee vs ranged stance from its own inventory. Server-fired
@@ -455,22 +451,15 @@ reference Systems:
 `using SS3D.Systems.X` lines point both ways (52 on 2026-11-10 by its own count; the audit's 53 used a slightly
 different scan) and fails if the count rises.
 
-That removes ~25k lines from the recompile set (L). Also: `SS3D.Systems.asmdef` references the base
-`SS3D.UI` assembly with zero uses (§1.29).
+That removes ~25k lines from the recompile set (L).
 
 ### 1.25 `SubSystems` registry lifecycle bugs and `Get` misuse — resolved 2026-11-10
 
 See §6.
 
-### 1.26 `com.unity.entities` installed for one unused World
+### 1.26 `com.unity.entities` installed for one unused World — resolved 2026-11-11
 
-**Blast radius: low-medium (player and server footprint) — trend: stable**
-
-`Atmospherics/ECS/AtmosWorld.cs` is the only `using Unity.Entities` in the repo; `AtmosSubSystem`
-creates and disposes it and nothing else touches it. The "ECS" folder is Burst `IJob`s on NativeArrays.
-`com.unity.entities` 1.5.0 has no `UNITY_DISABLE_AUTOMATIC_SYSTEM_BOOTSTRAP`, so a default World and
-its systems run in every player, including the dedicated server. Delete `AtmosWorld`, drop the package,
-rename the folder to `Jobs` (S). [FORK_STATUS.md](../FORK_STATUS.md)'s "ECS world" wording is misleading.
+See §6.
 
 ### 1.27 Tick-driven systems share no clock
 
@@ -508,21 +497,13 @@ Let `IPersistenceContributor` deserialize its own payload (S).
 - Shared scaffolding is unused: `UiBinderBase` has zero subclasses (the three new MI binders skipped
   it); `PanelAnimator` has one consumer while `MainHudView` and `MachineInterfaceHost` hand-roll DOTween.
   Adopt or delete.
-- The base `SS3D.UI` assembly (LabelButton, ToggleLabelButton, GenericTab*) has no prefab or scene
-  references beyond `LocalizeFont` on `PlayerCanvas.prefab`. Purge candidate (S).
+- The base `SS3D.UI` assembly is down to `LocalizeFont` (on the condemned `PlayerCanvas.prefab`) and
+  `GlobalUiVisibilityControllerView` since tech-debt P3.3; it goes when that prefab is purged.
 - `RespawnPrompt` is all inline styles and rewrites its label every frame (`:70-84`, `:96-127`).
 
-### 1.30 `HumanoidPredictedMovement` disabled but maintained
+### 1.30 `HumanoidPredictedMovement` disabled but maintained — resolved 2026-11-11
 
-**Blast radius: low-medium — trend: drifting**
-
-The component is `m_Enabled: 0` on `Human.prefab`, yet its 612 lines are still maintained. Its
-space-float / coast code duplicates `HumanoidLivingController` (`HumanoidPredictedMovement.cs:304-352` vs.
-`HumanoidLivingController.cs:250-304`) and has already drifted (the #124 fallback exists only in the
-living path). Delete it, or schedule it as the replacement for client-authoritative movement (S–M).
-Related small cleanup: `HumanHealthController.ApplyKnockback` is dead (only caller passes 0). (The throw-mode
-per-frame allocations, the per-tick organ copy, the uncached missing `AudioListener` and the
-`CmdTransferItem` null dereference went in tech-debt P2.9.)
+See §6.
 
 ## 2. Hot-path GC / performance debt (tracked, partially paid down)
 
@@ -664,3 +645,24 @@ the registered instance, `TryGet` / `Get` treat a destroyed Unity object as miss
 - **Closed by:** tech-debt P2.3 (`SubSystemsRegistryTests`).
 - **Not in this close:** removing the `FindObjectOfType` fallback from `Get` (P6.4, after a period of logging hits).
 - Related: [core-subsystems.md](systems/core-subsystems.md)
+
+### 1.26 `com.unity.entities` — 2026-11-11
+
+`AtmosWorld` (the only `Unity.Entities` user) and the package are gone, so no default ECS World runs in players
+or the dedicated server. The Burst job code lives in `Atmospherics/Jobs` (`SS3D.Atmospherics.Jobs`, namespace
+`SS3D.Systems.Atmospherics.Jobs`); Burst, Collections and Mathematics were already direct dependencies.
+
+- **Closed by:** tech-debt P3.1.
+- Related: [atmospherics.md](systems/atmospherics.md)
+
+### 1.30 `HumanoidPredictedMovement` — 2026-11-11
+
+Deleted with its call sites (`Ragdoll`, `HumanoidLivingController`, `CombatDummyBootstrap`,
+`CharacterPreviewBooth`) and `HumanoidController.PublishPredictedLocomotionVelocity`. `HumanPrefabRecipes` now
+strips components whose script was deleted (`HumanPrefabHygiene.RemoveMissingScripts`), which took it off
+`Human.prefab`. `HumanoidLivingController` is the only movement path. The dead
+`HumanoidBodyStateMachine.ApplyKnockback` went too.
+
+- **Closed by:** tech-debt P3.2, P3.5 (protocol 43).
+- **Not in this close:** server-authoritative movement; a prediction effort would be its own doc.
+- Related: [entities.md](systems/entities.md)

@@ -7,7 +7,7 @@
         "SS3D.Attributes",
         "SS3D.Systems",
         "SS3D.Hacks",
-        "SS3D.Atmospherics.ECS",
+        "SS3D.Atmospherics.Jobs",
         "SS3D.Rendering.URP",
         "Unity.RenderPipelines.Universal.Runtime",
         "Unity.RenderPipelines.Core.Runtime",

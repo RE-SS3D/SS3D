@@ -122,7 +122,7 @@ namespace SS3D.Systems.Entities.Humanoid
         /// <summary>
         /// Called by combat system when a hit lands on this humanoid.
         /// </summary>
-        public void OnHitReceived(Vector3 knockbackDirection, float knockbackForce, float staggerDuration)
+        public void OnHitReceived(float staggerDuration)
         {
             if (!IsServer)
             {
@@ -130,10 +130,6 @@ namespace SS3D.Systems.Entities.Humanoid
             }
 
             _bodyStateMachine.ApplyStagger(staggerDuration);
-            if (knockbackForce > 0f)
-            {
-                _bodyStateMachine.ApplyKnockback(knockbackDirection, knockbackForce);
-            }
         }
 
         /// <param name="windupSeconds">

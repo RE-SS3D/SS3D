@@ -2,7 +2,7 @@
 > Touches systems: core-subsystems, combat, entities, interactions-runtime, inventory, health, tile, map-editor-creative-hooks, area, structural-destruction, atmospherics, electricity, persistence, rounds-lobby, ui-shell, machine-interface, examine, ingame-console, networking-session, application
 > Status: in-progress
 
-**Progress:** Planned on 2026-11-09 from the code audit that refreshed [TECH_DEBT.md](TECH_DEBT.md) §1.19–§1.30; the owner answered Decisions 9–12 the same day and 13–16 on 2026-11-10. Phases 0–2 started 2026-11-10 as one stacked PR per item. Shipped: Phase 0 except G2 (with the console rework); Phase 1 except the console half of P1.3 (the console rework merged as #223 on 2026-11-10; its coverage check is next), the P1.1 aim cone and P1.9 steps 2–3 (both wait on playtest numbers, Decision 13), with `mppm:late-join` passed at its end; Phase 2 (P2.7 awaits an owner hand check). No open questions remain.
+**Progress:** Planned on 2026-11-09 from the code audit that refreshed [TECH_DEBT.md](TECH_DEBT.md) §1.19–§1.30; the owner answered Decisions 9–12 the same day and 13–16 on 2026-11-10. Phases 0–2 started 2026-11-10 as one stacked PR per item. Shipped: Phase 0; Phase 1 except the P1.1 aim cone and P1.9 steps 2–3 (both wait on playtest numbers, Decision 13), with `mppm:late-join` passed at its end; Phase 2 (P2.7 awaits an owner hand check). On 2026-11-11, G2 and the console half of P1.3 closed (the console rework #223 covered them; G2 is a guard test), and Phase 3 was done in one branch with them. The animation pass shipped, so Phase 4's dependency is met; its timing stays after Playtest 1 (Decision 9) unless the owner pulls it forward. No open questions remain.
 
 # Tech-debt paydown (Nov 2026)
 
@@ -348,6 +348,15 @@ Mechanical once Phases 5–7 have cut the reverse references. Each new assembly 
   - TECH_DEBT §1.19–§1.30 and the touched parts of §1.4, §1.7, §1.9, §1.12 and §1.13 move to §6 Resolved, or are rewritten as what's left.
   - INDEX and the coverage table are updated.
 - **P9.3 — Archive this effort,** harvesting live items first ([SKILL.md](../SKILL.md#archive-documentsarchive)).
+
+## Implementation notes
+
+- **G2** shipped as `CommandRegistryTests.RealCommands_ServerCommandsBelowAdminAreSelfOnly`: any `CommandType.Server` command below Administrator must be on a self-only list with its reason (today `ghostjump`), and the four named commands must be Administrator. The spawn command is `spawn`, not `spawnitem`. Client and Local commands are out of scope: they run on the caller's machine.
+- **P3.1:** the inner `ECS/Jobs` folder was flattened into `Atmospherics/Jobs`, and the namespace was renamed with the folder (`SS3D.Systems.Atmospherics.Jobs`). Burst, Collections and Mathematics were already direct dependencies.
+- **P3.2:** the component came off `Human.prefab` through a new general recipe step, `HumanPrefabHygiene.RemoveMissingScripts` (run by `HumanPrefabRecipes`), after the script was deleted. Removing a NetworkBehaviour shifts the prefab's behaviour indices, so this bumps `ProtocolVersion.Current` to 43.
+- **P3.3:** `ButtonStyle`, `ButtonStyleAsset`, `ButtonTextColorPair`, the two LabelButton inspector editors and the six unreferenced `Content/Data/UI/Buttons` style assets went too; only `LabelButton` used them. `SS3D.UI` keeps `LocalizeFont` and `GlobalUiVisibilityControllerView`.
+- **P3.4:** the two debug tools are created only when `Debug.isDebugBuild`, matching the F1 menu that is their only way in. `FloorDecalView` and `AreaFloorStripeView` expose a static `Instance` instead of being found by scene scan. The debug tools' `s_bootstrapped` flags now reset on `SubsystemRegistration`, so Play Mode without a domain reload recreates them.
+- **P3.5:** `HumanoidBodyStateMachine.ApplyKnockback` (the plan said `HumanHealthController`; the health controller was the only caller, passing 0) and the knockback parameters of `HumanoidCombatController.OnHitReceived` were deleted. The `ConstructionHologramManager` comment was already gone with P1.7.
 
 ## Out of scope
 

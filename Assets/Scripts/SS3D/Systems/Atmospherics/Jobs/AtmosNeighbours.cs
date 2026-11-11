@@ -1,4 +1,4 @@
-namespace SS3D.Systems.Atmospherics.ECS
+namespace SS3D.Systems.Atmospherics.Jobs
 {
     public struct AtmosNeighbours
     {

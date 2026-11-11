@@ -3,7 +3,7 @@ using Unity.Collections;
 using Unity.Jobs;
 using Unity.Mathematics;
 
-namespace SS3D.Systems.Atmospherics.ECS
+namespace SS3D.Systems.Atmospherics.Jobs
 {
     /// <summary>
     /// Per-cell gas reactions (currently plasma combustion). Runs in place over the active list —

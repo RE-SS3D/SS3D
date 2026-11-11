@@ -3,7 +3,7 @@ using Unity.Collections;
 using Unity.Jobs;
 using Unity.Mathematics;
 
-namespace SS3D.Systems.Atmospherics.ECS
+namespace SS3D.Systems.Atmospherics.Jobs
 {
     /// <summary>
     /// Bulk transport along per-edge flow with momentum, plus equal-pressure composition diffusion

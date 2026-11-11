@@ -1,8 +1,7 @@
 {
-    "name": "SS3D.Atmospherics.ECS",
+    "name": "SS3D.Atmospherics.Jobs",
     "rootNamespace": "",
     "references": [
-        "Unity.Entities",
         "Unity.Burst",
         "Unity.Collections",
         "Unity.Mathematics"

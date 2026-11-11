@@ -9,7 +9,7 @@
 
 Base actor/subsystem pattern and runtime service locator. All gameplay domains expose a `*SubSystem` registered via `SubSystems.Get<T>()`. `NetworkSubSystem` extends FishNet `NetworkActor` for networked subsystems.
 
-Process-wide services: `SystemsBootstrap` (DDOL, `AfterSceneLoad`; creates network session, command-line, player settings, scene, input, world readiness, screen effects, ambience/personal audio, automation, vision, server-status publisher, client main menu, then `ApplicationInitializerSubSystem` last). World/session networked systems: `NetworkSystemsHub` Resources prefab (spawned Online). Boot/Game do not place per-system SubSystem GameObjects ([session-world-lifecycle](../../archive/architecture/2026-07_session-world-lifecycle.md)).
+Process-wide services: `SystemsBootstrap` (DDOL, `AfterSceneLoad`; creates network session, command-line, player settings, scene, input, world readiness, screen effects, ambience/personal audio, automation, vision, server-status publisher, structural damage, bug reports (not in batch mode), the airlock proximity service, the floor-decal and area-stripe views, the debug-build-only local-speech and screen-effects debug tools, client main menu, then `ApplicationInitializerSubSystem` last). Systems types do not self-bootstrap with `AfterSceneLoad`; add new process-wide services here so the Test Runner guard covers them. World/session networked systems: `NetworkSystemsHub` Resources prefab (spawned Online). Boot/Game do not place per-system SubSystem GameObjects ([session-world-lifecycle](../../archive/architecture/2026-07_session-world-lifecycle.md)).
 
 ## Start here
 

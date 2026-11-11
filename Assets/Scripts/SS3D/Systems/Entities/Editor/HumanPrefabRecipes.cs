@@ -25,6 +25,7 @@ namespace SS3D.Systems.Entities.Editor
         public static void RunAllMenu()
         {
             int devHacksRemoved = HumanPrefabHygiene.RemoveDevHacks();
+            int missingScriptsRemoved = HumanPrefabHygiene.RemoveMissingScripts();
             int containerInteractiveStripped = BodyPartContainerInteractiveStrip.StripAll();
             bool handsRewired = HandsPrefabSetup.Wire();
             bool speechEmitterAdded = HumanPrefabHygiene.EnsureLocalSpeechEmitter();
@@ -42,6 +43,7 @@ namespace SS3D.Systems.Entities.Editor
             EditorUtility.DisplayDialog(
                 "Human Prefab Recipes",
                 $"Removed {devHacksRemoved} dev-only component(s).\n" +
+                $"Removed {missingScriptsRemoved} component(s) with a deleted script.\n" +
                 $"Stripped root ContainerInteractive from {containerInteractiveStripped} prefab(s).\n" +
                 $"Hands wiring: {(handsRewired ? "rewired" : "already correct")}.\n" +
                 $"LocalSpeechEmitter: {(speechEmitterAdded ? "added" : "already present")}.\n" +
@@ -55,6 +57,7 @@ namespace SS3D.Systems.Entities.Editor
         public static void RunAllBatch()
         {
             int devHacksRemoved = HumanPrefabHygiene.RemoveDevHacks();
+            int missingScriptsRemoved = HumanPrefabHygiene.RemoveMissingScripts();
             int containerInteractiveStripped = BodyPartContainerInteractiveStrip.StripAll();
             bool handsRewired = HandsPrefabSetup.Wire();
             bool speechEmitterAdded = HumanPrefabHygiene.EnsureLocalSpeechEmitter();
@@ -66,6 +69,7 @@ namespace SS3D.Systems.Entities.Editor
 
             UnityEngine.Debug.Log(
                 $"[HumanPrefabRecipes] Removed {devHacksRemoved} dev-only component(s); " +
+                $"removed {missingScriptsRemoved} component(s) with a deleted script; " +
                 $"stripped root ContainerInteractive from {containerInteractiveStripped} prefab(s); " +
                 $"hands wiring {(handsRewired ? "rewired" : "already correct")}; " +
                 $"LocalSpeechEmitter {(speechEmitterAdded ? "added" : "already present")}; " +
