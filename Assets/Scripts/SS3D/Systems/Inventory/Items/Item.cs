@@ -218,18 +218,6 @@ namespace SS3D.Systems.Inventory.Items
         public bool OverridesIconRotation => _overrideIconRotation;
 
         /// <summary>
-        /// World rotation for floor spawn/drop: entity yaw composed with <see cref="WorldRestRotation"/>.
-        /// </summary>
-        public Quaternion GetWorldFacing(float yawDegrees) =>
-            ComposeWorldFacing(WorldRestRotation, yawDegrees);
-
-        /// <summary>
-        /// Compose yaw with an authored rest rotation (for callers that only have the prefab).
-        /// </summary>
-        public static Quaternion ComposeWorldFacing(Quaternion restRotation, float yawDegrees) =>
-            Quaternion.Euler(0f, yawDegrees, 0f) * restRotation;
-
-        /// <summary>
         /// Initialise this item fields. Can only be called once.
         /// </summary>
         public void Init(string itemName, float weight,  List<Trait> traits)

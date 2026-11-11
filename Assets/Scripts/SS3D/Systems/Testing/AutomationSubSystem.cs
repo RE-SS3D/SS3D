@@ -796,7 +796,7 @@ namespace SS3D.Systems.Testing
             });
             open.Sort((a, b) => (a - _lastBreach).sqrMagnitude.CompareTo((b - _lastBreach).sqrMagnitude));
             for (int i = 0; i < count; i++)
-                items.SpawnItem(Items.Wrench, open[i % open.Count] + Vector3.up * 0.2f, Quaternion.identity);
+                items.SpawnItemAtRest(Items.Wrench, open[i % open.Count] + Vector3.up * 0.2f);
         }
 
         private static string BreachHull()

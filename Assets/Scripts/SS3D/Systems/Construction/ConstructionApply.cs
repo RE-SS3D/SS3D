@@ -164,7 +164,7 @@ namespace SS3D.Systems.Construction
             }
 
             Vector3 drop = world + Vector3.up * 0.2f;
-            Item spawned = items.SpawnItem(itemSo.PrefabAsset.Id, drop, Quaternion.identity);
+            Item spawned = items.SpawnItemAtRest(itemSo.PrefabAsset.Id, drop);
             if (spawned == null)
             {
                 return;

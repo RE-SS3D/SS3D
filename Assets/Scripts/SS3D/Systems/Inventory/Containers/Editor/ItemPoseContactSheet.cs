@@ -359,7 +359,7 @@ namespace SS3D.Systems.Inventory.Containers.Editor
             try
             {
                 Item instance = Object.Instantiate(prefab, root.transform);
-                instance.transform.SetLocalPositionAndRotation(Vector3.zero, prefab.GetWorldFacing(0f));
+                instance.transform.SetLocalPositionAndRotation(Vector3.zero, ItemPlacement.WorldRotation(prefab, 0f));
                 instance.SetVisibility(true);
                 if (!TryRendererBounds(instance.transform, out Bounds bounds))
                 {

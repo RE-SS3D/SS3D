@@ -116,7 +116,8 @@ namespace SS3D.Systems.Tile.MapEditor.Commands
             GenericObjectSo asset = ctx.ResolveAsset(_assetName);
             if (asset is ItemObjectSo item)
             {
-                Quaternion rotation = Quaternion.Euler(0f, TileHelper.GetRotationAngle(_direction), 0f);
+                Quaternion rotation = SS3D.Systems.Inventory.Items.ItemPlacement.WorldRotation(
+                item, TileHelper.GetRotationAngle(_direction));
                 Changed = ctx.Construction.TryPlaceItem(item, _position, rotation).Success;
             }
         }
@@ -354,7 +355,8 @@ namespace SS3D.Systems.Tile.MapEditor.Commands
             if (!ctx.Construction.TryClearItem(from, item).Success)
                 return false;
 
-            Quaternion rotation = Quaternion.Euler(0f, TileHelper.GetRotationAngle(_direction), 0f);
+            Quaternion rotation = SS3D.Systems.Inventory.Items.ItemPlacement.WorldRotation(
+                item, TileHelper.GetRotationAngle(_direction));
             if (ctx.Construction.TryPlaceItem(item, to, rotation).Success)
                 return true;
 

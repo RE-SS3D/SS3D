@@ -48,11 +48,36 @@ namespace SS3D.Tests.EditMode
         }
 
         [Test]
-        public void GetWorldFacing_ComposesYawWithRest()
+        public void WorldRotation_ComposesYawWithRest()
         {
             Quaternion expected = Quaternion.Euler(0f, 137f, 0f) * Quaternion.Euler(Rest);
 
-            Assert.Less(Quaternion.Angle(expected, _item.GetWorldFacing(137f)), Tolerance);
+            Assert.Less(Quaternion.Angle(expected, ItemPlacement.WorldRotation(_item, 137f)), Tolerance);
+        }
+
+        [Test]
+        public void WorldRotation_IgnoresTheItemsCurrentRotation()
+        {
+            Quaternion before = ItemPlacement.WorldRotation(_item, 45f);
+            _go.transform.rotation = Quaternion.Euler(-90f, 251f, 18f);
+
+            Assert.Less(Quaternion.Angle(before, ItemPlacement.WorldRotation(_item, 45f)), Tolerance);
+        }
+
+        [Test]
+        public void WorldRotation_WithoutAPrefab_IsYawOnly()
+        {
+            Assert.Less(Quaternion.Angle(Quaternion.Euler(0f, 90f, 0f), ItemPlacement.WorldRotation((SS3D.Systems.Tile.ItemObjectSo)null, 90f)), Tolerance);
+        }
+
+        [TestCase(0f, 1f, 0f)]
+        [TestCase(1f, 0f, 90f)]
+        [TestCase(0f, -1f, 180f)]
+        [TestCase(-1f, 0f, -90f)]
+        [TestCase(0f, 0f, 0f)]
+        public void YawOf_IsTheHeadingAngleFromWorldForward(float x, float z, float expectedYaw)
+        {
+            Assert.AreEqual(expectedYaw, ItemPlacement.YawOf(new Vector3(x, 0.7f, z)), Tolerance);
         }
 
         [Test]
