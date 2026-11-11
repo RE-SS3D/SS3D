@@ -25,10 +25,10 @@ using SS3D.Utils;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.Serialization;
+using SS3D.Core;
 #if UNITY_EDITOR
 using AssetDatabase = UnityEditor.AssetDatabase;
 using UnityEditor;
-using SS3D.Core;
 #endif
 
 namespace SS3D.Systems.Inventory.Items

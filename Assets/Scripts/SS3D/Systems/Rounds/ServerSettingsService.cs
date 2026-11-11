@@ -162,6 +162,8 @@ namespace SS3D.Systems.Rounds
             string[] maps = SubSystems.Get<PersistenceSubSystem>().ListStationTemplates().ToArray();
             if (!_pushPending && maps.SequenceEqual(_pushedMaps)) return;
             _pushPending = false;
+            // Only a broadcast moves the baseline: a one-admin reply must not hide a new map from the others.
+            _pushedMaps = maps;
             foreach (NetworkConnection connection in ServerManager.Clients.Values)
                 if (IsAdministrator(connection)) SendServerSettings(connection, "", refresh: true, maps);
         }
@@ -280,11 +282,10 @@ namespace SS3D.Systems.Rounds
         }
 
         [Server]
-        /// <param name="refresh">The lobby's periodic re-read: carries no action result of its own.</param>
+        /// <param name="refresh">A read or push that carries no action result of its own.</param>
         private void SendServerSettings(NetworkConnection sender, string status, bool refresh = false, string[] maps = null)
         {
             maps ??= SubSystems.Get<PersistenceSubSystem>().ListStationTemplates().ToArray();
-            _pushedMaps = maps;
             EnsureMap(maps);
             TargetServerSettings(sender, _settings, maps, string.IsNullOrEmpty(status) ? _statusNotice : status, refresh);
         }
