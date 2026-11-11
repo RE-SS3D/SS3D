@@ -1,5 +1,6 @@
 #if UNITY_EDITOR
 using System;
+using System.Collections.Generic;
 using SS3D.Systems.Inventory.Items;
 using UnityEditor;
 using UnityEditor.SceneManagement;
@@ -163,9 +164,77 @@ namespace SS3D.Systems.Inventory.Containers.Editor
 
         /// <summary>
         /// Load the prefab's contents, run <paramref name="edit"/> on its <see cref="Item"/> and save it. Refuses while
-        /// the prefab is open in Prefab Mode, where the save would be overwritten or lost.
+        /// the prefab is open in Prefab Mode, where the save would be overwritten or lost. Afterwards it re-aligns the
+        /// roots of the prefab's Item variants with their (inherited) rest pose, see <see cref="SyncVariantRoots"/>.
         /// </summary>
         public static bool EditPrefab(string path, Action<Item> edit, out string error)
+        {
+            if (!EditPrefabOnly(path, edit, out error))
+            {
+                return false;
+            }
+
+            List<string> synced = SyncVariantRoots(path);
+            if (synced.Count > 0)
+            {
+                Debug.Log($"[ItemPoseEdit] Turned the root of {synced.Count} variant(s) to their new rest pose: "
+                    + string.Join(", ", synced));
+            }
+
+            return true;
+        }
+
+        /// <summary>
+        /// A variant's root always stores its own rotation, so a base's new rest pose reaches the variant's
+        /// <c>_restRotation</c> but not its root. Turn the root of every Item variant of <paramref name="basePath"/>
+        /// whose root no longer matches its rest pose (a plain <c>Instantiate</c> must land at rest). Returns the
+        /// paths it saved.
+        /// </summary>
+        public static List<string> SyncVariantRoots(string basePath)
+        {
+            List<string> synced = new();
+            foreach (string path in ItemRestPoseRecipe.FindItemPrefabPathsBaseFirst())
+            {
+                GameObject prefab = AssetDatabase.LoadAssetAtPath<GameObject>(path);
+                if (path == basePath || !IsVariantOf(prefab, basePath)
+                    || ItemRestPoseRecipe.RestMatchesRoot(prefab.GetComponent<Item>()))
+                {
+                    continue;
+                }
+
+                bool saved = EditPrefabOnly(
+                    path,
+                    item => item.transform.localRotation = item.WorldRestRotation,
+                    out string error);
+                if (saved)
+                {
+                    synced.Add(path);
+                }
+                else
+                {
+                    Debug.LogError($"[ItemPoseEdit] Could not re-align {path}: {error}");
+                }
+            }
+
+            return synced;
+        }
+
+        private static bool IsVariantOf(GameObject prefab, string basePath)
+        {
+            GameObject current = prefab;
+            while (current != null && PrefabUtility.GetPrefabAssetType(current) == PrefabAssetType.Variant)
+            {
+                current = PrefabUtility.GetCorrespondingObjectFromSource(current);
+                if (current != null && AssetDatabase.GetAssetPath(current) == basePath)
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        private static bool EditPrefabOnly(string path, Action<Item> edit, out string error)
         {
             if (PrefabStageUtility.GetCurrentPrefabStage() is { } stage && stage.assetPath == path)
             {
