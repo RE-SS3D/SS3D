@@ -123,6 +123,11 @@ namespace SS3D.Systems.Examine.Editor
 
             UpsertEntry(englishTable, SS3D.Systems.Furniture.Disposal.DisposalTag.ExamineKey, SS3D.Systems.Furniture.Disposal.DisposalTag.ExamineFallback);
 
+            foreach ((string key, string value) in SS3D.Systems.Interactions.TakeFromCharacterWarning.TableEntries)
+            {
+                UpsertEntry(englishTable, key, value);
+            }
+
             foreach ((string key, string value) in ExamineDeviceKeys.All)
             {
                 UpsertEntry(englishTable, key, value);

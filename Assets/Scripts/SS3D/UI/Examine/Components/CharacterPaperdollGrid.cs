@@ -83,10 +83,11 @@ namespace SS3D.UI.Examine.Components
                 return;
             }
 
+            // A hidden slot is occupied but unreadable (examine.md §5): the "?" glyph, no name.
+            slot.Unknown = content.IsHidden;
             slot.ItemIcon = content.ItemIcon;
-            slot.SlotLabel = string.IsNullOrEmpty(content.ItemName)
-                ? DefaultSlotLabel(content.Slot)
-                : content.ItemName;
+            string label = string.IsNullOrEmpty(content.ItemName) ? DefaultSlotLabel(content.Slot) : content.ItemName;
+            slot.SlotLabel = content.IsHidden ? $"{DefaultSlotLabel(content.Slot)} (occupied)" : label;
         }
 
         private InventorySlot CreateSlot(CharacterExamineSlot slot, Sprite emptyIcon, float size)

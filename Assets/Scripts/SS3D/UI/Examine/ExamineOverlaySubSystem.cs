@@ -59,6 +59,7 @@ namespace SS3D.UI.Examine
         private bool _targetHidden;
         private float _nextVisibilityCheck;
         private float _nextLiveRebuild;
+        private float _nextWindowCheck;
         private bool _examineEventsBound;
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
@@ -163,6 +164,7 @@ namespace SS3D.UI.Examine
             if (_windowView != null && _windowView.IsOpen)
             {
                 _windowView.Tick(Time.deltaTime);
+                RefreshOpenWindow();
             }
 
             if (_takeInProgress
@@ -313,12 +315,38 @@ namespace SS3D.UI.Examine
             TryBindInteractionController();
             _quickLookView.Hide();
             _genericView.Hide();
-            IReadOnlyList<CharacterExamineSlotContent> slots = CharacterExamineContentBuilder.BuildSlots(inventory);
-            bool takeAllowed = CharacterLootUtility.IsLootable(inventory);
+            IReadOnlyList<CharacterExamineSlotContent> slots =
+                CharacterExamineContentBuilder.BuildSlots(inventory, CharacterLootUtility.IsLootable(inventory));
             Vector2 screenPosition = Mouse.current != null
                 ? Mouse.current.position.ReadValue()
                 : Vector2.zero;
-            _windowView.Show(PresentedIdentity.DisplayName(inventory), slots, takeAllowed, screenPosition);
+            _windowView.Show(PresentedIdentity.DisplayName(inventory), slots, takeAllowed: true, screenPosition);
+        }
+
+        /// <summary>
+        /// Search stays open only while you stand next to them (examine.md §4), and a target passing
+        /// out reveals their pockets, so the open window re-checks reach and slots on the poll tick.
+        /// </summary>
+        private void RefreshOpenWindow()
+        {
+            if (Time.unscaledTime < _nextWindowCheck)
+            {
+                return;
+            }
+
+            _nextWindowCheck = Time.unscaledTime + LiveRebuildInterval;
+            Hands hands = _localPlayer != null ? _localPlayer.GetComponentInChildren<Hands>() : null;
+            Hand hand = hands != null ? hands.SelectedHand : null;
+            if (_windowVictimInventory == null || hand == null || !hand.CanInteract(_windowVictimInventory.gameObject))
+            {
+                HandleCloseRequested();
+                return;
+            }
+
+            if (!_takeInProgress)
+            {
+                RefreshWindowSlots();
+            }
         }
 
         private void HandleCloseRequested()
@@ -331,7 +359,7 @@ namespace SS3D.UI.Examine
 
         private void HandleTakeHoldStarted(CharacterExamineSlot slot)
         {
-            if (_windowVictimInventory == null || !CharacterLootUtility.IsLootable(_windowVictimInventory))
+            if (_windowVictimInventory == null)
             {
                 return;
             }
@@ -396,10 +424,8 @@ namespace SS3D.UI.Examine
                 return;
             }
 
-            IReadOnlyList<CharacterExamineSlotContent> slots =
-                CharacterExamineContentBuilder.BuildSlots(_windowVictimInventory);
-            bool takeAllowed = CharacterLootUtility.IsLootable(_windowVictimInventory);
-            _windowView.TakeAllowed = takeAllowed;
+            IReadOnlyList<CharacterExamineSlotContent> slots = CharacterExamineContentBuilder.BuildSlots(
+                _windowVictimInventory, CharacterLootUtility.IsLootable(_windowVictimInventory));
             _windowView.RefreshSlots(PresentedIdentity.DisplayName(_windowVictimInventory), slots);
         }
 

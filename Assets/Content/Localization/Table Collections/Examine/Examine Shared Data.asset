@@ -1775,6 +1775,14 @@ MonoBehaviour:
     m_Key: examine.weapon.charge_empty
     m_Metadata:
       m_Items: []
+  - m_Id: 298323518423277568
+    m_Key: examine.take.warn_blind
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298323518498775040
+    m_Key: examine.take.warn_open
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:
