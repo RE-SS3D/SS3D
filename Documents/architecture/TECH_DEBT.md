@@ -157,7 +157,7 @@ checks. Sizes at `06316a98` (including partials):
 |---|---|---|
 | `LobbyShellView` | 2,022 + 542 | one class per tab; standalone `PlayerSettingsPanel` (the main menu ships a "Settings screen placeholder" because settings are locked inside the lobby) |
 | `MapEditorSubSystem` | 1,686 + partials | client controller, server RPC layer, sim suspension (§1.23) |
-| `RoundSubSystem` | 1,685 over 8 partials | `ServerSettingsService`, observability/bug intake (closes the Rounds↔BugReports cycle), map-stop flow |
+| `RoundSubSystem` | ~~1,685 over 8 partials~~ 984 over 5 | done (tech-debt P6.5): `ServerSettingsService`, `BugReportIntake` in BugReports (Rounds↔BugReports cycle closed), `MapEditorStopFlow` |
 | `MainHudSubSystem` | 1,627 | visibility arbiter, local-player binder, reticle presenter, alert presenter, inventory actions |
 | `InteractionController` | 1,585 | hand-action scheduler (§1.20) |
 | `CombatInteractionNetwork` | 1,451 | `ThrowController` component via the Human recipe |
@@ -171,8 +171,8 @@ members are pure; recoil is a function of time (`RangedWeaponItemExtension.Recoi
 `Update` completes reloads on every peer. The reticle skips its raycasts and reads while hidden.
 
 **Lobby polling:** `LobbyUiSubSystem.RefreshSession` polls at 5 Hz for the whole session, including
-in-round, and sends the job-preference / appearance / OOC handshakes and polls `CmdReadServerSettings`
-from there. That handshake belongs in a client-session service in Systems.
+in-round. The handshakes and the 1 Hz `CmdReadServerSettings` poll it used to send moved to
+`ClientSessionSubSystem`, and the server pushes admin settings (tech-debt P6.6); the 5 Hz view refresh itself is P7.4.
 
 - Related: [interactions-runtime.md](systems/interactions-runtime.md), [inventory.md](systems/inventory.md)
 - Effort (interactions): [2026-07_interaction-controller-decomposition.md](../archive/architecture/2026-07_interaction-controller-decomposition.md) — shipped
@@ -348,7 +348,7 @@ chunks batched per command group; keep one full snapshot for late joiners (M).
 **Blast radius: high (public sandbox server) — trend: getting worse (each feature adds RPCs)**
 
 43 of 74 ServerRpcs use `RequireOwnership = false`. Most check permissions (`ServerSettings`,
-`MapEditorRoundStop`, `EntitySubSystem.CmdSpawnLatePlayer`), but these do not. `ServerRpcAuthorityAuditTests` (tech-debt G1) lists every
+`MapEditorStopFlow`, `EntitySubSystem.CmdSpawnLatePlayer`), but these do not. `ServerRpcAuthorityAuditTests` (tech-debt G1) lists every
 ServerRpc of this kind with its check; the holes below are its `Unchecked` entries.
 
 - ~~Console commands at `AccessLevel User` run on the server for any player.~~ Fixed by the console
