@@ -32,20 +32,6 @@ namespace SS3D.Systems.Inventory.Containers.Editor
         private const int LabelHeight = 20;
         private const int GlyphScale = 2;
 
-        /// <summary>
-        /// Character root faces +Z, right hand at +X: look at each hand from the front, a quarter turn toward its side,
-        /// so the hanging arm reads as an arm and not as a leg.
-        /// </summary>
-        private static readonly Vector3 RightHandView = new Vector3(-0.7f, -0.3f, -1f).normalized;
-        private static readonly Vector3 LeftHandView = new Vector3(0.7f, -0.3f, -1f).normalized;
-        private static readonly Vector3 FloorView = new Vector3(-0.45f, -0.6f, -0.65f).normalized;
-
-        /// <summary>
-        /// Edge of the unrendered cube framed around the hand, so the hand and forearm show. The generator frames the
-        /// cube's corners, so the view spans about 1.7 times this.
-        /// </summary>
-        private const float MinHeldFrameSize = 0.45f;
-
         private static readonly string[] ViewNames = { "ICON", "RIGHT HAND", "LEFT HAND", "FLOOR" };
 
         private static readonly Color32 SheetBackground = new(28, 30, 34, 255);
@@ -53,7 +39,6 @@ namespace SS3D.Systems.Inventory.Containers.Editor
         private static readonly Color32 MissingCell = new(110, 40, 40, 255);
         private static readonly Color32 LabelColor = new(230, 230, 230, 255);
         private static readonly Color32 WarnColor = new(255, 170, 60, 255);
-        private static readonly Color FloorColor = new(0.32f, 0.33f, 0.36f, 1f);
 
         [MenuItem("SS3D/Inventory/Render Item Pose Contact Sheet")]
         public static void RenderMenu()
@@ -99,13 +84,6 @@ namespace SS3D.Systems.Inventory.Containers.Editor
             public bool HasAlt;
         }
 
-        private sealed class Hand
-        {
-            public Transform Display;
-            public bool Mirrored;
-            public Quaternion Reference;
-        }
-
         /// <summary>Render the sheet. Returns false if the Human rig could not be posed or nothing was found.</summary>
         public static bool Render(out string report)
         {
@@ -122,55 +100,21 @@ namespace SS3D.Systems.Inventory.Containers.Editor
                 return false;
             }
 
-            GameObject humanPrefab = AssetDatabase.LoadAssetAtPath<GameObject>(HandGripSocketCalibration.HumanPrefabPath);
-            if (humanPrefab == null)
-            {
-                report = $"Missing prefab: {HandGripSocketCalibration.HumanPrefabPath}";
-                return false;
-            }
-
-            bool previousNonReadable = RuntimePreviewGenerator.MarkTextureNonReadable;
-            Quaternion previousRotation = RuntimePreviewGenerator.PreviewRotation;
-            Vector3 previousDirection = RuntimePreviewGenerator.PreviewDirection;
-            float previousPadding = RuntimePreviewGenerator.Padding;
-            Transform previousBoundsTarget = RuntimePreviewGenerator.BoundsTarget;
-            RuntimePreviewGenerator.MarkTextureNonReadable = false;
-
-            GameObject human = Object.Instantiate(humanPrefab);
-            human.name = "ItemPoseContactSheet Human";
-            human.hideFlags = HideFlags.DontSave;
-            string error = null;
+            int index = 0;
             try
             {
-                human.transform.SetPositionAndRotation(Vector3.zero, Quaternion.identity);
-
-                // Skinned bounds stay at the bind pose in the Editor, so a tight frame on the held item culls the
-                // posed arm and hand (they rest by the hip in idle, their stale bounds sit out at T-pose).
-                foreach (SkinnedMeshRenderer skinned in human.GetComponentsInChildren<SkinnedMeshRenderer>(true))
-                {
-                    skinned.updateWhenOffscreen = true;
-                }
-                if (!TryFindHands(human, out Hand right, out Hand left, out error))
-                {
-                    report = error;
-                    return false;
-                }
-
-                int index = 0;
-                bool posed = HandGripSocketCalibration.WithReferencePose(
-                    human,
-                    new List<Transform> { right.Display, left.Display },
-                    () =>
+                bool posed = ItemPoseRenderer.WithPosedHuman(
+                    human =>
                     {
                         foreach (Entry entry in entries)
                         {
                             index++;
                             EditorUtility.DisplayProgressBar(
                                 "Item Pose Contact Sheet", entry.Prefab.name, index / (float)entries.Count);
-                            RenderEntry(entry, human.transform, right, left);
+                            RenderEntry(entry, human);
                         }
                     },
-                    out error);
+                    out string error);
                 if (!posed)
                 {
                     report = error;
@@ -180,12 +124,6 @@ namespace SS3D.Systems.Inventory.Containers.Editor
             finally
             {
                 EditorUtility.ClearProgressBar();
-                Object.DestroyImmediate(human);
-                RuntimePreviewGenerator.MarkTextureNonReadable = previousNonReadable;
-                RuntimePreviewGenerator.PreviewRotation = previousRotation;
-                RuntimePreviewGenerator.PreviewDirection = previousDirection;
-                RuntimePreviewGenerator.Padding = previousPadding;
-                RuntimePreviewGenerator.BoundsTarget = previousBoundsTarget;
             }
 
             try
@@ -233,67 +171,7 @@ namespace SS3D.Systems.Inventory.Containers.Editor
             return entries;
         }
 
-        /// <summary>The display under each avatar hand bone, with its calibrated reference.</summary>
-        private static bool TryFindHands(GameObject human, out Hand right, out Hand left, out string error)
-        {
-            right = null;
-            left = null;
-            error = null;
-            Animator animator = human.GetComponent<Animator>();
-            Transform rightBone = animator != null ? animator.GetBoneTransform(HumanBodyBones.RightHand) : null;
-            Transform leftBone = animator != null ? animator.GetBoneTransform(HumanBodyBones.LeftHand) : null;
-            if (rightBone == null || leftBone == null)
-            {
-                error = "Human.prefab needs a humanoid Animator with both hand bones.";
-                return false;
-            }
-
-            foreach (ContainerItemDisplay itemDisplay in human.GetComponentsInChildren<ContainerItemDisplay>(true))
-            {
-                if (itemDisplay.attachedContainer == null || itemDisplay.attachedContainer.Displays == null)
-                {
-                    continue;
-                }
-
-                foreach (Transform display in itemDisplay.attachedContainer.Displays)
-                {
-                    if (display == null)
-                    {
-                        continue;
-                    }
-
-                    Quaternion reference = display.TryGetComponent(out GripSocket socket) && socket.IsCalibrated
-                        ? socket.ReferenceRotation
-                        : Quaternion.identity;
-                    Hand hand = new() { Display = display, Mirrored = itemDisplay.Mirrored, Reference = reference };
-                    if (right == null && display.IsChildOf(rightBone))
-                    {
-                        right = hand;
-                    }
-                    else if (left == null && display.IsChildOf(leftBone))
-                    {
-                        left = hand;
-                    }
-                }
-            }
-
-            if (right == null || left == null)
-            {
-                error = "Human.prefab has no ContainerItemDisplay display under one of the hand bones.";
-                return false;
-            }
-
-            if (right.Display.GetComponent<GripSocket>() is not { IsCalibrated: true }
-                || left.Display.GetComponent<GripSocket>() is not { IsCalibrated: true })
-            {
-                error = "A hand display has no calibrated GripSocket. Run SS3D → Inventory → Calibrate Hand Grip Sockets first.";
-                return false;
-            }
-
-            return true;
-        }
-
-        private static void RenderEntry(Entry entry, Transform human, Hand right, Hand left)
+        private static void RenderEntry(Entry entry, ItemPoseRenderer.PosedHuman human)
         {
             Item prefab = entry.Prefab;
             if (prefab.AttachmentPoint == null)
@@ -302,10 +180,10 @@ namespace SS3D.Systems.Inventory.Containers.Editor
             }
 
             entry.HasAlt = prefab.AttachmentPointAlt != null;
-            entry.Views[0] = RenderIcon(prefab);
-            entry.Views[1] = RenderHeld(prefab, human, right, RightHandView);
-            entry.Views[2] = RenderHeld(prefab, human, left, LeftHandView);
-            entry.Views[3] = RenderFloor(prefab);
+            entry.Views[0] = ItemPoseRenderer.RenderIcon(prefab);
+            entry.Views[1] = ItemPoseRenderer.RenderHeld(prefab, human, human.Right, ItemPoseRenderer.RightHandView, Cell);
+            entry.Views[2] = ItemPoseRenderer.RenderHeld(prefab, human, human.Left, ItemPoseRenderer.LeftHandView, Cell);
+            entry.Views[3] = ItemPoseRenderer.RenderFloor(prefab, ItemPoseRenderer.FloorView, Cell);
             for (int i = 0; i < entry.Views.Length; i++)
             {
                 if (entry.Views[i] == null)
@@ -313,157 +191,6 @@ namespace SS3D.Systems.Inventory.Containers.Editor
                     entry.Flags.Add("NO " + ViewNames[i]);
                 }
             }
-        }
-
-        /// <summary>The icon exactly as the game generates it.</summary>
-        private static Texture2D RenderIcon(Item prefab)
-        {
-            Item instance = Object.Instantiate(prefab);
-            instance.gameObject.hideFlags = HideFlags.DontSave;
-            try
-            {
-                Sprite sprite = instance.GenerateIcon();
-                if (sprite == null)
-                {
-                    return null;
-                }
-
-                Texture2D texture = sprite.texture;
-                Object.DestroyImmediate(sprite);
-                return texture;
-            }
-            finally
-            {
-                Object.DestroyImmediate(instance.gameObject);
-            }
-        }
-
-        private static Texture2D RenderHeld(Item prefab, Transform human, Hand hand, Vector3 view)
-        {
-            Item instance = Object.Instantiate(prefab);
-            instance.gameObject.hideFlags = HideFlags.DontSave;
-            Transform pivot = null;
-            GameObject frame = null;
-            try
-            {
-                instance.SetVisibility(true);
-                ContainerItemDisplay.PlaceAtDisplay(instance, hand.Display, hand.Mirrored, hand.Reference);
-                Transform parent = instance.transform.parent;
-                pivot = parent != hand.Display ? parent : null;
-
-                // Frame the display (item plus an unrendered cube around the hand), not just the item: a small
-                // item framed alone hides the hand. Padding cannot do it, the generator clamps it to 0.25.
-                frame = GameObject.CreatePrimitive(PrimitiveType.Cube);
-                frame.hideFlags = HideFlags.DontSave;
-                Object.DestroyImmediate(frame.GetComponent<Collider>());
-                frame.GetComponent<Renderer>().forceRenderingOff = true;
-                frame.transform.SetPositionAndRotation(hand.Display.position, Quaternion.identity);
-                frame.transform.localScale = Vector3.one * MinHeldFrameSize;
-                frame.transform.SetParent(hand.Display, true);
-                return RenderScene(human, hand.Display, Quaternion.identity, view, 0.05f);
-            }
-            finally
-            {
-                Object.DestroyImmediate(instance.gameObject);
-                if (pivot != null)
-                {
-                    Object.DestroyImmediate(pivot.gameObject);
-                }
-
-                if (frame != null)
-                {
-                    Object.DestroyImmediate(frame);
-                }
-            }
-        }
-
-        /// <summary>The item at its rest pose (the floor spawn rotation at yaw 0) on a floor quad.</summary>
-        private static Texture2D RenderFloor(Item prefab)
-        {
-            GameObject root = new("ItemPoseContactSheet Floor") { hideFlags = HideFlags.DontSave };
-            Material floorMaterial = null;
-            try
-            {
-                Item instance = Object.Instantiate(prefab, root.transform);
-                instance.transform.SetLocalPositionAndRotation(Vector3.zero, ItemPlacement.WorldRotation(prefab, 0f));
-                instance.SetVisibility(true);
-                if (!TryRendererBounds(instance.transform, out Bounds bounds))
-                {
-                    return null;
-                }
-
-                GameObject floor = GameObject.CreatePrimitive(PrimitiveType.Quad);
-                Object.DestroyImmediate(floor.GetComponent<Collider>());
-                floor.transform.SetParent(root.transform, false);
-                float floorSize = Mathf.Max(bounds.size.x, bounds.size.z) * 2.5f;
-                floor.transform.SetLocalPositionAndRotation(
-                    new Vector3(bounds.center.x, bounds.min.y, bounds.center.z), Quaternion.Euler(90f, 0f, 0f));
-                floor.transform.localScale = Vector3.one * floorSize;
-                Renderer floorRenderer = floor.GetComponent<Renderer>();
-                floorMaterial = new Material(floorRenderer.sharedMaterial) { color = FloorColor };
-                floorRenderer.sharedMaterial = floorMaterial;
-
-                return RenderScene(root.transform, instance.transform, Quaternion.identity, FloorView, 0.2f);
-            }
-            finally
-            {
-                Object.DestroyImmediate(root);
-                if (floorMaterial != null)
-                {
-                    Object.DestroyImmediate(floorMaterial);
-                }
-            }
-        }
-
-        /// <remarks>
-        /// Restores the generator settings it changes: the icon cell calls the real <see cref="Item.GenerateIcon"/>,
-        /// which must see the game's default camera direction and padding, not the previous floor view's.
-        /// </remarks>
-        private static Texture2D RenderScene(Transform root, Transform frame, Quaternion rotation, Vector3 view, float padding)
-        {
-            Quaternion previousRotation = RuntimePreviewGenerator.PreviewRotation;
-            Vector3 previousDirection = RuntimePreviewGenerator.PreviewDirection;
-            float previousPadding = RuntimePreviewGenerator.Padding;
-            RuntimePreviewGenerator.PreviewRotation = rotation;
-            RuntimePreviewGenerator.PreviewDirection = view;
-            RuntimePreviewGenerator.Padding = padding;
-            RuntimePreviewGenerator.BoundsTarget = frame;
-            try
-            {
-                return RuntimePreviewGenerator.GenerateModelPreview(root, Cell, Cell, false);
-            }
-            finally
-            {
-                RuntimePreviewGenerator.PreviewRotation = previousRotation;
-                RuntimePreviewGenerator.PreviewDirection = previousDirection;
-                RuntimePreviewGenerator.Padding = previousPadding;
-                RuntimePreviewGenerator.BoundsTarget = null;
-            }
-        }
-
-        private static bool TryRendererBounds(Transform target, out Bounds bounds)
-        {
-            bounds = default;
-            bool any = false;
-            foreach (Renderer renderer in target.GetComponentsInChildren<Renderer>())
-            {
-                if (renderer is ParticleSystemRenderer)
-                {
-                    continue;
-                }
-
-                if (!any)
-                {
-                    bounds = renderer.bounds;
-                    any = true;
-                }
-                else
-                {
-                    bounds.Encapsulate(renderer.bounds);
-                }
-            }
-
-            return any;
         }
 
         private static Texture2D Compose(List<Entry> entries)
