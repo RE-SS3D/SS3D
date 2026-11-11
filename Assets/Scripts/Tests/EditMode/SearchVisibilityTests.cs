@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using System.Linq;
 using NUnit.Framework;
 using SS3D.Systems.Examine;
-using SS3D.Systems.Interactions;
 using SS3D.Systems.Inventory.Containers;
 using SS3D.Systems.Inventory.Items;
 using UnityEngine;
@@ -76,22 +75,6 @@ namespace EditorTests
             Assert.Less(open, blind);
             Assert.AreEqual(looting, CharacterLootUtility.TakeSeconds(victimIncapacitated: true, blind: true),
                 "an incapacitated body has nothing hidden");
-        }
-
-        [Test]
-        public void WarningNamesTheItemOnlyForAnOpenTake()
-        {
-            Assert.AreEqual("Someone is reaching into your pockets!", TakeFromCharacterWarning.Text(blind: true, null));
-            Item wrench = new GameObject("Wrench").AddComponent<Item>();
-            wrench.Init("Wrench", 1f, new List<SS3D.Systems.Trait>());
-            try
-            {
-                Assert.AreEqual("Someone is trying to take your wrench!", TakeFromCharacterWarning.Text(blind: false, wrench));
-            }
-            finally
-            {
-                Object.DestroyImmediate(wrench.gameObject);
-            }
         }
 
         private static CharacterExamineSlotContent PocketSlot(IReadOnlyList<CharacterExamineSlotContent> slots) =>

@@ -517,7 +517,7 @@ See §6.
 
 **Blast radius: low — trend: growing (one copy per recipe that adds a NetworkBehaviour)**
 
-`RebuildNetworkBehaviours` is private in `ConstructionHubRecipe`, `GirderStageRecipe`, `SolarPrefabSetup` and `SessionWorldLifecycleEditorMenus`, internal in `CombatInteractionNetworkPrefabSetup` (reused by `RangedPrefabSetup`), and `HumanPrefabHygiene` has a sixth variant. Forgetting it is silent ([combat.md](systems/combat.md) Pitfalls). Fix: one shared editor helper (S).
+`RebuildNetworkBehaviours` is private in `GirderStageRecipe`, `SolarPrefabSetup` and `SessionWorldLifecycleEditorMenus`, internal in `CombatInteractionNetworkPrefabSetup` (reused by `RangedPrefabSetup`) and `ConstructionHubRecipe` (reused by `ActionMessageHubRecipe`), and `HumanPrefabHygiene` has a sixth variant. Forgetting it is silent ([combat.md](systems/combat.md) Pitfalls). Fix: one shared editor helper (S).
 
 ## 2. Hot-path GC / performance debt (tracked, partially paid down)
 

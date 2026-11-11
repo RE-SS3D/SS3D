@@ -1824,12 +1824,16 @@ MonoBehaviour:
     m_Localized: Charge <k=warn>empty</k>.
     m_Metadata:
       m_Items: []
-  - m_Id: 298323518423277568
-    m_Localized: Someone is reaching into your pockets!
+  - m_Id: 298326310546284544
+    m_Localized: '{0} looks you over.'
     m_Metadata:
       m_Items: []
-  - m_Id: 298323518498775040
-    m_Localized: Someone is trying to take your {0}!
+  - m_Id: 298326310563061760
+    m_Localized: '{0} is reaching into your pockets!'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298326310563061761
+    m_Localized: '{0} is trying to take your {2}!'
     m_Metadata:
       m_Items: []
   references:

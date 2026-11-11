@@ -60,6 +60,7 @@ namespace SS3D.UI.Examine
         private float _nextVisibilityCheck;
         private float _nextLiveRebuild;
         private float _nextWindowCheck;
+        private HumanInventory _cueSentFor;
         private bool _examineEventsBound;
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
@@ -144,6 +145,11 @@ namespace SS3D.UI.Examine
             }
 
             bool detailedHeld = IsDetailedExamineHeld();
+            if (!detailedHeld)
+            {
+                _cueSentFor = null;
+            }
+
             if (detailedHeld != _wasDetailedExamineHeld)
             {
                 _wasDetailedExamineHeld = detailedHeld;
@@ -521,6 +527,7 @@ namespace SS3D.UI.Examine
             {
                 // Health sections rebuild every frame while Shift is held so bleed/crit updates live.
                 bool close = isSelf || IsWithinCloseRange(examinable);
+                SendExamineCue(inventory, isSelf, close);
                 string detailed = CharacterExamineDetail.Build(content, inventory, isSelf, close);
                 if (!string.IsNullOrWhiteSpace(detailed))
                 {
@@ -539,6 +546,22 @@ namespace SS3D.UI.Examine
             {
                 _genericView.UpdateAnchor(Mouse.current.position.ReadValue());
             }
+        }
+
+        /// <summary>
+        /// Holding examine on someone up close is noticed (examine.md §4): one request per hold and
+        /// target; the server re-checks range and rate-limits. Hover never sends it.
+        /// </summary>
+        private void SendExamineCue(HumanInventory target, bool isSelf, bool close)
+        {
+            if (isSelf || !close || target == null || target == _cueSentFor
+                || !SubSystems.TryGet(out SS3D.Systems.ActionMessages.ActionMessageSubSystem actions))
+            {
+                return;
+            }
+
+            _cueSentFor = target;
+            actions.RequestExamineCue(target.NetworkObject);
         }
 
         private void RefreshGenericDisplay()

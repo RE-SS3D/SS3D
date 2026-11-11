@@ -512,7 +512,7 @@ namespace SS3D.Systems.Interactions
             InteractionReference reference = hand.Interact(interactionEvent, interaction);
             TrackActiveInteraction(hand, reference, interaction);
             TargetTakeFromCharacterStarted(Owner, (byte)slot, interaction.DelaySeconds, reference.Id);
-            TakeFromCharacterWarning.ServerWarn(victimInventory, blind, item);
+            TakeFromCharacterWarning.ServerWarn(NetworkObject, victimInventory, blind, item);
         }
 
         [TargetRpc]

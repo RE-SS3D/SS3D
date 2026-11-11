@@ -56,6 +56,9 @@ namespace SS3D.Tests.AssetAudit
             { "HumanoidBodyStateMachine.CmdTrySit", AuthorityCheck.Revalidated },
             { "Draggable.CmdSetDrag", AuthorityCheck.ServerDerived },
 
+            // Action messages
+            { "ActionMessageSubSystem.CmdExamineCue", AuthorityCheck.Revalidated }, // examiner is the caller's own body; server range + per-pair cooldown
+
             // Construction
             { "ConstructionPlacementSubSystem.CmdRequestCellAction", AuthorityCheck.Revalidated }, // caller's own hand; reach, rule, materials, BuildChecker
             { "ConstructionPlacementSubSystem.CmdCancelCellAction", AuthorityCheck.ServerDerived }, // cancels only the caller's own pending step
