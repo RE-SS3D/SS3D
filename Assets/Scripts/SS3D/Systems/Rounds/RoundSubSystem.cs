@@ -43,6 +43,8 @@ namespace SS3D.Systems.Rounds
         [Server]
         private async UniTask StartRoundSequence(CancellationToken cancellationToken)
         {
+            bool editMapAnyway = _editMapAnyway;
+            _editMapAnyway = false;
             _serverSettingsError = "";
             PersistenceSubSystem persistence = SubSystems.Get<PersistenceSubSystem>();
             if (string.IsNullOrEmpty(_serverSettings.Map))
@@ -82,8 +84,17 @@ namespace SS3D.Systems.Rounds
                 MapValidationReport validation = MapValidationService.Validate(tiles, _serverSettings.Mode);
                 if (!validation.CanStart)
                 {
-                    FailStationLoad(validation.Describe(_serverSettings.Map, _serverSettings.Mode, saved: false));
-                    return;
+                    if (!editMapAnyway)
+                    {
+                        FailStationLoad(validation.Describe(_serverSettings.Map, _serverSettings.Mode, saved: false),
+                            StationLoadState.Unplayable);
+                        return;
+                    }
+
+                    // creative-mode §8 blocks a round on a map that doesn't fit its mode; without this exception a
+                    // saved map missing its spawns could never be opened in the Map Editor again to add them.
+                    FallBackToExtended($"{_serverSettings.Map} can't start a normal round, so this round is for fixing it: "
+                        + "it runs as Extended, and anyone without a spawn marker starts on the nearest deck.");
                 }
                 tiles.SyncFloorDecalsToClients();
                 _stationLoadState = StationLoadState.Initializing;
@@ -106,12 +117,12 @@ namespace SS3D.Systems.Rounds
         }
 
         [Server]
-        private void FailStationLoad(string message)
+        private void FailStationLoad(string message, StationLoadState state = StationLoadState.Failed)
         {
             // Also log it: a dedicated server has no lobby UI to show the reason, and the round just drops to Stopped.
             Log.Warning(this, "Round start aborted: {reason}", Logs.ServerOnly, message);
             _serverSettingsError = message;
-            _stationLoadState = StationLoadState.Failed;
+            _stationLoadState = state;
             // Retrying the same broken map every countdown would only spam the log.
             SetAutoStartHeld(true, "the station failed to load");
             RoundState = RoundState.Stopped;

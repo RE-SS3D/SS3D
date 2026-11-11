@@ -24,6 +24,9 @@ namespace SS3D.Systems.IngameConsoleSystem.Commands
         public override IReadOnlyList<Subcommand> Subcommands => _subcommands ??= new[]
         {
             Mode("start", "Start a round from the lobby", RoundAdminAction.Start, "Round start requested", "the round isn't stopped or ended"),
+            Mode("repair", "Start a round on a map that fails the round-start check, to fix it in the Map Editor",
+                RoundAdminAction.EditMapAnyway, "Round start requested on the unplayable map (runs as Extended)",
+                "the round isn't stopped, or the selected map didn't fail the round-start check"),
             Mode("force", "Skip the rest of the countdown", RoundAdminAction.ForceStart, "Countdown skipped", "no countdown is running"),
             Mode("extend", "Add a minute to the countdown", RoundAdminAction.ExtendTimer, "Countdown extended by 60 s", "no countdown is running"),
             Mode("cancel", "Stop the countdown and hold auto-start", RoundAdminAction.CancelCountdown, "Countdown cancelled", "no countdown is running"),

@@ -1575,4 +1575,6 @@
 .lobby-shell__map-load-status--loading { color: var(--lobby-btn-amber); }
 .lobby-shell__map-load-status--ready { color: var(--lobby-btn-green); }
 .lobby-shell__map-load-status--failed { color: #d36b6b; }
+/* The admin form lists why a map can't start, one reason per line: let it wrap instead of clipping to one line. */
+.lobby-shell__map-load-status--detail { white-space: normal; overflow: visible; text-overflow: clip; }
 .lobby-shell__panel-body .lobby-shell__map-load-status { -unity-text-align: middle-center; margin-bottom: 0; }
