@@ -1,6 +1,6 @@
 using Unity.Collections;
 
-namespace SS3D.Systems.Atmospherics.ECS
+namespace SS3D.Systems.Atmospherics.Jobs
 {
     /// <summary>
     /// Shared thermodynamic helpers for the Burst atmos jobs. Energy is tracked as

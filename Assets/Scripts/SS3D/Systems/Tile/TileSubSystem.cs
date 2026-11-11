@@ -213,7 +213,7 @@ namespace SS3D.Systems.Tile
         [ObserversRpc(BufferLast = true)]
         private void RpcSyncFloorDecals(SyncedFloorDecalChunk[] chunks)
         {
-            FloorDecalView view = FindFirstObjectByType<FloorDecalView>();
+            FloorDecalView view = FloorDecalView.Instance;
             if (view == null)
                 return;
 

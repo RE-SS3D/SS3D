@@ -82,7 +82,7 @@ namespace SS3D.Systems.Entities.Humanoid
             _windFelt = AtmosWind.Follow(_windFelt, target, seconds);
             if (target == Vector3.zero && _windFelt.sqrMagnitude < 0.0001f) _windFelt = Vector3.zero;
 
-            // Living bodies move owner-side; HumanoidPredictedMovement is off on Human.prefab.
+            // Living bodies move owner-side.
             if (_currentState != RagdollState.Walking || !IsRagdollPhysicsAuthority() || _characterController == null)
                 return;
 

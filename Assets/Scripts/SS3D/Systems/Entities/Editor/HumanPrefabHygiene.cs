@@ -84,6 +84,48 @@ namespace SS3D.Systems.Entities.Editor
             }
         }
 
+        /// <summary>
+        /// Strips components whose script was deleted (e.g. <c>HumanoidPredictedMovement</c>, tech-debt P3.2) from
+        /// <c>Human.prefab</c> and rebuilds the root behaviour list, so a retired script is removed by rerunning the
+        /// recipes rather than by hand-editing YAML. Returns how many were removed.
+        /// </summary>
+        public static int RemoveMissingScripts()
+        {
+            GameObject prefabRoot = PrefabUtility.LoadPrefabContents(HumanPrefabPath);
+            if (prefabRoot == null)
+            {
+                UnityEngine.Debug.LogError($"[HumanPrefabHygiene] Missing prefab: {HumanPrefabPath}");
+                return 0;
+            }
+
+            try
+            {
+                if (!prefabRoot.TryGetComponent(out NetworkObject rootNetworkObject))
+                {
+                    UnityEngine.Debug.LogError($"[HumanPrefabHygiene] No root NetworkObject on {HumanPrefabPath}");
+                    return 0;
+                }
+
+                int removed = 0;
+                foreach (Transform transform in prefabRoot.GetComponentsInChildren<Transform>(true))
+                {
+                    removed += GameObjectUtility.RemoveMonoBehavioursWithMissingScript(transform.gameObject);
+                }
+
+                if (removed > 0)
+                {
+                    RebuildNetworkBehaviours(rootNetworkObject);
+                    PrefabUtility.SaveAsPrefabAsset(prefabRoot, HumanPrefabPath);
+                }
+
+                return removed;
+            }
+            finally
+            {
+                PrefabUtility.UnloadPrefabContents(prefabRoot);
+            }
+        }
+
         /// <summary>A debug component from the <c>SS3D.Hacks</c> assembly, which must never ship on Human.</summary>
         public static bool IsDevHack(MonoBehaviour behaviour) =>
             behaviour != null && behaviour.GetType().Assembly.GetName().Name == "SS3D.Hacks";

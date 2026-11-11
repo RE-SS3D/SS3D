@@ -202,7 +202,7 @@ A final run after merging develop's item gravity read 183 / 259 KB/s and 3.81 / 
 - **Network:** `MaxPatchesPerTick` and `MaxPushed` hold traffic at about 266 KB/s per client, so a big breach makes far chunks lag rather than overrun. Eight clients are unmeasured, and the server sends that traffic to each of them. AOI ([client sync](2026-07_atmos-client-visualization-sync.md) Phase 2) is still unshipped, which puts T3 at risk.
 - **Reach:** one hole can empty every connected space (Decision 6). If a single C4 charge ruins whole rounds, firelocks need a design pass.
 - **The disk:** a breach can blow the authentication disk into space, where nobody can reach it until EVA exists. M3's indestructible-disk work should cover this.
-- **Prediction:** if `HumanoidPredictedMovement` is ever enabled on `Human.prefab`, wind must move into its replicate step, or reconcile undoes it.
+- **Prediction:** if living movement ever becomes predicted (`HumanoidPredictedMovement` was deleted in tech-debt P3.2), wind must move into its replicate step, or reconcile undoes it.
 
 ## Design changes
 

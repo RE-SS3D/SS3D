@@ -325,5 +325,47 @@ namespace EditorTests
                 StringAssert.StartsWith(command.Name + ": ", registry.HelpFor(command, ServerRoleTypes.ServerOwner));
             }
         }
+
+        /// <summary>
+        /// Server commands a non-admin may run, each with why it can't change the world or anyone else's state
+        /// (tech-debt G2; sandbox-server §5: players get no console). Shrinks only: a new player-run server
+        /// command that only touches its caller goes here with its reason, anything else needs Administrator.
+        /// </summary>
+        private static readonly Dictionary<string, string> PlayerServerCommands = new()
+        {
+            { "ghostjump", "self only: moves the caller's own ghost, refuses a living body" },
+        };
+
+        [Test]
+        public void RealCommands_ServerCommandsBelowAdminAreSelfOnly()
+        {
+            CommandRegistry registry = new(CommandRegistry.DiscoverCommands());
+            List<string> unlisted = registry.Commands
+                .Where(c => c.Type == CommandType.Server && c.AccessLevel < ServerRoleTypes.Administrator)
+                .Select(c => c.Name)
+                .Where(name => !PlayerServerCommands.ContainsKey(name))
+                .ToList();
+            CollectionAssert.IsEmpty(unlisted,
+                "server commands players can run; make them Administrator or list them as self-only: " +
+                string.Join(", ", unlisted));
+
+            foreach (string name in new[] { "accessgrant", "accessrevoke", "accesspreset", "spawn" })
+            {
+                Assert.IsTrue(registry.TryGet(name, out Command command), $"{name} exists");
+                Assert.GreaterOrEqual(command.AccessLevel, ServerRoleTypes.Administrator, $"{name} is admin-only");
+            }
+        }
+
+        [Test]
+        public void PlayerServerCommands_AllowlistHasNoStaleEntries()
+        {
+            CommandRegistry registry = new(CommandRegistry.DiscoverCommands());
+            foreach (string name in PlayerServerCommands.Keys)
+            {
+                Assert.IsTrue(registry.TryGet(name, out Command command), $"{name} no longer exists; drop it");
+                Assert.IsTrue(command.Type == CommandType.Server && command.AccessLevel < ServerRoleTypes.Administrator,
+                    $"{name} is no longer a player-run server command; drop it");
+            }
+        }
     }
 }

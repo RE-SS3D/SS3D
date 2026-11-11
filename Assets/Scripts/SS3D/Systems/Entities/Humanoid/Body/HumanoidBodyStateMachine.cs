@@ -486,16 +486,6 @@ namespace SS3D.Systems.Entities.Humanoid.Body
             }
         }
 
-        [Server]
-        public void ApplyKnockback(Vector3 direction, float force)
-        {
-            CharacterController controller = GetComponent<CharacterController>();
-            if (controller != null)
-            {
-                controller.Move(direction.normalized * force);
-            }
-        }
-
         public bool CanPerformAction()
         {
             return Capabilities.CanUseHands && _snapshot.State != BodyState.Staggered;

@@ -554,7 +554,6 @@ namespace SS3D.Systems.Entities.Character
             // order is not dependency order, and the body bridge is not a NetworkBehaviour.
             DestroyAll<CombatInteractionNetwork>(root);
             DestroyAll<LocalSpeechEmitter>(root);
-            DestroyAll<HumanoidPredictedMovement>(root);
             DestroyAll<HumanoidCombatController>(root);
             DestroyAll<HumanoidBodyStateBridge>(root);
             DestroyAll<RagdollPart>(root);

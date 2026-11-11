@@ -1,7 +1,7 @@
 > Goal: Playtest 1 — eight players play Nuclear Operatives rounds on the 24/7 server: ops spawn geared and breach for the disk, a five-job crew fights back, keeps the hull and power up and patches the wounded, and every round ends with a summary and restarts
 > Status: in-progress
 > Depends on: —
-> Current focus: [humanoid animation pass](../architecture/2026-11_humanoid-animation-pass.md) (get-up, pistol stance and throwing, for M1c), then M0, M1c, M3, M8/M9 thin — session stability, the 24/7 server and smoke live on [test-server.md](test-server.md) T3/T8
+> Current focus: M0, M1c, M3, M8/M9 thin (the [humanoid animation pass](../architecture/2026-11_humanoid-animation-pass.md) shipped) — session stability, the 24/7 server and smoke live on [test-server.md](test-server.md) T3/T8
 > Roadmap: Nuclear Operatives round — Play a full Nuke Ops round from spawn to end screen
 > Pillars: 2, 4, 6 (1 thin) — [vision.md](../design/vision.md) §2
 
