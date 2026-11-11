@@ -329,6 +329,7 @@ namespace SS3D.UI.Lobby
             _shellView.SetStationLoadState(rounds != null ? rounds.CurrentStationLoadState : StationLoadState.NotLoaded,
                 rounds != null ? rounds.StationName : "");
             bool admin = CanAdmin();
+            ShowAdminSettings();
             if (SubSystems.TryGet(out CommsSubSystem comms))
                 _shellView.SetChat(comms.OocLog, comms.OocLogVersion, connected && admin);
             MapEditorStopFlow stopFlow = null;
@@ -415,10 +416,22 @@ namespace SS3D.UI.Lobby
             session.AppearanceSource = null;
         }
 
+        private ServerSettingsService _shownSettingsService;
+        private int _shownAdminSettingsVersion;
+
+        /// <summary>
+        /// Shows the latest admin snapshot. The session's event calls it; <see cref="RefreshSession"/> calls it too, so a
+        /// snapshot that arrived while the view or the admin check wasn't ready yet still shows (a local version check).
+        /// </summary>
         private void ShowAdminSettings()
         {
-            if (_shellView != null && CanAdmin() && SubSystems.TryGet(out ServerSettingsService service) && service.HasAdminSettings)
-                _shellView.SetServerSettings(service.AdminSettings, service.AdminMaps, service.AdminSettingsStatus);
+            if (_shellView == null || !CanAdmin() || !SubSystems.TryGet(out ServerSettingsService service) || !service.HasAdminSettings)
+                return;
+            if (service == _shownSettingsService && service.AdminSettingsVersion == _shownAdminSettingsVersion)
+                return;
+            _shownSettingsService = service;
+            _shownAdminSettingsVersion = service.AdminSettingsVersion;
+            _shellView.SetServerSettings(service.AdminSettings, service.AdminMaps, service.AdminSettingsStatus);
         }
 
         private void HandleJobPreferencesChanged()

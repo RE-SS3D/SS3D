@@ -152,6 +152,9 @@ namespace SS3D.UI.Lobby
             map.Add(swatch);
             map.RegisterValueChangedCallback(e =>
             {
+                // The swatch is a Label inside the dropdown: its text changes bubble up as ChangeEvent<string> too,
+                // and would select a map named after its initial.
+                if (e.target != map) return;
                 _serverSettings.Map = e.newValue;
                 SaveServerSettings(ServerSetting.Map);
             });

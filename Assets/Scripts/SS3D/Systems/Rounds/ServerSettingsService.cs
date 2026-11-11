@@ -73,6 +73,8 @@ namespace SS3D.Systems.Rounds
         /// <summary>Client: replies to this admin's settings actions so far (not periodic refreshes).</summary>
         public int AdminActionReplies { get; private set; }
         public bool HasAdminSettings { get; private set; }
+        /// <summary>Client: counts admin snapshots received, so a view can tell it missed one.</summary>
+        public int AdminSettingsVersion { get; private set; }
 
         /// <summary>Client: new admin settings arrived (an action reply or a push).</summary>
         public event Action AdminSettingsReceived;
@@ -299,6 +301,7 @@ namespace SS3D.Systems.Rounds
             if (!refresh)
                 AdminActionReplies++;
             HasAdminSettings = true;
+            AdminSettingsVersion++;
             AdminSettingsReceived?.Invoke();
         }
 

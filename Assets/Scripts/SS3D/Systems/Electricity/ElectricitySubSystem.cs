@@ -76,6 +76,24 @@ namespace SS3D.Systems.Electricity
             _channel.Subscribe(HandleChannelTick);
         }
 
+        /// <summary>
+        /// A client's channel stops with the session. The ObserversRpc this replaced stopped on disconnect; a channel that
+        /// kept firing would tick devices whose objects are being destroyed (mppm:reconnect).
+        /// </summary>
+        public override void OnStopNetwork()
+        {
+            UnsubscribeFromChannel();
+            base.OnStopNetwork();
+        }
+
+        private void UnsubscribeFromChannel()
+        {
+            if (_channel == null) return;
+            _channel.Unsubscribe(HandleChannelTick);
+            _channel.Resumed -= HandleChannelResumed;
+            _channel = null;
+        }
+
         public override void OnStartServer()
         {
             base.OnStartServer();
@@ -87,12 +105,7 @@ namespace SS3D.Systems.Electricity
 
         protected override void OnDestroyed()
         {
-            if (_channel != null)
-            {
-                _channel.Unsubscribe(HandleChannelTick);
-                _channel.Resumed -= HandleChannelResumed;
-                _channel = null;
-            }
+            UnsubscribeFromChannel();
 
             _readinessCts?.Cancel();
             _readinessCts?.Dispose();
@@ -238,6 +251,8 @@ namespace SS3D.Systems.Electricity
 
         private void HandleChannelTick()
         {
+            // Between the transport dropping and OnStopNetwork, a client's objects are already going away.
+            if (!IsServer && (ClientManager == null || !ClientManager.Started)) return;
             using (TickPerformanceMarker.Auto())
             {
                 if (IsServer && _circuits != null)
