@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using FishNet.Object;
 using FishNet.Object.Synchronizing;
-using SS3D.Localization;
 using SS3D.Systems.Examine;
 using UnityEngine;
 
@@ -46,11 +45,10 @@ namespace SS3D.Systems.Health
             bool low = _fill < ExamineTankKeys.LowFraction;
             int percent = Mathf.CeilToInt(_fill * 100f);
             sections.Add(new ExamineSection(
-                LocalizedTextService.GetFormattedString(
-                    ExamineCanonicalKeyGenerator.ExamineTableName,
+                ExamineText.Get(
                     low ? ExamineTankKeys.FillLow : ExamineTankKeys.Fill,
-                    new object[] { percent },
-                    string.Format(low ? ExamineTankKeys.FillLowFallback : ExamineTankKeys.FillFallback, percent)),
+                    low ? ExamineTankKeys.FillLowFallback : ExamineTankKeys.FillFallback,
+                    percent),
                 ExamineBand.Close));
         }
     }

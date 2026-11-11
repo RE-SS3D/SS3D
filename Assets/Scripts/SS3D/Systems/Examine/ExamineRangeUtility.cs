@@ -7,12 +7,12 @@ namespace SS3D.Systems.Examine
     {
         public static bool IsWithinRange(IExaminable examinable, Vector3 origin, RangeLimit range)
         {
-            if (examinable is not ExaminableBase examinableObject)
+            GameObject target = GetGameObject(examinable);
+            if (target == null)
             {
                 return false;
             }
 
-            GameObject target = examinableObject.GameObject;
             Collider collider = target.GetComponent<Collider>();
             if (collider != null)
             {
@@ -22,6 +22,14 @@ namespace SS3D.Systems.Examine
 
             return range.IsInRange(origin, target.transform.position);
         }
+
+        /// <summary>The world object behind an examinable, or null.</summary>
+        public static GameObject GetGameObject(IExaminable examinable) => examinable switch
+        {
+            ItemFallbackExaminable fallback => fallback.Item != null ? fallback.Item.gameObject : null,
+            Component component => component != null ? component.gameObject : null,
+            _ => null,
+        };
 
         private static Vector3 GetClosestPoint(Collider collider, Vector3 position)
         {

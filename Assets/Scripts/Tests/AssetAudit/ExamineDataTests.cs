@@ -3,6 +3,8 @@ using System.Text;
 using UnityEditor;
 using UnityEngine.Localization.Tables;
 using SS3D.Systems.Examine;
+using SS3D.Systems.Inventory.Items;
+using UnityEngine;
 
 namespace AssetAudit
 {
@@ -44,6 +46,38 @@ namespace AssetAudit
 
             ValidateEnglishValue(englishTable, examineData, examineData.Name.TableEntryReference.Key, errors);
             ValidateEnglishValue(englishTable, examineData, examineData.Description.TableEntryReference.Key, errors);
+
+            Assert.IsTrue(errors.Length == 0, errors.ToString());
+        }
+
+        /// <summary>
+        /// Every item prefab examines as something (examine feedback Decision 4): its examinable has data,
+        /// or else it sets its own name, since the item fallback shows <c>Item.Name</c> and an empty name
+        /// falls back to the GameObject name ("HumanBrain").
+        /// </summary>
+        [Test]
+        public void EveryItemPrefabResolvesToAnExamineName()
+        {
+            StringBuilder errors = new();
+            foreach (string guid in AssetDatabase.FindAssets("t:Prefab", new[] { "Assets/Content" }))
+            {
+                string path = AssetDatabase.GUIDToAssetPath(guid);
+                GameObject prefab = AssetDatabase.LoadAssetAtPath<GameObject>(path);
+                if (prefab == null || !prefab.TryGetComponent(out Item item))
+                {
+                    continue;
+                }
+
+                if (prefab.TryGetComponent(out ExaminableBase examinable) && examinable.GetData() != null)
+                {
+                    continue;
+                }
+
+                if (string.IsNullOrWhiteSpace(new SerializedObject(item).FindProperty("_name").stringValue))
+                {
+                    errors.Append($"-> {path}: no ExamineData and no Item name.\n");
+                }
+            }
 
             Assert.IsTrue(errors.Length == 0, errors.ToString());
         }

@@ -60,8 +60,8 @@ namespace SS3D.Systems.Examine.Editor
 
         /// <summary>
         /// Tier C seed — no MenuItem. Writes the keyword-tagged English text (examine.md §3) for every
-        /// key whose fallback constant carries <c>&lt;k=…&gt;</c> markup, plus the substance and low-tank
-        /// keys. The fallback constants are the source; rerun after editing them.
+        /// key whose fallback constant carries <c>&lt;k=…&gt;</c> markup, plus the substance, low-tank,
+        /// item size/stack, short-look and self-presenting keys. The fallback constants are the source; rerun after editing them.
         /// </summary>
         public static void AddExamineFeedbackKeys()
         {
@@ -117,6 +117,21 @@ namespace SS3D.Systems.Examine.Editor
             }
 
             foreach ((string key, string value) in ExamineSubstanceKeys.All)
+            {
+                UpsertEntry(englishTable, key, value);
+            }
+
+            foreach ((string key, string value) in ExamineItemKeys.All)
+            {
+                UpsertEntry(englishTable, key, value);
+            }
+
+            foreach ((string key, string value) in PresentedIdentity.TableEntries)
+            {
+                UpsertEntry(englishTable, key, value);
+            }
+
+            foreach ((string key, string value) in CharacterExamineDetail.TableEntries)
             {
                 UpsertEntry(englishTable, key, value);
             }

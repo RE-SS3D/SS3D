@@ -32,8 +32,8 @@ namespace SS3D.UI.Examine
     /// </summary>
     public sealed class ExamineOverlaySubSystem : SubSystem
     {
-        private const string UnidentifiedKey = "character_examine.unidentified_crew_member";
-        private const string UnidentifiedFallback = "Unidentified Crew Member";
+        /// <summary>While examine is held, the target's content rebuilds this often (examine.md §4: live).</summary>
+        private const float LiveRebuildInterval = 0.1f;
 
         private readonly ExamineContentResolver _contentResolver = new();
 
@@ -58,6 +58,7 @@ namespace SS3D.UI.Examine
         private bool _hasCachedContent;
         private bool _targetHidden;
         private float _nextVisibilityCheck;
+        private float _nextLiveRebuild;
         private bool _examineEventsBound;
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
@@ -125,7 +126,8 @@ namespace SS3D.UI.Examine
 
             // The hover target can be destroyed with no selection change (a disconnect despawns the
             // round's objects). The interface null check misses a destroyed Unity object.
-            if (_currentExaminable is UnityEngine.Object target && target == null)
+            if ((_currentExaminable is UnityEngine.Object target && target == null)
+                || (_currentExaminable is ItemFallbackExaminable fallback && fallback.Item == null))
             {
                 _currentExaminable = null;
                 _hoveredCharacterInventory = null;
@@ -148,6 +150,13 @@ namespace SS3D.UI.Examine
             }
             else if (detailedHeld)
             {
+                // The cache serves hover; a held panel re-resolves so tanks, seals and timers stay live.
+                if (Time.unscaledTime >= _nextLiveRebuild)
+                {
+                    _nextLiveRebuild = Time.unscaledTime + LiveRebuildInterval;
+                    InvalidateContentCache();
+                }
+
                 RefreshGenericDisplay();
             }
 
@@ -218,7 +227,7 @@ namespace SS3D.UI.Examine
             // Catch up whatever is under the cursor so hover is not blank until selection moves.
             if (SubSystems.TryGet(out SelectionSubSystem selection))
             {
-                HandleExaminableChanged(selection.GetCurrentSelectable<IExaminable>());
+                HandleExaminableChanged(_examineSystem.GetCurrentExaminable());
             }
         }
 
@@ -309,7 +318,7 @@ namespace SS3D.UI.Examine
             Vector2 screenPosition = Mouse.current != null
                 ? Mouse.current.position.ReadValue()
                 : Vector2.zero;
-            _windowView.Show(ResolveDisplayName(inventory), slots, takeAllowed, screenPosition);
+            _windowView.Show(PresentedIdentity.DisplayName(inventory), slots, takeAllowed, screenPosition);
         }
 
         private void HandleCloseRequested()
@@ -391,7 +400,7 @@ namespace SS3D.UI.Examine
                 CharacterExamineContentBuilder.BuildSlots(_windowVictimInventory);
             bool takeAllowed = CharacterLootUtility.IsLootable(_windowVictimInventory);
             _windowView.TakeAllowed = takeAllowed;
-            _windowView.RefreshSlots(ResolveDisplayName(_windowVictimInventory), slots);
+            _windowView.RefreshSlots(PresentedIdentity.DisplayName(_windowVictimInventory), slots);
         }
 
         private bool TryBindInteractionController()
@@ -477,41 +486,16 @@ namespace SS3D.UI.Examine
                 && !CharacterLootUtility.IsOtherCharacter(localInventory, inventory);
         }
 
-        private static string ResolveDisplayName(HumanInventory inventory)
-        {
-            if (CharacterExamineContentBuilder.TryGetVisibleIdentity(inventory, out string name, out _))
-            {
-                return name;
-            }
-
-            return LocalizedTextService.GetFormattedString(
-                ExamineCanonicalKeyGenerator.ExamineTableName,
-                UnidentifiedKey,
-                System.Array.Empty<object>(),
-                UnidentifiedFallback);
-        }
-
-        private bool TryResolveLocalCharacter(out IExaminable examinable, out HumanInventory inventory)
-        {
-            examinable = null;
-            inventory = null;
-            return _localPlayer != null
-                && CharacterExamineTargetUtility.TryResolveFromTransform(
-                    _localPlayer.transform,
-                    out examinable,
-                    out inventory);
-        }
-
         private void ShowCharacterExamineDisplay(IExaminable examinable, HumanInventory inventory, bool isSelf)
         {
-            string displayName = ResolveDisplayName(inventory);
+            string displayName = PresentedIdentity.DisplayName(inventory);
             ExamineContent content = GetCachedContent(examinable);
 
             if (IsDetailedExamineHeld())
             {
                 // Health sections rebuild every frame while Shift is held so bleed/crit updates live.
                 bool close = isSelf || IsWithinCloseRange(examinable);
-                string detailed = BuildCharacterDetailedText(content, inventory, isSelf, close);
+                string detailed = CharacterExamineDetail.Build(content, inventory, isSelf, close);
                 if (!string.IsNullOrWhiteSpace(detailed))
                 {
                     _genericView.ShowDetailedText(displayName, ExamineKeywordFormatter.Format(detailed));
@@ -529,37 +513,6 @@ namespace SS3D.UI.Examine
             {
                 _genericView.UpdateAnchor(Mouse.current.position.ReadValue());
             }
-        }
-
-        private static string BuildCharacterDetailedText(
-            ExamineContent content,
-            HumanInventory inventory,
-            bool isSelf,
-            bool withinCloseRange)
-        {
-            List<ExamineSection> healthSections = new();
-            CharacterExamineHealthBuilder.AppendSections(
-                ResolveHealthController(inventory),
-                isSelf,
-                healthSections);
-
-            return ExamineDetailText.Build(content, withinCloseRange, healthSections);
-        }
-
-        private static HumanHealthController ResolveHealthController(HumanInventory inventory)
-        {
-            if (inventory == null)
-            {
-                return null;
-            }
-
-            if (inventory.TryGetComponent(out HumanHealthController health))
-            {
-                return health;
-            }
-
-            health = inventory.GetComponentInParent<HumanHealthController>();
-            return health != null ? health : inventory.GetComponentInChildren<HumanHealthController>();
         }
 
         private void RefreshGenericDisplay()
@@ -598,16 +551,10 @@ namespace SS3D.UI.Examine
                 return;
             }
 
-            // No-target Shift → self (examine.md §2 / health Tier 0+1).
+            // Nothing under the cursor never means yourself (examine.md §2): self-examine is pointing
+            // at your own model, which resolves to the character like anyone else.
             if (_targetHidden || _currentExaminable?.GetData() == null)
             {
-                if (IsDetailedExamineHeld()
-                    && TryResolveLocalCharacter(out IExaminable selfExaminable, out HumanInventory selfInventory))
-                {
-                    ShowCharacterExamineDisplay(selfExaminable, selfInventory, isSelf: true);
-                    return;
-                }
-
                 _genericView.Hide();
                 InvalidateContentCache();
                 return;

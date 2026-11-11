@@ -70,31 +70,6 @@ namespace SS3D.Systems.Examine
         }
 
         /// <summary>
-        /// Name/job for the examine window title, per examine.md §7 and id-access.md §3: visible only
-        /// when an ID is worn in the gear-strip Identification slot — not merely carried in a PDA.
-        /// </summary>
-        public static bool TryGetVisibleIdentity(HumanInventory inventory, out string name, out string job)
-        {
-            name = null;
-            job = null;
-
-            if (inventory == null
-                || !inventory.TryGetTypeContainer(ContainerType.Identification, 0, out AttachedContainer container))
-            {
-                return false;
-            }
-
-            if (container.Items.FirstOrDefault() is not IDCard idCard || string.IsNullOrWhiteSpace(idCard.OwnerName))
-            {
-                return false;
-            }
-
-            name = idCard.OwnerName;
-            job = idCard.RoleName;
-            return true;
-        }
-
-        /// <summary>
         /// Resolves the item currently shown in a paperdoll slot (container-backed or hand).
         /// </summary>
         public static bool TryGetItemInSlot(HumanInventory inventory, CharacterExamineSlot slot, out Item item)

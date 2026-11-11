@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using SS3D.Localization;
 using SS3D.Systems.Examine;
 using UnityEngine;
 
@@ -50,19 +49,10 @@ namespace SS3D.Systems.Substances
             }
         }
 
-        private static string Word(string key, string fallback) =>
-            LocalizedTextService.GetFormattedString(ExamineCanonicalKeyGenerator.ExamineTableName, key, null, fallback);
+        private static string Word(string key, string fallback) => ExamineText.Get(key, fallback);
 
-        private static ExamineSection Line(string key, string fallback, string argument)
-        {
-            object[] arguments = argument == null ? null : new object[] { argument };
-            string text = LocalizedTextService.GetFormattedString(
-                ExamineCanonicalKeyGenerator.ExamineTableName,
-                key,
-                arguments,
-                argument == null ? fallback : string.Format(fallback, argument));
-            return new ExamineSection(text, ExamineBand.Close);
-        }
+        private static ExamineSection Line(string key, string fallback, string argument) =>
+            new(argument == null ? ExamineText.Get(key, fallback) : ExamineText.Get(key, fallback, argument), ExamineBand.Close);
 
         private static (string, string) ApproximateVolume(float volumeMl)
         {

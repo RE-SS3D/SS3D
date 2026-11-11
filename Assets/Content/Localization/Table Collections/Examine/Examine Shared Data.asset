@@ -1703,6 +1703,50 @@ MonoBehaviour:
     m_Key: examine.substance.color.purple
     m_Metadata:
       m_Items: []
+  - m_Id: 298317283615547392
+    m_Key: examine.item.size
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298317283632324608
+    m_Key: examine.item.stack
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298317283632324609
+    m_Key: examine.item.size.tiny
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298317283632324610
+    m_Key: examine.item.size.small
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298317283632324611
+    m_Key: examine.item.size.normal
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298317283632324612
+    m_Key: examine.item.size.bulky
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298317283632324613
+    m_Key: examine.item.size.huge
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298317283632324614
+    m_Key: character_examine.unknown_in_outfit
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298317283632324615
+    m_Key: examine.self.presenting
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298317283632324616
+    m_Key: examine.self.presenting_no_job
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298317283632324617
+    m_Key: examine.self.presenting_nothing
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

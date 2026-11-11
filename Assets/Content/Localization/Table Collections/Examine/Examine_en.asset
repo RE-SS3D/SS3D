@@ -1752,6 +1752,50 @@ MonoBehaviour:
     m_Localized: purple
     m_Metadata:
       m_Items: []
+  - m_Id: 298317283615547392
+    m_Localized: 'Size: {0}.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298317283632324608
+    m_Localized: '{0} in the stack.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298317283632324609
+    m_Localized: tiny
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298317283632324610
+    m_Localized: small
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298317283632324611
+    m_Localized: normal
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298317283632324612
+    m_Localized: bulky
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298317283632324613
+    m_Localized: huge
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298317283632324614
+    m_Localized: Unknown crew member in {0}
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298317283632324615
+    m_Localized: 'You are presenting: {0}, {1}.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298317283632324616
+    m_Localized: 'You are presenting: {0}.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298317283632324617
+    m_Localized: You are presenting no ID.
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []
