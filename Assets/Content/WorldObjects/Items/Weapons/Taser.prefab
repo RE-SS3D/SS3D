@@ -217,7 +217,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: FishNet.Runtime::FishNet.Object.NetworkObject
   NetworkObserver: {fileID: 0}
-  <PrefabId>k__BackingField: 0
+  <PrefabId>k__BackingField: 124
   <SpawnableCollectionId>k__BackingField: 0
   _scenePathHash: 0
   <SceneId>k__BackingField: 0
@@ -279,7 +279,7 @@ MonoBehaviour:
   AttachmentPoint: {fileID: 8540630403880080581}
   AttachmentPointAlt: {fileID: 8540630403880080581}
   _restRotation: {x: -0, y: 0, z: 90}
-  _overrideIconRotation: 0
+  _overrideIconRotation: 1
   _iconRotation: {x: 0, y: 0, z: 0}
   _container: {fileID: 0}
 --- !u!65 &8290816172357947520

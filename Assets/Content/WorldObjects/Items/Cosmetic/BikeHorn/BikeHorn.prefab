@@ -236,7 +236,7 @@ MonoBehaviour:
   AttachmentPoint: {fileID: 4619531351315044860}
   AttachmentPointAlt: {fileID: 0}
   _restRotation: {x: 18.000004, y: 251, z: 271}
-  _overrideIconRotation: 0
+  _overrideIconRotation: 1
   _iconRotation: {x: 0, y: 0, z: 0}
   _container: {fileID: 0}
   _animator: {fileID: 7807247313645579261}
@@ -254,7 +254,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   NetworkObserver: {fileID: 0}
-  <PrefabId>k__BackingField: 13
+  <PrefabId>k__BackingField: 18
   <SpawnableCollectionId>k__BackingField: 0
   _scenePathHash: 0
   <SceneId>k__BackingField: 0

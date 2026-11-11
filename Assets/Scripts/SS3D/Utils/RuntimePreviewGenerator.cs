@@ -148,14 +148,17 @@ public static class RuntimePreviewGenerator
 
 	private static Quaternion m_previewRotation = Quaternion.identity;
 	/// <summary>
-	/// Rotation applied to non-static preview roots before framing (default identity).
-	/// Item/tile icon callers set this to the prefab rest pose so long items render on their side.
+	/// Rotation applied to non-static preview roots before framing (default identity). The camera is fixed, so
+	/// this alone decides which side faces it. Item icons set it to Item.IconRotation.
 	/// </summary>
 	public static Quaternion PreviewRotation
 	{
 		get { return m_previewRotation; }
 		set { m_previewRotation = value; }
 	}
+
+	/// <summary>SS3D: fixed in world space, not following the object (that turned a taser icon upside down).</summary>
+	public static Quaternion CameraRotation => Quaternion.LookRotation( m_previewDirection, Vector3.up );
 
 	private static Transform m_boundsTarget = null;
 	/// <summary>
@@ -325,7 +328,7 @@ public static class RuntimePreviewGenerator
 			if( !wasActive )
 				previewObject.gameObject.SetActive( true );
 
-			Quaternion cameraRotation = Quaternion.LookRotation( previewObject.rotation * m_previewDirection, Vector3.up );
+			Quaternion cameraRotation = CameraRotation;
 			Bounds previewBounds = new Bounds();
 			Transform boundsTarget = m_boundsTarget != null && !shouldCloneModel && m_boundsTarget.IsChildOf( previewObject ) ? m_boundsTarget : previewObject;
 			if( !CalculateBounds( boundsTarget, shouldIgnoreParticleSystems, cameraRotation, out previewBounds ) )

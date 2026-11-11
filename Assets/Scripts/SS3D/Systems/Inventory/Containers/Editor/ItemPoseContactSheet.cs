@@ -389,8 +389,15 @@ namespace SS3D.Systems.Inventory.Containers.Editor
             }
         }
 
+        /// <remarks>
+        /// Restores the generator settings it changes: the icon cell calls the real <see cref="Item.GenerateIcon"/>,
+        /// which must see the game's default camera direction and padding, not the previous floor view's.
+        /// </remarks>
         private static Texture2D RenderScene(Transform root, Transform frame, Quaternion rotation, Vector3 view, float padding)
         {
+            Quaternion previousRotation = RuntimePreviewGenerator.PreviewRotation;
+            Vector3 previousDirection = RuntimePreviewGenerator.PreviewDirection;
+            float previousPadding = RuntimePreviewGenerator.Padding;
             RuntimePreviewGenerator.PreviewRotation = rotation;
             RuntimePreviewGenerator.PreviewDirection = view;
             RuntimePreviewGenerator.Padding = padding;
@@ -401,6 +408,9 @@ namespace SS3D.Systems.Inventory.Containers.Editor
             }
             finally
             {
+                RuntimePreviewGenerator.PreviewRotation = previousRotation;
+                RuntimePreviewGenerator.PreviewDirection = previousDirection;
+                RuntimePreviewGenerator.Padding = previousPadding;
                 RuntimePreviewGenerator.BoundsTarget = null;
             }
         }

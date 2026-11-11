@@ -10,7 +10,8 @@ namespace SS3D.Tests.EditMode
 {
     /// <summary>
     /// Floor and icon pose contract (Documents/plans/item-orientation.plan.md B1): the rest pose is a serialized
-    /// field, so an instance reads it whatever its current rotation, and the icon uses it unless overridden.
+    /// field, so an instance reads it whatever its current rotation, and the icon uses it unless overridden (B3: the
+    /// icon camera is fixed, so the icon pose alone decides which side faces it).
     /// </summary>
     public class ItemPoseTests
     {
@@ -95,6 +96,25 @@ namespace SS3D.Tests.EditMode
             so.ApplyModifiedPropertiesWithoutUndo();
 
             Assert.Less(Quaternion.Angle(Quaternion.Euler(Icon), _item.IconRotation), Tolerance);
+        }
+
+        [Test]
+        public void PreviewCamera_IsFixed_WhateverThePreviewRotation()
+        {
+            Quaternion previous = RuntimePreviewGenerator.PreviewRotation;
+            try
+            {
+                RuntimePreviewGenerator.PreviewRotation = Quaternion.identity;
+                Quaternion unrotated = RuntimePreviewGenerator.CameraRotation;
+                RuntimePreviewGenerator.PreviewRotation = Quaternion.Euler(0f, 0f, 90f);
+
+                Assert.Less(Quaternion.Angle(unrotated, RuntimePreviewGenerator.CameraRotation), Tolerance,
+                    "The icon camera must not follow the object: pose the item through Item.IconRotation.");
+            }
+            finally
+            {
+                RuntimePreviewGenerator.PreviewRotation = previous;
+            }
         }
 
         [Test]

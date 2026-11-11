@@ -1,6 +1,7 @@
 ﻿using JetBrains.Annotations;
 using SS3D.Data.AssetDatabases;
 using SS3D.Logging;
+using SS3D.Systems.Inventory.Items;
 using SS3D.Utils;
 using System;
 using System.Collections;
@@ -86,7 +87,11 @@ namespace SS3D.Systems.Tile
                 }
 
 		        Quaternion previousPreviewRotation = RuntimePreviewGenerator.PreviewRotation;
-		        RuntimePreviewGenerator.PreviewRotation = prefab.transform.localRotation;
+		        // Items render at their icon pose, like the inventory icon. Other objects render unrotated: the
+		        // camera is fixed, so a yaw on the prefab root (APC, airlocks) would only show their back.
+		        RuntimePreviewGenerator.PreviewRotation = prefab.TryGetComponent(out Item item)
+			        ? item.IconRotation
+			        : Quaternion.identity;
 		        Texture2D texture;
 		        try
 		        {
