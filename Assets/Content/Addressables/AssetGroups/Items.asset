@@ -970,6 +970,11 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: edfdfa7aba0ad7fcfbb7bc5d0acadc5a
+    m_Address: Assets/Content/WorldObjects/Items/Functional/Generic/FloorTileWood.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: f0eca2b8867709749bc10f61917c4bdf
     m_Address: Assets/Content/WorldObjects/Furniture/Machines/Engineering/SolarPanel.prefab
     m_ReadOnly: 0

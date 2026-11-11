@@ -49,7 +49,9 @@ namespace SS3D.Systems.Construction
 
             return rule.Target switch
             {
-                ConstructionTargetKind.FloorTurf => placed.GenericType == TileObjectGenericType.Floor,
+                // Only floors with a tile item to hand back (D17); grass or carpet would just vanish.
+                ConstructionTargetKind.FloorTurf => placed.GenericType == TileObjectGenericType.Floor
+                    && ConstructionFloorTiles.IsPryable(placed.NameString),
                 ConstructionTargetKind.DamagedPlenum => placed.GenericType == TileObjectGenericType.Plenum && IsDamaged(placed),
                 ConstructionTargetKind.DamagedStructure => placed.GenericType == TileObjectGenericType.Wall && IsDamaged(placed),
                 ConstructionTargetKind.NamedTile => placed.NameString == rule.TargetName

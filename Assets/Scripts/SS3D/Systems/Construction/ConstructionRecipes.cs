@@ -116,6 +116,13 @@ namespace SS3D.Systems.Construction
             },
         };
 
+        /// <summary>
+        /// Wall tiles that are not reinforced yet have no deconstruction rule, each with why. Empty today:
+        /// every plain wall is on the ladder. <c>ConstructionCoverageTests</c> fails for a new wall tile that
+        /// is neither on the ladder, reinforced, nor listed here.
+        /// </summary>
+        public static readonly (string Tile, string Reason)[] NotDeconstructible = System.Array.Empty<(string, string)>();
+
         public static ConstructionRule Get(ConstructionStep step)
         {
             for (int i = 0; i < Rules.Count; i++)
@@ -156,7 +163,7 @@ namespace SS3D.Systems.Construction
             yield return ConstructionNames.SteelSheetItem;
             yield return ConstructionNames.GlassSheetItem;
             yield return ConstructionNames.FloorTileItem;
-            foreach ((string turf, string item, string _) in ConstructionFloorTiles.Kinds)
+            foreach ((string turf, string item, string _, bool _) in ConstructionFloorTiles.Kinds)
             {
                 yield return turf;
                 yield return item;

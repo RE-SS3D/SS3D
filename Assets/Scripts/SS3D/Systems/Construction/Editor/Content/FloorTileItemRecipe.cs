@@ -23,7 +23,7 @@ namespace SS3D.Systems.Construction.Editor
         public const string FloorTilePrefab = ConstructionItemRecipe.FloorTilePath;
         public const string ItemFolder = "Assets/Content/WorldObjects/Items/Functional/Generic/";
         public const string ItemAssetFolder = "Assets/Content/Data/TileMap/Resources/Items/Functional/Materials/";
-        public const string FloorFolder = "Assets/Content/WorldObjects/Structures/Floors/Tiles/Steel/";
+        public const string FloorFolder = "Assets/Content/WorldObjects/Structures/Floors/";
 
         public static int SetupAll()
         {
@@ -37,7 +37,7 @@ namespace SS3D.Systems.Construction.Editor
             }
 
             int changed = 0;
-            foreach ((string turf, string itemName, string displayName) in ConstructionFloorTiles.Kinds)
+            foreach ((string turf, string itemName, string displayName, bool wooden) in ConstructionFloorTiles.Kinds)
             {
                 string path = ItemFolder + itemName + ".prefab";
                 if (path == FloorTilePrefab)
@@ -48,7 +48,7 @@ namespace SS3D.Systems.Construction.Editor
                 Material material = FloorMaterial(turf);
                 if (material == null)
                 {
-                    Debug.LogError($"[FloorTileItemRecipe] {FloorFolder}{turf}.prefab has no material");
+                    Debug.LogError($"[FloorTileItemRecipe] No floor prefab {turf} with a material under {FloorFolder}");
                     continue;
                 }
 
@@ -66,7 +66,7 @@ namespace SS3D.Systems.Construction.Editor
                 }
 
                 ObjectAssetReference reference = Register(path, itemName, sourceItem, database);
-                if (ApplyPrefab(path, itemName, displayName, reference, material, created))
+                if (ApplyPrefab(path, itemName, displayName, reference, material, wooden, created))
                 {
                     changed++;
                 }
@@ -89,7 +89,17 @@ namespace SS3D.Systems.Construction.Editor
 
         private static Material FloorMaterial(string turf)
         {
-            GameObject floor = DB.LoadAssetAtPath<GameObject>(FloorFolder + turf + ".prefab");
+            GameObject floor = null;
+            foreach (string guid in DB.FindAssets(turf + " t:Prefab", new string[] { FloorFolder }))
+            {
+                string candidate = DB.GUIDToAssetPath(guid);
+                if (System.IO.Path.GetFileNameWithoutExtension(candidate) == turf)
+                {
+                    floor = DB.LoadAssetAtPath<GameObject>(candidate);
+                    break;
+                }
+            }
+
             MeshRenderer renderer = floor != null ? floor.GetComponentInChildren<MeshRenderer>(true) : null;
             return renderer != null ? renderer.sharedMaterial : null;
         }
@@ -117,7 +127,7 @@ namespace SS3D.Systems.Construction.Editor
         }
 
         private static bool ApplyPrefab(string path, string itemName, string displayName, ObjectAssetReference reference,
-            Material material, bool created)
+            Material material, bool wooden, bool created)
         {
             GameObject root = PrefabUtility.LoadPrefabContents(path);
             try
@@ -149,6 +159,19 @@ namespace SS3D.Systems.Construction.Editor
 
                     renderer.sharedMaterials = Fill(material, renderer.sharedMaterials.Length);
                     changed = true;
+                }
+
+                if (root.TryGetComponent(out Audio.NoisyCollision noisy))
+                {
+                    SerializedObject noisySo = new(noisy);
+                    SerializedProperty collision = noisySo.FindProperty("_material");
+                    int wanted = (int)(wooden ? Audio.ItemCollisionMaterial.Wood : Audio.ItemCollisionMaterial.Metal);
+                    if (collision.enumValueIndex != wanted)
+                    {
+                        collision.enumValueIndex = wanted;
+                        noisySo.ApplyModifiedPropertiesWithoutUndo();
+                        changed = true;
+                    }
                 }
 
                 if (!changed)

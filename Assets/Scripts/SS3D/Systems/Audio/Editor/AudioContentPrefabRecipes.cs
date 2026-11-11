@@ -29,6 +29,7 @@ namespace SS3D.Systems.Audio.Editor
             { "FloorTileWhite", ItemCollisionMaterial.Metal },
             { "FloorTileKitchen", ItemCollisionMaterial.Metal },
             { "FloorTileBar", ItemCollisionMaterial.Metal },
+            { "FloorTileWood", ItemCollisionMaterial.Wood },
             { "Hatchet", ItemCollisionMaterial.Metal },
             { "KitchenKnife", ItemCollisionMaterial.Metal },
             { "M4", ItemCollisionMaterial.Metal },

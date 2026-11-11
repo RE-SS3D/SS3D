@@ -31,9 +31,9 @@ namespace EditorTests
 
         private static TileObjectSo Plenum() => TileMapTestUtilities.CreateTileSo(TileLayer.Plenum, "Plenum");
 
-        private static PlacedTileObject PlaceFloor(TileMapTestUtilities.MapContext context, Vector3 position)
+        private static PlacedTileObject PlaceFloor(TileMapTestUtilities.MapContext context, Vector3 position, string name = "TestFloor")
         {
-            TileObjectSo floor = TileMapTestUtilities.CreateTileSo(TileLayer.Turf, "TestFloor");
+            TileObjectSo floor = TileMapTestUtilities.CreateTileSo(TileLayer.Turf, name);
             Assert.True(context.Map.PlaceTileObject(floor, position, Direction.North, true, false, false, out GameObject go));
             return go.GetComponent<PlacedTileObject>();
         }
@@ -92,11 +92,14 @@ namespace EditorTests
         {
             TileMapTestUtilities.MapContext context = TileMapTestUtilities.CreateContext(_objects);
             TileMapTestUtilities.PlacePlenum(context, Vector3.zero);
-            PlacedTileObject floor = PlaceFloor(context, Vector3.zero);
+            PlacedTileObject floor = PlaceFloor(context, Vector3.zero, ConstructionNames.FloorTurf);
             PlacedTileObject plating = PlenumAt(context, Vector3.zero);
             plating.tileObjectSO.genericType = TileObjectGenericType.Plenum;
 
             Assert.True(ConstructionObjectRules.Matches(Rule(ConstructionStep.PryFloorTile), floor));
+            TileMapTestUtilities.PlacePlenum(context, new Vector3(1, 0, 0));
+            PlacedTileObject grass = PlaceFloor(context, new Vector3(1, 0, 0), "TileGrass");
+            Assert.False(ConstructionObjectRules.Matches(Rule(ConstructionStep.PryFloorTile), grass), "Grass is not pried up into nothing");
             Assert.False(ConstructionObjectRules.Matches(Rule(ConstructionStep.PryFloorTile), plating));
 
             ConstructionRule repair = Rule(ConstructionStep.RepairPlating);
@@ -158,14 +161,16 @@ namespace EditorTests
         [Test]
         public void FloorTileKinds_RoundTrip()
         {
-            foreach ((string turf, string item, string _) in ConstructionFloorTiles.Kinds)
+            foreach ((string turf, string item, string _, bool _) in ConstructionFloorTiles.Kinds)
             {
                 Assert.AreEqual(item, ConstructionFloorTiles.ItemFor(turf));
                 Assert.AreEqual(turf, ConstructionFloorTiles.TurfFor(item));
             }
 
             Assert.AreEqual("FloorTileWhite", ConstructionFloorTiles.ItemFor("TileWhite"));
-            Assert.IsNull(ConstructionFloorTiles.ItemFor("TileGrass"), "Grass is not a steel tile");
+            Assert.AreEqual("FloorTileWood", ConstructionFloorTiles.ItemFor("TileWood"));
+            Assert.IsNull(ConstructionFloorTiles.ItemFor("TileGrass"), "Grass is not a laid tile");
+            Assert.False(ConstructionFloorTiles.IsPryable("TileGrass"));
             Assert.AreEqual(ConstructionNames.FloorTurf, ConstructionFloorTiles.TurfFor("Unknown"), "Unknown tiles lay grey");
             Assert.AreEqual(string.Empty, ConstructionApply.ReturnNameFor(Rule(ConstructionStep.PryFloorTile), null));
         }

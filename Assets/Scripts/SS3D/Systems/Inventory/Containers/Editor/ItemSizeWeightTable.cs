@@ -115,6 +115,7 @@ namespace SS3D.Systems.Inventory.Containers.Editor
             new("Functional/Generic/FloorTileWhite", SizeClass.Normal, 0.6f),
             new("Functional/Generic/FloorTileKitchen", SizeClass.Normal, 0.6f),
             new("Functional/Generic/FloorTileBar", SizeClass.Normal, 0.6f),
+            new("Functional/Generic/FloorTileWood", SizeClass.Normal, 0.6f),
             new("Functional/Materials/GlassSheet", SizeClass.Normal, 1.0f),
             new("Functional/Materials/GlassReinforcedSheet", SizeClass.Normal, 1.5f),
             new("Functional/Materials/SteelSheet", SizeClass.Normal, 1.5f),

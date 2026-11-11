@@ -432,6 +432,15 @@ MonoBehaviour:
     SearchTags:
     - item
     - materials & parts
+  - AssetName: FloorTileWood
+    Mode: 2
+    Subcategory: 301
+    Heading: 
+    Family: 
+    VariantLabel: 
+    SearchTags:
+    - item
+    - materials & parts
   - AssetName: FuelTank
     Mode: 0
     Subcategory: 105

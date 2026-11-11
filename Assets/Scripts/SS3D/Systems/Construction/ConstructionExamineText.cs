@@ -65,11 +65,16 @@ namespace SS3D.Systems.Construction
 
             if (placed.Layer == TileLayer.Turf && placed.GenericType == TileObjectGenericType.Floor)
             {
-                if (ConstructionObjectRules.IsDamaged(placed))
+                if (ConstructionObjectRules.IsDamaged(placed) && ConstructionFloorTiles.IsPryable(placed.NameString))
                 {
                     key = ExamineConstructionKeys.FloorDamaged;
                     fallback = ExamineConstructionKeys.FloorDamagedFallback;
                     return true;
+                }
+
+                if (!ConstructionFloorTiles.IsPryable(placed.NameString))
+                {
+                    return false;
                 }
 
                 key = ExamineConstructionKeys.FloorPry;
