@@ -90,7 +90,7 @@ namespace SS3D.Systems.Area
             FloorVisualCache.OnDirty -= HandleFloorVisualCacheDirty;
             if (_painting != null) _painting.Changed -= HandleAuthoredAreasChanged;
             UnsubscribeElectricityTicks();
-            SubSystems.Get<TileSubSystem>()?.UnregisterTileMutationObserver(this);
+            SubSystems.GetOrNull<TileSubSystem>()?.UnregisterTileMutationObserver(this);
             base.OnDestroyed();
         }
 

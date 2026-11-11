@@ -1575,6 +1575,42 @@ MonoBehaviour:
     m_Key: examine.device.broken
     m_Metadata:
       m_Items: []
+  - m_Id: 297583453850017792
+    m_Key: examine.construction.floor_pry
+    m_Metadata:
+      m_Items: []
+  - m_Id: 297583453879377920
+    m_Key: examine.construction.bare_plating
+    m_Metadata:
+      m_Items: []
+  - m_Id: 297583453879377921
+    m_Key: examine.construction.repair_welder
+    m_Metadata:
+      m_Items: []
+  - m_Id: 297583453879377922
+    m_Key: examine.construction.girder
+    m_Metadata:
+      m_Items: []
+  - m_Id: 297583453879377923
+    m_Key: examine.construction.girder_plated
+    m_Metadata:
+      m_Items: []
+  - m_Id: 297583453879377924
+    m_Key: examine.construction.wall_cut_seams
+    m_Metadata:
+      m_Items: []
+  - m_Id: 297583453879377925
+    m_Key: examine.construction.window_lift_pane
+    m_Metadata:
+      m_Items: []
+  - m_Id: 297583453879377926
+    m_Key: examine.construction.reinforced
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298192516493320192
+    m_Key: examine.construction.floor_damaged
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

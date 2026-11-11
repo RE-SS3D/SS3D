@@ -353,7 +353,7 @@ namespace SS3D.Systems.Furniture
             return true;
         }
 
-        /// <summary>Opens the door with no close timer, bypassing access. Debug/automation only (doordebug).</summary>
+        /// <summary>Opens the door with no close timer, bypassing access. Debug/automation only (door).</summary>
         [Server]
         public bool ServerDebugHoldOpen()
         {
@@ -693,7 +693,7 @@ namespace SS3D.Systems.Furniture
 
         private void NotifyTileStateChanged()
         {
-            SubSystems.Get<TileSubSystem>()?.NotifyTileStateChanged(transform.position);
+            SubSystems.GetOrNull<TileSubSystem>()?.NotifyTileStateChanged(transform.position);
         }
 
         private void HandlePowerStatusUpdated(object sender, PowerStatus newStatus)

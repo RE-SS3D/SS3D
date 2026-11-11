@@ -160,6 +160,17 @@ namespace SS3D.UI.MainHud.Components
 
         private void OnPointerDown(Slot slot, InventorySlot inventorySlot, PointerDownEvent evt)
         {
+            // Left-button only, and another button pressed mid-drag must not restart it (see HandsGearStrip.WireDrag).
+            if (evt.button != (int)MouseButton.LeftMouse)
+            {
+                if (inventorySlot.HasPointerCapture(evt.pointerId))
+                {
+                    evt.StopPropagation();
+                }
+
+                return;
+            }
+
             // Clear before the empty-slot early-out — same sticky-_dragMoved bug as HandsGearStrip.
             _dragMoved = false;
             _dragOrigin = (Vector2)evt.position;
@@ -196,7 +207,7 @@ namespace SS3D.UI.MainHud.Components
 
         private void OnPointerUp(Slot slot, InventorySlot inventorySlot, PointerUpEvent evt)
         {
-            if (_dragSlot != slot || !inventorySlot.HasPointerCapture(evt.pointerId))
+            if (evt.button != (int)MouseButton.LeftMouse || _dragSlot != slot || !inventorySlot.HasPointerCapture(evt.pointerId))
             {
                 return;
             }

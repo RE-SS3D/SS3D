@@ -32,7 +32,7 @@ Each body-part prefab carries **`AnatomyNode`** (replaces legacy `HumanBodypart`
 
 Chest and Groin are not severable. Reattachment deferred to Phase 7c surgery.
 
-Trigger: zone at **Disabled** + sharp melee (`CanSever` on `MeleeDamagePacket`) or admin `sever` / `destroybodypart` commands.
+Trigger: zone at **Disabled** + sharp melee (`CanSever` on `MeleeDamagePacket`) or admin `sever` command (`force` skips the Disabled check).
 
 ### Skeleton colliders → `BodyZone`
 
@@ -95,7 +95,7 @@ Files are under `Assets/Scripts/SS3D/Systems/Health/`; prefabs under `Assets/Con
 ## Depends on / Used by
 
 - **Depends on:** [entities](entities.md) (`Human.prefab` nested body-part prefabs), items (`ItemSubSystem` world drops)
-- **Used by:** [health](health.md), [combat](combat.md) (zone raycasts), dev console `sever` / `destroybodypart`
+- **Used by:** [health](health.md), [combat](combat.md) (zone raycasts), dev console `sever`
 
 ## Related docs
 

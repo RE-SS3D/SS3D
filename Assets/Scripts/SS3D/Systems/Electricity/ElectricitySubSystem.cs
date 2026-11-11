@@ -89,7 +89,7 @@ namespace SS3D.Systems.Electricity
                 readiness.PhaseChanged -= HandleReadinessPhaseChanged;
             }
 
-            SubSystems.Get<TileSubSystem>()?.UnregisterTileMutationObserver(this);
+            SubSystems.GetOrNull<TileSubSystem>()?.UnregisterTileMutationObserver(this);
             base.OnDestroyed();
         }
 
@@ -190,16 +190,6 @@ namespace SS3D.Systems.Electricity
             return true;
         }
 
-        /// <summary>
-        /// Pause circuit ticks (bulk map Clear / DMM import). Prevents FixedUpdate from walking
-        /// destroyed devices while FishNet despawn is still draining.
-        /// </summary>
-        public void SuspendCircuitUpdates(bool suspend)
-        {
-            _circuitUpdatesSuspended = suspend;
-            if (!suspend)
-                _graphIsDirty = true;
-        }
 
         /// <summary>
         /// Drop all registered devices/circuits. Call after <see cref="TileMap.Clear"/> when despawn
@@ -235,8 +225,19 @@ namespace SS3D.Systems.Electricity
         {
             using (FixedUpdatePerformanceMarker.Auto())
             {
-                if (_circuitUpdatesSuspended)
+                // Paused while the station is replaced (map load, clear, import), so FixedUpdate never walks
+                // devices whose despawn is still draining; the graph is rebuilt once the last scope closes.
+                if (WorldSimSuspension.IsSuspended)
+                {
+                    _circuitUpdatesSuspended = true;
                     return;
+                }
+
+                if (_circuitUpdatesSuspended)
+                {
+                    _circuitUpdatesSuspended = false;
+                    _graphIsDirty = true;
+                }
 
                 _timeElapsed += Time.deltaTime;
 

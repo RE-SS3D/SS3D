@@ -68,6 +68,9 @@ namespace SS3D.Systems.StructuralDamage.Editor
             {
                 table.AddEntry(ExamineStructuralIntegrityKeys.FracturedFloor, ExamineStructuralIntegrityKeys.FracturedFloorFallback);
                 table.AddEntry(ExamineStructuralIntegrityKeys.DamagedPlating, ExamineStructuralIntegrityKeys.DamagedPlatingFallback);
+                // Construction next-step lines (2026-11_construction-mvp1); the examinable is the same component.
+                foreach ((string key, string english) in ExamineConstructionKeys.All)
+                    table.AddEntry(key, english);
                 EditorUtility.SetDirty(table);
                 EditorUtility.SetDirty(table.SharedData);
             }

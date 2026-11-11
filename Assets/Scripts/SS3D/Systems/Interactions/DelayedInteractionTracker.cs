@@ -73,7 +73,10 @@ namespace SS3D.Systems.Interactions
                 return false;
             }
 
-            if (_serverActiveSource.HasInteraction(_serverActiveReference))
+            // A source destroyed mid-step (the last floor tile spent) is Unity-null but not C#-null through the
+            // interface, and its interaction list still holds the reference: count it as ended, or the kneel sticks.
+            bool sourceDestroyed = _serverActiveSource is UnityEngine.Object unityObject && unityObject == null;
+            if (!sourceDestroyed && _serverActiveSource.HasInteraction(_serverActiveReference))
             {
                 return false;
             }

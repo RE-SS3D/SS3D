@@ -7,7 +7,7 @@ namespace SS3D.Systems.Rounds
     /// The sandbox server profile (<c>sandbox-server.md</c>): a server launched with
     /// <see cref="CommandLineFlag"/> runs short Extended rounds where everyone builds, respawn is on and
     /// nothing is saved. The flag only overlays the in-memory <see cref="ServerSettings"/> at boot and
-    /// implies <c>-openbuild</c>; it never writes saved settings. Everything else reads the settings,
+    /// opens the map editor to every non-Restricted player; it never writes saved settings. Everything else reads the settings,
     /// not the flag, so each rule can be switched on its own.
     /// </summary>
     public static class SandboxProfile
@@ -25,8 +25,10 @@ namespace SS3D.Systems.Rounds
         /// <summary>Overrides <see cref="RoundLengthMinutes"/>, for tests: <c>-sandbox-round-minutes=1</c>.</summary>
         public const string RoundMinutesFlag = "-sandbox-round-minutes=";
 
-        public static bool RequestedOnCommandLine =>
-            Environment.GetCommandLineArgs().Any(arg => string.Equals(arg, CommandLineFlag, StringComparison.OrdinalIgnoreCase));
+        public static bool RequestedOnCommandLine => RequestedIn(Environment.GetCommandLineArgs());
+
+        public static bool RequestedIn(string[] args) =>
+            args != null && args.Any(arg => string.Equals(arg, CommandLineFlag, StringComparison.OrdinalIgnoreCase));
 
         /// <summary>The round length from <see cref="RoundMinutesFlag"/>, else <see cref="RoundLengthMinutes"/>.</summary>
         public static int RoundMinutesFrom(string[] args)

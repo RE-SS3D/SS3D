@@ -90,16 +90,23 @@ namespace SS3D.Systems.Rounds
         }
     }
 
-    public enum StationLoadState { NotLoaded, Loading, Initializing, Ready, Failed }
+    /// <summary><see cref="Unplayable"/>: the map loaded but fails the round-start check (creative-mode §8).</summary>
+    public enum StationLoadState { NotLoaded, Loading, Initializing, Ready, Failed, Unplayable }
 
     public enum ServerSetting { Map, Mode, PlayerCap, RoundLengthMinutes, AllowLateJoin, ServerName, Motd, MinimumReady, AutoStart, MinimumOperatives }
 
-    public enum RoundAdminAction { Start, ForceStart, ExtendTimer, CancelCountdown, Stop, HoldEnd, ResumeEnd }
+    /// <summary>
+    /// <see cref="EditMapAnyway"/> starts a round on a map that failed the round-start check, so it can be fixed in the
+    /// Map Editor: Extended, and bodies without a spawn marker start on the nearest deck.
+    /// </summary>
+    public enum RoundAdminAction { Start, ForceStart, ExtendTimer, CancelCountdown, Stop, HoldEnd, ResumeEnd, EditMapAnyway }
 
     public sealed partial class RoundSubSystem
     {
         private ServerSettings _serverSettings = ServerSettings.Default;
         private bool _forceStart;
+        /// <summary>The next start skips the round-start check (<see cref="RoundAdminAction.EditMapAnyway"/>).</summary>
+        private bool _editMapAnyway;
         private string _serverSettingsError = "";
         // Only the public join policy is replicated; admin configuration stays behind a TargetRpc.
         [SyncVar] private bool _allowLateJoin = true;
@@ -112,7 +119,7 @@ namespace SS3D.Systems.Rounds
         public ServerSettings SettingsForServer => _serverSettings;
 
         /// <summary>Server: the configured mode runs Nuke Ops (Secret resolves to it, as in map validation).</summary>
-        public bool ModeDrawsOperatives => _serverSettings.Mode is "Secret" or "Nuclear Emergency";
+        public bool ModeDrawsOperatives => _serverSettings.Mode is "Secret" or "Nuclear Emergency" && !_roundFellBackToExtended;
         public ServerSettings AdminSettings { get; private set; } = ServerSettings.Default;
         public string[] AdminMaps { get; private set; } = Array.Empty<string>();
         public string AdminSettingsStatus { get; private set; } = "Loading server settings…";
@@ -188,6 +195,10 @@ namespace SS3D.Systems.Rounds
                 return;
             }
             _serverSettingsError = "";
+            // The last start's verdict was about the old map or mode; don't keep offering to fix it.
+            if ((settings.Map != _serverSettings.Map || settings.Mode != _serverSettings.Mode)
+                && _stationLoadState is StationLoadState.Failed or StationLoadState.Unplayable)
+                _stationLoadState = StationLoadState.NotLoaded;
             // Name/MOTD have their own path and the server rules have no form fields;
             // a whole-form save must not roll them back.
             _serverSettings = settings.WithRulesOf(_serverSettings);
@@ -207,34 +218,53 @@ namespace SS3D.Systems.Rounds
         public void CmdRoundAdminAction(RoundAdminAction action, NetworkConnection sender = null)
         {
             if (!IsAdministrator(sender)) return;
+            ServerRoundAdminAction(action, sender);
+        }
+
+        /// <summary>
+        /// Apply an admin round action for an already-authorized caller (the lobby view through
+        /// <see cref="CmdRoundAdminAction"/>, or the <c>round</c> console command). False when the round
+        /// isn't in a state the action applies to.
+        /// </summary>
+        [Server]
+        public bool ServerRoundAdminAction(RoundAdminAction action, NetworkConnection sender)
+        {
             switch (action)
             {
                 case RoundAdminAction.Start when CurrentRoundState is RoundState.Stopped or RoundState.Ended:
                     SetAutoStartHeld(false, "an admin started a round");
                     RequestRoundStateChange(new ChangeRoundStateMessage(true));
-                    break;
+                    return true;
+                case RoundAdminAction.EditMapAnyway when CurrentRoundState is RoundState.Stopped or RoundState.Ended
+                    && _stationLoadState == StationLoadState.Unplayable:
+                    _editMapAnyway = true;
+                    SetAutoStartHeld(false, "an admin started a round to fix the map");
+                    RequestRoundStateChange(new ChangeRoundStateMessage(true));
+                    return true;
                 case RoundAdminAction.ForceStart when IsWarmingUp:
                     _forceStart = true;
-                    break;
+                    return true;
                 case RoundAdminAction.ExtendTimer when IsWarmingUp:
                     RoundSeconds = Math.Min(RoundSeconds + 60, 3600);
-                    break;
+                    return true;
                 case RoundAdminAction.CancelCountdown when IsWarmingUp:
                     CancelCountdown();
                     SetAutoStartHeld(true, "an admin cancelled the countdown");
-                    break;
+                    return true;
                 case RoundAdminAction.CancelCountdown when _autoStart.SecondsLeft > 0:
                     SetAutoStartHeld(true, "an admin cancelled the countdown");
-                    break;
+                    return true;
                 case RoundAdminAction.Stop when IsOngoing:
                     RequestPlayerRoundStop(sender);
-                    break;
+                    return true;
                 case RoundAdminAction.HoldEnd when CurrentRoundState == RoundState.Ending:
                     SetEndHeld(true, SubSystems.Get<PlayerSubSystem>().GetCkey(sender));
-                    break;
+                    return true;
                 case RoundAdminAction.ResumeEnd when CurrentRoundState == RoundState.Ending:
                     SetEndHeld(false, SubSystems.Get<PlayerSubSystem>().GetCkey(sender));
-                    break;
+                    return true;
+                default:
+                    return false;
             }
         }
 

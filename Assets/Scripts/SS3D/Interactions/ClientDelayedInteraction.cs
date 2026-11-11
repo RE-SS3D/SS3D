@@ -1,81 +1,71 @@
-﻿using Coimbra;
-using SS3D.Interactions.Extensions;
 using SS3D.Interactions.Interfaces;
 using UnityEngine;
-using SS3D.Data;
-using SS3D.Data.Generated;
 
 namespace SS3D.Interactions
 {
     /// <summary>
-    /// /// A client-side interaction that shows a loading bar
+    /// Client side of a <see cref="DelayedInteraction"/>: drives the progress ring over the target
+    /// (<see cref="DelayedProgressFeedback"/>), shows done when the timer runs out and the server's
+    /// cancel reason when it stops early.
     /// </summary>
-    public sealed class ClientDelayedInteraction : IClientInteraction
+    public sealed class ClientDelayedInteraction : IClientInteraction, IReasonedClientCancel
     {
-        private static readonly Vector3 LoadingBarOffset = new(0, 0.5f, 0);
+        /// <summary>
+        /// How long the instance outlives the timer. A completion-time refusal (missing materials) arrives
+        /// as a cancel just after the ring reads done; keep listening so it can replace done.
+        /// </summary>
+        private const float CancelGraceSeconds = 1f;
 
-        private LoadingBar _loadingBarInstance;
+        private int _ringId = DelayedProgressFeedback.NoRing;
+        private float _startTime;
+        private bool _completed;
 
         /// <summary>
-        /// The duration of the loading bar in seconds
+        /// The duration of the step in seconds
         /// </summary>
         public float Delay { get; set; }
 
-        /// <summary>
-        /// Starts the interaction on the client side
-        /// </summary>
-        /// <param name="interactionEvent">The interaction event</param>
-        /// <returns>True if started successfully</returns>
+        /// <inheritdoc />
         public bool ClientStart(InteractionEvent interactionEvent)
         {
-            if (_loadingBarInstance != null)
-            {
-                _loadingBarInstance.GameObject.Dispose(true);
-            }
+            _startTime = Time.time;
 
-            if (Delay < 0.1f)
+            if (Delay < 0.1f || !DelayedProgressFeedback.TryGetKey(interactionEvent, out int key, out Transform source))
             {
                 return true;
             }
 
-            if (interactionEvent.Source.GetRootSource() is not IGameObjectProvider source)
+            // The click already started an optimistic ring; keep it rather than restarting the sweep.
+            if (DelayedProgressFeedback.TryGetRunning(key, out _ringId))
             {
                 return true;
             }
 
-            if (InteractionOptimisticFeedback.TryAdoptExisting(source.GameObject.transform, out LoadingBar existingBar))
-            {
-                _loadingBarInstance = existingBar;
-                return true;
-            }
-
-            LoadingBar loadingBarPrefab = Assets.Get<LoadingBar>(AssetDatabases.WorldSpaceUI, WorldSpaceUI.LoadingBar);
-            _loadingBarInstance = Object.Instantiate(loadingBarPrefab, source.GameObject.transform);
-            
-            _loadingBarInstance.LocalPosition = LoadingBarOffset;
-            _loadingBarInstance.Duration = Delay;
-
+            DelayedProgressFeedback.ResolveAnchor(interactionEvent, source, out Transform anchor, out Vector3 point);
+            _ringId = DelayedProgressFeedback.Begin(key, anchor, point, Delay);
             return true;
         }
 
         /// <inheritdoc />
         public bool ClientUpdate(InteractionEvent interactionEvent)
         {
-            return true;
+            float elapsed = Time.time - _startTime;
+            if (!_completed && elapsed >= Delay)
+            {
+                _completed = true;
+                DelayedProgressFeedback.Complete(_ringId);
+            }
+
+            return elapsed < Delay + CancelGraceSeconds;
         }
 
         /// <inheritdoc />
-        public void ClientCancel(InteractionEvent interactionEvent)
-        {
-            if (_loadingBarInstance != null)
-            {
-                _loadingBarInstance.GameObject.Dispose(true);
-            }
+        public void ClientCancel(InteractionEvent interactionEvent) => ClientCancel(interactionEvent, DelayedCancelReason.Interrupted);
 
-            if (interactionEvent.Source.GetRootSource() is IGameObjectProvider source)
-            {
-                InteractionOptimisticFeedback.Clear(source.GameObject.transform);
-            }
+        /// <inheritdoc />
+        public void ClientCancel(InteractionEvent interactionEvent, DelayedCancelReason reason)
+        {
+            DelayedProgressFeedback.Cancel(_ringId, reason);
         }
     }
 }

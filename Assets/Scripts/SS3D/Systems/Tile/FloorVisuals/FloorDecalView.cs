@@ -10,6 +10,9 @@ namespace SS3D.Systems.Tile.FloorVisuals
     /// </summary>
     public sealed class FloorDecalView : MonoBehaviour
     {
+        /// <summary>The one live view, or null before cold start.</summary>
+        public static FloorDecalView Instance { get; private set; }
+
         private readonly List<GameObject> _spawned = new();
         private readonly Dictionary<ushort, Material> _materials = new();
         private readonly Dictionary<Vector2Int, ushort[]> _clientChunkCache = new();
@@ -42,6 +45,14 @@ namespace SS3D.Systems.Tile.FloorVisuals
             }
 
             Rebuild();
+        }
+
+        private void Awake() => Instance = this;
+
+        private void OnDestroy()
+        {
+            if (Instance == this)
+                Instance = null;
         }
 
         private void OnEnable() => TryBind();
@@ -186,10 +197,10 @@ namespace SS3D.Systems.Tile.FloorVisuals
             _spawned.Clear();
         }
 
-        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
-        private static void EnsureInstance()
+        /// <summary>Creates the process-wide view; called by <c>SystemsBootstrap</c> at cold start.</summary>
+        public static void EnsureInstance()
         {
-            if (FindFirstObjectByType<FloorDecalView>() != null)
+            if (Instance != null)
                 return;
 
             var go = new GameObject(nameof(FloorDecalView));

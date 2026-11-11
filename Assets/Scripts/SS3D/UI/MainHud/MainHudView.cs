@@ -208,6 +208,10 @@ namespace SS3D.UI.MainHud
             _handsGearStrip.SetHandContents(slot, itemIcon, itemName);
         }
 
+        public void SetHandStackCount(HandsGearStrip.HandSlot slot, int count) => _handsGearStrip.SetHandStackCount(slot, count);
+
+        public void SetGearStackCount(HandsGearStrip.GearSlot slot, int count) => _handsGearStrip.SetGearStackCount(slot, count);
+
         public void SetHandReserved(HandsGearStrip.HandSlot slot, bool reserved)
         {
             _handsGearStrip.SetHandReserved(slot, reserved);

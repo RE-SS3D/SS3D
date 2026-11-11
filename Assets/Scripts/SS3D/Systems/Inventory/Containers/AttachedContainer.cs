@@ -404,7 +404,7 @@ namespace SS3D.Systems.Inventory.Containers
             if (placedItemObject != null)
             {
                 // Remove from TileMap tracking
-                TileMap tileMap = SubSystems.Get<TileSubSystem>()?.CurrentMap;
+                TileMap tileMap = SubSystems.GetOrNull<TileSubSystem>()?.CurrentMap;
                 if (tileMap != null)
                 {
                     tileMap.RemovePlacedItemFromTracking(placedItemObject);
@@ -591,7 +591,7 @@ namespace SS3D.Systems.Inventory.Containers
                 Item existing = _storedItems[i].Item;
                 if (existing != null
                     && existing.CanMergeWith(item)
-                    && existing.StackCount + item.StackCount <= existing.MaxStackSize)
+                    && ItemStackRules.CanMerge(existing.StackCount, item.StackCount, existing.MaxStackSize))
                 {
                     index = i;
                     return true;
@@ -870,7 +870,7 @@ namespace SS3D.Systems.Inventory.Containers
             return item.IsStackable
                 && occupant != null
                 && occupant.CanMergeWith(item)
-                && occupant.StackCount + item.StackCount <= occupant.MaxStackSize;
+                && ItemStackRules.CanMerge(occupant.StackCount, item.StackCount, occupant.MaxStackSize);
         }
 
         /// <summary>

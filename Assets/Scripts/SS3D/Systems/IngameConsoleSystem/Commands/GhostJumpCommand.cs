@@ -1,11 +1,9 @@
-﻿using FishNet.Connection;
-using FishNet.Object;
-using SS3D.Core;
+﻿using SS3D.Core;
+using System.Collections.Generic;
 using SS3D.Logging;
 using SS3D.Permissions;
 using SS3D.Systems.Entities;
 using SS3D.Systems.Entities.Humanoid;
-using SS3D.Systems.PlayerControl;
 using SS3D.Systems.Tile;
 using UnityEngine;
 
@@ -20,85 +18,55 @@ namespace SS3D.Systems.IngameConsoleSystem.Commands
         /// <summary>Ghosts hover about this far above the deck (bug reports show y ≈ 1.06 on a floor at 0).</summary>
         private const float GhostHoverHeight = 1.05f;
 
-        public override string ShortDescription => "Ghost: jump to the station or to a player";
+        private static readonly IReadOnlyList<CommandParameter> Params = new[] { P.Target().Optional() };
 
-        public override string LongDescription =>
-            "Only works while you're a ghost. With no arguments, jumps to the station's spawn point. " +
-            "\"ghostjump (ckey)\" jumps to that player.";
-
-        public override string Usage => "[ckey]";
-
+        public override string Name => "ghostjump";
+        public override CommandCategory Category => CommandCategory.Admin;
+        public override string Description => "Ghosts only: jump to the station's spawn point, or to the target";
         public override ServerRoleTypes AccessLevel => ServerRoleTypes.User;
-
         public override CommandType Type => CommandType.Server;
+        public override IReadOnlyList<CommandParameter> Parameters => Params;
+        public override string Example => "";
 
-        private record CalculatedValues(string Ckey) : ICalculatedValues;
-
-        [Server]
-        public override string Perform(string[] args, NetworkConnection conn = null)
+        public override CommandResult Perform(CommandContext context, CommandArgs args)
         {
-            if (!ReceiveCheckResponse(args, out CheckArgsResponse response, out CalculatedValues values))
+            Entity self = context.CallerEntity;
+            if (self == null || !self.TryGetComponent(out HumanoidGhostController ghost))
             {
-                return response.InvalidArgs;
-            }
-
-            EntitySubSystem entities = SubSystems.Get<EntitySubSystem>();
-            if (!entities.TryGetOwnedEntity(conn, out Entity self) || self == null
-                || !self.TryGetComponent(out HumanoidGhostController ghost))
-            {
-                return "Only ghosts can jump.";
+                return CommandResult.Error("Only ghosts can jump.");
             }
 
             Vector3 floorPosition;
             string destination;
-            if (values.Ckey == null)
+            if (!args.Has("target"))
             {
                 if (!TryGetStationPosition(out floorPosition))
                 {
-                    return "This map has no spawn point to jump to.";
+                    return CommandResult.Error("this map has no spawn point to jump to.");
                 }
 
                 destination = "the station";
             }
             else
             {
-                Player player = SubSystems.Get<PlayerSubSystem>().GetPlayer(values.Ckey);
-                Entity target = player != null ? entities.GetSpawnedEntity(player) : null;
-                if (target == null)
+                CommandTarget target = args.Target();
+                if (target.Entity == self)
                 {
-                    return $"Player {values.Ckey} has no body or ghost to jump to.";
-                }
-
-                if (target == self)
-                {
-                    return "You're already there.";
+                    return CommandResult.Error("You're already there.");
                 }
 
                 // A ghost target already hovers; a body stands on the deck.
                 floorPosition = target.TryGetComponent(out HumanoidGhostController _)
-                    ? target.transform.position - Vector3.up * GhostHoverHeight
-                    : target.transform.position;
-                destination = values.Ckey;
+                    ? target.Entity.transform.position - Vector3.up * GhostHoverHeight
+                    : target.Entity.transform.position;
+                destination = target.DisplayName;
             }
 
             Vector3 position = floorPosition + Vector3.up * GhostHoverHeight;
             ghost.ServerTeleport(position);
-            Log.Information(this, "Ghost {ckey} jumped to {destination}", Logs.ServerOnly,
-                SubSystems.Get<PlayerSubSystem>().GetCkey(conn), destination);
+            Log.Information(this, "Ghost {ckey} jumped to {destination}", Logs.ServerOnly, context.Ckey, destination);
 
-            return $"Jumped to {destination}.";
-        }
-
-        [Server]
-        protected override CheckArgsResponse CheckArgs(string[] args)
-        {
-            CheckArgsResponse response = new();
-            return args.Length switch
-            {
-                0 => response.MakeValid(new CalculatedValues(null)),
-                1 => response.MakeValid(new CalculatedValues(args[0])),
-                _ => response.MakeInvalid("Invalid number of arguments"),
-            };
+            return CommandResult.Success($"Jumped to {destination}.");
         }
 
         private static bool TryGetStationPosition(out Vector3 position)

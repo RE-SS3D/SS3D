@@ -40,9 +40,6 @@ namespace SS3D.Systems.Furniture.Disposal
 
         public DisposalNetworkRegistry Registry => _registry;
 
-        /// <summary>When true, in-transit capsules do not advance (Map Editor authoring).</summary>
-        public bool CapsulesPaused { get; set; }
-
         /// <summary>
         /// Queue disposal topology mutations without rebuilding (bulk map import).
         /// Pair with <see cref="EndDeferredNetworkRebuild"/>.
@@ -153,8 +150,6 @@ namespace SS3D.Systems.Furniture.Disposal
                 return;
 
             _observer?.FlushPendingRebuilds();
-            if (CapsulesPaused)
-                return;
 
             TickCapsules(Time.deltaTime);
         }

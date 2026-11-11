@@ -86,9 +86,9 @@ Thin sync layer on top of existing types — no renderer rewrite.
 - Multiplayer test harness (real headless server + pure-client process, not just EditMode):
   the `observer-sync` smoke scenario (`Testing/multiplayer/scenarios/observer-sync*.txt`, run via
   `./Testing/multiplayer/run_smoketest.sh observer-sync 2`). Client 0 forces a fresh dirty chunk
-  with `atmosdebug heat` (headless equivalent of `AtmosDebugController`'s GUI buttons; it also
+  with `atmos heat` (headless equivalent of `AtmosDebugController`'s GUI buttons; it also
   changes a held item, health, a door and the area lights), and client 1 asserts its own
-  `AtmosRenderContext` snapshot is valid with `atmosclientstatus assert` — a real regression check
+  `AtmosRenderContext` snapshot is valid with `observesync atmos assert` — a real regression check
   that a pure client receives and applies chunk patches, not just that the render path compiles.
   Wired into the nightly `multiplayer-smoke-test.yml`. See
   [Multiplayer testing](systems/networking-session-testing.md).

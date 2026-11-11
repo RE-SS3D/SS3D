@@ -38,7 +38,7 @@ namespace SS3D.Tests
             yield return Hold(1f);
             Assert.IsFalse(door.IsOpen, "Without an ID clicking Open is refused");
 
-            yield return Console.Expect("spawninhand IDCard", "spawned in hand");
+            yield return Console.Expect("spawn IDCard hand", "spawned in hand");
             IDCard card = inventory.Hands.SelectedHand.ItemInHand.GetComponent<IDCard>();
             Assert.IsNotNull(card, "The spawned item is an ID card");
             IdAccessSubSystem idAccess = SubSystems.Get<IdAccessSubSystem>();
@@ -48,11 +48,11 @@ namespace SS3D.Tests
             yield return Hold(1f);
             Assert.IsFalse(door.IsOpen, "An ID without Security access is refused");
 
-            yield return Console.Expect("accessgrant Security", "Granted");
+            yield return Console.Expect("accessgrant me Security", "Granted");
             yield return WaitFor(() => door.IsOpen, "the door opens for the granted ID", 3f);
 
             // Leave the door shut for the next scenario: revoke, step back and let it close.
-            yield return Console.Expect("accessrevoke Security", "Revoked");
+            yield return Console.Expect("accessrevoke me Security", "Revoked");
             Teleport(Body, BesideDoor(door, tiles: 3f));
             yield return WaitFor(() => !door.IsOpen, "the door closes once nobody authorised stands at it", 6f);
         }
@@ -70,14 +70,14 @@ namespace SS3D.Tests
             HumanInventory inventory = Body.GetComponent<HumanInventory>();
             if (!AccessCredentialResolver.TryResolveBoundRecord(inventory, out _, out _))
             {
-                yield return Console.Expect("spawninhand IDCard", "spawned in hand");
+                yield return Console.Expect("spawn IDCard hand", "spawned in hand");
                 IDCard card = inventory.Hands.SelectedHand.ItemInHand.GetComponent<IDCard>();
                 IdAccessSubSystem idAccess = SubSystems.Get<IdAccessSubSystem>();
                 CrewRecord record = idAccess.CreateCrewRecord("Scenario", "Assistant", Department.Civilian, AccessMask.None);
                 idAccess.BindIdCard(card, record.Id);
             }
 
-            yield return Console.Expect("accessgrant Security", "Granted");
+            yield return Console.Expect("accessgrant me Security", "Granted");
             Teleport(Body, BesideDoor(door));
             yield return WaitFor(() => door.IsOpen, "the door opens for the granted body beside it", 3f);
             yield return Hold(1.5f); // let the panels finish sliding open before stepping in
@@ -91,7 +91,7 @@ namespace SS3D.Tests
             Teleport(Body, BesideDoor(door, tiles: 3f));
             yield return WaitFor(() => !door.IsOpen, "the clicked close goes through once the doorway is clear", 3f);
 
-            yield return Console.Expect("accessrevoke Security", "Revoked");
+            yield return Console.Expect("accessrevoke me Security", "Revoked");
         }
 
         private IEnumerator ClickDoor(AirLockOpener door)

@@ -405,6 +405,11 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 665e86f3c5289837fa534029cf6abcd9
+    m_Address: Assets/Content/WorldObjects/Items/Functional/Generic/FloorTileGreyDark.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 66f6206faf2f7fb4a993d935c83fc239
     m_Address: Assets/Content/WorldObjects/Structures/WallMounts/Lights/LightTubeFixture.prefab
     m_ReadOnly: 0
@@ -525,6 +530,11 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 84aadaa184e10e02db82e08354f7210b
+    m_Address: Assets/Content/WorldObjects/Items/Functional/Generic/FloorTileKitchen.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 84cec183559b4954c883b11f20f767c9
     m_Address: Assets/Content/WorldObjects/Items/Functional/Parts/MachineParts/MicroLaser.prefab
     m_ReadOnly: 0
@@ -555,6 +565,11 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 88e2667f303b7336fa14723a217739c0
+    m_Address: Assets/Content/WorldObjects/Items/Functional/Generic/FloorTileBar.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 8ae2f499d25bfcd41bf26b735c852ab1
     m_Address: Assets/Content/WorldObjects/Furniture/Flora/PottedPlants/PlantExotic.prefab
     m_ReadOnly: 0
@@ -567,6 +582,11 @@ MonoBehaviour:
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 8eb79a916f17f4339888eeb43288ad4e
     m_Address: Assets/Content/WorldObjects/Structures/Pipes/Atmospherics/Devices/AtmosValveManual.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 8f6164375bf37b8eb808a806323104ea
+    m_Address: Assets/Content/WorldObjects/Structures/Walls/SteelGirderPlated.prefab
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
@@ -587,6 +607,11 @@ MonoBehaviour:
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 93faf7e7a5c67b9478c57a0d03340256
     m_Address: Assets/Content/WorldObjects/Furniture/Machines/Vendors/VendorRobustSoftdrinks.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 93fe24ccecd13f763bc0838d8fe78134
+    m_Address: Assets/Content/WorldObjects/Items/Functional/Generic/FloorTileWhite.prefab
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
@@ -942,6 +967,11 @@ MonoBehaviour:
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: ed77d98d3e75b7946b404face1fe8f82
     m_Address: Assets/Content/WorldObjects/Items/Functional/Parts/MachineParts/MatterBin.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: edfdfa7aba0ad7fcfbb7bc5d0acadc5a
+    m_Address: Assets/Content/WorldObjects/Items/Functional/Generic/FloorTileWood.prefab
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0

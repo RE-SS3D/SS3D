@@ -1,0 +1,124 @@
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Text.RegularExpressions;
+using NUnit.Framework;
+using UnityEngine;
+
+namespace SS3D.Tests.AssetAudit
+{
+    /// <summary>
+    /// Guardrail G3 of the tech-debt paydown (Documents/architecture/2026-11_tech-debt-paydown.md, Phase 0): class sizes.
+    /// It reads source, not assemblies, and ratchets: today's sizes are stored here and may only fall. The point is a
+    /// visible diff at review time. Shrinking a number is welcome; raising one needs a reason in the PR.
+    /// </summary>
+    public sealed class ClassSizeRatchetTests
+    {
+        /// <summary>A class not listed in <see cref="GrandfatheredClassLines"/> may not grow past this many lines.</summary>
+        private const int MaxUnlistedClassLines = 900;
+
+        /// <summary>A listed class may grow this much past its entry before the entry must be updated in the same PR.</summary>
+        private const float GrandfatherSlack = 0.10f;
+
+        /// <summary>
+        /// G3: lines per type (summed over its partial files) on 2026-11-10, for every type over
+        /// <see cref="MaxUnlistedClassLines"/>. Lower an entry when a split lands; delete it once the type is under the cap.
+        /// </summary>
+        private static readonly Dictionary<string, int> GrandfatheredClassLines = new()
+        {
+            // TECH_DEBT §1.9 and the plan's Phase 4-7 splits.
+            { "LobbyShellView", 2568 },
+            { "MapEditorSubSystem", 2200 },
+            { "MapEditorView", 2072 },
+            { "InteractionController", 1663 },
+            { "MainHudSubSystem", 1628 },
+            { "CombatInteractionNetwork", 1483 },
+            { "AreaSubSystem", 1439 },
+            { "ConstructionHologramManager", 1408 },
+            { "AutomationSubSystem", 1329 },
+            { "TileMap", 1219 },
+            { "Ragdoll", 1204 },
+            { "MainMenuSubSystem", 1014 },
+            { "StoragePanelHost", 972 },
+            // Over the cap but not yet planned for a split.
+            { "LobbyLifecyclePilot", 2398 },
+            { "HumanoidLocomotionBlendSetup", 2332 },
+            { "CharacterCreatorView", 1192 },
+            { "HumanHealthController", 1150 },
+            { "AtmosSimulation", 975 },
+            { "LocalSpeechBubbleView", 955 },
+            { "AttachedContainer", 932 },
+            { "ExamineOverlaySubSystem", 930 },
+            { "Item", 901 },
+        };
+
+        private static readonly Regex TypeDeclaration = new(
+            @"^\s*(?:(?:public|internal|private|protected|static|sealed|abstract|partial|unsafe|readonly)\s+)*(?:class|struct|interface|record|enum)\s+(\w+)",
+            RegexOptions.Compiled);
+
+        private static string ScriptsRoot => Path.Combine(Application.dataPath, "Scripts", "SS3D");
+
+        [Test]
+        public void ClassSizes_StayUnderTheirRatchet()
+        {
+            Dictionary<string, int> sizes = MeasureClassLines();
+            Assert.That(sizes.Count, Is.GreaterThan(100), "The scan found almost no types; check ScriptsRoot.");
+
+            List<string> failures = new();
+            foreach (KeyValuePair<string, int> size in sizes.OrderByDescending(s => s.Value))
+            {
+                if (GrandfatheredClassLines.TryGetValue(size.Key, out int allowed))
+                {
+                    int limit = (int)Math.Ceiling(allowed * (1f + GrandfatherSlack));
+                    if (size.Value > limit)
+                    {
+                        failures.Add($"{size.Key}: {size.Value} lines, more than 10 % over its entry ({allowed}). Split it, or update its entry in this PR and say why.");
+                    }
+                }
+                else if (size.Value > MaxUnlistedClassLines)
+                {
+                    failures.Add($"{size.Key}: {size.Value} lines, over the {MaxUnlistedClassLines}-line cap for unlisted types. Split it into components.");
+                }
+            }
+
+            Assert.That(failures, Is.Empty, "G3 class-size ratchet (ClassSizeRatchetTests):\n  " + string.Join("\n  ", failures));
+        }
+
+        [Test]
+        public void GrandfatherEntries_StillNameATypeOverTheCap()
+        {
+            Dictionary<string, int> sizes = MeasureClassLines();
+            List<string> stale = GrandfatheredClassLines.Keys
+                .Where(name => !sizes.TryGetValue(name, out int lines) || lines <= MaxUnlistedClassLines)
+                .OrderBy(name => name)
+                .ToList();
+            Assert.That(stale, Is.Empty,
+                "These types are gone or under the cap now; remove their GrandfatheredClassLines entries:\n  " + string.Join("\n  ", stale));
+        }
+
+        private static Dictionary<string, int> MeasureClassLines()
+        {
+            Dictionary<string, int> sizes = new();
+            foreach (string file in Directory.EnumerateFiles(ScriptsRoot, "*.cs", SearchOption.AllDirectories))
+            {
+                string[] lines = File.ReadAllText(file).Split('\n');
+                if (lines.Take(20).Any(l => l.Contains("<auto-generated")))
+                {
+                    continue;
+                }
+
+                // A file counts toward the first type it declares: partial files of one class sum together.
+                string type = lines.Select(l => TypeDeclaration.Match(l)).FirstOrDefault(m => m.Success)?.Groups[1].Value;
+                if (type == null)
+                {
+                    continue;
+                }
+
+                sizes[type] = sizes.TryGetValue(type, out int sum) ? sum + lines.Length : lines.Length;
+            }
+
+            return sizes;
+        }
+    }
+}

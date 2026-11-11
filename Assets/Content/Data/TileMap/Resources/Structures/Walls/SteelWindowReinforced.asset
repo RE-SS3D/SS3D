@@ -20,4 +20,9 @@ MonoBehaviour:
   width: 1
   height: 1
   isLarge: 0
+  placementYOffset: 0
+  structuralDamageEnabled: 0
+  structuralMaxIntegrity: 0
+  airtight: 1
+  reinforced: 1
   impactMaterial: 3

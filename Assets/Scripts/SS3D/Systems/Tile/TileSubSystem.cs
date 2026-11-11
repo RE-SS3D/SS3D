@@ -185,81 +185,6 @@ namespace SS3D.Systems.Tile
 	        return false;
         }
 
-        /// <summary>
-        /// TileMap Creator place RPC. Requires <see cref="ServerRoleTypes.Administrator"/> on the server.
-        /// </summary>
-        [Client]
-        [ServerRpc(RequireOwnership = false)]
-        public void RpcPlaceObject(string genericObjectSoName, Vector3 placePosition, Direction dir, bool replaceExisting,
-            NetworkConnection conn = null)
-        {
-            if (!TileMapEditorPermissions.TryAuthorize(conn))
-                return;
-
-            GenericObjectSo tileObjectSo = GetAsset(genericObjectSoName);
-            PlaceObject(tileObjectSo, placePosition, dir, replaceExisting, skipBuildCheck: false);
-        }
-
-        /// <summary>
-        /// TileMap Creator clear-tile RPC. Requires <see cref="ServerRoleTypes.Administrator"/> on the server.
-        /// </summary>
-        [Client]
-        [ServerRpc(RequireOwnership = false)]
-        public void RpcClearTileObject(string tileObjectSoName, Vector3 placePosition, Direction dir,
-            NetworkConnection conn = null)
-        {
-            if (!TileMapEditorPermissions.TryAuthorize(conn))
-                return;
-
-            GenericObjectSo tileObjectSo = GetAsset(tileObjectSoName);
-            _constructionService.TryClearTile(placePosition, ((TileObjectSo)tileObjectSo).layer, dir);
-        }
-
-        /// <summary>
-        /// TileMap Creator clear-item RPC. Requires <see cref="ServerRoleTypes.Administrator"/> on the server.
-        /// </summary>
-        [Client]
-        [ServerRpc(RequireOwnership = false)]
-        public void RpcClearItemObject(string itemObjectSoName, Vector3 placePosition, NetworkConnection conn = null)
-        {
-            if (!TileMapEditorPermissions.TryAuthorize(conn))
-                return;
-
-            ItemObjectSo itemObjectSo = (ItemObjectSo)GetAsset(itemObjectSoName);
-            _constructionService.TryClearItem(placePosition, itemObjectSo);
-        }
-
-        /// <summary>
-        /// TileMap Creator place floor-decal RPC. Requires administrator. Writes sparse ushort id, not a PlacedTileObject.
-        /// </summary>
-        [Client]
-        [ServerRpc(RequireOwnership = false)]
-        public void RpcSetFloorDecal(ushort decalId, Vector3 placePosition, NetworkConnection conn = null)
-        {
-            if (!TileMapEditorPermissions.TryAuthorize(conn))
-                return;
-
-            if (_currentMap == null)
-                return;
-
-            if (_currentMap.TrySetFloorDecal(placePosition, decalId))
-                SyncFloorDecalsToClients();
-        }
-
-        [Client]
-        [ServerRpc(RequireOwnership = false)]
-        public void RpcClearFloorDecal(Vector3 placePosition, NetworkConnection conn = null)
-        {
-            if (!TileMapEditorPermissions.TryAuthorize(conn))
-                return;
-
-            if (_currentMap == null)
-                return;
-
-            if (_currentMap.TryClearFloorDecal(placePosition))
-                SyncFloorDecalsToClients();
-        }
-
         [Server]
         public void SyncFloorDecalsToClients()
         {
@@ -288,7 +213,7 @@ namespace SS3D.Systems.Tile
         [ObserversRpc(BufferLast = true)]
         private void RpcSyncFloorDecals(SyncedFloorDecalChunk[] chunks)
         {
-            FloorDecalView view = FindFirstObjectByType<FloorDecalView>();
+            FloorDecalView view = FloorDecalView.Instance;
             if (view == null)
                 return;
 
@@ -465,23 +390,14 @@ namespace SS3D.Systems.Tile
 
         private IEnumerator LoadLegacyMapRoutine(SavedTileMap mapSave, bool timeSlice)
         {
-            bool hasElectricity = SubSystems.TryGet(out Electricity.ElectricitySubSystem electricity);
-            bool hasAtmos = SubSystems.TryGet(out Atmospherics.AtmosSubSystem atmos);
             bool hasDisposal = SubSystems.TryGet(out Furniture.Disposal.DisposalSubSystem disposal);
-            bool priorAtmosPaused = false;
 
             if (SubSystems.TryGet(out AreaSubSystem areaSubSystem))
             {
                 areaSubSystem.BeginDeferredAreaFlood();
             }
 
-            if (hasElectricity)
-                electricity.SuspendCircuitUpdates(true);
-            if (hasAtmos)
-            {
-                priorAtmosPaused = atmos.SimulationPaused;
-                atmos.SimulationPaused = true;
-            }
+            WorldSimSuspension.Scope simsPaused = WorldSimSuspension.Begin("map load");
 
             if (hasDisposal)
                 disposal.BeginDeferredNetworkRebuild();
@@ -506,10 +422,7 @@ namespace SS3D.Systems.Tile
 
                 if (hasDisposal)
                     disposal.EndDeferredNetworkRebuild();
-                if (hasElectricity)
-                    electricity.SuspendCircuitUpdates(false);
-                if (hasAtmos)
-                    atmos.SimulationPaused = priorAtmosPaused;
+                simsPaused.Dispose();
 
                 if (SubSystems.TryGet(out AreaSubSystem areaAfterLoad))
                 {

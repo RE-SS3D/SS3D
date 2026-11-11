@@ -3,10 +3,12 @@ using System.Linq;
 using System.Reflection;
 using NUnit.Framework;
 using SS3D.Core;
+using SS3D.Interactions;
 using SS3D.Systems.Atmospherics;
 using SS3D.Systems.Atmospherics.Pipes;
 using SS3D.Systems.Entities;
 using SS3D.Systems.Entities.Humanoid;
+using SS3D.Systems.Interactions;
 using SS3D.Systems.Inventory.Items;
 using SS3D.Systems.StructuralDamage;
 using SS3D.Systems.Tile;
@@ -165,6 +167,50 @@ namespace SS3D.Tests
 
             Assert.IsTrue(ragdoll.IsKnockedDown, "The dummy goes down");
             Assert.That(ragdoll.WindSamplePosition.x, Is.GreaterThan(start.x + 0.5f), "The server launched its bones");
+        }
+
+        // Guards: a charge stuck to a wall falls once that wall is destroyed, instead of hanging in the air (#213: a pile of C4 blew the wall from under a survivor) · Not cheaper because: needs the real attach interaction, tile removal and server physics on a live host
+        [UnityTest]
+        public IEnumerator AttachedCharge_FallsWhenItsWallIsDestroyed()
+        {
+            ChangesRoom = true;
+            var wallPosition = new Vector3(0f, 0f, 2f);
+            Assert.IsTrue(Tiles.QueryService.TryGetOccupant(Coord(wallPosition), TileLayer.Turf, Direction.North, out ITileOccupant occupant),
+                "The room's north wall is there");
+            var wall = (PlacedTileObject)occupant;
+            Teleport(Body, new Vector3(0f, Body.transform.position.y, 0.6f));
+            yield return Console.Expect("spawninhand C4", "spawned in hand");
+            yield return Hold(0.2f);
+            TimedCharge charge = Object.FindObjectsByType<TimedCharge>(FindObjectsSortMode.None).Single();
+
+            string refusal = Body.GetComponent<InteractionController>().RunInteractionForTesting(
+                wall.gameObject, new Vector3(0f, 1.1f, 1.5f), "AttachCharge", IntentType.Help);
+            Assert.IsNull(refusal, refusal);
+            yield return WaitFor(() => charge.Armed && charge.GetComponent<Item>().Container == null, "the charge is on the wall and armed");
+            yield return Hold(0.5f);
+            float stuckHeight = charge.transform.position.y;
+            Assert.Greater(stuckHeight, 0.5f, "The charge sits on the wall, above the floor");
+
+            Tiles.Construction.TryClearTile(Tiles.QueryService.TileToWorld(Coord(wallPosition)), TileLayer.Turf, Direction.North);
+            yield return WaitFor(() => charge.transform.position.y < stuckHeight - 0.4f, "the charge falls once its wall is gone", 3f);
+        }
+
+        // Guards: the map editor's item delete removes the item clicked, not another of the same kind within a metre (#213: a C4 in a pile "could not be deleted") · Not cheaper because: TileMap item tracking only exists on a loaded map
+        [UnityTest]
+        public IEnumerator ItemDelete_InAPile_RemovesTheClickedItem()
+        {
+            Item[] pile = Enumerable.Range(0, 3).Select(i =>
+            {
+                var position = new Vector3(-1f + (0.3f * i), 0.1f, 0f);
+                Item item = SubSystems.Get<ItemSubSystem>().SpawnItem(C4, position, Quaternion.identity);
+                Tiles.Construction.TryPlaceItem((ItemObjectSo)Tiles.GetAsset(item.Asset), position, Quaternion.identity, item.gameObject);
+                return item;
+            }).ToArray();
+            yield return Hold(0.5f);
+
+            Tiles.Construction.TryClearItem(pile[1].transform.position, (ItemObjectSo)Tiles.GetAsset(pile[1].Asset));
+            yield return WaitFor(() => pile[1] == null, "the clicked charge is deleted");
+            Assert.IsTrue(pile[0] != null && pile[2] != null, "Its neighbours stay");
         }
 
         private static TileCoord Coord(Vector3 position) => Tiles.QueryService.WorldToTile(position, Tiles.CurrentMap.MapId);

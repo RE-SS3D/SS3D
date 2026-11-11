@@ -63,8 +63,8 @@ namespace SS3D.Systems.Entities.Humanoid
         /// <summary>Time.time until which a floor bend plays on the Base Layer (Upper Body held down).</summary>
         private float _interactFullBodyUntil = float.NegativeInfinity;
         private bool _hasInteractParameters;
-        /// <summary>The kneel loop is playing (replicated <see cref="BodyAnimationSnapshot.InteractKneel"/> while on foot).</summary>
-        private bool _kneeling;
+        /// <summary>The kneel or wall-work loop is playing (replicated snapshot bits, honoured while on foot).</summary>
+        private bool _kneeling, _working, _hasWorkParameter;
         private bool _hasPistolHoldParameter;
         private bool _hasRangedVelXParameter;
         private float _pistolHold;
@@ -138,6 +138,7 @@ namespace SS3D.Systems.Entities.Humanoid
             _hasPistolHoldParameter = HasFloatParameter(Animations.Humanoid.PistolHold);
             _hasRangedVelXParameter = HasFloatParameter(Animations.Humanoid.RangedVelX);
             _hasInteractParameters = HasParameter(Animations.Humanoid.InteractClip, AnimatorControllerParameterType.Int);
+            _hasWorkParameter = HasParameter(Animations.Humanoid.InteractWork, AnimatorControllerParameterType.Bool);
             if (_animator != null && _animator.runtimeAnimatorController != null)
             {
                 _offHandLeftLayer = _animator.GetLayerIndex(PistolStanceAnimation.OffHandLeftLayer);
@@ -483,7 +484,7 @@ namespace SS3D.Systems.Entities.Humanoid
             BodyAnimationSnapshot snapshot = _lastSnapshot;
             bool up = snapshot.State == BodyState.Locomotion || snapshot.State == BodyState.Seated;
             bool aimedRifle = snapshot.CombatMode == HumanoidCombatMode.Ranged && !snapshot.PistolHold;
-            if (!up || _kneeling || aimedRifle || IsUpperBodyOneshotPlaying())
+            if (!up || _kneeling || _working || aimedRifle || IsUpperBodyOneshotPlaying())
             {
                 return InteractionAnimation.None;
             }
@@ -513,8 +514,8 @@ namespace SS3D.Systems.Entities.Humanoid
             return played;
         }
 
-        /// <summary>A floor bend or the kneel owns the whole body; upper-body posing and aim IK stand aside.</summary>
-        public bool IsFullBodyInteractionPlaying => _kneeling || Time.time < _interactFullBodyUntil;
+        /// <summary>A floor bend, the kneel or wall work owns the whole body; upper-body posing and aim IK stand aside.</summary>
+        public bool IsFullBodyInteractionPlaying => _kneeling || _working || Time.time < _interactFullBodyUntil;
 
         private bool IsUpperBodyOneshotPlaying()
         {
@@ -701,11 +702,17 @@ namespace SS3D.Systems.Entities.Humanoid
             _animator.SetInteger(Animations.Humanoid.ArmHold, (int)snapshot.ArmHold);
             _animator.SetBool(Animations.Humanoid.IsSeated, snapshot.IsSeated);
             _animator.SetBool(Animations.Humanoid.MirrorUpperBody, snapshot.MirrorUpperBody);
-            _kneeling = snapshot.InteractKneel && snapshot.State == BodyState.Locomotion
-                && !snapshot.IsFloating && !snapshot.IsCrawling;
+            bool onFoot = snapshot.State == BodyState.Locomotion && !snapshot.IsFloating && !snapshot.IsCrawling;
+            _kneeling = snapshot.InteractKneel && onFoot;
+            _working = snapshot.InteractWork && onFoot && _hasWorkParameter;
             if (_hasInteractParameters)
             {
                 _animator.SetBool(Animations.Humanoid.InteractKneel, _kneeling);
+            }
+
+            if (_hasWorkParameter)
+            {
+                _animator.SetBool(Animations.Humanoid.InteractWork, _working);
             }
 
             if (_animator.layerCount <= 1)
@@ -870,6 +877,9 @@ namespace SS3D.Systems.Entities.Humanoid
 
             OnTriggerFired?.Invoke(trigger);
         }
+
+        /// <summary>Owner: the server refused the one-shot this client predicted, so don't skip the next echo.</summary>
+        public void DropOwnerPrediction() => _ownerPredictedAttack = false;
 
         public void FireLocalTrigger(AnimationTriggerId trigger)
         {

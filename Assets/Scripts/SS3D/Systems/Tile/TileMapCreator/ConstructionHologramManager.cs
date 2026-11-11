@@ -1370,51 +1370,6 @@ namespace SS3D.Systems.Tile.TileMapCreator
             }
         }
         
-        [ServerRpc(RequireOwnership = false)]
-        private void RpcSendCanBuild(string tileObjectSoName, Vector3 placePosition, Direction dir, bool replaceExisting, NetworkConnection conn)
-        {
-            // Kept for FishNet codegen / older callers; preview is local via RefreshHologram.
-            if (!MapEditorPermissions.TryAuthorize(conn))
-            {
-                RpcReceiveCanBuild(conn, placePosition, false);
-                return;
-            }
-
-            TileSubSystem tileSystem = SubSystems.Get<TileSubSystem>();
-
-            TileObjectSo tileObjectSo = (TileObjectSo)tileSystem.GetAsset(tileObjectSoName);
-
-            if (tileObjectSo == null)
-            {
-                Log.Error(this, "Asset is not found");
-                return;
-            }
-
-            bool canBuild = tileSystem.Construction.TryPreviewTile(tileObjectSo, placePosition, dir, replaceExisting).CanBuild;
-            RpcReceiveCanBuild(conn, placePosition, canBuild);
-        }
-
-        [TargetRpc]
-        private void RpcReceiveCanBuild(NetworkConnection conn, Vector3 placePosition, bool canBuild)
-        {
-            // Find correct hologram to update its material
-            for (int i = 0; i < _holograms.Count; i++)
-            {
-                ConstructionHologram hologram = _holograms[i];
-                if (hologram.TargetPosition != placePosition) continue;
-
-                if (canBuild)
-                {
-                    hologram.ChangeHologramColor(ConstructionMode.Valid);
-                }
-                else
-                {
-                    hologram.ChangeHologramColor(ConstructionMode.Invalid);
-                }
-                return;
-            }
-        }
-
         /// <summary>
         /// Method called when trying to delete an item from the tilemap (as opposed to a tile object).
         /// Items need a special method because they are not tied to specific coordinates like tile objects.

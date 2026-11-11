@@ -14,17 +14,20 @@ namespace SS3D.Systems.Tile.MapEditor
     /// </summary>
     public static class MapEditorPermissions
     {
-        private static IMapEditorAuthorizer _authorizer = CreateDefault();
+        private static IMapEditorAuthorizer _authorizer = CreateDefault(Environment.GetCommandLineArgs());
 
         /// <summary>
         /// Override the default authorizer (e.g. creative-mode Builder role check).
         /// </summary>
         public static void SetAuthorizer(IMapEditorAuthorizer authorizer) =>
-            _authorizer = authorizer ?? CreateDefault();
+            _authorizer = authorizer ?? CreateDefault(Environment.GetCommandLineArgs());
 
-        /// <summary>Admin-only, unless the server was launched with <c>-openbuild</c> or <c>-sandbox</c>.</summary>
-        private static IMapEditorAuthorizer CreateDefault() =>
-            OpenBuildMapEditorAuthorizer.RequestedOnCommandLine || SandboxProfile.RequestedOnCommandLine
+        /// <summary>
+        /// Admin-only, unless the server was launched with <c>-sandbox</c> (sandbox-server §5), the one mode where
+        /// every non-Restricted player may build.
+        /// </summary>
+        public static IMapEditorAuthorizer CreateDefault(string[] commandLineArgs) =>
+            SandboxProfile.RequestedIn(commandLineArgs)
                 ? new OpenBuildMapEditorAuthorizer()
                 : new AdminMapEditorAuthorizer();
 
@@ -32,7 +35,7 @@ namespace SS3D.Systems.Tile.MapEditor
 
         /// <summary>
         /// Deleting or overwriting map files on the server's disk. Always true with the default admin
-        /// authorizer; on an open-build server, only admins, or the player who saved that map this session.
+        /// authorizer; on the sandbox, only admins, or the player who saved that map this session.
         /// </summary>
         public static bool MayReplaceMapFile(NetworkConnection conn, string mapName)
         {
@@ -49,7 +52,7 @@ namespace SS3D.Systems.Tile.MapEditor
         }
 
         /// <summary>
-        /// A non-admin editing on an open-build server: throttled, and limited to undoing their own edits.
+        /// A non-admin editing on the sandbox: throttled, and limited to undoing their own edits.
         /// Always false in the default admin-only mode.
         /// </summary>
         public static bool IsSandboxPlayer(NetworkConnection conn) =>

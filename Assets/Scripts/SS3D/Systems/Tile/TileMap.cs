@@ -763,25 +763,33 @@ namespace SS3D.Systems.Tile
             _items.Add(placedItem);
         }
 
-        public void ClearItemObject(Vector3 worldPosition, ItemObjectSo itemObjectSo)
+        /// <returns>True when an item was found and removed.</returns>
+        public bool ClearItemObject(Vector3 worldPosition, ItemObjectSo itemObjectSo)
         {
             PruneDestroyedItems();
-            List<PlacedItemObject> placedItems = _items.FindAll(item => item.NameString == itemObjectSo.NameString);
+            // The nearest match, not the last one in range: in a pile of the same item the map editor
+            // would otherwise delete a different one than the item clicked.
             PlacedItemObject toRemove = null;
-
-            foreach (PlacedItemObject item in placedItems)
+            float nearest = 1f;
+            foreach (PlacedItemObject item in _items)
             {
-                if (Vector3.Distance(item.transform.position, worldPosition) < 1f)
+                if (item.NameString != itemObjectSo.NameString)
+                    continue;
+
+                float distance = Vector3.Distance(item.transform.position, worldPosition);
+                if (distance < nearest)
                 {
+                    nearest = distance;
                     toRemove = item;
                 }
             }
 
             if (toRemove == null)
-                return;
+                return false;
 
             _items.Remove(toRemove);
             toRemove.DestroySelf();
+            return true;
         }
 
         /// <summary>

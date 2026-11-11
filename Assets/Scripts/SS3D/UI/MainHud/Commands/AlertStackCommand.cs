@@ -1,9 +1,8 @@
-using FishNet.Connection;
 using SS3D.Core;
 using SS3D.Permissions;
 using SS3D.Systems.IngameConsoleSystem.Commands;
 using SS3D.UI.MainHud.Components;
-using System;
+using System.Collections.Generic;
 
 namespace SS3D.UI.MainHud.Commands
 {
@@ -15,44 +14,35 @@ namespace SS3D.UI.MainHud.Commands
     /// </summary>
     public class AlertStackCommand : Command
     {
-        public override string ShortDescription => "Force an Alert Icon Stack hazard's severity";
-        public override string Usage => "(hazard) (none|warning|critical)\n"
-            + "hazards: fire, hot, cold, lowpressure, highpressure, radiation, hunger, thirst, pulling, "
-            + "restrained, lowoxygen, dying, bleeding, cardiacarrest, sealbreach\n"
-            + "example: alertstack fire critical";
+        private static readonly IReadOnlyList<CommandParameter> Declared = new[]
+        {
+            P.Enum<AlertHazard>("hazard"),
+            P.Enum<AlertSeverity>("severity"),
+        };
+
+        public override string Name => "alertstack";
+        public override CommandCategory Category => CommandCategory.Debug;
+        public override string Description => "Force an Alert Icon Stack hazard's severity on your own HUD";
         public override ServerRoleTypes AccessLevel => ServerRoleTypes.User;
         public override CommandType Type => CommandType.Client;
+        public override IReadOnlyList<CommandParameter> Parameters => Declared;
+        public override string Example => "fire critical";
 
-        private record CalculatedValues(AlertHazard Hazard, AlertSeverity Severity) : ICalculatedValues;
-
-        public override string Perform(string[] args, NetworkConnection conn = null)
+        public override CommandResult Perform(CommandContext context, CommandArgs args)
         {
-            if (!ReceiveCheckResponse(args, out CheckArgsResponse response, out CalculatedValues values)) return response.InvalidArgs;
-
             MainHudSubSystem mainHud = SubSystems.Get<MainHudSubSystem>();
             if (mainHud == null)
             {
-                return "Main HUD subsystem not available";
+                return CommandResult.Error("Main HUD subsystem not available");
             }
 
+            AlertHazard hazard = args.Get<AlertHazard>("hazard");
+            AlertSeverity severity = args.Get<AlertSeverity>("severity");
             AlertStackState state = mainHud.DebugAlertOverride;
-            SetSeverity(ref state, values.Hazard, values.Severity);
+            SetSeverity(ref state, hazard, severity);
             mainHud.SetDebugAlertOverride(state);
 
-            return $"{values.Hazard} set to {values.Severity}";
-        }
-
-        protected override CheckArgsResponse CheckArgs(string[] args)
-        {
-            CheckArgsResponse response = new();
-
-            if (args.Length != 2) return response.MakeInvalid(WrongArgsText);
-
-            if (!Enum.TryParse(args[0], true, out AlertHazard hazard)) return response.MakeInvalid("Invalid hazard name");
-
-            if (!Enum.TryParse(args[1], true, out AlertSeverity severity)) return response.MakeInvalid("Invalid severity");
-
-            return response.MakeValid(new CalculatedValues(hazard, severity));
+            return CommandResult.Success($"{hazard} set to {severity}");
         }
 
         private static void SetSeverity(ref AlertStackState state, AlertHazard hazard, AlertSeverity severity)

@@ -50,6 +50,83 @@ namespace SS3D.Tests.EditMode
         }
 
         [Test]
+        public void BlockedPlace_IsNoUndoStep_AndLeavesTheBlockerAlone()
+        {
+            TileMapTestUtilities.MapContext mapCtx = TileMapTestUtilities.CreateContext(_instantiated);
+            Vector3 pos = new(5, 0, 5);
+            TileMapTestUtilities.PlacePlenum(mapCtx, pos);
+            TileObjectSo first = RegisterTile(TileLayer.Turf, "BlockerFloor", TileObjectGenericType.Floor);
+            TileObjectSo second = RegisterTile(TileLayer.Turf, "BlockedFloor", TileObjectGenericType.Floor);
+            MapEditorCommandService service = CreateService(mapCtx);
+            Assert.IsTrue(service.Execute(new PlaceTileCommand(first.NameString, pos, Direction.North, false)));
+
+            PlaceTileCommand blocked = new(second.NameString, pos, Direction.North, replaceExisting: false);
+            Assert.IsFalse(service.Execute(blocked), "the slot is taken");
+            Assert.AreEqual(1, service.UndoDepth);
+
+            blocked.Revert(service.Context);
+            Assert.AreEqual("BlockerFloor", GetOccupantName(mapCtx, TileLayer.Turf, pos), "reverting a refused place clears nothing");
+        }
+
+        [Test]
+        public void EmptyClear_IsNoUndoStep_AndRevertsToNothing()
+        {
+            TileMapTestUtilities.MapContext mapCtx = TileMapTestUtilities.CreateContext(_instantiated);
+            Vector3 pos = new(6, 0, 6);
+            TileMapTestUtilities.PlacePlenum(mapCtx, pos);
+            TileObjectSo floor = RegisterTile(TileLayer.Turf, "NeverPlaced", TileObjectGenericType.Floor);
+            MapEditorCommandService service = CreateService(mapCtx);
+
+            ClearTileCommand clear = new(floor.NameString, pos, Direction.North);
+            Assert.IsFalse(service.Execute(clear));
+            Assert.AreEqual(0, service.UndoDepth);
+
+            clear.Revert(service.Context);
+            Assert.IsFalse(HasOccupant(mapCtx, TileLayer.Turf, pos), "an empty clear puts nothing back");
+        }
+
+        [Test]
+        public void MoveOntoAnOccupiedTile_KeepsTheSource()
+        {
+            TileMapTestUtilities.MapContext mapCtx = TileMapTestUtilities.CreateContext(_instantiated);
+            Vector3 from = new(7, 0, 7);
+            Vector3 to = new(8, 0, 7);
+            TileMapTestUtilities.PlacePlenum(mapCtx, from);
+            TileMapTestUtilities.PlacePlenum(mapCtx, to);
+            TileObjectSo moving = RegisterTile(TileLayer.Turf, "MovingFloor", TileObjectGenericType.Floor);
+            TileObjectSo blocker = RegisterTile(TileLayer.Turf, "SittingFloor", TileObjectGenericType.Floor);
+            MapEditorCommandService service = CreateService(mapCtx);
+            Assert.IsTrue(service.Execute(new PlaceTileCommand(moving.NameString, from, Direction.North, false)));
+            Assert.IsTrue(service.Execute(new PlaceTileCommand(blocker.NameString, to, Direction.North, false)));
+
+            Assert.IsFalse(service.Execute(new MoveTileCommand(moving.NameString, from, to, Direction.North)));
+            Assert.AreEqual("MovingFloor", GetOccupantName(mapCtx, TileLayer.Turf, from), "a refused move loses nothing");
+            Assert.AreEqual("SittingFloor", GetOccupantName(mapCtx, TileLayer.Turf, to));
+            Assert.AreEqual(2, service.UndoDepth);
+        }
+
+        [Test]
+        public void Move_Undo_PutsItBack()
+        {
+            TileMapTestUtilities.MapContext mapCtx = TileMapTestUtilities.CreateContext(_instantiated);
+            Vector3 from = new(9, 0, 9);
+            Vector3 to = new(10, 0, 9);
+            TileMapTestUtilities.PlacePlenum(mapCtx, from);
+            TileMapTestUtilities.PlacePlenum(mapCtx, to);
+            TileObjectSo moving = RegisterTile(TileLayer.Turf, "MovedFloor", TileObjectGenericType.Floor);
+            MapEditorCommandService service = CreateService(mapCtx);
+            Assert.IsTrue(service.Execute(new PlaceTileCommand(moving.NameString, from, Direction.North, false)));
+
+            Assert.IsTrue(service.Execute(new MoveTileCommand(moving.NameString, from, to, Direction.North)));
+            Assert.IsFalse(HasOccupant(mapCtx, TileLayer.Turf, from));
+            Assert.IsTrue(HasOccupant(mapCtx, TileLayer.Turf, to));
+
+            Assert.IsTrue(service.Undo());
+            Assert.IsTrue(HasOccupant(mapCtx, TileLayer.Turf, from));
+            Assert.IsFalse(HasOccupant(mapCtx, TileLayer.Turf, to));
+        }
+
+        [Test]
         public void Replace_Undo_RestoresPreviousAsset()
         {
             TileMapTestUtilities.MapContext mapCtx = TileMapTestUtilities.CreateContext(_instantiated);

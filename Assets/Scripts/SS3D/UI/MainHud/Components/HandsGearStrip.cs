@@ -138,6 +138,17 @@ namespace SS3D.UI.MainHud.Components
             }
         }
 
+        public void SetHandStackCount(HandSlot slot, int count) => GetHandInventorySlot(slot).StackCount = count;
+
+        public void SetGearStackCount(GearSlot slot, int count)
+        {
+            InventorySlot inventorySlot = GetGearSlot(slot);
+            if (inventorySlot != null)
+            {
+                inventorySlot.StackCount = count;
+            }
+        }
+
         public void SetHandReserved(HandSlot slot, bool reserved)
         {
             InventorySlot inventorySlot = GetHandInventorySlot(slot);
@@ -244,6 +255,18 @@ namespace SS3D.UI.MainHud.Components
             // canDrag path) permanently fail to select a hand.
             inventorySlot.RegisterCallback<PointerDownEvent>(evt =>
             {
+                // Drags are left-button only. UI Toolkit sends a down and an up for each mouse button, so
+                // another button pressed mid-drag must neither restart the drag nor (on its release) end it.
+                if (evt.button != (int)MouseButton.LeftMouse)
+                {
+                    if (inventorySlot.HasPointerCapture(evt.pointerId))
+                    {
+                        evt.StopPropagation();
+                    }
+
+                    return;
+                }
+
                 _dragMoved = false;
                 dragOrigin = (Vector2)evt.position;
 
@@ -277,7 +300,7 @@ namespace SS3D.UI.MainHud.Components
             });
             inventorySlot.RegisterCallback<PointerUpEvent>(evt =>
             {
-                if (!inventorySlot.HasPointerCapture(evt.pointerId))
+                if (evt.button != (int)MouseButton.LeftMouse || !inventorySlot.HasPointerCapture(evt.pointerId))
                 {
                     return;
                 }

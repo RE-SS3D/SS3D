@@ -24,7 +24,7 @@ Glance examine (hover + Shift-hold) is **not** an `IInteraction` — `Examinable
 - **Click-to-take** — ~1.5s `TakeFromCharacterInteraction`; gated by `CharacterLootUtility.IsLootable` (dead/unconscious; restrained deferred).
 - **Covered/obscured-slot filtering** not implemented. Slot↔`ContainerType`: `CharacterExamineSlotContainerMap`.
 
-**Editor:** **SS3D → Examine → Rebuild Examine Asset Catalog**. Hand Search wiring: `HandsPrefabSetup.Wire` / `HumanPrefabRecipes`.
+**Editor:** **SS3D → Data → Rebuild All UI Catalogs** (the Examine builder runs inside the umbrella). Hand Search wiring: `HandsPrefabSetup.Wire` / `HumanPrefabRecipes`.
 
 ## Start here
 
@@ -55,7 +55,7 @@ Paths are under `Assets/Scripts/SS3D/Systems/` unless they start with `UI/` (`As
 - **Take without Discover:** start via `InteractionController.RequestTakeFromCharacter`, never `CmdRunInteraction` name resolve.
 - **Search vs glance:** Shift-hold detail is examine overlay; paperdoll open is Search (Shift+Click runs Search via `InteractionController.TryRunSearchOnCharacterSelection`, not a separate overlay click path).
 - **Foreign `CmdTransferItem` rejects** containers not in `ContainerViewer` display list — take uses `Hand.Pickup` instead.
-- **Catalog missing in builds:** run **Rebuild Examine Asset Catalog** and commit `Resources` asset.
+- **Catalog missing in builds:** run **Rebuild All UI Catalogs** and commit `Resources` asset.
 - **`InventorySlot` white HUD:** never put `overflow: hidden` on `.inventory-slot__well` (shared with Main HUD).
 - **DDOL overlay vs Online hub / Selection enable order:** bind examine/selection events with `Update` retry.
 - **Hover label off-screen:** UiShell `ConstantPhysicalSize` — use `InputInterface.ScreenToPanel` then `style.left`/`style.top`.

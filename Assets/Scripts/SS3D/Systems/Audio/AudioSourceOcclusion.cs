@@ -33,6 +33,18 @@ namespace SS3D.Systems.Audio
 
         private static Transform s_listener;
 
+        /// <summary>With no listener in the scene (a dedicated server, a menu), search again only this often.</summary>
+        private const float ListenerSearchIntervalSeconds = 0.5f;
+
+        private static float s_nextListenerSearch;
+
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+        private static void ResetListenerCache()
+        {
+            s_listener = null;
+            s_nextListenerSearch = 0f;
+        }
+
         /// <summary>How well the listener's air carries sound, 0..1. Driven by <see cref="AmbienceSubSystem"/>.</summary>
         public static float ListenerAir { get; set; } = 1f;
 
@@ -69,9 +81,18 @@ namespace SS3D.Systems.Audio
         {
             if (s_listener == null)
             {
+                // A scene scan per sound per frame is what this cache is for; a missing listener is cached too.
+                float now = Time.unscaledTime;
+                if (now < s_nextListenerSearch)
+                {
+                    position = default;
+                    return false;
+                }
+
                 AudioListener listener = FindAnyObjectByType<AudioListener>();
                 if (listener == null)
                 {
+                    s_nextListenerSearch = now + ListenerSearchIntervalSeconds;
                     position = default;
                     return false;
                 }

@@ -8,7 +8,6 @@ using SS3D.Systems.Interactions;
 using SS3D.Systems.Inventory.Containers;
 using SS3D.Systems.Inventory.Items;
 using SS3D.Systems.Rounds;
-using SS3D.UI.Buttons;
 using System.Collections;
 using System.Linq;
 using UnityEngine;
@@ -26,7 +25,6 @@ namespace SS3D.Tests
         private const string HorizontalAxis = "Horizontal";
         private const string VerticalAxis = "Vertical";
         private const string CancelButton = "Cancel";
-        private const string ReadyButtonName = "Ready";
         #endregion
 
         /// <summary>
@@ -113,40 +111,6 @@ namespace SS3D.Tests
             yield return ServerHelpers.StopRound();
         }
 
-        public static void PressButton(string buttonName)
-        {
-            LabelButton button = GetButton(buttonName);
-            if (button == null)
-            {
-                return;
-            }
-
-            button.Press();
-        }
-
-        public static IEnumerator PressButtonWhenAvailable(string buttonName, float timeout = 15f)
-        {
-            LabelButton button = GetButton(buttonName);
-            float startTime = Time.time;
-
-            while (button == null)
-            {
-                Assert.IsTrue(Time.time < startTime + timeout, $"Timeout of {timeout} reached when trying to press {buttonName} button");
-
-                yield return new WaitForSeconds(1f);
-                button = GetButton(buttonName);
-            }
-
-            button.Press();
-        }
-
-        public static LabelButton GetButton(string buttonName)
-        {
-            LabelButton button = GameObject.Find(buttonName)?.GetComponent<LabelButton>();
-
-            return button;
-        }
-
         public static void SetTabActive(string tabName)
         {
             GameObject.Find(tabName)?.GetComponent<Button>().onClick.Invoke();
@@ -177,7 +141,14 @@ namespace SS3D.Tests
             {
                 Item itemToSpawn = Assets.Get<GameObject>(AssetDatabases.Items, item)?.GetComponent<Item>();
 
-                itemSystem.CmdSpawnItemInContainer(itemToSpawn, hand.Container);
+                if (InstanceFinder.IsServer)
+                {
+                    itemSystem.SpawnItemInContainer(itemToSpawn.Name, hand.Container);
+                }
+                else
+                {
+                    itemSystem.CmdSpawnItemInContainer(itemToSpawn, hand.Container);
+                }
 
                 return hand.Container;
             }
