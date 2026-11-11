@@ -106,10 +106,10 @@ namespace SS3D.Systems.Rounds
         {
             bool idle = CurrentRoundState is RoundState.Stopped or RoundState.Ended;
             int ready = SubSystems.TryGet(out ReadyPlayersSubSystem readyPlayers)
-                ? readyPlayers.EffectiveReadyCount(_serverSettings.AllConnectedReady)
+                ? readyPlayers.EffectiveReadyCount(Settings.AllConnectedReady)
                 : 0;
-            bool start = _autoStart.Tick(_serverSettings.AutoStart, idle, ready, _serverSettings.MinimumReady);
-            _autoStartEnabled = _serverSettings.AutoStart;
+            bool start = _autoStart.Tick(Settings.AutoStart, idle, ready, Settings.MinimumReady);
+            _autoStartEnabled = Settings.AutoStart;
             _autoStartHeld = _autoStart.Held;
             _autoStartSeconds = _autoStart.SecondsLeft;
             if (!start)
@@ -123,7 +123,7 @@ namespace SS3D.Systems.Rounds
         [Server]
         private void SetAutoStartHeld(bool held, string reason)
         {
-            if (!_serverSettings.AutoStart || _autoStart.Held == held)
+            if (!Settings.AutoStart || _autoStart.Held == held)
                 return;
 
             _autoStart.Held = held;

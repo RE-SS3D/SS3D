@@ -4,6 +4,7 @@ using System.Linq;
 using FishNet.Connection;
 using FishNet.Object;
 using SS3D.Core;
+using SS3D.Core.Behaviours;
 using SS3D.Logging;
 using SS3D.Systems.Comms;
 using SS3D.Systems.Persistence;
@@ -14,12 +15,12 @@ namespace SS3D.Systems.Rounds
     public enum MapStopChoice { Cancel, SaveAndStop, DiscardAndStop }
 
     /// <summary>
-    /// Map edits happen during an Ongoing round, and stopping the round unloads the station
-    /// (<see cref="UnloadStation"/>). This keeps unsaved edits from vanishing with it: an admin's
-    /// Stop asks Save and stop / Discard / Cancel, and any other round end autosaves them to a
-    /// separate "-autosave" template.
+    /// Map edits happen during an Ongoing round, and stopping the round unloads the station. This keeps
+    /// unsaved edits from vanishing with it: an admin's Stop asks Save and stop / Discard / Cancel, and any
+    /// other round end autosaves them to a separate "-autosave" template (tech-debt P6.5 moved it out of
+    /// <see cref="RoundSubSystem"/>).
     /// </summary>
-    public sealed partial class RoundSubSystem
+    public sealed class MapEditorStopFlow : NetworkSubSystem
     {
         public const string AutosaveSuffix = "-autosave";
 
@@ -39,29 +40,41 @@ namespace SS3D.Systems.Rounds
         public string MapStopEditingMap { get; private set; }
         public string MapStopError { get; private set; }
 
+        private static bool IsOngoing =>
+            SubSystems.TryGet(out RoundSubSystem rounds) && rounds.CurrentRoundState == RoundState.Ongoing;
+
+        /// <summary>
+        /// Server: an admin asked to stop the round. With unsaved edits (and map persistence on) this opens the
+        /// prompt and returns true; the round then ends once the admin answers. False: nothing to save.
+        /// </summary>
         [Server]
-        protected override void RequestPlayerRoundStop(NetworkConnection sender)
+        public bool TryPrompt(NetworkConnection sender)
         {
             // With map persistence off there is nothing to save, so no prompt.
-            if (IsOngoing && MapEditorPermissions.PersistenceAllowed
-                && SubSystems.TryGet(out MapEditorSubSystem editor) && editor.HasUnsavedChanges)
+            if (!IsOngoing || !MapEditorPermissions.PersistenceAllowed
+                || !SubSystems.TryGet(out MapEditorSubSystem editor) || !editor.HasUnsavedChanges)
+                return false;
+
+            PendingMapStop pending = new()
             {
-                PendingMapStop pending = new()
-                {
-                    Token = ++_nextMapStopToken,
-                    Revision = editor.EditRevision,
-                    EditingMap = editor.EditingTemplateName,
-                };
-                ShowMapStop(sender, pending, "");
-                return;
-            }
-            RequestRoundEnd(RoundEndRequest.Admin);
+                Token = ++_nextMapStopToken,
+                Revision = editor.EditRevision,
+                EditingMap = editor.EditingTemplateName,
+            };
+            ShowMapStop(sender, pending, "");
+            return true;
+        }
+
+        private static void EndRoundAsAdmin()
+        {
+            if (SubSystems.TryGet(out RoundSubSystem rounds))
+                rounds.RequestRoundEnd(RoundEndRequest.Admin);
         }
 
         [ServerRpc(RequireOwnership = false)]
         public void CmdResolveMapStop(int token, MapStopChoice choice, string saveName, NetworkConnection sender = null)
         {
-            if (!IsAdministrator(sender) || !_pendingMapStops.TryGetValue(sender, out PendingMapStop pending)
+            if (!ServerSettingsService.IsAdministrator(sender) || !_pendingMapStops.TryGetValue(sender, out PendingMapStop pending)
                 || pending.Token != token) return;
             _pendingMapStops.Remove(sender);
             TargetMapStopPrompt(sender, 0, "", "");
@@ -69,7 +82,7 @@ namespace SS3D.Systems.Rounds
             if (pending.Revision != editor.EditRevision || pending.EditingMap != editor.EditingTemplateName)
             {
                 // Someone edited, saved or loaded since the prompt opened: confirm against the current state.
-                RequestPlayerRoundStop(sender);
+                if (!TryPrompt(sender)) EndRoundAsAdmin();
                 return;
             }
             if (choice == MapStopChoice.SaveAndStop)
@@ -99,7 +112,7 @@ namespace SS3D.Systems.Rounds
             else if (choice == MapStopChoice.DiscardAndStop) _mapDiscardApproved = true;
             else return;
 
-            RequestRoundEnd(RoundEndRequest.Admin);
+            EndRoundAsAdmin();
         }
 
         private static bool ValidNewTemplateName(string name) => !string.IsNullOrWhiteSpace(name)
@@ -120,11 +133,11 @@ namespace SS3D.Systems.Rounds
         }
 
         /// <summary>
-        /// Runs right before the station is unloaded. Unsaved edits are kept in an autosave
+        /// Server: runs right before the station is unloaded. Unsaved edits are kept in an autosave
         /// template unless an admin chose Discard; the original template is never overwritten.
         /// </summary>
         [Server]
-        private void HandleUnsavedMapEditsBeforeUnload()
+        public void HandleUnsavedMapEditsBeforeUnload()
         {
             bool discard = _mapDiscardApproved;
             _mapDiscardApproved = false;
@@ -165,10 +178,6 @@ namespace SS3D.Systems.Rounds
         {
             _pendingMapStops.Clear();
             _mapDiscardApproved = false;
-            MapEditorPermissions.PersistenceAllowed = true;
-            StopAutoStartLoop();
-            StopServerLifetime();
-            UnregisterBugReportBroadcasts();
             base.OnStopServer();
         }
     }

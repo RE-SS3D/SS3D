@@ -144,7 +144,7 @@ namespace SS3D.UI.Lobby
             _shellView.RoundChangeRequested += HandleRoundChangeRequested;
             _shellView.ServerSettingsChanged += (field, settings) =>
             {
-                if (CanAdmin() && SubSystems.TryGet(out RoundSubSystem rounds)) rounds.CmdUpdateServerSetting(field, settings);
+                if (CanAdmin() && SubSystems.TryGet(out ServerSettingsService service)) service.CmdUpdateServerSetting(field, settings);
             };
             _shellView.RoundAdminRequested += action =>
             {
@@ -152,7 +152,7 @@ namespace SS3D.UI.Lobby
             };
             _shellView.MapStopResolved += (token, choice, name) =>
             {
-                if (CanAdmin() && SubSystems.TryGet(out RoundSubSystem rounds)) rounds.CmdResolveMapStop(token, choice, name);
+                if (CanAdmin() && SubSystems.TryGet(out MapEditorStopFlow stopFlow)) stopFlow.CmdResolveMapStop(token, choice, name);
             };
             _shellView.JobPreferencesChanged += SendJobPreferences;
             _shellView.ChatSubmitted += HandleChatSubmitted;
@@ -334,8 +334,10 @@ namespace SS3D.UI.Lobby
             }
             _shellView.SetJobs(connected && SubSystems.TryGet(out RoleSubSystem roles)
                 ? roles.Jobs : System.Array.Empty<JobSlotInfo>());
-            if (connected && rounds != null)
-                _shellView.SetServerInfo(rounds.ServerName, rounds.Motd, rounds.PublicMode, rounds.ServerBuild, rounds.ServerStarted);
+            SubSystems.TryGet(out ServerSettingsService serverSettings);
+            if (connected && serverSettings != null)
+                _shellView.SetServerInfo(serverSettings.ServerName, serverSettings.Motd, serverSettings.PublicMode,
+                    serverSettings.ServerBuild, serverSettings.ServerStarted);
             else
                 _shellView.SetServerInfo(null, "", null, "", null);
             RefreshLastRound(connected ? rounds : null, visible);
@@ -344,19 +346,21 @@ namespace SS3D.UI.Lobby
             bool admin = CanAdmin();
             if (SubSystems.TryGet(out CommsSubSystem comms))
                 _shellView.SetChat(comms.OocLog, comms.OocLogVersion, connected && admin);
-            if (ShouldReadAdminSettings(admin, rounds != null, local != null))
+            if (ShouldReadAdminSettings(admin, serverSettings != null, local != null))
             {
                 if (Time.unscaledTime >= _nextAdminRefresh)
                 {
                     _nextAdminRefresh = Time.unscaledTime + 1f;
-                    rounds.CmdReadServerSettings();
+                    serverSettings.CmdReadServerSettings();
                 }
-                if (rounds.HasAdminSettings)
-                    _shellView.SetServerSettings(rounds.AdminSettings, rounds.AdminMaps, rounds.AdminSettingsStatus);
+                if (serverSettings.HasAdminSettings)
+                    _shellView.SetServerSettings(serverSettings.AdminSettings, serverSettings.AdminMaps, serverSettings.AdminSettingsStatus);
             }
-            bool mapPrompt = connected && admin && rounds != null && rounds.CurrentRoundState == RoundState.Ongoing;
-            _shellView.SetMapStopPrompt(mapPrompt ? rounds.MapStopToken : 0,
-                mapPrompt ? rounds.MapStopEditingMap : "", mapPrompt ? rounds.MapStopError : "");
+            MapEditorStopFlow stopFlow = null;
+            bool mapPrompt = connected && admin && rounds != null && rounds.CurrentRoundState == RoundState.Ongoing
+                && SubSystems.TryGet(out stopFlow);
+            _shellView.SetMapStopPrompt(mapPrompt ? stopFlow.MapStopToken : 0,
+                mapPrompt ? stopFlow.MapStopEditingMap : "", mapPrompt ? stopFlow.MapStopError : "");
             LobbyMockData.PlayerRow[] rows = connected ? players.OnlinePlayers.Where(p => p != null)
                 .Select(p => new LobbyMockData.PlayerRow(p.Ckey, p.Ckey, ready != null && ready.IsReady(p),
                     null, "—", "—", "—")).ToArray() : System.Array.Empty<LobbyMockData.PlayerRow>();
@@ -365,7 +369,7 @@ namespace SS3D.UI.Lobby
             _shellView.SetRoundEnd(rounds != null && rounds.EndHeld, rounds != null ? rounds.EndSecondsLeft : 0);
             _shellView.SetSession(rounds != null ? rounds.CurrentRoundState : RoundState.Stopped,
                 rounds != null ? rounds.CurrentTimerSeconds : 0,
-                local != null && ready != null && ready.IsReady(local), local != null && (rounds == null || rounds.CurrentRoundState != RoundState.Ongoing || rounds.AllowLateJoin), admin, rows, spawned);
+                local != null && ready != null && ready.IsReady(local), local != null && (rounds == null || rounds.CurrentRoundState != RoundState.Ongoing || serverSettings == null || serverSettings.AllowLateJoin), admin, rows, spawned);
         }
 
         /// <summary>Follows InputSubSystem across scene reloads (it owns a new Controls each time).</summary>

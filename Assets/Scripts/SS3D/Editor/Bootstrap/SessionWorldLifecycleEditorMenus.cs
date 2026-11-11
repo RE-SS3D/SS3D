@@ -16,6 +16,7 @@ using SS3D.Systems.Inventory.Items;
 using SS3D.Systems.Persistence;
 using SS3D.Systems.PlayerControl;
 using SS3D.Systems.Roles;
+using SS3D.Systems.BugReports;
 using SS3D.Systems.Rounds;
 using SS3D.Systems.Screens;
 using SS3D.Systems.Selection;
@@ -90,7 +91,10 @@ namespace SS3D.Editor.Bootstrap
             typeof(ElectricityDebugGizmoDrawer),
             typeof(AtmosSubSystem),
             typeof(DisposalSubSystem),
+            typeof(ServerSettingsService),
             typeof(RoundSubSystem),
+            typeof(MapEditorStopFlow),
+            typeof(BugReportIntake),
             typeof(ReadyPlayersSubSystem),
             typeof(PlayerSubSystem),
             typeof(EntitySubSystem),

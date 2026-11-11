@@ -274,7 +274,7 @@ namespace SS3D.Systems.Roles
                 return Array.Empty<string>();
             }
 
-            ServerSettings settings = rounds.SettingsForServer;
+            ServerSettings settings = SubSystems.Get<ServerSettingsService>().Current;
             if (!SquadDraw.HasEnoughReady(settings.Mode, ckeys.Count, settings.MinimumReadyForNukeOps))
             {
                 rounds.FallBackToExtended(SquadDraw.TooFewReadyNotice(ckeys.Count, settings.MinimumReadyForNukeOps));

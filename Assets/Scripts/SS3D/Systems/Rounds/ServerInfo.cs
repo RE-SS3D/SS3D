@@ -1,14 +1,5 @@
 using System;
 using System.Text;
-using Coimbra;
-using FishNet.Object;
-using FishNet.Object.Synchronizing;
-using SS3D.Data.Management;
-using SS3D.Data.Persistence;
-using SS3D.Logging;
-using SS3D.Networking;
-using SS3D.Networking.Settings;
-using UnityEngine;
 
 namespace SS3D.Systems.Rounds
 {
@@ -66,72 +57,6 @@ namespace SS3D.Systems.Rounds
             }
 
             return builder.ToString().Trim();
-        }
-    }
-
-    public sealed partial class RoundSubSystem
-    {
-        // Public lobby metadata. Name/MOTD persist under ServerMeta; the rest describe this server process.
-        [SyncVar] private string _serverName = ServerInfoText.DefaultName;
-        [SyncVar] private string _motd = ServerInfoText.DefaultMotd;
-        [SyncVar] private string _publicMode = ServerSettings.Default.Mode;
-        [SyncVar] private string _serverBuild = "";
-        [SyncVar] private long _serverStartedUnix;
-
-        public string ServerName => _serverName;
-        public string Motd => _motd;
-        /// <summary>The configured mode (Secret stays secret: it only resolves at round start).</summary>
-        public string PublicMode => _publicMode;
-        public string ServerBuild => _serverBuild;
-        public DateTimeOffset ServerStarted => DateTimeOffset.FromUnixTimeSeconds(_serverStartedUnix);
-
-        public override void OnStartServer()
-        {
-            base.OnStartServer();
-            SavedServerInfo saved = LocalStorage.LoadObject<SavedServerInfo>(PersistencePaths.ServerInfo);
-            _serverSettings.ServerName = ServerInfoText.SanitizeName(saved?.serverName);
-            _serverSettings.Motd = ServerInfoText.SanitizeMotd(saved?.motd);
-            if (ScriptableSettings.GetOrFind<NetworkSettings>().NetworkType == NetworkType.DedicatedServer)
-                _serverSettings = ServerSettings.ForDedicatedServer(_serverSettings);
-            if (SandboxProfile.RequestedOnCommandLine)
-            {
-                // In memory only: the saved server info and settings stay as they are.
-                _serverSettings = SandboxProfile.Apply(_serverSettings);
-                _allowLateJoin = _serverSettings.AllowLateJoin;
-                Log.Information(this, "Sandbox profile applied", Logs.ServerOnly);
-                if (NukeOpsProfile.RequestedOnCommandLine)
-                    Log.Warning(this, "Both -sandbox and -nukeops given; the sandbox profile wins", Logs.ServerOnly);
-            }
-            else if (NukeOpsProfile.RequestedOnCommandLine)
-            {
-                // In memory only, as above.
-                _serverSettings = NukeOpsProfile.Apply(_serverSettings);
-                _allowLateJoin = _serverSettings.AllowLateJoin;
-                Log.Information(this, "Nuke Ops profile applied: {minutes} min rounds, {ready} ready players for a squad",
-                    Logs.ServerOnly, _serverSettings.RoundLengthMinutes, _serverSettings.MinimumReadyForNukeOps);
-            }
-            ApplyServerRules();
-            StartAutoStartLoop();
-            StartServerLifetime();
-            RegisterBugReportBroadcasts();
-            _serverName = _serverSettings.ServerName;
-            _motd = _serverSettings.Motd;
-            _publicMode = _serverSettings.Mode;
-            _serverBuild = BuildInfo.Label;
-            _serverStartedUnix = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
-        }
-
-        /// <summary>Name/MOTD are not round configuration: admins may edit them in any round state.</summary>
-        [Server]
-        private void SaveServerInfo(ServerSetting field, ServerSettings value)
-        {
-            if (field == ServerSetting.ServerName) _serverSettings.ServerName = ServerInfoText.SanitizeName(value.ServerName);
-            else _serverSettings.Motd = ServerInfoText.SanitizeMotd(value.Motd);
-            _serverName = _serverSettings.ServerName;
-            _motd = _serverSettings.Motd;
-            bool saved = LocalStorage.SaveObject(PersistencePaths.ServerInfo,
-                new SavedServerInfo { serverName = _serverSettings.ServerName, motd = _serverSettings.Motd }, overwrite: true);
-            if (!saved) Debug.LogWarning("[Rounds] Could not save server info; the change applies to this session only.");
         }
     }
 }

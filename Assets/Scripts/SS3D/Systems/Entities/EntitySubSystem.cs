@@ -285,7 +285,7 @@ namespace SS3D.Systems.Entities
         private void SpawnLatePlayer(Player player)
         {
             if (SubSystems.Get<RoundSubSystem>().CurrentRoundState != RoundState.Ongoing
-                || !SubSystems.Get<RoundSubSystem>().AllowLateJoin)
+                || !SubSystems.Get<ServerSettingsService>().AllowLateJoin)
             {
                 return;
             }

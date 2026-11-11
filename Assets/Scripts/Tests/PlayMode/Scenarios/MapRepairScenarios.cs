@@ -43,10 +43,11 @@ namespace SS3D.Tests
 
             yield return ServerHelpers.StopRound();
             RoundSubSystem rounds = SubSystems.Get<RoundSubSystem>();
-            ServerSettings settings = rounds.SettingsForServer;
+            ServerSettingsService service = SubSystems.Get<ServerSettingsService>();
+            ServerSettings settings = service.Current;
             settings.Map = NoSpawnsStation;
             settings.Mode = "Secret";
-            rounds.ApplyServerSettingsForTesting(settings);
+            service.ApplyServerSettingsForTesting(settings);
             ServerHelpers.SetPlayerReadiness(ServerHelpers.LocalCkey, true);
 
             Assert.IsFalse(rounds.ServerRoundAdminAction(RoundAdminAction.EditMapAnyway, InstanceFinder.ClientManager.Connection),

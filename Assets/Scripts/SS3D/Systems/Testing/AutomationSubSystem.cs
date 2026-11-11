@@ -410,16 +410,17 @@ namespace SS3D.Systems.Testing
 
                 case "probe_server_settings_permissions":
                     RoundSubSystem settingsRounds = SubSystems.Get<RoundSubSystem>();
-                    settingsRounds.CmdReadServerSettings();
+                    ServerSettingsService settingsService = SubSystems.Get<ServerSettingsService>();
+                    settingsService.CmdReadServerSettings();
                     ServerSettings unauthorized = ServerSettings.Default;
                     unauthorized.PlayerCap = 1;
                     unauthorized.AllowLateJoin = false;
-                    settingsRounds.CmdSaveServerSettings(unauthorized);
-                    settingsRounds.CmdUpdateServerSetting(ServerSetting.PlayerCap, unauthorized);
+                    settingsService.CmdSaveServerSettings(unauthorized);
+                    settingsService.CmdUpdateServerSetting(ServerSetting.PlayerCap, unauthorized);
                     foreach (RoundAdminAction action in Enum.GetValues(typeof(RoundAdminAction)))
                         settingsRounds.CmdRoundAdminAction(action);
                     yield return new WaitForSeconds(2);
-                    if (settingsRounds.HasAdminSettings || settingsRounds.CurrentRoundState != RoundState.Stopped)
+                    if (settingsService.HasAdminSettings || settingsRounds.CurrentRoundState != RoundState.Stopped)
                         throw new InvalidOperationException("Non-admin gained server settings access.");
                     TestSignal.Emit(this, "ServerSettingsPermissionVerified");
                     break;
@@ -773,12 +774,12 @@ namespace SS3D.Systems.Testing
 
         private static void UseStation(string map, string mode)
         {
-            RoundSubSystem rounds = SubSystems.Get<RoundSubSystem>();
-            ServerSettings settings = rounds.SettingsForServer;
+            ServerSettingsService service = SubSystems.Get<ServerSettingsService>();
+            ServerSettings settings = service.Current;
             settings.Map = map;
             settings.Mode = mode;
-            rounds.CmdUpdateServerSetting(ServerSetting.Map, settings);
-            rounds.CmdUpdateServerSetting(ServerSetting.Mode, settings);
+            service.CmdUpdateServerSetting(ServerSetting.Map, settings);
+            service.CmdUpdateServerSetting(ServerSetting.Mode, settings);
         }
 
         private static Vector3 _lastBreach;
