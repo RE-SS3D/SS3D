@@ -429,18 +429,34 @@ namespace SS3D.Systems.Roles
                 containers.Add(inventoryContainer.ContainerType, inventoryContainer);
             }
 
-            // Suit storage only accepts a tank once the suit is on.
+            Dictionary<ContainerType, Item> equipped = new();
+
+            // The belt slot only takes a belt over a jumpsuit, and suit storage only accepts a tank once the suit is on.
             foreach (KeyValuePair<ContainerType, ObjectAssetReference> itemToEquip in loadout.EquipmentAssets
-                .OrderBy(equipment => equipment.Key == ContainerType.SuitStorage))
+                .OrderBy(equipment => equipment.Key switch
+                {
+                    ContainerType.Jumpsuit => 0,
+                    ContainerType.SuitStorage => 2,
+                    _ => 1,
+                }))
             {
                 if (!itemToEquip.Value)
                 {
                     continue;
                 }
 
-                if (containers.TryGetValue(itemToEquip.Key, out AttachedContainer container))
+                if (containers.TryGetValue(itemToEquip.Key, out AttachedContainer container)
+                    && SpawnItemInSlot(itemToEquip.Value, true, container) is { } item)
                 {
-                    SpawnItemInSlot(itemToEquip.Value, true, container);
+                    equipped[itemToEquip.Key] = item;
+                }
+            }
+
+            foreach (LoadoutContents contents in loadout.EquipmentContents)
+            {
+                if (contents != null)
+                {
+                    SpawnContents(equipped.GetValueOrDefault(contents.Slot), contents.Items);
                 }
             }
 
@@ -458,15 +474,44 @@ namespace SS3D.Systems.Roles
 
             if (loadout.HandLeftAsset && HandContainer(HandSide.Left) is { } left)
             {
-                SpawnItemInSlot(loadout.HandLeftAsset, true, left);
+                SpawnContents(SpawnItemInSlot(loadout.HandLeftAsset, true, left), loadout.HandLeftContents);
             }
 
             if (loadout.HandRightAsset && HandContainer(HandSide.Right) is { } right)
             {
-                SpawnItemInSlot(loadout.HandRightAsset, true, right);
+                SpawnContents(SpawnItemInSlot(loadout.HandRightAsset, true, right), loadout.HandRightContents);
             }
 
             inventory.TriggerInventorySetup();
+        }
+
+        /// <summary>
+        /// Fills the storage of a spawned loadout item (a toolbelt's tools, a medkit's patches). Contents that
+        /// don't fit are refused and despawned by <see cref="ItemSubSystem.SpawnItemInContainer(GameObject, AttachedContainer)"/>.
+        /// </summary>
+        /// <param name="holder">The loadout item that holds the contents; nothing spawns when it is null.</param>
+        /// <param name="contents">The items to spawn inside its storage.</param>
+        private void SpawnContents(Item holder, List<ObjectAssetReference> contents)
+        {
+            if (holder == null || contents == null || contents.Count == 0)
+            {
+                return;
+            }
+
+            AttachedContainer storage = RoleLoadout.StorageOf(holder.gameObject);
+            if (storage == null)
+            {
+                Log.Warning(this, "Loadout item {item} has no storage for its contents", Logs.ServerOnly, holder.name);
+                return;
+            }
+
+            foreach (ObjectAssetReference content in contents)
+            {
+                if (content)
+                {
+                    SpawnItemInSlot(content, true, storage);
+                }
+            }
         }
 
         /// <summary>

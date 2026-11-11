@@ -12,15 +12,29 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9fbd6da0c74d76746b141068081e0dc3, type: 3}
   m_Name: SecurityLoadout
   m_EditorClassIdentifier: 
-  HandLeftAsset: {fileID: 11400000, guid: d81d46f903aad014aa4728a8b47ab7ea, type: 2}
-  HandRightAsset: {fileID: 0}
+  HandLeftAsset: {fileID: 0}
+  HandRightAsset: {fileID: 11400000, guid: c023289bfe65e6fb78be1944ced31875, type: 2}
   EquipmentAssets:
     _list:
     - _key: 512
-      _value: {fileID: 11400000, guid: 620dc53a5608be44a975c990e69ddba5, type: 2}
+      _value: {fileID: 11400000, guid: 9abef62d6f4edd443b3fa81a32f9a5ba, type: 2}
     - _key: 16
       _value: {fileID: 11400000, guid: 7514f2bc5fd84a14095929761da0a4dd, type: 2}
+    - _key: 8192
+      _value: {fileID: 11400000, guid: 5e0824505970aa040a1780b6e80e4630, type: 2}
+    - _key: 64
+      _value: {fileID: 11400000, guid: c0a5c4fc200a5ae4693d9b02fee23b49, type: 2}
+    - _key: 4
+      _value: {fileID: 11400000, guid: 9435365903a79d64184af9ee71e060e5, type: 2}
     _new: 0
   PocketAssets:
   - {fileID: 11400000, guid: 4f4a376e135b3e46dbe041dbca673357, type: 2}
   - {fileID: 11400000, guid: 4a50e327a934cd3438e1b88d2bb547cb, type: 2}
+  EquipmentContents:
+  - Slot: 4
+    Items:
+    - {fileID: 11400000, guid: cb8a18ff6b582ec45a3aa1f689a18564, type: 2}
+    - {fileID: 11400000, guid: 8ec2a780fae01344a9431a9cb06d8a7c, type: 2}
+    - {fileID: 11400000, guid: e28b644ad26ceae45acf3ceb84b8cbff, type: 2}
+  HandLeftContents: []
+  HandRightContents: []

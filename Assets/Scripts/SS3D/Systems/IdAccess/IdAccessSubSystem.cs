@@ -179,6 +179,8 @@ namespace SS3D.Systems.IdAccess
             {
                 "Security" => Department.Security,
                 "Assistant" => Department.Civilian,
+                "Engineer" => Department.Engineering,
+                "Doctor" => Department.Medical,
                 "Captain" => Department.Command,
                 "Head of Personnel" => Department.Command,
                 _ => Department.None,

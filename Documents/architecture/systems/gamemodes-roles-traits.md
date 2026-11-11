@@ -1,7 +1,7 @@
 > Code paths: Assets/Scripts/SS3D/Systems/Gamemodes/, Assets/Scripts/SS3D/Systems/Roles/, Assets/Scripts/SS3D/Systems/Traits/
 > Entry points: GamemodeSubSystem, RoleSubSystem
 > Status: partial
-> Verified: ae1a54ed1 — 2026-11-05
+> Verified: 8083cf48 — 2026-11-11
 
 # Gamemodes / roles / traits
 
@@ -19,7 +19,8 @@ Round objectives, job roles/loadouts, and character traits (e.g. ID permissions)
 - `Assets/Scripts/SS3D/Systems/Gamemodes/Modes/NukeGamemode.cs` — one shared team objective for the squad, resolved at the round-end trigger; `OperativeBriefing` is the spawn briefing, sent by `GamemodeSubSystem` to each operative alone through `CommsSubSystem.SendPrivateFeed` ([chat](chat-audio-screens.md))
 - `Assets/Scripts/SS3D/Systems/Gamemodes/NukeOpsRules.cs` — pure §6 win/lose table ([round-end loop](../../archive/architecture/2026-11_round-end-loop.md) P3): crew win when the squad is out, timer/admin end resolved by who holds the disk, container-tree walk; `NukeOpsRulesTests`
 - `Assets/Scripts/SS3D/Systems/Gamemodes/NukeOpsWorld.cs` — server adapter: reads each operative's entity (dead, ghost, gone, SSD) and the disk's carrier into a `NukeOpsSnapshot`
-- `Assets/Content/Data/Roles/StartingRoles.asset` — available roles and slot caps (0 = unlimited)
+- `Assets/Scripts/SS3D/Systems/Roles/RoleLoadout.cs` — per-role kit: hands, worn slots (`EquipmentAssets`), pockets, and the contents of a held or worn item's storage (`EquipmentContents` keyed by the holder's slot, `HandLeftContents`/`HandRightContents`). `RoleLoadout.StorageOf` picks the item's storage (first container with a storage panel)
+- `Assets/Content/Data/Roles/StartingRoles.asset` — available roles and slot caps (0 = unlimited): Assistant, Security (1 slot), Operative (antagonist), Engineer, Doctor
 - `GamemodeObjectivePanelView` — legacy uGUI panel hidden (no Tab hotkey; PDA tab later)
 
 Server Settings selects Secret / Extended / Nuclear Emergency. Extended skips objective
@@ -31,11 +32,23 @@ The `-nukeops` server profile (`Rounds/NukeOpsProfile.cs`, [rounds-lobby](rounds
 
 The operative loadout includes the Syndicate hardsuit (ExoSuit) and helmet (Head), authored by the [inventory content recipe](inventory.md#overview). The suit and helmet seal against pressure and cold, and a full oxygen tank starts in suit storage with internals off. Magboots fill both shoe slots, switched off. `RoleSubSystem` spawns suit storage after the suit. Crew roles carry an emergency tank and a gas mask through `RoleLoadout.PocketAssets`.
 
+Crew kits (worn, then what spawns inside):
+
+| Role | Worn and held | Contents |
+| --- | --- | --- |
+| Assistant | grey jumpsuit, HiTops, headset, backpack; toolbox in hand | none |
+| Security | security jumpsuit, jackboots, security headset, sunglasses, backpack; Taser in hand; Security PDA/ID | backpack: flashlight, brute and burn patch |
+| Engineer | engineering jumpsuit, HiTops, insulated gloves, headset, toolbelt, backpack | belt: screwdriver, wrench, wirecutters, multitool, welder. Backpack: crowbar, cable, 2 steel sheets, flashlight |
+| Doctor | grey jumpsuit, HiTops, headset, toolbelt, backpack; medkit in hand | belt: health scanner, one of each patch. Medkit: two of each patch. Backpack: flashlight |
+
+The operative also gets a filled toolbelt (the Engineer's five tools) and a backpack with C4, a Syndicate minibomb and a flashlight. Engineer access is Engineering, EVA, Maintenance and Crew; Doctor access is Medical, Maintenance and Crew.
+
 ## Extension points
 
 - Active gamemode name: `GamemodeSubSystem.CurrentGamemodeName` (used by round-history persistence).
 - Mode win rules: override `Gamemode.ResolveEnd` (gives a timer or admin end its winner, called from `RoundSubSystem.BuildOutcome`) and `Gamemode.TryGetEndCondition` (checked on every `EntitySubSystem.ServerSpawnedPlayersChanged` while Ongoing). Keep the rules pure, as `NukeOpsRules` is.
-- New job: add a `RoleData` to `StartingRoles.asset` and map its department in `IdAccessSubSystem.DepartmentForRole`.
+- New job: add a `RoleData` to `StartingRoles.asset` and map its department in `IdAccessSubSystem.DepartmentForRole`. Map Check refuses a round on a map without a marker for every offered job, so add the job's spawn marker to the shipped templates (`Builds/Game/Data/StationTemplates/`) and the test fixtures (`Testing/fixtures/stations/`), and list the job in `MapEditorSpawnCatalog.DefaultJobNames`. Add its loadout to `GasTankSetup`'s crew list, or the recipe leaves its pockets alone. The lobby job icon is `Assets/Art/Icons/Lobby/Jobs/<Name>.png` (`LobbyShellView.JobIconId`).
+- Filled containers: put the holder in `EquipmentAssets` (or a hand) and its contents in `EquipmentContents` (or `HandLeftContents`/`HandRightContents`). Contents spawn after all worn items.
 - New antagonist role: a `RoleData` with `_antagonistCategory` set, listed in `StartingRoles.asset`; it never appears in the job list. `RoleSubSystem.Operatives` / `IsOperative` expose the drawn squad (server).
 
 ## Pitfalls
@@ -46,11 +59,16 @@ The operative loadout includes the Syndicate hardsuit (ExoSuit) and helmet (Head
 - There is no voluntary ghost-out: a ghost always means the body died, so Decision 16's "ghosted-out bodies count as alive" has no case yet. An SSD body keeps its mind and counts as up.
 - **Design deviations** ([antagonist-content.md](../../design/antagonist-content.md) §6): an operative is out when dead or destroyed; restraint is ignored until restraints exist (handcuffs are MVP2). An admin end in a Nuke Ops round resolves as a timeout, so it still gets a winner. The ready threshold gates Secret only and has no admin form field; `-nukeops-min-ready=N` sets it.
 - The operative kit (M4, engineering jumpsuit) is a placeholder: MVP1 M1c gives operatives the C20R and Stechkin. Swap `OperativeLoadout.asset` when those land.
+- Other kit stand-ins until art lands: the Doctor wears the grey jumpsuit and a toolbelt as a medical belt, and every crew job but Security wears the generic headset, PDA and ID. Headsets are cosmetic: radio channels aren't tied to the worn headset.
+- **Loadout contents that don't fit vanish with only a warning:** `ItemSubSystem.SpawnItemInContainer` despawns what a container refuses (slot count, size class, nesting, storage conditions). The toolbelt holds five Small items, so the Crowbar (Normal) rides in the backpack. `PrefabTests.LoadoutContentsFitTheirStorage` checks slots, size, nesting and weight, but not storage conditions.
+- **Worn slots have order rules:** the belt slot and pockets need a jumpsuit, and suit storage needs the suit. `SpawnLoadoutItems` equips the jumpsuit first and suit storage last; pockets and hands follow the worn slots.
+- Kit weight counts against stamina (`StaminaController.ReferenceEncumbranceWeight`, 40 kg). At spawn the Engineer carries about 27% of the cap and the operative about 60% (51% before its belt and backpack were filled); keep heavy materials out of spawn kits.
 - Assignment happens at round start (`ResolveRoundStartRoles`, called by `EntitySubSystem.SpawnReadyPlayers`) or at latejoin spawn, not on connect. `TryGetRole` is empty in the lobby.
 
 ## Tests
 
 - `validate.sh --steps compile,editmode`: `GamemodeTests` (team objective assignment and resolution), `SquadDrawTests` (squad size, opt-ins only, Extended fallback, latejoiners never drawn), `NukeOpsProfileTests` (ready threshold, default opt-in), `RoundEndLoopTests` (objective results on the outcome).
+- `PrefabTests` (AssetAudit): `LoadoutsDoNotFillTheSecondSideOfAPair`, and `LoadoutContentsFitTheirStorage` for every content list.
 - `NukeOpsRulesTests` (EditMode): every §6 row plus SSD, ghosted, dead carrier, crew carrier, nested-bag and missing-disk cases, and the admin end resolved as a timeout. `TestRoomFixtureTests` keeps the test room passing Map Check for Nuclear Emergency.
 - `validate.sh --steps scenarios:NukeOps` (tier 2, `NukeOpsScenarios`): a Nuclear Emergency round in the test room with the host opted in. Checks the operative spawn (marker, kit, briefing naming the objective), detonation → operatives win with the station destroyed, and the squad killed → crew win at once. The fixture keeps the round-start body (`FreshBodyPerScenario`), and both outcome scenarios reboot the room.
 
