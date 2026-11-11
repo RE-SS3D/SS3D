@@ -271,6 +271,17 @@ namespace EditorTests
         }
 
         [Test]
+        public void RoomWithTwoApcsWarnsAndNamesTheExtraApc()
+        {
+            MapValidationIssue issue = RoomChecks(Device(RoomDeviceKind.Apc, 1, 3), Device(RoomDeviceKind.Apc, 4, 3),
+                Device(RoomDeviceKind.Apc, 7, 5, "Kitchen")).Issues.Single();
+            Assert.AreEqual("apc-shared:3", issue.Id);
+            StringAssert.StartsWith("2 APCs in Bar", issue.Title);
+            StringAssert.Contains("APC at (4, 2)", issue.Body);
+            Assert.AreEqual(new Vector3(4, 0, 2), issue.Position);
+        }
+
+        [Test]
         public void MapCheckFiltersIgnoresWarningsAndRestoresWithoutChangingServerPolicy()
         {
             MapValidationReport report = MapValidator.Validate("Extended", new[] { "Captain" },

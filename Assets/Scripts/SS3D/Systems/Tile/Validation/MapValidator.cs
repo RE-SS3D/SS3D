@@ -170,6 +170,12 @@ namespace SS3D.Systems.Tile.Validation
                     AddWarning(report, $"no-vent:{room.Key}", ports[0], $"No vent in {RoomLabel(ports[0])}",
                         "so lost air can't be replaced. Place a vent on a pipe.", VentEntry);
 
+                RoomDeviceRecord[] apcs = room.Where(device => device.Kind == RoomDeviceKind.Apc).ToArray();
+                if (apcs.Length > 1)
+                    AddWarning(report, $"apc-shared:{room.Key}", apcs[1], $"{apcs.Length} APCs in {RoomLabel(apcs[0])}",
+                        $"so only one of them powers it. Remove or turn the APC at {string.Join(", ", apcs.Skip(1).Select(Cell))}, or paint its tile into a room of its own under {RoomsPath}.",
+                        ApcEntry);
+
                 RoomDeviceRecord first = room.First();
                 if (!first.RoomHasApc)
                     AddWarning(report, $"no-apc:{room.Key}", first, $"No APC in {RoomLabel(first)}",
@@ -214,8 +220,15 @@ namespace SS3D.Systems.Tile.Validation
             RoomDeviceKind.ThreeWay => "Filter or mixer",
             RoomDeviceKind.LineReader => "Meter or injector",
             RoomDeviceKind.AirAlarm => "Air alarm",
+            RoomDeviceKind.Apc => "APC",
             _ => "Light",
         };
+
+        private static string Cell(RoomDeviceRecord device)
+        {
+            Vector2Int cell = SpawnPointRegistry.TileKey(device.Position);
+            return $"({cell.x}, {cell.y})";
+        }
 
         private static string RoomLabel(RoomDeviceRecord device)
         {
@@ -249,6 +262,9 @@ namespace SS3D.Systems.Tile.Validation
 
         /// <summary>A meter or injector: any line on its tile.</summary>
         LineReader,
+
+        /// <summary>An APC; its room is the tile it faces, as the area system resolves it.</summary>
+        Apc,
     }
 
     /// <summary>A placed device and the room it belongs to (area 0 means no room).</summary>
