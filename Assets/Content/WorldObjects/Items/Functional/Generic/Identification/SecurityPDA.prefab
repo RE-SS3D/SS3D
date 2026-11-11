@@ -186,8 +186,8 @@ MonoBehaviour:
   <ChildNetworkObjects>k__BackingField: []
   SerializedTransformProperties:
     Position: {x: 0, y: 0, z: 0}
-    Rotation: {x: 0, y: 0, z: 0, w: 0}
-    LocalScale: {x: 0, y: 0, z: 0}
+    Rotation: {x: 0.7071068, y: 0, z: 0, w: -0.7071068}
+    LocalScale: {x: 1, y: 1, z: 1}
   _isNetworked: 1
   _isGlobal: 0
   _initializeOrder: 0
@@ -292,6 +292,7 @@ MonoBehaviour:
   AttachmentPoint: {fileID: 7760506997891073340}
   AttachmentPointAlt: {fileID: 7938302722024457138}
   _restRotation: {x: 270, y: 0, z: 0}
+  _restsUpright: 0
   _overrideIconRotation: 1
   _iconRotation: {x: 0, y: 0, z: 0}
   _container: {fileID: 0}
@@ -437,7 +438,7 @@ Transform:
   m_GameObject: {fileID: 5927379166768225886}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0.7071068, z: 0, w: -0.7071068}
-  m_LocalPosition: {x: -0.02, y: 0, z: -0.1}
+  m_LocalPosition: {x: -0.02, y: -0, z: -0.0291}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -468,7 +469,7 @@ Transform:
   m_GameObject: {fileID: 8188033368034612119}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0.7071068, z: 0, w: 0.7071068}
-  m_LocalPosition: {x: 0.06, y: 0, z: -0.1}
+  m_LocalPosition: {x: 0.06, y: -0, z: -0.0291}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
