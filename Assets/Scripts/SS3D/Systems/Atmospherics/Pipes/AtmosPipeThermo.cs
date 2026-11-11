@@ -42,7 +42,7 @@ namespace SS3D.Systems.Atmospherics.Pipes
                 return 0f;
 
             float totalMoles = GetTotalMoles(moles, gasTypeCount);
-            return totalMoles * ECS.AtmosFluxConstants.GasConstant * temperature / volume / 1000f;
+            return totalMoles * Jobs.AtmosFluxConstants.GasConstant * temperature / volume / 1000f;
         }
 
         /// <summary>
@@ -53,7 +53,7 @@ namespace SS3D.Systems.Atmospherics.Pipes
             if (temperature <= 0f)
                 return 0f;
 
-            return pressureKpa * 1000f * volume / (ECS.AtmosFluxConstants.GasConstant * temperature);
+            return pressureKpa * 1000f * volume / (Jobs.AtmosFluxConstants.GasConstant * temperature);
         }
 
         public static float BlendTemperature(

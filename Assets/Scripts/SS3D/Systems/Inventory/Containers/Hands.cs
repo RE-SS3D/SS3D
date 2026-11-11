@@ -231,7 +231,8 @@ namespace SS3D.Systems.Inventory.Containers
         [Client]
         private void HandleDropHeldItem(InputAction.CallbackContext context)
         {
-            if (!IsOwner || !enabled || SelectedHand == null)
+            // Nothing to drop: the server would ignore it, but the put-down would already be playing here.
+            if (!IsOwner || !enabled || SelectedHand == null || SelectedHand.IsEmpty())
                 return;
 
             // Drop is a Help-mode world verb; Harm is combat-exclusive (melee / future combat chords).

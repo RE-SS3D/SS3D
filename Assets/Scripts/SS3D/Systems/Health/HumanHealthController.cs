@@ -6,8 +6,9 @@ using Coimbra.Services.Events;
 using Coimbra.Services.PlayerLoopEvents;
 using SS3D.Core;
 using SS3D.Core.Behaviours;
+using SS3D.Interactions.Interfaces;
 using SS3D.Systems.Atmospherics;
-using SS3D.Systems.Atmospherics.ECS;
+using SS3D.Systems.Atmospherics.Jobs;
 using SS3D.Systems.Atmospherics.Pipes;
 using SS3D.Systems.Audio;
 using AudioType = SS3D.Systems.Audio.AudioType;
@@ -28,10 +29,11 @@ namespace SS3D.Systems.Health
     /// <summary>
     /// Server-authoritative health controller for humanoids. Owns zone damage, organs, and systemic pools.
     /// </summary>
-    public class HumanHealthController : NetworkActor
+    public class HumanHealthController : NetworkActor, IDamageNotifier
     {
         private readonly ZoneDamageState[] _zones = new ZoneDamageState[HealthConstants.ZoneCount];
         private readonly List<OrganState> _organs = new();
+        private OrganState[] _organBuffer = System.Array.Empty<OrganState>();
         private readonly List<IHealthEffectModifier> _modifiers = new();
 
         private SystemicPools _pools = SystemicPools.Default;
@@ -63,6 +65,12 @@ namespace SS3D.Systems.Health
         /// Main HUD and other local-owner consumers subscribe here.
         /// </summary>
         public event Action<HealthSnapshot> SnapshotChanged;
+
+        /// <summary>
+        /// Server only: raised when a hit lands (brute or burn above zero). Timed steps cancel on it
+        /// (<see cref="SS3D.Interactions.DelayedInteraction.CancelOnDamage"/>).
+        /// </summary>
+        public event Action ServerDamaged;
 
         public HealthSnapshot Snapshot => _snapshot;
 
@@ -135,9 +143,27 @@ namespace SS3D.Systems.Health
             ApplyScreenEffectsFromSnapshot(_snapshot);
         }
 
+        /// <summary>
+        /// Server: every spawned body with health, so a blast finds them without a scene scan (tech-debt P2.5; P6.4
+        /// generalizes this into a registry).
+        /// </summary>
+        public static IReadOnlyCollection<HumanHealthController> ServerInstances => ServerBodies;
+
+        private static readonly HashSet<HumanHealthController> ServerBodies = new();
+
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+        private static void ResetServerBodies() => ServerBodies.Clear();
+
+        public override void OnStopServer()
+        {
+            base.OnStopServer();
+            ServerBodies.Remove(this);
+        }
+
         public override void OnStartServer()
         {
             base.OnStartServer();
+            ServerBodies.Add(this);
             EnsureBuiltinOrgans();
             OrganSimulation.EnsureDefaultOrgans(_organs);
             PublishSnapshot();
@@ -145,6 +171,7 @@ namespace SS3D.Systems.Health
 
         protected override void OnDestroyed()
         {
+            ServerBodies.Remove(this);
             if (_entity != null)
             {
                 _entity.OnMindChanged -= HandleMindChangedForLocalFeedback;
@@ -234,6 +261,11 @@ namespace SS3D.Systems.Health
 
             PublishSnapshot();
 
+            if (brute + burn > 0f)
+            {
+                ServerDamaged?.Invoke();
+            }
+
             // Dead / unminded corpses must not flash the ghost's screen — Owner may still be valid
             // briefly if SetMind(null) has not run yet; never TargetRpc after death latch.
             if (brute + burn > 0f
@@ -283,7 +315,7 @@ namespace SS3D.Systems.Health
             float t = Mathf.Clamp01(brute / HealthConstants.BloodSprayFullBrute);
             // Keep stagger through most of the flinch clip so Additive Flinch weight can lerp out softly.
             float staggerSeconds = Mathf.Lerp(0.55f, 0.85f, t);
-            _combatController.OnHitReceived(Vector3.zero, knockbackForce: 0f, staggerSeconds);
+            _combatController.OnHitReceived(staggerSeconds);
         }
 
         /// <summary>
@@ -570,7 +602,7 @@ namespace SS3D.Systems.Health
             }
 
             _nextScreamTime = Time.time + HealthConstants.ScreamCooldownSeconds;
-            SubSystems.Get<AudioSubSystem>()?.PlayAudioSource(
+            SubSystems.GetOrNull<AudioSubSystem>()?.PlayAudioSource(
                 AudioType.Sfx,
                 HealthAudioTrackIds.MaleScream,
                 Transform.position,
@@ -636,9 +668,17 @@ namespace SS3D.Systems.Health
             OrganSimulation.TickOrganFunction(_pools, _organs);
             _pools = HealthSimulation.TickPools(_pools, _zones, _organs, atmosphereO2, toxinIntake);
 
-            for (int i = 0; i < _modifiers.Count; i++)
+            if (_modifiers.Count > 0)
             {
-                _modifiers[i].ApplyTick(ref _pools, _organs.ToArray());
+                // One copy per tick, into a reused buffer: modifiers read organ state and their writes were never kept.
+                if (_organBuffer.Length != _organs.Count)
+                    _organBuffer = new OrganState[_organs.Count];
+
+                _organs.CopyTo(_organBuffer);
+                for (int i = 0; i < _modifiers.Count; i++)
+                {
+                    _modifiers[i].ApplyTick(ref _pools, _organBuffer);
+                }
             }
 
             HealthState state = HealthSimulation.EvaluateHealthState(_pools, _organs);
@@ -978,7 +1018,7 @@ namespace SS3D.Systems.Health
                 return;
             }
 
-            SubSystems.Get<ScreenEffectsSubSystem>()?.TriggerHitFlash();
+            SubSystems.GetOrNull<ScreenEffectsSubSystem>()?.TriggerHitFlash();
         }
 
         private void ApplyScreenEffectsFromSnapshot(HealthSnapshot snapshot)

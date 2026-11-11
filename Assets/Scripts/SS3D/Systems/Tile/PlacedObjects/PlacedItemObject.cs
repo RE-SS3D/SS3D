@@ -18,7 +18,9 @@ namespace SS3D.Systems.Tile
     public class PlacedItemObject : NetworkBehaviour
     {
         /// <summary>
-        ///  Places an item on the tilemap at a given position and rotation
+        ///  Places an item on the tilemap at a given position and exact world rotation. Callers placing a fresh item
+        ///  at rest compose yaw with <see cref="SS3D.Systems.Inventory.Items.ItemPlacement"/>; a map load passes the
+        ///  saved world rotation back unchanged.
         /// </summary>
         /// <param name="worldPosition"></param>
         /// <param name="origin"></param>
@@ -32,7 +34,7 @@ namespace SS3D.Systems.Tile
             
             if (existingItem != null)
             {
-                // Use the existing item GameObject (rotation already composed by drop/place callers).
+                // Use the existing item GameObject (drop/place callers pass its resulting pose).
                 placedGameObject = existingItem;
             }
             else
@@ -43,11 +45,6 @@ namespace SS3D.Systems.Tile
 #if UNITY_SERVER
                 ServerVisualsUtility.DisableRenderingComponents(placedGameObject);
 #endif
-                // Map-editor / tile spawn passes yaw-only; preserve authored rest pitch/roll (e.g. M4 -90° X).
-                if (placedGameObject.TryGetComponent(out SS3D.Systems.Inventory.Items.Item item))
-                {
-                    rotation = item.GetWorldFacing(rotation.eulerAngles.y);
-                }
             }
 
             SS3D.Systems.Inventory.Items.ItemUtility.SetWorldPose(placedGameObject.transform, worldPosition, rotation);
@@ -85,6 +82,13 @@ namespace SS3D.Systems.Tile
         public string NameString => _itemSo.NameString;
 
         /// <summary>
+        /// The map tracking this item, set by <see cref="TileMap.PlaceItemObject"/>. Unity's OnDestroy
+        /// is used rather than a FishNet stop callback because this component is added at runtime and
+        /// is not registered with the NetworkObject.
+        /// </summary>
+        internal TileMap Owner { get; set; }
+
+        /// <summary>
         /// Set up a new item object.
         /// </summary>
         /// <param name="worldPosition"></param>
@@ -101,6 +105,12 @@ namespace SS3D.Systems.Tile
         {
             base.OnStartClient();
             TileLayerVisibilityService.TryApplyPlacedItem(this);
+        }
+
+        private void OnDestroy()
+        {
+            if (Owner != null)
+                Owner.ForgetDestroyedItem(this);
         }
 
         /// <summary>

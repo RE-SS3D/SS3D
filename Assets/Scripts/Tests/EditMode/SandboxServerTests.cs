@@ -1,6 +1,7 @@
 using NUnit.Framework;
 using SS3D.Systems.Rounds;
 using SS3D.Systems.Tile.MapEditor;
+using SS3D.Systems.Tile.MapEditor.Authorizers;
 using SS3D.Systems.Tile.MapEditor.Commands;
 
 namespace SS3D.Tests.EditMode
@@ -104,6 +105,16 @@ namespace SS3D.Tests.EditMode
 
             MapEditorCapabilities full = MapEditorCapabilities.Full;
             Assert.IsTrue(full.Persistence && full.Invincibility && !full.RestrictedPalette);
+        }
+
+        [Test]
+        public void Authorizer_IsAdminOnly_UnlessSandbox()
+        {
+            // Decision 10 of the tech-debt paydown: -sandbox is the only open mode; -openbuild is gone.
+            Assert.IsInstanceOf<AdminMapEditorAuthorizer>(MapEditorPermissions.CreateDefault(new[] { "SS3D" }));
+            Assert.IsInstanceOf<AdminMapEditorAuthorizer>(MapEditorPermissions.CreateDefault(new[] { "SS3D", "-openbuild" }));
+            Assert.IsInstanceOf<OpenBuildMapEditorAuthorizer>(MapEditorPermissions.CreateDefault(new[] { "SS3D", "-sandbox" }));
+            Assert.IsInstanceOf<OpenBuildMapEditorAuthorizer>(MapEditorPermissions.CreateDefault(new[] { "SS3D", "-SANDBOX" }));
         }
 
         [Test]

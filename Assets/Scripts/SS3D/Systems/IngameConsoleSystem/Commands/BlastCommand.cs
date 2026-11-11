@@ -1,10 +1,10 @@
-using FishNet.Connection;
 using FishNet.Object;
 using SS3D.Core;
 using SS3D.Permissions;
 using SS3D.Systems.Entities;
 using SS3D.Systems.StructuralDamage;
 using SS3D.Systems.Tile;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace SS3D.Systems.IngameConsoleSystem.Commands
@@ -17,86 +17,49 @@ namespace SS3D.Systems.IngameConsoleSystem.Commands
         private const float DefaultYield = 120f;
         private const float DefaultFalloff = 25f;
 
-        public override string ShortDescription => "Detonate a blast at your standing tile";
-        public override string LongDescription =>
-            "Runs hop-based blast resolution from your standing tile. Usage: blast [yield] [falloff] (defaults 120, 25).";
-        public override string Usage => "[yield] [falloff]";
+        private static readonly IReadOnlyList<CommandParameter> Declared = new[]
+        {
+            P.Float("yield").Default(DefaultYield).Range(0.01, 100000),
+            P.Float("falloff").Default(DefaultFalloff).Range(0, 100000),
+        };
+
+        public override string Name => "blast";
+        public override CommandCategory Category => CommandCategory.Debug;
+        public override string Description => "Detonate a hop-based blast at your standing tile";
         public override ServerRoleTypes AccessLevel => ServerRoleTypes.Administrator;
         public override CommandType Type => CommandType.Server;
+        public override IReadOnlyList<CommandParameter> Parameters => Declared;
+        public override string Example => "200 30";
 
         [Server]
-        public override string Perform(string[] args, NetworkConnection conn = null)
+        public override CommandResult Perform(CommandContext context, CommandArgs args)
         {
-            CheckArgsResponse check = CheckArgs(args);
-            if (!check.IsValid)
-            {
-                return check.InvalidArgs;
-            }
+            float yield = args.Float("yield");
+            float falloff = args.Float("falloff");
 
-            float yield = DefaultYield;
-            float falloff = DefaultFalloff;
-            if (args.Length >= 1)
+            Entity entity = context.CallerEntity;
+            if (entity == null)
             {
-                float.TryParse(args[0], out yield);
-            }
-
-            if (args.Length >= 2)
-            {
-                float.TryParse(args[1], out falloff);
-            }
-
-            EntitySubSystem entities = SubSystems.Get<EntitySubSystem>();
-            if (entities == null || !entities.TryGetOwnedEntity(conn, out Entity entity))
-            {
-                return "Connection does not own any entity";
+                return CommandResult.Error("you have no body");
             }
 
             TileSubSystem tiles = SubSystems.Get<TileSubSystem>();
             if (tiles == null || tiles.CurrentMap == null || tiles.QueryService == null)
             {
-                return "TileSubSystem / map not ready";
+                return CommandResult.Error("TileSubSystem / map not ready");
             }
 
             StructuralDamageSubSystem structural = SubSystems.Get<StructuralDamageSubSystem>();
             if (structural == null || structural.Blast == null)
             {
-                return "StructuralDamageSubSystem / blast not ready";
+                return CommandResult.Error("StructuralDamageSubSystem / blast not ready");
             }
 
             int mapId = tiles.CurrentMap.MapId;
             TileCoord epicenter = tiles.QueryService.WorldToTile(entity.transform.position, mapId);
             structural.ResolveBlast(epicenter, yield, falloff);
 
-            return $"Blast at {epicenter.Grid.x},{epicenter.Grid.y} map {mapId}: yield {yield:0.#}, falloff {falloff:0.#}";
-        }
-
-        protected override CheckArgsResponse CheckArgs(string[] args)
-        {
-            CheckArgsResponse response = new();
-
-            if (args.Length > 2)
-            {
-                return response.MakeInvalid("Usage: blast [yield] [falloff]");
-            }
-
-            if (args.Length >= 1)
-            {
-                if (!float.TryParse(args[0], out float parsedYield) || parsedYield <= 0f)
-                {
-                    return response.MakeInvalid("Yield must be a positive number");
-                }
-            }
-
-            if (args.Length >= 2)
-            {
-                if (!float.TryParse(args[1], out float parsedFalloff) || parsedFalloff < 0f)
-                {
-                    return response.MakeInvalid("Falloff must be a non-negative number");
-                }
-            }
-
-            response.IsValid = true;
-            return response;
+            return CommandResult.Success($"Blast at {epicenter.Grid.x},{epicenter.Grid.y} map {mapId}: yield {yield:0.#}, falloff {falloff:0.#}");
         }
     }
 }

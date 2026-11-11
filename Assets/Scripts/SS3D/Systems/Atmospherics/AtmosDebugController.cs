@@ -1,7 +1,7 @@
 using SS3D.Core.Debugging;
 using SS3D.Core;
 using SS3D.Core.Behaviours;
-using SS3D.Systems.Atmospherics.ECS;
+using SS3D.Systems.Atmospherics.Jobs;
 using SS3D.Systems.Atmospherics.Pipes;
 using SS3D.Systems.Tile;
 using SS3D.Systems.Inputs;

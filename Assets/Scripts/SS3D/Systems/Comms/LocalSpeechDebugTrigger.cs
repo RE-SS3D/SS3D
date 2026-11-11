@@ -13,9 +13,9 @@ namespace SS3D.Systems.Comms
     /// <summary>
     /// PLACEHOLDER for remaining compose polish (mode pip hints per comms.md §5). T opens the
     /// real draft chip via LocalSpeechBubbleController + InputSubSystem.OpenLocalSpeechCompose.
-    /// F3 still cycles local-chat test lines (speak / whisper / shout / emote) for presentation
-    /// checks — radio and station announcements live on other UI surfaces. Self-bootstraps at
-    /// scene load (same pattern as ScreenEffectsDebugMenuView).
+    /// Its F1 debug-menu tool cycles local-chat test lines (speak / whisper / shout / emote) for presentation
+    /// checks — radio and station announcements live on other UI surfaces. SystemsBootstrap creates it
+    /// in debug builds (same as ScreenEffectsDebugMenuView).
     /// </summary>
     public sealed class LocalSpeechDebugTrigger : Actor
     {
@@ -44,8 +44,11 @@ namespace SS3D.Systems.Comms
 
         private static bool s_bootstrapped;
 
-        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
-        private static void Bootstrap()
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+        private static void ResetStatics() => s_bootstrapped = false;
+
+        /// <summary>Called by <c>SystemsBootstrap</c> at cold start, in debug builds only (the F1 menu reaches it).</summary>
+        public static void Bootstrap()
         {
             if (s_bootstrapped)
             {

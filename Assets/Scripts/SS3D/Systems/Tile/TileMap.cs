@@ -509,6 +509,33 @@ namespace SS3D.Systems.Tile
             EvaluateBuild(tileObjectSo, placePosition, dir, replaceExisting).Length == 0;
 
         /// <summary>
+        /// Whether a player body stands in the given cell. A wall or a closed door built there spawns its
+        /// colliders on the body, and the character controller then pushes it out into the next wall.
+        /// Defaults to the spawned players; EditMode tests swap it, since they have no entities.
+        /// </summary>
+        public Func<Vector3, bool> IsBodyInCell { get; set; } = IsSpawnedPlayerInCell;
+
+        private static bool IsSolidTurf(TileObjectSo tileObjectSo) =>
+            tileObjectSo.layer == TileLayer.Turf
+            && tileObjectSo.genericType is TileObjectGenericType.Wall or TileObjectGenericType.Door;
+
+        private static bool IsSpawnedPlayerInCell(Vector3 gridPosition)
+        {
+            if (!SubSystems.TryGet(out SS3D.Systems.Entities.EntitySubSystem entities))
+                return false;
+
+            Vector3 cell = TileHelper.GetClosestPosition(gridPosition);
+            IReadOnlyList<SS3D.Systems.Entities.Entity> players = entities.SpawnedPlayers;
+            for (int i = 0; i < players.Count; i++)
+            {
+                if (players[i] != null && TileHelper.GetClosestPosition(players[i].transform.position) == cell)
+                    return true;
+            }
+
+            return false;
+        }
+
+        /// <summary>
         /// Aggregates <see cref="BuildChecker"/> failures across every cell the object occupies.
         /// </summary>
         public BuildFailReason[] EvaluateBuild(TileObjectSo tileObjectSo, Vector3 placePosition, Direction dir, bool replaceExisting)
@@ -529,6 +556,9 @@ namespace SS3D.Systems.Tile
                     GetNeighbourPlacedObjects(TileLayer.Turf, gridPosition),
                     replaceExisting,
                     this);
+
+                if (IsSolidTurf(tileObjectSo) && IsBodyInCell(gridPosition) && !failures.Contains(BuildFailReason.BodyInTheWay))
+                    failures.Add(BuildFailReason.BodyInTheWay);
 
                 foreach (BuildFailReason failure in cellFailures)
                 {
@@ -729,24 +759,63 @@ namespace SS3D.Systems.Tile
             // Create new PlacedItemObject and add to tracking
             PlacedItemObject placedItem = PlacedItemObject.Create(worldPosition, rotation, itemObjectSo, existingItem);
             placedItem.transform.SetParent(transform);
+            placedItem.Owner = this;
             _items.Add(placedItem);
         }
 
-        public void ClearItemObject(Vector3 worldPosition, ItemObjectSo itemObjectSo)
+        /// <returns>True when an item was found and removed.</returns>
+        public bool ClearItemObject(Vector3 worldPosition, ItemObjectSo itemObjectSo)
         {
-            List<PlacedItemObject> placedItems = _items.FindAll(item => item.NameString == itemObjectSo.NameString);
+            PruneDestroyedItems();
+            // The nearest match, not the last one in range: in a pile of the same item the map editor
+            // would otherwise delete a different one than the item clicked.
             PlacedItemObject toRemove = null;
-
-            foreach (PlacedItemObject item in placedItems)
+            float nearest = 1f;
+            foreach (PlacedItemObject item in _items)
             {
-                if (Vector3.Distance(item.transform.position, worldPosition) < 1f)
+                if (item.NameString != itemObjectSo.NameString)
+                    continue;
+
+                float distance = Vector3.Distance(item.transform.position, worldPosition);
+                if (distance < nearest)
                 {
+                    nearest = distance;
                     toRemove = item;
                 }
             }
 
-            toRemove?.DestroySelf();
+            if (toRemove == null)
+                return false;
+
             _items.Remove(toRemove);
+            toRemove.DestroySelf();
+            return true;
+        }
+
+        /// <summary>
+        /// Called by <see cref="PlacedItemObject"/> when its GameObject is destroyed (despawned by a
+        /// detonation, consumed, etc.) so the list never holds dead entries. Uses reference equality
+        /// so the match never depends on Unity's destroyed-object null semantics mid-teardown.
+        /// </summary>
+        internal void ForgetDestroyedItem(PlacedItemObject placedItemObject)
+        {
+            if (_items == null)
+                return;
+
+            for (int i = _items.Count - 1; i >= 0; i--)
+            {
+                if (ReferenceEquals(_items[i], placedItemObject))
+                    _items.RemoveAt(i);
+            }
+        }
+
+        /// <summary>
+        /// Drops entries whose GameObject was destroyed without going through the map
+        /// (backstop for <see cref="ForgetDestroyedItem"/>).
+        /// </summary>
+        private void PruneDestroyedItems()
+        {
+            _items.RemoveAll(item => item == null);
         }
 
         /// <summary>
@@ -774,16 +843,15 @@ namespace SS3D.Systems.Tile
             _chunks.Clear();
             BumpStructureVersion();
 
-            // Clear items list safely, checking for null references
+            // Take each entry out before destroying it: destruction calls back into ForgetDestroyedItem.
             while (_items.Count > 0)
             {
-                PlacedItemObject item = _items.First();
-                if (item != null && item.gameObject != null)
+                PlacedItemObject item = _items[_items.Count - 1];
+                _items.RemoveAt(_items.Count - 1);
+                if (item != null)
                 {
                     item.DestroySelf();
                 }
-                
-                _items.RemoveAt(0);
             }
 
             // Template restore skips missing spawn chunks — wipe markers with the map so stale
@@ -808,6 +876,8 @@ namespace SS3D.Systems.Tile
                 chunkObjectSaveList.Add(chunk.Save());
             }
 
+            // Exploded/despawned items must not be written back into the save.
+            PruneDestroyedItems();
             foreach (PlacedItemObject item in _items)
             {
                 itemSaveList.Add(item.Save());

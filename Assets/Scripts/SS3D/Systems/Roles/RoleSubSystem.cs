@@ -388,7 +388,7 @@ namespace SS3D.Systems.Roles
 
             if (!inventory.TryGetTypeContainer(ContainerType.Identification, 0, out AttachedContainer container)) return;
 
-            Item idCardItem = itemSystem.SpawnItem(role.IDCardAsset.Id, Vector3.zero, Quaternion.identity);
+            Item idCardItem = itemSystem.SpawnItemAtRest(role.IDCardAsset.Id, Vector3.zero);
             IDCard idCard = (IDCard)idCardItem;
 
             CrewRecord crewRecord = idAccess.CreateCrewRecord(

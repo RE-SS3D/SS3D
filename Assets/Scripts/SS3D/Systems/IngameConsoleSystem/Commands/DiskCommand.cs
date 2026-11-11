@@ -1,13 +1,8 @@
-﻿using FishNet.Connection;
-using FishNet.Object;
-using SS3D.Core;
-using SS3D.Logging;
-using SS3D.Permissions;
+﻿using SS3D.Permissions;
 using SS3D.Systems.Entities;
 using SS3D.Systems.Inventory.Containers;
 using SS3D.Systems.Inventory.Items;
 using SS3D.Systems.Inventory.Items.Generic;
-using SS3D.Systems.PlayerControl;
 using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
@@ -20,93 +15,43 @@ namespace SS3D.Systems.IngameConsoleSystem.Commands
     /// </summary>
     public class DiskCommand : Command
     {
-        private const string HereArg = "here";
+        private static readonly IReadOnlyList<CommandParameter> Params = new[] { P.Target().Optional() };
 
-        public override string ShortDescription => "Find or teleport the authentication disk";
-
-        public override string LongDescription =>
-            "With no arguments, lists every authentication disk and who or what holds it. " +
-            "\"disk here\" moves it to your feet; \"disk (ckey)\" moves it to that player's feet. " +
-            "A disk held in a hand or bag is taken out first.";
-
-        public override string Usage => "[here | (ckey)]";
-
+        public override string Name => "disk";
+        public override CommandCategory Category => CommandCategory.Admin;
+        public override string Description =>
+            "List every authentication disk and its holder, or take it out of any hand or bag and drop it at the target's feet";
         public override ServerRoleTypes AccessLevel => ServerRoleTypes.Administrator;
-
         public override CommandType Type => CommandType.Server;
+        public override IReadOnlyList<CommandParameter> Parameters => Params;
+        public override string Example => "me";
 
-        private record CalculatedValues(string Mode) : ICalculatedValues;
-
-        [Server]
-        public override string Perform(string[] args, NetworkConnection conn = null)
+        public override CommandResult Perform(CommandContext context, CommandArgs args)
         {
-            if (!ReceiveCheckResponse(args, out CheckArgsResponse response, out CalculatedValues values))
-            {
-                return response.InvalidArgs;
-            }
-
             List<NukeCard> disks = FindDisks();
             if (disks.Count == 0)
             {
-                return "No authentication disk exists this round.";
+                return CommandResult.Success("No authentication disk exists this round.");
             }
 
-            if (values.Mode == null)
+            if (!args.Has("target"))
             {
-                return Describe(disks);
+                return CommandResult.Success(Describe(disks));
             }
 
-            EntitySubSystem entities = SubSystems.Get<EntitySubSystem>();
-            Entity destination;
-            if (values.Mode == HereArg)
-            {
-                if (!entities.TryGetOwnedEntity(conn, out destination) || destination == null)
-                {
-                    return "You have no body to teleport the disk to. Use \"disk (ckey)\".";
-                }
-            }
-            else
-            {
-                Player player = SubSystems.Get<PlayerSubSystem>().GetPlayer(values.Mode);
-                destination = player != null ? entities.GetSpawnedEntity(player) : null;
-                if (destination == null)
-                {
-                    return $"Player {values.Mode} has no body to teleport the disk to.";
-                }
-            }
+            Entity destination = args.Target().Entity;
 
             // Several disks only happen on a broken map; move the first and say so.
             NukeCard disk = disks[0];
             string from = DescribeLocation(disk);
             if (!TryTeleport(disk, destination.transform.position, out string failure))
             {
-                return failure;
+                return CommandResult.Error(failure);
             }
 
-            string admin = SubSystems.Get<PlayerSubSystem>().GetCkey(conn);
-            Log.Information(this, "Admin {admin} teleported the authentication disk from {from} to {destination}",
-                Logs.ServerOnly, admin, from, destination.name);
-
+            // CommandsController writes the AdminAction log line for this command.
             string answer = $"Disk moved from {from} to {destination.name} at {destination.transform.position}.";
-            return disks.Count > 1 ? answer + $" {disks.Count - 1} other disk(s) left in place." : answer;
-        }
-
-        [Server]
-        protected override CheckArgsResponse CheckArgs(string[] args)
-        {
-            CheckArgsResponse response = new();
-            if (args.Length == 0)
-            {
-                return response.MakeValid(new CalculatedValues(null));
-            }
-
-            if (args.Length != 1)
-            {
-                return response.MakeInvalid("Invalid number of arguments");
-            }
-
-            string mode = args[0].Equals(HereArg, System.StringComparison.OrdinalIgnoreCase) ? HereArg : args[0];
-            return response.MakeValid(new CalculatedValues(mode));
+            return CommandResult.Success(disks.Count > 1 ? answer + $" {disks.Count - 1} other disk(s) left in place." : answer);
         }
 
         private static List<NukeCard> FindDisks()
@@ -133,7 +78,7 @@ namespace SS3D.Systems.IngameConsoleSystem.Commands
                 container.RemoveItem(disk);
                 if (disk.Container != null)
                 {
-                    failure = $"Disk is locked in {container.gameObject.name} and can't be taken out.";
+                    failure = $"disk is locked in {container.gameObject.name} and can't be taken out.";
                     return false;
                 }
             }

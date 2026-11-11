@@ -380,7 +380,7 @@ Ships between Phase 5 and Phase 6. Design authority: health.md §5 (Severed tier
 1. **`AnatomyNode`** — restore detach fields: skinned mesh ref, sever anchor, optional severed-item prefab; `IsSevered` runtime state.
 2. **`HumanAnatomyController`** — zone → anatomy subtree map from nested HumanBodyParts prefabs; hide meshes, disable zone colliders, spawn severed item via `ItemSubSystem`.
 3. **`ZoneDamageState.IsSevered`** — explicit transition to `WoundSeverity.Severed` (not derived from brute thresholds); max bleeding; limb function hard-disabled.
-4. **Severance trigger** — zone must reach Disabled first; sharp melee (`CanSever` on `MeleeDamagePacket`) or admin `sever` / `destroybodypart` commands.
+4. **Severance trigger** — zone must reach Disabled first; sharp melee (`CanSever` on `MeleeDamagePacket`) or admin `sever <target> <zone> [force]` command.
 5. **Head decapitation** — mind-swap to severed head entity (plan key decision); body deactivates player controls, does not run ghost/death flow.
 6. **Reattachment / prosthetics** — explicitly deferred to Phase 7c.
 
@@ -587,7 +587,7 @@ health.md §8 + death-cloning §9 example A, end-to-end:
 - `HumanAnatomyController` maps zones to nested body-part prefabs, hides anatomy, disables zone colliders, spawns world item copies; head severance instantiates `HumanHead` with runtime `Entity` before FishNet spawn, then `MindSubSystem.SwapMinds`.
 - `ZoneDamageState.IsSevered` + `HealthSnapshot.SeveredZoneMask`; severance requires Disabled tier unless admin `force`.
 - Sharp melee: `CanSever` on `MeleeDamagePacket` / `MeleeWeaponProfile`; hatchet and kitchen knife wired via `MeleeWeaponItemExtension`.
-- Admin: `sever (ckey) (zone) [force]`; `destroybodypart` force-severs head for decap testing.
+- Admin: `sever <target> <zone> [force]`; `sever <target> Head force` force-severs the head for decap testing.
 - Reattachment / stump `HumanCut.mat` / nested NO unparent deferred (Phase 7c / art).
 
 ### Phase 6 (partial)

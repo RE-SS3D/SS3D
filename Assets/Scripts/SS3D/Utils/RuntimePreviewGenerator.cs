@@ -148,13 +148,27 @@ public static class RuntimePreviewGenerator
 
 	private static Quaternion m_previewRotation = Quaternion.identity;
 	/// <summary>
-	/// Rotation applied to non-static preview roots before framing (default identity).
-	/// Item/tile icon callers set this to the prefab rest pose so long items render on their side.
+	/// Rotation applied to non-static preview roots before framing (default identity). The camera is fixed, so
+	/// this alone decides which side faces it. Item icons set it to Item.IconRotation.
 	/// </summary>
 	public static Quaternion PreviewRotation
 	{
 		get { return m_previewRotation; }
 		set { m_previewRotation = value; }
+	}
+
+	/// <summary>SS3D: fixed in world space, not following the object (that turned a taser icon upside down).</summary>
+	public static Quaternion CameraRotation => Quaternion.LookRotation( m_previewDirection, Vector3.up );
+
+	private static Transform m_boundsTarget = null;
+	/// <summary>
+	/// SS3D: frame the camera on this descendant of the model instead of the whole model (null: the model).
+	/// The item pose contact sheet frames the held item while the whole Human renders around it.
+	/// </summary>
+	public static Transform BoundsTarget
+	{
+		get { return m_boundsTarget; }
+		set { m_boundsTarget = value; }
 	}
 
 	private static bool m_useLocalBounds = false;
@@ -314,9 +328,10 @@ public static class RuntimePreviewGenerator
 			if( !wasActive )
 				previewObject.gameObject.SetActive( true );
 
-			Quaternion cameraRotation = Quaternion.LookRotation( previewObject.rotation * m_previewDirection, Vector3.up );
+			Quaternion cameraRotation = CameraRotation;
 			Bounds previewBounds = new Bounds();
-			if( !CalculateBounds( previewObject, shouldIgnoreParticleSystems, cameraRotation, out previewBounds ) )
+			Transform boundsTarget = m_boundsTarget != null && !shouldCloneModel && m_boundsTarget.IsChildOf( previewObject ) ? m_boundsTarget : previewObject;
+			if( !CalculateBounds( boundsTarget, shouldIgnoreParticleSystems, cameraRotation, out previewBounds ) )
 			{
 #if UNITY_2018_2_OR_NEWER
 				if( asyncCallback != null )

@@ -297,7 +297,7 @@ namespace SS3D.Systems.Entities
                 string job = SubSystems.Get<RoleSubSystem>().TryGetRole(player, out RoleData role)
                     ? role.Name.ToLowerInvariant()
                     : "crew";
-                SubSystems.Get<CommsSubSystem>()?.SendAnnouncement(
+                SubSystems.GetOrNull<CommsSubSystem>()?.SendAnnouncement(
                     $"{entity.Mind.DisplayName}, {job}, has joined the ship");
             }
         }
@@ -375,9 +375,12 @@ namespace SS3D.Systems.Entities
         /// <summary>
         /// Operatives spawn on the map's Nuclear Operatives markers, spread over them in draw order.
         /// Everyone else: the legacy inspector spawn transform; otherwise the first authored map spawn
-        /// marker; otherwise the hub transform (scene spawn points are gone after Phase 3h). Crew job
-        /// markers are not routed yet.
+        /// marker; otherwise the walkable deck nearest the hub transform (a map that has lost its markers, started
+        /// with <see cref="RoundAdminAction.EditMapAnyway"/> to fix it); otherwise the hub transform itself (scene
+        /// spawn points are gone after Phase 3h). Crew job markers are not routed yet.
         /// </summary>
+        private const int NoMarkerSearchRadius = 64;
+
         private Vector3 ResolveSpawnPosition(Player player)
         {
             if (TryResolveOperativeSpawn(player, out Vector3 operativeSpawn))
@@ -395,6 +398,11 @@ namespace SS3D.Systems.Entities
                 && tile.SpawnPoints.Count > 0)
             {
                 return tile.SpawnPoints.Records[0].Position;
+            }
+
+            if (StationBoundsRescue.TryFindWalkableDeck(transform.position, NoMarkerSearchRadius, out Vector3 deck))
+            {
+                return deck;
             }
 
             return transform.position;

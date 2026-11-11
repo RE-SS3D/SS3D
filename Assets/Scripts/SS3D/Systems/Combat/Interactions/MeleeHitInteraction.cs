@@ -1,4 +1,4 @@
-using FishNet.Object;
+﻿using FishNet.Object;
 using SS3D.Core;
 using SS3D.Data;
 using SS3D.Data.Generated;
@@ -39,7 +39,7 @@ namespace SS3D.Systems.Combat.Interactions
         public int Priority => 100;
 
         /// <summary>
-        /// Melee uses swing telegraph + reticle lock-on recharge — never the world-space LoadingBar.
+        /// Melee uses swing telegraph + reticle lock-on recharge — never the progress ring.
         /// </summary>
         public override IClientInteraction CreateClient(InteractionEvent interactionEvent) => null;
 
@@ -199,6 +199,9 @@ namespace SS3D.Systems.Combat.Interactions
         /// </summary>
         protected override bool CancelOnMove => false;
 
+        /// <summary>Getting hit mid-swing does not abort it; recovery and stamina gate the exchange.</summary>
+        public override bool CancelOnDamage => false;
+
         /// <summary>
         /// Hands animate during the swing — if cancel-on-move is re-enabled, use entity root
         /// rather than the hand bone.
@@ -334,7 +337,9 @@ namespace SS3D.Systems.Combat.Interactions
                 return false;
             }
 
-            Vector3 origin = entity.transform.position + Vector3.up * 1.5f;
+            Vector3 origin = combat != null
+                ? combat.ServerEyePosition()
+                : entity.transform.position + Vector3.up * CombatAimRay.FallbackEyeHeight;
             Vector3 direction = AimDirectionFromYawPitch(body.AimYaw, body.AimPitch);
             if (direction.sqrMagnitude < 0.0001f)
             {

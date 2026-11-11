@@ -397,8 +397,10 @@ namespace SS3D.Editor.Automation
                         Click(start);
                         _pendingStartClick = false;
                     }
-                    return Rounds().CurrentStationLoadState == StationLoadState.Failed
-                        && Rounds().AdminSettingsStatus.Contains("Missing job spawn");
+                    // The form's copy of the status follows the admin settings read, so wait for the label too.
+                    return Rounds().CurrentStationLoadState == StationLoadState.Unplayable
+                        && Rounds().AdminSettingsStatus.Contains("Missing job spawn")
+                        && Shell().Q<Label>("server-map-load-status").text.Contains("Missing job spawn");
                 },
                 Verify = () =>
                 {
@@ -406,7 +408,9 @@ namespace SS3D.Editor.Automation
                         && !Spawned(), "Invalid map never reaches countdown or spawns players");
                     foreach (JobSlotInfo job in SubSystems.Get<RoleSubSystem>().Jobs)
                         Require(Rounds().AdminSettingsStatus.Contains(job.Name), $"Validation explains missing {job.Name} spawn");
-                    Shell().Q<ScrollView>("server-settings-scroll").ScrollTo(Shell().Q("server-settings-status"));
+                    Require(Visible(Shell().Q("server-edit-anyway")) && Shell().Q<Button>("server-edit-anyway").enabledInHierarchy,
+                        "Edit Map Anyway is offered for the unplayable map");
+                    Shell().Q<ScrollView>("server-settings-scroll").ScrollTo(Shell().Q("server-map-load-status"));
                     Capture("server-settings-validation");
                     CreateValidationStation(valid: true);
                 },
@@ -606,7 +610,7 @@ namespace SS3D.Editor.Automation
                     Rounds().CmdSaveServerSettings(settings);
                 },
                 Until = () => Rounds().SettingsForServer.PlayerCap == 32 && Rounds().AllowLateJoin
-                    && Shell().Q<Toggle>("server-late-join").value && Shell().Q<IntegerField>("server-round-length").value == 90,
+                    && Shell().Q<Toggle>("server-late-join").value && Shell().Q<IntegerField>("server-round-length").value == ServerSettings.Default.RoundLengthMinutes,
             },
             new Step { Name = "Leave admin before lifecycle", Enter = () => Click(AdminButton()), Until = () => Shell().Q("server-settings-form") == null },
             new Step { Name = "Ready", Enter = () => Click(ReadyButton()), Until = () => IsReady() && ReadyButton().text.Contains("READY") && CountLabel() == "1/1 ready",

@@ -1,92 +1,40 @@
-using System.Collections.Generic;
-using Coimbra;
-using SS3D.Data;
-using SS3D.Data.Generated;
-using SS3D.Interactions.Extensions;
 using SS3D.Interactions.Interfaces;
 using UnityEngine;
 
 namespace SS3D.Interactions
 {
     /// <summary>
-    /// Shows immediate client feedback while waiting for server interaction confirmation.
+    /// Starts the progress ring on click, before the server confirms, so a timed step shows at once.
+    /// <see cref="ClientDelayedInteraction"/> adopts the ring when the confirm arrives; a rejection clears it.
     /// </summary>
     public static class InteractionOptimisticFeedback
     {
-        private static readonly Dictionary<int, LoadingBar> ActiveBars = new();
-
         public static void TryBeginDelayed(IInteraction interaction, InteractionEvent interactionEvent)
         {
-            if (interaction is not IDelayedInteraction delayedInteraction)
+            if (interaction is not DelayedInteraction delayedInteraction || delayedInteraction.ClientDelay < 0.1f)
             {
                 return;
             }
 
-            if (interactionEvent.Source.GetRootSource() is not IGameObjectProvider source)
+            // Steps with their own client feedback (melee telegraph, paperdoll spinner) create no client.
+            if (delayedInteraction.CreateClient(interactionEvent) == null)
             {
                 return;
             }
 
-            float delay = GetDelay(delayedInteraction);
-            if (delay < 0.1f)
+            if (!DelayedProgressFeedback.TryGetKey(interactionEvent, out int key, out Transform source))
             {
                 return;
             }
 
-            Clear(source.GameObject.transform);
-            ShowLoadingBar(source.GameObject.transform, delay);
+            DelayedProgressFeedback.ResolveAnchor(interactionEvent, source, out Transform anchor, out Vector3 point);
+            DelayedProgressFeedback.Begin(key, anchor, point, delayedInteraction.ClientDelay);
         }
 
-        public static bool TryAdoptExisting(Transform sourceTransform, out LoadingBar loadingBar)
-        {
-            int key = sourceTransform.GetInstanceID();
-            if (ActiveBars.TryGetValue(key, out loadingBar) && loadingBar != null)
-            {
-                return true;
-            }
+        /// <summary>Removes the local player's rings without a message (server rejection).</summary>
+        public static void ClearAll() => DelayedProgressFeedback.ClearAll();
 
-            loadingBar = null;
-            return false;
-        }
-
-        public static void Clear(Transform sourceTransform)
-        {
-            if (sourceTransform == null)
-            {
-                return;
-            }
-
-            int key = sourceTransform.GetInstanceID();
-            if (!ActiveBars.TryGetValue(key, out LoadingBar loadingBar))
-            {
-                return;
-            }
-
-            ActiveBars.Remove(key);
-
-            if (loadingBar != null)
-            {
-                loadingBar.GameObject.Dispose(true);
-            }
-        }
-
-        private static void ShowLoadingBar(Transform parent, float delay)
-        {
-            LoadingBar loadingBarPrefab = Assets.Get<LoadingBar>(AssetDatabases.WorldSpaceUI, WorldSpaceUI.LoadingBar);
-            LoadingBar instance = Object.Instantiate(loadingBarPrefab, parent);
-            instance.LocalPosition = new Vector3(0f, 0.5f, 0f);
-            instance.Duration = delay;
-            ActiveBars[parent.GetInstanceID()] = instance;
-        }
-
-        private static float GetDelay(IDelayedInteraction delayedInteraction)
-        {
-            if (delayedInteraction is DelayedInteraction concrete)
-            {
-                return concrete.ClientDelay;
-            }
-
-            return 0f;
-        }
+        /// <summary>Shows "Cancelled" on the local player's running rings (Cancel key).</summary>
+        public static void CancelLocal() => DelayedProgressFeedback.CancelAll(DelayedCancelReason.Manual);
     }
 }

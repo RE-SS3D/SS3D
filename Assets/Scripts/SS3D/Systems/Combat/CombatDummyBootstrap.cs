@@ -23,7 +23,6 @@ namespace SS3D.Systems.Combat
         {
             _ragdoll = GetComponentInChildren<Ragdoll>(true);
             _livingControllers = GetComponentsInChildren<HumanoidLivingController>(true);
-            DisableBehavioursInChildren<HumanoidPredictedMovement>();
             DisableBehavioursInChildren<HumanoidLivingController>();
             DisableBehavioursInChildren<InteractionController>();
             DisableBehavioursInChildren<HumanoidCombatController>();

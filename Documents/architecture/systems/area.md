@@ -45,7 +45,7 @@ Per-consumer power gating and **area-scoped APC cell drain** via [electricity](e
 - Resolve area record by id: `AreaSubSystem.TryGetArea`.
 - Client / no-registry area id: `TryResolveAreaIdForDevice` — server/host with live map uses `TryGetAreaForDevice` only (sticky None); pure clients use `FloorVisualCache`.
 - Register APC origins: implement `IAreaApcOrigin` (see `ApcController`); register in `OnStartServer`, unregister in `OnStopServer`.
-- Server room metadata APIs: `AreaSubSystem.RenameArea`, `SetParentTag`, `SetDefaultRequiredAccess`; Map Editor Scripts → Rooms tab selects or creates rooms and edits these via RPCs gated by `MapEditorPermissions.TryAuthorize` (admin, or anyone on `-openbuild`/`-sandbox`) in `MapEditorArea.cs`.
+- Server room metadata APIs: `AreaSubSystem.RenameArea`, `SetParentTag`, `SetDefaultRequiredAccess`; Map Editor Scripts → Rooms tab selects or creates rooms and edits these via RPCs gated by `MapEditorPermissions.TryAuthorize` (admin, or any non-Restricted player on `-sandbox`) in `MapEditorArea.cs`.
 - Resolve effective APC for a device: `AreaSubSystem.TryGetEffectiveApcForDevice`.
 - Area rebuild / APC lifecycle invalidates electricity's per-APC consumer index and atmos's area→port index via `InvalidateAreaMembershipIndexes`.
 - Query lighting by tile: `IAreaLightingStateSource.TryGetLightingStateForTile`.

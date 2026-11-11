@@ -9,7 +9,7 @@
 
 Base actor/subsystem pattern and runtime service locator. All gameplay domains expose a `*SubSystem` registered via `SubSystems.Get<T>()`. `NetworkSubSystem` extends FishNet `NetworkActor` for networked subsystems.
 
-Process-wide services: `SystemsBootstrap` (DDOL, `AfterSceneLoad`; creates network session, command-line, player settings, scene, input, world readiness, screen effects, ambience/personal audio, automation, vision, server-status publisher, client main menu, then `ApplicationInitializerSubSystem` last). World/session networked systems: `NetworkSystemsHub` Resources prefab (spawned Online). Boot/Game do not place per-system SubSystem GameObjects ([session-world-lifecycle](../../archive/architecture/2026-07_session-world-lifecycle.md)).
+Process-wide services: `SystemsBootstrap` (DDOL, `AfterSceneLoad`; creates network session, command-line, player settings, scene, input, world readiness, screen effects, ambience/personal audio, automation, vision, server-status publisher, structural damage, bug reports (not in batch mode), the airlock proximity service, the floor-decal and area-stripe views, the debug-build-only local-speech and screen-effects debug tools, client main menu, then `ApplicationInitializerSubSystem` last). Systems types do not self-bootstrap with `AfterSceneLoad`; add new process-wide services here so the Test Runner guard covers them. World/session networked systems: `NetworkSystemsHub` Resources prefab (spawned Online). Boot/Game do not place per-system SubSystem GameObjects ([session-world-lifecycle](../../archive/architecture/2026-07_session-world-lifecycle.md)).
 
 ## Start here
 
@@ -34,6 +34,7 @@ Process-wide services: `SystemsBootstrap` (DDOL, `AfterSceneLoad`; creates netwo
 
 - **Registration ≠ readiness.** Await `WorldReadyPhase` before round start / sim ticks that need flooded areas.
 - **Missing Get during Disconnecting / WaitingForServer is silent** — use `TryGet`.
+- **Expecting a miss? Use `TryGet` or `GetOrNull<T>()?.`, never `Get<T>()?.`:** `Get` logs an error and scans the scene on a miss. The registry drops destroyed instances, `Unregister` only removes the instance that is registered (a destroyed duplicate can't evict the live one), and quit flag and registry reset on `SubsystemRegistration` for Play Mode without a domain reload (tech-debt P2.3).
 - **Bootstrap order and Test Runner cold start** are silent failures too — see [application](application.md) Pitfalls.
 - **Game content prefabs may still host SubSystems** (`PlayerCameraSubSystem`, Radial/Armed interaction overlays, `MapEditorSubSystem`) that register before hub Online — Phase 3 only stripped Boot/Game systems roots. Consumers must `TryGet` / lazy-resolve; relocating those components onto bootstrap/hub is residual cleanup ([session-world-lifecycle](../../archive/architecture/2026-07_session-world-lifecycle.md) post-ship note).
 - **Do not AddComponent NetworkSubSystems at runtime** — edit-time on hub prefab only (FishNet behaviour list).

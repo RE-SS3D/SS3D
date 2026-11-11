@@ -96,6 +96,14 @@ namespace SS3D.Systems.Tile
             return failures.Count == 0 ? EmptyFailures : failures.ToArray();
         }
 
+        /// <summary>
+        /// Wreckage blocks construction on its cell and layer (D9 of 2026-11_construction-mvp1). Not part of
+        /// <see cref="Evaluate"/>: the map editor keeps placing over wreckage, which deletes it.
+        /// </summary>
+        /// <param name="hasWreckage">Wreckage lookup, e.g. <see cref="TileSubSystem.HasWreckage"/>; null means none.</param>
+        public static bool WreckageBlocks(System.Func<TileCoord, TileLayer, bool> hasWreckage, TileCoord coord, TileLayer layer) =>
+            hasWreckage != null && hasWreckage(coord, layer);
+
         private static void CollectWallAttachmentFailures(SingleTileLocation wallLocation, TileObjectSo wallAttachment,
             Direction dir, PlacedTileObject[] adjacentObjects, List<BuildFailReason> failures)
         {

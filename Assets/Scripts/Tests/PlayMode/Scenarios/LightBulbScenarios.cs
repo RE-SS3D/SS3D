@@ -107,15 +107,13 @@ namespace SS3D.Tests
         private static int CountLooseBroken() => Object.FindObjectsByType<LightBulbItem>(FindObjectsSortMode.None)
             .Count(item => item.IsBroken && !item.GetComponent<Item>().IsInContainer());
 
-        /// <summary>Harm intent, a camera ray at <paramref name="target"/>, and the server fire path the trigger reaches.</summary>
+        /// <summary>Harm intent, an aim point at <paramref name="target"/> (the server fires from the eye), and the server fire path the trigger reaches.</summary>
         private IEnumerator Fire(Vector3 target)
         {
             InteractionController controller = Body.GetComponent<InteractionController>();
             typeof(InteractionController).GetField("_ownerIntent", Private).SetValue(controller, IntentType.Harm);
 
             CombatInteractionNetwork combat = Body.GetComponent<CombatInteractionNetwork>();
-            Vector3 eye = Body.transform.position + (Vector3.up * 1.6f);
-            typeof(CombatInteractionNetwork).GetField("_meleeAimRayOrigin", Private).SetValue(combat, eye);
             typeof(CombatInteractionNetwork).GetField("_meleeAimPoint", Private).SetValue(combat, target);
             typeof(CombatInteractionNetwork).GetField("_hasMeleeAimRay", Private).SetValue(combat, true);
             typeof(CombatInteractionNetwork).GetMethod("CmdRunRangedFire", Private).Invoke(combat, null);

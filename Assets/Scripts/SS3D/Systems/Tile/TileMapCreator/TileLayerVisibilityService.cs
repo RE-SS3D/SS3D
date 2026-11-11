@@ -137,7 +137,11 @@ namespace SS3D.Systems.Tile.TileMapCreator
                 return;
 
             foreach (PlacedItemObject placedItem in map.PlacedItems)
-                ApplyToRenderers(placedItem.gameObject, visible);
+            {
+                // A despawned item reads as null; touching .gameObject on it throws.
+                if (placedItem != null)
+                    ApplyToRenderers(placedItem.gameObject, visible);
+            }
 
             // Pure clients never track PlacedItems (PlacedItemObject is added server-side at runtime,
             // so it is not networked). Fall back to every loose world item.

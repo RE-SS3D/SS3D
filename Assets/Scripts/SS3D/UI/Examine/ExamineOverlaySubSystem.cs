@@ -124,6 +124,16 @@ namespace SS3D.UI.Examine
                 SubSystems.TryGet(out _inputSystem);
             }
 
+            // The hover target can be destroyed with no selection change (a disconnect despawns the
+            // round's objects). The interface null check misses a destroyed Unity object.
+            if (_currentExaminable is UnityEngine.Object target && target == null)
+            {
+                _currentExaminable = null;
+                _hoveredCharacterInventory = null;
+                InvalidateContentCache();
+                RefreshGenericDisplay();
+            }
+
             // The hover target can leave the FOV with no selection change: a door shuts, or the
             // player walks behind a wall.
             if (Time.unscaledTime >= _nextVisibilityCheck && UpdateTargetVisibility())
@@ -899,7 +909,7 @@ namespace SS3D.UI.Examine
             {
                 Debug.LogError(
                     $"ExamineOverlaySubSystem could not load Resources/{ExamineOverlayAssetPaths.ResourcesCatalogName}. "
-                    + "Run SS3D → Examine → Rebuild Examine Asset Catalog and commit the asset.",
+                    + "Run SS3D → Data → Rebuild All UI Catalogs and commit the asset.",
                     this);
                 return false;
             }
@@ -908,7 +918,7 @@ namespace SS3D.UI.Examine
             {
                 Debug.LogError(
                     $"ExamineOverlayAssetCatalog is missing required assets ({missingField}). "
-                    + "Run SS3D → Examine → Rebuild Examine Asset Catalog.",
+                    + "Run SS3D → Data → Rebuild All UI Catalogs.",
                     this);
                 return false;
             }

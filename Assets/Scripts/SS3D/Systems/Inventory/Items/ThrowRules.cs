@@ -1,3 +1,4 @@
+using SS3D.Core;
 using SS3D.Systems.Inventory.Containers;
 using UnityEngine;
 
@@ -66,22 +67,38 @@ namespace SS3D.Systems.Inventory.Items
         /// <summary>
         /// Where a throw aimed at <paramref name="target"/> lands. Within range it is the target itself;
         /// beyond it, the point at <paramref name="maxRange"/> along the same heading, at the thrower's
-        /// feet height so it falls short onto the floor instead of hanging in the air.
+        /// feet height so it falls short onto the floor instead of hanging in the air. The target's height is kept
+        /// within <see cref="MaxTargetHeightOffset"/> of the feet, and a non-finite target (a modified client's NaN)
+        /// lands at the feet.
         /// </summary>
         public static Vector3 ClampToRange(Vector3 throwerFeet, Vector3 target, float maxRange, out bool clamped)
         {
+            if (!RpcInput.IsFinite(target))
+            {
+                clamped = true;
+                return throwerFeet;
+            }
+
+            float height = Mathf.Clamp(target.y, throwerFeet.y - MaxTargetHeightOffset, throwerFeet.y + MaxTargetHeightOffset);
+            bool heightClamped = !Mathf.Approximately(height, target.y);
+            target.y = height;
+
             Vector3 planar = target - throwerFeet;
             planar.y = 0f;
             float distance = planar.magnitude;
             clamped = distance > maxRange;
             if (!clamped)
             {
+                clamped = heightClamped;
                 return target;
             }
 
             Vector3 heading = distance > 0.0001f ? planar / distance : Vector3.forward;
             return throwerFeet + heading * maxRange;
         }
+
+        /// <summary>A throw can't aim higher or lower than this from the thrower's feet: the station is one deck tall.</summary>
+        public const float MaxTargetHeightOffset = StationBounds.CeilingHeight;
 
         public static float FlightSeconds(Vector3 origin, Vector3 target)
         {

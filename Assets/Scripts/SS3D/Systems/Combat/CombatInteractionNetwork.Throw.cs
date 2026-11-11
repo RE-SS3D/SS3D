@@ -181,12 +181,13 @@ namespace SS3D.Systems.Combat
                 GetComponentInChildren<HumanoidIkController>()?.SetThrowAimYaw(yaw);
             }
 
+            // CmdThrow first: the server must hold the pending throw when the telegraph's trigger arrives.
+            CmdThrow(aimPoint);
             if (TryGetComponent(out HumanoidCombatController combat))
             {
                 combat.RequestAttack(AnimationTriggerId.Throw, 0f, (byte)variant);
             }
 
-            CmdThrow(aimPoint);
             SetThrowMode(false);
             return true;
         }
@@ -252,12 +253,21 @@ namespace SS3D.Systems.Combat
         /// Samples the server's launch (same origin, velocity and gravity) into <paramref name="points"/> and
         /// stops at the first collider in the way. Returns where the flight ends.
         /// </summary>
+        /// <summary>Shared hit buffer for throw-mode casts, which run every frame while aiming (no per-frame arrays).</summary>
+        private static readonly RaycastHit[] ThrowHits = new RaycastHit[32];
+
+        private static int _defaultLayerMask = -1;
+
+        /// <summary>Resolved on first use; <see cref="LayerMask.GetMask"/> can't run in a static initializer.</summary>
+        private static int DefaultLayerMask => _defaultLayerMask >= 0 ? _defaultLayerMask : _defaultLayerMask = LayerMask.GetMask("Default");
+
         private Vector3 SampleFlight(Vector3 origin, Vector3 target, List<Vector3> points)
         {
             points.Clear();
             float flight = ThrowRules.FlightSeconds(origin, target);
             Vector3 velocity = ThrowRules.LaunchVelocity(origin, target, Physics.gravity, flight);
-            int mask = LayerMask.GetMask("Default");
+            // The ceiling and the airlock lintels stop a real throw, so the preview arc ends on them too.
+            int mask = DefaultLayerMask | StationBounds.CeilingMask;
             Vector3 previous = origin;
             points.Add(origin);
             for (int i = 1; i <= ArcSamples; i++)
@@ -283,8 +293,10 @@ namespace SS3D.Systems.Combat
         {
             first = default;
             float nearest = float.MaxValue;
-            foreach (RaycastHit hit in Physics.RaycastAll(from, direction, length, mask, QueryTriggerInteraction.Ignore))
+            int count = Physics.RaycastNonAlloc(from, direction, ThrowHits, length, mask, QueryTriggerInteraction.Ignore);
+            for (int i = 0; i < count; i++)
             {
+                RaycastHit hit = ThrowHits[i];
                 if (hit.transform != null && !hit.transform.IsChildOf(transform) && hit.distance < nearest)
                 {
                     nearest = hit.distance;
@@ -340,7 +352,7 @@ namespace SS3D.Systems.Combat
         [ServerRpc]
         private void CmdThrow(Vector3 aimPoint)
         {
-            if (HasPendingThrow)
+            if (HasPendingThrow || !RpcInput.IsFinite(aimPoint))
             {
                 return;
             }
@@ -412,7 +424,7 @@ namespace SS3D.Systems.Combat
             }
 
             Vector3 origin = ClearReleasePoint(feet, ThrowRules.ReleasePoint(feet, heading, hand.Side == HandSide.Left));
-            hand.PlaceHeldItemOutOfHand(origin, Quaternion.LookRotation(heading.normalized));
+            hand.PlaceHeldItemOutOfHand(origin, ItemPlacement.WorldRotation(item, ItemPlacement.YawOf(heading)));
 
             if (item.TryGetComponent(out Rigidbody body))
             {
@@ -442,11 +454,12 @@ namespace SS3D.Systems.Combat
             }
 
             Vector3 direction = toRelease / distance;
-            RaycastHit[] hits = Physics.SphereCastAll(chest, ReleaseClearanceRadius, direction, distance,
-                LayerMask.GetMask("Default"), QueryTriggerInteraction.Ignore);
+            int count = Physics.SphereCastNonAlloc(chest, ReleaseClearanceRadius, direction, ThrowHits, distance,
+                DefaultLayerMask, QueryTriggerInteraction.Ignore);
             float clear = distance;
-            foreach (RaycastHit hit in hits)
+            for (int i = 0; i < count; i++)
             {
+                RaycastHit hit = ThrowHits[i];
                 if (hit.transform != null && !hit.transform.IsChildOf(transform) && hit.distance < clear)
                 {
                     clear = Mathf.Max(0f, hit.distance - 0.01f);
@@ -492,7 +505,7 @@ namespace SS3D.Systems.Combat
         {
             Vector3 landing = ThrowRules.ClampToRange(transform.position, aimPoint, range, out clamped);
             if (clamped && Physics.Raycast(landing + Vector3.up * 1.5f, Vector3.down, out RaycastHit floor, 4f,
-                    LayerMask.GetMask("Default"), QueryTriggerInteraction.Ignore))
+                    DefaultLayerMask, QueryTriggerInteraction.Ignore))
             {
                 landing = floor.point;
             }

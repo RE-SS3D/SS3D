@@ -29,6 +29,8 @@ Composition root for player-facing UI Toolkit surfaces. `UiShellSubSystem` self-
 | Machine UI | `MachineUiAssetPaths` / `MachineUiAssetCatalog` | [machine-interface](machine-interface.md) |
 | Main HUD | `MainHudAssetPaths` / `MainHudAssetCatalog` | [inventory](inventory.md) |
 | Storage Panel | `StoragePanelAssetPaths` / `StoragePanelAssetCatalog` | [inventory](inventory.md) |
+| Map Editor | `MapEditorSubSystem`'s own `UIDocument` (`MapEditorCanvas.prefab`) hosting `MapEditorView`; palette data in `MapEditorCatalog` (not a UI path catalog) | [map-editor-creative-hooks](map-editor-creative-hooks.md), [tile](tile.md) |
+| FPS counter | `UI/MainHud/Components/FpsCounterView` adds its own `UIDocument` on Main HUD PanelSettings | [inventory](inventory.md) |
 
 The F1 developer window (`UI/MainHud/Dev/DebugMenuView.cs`) also owns a private DDOL `UIDocument`; it uses Main HUD PanelSettings and has not migrated to `UiLayer.Debug`.
 

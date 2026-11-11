@@ -36,9 +36,9 @@ namespace EditorTests
             GameObject prefab = AssetDatabase.LoadAssetAtPath<GameObject>(HumanPrefabPath);
             Assert.IsNotNull(prefab, $"Could not load prefab at {HumanPrefabPath}");
 
-            RagdollWhenPressingButton[] hacks = prefab.GetComponentsInChildren<RagdollWhenPressingButton>(true);
+            int hacks = prefab.GetComponentsInChildren<MonoBehaviour>(true).Count(b => b != null && b.GetType().Assembly.GetName().Name == "SS3D.Hacks");
 
-            Assert.AreEqual(0, hacks.Length, "Human.prefab must not ship SS3D.Hacks debug components to players.");
+            Assert.AreEqual(0, hacks, "Human.prefab must not ship SS3D.Hacks debug components to players.");
         }
 
         [Test]

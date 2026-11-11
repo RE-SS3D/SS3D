@@ -114,7 +114,7 @@ namespace SS3D.Tests
         public IEnumerator ApplyOxygen_DrawsFromTheTankUntilItIsEmpty()
         {
             HumanHealthController health = Body.GetComponent<HumanHealthController>();
-            yield return Console.Expect("spawninhand OxygenTank", "spawned in hand");
+            yield return Console.Expect("spawn OxygenTank hand", "spawned in hand");
             GasTankItemExtension tank = Body.GetComponent<Hands>().SelectedHand.ItemInHand.GetComponent<GasTankItemExtension>();
             while (health.Snapshot.Pools.OxyDebt < HealthConstants.TreatmentOxyDebtThreshold)
             {

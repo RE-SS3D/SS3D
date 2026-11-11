@@ -22,9 +22,9 @@ namespace SS3D.Systems.Tile.TileMapCreator
         public Vector3 TargetPosition { get => _targetPosition; set => _targetPosition = value; }
         public float PlacementYOffset { get; private set; }
 
-        /// <summary>Yaw from direction composed with authored item rest pitch/roll.</summary>
+        /// <summary>Yaw from direction composed with the rest pose (an item's, or a tile object's root rotation).</summary>
         public Quaternion TargetWorldRotation =>
-            SS3D.Systems.Inventory.Items.Item.ComposeWorldFacing(
+            SS3D.Systems.Inventory.Items.ItemPlacement.WorldRotation(
                 _worldRestRotation,
                 TileHelper.GetRotationAngle(_direction));
         
@@ -44,8 +44,10 @@ namespace SS3D.Systems.Tile.TileMapCreator
             _targetPosition = targetPosition;
             PlacementYOffset = placementYOffset;
             _direction = dir;
-            // Capture authored root rest before CreateHologram overwrites with yaw-only (M4 -90° X, etc.).
-            _worldRestRotation = ghostObject.transform.localRotation;
+            // Capture the rest pose before CreateHologram overwrites the root with yaw-only (M4 -90° X, etc.).
+            _worldRestRotation = ghostObject.TryGetComponent(out SS3D.Systems.Inventory.Items.Item ghostItem)
+                ? ghostItem.WorldRestRotation
+                : ghostObject.transform.localRotation;
 
             if (ghostObject.TryGetComponent(out ICustomGhostRotation customRotationComponent) 
                 && !customRotationComponent.GetAllowedRotations().Contains(dir))

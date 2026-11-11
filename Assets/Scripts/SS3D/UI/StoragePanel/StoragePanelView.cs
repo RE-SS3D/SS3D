@@ -41,8 +41,12 @@ namespace SS3D.UI.StoragePanel
         /// </summary>
         public event Action<StoragePanelView, StorageSlot, Vector2> SlotDragEnded;
 
-        /// <summary>Fired when a slot bound to a nested container item is clicked (Documents/design/inventory-storage.md §7).</summary>
-        public event Action<StoragePanelView, StorageSlot> SlotNestedOpenRequested;
+        /// <summary>
+        /// Fired on a left click of a slot, bound or empty, with the click count (2 on a double-click). The host
+        /// takes the item into the active hand, stores the held item, or opens a nested container
+        /// (Documents/design/inventory-storage.md §6, §7).
+        /// </summary>
+        public event Action<StoragePanelView, StorageSlot, int> SlotClicked;
 
         private readonly VisualElement _header;
         private readonly VisualElement _closeButton;
@@ -306,7 +310,7 @@ namespace SS3D.UI.StoragePanel
                     slot.DragStarted += (s, pos) => SlotDragStarted?.Invoke(this, s, pos);
                     slot.DragMoved += (_, pos) => SlotDragMoved?.Invoke(pos);
                     slot.DragEnded += (s, pos) => SlotDragEnded?.Invoke(this, s, pos);
-                    slot.NestedOpenRequested += s => SlotNestedOpenRequested?.Invoke(this, s);
+                    slot.Clicked += (s, clicks) => SlotClicked?.Invoke(this, s, clicks);
                     _slots.Add(slot);
                     row.Add(slot);
                 }

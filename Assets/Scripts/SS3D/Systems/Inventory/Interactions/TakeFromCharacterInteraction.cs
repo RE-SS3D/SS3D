@@ -39,7 +39,7 @@ namespace SS3D.Systems.Inventory.Interactions
         public float DelaySeconds => Delay;
 
         /// <inheritdoc />
-        /// UITK slot spinner owns client feedback — no world LoadingBar.
+        /// UITK slot spinner owns client feedback — no progress ring.
         public override IClientInteraction CreateClient(InteractionEvent interactionEvent) => null;
 
         public override string GetName(InteractionEvent interactionEvent) => "Take";

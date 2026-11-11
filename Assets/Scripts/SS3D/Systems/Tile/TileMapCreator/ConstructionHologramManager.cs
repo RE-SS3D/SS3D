@@ -1370,51 +1370,6 @@ namespace SS3D.Systems.Tile.TileMapCreator
             }
         }
         
-        [ServerRpc(RequireOwnership = false)]
-        private void RpcSendCanBuild(string tileObjectSoName, Vector3 placePosition, Direction dir, bool replaceExisting, NetworkConnection conn)
-        {
-            // Kept for FishNet codegen / older callers; preview is local via RefreshHologram.
-            if (!MapEditorPermissions.TryAuthorize(conn))
-            {
-                RpcReceiveCanBuild(conn, placePosition, false);
-                return;
-            }
-
-            TileSubSystem tileSystem = SubSystems.Get<TileSubSystem>();
-
-            TileObjectSo tileObjectSo = (TileObjectSo)tileSystem.GetAsset(tileObjectSoName);
-
-            if (tileObjectSo == null)
-            {
-                Log.Error(this, "Asset is not found");
-                return;
-            }
-
-            bool canBuild = tileSystem.Construction.TryPreviewTile(tileObjectSo, placePosition, dir, replaceExisting).CanBuild;
-            RpcReceiveCanBuild(conn, placePosition, canBuild);
-        }
-
-        [TargetRpc]
-        private void RpcReceiveCanBuild(NetworkConnection conn, Vector3 placePosition, bool canBuild)
-        {
-            // Find correct hologram to update its material
-            for (int i = 0; i < _holograms.Count; i++)
-            {
-                ConstructionHologram hologram = _holograms[i];
-                if (hologram.TargetPosition != placePosition) continue;
-
-                if (canBuild)
-                {
-                    hologram.ChangeHologramColor(ConstructionMode.Valid);
-                }
-                else
-                {
-                    hologram.ChangeHologramColor(ConstructionMode.Invalid);
-                }
-                return;
-            }
-        }
-
         /// <summary>
         /// Method called when trying to delete an item from the tilemap (as opposed to a tile object).
         /// Items need a special method because they are not tied to specific coordinates like tile objects.
@@ -1424,7 +1379,11 @@ namespace SS3D.Systems.Tile.TileMapCreator
             if (_mapEditor == null || !TryGetItemUnderCursor(out PlacedItemObject placedItem))
                 return;
 
-            Direction direction = NearestCardinalDirection(placedItem.transform.rotation);
+            // Undo re-places at this direction: take the yaw without the rest pose's own yaw.
+            float yaw = placedItem.TryGetComponent(out SS3D.Systems.Inventory.Items.Item item)
+                ? SS3D.Systems.Inventory.Items.ItemPlacement.YawAtRest(item, placedItem.transform.rotation)
+                : placedItem.transform.eulerAngles.y;
+            Direction direction = NearestCardinalDirection(yaw);
             _mapEditor.SubmitCommands(new[]
             {
                 new MapEditorCommandDto
@@ -1437,10 +1396,9 @@ namespace SS3D.Systems.Tile.TileMapCreator
             });
         }
 
-        private static Direction NearestCardinalDirection(Quaternion rotation)
+        private static Direction NearestCardinalDirection(float yaw)
         {
-            float y = rotation.eulerAngles.y;
-            int snapped = Mathf.RoundToInt(y / 90f) & 3;
+            int snapped = Mathf.RoundToInt(yaw / 90f) & 3;
             return snapped switch
             {
                 0 => Direction.North,

@@ -24,7 +24,10 @@ namespace SS3D.Systems.StructuralDamage
         private readonly Action<TileCoord, float> _applyFloorDamage;
         private readonly Action<TileCoord, IReadOnlyDictionary<TileCoord, float>> _applyCrewPush;
 
-        /// <param name="applyCrewBrute">Optional; invoked as (tile, force) for each BFS visit.</param>
+        /// <param name="applyCrewBrute">
+        /// Optional; invoked once per tile per detonation as (tile, final force), after every pass, so a body takes one hit
+        /// from one blast (tech-debt P2.5). It used to run on every BFS visit, so a shaped charge's two passes hit twice.
+        /// </param>
         /// <param name="applyCrewPush">Optional; invoked once per detonation as (epicenter, force per tile, summed over passes).</param>
         public BlastResolutionService(
             ITileQueryService query,
@@ -65,6 +68,8 @@ namespace SS3D.Systems.StructuralDamage
 
         private void FinishBlast(TileCoord epicenter, Dictionary<TileCoord, float> forces)
         {
+            if (_applyCrewBrute != null)
+                foreach (KeyValuePair<TileCoord, float> entry in forces) _applyCrewBrute(entry.Key, entry.Value);
             if (_applyFloorDamage != null)
                 foreach (KeyValuePair<TileCoord, float> entry in forces) _applyFloorDamage(entry.Key, entry.Value);
             if (forces.Count > 0) _applyCrewPush?.Invoke(epicenter, forces);
@@ -101,7 +106,6 @@ namespace SS3D.Systems.StructuralDamage
                 bestForce[coord] = force;
 
                 _structural.TryApplyStructuralDamage(coord, force, StructuralDamageSource.Blast);
-                _applyCrewBrute?.Invoke(coord, force);
 
                 if (!_query.TryGetOccupancy(coord, out TileOccupancy fromOccupancy))
                 {

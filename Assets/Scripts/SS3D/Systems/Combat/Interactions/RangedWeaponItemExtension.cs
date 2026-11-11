@@ -13,7 +13,7 @@ namespace SS3D.Systems.Combat.Interactions
     /// Dedicated hitscan firearm on a held item. Mag/recoil/cooldown/reload are authoritative on
     /// the server instance of this component; owner clients mirror via InteractionController TargetRpcs.
     /// </summary>
-    public class RangedWeaponItemExtension : MonoBehaviour, IInteractionSourceExtension
+    public class RangedWeaponItemExtension : MonoBehaviour, IInteractionSourceExtension, ICombatReadout
     {
         [SerializeField] private RangedWeaponProfile _profile = RangedWeaponProfile.M4;
         [Tooltip("Barrel tip — muzzle flash and future aim alignment. Wired by RangedPrefabSetup.")]
@@ -28,13 +28,14 @@ namespace SS3D.Systems.Combat.Interactions
         [SerializeField] private Vector3 _magazineHandEuler = new Vector3(356.06f, 298.24f, 93.93f);
 
         private int _rounds;
+        /// <summary>Recoil at <see cref="_recoilSince"/>; read it through <see cref="RecoilStacks"/>.</summary>
         private float _recoilStacks;
         private float _cooldownUntil;
         private float _reloadUntil;
         private float _reloadStartedAt;
         /// <summary>Reload sound cues already played this reload: 0 none, 1 mag in, 2 bolt release.</summary>
         private int _reloadCuesPlayed;
-        private float _lastRecoilDecayTime;
+        private float _recoilSince;
         private bool _initialized;
         private NetworkObject _networkObject;
 
@@ -60,7 +61,22 @@ namespace SS3D.Systems.Combat.Interactions
 
         public bool IsOnCooldown => Time.time < _cooldownUntil;
 
-        public float RecoilStacks => _recoilStacks;
+        public float RecoilStacks => RecoilAt(_recoilStacks, _recoilSince, _cooldownUntil, _profile.RecoilDecayPerSecond, Time.time);
+
+        /// <summary>
+        /// Recoil as a pure function of time: it holds while the fire cooldown runs, then decays from the moment it was
+        /// set. This matches what the server always did when nothing polled between shots, so a polling HUD on a host no
+        /// longer changes the spread (tech-debt P2.1).
+        /// </summary>
+        public static float RecoilAt(float stacks, float since, float cooldownUntil, float decayPerSecond, float now)
+        {
+            if (stacks <= 0f || now < cooldownUntil)
+            {
+                return Mathf.Max(0f, stacks);
+            }
+
+            return Mathf.Max(0f, stacks - (Mathf.Max(0f, now - since) * Mathf.Max(0f, decayPerSecond)));
+        }
 
         public float ReadyProgress01
         {
@@ -111,7 +127,6 @@ namespace SS3D.Systems.Combat.Interactions
         public bool CanStartFire()
         {
             EnsureInitialized();
-            DecayRecoil();
             TryCompleteReloadIfDue();
             return !IsBusy && _rounds > 0;
         }
@@ -143,12 +158,12 @@ namespace SS3D.Systems.Combat.Interactions
         public void ClientSetRecoil(float recoilStacks)
         {
             _recoilStacks = Mathf.Max(0f, recoilStacks);
+            _recoilSince = Time.time;
         }
 
         public bool ServerTryConsumeRound()
         {
             EnsureInitialized();
-            DecayRecoil();
             TryCompleteReloadIfDue();
             if (IsBusy || _rounds <= 0)
             {
@@ -156,7 +171,8 @@ namespace SS3D.Systems.Combat.Interactions
             }
 
             _rounds--;
-            _recoilStacks += Mathf.Max(0f, _profile.RecoilPerShot);
+            _recoilStacks = RecoilStacks + Mathf.Max(0f, _profile.RecoilPerShot);
+            _recoilSince = Time.time;
             float cooldown = Mathf.Max(0.01f, _profile.FireCooldownSeconds);
             _cooldownUntil = Time.time + cooldown;
             return true;
@@ -201,9 +217,7 @@ namespace SS3D.Systems.Combat.Interactions
 
         public float CurrentSpreadDegrees(float horizontalSpeed, float aimDistanceMeters, float exertionPenalty = 0f)
         {
-            EnsureInitialized();
-            DecayRecoil();
-            return AccuracyCone.ComputeSpreadDegrees(_profile, _recoilStacks, horizontalSpeed, aimDistanceMeters, exertionPenalty);
+            return AccuracyCone.ComputeSpreadDegrees(_profile, RecoilStacks, horizontalSpeed, aimDistanceMeters, exertionPenalty);
         }
 
         /// <summary>
@@ -278,26 +292,8 @@ namespace SS3D.Systems.Combat.Interactions
             }
 
             _rounds = MagazineSize;
-            _lastRecoilDecayTime = Time.time;
+            _recoilSince = Time.time;
             _initialized = true;
-        }
-
-        private void DecayRecoil()
-        {
-            float now = Time.time;
-            float dt = now - _lastRecoilDecayTime;
-            _lastRecoilDecayTime = now;
-            if (dt <= 0f || _recoilStacks <= 0f)
-            {
-                return;
-            }
-
-            if (IsOnCooldown)
-            {
-                return;
-            }
-
-            _recoilStacks = Mathf.Max(0f, _recoilStacks - (dt * Mathf.Max(0f, _profile.RecoilDecayPerSecond)));
         }
     }
 }

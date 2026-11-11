@@ -81,6 +81,51 @@ namespace SS3D.Tests.EditMode
             Assert.IsTrue(away.CanBuild, string.Join(", ", away.Failures));
         }
 
+        // Playtest bug "Noclipping doors": a door or wall built on the builder's own tile spawned its
+        // colliders on the body, which got pushed into the next wall and could walk out anywhere.
+        [TestCase(TileObjectGenericType.Wall)]
+        [TestCase(TileObjectGenericType.Door)]
+        public void Preview_SolidTurfOnABody_FailsWithBodyInTheWay(TileObjectGenericType type)
+        {
+            TileMapTestUtilities.MapContext context = TileMapTestUtilities.CreateContext(_instantiated);
+            TileMapTestUtilities.PlacePlenum(context, CellA);
+            context.Map.IsBodyInCell = cell => cell == CellA;
+
+            TileObjectSo solid = TileMapTestUtilities.CreateTileSo(TileLayer.Turf, "SolidOnBody");
+            solid.genericType = type;
+            PreviewResult preview = context.Construction.TryPreviewTile(solid, CellA, Direction.North, replaceExisting: false);
+
+            Assert.IsFalse(preview.CanBuild);
+            CollectionAssert.Contains(preview.Failures, BuildFailReason.BodyInTheWay);
+        }
+
+        [Test]
+        public void Preview_FloorUnderABody_Succeeds()
+        {
+            TileMapTestUtilities.MapContext context = TileMapTestUtilities.CreateContext(_instantiated);
+            TileMapTestUtilities.PlacePlenum(context, CellA);
+            context.Map.IsBodyInCell = cell => cell == CellA;
+
+            TileObjectSo floor = TileMapTestUtilities.CreateTileSo(TileLayer.Turf, "FloorUnderBody");
+            floor.genericType = TileObjectGenericType.Floor;
+            PreviewResult preview = context.Construction.TryPreviewTile(floor, CellA, Direction.North, replaceExisting: false);
+
+            Assert.IsTrue(preview.CanBuild, string.Join(", ", preview.Failures));
+        }
+
+        [Test]
+        public void Preview_WallBesideABody_Succeeds()
+        {
+            TileMapTestUtilities.MapContext context = TileMapTestUtilities.CreateContext(_instantiated);
+            TileMapTestUtilities.PlacePlenum(context, CellA);
+            context.Map.IsBodyInCell = cell => cell == CellB;
+
+            PreviewResult preview = context.Construction.TryPreviewTile(
+                CreateWall("WallBesideBody"), CellA, Direction.North, replaceExisting: false);
+
+            Assert.IsTrue(preview.CanBuild, string.Join(", ", preview.Failures));
+        }
+
         private TileMapTestUtilities.MapContext WallBesideMountedWall(Direction mountFacing)
         {
             TileMapTestUtilities.MapContext context = TileMapTestUtilities.CreateContext(_instantiated);

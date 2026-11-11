@@ -299,11 +299,16 @@ MonoBehaviour:
   _weight: 0.4
   _sizeClass: 1
   _maxStackSize: 1
+  _initialStackCount: 1
   _stackCount: 1
   _startingTraits: []
   _rigidbody: {fileID: 751568336328987408}
   AttachmentPoint: {fileID: 6123520057549092640}
   AttachmentPointAlt: {fileID: 6123520057549092640}
+  _restRotation: {x: 0, y: 0, z: 0}
+  _restsUpright: 1
+  _overrideIconRotation: 0
+  _iconRotation: {x: 0, y: 0, z: 0}
   _container: {fileID: 0}
 --- !u!114 &-1409642175327164469
 MonoBehaviour:

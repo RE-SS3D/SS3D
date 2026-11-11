@@ -7,6 +7,7 @@ using SS3D.Interactions.Interfaces;
 using SS3D.Systems.Entities;
 using SS3D.Systems.Inventory.Containers;
 using SS3D.Utils;
+using SS3D.Systems.Inventory.Items;
 using UnityEngine;
 
 namespace SS3D.Systems.Inventory.Interactions
@@ -23,9 +24,30 @@ namespace SS3D.Systems.Inventory.Interactions
         private float _maxSurfaceAngle = 10;
 
         /// <summary>
-        /// Only raycast the default layer for seeing if we are vision blocked
+        /// Only raycast the default layer for seeing if we are vision blocked. Resolved on first use, because
+        /// <see cref="LayerMask.GetMask"/> can't run in a static field initializer.
         /// </summary>
-        private LayerMask _defaultMask = LayerMask.GetMask("Default");
+        private static int _defaultMask = -1;
+
+        private static int DefaultMask => _defaultMask >= 0 ? _defaultMask : _defaultMask = LayerMask.GetMask("Default");
+
+        /// <summary>How far the eye's LOS hit may land from the clicked point. Exact today; #192 / plan Q5 may add slack.</summary>
+        public const float LineOfSightTolerance = 0.1f;
+
+        /// <summary>
+        /// Distance from <paramref name="point"/> to where a ray from <paramref name="viewOrigin"/> toward it first hits
+        /// the Default layer; infinity when it hits nothing. Also used by the server's rejection diagnostics (P1.9).
+        /// </summary>
+        public static float LineOfSightMiss(Vector3 viewOrigin, Vector3 point)
+        {
+            Vector3 direction = (point - viewOrigin).normalized;
+            if (!LineOfSight.TryGetFirstHit(viewOrigin, direction, Mathf.Infinity, DefaultMask, out RaycastHit hit))
+            {
+                return float.PositiveInfinity;
+            }
+
+            return Vector3.Distance(point, hit.point);
+        }
 
         public int Priority => 5;
 
@@ -61,17 +83,9 @@ namespace SS3D.Systems.Inventory.Interactions
                 return false;
             }
 
-            // Confirm the entities ViewPoint can see the drop point (shared LOS helper).
-            Vector3 viewOrigin = entity.ViewPoint.transform.position;
-            Vector3 direction = (interactionEvent.Point - viewOrigin).normalized;
-            if (!LineOfSight.TryGetFirstHit(viewOrigin, direction, Mathf.Infinity, _defaultMask, out RaycastHit hit))
-            {
-                return false;
-            }
-
-            // Confirm raycasted hit point is near the interaction point.
-            // This is necessary because interaction rays are casted from the camera, not from view point
-            if (Vector3.Distance(interactionEvent.Point, hit.point) > 0.1)
+            // Confirm the entity's ViewPoint can see the drop point: the LOS hit must land near the clicked point,
+            // because interaction rays are cast from the camera, not from the view point.
+            if (LineOfSightMiss(entity.ViewPoint.transform.position, interactionEvent.Point) > LineOfSightTolerance)
             {
                 return false;
             }
@@ -97,7 +111,7 @@ namespace SS3D.Systems.Inventory.Interactions
             // Face entity yaw while keeping the prefab's authored rest pitch/roll (side-lying guns/tools).
             Entity entity = interactionEvent.Source.GetComponentInParent<Entity>();
             Hand hand = interactionEvent.Source.GetRootSource() as Hand;
-            Quaternion rotation = hand.ItemInHand.GetWorldFacing(entity.transform.eulerAngles.y);
+            Quaternion rotation = ItemPlacement.WorldRotation(hand.ItemInHand, entity.transform.eulerAngles.y);
             hand.PlaceHeldItemOutOfHand(interactionEvent.Point, rotation);
 
             return false;

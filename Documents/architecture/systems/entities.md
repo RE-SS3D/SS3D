@@ -1,32 +1,33 @@
 > Code paths: Assets/Scripts/SS3D/Systems/Entities/
 > Entry points: EntitySubSystem, MindSubSystem, HumanoidBodyStateMachine
 > Status: partial
-> Verified: 7785df8dc — 2026-11-06
+> Verified: 6c49dab49 — 2026-11-11
 
 # Entities
 
 ## Overview
 
-Humanoid/silicon entity spawning, minds, and join/round ordering with [rounds-lobby](rounds-lobby.md). Humanoid body animation is driven by a packed `BodyAnimationSnapshot` SyncVar, not ad-hoc Animator calls.
+Humanoid/silicon entity spawning, minds, and join/round ordering with [rounds-lobby](rounds-lobby.md). Humanoid body animation is driven by a packed `BodyAnimationSnapshot` SyncVar, not ad-hoc Animator calls. Held interaction loops are snapshot bits the server sets for a step's duration: `InteractKneel` (floor work, defuse, CPR) and `InteractWork` (wall construction, a stand-in Mixamo clip until dedicated animations exist). Each loop's Animator bool is its `InteractionAnimation.Clip.HoldParameter`, wired by `HumanoidLocomotionBlendSetup`.
 
 **Prefab composition:** Human remains a large shared graph. Evolve it through the
 [Entity prefab recipes](entities-prefab-recipes.md); remaining structural work is tracked in
 [TECH_DEBT §1.1](../TECH_DEBT.md#11-humanprefab-mega-prefab).
 
-**Body presentation:** `Ragdoll` owns replicated `BodyPresentationState` (`Locomotion` / `Collapsed` / `Dead`) and is the sole applier. Movement, bridge, and orchestrator read `Presentation` — do not invent a parallel collapse path ([2026-07_body-presentation-authority.md](../../archive/architecture/2026-07_body-presentation-authority.md), shipped).
+**Body presentation:** `Ragdoll` owns replicated `BodyPresentationState` (`Locomotion` / `Collapsed` / `Dead`) and is the sole applier. Movement and the bridge read `Presentation`; `AnimationOrchestrator` does not: it keys off the snapshot's `BodyState.Ragdoll` and `Ragdoll` calling its `SetPosingSuppressed` (tech-debt P4.2 folds both into one model). Do not invent a parallel collapse path ([2026-07_body-presentation-authority.md](../../archive/architecture/2026-07_body-presentation-authority.md), shipped).
 
 ## Start here
 
 - [Entity prefab recipes](entities-prefab-recipes.md) — domain wiring, aggregator, nested FishNet constraints and integrity checks
 
+- `Assets/Scripts/SS3D/Systems/Entities/Humanoid/Body/InteractionAnimation.cs` — which hand clip an interaction plays (`ChooseClip`, matched by generic name) and its contact frame
+- `Assets/Scripts/SS3D/Systems/Interactions/InteractionController.Animation.cs` — server hand-action scheduling: `ServerRunWithAnimation` / `ServerRunHandAction` run an interaction's effect at the clip's contact frame and re-check it then
 - `Assets/Scripts/SS3D/Systems/Entities/EntitySubSystem.cs` — entity spawn/management; `TryReclaimEntity` re-links a reconnecting player's existing body (see [player-control](player-control.md)); `ServerSpawnCombatDummy` for mindless test Humans; `ResolveSpawnPosition` puts Nuke Ops operatives on the map's Nuclear Operatives markers (crew job markers not routed yet); `ServerSpawnedPlayersChanged` (server, synchronous — a dying body's ghost may not hold its mind yet) feeds [gamemode](gamemodes-roles-traits.md) win/lose checks
 - `Assets/Scripts/SS3D/Systems/Entities/EntitySubSystem.Respawn.cs` — respawn ([sandbox](../2026-11_sandbox-server.md)): death offers a respawn (`RecordPlayerDeath`), `CmdRespawn` checks `ServerSettings.RespawnEnabled` + `RespawnCooldown`, despawns the ghost and re-runs `SpawnPlayer` with the ghost's Mind; `RemoveCorpseOnRespawn` removes the previous corpse only after a successful respawn (sandbox default); remaining corpses are tracked and despawned at round end. `RespawnPrompt` is the ghost-HUD button (UiShell Hud layer, added on client start)
 - `Assets/Scripts/SS3D/Systems/Entities/MindSubSystem.cs` — mind/player mind assignment; `Mind.DisplayName` (lobby character name, else ckey) is the in-world speaker/record name
 - `Assets/Scripts/SS3D/Systems/Entities/Human.cs` — replicated `CharacterAppearance` from the lobby (morphs on the armature, hair/beard/eyebrows and skin/eye/style colors) — see [rounds-lobby](rounds-lobby.md)
 - `Assets/Scripts/SS3D/Systems/Entities/Character/HumanoidStyleApplier.cs` — head sockets for catalog styles; per-material skin/eye tint without mutating shared assets
 - `Assets/Scripts/SS3D/Systems/Entities/Humanoid/Body/HumanoidBodyStateMachine.cs` — authoritative body/combat snapshot
-- `Assets/Scripts/SS3D/Systems/Entities/Humanoid/Body/HumanoidPredictedMovement.cs` — FishNet predicted move + space float (when enabled)
-- `Assets/Scripts/SS3D/Systems/Entities/Humanoid/HumanoidLivingController.cs` — **live** loco path (`Human.prefab` has PredictedMovement disabled); owns space float coast + `SetFloating`
+- `Assets/Scripts/SS3D/Systems/Entities/Humanoid/HumanoidLivingController.cs` — the only loco path; owns space float coast + `SetFloating`
 - `Assets/Scripts/SS3D/Systems/Entities/Humanoid/Body/HumanoidSpaceSupport.cs` — `GetSupportAt` / `HumanoidSupportState` (Unknown / Supported / Unsupported)
 - `Assets/Scripts/SS3D/Systems/Entities/Humanoid/Body/AnimationOrchestrator.cs` — snapshot → Animator; Melee/Ranged Upper Body weight; Ranged CrossFade to Rifle or Pistol Aim Idle; `PistolHold` blend, `RangedVelX`, Off Hand layer weights; `SetPosingSuppressed` for collapse
 - `Assets/Scripts/SS3D/Systems/Entities/Humanoid/BodyPresentationState.cs` — locomotion / collapsed / dead enum
@@ -61,7 +62,7 @@ Humanoid/silicon entity spawning, minds, and join/round ordering with [rounds-lo
 
 ## Pitfalls
 
-- **Wind must reach the physics authority:** server transforms do not simulate living owners’ bones. Send wind velocity to the owner; server applies corpse/unowned wind physics. Upright drift runs owner-side because `HumanoidPredictedMovement` is disabled on `Human.prefab` (enabling it means moving wind into the replicate step). For an unowned upright body the server enables its `CharacterController` only for the `Move` call: left on, it adds a capsule to server raycasts and blocks teleports. Never convert a health-owned timeless collapse into a timed wind knockdown.
+- **Wind must reach the physics authority:** server transforms do not simulate living owners’ bones. Send wind velocity to the owner; server applies corpse/unowned wind physics. Upright drift runs owner-side, because living movement is owner-driven (a future predicted movement would have to move wind into its replicate step). For an unowned upright body the server enables its `CharacterController` only for the `Move` call: left on, it adds a capsule to server raycasts and blocks teleports. Never convert a health-owned timeless collapse into a timed wind knockdown.
 
 - **Critical rejoin T-pose:** ownership changes do not change presentation. `Ragdoll.OnOwnershipClient` must reapply collapsed/dead presentation so the new owner simulates bones and observers stay kinematic. Initial SyncVars may collapse before `OnStartNetwork`; preserve the original NetworkAnimator enabled state instead of recapturing its suppressed value.
 
@@ -86,7 +87,7 @@ Humanoid/silicon entity spawning, minds, and join/round ordering with [rounds-lo
 - **Reclaim must fire `LocalPlayerObjectChanged`:** `TryReclaimEntity` restores ownership without Mind SyncVar change. `Entity.OnOwnershipClient` invokes the event so HUD/lobby leave the menu — see [player-control](player-control.md). Hit 2026-07-26.
 - **Humanoid clips cannot be sampled with `AnimationClip.SampleAnimation`:** on a muscle clip it leaves the bones in the avatar's T-pose. `Ragdoll` samples the stand-up's first frame with `Animator.Play` + `Update(0)`. A re-enabled Animator starts with zero layer weights, so only the Base Layer pose lands. The get-up clips, their trims and their speed live in `GetUpAnimation`, and the controller rebuild reads them from there ([humanoid-animation-pass](../2026-11_humanoid-animation-pass.md) Phase 1).
 - **`Ragdoll.OnDisable` must not `Recover()`:** ownership/network teardown would stand a corpse back into locomotion.
-- **Unable to walk after any ragdoll, with no error on the owner:** `Ragdoll.ToggleController` turned on `HumanoidPredictedMovement`, which `Human.prefab` ships off. `HumanoidLivingController` then stands aside for it, but it takes its input subscription in `OnOwnershipClient` while enabled, so it never had one and nothing moved the body. On a remote owner the server also logged `CharacterController.Move called on inactive controller` every tick. Recovery now restores the prefab's state, like `_networkAnimatorInitiallyEnabled`. `KnockedDownOwner_WalksAgainAfterRecovering` presses real keys; it has to set `InputSystem.settings` to ignore focus, because an unfocused editor drops device input. Hit 2026-11-06.
+- **Unable to walk after any ragdoll, with no error on the owner:** `Ragdoll.ToggleController` turned on the then-disabled `HumanoidPredictedMovement`, and `HumanoidLivingController` stood aside for a component with no input subscription. The component was deleted in tech-debt P3.2, so `HumanoidLivingController` is the only movement path. `KnockedDownOwner_WalksAgainAfterRecovering` presses real keys; it has to set `InputSystem.settings` to ignore focus, because an unfocused editor drops device input. Hit 2026-11-06.
 - **Timed knockdown from server:** call `ServerRecover`, not `Recover()` (ServerRpc is a no-op from server).
 - **Melee swing torso fight:** Upper Body mask must include spine/chest; head stays unmasked for look-at. Do not reintroduce C# swing duration timers — use AttackSwing + `AttackVariant` (0–2: horizontal / downward / backhand).
 - **Swing strike lands at connect:** `MeleeSwingAnimation.Variants` is the single table for swing clips (file, trim frames, strike frame). The rebuild imports and trims the FBXs from it. `AnimationOrchestrator` sets `AttackRate` (swing state speed) so the strike frame plays at the weapon's effective windup, then sets it back to 1 for the follow-through. The windup rides the snapshot (`AttackWindup`, 5 bits, 20 ms steps) so observers match the owner. Long full-body clips (the axe swings struck at ~1 s against 0.2–0.35 s windups) make the target flinch before the arm moves. New swings must strike within 2.5× of the shortest windup (`MeleeSwingAnimationTests`). Swings exit straight to Hold Item / Hold Weapon / Hold Default by `ArmHold`.
@@ -109,7 +110,6 @@ Humanoid/silicon entity spawning, minds, and join/round ordering with [rounds-lo
 - **`SetLocomotionMode(Idle|Walk|Run)` clears `IsFloating`:** while space-coasting, call `SetFloating(true)` only — never write gait modes. `SetFloating(false)` restores Idle when leaving Floating locomotion.
 - **Client spawn stuck in Mix_Floating:** pure-client maps start empty and AOI often delivers non-plenum layers first. `GetSupportAt` must return `Unknown` for client occupancy-miss **and** client `!HasPlenum` — never local Unsupported. Server occupancy-miss is Unsupported only after `TileMapLoaded` (empty UnnamedMap must not pack Floating). Deep-space float on clients is SyncVar-driven (`ServerReconcileSpaceSupport`); Unknown keep-coast only while that SyncVar is already true. Structural register: [TECH_DEBT.md](../TECH_DEBT.md) §1.17.
 - **Early Embark fall-through floor:** `Unknown` used to make `TryProcessSpaceFloat` return false → living path applied `CharacterController.Move(Physics.gravity)` with no tile colliders yet. Skip gravity on Unknown only while a downward raycast finds no floor; once colliders exist (or allow planar walk with no gravity), resume loco — a hard hold soft-locked movement after the map was visible but client `!HasPlenum` stayed Unknown. Same guard in `HumanoidPredictedMovement` when enabled. Hit 2026-07-26.
-- **`HumanoidPredictedMovement` is disabled on `Human.prefab`:** space float and predicted ticks do not run until it is enabled; living Update path must carry space float (see `HumanoidLivingController.TryProcessSpaceFloat`).
 - **`PublishSnapshot` used to no-op on pure clients:** owner now `ApplyOwnerSnapshot` so Floating hits the Animator without waiting on SyncVar; dedicated server still reconciles Floating via `ServerReconcileSpaceSupport`.
 - **Hold Default / Hold Item / Hold Weapon pose nothing:** `HumanIdle`/`HumanHoldItem`/`HumanHoldWeapon` are generic transform clips, and on the humanoid rig they leave every bone where the Base layer put it (measured 2026-11-09: hands identical at Upper Body weight 0 and 1). The "hold pose" in Melee is the locomotion clip's arm, and mirroring those states does nothing. A humanoid mask or mirror over them is a no-op; the Off Hand layers play `Mix_Idle` instead.
 - **Mirrored upper body over unmirrored legs points the gun sideways:** the pistol and rifle legs stand bladed (hips 53° / 40° off the root) and the torso twists back. Mirroring only the Upper Body flips that twist against the hips, which put the left-hand pistol's grip 0.3 m to the side. Mirror the Ranged base state with it (see Left-hand Mixamo mirror). `PistolStanceAnimationTests.Grip_SitsInFrontOfTheBody_InEitherHand` guards it.
@@ -135,7 +135,7 @@ Humanoid/silicon entity spawning, minds, and join/round ordering with [rounds-lo
 
 ## Related docs
 
-- [2026-11_humanoid-animation-pass](../2026-11_humanoid-animation-pass.md) — **in progress**: get-up, pistol stance, throwing
+- [2026-11_humanoid-animation-pass](../2026-11_humanoid-animation-pass.md) — **shipped**: get-up, pistol stance, throwing, interaction animations
 - [2026-07_animation-polish](../../archive/architecture/2026-07_animation-polish.md) — **shipped** melee/limp/mirror/severity polish
 - [2026-07_body-presentation-authority](../../archive/architecture/2026-07_body-presentation-authority.md) — **shipped** collapse/death presentation
 - [2026-07_health-env-feel](../../archive/architecture/2026-07_health-env-feel.md) — **shipped** hit flinch / critical feel (adjacent)

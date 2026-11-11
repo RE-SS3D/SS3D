@@ -6,7 +6,7 @@ namespace SS3D.Systems.Combat
 {
     /// <summary>
     /// Client-local ranged shot outcome: cross-flash on damaging hits, plus optional debug world markers.
-    /// Gold/grey spheres are off by default — enable with <c>rangeddebug on</c>.
+    /// Gold/grey spheres are off by default — enable with <c>rangedmarkers on</c>.
     /// </summary>
     public static class RangedShotFeedback
     {
@@ -21,7 +21,7 @@ namespace SS3D.Systems.Combat
 
         /// <summary>
         /// When true, spawn gold/grey impact spheres. Default off — diegetic feedback is bullet holes + muzzle flash.
-        /// Toggled by the <c>rangeddebug</c> console command.
+        /// Toggled by the <c>rangedmarkers</c> console command.
         /// </summary>
         public static bool ShowImpactMarkers { get; set; }
 

@@ -367,10 +367,7 @@ namespace SS3D.Systems.Persistence
                 TemplateName = templateName,
             };
 
-            bool hasElectricity = SubSystems.TryGet(out ElectricitySubSystem electricity);
-            bool hasAtmos = SubSystems.TryGet(out AtmosSubSystem atmos);
             bool hasDisposal = SubSystems.TryGet(out DisposalSubSystem disposal);
-            bool priorAtmosPaused = false;
             TileMap map = SubSystems.TryGet(out TileSubSystem tileSystem) ? tileSystem.CurrentMap : null;
 
             // APCs spawn mid-tile-placement and would flood against an incomplete map (missing
@@ -380,13 +377,7 @@ namespace SS3D.Systems.Persistence
                 areaSubSystem.BeginDeferredAreaFlood();
             }
 
-            if (hasElectricity)
-                electricity.SuspendCircuitUpdates(true);
-            if (hasAtmos)
-            {
-                priorAtmosPaused = atmos.SimulationPaused;
-                atmos.SimulationPaused = true;
-            }
+            WorldSimSuspension.Scope simsPaused = WorldSimSuspension.Begin("station template restore");
 
             if (hasDisposal)
                 disposal.BeginDeferredNetworkRebuild();
@@ -429,10 +420,7 @@ namespace SS3D.Systems.Persistence
 
                 if (hasDisposal)
                     disposal.EndDeferredNetworkRebuild();
-                if (hasElectricity)
-                    electricity.SuspendCircuitUpdates(false);
-                if (hasAtmos)
-                    atmos.SimulationPaused = priorAtmosPaused;
+                simsPaused.Dispose();
 
                 if (SubSystems.TryGet(out AreaSubSystem areaAfterRestore))
                 {

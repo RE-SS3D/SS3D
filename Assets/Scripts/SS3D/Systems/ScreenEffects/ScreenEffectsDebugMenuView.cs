@@ -23,8 +23,11 @@ namespace SS3D.Systems.ScreenEffects
     {
         private static bool s_bootstrapped;
 
-        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
-        private static void Bootstrap()
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+        private static void ResetStatics() => s_bootstrapped = false;
+
+        /// <summary>Called by <c>SystemsBootstrap</c> at cold start, in debug builds only (the F1 menu reaches it).</summary>
+        public static void Bootstrap()
         {
             if (s_bootstrapped)
             {
@@ -199,7 +202,7 @@ namespace SS3D.Systems.ScreenEffects
                 }
 
                 valueLabel.text = value.ToString("0.00");
-                SubSystems.Get<ScreenEffectsSubSystem>()?.SetEffect(type, value);
+                SubSystems.GetOrNull<ScreenEffectsSubSystem>()?.SetEffect(type, value);
             });
         }
 
@@ -216,7 +219,7 @@ namespace SS3D.Systems.ScreenEffects
 
             Button button = buttonHost.AddComponent<Button>();
             button.targetGraphic = background;
-            button.onClick.AddListener(() => SubSystems.Get<ScreenEffectsSubSystem>()?.TriggerHitFlash());
+            button.onClick.AddListener(() => SubSystems.GetOrNull<ScreenEffectsSubSystem>()?.TriggerHitFlash());
 
             AddLabel(buttonHost.transform, "Hit Flash", 14);
         }

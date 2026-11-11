@@ -166,7 +166,7 @@ namespace SS3D.Systems.Stamina
         [ServerRpc]
         private void CmdDepleteStaminaScaled(float amountToDeplete)
         {
-            if (_stamina == null || amountToDeplete <= 0f)
+            if (_stamina == null || !RpcInput.IsFinite(amountToDeplete) || amountToDeplete <= 0f)
             {
                 return;
             }

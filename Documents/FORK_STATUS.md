@@ -49,7 +49,7 @@ Coverage means how much of the design intent is playable today, not “code exis
 | [Station lighting (URP)](#urp-lighting-phase-1) | partial | Fixture-driven half-toon Forward+ look; client SyncVar fixture visuals; visual plate polish still open |
 | [Areas + station power](#area-foundation) | partial | APC-seeded areas, kWh cells, channel shedding, area lights/switches; [solar panels + tracker](#solar-generation); live remesh pending |
 | [Machine interfaces](#machine-interfaces) | shipped | Diegetic UITK APC/SMES/atmos ports/vending; engineering ID swipe; host-echo TargetRpc gate |
-| [Atmospherics](#atmospherics-ecs-foundation) | partial | Turf gas ECS + fire + per-edge bulk flow + equal-P composition diffusion; pipe networks + ports; Phase 1 dirty-chunk client VFX sync (AOI / late-join deferred) |
+| [Atmospherics](#atmospherics-ecs-foundation) | partial | Turf gas Burst sim + fire + per-edge bulk flow + equal-P composition diffusion; pipe networks + ports; Phase 1 dirty-chunk client VFX sync (AOI / late-join deferred) |
 | [ID / access](#id-access-foundation) | partial | Crew records, door + machine gates, ID console; auth logs / broader design pending |
 | [Tilemap / construction](#tilemap-and-adjacency-engine) | shipped | Adjacency engine, construction service, AOI tile sync, layer visibility |
 | [Map Editor](#map-editor-replacement) | partial | Full-screen UITK Map Editor + spawn-point authoring/persistence; Builder / instant place / round-config pool / runtime spawn pick deferred |
@@ -541,7 +541,7 @@ APC flood-fill now deferred until station template load finishes, instead of rac
 
 Server-authoritative open-tile gas simulation on the turf grid:
 
-- **ECS world** — `AtmosSimulation` with native cell buffers, active-cell sleep/wake, Burst jobs
+- **Burst jobs on native buffers** (no ECS World or `com.unity.entities` since tech-debt P3.1; `SS3D.Atmospherics.Jobs`) — `AtmosSimulation` with native cell buffers, active-cell sleep/wake, Burst jobs
   (`ShareGasJob`, `ConductHeatJob`, `ReactAtmosJob` for plasma combustion)
 - **Tile bridge** — `AtmosTileObserver` on `ITileMutationObserver`; dynamic airlock occupancy via
   `IDynamicTileOccupant` reopens/closes gas paths when doors move
@@ -973,6 +973,9 @@ Genuine Server-subtarget Linux build (not a client launched with `-serveronly`):
   spawned renderers/lights under `#if UNITY_SERVER`
 - Docker Compose + start scripts under `Builds/`
 - Windows release zips seed **Config/Tilemaps** so packaged playtests load maps (PR #56)
+- **Vendored FishNet patch** (`SS3D patch` in Tugboat's `ServerSocket`): the main menu's status query is answered on
+  the game port, on the receive thread, and rate-limited per source address and globally by
+  `UnconnectedRequestLimiter` (tech-debt P1.8) so the reply can't be used to reflect a flood. Re-apply on FishNet upgrades.
 
 Known gaps: selection outline and drop interaction against a real client still broken (not
 root-caused). An automated multiplayer harness now exists — see below.

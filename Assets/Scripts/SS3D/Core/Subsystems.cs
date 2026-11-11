@@ -36,6 +36,18 @@ namespace SS3D.Core
         }
 
         /// <summary>
+        /// Entering Play Mode without a domain reload (the MCP / Test Runner path) keeps statics: without this reset a
+        /// previous session's quit flag made every <see cref="Get{T}"/> return null, and its instances lingered.
+        /// </summary>
+        [UnityEngine.RuntimeInitializeOnLoadMethod(UnityEngine.RuntimeInitializeLoadType.SubsystemRegistration)]
+        internal static void ResetForNewSession()
+        {
+            _isQuitting = false;
+            _suppressMissingErrors = false;
+            RegisteredSubsystems.Clear();
+        }
+
+        /// <summary>
         /// Suppresses missing-subsystem Errors while disconnected / waiting to reconnect.
         /// </summary>
         public static void SetSuppressMissingErrors(bool suppress) => _suppressMissingErrors = suppress;
@@ -47,10 +59,33 @@ namespace SS3D.Core
         /// <returns>If the subsystem is found or not</returns>
         public static bool TryGet<T>([CanBeNull] out T subsystem) where T : class, ISubSystem
         {
-            bool hasValue = RegisteredSubsystems.TryGetValue(typeof(T), out ISubSystem match);
+            subsystem = TryGetLive(typeof(T), out ISubSystem match) ? match as T : null;
+            return subsystem != null;
+        }
 
-            subsystem = match as T;
-            return hasValue;
+        /// <summary>
+        /// <see cref="TryGet{T}"/> as an expression: the subsystem, or null with no error and no scene scan. Use it where a
+        /// miss is expected (<c>SubSystems.GetOrNull&lt;T&gt;()?.Method()</c>); <see cref="Get{T}"/> logs an error on a miss.
+        /// </summary>
+        [CanBeNull]
+        public static T GetOrNull<T>() where T : class, ISubSystem => TryGet(out T subsystem) ? subsystem : null;
+
+        /// <summary>The registered instance for <paramref name="type"/>; a destroyed Unity object counts as missing and is dropped.</summary>
+        private static bool TryGetLive(Type type, out ISubSystem match)
+        {
+            if (!RegisteredSubsystems.TryGetValue(type, out match))
+            {
+                return false;
+            }
+
+            if (match is UnityEngine.Object unityObject && unityObject == null)
+            {
+                RegisteredSubsystems.Remove(type);
+                match = null;
+                return false;
+            }
+
+            return true;
         }
 
         /// <summary>
@@ -62,7 +97,7 @@ namespace SS3D.Core
         /// <returns>The found subsystem</returns>
         public static T Get<T>() where T : class, ISubSystem
         {
-            if (RegisteredSubsystems.TryGetValue(typeof(T), out ISubSystem match))
+            if (TryGetLive(typeof(T), out ISubSystem match))
             {
                 return match as T;
             }
@@ -111,8 +146,16 @@ namespace SS3D.Core
         /// <param name="subSystem">The subsystem to unregister.</param>
         public static void Unregister([NotNull] ISubSystem subSystem)
         {
-            Log.Debug(typeof(SubSystems), "Unregistering subsystem {subSystemType}", Logs.Generic, subSystem.GetType().Name);
-            RegisteredSubsystems.Remove(subSystem.GetType());
+            // Only the registered instance may unregister: a destroyed duplicate (a content-prefab copy next to the
+            // bootstrap one) must not evict the live subsystem.
+            Type type = subSystem.GetType();
+            if (!RegisteredSubsystems.TryGetValue(type, out ISubSystem registered) || !ReferenceEquals(registered, subSystem))
+            {
+                return;
+            }
+
+            Log.Debug(typeof(SubSystems), "Unregistering subsystem {subSystemType}", Logs.Generic, type.Name);
+            RegisteredSubsystems.Remove(type);
         }
     }
 }
