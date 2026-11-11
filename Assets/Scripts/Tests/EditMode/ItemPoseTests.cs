@@ -147,5 +147,51 @@ namespace SS3D.Tests.EditMode
                 "An Item's rest rotation must match its prefab root rotation. "
                 + "Run SS3D → Inventory → Run Content Prefab Recipes and commit the prefabs.");
         }
+
+        /// <summary>Pickable items, not body parts: their points are body sockets, and three of them have none.</summary>
+        private const string PickableItemRoot = "Assets/Content/WorldObjects/Items/";
+
+        [Test]
+        public void PickableItemPrefabs_HaveAnAttachmentPoint()
+        {
+            List<string> missing = new();
+            foreach (string path in ItemRestPoseRecipe.FindItemPrefabPathsBaseFirst())
+            {
+                if (path.StartsWith(PickableItemRoot) && DB.LoadAssetAtPath<Item>(path).AttachmentPoint == null)
+                {
+                    missing.Add(path);
+                }
+            }
+
+            Assert.IsEmpty(missing, "Without an AttachmentPoint the item sits at the hand's origin at its root rotation.");
+        }
+
+        /// <summary>
+        /// D2: the rest pose lies flat unless the item is flagged upright. Fix a failure in SS3D → Inventory → Item
+        /// Pose Editor: turn Rest, or tick Stands upright.
+        /// </summary>
+        [Test]
+        public void PickableItemPrefabs_LieFlatAtRest_UnlessFlaggedUpright()
+        {
+            List<string> standing = new();
+            foreach (string path in ItemRestPoseRecipe.FindItemPrefabPathsBaseFirst())
+            {
+                if (path.StartsWith(PickableItemRoot) && ItemRestPoseAudit.Problem(DB.LoadAssetAtPath<Item>(path)) is { } problem)
+                {
+                    standing.Add($"{path}: {problem}");
+                }
+            }
+
+            Assert.IsEmpty(standing, "Lay these flat or flag them upright in SS3D → Inventory → Item Pose Editor.");
+        }
+
+        [TestCase(0.41f, 0.098f, 0.085f, true)] // the screwdriver on its side: a little taller than wide
+        [TestCase(0.14f, 0.25f, 0.14f, false)] // a can on its end
+        [TestCase(0.9f, 0.25f, 0.06f, false)]  // a rifle standing on its grip
+        [TestCase(0.3f, 0.05f, 0.2f, true)]    // a PDA face up
+        public void LiesFlat_WantsTheThinnestAxisVertical(float x, float y, float z, bool flat)
+        {
+            Assert.AreEqual(flat, ItemRestPoseAudit.LiesFlat(new Vector3(x, y, z)));
+        }
     }
 }

@@ -266,6 +266,7 @@ MonoBehaviour:
   AttachmentPoint: {fileID: 5663404281796149511}
   AttachmentPointAlt: {fileID: 5663404281796149511}
   _restRotation: {x: 0, y: 0, z: 0}
+  _restsUpright: 1
   _overrideIconRotation: 0
   _iconRotation: {x: 0, y: 0, z: 0}
   _container: {fileID: 0}

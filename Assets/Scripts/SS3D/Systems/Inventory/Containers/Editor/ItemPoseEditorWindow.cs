@@ -51,6 +51,7 @@ namespace SS3D.Systems.Inventory.Containers.Editor
         private Vector2 _detailScroll;
         private string _status;
         private string _renderError;
+        private string _restProblem;
 
         // Not restored across a domain reload: the textures it refers to are gone, OnEnable queues a fresh render.
         [System.NonSerialized] private bool _renderQueued;
@@ -297,6 +298,19 @@ namespace SS3D.Systems.Inventory.Containers.Editor
                     }
                 }
 
+                if (pose == ItemPose.Rest)
+                {
+                    bool upright = GUILayout.Toggle(item.RestsUpright, "Stands upright", GUILayout.Width(110f));
+                    if (upright != item.RestsUpright)
+                    {
+                        bool was = item.RestsUpright;
+                        Edit(
+                            upright ? "the upright flag" : "clearing the upright flag",
+                            edited => ItemPoseEdit.SetRestsUpright(edited, upright),
+                            undo => ItemPoseEdit.SetRestsUpright(undo, was));
+                    }
+                }
+
                 if (pose == ItemPose.Icon)
                 {
                     using (new EditorGUI.DisabledScope(!item.OverridesIconRotation))
@@ -310,6 +324,11 @@ namespace SS3D.Systems.Inventory.Containers.Editor
             }
 
             EditorGUILayout.LabelField(reason ?? axesNote, EditorStyles.miniLabel);
+            if (pose == ItemPose.Rest && _restProblem != null)
+            {
+                EditorGUILayout.HelpBox("Not lying flat: " + _restProblem, MessageType.Warning);
+            }
+
             EditorGUILayout.Space(4f);
         }
 
@@ -460,6 +479,7 @@ namespace SS3D.Systems.Inventory.Containers.Editor
             _renderQueued = false;
             ClearViews();
             _renderError = null;
+            _restProblem = null;
             string path = SelectedPath;
             Item prefab = path != null ? AssetDatabase.LoadAssetAtPath<Item>(path) : null;
             if (prefab == null)
@@ -475,6 +495,7 @@ namespace SS3D.Systems.Inventory.Containers.Editor
                 return;
             }
 
+            _restProblem = ItemRestPoseAudit.Problem(prefab);
             _views[(int)View.Icon] = ItemPoseRenderer.RenderIcon(prefab);
             _views[(int)View.Floor] = ItemPoseRenderer.RenderFloor(prefab, ItemPoseRenderer.FloorView, PreviewSize);
             _views[(int)View.FloorSide] = ItemPoseRenderer.RenderFloor(prefab, ItemPoseRenderer.FloorSideView, PreviewSize);

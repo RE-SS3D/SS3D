@@ -101,6 +101,10 @@ namespace SS3D.Systems.Inventory.Items
             + "Spawns, drops and placements compose yaw with it. Keep the prefab root rotation equal to it.")]
         [SerializeField] private Vector3 _restRotation;
 
+        [Tooltip("The item stands at rest on purpose (a can, a tank, a boot), so its rest pose need not lie flat. "
+            + "Only the editor audit reads it.")]
+        [SerializeField] private bool _restsUpright;
+
         [Tooltip("Off: the inventory icon renders the item at its rest rotation. On: it uses Icon Rotation.")]
         [SerializeField] private bool _overrideIconRotation;
 
@@ -216,6 +220,12 @@ namespace SS3D.Systems.Inventory.Items
         public Quaternion IconRotation => _overrideIconRotation ? Quaternion.Euler(_iconRotation) : WorldRestRotation;
 
         public bool OverridesIconRotation => _overrideIconRotation;
+
+        /// <summary>
+        /// True when the rest pose stands the item up on purpose; otherwise the editor audit expects it to lie flat
+        /// (thinnest bounds axis vertical). Documents/plans/item-orientation.plan.md D2.
+        /// </summary>
+        public bool RestsUpright => _restsUpright;
 
         /// <summary>
         /// Initialise this item fields. Can only be called once.

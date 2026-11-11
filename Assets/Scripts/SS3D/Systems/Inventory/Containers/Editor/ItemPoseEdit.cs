@@ -35,6 +35,7 @@ namespace SS3D.Systems.Inventory.Containers.Editor
         private const string RestField = "_restRotation";
         private const string IconField = "_iconRotation";
         private const string OverrideIconField = "_overrideIconRotation";
+        private const string RestsUprightField = "_restsUpright";
 
         /// <summary>What a pose was before an edit, so the edit can be undone.</summary>
         public readonly struct Snapshot
@@ -153,6 +154,14 @@ namespace SS3D.Systems.Inventory.Containers.Editor
         /// <summary>Put a pose back as <paramref name="snapshot"/> recorded it.</summary>
         public static void Restore(Item item, Snapshot snapshot) =>
             Set(item, snapshot.Pose, snapshot.Euler, snapshot.IconOverride);
+
+        /// <summary>Flag the rest pose as standing on purpose, so the lies-flat audit skips the item.</summary>
+        public static void SetRestsUpright(Item item, bool upright)
+        {
+            SerializedObject so = new(item);
+            so.FindProperty(RestsUprightField).boolValue = upright;
+            so.ApplyModifiedPropertiesWithoutUndo();
+        }
 
         /// <summary>Turn the icon override off, so the icon follows the rest pose again.</summary>
         public static void FollowRest(Item item)
