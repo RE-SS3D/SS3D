@@ -27,6 +27,8 @@ namespace SS3D.Systems.Entities.Humanoid.Body
         public const int FloorPutDown = 6;
         public const int Kneel = 7;
         public const int LightSwitch = 8;
+        /// <summary>Standing work at a wall, held like <see cref="Kneel"/> for a construction step's whole timer.</summary>
+        public const int WallWork = 9;
 
         /// <summary>
         /// <see cref="ChooseClip"/> name for a light switch's toggle. Its generic name is the shared "Toggle"
@@ -74,6 +76,9 @@ namespace SS3D.Systems.Entities.Humanoid.Body
         public const string ClipParameter = "InteractClip";
         public const string KneelParameter = "InteractKneel";
 
+        /// <summary>Bool held while a wall construction step runs (<see cref="WallWork"/>).</summary>
+        public const string WorkParameter = "InteractWork";
+
         public readonly struct Clip
         {
             public readonly string StateName;
@@ -94,11 +99,14 @@ namespace SS3D.Systems.Entities.Humanoid.Body
             /// </summary>
             public readonly int ReturnFirstFrame;
             public readonly int ReturnLastFrame;
+            /// <summary>For a held loop: the Animator bool that holds it (kneel, wall work); null otherwise.</summary>
+            public readonly string HoldParameter;
 
             public Clip(string stateName, string file, string clipName, int firstFrame, int lastFrame,
                 float playbackRate, int contactFrame = 0, bool fullBody = false, bool loop = false,
-                int returnFirstFrame = 0, int returnLastFrame = 0)
+                int returnFirstFrame = 0, int returnLastFrame = 0, string holdParameter = null)
             {
+                HoldParameter = holdParameter;
                 ContactFrame = contactFrame;
                 ReturnFirstFrame = returnFirstFrame;
                 ReturnLastFrame = returnLastFrame;
@@ -172,13 +180,22 @@ namespace SS3D.Systems.Entities.Humanoid.Body
                 contactFrame: 150, fullBody: true),
             // Mixamo "Man Working On Device": on one knee with both hands low; 60–132 loops.
             new("Interact Kneel", "Interact/X Bot@Man Working On Device.fbx", "Mix_InteractKneel", 60, 132, 1f,
-                fullBody: true, loop: true),
+                fullBody: true, loop: true, holdParameter: KneelParameter),
             // Owner's Pulling Lever, from the hand leaving the side (27): up at the switch by 42, pressed slightly
             // down to 66. The source then holds for two seconds; its own lowering (105–132, the hand where 66 left
             // it) follows as the return. Contact 0.29 s.
             new("Interact Light Switch", "Interact/X Bot@Pulling Lever.fbx", "Mix_InteractLightSwitch", 27, 66, 1.75f,
                 contactFrame: 42, returnFirstFrame: 105, returnLastFrame: 132),
+            // Mixamo "Searching The Top Drawer Of A File Cabinet": both hands working at chest height, feet planted.
+            // The middle of the take loops while a wall construction step runs (weld, plate, glaze, cut, pry).
+            new("Interact Wall Work", WallWorkFile, "Mix_InteractWallWork", 80, 200, 1f,
+                fullBody: true, loop: true, holdParameter: WorkParameter),
         };
+
+        public const string WallWorkFile = "Interact/X Bot@Searching The Top Drawer Of A File Cabinet.fbx";
+
+        /// <summary>A held loop (kneel, wall work): replicated state for a step's duration, not a oneshot.</summary>
+        public static bool IsHold(int index) => TryGetClip(index, out Clip clip) && clip.HoldParameter != null;
 
         public static bool TryGetClip(int index, out Clip clip)
         {
@@ -225,7 +242,24 @@ namespace SS3D.Systems.Entities.Humanoid.Body
                     return DoorReach;
                 case "DefuseC4":
                 case "Perform CPR":
+                // Construction floor work (ConstructionRecipes generic names): down on one knee for the step.
+                case "ConstructionPlacePlating":
+                case "ConstructionPlaceFloorTile":
+                case "ConstructionPryTile":
+                case "ConstructionRepairPlating":
+                case "ConstructionClearWreckage":
                     return Kneel;
+                // Construction wall work: both hands at the wall for the step's whole timer.
+                case "ConstructionRepairStructure":
+                case "ConstructionPlaceGirder":
+                case "ConstructionPlateGirder":
+                case "ConstructionWeldSeams":
+                case "ConstructionGlazeGirder":
+                case "ConstructionCutSeams":
+                case "ConstructionPullPlate":
+                case "ConstructionLiftPane":
+                case "ConstructionDismantleGirder":
+                    return WallWork;
                 default:
                     return None;
             }
@@ -237,7 +271,7 @@ namespace SS3D.Systems.Entities.Humanoid.Body
         /// </summary>
         public static int ResolvePlayback(int clip, bool moving, bool standing)
         {
-            if (clip == Kneel || !TryGetClip(clip, out _))
+            if (IsHold(clip) || !TryGetClip(clip, out _))
             {
                 return None;
             }

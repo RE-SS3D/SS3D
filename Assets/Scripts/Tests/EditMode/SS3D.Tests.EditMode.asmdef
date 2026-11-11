@@ -3,6 +3,7 @@
     "rootNamespace": "",
     "references": [
         "SS3D.Core",
+        "ConstructionEditorAssembly",
         "FishNet.Runtime",
         "SS3D.Attributes",
         "SS3D.Systems",

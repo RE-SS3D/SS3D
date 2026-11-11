@@ -30,6 +30,15 @@ namespace SS3D.Systems.Tile
                         occupancy.BlockedEdges = ComputeWallBlockedEdges(placed, map);
                         occupancy.IsAirtight = !leaks;
                     }
+                    else if (placed.tileObjectSO != null && !placed.tileObjectSO.airtight)
+                    {
+                        // Girder and unwelded plated girder: block movement, but air flows through
+                        // their seams as if open (construction.md §6). Atmos flow reads edges.
+                        occupancy.HasWall = true;
+                        occupancy.BlocksVision = placed.tileObjectSO.blocksVision;
+                        occupancy.BlockedEdges = 0;
+                        occupancy.IsAirtight = false;
+                    }
                     else
                     {
                         occupancy.HasWall = true;

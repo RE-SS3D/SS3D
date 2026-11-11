@@ -28,6 +28,20 @@ namespace SS3D.Tests.EditMode
             Assert.IsFalse(forward.Equals(strafe));
         }
 
+        // Guards: the wall-work hold replicates in its own bit, apart from the kneel
+        [Test]
+        public void Pack_RoundTripsInteractWork_ApartFromTheKneel()
+        {
+            BodyAnimationSnapshot snapshot = BodyAnimationSnapshot.Default;
+            snapshot.InteractWork = true;
+
+            BodyAnimationSnapshot unpacked = BodyAnimationSnapshot.Unpack(snapshot.Pack(), 0f, 0f, 0f, 0f, 0f, 0f, 0f);
+
+            Assert.IsTrue(unpacked.InteractWork);
+            Assert.IsFalse(unpacked.InteractKneel);
+            Assert.IsFalse(BodyAnimationSnapshot.Default.Equals(snapshot), "A wall-work change republishes the snapshot");
+        }
+
         [Test]
         public void Pack_RoundTripsInteractKneel_NextToTheRangedHoldBits()
         {

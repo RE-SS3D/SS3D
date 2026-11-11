@@ -40,7 +40,18 @@ namespace SS3D.Systems.Interactions
         private static readonly Color AvailableColor = new(0.15f, 0.95f, 0.35f, 1f);
         private static readonly Color UnavailableColor = new(0.98f, 0.88f, 0.15f, 1f);
 
+        private static readonly int CullId = Shader.PropertyToID("_Cull");
+        private static readonly int OffsetFactorId = Shader.PropertyToID("_OffsetFactor");
+        private static readonly int OffsetUnitsId = Shader.PropertyToID("_OffsetUnits");
+        private static readonly int SrcBlendId = Shader.PropertyToID("_SrcBlend");
+        private static readonly int DstBlendId = Shader.PropertyToID("_DstBlend");
+
+        /// <summary>A mesh flatter than this (world metres) is a floor or plating: it gets the fill, not the hull.</summary>
+        private const float FlatMeshHeight = 0.12f;
+        private const float FillAlpha = 0.35f;
+
         private static Material _outlineMaterial;
+        private static Material _fillMaterial;
 
         private readonly List<OutlineEntry> _entries = new();
         private OutlineState _currentState = OutlineState.Hidden;
@@ -50,6 +61,7 @@ namespace SS3D.Systems.Interactions
         {
             public Renderer Renderer;
             public MaterialPropertyBlock PropertyBlock;
+            public bool Fill;
         }
 
         public void SetState(OutlineState state)
@@ -98,7 +110,7 @@ namespace SS3D.Systems.Interactions
                     continue;
                 }
 
-                entry.PropertyBlock.SetColor(OutlineColorId, color);
+                entry.PropertyBlock.SetColor(OutlineColorId, entry.Fill ? new Color(color.r, color.g, color.b, FillAlpha) : color);
                 entry.Renderer.SetPropertyBlock(entry.PropertyBlock);
                 entry.Renderer.enabled = true;
             }
@@ -249,6 +261,19 @@ namespace SS3D.Systems.Interactions
                 hideFlags = HideFlags.HideAndDontSave,
             };
             _outlineMaterial.SetFloat(OutlineWidthId, OutlineWidth);
+
+            // Same shader, so no second Always Included entry: a flat tile's normals face the camera and a
+            // hull draws nothing, so it gets a translucent tint drawn just in front of its own surface.
+            _fillMaterial = new Material(shader)
+            {
+                hideFlags = HideFlags.HideAndDontSave,
+            };
+            _fillMaterial.SetFloat(OutlineWidthId, 0f);
+            _fillMaterial.SetFloat(CullId, (float)CullMode.Back);
+            _fillMaterial.SetFloat(OffsetFactorId, -1f);
+            _fillMaterial.SetFloat(OffsetUnitsId, -1f);
+            _fillMaterial.SetFloat(SrcBlendId, (float)BlendMode.SrcAlpha);
+            _fillMaterial.SetFloat(DstBlendId, (float)BlendMode.OneMinusSrcAlpha);
         }
 
         private void CollectOutlineRenderers(Transform root, Selectable ownerSelectable)
@@ -302,8 +327,9 @@ namespace SS3D.Systems.Interactions
             MeshFilter outlineFilter = outlineObject.AddComponent<MeshFilter>();
             outlineFilter.sharedMesh = meshFilter.sharedMesh;
 
+            bool fill = source.bounds.size.y < FlatMeshHeight;
             MeshRenderer outlineRenderer = outlineObject.AddComponent<MeshRenderer>();
-            outlineRenderer.sharedMaterial = _outlineMaterial;
+            outlineRenderer.sharedMaterial = fill ? _fillMaterial : _outlineMaterial;
             outlineRenderer.shadowCastingMode = ShadowCastingMode.Off;
             outlineRenderer.receiveShadows = false;
             outlineRenderer.renderingLayerMask = SelectionRenderingLayers.ExcludeFromSelectionPick;
@@ -313,6 +339,7 @@ namespace SS3D.Systems.Interactions
             {
                 Renderer = outlineRenderer,
                 PropertyBlock = new MaterialPropertyBlock(),
+                Fill = fill,
             });
         }
 

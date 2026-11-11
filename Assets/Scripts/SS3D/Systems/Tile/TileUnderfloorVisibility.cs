@@ -52,8 +52,16 @@ namespace SS3D.Systems.Tile
             if (!location.TryGetPlacedObject(out PlacedTileObject turf) || turf == null)
                 return false;
 
-            return IsCoveringTurfGenericType(turf.GenericType);
+            return CoversUnderfloor(turf);
         }
+
+        /// <summary>
+        /// A floor, wall or door hides what is under it, except a wall that is not airtight: a girder
+        /// stage is open framework, so the plating under it shows instead of space.
+        /// </summary>
+        public static bool CoversUnderfloor(PlacedTileObject turf) =>
+            IsCoveringTurfGenericType(turf.GenericType)
+            && (turf.GenericType != TileObjectGenericType.Wall || turf.tileObjectSO == null || turf.tileObjectSO.airtight);
 
         /// <summary>
         /// Whether play-mode should hide underfloor MeshRenderers of <paramref name="layer"/> at this cell.

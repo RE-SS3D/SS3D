@@ -57,12 +57,56 @@ namespace SS3D.Systems.Tile
                 _structuralAudio.OnSteelBreakup(record.Position + Vector3.up * Mathf.Min(record.Size.y * 0.5f, 1f));
         }
 
-        private void RemoveWreckage(TileCoord coord, TileLayer layer)
+        /// <summary>Replicated, so clients can show "Clear the wreckage first" on the ghost.</summary>
+        public bool HasWreckage(TileCoord coord, TileLayer layer)
         {
-            for (int i = _steelWreckage.Count - 1; i >= 0; i--)
+            for (int i = 0; i < _steelWreckage.Count; i++)
                 if (_steelWreckage[i].Coord == coord && _steelWreckage[i].Layer == layer)
+                    return true;
+            return false;
+        }
+
+        /// <summary>Crowbar "Clear wreckage" and map edits remove it; construction placement does not (D9).</summary>
+        [Server]
+        public bool RemoveWreckage(TileCoord coord, TileLayer layer)
+        {
+            bool removed = false;
+            for (int i = _steelWreckage.Count - 1; i >= 0; i--)
+            {
+                if (_steelWreckage[i].Coord == coord && _steelWreckage[i].Layer == layer)
+                {
                     _steelWreckage.RemoveAt(i);
+                    removed = true;
+                }
+            }
+
             if (IsClient) RefreshWreckage();
+            return removed;
+        }
+
+        private int _keepWreckageDepth;
+
+        /// <summary>
+        /// Construction placements inside this scope leave wreckage alone (D9). Construction never places on
+        /// wreckage, but a replace on a neighbouring layer must not sweep it either. The map editor keeps
+        /// delete-on-place.
+        /// </summary>
+        public KeepWreckageScope KeepWreckage() => new(this);
+
+        public readonly struct KeepWreckageScope : System.IDisposable
+        {
+            private readonly TileSubSystem _owner;
+
+            public KeepWreckageScope(TileSubSystem owner)
+            {
+                _owner = owner;
+                if (_owner != null) _owner._keepWreckageDepth++;
+            }
+
+            public void Dispose()
+            {
+                if (_owner != null) _owner._keepWreckageDepth--;
+            }
         }
 
         private sealed class WreckageMutationObserver : ITileMutationObserver
@@ -71,7 +115,7 @@ namespace SS3D.Systems.Tile
             public WreckageMutationObserver(TileSubSystem owner) => _owner = owner;
             public void OnTilePlaced(ITileOccupant occupant, TileCoord coord)
             {
-                if (_owner.IsServer && occupant is PlacedTileObject placed)
+                if (_owner.IsServer && _owner._keepWreckageDepth == 0 && occupant is PlacedTileObject placed)
                     _owner.RemoveWreckage(coord, placed.Layer);
             }
             public void OnTileCleared(ITileOccupant occupant, TileCoord coord, TileLayer layer) { }

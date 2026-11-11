@@ -40,6 +40,7 @@ namespace SS3D.Systems.Entities.Data
             public static readonly int Interact = Animator.StringToHash(InteractionAnimation.TriggerParameter);
             public static readonly int InteractClip = Animator.StringToHash(InteractionAnimation.ClipParameter);
             public static readonly int InteractKneel = Animator.StringToHash(InteractionAnimation.KneelParameter);
+            public static readonly int InteractWork = Animator.StringToHash(InteractionAnimation.WorkParameter);
             public static readonly int Emote = Animator.StringToHash("Emote");
             public static readonly int Flinch = Animator.StringToHash("Flinch");
             public static readonly int FireRifle = Animator.StringToHash("FireRifle");

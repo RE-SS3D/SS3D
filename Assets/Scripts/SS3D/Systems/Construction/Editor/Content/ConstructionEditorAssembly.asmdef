@@ -1,0 +1,26 @@
+{
+    "name": "ConstructionEditorAssembly",
+    "rootNamespace": "",
+    "references": [
+        "SS3D.Systems",
+        "SS3D.Core",
+        "SS3D.Data",
+        "SS3D.Interactions",
+        "FishNet.Runtime",
+        "Unity.Addressables.Editor",
+        "Unity.Addressables",
+        "Unity.ResourceManager",
+        "Coimbra"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

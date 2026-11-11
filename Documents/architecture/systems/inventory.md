@@ -1,7 +1,7 @@
 > Code paths: Assets/Scripts/SS3D/Systems/Inventory/, Assets/Scripts/SS3D/UI/MainHud/, Assets/Scripts/SS3D/UI/StoragePanel/, Assets/Scripts/SS3D/Systems/Stamina/
 > Entry points: ItemSubSystem, MainHudSubSystem, StoragePanelHost, StaminaController
 > Status: partial
-> Verified: 407953d97 — 2026-11-06
+> Verified: 6c49dab49 — 2026-11-11
 
 # Inventory
 
@@ -9,7 +9,7 @@
 
 Items, containers, hands, identification cards (`IDCard`, `PDA`), on-demand storage panel UI, and Main HUD equip/storage UX. ID cards bind to server-side crew records via [id-access](id-access.md); spawn-time binding in `RoleSubSystem`.
 
-**Container primitive:** `AttachedContainer` — position-grid slots (`Size.x × Size.y`), `SizeClass` fit ceiling, recursive computed `Weight`, `MaxWeight` panel readout, stacking (`Item.MaxStackSize`/`StackCount`, merge-on-add; split not built). Optional `AttachedContainerLock` ID-gates world containers. See [inventory-storage.md](../../design/inventory-storage.md).
+**Container primitive:** `AttachedContainer` — position-grid slots (`Size.x × Size.y`), `SizeClass` fit ceiling, recursive computed `Weight`, `MaxWeight` panel readout, stacking (`Item.MaxStackSize`/`StackCount`, merge-on-add; split not built). `Item._initialStackCount` sets a fresh spawn's count (sheets 20, floor tiles 10); `[Server] Item.TryConsume(n)` spends units and deletes the item at 0. A loose stack picks up onto the matching stack in hand with **Add to stack** (`StackPickupInteraction`, `Hand.StackOnto`); Pick up still needs an empty hand. The HUD hand and gear slots show "×N" (`InventorySlot.StackCount`), read each frame by `MainHudSubSystem.RefreshStackCounts` because spending a stack raises no container event. Optional `AttachedContainerLock` ID-gates world containers. See [inventory-storage.md](../../design/inventory-storage.md).
 
 **Carried weight:** `HumanInventory.CarriedWeight` sums every inventory container's recursive `AttachedContainer.Weight` (hands included). Fires `OnCarriedWeightChanged`. Feeds [stamina](stamina.md) encumbrance (Phase 7a).
 

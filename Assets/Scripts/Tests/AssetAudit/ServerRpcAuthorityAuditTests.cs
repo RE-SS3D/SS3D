@@ -56,6 +56,10 @@ namespace SS3D.Tests.AssetAudit
             { "HumanoidBodyStateMachine.CmdTrySit", AuthorityCheck.Revalidated },
             { "Draggable.CmdSetDrag", AuthorityCheck.ServerDerived },
 
+            // Construction
+            { "ConstructionPlacementSubSystem.CmdRequestCellAction", AuthorityCheck.Revalidated }, // caller's own hand; reach, rule, materials, BuildChecker
+            { "ConstructionPlacementSubSystem.CmdCancelCellAction", AuthorityCheck.ServerDerived }, // cancels only the caller's own pending step
+
             // Interactions and inventory
             { "InteractionController.CmdStartTakeFromCharacter", AuthorityCheck.Revalidated },
             { "InteractionController.CmdRunInteraction", AuthorityCheck.Revalidated },

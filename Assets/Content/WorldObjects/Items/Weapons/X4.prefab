@@ -550,6 +550,7 @@ MonoBehaviour:
   _weight: 1.2
   _sizeClass: 2
   _maxStackSize: 1
+  _initialStackCount: 1
   _stackCount: 1
   _startingTraits: []
   _rigidbody: {fileID: 3368721005309584205}

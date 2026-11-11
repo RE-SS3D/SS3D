@@ -1,7 +1,7 @@
 > Code paths: Assets/Scripts/SS3D/Systems/Tile/
 > Entry points: TileSubSystem, AdjacencyEngine, ConstructionService, TileQueryService, MapEditorSubSystem, MapImportPlanner
 > Status: partial
-> Verified: 3190b2f1c — 2026-11-07
+> Verified: 6c49dab49 — 2026-11-11
 
 # Tile / construction
 
@@ -17,7 +17,9 @@ Session boot creates an empty tile container for Map Editor/AOI registration. It
 restore persisted station content. `RoundSubSystem` owns Start → selected-template restore →
 WorldReady → countdown; explicit Map Editor/Tile load APIs remain available.
 
-Steel wall/table debris is separate from tile occupancy: `TileSubSystem.Wreckage.cs` owns the replicated session list and placement observer. `ClearMarkers` also clears that list when `TileMap.Clear` resets the world. See [structural-destruction](structural-destruction.md).
+`TileObjectSo` carries three gameplay flags read outside placement: `airtight` (default true; `TileOccupancyEvaluator` makes a non-airtight wall pass air, with no blocked edges), `blocksVision` (false on the bare girder) and `reinforced` (refuses deconstruction). In-round building and repair live in [construction](construction.md).
+
+Steel wall/table debris is separate from tile occupancy: `TileSubSystem.Wreckage.cs` owns the replicated session list and placement observer. Wreckage blocks construction on its cell (`BuildFailReason.WreckageInTheWay`); construction placement runs inside `KeepWreckage()` so only the Map Editor deletes wreckage on place, and `RemoveWreckage` is public for the crowbar. `ClearMarkers` also clears that list when `TileMap.Clear` resets the world. See [structural-destruction](structural-destruction.md).
 
 ## Start here
 

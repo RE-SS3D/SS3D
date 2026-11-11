@@ -60,6 +60,9 @@ namespace SS3D.Systems.Interactions
 
         public IntentType CurrentIntent => IsOwner ? _ownerIntent : _currentIntent;
 
+        /// <summary>The local player's controller (owning client), or null.</summary>
+        public static InteractionController Local { get; private set; }
+
         /// <summary>
         /// Fired on the owning client when a character-examine take windup is accepted by the server.
         /// </summary>
@@ -75,16 +78,28 @@ namespace SS3D.Systems.Interactions
         /// </summary>
         public bool HasActiveDelayedInteraction => IsClient && _delayedTracker.HasClientActive;
 
+        /// <summary>Owner: the hovered target has its own interaction for the held item (its outline is Available).</summary>
+        public bool HoveredTargetHasInteraction => _outlineDriver.HoveredHasInteraction;
+
+        /// <summary>Client: asked for the primary click and the Cancel key before target interactions (construction ghost).</summary>
+        public static IWorldClickHandler WorldClickHandler { get; set; }
+
         public override void OnOwnershipClient(NetworkConnection prevOwner)
         {
             base.OnOwnershipClient(prevOwner);
 
             if (IsOwner)
             {
+                Local = this;
                 SubscribeToInput();
             }
             else if (prevOwner.Equals(LocalConnection))
             {
+                if (Local == this)
+                {
+                    Local = null;
+                }
+
                 UnsubscribeFromInput();
             }
         }
@@ -217,9 +232,24 @@ namespace SS3D.Systems.Interactions
             _gameplayHandle = null;
         }
 
+        protected override void OnDestroyed()
+        {
+            if (Local == this)
+            {
+                Local = null;
+            }
+
+            base.OnDestroyed();
+        }
+
         [Client]
         private void HandleCancelInteraction(InputAction.CallbackContext callbackContext)
         {
+            if (WorldClickHandler != null && WorldClickHandler.TryCancelLocal())
+            {
+                return;
+            }
+
             if (!_delayedTracker.HasClientActive)
             {
                 return;
@@ -227,7 +257,7 @@ namespace SS3D.Systems.Interactions
 
             int referenceId = _delayedTracker.ClientActiveReferenceId;
             ClearClientActiveInteractionTracking();
-            InteractionOptimisticFeedback.Clear(transform);
+            InteractionOptimisticFeedback.CancelLocal();
             InteractionOutlineView.ClearPending();
             TakeFromCharacterEnded?.Invoke();
             CmdCancelInteraction(referenceId);
@@ -274,6 +304,13 @@ namespace SS3D.Systems.Interactions
                 }
 
                 combat?.TryRunMeleeSwingPrimary();
+                return;
+            }
+
+            // A visible construction ghost takes the click. It hides itself while the hovered target has its
+            // own interaction for the held item, so what the ghost shows is what the click does.
+            if (WorldClickHandler != null && WorldClickHandler.TryHandlePrimaryClick())
+            {
                 return;
             }
 
@@ -413,7 +450,7 @@ namespace SS3D.Systems.Interactions
 
             int referenceId = _delayedTracker.ClientActiveReferenceId;
             ClearClientActiveInteractionTracking();
-            InteractionOptimisticFeedback.Clear(transform);
+            InteractionOptimisticFeedback.CancelLocal();
             InteractionOutlineView.ClearPending();
             TakeFromCharacterEnded?.Invoke();
             CmdCancelInteraction(referenceId);
@@ -1281,7 +1318,7 @@ namespace SS3D.Systems.Interactions
         private void ClearActiveInteractionTracking()
         {
             _delayedTracker.ClearServer();
-            SetServerKneel(false);
+            SetServerHold(InteractionAnimation.None);
             CombatInteractionNetwork combat = GetCombatNetwork();
             combat?.ClearPendingMeleeConnect();
             combat?.ClearMeleeAimPoint();
@@ -1300,7 +1337,7 @@ namespace SS3D.Systems.Interactions
                 return;
             }
 
-            SetServerKneel(false);
+            SetServerHold(InteractionAnimation.None);
 
             // Combat connect may still be pending when a DelayedInteraction ends.
             CombatInteractionNetwork combat = GetCombatNetwork();
@@ -1356,7 +1393,7 @@ namespace SS3D.Systems.Interactions
         private void TargetRejectInteraction(NetworkConnection connection)
         {
             ClearClientActiveInteractionTracking();
-            InteractionOptimisticFeedback.Clear(transform);
+            InteractionOptimisticFeedback.ClearAll();
             InteractionOutlineView.ClearPending();
             TakeFromCharacterEnded?.Invoke();
         }

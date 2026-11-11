@@ -17,6 +17,8 @@ namespace SS3D.Systems.Tile
         NoWallsOnFurniture,
         NeighbourWallMountBlocksWall,
         BodyInTheWay,
+        /// <summary>Steel wreckage lies on the cell (construction.md §8). Construction only; the map editor deletes it.</summary>
+        WreckageInTheWay,
     }
 
     /// <summary>
@@ -37,6 +39,7 @@ namespace SS3D.Systems.Tile
                 BuildFailReason.NoWallsOnFurniture => "Cannot place a wall on furniture",
                 BuildFailReason.NeighbourWallMountBlocksWall => "A neighbouring wall mount blocks this wall",
                 BuildFailReason.BodyInTheWay => "Someone is standing there",
+                BuildFailReason.WreckageInTheWay => "Clear the wreckage first",
                 _ => "Cannot place here",
             };
 
