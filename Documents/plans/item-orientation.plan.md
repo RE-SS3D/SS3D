@@ -16,7 +16,7 @@ todos:
     status: completed
   - id: a-remove-legacy
     content: "A5: once A4 is green, delete the legacy character-root grip and the #158 pending-grip LateUpdate"
-    status: pending
+    status: completed
   - id: d-contact-sheet
     content: "D1: SS3D → Inventory → Render Item Pose Contact Sheet: icon, held (idle) and floor pose of every Item prefab in one PNG"
     status: pending
@@ -69,7 +69,7 @@ One contract per context, each with a single owner:
 - The grip pivot's **local** rotation is `ReferenceRotation * AttachmentPoint.localRotation`. It does not read the character root or the hand's current pose, so it is the same at spawn, mid-walk and in any stance, and the `LateUpdate` re-grip is not needed.
 - In the reference pose the result equals the legacy formula, so the 87 authored `AttachmentPoint`s keep their meaning: no item is re-authored. An item that looked right when picked up standing still looks the same; one that came out wrong when picked up mid-animation now comes out right.
 - The recipe poses an instance of `Human.prefab` with `Animator.Rebind()` + `Update(0)`, measures every display, and writes the sockets into the prefab. It refuses to write if a hand did not move from the bind pose (the Animator did not pose the rig).
-- Until the recipe has run, `ContainerItemDisplay` falls back to the legacy path. A5 removes that fallback.
+- Until the recipe had run, `ContainerItemDisplay` fell back to the legacy path. A5 removed that fallback: an uncalibrated display now logs a warning once and uses an identity reference.
 - `AttachmentPointAlt` (left hand) is unchanged in A. A mirrored socket could make it optional; left for a later pass once the contact sheet shows how many items need it.
 
 ### Phase B: explicit Rest and Icon poses
@@ -97,3 +97,4 @@ An Item Pose inspector on `Item` previews the three contexts (item in a Human ha
 
 - A1–A3 landed without a Unity Editor in the session. The runtime code falls back to the legacy grip until A4 runs the recipe, so the build behaves as before until then. `HandGripSocketContentTests` fails until the recipe has been run and `Human.prefab` committed: that failure is the reminder.
 - A4 (2026-11-11): recipe run in the Editor after merging develop; it calibrated `hold.r`, `hold.l` and `IDHold` and added three `GripSocket`s to `Human.prefab`. `validate.sh --steps compile,editmode,scenarios:Combat` passed (EditMode 4407/4407, Combat 20/20). Owner hand test passed the same day: held items look right; the taser icon is still upside down, as expected until B3.
+- A5 (2026-11-11): removed the legacy grip, `PendingGrip` and the `LateUpdate` re-grip. `TestHuman.prefab` nests the same hands without sockets; it has no InteractionController and nothing spawns it, so it was left uncalibrated.

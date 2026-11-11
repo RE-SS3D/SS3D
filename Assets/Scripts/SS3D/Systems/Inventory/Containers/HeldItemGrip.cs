@@ -15,19 +15,11 @@ namespace SS3D.Systems.Inventory.Containers
 
         /// <summary>
         /// Grip pivot rotation local to a calibrated display. Constant: independent of the hand's current pose
-        /// and of the character's facing. In the reference pose its world rotation equals
-        /// <see cref="LegacyPivotWorldRotation"/>.
+        /// and of the character's facing. In the reference pose its world rotation is
+        /// <c>characterRoot.rotation * attachmentLocalRotation</c>, the meaning every authored AttachmentPoint has.
         /// </summary>
         public static Quaternion PivotLocalRotation(Quaternion referenceRotation, Quaternion attachmentLocalRotation) =>
             Normalize(referenceRotation * attachmentLocalRotation);
-
-        /// <summary>
-        /// The pre-socket grip: character facing × attachment, applied in world space at attach time. Its
-        /// rotation relative to the hand depends on the hand's pose at that moment. Kept for uncalibrated
-        /// displays only.
-        /// </summary>
-        public static Quaternion LegacyPivotWorldRotation(Quaternion characterRootWorldRotation, Quaternion attachmentLocalRotation) =>
-            Normalize(characterRootWorldRotation * attachmentLocalRotation);
 
         private static Quaternion Normalize(Quaternion q)
         {

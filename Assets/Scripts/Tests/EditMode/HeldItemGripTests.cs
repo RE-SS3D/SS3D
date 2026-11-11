@@ -8,7 +8,7 @@ namespace SS3D.Tests.EditMode
 {
     /// <summary>
     /// Held-item grip contract (Documents/plans/item-orientation.plan.md Phase A): a calibrated
-    /// <see cref="GripSocket"/> makes the grip a constant hand-local rotation that equals the legacy
+    /// <see cref="GripSocket"/> makes the grip a constant hand-local rotation that equals the authored
     /// character-facing grip in the reference pose.
     /// </summary>
     public class HeldItemGripTests
@@ -23,14 +23,20 @@ namespace SS3D.Tests.EditMode
         private static readonly Quaternion SwingHand = Quaternion.Euler(10f, 160f, 30f);
         private static readonly Quaternion BindPoseHand = Quaternion.Euler(0f, 227f, 90f);
 
+        /// <summary>
+        /// What an AttachmentPoint means: the item's rotation in character space in the idle pose. The pre-socket
+        /// grip applied exactly this in world space at attach time, which baked in the hand's pose at that moment.
+        /// </summary>
+        private static Quaternion AuthoredGrip() => CharacterRoot * Attachment;
+
         [Test]
-        public void CalibratedGrip_InTheReferencePose_EqualsTheLegacyGrip()
+        public void CalibratedGrip_InTheReferencePose_EqualsTheAuthoredGrip()
         {
             Quaternion reference = HeldItemGrip.ReferenceRotation(ReferenceHand, CharacterRoot);
             Quaternion pivotWorld = ReferenceHand * HeldItemGrip.PivotLocalRotation(reference, Attachment);
 
             Assert.Less(
-                Quaternion.Angle(HeldItemGrip.LegacyPivotWorldRotation(CharacterRoot, Attachment), pivotWorld),
+                Quaternion.Angle(AuthoredGrip(), pivotWorld),
                 Tolerance,
                 "Authored AttachmentPoints must keep their meaning: same result as before in the idle pose.");
         }
@@ -41,19 +47,19 @@ namespace SS3D.Tests.EditMode
             Quaternion reference = HeldItemGrip.ReferenceRotation(ReferenceHand, CharacterRoot);
             Quaternion calibrated = HeldItemGrip.PivotLocalRotation(reference, Attachment);
 
-            // Legacy: pivot world rotation is fixed at attach time, so its hand-local rotation is that pose's.
-            Quaternion legacyFromSwing = Quaternion.Inverse(SwingHand)
-                * HeldItemGrip.LegacyPivotWorldRotation(CharacterRoot, Attachment);
-            Quaternion legacyFromBind = Quaternion.Inverse(BindPoseHand)
-                * HeldItemGrip.LegacyPivotWorldRotation(CharacterRoot, Attachment);
+            // Pre-socket grip: pivot world rotation fixed at attach time, so its hand-local rotation is that pose's.
+            Quaternion preSocketFromSwing = Quaternion.Inverse(SwingHand)
+                * AuthoredGrip();
+            Quaternion preSocketFromBind = Quaternion.Inverse(BindPoseHand)
+                * AuthoredGrip();
 
-            Assert.Greater(Quaternion.Angle(legacyFromSwing, legacyFromBind), 10f,
-                "Precondition: the legacy grip differs between pickups in different poses (#158).");
+            Assert.Greater(Quaternion.Angle(preSocketFromSwing, preSocketFromBind), 10f,
+                "Precondition: the pre-socket grip differs between pickups in different poses (#158).");
 
-            // Back in the idle pose, the calibrated grip lands where the item was authored; the legacy one does not.
-            Quaternion expected = HeldItemGrip.LegacyPivotWorldRotation(CharacterRoot, Attachment);
+            // Back in the idle pose, the calibrated grip lands where the item was authored; the pre-socket one does not.
+            Quaternion expected = AuthoredGrip();
             Assert.Less(Quaternion.Angle(expected, ReferenceHand * calibrated), Tolerance);
-            Assert.Greater(Quaternion.Angle(expected, ReferenceHand * legacyFromSwing), 10f);
+            Assert.Greater(Quaternion.Angle(expected, ReferenceHand * preSocketFromSwing), 10f);
         }
 
         [Test]
@@ -118,7 +124,7 @@ namespace SS3D.Tests.EditMode
 
             Assert.Greater(checkedDisplays, 0, "Human.prefab should have hand display points.");
             Assert.IsEmpty(missing,
-                "Uncalibrated display(s) fall back to the pose-dependent legacy grip. "
+                "Uncalibrated display(s) hold items with an identity reference, at the wrong angle. "
                 + "Run SS3D → Inventory → Calibrate Hand Grip Sockets and commit Human.prefab.");
         }
     }

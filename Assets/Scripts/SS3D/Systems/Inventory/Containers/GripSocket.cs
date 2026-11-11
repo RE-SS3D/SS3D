@@ -17,7 +17,7 @@ namespace SS3D.Systems.Inventory.Containers
         [SerializeField]
         private Quaternion _referenceRotation = Quaternion.identity;
 
-        [Tooltip("False until the calibration recipe has run. Uncalibrated sockets use the legacy grip.")]
+        [Tooltip("False until the calibration recipe has run. Uncalibrated displays hold items with an identity reference and log a warning.")]
         [SerializeField]
         private bool _calibrated;
 
