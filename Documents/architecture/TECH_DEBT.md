@@ -513,6 +513,12 @@ See §6.
 
 - Related: [inventory.md](systems/inventory.md), [examine.md](systems/examine.md)
 
+### 1.32 Recipes copy FishNet's behaviour-list rebuild
+
+**Blast radius: low — trend: growing (one copy per recipe that adds a NetworkBehaviour)**
+
+`RebuildNetworkBehaviours` is private in `ConstructionHubRecipe`, `GirderStageRecipe`, `SolarPrefabSetup` and `SessionWorldLifecycleEditorMenus`, internal in `CombatInteractionNetworkPrefabSetup` (reused by `RangedPrefabSetup`), and `HumanPrefabHygiene` has a sixth variant. Forgetting it is silent ([combat.md](systems/combat.md) Pitfalls). Fix: one shared editor helper (S).
+
 ## 2. Hot-path GC / performance debt (tracked, partially paid down)
 
 PR #13 fixed a first wave of per-tick allocation ([FORK_STATUS.md](../FORK_STATUS.md) § Hot-path

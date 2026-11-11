@@ -1,8 +1,8 @@
 > Implements: Documents/design/examine.md §2 (self-examine, range bands), §3 (keyword colours), §4 (live panel, examine cue), §5 (gear rule, visible injuries and states, Search visibility), §7 (target rows); Documents/design/action-messages.md §2–§6
 > Touches systems: examine, interactions-runtime, interactions-framework, chat-audio-screens, inventory, localization, main-hud
-> Status: planned
+> Status: in-progress
 
-**Progress:** Not started. Decided in the 2026-11 examine grill. Phases 1–3 fix shipped content and serve [mvp1-nuke-ops.md](../milestones/mvp1-nuke-ops.md) M0 (identity at a glance) and M3 (examine shows the nuke state); phases 4–6 build action messages. The out-of-character column is a separate, parallel piece: [ooc-column.plan.md](../plans/ooc-column.plan.md). Visual brief for Claude Design: [examine-feedback-visual-brief.md](../plans/examine-feedback-visual-brief.md). Tests follow the [testing philosophy](2026-11_testing-philosophy.md).
+**Progress:** Phases 1–4 built on `feature/gifted-maxwell-n1nemy` (2026-11-11), awaiting the owner's hand test; phases 5–6 not started. Decided in the 2026-11 examine grill. Phases 1–3 fix shipped content and serve [mvp1-nuke-ops.md](../milestones/mvp1-nuke-ops.md) M0 (identity at a glance) and M3 (examine shows the nuke state); phases 4–6 build action messages. The out-of-character column is a separate, parallel piece: [ooc-column.plan.md](../plans/ooc-column.plan.md). Visual brief for Claude Design: [examine-feedback-visual-brief.md](../plans/examine-feedback-visual-brief.md). Tests follow the [testing philosophy](2026-11_testing-philosophy.md).
 
 # Examine and action feedback (Nov 2026)
 
@@ -44,32 +44,32 @@ Each phase is one PR off `develop`, run through `update-system-docs` before merg
 
 ### Phase 1 — Section model
 
-- [ ] `ExamineSection` gains `Band`; existing providers mark their fine print `Close` (tank level, substance contents).
-- [ ] `ExamineKeywordFormatter`: `<k=…>` → UITK rich text from tokens; plain on unknown tag.
-- [ ] Add tags to existing strings in the Examine string table: integrity (damaged/cracked), seal (intact/breached), tank (low), device (broken), health Tier 0.
-- [ ] Move `SubstanceContainerExaminable`'s hardcoded English into the Examine table.
+- [x] `ExamineSection` gains `Band`; existing providers mark their fine print `Close` (tank level, substance contents, air alarm readings, disposal tag). `ExamineConfig.CloseRange` (2.5 m) replaces `DetailedImageRange`; the flavour description is close-only too.
+- [x] `ExamineKeywordFormatter`: `<k=…>` → UITK rich text from tokens; plain on unknown tag.
+- [x] Add tags to existing strings in the Examine string table: integrity (damaged/cracked), seal (intact/breached), tank (low), device (broken), health Tier 0.
+- [x] Move `SubstanceContainerExaminable`'s hardcoded English into the Examine table.
 
 ### Phase 2 — Refresh, fallback, self
 
-- [ ] Throttled live rebuild while held; cache for hover only.
-- [ ] Resolver fallback for bare `Item`s, with size class and stack count lines.
-- [ ] Remove the no-target self fallback; vitals-cluster press-and-hold opens the self readout; "You are presenting…" line.
-- [ ] Extract the identity resolver into a shared utility (Decision 10).
+- [x] Throttled live rebuild while held; cache for hover only.
+- [x] Resolver fallback for bare `Item`s, with size class and stack count lines. It also covers examinables with no `ExamineData` (soda cans, mug), which showed nothing.
+- [x] Remove the no-target self fallback; "You are presenting…" line. Vitals-cluster press-and-hold waits: the cluster isn't built (see Deviations).
+- [x] Extract the identity resolver into a shared utility (Decision 10): `PresentedIdentity`.
 
 ### Phase 3 — Content lines
 
-- [ ] Gun round count (close) on the gun item, read from the loaded magazine.
-- [ ] Door/machine state provider: powered, bolted, panel open.
-- [ ] Disposal tag: the tagger adds `DisposalTagExaminable`; `DisposalTag` syncs.
+- [x] Gun round count (close) on the gun item, mirrored to observers by `RangedWeaponRoundsReadout`; energy weapons show charges.
+- [x] Door/machine state provider: powered (both power consumer types). Bolts and maintenance panels don't exist yet.
+- [ ] Disposal tag: `DisposalTag` is its own provider now (`DisposalTagExaminable` deleted); syncing it is an owner decision (see Deviations).
 - [ ] Nuclear device provider, filed against the M3 nuke slice (not built ahead of the device).
 - [ ] Organ condition provider (close), via a tier-B recipe on organ prefabs.
 - [ ] Lock state and restrained: follow-ups when locks and restraints exist.
 
 ### Phase 4 — Search
 
-- [ ] Pocket and suit-storage slots occupied/empty only while the target is conscious.
-- [ ] Server-side reach check on Search and Take.
-- [ ] Blind take: slower than an open take, warns the target. The warning becomes a TargetOnly action line in Phase 5.
+- [x] Pocket and suit-storage slots occupied/empty only while the target is conscious.
+- [x] Server-side reach check on Search and Take: both already checked reach; the window now also closes when you walk away.
+- [x] Take from anyone in reach (`inventory-storage.md` §9): 1.5 s incapacitated, 3 s open, 4.5 s blind. A conscious victim is warned through `CommsSubSystem.SendPrivateFeed` (`TakeFromCharacterWarning`) until the TargetOnly action line in Phase 5.
 
 ### Phase 5 — Action-message pipeline
 
@@ -93,7 +93,15 @@ Each phase is one PR off `develop`, run through `update-system-docs` before merg
 
 ## Deviations
 
-None from the revised design. Recorded limit: Search's hidden slots are hidden in the UI only until [TECH_DEBT.md](TECH_DEBT.md) §1.31 is paid.
+Recorded limit: Search's hidden slots are hidden in the UI only until [TECH_DEBT.md](TECH_DEBT.md) §1.31 is paid.
+
+Found while building phases 1–4, open for the owner:
+
+- **No vitals cluster.** `main-hud.md` §5's cluster isn't built, so self-examine is only pointing at your own model. The press-and-hold readout lands with the cluster.
+- **Disposal tag doesn't replicate.** The tagger adds `DisposalTag` at runtime on the server, and FishNet can't sync a runtime-added component, so only the host sees the tag. Fix options: a synced label field on `Item` (grows a class at its size cap) or a `DisposalTag` NetworkBehaviour on every item prefab via a recipe.
+- **Department colours.** `<k=dept:…>` tags are written (ID card role, presented job) but render plain until the visual brief returns a palette (`ExamineKeywordFormatter.DepartmentColors`).
+- **Short look wording.** With no ID, a character reads "Unknown crew member in engineering jumpsuit" (outer suit, else jumpsuit, item name lower-cased); the design's article ("an … in an …") would need per-locale grammar.
+- **Organ condition** waits on extraction/surgery: organ items carry no condition yet.
 
 ## Related docs
 

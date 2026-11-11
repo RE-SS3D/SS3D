@@ -14,7 +14,7 @@ One row per gameplay domain that has, or should eventually have, a design doc. A
 
 | Domain | Design | Architecture | System map |
 |---|---|---|---|
-| action-messages | [action-messages](../design/action-messages.md) | [examine-and-action-feedback](2026-11_examine-and-action-feedback.md) — planned | none yet |
+| action-messages | [action-messages](../design/action-messages.md) | [examine-and-action-feedback](2026-11_examine-and-action-feedback.md) — in-progress | none yet |
 | admin-tools | [admin-tools](../design/admin-tools.md) | [console-commands](../archive/architecture/2026-11_console-commands.md) — shipped | [ingame-console](systems/ingame-console.md) — partial |
 | ai-cyborgs | [ai-cyborgs](../design/ai-cyborgs.md) | none yet | none yet |
 | antagonist-content | [antagonist-content](../design/antagonist-content.md) | [round-end-loop](../archive/architecture/2026-11_round-end-loop.md) — shipped | [gamemodes-roles-traits](systems/gamemodes-roles-traits.md) — partial |
@@ -33,7 +33,7 @@ One row per gameplay domain that has, or should eventually have, a design doc. A
 | death-cloning-respawn | [death-cloning-respawn](../design/death-cloning-respawn.md) | none yet | none yet |
 | disposal | [disposal](../design/disposal.md) | [disposal-item-network](../archive/architecture/2026-07_disposal-item-network.md) — shipped | [disposal](systems/disposal.md) — partial |
 | electricity | [electricity](../design/electricity.md) | [solar-generation](../archive/architecture/2026-07_solar-generation.md), [mi-area-electricity-debt](../archive/architecture/2026-07_mi-area-electricity-debt.md) — shipped | [electricity](systems/electricity.md) — partial |
-| examine | [examine](../design/examine.md) | [examine-and-action-feedback](2026-11_examine-and-action-feedback.md) — planned | [examine](systems/examine.md) — partial |
+| examine | [examine](../design/examine.md) | [examine-and-action-feedback](2026-11_examine-and-action-feedback.md) — in-progress | [examine](systems/examine.md) — partial |
 | explosives-destruction | [explosives-destruction](../design/explosives-destruction.md) | [structural-destruction](2026-07_structural-destruction.md) — in-progress | [structural-destruction](systems/structural-destruction.md) — partial |
 | hacking-interface | [hacking-interface](../design/hacking-interface.md) | none yet | none yet |
 | health | [health](../design/health.md) | [health plan](../plans/health_implementation_plan.md) — in-progress; [body-presentation-authority](../archive/architecture/2026-07_body-presentation-authority.md), [health-env-feel](../archive/architecture/2026-07_health-env-feel.md) — shipped | [health](systems/health.md) — partial |
@@ -137,7 +137,7 @@ Only work that is in flight, planned, or kept as standing reference. Everything 
 | [2026-11_atmos-edge-flow](2026-11_atmos-edge-flow.md) | in-progress |
 | [2026-11_humanoid-animation-pass](2026-11_humanoid-animation-pass.md) | shipped |
 | [2026-11_construction-mvp1](2026-11_construction-mvp1.md) | in-progress |
-| [2026-11_examine-and-action-feedback](2026-11_examine-and-action-feedback.md) | planned |
+| [2026-11_examine-and-action-feedback](2026-11_examine-and-action-feedback.md) | in-progress (phases 1–4 built) |
 | [2026-11_testing-philosophy](2026-11_testing-philosophy.md) | shipped (standing policy) |
 | [2026-11_tech-debt-paydown](2026-11_tech-debt-paydown.md) | in-progress (Phases 0–2 done, awaiting review) |
 | [agent_validation_loop.plan](../plans/agent_validation_loop.plan.md) | shipped (reference) |
