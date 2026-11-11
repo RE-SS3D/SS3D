@@ -71,6 +71,17 @@ namespace SS3D.Tests.EditMode
             Assert.Less(Quaternion.Angle(Quaternion.Euler(0f, 90f, 0f), ItemPlacement.WorldRotation((SS3D.Systems.Tile.ItemObjectSo)null, 90f)), Tolerance);
         }
 
+        [TestCase(0f)]
+        [TestCase(90f)]
+        [TestCase(-90f)]
+        [TestCase(180f)]
+        public void YawAtRest_InvertsWorldRotation_ForAPitchedRestPose(float yaw)
+        {
+            Quaternion world = ItemPlacement.WorldRotation(_item, yaw);
+
+            Assert.AreEqual(0f, Mathf.DeltaAngle(yaw, ItemPlacement.YawAtRest(_item, world)), Tolerance);
+        }
+
         [TestCase(0f, 1f, 0f)]
         [TestCase(1f, 0f, 90f)]
         [TestCase(0f, -1f, 180f)]

@@ -28,6 +28,14 @@ namespace SS3D.Systems.Inventory.Items
             Quaternion.Euler(0f, yawDegrees, 0f) * restRotation;
 
         /// <summary>
+        /// The yaw <paramref name="worldRotation"/> was composed with, the inverse of <see cref="WorldRotation(Item, float)"/>.
+        /// Reading <c>eulerAngles.y</c> instead adds the rest pose's own yaw (M4, bike horn) and is gimbal-locked
+        /// for a pitched rest pose.
+        /// </summary>
+        public static float YawAtRest(Item item, Quaternion worldRotation) =>
+            YawOf(worldRotation * Quaternion.Inverse(item.WorldRestRotation) * Vector3.forward);
+
+        /// <summary>
         /// The yaw of a horizontal heading, in degrees (0 = world +Z). A vertical or zero heading gives 0.
         /// </summary>
         public static float YawOf(Vector3 heading) =>

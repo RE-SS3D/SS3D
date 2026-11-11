@@ -32,13 +32,19 @@ namespace SS3D.Systems.Inventory.Containers.Editor
         private const int LabelHeight = 20;
         private const int GlyphScale = 2;
 
-        /// <summary>Character root faces +Z, right hand at +X: look at each hand from its outer side, a little in front.</summary>
-        private static readonly Vector3 RightHandView = new Vector3(-1f, -0.25f, -0.35f).normalized;
-        private static readonly Vector3 LeftHandView = new Vector3(1f, -0.25f, -0.35f).normalized;
+        /// <summary>
+        /// Character root faces +Z, right hand at +X: look at each hand from the front, a quarter turn toward its side,
+        /// so the hanging arm reads as an arm and not as a leg.
+        /// </summary>
+        private static readonly Vector3 RightHandView = new Vector3(-0.7f, -0.3f, -1f).normalized;
+        private static readonly Vector3 LeftHandView = new Vector3(0.7f, -0.3f, -1f).normalized;
         private static readonly Vector3 FloorView = new Vector3(-0.45f, -0.6f, -0.65f).normalized;
 
-        /// <summary>Held views frame at least this much space around the item, so the hand shows.</summary>
-        private const float MinHeldFrameSize = 0.4f;
+        /// <summary>
+        /// Edge of the unrendered cube framed around the hand, so the hand and forearm show. The generator frames the
+        /// cube's corners, so the view spans about 1.7 times this.
+        /// </summary>
+        private const float MinHeldFrameSize = 0.45f;
 
         private static readonly string[] ViewNames = { "ICON", "RIGHT HAND", "LEFT HAND", "FLOOR" };
 
@@ -137,6 +143,13 @@ namespace SS3D.Systems.Inventory.Containers.Editor
             try
             {
                 human.transform.SetPositionAndRotation(Vector3.zero, Quaternion.identity);
+
+                // Skinned bounds stay at the bind pose in the Editor, so a tight frame on the held item culls the
+                // posed arm and hand (they rest by the hip in idle, their stale bounds sit out at T-pose).
+                foreach (SkinnedMeshRenderer skinned in human.GetComponentsInChildren<SkinnedMeshRenderer>(true))
+                {
+                    skinned.updateWhenOffscreen = true;
+                }
                 if (!TryFindHands(human, out Hand right, out Hand left, out error))
                 {
                     report = error;
@@ -330,6 +343,7 @@ namespace SS3D.Systems.Inventory.Containers.Editor
             Item instance = Object.Instantiate(prefab);
             instance.gameObject.hideFlags = HideFlags.DontSave;
             Transform pivot = null;
+            GameObject frame = null;
             try
             {
                 instance.SetVisibility(true);
@@ -337,9 +351,16 @@ namespace SS3D.Systems.Inventory.Containers.Editor
                 Transform parent = instance.transform.parent;
                 pivot = parent != hand.Display ? parent : null;
 
-                float size = RendererSize(instance.transform);
-                float padding = size > 0f ? Mathf.Max(0.35f, (MinHeldFrameSize / size - 1f) * 0.5f) : 0.35f;
-                return RenderScene(human, instance.transform, Quaternion.identity, view, padding);
+                // Frame the display (item plus an unrendered cube around the hand), not just the item: a small
+                // item framed alone hides the hand. Padding cannot do it, the generator clamps it to 0.25.
+                frame = GameObject.CreatePrimitive(PrimitiveType.Cube);
+                frame.hideFlags = HideFlags.DontSave;
+                Object.DestroyImmediate(frame.GetComponent<Collider>());
+                frame.GetComponent<Renderer>().forceRenderingOff = true;
+                frame.transform.SetPositionAndRotation(hand.Display.position, Quaternion.identity);
+                frame.transform.localScale = Vector3.one * MinHeldFrameSize;
+                frame.transform.SetParent(hand.Display, true);
+                return RenderScene(human, hand.Display, Quaternion.identity, view, 0.05f);
             }
             finally
             {
@@ -347,6 +368,11 @@ namespace SS3D.Systems.Inventory.Containers.Editor
                 if (pivot != null)
                 {
                     Object.DestroyImmediate(pivot.gameObject);
+                }
+
+                if (frame != null)
+                {
+                    Object.DestroyImmediate(frame);
                 }
             }
         }
@@ -414,9 +440,6 @@ namespace SS3D.Systems.Inventory.Containers.Editor
                 RuntimePreviewGenerator.BoundsTarget = null;
             }
         }
-
-        private static float RendererSize(Transform target) =>
-            TryRendererBounds(target, out Bounds bounds) ? bounds.size.magnitude : 0f;
 
         private static bool TryRendererBounds(Transform target, out Bounds bounds)
         {
