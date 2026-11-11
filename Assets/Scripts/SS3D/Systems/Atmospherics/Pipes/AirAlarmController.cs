@@ -107,7 +107,7 @@ namespace SS3D.Systems.Atmospherics.Pipes
         {
             base.OnStartServer();
             Initialize();
-            InvokeRepeating(nameof(ServerSampleTick), AtmosConstants.TickInterval, AtmosConstants.TickInterval);
+            AtmosSubSystem.Channel.Subscribe(ServerSampleTick);
         }
 
         public override void OnStartClient()
@@ -120,12 +120,13 @@ namespace SS3D.Systems.Atmospherics.Pipes
 
         public override void OnStopServer()
         {
-            CancelInvoke(nameof(ServerSampleTick));
+            AtmosSubSystem.Channel.Unsubscribe(ServerSampleTick);
             base.OnStopServer();
         }
 
         private void OnDestroy()
         {
+            AtmosSubSystem.Channel.Unsubscribe(ServerSampleTick);
             UnsubscribePowerEvents();
         }
 

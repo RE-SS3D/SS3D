@@ -849,6 +849,13 @@ namespace SS3D.Systems.Testing
             NetworkTraficStatistics statistics = InstanceFinder.NetworkManager.StatisticsManager.NetworkTraffic;
             statistics.OnServerNetworkTraffic += OnTraffic;
             int lastTick = atmos.TickCount;
+            IReadOnlyList<SimulationChannel> channels = SimulationClock.All;
+            var channelTicks = new long[channels.Count];
+            for (int i = 0; i < channels.Count; i++)
+            {
+                channelTicks[i] = channels[i].TickCount;
+            }
+
             float end = Time.realtimeSinceStartup + seconds;
             while (Time.realtimeSinceStartup < end)
             {
@@ -878,6 +885,14 @@ namespace SS3D.Systems.Testing
                 $"traffic mean/max={bytesPerSecond * totalChunks / Mathf.Max(tick.Count, 1) / 1024f:F0}/{bytesPerSecond * maxChunks / 1024f:F0} KB/s " +
                 $"sent to all connections p50/max={Percentile(sent, 0.5f):F0}/{Percentile(sent, 1f):F0} KB/s pushed max={maxPushed} adrift={atmos.LooseBodies.AdriftCount}";
             Debug.Log($"[atmos-budget] {report}");
+            // Fires per simulation channel over the sample; per-tick GC is read from the SS3D.Clock.* Profiler markers.
+            var rates = new System.Text.StringBuilder();
+            for (int i = 0; i < channelTicks.Length; i++)
+            {
+                rates.Append($"{channels[i].Name}={channels[i].TickCount - channelTicks[i]} ");
+            }
+
+            Debug.Log($"[clock-budget] ticks over {seconds:F0} s: {rates}");
             TestSignal.Emit(this, "AtmosBudget", report);
         }
 

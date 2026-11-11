@@ -1,5 +1,3 @@
-using Coimbra.Services.Events;
-using Coimbra.Services.PlayerLoopEvents;
 using Cysharp.Threading.Tasks;
 using FishNet.Object;
 using QuikGraph;
@@ -29,7 +27,7 @@ namespace SS3D.Systems.Electricity
     /// </remarks>
     public partial class ElectricitySubSystem : NetworkSubSystem, ITileMutationObserver, IWorldReady
     {
-        private static readonly ProfilerMarker FixedUpdatePerformanceMarker = new("SS3D.Electricity.FixedUpdate");
+        private static readonly ProfilerMarker TickPerformanceMarker = new("SS3D.Electricity.Tick");
         private static readonly ProfilerMarker CircuitsTickPerformanceMarker = new("SS3D.Electricity.CircuitsTick");
         private static readonly ProfilerMarker AreaPowerPerformanceMarker = new("SS3D.Electricity.AreaPower");
         private static readonly ProfilerMarker OnTickPerformanceMarker = new("SS3D.Electricity.OnTick");
@@ -37,8 +35,8 @@ namespace SS3D.Systems.Electricity
         public event Action WhenReady;
 
         /// <summary>
-        /// Called each time the electricity system updates. Subscribers should use this
-        /// instead of Unity update loops.
+        /// Called each time the electricity system updates, on the server and on every client (each runs the
+        /// electricity channel of <see cref="SimulationClock"/>). Subscribers should use this instead of Unity update loops.
         /// </summary>
         public event Action OnTick;
 
@@ -48,7 +46,6 @@ namespace SS3D.Systems.Electricity
 
         private bool _graphIsDirty;
         private bool _apcConsumerIndexDirty = true;
-        private bool _circuitUpdatesSuspended;
         private List<Circuit> _circuits;
         private readonly Dictionary<IElectricDevice, Circuit> _circuitByDevice = new();
         private readonly List<IPowerConsumer> _registeredConsumers = new();
@@ -66,20 +63,37 @@ namespace SS3D.Systems.Electricity
 
         [SerializeField]
         private float _tickRate = 0.2f;
-        private float _timeElapsed;
+        private SimulationChannel _channel;
+
+        public override void OnStartNetwork()
+        {
+            base.OnStartNetwork();
+            // World suspension (map load, clear, import) pauses this channel, so ticks never walk devices whose
+            // despawn is still draining; the graph is rebuilt on the first tick after the last scope closes.
+            _channel = SimulationClock.GetOrCreate("electricity", _tickRate, pausedByWorldSuspension: true);
+            _channel.Resumed -= HandleChannelResumed;
+            _channel.Resumed += HandleChannelResumed;
+            _channel.Subscribe(HandleChannelTick);
+        }
 
         public override void OnStartServer()
         {
             base.OnStartServer();
             _electricityGraph = new();
             _circuits = new();
-            AddHandle(FixedUpdateEvent.AddListener(HandleFixedUpdate));
             SubSystems.Get<TileSubSystem>().RegisterTileMutationObserver(this);
             AwaitAreasThenMarkReady().Forget();
         }
 
         protected override void OnDestroyed()
         {
+            if (_channel != null)
+            {
+                _channel.Unsubscribe(HandleChannelTick);
+                _channel.Resumed -= HandleChannelResumed;
+                _channel = null;
+            }
+
             _readinessCts?.Cancel();
             _readinessCts?.Dispose();
             _readinessCts = null;
@@ -220,36 +234,20 @@ namespace SS3D.Systems.Electricity
             _apcConsumerIndexDirty = true;
         }
 
-        [Server]
-        private void HandleFixedUpdate(ref EventContext context, in FixedUpdateEvent updateEvent)
+        private void HandleChannelResumed() => _graphIsDirty = true;
+
+        private void HandleChannelTick()
         {
-            using (FixedUpdatePerformanceMarker.Auto())
+            using (TickPerformanceMarker.Auto())
             {
-                // Paused while the station is replaced (map load, clear, import), so FixedUpdate never walks
-                // devices whose despawn is still draining; the graph is rebuilt once the last scope closes.
-                if (WorldSimSuspension.IsSuspended)
-                {
-                    _circuitUpdatesSuspended = true;
-                    return;
-                }
-
-                if (_circuitUpdatesSuspended)
-                {
-                    _circuitUpdatesSuspended = false;
-                    _graphIsDirty = true;
-                }
-
-                _timeElapsed += Time.deltaTime;
-
-                if (_timeElapsed > _tickRate)
+                if (IsServer && _circuits != null)
                 {
                     HandleCircuitsUpdate();
-                    using (OnTickPerformanceMarker.Auto())
-                    {
-                        RpcInvokeOnTick();
-                    }
+                }
 
-                    _timeElapsed = 0;
+                using (OnTickPerformanceMarker.Auto())
+                {
+                    OnTick?.Invoke();
                 }
             }
         }
@@ -681,11 +679,5 @@ namespace SS3D.Systems.Electricity
         private static VerticeCoordinates ToCoordinates(PlacedTileObject tileObject) =>
             new((short)tileObject.WorldOrigin.x, (short)tileObject.WorldOrigin.y,
                 (byte)tileObject.Layer, (byte)tileObject.Direction);
-
-        [ObserversRpc(RunLocally = true)]
-        private void RpcInvokeOnTick()
-        {
-            OnTick?.Invoke();
-        }
     }
 }

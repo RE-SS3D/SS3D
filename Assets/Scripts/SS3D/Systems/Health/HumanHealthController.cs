@@ -2,8 +2,6 @@ using FishNet.Connection;
 using FishNet.Object;
 using FishNet.Object.Synchronizing;
 using System.Linq;
-using Coimbra.Services.Events;
-using Coimbra.Services.PlayerLoopEvents;
 using SS3D.Core;
 using SS3D.Core.Behaviours;
 using SS3D.Systems.Atmospherics;
@@ -36,7 +34,6 @@ namespace SS3D.Systems.Health
         private readonly List<IHealthEffectModifier> _modifiers = new();
 
         private SystemicPools _pools = SystemicPools.Default;
-        private float _tickTimer;
         private Entity _entity;
         private WoundVfx _woundVfx;
         private HumanAnatomyController _anatomy;
@@ -118,8 +115,6 @@ namespace SS3D.Systems.Health
             }
 
             _anatomy.Initialize(this);
-
-            AddHandle(UpdateEvent.AddListener(HandleUpdate));
         }
 
         public override void OnStartClient()
@@ -147,16 +142,22 @@ namespace SS3D.Systems.Health
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
         private static void ResetServerBodies() => ServerBodies.Clear();
 
+        /// <summary>Every body ticks on one shared channel of <see cref="SimulationClock"/>; map loads don't pause it.</summary>
+        private static SimulationChannel HealthChannel =>
+            SimulationClock.GetOrCreate("health", HealthConstants.TickIntervalSeconds, pausedByWorldSuspension: false);
+
         public override void OnStopServer()
         {
             base.OnStopServer();
             ServerBodies.Remove(this);
+            HealthChannel.Unsubscribe(HandleHealthTick);
         }
 
         public override void OnStartServer()
         {
             base.OnStartServer();
             ServerBodies.Add(this);
+            HealthChannel.Subscribe(HandleHealthTick);
             EnsureBuiltinOrgans();
             OrganSimulation.EnsureDefaultOrgans(_organs);
             PublishSnapshot();
@@ -165,6 +166,7 @@ namespace SS3D.Systems.Health
         protected override void OnDestroyed()
         {
             ServerBodies.Remove(this);
+            HealthChannel.Unsubscribe(HandleHealthTick);
             if (_entity != null)
             {
                 _entity.OnMindChanged -= HandleMindChangedForLocalFeedback;
@@ -678,20 +680,13 @@ namespace SS3D.Systems.Health
             }
         }
 
-        private void HandleUpdate(ref EventContext context, in UpdateEvent updateEvent)
+        private void HandleHealthTick()
         {
             if (!IsServer || _deathTriggered)
             {
                 return;
             }
 
-            _tickTimer += updateEvent.DeltaTime;
-            if (_tickTimer < HealthConstants.TickIntervalSeconds)
-            {
-                return;
-            }
-
-            _tickTimer = 0f;
             TickHealthFromEnvironment();
         }
 
