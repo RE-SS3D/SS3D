@@ -1840,6 +1840,10 @@ MonoBehaviour:
     m_Localized: '{0} flicks the light switch.'
     m_Metadata:
       m_Items: []
+  - m_Id: 298330755267010560
+    m_Localized: '{0} plants something on the {1}.'
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

@@ -172,7 +172,15 @@ namespace SS3D.Systems.ActionMessages
                 return PresentedIdentity.DisplayName(inventory);
             }
 
-            return subject.TryGetComponent(out Item item) ? item.Name : subject.name;
+            if (subject.TryGetComponent(out Item item))
+            {
+                return item.Name;
+            }
+
+            // A wall, door or machine: its examine name, lower-cased to sit mid-sentence.
+            IExaminable examinable = subject.GetComponentInChildren<IExaminable>();
+            string examined = examinable != null ? new ExamineContentResolver().Resolve(examinable).Name : null;
+            return string.IsNullOrEmpty(examined) ? subject.name : examined.ToLowerInvariant();
         }
 
         private static string ItemName(NetworkObject item) =>

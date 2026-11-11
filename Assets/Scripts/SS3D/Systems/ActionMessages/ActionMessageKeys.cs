@@ -13,6 +13,7 @@ namespace SS3D.Systems.ActionMessages
         public const string TakeBlind = "action.take_blind";
         public const string TakeOpen = "action.take_open";
         public const string LightSwitch = "action.light_switch";
+        public const string PlantCharge = "action.plant_charge";
 
         private static readonly Dictionary<string, string> English = new()
         {
@@ -20,6 +21,7 @@ namespace SS3D.Systems.ActionMessages
             { TakeBlind, "{0} is reaching into your pockets!" },
             { TakeOpen, "{0} is trying to take your {2}!" },
             { LightSwitch, "{0} flicks the light switch." },
+            { PlantCharge, "{0} plants something on the {1}." },
         };
 
         /// <summary>Lines aimed at the viewer that should outrank routine ones (action-messages.md §5).</summary>

@@ -1791,6 +1791,10 @@ MonoBehaviour:
     m_Key: action.light_switch
     m_Metadata:
       m_Items: []
+  - m_Id: 298330755267010560
+    m_Key: action.plant_charge
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:
