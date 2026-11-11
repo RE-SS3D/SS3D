@@ -7,7 +7,7 @@ namespace SS3D.Systems.Inventory.Items
     /// <summary>
     /// The one owner of an item's world rotation on the floor: the item's rest pose (<see cref="Item.WorldRestRotation"/>)
     /// turned by a yaw. Every spawn, drop, place, throw and outlet path that puts an item down at rest goes through
-    /// here (Documents/plans/item-orientation.plan.md B2). Paths that set a deliberate non-rest pose (a wall-mounted
+    /// here (Documents/architecture/systems/inventory.md). Paths that set a deliberate non-rest pose (a wall-mounted
     /// charge, a severed limb at its anchor, a vending tumble, a teleport that keeps the current pose) do not.
     /// </summary>
     public static class ItemPlacement

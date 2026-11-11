@@ -223,7 +223,7 @@ namespace SS3D.Systems.Inventory.Items
 
         /// <summary>
         /// True when the rest pose stands the item up on purpose; otherwise the editor audit expects it to lie flat
-        /// (thinnest bounds axis vertical). Documents/plans/item-orientation.plan.md D2.
+        /// (thinnest bounds axis vertical). Documents/architecture/systems/inventory.md.
         /// </summary>
         public bool RestsUpright => _restsUpright;
 

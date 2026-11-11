@@ -12,7 +12,7 @@ namespace SS3D.Systems.Inventory.Containers.Editor
     /// <c>Human.prefab</c> (both hands, the torso). It poses an instance of the prefab in the Animator's
     /// default state (idle, time 0), measures each display against the character root, and writes the
     /// result into the prefab. Held items then grip at a constant hand-local rotation instead of whatever
-    /// the hand's pose was at pickup. Documents/plans/item-orientation.plan.md Phase A.
+    /// the hand's pose was at pickup. Documents/architecture/systems/inventory.md.
     /// </summary>
     /// <remarks>
     /// Re-run after changing the idle clip, the avatar, the hand display transforms, or the default state of

@@ -9,7 +9,7 @@ namespace SS3D.Systems.Inventory.Containers.Editor
     /// <summary>
     /// SS3D → Inventory → Item Pose Editor: click through the Item prefabs, see each one as an icon, in both hands
     /// and on the floor, and fix a wrong pose with ±step buttons that write the prefab
-    /// (Documents/plans/item-orientation.plan.md C1). Previews come from <see cref="ItemPoseRenderer"/>, the same code
+    /// (Documents/architecture/systems/inventory.md). Previews come from <see cref="ItemPoseRenderer"/>, the same code
     /// the contact sheet and the game use; edits go through <see cref="ItemPoseEdit"/>.
     /// </summary>
     public sealed class ItemPoseEditorWindow : EditorWindow

@@ -13,7 +13,7 @@ namespace SS3D.Systems.Inventory.Containers.Editor
     /// the inventory icon (the real <see cref="Item.GenerateIcon"/>), held in the right and left hand of
     /// <c>Human.prefab</c> in the calibrated reference pose (the real
     /// <see cref="ContainerItemDisplay.PlaceAtDisplay"/>), and lying on a floor in its rest pose. It catches
-    /// upside-down and sideways cases no assertion can judge. Documents/plans/item-orientation.plan.md D1.
+    /// upside-down and sideways cases no assertion can judge. Documents/architecture/systems/inventory.md.
     /// </summary>
     /// <remarks>
     /// Writes <c>artifacts/item-poses/item-pose-contact-sheet.png</c> plus a CSV index (gitignored). Needs a

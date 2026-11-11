@@ -26,7 +26,7 @@ namespace SS3D.Systems.Inventory.Containers.Editor
 
     /// <summary>
     /// Turns an item's Rest, Icon or Held pose about a fixed axis and writes it into the prefab, for the
-    /// <see cref="ItemPoseEditorWindow"/> (Documents/plans/item-orientation.plan.md C1). Rest and Icon turn about world
+    /// <see cref="ItemPoseEditorWindow"/> (Documents/architecture/systems/inventory.md). Rest and Icon turn about world
     /// axes; Held turns about character axes (X right, Y up, Z forward), since an <c>AttachmentPoint</c> is the item's
     /// rotation in character space in the reference pose. Held turns pivot on the grip point, which stays in the hand.
     /// </summary>

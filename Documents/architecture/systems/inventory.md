@@ -1,7 +1,7 @@
 > Code paths: Assets/Scripts/SS3D/Systems/Inventory/, Assets/Scripts/SS3D/UI/MainHud/, Assets/Scripts/SS3D/UI/StoragePanel/, Assets/Scripts/SS3D/Systems/Stamina/
 > Entry points: ItemSubSystem, MainHudSubSystem, StoragePanelHost, StaminaController
 > Status: partial
-> Verified: 6c49dab49 — 2026-11-11
+> Verified: 214e7e737 — 2026-11-11
 
 # Inventory
 
@@ -10,6 +10,8 @@
 Items, containers, hands, identification cards (`IDCard`, `PDA`), on-demand storage panel UI, and Main HUD equip/storage UX. ID cards bind to server-side crew records via [id-access](id-access.md); spawn-time binding in `RoleSubSystem`.
 
 **Container primitive:** `AttachedContainer` — position-grid slots (`Size.x × Size.y`), `SizeClass` fit ceiling, recursive computed `Weight`, `MaxWeight` panel readout, stacking (`Item.MaxStackSize`/`StackCount`, merge-on-add; split not built). `Item._initialStackCount` sets a fresh spawn's count (sheets 20, floor tiles 10); `[Server] Item.TryConsume(n)` spends units and deletes the item at 0. A loose stack picks up onto the matching stack in hand with **Add to stack** (`StackPickupInteraction`, `Hand.StackOnto`); Pick up still needs an empty hand. The HUD hand and gear slots show "×N" (`InventorySlot.StackCount`), read each frame by `MainHudSubSystem.RefreshStackCounts` because spending a stack raises no container event. Optional `AttachedContainerLock` ID-gates world containers. See [inventory-storage.md](../../design/inventory-storage.md).
+
+**Item orientation:** one contract per context. *Held:* `AttachmentPoint` (`AttachmentPointAlt` for the left hand, when it is its own transform) is the item's rotation in character space in the idle pose; the display's calibrated `GripSocket` turns it into a constant hand-local rotation. *Floor:* `Item._restRotation`, equal to the prefab root rotation, composed with yaw by `ItemPlacement`. *Icon:* `Item.IconRotation` (the rest pose unless overridden) under a fixed camera. Edit all three in the **Item Pose Editor**; `ItemPoseTests` enforces rest == root, an `AttachmentPoint` on every pickable item, and a flat rest pose unless `RestsUpright`.
 
 **Carried weight:** `HumanInventory.CarriedWeight` sums every inventory container's recursive `AttachedContainer.Weight` (hands included). Fires `OnCarriedWeightChanged`. Feeds [stamina](stamina.md) encumbrance (Phase 7a).
 
@@ -40,10 +42,13 @@ Items, containers, hands, identification cards (`IDCard`, `PDA`), on-demand stor
 ## Start here
 
 - `Assets/Scripts/SS3D/Systems/Inventory/Items/ItemSubSystem.cs` — item subsystem entry point
-- `Assets/Scripts/SS3D/Systems/Inventory/Items/Item.cs` — serialized Rest and Icon poses (`WorldRestRotation`, `IconRotation`); `GenerateIcon` → `IconPreviewGenerator`. `ItemPlacement.WorldRotation(item, yaw)` is the only floor-rotation helper
-- `Assets/Scripts/SS3D/Systems/Inventory/Containers/ContainerItemDisplay.cs` / `GripSocket.cs` / `HeldItemGrip.cs` — held-item grip; a calibrated `GripSocket` on each display makes the grip hand-local and pose-independent ([item orientation plan](../../plans/item-orientation.plan.md) Phase A)
+- `Assets/Scripts/SS3D/Systems/Inventory/Items/Item.cs` — serialized Rest and Icon poses (`WorldRestRotation`, `IconRotation`, `RestsUpright`); `GenerateIcon` renders `IconRotation` under a fixed camera (`RuntimePreviewGenerator.CameraRotation`)
+- `Assets/Scripts/SS3D/Systems/Inventory/Items/ItemPlacement.cs` — `WorldRotation(item, yaw)` is the only floor-rotation helper (spawn, drop, place, throw, outlets, map editor, holograms); `YawAtRest` inverts it
+- `Assets/Scripts/SS3D/Systems/Inventory/Containers/ContainerItemDisplay.cs` / `GripSocket.cs` / `HeldItemGrip.cs` — held-item grip; a calibrated `GripSocket` on each display makes the grip hand-local and pose-independent ([archived item orientation plan](../../archive/plans/item-orientation.plan.md))
 - `Assets/Scripts/SS3D/Systems/Inventory/Containers/Editor/HandGripSocketCalibration.cs` — **SS3D → Inventory → Calibrate Hand Grip Sockets** (also in Run All Human Prefab Recipes)
-- `Assets/Scripts/SS3D/Systems/Inventory/Containers/Editor/ItemPoseContactSheet.cs` — **SS3D → Inventory → Render Item Pose Contact Sheet**: icon, right hand, left hand and floor view of every Item prefab in one PNG (`artifacts/item-poses/`, plus a CSV index). Review it after changing an `AttachmentPoint`, a rest rotation or the icon path
+- `Assets/Scripts/SS3D/Systems/Inventory/Containers/Editor/ItemPoseEditorWindow.cs` — **SS3D → Inventory → Item Pose Editor**: click through Item prefabs, preview icon, floor, level side view and both hands, and turn Rest, Icon or Held in steps (saves the prefab; edits in `ItemPoseEdit`, previews in `ItemPoseRenderer`)
+- `Assets/Scripts/SS3D/Systems/Inventory/Containers/Editor/ItemPoseContactSheet.cs` — **SS3D → Inventory → Render Item Pose Contact Sheet**: every Item prefab's views in one PNG (`artifacts/item-poses/`, plus a CSV index), for a one-minute review after pose or icon-path changes
+- `Assets/Scripts/SS3D/Systems/Inventory/Containers/Editor/ItemRestPoseAudit.cs` — lies-flat rule behind `ItemPoseTests` (rest pose thinnest vertically unless `RestsUpright`); `ItemRestPoseRecipe` migrated root rotations into `_restRotation`
 - `Assets/Scripts/SS3D/Utils/IconPreviewGenerator.cs` — bright `Unlit/ObjectIcon` for HUD/tile icons
 - `Assets/Scripts/SS3D/Systems/Inventory/Containers/AttachedContainer.cs` — container primitive
 - `Assets/Scripts/SS3D/Systems/Inventory/Containers/AttachedContainerLock.cs` — ID-gated world lock
@@ -90,7 +95,8 @@ Items, containers, hands, identification cards (`IDCard`, `PDA`), on-demand stor
 - **Head/torso world containers:** do not re-add `ContainerInteractive` on `HumanHead`/`HumanTorso` until surgery needs organ holes — re-strip via **SS3D → Entities → Run All Human Prefab Recipes**.
 - **New alert hazard:** add to `AlertHazard`/`AlertStackState`/`AlertIconSet`, drop PNG under `Assets/Art/Icons/Alerts/`, wire catalog/builder/editor fallback, rebuild catalogs via **SS3D → Data → Rebuild All UI Catalogs**; add alert debug row + `AlertStackCommand` case.
 - **New clothing with dual mesh:** add folded + worn-shaped children on one Item, `Cloth` mesh map, `ClothingItemPresentation` + root collider via `ClothingPrefabSetup` (or same PrefabUtility pattern) — never a second NetworkObject for the folded form.
-- **World spawn/drop facing:** use `Item.GetWorldFacing(yaw)` (or `ComposeWorldFacing` with the prefab rest) — never yaw-only or `Quaternion.identity`, or long items (M4, knives, tools) stand upright. Map-editor place goes through `PlacedItemObject.Create` (composes rest); holograms use `ConstructionHologram.TargetWorldRotation`.
+- **World spawn/drop facing:** use `ItemPlacement.WorldRotation(item, yaw)` (or `SpawnItemAtRest`): never yaw-only or `Quaternion.identity`, or long items (M4, knives, tools) stand upright. `SpawnItem` and `PlacedItemObject.Create` apply the exact rotation they are given. Deliberate non-rest poses (wall charges, severed limbs, vending tumbles) set their own.
+- **Item poses:** fix a wrong held, floor or icon pose in the **Item Pose Editor**, not by hand: Rest must equal the root rotation (`ItemPoseTests`), and the editor keeps variant roots in line. A pickable item must lie flat at rest or tick **Stands upright**. `AttachmentPoint` is the item's rotation in character space in the idle pose; most items reuse it for the left hand (`AttachmentPointAlt` unset or the same transform), and **Split** gives the left hand its own.
 
 ## Pitfalls
 
@@ -99,6 +105,12 @@ Items, containers, hands, identification cards (`IDCard`, `PDA`), on-demand stor
 - **A Bulky item cannot go in a backpack:** that is intended (toolbox, backpack, toolbelt). Weapons are never Bulky: `TileMapTests.EveryWeaponFitsTheBackpack`. A new bag must be Bulky or it nests in itself.
 
 - **Held items at the wrong angle after spawn or a mid-animation pickup (#158):** the grip pivot is a child of the animated hand bone. Setting its *world* rotation from the character root at attach time (the old grip) froze whatever pose the hand had then: the bind pose for loadouts, a walk or swing frame for pickups. `ContainerItemDisplay` now sets the pivot's *local* rotation from the display's calibrated `GripSocket` (`ReferenceRotation * AttachmentPoint.localRotation`), which never reads the hand's current pose. A display without a calibrated socket logs a warning once and holds items with an identity reference. Don't bring back a world-space grip or a per-frame re-grip.
+
+- **Rest pose "lies flat" but stands:** judge a rest pose from a level side view. The M4 at `-90° X` levelled its barrel but stood on its grip; from the diagonal floor view upright and flat look alike. `ItemPoseTests` now checks the thinnest axis is vertical.
+- **Icon upside down (taser):** the icon camera used to follow the object's rotation, so an item rested on its other side rendered flipped. The camera is fixed now; pose icons only through `Item.IconRotation`.
+- **Rest edit on a base prefab leaves a variant behind:** a variant's root always stores its own rotation, so it keeps the old root while inheriting the new `_restRotation`, and a plain `Instantiate` lands off rest. `ItemPoseEdit.EditPrefab` re-aligns variant roots; a hand edit must do the same.
+- **Held limbs hang far outside the body (open):** HumanArmLeft/Right and the other severed limbs sit well away from the hand when held. Their `AttachmentPoint`s are body sockets from the legacy severing setup, not grips, so the item-pose audits skip `Entities/` body parts. Deferred to the severing rework (owner, 2026-11-11).
+- **Item yaw drifted on every map save/load:** `PlacedItemObject.Create` re-composed the saved (already composed) rotation with the rest pose, so a BikeHorn gained its rest yaw each load. It now applies the rotation it is given; read a placed item's yaw back with `ItemPlacement.YawAtRest`, not `eulerAngles.y`.
 
 - **ExoSuit invisible / cannot unequip with belt worn:** clothing sync must resolve local renderers by `ClothType`, rather than an empty nested NetworkObject reference. A slot copied from Jumpsuit must strip `JumpsuitStorageCondition`; that rule intentionally locks jumpsuit removal while wearing a belt, and does not belong on outer suits.
 - **Clothing HUD icon contains two shapes:** icon clones must discard the unused world/worn branch before baking; keep both shapes only on the live Item. `ClothingItemPresentation.PrepareIconPreview` is clone-only.

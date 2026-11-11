@@ -13,7 +13,7 @@ namespace SS3D.Systems.Inventory.Containers.Editor
     /// <see cref="Item.GenerateIcon"/>), held in a hand of <c>Human.prefab</c> in the calibrated reference pose (the
     /// real <see cref="ContainerItemDisplay.PlaceAtDisplay"/>), and lying on a floor at its rest pose. Shared by
     /// <see cref="ItemPoseContactSheet"/> and <see cref="ItemPoseEditorWindow"/>.
-    /// Documents/plans/item-orientation.plan.md D1 and C1.
+    /// Documents/architecture/systems/inventory.md.
     /// </summary>
     public static class ItemPoseRenderer
     {

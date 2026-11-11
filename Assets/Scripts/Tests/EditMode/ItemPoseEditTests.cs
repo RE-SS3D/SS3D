@@ -9,7 +9,7 @@ using Object = UnityEngine.Object;
 namespace SS3D.Tests.EditMode
 {
     /// <summary>
-    /// Item Pose Editor edits (Documents/plans/item-orientation.plan.md C1): turns are about fixed axes, Rest keeps the
+    /// Item Pose Editor edits (Documents/architecture/systems/inventory.md): turns are about fixed axes, Rest keeps the
     /// root rotation equal to it, Icon edits turn the override on, Held edits keep the grip point, and an undo
     /// snapshot puts the stored fields back exactly.
     /// </summary>

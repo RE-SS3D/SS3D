@@ -8,7 +8,7 @@ namespace SS3D.Systems.Inventory.Containers.Editor
 {
     /// <summary>
     /// Tier-B recipe: copies each Item prefab's root rotation into <c>Item._restRotation</c>, the explicit floor pose
-    /// (Documents/plans/item-orientation.plan.md B1). The root rotation stays as it is, so a plain
+    /// (Documents/architecture/systems/inventory.md). The root rotation stays as it is, so a plain
     /// <c>Instantiate(prefab)</c> still lands at rest. Icon rotation is left alone: it defaults to the rest pose.
     /// Registered on <see cref="InventoryContentPrefabRecipes"/>.
     /// </summary>

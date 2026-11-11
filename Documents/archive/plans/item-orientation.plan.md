@@ -37,13 +37,13 @@ todos:
     status: completed
   - id: docs-sync
     content: "update-system-docs per phase: inventory map Start here, Pitfalls (#158, grip pitfall), Verified stamp"
-    status: pending
+    status: completed
 isProject: false
 ---
 
 # Item orientation
 
-No design doc governs this: it is presentation plumbing under [inventory](../architecture/systems/inventory.md). Touches inventory (hold, spawn, place, icons), [tile](../architecture/systems/tile.md) (map-editor placement, holograms) and the Human prefab recipes ([entities-prefab-recipes](../architecture/systems/entities-prefab-recipes.md)). No milestone gate depends on it.
+No design doc governs this: it is presentation plumbing under [inventory](../../architecture/systems/inventory.md). Touches inventory (hold, spawn, place, icons), [tile](../../architecture/systems/tile.md) (map-editor placement, holograms) and the Human prefab recipes ([entities-prefab-recipes](../../architecture/systems/entities-prefab-recipes.md)). No milestone gate depends on it.
 
 ## Problem
 
@@ -108,3 +108,4 @@ An Item Pose inspector on `Item` previews the three contexts (item in a Human ha
 - Owner pose pass (2026-11-11): Rest, Icon and Held fixes on 37 Item prefabs through the Item Pose Editor, 12 of them with a split left-hand grip. The JumpsuitBotany/JumpsuitEngineer splits were dropped in favour of the JumpsuitGrey base's (same poses, no duplicate `AttachmentPointAlt`). A Rest edit on Headset left its variant HeadsetSecurity's root behind (a variant root always stores its own rotation), so `ItemPoseEdit.EditPrefab` now re-aligns the roots of the edited prefab's Item variants (`SyncVariantRoots`). Validation: compile, EditMode 4438/4438, Combat 20/20. `validate.sh` takes a floating Item Pose Editor window for a modal dialog: close it before PlayMode steps.
 - Deferred to the severing rework (owner, 2026-11-11): HumanArmLeft/Right and the other limbs sit far outside the character when held, probably the legacy severing setup.
 - D2 (2026-11-11): `ItemPoseTests` (EditMode, not AssetAudit: that assembly cannot see the editor helpers) checks that every pickable Item (under `Assets/Content/WorldObjects/Items/`, so body parts are out) has an `AttachmentPoint`, and that its rest pose lies flat unless `Item._restsUpright` is set. `ItemRestPoseAudit` measures the visible renderers at the rest pose, as the floor preview shows them: flat means the height is at most 1.25 times the thinner horizontal side (the screwdriver on its side is 1.15; cans, tanks and items on their edge are 1.4 and up). After the owner's pose pass 14 base prefabs still stood and were flagged upright, so their variants (7 soda cans, PowerCellAdmin) inherit it: FacewearGasMask, ShoeHiTops, ShoeJackboots, SyndicateHardsuitHelmet, SyndicateMagboots, SodaCanGeneric, Boombox, the three tanks, MicroLaser, PowerCell, Medkit, SyndicateMiniBomb. The Item Pose Editor has a Stands upright toggle on the Rest row and warns when the rest pose is not flat. Validation: compile, EditMode 4444/4444.
+- Docs sync (2026-11-11): contracts, tools and pitfalls moved into the [inventory map](../../architecture/systems/inventory.md) (Overview, Start here, Extension points, Pitfalls) and [entity prefab recipes](../../architecture/systems/entities-prefab-recipes.md); code citations point at the inventory map. Plan archived.

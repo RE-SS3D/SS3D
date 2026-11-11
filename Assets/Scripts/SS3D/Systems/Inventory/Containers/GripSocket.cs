@@ -8,7 +8,7 @@ namespace SS3D.Systems.Inventory.Containers
     /// Animator's default idle state). With it, a held item's grip is a constant hand-local rotation, so it
     /// no longer depends on which animation frame the hand was in when the item attached.
     /// Baked by <c>HandGripSocketCalibration</c> (SS3D → Inventory → Calibrate Hand Grip Sockets); see
-    /// Documents/plans/item-orientation.plan.md Phase A.
+    /// Documents/architecture/systems/inventory.md.
     /// </summary>
     [DisallowMultipleComponent]
     public sealed class GripSocket : MonoBehaviour

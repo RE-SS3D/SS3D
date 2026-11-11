@@ -7,7 +7,7 @@ using DB = UnityEditor.AssetDatabase;
 namespace SS3D.Tests.EditMode
 {
     /// <summary>
-    /// Held-item grip contract (Documents/plans/item-orientation.plan.md Phase A): a calibrated
+    /// Held-item grip contract (Documents/architecture/systems/inventory.md): a calibrated
     /// <see cref="GripSocket"/> makes the grip a constant hand-local rotation that equals the authored
     /// character-facing grip in the reference pose.
     /// </summary>

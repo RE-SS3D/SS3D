@@ -69,7 +69,7 @@ namespace SS3D.Systems.Inventory.Containers
         /// <c>AttachmentPoint</c> (or <c>AttachmentPointAlt</c> when <paramref name="mirrored"/>) sits on the
         /// display, turned by the display's calibrated reference rotation. Constant hand-local, so the same
         /// whatever pose the hand is in right now (spawn, mid-walk, Harm stance). Also used by the item pose
-        /// contact sheet. Documents/plans/item-orientation.plan.md Phase A.
+        /// contact sheet. Documents/architecture/systems/inventory.md.
         /// </summary>
         public static void PlaceAtDisplay(Item item, Transform display, bool mirrored, Quaternion referenceRotation)
         {

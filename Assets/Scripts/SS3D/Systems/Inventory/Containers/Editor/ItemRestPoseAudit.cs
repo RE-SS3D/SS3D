@@ -6,7 +6,7 @@ namespace SS3D.Systems.Inventory.Containers.Editor
 {
     /// <summary>
     /// Does an item lie flat at rest? Its rendered bounds at the rest pose must be thinnest vertically, unless the item
-    /// is flagged <see cref="Item.RestsUpright"/> (Documents/plans/item-orientation.plan.md D2). "Longest axis
+    /// is flagged <see cref="Item.RestsUpright"/> (Documents/architecture/systems/inventory.md). "Longest axis
     /// horizontal" is not enough: the M4 at <c>-90° X</c> passed it while standing on its grip and magazine.
     /// </summary>
     public static class ItemRestPoseAudit

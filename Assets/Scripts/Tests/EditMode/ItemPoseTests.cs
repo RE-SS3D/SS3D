@@ -9,7 +9,7 @@ using DB = UnityEditor.AssetDatabase;
 namespace SS3D.Tests.EditMode
 {
     /// <summary>
-    /// Floor and icon pose contract (Documents/plans/item-orientation.plan.md B1): the rest pose is a serialized
+    /// Floor and icon pose contract (Documents/architecture/systems/inventory.md): the rest pose is a serialized
     /// field, so an instance reads it whatever its current rotation, and the icon uses it unless overridden (B3: the
     /// icon camera is fixed, so the icon pose alone decides which side faces it).
     /// </summary>
