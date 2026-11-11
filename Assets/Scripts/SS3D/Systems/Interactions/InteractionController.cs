@@ -1240,7 +1240,7 @@ namespace SS3D.Systems.Interactions
         private void ClearActiveInteractionTracking()
         {
             _delayedTracker.ClearServer();
-            SetServerKneel(false);
+            SetServerHold(InteractionAnimation.None);
             CombatInteractionNetwork combat = GetCombatNetwork();
             combat?.ClearPendingMeleeConnect();
             combat?.ClearMeleeAimPoint();
@@ -1259,7 +1259,7 @@ namespace SS3D.Systems.Interactions
                 return;
             }
 
-            SetServerKneel(false);
+            SetServerHold(InteractionAnimation.None);
 
             // Combat connect may still be pending when a DelayedInteraction ends.
             CombatInteractionNetwork combat = GetCombatNetwork();

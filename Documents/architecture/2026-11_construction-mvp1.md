@@ -140,7 +140,8 @@ What the first Editor session needs to know; fold into the system maps with `upd
 - [ ] Alt-tab mid-step left the body kneeling after the step finished; retest after the destroyed-source fix, probe live state if it persists
 - [x] Wood floors pried up to nothing (owner hand test 2026-11-11): `FloorTileWood` joins D17, and floors with no tile item (dirt, grass, carpet, reinforced, plating-look) are refused instead of vanishing (`ConstructionFloorTiles.NotPryable`)
 - [x] `ConstructionCoverageTests`: every floor tile is in `Kinds` or `NotPryable`, every tile item exists and stacks, and every plain wall tile is on the deconstruction ladder, reinforced, or in `ConstructionRecipes.NotDeconstructible`
-- [ ] Wall work holds a looped clip for the whole step instead of the one-second door reach (needs a clip; floor work already kneels for the step)
+- [x] Wall work holds a looped clip for the whole step instead of the one-second door reach: `InteractionAnimation.WallWork`, Mixamo "Searching The Top Drawer Of A File Cabinet" frames 80–200, replicated as `BodyAnimationSnapshot.InteractWork` and held by the server like the kneel (`SetServerHold`). Each held loop has its own Animator bool (`Clip.HoldParameter`)
+- [ ] Owner visual check of the wall-work loop: the segment and the seam where it loops
 - [ ] Owner re-check in editor: floor tile install and the steel-sheet girder through the new interactions
 - Validation: `compile,editmode` + `scenarios:Construction`
 

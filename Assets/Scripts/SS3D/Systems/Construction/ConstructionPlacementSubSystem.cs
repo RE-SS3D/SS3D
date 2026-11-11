@@ -147,10 +147,10 @@ namespace SS3D.Systems.Construction
                 return true;
             }
 
-            // Wall work reaches out at once; the kneel for floor work is the server's replicated body state.
+            // Held loops (kneel, wall work) are the server's replicated body state; anything else plays here at once.
             int clip = InteractionAnimation.ChooseClip(_ghostRule.GenericName);
             InteractionController owner = InteractionController.Local;
-            if (clip != InteractionAnimation.Kneel && owner != null)
+            if (!InteractionAnimation.IsHold(clip) && owner != null)
             {
                 owner.BeginOwnerHandAction(clip, _ghostGrid);
             }

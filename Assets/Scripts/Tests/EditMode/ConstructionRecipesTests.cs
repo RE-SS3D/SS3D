@@ -98,8 +98,8 @@ namespace EditorTests
                 int expected = rule.Layer == TileLayer.Plenum || rule.Target is ConstructionTargetKind.FloorTurf
                     or ConstructionTargetKind.BarePlating or ConstructionTargetKind.Wreckage
                     ? InteractionAnimation.Kneel
-                    : InteractionAnimation.DoorReach;
-                Assert.AreEqual(expected, clip, $"{rule.GenericName}: floor work kneels, wall work reaches");
+                    : InteractionAnimation.WallWork;
+                Assert.AreEqual(expected, clip, $"{rule.GenericName}: floor work kneels, wall work holds the wall-work loop");
             }
         }
 

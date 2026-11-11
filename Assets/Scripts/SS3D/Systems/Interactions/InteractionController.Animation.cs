@@ -22,7 +22,8 @@ namespace SS3D.Systems.Interactions
     {
         private AnimationOrchestrator _animationOrchestrator;
         private HumanoidIkController _ikController;
-        private bool _serverKneeling;
+        /// <summary>Server: the held loop (kneel, wall work) the body shows, or None.</summary>
+        private int _serverHold = InteractionAnimation.None;
 
         private float _pendingHandActionAt = -1f;
         private Hand _pendingHandActionHand;
@@ -191,14 +192,15 @@ namespace SS3D.Systems.Interactions
                 : transform.eulerAngles.y;
         }
 
-        /// <summary>Server: kneels the body while a kneeling delayed interaction runs.</summary>
+        /// <summary>Server: holds the kneel or wall-work loop while a delayed interaction that uses one runs.</summary>
         [Server]
         private void UpdateInteractionKneel(IInteraction interaction)
         {
-            // Only a delayed interaction replaces the tracked one, so only it changes the kneel.
+            // Only a delayed interaction replaces the tracked one, so only it changes the hold.
             if (interaction is IDelayedInteraction)
             {
-                SetServerKneel(InteractionAnimation.ChooseClip(interaction.GetGenericName()) == InteractionAnimation.Kneel);
+                int clip = InteractionAnimation.ChooseClip(interaction.GetGenericName());
+                SetServerHold(InteractionAnimation.IsHold(clip) ? clip : InteractionAnimation.None);
             }
         }
 
@@ -211,9 +213,9 @@ namespace SS3D.Systems.Interactions
         public void ServerBeginStepAnimation(string genericName, Vector3 targetPoint)
         {
             int clip = InteractionAnimation.ChooseClip(genericName);
-            if (clip == InteractionAnimation.Kneel)
+            if (InteractionAnimation.IsHold(clip))
             {
-                SetServerKneel(true);
+                SetServerHold(clip);
             }
             else if (clip != InteractionAnimation.None)
             {
@@ -223,20 +225,22 @@ namespace SS3D.Systems.Interactions
 
         /// <summary>Server: ends what <see cref="ServerBeginStepAnimation"/> started.</summary>
         [Server]
-        public void ServerEndStepAnimation() => SetServerKneel(false);
+        public void ServerEndStepAnimation() => SetServerHold(InteractionAnimation.None);
 
+        /// <summary>Server: shows <paramref name="clip"/>'s held loop (kneel or wall work), or none.</summary>
         [Server]
-        private void SetServerKneel(bool kneel)
+        private void SetServerHold(int clip)
         {
-            if (_serverKneeling == kneel)
+            if (_serverHold == clip)
             {
                 return;
             }
 
-            _serverKneeling = kneel;
+            _serverHold = clip;
             if (TryGetComponent(out HumanoidBodyStateMachine body))
             {
-                body.SetInteractKneel(kneel);
+                body.SetInteractKneel(clip == InteractionAnimation.Kneel);
+                body.SetInteractWork(clip == InteractionAnimation.WallWork);
             }
         }
 
