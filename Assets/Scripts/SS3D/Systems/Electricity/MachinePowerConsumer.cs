@@ -1,12 +1,14 @@
+using System.Collections.Generic;
 using FishNet.Object.Synchronizing;
 using SS3D.Core;
+using SS3D.Systems.Examine;
 using SS3D.Systems.Furniture;
 using SS3D.Systems.Tile.Connections;
 using System;
 using UnityEngine;
 namespace SS3D.Systems.Electricity
 {
-    public class MachinePowerConsumer : BasicElectricDevice, IPowerConsumer
+    public class MachinePowerConsumer : BasicElectricDevice, IPowerConsumer, IExamineContentProvider
     {
         [SerializeField]
         private float _powerConsumptionIdle = 1f;
@@ -69,5 +71,9 @@ namespace SS3D.Systems.Electricity
             _machineUsedOnce = false;
             SubSystems.Get<ElectricitySubSystem>().OnTick -= HandleMachineWasUsed;
         }
+
+        /// <summary>Powered or unpowered on examine, at any range (examine.md §7).</summary>
+        public void AppendSections(IExaminable examinable, List<ExamineSection> sections) =>
+            ExamineDeviceKeys.AppendPower(PowerStatus == PowerStatus.Powered, sections);
     }
 }

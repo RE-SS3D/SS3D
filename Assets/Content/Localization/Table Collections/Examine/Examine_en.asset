@@ -1796,6 +1796,34 @@ MonoBehaviour:
     m_Localized: You are presenting no ID.
     m_Metadata:
       m_Items: []
+  - m_Id: 298320605231685632
+    m_Localized: 'Disposal tag: {0}.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298320605248462848
+    m_Localized: <k=good>Powered</k>.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298320605248462849
+    m_Localized: <k=warn>Unpowered</k>.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298320605248462850
+    m_Localized: 'Rounds: {0}.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298320605248462851
+    m_Localized: Magazine <k=warn>empty</k>.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298320605248462852
+    m_Localized: 'Charge: {0} shots.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298320605248462853
+    m_Localized: Charge <k=warn>empty</k>.
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

@@ -1747,6 +1747,34 @@ MonoBehaviour:
     m_Key: examine.self.presenting_nothing
     m_Metadata:
       m_Items: []
+  - m_Id: 298320605231685632
+    m_Key: examine.disposal.tag
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298320605248462848
+    m_Key: examine.device.powered
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298320605248462849
+    m_Key: examine.device.unpowered
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298320605248462850
+    m_Key: examine.weapon.rounds
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298320605248462851
+    m_Key: examine.weapon.rounds_empty
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298320605248462852
+    m_Key: examine.weapon.charge
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298320605248462853
+    m_Key: examine.weapon.charge_empty
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

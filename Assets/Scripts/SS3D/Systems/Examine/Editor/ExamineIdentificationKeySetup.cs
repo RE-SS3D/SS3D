@@ -121,6 +121,18 @@ namespace SS3D.Systems.Examine.Editor
                 UpsertEntry(englishTable, key, value);
             }
 
+            UpsertEntry(englishTable, SS3D.Systems.Furniture.Disposal.DisposalTag.ExamineKey, SS3D.Systems.Furniture.Disposal.DisposalTag.ExamineFallback);
+
+            foreach ((string key, string value) in ExamineDeviceKeys.All)
+            {
+                UpsertEntry(englishTable, key, value);
+            }
+
+            foreach ((string key, string value) in ExamineWeaponKeys.All)
+            {
+                UpsertEntry(englishTable, key, value);
+            }
+
             foreach ((string key, string value) in ExamineItemKeys.All)
             {
                 UpsertEntry(englishTable, key, value);

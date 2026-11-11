@@ -11,7 +11,7 @@ namespace SS3D.Systems.Furniture.Disposal
     /// <summary>
     /// Quick tagger interaction available at a chute (design doc §4/§9) — cycles the held item's
     /// disposal destination label through the department list, wrapping back to untagged. The current
-    /// tag reads via examine (<see cref="DisposalTagExaminable"/>), same manifest-on-the-object
+    /// tag reads via examine (<see cref="DisposalTag"/> is its own provider), same manifest-on-the-object
     /// convention as a Cargo crate.
     /// </summary>
     public sealed class DisposalTaggerInteraction : IInteraction

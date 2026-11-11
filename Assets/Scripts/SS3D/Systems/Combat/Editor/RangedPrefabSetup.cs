@@ -71,6 +71,13 @@ namespace SS3D.Systems.Combat.Editor
 
             Transform muzzle = EnsureMuzzle(root);
 
+            // Observers read the loaded rounds on examine (examine.md §7).
+            if (!root.TryGetComponent(out RangedWeaponRoundsReadout _))
+            {
+                root.AddComponent<RangedWeaponRoundsReadout>();
+                CombatInteractionNetworkPrefabSetup.RebuildNetworkBehaviours(root.GetComponent<FishNet.Object.NetworkObject>());
+            }
+
             SerializedObject so = new(extension);
             so.FindProperty("_profile.VisualStyle").enumValueIndex = (int)profile.VisualStyle;
             so.FindProperty("_profile.BruteDamage").floatValue = profile.BruteDamage;

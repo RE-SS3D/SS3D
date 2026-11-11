@@ -1,5 +1,7 @@
+using System.Collections.Generic;
 using FishNet.Object.Synchronizing;
 using SS3D.Core;
+using SS3D.Systems.Examine;
 using SS3D.Systems.Tile.Connections;
 using System;
 using UnityEngine;
@@ -10,7 +12,7 @@ namespace SS3D.Systems.Electricity
     /// Script providing a basic implementation for IPowerConsumer.
     /// Can be used for things that need a constant amount of power at all time.
     /// </summary>
-    public class BasicPowerConsumer : BasicElectricDevice, IPowerConsumer
+    public class BasicPowerConsumer : BasicElectricDevice, IPowerConsumer, IExamineContentProvider
     {
         [SerializeField]
         private float _powerConsumption = 1f;
@@ -57,5 +59,9 @@ namespace SS3D.Systems.Electricity
         {
             OnPowerStatusUpdated?.Invoke(this, newValue);
         }
+
+        /// <summary>Powered or unpowered on examine, at any range (examine.md §7).</summary>
+        public void AppendSections(IExaminable examinable, List<ExamineSection> sections) =>
+            ExamineDeviceKeys.AppendPower(PowerStatus == PowerStatus.Powered, sections);
     }
 }

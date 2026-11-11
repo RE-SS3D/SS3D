@@ -256,9 +256,9 @@ namespace SS3D.Systems.Atmospherics.Pipes
             if (sections == null)
                 return;
 
+            // The power consumer's own line says it is unpowered; an unpowered alarm reads nothing more.
             if (!IsPowered())
             {
-                sections.Add(new ExamineSection("Air alarm: <k=warn>unpowered</k> — environmental scan offline."));
                 return;
             }
 
