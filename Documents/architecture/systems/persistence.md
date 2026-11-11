@@ -1,7 +1,7 @@
 > Code paths: Assets/Scripts/SS3D/Data/Persistence/, Assets/Scripts/SS3D/Systems/Persistence/
 > Entry points: PersistenceSubSystem, IPersistenceContributor, EnvelopePersistenceStore
 > Status: partial
-> Verified: e2f86cf20 — 2026-11-05
+> Verified: 5ad42b7f2 — 2026-11-11
 
 # Persistence
 
@@ -35,7 +35,7 @@ Layered contributor-based disk persistence for station templates and server meta
 
 - Authored areas: tile chunk `areaIds` are restored as saved when area records carry `authored`; APC-less records carry `noApc`. The area payload also stores a map-level `authored` flag so deleting all rooms does not regenerate them on load; legacy flat saves carry `hasAuthoredAreas` through migration. Missing flags keep legacy APC flood defaults. See [area-authoring](area-authoring.md).
 
-- New domain: implement `IPersistenceContributor`, register in `PersistenceSubSystem.RegisterBuiltInContributors()` or call `RegisterContributor` at startup; add a `DeserializePayload` arm for the DTO type.
+- New domain: implement `IPersistenceContributor`, register in `PersistenceSubSystem.RegisterBuiltInContributors()` or call `RegisterContributor` at startup; implement its `DeserializePayload` to read its own DTO (Persistence knows only the interface).
 - Station template save/load: `SaveStationTemplate` / `LoadStationTemplate` / `LoadMostRecentStationTemplate`.
 - Server meta: `LoadServerMeta` (owned by `PersistenceSubSystem.OnStart` when server), `SaveServerMeta` (on `UserPermissionsChangedEvent`).
 - Round history: `AppendRoundHistory` — hooked from `RoundSubSystem.ProcessEndRound` with the fixed `RoundOutcome`: mode, map, player count, duration, `trigger`, `winner`, `operativeCkeys` and `fallbackMap` (true only when P2's Extended fallback ran).

@@ -135,7 +135,7 @@ Only work that is in flight, planned, or kept as standing reference. Everything 
 | [2026-11_atmos-edge-flow](2026-11_atmos-edge-flow.md) | in-progress |
 | [2026-11_humanoid-animation-pass](2026-11_humanoid-animation-pass.md) | shipped |
 | [2026-11_testing-philosophy](2026-11_testing-philosophy.md) | shipped (standing policy) |
-| [2026-11_tech-debt-paydown](2026-11_tech-debt-paydown.md) | in-progress (Phases 0–2 done, awaiting review) |
+| [2026-11_tech-debt-paydown](2026-11_tech-debt-paydown.md) | in-progress (Phases 0–3 shipped; Phase 6 under way: P6.1–P6.4 done) |
 | [agent_validation_loop.plan](../plans/agent_validation_loop.plan.md) | shipped (reference) |
 | [eva-gear.plan](../plans/eva-gear.plan.md) | in-progress |
 | [combat_implementation_plan](../plans/combat_implementation_plan.md) | in-progress |
