@@ -23,10 +23,11 @@ using UnityEngine.UIElements;
 namespace SS3D.Systems.Construction
 {
     /// <summary>
-    /// Held-item cell actions (D3 of 2026-11_construction-mvp1): sheets on a hull hole, floor tiles on bare
-    /// plating, later girders on clear floor and a crowbar on wreckage. The owning client shows a ghost of
-    /// the result under the cursor through <see cref="ConstructionHologram"/>, with the fail reason and an
-    /// "n / m" cost tag; a click sends one ServerRpc with the cell and step. The server checks rule, reach,
+    /// Held-item cell actions (D3 of 2026-11_construction-mvp1, revised D14): steel sheets on a hull hole, the
+    /// one cell with no object to hover. The owning client shows a ghost of the plating under the cursor
+    /// through <see cref="ConstructionHologram"/>, with the fail reason and an "n / m" cost tag; a click sends
+    /// one ServerRpc with the cell and step. Girders, floor tiles and wreckage are interactions on the
+    /// hovered floor or plating (<see cref="ConstructionRule.ActsOnCell"/>). The server checks rule, reach,
     /// materials and <see cref="BuildChecker"/>, runs the step on a timer with the same cancel rules as
     /// <see cref="DelayedInteraction"/>, and spends materials only at completion. Steps on existing objects
     /// (weld, plate, pry) are ordinary interactions, see <see cref="ConstructionInteractions"/>.

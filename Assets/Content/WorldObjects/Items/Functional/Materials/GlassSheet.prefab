@@ -392,7 +392,7 @@ MonoBehaviour:
   _addedNetworkObject: {fileID: 1773710978803455870}
   _networkObjectCache: {fileID: 1773710978803455870}
   _asset: {fileID: 11400000, guid: 3c8e8f4d958f81744a729dc344342955, type: 2}
-  _name: Steel sheet
+  _name: Glass sheet
   _weight: 1
   _sizeClass: 2
   _maxStackSize: 50

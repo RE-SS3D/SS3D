@@ -5,8 +5,8 @@ using UnityEngine;
 namespace SS3D.Systems.Construction
 {
     /// <summary>
-    /// Shape and validity of construction cell actions, shared by the client ghost and the server check
-    /// (D3 of 2026-11_construction-mvp1). Pure over a <see cref="TileMap"/> plus a wreckage lookup; the
+    /// Shape and validity of construction cell steps: the hull-hole ghost and the steps offered on a hovered
+    /// floor or plating (<see cref="ConstructionRule.ActsOnCell"/>), shared by client and server. Pure over a <see cref="TileMap"/> plus a wreckage lookup; the
     /// client map can be partial, so the server repeats every check before it starts or finishes a step.
     /// </summary>
     public static class ConstructionCellRules
@@ -22,7 +22,7 @@ namespace SS3D.Systems.Construction
         public static bool Matches(TileMap map, ConstructionRule rule, Vector3 gridPosition,
             Func<TileCoord, TileLayer, bool> hasWreckage = null)
         {
-            if (map == null || rule == null || !rule.IsCellAction)
+            if (map == null || rule == null || !(rule.IsCellAction || rule.ActsOnCell))
             {
                 return false;
             }

@@ -2,7 +2,7 @@
 > Touches systems: tile, structural-destruction, interactions-framework, interactions-runtime, inventory, atmospherics, ui-shell, gamemodes-roles-traits
 > Status: in-progress
 
-**Progress:** Grilled with the owner on 2026-11-09, after the gameplay grill that revised [construction.md](../design/construction.md). Serves [mvp1-nuke-ops.md](../milestones/mvp1-nuke-ops.md) M10, and S2 closes M8's "an engineer seals a hull hole". Takes over [station structural damage](../plans/station_structural_damage.plan.md) Phase 6 (repair). S1–S5 written, not compiled or tested; first Editor session: compile, run setup scripts, validate.sh --steps compile,editmode, S4 visual check.
+**Progress:** Grilled with the owner on 2026-11-09, after the gameplay grill that revised [construction.md](../design/construction.md). Serves [mvp1-nuke-ops.md](../milestones/mvp1-nuke-ops.md) M10, and S2 closes M8's "an engineer seals a hull hole". Takes over [station structural damage](../plans/station_structural_damage.plan.md) Phase 6 (repair). S1–S5 compiled and hand-tested once (2026-11-09); the second hand test (2026-11-11) revised placement into interactions (D14–D16), see S7.
 
 # Construction for MVP1: floors, hull, walls, windows (Nov 2026)
 
@@ -42,11 +42,16 @@ Checked by three read-only explorations against code; the [tile](systems/tile.md
 | D10 | **`TileObjectSo.reinforced`**, set on `SteelWallReinforced` and `SteelWindowReinforced`. Deconstruction rules refuse it; repair allows it. Reinforced walls get a higher `structuralMaxIntegrity` (value is balancing) | Design §9; today the vault wall has plain-wall HP |
 | D11 | **Hover outline includes tool-side interactions**: `TryEvaluateOutlineInteractability` also asks the held item's source extensions. No candidate scan | Same signal where the player is looking, no per-frame scan |
 | D12 | **`Item._initialStackCount`** (default 1), applied at server spawn. Steel and glass sheets 20, floor tiles 10. Salvage calls `SetStackCount` explicitly | Loadouts and map-placed closet stock arrive as stacks with no loadout or save format change |
+| D14 | **"Construct X" interactions replace the placement ghost** (revises D3, 2026-11-11 owner hand test). Girder, floor tile and clear wreckage are object steps offered on the hovered floor tile or plating; the step acts on that cell (`ConstructionRule.ActsOnCell`). Only patching a hull hole keeps the ghost, because an empty cell has nothing to hover. A blocked cell step (wreckage, furniture) is matched but not viable, so the outline shows yellow | The ghost appeared on hover, fought object interactions for the click and hid itself in too many cases; the owner rejected an explicit build mode on E |
+| D15 | **A held tool or stack lights green only its own interactions** (refines D11). When the held item has an `IOutlineSourceExtension`, target-side interactions (a door's Open) count as yellow, interactable but not with this | Holding a welder lit every door green |
+| D16 | **Damaged floor tiles are replaced, not welded.** Crowbar pries any floor tile; a Cracked one returns nothing (`NoReturnWhenCracked`); lay a new tile on the bare plating | SS13 precedent; no new rule, one flag |
+| D17 | **One floor tile item per steel floor** (`ConstructionFloorTiles`): grey, dark, white, kitchen, bar. Prying returns the floor's own tile; a tile lays its own floor; kinds stack only with themselves. The four non-grey items are copies of `FloorTile.prefab` in the floor's material (`FloorTileItemRecipe`). Dirt, grass, carpet and wood pry to nothing | Prying a white floor handed back a grey tile |
 | D13 | **Versioning.** New tile types and RPCs bump `ProtocolVersion.Current`. No `PersistenceEnvelope` bump: stages are tile identity and integrity stays unsaved. The commit that completes S4 carries `Version-Bump: minor` | [game-versioning](2026-10_game-versioning.md) |
 
 ## Deviations from design
 
 - **construction.md §3, valid targets light up:** MVP1 outlines only the hovered target (D11). Full candidate highlighting while a tool is held is post-playtest.
+- **construction.md §3, placement ghost:** only a hull hole shows one (D14). Girders and floor tiles are "Construct girder" and "Lay floor tile" on the hovered floor or plating, lit by the outline; a blocked step shows a yellow outline with no reason text and no "n / m" cost tag. Update §3 if the owner keeps this after playtest.
 - **construction.md §5, a patched room refills from its vents:** the patched cell itself starts with station air (D8), and the air alarm's refill preset doesn't make vents faster, it only stops scrubbers.
 - **Girder prefab:** its reinforced, window-sheet, support and strut layers move out (D1). They stay in `SteelWalls.fbx` for reinforced building later.
 - **construction.md §11, welding hisses:** no weld hiss clip or spark effect exists in the project. The welder cue is the structural metal contact flecks plus quiet, high-pitched metal hits; the crowbar plays the metal-scrape clips. A real hiss clip and spark VFX are an art follow-up.
@@ -124,6 +129,19 @@ What the first Editor session needs to know; fold into the system maps with `upd
 - [ ] Separate-client multiplayer check: ghost, ring, cancel reasons, stage swaps and wreckage visible to a remote client
 - [ ] `update-system-docs`: tile, structural-destruction, interactions, inventory maps; M8/M10 slices
 - Validation: `compile,editmode` + the new scenario + multiplayer smoke
+
+### S7: second hand test (2026-11-11)
+
+- [x] D14: girder, floor tile and wreckage as interactions on the hovered floor or plating; ghost for hull holes only; scenario drives them through the interaction path
+- [x] D15: tool-only green outline
+- [x] D16: pry and re-lay damaged floor tiles; examine line for a damaged tile (`examine.construction.floor_damaged`)
+- [x] Stack count badge ("×N") on the hand and gear slots, read each frame because spending a stack raises no container event
+- [x] Second pass (owner): D17 tile kinds; flat tiles (floor, plating) outline as a translucent tint, since a hull along normals that face the camera draws nothing; "Add to stack" picks a loose stack onto the matching one in hand (`StackPickupInteraction`, `IHeldItemInteraction` keeps it green under D15); the glass sheet item was named "Steel sheet"; a kneel stuck when the step spent the last of the stack, because the delayed-interaction tracker did not see its destroyed source as ended
+- [ ] Alt-tab mid-step left the body kneeling after the step finished; retest after the destroyed-source fix, probe live state if it persists
+- [ ] Wood (and dirt, grass, carpet) floors pry up to nothing and the tile is lost (owner hand test 2026-11-11). Either a wood plank item per D17, or refuse prying floors with no tile item
+- [ ] Wall work holds a looped clip for the whole step instead of the one-second door reach (needs a clip; floor work already kneels for the step)
+- [ ] Owner re-check in editor: floor tile install and the steel-sheet girder through the new interactions
+- Validation: `compile,editmode` + `scenarios:Construction`
 
 ## Out of scope
 

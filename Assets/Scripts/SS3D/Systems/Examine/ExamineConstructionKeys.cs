@@ -9,6 +9,9 @@ namespace SS3D.Systems.Examine
         public const string FloorPry = "examine.construction.floor_pry";
         public const string FloorPryFallback = "A crowbar would pry the tile up.";
 
+        public const string FloorDamaged = "examine.construction.floor_damaged";
+        public const string FloorDamagedFallback = "The tile is damaged. A crowbar would pry it up for a new one.";
+
         public const string BarePlating = "examine.construction.bare_plating";
         public const string BarePlatingFallback = "Bare hull plating. Floor tiles would cover it.";
 
@@ -34,6 +37,7 @@ namespace SS3D.Systems.Examine
         public static readonly (string Key, string English)[] All =
         {
             (FloorPry, FloorPryFallback),
+            (FloorDamaged, FloorDamagedFallback),
             (BarePlating, BarePlatingFallback),
             (RepairWelder, RepairWelderFallback),
             (Girder, GirderFallback),

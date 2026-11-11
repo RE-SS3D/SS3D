@@ -174,6 +174,33 @@ namespace SS3D.Systems.Inventory.Containers
 			target.Container.AddItem(item);
 		}
 
+        /// <summary>Whether <paramref name="item"/> would merge whole into the stack this hand holds.</summary>
+        public bool CanStackOnto(Item item)
+        {
+            Item held = ItemInHand;
+            return CanUseHand && held != null && item != null && held != item && held.CanMergeWith(item)
+                && ItemStackRules.CanMerge(held.StackCount, item.StackCount, held.MaxStackSize)
+                && Container != null && Container.CanContainItem(item);
+        }
+
+        /// <summary>Adds a loose stack to the matching stack in this hand; the container merge despawns it.</summary>
+        [Server]
+        public void StackOnto(Item item)
+        {
+            if (!CanStackOnto(item))
+            {
+                return;
+            }
+
+            item.GiveOwnership(Owner);
+            if (item.Container != null && item.Container != Container)
+            {
+                item.Container.RemoveItem(item);
+            }
+
+            Container.AddItem(item);
+        }
+
         [ServerRpc]
         public void CmdDropHeldItem()
         {

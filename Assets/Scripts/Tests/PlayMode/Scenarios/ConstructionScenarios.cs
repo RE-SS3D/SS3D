@@ -21,7 +21,7 @@ namespace SS3D.Tests
 {
     /// <summary>
     /// S6 of 2026-11_construction-mvp1 in the test room: weld cracked plating, patch a blasted hull hole,
-    /// and rebuild a destroyed wall from its wreckage, each through the same server RPCs a player's click sends.
+    /// and rebuild a destroyed wall from its wreckage, each through the same RPC or interaction path a player's click takes.
     /// </summary>
     [Category(TestCategories.Scenarios)]
     [Category(TestCategories.Construction)]
@@ -44,7 +44,7 @@ namespace SS3D.Tests
 
         private static TileSubSystem Tiles => SubSystems.Get<TileSubSystem>();
 
-        // Guards: the welder offers Repair on cracked plating under a stripped floor, and floor tiles relay it (S2) · Not cheaper because: object steps dispatch through the plating's Selectable and the client interaction path
+        // Guards: the welder offers Repair on cracked plating under a stripped floor, and "Lay floor tile" on the plating relays it (S2) · Not cheaper because: object steps dispatch through the plating's Selectable and the client interaction path
         [UnityTest]
         public IEnumerator CrackedPlating_WeldedBackToIntact_ThenRetiled()
         {
@@ -71,7 +71,7 @@ namespace SS3D.Tests
                 Item tiles = HoldNew(FloorTile).ItemInHand;
                 int before = tiles.StackCount;
                 yield return Hold(0.3f);
-                yield return RunCellStep(ConstructionStep.PlaceFloorTile, Epicenter);
+                yield return RunObjectStep(Plenum(Epicenter).gameObject, "ConstructionPlaceFloorTile");
                 yield return WaitFor(() => HasTurf(Epicenter), "a floor tile goes down on the bare plating",
                     ConstructionRecipes.Get(ConstructionStep.PlaceFloorTile).Seconds + 3f);
                 Assert.AreEqual(before - 1, tiles.StackCount, "Laying one tile spends one");
@@ -147,7 +147,7 @@ namespace SS3D.Tests
             }
         }
 
-        // Guards: a destroyed wall leaves wreckage that blocks building, a crowbar clears it for steel, and girder → plated → welded seals the rooms apart again (S4) · Not cheaper because: needs wreckage records, networked stage prefabs and atmos edges on a live host
+        // Guards: a destroyed wall leaves wreckage that blocks building, "Clear wreckage" and "Construct girder" on its plating, and girder → plated → welded seals the rooms apart again (S4) · Not cheaper because: needs wreckage records, networked stage prefabs and atmos edges on a live host
         [UnityTest]
         public IEnumerator DestroyedWall_ClearedAndRebuilt_SealsTheRoomsApart()
         {
@@ -170,7 +170,7 @@ namespace SS3D.Tests
                 yield return StandBeside(wall);
                 Hand hand = HoldNew(Crowbar);
                 yield return Hold(0.3f);
-                yield return RunCellStep(ConstructionStep.ClearWreckage, wall);
+                yield return RunObjectStep(Plenum(wall).gameObject, "ConstructionClearWreckage");
                 yield return WaitFor(() => !Tiles.HasWreckage(coord, TileLayer.Turf), "the crowbar clears the wreckage",
                     ConstructionRecipes.Get(ConstructionStep.ClearWreckage).Seconds + 3f);
 
@@ -178,7 +178,7 @@ namespace SS3D.Tests
                 yield return Hold(0.3f);
                 Item sheets = HoldNew(SteelSheet).ItemInHand;
                 yield return Hold(0.3f);
-                yield return RunCellStep(ConstructionStep.PlaceGirder, wall);
+                yield return RunObjectStep(Plenum(wall).gameObject, "ConstructionPlaceGirder");
                 yield return WaitFor(() => TurfNamed(wall, ConstructionNames.Girder), "a girder goes up",
                     ConstructionRecipes.Get(ConstructionStep.PlaceGirder).Seconds + 3f);
                 Assert.IsTrue(Tiles.QueryService.TryGetOccupancy(coord, out TileOccupancy girder) && girder.BlockedEdges == 0,

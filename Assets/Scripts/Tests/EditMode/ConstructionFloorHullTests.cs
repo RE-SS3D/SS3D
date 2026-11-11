@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using NUnit.Framework;
 using SS3D.Interactions;
@@ -104,6 +105,69 @@ namespace EditorTests
             plating.ServerSetIntegrity(40f, StructuralIntegrityStage.Cracked);
             Assert.True(ConstructionObjectRules.Matches(repair, plating));
             Assert.False(ConstructionObjectRules.Matches(repair, floor), "The plating rule never touches the floor layer");
+        }
+
+        // Guards: girder, floor tile and wreckage steps are offered on the hovered floor or plating (D14), not on an empty cell
+        [Test]
+        public void CellSteps_AreOfferedOnTheFloorOrPlatingYouHover()
+        {
+            TileMapTestUtilities.MapContext context = TileMapTestUtilities.CreateContext(_objects);
+            Vector3 bare = Vector3.zero, floored = new(1, 0, 0);
+            TileMapTestUtilities.PlacePlenum(context, bare);
+            TileMapTestUtilities.PlacePlenum(context, floored);
+            PlacedTileObject floor = PlaceFloor(context, floored);
+            floor.tileObjectSO.genericType = TileObjectGenericType.Floor;
+            PlacedTileObject barePlating = PlenumAt(context, bare);
+            PlacedTileObject flooredPlating = PlenumAt(context, floored);
+            barePlating.tileObjectSO.genericType = TileObjectGenericType.Plenum;
+            flooredPlating.tileObjectSO.genericType = TileObjectGenericType.Plenum;
+
+            TileCoord bareCoord = ConstructionCellRules.CoordOf(context.Map, bare);
+            bool wreckage = false;
+            Func<TileCoord, TileLayer, bool> lookup = (c, layer) => wreckage && c == bareCoord && layer == TileLayer.Turf;
+
+            ConstructionRule lay = Rule(ConstructionStep.PlaceFloorTile);
+            ConstructionRule girder = Rule(ConstructionStep.PlaceGirder);
+            ConstructionRule clear = Rule(ConstructionStep.ClearWreckage);
+            Assert.False(lay.IsCellAction || girder.IsCellAction || clear.IsCellAction, "Only the hull hole keeps a ghost");
+            Assert.True(lay.ActsOnCell && girder.ActsOnCell && clear.ActsOnCell);
+            Assert.True(Rule(ConstructionStep.PlacePlating).IsCellAction);
+
+            Assert.True(ConstructionObjectRules.Matches(lay, barePlating, context.Map, lookup), "Lay a tile on bare plating");
+            Assert.False(ConstructionObjectRules.Matches(lay, flooredPlating, context.Map, lookup), "Already floored");
+            Assert.False(ConstructionObjectRules.Matches(lay, floor, context.Map, lookup), "Not on the floor tile itself");
+
+            Assert.True(ConstructionObjectRules.Matches(girder, floor, context.Map, lookup), "Construct a girder on a floor tile");
+            Assert.True(ConstructionObjectRules.Matches(girder, barePlating, context.Map, lookup), "or on bare plating");
+
+            Assert.False(ConstructionObjectRules.Matches(clear, barePlating, context.Map, lookup), "No wreckage, nothing to clear");
+            wreckage = true;
+            Assert.True(ConstructionObjectRules.Matches(clear, barePlating, context.Map, lookup), "Clear wreckage from its plating");
+        }
+
+        // Guards: a damaged floor tile is replaced by prying it up and laying a new one; a Cracked one is scrap
+        [Test]
+        public void PryingACrackedTile_ReturnsNothing()
+        {
+            ConstructionRule pry = Rule(ConstructionStep.PryFloorTile);
+            Assert.True(pry.NoReturnWhenCracked);
+            Assert.AreEqual(ConstructionNames.FloorTileItem, pry.ReturnItemName, "An intact or damaged tile comes back");
+        }
+
+        // Guards: a pried floor returns its own kind of tile, and that tile lays the same floor back (D17)
+        [Test]
+        public void FloorTileKinds_RoundTrip()
+        {
+            foreach ((string turf, string item, string _) in ConstructionFloorTiles.Kinds)
+            {
+                Assert.AreEqual(item, ConstructionFloorTiles.ItemFor(turf));
+                Assert.AreEqual(turf, ConstructionFloorTiles.TurfFor(item));
+            }
+
+            Assert.AreEqual("FloorTileWhite", ConstructionFloorTiles.ItemFor("TileWhite"));
+            Assert.IsNull(ConstructionFloorTiles.ItemFor("TileGrass"), "Grass is not a steel tile");
+            Assert.AreEqual(ConstructionNames.FloorTurf, ConstructionFloorTiles.TurfFor("Unknown"), "Unknown tiles lay grey");
+            Assert.AreEqual(string.Empty, ConstructionApply.ReturnNameFor(Rule(ConstructionStep.PryFloorTile), null));
         }
 
         [Test]

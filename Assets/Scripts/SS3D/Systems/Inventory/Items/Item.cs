@@ -501,7 +501,8 @@ namespace SS3D.Systems.Inventory.Items
 
         public virtual IInteraction[] CreateTargetInteractions(InteractionEvent interactionEvent)
         {
-            return new IInteraction[] { new PickupInteraction { Icon = null } };
+            // Pickup needs an empty hand; Add to stack is for the matching stack already in hand.
+            return new IInteraction[] { new PickupInteraction { Icon = null }, new StackPickupInteraction() };
         }
 
         // this creates the base interactions for an item, in this case, the drop interaction

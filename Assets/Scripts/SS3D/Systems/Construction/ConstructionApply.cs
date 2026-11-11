@@ -71,6 +71,17 @@ namespace SS3D.Systems.Construction
 
             Vector3 world = GridWorld(target);
 
+            // "Construct girder" on a floor tile, "Clear wreckage" on plating: the outcome lands on the cell.
+            if (rule.ActsOnCell)
+            {
+                string resultName = ResultNameFor(rule, item, tiles);
+                TileObjectSo result = string.IsNullOrEmpty(resultName) ? null : tiles.GetAsset(resultName) as TileObjectSo;
+                return TryApplyCell(rule, world, result, item, hand);
+            }
+
+            bool cracked = target.IntegrityStage == StructuralIntegrityStage.Cracked;
+            string returnName = ReturnNameFor(rule, target);
+
             switch (rule.Outcome)
             {
                 case ConstructionOutcome.Repair:
@@ -108,7 +119,11 @@ namespace SS3D.Systems.Construction
             }
 
             Spend(rule, item);
-            GiveReturns(rule, hand, world);
+            if (!(cracked && rule.NoReturnWhenCracked))
+            {
+                GiveReturns(rule, hand, world, returnName);
+            }
+
             return true;
         }
 
@@ -133,15 +148,17 @@ namespace SS3D.Systems.Construction
         /// Hands back what a step returns (a pried tile, pulled sheets): into a free or matching hand,
         /// else onto the floor at <paramref name="world"/>. Salvage sets its count explicitly (D12).
         /// </summary>
-        public static void GiveReturns(ConstructionRule rule, Hand hand, Vector3 world)
+        /// <param name="itemName">Item to hand back in place of the rule's own (the pried floor's kind of tile).</param>
+        public static void GiveReturns(ConstructionRule rule, Hand hand, Vector3 world, string itemName = null)
         {
-            if (string.IsNullOrEmpty(rule.ReturnItemName) || rule.ReturnCount <= 0)
+            itemName ??= rule.ReturnItemName;
+            if (string.IsNullOrEmpty(itemName) || rule.ReturnCount <= 0)
             {
                 return;
             }
 
             if (!SubSystems.TryGet(out TileSubSystem tiles) || !SubSystems.TryGet(out ItemSubSystem items)
-                || tiles.GetAsset(rule.ReturnItemName) is not ItemObjectSo itemSo || itemSo.PrefabAsset == null)
+                || tiles.GetAsset(itemName) is not ItemObjectSo itemSo || itemSo.PrefabAsset == null)
             {
                 return;
             }
@@ -171,6 +188,28 @@ namespace SS3D.Systems.Construction
             ItemUtility.Place(spawned, drop, spawned.transform.rotation);
             // Pass the lifted pose from ItemUtility.Place (inventory Pitfall: the raw point sinks the item).
             tiles.Construction.TryPlaceItem(itemSo, spawned.transform.position, spawned.transform.rotation, spawned.gameObject);
+        }
+
+        /// <summary>The tile a step places: the floor matching the held tile item, else the rule's result.</summary>
+        public static string ResultNameFor(ConstructionRule rule, Item item, TileSubSystem tiles)
+        {
+            if (rule.Step == ConstructionStep.PlaceFloorTile && item != null && item.Asset != null && tiles != null)
+            {
+                return ConstructionFloorTiles.TurfFor(tiles.GetAsset(item.Asset)?.NameString);
+            }
+
+            return rule.ResultName;
+        }
+
+        /// <summary>What a step hands back: the tile matching the pried floor (none for dirt or carpet), else the rule's item.</summary>
+        public static string ReturnNameFor(ConstructionRule rule, PlacedTileObject target)
+        {
+            if (rule.Step == ConstructionStep.PryFloorTile)
+            {
+                return target != null ? ConstructionFloorTiles.ItemFor(target.NameString) ?? string.Empty : string.Empty;
+            }
+
+            return rule.ReturnItemName;
         }
 
         public static Vector3 GridWorld(PlacedTileObject placed) => new(placed.WorldOrigin.x, 0f, placed.WorldOrigin.y);

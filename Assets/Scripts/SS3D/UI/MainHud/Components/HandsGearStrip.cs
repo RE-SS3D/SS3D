@@ -138,6 +138,17 @@ namespace SS3D.UI.MainHud.Components
             }
         }
 
+        public void SetHandStackCount(HandSlot slot, int count) => GetHandInventorySlot(slot).StackCount = count;
+
+        public void SetGearStackCount(GearSlot slot, int count)
+        {
+            InventorySlot inventorySlot = GetGearSlot(slot);
+            if (inventorySlot != null)
+            {
+                inventorySlot.StackCount = count;
+            }
+        }
+
         public void SetHandReserved(HandSlot slot, bool reserved)
         {
             InventorySlot inventorySlot = GetHandInventorySlot(slot);

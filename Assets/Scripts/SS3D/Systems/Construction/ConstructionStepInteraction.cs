@@ -44,6 +44,7 @@ namespace SS3D.Systems.Construction
         public override bool CanInteract(InteractionEvent interactionEvent) =>
             _target != null
             && ConstructionObjectRules.Matches(_rule, _target)
+            && ConstructionObjectRules.CellFailure(_rule, _target) == null
             && HoldsInput(interactionEvent, out Item item)
             && HasMaterials(item)
             && InteractionExtensions.RangeCheck(interactionEvent);

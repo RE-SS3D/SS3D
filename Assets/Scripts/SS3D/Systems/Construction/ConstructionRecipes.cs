@@ -25,14 +25,14 @@ namespace SS3D.Systems.Construction
                 Step = ConstructionStep.PlaceFloorTile, GenericName = "ConstructionPlaceFloorTile", Verb = "Lay floor tile",
                 Input = ConstructionInput.FloorTile, Target = ConstructionTargetKind.BarePlating, Layer = TileLayer.Turf,
                 Cost = 1, Seconds = 1f, Outcome = ConstructionOutcome.Place, ResultName = ConstructionNames.FloorTurf,
-                IsCellAction = true,
             },
             new ConstructionRule
             {
                 Step = ConstructionStep.PryFloorTile, GenericName = "ConstructionPryTile", Verb = "Pry tile",
                 Input = ConstructionInput.Crowbar, Target = ConstructionTargetKind.FloorTurf, Layer = TileLayer.Turf,
                 Seconds = 1f, Outcome = ConstructionOutcome.Remove,
-                ReturnItemName = ConstructionNames.FloorTileItem, ReturnCount = 1,
+                // A damaged tile is replaced by prying it up and laying a new one; a Cracked one is scrap.
+                ReturnItemName = ConstructionNames.FloorTileItem, ReturnCount = 1, NoReturnWhenCracked = true,
             },
             new ConstructionRule
             {
@@ -52,10 +52,9 @@ namespace SS3D.Systems.Construction
             // Girder ladder and windows (S4). Girder to sealed is about 15 s across three steps (§10).
             new ConstructionRule
             {
-                Step = ConstructionStep.PlaceGirder, GenericName = "ConstructionPlaceGirder", Verb = "Build girder",
+                Step = ConstructionStep.PlaceGirder, GenericName = "ConstructionPlaceGirder", Verb = "Construct girder",
                 Input = ConstructionInput.SteelSheet, Target = ConstructionTargetKind.ClearFloor, Layer = TileLayer.Turf,
                 Cost = 2, Seconds = 5f, Outcome = ConstructionOutcome.Place, ResultName = ConstructionNames.Girder,
-                IsCellAction = true,
             },
             new ConstructionRule
             {
@@ -82,7 +81,7 @@ namespace SS3D.Systems.Construction
                 Step = ConstructionStep.ClearWreckage, GenericName = "ConstructionClearWreckage", Verb = "Clear wreckage",
                 Input = ConstructionInput.Crowbar, Target = ConstructionTargetKind.Wreckage, Layer = TileLayer.Turf,
                 Seconds = 3f, Outcome = ConstructionOutcome.ClearWreckage,
-                ReturnItemName = ConstructionNames.SteelSheetItem, ReturnCount = 2, IsCellAction = true,
+                ReturnItemName = ConstructionNames.SteelSheetItem, ReturnCount = 2,
             },
 
             // Deconstruction (S5): the ladder backwards, from Intact only, about twice the build time,
@@ -157,6 +156,12 @@ namespace SS3D.Systems.Construction
             yield return ConstructionNames.SteelSheetItem;
             yield return ConstructionNames.GlassSheetItem;
             yield return ConstructionNames.FloorTileItem;
+            foreach ((string turf, string item, string _) in ConstructionFloorTiles.Kinds)
+            {
+                yield return turf;
+                yield return item;
+            }
+
             yield return ConstructionNames.WelderItem;
             yield return ConstructionNames.CrowbarItem;
         }

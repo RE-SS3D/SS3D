@@ -91,6 +91,10 @@ namespace SS3D.Interactions
 
             IInteractionTarget previousTarget = interactionEvent.Target;
 
+            // A held tool or stack (welder, sheets) lights green only what it can act on; a door that opens
+            // whatever is held stays yellow, interactable but not with this.
+            bool toolOnly = HasOutlineExtensions(source);
+
             foreach (IInteractionTarget target in targets)
             {
                 if (target == null)
@@ -106,7 +110,7 @@ namespace SS3D.Interactions
                 {
                     hasTargetBound = true;
 
-                    if (hasViableInteractions)
+                    if (hasViableInteractions || (toolOnly && interaction is not IHeldItemInteraction))
                     {
                         continue;
                     }
@@ -146,6 +150,19 @@ namespace SS3D.Interactions
         }
 
         private static readonly List<IOutlineSourceExtension> OutlineExtensionsScratch = new(4);
+
+        private static bool HasOutlineExtensions(IInteractionSource source)
+        {
+            if (source is not IGameObjectProvider provider || provider.GameObject == null)
+            {
+                return false;
+            }
+
+            provider.GameObject.GetComponents(OutlineExtensionsScratch);
+            bool any = OutlineExtensionsScratch.Count > 0;
+            OutlineExtensionsScratch.Clear();
+            return any;
+        }
         private static readonly List<IInteraction> OutlineInteractionsScratch = new(8);
 
         /// <summary>

@@ -242,6 +242,7 @@ namespace SS3D.UI.MainHud
             RefreshActiveHand();
             RefreshIntent();
             RefreshZoneReticle();
+            RefreshStackCounts();
             _view.SetInternals(_evaGear != null && _evaGear.InternalsAvailable, _evaGear != null && _evaGear.InternalsOn);
             _view.SetMagboots(_evaGear != null && _evaGear.MagbootsAvailable, _evaGear != null && _evaGear.MagbootsOn);
             _view.SetGearLocked(_evaGear != null && !_evaGear.CanSwitch);
@@ -1379,6 +1380,22 @@ namespace SS3D.UI.MainHud
                 ? container.Items.FirstOrDefault()
                 : null;
         }
+
+        /// <summary>
+        /// Stack counts change without a container event (a construction step spends sheets in hand), so
+        /// read them each frame; the slot ignores unchanged values.
+        /// </summary>
+        private void RefreshStackCounts()
+        {
+            _view.SetHandStackCount(HandsGearStrip.HandSlot.Left, StackCountOf(HandItemAt(0)));
+            _view.SetHandStackCount(HandsGearStrip.HandSlot.Right, StackCountOf(HandItemAt(1)));
+            _view.SetGearStackCount(HandsGearStrip.GearSlot.Belt, StackCountOf(ItemIn(ContainerType.Belt)));
+            _view.SetGearStackCount(HandsGearStrip.GearSlot.Id, StackCountOf(ItemIn(ContainerType.Identification)));
+            _view.SetGearStackCount(HandsGearStrip.GearSlot.Pocket, StackCountOf(ItemIn(ContainerType.Pocket)));
+            _view.SetGearStackCount(HandsGearStrip.GearSlot.Back, StackCountOf(ItemIn(ContainerType.Bag)));
+        }
+
+        private static int StackCountOf(Item item) => item != null && item.IsStackable ? item.StackCount : 0;
 
         private Sprite HandIconAt(int position) => HandItemAt(position)?.ItemSprite;
 

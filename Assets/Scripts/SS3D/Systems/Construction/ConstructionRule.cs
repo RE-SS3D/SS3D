@@ -2,7 +2,11 @@ using SS3D.Systems.Tile;
 
 namespace SS3D.Systems.Construction
 {
-    /// <summary>One construction step. Cell actions run through <c>ConstructionPlacementSubSystem</c>; the rest are interactions.</summary>
+    /// <summary>
+    /// One construction step. Only patching a hull hole is a cell action (<c>ConstructionPlacementSubSystem</c>,
+    /// a ghost on the empty cell); the rest are interactions on a placed object, including the cell steps
+    /// that act on the floor or plating you hover ("Construct girder", "Lay floor tile", "Clear wreckage").
+    /// </summary>
     public enum ConstructionStep : byte
     {
         PlacePlating = 0,
@@ -26,7 +30,7 @@ namespace SS3D.Systems.Construction
     {
         /// <summary>A cell inside the station with no plating (a hull hole).</summary>
         HullHole = 0,
-        /// <summary>A cell with plating and nothing on the Turf layer.</summary>
+        /// <summary>Plating with nothing on the Turf layer. Targeted through the plating.</summary>
         BarePlating = 1,
         /// <summary>Any walkable floor turf.</summary>
         FloorTurf = 2,
@@ -34,9 +38,12 @@ namespace SS3D.Systems.Construction
         DamagedPlenum = 3,
         /// <summary>A Damaged or Cracked wall, window or reinforced wall.</summary>
         DamagedStructure = 4,
-        /// <summary>Plating with nothing on Turf or a walkable floor, and no furniture (construction.md §6).</summary>
+        /// <summary>
+        /// Plating with nothing on Turf or a walkable floor, and no furniture (construction.md §6). Targeted
+        /// through the floor tile or the bare plating.
+        /// </summary>
         ClearFloor = 5,
-        /// <summary>A cell with steel wreckage on Turf.</summary>
+        /// <summary>A cell with steel wreckage on Turf. Targeted through the plating or floor under it.</summary>
         Wreckage = 6,
         /// <summary>The tile named <see cref="ConstructionRule.TargetName"/>.</summary>
         NamedTile = 7,
@@ -95,8 +102,19 @@ namespace SS3D.Systems.Construction
 
         public int ReturnCount { get; init; }
 
-        /// <summary>True for steps chosen by clicking a cell under a placement ghost.</summary>
+        /// <summary>True for steps chosen by clicking an empty cell under a placement ghost (a hull hole).</summary>
         public bool IsCellAction { get; init; }
+
+        /// <summary>
+        /// An object step whose target is the cell under the hovered floor or plating rather than the object
+        /// itself (<see cref="ConstructionTargetKind.BarePlating"/>, <see cref="ConstructionTargetKind.ClearFloor"/>,
+        /// <see cref="ConstructionTargetKind.Wreckage"/>). Checked with <c>ConstructionCellRules</c>.
+        /// </summary>
+        public bool ActsOnCell => !IsCellAction && Target is ConstructionTargetKind.BarePlating
+            or ConstructionTargetKind.ClearFloor or ConstructionTargetKind.Wreckage;
+
+        /// <summary>A Cracked target is spent by the step: nothing is handed back (a broken floor tile).</summary>
+        public bool NoReturnWhenCracked { get; init; }
 
         /// <summary>Deconstruction runs from Intact only (construction.md §9).</summary>
         public bool RequiresIntact { get; init; }

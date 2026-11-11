@@ -1607,6 +1607,10 @@ MonoBehaviour:
     m_Key: examine.construction.reinforced
     m_Metadata:
       m_Items: []
+  - m_Id: 298192516493320192
+    m_Key: examine.construction.floor_damaged
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

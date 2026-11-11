@@ -396,6 +396,42 @@ MonoBehaviour:
     SearchTags:
     - item
     - materials & parts
+  - AssetName: FloorTileBar
+    Mode: 2
+    Subcategory: 301
+    Heading: 
+    Family: 
+    VariantLabel: 
+    SearchTags:
+    - item
+    - materials & parts
+  - AssetName: FloorTileGreyDark
+    Mode: 2
+    Subcategory: 301
+    Heading: 
+    Family: 
+    VariantLabel: 
+    SearchTags:
+    - item
+    - materials & parts
+  - AssetName: FloorTileKitchen
+    Mode: 2
+    Subcategory: 301
+    Heading: 
+    Family: 
+    VariantLabel: 
+    SearchTags:
+    - item
+    - materials & parts
+  - AssetName: FloorTileWhite
+    Mode: 2
+    Subcategory: 301
+    Heading: 
+    Family: 
+    VariantLabel: 
+    SearchTags:
+    - item
+    - materials & parts
   - AssetName: FuelTank
     Mode: 0
     Subcategory: 105

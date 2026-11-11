@@ -1649,6 +1649,10 @@ MonoBehaviour:
       it apart.
     m_Metadata:
       m_Items: []
+  - m_Id: 298192516493320192
+    m_Localized: The tile is damaged. A crowbar would pry it up for a new one.
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

@@ -4,6 +4,13 @@ Shader "Custom/InteractionOutline"
     {
         _OutlineColor ("Outline Color", Color) = (0, 1, 0, 1)
         _OutlineWidth ("Outline Width (px)", Range(0, 8)) = 2
+        // Fill mode for flat tiles (floor, plating), whose normals face the camera so a hull shows nothing:
+        // InteractionOutlineView sets Cull Back, a negative offset and alpha blend on a second material.
+        [Enum(UnityEngine.Rendering.CullMode)] _Cull ("Cull", Float) = 1
+        _OffsetFactor ("Offset Factor", Float) = 1
+        _OffsetUnits ("Offset Units", Float) = 1
+        [Enum(UnityEngine.Rendering.BlendMode)] _SrcBlend ("Src Blend", Float) = 1
+        [Enum(UnityEngine.Rendering.BlendMode)] _DstBlend ("Dst Blend", Float) = 0
     }
 
     SubShader
@@ -31,11 +38,11 @@ Shader "Custom/InteractionOutline"
             Name "InteractionOutline"
             Tags { "LightMode" = "SRPDefaultUnlit" }
 
-            Cull Front
+            Cull [_Cull]
             ZWrite Off
             ZTest LEqual
-            Offset 1, 1
-            Blend Off
+            Offset [_OffsetFactor], [_OffsetUnits]
+            Blend [_SrcBlend] [_DstBlend]
 
             HLSLPROGRAM
             #pragma target 2.0
