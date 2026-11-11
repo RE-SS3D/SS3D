@@ -229,11 +229,15 @@ MonoBehaviour:
   _weight: 0.2
   _sizeClass: 1
   _maxStackSize: 1
+  _initialStackCount: 1
   _stackCount: 1
   _startingTraits: []
   _rigidbody: {fileID: 6351433192589740835}
   AttachmentPoint: {fileID: 4619531351315044860}
   AttachmentPointAlt: {fileID: 0}
+  _restRotation: {x: 18.000004, y: 251, z: 271}
+  _overrideIconRotation: 0
+  _iconRotation: {x: 0, y: 0, z: 0}
   _container: {fileID: 0}
   _animator: {fileID: 7807247313645579261}
   _honkIcon: {fileID: 21300000, guid: 03812e70c708b3047b20e316b16f1896, type: 3}

@@ -22,7 +22,7 @@ todos:
     status: completed
   - id: b-pose-fields
     content: "B1: Item.RestRotation / IconRotation fields, migrated from the root rotation by a recipe; Icon defaults to Rest"
-    status: pending
+    status: completed
   - id: b-choke-point
     content: "B2: one ItemPlacement.WorldRotation(item, yaw) used by every spawn/drop/place/throw path; SpawnItem's identity special case goes"
     status: pending
@@ -99,3 +99,4 @@ An Item Pose inspector on `Item` previews the three contexts (item in a Human ha
 - A4 (2026-11-11): recipe run in the Editor after merging develop; it calibrated `hold.r`, `hold.l` and `IDHold` and added three `GripSocket`s to `Human.prefab`. `validate.sh --steps compile,editmode,scenarios:Combat` passed (EditMode 4407/4407, Combat 20/20). Owner hand test passed the same day: held items look right; the taser icon is still upside down, as expected until B3.
 - A5 (2026-11-11): removed the legacy grip, `PendingGrip` and the `LateUpdate` re-grip. `TestHuman.prefab` nests the same hands without sockets; it has no InteractionController and nothing spawns it, so it was left uncalibrated.
 - D1 (2026-11-11): `ItemPoseContactSheet` renders 107 Item prefabs (Assets/Content) as icon, right hand, left hand and floor cells into `artifacts/item-poses/item-pose-contact-sheet.png`, with a CSV index (flags, whether `AttachmentPointAlt` is set). It reuses the real paths: `Item.GenerateIcon`, `ContainerItemDisplay.PlaceAtDisplay` (extracted from the attach handler) on `Human.prefab` posed by `HandGripSocketCalibration.WithReferencePose`. `RuntimePreviewGenerator.BoundsTarget` frames the held item while the whole body renders. First sheet: 3 prefabs lack an `AttachmentPoint` (HumanEarRight, HumanTorso, HumanBrain); 91 of 107 have an `AttachmentPointAlt`. Body-part items frame the whole body (their skinned bounds span it).
+- B1 (2026-11-11): `Item` serializes `_restRotation` (euler) and `_iconRotation` behind `_overrideIconRotation`; `WorldRestRotation` reads the field on the instance itself, so the runtime prefab lookup is gone, and `IconRotation` falls back to it. `ItemRestPoseRecipe` (in Run Content Prefab Recipes) copies the root rotation into the field, base prefabs before variants. Only 5 of 107 Item prefabs rest off identity (M4, IonRifle, LaserRifle, Taser, BikeHorn); the rest keep the zero default. The root rotation stays equal to the rest pose so a plain `Instantiate(prefab)` still lands at rest; `ItemPoseTests` asserts that for every content prefab. `Item.Reset` seeds the field on new items. No visual change: the icon still renders at Rest until B3. `validate.sh --steps compile,editmode,scenarios:Combat` passed (EditMode 4412/4412, Combat 20/20).

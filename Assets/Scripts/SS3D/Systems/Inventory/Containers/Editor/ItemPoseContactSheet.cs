@@ -359,9 +359,7 @@ namespace SS3D.Systems.Inventory.Containers.Editor
             try
             {
                 Item instance = Object.Instantiate(prefab, root.transform);
-                // The prefab root rotation is the rest pose (WorldRestRotation of a prefab); avoid the runtime asset lookup.
-                instance.transform.SetLocalPositionAndRotation(
-                    Vector3.zero, Item.ComposeWorldFacing(prefab.transform.localRotation, 0f));
+                instance.transform.SetLocalPositionAndRotation(Vector3.zero, prefab.GetWorldFacing(0f));
                 instance.SetVisibility(true);
                 if (!TryRendererBounds(instance.transform, out Bounds bounds))
                 {

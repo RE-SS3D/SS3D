@@ -271,6 +271,7 @@ MonoBehaviour:
   _weight: 2.5
   _sizeClass: 2
   _maxStackSize: 1
+  _initialStackCount: 1
   _stackCount: 1
   _startingTraits:
   - {fileID: 11400000, guid: 20862f95ca774742a249ac1535fc626e, type: 2}
@@ -278,6 +279,9 @@ MonoBehaviour:
   _rigidbody: {fileID: 7900676986793032205}
   AttachmentPoint: {fileID: 3973287392732280433}
   AttachmentPointAlt: {fileID: 3973287392732280433}
+  _restRotation: {x: -0, y: 0, z: 90}
+  _overrideIconRotation: 0
+  _iconRotation: {x: 0, y: 0, z: 0}
   _container: {fileID: 0}
 --- !u!65 &8290816172357947520
 BoxCollider:
@@ -317,6 +321,7 @@ MonoBehaviour:
     BruteDamage: 0
     BurnDamage: 16
     StaminaDamage: 0
+    KnockdownSeconds: 0
     CanSever: 0
     BaseSpreadDegrees: 0.32
     RecoilClimbDegrees: 0.2
@@ -335,6 +340,7 @@ MonoBehaviour:
     ExhaustionSpreadDegrees: 1.6
     RequiresBothHands: 1
     RequiredHand: 0
+    HoldStyle: 0
   _muzzle: {fileID: 5977439101975936736}
   _magazine: {fileID: 0}
   _magazineHandPosition: {x: -0.0262, y: 0.037, z: -0.0604}

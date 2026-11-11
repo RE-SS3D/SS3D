@@ -19,12 +19,14 @@ namespace SS3D.Systems.Inventory.Containers.Editor
             clothing += GasTankSetup.SetupAll();
             int storage = StorageContainerPrefabSetup.HookUpAll();
             int sizeWeight = ItemSizeWeightRecipe.SetupAll();
+            int restPose = ItemRestPoseRecipe.SetupAll();
 
             EditorUtility.DisplayDialog(
                 "Inventory Content Prefab Recipes",
                 $"Clothing presentation: updated {clothing} prefab(s).\n" +
                 $"Storage hook-up: updated {storage} prefab(s).\n" +
-                $"Item size/weight: updated {sizeWeight} prefab(s).",
+                $"Item size/weight: updated {sizeWeight} prefab(s).\n" +
+                $"Item rest pose: updated {restPose} prefab(s).",
                 "OK");
         }
 
@@ -36,8 +38,10 @@ namespace SS3D.Systems.Inventory.Containers.Editor
             clothing += GasTankSetup.SetupAll();
             int storage = StorageContainerPrefabSetup.HookUpAll();
             int sizeWeight = ItemSizeWeightRecipe.SetupAll();
+            int restPose = ItemRestPoseRecipe.SetupAll();
             Debug.Log(
-                $"[InventoryContentPrefabRecipes] Clothing {clothing}; Storage {storage}; SizeWeight {sizeWeight}.");
+                $"[InventoryContentPrefabRecipes] Clothing {clothing}; Storage {storage}; SizeWeight {sizeWeight}; "
+                + $"RestPose {restPose}.");
 
             if (UnityEngine.Application.isBatchMode)
             {
