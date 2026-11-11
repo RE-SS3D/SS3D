@@ -791,7 +791,7 @@ namespace SS3D.Systems.Testing
             var open = new List<Vector3>();
             simulation.ForEachCell((coord, index) =>
             {
-                if (simulation.CellMeta[index].State != AtmosCellState.Vacuum && simulation.CellMeta[index].State != AtmosCellState.Blocked)
+                if (IsAir(simulation.CellMeta[index]))
                     open.Add(tiles.QueryService.TileToWorld(coord));
             });
             open.Sort((a, b) => (a - _lastBreach).sqrMagnitude.CompareTo((b - _lastBreach).sqrMagnitude));
@@ -830,8 +830,11 @@ namespace SS3D.Systems.Testing
             if (!simulation.TryGetCellIndex(east, out int a) || !simulation.TryGetCellIndex(west, out int b)) return false;
             AtmosCellMeta metaA = simulation.CellMeta[a];
             AtmosCellMeta metaB = simulation.CellMeta[b];
-            return (metaA.State == AtmosCellState.Vacuum && metaB.IsSimulated) || (metaB.State == AtmosCellState.Vacuum && metaA.IsSimulated);
+            return (metaA.State == AtmosCellState.Vacuum && IsAir(metaB)) || (metaB.State == AtmosCellState.Vacuum && IsAir(metaA));
         }
+
+        // Air that has settled sleeps as Inactive, which IsSimulated excludes; a sealed map is asleep within seconds of loading.
+        private static bool IsAir(AtmosCellMeta meta) => meta.State is not (AtmosCellState.Vacuum or AtmosCellState.Blocked);
 
         private IEnumerator SampleAtmosBudget(float seconds)
         {
