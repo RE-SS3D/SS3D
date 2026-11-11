@@ -30,7 +30,7 @@ todos:
     content: "B3: icon generator renders from the Icon pose with a fixed camera (not object-relative); fix the taser via its Icon pose"
     status: completed
   - id: c-pose-inspector
-    content: "C1: Item Pose inspector: hand (reference pose), floor and icon previews side by side, rotate handles and 90° snaps"
+    content: "C1: Item Pose Editor window: click through Item prefabs; icon, right-hand, floor and level side-view previews; ±90° buttons per axis for Rest, Icon and Held (owner's ask 2026-11-11: quick fixes without hand-editing prefabs)"
     status: pending
   - id: d-audit
     content: "D2: AssetAudit: every pickable Item has an AttachmentPoint; Rest pose lies flat (thinnest bounds axis vertical) unless flagged upright"
