@@ -70,7 +70,7 @@ namespace SS3D.Systems.Gamemodes
             if (livingOperatives.Count == 0)
                 return null;
 
-            foreach (NukeCard disk in Object.FindObjectsByType<NukeCard>(FindObjectsSortMode.None))
+            foreach (NukeCard disk in SceneRegistry<NukeCard>.All)
             {
                 string ckey = NukeOpsRules.CarrierCkey<Component>(disk, HolderOf,
                     node => node is Entity entity && livingOperatives.TryGetValue(entity, out string carrier) ? carrier : null);

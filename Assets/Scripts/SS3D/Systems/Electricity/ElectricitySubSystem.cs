@@ -290,8 +290,11 @@ namespace SS3D.Systems.Electricity
 
                 EnsureApcConsumerIndex();
 
-                foreach (AreaRecord record in areaSubSystem.GetAllAreas())
+                // Indexed: foreach over the IReadOnlyList boxes its enumerator every tick.
+                IReadOnlyList<AreaRecord> areas = areaSubSystem.GetAllAreas();
+                for (int i = 0; i < areas.Count; i++)
                 {
+                    AreaRecord record = areas[i];
                     if (record.Apc is not IApcChannelSource apc
                         || record.Apc is not IPowerStorage apcStorage
                         || record.Apc is not IElectricDevice apcDevice

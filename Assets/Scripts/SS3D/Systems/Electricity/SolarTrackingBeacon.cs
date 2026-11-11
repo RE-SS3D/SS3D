@@ -3,6 +3,8 @@ using SS3D.Core.Behaviours;
 using SS3D.Interactions;
 using SS3D.Systems.Tile;
 using UnityEngine;
+using SS3D.Core;
+using System.Collections.Generic;
 
 namespace SS3D.Systems.Electricity
 {
@@ -75,8 +77,8 @@ namespace SS3D.Systems.Electricity
             Vector3 origin = transform.position;
             int aimed = 0;
 
-            SolarPanel[] panels = FindObjectsByType<SolarPanel>(FindObjectsSortMode.None);
-            for (int i = 0; i < panels.Length; i++)
+            IReadOnlyList<SolarPanel> panels = SceneRegistry<SolarPanel>.All;
+            for (int i = 0; i < panels.Count; i++)
             {
                 SolarPanel panel = panels[i];
                 if (panel == null)

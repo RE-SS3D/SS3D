@@ -25,7 +25,7 @@ namespace SS3D.Systems.Health
             }
         }
 
-        public static void TickOrganFunction(SystemicPools pools, IList<OrganState> organs)
+        public static void TickOrganFunction(SystemicPools pools, List<OrganState> organs)
         {
             if (pools.OxyDebt >= HealthConstants.CriticalOxyDebt)
             {
@@ -131,13 +131,14 @@ namespace SS3D.Systems.Health
             return zone.IsSevered || (zone.IsDisabled && !zone.IsSplinted);
         }
 
-        public static float GetStoredOrganFunction(IEnumerable<OrganState> organs, OrganType type)
+        public static float GetStoredOrganFunction(IReadOnlyList<OrganState> organs, OrganType type)
         {
-            foreach (OrganState organ in organs)
+            // Indexed: health reads organs several times per body per tick, and foreach over the interface boxes.
+            for (int i = 0; i < organs.Count; i++)
             {
-                if (organ.Type == type)
+                if (organs[i].Type == type)
                 {
-                    return organ.FunctionPercent;
+                    return organs[i].FunctionPercent;
                 }
             }
 

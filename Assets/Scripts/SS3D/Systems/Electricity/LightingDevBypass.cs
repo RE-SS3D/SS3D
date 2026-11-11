@@ -37,10 +37,7 @@ namespace SS3D.Systems.Electricity
 
             if (UnityEngine.Application.isPlaying)
             {
-                foreach (var fixture in UnityEngine.Object.FindObjectsByType<LightPower>(UnityEngine.FindObjectsSortMode.None))
-                {
-                    fixture.RefreshVisuals();
-                }
+                LightPower.RefreshAllFixtures();
             }
         }
 

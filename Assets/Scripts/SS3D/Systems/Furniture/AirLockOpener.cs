@@ -138,6 +138,10 @@ namespace SS3D.Systems.Furniture
         internal bool NeedsEmptyProximityPass =>
             _authorizedOccupants.Count > 0 || _deniedOccupants.Count > 0 || _closeHeldOccupants.Count > 0;
 
+        private void OnEnable() => SceneRegistry<AirLockOpener>.Register(this);
+
+        private void OnDisable() => SceneRegistry<AirLockOpener>.Unregister(this);
+
         private void Awake()
         {
             if (_animator != null)

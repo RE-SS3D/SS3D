@@ -34,6 +34,18 @@ namespace SS3D.Systems.Inventory.Containers
         // Reference to the player's inventory.
         public HumanInventory inventory;
 
+        protected override void OnEnabled()
+        {
+            base.OnEnabled();
+            SceneRegistry<ContainerViewer>.Register(this);
+        }
+
+        protected override void OnDisabled()
+        {
+            SceneRegistry<ContainerViewer>.Unregister(this);
+            base.OnDisabled();
+        }
+
         public override void OnStartClient()
         {
             base.OnStartClient();

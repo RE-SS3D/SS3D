@@ -5,6 +5,7 @@ using SS3D.Interactions.Interfaces;
 using SS3D.Systems.Tile;
 using SS3D.Systems.Tile.Connections;
 using UnityEngine;
+using SS3D.Core;
 
 namespace SS3D.Systems.Electricity
 {
@@ -41,6 +42,18 @@ namespace SS3D.Systems.Electricity
                 float aimFactor = SolarCycle.ComputeAimFactor(_aim, SolarCycle.GetSunAzimuthDegrees());
                 return _peakPowerKw * intensity * aimFactor;
             }
+        }
+
+        protected override void OnEnabled()
+        {
+            base.OnEnabled();
+            SceneRegistry<SolarPanel>.Register(this);
+        }
+
+        protected override void OnDisabled()
+        {
+            SceneRegistry<SolarPanel>.Unregister(this);
+            base.OnDisabled();
         }
 
         public override void OnStartClient()

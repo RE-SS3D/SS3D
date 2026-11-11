@@ -80,7 +80,7 @@ namespace SS3D.Systems.Atmospherics.Pipes
         public float GetTotalMolesAcrossNetworks()
         {
             float total = 0f;
-            foreach (GasPipeNetworkRecord record in _registry.Networks.Values)
+            foreach (GasPipeNetworkRecord record in _registry.NetworkRecords)
                 total += record.GetTotalMoles(_gasTypeCount);
 
             return total;
@@ -167,7 +167,7 @@ namespace SS3D.Systems.Atmospherics.Pipes
 
         private void UpdateNetworkTemperatures()
         {
-            foreach (GasPipeNetworkRecord record in _registry.Networks.Values)
+            foreach (GasPipeNetworkRecord record in _registry.NetworkRecords)
             {
                 if (record.Segments.Count == 0)
                     continue;

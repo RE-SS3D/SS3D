@@ -146,6 +146,19 @@ namespace SS3D.Systems.Health
         private static SimulationChannel HealthChannel =>
             SimulationClock.GetOrCreate("health", HealthConstants.TickIntervalSeconds, pausedByWorldSuspension: false);
 
+        /// <summary>Every enabled body on this peer (debug overlay, console targets); <see cref="ServerInstances"/> is the server's spawned set.</summary>
+        protected override void OnEnabled()
+        {
+            base.OnEnabled();
+            SceneRegistry<HumanHealthController>.Register(this);
+        }
+
+        protected override void OnDisabled()
+        {
+            SceneRegistry<HumanHealthController>.Unregister(this);
+            base.OnDisabled();
+        }
+
         public override void OnStopServer()
         {
             base.OnStopServer();
@@ -767,13 +780,9 @@ namespace SS3D.Systems.Health
                 return null;
             }
 
-            foreach (AttachedContainer container in _inventory.Containers)
+            // TryGetTypeContainer, not Containers: that copies the list, and this runs for every body every tick.
+            for (int i = 0; _inventory.TryGetTypeContainer(slot, i, out AttachedContainer container); i++)
             {
-                if (container.Type != slot)
-                {
-                    continue;
-                }
-
                 foreach (Item item in container.Items)
                 {
                     if (item.TryGetComponent(out SealedGearItemExtension seal))

@@ -187,11 +187,11 @@ namespace SS3D.Systems.IngameConsoleSystem.Commands
         }
 
         private static int CountLitFixtures() =>
-            UnityEngine.Object.FindObjectsByType<LightPower>(FindObjectsSortMode.None)
+            SceneRegistry<LightPower>.All
                 .Count(light => light.Visual != LightPower.FixtureVisual.Off);
 
         private static int CountOpenAirlocks() =>
-            UnityEngine.Object.FindObjectsByType<AirLockOpener>(FindObjectsSortMode.None).Count(airlock => airlock.IsOpen);
+            SceneRegistry<AirLockOpener>.All.Count(airlock => airlock.IsOpen);
 
         private static string Normalize(string name) => (name ?? string.Empty).Replace(" ", string.Empty).ToLowerInvariant();
     }
