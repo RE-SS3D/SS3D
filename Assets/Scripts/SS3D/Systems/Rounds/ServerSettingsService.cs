@@ -23,11 +23,19 @@ namespace SS3D.Systems.Rounds
     /// The server's configuration (tech-debt P6.5): the authoritative <see cref="ServerSettings"/>, the boot profiles
     /// (<c>-sandbox</c>, <c>-nukeops</c>), the saved name and MOTD, the public lobby metadata, and the admin
     /// Server Settings RPCs. <see cref="RoundSubSystem"/> reads <see cref="Current"/> and owns the round state.
+    /// An admin asks once (<see cref="CmdReadServerSettings"/>); after that the server pushes every change to every
+    /// admin (P6.6), including saved maps that appear on disk.
     /// </summary>
     public sealed class ServerSettingsService : NetworkSubSystem
     {
+        /// <summary>How often the server looks for a changed saved-map list while an admin is online.</summary>
+        private const float MapScanSeconds = 2f;
+
         private ServerSettings _settings = ServerSettings.Default;
         private string _statusNotice = "";
+        private bool _pushPending;
+        private float _nextMapScan;
+        private string[] _pushedMaps = Array.Empty<string>();
 
         // Public lobby metadata. Name/MOTD persist under ServerMeta; the rest describe this server process.
         // Only the public join policy is replicated; admin configuration stays behind a TargetRpc.
@@ -65,6 +73,9 @@ namespace SS3D.Systems.Rounds
         /// <summary>Client: replies to this admin's settings actions so far (not periodic refreshes).</summary>
         public int AdminActionReplies { get; private set; }
         public bool HasAdminSettings { get; private set; }
+
+        /// <summary>Client: new admin settings arrived (an action reply or a push).</summary>
+        public event Action AdminSettingsReceived;
 
         /// <summary>The map a server plays until an admin picks another: Classic MiniStation, else the first one saved.</summary>
         public static string DefaultStation(string[] maps) => maps.Contains("classic-ministation")
@@ -122,7 +133,36 @@ namespace SS3D.Systems.Rounds
         /// Shown as the Server Settings status until the next action reply.
         /// </summary>
         [Server]
-        public void SetStatusNotice(string notice) => _statusNotice = notice ?? "";
+        public void SetStatusNotice(string notice)
+        {
+            notice ??= "";
+            if (notice == _statusNotice) return;
+            _statusNotice = notice;
+            _pushPending = true;
+        }
+
+        /// <summary>Server: sends pending changes, and a changed saved-map list, to every admin.</summary>
+        private void Update()
+        {
+            if (!IsServer) return;
+            if (!_pushPending && Time.unscaledTime < _nextMapScan) return;
+            _nextMapScan = Time.unscaledTime + MapScanSeconds;
+            bool anyAdmin = false;
+            foreach (NetworkConnection connection in ServerManager.Clients.Values)
+                anyAdmin |= IsAdministrator(connection);
+            if (!anyAdmin)
+            {
+                _pushPending = false;
+                return;
+            }
+
+            // Listing also imports archives dropped into the maps folder, so a new map shows up here.
+            string[] maps = SubSystems.Get<PersistenceSubSystem>().ListStationTemplates().ToArray();
+            if (!_pushPending && maps.SequenceEqual(_pushedMaps)) return;
+            _pushPending = false;
+            foreach (NetworkConnection connection in ServerManager.Clients.Values)
+                if (IsAdministrator(connection)) SendServerSettings(connection, "", refresh: true, maps);
+        }
 
         /// <summary>Server: the sender is an administrator. The admin RPCs of the round services share this check.</summary>
         internal static bool IsAdministrator(NetworkConnection sender)
@@ -161,6 +201,7 @@ namespace SS3D.Systems.Rounds
             {
                 // A server rule, not round config: it applies at once, in any round state.
                 _settings.AutoStart = value.AutoStart;
+                _pushPending = true;
                 ServerAutoStartSet?.Invoke();
                 SendServerSettings(sender, value.AutoStart ? "Auto start is on." : "Auto start is off.");
                 return;
@@ -200,6 +241,7 @@ namespace SS3D.Systems.Rounds
             // a whole-form save must not roll them back.
             _settings = settings.WithRulesOf(_settings);
             PublishPublicSettings();
+            _pushPending = true;
             ServerChanged?.Invoke(previous, _settings);
             SendServerSettings(sender, "Settings saved for this server session.");
         }
@@ -212,6 +254,7 @@ namespace SS3D.Systems.Rounds
             else _settings.Motd = ServerInfoText.SanitizeMotd(value.Motd);
             _serverName = _settings.ServerName;
             _motd = _settings.Motd;
+            _pushPending = true;
             bool saved = LocalStorage.SaveObject(PersistencePaths.ServerInfo,
                 new SavedServerInfo { serverName = _settings.ServerName, motd = _settings.Motd }, overwrite: true);
             if (!saved) Debug.LogWarning("[Rounds] Could not save server info; the change applies to this session only.");
@@ -236,9 +279,10 @@ namespace SS3D.Systems.Rounds
 
         [Server]
         /// <param name="refresh">The lobby's periodic re-read: carries no action result of its own.</param>
-        private void SendServerSettings(NetworkConnection sender, string status, bool refresh = false)
+        private void SendServerSettings(NetworkConnection sender, string status, bool refresh = false, string[] maps = null)
         {
-            string[] maps = SubSystems.Get<PersistenceSubSystem>().ListStationTemplates().ToArray();
+            maps ??= SubSystems.Get<PersistenceSubSystem>().ListStationTemplates().ToArray();
+            _pushedMaps = maps;
             EnsureMap(maps);
             TargetServerSettings(sender, _settings, maps, string.IsNullOrEmpty(status) ? _statusNotice : status, refresh);
         }
@@ -255,6 +299,7 @@ namespace SS3D.Systems.Rounds
             if (!refresh)
                 AdminActionReplies++;
             HasAdminSettings = true;
+            AdminSettingsReceived?.Invoke();
         }
 
 #if UNITY_EDITOR
@@ -268,6 +313,7 @@ namespace SS3D.Systems.Rounds
             _settings = settings;
             PublishPublicSettings();
             ApplyServerRules();
+            _pushPending = true;
         }
 #endif
     }

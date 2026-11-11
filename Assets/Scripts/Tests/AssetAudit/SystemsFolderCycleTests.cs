@@ -17,9 +17,9 @@ namespace SS3D.Tests.AssetAudit
     {
         /// <summary>
         /// G4: pairs of top-level <c>Systems/*</c> folders whose runtime code (outside <c>Editor/</c>) has a
-        /// <c>using SS3D.Systems.&lt;Other&gt;</c> in both directions. 52 on 2026-11-10. Phases 5, 6 and 8 lower it.
+        /// <c>using SS3D.Systems.&lt;Other&gt;</c> in both directions. 52 on 2026-11-10; 50 on 2026-11-11 after Phase 6. Phases 5, 6 and 8 lower it.
         /// </summary>
-        private const int MaxMutualSystemsFolderPairs = 52;
+        private const int MaxMutualSystemsFolderPairs = 50;
 
         private static readonly Regex SystemsUsing = new(@"^\s*using\s+(?:\w+\s*=\s*)?SS3D\.Systems\.(\w+)", RegexOptions.Compiled);
 

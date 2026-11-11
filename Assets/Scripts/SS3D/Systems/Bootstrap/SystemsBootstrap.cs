@@ -9,6 +9,8 @@ using SS3D.Systems.BugReports;
 using SS3D.Systems.Comms;
 using SS3D.Systems.Furniture;
 using SS3D.Systems.Inputs;
+using SS3D.Systems.PlayerControl;
+using SS3D.Systems.Session;
 using SS3D.Systems.Rounds;
 using SS3D.Systems.ScreenEffects;
 using SS3D.Systems.Settings;
@@ -92,6 +94,7 @@ namespace SS3D.Systems.Bootstrap
             EnsureSubSystem<AutomationSubSystem>();
             EnsureSubSystem<VisionSubSystem>();
             EnsureSubSystem<ServerStatusPublisher>();
+            EnsureSubSystem<ClientSessionSubSystem>();
             EnsureSubSystem<StructuralDamageSubSystem>();
             if (BugReportSubSystem.IsSupported)
             {
