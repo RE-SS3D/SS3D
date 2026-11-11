@@ -1836,6 +1836,10 @@ MonoBehaviour:
     m_Localized: '{0} is trying to take your {2}!'
     m_Metadata:
       m_Items: []
+  - m_Id: 298329279073329152
+    m_Localized: '{0} flicks the light switch.'
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

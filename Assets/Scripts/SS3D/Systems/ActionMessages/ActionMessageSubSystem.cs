@@ -28,6 +28,21 @@ namespace SS3D.Systems.ActionMessages
         private readonly List<(NetworkConnection Listener, Vector3 Position)> _listeners = new();
         private readonly List<NetworkConnection> _recipients = new();
 
+        public override void OnStartServer()
+        {
+            base.OnStartServer();
+            SS3D.Interactions.Interfaces.InteractionNarration.ServerNarrated += HandleInteractionNarrated;
+        }
+
+        public override void OnStopServer()
+        {
+            SS3D.Interactions.Interfaces.InteractionNarration.ServerNarrated -= HandleInteractionNarrated;
+            base.OnStopServer();
+        }
+
+        private void HandleInteractionNarrated(SS3D.Interactions.Interfaces.InteractionNarration narration) =>
+            Narrate(narration.Key, narration.Actor, narration.Target, narration.Item, (ActionVisibility)narration.Level);
+
         /// <summary>
         /// Server: narrate an action. <paramref name="actor"/> and <paramref name="target"/> are the
         /// characters (or objects) involved, <paramref name="item"/> what was used; any may be null.

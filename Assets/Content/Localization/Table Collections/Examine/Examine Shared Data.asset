@@ -1787,6 +1787,10 @@ MonoBehaviour:
     m_Key: action.take_open
     m_Metadata:
       m_Items: []
+  - m_Id: 298329279073329152
+    m_Key: action.light_switch
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

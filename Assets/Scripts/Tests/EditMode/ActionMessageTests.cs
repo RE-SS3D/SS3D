@@ -69,6 +69,28 @@ namespace EditorTests
         }
 
         [Test]
+        public void ToggleNarratesOnlyWhenItHasAKey()
+        {
+            SS3D.Interactions.InteractionEvent interactionEvent = new(null, null);
+            List<string> raised = new();
+            void Handle(SS3D.Interactions.Interfaces.InteractionNarration narration) => raised.Add(narration.Key);
+            SS3D.Interactions.Interfaces.InteractionNarration.ServerNarrated += Handle;
+            try
+            {
+                SS3D.Interactions.ToggleInteraction silent = new();
+                Assert.IsFalse(SS3D.Interactions.Interfaces.InteractionNarration.TryRaise(silent, interactionEvent));
+
+                SS3D.Interactions.ToggleInteraction narrated = new() { NarrationKey = ActionMessageKeys.LightSwitch };
+                Assert.IsTrue(SS3D.Interactions.Interfaces.InteractionNarration.TryRaise(narrated, interactionEvent));
+                CollectionAssert.AreEqual(new[] { ActionMessageKeys.LightSwitch }, raised);
+            }
+            finally
+            {
+                SS3D.Interactions.Interfaces.InteractionNarration.ServerNarrated -= Handle;
+            }
+        }
+
+        [Test]
         public void SpeechOutranksHostileOutranksAimedOutranksRoutineThenProximity()
         {
             var items = new[]

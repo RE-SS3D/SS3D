@@ -12,12 +12,14 @@ namespace SS3D.Systems.ActionMessages
         public const string ExamineCue = "action.examine_cue";
         public const string TakeBlind = "action.take_blind";
         public const string TakeOpen = "action.take_open";
+        public const string LightSwitch = "action.light_switch";
 
         private static readonly Dictionary<string, string> English = new()
         {
             { ExamineCue, "{0} looks you over." },
             { TakeBlind, "{0} is reaching into your pockets!" },
             { TakeOpen, "{0} is trying to take your {2}!" },
+            { LightSwitch, "{0} flicks the light switch." },
         };
 
         /// <summary>Lines aimed at the viewer that should outrank routine ones (action-messages.md §5).</summary>
