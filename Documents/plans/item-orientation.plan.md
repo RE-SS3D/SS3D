@@ -13,7 +13,7 @@ todos:
     status: completed
   - id: a-run-and-verify
     content: "A4: run the recipe in the Editor, commit the Human.prefab diff, validate.sh --steps compile,editmode,scenarios:Combat; pick up M4, taser, boombox, wrench in idle/walk/Harm and at spawn"
-    status: pending
+    status: completed
   - id: a-remove-legacy
     content: "A5: once A4 is green, delete the legacy character-root grip and the #158 pending-grip LateUpdate"
     status: pending
@@ -96,3 +96,4 @@ An Item Pose inspector on `Item` previews the three contexts (item in a Human ha
 ## Implementation notes
 
 - A1–A3 landed without a Unity Editor in the session. The runtime code falls back to the legacy grip until A4 runs the recipe, so the build behaves as before until then. `HandGripSocketContentTests` fails until the recipe has been run and `Human.prefab` committed: that failure is the reminder.
+- A4 (2026-11-11): recipe run in the Editor after merging develop; it calibrated `hold.r`, `hold.l` and `IDHold` and added three `GripSocket`s to `Human.prefab`. `validate.sh --steps compile,editmode,scenarios:Combat` passed (EditMode 4407/4407, Combat 20/20). Owner hand test passed the same day: held items look right; the taser icon is still upside down, as expected until B3.

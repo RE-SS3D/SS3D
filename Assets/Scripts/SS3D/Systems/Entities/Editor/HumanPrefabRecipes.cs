@@ -44,7 +44,7 @@ namespace SS3D.Systems.Entities.Editor
             bool gripsCalibrated = HandGripSocketCalibration.Calibrate(out string gripReport);
             if (!gripsCalibrated)
             {
-                Debug.LogError("[HumanPrefabRecipes] Grip sockets: " + gripReport);
+                UnityEngine.Debug.LogError("[HumanPrefabRecipes] Grip sockets: " + gripReport);
             }
 
             EditorUtility.DisplayDialog(
