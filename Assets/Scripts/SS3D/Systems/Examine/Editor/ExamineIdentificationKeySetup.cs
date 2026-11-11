@@ -58,6 +58,76 @@ namespace SS3D.Systems.Examine.Editor
             Debug.Log("Added identification card + structural integrity template keys to the Examine English table.");
         }
 
+        /// <summary>
+        /// Tier C seed — no MenuItem. Writes the keyword-tagged English text (examine.md §3) for every
+        /// key whose fallback constant carries <c>&lt;k=…&gt;</c> markup, plus the substance and low-tank
+        /// keys. The fallback constants are the source; rerun after editing them.
+        /// </summary>
+        public static void AddExamineFeedbackKeys()
+        {
+            StringTableCollection collection = LocalizationEditorSettings.GetStringTableCollection(ExamineCanonicalKeyGenerator.ExamineTableName);
+            if (collection == null || collection.GetTable(new LocaleIdentifier("en")) is not StringTable englishTable)
+            {
+                Debug.LogError($"Could not find the English table of '{ExamineCanonicalKeyGenerator.ExamineTableName}'.");
+                return;
+            }
+
+            (string, string)[] entries =
+            {
+                (ExamineStructuralIntegrityKeys.Damaged, ExamineStructuralIntegrityKeys.DamagedFallback),
+                (ExamineStructuralIntegrityKeys.Cracked, ExamineStructuralIntegrityKeys.CrackedFallback),
+                (ExamineStructuralIntegrityKeys.TornMetal, ExamineStructuralIntegrityKeys.TornMetalFallback),
+                (ExamineStructuralIntegrityKeys.GougedWood, ExamineStructuralIntegrityKeys.GougedWoodFallback),
+                (ExamineStructuralIntegrityKeys.SplitWood, ExamineStructuralIntegrityKeys.SplitWoodFallback),
+                (ExamineStructuralIntegrityKeys.ChippedGlass, ExamineStructuralIntegrityKeys.ChippedGlassFallback),
+                (ExamineStructuralIntegrityKeys.FracturedGlass, ExamineStructuralIntegrityKeys.FracturedGlassFallback),
+                (ExamineStructuralIntegrityKeys.FracturedFloor, ExamineStructuralIntegrityKeys.FracturedFloorFallback),
+                (ExamineStructuralIntegrityKeys.DamagedPlating, ExamineStructuralIntegrityKeys.DamagedPlatingFallback),
+                (ExamineStructuralIntegrityKeys.DentedDevice, ExamineStructuralIntegrityKeys.DentedDeviceFallback),
+                (ExamineStructuralIntegrityKeys.BrokenDevice, ExamineStructuralIntegrityKeys.BrokenDeviceFallback),
+                (ExamineSealKeys.Intact, ExamineSealKeys.IntactFallback),
+                (ExamineSealKeys.Breached, ExamineSealKeys.BreachedFallback),
+                (ExamineTankKeys.Fill, ExamineTankKeys.FillFallback),
+                (ExamineTankKeys.FillLow, ExamineTankKeys.FillLowFallback),
+                (ExamineHealthKeys.DeadSelf, ExamineHealthKeys.DeadSelfFallback),
+                (ExamineHealthKeys.DeadOther, ExamineHealthKeys.DeadOtherFallback),
+                (ExamineHealthKeys.CardiacArrestSelf, ExamineHealthKeys.CardiacArrestSelfFallback),
+                (ExamineHealthKeys.CardiacArrestOther, ExamineHealthKeys.CardiacArrestOtherFallback),
+                (ExamineHealthKeys.CriticalSelf, ExamineHealthKeys.CriticalSelfFallback),
+                (ExamineHealthKeys.CriticalOther, ExamineHealthKeys.CriticalOtherFallback),
+                (ExamineHealthKeys.SelfHurtAndBleeding, ExamineHealthKeys.SelfHurtAndBleedingFallback),
+                (ExamineHealthKeys.SelfBleeding, ExamineHealthKeys.SelfBleedingFallback),
+                (ExamineHealthKeys.SelfHurt, ExamineHealthKeys.SelfHurtFallback),
+                (ExamineHealthKeys.SelfMissing, ExamineHealthKeys.SelfMissingFallback),
+                (ExamineHealthKeys.SelfMissingAndHurtAndBleeding, ExamineHealthKeys.SelfMissingAndHurtAndBleedingFallback),
+                (ExamineHealthKeys.SelfMissingAndBleeding, ExamineHealthKeys.SelfMissingAndBleedingFallback),
+                (ExamineHealthKeys.SelfMissingAndHurt, ExamineHealthKeys.SelfMissingAndHurtFallback),
+                (ExamineHealthKeys.OtherHurtAndBleeding, ExamineHealthKeys.OtherHurtAndBleedingFallback),
+                (ExamineHealthKeys.OtherBleeding, ExamineHealthKeys.OtherBleedingFallback),
+                (ExamineHealthKeys.OtherHurt, ExamineHealthKeys.OtherHurtFallback),
+                (ExamineHealthKeys.OtherMissing, ExamineHealthKeys.OtherMissingFallback),
+                (ExamineHealthKeys.OtherMissingAndHurtAndBleeding, ExamineHealthKeys.OtherMissingAndHurtAndBleedingFallback),
+                (ExamineHealthKeys.OtherMissingAndBleeding, ExamineHealthKeys.OtherMissingAndBleedingFallback),
+                (ExamineHealthKeys.OtherMissingAndHurt, ExamineHealthKeys.OtherMissingAndHurtFallback),
+            };
+
+            foreach ((string key, string value) in entries)
+            {
+                UpsertEntry(englishTable, key, value);
+            }
+
+            foreach ((string key, string value) in ExamineSubstanceKeys.All)
+            {
+                UpsertEntry(englishTable, key, value);
+            }
+
+            EditorUtility.SetDirty(englishTable);
+            EditorUtility.SetDirty(englishTable.SharedData);
+            EditorUtility.SetDirty(collection);
+            AssetDatabase.SaveAssets();
+            Debug.Log("Wrote keyword-tagged examine keys to the Examine English table.");
+        }
+
         /// <summary>Tier C seed — no MenuItem. Prefer <see cref="AddIdentificationCardTemplateKeys"/> which also upserts integrity keys.</summary>
         public static void AddStructuralIntegrityTemplateKeys()
         {

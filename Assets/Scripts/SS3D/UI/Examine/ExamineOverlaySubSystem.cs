@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Text;
 using Coimbra.Services.Events;
 using SS3D.Core;
 using SS3D.Core.Behaviours;
@@ -511,10 +510,11 @@ namespace SS3D.UI.Examine
             if (IsDetailedExamineHeld())
             {
                 // Health sections rebuild every frame while Shift is held so bleed/crit updates live.
-                string detailed = BuildCharacterDetailedText(content, inventory, isSelf);
+                bool close = isSelf || IsWithinCloseRange(examinable);
+                string detailed = BuildCharacterDetailedText(content, inventory, isSelf, close);
                 if (!string.IsNullOrWhiteSpace(detailed))
                 {
-                    _genericView.ShowDetailedText(displayName, detailed);
+                    _genericView.ShowDetailedText(displayName, ExamineKeywordFormatter.Format(detailed));
                     if (Mouse.current != null)
                     {
                         _genericView.UpdateAnchor(Mouse.current.position.ReadValue());
@@ -534,37 +534,16 @@ namespace SS3D.UI.Examine
         private static string BuildCharacterDetailedText(
             ExamineContent content,
             HumanInventory inventory,
-            bool isSelf)
+            bool isSelf,
+            bool withinCloseRange)
         {
-            StringBuilder builder = new();
-            string baseText = BuildDetailedText(content);
-            if (!string.IsNullOrEmpty(baseText))
-            {
-                builder.Append(baseText);
-            }
-
             List<ExamineSection> healthSections = new();
             CharacterExamineHealthBuilder.AppendSections(
                 ResolveHealthController(inventory),
                 isSelf,
                 healthSections);
 
-            foreach (ExamineSection section in healthSections)
-            {
-                if (string.IsNullOrWhiteSpace(section.Text))
-                {
-                    continue;
-                }
-
-                if (builder.Length > 0)
-                {
-                    builder.Append("\n\n");
-                }
-
-                builder.Append(section.Text);
-            }
-
-            return builder.ToString();
+            return ExamineDetailText.Build(content, withinCloseRange, healthSections);
         }
 
         private static HumanHealthController ResolveHealthController(HumanInventory inventory)
@@ -648,8 +627,9 @@ namespace SS3D.UI.Examine
             if (IsDetailedExamineHeld())
             {
                 ExamineData data = _currentExaminable.GetData();
+                bool close = IsWithinCloseRange(_currentExaminable);
                 if (data.Type == ExamineType.SIMPLE_IMAGE
-                    && IsWithinDetailedImageRange(_currentExaminable, data)
+                    && close
                     && TryGetImageDetailedContent(
                         _currentExaminable,
                         nonCharacterContent,
@@ -657,7 +637,7 @@ namespace SS3D.UI.Examine
                         out string caption,
                         out Vector2 imageSize))
                 {
-                    _genericView.ShowDetailedImage(image, caption, imageSize);
+                    _genericView.ShowDetailedImage(image, ExamineKeywordFormatter.Format(caption), imageSize);
                     if (Mouse.current != null)
                     {
                         _genericView.UpdateAnchor(Mouse.current.position.ReadValue());
@@ -666,9 +646,10 @@ namespace SS3D.UI.Examine
                     return;
                 }
 
-                if (nonCharacterContent.HasDescription || nonCharacterContent.Sections.Count > 0)
+                string detailed = ExamineDetailText.Build(nonCharacterContent, close);
+                if (!string.IsNullOrWhiteSpace(detailed))
                 {
-                    _genericView.ShowDetailedText(nonCharacterContent.Name, BuildDetailedText(nonCharacterContent));
+                    _genericView.ShowDetailedText(nonCharacterContent.Name, ExamineKeywordFormatter.Format(detailed));
                     if (Mouse.current != null)
                     {
                         _genericView.UpdateAnchor(Mouse.current.position.ReadValue());
@@ -775,14 +756,15 @@ namespace SS3D.UI.Examine
             return !vision.IsVisible(point);
         }
 
-        private bool IsWithinDetailedImageRange(IExaminable examinable, ExamineData data)
+        /// <summary>Fine print, the flavour line and the image show only inside the close band (examine.md §2).</summary>
+        private bool IsWithinCloseRange(IExaminable examinable)
         {
             if (!TryGetPlayerExamineOrigin(out Vector3 origin))
             {
                 return false;
             }
 
-            return ExamineRangeUtility.IsWithinRange(examinable, origin, data.DetailedImageRange);
+            return ExamineRangeUtility.IsWithinRange(examinable, origin, ExamineConfig.CloseRange);
         }
 
         private bool TryGetPlayerExamineOrigin(out Vector3 origin)
@@ -825,32 +807,6 @@ namespace SS3D.UI.Examine
             }
 
             return _inputSystem != null && _inputSystem.DetailedExamine.IsPressed();
-        }
-
-        private static string BuildDetailedText(ExamineContent content)
-        {
-            if (content.Sections == null || content.Sections.Count == 0)
-            {
-                return content.Description;
-            }
-
-            StringBuilder builder = new(content.Description);
-            foreach (ExamineSection section in content.Sections)
-            {
-                if (string.IsNullOrWhiteSpace(section.Text))
-                {
-                    continue;
-                }
-
-                if (builder.Length > 0)
-                {
-                    builder.Append("\n\n");
-                }
-
-                builder.Append(section.Text);
-            }
-
-            return builder.ToString();
         }
 
         private bool EnsureViews()

@@ -58,7 +58,7 @@ namespace EditorTests
             CharacterExamineHealthBuilder.AppendSections(snapshot, detail, includeSelfDetail: false, sections);
 
             Assert.AreEqual(1, sections.Count);
-            string line = sections[0].Text;
+            string line = ExamineKeywordFormatter.StripTags(sections[0].Text);
             Assert.IsTrue(line.StartsWith("He "), line);
             Assert.IsTrue(line.Contains("missing his left leg"), line);
             Assert.IsTrue(line.Contains("hurt"), line);
@@ -82,7 +82,7 @@ namespace EditorTests
             Assert.AreEqual(1, sections.Count);
             Assert.AreEqual(
                 "I am hurt and bleeding from the head and chest.",
-                sections[0].Text);
+                ExamineKeywordFormatter.StripTags(sections[0].Text));
         }
 
         [Test]
@@ -154,9 +154,9 @@ namespace EditorTests
                 otherSections);
 
             Assert.AreEqual(1, selfSections.Count);
-            Assert.AreEqual("I am dead.", selfSections[0].Text);
+            Assert.AreEqual("I am dead.", ExamineKeywordFormatter.StripTags(selfSections[0].Text));
             Assert.AreEqual(1, otherSections.Count);
-            Assert.AreEqual("He is dead.", otherSections[0].Text);
+            Assert.AreEqual("He is dead.", ExamineKeywordFormatter.StripTags(otherSections[0].Text));
         }
 
         [Test]

@@ -22,7 +22,7 @@ namespace SS3D.Systems.Furniture.Disposal
             }
 
             string departmentName = DepartmentDisplay.GetName(tag.Destination);
-            sections.Add(new ExamineSection($"Disposal tag: {departmentName}"));
+            sections.Add(new ExamineSection($"Disposal tag: {departmentName}", ExamineBand.Close));
         }
     }
 }

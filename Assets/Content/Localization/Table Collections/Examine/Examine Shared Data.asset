@@ -1611,6 +1611,98 @@ MonoBehaviour:
     m_Key: examine.construction.floor_damaged
     m_Metadata:
       m_Items: []
+  - m_Id: 298314483225567232
+    m_Key: examine.tank.fill_low
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298314483246538752
+    m_Key: examine.substance.empty
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298314483246538753
+    m_Key: examine.substance.contains
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298314483246538754
+    m_Key: examine.substance.volume.few
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298314483246538755
+    m_Key: examine.substance.volume.small
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298314483246538756
+    m_Key: examine.substance.volume.moderate
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298314483246538757
+    m_Key: examine.substance.volume.large
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298314483246538758
+    m_Key: examine.substance.feels
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298314483246538759
+    m_Key: examine.substance.temp.frozen
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298314483246538760
+    m_Key: examine.substance.temp.cold
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298314483246538761
+    m_Key: examine.substance.temp.cool
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298314483246538762
+    m_Key: examine.substance.temp.warm
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298314483246538763
+    m_Key: examine.substance.temp.hot
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298314483246538764
+    m_Key: examine.substance.temp.scalding
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298314483246538765
+    m_Key: examine.substance.looks
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298314483246538766
+    m_Key: examine.substance.color.clear
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298314483246538767
+    m_Key: examine.substance.color.murky
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298314483246538768
+    m_Key: examine.substance.color.red
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298314483246538769
+    m_Key: examine.substance.color.orange
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298314483246538770
+    m_Key: examine.substance.color.yellow
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298314483246538771
+    m_Key: examine.substance.color.green
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298314483246538772
+    m_Key: examine.substance.color.blue
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298314483246538773
+    m_Key: examine.substance.color.purple
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

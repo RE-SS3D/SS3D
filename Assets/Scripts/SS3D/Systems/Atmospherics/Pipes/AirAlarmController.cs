@@ -258,7 +258,7 @@ namespace SS3D.Systems.Atmospherics.Pipes
 
             if (!IsPowered())
             {
-                sections.Add(new ExamineSection("Air alarm: unpowered — environmental scan offline."));
+                sections.Add(new ExamineSection("Air alarm: <k=warn>unpowered</k> — environmental scan offline."));
                 return;
             }
 
@@ -268,12 +268,17 @@ namespace SS3D.Systems.Atmospherics.Pipes
                 return;
             }
 
-            string status = _alarmState == AirAlarmState.None ? "Nominal" : _alarmState.ToString();
+            // Alarm state reads at range (coarse device state); the readings are fine print.
+            string status = _alarmState == AirAlarmState.None
+                ? "<k=good>Nominal</k>"
+                : $"<k=danger>{_alarmState}</k>";
             float temperatureC = _sampleTemperatureKelvin - 273.15f;
+            sections.Add(new ExamineSection($"Air alarm: {status}."));
             sections.Add(new ExamineSection(
-                $"Air alarm: {status}. Pressure {_samplePressureKpa:F1} kPa. " +
+                $"Pressure {_samplePressureKpa:F1} kPa. " +
                 $"Temp {temperatureC:F1}°C. O₂ {_sampleOxygenFraction:P1}. " +
-                $"CO₂ {_sampleCarbonDioxideFraction:P2}. Plasma {_samplePlasmaFraction:P2}."));
+                $"CO₂ {_sampleCarbonDioxideFraction:P2}. Plasma {_samplePlasmaFraction:P2}.",
+                ExamineBand.Close));
         }
 
         private void Initialize()

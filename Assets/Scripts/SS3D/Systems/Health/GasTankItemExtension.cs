@@ -42,11 +42,16 @@ namespace SS3D.Systems.Health
 
         public void AppendSections(IExaminable examinable, List<ExamineSection> sections)
         {
-            sections.Add(new ExamineSection(LocalizedTextService.GetFormattedString(
-                ExamineCanonicalKeyGenerator.ExamineTableName,
-                ExamineTankKeys.Fill,
-                new object[] { Mathf.CeilToInt(_fill * 100f) },
-                ExamineTankKeys.FillFallback)));
+            // Level is fine print (examine.md §2/§7); below a quarter it reads as low.
+            bool low = _fill < ExamineTankKeys.LowFraction;
+            int percent = Mathf.CeilToInt(_fill * 100f);
+            sections.Add(new ExamineSection(
+                LocalizedTextService.GetFormattedString(
+                    ExamineCanonicalKeyGenerator.ExamineTableName,
+                    low ? ExamineTankKeys.FillLow : ExamineTankKeys.Fill,
+                    new object[] { percent },
+                    string.Format(low ? ExamineTankKeys.FillLowFallback : ExamineTankKeys.FillFallback, percent)),
+                ExamineBand.Close));
         }
     }
 }

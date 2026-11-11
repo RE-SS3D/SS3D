@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using SS3D.Localization;
 using SS3D.Systems.Examine;
 using UnityEngine;
 
@@ -6,7 +7,8 @@ namespace SS3D.Systems.Substances
 {
     /// <summary>
     /// Free diegetic properties only: approximate volume, qualitative temperature, and visible color.
-    /// Chemical identity is observer knowledge (chemistry gameplay) — not shown here.
+    /// Chemical identity is observer knowledge (chemistry gameplay) — not shown here. All lines are
+    /// fine print (examine.md §2).
     /// </summary>
     public sealed class SubstanceContainerExaminable : SimpleExaminable, IExamineContentProvider
     {
@@ -28,105 +30,126 @@ namespace SS3D.Systems.Substances
                 return;
             }
 
-            string volumeLine = _container.IsEmpty
-                ? "Empty."
-                : $"Contains about {ApproximateVolumeLabel(_container.CurrentVolumeMl)} of liquid.";
-            sections.Add(new ExamineSection(volumeLine));
+            if (_container.IsEmpty)
+            {
+                sections.Add(Line(ExamineSubstanceKeys.Empty, ExamineSubstanceKeys.EmptyFallback, null));
+            }
+            else
+            {
+                (string key, string fallback) = ApproximateVolume(_container.CurrentVolumeMl);
+                sections.Add(Line(ExamineSubstanceKeys.Contains, ExamineSubstanceKeys.ContainsFallback, Word(key, fallback)));
+            }
 
-            sections.Add(new ExamineSection($"Feels {TemperatureBand(_container.TemperatureKelvin)}."));
+            (string tempKey, string tempFallback) = TemperatureBand(_container.TemperatureKelvin);
+            sections.Add(Line(ExamineSubstanceKeys.Feels, ExamineSubstanceKeys.FeelsFallback, Word(tempKey, tempFallback)));
 
             if (!_container.IsEmpty)
             {
-                Color color = _container.GetBlendColor();
-                sections.Add(new ExamineSection($"The liquid looks {DescribeColor(color)}."));
+                (string colorKey, string colorFallback) = DescribeColor(_container.GetBlendColor());
+                sections.Add(Line(ExamineSubstanceKeys.Looks, ExamineSubstanceKeys.LooksFallback, Word(colorKey, colorFallback)));
             }
         }
 
-        private static string ApproximateVolumeLabel(float volumeMl)
+        private static string Word(string key, string fallback) =>
+            LocalizedTextService.GetFormattedString(ExamineCanonicalKeyGenerator.ExamineTableName, key, null, fallback);
+
+        private static ExamineSection Line(string key, string fallback, string argument)
+        {
+            object[] arguments = argument == null ? null : new object[] { argument };
+            string text = LocalizedTextService.GetFormattedString(
+                ExamineCanonicalKeyGenerator.ExamineTableName,
+                key,
+                arguments,
+                argument == null ? fallback : string.Format(fallback, argument));
+            return new ExamineSection(text, ExamineBand.Close);
+        }
+
+        private static (string, string) ApproximateVolume(float volumeMl)
         {
             if (volumeMl < 5f)
             {
-                return "a few milliliters";
+                return (ExamineSubstanceKeys.VolumeFew, ExamineSubstanceKeys.VolumeFewFallback);
             }
 
             if (volumeMl < 30f)
             {
-                return "a small amount";
+                return (ExamineSubstanceKeys.VolumeSmall, ExamineSubstanceKeys.VolumeSmallFallback);
             }
 
             if (volumeMl < 80f)
             {
-                return "a moderate amount";
+                return (ExamineSubstanceKeys.VolumeModerate, ExamineSubstanceKeys.VolumeModerateFallback);
             }
 
-            return "a large amount";
+            return (ExamineSubstanceKeys.VolumeLarge, ExamineSubstanceKeys.VolumeLargeFallback);
         }
 
-        private static string TemperatureBand(float kelvin)
+        private static (string, string) TemperatureBand(float kelvin)
         {
             if (kelvin < 260f)
             {
-                return "frosted / bitterly cold";
+                return (ExamineSubstanceKeys.TempFrozen, ExamineSubstanceKeys.TempFrozenFallback);
             }
 
             if (kelvin < 280f)
             {
-                return "cold";
+                return (ExamineSubstanceKeys.TempCold, ExamineSubstanceKeys.TempColdFallback);
             }
 
             if (kelvin < 310f)
             {
-                return "cool";
+                return (ExamineSubstanceKeys.TempCool, ExamineSubstanceKeys.TempCoolFallback);
             }
 
             if (kelvin < 340f)
             {
-                return "warm";
+                return (ExamineSubstanceKeys.TempWarm, ExamineSubstanceKeys.TempWarmFallback);
             }
 
             if (kelvin < 370f)
             {
-                return "hot";
+                return (ExamineSubstanceKeys.TempHot, ExamineSubstanceKeys.TempHotFallback);
             }
 
-            return "scalding";
+            return (ExamineSubstanceKeys.TempScalding, ExamineSubstanceKeys.TempScaldingFallback);
         }
 
-        private static string DescribeColor(Color color)
+        private static (string, string) DescribeColor(Color color)
         {
-            float h, s, v;
-            Color.RGBToHSV(color, out h, out s, out v);
+            Color.RGBToHSV(color, out float h, out float s, out float v);
             if (s < 0.15f)
             {
-                return v > 0.7f ? "clear" : "murky";
+                return v > 0.7f
+                    ? (ExamineSubstanceKeys.ColorClear, ExamineSubstanceKeys.ColorClearFallback)
+                    : (ExamineSubstanceKeys.ColorMurky, ExamineSubstanceKeys.ColorMurkyFallback);
             }
 
             if (h < 0.05f || h > 0.95f)
             {
-                return "reddish";
+                return (ExamineSubstanceKeys.ColorRed, ExamineSubstanceKeys.ColorRedFallback);
             }
 
             if (h < 0.15f)
             {
-                return "orange";
+                return (ExamineSubstanceKeys.ColorOrange, ExamineSubstanceKeys.ColorOrangeFallback);
             }
 
             if (h < 0.2f)
             {
-                return "yellow";
+                return (ExamineSubstanceKeys.ColorYellow, ExamineSubstanceKeys.ColorYellowFallback);
             }
 
             if (h < 0.45f)
             {
-                return "green";
+                return (ExamineSubstanceKeys.ColorGreen, ExamineSubstanceKeys.ColorGreenFallback);
             }
 
             if (h < 0.7f)
             {
-                return "blue";
+                return (ExamineSubstanceKeys.ColorBlue, ExamineSubstanceKeys.ColorBlueFallback);
             }
 
-            return "purple";
+            return (ExamineSubstanceKeys.ColorPurple, ExamineSubstanceKeys.ColorPurpleFallback);
         }
     }
 }
