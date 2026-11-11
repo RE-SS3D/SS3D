@@ -3,6 +3,7 @@ using SS3D.Data.Persistence;
 using SS3D.Permissions;
 using System;
 using System.Collections.Generic;
+using UnityEngine;
 
 namespace SS3D.Systems.Persistence
 {
@@ -22,6 +23,8 @@ namespace SS3D.Systems.Persistence
         public PersistenceLayer Layer => PersistenceLayer.ServerMeta;
 
         public int LoadOrder => 0;
+
+        public object DeserializePayload(string payloadJson) => JsonUtility.FromJson<SavedPermissionsPayload>(payloadJson);
 
         public object Capture()
         {
