@@ -2,7 +2,7 @@
 > Touches systems: examine, interactions-runtime, interactions-framework, chat-audio-screens, inventory, localization, main-hud
 > Status: in-progress
 
-**Progress:** Phases 1–4 built on `feature/gifted-maxwell-n1nemy` (2026-11-11), awaiting the owner's hand test; phases 5–6 not started. Decided in the 2026-11 examine grill. Phases 1–3 fix shipped content and serve [mvp1-nuke-ops.md](../milestones/mvp1-nuke-ops.md) M0 (identity at a glance) and M3 (examine shows the nuke state); phases 4–6 build action messages. The out-of-character column is a separate, parallel piece: [ooc-column.plan.md](../plans/ooc-column.plan.md). Visual brief for Claude Design: [examine-feedback-visual-brief.md](../plans/examine-feedback-visual-brief.md). Tests follow the [testing philosophy](2026-11_testing-philosophy.md).
+**Progress:** Phases 1–4 built on `feature/gifted-maxwell-n1nemy` (2026-11-11), awaiting the owner's hand test. Phase 5 has the pipeline, chips, ranker tiers and both first consumers; sound lines and the Actions history are open. Phase 6 has two narrations; failure reasons are open. Decided in the 2026-11 examine grill. Phases 1–3 fix shipped content and serve [mvp1-nuke-ops.md](../milestones/mvp1-nuke-ops.md) M0 (identity at a glance) and M3 (examine shows the nuke state); phases 4–6 build action messages. The out-of-character column is a separate, parallel piece: [ooc-column.plan.md](../plans/ooc-column.plan.md). Visual brief for Claude Design: [examine-feedback-visual-brief.md](../plans/examine-feedback-visual-brief.md). Tests follow the [testing philosophy](2026-11_testing-philosophy.md).
 
 # Examine and action feedback (Nov 2026)
 
@@ -73,17 +73,17 @@ Each phase is one PR off `develop`, run through `update-system-docs` before merg
 
 ### Phase 5 — Action-message pipeline
 
-- [ ] `ActionMessageSubSystem` on the `NetworkSystemsHub` (rebuild via the hub menu): `Narrate`, recipient split per Decision 9, client formatting per Decision 10.
-- [ ] `INarratedInteraction`, emitted by the interaction runtime on successful `Start`.
-- [ ] Action chip style and ranker priority tiers on `LocalSpeechBubbleController`.
-- [ ] Sound lines placed by direction.
-- [ ] Actions filter in the comms feed scrollback.
-- [ ] Examine cue (Decision 12) and the blind-take warning as the first two consumers.
+- [x] `ActionMessageSubSystem` on the `NetworkSystemsHub` (`ActionMessageHubRecipe` appends it; the full hub rebuild would drop the hub's serialized settings, see Deviations): `Narrate`, recipient split per Decision 9, client formatting per Decision 10.
+- [x] `INarratedInteraction`, emitted by the interaction runtime after server `Start` through `InteractionNarration.ServerNarrated`; the interaction decides whether anything happened.
+- [x] Action chip style (interim, until the visual brief) and ranker priority tiers on `LocalSpeechBubbleController`.
+- [ ] Sound lines placed by direction: no consumer yet, and the screen-edge look waits on the brief.
+- [ ] Actions filter in the comms feed scrollback: the feed has no scrollback yet (`comms.md` §9 unbuilt).
+- [x] Examine cue (Decision 12) and the blind-take warning as the first two consumers. `mppm:action-line` checks remote delivery.
 
 ### Phase 6 — Narration and failure reasons
 
-- [ ] `INarratedInteraction` on existing interactions that fail `action-messages.md` §2's test: light switch, consoles, take from character, restrain/inject/bandage as they exist, breaching charge.
-- [ ] `IExplainsFailure` with the first common reasons.
+- [ ] `INarratedInteraction` on existing interactions that fail `action-messages.md` §2's test: light switch and breaching charge done; consoles, take from character, restrain/inject/bandage open.
+- [ ] `IExplainsFailure` with the first common reasons. Needs a self-only delivery path: the recipient split never sends an actor their own line.
 
 ## Tests
 
@@ -102,6 +102,8 @@ Found while building phases 1–4, open for the owner:
 - **Department colours.** `<k=dept:…>` tags are written (ID card role, presented job) but render plain until the visual brief returns a palette (`ExamineKeywordFormatter.DepartmentColors`).
 - **Short look wording.** With no ID, a character reads "Unknown crew member in engineering jumpsuit" (outer suit, else jumpsuit, item name lower-cased); the design's article ("an … in an …") would need per-locale grammar.
 - **Organ condition** waits on extraction/surgery: organ items carry no condition yet.
+- **Action lines live in the Examine table** (`action.` keys) rather than a separate ActionMessages table, so one seed and one keyword audit cover both.
+- **Hub rebuild menu is unsafe now:** *Rebuild NetworkSystemsHub Prefab* copies serialized fields from Game, which no longer holds those systems, so the hub would lose settings such as `LocalSpeechBubbleController._config`. New hub systems use a tier-B append recipe (`ConstructionHubRecipe`, `ActionMessageHubRecipe`).
 
 ## Related docs
 

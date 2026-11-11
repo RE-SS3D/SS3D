@@ -14,7 +14,7 @@ One row per gameplay domain that has, or should eventually have, a design doc. A
 
 | Domain | Design | Architecture | System map |
 |---|---|---|---|
-| action-messages | [action-messages](../design/action-messages.md) | [examine-and-action-feedback](2026-11_examine-and-action-feedback.md) — in-progress | none yet |
+| action-messages | [action-messages](../design/action-messages.md) | [examine-and-action-feedback](2026-11_examine-and-action-feedback.md) — in-progress | [action-messages](systems/action-messages.md) — partial |
 | admin-tools | [admin-tools](../design/admin-tools.md) | [console-commands](../archive/architecture/2026-11_console-commands.md) — shipped | [ingame-console](systems/ingame-console.md) — partial |
 | ai-cyborgs | [ai-cyborgs](../design/ai-cyborgs.md) | none yet | none yet |
 | antagonist-content | [antagonist-content](../design/antagonist-content.md) | [round-end-loop](../archive/architecture/2026-11_round-end-loop.md) — shipped | [gamemodes-roles-traits](systems/gamemodes-roles-traits.md) — partial |
@@ -81,6 +81,7 @@ Infrastructure and gameplay maps, including the ones with no design doc (interac
 | [disposal](systems/disposal.md) | partial | Item disposal network |
 | [electricity](systems/electricity.md) | partial | kWh grid, APCs, SMES, solar |
 | [entities](systems/entities.md) | partial | Humanoids, minds, spawning, body animation; [Entity prefab recipes](systems/entities-prefab-recipes.md) |
+| [action-messages](systems/action-messages.md) | partial | Narrated action lines: server recipient split, chips on the speech controller, examine cue |
 | [examine](systems/examine.md) | partial | Hover/detailed examine, Search paperdoll |
 | [furniture](systems/furniture.md) | partial | Airlocks, lockers, vendors, jukebox; material-specific table, locker, machine and airlock damage |
 | [gamemodes-roles-traits](systems/gamemodes-roles-traits.md) | partial | Gamemodes, objectives, jobs, traits |
@@ -137,7 +138,7 @@ Only work that is in flight, planned, or kept as standing reference. Everything 
 | [2026-11_atmos-edge-flow](2026-11_atmos-edge-flow.md) | in-progress |
 | [2026-11_humanoid-animation-pass](2026-11_humanoid-animation-pass.md) | shipped |
 | [2026-11_construction-mvp1](2026-11_construction-mvp1.md) | in-progress |
-| [2026-11_examine-and-action-feedback](2026-11_examine-and-action-feedback.md) | in-progress (phases 1–4 built) |
+| [2026-11_examine-and-action-feedback](2026-11_examine-and-action-feedback.md) | in-progress (phases 1–4 built, 5–6 partly) |
 | [2026-11_testing-philosophy](2026-11_testing-philosophy.md) | shipped (standing policy) |
 | [2026-11_tech-debt-paydown](2026-11_tech-debt-paydown.md) | in-progress (Phases 0–2 done, awaiting review) |
 | [agent_validation_loop.plan](../plans/agent_validation_loop.plan.md) | shipped (reference) |

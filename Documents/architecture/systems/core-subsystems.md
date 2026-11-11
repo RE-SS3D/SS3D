@@ -26,7 +26,7 @@ Process-wide services: `SystemsBootstrap` (DDOL, `AfterSceneLoad`; creates netwo
 ## Extension points
 
 - New process-wide SubSystem: add to `SystemsBootstrap.EnsureProcessWideServices`, before `ApplicationInitializerSubSystem`. Types in assemblies `SS3D.Systems` cannot reference (Networking, CommandLine, Launcher) go through `EnsureSubSystemType` by assembly-qualified name.
-- New networked domain: add type to hub rebuild menu list, run `SS3D/Bootstrap/Rebuild NetworkSystemsHub Prefab` — do not edit Game.unity.
+- New networked domain: add type to hub rebuild menu list, then append it with a tier-B recipe (`ConstructionHubRecipe`, `ActionMessageHubRecipe`: `AddComponent` + `RebuildNetworkBehaviours`) — do not edit Game.unity. Prefer that to `SS3D/Bootstrap/Rebuild NetworkSystemsHub Prefab`: the rebuild copies serialized fields from Game's system objects, which the Phase 3 strip removed, so by reading the code it would reset hub settings to defaults (unverified by a run).
 - World sim: implement `IWorldReady`; notify via `WorldReadinessSubSystem` after TileMapLoaded / AreasFlooded — never treat `OnMapCreated` as ready.
 - Consumers: `IsReady` / `WhenReady` / `WaitUntilAsync` — not `Get` in Update.
 
