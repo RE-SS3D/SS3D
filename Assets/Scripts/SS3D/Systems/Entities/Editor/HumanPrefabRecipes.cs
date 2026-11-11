@@ -40,6 +40,13 @@ namespace SS3D.Systems.Entities.Editor
             SuitStoragePrefabSetup.Wire();
             HumanPrefabHygiene.ResyncNestedPrefabInstances();
 
+            // After the resync: measures the final hierarchy and adds GripSockets to Human.prefab's displays.
+            bool gripsCalibrated = HandGripSocketCalibration.Calibrate(out string gripReport);
+            if (!gripsCalibrated)
+            {
+                UnityEngine.Debug.LogError("[HumanPrefabRecipes] Grip sockets: " + gripReport);
+            }
+
             EditorUtility.DisplayDialog(
                 "Human Prefab Recipes",
                 $"Removed {devHacksRemoved} dev-only component(s).\n" +
@@ -49,7 +56,8 @@ namespace SS3D.Systems.Entities.Editor
                 $"LocalSpeechEmitter: {(speechEmitterAdded ? "added" : "already present")}.\n" +
                 $"CombatInteractionNetwork: {(combatNetworkWired ? "added/wired" : "already present")}.\n" +
                 $"SubstanceContainer strip: {(substanceContainerStripped ? "stripped" : "already clean")}.\n" +
-                "Resynced Human.prefab against its body-part prefabs.",
+                "Resynced Human.prefab against its body-part prefabs.\n" +
+                $"Hand grip sockets: {(gripsCalibrated ? "calibrated" : "FAILED, see Console")}.",
                 "OK");
         }
 
@@ -66,6 +74,11 @@ namespace SS3D.Systems.Entities.Editor
             ExoSuitPrefabSetup.Wire();
             SuitStoragePrefabSetup.Wire();
             HumanPrefabHygiene.ResyncNestedPrefabInstances();
+            bool gripsCalibrated = HandGripSocketCalibration.Calibrate(out string gripReport);
+            if (!gripsCalibrated)
+            {
+                UnityEngine.Debug.LogError("[HumanPrefabRecipes] Grip sockets: " + gripReport);
+            }
 
             UnityEngine.Debug.Log(
                 $"[HumanPrefabRecipes] Removed {devHacksRemoved} dev-only component(s); " +
@@ -75,7 +88,8 @@ namespace SS3D.Systems.Entities.Editor
                 $"LocalSpeechEmitter {(speechEmitterAdded ? "added" : "already present")}; " +
                 $"CombatInteractionNetwork {(combatNetworkWired ? "added/wired" : "already present")}; " +
                 $"SubstanceContainer strip {(substanceContainerStripped ? "stripped" : "already clean")}; " +
-                "resynced Human.prefab against its body-part prefabs.");
+                "resynced Human.prefab against its body-part prefabs; " +
+                $"grip sockets {(gripsCalibrated ? "calibrated" : "FAILED")}.");
 
             if (UnityEngine.Application.isBatchMode)
             {

@@ -1379,7 +1379,11 @@ namespace SS3D.Systems.Tile.TileMapCreator
             if (_mapEditor == null || !TryGetItemUnderCursor(out PlacedItemObject placedItem))
                 return;
 
-            Direction direction = NearestCardinalDirection(placedItem.transform.rotation);
+            // Undo re-places at this direction: take the yaw without the rest pose's own yaw.
+            float yaw = placedItem.TryGetComponent(out SS3D.Systems.Inventory.Items.Item item)
+                ? SS3D.Systems.Inventory.Items.ItemPlacement.YawAtRest(item, placedItem.transform.rotation)
+                : placedItem.transform.eulerAngles.y;
+            Direction direction = NearestCardinalDirection(yaw);
             _mapEditor.SubmitCommands(new[]
             {
                 new MapEditorCommandDto
@@ -1392,10 +1396,9 @@ namespace SS3D.Systems.Tile.TileMapCreator
             });
         }
 
-        private static Direction NearestCardinalDirection(Quaternion rotation)
+        private static Direction NearestCardinalDirection(float yaw)
         {
-            float y = rotation.eulerAngles.y;
-            int snapped = Mathf.RoundToInt(y / 90f) & 3;
+            int snapped = Mathf.RoundToInt(yaw / 90f) & 3;
             return snapped switch
             {
                 0 => Direction.North,

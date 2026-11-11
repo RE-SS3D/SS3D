@@ -179,7 +179,7 @@ namespace SS3D.Systems.Tile
 			        return _constructionService.TryPlaceTile(so, placePosition, dir, replaceExisting, skipBuildCheck).Success;
 		        case ItemObjectSo so:
 			        return _constructionService.TryPlaceItem(so, placePosition,
-                        Quaternion.Euler(0, TileHelper.GetRotationAngle(dir), 0)).Success;
+                        SS3D.Systems.Inventory.Items.ItemPlacement.WorldRotation(so, TileHelper.GetRotationAngle(dir))).Success;
 	        }
 
 	        return false;

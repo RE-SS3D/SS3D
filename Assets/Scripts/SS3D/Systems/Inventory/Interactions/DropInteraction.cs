@@ -7,6 +7,7 @@ using SS3D.Interactions.Interfaces;
 using SS3D.Systems.Entities;
 using SS3D.Systems.Inventory.Containers;
 using SS3D.Utils;
+using SS3D.Systems.Inventory.Items;
 using UnityEngine;
 
 namespace SS3D.Systems.Inventory.Interactions
@@ -110,7 +111,7 @@ namespace SS3D.Systems.Inventory.Interactions
             // Face entity yaw while keeping the prefab's authored rest pitch/roll (side-lying guns/tools).
             Entity entity = interactionEvent.Source.GetComponentInParent<Entity>();
             Hand hand = interactionEvent.Source.GetRootSource() as Hand;
-            Quaternion rotation = hand.ItemInHand.GetWorldFacing(entity.transform.eulerAngles.y);
+            Quaternion rotation = ItemPlacement.WorldRotation(hand.ItemInHand, entity.transform.eulerAngles.y);
             hand.PlaceHeldItemOutOfHand(interactionEvent.Point, rotation);
 
             return false;

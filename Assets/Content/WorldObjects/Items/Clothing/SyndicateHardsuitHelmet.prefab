@@ -173,12 +173,17 @@ MonoBehaviour:
   _weight: 1.5
   _sizeClass: 2
   _maxStackSize: 1
+  _initialStackCount: 1
   _stackCount: 1
   _startingTraits:
   - {fileID: 11400000, guid: 4fd47d47c95ea9d4bbfa168e63538ba1, type: 2}
   _rigidbody: {fileID: 950155378762729286}
   AttachmentPoint: {fileID: 3901431991760160121}
   AttachmentPointAlt: {fileID: 3901431991760160121}
+  _restRotation: {x: 0, y: 0, z: 0}
+  _restsUpright: 1
+  _overrideIconRotation: 0
+  _iconRotation: {x: 0, y: 0, z: 0}
   _container: {fileID: 0}
 --- !u!114 &1629795439574854430
 MonoBehaviour:
@@ -415,7 +420,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4075046482874297050}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: 0, y: 0, z: 1, w: -0.00000004371139}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0

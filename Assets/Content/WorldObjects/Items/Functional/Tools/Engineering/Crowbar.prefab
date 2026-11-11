@@ -36,7 +36,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1888703706215615217}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: 0, y: 0, z: 0.7071068, w: 0.7071068}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -255,6 +255,9 @@ MonoBehaviour:
   _rigidbody: {fileID: 8316413619239954654}
   AttachmentPoint: {fileID: 4263568945307503621}
   AttachmentPointAlt: {fileID: 4263568945307503621}
+  _restRotation: {x: 0, y: 0, z: 90}
+  _overrideIconRotation: 1
+  _iconRotation: {x: 0, y: 0, z: 0}
   _container: {fileID: 0}
 --- !u!114 &8720207852131239820
 MonoBehaviour:

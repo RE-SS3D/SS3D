@@ -246,12 +246,19 @@ MonoBehaviour:
   _name: High Top Sneakers
   _weight: 0.8
   _sizeClass: 2
+  _maxStackSize: 1
+  _initialStackCount: 1
+  _stackCount: 1
   _startingTraits:
   - {fileID: 11400000, guid: c753b1913c89a5745806c17b77d57b6d, type: 2}
   - {fileID: 11400000, guid: 144a9ec15419baf49ba8c376f97628c6, type: 2}
   _rigidbody: {fileID: 4736812714006782479}
   AttachmentPoint: {fileID: 4956007631782200439}
   AttachmentPointAlt: {fileID: 4956007631782200439}
+  _restRotation: {x: 0, y: 0, z: 0}
+  _restsUpright: 1
+  _overrideIconRotation: 0
+  _iconRotation: {x: 0, y: 0, z: 0}
   _container: {fileID: 0}
 --- !u!114 &2293966627244539820
 MonoBehaviour:
@@ -272,6 +279,8 @@ MonoBehaviour:
     - _key: 0
       _value: {fileID: -6802408581776391992, guid: 76ba5420c179bb841858ed042df97ba2, type: 3}
     _new: 0
+  _wornMaterials: []
+  _occludedBodyRenderers: []
 --- !u!114 &8205762469322294721
 MonoBehaviour:
   m_ObjectHideFlags: 0

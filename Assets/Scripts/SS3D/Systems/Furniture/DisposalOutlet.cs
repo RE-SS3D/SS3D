@@ -199,7 +199,7 @@ namespace SS3D.Systems.Furniture
         private void SpitItemOut(Item item)
         {
             Vector3 spitPosition = transform.position + GetFacingDirection() * _spitDistance;
-            Quaternion spitRotation = Quaternion.LookRotation(GetFacingDirection(), Vector3.up);
+            Quaternion spitRotation = ItemPlacement.WorldRotation(item, ItemPlacement.YawOf(GetFacingDirection()));
             item.transform.SetPositionAndRotation(spitPosition, spitRotation);
         }
 
