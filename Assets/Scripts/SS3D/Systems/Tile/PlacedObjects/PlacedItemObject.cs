@@ -85,6 +85,13 @@ namespace SS3D.Systems.Tile
         public string NameString => _itemSo.NameString;
 
         /// <summary>
+        /// The map tracking this item, set by <see cref="TileMap.PlaceItemObject"/>. Unity's OnDestroy
+        /// is used rather than a FishNet stop callback because this component is added at runtime and
+        /// is not registered with the NetworkObject.
+        /// </summary>
+        internal TileMap Owner { get; set; }
+
+        /// <summary>
         /// Set up a new item object.
         /// </summary>
         /// <param name="worldPosition"></param>
@@ -101,6 +108,12 @@ namespace SS3D.Systems.Tile
         {
             base.OnStartClient();
             TileLayerVisibilityService.TryApplyPlacedItem(this);
+        }
+
+        private void OnDestroy()
+        {
+            if (Owner != null)
+                Owner.ForgetDestroyedItem(this);
         }
 
         /// <summary>

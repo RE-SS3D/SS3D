@@ -22,7 +22,8 @@
         "SS3D.Data",
         "SS3D.Networking",
         "SS3D.CommandLine",
-        "SS3D.Interactions"
+        "SS3D.Interactions",
+        "SS3D.Permissions"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

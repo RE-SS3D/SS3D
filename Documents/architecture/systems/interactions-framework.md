@@ -1,7 +1,7 @@
 > Code paths: Assets/Scripts/SS3D/Interactions/
 > Entry points: IInteraction, IInteractionSource, IInteractionTarget, InteractionPipeline, InteractionIdentifier
 > Status: shipped
-> Verified: e2f86cf20 — 2026-11-05
+> Verified: 6c49dab49 — 2026-11-11
 
 # Interactions (framework)
 
@@ -29,7 +29,8 @@ RPCs identify interactions with `InteractionIdentifier` (`genericName` + `target
 - `Assets/Scripts/SS3D/Interactions/InteractionOptimisticFeedback.cs` — delayed loading bars during server confirm
 - `Assets/Scripts/SS3D/Interactions/Interfaces/IIntentRestrictedInteraction.cs` — Help/Harm gate (unrestricted = Help-default; Harm must opt in)
 - `Assets/Scripts/SS3D/Interactions/Interfaces/ITargetedInteraction.cs` — armed-mode second-click targeting
-- `Assets/Scripts/SS3D/Interactions/DelayedInteraction.cs` — timed interaction base class
+- `Assets/Scripts/SS3D/Interactions/DelayedInteraction.cs` — timed interaction base class (`CancelOnDamage`, `DelayedCancelReason`)
+- `Assets/Scripts/SS3D/Interactions/Interfaces/IOutlineSourceExtension.cs` / `IHeldItemInteraction.cs` — tool-side outline probe and the held-item marker
 - `Assets/Scripts/SS3D/Interactions/InteractionIconLookup.cs` — resolves radial/menu sprites from `InteractionIcons` (`AddressablesAsync` DB; sync Get needs warmup — [data-codegen](data-codegen.md) pitfalls)
 
 ## Extension points
@@ -40,6 +41,7 @@ RPCs identify interactions with `InteractionIdentifier` (`genericName` + `target
 - Use `Requirement` and `IInteractionRangeLimit` / `RangeLimit` for gating.
 - Register interaction icons via generated `InteractionIcons` asset refs ([data-codegen](data-codegen.md)); that DB is `AddressablesAsync` (warm-preloaded). Expose named helpers on `InteractionIconLookup` when shared. Do not add another one-shot icon rebuild `MenuItem` — see [TECH_DEBT.md](../TECH_DEBT.md) §1.5.
 - Replicated state changes in `Start()` must go through networked components (`NetworkedOpenable.SetOpenState`, `SyncVar` toggles), not local-only animator writes.
+- **Tool-side outline:** a held item's `IOutlineSourceExtension` adds the interactions it offers on the hovered target, so the outline lights them (construction tools and stacks). An item with one makes the outline tool-only: other target interactions count as yellow unless they implement the marker `IHeldItemInteraction` (they act with the held item, like `StackPickupInteraction`). See [construction](construction.md).
 - Source extensions: gate target-bound Adds (structural and/or `CanInteract`); never unconditional Add for every hover. Source-only verbs: `InteractionEntry.SourceOnly` once per Discover. Prefer `context.WithTarget(target)` so `HasPoint` is preserved.
 
 ## Pitfalls

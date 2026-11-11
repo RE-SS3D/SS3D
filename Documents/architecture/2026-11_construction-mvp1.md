@@ -2,7 +2,7 @@
 > Touches systems: tile, structural-destruction, interactions-framework, interactions-runtime, inventory, atmospherics, ui-shell, gamemodes-roles-traits
 > Status: in-progress
 
-**Progress:** Grilled with the owner on 2026-11-09, after the gameplay grill that revised [construction.md](../design/construction.md). Serves [mvp1-nuke-ops.md](../milestones/mvp1-nuke-ops.md) M10, and S2 closes M8's "an engineer seals a hull hole". Takes over [station structural damage](../plans/station_structural_damage.plan.md) Phase 6 (repair). S1–S5 compiled and hand-tested once (2026-11-09); the second hand test (2026-11-11) revised placement into interactions (D14–D16), see S7.
+**Progress:** S1–S5 and S7 implemented and hand-tested by the owner; S6's scenario ships, the M0 test station work moved to [mvp1-nuke-ops](../milestones/mvp1-nuke-ops.md) M0, and a separate-client multiplayer check is the last open item before archiving. Map: [construction](systems/construction.md). Grilled with the owner on 2026-11-09, after the gameplay grill that revised [construction.md](../design/construction.md). Serves [mvp1-nuke-ops.md](../milestones/mvp1-nuke-ops.md) M10, and S2 closes M8's "an engineer seals a hull hole". Takes over [station structural damage](../plans/station_structural_damage.plan.md) Phase 6 (repair). S1–S5 compiled and hand-tested once (2026-11-09); the second hand test (2026-11-11) revised placement into interactions (D14–D16), see S7.
 
 # Construction for MVP1: floors, hull, walls, windows (Nov 2026)
 
@@ -124,10 +124,10 @@ What the first Editor session needs to know; fold into the system maps with `upd
 
 ### S6: test station and acceptance
 
-- [ ] M0 test station: supply network to its vents and an air alarm per breach-prone room; engineering closet with sheets, glass and floor tiles; Engineer loadout with welder, crowbar and stacks (lands with M0's Engineer)
+- Moved to M0 (owner, 2026-11-11): supply network and air alarms on the test station, engineering closet, Engineer loadout
 - [x] Scenario `scenarios:Construction` (`ConstructionScenarios`, test room): weld cracked plating and retile; patch a hull hole cell by cell in magboots, the room holds its air; destroy a wall, clear wreckage, rebuild to sealed, the wall blocks air. The test room has no vents, so "pressure climbs back" waits for the M0 station's supply network
 - [ ] Separate-client multiplayer check: ghost, ring, cancel reasons, stage swaps and wreckage visible to a remote client
-- [ ] `update-system-docs`: tile, structural-destruction, interactions, inventory maps; M8/M10 slices
+- [x] `update-system-docs`: new [construction](systems/construction.md) map; tile, structural-destruction, interactions, inventory and entities maps; M8/M10 slices
 - Validation: `compile,editmode` + the new scenario + multiplayer smoke
 
 ### S7: second hand test (2026-11-11)
@@ -141,8 +141,8 @@ What the first Editor session needs to know; fold into the system maps with `upd
 - [x] Wood floors pried up to nothing (owner hand test 2026-11-11): `FloorTileWood` joins D17, and floors with no tile item (dirt, grass, carpet, reinforced, plating-look) are refused instead of vanishing (`ConstructionFloorTiles.NotPryable`)
 - [x] `ConstructionCoverageTests`: every floor tile is in `Kinds` or `NotPryable`, every tile item exists and stacks, and every plain wall tile is on the deconstruction ladder, reinforced, or in `ConstructionRecipes.NotDeconstructible`
 - [x] Wall work holds a looped clip for the whole step instead of the one-second door reach: `InteractionAnimation.WallWork`, Mixamo "Searching The Top Drawer Of A File Cabinet" frames 80–200, replicated as `BodyAnimationSnapshot.InteractWork` and held by the server like the kneel (`SetServerHold`). Each held loop has its own Animator bool (`Clip.HoldParameter`)
-- [ ] Owner visual check of the wall-work loop: the segment and the seam where it loops
-- [ ] Owner re-check in editor: floor tile install and the steel-sheet girder through the new interactions
+- [x] Owner visual check of the wall-work loop: rough but accepted as a stand-in; dedicated construction animations are a follow-up
+- [x] Owner re-check in editor: floor tile install and the steel-sheet girder through the new interactions
 - Validation: `compile,editmode` + `scenarios:Construction`
 
 ## Out of scope

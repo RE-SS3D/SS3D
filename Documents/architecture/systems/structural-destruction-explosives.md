@@ -41,7 +41,7 @@ Remote triggers, a proximity alert, other grenades and separate-client acceptanc
 ## Extension points
 
 - Run **SS3D → Structural Damage → Run Content Prefab Recipes** to rebuild content. It creates `C4`, `X4`, and `SyndicateMiniBomb` under `Assets/Content/WorldObjects/Items/Weapons/` and registers their item refs/Addressables.
-- The admin console can give any of them with `spawninhand <name>`. Map Editor uses the same registered items.
+- The admin console can give any of them with `spawn <name> hand`. Map Editor uses the same registered items.
 - New sound files belong under `Assets/Art/Sound/Items/Weapons/Explosive/SS14/`, with source/licence rows in Sound ATTRIBUTIONS. Registration lives in the recipe.
 
 ## Pitfalls

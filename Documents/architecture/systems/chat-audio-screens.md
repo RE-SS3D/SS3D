@@ -93,6 +93,7 @@ HUD feed yet.
 - **UITK:** do not combine `border-radius` + `overflow: hidden` on the same element.
 - **Occlusion:** shared `SS3D.Utils.LineOfSight` — no private raycast in `LocalSpeechListener`.
 - **`CameraFollow` ignores `enabled = false`:** Coimbra `LateUpdateEvent` needs `isActiveAndEnabled` early-out.
+- **Scroll zooms through UI panels:** zoom is the only action on the scroll wheel and fired under the console's scroll view. `CameraFollow.HandleZoom` returns while `InputInterface.IsPointerOverInterface()` is true (which also covers focused text fields).
 - **Follow the body in LateUpdate:** Coimbra does not order `UpdateEvent` listeners, and `CameraFollow` registers before the player spawns, so in Update it read the previous frame's body position and the owner's body jittered on screen with uneven frame times (noticed while hosting). Keep `CameraFollow` on `LateUpdateEvent`, after all movement.
 - Radio/Announcement **head-chip** CSS is draft/preview only; live path is `CommsFeedView`.
 

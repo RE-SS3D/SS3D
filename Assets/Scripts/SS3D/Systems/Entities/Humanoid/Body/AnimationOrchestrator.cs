@@ -63,11 +63,8 @@ namespace SS3D.Systems.Entities.Humanoid
         /// <summary>Time.time until which a floor bend plays on the Base Layer (Upper Body held down).</summary>
         private float _interactFullBodyUntil = float.NegativeInfinity;
         private bool _hasInteractParameters;
-        /// <summary>The kneel loop is playing (replicated <see cref="BodyAnimationSnapshot.InteractKneel"/> while on foot).</summary>
-        private bool _kneeling;
-        /// <summary>The wall-work loop is playing (replicated <see cref="BodyAnimationSnapshot.InteractWork"/> while on foot).</summary>
-        private bool _working;
-        private bool _hasWorkParameter;
+        /// <summary>The kneel or wall-work loop is playing (replicated snapshot bits, honoured while on foot).</summary>
+        private bool _kneeling, _working, _hasWorkParameter;
         private bool _hasPistolHoldParameter;
         private bool _hasRangedVelXParameter;
         private float _pistolHold;
@@ -705,10 +702,9 @@ namespace SS3D.Systems.Entities.Humanoid
             _animator.SetInteger(Animations.Humanoid.ArmHold, (int)snapshot.ArmHold);
             _animator.SetBool(Animations.Humanoid.IsSeated, snapshot.IsSeated);
             _animator.SetBool(Animations.Humanoid.MirrorUpperBody, snapshot.MirrorUpperBody);
-            _kneeling = snapshot.InteractKneel && snapshot.State == BodyState.Locomotion
-                && !snapshot.IsFloating && !snapshot.IsCrawling;
-            _working = snapshot.InteractWork && snapshot.State == BodyState.Locomotion
-                && !snapshot.IsFloating && !snapshot.IsCrawling && _hasWorkParameter;
+            bool onFoot = snapshot.State == BodyState.Locomotion && !snapshot.IsFloating && !snapshot.IsCrawling;
+            _kneeling = snapshot.InteractKneel && onFoot;
+            _working = snapshot.InteractWork && onFoot && _hasWorkParameter;
             if (_hasInteractParameters)
             {
                 _animator.SetBool(Animations.Humanoid.InteractKneel, _kneeling);
@@ -881,6 +877,9 @@ namespace SS3D.Systems.Entities.Humanoid
 
             OnTriggerFired?.Invoke(trigger);
         }
+
+        /// <summary>Owner: the server refused the one-shot this client predicted, so don't skip the next echo.</summary>
+        public void DropOwnerPrediction() => _ownerPredictedAttack = false;
 
         public void FireLocalTrigger(AnimationTriggerId trigger)
         {

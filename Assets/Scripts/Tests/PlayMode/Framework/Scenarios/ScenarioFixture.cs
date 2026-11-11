@@ -120,6 +120,12 @@ namespace SS3D.Tests
                 yield break;
             }
 
+            if (InstanceFinder.ServerManager == null || !InstanceFinder.ServerManager.Started)
+            {
+                _roomReady = false; // the scenario ended the session (e.g. left to the main menu); boot again next time
+                yield break;
+            }
+
             Debug.Log($"[Scenario] {TestContext.CurrentContext.Test.Name} took {_scenarioClock.Elapsed.TotalSeconds:F1}s");
             DespawnScenarioObjects();
             if (ChecksRoomAir && !ChangesRoom && ScenarioAtmos.CheckUnchanged(TestContext.CurrentContext.Test.Name))
@@ -228,7 +234,7 @@ namespace SS3D.Tests
 
         /// <summary>Fully heals the host's body through the <c>heal</c> console command.</summary>
         protected IEnumerator HealFully() =>
-            Console.Expect($"heal {ServerHelpers.LocalCkey} all 999 999", "Player fully healed");
+            Console.Expect($"heal {ServerHelpers.LocalCkey}", "Player fully healed");
 
         /// <summary>Deletes whatever the body holds; the job loadout fills a hand (Security's toolbox).</summary>
         protected static void EmptyHands(Entity body)

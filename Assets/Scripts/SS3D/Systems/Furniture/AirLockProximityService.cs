@@ -39,8 +39,8 @@ namespace SS3D.Systems.Furniture
             }
         }
 
-        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
-        private static void EnsureExists()
+        /// <summary>Called by <c>SystemsBootstrap</c> at cold start; <see cref="Instance"/> also creates it on first use.</summary>
+        public static void EnsureExists()
         {
             if (_instance != null)
                 return;

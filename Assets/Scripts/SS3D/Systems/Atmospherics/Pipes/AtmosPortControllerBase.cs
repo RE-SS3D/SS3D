@@ -81,7 +81,7 @@ namespace SS3D.Systems.Atmospherics.Pipes
         {
             base.OnStartServer();
             Initialize();
-            SubSystems.Get<AtmosSubSystem>()?.RegisterPort(this);
+            SubSystems.GetOrNull<AtmosSubSystem>()?.RegisterPort(this);
             RefreshAnimatorAuthorityState();
         }
 

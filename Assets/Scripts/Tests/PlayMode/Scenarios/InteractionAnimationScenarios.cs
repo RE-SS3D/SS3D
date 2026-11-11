@@ -54,6 +54,40 @@ namespace SS3D.Tests
             wrench.Delete();
         }
 
+        // Playtest bug "Item miniatures": the height morph scales the armature the hands sit under, and
+        // each pickup and drop multiplied the item by that scale, so a short holder shrank it a bit more
+        // every time.
+        [UnityTest]
+        public IEnumerator PickupAndDrop_KeepTheItemsSize_ForAShortHolder()
+        {
+            PlaceBody();
+            Hand hand = Body.GetComponent<Hands>().SelectedHand;
+            Transform armature = Body.GetComponent<HumanoidRigReferences>().ArmatureRoot;
+            Vector3 bodyScale = armature.localScale;
+            Item wrench = SubSystems.Get<ItemSubSystem>().SpawnItem(Wrench, Body.transform.position, Quaternion.identity);
+            Vector3 ownScale = wrench.transform.lossyScale;
+
+            try
+            {
+                armature.localScale = Vector3.one * 0.88f; // the shortest the height slider makes a body
+                for (int i = 0; i < 5; i++)
+                {
+                    Assert.IsTrue(hand.Container.AddItem(wrench), "The wrench goes in the active hand");
+                    yield return null;
+                    hand.Container.RemoveItem(wrench);
+                    yield return null;
+                }
+
+                Assert.That(Vector3.Distance(wrench.transform.lossyScale, ownScale), Is.LessThan(1e-3f),
+                    $"The dropped wrench keeps its own size ({ownScale}), not {wrench.transform.lossyScale}");
+            }
+            finally
+            {
+                armature.localScale = bodyScale;
+                wrench.Delete();
+            }
+        }
+
         [UnityTest]
         public IEnumerator KnockdownBeforeContact_LeavesTheItemOnTheFloor()
         {

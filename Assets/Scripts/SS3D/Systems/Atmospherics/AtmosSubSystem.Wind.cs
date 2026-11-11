@@ -1,3 +1,4 @@
+using SS3D.Core;
 using SS3D.Systems.Entities.Humanoid;
 
 namespace SS3D.Systems.Atmospherics
@@ -20,7 +21,7 @@ namespace SS3D.Systems.Atmospherics
 
         private void FixedUpdate()
         {
-            if (!SimulationPaused) LooseBodies?.ApplyForces();
+            if (!SimulationPaused && !WorldSimSuspension.IsSuspended) LooseBodies?.ApplyForces();
         }
     }
 }

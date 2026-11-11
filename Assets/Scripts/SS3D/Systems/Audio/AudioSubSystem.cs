@@ -308,16 +308,34 @@ namespace SS3D.Systems.Audio
             /// </summary>
             public void PurgeUnusedAudioSources()
             {
-                foreach (AudioSource source in List)
-                {
-                    //Check that the audio source is idle, and we have more than our minimum number.
-                    if (source == null || (!source.isPlaying && List.Count > MinAudioSources))
-                    {
-                        List.Remove(source);
-                        source?.gameObject.Dispose(true);
-                    }
-                }
+                PurgeIdleAudioSources(List, MinAudioSources);
             }
+        }
+
+        /// <summary>
+        /// Removes destroyed sources from <paramref name="sources"/>, then destroys idle ones until only
+        /// <paramref name="minSources"/> are left. Playing sources are always kept.
+        /// </summary>
+        /// <returns>How many entries were removed.</returns>
+        public static int PurgeIdleAudioSources(List<AudioSource> sources, int minSources)
+        {
+            int removed = sources.RemoveAll(source => source == null);
+
+            // Backwards, so removing an entry doesn't skip the next one.
+            for (int i = sources.Count - 1; i >= 0 && sources.Count > minSources; i--)
+            {
+                AudioSource source = sources[i];
+                if (source.isPlaying)
+                {
+                    continue;
+                }
+
+                sources.RemoveAt(i);
+                source.gameObject.Dispose(true);
+                removed++;
+            }
+
+            return removed;
         }
 
 #if UNITY_EDITOR

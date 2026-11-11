@@ -68,6 +68,63 @@ namespace AssetAudit
         }
 
         /// <summary>
+        /// The hand holds an item by its attachment point, so a point off the item's mesh makes it hang beside or
+        /// below the hand. Item prefabs copied from a bigger item keep the template's point (the emergency oxygen
+        /// tank held 0.3 m below the hand on the full tank's point until 2026-11).
+        /// </summary>
+        [Test, TestCaseSource(nameof(AllPrefabs))]
+        public void ItemAttachmentPointsSitOnTheItem(GameObject prefab)
+        {
+            // Body parts are items too, but their points are body sockets, not grips.
+            Item item = prefab.GetComponent<Item>();
+            if (item == null || !AssetDatabase.GetAssetPath(prefab).StartsWith("Assets/Content/WorldObjects/Items/"))
+            {
+                return;
+            }
+
+            Bounds? meshBounds = null;
+            foreach (MeshFilter filter in prefab.GetComponentsInChildren<MeshFilter>(true))
+            {
+                if (filter.sharedMesh == null)
+                {
+                    continue;
+                }
+
+                Bounds local = filter.sharedMesh.bounds;
+                Bounds inRoot = new(prefab.transform.InverseTransformPoint(filter.transform.TransformPoint(local.center)),
+                    Vector3.Scale(local.size, filter.transform.lossyScale));
+                if (meshBounds is Bounds sofar)
+                {
+                    sofar.Encapsulate(inRoot);
+                    meshBounds = sofar;
+                }
+                else
+                {
+                    meshBounds = inRoot;
+                }
+            }
+
+            if (meshBounds is not Bounds bounds)
+            {
+                return;
+            }
+
+            // A little slack: some grips sit just off a handle or a strap.
+            bounds.Expand(0.1f);
+            foreach (Transform point in new[] { item.AttachmentPoint, item.AttachmentPointAlt })
+            {
+                if (point == null)
+                {
+                    continue;
+                }
+
+                Vector3 local = prefab.transform.InverseTransformPoint(point.position);
+                Assert.IsTrue(bounds.Contains(local),
+                    $"{prefab.name}: attachment point '{point.name}' at {local:F3} is off the item's mesh ({bounds.min:F2} to {bounds.max:F2})");
+            }
+        }
+
+        /// <summary>
         /// These pieces start as copies of plain clothing, so the recipe must replace the template's root mesh and examine key.
         /// </summary>
         [TestCase("SyndicateHardsuit")]

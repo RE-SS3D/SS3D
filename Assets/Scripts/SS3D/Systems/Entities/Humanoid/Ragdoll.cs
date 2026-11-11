@@ -26,8 +26,6 @@ namespace SS3D.Systems.Entities.Humanoid
         private Animator _animator; 
         private NetworkAnimator _networkAnimator; 
         private bool _networkAnimatorInitiallyEnabled;
-        private HumanoidPredictedMovement _predictedMovement;
-        private bool _predictedMovementInitiallyEnabled;
         private HumanoidLivingController _humanoidLivingController; 
         private CharacterController _characterController; 
         private Transform[] _ragdollParts;
@@ -224,7 +222,7 @@ namespace SS3D.Systems.Entities.Humanoid
                 _knockdownTimer -= Time.deltaTime;
                 if (_knockdownTimer <= 0 && (!_windKnockdown || HasFloorSupport()))
                 {
-                    // Must call ServerRecover — Recover() is a ServerRpc and is a no-op from server.
+                    // Server-side recovery: ServerRecover is the only way up.
                     ServerRecover();
                 }
             }
@@ -333,21 +331,12 @@ namespace SS3D.Systems.Entities.Humanoid
 
         /// <summary>
         /// Knockdown that does not expire until Recover(). Safe to call from server code
-        /// (admin). Prefer this over the ServerRpc from server authority paths.
+        /// (admin). Clients can't request a knockdown (networking §2).
         /// </summary>
         [Server]
         public void ServerKnockdownTimeless()
         {
             ServerSetPresentation(BodyPresentationState.Collapsed);
-        }
-
-        /// <summary>
-        /// Client-owned request for timeless knockdown.
-        /// </summary>
-        [ServerRpc(RequireOwnership = false)]
-        public void KnockdownTimeless()
-        {
-            ServerKnockdownTimeless();
         }
 
         /// <summary>
@@ -376,15 +365,6 @@ namespace SS3D.Systems.Entities.Humanoid
             }
         }
 
-        /// <summary>
-        /// Client-owned request for timed knockdown.
-        /// </summary>
-        [ServerRpc(RequireOwnership = false)]
-        public void Knockdown(float seconds)
-        {
-            ServerKnockdown(seconds);
-        }
-
         private void EnsureAnimatorCached()
         {
             if (_animator == null)
@@ -406,12 +386,6 @@ namespace SS3D.Systems.Entities.Humanoid
             {
                 _networkAnimator = GetComponent<NetworkAnimator>();
                 _networkAnimatorInitiallyEnabled = _networkAnimator != null && _networkAnimator.enabled;
-            }
-
-            if (_predictedMovement == null)
-            {
-                _predictedMovement = GetComponent<HumanoidPredictedMovement>();
-                _predictedMovementInitiallyEnabled = _predictedMovement != null && _predictedMovement.enabled;
             }
         }
 
@@ -813,12 +787,6 @@ namespace SS3D.Systems.Entities.Humanoid
         {
             ServerSetPresentation(BodyPresentationState.Locomotion);
         }
-
-        [ServerRpc(RequireOwnership = false)]
-        public void Recover()
-        {
-            ServerRecover();
-        }
         
 		/// <summary>
 		/// Switch isKinematic for each ragdoll part
@@ -847,13 +815,6 @@ namespace SS3D.Systems.Entities.Humanoid
                 // Non-owners must keep CC off so NetworkTransform can drive the server transform.
                 // Enabling CC on remotes leaves them stuck at spawn for proximity (doors, etc.).
                 _characterController.enabled = enable && IsOwner;
-            }
-
-            // Human.prefab ships this off. Turning it on at recovery has the server replay a remote
-            // owner's inputs against a controller that is off there, logging an error every tick.
-            if (_predictedMovement != null)
-            {
-                _predictedMovement.enabled = enable && _predictedMovementInitiallyEnabled;
             }
         }
         private void ToggleAnimator(bool enable)

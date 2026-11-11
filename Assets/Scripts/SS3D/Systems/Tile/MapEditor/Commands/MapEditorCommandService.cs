@@ -58,6 +58,11 @@ namespace SS3D.Systems.Tile.MapEditor.Commands
 
             _context.PlacementMode = _placementMode;
             command.Apply(_context);
+
+            // An edit that changed nothing (a blocked place, an empty clear) is not an undo step.
+            if (command is IReportsChange { Changed: false })
+                return false;
+
             _undoStack.Push(command, owner);
             return true;
         }

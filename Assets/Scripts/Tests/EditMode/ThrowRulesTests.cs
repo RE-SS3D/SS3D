@@ -53,6 +53,28 @@ namespace SS3D.Tests.EditMode
             Assert.AreEqual(0f, landing.y, 0.001f);
         }
 
+        [Test]
+        public void TargetFarAboveOrBelow_HeightIsClamped()
+        {
+            Vector3 feet = new(0f, 0f, 0f);
+            Vector3 landing = ThrowRules.ClampToRange(feet, new Vector3(1f, 500f, 1f), 10f, out bool clamped);
+            Assert.IsTrue(clamped);
+            Assert.AreEqual(ThrowRules.MaxTargetHeightOffset, landing.y, 0.001f);
+
+            landing = ThrowRules.ClampToRange(feet, new Vector3(1f, -500f, 1f), 10f, out clamped);
+            Assert.IsTrue(clamped);
+            Assert.AreEqual(-ThrowRules.MaxTargetHeightOffset, landing.y, 0.001f);
+        }
+
+        [Test]
+        public void NonFiniteTarget_LandsAtTheFeet()
+        {
+            Vector3 feet = new(2f, 0f, 3f);
+            Vector3 landing = ThrowRules.ClampToRange(feet, new Vector3(float.NaN, 0f, 1f), 10f, out bool clamped);
+            Assert.IsTrue(clamped);
+            Assert.AreEqual(feet, landing);
+        }
+
         [TestCase(1f, 0f)]
         [TestCase(6f, -0.6f)]
         [TestCase(10f, 1.2f)]

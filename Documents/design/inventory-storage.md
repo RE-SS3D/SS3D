@@ -60,6 +60,8 @@ This is what main HUD §13 left out.
 
 **Opening a second container opens a second panel alongside the first**, not a replacement — this is what actually makes looting and transferring work. Rummaging a locker while your own backpack is open shows both panels side by side; dragging an item from one panel to the other moves it, the same way dragging onto a hand or a gear-strip icon does (`main-hud.md` §8). No hard cap on panels open at once, but in practice most interactions only ever need two.
 
+**Click to take, click to put, hold to drag.** A plain click on an item in a panel takes it into the active hand, if that hand is empty. With something held, a click on an empty slot puts the held item there, if it fits. Anything else does nothing: a click with a full hand never swaps. This is what a click on a HUD slot already does. Pressing and moving the pointer is a drag, as above. A double-click on a container item opens it (§7); its single click waits a moment for that second click before taking it.
+
 **Closes when not in use.** No panel is ever pinned open — walking away from a world container, or unequipping your own worn one, closes its panel, consistent with main HUD's minimal-permanent-chrome rule (§1 rule 3). Your own equipped containers reopen instantly from the gear strip at any time; closing never means losing access.
 
 ## 7. Nested containers
@@ -68,10 +70,12 @@ Full recursive nesting: a box can sit inside a backpack, and another box can sit
 
 - **Weight is always the true total.** A backpack's weight is its own empty weight plus everything inside it, however deeply nested.
 - **Capacity is per-container, not shared down the chain.** A backpack with 6 slots and a box with 4 slots inside it still only costs the backpack one slot — the box itself. The box's own 4 slots are separate capacity, not borrowed from the backpack. This is what makes nesting a real packing strategy instead of a no-op.
-- **Opening is sequential, not X-ray.** Opening a backpack shows a nested box as a single icon; you have to open the box (another panel alongside, per §6) to see what's inside it. No panel ever shows contents more than one level deep at once — keeps §6's UI legible instead of becoming a nested tree view.
+- **Opening is sequential, not X-ray.** Opening a backpack shows a nested box as a single icon; you have to open the box (double-click it, and another panel opens alongside, per §6) to see what's inside it. No panel ever shows contents more than one level deep at once — keeps §6's UI legible instead of becoming a nested tree view.
 - **Locking is independent of depth.** A locked evidence box can nest inside an unlocked bag and vice versa — the lock is a per-container property (§8), not inherited or required up or down the chain.
 
 **Fit still gates by size and slots**, same as anywhere else (§4): a box goes into a bag only if the box's own size class fits. Its contents' weight adds to what the carrier hauls (§10), not to whether it fits.
+
+**A storage item only nests into a strictly larger storage item.** A toolbox (bulky) can hold a medkit (normal) but never another toolbox, and a medkit can't hold a medkit. Every step down the chain drops a size tier, so nesting stays a packing strategy and never becomes an endless toolbox-in-a-toolbox hoard. Hands, worn slots, and freestanding containers like lockers aren't storage items, so they take any storage item that fits (§4).
 
 ## 8. Locked storage
 

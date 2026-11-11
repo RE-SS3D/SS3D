@@ -33,7 +33,7 @@ namespace SS3D.Systems.Construction
     /// (weld, plate, pry) are ordinary interactions, see <see cref="ConstructionInteractions"/>.
     /// Lives on the NetworkSystemsHub (added by <c>ConstructionHubRecipe</c>).
     /// </summary>
-    public sealed partial class ConstructionPlacementSubSystem : NetworkSubSystem
+    public sealed partial class ConstructionPlacementSubSystem : NetworkSubSystem, IWorldClickHandler
     {
         private const float CheckInterval = 0.2f;
         private const float GhostLift = 0.02f;
@@ -97,16 +97,32 @@ namespace SS3D.Systems.Construction
             base.OnStopServer();
         }
 
+        public override void OnStartClient()
+        {
+            base.OnStartClient();
+            InteractionController.WorldClickHandler = this;
+        }
+
         public override void OnStopClient()
         {
             HideGhost();
+            ReleaseClickHandler();
             base.OnStopClient();
         }
 
         protected override void OnDestroyed()
         {
             HideGhost();
+            ReleaseClickHandler();
             base.OnDestroyed();
+        }
+
+        private void ReleaseClickHandler()
+        {
+            if (ReferenceEquals(InteractionController.WorldClickHandler, this))
+            {
+                InteractionController.WorldClickHandler = null;
+            }
         }
 
         private void Update()

@@ -15,18 +15,18 @@ A 3D Space Station 13. Every gate names the [vision](../design/vision.md) pillar
 
 **Gameplay** — [mvp1-nuke-ops.md](mvp1-nuke-ops.md), in this order:
 
-1. **Animation pass** — [humanoid-animation-pass](../architecture/2026-11_humanoid-animation-pass.md), serving M1c: get-up without a T-pose, a pistol stance, throwing any held item. M1m (responsive movement) shipped in [#138](https://github.com/henkhooft/SS3D/pull/138); dragging moved to the feel pass
+1. ~~**Animation pass**~~ — shipped: [humanoid-animation-pass](../architecture/2026-11_humanoid-animation-pass.md) (get-up, pistol stance, throwing, interaction animations). M1m (responsive movement) shipped in [#138](https://github.com/henkhooft/SS3D/pull/138); dragging moved to the feel pass
 2. **M0** — in-house test station; Captain, Security, Engineer, Doctor, Assistant with loadouts and access; ops suit identity
 3. **M1c** — combat core: C20R, Stechkin, security pistol, M4, stun baton; physical magazines; C4/X4 and minibomb (implemented; multiplayer acceptance pending); sounds; no debug chrome
 4. **M3** — nuke loop (thin) with floor and furniture damage
 5. **M8 + M9 (thin)** — vacuum kills, suit seal and internals protect, engineers patch hull holes; APC lights matter (M9 partial: breakable APCs, fixture emergency cells and breakable bulbs in [#202](https://github.com/henkhooft/SS3D/pull/202); needs the M0 station's APCs and lights and a remote-client check)
-6. **M10 (thin)** — construction: engineers repair and rebuild floors, walls and windows; the crew can barricade ([construction.md](../design/construction.md))
+6. **M10 (thin)** — construction: engineers repair and rebuild floors, walls and windows; the crew can barricade ([construction.md](../design/construction.md)). Implemented in [construction-mvp1](../architecture/2026-11_construction-mvp1.md); a separate-client check remains, and "a patched room refills" waits on M0's supply network
 
 M4 (win/lose) and M5 (end screen, restart) shipped: [round-end loop](../archive/architecture/2026-11_round-end-loop.md), [#131](https://github.com/henkhooft/SS3D/pull/131)–[#137](https://github.com/henkhooft/SS3D/pull/137).
 
 **Enabler** — [test-server.md](test-server.md), serves Playtest 1:
 
-- **T3** — exit line: doors for remote clients; admin force-end and teleport disk; Nuke Ops smoke green nightly; 8 clients through a breach without hitching
+- **T3** — exit line: doors for remote clients (admin force-end and disk teleport shipped as `round end` and `disk`); Nuke Ops smoke green nightly; 8 clients through a breach without hitching
 - **T8** — 24/7 Nuke Ops server, separate from the sandbox; Extended below 4 ready players. Announcing it publicly closes the gate (T5)
 
 **Maintenance** — [map-authoring.md](map-authoring.md): A8 palette layout (S1–S3 done; S4 layer groups next); triage tester reports. A6 (a tester-built station) is off the critical path.

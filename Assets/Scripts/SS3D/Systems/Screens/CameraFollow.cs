@@ -178,6 +178,12 @@ namespace SS3D.Systems.Screens
         
         private void HandleZoom(InputAction.CallbackContext context) 
         {
+           // Scrolling a UI panel (console, chat, inventory) scrolls the panel, not the camera.
+           if (InputInterface.IsPointerOverInterface())
+           {
+               return;
+           }
+
            _cameraDistance = Mathf.Clamp(_cameraDistance - context.ReadValue<float>() * _zoomSpeedMultiplier, MinDistance, MaxDistance);
         }
         

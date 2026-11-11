@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using NUnit.Framework;
 using SS3D.Systems.Construction;
+using SS3D.Systems.Examine;
 using SS3D.Systems.StructuralDamage;
 using SS3D.Systems.Tile;
 using UnityEngine;
@@ -101,7 +102,7 @@ namespace EditorTests
             PlacedTileObject wall = Wall(context, new Vector3(2, 0, 2));
             wall.ServerSetIntegrity(70f, StructuralIntegrityStage.Damaged);
             Assert.True(ConstructionExamineText.TryGetNextStep(wall, out string key, out _));
-            Assert.AreEqual(SS3D.Systems.Examine.ExamineConstructionKeys.RepairWelder, key);
+            Assert.AreEqual(ExamineConstructionKeys.RepairWelder, key);
         }
     }
 }

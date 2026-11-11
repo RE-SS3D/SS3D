@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using SS3D.Localization;
-using SS3D.Systems.Construction;
 using SS3D.Systems.Tile;
 
 namespace SS3D.Systems.Examine

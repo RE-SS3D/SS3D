@@ -142,10 +142,9 @@ namespace SS3D.Systems.Entities.Humanoid
         {
             base.OnDisabled();
 
-            if (IsOwner)
-            {
-                UnsubscribeFromInput();
-            }
+            // Not gated on IsOwner: ownership is already gone when a session ends and the body is torn down,
+            // which leaked the Gameplay input context into the main menu.
+            UnsubscribeFromInput();
 
             TargetMovement = Vector3.zero;
         }
@@ -558,15 +557,6 @@ namespace SS3D.Systems.Entities.Humanoid
             }
 
             return true;
-        }
-
-        /// <summary>
-        /// Used by <see cref="HumanoidPredictedMovement"/> when it owns locomotion ticks.
-        /// </summary>
-        public void PublishPredictedLocomotionVelocity(float velX, float velZ, float turn = 0f)
-        {
-            OnLocomotionVelocityChanged?.Invoke(velX, velZ, turn);
-            OnSpeedChanged(new Vector2(velX, velZ).magnitude);
         }
 
         protected virtual float FilterSpeed()

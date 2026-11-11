@@ -11,11 +11,11 @@ using SS3D.Interactions.Extensions;
 using SS3D.Interactions.Interfaces;
 using SS3D.Logging;
 using SS3D.Systems.Inputs;
+using SS3D.Systems.Entities;
 using SS3D.Systems.Entities.Humanoid;
 using SS3D.Systems.Examine;
 using SS3D.Systems.Entities.Humanoid.Body;
 using SS3D.Systems.Combat;
-using SS3D.Systems.Construction;
 using SS3D.Systems.Screens;
 using SS3D.Systems.Selection;
 using SS3D.Systems.Inventory.Containers;
@@ -53,6 +53,8 @@ namespace SS3D.Systems.Interactions
 
         private CombatInteractionNetwork _combatNetwork;
 
+        private bool _armedEvaluatorSubscribed;
+
         private readonly InteractionOutlineDriver _outlineDriver = new();
         private readonly DelayedInteractionTracker _delayedTracker = new();
 
@@ -79,6 +81,9 @@ namespace SS3D.Systems.Interactions
         /// <summary>Owner: the hovered target has its own interaction for the held item (its outline is Available).</summary>
         public bool HoveredTargetHasInteraction => _outlineDriver.HoveredHasInteraction;
 
+        /// <summary>Client: asked for the primary click and the Cancel key before target interactions (construction ghost).</summary>
+        public static IWorldClickHandler WorldClickHandler { get; set; }
+
         public override void OnOwnershipClient(NetworkConnection prevOwner)
         {
             base.OnOwnershipClient(prevOwner);
@@ -87,7 +92,6 @@ namespace SS3D.Systems.Interactions
             {
                 Local = this;
                 SubscribeToInput();
-                _armedSystem.EvaluateTarget += EvaluateArmedTarget;
             }
             else if (prevOwner.Equals(LocalConnection))
             {
@@ -97,7 +101,6 @@ namespace SS3D.Systems.Interactions
                 }
 
                 UnsubscribeFromInput();
-                _armedSystem.EvaluateTarget -= EvaluateArmedTarget;
             }
         }
 
@@ -117,7 +120,7 @@ namespace SS3D.Systems.Interactions
             _armedSystem = SubSystems.Get<ArmedInteractionSubSystem>();
             _selectionSystem = SubSystems.Get<SelectionSubSystem>();
 
-            Actor playerCamera = SubSystems.Get<CameraSubSystem>()?.PlayerCamera;
+            Actor playerCamera = SubSystems.GetOrNull<CameraSubSystem>()?.PlayerCamera;
             if (playerCamera != null)
             {
                 _camera = playerCamera.GetComponent<Camera>();
@@ -180,14 +183,22 @@ namespace SS3D.Systems.Interactions
 
             if (IsOwner)
             {
-                UnsubscribeFromInput();
                 _outlineDriver.Clear();
-                _armedSystem.EvaluateTarget -= EvaluateArmedTarget;
             }
+
+            // Not gated on IsOwner: when the session ends, ownership is already gone by the time the body is
+            // torn down, but the input actions outlive it and would keep calling into the destroyed controller.
+            UnsubscribeFromInput();
         }
 
         private void SubscribeToInput()
         {
+            if (!_armedEvaluatorSubscribed && _armedSystem != null)
+            {
+                _armedSystem.EvaluateTarget += EvaluateArmedTarget;
+                _armedEvaluatorSubscribed = true;
+            }
+
             // OnEnabled and OnOwnershipClient can both fire for an owner; subscribe exactly once.
             if (_gameplayHandle != null)
             {
@@ -203,6 +214,16 @@ namespace SS3D.Systems.Interactions
 
         private void UnsubscribeFromInput()
         {
+            if (_armedEvaluatorSubscribed)
+            {
+                if (_armedSystem != null)
+                {
+                    _armedSystem.EvaluateTarget -= EvaluateArmedTarget;
+                }
+
+                _armedEvaluatorSubscribed = false;
+            }
+
             _controls.RunPrimary.performed -= HandleRunPrimary;
             _controls.ViewInteractions.performed -= HandleView;
             _cancelInteractionAction.performed -= HandleCancelInteraction;
@@ -224,7 +245,7 @@ namespace SS3D.Systems.Interactions
         [Client]
         private void HandleCancelInteraction(InputAction.CallbackContext callbackContext)
         {
-            if (SubSystems.TryGet(out ConstructionPlacementSubSystem construction) && construction.TryCancelLocal())
+            if (WorldClickHandler != null && WorldClickHandler.TryCancelLocal())
             {
                 return;
             }
@@ -288,7 +309,7 @@ namespace SS3D.Systems.Interactions
 
             // A visible construction ghost takes the click. It hides itself while the hovered target has its
             // own interaction for the held item, so what the ghost shows is what the click does.
-            if (SubSystems.TryGet(out ConstructionPlacementSubSystem construction) && construction.TryHandlePrimaryClick())
+            if (WorldClickHandler != null && WorldClickHandler.TryHandlePrimaryClick())
             {
                 return;
             }
@@ -317,7 +338,7 @@ namespace SS3D.Systems.Interactions
 
             InteractionOptimisticFeedback.TryBeginDelayed(interaction.Interaction, interactionEvent);
             InteractionOutlineView.TryBeginPending(interaction.Interaction, interactionEvent);
-            CmdRunInteraction(networkTarget, interactionEvent.Point, interaction.Id.GenericName, interaction.Id.TargetComponentIndex);
+            SendRunInteraction(networkTarget, interactionEvent.Point, interaction.Id.GenericName, interaction.Id.TargetComponentIndex);
         }
 
         /// <summary>
@@ -383,7 +404,7 @@ namespace SS3D.Systems.Interactions
 
             InteractionOptimisticFeedback.TryBeginDelayed(searchEntry.Interaction, interactionEvent);
             InteractionOutlineView.TryBeginPending(searchEntry.Interaction, interactionEvent);
-            CmdRunInteraction(networkTarget, interactionEvent.Point, searchEntry.Id.GenericName, searchEntry.Id.TargetComponentIndex);
+            SendRunInteraction(networkTarget, interactionEvent.Point, searchEntry.Id.GenericName, searchEntry.Id.TargetComponentIndex);
             return true;
         }
 
@@ -658,7 +679,7 @@ namespace SS3D.Systems.Interactions
 
                 InteractionOptimisticFeedback.TryBeginDelayed(entry.Interaction, interactionEvent);
                 InteractionOutlineView.TryBeginPending(entry.Interaction, interactionEvent);
-                CmdRunInteraction(networkTarget, interactionEvent.Point, entry.Id.GenericName, entry.Id.TargetComponentIndex);
+                SendRunInteraction(networkTarget, interactionEvent.Point, entry.Id.GenericName, entry.Id.TargetComponentIndex);
             }
 
             _radialView.SetInteractions(interactions, interactionEvent, Mouse.current.position.ReadValue());
@@ -833,7 +854,7 @@ namespace SS3D.Systems.Interactions
             InteractionOptimisticFeedback.TryBeginDelayed(entry.Interaction, targetEvent);
             InteractionOutlineView.TryBeginPending(entry.Interaction, targetEvent);
             _armedSystem.Cancel();
-            CmdRunInteraction(networkTarget, targetEvent.Point, entry.Id.GenericName, entry.Id.TargetComponentIndex);
+            SendRunInteraction(networkTarget, targetEvent.Point, entry.Id.GenericName, entry.Id.TargetComponentIndex);
             return true;
         }
 
@@ -909,17 +930,36 @@ namespace SS3D.Systems.Interactions
                 return $"'{genericName}' dropped: a hand action is still in flight";
             }
 
-            CmdRunInteraction(networkTarget, point, entry.Id.GenericName, entry.Id.TargetComponentIndex);
+            SendRunInteraction(networkTarget, point, entry.Id.GenericName, entry.Id.TargetComponentIndex);
             return null;
         }
 #endif
 
+        /// <summary>Client: <see cref="CmdRunInteraction"/> with this client's eye, which the server only logs (P1.9).</summary>
+        [Client]
+        private void SendRunInteraction(NetworkObject target, Vector3 point, string genericName, int targetComponentIndex) =>
+            CmdRunInteraction(target, point, genericName, targetComponentIndex, EyePosition());
+
+        /// <summary>The body's eye on this peer: <see cref="Entity.ViewPoint"/>, else the root.</summary>
+        private Vector3 EyePosition()
+        {
+            Entity entity = GetComponent<Entity>();
+            return entity != null && entity.ViewPoint != null ? entity.ViewPoint.transform.position : transform.position;
+        }
+
         /// <summary>
         /// Runs an interaction (chosen on the client) on the server. For reasons of serialization and security, some code is re-run.
+        /// <paramref name="clientEye"/> is diagnostics only: the server never acts on it (tech-debt P1.9, #192).
         /// </summary>
         [ServerRpc]
-        private void CmdRunInteraction(NetworkObject target, Vector3 point, string genericName, int targetComponentIndex)
+        private void CmdRunInteraction(NetworkObject target, Vector3 point, string genericName, int targetComponentIndex, Vector3 clientEye)
         {
+            if (!RpcInput.IsInStation(point))
+            {
+                TargetRejectInteraction(Owner);
+                return;
+            }
+
             if (!TryValidateInteractionTarget(target, out GameObject targetGameObject))
             {
                 return;
@@ -930,9 +970,7 @@ namespace SS3D.Systems.Interactions
 
             if (!TryResolveDispatchedInteraction(viableInteractions, id, out InteractionEntry interaction))
             {
-                Log.Error(this, "Failed to resolve interaction {genericName} at target index {targetIndex} on {target}",
-                    Logs.Generic, genericName, targetComponentIndex, targetGameObject);
-
+                LogRevalidationFailure(targetGameObject, point, id, clientEye);
                 TargetRejectInteraction(Owner);
                 return;
             }
@@ -950,7 +988,10 @@ namespace SS3D.Systems.Interactions
             {
                 InteractionReference reference = interactionEvent.Source.Interact(interactionEvent, interaction.Interaction);
                 TrackActiveInteraction(interactionEvent.Source, reference, interaction.Interaction);
-                RpcExecuteClientInteraction(target, point, genericName, targetComponentIndex, reference.Id);
+                if (Owner.IsValid)
+                {
+                    TargetExecuteClientInteraction(Owner, target, point, genericName, targetComponentIndex, reference.Id);
+                }
             });
             if (!accepted)
             {
@@ -959,10 +1000,10 @@ namespace SS3D.Systems.Interactions
         }
 
         /// <summary>
-        /// Confirms an interaction issued by a client
+        /// Confirms an interaction issued by a client. Sent to the owner only.
         /// </summary>
-        [ObserversRpc(RunLocally = true)]
-        private void RpcExecuteClientInteraction(NetworkObject target, Vector3 point, string genericName, int targetComponentIndex, int referenceId)
+        [TargetRpc(RunLocally = true)]
+        private void TargetExecuteClientInteraction(NetworkConnection conn, NetworkObject target, Vector3 point, string genericName, int targetComponentIndex, int referenceId)
         {
             if (!IsOwner)
             {
@@ -1037,6 +1078,40 @@ namespace SS3D.Systems.Interactions
         /// falls back to generic name when the client hovered a child Selectable (body part) but the RPC
         /// revalidates against the parent NetworkObject root (different target-component indices).
         /// </summary>
+        /// <summary>
+        /// Server diagnostics for #192 (tech-debt P1.9 step 1): why the server's copy of the body refused an interaction
+        /// the client offered. Logs the failing check, and for Drop how far the eye's line of sight missed the clicked
+        /// point and how far the server's eye is from the client's. Changes nothing.
+        /// </summary>
+        [Server]
+        private void LogRevalidationFailure(GameObject targetGameObject, Vector3 point, InteractionIdentifier id, Vector3 clientEye)
+        {
+            InteractionPipeline.ViabilityFailure reason = InteractionPipeline.ViabilityFailure.NoSuchInteraction;
+            IInteractionSource source = GetActiveInteractionSource();
+            if (source != null)
+            {
+                List<IInteractionTarget> targets = InteractionDiscovery.GetTargetsFromGameObject(source, targetGameObject);
+                InteractionEvent interactionEvent = new(source, targets.Count > 0 ? targets[0] : null, point, Vector3.zero);
+                List<InteractionEntry> discovered = InteractionPipeline.Discover(source, targets, interactionEvent);
+                reason = InteractionPipeline.ExplainNotViable(source, discovered, interactionEvent, CurrentIntent, id);
+            }
+
+            Vector3 serverEye = EyePosition();
+            float eyeDelta = RpcInput.IsFinite(clientEye) ? Vector3.Distance(serverEye, clientEye) : -1f;
+            if (id.GenericName == "Drop")
+            {
+                Log.Warning(this,
+                    "Server refused {genericName} on {target}: {reason}. LOS miss {losMiss:F3} m (allowed {losTolerance} m), server/client eye delta {eyeDelta:F3} m",
+                    Logs.Generic, id.GenericName, targetGameObject, reason,
+                    DropInteraction.LineOfSightMiss(serverEye, point), DropInteraction.LineOfSightTolerance, eyeDelta);
+                return;
+            }
+
+            Log.Warning(this,
+                "Server refused {genericName} at target index {targetIndex} on {target}: {reason}. Server/client eye delta {eyeDelta:F3} m",
+                Logs.Generic, id.GenericName, id.TargetComponentIndex, targetGameObject, reason, eyeDelta);
+        }
+
         private static bool TryResolveDispatchedInteraction(
             List<InteractionEntry> viableInteractions,
             InteractionIdentifier id,
@@ -1168,7 +1243,10 @@ namespace SS3D.Systems.Interactions
                 TrackActiveInteraction(source, reference, chosenEntry.Interaction);
                 if (chosenEntry.Interaction is IClientInteractionSource)
                 {
-                    RpcExecuteClientInventoryInteraction(target, sourceObject, genericName, targetComponentIndex, reference.Id);
+                    if (Owner.IsValid)
+                    {
+                        TargetExecuteClientInventoryInteraction(Owner, target, sourceObject, genericName, targetComponentIndex, reference.Id);
+                    }
                 }
             });
             if (!accepted)
@@ -1184,8 +1262,8 @@ namespace SS3D.Systems.Interactions
         /// <param name="sourceObject"></param>
         /// <param name="interactionName"></param>
         /// <param name="referenceId"></param>
-        [ObserversRpc(RunLocally = true)]
-        private void RpcExecuteClientInventoryInteraction(GameObject target, GameObject sourceObject, string genericName, int targetComponentIndex, int referenceId)
+        [TargetRpc(RunLocally = true)]
+        private void TargetExecuteClientInventoryInteraction(NetworkConnection conn, GameObject target, GameObject sourceObject, string genericName, int targetComponentIndex, int referenceId)
         {
             if (!IsOwner)
             {

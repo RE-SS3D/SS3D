@@ -61,10 +61,18 @@ namespace SS3D.Systems.Inventory.Containers
             {
                 HumanHealthController health = GetComponentInParent<HumanHealthController>();
                 Ragdoll ragdoll = GetComponentInParent<Ragdoll>();
-                return (health == null || health.Snapshot.CanUseArms)
-                    && (ragdoll == null || !ragdoll.IsKnockedDown);
+                return CanUse(
+                    health == null || health.Snapshot.CanUseArms,
+                    ragdoll != null && ragdoll.IsKnockedDown,
+                    ragdoll != null && ragdoll.IsGettingUp);
             }
         }
+
+        /// <summary>
+        /// The hand rule: working arms, not knocked down, and not in the stand-up after a knockdown, which is the victim's
+        /// vulnerable window (combat §5; tech-debt P2.8). P4.1 replaces the several "can act" rules with one.
+        /// </summary>
+        public static bool CanUse(bool armsWork, bool knockedDown, bool gettingUp) => armsWork && !knockedDown && !gettingUp;
 
         /// <summary>
         /// The item held in this hand, if it exists

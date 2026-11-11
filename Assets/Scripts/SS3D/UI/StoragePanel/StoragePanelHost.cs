@@ -8,6 +8,7 @@ using SS3D.Systems.Inputs;
 using SS3D.Systems.Inventory.Containers;
 using SS3D.Systems.Inventory.Items;
 using SS3D.Systems.Screens;
+using SS3D.Systems.Tile.MapEditor;
 using SS3D.UI.MachineInterface;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -61,8 +62,12 @@ namespace SS3D.UI.StoragePanel
         private readonly Dictionary<AttachedContainer, string> _pendingBreadcrumbs = new();
         private readonly List<HudDropTarget> _hudDropTargets = new();
 
+        /// <summary>How long a click on a container item waits for a second click (open) before taking it.</summary>
+        private const long DoubleClickWindowMs = 300;
+
         private VisualElement _root;
         private HumanInventory _localInventory;
+        private IVisualElementScheduledItem _pendingContainerTake;
         private int _cascadeIndex;
 
         // Active drag state (panel slot and/or HUD-origin drag).
@@ -104,13 +109,15 @@ namespace SS3D.UI.StoragePanel
             base.OnStart();
             EnsureMachineUiSubscription();
             EnsureMenuSubscription();
+            EnsureMapEditorSubscription();
         }
 
         private void Update()
         {
-            // MI may bootstrap after this host — keep trying until subscribed (same as MainHudSubSystem).
+            // MI and the map editor may bootstrap after this host — keep trying until subscribed (same as MainHudSubSystem).
             EnsureMachineUiSubscription();
             EnsureMenuSubscription();
+            EnsureMapEditorSubscription();
         }
 
         protected override void OnDestroyed()
@@ -118,6 +125,7 @@ namespace SS3D.UI.StoragePanel
             SceneManager.sceneUnloaded -= HandleSceneUnloaded;
             UnsubscribeMachineUi();
             UnsubscribeMenu();
+            UnsubscribeMapEditor();
             InputInterface.UnregisterDocument(_document);
             base.OnDestroyed();
         }
@@ -232,6 +240,52 @@ namespace SS3D.UI.StoragePanel
             ApplyMachineUiVisibility();
         }
 
+        private MapEditorSubSystem _mapEditor;
+        private bool _mapEditorOpen;
+
+        /// <summary>
+        /// The map editor hides storage panels like the Main HUD does (tech-debt P2.7; P7.2 replaces both copies with one
+        /// visibility arbiter).
+        /// </summary>
+        private void EnsureMapEditorSubscription()
+        {
+            if (_mapEditor != null || !SubSystems.TryGet(out MapEditorSubSystem mapEditor))
+            {
+                return;
+            }
+
+            _mapEditor = mapEditor;
+            _mapEditor.EditorOpened += HandleMapEditorOpened;
+            _mapEditor.EditorClosed += HandleMapEditorClosed;
+            _mapEditorOpen = _mapEditor.IsActive;
+            ApplyMachineUiVisibility();
+        }
+
+        private void UnsubscribeMapEditor()
+        {
+            if (_mapEditor == null)
+            {
+                return;
+            }
+
+            _mapEditor.EditorOpened -= HandleMapEditorOpened;
+            _mapEditor.EditorClosed -= HandleMapEditorClosed;
+            _mapEditor = null;
+        }
+
+        private void HandleMapEditorOpened()
+        {
+            _mapEditorOpen = true;
+            CleanupDrag();
+            ApplyMachineUiVisibility();
+        }
+
+        private void HandleMapEditorClosed()
+        {
+            _mapEditorOpen = false;
+            ApplyMachineUiVisibility();
+        }
+
         private void EnsureMachineUiSubscription()
         {
             if (_subscribedToMachineUi)
@@ -279,8 +333,8 @@ namespace SS3D.UI.StoragePanel
         }
 
         /// <summary>
-        /// Hide open storage panels while machine UI is up (same suppress as Main HUD). Panels stay
-        /// bound and return when MI closes — do not tear them down here.
+        /// Hide open storage panels while machine UI, the Escape menu or the map editor is up (same suppress as Main HUD).
+        /// Panels stay bound and return when it closes — do not tear them down here.
         /// </summary>
         private void ApplyMachineUiVisibility()
         {
@@ -289,7 +343,7 @@ namespace SS3D.UI.StoragePanel
                 return;
             }
 
-            _root.style.display = _machineUiOpen || _menuOpen ? DisplayStyle.None : DisplayStyle.Flex;
+            _root.style.display = _machineUiOpen || _menuOpen || _mapEditorOpen ? DisplayStyle.None : DisplayStyle.Flex;
         }
 
         private ContainerViewer _boundViewer;
@@ -430,7 +484,7 @@ namespace SS3D.UI.StoragePanel
             view.SlotDragStarted += HandleSlotDragStarted;
             view.SlotDragMoved += HandleSlotDragMoved;
             view.SlotDragEnded += HandleSlotDragEnded;
-            view.SlotNestedOpenRequested += HandleSlotNestedOpenRequested;
+            view.SlotClicked += HandleSlotClicked;
             view.Bind(container);
 
             _root.Add(view);
@@ -449,6 +503,13 @@ namespace SS3D.UI.StoragePanel
             if (!_openPanels.TryGetValue(container, out StoragePanelView view))
             {
                 return;
+            }
+
+            // Closing the panel a drag started from takes the source slot and its pointer capture with it, so the
+            // release never arrives and the ghost would stay on screen until the next drag or focus loss.
+            if (ReferenceEquals(_dragSourcePanel, view))
+            {
+                CleanupDrag();
             }
 
             ((IContainerPanel)view).Close();
@@ -711,6 +772,53 @@ namespace SS3D.UI.StoragePanel
             }
 
             return false;
+        }
+
+        /// <summary>
+        /// A click on a panel slot does what a click on a HUD slot does: with the active hand empty it takes the
+        /// item, with something held it stores that item in an empty slot it fits, else nothing
+        /// (<see cref="HumanInventory.ClientInteractWithContainerSlot"/>). A double-click opens a container item as a
+        /// nested panel, so its single click waits out the double-click window before taking it
+        /// (Documents/design/inventory-storage.md §6, §7).
+        /// </summary>
+        private void HandleSlotClicked(StoragePanelView panel, StorageSlot slot, int clickCount)
+        {
+            _pendingContainerTake?.Pause();
+            _pendingContainerTake = null;
+
+            if (_localInventory == null || panel.Container == null)
+            {
+                return;
+            }
+
+            bool opensNested = slot.BoundItem != null && slot.BoundItem.GetComponent<AttachedContainer>() != null;
+            if (clickCount >= 2)
+            {
+                // Anything that isn't a container went to the hand on the first click; don't put it straight back.
+                if (opensNested)
+                {
+                    HandleSlotNestedOpenRequested(panel, slot);
+                }
+
+                return;
+            }
+
+            AttachedContainer container = panel.Container;
+            Vector2Int position = slot.Position;
+            if (!opensNested)
+            {
+                _localInventory.ClientInteractWithContainerSlot(container, position);
+                return;
+            }
+
+            _pendingContainerTake = _root.schedule.Execute(() =>
+            {
+                _pendingContainerTake = null;
+                if (_localInventory != null && container != null)
+                {
+                    _localInventory.ClientInteractWithContainerSlot(container, position);
+                }
+            }).StartingIn(DoubleClickWindowMs);
         }
 
         private void HandleSlotNestedOpenRequested(StoragePanelView panel, StorageSlot slot)

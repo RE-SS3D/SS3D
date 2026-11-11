@@ -13,7 +13,7 @@ namespace SS3D.Tests
         [UnityTest]
         public IEnumerator ReloadedRoom_HasStationAirAgain()
         {
-            yield return Console.Expect("atmosdebug gas carbondioxide 20", "Added 20.0 mol");
+            yield return Console.Expect("atmos gas carbondioxide 20", "Added 20.0 mol");
             float start = Time.time;
             while (ScenarioAtmos.Read().MaxCarbonDioxide <= 0.01f)
             {

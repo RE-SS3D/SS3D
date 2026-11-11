@@ -224,6 +224,51 @@ namespace SS3D.Interactions
             return TryEvaluateOutlineInteractability(source, targets, interactionEvent, intent, out hasViableInteractions);
         }
 
+        /// <summary>Why <see cref="ExplainNotViable"/> found a requested interaction not viable.</summary>
+        public enum ViabilityFailure
+        {
+            None,
+            NoSuchInteraction,
+            CannotInteract,
+            WrongIntent,
+            SourceRefused,
+        }
+
+        /// <summary>
+        /// Diagnostics (tech-debt P1.9, #192): which <see cref="FilterAndSort"/> check refuses the entry with
+        /// <paramref name="id"/> among the <paramref name="discovered"/> (unfiltered) entries. <see cref="ViabilityFailure.None"/>
+        /// when it would pass. Not for gameplay decisions.
+        /// </summary>
+        public static ViabilityFailure ExplainNotViable(
+            IInteractionSource source,
+            List<InteractionEntry> discovered,
+            InteractionEvent interactionEvent,
+            IntentType intent,
+            InteractionIdentifier id)
+        {
+            foreach (InteractionEntry entry in discovered)
+            {
+                if (entry.Id != id)
+                {
+                    continue;
+                }
+
+                if (!entry.Interaction.CanInteract(interactionEvent.WithTarget(entry.Target)))
+                {
+                    return ViabilityFailure.CannotInteract;
+                }
+
+                if (!MatchesIntent(entry.Interaction, intent))
+                {
+                    return ViabilityFailure.WrongIntent;
+                }
+
+                return source.CanExecuteInteraction(entry.Interaction) ? ViabilityFailure.None : ViabilityFailure.SourceRefused;
+            }
+
+            return ViabilityFailure.NoSuchInteraction;
+        }
+
         public static List<InteractionEntry> FilterAndSort(
             IInteractionSource source,
             List<InteractionEntry> entries,

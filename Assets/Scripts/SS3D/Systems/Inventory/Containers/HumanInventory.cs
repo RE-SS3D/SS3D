@@ -391,6 +391,9 @@ namespace SS3D.Systems.Inventory.Containers
         [ServerRpc]
         private void CmdPlaceItemInWorld(GameObject itemObject, Vector3 point, Vector3 surfaceNormal)
         {
+            if (!RpcInput.IsInStation(point) || !RpcInput.IsDirection(surfaceNormal))
+                return;
+
             if (Hands == null || Hands.SelectedHand == null || !Hands.SelectedHand.CanUseHand)
                 return;
 
@@ -537,7 +540,7 @@ namespace SS3D.Systems.Inventory.Containers
 
             if (container == null)
             {
-                Log.Error(this, $"Client sent invalid container reference: NetId {container.ObjectId}");
+                Log.Error(this, "Client sent a null or despawned container to transfer into");
                 return;
             }
 

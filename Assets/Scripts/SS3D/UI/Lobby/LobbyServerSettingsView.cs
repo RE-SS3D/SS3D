@@ -16,30 +16,41 @@ namespace SS3D.UI.Lobby
 
         public void SetStationLoadState(StationLoadState state, string stationName)
         {
+            bool changed = state != _stationLoadState;
             _stationLoadState = state;
             _stationName = stationName ?? "";
             if (_headerMapLabel != null) _headerMapLabel.text = string.IsNullOrEmpty(_stationName) ? "No map loaded" : _stationName;
             Label infoMap = _root?.Q<Label>("server-info-map");
             if (infoMap != null) infoMap.text = string.IsNullOrEmpty(_stationName) ? "No map loaded" : _stationName;
             UpdateStationIndicator(_stationLoadLabel);
+            // Edit Map Anyway shows only for an unplayable map.
+            if (changed) RefreshServerSettings();
             UpdateStationIndicator(_tabContent?.Q<Label>("server-map-load-status"));
         }
 
         private void UpdateStationIndicator(Label label)
         {
             if (label == null) return;
+            // The admin form's line under the map picker spells out why a map can't start; the round card stays short.
+            bool detailed = label.name == "server-map-load-status";
             label.text = _stationLoadState switch
             {
                 StationLoadState.Loading => $"Loading map: {_stationName}…",
                 StationLoadState.Initializing => $"Initializing station: {_stationName}…",
                 StationLoadState.Ready => $"Map ready: {_stationName}",
                 StationLoadState.Failed => "Map load failed — select a map and retry",
+                StationLoadState.Unplayable when detailed && !string.IsNullOrEmpty(_serverSettingsStatus) =>
+                    _serverSettingsStatus + "\nEdit Map Anyway starts an Extended round on it so you can fix it in the Map Editor.",
+                StationLoadState.Unplayable => $"{_stationName} can't start a round yet — see Server Settings",
                 _ => "No map loaded",
             };
             label.EnableInClassList("lobby-shell__map-load-status--loading",
                 _stationLoadState is StationLoadState.Loading or StationLoadState.Initializing);
             label.EnableInClassList("lobby-shell__map-load-status--ready", _stationLoadState == StationLoadState.Ready);
-            label.EnableInClassList("lobby-shell__map-load-status--failed", _stationLoadState == StationLoadState.Failed);
+            label.EnableInClassList("lobby-shell__map-load-status--failed",
+                _stationLoadState is StationLoadState.Failed or StationLoadState.Unplayable);
+            label.EnableInClassList("lobby-shell__map-load-status--detail",
+                detailed && _stationLoadState == StationLoadState.Unplayable);
         }
 
         private ServerSettings _serverSettings = ServerSettings.Default;
@@ -114,6 +125,8 @@ namespace SS3D.UI.Lobby
             controls.AddToClassList("lobby-shell__admin-controls");
             AddRoundAction(controls, "Start Round", "server-start", RoundAdminAction.Start);
             AddRoundAction(controls, "Force Start", "server-force", RoundAdminAction.ForceStart, true);
+            // Only offered after a start found the map unplayable (creative-mode §8's block, with a way back into the editor).
+            AddRoundAction(controls, "Edit Map Anyway", "server-edit-anyway", RoundAdminAction.EditMapAnyway, true);
             AddRoundAction(controls, "Extend Timer", "server-extend", RoundAdminAction.ExtendTimer, true);
             AddRoundAction(controls, "Cancel Countdown", "server-cancel", RoundAdminAction.CancelCountdown, true);
             // Stop is an in-round extension to the pre-round reference.
@@ -309,6 +322,10 @@ namespace SS3D.UI.Lobby
             Button start = form.Q<Button>("server-start");
             start.style.display = idle ? DisplayStyle.Flex : DisplayStyle.None;
             start.SetEnabled(idle && _hasServerSettings && _serverMaps.Contains(_serverSettings.Map));
+            Button editAnyway = form.Q<Button>("server-edit-anyway");
+            bool unplayable = idle && _hasServerSettings && _stationLoadState == StationLoadState.Unplayable;
+            editAnyway.style.display = unplayable ? DisplayStyle.Flex : DisplayStyle.None;
+            editAnyway.SetEnabled(unplayable);
             foreach (string name in new string[] { "server-force", "server-extend", "server-cancel" })
             {
                 Button action = form.Q<Button>(name);
@@ -367,6 +384,7 @@ namespace SS3D.UI.Lobby
             late.SetValueWithoutNotify(_serverSettings.AllowLateJoin);
             late.SetEnabled(idle && _hasServerSettings);
             form.Q<Label>("server-settings-status").text = _serverSettingsStatus;
+            UpdateStationIndicator(form.Q<Label>("server-map-load-status"));
         }
     }
 }

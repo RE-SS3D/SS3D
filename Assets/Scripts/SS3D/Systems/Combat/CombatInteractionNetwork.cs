@@ -32,11 +32,10 @@ namespace SS3D.Systems.Combat
     /// Intent and delayed-interaction tracking stay on <see cref="InteractionController"/>.
     /// </summary>
     [RequireComponent(typeof(InteractionController))]
-    public sealed partial class CombatInteractionNetwork : NetworkActor
+    public sealed partial class CombatInteractionNetwork : NetworkActor, IClientTriggerGate
     {
         [SerializeField] private InteractionController _interactionController;
 
-        private Vector3 _meleeAimRayOrigin;
         private Vector3 _meleeAimPoint;
         private bool _hasMeleeAimRay;
 
@@ -100,9 +99,11 @@ namespace SS3D.Systems.Combat
                 BeginLocalSwingCycle(hand, hit.Profile);
             }
 
-            TryPlayMeleeSwingTelegraph(hit, hand);
+            // The action RPC goes first so the server has accepted it when the telegraph's CmdFireTrigger arrives
+            // (ClientTriggerRules); both play in this frame locally.
             TrySyncMeleeAimToServer();
             CmdRunMeleeSwing();
+            TryPlayMeleeSwingTelegraph(hit, hand);
             return true;
         }
 
@@ -129,13 +130,13 @@ namespace SS3D.Systems.Combat
                     weapon.BeginLocalReload(weapon.Profile.ReloadSeconds);
                 }
 
+                TrySyncMeleeAimToServer();
+                CmdRunRangedFire();
                 if (startingReload)
                 {
                     TryPlayRangedReloadTelegraph();
                 }
 
-                TrySyncMeleeAimToServer();
-                CmdRunRangedFire();
                 return true;
             }
 
@@ -149,9 +150,9 @@ namespace SS3D.Systems.Combat
                 weapon.BeginLocalFireCooldown();
             }
 
-            TryPlayRangedFireTelegraph();
             TrySyncMeleeAimToServer();
             CmdRunRangedFire();
+            TryPlayRangedFireTelegraph();
             return true;
         }
 
@@ -173,8 +174,8 @@ namespace SS3D.Systems.Combat
                 weapon.BeginLocalReload(weapon.Profile.ReloadSeconds);
             }
 
-            TryPlayRangedReloadTelegraph();
             CmdRunRangedReload();
+            TryPlayRangedReloadTelegraph();
             return true;
         }
 
@@ -229,11 +230,8 @@ namespace SS3D.Systems.Combat
             if (!TryGetMeleeAimRay(out Ray aimRay))
             {
                 Entity entity = GetComponent<Entity>();
-                Vector3 origin = entity != null
-                    ? entity.transform.position + Vector3.up * 1.5f
-                    : transform.position + Vector3.up * 1.5f;
                 Vector3 direction = entity != null ? entity.transform.forward : transform.forward;
-                aimRay = new Ray(origin, direction);
+                aimRay = new Ray(ServerEyePosition(), direction);
             }
 
             weapon.GetMuzzleWorldPose(out Vector3 firePosition, out _);
@@ -369,6 +367,26 @@ namespace SS3D.Systems.Combat
             }
         }
 
+        /// <summary>Server: a client's combat one-shot plays for others only while its action is under way here.</summary>
+        [Server]
+        public bool ServerAcceptsClientTrigger(AnimationTriggerId trigger)
+        {
+            switch (trigger)
+            {
+                case AnimationTriggerId.AttackSwing:
+                case AnimationTriggerId.AttackStab:
+                    return _pendingMeleeHand != null;
+                case AnimationTriggerId.Throw:
+                    return HasPendingThrow;
+                case AnimationTriggerId.FireRifle:
+                    return TryGetHeldRangedWeapon(out _, out RangedWeaponItemExtension firing) && firing.IsOnCooldown;
+                case AnimationTriggerId.Reload:
+                    return TryGetHeldRangedWeapon(out _, out RangedWeaponItemExtension reloading) && reloading.IsReloading;
+                default:
+                    return false;
+            }
+        }
+
         [ServerRpc]
         private void CmdRunRangedReload()
         {
@@ -393,7 +411,7 @@ namespace SS3D.Systems.Combat
             string[] clips = CombatAudioTrackIds.FireFor(style);
             string clipId = clips[UnityEngine.Random.Range(0, clips.Length)];
             float pitch = UnityEngine.Random.Range(0.95f, 1.05f);
-            SubSystems.Get<AudioSubSystem>()?.PlayAudioSource(
+            SubSystems.GetOrNull<AudioSubSystem>()?.PlayAudioSource(
                 AudioType.Sfx, clipId, position, null, false, 1f, pitch, 14f, 90f);
         }
 
@@ -406,7 +424,7 @@ namespace SS3D.Systems.Combat
                 weapon.GetMuzzleWorldPose(out position, out _);
             }
 
-            SubSystems.Get<AudioSubSystem>()?.PlayAudioSource(
+            SubSystems.GetOrNull<AudioSubSystem>()?.PlayAudioSource(
                 AudioType.Sfx, weapon != null && weapon.Profile.VisualStyle != RangedVisualStyle.Ballistic
                     ? CombatAudioTrackIds.EnergyReady : CombatAudioTrackIds.GunEmpty, position, null, false, 1f, 1f, 8f, 40f);
         }
@@ -419,7 +437,7 @@ namespace SS3D.Systems.Combat
                 : living ? CombatAudioTrackIds.EnergyFleshHit : CombatAudioTrackIds.EnergyHit;
             string clipId = clips[UnityEngine.Random.Range(0, clips.Length)];
             float pitch = UnityEngine.Random.Range(0.92f, 1.08f);
-            SubSystems.Get<AudioSubSystem>()?.PlayAudioSource(
+            SubSystems.GetOrNull<AudioSubSystem>()?.PlayAudioSource(
                 AudioType.Sfx, clipId, impactPoint, null, false, 0.95f, pitch, 6f, 50f);
         }
 
@@ -431,7 +449,7 @@ namespace SS3D.Systems.Combat
                 return;
             }
 
-            SubSystems.Get<AudioSubSystem>()?.PlayAudioSource(
+            SubSystems.GetOrNull<AudioSubSystem>()?.PlayAudioSource(
                 AudioType.Sfx, weapon.Profile.VisualStyle == RangedVisualStyle.Ballistic
                     ? CombatAudioTrackIds.ReloadMagazineOut : CombatAudioTrackIds.EnergyReady, transform.position, null, false, 1f, 1f, 8f, 40f);
 
@@ -614,11 +632,15 @@ namespace SS3D.Systems.Combat
             ServerScheduleMeleeConnect(hand, hit.Profile, effectiveWindupSeconds);
 
             _meleeSwingSerial++;
-            RpcExecuteMeleeSwing(_meleeSwingSerial);
+            if (Owner.IsValid)
+            {
+                TargetExecuteMeleeSwing(Owner, _meleeSwingSerial);
+            }
         }
 
-        [ObserversRpc(RunLocally = true)]
-        private void RpcExecuteMeleeSwing(int swingId)
+        /// <summary>Owner only: start the client-side swing. Non-owners have nothing to run.</summary>
+        [TargetRpc(RunLocally = true)]
+        private void TargetExecuteMeleeSwing(NetworkConnection conn, int swingId)
         {
             if (!IsOwner)
             {
@@ -777,32 +799,34 @@ namespace SS3D.Systems.Combat
         }
 
         /// <summary>
-        /// Client-synced camera aim ray for the active melee swing (matches zone reticle; not hand bone).
+        /// Aim ray for the active shot or swing: from the body's eye on the server through the point the client
+        /// synced (the zone reticle's point). The client never chooses the origin (<see cref="CombatAimRay"/>).
         /// </summary>
         [Server]
         public bool TryGetMeleeAimRay(out Ray aimRay)
         {
             aimRay = default;
-            if (!_hasMeleeAimRay)
+            return _hasMeleeAimRay && CombatAimRay.TryBuild(ServerEyePosition(), _meleeAimPoint, out aimRay);
+        }
+
+        /// <summary>The body's eye on the server: <see cref="Entity.ViewPoint"/>, else a fixed height above the root.</summary>
+        [Server]
+        public Vector3 ServerEyePosition()
+        {
+            Entity entity = GetComponent<Entity>();
+            if (entity != null && entity.ViewPoint != null)
             {
-                return false;
+                return entity.ViewPoint.transform.position;
             }
 
-            Vector3 direction = _meleeAimPoint - _meleeAimRayOrigin;
-            if (direction.sqrMagnitude < 0.0001f)
-            {
-                return false;
-            }
-
-            aimRay = new Ray(_meleeAimRayOrigin, direction.normalized);
-            return true;
+            Transform root = entity != null ? entity.transform : transform;
+            return root.position + Vector3.up * CombatAimRay.FallbackEyeHeight;
         }
 
         [Server]
         public void ClearMeleeAimPoint()
         {
             _hasMeleeAimRay = false;
-            _meleeAimRayOrigin = default;
             _meleeAimPoint = default;
         }
 
@@ -842,13 +866,18 @@ namespace SS3D.Systems.Combat
                 return;
             }
 
-            CmdSyncMeleeAim(aimRay.origin, aimPoint);
+            CmdSyncMeleeAim(aimPoint);
         }
 
+        /// <summary>The client sends only where it aims; the server supplies the origin (<see cref="TryGetMeleeAimRay"/>).</summary>
         [ServerRpc(RequireOwnership = true)]
-        private void CmdSyncMeleeAim(Vector3 rayOrigin, Vector3 aimPoint)
+        private void CmdSyncMeleeAim(Vector3 aimPoint)
         {
-            _meleeAimRayOrigin = rayOrigin;
+            if (!RpcInput.IsInStation(aimPoint))
+            {
+                return;
+            }
+
             _meleeAimPoint = aimPoint;
             _hasMeleeAimRay = true;
         }

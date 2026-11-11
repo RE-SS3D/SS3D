@@ -1,4 +1,4 @@
-using FishNet.Connection;
+using System.Collections.Generic;
 using FishNet.Object;
 using SS3D.Permissions;
 using SS3D.Systems.Health;
@@ -7,62 +7,39 @@ namespace SS3D.Systems.IngameConsoleSystem.Commands
 {
     /// <summary>
     /// Toggles turf atmosphere → health damage/oxy/alerts (default on). Does not pause the gas sim.
+    /// Off skips turf oxy shortfall, breath exchange, environmental burns and atmos alerts/screens.
     /// </summary>
     public class AtmosDamageCommand : Command
     {
-        public override string ShortDescription => "Enable/disable atmospheric damage on players";
-        public override string Usage => "[on|off|status]\n"
-            + "off — skip turf oxy shortfall, breath exchange, env burn, atmos alerts/screens\n"
-            + "example: atmosdamage off";
+        private static readonly IReadOnlyList<CommandParameter> Declared = new[]
+        {
+            P.Choice("mode", "on", "off", "status").Default("status"),
+        };
+
+        public override string Name => "atmosdamage";
+        public override CommandCategory Category => CommandCategory.Debug;
+        public override string Description => "Turn atmospheric damage on players on or off, or show whether it is on";
         public override ServerRoleTypes AccessLevel => ServerRoleTypes.Administrator;
         public override CommandType Type => CommandType.Server;
-
-        private record CalculatedValues(string Mode) : ICalculatedValues;
+        public override IReadOnlyList<CommandParameter> Parameters => Declared;
+        public override string Example => "off";
 
         [Server]
-        public override string Perform(string[] args, NetworkConnection conn = null)
+        public override CommandResult Perform(CommandContext context, CommandArgs args)
         {
-            if (!ReceiveCheckResponse(args, out CheckArgsResponse response, out CalculatedValues values))
+            string mode = args.Text("mode");
+            if (mode == "status")
             {
-                return response.InvalidArgs;
-            }
-
-            if (values.Mode == "status")
-            {
-                return HealthEnvironmentSettings.AtmosphericDamageDisabled
+                return CommandResult.Success(HealthEnvironmentSettings.AtmosphericDamageDisabled
                     ? "Atmospheric damage: OFF (disabled)"
-                    : "Atmospheric damage: ON";
+                    : "Atmospheric damage: ON");
             }
 
-            bool disable = values.Mode == "off";
+            bool disable = mode == "off";
             HealthEnvironmentSettings.AtmosphericDamageDisabled = disable;
-            return disable
+            return CommandResult.Success(disable
                 ? "Atmospheric damage disabled"
-                : "Atmospheric damage enabled";
-        }
-
-        [Server]
-        protected override CheckArgsResponse CheckArgs(string[] args)
-        {
-            CheckArgsResponse response = new();
-
-            if (args.Length == 0)
-            {
-                return response.MakeValid(new CalculatedValues("status"));
-            }
-
-            if (args.Length != 1)
-            {
-                return response.MakeInvalid(WrongArgsText);
-            }
-
-            string mode = args[0].ToLowerInvariant();
-            if (mode is not ("on" or "off" or "status"))
-            {
-                return response.MakeInvalid("Expected on, off, or status");
-            }
-
-            return response.MakeValid(new CalculatedValues(mode));
+                : "Atmospheric damage enabled");
         }
     }
 }

@@ -337,7 +337,9 @@ namespace SS3D.Systems.Combat.Interactions
                 return false;
             }
 
-            Vector3 origin = entity.transform.position + Vector3.up * 1.5f;
+            Vector3 origin = combat != null
+                ? combat.ServerEyePosition()
+                : entity.transform.position + Vector3.up * CombatAimRay.FallbackEyeHeight;
             Vector3 direction = AimDirectionFromYawPitch(body.AimYaw, body.AimPitch);
             if (direction.sqrMagnitude < 0.0001f)
             {

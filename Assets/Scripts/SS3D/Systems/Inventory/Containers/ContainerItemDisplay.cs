@@ -171,12 +171,26 @@ namespace SS3D.Systems.Inventory.Containers
                 return;
             }
 
+            Transform display = attachedContainer.Displays[index];
             Transform itemParent = item.transform.parent;
-            if (itemParent != null && itemParent != attachedContainer.Displays[index])
+            if (itemParent != null && itemParent != display && itemParent.parent == display)
             {
+                // Still on our grip pivot: let go of the item and drop the pivot.
                 item.transform.SetParent(null, true);
-                // It's currently deleting the game object containing the item, why is this here ?
                 itemParent.gameObject.Dispose(true);
+            }
+            else
+            {
+                // The item already moved on (its new container's add arrived first on this client): it is
+                // parented there now, so leave it and only clear away our empty pivots.
+                for (int i = display.childCount - 1; i >= 0; i--)
+                {
+                    Transform child = display.GetChild(i);
+                    if (child.name == "TempPivotPoint" && child.childCount == 0)
+                    {
+                        child.gameObject.Dispose(true);
+                    }
+                }
             }
 
             _displayedItems[index] = null;
