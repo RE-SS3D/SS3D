@@ -1,4 +1,5 @@
 using FishNet.Object;
+using SS3D.Systems.Construction;
 using SS3D.Networking;
 using SS3D.Permissions;
 using SS3D.Systems.Substances;
@@ -114,6 +115,7 @@ namespace SS3D.Editor.Bootstrap
             typeof(SubstancesSubSystem),
             typeof(MachineInterfaceSubSystem),
             typeof(MachineInterfaceHost),
+            typeof(ConstructionPlacementSubSystem),
         };
 
         /// <summary>Batch entry for headless Unity: rebuild hub + strip Boot + strip Game (tier C — no MenuItem).</summary>

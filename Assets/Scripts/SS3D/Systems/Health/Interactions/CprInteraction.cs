@@ -1,4 +1,4 @@
-using FishNet.Object;
+﻿using FishNet.Object;
 using SS3D.Data;
 using SS3D.Data.Generated;
 using SS3D.Interactions;
@@ -67,9 +67,8 @@ namespace SS3D.Systems.Health.Interactions
         [Server]
         public override bool Start(InteractionEvent interactionEvent, InteractionReference reference)
         {
-            CaptureStartPosition(interactionEvent);
-            StartCounter();
-            return true;
+            // Base start also subscribes cancel-on-damage.
+            return base.Start(interactionEvent, reference);
         }
 
         protected override void StartDelayed(InteractionEvent interactionEvent, InteractionReference reference)

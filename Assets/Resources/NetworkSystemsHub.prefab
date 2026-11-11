@@ -41,9 +41,10 @@ GameObject:
   - component: {fileID: 3796406931252978182}
   - component: {fileID: 2629140244360501243}
   - component: {fileID: 6100110011001100123}
-  - component: {fileID: 259748810952663260}
-  - component: {fileID: 5636355587363408762}
-  - component: {fileID: 1286648792605308325}
+  - component: {fileID: 3002766317706055259}
+  - component: {fileID: 8158633296796554082}
+  - component: {fileID: 3335355118854265521}
+  - component: {fileID: 1754970448278505657}
   m_Layer: 0
   m_Name: NetworkSystemsHub
   m_TagString: Untagged
@@ -108,9 +109,10 @@ MonoBehaviour:
   - {fileID: 8445038736280552500}
   - {fileID: 5355501408288632448}
   - {fileID: 1773152946861829430}
-  - {fileID: 259748810952663260}
-  - {fileID: 5636355587363408762}
-  - {fileID: 1286648792605308325}
+  - {fileID: 3002766317706055259}
+  - {fileID: 8158633296796554082}
+  - {fileID: 3335355118854265521}
+  - {fileID: 1754970448278505657}
   <ParentNetworkObject>k__BackingField: {fileID: 0}
   <ChildNetworkObjects>k__BackingField: []
   SerializedTransformProperties:
@@ -605,7 +607,22 @@ MonoBehaviour:
   m_EditorClassIdentifier: SS3D.Systems::SS3D.Systems.Comms.CommsFeedController
   _styleSheet: {fileID: 7433441132597879392, guid: 2534ecf24e7b40a89a13455358fd68eb, type: 3}
   _radioIcon: {fileID: 0}
---- !u!114 &259748810952663260
+--- !u!114 &3002766317706055259
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 100001}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 476a1d0d3e7ff5c28aa0dbb2a5cdd1da, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: SS3D.Systems::SS3D.Systems.Construction.ConstructionPlacementSubSystem
+  _componentIndexCache: 20
+  _addedNetworkObject: {fileID: 100004}
+  _networkObjectCache: {fileID: 100004}
+--- !u!114 &8158633296796554082
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -617,7 +634,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 959145614f702e9ce92662d94bef3c12, type: 3}
   m_Name: 
   m_EditorClassIdentifier: SS3D.Systems::SS3D.Systems.Rounds.ServerSettingsService
-  _componentIndexCache: 20
+  _componentIndexCache: 21
   _addedNetworkObject: {fileID: 100004}
   _networkObjectCache: {fileID: 100004}
   _allowLateJoin: 1
@@ -627,7 +644,7 @@ MonoBehaviour:
   _publicMode: Secret
   _serverBuild: 
   _serverStartedUnix: 0
---- !u!114 &5636355587363408762
+--- !u!114 &3335355118854265521
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -639,10 +656,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0b02e3fa575d4ccc9154e4dd1f7f868b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: SS3D.Systems::SS3D.Systems.Rounds.MapEditorStopFlow
-  _componentIndexCache: 21
+  _componentIndexCache: 22
   _addedNetworkObject: {fileID: 100004}
   _networkObjectCache: {fileID: 100004}
---- !u!114 &1286648792605308325
+--- !u!114 &1754970448278505657
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -654,6 +671,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 94f4261abf4f527daba0a4d7ef2409b9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: SS3D.Systems::SS3D.Systems.BugReports.BugReportIntake
-  _componentIndexCache: 22
+  _componentIndexCache: 23
   _addedNetworkObject: {fileID: 100004}
   _networkObjectCache: {fileID: 100004}

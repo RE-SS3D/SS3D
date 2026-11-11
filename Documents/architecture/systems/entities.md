@@ -1,13 +1,13 @@
 > Code paths: Assets/Scripts/SS3D/Systems/Entities/
 > Entry points: EntitySubSystem, MindSubSystem, HumanoidBodyStateMachine
 > Status: partial
-> Verified: 7785df8dc — 2026-11-06
+> Verified: 6c49dab49 — 2026-11-11
 
 # Entities
 
 ## Overview
 
-Humanoid/silicon entity spawning, minds, and join/round ordering with [rounds-lobby](rounds-lobby.md). Humanoid body animation is driven by a packed `BodyAnimationSnapshot` SyncVar, not ad-hoc Animator calls.
+Humanoid/silicon entity spawning, minds, and join/round ordering with [rounds-lobby](rounds-lobby.md). Humanoid body animation is driven by a packed `BodyAnimationSnapshot` SyncVar, not ad-hoc Animator calls. Held interaction loops are snapshot bits the server sets for a step's duration: `InteractKneel` (floor work, defuse, CPR) and `InteractWork` (wall construction, a stand-in Mixamo clip until dedicated animations exist). Each loop's Animator bool is its `InteractionAnimation.Clip.HoldParameter`, wired by `HumanoidLocomotionBlendSetup`.
 
 **Prefab composition:** Human remains a large shared graph. Evolve it through the
 [Entity prefab recipes](entities-prefab-recipes.md); remaining structural work is tracked in

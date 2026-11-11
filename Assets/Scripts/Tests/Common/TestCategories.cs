@@ -45,5 +45,8 @@ namespace SS3D.Tests
 
         /// <summary>Weapons in a live body's hands: hold pose and aim.</summary>
         public const string Combat = "Combat";
+
+        /// <summary>Repairing and rebuilding hull, floors and walls in the test room.</summary>
+        public const string Construction = "Construction";
     }
 }

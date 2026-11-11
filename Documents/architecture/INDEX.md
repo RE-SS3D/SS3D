@@ -25,7 +25,7 @@ One row per gameplay domain that has, or should eventually have, a design doc. A
 | chemistry | [chemistry](../design/chemistry.md) | [substances-foundation](../archive/architecture/2026-07_substances-foundation.md) — shipped | [substances](systems/substances.md) — partial |
 | combat | [combat](../design/combat.md) | [combat plan](../plans/combat_implementation_plan.md) — in-progress; [player-body-animation](../archive/architecture/2026-07_player-body-animation.md), [animation-polish](../archive/architecture/2026-07_animation-polish.md) — shipped; [humanoid-animation-pass](2026-11_humanoid-animation-pass.md) — in-progress | [combat](systems/combat.md) — partial |
 | comms | [comms](../design/comms.md) | [comms-non-diegetic-feed](../archive/architecture/2026-07_comms-non-diegetic-feed.md) — shipped | [chat-audio-screens](systems/chat-audio-screens.md) — partial |
-| construction | [construction](../design/construction.md) | none yet | [tile](systems/tile.md) — partial |
+| construction | [construction](../design/construction.md) | [construction-mvp1](2026-11_construction-mvp1.md) — in-progress | [construction](systems/construction.md) — partial |
 | crafting | [crafting](../design/crafting.md) | none yet | [crafting](systems/crafting.md) — stub |
 | creative-mode | [creative-mode](../design/creative-mode.md) | [map-editor-replacement](../archive/architecture/2026-07_map-editor-replacement.md), [spawn-point-authoring](../archive/architecture/2026-07_spawn-point-authoring.md), [ss13-map-import](../archive/architecture/2026-07_ss13-map-import.md), [ss13-map-import-infrastructure](../archive/architecture/2026-07_ss13-map-import-infrastructure.md) — shipped ; [map-editor-palette-layout](../archive/architecture/2026-11_map-editor-palette-layout.md) — shipped | [tile](systems/tile.md) — partial; [map-editor-creative-hooks](systems/map-editor-creative-hooks.md) |
 | cryogenics | [cryogenics](../design/cryogenics.md) | none yet | none yet |
@@ -58,7 +58,7 @@ One row per gameplay domain that has, or should eventually have, a design doc. A
 | surgery | [surgery](../design/surgery.md) | none yet | none yet |
 | virology | [virology](../design/virology.md) | none yet | none yet |
 
-Every design doc is `Status: active` unless its own header says otherwise. Deferred (design stands, no milestone up to MVP2 needs it): ai-cyborgs, construction, crafting, cryogenics, hacking-interface, pda, surgery, virology. The 2026-10 design review is recorded in [REVIEW_2026-10](../design/REVIEW_2026-10.md).
+Every design doc is `Status: active` unless its own header says otherwise. Deferred (design stands, no milestone up to MVP2 needs it): ai-cyborgs, crafting, cryogenics, hacking-interface, pda, surgery, virology. The 2026-10 design review is recorded in [REVIEW_2026-10](../design/REVIEW_2026-10.md).
 
 ## System maps
 
@@ -73,6 +73,7 @@ Infrastructure and gameplay maps, including the ones with no design doc (interac
 | [audio](systems/audio.md) | partial | SFX pool, occlusion, room tone, wind and sound needs air, personal audio cues; child map [audio-content](systems/audio-content.md) for clips |
 | [chat-audio-screens](systems/chat-audio-screens.md) | partial | Comms hub: local speech, radio/announce feed, compose |
 | [combat](systems/combat.md) | partial | Melee, ranged hitscan, armor absorption, combat feel, ion/laser/taser content and VFX |
+| [construction](systems/construction.md) | partial | Crew repair and rebuild: rule table, Construct X interactions, hull-hole ghost, floor tile kinds |
 | [core-subsystems](systems/core-subsystems.md) | partial | `SubSystems.Get<T>()`, bootstrap, world-readiness graph |
 | [crafting](systems/crafting.md) | stub | Nothing live; awaits redesign |
 | [data-codegen](systems/data-codegen.md) | partial | Asset databases, generated refs, Addressables |
@@ -134,6 +135,7 @@ Only work that is in flight, planned, or kept as standing reference. Everything 
 | [2026-11_sandbox-server](2026-11_sandbox-server.md) | in-progress |
 | [2026-11_atmos-edge-flow](2026-11_atmos-edge-flow.md) | in-progress |
 | [2026-11_humanoid-animation-pass](2026-11_humanoid-animation-pass.md) | shipped |
+| [2026-11_construction-mvp1](2026-11_construction-mvp1.md) | in-progress |
 | [2026-11_testing-philosophy](2026-11_testing-philosophy.md) | shipped (standing policy) |
 | [2026-11_tech-debt-paydown](2026-11_tech-debt-paydown.md) | in-progress (Phases 0–3 shipped; Phase 6 under way: P6.1–P6.4 done) |
 | [agent_validation_loop.plan](../plans/agent_validation_loop.plan.md) | shipped (reference) |

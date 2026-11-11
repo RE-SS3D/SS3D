@@ -13,6 +13,8 @@ namespace SS3D.UI.MachineInterface.Components
         private readonly Image _icon;
         private readonly VisualElement _takeProgress;
         private readonly VisualElement _reservedBadge;
+        private readonly Label _stackCount;
+        private int _stackCountValue;
         private bool _unknown = true;
         private bool _reserved;
         private float _size = 48f;
@@ -54,6 +56,25 @@ namespace SS3D.UI.MachineInterface.Components
             _reservedBadge.Add(reservedRing);
             _reservedBadge.Add(reservedSlash);
             _well.Add(_reservedBadge);
+
+            // Inline style so every host (HUD, machine UIs) shows the count without its own USS rule.
+            _stackCount = new Label();
+            _stackCount.AddToClassList("inventory-slot__stack-count");
+            _stackCount.pickingMode = PickingMode.Ignore;
+            _stackCount.style.position = Position.Absolute;
+            _stackCount.style.right = 3f;
+            _stackCount.style.bottom = 2f;
+            _stackCount.style.fontSize = 11f;
+            _stackCount.style.color = Color.white;
+            _stackCount.style.backgroundColor = new Color(0f, 0f, 0f, 0.6f);
+            _stackCount.style.paddingLeft = 3f;
+            _stackCount.style.paddingRight = 3f;
+            _stackCount.style.borderTopLeftRadius = 3f;
+            _stackCount.style.borderTopRightRadius = 3f;
+            _stackCount.style.borderBottomLeftRadius = 3f;
+            _stackCount.style.borderBottomRightRadius = 3f;
+            _stackCount.style.display = DisplayStyle.None;
+            _well.Add(_stackCount);
 
             // Host sizes to the slot and centers the chip; avoids UITK translate:-50% sticking to the
             // previous text width when SlotLabel changes (e.g. Head → Trucker Cap).
@@ -156,6 +177,24 @@ namespace SS3D.UI.MachineInterface.Components
             _takeProgress.style.display = DisplayStyle.None;
             _takeProgress.style.rotate = new Rotate(Angle.Degrees(0f));
             EnableInClassList("inventory-slot--taking", false);
+        }
+
+        /// <summary>Units in the held stack; shown as "×N" in the well's corner when above 1.</summary>
+        public int StackCount
+        {
+            get => _stackCountValue;
+            set
+            {
+                if (_stackCountValue == value)
+                {
+                    return;
+                }
+
+                _stackCountValue = value;
+                bool show = value > 1;
+                _stackCount.text = show ? $"×{value}" : string.Empty;
+                _stackCount.style.display = show ? DisplayStyle.Flex : DisplayStyle.None;
+            }
         }
 
         /// <summary>
