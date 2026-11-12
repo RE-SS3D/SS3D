@@ -104,15 +104,15 @@ namespace SS3D.Systems.Area
                 after[tile] = target;
             }
             if (after.Count == 0) { error = "No room tiles changed. Paint floor or door tiles."; return false; }
-            HashSet<ushort> occupied = new();
-            foreach (IAreaApcOrigin apc in _apcs)
+            // Reject only conflicts this stroke creates or grows. A room that already shares APCs
+            // (an APC placed into it later) must not lock every other stroke on the map.
+            Dictionary<ushort, int> apcsBefore = CountApcsPerRoom(null);
+            foreach (KeyValuePair<ushort, int> room in CountApcsPerRoom(after))
             {
-                if (!IsLive(apc)) continue;
-                TileCoord coord = GetApcMembershipTile(apc);
-                ushort id;
-                if (!after.TryGetValue(coord.Grid, out id)) _map.TryGetAreaId(coord, out id);
-                if (id != AreaId.None && !occupied.Add(id))
-                { error = "A room can have only one APC. Paint the APCs into separate rooms."; return false; }
+                if (room.Value < 2 || room.Value <= apcsBefore.GetValueOrDefault(room.Key)) continue;
+                error = $"A room can have only one APC, and this stroke would put {room.Value} in {RoomName(room.Key)}. "
+                    + "Paint the APCs into separate rooms.";
+                return false;
             }
             // Only retire rooms affected by this stroke. Keep partial rooms and the paint target.
             HashSet<ushort> candidates = new(before.Values.Where(id => id != AreaId.None && id != target));
@@ -142,6 +142,24 @@ namespace SS3D.Systems.Area
             change.Redo();
             return true;
         }
+
+        /// <summary>Live APCs per room, reading <paramref name="overrides"/> before the map's current membership.</summary>
+        private Dictionary<ushort, int> CountApcsPerRoom(IReadOnlyDictionary<Vector2Int, ushort> overrides)
+        {
+            Dictionary<ushort, int> counts = new();
+            foreach (IAreaApcOrigin apc in _apcs)
+            {
+                if (!IsLive(apc)) continue;
+                TileCoord coord = GetApcMembershipTile(apc);
+                if (overrides == null || !overrides.TryGetValue(coord.Grid, out ushort id)) _map.TryGetAreaId(coord, out id);
+                if (id != AreaId.None) counts[id] = counts.GetValueOrDefault(id) + 1;
+            }
+            return counts;
+        }
+
+        private string RoomName(ushort id) =>
+            _registry.TryGet(new AreaId(id), out AreaRecord room) && !string.IsNullOrWhiteSpace(room.DisplayName)
+                ? room.DisplayName : "one room";
 
         /// <summary>A despawned APC is Unity-null but still a live C# reference; it must not claim a room.</summary>
         private static bool IsLive(IAreaApcOrigin apc) => apc is not UnityEngine.Object unityObject || unityObject;

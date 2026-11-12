@@ -207,6 +207,31 @@ namespace EditorTests
         }
 
         [Test]
+        public void ExistingSharedApcRoomDoesNotBlockStrokesElsewhere()
+        {
+            // Bug report 6: an APC placed into a room that already had one locked every stroke on the map.
+            _context.Map.TrySetAreaId(new TileCoord(_context.Map.MapId, 0, 0), 1);
+            _context.Map.TrySetAreaId(new TileCoord(_context.Map.MapId, 1, 0), 1);
+            _apcs.Add(new TestApc { OriginTile = new TileCoord(_context.Map.MapId, 0, 0) });
+            _apcs.Add(new TestApc { OriginTile = new TileCoord(_context.Map.MapId, 1, 0) });
+            Assert.IsTrue(_painting.TryPaint(2, new[] { new Vector2Int(3, 0) }, out _, out string error), error);
+            Assert.AreEqual(2, At(3));
+            Assert.IsTrue(_painting.TryPaint(2, new[] { Vector2Int.right }, out _, out error), "Splitting the shared room: " + error);
+            Assert.AreEqual(2, At(1));
+        }
+
+        [Test]
+        public void StrokeCannotAddAnotherApcToARoomThatAlreadySharesOne()
+        {
+            _context.Map.TrySetAreaId(new TileCoord(_context.Map.MapId, 0, 0), 1);
+            _context.Map.TrySetAreaId(new TileCoord(_context.Map.MapId, 1, 0), 1);
+            for (int x = 0; x < 3; x++) _apcs.Add(new TestApc { OriginTile = new TileCoord(_context.Map.MapId, x, 0) });
+            Assert.IsFalse(_painting.TryPaint(1, new[] { new Vector2Int(2, 0) }, out _, out string error));
+            StringAssert.Contains("3 in Engineering", error);
+            Assert.AreEqual(0, At(2));
+        }
+
+        [Test]
         public void AuthoredRoomWithoutApcRoundTripsMetadataAndChunkMembership()
         {
             _painting.TryPaint(2, new[] { Vector2Int.zero, new Vector2Int(3, 0) }, out _, out _);
