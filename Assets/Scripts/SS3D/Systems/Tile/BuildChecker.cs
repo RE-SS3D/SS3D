@@ -44,6 +44,11 @@ namespace SS3D.Systems.Tile
                     Log.Error(typeof(BuildChecker), "Location on Plenum should be a Single object location");
                     failures.Add(BuildFailReason.MissingOrInvalidPlenum);
                 }
+                else if (placedLayer == TileLayer.Turf)
+                {
+                    if (!IsSolidPlenum(plenumLocation))
+                        failures.Add(BuildFailReason.TurfNeedsPlenum);
+                }
                 else if (!CanBuildOnPlenum(plenumLocation))
                 {
                     failures.Add(BuildFailReason.MissingOrInvalidPlenum);
@@ -151,15 +156,30 @@ namespace SS3D.Systems.Tile
             return !neighboursHigh.Any(x => x != null) && !neighboursLow.Any(x => x != null);
         }
 
+        /// <summary>
+        /// Whether wires, pipes, disposals and furniture can sit on this Plenum-layer object: a plenum, a catwalk or a lattice.
+        /// </summary>
         private static bool CanBuildOnPlenum(SingleTileLocation plenumLocation)
         {
             if (plenumLocation.IsEmpty())
                 return false;
 
-            return plenumLocation.PlacedObject.NameString.Contains("Plenum") ||
-                   plenumLocation.PlacedObject.name.Contains("Catwalk") ||
-                   plenumLocation.PlacedObject.name.Contains("Lattice");
+            string name = plenumLocation.PlacedObject.NameString;
+            return name.Contains("Plenum") || IsGrating(name);
         }
+
+        /// <summary>
+        /// Whether a Plenum-layer asset name is a catwalk or lattice: it holds wires and pipes but not turf.
+        /// </summary>
+        public static bool IsGrating(string plenumLayerName) =>
+            plenumLayerName != null && (plenumLayerName.Contains("Catwalk") || plenumLayerName.Contains("Lattice"));
+
+        /// <summary>
+        /// Whether turf (floors, walls, windows) can sit on this Plenum-layer object. Only a real plenum holds turf;
+        /// catwalks and lattices do not, as in SS13 where floors and walls need plating.
+        /// </summary>
+        private static bool IsSolidPlenum(SingleTileLocation plenumLocation) =>
+            !plenumLocation.IsEmpty() && plenumLocation.PlacedObject.NameString.Contains("Plenum");
 
         /// <summary>
         /// Returns a list of incompatible existing objects that should be removed if the provided tile object is removed.
@@ -205,6 +225,15 @@ namespace SS3D.Systems.Tile
                 {
                     for (int i = 1; i < tileObjects.Length; i++)
                         invalid.Add(tileObjects[i]);
+                    break;
+                }
+                case TileLayer.Plenum when tileObjects[(int)TileLayer.Plenum] is SingleTileLocation plenum
+                                           && !IsSolidPlenum(plenum):
+                {
+                    // A plenum swapped for a catwalk or lattice keeps its wires and pipes but not its turf.
+                    invalid.Add(tileObjects[(int)TileLayer.Turf]);
+                    invalid.Add(tileObjects[(int)TileLayer.WallMountHigh]);
+                    invalid.Add(tileObjects[(int)TileLayer.WallMountLow]);
                     break;
                 }
                 case TileLayer.Turf when tileObjects[(int)TileLayer.Turf] is SingleTileLocation turf:

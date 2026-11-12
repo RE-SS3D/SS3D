@@ -19,6 +19,8 @@ namespace SS3D.Systems.Tile
         BodyInTheWay,
         /// <summary>Steel wreckage lies on the cell (construction.md §8). Construction only; the map editor deletes it.</summary>
         WreckageInTheWay,
+        /// <summary>Floors, walls and windows need a real plenum; a catwalk or lattice does not hold them.</summary>
+        TurfNeedsPlenum,
     }
 
     /// <summary>
@@ -40,6 +42,7 @@ namespace SS3D.Systems.Tile
                 BuildFailReason.NeighbourWallMountBlocksWall => "A neighbouring wall mount blocks this wall",
                 BuildFailReason.BodyInTheWay => "Someone is standing there",
                 BuildFailReason.WreckageInTheWay => "Clear the wreckage first",
+                BuildFailReason.TurfNeedsPlenum => "Floors and walls need a plenum underneath",
                 _ => "Cannot place here",
             };
 
