@@ -1001,8 +1001,8 @@ namespace SS3D.Systems.Tile
 
                 HashSet<Vector2Int> gratingToPlenum = GratingUnderTurfMigration.FindCellsToConvert(
                     resolved.Select(entry => (entry.Cell, entry.So)));
-                if (gratingToPlenum.Count > 0)
-                    plenumSo ??= tileSystem.GetAsset(GratingUnderTurfMigration.PlenumAssetName) as TileObjectSo;
+                if (gratingToPlenum.Count > 0 && plenumSo == null)
+                    plenumSo = tileSystem.GetAsset(GratingUnderTurfMigration.PlenumAssetName) as TileObjectSo;
 
                 foreach ((Vector2Int cell, SavedPlacedTileObject savedObject, TileObjectSo so) in resolved)
                 {
