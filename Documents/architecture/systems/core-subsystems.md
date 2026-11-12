@@ -29,7 +29,7 @@ Process-wide services: `SystemsBootstrap` (DDOL, `AfterSceneLoad`; creates netwo
 ## Extension points
 
 - New process-wide SubSystem: add to `SystemsBootstrap.EnsureProcessWideServices`, before `ApplicationInitializerSubSystem`. Types in assemblies `SS3D.Systems` cannot reference (Networking, CommandLine, Launcher) go through `EnsureSubSystemType` by assembly-qualified name.
-- New networked domain: add type to hub rebuild menu list, run `SS3D/Bootstrap/Rebuild NetworkSystemsHub Prefab` — do not edit Game.unity.
+- New networked domain: add type to hub rebuild menu list, then append it with a tier-B recipe (`ConstructionHubRecipe`, `ActionMessageHubRecipe`: `AddComponent` + `RebuildNetworkBehaviours`) — do not edit Game.unity. Prefer that to `SS3D/Bootstrap/Rebuild NetworkSystemsHub Prefab`: the rebuild copies serialized fields from Game's system objects, which the Phase 3 strip removed, so by reading the code it would reset hub settings to defaults (unverified by a run).
 - World sim: implement `IWorldReady`; notify via `WorldReadinessSubSystem` after TileMapLoaded / AreasFlooded — never treat `OnMapCreated` as ready.
 - Fixed-rate sim: `SimulationClock.GetOrCreate(name, interval, pausedByWorldSuspension)` and `Subscribe`, never an `Update` accumulator. Every caller of a name must agree on its interval. Each fire runs inside an `SS3D.Clock.<name>` Profiler marker, which is where to read its per-tick GC.
 - Finding live instances: register in `SceneRegistry<T>` from `OnEnabled`/`OnDisabled` (or server start/stop when only spawned ones count), never `FindObjectsByType` in gameplay code. Edit mode runs no `OnEnable`, so EditMode tests register by hand.

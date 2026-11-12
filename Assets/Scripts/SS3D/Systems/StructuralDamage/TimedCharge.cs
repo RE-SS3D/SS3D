@@ -254,10 +254,26 @@ namespace SS3D.Systems.StructuralDamage
             }
         }
 
-        private sealed class AttachInteraction : IInteraction
+        private sealed class AttachInteraction : IInteraction, INarratedInteraction
         {
             private readonly TimedCharge _charge;
+            private FishNet.Object.NetworkObject _actor;
+            private FishNet.Object.NetworkObject _surface;
             public AttachInteraction(TimedCharge charge) => _charge = charge;
+
+            // Close: those beside the operative notice it (action-messages.md §4, breaching charge).
+            public bool TryGetNarration(InteractionEvent e, out InteractionNarration narration)
+            {
+                narration = default;
+                if (_actor == null || !_charge._attached || !_charge._armed)
+                {
+                    return false;
+                }
+
+                narration = new InteractionNarration(SS3D.Systems.ActionMessages.ActionMessageKeys.PlantCharge,
+                    (byte)SS3D.Systems.ActionMessages.ActionVisibility.Close, _actor, _surface, null);
+                return true;
+            }
             public int Priority => 40;
             public string GetName(InteractionEvent e) => $"Attach and arm {_charge.Label}";
             public string GetGenericName() => "AttachCharge";
@@ -268,6 +284,8 @@ namespace SS3D.Systems.StructuralDamage
             {
                 if (!CanInteract(e) || !SubSystems.TryGet(out TileSubSystem tiles) || tiles.CurrentMap == null) return false;
                 if (!TryAttachmentSurface(e, out PlacedTileObject target, out Vector3 contact, out Vector3 surfaceNormal)) return false;
+                _actor = InteractionNarration.ActorOf(e);
+                _surface = target.GetComponentInParent<FishNet.Object.NetworkObject>();
                 Vector3 normal = new Vector3(surfaceNormal.x, 0f, surfaceNormal.z).normalized;
                 _charge._targetTile = tiles.QueryService.WorldToTile(target.transform.position, tiles.CurrentMap.MapId);
                 _charge._coneDirection = new Vector2(-normal.x, -normal.z);

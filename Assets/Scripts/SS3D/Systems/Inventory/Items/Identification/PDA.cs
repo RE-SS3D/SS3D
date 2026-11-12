@@ -48,6 +48,12 @@ namespace SS3D.Systems.Inventory.Items.Generic
 
         public IDCard GetInsertedIdCard()
         {
+            // Clients never run EnsureStartingIdCardInserted, so resolve the container here too.
+            if (attachedContainer == null)
+            {
+                attachedContainer = GetComponent<AttachedContainer>();
+            }
+
             if (attachedContainer == null)
             {
                 return null;

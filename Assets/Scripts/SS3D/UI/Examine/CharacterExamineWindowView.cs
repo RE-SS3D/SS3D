@@ -257,7 +257,7 @@ namespace SS3D.UI.Examine
 
         private void BeginTakeClick(CharacterExamineSlot slot, InventorySlot inventorySlot)
         {
-            if (!TakeAllowed || inventorySlot.ItemIcon == null)
+            if (!TakeAllowed || (inventorySlot.ItemIcon == null && !inventorySlot.Unknown))
             {
                 return;
             }

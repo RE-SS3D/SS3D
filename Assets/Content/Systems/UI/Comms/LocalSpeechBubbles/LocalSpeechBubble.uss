@@ -130,6 +130,23 @@
     -unity-font-style: italic;
 }
 
+/* Action line (action-messages.md §5): smaller, italic, quieter surface than speech so it never
+   reads as someone talking. Interim look until the examine-feedback visual brief returns. */
+.comms-subtitle--action {
+    background-color: rgba(10, 10, 10, 0.3);
+    border-width: 1px;
+    border-color: rgba(154, 150, 144, 0.35);
+    border-radius: 3px;
+    padding: 3px 8px;
+}
+
+.comms-subtitle--action .comms-subtitle__line {
+    margin-top: 0;
+    font-size: 15px;
+    color: rgb(200, 197, 192);
+    -unity-font-style: italic;
+}
+
 .comms-subtitle--radio {
     background-color: rgba(61, 96, 137, 0.26);
     border-left-width: 2px;

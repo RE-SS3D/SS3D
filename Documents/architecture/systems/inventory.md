@@ -89,7 +89,7 @@ Items, containers, hands, identification cards (`IDCard`, `PDA`), on-demand stor
 
 - **New container-opening entry point:** `ContainerViewer.ShowContainerUI(container)` only — do not invent a second open path.
 - **Open another character's paperdoll:** `SearchInteraction` via `HandSearchExtension` on hand prefabs (Discover/`CmdRunInteraction`); Shift+Click is a shortcut in `InteractionController`. UI opens client-side through `ExamineSubSystem.RequestCharacterWindow`.
-- **Take from another character (examine paperdoll):** `InteractionController.RequestTakeFromCharacter` → `TakeFromCharacterInteraction` (`Hand.Pickup`); loot gate `CharacterLootUtility.IsLootable` (dead/unconscious). Do not use `CmdTransferItem` for foreign worn gear without opening the container in the viewer.
+- **Take from another character (examine paperdoll):** `InteractionController.RequestTakeFromCharacter` → `TakeFromCharacterInteraction` (`Hand.Pickup`). Anyone in reach; `CharacterLootUtility.TakeSeconds` makes an alert victim slower and a blind reach (pocket, suit storage) slower still, and `TakeFromCharacterWarning` warns them. `IsLootable` (dead/unconscious) now means "quick take, every slot visible". Do not use `CmdTransferItem` for foreign worn gear without opening the container in the viewer.
 - **New HUD drop peer:** register via `StoragePanelHost.SetHudDropTargets` from Main HUD bind/refresh.
 - **New storage panel stylesheet:** path in `StoragePanelAssetPaths`, run **SS3D → Data → Rebuild All UI Catalogs**.
 - **Head/torso world containers:** do not re-add `ContainerInteractive` on `HumanHead`/`HumanTorso` until surgery needs organ holes — re-strip via **SS3D → Entities → Run All Human Prefab Recipes**.

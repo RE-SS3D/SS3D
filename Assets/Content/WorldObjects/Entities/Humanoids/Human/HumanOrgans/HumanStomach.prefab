@@ -273,7 +273,7 @@ MonoBehaviour:
   _addedNetworkObject: {fileID: 8532088199163376958}
   _networkObjectCache: {fileID: 8532088199163376958}
   _asset: {fileID: 11400000, guid: 6d4e37b5ee952264aadeec1edee7f15a, type: 2}
-  _name: 
+  _name: human stomach
   _weight: 1
   _startingTraits: []
   _rigidbody: {fileID: 3362323121630547519}

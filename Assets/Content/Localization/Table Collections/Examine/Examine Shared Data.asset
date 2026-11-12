@@ -1611,6 +1611,230 @@ MonoBehaviour:
     m_Key: examine.construction.floor_damaged
     m_Metadata:
       m_Items: []
+  - m_Id: 298314483225567232
+    m_Key: examine.tank.fill_low
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298314483246538752
+    m_Key: examine.substance.empty
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298314483246538753
+    m_Key: examine.substance.contains
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298314483246538754
+    m_Key: examine.substance.volume.few
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298314483246538755
+    m_Key: examine.substance.volume.small
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298314483246538756
+    m_Key: examine.substance.volume.moderate
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298314483246538757
+    m_Key: examine.substance.volume.large
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298314483246538758
+    m_Key: examine.substance.feels
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298314483246538759
+    m_Key: examine.substance.temp.frozen
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298314483246538760
+    m_Key: examine.substance.temp.cold
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298314483246538761
+    m_Key: examine.substance.temp.cool
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298314483246538762
+    m_Key: examine.substance.temp.warm
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298314483246538763
+    m_Key: examine.substance.temp.hot
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298314483246538764
+    m_Key: examine.substance.temp.scalding
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298314483246538765
+    m_Key: examine.substance.looks
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298314483246538766
+    m_Key: examine.substance.color.clear
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298314483246538767
+    m_Key: examine.substance.color.murky
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298314483246538768
+    m_Key: examine.substance.color.red
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298314483246538769
+    m_Key: examine.substance.color.orange
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298314483246538770
+    m_Key: examine.substance.color.yellow
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298314483246538771
+    m_Key: examine.substance.color.green
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298314483246538772
+    m_Key: examine.substance.color.blue
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298314483246538773
+    m_Key: examine.substance.color.purple
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298317283615547392
+    m_Key: examine.item.size
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298317283632324608
+    m_Key: examine.item.stack
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298317283632324609
+    m_Key: examine.item.size.tiny
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298317283632324610
+    m_Key: examine.item.size.small
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298317283632324611
+    m_Key: examine.item.size.normal
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298317283632324612
+    m_Key: examine.item.size.bulky
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298317283632324613
+    m_Key: examine.item.size.huge
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298317283632324614
+    m_Key: character_examine.unknown_in_outfit
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298317283632324615
+    m_Key: examine.self.presenting
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298317283632324616
+    m_Key: examine.self.presenting_no_job
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298317283632324617
+    m_Key: examine.self.presenting_nothing
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298320605231685632
+    m_Key: examine.disposal.tag
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298320605248462848
+    m_Key: examine.device.powered
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298320605248462849
+    m_Key: examine.device.unpowered
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298320605248462850
+    m_Key: examine.weapon.rounds
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298320605248462851
+    m_Key: examine.weapon.rounds_empty
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298320605248462852
+    m_Key: examine.weapon.charge
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298320605248462853
+    m_Key: examine.weapon.charge_empty
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298326310546284544
+    m_Key: action.examine_cue
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298326310563061760
+    m_Key: action.take_blind
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298326310563061761
+    m_Key: action.take_open
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298329279073329152
+    m_Key: action.light_switch
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298330755267010560
+    m_Key: action.plant_charge
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298583315651469312
+    m_Key: furniture.jukebox.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298583315676635136
+    m_Key: furniture.jukebox.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298583317127864320
+    m_Key: structures.doors.airlock_panel.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298583317127864321
+    m_Key: structures.doors.airlock_panel.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298583318595870720
+    m_Key: structures.floors.tiles.tile_dirt.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298583318595870721
+    m_Key: structures.floors.tiles.tile_dirt.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298583320034516992
+    m_Key: structures.floors.tiles.tile_grass.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298583320034516993
+    m_Key: structures.floors.tiles.tile_grass.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298583321477357568
+    m_Key: structures.floors.tiles.tile_reinforced.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298583321477357569
+    m_Key: structures.floors.tiles.tile_reinforced.desc
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

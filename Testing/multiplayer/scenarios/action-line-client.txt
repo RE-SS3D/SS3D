@@ -1,0 +1,11 @@
+# Client side of mppm:action-line: joins the running round and waits for the host's examine cue.
+wait_timeout 60
+wait_connected
+wait_round Ongoing
+wait_seconds 1
+ready
+embark
+assert_embarked
+assert_action_line looks you over
+wait_seconds 4
+disconnect

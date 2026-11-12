@@ -36,13 +36,14 @@ namespace SS3D.Systems.Examine
                 sections.Add(new ExamineSection(ownerLine));
             }
 
-            if (!string.IsNullOrWhiteSpace(idCard.RoleName))
+            string taggedJob = new PresentedIdentity(idCard.OwnerName, idCard.RoleName, idCard.Department).TaggedJob;
+            if (!string.IsNullOrWhiteSpace(taggedJob))
             {
                 string roleLine = LocalizedTextService.GetFormattedString(
                     ExamineCanonicalKeyGenerator.ExamineTableName,
                     ExamineIdentificationKeys.RoleLine,
-                    new object[] { idCard.RoleName },
-                    string.Format(ExamineIdentificationKeys.RoleFallback, idCard.RoleName));
+                    new object[] { taggedJob },
+                    string.Format(ExamineIdentificationKeys.RoleFallback, taggedJob));
 
                 sections.Add(new ExamineSection(roleLine));
             }

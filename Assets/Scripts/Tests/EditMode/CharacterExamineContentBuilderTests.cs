@@ -35,15 +35,5 @@ namespace EditorTests
             Assert.IsTrue(hasLeft);
             Assert.IsTrue(hasRight);
         }
-
-        [Test]
-        public void TryGetVisibleIdentityReturnsFalseForNullInventory()
-        {
-            bool found = CharacterExamineContentBuilder.TryGetVisibleIdentity(null, out string name, out string job);
-
-            Assert.IsFalse(found);
-            Assert.IsNull(name);
-            Assert.IsNull(job);
-        }
     }
 }

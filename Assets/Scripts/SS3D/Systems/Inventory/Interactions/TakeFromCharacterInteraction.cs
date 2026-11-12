@@ -14,7 +14,7 @@ namespace SS3D.Systems.Inventory.Interactions
     /// </summary>
     public sealed class TakeFromCharacterInteraction : DelayedInteraction
     {
-        public const float DefaultDelaySeconds = 1.5f;
+        public const float DefaultDelaySeconds = CharacterLootUtility.IncapacitatedTakeSeconds;
         private const float DefaultCheckIntervalSeconds = 0.25f;
 
         private readonly HumanInventory _victimInventory;
@@ -60,11 +60,6 @@ namespace SS3D.Systems.Inventory.Interactions
 
             HumanInventory takerInventory = hand.GetComponentInParent<HumanInventory>();
             if (!CharacterLootUtility.IsOtherCharacter(takerInventory, _victimInventory))
-            {
-                return false;
-            }
-
-            if (!CharacterLootUtility.IsLootable(_victimInventory))
             {
                 return false;
             }

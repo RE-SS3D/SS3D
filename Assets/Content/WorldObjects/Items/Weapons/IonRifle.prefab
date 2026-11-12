@@ -51,6 +51,7 @@ GameObject:
   - component: {fileID: 9182736450123456901}
   - component: {fileID: 4173397973592644625}
   - component: {fileID: 250033783427652562}
+  - component: {fileID: 5593766085549581189}
   m_Layer: 10
   m_Name: IonRifle
   m_TagString: Untagged
@@ -229,6 +230,7 @@ MonoBehaviour:
   _networkBehaviours:
   - {fileID: 6701823988818803309}
   - {fileID: 3769753042901807984}
+  - {fileID: 5593766085549581189}
   <ParentNetworkObject>k__BackingField: {fileID: 0}
   <ChildNetworkObjects>k__BackingField: []
   SerializedTransformProperties:
@@ -280,6 +282,7 @@ MonoBehaviour:
   AttachmentPoint: {fileID: 3973287392732280433}
   AttachmentPointAlt: {fileID: 3973287392732280433}
   _restRotation: {x: -0, y: 0, z: 90}
+  _restsUpright: 0
   _overrideIconRotation: 1
   _iconRotation: {x: 0, y: 0, z: 0}
   _container: {fileID: 0}
@@ -371,6 +374,22 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: SS3D.Systems::SS3D.Systems.Examine.SimpleExaminable
   key: {fileID: 11400000, guid: 66aaee48937cc1f468f011ad7fa356fb, type: 2}
+--- !u!114 &5593766085549581189
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4945023127613724458}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c8556f8e40407ca0d8154c8a1c9806c9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: SS3D.Systems::SS3D.Systems.Combat.RangedWeaponRoundsReadout
+  _componentIndexCache: 2
+  _addedNetworkObject: {fileID: 3705697856645950051}
+  _networkObjectCache: {fileID: 3705697856645950051}
+  _rounds: -1
 --- !u!1 &8155231258371102692
 GameObject:
   m_ObjectHideFlags: 0

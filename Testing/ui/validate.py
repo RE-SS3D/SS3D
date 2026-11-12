@@ -61,6 +61,7 @@ MPPM_SCENARIOS = {
     "breach": ("breach-host", ["breach-client"]),
     "breach-budget": ("breach-budget-host", ["breach-budget-client"]),
     "blast": ("blast-host", ["blast-client"]),
+    "action-line": ("action-line-host", ["action-line-client"]),
 }
 # Scenario -> station fixture its host loads, copied in for the run: rounds read Data/StationTemplates.
 MPPM_STATIONS = {"breach-budget": "atmostest.json", "breach": "testroom.json"}

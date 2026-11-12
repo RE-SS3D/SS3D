@@ -489,16 +489,19 @@ namespace SS3D.Systems.Interactions
 
             if (victimInventory == null
                 || !CharacterLootUtility.IsOtherCharacter(takerInventory, victimInventory)
-                || !CharacterLootUtility.IsLootable(victimInventory)
                 || !CharacterExamineContentBuilder.TryGetItemInSlot(victimInventory, slot, out Item item))
             {
                 TargetRejectTakeFromCharacter(Owner);
                 return;
             }
 
+            // Anyone in reach (inventory-storage.md §9); an alert victim takes longer and is warned.
+            bool incapacitated = CharacterLootUtility.IsLootable(victimInventory);
+            bool blind = !incapacitated && CharacterExamineContentBuilder.IsHiddenWhileAlert(slot);
             Vector3 point = victimInventory.transform.position;
             InteractionEvent interactionEvent = new(hand, item, point, Vector3.up);
-            TakeFromCharacterInteraction interaction = new(victimInventory, slot, item);
+            TakeFromCharacterInteraction interaction = new(
+                victimInventory, slot, item, CharacterLootUtility.TakeSeconds(incapacitated, blind));
 
             if (!interaction.CanInteract(interactionEvent) || !hand.CanExecuteInteraction(interaction))
             {
@@ -509,6 +512,7 @@ namespace SS3D.Systems.Interactions
             InteractionReference reference = hand.Interact(interactionEvent, interaction);
             TrackActiveInteraction(hand, reference, interaction);
             TargetTakeFromCharacterStarted(Owner, (byte)slot, interaction.DelaySeconds, reference.Id);
+            TakeFromCharacterWarning.ServerWarn(NetworkObject, victimInventory, blind, item);
         }
 
         [TargetRpc]

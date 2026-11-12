@@ -49,9 +49,14 @@ namespace SS3D.Interactions
                     instance.FirstTick = false;
 
                     // Runs the first tick of the interaction
-                    if (instance.Interaction != null && instance.Interaction.Start(instance.Event, instance.Reference))
+                    if (instance.Interaction != null)
                     {
-                        continue;
+                        bool running = instance.Interaction.Start(instance.Event, instance.Reference);
+                        InteractionNarration.TryRaise(instance.Interaction, instance.Event);
+                        if (running)
+                        {
+                            continue;
+                        }
                     }
                 }
                 else
