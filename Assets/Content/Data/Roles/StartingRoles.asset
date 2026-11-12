@@ -13,9 +13,15 @@ MonoBehaviour:
   m_Name: StartingRoles
   m_EditorClassIdentifier: 
   Roles:
+  - Data: {fileID: 11400000, guid: 1709128e624b45a29f4228d34098224b, type: 2}
+    AvailableRoles: 1
   - Data: {fileID: 11400000, guid: 1928692fbc0905b4195e6a72d04f474d, type: 2}
     AvailableRoles: 0
   - Data: {fileID: 11400000, guid: 7485a795dffb1c94385d7b05561d2d78, type: 2}
     AvailableRoles: 1
   - Data: {fileID: 11400000, guid: 8156304f041c4ad39cb0ab46cb768443, type: 2}
+    AvailableRoles: 0
+  - Data: {fileID: 11400000, guid: 9d08ac708a94414db4580f1c51f9cd97, type: 2}
+    AvailableRoles: 0
+  - Data: {fileID: 11400000, guid: e58311b330ba471c92875a9e522e79ef, type: 2}
     AvailableRoles: 0

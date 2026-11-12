@@ -1,0 +1,38 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9fbd6da0c74d76746b141068081e0dc3, type: 3}
+  m_Name: CaptainLoadout
+  m_EditorClassIdentifier: 
+  HandLeftAsset: {fileID: 0}
+  HandRightAsset: {fileID: 0}
+  EquipmentAssets:
+    _list:
+    - _key: 512
+      _value: {fileID: 11400000, guid: 620dc53a5608be44a975c990e69ddba5, type: 2}
+    - _key: 16
+      _value: {fileID: 11400000, guid: 7514f2bc5fd84a14095929761da0a4dd, type: 2}
+    - _key: 8192
+      _value: {fileID: 11400000, guid: f2914f9670967764e93aa1b262968344, type: 2}
+    - _key: 64
+      _value: {fileID: 11400000, guid: c0a5c4fc200a5ae4693d9b02fee23b49, type: 2}
+    - _key: 4
+      _value: {fileID: 11400000, guid: 9435365903a79d64184af9ee71e060e5, type: 2}
+    _new: 0
+  PocketAssets:
+  - {fileID: 11400000, guid: 4f4a376e135b3e46dbe041dbca673357, type: 2}
+  - {fileID: 11400000, guid: 4a50e327a934cd3438e1b88d2bb547cb, type: 2}
+  EquipmentContents:
+  - Slot: 4
+    Items:
+    - {fileID: 11400000, guid: cb8a18ff6b582ec45a3aa1f689a18564, type: 2}
+  HandLeftContents: []
+  HandRightContents: []

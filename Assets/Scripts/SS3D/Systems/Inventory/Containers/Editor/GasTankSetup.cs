@@ -45,7 +45,7 @@ namespace SS3D.Systems.Inventory.Containers.Editor
             var operative = DB.LoadAssetAtPath<RoleLoadout>(Loadouts + "OperativeLoadout.asset");
             operative.EquipmentAssets[ContainerType.SuitStorage] = fullTank;
             EditorUtility.SetDirty(operative);
-            foreach (string crew in new[] { "AssistantLoadout.asset", "SecurityLoadout.asset" })
+            foreach (string crew in new[] { "CaptainLoadout.asset", "AssistantLoadout.asset", "SecurityLoadout.asset", "EngineerLoadout.asset", "DoctorLoadout.asset" })
             {
                 var loadout = DB.LoadAssetAtPath<RoleLoadout>(Loadouts + crew);
                 loadout.PocketAssets = new() { emergency, gasMask };

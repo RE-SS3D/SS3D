@@ -36,3 +36,18 @@ MonoBehaviour:
       _value: {fileID: 11400000, guid: b42f227c43baa2141938339b7dda3f71, type: 2}
     _new: 0
   PocketAssets: []
+  EquipmentContents:
+  - Slot: 32768
+    Items:
+    - {fileID: 11400000, guid: 9e4b9aa465bc48d4faa9b53cd0132f11, type: 2}
+    - {fileID: 11400000, guid: fd8e3cf550cdc704281d3b94b5c8d631, type: 2}
+    - {fileID: 11400000, guid: f784858d359bb434c9a7ea797c27552d, type: 2}
+    - {fileID: 11400000, guid: bd14f7dd0646a2240adf09ba61ce700a, type: 2}
+    - {fileID: 11400000, guid: 715777b8c0a0f1b4cb29ee4dab0326e4, type: 2}
+  - Slot: 4
+    Items:
+    - {fileID: 11400000, guid: 85c7d64ad33dbc7d6a808f7e759dab07, type: 2}
+    - {fileID: 11400000, guid: e2e5a3bc6dba95ae6b6167ce7df8f6fc, type: 2}
+    - {fileID: 11400000, guid: cb8a18ff6b582ec45a3aa1f689a18564, type: 2}
+  HandLeftContents: []
+  HandRightContents: []
