@@ -91,7 +91,7 @@ namespace SS3D.Systems.Rounds
 
         public static RoundEndRequest Admin => new(RoundEndTrigger.Admin);
 
-        /// <summary>The device detonated; until M3 this is the instant <c>Nuke.Detonate</c>.</summary>
+        /// <summary>The device detonated: its countdown ran out (<c>Nuke.Detonate</c>).</summary>
         public static RoundEndRequest Detonation =>
             new(RoundEndTrigger.GamemodeCondition, RoundWinner.Operatives, true, "The nuclear device detonated.");
     }

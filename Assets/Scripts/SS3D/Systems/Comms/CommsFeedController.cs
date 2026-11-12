@@ -52,6 +52,7 @@ namespace SS3D.Systems.Comms
             if (_comms != null)
             {
                 _comms.OnCommsMessageReceived += HandleCommsMessage;
+                _comms.StationCueReceived += HandleStationCue;
             }
         }
 
@@ -60,6 +61,7 @@ namespace SS3D.Systems.Comms
             if (_comms != null)
             {
                 _comms.OnCommsMessageReceived -= HandleCommsMessage;
+                _comms.StationCueReceived -= HandleStationCue;
                 _comms = null;
             }
 
@@ -114,6 +116,9 @@ namespace SS3D.Systems.Comms
             Color accent = channel != null ? channel.Color : new Color(0.37f, 0.53f, 0.7f);
             _view.PushRadio(header, message.Sender, message.Text, accent);
         }
+
+        /// <summary>A station cue plays at once on the announcement source, with no banner.</summary>
+        private void HandleStationCue(string soundId) => PlayAnnounceCue(soundId);
 
         private void EnqueueAnnouncement(string title, string body, string followUpSoundId)
         {

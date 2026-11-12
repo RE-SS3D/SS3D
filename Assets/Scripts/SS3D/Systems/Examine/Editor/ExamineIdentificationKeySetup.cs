@@ -138,6 +138,11 @@ namespace SS3D.Systems.Examine.Editor
                 UpsertEntry(englishTable, key, value);
             }
 
+            foreach ((string key, string value) in ExamineNukeKeys.All)
+            {
+                UpsertEntry(englishTable, key, value);
+            }
+
             foreach ((string key, string value) in ExamineItemKeys.All)
             {
                 UpsertEntry(englishTable, key, value);

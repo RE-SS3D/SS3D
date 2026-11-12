@@ -15,7 +15,7 @@ Short narrated lines for what an animation alone doesn't explain ([action-messag
 
 Lines render as chips on the actor through the local speech chip controller ([chat-audio-screens](chat-audio-screens.md)): `SpeechMode.Action`, smaller, italic, `LocalSpeechConfig.ActionFadeDuration` (2.5 s), sharing the crowd cap. `CrowdCapRanker.RankByTier` orders speech, then hostile lines aimed at you, then lines aimed at you, then routine ones, then proximity. A line aimed at you with no actor sits on your own head.
 
-Consumers: the examine cue (holding examine on someone within `CueRange`, one per pair per 5 s), the take-from-character warning (target-only), the light switch (public) and planting a breaching charge (close). Not built: sound lines, the comms feed's Actions history (the feed has no scrollback yet), failure reasons (`IExplainsFailure`). Status per phase: [2026-11_examine-and-action-feedback](../2026-11_examine-and-action-feedback.md).
+Consumers: the examine cue (holding examine on someone within `CueRange`, one per pair per 5 s), the take-from-character warning (target-only), the light switch (public), planting a breaching charge (close) and the nuclear device (loading the disk and unscrewing the panel close; arming and cutting the wires public, each said as the step starts). Not built: sound lines, the comms feed's Actions history (the feed has no scrollback yet), failure reasons (`IExplainsFailure`). Status per phase: [2026-11_examine-and-action-feedback](../2026-11_examine-and-action-feedback.md).
 
 ## Start here
 

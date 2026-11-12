@@ -35,6 +35,7 @@ HUD feed yet.
 - `CommsSubSystem.cs` — local + radio/announce hub; `SendAnnouncement` / `HandleAnnouncementRequest`;
   `TryResolveComposePrefix`; transcript `Logs/Comms.txt` on server. `SendPrivateFeed` (server) puts one line
   in a single player's radio feed under a custom header, overheard by nobody (Nuke Ops `OperativeBriefing`).
+- `CommsSubSystem.StationCue.cs` — `SendStationCue(soundId)` (server): a sound with no banner for every player with a body, played by `CommsFeedController` on the announcement source (the nuke's final alarm)
 - `CommsSubSystem.Ooc.cs` — `SendOoc` / `RequestOocHistory` (client), `PostOocSystem` (server); `OocChat.cs` — messages, `OocChatRules`, `OocRateLimiter`, `OocChatHistory` (EditMode-tested in `OocChatTests`).
 - `LocalSpeechEmitter` — `CmdSpeak` / `CmdSendRadio` / `CmdSendAnnouncement` on the speaking Entity; `CanSpeak` reads health. All three server handlers refuse critical, unconscious, arrested or dead speakers; OOC remains separate.
 - `CommsComposePrefix` — pure `/token` parse/strip (EditMode-tested).

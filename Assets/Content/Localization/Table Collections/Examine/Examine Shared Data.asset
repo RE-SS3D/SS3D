@@ -1835,6 +1835,42 @@ MonoBehaviour:
     m_Key: structures.floors.tiles.tile_reinforced.desc
     m_Metadata:
       m_Items: []
+  - m_Id: 298600052098834432
+    m_Key: action.nuke_load_disk
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298600052119805952
+    m_Key: action.nuke_arm
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298600052119805953
+    m_Key: action.nuke_open_panel
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298600052119805954
+    m_Key: action.nuke_cut_wires
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298600052119805955
+    m_Key: examine.nuke.disk_empty
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298600052119805956
+    m_Key: examine.nuke.disk_loaded
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298600052119805957
+    m_Key: examine.nuke.safe
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298600052119805958
+    m_Key: examine.nuke.armed
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298600052119805959
+    m_Key: examine.nuke.panel_open
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:
