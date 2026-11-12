@@ -52,7 +52,14 @@ namespace SS3D.Systems.Inventory.Containers.Editor
             public readonly string Description;
             public readonly ArmorProfile? Armor;
 
-            public Garment(string name, string set, Slot slot, string displayName, string description, ArmorProfile? armor = null)
+            /// <summary>
+            /// Covers torso, arms and legs wrist to ankle with no openings, so the body under it can be hidden.
+            /// The Drive jumpsuits need this: they are cut tighter than the in-game body, which pokes through.
+            /// </summary>
+            public readonly bool CoversBody;
+
+            public Garment(string name, string set, Slot slot, string displayName, string description, ArmorProfile? armor = null,
+                bool coversBody = false)
             {
                 Name = name;
                 Set = set;
@@ -60,6 +67,7 @@ namespace SS3D.Systems.Inventory.Containers.Editor
                 DisplayName = displayName;
                 Description = description;
                 Armor = armor;
+                CoversBody = coversBody;
             }
 
             /// <summary>Examine key stem, e.g. <c>jumpsuit_captain</c>.</summary>
@@ -86,10 +94,10 @@ namespace SS3D.Systems.Inventory.Containers.Editor
         /// <summary>Every garment the importer owns. Names match the objects in the exported FBX sets.</summary>
         public static readonly IReadOnlyList<Garment> Garments = new Garment[]
         {
-            new("JumpsuitCaptain", "Command", Slot.Jumpsuit, "Captain's Jumpsuit", "A navy jumpsuit with gold trim, cut for whoever is in charge."),
+            new("JumpsuitCaptain", "Command", Slot.Jumpsuit, "Captain's Jumpsuit", "A navy jumpsuit with gold trim, cut for whoever is in charge.", coversBody: true),
             new("CapCaptain", "Command", Slot.Head, "Captain's Garrison Cap", "A blue garrison cap with a gold badge."),
             new("BackpackCommand", "Command", Slot.Back, "Command Backpack", "A backpack in command blue."),
-            new("JumpsuitMedical", "Medical", Slot.Jumpsuit, "Medical Scrubs", "White scrubs, easy to spot blood on."),
+            new("JumpsuitMedical", "Medical", Slot.Jumpsuit, "Medical Scrubs", "White scrubs, easy to spot blood on.", coversBody: true),
             new("LabCoat", "Medical", Slot.Outer, "Lab Coat", "A long white coat worn over the uniform."),
             new("BackpackMedical", "Medical", Slot.Back, "Medical Backpack", "A white backpack with a green stripe."),
             new("ArmorVestSecurity", "Security", Slot.Outer, "Armor Vest", "A ballistic vest. Good against blows and bullets, poor against fire.", Vest(10f, 3f, 150f)),
@@ -101,7 +109,7 @@ namespace SS3D.Systems.Inventory.Containers.Editor
             new("ShoeWorkBoots", "Engineering", Slot.Shoes, "Work Boots", "A pair of laced yellow work boots."),
             new("WeldingMask", "Engineering", Slot.Head, "Welding Helmet", "A dark-visored welding helmet."),
             new("GogglesMeson", "Engineering", Slot.Glasses, "Meson Goggles", "Green-lensed engineering goggles."),
-            new("JumpsuitSyndicate", "Syndicate", Slot.Jumpsuit, "Tactical Turtleneck", "Black fatigues with red bands. Nobody on the crew wears these."),
+            new("JumpsuitSyndicate", "Syndicate", Slot.Jumpsuit, "Tactical Turtleneck", "Black fatigues with red bands. Nobody on the crew wears these.", coversBody: true),
             new("ArmorVestSyndicate", "Syndicate", Slot.Outer, "Syndicate Armor Vest", "A black plate vest with shoulder guards.", Vest(12f, 5f, 160f)),
             new("ShoeSyndicateBoots", "Syndicate", Slot.Shoes, "Combat Boots", "A pair of black combat boots."),
             new("GloveSyndicate", "Syndicate", Slot.Gloves, "Combat Gloves", "Black fingerless combat gloves."),
@@ -195,7 +203,7 @@ namespace SS3D.Systems.Inventory.Containers.Editor
                 item.ApplyModifiedPropertiesWithoutUndo();
 
                 ClothType type = garment.Slot == Slot.Jumpsuit ? ClothType.Jumpsuit : ClothType.ExoSuit;
-                SetCloth(root, new[] { (type, mesh) }, materials);
+                SetCloth(root, new[] { (type, mesh) }, materials, garment.CoversBody ? CoveredBody : Array.Empty<string>());
                 Hardsuit.WirePresentation(root, world, worn);
                 Finish(root, garment, path);
             }
@@ -250,7 +258,7 @@ namespace SS3D.Systems.Inventory.Containers.Editor
                 var item = new SerializedObject(root.GetComponent<Item>());
                 SetItemFields(item, garment, reference, null);
                 item.ApplyModifiedPropertiesWithoutUndo();
-                SetCloth(root, meshes, new[] { palette });
+                SetCloth(root, meshes, new[] { palette }, Array.Empty<string>());
                 Finish(root, garment, path);
             }
             finally
@@ -381,7 +389,11 @@ namespace SS3D.Systems.Inventory.Containers.Editor
         /// The exported meshes have one submesh, so they get one material. Leaving the list empty would keep
         /// the body slot's own materials, and a second material draws the last submesh again on top.
         /// </summary>
-        private static void SetCloth(GameObject root, (ClothType type, Mesh mesh)[] meshes, Material[] materials)
+        /// <summary>Body renderers a full-cover garment hides, as the hardsuit does (the neck is part of the head).</summary>
+        private static readonly string[] CoveredBody =
+            { "HumanTorso", "HumanArmLeft", "HumanArmRight", "HumanLegLeft", "HumanLegRight", "UnderwearTop", "UnderwearBottom" };
+
+        private static void SetCloth(GameObject root, (ClothType type, Mesh mesh)[] meshes, Material[] materials, string[] occluded)
         {
             var cloth = root.GetComponent<Cloth>();
             if (cloth == null) cloth = root.AddComponent<Cloth>();
@@ -397,7 +409,9 @@ namespace SS3D.Systems.Inventory.Containers.Editor
             SerializedProperty worn = so.FindProperty("_wornMaterials");
             worn.arraySize = materials.Length;
             for (int i = 0; i < materials.Length; i++) worn.GetArrayElementAtIndex(i).objectReferenceValue = materials[i];
-            so.FindProperty("_occludedBodyRenderers").arraySize = 0;
+            SerializedProperty hidden = so.FindProperty("_occludedBodyRenderers");
+            hidden.arraySize = occluded.Length;
+            for (int i = 0; i < occluded.Length; i++) hidden.GetArrayElementAtIndex(i).stringValue = occluded[i];
             so.ApplyModifiedPropertiesWithoutUndo();
         }
 
