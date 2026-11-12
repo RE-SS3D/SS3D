@@ -165,8 +165,14 @@ namespace SS3D.Systems.Tile
                 return false;
 
             string name = plenumLocation.PlacedObject.NameString;
-            return name.Contains("Plenum") || name.Contains("Catwalk") || name.Contains("Lattice");
+            return name.Contains("Plenum") || IsGrating(name);
         }
+
+        /// <summary>
+        /// Whether a Plenum-layer asset name is a catwalk or lattice: it holds wires and pipes but not turf.
+        /// </summary>
+        public static bool IsGrating(string plenumLayerName) =>
+            plenumLayerName != null && (plenumLayerName.Contains("Catwalk") || plenumLayerName.Contains("Lattice"));
 
         /// <summary>
         /// Whether turf (floors, walls, windows) can sit on this Plenum-layer object. Only a real plenum holds turf;
