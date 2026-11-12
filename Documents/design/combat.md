@@ -50,12 +50,13 @@ Free continuous movement (confirmed, not tile-stepped) makes combat inherently m
 
 ## 5. Stagger and knockdown
 
-Hits interrupt, not just subtract. Two levels:
+Hits interrupt, not just subtract. Three levels:
 
+- **Flinch** — every hit that lands makes the victim flinch: their own view kicks, and everyone else sees the body jolt. It scales with the damage before armor (a pistol round is a twitch, a point-blank rifle hit a jolt), so a hardsuit still flinches and the shooter can see they hit even when armor soaked it. A flinch never cancels what the victim is doing; that is stagger's job.
 - **Stagger** — a heavy hit (a big melee weapon, a point-blank shot) briefly interrupts the victim: their current windup or action is cancelled and they stumble. A fraction of a second, no loss of control beyond that.
-- **Knockdown** — a shove (disarm, `main-hud.md` §7), a stun baton or taser hit (below), collapsing from exhaustion (`stamina.md` §3) or a nearby blast (`explosives-destruction.md` §1) puts the victim on the ground for roughly **2–3 seconds**. They drop to prone visibly, get a HUD alert (`main-hud.md` §9), and stand back up when it ends. Knockdown is the window where a disarm, a grab or a finishing blow lands.
+- **Knockdown** — a shove (disarm, `main-hud.md` §7), a stun baton or taser hit (below), a hit on an already wounded leg while sprinting (`health.md` §5), collapsing from exhaustion (`stamina.md` §3) or a nearby blast (`explosives-destruction.md` §1) puts the victim on the ground for roughly **2–3 seconds**. They drop to prone visibly, get a HUD alert (`main-hud.md` §9), and stand back up when it ends. Knockdown is the window where a disarm, a grab or a finishing blow lands.
 
-Knockdown is always legible: the victim sees themselves fall and sees when they can stand, and everyone around sees a body on the floor. Critical-state collapse (`health.md` §4) is a different, longer state, not a knockdown.
+Knockdown is always legible: the victim sees themselves fall and sees when they can stand, and everyone around sees a body on the floor. Going down from injury is a different, longer state, not a knockdown: **Downed**, conscious and on the floor for as long as the shock lasts, and then **Critical** (`health.md` §4). This is how gunfights end. Half a rifle magazine puts an unarmored body down well before it bleeds out.
 
 **Stun baton.** Security's signature weapon, and its non-lethal one. It is an ordinary melee weapon under §2 (windup, recovery, deterministic hit), except that a charged hit knocks the target down as above instead of mainly dealing damage. It holds a charge that each knockdown hit spends; empty, it is a club. Armor doesn't make anyone immune: an operative in a hardsuit goes down like anyone else. A stun is a window for whoever follows up, not an arrest — restraints are out of scope for this pass (§11).
 

@@ -14,6 +14,7 @@ The two have to stay genuinely separate, though. Oxy debt in the health doc mean
 
 - Fast-draining, fast-recovering. Depletes over seconds of exertion, refills over seconds of rest — this is the layer that makes momentary sprints, swings, and blocks feel weighty without being a health mechanic.
 - **Regeneration rate is modulated by heart/lung function and blood volume**, per the health doc's organ model. This isn't a new rule — it's the existing organ system doing more work. The direct consequence: a character who's already bleeding from an earlier hit tires out faster for the rest of a fight, entirely as a result of systems already defined, no extra bookkeeping required.
+- **Shock lowers the cap** (`health.md` §4). A badly hurt body tires faster and can't sprint as long, which is part of why a target who has been shot can't simply outrun the shooter.
 - **Weight lowers both the cap and the regen.** Everything you carry counts — worn armor (`armor.md` §4), what's in your hands, and what's in your backpack. Full protection and a full bag cost mobility, exactly the way they would physically. Nothing about weight decides whether an item fits in a container (`inventory-storage.md` §4); weight's only job is this one.
 - **Drivers of drain:**
   - Sprinting — continuous drain while moving above walking speed
@@ -46,7 +47,7 @@ Same rule as vitals (`main-hud.md` §5): minimal permanent chrome, diegetic feed
 
 | Stamina element | Touches existing system |
 |---|---|
-| Regen rate and cap | Organ function (heart/lungs) and blood volume — `health.md` §3; carried weight — `armor.md` §4, `inventory-storage.md` |
+| Regen rate and cap | Organ function (heart/lungs) and blood volume — `health.md` §3; shock lowers the cap — `health.md` §4; carried weight — `armor.md` §4, `inventory-storage.md` |
 | Push-past-empty cost | Oxy debt pool and critical/death thresholds — `health.md` §4 |
 | Melee drain | Windup/recovery timing — `combat.md` §2 |
 | Ranged drain | Accuracy cone and reticle bloom — `combat.md` §3 |
