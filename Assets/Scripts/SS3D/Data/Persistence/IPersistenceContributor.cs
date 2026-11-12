@@ -10,6 +10,9 @@ namespace SS3D.Data.Persistence
 
         object Capture();
 
+        /// <summary>Reads this contributor's saved payload back into the object <see cref="Restore"/> takes.</summary>
+        object DeserializePayload(string payloadJson);
+
         void Restore(object data, PersistenceContext context);
     }
 }

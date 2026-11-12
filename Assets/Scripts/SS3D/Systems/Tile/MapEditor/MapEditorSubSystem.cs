@@ -1339,7 +1339,7 @@ namespace SS3D.Systems.Tile.MapEditor
                 }
                 MapEditorPermissions.RecordSave(conn, mapName);
                 TargetRememberTemplate(conn, mapName);
-                string mode = SubSystems.Get<SS3D.Systems.Rounds.RoundSubSystem>().SettingsForServer.Mode;
+                string mode = SubSystems.Get<SS3D.Systems.Rounds.ServerSettingsService>().Current.Mode;
                 Validation.MapValidationReport report = Validation.MapValidationService.Validate(_tileSystem, mode);
                 TargetMapValidation(conn, report.Issues.ToArray(), mode, false);
                 TargetRefreshMapList(conn);
@@ -1379,7 +1379,7 @@ namespace SS3D.Systems.Tile.MapEditor
         [Server]
         private void SendMapValidation(NetworkConnection conn, bool resetDismissed = false)
         {
-            string mode = SubSystems.Get<RoundSubSystem>().SettingsForServer.Mode;
+            string mode = SubSystems.Get<ServerSettingsService>().Current.Mode;
             Validation.MapValidationReport report = Validation.MapValidationService.Validate(_tileSystem, mode);
             TargetMapValidation(conn, report.Issues.ToArray(), mode, resetDismissed);
         }

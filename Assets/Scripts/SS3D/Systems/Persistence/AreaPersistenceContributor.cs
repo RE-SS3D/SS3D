@@ -28,6 +28,8 @@ namespace SS3D.Systems.Persistence
 
         public int LoadOrder => 100;
 
+        public object DeserializePayload(string payloadJson) => JsonUtility.FromJson<SavedAreaChunkPayload>(payloadJson);
+
         public object Capture()
         {
             AreaSubSystem areaSubSystem = _areaSubSystemProvider();

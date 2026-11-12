@@ -29,7 +29,7 @@ namespace SS3D.Tests
         [UnitySetUp]
         public IEnumerator SaveSettings()
         {
-            _settingsBefore = Rounds.SettingsForServer;
+            _settingsBefore = Settings.Current;
             yield break;
         }
 
@@ -37,8 +37,8 @@ namespace SS3D.Tests
         public IEnumerator RestoreSettings()
         {
             // Gone after a scenario that leaves the session; the next boot loads the settings again.
-            if (SubSystems.TryGet(out RoundSubSystem rounds))
-                rounds.ApplyServerSettingsForTesting(_settingsBefore);
+            if (SubSystems.TryGet(out ServerSettingsService settings))
+                settings.ApplyServerSettingsForTesting(_settingsBefore);
             yield break;
         }
 
@@ -128,17 +128,17 @@ namespace SS3D.Tests
             return stale;
         }
 
-        private static RoundSubSystem Rounds => SubSystems.Get<RoundSubSystem>();
+        private static ServerSettingsService Settings => SubSystems.Get<ServerSettingsService>();
 
         private bool IsGhost() => HostEntity != null && HostEntity.GetComponent<HumanoidGhostController>() != null;
 
         private static void SetRespawnRules(int cooldownSeconds)
         {
-            ServerSettings settings = Rounds.SettingsForServer;
+            ServerSettings settings = Settings.Current;
             settings.RespawnEnabled = true;
             settings.RemoveCorpseOnRespawn = true;
             settings.RespawnCooldownSeconds = cooldownSeconds;
-            Rounds.ApplyServerSettingsForTesting(settings);
+            Settings.ApplyServerSettingsForTesting(settings);
         }
     }
 }

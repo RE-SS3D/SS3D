@@ -2,8 +2,6 @@ using FishNet.Connection;
 using FishNet.Object;
 using FishNet.Object.Synchronizing;
 using System.Linq;
-using Coimbra.Services.Events;
-using Coimbra.Services.PlayerLoopEvents;
 using SS3D.Core;
 using SS3D.Core.Behaviours;
 using SS3D.Interactions.Interfaces;
@@ -37,7 +35,6 @@ namespace SS3D.Systems.Health
         private readonly List<IHealthEffectModifier> _modifiers = new();
 
         private SystemicPools _pools = SystemicPools.Default;
-        private float _tickTimer;
         private Entity _entity;
         private WoundVfx _woundVfx;
         private HumanAnatomyController _anatomy;
@@ -125,8 +122,6 @@ namespace SS3D.Systems.Health
             }
 
             _anatomy.Initialize(this);
-
-            AddHandle(UpdateEvent.AddListener(HandleUpdate));
         }
 
         public override void OnStartClient()
@@ -154,16 +149,35 @@ namespace SS3D.Systems.Health
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
         private static void ResetServerBodies() => ServerBodies.Clear();
 
+        /// <summary>Every body ticks on one shared channel of <see cref="SimulationClock"/>; map loads don't pause it.</summary>
+        private static SimulationChannel HealthChannel =>
+            SimulationClock.GetOrCreate("health", HealthConstants.TickIntervalSeconds, pausedByWorldSuspension: false);
+
+        /// <summary>Every enabled body on this peer (debug overlay, console targets); <see cref="ServerInstances"/> is the server's spawned set.</summary>
+        protected override void OnEnabled()
+        {
+            base.OnEnabled();
+            SceneRegistry<HumanHealthController>.Register(this);
+        }
+
+        protected override void OnDisabled()
+        {
+            SceneRegistry<HumanHealthController>.Unregister(this);
+            base.OnDisabled();
+        }
+
         public override void OnStopServer()
         {
             base.OnStopServer();
             ServerBodies.Remove(this);
+            HealthChannel.Unsubscribe(HandleHealthTick);
         }
 
         public override void OnStartServer()
         {
             base.OnStartServer();
             ServerBodies.Add(this);
+            HealthChannel.Subscribe(HandleHealthTick);
             EnsureBuiltinOrgans();
             OrganSimulation.EnsureDefaultOrgans(_organs);
             PublishSnapshot();
@@ -172,6 +186,7 @@ namespace SS3D.Systems.Health
         protected override void OnDestroyed()
         {
             ServerBodies.Remove(this);
+            HealthChannel.Unsubscribe(HandleHealthTick);
             if (_entity != null)
             {
                 _entity.OnMindChanged -= HandleMindChangedForLocalFeedback;
@@ -690,20 +705,13 @@ namespace SS3D.Systems.Health
             }
         }
 
-        private void HandleUpdate(ref EventContext context, in UpdateEvent updateEvent)
+        private void HandleHealthTick()
         {
             if (!IsServer || _deathTriggered)
             {
                 return;
             }
 
-            _tickTimer += updateEvent.DeltaTime;
-            if (_tickTimer < HealthConstants.TickIntervalSeconds)
-            {
-                return;
-            }
-
-            _tickTimer = 0f;
             TickHealthFromEnvironment();
         }
 
@@ -784,13 +792,9 @@ namespace SS3D.Systems.Health
                 return null;
             }
 
-            foreach (AttachedContainer container in _inventory.Containers)
+            // TryGetTypeContainer, not Containers: that copies the list, and this runs for every body every tick.
+            for (int i = 0; _inventory.TryGetTypeContainer(slot, i, out AttachedContainer container); i++)
             {
-                if (container.Type != slot)
-                {
-                    continue;
-                }
-
                 foreach (Item item in container.Items)
                 {
                     if (item.TryGetComponent(out SealedGearItemExtension seal))

@@ -42,6 +42,9 @@ GameObject:
   - component: {fileID: 2629140244360501243}
   - component: {fileID: 6100110011001100123}
   - component: {fileID: 3002766317706055259}
+  - component: {fileID: 8158633296796554082}
+  - component: {fileID: 3335355118854265521}
+  - component: {fileID: 1754970448278505657}
   m_Layer: 0
   m_Name: NetworkSystemsHub
   m_TagString: Untagged
@@ -107,6 +110,9 @@ MonoBehaviour:
   - {fileID: 5355501408288632448}
   - {fileID: 1773152946861829430}
   - {fileID: 3002766317706055259}
+  - {fileID: 8158633296796554082}
+  - {fileID: 3335355118854265521}
+  - {fileID: 1754970448278505657}
   <ParentNetworkObject>k__BackingField: {fileID: 0}
   <ChildNetworkObjects>k__BackingField: []
   SerializedTransformProperties:
@@ -300,21 +306,14 @@ MonoBehaviour:
   _roundState: 0
   _currentTimerSeconds: 0
   _warmupSeconds: 5
+  _stationLoadState: 0
+  _stationName: 
   _autoStartEnabled: 0
   _autoStartHeld: 0
   _autoStartSeconds: 0
   _endSecondsLeft: 0
   _endHeld: 0
   _roundId: 0
-  _serverName: SS3D Server
-  _motd: "Welcome aboard. This is a community-maintained pre-alpha build \u2014 expect
-    things to break, and report what you find."
-  _publicMode: Secret
-  _serverBuild: 
-  _serverStartedUnix: 0
-  _allowLateJoin: 1
-  _stationLoadState: 0
-  _stationName: 
 --- !u!114 &1960809383459953346
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -621,5 +620,57 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: SS3D.Systems::SS3D.Systems.Construction.ConstructionPlacementSubSystem
   _componentIndexCache: 20
+  _addedNetworkObject: {fileID: 100004}
+  _networkObjectCache: {fileID: 100004}
+--- !u!114 &8158633296796554082
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 100001}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 959145614f702e9ce92662d94bef3c12, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: SS3D.Systems::SS3D.Systems.Rounds.ServerSettingsService
+  _componentIndexCache: 21
+  _addedNetworkObject: {fileID: 100004}
+  _networkObjectCache: {fileID: 100004}
+  _allowLateJoin: 1
+  _serverName: SS3D Server
+  _motd: "Welcome aboard. This is a community-maintained pre-alpha build \u2014 expect
+    things to break, and report what you find."
+  _publicMode: Secret
+  _serverBuild: 
+  _serverStartedUnix: 0
+--- !u!114 &3335355118854265521
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 100001}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0b02e3fa575d4ccc9154e4dd1f7f868b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: SS3D.Systems::SS3D.Systems.Rounds.MapEditorStopFlow
+  _componentIndexCache: 22
+  _addedNetworkObject: {fileID: 100004}
+  _networkObjectCache: {fileID: 100004}
+--- !u!114 &1754970448278505657
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 100001}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 94f4261abf4f527daba0a4d7ef2409b9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: SS3D.Systems::SS3D.Systems.BugReports.BugReportIntake
+  _componentIndexCache: 23
   _addedNetworkObject: {fileID: 100004}
   _networkObjectCache: {fileID: 100004}

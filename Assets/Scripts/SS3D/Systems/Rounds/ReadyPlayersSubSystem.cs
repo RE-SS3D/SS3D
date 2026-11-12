@@ -50,7 +50,7 @@ namespace SS3D.Systems.Rounds
             }
 
             // Sandbox rule: everyone connected joins, ready or not (no observers exist yet to leave out).
-            bool allConnected = SubSystems.TryGet(out RoundSubSystem rounds) && rounds.SettingsForServer.AllConnectedReady;
+            bool allConnected = SubSystems.TryGet(out ServerSettingsService settings) && settings.Current.AllConnectedReady;
             List<Player> spawning = allConnected
                 ? SubSystems.Get<PlayerSubSystem>().OnlinePlayers.ToList()
                 : _readyPlayers.ToList();

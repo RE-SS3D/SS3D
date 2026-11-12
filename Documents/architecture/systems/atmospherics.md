@@ -1,7 +1,7 @@
 > Code paths: Assets/Scripts/SS3D/Systems/Atmospherics/, Assets/Scripts/SS3D/Rendering/URP/Atmos*
 > Entry points: AtmosSubSystem, AtmosSimulation, AtmosRendererFeature
 > Status: partial
-> Verified: 41fd036ed — 2026-11-06
+> Verified: 5ad42b7f2 — 2026-11-11
 
 # Atmospherics
 
@@ -13,7 +13,7 @@ Destroyed walls automatically produce wind, because wind is the air speed the ed
 
 ## Start here
 
-- `Assets/Scripts/SS3D/Systems/Atmospherics/AtmosSubSystem.cs` — tick loop; `IWorldReady`; awaits `TileMapLoaded` then notifies `AtmosReady` (`SS3D.Atmos.Sim` / `Upload` markers)
+- `Assets/Scripts/SS3D/Systems/Atmospherics/AtmosSubSystem.cs` — tick loop on the `atmos` channel of `SimulationClock` (5 Hz; air alarms sample on it too, and the debug pause holds it); `IWorldReady`; awaits `TileMapLoaded` then notifies `AtmosReady` (`SS3D.Atmos.Sim` / `Upload` markers)
 - `Assets/Scripts/SS3D/Systems/Atmospherics/AtmosWind.cs` / `AtmosSubSystem.Wind.cs` / `AtmosWindView.cs` — edge-aware continuous wind sampling, body dispatch and atlas-driven client streaks
 - `Assets/Scripts/SS3D/Systems/Atmospherics/AtmosLooseBodies.cs` — wind on free rigidbodies: capped selection per tick, forces per physics step, drift in space
 - `Assets/Scripts/SS3D/Systems/Atmospherics/AtmosSimulation.cs` — native cell buffers, active-cell scheduling, job dispatch

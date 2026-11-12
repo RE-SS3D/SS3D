@@ -87,7 +87,7 @@ namespace SS3D.Systems.IngameConsoleSystem
             Vector3 origin = caller.transform.position;
             Entity best = null;
             float bestDistance = NearestRange;
-            foreach (HumanHealthController health in UnityEngine.Object.FindObjectsByType<HumanHealthController>(FindObjectsSortMode.None))
+            foreach (HumanHealthController health in SceneRegistry<HumanHealthController>.All)
             {
                 if (health == null || !health.isActiveAndEnabled)
                 {

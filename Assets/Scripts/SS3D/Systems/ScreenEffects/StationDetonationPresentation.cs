@@ -33,7 +33,7 @@ namespace SS3D.Systems.ScreenEffects
             if (SubSystems.TryGet(out ScreenEffectsSubSystem screenEffects))
                 screenEffects.TriggerWhiteout(Seconds);
 
-            CameraFollow follow = Object.FindFirstObjectByType<CameraFollow>();
+            CameraFollow follow = SceneRegistry<CameraFollow>.Count > 0 ? SceneRegistry<CameraFollow>.All[0] : null;
             if (follow != null)
                 follow.AddImpulse(ShakeAmplitude, ShakeSeconds);
         }

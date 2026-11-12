@@ -11,6 +11,9 @@ namespace SS3D.Systems.Tile
     {
         private readonly TileMap _map;
 
+        // TryGetOccupancy runs per body per health tick and per atmos cell rebuild; one reused buffer, main thread only.
+        private readonly ITileLocation[] _locations = new ITileLocation[TileHelper.GetTileLayers().Length];
+
         public TileQueryService(TileMap map)
         {
             _map = map;
@@ -40,13 +43,13 @@ namespace SS3D.Systems.Tile
                 return false;
 
             Vector3 world = TileToWorld(coord);
-            if (!_map.TryGetTileLocations(world, out ITileLocation[] locations))
+            if (!_map.TryFillTileLocations(world, _locations))
                 return false;
 
-            occupancy.HasPlenum = !locations[(int)TileLayer.Plenum].IsFullyEmpty();
-            occupancy.HasTurf = !locations[(int)TileLayer.Turf].IsFullyEmpty();
+            occupancy.HasPlenum = !_locations[(int)TileLayer.Plenum].IsFullyEmpty();
+            occupancy.HasTurf = !_locations[(int)TileLayer.Turf].IsFullyEmpty();
 
-            TileOccupancyEvaluator.Evaluate(_map, locations, ref occupancy);
+            TileOccupancyEvaluator.Evaluate(_map, _locations, ref occupancy);
 
             return true;
         }

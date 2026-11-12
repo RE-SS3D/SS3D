@@ -289,7 +289,7 @@ namespace SS3D.Systems.Persistence
 
                     if (!string.IsNullOrEmpty(chunk?.payloadJson))
                     {
-                        payload = DeserializePayload(contributor, chunk.payloadJson);
+                        payload = contributor.DeserializePayload(chunk.payloadJson);
                     }
                 }
 
@@ -396,7 +396,7 @@ namespace SS3D.Systems.Persistence
                         continue;
                     }
 
-                    object payload = DeserializePayload(contributor, chunk.payloadJson);
+                    object payload = contributor.DeserializePayload(chunk.payloadJson);
 
                     if (contributor.ContributorId == TileMapPersistenceContributor.ContributorIdValue
                         && payload is SavedTileMap savedTileMap
@@ -460,19 +460,6 @@ namespace SS3D.Systems.Persistence
             Log.Warning(this, "No station template found for {templateName} in StationTemplates or Tilemaps", Logs.Generic, templateName);
             envelope = null;
             return false;
-        }
-
-        private static object DeserializePayload(IPersistenceContributor contributor, string payloadJson)
-        {
-            return contributor.ContributorId switch
-            {
-                TileMapPersistenceContributor.ContributorIdValue => JsonUtility.FromJson<SavedTileMap>(payloadJson),
-                AreaPersistenceContributor.ContributorIdValue => JsonUtility.FromJson<SavedAreaChunkPayload>(payloadJson),
-                SpawnPointPersistenceContributor.ContributorIdValue => JsonUtility.FromJson<SavedSpawnPointChunkPayload>(payloadJson),
-                GasMarkerPersistenceContributor.ContributorIdValue => JsonUtility.FromJson<SavedGasMarkerChunkPayload>(payloadJson),
-                PermissionsPersistenceContributor.ContributorIdValue => JsonUtility.FromJson<SavedPermissionsPayload>(payloadJson),
-                _ => payloadJson,
-            };
         }
 
         private IEnumerable<IPersistenceContributor> GetContributors(PersistenceLayer layer)

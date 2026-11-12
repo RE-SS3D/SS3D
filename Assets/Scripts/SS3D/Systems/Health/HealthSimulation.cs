@@ -302,7 +302,7 @@ namespace SS3D.Systems.Health
 
         public static DefibrillatorOutcome ApplyDefibrillation(
             BodyZone zone,
-            IList<OrganState> organs,
+            List<OrganState> organs,
             ZoneDamageState[] zones,
             out float burnApplied)
         {

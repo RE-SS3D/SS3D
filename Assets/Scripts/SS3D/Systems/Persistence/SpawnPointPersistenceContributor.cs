@@ -2,6 +2,7 @@ using SS3D.Data.Persistence;
 using SS3D.Systems.Tile;
 using SS3D.Systems.Tile.SpawnPoints;
 using System;
+using UnityEngine;
 
 namespace SS3D.Systems.Persistence
 {
@@ -21,6 +22,8 @@ namespace SS3D.Systems.Persistence
         public PersistenceLayer Layer => PersistenceLayer.StationTemplate;
 
         public int LoadOrder => 110;
+
+        public object DeserializePayload(string payloadJson) => JsonUtility.FromJson<SavedSpawnPointChunkPayload>(payloadJson);
 
         public object Capture()
         {

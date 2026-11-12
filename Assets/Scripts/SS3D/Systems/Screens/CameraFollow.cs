@@ -136,6 +136,7 @@ namespace SS3D.Systems.Screens
         protected override void OnEnabled()
         {
             base.OnEnabled();
+            SceneRegistry<CameraFollow>.Register(this);
             
             _controls.Zoom.performed += HandleZoom;
             _controls.SnapRight.performed += HandleSnapRight;
@@ -147,6 +148,7 @@ namespace SS3D.Systems.Screens
 
         protected override void OnDisabled()
         {
+            SceneRegistry<CameraFollow>.Unregister(this);
             base.OnDisabled();
             
             _controls.Zoom.performed -= HandleZoom;

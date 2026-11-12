@@ -6,6 +6,7 @@ using SS3D.Systems.Inventory.Items.Generic;
 using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
+using SS3D.Core;
 
 namespace SS3D.Systems.IngameConsoleSystem.Commands
 {
@@ -57,9 +58,9 @@ namespace SS3D.Systems.IngameConsoleSystem.Commands
         private static List<NukeCard> FindDisks()
         {
             List<NukeCard> disks = new();
-            foreach (NukeCard disk in UnityEngine.Object.FindObjectsByType<NukeCard>(FindObjectsInactive.Include, FindObjectsSortMode.None))
+            foreach (NukeCard disk in SceneRegistry<NukeCard>.All)
             {
-                // Prefab assets and despawned pool copies have no live NetworkObject on the server.
+                // The registry holds disks spawned on the server; one mid-despawn may still be listed.
                 if (disk != null && disk.IsSpawned)
                 {
                     disks.Add(disk);

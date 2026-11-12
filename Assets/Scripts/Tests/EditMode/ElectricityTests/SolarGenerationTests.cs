@@ -1,4 +1,5 @@
 using NUnit.Framework;
+using SS3D.Core;
 using SS3D.Systems.Electricity;
 using SS3D.Systems.Tile;
 using UnityEngine;
@@ -167,6 +168,9 @@ namespace EditorTests
                 SolarPanel far = farGo.AddComponent<SolarPanel>();
                 near.SetAim(Direction.North);
                 far.SetAim(Direction.North);
+                // Edit mode runs no OnEnable, which is where panels register themselves in play.
+                SceneRegistry<SolarPanel>.Register(near);
+                SceneRegistry<SolarPanel>.Register(far);
 
                 int aimed = beacon.AimNearbyPanels();
 
@@ -176,6 +180,8 @@ namespace EditorTests
             }
             finally
             {
+                SceneRegistry<SolarPanel>.Unregister(nearGo.GetComponent<SolarPanel>());
+                SceneRegistry<SolarPanel>.Unregister(farGo.GetComponent<SolarPanel>());
                 Object.DestroyImmediate(beaconGo);
                 Object.DestroyImmediate(nearGo);
                 Object.DestroyImmediate(farGo);

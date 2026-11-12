@@ -148,7 +148,7 @@ namespace SS3D.Systems.Tile.TileMapCreator
             if (FishNet.InstanceFinder.IsServer)
                 return;
 
-            foreach (Item item in Object.FindObjectsByType<Item>(FindObjectsSortMode.None))
+            foreach (Item item in SceneRegistry<Item>.All)
             {
                 if (!item.IsInContainer())
                     ApplyToRenderers(item.gameObject, visible);

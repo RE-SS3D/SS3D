@@ -26,6 +26,9 @@ namespace SS3D.Systems.Atmospherics.Pipes
 
         public IReadOnlyDictionary<GasPipeNetworkId, GasPipeNetworkRecord> Networks => _networks;
 
+        /// <summary>Every network, for per-tick loops: a <c>foreach</c> over it doesn't box an enumerator like <see cref="Networks"/>.Values.</summary>
+        public Dictionary<GasPipeNetworkId, GasPipeNetworkRecord>.ValueCollection NetworkRecords => _networks.Values;
+
         public int NetworkCount => _networks.Count;
 
         /// <summary>

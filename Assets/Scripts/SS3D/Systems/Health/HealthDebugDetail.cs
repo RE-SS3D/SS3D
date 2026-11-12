@@ -1,3 +1,4 @@
+using SS3D.Core;
 using System;
 
 namespace SS3D.Systems.Health
@@ -6,7 +7,7 @@ namespace SS3D.Systems.Health
     /// Full per-zone and per-organ state synced for the runtime health debug overlay.
     /// </summary>
     [Serializable]
-    public struct HealthDebugDetail
+    public struct HealthDebugDetail : IEquatable<HealthDebugDetail>
     {
         public ZoneDamageState Head;
         public ZoneDamageState Chest;
@@ -81,5 +82,12 @@ namespace SS3D.Systems.Health
 
             return OrganState.Default(type);
         }
+
+        // A synced struct: without IEquatable, FishNet's SyncVar compare boxes it and reflects over every field each tick.
+        public bool Equals(HealthDebugDetail other) => BlittableEquality.Equal(this, other);
+
+        public override bool Equals(object obj) => obj is HealthDebugDetail other && Equals(other);
+
+        public override int GetHashCode() => BlittableEquality.Hash(this);
     }
 }

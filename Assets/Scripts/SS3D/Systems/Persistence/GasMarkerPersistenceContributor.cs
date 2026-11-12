@@ -3,6 +3,7 @@ using SS3D.Systems.Tile;
 using SS3D.Systems.Tile.GasMarkers;
 using System;
 using System.Linq;
+using UnityEngine;
 
 namespace SS3D.Systems.Persistence
 {
@@ -22,6 +23,8 @@ namespace SS3D.Systems.Persistence
         public PersistenceLayer Layer => PersistenceLayer.StationTemplate;
 
         public int LoadOrder => 115;
+
+        public object DeserializePayload(string payloadJson) => JsonUtility.FromJson<SavedGasMarkerChunkPayload>(payloadJson);
 
         public object Capture() => new SavedGasMarkerChunkPayload
         {

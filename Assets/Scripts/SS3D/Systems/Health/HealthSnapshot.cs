@@ -1,9 +1,10 @@
+using SS3D.Core;
 using System;
 
 namespace SS3D.Systems.Health
 {
     [Serializable]
-    public struct HealthSnapshot
+    public struct HealthSnapshot : IEquatable<HealthSnapshot>
     {
         public HealthState State;
         public SystemicPools Pools;
@@ -70,5 +71,12 @@ namespace SS3D.Systems.Health
             CanDefibrillate = false,
             Environment = HealthEnvironmentState.SafeDefault,
         };
+
+        // A synced struct: without IEquatable, FishNet's SyncVar compare boxes it and reflects over every field each tick.
+        public bool Equals(HealthSnapshot other) => BlittableEquality.Equal(this, other);
+
+        public override bool Equals(object obj) => obj is HealthSnapshot other && Equals(other);
+
+        public override int GetHashCode() => BlittableEquality.Hash(this);
     }
 }

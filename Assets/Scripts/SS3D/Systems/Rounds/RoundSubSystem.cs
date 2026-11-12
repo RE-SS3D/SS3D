@@ -1,6 +1,7 @@
 using System.Threading;
 using Cysharp.Threading.Tasks;
 using FishNet.Object;
+using FishNet.Object.Synchronizing;
 using SS3D.Core;
 using SS3D.Core.WorldReadiness;
 using SS3D.Logging;
@@ -19,6 +20,35 @@ namespace SS3D.Systems.Rounds
     /// </summary>
     public sealed partial class RoundSubSystem : RoundSubSystemBase
     {
+        /// <summary>Synced so a client's bug report names the round its player saw.</summary>
+        [SyncVar] private int _roundId;
+
+        /// <summary>Counts round starts in this server process; 0 before the first. Replicated to clients.</summary>
+        public int RoundId => _roundId;
+
+        public override void OnStartServer()
+        {
+            base.OnStartServer();
+            SubscribeToSettings();
+            StartAutoStartLoop();
+            StartServerLifetime();
+        }
+
+        public override void OnStopServer()
+        {
+            UnsubscribeFromSettings();
+            StopAutoStartLoop();
+            StopServerLifetime();
+            base.OnStopServer();
+        }
+
+        [Server]
+        private void BeginRoundId()
+        {
+            _roundId++;
+            Log.Information(this, "Round {roundId} preparing on {map}", Logs.ServerOnly, _roundId, Settings.Map);
+        }
+
         /// <summary>
         /// Round loop runner
         /// </summary>
@@ -45,13 +75,11 @@ namespace SS3D.Systems.Rounds
         {
             bool editMapAnyway = _editMapAnyway;
             _editMapAnyway = false;
-            _serverSettingsError = "";
+            SettingsService.SetStatusNotice("");
             PersistenceSubSystem persistence = SubSystems.Get<PersistenceSubSystem>();
-            if (string.IsNullOrEmpty(_serverSettings.Map))
-                _serverSettings.Map = DefaultStation(persistence.ListStationTemplates().ToArray());
-            if (string.IsNullOrEmpty(_serverSettings.Map))
+            if (string.IsNullOrEmpty(SettingsService.EnsureMap(persistence.ListStationTemplates().ToArray())))
             {
-                _serverSettingsError = "No saved maps available. Import or save a station before starting a round.";
+                SettingsService.SetStatusNotice("No saved maps available. Import or save a station before starting a round.");
                 _stationLoadState = StationLoadState.Failed;
                 SetAutoStartHeld(true, "no saved maps");
                 return;
@@ -62,7 +90,8 @@ namespace SS3D.Systems.Rounds
             BeginRoundId();
             _roundFellBackToExtended = false;
             _pendingOutcome = null;
-            _stationName = _serverSettings.Map;
+            ServerSettings settings = Settings;
+            _stationName = settings.Map;
             _stationLoadState = StationLoadState.Loading;
             try
             {
@@ -74,26 +103,26 @@ namespace SS3D.Systems.Rounds
                 cancellationToken.ThrowIfCancellationRequested();
                 // Every start restores the selected template, including after a cancelled countdown.
                 // A previous round's in-memory station is never an implicit selection.
-                bool loaded = await persistence.LoadStationTemplateAsync(_serverSettings.Map);
+                bool loaded = await persistence.LoadStationTemplateAsync(settings.Map);
                 cancellationToken.ThrowIfCancellationRequested();
                 if (!loaded)
                 {
                     FailStationLoad("Station could not be loaded. Select another saved map.");
                     return;
                 }
-                MapValidationReport validation = MapValidationService.Validate(tiles, _serverSettings.Mode);
+                MapValidationReport validation = MapValidationService.Validate(tiles, settings.Mode);
                 if (!validation.CanStart)
                 {
                     if (!editMapAnyway)
                     {
-                        FailStationLoad(validation.Describe(_serverSettings.Map, _serverSettings.Mode, saved: false),
+                        FailStationLoad(validation.Describe(settings.Map, settings.Mode, saved: false),
                             StationLoadState.Unplayable);
                         return;
                     }
 
                     // creative-mode §8 blocks a round on a map that doesn't fit its mode; without this exception a
                     // saved map missing its spawns could never be opened in the Map Editor again to add them.
-                    FallBackToExtended($"{_serverSettings.Map} can't start a normal round, so this round is for fixing it: "
+                    FallBackToExtended($"{settings.Map} can't start a normal round, so this round is for fixing it: "
                         + "it runs as Extended, and anyone without a spawn marker starts on the nearest deck.");
                 }
                 tiles.SyncFloorDecalsToClients();
@@ -121,7 +150,7 @@ namespace SS3D.Systems.Rounds
         {
             // Also log it: a dedicated server has no lobby UI to show the reason, and the round just drops to Stopped.
             Log.Warning(this, "Round start aborted: {reason}", Logs.ServerOnly, message);
-            _serverSettingsError = message;
+            SettingsService.SetStatusNotice(message);
             _stationLoadState = state;
             // Retrying the same broken map every countdown would only spam the log.
             SetAutoStartHeld(true, "the station failed to load");
@@ -200,7 +229,7 @@ namespace SS3D.Systems.Rounds
             {
                 await UniTask.Delay(second, cancellationToken: TickCancellationToken.Token);
                 RoundSeconds++;
-                int secondsLeft = _serverSettings.RoundLengthMinutes * 60 - RoundSeconds;
+                int secondsLeft = Settings.RoundLengthMinutes * 60 - RoundSeconds;
                 if (secondsLeft <= 0)
                 {
                     RequestRoundEnd(RoundEndRequest.Timer);
@@ -272,7 +301,7 @@ namespace SS3D.Systems.Rounds
             UnloadStation();
 
             await UniTask.Delay(System.TimeSpan.FromMilliseconds(500), cancellationToken: cancellationToken);
-            AppendResetHealth();
+            RoundObservability.AppendResetHealth(this, _roundId, ServerManager);
             ExitIfRoundLimitReached();
         }
 
@@ -284,7 +313,8 @@ namespace SS3D.Systems.Rounds
         [Server]
         private void UnloadStation()
         {
-            HandleUnsavedMapEditsBeforeUnload();
+            if (SubSystems.TryGet(out MapEditorStopFlow stopFlow))
+                stopFlow.HandleUnsavedMapEditsBeforeUnload();
             if (SubSystems.TryGet(out Tile.TileSubSystem tiles) && tiles.CurrentMap != null)
             {
                 tiles.CurrentMap.Clear();
@@ -307,20 +337,6 @@ namespace SS3D.Systems.Rounds
         public void ChangeRoundStateMessageStubBroadcast(ChangeRoundStateMessage m)
         {
             RequestRoundStateChange(m);
-        }
-
-        /// <summary>
-        /// Automation only: replaces the server settings and rules the way <c>-sandbox</c> does at boot,
-        /// so a pilot in the editor can run the sandbox profile without a command-line flag.
-        /// </summary>
-        [Server]
-        public void ApplyServerSettingsForTesting(ServerSettings settings)
-        {
-            _serverSettings = settings;
-            _allowLateJoin = settings.AllowLateJoin;
-            _publicMode = settings.Mode;
-            _motd = settings.Motd;
-            ApplyServerRules();
         }
 
         /// <summary>
