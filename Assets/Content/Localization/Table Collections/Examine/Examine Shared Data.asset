@@ -1871,6 +1871,158 @@ MonoBehaviour:
     m_Key: examine.nuke.panel_open
     m_Metadata:
       m_Items: []
+  - m_Id: 298639841044963328
+    m_Key: items.clothing.jumpsuit_captain.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298639841065934848
+    m_Key: items.clothing.jumpsuit_captain.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298639841065934849
+    m_Key: items.clothing.cap_captain.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298639841065934850
+    m_Key: items.clothing.cap_captain.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298639841065934851
+    m_Key: items.clothing.backpack_command.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298639841065934852
+    m_Key: items.clothing.backpack_command.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298639841065934853
+    m_Key: items.clothing.jumpsuit_medical.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298639841065934854
+    m_Key: items.clothing.jumpsuit_medical.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298639841065934855
+    m_Key: items.clothing.lab_coat.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298639841065934856
+    m_Key: items.clothing.lab_coat.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298639841065934857
+    m_Key: items.clothing.backpack_medical.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298639841065934858
+    m_Key: items.clothing.backpack_medical.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298639841065934859
+    m_Key: items.clothing.armor_vest_security.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298639841065934860
+    m_Key: items.clothing.armor_vest_security.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298639841065934861
+    m_Key: items.clothing.helmet_security.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298639841065934862
+    m_Key: items.clothing.helmet_security.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298639841065934863
+    m_Key: items.clothing.cap_security.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298639841065934864
+    m_Key: items.clothing.cap_security.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298639841065934865
+    m_Key: items.clothing.glasses_security_hud.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298639841065934866
+    m_Key: items.clothing.glasses_security_hud.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298639841065934867
+    m_Key: items.clothing.backpack_security.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298639841065934868
+    m_Key: items.clothing.backpack_security.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298639841065934869
+    m_Key: items.clothing.hard_hat_yellow.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298639841065934870
+    m_Key: items.clothing.hard_hat_yellow.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298639841065934871
+    m_Key: items.clothing.shoe_work_boots.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298639841065934872
+    m_Key: items.clothing.shoe_work_boots.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298639841065934873
+    m_Key: items.clothing.welding_mask.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298639841065934874
+    m_Key: items.clothing.welding_mask.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298639841065934875
+    m_Key: items.clothing.goggles_meson.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298639841065934876
+    m_Key: items.clothing.goggles_meson.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298639841065934877
+    m_Key: items.clothing.jumpsuit_syndicate.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298639841065934878
+    m_Key: items.clothing.jumpsuit_syndicate.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298639841065934879
+    m_Key: items.clothing.armor_vest_syndicate.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298639841065934880
+    m_Key: items.clothing.armor_vest_syndicate.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298639841065934881
+    m_Key: items.clothing.shoe_syndicate_boots.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298639841065934882
+    m_Key: items.clothing.shoe_syndicate_boots.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298639841065934883
+    m_Key: items.clothing.glove_syndicate.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298639841065934884
+    m_Key: items.clothing.glove_syndicate.desc
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

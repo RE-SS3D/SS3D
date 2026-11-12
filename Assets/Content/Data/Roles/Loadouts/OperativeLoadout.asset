@@ -17,13 +17,13 @@ MonoBehaviour:
   EquipmentAssets:
     _list:
     - _key: 512
-      _value: {fileID: 11400000, guid: c3e196c40ac645e4d840edb82a27baf9, type: 2}
+      _value: {fileID: 11400000, guid: 26575872a7adeab948ad4ea4b700efe3, type: 2}
     - _key: 16
       _value: {fileID: 11400000, guid: a41a1dfa72bfb1f068f59940813a6d31, type: 2}
     - _key: 128
       _value: {fileID: 11400000, guid: 4a50e327a934cd3438e1b88d2bb547cb, type: 2}
     - _key: 2048
-      _value: {fileID: 11400000, guid: 55deb25596d5d314b8b7dd58eafb8aec, type: 2}
+      _value: {fileID: 11400000, guid: cafdd28cc4f134534a914521851f8ce0, type: 2}
     - _key: 32768
       _value: {fileID: 11400000, guid: 9cf2801a7b335074190840fc9112d582, type: 2}
     - _key: 4

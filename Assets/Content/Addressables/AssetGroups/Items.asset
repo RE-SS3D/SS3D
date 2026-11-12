@@ -75,8 +75,18 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 1280f63d3bc15a00fb767152d31a1084
+    m_Address: JumpsuitCaptain
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 12a989ad41a83a3468d1ae9aff9628d3
     m_Address: Assets/Content/WorldObjects/Structures/Pipes/Disposals/DisposalPipes.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 150ef45e2757f5051830f7e9e241e3e6
+    m_Address: ArmorVestSyndicate
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
@@ -102,6 +112,11 @@ MonoBehaviour:
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 1c71957ab86ed6acaacd79fb484b1fa2
     m_Address: Assets/Content/WorldObjects/Structures/Pipes/Atmospherics/Devices/AtmosMixerL.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 1ccc3cf742cb80680b05529457e5b64c
+    m_Address: GlassesSecurityHud
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
@@ -225,6 +240,11 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 40769ae118a5aa2a1969308e4cf94e00
+    m_Address: GogglesMeson
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 4099749ffee23ec59ab069d60911690f
     m_Address: IonRifle
     m_ReadOnly: 0
@@ -255,6 +275,11 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 459efb834786aff2783a5d52f3459efc
+    m_Address: JumpsuitSyndicate
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 45cc43b84ee58e644b9523cb27682b39
     m_Address: Assets/Content/WorldObjects/Furniture/Machines/Engineering/PacManGenerator.prefab
     m_ReadOnly: 0
@@ -262,6 +287,11 @@ MonoBehaviour:
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 45d13347efae0f54882e0e56dd770bb1
     m_Address: Assets/Content/WorldObjects/Structures/Walls/SteelWall.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 460f7e2de24031d19846c330f44ba3c6
+    m_Address: BackpackCommand
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
@@ -295,6 +325,16 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 4afde6296256106e6a85c6c5b574b6ca
+    m_Address: ShoeWorkBoots
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 4baa61d370aaa060fa3a225b10e0fa46
+    m_Address: HelmetSecurity
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 4c966398d6624164c910cd29c1faa980
     m_Address: Assets/Content/WorldObjects/Structures/WallMounts/APC.prefab
     m_ReadOnly: 0
@@ -312,6 +352,11 @@ MonoBehaviour:
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 4e6899916bc8fd742a07f32b3a04de12
     m_Address: Assets/Content/WorldObjects/Items/Consumable/Drinks/Soda/SodaCanBeepyLime.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 4fae3e9ea97833b8aba377e30c78b086
+    m_Address: ShoeSyndicateBoots
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
@@ -347,6 +392,11 @@ MonoBehaviour:
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 5479411218b869144b7d09d6db6dc58e
     m_Address: Assets/Content/WorldObjects/Items/Functional/Generic/Tanks/OxygenTank.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 54d48c04501b2b100a0aef424d6b2851
+    m_Address: LabCoat
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
@@ -395,8 +445,18 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 60d66d5da11103d0d87b928d08cf389c
+    m_Address: HardHatYellow
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 61201f10ccc2856459a9de99d9cdc52e
     m_Address: Assets/Content/WorldObjects/Structures/Floors/Tiles/Steel/TileWhite.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 61694d340b7f90adda425df08c72243a
+    m_Address: GloveSyndicate
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
@@ -590,6 +650,11 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 8f8c9b43b65c25583a9388f9abd3bcbc
+    m_Address: BackpackMedical
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 92d3eb280886ba74cb1e19f4e01669a7
     m_Address: Assets/Content/WorldObjects/Structures/Wires/Cables.prefab
     m_ReadOnly: 0
@@ -612,6 +677,11 @@ MonoBehaviour:
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 93fe24ccecd13f763bc0838d8fe78134
     m_Address: Assets/Content/WorldObjects/Items/Functional/Generic/FloorTileWhite.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 947eeeb0447a659e3851a044b9a49616
+    m_Address: WeldingMask
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
@@ -665,6 +735,11 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: a098e7b1a3f1e6a8fb7a7cf4b5f3dd83
+    m_Address: BackpackSecurity
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: a1a7407e08bb2914c97f431063bf83e2
     m_Address: Assets/Content/WorldObjects/Items/Functional/Materials/GlassSheetReinforced.prefab
     m_ReadOnly: 0
@@ -687,6 +762,11 @@ MonoBehaviour:
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: a777a6da30f0704478e25312963a8151
     m_Address: Assets/Content/WorldObjects/Structures/WallMounts/Mirror.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: a7a8e08258cca7225b252214f3121ced
+    m_Address: CapSecurity
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
@@ -770,6 +850,11 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: bbfcf87c20e87532a973edda6ea2615e
+    m_Address: JumpsuitMedical
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: bdeac5e9a27546348a584caa74f00ec7
     m_Address: Assets/Content/WorldObjects/Furniture/Machines/MachineFrame.prefab
     m_ReadOnly: 0
@@ -787,6 +872,11 @@ MonoBehaviour:
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: bf177f8bab26bc84b87fd9a971004418
     m_Address: Assets/Content/WorldObjects/Items/Clothing/FacewearGasMask.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: c598d3290aa6b25a7997235b9a307741
+    m_Address: CapCaptain
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
@@ -817,6 +907,11 @@ MonoBehaviour:
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: d07b5fba3896ff448855d6e54356c365
     m_Address: Assets/Content/WorldObjects/Structures/WallMounts/LightSwitch.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: d14a86cc0a154e979953084c8fb580e0
+    m_Address: ArmorVestSecurity
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
