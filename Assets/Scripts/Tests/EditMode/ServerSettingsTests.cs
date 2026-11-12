@@ -23,14 +23,14 @@ namespace EditorTests
         public void ClassicMiniStationIsTheDefaultMap()
         {
             Assert.AreEqual("classic-ministation",
-                RoundSubSystem.DefaultStation(new[] { "AtmosTest", "ministation", "classic-ministation" }));
+                ServerSettingsService.DefaultStation(new[] { "AtmosTest", "ministation", "classic-ministation" }));
         }
 
         [Test]
         public void DefaultMapFallsBackToTheFirstSavedMap()
         {
-            Assert.AreEqual("AtmosTest", RoundSubSystem.DefaultStation(new[] { "AtmosTest", "ministation" }));
-            Assert.AreEqual("", RoundSubSystem.DefaultStation(System.Array.Empty<string>()));
+            Assert.AreEqual("AtmosTest", ServerSettingsService.DefaultStation(new[] { "AtmosTest", "ministation" }));
+            Assert.AreEqual("", ServerSettingsService.DefaultStation(System.Array.Empty<string>()));
         }
     }
 }

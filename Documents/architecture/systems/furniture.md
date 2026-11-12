@@ -23,7 +23,7 @@ Steel tables leave procedural collapsed tops and legs through [structural-destru
 - `Assets/Scripts/SS3D/Systems/Audio/Boombox.cs` — jukebox toggle; stops audio on power loss
 - `Assets/Content/WorldObjects/Furniture/Machines/Vendors/` — vending machine prefabs
 - `Assets/Scripts/SS3D/Systems/Furniture/AirLockAccessGate.cs` — door access from assigned room / department defaults ([id-access](id-access.md))
-- `Assets/Scripts/SS3D/Systems/Furniture/Nuke.cs` — nuke device; `Detonate` is a `[Server]` entry that ends the round ([rounds-lobby](rounds-lobby.md))
+- `Assets/Scripts/SS3D/Systems/Furniture/Nuke.cs` / `NukeDeviceState.cs` — nuclear device: disk, arm countdown, defuse, examine; documented in [gamemodes-roles-traits](gamemodes-roles-traits.md)
 - Disposal: see [disposal](disposal.md) (`DisposalBin`, `DisposalOutlet`, `DisposalSubSystem`)
 - `Assets/Scripts/SS3D/Systems/StructuralDamage/Editor/StructuralIntegrityPrefabSetup.cs` — tier-B presentation/examine recipe for supported tables, lockers, machines and civilian/security airlocks
 

@@ -24,7 +24,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3674300424860135979}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0.5, y: -0.5, z: -0.5, w: 0.5}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -66,7 +66,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8712940276313799639}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: 0, y: 0, z: 0.7071068, w: 0.7071068}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -257,6 +257,7 @@ MonoBehaviour:
   _weight: 0.2
   _sizeClass: 1
   _maxStackSize: 1
+  _initialStackCount: 1
   _stackCount: 1
   _startingTraits:
   - {fileID: 11400000, guid: 5f051f2619c7c6a41938d7c2ac95c921, type: 2}
@@ -265,6 +266,9 @@ MonoBehaviour:
   _rigidbody: {fileID: 3062541430869004980}
   AttachmentPoint: {fileID: 6103743994441136842}
   AttachmentPointAlt: {fileID: 6103743994441136842}
+  _restRotation: {x: 0, y: 0, z: 90}
+  _overrideIconRotation: 1
+  _iconRotation: {x: 0, y: 0, z: 0}
   _container: {fileID: 0}
 --- !u!64 &-6344899436166818615
 MeshCollider:
@@ -307,6 +311,8 @@ MonoBehaviour:
     - _key: 10
       _value: {fileID: -7538617259321099598, guid: 76ba5420c179bb841858ed042df97ba2, type: 3}
     _new: 0
+  _wornMaterials: []
+  _occludedBodyRenderers: []
 --- !u!114 &2296607117492175576
 MonoBehaviour:
   m_ObjectHideFlags: 0

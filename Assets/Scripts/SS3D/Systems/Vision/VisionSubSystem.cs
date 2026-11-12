@@ -514,10 +514,14 @@ namespace SS3D.Systems.Vision
             if (collider.isTrigger)
                 return false;
 
+            PlacedTileObject placed = collider.GetComponentInParent<PlacedTileObject>();
+            // A bare girder sits on the Walls layer but is open framework (construction.md §6).
+            if (placed != null && placed.tileObjectSO != null && !placed.tileObjectSO.blocksVision)
+                return false;
+
             if (_wallsLayer >= 0 && collider.gameObject.layer == _wallsLayer)
                 return true;
 
-            PlacedTileObject placed = collider.GetComponentInParent<PlacedTileObject>();
             // Identity can still be unset on a pure client mid-spawn.
             if (placed == null || placed.tileObjectSO == null)
                 return false;

@@ -23,33 +23,8 @@ namespace SS3D.Systems.Inventory.Containers
         /// </summary>
         private Item[] _displayedItems;
 
-        /// <summary>
-        /// Grips set before the character's Animator has posed the hand bone. The pivot is a child of
-        /// the hand, so a grip set against the bind pose (a loadout item at spawn) stays wrong until
-        /// the item is picked up again (#158). Re-set once the hand has been animated.
-        /// </summary>
-        private readonly List<PendingGrip> _pendingGrips = new();
-
-        /// <summary>Re-set the grip anyway after this many frames, so an Animator that never starts can't leak entries.</summary>
-        private const int MaxGripWaitFrames = 60;
-
-        private readonly struct PendingGrip
-        {
-            public readonly Transform Pivot;
-            public readonly Transform CharacterRoot;
-            public readonly Quaternion AttachmentRotation;
-            public readonly Animator Animator;
-            public readonly int AttachedFrame;
-
-            public PendingGrip(Transform pivot, Transform characterRoot, Quaternion attachmentRotation, Animator animator, int attachedFrame)
-            {
-                Pivot = pivot;
-                CharacterRoot = characterRoot;
-                AttachmentRotation = attachmentRotation;
-                Animator = animator;
-                AttachedFrame = attachedFrame;
-            }
-        }
+        /// <summary>Displays already warned about a missing calibration, so the warning shows once each.</summary>
+        private readonly HashSet<Transform> _warnedUncalibrated = new();
 
         public void Awake()
         {
@@ -84,74 +59,61 @@ namespace SS3D.Systems.Inventory.Containers
                 return;
             }
 
-            Transform itemTransform = item.transform;
+            Transform display = attachedContainer.Displays[index].transform;
+            PlaceAtDisplay(item, display, Mirrored, ReferenceRotation(display));
+            _displayedItems[index] = item;
+        }
 
-            // Check if a custom attachment point should be used
+        /// <summary>
+        /// Parent <paramref name="item"/> to <paramref name="display"/> at its grip: the item's
+        /// <c>AttachmentPoint</c> (or <c>AttachmentPointAlt</c> when <paramref name="mirrored"/>) sits on the
+        /// display, turned by the display's calibrated reference rotation. Constant hand-local, so the same
+        /// whatever pose the hand is in right now (spawn, mid-walk, Harm stance). Also used by the item pose
+        /// contact sheet. Documents/architecture/systems/inventory.md.
+        /// </summary>
+        public static void PlaceAtDisplay(Item item, Transform display, bool mirrored, Quaternion referenceRotation)
+        {
+            Transform itemTransform = item.transform;
             Transform attachmentPoint = item.AttachmentPoint;
-            if (Mirrored && item.AttachmentPointAlt != null)
+            if (mirrored && item.AttachmentPointAlt != null)
             {
                 attachmentPoint = item.AttachmentPointAlt;
             }
 
-            if (attachmentPoint != null)
+            if (attachmentPoint == null)
             {
-                // #1226 used attachmentPoint.root (the ITEM) * localRotation — mid-air tumble became the grip.
-                // Absolute world (identity * att) freezes world axes so hand-local drifts with facing.
-                // Use the hand display's character root: hold ≈ character.facing * Attachment (stable).
-                GameObject temporaryPoint = new GameObject("TempPivotPoint");
-                Transform display = attachedContainer.Displays[index].transform;
-                Transform characterRoot = display.root;
-
-                temporaryPoint.transform.SetParent(display, false);
-                temporaryPoint.transform.localPosition = Vector3.zero;
-
-                itemTransform.SetParent(temporaryPoint.transform, false);
-                temporaryPoint.transform.rotation = characterRoot.rotation * attachmentPoint.localRotation;
-                itemTransform.localRotation = Quaternion.identity;
-                itemTransform.localPosition = -attachmentPoint.localPosition;
-
-                _pendingGrips.Add(new PendingGrip(
-                    temporaryPoint.transform,
-                    characterRoot,
-                    attachmentPoint.localRotation,
-                    display.GetComponentInParent<Animator>(),
-                    Time.frameCount));
-            }
-            else
-            {
-                itemTransform.SetParent(attachedContainer.Displays[index].transform, false);
+                itemTransform.SetParent(display, false);
                 itemTransform.localPosition = Vector3.zero;
                 itemTransform.localRotation = Quaternion.identity;
+                return;
             }
 
-            _displayedItems[index] = item;
+            GameObject temporaryPoint = new GameObject("TempPivotPoint");
+            temporaryPoint.transform.SetParent(display, false);
+            temporaryPoint.transform.localPosition = Vector3.zero;
+
+            itemTransform.SetParent(temporaryPoint.transform, false);
+            itemTransform.localRotation = Quaternion.identity;
+            itemTransform.localPosition = -attachmentPoint.localPosition;
+            temporaryPoint.transform.localRotation =
+                HeldItemGrip.PivotLocalRotation(referenceRotation, attachmentPoint.localRotation);
         }
 
-        private void LateUpdate()
+        private Quaternion ReferenceRotation(Transform display)
         {
-            for (int i = _pendingGrips.Count - 1; i >= 0; i--)
+            if (display.TryGetComponent(out GripSocket socket) && socket.IsCalibrated)
             {
-                PendingGrip grip = _pendingGrips[i];
-                if (grip.Pivot == null || grip.CharacterRoot == null)
-                {
-                    _pendingGrips.RemoveAt(i);
-                    continue;
-                }
-
-                int waited = Time.frameCount - grip.AttachedFrame;
-                bool handAnimated = grip.Animator == null
-                    || (grip.Animator.isActiveAndEnabled && grip.Animator.isInitialized);
-
-                // LateUpdate runs after the Animator, so from the frame after attach the hand bone
-                // holds a real animated pose rather than the bind pose.
-                if (waited < 1 || (!handAnimated && waited < MaxGripWaitFrames))
-                {
-                    continue;
-                }
-
-                grip.Pivot.rotation = grip.CharacterRoot.rotation * grip.AttachmentRotation;
-                _pendingGrips.RemoveAt(i);
+                return socket.ReferenceRotation;
             }
+
+            if (_warnedUncalibrated.Add(display))
+            {
+                Debug.LogWarning($"[ContainerItemDisplay] Display '{display.name}' on '{display.root.name}' has no calibrated "
+                    + "GripSocket; held items use an identity reference and may sit at the wrong angle. "
+                    + "Run SS3D → Inventory → Calibrate Hand Grip Sockets.", display);
+            }
+
+            return Quaternion.identity;
         }
 
         private void ContainerOnItemDetached(object sender, Item item)

@@ -1,7 +1,7 @@
 > Code paths: Assets/Scripts/SS3D/Systems/Interactions/
 > Entry points: InteractionController, InteractionDiscovery, InteractionDispatch, RadialInteractionSubSystem, ArmedInteractionSubSystem
 > Status: shipped
-> Verified: e2f86cf20 — 2026-11-05
+> Verified: 6c49dab49 — 2026-11-11
 
 # Interactions (runtime)
 
@@ -31,6 +31,8 @@ Radial menu and armed overlay attach into `UiShellSubSystem`'s shared overlay la
 | Blue (pending) | Instant interaction awaiting server confirm |
 | Hidden | No hover, entity target, no source, or only source-only entries (e.g. Drop while holding) |
 
+While the held item has an `IOutlineSourceExtension` (a construction tool or stack), only its own interactions and `IHeldItemInteraction`s (Add to stack) light green; other target interactions, such as a door's Open, show yellow ([interactions-framework](interactions-framework.md)). Flat meshes (floor tiles, plating: world bounds under 0.12 m tall) get a translucent tint in the outline colour instead of a hull, from the same shader with cull, offset and blend set as material properties.
+
 Entities (`Human`, ghosts) are excluded from hover outlines; medical targeting will use dedicated UI.
 
 Hover outlines ignore source-only discoveries such as `Drop` (see Pitfalls).
@@ -42,12 +44,20 @@ Discover / `HasPoint` contract: [interactions-framework](interactions-framework.
 - **Cancel Interaction** (`<Keyboard>/backspace`) — `CmdCancelInteraction` for in-progress delayed interactions.
 - **Intent toggle** is **F**, not Cancel — see [2026-07_default-input-scheme.md](../../archive/architecture/2026-07_default-input-scheme.md).
 - Movement — `DelayedInteraction` auto-cancel via `CharacterMoveCheck` (melee uses entity root).
+- Every cancel carries a `DelayedCancelReason` (Moved, KnockedDown, Hurt, MissingMaterials, Manual, Interrupted) to the owning client, shown on the progress ring. `CancelOnDamage` (default true, melee opts out) cancels through `IDamageNotifier`.
+
+### Progress and held poses
+
+`DelayedProgressRingSubSystem` (UI Toolkit, overlay layer) draws one ring per running delayed interaction or construction cell step, anchored to the target, with a cancel reason; it replaced the uGUI `LoadingBar`. While a delayed interaction whose clip is a held loop runs, the server holds it on the body (`SetServerHold`: `InteractionAnimation.Kneel` for floor work, defuse and CPR; `WallWork` for wall construction), see [entities](entities.md).
 
 ## Start here
 
 - `Assets/Scripts/SS3D/Systems/Interactions/InteractionController.cs` — router plus server hand-action scheduling (the `.Animation.cs` partial: one pending hand action, effect at the clip's contact frame; tech-debt P4.1 moves it to a `HandActionScheduler`): primary-click policy, radial/armed, intent SyncVar, world/inventory/examine RPCs, delayed tracking; editor-only `RunInteractionForTesting` sends a named verb through `CmdRunInteraction` for scenarios
 - `Assets/Scripts/SS3D/Systems/Interactions/InteractionDiscovery.cs` / `InteractionDispatch.cs` — shared discover/resolve helpers (client + server revalidation)
 - `Assets/Scripts/SS3D/Systems/Interactions/InteractionOutlineDriver.cs` / `DelayedInteractionTracker.cs` — outline LateUpdate + active delayed refs
+- `Assets/Scripts/SS3D/Systems/Interactions/DelayedProgressRingSubSystem.cs` — progress ring presenter (`DelayedProgressFeedback.Presenter`)
+- `Assets/Scripts/SS3D/Systems/Interactions/IWorldClickHandler.cs` — `InteractionController.WorldClickHandler` gets the primary click and Cancel before target interactions (the [construction](construction.md) hull-hole ghost registers itself)
+- `Assets/Scripts/SS3D/Systems/Interactions/InteractionController.Animation.cs` — interaction clips, held loops (`SetServerHold`), `ServerBeginStepAnimation` for construction cell steps
 - `Assets/Scripts/SS3D/Systems/Interactions/RadialInteractionSubSystem.cs` — three-tier radial menu subsystem
 - `Assets/Scripts/SS3D/Systems/Interactions/UI/RadialInteractionMenuView.cs` — radial menu UI (UI Toolkit)
 - `Assets/Scripts/SS3D/Systems/Interactions/UI/RadialInteractionPetal.cs` — dynamic petal elements
@@ -93,6 +103,9 @@ Discover / `HasPoint` contract: [interactions-framework](interactions-framework.
 - **Wall mounts sit inside the wall's 1 m solid:** a mount shares its wall's tile and its colliders are centred there, so a picked point is 0.4 m inside the wall. Reach goes through `IReachSurface` to the face in the mount's `dir`, the side `BuildChecker` keeps free of walls.
 - **Unsubscribe input without checking `IsOwner`:** when a session ends (leave to main menu), FishNet has already cleared ownership by the time a body's `OnDisable` runs. `InteractionController` and `HumanoidController` used to unsubscribe only `if (IsOwner)`, so the `Controls` actions (which outlive the body in `InputSubSystem`) kept calling the destroyed controllers, and every click after re-hosting logged an NRE (#215). Their subscribe/unsubscribe are idempotent, so `OnDisabled` unsubscribes unconditionally. A round-end despawn does not show this; only a session stop does. `RespawnScenarios.LeavingToMainMenu_LeavesNoInputCallbacksBehind` checks every action's callbacks for destroyed targets.
 - **New interaction icons:** image assets belong under `Assets/Art/Icons/`; consult the [icon index](../../icon-index.md). The legacy interaction icon builder still targets `Assets/Art/Graphics/UI/Interactions/InteractionIcons/` and must be updated before using it for new images.
+
+- **A held pose sticks after the step's item is used up:** a step that spends the last of a stack destroys its interaction source. Through the `IInteractionSource` interface the destroyed item is not C#-null, and its interaction list still holds the reference, so `DelayedInteractionTracker.TryRefreshServerEnded` never saw the end and the kneel stayed on. It now treats a Unity-null source as ended; keep that check if the tracker changes.
+- **Flat meshes draw no hull outline:** the hull extrudes along screen-projected normals, and a floor's normals face the camera, so nothing drew. `InteractionOutlineView` gives flat meshes the fill material instead; a new outline mode must handle flat geometry too.
 
 ## Tests
 

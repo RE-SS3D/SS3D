@@ -255,7 +255,7 @@ namespace SS3D.Systems.Electricity
             }
 
             // Out of the socket and away from the wall, so it falls clear of the fixture.
-            items.SpawnItem(_brokenItem.Id, SocketPosition() + transform.forward * 0.15f, Quaternion.identity);
+            items.SpawnItemAtRest(_brokenItem.Id, SocketPosition() + transform.forward * 0.15f, transform.eulerAngles.y);
         }
 
         private void PlaySocketClick()

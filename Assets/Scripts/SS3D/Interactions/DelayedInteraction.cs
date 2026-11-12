@@ -33,6 +33,15 @@ namespace SS3D.Interactions
         protected virtual bool CancelOnMove => true;
 
         /// <summary>
+        /// When true, damage to the body holding the source cancels the windup (construction.md §3, D7 of
+        /// 2026-11_construction-mvp1). Defuse keeps the default.
+        /// </summary>
+        public virtual bool CancelOnDamage => true;
+
+        private IDamageNotifier _damageNotifier;
+        private bool _damagedSinceStart;
+
+        /// <summary>
         /// The interval in seconds in which CanInteract is checked
         /// </summary>
         protected float CheckInterval { get; set; }
@@ -73,6 +82,7 @@ namespace SS3D.Interactions
         {
             CaptureStartPosition(interactionEvent);
             StartCounter();
+            SubscribeDamage(interactionEvent);
 
             return true;
         }
@@ -84,24 +94,30 @@ namespace SS3D.Interactions
         /// <param name="reference">The reference to this interaction</param>
         public virtual bool Update(InteractionEvent interactionEvent, InteractionReference reference)
         {
+            if (HasStarted && CancelOnDamage && _damagedSinceStart)
+            {
+                return CancelWith(interactionEvent, reference, DelayedCancelReason.Hurt);
+            }
+
             if (HasStarted
                 && CancelOnMove
                 && !InteractionExtensions.CharacterMoveCheck(
                     _startPosition,
                     ResolveMoveCheckPosition(interactionEvent)))
             {
-                interactionEvent.Source.CancelInteraction(reference);
-                return true;
+                return CancelWith(interactionEvent, reference, DelayedCancelReason.Moved);
             }
 
             if (_lastCheck + CheckInterval < Time.time && HasStarted)
             {
-                if (!CanInteract(interactionEvent) || !interactionEvent.Source.CanContinueInteraction())
+                if (!interactionEvent.Source.CanContinueInteraction())
                 {
-                    // Cancel the interaction
-                    interactionEvent.Source.CancelInteraction(reference);
+                    return CancelWith(interactionEvent, reference, DelayedCancelReason.KnockedDown);
+                }
 
-                    return true;
+                if (!CanInteract(interactionEvent))
+                {
+                    return CancelWith(interactionEvent, reference, ResolveCannotInteractReason(interactionEvent));
                 }
 
                 _lastCheck = Time.time;
@@ -111,21 +127,65 @@ namespace SS3D.Interactions
             {
                 if (CanInteract(interactionEvent))
                 {
+                    ReleaseCancelHooks();
                     StartDelayed(interactionEvent, reference);
 
                     return false;
                 }
-                else
-                {
-                    // Cancel own interaction
-                    interactionEvent.Source.CancelInteraction(reference);
 
-                    return true;
-                }
+                // Cancel own interaction
+                return CancelWith(interactionEvent, reference, ResolveCannotInteractReason(interactionEvent));
             }
 
             return true;
         }
+
+        /// <summary>
+        /// Reason sent when <see cref="CanInteract"/> turns false mid-step. Construction steps report
+        /// missing materials; everything else is a generic interruption.
+        /// </summary>
+        protected virtual DelayedCancelReason ResolveCannotInteractReason(InteractionEvent interactionEvent) =>
+            DelayedCancelReason.Interrupted;
+
+        /// <summary>
+        /// Drops the damage subscription. <see cref="InteractionSource"/> calls this on every cancel path,
+        /// including the Cancel key, so a cancelled step does not keep listening to the body.
+        /// </summary>
+        public void ReleaseCancelHooks()
+        {
+            if (_damageNotifier != null)
+            {
+                _damageNotifier.ServerDamaged -= HandleServerDamaged;
+                _damageNotifier = null;
+            }
+        }
+
+        private bool CancelWith(InteractionEvent interactionEvent, InteractionReference reference, DelayedCancelReason reason)
+        {
+            ReleaseCancelHooks();
+            interactionEvent.Source.CancelInteraction(reference, reason);
+            return true;
+        }
+
+        private void SubscribeDamage(InteractionEvent interactionEvent)
+        {
+            ReleaseCancelHooks();
+            _damagedSinceStart = false;
+
+            if (!CancelOnDamage || interactionEvent.Source.GetRootSource() is not IGameObjectProvider provider
+                || provider.GameObject == null)
+            {
+                return;
+            }
+
+            _damageNotifier = provider.GameObject.GetComponentInParent<IDamageNotifier>();
+            if (_damageNotifier != null)
+            {
+                _damageNotifier.ServerDamaged += HandleServerDamaged;
+            }
+        }
+
+        private void HandleServerDamaged() => _damagedSinceStart = true;
 
         /// <inheritdoc />
         public abstract void Cancel(InteractionEvent interactionEvent, InteractionReference reference);

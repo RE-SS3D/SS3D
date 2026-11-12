@@ -59,7 +59,7 @@ namespace SS3D.Systems.StructuralDamage
             float shakeAttenuation = BlastVfxFalloff.DistanceAttenuation(distance, shakeFull, shakeMax);
             if (shakeAttenuation > 0.01f)
             {
-                CameraFollow follow = Object.FindFirstObjectByType<CameraFollow>();
+                CameraFollow follow = SceneRegistry<CameraFollow>.Count > 0 ? SceneRegistry<CameraFollow>.All[0] : null;
                 if (follow != null)
                 {
                     float amplitude = (catalog != null ? catalog.ShakeAmplitude : 0.75f) * yieldScale * shakeAttenuation;

@@ -5,7 +5,7 @@ using SS3D.Core;
 using SS3D.Core.Behaviours;
 using SS3D.Core.WorldReadiness;
 using SS3D.Logging;
-using SS3D.Systems.Atmospherics.ECS;
+using SS3D.Systems.Atmospherics.Jobs;
 using SS3D.Systems.Atmospherics.Pipes;
 using SS3D.Systems.Atmospherics.Visualization;
 using SS3D.Systems.Area;
@@ -20,7 +20,7 @@ using UnityEngine;
 namespace SS3D.Systems.Atmospherics
 {
     /// <summary>
-    /// Server-authoritative atmospherics coordinator. Owns the ECS simulation world and tick loop.
+    /// Server-authoritative atmospherics coordinator. Owns the Burst-job simulation and tick loop.
     /// </summary>
     public sealed partial class AtmosSubSystem : NetworkSubSystem, IWorldReady
     {
@@ -34,7 +34,6 @@ namespace SS3D.Systems.Atmospherics
 
         [SerializeField] private GasRegistry _gasRegistry;
 
-        private AtmosWorld _atmosWorld;
         private AtmosSimulation _simulation;
         private AtmosTileObserver _tileObserver;
         private AtmosPipeObserver _pipeObserver;
@@ -48,7 +47,6 @@ namespace SS3D.Systems.Atmospherics
         private AtmosDirtyChunkTracker _dirtyChunkTracker;
         private AtmosChunkPatchBuilder _patchBuilder;
         private readonly List<Vector2Int> _dirtyChunkBuffer = new();
-        private float _tickTimer;
         private CancellationTokenSource _readinessCts;
 
         public event Action WhenReady;
@@ -67,7 +65,19 @@ namespace SS3D.Systems.Atmospherics
         /// </summary>
         public AtmosAreaPortIndex AreaPortIndex => _areaPortIndex;
 
-        public bool SimulationPaused { get; set; }
+        /// <summary>
+        /// The atmos channel of <see cref="SimulationClock"/>: the simulation and anything that samples it per tick
+        /// (air alarms). World suspension pauses it.
+        /// </summary>
+        public static SimulationChannel Channel => SimulationClock.GetOrCreate("atmos", AtmosConstants.TickInterval, pausedByWorldSuspension: true);
+
+        /// <summary>The debug pause: holds the atmos channel, so no ticks build up while it's set.</summary>
+        public bool SimulationPaused
+        {
+            get => Channel.Paused;
+            set => Channel.Paused = value;
+        }
+
         public float LastTickMilliseconds { get; private set; }
 
         /// <summary>Cost of <see cref="AtmosSimulation.Tick"/> alone in the last tick.</summary>
@@ -99,6 +109,7 @@ namespace SS3D.Systems.Atmospherics
                 readiness.PhaseChanged += HandleReadinessPhaseChanged;
             }
 
+            Channel.Subscribe(HandleChannelTick);
             InitializeWhenMapReady().Forget();
         }
 
@@ -164,8 +175,6 @@ namespace SS3D.Systems.Atmospherics
 
                 return;
             }
-
-            _atmosWorld = AtmosWorld.Create("AtmosSimulation");
 
             int gasTypeCount;
             float[] specificHeats = null;
@@ -269,6 +278,7 @@ namespace SS3D.Systems.Atmospherics
                 readiness.PhaseChanged -= HandleReadinessPhaseChanged;
             }
 
+            Channel.Unsubscribe(HandleChannelTick);
             DisposeSimulation();
             _visualizationBridge = null;
             _clientVisualizationBridge = null;
@@ -281,7 +291,7 @@ namespace SS3D.Systems.Atmospherics
         {
             IsReady = false;
             SimulationPaused = false;
-            _tickTimer = 0f;
+            Channel.ResetPhase();
             LastTickMilliseconds = 0f;
             SubSystems.TryGet(out TileSubSystem tileSubSystem);
             if (_tileObserver != null)
@@ -298,21 +308,14 @@ namespace SS3D.Systems.Atmospherics
             _pipeObserver = null;
             _pipeSimulation = null;
             _pipeRegistry = null;
-            _atmosWorld?.Dispose();
-            _atmosWorld = null;
             _areaPortIndex.Invalidate();
         }
 
-        private void Update()
+        private void HandleChannelTick()
         {
-            if (!IsServer || _simulation == null || SimulationPaused || WorldSimSuspension.IsSuspended)
+            if (!IsServer || _simulation == null)
                 return;
 
-            _tickTimer += Time.deltaTime;
-            if (_tickTimer < AtmosConstants.TickInterval)
-                return;
-
-            _tickTimer -= AtmosConstants.TickInterval;
             SimTick();
         }
 

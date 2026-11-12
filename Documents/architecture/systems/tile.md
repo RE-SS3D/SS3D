@@ -1,7 +1,7 @@
 > Code paths: Assets/Scripts/SS3D/Systems/Tile/
 > Entry points: TileSubSystem, AdjacencyEngine, ConstructionService, TileQueryService, MapEditorSubSystem, MapImportPlanner
 > Status: partial
-> Verified: 3190b2f1c — 2026-11-07
+> Verified: 6c49dab49 — 2026-11-11
 
 # Tile / construction
 
@@ -17,7 +17,9 @@ Session boot creates an empty tile container for Map Editor/AOI registration. It
 restore persisted station content. `RoundSubSystem` owns Start → selected-template restore →
 WorldReady → countdown; explicit Map Editor/Tile load APIs remain available.
 
-Steel wall/table debris is separate from tile occupancy: `TileSubSystem.Wreckage.cs` owns the replicated session list and placement observer. `ClearMarkers` also clears that list when `TileMap.Clear` resets the world. See [structural-destruction](structural-destruction.md).
+`TileObjectSo` carries three gameplay flags read outside placement: `airtight` (default true; `TileOccupancyEvaluator` makes a non-airtight wall pass air, with no blocked edges), `blocksVision` (false on the bare girder) and `reinforced` (refuses deconstruction). In-round building and repair live in [construction](construction.md).
+
+Steel wall/table debris is separate from tile occupancy: `TileSubSystem.Wreckage.cs` owns the replicated session list and placement observer. Wreckage blocks construction on its cell (`BuildFailReason.WreckageInTheWay`); construction placement runs inside `KeepWreckage()` so only the Map Editor deletes wreckage on place, and `RemoveWreckage` is public for the crowbar. `ClearMarkers` also clears that list when `TileMap.Clear` resets the world. See [structural-destruction](structural-destruction.md).
 
 ## Start here
 
@@ -120,7 +122,7 @@ Steel wall/table debris is separate from tile occupancy: `TileSubSystem.Wreckage
 - **Spawn markers vanish after loading an old template:** `TileMap.Clear` (called on every template restore) clears `SpawnPoints`. Templates without a `spawn-points` chunk intentionally stay empty — do not skip that clear or stale markers from the previous map survive.
 - **Wall Mounts hologram waited for hover:** Delete ghost only swapped to a mount prefab after `Resolve` found one under the cursor; Construct kept the previous subcategory’s selection. Selecting the Wall Mounts (or any) sub-tab now picks a catalog prototype immediately — Delete uses it as the face-cycled ghost, Construct auto-selects the first asset in that tab.
 - **Dropper / Select always copied Plenum:** tile-location arrays are enum-ordered with Plenum at index 0, so a naive foreach sampled the base tile under every click. Use `MapEditorCursorPick` (physics hit when available, else furniture→turf→plenum priority; prefer visible layer groups).
-- **Item hologram stands upright while placed item lies on its side:** `CreateHologram` / `UpdateRotationAndPosition` used to force yaw-only. Capture prefab root rest into `ConstructionHologram` and use `TargetWorldRotation` (yaw × rest) — same composition as `PlacedItemObject.Create` / `Item.GetWorldFacing` ([inventory](inventory.md)).
+- **Item hologram stands upright while placed item lies on its side:** `CreateHologram` / `UpdateRotationAndPosition` used to force yaw-only. Capture prefab root rest into `ConstructionHologram` and use `TargetWorldRotation` (yaw × rest) — the same `ItemPlacement.WorldRotation` every item spawn uses ([inventory](inventory.md)).
 - **Renaming or moving a tile asset:** saves find it by prefab id, so they survive, but three things don't follow on their own. Its examine localization key is built from the folder path (`ExamineCanonicalKeyGenerator.GetNameKey`), so the key changes; the owner left keys path-based until a localization effort. Edit the `Items.cs` constants by hand: `AssetDatabasesCodeGenerator.GenerateAssetDatabasesCode` writes invalid C# into `Sounds.cs`, fills `_asset` on about 90 tile prefabs and renumbers PrefabIds. A map file written outside the game (a script, a hand edit) carries names only until `python3 Tools/map_import/asset_ids.py <files>` stamps the ids.
 - **Dropper / Select / Move missed wall mounts:** the wall's collider (0.35 thick) is bigger than its mesh, so the ray stopped at the wall in front of the mount. `MapEditorCursorPick.TryPickWallMount` tests the renderer bounds of the mounts on both sides of the hit, keeps those on the hit side of the collider's middle, and takes the nearest the ray meets before the hit or up to 0.3 behind it.
 - **Construct hologram lingered after switching to Select:** `OnToolSelected` only cleared when leaving Delete, and hologram `HandleUpdate` early-out for Select/Dropper/Move skipped `DestroyHolograms`, so the last ghost froze in-world. Clear selection on non-Edit tools; destroy leftovers in the inactive-tool early-out; restore the ghost when returning to Construct from the current library selection.

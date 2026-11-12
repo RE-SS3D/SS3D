@@ -4,6 +4,7 @@ using FishNet.Transporting;
 using SS3D.Systems.Electricity;
 using SS3D.Systems.Entities;
 using UnityEngine;
+using SS3D.Core;
 
 namespace SS3D.Systems.Tile.MapEditor
 {
@@ -65,8 +66,7 @@ namespace SS3D.Systems.Tile.MapEditor
                 return;
 
             LightingDevBypass.MapEditorOverride = enabled;
-            foreach (LightPower fixture in FindObjectsByType<LightPower>(FindObjectsSortMode.None))
-                fixture.RefreshVisuals();
+            LightPower.RefreshAllFixtures();
         }
 
         [ServerRpc(RequireOwnership = false)]

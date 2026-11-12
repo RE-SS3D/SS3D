@@ -6,8 +6,8 @@ namespace SS3D.Systems.Examine
     public static class ExamineSealKeys
     {
         public const string Intact = "examine.seal.intact";
-        public const string IntactFallback = "Seal: intact.";
+        public const string IntactFallback = "Seal: <k=good>intact</k>.";
         public const string Breached = "examine.seal.breached";
-        public const string BreachedFallback = "Seal: breached.";
+        public const string BreachedFallback = "Seal: <k=danger>breached</k>.";
     }
 }

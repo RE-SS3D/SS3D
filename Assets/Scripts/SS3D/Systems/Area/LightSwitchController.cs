@@ -47,6 +47,7 @@ namespace SS3D.Systems.Area
                     OnName = "Turn lights off",
                     OffName = "Turn lights on",
                     CanInteractCallback = _ => IsPowered(),
+                    NarrationKey = SS3D.Systems.ActionMessages.ActionMessageKeys.LightSwitch,
                 },
             };
         }

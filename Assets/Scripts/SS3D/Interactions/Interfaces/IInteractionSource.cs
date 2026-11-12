@@ -58,6 +58,11 @@ namespace SS3D.Interactions.Interfaces
         /// <param name="reference">The reference to the interaction</param>
         void CancelInteraction(InteractionReference reference);
 
+        /// <summary>
+        /// Cancels an interaction and tells the owning client why (progress ring reason).
+        /// </summary>
+        void CancelInteraction(InteractionReference reference, DelayedCancelReason reason);
+
         InteractionInstance GetInstanceFromReference(InteractionReference reference);
 
         /// <summary>

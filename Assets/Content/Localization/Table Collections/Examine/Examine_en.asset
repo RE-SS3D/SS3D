@@ -1203,11 +1203,12 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 257390954000543744
-    m_Localized: It looks dented and scorched.
+    m_Localized: It looks <k=warn>dented</k> and scorched.
     m_Metadata:
       m_Items: []
   - m_Id: 257390954025709568
-    m_Localized: "It is cracked and hissing \u2014 atmosphere is leaking through."
+    m_Localized: "It is <k=danger>cracked</k> and hissing \u2014 atmosphere is leaking
+      through."
     m_Metadata:
       m_Items: []
   - m_Id: 257390954050000000
@@ -1215,27 +1216,27 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 257391100000000001
-    m_Localized: I am dead.
+    m_Localized: I am <k=danger>dead</k>.
     m_Metadata:
       m_Items: []
   - m_Id: 257391100000000002
-    m_Localized: He is dead.
+    m_Localized: He is <k=danger>dead</k>.
     m_Metadata:
       m_Items: []
   - m_Id: 257391100000000003
-    m_Localized: My heart has stopped.
+    m_Localized: My heart has <k=danger>stopped</k>.
     m_Metadata:
       m_Items: []
   - m_Id: 257391100000000004
-    m_Localized: He is in cardiac arrest.
+    m_Localized: He is in <k=danger>cardiac arrest</k>.
     m_Metadata:
       m_Items: []
   - m_Id: 257391100000000005
-    m_Localized: I feel myself slipping away.
+    m_Localized: I feel myself <k=danger>slipping away</k>.
     m_Metadata:
       m_Items: []
   - m_Id: 257391100000000006
-    m_Localized: He is in critical condition.
+    m_Localized: He is in <k=danger>critical condition</k>.
     m_Metadata:
       m_Items: []
   - m_Id: 257391100000000007
@@ -1275,60 +1276,64 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 257391100000000016
-    m_Localized: He seems to be hurt and bleeding from the {0}.
+    m_Localized: He seems to be <k=warn>hurt</k> and <k=danger>bleeding</k> from
+      the {0}.
     m_Metadata:
       m_Items: []
   - m_Id: 257391100000000017
-    m_Localized: He seems to be bleeding from the {0}.
+    m_Localized: He seems to be <k=danger>bleeding</k> from the {0}.
     m_Metadata:
       m_Items: []
   - m_Id: 257391100000000018
-    m_Localized: He seems to be hurt.
+    m_Localized: He seems to be <k=warn>hurt</k>.
     m_Metadata:
       m_Items: []
   - m_Id: 257391100000000019
-    m_Localized: He is missing his {0}.
+    m_Localized: He is <k=danger>missing</k> his {0}.
     m_Metadata:
       m_Items: []
   - m_Id: 257391100000000020
-    m_Localized: He is missing his {0} and seems to be hurt and bleeding from the
-      {1}.
+    m_Localized: He is <k=danger>missing</k> his {0} and seems to be <k=warn>hurt</k>
+      and <k=danger>bleeding</k> from the {1}.
     m_Metadata:
       m_Items: []
   - m_Id: 257391100000000021
-    m_Localized: He is missing his {0} and seems to be bleeding from the {1}.
+    m_Localized: He is <k=danger>missing</k> his {0} and seems to be <k=danger>bleeding</k>
+      from the {1}.
     m_Metadata:
       m_Items: []
   - m_Id: 257391100000000022
-    m_Localized: He is missing his {0} and seems to be hurt.
+    m_Localized: He is <k=danger>missing</k> his {0} and seems to be <k=warn>hurt</k>.
     m_Metadata:
       m_Items: []
   - m_Id: 257391100000000023
-    m_Localized: I am hurt and bleeding from the {0}.
+    m_Localized: I am <k=warn>hurt</k> and <k=danger>bleeding</k> from the {0}.
     m_Metadata:
       m_Items: []
   - m_Id: 257391100000000024
-    m_Localized: I am bleeding from the {0}.
+    m_Localized: I am <k=danger>bleeding</k> from the {0}.
     m_Metadata:
       m_Items: []
   - m_Id: 257391100000000025
-    m_Localized: I am hurt.
+    m_Localized: I am <k=warn>hurt</k>.
     m_Metadata:
       m_Items: []
   - m_Id: 257391100000000026
-    m_Localized: I am missing my {0}.
+    m_Localized: I am <k=danger>missing</k> my {0}.
     m_Metadata:
       m_Items: []
   - m_Id: 257391100000000027
-    m_Localized: I am missing my {0} and am hurt and bleeding from the {1}.
+    m_Localized: I am <k=danger>missing</k> my {0} and am <k=warn>hurt</k> and <k=danger>bleeding</k>
+      from the {1}.
     m_Metadata:
       m_Items: []
   - m_Id: 257391100000000028
-    m_Localized: I am missing my {0} and am bleeding from the {1}.
+    m_Localized: I am <k=danger>missing</k> my {0} and am <k=danger>bleeding</k>
+      from the {1}.
     m_Metadata:
       m_Items: []
   - m_Id: 257391100000000029
-    m_Localized: I am missing my {0} and am hurt.
+    m_Localized: I am <k=danger>missing</k> my {0} and am <k=warn>hurt</k>.
     m_Metadata:
       m_Items: []
   - m_Id: 257391100000000030
@@ -1368,31 +1373,32 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 295629502976073728
-    m_Localized: The metal is deeply dented and torn.
+    m_Localized: The metal is deeply dented and <k=danger>torn</k>.
     m_Metadata:
       m_Items: []
   - m_Id: 295631575918551040
-    m_Localized: The wood is gouged and chipped.
+    m_Localized: The wood is <k=warn>gouged</k> and chipped.
     m_Metadata:
       m_Items: []
   - m_Id: 295631575939522560
-    m_Localized: Deep splits run along the wood grain, exposing splintered fibres.
+    m_Localized: Deep <k=danger>splits</k> run along the wood grain, exposing splintered
+      fibres.
     m_Metadata:
       m_Items: []
   - m_Id: 295634111387901952
-    m_Localized: The glass is chipped, with a small star of cracks.
+    m_Localized: The glass is <k=warn>chipped</k>, with a small star of cracks.
     m_Metadata:
       m_Items: []
   - m_Id: 295634111404679168
-    m_Localized: Branching fractures spread across the glass.
+    m_Localized: Branching <k=danger>fractures</k> spread across the glass.
     m_Metadata:
       m_Items: []
   - m_Id: 252937831064399873
-    m_Localized: 'Seal: intact.'
+    m_Localized: 'Seal: <k=good>intact</k>.'
     m_Metadata:
       m_Items: []
   - m_Id: 252937831064399874
-    m_Localized: 'Seal: breached.'
+    m_Localized: 'Seal: <k=danger>breached</k>.'
     m_Metadata:
       m_Items: []
   - m_Id: 296172240830177280
@@ -1567,11 +1573,11 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 296457849096347648
-    m_Localized: The flooring is badly cracked and scorched.
+    m_Localized: The flooring is badly <k=danger>cracked</k> and scorched.
     m_Metadata:
       m_Items: []
   - m_Id: 296457849121513472
-    m_Localized: The hull plating is badly damaged, but remains sealed.
+    m_Localized: The hull plating is badly <k=warn>damaged</k>, but remains <k=good>sealed</k>.
     m_Metadata:
       m_Items: []
   - m_Id: 297502203608068096
@@ -1607,11 +1613,311 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 297530947802525696
-    m_Localized: Its casing is dented and scorched.
+    m_Localized: Its casing is <k=warn>dented</k> and scorched.
     m_Metadata:
       m_Items: []
   - m_Id: 297530947844468736
-    m_Localized: It's smashed and dead. Sparks spit from the broken casing.
+    m_Localized: It's <k=danger>smashed</k> and dead. Sparks spit from the broken
+      casing.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 297583453850017792
+    m_Localized: A crowbar would pry the tile up.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 297583453879377920
+    m_Localized: Bare hull plating. Floor tiles would cover it.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 297583453879377921
+    m_Localized: A welder would repair it.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 297583453879377922
+    m_Localized: A bare steel girder. Steel sheets would plate it, glass sheets would
+      glaze it; a welder would cut it apart.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 297583453879377923
+    m_Localized: 'Plated girder. Seams unwelded: a welder would seal it, a crowbar
+      would pull the plate off.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 297583453879377924
+    m_Localized: A welder could cut its seams.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 297583453879377925
+    m_Localized: A crowbar could lift the pane out.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 297583453879377926
+    m_Localized: Reinforced. A welder can patch it, but only explosives will take
+      it apart.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298192516493320192
+    m_Localized: The tile is damaged. A crowbar would pry it up for a new one.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298314483225567232
+    m_Localized: 'Tank: {0}% full, <k=warn>low</k>.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298314483246538752
+    m_Localized: Empty.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298314483246538753
+    m_Localized: Contains about {0} of liquid.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298314483246538754
+    m_Localized: a few milliliters
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298314483246538755
+    m_Localized: a small amount
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298314483246538756
+    m_Localized: a moderate amount
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298314483246538757
+    m_Localized: a large amount
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298314483246538758
+    m_Localized: Feels {0}.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298314483246538759
+    m_Localized: frosted / bitterly cold
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298314483246538760
+    m_Localized: cold
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298314483246538761
+    m_Localized: cool
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298314483246538762
+    m_Localized: warm
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298314483246538763
+    m_Localized: hot
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298314483246538764
+    m_Localized: <k=danger>scalding</k>
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298314483246538765
+    m_Localized: The liquid looks {0}.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298314483246538766
+    m_Localized: clear
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298314483246538767
+    m_Localized: murky
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298314483246538768
+    m_Localized: reddish
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298314483246538769
+    m_Localized: orange
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298314483246538770
+    m_Localized: yellow
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298314483246538771
+    m_Localized: green
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298314483246538772
+    m_Localized: blue
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298314483246538773
+    m_Localized: purple
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298317283615547392
+    m_Localized: 'Size: {0}.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298317283632324608
+    m_Localized: '{0} in the stack.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298317283632324609
+    m_Localized: tiny
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298317283632324610
+    m_Localized: small
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298317283632324611
+    m_Localized: normal
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298317283632324612
+    m_Localized: bulky
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298317283632324613
+    m_Localized: huge
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298317283632324614
+    m_Localized: Unknown crew member in {0}
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298317283632324615
+    m_Localized: 'You are presenting: {0}, {1}.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298317283632324616
+    m_Localized: 'You are presenting: {0}.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298317283632324617
+    m_Localized: You are presenting no ID.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298320605231685632
+    m_Localized: 'Disposal tag: {0}.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298320605248462848
+    m_Localized: <k=good>Powered</k>.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298320605248462849
+    m_Localized: <k=warn>Unpowered</k>.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298320605248462850
+    m_Localized: 'Rounds: {0}.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298320605248462851
+    m_Localized: Magazine <k=warn>empty</k>.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298320605248462852
+    m_Localized: 'Charge: {0} shots.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298320605248462853
+    m_Localized: Charge <k=warn>empty</k>.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298326310546284544
+    m_Localized: '{0} looks you over.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298326310563061760
+    m_Localized: '{0} is reaching into your pockets!'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298326310563061761
+    m_Localized: '{0} is trying to take your {2}!'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298329279073329152
+    m_Localized: '{0} flicks the light switch.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298330755267010560
+    m_Localized: '{0} plants something on the {1}.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298583315651469312
+    m_Localized: Jukebox
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298583315676635136
+    m_Localized: A jukebox with a worn selection of songs.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298583317127864320
+    m_Localized: Airlock Panel
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298583317127864321
+    m_Localized: The control panel on an airlock.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298583318595870720
+    m_Localized: Dirt
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298583318595870721
+    m_Localized: A patch of packed dirt.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298583320034516992
+    m_Localized: Grass
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298583320034516993
+    m_Localized: A patch of grass, somehow growing on a space station.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298583321477357568
+    m_Localized: Reinforced Floor
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298583321477357569
+    m_Localized: Heavy reinforced floor plating.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298600052098834432
+    m_Localized: '{0} slides a disk into the {1}.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298600052119805952
+    m_Localized: '{0} starts arming the {1}!'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298600052119805953
+    m_Localized: '{0} starts unscrewing the {1}''s wiring panel.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298600052119805954
+    m_Localized: '{0} starts cutting the {1}''s wires.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298600052119805955
+    m_Localized: The disk slot is <k=good>empty</k>.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298600052119805956
+    m_Localized: An authentication disk is <k=warn>loaded</k>.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298600052119805957
+    m_Localized: It is <k=good>not armed</k>.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298600052119805958
+    m_Localized: '<k=danger>Armed</k>: {0} left.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298600052119805959
+    m_Localized: Its wiring panel is <k=warn>open</k>.
     m_Metadata:
       m_Items: []
   references:

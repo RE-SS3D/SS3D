@@ -1,7 +1,7 @@
 > Parent map: [entities.md](entities.md)
 > Code paths: Assets/Scripts/SS3D/Systems/Entities/Editor/, Assets/Scripts/SS3D/Systems/Inventory/Containers/Editor/
 > Status: shipped
-> Verified: e2f86cf20 — 2026-11-05
+> Verified: 214e7e737 — 2026-11-11
 
 # Entity prefab recipes
 
@@ -14,7 +14,7 @@ Close the project's Editor before starting a separate batchmode process.
 
 The aggregator removes dev hacks, strips head/torso world-container interactions, wires hands,
 ensures local speech and combat networking, strips the obsolete Human substance container, wires
-the ExoSuit slot and worn renderer, and resyncs nested body-part instances last. It is scoped to Human/body-part prefabs; storage-item and
+the ExoSuit slot and worn renderer, and resyncs nested body-part instances. After the resync it calibrates the hand grip sockets on the final hierarchy. It is scoped to Human/body-part prefabs; storage-item and
 hand-tool recipes belong to their own domain aggregators.
 
 ## Start here
@@ -27,13 +27,14 @@ hand-tool recipes belong to their own domain aggregators.
 - `Assets/Scripts/SS3D/Systems/Substances/Editor/HumanSubstanceContainerStrip.cs` — obsolete root substance-container strip
 - `Assets/Scripts/SS3D/Systems/Entities/Editor/SuitStoragePrefabSetup.cs` — suit storage slot and its two storage conditions, `EvaGearController` on Human, and the pocket size limit on HumanTorso (run after ExoSuitPrefabSetup)
 - `Assets/Scripts/SS3D/Systems/Entities/Editor/ExoSuitPrefabSetup.cs` — ExoSuit container/filter (without the jumpsuit belt lock) and type-addressed worn Overwear renderer (requires inventory content assets first)
+- `Assets/Scripts/SS3D/Systems/Inventory/Containers/Editor/HandGripSocketCalibration.cs` — poses Human in the Animator's idle state and writes each display's `GripSocket` reference rotation (also **SS3D → Inventory → Calibrate Hand Grip Sockets**)
 - `Assets/Scripts/Tests/EditMode/HumanPrefabIntegrityTests.cs` — committed prefab integrity assertions
 
 ## Extension points
 
 - Add a repeatable `PrefabUtility` static for a domain concern; register it in **both** `RunAllMenu` and `RunAllBatch`. Do not add a permanent per-recipe MenuItem or hand-edit mega-prefab YAML.
 - Rebuild FishNet's serialized behaviour list when adding/removing `NetworkBehaviour`s. Preserve nested body-part behaviours; stop collection only at genuine separate spawn roots.
-- Keep `ResyncNestedPrefabInstances` last after body-part mutations.
+- Keep `ResyncNestedPrefabInstances` last after body-part mutations; only the grip calibration, which measures the result, runs after it.
 - `Hands.PlayerHands` must contain Left then Right; the first entry is the initial active hand.
 - In-body organ meshes are rigged visual children. `HumanOrgans` item prefabs represent removed organs and carry networking/physics; do not substitute those item prefabs into the body's visual rig.
 
@@ -42,6 +43,7 @@ hand-tool recipes belong to their own domain aggregators.
 - **Dangling stripped mirrors after body-part edits:** changing a nested prefab does not refresh Human's serialized mirror automatically. Resave/resync Human after all recipes run.
 - **Body-part behaviours disappear from FishNet's list:** flat-prefab collectors stop at every child `NetworkObject`. Human collection must traverse children marked nested and stop only at separate spawn roots.
 - **Worn clothing renderer must not carry its own `NetworkObject`:** clothing is addressed by `ClothType`, and a new empty nested Nob on a renderer like `Overwear` does not resolve reliably. `ExoSuitPrefabSetup` removes it and rebuilds the root's behaviour list; do the same for any new worn slot.
+- **Grip calibration refuses to write:** it checks that each hand moved away from the bind pose; if the Animator did not pose the rig (no controller, not humanoid), it falls back to sampling the default state's clip and otherwise fails rather than bake the bind pose. `HandGripSocketContentTests` fails while Human's displays are uncalibrated. `TestHuman` nests the hands without sockets on purpose: it never holds items.
 - **Hand Search is missing despite correct hand order:** the hand recipe also ensures `HandSearchExtension` on both hand assets; run the aggregator rather than editing only `PlayerHands`.
 
 ## Tests

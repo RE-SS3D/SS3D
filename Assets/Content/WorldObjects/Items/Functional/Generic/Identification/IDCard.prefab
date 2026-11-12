@@ -279,12 +279,16 @@ MonoBehaviour:
   _weight: 0.1
   _sizeClass: 0
   _maxStackSize: 1
+  _initialStackCount: 1
   _stackCount: 1
   _startingTraits:
   - {fileID: 11400000, guid: e5b749c01fdf96d429a02713921efca7, type: 2}
   _rigidbody: {fileID: 3483542684610536844}
   AttachmentPoint: {fileID: 7760506997891073340}
   AttachmentPointAlt: {fileID: 7000645782498805431}
+  _restRotation: {x: 0, y: 0, z: 0}
+  _overrideIconRotation: 0
+  _iconRotation: {x: 0, y: 0, z: 0}
   _container: {fileID: 0}
   _boundRecordId: 0
   _ownerName: 
@@ -352,7 +356,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7525193168266007956}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0.6427876, w: 0.7660445}
+  m_LocalRotation: {x: 0.54167527, y: -0.45451948, z: -0.45451948, w: -0.54167527}
   m_LocalPosition: {x: 0.12, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -383,7 +387,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8188033368034612119}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0.76604444, w: 0.64278764}
+  m_LocalRotation: {x: 0.45451948, y: -0.5416752, z: -0.5416752, w: -0.45451948}
   m_LocalPosition: {x: 0.12, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0

@@ -116,7 +116,11 @@ namespace SS3D.Systems.Combat.Editor
             }
         }
 
-        private static void RebuildNetworkBehaviours(NetworkObject rootNetworkObject)
+        /// <summary>
+        /// FishNet's UpdateNetworkBehaviours for a prefab asset: lists every NetworkBehaviour under the
+        /// root on its NetworkObject and points each back at it. Run after adding one in a recipe.
+        /// </summary>
+        internal static void RebuildNetworkBehaviours(NetworkObject rootNetworkObject)
         {
             List<NetworkBehaviour> behaviours = new();
             CollectNetworkBehaviours(rootNetworkObject.transform, behaviours);
@@ -129,6 +133,8 @@ namespace SS3D.Systems.Combat.Editor
                 listProp.GetArrayElementAtIndex(i).objectReferenceValue = behaviours[i];
 
                 SerializedObject behaviourSo = new(behaviours[i]);
+                behaviourSo.FindProperty("_addedNetworkObject").objectReferenceValue = rootNetworkObject;
+                behaviourSo.FindProperty("_networkObjectCache").objectReferenceValue = rootNetworkObject;
                 behaviourSo.FindProperty("_componentIndexCache").intValue = i;
                 behaviourSo.ApplyModifiedPropertiesWithoutUndo();
                 EditorUtility.SetDirty(behaviours[i]);

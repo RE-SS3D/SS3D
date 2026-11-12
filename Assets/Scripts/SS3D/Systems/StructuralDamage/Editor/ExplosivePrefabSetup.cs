@@ -26,6 +26,20 @@ namespace SS3D.Systems.StructuralDamage.Editor
             Build("C4", ExplosiveKind.C4, 0.8f);
             Build("X4", ExplosiveKind.X4, 1.2f);
             Build("SyndicateMiniBomb", ExplosiveKind.Minibomb, 0.5f);
+            RegisterNukeSounds();
+            DB.SaveAssets();
+        }
+
+        /// <summary>The nuclear device's clips (<c>NukeAudioTrackIds</c>); SS14 sources are in Sound ATTRIBUTIONS.</summary>
+        public static readonly string[] NukeSounds =
+        {
+            "NukeDiskInsert", "NukeArmBeep", "NukeArmed", "NukeTick", "NukeAlarm", "NukePanel", "NukeWireCut", "NukeDisarmed",
+        };
+
+        /// <summary>Registers <see cref="NukeSounds"/> in the sound database. Safe to rerun.</summary>
+        public static void RegisterNukeSounds()
+        {
+            foreach (string name in NukeSounds) RegisterSound(name);
             DB.SaveAssets();
         }
 

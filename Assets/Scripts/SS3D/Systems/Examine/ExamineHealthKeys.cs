@@ -42,37 +42,37 @@ namespace SS3D.Systems.Examine
         public const string FeelSideAches = "examine.health.feel.side_aches";
         public const string FeelLimbUseless = "examine.health.feel.limb_useless";
 
-        public const string DeadSelfFallback = "I am dead.";
-        public const string DeadOtherFallback = "He is dead.";
-        public const string CardiacArrestSelfFallback = "My heart has stopped.";
-        public const string CardiacArrestOtherFallback = "He is in cardiac arrest.";
-        public const string CriticalSelfFallback = "I feel myself slipping away.";
-        public const string CriticalOtherFallback = "He is in critical condition.";
+        public const string DeadSelfFallback = "I am <k=danger>dead</k>.";
+        public const string DeadOtherFallback = "He is <k=danger>dead</k>.";
+        public const string CardiacArrestSelfFallback = "My heart has <k=danger>stopped</k>.";
+        public const string CardiacArrestOtherFallback = "He is in <k=danger>cardiac arrest</k>.";
+        public const string CriticalSelfFallback = "I feel myself <k=danger>slipping away</k>.";
+        public const string CriticalOtherFallback = "He is in <k=danger>critical condition</k>.";
         public const string UnconsciousSelfFallback = "Everything goes dark.";
         public const string UnconsciousOtherFallback = "He is unconscious.";
 
-        public const string SelfHurtAndBleedingFallback = "I am hurt and bleeding from the {0}.";
-        public const string SelfBleedingFallback = "I am bleeding from the {0}.";
-        public const string SelfHurtFallback = "I am hurt.";
-        public const string SelfMissingFallback = "I am missing my {0}.";
+        public const string SelfHurtAndBleedingFallback = "I am <k=warn>hurt</k> and <k=danger>bleeding</k> from the {0}.";
+        public const string SelfBleedingFallback = "I am <k=danger>bleeding</k> from the {0}.";
+        public const string SelfHurtFallback = "I am <k=warn>hurt</k>.";
+        public const string SelfMissingFallback = "I am <k=danger>missing</k> my {0}.";
         public const string SelfMissingAndHurtAndBleedingFallback =
-            "I am missing my {0} and am hurt and bleeding from the {1}.";
+            "I am <k=danger>missing</k> my {0} and am <k=warn>hurt</k> and <k=danger>bleeding</k> from the {1}.";
         public const string SelfMissingAndBleedingFallback =
-            "I am missing my {0} and am bleeding from the {1}.";
+            "I am <k=danger>missing</k> my {0} and am <k=danger>bleeding</k> from the {1}.";
         public const string SelfMissingAndHurtFallback =
-            "I am missing my {0} and am hurt.";
+            "I am <k=danger>missing</k> my {0} and am <k=warn>hurt</k>.";
 
         // Interim masculine pronouns — roster is male-only for now.
-        public const string OtherHurtAndBleedingFallback = "He seems to be hurt and bleeding from the {0}.";
-        public const string OtherBleedingFallback = "He seems to be bleeding from the {0}.";
-        public const string OtherHurtFallback = "He seems to be hurt.";
-        public const string OtherMissingFallback = "He is missing his {0}.";
+        public const string OtherHurtAndBleedingFallback = "He seems to be <k=warn>hurt</k> and <k=danger>bleeding</k> from the {0}.";
+        public const string OtherBleedingFallback = "He seems to be <k=danger>bleeding</k> from the {0}.";
+        public const string OtherHurtFallback = "He seems to be <k=warn>hurt</k>.";
+        public const string OtherMissingFallback = "He is <k=danger>missing</k> his {0}.";
         public const string OtherMissingAndHurtAndBleedingFallback =
-            "He is missing his {0} and seems to be hurt and bleeding from the {1}.";
+            "He is <k=danger>missing</k> his {0} and seems to be <k=warn>hurt</k> and <k=danger>bleeding</k> from the {1}.";
         public const string OtherMissingAndBleedingFallback =
-            "He is missing his {0} and seems to be bleeding from the {1}.";
+            "He is <k=danger>missing</k> his {0} and seems to be <k=danger>bleeding</k> from the {1}.";
         public const string OtherMissingAndHurtFallback =
-            "He is missing his {0} and seems to be hurt.";
+            "He is <k=danger>missing</k> his {0} and seems to be <k=warn>hurt</k>.";
 
         public const string FeelDizzyFallback = "I feel dizzy.";
         public const string FeelFadingFallback = "I can barely stay conscious.";

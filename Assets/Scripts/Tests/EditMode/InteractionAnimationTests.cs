@@ -66,6 +66,10 @@ namespace SS3D.Tests.EditMode
         [TestCase("Toggle", 1f, false, InteractionAnimation.None)]
         [TestCase("AttachCharge", 1f, false, InteractionAnimation.DoorReach)]
         [TestCase("DefuseC4", 0f, false, InteractionAnimation.Kneel)]
+        [TestCase("NukeLoadDisk", 1f, false, InteractionAnimation.DoorReach)]
+        [TestCase("NukeArm", 1f, false, InteractionAnimation.DoorReach)]
+        [TestCase("NukeOpenPanel", 1f, false, InteractionAnimation.WallWork)]
+        [TestCase("NukeCutWires", 1f, false, InteractionAnimation.WallWork)]
         [TestCase("Perform CPR", 0f, false, InteractionAnimation.Kneel)]
         [TestCase("ArmC4", 1f, false, InteractionAnimation.None)]
         [TestCase("Bandage", 1f, false, InteractionAnimation.None)]
@@ -112,9 +116,9 @@ namespace SS3D.Tests.EditMode
                 Assert.AreEqual(1, entries.Length, $"{entry.StateName} has one way in");
                 if (entry.Loop)
                 {
-                    Assert.IsTrue(entries[0].conditions.Any(c => c.parameter == InteractionAnimation.KneelParameter
+                    Assert.IsTrue(entries[0].conditions.Any(c => c.parameter == entry.HoldParameter
                         && c.mode == AnimatorConditionMode.If), entry.StateName);
-                    Assert.IsTrue(state.transitions.All(t => t.conditions.Any(c => c.parameter == InteractionAnimation.KneelParameter
+                    Assert.IsTrue(state.transitions.All(t => t.conditions.Any(c => c.parameter == entry.HoldParameter
                         && c.mode == AnimatorConditionMode.IfNot)), $"{entry.StateName} leaves when the kneel clears");
                     continue;
                 }

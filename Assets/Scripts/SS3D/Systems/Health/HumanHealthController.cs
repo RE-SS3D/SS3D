@@ -2,12 +2,11 @@ using FishNet.Connection;
 using FishNet.Object;
 using FishNet.Object.Synchronizing;
 using System.Linq;
-using Coimbra.Services.Events;
-using Coimbra.Services.PlayerLoopEvents;
 using SS3D.Core;
 using SS3D.Core.Behaviours;
+using SS3D.Interactions.Interfaces;
 using SS3D.Systems.Atmospherics;
-using SS3D.Systems.Atmospherics.ECS;
+using SS3D.Systems.Atmospherics.Jobs;
 using SS3D.Systems.Atmospherics.Pipes;
 using SS3D.Systems.Audio;
 using AudioType = SS3D.Systems.Audio.AudioType;
@@ -28,7 +27,7 @@ namespace SS3D.Systems.Health
     /// <summary>
     /// Server-authoritative health controller for humanoids. Owns zone damage, organs, and systemic pools.
     /// </summary>
-    public class HumanHealthController : NetworkActor
+    public class HumanHealthController : NetworkActor, IDamageNotifier
     {
         private readonly ZoneDamageState[] _zones = new ZoneDamageState[HealthConstants.ZoneCount];
         private readonly List<OrganState> _organs = new();
@@ -36,7 +35,6 @@ namespace SS3D.Systems.Health
         private readonly List<IHealthEffectModifier> _modifiers = new();
 
         private SystemicPools _pools = SystemicPools.Default;
-        private float _tickTimer;
         private Entity _entity;
         private WoundVfx _woundVfx;
         private HumanAnatomyController _anatomy;
@@ -64,6 +62,12 @@ namespace SS3D.Systems.Health
         /// Main HUD and other local-owner consumers subscribe here.
         /// </summary>
         public event Action<HealthSnapshot> SnapshotChanged;
+
+        /// <summary>
+        /// Server only: raised when a hit lands (brute or burn above zero). Timed steps cancel on it
+        /// (<see cref="SS3D.Interactions.DelayedInteraction.CancelOnDamage"/>).
+        /// </summary>
+        public event Action ServerDamaged;
 
         public HealthSnapshot Snapshot => _snapshot;
 
@@ -118,8 +122,6 @@ namespace SS3D.Systems.Health
             }
 
             _anatomy.Initialize(this);
-
-            AddHandle(UpdateEvent.AddListener(HandleUpdate));
         }
 
         public override void OnStartClient()
@@ -147,16 +149,35 @@ namespace SS3D.Systems.Health
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
         private static void ResetServerBodies() => ServerBodies.Clear();
 
+        /// <summary>Every body ticks on one shared channel of <see cref="SimulationClock"/>; map loads don't pause it.</summary>
+        private static SimulationChannel HealthChannel =>
+            SimulationClock.GetOrCreate("health", HealthConstants.TickIntervalSeconds, pausedByWorldSuspension: false);
+
+        /// <summary>Every enabled body on this peer (debug overlay, console targets); <see cref="ServerInstances"/> is the server's spawned set.</summary>
+        protected override void OnEnabled()
+        {
+            base.OnEnabled();
+            SceneRegistry<HumanHealthController>.Register(this);
+        }
+
+        protected override void OnDisabled()
+        {
+            SceneRegistry<HumanHealthController>.Unregister(this);
+            base.OnDisabled();
+        }
+
         public override void OnStopServer()
         {
             base.OnStopServer();
             ServerBodies.Remove(this);
+            HealthChannel.Unsubscribe(HandleHealthTick);
         }
 
         public override void OnStartServer()
         {
             base.OnStartServer();
             ServerBodies.Add(this);
+            HealthChannel.Subscribe(HandleHealthTick);
             EnsureBuiltinOrgans();
             OrganSimulation.EnsureDefaultOrgans(_organs);
             PublishSnapshot();
@@ -165,6 +186,7 @@ namespace SS3D.Systems.Health
         protected override void OnDestroyed()
         {
             ServerBodies.Remove(this);
+            HealthChannel.Unsubscribe(HandleHealthTick);
             if (_entity != null)
             {
                 _entity.OnMindChanged -= HandleMindChangedForLocalFeedback;
@@ -254,6 +276,11 @@ namespace SS3D.Systems.Health
 
             PublishSnapshot();
 
+            if (brute + burn > 0f)
+            {
+                ServerDamaged?.Invoke();
+            }
+
             // Dead / unminded corpses must not flash the ghost's screen — Owner may still be valid
             // briefly if SetMind(null) has not run yet; never TargetRpc after death latch.
             if (brute + burn > 0f
@@ -303,7 +330,7 @@ namespace SS3D.Systems.Health
             float t = Mathf.Clamp01(brute / HealthConstants.BloodSprayFullBrute);
             // Keep stagger through most of the flinch clip so Additive Flinch weight can lerp out softly.
             float staggerSeconds = Mathf.Lerp(0.55f, 0.85f, t);
-            _combatController.OnHitReceived(Vector3.zero, knockbackForce: 0f, staggerSeconds);
+            _combatController.OnHitReceived(staggerSeconds);
         }
 
         /// <summary>
@@ -678,20 +705,13 @@ namespace SS3D.Systems.Health
             }
         }
 
-        private void HandleUpdate(ref EventContext context, in UpdateEvent updateEvent)
+        private void HandleHealthTick()
         {
             if (!IsServer || _deathTriggered)
             {
                 return;
             }
 
-            _tickTimer += updateEvent.DeltaTime;
-            if (_tickTimer < HealthConstants.TickIntervalSeconds)
-            {
-                return;
-            }
-
-            _tickTimer = 0f;
             TickHealthFromEnvironment();
         }
 
@@ -772,13 +792,9 @@ namespace SS3D.Systems.Health
                 return null;
             }
 
-            foreach (AttachedContainer container in _inventory.Containers)
+            // TryGetTypeContainer, not Containers: that copies the list, and this runs for every body every tick.
+            for (int i = 0; _inventory.TryGetTypeContainer(slot, i, out AttachedContainer container); i++)
             {
-                if (container.Type != slot)
-                {
-                    continue;
-                }
-
                 foreach (Item item in container.Items)
                 {
                     if (item.TryGetComponent(out SealedGearItemExtension seal))

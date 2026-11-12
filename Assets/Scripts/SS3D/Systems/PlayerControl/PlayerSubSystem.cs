@@ -193,8 +193,8 @@ namespace SS3D.Systems.PlayerControl
         [Server]
         private void ProcessAuthorizePlayer(NetworkConnection conn, UserAuthorizationMessage userAuthorizationMessage)
         {
-            if (SubSystems.TryGet(out SS3D.Systems.Rounds.RoundSubSystem rounds)
-                && _onlinePlayers.Count >= rounds.PlayerCap
+            if (SubSystems.TryGet(out SS3D.Systems.Rounds.ServerSettingsService settings)
+                && _onlinePlayers.Count >= settings.PlayerCap
                 && !_onlinePlayers.ContainsKey(userAuthorizationMessage.Ckey))
             {
                 ConnectionNotices.Disconnect(conn, DisconnectCode.ServerFull);

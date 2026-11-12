@@ -24,6 +24,7 @@ A **Server Settings** screen, open to Administrators (`admin-tools.md` §2), hol
 - **Round length** — the hard time limit for a round (`round-end.md` §2). A server setting, the same for every mode in this pass; a gamemode may override it in a later pass.
 - **Player cap** — how many players can be connected at once (`networking.md` §5).
 - **Latejoin** — on or off (`lobby.md` §7).
+- **OOC chat** — on by default; an admin can mute global OOC mid-round, without a restart (`comms.md` §7). LOOC, dead chat and admin messages are unaffected.
 - **Respawn** — off by default; when on, a ghost may latejoin as a new character after a cooldown (`death-cloning-respawn.md` §6).
 
 ## 3. Choosing the mode at round start
@@ -75,6 +76,7 @@ Nothing in §2–§5 has to change shape for this; Secret just draws from a weig
 | Settings persistence | `persistence-save.md` §4 |
 | Who may change settings, and the log of changes | `admin-tools.md` §1, §2 |
 | Map-fits-mode check | `creative-mode.md` §8 |
+| OOC mute | `comms.md` §7 |
 
 ## 9. Worked examples
 

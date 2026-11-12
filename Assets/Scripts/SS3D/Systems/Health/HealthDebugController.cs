@@ -81,7 +81,11 @@ namespace SS3D.Systems.Health
 
         private void RefreshTargets()
         {
-            _targets = FindObjectsByType<HumanHealthController>(FindObjectsSortMode.None);
+            _targets = new HumanHealthController[SceneRegistry<HumanHealthController>.Count];
+            for (int i = 0; i < _targets.Length; i++)
+            {
+                _targets[i] = SceneRegistry<HumanHealthController>.All[i];
+            }
             if (_selected != null)
             {
                 for (int i = 0; i < _targets.Length; i++)

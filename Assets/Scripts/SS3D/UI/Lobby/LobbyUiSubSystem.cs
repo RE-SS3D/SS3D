@@ -7,6 +7,7 @@ using SS3D.Permissions;
 using SS3D.Systems.Comms;
 using SS3D.Systems.Entities;
 using SS3D.Systems.PlayerControl;
+using SS3D.Systems.Session;
 using SS3D.Systems.Roles;
 using SS3D.Systems.Roles.Messages;
 using SS3D.Systems.Rounds;
@@ -99,6 +100,7 @@ namespace SS3D.UI.Lobby
                 HumanoidStyleSource.Current = null;
             }
 
+            UnbindClientSession();
             DisposeBooth();
             base.OnDestroyed();
         }
@@ -106,7 +108,11 @@ namespace SS3D.UI.Lobby
         private void Update()
         {
             if (!_attached) TryAttachShell();
-            if (_shellView != null) RefreshSession();
+            if (_shellView != null)
+            {
+                BindClientSession();
+                RefreshSession();
+            }
             RefreshDisplayConfirmation();
             if (_portraitDirty) TryCapturePortrait();
         }
@@ -144,7 +150,7 @@ namespace SS3D.UI.Lobby
             _shellView.RoundChangeRequested += HandleRoundChangeRequested;
             _shellView.ServerSettingsChanged += (field, settings) =>
             {
-                if (CanAdmin() && SubSystems.TryGet(out RoundSubSystem rounds)) rounds.CmdUpdateServerSetting(field, settings);
+                if (CanAdmin() && SubSystems.TryGet(out ServerSettingsService service)) service.CmdUpdateServerSetting(field, settings);
             };
             _shellView.RoundAdminRequested += action =>
             {
@@ -152,9 +158,9 @@ namespace SS3D.UI.Lobby
             };
             _shellView.MapStopResolved += (token, choice, name) =>
             {
-                if (CanAdmin() && SubSystems.TryGet(out RoundSubSystem rounds)) rounds.CmdResolveMapStop(token, choice, name);
+                if (CanAdmin() && SubSystems.TryGet(out MapEditorStopFlow stopFlow)) stopFlow.CmdResolveMapStop(token, choice, name);
             };
-            _shellView.JobPreferencesChanged += SendJobPreferences;
+            _shellView.JobPreferencesChanged += HandleJobPreferencesChanged;
             _shellView.ChatSubmitted += HandleChatSubmitted;
             BindPlayerSettings();
             _shellView.SetCharacterName(_draft.Name);
@@ -252,9 +258,6 @@ namespace SS3D.UI.Lobby
 
         private float _nextSessionRefresh;
         private bool _inWorld;
-        private NetworkConnection _preferencesSentTo;
-        private NetworkConnection _appearanceSentTo;
-        private NetworkConnection _chatHistoryRequestedFrom;
         private bool _spawned;
         private bool _menuOpen;
         private IInputHandle _menuHandle;
@@ -314,49 +317,26 @@ namespace SS3D.UI.Lobby
                 _inWorld = false;
                 HandleReturnToLobbyRequested();
             }
-            // Wait for the replicated player record: the server drops preferences from unknown senders.
-            if (local == null)
-            {
-                _preferencesSentTo = null;
-                _appearanceSentTo = null;
-                _chatHistoryRequestedFrom = null;
-            }
-            else
-            {
-                if (_preferencesSentTo != InstanceFinder.ClientManager.Connection) SendJobPreferences();
-                if (_appearanceSentTo != InstanceFinder.ClientManager.Connection) SendCharacterAppearance();
-                if (_chatHistoryRequestedFrom != InstanceFinder.ClientManager.Connection
-                    && SubSystems.TryGet(out CommsSubSystem historyComms))
-                {
-                    historyComms.RequestOocHistory();
-                    _chatHistoryRequestedFrom = InstanceFinder.ClientManager.Connection;
-                }
-            }
             _shellView.SetJobs(connected && SubSystems.TryGet(out RoleSubSystem roles)
                 ? roles.Jobs : System.Array.Empty<JobSlotInfo>());
-            if (connected && rounds != null)
-                _shellView.SetServerInfo(rounds.ServerName, rounds.Motd, rounds.PublicMode, rounds.ServerBuild, rounds.ServerStarted);
+            SubSystems.TryGet(out ServerSettingsService serverSettings);
+            if (connected && serverSettings != null)
+                _shellView.SetServerInfo(serverSettings.ServerName, serverSettings.Motd, serverSettings.PublicMode,
+                    serverSettings.ServerBuild, serverSettings.ServerStarted);
             else
                 _shellView.SetServerInfo(null, "", null, "", null);
             RefreshLastRound(connected ? rounds : null, visible);
             _shellView.SetStationLoadState(rounds != null ? rounds.CurrentStationLoadState : StationLoadState.NotLoaded,
                 rounds != null ? rounds.StationName : "");
             bool admin = CanAdmin();
+            ShowAdminSettings();
             if (SubSystems.TryGet(out CommsSubSystem comms))
                 _shellView.SetChat(comms.OocLog, comms.OocLogVersion, connected && admin);
-            if (ShouldReadAdminSettings(admin, rounds != null, local != null))
-            {
-                if (Time.unscaledTime >= _nextAdminRefresh)
-                {
-                    _nextAdminRefresh = Time.unscaledTime + 1f;
-                    rounds.CmdReadServerSettings();
-                }
-                if (rounds.HasAdminSettings)
-                    _shellView.SetServerSettings(rounds.AdminSettings, rounds.AdminMaps, rounds.AdminSettingsStatus);
-            }
-            bool mapPrompt = connected && admin && rounds != null && rounds.CurrentRoundState == RoundState.Ongoing;
-            _shellView.SetMapStopPrompt(mapPrompt ? rounds.MapStopToken : 0,
-                mapPrompt ? rounds.MapStopEditingMap : "", mapPrompt ? rounds.MapStopError : "");
+            MapEditorStopFlow stopFlow = null;
+            bool mapPrompt = connected && admin && rounds != null && rounds.CurrentRoundState == RoundState.Ongoing
+                && SubSystems.TryGet(out stopFlow);
+            _shellView.SetMapStopPrompt(mapPrompt ? stopFlow.MapStopToken : 0,
+                mapPrompt ? stopFlow.MapStopEditingMap : "", mapPrompt ? stopFlow.MapStopError : "");
             LobbyMockData.PlayerRow[] rows = connected ? players.OnlinePlayers.Where(p => p != null)
                 .Select(p => new LobbyMockData.PlayerRow(p.Ckey, p.Ckey, ready != null && ready.IsReady(p),
                     null, "—", "—", "—")).ToArray() : System.Array.Empty<LobbyMockData.PlayerRow>();
@@ -365,7 +345,7 @@ namespace SS3D.UI.Lobby
             _shellView.SetRoundEnd(rounds != null && rounds.EndHeld, rounds != null ? rounds.EndSecondsLeft : 0);
             _shellView.SetSession(rounds != null ? rounds.CurrentRoundState : RoundState.Stopped,
                 rounds != null ? rounds.CurrentTimerSeconds : 0,
-                local != null && ready != null && ready.IsReady(local), local != null && (rounds == null || rounds.CurrentRoundState != RoundState.Ongoing || rounds.AllowLateJoin), admin, rows, spawned);
+                local != null && ready != null && ready.IsReady(local), local != null && (rounds == null || rounds.CurrentRoundState != RoundState.Ongoing || serverSettings == null || serverSettings.AllowLateJoin), admin, rows, spawned);
         }
 
         /// <summary>Follows InputSubSystem across scene reloads (it owns a new Controls each time).</summary>
@@ -409,66 +389,99 @@ namespace SS3D.UI.Lobby
         }
 
         /// <summary>
-        /// Sends the full preference list; the server keeps it per ckey until the next change, so it
-        /// is also resent once per connection.
+        /// The session service sends job preferences, the saved character and the OOC history request once per
+        /// connection, and relays the admin settings the server pushes (tech-debt P6.6). The lobby only supplies
+        /// the values and shows what arrives.
         /// </summary>
-        private void SendJobPreferences()
+        private bool _sessionBound;
+
+        private void BindClientSession()
         {
-            if (_shellView == null || InstanceFinder.ClientManager == null || !InstanceFinder.ClientManager.Started) return;
+            if (_sessionBound || !SubSystems.TryGet(out ClientSessionSubSystem session)) return;
+            _sessionBound = true;
+            session.JobPreferencesSource = BuildJobPreferences;
+            session.AppearanceSource = BuildCharacterAppearance;
+            session.AdminSettingsChanged += ShowAdminSettings;
+            session.JobPreferencesChanged();
+            session.AppearanceChanged();
+            ShowAdminSettings();
+        }
+
+        private void UnbindClientSession()
+        {
+            if (!_sessionBound || !SubSystems.TryGet(out ClientSessionSubSystem session)) return;
+            _sessionBound = false;
+            session.AdminSettingsChanged -= ShowAdminSettings;
+            session.JobPreferencesSource = null;
+            session.AppearanceSource = null;
+        }
+
+        private ServerSettingsService _shownSettingsService;
+        private int _shownAdminSettingsVersion;
+
+        /// <summary>
+        /// Shows the latest admin snapshot. The session's event calls it; <see cref="RefreshSession"/> calls it too, so a
+        /// snapshot that arrived while the view or the admin check wasn't ready yet still shows (a local version check).
+        /// </summary>
+        private void ShowAdminSettings()
+        {
+            if (_shellView == null || !CanAdmin() || !SubSystems.TryGet(out ServerSettingsService service) || !service.HasAdminSettings)
+                return;
+            if (service == _shownSettingsService && service.AdminSettingsVersion == _shownAdminSettingsVersion)
+                return;
+            _shownSettingsService = service;
+            _shownAdminSettingsVersion = service.AdminSettingsVersion;
+            _shellView.SetServerSettings(service.AdminSettings, service.AdminMaps, service.AdminSettingsStatus);
+        }
+
+        private void HandleJobPreferencesChanged()
+        {
+            if (SubSystems.TryGet(out ClientSessionSubSystem session)) session.JobPreferencesChanged();
+        }
+
+        private void NotifyAppearanceChanged()
+        {
+            if (SubSystems.TryGet(out ClientSessionSubSystem session)) session.AppearanceChanged();
+        }
+
+        /// <summary>The full preference list; the server keeps it per ckey until the next change.</summary>
+        private JobPreferencesMessage? BuildJobPreferences()
+        {
+            if (_shellView == null) return null;
             string[] jobs = _shellView.JobPriorities.Keys.ToArray();
-            InstanceFinder.ClientManager.Broadcast(new JobPreferencesMessage
+            return new JobPreferencesMessage
             {
                 Jobs = jobs,
                 Priorities = jobs.Select(job => (byte)_shellView.JobPriorities[job]).ToArray(),
                 AntagonistOptIns = _shellView.AntagonistOptIns.ToArray(),
-            });
-            _preferencesSentTo = InstanceFinder.ClientManager.Connection;
+            };
         }
 
-        /// <summary>
-        /// Sends the saved character (never unsaved creator edits); the server applies it at the next
-        /// spawn, so it is also resent once per connection.
-        /// </summary>
-        private void SendCharacterAppearance()
+        /// <summary>The saved character (never unsaved creator edits).</summary>
+        private CharacterAppearance? BuildCharacterAppearance()
         {
-            if (_draft == null || _catalog == null || InstanceFinder.ClientManager == null || !InstanceFinder.ClientManager.Started) return;
-            InstanceFinder.ClientManager.Broadcast(new CharacterAppearanceMessage
+            if (_draft == null || _catalog == null) return null;
+            return new CharacterAppearance
             {
-                Appearance = new CharacterAppearance
-                {
-                    Name = _draft.Name,
-                    Female = _draft.GetMorph("female", 0f),
-                    Breasts = _draft.GetMorph("breasts", 0f),
-                    Fat = _draft.GetMorph("fat", 0f),
-                    Muscle = _draft.GetMorph("muscle", 0f),
-                    Jaw = _draft.GetMorph("jaw", 0.5f),
-                    Height = _draft.GetMorph("height", 0.5f),
-                    HairStyle = _draft.HairStyleIndex,
-                    BeardStyle = _draft.BeardStyleIndex,
-                    HairColor = _catalog.GetHairColor(_draft.HairColorIndex),
-                    BeardColor = _catalog.GetHairColor(_draft.BeardColorIndex),
-                    SkinColor = CharacterCreatorView.PaletteColor(CharacterCreatorMockData.SkinColors, _draft.SkinColorIndex),
-                    EyeColor = CharacterCreatorView.PaletteColor(CharacterCreatorMockData.EyeColors, _draft.EyeColorIndex),
-                    EyebrowColor = _catalog.GetHairColor(_draft.EyebrowColorIndex),
-                    EyebrowStyle = CharacterAppearance.NormalizeEyebrowStyle(_draft.Eyebrows),
-                },
-            });
-            _appearanceSentTo = InstanceFinder.ClientManager.Connection;
+                Name = _draft.Name,
+                Female = _draft.GetMorph("female", 0f),
+                Breasts = _draft.GetMorph("breasts", 0f),
+                Fat = _draft.GetMorph("fat", 0f),
+                Muscle = _draft.GetMorph("muscle", 0f),
+                Jaw = _draft.GetMorph("jaw", 0.5f),
+                Height = _draft.GetMorph("height", 0.5f),
+                HairStyle = _draft.HairStyleIndex,
+                BeardStyle = _draft.BeardStyleIndex,
+                HairColor = _catalog.GetHairColor(_draft.HairColorIndex),
+                BeardColor = _catalog.GetHairColor(_draft.BeardColorIndex),
+                SkinColor = CharacterCreatorView.PaletteColor(CharacterCreatorMockData.SkinColors, _draft.SkinColorIndex),
+                EyeColor = CharacterCreatorView.PaletteColor(CharacterCreatorMockData.EyeColors, _draft.EyeColorIndex),
+                EyebrowColor = _catalog.GetHairColor(_draft.EyebrowColorIndex),
+                EyebrowStyle = CharacterAppearance.NormalizeEyebrowStyle(_draft.Eyebrows),
+            };
         }
 
-        private float _nextAdminRefresh;
-
-        /// <summary>
-        /// Logged in, not merely connected: a refused admin name stays connected through the disconnect
-        /// grace, and the server has no name for that connection to check.
-        /// </summary>
-        public static bool ShouldReadAdminSettings(bool canAdmin, bool hasRounds, bool loggedIn) =>
-            canAdmin && hasRounds && loggedIn;
-
-        private bool CanAdmin() => SubSystems.TryGet(out PermissionSubSystem permissions)
-            && permissions.HasLoadedPermissions
-            && !string.IsNullOrEmpty(SS3D.Core.Settings.LocalPlayer.Ckey)
-            && permissions.IsAtLeast(SS3D.Core.Settings.LocalPlayer.Ckey, ServerRoleTypes.Administrator);
+        private static bool CanAdmin() => ClientSessionSubSystem.LocalPlayerIsAdmin();
 
         private void HandleChatSubmitted(OocChannel channel, string text)
         {
@@ -618,7 +631,7 @@ namespace SS3D.UI.Lobby
             HandleFaceChanged(CharacterCreatorView.PaletteColor(CharacterCreatorMockData.SkinColors, _draft.SkinColorIndex),
                 CharacterCreatorView.PaletteColor(CharacterCreatorMockData.EyeColors, _draft.EyeColorIndex),
                 CharacterAppearance.NormalizeEyebrowStyle(_draft.Eyebrows), _catalog.GetHairColor(_draft.EyebrowColorIndex));
-            SendCharacterAppearance();
+            NotifyAppearanceChanged();
             Debug.Log($"[Lobby] Character draft saved: {_draft.Name}");
         }
 

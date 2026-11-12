@@ -49,7 +49,6 @@ namespace SS3D.Tests.AssetAudit
             { "AtmosSimulation", 975 },
             { "LocalSpeechBubbleView", 955 },
             { "AttachedContainer", 932 },
-            { "ExamineOverlaySubSystem", 930 },
             { "Item", 901 },
         };
 

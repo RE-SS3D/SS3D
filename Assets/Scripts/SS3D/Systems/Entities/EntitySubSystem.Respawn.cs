@@ -76,7 +76,7 @@ namespace SS3D.Systems.Entities
 
         private static double Now => Time.realtimeSinceStartupAsDouble;
 
-        private static ServerSettings Settings => SubSystems.Get<RoundSubSystem>().SettingsForServer;
+        private static ServerSettings Settings => SubSystems.Get<ServerSettingsService>().Current;
 
         /// <summary>Server: a player's body died and their ghost took over; starts the cooldown and offers respawn.</summary>
         [Server]

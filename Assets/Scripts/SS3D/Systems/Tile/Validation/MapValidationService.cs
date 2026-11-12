@@ -128,6 +128,8 @@ namespace SS3D.Systems.Tile.Validation
                 kind = RoomDeviceKind.AirAlarm;
             else if (placed.TryGetComponent(out LightPower _) || placed.TryGetComponent(out LightSwitchController _))
                 kind = RoomDeviceKind.Light;
+            else if (placed.TryGetComponent(out IAreaApcOrigin _))
+                kind = RoomDeviceKind.Apc;
             else
                 return false;
             return true;

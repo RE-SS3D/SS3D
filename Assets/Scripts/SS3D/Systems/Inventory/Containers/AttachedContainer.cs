@@ -1,6 +1,7 @@
 ﻿using FishNet.Component.Transforming;
 using SS3D.Core.Behaviours;
 using SS3D.Core;
+using System.Collections;
 using System.Collections.Generic;
 using System;
 using UnityEngine;
@@ -170,7 +171,7 @@ namespace SS3D.Systems.Inventory.Containers
 		/// <summary>
 		/// How many items are in this container
 		/// </summary>
-		public int ItemCount => Items.Count();
+		public int ItemCount => _storedItems.Count;
 
         /// <summary>
         /// Total carried weight: every stored item's own weight (times its stack count), plus,
@@ -218,9 +219,10 @@ namespace SS3D.Systems.Inventory.Containers
         private readonly SyncList<StoredItem> _storedItems = new();
 
         /// <summary>
-        /// The items stored in this container
+        /// The stored items. A <c>foreach</c> over it allocates nothing (health reads worn gear every tick); LINQ still
+        /// works through <see cref="IEnumerable{T}"/>.
         /// </summary>
-        public IEnumerable<Item> Items => _storedItems.Select(x => x.Item);
+        public ItemsView Items => new(_storedItems);
 
 		public delegate void ContainerContentsHandler(AttachedContainer container, Item oldItem, Item newItem, ContainerChangeType type);
 		/// <summary>
@@ -591,7 +593,7 @@ namespace SS3D.Systems.Inventory.Containers
                 Item existing = _storedItems[i].Item;
                 if (existing != null
                     && existing.CanMergeWith(item)
-                    && existing.StackCount + item.StackCount <= existing.MaxStackSize)
+                    && ItemStackRules.CanMerge(existing.StackCount, item.StackCount, existing.MaxStackSize))
                 {
                     index = i;
                     return true;
@@ -870,7 +872,7 @@ namespace SS3D.Systems.Inventory.Containers
             return item.IsStackable
                 && occupant != null
                 && occupant.CanMergeWith(item)
-                && occupant.StackCount + item.StackCount <= occupant.MaxStackSize;
+                && ItemStackRules.CanMerge(occupant.StackCount, item.StackCount, occupant.MaxStackSize);
         }
 
         /// <summary>
@@ -927,6 +929,38 @@ namespace SS3D.Systems.Inventory.Containers
 		{
 			return slotCoordinates.x < Size.x && slotCoordinates.y < Size.y && slotCoordinates.x >= 0 && slotCoordinates.y >= 0;
 		}
-	}
+	
+
+        /// <summary>The items of a container's <see cref="StoredItem"/> list, enumerated without allocating.</summary>
+        public readonly struct ItemsView : IEnumerable<Item>
+        {
+            private readonly SyncList<StoredItem> _storedItems;
+
+            public ItemsView(SyncList<StoredItem> storedItems) => _storedItems = storedItems;
+
+            public Enumerator GetEnumerator() => new(_storedItems.GetEnumerator());
+
+            IEnumerator<Item> IEnumerable<Item>.GetEnumerator() => GetEnumerator();
+
+            IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+
+            public struct Enumerator : IEnumerator<Item>
+            {
+                private SyncList<StoredItem>.Enumerator _inner;
+
+                public Enumerator(SyncList<StoredItem>.Enumerator inner) => _inner = inner;
+
+                public Item Current => _inner.Current.Item;
+
+                object IEnumerator.Current => Current;
+
+                public bool MoveNext() => _inner.MoveNext();
+
+                public void Reset() => _inner.Reset();
+
+                public void Dispose() => _inner.Dispose();
+            }
+        }
+}
 
 }

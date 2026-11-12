@@ -275,6 +275,18 @@ namespace SS3D.Systems.Entities.Humanoid.Body
             PublishSnapshot();
         }
 
+        /// <summary>Server: holds the wall-work loop for a construction step until cleared.</summary>
+        public void SetInteractWork(bool work)
+        {
+            if (!IsServer || _snapshot.InteractWork == work)
+            {
+                return;
+            }
+
+            _snapshot.InteractWork = work;
+            PublishSnapshot();
+        }
+
         public void SetInjuredArms(float left, float right)
         {
             // SyncVars are server-authoritative. Assigning on a pure client spam-logs
@@ -483,16 +495,6 @@ namespace SS3D.Systems.Entities.Humanoid.Body
             {
                 ApplyLocalSnapshot();
                 _triggerSequence++;
-            }
-        }
-
-        [Server]
-        public void ApplyKnockback(Vector3 direction, float force)
-        {
-            CharacterController controller = GetComponent<CharacterController>();
-            if (controller != null)
-            {
-                controller.Move(direction.normalized * force);
             }
         }
 

@@ -12,6 +12,7 @@ using SS3D.Systems.Selection;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Serialization;
+using SS3D.Core;
 
 namespace SS3D.Systems.Furniture
 {
@@ -80,7 +81,7 @@ namespace SS3D.Systems.Furniture
                 return;
             }
 
-            ContainerViewer[] viewers = FindObjectsByType<ContainerViewer>(FindObjectsSortMode.None);
+            IReadOnlyList<ContainerViewer> viewers = SceneRegistry<ContainerViewer>.All;
             foreach (AttachedContainer container in containers)
             {
                 if (!container.HasUi)

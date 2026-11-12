@@ -22,7 +22,6 @@ namespace SS3D.Systems.Entities.Humanoid
         [SerializeField] private StaminaController _staminaController;
         private EvaGearController _evaGear;
         private HumanHealthController _healthController;
-        [SerializeField] private HumanoidPredictedMovement _predictedMovement;
 
         public bool IsDragging { get; set; }
 
@@ -52,11 +51,6 @@ namespace SS3D.Systems.Entities.Humanoid
             base.OnStartClient();
             _healthController = GetComponent<HumanHealthController>();
             _evaGear = GetComponent<EvaGearController>();
-            if (_predictedMovement == null)
-            {
-                _predictedMovement = GetComponent<HumanoidPredictedMovement>();
-            }
-
             ApplyCharacterControllerOwnership();
             if (!IsOwner)
             {
@@ -174,18 +168,11 @@ namespace SS3D.Systems.Entities.Humanoid
                 return;
             }
 
-            bool predictedOwnsLoco = _predictedMovement != null && _predictedMovement.enabled;
             HumanoidSupportState support = HumanoidSpaceSupport.GetSupportFor(this, transform.position);
             bool coasting = ShouldCoast(support);
             // Avoid publishing walk Speed the same frame we enter space float (clears Floating via gait).
-            ProcessPlayerInput(publishSpeed: !predictedOwnsLoco && !coasting);
+            ProcessPlayerInput(publishSpeed: !coasting);
 
-            if (predictedOwnsLoco)
-            {
-                return;
-            }
-
-            // Human.prefab ships PredictedMovement disabled — this path owns living space float.
             if (TryProcessSpaceFloat(support))
             {
                 return;

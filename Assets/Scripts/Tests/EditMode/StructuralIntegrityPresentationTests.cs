@@ -185,10 +185,14 @@ namespace EditorTests
             var sections = new List<ExamineSection>();
             examinable.AppendSections(examinable, sections);
 
-            Assert.AreEqual(1, sections.Count);
+            // Damage line first, then construction's next-step hint (weld it back to Intact).
+            Assert.AreEqual(2, sections.Count);
             Assert.IsTrue(
                 sections[0].Text.IndexOf("cracked", System.StringComparison.OrdinalIgnoreCase) >= 0,
                 $"Expected cracked examine text, got: {sections[0].Text}");
+            Assert.IsTrue(
+                sections[1].Text.IndexOf("weld", System.StringComparison.OrdinalIgnoreCase) >= 0,
+                $"Expected a weld next-step hint, got: {sections[1].Text}");
         }
     }
 }

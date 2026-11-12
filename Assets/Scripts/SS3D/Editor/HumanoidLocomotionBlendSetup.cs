@@ -159,6 +159,7 @@ namespace SS3D.Editor
             (InteractionAnimation.TriggerParameter, AnimatorControllerParameterType.Trigger),
             (InteractionAnimation.ClipParameter, AnimatorControllerParameterType.Int),
             (InteractionAnimation.KneelParameter, AnimatorControllerParameterType.Bool),
+            (InteractionAnimation.WorkParameter, AnimatorControllerParameterType.Bool),
             ("Emote", AnimatorControllerParameterType.Trigger),
             ("Flinch", AnimatorControllerParameterType.Trigger),
             ("FireRifle", AnimatorControllerParameterType.Trigger),
@@ -1281,7 +1282,8 @@ namespace SS3D.Editor
         /// <summary>
         /// Base Layer interaction states: the floor bends as oneshots on the Interact trigger, which leave for
         /// the stance's locomotion at their exit time or as soon as the body moves, and the kneel loop, held
-        /// while InteractKneel is true. The orchestrator drops the Upper Body layer while either plays.
+        /// while InteractKneel is true, and the wall-work loop, held while InteractWork is true. The orchestrator
+        /// drops the Upper Body layer while any of them plays.
         /// </summary>
         private static void WireInteractionBaseStates(
             AnimatorStateMachine baseMachine, AnimatorState peaceful, AnimatorState melee, AnimatorState ranged)
@@ -1318,14 +1320,14 @@ namespace SS3D.Editor
                     enter.duration = InteractionAnimation.KneelBlendSeconds;
                     enter.canTransitionToSelf = false;
                     enter.mute = false;
-                    enter.AddCondition(AnimatorConditionMode.If, 0f, InteractionAnimation.KneelParameter);
+                    enter.AddCondition(AnimatorConditionMode.If, 0f, entry.HoldParameter);
                     for (int stance = 0; stance < stanceStates.Length; stance++)
                     {
                         AnimatorStateTransition leave = state.AddTransition(stanceStates[stance]);
                         leave.hasExitTime = false;
                         leave.hasFixedDuration = true;
                         leave.duration = InteractionAnimation.KneelBlendSeconds;
-                        leave.AddCondition(AnimatorConditionMode.IfNot, 0f, InteractionAnimation.KneelParameter);
+                        leave.AddCondition(AnimatorConditionMode.IfNot, 0f, entry.HoldParameter);
                         leave.AddCondition(AnimatorConditionMode.Equals, stance, "CombatStance");
                     }
 

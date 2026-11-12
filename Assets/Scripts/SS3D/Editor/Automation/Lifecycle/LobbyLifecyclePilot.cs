@@ -15,6 +15,7 @@ using SS3D.Systems.Inputs;
 using SS3D.Systems.Persistence;
 using SS3D.Systems.PlayerControl;
 using SS3D.Systems.Roles;
+using SS3D.Systems.BugReports;
 using SS3D.Systems.Rounds;
 using SS3D.Systems.Rounds.Messages;
 using SS3D.Systems.Tile.MapEditor;
@@ -336,27 +337,27 @@ namespace SS3D.Editor.Automation
                     Shell().Q<IntegerField>("server-player-cap").value = 24;
                     Shell().Q<IntegerField>("server-round-length").value = 45;
                 },
-                Until = () => Rounds().SettingsForServer.PlayerCap == 24 && Rounds().AdminSettings.PlayerCap == 24
-                    && Rounds().SettingsForServer.RoundLengthMinutes == 45 && Rounds().AdminSettings.RoundLengthMinutes == 45,
+                Until = () => Settings().Current.PlayerCap == 24 && Settings().AdminSettings.PlayerCap == 24
+                    && Settings().Current.RoundLengthMinutes == 45 && Settings().AdminSettings.RoundLengthMinutes == 45,
                 Verify = () => Require(true, "Rapid field edits both reach server and return in admin snapshot"),
             },
             new Step
             {
                 Name = "Edit round length through Server Settings",
                 Enter = () => Shell().Q<IntegerField>("server-round-length").value = 45,
-                Until = () => Rounds().SettingsForServer.RoundLengthMinutes == 45,
+                Until = () => Settings().Current.RoundLengthMinutes == 45,
             },
             new Step
             {
                 Name = "Select Extended mode",
                 Enter = () => Shell().Q<DropdownField>("server-mode").value = "Extended",
-                Until = () => Rounds().SettingsForServer.Mode == "Extended",
+                Until = () => Settings().Current.Mode == "Extended",
             },
             new Step
             {
                 Name = "Disable late join through Server Settings",
                 Enter = () => Shell().Q<Toggle>("server-late-join").value = false,
-                Until = () => !Rounds().AllowLateJoin && !Rounds().SettingsForServer.AllowLateJoin,
+                Until = () => !Settings().AllowLateJoin && !Settings().Current.AllowLateJoin,
                 Verify = () => Require(true, "Late-join policy reaches authoritative server"),
             },
             new Step
@@ -366,19 +367,19 @@ namespace SS3D.Editor.Automation
                 Timeout = 120,
                 Enter = () =>
                 {
-                    _repliesBefore = Rounds().AdminActionReplies;
-                    ServerSettings invalid = Rounds().SettingsForServer;
+                    _repliesBefore = Settings().AdminActionReplies;
+                    ServerSettings invalid = Settings().Current;
                     invalid.PlayerCap = 0;
-                    Rounds().CmdSaveServerSettings(invalid);
+                    Settings().CmdSaveServerSettings(invalid);
                 },
-                Until = () => Rounds().AdminActionReplies > _repliesBefore && Rounds().AdminSettingsStatus.Contains("rejected"),
-                Verify = () => Require(Rounds().SettingsForServer.PlayerCap == 24, "Invalid request leaves authoritative settings unchanged"),
+                Until = () => Settings().AdminActionReplies > _repliesBefore && Settings().AdminSettingsStatus.Contains("rejected"),
+                Verify = () => Require(Settings().Current.PlayerCap == 24, "Invalid request leaves authoritative settings unchanged"),
             },
             new Step
             {
                 Name = "Select a real saved station",
                 Enter = () => Shell().Q<DropdownField>("server-map").value = _validationStation,
-                Until = () => Rounds().SettingsForServer.Map == _validationStation && Rounds().AdminSettings.Map == _validationStation,
+                Until = () => Settings().Current.Map == _validationStation && Settings().AdminSettings.Map == _validationStation,
                 Verify = () => Require(Shell().Q<DropdownField>("server-map").choices.Contains(_validationStation), "Selected map is a saved template offered by the server"),
             },
             new Step
@@ -399,7 +400,7 @@ namespace SS3D.Editor.Automation
                     }
                     // The form's copy of the status follows the admin settings read, so wait for the label too.
                     return Rounds().CurrentStationLoadState == StationLoadState.Unplayable
-                        && Rounds().AdminSettingsStatus.Contains("Missing job spawn")
+                        && Settings().AdminSettingsStatus.Contains("Missing job spawn")
                         && Shell().Q<Label>("server-map-load-status").text.Contains("Missing job spawn");
                 },
                 Verify = () =>
@@ -407,7 +408,7 @@ namespace SS3D.Editor.Automation
                     Require(Rounds().CurrentRoundState == RoundState.Stopped && Rounds().CurrentTimerSeconds == 0
                         && !Spawned(), "Invalid map never reaches countdown or spawns players");
                     foreach (JobSlotInfo job in SubSystems.Get<RoleSubSystem>().Jobs)
-                        Require(Rounds().AdminSettingsStatus.Contains(job.Name), $"Validation explains missing {job.Name} spawn");
+                        Require(Settings().AdminSettingsStatus.Contains(job.Name), $"Validation explains missing {job.Name} spawn");
                     Require(Visible(Shell().Q("server-edit-anyway")) && Shell().Q<Button>("server-edit-anyway").enabledInHierarchy,
                         "Edit Map Anyway is offered for the unplayable map");
                     Shell().Q<ScrollView>("server-settings-scroll").ScrollTo(Shell().Q("server-map-load-status"));
@@ -419,7 +420,7 @@ namespace SS3D.Editor.Automation
             {
                 Name = "Configure a one-minute Extended round",
                 Enter = () => Shell().Q<IntegerField>("server-round-length").value = 1,
-                Until = () => Rounds().SettingsForServer.RoundLengthMinutes == 1,
+                Until = () => Settings().Current.RoundLengthMinutes == 1,
             },
             new Step
             {
@@ -459,7 +460,7 @@ namespace SS3D.Editor.Automation
                 {
                     _alternateStation = "lobby-pilot-" + Guid.NewGuid().ToString("N");
                     Require(SubSystems.Get<SS3D.Systems.Persistence.PersistenceSubSystem>().SaveStationTemplate(_alternateStation, false), "Created temporary alternate map fixture");
-                    Rounds().CmdReadServerSettings();
+                    Settings().CmdReadServerSettings();
                 },
                 Until = () => Shell().Q<DropdownField>("server-map").choices.Contains(_alternateStation),
             },
@@ -471,7 +472,7 @@ namespace SS3D.Editor.Automation
                     _previousStationEpoch = SubSystems.Get<SS3D.Systems.WorldReadiness.WorldReadinessSubSystem>().Epoch;
                     Shell().Q<DropdownField>("server-map").value = _alternateStation;
                 },
-                Until = () => Rounds().SettingsForServer.Map == _alternateStation,
+                Until = () => Settings().Current.Map == _alternateStation,
                 Verify = () => Require(Rounds().StationName == _validationStation, "Changing selection does not silently replace the loaded station"),
             },
             new Step
@@ -518,7 +519,7 @@ namespace SS3D.Editor.Automation
             {
                 Name = "Cancel keeps the round and the edits",
                 Enter = () => Click(Shell().Q<Button>("map-stop-cancel")),
-                Until = () => !Visible(Shell().Q("map-stop-prompt")) && Rounds().MapStopToken == 0,
+                Until = () => !Visible(Shell().Q("map-stop-prompt")) && StopFlow().MapStopToken == 0,
                 Verify = () => Require(Rounds().CurrentRoundState == RoundState.Ongoing && UnsavedMapEdits() && MapEditSpawnPresent(),
                     "Cancel keeps the round running with the edits"),
             },
@@ -534,21 +535,21 @@ namespace SS3D.Editor.Automation
                 Name = "Reject configuration changes during an active round",
                 Enter = () =>
                 {
-                    _repliesBefore = Rounds().AdminActionReplies;
+                    _repliesBefore = Settings().AdminActionReplies;
                     ServerSettings settings = ServerSettings.Default;
                     settings.Map = _validationStation;
-                    Rounds().CmdSaveServerSettings(settings);
+                    Settings().CmdSaveServerSettings(settings);
                 },
-                Until = () => Rounds().AdminActionReplies > _repliesBefore && Rounds().AdminSettingsStatus.Contains("rejected"),
-                Verify = () => Require(Rounds().SettingsForServer.RoundLengthMinutes == 1 && !Rounds().AllowLateJoin, "Active round configuration cannot change"),
+                Until = () => Settings().AdminActionReplies > _repliesBefore && Settings().AdminSettingsStatus.Contains("rejected"),
+                Verify = () => Require(Settings().Current.RoundLengthMinutes == 1 && !Settings().AllowLateJoin, "Active round configuration cannot change"),
             },
             new Step
             {
                 Name = "MOTD text being typed survives admin settings refreshes",
                 Enter = () =>
                 {
-                    _originalServerName = Rounds().ServerName;
-                    _originalMotd = Rounds().Motd;
+                    _originalServerName = Settings().ServerName;
+                    _originalMotd = Settings().Motd;
                     TextField motd = Shell().Q<TextField>("server-motd");
                     motd.Focus();
                     motd.value = PilotMotd;
@@ -559,7 +560,7 @@ namespace SS3D.Editor.Automation
                 Verify = () =>
                 {
                     Require(Shell().Q<TextField>("server-motd").value == PilotMotd, "Uncommitted MOTD text is not overwritten while focused");
-                    Require(Rounds().Motd == _originalMotd, "MOTD is not committed before focus loss");
+                    Require(Settings().Motd == _originalMotd, "MOTD is not committed before focus loss");
                 },
             },
             new Step
@@ -575,14 +576,14 @@ namespace SS3D.Editor.Automation
                     name.value = PilotServerName;
                     name.Blur();
                 },
-                Until = () => Rounds().ServerName == PilotServerName && Rounds().Motd == PilotMotd,
+                Until = () => Settings().ServerName == PilotServerName && Settings().Motd == PilotMotd,
                 Verify = () =>
                 {
                     Require(Shell().Q<TextField>("server-motd").value == PilotMotd, "MOTD field keeps the committed text");
                     Require(LocalStorage.TryReadRaw(PersistencePaths.ServerInfo, out string saved)
                         && saved.Contains(PilotServerName) && saved.Contains("Line <b>two</b>"), "Server info is saved server-side");
-                    Require(Rounds().PublicMode == "Extended", "Players see the configured mode");
-                    Require(!string.IsNullOrEmpty(Rounds().ServerBuild) && Rounds().ServerStarted <= DateTimeOffset.UtcNow,
+                    Require(Settings().PublicMode == "Extended", "Players see the configured mode");
+                    Require(!string.IsNullOrEmpty(Settings().ServerBuild) && Settings().ServerStarted <= DateTimeOffset.UtcNow,
                         "Server build and start time are replicated");
                 },
             },
@@ -594,7 +595,7 @@ namespace SS3D.Editor.Automation
                 Verify = () =>
                 {
                     Require(!Spawned(), "One-minute Extended round ended automatically without a late spawn");
-                    Require(TemplateExists(_alternateStation + RoundSubSystem.AutosaveSuffix),
+                    Require(TemplateExists(_alternateStation + MapEditorStopFlow.AutosaveSuffix),
                         "Round end autosaved the unsaved map edits to a separate template");
                     Require(!UnsavedMapEdits() && SubSystems.Get<MapEditorSubSystem>().EditingTemplateName == null,
                         "Unloading the station resets the editor's history");
@@ -607,9 +608,9 @@ namespace SS3D.Editor.Automation
                 {
                     ServerSettings settings = ServerSettings.Default;
                     settings.Map = _validationStation;
-                    Rounds().CmdSaveServerSettings(settings);
+                    Settings().CmdSaveServerSettings(settings);
                 },
-                Until = () => Rounds().SettingsForServer.PlayerCap == 32 && Rounds().AllowLateJoin
+                Until = () => Settings().Current.PlayerCap == 32 && Settings().AllowLateJoin
                     && Shell().Q<Toggle>("server-late-join").value && Shell().Q<IntegerField>("server-round-length").value == ServerSettings.Default.RoundLengthMinutes,
             },
             new Step { Name = "Leave admin before lifecycle", Enter = () => Click(AdminButton()), Until = () => Shell().Q("server-settings-form") == null },
@@ -642,7 +643,7 @@ namespace SS3D.Editor.Automation
                 {
                     Require(!Shell().Q<Label>("server-info-motd").enableRichText, "MOTD renders tags literally");
                     Require(Shell().Query<Label>().ToList().Any(l => l.text == PilotServerName.ToUpperInvariant()), "Server Info title is the configured name");
-                    Require(Shell().Q<Label>("server-info-meta").text.StartsWith("build " + Rounds().ServerBuild), "Server Info shows the server build");
+                    Require(Shell().Q<Label>("server-info-meta").text.StartsWith("build " + Settings().ServerBuild), "Server Info shows the server build");
                     Require(!Shell().Query<Label>().ToList().Any(l => l.text.Contains("USS Horizon") || l.text.Contains("0.14.2")),
                         "No mock server metadata remains");
                     Capture("server-info-live");
@@ -653,13 +654,13 @@ namespace SS3D.Editor.Automation
                 Name = "Restore server name and MOTD",
                 Enter = () =>
                 {
-                    ServerSettings original = Rounds().SettingsForServer;
+                    ServerSettings original = Settings().Current;
                     original.ServerName = _originalServerName;
                     original.Motd = _originalMotd;
-                    Rounds().CmdUpdateServerSetting(ServerSetting.ServerName, original);
-                    Rounds().CmdUpdateServerSetting(ServerSetting.Motd, original);
+                    Settings().CmdUpdateServerSetting(ServerSetting.ServerName, original);
+                    Settings().CmdUpdateServerSetting(ServerSetting.Motd, original);
                 },
-                Until = () => Rounds().ServerName == _originalServerName && Rounds().Motd == _originalMotd,
+                Until = () => Settings().ServerName == _originalServerName && Settings().Motd == _originalMotd,
             },
             new Step { Name = "Open Chat tab", Enter = () => Click(Shell().Q<Button>("tab-chat")), Until = () => ChatInput() != null },
             new Step
@@ -912,7 +913,7 @@ namespace SS3D.Editor.Automation
             {
                 Name = "Player stop request asks before unloading edits",
                 Enter = () => InstanceFinder.ClientManager.Broadcast(new ChangeRoundStateMessage(false)),
-                Until = () => Rounds().MapStopToken != 0,
+                Until = () => StopFlow().MapStopToken != 0,
                 Verify = () => Require(Rounds().CurrentRoundState == RoundState.Ongoing, "Stop waits for the admin's choice"),
             },
             // Guards: the round-end loop end to end in one host: the server's outcome reaches the overlay over a
@@ -928,7 +929,7 @@ namespace SS3D.Editor.Automation
                     // The real beat, so the countdown and bar look as players see them; the captures below happen
                     // while held, and the resumed beat is the one ~30 s this pilot pays for the summary.
                     Rounds().SetEndBeatSecondsForTesting(RoundEndBeat.Seconds);
-                    Rounds().CmdResolveMapStop(Rounds().MapStopToken, MapStopChoice.DiscardAndStop, "");
+                    StopFlow().CmdResolveMapStop(StopFlow().MapStopToken, MapStopChoice.DiscardAndStop, "");
                 },
                 Until = () => Rounds().CurrentRoundState == RoundState.Ending && Shown(RoundEndPart("round-end-panel")),
                 Verify = () =>
@@ -973,7 +974,7 @@ namespace SS3D.Editor.Automation
                     Require(BoothLive(), "Booth restored with RT bound");
                     Require(CharacterName() == _savedName, "Saved character name restored");
                     Require(AssignedRole() == null && Job("Security").Assigned == 0, "Round stop cleared job assignments");
-                    Require(!TemplateExists(_validationStation + RoundSubSystem.AutosaveSuffix), "Discard and stop left no autosave");
+                    Require(!TemplateExists(_validationStation + MapEditorStopFlow.AutosaveSuffix), "Discard and stop left no autosave");
                 },
             },
             new Step
@@ -1029,18 +1030,18 @@ namespace SS3D.Editor.Automation
             {
                 Name = "Stop after late join asks first",
                 Enter = () => InstanceFinder.ClientManager.Broadcast(new ChangeRoundStateMessage(false)),
-                Until = () => Rounds().MapStopToken != 0,
+                Until = () => StopFlow().MapStopToken != 0,
             },
             new Step
             {
                 Name = "Stop round after late join returns",
-                Enter = () => Rounds().CmdResolveMapStop(Rounds().MapStopToken, MapStopChoice.SaveAndStop, ""),
+                Enter = () => StopFlow().CmdResolveMapStop(StopFlow().MapStopToken, MapStopChoice.SaveAndStop, ""),
                 Until = () => Rounds().CurrentRoundState == RoundState.Stopped && !Spawned() && Visible(Shell()),
                 Verify = () =>
                 {
                     Require(BoothLive(), "Booth restored after second return");
                     Require(TemplateWriteTime(_validationStation) > _templateWriteTime, "Save and stop overwrote the editing template");
-                    Require(!TemplateExists(_validationStation + RoundSubSystem.AutosaveSuffix), "Saved edits need no autosave");
+                    Require(!TemplateExists(_validationStation + MapEditorStopFlow.AutosaveSuffix), "Saved edits need no autosave");
                 },
             },
             // New connections 60s+ after server start used to time out before their first packet.
@@ -1091,7 +1092,7 @@ namespace SS3D.Editor.Automation
                     CreateValidationStation(valid: true);
                     ServerSettings settings = ServerSettings.Default;
                     settings.Map = _validationStation;
-                    Rounds().CmdSaveServerSettings(settings);
+                    Settings().CmdSaveServerSettings(settings);
                     Require(!SubSystems.Get<PermissionSubSystem>().IsAtLeast(RemoteCkey, ServerRoleTypes.Administrator), $"'{RemoteCkey}' has no Administrator permission");
                     _bugLines = JsonlLines(SS3D.Data.Persistence.PersistencePaths.BugReports).Length;
                 },
@@ -1120,7 +1121,7 @@ namespace SS3D.Editor.Automation
                 {
                     Require(Rounds().CurrentRoundState == RoundState.Stopped, "Non-admin start request did not start a round");
                     Require(ClientLog().Contains("ServerSettingsPermissionVerified"), "Remote cannot read admin configuration");
-                    Require(Rounds().SettingsForServer.PlayerCap == 32 && Rounds().AllowLateJoin, "Non-admin configuration writes were rejected");
+                    Require(Settings().Current.PlayerCap == 32 && Settings().AllowLateJoin, "Non-admin configuration writes were rejected");
                     Require(ClientSignal("UiText", ".lobby-shell__countdown-sub Stopped"), "Client observed Stopped after its start request");
                     Require(!IsReady(), "Host stays unready");
                     Require(_osInputsDone >= 1 && !ClientLog().Contains("UiSubmitted"), "Remote readied through a real OS click, not a synthetic submit");
@@ -1411,6 +1412,10 @@ namespace SS3D.Editor.Automation
 
         private static RoundSubSystem Rounds() => SubSystems.TryGet(out RoundSubSystem rounds) ? rounds : null;
 
+        private static ServerSettingsService Settings() => SubSystems.TryGet(out ServerSettingsService settings) ? settings : null;
+
+        private static MapEditorStopFlow StopFlow() => SubSystems.TryGet(out MapEditorStopFlow stopFlow) ? stopFlow : null;
+
         private static bool IsReady() => Local() != null && SubSystems.TryGet(out ReadyPlayersSubSystem ready) && ready.IsReady(Local());
 
         private static bool Spawned() => Online() && SubSystems.TryGet(out EntitySubSystem entities)
@@ -1677,13 +1682,13 @@ namespace SS3D.Editor.Automation
             if (!string.IsNullOrEmpty(_alternateStation))
             {
                 SS3D.Data.Management.LocalStorage.DeleteFile(SS3D.Data.Persistence.PersistencePaths.StationTemplates + "/" + _alternateStation);
-                LocalStorage.DeleteFile(PersistencePaths.StationTemplates + "/" + _alternateStation + RoundSubSystem.AutosaveSuffix);
+                LocalStorage.DeleteFile(PersistencePaths.StationTemplates + "/" + _alternateStation + MapEditorStopFlow.AutosaveSuffix);
                 _alternateStation = null;
             }
             if (!string.IsNullOrEmpty(_validationStation))
             {
                 LocalStorage.DeleteFile(PersistencePaths.StationTemplates + "/" + _validationStation);
-                LocalStorage.DeleteFile(PersistencePaths.StationTemplates + "/" + _validationStation + RoundSubSystem.AutosaveSuffix);
+                LocalStorage.DeleteFile(PersistencePaths.StationTemplates + "/" + _validationStation + MapEditorStopFlow.AutosaveSuffix);
                 _validationStation = null;
             }
             Report report = new()

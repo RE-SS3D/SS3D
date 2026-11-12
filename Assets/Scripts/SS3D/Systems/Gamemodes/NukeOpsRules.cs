@@ -33,11 +33,14 @@ namespace SS3D.Systems.Gamemodes
         public readonly IReadOnlyList<OperativeBody> Squad;
         /// <summary>Ckey of the body the disk is on, anywhere in its container tree; null when loose, stored or missing.</summary>
         public readonly string DiskCarrierCkey;
+        /// <summary>The disk is loaded in the nuclear device, which counts as an operative holder (§6).</summary>
+        public readonly bool DiskInDevice;
 
-        public NukeOpsSnapshot(IReadOnlyList<OperativeBody> squad, string diskCarrierCkey)
+        public NukeOpsSnapshot(IReadOnlyList<OperativeBody> squad, string diskCarrierCkey, bool diskInDevice = false)
         {
             Squad = squad ?? Array.Empty<OperativeBody>();
             DiskCarrierCkey = diskCarrierCkey;
+            DiskInDevice = diskInDevice;
         }
     }
 
@@ -50,8 +53,10 @@ namespace SS3D.Systems.Gamemodes
     {
         public const string SquadOutReason = "Every operative is dead.";
         public const string TimerDiskHeldReason = "Time ran out with the disk in operative hands.";
+        public const string TimerDiskInDeviceReason = "Time ran out with the disk loaded in the device.";
         public const string TimerDiskSafeReason = "Time ran out with the disk still on the station.";
         public const string AdminDiskHeldReason = "Ended by an admin with the disk in operative hands.";
+        public const string AdminDiskInDeviceReason = "Ended by an admin with the disk loaded in the device.";
         public const string AdminDiskSafeReason = "Ended by an admin with the disk still on the station.";
 
         /// <summary>
@@ -75,11 +80,15 @@ namespace SS3D.Systems.Gamemodes
         }
 
         /// <summary>
-        /// The disk counts as held only on a living operative (Decision 18). A disk on a dead operative,
-        /// on a crew member, on the floor or missing is still on the station.
+        /// The disk counts as held on a living operative (Decision 18) or loaded in the device, which §6 lists
+        /// as a valid holder. A disk on a dead operative, on a crew member, on the floor or missing is still on
+        /// the station.
         /// </summary>
         public static bool DiskHeldByOperative(NukeOpsSnapshot snapshot)
         {
+            if (snapshot.DiskInDevice)
+                return true;
+
             if (string.IsNullOrEmpty(snapshot.DiskCarrierCkey))
                 return false;
 
@@ -104,9 +113,9 @@ namespace SS3D.Systems.Gamemodes
 
             bool held = DiskHeldByOperative(snapshot);
             bool admin = request.Trigger == RoundEndTrigger.Admin;
-            string reason = held
-                ? admin ? AdminDiskHeldReason : TimerDiskHeldReason
-                : admin ? AdminDiskSafeReason : TimerDiskSafeReason;
+            string reason = !held ? admin ? AdminDiskSafeReason : TimerDiskSafeReason
+                : snapshot.DiskInDevice ? admin ? AdminDiskInDeviceReason : TimerDiskInDeviceReason
+                : admin ? AdminDiskHeldReason : TimerDiskHeldReason;
             return new RoundEndRequest(request.Trigger, held ? RoundWinner.OperativesMinor : RoundWinner.Crew,
                 request.StationDestroyed, reason);
         }

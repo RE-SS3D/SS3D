@@ -65,8 +65,7 @@ namespace SS3D.Systems.IngameConsoleSystem.Commands.ItemCommands
             }
 
             Vector3 position = entity.transform.position;
-            Quaternion rotation = item.Prefab.GetWorldFacing(entity.transform.eulerAngles.y);
-            items.SpawnItem(item.AssetId, position, rotation);
+            items.SpawnItemAtRest(item.AssetId, position, entity.transform.eulerAngles.y);
             return CommandResult.Success($"item {item.Prefab.Name} spawned at {position}");
         }
     }

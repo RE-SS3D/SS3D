@@ -25,6 +25,7 @@ using SS3D.Utils;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.Serialization;
+using SS3D.Core;
 #if UNITY_EDITOR
 using AssetDatabase = UnityEditor.AssetDatabase;
 using UnityEditor;
@@ -63,6 +64,9 @@ namespace SS3D.Systems.Inventory.Items
         [Tooltip("If greater than 1, identical items (same source asset) collapse into one stack up to this count."), SerializeField]
         private int _maxStackSize = 1;
 
+        [Tooltip("Stack count a freshly spawned instance starts with (loadouts, map-placed stock). Clamped to the stack size."), SerializeField]
+        private int _initialStackCount = 1;
+
         /// <summary>
         /// How many units this item instance currently represents. Only meaningful when MaxStackSize > 1.
         /// </summary>
@@ -91,6 +95,22 @@ namespace SS3D.Systems.Inventory.Items
 
         [Tooltip("same point but for the left hand, in cases where it's needed")]
         public Transform AttachmentPointAlt;
+
+        [Header("Pose settings")]
+
+        [Tooltip("Euler rotation the item lies at on the floor, at yaw 0 (e.g. -90 X so a long item lies on its side). "
+            + "Spawns, drops and placements compose yaw with it. Keep the prefab root rotation equal to it.")]
+        [SerializeField] private Vector3 _restRotation;
+
+        [Tooltip("The item stands at rest on purpose (a can, a tank, a boot), so its rest pose need not lie flat. "
+            + "Only the editor audit reads it.")]
+        [SerializeField] private bool _restsUpright;
+
+        [Tooltip("Off: the inventory icon renders the item at its rest rotation. On: it uses Icon Rotation.")]
+        [SerializeField] private bool _overrideIconRotation;
+
+        [Tooltip("Euler rotation the inventory icon renders the item at, when Override Icon Rotation is on.")]
+        [SerializeField] private Vector3 _iconRotation;
 
         /// <summary>
         /// The list of characteristics this Item has
@@ -137,6 +157,8 @@ namespace SS3D.Systems.Inventory.Items
         public bool IsStackable => _maxStackSize > 1;
 
         public int StackCount => _stackCount;
+
+        public int InitialStackCount => _initialStackCount;
 
         public ReadOnlyCollection<Trait> Traits => ((List<Trait>) _traits.Collection).AsReadOnly();
 
@@ -190,33 +212,21 @@ namespace SS3D.Systems.Inventory.Items
         public Item Prefab => Asset ? Assets.Get<Item>(Asset) : null;
 
         /// <summary>
-        /// Authored pitch/roll from the item prefab (e.g. -90° X so long items lie on their side).
+        /// The floor pose: authored pitch/roll at yaw 0 (e.g. -90° X so long items lie on their side). It is serialized
+        /// on the item, so an instance reads it directly whatever its current rotation.
         /// </summary>
-        public Quaternion WorldRestRotation
-        {
-            get
-            {
-                Item prefab = Prefab;
-                if (prefab != null && prefab != this)
-                {
-                    return prefab.transform.localRotation;
-                }
+        public Quaternion WorldRestRotation => Quaternion.Euler(_restRotation);
 
-                return transform.localRotation;
-            }
-        }
+        /// <summary>The rotation the inventory icon renders the item at; the rest pose unless overridden.</summary>
+        public Quaternion IconRotation => _overrideIconRotation ? Quaternion.Euler(_iconRotation) : WorldRestRotation;
+
+        public bool OverridesIconRotation => _overrideIconRotation;
 
         /// <summary>
-        /// World rotation for floor spawn/drop: entity yaw composed with <see cref="WorldRestRotation"/>.
+        /// True when the rest pose stands the item up on purpose; otherwise the editor audit expects it to lie flat
+        /// (thinnest bounds axis vertical). Documents/architecture/systems/inventory.md.
         /// </summary>
-        public Quaternion GetWorldFacing(float yawDegrees) =>
-            ComposeWorldFacing(WorldRestRotation, yawDegrees);
-
-        /// <summary>
-        /// Compose yaw with an authored rest rotation (for callers that only have the prefab).
-        /// </summary>
-        public static Quaternion ComposeWorldFacing(Quaternion restRotation, float yawDegrees) =>
-            Quaternion.Euler(0f, yawDegrees, 0f) * restRotation;
+        public bool RestsUpright => _restsUpright;
 
         /// <summary>
         /// Initialise this item fields. Can only be called once.
@@ -255,6 +265,18 @@ namespace SS3D.Systems.Inventory.Items
         {
             base.OnAwake();
             _restScale = transform.localScale;
+        }
+
+        protected override void OnEnabled()
+        {
+            base.OnEnabled();
+            SceneRegistry<Item>.Register(this);
+        }
+
+        protected override void OnDisabled()
+        {
+            SceneRegistry<Item>.Unregister(this);
+            base.OnDisabled();
         }
 
         /// <summary>
@@ -319,6 +341,11 @@ namespace SS3D.Systems.Inventory.Items
         {
             base.OnStartServer();
             _traits.AddRange(_startingTraits);
+            // Salvage and merges call SetStackCount after spawn, which overrides this.
+            if (_initialStackCount > 1 && _stackCount == 1)
+            {
+                _stackCount = ItemStackRules.ClampCount(_initialStackCount, _maxStackSize);
+            }
             if (_rigidbody != null) AtmosLooseBodies.Register(_rigidbody);
         }
 
@@ -564,7 +591,8 @@ namespace SS3D.Systems.Inventory.Items
 
         public virtual IInteraction[] CreateTargetInteractions(InteractionEvent interactionEvent)
         {
-            return new IInteraction[] { new PickupInteraction { Icon = null } };
+            // Pickup needs an empty hand; Add to stack is for the matching stack already in hand.
+            return new IInteraction[] { new PickupInteraction { Icon = null }, new StackPickupInteraction() };
         }
 
         // this creates the base interactions for an item, in this case, the drop interaction
@@ -682,7 +710,29 @@ namespace SS3D.Systems.Inventory.Items
         [Server]
         public void SetStackCount(int count)
         {
-            _stackCount = Mathf.Max(1, count);
+            _stackCount = ItemStackRules.ClampCount(count, _maxStackSize);
+        }
+
+        /// <summary>
+        /// Spends <paramref name="amount"/> units of this stack. Deletes the item when the stack is used up.
+        /// Returns false and spends nothing when the stack holds fewer.
+        /// </summary>
+        [Server]
+        public bool TryConsume(int amount)
+        {
+            if (!ItemStackRules.TryResolveConsume(_stackCount, amount, out int remaining, out bool deleteItem))
+            {
+                return false;
+            }
+
+            if (deleteItem)
+            {
+                Delete();
+                return true;
+            }
+
+            _stackCount = remaining;
+            return true;
         }
 
        
@@ -724,7 +774,7 @@ namespace SS3D.Systems.Inventory.Items
             }
 
             Quaternion previousPreviewRotation = RuntimePreviewGenerator.PreviewRotation;
-            RuntimePreviewGenerator.PreviewRotation = WorldRestRotation;
+            RuntimePreviewGenerator.PreviewRotation = IconRotation;
 
             // Find stored items
             AttachedContainer[] containers = GetComponentsInChildren<AttachedContainer>();
@@ -851,6 +901,13 @@ namespace SS3D.Systems.Inventory.Items
 
         #region Editor
 #if UNITY_EDITOR
+        /// <summary>A newly added Item takes its rest pose from the root rotation it was authored at.</summary>
+        protected override void Reset()
+        {
+            base.Reset();
+            _restRotation = transform.localEulerAngles;
+        }
+
         private void OnDrawGizmos()
         {
             // Make sure gizmo only draws in prefab mode

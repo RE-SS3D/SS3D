@@ -91,6 +91,10 @@ namespace SS3D.Interactions
 
             IInteractionTarget previousTarget = interactionEvent.Target;
 
+            // A held tool or stack (welder, sheets) lights green only what it can act on; a door that opens
+            // whatever is held stays yellow, interactable but not with this.
+            bool toolOnly = HasOutlineExtensions(source);
+
             foreach (IInteractionTarget target in targets)
             {
                 if (target == null)
@@ -106,7 +110,7 @@ namespace SS3D.Interactions
                 {
                     hasTargetBound = true;
 
-                    if (hasViableInteractions)
+                    if (hasViableInteractions || (toolOnly && interaction is not IHeldItemInteraction))
                     {
                         continue;
                     }
@@ -129,6 +133,11 @@ namespace SS3D.Interactions
                     hasViableInteractions = true;
                 }
 
+                if (!hasViableInteractions)
+                {
+                    EvaluateSourceOutlineExtensions(source, interactionEvent, intent, ref hasTargetBound, ref hasViableInteractions);
+                }
+
                 if (hasTargetBound && hasViableInteractions)
                 {
                     interactionEvent.Target = previousTarget;
@@ -138,6 +147,59 @@ namespace SS3D.Interactions
 
             interactionEvent.Target = previousTarget;
             return hasTargetBound;
+        }
+
+        private static readonly List<IOutlineSourceExtension> OutlineExtensionsScratch = new(4);
+
+        private static bool HasOutlineExtensions(IInteractionSource source)
+        {
+            if (source is not IGameObjectProvider provider || provider.GameObject == null)
+            {
+                return false;
+            }
+
+            provider.GameObject.GetComponents(OutlineExtensionsScratch);
+            bool any = OutlineExtensionsScratch.Count > 0;
+            OutlineExtensionsScratch.Clear();
+            return any;
+        }
+        private static readonly List<IInteraction> OutlineInteractionsScratch = new(8);
+
+        /// <summary>
+        /// Tool-side interactions for the current target (a welder on a cracked wall), asked of the held
+        /// item's <see cref="IOutlineSourceExtension"/>s. Only the hovered target is asked: no candidate scan.
+        /// </summary>
+        private static void EvaluateSourceOutlineExtensions(IInteractionSource source, InteractionEvent interactionEvent,
+            IntentType intent, ref bool hasTargetBound, ref bool hasViableInteractions)
+        {
+            if (source is not IGameObjectProvider provider || provider.GameObject == null)
+            {
+                return;
+            }
+
+            provider.GameObject.GetComponents(OutlineExtensionsScratch);
+            for (int e = 0; e < OutlineExtensionsScratch.Count && !hasViableInteractions; e++)
+            {
+                OutlineInteractionsScratch.Clear();
+                OutlineExtensionsScratch[e].CollectOutlineInteractions(interactionEvent, OutlineInteractionsScratch);
+
+                for (int i = 0; i < OutlineInteractionsScratch.Count; i++)
+                {
+                    IInteraction interaction = OutlineInteractionsScratch[i];
+                    hasTargetBound = true;
+
+                    if (interaction.CanInteract(interactionEvent)
+                        && MatchesIntent(interaction, intent)
+                        && source.CanExecuteInteraction(interaction))
+                    {
+                        hasViableInteractions = true;
+                        break;
+                    }
+                }
+            }
+
+            OutlineExtensionsScratch.Clear();
+            OutlineInteractionsScratch.Clear();
         }
 
         /// <summary>

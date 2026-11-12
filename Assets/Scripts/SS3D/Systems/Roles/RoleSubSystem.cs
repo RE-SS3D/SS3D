@@ -274,7 +274,7 @@ namespace SS3D.Systems.Roles
                 return Array.Empty<string>();
             }
 
-            ServerSettings settings = rounds.SettingsForServer;
+            ServerSettings settings = SubSystems.Get<ServerSettingsService>().Current;
             if (!SquadDraw.HasEnoughReady(settings.Mode, ckeys.Count, settings.MinimumReadyForNukeOps))
             {
                 rounds.FallBackToExtended(SquadDraw.TooFewReadyNotice(ckeys.Count, settings.MinimumReadyForNukeOps));
@@ -388,7 +388,7 @@ namespace SS3D.Systems.Roles
 
             if (!inventory.TryGetTypeContainer(ContainerType.Identification, 0, out AttachedContainer container)) return;
 
-            Item idCardItem = itemSystem.SpawnItem(role.IDCardAsset.Id, Vector3.zero, Quaternion.identity);
+            Item idCardItem = itemSystem.SpawnItemAtRest(role.IDCardAsset.Id, Vector3.zero);
             IDCard idCard = (IDCard)idCardItem;
 
             CrewRecord crewRecord = idAccess.CreateCrewRecord(

@@ -8,7 +8,8 @@ using UnityEngine;
 namespace SS3D.Systems.Examine
 {
     /// <summary>
-    /// Resolved icon/name for one paperdoll slot. Both fields are null for an empty slot.
+    /// Resolved icon/name for one paperdoll slot. Both fields are null for an empty slot, and for a
+    /// <see cref="IsHidden"/> slot: occupied, but what is in it can't be seen (examine.md §5).
     /// </summary>
     public readonly struct CharacterExamineSlotContent
     {
@@ -18,11 +19,17 @@ namespace SS3D.Systems.Examine
 
         public string ItemName { get; }
 
-        public CharacterExamineSlotContent(CharacterExamineSlot slot, Sprite itemIcon, string itemName)
+        /// <summary>Occupied, contents not visible: a conscious character's pocket or suit storage.</summary>
+        public bool IsHidden { get; }
+
+        public bool IsOccupied => IsHidden || ItemIcon != null || !string.IsNullOrEmpty(ItemName);
+
+        public CharacterExamineSlotContent(CharacterExamineSlot slot, Sprite itemIcon, string itemName, bool isHidden = false)
         {
             Slot = slot;
             ItemIcon = itemIcon;
             ItemName = itemName;
+            IsHidden = isHidden;
         }
     }
 
@@ -51,17 +58,21 @@ namespace SS3D.Systems.Examine
         };
 
         /// <summary>
-        /// Builds all 15 paperdoll slots (13 container-backed + 2 hands). Covered/obscured-slot
-        /// filtering is not implemented yet — no existing item/clothing data tracks "visually hidden by
-        /// an outer layer", so every equipped item currently shows. See examine.md fork-deviations.
+        /// Builds all 15 paperdoll slots (13 container-backed + 2 hands). Unless
+        /// <paramref name="revealHidden"/> (the target is dead, unconscious or restrained), pockets and
+        /// suit storage show only occupied or empty (examine.md §5). Clothing covering other slots is
+        /// not modelled: no item data says what an outer layer hides.
         /// </summary>
-        public static IReadOnlyList<CharacterExamineSlotContent> BuildSlots(HumanInventory inventory)
+        public static IReadOnlyList<CharacterExamineSlotContent> BuildSlots(HumanInventory inventory, bool revealHidden = true)
         {
             List<CharacterExamineSlotContent> slots = new(14);
 
             foreach (CharacterExamineSlot slot in ContainerBackedSlots)
             {
-                slots.Add(BuildContainerSlot(inventory, slot));
+                CharacterExamineSlotContent content = BuildContainerSlot(inventory, slot);
+                slots.Add(!revealHidden && IsHiddenWhileAlert(slot) && content.IsOccupied
+                    ? new CharacterExamineSlotContent(slot, null, null, isHidden: true)
+                    : content);
             }
 
             slots.Add(BuildHandSlot(inventory, CharacterExamineSlot.HandLeft, 0));
@@ -69,30 +80,9 @@ namespace SS3D.Systems.Examine
             return slots;
         }
 
-        /// <summary>
-        /// Name/job for the examine window title, per examine.md §7 and id-access.md §3: visible only
-        /// when an ID is worn in the gear-strip Identification slot — not merely carried in a PDA.
-        /// </summary>
-        public static bool TryGetVisibleIdentity(HumanInventory inventory, out string name, out string job)
-        {
-            name = null;
-            job = null;
-
-            if (inventory == null
-                || !inventory.TryGetTypeContainer(ContainerType.Identification, 0, out AttachedContainer container))
-            {
-                return false;
-            }
-
-            if (container.Items.FirstOrDefault() is not IDCard idCard || string.IsNullOrWhiteSpace(idCard.OwnerName))
-            {
-                return false;
-            }
-
-            name = idCard.OwnerName;
-            job = idCard.RoleName;
-            return true;
-        }
+        /// <summary>Slots whose contents a look can't see on a conscious character (examine.md §5).</summary>
+        public static bool IsHiddenWhileAlert(CharacterExamineSlot slot) =>
+            slot == CharacterExamineSlot.Pocket || slot == CharacterExamineSlot.SuitStorage;
 
         /// <summary>
         /// Resolves the item currently shown in a paperdoll slot (container-backed or hand).

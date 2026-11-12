@@ -17,7 +17,7 @@ A separate dedicated instance where everyone can build and fight, with a 20-minu
 - **A ghost counts as a spawned player.** `Human` swaps the ghost into `EntitySubSystem._spawnedPlayers` via `TryTransferEntity`, so `SpawnLatePlayer` refuses ghosts: there is no respawn path.
 - **Editor server RPCs check only the authorizer**, never for a body. The client's `MapEditorSubSystem.CanOpenEditor` asks `IsPlayerSpawned`, which is true for a ghost; ghost editing is untested at runtime.
 - **Player invincibility** is a per-client toggle in `MapEditorSettings` (`EntityInvincibility.SetServer`), authorized with `MapEditorPermissions.TryAuthorize` — anyone on `-sandbox`. It persists after closing the editor until disconnect.
-- **Persistence calls** are separate server RPCs on `MapEditorSubSystem`: `RpcSaveMap`, `RpcExportMap`, `RpcLoadMap`, `RpcDeleteMap`, `RpcNewMap`. Round-end autosave lives in `MapEditorRoundStop`.
+- **Persistence calls** are separate server RPCs on `MapEditorSubSystem`: `RpcSaveMap`, `RpcExportMap`, `RpcLoadMap`, `RpcDeleteMap`, `RpcNewMap`. Round-end autosave lives in `MapEditorStopFlow`.
 - **Spawn points** have their own command kinds (`PlaceSpawnPoint`, `ClearSpawnPoint` in `MapEditorCommandKind`).
 - **TomNAS** already runs Docker and user systemd with linger for the CI runner ([2026-07_multiplayer-testing-self-hosted-ci](2026-07_multiplayer-testing-self-hosted-ci.md)).
 

@@ -34,7 +34,8 @@ Visual language matches the diagnostic interface and radial menu work already do
 | Top-left | Vitals cluster (§5) | Yes, compact |
 | Top-right | Alert icon stack (§9) | Only active alerts |
 | Center | Aim reticle + zone label (§6) | Only while a valid target is under the cursor |
-| Bottom-left | Comms feed — see `comms.md` | Collapsed strip, expands on activity |
+| Right edge, middle | Out-of-character column — OOC, LOOC, dead chat, admin (`comms.md` §7) | Empty when idle; lines appear and fade |
+| Bottom-left | Comms feed, in-character only — see `comms.md` | Collapsed strip, expands on activity |
 | Bottom-center | Hands + gear strip (§8) | Yes |
 | Bottom-right | Intent module — help/harm toggle + modifier hints (§7) | Yes |
 
@@ -42,7 +43,7 @@ Nothing else is persistent. **A machine's screen replaces the HUD while it's ope
 
 ## 5. Vitals cluster — doll replacement, part 1
 
-A small always-on card, not a body diagram: an aggregate condition read plus four thin bars (brute, burn, toxin, oxy), each rendered as a labeled icon + bar rather than a silhouette. Bars that are at zero stay visually quiet — no "OK" clutter, just a flat empty bar — so the cluster only draws the eye when something's actually wrong.
+A small always-on card, not a body diagram — clicking it opens self-examine (`examine.md` §2): an aggregate condition read plus four thin bars (brute, burn, toxin, oxy), each rendered as a labeled icon + bar rather than a silhouette. Bars that are at zero stay visually quiet — no "OK" clutter, just a flat empty bar — so the cluster only draws the eye when something's actually wrong.
 
 **Screen-space feedback carries the rest of the load that the doll used to:**
 

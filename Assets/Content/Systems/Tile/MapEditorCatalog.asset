@@ -396,6 +396,51 @@ MonoBehaviour:
     SearchTags:
     - item
     - materials & parts
+  - AssetName: FloorTileBar
+    Mode: 2
+    Subcategory: 301
+    Heading: 
+    Family: 
+    VariantLabel: 
+    SearchTags:
+    - item
+    - materials & parts
+  - AssetName: FloorTileGreyDark
+    Mode: 2
+    Subcategory: 301
+    Heading: 
+    Family: 
+    VariantLabel: 
+    SearchTags:
+    - item
+    - materials & parts
+  - AssetName: FloorTileKitchen
+    Mode: 2
+    Subcategory: 301
+    Heading: 
+    Family: 
+    VariantLabel: 
+    SearchTags:
+    - item
+    - materials & parts
+  - AssetName: FloorTileWhite
+    Mode: 2
+    Subcategory: 301
+    Heading: 
+    Family: 
+    VariantLabel: 
+    SearchTags:
+    - item
+    - materials & parts
+  - AssetName: FloorTileWood
+    Mode: 2
+    Subcategory: 301
+    Heading: 
+    Family: 
+    VariantLabel: 
+    SearchTags:
+    - item
+    - materials & parts
   - AssetName: FuelTank
     Mode: 0
     Subcategory: 105
@@ -1107,6 +1152,14 @@ MonoBehaviour:
     SearchTags:
     - machines
   - AssetName: SteelGirder
+    Mode: 0
+    Subcategory: 101
+    Heading: 
+    Family: 
+    VariantLabel: 
+    SearchTags:
+    - walls & windows
+  - AssetName: SteelGirderPlated
     Mode: 0
     Subcategory: 101
     Heading: 

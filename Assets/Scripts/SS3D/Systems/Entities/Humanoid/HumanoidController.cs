@@ -559,15 +559,6 @@ namespace SS3D.Systems.Entities.Humanoid
             return true;
         }
 
-        /// <summary>
-        /// Used by <see cref="HumanoidPredictedMovement"/> when it owns locomotion ticks.
-        /// </summary>
-        public void PublishPredictedLocomotionVelocity(float velX, float velZ, float turn = 0f)
-        {
-            OnLocomotionVelocityChanged?.Invoke(velX, velZ, turn);
-            OnSpeedChanged(new Vector2(velX, velZ).magnitude);
-        }
-
         protected virtual float FilterSpeed()
         {
             return _isRunning ? RunAnimatorValue : WalkAnimatorValue;

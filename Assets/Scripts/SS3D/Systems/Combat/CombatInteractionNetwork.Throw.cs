@@ -424,7 +424,7 @@ namespace SS3D.Systems.Combat
             }
 
             Vector3 origin = ClearReleasePoint(feet, ThrowRules.ReleasePoint(feet, heading, hand.Side == HandSide.Left));
-            hand.PlaceHeldItemOutOfHand(origin, Quaternion.LookRotation(heading.normalized));
+            hand.PlaceHeldItemOutOfHand(origin, ItemPlacement.WorldRotation(item, ItemPlacement.YawOf(heading)));
 
             if (item.TryGetComponent(out Rigidbody body))
             {

@@ -31,6 +31,14 @@ namespace SS3D.Systems.Interactions
         private InteractionOutlineView.OutlineState _cachedOutlineState = InteractionOutlineView.OutlineState.Hidden;
         private bool _hasCachedOutlineState;
 
+        /// <summary>
+        /// True while the hovered selectable has a viable target-bound interaction for the held source (the
+        /// outline shows Available). A construction ghost hides then, so it never shows where the click goes
+        /// to the target instead.
+        /// </summary>
+        public bool HoveredHasInteraction => _activeOutlineSelectable != null && _hasCachedOutlineState
+            && _cachedOutlineState == InteractionOutlineView.OutlineState.Available;
+
         public void Refresh(
             SelectionSubSystem selectionSystem,
             Camera camera,

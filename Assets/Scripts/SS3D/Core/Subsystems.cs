@@ -111,6 +111,8 @@ namespace SS3D.Core
 
             if (subsystem != null)
             {
+                // Tech-debt P6.4: this scan goes once nothing hits it. A hit means T didn't register itself in time.
+                Log.Warning(typeof(SubSystems), "SubSystems.Get<{type}> fell back to a scene scan; it should register itself", Logs.Important, typeof(T).Name);
                 Register(subsystem as T);
                 return subsystem as T;
             }

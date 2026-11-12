@@ -88,6 +88,21 @@ namespace EditorTests
             Assert.AreEqual(NukeOpsRules.TimerDiskHeldReason, request.Reason);
         }
 
+        // §6: the device counts as a valid holder once the disk is loaded.
+        [Test]
+        public void Timeout_DiskLoadedInTheDevice_IsAMinorOperativeWin()
+        {
+            NukeOpsSnapshot snapshot = new(new[] { Up("a") }, diskCarrierCkey: null, diskInDevice: true);
+
+            RoundEndRequest timer = NukeOpsRules.Resolve(RoundEndRequest.Timer, snapshot);
+            Assert.AreEqual(RoundWinner.OperativesMinor, timer.Winner);
+            Assert.AreEqual(NukeOpsRules.TimerDiskInDeviceReason, timer.Reason);
+
+            RoundEndRequest admin = NukeOpsRules.Resolve(RoundEndRequest.Admin, snapshot);
+            Assert.AreEqual(RoundWinner.OperativesMinor, admin.Winner);
+            Assert.AreEqual(NukeOpsRules.AdminDiskInDeviceReason, admin.Reason);
+        }
+
         [Test]
         public void Timeout_DiskOnDeadOperative_IsACrewWin()
         {

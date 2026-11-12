@@ -93,6 +93,17 @@ namespace SS3D.Tests.EditMode
         }
 
         [Test]
+        public void CellHasCoveringTurf_False_ForAnOpenGirder()
+        {
+            TileMapTestUtilities.MapContext context = TileMapTestUtilities.CreateContext(_instantiated);
+            Vector3 position = new Vector3(6f, 0f, 1f);
+            TileObjectSo girder = PlaceTurf(context, position, TileObjectGenericType.Wall, "TestGirder", airtight: false);
+
+            Assert.IsFalse(TileUnderfloorVisibility.CellHasCoveringTurf(context.Map, position), "Plating under a girder stays drawn");
+            Assert.IsFalse(girder.airtight);
+        }
+
+        [Test]
         public void ShouldHideUnderfloor_False_WhenMapEditorAuthoring()
         {
             TileMapTestUtilities.MapContext context = TileMapTestUtilities.CreateContext(_instantiated);
@@ -144,14 +155,16 @@ namespace SS3D.Tests.EditMode
             Assert.IsFalse(TileUnderfloorVisibility.ShouldHideUnderfloor(context.Map, centre, TileLayer.Plenum, mapEditorAuthoring: false));
         }
 
-        private void PlaceTurf(
+        private TileObjectSo PlaceTurf(
             TileMapTestUtilities.MapContext context,
             Vector3 position,
             TileObjectGenericType genericType,
-            string name)
+            string name,
+            bool airtight = true)
         {
             TileObjectSo turfSo = TileMapTestUtilities.CreateTileSo(TileLayer.Turf, name);
             turfSo.genericType = genericType;
+            turfSo.airtight = airtight;
             _owned.Add(turfSo);
             _owned.Add(turfSo.PrefabAsset);
 
@@ -166,6 +179,7 @@ namespace SS3D.Tests.EditMode
             Assert.IsTrue(placed, $"Expected {genericType} turf placement to succeed.");
             if (go != null)
                 _instantiated.Add(go);
+            return turfSo;
         }
     }
 }

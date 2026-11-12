@@ -16,6 +16,7 @@ namespace SS3D.Systems.Comms.UI
             "comms-subtitle--whisper",
             "comms-subtitle--shout",
             "comms-subtitle--emote",
+            "comms-subtitle--action",
             "comms-subtitle--radio",
             "comms-subtitle--announce",
         };
@@ -149,7 +150,7 @@ namespace SS3D.Systems.Comms.UI
             labels.Line.style.unityFontStyleAndWeight = mode switch
             {
                 SpeechMode.Shout => FontStyle.Bold,
-                SpeechMode.Whisper or SpeechMode.Emote => FontStyle.Italic,
+                SpeechMode.Whisper or SpeechMode.Emote or SpeechMode.Action => FontStyle.Italic,
                 _ => FontStyle.Normal,
             };
 
@@ -811,7 +812,7 @@ namespace SS3D.Systems.Comms.UI
                 {
                     SpeechMode.Whisper => 20f,
                     SpeechMode.Shout => 32f,
-                    SpeechMode.Emote => 24f,
+                    SpeechMode.Emote or SpeechMode.Action => 24f,
                     _ => 28f,
                 };
 
@@ -905,6 +906,7 @@ namespace SS3D.Systems.Comms.UI
                 SpeechMode.Whisper => "comms-subtitle--whisper",
                 SpeechMode.Shout => "comms-subtitle--shout",
                 SpeechMode.Emote => "comms-subtitle--emote",
+                SpeechMode.Action => "comms-subtitle--action",
                 SpeechMode.Radio => "comms-subtitle--radio",
                 SpeechMode.Announcement => "comms-subtitle--announce",
                 _ => "comms-subtitle--speak",

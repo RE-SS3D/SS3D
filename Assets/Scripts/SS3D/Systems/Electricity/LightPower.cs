@@ -98,6 +98,18 @@ namespace SS3D.Systems.Electricity
             ApplyFixtureVisual(_fixtureVisual);
         }
 
+        protected override void OnEnabled()
+        {
+            base.OnEnabled();
+            SceneRegistry<LightPower>.Register(this);
+        }
+
+        protected override void OnDisabled()
+        {
+            SceneRegistry<LightPower>.Unregister(this);
+            base.OnDisabled();
+        }
+
         protected override void OnDestroyed()
         {
             if (_consumer != null)
@@ -331,7 +343,7 @@ namespace SS3D.Systems.Electricity
 
         public static void RefreshAllFixtures()
         {
-            foreach (LightPower fixture in FindObjectsByType<LightPower>(FindObjectsSortMode.None))
+            foreach (LightPower fixture in SceneRegistry<LightPower>.All)
             {
                 fixture.RefreshVisuals();
             }

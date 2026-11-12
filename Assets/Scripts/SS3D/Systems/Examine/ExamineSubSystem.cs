@@ -1,6 +1,7 @@
 ﻿using SS3D.Core;
 using SS3D.Core.Behaviours;
 using SS3D.Systems.Selection;
+using SS3D.Systems.Inventory.Items;
 using UnityEngine;
 
 namespace SS3D.Systems.Examine
@@ -45,6 +46,7 @@ namespace SS3D.Systems.Examine
         }
 
         private SelectionSubSystem _selectionSystem;
+        private ItemFallbackExaminable _lastFallback;
         private bool _selectionEventsBound;
 
         protected override void OnEnabled()
@@ -109,8 +111,40 @@ namespace SS3D.Systems.Examine
                 return;
             }
 
+            OnExaminableChanged?.Invoke(GetCurrentExaminable());
+        }
+
+        /// <summary>
+        /// What is under the cursor as an examinable: its own <see cref="IExaminable"/>, or for an item
+        /// without one (or with one that has no data) an <see cref="ItemFallbackExaminable"/>, reused while
+        /// the same item stays hovered.
+        /// </summary>
+        public IExaminable GetCurrentExaminable()
+        {
+            if (_selectionSystem == null)
+            {
+                return null;
+            }
+
             IExaminable current = _selectionSystem.GetCurrentSelectable<IExaminable>();
-            OnExaminableChanged?.Invoke(current);
+            if (current != null && current.GetData() != null)
+            {
+                return current;
+            }
+
+            // No examinable, or one without data (soda cans carry a bare provider): examine the item.
+            Item item = _selectionSystem.GetCurrentSelectable<Item>();
+            if (item == null)
+            {
+                return current;
+            }
+
+            if (_lastFallback == null || _lastFallback.Item != item)
+            {
+                _lastFallback = new ItemFallbackExaminable(item);
+            }
+
+            return _lastFallback;
         }
 
         /// <summary>

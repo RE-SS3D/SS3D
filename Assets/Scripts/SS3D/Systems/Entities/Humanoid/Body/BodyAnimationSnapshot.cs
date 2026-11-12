@@ -46,6 +46,8 @@ namespace SS3D.Systems.Entities.Humanoid.Body
         public bool OffHandBusy;
         /// <summary>The body kneels for a delayed interaction (defuse, CPR) while this is set (server).</summary>
         public bool InteractKneel;
+        /// <summary>The body works at a wall for a construction step while this is set (server).</summary>
+        public bool InteractWork;
 
         public uint Pack()
         {
@@ -66,6 +68,7 @@ namespace SS3D.Systems.Entities.Humanoid.Body
             if (PistolHold) packed |= 1u << 27;
             if (OffHandBusy) packed |= 1u << 28;
             if (InteractKneel) packed |= 1u << 29;
+            if (InteractWork) packed |= 1u << 30;
             return packed;
         }
 
@@ -97,6 +100,7 @@ namespace SS3D.Systems.Entities.Humanoid.Body
                 PistolHold = (packed & (1u << 27)) != 0,
                 OffHandBusy = (packed & (1u << 28)) != 0,
                 InteractKneel = (packed & (1u << 29)) != 0,
+                InteractWork = (packed & (1u << 30)) != 0,
                 AimYaw = aimYaw,
                 AimPitch = aimPitch,
                 MovementSpeed = (float)Math.Sqrt(movementVelX * movementVelX + movementVelZ * movementVelZ),

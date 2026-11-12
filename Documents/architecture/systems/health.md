@@ -1,7 +1,7 @@
 > Code paths: Assets/Scripts/SS3D/Systems/Health/
 > Entry points: HumanHealthController, HealthSimulation, OrganSimulation
 > Status: partial
-> Verified: ae1a54ed1 — 2026-11-05
+> Verified: 5ad42b7f2 — 2026-11-11
 
 # Health
 
@@ -20,7 +20,7 @@ Phase 0d strips legacy health components from `Human.prefab` and rewires a thinn
 ## Start here
 
 - `Assets/Scripts/SS3D/Systems/Examine/CharacterExamineHealthBuilder.cs` — Tier 0/1 examine lines (reads `Snapshot` + `DebugDetail`; owned by examine UI, not a Human prefab component)
-- `Assets/Scripts/SS3D/Systems/Health/HumanHealthController.cs` — server tick, damage/treatment, organ registration, snapshot SyncVar + `SnapshotChanged`
+- `Assets/Scripts/SS3D/Systems/Health/HumanHealthController.cs` — server tick (every body on the shared 1 Hz `health` channel of `SimulationClock`; map loads don't pause it), damage/treatment, organ registration, snapshot SyncVar + `SnapshotChanged`
 - `Assets/Scripts/SS3D/Systems/Health/BodyPresentationIntent.cs` — snapshot → `BodyPresentationState` (Collapsed / Locomotion / Dead mapping)
 - `Assets/Scripts/SS3D/Systems/Health/HealthScreenEffectMapper.cs` — local-owner snapshot → `ScreenEffectsSubSystem` intensities
 - `Assets/Scripts/SS3D/Systems/Health/HealthAlertStackMapper.cs` — snapshot → health alert signals (no MainHud types); Main HUD merges with atmos
@@ -108,7 +108,7 @@ Phase 0d strips legacy health components from `Human.prefab` and rewires a thinn
 ## Depends on / Used by
 
 - **Depends on:** [entities](entities.md), [interactions-framework](interactions-framework.md), [screen-effects](screen-effects.md), [audio](audio.md) (`PersonalAudioSubSystem`, hit/gasp pool), [atmospherics](atmospherics.md) (turf sample)
-- **Used by:** [combat](combat.md) (melee zone hits), [inventory](inventory.md) (Main HUD alert stack), dev console `hurt`/`heal`, `HumanoidLivingController` / `HumanoidPredictedMovement` / `HumanoidBodyStateBridge` (movement multiplier / limp + `InjuredLeg` / injured-arm presentation), `Hand` (arm debuff stub)
+- **Used by:** [combat](combat.md) (melee zone hits), [inventory](inventory.md) (Main HUD alert stack), dev console `hurt`/`heal`, `HumanoidLivingController` / `HumanoidBodyStateBridge` (movement multiplier / limp + `InjuredLeg` / injured-arm presentation), `Hand` (arm debuff stub)
 - **Stamina:** [stamina](stamina.md) Phase 7a core — regen/encumbrance/overdraw→oxy; breathing max-merge with health
 
 ## Related docs

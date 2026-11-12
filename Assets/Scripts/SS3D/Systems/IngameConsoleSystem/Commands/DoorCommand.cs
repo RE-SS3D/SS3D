@@ -4,6 +4,7 @@ using SS3D.Permissions;
 using SS3D.Systems.Entities;
 using SS3D.Systems.Furniture;
 using UnityEngine;
+using SS3D.Core;
 
 namespace SS3D.Systems.IngameConsoleSystem.Commands
 {
@@ -40,7 +41,7 @@ namespace SS3D.Systems.IngameConsoleSystem.Commands
             }
 
             Vector3 position = entity.Transform.position;
-            AirLockOpener airlock = Object.FindObjectsByType<AirLockOpener>(FindObjectsSortMode.None)
+            AirLockOpener airlock = SceneRegistry<AirLockOpener>.All
                 .OrderBy(candidate => Vector3.Distance(candidate.transform.position, position))
                 .FirstOrDefault();
             if (airlock == null || Vector3.Distance(airlock.transform.position, position) > MaxDistance)

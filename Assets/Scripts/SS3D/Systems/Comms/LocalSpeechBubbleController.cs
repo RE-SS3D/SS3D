@@ -1,6 +1,7 @@
 using Coimbra.Services.Events;
 using SS3D.Core;
 using SS3D.Core.Behaviours;
+using SS3D.Systems.ActionMessages;
 using SS3D.Systems.Comms.UI;
 using SS3D.Systems.Entities;
 using SS3D.Systems.Entities.Events;
@@ -20,7 +21,6 @@ namespace SS3D.Systems.Comms
     public sealed class LocalSpeechBubbleController : Actor
     {
         private const float BubbleWorldHeightOffset = 0.15f;
-        private const float FadeOutTailSeconds = 1f;
 
         [SerializeField] private StyleSheet _bubbleStyleSheet;
         [SerializeField] private LocalSpeechConfig _config;
@@ -33,11 +33,15 @@ namespace SS3D.Systems.Comms
             public float ExpiryTime;
             public int GarbleSeed;
             public AudibilityTier CurrentTier;
+
+            /// <summary><see cref="CrowdCapRanker"/> tier; speech entries are 0.</summary>
+            public int Tier;
         }
 
         private readonly Dictionary<Entity, List<ActiveSpeech>> _activeSpeeches = new();
         private readonly List<Entity> _shownSpeakers = new();
         private readonly List<Entity> _staleSpeakers = new();
+        private readonly Dictionary<Entity, int> _speakerTiers = new();
         private readonly InputTextEntryScope _composeEntry = new(InputContext.TextEntry);
 
         private LocalSpeechBubbleView _view;
@@ -46,6 +50,7 @@ namespace SS3D.Systems.Comms
         private CrowdCapRanker _ranker;
         private Entity _localViewer;
         private CommsSubSystem _commsSubSystem;
+        private ActionMessageSubSystem _actionMessages;
         private InputSubSystem _inputSubSystem;
         private float _nextRerankTime;
         private int _overflowCount;
@@ -102,6 +107,12 @@ namespace SS3D.Systems.Comms
             if (_inputSubSystem != null)
             {
                 _inputSubSystem.OpenLocalSpeechCompose.performed -= HandleOpenCompose;
+            }
+
+            if (_actionMessages != null)
+            {
+                _actionMessages.ClientLineReceived -= HandleActionLine;
+                _actionMessages = null;
             }
 
             EndCompose(clearText: true);
@@ -278,7 +289,7 @@ namespace SS3D.Systems.Comms
 
             CommsSubSystem comms = _commsSubSystem != null ? _commsSubSystem : SubSystems.Get<CommsSubSystem>();
             // /bug is a chat command handled with OOC, never spoken aloud.
-            if (comms != null && Rounds.BugCommand.TryParse(text, out _))
+            if (comms != null && BugReports.BugCommand.TryParse(text, out _))
             {
                 comms.SendOoc(OocChannel.Ooc, text);
                 EndCompose(clearText: true);
@@ -478,8 +489,61 @@ namespace SS3D.Systems.Comms
             }
         }
 
+        /// <summary>
+        /// An action line is a chip on the actor in the speech stack (one crowd cap, action-messages.md
+        /// §5). A line about you with no actor sits on your own head.
+        /// </summary>
+        private void HandleActionLine(ActionLine line)
+        {
+            Entity anchor = line.Actor != null ? line.Actor : line.AimedAtViewer ? _localViewer : null;
+
+            if (anchor == null || string.IsNullOrEmpty(line.Text))
+            {
+                return;
+            }
+
+            if (!_activeSpeeches.TryGetValue(anchor, out List<ActiveSpeech> stack))
+            {
+                stack = new List<ActiveSpeech>(_config.MaxStackedMessagesPerSpeaker);
+                _activeSpeeches[anchor] = stack;
+            }
+
+            float now = Time.time;
+            int tier = line.Hostile && line.AimedAtViewer ? CrowdCapRanker.HostileActionTier
+                : line.AimedAtViewer ? CrowdCapRanker.ActionOnViewerTier
+                : CrowdCapRanker.RoutineActionTier;
+            stack.Add(new ActiveSpeech
+            {
+                Text = line.Text,
+                Mode = SpeechMode.Action,
+                StartTime = now,
+                ExpiryTime = now + _config.ActionFadeDuration,
+                CurrentTier = AudibilityTier.Clear,
+                Tier = tier,
+            });
+
+            while (stack.Count > Mathf.Max(1, _config.MaxStackedMessagesPerSpeaker))
+            {
+                stack.RemoveAt(0);
+            }
+
+            _nextRerankTime = 0f;
+        }
+
+        private void TryBindActionMessages()
+        {
+            if (_actionMessages != null || !SubSystems.TryGet(out ActionMessageSubSystem actions))
+            {
+                return;
+            }
+
+            _actionMessages = actions;
+            _actionMessages.ClientLineReceived += HandleActionLine;
+        }
+
         private void Update()
         {
+            TryBindActionMessages();
             if (_isComposing)
             {
                 _composeMode = PeekComposeModeFromModifiers();
@@ -586,20 +650,38 @@ namespace SS3D.Systems.Comms
                 AudibilityTier tier = _listener.ComputeTier(_localViewer, speaker);
                 List<ActiveSpeech> stack = pair.Value;
 
+                bool shown = false;
+                int speakerTier = int.MaxValue;
                 for (int i = 0; i < stack.Count; i++)
                 {
                     ActiveSpeech entry = stack[i];
+                    if (entry.Mode == SpeechMode.Action)
+                    {
+                        // Already filtered by who could perceive it; never garbled by distance.
+                        shown = true;
+                        speakerTier = Mathf.Min(speakerTier, entry.Tier);
+                        continue;
+                    }
+
                     entry.CurrentTier = tier;
                     stack[i] = entry;
+                    if (tier != AudibilityTier.Inaudible)
+                    {
+                        shown = true;
+                        speakerTier = CrowdCapRanker.SpeechTier;
+                    }
                 }
 
-                if (tier != AudibilityTier.Inaudible)
+                if (shown)
                 {
                     audibleSpeakers.Add(speaker);
+                    _speakerTiers[speaker] = speakerTier;
                 }
             }
 
-            CrowdCapRanker.Result result = _ranker.Rank(_localViewer, audibleSpeakers, _config.MaxVisibleBubbles);
+            CrowdCapRanker.Result result = _ranker.Rank(_localViewer, audibleSpeakers, _config.MaxVisibleBubbles,
+                speaker => _speakerTiers.TryGetValue(speaker, out int t) ? t : CrowdCapRanker.SpeechTier);
+            _speakerTiers.Clear();
 
             _shownSpeakers.Clear();
             _shownSpeakers.AddRange(result.Shown);
@@ -653,7 +735,7 @@ namespace SS3D.Systems.Comms
                         continue;
                     }
 
-                    string speakerName = ResolveSpeakerName(speaker);
+                    string speakerName = LocalSpeechChipText.ResolveSpeakerName(speaker);
 
                     // While the local player is drafting, reserve the head slot so existing
                     // lines lift the same way they will after commit — nothing jumps.
@@ -667,12 +749,12 @@ namespace SS3D.Systems.Comms
                         bool isNewest = fromNewest == 0 && stackBias == 0;
                         int visualAge = fromNewest + stackBias;
 
-                        string displayText = FormatDisplayText(entry, entry.CurrentTier, speakerName, isNewest);
+                        string displayText = LocalSpeechChipText.FormatDisplayText(entry.Text, entry.Mode, entry.GarbleSeed, entry.CurrentTier, speakerName, isNewest);
                         float age = now - entry.StartTime;
                         float drift = age * _config.DriftPixelsPerSecond;
                         float stackLift = visualAge * _config.StackSpacingPixels;
-                        float opacity = ComputeFadeOpacity(entry.ExpiryTime) * StackOpacity(visualAge);
-                        string nameForChip = ResolveNameLabel(entry.Mode, speakerName, isNewest);
+                        float opacity = LocalSpeechChipText.ComputeFadeOpacity(entry.ExpiryTime) * LocalSpeechChipText.StackOpacity(visualAge);
+                        string nameForChip = LocalSpeechChipText.ResolveNameLabel(entry.Mode, speakerName, isNewest);
 
                         _view.ShowBubble(
                             shownCount,
@@ -715,69 +797,6 @@ namespace SS3D.Systems.Comms
             {
                 _view.HideOverflowChip();
             }
-        }
-
-        private static string ResolveNameLabel(SpeechMode mode, string speakerName, bool isNewest)
-        {
-            // Local-chat head chips only. Radio / announcements use other UI surfaces and never
-            // supply a name label through this path.
-            if (!isNewest || mode is SpeechMode.Whisper or SpeechMode.Emote
-                or SpeechMode.Radio or SpeechMode.Announcement)
-            {
-                return string.Empty;
-            }
-
-            return speakerName;
-        }
-
-        private static string FormatDisplayText(ActiveSpeech entry, AudibilityTier tier, string speakerName, bool _)
-        {
-            string body = tier == AudibilityTier.Clear
-                ? entry.Text
-                : TextGarbler.Garble(entry.Text, entry.GarbleSeed);
-
-            return entry.Mode switch
-            {
-                // Mock 1a: name folded into the line, italic via CSS, no asterisks.
-                SpeechMode.Emote => $"{speakerName} {body}",
-                SpeechMode.Radio => body,
-                SpeechMode.Announcement => body,
-                SpeechMode.Whisper => body,
-                SpeechMode.Shout => body.ToUpperInvariant(),
-                _ => body,
-            };
-        }
-
-        private static float StackOpacity(int fromNewest)
-        {
-            return fromNewest switch
-            {
-                0 => 1f,
-                1 => 0.65f,
-                _ => 0.4f,
-            };
-        }
-
-        private static float ComputeFadeOpacity(float expiryTime)
-        {
-            float remaining = expiryTime - Time.time;
-            if (remaining >= FadeOutTailSeconds)
-            {
-                return 1f;
-            }
-
-            return Mathf.Clamp01(remaining / FadeOutTailSeconds);
-        }
-
-        private static string ResolveSpeakerName(Entity speaker)
-        {
-            Mind mind = speaker.Mind;
-            if (mind != null && mind != Mind.Empty && !string.IsNullOrEmpty(mind.DisplayName))
-            {
-                return mind.DisplayName;
-            }
-
-            return "Someone";
         }
 
         private bool EnsureOverlay()

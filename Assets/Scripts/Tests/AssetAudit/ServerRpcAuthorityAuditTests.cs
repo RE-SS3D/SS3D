@@ -56,6 +56,13 @@ namespace SS3D.Tests.AssetAudit
             { "HumanoidBodyStateMachine.CmdTrySit", AuthorityCheck.Revalidated },
             { "Draggable.CmdSetDrag", AuthorityCheck.ServerDerived },
 
+            // Action messages
+            { "ActionMessageSubSystem.CmdExamineCue", AuthorityCheck.Revalidated }, // examiner is the caller's own body; server range + per-pair cooldown
+
+            // Construction
+            { "ConstructionPlacementSubSystem.CmdRequestCellAction", AuthorityCheck.Revalidated }, // caller's own hand; reach, rule, materials, BuildChecker
+            { "ConstructionPlacementSubSystem.CmdCancelCellAction", AuthorityCheck.ServerDerived }, // cancels only the caller's own pending step
+
             // Interactions and inventory
             { "InteractionController.CmdStartTakeFromCharacter", AuthorityCheck.Revalidated },
             { "InteractionController.CmdRunInteraction", AuthorityCheck.Revalidated },
@@ -70,10 +77,10 @@ namespace SS3D.Tests.AssetAudit
 
             // Rounds, gamemodes, console
             { "GamemodeSubSystem.CmdGetCurrentClientObjectives", AuthorityCheck.ReadOnly },
-            { "RoundSubSystem.CmdResolveMapStop", AuthorityCheck.Admin },
-            { "RoundSubSystem.CmdReadServerSettings", AuthorityCheck.Admin },
-            { "RoundSubSystem.CmdSaveServerSettings", AuthorityCheck.Admin },
-            { "RoundSubSystem.CmdUpdateServerSetting", AuthorityCheck.Admin },
+            { "MapEditorStopFlow.CmdResolveMapStop", AuthorityCheck.Admin },
+            { "ServerSettingsService.CmdReadServerSettings", AuthorityCheck.Admin },
+            { "ServerSettingsService.CmdSaveServerSettings", AuthorityCheck.Admin },
+            { "ServerSettingsService.CmdUpdateServerSetting", AuthorityCheck.Admin },
             { "RoundSubSystem.CmdRoundAdminAction", AuthorityCheck.Admin },
             { "CommandsController.CmdProcessOnlineCommand", AuthorityCheck.ConsoleAccessLevel },
 

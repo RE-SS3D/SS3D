@@ -8,6 +8,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 808270407970017625, guid: 852d57bdb0508494fb6047f36e813c69, type: 3}
+      propertyPath: key
+      value: 
+      objectReference: {fileID: 11400000, guid: 399184e97f6018b48b78956da1731cb8, type: 2}
     - target: {fileID: -5414623717715724467, guid: 852d57bdb0508494fb6047f36e813c69, type: 3}
       propertyPath: _networkBehaviours.Array.size
       value: 2

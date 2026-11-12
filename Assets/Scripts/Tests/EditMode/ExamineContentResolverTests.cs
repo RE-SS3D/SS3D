@@ -110,6 +110,41 @@ namespace EditorTests
             }
         }
 
+        [Test]
+        public void BareItemResolvesToItsNameWithSizeAndStackLines()
+        {
+            ExamineContentResolver resolver = new();
+            GameObject host = new("BareItem");
+            try
+            {
+                SS3D.Systems.Inventory.Items.Item item = host.AddComponent<SS3D.Systems.Inventory.Items.Item>();
+                item.Init("Steel sheet", 1f, new List<SS3D.Systems.Trait>());
+                UnityEditor.SerializedObject serialized = new(item);
+                serialized.FindProperty("_maxStackSize").intValue = 50;
+                serialized.FindProperty("_sizeClass").enumValueIndex = (int)SS3D.Systems.Inventory.Items.SizeClass.Small;
+                serialized.ApplyModifiedPropertiesWithoutUndo();
+
+                ExamineContent content = resolver.Resolve(new ItemFallbackExaminable(item));
+
+                Assert.AreEqual("Steel sheet", content.Name);
+                Assert.IsFalse(content.HasDescription);
+                Assert.AreEqual(2, content.Sections.Count);
+                Assert.AreEqual(ExamineBand.Any, content.Sections[0].Band);
+                StringAssert.Contains("small", content.Sections[0].Text);
+                Assert.AreEqual(ExamineBand.Close, content.Sections[1].Band);
+            }
+            finally
+            {
+                Object.DestroyImmediate(host);
+            }
+        }
+
+        [Test]
+        public void DestroyedFallbackItemResolvesEmpty()
+        {
+            Assert.AreEqual(string.Empty, new ExamineContentResolver().Resolve(new ItemFallbackExaminable(null)).Name);
+        }
+
         private sealed class StubExaminable : IExaminable
         {
             private readonly ExamineData _data;

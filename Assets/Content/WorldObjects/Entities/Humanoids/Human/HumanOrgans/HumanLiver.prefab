@@ -274,7 +274,7 @@ MonoBehaviour:
   _addedNetworkObject: {fileID: 8532088199163376958}
   _networkObjectCache: {fileID: 8532088199163376958}
   _asset: {fileID: 11400000, guid: 6577fdc9764f17349899be7dc4671044, type: 2}
-  _name: 
+  _name: human liver
   _weight: 1
   _startingTraits: []
   _rigidbody: {fileID: 3362323121630547519}
