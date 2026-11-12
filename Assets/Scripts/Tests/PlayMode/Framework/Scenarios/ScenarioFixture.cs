@@ -184,13 +184,14 @@ namespace SS3D.Tests
 
             CopyRoomStation(StationFixture);
             RoundSubSystem rounds = SubSystems.Get<RoundSubSystem>();
-            ServerSettings settings = rounds.SettingsForServer;
+            ServerSettingsService service = SubSystems.Get<ServerSettingsService>();
+            ServerSettings settings = service.Current;
             settings.Map = RoomStation;
             settings.Mode = Mode;
             settings.RoundLengthMinutes = 120;
             settings.AutoStart = false;
             settings.AllowLateJoin = true;
-            rounds.ApplyServerSettingsForTesting(settings);
+            service.ApplyServerSettingsForTesting(settings);
 
             BeforeRoundStart();
             ServerHelpers.SetPlayerReadiness(ServerHelpers.LocalCkey, true);

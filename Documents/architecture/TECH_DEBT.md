@@ -157,7 +157,7 @@ checks. Sizes at `06316a98` (including partials):
 |---|---|---|
 | `LobbyShellView` | 2,022 + 542 | one class per tab; standalone `PlayerSettingsPanel` (the main menu ships a "Settings screen placeholder" because settings are locked inside the lobby) |
 | `MapEditorSubSystem` | 1,686 + partials | client controller, server RPC layer, sim suspension (§1.23) |
-| `RoundSubSystem` | 1,685 over 8 partials | `ServerSettingsService`, observability/bug intake (closes the Rounds↔BugReports cycle), map-stop flow |
+| `RoundSubSystem` | ~~1,685 over 8 partials~~ 984 over 5 | done (tech-debt P6.5): `ServerSettingsService`, `BugReportIntake` in BugReports (Rounds↔BugReports cycle closed), `MapEditorStopFlow` |
 | `MainHudSubSystem` | 1,627 | visibility arbiter, local-player binder, reticle presenter, alert presenter, inventory actions |
 | `InteractionController` | 1,585 | hand-action scheduler (§1.20) |
 | `CombatInteractionNetwork` | 1,451 | `ThrowController` component via the Human recipe |
@@ -171,8 +171,8 @@ members are pure; recoil is a function of time (`RangedWeaponItemExtension.Recoi
 `Update` completes reloads on every peer. The reticle skips its raycasts and reads while hidden.
 
 **Lobby polling:** `LobbyUiSubSystem.RefreshSession` polls at 5 Hz for the whole session, including
-in-round, and sends the job-preference / appearance / OOC handshakes and polls `CmdReadServerSettings`
-from there. That handshake belongs in a client-session service in Systems.
+in-round. The handshakes and the 1 Hz `CmdReadServerSettings` poll it used to send moved to
+`ClientSessionSubSystem`, and the server pushes admin settings (tech-debt P6.6); the 5 Hz view refresh itself is P7.4.
 
 - Related: [interactions-runtime.md](systems/interactions-runtime.md), [inventory.md](systems/inventory.md)
 - Effort (interactions): [2026-07_interaction-controller-decomposition.md](../archive/architecture/2026-07_interaction-controller-decomposition.md) — shipped
@@ -224,21 +224,27 @@ early and expensive to reinstate once thousands of lines have drifted.
 
 ### 1.12 Scene-wide `FindObjectsByType` calls in gameplay code, not just Editor tooling
 
-**Blast radius: low-medium — trend: improving for locator; Item/Locker scans unchanged**
+**Blast radius: low — trend: improving (gameplay scans moved to registries 2026-11-11)**
 
-Scene scans remain in gameplay code: `TileMap.ClearUntrackedItems` scans all `Item`s during
-map restore/cleanup, `Locker.CloseStorageUIs` scans `ContainerViewer`s on close, and
-`Core/Subsystems.cs` falls back to `FindObjectOfType` on a registry miss. These are lifecycle/event
-paths, not evidence of a per-frame scan. The locator fallback is skipped while quitting and while
-missing-subsystem errors are suppressed (Disconnecting / WaitingForServer); prefer `TryGet` and
-world-readiness gates. A registry/event-based replacement for the Item/Locker scans remains open.
+Tech-debt P6.4 added `SceneRegistry<T>` (`Core/SceneRegistry.cs`): components register on enable (or, for
+`NukeCard`, on server spawn) and gameplay reads the set. `Item`, `ContainerViewer`, `HumanHealthController`,
+`SolarPanel`, `LightPower`, `AirLockOpener`, `CameraFollow` and `NukeCard` register, and the scans in
+`TileMap.ClearUntrackedItems`, `Locker.CloseStorageUIs`, `TileLayerVisibilityService`, `MapEditorSettings`,
+`LightingDevBypass`, `SolarTrackingBeacon`, `BlastVfxPresenter`, `StationDetonationPresentation`,
+`CommandResolver`, `HealthDebugController`, `NukeOpsWorld` and the `disk`, `door` and `observesync` commands read
+it. `SubSystems.Get`'s `FindObjectOfType` fallback now logs a warning on every hit.
 
-More gameplay scans found at `06316a98`:
-- `TileSubSystem.cs:291` (every decal sync), `TileLayerVisibilityService.cs:151` (every layer toggle),
-  `MapEditorSettings.cs:68`, `BlastVfxPresenter.cs:62`, `SolarTrackingBeacon.cs:78`,
-  `LightPower.cs:334`, `RoundObservability.cs:137-141` (all GameObjects, every round reset).
-- `TileMap.ClearUntrackedItems` still uses the deprecated `FindObjectsOfType` and `DestroyImmediate`s
-  networked items (`TileMap.cs:1195-1216`).
+What still scans, and why:
+- `RoundObservability.AppendResetHealth` counts every GameObject, tile object and item, inactive included, after
+  a station unload. It looks for leaks, which by definition aren't in any registry.
+- Unity types no SS3D code can register: `GameplayLightGuard` (`Light`), `AudioSourceOcclusion` and
+  `MainMenuSubSystem` (`AudioListener`), `AutomationSubSystem` (`UIDocument`).
+- Bootstrap and lookup: `SystemsBootstrap`, `NetworkSystemsHub.EnsureSpawned`, `CameraSubSystem` (finds an
+  inactive camera), the `SubSystems.Get` fallback (removed once no hits are logged for a while).
+- Debug and test code: `AreaDebugGizmoDrawer`, `ClientCanSeeContentOfAllContainers` (Hacks),
+  `AutomationSubSystem` (`UnauthorizedPlayer`, `CommandsController`; it leaves Systems in P8.1).
+- `TileMap.ClearUntrackedItems` still `DestroyImmediate`s networked items (`TileMap.cs`); Phase 5 changes it
+  to `ServerManager.Despawn`.
 
 - Related: [core-subsystems.md](systems/core-subsystems.md), [tile.md](systems/tile.md), [2026-07_session-world-lifecycle.md](../archive/architecture/2026-07_session-world-lifecycle.md)
 
@@ -342,7 +348,7 @@ chunks batched per command group; keep one full snapshot for late joiners (M).
 **Blast radius: high (public sandbox server) — trend: getting worse (each feature adds RPCs)**
 
 43 of 74 ServerRpcs use `RequireOwnership = false`. Most check permissions (`ServerSettings`,
-`MapEditorRoundStop`, `EntitySubSystem.CmdSpawnLatePlayer`), but these do not. `ServerRpcAuthorityAuditTests` (tech-debt G1) lists every
+`MapEditorStopFlow`, `EntitySubSystem.CmdSpawnLatePlayer`), but these do not. `ServerRpcAuthorityAuditTests` (tech-debt G1) lists every
 ServerRpc of this kind with its check; the holes below are its `Unchecked` entries.
 
 - ~~Console commands at `AccessLevel User` run on the server for any player.~~ Fixed by the console
@@ -461,25 +467,13 @@ See §6.
 
 See §6.
 
-### 1.27 Tick-driven systems share no clock
+### 1.27 Tick-driven systems share no clock — resolved 2026-11-11
 
-**Blast radius: medium — trend: stable (each new sim picks its own)**
+See §6.
 
-Five patterns: Atmos `Update` + `deltaTime` accumulator (`AtmosSubSystem.cs:306-317`); Electricity
-Coimbra `FixedUpdateEvent` with `_timeElapsed = 0` discarding the remainder
-(`ElectricitySubSystem.cs:234-253`); one reset-to-zero timer per body in Health
-(`HumanHealthController.cs:653-666`); `UniTask.Delay` loops in Rounds; FishNet `TimeManager.OnTick` for
-movement. `ElectricitySubSystem.RpcInvokeOnTick` (`:685-688`) is a payload-less `ObserversRpc` sent to
-every client 5×/s so client visuals can tick. **Fix:** one `SimulationClock` on `TimeManager.OnTick`
-with fixed-rate channels; clients tick locally (M).
+### 1.28 Persistence contributors deserialized by a central switch — resolved 2026-11-11
 
-### 1.28 Persistence contributors deserialized by a central switch
-
-**Blast radius: low-medium — trend: stable**
-
-`PersistenceSubSystem.DeserializePayload` (`:477-488`) switches over all five contributor IDs, so
-Persistence must know every domain's payload type, which helps keep the Persistence↔Tile cycle.
-Let `IPersistenceContributor` deserialize its own payload (S).
+See §6.
 
 ### 1.29 UI widget and host duplication
 
@@ -517,7 +511,7 @@ See §6.
 
 **Blast radius: low — trend: growing (one copy per recipe that adds a NetworkBehaviour)**
 
-`RebuildNetworkBehaviours` is private in `GirderStageRecipe`, `SolarPrefabSetup` and `SessionWorldLifecycleEditorMenus`, internal in `CombatInteractionNetworkPrefabSetup` (reused by `RangedPrefabSetup`) and `ConstructionHubRecipe` (reused by `ActionMessageHubRecipe`), and `HumanPrefabHygiene` has a sixth variant. Forgetting it is silent ([combat.md](systems/combat.md) Pitfalls). Fix: one shared editor helper (S).
+`RebuildNetworkBehaviours` has eight copies: private in `GirderStageRecipe`, `SolarPrefabSetup`, `BodyPartContainerInteractiveStrip` and `SessionWorldLifecycleEditorMenus`; internal in `CombatInteractionNetworkPrefabSetup` (reused by `RangedPrefabSetup`) and `ConstructionHubRecipe` (reused by `ActionMessageHubRecipe`); public in `StorageContainerPrefabSetup` and `HumanPrefabHygiene`. Forgetting it is silent ([combat.md](systems/combat.md) Pitfalls). Fix: one shared editor helper (S).
 
 ## 2. Hot-path GC / performance debt (tracked, partially paid down)
 
@@ -531,6 +525,23 @@ safe because "the pattern was fixed once."
 
 - Full list of pitfalls-with-fixes: [tile.md](systems/tile.md), [atmospherics.md](systems/atmospherics.md), [substances.md](systems/substances.md) § Pitfalls
 - **Coimbra PackageCache GC (Editor):** `ServiceLocator.GetChecked` builds `$"..."` assert messages every call (~724 B); `EventSystem.Invoke` pairs with unconditional `String.Format` in deep profiles. Lives in `com.coimbrastudios.core` — do not patch PackageCache; cache `IEventService` / avoid hot-path `GetChecked`, or vendor later. Area/device tile resolution still recomputed per electricity tick (`TileMap.TryGetAreaId` / `GetTileInFront`) — defer a cache pass after re-profile. See [core-subsystems.md](systems/core-subsystems.md).
+
+**Per-tick allocation, measured 2026-11-11 (tech-debt P6.2).** Every `SimulationClock` channel fires inside an
+`SS3D.Clock.<name>` Profiler marker, so a capture shows each sim's per-tick GC directly (`mppm:breach-budget` with
+the Profiler recording; the call-stack recording mode slows the host enough to break the MPPM client's timeouts).
+Fixed: electricity 80 → 0 B per tick (two `foreach` over `IReadOnlyList<AreaRecord>`); health ~3 KB → ~0 per body
+for the simulation itself: `HealthSnapshot` and `HealthDebugDetail` are `[SyncVar]` structs and FishNet compared
+them with `EqualityComparer<T>.Default`, which boxes and reflects without `IEquatable<T>` (now
+`BlittableEquality`); `HumanInventory.Containers` copies its list and `AttachedContainer.Items` was a LINQ `Select`
+(now a struct enumerator); `OrganSimulation.GetStoredOrganFunction` boxed its enumerator; `TileQueryService.
+TryGetOccupancy` allocated a layer array per call (now `TileMap.TryFillTileLocations` into a reused buffer); the pipe
+simulation boxed `IReadOnlyDictionary.Values`. Left, in the editor:
+- health ~950 B per tick, all in the local player's `MainHudSubSystem` alert update (`SnapshotChanged`), which runs
+  twice per tick on a host (the SyncVar `OnChange` and `PublishSnapshot` both raise it). A dedicated server has no HUD.
+- atmos at rest ~120 B per tick in `AtmosVisualizationBridge.PublishSnapshot` (host visuals). During a breach with
+  a remote client ~2 KB per tick: `AtmosDirtyChunkTracker.Update` ~560 B and FishNet's `RpcApplyChunkPatch` send
+  ~380 B (call stacks weren't recoverable; the editor capture also includes Burst's one-time JIT under
+  `SS3D.Atmos.Sim`).
 
 ---
 
@@ -680,3 +691,28 @@ strips components whose script was deleted (`HumanPrefabHygiene.RemoveMissingScr
 - **Closed by:** tech-debt P3.2, P3.5 (protocol 43).
 - **Not in this close:** server-authoritative movement; a prediction effort would be its own doc.
 - Related: [entities.md](systems/entities.md)
+
+### 1.27 Tick-driven systems share no clock — 2026-11-11
+
+`SS3D.Core.SimulationClock` runs on FishNet's `TimeManager.OnTick` and feeds named fixed-rate channels that keep
+the remainder: `atmos` (5 Hz; the simulation and air alarms), `electricity` (5 Hz) and `health` (1 Hz, all bodies on
+one channel). Atmos's `Update` accumulator, electricity's `FixedUpdate` timer (which reset to zero, so it ran
+nearer 4.5 Hz), the per-body health timers and the air alarm's `InvokeRepeating` are gone. `WorldSimSuspension`
+pauses the channels that opt in (atmos, electricity), and electricity rebuilds its graph from the channel's
+`Resumed` event. Clients run the electricity channel themselves, so the empty 5 Hz `RpcInvokeOnTick` ObserversRpc
+is deleted (protocol 44).
+
+- **Closed by:** tech-debt P6.1 (`SimulationClockTests`).
+- **Not in this close:** `UniTask.Delay` loops in Rounds and movement's own `TimeManager.OnTick` use stay as they
+  are: neither is a fixed-rate world simulation.
+- Related: [core-subsystems.md](systems/core-subsystems.md), [atmospherics.md](systems/atmospherics.md), [electricity.md](systems/electricity.md), [health.md](systems/health.md)
+
+### 1.28 Persistence contributors deserialized by a central switch — 2026-11-11
+
+`IPersistenceContributor.DeserializePayload(string)` replaces the switch in `PersistenceSubSystem`; each
+contributor reads its own payload type. No schema change.
+
+- **Closed by:** tech-debt P6.3.
+- **Not in this close:** the Persistence↔Tile folder cycle: `PersistenceSubSystem` and the Tile contributors still
+  use Tile types directly, and `TileSubSystem` still imports Persistence (P8.6).
+- Related: [persistence.md](systems/persistence.md)

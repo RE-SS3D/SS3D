@@ -426,6 +426,22 @@ namespace SS3D.Systems.Tile
             return true;
         }
 
+        /// <summary>
+        /// <see cref="TryGetTileLocations"/> into a caller's buffer (one slot per <see cref="TileLayer"/>), for per-tick
+        /// callers. False, with the buffer untouched, when no chunk covers the position.
+        /// </summary>
+        public bool TryFillTileLocations(Vector3 worldPosition, ITileLocation[] buffer)
+        {
+            TileChunk chunk = GetChunk(worldPosition);
+            if (chunk == null)
+                return false;
+
+            foreach (TileLayer layer in TileHelper.GetTileLayers())
+                buffer[(int)layer] = chunk.GetTileObject(layer, worldPosition);
+
+            return true;
+        }
+
         public ITileLocation[] GetTileLocations(Vector3 worldPosition)
         {
             ITileLocation[] tileObjects = new ITileLocation[TileHelper.GetTileLayers().Length];
@@ -1202,9 +1218,10 @@ namespace SS3D.Systems.Tile
 
         private void ClearUntrackedItems()
         {
-            // Find all Item components in the scene
-            Item[] allItems = FindObjectsOfType<Item>();
-            
+            // A copy: destroying an item unregisters it.
+            var allItems = new List<Item>();
+            SceneRegistry<Item>.CopyTo(allItems);
+
             foreach (Item item in allItems)
             {
                 // Skip items that are in containers (player inventory, etc.)

@@ -14,6 +14,7 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using SS3D.Core;
 using SS3D.Systems.Comms;
+using SS3D.Systems.BugReports;
 using SS3D.Systems.Rounds;
 using SS3D.Systems.Tile;
 using SS3D.Systems.Tile.MapEditor;
@@ -57,7 +58,7 @@ namespace SS3D.Editor.Automation
             SubSystems.Get<SS3D.UI.Shell.UiShellSubSystem>().Document.rootVisualElement.Q("bug-report");
 
         private static bool AutosaveExists() =>
-            SubSystems.Get<SS3D.Systems.Persistence.PersistenceSubSystem>().StationTemplateExists(_validationStation + RoundSubSystem.AutosaveSuffix);
+            SubSystems.Get<SS3D.Systems.Persistence.PersistenceSubSystem>().StationTemplateExists(_validationStation + MapEditorStopFlow.AutosaveSuffix);
 
         private static bool StationEmpty() => SubSystems.Get<TileSubSystem>().CurrentMap.ChunkCount == 0;
 
@@ -217,18 +218,18 @@ namespace SS3D.Editor.Automation
                 Name = "Apply the sandbox profile with a two-minute first round",
                 Enter = () =>
                 {
-                    ServerSettings settings = SandboxProfile.Apply(Rounds().SettingsForServer);
+                    ServerSettings settings = SandboxProfile.Apply(Settings().Current);
                     settings.Map = _validationStation;
                     settings.RoundLengthMinutes = 2;
                     settings.RespawnCooldownSeconds = 8;
-                    Rounds().ApplyServerSettingsForTesting(settings);
+                    Settings().ApplyServerSettingsForTesting(settings);
                 },
                 Until = () => Rounds().AutoStartSecondsLeft > 0 && SidebarSub() == "Starting In",
                 Verify = () =>
                 {
                     Require(!IsReady(), "Countdown started without anyone pressing Ready");
                     Require(!MapEditorPermissions.PersistenceAllowed, "Sandbox profile turns map persistence off");
-                    Require(Rounds().Motd == SandboxProfile.Motd, "MOTD carries the sandbox rules");
+                    Require(Settings().Motd == SandboxProfile.Motd, "MOTD carries the sandbox rules");
                     Capture("sandbox-autostart-countdown");
                 },
             },
@@ -470,9 +471,9 @@ namespace SS3D.Editor.Automation
                         "No bodies or corpses survive the reset");
                     Require(_roundDecals.All(decal => decal == null), "Blood and bullet-hole decals are destroyed on Stop");
                     VerifyResetHealth(1);
-                    ServerSettings settings = Rounds().SettingsForServer;
+                    ServerSettings settings = Settings().Current;
                     settings.RoundLengthMinutes = 1;
-                    Rounds().ApplyServerSettingsForTesting(settings);
+                    Settings().ApplyServerSettingsForTesting(settings);
                 },
             },
             new Step

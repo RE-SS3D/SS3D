@@ -67,15 +67,15 @@ namespace SS3D.Systems.Rounds
         {
             string name = ServerInfoText.DefaultName;
             int cap = ServerSettings.Default.PlayerCap;
-            if (SubSystems.TryGet(out RoundSubSystem rounds))
+            if (SubSystems.TryGet(out ServerSettingsService service))
             {
-                ServerSettings settings = rounds.SettingsForServer;
+                ServerSettings settings = service.Current;
                 if (!string.IsNullOrWhiteSpace(settings.ServerName))
                 {
                     name = settings.ServerName;
                 }
 
-                cap = rounds.PlayerCap;
+                cap = service.PlayerCap;
             }
 
             int players = SubSystems.TryGet(out PlayerSubSystem playerSubSystem) ? playerSubSystem.OnlinePlayers.Count() : 0;

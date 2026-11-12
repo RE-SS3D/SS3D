@@ -47,7 +47,7 @@ namespace SS3D.Systems.Rounds
         public bool EndHeld => _endHeld;
 
         /// <summary>Server: this round runs without antagonists, configured as Extended or fallen back to it.</summary>
-        public bool IsExtendedRound => _serverSettings.Mode == "Extended" || _roundFellBackToExtended;
+        public bool IsExtendedRound => Settings.Mode == "Extended" || _roundFellBackToExtended;
 
         /// <summary>
         /// The squad draw found too few opt-ins (Decision 11): the round runs as Extended, and admins hear
@@ -57,7 +57,7 @@ namespace SS3D.Systems.Rounds
         public void FallBackToExtended(string notice)
         {
             _roundFellBackToExtended = true;
-            _serverSettingsError = notice;
+            SettingsService.SetStatusNotice(notice);
             Log.Warning(this, notice, Logs.ServerOnly);
             if (SubSystems.TryGet(out CommsSubSystem comms))
                 comms.PostOocSystem(OocChannel.Admin, notice);
@@ -106,7 +106,7 @@ namespace SS3D.Systems.Rounds
             string mode = hasGamemodes ? gamemodes.CurrentGamemodeName : "";
             // Objectives resolve here, at the trigger instant, like everything else on the outcome.
             IEnumerable<RoundOutcomeObjective> objectives = hasGamemodes ? gamemodes.ResolveObjectives(request) : null;
-            return RoundOutcomeBuilder.Build(request, _roundId, _serverSettings.Mode, ModeDisplayName(mode),
+            return RoundOutcomeBuilder.Build(request, _roundId, Settings.Mode, ModeDisplayName(mode),
                 _stationName, RoundSeconds, CollectRoster(), "Operatives", objectives);
         }
 

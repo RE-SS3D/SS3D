@@ -410,16 +410,17 @@ namespace SS3D.Systems.Testing
 
                 case "probe_server_settings_permissions":
                     RoundSubSystem settingsRounds = SubSystems.Get<RoundSubSystem>();
-                    settingsRounds.CmdReadServerSettings();
+                    ServerSettingsService settingsService = SubSystems.Get<ServerSettingsService>();
+                    settingsService.CmdReadServerSettings();
                     ServerSettings unauthorized = ServerSettings.Default;
                     unauthorized.PlayerCap = 1;
                     unauthorized.AllowLateJoin = false;
-                    settingsRounds.CmdSaveServerSettings(unauthorized);
-                    settingsRounds.CmdUpdateServerSetting(ServerSetting.PlayerCap, unauthorized);
+                    settingsService.CmdSaveServerSettings(unauthorized);
+                    settingsService.CmdUpdateServerSetting(ServerSetting.PlayerCap, unauthorized);
                     foreach (RoundAdminAction action in Enum.GetValues(typeof(RoundAdminAction)))
                         settingsRounds.CmdRoundAdminAction(action);
                     yield return new WaitForSeconds(2);
-                    if (settingsRounds.HasAdminSettings || settingsRounds.CurrentRoundState != RoundState.Stopped)
+                    if (settingsService.HasAdminSettings || settingsRounds.CurrentRoundState != RoundState.Stopped)
                         throw new InvalidOperationException("Non-admin gained server settings access.");
                     TestSignal.Emit(this, "ServerSettingsPermissionVerified");
                     break;
@@ -829,12 +830,12 @@ namespace SS3D.Systems.Testing
 
         private static void UseStation(string map, string mode)
         {
-            RoundSubSystem rounds = SubSystems.Get<RoundSubSystem>();
-            ServerSettings settings = rounds.SettingsForServer;
+            ServerSettingsService service = SubSystems.Get<ServerSettingsService>();
+            ServerSettings settings = service.Current;
             settings.Map = map;
             settings.Mode = mode;
-            rounds.CmdUpdateServerSetting(ServerSetting.Map, settings);
-            rounds.CmdUpdateServerSetting(ServerSetting.Mode, settings);
+            service.CmdUpdateServerSetting(ServerSetting.Map, settings);
+            service.CmdUpdateServerSetting(ServerSetting.Mode, settings);
         }
 
         private static Vector3 _lastBreach;
@@ -847,7 +848,7 @@ namespace SS3D.Systems.Testing
             var open = new List<Vector3>();
             simulation.ForEachCell((coord, index) =>
             {
-                if (simulation.CellMeta[index].State != AtmosCellState.Vacuum && simulation.CellMeta[index].State != AtmosCellState.Blocked)
+                if (IsAir(simulation.CellMeta[index]))
                     open.Add(tiles.QueryService.TileToWorld(coord));
             });
             open.Sort((a, b) => (a - _lastBreach).sqrMagnitude.CompareTo((b - _lastBreach).sqrMagnitude));
@@ -886,8 +887,11 @@ namespace SS3D.Systems.Testing
             if (!simulation.TryGetCellIndex(east, out int a) || !simulation.TryGetCellIndex(west, out int b)) return false;
             AtmosCellMeta metaA = simulation.CellMeta[a];
             AtmosCellMeta metaB = simulation.CellMeta[b];
-            return (metaA.State == AtmosCellState.Vacuum && metaB.IsSimulated) || (metaB.State == AtmosCellState.Vacuum && metaA.IsSimulated);
+            return (metaA.State == AtmosCellState.Vacuum && IsAir(metaB)) || (metaB.State == AtmosCellState.Vacuum && IsAir(metaA));
         }
+
+        // Air that has settled sleeps as Inactive, which IsSimulated excludes; a sealed map is asleep within seconds of loading.
+        private static bool IsAir(AtmosCellMeta meta) => meta.State is not (AtmosCellState.Vacuum or AtmosCellState.Blocked);
 
         private IEnumerator SampleAtmosBudget(float seconds)
         {
@@ -902,6 +906,13 @@ namespace SS3D.Systems.Testing
             NetworkTraficStatistics statistics = InstanceFinder.NetworkManager.StatisticsManager.NetworkTraffic;
             statistics.OnServerNetworkTraffic += OnTraffic;
             int lastTick = atmos.TickCount;
+            IReadOnlyList<SimulationChannel> channels = SimulationClock.All;
+            var channelTicks = new long[channels.Count];
+            for (int i = 0; i < channels.Count; i++)
+            {
+                channelTicks[i] = channels[i].TickCount;
+            }
+
             float end = Time.realtimeSinceStartup + seconds;
             while (Time.realtimeSinceStartup < end)
             {
@@ -931,6 +942,14 @@ namespace SS3D.Systems.Testing
                 $"traffic mean/max={bytesPerSecond * totalChunks / Mathf.Max(tick.Count, 1) / 1024f:F0}/{bytesPerSecond * maxChunks / 1024f:F0} KB/s " +
                 $"sent to all connections p50/max={Percentile(sent, 0.5f):F0}/{Percentile(sent, 1f):F0} KB/s pushed max={maxPushed} adrift={atmos.LooseBodies.AdriftCount}";
             Debug.Log($"[atmos-budget] {report}");
+            // Fires per simulation channel over the sample; per-tick GC is read from the SS3D.Clock.* Profiler markers.
+            var rates = new System.Text.StringBuilder();
+            for (int i = 0; i < channelTicks.Length; i++)
+            {
+                rates.Append($"{channels[i].Name}={channels[i].TickCount - channelTicks[i]} ");
+            }
+
+            Debug.Log($"[clock-budget] ticks over {seconds:F0} s: {rates}");
             TestSignal.Emit(this, "AtmosBudget", report);
         }
 

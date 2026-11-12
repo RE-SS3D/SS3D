@@ -24,6 +24,8 @@ namespace SS3D.Systems.Persistence
 
         public int LoadOrder => 0;
 
+        public object DeserializePayload(string payloadJson) => JsonUtility.FromJson<SavedTileMap>(payloadJson);
+
         public object Capture()
         {
             TileSubSystem tileSubSystem = _tileSubSystemProvider();

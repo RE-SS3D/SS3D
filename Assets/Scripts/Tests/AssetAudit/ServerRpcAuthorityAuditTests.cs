@@ -77,10 +77,10 @@ namespace SS3D.Tests.AssetAudit
 
             // Rounds, gamemodes, console
             { "GamemodeSubSystem.CmdGetCurrentClientObjectives", AuthorityCheck.ReadOnly },
-            { "RoundSubSystem.CmdResolveMapStop", AuthorityCheck.Admin },
-            { "RoundSubSystem.CmdReadServerSettings", AuthorityCheck.Admin },
-            { "RoundSubSystem.CmdSaveServerSettings", AuthorityCheck.Admin },
-            { "RoundSubSystem.CmdUpdateServerSetting", AuthorityCheck.Admin },
+            { "MapEditorStopFlow.CmdResolveMapStop", AuthorityCheck.Admin },
+            { "ServerSettingsService.CmdReadServerSettings", AuthorityCheck.Admin },
+            { "ServerSettingsService.CmdSaveServerSettings", AuthorityCheck.Admin },
+            { "ServerSettingsService.CmdUpdateServerSetting", AuthorityCheck.Admin },
             { "RoundSubSystem.CmdRoundAdminAction", AuthorityCheck.Admin },
             { "CommandsController.CmdProcessOnlineCommand", AuthorityCheck.ConsoleAccessLevel },
 

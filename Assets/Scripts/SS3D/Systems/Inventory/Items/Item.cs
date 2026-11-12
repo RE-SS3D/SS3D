@@ -25,6 +25,7 @@ using SS3D.Utils;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.Serialization;
+using SS3D.Core;
 #if UNITY_EDITOR
 using AssetDatabase = UnityEditor.AssetDatabase;
 using UnityEditor;
@@ -264,6 +265,18 @@ namespace SS3D.Systems.Inventory.Items
         {
             base.OnAwake();
             _restScale = transform.localScale;
+        }
+
+        protected override void OnEnabled()
+        {
+            base.OnEnabled();
+            SceneRegistry<Item>.Register(this);
+        }
+
+        protected override void OnDisabled()
+        {
+            SceneRegistry<Item>.Unregister(this);
+            base.OnDisabled();
         }
 
         /// <summary>

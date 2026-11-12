@@ -1,4 +1,5 @@
 using NUnit.Framework;
+using SS3D.Systems.BugReports;
 using SS3D.Systems.Rounds;
 using SS3D.Systems.Tile.MapEditor;
 using SS3D.Systems.Tile.MapEditor.Authorizers;

@@ -996,8 +996,11 @@ namespace SS3D.Systems.Area
             }
 
             bool anyChanged = false;
-            foreach (AreaRecord record in _registry.GetAllAreas())
+            // Indexed: this runs every electricity tick, and foreach over the IReadOnlyList boxes its enumerator.
+            IReadOnlyList<AreaRecord> areas = _registry.GetAllAreas();
+            for (int i = 0; i < areas.Count; i++)
             {
+                AreaRecord record = areas[i];
                 if (record.Apc is not IApcChannelSource areaApc || record.Apc is not IElectricDevice)
                 {
                     if (HasAuthoredAreas && ApplyLightingStateChange(record.Id, AreaLightingState.Dark)) anyChanged = true;
