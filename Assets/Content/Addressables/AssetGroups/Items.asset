@@ -20,6 +20,11 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 0457ff6928c09cf5fb2f211be2dd4360
+    m_Address: Gauze
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 06b6be83779804245b7f6411fe07b851
     m_Address: Assets/Content/WorldObjects/Entities/Humanoids/Human/HumanBodyParts/HumanArmLeft.prefab
     m_ReadOnly: 0
@@ -690,6 +695,11 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 97dce40f8d2611022992adb6518078e8
+    m_Address: StunBaton
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 98ce0a84deb394b4bbd18f31f368317c
     m_Address: Assets/Content/WorldObjects/Structures/WallMounts/Lights/LightBulbFixture.prefab
     m_ReadOnly: 0
@@ -810,6 +820,11 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: aec0826f17bb77248bca41c8e9b3312d
+    m_Address: SecurityPistol
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: b044d7bdb55405046a9055726a779eb1
     m_Address: Assets/Content/WorldObjects/Items/Functional/Generic/Poster.prefab
     m_ReadOnly: 0
@@ -842,6 +857,11 @@ MonoBehaviour:
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: b9c224febb4233f4e912745553097652
     m_Address: Assets/Content/WorldObjects/Structures/Walls/SteelWindow.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: bafabc47401d80ecf9713c038311eeec
+    m_Address: Stechkin
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
@@ -882,6 +902,11 @@ MonoBehaviour:
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: c69ed93dc225ea049bbf1a02662c48c0
     m_Address: Assets/Content/WorldObjects/Items/Functional/Parts/PowerCells/PowerCellAdmin.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: c716ee6f27758511f9179164cea2c207
+    m_Address: PortableDefibrillator
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
@@ -957,6 +982,11 @@ MonoBehaviour:
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: d9aabfd5d726a7f499b8e360d919eba4
     m_Address: Assets/Content/WorldObjects/Items/Functional/Storage/Substances/Mug.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: da0ac476bdec040da9fd564bb9dd5cef
+    m_Address: C20R
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0

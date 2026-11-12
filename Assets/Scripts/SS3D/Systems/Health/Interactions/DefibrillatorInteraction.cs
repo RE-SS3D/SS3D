@@ -5,7 +5,6 @@ using SS3D.Interactions.Extensions;
 using SS3D.Interactions.Interfaces;
 using SS3D.Systems.Entities;
 using SS3D.Systems.Inventory.Items;
-using System.Collections.Generic;
 using UnityEngine;
 
 namespace SS3D.Systems.Health.Interactions
@@ -101,25 +100,6 @@ namespace SS3D.Systems.Health.Interactions
 
             Entity entity = targetBehaviour.GameObject.GetComponentInParent<Entity>();
             return entity != null ? entity.GetComponentInChildren<HumanHealthController>() : null;
-        }
-    }
-
-    /// <summary>
-    /// Adds defibrillator interactions when this item is used on viable targets.
-    /// </summary>
-    public class DefibrillatorItemExtension : MonoBehaviour, IInteractionSourceExtension
-    {
-        private static readonly DefibrillatorInteraction Interaction = new();
-
-        public void GetSourceInteractions(IInteractionTarget[] targets, List<InteractionEntry> interactions, InteractionEvent context)
-        {
-            foreach (IInteractionTarget target in targets)
-            {
-                if (Interaction.CanInteract(context.WithTarget(target)))
-                {
-                    interactions.Add(new InteractionEntry(target, Interaction));
-                }
-            }
         }
     }
 }

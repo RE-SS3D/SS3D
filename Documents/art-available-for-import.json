@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-11-12T16:27:18.758227+00:00",
+  "generated_at": "2026-11-12T20:21:02.689258+00:00",
   "purpose": "Game-ready SS3D-Art assets not yet imported into Assets/Art/.",
-  "count": 2008,
+  "count": 2003,
   "assets": [
     {
       "name": "HumanAnimRig.ma",
@@ -10408,15 +10408,6 @@
       "github_url": "https://github.com/RE-SS3D/SS3D-Art/blob/main/Assets/Models/Items/Functional/Tools/Medical/PetriDish.blend"
     },
     {
-      "name": "PortableDefibrillator.blend",
-      "stem": "portabledefibrillator",
-      "extension": "blend",
-      "category": "Models/Items/Functional/Tools/Medical",
-      "ss3d_art_path": "Assets/Models/Items/Functional/Tools/Medical/PortableDefibrillator.blend",
-      "import_target_path": "Assets/Art/Models/Items/Functional/Tools/Medical/PortableDefibrillator.fbx",
-      "github_url": "https://github.com/RE-SS3D/SS3D-Art/blob/main/Assets/Models/Items/Functional/Tools/Medical/PortableDefibrillator.blend"
-    },
-    {
       "name": "SurgicalTools.blend",
       "stem": "surgicaltools",
       "extension": "blend",
@@ -10856,15 +10847,6 @@
       "ss3d_art_path": "Assets/Models/Items/Weapons/Melee/Blunt/SledgeHammer.blend",
       "import_target_path": "Assets/Art/Models/Items/Weapons/Melee/Blunt/SledgeHammer.fbx",
       "github_url": "https://github.com/RE-SS3D/SS3D-Art/blob/main/Assets/Models/Items/Weapons/Melee/Blunt/SledgeHammer.blend"
-    },
-    {
-      "name": "StunBaton.blend",
-      "stem": "stunbaton",
-      "extension": "blend",
-      "category": "Models/Items/Weapons/Melee/Blunt",
-      "ss3d_art_path": "Assets/Models/Items/Weapons/Melee/Blunt/StunBaton.blend",
-      "import_target_path": "Assets/Art/Models/Items/Weapons/Melee/Blunt/StunBaton.fbx",
-      "github_url": "https://github.com/RE-SS3D/SS3D-Art/blob/main/Assets/Models/Items/Weapons/Melee/Blunt/StunBaton.blend"
     },
     {
       "name": "TelescopicBaton.blend",
@@ -11407,24 +11389,6 @@
       "github_url": "https://github.com/RE-SS3D/SS3D-Art/blob/main/Assets/Models/Items/Weapons/Ranged/Physical/Handguns/OfficerPistols.blend"
     },
     {
-      "name": "SecurityPistol.blend",
-      "stem": "securitypistol",
-      "extension": "blend",
-      "category": "Models/Items/Weapons/Ranged/Physical/Handguns",
-      "ss3d_art_path": "Assets/Models/Items/Weapons/Ranged/Physical/Handguns/SecurityPistol.blend",
-      "import_target_path": "Assets/Art/Models/Items/Weapons/Ranged/Physical/Handguns/SecurityPistol.fbx",
-      "github_url": "https://github.com/RE-SS3D/SS3D-Art/blob/main/Assets/Models/Items/Weapons/Ranged/Physical/Handguns/SecurityPistol.blend"
-    },
-    {
-      "name": "Stechkin.blend",
-      "stem": "stechkin",
-      "extension": "blend",
-      "category": "Models/Items/Weapons/Ranged/Physical/Handguns",
-      "ss3d_art_path": "Assets/Models/Items/Weapons/Ranged/Physical/Handguns/Stechkin.blend",
-      "import_target_path": "Assets/Art/Models/Items/Weapons/Ranged/Physical/Handguns/Stechkin.fbx",
-      "github_url": "https://github.com/RE-SS3D/SS3D-Art/blob/main/Assets/Models/Items/Weapons/Ranged/Physical/Handguns/Stechkin.blend"
-    },
-    {
       "name": "SW686.blend",
       "stem": "sw686",
       "extension": "blend",
@@ -11486,15 +11450,6 @@
       "ss3d_art_path": "Assets/Models/Items/Weapons/Ranged/Physical/Rifles/Browning50Cal.blend",
       "import_target_path": "Assets/Art/Models/Items/Weapons/Ranged/Physical/Rifles/Browning50Cal.fbx",
       "github_url": "https://github.com/RE-SS3D/SS3D-Art/blob/main/Assets/Models/Items/Weapons/Ranged/Physical/Rifles/Browning50Cal.blend"
-    },
-    {
-      "name": "C20R.blend",
-      "stem": "c20r",
-      "extension": "blend",
-      "category": "Models/Items/Weapons/Ranged/Physical/Rifles",
-      "ss3d_art_path": "Assets/Models/Items/Weapons/Ranged/Physical/Rifles/C20R.blend",
-      "import_target_path": "Assets/Art/Models/Items/Weapons/Ranged/Physical/Rifles/C20R.fbx",
-      "github_url": "https://github.com/RE-SS3D/SS3D-Art/blob/main/Assets/Models/Items/Weapons/Ranged/Physical/Rifles/C20R.blend"
     },
     {
       "name": "L105Rifle.blend",

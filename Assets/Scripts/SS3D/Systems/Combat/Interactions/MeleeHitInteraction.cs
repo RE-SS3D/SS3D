@@ -6,6 +6,7 @@ using SS3D.Interactions;
 using SS3D.Interactions.Extensions;
 using SS3D.Interactions.Interfaces;
 using SS3D.Systems.Entities;
+using SS3D.Systems.Entities.Humanoid;
 using SS3D.Systems.Entities.Humanoid.Body;
 using SS3D.Systems.Health;
 using SS3D.Systems.Inventory.Containers;
@@ -138,6 +139,32 @@ namespace SS3D.Systems.Combat.Interactions
         }
 
         /// <summary>
+        /// Server only: what a swing that connects with a living body does to it (damage, stamina, knockdown).
+        /// Unlike the taser, a contact stun ignores <see cref="ArmorProfile.BlocksStun"/>.
+        /// </summary>
+        public static void ServerApplyLivingHit(MeleeWeaponProfile profile, HumanHealthController health, BodyZone zone)
+        {
+            health.ApplyDamage(zone, profile.ToDamagePacket());
+            if (profile.StaminaDamage > 0f)
+            {
+                StaminaController targetStamina = health.GetComponentInParent<StaminaController>();
+                if (targetStamina != null)
+                {
+                    targetStamina.ServerDepleteStamina(Mathf.Min(profile.StaminaDamage, targetStamina.ServerCurrentStaminaAbsolute));
+                }
+            }
+
+            if (profile.KnockdownSeconds > 0f)
+            {
+                Ragdoll targetRagdoll = health.GetComponentInParent<Ragdoll>();
+                if (targetRagdoll != null)
+                {
+                    targetRagdoll.ServerKnockdownAtLeast(profile.KnockdownSeconds);
+                }
+            }
+        }
+
+        /// <summary>
         /// Connect-frame resolve: living zone first, else structural turf. Used by Harm primary
         /// (controller-scheduled) and by DelayedInteraction StartDelayed for discovered Hits.
         /// </summary>
@@ -152,7 +179,7 @@ namespace SS3D.Systems.Combat.Interactions
             bool landed = false;
             if (TryResolveConnectHit(hand, out HumanHealthController health, out BodyZone zone))
             {
-                health.ApplyDamage(zone, _profile.ToDamagePacket());
+                ServerApplyLivingHit(_profile, health, zone);
                 landed = true;
             }
             else if (_profile.ResolveStructuralForce() > 0f && TryResolveDeviceConnect(hand, out BreakableDevice device, out RaycastHit deviceHit))

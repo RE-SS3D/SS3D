@@ -13,7 +13,8 @@
         "Unity.Addressables",
         "Unity.ResourceManager",
         "Coimbra",
-        "Unity.Localization"
+        "Unity.Localization",
+        "Unity.Localization.Editor"
     ],
     "includePlatforms": [
         "Editor"

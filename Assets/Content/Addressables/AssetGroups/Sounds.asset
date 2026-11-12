@@ -25,6 +25,11 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 0936e6e07af58d37a9c9bfd4f073aedd
+    m_Address: Mk58Fire
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 1342f00d3f3444ba9d135ac709a632b4
     m_Address: Assets/Art/Sound/Entities/Humanoid/Footsteps/Socks.mp3
     m_ReadOnly: 0
@@ -37,6 +42,11 @@ MonoBehaviour:
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 1a34c805f84be3b4caac14d7de790607
     m_Address: Assets/Art/Sound/World/Collisions/can1.mp3
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 1cdb5e0ad1be17115aebbf08a33b52c0
+    m_Address: PistolCock
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
@@ -62,6 +72,11 @@ MonoBehaviour:
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 36c53e237ddb426ea20825ce79dd1737
     m_Address: Assets/Art/Sound/Entities/Humanoid/Combat/GenHit1.ogg
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 3a9db0b2c069b71a6906d15d98b6ddb7
+    m_Address: C20RFire
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
@@ -100,6 +115,11 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 6872ad7ec96ede95e8374051180a5764
+    m_Address: SmgCock
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 6fab86354b054a54b8b4828f689970e4
     m_Address: Assets/Art/Sound/Entities/Humanoid/Combat/Punch1.ogg
     m_ReadOnly: 0
@@ -135,6 +155,11 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 97f1d41c8070753df888b339f43594ee
+    m_Address: SmgMagOut
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 9c25cbf72a814b7daecb30325916da0a
     m_Address: Assets/Art/Sound/UI/Health/Beep1.ogg
     m_ReadOnly: 0
@@ -162,6 +187,11 @@ MonoBehaviour:
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: a7f3e91c2b4d4856a1c0e8f92d35b647
     m_Address: Assets/Art/Sound/World/Airlocks/AirlockDeny.ogg
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: acc03a180e6341f11bba14240ec7cd36
+    m_Address: PistolFire
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
@@ -205,6 +235,11 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: d09e08afb836d944a865ccb0f20177b8
+    m_Address: PistolMagIn
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: d592855338f1467d897447bbfee4dc11
     m_Address: Assets/Art/Sound/Entities/Humanoid/Combat/WeakHit1.ogg
     m_ReadOnly: 0
@@ -222,6 +257,11 @@ MonoBehaviour:
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: dbf6b684f1e247489f2e02739ac9c27b
     m_Address: Assets/Art/Sound/Entities/Humanoids/Human/Vocal/Scream/MaleScream1.wav
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: dc8424675bcfc69d49b9f70bc131ab38
+    m_Address: PistolMagOut
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
@@ -247,6 +287,11 @@ MonoBehaviour:
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: ec8b849764a7e9147b2a565f81a1ca42
     m_Address: Assets/Art/Sound/World/Music/title1.ogg
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: ed955a070588a46449916e0716ecc7b9
+    m_Address: SmgMagIn
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0

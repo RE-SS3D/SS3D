@@ -30,6 +30,38 @@ namespace SS3D.Systems.Combat
             "3cd42449f5454a3da5a29079d176b26f", // Rifle2.ogg
         };
 
+        /// <summary>
+        /// Ballistic gunshot and reload clips for <paramref name="set"/>: the M4's rifle set, the C-20r's SMG set,
+        /// the Stechkin's pistol set and the security pistol's (SS14's Mk 58). The dry-fire click is shared.
+        /// </summary>
+        public static FirearmSounds SoundsFor(FirearmSoundSet set) => set switch
+        {
+            FirearmSoundSet.Smg => Smg,
+            FirearmSoundSet.Pistol => Pistol,
+            FirearmSoundSet.ServicePistol => ServicePistol,
+            _ => Rifle,
+        };
+
+        private static readonly FirearmSounds Rifle = new(GunFire, ReloadMagazineOut, ReloadMagazineIn, ReloadCock);
+
+        private static readonly FirearmSounds Smg = new(
+            new[] { "3a9db0b2c069b71a6906d15d98b6ddb7" }, // C20RFire.ogg
+            "97f1d41c8070753df888b339f43594ee", // SmgMagOut.ogg
+            "ed955a070588a46449916e0716ecc7b9", // SmgMagIn.ogg
+            "6872ad7ec96ede95e8374051180a5764"); // SmgCock.ogg
+
+        private const string PistolMagazineOut = "dc8424675bcfc69d49b9f70bc131ab38"; // PistolMagOut.ogg
+        private const string PistolMagazineIn = "d09e08afb836d944a865ccb0f20177b8"; // PistolMagIn.ogg
+        private const string PistolCock = "1cdb5e0ad1be17115aebbf08a33b52c0"; // PistolCock.ogg
+
+        private static readonly FirearmSounds Pistol = new(
+            new[] { "acc03a180e6341f11bba14240ec7cd36" }, // PistolFire.ogg
+            PistolMagazineOut, PistolMagazineIn, PistolCock);
+
+        private static readonly FirearmSounds ServicePistol = new(
+            new[] { "0936e6e07af58d37a9c9bfd4f073aedd" }, // Mk58Fire.ogg
+            PistolMagazineOut, PistolMagazineIn, PistolCock);
+
         /// <summary>Dry-fire click when the mag is empty.</summary>
         public const string GunEmpty = "c09143590f9c417ab03c13e03f8fb274"; // Empty.ogg
 
@@ -64,5 +96,22 @@ namespace SS3D.Systems.Combat
             "36c53e237ddb426ea20825ce79dd1737",
             "d592855338f1467d897447bbfee4dc11",
         };
+    }
+
+    /// <summary>One ballistic gun's sound clip ids (<c>AssetDatabases.Sounds</c>).</summary>
+    public readonly struct FirearmSounds
+    {
+        public readonly string[] Fire;
+        public readonly string MagazineOut;
+        public readonly string MagazineIn;
+        public readonly string Cock;
+
+        public FirearmSounds(string[] fire, string magazineOut, string magazineIn, string cock)
+        {
+            Fire = fire;
+            MagazineOut = magazineOut;
+            MagazineIn = magazineIn;
+            Cock = cock;
+        }
     }
 }

@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: OperativeLoadout
   m_EditorClassIdentifier: 
   HandLeftAsset: {fileID: 0}
-  HandRightAsset: {fileID: 11400000, guid: ca4d73170d4d43419bc8e4f6f73b92b6, type: 2}
+  HandRightAsset: {fileID: 11400000, guid: fa54ce89709c7df79b33f29216e85a10, type: 2}
   EquipmentAssets:
     _list:
     - _key: 512
@@ -49,5 +49,6 @@ MonoBehaviour:
     - {fileID: 11400000, guid: 85c7d64ad33dbc7d6a808f7e759dab07, type: 2}
     - {fileID: 11400000, guid: e2e5a3bc6dba95ae6b6167ce7df8f6fc, type: 2}
     - {fileID: 11400000, guid: cb8a18ff6b582ec45a3aa1f689a18564, type: 2}
+    - {fileID: 11400000, guid: e1be91a48608ab64e822afa33347459c, type: 2}
   HandLeftContents: []
   HandRightContents: []

@@ -34,6 +34,7 @@ namespace SS3D.Systems.Combat.Editor
             }
 
             updated += EnergyWeaponPrefabSetup.SetupAll();
+            updated += BallisticWeaponPrefabSetup.SetupAll();
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
             return updated;
@@ -102,6 +103,8 @@ namespace SS3D.Systems.Combat.Editor
             so.FindProperty("_profile.ExhaustionSpreadDegrees").floatValue = profile.ExhaustionSpreadDegrees;
             so.FindProperty("_profile.RequiresBothHands").boolValue = profile.RequiresBothHands;
             so.FindProperty("_profile.RequiredHand").enumValueIndex = (int)profile.RequiredHand;
+            so.FindProperty("_profile.HoldStyle").enumValueIndex = (int)profile.HoldStyle;
+            so.FindProperty("_profile.SoundSet").enumValueIndex = (int)profile.SoundSet;
             so.FindProperty("_muzzle").objectReferenceValue = muzzle;
             SerializedProperty magazine = so.FindProperty("_magazine");
             if (magazine.objectReferenceValue == null)

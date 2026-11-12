@@ -1,10 +1,10 @@
 {
-  "generated_at": "2026-11-12T16:27:18.758227+00:00",
+  "generated_at": "2026-11-12T20:21:02.689258+00:00",
   "purpose": "Agent reference for locating SS3D art assets and determining import status.",
   "sources": {
     "in_game": {
       "root": "Assets/Art",
-      "file_count": 5434
+      "file_count": 5440
     },
     "ss3d_art": {
       "repo": "https://github.com/RE-SS3D/SS3D-Art",
@@ -13,13 +13,13 @@
     }
   },
   "summary": {
-    "in_game_files": 5434,
+    "in_game_files": 5440,
     "ss3d_art_files": 2480,
-    "unique_assets": 7667,
-    "imported": 247,
-    "in_game_only": 5197,
-    "ss3d_art_only": 2223,
-    "available_for_import": 2008,
+    "unique_assets": 7668,
+    "imported": 252,
+    "in_game_only": 5198,
+    "ss3d_art_only": 2218,
+    "available_for_import": 2003,
     "artwork_only": 215
   },
   "categories": [
@@ -73,11 +73,11 @@
     },
     {
       "path": "Models",
-      "in_game": 98,
+      "in_game": 104,
       "ss3d_art": 749,
-      "imported": 83,
-      "in_game_only": 15,
-      "ss3d_art_only": 666
+      "imported": 88,
+      "in_game_only": 16,
+      "ss3d_art_only": 661
     },
     {
       "path": "Sound",
@@ -1435,10 +1435,10 @@
     },
     {
       "path": "Models/Items/Consumable/Chemical/Medications",
-      "in_game": 1,
+      "in_game": 2,
       "ss3d_art": 3,
       "imported": 1,
-      "in_game_only": 0,
+      "in_game_only": 1,
       "ss3d_art_only": 2
     },
     {
@@ -1747,11 +1747,11 @@
     },
     {
       "path": "Models/Items/Functional/Tools/Medical",
-      "in_game": 1,
+      "in_game": 2,
       "ss3d_art": 11,
-      "imported": 1,
+      "imported": 2,
       "in_game_only": 0,
-      "ss3d_art_only": 10
+      "ss3d_art_only": 9
     },
     {
       "path": "Models/Items/Functional/Tools/Science",
@@ -1811,11 +1811,11 @@
     },
     {
       "path": "Models/Items/Weapons/Melee/Blunt",
-      "in_game": 0,
+      "in_game": 1,
       "ss3d_art": 12,
-      "imported": 0,
+      "imported": 1,
       "in_game_only": 0,
-      "ss3d_art_only": 12
+      "ss3d_art_only": 11
     },
     {
       "path": "Models/Items/Weapons/Melee/Sharp",
@@ -1875,19 +1875,19 @@
     },
     {
       "path": "Models/Items/Weapons/Ranged/Physical/Handguns",
-      "in_game": 0,
+      "in_game": 2,
       "ss3d_art": 17,
-      "imported": 0,
+      "imported": 2,
       "in_game_only": 0,
-      "ss3d_art_only": 17
+      "ss3d_art_only": 15
     },
     {
       "path": "Models/Items/Weapons/Ranged/Physical/Rifles",
-      "in_game": 0,
+      "in_game": 1,
       "ss3d_art": 18,
-      "imported": 0,
+      "imported": 1,
       "in_game_only": 0,
-      "ss3d_art_only": 18
+      "ss3d_art_only": 17
     },
     {
       "path": "Models/Items/Weapons/Ranged/Physical/SMGs",
@@ -3029,8 +3029,8 @@
   "extensions": {
     "svg": 4248,
     "png": 2084,
-    "blend": 671,
-    "fbx": 287,
+    "blend": 666,
+    "fbx": 293,
     "wav": 159,
     "ogg": 143,
     "mp3": 18,
@@ -71157,6 +71157,17 @@
       "status": "ss3d_art_only"
     },
     {
+      "name": "Gauze.fbx",
+      "stem": "gauze",
+      "extension": "fbx",
+      "category": "Models/Items/Consumable/Chemical/Medications",
+      "in_game_path": "Assets/Art/Models/Items/Consumable/Chemical/Medications/Gauze.fbx",
+      "ss3d_art_path": null,
+      "github_url": null,
+      "import_target_path": null,
+      "status": "in_game_only"
+    },
+    {
       "name": "MedicalPatches.fbx",
       "stem": "medicalpatches",
       "extension": "fbx",
@@ -74061,15 +74072,15 @@
       "status": "ss3d_art_only"
     },
     {
-      "name": "PortableDefibrillator.blend",
+      "name": "PortableDefibrillator.fbx",
       "stem": "portabledefibrillator",
-      "extension": "blend",
+      "extension": "fbx",
       "category": "Models/Items/Functional/Tools/Medical",
-      "in_game_path": null,
+      "in_game_path": "Assets/Art/Models/Items/Functional/Tools/Medical/PortableDefibrillator.fbx",
       "ss3d_art_path": "Assets/Models/Items/Functional/Tools/Medical/PortableDefibrillator.blend",
       "github_url": "https://github.com/RE-SS3D/SS3D-Art/blob/main/Assets/Models/Items/Functional/Tools/Medical/PortableDefibrillator.blend",
       "import_target_path": "Assets/Art/Models/Items/Functional/Tools/Medical/PortableDefibrillator.fbx",
-      "status": "ss3d_art_only"
+      "status": "imported"
     },
     {
       "name": "SurgicalTools.blend",
@@ -74655,15 +74666,15 @@
       "status": "ss3d_art_only"
     },
     {
-      "name": "StunBaton.blend",
+      "name": "StunBaton.fbx",
       "stem": "stunbaton",
-      "extension": "blend",
+      "extension": "fbx",
       "category": "Models/Items/Weapons/Melee/Blunt",
-      "in_game_path": null,
+      "in_game_path": "Assets/Art/Models/Items/Weapons/Melee/Blunt/StunBaton.fbx",
       "ss3d_art_path": "Assets/Models/Items/Weapons/Melee/Blunt/StunBaton.blend",
       "github_url": "https://github.com/RE-SS3D/SS3D-Art/blob/main/Assets/Models/Items/Weapons/Melee/Blunt/StunBaton.blend",
       "import_target_path": "Assets/Art/Models/Items/Weapons/Melee/Blunt/StunBaton.fbx",
-      "status": "ss3d_art_only"
+      "status": "imported"
     },
     {
       "name": "TelescopicBaton.blend",
@@ -75359,26 +75370,26 @@
       "status": "ss3d_art_only"
     },
     {
-      "name": "SecurityPistol.blend",
+      "name": "SecurityPistol.fbx",
       "stem": "securitypistol",
-      "extension": "blend",
+      "extension": "fbx",
       "category": "Models/Items/Weapons/Ranged/Physical/Handguns",
-      "in_game_path": null,
+      "in_game_path": "Assets/Art/Models/Items/Weapons/Ranged/Physical/Handguns/SecurityPistol.fbx",
       "ss3d_art_path": "Assets/Models/Items/Weapons/Ranged/Physical/Handguns/SecurityPistol.blend",
       "github_url": "https://github.com/RE-SS3D/SS3D-Art/blob/main/Assets/Models/Items/Weapons/Ranged/Physical/Handguns/SecurityPistol.blend",
       "import_target_path": "Assets/Art/Models/Items/Weapons/Ranged/Physical/Handguns/SecurityPistol.fbx",
-      "status": "ss3d_art_only"
+      "status": "imported"
     },
     {
-      "name": "Stechkin.blend",
+      "name": "Stechkin.fbx",
       "stem": "stechkin",
-      "extension": "blend",
+      "extension": "fbx",
       "category": "Models/Items/Weapons/Ranged/Physical/Handguns",
-      "in_game_path": null,
+      "in_game_path": "Assets/Art/Models/Items/Weapons/Ranged/Physical/Handguns/Stechkin.fbx",
       "ss3d_art_path": "Assets/Models/Items/Weapons/Ranged/Physical/Handguns/Stechkin.blend",
       "github_url": "https://github.com/RE-SS3D/SS3D-Art/blob/main/Assets/Models/Items/Weapons/Ranged/Physical/Handguns/Stechkin.blend",
       "import_target_path": "Assets/Art/Models/Items/Weapons/Ranged/Physical/Handguns/Stechkin.fbx",
-      "status": "ss3d_art_only"
+      "status": "imported"
     },
     {
       "name": "SW686.blend",
@@ -75458,15 +75469,15 @@
       "status": "ss3d_art_only"
     },
     {
-      "name": "C20R.blend",
+      "name": "C20R.fbx",
       "stem": "c20r",
-      "extension": "blend",
+      "extension": "fbx",
       "category": "Models/Items/Weapons/Ranged/Physical/Rifles",
-      "in_game_path": null,
+      "in_game_path": "Assets/Art/Models/Items/Weapons/Ranged/Physical/Rifles/C20R.fbx",
       "ss3d_art_path": "Assets/Models/Items/Weapons/Ranged/Physical/Rifles/C20R.blend",
       "github_url": "https://github.com/RE-SS3D/SS3D-Art/blob/main/Assets/Models/Items/Weapons/Ranged/Physical/Rifles/C20R.blend",
       "import_target_path": "Assets/Art/Models/Items/Weapons/Ranged/Physical/Rifles/C20R.fbx",
-      "status": "ss3d_art_only"
+      "status": "imported"
     },
     {
       "name": "L105Rifle.blend",

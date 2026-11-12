@@ -235,7 +235,7 @@ namespace SS3D.Systems.Combat
             }
 
             weapon.GetMuzzleWorldPose(out Vector3 firePosition, out _);
-            PlayGunfireSound(firePosition, weapon.Profile.VisualStyle);
+            PlayGunfireSound(firePosition, weapon.Profile);
 
             float maxRange = Mathf.Max(1f, weapon.Profile.MaxRangeMeters);
             float aimDistance = maxRange;
@@ -406,9 +406,11 @@ namespace SS3D.Systems.Combat
         }
 
         [Server]
-        private void PlayGunfireSound(Vector3 position, RangedVisualStyle style)
+        private void PlayGunfireSound(Vector3 position, RangedWeaponProfile profile)
         {
-            string[] clips = CombatAudioTrackIds.FireFor(style);
+            string[] clips = profile.VisualStyle == RangedVisualStyle.Ballistic
+                ? CombatAudioTrackIds.SoundsFor(profile.SoundSet).Fire
+                : CombatAudioTrackIds.FireFor(profile.VisualStyle);
             string clipId = clips[UnityEngine.Random.Range(0, clips.Length)];
             float pitch = UnityEngine.Random.Range(0.95f, 1.05f);
             SubSystems.GetOrNull<AudioSubSystem>()?.PlayAudioSource(
@@ -451,7 +453,8 @@ namespace SS3D.Systems.Combat
 
             SubSystems.GetOrNull<AudioSubSystem>()?.PlayAudioSource(
                 AudioType.Sfx, weapon.Profile.VisualStyle == RangedVisualStyle.Ballistic
-                    ? CombatAudioTrackIds.ReloadMagazineOut : CombatAudioTrackIds.EnergyReady, transform.position, null, false, 1f, 1f, 8f, 40f);
+                    ? CombatAudioTrackIds.SoundsFor(weapon.Profile.SoundSet).MagazineOut : CombatAudioTrackIds.EnergyReady,
+                transform.position, null, false, 1f, 1f, 8f, 40f);
 
             TargetNotifyRangedReload(
                 Owner,
