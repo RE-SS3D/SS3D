@@ -1844,6 +1844,46 @@ MonoBehaviour:
     m_Localized: '{0} plants something on the {1}.'
     m_Metadata:
       m_Items: []
+  - m_Id: 298583315651469312
+    m_Localized: Jukebox
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298583315676635136
+    m_Localized: A jukebox with a worn selection of songs.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298583317127864320
+    m_Localized: Airlock Panel
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298583317127864321
+    m_Localized: The control panel on an airlock.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298583318595870720
+    m_Localized: Dirt
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298583318595870721
+    m_Localized: A patch of packed dirt.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298583320034516992
+    m_Localized: Grass
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298583320034516993
+    m_Localized: A patch of grass, somehow growing on a space station.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298583321477357568
+    m_Localized: Reinforced Floor
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298583321477357569
+    m_Localized: Heavy reinforced floor plating.
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

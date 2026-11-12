@@ -73,13 +73,14 @@ Paths are under `Assets/Scripts/SS3D/Systems/` unless they start with `UI/` (`As
 - **`[MISSING: key]` in EditMode and early frames:** the Examine table loads asynchronously, so `LocalizedTextService` returns the missing marker even for real keys. Look up through `ExamineText.Get`, which formats the English fallback with the same arguments.
 - **Examinable with no `ExamineData` showed nothing:** soda cans carry a bare `SubstanceContainerExaminable`; `GetData() == null` read as "no target". `ExamineSubSystem.GetCurrentExaminable` now falls back to the item. `ExamineDataTests.EveryItemPrefabResolvesToAnExamineName` keeps such items named.
 - **Remote examine named nobody:** crew spawn with their card inside a PDA in the ID slot, and the old resolver read only a bare card; `PDA.GetInsertedIdCard` also returned null on clients (its container was set only server-side).
+- **World object with no `ExamineData` showed nothing:** reinforced walls and windows, girders, three floor tiles, the fuel and water tanks, the airlock panel and the jukebox had a null `key` or no examinable; hover and Shift were silently empty. `StructuralIntegrityPrefabSetup` swaps a `SimpleExaminable` for a `StructuralIntegrityExaminable` but drops the key when the original had none. `ExamineDataTests.EverySelectableWorldObjectHasExamineData` now fails on any selectable non-item prefab without data. After a text edit of a prefab's `key`, the open editor can keep a stale null in memory until the next domain reload; trust a real EditMode run, not an `execute_code` check.
 - **Holder-only state:** `RangedWeaponItemExtension` rounds reach only the holder (TargetRpc). Anything examine shows must be synced to observers; check before adding a provider.
 
 ## Tests
 
 - EditMode: `ExamineKeywordFormatterTests`, `ExamineDetailTextTests`, `PresentedIdentityTests`, `ExamineContentLineTests`, `SearchVisibilityTests`, `ExamineContentResolverTests`, `ExamineCanonicalKeyGeneratorTests`, `CharacterExamineHealthBuilderTests`, `CharacterExamineContentBuilderTests`, `CharacterExamineSlotContainerMapTests`, `CharacterLootUtilityTests`, `SearchInteractionTests`, `VisionFovTests` (FOV depth lookup).
 - PlayMode: `VisionScenarios` (`IsVisible` against real walls); `TaserScenarios.TaserShot_LowersTheChargeExamineShows` (synced rounds).
-- AssetAudit: `ExamineDataTests` (every item prefab named; every keyword tag known and closed).
+- AssetAudit: `ExamineDataTests` (every item prefab named; every selectable world object has `ExamineData`; every keyword tag known and closed).
 
 ## Depends on / Used by
 

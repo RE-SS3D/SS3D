@@ -4,6 +4,7 @@ using UnityEditor;
 using UnityEngine.Localization.Tables;
 using SS3D.Systems.Examine;
 using SS3D.Systems.Inventory.Items;
+using SS3D.Systems.Selection;
 using UnityEngine;
 
 namespace AssetAudit
@@ -76,6 +77,50 @@ namespace AssetAudit
                 if (string.IsNullOrWhiteSpace(new SerializedObject(item).FindProperty("_name").stringValue))
                 {
                     errors.Append($"-> {path}: no ExamineData and no Item name.\n");
+                }
+            }
+
+            Assert.IsTrue(errors.Length == 0, errors.ToString());
+        }
+
+        /// <summary>Selectable prefabs that are never examined in play, each with the reason.</summary>
+        private static readonly string[] NotExaminedPrefabs =
+        {
+            // Stripped visual/smoke-test body: no Entity, no inventory, never spawned as a player.
+            "Assets/Content/WorldObjects/Entities/Humanoids/Human/TestHuman.prefab",
+        };
+
+        /// <summary>
+        /// Every selectable world object that is not an item examines as something: it has
+        /// an examinable, and that examinable points at <see cref="ExamineData"/>. Items are covered by
+        /// <see cref="EveryItemPrefabResolvesToAnExamineName"/>, because they fall back to <c>Item.Name</c>.
+        /// A missing examinable or a null key shows nothing on hover or Shift, with no error (reinforced
+        /// walls and windows shipped like this).
+        /// </summary>
+        [Test]
+        public void EverySelectableWorldObjectHasExamineData()
+        {
+            StringBuilder errors = new();
+            foreach (string guid in AssetDatabase.FindAssets("t:Prefab", new[] { "Assets/Content" }))
+            {
+                string path = AssetDatabase.GUIDToAssetPath(guid);
+                GameObject prefab = AssetDatabase.LoadAssetAtPath<GameObject>(path);
+                if (prefab == null
+                    || System.Array.IndexOf(NotExaminedPrefabs, path) >= 0
+                    || prefab.GetComponentInChildren<Selectable>(true) == null
+                    || prefab.GetComponentInChildren<Item>(true) != null)
+                {
+                    continue;
+                }
+
+                ExaminableBase examinable = prefab.GetComponentInChildren<ExaminableBase>(true);
+                if (examinable == null)
+                {
+                    errors.Append($"-> {path}: selectable but has no examinable.\n");
+                }
+                else if (examinable.GetData() == null)
+                {
+                    errors.Append($"-> {path}: {examinable.GetType().Name} has no ExamineData.\n");
                 }
             }
 

@@ -447,7 +447,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 23a78eb0cc1c4b01ad68f5123895213c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: SS3D.Systems::SS3D.Systems.Examine.StructuralIntegrityExaminable
-  key: {fileID: 0}
+  key: {fileID: 11400000, guid: 0c277da1beb068b409b1852d22fb7cc2, type: 2}
 --- !u!1 &7790124558541205835
 GameObject:
   m_ObjectHideFlags: 0

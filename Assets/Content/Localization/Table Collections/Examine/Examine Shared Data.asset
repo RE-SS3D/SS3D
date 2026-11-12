@@ -1795,6 +1795,46 @@ MonoBehaviour:
     m_Key: action.plant_charge
     m_Metadata:
       m_Items: []
+  - m_Id: 298583315651469312
+    m_Key: furniture.jukebox.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298583315676635136
+    m_Key: furniture.jukebox.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298583317127864320
+    m_Key: structures.doors.airlock_panel.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298583317127864321
+    m_Key: structures.doors.airlock_panel.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298583318595870720
+    m_Key: structures.floors.tiles.tile_dirt.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298583318595870721
+    m_Key: structures.floors.tiles.tile_dirt.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298583320034516992
+    m_Key: structures.floors.tiles.tile_grass.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298583320034516993
+    m_Key: structures.floors.tiles.tile_grass.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298583321477357568
+    m_Key: structures.floors.tiles.tile_reinforced.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298583321477357569
+    m_Key: structures.floors.tiles.tile_reinforced.desc
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:
