@@ -1,7 +1,7 @@
 > Code paths: Assets/Scripts/SS3D/Systems/Gamemodes/, Assets/Scripts/SS3D/Systems/Roles/, Assets/Scripts/SS3D/Systems/Traits/
 > Entry points: GamemodeSubSystem, RoleSubSystem
 > Status: partial
-> Verified: 8bf326b60 — 2026-11-12
+> Verified: 47a3f3c9a — 2026-11-12
 
 # Gamemodes / roles / traits
 
@@ -22,7 +22,7 @@ Round objectives, job roles/loadouts, and character traits (e.g. ID permissions)
 - `Assets/Scripts/SS3D/Systems/Roles/RoleLoadout.cs` — per-role kit: hands, worn slots (`EquipmentAssets`), pockets, and the contents of a held or worn item's storage (`EquipmentContents` keyed by the holder's slot, `HandLeftContents`/`HandRightContents`). `RoleLoadout.StorageOf` picks the item's storage (first container with a storage panel)
 - `Assets/Scripts/SS3D/Systems/Furniture/NukeDeviceState.cs` — pure device rules (MVP1 M3): load the disk, arm (countdown), screwdriver opens the wiring panel, wirecutters defuse; pulling the disk after arming does not stop the clock; a defused device re-arms with a disk loaded; `NukeDeviceStateTests`
 - `Assets/Scripts/SS3D/Systems/Furniture/Nuke.cs` — the device's server adapter and synced readout: five interactions (load disk, eject disk, arm, unscrew panel, cut wires), the countdown in `Update`, the arm announcement through `CommsSubSystem.SendAnnouncement` naming the device's area, examine lines (`ExamineNukeKeys`), action lines (`ActionMessageKeys.Nuke*`), sounds (`NukeAudioTrackIds`: disk insert, code-accepted beep, screwdriver, wirecutter and disarm sting at the device; a countdown beep each client derives from the synced deadline, faster under 30 s and 10 s; the arm sting after the announcement chime and the last-ten-seconds alarm station-wide through `CommsSubSystem.SendStationCue`). `Detonate` stays a `[Server]` entry, pinned by `NukeDetonateContractTests`
-- `Assets/Content/Data/Roles/StartingRoles.asset` — available roles and slot caps (0 = unlimited): Assistant, Security (1 slot), Operative (antagonist), Engineer, Doctor
+- `Assets/Content/Data/Roles/StartingRoles.asset` — available roles and slot caps (0 = unlimited): Captain (1 slot), Assistant, Security (1 slot), Operative (antagonist), Engineer, Doctor. List order is the lobby order; the fallback job is `RoleSubSystem._fallbackRole` by name
 - `GamemodeObjectivePanelView` — legacy uGUI panel hidden (no Tab hotkey; PDA tab later)
 
 Server Settings selects Secret / Extended / Nuclear Emergency. Extended skips objective
@@ -66,7 +66,8 @@ The operative also gets a filled toolbelt (the Engineer's five tools) and a back
 - **A loaded disk counts as held by the operatives** (`NukeOpsSnapshot.DiskInDevice`, §6 "or the device itself once loaded"), so a timer or admin end with the disk in the device is a minor operative win.
 - **Device design deviations** ([antagonist-content.md](../../design/antagonist-content.md) §6, §8; [explosives-destruction.md](../../design/explosives-destruction.md) §7): the countdown and disk state show on examine and in the arm announcement only. There is no readout on the model and no proximity alert yet; the countdown is audible (beeps, then the station-wide alarm). A defuse is not announced: its sting plays only at the device, unlike SS14's station-wide one. No countdown music (SS14's `NukeMusic`). Defuse is two tool steps (screwdriver 5 s, then wirecutters 10 s), owner's choice 2026-11-12; the Engineer spawns with both tools, but anyone holding them can defuse. The pinpointer is not built.
 - The operative kit (M4, engineering jumpsuit) is a placeholder: MVP1 M1c gives operatives the C20R and Stechkin. Swap `OperativeLoadout.asset` when those land.
-- Other kit stand-ins until art lands: the Doctor wears the grey jumpsuit and a toolbelt as a medical belt, and every crew job but Security wears the generic headset, PDA and ID. Headsets are cosmetic: radio channels aren't tied to the worn headset.
+- Other kit stand-ins until art lands: the Captain and the Doctor wear the grey jumpsuit (the Captain with jackboots and sunglasses, no weapon), the Doctor a toolbelt as a medical belt, and every crew job but Security wears the generic headset, PDA and ID. Headsets are cosmetic: radio channels aren't tied to the worn headset.
+- **Captain access is enumerated** (`id-access.md` §4): every department level plus Bridge, Captain's Office, Change ID and EVA, with Maintenance and Crew like other jobs; no Armory. A vault is an area painted with Command access, so the Captain opens it without a vault flag.
 - **Loadout contents that don't fit vanish with only a warning:** `ItemSubSystem.SpawnItemInContainer` despawns what a container refuses (slot count, size class, nesting, storage conditions). The toolbelt holds five Small items, so the Crowbar (Normal) rides in the backpack. `PrefabTests.LoadoutContentsFitTheirStorage` checks slots, size, nesting and weight, but not storage conditions.
 - **Worn slots have order rules:** the belt slot and pockets need a jumpsuit, and suit storage needs the suit. `SpawnLoadoutItems` equips the jumpsuit first and suit storage last; pockets and hands follow the worn slots.
 - Kit weight counts against stamina (`StaminaController.ReferenceEncumbranceWeight`, 40 kg). At spawn the Engineer carries about 27% of the cap and the operative about 60% (51% before its belt and backpack were filled); keep heavy materials out of spawn kits.
