@@ -1,7 +1,7 @@
 > Code paths: Assets/Scripts/SS3D/Systems/Inventory/, Assets/Scripts/SS3D/UI/MainHud/, Assets/Scripts/SS3D/UI/StoragePanel/, Assets/Scripts/SS3D/Systems/Stamina/
 > Entry points: ItemSubSystem, MainHudSubSystem, StoragePanelHost, StaminaController
 > Status: partial
-> Verified: 214e7e737 — 2026-11-11
+> Verified: 6d0f4604b — 2026-11-12
 
 # Inventory
 
@@ -39,6 +39,8 @@ Items, containers, hands, identification cards (`IDCard`, `PDA`), on-demand stor
 
 **Syndicate hardsuit:** `SyndicateHardsuitSetup` imports the supplied Drive FBXs into suit, helmet and magboot Items, adapts bone indices and bind poses to Human, and registers item refs/Addressables and the operative loadout. Run via **Inventory → Run Content Prefab Recipes**. The suit uses the ExoSuit slot, exposed as **Suit** in the equipment doll; `ExoSuitPrefabSetup` wires the container and worn renderer through the Human recipe aggregator. Worn presentation sync identifies local renderers by `ClothType` (including initially inactive renderers), with existing state applied on client startup. `Cloth` optionally supplies worn materials and names of underlying renderers concealed while equipped; removal restores them. These assets have no body-shape blend shapes. Combat absorption and the environmental seal are present ([combat](combat.md)). `SyndicateMagboots` is one prefab that fills either foot, like every shoe: the recipe splits the FBX pair into a worn mesh per side by dominant bone and uses half of the folded mesh as the world form, so a pair is two Items. The recipe copies plain clothing templates, so `ReplaceShapes` strips any root mesh and `WireExamine` gives each piece its own `ExamineData`; `PrefabTests` guards both.
 
+**Job clothing:** department garments come from the SS3D-Art repo's rigged sources (the `HUMAN_BODY_v4.0` blend, the Drive clothing FBXs and the Syndicate blend). `Tools/clothing/export_clothing.py` (headless Blender, input `Tools/clothing/clothing_manifest.json`) gives each garment HumanArmature weights (kept, copied from a rigged reference, or bound to the head bone), the body's slider shape keys, one palette material and, for jumpsuits, a folded pile recoloured from `JumpsuitGreyFolded`. It writes one FBX per department to `Assets/Art/Models/Items/Clothing/Jobs/`. `ClothingImportSetup.SetupAll` then copies each slot's existing prefab (jumpsuit, outer layer, hat, glasses, backpack, shoes, gloves), remaps the worn mesh onto Human's bones and registers the Item; `ApplyLoadouts` dresses the five crew and operative loadouts. Outer layers (lab coat, armor vests) use the ExoSuit slot and never seal.
+
 ## Start here
 
 - `Assets/Scripts/SS3D/Systems/Inventory/Items/ItemSubSystem.cs` — item subsystem entry point
@@ -57,6 +59,7 @@ Items, containers, hands, identification cards (`IDCard`, `PDA`), on-demand stor
 - `Assets/Scripts/SS3D/Systems/Inventory/Containers/Editor/InventoryContentPrefabRecipes.cs` — **SS3D → Inventory → Run Content Prefab Recipes** (clothing + storage + size/weight)
 - `Assets/Scripts/SS3D/Systems/Inventory/Containers/Editor/ItemSizeWeightTable.cs` / `ItemSizeWeightRecipe.cs` — the size/weight source of truth and the recipe that applies it
 - `Assets/Scripts/SS3D/Systems/Inventory/Containers/Editor/ClothingPrefabSetup.cs` — clothing world presentation statics (tier B)
+- `Assets/Scripts/SS3D/Systems/Inventory/Containers/Editor/ClothingImportSetup.cs` + `Tools/clothing/` — job clothing: Blender export, then `SetupAll` and `ApplyLoadouts` (run through `execute_code`; no menu item)
 - `Assets/Scripts/SS3D/Systems/Inventory/Containers/Editor/BodyPartContainerInteractiveStrip.cs` — strip head/torso world CI (via Human recipes)
 - `Assets/Scripts/SS3D/Systems/Inventory/Containers/Editor/HandsPrefabSetup.cs` — (re)wires `Hands.PlayerHands` + ensures `HandSearchExtension` (via Human recipes)
 - `Assets/Scripts/SS3D/Systems/Inventory/Interactions/SearchInteraction.cs` — Search → character examine paperdoll
@@ -94,6 +97,7 @@ Items, containers, hands, identification cards (`IDCard`, `PDA`), on-demand stor
 - **New storage panel stylesheet:** path in `StoragePanelAssetPaths`, run **SS3D → Data → Rebuild All UI Catalogs**.
 - **Head/torso world containers:** do not re-add `ContainerInteractive` on `HumanHead`/`HumanTorso` until surgery needs organ holes — re-strip via **SS3D → Entities → Run All Human Prefab Recipes**.
 - **New alert hazard:** add to `AlertHazard`/`AlertStackState`/`AlertIconSet`, drop PNG under `Assets/Art/Icons/Alerts/`, wire catalog/builder/editor fallback, rebuild catalogs via **SS3D → Data → Rebuild All UI Catalogs**; add alert debug row + `AlertStackCommand` case.
+- **New job garment:** add a row to `Tools/clothing/clothing_manifest.json`, run `blender -b --python Tools/clothing/export_clothing.py`, add the garment to `ClothingImportSetup.Garments`, `ItemSizeWeightTable`, the audio recipe lists (`AudioContentPrefabRecipes`) and its examine text in `ExamineIdentificationKeySetup`, then run `ClothingImportSetup.SetupAll`. A new backpack also needs a `StorageContainerPrefabSetup` row. Check the fit with the body sliders at 100: render it in edit mode or play.
 - **New clothing with dual mesh:** add folded + worn-shaped children on one Item, `Cloth` mesh map, `ClothingItemPresentation` + root collider via `ClothingPrefabSetup` (or same PrefabUtility pattern) — never a second NetworkObject for the folded form.
 - **World spawn/drop facing:** use `ItemPlacement.WorldRotation(item, yaw)` (or `SpawnItemAtRest`): never yaw-only or `Quaternion.identity`, or long items (M4, knives, tools) stand upright. `SpawnItem` and `PlacedItemObject.Create` apply the exact rotation they are given. Deliberate non-rest poses (wall charges, severed limbs, vending tumbles) set their own.
 - **Item poses:** fix a wrong held, floor or icon pose in the **Item Pose Editor**, not by hand: Rest must equal the root rotation (`ItemPoseTests`), and the editor keeps variant roots in line. A pickable item must lie flat at rest or tick **Stands upright**. `AttachmentPoint` is the item's rotation in character space in the idle pose; most items reuse it for the left hand (`AttachmentPointAlt` unset or the same transform), and **Split** gives the left hand its own.
@@ -116,6 +120,10 @@ Items, containers, hands, identification cards (`IDCard`, `PDA`), on-demand stor
 - **Clothing HUD icon contains two shapes:** icon clones must discard the unused world/worn branch before baking; keep both shapes only on the live Item. `ClothingItemPresentation.PrepareIconPreview` is clone-only.
 
 - **Suit stuck on a corpse:** a slot that blocks removal of another item must be reachable by looters too. `ExoSuitStorageCondition` refuses to release the suit while a tank is stored, so suit storage needs its own paperdoll well (`CharacterExamineSlot.SuitStorage`).
+- **Mesh assets rewritten in an open editor:** `SyndicateHardsuitSetup.SaveMesh` replaces the asset with `CreateAsset` (the GUID survives) and returns it reloaded. `CopySerialized` onto the loaded mesh left its GPU data stale for the session, so skinned clothing drew nothing until a restart. Replacing the asset can also leave the editor's loaded prefabs pointing at dead meshes, so `ClothingImportSetup` force-reimports every prefab it writes. A garment that is invisible only in the session that built it has one of these two problems.
+- **Rooted clothing's world mesh:** caps, glasses, backpacks, shoes and gloves draw their root `MeshFilter` on the floor and in the hand. After the bone remap the worn mesh is in Human's bind space (Z-up, offset), so `ClothingImportSetup` bakes a Y-up world mesh and centres it where the template's mesh sat, which keeps the template's attachment points on the item.
+- **Clothing sources lie:** Drive head items are laid out on a 1 m grid (the exporter snaps them back). The Syndicate blend positions its garments with its own rig 4 m away and sites the belt as a static object in that space (the exporter evaluates the whole file at rest). `Reference Jumpsuit`'s shape keys all carry the same 1.48 m stray offset, so morphs come from the body. Geometry Nodes sources leave extra UV maps and vertex colours, which the exporter strips.
+- **Body shows through Drive jumpsuits:** they are cut tighter than the in-game body. The exporter pushes torso vertices 6 mm clear of the body; some skin still shows at the chest and lower back at default body shape. Pushing from the body's side instead made it worse.
 - **Drive clothing rig indices differ from Human:** never assign the raw FBX mesh directly. `SyndicateHardsuitSetup` remaps weights/bind poses to Human's bone array; opaque suit occlusion prevents body/jumpsuit clipping. Keep the folded world mesh on the same Item and rebuild FishNet behaviour caches after adding armor.
 
 

@@ -35,6 +35,9 @@ namespace SS3D.Systems.Inventory.Containers.Editor
             // bags never nest in bags), toolbelt 5x1 Small, lockers take anything including full gas tanks.
             // Medkit and toolbox grids live in ItemSizeWeightTable.Containers: they are openable and keep their flags.
             new("Assets/Content/WorldObjects/Items/Clothing/Backpack.prefab", 4, 3, SizeClass.Normal, 25f),
+            new("Assets/Content/WorldObjects/Items/Clothing/BackpackCommand.prefab", 4, 3, SizeClass.Normal, 25f),
+            new("Assets/Content/WorldObjects/Items/Clothing/BackpackMedical.prefab", 4, 3, SizeClass.Normal, 25f),
+            new("Assets/Content/WorldObjects/Items/Clothing/BackpackSecurity.prefab", 4, 3, SizeClass.Normal, 25f),
             new("Assets/Content/WorldObjects/Items/Clothing/Toolbelt.prefab", 5, 1, SizeClass.Small, 6f),
             new("Assets/Content/WorldObjects/Furniture/Storage/Lockers/Locker.prefab", 4, 4, SizeClass.Huge, 80f),
             new("Assets/Content/WorldObjects/Furniture/Storage/Lockers/LockerSecure.prefab", 4, 4, SizeClass.Huge, 80f),

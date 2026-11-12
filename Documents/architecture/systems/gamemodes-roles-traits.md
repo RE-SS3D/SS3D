@@ -1,7 +1,7 @@
 > Code paths: Assets/Scripts/SS3D/Systems/Gamemodes/, Assets/Scripts/SS3D/Systems/Roles/, Assets/Scripts/SS3D/Systems/Traits/
 > Entry points: GamemodeSubSystem, RoleSubSystem
 > Status: partial
-> Verified: 47a3f3c9a — 2026-11-12
+> Verified: 6d0f4604b — 2026-11-12
 
 # Gamemodes / roles / traits
 
@@ -65,12 +65,12 @@ The operative also gets a filled toolbelt (the Engineer's five tools) and a back
 - **Station-wide sound can't come from the nuke.** Its NetworkObject uses a grid observer condition, so a far client has no sync vars or RPCs from it; the alarm goes through `CommsSubSystem.SendStationCue` (crew with a body, like announcements). The countdown beep is local to observers on purpose.
 - **A loaded disk counts as held by the operatives** (`NukeOpsSnapshot.DiskInDevice`, §6 "or the device itself once loaded"), so a timer or admin end with the disk in the device is a minor operative win.
 - **Device design deviations** ([antagonist-content.md](../../design/antagonist-content.md) §6, §8; [explosives-destruction.md](../../design/explosives-destruction.md) §7): the countdown and disk state show on examine and in the arm announcement only. There is no readout on the model and no proximity alert yet; the countdown is audible (beeps, then the station-wide alarm). A defuse is not announced: its sting plays only at the device, unlike SS14's station-wide one. No countdown music (SS14's `NukeMusic`). Defuse is two tool steps (screwdriver 5 s, then wirecutters 10 s), owner's choice 2026-11-12; the Engineer spawns with both tools, but anyone holding them can defuse. The pinpointer is not built.
-- The operative kit (M4, engineering jumpsuit) is a placeholder: MVP1 M1c gives operatives the C20R and Stechkin. Swap `OperativeLoadout.asset` when those land.
-- Other kit stand-ins until art lands: the Captain and the Doctor wear the grey jumpsuit (the Captain with jackboots and sunglasses, no weapon), the Doctor a toolbelt as a medical belt, and every crew job but Security wears the generic headset, PDA and ID. Headsets are cosmetic: radio channels aren't tied to the worn headset.
+- The operative's M4 is a placeholder: MVP1 M1c gives operatives the C20R and Stechkin. Swap `OperativeLoadout.asset` when those land. Under the hardsuit they wear the Syndicate fatigues and combat gloves.
+- Department clothing comes from `ClothingImportSetup.ApplyLoadouts` ([inventory](inventory.md)): Captain jumpsuit, garrison cap and command backpack; Doctor scrubs, lab coat and medical backpack; Security armor vest, helmet, security glasses and backpack; Engineer hard hat, meson goggles and work boots. Stand-ins until art lands: the Doctor wears a toolbelt as a medical belt, the Captain has no weapon, and every crew job but Security wears the generic headset, PDA and ID. Headsets are cosmetic: radio channels aren't tied to the worn headset. The welding helmet, security cap and Syndicate armor vest exist as items but are in no loadout.
 - **Captain access is enumerated** (`id-access.md` §4): every department level plus Bridge, Captain's Office, Change ID and EVA, with Maintenance and Crew like other jobs; no Armory. A vault is an area painted with Command access, so the Captain opens it without a vault flag.
 - **Loadout contents that don't fit vanish with only a warning:** `ItemSubSystem.SpawnItemInContainer` despawns what a container refuses (slot count, size class, nesting, storage conditions). The toolbelt holds five Small items, so the Crowbar (Normal) rides in the backpack. `PrefabTests.LoadoutContentsFitTheirStorage` checks slots, size, nesting and weight, but not storage conditions.
 - **Worn slots have order rules:** the belt slot and pockets need a jumpsuit, and suit storage needs the suit. `SpawnLoadoutItems` equips the jumpsuit first and suit storage last; pockets and hands follow the worn slots.
-- Kit weight counts against stamina (`StaminaController.ReferenceEncumbranceWeight`, 40 kg). At spawn the Engineer carries about 27% of the cap and the operative about 60% (51% before its belt and backpack were filled); keep heavy materials out of spawn kits.
+- Kit weight counts against stamina (`StaminaController.ReferenceEncumbranceWeight`, 40 kg). At spawn the Engineer carries about 27% of the cap and the operative about 60% (51% before its belt and backpack were filled); Security's armor vest (3 kg) and helmet (1 kg) add 10%. Keep heavy materials out of spawn kits.
 - Assignment happens at round start (`ResolveRoundStartRoles`, called by `EntitySubSystem.SpawnReadyPlayers`) or at latejoin spawn, not on connect. `TryGetRole` is empty in the lobby.
 
 ## Tests

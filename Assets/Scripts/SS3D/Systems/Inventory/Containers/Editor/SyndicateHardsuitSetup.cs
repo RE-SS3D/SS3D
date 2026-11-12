@@ -61,7 +61,7 @@ namespace SS3D.Systems.Inventory.Containers.Editor
             return 3;
         }
 
-        private static T EnsureAsset<T>(string path) where T : ScriptableObject
+        internal static T EnsureAsset<T>(string path) where T : ScriptableObject
         {
             var asset = DB.LoadAssetAtPath<T>(path);
             if (asset != null) return asset;
@@ -187,7 +187,7 @@ namespace SS3D.Systems.Inventory.Containers.Editor
             return reference;
         }
 
-        private static ObjectAssetReference EnsurePrefab(string name, string template, out string path)
+        internal static ObjectAssetReference EnsurePrefab(string name, string template, out string path)
         {
             path = Clothing + name + ".prefab";
             if (DB.LoadAssetAtPath<GameObject>(path) == null)
@@ -199,7 +199,7 @@ namespace SS3D.Systems.Inventory.Containers.Editor
             return reference;
         }
 
-        private static void RegisterItem(ObjectAssetReference reference, string path, string name)
+        internal static void RegisterItem(ObjectAssetReference reference, string path, string name)
         {
             var db = DB.LoadAssetAtPath<SS3D.Data.AssetDatabases.AssetDatabase>("Assets/Content/Data/Databases/Items.asset");
             var settings = AddressableAssetSettingsDefaultObject.Settings;
@@ -209,7 +209,7 @@ namespace SS3D.Systems.Inventory.Containers.Editor
         }
 
         /// <summary>Retains root physics/network/item; replaces the template's visual and attachment children.</summary>
-        private static void ReplaceShapes(GameObject root, Mesh preview, Mesh worldMesh, Transform worldPose, Material[] materials,
+        internal static void ReplaceShapes(GameObject root, Mesh preview, Mesh worldMesh, Transform worldPose, Material[] materials,
             out GameObject worn, out GameObject world, out GameObject attachment)
         {
             foreach (Transform child in root.transform.Cast<Transform>().ToArray())
@@ -234,7 +234,7 @@ namespace SS3D.Systems.Inventory.Containers.Editor
         }
 
         /// <summary>The template's key names the template, so each piece gets its own. Text lives in ExamineIdentificationKeySetup.</summary>
-        private static void WireExamine(GameObject root, string name, string key)
+        internal static void WireExamine(GameObject root, string name, string key)
         {
             var data = EnsureAsset<ExamineData>("Assets/Content/Data/Examine/String/Items/Clothing/" + name + ".asset");
             data.Name = new LocalizedString("Examine", "items.clothing." + key + ".name");
@@ -245,7 +245,7 @@ namespace SS3D.Systems.Inventory.Containers.Editor
             examine.ApplyModifiedPropertiesWithoutUndo();
         }
 
-        private static void WirePresentation(GameObject root, GameObject world, GameObject worn)
+        internal static void WirePresentation(GameObject root, GameObject world, GameObject worn)
         {
             var presentation = root.GetComponent<ClothingItemPresentation>();
             if (presentation == null) presentation = root.AddComponent<ClothingItemPresentation>();
@@ -255,7 +255,7 @@ namespace SS3D.Systems.Inventory.Containers.Editor
             so.ApplyModifiedPropertiesWithoutUndo(); worn.SetActive(false);
         }
 
-        private static Mesh BakePreview(GameObject model, SkinnedMeshRenderer source, string name)
+        internal static Mesh BakePreview(GameObject model, SkinnedMeshRenderer source, string name)
         {
             var baked = new Mesh(); source.BakeMesh(baked);
             baked.name = name;
@@ -266,17 +266,20 @@ namespace SS3D.Systems.Inventory.Containers.Editor
             return baked;
         }
 
-        private static Mesh SaveMesh(Mesh built, string path)
+        /// <summary>
+        /// Writes the mesh asset, replacing any earlier one, and returns the asset as loaded from that path; assign that
+        /// one, never <paramref name="built"/>. CreateAsset over the path keeps the GUID, but replacing a loaded asset can
+        /// leave the passed-in object dead in memory. Copying onto the loaded mesh with CopySerialized instead left its
+        /// GPU data stale for the rest of the editor session, so a skinned renderer drew nothing until a restart.
+        /// </summary>
+        internal static Mesh SaveMesh(Mesh built, string path)
         {
-            var mesh = DB.LoadAssetAtPath<Mesh>(path);
-            if (mesh == null) { DB.CreateAsset(built, path); return built; }
-            EditorUtility.CopySerialized(built, mesh);
-            UnityEngine.Object.DestroyImmediate(built);
-            return mesh;
+            DB.CreateAsset(built, path);
+            return DB.LoadAssetAtPath<Mesh>(path);
         }
 
         /// <summary>Copies the triangles whose corners all pass, keeping submeshes, skinning and vertex order.</summary>
-        private static Mesh KeepVertices(Mesh mesh, Func<int, bool> keep, string name)
+        internal static Mesh KeepVertices(Mesh mesh, Func<int, bool> keep, string name)
         {
             int[] remap = new int[mesh.vertexCount];
             int kept = 0;
@@ -306,7 +309,7 @@ namespace SS3D.Systems.Inventory.Containers.Editor
             return part;
         }
 
-        private static Mesh AdaptMesh(SkinnedMeshRenderer source, SkinnedMeshRenderer target)
+        internal static Mesh AdaptMesh(SkinnedMeshRenderer source, SkinnedMeshRenderer target)
         {
             var mesh = UnityEngine.Object.Instantiate(source.sharedMesh);
             mesh.name = source.name + "Worn";

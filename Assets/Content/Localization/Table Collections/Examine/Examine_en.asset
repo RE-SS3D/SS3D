@@ -1920,6 +1920,158 @@ MonoBehaviour:
     m_Localized: Its wiring panel is <k=warn>open</k>.
     m_Metadata:
       m_Items: []
+  - m_Id: 298639841044963328
+    m_Localized: Captain's Jumpsuit
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298639841065934848
+    m_Localized: A navy jumpsuit with gold trim, cut for whoever is in charge.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298639841065934849
+    m_Localized: Captain's Garrison Cap
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298639841065934850
+    m_Localized: A blue garrison cap with a gold badge.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298639841065934851
+    m_Localized: Command Backpack
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298639841065934852
+    m_Localized: A backpack in command blue.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298639841065934853
+    m_Localized: Medical Scrubs
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298639841065934854
+    m_Localized: White scrubs, easy to spot blood on.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298639841065934855
+    m_Localized: Lab Coat
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298639841065934856
+    m_Localized: A long white coat worn over the uniform.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298639841065934857
+    m_Localized: Medical Backpack
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298639841065934858
+    m_Localized: A white backpack with a green stripe.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298639841065934859
+    m_Localized: Armor Vest
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298639841065934860
+    m_Localized: A ballistic vest. Good against blows and bullets, poor against fire.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298639841065934861
+    m_Localized: Security Helmet
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298639841065934862
+    m_Localized: A hard helmet marked POLICE.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298639841065934863
+    m_Localized: Security Cap
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298639841065934864
+    m_Localized: A red cap marked POLICE.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298639841065934865
+    m_Localized: Security Glasses
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298639841065934866
+    m_Localized: Red-tinted security glasses.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298639841065934867
+    m_Localized: Security Backpack
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298639841065934868
+    m_Localized: A black backpack with red trim.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298639841065934869
+    m_Localized: Hard Hat
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298639841065934870
+    m_Localized: A yellow hard hat with a lamp.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298639841065934871
+    m_Localized: Work Boots
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298639841065934872
+    m_Localized: A pair of laced yellow work boots.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298639841065934873
+    m_Localized: Welding Helmet
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298639841065934874
+    m_Localized: A dark-visored welding helmet.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298639841065934875
+    m_Localized: Meson Goggles
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298639841065934876
+    m_Localized: Green-lensed engineering goggles.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298639841065934877
+    m_Localized: Tactical Turtleneck
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298639841065934878
+    m_Localized: Black fatigues with red bands. Nobody on the crew wears these.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298639841065934879
+    m_Localized: Syndicate Armor Vest
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298639841065934880
+    m_Localized: A black plate vest with shoulder guards.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298639841065934881
+    m_Localized: Combat Boots
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298639841065934882
+    m_Localized: A pair of black combat boots.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298639841065934883
+    m_Localized: Combat Gloves
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298639841065934884
+    m_Localized: Black fingerless combat gloves.
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

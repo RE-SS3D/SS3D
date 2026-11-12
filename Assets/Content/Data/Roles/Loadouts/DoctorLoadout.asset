@@ -17,7 +17,7 @@ MonoBehaviour:
   EquipmentAssets:
     _list:
     - _key: 512
-      _value: {fileID: 11400000, guid: 620dc53a5608be44a975c990e69ddba5, type: 2}
+      _value: {fileID: 11400000, guid: 1c9be81154cd5be87899550619da231e, type: 2}
     - _key: 16
       _value: {fileID: 11400000, guid: 7877ae994c8a31244bf59b1b971caaa5, type: 2}
     - _key: 8192
@@ -25,7 +25,9 @@ MonoBehaviour:
     - _key: 32768
       _value: {fileID: 11400000, guid: 9cf2801a7b335074190840fc9112d582, type: 2}
     - _key: 4
-      _value: {fileID: 11400000, guid: 9435365903a79d64184af9ee71e060e5, type: 2}
+      _value: {fileID: 11400000, guid: c8290394d22d1d942ada5ad3531b3563, type: 2}
+    - _key: 1024
+      _value: {fileID: 11400000, guid: 0bf5ab4155ebd25a4bf44ad848e0d953, type: 2}
     _new: 0
   PocketAssets:
   - {fileID: 11400000, guid: 4f4a376e135b3e46dbe041dbca673357, type: 2}
