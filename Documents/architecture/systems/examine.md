@@ -41,7 +41,7 @@ Paths are under `Assets/Scripts/SS3D/Systems/` unless they start with `UI/` (`As
 - `UI/Examine/GenericExamineHoverView.cs` / `CharacterExamineWindowView.cs`
 - `Examine/CharacterExamineContentBuilder.cs` — slot icons + visible identity
 - `Examine/CharacterExamineSlotContainerMap.cs` / `CharacterExamineTargetUtility.cs`
-- Providers outside Examine: `Combat/RangedWeaponRoundsReadout.cs` (rounds/charges, synced), `Electricity/BasicPowerConsumer.cs` + `MachinePowerConsumer.cs` (powered), `Furniture/Disposal/DisposalTag.cs`
+- Providers outside Examine: `Combat/RangedWeaponRoundsReadout.cs` (rounds/charges, synced), `Electricity/BasicPowerConsumer.cs` + `MachinePowerConsumer.cs` (powered), `Furniture/Disposal/DisposalTag.cs`, `Furniture/Nuke.cs` (disk, armed and time left, panel; `ExamineNukeKeys`)
 - `Examine/IdentificationCardExaminable.cs` (owner/role lines) / `StructuralIntegrityExaminable.cs` (damaged/cracked lines for walls, windows and tables; added by `StructuralIntegrityPrefabSetup`) — content-provider examples
 - `Examine/Editor/` — localization JSON export/import menus; `ExamineIdentificationKeySetup` seeds keys (no menu): `AddExamineFeedbackKeys` writes every tagged and new key from its fallback constant
 - `Inventory/Interactions/SearchInteraction.cs` / `HandSearchExtension.cs` — paperdoll open as Help Instant

@@ -15,6 +15,16 @@ MonoBehaviour:
   m_GroupName: Sounds
   m_GUID: 5a93ce093ec9bfc4aab900a7ff98e41a
   m_SerializeEntries:
+  - m_GUID: 03651e6838974f8e7b66152682104269
+    m_Address: NukeDisarmed
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 04ede92dcec9390a7a7ed55931e847e0
+    m_Address: NukeAlarm
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 1342f00d3f3444ba9d135ac709a632b4
     m_Address: Assets/Art/Sound/Entities/Humanoid/Footsteps/Socks.mp3
     m_ReadOnly: 0
@@ -45,6 +55,11 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 34d3c3a2410b47612ad0e6c6a2210c6c
+    m_Address: NukeArmBeep
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 36c53e237ddb426ea20825ce79dd1737
     m_Address: Assets/Art/Sound/Entities/Humanoid/Combat/GenHit1.ogg
     m_ReadOnly: 0
@@ -57,6 +72,11 @@ MonoBehaviour:
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 46d1ebcf19d64594a03b8053351b1a3a
     m_Address: TaserFire
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 499fddd0b2c1a9eb7851582af7212146
+    m_Address: NukeArmed
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
@@ -125,6 +145,11 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: a0598fa17bfcb815fad7408b6c60f9e0
+    m_Address: NukeDiskInsert
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: a583ecd799d040728b40947e8e4287d1
     m_Address: MinibombExplosion
     m_ReadOnly: 0
@@ -137,6 +162,11 @@ MonoBehaviour:
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: a7f3e91c2b4d4856a1c0e8f92d35b647
     m_Address: Assets/Art/Sound/World/Airlocks/AirlockDeny.ogg
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: ad29110d81908efdf8efa944c2965c2b
+    m_Address: NukePanel
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
@@ -162,6 +192,16 @@ MonoBehaviour:
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: bfcb361d68ba498eade01a32f2ff5037
     m_Address: EnergyFleshHit2
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: c71b390cba490a1af818076d0edd59f2
+    m_Address: NukeWireCut
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: ceabe1eeefec121739e2ad2ed67bfcb7
+    m_Address: NukeTick
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0

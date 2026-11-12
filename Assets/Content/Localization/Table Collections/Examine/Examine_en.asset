@@ -1884,6 +1884,42 @@ MonoBehaviour:
     m_Localized: Heavy reinforced floor plating.
     m_Metadata:
       m_Items: []
+  - m_Id: 298600052098834432
+    m_Localized: '{0} slides a disk into the {1}.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298600052119805952
+    m_Localized: '{0} starts arming the {1}!'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298600052119805953
+    m_Localized: '{0} starts unscrewing the {1}''s wiring panel.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298600052119805954
+    m_Localized: '{0} starts cutting the {1}''s wires.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298600052119805955
+    m_Localized: The disk slot is <k=good>empty</k>.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298600052119805956
+    m_Localized: An authentication disk is <k=warn>loaded</k>.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298600052119805957
+    m_Localized: It is <k=good>not armed</k>.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298600052119805958
+    m_Localized: '<k=danger>Armed</k>: {0} left.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298600052119805959
+    m_Localized: Its wiring panel is <k=warn>open</k>.
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []
