@@ -17,6 +17,7 @@ namespace SS3D.UI.MainHud
         private const float AnimDuration = 0.22f;
         private const float ShowScaleFrom = 0.92f;
         private const float ShowTranslateYFrom = 20f;
+        private const long NoticeDurationMs = 3500;
 
         public event Action IntentToggleRequested;
 
@@ -52,6 +53,8 @@ namespace SS3D.UI.MainHud
         private readonly AlertIconSet _alertIcons;
 
         private VisualElement _root;
+        private Label _notice;
+        private IVisualElementScheduledItem _noticeHide;
         private AlertIconStack _alertStack;
         private GearToggleChip _internalsChip;
         private GearToggleChip _magbootsChip;
@@ -89,11 +92,16 @@ namespace SS3D.UI.MainHud
             BuildTree();
             overlayRoot.Add(_root);
             SetVisibleImmediate(false);
+            BuildNotice(overlayRoot);
         }
 
         public void Detach()
         {
             KillVisibilitySequence();
+            _noticeHide?.Pause();
+            _noticeHide = null;
+            _notice?.RemoveFromHierarchy();
+            _notice = null;
             _root?.RemoveFromHierarchy();
             _root = null;
             _zoneReticle = null;
@@ -116,6 +124,43 @@ namespace SS3D.UI.MainHud
             {
                 PlayHide();
             }
+        }
+
+        /// <summary>
+        /// Brief top-centre line for a refusal the player should hear about (e.g. the map editor
+        /// denied). Lives beside the HUD root, not inside it, so it shows while the HUD chrome is
+        /// hidden (ghosts, modal panels).
+        /// </summary>
+        public void ShowNotice(string message)
+        {
+            if (_notice == null || string.IsNullOrEmpty(message))
+            {
+                return;
+            }
+
+            _notice.text = message;
+            _notice.AddToClassList("main-hud-notice--visible");
+            _noticeHide?.Pause();
+            _noticeHide = _notice.schedule
+                .Execute(() => _notice?.RemoveFromClassList("main-hud-notice--visible"))
+                .StartingIn(NoticeDurationMs);
+        }
+
+        private void BuildNotice(VisualElement overlayRoot)
+        {
+            _notice = new Label();
+            _notice.AddToClassList("main-hud-notice");
+            _notice.AddToClassList("font-body");
+            _notice.pickingMode = PickingMode.Ignore;
+            foreach (StyleSheet styleSheet in _styleSheets)
+            {
+                if (styleSheet != null)
+                {
+                    _notice.styleSheets.Add(styleSheet);
+                }
+            }
+
+            overlayRoot.Add(_notice);
         }
 
         public void SetAlertState(AlertStackState state)

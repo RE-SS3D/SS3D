@@ -7,7 +7,7 @@
 
 ## Overview
 
-Static `LocalizedTextService` (own `SS3D.Localization` asmdef): per-table, per-locale cache, `LocaleChanged` event that clears the cache, `PreloadTableAsync` for warm-up, and `GetFormattedString` for Smart-format arguments. A missing key returns `[MISSING: key]` plus a warning in Editor/development builds and the English fallback in release. Only consumer is the [examine](examine.md) unified string table (resolver, ID-card and structural-integrity examinables, character health builder, examine overlay). Editor export/import lives under `SS3D/Localization/Examine/`.
+Static `LocalizedTextService` (own `SS3D.Localization` asmdef): per-table, per-locale cache, `LocaleChanged` event that clears the cache, `PreloadTableAsync` for warm-up, and `GetFormattedString` for Smart-format arguments. A key with no value in the selected locale falls back to the project locale (`en`) table, so untranslated tables (Examine has values only in `en`; `fr`, `pt-BR` and `ru-RU` are empty) show English rather than the raw key. Only a key missing from `en` too returns `[MISSING: key]` plus a warning in Editor/development builds, and the caller's English fallback (or the key) in release. The package's own `m_UseFallback` stays off: the service reads `table[key]` directly, so package fallback metadata would not apply to it anyway. Only consumer is the [examine](examine.md) unified string table (resolver, ID-card and structural-integrity examinables, character health builder, examine overlay). Editor export/import lives under `SS3D/Localization/Examine/`.
 
 ## Start here
 

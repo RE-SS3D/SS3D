@@ -108,9 +108,13 @@ namespace SS3D.Tests
                 yield return WearMagboots();
 
                 // Work in from the hole's edge: each patched cell is somewhere to stand for the next.
+                // The hole can run past one default stack (10), so hand the engineer enough for the room.
+                const int sheetsHeld = 20;
                 Item sheets = HoldNew(SteelSheet).ItemInHand;
                 yield return Hold(0.3f);
-                Assert.AreEqual(20, sheets.StackCount, "Steel sheets spawn as a stack of 20");
+                sheets.SetStackCount(sheetsHeld);
+                yield return Hold(0.3f);
+                Assert.AreEqual(sheetsHeld, sheets.StackCount, "The engineer holds a full stack for the patch");
                 float seconds = ConstructionRecipes.Get(ConstructionStep.PlacePlating).Seconds + 3f;
                 int patchedCells = 0;
                 while (TryFindHoleAtEdge(out Vector3 cell))
@@ -131,7 +135,7 @@ namespace SS3D.Tests
                 }
 
                 Assert.IsTrue(IsPlated(Epicenter), "The whole hole is patched");
-                Assert.AreEqual(20 - patchedCells, sheets.StackCount, "Plating spends one sheet a cell");
+                Assert.AreEqual(sheetsHeld - patchedCells, sheets.StackCount, "Plating spends one sheet a cell");
 
                 // The patched cell starts with station air (D8); with the hull shut it is not lost to space.
                 yield return Hold(2f);

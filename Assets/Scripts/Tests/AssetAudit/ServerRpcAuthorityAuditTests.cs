@@ -104,6 +104,7 @@ namespace SS3D.Tests.AssetAudit
             { "MapEditorSubSystem.RpcRedo", AuthorityCheck.MapEditorPermission },
             { "MapEditorSubSystem.RpcMoveObject", AuthorityCheck.MapEditorPermission },
             { "MapEditorSubSystem.RpcRequestUndoState", AuthorityCheck.MapEditorPermission },
+            { "MapEditorSubSystem.RpcRequestOpen", AuthorityCheck.MapEditorPermission },
 
             // Machine interfaces
             { "MachineInterfaceBehaviour.CmdSetControl", AuthorityCheck.Viewer },

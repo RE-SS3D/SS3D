@@ -49,7 +49,6 @@ MonoBehaviour:
     - {fileID: 11400000, guid: 9310ba3e563558e42bdbd19ee6b8440c, type: 2}
     - {fileID: 11400000, guid: 40f2a5ef12396ce469ae6fa7474a6bc6, type: 2}
     - {fileID: 11400000, guid: 8cfc0ba9b0715224ca017ad6ddfbd66b, type: 2}
-    - {fileID: 11400000, guid: 8cfc0ba9b0715224ca017ad6ddfbd66b, type: 2}
     - {fileID: 11400000, guid: cb8a18ff6b582ec45a3aa1f689a18564, type: 2}
   HandLeftContents: []
   HandRightContents: []

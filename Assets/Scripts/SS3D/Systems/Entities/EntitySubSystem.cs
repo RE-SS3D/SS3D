@@ -67,7 +67,7 @@ namespace SS3D.Systems.Entities
 
         public Entity GetSpawnedEntity(Player player)
         {
-            var entity = _spawnedPlayers.Find(entity => entity.Mind.player == player);
+            var entity = _spawnedPlayers.Find(entity => entity != null && entity.Mind != null && entity.Mind.player == player);
             if (IsPlayerSpawned(player))
             {
                 return entity;
@@ -77,7 +77,7 @@ namespace SS3D.Systems.Entities
 
         public bool TryGetSpawnedEntity(NetworkConnection conn, out Entity entity)
         {
-            entity = _spawnedPlayers.Find(entity => entity.Mind?.player?.Owner == conn);
+            entity = _spawnedPlayers.Find(entity => entity != null && entity.Mind?.player?.Owner == conn);
             return entity != null;
         }
 
@@ -88,7 +88,7 @@ namespace SS3D.Systems.Entities
         /// <returns>Is the player is controlling an entity</returns>
         public bool IsPlayerSpawned(Player player)
         {
-            Entity spawnedPlayer = _spawnedPlayers.Find(entity => entity.Mind.player == player);
+            Entity spawnedPlayer = _spawnedPlayers.Find(entity => entity != null && entity.Mind != null && entity.Mind.player == player);
             return spawnedPlayer != null && spawnedPlayer.Mind != Mind.Empty;
         }
 
@@ -232,7 +232,7 @@ namespace SS3D.Systems.Entities
         [Server]
         public bool TryReclaimEntity(Player player, NetworkConnection conn)
         {
-            Entity entity = _spawnedPlayers.Find(e => e.Mind?.player == player);
+            Entity entity = _spawnedPlayers.Find(e => e != null && e.Mind?.player == player);
             if (entity == null)
             {
                 return false;
