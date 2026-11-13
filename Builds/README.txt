@@ -52,6 +52,11 @@ LINUX CLIENT (SS3D-Linux-Client-<version>.zip)
   A stable release must include its Linux client zip; otherwise updating fails safely.
   No sudo, Unity, Git, curl, jq, or extra Python packages are needed.
 
+  Low frame rate on Linux? Start the client on OpenGL instead of Vulkan:
+    Game/SS3D-Client -forceLauncher -force-glcore
+  It runs much faster on some machines, but bullet holes and blood decals don't show
+  (URP has no DBuffer decals on OpenGL). -forceLauncher keeps the main menu.
+
 LINUX DEDICATED SERVER (SS3D-Linux-Server-<version>.zip)
 
   ./start_ss3d_server.sh [port]                headless; logs to GameServer/server.log
