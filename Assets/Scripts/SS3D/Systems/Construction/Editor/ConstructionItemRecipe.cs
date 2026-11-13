@@ -21,7 +21,7 @@ namespace SS3D.Systems.Construction.Editor
         /// <summary>Stack limit and initial count per material. First guesses for the balancing pass.</summary>
         public static readonly (string Path, ConstructionMaterialKind Kind, int MaxStack, int Initial)[] Materials =
         {
-            (SteelSheetPath, ConstructionMaterialKind.SteelSheet, 50, 20),
+            (SteelSheetPath, ConstructionMaterialKind.SteelSheet, 50, 10),
             (GlassSheetPath, ConstructionMaterialKind.GlassSheet, 50, 20),
             (FloorTilePath, ConstructionMaterialKind.FloorTile, 20, 10),
         };
