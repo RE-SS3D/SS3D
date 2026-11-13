@@ -35,6 +35,9 @@ namespace SS3D.UI.Lobby
         private Label _countdownLabel;
         private Label _countdownSub;
         private Button _readyButton;
+        private Button _observeButton;
+        private bool _observing;
+        private bool _canObserve;
         private Button _adminButton;
         private VisualElement _previewImage;
         private Label _characterNameLabel;
@@ -94,6 +97,9 @@ namespace SS3D.UI.Lobby
 
         public event Action CharacterCreatorRequested;
         public event Action ReadyRequested;
+
+        /// <summary>The player pressed Observe (<c>observer.md</c> §2): toggle before a round, join as a ghost during one.</summary>
+        public event Action ObserveRequested;
         public event Action QuitRequested;
 
         /// <summary>"Report a bug": the host opens the bug report dialog (<c>sandbox-server.md</c> §7).</summary>
@@ -219,12 +225,23 @@ namespace SS3D.UI.Lobby
             RefreshSidebar();
             RefreshServerSettings();
             _readyButton?.SetEnabled(canAct && !inRound && state is not RoundState.Ending);
+            _observeButton?.SetEnabled(_canObserve && !inRound && state is not RoundState.Ending);
             if (playersChanged && _activeTab == TabPlayers) ShowTab(TabPlayers);
         }
 
         private bool _autoStartEnabled;
         private bool _autoStartHeld;
         private int _autoStartSeconds;
+
+        /// <summary>
+        /// Observe button state; call before <see cref="SetSession"/>. <paramref name="observing"/>: the player
+        /// chose to watch the next round. <paramref name="canObserve"/>: pressing it would do something now.
+        /// </summary>
+        public void SetObserve(bool observing, bool canObserve)
+        {
+            _observing = observing;
+            _canObserve = canObserve;
+        }
 
         /// <summary>Server auto-start state; call before <see cref="SetSession"/>.</summary>
         public void SetAutoStart(bool enabled, bool held, int secondsLeft)
@@ -322,6 +339,7 @@ namespace SS3D.UI.Lobby
         {
             CharacterCreatorRequested = null;
             ReadyRequested = null;
+            ObserveRequested = null;
             RoundChangeRequested = null;
             ServerSettingsChanged = null;
             VolumeChanged = null;
@@ -362,6 +380,7 @@ namespace SS3D.UI.Lobby
             _stationLoadLabel = null;
             _headerMapLabel = null;
             _readyButton = null;
+            _observeButton = null;
             _adminButton = null;
             _previewImage = null;
             _characterNameLabel = null;
@@ -543,16 +562,17 @@ namespace SS3D.UI.Lobby
             VisualElement row = new();
             row.AddToClassList("lobby-shell__actions-row");
 
-            Button observe = new(() => Debug.Log("[Lobby] Observe clicked (stub until observer wiring)."))
+            _observeButton = new Button(() => ObserveRequested?.Invoke())
             {
+                name = "lobby-observe",
                 text = "OBSERVE",
+                tooltip = "Watch the round as a ghost. Observers can't respawn or join that round.",
             };
-            observe.SetEnabled(false);
-            observe.tooltip = "Observer mode is not implemented yet.";
-            observe.AddToClassList("lobby-shell__btn");
-            observe.AddToClassList("lobby-shell__btn--observe");
-            observe.AddToClassList("font-titling");
-            row.Add(observe);
+            _observeButton.SetEnabled(false);
+            _observeButton.AddToClassList("lobby-shell__btn");
+            _observeButton.AddToClassList("lobby-shell__btn--observe");
+            _observeButton.AddToClassList("font-titling");
+            row.Add(_observeButton);
 
             _adminButton = new Button(ToggleAdmin) { text = "ADMIN" };
             _adminButton.AddToClassList("lobby-shell__btn");
@@ -646,6 +666,13 @@ namespace SS3D.UI.Lobby
                 _readyButton.text = _ready ? "✓  READY" : "NOT READY";
                 if (_runtime && _roundState == RoundState.Ongoing) _readyButton.text = _inRound ? "IN ROUND" : "JOIN ROUND";
                 _readyButton.EnableInClassList("lobby-shell__btn--ready-on", _ready);
+            }
+
+            if (_observeButton != null)
+            {
+                bool ongoing = _runtime && _roundState == RoundState.Ongoing;
+                _observeButton.text = ongoing ? (_inRound ? "IN ROUND" : "OBSERVE") : _observing ? "✓  OBSERVING" : "OBSERVE";
+                _observeButton.EnableInClassList("lobby-shell__btn--observe-on", _observing && !ongoing);
             }
 
             if (_adminButton != null)

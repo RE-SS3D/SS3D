@@ -43,8 +43,10 @@ namespace SS3D.Systems.Entities
     public static class RespawnRules
     {
         /// <summary>Why a respawn is refused, or null when it is allowed.</summary>
-        public static string Refusal(bool enabled, bool roundOngoing, bool isGhost, int secondsLeft)
+        public static string Refusal(bool enabled, bool roundOngoing, bool isGhost, int secondsLeft, bool isObserver = false)
         {
+            // Observers chose to watch, not play (observer.md §2): never a body this round.
+            if (isObserver) return "Observers can't respawn.";
             if (!enabled) return "Respawn is off on this server.";
             if (!roundOngoing) return "You can only respawn during a round.";
             if (!isGhost) return "Only ghosts can respawn.";
@@ -112,7 +114,7 @@ namespace SS3D.Systems.Entities
             bool ongoing = SubSystems.Get<RoundSubSystem>().CurrentRoundState == RoundState.Ongoing;
             int secondsLeft = player == null ? 0 : _respawnCooldown.SecondsLeft(player.Ckey, Now, settings.RespawnCooldownSeconds);
 
-            refusal = RespawnRules.Refusal(settings.RespawnEnabled, ongoing, isGhost, secondsLeft);
+            refusal = RespawnRules.Refusal(settings.RespawnEnabled, ongoing, isGhost, secondsLeft, IsObserver(player));
             if (refusal != null)
             {
                 Log.Information(this, "Respawn refused for {ckey}: {reason}", Logs.ServerOnly, player?.Ckey, refusal);
@@ -153,11 +155,15 @@ namespace SS3D.Systems.Entities
         /// Automation only, with <see cref="SpawnBodyForTesting"/>: takes a living player's body away,
         /// skipping the respawn rules, so each PlayMode scenario starts from an undamaged, empty-handed body.
         /// Despawns like round end does, without clearing the mind first: removing ownership and
-        /// despawning a Human in one tick makes the host client fail its nested spawns.
+        /// despawning a Human in one tick makes the host client fail its nested spawns. Also clears observer
+        /// status, so a scenario that observed does not leave the next one unable to respawn.
         /// </summary>
         [Server]
         public Mind DespawnBodyForTesting(Player player)
         {
+            if (player != null)
+                _observerCkeys.Remove(player.Ckey);
+
             Entity current = GetSpawnedEntity(player);
             if (current == null)
                 return null;

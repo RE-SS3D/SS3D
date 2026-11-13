@@ -240,6 +240,21 @@ namespace SS3D.Tests.EditMode
             StringAssert.Contains("5 seconds", SS3D.Systems.Entities.RespawnRules.Refusal(true, true, true, 5));
             Assert.IsNull(SS3D.Systems.Entities.RespawnRules.Refusal(true, true, true, 0));
         }
+
+        [Test]
+        public void RespawnRules_ObserversNeverRespawn()
+        {
+            StringAssert.Contains("Observers", SS3D.Systems.Entities.RespawnRules.Refusal(true, true, true, 0, isObserver: true));
+        }
+
+        [Test]
+        public void ObserveRules_OnlyIntoARunningRoundWithoutABody()
+        {
+            Assert.IsNull(SS3D.Systems.Entities.ObserveRules.Refusal(roundOngoing: true, hasEntity: false));
+            Assert.IsNotNull(SS3D.Systems.Entities.ObserveRules.Refusal(roundOngoing: false, hasEntity: false));
+            Assert.IsNotNull(SS3D.Systems.Entities.ObserveRules.Refusal(roundOngoing: true, hasEntity: true),
+                "A living player or a ghost can't become an observer");
+        }
     
         [TestCase("/bug the door ate me", true, "the door ate me")]
         [TestCase("/BUG  spaced  ", true, "spaced")]

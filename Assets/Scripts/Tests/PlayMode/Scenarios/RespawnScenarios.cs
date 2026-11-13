@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Reflection;
 using FishNet;
+using FishNet.Connection;
 using NUnit.Framework;
 using SS3D.Core;
 using SS3D.Data.Generated;
@@ -19,6 +20,7 @@ using Object = UnityEngine.Object;
 
 namespace SS3D.Tests
 {
+    // Guards (observer): a body-less player observing mid-round gets an owned ghost and no Human, and can neither respawn nor observe twice (observer.md §2, EntitySubSystem.TryObserve)
     // Guards: death leaves a corpse and a ghost, the cooldown refuses an early respawn, and a respawn gives a controllable new body and removes only the previous corpse, twice in a row (death-cloning-respawn §6, EntitySubSystem.TryRespawn; the old respawn-cleanup pilot) · Not cheaper because: needs a live round, the ghost swap and the spawn path on a networked host
     [Category(TestCategories.Scenarios)]
     [Category(TestCategories.Respawn)]
@@ -74,6 +76,33 @@ namespace SS3D.Tests
                 yield return Console.Run("spawn MedicalPatch hand");
                 StringAssert.Contains("not empty", Console.LastAnswer, $"Life {life}: the new body's hand holds what it was given");
             }
+        }
+
+        [UnityTest]
+        public IEnumerator Observe_MidRound_GhostWithNoBody_CannotRespawn()
+        {
+            EntitySubSystem entities = SubSystems.Get<EntitySubSystem>();
+            NetworkConnection conn = InstanceFinder.ClientManager.Connection;
+            SetRespawnRules(cooldownSeconds: 0);
+            Assert.IsFalse(entities.TryObserve(conn, out _), "A player who has a body can't observe");
+
+            // Stand in for a player who never took a body this round.
+            Entity body = Body;
+            Mind bodyMind = entities.DespawnBodyForTesting(Host);
+            if (bodyMind != null && bodyMind.IsSpawned)
+                InstanceFinder.ServerManager.Despawn(bodyMind.NetworkObject);
+            yield return WaitFor(() => body == null && HostEntity == null, "the host has no body");
+            int humans = Object.FindObjectsByType<Human>(FindObjectsSortMode.None).Length;
+
+            Assert.IsTrue(entities.TryObserve(conn, out string refusal), $"Observing a running round succeeds ({refusal})");
+            yield return WaitFor(() => IsGhost() && HostEntity.NetworkObject.ClientInitialized && HostEntity.IsOwner,
+                "the host's client controls an observer ghost");
+            Assert.AreEqual(humans, Object.FindObjectsByType<Human>(FindObjectsSortMode.None).Length, "Observing spawns no body");
+            Assert.IsTrue(entities.IsObserver(Host), "The server records the host as an observer");
+
+            Assert.IsFalse(entities.TryRespawn(conn, out refusal), "An observer can't respawn, even with respawn on and no cooldown");
+            StringAssert.Contains("Observers", refusal);
+            Assert.IsFalse(entities.TryObserve(conn, out _), "Observing twice is refused");
         }
 
         // #215: when a session ended (leaving to the main menu), the body's controllers had already lost ownership

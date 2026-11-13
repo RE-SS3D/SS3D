@@ -330,6 +330,14 @@
     background-color: var(--lobby-btn-blue-hover);
 }
 
+.lobby-shell__btn--observe-on {
+    background-color: var(--lobby-btn-green);
+}
+
+.lobby-shell__btn--observe-on:hover {
+    background-color: var(--lobby-btn-green-hover);
+}
+
 .lobby-shell__display-prompt {
     position: absolute;
     left: 0;
