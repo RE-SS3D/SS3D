@@ -364,6 +364,10 @@ namespace SS3D.UI.MainHud
             float aimDistance = EstimateRangedAimDistance(maxRange);
             float exertionPenalty = _stamina != null ? _stamina.ExertionPenalty : 0f;
             float spread = ((ICombatReadout)ranged).CurrentSpreadDegrees(horizontalSpeed, aimDistance, exertionPenalty);
+            if (_localPlayer != null && _localPlayer.TryGetComponent(out HumanHealthController health))
+            {
+                spread *= DownedFireRules.SpreadMultiplier(health.Snapshot);
+            }
             // Map current cone into 0–1 using a readable reference (~still + light move at mid range).
             float bloomRef = Mathf.Max(
                 2.5f,
@@ -543,6 +547,7 @@ namespace SS3D.UI.MainHud
                 SealBreach = ToAlertSeverity(atmos.SealBreach),
                 Invincible = EntityInvincibility.LocalPlayerInvincible ? AlertSeverity.Warning : AlertSeverity.None,
                 TankLow = ToAlertSeverity(atmos.TankLow),
+                Shock = ToAlertSeverity(health.Shock),
             };
         }
 
@@ -1631,6 +1636,7 @@ namespace SS3D.UI.MainHud
                     CardiacArrest = LoadAlertSprite("cardiac-arrest"),
                     SealBreach = LoadAlertSprite("seal-breach"),
                     TankLow = LoadAlertSprite("tank-low"),
+                    Shock = LoadAlertSprite("shock"),
                     Internals = LoadAlertSprite("internals"),
                     Magboots = LoadAlertSprite("magboots"),
                 };

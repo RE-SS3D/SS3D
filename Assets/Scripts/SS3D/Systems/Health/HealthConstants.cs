@@ -117,6 +117,59 @@
         public const float TreatmentBloodLowThreshold = 0.85f;
         public const float TreatmentOxyDebtThreshold = 0.05f;
 
+        // Shock (health.md §4; tuning: Documents/plans/shock-and-downed.plan.md). Shock is 0–100+.
+        public const float ShockWarningThreshold = 35f;
+        public const float ShockStandThreshold = 40f;
+        public const float ShockDownedThreshold = 60f;
+        public const float ShockCriticalThreshold = 100f;
+        public const float ShockTorsoZoneWeight = 0.35f;
+        public const float ShockHeadZoneWeight = 0.5f;
+        public const float ShockLimbZoneWeight = 0.15f;
+        public const float ShockBurnTypeWeight = 1.3f;
+        /// <summary>Share of armor-absorbed damage that still becomes shock (the blunt force of a stopped round).</summary>
+        public const float ArmorShockFraction = 0.15f;
+        public const float ShockSpikeBruised = 2f;
+        public const float ShockSpikeWound = 5f;
+        public const float ShockSpikeSevere = 8f;
+        public const float ShockSpikeDisabled = 10f;
+        public const float ShockSpikeSevered = 20f;
+        /// <summary>Arms and legs take this share of the tier spikes, so limb shots slow rather than drop.</summary>
+        public const float ShockLimbSpikeScale = 0.5f;
+        /// <summary>Incoming pain becomes shock over this many seconds (1 Hz ticks) after the last hit.</summary>
+        public const float ShockBuildSeconds = 3f;
+        public const float ShockDecayPerSecond = 3f;
+        public const float ShockFloorWound = 4f;
+        public const float ShockFloorSevere = 8f;
+        public const float ShockFloorDisabled = 12f;
+        public const float ShockFloorSevered = 20f;
+        public const float LowBloodShockScale = 60f;
+        /// <summary>Stamina cap scale reached at <see cref="ShockDownedThreshold"/> (stamina.md §2).</summary>
+        public const float ShockStaminaCapFloor = 0.5f;
+        /// <summary>Extra spike when the head crosses into Severe (health.md §5).</summary>
+        public const float ShockHeadSevereSpike = 15f;
+        /// <summary>Blurred vision from a Severe / Disabled head wound (screen Concussion intensity).</summary>
+        public const float HeadSevereBlur = 0.4f;
+        public const float HeadDisabledBlur = 0.6f;
+
+        // Hit reactions (combat.md §5).
+        /// <summary>Damage before armor at which a hit staggers (cancels what the victim is doing) instead of only flinching.</summary>
+        public const float HeavyHitStaggerDamage = 30f;
+        public const float SprintTripSeconds = 2.5f;
+        public const float ViewKickMinAmplitude = 0.04f;
+        public const float ViewKickMaxAmplitude = 0.16f;
+        public const float ViewKickSeconds = 0.25f;
+
+        // Downed (health.md §4).
+        public const float DownedCrawlSpeedMultiplier = 0.25f;
+        /// <summary>One-handed weapons fired while Downed: accuracy cone × this (a very wide reticle).</summary>
+        public const float DownedSpreadMultiplier = 3f;
+        public const float HelpUpSeconds = 2f;
+        /// <summary>World speed while standing in high shock (the slower, stumbling gait).</summary>
+        public const float ShockStumbleSpeedMultiplier = 0.85f;
+        /// <summary>After being helped up: slower and no sprint for this long.</summary>
+        public const float UnsteadySeconds = 3f;
+        public const float UnsteadySpeedMultiplier = 0.6f;
+
         // Limb capability multipliers.
         public const float LimbDisabledMovementMultiplier = 0.35f;
         public const float LimbSevereMovementMultiplier = 0.6f;

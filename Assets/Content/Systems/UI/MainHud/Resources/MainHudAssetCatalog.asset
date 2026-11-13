@@ -49,5 +49,6 @@ MonoBehaviour:
   _alertSealBreach: {fileID: 21300000, guid: 7cb5d8629ed9460d8345de5043b28aff, type: 3}
   _alertInvincible: {fileID: 21300000, guid: a6f07d6253524134aae87021a072575b, type: 3}
   _alertTankLow: {fileID: 21300000, guid: e4de13b1211b4ac0b9d1eb97b634a4cc, type: 3}
+  _alertShock: {fileID: 21300000, guid: 9567bac6c68e43a5a1f3e1336294739b, type: 3}
   _internals: {fileID: 21300000, guid: ad3b1a0ac7854491b9e4e977594d3bc9, type: 3}
   _magboots: {fileID: 21300000, guid: 908e6fd9eeb04607bd6bb7fb1d999e91, type: 3}

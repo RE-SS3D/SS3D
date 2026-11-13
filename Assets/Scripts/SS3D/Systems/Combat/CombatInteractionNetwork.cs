@@ -219,6 +219,13 @@ namespace SS3D.Systems.Combat
                 return;
             }
 
+            HealthSnapshot shooterHealth = TryGetComponent(out HumanHealthController shooter) ? shooter.Snapshot : HealthSnapshot.Default;
+            if (!DownedFireRules.MayFire(shooterHealth, weapon.Profile.RequiresBothHands))
+            {
+                _interactionController.RejectInteractionForOwner();
+                return;
+            }
+
             weapon.ServerCompleteReloadIfDue();
 
             if (weapon.RoundsRemaining <= 0)
@@ -268,7 +275,8 @@ namespace SS3D.Systems.Combat
 
             float horizontalSpeed = GetHorizontalMoveSpeed();
             float exertionPenalty = stamina?.ExertionPenalty ?? 0f;
-            float spread = weapon.CurrentSpreadDegrees(horizontalSpeed, aimDistance, exertionPenalty);
+            float spread = weapon.CurrentSpreadDegrees(horizontalSpeed, aimDistance, exertionPenalty)
+                * DownedFireRules.SpreadMultiplier(shooterHealth);
             var rng = new System.Random(unchecked(Environment.TickCount ^ GetInstanceID() ^ weapon.RoundsRemaining));
 
             HumanHealthController selfHealth = GetComponentInChildren<HumanHealthController>();

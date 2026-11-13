@@ -170,7 +170,7 @@ namespace SS3D.Systems.Health
             return brainFunctionPercent > HealthConstants.ConsciousnessBrainFunctionPercent;
         }
 
-        public static HealthCriticalFlags BuildCriticalFlags(SystemicPools pools, float brainEffectiveFunctionPercent)
+        public static HealthCriticalFlags BuildCriticalFlags(SystemicPools pools, float brainEffectiveFunctionPercent, float shock = 0f)
         {
             HealthCriticalFlags flags = HealthCriticalFlags.None;
 
@@ -194,12 +194,31 @@ namespace SS3D.Systems.Health
                 flags |= HealthCriticalFlags.LowBrain;
             }
 
+            if (ShockSimulation.IsCritical(shock))
+            {
+                flags |= HealthCriticalFlags.HighShock;
+            }
+
             return flags;
         }
 
         public static HealthState EvaluateHealthState(
             SystemicPools pools,
             IReadOnlyList<OrganState> organs)
+        {
+            return EvaluateHealthState(pools, organs, null, 0f, HealthState.Healthy);
+        }
+
+        /// <summary>
+        /// Dead, CardiacArrest, Critical (systemic, brain or shock), Downed (shock or no usable leg), Healthy — first
+        /// match wins. <paramref name="previous"/> gives Downed its hysteresis (health.md §4).
+        /// </summary>
+        public static HealthState EvaluateHealthState(
+            SystemicPools pools,
+            IReadOnlyList<OrganState> organs,
+            IReadOnlyList<ZoneDamageState> zones,
+            float shock,
+            HealthState previous)
         {
             float bloodVolume = pools.BloodVolumeRatio;
             float brainStored = OrganSimulation.GetStoredOrganFunction(organs, OrganType.Brain);
@@ -216,9 +235,16 @@ namespace SS3D.Systems.Health
                 return HealthState.CardiacArrest;
             }
 
-            if (IsSystemicallyCritical(pools) || IsBrainCriticallyLow(brainEffective))
+            if (IsSystemicallyCritical(pools) || IsBrainCriticallyLow(brainEffective) || ShockSimulation.IsCritical(shock))
             {
                 return HealthState.Critical;
+            }
+
+            // A body coming out of Critical is still at least as hurt as Downed, so it keeps Downed's lower stand line.
+            bool wasDown = previous is HealthState.Downed or HealthState.Critical;
+            if (ShockSimulation.IsDowned(shock, ShockSimulation.HasUsableLeg(zones), wasDown))
+            {
+                return HealthState.Downed;
             }
 
             return HealthState.Healthy;
@@ -229,11 +255,22 @@ namespace SS3D.Systems.Health
             IReadOnlyList<ZoneDamageState> zones,
             IReadOnlyList<OrganState> organs)
         {
+            return BuildSnapshot(pools, zones, organs, ShockState.None, HealthState.Healthy);
+        }
+
+        public static HealthSnapshot BuildSnapshot(
+            SystemicPools pools,
+            IReadOnlyList<ZoneDamageState> zones,
+            IReadOnlyList<OrganState> organs,
+            ShockState shock,
+            HealthState previous)
+        {
             float worstBrute = 0f;
             float worstBurn = 0f;
             bool bleeding = false;
             int bleedingMask = 0;
             int severedMask = 0;
+            int disabledMask = 0;
             int bleedingRatePacked = 0;
             float totalBleedingRate = 0f;
 
@@ -268,12 +305,17 @@ namespace SS3D.Systems.Health
                 {
                     severedMask |= 1 << i;
                 }
+
+                if (OrganSimulation.IsLimbZone((BodyZone)i) && OrganSimulation.IsLimbFunctionallyDisabled(zones[i]))
+                {
+                    disabledMask |= 1 << i;
+                }
             }
 
             float brainStored = OrganSimulation.GetStoredOrganFunction(organs, OrganType.Brain);
             float heartStored = OrganSimulation.GetStoredOrganFunction(organs, OrganType.Heart);
             float brainEffective = GetOrganFunction(organs, OrganType.Brain, pools.BloodVolumeRatio);
-            HealthState state = EvaluateHealthState(pools, organs);
+            HealthState state = EvaluateHealthState(pools, organs, zones, shock.Shock, previous);
             bool canAct = state != HealthState.Dead && state != HealthState.Critical
                 && IsConscious(brainEffective) && !IsCardiacArrest(heartStored);
 
@@ -292,12 +334,66 @@ namespace SS3D.Systems.Health
                 TotalBleedingRate = totalBleedingRate,
                 BrainFunctionPercent = brainStored,
                 HeartFunctionPercent = heartStored,
-                MovementSpeedMultiplier = canAct ? OrganSimulation.ComputeMovementSpeedMultiplier(zones) : 0f,
+                MovementSpeedMultiplier = !canAct ? 0f
+                    : state == HealthState.Downed ? HealthConstants.DownedCrawlSpeedMultiplier
+                    : OrganSimulation.ComputeMovementSpeedMultiplier(zones)
+                        * (shock.Shock >= HealthConstants.ShockWarningThreshold ? HealthConstants.ShockStumbleSpeedMultiplier : 1f),
+                CanSprint = canAct && state != HealthState.Downed,
+                DisabledZoneMask = disabledMask,
+                HeadTraumaBlur = HeadTraumaBlur(zones),
                 CanUseArms = canAct && OrganSimulation.CanUseArms(zones),
-                CriticalFlags = BuildCriticalFlags(pools, brainEffective),
+                CriticalFlags = BuildCriticalFlags(pools, brainEffective, shock.Shock),
                 CanDefibrillate = IsCardiacArrest(heartStored) && brainStored > 0f,
                 Environment = HealthEnvironmentState.SafeDefault,
+                Shock = shock.Shock,
+                IncomingPain = shock.IncomingPain,
             };
+        }
+
+        /// <summary>The few seconds after being helped up: slower, and no sprint.</summary>
+        public static HealthSnapshot ApplyUnsteady(HealthSnapshot snapshot, bool unsteady)
+        {
+            snapshot.IsUnsteady = unsteady && snapshot.State == HealthState.Healthy;
+            if (snapshot.IsUnsteady)
+            {
+                snapshot.MovementSpeedMultiplier *= HealthConstants.UnsteadySpeedMultiplier;
+                snapshot.CanSprint = false;
+            }
+
+            return snapshot;
+        }
+
+        public static float HeadTraumaBlur(IReadOnlyList<ZoneDamageState> zones)
+        {
+            if (zones == null || zones.Count <= (int)BodyZone.Head)
+            {
+                return 0f;
+            }
+
+            return zones[(int)BodyZone.Head].Severity switch
+            {
+                WoundSeverity.Severe => HealthConstants.HeadSevereBlur,
+                >= WoundSeverity.Disabled => HealthConstants.HeadDisabledBlur,
+                _ => 0f,
+            };
+        }
+
+        /// <summary>
+        /// Lands damage that already got past armor on one zone: severity, disabled and bleeding follow it.
+        /// Returns the severity before the hit, for the tier spikes in <see cref="ShockSimulation.HitPain"/>.
+        /// </summary>
+        public static WoundSeverity ApplyZoneHit(ref ZoneDamageState state, float brute, float burn)
+        {
+            WoundSeverity before = state.Severity;
+            state.Brute += brute;
+            state.Burn += burn;
+            RefreshZoneDerivedState(ref state);
+            if (!state.IsSevered)
+            {
+                state.BleedingRate = BleedingRateForSeverity(state.Severity);
+            }
+
+            return before;
         }
 
         public static DefibrillatorOutcome ApplyDefibrillation(

@@ -2072,6 +2072,22 @@ MonoBehaviour:
     m_Localized: Black fingerless combat gloves.
     m_Metadata:
       m_Items: []
+  - m_Id: 298977481593221120
+    m_Localized: I am <k=warn>down</k>, and everything hurts.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298977481626775552
+    m_Localized: He is <k=warn>down</k>, conscious and in pain.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298977481626775553
+    m_Localized: I am <k=warn>shaking</k> and feel faint.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298977481626775554
+    m_Localized: He is <k=warn>pale and shaking</k>.
+    m_Metadata:
+      m_Items: []
   - m_Id: 298702715700355072
     m_Localized: Stun Baton
     m_Metadata:

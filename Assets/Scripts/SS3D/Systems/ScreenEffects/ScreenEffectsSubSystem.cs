@@ -445,6 +445,19 @@ namespace SS3D.Systems.ScreenEffects
                 chromaticAberration += concussion * (0.65f + 0.55f * Flicker(0.9f, 8.6f));
             }
 
+            float shock = _currentIntensity[ScreenEffectType.Shock];
+            if (shock > 0f)
+            {
+                AddVignette(shock * (0.55f + 0.15f * Breathe(4.8f)), new Color(0.12f, 0.12f, 0.14f));
+                saturation -= shock * 60f;
+            }
+
+            float shockBuildUp = _currentIntensity[ScreenEffectType.ShockBuildUp];
+            if (shockBuildUp > 0f)
+            {
+                AddVignette(shockBuildUp * Mathf.Lerp(0.2f, 0.9f, Heartbeat(1.2f)), new Color(0.08f, 0.06f, 0.08f));
+            }
+
             // Unconscious ends in a clean flat blackout (previous look) — do not pulse/tint it with dying.
             float unconscious = _currentIntensity[ScreenEffectType.Unconscious];
             if (unconscious > 0f)

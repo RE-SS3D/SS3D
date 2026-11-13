@@ -515,6 +515,12 @@ namespace SS3D.Editor
                 "Assets/Art/Animations/Misc/X Bot@Floating.fbx",
                 "Mix_Floating");
 
+            if (controller.layers.Length > 3)
+            {
+                // Downed (health.md §4): falls, crawl and lying states on Full Body Override.
+                WireDownedStates(controller, humanScale);
+            }
+
             if (controller.layers.Length > 2)
             {
                 AnimatorStateMachine additive = controller.layers[2].stateMachine;
@@ -534,7 +540,7 @@ namespace SS3D.Editor
             return "OK: Rebuilt stance blends; get-up states; injured idle severity; limp Jump/Turn90; Injured Wave Emote; "
                    + "AttackSwing variants + MirrorUpperBody; stance-aware Flinch (GettingHit/gut/HitReaction); "
                    + "Ranged Upper Body Aim Idle + FireRifle/Reload; pistol hold + Off Hand layers; interaction reaches, "
-                   + "floor bends and kneel; Floating → Mix_Floating.";
+                   + "floor bends and kneel; Floating → Mix_Floating; Downed falls, crawl and lying states.";
         }
 
         /// <summary>

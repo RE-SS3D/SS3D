@@ -63,6 +63,7 @@ namespace SS3D.Editor
                 SealBreach = LoadRequiredAlertSprite("seal-breach", missing),
                 Invincible = LoadRequiredAlertSprite("invincible", missing),
                 TankLow = LoadRequiredAlertSprite("tank-low", missing),
+                Shock = LoadRequiredAlertSprite("shock", missing),
                 Internals = LoadRequiredAlertSprite("internals", missing),
                 Magboots = LoadRequiredAlertSprite("magboots", missing),
             };

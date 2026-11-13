@@ -3,10 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using NUnit.Framework;
 using SS3D.Core;
+using SS3D.Systems.Combat;
 using SS3D.Systems.Comms;
 using SS3D.Systems.Examine;
 using SS3D.Systems.Furniture;
 using SS3D.Systems.Gamemodes;
+using SS3D.Systems.Health;
 using SS3D.Interactions;
 using SS3D.Systems.Interactions;
 using SS3D.Systems.Inventory.Containers;
@@ -166,6 +168,43 @@ namespace SS3D.Tests
             Assert.IsNull(CurrentOutcome(), "A defuse does not end the round");
             StringAssert.Contains("not armed", Examine(nuke));
             cutters.Delete();
+        }
+
+        // Down is not out (health.md §4): the crew-win check needs operatives dead, so a Downed or Critical one keeps the
+        // round going and can still be rescued by the squad.
+        [UnityTest]
+        public IEnumerator SquadDownedThenCritical_RoundGoesOn()
+        {
+            ChangesRoom = true;
+            HumanHealthController health = Body.GetComponent<HumanHealthController>();
+            BodyZone[] centerMass = { BodyZone.Chest, BodyZone.Groin };
+            int rounds = 0;
+            while (health.Snapshot.State == HealthState.Healthy && rounds < 40)
+            {
+                // Two rounds, then let the pain become shock, so the operative is caught Downed before Critical.
+                for (int i = 0; i < 2; i++, rounds++)
+                {
+                    CombatInteractionNetwork.ServerApplyLivingHit(RangedWeaponProfile.M4, health, centerMass[rounds % 2]);
+                }
+
+                yield return WaitFor(() => health.Snapshot.IncomingPain <= 0f, "the pain becomes shock", HealthConstants.ShockBuildSeconds + 2f);
+            }
+
+            Assert.AreEqual(HealthState.Downed, health.Snapshot.State, $"M4 rounds put the operative down ({rounds} rounds)");
+            yield return Hold(2f);
+            Assert.IsNull(CurrentOutcome(), "A Downed operative does not end the round");
+
+            while (health.Snapshot.State == HealthState.Downed && rounds < 80)
+            {
+                CombatInteractionNetwork.ServerApplyLivingHit(RangedWeaponProfile.M4, health, centerMass[rounds++ % 2]);
+                yield return Hold(0.2f);
+            }
+
+            yield return WaitFor(() => health.Snapshot.State == HealthState.Critical, "more rounds make the operative critical",
+                HealthConstants.ShockBuildSeconds + 2f);
+            yield return Hold(2f);
+            Assert.IsNull(CurrentOutcome(), "A Critical operative does not end the round either");
+            yield return HealFully();
         }
 
         [UnityTest]

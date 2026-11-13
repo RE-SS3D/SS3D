@@ -29,11 +29,8 @@ namespace SS3D.Systems.Entities.Humanoid
         private HumanoidLivingController _humanoidLivingController; 
         private CharacterController _characterController; 
         private Transform[] _ragdollParts;
-        /// <summary>
-        /// Every humanoid bone, blended from the ragdoll into the stand-up's first frame. Wider than the ragdoll
-        /// parts: the chest, neck, hands and feet have no rigidbody but would otherwise snap.
-        /// </summary>
-        private Transform[] _blendBones;
+        /// <summary>Blends the ragdoll (or a frozen clip) into the get-up or Downed clip's first frame.</summary>
+        private RagdollPoseBlend _poseBlend;
         /// <summary>
         /// If knockdown is supposed to expire
         /// </summary>
@@ -42,7 +39,6 @@ namespace SS3D.Systems.Entities.Humanoid
         /// How many seconds are left before the ragdoll expires
         /// </summary>
         private float _knockdownTimer; 
-        private float _elapsedResetBonesTime; 
         /// <summary>
         /// Determines how much higher than the lowest point character will be during AlignToHips(). This var prevent character from getting stuck in the floor 
         /// </summary>
@@ -55,19 +51,6 @@ namespace SS3D.Systems.Entities.Humanoid
             StandingUp
         }
         private RagdollState _currentState;
-        private class BoneTransform
-        {
-            public Vector3 Position;
-            public Quaternion Rotation;
-        }
-        /// <summary>
-        /// Bones Transforms (position and rotation) in the first frame of StandUp animation
-        /// </summary>
-        private BoneTransform[] _standUpBones;
-        /// <summary>
-        /// Bones Transforms (position and rotation) during the Ragdoll state
-        /// </summary>
-        private BoneTransform[] _ragdollBones;
 
         [SyncVar(OnChange = nameof(OnSyncPresentation))]
         private BodyPresentationState _presentation = BodyPresentationState.Locomotion;
@@ -75,8 +58,14 @@ namespace SS3D.Systems.Entities.Humanoid
         /// <summary>Replicated presentation authority. Prefer this over inventing collapse rules elsewhere.</summary>
         public BodyPresentationState Presentation => _presentation;
 
-        /// <summary>True when presentation is not locomotion (collapsed or dead).</summary>
-        public bool IsKnockedDown => _presentation != BodyPresentationState.Locomotion;
+        /// <summary>True while ragdolled (collapsed or dead). A Downed body crawls and is not knocked down.</summary>
+        public bool IsKnockedDown => _presentation.IsRagdolled();
+
+        /// <summary>Downed: on the floor, crawling under the animator (health.md §4).</summary>
+        public bool IsDowned => _presentation == BodyPresentationState.Downed;
+
+        /// <summary>Whether the current collapse is a combat knockdown that recovers on its own timer.</summary>
+        public bool IsKnockdownTimed => _isKnockdownTimed && IsKnockedDown;
 
         /// <summary>
         /// True from recovery until movement comes back: the blend into the stand-up clip and the clip up to
@@ -85,6 +74,9 @@ namespace SS3D.Systems.Entities.Humanoid
         public bool IsGettingUp => _currentState == RagdollState.BonesReset || _currentState == RagdollState.StandingUp;
 
         public event Action<bool> OnKnockdownChanged;
+
+        /// <summary>Raised on every peer when the body enters or leaves <see cref="BodyPresentationState.Downed"/>.</summary>
+        public event Action<bool> OnDownedChanged;
         /// <summary>
         /// Which stand-up clip this get-up plays. Read from the hips on each peer when the get-up starts:
         /// observers hold the synced ragdoll pose, so they agree with the owner without a SyncVar.
@@ -103,6 +95,7 @@ namespace SS3D.Systems.Entities.Humanoid
         /// </summary>
         private bool _deathRagdoll;
         private bool _lastNotifiedKnockedDown;
+        private bool _lastNotifiedDowned;
 
         private void Awake()
         {
@@ -149,13 +142,14 @@ namespace SS3D.Systems.Entities.Humanoid
             // Late join / host: do not rely on SyncVar OnChange alone for the initial value.
             if (_presentation != BodyPresentationState.Locomotion)
             {
+                NotifyKnockdownIfChanged(_presentation);
                 if (_presentation == BodyPresentationState.Dead)
                 {
                     _deathRagdoll = true;
                 }
 
                 enabled = true;
-                ApplyPresentation(_presentation, applyImpulse: false);
+                ApplyPresentation(_presentation, applyImpulse: false, snap: true);
             }
         }
 
@@ -169,21 +163,13 @@ namespace SS3D.Systems.Entities.Humanoid
             _ragdollParts = (from part in GetComponentsInChildren<RagdollPart>(true)
                 select part.transform).ToArray();
             Animator animator = GetComponent<Animator>();
-            _blendBones = animator != null && animator.isHuman
+            Transform[] blendBones = animator != null && animator.isHuman
                 ? Enumerable.Range(0, (int)HumanBodyBones.LastBone)
                     .Select(bone => animator.GetBoneTransform((HumanBodyBones)bone))
                     .Where(bone => bone != null)
                     .ToArray()
                 : _ragdollParts;
-            _standUpBones = new BoneTransform[_blendBones.Length];
-            _ragdollBones = new BoneTransform[_blendBones.Length];
-
-            for (int boneIndex = 0; boneIndex < _blendBones.Length; boneIndex++)
-            {
-                _standUpBones[boneIndex] = new();
-                _ragdollBones[boneIndex] = new();
-            }
-
+            _poseBlend = new RagdollPoseBlend(blendBones);
             _ragdollPartsCached = true;
         }
 
@@ -203,7 +189,7 @@ namespace SS3D.Systems.Entities.Humanoid
 
             // Reclaim does not change the presentation SyncVar. Reapply its physics authority
             // when ownership changes, otherwise the new owner inherits kinematic observer bones.
-            if (_hips != null && _presentation != BodyPresentationState.Locomotion)
+            if (_hips != null && _presentation.IsRagdolled())
             {
                 ApplyPresentation(_presentation, applyImpulse: false);
             }
@@ -245,7 +231,7 @@ namespace SS3D.Systems.Entities.Humanoid
             }
         }
 
-        private void WalkingBehavior() { }
+        private void WalkingBehavior() => TickDownedPose();
 
         /// <summary>
         /// Server write of presentation authority. Dead is sticky. Do not gate on <c>enabled</c> —
@@ -310,14 +296,27 @@ namespace SS3D.Systems.Entities.Humanoid
 
         private void NotifyKnockdownIfChanged(BodyPresentationState state)
         {
-            bool nextKnocked = state != BodyPresentationState.Locomotion;
-            if (_lastNotifiedKnockedDown == nextKnocked)
+            bool nextKnocked = state.IsRagdolled();
+            bool nextDowned = state == BodyPresentationState.Downed;
+
+            // Leave the old state before entering the new one, so the body state machine ends on the right state.
+            if (_lastNotifiedDowned && !nextDowned)
             {
-                return;
+                _lastNotifiedDowned = false;
+                OnDownedChanged?.Invoke(false);
             }
 
-            _lastNotifiedKnockedDown = nextKnocked;
-            OnKnockdownChanged?.Invoke(nextKnocked);
+            if (_lastNotifiedKnockedDown != nextKnocked)
+            {
+                _lastNotifiedKnockedDown = nextKnocked;
+                OnKnockdownChanged?.Invoke(nextKnocked);
+            }
+
+            if (!_lastNotifiedDowned && nextDowned)
+            {
+                _lastNotifiedDowned = true;
+                OnDownedChanged?.Invoke(true);
+            }
         }
         
         /// <summary>
@@ -389,17 +388,30 @@ namespace SS3D.Systems.Entities.Humanoid
             }
         }
 
-        private void ApplyPresentation(BodyPresentationState state, bool applyImpulse)
+        /// <param name="snap">Late join: already lying, so skip the fall and the blend.</param>
+        private void ApplyPresentation(BodyPresentationState state, bool applyImpulse, bool snap = false)
         {
             EnsureAnimatorCached();
             CacheRagdollParts();
             // Prefab may ship disabled; Update/AlignToHips must run on all peers while down.
             enabled = true;
 
-            if (state == BodyPresentationState.Locomotion)
+            if (!state.IsRagdolled())
             {
                 if (_deathRagdoll)
                 {
+                    return;
+                }
+
+                if (state == BodyPresentationState.Downed)
+                {
+                    EnterDowned(snap);
+                    return;
+                }
+
+                if ((_inDownedPose || _downedFalling) && _currentState == RagdollState.Walking)
+                {
+                    StandUpFromDownedPose();
                     return;
                 }
 
@@ -488,6 +500,8 @@ namespace SS3D.Systems.Entities.Humanoid
             EnsureAnimatorCached();
             CacheRagdollParts();
             _currentState = RagdollState.Ragdoll;
+            _inDownedPose = false;
+            _downedFalling = false;
             ToggleSyncRagdoll(true);
             ToggleController(false);
             ToggleAnimator(false);
@@ -635,7 +649,8 @@ namespace SS3D.Systems.Entities.Humanoid
         /// <summary>
         /// Switch to BonesReset state and prepare for BonesResetBehavior
         /// </summary>
-        private void BonesReset()
+        /// <param name="intoDowned">Blend into the Downed clip's first frame and stay down, instead of standing up.</param>
+        private void BonesReset(bool intoDowned = false)
         {
             if (_deathRagdoll)
             {
@@ -643,7 +658,7 @@ namespace SS3D.Systems.Entities.Humanoid
             }
 
             _currentState = RagdollState.BonesReset;
-            _elapsedResetBonesTime = 0;
+            _blendIntoDowned = intoDowned;
 
             ToggleSyncRagdoll(false);
             ToggleKinematic(true);
@@ -651,29 +666,9 @@ namespace SS3D.Systems.Entities.Humanoid
             // Every peer blends its own bones: they are kinematic everywhere now, and observers hold the
             // last synced ragdoll pose. Without this an observer cut from the ragdoll to the clip.
             _getUp = GetUpAnimation.For(IsHipsFacingDown());
-            PopulatePartsTransforms(_ragdollBones);
-            Vector3 ragdollHips = _hips.position;
-            Vector3 standUpHips = PopulateStandUpPartsTransforms(_standUpBones, _getUp);
-            CenterRootUnderStandUpHips(ragdollHips, standUpHips);
-        }
-
-        /// <summary>
-        /// The clip's first frame does not lie on the root (face up, the hips start 0.68 m behind it). Shift the
-        /// root so that frame's hips land on the ragdoll's hips; otherwise the blend drags the body across the
-        /// floor. The body then stands up where its feet were.
-        /// </summary>
-        private void CenterRootUnderStandUpHips(Vector3 ragdollHips, Vector3 standUpHips)
-        {
-            Vector3 offset = ragdollHips - standUpHips;
-            offset.y = 0f;
-            if (offset.sqrMagnitude < 0.0001f)
-            {
-                return;
-            }
-
-            _character.position += offset;
-            _hips.position = ragdollHips;
-            PopulatePartsTransforms(_ragdollBones);
+            // Downed turns the root so the lying frame's head points where the body's head does: a roll, not a spin.
+            _poseBlend.Begin(_animator, _armatureRoot, _hips, _character,
+                intoDowned ? ChooseDownedTarget() : _getUp.StateName, intoDowned ? DownedAnimation.Layer : 0, turnToMatch: intoDowned);
         }
 
         private bool IsHipsFacingDown() => _hips.forward.y < 0;
@@ -682,18 +677,18 @@ namespace SS3D.Systems.Entities.Humanoid
         /// </summary>
         private void BonesResetBehavior()
         {
-            _elapsedResetBonesTime += Time.deltaTime;
-            if (_elapsedResetBonesTime >= GetUpAnimation.BlendInSeconds)
+            if (!_poseBlend.Tick(Time.deltaTime, GetUpAnimation.BlendInSeconds))
             {
-                StandUp();
+                return;
             }
-            
-            float elapsedPercentage = Mathf.Clamp01(_elapsedResetBonesTime / GetUpAnimation.BlendInSeconds);
-            for (int partIndex = 0; partIndex < _blendBones.Length; partIndex++)
+
+            if (_blendIntoDowned)
             {
-                _blendBones[partIndex].localPosition = Vector3.Lerp(_ragdollBones[partIndex].Position, _standUpBones[partIndex].Position, elapsedPercentage);
-                _blendBones[partIndex].localRotation = Quaternion.Lerp(_ragdollBones[partIndex].Rotation, _standUpBones[partIndex].Rotation, elapsedPercentage);
+                PlayDownedPose(_downedTarget);
+                return;
             }
+
+            StandUp();
         }
         /// <summary>
         /// End the BonesReset state and start StandUp animation
@@ -702,6 +697,8 @@ namespace SS3D.Systems.Entities.Humanoid
         {
             _currentState = RagdollState.StandingUp;
             ToggleAnimator(true);
+            // Standing up out of Downed: the lying clip's override layer must not hold the body down.
+            SetDownedLayerWeight(0f);
             _animator.Play(_getUp.StateName, 0, 0);
             _standUpPlayFrame = Time.frameCount;
         }
@@ -734,54 +731,6 @@ namespace SS3D.Systems.Entities.Humanoid
             EnableAnimationDrivers();
         }
 
-        /// <summary>
-        /// Copy current blend bone transforms to array
-        /// </summary>
-        /// <param name="partsTransforms">Array, that receives ragdoll parts positions</param>
-        private void PopulatePartsTransforms(BoneTransform[] partsTransforms)
-        {
-            for (int partIndex = 0; partIndex < _blendBones.Length; partIndex++)
-            {
-                partsTransforms[partIndex].Position = _blendBones[partIndex].localPosition;
-                partsTransforms[partIndex].Rotation = _blendBones[partIndex].localRotation;
-            }
-        }
-
-        /// <summary>
-        /// Copy ragdoll parts transforms in the first frame of the stand-up state to array
-        /// </summary>
-        /// <param name = "partsTransforms">Array, that receives ragdoll parts positions</param>
-        /// <returns>World position of the hips in that frame, for the current root.</returns>
-        private Vector3 PopulateStandUpPartsTransforms(BoneTransform[] partsTransforms, GetUpAnimation.Clip getUp)
-        {
-            BoneTransform[] originalTransforms = (BoneTransform[])_ragdollBones.Clone();
-            Vector3 originalArmaturePosition = _armatureRoot.localPosition;
-            Quaternion originalArmatureRotation = _armatureRoot.localRotation;
-            // Evaluate the state through the Animator. These are humanoid muscle clips:
-            // AnimationClip.SampleAnimation leaves the bones in the avatar's T-pose, which the blend
-            // then passed through. A re-enabled Animator starts with zero layer weights, so only the
-            // Base Layer stand-up pose lands on the bones.
-            _animator.enabled = true;
-            _animator.Play(getUp.StateName, 0, 0f);
-            _animator.Update(0f);
-            _animator.enabled = false;
-            Vector3 originalHipsPosition = _hips.position;
-            Quaternion originalHipsRotation = _hips.rotation;
-            _armatureRoot.localPosition = originalArmaturePosition;
-            _armatureRoot.localRotation = originalArmatureRotation;
-            _hips.position = originalHipsPosition;
-            _hips.rotation = originalHipsRotation;
-            PopulatePartsTransforms(partsTransforms);
-            
-            // Move bones back to their original positions
-            for (int partIndex = 0; partIndex < _blendBones.Length; partIndex++)
-            {
-                _blendBones[partIndex].localPosition = originalTransforms[partIndex].Position;
-                _blendBones[partIndex].localRotation = originalTransforms[partIndex].Rotation;
-            }
-
-            return originalHipsPosition;
-        }
         [Server]
         public void ServerRecover()
         {

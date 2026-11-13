@@ -24,6 +24,7 @@ namespace SS3D.Systems.Health
             public Severity Dying;
             public Severity CardiacArrest;
             public Severity LowOxygen;
+            public Severity Shock;
         }
 
         /// <summary>
@@ -44,6 +45,7 @@ namespace SS3D.Systems.Health
                 Dying = snapshot.State == HealthState.Critical ? Severity.Critical : Severity.None,
                 CardiacArrest = snapshot.IsCardiacArrest ? Severity.Critical : Severity.None,
                 LowOxygen = ComputeLowOxygen(snapshot),
+                Shock = ComputeShock(snapshot),
             };
         }
 
@@ -60,6 +62,17 @@ namespace SS3D.Systems.Health
             }
 
             return Severity.None;
+        }
+
+        /// <summary>Warning from the stumble line; critical once Downed (or worse, from shock).</summary>
+        private static Severity ComputeShock(HealthSnapshot snapshot)
+        {
+            if (snapshot.State == HealthState.Downed || (snapshot.CriticalFlags & HealthCriticalFlags.HighShock) != 0)
+            {
+                return Severity.Critical;
+            }
+
+            return snapshot.Shock >= HealthConstants.ShockWarningThreshold ? Severity.Warning : Severity.None;
         }
 
         private static Severity ComputeLowOxygen(HealthSnapshot snapshot)

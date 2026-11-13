@@ -1,7 +1,7 @@
 > Code paths: Assets/Scripts/SS3D/Systems/Health/
-> Entry points: HumanHealthController, HealthSimulation, OrganSimulation
+> Entry points: HumanHealthController, HealthSimulation, OrganSimulation, ShockSimulation
 > Status: partial
-> Verified: 77ce6acb3 — 2026-11-12
+> Verified: 77ce6acb3 — 2026-11-13
 
 # Health
 
@@ -10,6 +10,8 @@
 Greenfield rewrite per [health_implementation_plan.md](../../plans/health_implementation_plan.md). Phase 1 shipped bleeding, bandage, and VFX. Phase 2 wires asset-backed organs into pool math, cardiac arrest, and movement debuffs (`Snapshot.MovementSpeedMultiplier` — consumed by humanoid gait/limp presentation after the develop integration). Phase 3 adds multi-threshold critical state, cardiac arrest → defib window, and chest defibrillation. Phase 4 adds BodyParts raycast zone resolution for melee combat. Phase 5 adds field treatments (burn dressing, splint, O2, CPR, transfusion, antitoxin). Phase 5b adds limb severing (zone `IsSevered`, anatomy hide, world drops, head mind-swap). Bleeding visuals now use tuned particle streams plus URP Decal blood marks (body + floor). Bleed drain uses `BleedingBloodDrainScale = 0.010` with oxy gain / arrest brain drain synced so hypoxia tracks bleed (see plan hemorrhage tuning).
 
 Local-owner [screen-effects](screen-effects.md) are driven from `HealthSnapshot` via `HealthScreenEffectMapper` (dying/critical, blood-loss tunnel vision, oxy debt, concussion, unconscious) plus hit flash on `ApplyDamage`, and turf temp/fire via `AtmosScreenEffectMapper` from `HealthSnapshot.Environment`. Main HUD alert icons merge `HealthAlertStackMapper` + `AtmosAlertStackMapper` (Hot/Cold/pressure/Fire + LowOxygen from debt or turf). Personal [audio](audio.md): heartbeat + labored breathing (`HealthPersonalAudioMapper`, max-merged with stamina); alert ding; positional flesh/blood/gasp/scream on damage and critical/vacuum edges. Server `TickHealthFromEnvironment` samples the occupant tile each 1 Hz tick: O₂ partial-pressure breathability, O₂→CO₂ breath exchange, plasma toxin intake, hot/cold/fire burn on **all zones**, and low/high/vacuum pressure → **lung** barotrauma (not chest burn). `atmosdamage off` / Health Debug checkbox skips turf coupling (`HealthEnvironmentSettings.AtmosphericDamageDisabled`). Examine Tier 0/1 health lines shipped via `CharacterExamineHealthBuilder` (see [examine](examine.md)); vitals cluster UITK remains Phase 6 remainder.
+
+**Shock and Downed ([shock-and-downed plan](../../plans/shock-and-downed.plan.md)):** each hit adds incoming pain (zone- and type-weighted, a share of armor-absorbed damage, plus a spike per wound tier crossed); the 1 Hz tick turns it into `Shock` over 3 ticks, then drains it towards a floor from open wounds and lost blood. Shock ≥ 60 (or no usable leg) → `HealthState.Downed`, standing again below 40; ≥ 100 → Critical with `HealthCriticalFlags.HighShock`. Downed maps to `BodyPresentationState.Downed`: on the floor under the animator (not a ragdoll), crawling at a quarter speed, hands kept, two-handed guns refused (`DownedFireRules`). `HelpUpInteraction` (on `HandCprExtension`) stands a Downed body early and leaves it unsteady. Shock lowers the stamina cap, drives the Shock alert, the Shock/ShockBuildUp screen effects, a hearing muffle, the onlooker stumble and the examine lines. Hit reactions (`HitReaction`) read damage before armor: flinch on every hit, stagger and `ServerDamaged` only from 30, sprint trip on a wounded leg.
 
 **Stamina Phase 7a core shipped:** see [stamina](stamina.md) — push-past-empty calls `ApplyOxyDebt`; obsolete `StaminaBar` purged from PlayerCanvas. Melee swings and ranged fire drain stamina ([combat](combat.md)); block drain is deferred.
 
@@ -32,6 +34,11 @@ Phase 0d strips legacy health components from `Human.prefab` and rewires a thinn
 - `Assets/Scripts/SS3D/Systems/IngameConsoleSystem/Commands/AtmosDamageCommand.cs` — `atmosdamage [on|off|status]`
 - `Assets/Scripts/SS3D/Systems/Health/HumanAnatomyController.cs` — limb severance visuals, world drops, head mind-swap (Phase 5b)
 - `Assets/Scripts/SS3D/Systems/Health/HealthSimulation.cs` — pool math, severity/bleeding, critical/death evaluation
+- `Assets/Scripts/SS3D/Systems/Health/ShockSimulation.cs` — pure shock math (`ShockState`: shock, incoming pain, build rate); `HitPain`, `Tick`, `Floor`, Downed hysteresis, help-up rule, feel/stumble intensities, stamina cap. Tuning constants in `HealthConstants` under "Shock" and "Downed"
+- `Assets/Scripts/SS3D/Systems/Health/HealthBodyPresentation.cs` — server: snapshot → `Ragdoll` presentation (Collapsed / Downed / Locomotion, waits out timed knockdowns) and dropping held items when arms stop working
+- `Assets/Scripts/SS3D/Systems/Health/HealthVocalAudio.cs` — positional flesh hits, pain scream, gasp/choke edges, Downed groans and Critical gasps
+- `Assets/Scripts/SS3D/Systems/Health/HitReaction.cs` — flinch strength, stagger line, view kick, sprint trip (combat.md §5)
+- `Assets/Scripts/SS3D/Systems/Health/Interactions/HelpUpInteraction.cs` — Help up a Downed body (offered by `HandCprExtension`)
 - `Assets/Scripts/SS3D/Systems/Health/OrganSimulation.cs` — zone→organ damage, organ tick drains, perfusion, limb multipliers
 - `Assets/Scripts/SS3D/Systems/Health/OrganInstance.cs` — organ registration on Human prefab / organ item prefabs
 - `Assets/Scripts/SS3D/Systems/Health/Interactions/BandageInteraction.cs` — stop bleeding (Phase 1)
@@ -77,6 +84,9 @@ Phase 0d strips legacy health components from `Human.prefab` and rewires a thinn
 - **A MonoBehaviour must live in a file of its own name to go on a prefab:** `DefibrillatorItemExtension` sat in `DefibrillatorInteraction.cs`, so `AddComponent` worked in memory but the saved prefab showed a missing script, and re-saving that prefab then failed with no error. It now has its own file. Remove a missing-script component with `GameObjectUtility.RemoveMonoBehavioursWithMissingScript` before re-running a recipe on a prefab that has one.
 
 - **Invincibility must not blank the environment:** map editor invincibility outlives the editor, and `TickHealthFromEnvironment` used to return `SafeDefault` for it, so the snapshot said 101 kPa in vacuum and no alert showed, with no error. It now samples and skips only the harm; `HasSample` false means no reading, not safe air. Hit 2026-11-06.
+- **`ServerDamaged` is the stagger signal, not "any damage":** it fires only for hits of `HeavyHitStaggerDamage` (30) or more before armor, so an M4 round no longer cancels a timed step (combat.md §5: a flinch never cancels). Subscribe to `SnapshotChanged` for "took damage".
+- **The combat dummy is armored:** it spawns in `JumpsuitSecurity` (5 brute absorbed per hit), so shock/Downed numbers on a dummy differ from the bare-body targets. `ShockScenarios` takes the jumpsuit off first, half a second after spawning (deleting it in the spawn frame logs "Transform resides in a Prefab asset").
+- **`HealthState` is appended-only:** `Downed = 4` comes after `Dead`, so never compare states by order. Anything that gates on `== HealthState.Healthy` (speech did) also has to allow Downed, which is conscious and can talk.
 - **Critical patients can still act despite collapsing:** snapshot `CanUseArms` and `MovementSpeedMultiplier` must include systemic critical, consciousness, arrest and death checks, not only limb injury. `PublishSnapshot` drops held items on loss of arm control; recovery restores capabilities.
 - **Blood decals vanish after setting Surface Type Transparent:** URP `Decal` shadergraph materials must stay **Opaque**. Alpha already blends via the DBuffer/Screen Space passes (`SrcAlpha OneMinusSrcAlpha`); flipping `_Surface` / render queue 3000 / `_SURFACE_TYPE_TRANSPARENT` makes projectors stop drawing. Keep `BloodDecal.mat` Opaque like the package `Decal.mat` default.
 - **White / untinted splatters:** most `Assets/Art/Textures/World/VFX/Splatters/Splatter*.png` are white masks. URP Decal has no Base Color multiply (only `Base_Map` → albedo). `BleedingVfxCatalog.CreateDecalMaterial` tints those masks at runtime; do not “fix” white by switching the material to Transparent.
@@ -103,8 +113,10 @@ Phase 0d strips legacy health components from `Human.prefab` and rewires a thinn
 
 ## Tests
 
-- `Testing/ui/validate.sh --steps compile,editmode`: the health simulation, treatment and environment exposure EditMode tests.
+- `Testing/ui/validate.sh --steps compile,editmode`: the health simulation, treatment and environment exposure EditMode tests. `ShockSimulationTests` pins the M4 outcomes (center mass Downed at 6–9 hits, Critical at 10–14; arms not Downed before 12; hardsuit ≥ 1.5× the hits) through the same zone/armor/shock steps the controller runs.
 - `Testing/ui/validate.sh --steps compile,scenarios:Medical` (`MedicalScenarios`): bandaging a bleeding wound on yourself.
+- `Testing/ui/validate.sh --steps compile,scenarios:Combat` (`ShockScenarios`): an M4 burst downs a dummy, bandages stand it up, a second burst makes it Critical; Help up; a hardsuit takes more rounds. `scenarios:NukeOps` checks a Downed or Critical operative keeps the round going. `mppm:downed`: the remote owner sees its own body Downed and stands again after a heal.
+- EditMode: `ShockSimulationTests` (M4 targets), `DownedBodyTests`, `ShockFeedbackTests`, `HitReactionTests`.
 - `Testing/ui/validate.sh --steps compile,scenarios:Environment` (`EnvironmentScenarios`): plasma in the room drives a body critical through the real atmos → health tick (~17 s: toxin intake is capped at 0.08/tick against 0.03/tick liver clearance, so more gas doesn't speed it up).
 
 ## Depends on / Used by

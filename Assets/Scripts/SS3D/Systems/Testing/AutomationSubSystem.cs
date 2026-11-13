@@ -518,6 +518,28 @@ namespace SS3D.Systems.Testing
                         float.Parse(instruction.Args[1], System.Globalization.CultureInfo.InvariantCulture)));
                     break;
 
+                // Server: shoots the first remote body Downed (mppm:downed); heal_clients undoes it.
+                case "down_client":
+                    yield return DownedAutomation.DownRemoteBody(_waitTimeoutSeconds);
+                    TestSignal.Emit(this, "ClientDowned");
+                    break;
+
+                case "heal_clients":
+                    DownedAutomation.HealRemoteBodies();
+                    TestSignal.Emit(this, "ClientsHealed");
+                    break;
+
+                // Client: the owned body crawls Downed here, then stands once healed.
+                case "assert_downed":
+                    yield return DownedAutomation.AssertOwnBodyDowned(_waitTimeoutSeconds);
+                    TestSignal.Emit(this, "DownedSeen");
+                    break;
+
+                case "assert_stood":
+                    yield return DownedAutomation.AssertOwnBodyStood(_waitTimeoutSeconds);
+                    TestSignal.Emit(this, "StoodSeen");
+                    break;
+
                 // Server: narrates the examine cue from the host's body onto the first remote body (target-only line).
                 case "narrate_on_client":
                     TestSignal.Emit(this, "ActionNarrated", NarrateOnClient());

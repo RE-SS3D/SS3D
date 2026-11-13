@@ -22,6 +22,11 @@ namespace SS3D.Systems.Health
                 return BodyPresentationState.Collapsed;
             }
 
+            if (snapshot.State == HealthState.Downed)
+            {
+                return BodyPresentationState.Downed;
+            }
+
             return BodyPresentationState.Locomotion;
         }
     }

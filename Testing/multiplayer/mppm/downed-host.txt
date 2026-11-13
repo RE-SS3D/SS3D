@@ -1,0 +1,16 @@
+# Guards: a player shot Downed crawls on their own client (animated, controller and hands live, not ragdolled) and stands again once healed (health.md §4) · Not cheaper because: the owner's view of Ragdoll presentation, the body state machine and its CharacterController needs a second process
+# Main editor (host) side. Player2 runs scenarios/downed-client.txt.
+wait_timeout 120
+wait_connected
+wait_clients 1
+ready
+start_round
+wait_round Ongoing
+embark
+assert_embarked
+wait_players 2
+wait_seconds 4
+down_client
+wait_seconds 12
+heal_clients
+wait_seconds 15

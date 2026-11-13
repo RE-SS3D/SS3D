@@ -7,15 +7,17 @@ using UnityEngine;
 namespace SS3D.Systems.Health.Interactions
 {
     /// <summary>
-    /// Adds empty-hand CPR from hand sources when the patient needs oxy assistance.
+    /// Empty-hand help from hand sources: CPR when the patient needs oxy assistance, and helping a Downed body up.
     /// </summary>
     public sealed class HandCprExtension : MonoBehaviour, IInteractionSourceExtension
     {
         private CprInteraction _interaction;
+        private HelpUpInteraction _helpUp;
 
         private void Awake()
         {
             _interaction = new CprInteraction();
+            _helpUp = new HelpUpInteraction();
         }
 
         public void GetSourceInteractions(IInteractionTarget[] targets, List<InteractionEntry> interactions, InteractionEvent context)
@@ -36,6 +38,11 @@ namespace SS3D.Systems.Health.Interactions
                 if (_interaction.CanInteract(context.WithTarget(target)))
                 {
                     interactions.Add(new InteractionEntry(target, _interaction));
+                }
+
+                if (_helpUp != null && _helpUp.CanInteract(context.WithTarget(target)))
+                {
+                    interactions.Add(new InteractionEntry(target, _helpUp));
                 }
             }
         }

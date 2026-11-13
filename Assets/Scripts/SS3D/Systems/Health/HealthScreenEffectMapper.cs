@@ -29,6 +29,8 @@ namespace SS3D.Systems.Health
             public float LowOxygen;
             public float Concussion;
             public float Unconscious;
+            public float Shock;
+            public float ShockBuildUp;
         }
 
         public static Intensities Compute(HealthSnapshot snapshot)
@@ -50,8 +52,10 @@ namespace SS3D.Systems.Health
                 DyingCritical = dying,
                 BloodLossTunnelVision = ComputeBloodLoss(snapshot.Pools.BloodVolumeRatio),
                 LowOxygen = lowOxygen,
-                Concussion = ComputeConcussion(snapshot.BrainFunctionPercent),
+                Concussion = Mathf.Max(ComputeConcussion(snapshot.BrainFunctionPercent), snapshot.HeadTraumaBlur),
                 Unconscious = snapshot.IsConscious ? 0f : 1f,
+                Shock = snapshot.IsConscious ? ShockSimulation.FeelIntensity(snapshot.Shock) : 0f,
+                ShockBuildUp = ShockSimulation.IsGoingDown(snapshot) ? 1f : 0f,
             };
         }
 
@@ -68,6 +72,8 @@ namespace SS3D.Systems.Health
             effects.SetEffect(ScreenEffectType.LowOxygen, intensities.LowOxygen);
             effects.SetEffect(ScreenEffectType.Concussion, intensities.Concussion);
             effects.SetEffect(ScreenEffectType.Unconscious, intensities.Unconscious);
+            effects.SetEffect(ScreenEffectType.Shock, intensities.Shock);
+            effects.SetEffect(ScreenEffectType.ShockBuildUp, intensities.ShockBuildUp);
         }
 
         public static void Clear(ScreenEffectsSubSystem effects)
@@ -82,6 +88,8 @@ namespace SS3D.Systems.Health
             effects.SetEffect(ScreenEffectType.LowOxygen, 0f);
             effects.SetEffect(ScreenEffectType.Concussion, 0f);
             effects.SetEffect(ScreenEffectType.Unconscious, 0f);
+            effects.SetEffect(ScreenEffectType.Shock, 0f);
+            effects.SetEffect(ScreenEffectType.ShockBuildUp, 0f);
         }
 
         private static float ComputeDyingCritical(HealthSnapshot snapshot)

@@ -26,6 +26,8 @@ Glance examine (hover + Shift-hold) is **not** an `IInteraction` — `Examinable
 
 **Editor:** **SS3D → Data → Rebuild All UI Catalogs** (the Examine builder runs inside the umbrella). Hand Search wiring: `HandsPrefabSetup.Wire` / `HumanPrefabRecipes`.
 
+**Shock lines (health.md §7):** `CharacterExamineHealthBuilder` reads "pale and shaking" from shock 35 and "down, conscious and in pain" while Downed (keys `examine.health.shock.*` / `examine.health.downed.*`, seeded by `ExamineIdentificationKeySetup.AddExamineFeedbackKeys`).
+
 ## Start here
 
 Paths are under `Assets/Scripts/SS3D/Systems/` unless they start with `UI/` (`Assets/Scripts/SS3D/UI/`).

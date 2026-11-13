@@ -49,8 +49,7 @@ namespace SS3D.Systems.Entities.Humanoid
         private bool _ownerPredictedAttack;
         private float _upperBodyWeight;
         private float _upperBodyWeightTarget;
-        private float _additiveWeight;
-        private float _additiveWeightTarget;
+        private AdditiveLayerWeight _additive;
         private bool _posingSuppressed;
         private int _nextAttackVariant;
         private bool _hasAttackRateParameter;
@@ -599,11 +598,7 @@ namespace SS3D.Systems.Entities.Humanoid
                 return;
             }
 
-            _additiveWeight = Mathf.MoveTowards(
-                _additiveWeight,
-                _additiveWeightTarget,
-                Time.deltaTime * _additiveWeightLerp);
-            _animator.SetLayerWeight(2, _additiveWeight);
+            _animator.SetLayerWeight(2, _additive.Tick(Time.deltaTime, _additiveWeightLerp, Time.time));
         }
 
         public void ApplySnapshot(BodyAnimationSnapshot snapshot)
@@ -820,7 +815,7 @@ namespace SS3D.Systems.Entities.Humanoid
 
                 // Soft target only — TickAdditiveWeight lerps. Stagger raises Additive so unmuted
                 // Additive Flinch (gut) shows; never slam Empty Additive (hurting idle) to 1.
-                _additiveWeightTarget = snapshot.State == BodyState.Staggered
+                _additive.Target = snapshot.State == BodyState.Staggered
                     ? Mathf.Max(injuryWeight, StaggerAdditiveWeight)
                     : injuryWeight;
             }
@@ -866,6 +861,10 @@ namespace SS3D.Systems.Entities.Humanoid
             else if (trigger == AnimationTriggerId.Throw)
             {
                 BeginThrow(attackVariant & 0x3);
+            }
+            else if (trigger == AnimationTriggerId.Flinch)
+            {
+                _additive.Flinch(attackVariant, Time.time);
             }
 
             int hash = Animations.Humanoid.GetTriggerHash(trigger);

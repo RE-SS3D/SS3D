@@ -218,9 +218,11 @@ namespace SS3D.Systems.Stamina
             float heart = 1f;
             float lungs = 1f;
             float blood = 1f;
+            float shockCap = 1f;
             if (_health != null)
             {
                 HealthSnapshot snapshot = _health.Snapshot;
+                shockCap = ShockSimulation.StaminaCapScale(snapshot.Shock);
                 heart = Mathf.Clamp01(snapshot.HeartFunctionPercent / 100f);
                 lungs = Mathf.Clamp01(
                     (_health.GetStoredOrganFunction(OrganType.LeftLung)
@@ -235,7 +237,7 @@ namespace SS3D.Systems.Stamina
             float weightMaxScale = Mathf.Lerp(1f, 0.5f, encumbrance);
             float weightRegenScale = Mathf.Lerp(1f, 0.4f, encumbrance);
 
-            _stamina.ApplyModifiers(weightMaxScale, healthRegen * weightRegenScale);
+            _stamina.ApplyModifiers(weightMaxScale * shockCap, healthRegen * weightRegenScale);
         }
 
         [Server]

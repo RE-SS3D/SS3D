@@ -23,6 +23,22 @@ namespace SS3D.Systems.Health
 
         private const float InternalsBreathingIntensity = 0.4f;
 
+        /// <summary>Heartbeat while pending pain will carry shock past Downed.</summary>
+        public const float ShockBuildUpHeartbeat = 0.6f;
+
+        /// <summary>Hearing muffle at full shock feel.</summary>
+        public const float ShockMuffleScale = 0.8f;
+
+        public static float ComputeMuffle(HealthSnapshot snapshot)
+        {
+            if (snapshot.State == HealthState.Dead || !snapshot.IsConscious)
+            {
+                return 0f;
+            }
+
+            return ShockSimulation.FeelIntensity(snapshot.Shock) * ShockMuffleScale;
+        }
+
         public static float ComputeHeartbeatIntensity(HealthSnapshot snapshot)
         {
             // IsCardiacArrest is the operative flag (mirrors HealthScreenEffectMapper.ComputeDyingCritical,
@@ -31,6 +47,12 @@ namespace SS3D.Systems.Health
             if (snapshot.IsCardiacArrest)
             {
                 return 0f;
+            }
+
+            // The build-up warning: pain on its way will put this body down.
+            if (ShockSimulation.IsGoingDown(snapshot))
+            {
+                return ShockBuildUpHeartbeat;
             }
 
             if (snapshot.State != HealthState.Critical)
@@ -92,10 +114,12 @@ namespace SS3D.Systems.Health
             personalAudio.SetHeartbeatIntensity(ComputeHeartbeatIntensity(snapshot));
             personalAudio.SetHealthBreathingIntensity(ComputeBreathingIntensity(snapshot));
             personalAudio.SetInternalsBreathingIntensity(ComputeInternalsIntensity(snapshot));
+            AmbienceHandler.HealthMuffle = ComputeMuffle(snapshot);
         }
 
         public static void Clear(PersonalAudioSubSystem personalAudio)
         {
+            AmbienceHandler.HealthMuffle = 0f;
             if (personalAudio == null)
             {
                 return;

@@ -31,7 +31,8 @@ namespace SS3D.Systems.Entities.Humanoid
             : 1f);
 
         /// <summary>The run toggle survives, so sprinting returns when the boots let go (armor.md §3).</summary>
-        public override bool IsRunning => base.IsRunning && (_evaGear == null || !_evaGear.MagbootsAnchored);
+        public override bool IsRunning => base.IsRunning && (_evaGear == null || !_evaGear.MagbootsAnchored)
+            && (_healthController == null || _healthController.Snapshot.CanSprint);
 
         /// <summary>World speed scale from worn gear. Reads synced state, because movement is owner-side.</summary>
         public float GearSpeedFactor => _evaGear != null ? _evaGear.MovementSpeedFactor : 1f;
@@ -124,7 +125,7 @@ namespace SS3D.Systems.Entities.Humanoid
             }
 
             if (TryGetComponent(out Ragdoll ragdoll)
-                && ragdoll.Presentation != BodyPresentationState.Locomotion)
+                && ragdoll.Presentation.IsRagdolled())
             {
                 return;
             }
@@ -154,7 +155,7 @@ namespace SS3D.Systems.Entities.Humanoid
         protected override void ProcessCharacterMovement()
         {
             if (_healthController != null
-                && BodyPresentationIntent.FromSnapshot(_healthController.Snapshot) != BodyPresentationState.Locomotion)
+                && BodyPresentationIntent.FromSnapshot(_healthController.Snapshot).IsRagdolled())
             {
                 Input = Vector2.zero;
                 TargetMovement = Vector3.zero;
@@ -162,7 +163,7 @@ namespace SS3D.Systems.Entities.Humanoid
             }
 
             if (TryGetComponent(out Ragdoll ragdoll)
-                && ragdoll.Presentation != BodyPresentationState.Locomotion)
+                && ragdoll.Presentation.IsRagdolled())
             {
                 // Collapse disables this controller; do not Move gravity/CC while down (fights ragdoll).
                 return;

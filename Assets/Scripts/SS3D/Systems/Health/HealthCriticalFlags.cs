@@ -10,5 +10,6 @@ namespace SS3D.Systems.Health
         HighOxyDebt = 1 << 1,
         HighToxin = 1 << 2,
         LowBrain = 1 << 3,
+        HighShock = 1 << 4,
     }
 }

@@ -248,6 +248,7 @@ namespace SS3D.Systems.Health
             builder.AppendLine($"  Blood volume: {snapshot.Pools.BloodVolumeRatio:P0}");
             builder.AppendLine($"  Oxy debt: {snapshot.Pools.OxyDebt:F2}");
             builder.AppendLine($"  Toxin: {snapshot.Pools.ToxinConcentration:F2}");
+            builder.AppendLine($"  Shock: {snapshot.Shock:F1}  |  Incoming pain: {snapshot.IncomingPain:F1}");
             builder.AppendLine();
             builder.AppendLine("Worst zone damage (snapshot)");
             builder.AppendLine($"  Brute: {snapshot.WorstZoneBrute:F1}  |  Burn: {snapshot.WorstZoneBurn:F1}");

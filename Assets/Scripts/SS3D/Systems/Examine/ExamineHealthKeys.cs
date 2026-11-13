@@ -13,6 +13,10 @@ namespace SS3D.Systems.Examine
         public const string CriticalOther = "examine.health.critical.other";
         public const string UnconsciousSelf = "examine.health.unconscious.self";
         public const string UnconsciousOther = "examine.health.unconscious.other";
+        public const string DownedSelf = "examine.health.downed.self";
+        public const string DownedOther = "examine.health.downed.other";
+        public const string ShockSelf = "examine.health.shock.self";
+        public const string ShockOther = "examine.health.shock.other";
 
         // Tier 0 appearance — shared shape, self vs other copy.
         public const string SelfHurtAndBleeding = "examine.health.self.hurt_and_bleeding";
@@ -50,6 +54,10 @@ namespace SS3D.Systems.Examine
         public const string CriticalOtherFallback = "He is in <k=danger>critical condition</k>.";
         public const string UnconsciousSelfFallback = "Everything goes dark.";
         public const string UnconsciousOtherFallback = "He is unconscious.";
+        public const string DownedSelfFallback = "I am <k=warn>down</k>, and everything hurts.";
+        public const string DownedOtherFallback = "He is <k=warn>down</k>, conscious and in pain.";
+        public const string ShockSelfFallback = "I am <k=warn>shaking</k> and feel faint.";
+        public const string ShockOtherFallback = "He is <k=warn>pale and shaking</k>.";
 
         public const string SelfHurtAndBleedingFallback = "I am <k=warn>hurt</k> and <k=danger>bleeding</k> from the {0}.";
         public const string SelfBleedingFallback = "I am <k=danger>bleeding</k> from the {0}.";
