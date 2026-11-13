@@ -505,6 +505,7 @@ namespace SS3D.Systems.Entities.Humanoid.Body
             // Pack Flinch (+ Staggered) before sequence bump — SyncTriggerSequence OnChange
             // rebuilds from packed snapshot and would wipe ActiveTrigger if sequence came first.
             _snapshot.ActiveTrigger = AnimationTriggerId.Flinch;
+            _snapshot.AttackVariant = 3;
             if (_snapshot.State != BodyState.Staggered)
             {
                 _previousBodyState = _snapshot.State;
@@ -519,6 +520,20 @@ namespace SS3D.Systems.Entities.Humanoid.Body
                 ApplyLocalSnapshot();
                 _triggerSequence++;
             }
+        }
+
+        /// <summary>
+        /// Server: the body jolts (additive Flinch) without leaving its state, so nothing it is doing is cancelled
+        /// (combat.md §5). <paramref name="strength"/> 0–3 scales the jolt.
+        /// </summary>
+        [Server]
+        public void ApplyFlinch(byte strength)
+        {
+            // Pack the trigger before the sequence bump, as in ApplyStagger.
+            _snapshot.ActiveTrigger = AnimationTriggerId.Flinch;
+            _snapshot.AttackVariant = (byte)(strength & 0x3);
+            ApplyLocalSnapshot();
+            _triggerSequence++;
         }
 
         public bool CanPerformAction()

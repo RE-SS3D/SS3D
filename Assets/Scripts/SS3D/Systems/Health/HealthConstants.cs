@@ -151,6 +151,14 @@
         public const float HeadSevereBlur = 0.4f;
         public const float HeadDisabledBlur = 0.6f;
 
+        // Hit reactions (combat.md §5).
+        /// <summary>Damage before armor at which a hit staggers (cancels what the victim is doing) instead of only flinching.</summary>
+        public const float HeavyHitStaggerDamage = 30f;
+        public const float SprintTripSeconds = 2.5f;
+        public const float ViewKickMinAmplitude = 0.04f;
+        public const float ViewKickMaxAmplitude = 0.16f;
+        public const float ViewKickSeconds = 0.25f;
+
         // Downed (health.md §4).
         public const float DownedCrawlSpeedMultiplier = 0.25f;
         /// <summary>One-handed weapons fired while Downed: accuracy cone × this (a very wide reticle).</summary>

@@ -16,6 +16,7 @@ using SS3D.Systems.Entities.Humanoid.Body;
 using SS3D.Systems.Inventory.Containers;
 using SS3D.Systems.Inventory.Items;
 using SS3D.Systems.ScreenEffects;
+using SS3D.Systems.Screens;
 using SS3D.Systems.Tile;
 using System;
 using System.Collections.Generic;
@@ -41,6 +42,7 @@ namespace SS3D.Systems.Health
         private HumanAnatomyController _anatomy;
         private Ragdoll _ragdoll;
         private HumanoidCombatController _combatController;
+        private HumanoidBodyStateMachine _bodyState;
         private HumanInventory _inventory;
         private EvaGearController _evaGear;
         private bool _deathTriggered;
@@ -289,7 +291,9 @@ namespace SS3D.Systems.Health
 
             PublishSnapshot();
 
-            if (brute + burn > 0f)
+            // Only a heavy hit cancels what the victim is doing; an ordinary one only flinches (combat.md §5).
+            float preArmor = incomingBrute + incomingBurn;
+            if (HitReaction.IsStagger(preArmor))
             {
                 ServerDamaged?.Invoke();
             }
@@ -301,32 +305,51 @@ namespace SS3D.Systems.Health
                 && !_deathTriggered
                 && _snapshot.State != HealthState.Dead)
             {
-                RpcHitFlash(Owner);
+                RpcHitFlash(Owner, HitReaction.ViewKickAmplitude(preArmor));
+            }
+
+            if (preArmor > 0f)
+            {
+                ApplyHitReaction(zone, before, preArmor);
             }
 
             if (brute >= HealthConstants.BloodSprayMinBrute)
             {
                 float intensity = Mathf.Clamp01(brute / HealthConstants.BloodSprayFullBrute);
                 RpcBloodImpactBurst(zone, intensity);
-                TryApplyHitFlinch(brute);
                 _vocalAudio.PlayHitImpact(Transform.position, intensity);
                 _vocalAudio.TryPainScream(Transform.position, brute, MayVocalize());
             }
         }
 
         /// <summary>
-        /// Standing flinch via <see cref="HumanoidCombatController.OnHitReceived"/> — only while locomotion.
+        /// The body's reaction to a hit, from its damage before armor (combat.md §5): a heavy hit staggers a standing
+        /// body, any other hit only flinches it, and a hit on a wounded leg trips a sprinting one (health.md §5).
+        /// Ragdolled bodies don't react.
         /// </summary>
         [Server]
-        private void TryApplyHitFlinch(float brute)
+        private void ApplyHitReaction(BodyZone zone, WoundSeverity before, float preArmor)
         {
             if (_ragdoll == null)
             {
                 _ragdoll = GetComponent<Ragdoll>();
             }
 
-            if (_ragdoll != null && _ragdoll.Presentation != BodyPresentationState.Locomotion)
+            if (_deathTriggered || (_ragdoll != null && _ragdoll.Presentation.IsRagdolled()))
             {
+                return;
+            }
+
+            if (_bodyState == null)
+            {
+                _bodyState = GetComponent<HumanoidBodyStateMachine>();
+            }
+
+            bool standing = _ragdoll == null || _ragdoll.Presentation == BodyPresentationState.Locomotion;
+            if (standing && _ragdoll != null && _bodyState != null
+                && HitReaction.ShouldTrip(zone, before, _bodyState.Snapshot.MovementSpeed))
+            {
+                _ragdoll.ServerKnockdownAtLeast(HealthConstants.SprintTripSeconds);
                 return;
             }
 
@@ -335,15 +358,15 @@ namespace SS3D.Systems.Health
                 _combatController = GetComponent<HumanoidCombatController>();
             }
 
-            if (_combatController == null)
+            if (standing && HitReaction.IsStagger(preArmor) && _combatController != null)
             {
+                float t = Mathf.Clamp01(preArmor / (HealthConstants.HeavyHitStaggerDamage * 2f));
+                // Keep stagger through most of the flinch clip so Additive Flinch weight can lerp out softly.
+                _combatController.OnHitReceived(Mathf.Lerp(0.55f, 0.85f, t));
                 return;
             }
 
-            float t = Mathf.Clamp01(brute / HealthConstants.BloodSprayFullBrute);
-            // Keep stagger through most of the flinch clip so Additive Flinch weight can lerp out softly.
-            float staggerSeconds = Mathf.Lerp(0.55f, 0.85f, t);
-            _combatController.OnHitReceived(staggerSeconds);
+            _bodyState?.ApplyFlinch(HitReaction.FlinchStrength(preArmor));
         }
 
         /// <summary>
@@ -955,7 +978,7 @@ namespace SS3D.Systems.Health
         }
 
         [TargetRpc(RunLocally = true)]
-        private void RpcHitFlash(NetworkConnection target)
+        private void RpcHitFlash(NetworkConnection target, float viewKick)
         {
             // Belt-and-suspenders: only flash while this body still has a local living mind.
             if (!IsLocalOwnerMind() || _deathTriggered || _snapshot.State == HealthState.Dead)
@@ -964,6 +987,11 @@ namespace SS3D.Systems.Health
             }
 
             SubSystems.GetOrNull<ScreenEffectsSubSystem>()?.TriggerHitFlash();
+            // The victim's own view kicks with the flinch (combat.md §5).
+            if (SceneRegistry<CameraFollow>.Count > 0)
+            {
+                SceneRegistry<CameraFollow>.All[0].AddImpulse(viewKick, HealthConstants.ViewKickSeconds);
+            }
         }
 
         private void ApplyScreenEffectsFromSnapshot(HealthSnapshot snapshot)
