@@ -671,7 +671,9 @@ namespace SS3D.UI.Lobby
             if (_observeButton != null)
             {
                 bool ongoing = _runtime && _roundState == RoundState.Ongoing;
-                _observeButton.text = ongoing ? (_inRound ? "IN ROUND" : "OBSERVE") : _observing ? "✓  OBSERVING" : "OBSERVE";
+                _observeButton.text = "OBSERVE";
+                if (ongoing && _inRound) _observeButton.text = "IN ROUND";
+                else if (!ongoing && _observing) _observeButton.text = "✓  OBSERVING";
                 _observeButton.EnableInClassList("lobby-shell__btn--observe-on", _observing && !ongoing);
             }
 
