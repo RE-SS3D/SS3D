@@ -364,6 +364,10 @@ namespace SS3D.UI.MainHud
             float aimDistance = EstimateRangedAimDistance(maxRange);
             float exertionPenalty = _stamina != null ? _stamina.ExertionPenalty : 0f;
             float spread = ((ICombatReadout)ranged).CurrentSpreadDegrees(horizontalSpeed, aimDistance, exertionPenalty);
+            if (_localPlayer != null && _localPlayer.TryGetComponent(out HumanHealthController health))
+            {
+                spread *= DownedFireRules.SpreadMultiplier(health.Snapshot);
+            }
             // Map current cone into 0–1 using a readable reference (~still + light move at mid range).
             float bloomRef = Mathf.Max(
                 2.5f,

@@ -9,7 +9,6 @@ using SS3D.Systems.Atmospherics;
 using SS3D.Systems.Atmospherics.Jobs;
 using SS3D.Systems.Atmospherics.Pipes;
 using SS3D.Systems.Audio;
-using AudioType = SS3D.Systems.Audio.AudioType;
 using SS3D.Systems.Combat;
 using SS3D.Systems.Entities;
 using SS3D.Systems.Entities.Humanoid;
@@ -36,6 +35,7 @@ namespace SS3D.Systems.Health
 
         private SystemicPools _pools = SystemicPools.Default;
         private ShockState _shock = ShockState.None;
+        private float _unsteadyUntil;
         private Entity _entity;
         private WoundVfx _woundVfx;
         private HumanAnatomyController _anatomy;
@@ -44,12 +44,12 @@ namespace SS3D.Systems.Health
         private HumanInventory _inventory;
         private EvaGearController _evaGear;
         private bool _deathTriggered;
-        private bool _healthCollapseActive;
+        private HealthBodyPresentation _presentation;
+
+        private HealthBodyPresentation Presentation => _presentation ??= new HealthBodyPresentation(GetComponent<Ragdoll>());
         private bool _drivingLocalPresentation;
         private HealthEnvironmentState _environment = HealthEnvironmentState.SafeDefault;
-        private HealthState _previousAudioHealthState = HealthState.Healthy;
-        private bool _previousAudioVacuum;
-        private float _nextScreamTime;
+        private readonly HealthVocalAudio _vocalAudio = new();
 
         [SyncVar(OnChange = nameof(SyncSnapshot))]
         private HealthSnapshot _snapshot = HealthSnapshot.Default;
@@ -172,12 +172,26 @@ namespace SS3D.Systems.Health
             base.OnStopServer();
             ServerBodies.Remove(this);
             HealthChannel.Unsubscribe(HandleHealthTick);
+            if (_ragdoll != null)
+            {
+                _ragdoll.OnKnockdownChanged -= HandleKnockdownChanged;
+            }
         }
 
         public override void OnStartServer()
         {
             base.OnStartServer();
             ServerBodies.Add(this);
+            if (_ragdoll == null)
+            {
+                _ragdoll = GetComponent<Ragdoll>();
+            }
+
+            if (_ragdoll != null)
+            {
+                _ragdoll.OnKnockdownChanged += HandleKnockdownChanged;
+            }
+
             HealthChannel.Subscribe(HandleHealthTick);
             EnsureBuiltinOrgans();
             OrganSimulation.EnsureDefaultOrgans(_organs);
@@ -295,8 +309,8 @@ namespace SS3D.Systems.Health
                 float intensity = Mathf.Clamp01(brute / HealthConstants.BloodSprayFullBrute);
                 RpcBloodImpactBurst(zone, intensity);
                 TryApplyHitFlinch(brute);
-                PlayHitImpactSounds(intensity);
-                TryPlayPainScream(brute);
+                _vocalAudio.PlayHitImpact(Transform.position, intensity);
+                _vocalAudio.TryPainScream(Transform.position, brute, MayVocalize());
             }
         }
 
@@ -436,6 +450,24 @@ namespace SS3D.Systems.Health
             PublishSnapshot();
         }
 
+        /// <summary>
+        /// Another player pulled this body up (<see cref="Interactions.HelpUpInteraction"/>): shock drops under the stand
+        /// line and the body is unsteady for a few seconds. Refused when the rules no longer allow it.
+        /// </summary>
+        [Server]
+        public bool ServerHelpUp()
+        {
+            if (!ShockSimulation.CanBeHelpedUp(_snapshot))
+            {
+                return false;
+            }
+
+            _shock = ShockSimulation.HelpUp(_shock);
+            _unsteadyUntil = Time.time + HealthConstants.UnsteadySeconds;
+            PublishSnapshot();
+            return true;
+        }
+
         [Server]
         public void ApplyBloodTransfusion(float bloodRestore = HealthConstants.TransfusionBloodRestore)
         {
@@ -569,43 +601,12 @@ namespace SS3D.Systems.Health
             _woundVfx?.PlayImpactBurst(zone, intensity);
         }
 
-        /// <summary>
-        /// Positional flesh + blood SFX at the body (audio.md §3). Server-triggered so the pool
-        /// fans out via ObserversRpc; parent null so StopAudioSource on the body cannot kill it.
-        /// </summary>
-        [Server]
-        private void PlayHitImpactSounds(float intensity)
+        /// <summary>Dead, unconscious and ragdolled bodies don't vocalize; flesh impact sounds still play.</summary>
+        private bool MayVocalize()
         {
-            AudioSubSystem audio = SubSystems.Get<AudioSubSystem>();
-            if (audio == null)
+            if (_deathTriggered || _snapshot.State == HealthState.Dead || !_snapshot.IsConscious)
             {
-                return;
-            }
-
-            Vector3 position = Transform.position;
-            string[] flesh = CombatAudioTrackIds.FleshHit;
-            string fleshId = flesh[UnityEngine.Random.Range(0, flesh.Length)];
-            float pitch = UnityEngine.Random.Range(0.92f, 1.08f);
-            audio.PlayAudioSource(AudioType.Sfx, fleshId, position, null, false, 0.75f, pitch);
-
-            string bloodId = intensity >= 0.65f ? HealthAudioTrackIds.Splat : HealthAudioTrackIds.Blood1;
-            audio.PlayAudioSource(AudioType.Sfx, bloodId, position, null, false, 0.55f + 0.35f * intensity, pitch);
-        }
-
-        [Server]
-        private void TryPlayPainScream(float brute)
-        {
-            if (brute < HealthConstants.ScreamMinBrute || Time.time < _nextScreamTime)
-            {
-                return;
-            }
-
-            // Dead / unconscious / collapsed bodies do not vocalize — flesh impact SFX still play.
-            if (_deathTriggered
-                || _snapshot.State == HealthState.Dead
-                || !_snapshot.IsConscious)
-            {
-                return;
+                return false;
             }
 
             if (_ragdoll == null)
@@ -613,71 +614,8 @@ namespace SS3D.Systems.Health
                 _ragdoll = GetComponent<Ragdoll>();
             }
 
-            if (_ragdoll != null && _ragdoll.Presentation != BodyPresentationState.Locomotion)
-            {
-                return;
-            }
-
-            _nextScreamTime = Time.time + HealthConstants.ScreamCooldownSeconds;
-            SubSystems.GetOrNull<AudioSubSystem>()?.PlayAudioSource(
-                AudioType.Sfx,
-                HealthAudioTrackIds.MaleScream,
-                Transform.position,
-                null,
-                false,
-                0.85f,
-                UnityEngine.Random.Range(0.95f, 1.05f));
+            return _ragdoll == null || !_ragdoll.Presentation.IsRagdolled();
         }
-
-        /// <summary>
-        /// Gasp/choke on entering critical or vacuum — positional so nearby players hear it.
-        /// </summary>
-        [Server]
-        private void TryPlayHealthStateAudio(HealthSnapshot snapshot)
-        {
-            AudioSubSystem audio = SubSystems.Get<AudioSubSystem>();
-            if (audio == null)
-            {
-                _previousAudioHealthState = snapshot.State;
-                _previousAudioVacuum = BreathingVacuum(snapshot.Environment);
-                return;
-            }
-
-            bool enteredCritical = snapshot.State == HealthState.Critical
-                && _previousAudioHealthState != HealthState.Critical
-                && snapshot.IsConscious
-                && !snapshot.IsCardiacArrest;
-
-            bool enteredVacuum = BreathingVacuum(snapshot.Environment) && !_previousAudioVacuum;
-
-            if (enteredCritical || enteredVacuum)
-            {
-                string clipId;
-                if (enteredVacuum)
-                {
-                    string[] choke = HealthAudioTrackIds.Choke;
-                    clipId = choke[UnityEngine.Random.Range(0, choke.Length)];
-                }
-                else
-                {
-                    clipId = HealthAudioTrackIds.MaleGasp;
-                }
-
-                audio.PlayAudioSource(
-                    AudioType.Sfx,
-                    clipId,
-                    Transform.position,
-                    null,
-                    false,
-                    0.8f,
-                    UnityEngine.Random.Range(0.95f, 1.05f));
-            }
-
-            _previousAudioHealthState = snapshot.State;
-            _previousAudioVacuum = BreathingVacuum(snapshot.Environment);
-        }
-
-        private static bool BreathingVacuum(HealthEnvironmentState env) => env.IsVacuum && !env.OnInternals;
 
         [Server]
         public void TickHealth(float atmosphereO2 = 1f, float toxinIntake = HealthConstants.BaseToxinIntake)
@@ -700,6 +638,10 @@ namespace SS3D.Systems.Health
 
             _shock = ShockSimulation.Tick(_shock, ShockSimulation.Floor(_zones, _pools.BloodVolumeRatio));
             PublishSnapshot();
+            if (MayVocalize())
+            {
+                _vocalAudio.Tick(Transform.position, _snapshot);
+            }
 
             if (_snapshot.State == HealthState.Dead)
             {
@@ -982,28 +924,25 @@ namespace SS3D.Systems.Health
         private void PublishSnapshot()
         {
             HealthSnapshot snapshot = HealthSimulation.BuildSnapshot(_pools, _zones, _organs, _shock, _snapshot.State);
+            snapshot = HealthSimulation.ApplyUnsteady(snapshot, Time.time < _unsteadyUntil);
             snapshot.Environment = _environment;
             bool lostArmControl = _snapshot.CanUseArms && !snapshot.CanUseArms;
+            int newlyDisabled = snapshot.DisabledZoneMask & ~_snapshot.DisabledZoneMask;
             _snapshot = snapshot;
             _debugDetail = HealthDebugDetail.FromStates(_zones, _organs);
 
-            if (lostArmControl && TryGetComponent(out Hands hands))
-            {
-                foreach (Hand hand in hands.PlayerHands)
-                {
-                    if (hand == null || hand.Container == null || hand.IsEmpty())
-                        continue;
-                    hand.ItemInHand.GiveOwnership(null);
-                    hand.Container.Dump();
-                }
-            }
+            HealthBodyPresentation.DropHeldItems(this, lostArmControl, newlyDisabled);
 
             // Do not rely on SyncVar OnChange for this — FishNet may not invoke it on the
             // server when assigning the snapshot, which left unconscious players walking.
-            ApplyBodyPresentationIntent(snapshot);
+            if (!_deathTriggered)
+            {
+                Presentation.Apply(snapshot);
+            }
+
             // Same host gap for local screen overlays and HUD alert consumers.
             ApplyScreenEffectsFromSnapshot(snapshot);
-            TryPlayHealthStateAudio(snapshot);
+            _vocalAudio.OnSnapshot(Transform.position, snapshot);
             SnapshotChanged?.Invoke(snapshot);
         }
 
@@ -1070,56 +1009,12 @@ namespace SS3D.Systems.Health
                 && _entity.Mind != Mind.Empty && _entity.Mind.IsOwner;
         }
 
-        /// <summary>
-        /// Writes presentation intent to <see cref="Ragdoll"/> only. Death is owned by
-        /// <see cref="Human.Kill"/> → <see cref="Ragdoll.ServerDeathRagdoll"/> and is ignored here.
-        /// </summary>
-        [Server]
-        private void ApplyBodyPresentationIntent(HealthSnapshot snapshot)
+        /// <summary>Server: a body that stood up from a timed knockdown goes straight back to what health says.</summary>
+        private void HandleKnockdownChanged(bool knockedDown)
         {
-            if (_deathTriggered || snapshot.State == HealthState.Dead)
+            if (!knockedDown && IsServer && !_deathTriggered)
             {
-                return;
-            }
-
-            if (_ragdoll == null)
-            {
-                _ragdoll = GetComponent<Ragdoll>();
-            }
-
-            if (_ragdoll == null)
-            {
-                return;
-            }
-
-            BodyPresentationState intent = BodyPresentationIntent.FromSnapshot(snapshot);
-            if (intent == BodyPresentationState.Dead)
-            {
-                return;
-            }
-
-            // Collapsed vs Locomotion only — never fight Kill()'s Dead write.
-            // Latch health-owned collapses so we do not clear combat timed knockdowns.
-            if (intent == BodyPresentationState.Collapsed)
-            {
-                if (_ragdoll.Presentation != BodyPresentationState.Collapsed)
-                {
-                    _ragdoll.ServerSetPresentation(BodyPresentationState.Collapsed);
-                }
-
-                _healthCollapseActive = true;
-                return;
-            }
-
-            if (!_healthCollapseActive)
-            {
-                return;
-            }
-
-            _healthCollapseActive = false;
-            if (_ragdoll.Presentation == BodyPresentationState.Collapsed)
-            {
-                _ragdoll.ServerSetPresentation(BodyPresentationState.Locomotion);
+                Presentation.Apply(_snapshot);
             }
         }
 

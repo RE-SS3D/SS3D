@@ -106,7 +106,7 @@ namespace SS3D.Systems.Entities.Humanoid
         private bool ShouldSuppressBodyPresentation()
         {
             return TryGetComponent(out Ragdoll ragdoll)
-                && ragdoll.Presentation != BodyPresentationState.Locomotion;
+                && ragdoll.Presentation.IsRagdolled();
         }
 
         private void HandleItemChanged(object sender, Item item)

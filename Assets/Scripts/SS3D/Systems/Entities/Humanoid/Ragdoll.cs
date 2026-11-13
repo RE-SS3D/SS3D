@@ -75,8 +75,14 @@ namespace SS3D.Systems.Entities.Humanoid
         /// <summary>Replicated presentation authority. Prefer this over inventing collapse rules elsewhere.</summary>
         public BodyPresentationState Presentation => _presentation;
 
-        /// <summary>True when presentation is not locomotion (collapsed or dead).</summary>
-        public bool IsKnockedDown => _presentation != BodyPresentationState.Locomotion;
+        /// <summary>True while ragdolled (collapsed or dead). A Downed body crawls and is not knocked down.</summary>
+        public bool IsKnockedDown => _presentation.IsRagdolled();
+
+        /// <summary>Downed: on the floor, crawling under the animator (health.md §4).</summary>
+        public bool IsDowned => _presentation == BodyPresentationState.Downed;
+
+        /// <summary>Whether the current collapse is a combat knockdown that recovers on its own timer.</summary>
+        public bool IsKnockdownTimed => _isKnockdownTimed && IsKnockedDown;
 
         /// <summary>
         /// True from recovery until movement comes back: the blend into the stand-up clip and the clip up to
@@ -85,6 +91,9 @@ namespace SS3D.Systems.Entities.Humanoid
         public bool IsGettingUp => _currentState == RagdollState.BonesReset || _currentState == RagdollState.StandingUp;
 
         public event Action<bool> OnKnockdownChanged;
+
+        /// <summary>Raised on every peer when the body enters or leaves <see cref="BodyPresentationState.Downed"/>.</summary>
+        public event Action<bool> OnDownedChanged;
         /// <summary>
         /// Which stand-up clip this get-up plays. Read from the hips on each peer when the get-up starts:
         /// observers hold the synced ragdoll pose, so they agree with the owner without a SyncVar.
@@ -103,6 +112,7 @@ namespace SS3D.Systems.Entities.Humanoid
         /// </summary>
         private bool _deathRagdoll;
         private bool _lastNotifiedKnockedDown;
+        private bool _lastNotifiedDowned;
 
         private void Awake()
         {
@@ -149,6 +159,7 @@ namespace SS3D.Systems.Entities.Humanoid
             // Late join / host: do not rely on SyncVar OnChange alone for the initial value.
             if (_presentation != BodyPresentationState.Locomotion)
             {
+                NotifyKnockdownIfChanged(_presentation);
                 if (_presentation == BodyPresentationState.Dead)
                 {
                     _deathRagdoll = true;
@@ -203,7 +214,7 @@ namespace SS3D.Systems.Entities.Humanoid
 
             // Reclaim does not change the presentation SyncVar. Reapply its physics authority
             // when ownership changes, otherwise the new owner inherits kinematic observer bones.
-            if (_hips != null && _presentation != BodyPresentationState.Locomotion)
+            if (_hips != null && _presentation.IsRagdolled())
             {
                 ApplyPresentation(_presentation, applyImpulse: false);
             }
@@ -310,14 +321,27 @@ namespace SS3D.Systems.Entities.Humanoid
 
         private void NotifyKnockdownIfChanged(BodyPresentationState state)
         {
-            bool nextKnocked = state != BodyPresentationState.Locomotion;
-            if (_lastNotifiedKnockedDown == nextKnocked)
+            bool nextKnocked = state.IsRagdolled();
+            bool nextDowned = state == BodyPresentationState.Downed;
+
+            // Leave the old state before entering the new one, so the body state machine ends on the right state.
+            if (_lastNotifiedDowned && !nextDowned)
             {
-                return;
+                _lastNotifiedDowned = false;
+                OnDownedChanged?.Invoke(false);
             }
 
-            _lastNotifiedKnockedDown = nextKnocked;
-            OnKnockdownChanged?.Invoke(nextKnocked);
+            if (_lastNotifiedKnockedDown != nextKnocked)
+            {
+                _lastNotifiedKnockedDown = nextKnocked;
+                OnKnockdownChanged?.Invoke(nextKnocked);
+            }
+
+            if (!_lastNotifiedDowned && nextDowned)
+            {
+                _lastNotifiedDowned = true;
+                OnDownedChanged?.Invoke(true);
+            }
         }
         
         /// <summary>
@@ -396,7 +420,8 @@ namespace SS3D.Systems.Entities.Humanoid
             // Prefab may ship disabled; Update/AlignToHips must run on all peers while down.
             enabled = true;
 
-            if (state == BodyPresentationState.Locomotion)
+            // Downed is animated (crawl), so it comes back from a ragdoll the same way standing does.
+            if (!state.IsRagdolled())
             {
                 if (_deathRagdoll)
                 {

@@ -50,7 +50,7 @@ namespace SS3D.Systems.Health
                 DyingCritical = dying,
                 BloodLossTunnelVision = ComputeBloodLoss(snapshot.Pools.BloodVolumeRatio),
                 LowOxygen = lowOxygen,
-                Concussion = ComputeConcussion(snapshot.BrainFunctionPercent),
+                Concussion = Mathf.Max(ComputeConcussion(snapshot.BrainFunctionPercent), snapshot.HeadTraumaBlur),
                 Unconscious = snapshot.IsConscious ? 0f : 1f,
             };
         }

@@ -9,7 +9,7 @@ namespace SS3D.Networking
     /// </summary>
     public static class ProtocolVersion
     {
-        public const int Current = 49;
+        public const int Current = 50;
 
         /// <summary>Human-readable message for the client UI, e.g. "Server 0.2.0 (protocol 2), you have 0.1.4 (protocol 1)".</summary>
         public static string Describe(string serverVersion, int serverProtocol, string clientVersion, int clientProtocol) =>

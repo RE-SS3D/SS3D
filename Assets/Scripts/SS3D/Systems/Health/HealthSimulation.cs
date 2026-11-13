@@ -270,6 +270,7 @@ namespace SS3D.Systems.Health
             bool bleeding = false;
             int bleedingMask = 0;
             int severedMask = 0;
+            int disabledMask = 0;
             int bleedingRatePacked = 0;
             float totalBleedingRate = 0f;
 
@@ -304,6 +305,11 @@ namespace SS3D.Systems.Health
                 {
                     severedMask |= 1 << i;
                 }
+
+                if (OrganSimulation.IsLimbZone((BodyZone)i) && OrganSimulation.IsLimbFunctionallyDisabled(zones[i]))
+                {
+                    disabledMask |= 1 << i;
+                }
             }
 
             float brainStored = OrganSimulation.GetStoredOrganFunction(organs, OrganType.Brain);
@@ -328,13 +334,46 @@ namespace SS3D.Systems.Health
                 TotalBleedingRate = totalBleedingRate,
                 BrainFunctionPercent = brainStored,
                 HeartFunctionPercent = heartStored,
-                MovementSpeedMultiplier = canAct ? OrganSimulation.ComputeMovementSpeedMultiplier(zones) : 0f,
+                MovementSpeedMultiplier = !canAct ? 0f
+                    : state == HealthState.Downed ? HealthConstants.DownedCrawlSpeedMultiplier
+                    : OrganSimulation.ComputeMovementSpeedMultiplier(zones),
+                CanSprint = canAct && state != HealthState.Downed,
+                DisabledZoneMask = disabledMask,
+                HeadTraumaBlur = HeadTraumaBlur(zones),
                 CanUseArms = canAct && OrganSimulation.CanUseArms(zones),
                 CriticalFlags = BuildCriticalFlags(pools, brainEffective, shock.Shock),
                 CanDefibrillate = IsCardiacArrest(heartStored) && brainStored > 0f,
                 Environment = HealthEnvironmentState.SafeDefault,
                 Shock = shock.Shock,
                 IncomingPain = shock.IncomingPain,
+            };
+        }
+
+        /// <summary>The few seconds after being helped up: slower, and no sprint.</summary>
+        public static HealthSnapshot ApplyUnsteady(HealthSnapshot snapshot, bool unsteady)
+        {
+            snapshot.IsUnsteady = unsteady && snapshot.State == HealthState.Healthy;
+            if (snapshot.IsUnsteady)
+            {
+                snapshot.MovementSpeedMultiplier *= HealthConstants.UnsteadySpeedMultiplier;
+                snapshot.CanSprint = false;
+            }
+
+            return snapshot;
+        }
+
+        public static float HeadTraumaBlur(IReadOnlyList<ZoneDamageState> zones)
+        {
+            if (zones == null || zones.Count <= (int)BodyZone.Head)
+            {
+                return 0f;
+            }
+
+            return zones[(int)BodyZone.Head].Severity switch
+            {
+                WoundSeverity.Severe => HealthConstants.HeadSevereBlur,
+                >= WoundSeverity.Disabled => HealthConstants.HeadDisabledBlur,
+                _ => 0f,
             };
         }
 

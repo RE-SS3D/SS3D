@@ -145,6 +145,20 @@
         public const float LowBloodShockScale = 60f;
         /// <summary>Stamina cap scale reached at <see cref="ShockDownedThreshold"/> (stamina.md §2).</summary>
         public const float ShockStaminaCapFloor = 0.5f;
+        /// <summary>Extra spike when the head crosses into Severe (health.md §5).</summary>
+        public const float ShockHeadSevereSpike = 15f;
+        /// <summary>Blurred vision from a Severe / Disabled head wound (screen Concussion intensity).</summary>
+        public const float HeadSevereBlur = 0.4f;
+        public const float HeadDisabledBlur = 0.6f;
+
+        // Downed (health.md §4).
+        public const float DownedCrawlSpeedMultiplier = 0.25f;
+        /// <summary>One-handed weapons fired while Downed: accuracy cone × this (a very wide reticle).</summary>
+        public const float DownedSpreadMultiplier = 3f;
+        public const float HelpUpSeconds = 2f;
+        /// <summary>After being helped up: slower and no sprint for this long.</summary>
+        public const float UnsteadySeconds = 3f;
+        public const float UnsteadySpeedMultiplier = 0.6f;
 
         // Limb capability multipliers.
         public const float LimbDisabledMovementMultiplier = 0.35f;

@@ -92,6 +92,11 @@ namespace SS3D.Systems.Entities.Humanoid.Body
             if (_ragdoll != null)
             {
                 _ragdoll.OnKnockdownChanged += HandleRagdollChanged;
+                _ragdoll.OnDownedChanged += HandleDownedChanged;
+                if (_ragdoll.IsDowned)
+                {
+                    HandleDownedChanged(true);
+                }
             }
         }
 
@@ -101,6 +106,7 @@ namespace SS3D.Systems.Entities.Humanoid.Body
             if (_ragdoll != null)
             {
                 _ragdoll.OnKnockdownChanged -= HandleRagdollChanged;
+                _ragdoll.OnDownedChanged -= HandleDownedChanged;
             }
         }
 
@@ -112,8 +118,25 @@ namespace SS3D.Systems.Entities.Humanoid.Body
             }
             else if (_snapshot.State == BodyState.Ragdoll)
             {
+                SetBodyState(_ragdoll != null && _ragdoll.IsDowned ? BodyState.Crawling : BodyState.Locomotion);
+            }
+        }
+
+        /// <summary>Downed crawls: <see cref="BodyState.Crawling"/> plus the IsCrawling animator bool (HumanCrawl.anim).</summary>
+        private void HandleDownedChanged(bool isDowned)
+        {
+            _snapshot.IsCrawling = isDowned;
+            if (isDowned)
+            {
+                _staggerTimer = 0f;
+                SetBodyState(BodyState.Crawling);
+            }
+            else if (_snapshot.State == BodyState.Crawling)
+            {
                 SetBodyState(BodyState.Locomotion);
             }
+
+            PublishSnapshot();
         }
 
         protected override void OnEnabled()
@@ -139,7 +162,7 @@ namespace SS3D.Systems.Entities.Humanoid.Body
                 _staggerTimer -= Time.deltaTime;
                 if (_staggerTimer <= 0f)
                 {
-                    SetBodyState(BodyState.Locomotion);
+                    SetBodyState(_ragdoll != null && _ragdoll.IsDowned ? BodyState.Crawling : BodyState.Locomotion);
                 }
             }
         }
@@ -597,7 +620,7 @@ namespace SS3D.Systems.Entities.Humanoid.Body
         {
             // BodyStateBridge limp updates call PublishSnapshot every frame; skip posing while collapsed/dead.
             if (TryGetComponent(out Ragdoll ragdoll)
-                && ragdoll.Presentation != BodyPresentationState.Locomotion)
+                && ragdoll.Presentation.IsRagdolled())
             {
                 return;
             }
@@ -627,7 +650,7 @@ namespace SS3D.Systems.Entities.Humanoid.Body
                 _injuredLeg);
 
             if (TryGetComponent(out Ragdoll ragdoll)
-                && ragdoll.Presentation != BodyPresentationState.Locomotion)
+                && ragdoll.Presentation.IsRagdolled())
             {
                 OnCapabilitiesChanged?.Invoke(Capabilities);
                 return;

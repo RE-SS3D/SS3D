@@ -88,7 +88,8 @@ namespace SS3D.Systems.Audio
 
         private void Update()
         {
-            if (_ragdoll != null && _ragdoll.IsKnockedDown)
+            // A crawling body makes no footsteps either.
+            if (_ragdoll != null && (_ragdoll.IsKnockedDown || _ragdoll.IsDowned))
             {
                 StopFootsteps();
                 return;

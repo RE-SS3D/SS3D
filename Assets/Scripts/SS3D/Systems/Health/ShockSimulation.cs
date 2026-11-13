@@ -61,6 +61,11 @@ namespace SS3D.Systems.Health
                 spike += TierSpike((WoundSeverity)tier);
             }
 
+            if (zone == BodyZone.Head && before < WoundSeverity.Severe && after >= WoundSeverity.Severe)
+            {
+                spike += HealthConstants.ShockHeadSevereSpike;
+            }
+
             return IsLimb(zone) ? spike * HealthConstants.ShockLimbSpikeScale : spike;
         }
 
@@ -156,7 +161,7 @@ namespace SS3D.Systems.Health
         /// <summary>A splinted leg holds weight; a severed one never does.</summary>
         public static bool IsUsableLeg(ZoneDamageState leg)
         {
-            return !leg.IsSevered && (!leg.IsDisabled || leg.IsSplinted);
+            return !OrganSimulation.IsLimbFunctionallyDisabled(leg);
         }
 
         public static bool HasUsableLeg(IReadOnlyList<ZoneDamageState> zones)
@@ -183,6 +188,24 @@ namespace SS3D.Systems.Health
             }
 
             return shock >= (wasDowned ? HealthConstants.ShockStandThreshold : HealthConstants.ShockDownedThreshold);
+        }
+
+        /// <summary>
+        /// Someone else may help a Downed body up once its shock is back under the Downed line and a leg can hold it
+        /// (a splinted one counts). Critical bodies are not Downed, so they never qualify.
+        /// </summary>
+        public static bool CanBeHelpedUp(HealthSnapshot snapshot)
+        {
+            return snapshot.State == HealthState.Downed
+                && snapshot.Shock < HealthConstants.ShockDownedThreshold
+                && (!snapshot.IsZoneDisabled(BodyZone.LeftLeg) || !snapshot.IsZoneDisabled(BodyZone.RightLeg));
+        }
+
+        /// <summary>Helping up drops shock to just under the stand line; pain still pending keeps coming.</summary>
+        public static ShockState HelpUp(ShockState state)
+        {
+            state.Shock = Math.Min(state.Shock, HealthConstants.ShockStandThreshold - 0.01f);
+            return state;
         }
 
         /// <summary>Stamina cap scale (stamina.md §2): 1 with no shock, <see cref="HealthConstants.ShockStaminaCapFloor"/> at Downed.</summary>
