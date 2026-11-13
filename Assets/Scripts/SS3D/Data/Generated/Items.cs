@@ -18,6 +18,13 @@ namespace SS3D.Data.Generated
         public const string AtmosPipesMixed = "251dc2a5fbda518429c8205c3b62165f";
         public const string AtmosPipesSupply = "de6f06ad18d50134295959f438ba9c5d";
         public const string AtmosPipesSurface = "48efd00c91c310e4bb965d025c63b3ba";
+        public const string AtmosPipesSurfaceBlue = "ef9ab2d094f77348d9a2f53838ba1620";
+        public const string AtmosPipesSurfaceCyan = "2b9437662b294708197826d27d327cda";
+        public const string AtmosPipesSurfaceGreen = "95e25c7f38c565a9682dcc97875f127f";
+        public const string AtmosPipesSurfaceOrange = "674873d218c0204b7a5092f90212a490";
+        public const string AtmosPipesSurfacePurple = "4d79ea0e76521054c80903d512b70ae2";
+        public const string AtmosPipesSurfaceRed = "6a817f32f67f755649f2808732b856c3";
+        public const string AtmosPipesSurfaceYellow = "161f2a0e64483bfe7a3c617869f03dbe";
         public const string AtmosPipesWaste = "adc07a7f0fee8304691f45a201509b13";
         public const string AtmosPumpVolume = "1927b699e71f9833a82ed74dffe4acfd";
         public const string AtmosValveDigital = "52003a6b5233e43fca012e400adbeea6";

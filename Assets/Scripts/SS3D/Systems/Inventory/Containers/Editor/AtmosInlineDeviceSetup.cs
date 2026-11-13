@@ -490,7 +490,7 @@ namespace SS3D.Systems.Atmospherics.Editor
         /// <summary>
         /// Gives a prefab its tile asset and a place in the Items database and addressables.
         /// </summary>
-        private static TileObjectSo RegisterTileObject(string name, string path, TileLayer layer, string tileFolder = TileFolder)
+        internal static TileObjectSo RegisterTileObject(string name, string path, TileLayer layer, string tileFolder = TileFolder)
         {
             var reference = EnsureAsset<ObjectAssetReference>(ReferenceFolder + name + ".asset");
             reference.Id = DB.AssetPathToGUID(path);

@@ -129,8 +129,64 @@ MonoBehaviour:
     Mode: 1
     Subcategory: 202
     Heading: 
-    Family: 
-    VariantLabel: 
+    Family: Surface Pipe
+    VariantLabel: Standard
+    SearchTags:
+    - gas pipes
+  - AssetName: AtmosPipesSurfaceBlue
+    Mode: 1
+    Subcategory: 202
+    Heading: 
+    Family: Surface Pipe
+    VariantLabel: Blue
+    SearchTags:
+    - gas pipes
+  - AssetName: AtmosPipesSurfaceCyan
+    Mode: 1
+    Subcategory: 202
+    Heading: 
+    Family: Surface Pipe
+    VariantLabel: Cyan
+    SearchTags:
+    - gas pipes
+  - AssetName: AtmosPipesSurfaceGreen
+    Mode: 1
+    Subcategory: 202
+    Heading: 
+    Family: Surface Pipe
+    VariantLabel: Green
+    SearchTags:
+    - gas pipes
+  - AssetName: AtmosPipesSurfaceOrange
+    Mode: 1
+    Subcategory: 202
+    Heading: 
+    Family: Surface Pipe
+    VariantLabel: Orange
+    SearchTags:
+    - gas pipes
+  - AssetName: AtmosPipesSurfacePurple
+    Mode: 1
+    Subcategory: 202
+    Heading: 
+    Family: Surface Pipe
+    VariantLabel: Purple
+    SearchTags:
+    - gas pipes
+  - AssetName: AtmosPipesSurfaceRed
+    Mode: 1
+    Subcategory: 202
+    Heading: 
+    Family: Surface Pipe
+    VariantLabel: Red
+    SearchTags:
+    - gas pipes
+  - AssetName: AtmosPipesSurfaceYellow
+    Mode: 1
+    Subcategory: 202
+    Heading: 
+    Family: Surface Pipe
+    VariantLabel: Yellow
     SearchTags:
     - gas pipes
   - AssetName: AtmosPipesWaste
@@ -390,9 +446,9 @@ MonoBehaviour:
   - AssetName: Flamethrower
     Mode: 2
     Subcategory: 306
-    Heading:
-    Family:
-    VariantLabel:
+    Heading: 
+    Family: 
+    VariantLabel: 
     SearchTags:
     - item
     - weapons
