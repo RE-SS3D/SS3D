@@ -22,8 +22,9 @@ import zipfile
 API = "https://api.github.com/repos/henkhooft/SS3D/releases"
 TAG = re.compile(r"v([0-9]+)\.([0-9]+)\.([0-9]+)\Z")
 # update_ss3d.py replaces itself so updater fixes reach existing installs; Python has already
-# read it. update_ss3d.sh is only a launcher and stays as is.
-MANAGED = ("Game", "README.txt", "TESTERS.md", "update_ss3d.py", ".ss3d-release.json")
+# read it. update_ss3d.sh is only a launcher and stays as is. play_ss3d_opengl.sh is replaced like the
+# game; installs updated by an updater that predates it get it on the following update.
+MANAGED = ("Game", "README.txt", "TESTERS.md", "update_ss3d.py", "play_ss3d_opengl.sh", ".ss3d-release.json")
 # Launch scripts from releases before the main menu replaced them; moved into the backup, not reinstalled.
 RETIRED = ("start_ss3d_host.sh", "start_ss3d_client.sh")
 
@@ -127,7 +128,8 @@ def expand_release(archive_path, destination, tag):
     root = destination / prefix.rstrip("/")
     required = ("Game/SS3D-Client", "Game/UnityPlayer.so", "Game/SS3D-Client_Data/globalgamemanagers",
                 "Game/Config/permissions.txt", "Game/Config/network.json",
-                "Game/Data/StationTemplates/ministation.json", "README.txt", "TESTERS.md", "update_ss3d.py")
+                "Game/Data/StationTemplates/ministation.json", "README.txt", "TESTERS.md", "update_ss3d.py",
+                "play_ss3d_opengl.sh")
     for name in required:
         if not (root / name).is_file():
             raise RuntimeError(f"Incomplete Linux client release: missing {name}")
