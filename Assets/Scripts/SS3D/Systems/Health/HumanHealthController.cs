@@ -35,6 +35,7 @@ namespace SS3D.Systems.Health
         private readonly List<IHealthEffectModifier> _modifiers = new();
 
         private SystemicPools _pools = SystemicPools.Default;
+        private ShockState _shock = ShockState.None;
         private Entity _entity;
         private WoundVfx _woundVfx;
         private HumanAnatomyController _anatomy;
@@ -205,6 +206,7 @@ namespace SS3D.Systems.Health
             }
 
             _pools = SystemicPools.Default;
+            _shock = ShockState.None;
         }
 
         public void RegisterOrgan(OrganInstance organ)
@@ -260,18 +262,15 @@ namespace SS3D.Systems.Health
                 return;
             }
 
+            float incomingBrute = brute;
+            float incomingBurn = burn;
             (brute, burn) = ApplyArmorAbsorption(zone, brute, burn);
 
             ZoneDamageState state = _zones[index];
-            state.Brute += brute;
-            state.Burn += burn;
-            HealthSimulation.RefreshZoneDerivedState(ref state);
-            if (!state.IsSevered)
-            {
-                state.BleedingRate = HealthSimulation.BleedingRateForSeverity(state.Severity);
-            }
-
+            WoundSeverity before = HealthSimulation.ApplyZoneHit(ref state, brute, burn);
             _zones[index] = state;
+            _shock = ShockSimulation.AddPain(_shock, ShockSimulation.HitPain(
+                zone, brute, burn, incomingBrute - brute, incomingBurn - burn, before, state.Severity));
             OrganSimulation.ApplyZoneDamageToOrgans(zone, brute, burn, _organs);
 
             PublishSnapshot();
@@ -482,6 +481,7 @@ namespace SS3D.Systems.Health
         public void RestoreSystemicPools()
         {
             _pools = SystemicPools.Default;
+            _shock = ShockState.None;
             PublishSnapshot();
         }
 
@@ -545,8 +545,10 @@ namespace SS3D.Systems.Health
                 return false;
             }
 
+            WoundSeverity before = state.Severity;
             HealthSimulation.ApplySeverance(ref state);
             _zones[index] = state;
+            _shock = ShockSimulation.AddPain(_shock, ShockSimulation.TierSpikes(zone, before, WoundSeverity.Severed));
 
             _anatomy.ExecuteServerSeverance(zone);
             RpcApplySeveranceVisuals(zone);
@@ -696,10 +698,10 @@ namespace SS3D.Systems.Health
                 }
             }
 
-            HealthState state = HealthSimulation.EvaluateHealthState(_pools, _organs);
+            _shock = ShockSimulation.Tick(_shock, ShockSimulation.Floor(_zones, _pools.BloodVolumeRatio));
             PublishSnapshot();
 
-            if (state == HealthState.Dead)
+            if (_snapshot.State == HealthState.Dead)
             {
                 TriggerDeath();
             }
@@ -979,7 +981,7 @@ namespace SS3D.Systems.Health
         [Server]
         private void PublishSnapshot()
         {
-            HealthSnapshot snapshot = HealthSimulation.BuildSnapshot(_pools, _zones, _organs);
+            HealthSnapshot snapshot = HealthSimulation.BuildSnapshot(_pools, _zones, _organs, _shock, _snapshot.State);
             snapshot.Environment = _environment;
             bool lostArmControl = _snapshot.CanUseArms && !snapshot.CanUseArms;
             _snapshot = snapshot;

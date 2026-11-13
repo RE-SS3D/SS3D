@@ -23,7 +23,7 @@ namespace SS3D.Systems.Comms
         /// <summary>Health gates in-character speech on the server, including radio and announcements.</summary>
         public bool CanSpeak => (!TryGetComponent(out Ragdoll ragdoll) || ragdoll.Presentation != BodyPresentationState.Dead)
             && (!TryGetComponent(out HumanHealthController health)
-                || (health.Snapshot.State == HealthState.Healthy
+                || (health.Snapshot.State is HealthState.Healthy or HealthState.Downed
                     && health.Snapshot.IsConscious && !health.Snapshot.IsCardiacArrest));
 
         protected override void OnAwake()

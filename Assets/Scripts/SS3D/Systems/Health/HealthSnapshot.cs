@@ -27,6 +27,10 @@ namespace SS3D.Systems.Health
         public HealthCriticalFlags CriticalFlags;
         public bool CanDefibrillate;
         public HealthEnvironmentState Environment;
+        /// <summary>Whole-body shock (health.md §4), 0–100+.</summary>
+        public float Shock;
+        /// <summary>Pain from recent hits that has not yet become shock; carried so the warning cue starts on the hit.</summary>
+        public float IncomingPain;
 
         public bool IsZoneBleeding(BodyZone zone)
         {
@@ -70,6 +74,8 @@ namespace SS3D.Systems.Health
             CriticalFlags = HealthCriticalFlags.None,
             CanDefibrillate = false,
             Environment = HealthEnvironmentState.SafeDefault,
+            Shock = 0f,
+            IncomingPain = 0f,
         };
 
         // A synced struct: without IEquatable, FishNet's SyncVar compare boxes it and reflects over every field each tick.

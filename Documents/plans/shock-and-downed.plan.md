@@ -4,7 +4,7 @@ overview: Trauma puts a body down before it bleeds out. Shock builds from hits, 
 todos:
   - id: shock-core
     content: "PR 1: ShockSimulation (hit shock, tier spikes, armor bleed-through, incoming-pain build-up, decay to a wound/blood floor, Downed/Critical/Stand thresholds), HealthState.Downed, snapshot fields, HighShock critical flag, stamina cap, protocol bump, M4 tuning tests"
-    status: pending
+    status: in_progress
   - id: downed-body
     content: "PR 2: BodyPresentationState.Downed through BodyPresentationIntent, crawl wired to HumanCrawl.anim, Downed capabilities (one-handed use with wide reticle, no two-handed fire, draggable), auto stand-up with hysteresis, limb rules (both legs, arm drop, head spike)"
     status: pending
@@ -78,6 +78,7 @@ Starting values. The M4 test in PR 1 pins the outcome, not the constants.
 | Zone weights: chest, groin / head / arms, legs | 0.35 / 0.5 / 0.15 | Center mass drops people |
 | Burn type weight | 1.3 | Burns hurt more |
 | Tier spikes: Bruised / Wound / Severe / Disabled / Severed | 2 / 5 / 8 / 10 / 20 | |
+| `ShockLimbSpikeScale` | 0.5 | Arms and legs take half the spikes (see Deviations) |
 | `ArmorShockFraction` | 0.15 | Hardsuit operative goes down after a focused response |
 | `ShockBuildSeconds` | 3 | |
 | `ShockDecayPerSecond` | 3 | Downed at 60 with wounds bandaged stands in about 7 s |
@@ -99,8 +100,14 @@ Starting values. The M4 test in PR 1 pins the outcome, not the constants.
 
 ## Deviations
 
-None yet.
+- **Limb tier spikes are halved** (`ShockLimbSpikeScale = 0.5`). With flat spikes, M4 hits spread over both arms reached Downed at 9 hits (the Disabled crossings alone add 25 per arm), short of the "not Downed before about 12" target. Halved, it is 13. The torso and head keep the full spikes.
+- **The hardsuit target is about 1.6×, not 2×.** Through-damage still crosses wound tiers, so the spikes land on the armored body too, and the damage term itself only falls from 6.3 to 3.9 per chest hit (10 through plus 15 % of the 8 absorbed). Unarmored center mass downs at 6 hits, the hardsuit at 10. `ShockSimulationTests` asserts 1.5×–3× and within one magazine. Getting to 2× needs either a lower torso spike while armored or a lower `ArmorShockFraction`, and the second barely moves it.
+- **A third shock value.** `ShockState` holds `BuildPerTick` beside `Shock` and `IncomingPain`: each hit re-spreads all pending pain over the next `ShockBuildSeconds` ticks, so the conversion takes exactly 3 ticks after the last hit instead of tailing off. It is server-only and not in the snapshot.
 
 ## Implementation notes
 
-None yet.
+- PR 1 (shock-core): `ShockSimulation.cs` (pure) + `ShockState`; constants in `HealthConstants` under "Shock". `HealthSimulation.EvaluateHealthState`/`BuildSnapshot` gain overloads taking zones, shock and the previous state; the old overloads pass no shock. `HealthSimulation.ApplyZoneHit` is the shared zone-damage step for the controller and the tests.
+- The both-legs rule landed in PR 1, since it lives in the same state evaluation. Leaving Critical counts as "was down", so a body whose shock falls from 100 keeps Downed's lower stand line.
+- Until PR 2, `HealthState.Downed` has no presentation: `BodyPresentationIntent` maps it to Locomotion, so the body stays standing. `LocalSpeechEmitter.CanSpeak` allows Downed.
+- Shock-only Critical has no heart drain of its own (the plan keeps shock off the organs). In practice the hits that reach it leave Severe/Disabled torso wounds whose bleeding supplies the countdown. Environmental burn (fire, cold) adds no shock: it is not a hit.
+- `RestoreSystemicPools` (the `heal` command, sandbox resets) clears shock.
