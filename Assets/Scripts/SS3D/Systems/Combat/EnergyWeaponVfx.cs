@@ -11,6 +11,7 @@ namespace SS3D.Systems.Combat
         Laser = 1,
         Ion = 2,
         Taser = 3,
+        Flame = 4,
     }
 
     /// <summary>Bounded, client-only shot presentation. Endpoints come from the authoritative hitscan.</summary>

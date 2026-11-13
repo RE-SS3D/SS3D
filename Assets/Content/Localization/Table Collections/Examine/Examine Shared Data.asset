@@ -2023,6 +2023,66 @@ MonoBehaviour:
     m_Key: items.clothing.glove_syndicate.desc
     m_Metadata:
       m_Items: []
+  - m_Id: 298702715700355072
+    m_Key: items.weapons.stunbaton.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298702715717132288
+    m_Key: items.weapons.stunbaton.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298702720939040768
+    m_Key: items.weapons.c20r.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298702720939040769
+    m_Key: items.weapons.c20r.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298702725540192256
+    m_Key: items.weapons.stechkin.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298702725540192257
+    m_Key: items.weapons.stechkin.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298703054059053056
+    m_Key: items.weapons.securitypistol.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298703054059053057
+    m_Key: items.weapons.securitypistol.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298703058354020352
+    m_Key: items.medical.gauze.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298703058354020353
+    m_Key: items.medical.gauze.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298703062535741440
+    m_Key: items.medical.defibrillator.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298703062535741441
+    m_Key: items.medical.defibrillator.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298714254427791360
+    m_Key: items.weapons.flamethrower.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298714254444568576
+    m_Key: items.weapons.flamethrower.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298715341041934336
+    m_Key: examine.weapon.fuel
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

@@ -467,7 +467,11 @@ namespace SS3D.Systems.Tile
         {
             _spawnPoints.Clear();
             _gasMarkers.Clear();
-            if (IsServer) _steelWreckage.Clear();
+            if (IsServer)
+            {
+                _steelWreckage.Clear();
+                if (SubSystems.TryGet(out SS3D.Systems.Combat.NapalmSubSystem napalm)) napalm.ClearFuel();
+            }
         }
 
         public bool MapNameAlreadyExist(string name)

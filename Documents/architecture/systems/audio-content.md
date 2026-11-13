@@ -1,7 +1,7 @@
 > Parent map: [audio.md](audio.md)
 > Code paths: Assets/Content/Data/Databases/Sounds.asset, Assets/Content/Data/ObjectAssetReferences/, `*AudioTrackIds.cs` per domain
 > Status: partial
-> Verified: 7785df8dc — 2026-11-06
+> Verified: 77ce6acb3 — 2026-11-13
 
 # Audio content (clips and track ids)
 
@@ -24,7 +24,7 @@ How sound clips are found, registered and named in code, plus which registered c
   - `CombatAudioTrackIds` (gunfire / surface / `FleshHit` arrays, empty click, reload), `HealthAudioTrackIds` (gasp / choke / scream / blood)
   - `Systems/Audio/ItemCollisionAudioTrackIds.cs` — clip sets per `ItemCollisionMaterial` (metal, heavy metal, can, wood, plastic, glass) for `NoisyCollision`
   - `Systems/StructuralDamage/StructuralAudioTrackIds.cs` — hit, strain and break sets per material, wreckage thud, blast near and far, under `Assets/Art/Sound/World/Destruction/`
-- `Systems/Combat/CombatAudioTrackIds.cs` — ballistic clips plus `FireFor(VisualStyle)` for energy weapons. SS14 `ship_svalinn` (laser), `plasma_cutter` (ion), `taser2`, `energy_metal1–2`, `energy_meat1–2`, and machine `beep` are under `Assets/Art/Sound/Items/Weapons/Energy/SS14/`, registered by `EnergyWeaponPrefabSetup` on the combat recipe aggregator. Credits and source paths are in ATTRIBUTIONS.
+- `Systems/Combat/CombatAudioTrackIds.cs` — `FlameJet` is the CC0 SS14 `Effects/fire.ogg` import under `Items/Weapons/Flamethrower/`, registered by `FlamethrowerPrefabSetup`; `FlamethrowerVfx` holds one pooled, occluded local loop until server pulses cease, and `NapalmSurfaceVfx` holds one quieter loop at the nearest audible burning surface. Also ballistic clips plus `FireFor(VisualStyle)` for energy weapons. SS14 `ship_svalinn` (laser), `plasma_cutter` (ion), `taser2`, `energy_metal1–2`, `energy_meat1–2`, and machine `beep` are under `Assets/Art/Sound/Items/Weapons/Energy/SS14/`, registered by `EnergyWeaponPrefabSetup` on the combat recipe aggregator. Credits and source paths are in ATTRIBUTIONS.
 - `Assets/Scripts/SS3D/Data/Generated/Sounds.cs` — generated constants for the older clips (airlock open/close, bike horn, cans, generator, title stings)
 - `Assets/Resources/AmbienceProfileCatalog.asset` lists the `AmbienceProfile` assets in `Assets/Content/Data/Ambience/`. Profiles reference their `AudioClip`s directly, so room tone needs no `Sounds.asset` entry. The catalog also holds the three wind layers and the space bed. Clips live under `Assets/Art/Sound/World/Ambience/`, and long ones import as Compressed In Memory, because the catalog holds them all.
 - Third-party credits: [Sound ATTRIBUTIONS](../../../Assets/Art/Sound/ATTRIBUTIONS.md). Sound effects may be CC0, CC-BY, CC-BY-SA or CC-BY-NC; a commercial release would have to replace the NC clips (metal breaks), and custom-licensed music stays out. An SS14 clip with no `attributions.yml` entry falls under the SS14 README's default (CC-BY-SA-3.0, owner decision 2026-11-12); credit it as "SS14 default" in ATTRIBUTIONS so it can be found and replaced if its origin is ever disputed.

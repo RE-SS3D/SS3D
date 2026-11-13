@@ -12,6 +12,18 @@ namespace SS3D.Systems.Combat
     }
 
     /// <summary>
+    /// Which gunshot and reload sounds a ballistic gun plays (<see cref="CombatAudioTrackIds.SoundsFor"/>).
+    /// Energy weapons sound by <see cref="RangedVisualStyle"/> instead. Serialized on prefabs: append, never reorder.
+    /// </summary>
+    public enum FirearmSoundSet : byte
+    {
+        Rifle = 0,
+        Smg = 1,
+        Pistol = 2,
+        ServicePistol = 3,
+    }
+
+    /// <summary>
     /// Hitscan firearm profile. Accuracy cone is weapon-intrinsic and readable via reticle bloom.
     /// Mag refill is timed reload (no loose ammo items this pass).
     /// </summary>
@@ -91,6 +103,9 @@ namespace SS3D.Systems.Combat
         /// </summary>
         public WeaponHoldStyle HoldStyle;
 
+        /// <summary>Gunshot and reload sounds for a ballistic gun; ignored by energy weapons.</summary>
+        public FirearmSoundSet SoundSet;
+
         public MeleeDamagePacket ToDamagePacket() => new(BruteDamage, BurnDamage, CanSever);
 
         public float ResolveStructuralForce()
@@ -127,6 +142,80 @@ namespace SS3D.Systems.Combat
             RequiresBothHands = true,
             RequiredHand = HandSide.Right,
         };
+        /// <summary>
+        /// Operative SMG: a bigger magazine and faster cadence than the M4 for lighter hits and a wider cone.
+        /// First-guess balance, to tune from playtests.
+        /// </summary>
+        public static RangedWeaponProfile C20R
+        {
+            get
+            {
+                RangedWeaponProfile profile = M4;
+                profile.BruteDamage = 14f;
+                profile.BaseSpreadDegrees = 0.5f;
+                profile.RecoilClimbDegrees = 0.25f;
+                profile.FalloffStartMeters = 15f;
+                profile.FalloffEndMeters = 35f;
+                profile.FalloffExtraSpreadDegrees = 2f;
+                profile.MaxRangeMeters = 35f;
+                profile.FireCooldownSeconds = 0.1f;
+                profile.MagazineSize = 24;
+                profile.StructuralForce = 9f;
+                profile.SoundSet = FirearmSoundSet.Smg;
+                return profile;
+            }
+        }
+
+        /// <summary>Operative sidearm: one-handed, hits harder per round than the security pistol.</summary>
+        public static RangedWeaponProfile Stechkin => Pistol(18f, 8, 0.3f, FirearmSoundSet.Pistol);
+
+        /// <summary>Security sidearm: one-handed, the crew's standard lethal option before the armory M4.</summary>
+        public static RangedWeaponProfile SecurityPistol => Pistol(15f, 10, 0.25f, FirearmSoundSet.ServicePistol);
+
+        public const float PistolReloadSeconds = 1.6f;
+
+        private static RangedWeaponProfile Pistol(float brute, int capacity, float cooldown, FirearmSoundSet sounds)
+        {
+            RangedWeaponProfile profile = M4;
+            profile.BruteDamage = brute;
+            profile.BaseSpreadDegrees = 0.45f;
+            profile.RecoilClimbDegrees = 0.35f;
+            profile.RecoilDecayPerSecond = 5f;
+            profile.FalloffStartMeters = 12f;
+            profile.FalloffEndMeters = 30f;
+            profile.FalloffExtraSpreadDegrees = 2f;
+            profile.MaxRangeMeters = 30f;
+            profile.FireCooldownSeconds = cooldown;
+            profile.MagazineSize = capacity;
+            // Pistols have no reload clip (the Pistol pack only kicks the forearms), so this is a plain timer.
+            profile.ReloadSeconds = PistolReloadSeconds;
+            profile.StructuralForce = 8f;
+            profile.StaminaCost = 2f;
+            profile.RequiresBothHands = false;
+            profile.HoldStyle = WeaponHoldStyle.Pistol;
+            profile.SoundSet = sounds;
+            return profile;
+        }
+
+        /// <summary>Short-range fuel pulses; hold primary to sustain the jet. Provisional balance.</summary>
+        public static RangedWeaponProfile Flamethrower
+        {
+            get
+            {
+                RangedWeaponProfile profile = Energy(RangedVisualStyle.Flame, 4f, 0f, 60, 0.16f, NapalmSprayRules.Range);
+                profile.StructuralForce = 0f;
+                profile.BaseSpreadDegrees = NapalmSprayRules.HalfAngle;
+                profile.RecoilClimbDegrees = 0f;
+                profile.RecoilPerShot = 0f;
+                profile.MovementBloomPerSpeed = 0f;
+                profile.FalloffExtraSpreadDegrees = 0f;
+                profile.ExhaustionSpreadDegrees = 0f;
+                profile.StaminaCost = 0.15f;
+                profile.ReloadSeconds = 4f;
+                return profile;
+            }
+        }
+
         public static RangedWeaponProfile LaserRifle => Energy(RangedVisualStyle.Laser, 24f, 0f, 20, 0.3f, 40f);
         public static RangedWeaponProfile IonRifle => Energy(RangedVisualStyle.Ion, 16f, 0f, 12, 0.6f, 30f);
         public static RangedWeaponProfile Taser

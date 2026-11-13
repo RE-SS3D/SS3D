@@ -2072,6 +2072,74 @@ MonoBehaviour:
     m_Localized: Black fingerless combat gloves.
     m_Metadata:
       m_Items: []
+  - m_Id: 298702715700355072
+    m_Localized: Stun Baton
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298702715717132288
+    m_Localized: A Security baton with a charged head. A hit knocks the target down
+      and tires them out; it goes through armor.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298702720939040768
+    m_Localized: C-20r SMG
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298702720939040769
+    m_Localized: A compact Syndicate submachine gun. Fast and light-hitting, it needs
+      both hands. Use to reload.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298702725540192256
+    m_Localized: Stechkin Pistol
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298702725540192257
+    m_Localized: 'A Syndicate pistol: small, one-handed and hard-hitting. Use to
+      reload.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298703054059053056
+    m_Localized: Security Pistol
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298703054059053057
+    m_Localized: The standard Security sidearm. One-handed, with a ten-round magazine.
+      Use to reload.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298703058354020352
+    m_Localized: Gauze
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298703058354020353
+    m_Localized: A roll of gauze. Use it on a bleeding body part to stop the bleeding.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298703062535741440
+    m_Localized: Defibrillator
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298703062535741441
+    m_Localized: A portable defibrillator. Use it on the chest of a patient whose
+      heart has stopped, before the brain dies. Shocking a beating heart burns it.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298714254427791360
+    m_Localized: Flamethrower
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298714254444568576
+    m_Localized: A two-handed flame projector. Hold primary in Harm to spray a wide
+      fan of burning fuel up to four metres. Fuel sticks to people and surfaces,
+      burns for six seconds and blackens surfaces. Holds sixty fuel pulses. Use to
+      refill in four seconds.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298715341041934336
+    m_Localized: 'Fuel: {0} pulses.'
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

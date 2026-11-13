@@ -12,7 +12,8 @@ namespace SS3D.Utils
         /// True when nothing on <paramref name="mask"/> intersects the segment from
         /// <paramref name="origin"/> to <paramref name="end"/> (exclusive of zero-length).
         /// </summary>
-        public static bool HasLineOfSight(Vector3 origin, Vector3 end, LayerMask mask, out RaycastHit blockHit)
+        public static bool HasLineOfSight(Vector3 origin, Vector3 end, LayerMask mask, out RaycastHit blockHit,
+            QueryTriggerInteraction triggers = QueryTriggerInteraction.UseGlobal)
         {
             Vector3 delta = end - origin;
             float distance = delta.magnitude;
@@ -23,7 +24,7 @@ namespace SS3D.Utils
             }
 
             Vector3 direction = delta / distance;
-            if (Physics.Raycast(origin, direction, out blockHit, distance, mask))
+            if (Physics.Raycast(origin, direction, out blockHit, distance, mask, triggers))
             {
                 return false;
             }
@@ -67,10 +68,11 @@ namespace SS3D.Utils
             Vector3 direction,
             float maxDistance,
             LayerMask mask,
-            out RaycastHit hit)
+            out RaycastHit hit,
+            QueryTriggerInteraction triggers = QueryTriggerInteraction.UseGlobal)
         {
             Vector3 dir = direction.sqrMagnitude > 0f ? direction.normalized : Vector3.forward;
-            return Physics.Raycast(origin, dir, out hit, maxDistance, mask);
+            return Physics.Raycast(origin, dir, out hit, maxDistance, mask, triggers);
         }
     }
 }

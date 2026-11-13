@@ -22,6 +22,17 @@ namespace SS3D.Systems.Combat
         /// </summary>
         public float StructuralForce;
 
+        /// <summary>
+        /// Hostile exhaustion in absolute stamina points on a living hit, clamped to the target's current stamina.
+        /// </summary>
+        public float StaminaDamage;
+
+        /// <summary>
+        /// Seconds a living hit knocks the target down (combat.md §5); 0 never floors anyone. A contact stun:
+        /// armor that blocks the taser's prongs does not stop it.
+        /// </summary>
+        public float KnockdownSeconds;
+
         public MeleeDamagePacket ToDamagePacket() => new(BruteDamage, BurnDamage, CanSever);
 
         /// <summary>
@@ -91,6 +102,23 @@ namespace SS3D.Systems.Combat
             StaminaCost = 9f,
             CanSever = true,
             StructuralForce = 4f,
+        };
+
+        /// <summary>
+        /// Security's non-lethal option: light brute, a stamina drain and the taser's knockdown on every
+        /// living hit. Always on (no cell); first-guess balance, to tune from playtests.
+        /// </summary>
+        public static MeleeWeaponProfile StunBaton => new()
+        {
+            BruteDamage = 5f,
+            BurnDamage = 0f,
+            WindupSeconds = 0.3f,
+            RecoverySeconds = 0.9f,
+            StaminaCost = 10f,
+            CanSever = false,
+            StructuralForce = 6f,
+            StaminaDamage = 5f,
+            KnockdownSeconds = RangedWeaponProfile.TaserKnockdownSeconds,
         };
     }
 }
