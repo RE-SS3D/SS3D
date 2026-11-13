@@ -9,6 +9,7 @@ using SS3D.Interactions.Interfaces;
 using SS3D.Systems.Audio;
 using SS3D.Systems.Electricity;
 using SS3D.Systems.Entities;
+using SS3D.Systems.Entities.Humanoid;
 using SS3D.Systems.Inventory.Containers;
 using SS3D.Systems.Selection;
 using SS3D.Systems.Tile;
@@ -617,7 +618,9 @@ namespace SS3D.Systems.Furniture
             for (int i = 0; i < players.Count; i++)
             {
                 Entity entity = players[i];
-                if (entity != null && IsInDoorway(entity.transform.position + Vector3.up * OccupantSampleHeight))
+                // Ghosts (dead players and observers) have no physical footprint (observer.md §3).
+                if (entity != null && !entity.TryGetComponent(out HumanoidGhostController _)
+                    && IsInDoorway(entity.transform.position + Vector3.up * OccupantSampleHeight))
                 {
                     return true;
                 }

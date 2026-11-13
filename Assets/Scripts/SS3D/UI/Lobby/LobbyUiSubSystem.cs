@@ -145,6 +145,7 @@ namespace SS3D.UI.Lobby
             _shellView.Attach(modalLayer);
             _shellView.CharacterCreatorRequested += HandleCharacterCreatorRequested;
             _shellView.ReadyRequested += HandleReadyRequested;
+            _shellView.ObserveRequested += HandleObserveRequested;
             _shellView.QuitRequested += HandleQuitRequested;
             _shellView.BugReportRequested += HandleBugReportRequested;
             _shellView.RoundChangeRequested += HandleRoundChangeRequested;
@@ -343,6 +344,9 @@ namespace SS3D.UI.Lobby
             _shellView.SetAutoStart(rounds != null && rounds.AutoStartEnabled, rounds != null && rounds.AutoStartHeld,
                 rounds != null ? rounds.AutoStartSecondsLeft : 0);
             _shellView.SetRoundEnd(rounds != null && rounds.EndHeld, rounds != null ? rounds.EndSecondsLeft : 0);
+            // Observing is always available (lobby.md §7): no late-join gate, only "not already in the round".
+            _shellView.SetObserve(local != null && ready != null && ready.IsObserving(local),
+                local != null && !spawned && rounds != null && rounds.CurrentRoundState is not RoundState.Ending);
             _shellView.SetSession(rounds != null ? rounds.CurrentRoundState : RoundState.Stopped,
                 rounds != null ? rounds.CurrentTimerSeconds : 0,
                 local != null && ready != null && ready.IsReady(local), local != null && (rounds == null || rounds.CurrentRoundState != RoundState.Ongoing || serverSettings == null || serverSettings.AllowLateJoin), admin, rows, spawned);
@@ -515,6 +519,24 @@ namespace SS3D.UI.Lobby
             }
             else if (rounds.CurrentRoundState is not RoundState.Ending)
                 InstanceFinder.ClientManager.Broadcast(new ChangePlayerReadyMessage(local.Ckey, !ready.IsReady(local)));
+        }
+
+        /// <summary>
+        /// Before a round, toggles watching the next one; during a round, asks for an observer ghost now.
+        /// The server decides either way (<c>observer.md</c> §2).
+        /// </summary>
+        private void HandleObserveRequested()
+        {
+            if (!InstanceFinder.ClientManager.Started || !SubSystems.TryGet(out PlayerSubSystem players)
+                || !SubSystems.TryGet(out RoundSubSystem rounds) || !SubSystems.TryGet(out ReadyPlayersSubSystem ready)) return;
+            Player local = players.GetPlayer(InstanceFinder.ClientManager.Connection);
+            if (local == null) return;
+            if (rounds.CurrentRoundState == RoundState.Ongoing)
+            {
+                if (SubSystems.TryGet(out EntitySubSystem entities)) entities.CmdObserve();
+            }
+            else if (rounds.CurrentRoundState is not RoundState.Ending)
+                InstanceFinder.ClientManager.Broadcast(new ChangePlayerObservingMessage(!ready.IsObserving(local)));
         }
 
         private bool TryEnsureCatalog()

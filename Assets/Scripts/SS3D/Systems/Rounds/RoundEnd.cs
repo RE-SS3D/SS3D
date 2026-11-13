@@ -120,7 +120,7 @@ namespace SS3D.Systems.Rounds
                 _ => gamemodeName,
             };
 
-        /// <summary>Everyone who took a body, as their current body stands: a ghost counts as dead.</summary>
+        /// <summary>Everyone who took a body, as their current body stands: a ghost counts as dead; observers are left out.</summary>
         [Server]
         private List<RoundOutcomePlayer> CollectRoster()
         {
@@ -132,7 +132,8 @@ namespace SS3D.Systems.Rounds
             foreach (Entity entity in entities.SpawnedPlayers)
             {
                 Player player = entity != null && entity.Mind != null ? entity.Mind.player : null;
-                if (player == null)
+                // Observers never took a body; the summary shows them as not having played.
+                if (player == null || entities.IsObserver(player))
                     continue;
 
                 roster.Add(new RoundOutcomePlayer

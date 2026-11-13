@@ -96,7 +96,7 @@ flowchart TB
 - **Health feel** — crit ragdoll, screen-effect compositing, personal/hit SFX ([health-env-feel](../archive/architecture/2026-07_health-env-feel.md)).
 - **Structural damage + blast resolve API** — [structural-destruction](../architecture/systems/structural-destruction.md) Phase 1–4.
 - **Env→health exposure** — turf exposure and equal-pressure turf mixing ([atmospherics](../architecture/systems/atmospherics.md)).
-- **Death → spectator** — ghost detach wired ([entities](../architecture/systems/entities.md)). Full observer stays deferred.
+- **Death → spectator** — ghost detach wired ([entities](../architecture/systems/entities.md)). The lobby's Observe button enters a round as a ghost with no respawn ([observer.md](../design/observer.md) §2 first pass). Follow-lock, dead chat and possession stay deferred.
 - **Client atmos VFX (Phase 1)** — dirty-chunk sync shipped ([2026-07_atmos-client-visualization-sync.md](../architecture/2026-07_atmos-client-visualization-sync.md)). Do **not** re-list “wire client atmos VFX” as work.
 
 **What still unlocks the round:**

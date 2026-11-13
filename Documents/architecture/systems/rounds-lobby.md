@@ -11,7 +11,7 @@ Round lifecycle state machine with single-flight `CancellationTokenSource` (prev
 
 **UITK lobby:** `LobbyUiSubSystem` owns the shell and guided Character Creator on
 `UiLayer.Modal`. Ready/latejoin, player readiness/counts, round timer, admin controls and job
-preferences are networked. Jobs use H/M/L/N chips; latejoin resolves those preferences against
+preferences are networked. **Observe** ([observer.md](../../design/observer.md) §2, [lobby.md](../../design/lobby.md) §7): before a round it toggles `ReadyPlayersSubSystem`'s observing list (`ChangePlayerObservingMessage`; exclusive with Ready, left out of `AllConnectedReady` and `EffectiveReadyCount`) and the round start spawns those players as ghosts; during a round it calls `EntitySubSystem.CmdObserve` for a ghost at once, regardless of late-join ([entities](entities.md)). Jobs use H/M/L/N chips; latejoin resolves those preferences against
 open slots rather than a direct job picker. Antagonist opt-ins (Nuclear Operative ticked by default)
 feed the squad draw (`RoleSubSystem`, [gamemodes-roles-traits](gamemodes-roles-traits.md)). Playtime locks are absent.
 
@@ -169,7 +169,7 @@ original) and tells admins in Admin chat. Unloading resets the editor's history 
 
 - **Preview clothes:** use `Cloth.GetClothMesh` on catalog prefab assets and activate the dummy's existing Jumpsuit/ShoeLeft/ShoeRight renderers. Do not instantiate folded Item prefabs or route offline preview through server-only `ClothesDisplayer`. Pick an outfit once per draft, not on each appearance callback.
 - **Remote client booth threw in `HumanoidController.Setup`:** instantiating the active Human prefab ran every gameplay `Awake` before stripping; on a remote client the booth is built before `CameraSubSystem` exists. The dummy is now instantiated under an inactive staging parent and stripped with `DestroyImmediate` before activation. Host-only pilots never saw this — run the remote pilot after booth changes.
-- **Disabled lobby buttons looked clickable:** the fill-colour button rules had no `:disabled` state, so a non-admin's Admin (and unwired Observe) rendered like live buttons; `ui_wait … disabled` still passed. `.lobby-shell__btn:disabled` dims them. UI renders in linear colour space, so opacity 0.35 reads closer to 60% — judge the screenshot, not the number.
+- **Disabled lobby buttons looked clickable:** the fill-colour button rules had no `:disabled` state, so a non-admin's Admin (and the then-unwired Observe) rendered like live buttons; `ui_wait … disabled` still passed. `.lobby-shell__btn:disabled` dims them. UI renders in linear colour space, so opacity 0.35 reads closer to 60% — judge the screenshot, not the number.
 - **Server name/MOTD are not round config:** they bypass the idle-only settings gate, and a whole-form save keeps the current values. Pilots that edit them must restore the originals, because the file is the real `ServerMeta` data.
 - **Appearance colors are `Color32`:** FishNet's default `Color` serializer truncates channels to hundredths. Keep replicated colors as `Color32`.
 - **Chat Return ignored in real play:** a real Return keydown targets the `TextField`'s inner text element, which consumes it before it bubbles; the composer's bubble-phase `KeyDownEvent` handler never ran, while synthetic events sent to the field itself passed. Register Return/submit handlers on text fields with `TrickleDown.TrickleDown`; found by the remote pilot's real keyboard input.

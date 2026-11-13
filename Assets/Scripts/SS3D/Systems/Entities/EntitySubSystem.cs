@@ -441,11 +441,11 @@ namespace SS3D.Systems.Entities
         }
 
         /// <summary>
-        /// Spawns all the players that are ready when the round starts
+        /// Spawns all the players that are ready when the round starts, then puts the lobby's observers
+        /// in as ghosts.
         /// </summary>
-        /// <param name="players"></param>
         [Server]
-        private void SpawnReadyPlayers(List<Player> players)
+        private void SpawnReadyPlayers(List<Player> players, List<Player> observers)
         {
             if (_hasSpawnedInitialPlayers) return;
 
@@ -459,6 +459,14 @@ namespace SS3D.Systems.Entities
             foreach (Player ckey in players)
             {
                 SpawnPlayer(ckey);
+            }
+
+            foreach (Player observer in observers)
+            {
+                if (observer != null && observer.Owner != null && observer.Owner.IsActive)
+                {
+                    SpawnObserver(observer);
+                }
             }
 
             _hasSpawnedInitialPlayers = true;
@@ -493,6 +501,7 @@ namespace SS3D.Systems.Entities
             _hasSpawnedInitialPlayers = false;
             _spawnedPlayers.Clear();
             _respawnCooldown.Clear();
+            _observerCkeys.Clear();
             DespawnCorpses();
         }
 
@@ -512,9 +521,7 @@ namespace SS3D.Systems.Entities
         [Server]
         private void HandleSpawnReadyPlayers(ref EventContext context, in SpawnReadyPlayersEvent e)
         {
-            List<Player> playersToSpawn = e.ReadyPlayers;
-
-            SpawnReadyPlayers(playersToSpawn);
+            SpawnReadyPlayers(e.ReadyPlayers, e.Observers);
         }
 
         private void HandleSpawnedPlayersChanged(SyncListOperation op, int index, Entity old, Entity @new, bool asServer)

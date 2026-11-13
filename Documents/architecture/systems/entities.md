@@ -1,7 +1,7 @@
 > Code paths: Assets/Scripts/SS3D/Systems/Entities/
 > Entry points: EntitySubSystem, MindSubSystem, HumanoidBodyStateMachine
 > Status: partial
-> Verified: 6c49dab49 — 2026-11-11
+> Verified: 059aad4c5 — 2026-11-13
 
 # Entities
 
@@ -23,6 +23,7 @@ Humanoid/silicon entity spawning, minds, and join/round ordering with [rounds-lo
 - `Assets/Scripts/SS3D/Systems/Interactions/InteractionController.Animation.cs` — server hand-action scheduling: `ServerRunWithAnimation` / `ServerRunHandAction` run an interaction's effect at the clip's contact frame and re-check it then
 - `Assets/Scripts/SS3D/Systems/Entities/EntitySubSystem.cs` — entity spawn/management; `TryReclaimEntity` re-links a reconnecting player's existing body (see [player-control](player-control.md)); `ServerSpawnCombatDummy` for mindless test Humans; `ResolveSpawnPosition` puts Nuke Ops operatives on the map's Nuclear Operatives markers (crew job markers not routed yet); `ServerSpawnedPlayersChanged` (server, synchronous — a dying body's ghost may not hold its mind yet) feeds [gamemode](gamemodes-roles-traits.md) win/lose checks
 - `Assets/Scripts/SS3D/Systems/Entities/EntitySubSystem.Respawn.cs` — respawn ([sandbox](../2026-11_sandbox-server.md)): death offers a respawn (`RecordPlayerDeath`), `CmdRespawn` checks `ServerSettings.RespawnEnabled` + `RespawnCooldown`, despawns the ghost and re-runs `SpawnPlayer` with the ghost's Mind; `RemoveCorpseOnRespawn` removes the previous corpse only after a successful respawn (sandbox default); remaining corpses are tracked and despawned at round end. `RespawnPrompt` is the ghost-HUD button (UiShell Hud layer, added on client start)
+- `Assets/Scripts/SS3D/Systems/Entities/EntitySubSystem.Observer.cs` — observer mode ([observer.md](../../design/observer.md) §2 first pass): `SpawnObserver` spawns the death `Ghost` prefab (read off the human prefab) with a new Mind at the crew spawn, no body; lobby observers come in at round start (`SpawnReadyPlayersEvent.Observers`), mid-round through `CmdObserve`/`TryObserve` (`ObserveRules`: running round, no entity yet; no late-join gate). `IsObserver` makes `RespawnRules` refuse, keeps them out of the round-end roster, and clears at round end. Observers can't late-join because their ghost counts as spawned
 - `Assets/Scripts/SS3D/Systems/Entities/MindSubSystem.cs` — mind/player mind assignment; `Mind.DisplayName` (lobby character name, else ckey) is the in-world speaker/record name
 - `Assets/Scripts/SS3D/Systems/Entities/Human.cs` — replicated `CharacterAppearance` from the lobby (morphs on the armature, hair/beard/eyebrows and skin/eye/style colors) — see [rounds-lobby](rounds-lobby.md)
 - `Assets/Scripts/SS3D/Systems/Entities/Character/HumanoidStyleApplier.cs` — head sockets for catalog styles; per-material skin/eye tint without mutating shared assets
@@ -121,7 +122,7 @@ Humanoid/silicon entity spawning, minds, and join/round ordering with [rounds-lo
 
 ## Tests
 
-- `Testing/ui/validate.sh --steps compile,scenarios:Respawn` (`RespawnScenarios`) runs two death/respawn cycles in the test room: kill → ghost, the cooldown refuses and keeps the corpse, respawn removes it and leaves one Human, and the new body is owned and takes items. `SandboxServerTests` covers the profile/default/admin-save rule values.
+- `Testing/ui/validate.sh --steps compile,scenarios:Respawn` (`RespawnScenarios`) runs two death/respawn cycles in the test room: kill → ghost, the cooldown refuses and keeps the corpse, respawn removes it and leaves one Human, and the new body is owned and takes items. `Observe_MidRound_GhostWithNoBody_CannotRespawn` covers mid-round observing (owned ghost, no Human, respawn and a second observe refused). The pre-round Observe toggle → ghost at round start has no automated test yet. `SandboxServerTests` covers the profile/default/admin-save rule values.
 
 - `Testing/ui/validate.sh --steps compile,scenarios:Environment` (`EnvironmentScenarios`) covers ragdoll gravity on the deck (critical from plasma), critical/dead weightlessness in open space and back on the deck, and ownership loss/reclaim while critical with collapsed-before-network-start ordering and treatment recovery. A separate-client transport reconnect and remote physics ownership stay outside it.
 - `Testing/ui/validate.sh --steps compile,scenarios:Combat` (`PistolHoldScenarios`) holds a taser in Harm in each hand on a live host: two-handed grip, muzzle along the body's facing, and the off-hand arm leaving the grip once that hand holds an item. EditMode `PistolStanceAnimationTests` covers hold-style data, snapshot bits, the kick curve, clip import, per-ring calibration, the Off Hand layers and the mirrored grip.
