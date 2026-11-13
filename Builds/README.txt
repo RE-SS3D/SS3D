@@ -32,6 +32,10 @@ UPDATING (WINDOWS)
   older backups are deleted after a successful update.
   Update_SS3D.bat -CheckOnly checks for updates without downloading or installing.
 
+  If the updater says the folder's path is too long, move the whole SS3D folder somewhere
+  short such as C:\SS3D and run it again. Windows "Extract All" into Downloads often nests
+  the folder twice (Downloads\SS3D-Windows-...\SS3D-Windows-...), which can be too deep.
+
   If an update is interrupted while installing, keep .ss3d-update-* and .ss3d-backups:
   the previous Game folder can be recovered from the latest backup.
   Update_SS3D.ps1 updates itself along with the game; Update_SS3D.bat stays as it is.

@@ -46,7 +46,7 @@ function Invoke-WebRequest {
 }
 function Move-Item {
     param($LiteralPath, $Destination)
-    if ($script:failMove -and $LiteralPath -like '*extract*README.txt') {
+    if ($script:failMove -and $LiteralPath -like '*.ss3d-update-*README.txt') {
         $script:failMove = $false
         throw 'Simulated disk failure'
     }
@@ -166,6 +166,32 @@ try {
     Update-SS3D $legacy
     Assert ((Read-Fixture $legacy 'Game/Data/StationTemplates/ministation.json') -eq 'my edited ministation') 'Legacy map collision is preserved'
 
+    # MAX_PATH (playtest report: "Could not find a part of the path" from a deep Downloads folder).
+    # Boundaries: a file path may be 259 characters, a folder path 247.
+    $limitRoot = Join-Path $testRoot 'limit'
+    $base = $limitRoot.Length + 1
+    Assert-SS3DPathLength @('f' * (259 - $base)) @($limitRoot)
+    Expect-Failure { Assert-SS3DPathLength @('f' * (260 - $base)) @($limitRoot) } '1 character\(s\) over the limit.*C:\\SS3D'
+    Assert-SS3DPathLength @(('d' * (247 - $base)) + '/f') @($limitRoot)
+    Expect-Failure { Assert-SS3DPathLength @(('d' * (248 - $base)) + '/f') @($limitRoot) } 'too long'
+    Assert-SS3DPathLength @(('d' * (247 - $base)) + '/') @($limitRoot)
+    Expect-Failure { Assert-SS3DPathLength @(('d' * (248 - $base)) + '/') @($limitRoot) } 'too long'
+    Expect-Failure { Assert-SS3DPathLength @('f' * (259 - $base)) @($limitRoot, "$limitRoot-longer") } 'too long'
+    $long = Join-Path $testRoot 'long.zip'
+    $archive = [IO.Compression.ZipFile]::Open($long, [IO.Compression.ZipArchiveMode]::Create)
+    $null = $archive.CreateEntry('SS3D-Windows-v0.3.0/Game/SS3D_Data/' + ('a' * 240) + '.bundle')
+    $archive.Dispose()
+    $longExtract = Join-Path $testRoot 'long-extract'
+    Expect-Failure { Expand-SS3DRelease $long $longExtract 'v0.3.0' } 'too long'
+    Assert (-not (Test-Path -LiteralPath $longExtract)) 'Too-long archive is refused before anything is unpacked'
+    # A real update from a deep folder: refused with advice, install untouched, staging cleaned up.
+    $deep = Join-Path $testRoot ('deep' + ('p' * (195 - $testRoot.Length)))
+    Assert ($deep.Length -eq 200) 'Deep installation fixture is 200 characters'
+    Write-Fixture $deep 'Game/SS3D.exe' 'old'
+    Expect-Failure { Update-SS3D $deep } 'too long.*Your installation has not been changed'
+    Assert ((Read-Fixture $deep 'Game/SS3D.exe') -eq 'old') 'Too-long update leaves the installation intact'
+    Assert (@(Get-ChildItem -LiteralPath $deep -Directory -Force -Filter '.ss3d-update-*').Count -eq 0) 'Too-long update removes its staging folder'
+
     $unsafe = Join-Path $testRoot 'unsafe.zip'
     $archive = [IO.Compression.ZipFile]::Open($unsafe, [IO.Compression.ZipArchiveMode]::Create)
     $null = $archive.CreateEntry('SS3D-Windows-v0.3.0/../../escape.txt')
@@ -184,5 +210,5 @@ try {
     $script:gameProcess.Exited = $false
     Expect-Failure { Wait-SS3DExit 4242 1 } 'did not close'
     $script:gameProcess = $null
-    Write-Host 'PASS: stable release selection/promotion, check-only, process/lock refusal, download/hash/asset failures, swap rollback, data preservation, self-update, n-1 backup retention, repeat update, no downgrade, legacy update, unsafe/incomplete archives, wait for the quitting game.'
+    Write-Host 'PASS: stable release selection/promotion, check-only, process/lock refusal, download/hash/asset failures, swap rollback, data preservation, self-update, n-1 backup retention, repeat update, no downgrade, legacy update, MAX_PATH refusal, unsafe/incomplete archives, wait for the quitting game.'
 } finally { Remove-Item -LiteralPath $testRoot -Recurse -Force }
