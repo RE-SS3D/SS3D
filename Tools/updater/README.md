@@ -49,6 +49,7 @@ The updater shares the Windows contract above: stable numbered releases only, ve
 downloads, preserved local data, refreshed unchanged bundled maps and runnable backups.
 It also restores executable permissions on the player and native helpers.
 `update_ss3d.py` updates itself like the PowerShell script; the `update_ss3d.sh` launcher stays.
+`play_ss3d_opengl.sh` (OpenGL launcher, no decals) is managed and replaced with the game.
 
 Use `python3 -B Tools/updater/test_update_linux.py` for isolated regression tests. Fixtures
 and mocked downloads live in temporary directories; no real game runs. Both the PR updater

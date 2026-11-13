@@ -40,6 +40,7 @@ LINUX CLIENT (SS3D-Linux-Client-<version>.zip)
 
   Game/SS3D-Client                             main menu: play locally, join, update
   ./update_ss3d.sh                            update this folder to the latest stable release
+  ./play_ss3d_opengl.sh                       main menu on OpenGL (faster on some machines, no decals)
 
   Close all Linux client windows before running ./update_ss3d.sh. Requires Python 3;
   keep update_ss3d.py beside the shell script. ./update_ss3d.sh --check-only checks
@@ -52,10 +53,10 @@ LINUX CLIENT (SS3D-Linux-Client-<version>.zip)
   A stable release must include its Linux client zip; otherwise updating fails safely.
   No sudo, Unity, Git, curl, jq, or extra Python packages are needed.
 
-  Low frame rate on Linux? Start the client on OpenGL instead of Vulkan:
-    Game/SS3D-Client -forceLauncher -force-glcore
-  It runs much faster on some machines, but bullet holes and blood decals don't show
-  (URP has no DBuffer decals on OpenGL). -forceLauncher keeps the main menu.
+  Low frame rate on Linux? Start the game with ./play_ss3d_opengl.sh instead. It runs on
+  OpenGL rather than Vulkan, which is much faster on some machines, but bullet holes and
+  blood decals don't show (URP has no DBuffer decals on OpenGL). Join arguments such as
+  -ip=... -ckey=... work with it too. UPDATE AND RESTART starts the normal Vulkan client.
 
 LINUX DEDICATED SERVER (SS3D-Linux-Server-<version>.zip)
 
