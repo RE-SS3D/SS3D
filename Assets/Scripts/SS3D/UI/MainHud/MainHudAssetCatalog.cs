@@ -54,6 +54,7 @@ namespace SS3D.UI.MainHud
         [SerializeField] private Sprite _alertSealBreach;
         [SerializeField] private Sprite _alertInvincible;
         [SerializeField] private Sprite _alertTankLow;
+        [SerializeField] private Sprite _alertShock;
         [SerializeField] private Sprite _internals;
         [SerializeField] private Sprite _magboots;
 
@@ -101,6 +102,7 @@ namespace SS3D.UI.MainHud
             SealBreach = _alertSealBreach,
             Invincible = _alertInvincible,
             TankLow = _alertTankLow,
+            Shock = _alertShock,
             Internals = _internals,
             Magboots = _magboots,
         };
@@ -141,6 +143,7 @@ namespace SS3D.UI.MainHud
                 || _alertSealBreach == null
                 || _alertInvincible == null
                 || _alertTankLow == null
+                || _alertShock == null
                 || _internals == null
                 || _magboots == null)
             {
@@ -201,6 +204,7 @@ namespace SS3D.UI.MainHud
             _alertSealBreach = alertIcons.SealBreach;
             _alertInvincible = alertIcons.Invincible;
             _alertTankLow = alertIcons.TankLow;
+            _alertShock = alertIcons.Shock;
             _internals = alertIcons.Internals;
             _magboots = alertIcons.Magboots;
         }

@@ -156,6 +156,8 @@
         /// <summary>One-handed weapons fired while Downed: accuracy cone × this (a very wide reticle).</summary>
         public const float DownedSpreadMultiplier = 3f;
         public const float HelpUpSeconds = 2f;
+        /// <summary>World speed while standing in high shock (the slower, stumbling gait).</summary>
+        public const float ShockStumbleSpeedMultiplier = 0.85f;
         /// <summary>After being helped up: slower and no sprint for this long.</summary>
         public const float UnsteadySeconds = 3f;
         public const float UnsteadySpeedMultiplier = 0.6f;

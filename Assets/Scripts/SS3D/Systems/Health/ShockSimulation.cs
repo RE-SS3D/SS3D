@@ -208,6 +208,55 @@ namespace SS3D.Systems.Health
             return state;
         }
 
+        /// <summary>
+        /// Onlooker stumble (health.md §7): from the warning line a standing body limps on the injured-leg blend, harder
+        /// as it nears Downed. 0 below the line.
+        /// </summary>
+        public static float StumbleIntensity(float shock)
+        {
+            if (shock < HealthConstants.ShockWarningThreshold)
+            {
+                return 0f;
+            }
+
+            float t = Math.Clamp(
+                (shock - HealthConstants.ShockWarningThreshold)
+                / (HealthConstants.ShockDownedThreshold - HealthConstants.ShockWarningThreshold), 0f, 1f);
+            return 0.35f + (0.35f * t);
+        }
+
+        /// <summary>Pain already on its way will put this standing body down: the build-up warning (health.md §7).</summary>
+        public static bool IsGoingDown(HealthSnapshot snapshot)
+        {
+            return snapshot.State == HealthState.Healthy
+                && snapshot.IncomingPain > 0f
+                && snapshot.Shock + snapshot.IncomingPain >= HealthConstants.ShockDownedThreshold;
+        }
+
+        /// <summary>
+        /// Staged 0–1 shock feel for screen and hearing: nothing below the warning line, a light stage up to Downed,
+        /// a heavy stage from Downed to the Critical line.
+        /// </summary>
+        public static float FeelIntensity(float shock)
+        {
+            if (shock < HealthConstants.ShockWarningThreshold)
+            {
+                return 0f;
+            }
+
+            if (shock < HealthConstants.ShockDownedThreshold)
+            {
+                float t = (shock - HealthConstants.ShockWarningThreshold)
+                    / (HealthConstants.ShockDownedThreshold - HealthConstants.ShockWarningThreshold);
+                return 0.25f + (0.25f * t);
+            }
+
+            float heavy = Math.Clamp(
+                (shock - HealthConstants.ShockDownedThreshold)
+                / (HealthConstants.ShockCriticalThreshold - HealthConstants.ShockDownedThreshold), 0f, 1f);
+            return 0.6f + (0.25f * heavy);
+        }
+
         /// <summary>Stamina cap scale (stamina.md §2): 1 with no shock, <see cref="HealthConstants.ShockStaminaCapFloor"/> at Downed.</summary>
         public static float StaminaCapScale(float shock)
         {

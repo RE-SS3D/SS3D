@@ -191,6 +191,25 @@ namespace SS3D.Systems.Examine
                     isSelf
                         ? ExamineHealthKeys.UnconsciousSelfFallback
                         : ExamineHealthKeys.UnconsciousOtherFallback)));
+                return;
+            }
+
+            // health.md §7 onlooker table: Downed, then high shock while still standing.
+            if (snapshot.State == HealthState.Downed)
+            {
+                sections.Add(new ExamineSection(Localized(
+                    isSelf ? ExamineHealthKeys.DownedSelf : ExamineHealthKeys.DownedOther,
+                    null,
+                    isSelf ? ExamineHealthKeys.DownedSelfFallback : ExamineHealthKeys.DownedOtherFallback)));
+                return;
+            }
+
+            if (snapshot.Shock >= HealthConstants.ShockWarningThreshold)
+            {
+                sections.Add(new ExamineSection(Localized(
+                    isSelf ? ExamineHealthKeys.ShockSelf : ExamineHealthKeys.ShockOther,
+                    null,
+                    isSelf ? ExamineHealthKeys.ShockSelfFallback : ExamineHealthKeys.ShockOtherFallback)));
             }
         }
 

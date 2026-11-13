@@ -2023,6 +2023,22 @@ MonoBehaviour:
     m_Key: items.clothing.glove_syndicate.desc
     m_Metadata:
       m_Items: []
+  - m_Id: 298977481593221120
+    m_Key: examine.health.downed.self
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298977481626775552
+    m_Key: examine.health.downed.other
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298977481626775553
+    m_Key: examine.health.shock.self
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298977481626775554
+    m_Key: examine.health.shock.other
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

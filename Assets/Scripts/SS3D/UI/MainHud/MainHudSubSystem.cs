@@ -547,6 +547,7 @@ namespace SS3D.UI.MainHud
                 SealBreach = ToAlertSeverity(atmos.SealBreach),
                 Invincible = EntityInvincibility.LocalPlayerInvincible ? AlertSeverity.Warning : AlertSeverity.None,
                 TankLow = ToAlertSeverity(atmos.TankLow),
+                Shock = ToAlertSeverity(health.Shock),
             };
         }
 
@@ -1628,6 +1629,7 @@ namespace SS3D.UI.MainHud
                     CardiacArrest = LoadAlertSprite("cardiac-arrest"),
                     SealBreach = LoadAlertSprite("seal-breach"),
                     TankLow = LoadAlertSprite("tank-low"),
+                    Shock = LoadAlertSprite("shock"),
                     Internals = LoadAlertSprite("internals"),
                     Magboots = LoadAlertSprite("magboots"),
                 };

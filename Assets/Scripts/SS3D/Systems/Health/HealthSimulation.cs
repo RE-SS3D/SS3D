@@ -336,7 +336,8 @@ namespace SS3D.Systems.Health
                 HeartFunctionPercent = heartStored,
                 MovementSpeedMultiplier = !canAct ? 0f
                     : state == HealthState.Downed ? HealthConstants.DownedCrawlSpeedMultiplier
-                    : OrganSimulation.ComputeMovementSpeedMultiplier(zones),
+                    : OrganSimulation.ComputeMovementSpeedMultiplier(zones)
+                        * (shock.Shock >= HealthConstants.ShockWarningThreshold ? HealthConstants.ShockStumbleSpeedMultiplier : 1f),
                 CanSprint = canAct && state != HealthState.Downed,
                 DisabledZoneMask = disabledMask,
                 HeadTraumaBlur = HeadTraumaBlur(zones),

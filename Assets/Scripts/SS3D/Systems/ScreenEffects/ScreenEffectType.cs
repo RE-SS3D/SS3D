@@ -16,5 +16,9 @@ namespace SS3D.Systems.ScreenEffects
         BloodLossTunnelVision,
         Concussion,
         Unconscious,
+        /// <summary>Shock (health.md §7): a grey vignette and drained colour that deepen in stages.</summary>
+        Shock,
+        /// <summary>Pending pain will carry shock past Downed: a slow dark pulse, the "you're about to go down" warning.</summary>
+        ShockBuildUp,
     }
 }

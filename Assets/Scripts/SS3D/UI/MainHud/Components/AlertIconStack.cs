@@ -32,6 +32,7 @@ namespace SS3D.UI.MainHud.Components
         SealBreach,
         Invincible,
         TankLow,
+        Shock,
     }
 
     /// <summary>
@@ -71,6 +72,7 @@ namespace SS3D.UI.MainHud.Components
         public AlertSeverity SealBreach;
         public AlertSeverity Invincible;
         public AlertSeverity TankLow;
+        public AlertSeverity Shock;
 
         public AlertSeverity this[AlertHazard hazard] => hazard switch
         {
@@ -91,6 +93,7 @@ namespace SS3D.UI.MainHud.Components
             AlertHazard.SealBreach => SealBreach,
             AlertHazard.Invincible => Invincible,
             AlertHazard.TankLow => TankLow,
+            AlertHazard.Shock => Shock,
             _ => AlertSeverity.None,
         };
     }
@@ -122,6 +125,7 @@ namespace SS3D.UI.MainHud.Components
             (AlertHazard.SealBreach, "Seal Breach"),
             (AlertHazard.Invincible, "Invincible - Editor"),
             (AlertHazard.TankLow, "Tank Low"),
+            (AlertHazard.Shock, "Shock"),
         };
 
         private readonly AlertChip[] _chips;

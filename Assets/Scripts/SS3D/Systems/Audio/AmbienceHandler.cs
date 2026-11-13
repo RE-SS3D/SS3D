@@ -147,13 +147,23 @@ namespace SS3D.Systems.Audio
         }
 
 
+        /// <summary>SFX low-pass cutoff at full <see cref="HealthMuffle"/>.</summary>
+        public const float HealthMuffledCutoff = 1100f;
+
+        /// <summary>
+        /// 0–1: how muffled the local player's hearing is from their own body (shock, health.md §7). Written by the
+        /// health personal-audio mapper; combined with the air muffle by taking the lower cutoff.
+        /// </summary>
+        public static float HealthMuffle { get; set; }
+
         /// <summary>
         /// Muffles SFX channel based on the amount of air.
         /// </summary>
         private void MuffleSFX()
         {
             _sfxAnimator.SetFloat("air", _air);
-            _masterMixer.SetFloat("SFXcutoffFreq", _sfxLowPassCutoff);
+            float healthCutoff = Mathf.Lerp(22000f, HealthMuffledCutoff, Mathf.Clamp01(HealthMuffle));
+            _masterMixer.SetFloat("SFXcutoffFreq", Mathf.Min(_sfxLowPassCutoff, healthCutoff));
             _masterMixer.SetFloat("SFXlowEQgain", _sfxPitchBoost);
             _masterMixer.SetFloat("SFXpitch", _sfxPitchShift);
         }

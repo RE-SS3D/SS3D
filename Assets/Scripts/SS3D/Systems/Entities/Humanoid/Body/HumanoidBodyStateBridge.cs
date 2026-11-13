@@ -230,6 +230,8 @@ namespace SS3D.Systems.Entities.Humanoid
             float leftDamage = _healthController != null ? _healthController.GetZoneBruteFraction(BodyZone.LeftLeg) : 0f;
             float rightDamage = _healthController != null ? _healthController.GetZoneBruteFraction(BodyZone.RightLeg) : 0f;
             float maxLeg = Mathf.Max(leftDamage, rightDamage);
+            // High shock stumbles on the same blend (health.md §7 onlooker table).
+            float stumble = _healthController != null ? ShockSimulation.StumbleIntensity(_healthController.Snapshot.Shock) : 0f;
 
             LimpSide side = LimpSide.None;
             if (leftDamage > LimpThreshold && leftDamage > rightDamage)
@@ -242,7 +244,7 @@ namespace SS3D.Systems.Entities.Humanoid
             }
 
             _bodyStateMachine.SetLimpSide(side);
-            _bodyStateMachine.SetInjuredLeg(maxLeg);
+            _bodyStateMachine.SetInjuredLeg(Mathf.Max(maxLeg, stumble));
             TickRareHurtEmote(maxLeg);
         }
 
