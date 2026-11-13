@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using NUnit.Framework;
+using SS3D.Systems.Area;
 using SS3D.Systems.Audio;
 using SS3D.Systems.Audio.Editor;
 using UnityEditor;
@@ -48,6 +49,26 @@ namespace EditorTests
         }
 
         [Test]
+        public void AreaBoundSound_HeardOnlyFromTheSameArea()
+        {
+            AreaId room = new(3);
+            AreaId nextRoom = new(4);
+
+            Assert.IsTrue(AmbientLoopSelection.IsInListenerArea(true, room, true, room));
+            Assert.IsFalse(AmbientLoopSelection.IsInListenerArea(true, nextRoom, true, room));
+        }
+
+        [Test]
+        public void AreaBoundSound_SilentWhenEitherAreaIsUnknown()
+        {
+            AreaId room = new(3);
+
+            Assert.IsFalse(AmbientLoopSelection.IsInListenerArea(false, default, true, room), "listener outside any area");
+            Assert.IsFalse(AmbientLoopSelection.IsInListenerArea(true, room, false, default), "machine with no area");
+            Assert.IsFalse(AmbientLoopSelection.IsInListenerArea(true, default, true, default), "both None");
+        }
+
+        [Test]
         public void NothingRunning_ClearsTheLastSelection()
         {
             Select(12, new AmbientLoopCandidate(0, 1f, 5f));
@@ -65,6 +86,13 @@ namespace EditorTests
             List<string> drift = AudioContentPrefabRecipes.FindMachineLoopDrift();
 
             Assert.IsEmpty(drift, string.Join("\n", drift));
+        }
+
+        [Test]
+        public void AirAlarm_StaysInItsArea_MachineHumsCarry()
+        {
+            Assert.IsTrue(AmbientLoopTrackIds.Get(AmbientLoopKind.AirAlarm).StaysInArea);
+            Assert.IsFalse(AmbientLoopTrackIds.Get(AmbientLoopKind.Vent).StaysInArea);
         }
 
         [Test]

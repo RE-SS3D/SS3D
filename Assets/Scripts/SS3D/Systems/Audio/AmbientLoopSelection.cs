@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using SS3D.Systems.Area;
 
 namespace SS3D.Systems.Audio
 {
@@ -20,6 +21,15 @@ namespace SS3D.Systems.Audio
     /// <summary>Picks which machines get a voice: the nearest ones the listener could hear.</summary>
     public static class AmbientLoopSelection
     {
+        /// <summary>
+        /// Whether a machine whose sound <see cref="AmbientLoopSettings.StaysInArea"/> can be heard
+        /// from where the listener stands: both must sit in a known Area, and the same one.
+        /// </summary>
+        public static bool IsInListenerArea(bool listenerHasArea, AreaId listenerArea, bool sourceHasArea, AreaId sourceArea)
+        {
+            return listenerHasArea && sourceHasArea && !listenerArea.IsNone && listenerArea.Equals(sourceArea);
+        }
+
         /// <summary>
         /// Fills <paramref name="selected"/> with the indices of the nearest
         /// <paramref name="maxCount"/> candidates within their own reach. Equal distances fall back

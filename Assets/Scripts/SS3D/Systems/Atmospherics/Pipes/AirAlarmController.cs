@@ -30,7 +30,7 @@ namespace SS3D.Systems.Atmospherics.Pipes
     [RequireComponent(typeof(PlacedTileObject))]
     [RequireComponent(typeof(BasicPowerConsumer))]
     [RequireComponent(typeof(ElectricDeviceAdjacencyConnector))]
-    public sealed class AirAlarmController : NetworkBehaviour, IAmbientLoopState
+    public sealed class AirAlarmController : NetworkBehaviour, IAmbientLoopState, IAmbientLoopArea
     {
         /// <summary>Seconds lit and seconds dark while alarming.</summary>
         private const float FlashSeconds = 0.4f;
@@ -88,6 +88,21 @@ namespace SS3D.Systems.Atmospherics.Pipes
         public AreaId AreaId => _areaId;
 
         public bool HasArea => _hasArea;
+
+        /// <summary>
+        /// The alarm sounds only in its own area (<see cref="AmbientLoopSettings.StaysInArea"/>).
+        /// Resolved per call from the client floor cache, since <see cref="ResolveArea"/> reads the
+        /// server registry and runs once at start, before a joining client has the floor snapshot.
+        /// </summary>
+        public bool TryGetLoopArea(out AreaId areaId)
+        {
+            areaId = default;
+            if (_tileObject == null && !TryGetComponent(out _tileObject))
+                return false;
+
+            return SubSystems.TryGet(out AreaSubSystem areaSubSystem)
+                && areaSubSystem.TryResolveAreaIdForDevice(_tileObject, out areaId);
+        }
 
         public float SamplePressureKpa => _samplePressureKpa;
 

@@ -19,11 +19,18 @@ namespace SS3D.Systems.Audio
         public readonly float Volume;
         public readonly float MaxDistance;
 
-        public AmbientLoopSettings(string trackId, float volume, float maxDistance)
+        /// <summary>
+        /// Heard only by a listener standing in the machine's own Area, so the sound says which
+        /// room it comes from instead of carrying through walls into the next ones.
+        /// </summary>
+        public readonly bool StaysInArea;
+
+        public AmbientLoopSettings(string trackId, float volume, float maxDistance, bool staysInArea = false)
         {
             TrackId = trackId;
             Volume = volume;
             MaxDistance = maxDistance;
+            StaysInArea = staysInArea;
         }
     }
 
@@ -48,7 +55,7 @@ namespace SS3D.Systems.Audio
             AmbientLoopKind.Vendor => new AmbientLoopSettings(PowerHum, 0.2f, 5f),
             AmbientLoopKind.Apc => new AmbientLoopSettings(PowerHum, 0.12f, 4f),
             AmbientLoopKind.Smes => new AmbientLoopSettings(Machinery, 0.35f, 9f),
-            AmbientLoopKind.AirAlarm => new AmbientLoopSettings(Alarm, 0.8f, 14f),
+            AmbientLoopKind.AirAlarm => new AmbientLoopSettings(Alarm, 0.8f, 14f, staysInArea: true),
             _ => default,
         };
     }
