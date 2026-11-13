@@ -5,6 +5,7 @@ using SS3D.Core;
 using SS3D.Core.Behaviours;
 using SS3D.Data;
 using SS3D.Data.Generated;
+using SS3D.Systems.Area;
 using UnityEngine;
 
 namespace SS3D.Systems.Audio
@@ -90,17 +91,30 @@ namespace SS3D.Systems.Audio
                 return;
             }
 
+            bool listenerHasArea = TryGetListenerArea(listener, out AreaId listenerArea);
+
             IReadOnlyList<AmbientLoopSource> sources = AmbientLoopSource.Sources;
             _candidates.Clear();
             for (int i = 0; i < sources.Count; i++)
             {
                 AmbientLoopSource source = sources[i];
-                if (source.IsRunning)
+                if (!source.IsRunning)
                 {
-                    float maxDistance = AmbientLoopTrackIds.Get(source.Kind).MaxDistance;
-                    float sqrDistance = (source.transform.position - listener).sqrMagnitude;
-                    _candidates.Add(new AmbientLoopCandidate(i, sqrDistance, maxDistance));
+                    continue;
                 }
+
+                AmbientLoopSettings settings = AmbientLoopTrackIds.Get(source.Kind);
+                if (settings.StaysInArea)
+                {
+                    bool sourceHasArea = source.TryGetArea(out AreaId sourceArea);
+                    if (!AmbientLoopSelection.IsInListenerArea(listenerHasArea, listenerArea, sourceHasArea, sourceArea))
+                    {
+                        continue;
+                    }
+                }
+
+                float sqrDistance = (source.transform.position - listener).sqrMagnitude;
+                _candidates.Add(new AmbientLoopCandidate(i, sqrDistance, settings.MaxDistance));
             }
 
             AmbientLoopSelection.SelectNearest(_candidates, VoiceCount, _selected);
@@ -121,6 +135,13 @@ namespace SS3D.Systems.Audio
                     TryStartVoice(sources[index]);
                 }
             }
+        }
+
+        private static bool TryGetListenerArea(Vector3 listener, out AreaId areaId)
+        {
+            areaId = default;
+            return SubSystems.TryGet(out AreaSubSystem areaSubSystem)
+                && areaSubSystem.TryResolveAreaIdForWorldPosition(listener, out areaId);
         }
 
         private bool IsSelected(AmbientLoopSource owner, IReadOnlyList<AmbientLoopSource> sources)

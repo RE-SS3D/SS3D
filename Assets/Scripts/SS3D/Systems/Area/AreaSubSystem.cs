@@ -247,6 +247,23 @@ namespace SS3D.Systems.Area
         }
 
         /// <summary>
+        /// Resolves a device's area id on host (live registry via <see cref="TryGetAreaForDevice"/>)
+        /// or a pure client (<see cref="FloorVisualCache"/> snapshot, same tile rules), for
+        /// client-local presentation tied to a fixed device such as an alarm's sound.
+        /// </summary>
+        public bool TryResolveAreaIdForDevice(PlacedTileObject tileObject, out AreaId areaId)
+        {
+            if (TryGetAreaForDevice(tileObject, out AreaRecord record))
+            {
+                areaId = record.Id;
+                return true;
+            }
+
+            return AreaDeviceTileResolver.TryResolveAreaIdFromFloorCache(FloorVisualCache, tileObject, out areaId)
+                && !areaId.IsNone;
+        }
+
+        /// <summary>
         /// Clears cached device→area ids (tile structure change or area reflood).
         /// </summary>
         public void InvalidateDeviceAreaCache()
