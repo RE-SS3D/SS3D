@@ -95,6 +95,11 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 161f2a0e64483bfe7a3c617869f03dbe
+    m_Address: Assets/Content/WorldObjects/Structures/Pipes/Atmospherics/SurfacePaint/AtmosPipesSurfaceYellow.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 162e188d33a82b440a239f20901c716a
     m_Address: Assets/Content/WorldObjects/Items/Consumable/Chemical/Medications/BurnPatch.prefab
     m_ReadOnly: 0
@@ -192,6 +197,11 @@ MonoBehaviour:
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 2a63163a4db141744a802f3ff67087db
     m_Address: Assets/Content/WorldObjects/Items/Functional/Identification/SecurityPDA.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 2b9437662b294708197826d27d327cda
+    m_Address: Assets/Content/WorldObjects/Structures/Pipes/Atmospherics/SurfacePaint/AtmosPipesSurfaceCyan.prefab
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
@@ -355,6 +365,11 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 4d79ea0e76521054c80903d512b70ae2
+    m_Address: Assets/Content/WorldObjects/Structures/Pipes/Atmospherics/SurfacePaint/AtmosPipesSurfacePurple.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 4e6899916bc8fd742a07f32b3a04de12
     m_Address: Assets/Content/WorldObjects/Items/Consumable/Drinks/Soda/SodaCanBeepyLime.prefab
     m_ReadOnly: 0
@@ -485,6 +500,11 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 674873d218c0204b7a5092f90212a490
+    m_Address: Assets/Content/WorldObjects/Structures/Pipes/Atmospherics/SurfacePaint/AtmosPipesSurfaceOrange.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 6873d7cf62d6ebc42966423161b799f1
     m_Address: Assets/Content/WorldObjects/Structures/Floors/Tiles/Steel/TileGreyDark.prefab
     m_ReadOnly: 0
@@ -492,6 +512,11 @@ MonoBehaviour:
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 695d43ceb053fda4eb5045c81b18877e
     m_Address: LightTubeBroken
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 6a817f32f67f755649f2808732b856c3
+    m_Address: Assets/Content/WorldObjects/Structures/Pipes/Atmospherics/SurfacePaint/AtmosPipesSurfaceRed.prefab
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
@@ -692,6 +717,11 @@ MonoBehaviour:
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 94aaf82bb6ab002418e01d9cc7c6eaaa
     m_Address: Assets/Content/WorldObjects/Entities/Humanoids/Human/HumanBodyParts/HumanFootLeft.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 95e25c7f38c565a9682dcc97875f127f
+    m_Address: Assets/Content/WorldObjects/Structures/Pipes/Atmospherics/SurfacePaint/AtmosPipesSurfaceGreen.prefab
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
@@ -1097,6 +1127,11 @@ MonoBehaviour:
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: edfdfa7aba0ad7fcfbb7bc5d0acadc5a
     m_Address: Assets/Content/WorldObjects/Items/Functional/Generic/FloorTileWood.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: ef9ab2d094f77348d9a2f53838ba1620
+    m_Address: Assets/Content/WorldObjects/Structures/Pipes/Atmospherics/SurfacePaint/AtmosPipesSurfaceBlue.prefab
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
