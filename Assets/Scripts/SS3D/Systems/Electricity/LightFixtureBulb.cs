@@ -9,6 +9,7 @@ using SS3D.Interactions.Interfaces;
 using SS3D.Systems.Audio;
 using SS3D.Systems.Inventory.Containers;
 using SS3D.Systems.Inventory.Items;
+using SS3D.Systems.StructuralDamage;
 using UnityEngine;
 using AudioType = SS3D.Systems.Audio.AudioType;
 
@@ -147,7 +148,19 @@ namespace SS3D.Systems.Electricity
             SetState(LightBulbState.Broken);
             PlaySound(LightFixtureAudioTrackIds.BulbBreak, glass, BreakVolume, BreakMinRange, BreakMaxRange,
                 Random.Range(1.05f, 1.2f));
+            if (NetworkObject != null && NetworkObject.IsSpawned)
+            {
+                RpcShatter(glass);
+            }
+
             return true;
+        }
+
+        // One-shot and unbuffered: a late joiner sees the broken bulb, not glass still falling.
+        [ObserversRpc(RunLocally = true)]
+        private void RpcShatter(Vector3 glass)
+        {
+            DebrisSpriteVfx.Burst(glass, Vector3.down, DebrisKind.Glass, 8, 1.4f, 0.06f, 180f, 1.8f);
         }
 
         /// <summary>

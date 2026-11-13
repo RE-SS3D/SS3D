@@ -205,6 +205,7 @@ Breaching-charge / timed-charge **placement** can use a minimal place-on-tile / 
 - Furniture/machine housing integrity.
 - Chemistry bad-mix → `BlastResolutionService` (one-line integration once Phase 3 exists).
 - Shuttle impact / electrical overload as additional sources.
+- Debris sprite physics and shading (`DebrisSpriteVfx`, low priority, owner 2026-11-13). Every fragment kind now shares one gravity, wind share and bounce, and one flat unlit look. (1) Per-kind weight: heavy plates should fall fast and barely take the wind, while paper, cardboard and cloth (still unimported in SS3D-Art `Textures/World/VFX/Particles`) should flutter, fall slowly and ride the wind. (2) Per-kind brightness and reflectiveness: metal and glass should catch scene light, while paper and wood stay matte; today the sprite shader is unlit for every kind. Both cost more per particle (a lit particle shader, or per-kind drag in `DebrisWindCarrier`).
 
 ---
 
