@@ -39,7 +39,10 @@ namespace SS3D.Systems.Combat
 
             // Before the first publish (fresh spawn) the gun is full.
             int rounds = _rounds >= 0 ? _rounds : _weapon.MagazineSize;
-            sections.Add(new ExamineSection(Line(_weapon.Profile.VisualStyle != RangedVisualStyle.Ballistic, rounds), ExamineBand.Close));
+            string line = _weapon.Profile.VisualStyle == RangedVisualStyle.Flame
+                ? ExamineText.Get(ExamineWeaponKeys.Fuel, ExamineWeaponKeys.FuelFallback, rounds)
+                : Line(_weapon.Profile.VisualStyle != RangedVisualStyle.Ballistic, rounds);
+            sections.Add(new ExamineSection(line, ExamineBand.Close));
         }
 
         public static string Line(bool energy, int rounds)

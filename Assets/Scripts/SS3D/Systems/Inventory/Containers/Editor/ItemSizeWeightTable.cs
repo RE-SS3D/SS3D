@@ -135,6 +135,7 @@ namespace SS3D.Systems.Inventory.Containers.Editor
             new("Weapons/C20R", SizeClass.Normal, 2.4f),
             new("Weapons/Stechkin", SizeClass.Small, 0.8f),
             new("Weapons/SecurityPistol", SizeClass.Small, 0.8f),
+            new("Weapons/Flamethrower", SizeClass.Normal, 3.5f),
             new("Weapons/StunBaton", SizeClass.Normal, 1.0f),
             new("Functional/Storage/Objects/ToolBoxes/ToolboxBlue", SizeClass.Bulky, 2.0f),
             new("Functional/Generic/Boombox", SizeClass.Bulky, 3.0f),

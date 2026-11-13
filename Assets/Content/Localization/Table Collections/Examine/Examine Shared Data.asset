@@ -2071,6 +2071,18 @@ MonoBehaviour:
     m_Key: items.medical.defibrillator.desc
     m_Metadata:
       m_Items: []
+  - m_Id: 298714254427791360
+    m_Key: items.weapons.flamethrower.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298714254444568576
+    m_Key: items.weapons.flamethrower.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298715341041934336
+    m_Key: examine.weapon.fuel
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

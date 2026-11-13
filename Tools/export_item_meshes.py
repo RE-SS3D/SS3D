@@ -17,6 +17,7 @@ from mathutils import Vector
 
 # name: (source .blend under Assets/Models, main object, extra objects kept as their own mesh, objects joined into main)
 ITEMS = {
+    'Flamethrower': ('Items/Weapons/Ranged/Energy/Flamethrower', 'Flamethrower', [], []),
     'C20R': ('Items/Weapons/Ranged/Physical/Rifles/C20R', 'C20R', ['C20RMagazine'], []),
     'Stechkin': ('Items/Weapons/Ranged/Physical/Handguns/Stechkin', 'Stechkin', ['StechkinMagazine'], ['StechkinSlide']),
     'SecurityPistol': ('Items/Weapons/Ranged/Physical/Handguns/SecurityPistol', 'SecurityPistol', ['SecurityPistolMagazine'], []),

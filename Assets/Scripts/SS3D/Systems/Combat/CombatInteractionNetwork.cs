@@ -63,6 +63,8 @@ namespace SS3D.Systems.Combat
             AddHandle(UpdateEvent.AddListener(HandleServerThrowUpdate));
         }
 
+        private RangedWeaponItemExtension _continuousWeapon;
+
         private void Update()
         {
             if (!IsOwner)
@@ -119,6 +121,7 @@ namespace SS3D.Systems.Combat
                 return false;
             }
 
+            _continuousWeapon = weapon.Profile.VisualStyle == RangedVisualStyle.Flame ? weapon : null;
             weapon.ServerCompleteReloadIfDue();
 
             // Empty mag → server dry-fire (+ reload if possible); do not fall through to melee.
@@ -152,8 +155,22 @@ namespace SS3D.Systems.Combat
 
             TrySyncMeleeAimToServer();
             CmdRunRangedFire();
-            TryPlayRangedFireTelegraph();
+            if (weapon.Profile.VisualStyle != RangedVisualStyle.Flame) TryPlayRangedFireTelegraph();
             return true;
+        }
+
+        /// <summary>Called by the arbitrated primary-input owner. Release/UI/intent/item changes end the hold.</summary>
+        [Client]
+        public void ContinueRangedFirePrimary(bool primaryHeld)
+        {
+            if (!primaryHeld || _continuousWeapon == null
+                || !TryGetHeldRangedWeapon(out _, out RangedWeaponItemExtension weapon)
+                || weapon != _continuousWeapon || weapon.IsReloading || weapon.RoundsRemaining <= 0)
+            {
+                _continuousWeapon = null;
+                return;
+            }
+            if (weapon.CanStartFire()) TryRunRangedFirePrimary();
         }
 
         [Client]
@@ -235,6 +252,11 @@ namespace SS3D.Systems.Combat
             }
 
             weapon.GetMuzzleWorldPose(out Vector3 firePosition, out _);
+            if (weapon.Profile.VisualStyle == RangedVisualStyle.Flame)
+            {
+                ServerFireNapalm(weapon, aimRay, firePosition);
+                return;
+            }
             PlayGunfireSound(firePosition, weapon.Profile);
 
             float maxRange = Mathf.Max(1f, weapon.Profile.MaxRangeMeters);
@@ -412,6 +434,7 @@ namespace SS3D.Systems.Combat
                 ? CombatAudioTrackIds.SoundsFor(profile.SoundSet).Fire
                 : CombatAudioTrackIds.FireFor(profile.VisualStyle);
             string clipId = clips[UnityEngine.Random.Range(0, clips.Length)];
+            if (profile.VisualStyle == RangedVisualStyle.Flame) return; // The jet owns one refreshed, occluded voice.
             float pitch = UnityEngine.Random.Range(0.95f, 1.05f);
             SubSystems.GetOrNull<AudioSubSystem>()?.PlayAudioSource(
                 AudioType.Sfx, clipId, position, null, false, 1f, pitch, 14f, 90f);
@@ -434,6 +457,7 @@ namespace SS3D.Systems.Combat
         [Server]
         private static void PlaySurfaceHitSound(Vector3 impactPoint, RangedVisualStyle style, bool living = false)
         {
+            if (style == RangedVisualStyle.Flame) return;
             string[] clips = style == RangedVisualStyle.Ballistic
                 ? CombatAudioTrackIds.SurfaceHit
                 : living ? CombatAudioTrackIds.EnergyFleshHit : CombatAudioTrackIds.EnergyHit;
@@ -499,7 +523,7 @@ namespace SS3D.Systems.Combat
         {
             style = EnergyWeaponVfx.PreviewStyle ?? style;
             HumanoidIkController ik = GetComponentInChildren<HumanoidIkController>();
-            if (ik != null)
+            if (ik != null && style != RangedVisualStyle.Flame)
             {
                 ik.PlayShotKick();
             }
@@ -508,7 +532,9 @@ namespace SS3D.Systems.Combat
             {
                 Transform socket = TryGetHeldRangedWeapon(out _, out RangedWeaponItemExtension energyWeapon)
                     ? energyWeapon.Muzzle : null;
-                EnergyWeaponVfx.Play(style, socket, fallbackPosition, endpoint, hasImpact, impactNormal);
+                if (style == RangedVisualStyle.Flame)
+                    FlamethrowerVfx.Play(socket, fallbackPosition, endpoint, hasImpact, impactNormal);
+                else EnergyWeaponVfx.Play(style, socket, fallbackPosition, endpoint, hasImpact, impactNormal);
                 return;
             }
             if (TryGetHeldRangedWeapon(out _, out RangedWeaponItemExtension weapon))

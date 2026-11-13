@@ -46,6 +46,7 @@ GameObject:
   - component: {fileID: 3335355118854265521}
   - component: {fileID: 1754970448278505657}
   - component: {fileID: 3744748694784896477}
+  - component: {fileID: 6187682739958614757}
   m_Layer: 0
   m_Name: NetworkSystemsHub
   m_TagString: Untagged
@@ -115,6 +116,7 @@ MonoBehaviour:
   - {fileID: 3335355118854265521}
   - {fileID: 1754970448278505657}
   - {fileID: 3744748694784896477}
+  - {fileID: 6187682739958614757}
   <ParentNetworkObject>k__BackingField: {fileID: 0}
   <ChildNetworkObjects>k__BackingField: []
   SerializedTransformProperties:
@@ -689,5 +691,20 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: SS3D.Systems::SS3D.Systems.ActionMessages.ActionMessageSubSystem
   _componentIndexCache: 24
+  _addedNetworkObject: {fileID: 100004}
+  _networkObjectCache: {fileID: 100004}
+--- !u!114 &6187682739958614757
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 100001}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1515171b101aab07faf8e27fd6de5328, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: SS3D.Systems::SS3D.Systems.Combat.NapalmSubSystem
+  _componentIndexCache: 25
   _addedNetworkObject: {fileID: 100004}
   _networkObjectCache: {fileID: 100004}

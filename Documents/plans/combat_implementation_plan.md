@@ -252,3 +252,5 @@ Current energy content: ion rifle, laser rifle and taser share the hitscan/refil
   (`Editor/ArmorPrefabSetup.cs`). Pure-math `ArmorSimulation.ResolveAbsorption` unit-tested in
   `ArmorSimulationTests`. Environmental seal/breach, armor wear visuals, and examine-self
   integration deferred — see Phase 5 notes above.
+
+The optional flamethrower content uses held-primary repetition, a server-resolved short-range fan, and continuous client flame VFX. Real contacts deposit world-owned, six-second burning fuel; contact and spray hits coat people after they leave the pool. Limb-volume checks and one-second damage packets prevent missed contact and armor-erased micro-hits. Bounded snapshots retain black scorch marks when surface fuel expires. Atmos ignition, automatic spread and removable tanks remain unbuilt. See [flamethrower and napalm](../architecture/systems/combat-napalm.md). This does not close another Playtest 1 combat gate.

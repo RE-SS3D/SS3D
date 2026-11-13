@@ -197,6 +197,25 @@ namespace SS3D.Systems.Combat
             return profile;
         }
 
+        /// <summary>Short-range fuel pulses; hold primary to sustain the jet. Provisional balance.</summary>
+        public static RangedWeaponProfile Flamethrower
+        {
+            get
+            {
+                RangedWeaponProfile profile = Energy(RangedVisualStyle.Flame, 4f, 0f, 60, 0.16f, NapalmSprayRules.Range);
+                profile.StructuralForce = 0f;
+                profile.BaseSpreadDegrees = NapalmSprayRules.HalfAngle;
+                profile.RecoilClimbDegrees = 0f;
+                profile.RecoilPerShot = 0f;
+                profile.MovementBloomPerSpeed = 0f;
+                profile.FalloffExtraSpreadDegrees = 0f;
+                profile.ExhaustionSpreadDegrees = 0f;
+                profile.StaminaCost = 0.15f;
+                profile.ReloadSeconds = 4f;
+                return profile;
+            }
+        }
+
         public static RangedWeaponProfile LaserRifle => Energy(RangedVisualStyle.Laser, 24f, 0f, 20, 0.3f, 40f);
         public static RangedWeaponProfile IonRifle => Energy(RangedVisualStyle.Ion, 16f, 0f, 12, 0.6f, 30f);
         public static RangedWeaponProfile Taser

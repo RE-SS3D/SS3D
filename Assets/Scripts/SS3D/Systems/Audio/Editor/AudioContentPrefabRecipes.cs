@@ -39,6 +39,7 @@ namespace SS3D.Systems.Audio.Editor
             { "C20R", ItemCollisionMaterial.Metal },
             { "Stechkin", ItemCollisionMaterial.Metal },
             { "SecurityPistol", ItemCollisionMaterial.Metal },
+            { "Flamethrower", ItemCollisionMaterial.Metal },
             { "StunBaton", ItemCollisionMaterial.Metal },
             { "PortableDefibrillator", ItemCollisionMaterial.Plastic },
             { "MatterBin", ItemCollisionMaterial.Metal },

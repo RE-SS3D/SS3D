@@ -35,6 +35,7 @@ namespace SS3D.Systems.Combat.Editor
 
             updated += EnergyWeaponPrefabSetup.SetupAll();
             updated += BallisticWeaponPrefabSetup.SetupAll();
+            updated += FlamethrowerPrefabSetup.SetupAll();
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
             return updated;

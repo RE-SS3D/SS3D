@@ -73,7 +73,7 @@ Infrastructure and gameplay maps, including the ones with no design doc (interac
 | [atmospherics](systems/atmospherics.md) | partial | ECS turf gas sim, pressure-driven wind/knockdown, loose items in wind, client VFX sync, host AOI |
 | [audio](systems/audio.md) | partial | SFX pool, occlusion, room tone, wind and sound needs air, personal audio cues; child map [audio-content](systems/audio-content.md) for clips |
 | [chat-audio-screens](systems/chat-audio-screens.md) | partial | Comms hub: local speech, radio/announce feed, compose |
-| [combat](systems/combat.md) | partial | Melee, ranged hitscan, armor absorption, combat feel, ion/laser/taser content and VFX |
+| [combat](systems/combat.md) | partial | Melee, ranged hitscan, armor absorption, combat feel, ion/laser/taser content; flamethrower fan and persistent napalm |
 | [construction](systems/construction.md) | partial | Crew repair and rebuild: rule table, Construct X interactions, hull-hole ghost, floor tile kinds |
 | [core-subsystems](systems/core-subsystems.md) | partial | `SubSystems.Get<T>()`, bootstrap, world-readiness graph |
 | [crafting](systems/crafting.md) | stub | Nothing live; awaits redesign |

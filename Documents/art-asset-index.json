@@ -1,10 +1,10 @@
 {
-  "generated_at": "2026-11-12T20:21:02.689258+00:00",
+  "generated_at": "2026-11-12T20:56:44.084242+00:00",
   "purpose": "Agent reference for locating SS3D art assets and determining import status.",
   "sources": {
     "in_game": {
       "root": "Assets/Art",
-      "file_count": 5440
+      "file_count": 5451
     },
     "ss3d_art": {
       "repo": "https://github.com/RE-SS3D/SS3D-Art",
@@ -13,13 +13,13 @@
     }
   },
   "summary": {
-    "in_game_files": 5440,
+    "in_game_files": 5451,
     "ss3d_art_files": 2480,
-    "unique_assets": 7668,
-    "imported": 252,
-    "in_game_only": 5198,
-    "ss3d_art_only": 2218,
-    "available_for_import": 2003,
+    "unique_assets": 7678,
+    "imported": 253,
+    "in_game_only": 5208,
+    "ss3d_art_only": 2217,
+    "available_for_import": 2002,
     "artwork_only": 215
   },
   "categories": [
@@ -73,18 +73,18 @@
     },
     {
       "path": "Models",
-      "in_game": 104,
+      "in_game": 105,
       "ss3d_art": 749,
-      "imported": 88,
+      "imported": 89,
       "in_game_only": 16,
-      "ss3d_art_only": 661
+      "ss3d_art_only": 660
     },
     {
       "path": "Sound",
-      "in_game": 191,
+      "in_game": 201,
       "ss3d_art": 218,
       "imported": 89,
-      "in_game_only": 102,
+      "in_game_only": 112,
       "ss3d_art_only": 129
     },
     {
@@ -1827,11 +1827,11 @@
     },
     {
       "path": "Models/Items/Weapons/Ranged/Energy",
-      "in_game": 0,
+      "in_game": 1,
       "ss3d_art": 2,
-      "imported": 0,
+      "imported": 1,
       "in_game_only": 0,
-      "ss3d_art_only": 2
+      "ss3d_art_only": 1
     },
     {
       "path": "Models/Items/Weapons/Ranged/Energy/EnergyHandguns",
@@ -2291,10 +2291,18 @@
     },
     {
       "path": "Sound/Items/Weapons/Firearms/SS14",
-      "in_game": 12,
+      "in_game": 21,
       "ss3d_art": 0,
       "imported": 0,
-      "in_game_only": 12,
+      "in_game_only": 21,
+      "ss3d_art_only": 0
+    },
+    {
+      "path": "Sound/Items/Weapons/Flamethrower",
+      "in_game": 1,
+      "ss3d_art": 0,
+      "imported": 0,
+      "in_game_only": 1,
       "ss3d_art_only": 0
     },
     {
@@ -3029,10 +3037,10 @@
   "extensions": {
     "svg": 4248,
     "png": 2084,
-    "blend": 666,
-    "fbx": 293,
+    "blend": 665,
+    "fbx": 294,
     "wav": 159,
-    "ogg": 143,
+    "ogg": 153,
     "mp3": 18,
     "ma": 13,
     "mp4": 12,
@@ -74886,15 +74894,15 @@
       "status": "ss3d_art_only"
     },
     {
-      "name": "Flamethrower.blend",
+      "name": "Flamethrower.fbx",
       "stem": "flamethrower",
-      "extension": "blend",
+      "extension": "fbx",
       "category": "Models/Items/Weapons/Ranged/Energy",
-      "in_game_path": null,
+      "in_game_path": "Assets/Art/Models/Items/Weapons/Ranged/Energy/Flamethrower.fbx",
       "ss3d_art_path": "Assets/Models/Items/Weapons/Ranged/Energy/Flamethrower.blend",
       "github_url": "https://github.com/RE-SS3D/SS3D-Art/blob/main/Assets/Models/Items/Weapons/Ranged/Energy/Flamethrower.blend",
       "import_target_path": "Assets/Art/Models/Items/Weapons/Ranged/Energy/Flamethrower.fbx",
-      "status": "ss3d_art_only"
+      "status": "imported"
     },
     {
       "name": "StunShotgun.blend",
@@ -78472,6 +78480,17 @@
       "status": "in_game_only"
     },
     {
+      "name": "C20RFire.ogg",
+      "stem": "c20rfire",
+      "extension": "ogg",
+      "category": "Sound/Items/Weapons/Firearms/SS14",
+      "in_game_path": "Assets/Art/Sound/Items/Weapons/Firearms/SS14/C20RFire.ogg",
+      "ss3d_art_path": null,
+      "github_url": null,
+      "import_target_path": null,
+      "status": "in_game_only"
+    },
+    {
       "name": "Empty.ogg",
       "stem": "empty",
       "extension": "ogg",
@@ -78510,6 +78529,61 @@
       "extension": "ogg",
       "category": "Sound/Items/Weapons/Firearms/SS14",
       "in_game_path": "Assets/Art/Sound/Items/Weapons/Firearms/SS14/LtRifleMagOut.ogg",
+      "ss3d_art_path": null,
+      "github_url": null,
+      "import_target_path": null,
+      "status": "in_game_only"
+    },
+    {
+      "name": "Mk58Fire.ogg",
+      "stem": "mk58fire",
+      "extension": "ogg",
+      "category": "Sound/Items/Weapons/Firearms/SS14",
+      "in_game_path": "Assets/Art/Sound/Items/Weapons/Firearms/SS14/Mk58Fire.ogg",
+      "ss3d_art_path": null,
+      "github_url": null,
+      "import_target_path": null,
+      "status": "in_game_only"
+    },
+    {
+      "name": "PistolCock.ogg",
+      "stem": "pistolcock",
+      "extension": "ogg",
+      "category": "Sound/Items/Weapons/Firearms/SS14",
+      "in_game_path": "Assets/Art/Sound/Items/Weapons/Firearms/SS14/PistolCock.ogg",
+      "ss3d_art_path": null,
+      "github_url": null,
+      "import_target_path": null,
+      "status": "in_game_only"
+    },
+    {
+      "name": "PistolFire.ogg",
+      "stem": "pistolfire",
+      "extension": "ogg",
+      "category": "Sound/Items/Weapons/Firearms/SS14",
+      "in_game_path": "Assets/Art/Sound/Items/Weapons/Firearms/SS14/PistolFire.ogg",
+      "ss3d_art_path": null,
+      "github_url": null,
+      "import_target_path": null,
+      "status": "in_game_only"
+    },
+    {
+      "name": "PistolMagIn.ogg",
+      "stem": "pistolmagin",
+      "extension": "ogg",
+      "category": "Sound/Items/Weapons/Firearms/SS14",
+      "in_game_path": "Assets/Art/Sound/Items/Weapons/Firearms/SS14/PistolMagIn.ogg",
+      "ss3d_art_path": null,
+      "github_url": null,
+      "import_target_path": null,
+      "status": "in_game_only"
+    },
+    {
+      "name": "PistolMagOut.ogg",
+      "stem": "pistolmagout",
+      "extension": "ogg",
+      "category": "Sound/Items/Weapons/Firearms/SS14",
+      "in_game_path": "Assets/Art/Sound/Items/Weapons/Firearms/SS14/PistolMagOut.ogg",
       "ss3d_art_path": null,
       "github_url": null,
       "import_target_path": null,
@@ -78587,6 +78661,50 @@
       "extension": "ogg",
       "category": "Sound/Items/Weapons/Firearms/SS14",
       "in_game_path": "Assets/Art/Sound/Items/Weapons/Firearms/SS14/Rifle2.ogg",
+      "ss3d_art_path": null,
+      "github_url": null,
+      "import_target_path": null,
+      "status": "in_game_only"
+    },
+    {
+      "name": "SmgCock.ogg",
+      "stem": "smgcock",
+      "extension": "ogg",
+      "category": "Sound/Items/Weapons/Firearms/SS14",
+      "in_game_path": "Assets/Art/Sound/Items/Weapons/Firearms/SS14/SmgCock.ogg",
+      "ss3d_art_path": null,
+      "github_url": null,
+      "import_target_path": null,
+      "status": "in_game_only"
+    },
+    {
+      "name": "SmgMagIn.ogg",
+      "stem": "smgmagin",
+      "extension": "ogg",
+      "category": "Sound/Items/Weapons/Firearms/SS14",
+      "in_game_path": "Assets/Art/Sound/Items/Weapons/Firearms/SS14/SmgMagIn.ogg",
+      "ss3d_art_path": null,
+      "github_url": null,
+      "import_target_path": null,
+      "status": "in_game_only"
+    },
+    {
+      "name": "SmgMagOut.ogg",
+      "stem": "smgmagout",
+      "extension": "ogg",
+      "category": "Sound/Items/Weapons/Firearms/SS14",
+      "in_game_path": "Assets/Art/Sound/Items/Weapons/Firearms/SS14/SmgMagOut.ogg",
+      "ss3d_art_path": null,
+      "github_url": null,
+      "import_target_path": null,
+      "status": "in_game_only"
+    },
+    {
+      "name": "FlameJet.ogg",
+      "stem": "flamejet",
+      "extension": "ogg",
+      "category": "Sound/Items/Weapons/Flamethrower",
+      "in_game_path": "Assets/Art/Sound/Items/Weapons/Flamethrower/FlameJet.ogg",
       "ss3d_art_path": null,
       "github_url": null,
       "import_target_path": null,

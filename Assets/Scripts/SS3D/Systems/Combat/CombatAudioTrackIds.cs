@@ -16,6 +16,8 @@ namespace SS3D.Systems.Combat
             _ => GunFire,
         };
 
+        public const string FlameJet = "a84cef50ecde439ab9da0a34ce80cb92";
+
         public static readonly string[] LaserFire = { "7d8f7f4005a7408dac34329b02c5c252" };
         public static readonly string[] IonFire = { "f1ba387ba8d9495fbb8df0b2bfd99a0c" };
         public static readonly string[] TaserFire = { "46d1ebcf19d64594a03b8053351b1a3a" };

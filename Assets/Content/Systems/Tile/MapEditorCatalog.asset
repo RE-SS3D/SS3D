@@ -387,6 +387,15 @@ MonoBehaviour:
     VariantLabel: 
     SearchTags:
     - wall mounts
+  - AssetName: Flamethrower
+    Mode: 2
+    Subcategory: 306
+    Heading:
+    Family:
+    VariantLabel:
+    SearchTags:
+    - item
+    - weapons
   - AssetName: FlashlightBlue
     Mode: 2
     Subcategory: 305

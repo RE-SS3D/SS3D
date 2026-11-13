@@ -1,7 +1,7 @@
 > Code paths: Assets/Scripts/SS3D/Systems/Combat/, Assets/Scripts/SS3D/Systems/Entities/Humanoid/Body/, Assets/Scripts/SS3D/Utils/LineOfSight.cs
 > Entry points: Harm primary → `CombatInteractionNetwork.TryRunRangedFirePrimary` / `CmdRunRangedFire` (held `RangedWeaponItemExtension`) else `TryRunMeleeSwingPrimary` / `CmdRunMeleeSwing`
 > Status: partial
-> Verified: 77ce6acb3 — 2026-11-12
+> Verified: 77ce6acb3 — 2026-11-13
 
 # Combat
 
@@ -16,6 +16,8 @@ Phase 0–1 melee + Phase 3 ranged + Phase 5 armor slice per [combat_implementat
 **Hold style ([animation pass](../2026-11_humanoid-animation-pass.md) Phase 2):** `RangedWeaponProfile.HoldStyle` (Rifle default, Pistol) picks the body pose and is presentation only; `RequiresBothHands` stays the gameplay rule. A pistol plays the Pistol Handgun pack: two-handed grip with an empty off-hand, only the gun arm when the off-hand holds an item, mirrored whole-body in the left hand. Shots kick the forearms procedurally from `ObserversNotifyMuzzleFlash`; there is no fire or reload clip. The Stechkin and security pistol take `HoldStyle = Pistol` when they land in M1c. Pose wiring and pitfalls: [entities](entities.md).
 
 **Energy-shot VFX:** `RangedWeaponProfile.VisualStyle` selects Ballistic (serialized default), Laser (red beam), Ion (cyan helix), or Taser (blue jittering arc with a fork). `ObserversNotifyMuzzleFlash` carries the server-resolved endpoint/contact normal and style; clients attach the start to their live muzzle. `EnergyWeaponVfx` caps live shots at 24, fades each within 0.32 s, and uses an additive depth-tested Resources shader, surface corona and shadowless muzzle light. Content prefabs `IonRifle`, `LaserRifle` and `Taser` are spawnable through the Items database and FishNet collection. The rifles deal burn damage (16 / 24); the taser drains 6.5 stamina points (65% of the default 10-point bar; `StaminaDamage` is absolute and clamped to `StaminaController.ServerCurrentStaminaAbsolute`) without oxy overdraw, burn or structural damage, and knocks the target down for `RangedWeaponProfile.KnockdownSeconds` (2.5 s; `CombatInteractionNetwork.ServerApplyLivingHit` → `Ragdoll.ServerKnockdownAtLeast`, so repeat hits refresh rather than stack the timer). `CombatDummyBootstrap` re-freezes a dummy's living controller once it has stood up. An intact worn piece with `ArmorProfile.BlocksStun` (Syndicate hardsuit + helmet) on the hit zone cancels the knockdown and halves the drain (`HumanHealthController.ServerZoneBlocksStun`; a spent piece, Integrity 0, no longer blocks). First-guess taser balance: 3 charges, 9 s recharge. Both rifles reserve the off-hand; the taser is single-hand. All use the timed refill (12 / 20 / 3 charges; the taser's refill takes 9 s). The rifles reuse the M4 fire/reload animation; the taser has `HoldStyle = Pistol` and holds like a pistol (see below). No EMP or removable battery system. Client `energyvfx laser|ion|taser|off` previews these looks on existing firearms without changing their damage/audio/ammo.
+
+**Flamethrower:** continuous short-range fan, six-second fuel on surfaces/people, and retained black scorch marks, with authoritative limb contact, lingering burn and buffered observer visuals. See [flamethrower and napalm](combat-napalm.md) for content, bounds, lifetime, networking and test contracts.
 
 **M1c ballistic content:** `C20R` (operative SMG, two-handed, rifle hold), `Stechkin` (operative sidearm) and `SecurityPistol` (Security sidearm) are M4 copies with their own SS3D-Art mesh, a seated `*Magazine` child and `RangedWeaponProfile.C20R` / `Stechkin` / `SecurityPistol`; the pistols are one-handed with `HoldStyle = Pistol` and a plain 1.6 s reload timer. Balance is first-guess. Each ballistic gun sounds by `RangedWeaponProfile.SoundSet` (`CombatAudioTrackIds.SoundsFor`): Rifle (M4), Smg (C-20r: SS14 `c-20r` plus SMG mag and cock), Pistol (Stechkin: SS14 `pistol`, SS14's Viper sound) and ServicePistol (security pistol: SS14 `mk58`); both pistols share the pistol mag and cock clips. A rifle times its mag-in and bolt cues off `RifleReloadClipTiming`; a pistol has no reload clip, so its cues fall at 60% and 85% of the reload. No physical magazine items yet.
 
@@ -42,6 +44,7 @@ stamina drain), projectile travel, thrown-item damage.
 - `Assets/Scripts/SS3D/Systems/Interactions/InteractionController.cs` — routes Harm primary to `CombatInteractionNetwork`; owns intent SyncVar
 - `Assets/Scripts/SS3D/Systems/Combat/Interactions/RangedWeaponItemExtension.cs` — profile, mag, recoil, cooldown, reload
 - `Assets/Scripts/SS3D/Systems/Combat/RangedWeaponProfile.cs` / `AccuracyCone.cs` / `RangedHitscanResolver.cs` / `RangedShotFeedback.cs` / `MuzzleFlashVfx.cs` / `TwoHandedWeaponRules.cs` / `BulletHoleDecalSpawner.cs` / `BulletHoleVfxCatalog.cs`
+- [Flamethrower and napalm](combat-napalm.md) — fan resolution, world-owned surface fuel, jet/surface VFX and owning recipes.
 - `Assets/Scripts/SS3D/Systems/Combat/EnergyWeaponVfx.cs` + `Assets/Resources/Combat/EnergyWeapon.shader` — bounded energy-shot rendering; `EnergyVfxCommand` is a local look-development override.
 - `Assets/Scripts/SS3D/Systems/Combat/CombatAudioTrackIds.cs` — `AssetDatabases.Sounds` clip ids (SS14 rifle fire/empty/mag/cock + surface ricochet set) registered under `Assets/Art/Sound/Items/Weapons/Firearms/SS14/`; energy clips under `Items/Weapons/Energy/SS14/` use `FireFor(VisualStyle)`, separate flesh/surface sets and ready beeps in place of magazine/bolt foley; `CombatInteractionNetwork` plays fire/empty/surface via `AudioSubSystem.PlayAudioSource`, reload-complete mag-in/cock from `RangedWeaponItemExtension.TryCompleteReloadIfDue` (Sfx — gains occlusion via [audio](audio.md) `AudioSourceOcclusion` for free)
 - `Assets/Scripts/SS3D/Utils/LineOfSight.cs` — shared occlusion (Drop, LocalSpeech, combat)
@@ -72,6 +75,8 @@ stamina drain), projectile travel, thrown-item damage.
 - One-shots: a client's combat `CmdFireTrigger` replicates only while the server holds the matching action (`IClientTriggerGate` on `CombatInteractionNetwork`). Send the action RPC (`CmdRunMeleeSwing`, `CmdRunRangedFire`, `CmdRunRangedReload`, `CmdThrow`) **before** `HumanoidCombatController.RequestAttack`, or the trigger arrives first and is refused (tech-debt P1.6). Stance (melee vs ranged) is resolved on the server.
 
 ## Pitfalls
+
+- **A freshly created baked mesh takes the asset filename as its name:** `CreateAsset` renames it on first import even if `mesh.name` was set first. The flamethrower recipe sets the name after `BakeMesh`, so first and repeat imports satisfy the same content contract.
 
 - **Energy weapons point backward in hand:** `ContainerItemDisplay` applies `Attachment.localRotation` directly, rather than inverting a socket pose. Imported +Z-forward meshes need the M4 attachment × muzzle basis (currently +90° X), not −90° X. `EnergyWeaponPrefabSetup` derives this from the M4; `HeldBarrelBasis_MatchesM4` checks forward and roll.
 

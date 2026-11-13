@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-11-12T20:21:02.689258+00:00",
+  "generated_at": "2026-11-12T20:56:44.084242+00:00",
   "purpose": "Game-ready SS3D-Art assets not yet imported into Assets/Art/.",
-  "count": 2003,
+  "count": 2002,
   "assets": [
     {
       "name": "HumanAnimRig.ma",
@@ -11018,15 +11018,6 @@
       "ss3d_art_path": "Assets/Models/Items/Weapons/Melee/Sharp/VendelSword.blend",
       "import_target_path": "Assets/Art/Models/Items/Weapons/Melee/Sharp/VendelSword.fbx",
       "github_url": "https://github.com/RE-SS3D/SS3D-Art/blob/main/Assets/Models/Items/Weapons/Melee/Sharp/VendelSword.blend"
-    },
-    {
-      "name": "Flamethrower.blend",
-      "stem": "flamethrower",
-      "extension": "blend",
-      "category": "Models/Items/Weapons/Ranged/Energy",
-      "ss3d_art_path": "Assets/Models/Items/Weapons/Ranged/Energy/Flamethrower.blend",
-      "import_target_path": "Assets/Art/Models/Items/Weapons/Ranged/Energy/Flamethrower.fbx",
-      "github_url": "https://github.com/RE-SS3D/SS3D-Art/blob/main/Assets/Models/Items/Weapons/Ranged/Energy/Flamethrower.blend"
     },
     {
       "name": "StunShotgun.blend",

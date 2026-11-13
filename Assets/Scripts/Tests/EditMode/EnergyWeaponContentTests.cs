@@ -15,6 +15,7 @@ namespace SS3D.Tests.EditMode
         [TestCase("IonRifle", RangedVisualStyle.Ion)]
         [TestCase("LaserRifle", RangedVisualStyle.Laser)]
         [TestCase("Taser", RangedVisualStyle.Taser)]
+        [TestCase("Flamethrower", RangedVisualStyle.Flame)]
         public void Content_IsRegisteredAndHasOwnPresentation(string name, RangedVisualStyle style)
         {
             string path = "Assets/Content/WorldObjects/Items/Weapons/" + name + ".prefab";
@@ -38,6 +39,7 @@ namespace SS3D.Tests.EditMode
         [TestCase("IonRifle")]
         [TestCase("LaserRifle")]
         [TestCase("Taser")]
+        [TestCase("Flamethrower")]
         public void HeldBarrelBasis_MatchesM4(string name)
         {
             GameObject reference = DB.LoadAssetAtPath<GameObject>("Assets/Content/WorldObjects/Items/Weapons/M4.prefab");

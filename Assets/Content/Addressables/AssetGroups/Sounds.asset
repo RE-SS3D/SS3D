@@ -190,6 +190,11 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: a84cef50ecde439ab9da0a34ce80cb92
+    m_Address: FlameJet
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: acc03a180e6341f11bba14240ec7cd36
     m_Address: PistolFire
     m_ReadOnly: 0

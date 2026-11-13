@@ -2125,6 +2125,21 @@ MonoBehaviour:
       heart has stopped, before the brain dies. Shocking a beating heart burns it.
     m_Metadata:
       m_Items: []
+  - m_Id: 298714254427791360
+    m_Localized: Flamethrower
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298714254444568576
+    m_Localized: A two-handed flame projector. Hold primary in Harm to spray a wide
+      fan of burning fuel up to four metres. Fuel sticks to people and surfaces,
+      burns for six seconds and blackens surfaces. Holds sixty fuel pulses. Use to
+      refill in four seconds.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298715341041934336
+    m_Localized: 'Fuel: {0} pulses.'
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

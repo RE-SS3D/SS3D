@@ -1,13 +1,13 @@
 > Code paths: Assets/Scripts/SS3D/Systems/Interactions/
 > Entry points: InteractionController, InteractionDiscovery, InteractionDispatch, RadialInteractionSubSystem, ArmedInteractionSubSystem
 > Status: shipped
-> Verified: 6c49dab49 — 2026-11-11
+> Verified: 77ce6acb3 — 2026-11-12
 
 # Interactions (runtime)
 
 ## Overview
 
-Client-side interaction routing: discovers available interactions from the current selection and player state, presents the three-tier radial menu, arms targeted interactions, and dispatches `InteractionIdentifier`-based requests to the server. Bridges [selection](selection.md) hover targets with the shared [interactions-framework](interactions-framework.md). Owns Help/Harm intent (`IIntentProvider`). Harm-primary combat RPCs live on sibling [combat](combat.md) `CombatInteractionNetwork` — the controller only routes Harm primary to that behaviour.
+Client-side interaction routing: discovers available interactions from the current selection and player state, presents the three-tier radial menu, arms targeted interactions, and dispatches `InteractionIdentifier`-based requests to the server. Bridges [selection](selection.md) hover targets with the shared [interactions-framework](interactions-framework.md). Owns Help/Harm intent (`IIntentProvider`). Its owner update forwards arbitrated held-primary state to combat for the flamethrower; UI, Shift, armed mode and Help stop repetition. Harm-primary combat RPCs live on sibling [combat](combat.md) `CombatInteractionNetwork` — the controller only routes Harm primary to that behaviour.
 
 **Intent gate:** unrestricted verbs (Drop, Open, MI, …) are **Help-default** via `InteractionPipeline.MatchesIntent`. Harm is combat-exclusive (`IIntentRestrictedInteraction`); primary never falls through to world verbs when a swing cannot start. Drop hotkey also requires Help.
 
