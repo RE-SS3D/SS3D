@@ -141,6 +141,12 @@ namespace SS3D.Systems.Entities
 		[ObserversRpc(RunLocally = true)]
 		private void RpcUpdateGhostPosition(Entity originEntity, Entity ghostEntity)
 		{
+            // Living clients never observe the ghost (GhostObserverCondition), so it resolves to null there.
+            if (ghostEntity == null || originEntity == null)
+            {
+                return;
+            }
+
 			ghostEntity.Transform.SetPositionAndRotation(originEntity.Transform.position, originEntity.Transform.rotation);
         }
 

@@ -31,6 +31,7 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.UIElements;
+using UserPermissionsChangedEvent = SS3D.Permissions.Events.UserPermissionsChangedEvent;
 using InputSubSystem = SS3D.Systems.Inputs.InputSubSystem;
 
 namespace SS3D.Systems.Tile.MapEditor
@@ -67,6 +68,8 @@ namespace SS3D.Systems.Tile.MapEditor
         private IInputHandle _mapEditorHandle;
         private VisualElement _overlayRoot;
         private bool _active;
+        /// <summary>Toggle pressed; waiting for the server to grant or refuse the open.</summary>
+        private bool _awaitingOpenGrant;
         private bool _lastTabRestored;
         /// <summary>OnStart finished; OnDestroyed may run first when a scene unloads mid-load.</summary>
         private bool _started;
@@ -224,6 +227,7 @@ namespace SS3D.Systems.Tile.MapEditor
         {
             base.OnEnabled();
             AddHandle(UpdateEvent.AddListener(HandleUpdate));
+            AddHandle(UserPermissionsChangedEvent.AddListener(HandleUserPermissionsChanged));
         }
 
         protected override void OnDestroyed()
@@ -338,9 +342,57 @@ namespace SS3D.Systems.Tile.MapEditor
         private void HandleToggleMenu(InputAction.CallbackContext context)
         {
             if (_active)
+            {
+                _awaitingOpenGrant = false;
                 SetActive(false);
-            else if (CanOpenEditor())
+            }
+            else if (CanOpenEditor() && !_awaitingOpenGrant)
+            {
+                // The server decides who may build (admin, or anyone on -sandbox): the client can't
+                // tell sandbox from its own command line, and opening first would hand a non-admin the
+                // free camera and the underfloor view even though every edit is refused.
+                _awaitingOpenGrant = true;
+                RpcRequestOpen(LocalConnection);
+            }
+        }
+
+        [ServerRpc(RequireOwnership = false)]
+        private void RpcRequestOpen(NetworkConnection conn = null)
+        {
+            if (!MapEditorPermissions.TryAuthorize(conn))
+            {
+                TargetOpenDenied(conn);
+                return;
+            }
+
+            TargetOpenGranted(conn);
+        }
+
+        [TargetRpc]
+        private void TargetOpenGranted(NetworkConnection conn)
+        {
+            bool requested = _awaitingOpenGrant;
+            _awaitingOpenGrant = false;
+            if (requested && !_active && CanOpenEditor())
                 SetActive(true);
+        }
+
+        /// <summary>Also closes an open editor, so a re-check after a demotion takes it away.</summary>
+        [TargetRpc]
+        private void TargetOpenDenied(NetworkConnection conn)
+        {
+            _awaitingOpenGrant = false;
+            if (_active)
+                SetActive(false);
+
+            Log.Information(this, "The map editor is only available to admins on this server.", Logs.Generic);
+        }
+
+        /// <summary>Re-asks the server while open, so losing admin closes the editor.</summary>
+        private void HandleUserPermissionsChanged(ref EventContext context, in UserPermissionsChangedEvent e)
+        {
+            if (_active && IsClient)
+                RpcRequestOpen(LocalConnection);
         }
 
         /// <summary>
