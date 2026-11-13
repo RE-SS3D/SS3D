@@ -24,6 +24,9 @@ namespace SS3D.Systems.Health
         private const float ClunkPitchOn = 0.7f;
         private const float ClunkPitchOff = 0.9f;
         private const float ClunkRange = 10f;
+        private const float ValveVolume = 1f;
+        private const float ValveMinRange = 3f;
+        private const float ValveRange = 8f;
 
         private static readonly ContainerType[] TankSlots =
         {
@@ -107,7 +110,19 @@ namespace SS3D.Systems.Health
         public void ServerSetInternals(bool on)
         {
             ServerRefresh();
-            _internalsOn = on && _internalsAvailable;
+            bool next = on && _internalsAvailable;
+            if (next == _internalsOn)
+            {
+                return;
+            }
+
+            _internalsOn = next;
+            if (next)
+            {
+                // Only the valve opening has a sound, as in SS13; closing it is silent.
+                SubSystems.Get<AudioSubSystem>().PlayAudioSource(
+                    AudioType.Sfx, AudioTrackIds.InternalsOn, Transform.position, NetworkObject, false, ValveVolume, 1f, ValveMinRange, ValveRange);
+            }
         }
 
         public void ClientToggleMagboots() => CmdToggleMagboots();
