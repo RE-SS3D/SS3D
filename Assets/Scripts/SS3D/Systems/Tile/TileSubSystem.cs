@@ -262,9 +262,12 @@ namespace SS3D.Systems.Tile
             if (!IsClient)
                 return;
 
-            // A zero normal means no measured surface, so this impact is sound only.
+            // A zero normal means no measured surface: no contact particles. A break without a surface is a
+            // window, table or door that just came apart, so it bursts into fragments on every side.
             if (normal.sqrMagnitude > 0.0001f)
                 SteelWallDamageVfx.PlayImpact(point, normal, (byte)material);
+            else if (cue == StructuralImpactCue.Break)
+                DebrisSpriteVfx.PlayBreak(point, material);
 
             if (_structuralAudio != null)
                 _structuralAudio.OnImpact(point, material, cue);

@@ -98,7 +98,8 @@ namespace SS3D.Systems.StructuralDamage
             overlay.sharedMaterials = materials;
         }
 
-        public static void PlayImpact(Vector3 point, Vector3 normal, byte material = 0)
+        /// <param name="chunks">False for cues that only throw sparks (welding): no sprite fragments.</param>
+        public static void PlayImpact(Vector3 point, Vector3 normal, byte material = 0, bool chunks = true)
         {
             if (!EnsureMaterials())
                 return;
@@ -109,6 +110,8 @@ namespace SS3D.Systems.StructuralDamage
             {
                 Emit(origin, rotation, "Glass chips", 10, 1.8f, 0.27f, 0.035f, 0.8f,
                     new Color(0.7f, 0.88f, 0.9f, 0.8f), ParticleSystemRenderMode.Stretch);
+                if (chunks)
+                    DebrisSpriteVfx.Burst(origin, normal, DebrisKind.Glass, 4, 2f, 0.075f);
                 return;
             }
 
@@ -118,6 +121,8 @@ namespace SS3D.Systems.StructuralDamage
                     new Color(0.65f, 0.43f, 0.22f, 1f), ParticleSystemRenderMode.Stretch);
                 Emit(origin, rotation, "Wood dust", 7, 0.45f, 0.3f, 0.1f, 0f,
                     new Color(0.52f, 0.36f, 0.2f, 0.45f), ParticleSystemRenderMode.Billboard);
+                if (chunks)
+                    DebrisSpriteVfx.Burst(origin, normal, DebrisKind.Wood, 3, 1.8f, 0.09f);
                 return;
             }
 
@@ -125,6 +130,9 @@ namespace SS3D.Systems.StructuralDamage
                 new Color(0.95f, 0.79f, 0.52f, 1f), ParticleSystemRenderMode.Stretch);
             Emit(origin, rotation, "Dust", 9, 0.63f, 0.25f, 0.13f, 0f,
                 new Color(0.54f, 0.49f, 0.43f, 0.5f), ParticleSystemRenderMode.Billboard);
+            if (chunks)
+                DebrisSpriteVfx.Burst(origin, normal, DebrisKind.Metal, 2, 2f, 0.08f,
+                    firstSprite: DebrisSpriteVfx.MetalHardwareStart);
         }
 
         /// <summary>A short shower of bright, falling sparks: a machine shorting out as it breaks.</summary>

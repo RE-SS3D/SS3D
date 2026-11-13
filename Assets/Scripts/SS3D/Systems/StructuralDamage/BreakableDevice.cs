@@ -161,6 +161,7 @@ namespace SS3D.Systems.StructuralDamage
             if (broke)
             {
                 SteelWallDamageVfx.PlaySparks(point, normal);
+                DebrisSpriteVfx.Burst(point + normal * 0.03f, normal, DebrisKind.Electronics, 9, 2.6f, 0.11f, 60f);
             }
         }
 

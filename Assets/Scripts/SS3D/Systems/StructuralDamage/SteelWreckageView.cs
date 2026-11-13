@@ -62,7 +62,10 @@ namespace SS3D.Systems.StructuralDamage
             }
             EmitDust(wreck, false);
             EmitDust(wreck, true);
-            SteelWallDamageVfx.PlayImpact(record.Position + Vector3.up * Mathf.Min(record.Size.y * 0.5f, 1f), Vector3.up, 0);
+            Vector3 middle = record.Position + Vector3.up * Mathf.Min(record.Size.y * 0.5f, 1f);
+            SteelWallDamageVfx.PlayImpact(middle, Vector3.up, 0, chunks: false);
+            bool table = record.Kind == 2;
+            DebrisSpriteVfx.Burst(middle, Vector3.up, DebrisKind.Metal, table ? 7 : 14, 3.2f, table ? 0.13f : 0.17f, 70f);
         }
 
         private void EmitDust(Wreck wreck, bool groundImpact)
