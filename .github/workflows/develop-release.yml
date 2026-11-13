@@ -640,7 +640,7 @@ jobs:
               (cd staging && zip -qq -r "../dist/SS3D-Linux-${kind}-${TAG}.zip" "SS3D-Linux-${kind}-${TAG}")
             }
             stage_linux Client build-linux/Game/StandaloneLinux64 Game SS3D-Client \
-              update_ss3d.sh
+              update_ss3d.sh play_ss3d_opengl.sh
             stage_linux Server build-linux/GameServer/StandaloneLinux64 GameServer SS3D-Server \
               start_ss3d_server.sh
             FILES="$(printf '%s\n%s\n%s' "$FILES" "dist/SS3D-Linux-Server-${TAG}.zip" "dist/SS3D-Linux-Client-${TAG}.zip")"

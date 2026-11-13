@@ -55,7 +55,7 @@ Phase 0d strips legacy health components from `Human.prefab` and rewires a thinn
 - `Assets/Scripts/SS3D/Systems/Health/Interactions/OxygenTreatmentInteraction.cs` — oxy debt relief (Phase 5)
 - `Assets/Scripts/SS3D/Systems/Health/Interactions/CprInteraction.cs` + `HandCprExtension.cs` — chest CPR (Phase 5)
 - `Assets/Scripts/SS3D/Systems/Health/Interactions/TransfusionInteraction.cs` / `AntitoxinInteraction.cs` — medkit systemic treatments (Phase 5)
-- `Assets/Scripts/SS3D/Systems/Health/Interactions/DefibrillatorInteraction.cs` — chest-zone defibrillation (Phase 3)
+- `Assets/Scripts/SS3D/Systems/Health/Interactions/DefibrillatorInteraction.cs` — chest-zone defibrillation (Phase 3); `DefibrillatorItemExtension.cs` offers it from a held item. Content: `PortableDefibrillator.prefab` and `Gauze.prefab` (bandage) from `MedicalItemPrefabSetup` ([inventory](inventory.md)), both in the Doctor's kit
 - `Assets/Scripts/SS3D/Systems/IngameConsoleSystem/Commands/DefibCommand.cs` — admin defib testing
 - `Assets/Scripts/SS3D/Systems/Health/HealthDebugController.cs` — IMGUI overlay (F1 → Health) for full zone/organ/pool inspection
 - `Assets/Scripts/SS3D/Systems/Health/HealthDebugDetail.cs` — per-zone/per-organ SyncVar payload for debug UI
@@ -80,6 +80,8 @@ Phase 0d strips legacy health components from `Human.prefab` and rewires a thinn
 - Body presentation: map vitals with `BodyPresentationIntent.FromSnapshot` and call `Ragdoll.ServerSetPresentation` — never apply ragdoll/animator visuals from Health.
 
 ## Pitfalls
+
+- **A MonoBehaviour must live in a file of its own name to go on a prefab:** `DefibrillatorItemExtension` sat in `DefibrillatorInteraction.cs`, so `AddComponent` worked in memory but the saved prefab showed a missing script, and re-saving that prefab then failed with no error. It now has its own file. Remove a missing-script component with `GameObjectUtility.RemoveMonoBehavioursWithMissingScript` before re-running a recipe on a prefab that has one.
 
 - **Invincibility must not blank the environment:** map editor invincibility outlives the editor, and `TickHealthFromEnvironment` used to return `SafeDefault` for it, so the snapshot said 101 kPa in vacuum and no alert showed, with no error. It now samples and skips only the harm; `HasSample` false means no reading, not safe air. Hit 2026-11-06.
 - **`ServerDamaged` is the stagger signal, not "any damage":** it fires only for hits of `HeavyHitStaggerDamage` (30) or more before armor, so an M4 round no longer cancels a timed step (combat.md §5: a flinch never cancels). Subscribe to `SnapshotChanged` for "took damage".

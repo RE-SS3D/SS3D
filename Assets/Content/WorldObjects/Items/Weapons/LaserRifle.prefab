@@ -56,7 +56,7 @@ Transform:
   m_GameObject: {fileID: 4152983973162309876}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.100782715, z: 0.3194657}
+  m_LocalPosition: {x: 0, y: 0.0548, z: 0.3194657}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -265,8 +265,8 @@ MonoBehaviour:
   <ParentNetworkObject>k__BackingField: {fileID: 0}
   <ChildNetworkObjects>k__BackingField: []
   SerializedTransformProperties:
-    Position: {x: 4.46231, y: 0, z: -5.81089}
-    Rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+    Position: {x: 0, y: 0, z: 0}
+    Rotation: {x: 0, y: 0, z: 0.7071068, w: 0.7071068}
     LocalScale: {x: 1, y: 1, z: 1}
   _isNetworked: 1
   _isGlobal: 0
@@ -375,6 +375,7 @@ MonoBehaviour:
     RequiresBothHands: 1
     RequiredHand: 0
     HoldStyle: 0
+    SoundSet: 0
   _muzzle: {fileID: 1004819846146207257}
   _magazine: {fileID: 0}
   _magazineHandPosition: {x: -0.0262, y: 0.037, z: -0.0604}

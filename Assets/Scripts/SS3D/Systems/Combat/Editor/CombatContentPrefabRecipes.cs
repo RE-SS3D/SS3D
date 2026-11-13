@@ -14,6 +14,7 @@ namespace SS3D.Systems.Combat.Editor
         [MenuItem("SS3D/Combat/Run Content Prefab Recipes")]
         public static void RunAllMenu()
         {
+            NapalmHubRecipe.SetupAll();
             int melee = MeleePrefabSetup.SetupAll();
             int ranged = RangedPrefabSetup.SetupAll();
             int armor = ArmorPrefabSetup.SetupAll();
@@ -29,6 +30,7 @@ namespace SS3D.Systems.Combat.Editor
         /// <summary>BatchMode: <c>-executeMethod SS3D.Systems.Combat.Editor.CombatContentPrefabRecipes.RunAllBatch</c></summary>
         public static void RunAllBatch()
         {
+            NapalmHubRecipe.SetupAll();
             int melee = MeleePrefabSetup.SetupAll();
             int ranged = RangedPrefabSetup.SetupAll();
             int armor = ArmorPrefabSetup.SetupAll();

@@ -155,6 +155,10 @@ namespace SS3D.Systems.Interactions
             // Client-side tracking for interactions that registered a ClientInteract instance.
             // Take-from-character (CreateClient => null) waits for TargetNotify / Cancel instead.
             RefreshClientDelayedInteractionTracking();
+            GetCombatNetwork()?.ContinueRangedFirePrimary(
+                _controls.RunPrimary.enabled && _controls.RunPrimary.IsPressed()
+                && CurrentIntent == IntentType.Harm && !_armedSystem.IsArmed
+                && !IsShiftModifierHeld() && !InputInterface.IsPointerOverInterface());
         }
 
         private void LateUpdate()

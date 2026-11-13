@@ -1,7 +1,7 @@
 > Code paths: Assets/Scripts/SS3D/Systems/Inventory/, Assets/Scripts/SS3D/UI/MainHud/, Assets/Scripts/SS3D/UI/StoragePanel/, Assets/Scripts/SS3D/Systems/Stamina/
 > Entry points: ItemSubSystem, MainHudSubSystem, StoragePanelHost, StaminaController
 > Status: partial
-> Verified: 6d0f4604b — 2026-11-12
+> Verified: 77ce6acb3 — 2026-11-12
 
 # Inventory
 
@@ -59,6 +59,7 @@ Items, containers, hands, identification cards (`IDCard`, `PDA`), on-demand stor
 - `Assets/Scripts/SS3D/Systems/Inventory/Containers/Editor/InventoryContentPrefabRecipes.cs` — **SS3D → Inventory → Run Content Prefab Recipes** (clothing + storage + size/weight)
 - `Assets/Scripts/SS3D/Systems/Inventory/Containers/Editor/ItemSizeWeightTable.cs` / `ItemSizeWeightRecipe.cs` — the size/weight source of truth and the recipe that applies it
 - `Assets/Scripts/SS3D/Systems/Inventory/Containers/Editor/ClothingPrefabSetup.cs` — clothing world presentation statics (tier B)
+- `Assets/Scripts/SS3D/Systems/Inventory/Containers/Editor/ImportedItemPrefab.cs` + `Tools/export_item_meshes.py` — rigid items from SS3D-Art: Blender export of named objects, then bake the mesh, copy a template prefab with the right behaviour, swap the visual, register (Items database, Addressables, map editor `ItemObjectSo`, examine). Used by `BallisticWeaponPrefabSetup`, `MeleePrefabSetup` ([combat](combat.md)) and `MedicalItemPrefabSetup` (SS3D → Health → Run Medical Item Recipes)
 - `Assets/Scripts/SS3D/Systems/Inventory/Containers/Editor/ClothingImportSetup.cs` + `Tools/clothing/` — job clothing: Blender export, then `SetupAll` and `ApplyLoadouts` (run through `execute_code`; no menu item)
 - `Assets/Scripts/SS3D/Systems/Inventory/Containers/Editor/BodyPartContainerInteractiveStrip.cs` — strip head/torso world CI (via Human recipes)
 - `Assets/Scripts/SS3D/Systems/Inventory/Containers/Editor/HandsPrefabSetup.cs` — (re)wires `Hands.PlayerHands` + ensures `HandSearchExtension` (via Human recipes)
@@ -97,6 +98,7 @@ Items, containers, hands, identification cards (`IDCard`, `PDA`), on-demand stor
 - **New storage panel stylesheet:** path in `StoragePanelAssetPaths`, run **SS3D → Data → Rebuild All UI Catalogs**.
 - **Head/torso world containers:** do not re-add `ContainerInteractive` on `HumanHead`/`HumanTorso` until surgery needs organ holes — re-strip via **SS3D → Entities → Run All Human Prefab Recipes**.
 - **New alert hazard:** add to `AlertHazard`/`AlertStackState`/`AlertIconSet`, drop PNG under `Assets/Art/Icons/Alerts/`, wire catalog/builder/editor fallback, rebuild catalogs via **SS3D → Data → Rebuild All UI Catalogs**; add alert debug row + `AlertStackCommand` case.
+- **New rigid item from SS3D-Art:** add it to `ITEMS` in `Tools/export_item_meshes.py` and run `blender -b -t 1 --python Tools/export_item_meshes.py -- <SS3D-Art root> <name>`, then build it in a domain recipe with `ImportedItemPrefab` from the closest existing prefab, add it to `ItemSizeWeightTable` and `AudioContentPrefabRecipes`, and run `ItemSizeWeightRecipe.SetupAll`. That recipe also resaves about 50 untouched prefabs to add default-valued fields; revert those.
 - **New job garment:** add a row to `Tools/clothing/clothing_manifest.json`, run `blender -b --python Tools/clothing/export_clothing.py`, add the garment to `ClothingImportSetup.Garments`, `ItemSizeWeightTable`, the audio recipe lists (`AudioContentPrefabRecipes`) and its examine text in `ExamineIdentificationKeySetup`, then run `ClothingImportSetup.SetupAll`. A new backpack also needs a `StorageContainerPrefabSetup` row. Check the fit with the body sliders at 100: render it in edit mode or play.
 - **New clothing with dual mesh:** add folded + worn-shaped children on one Item, `Cloth` mesh map, `ClothingItemPresentation` + root collider via `ClothingPrefabSetup` (or same PrefabUtility pattern) — never a second NetworkObject for the folded form.
 - **World spawn/drop facing:** use `ItemPlacement.WorldRotation(item, yaw)` (or `SpawnItemAtRest`): never yaw-only or `Quaternion.identity`, or long items (M4, knives, tools) stand upright. `SpawnItem` and `PlacedItemObject.Create` apply the exact rotation they are given. Deliberate non-rest poses (wall charges, severed limbs, vending tumbles) set their own.

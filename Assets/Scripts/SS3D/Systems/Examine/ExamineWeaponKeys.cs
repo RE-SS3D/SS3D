@@ -12,10 +12,13 @@ namespace SS3D.Systems.Examine
         public const string ChargeEmpty = "examine.weapon.charge_empty";
         public const string ChargeEmptyFallback = "Charge <k=warn>empty</k>.";
 
+        public const string Fuel = "examine.weapon.fuel";
+        public const string FuelFallback = "Fuel: {0} pulses.";
+
         public static readonly (string Key, string English)[] All =
         {
             (Rounds, RoundsFallback), (RoundsEmpty, RoundsEmptyFallback),
-            (Charge, ChargeFallback), (ChargeEmpty, ChargeEmptyFallback),
+            (Charge, ChargeFallback), (ChargeEmpty, ChargeEmptyFallback), (Fuel, FuelFallback),
         };
     }
 }

@@ -29,9 +29,10 @@ class UpdaterTests(unittest.TestCase):
         self.new = self.base / "payload/SS3D-Linux-Client-v0.3.0"
         for name in ("Game/SS3D-Client", "Game/UnityPlayer.so", "Game/SS3D-Client_Data/globalgamemanagers",
                      "Game/Config/permissions.txt", "Game/Config/network.json", "README.txt", "TESTERS.md",
-                     "update_ss3d.py",
+                     "update_ss3d.py", "play_ss3d_opengl.sh",
                      "Game/Data/StationTemplates/ministation.json", "Game/Data/StationTemplates/edited.json"):
             self.write(self.new, name, "new release")
+        (self.new / "play_ss3d_opengl.sh").chmod(0o755)
         self.write(self.new, "Game/UnityCrashHandler64", "native helper")
         (self.new / "Game/UnityCrashHandler64").chmod(0o755)
         self.archive = self.base / "release.zip"
@@ -86,7 +87,8 @@ class UpdaterTests(unittest.TestCase):
                      "Game/Logs/player.log", "Game/Config/network.json"):
             self.assertEqual((self.root / name).read_text(), "local data", name)
         self.assertEqual(updater.metadata(self.root)["tag"], "v0.3.0")
-        for name in ("Game/SS3D-Client", "Game/UnityCrashHandler64"):
+        self.assertEqual((self.root / "play_ss3d_opengl.sh").read_text(), "new release")
+        for name in ("Game/SS3D-Client", "Game/UnityCrashHandler64", "play_ss3d_opengl.sh"):
             self.assertTrue((self.root / name).stat().st_mode & stat.S_IXUSR, name)
         for name in updater.RETIRED:
             self.assertFalse((self.root / name).exists(), name)

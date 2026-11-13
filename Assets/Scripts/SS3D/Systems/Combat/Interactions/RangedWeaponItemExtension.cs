@@ -27,6 +27,11 @@ namespace SS3D.Systems.Combat.Interactions
         [Tooltip("Magazine rotation (Euler) in the left hand bone's space while carried.")]
         [SerializeField] private Vector3 _magazineHandEuler = new Vector3(356.06f, 298.24f, 93.93f);
 
+        /// <summary>Share of a pistol's reload at which the new magazine seats (no clip to time it against).</summary>
+        private const float PistolMagazineInShare = 0.6f;
+        /// <summary>Share of a pistol's reload at which the slide is released.</summary>
+        private const float PistolCockShare = 0.85f;
+
         private int _rounds;
         /// <summary>Recoil at <see cref="_recoilSince"/>; read it through <see cref="RecoilStacks"/>.</summary>
         private float _recoilStacks;
@@ -247,8 +252,9 @@ namespace SS3D.Systems.Combat.Interactions
         }
 
         /// <summary>
-        /// Server: mag-in and bolt-release sounds at the moments the reload clip shows them
-        /// (<see cref="RifleReloadClipTiming"/>), clamped so a shorter reload still plays both.
+        /// Server: mag-in and bolt-release sounds. A rifle plays them at the moments its reload clip shows them
+        /// (<see cref="RifleReloadClipTiming"/>), clamped so a shorter reload still plays both; a pistol has no
+        /// reload clip, so its cues sit at fixed shares of the reload time.
         /// </summary>
         private void PlayDueReloadCues()
         {
@@ -259,19 +265,23 @@ namespace SS3D.Systems.Combat.Interactions
 
             float elapsed = Time.time - _reloadStartedAt;
             float duration = Mathf.Max(0.01f, _profile.ReloadSeconds);
-            if (_reloadCuesPlayed < 1 && elapsed >= Mathf.Min(RifleReloadClipTiming.MagazineInSeconds, duration))
+            bool rifle = _profile.HoldStyle == WeaponHoldStyle.Rifle;
+            float magazineIn = rifle ? RifleReloadClipTiming.MagazineInSeconds : duration * PistolMagazineInShare;
+            float cock = rifle ? RifleReloadClipTiming.BoltReleaseSeconds : duration * PistolCockShare;
+            FirearmSounds sounds = CombatAudioTrackIds.SoundsFor(_profile.SoundSet);
+            if (_reloadCuesPlayed < 1 && elapsed >= Mathf.Min(magazineIn, duration))
             {
                 _reloadCuesPlayed = 1;
                 PlayReloadCue(_profile.VisualStyle == RangedVisualStyle.Ballistic
-                    ? CombatAudioTrackIds.ReloadMagazineIn : CombatAudioTrackIds.EnergyReady, 1f);
+                    ? sounds.MagazineIn : CombatAudioTrackIds.EnergyReady, 1f);
             }
 
-            if (_reloadCuesPlayed < 2 && elapsed >= Mathf.Min(RifleReloadClipTiming.BoltReleaseSeconds, duration))
+            if (_reloadCuesPlayed < 2 && elapsed >= Mathf.Min(cock, duration))
             {
                 _reloadCuesPlayed = 2;
                 if (_profile.VisualStyle == RangedVisualStyle.Ballistic)
                 {
-                    PlayReloadCue(CombatAudioTrackIds.ReloadCock, 0.95f);
+                    PlayReloadCue(sounds.Cock, 0.95f);
                 }
             }
         }

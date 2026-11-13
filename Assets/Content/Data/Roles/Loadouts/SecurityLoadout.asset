@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: SecurityLoadout
   m_EditorClassIdentifier: 
   HandLeftAsset: {fileID: 0}
-  HandRightAsset: {fileID: 11400000, guid: c023289bfe65e6fb78be1944ced31875, type: 2}
+  HandRightAsset: {fileID: 11400000, guid: 4a2a9822c275d2db7a581057fba1cb36, type: 2}
   EquipmentAssets:
     _list:
     - _key: 512
@@ -40,5 +40,6 @@ MonoBehaviour:
     - {fileID: 11400000, guid: cb8a18ff6b582ec45a3aa1f689a18564, type: 2}
     - {fileID: 11400000, guid: 8ec2a780fae01344a9431a9cb06d8a7c, type: 2}
     - {fileID: 11400000, guid: e28b644ad26ceae45acf3ceb84b8cbff, type: 2}
+    - {fileID: 11400000, guid: 711a5ee0617bbf3bc9a5029373a16fac, type: 2}
   HandLeftContents: []
   HandRightContents: []

@@ -129,8 +129,64 @@ MonoBehaviour:
     Mode: 1
     Subcategory: 202
     Heading: 
-    Family: 
-    VariantLabel: 
+    Family: Surface Pipe
+    VariantLabel: Standard
+    SearchTags:
+    - gas pipes
+  - AssetName: AtmosPipesSurfaceBlue
+    Mode: 1
+    Subcategory: 202
+    Heading: 
+    Family: Surface Pipe
+    VariantLabel: Blue
+    SearchTags:
+    - gas pipes
+  - AssetName: AtmosPipesSurfaceCyan
+    Mode: 1
+    Subcategory: 202
+    Heading: 
+    Family: Surface Pipe
+    VariantLabel: Cyan
+    SearchTags:
+    - gas pipes
+  - AssetName: AtmosPipesSurfaceGreen
+    Mode: 1
+    Subcategory: 202
+    Heading: 
+    Family: Surface Pipe
+    VariantLabel: Green
+    SearchTags:
+    - gas pipes
+  - AssetName: AtmosPipesSurfaceOrange
+    Mode: 1
+    Subcategory: 202
+    Heading: 
+    Family: Surface Pipe
+    VariantLabel: Orange
+    SearchTags:
+    - gas pipes
+  - AssetName: AtmosPipesSurfacePurple
+    Mode: 1
+    Subcategory: 202
+    Heading: 
+    Family: Surface Pipe
+    VariantLabel: Purple
+    SearchTags:
+    - gas pipes
+  - AssetName: AtmosPipesSurfaceRed
+    Mode: 1
+    Subcategory: 202
+    Heading: 
+    Family: Surface Pipe
+    VariantLabel: Red
+    SearchTags:
+    - gas pipes
+  - AssetName: AtmosPipesSurfaceYellow
+    Mode: 1
+    Subcategory: 202
+    Heading: 
+    Family: Surface Pipe
+    VariantLabel: Yellow
     SearchTags:
     - gas pipes
   - AssetName: AtmosPipesWaste
@@ -218,6 +274,15 @@ MonoBehaviour:
     SearchTags:
     - item
     - medical
+  - AssetName: C20R
+    Mode: 2
+    Subcategory: 306
+    Heading: 
+    Family: 
+    VariantLabel: 
+    SearchTags:
+    - item
+    - weapons
   - AssetName: C4
     Mode: 2
     Subcategory: 306
@@ -378,6 +443,15 @@ MonoBehaviour:
     VariantLabel: 
     SearchTags:
     - wall mounts
+  - AssetName: Flamethrower
+    Mode: 2
+    Subcategory: 306
+    Heading: 
+    Family: 
+    VariantLabel: 
+    SearchTags:
+    - item
+    - weapons
   - AssetName: FlashlightBlue
     Mode: 2
     Subcategory: 305
@@ -457,6 +531,15 @@ MonoBehaviour:
     VariantLabel: 
     SearchTags:
     - gas pipes
+  - AssetName: Gauze
+    Mode: 2
+    Subcategory: 303
+    Heading: 
+    Family: 
+    VariantLabel: 
+    SearchTags:
+    - item
+    - medical
   - AssetName: Gibber
     Mode: 0
     Subcategory: 105
@@ -912,6 +995,15 @@ MonoBehaviour:
     VariantLabel: 
     SearchTags:
     - subfloor
+  - AssetName: PortableDefibrillator
+    Mode: 2
+    Subcategory: 303
+    Heading: 
+    Family: 
+    VariantLabel: 
+    SearchTags:
+    - item
+    - medical
   - AssetName: Poster
     Mode: 2
     Subcategory: 307
@@ -1030,6 +1122,15 @@ MonoBehaviour:
     SearchTags:
     - item
     - devices
+  - AssetName: SecurityPistol
+    Mode: 2
+    Subcategory: 306
+    Heading: 
+    Family: 
+    VariantLabel: 
+    SearchTags:
+    - item
+    - weapons
   - AssetName: ShoeHiTops
     Mode: 2
     Subcategory: 302
@@ -1151,6 +1252,15 @@ MonoBehaviour:
     VariantLabel: 
     SearchTags:
     - machines
+  - AssetName: Stechkin
+    Mode: 2
+    Subcategory: 306
+    Heading: 
+    Family: 
+    VariantLabel: 
+    SearchTags:
+    - item
+    - weapons
   - AssetName: SteelGirder
     Mode: 0
     Subcategory: 101
@@ -1235,6 +1345,15 @@ MonoBehaviour:
     VariantLabel: 
     SearchTags:
     - walls & windows
+  - AssetName: StunBaton
+    Mode: 2
+    Subcategory: 306
+    Heading: 
+    Family: 
+    VariantLabel: 
+    SearchTags:
+    - item
+    - weapons
   - AssetName: Sunglasses
     Mode: 2
     Subcategory: 302

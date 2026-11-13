@@ -236,6 +236,7 @@ namespace SS3D.Tests.EditMode
                     "Plant: Earth, Exotic",
                     "Plastic Chair: Standard, Blue, Grey",
                     "Soda Can: Beeps Soda, Beepy Lime, Canned Air, Canned Laughter, Cola, Duke Purple Tea, Tonic",
+                    "Surface Pipe: Standard, Blue, Cyan, Green, Orange, Purple, Red, Yellow",
                 },
                 families);
         }

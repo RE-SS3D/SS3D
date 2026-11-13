@@ -14,12 +14,13 @@ namespace SS3D.Systems.StructuralDamage.Editor
         public static void RunAllMenu()
         {
             BlastVfxSetup.SetupAll();
+            DebrisVfxSetup.SetupAll();
             ExplosivePrefabSetup.SetupAll();
             int integrity = StructuralIntegrityPrefabSetup.SetupAll();
 
             EditorUtility.DisplayDialog(
                 "Structural Damage Recipes",
-                $"Blast VFX assets ensured.\nStructural integrity presentation: updated {integrity} prefab(s).",
+                $"Blast and debris VFX assets ensured.\nStructural integrity presentation: updated {integrity} prefab(s).",
                 "OK");
         }
 
@@ -27,9 +28,10 @@ namespace SS3D.Systems.StructuralDamage.Editor
         public static void RunAllBatch()
         {
             BlastVfxSetup.SetupAll();
+            DebrisVfxSetup.SetupAll();
             ExplosivePrefabSetup.SetupAll();
             int integrity = StructuralIntegrityPrefabSetup.SetupAll();
-            Debug.Log($"[StructuralDamageContentPrefabRecipes] Blast VFX done; integrity {integrity}.");
+            Debug.Log($"[StructuralDamageContentPrefabRecipes] Blast and debris VFX done; integrity {integrity}.");
 
             if (UnityEngine.Application.isBatchMode)
             {

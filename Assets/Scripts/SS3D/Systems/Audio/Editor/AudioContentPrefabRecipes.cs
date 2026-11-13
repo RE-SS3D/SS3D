@@ -36,6 +36,12 @@ namespace SS3D.Systems.Audio.Editor
             { "IonRifle", ItemCollisionMaterial.Metal },
             { "LaserRifle", ItemCollisionMaterial.Metal },
             { "Taser", ItemCollisionMaterial.Metal },
+            { "C20R", ItemCollisionMaterial.Metal },
+            { "Stechkin", ItemCollisionMaterial.Metal },
+            { "SecurityPistol", ItemCollisionMaterial.Metal },
+            { "Flamethrower", ItemCollisionMaterial.Metal },
+            { "StunBaton", ItemCollisionMaterial.Metal },
+            { "PortableDefibrillator", ItemCollisionMaterial.Plastic },
             { "MatterBin", ItemCollisionMaterial.Metal },
             { "MicroLaser", ItemCollisionMaterial.Metal },
             { "Multitool", ItemCollisionMaterial.Metal },
@@ -87,7 +93,7 @@ namespace SS3D.Systems.Audio.Editor
         private static readonly HashSet<string> SilentItems = new()
         {
             "Backpack", "BrutePatch", "BurnPatch", "DonkPocket", "Doodad", "GloveInsulated", "JumpsuitGrey",
-            "MedicalPatch", "Poster", "ShoeHiTops", "ShoeJackboots", "SyndicateHardsuit", "SyndicateHardsuitHelmet",
+            "MedicalPatch", "Gauze", "Poster", "ShoeHiTops", "ShoeJackboots", "SyndicateHardsuit", "SyndicateHardsuitHelmet",
             "Toolbelt", "TruckerCap",
             // Job clothing (ClothingImportSetup); its hard hats, helmets and glasses are Plastic above.
             "ArmorVestSecurity", "ArmorVestSyndicate", "BackpackCommand", "BackpackMedical", "BackpackSecurity", "CapCaptain",

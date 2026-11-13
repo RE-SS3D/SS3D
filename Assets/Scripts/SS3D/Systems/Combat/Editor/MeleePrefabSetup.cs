@@ -1,8 +1,11 @@
 #if UNITY_EDITOR
 using SS3D.Systems.Combat;
 using SS3D.Systems.Combat.Interactions;
+using SS3D.Systems.Construction;
+using SS3D.Systems.Inventory.Containers.Editor;
 using UnityEditor;
 using UnityEngine;
+using DB = UnityEditor.AssetDatabase;
 
 namespace SS3D.Systems.Combat.Editor
 {
@@ -16,6 +19,8 @@ namespace SS3D.Systems.Combat.Editor
         private const string Crowbar = "Assets/Content/WorldObjects/Items/Functional/Tools/Engineering/Crowbar.prefab";
         private const string Hatchet = "Assets/Content/WorldObjects/Items/Functional/Tools/Botany/Hatchet.prefab";
         private const string KitchenKnife = "Assets/Content/WorldObjects/Items/Functional/Tools/Kitchen/KitchenKnife.prefab";
+        public const string StunBaton = "Assets/Content/WorldObjects/Items/Weapons/StunBaton.prefab";
+        private const string StunBatonArt = "Assets/Art/Models/Items/Weapons/Melee/Blunt/";
 
         /// <summary>BatchMode: <c>-executeMethod SS3D.Systems.Combat.Editor.MeleePrefabSetup.SetupBatch</c>
         /// Prefer <see cref="CombatContentPrefabRecipes.RunAllBatch"/> for domain re-runs.</summary>
@@ -57,9 +62,51 @@ namespace SS3D.Systems.Combat.Editor
                 updated++;
             }
 
+            BuildStunBaton();
+            if (EnsureWeapon(StunBaton, MeleeWeaponProfile.StunBaton))
+            {
+                updated++;
+            }
+
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
             return updated;
+        }
+
+        /// <summary>
+        /// The stun baton's prefab from Tools/export_item_meshes.py output, copied from the crowbar for its melee
+        /// wiring; the profile is applied by <see cref="EnsureWeapon"/> afterwards.
+        /// </summary>
+        private static void BuildStunBaton()
+        {
+            Mesh mesh = ImportedItemPrefab.BakeMesh(StunBatonArt + "StunBaton.fbx", "StunBaton", StunBatonArt + "StunBatonMesh.asset",
+                false, out _, out Material[] sourceMaterials);
+            SS3D.Data.AssetDatabases.ObjectAssetReference reference = ImportedItemPrefab.EnsurePrefab(Crowbar, StunBaton, "StunBaton");
+            GameObject root = PrefabUtility.LoadPrefabContents(StunBaton);
+            try
+            {
+                root.name = "StunBaton";
+                // A baton is no prying tool.
+                if (root.TryGetComponent(out ConstructionTool tool)) Object.DestroyImmediate(tool);
+                Quaternion gripRotation = DB.LoadAssetAtPath<GameObject>(Crowbar).GetComponent<SS3D.Systems.Inventory.Items.Item>()
+                    .AttachmentPoint.localRotation;
+                ImportedItemPrefab.ReplaceVisual(root, mesh, ImportedItemPrefab.PaletteMaterials(sourceMaterials), "Attachment");
+                Transform grip = ImportedItemPrefab.EnsureChild(root, "Attachment");
+                // The handle is the low end of the upright source mesh.
+                grip.localPosition = new Vector3(0f, mesh.bounds.min.y + mesh.bounds.size.y * 0.12f, 0f);
+                grip.localRotation = gripRotation;
+                ImportedItemPrefab.SetItem(root, reference, "Stun Baton", 1f, grip, new Vector3(0f, 0f, 90f), false, Vector3.zero);
+                ImportedItemPrefab.WireExamine(root, "items.weapons.stunbaton",
+                    "Assets/Content/Data/Examine/String/Items/Weapons/StunBaton.asset", "Stun Baton",
+                    "A Security baton with a charged head. A hit knocks the target down and tires them out; it goes through armor.");
+                PrefabUtility.SaveAsPrefabAsset(root, StunBaton);
+            }
+            finally
+            {
+                PrefabUtility.UnloadPrefabContents(root);
+            }
+
+            ImportedItemPrefab.Register(reference, StunBaton, "StunBaton", "Assets/Content/Data/TileMap/Resources/Items/Weapons");
         }
 
         private static bool EnsureHandMelee(string path)
@@ -111,6 +158,8 @@ namespace SS3D.Systems.Combat.Editor
                 so.FindProperty("_profile.RecoverySeconds").floatValue = profile.RecoverySeconds;
                 so.FindProperty("_profile.StaminaCost").floatValue = profile.StaminaCost;
                 so.FindProperty("_profile.CanSever").boolValue = profile.CanSever;
+                so.FindProperty("_profile.StaminaDamage").floatValue = profile.StaminaDamage;
+                so.FindProperty("_profile.KnockdownSeconds").floatValue = profile.KnockdownSeconds;
                 SerializedProperty structuralForce = so.FindProperty("_profile.StructuralForce");
                 if (structuralForce != null)
                 {

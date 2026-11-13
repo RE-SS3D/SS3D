@@ -118,7 +118,7 @@ namespace SS3D.Systems.Construction
                 {
                     cue.NextTime = now + WeldSparkInterval;
                     Vector3 jitter = Random.insideUnitSphere * 0.08f;
-                    SteelWallDamageVfx.PlayImpact(cue.Point + jitter, cue.Normal, (byte)StructuralMaterial.Metal);
+                    SteelWallDamageVfx.PlayImpact(cue.Point + jitter, cue.Normal, (byte)StructuralMaterial.Metal, chunks: false);
                     PlayCueSound(cue.Point, StructuralAudioTrackIds.MetalHit, volume: 0.12f, pitch: 1.6f);
                 }
                 else

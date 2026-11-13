@@ -1,7 +1,7 @@
 > Code paths: Assets/Scripts/SS3D/Core/, Assets/Scripts/SS3D/Systems/Bootstrap/, Assets/Scripts/SS3D/Systems/WorldReadiness/, Assets/Scripts/SS3D/Networking/NetworkSystemsHub.cs
 > Entry points: SubSystem, NetworkSubSystem, SubSystems, SystemsBootstrap, WorldReadinessSubSystem, NetworkSystemsHub
 > Status: partial
-> Verified: 5ad42b7f2 — 2026-11-11
+> Verified: 77ce6acb3 — 2026-11-13
 
 # Core / SubSystems
 
@@ -9,7 +9,7 @@
 
 Base actor/subsystem pattern and runtime service locator. All gameplay domains expose a `*SubSystem` registered via `SubSystems.Get<T>()`. `NetworkSubSystem` extends FishNet `NetworkActor` for networked subsystems.
 
-Process-wide services: `SystemsBootstrap` (DDOL, `AfterSceneLoad`; creates network session, command-line, player settings, scene, input, world readiness, screen effects, ambience/personal audio, automation, vision, server-status publisher, client session (`ClientSessionSubSystem`), structural damage, bug reports (not in batch mode), the airlock proximity service, the floor-decal and area-stripe views, the debug-build-only local-speech and screen-effects debug tools, client main menu, then `ApplicationInitializerSubSystem` last). Systems types do not self-bootstrap with `AfterSceneLoad`; add new process-wide services here so the Test Runner guard covers them. World/session networked systems: `NetworkSystemsHub` Resources prefab (spawned Online). Boot/Game do not place per-system SubSystem GameObjects ([session-world-lifecycle](../../archive/architecture/2026-07_session-world-lifecycle.md)).
+Process-wide services: `SystemsBootstrap` (DDOL, `AfterSceneLoad`; creates network session, command-line, player settings, scene, input, world readiness, screen effects, ambience/personal audio, automation, vision, server-status publisher, client session (`ClientSessionSubSystem`), structural damage, bug reports (not in batch mode), the airlock proximity service, the floor-decal and area-stripe views, the debug-build-only local-speech and screen-effects debug tools, client main menu, then `ApplicationInitializerSubSystem` last). Systems types do not self-bootstrap with `AfterSceneLoad`; add new process-wide services here so the Test Runner guard covers them. World/session networked systems: `NetworkSystemsHub` Resources prefab (spawned Online). The hub also owns transient [napalm surface fire](combat-napalm.md), so it survives its shooter and clears on world reset. Boot/Game do not place per-system SubSystem GameObjects ([session-world-lifecycle](../../archive/architecture/2026-07_session-world-lifecycle.md)).
 
 ## Start here
 

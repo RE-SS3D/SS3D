@@ -1,10 +1,10 @@
 {
-  "generated_at": "2026-11-12T16:27:18.758227+00:00",
+  "generated_at": "2026-11-13T15:36:07.557482+00:00",
   "purpose": "Agent reference for locating SS3D art assets and determining import status.",
   "sources": {
     "in_game": {
       "root": "Assets/Art",
-      "file_count": 5434
+      "file_count": 5482
     },
     "ss3d_art": {
       "repo": "https://github.com/RE-SS3D/SS3D-Art",
@@ -13,13 +13,13 @@
     }
   },
   "summary": {
-    "in_game_files": 5434,
+    "in_game_files": 5482,
     "ss3d_art_files": 2480,
-    "unique_assets": 7667,
-    "imported": 247,
-    "in_game_only": 5197,
-    "ss3d_art_only": 2223,
-    "available_for_import": 2008,
+    "unique_assets": 7679,
+    "imported": 283,
+    "in_game_only": 5209,
+    "ss3d_art_only": 2187,
+    "available_for_import": 1972,
     "artwork_only": 215
   },
   "categories": [
@@ -73,27 +73,27 @@
     },
     {
       "path": "Models",
-      "in_game": 98,
+      "in_game": 105,
       "ss3d_art": 749,
-      "imported": 83,
-      "in_game_only": 15,
-      "ss3d_art_only": 666
+      "imported": 89,
+      "in_game_only": 16,
+      "ss3d_art_only": 660
     },
     {
       "path": "Sound",
-      "in_game": 191,
+      "in_game": 201,
       "ss3d_art": 218,
       "imported": 89,
-      "in_game_only": 102,
+      "in_game_only": 112,
       "ss3d_art_only": 129
     },
     {
       "path": "Textures",
-      "in_game": 127,
+      "in_game": 158,
       "ss3d_art": 579,
-      "imported": 66,
-      "in_game_only": 67,
-      "ss3d_art_only": 513
+      "imported": 96,
+      "in_game_only": 68,
+      "ss3d_art_only": 483
     },
     {
       "path": "Videos",
@@ -1435,10 +1435,10 @@
     },
     {
       "path": "Models/Items/Consumable/Chemical/Medications",
-      "in_game": 1,
+      "in_game": 2,
       "ss3d_art": 3,
       "imported": 1,
-      "in_game_only": 0,
+      "in_game_only": 1,
       "ss3d_art_only": 2
     },
     {
@@ -1747,11 +1747,11 @@
     },
     {
       "path": "Models/Items/Functional/Tools/Medical",
-      "in_game": 1,
+      "in_game": 2,
       "ss3d_art": 11,
-      "imported": 1,
+      "imported": 2,
       "in_game_only": 0,
-      "ss3d_art_only": 10
+      "ss3d_art_only": 9
     },
     {
       "path": "Models/Items/Functional/Tools/Science",
@@ -1811,11 +1811,11 @@
     },
     {
       "path": "Models/Items/Weapons/Melee/Blunt",
-      "in_game": 0,
+      "in_game": 1,
       "ss3d_art": 12,
-      "imported": 0,
+      "imported": 1,
       "in_game_only": 0,
-      "ss3d_art_only": 12
+      "ss3d_art_only": 11
     },
     {
       "path": "Models/Items/Weapons/Melee/Sharp",
@@ -1827,11 +1827,11 @@
     },
     {
       "path": "Models/Items/Weapons/Ranged/Energy",
-      "in_game": 0,
+      "in_game": 1,
       "ss3d_art": 2,
-      "imported": 0,
+      "imported": 1,
       "in_game_only": 0,
-      "ss3d_art_only": 2
+      "ss3d_art_only": 1
     },
     {
       "path": "Models/Items/Weapons/Ranged/Energy/EnergyHandguns",
@@ -1875,19 +1875,19 @@
     },
     {
       "path": "Models/Items/Weapons/Ranged/Physical/Handguns",
-      "in_game": 0,
+      "in_game": 2,
       "ss3d_art": 17,
-      "imported": 0,
+      "imported": 2,
       "in_game_only": 0,
-      "ss3d_art_only": 17
+      "ss3d_art_only": 15
     },
     {
       "path": "Models/Items/Weapons/Ranged/Physical/Rifles",
-      "in_game": 0,
+      "in_game": 1,
       "ss3d_art": 18,
-      "imported": 0,
+      "imported": 1,
       "in_game_only": 0,
-      "ss3d_art_only": 18
+      "ss3d_art_only": 17
     },
     {
       "path": "Models/Items/Weapons/Ranged/Physical/SMGs",
@@ -2291,10 +2291,18 @@
     },
     {
       "path": "Sound/Items/Weapons/Firearms/SS14",
-      "in_game": 12,
+      "in_game": 21,
       "ss3d_art": 0,
       "imported": 0,
-      "in_game_only": 12,
+      "in_game_only": 21,
+      "ss3d_art_only": 0
+    },
+    {
+      "path": "Sound/Items/Weapons/Flamethrower",
+      "in_game": 1,
+      "ss3d_art": 0,
+      "imported": 0,
+      "in_game_only": 1,
       "ss3d_art_only": 0
     },
     {
@@ -2971,11 +2979,19 @@
     },
     {
       "path": "Textures/World/VFX/Particles",
-      "in_game": 0,
+      "in_game": 30,
       "ss3d_art": 102,
-      "imported": 0,
+      "imported": 30,
       "in_game_only": 0,
-      "ss3d_art_only": 102
+      "ss3d_art_only": 72
+    },
+    {
+      "path": "Textures/World/VFX/Particles/Atlas",
+      "in_game": 1,
+      "ss3d_art": 0,
+      "imported": 0,
+      "in_game_only": 1,
+      "ss3d_art_only": 0
     },
     {
       "path": "Textures/World/VFX/Shadows",
@@ -3028,11 +3044,11 @@
   ],
   "extensions": {
     "svg": 4248,
-    "png": 2084,
-    "blend": 671,
-    "fbx": 287,
+    "png": 2085,
+    "blend": 665,
+    "fbx": 294,
     "wav": 159,
-    "ogg": 143,
+    "ogg": 153,
     "mp3": 18,
     "ma": 13,
     "mp4": 12,
@@ -71157,6 +71173,17 @@
       "status": "ss3d_art_only"
     },
     {
+      "name": "Gauze.fbx",
+      "stem": "gauze",
+      "extension": "fbx",
+      "category": "Models/Items/Consumable/Chemical/Medications",
+      "in_game_path": "Assets/Art/Models/Items/Consumable/Chemical/Medications/Gauze.fbx",
+      "ss3d_art_path": null,
+      "github_url": null,
+      "import_target_path": null,
+      "status": "in_game_only"
+    },
+    {
       "name": "MedicalPatches.fbx",
       "stem": "medicalpatches",
       "extension": "fbx",
@@ -74061,15 +74088,15 @@
       "status": "ss3d_art_only"
     },
     {
-      "name": "PortableDefibrillator.blend",
+      "name": "PortableDefibrillator.fbx",
       "stem": "portabledefibrillator",
-      "extension": "blend",
+      "extension": "fbx",
       "category": "Models/Items/Functional/Tools/Medical",
-      "in_game_path": null,
+      "in_game_path": "Assets/Art/Models/Items/Functional/Tools/Medical/PortableDefibrillator.fbx",
       "ss3d_art_path": "Assets/Models/Items/Functional/Tools/Medical/PortableDefibrillator.blend",
       "github_url": "https://github.com/RE-SS3D/SS3D-Art/blob/main/Assets/Models/Items/Functional/Tools/Medical/PortableDefibrillator.blend",
       "import_target_path": "Assets/Art/Models/Items/Functional/Tools/Medical/PortableDefibrillator.fbx",
-      "status": "ss3d_art_only"
+      "status": "imported"
     },
     {
       "name": "SurgicalTools.blend",
@@ -74655,15 +74682,15 @@
       "status": "ss3d_art_only"
     },
     {
-      "name": "StunBaton.blend",
+      "name": "StunBaton.fbx",
       "stem": "stunbaton",
-      "extension": "blend",
+      "extension": "fbx",
       "category": "Models/Items/Weapons/Melee/Blunt",
-      "in_game_path": null,
+      "in_game_path": "Assets/Art/Models/Items/Weapons/Melee/Blunt/StunBaton.fbx",
       "ss3d_art_path": "Assets/Models/Items/Weapons/Melee/Blunt/StunBaton.blend",
       "github_url": "https://github.com/RE-SS3D/SS3D-Art/blob/main/Assets/Models/Items/Weapons/Melee/Blunt/StunBaton.blend",
       "import_target_path": "Assets/Art/Models/Items/Weapons/Melee/Blunt/StunBaton.fbx",
-      "status": "ss3d_art_only"
+      "status": "imported"
     },
     {
       "name": "TelescopicBaton.blend",
@@ -74875,15 +74902,15 @@
       "status": "ss3d_art_only"
     },
     {
-      "name": "Flamethrower.blend",
+      "name": "Flamethrower.fbx",
       "stem": "flamethrower",
-      "extension": "blend",
+      "extension": "fbx",
       "category": "Models/Items/Weapons/Ranged/Energy",
-      "in_game_path": null,
+      "in_game_path": "Assets/Art/Models/Items/Weapons/Ranged/Energy/Flamethrower.fbx",
       "ss3d_art_path": "Assets/Models/Items/Weapons/Ranged/Energy/Flamethrower.blend",
       "github_url": "https://github.com/RE-SS3D/SS3D-Art/blob/main/Assets/Models/Items/Weapons/Ranged/Energy/Flamethrower.blend",
       "import_target_path": "Assets/Art/Models/Items/Weapons/Ranged/Energy/Flamethrower.fbx",
-      "status": "ss3d_art_only"
+      "status": "imported"
     },
     {
       "name": "StunShotgun.blend",
@@ -75359,26 +75386,26 @@
       "status": "ss3d_art_only"
     },
     {
-      "name": "SecurityPistol.blend",
+      "name": "SecurityPistol.fbx",
       "stem": "securitypistol",
-      "extension": "blend",
+      "extension": "fbx",
       "category": "Models/Items/Weapons/Ranged/Physical/Handguns",
-      "in_game_path": null,
+      "in_game_path": "Assets/Art/Models/Items/Weapons/Ranged/Physical/Handguns/SecurityPistol.fbx",
       "ss3d_art_path": "Assets/Models/Items/Weapons/Ranged/Physical/Handguns/SecurityPistol.blend",
       "github_url": "https://github.com/RE-SS3D/SS3D-Art/blob/main/Assets/Models/Items/Weapons/Ranged/Physical/Handguns/SecurityPistol.blend",
       "import_target_path": "Assets/Art/Models/Items/Weapons/Ranged/Physical/Handguns/SecurityPistol.fbx",
-      "status": "ss3d_art_only"
+      "status": "imported"
     },
     {
-      "name": "Stechkin.blend",
+      "name": "Stechkin.fbx",
       "stem": "stechkin",
-      "extension": "blend",
+      "extension": "fbx",
       "category": "Models/Items/Weapons/Ranged/Physical/Handguns",
-      "in_game_path": null,
+      "in_game_path": "Assets/Art/Models/Items/Weapons/Ranged/Physical/Handguns/Stechkin.fbx",
       "ss3d_art_path": "Assets/Models/Items/Weapons/Ranged/Physical/Handguns/Stechkin.blend",
       "github_url": "https://github.com/RE-SS3D/SS3D-Art/blob/main/Assets/Models/Items/Weapons/Ranged/Physical/Handguns/Stechkin.blend",
       "import_target_path": "Assets/Art/Models/Items/Weapons/Ranged/Physical/Handguns/Stechkin.fbx",
-      "status": "ss3d_art_only"
+      "status": "imported"
     },
     {
       "name": "SW686.blend",
@@ -75458,15 +75485,15 @@
       "status": "ss3d_art_only"
     },
     {
-      "name": "C20R.blend",
+      "name": "C20R.fbx",
       "stem": "c20r",
-      "extension": "blend",
+      "extension": "fbx",
       "category": "Models/Items/Weapons/Ranged/Physical/Rifles",
-      "in_game_path": null,
+      "in_game_path": "Assets/Art/Models/Items/Weapons/Ranged/Physical/Rifles/C20R.fbx",
       "ss3d_art_path": "Assets/Models/Items/Weapons/Ranged/Physical/Rifles/C20R.blend",
       "github_url": "https://github.com/RE-SS3D/SS3D-Art/blob/main/Assets/Models/Items/Weapons/Ranged/Physical/Rifles/C20R.blend",
       "import_target_path": "Assets/Art/Models/Items/Weapons/Ranged/Physical/Rifles/C20R.fbx",
-      "status": "ss3d_art_only"
+      "status": "imported"
     },
     {
       "name": "L105Rifle.blend",
@@ -78461,6 +78488,17 @@
       "status": "in_game_only"
     },
     {
+      "name": "C20RFire.ogg",
+      "stem": "c20rfire",
+      "extension": "ogg",
+      "category": "Sound/Items/Weapons/Firearms/SS14",
+      "in_game_path": "Assets/Art/Sound/Items/Weapons/Firearms/SS14/C20RFire.ogg",
+      "ss3d_art_path": null,
+      "github_url": null,
+      "import_target_path": null,
+      "status": "in_game_only"
+    },
+    {
       "name": "Empty.ogg",
       "stem": "empty",
       "extension": "ogg",
@@ -78499,6 +78537,61 @@
       "extension": "ogg",
       "category": "Sound/Items/Weapons/Firearms/SS14",
       "in_game_path": "Assets/Art/Sound/Items/Weapons/Firearms/SS14/LtRifleMagOut.ogg",
+      "ss3d_art_path": null,
+      "github_url": null,
+      "import_target_path": null,
+      "status": "in_game_only"
+    },
+    {
+      "name": "Mk58Fire.ogg",
+      "stem": "mk58fire",
+      "extension": "ogg",
+      "category": "Sound/Items/Weapons/Firearms/SS14",
+      "in_game_path": "Assets/Art/Sound/Items/Weapons/Firearms/SS14/Mk58Fire.ogg",
+      "ss3d_art_path": null,
+      "github_url": null,
+      "import_target_path": null,
+      "status": "in_game_only"
+    },
+    {
+      "name": "PistolCock.ogg",
+      "stem": "pistolcock",
+      "extension": "ogg",
+      "category": "Sound/Items/Weapons/Firearms/SS14",
+      "in_game_path": "Assets/Art/Sound/Items/Weapons/Firearms/SS14/PistolCock.ogg",
+      "ss3d_art_path": null,
+      "github_url": null,
+      "import_target_path": null,
+      "status": "in_game_only"
+    },
+    {
+      "name": "PistolFire.ogg",
+      "stem": "pistolfire",
+      "extension": "ogg",
+      "category": "Sound/Items/Weapons/Firearms/SS14",
+      "in_game_path": "Assets/Art/Sound/Items/Weapons/Firearms/SS14/PistolFire.ogg",
+      "ss3d_art_path": null,
+      "github_url": null,
+      "import_target_path": null,
+      "status": "in_game_only"
+    },
+    {
+      "name": "PistolMagIn.ogg",
+      "stem": "pistolmagin",
+      "extension": "ogg",
+      "category": "Sound/Items/Weapons/Firearms/SS14",
+      "in_game_path": "Assets/Art/Sound/Items/Weapons/Firearms/SS14/PistolMagIn.ogg",
+      "ss3d_art_path": null,
+      "github_url": null,
+      "import_target_path": null,
+      "status": "in_game_only"
+    },
+    {
+      "name": "PistolMagOut.ogg",
+      "stem": "pistolmagout",
+      "extension": "ogg",
+      "category": "Sound/Items/Weapons/Firearms/SS14",
+      "in_game_path": "Assets/Art/Sound/Items/Weapons/Firearms/SS14/PistolMagOut.ogg",
       "ss3d_art_path": null,
       "github_url": null,
       "import_target_path": null,
@@ -78576,6 +78669,50 @@
       "extension": "ogg",
       "category": "Sound/Items/Weapons/Firearms/SS14",
       "in_game_path": "Assets/Art/Sound/Items/Weapons/Firearms/SS14/Rifle2.ogg",
+      "ss3d_art_path": null,
+      "github_url": null,
+      "import_target_path": null,
+      "status": "in_game_only"
+    },
+    {
+      "name": "SmgCock.ogg",
+      "stem": "smgcock",
+      "extension": "ogg",
+      "category": "Sound/Items/Weapons/Firearms/SS14",
+      "in_game_path": "Assets/Art/Sound/Items/Weapons/Firearms/SS14/SmgCock.ogg",
+      "ss3d_art_path": null,
+      "github_url": null,
+      "import_target_path": null,
+      "status": "in_game_only"
+    },
+    {
+      "name": "SmgMagIn.ogg",
+      "stem": "smgmagin",
+      "extension": "ogg",
+      "category": "Sound/Items/Weapons/Firearms/SS14",
+      "in_game_path": "Assets/Art/Sound/Items/Weapons/Firearms/SS14/SmgMagIn.ogg",
+      "ss3d_art_path": null,
+      "github_url": null,
+      "import_target_path": null,
+      "status": "in_game_only"
+    },
+    {
+      "name": "SmgMagOut.ogg",
+      "stem": "smgmagout",
+      "extension": "ogg",
+      "category": "Sound/Items/Weapons/Firearms/SS14",
+      "in_game_path": "Assets/Art/Sound/Items/Weapons/Firearms/SS14/SmgMagOut.ogg",
+      "ss3d_art_path": null,
+      "github_url": null,
+      "import_target_path": null,
+      "status": "in_game_only"
+    },
+    {
+      "name": "FlameJet.ogg",
+      "stem": "flamejet",
+      "extension": "ogg",
+      "category": "Sound/Items/Weapons/Flamethrower",
+      "in_game_path": "Assets/Art/Sound/Items/Weapons/Flamethrower/FlameJet.ogg",
       "ss3d_art_path": null,
       "github_url": null,
       "import_target_path": null,
@@ -85824,110 +85961,110 @@
       "stem": "particleelectronicspart1",
       "extension": "png",
       "category": "Textures/World/VFX/Particles",
-      "in_game_path": null,
+      "in_game_path": "Assets/Art/Textures/World/VFX/Particles/ParticleElectronicsPart1.png",
       "ss3d_art_path": "Assets/Textures/World/VFX/Particles/ParticleElectronicsPart1.png",
       "github_url": "https://github.com/RE-SS3D/SS3D-Art/blob/main/Assets/Textures/World/VFX/Particles/ParticleElectronicsPart1.png",
       "import_target_path": "Assets/Art/Textures/World/VFX/Particles/ParticleElectronicsPart1.png",
-      "status": "ss3d_art_only"
+      "status": "imported"
     },
     {
       "name": "ParticleElectronicsPart2.png",
       "stem": "particleelectronicspart2",
       "extension": "png",
       "category": "Textures/World/VFX/Particles",
-      "in_game_path": null,
+      "in_game_path": "Assets/Art/Textures/World/VFX/Particles/ParticleElectronicsPart2.png",
       "ss3d_art_path": "Assets/Textures/World/VFX/Particles/ParticleElectronicsPart2.png",
       "github_url": "https://github.com/RE-SS3D/SS3D-Art/blob/main/Assets/Textures/World/VFX/Particles/ParticleElectronicsPart2.png",
       "import_target_path": "Assets/Art/Textures/World/VFX/Particles/ParticleElectronicsPart2.png",
-      "status": "ss3d_art_only"
+      "status": "imported"
     },
     {
       "name": "ParticleElectronicsPart3.png",
       "stem": "particleelectronicspart3",
       "extension": "png",
       "category": "Textures/World/VFX/Particles",
-      "in_game_path": null,
+      "in_game_path": "Assets/Art/Textures/World/VFX/Particles/ParticleElectronicsPart3.png",
       "ss3d_art_path": "Assets/Textures/World/VFX/Particles/ParticleElectronicsPart3.png",
       "github_url": "https://github.com/RE-SS3D/SS3D-Art/blob/main/Assets/Textures/World/VFX/Particles/ParticleElectronicsPart3.png",
       "import_target_path": "Assets/Art/Textures/World/VFX/Particles/ParticleElectronicsPart3.png",
-      "status": "ss3d_art_only"
+      "status": "imported"
     },
     {
       "name": "ParticleElectronicsPart4.png",
       "stem": "particleelectronicspart4",
       "extension": "png",
       "category": "Textures/World/VFX/Particles",
-      "in_game_path": null,
+      "in_game_path": "Assets/Art/Textures/World/VFX/Particles/ParticleElectronicsPart4.png",
       "ss3d_art_path": "Assets/Textures/World/VFX/Particles/ParticleElectronicsPart4.png",
       "github_url": "https://github.com/RE-SS3D/SS3D-Art/blob/main/Assets/Textures/World/VFX/Particles/ParticleElectronicsPart4.png",
       "import_target_path": "Assets/Art/Textures/World/VFX/Particles/ParticleElectronicsPart4.png",
-      "status": "ss3d_art_only"
+      "status": "imported"
     },
     {
       "name": "ParticleElectronicsPart5.png",
       "stem": "particleelectronicspart5",
       "extension": "png",
       "category": "Textures/World/VFX/Particles",
-      "in_game_path": null,
+      "in_game_path": "Assets/Art/Textures/World/VFX/Particles/ParticleElectronicsPart5.png",
       "ss3d_art_path": "Assets/Textures/World/VFX/Particles/ParticleElectronicsPart5.png",
       "github_url": "https://github.com/RE-SS3D/SS3D-Art/blob/main/Assets/Textures/World/VFX/Particles/ParticleElectronicsPart5.png",
       "import_target_path": "Assets/Art/Textures/World/VFX/Particles/ParticleElectronicsPart5.png",
-      "status": "ss3d_art_only"
+      "status": "imported"
     },
     {
       "name": "ParticleElectronicsPart6.png",
       "stem": "particleelectronicspart6",
       "extension": "png",
       "category": "Textures/World/VFX/Particles",
-      "in_game_path": null,
+      "in_game_path": "Assets/Art/Textures/World/VFX/Particles/ParticleElectronicsPart6.png",
       "ss3d_art_path": "Assets/Textures/World/VFX/Particles/ParticleElectronicsPart6.png",
       "github_url": "https://github.com/RE-SS3D/SS3D-Art/blob/main/Assets/Textures/World/VFX/Particles/ParticleElectronicsPart6.png",
       "import_target_path": "Assets/Art/Textures/World/VFX/Particles/ParticleElectronicsPart6.png",
-      "status": "ss3d_art_only"
+      "status": "imported"
     },
     {
       "name": "ParticleElectronicsWire1.png",
       "stem": "particleelectronicswire1",
       "extension": "png",
       "category": "Textures/World/VFX/Particles",
-      "in_game_path": null,
+      "in_game_path": "Assets/Art/Textures/World/VFX/Particles/ParticleElectronicsWire1.png",
       "ss3d_art_path": "Assets/Textures/World/VFX/Particles/ParticleElectronicsWire1.png",
       "github_url": "https://github.com/RE-SS3D/SS3D-Art/blob/main/Assets/Textures/World/VFX/Particles/ParticleElectronicsWire1.png",
       "import_target_path": "Assets/Art/Textures/World/VFX/Particles/ParticleElectronicsWire1.png",
-      "status": "ss3d_art_only"
+      "status": "imported"
     },
     {
       "name": "ParticleElectronicsWire2.png",
       "stem": "particleelectronicswire2",
       "extension": "png",
       "category": "Textures/World/VFX/Particles",
-      "in_game_path": null,
+      "in_game_path": "Assets/Art/Textures/World/VFX/Particles/ParticleElectronicsWire2.png",
       "ss3d_art_path": "Assets/Textures/World/VFX/Particles/ParticleElectronicsWire2.png",
       "github_url": "https://github.com/RE-SS3D/SS3D-Art/blob/main/Assets/Textures/World/VFX/Particles/ParticleElectronicsWire2.png",
       "import_target_path": "Assets/Art/Textures/World/VFX/Particles/ParticleElectronicsWire2.png",
-      "status": "ss3d_art_only"
+      "status": "imported"
     },
     {
       "name": "ParticleElectronicsWire3.png",
       "stem": "particleelectronicswire3",
       "extension": "png",
       "category": "Textures/World/VFX/Particles",
-      "in_game_path": null,
+      "in_game_path": "Assets/Art/Textures/World/VFX/Particles/ParticleElectronicsWire3.png",
       "ss3d_art_path": "Assets/Textures/World/VFX/Particles/ParticleElectronicsWire3.png",
       "github_url": "https://github.com/RE-SS3D/SS3D-Art/blob/main/Assets/Textures/World/VFX/Particles/ParticleElectronicsWire3.png",
       "import_target_path": "Assets/Art/Textures/World/VFX/Particles/ParticleElectronicsWire3.png",
-      "status": "ss3d_art_only"
+      "status": "imported"
     },
     {
       "name": "ParticleElectronicsWire4.png",
       "stem": "particleelectronicswire4",
       "extension": "png",
       "category": "Textures/World/VFX/Particles",
-      "in_game_path": null,
+      "in_game_path": "Assets/Art/Textures/World/VFX/Particles/ParticleElectronicsWire4.png",
       "ss3d_art_path": "Assets/Textures/World/VFX/Particles/ParticleElectronicsWire4.png",
       "github_url": "https://github.com/RE-SS3D/SS3D-Art/blob/main/Assets/Textures/World/VFX/Particles/ParticleElectronicsWire4.png",
       "import_target_path": "Assets/Art/Textures/World/VFX/Particles/ParticleElectronicsWire4.png",
-      "status": "ss3d_art_only"
+      "status": "imported"
     },
     {
       "name": "ParticleFoodBacon.png",
@@ -86209,77 +86346,77 @@
       "stem": "particleglassshard1",
       "extension": "png",
       "category": "Textures/World/VFX/Particles",
-      "in_game_path": null,
+      "in_game_path": "Assets/Art/Textures/World/VFX/Particles/ParticleGlassShard1.png",
       "ss3d_art_path": "Assets/Textures/World/VFX/Particles/ParticleGlassShard1.png",
       "github_url": "https://github.com/RE-SS3D/SS3D-Art/blob/main/Assets/Textures/World/VFX/Particles/ParticleGlassShard1.png",
       "import_target_path": "Assets/Art/Textures/World/VFX/Particles/ParticleGlassShard1.png",
-      "status": "ss3d_art_only"
+      "status": "imported"
     },
     {
       "name": "ParticleGlassShard2.png",
       "stem": "particleglassshard2",
       "extension": "png",
       "category": "Textures/World/VFX/Particles",
-      "in_game_path": null,
+      "in_game_path": "Assets/Art/Textures/World/VFX/Particles/ParticleGlassShard2.png",
       "ss3d_art_path": "Assets/Textures/World/VFX/Particles/ParticleGlassShard2.png",
       "github_url": "https://github.com/RE-SS3D/SS3D-Art/blob/main/Assets/Textures/World/VFX/Particles/ParticleGlassShard2.png",
       "import_target_path": "Assets/Art/Textures/World/VFX/Particles/ParticleGlassShard2.png",
-      "status": "ss3d_art_only"
+      "status": "imported"
     },
     {
       "name": "ParticleGlassShard3.png",
       "stem": "particleglassshard3",
       "extension": "png",
       "category": "Textures/World/VFX/Particles",
-      "in_game_path": null,
+      "in_game_path": "Assets/Art/Textures/World/VFX/Particles/ParticleGlassShard3.png",
       "ss3d_art_path": "Assets/Textures/World/VFX/Particles/ParticleGlassShard3.png",
       "github_url": "https://github.com/RE-SS3D/SS3D-Art/blob/main/Assets/Textures/World/VFX/Particles/ParticleGlassShard3.png",
       "import_target_path": "Assets/Art/Textures/World/VFX/Particles/ParticleGlassShard3.png",
-      "status": "ss3d_art_only"
+      "status": "imported"
     },
     {
       "name": "ParticleGlassShard4.png",
       "stem": "particleglassshard4",
       "extension": "png",
       "category": "Textures/World/VFX/Particles",
-      "in_game_path": null,
+      "in_game_path": "Assets/Art/Textures/World/VFX/Particles/ParticleGlassShard4.png",
       "ss3d_art_path": "Assets/Textures/World/VFX/Particles/ParticleGlassShard4.png",
       "github_url": "https://github.com/RE-SS3D/SS3D-Art/blob/main/Assets/Textures/World/VFX/Particles/ParticleGlassShard4.png",
       "import_target_path": "Assets/Art/Textures/World/VFX/Particles/ParticleGlassShard4.png",
-      "status": "ss3d_art_only"
+      "status": "imported"
     },
     {
       "name": "ParticleGlassShard5.png",
       "stem": "particleglassshard5",
       "extension": "png",
       "category": "Textures/World/VFX/Particles",
-      "in_game_path": null,
+      "in_game_path": "Assets/Art/Textures/World/VFX/Particles/ParticleGlassShard5.png",
       "ss3d_art_path": "Assets/Textures/World/VFX/Particles/ParticleGlassShard5.png",
       "github_url": "https://github.com/RE-SS3D/SS3D-Art/blob/main/Assets/Textures/World/VFX/Particles/ParticleGlassShard5.png",
       "import_target_path": "Assets/Art/Textures/World/VFX/Particles/ParticleGlassShard5.png",
-      "status": "ss3d_art_only"
+      "status": "imported"
     },
     {
       "name": "ParticleGlassShard6.png",
       "stem": "particleglassshard6",
       "extension": "png",
       "category": "Textures/World/VFX/Particles",
-      "in_game_path": null,
+      "in_game_path": "Assets/Art/Textures/World/VFX/Particles/ParticleGlassShard6.png",
       "ss3d_art_path": "Assets/Textures/World/VFX/Particles/ParticleGlassShard6.png",
       "github_url": "https://github.com/RE-SS3D/SS3D-Art/blob/main/Assets/Textures/World/VFX/Particles/ParticleGlassShard6.png",
       "import_target_path": "Assets/Art/Textures/World/VFX/Particles/ParticleGlassShard6.png",
-      "status": "ss3d_art_only"
+      "status": "imported"
     },
     {
       "name": "ParticleGlassShard7.png",
       "stem": "particleglassshard7",
       "extension": "png",
       "category": "Textures/World/VFX/Particles",
-      "in_game_path": null,
+      "in_game_path": "Assets/Art/Textures/World/VFX/Particles/ParticleGlassShard7.png",
       "ss3d_art_path": "Assets/Textures/World/VFX/Particles/ParticleGlassShard7.png",
       "github_url": "https://github.com/RE-SS3D/SS3D-Art/blob/main/Assets/Textures/World/VFX/Particles/ParticleGlassShard7.png",
       "import_target_path": "Assets/Art/Textures/World/VFX/Particles/ParticleGlassShard7.png",
-      "status": "ss3d_art_only"
+      "status": "imported"
     },
     {
       "name": "ParticleMaterialCardboard1.png",
@@ -86396,143 +86533,143 @@
       "stem": "particlematerialwood1",
       "extension": "png",
       "category": "Textures/World/VFX/Particles",
-      "in_game_path": null,
+      "in_game_path": "Assets/Art/Textures/World/VFX/Particles/ParticleMaterialWood1.png",
       "ss3d_art_path": "Assets/Textures/World/VFX/Particles/ParticleMaterialWood1.png",
       "github_url": "https://github.com/RE-SS3D/SS3D-Art/blob/main/Assets/Textures/World/VFX/Particles/ParticleMaterialWood1.png",
       "import_target_path": "Assets/Art/Textures/World/VFX/Particles/ParticleMaterialWood1.png",
-      "status": "ss3d_art_only"
+      "status": "imported"
     },
     {
       "name": "ParticleMaterialWood2.png",
       "stem": "particlematerialwood2",
       "extension": "png",
       "category": "Textures/World/VFX/Particles",
-      "in_game_path": null,
+      "in_game_path": "Assets/Art/Textures/World/VFX/Particles/ParticleMaterialWood2.png",
       "ss3d_art_path": "Assets/Textures/World/VFX/Particles/ParticleMaterialWood2.png",
       "github_url": "https://github.com/RE-SS3D/SS3D-Art/blob/main/Assets/Textures/World/VFX/Particles/ParticleMaterialWood2.png",
       "import_target_path": "Assets/Art/Textures/World/VFX/Particles/ParticleMaterialWood2.png",
-      "status": "ss3d_art_only"
+      "status": "imported"
     },
     {
       "name": "ParticleMaterialWood3.png",
       "stem": "particlematerialwood3",
       "extension": "png",
       "category": "Textures/World/VFX/Particles",
-      "in_game_path": null,
+      "in_game_path": "Assets/Art/Textures/World/VFX/Particles/ParticleMaterialWood3.png",
       "ss3d_art_path": "Assets/Textures/World/VFX/Particles/ParticleMaterialWood3.png",
       "github_url": "https://github.com/RE-SS3D/SS3D-Art/blob/main/Assets/Textures/World/VFX/Particles/ParticleMaterialWood3.png",
       "import_target_path": "Assets/Art/Textures/World/VFX/Particles/ParticleMaterialWood3.png",
-      "status": "ss3d_art_only"
+      "status": "imported"
     },
     {
       "name": "ParticleMechanicalJunk1.png",
       "stem": "particlemechanicaljunk1",
       "extension": "png",
       "category": "Textures/World/VFX/Particles",
-      "in_game_path": null,
+      "in_game_path": "Assets/Art/Textures/World/VFX/Particles/ParticleMechanicalJunk1.png",
       "ss3d_art_path": "Assets/Textures/World/VFX/Particles/ParticleMechanicalJunk1.png",
       "github_url": "https://github.com/RE-SS3D/SS3D-Art/blob/main/Assets/Textures/World/VFX/Particles/ParticleMechanicalJunk1.png",
       "import_target_path": "Assets/Art/Textures/World/VFX/Particles/ParticleMechanicalJunk1.png",
-      "status": "ss3d_art_only"
+      "status": "imported"
     },
     {
       "name": "ParticleMechanicalJunk2.png",
       "stem": "particlemechanicaljunk2",
       "extension": "png",
       "category": "Textures/World/VFX/Particles",
-      "in_game_path": null,
+      "in_game_path": "Assets/Art/Textures/World/VFX/Particles/ParticleMechanicalJunk2.png",
       "ss3d_art_path": "Assets/Textures/World/VFX/Particles/ParticleMechanicalJunk2.png",
       "github_url": "https://github.com/RE-SS3D/SS3D-Art/blob/main/Assets/Textures/World/VFX/Particles/ParticleMechanicalJunk2.png",
       "import_target_path": "Assets/Art/Textures/World/VFX/Particles/ParticleMechanicalJunk2.png",
-      "status": "ss3d_art_only"
+      "status": "imported"
     },
     {
       "name": "ParticleMechanicalJunk3.png",
       "stem": "particlemechanicaljunk3",
       "extension": "png",
       "category": "Textures/World/VFX/Particles",
-      "in_game_path": null,
+      "in_game_path": "Assets/Art/Textures/World/VFX/Particles/ParticleMechanicalJunk3.png",
       "ss3d_art_path": "Assets/Textures/World/VFX/Particles/ParticleMechanicalJunk3.png",
       "github_url": "https://github.com/RE-SS3D/SS3D-Art/blob/main/Assets/Textures/World/VFX/Particles/ParticleMechanicalJunk3.png",
       "import_target_path": "Assets/Art/Textures/World/VFX/Particles/ParticleMechanicalJunk3.png",
-      "status": "ss3d_art_only"
+      "status": "imported"
     },
     {
       "name": "ParticleMechanicalJunk4.png",
       "stem": "particlemechanicaljunk4",
       "extension": "png",
       "category": "Textures/World/VFX/Particles",
-      "in_game_path": null,
+      "in_game_path": "Assets/Art/Textures/World/VFX/Particles/ParticleMechanicalJunk4.png",
       "ss3d_art_path": "Assets/Textures/World/VFX/Particles/ParticleMechanicalJunk4.png",
       "github_url": "https://github.com/RE-SS3D/SS3D-Art/blob/main/Assets/Textures/World/VFX/Particles/ParticleMechanicalJunk4.png",
       "import_target_path": "Assets/Art/Textures/World/VFX/Particles/ParticleMechanicalJunk4.png",
-      "status": "ss3d_art_only"
+      "status": "imported"
     },
     {
       "name": "ParticleMechanicalJunk5.png",
       "stem": "particlemechanicaljunk5",
       "extension": "png",
       "category": "Textures/World/VFX/Particles",
-      "in_game_path": null,
+      "in_game_path": "Assets/Art/Textures/World/VFX/Particles/ParticleMechanicalJunk5.png",
       "ss3d_art_path": "Assets/Textures/World/VFX/Particles/ParticleMechanicalJunk5.png",
       "github_url": "https://github.com/RE-SS3D/SS3D-Art/blob/main/Assets/Textures/World/VFX/Particles/ParticleMechanicalJunk5.png",
       "import_target_path": "Assets/Art/Textures/World/VFX/Particles/ParticleMechanicalJunk5.png",
-      "status": "ss3d_art_only"
+      "status": "imported"
     },
     {
       "name": "ParticleMechanicalPlate1.png",
       "stem": "particlemechanicalplate1",
       "extension": "png",
       "category": "Textures/World/VFX/Particles",
-      "in_game_path": null,
+      "in_game_path": "Assets/Art/Textures/World/VFX/Particles/ParticleMechanicalPlate1.png",
       "ss3d_art_path": "Assets/Textures/World/VFX/Particles/ParticleMechanicalPlate1.png",
       "github_url": "https://github.com/RE-SS3D/SS3D-Art/blob/main/Assets/Textures/World/VFX/Particles/ParticleMechanicalPlate1.png",
       "import_target_path": "Assets/Art/Textures/World/VFX/Particles/ParticleMechanicalPlate1.png",
-      "status": "ss3d_art_only"
+      "status": "imported"
     },
     {
       "name": "ParticleMechanicalPlate2.png",
       "stem": "particlemechanicalplate2",
       "extension": "png",
       "category": "Textures/World/VFX/Particles",
-      "in_game_path": null,
+      "in_game_path": "Assets/Art/Textures/World/VFX/Particles/ParticleMechanicalPlate2.png",
       "ss3d_art_path": "Assets/Textures/World/VFX/Particles/ParticleMechanicalPlate2.png",
       "github_url": "https://github.com/RE-SS3D/SS3D-Art/blob/main/Assets/Textures/World/VFX/Particles/ParticleMechanicalPlate2.png",
       "import_target_path": "Assets/Art/Textures/World/VFX/Particles/ParticleMechanicalPlate2.png",
-      "status": "ss3d_art_only"
+      "status": "imported"
     },
     {
       "name": "ParticleMechanicalPlate3.png",
       "stem": "particlemechanicalplate3",
       "extension": "png",
       "category": "Textures/World/VFX/Particles",
-      "in_game_path": null,
+      "in_game_path": "Assets/Art/Textures/World/VFX/Particles/ParticleMechanicalPlate3.png",
       "ss3d_art_path": "Assets/Textures/World/VFX/Particles/ParticleMechanicalPlate3.png",
       "github_url": "https://github.com/RE-SS3D/SS3D-Art/blob/main/Assets/Textures/World/VFX/Particles/ParticleMechanicalPlate3.png",
       "import_target_path": "Assets/Art/Textures/World/VFX/Particles/ParticleMechanicalPlate3.png",
-      "status": "ss3d_art_only"
+      "status": "imported"
     },
     {
       "name": "ParticleMechanicalPlate4.png",
       "stem": "particlemechanicalplate4",
       "extension": "png",
       "category": "Textures/World/VFX/Particles",
-      "in_game_path": null,
+      "in_game_path": "Assets/Art/Textures/World/VFX/Particles/ParticleMechanicalPlate4.png",
       "ss3d_art_path": "Assets/Textures/World/VFX/Particles/ParticleMechanicalPlate4.png",
       "github_url": "https://github.com/RE-SS3D/SS3D-Art/blob/main/Assets/Textures/World/VFX/Particles/ParticleMechanicalPlate4.png",
       "import_target_path": "Assets/Art/Textures/World/VFX/Particles/ParticleMechanicalPlate4.png",
-      "status": "ss3d_art_only"
+      "status": "imported"
     },
     {
       "name": "ParticleMechanicalPlate5.png",
       "stem": "particlemechanicalplate5",
       "extension": "png",
       "category": "Textures/World/VFX/Particles",
-      "in_game_path": null,
+      "in_game_path": "Assets/Art/Textures/World/VFX/Particles/ParticleMechanicalPlate5.png",
       "ss3d_art_path": "Assets/Textures/World/VFX/Particles/ParticleMechanicalPlate5.png",
       "github_url": "https://github.com/RE-SS3D/SS3D-Art/blob/main/Assets/Textures/World/VFX/Particles/ParticleMechanicalPlate5.png",
       "import_target_path": "Assets/Art/Textures/World/VFX/Particles/ParticleMechanicalPlate5.png",
-      "status": "ss3d_art_only"
+      "status": "imported"
     },
     {
       "name": "ParticleMiningBananium1.png",
@@ -86940,6 +87077,17 @@
       "github_url": "https://github.com/RE-SS3D/SS3D-Art/blob/main/Assets/Textures/World/VFX/Particles/ParticleVegetationTwig4.png",
       "import_target_path": "Assets/Art/Textures/World/VFX/Particles/ParticleVegetationTwig4.png",
       "status": "ss3d_art_only"
+    },
+    {
+      "name": "DebrisAtlas.png",
+      "stem": "debrisatlas",
+      "extension": "png",
+      "category": "Textures/World/VFX/Particles/Atlas",
+      "in_game_path": "Assets/Art/Textures/World/VFX/Particles/Atlas/DebrisAtlas.png",
+      "ss3d_art_path": null,
+      "github_url": null,
+      "import_target_path": null,
+      "status": "in_game_only"
     },
     {
       "name": "BlobShadow.jpg",

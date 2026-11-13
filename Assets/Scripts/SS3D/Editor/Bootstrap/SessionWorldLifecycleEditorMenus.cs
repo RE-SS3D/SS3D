@@ -117,6 +117,7 @@ namespace SS3D.Editor.Bootstrap
             typeof(MachineInterfaceHost),
             typeof(ConstructionPlacementSubSystem),
             typeof(SS3D.Systems.ActionMessages.ActionMessageSubSystem),
+            typeof(SS3D.Systems.Combat.NapalmSubSystem),
         };
 
         /// <summary>Batch entry for headless Unity: rebuild hub + strip Boot + strip Game (tier C — no MenuItem).</summary>
