@@ -26,6 +26,7 @@ No atmos ignition, body-to-body contagion, automatic burning-object spread, remo
 - `NapalmPatchSet.cs` — bounded burning/cold surface state, collider anchors and extended snapshot payload
 - `NapalmSubSystem.cs` — surface contact, body fuel timers, coalesced damage and buffered snapshots
 - `FlamethrowerVfx.cs`, `NapalmSurfaceVfx.cs`, `Assets/Resources/Combat/Flame.shader` — continuous spray and surface flames; scorch decals in `NapalmSurfaceVfx`
+- `FlameParticleStyle.cs` — shared camera-facing billboard setup: per-particle seed/age streams drive the shader's scrolling-noise shape, heat ramp, cooling and soft depth fade. Avoid vertical billboards; they read as flat cards from the tilted camera. Heat haze is a particle mode that refracts `_CameraOpaqueTexture`; its material queue sits below the fire because the opaque copy holds no transparents, so haze drawn later would erase flames behind it.
 - `Editor/FlamethrowerPrefabSetup.cs`, `Editor/NapalmHubRecipe.cs` — weapon recipe and appended hub behaviour; both under the combat aggregator
 
 ## Extension points

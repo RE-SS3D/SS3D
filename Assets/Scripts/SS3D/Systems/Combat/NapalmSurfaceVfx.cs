@@ -25,6 +25,8 @@ namespace SS3D.Systems.Combat
         private static readonly Dictionary<int, NapalmSurfaceVfx> Views = new();
         private static Material _flameMaterial;
         private static Material _smokeMaterial;
+        private static Material _emberMaterial;
+        private static Material _heatMaterial;
         private static Material _scorchMaterial;
         private static AudioSource _burnVoice;
         private int _id;
@@ -36,6 +38,10 @@ namespace SS3D.Systems.Combat
         private Vector3 _normal;
         private ParticleSystem _flame;
         private ParticleSystem _smoke;
+        private ParticleSystem _embers;
+        private ParticleSystem _heat;
+        private float _heatCredit;
+        private float _emberCredit;
         private Light _light;
         private DecalProjector _scorch;
         private float _scorchSpin;
@@ -52,9 +58,13 @@ namespace SS3D.Systems.Combat
             StopAudio();
             if (_flameMaterial != null) Destroy(_flameMaterial);
             if (_smokeMaterial != null) Destroy(_smokeMaterial);
+            if (_emberMaterial != null) Destroy(_emberMaterial);
+            if (_heatMaterial != null) Destroy(_heatMaterial);
             if (_scorchMaterial != null) Destroy(_scorchMaterial);
             _flameMaterial = null;
             _smokeMaterial = null;
+            _emberMaterial = null;
+            _heatMaterial = null;
             _scorchMaterial = null;
         }
 
@@ -86,8 +96,7 @@ namespace SS3D.Systems.Combat
                     view = new GameObject(patch.IsBody ? "NapalmBodyFire" : "NapalmSurfaceFire").AddComponent<NapalmSurfaceVfx>();
                     view._isBody = patch.IsBody;
                     view._id = patch.Id;
-                    view._flame = view.MakeParticles("SurfaceFlame", _flameMaterial, false);
-                    view._smoke = view.MakeParticles("SurfaceSmoke", _smokeMaterial, true);
+                    view.MakeParticles();
                     view._light = view.gameObject.AddComponent<Light>();
                     view._light.color = new Color(1f, 0.32f, 0.04f);
                     view._light.shadows = LightShadows.None;
@@ -123,6 +132,8 @@ namespace SS3D.Systems.Combat
                 {
                     view._flame.Play();
                     view._smoke.Play();
+                    view._embers.Play();
+                    view._heat.Play();
                 }
             }
             List<int> removed = Removed;
@@ -172,13 +183,11 @@ namespace SS3D.Systems.Combat
         private static bool EnsureMaterials()
         {
             if (_flameMaterial != null) return true;
-            Shader shader = Resources.Load<Shader>("Combat/Flame");
-            if (shader == null) return false;
-            _flameMaterial = new Material(shader) { hideFlags = HideFlags.HideAndDontSave };
-            _flameMaterial.SetFloat("_Intensity", 2.3f);
-            _flameMaterial.SetFloat("_SurfaceFlame", 1f);
-            _smokeMaterial = new Material(shader) { hideFlags = HideFlags.HideAndDontSave };
-            _smokeMaterial.SetFloat("_DstBlend", (float)BlendMode.OneMinusSrcAlpha);
+            _flameMaterial = FlameParticleStyle.CreateMaterial(FlameParticleStyle.Kind.Tongue, 2.4f, 0.25f);
+            if (_flameMaterial == null) return false;
+            _smokeMaterial = FlameParticleStyle.CreateMaterial(FlameParticleStyle.Kind.Smoke, 1f, 1f);
+            _emberMaterial = FlameParticleStyle.CreateMaterial(FlameParticleStyle.Kind.Ember, 4f, 0f);
+            _heatMaterial = FlameParticleStyle.CreateMaterial(FlameParticleStyle.Kind.Heat, 1f, 1f);
             return true;
         }
 
@@ -223,41 +232,21 @@ namespace SS3D.Systems.Combat
             child.transform.rotation = BloodDecalSpawner.RotationOntoSurface(normal, _scorchSpin);
         }
 
-        private ParticleSystem MakeParticles(string name, Material material, bool smoke)
+        private void MakeParticles()
         {
-            GameObject child = new(name);
-            child.transform.SetParent(transform, false);
-            ParticleSystem system = child.AddComponent<ParticleSystem>();
-            system.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
-            ParticleSystem.MainModule main = system.main;
-            main.playOnAwake = false;
-            main.loop = true;
-            main.simulationSpace = ParticleSystemSimulationSpace.World;
-            main.maxParticles = smoke ? 24 : 64;
-            main.startRotation = smoke ? new ParticleSystem.MinMaxCurve(0f, Mathf.PI * 2f) : new ParticleSystem.MinMaxCurve(0f);
-            main.startSize3D = !smoke;
-            ParticleSystem.EmissionModule emission = system.emission;
-            emission.enabled = false;
-            ParticleSystem.ShapeModule shape = system.shape;
-            shape.enabled = false;
-            Gradient gradient = new();
-            gradient.SetKeys(smoke
-                ? new[] { new GradientColorKey(new Color(0.14f, 0.12f, 0.1f), 0f), new GradientColorKey(new Color(0.06f, 0.06f, 0.06f), 1f) }
-                : new[] { new GradientColorKey(new Color(1f, 0.8f, 0.12f), 0f), new GradientColorKey(new Color(1f, 0.3f, 0.015f), 1f) },
-                new[] { new GradientAlphaKey(0f, 0f), new GradientAlphaKey(smoke ? 0.1f : 0.85f, 0.15f), new GradientAlphaKey(0f, 1f) });
-            ParticleSystem.ColorOverLifetimeModule color = system.colorOverLifetime;
-            color.enabled = true;
-            color.color = gradient;
-            ParticleSystem.SizeOverLifetimeModule size = system.sizeOverLifetime;
-            size.enabled = true;
-            size.size = new ParticleSystem.MinMaxCurve(1f, AnimationCurve.Linear(0f, smoke ? 0.6f : 0.9f, 1f, smoke ? 1.8f : 0.5f));
-            ParticleSystemRenderer renderer = child.GetComponent<ParticleSystemRenderer>();
-            renderer.sharedMaterial = material;
-            if (!smoke) renderer.renderMode = ParticleSystemRenderMode.VerticalBillboard;
-            renderer.shadowCastingMode = ShadowCastingMode.Off;
-            renderer.receiveShadows = false;
-            system.Play();
-            return system;
+            // Tongues stay white in the vertex colour: the shader's heat ramp does the colouring and cooling.
+            _flame = FlameParticleStyle.Create(transform, "SurfaceFlame", _flameMaterial, 128, FlameParticleStyle.Kind.Tongue,
+                FlameParticleStyle.Fade(Color.white, new Color(1f, 0.8f, 0.7f), 1f, 0.1f),
+                AnimationCurve.EaseInOut(0f, 0.7f, 1f, 0.35f), 0.35f);
+            _smoke = FlameParticleStyle.Create(transform, "SurfaceSmoke", _smokeMaterial, 32, FlameParticleStyle.Kind.Smoke,
+                FlameParticleStyle.Fade(new Color(0.09f, 0.08f, 0.07f), new Color(0.05f, 0.05f, 0.05f), 0.35f, 0.25f),
+                AnimationCurve.Linear(0f, 0.5f, 1f, 1.8f), 0.4f);
+            _embers = FlameParticleStyle.Create(transform, "SurfaceEmbers", _emberMaterial, 24, FlameParticleStyle.Kind.Ember,
+                FlameParticleStyle.Fade(Color.white, Color.white, 1f, 0.05f),
+                AnimationCurve.Linear(0f, 1f, 1f, 0.4f), 1.2f);
+            _heat = FlameParticleStyle.Create(transform, "SurfaceHeat", _heatMaterial, 16, FlameParticleStyle.Kind.Heat,
+                FlameParticleStyle.Fade(Color.white, Color.white, 1f, 0.3f),
+                AnimationCurve.Linear(0f, 0.7f, 1f, 1.3f), 0.2f);
         }
 
         private void Update() => Tick(Time.time, Time.deltaTime);
@@ -278,6 +267,8 @@ namespace SS3D.Systems.Combat
                 _credit = 0f;
                 if (_flame.isPlaying) _flame.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
                 if (_smoke.isPlaying) _smoke.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
+                if (_embers.isPlaying) _embers.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
+                if (_heat.isPlaying) _heat.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
                 if (_isBody)
                 {
                     Views.Remove(_id);
@@ -290,30 +281,77 @@ namespace SS3D.Systems.Combat
                 return;
             }
             float fade = Mathf.Clamp01(remaining);
-            _light.intensity = 0.8f * fade;
-            _credit += Mathf.Min(deltaTime, 0.05f) * 60f * fade;
+            float dt = Mathf.Min(deltaTime, 0.05f);
+            _light.intensity = (0.75f + Mathf.PerlinNoise(now * 9f, _id * 0.37f) * 0.35f) * fade;
+            _credit += dt * 105f * fade;
             int count = Mathf.FloorToInt(_credit);
             _credit -= count;
             for (int i = 0; i < count; i++)
             {
-                Vector2 disk = Random.insideUnitCircle * (NapalmPatchSet.Radius * 0.85f);
-                Vector3 point = _isBody
-                    ? transform.position + Random.insideUnitSphere * 0.2f + Vector3.up * Random.Range(0f, 0.35f)
-                    : transform.TransformPoint(new Vector3(disk.x, disk.y, 0f));
+                Vector2 disk = Random.insideUnitCircle * (NapalmPatchSet.Radius * 0.8f);
+                // Tall tongues near the middle, low licks at the rim, like a real pool fire.
+                float centre = 1f - disk.magnitude / NapalmPatchSet.Radius;
+                Vector2 extent = _isBody
+                    ? new Vector2(Random.Range(0.26f, 0.42f), Random.Range(0.4f, 0.65f))
+                    : new Vector2(Random.Range(0.36f, 0.58f), Random.Range(0.5f, 0.85f) * (0.6f + centre * 0.8f));
+                Vector3 baseline = _isBody
+                    ? transform.position + Random.insideUnitSphere * 0.18f
+                    : transform.TransformPoint(new Vector3(disk.x, disk.y, 0f)) + _normal * 0.06f;
+                // Billboards are centred on their position: lift by half the height so the base sits on the surface.
                 ParticleSystem.EmitParams flame = new()
                 {
-                    position = point, velocity = Vector3.up * Random.Range(0.55f, 0.9f) + _normal * 0.12f,
-                    startLifetime = Random.Range(0.5f, 0.85f),
-                    startSize3D = new Vector3(Random.Range(0.65f, 0.95f), Random.Range(0.8f, 1.3f), 1f), startColor = Color.white,
+                    position = baseline + Vector3.up * (extent.y * 0.4f),
+                    velocity = Vector3.up * Random.Range(0.6f, 1.1f) + _normal * 0.1f,
+                    startLifetime = Random.Range(0.45f, 0.8f),
+                    startSize3D = new Vector3(extent.x, extent.y, 1f),
+                    rotation = Random.Range(-12f, 12f),
+                    startColor = Color.white,
                 };
                 _flame.Emit(flame, 1);
-                if (Random.value < 0.1f)
+                if (Random.value < 0.12f)
                 {
-                    flame.velocity = Vector3.up * 0.5f;
-                    flame.startLifetime = 1f;
-                    flame.startSize = 0.55f;
-                    _smoke.Emit(flame, 1);
+                    float size = Random.Range(0.45f, 0.7f);
+                    _smoke.Emit(new ParticleSystem.EmitParams
+                    {
+                        position = baseline + Vector3.up * (0.5f + Random.value * 0.3f),
+                        velocity = Vector3.up * Random.Range(0.4f, 0.7f),
+                        startLifetime = Random.Range(1.2f, 1.8f),
+                        startSize = size,
+                        rotation = Random.Range(0f, 360f),
+                        startColor = Color.white,
+                    }, 1);
                 }
+            }
+            _heatCredit += dt * 6f * fade;
+            while (_heatCredit >= 1f)
+            {
+                _heatCredit -= 1f;
+                Vector2 disk = Random.insideUnitCircle * (NapalmPatchSet.Radius * 0.5f);
+                Vector3 origin = _isBody
+                    ? transform.position + Vector3.up * 0.4f
+                    : transform.TransformPoint(new Vector3(disk.x, disk.y, 0f)) + _normal * 0.1f + Vector3.up * 0.7f;
+                _heat.Emit(new ParticleSystem.EmitParams
+                {
+                    position = origin, velocity = Vector3.up * Random.Range(0.5f, 0.8f),
+                    startLifetime = Random.Range(1f, 1.4f), startSize = Random.Range(1f, 1.4f), startColor = Color.white,
+                }, 1);
+            }
+            _emberCredit += dt * 7f * fade;
+            while (_emberCredit >= 1f)
+            {
+                _emberCredit -= 1f;
+                Vector2 disk = Random.insideUnitCircle * (NapalmPatchSet.Radius * 0.7f);
+                Vector3 origin = _isBody
+                    ? transform.position + Random.insideUnitSphere * 0.2f
+                    : transform.TransformPoint(new Vector3(disk.x, disk.y, 0f)) + Vector3.up * 0.2f;
+                _embers.Emit(new ParticleSystem.EmitParams
+                {
+                    position = origin,
+                    velocity = Vector3.up * Random.Range(1f, 2f) + Random.insideUnitSphere * 0.4f,
+                    startLifetime = Random.Range(0.8f, 1.5f),
+                    startSize = Random.Range(0.025f, 0.05f),
+                    startColor = Color.white,
+                }, 1);
             }
         }
     }

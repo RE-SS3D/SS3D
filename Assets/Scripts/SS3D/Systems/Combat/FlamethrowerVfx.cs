@@ -18,10 +18,12 @@ namespace SS3D.Systems.Combat
         private const int Capacity = 12;
         private const float HoldSeconds = 0.32f;
         private const float JetSpeed = 12f;
-        private const float EmissionRate = 420f;
+        private const float EmissionRate = 560f;
+        /// <summary>One haze puff per this many flame particles.</summary>
+        private const int HazeEvery = 9;
         private static readonly List<FlamethrowerVfx> Active = new();
         private static Material _fireMaterial;
-        private static Material _smokeMaterial;
+        private static Material _heatMaterial;
         private Transform _muzzle;
         private Vector3 _origin;
         private float _lastPulse;
@@ -31,6 +33,8 @@ namespace SS3D.Systems.Combat
         private bool _hasOrigin;
         private float _emissionCredit;
         private ParticleSystem _fire;
+        private ParticleSystem _heat;
+        private int _hazeCounter;
         private Light _light;
         private AudioSource _voice;
 
@@ -39,9 +43,9 @@ namespace SS3D.Systems.Combat
         {
             Active.Clear();
             if (_fireMaterial != null) Destroy(_fireMaterial);
-            if (_smokeMaterial != null) Destroy(_smokeMaterial);
+            if (_heatMaterial != null) Destroy(_heatMaterial);
             _fireMaterial = null;
-            _smokeMaterial = null;
+            _heatMaterial = null;
         }
 
         public static void Play(Transform muzzle, Vector3 origin, Vector3 endpoint, bool hit, Vector3 normal)
@@ -54,12 +58,9 @@ namespace SS3D.Systems.Combat
             {
                 if (_fireMaterial == null)
                 {
-                    Shader shader = Resources.Load<Shader>("Combat/Flame");
-                    if (shader == null) return;
-                    _fireMaterial = new Material(shader) { hideFlags = HideFlags.HideAndDontSave };
-                    _fireMaterial.SetFloat("_Intensity", 2.5f);
-                    _smokeMaterial = new Material(shader) { hideFlags = HideFlags.HideAndDontSave };
-                    _smokeMaterial.SetFloat("_DstBlend", (float)BlendMode.OneMinusSrcAlpha);
+                    _fireMaterial = FlameParticleStyle.CreateMaterial(FlameParticleStyle.Kind.Jet, 2.6f, 0.2f);
+                    if (_fireMaterial == null) return;
+                    _heatMaterial = FlameParticleStyle.CreateMaterial(FlameParticleStyle.Kind.Heat, 1f, 1f);
                 }
                 if (Active.Count >= Capacity)
                 {
@@ -69,7 +70,9 @@ namespace SS3D.Systems.Combat
                 }
                 effect = new GameObject("FlamethrowerJet").AddComponent<FlamethrowerVfx>();
                 effect._muzzle = muzzle;
-                effect._fire = effect.MakeParticles("Flame", _fireMaterial, 256, false);
+                effect._fire = effect.MakeParticles();
+                effect._heat = FlameParticleStyle.Create(effect.transform, "Heat", _heatMaterial, 64, FlameParticleStyle.Kind.Heat,
+                    FlameParticleStyle.Fade(Color.white, Color.white, 1f, 0.2f), AnimationCurve.Linear(0f, 0.5f, 1f, 1.4f), 0.3f);
                 effect._light = effect.gameObject.AddComponent<Light>();
                 effect._light.color = new Color(1f, 0.32f, 0.05f);
                 effect._light.range = 3f;
@@ -79,55 +82,28 @@ namespace SS3D.Systems.Combat
             effect.Pulse(origin, endpoint, hit, normal);
         }
 
-        private ParticleSystem MakeParticles(string name, Material material, int capacity, bool smoke)
+        private ParticleSystem MakeParticles()
         {
-            GameObject child = new(name);
-            child.transform.SetParent(transform, false);
-            ParticleSystem particles = child.AddComponent<ParticleSystem>();
-            particles.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
+            // Camera-facing turbulent puffs that swell and cool along the stream, not velocity-stretched cards.
+            ParticleSystem particles = FlameParticleStyle.Create(transform, "Flame", _fireMaterial, 320, FlameParticleStyle.Kind.Jet,
+                FlameParticleStyle.Fade(Color.white, new Color(1f, 0.75f, 0.6f), 1f, 0.08f),
+                AnimationCurve.Linear(0f, 0.2f, 1f, 1.3f), 0.45f);
             ParticleSystem.MainModule main = particles.main;
-            main.playOnAwake = false;
-            main.loop = true;
-            main.simulationSpace = ParticleSystemSimulationSpace.World;
-            main.maxParticles = capacity;
-            main.startSpeed = 0f;
-            main.gravityModifier = smoke ? -0.025f : 0.12f;
+            main.gravityModifier = 0.12f;
             main.startRotation = new ParticleSystem.MinMaxCurve(0f, Mathf.PI * 2f);
-            ParticleSystem.EmissionModule emission = particles.emission;
-            emission.enabled = false;
-            ParticleSystem.ShapeModule shape = particles.shape;
-            shape.enabled = false;
-            ParticleSystem.ColorOverLifetimeModule color = particles.colorOverLifetime;
-            color.enabled = true;
-            Gradient gradient = new();
-            gradient.SetKeys(smoke
-                ? new[] { new GradientColorKey(new Color(0.14f, 0.12f, 0.1f), 0f), new GradientColorKey(new Color(0.04f, 0.04f, 0.04f), 1f) }
-                : new[] { new GradientColorKey(new Color(1f, 0.9f, 0.25f), 0f), new GradientColorKey(new Color(1f, 0.6f, 0.06f), 0.65f), new GradientColorKey(new Color(0.5f, 0.08f, 0f), 1f) },
-                new[] { new GradientAlphaKey(0f, 0f), new GradientAlphaKey(smoke ? 0.24f : 0.65f, 0.12f), new GradientAlphaKey(0f, 1f) });
-            color.color = gradient;
-            ParticleSystem.SizeOverLifetimeModule size = particles.sizeOverLifetime;
-            size.enabled = true;
-            size.size = new ParticleSystem.MinMaxCurve(1f, AnimationCurve.Linear(0f, 0.18f, 1f, 1.35f));
-            ParticleSystemRenderer renderer = child.GetComponent<ParticleSystemRenderer>();
-            renderer.sharedMaterial = material;
-            renderer.shadowCastingMode = ShadowCastingMode.Off;
-            renderer.receiveShadows = false;
+            ParticleSystemRenderer renderer = particles.GetComponent<ParticleSystemRenderer>();
             renderer.maxParticleSize = 1f;
-            if (!smoke)
-            {
-                renderer.renderMode = ParticleSystemRenderMode.Stretch;
-                renderer.velocityScale = 0.025f;
-                renderer.lengthScale = 1.4f;
-                ParticleSystem.CollisionModule collision = particles.collision;
-                collision.enabled = true;
-                collision.type = ParticleSystemCollisionType.World;
-                collision.mode = ParticleSystemCollisionMode.Collision3D;
-                collision.collidesWith = LayerMask.GetMask("Default", "Walls");
-                collision.enableDynamicColliders = false;
-                collision.lifetimeLoss = 1f;
-                collision.quality = ParticleSystemCollisionQuality.Medium;
-            }
-            particles.Play();
+            ParticleSystem.CollisionModule collision = particles.collision;
+            collision.enabled = true;
+            collision.type = ParticleSystemCollisionType.World;
+            collision.mode = ParticleSystemCollisionMode.Collision3D;
+            collision.collidesWith = LayerMask.GetMask("Default", "Walls");
+            collision.enableDynamicColliders = false;
+            // Splash and spread along the surface instead of vanishing on contact.
+            collision.lifetimeLoss = 0.35f;
+            collision.dampen = 0.75f;
+            collision.bounce = 0.05f;
+            collision.quality = ParticleSystemCollisionQuality.Medium;
             return particles;
         }
 
@@ -192,7 +168,10 @@ namespace SS3D.Systems.Combat
                     Vector3 velocity = basis * Quaternion.Euler(pitch, yaw, 0f) * Vector3.forward * JetSpeed;
                     float birthAge = Mathf.Min(dt * (1f - fraction), travelSeconds * 0.5f);
                     point += velocity * birthAge;
-                    Emit(_fire, point, velocity, Random.Range(0.5f, 0.75f), travelSeconds - birthAge);
+                    Emit(_fire, point, velocity, Random.Range(0.55f, 0.85f), travelSeconds - birthAge);
+                    // Hot air trails the stream, rising and lingering after the fuel has passed.
+                    if (++_hazeCounter % HazeEvery == 0)
+                        Emit(_heat, point, velocity * 0.75f + Vector3.up * 0.6f, Random.Range(0.8f, 1.1f), travelSeconds * 1.6f);
                 }
                 if (_voice != null) _voice.transform.position = origin;
             }
