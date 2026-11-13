@@ -375,9 +375,10 @@ namespace SS3D.Systems.Comms
         /// <summary>
         /// Server-only: a line in one player's HUD feed that nobody else receives (an antagonist briefing).
         /// It uses the radio feed's row with <paramref name="header"/> as its header; the channel id
-        /// matches no radio channel, so it is never writable or overheard.
+        /// matches no radio channel, so it is never writable or overheard. <paramref name="soundId"/>, when
+        /// given, plays once for that player as the line appears.
         /// </summary>
-        public void SendPrivateFeed(NetworkConnection target, string header, string text)
+        public void SendPrivateFeed(NetworkConnection target, string header, string text, string soundId = null)
         {
             if (!IsServer || target == null || !target.IsActive || !TryNormalizeText(text, out text))
             {
@@ -390,6 +391,7 @@ namespace SS3D.Systems.Comms
                 Sender = "",
                 Text = text,
                 Kind = CommsChannelKind.Radio,
+                SoundId = soundId,
             });
         }
 

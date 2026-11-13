@@ -21,8 +21,6 @@ namespace SS3D.Systems.Health
         /// <summary>Oxy debt at full breathing intensity.</summary>
         public const float BreathingOxyDebtFull = HealthConstants.CriticalOxyDebt;
 
-        private const float InternalsBreathingIntensity = 0.4f;
-
         /// <summary>Heartbeat while pending pain will carry shock past Downed.</summary>
         public const float ShockBuildUpHeartbeat = 0.6f;
 
@@ -94,14 +92,13 @@ namespace SS3D.Systems.Health
             return Mathf.Max(fromOxy, fromCritical);
         }
 
-        /// <summary>Internals are audible while the tank still gives a breath (armor.md §6).</summary>
-        public static float ComputeInternalsIntensity(HealthSnapshot snapshot)
+        /// <summary>Breathing from a tank while it still gives a breath. Silences calm vacuum breathing.</summary>
+        public static bool IsBreathingInternals(HealthSnapshot snapshot)
         {
-            bool breathing = snapshot.Environment.OnInternals
+            return snapshot.Environment.OnInternals
                 && snapshot.Environment.TankFill > 0f
                 && snapshot.IsConscious
                 && snapshot.State != HealthState.Dead;
-            return breathing ? InternalsBreathingIntensity : 0f;
         }
 
         public static void Apply(HealthSnapshot snapshot, PersonalAudioSubSystem personalAudio)
@@ -113,7 +110,7 @@ namespace SS3D.Systems.Health
 
             personalAudio.SetHeartbeatIntensity(ComputeHeartbeatIntensity(snapshot));
             personalAudio.SetHealthBreathingIntensity(ComputeBreathingIntensity(snapshot));
-            personalAudio.SetInternalsBreathingIntensity(ComputeInternalsIntensity(snapshot));
+            personalAudio.SetOnInternals(IsBreathingInternals(snapshot));
             AmbienceHandler.HealthMuffle = ComputeMuffle(snapshot);
         }
 
@@ -127,7 +124,7 @@ namespace SS3D.Systems.Health
 
             personalAudio.SetHeartbeatIntensity(0f);
             personalAudio.ClearHealthBreathing();
-            personalAudio.SetInternalsBreathingIntensity(0f);
+            personalAudio.SetOnInternals(false);
         }
     }
 }
