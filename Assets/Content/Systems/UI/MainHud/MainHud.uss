@@ -10,6 +10,30 @@
     bottom: 0;
 }
 
+/* Transient refusal line (MainHudView.ShowNotice). Sibling of .main-hud so it shows while the HUD is hidden. */
+.main-hud-notice {
+    position: absolute;
+    top: 96px;
+    left: 50%;
+    translate: -50% 0;
+    padding: var(--ss3d-space-2) var(--ss3d-space-4);
+    background-color: var(--ss3d-feedback-warning-bg);
+    border-width: 1px;
+    border-color: var(--ss3d-feedback-warning-border);
+    border-radius: var(--ss3d-radius-md);
+    color: var(--ss3d-text-primary);
+    font-size: 14px;
+    -unity-text-align: middle-center;
+    white-space: nowrap;
+    opacity: 0;
+    transition-property: opacity;
+    transition-duration: var(--ss3d-duration-medium);
+}
+
+.main-hud-notice--visible {
+    opacity: 1;
+}
+
 .main-hud__zone {
     position: absolute;
 }

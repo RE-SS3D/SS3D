@@ -858,6 +858,7 @@ namespace SS3D.UI.MainHud
             _mapEditor = mapEditor;
             _mapEditor.EditorOpened += HandleMapEditorOpened;
             _mapEditor.EditorClosed += HandleMapEditorClosed;
+            _mapEditor.OpenDenied += HandleMapEditorOpenDenied;
             _subscribedToMapEditor = true;
             _mapEditorOpen = _mapEditor.IsActive;
             ApplyVisibility();
@@ -872,6 +873,7 @@ namespace SS3D.UI.MainHud
 
             _mapEditor.EditorOpened -= HandleMapEditorOpened;
             _mapEditor.EditorClosed -= HandleMapEditorClosed;
+            _mapEditor.OpenDenied -= HandleMapEditorOpenDenied;
             _mapEditor = null;
             _subscribedToMapEditor = false;
         }
@@ -886,6 +888,11 @@ namespace SS3D.UI.MainHud
         {
             _mapEditorOpen = false;
             ApplyVisibility();
+        }
+
+        private void HandleMapEditorOpenDenied(string message)
+        {
+            _view?.ShowNotice(message);
         }
 
         /// <summary>

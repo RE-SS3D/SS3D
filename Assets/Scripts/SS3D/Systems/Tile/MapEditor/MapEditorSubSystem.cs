@@ -356,6 +356,12 @@ namespace SS3D.Systems.Tile.MapEditor
             }
         }
 
+        /// <summary>Shown when the server refuses to open the editor for this player.</summary>
+        public const string OpenDeniedMessage = "The map editor is only available to admins on this server.";
+
+        /// <summary>Client: the server refused to open the editor. Carries the player-facing reason.</summary>
+        public event Action<string> OpenDenied;
+
         [ServerRpc(RequireOwnership = false)]
         private void RpcRequestOpen(NetworkConnection conn = null)
         {
@@ -385,7 +391,8 @@ namespace SS3D.Systems.Tile.MapEditor
             if (_active)
                 SetActive(false);
 
-            Log.Information(this, "The map editor is only available to admins on this server.", Logs.Generic);
+            Log.Information(this, OpenDeniedMessage, Logs.Generic);
+            OpenDenied?.Invoke(OpenDeniedMessage);
         }
 
         /// <summary>Re-asks the server while open, so losing admin closes the editor.</summary>
