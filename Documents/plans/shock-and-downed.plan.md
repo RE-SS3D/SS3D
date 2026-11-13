@@ -4,22 +4,22 @@ overview: Trauma puts a body down before it bleeds out. Shock builds from hits, 
 todos:
   - id: shock-core
     content: "PR 1: ShockSimulation (hit shock, tier spikes, armor bleed-through, incoming-pain build-up, decay to a wound/blood floor, Downed/Critical/Stand thresholds), HealthState.Downed, snapshot fields, HighShock critical flag, stamina cap, protocol bump, M4 tuning tests"
-    status: in_progress
+    status: completed
   - id: downed-body
     content: "PR 2: BodyPresentationState.Downed through BodyPresentationIntent, crawl wired to HumanCrawl.anim, Downed capabilities (one-handed use with wide reticle, no two-handed fire, draggable), auto stand-up with hysteresis, limb rules (both legs, arm drop, head spike)"
-    status: pending
+    status: completed
   - id: help-up
     content: "PR 3: Help up interaction, unsteady window after standing, splint gate for two broken legs"
-    status: pending
+    status: completed
   - id: feedback
     content: "PR 4: Shock alert, staged screen effects and build-up warning, examine lines, onlooker stumble/hunch, groan and gasp audio by state"
-    status: pending
+    status: completed
   - id: flinch-trip
     content: "PR 5: flinch from pre-armor damage that never cancels actions, Staggered kept for heavy hits only, victim view kick, wounded-leg sprint trip"
-    status: pending
+    status: completed
   - id: acceptance
     content: "PR 6: PlayMode scenarios (M4 burst to Downed, bandage and stand, hardsuit operative, Downed operative is not a crew win), remote-client check, update-system-docs and M1s row"
-    status: pending
+    status: completed
 isProject: false
 ---
 
@@ -102,6 +102,12 @@ Starting values. The M4 test in PR 1 pins the outcome, not the constants.
 
 - **Limb tier spikes are halved** (`ShockLimbSpikeScale = 0.5`). With flat spikes, M4 hits spread over both arms reached Downed at 9 hits (the Disabled crossings alone add 25 per arm), short of the "not Downed before about 12" target. Halved, it is 13. The torso and head keep the full spikes.
 - **The hardsuit target is about 1.6×, not 2×.** Through-damage still crosses wound tiers, so the spikes land on the armored body too, and the damage term itself only falls from 6.3 to 3.9 per chest hit (10 through plus 15 % of the 8 absorbed). Unarmored center mass downs at 6 hits, the hardsuit at 10. `ShockSimulationTests` asserts 1.5×–3× and within one magazine. Getting to 2× needs either a lower torso spike while armored or a lower `ArmorShockFraction`, and the second barely moves it.
+- **Downed plays a lying-down stand-in, not a crawl.** The existing `HumanCrawl.anim` is a generic clip and does nothing on the humanoid avatar (the body stood upright while "crawling"). No humanoid crawl is imported, and Mixamo can't be reached from TomNAS, so the `Crawl` state plays `Mix_Laying Breathless`: the body lies on its back and slides at crawl speed. Import a Mixamo crawl (`Tools/mixamo/mixamo.py`) and remap it in `HumanoidLocomotionBlendSetup`.
+- **Standing up from Downed blends out of the floor clip** through the animator transition; from a ragdoll (Critical → Downed) it uses the normal get-up first. The plan's "reuse the get-up path" applies only to the ragdoll case.
+- **No body dragging.** Humans have no `Draggable`; pulling a body is its own feature (combat.md grab), so Downed bodies can't be dragged yet.
+- **Groans reuse the gasp clip pitched down** (`HealthVocalAudio.GroanPitch`). There are no groan clips in the art index.
+- **Muffle** is a health term on the SFX low-pass (`AmbienceHandler.HealthMuffle`); the view sway near collapse (health.md §7) is not done.
+- **`ServerDamaged` (timed-step cancel) now fires only on stagger-level hits**, so ordinary hits no longer cancel bandaging or construction (combat.md §5).
 - **A third shock value.** `ShockState` holds `BuildPerTick` beside `Shock` and `IncomingPain`: each hit re-spreads all pending pain over the next `ShockBuildSeconds` ticks, so the conversion takes exactly 3 ticks after the last hit instead of tailing off. It is server-only and not in the snapshot.
 
 ## Implementation notes
@@ -111,3 +117,7 @@ Starting values. The M4 test in PR 1 pins the outcome, not the constants.
 - Until PR 2, `HealthState.Downed` has no presentation: `BodyPresentationIntent` maps it to Locomotion, so the body stays standing. `LocalSpeechEmitter.CanSpeak` allows Downed.
 - Shock-only Critical has no heart drain of its own (the plan keeps shock off the organs). In practice the hits that reach it leave Severe/Disabled torso wounds whose bleeding supplies the countdown. Environmental burn (fire, cold) adds no shock: it is not a hit.
 - `RestoreSystemicPools` (the `heal` command, sandbox resets) clears shock.
+- PR 2–3: `BodyPresentationState.Downed = 3` with `IsRagdolled()`; `Ragdoll.IsKnockedDown` means ragdolled only, `IsDowned`/`OnDownedChanged` added. `HealthBodyPresentation` and `HealthVocalAudio` came out of `HumanHealthController` (class-size ratchet). `HelpUpInteraction` is offered by `HandCprExtension`, so no prefab change. Snapshot gained `DisabledZoneMask`, `HeadTraumaBlur`, `CanSprint`, `IsUnsteady`. Protocol 50.
+- PR 4: `AlertHazard.Shock` with `Assets/Art/Icons/Alerts/shock.png` (lorc back-pain); `ScreenEffectType.Shock`/`ShockBuildUp`; examine keys seeded into the Examine table.
+- PR 5: `HitReaction` (pure), `HumanoidBodyStateMachine.ApplyFlinch`, `AdditiveLayerWeight` (flinch pulse, split out of `AnimationOrchestrator` for its size cap), view kick in `RpcHitFlash`. Protocol 51.
+- PR 6: `ShockScenarios` (Combat), `NukeOpsScenarios.SquadDownedThenCritical_RoundGoesOn`, `mppm:downed` (`DownedAutomation`). All six PRs are commits on `feature/brave-mccarthy-1x6pxv`, not separate PRs.

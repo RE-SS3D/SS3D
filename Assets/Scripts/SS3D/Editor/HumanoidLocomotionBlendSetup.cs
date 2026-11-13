@@ -515,6 +515,14 @@ namespace SS3D.Editor
                 "Assets/Art/Animations/Misc/X Bot@Floating.fbx",
                 "Mix_Floating");
 
+            if (controller.layers.Length > 3)
+            {
+                // Downed (health.md §4) plays on Full Body Override. No humanoid crawl clip is imported yet; the old
+                // generic HumanCrawl does nothing on the humanoid avatar, so lie on the floor breathing hard instead.
+                RemapStateMotion(controller.layers[3].stateMachine, "Crawl",
+                    "Assets/Art/Animations/Misc/X Bot@Laying Breathless.fbx", "Mix_Laying Breathless");
+            }
+
             if (controller.layers.Length > 2)
             {
                 AnimatorStateMachine additive = controller.layers[2].stateMachine;
@@ -534,7 +542,7 @@ namespace SS3D.Editor
             return "OK: Rebuilt stance blends; get-up states; injured idle severity; limp Jump/Turn90; Injured Wave Emote; "
                    + "AttackSwing variants + MirrorUpperBody; stance-aware Flinch (GettingHit/gut/HitReaction); "
                    + "Ranged Upper Body Aim Idle + FireRifle/Reload; pistol hold + Off Hand layers; interaction reaches, "
-                   + "floor bends and kneel; Floating → Mix_Floating.";
+                   + "floor bends and kneel; Floating → Mix_Floating; Crawl → Mix_Laying Breathless.";
         }
 
         /// <summary>

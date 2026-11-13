@@ -30,6 +30,8 @@ Phase 0–1 melee + Phase 3 ranged + Phase 5 armor slice per [combat_implementat
 Deferred: disarm/grab, armor wear visuals, blocking (including block
 stamina drain), projectile travel, thrown-item damage.
 
+**Hit reactions and Downed ([shock-and-downed plan](../../plans/shock-and-downed.plan.md)):** every landed hit flinches the victim (an additive Flinch pulse scaled by damage before armor, `AdditiveLayerWeight`) and kicks their view; only 30+ before armor staggers and cancels timed actions (`HitReaction`, `HumanHealthController.ApplyHitReaction`). A Downed shooter can't fire a weapon that needs both hands and fires one-handed ones with a 3× cone (`DownedFireRules`, also applied to the HUD reticle).
+
 ## Start here
 
 - `Assets/Scripts/SS3D/Systems/Combat/CombatInteractionNetwork.cs` — Harm primary: ranged fire/reload Cmds; melee swing; aim + Target/Observers Rpcs (sibling of `InteractionController` on Human)

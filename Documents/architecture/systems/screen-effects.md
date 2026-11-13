@@ -15,6 +15,8 @@ Bootstraps itself with `RuntimeInitializeOnLoadMethod` (not in Boot.unity) so it
 
 **Condemned UI:** Screen Effects debug Canvas (F1 tool) (`ScreenEffectsDebugMenuView`) — do not port to UITK; delete when health rewrite absorbs debug. Volume/effect path stays.
 
+**Shock (health.md §7):** `Shock` (grey vignette + desaturation, staged by `ShockSimulation.FeelIntensity`) and `ShockBuildUp` (a dark heartbeat pulse while pending pain will put a standing body down) come from `HealthScreenEffectMapper`; the hearing muffle is `AmbienceHandler.HealthMuffle`, set by `HealthPersonalAudioMapper` and combined with the air muffle by the lower cutoff.
+
 ## Start here
 
 - `Assets/Scripts/SS3D/Systems/ScreenEffects/ScreenEffectsSubSystem.cs` — Volume + world blackout + ember/frost particles; `SetEffect` / `TriggerHitFlash` / `TriggerBlastFlash` / `TriggerWhiteout` (post-exposure burn to white plus a white vignette) / `SetUiBackdropBlur`
