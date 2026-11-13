@@ -50,6 +50,22 @@ namespace SS3D.Tests
             Assert.IsTrue(body.Snapshot.IsCrawling, "The crawl clip plays");
             Assert.IsTrue(health.Snapshot.IsConscious && health.Snapshot.CanUseArms, "Downed is conscious and keeps its hands");
 
+            Animator animator = dummy.GetComponent<Animator>();
+            Assert.IsTrue(ragdoll.IsFallingDowned, "A standing body falls before it lies Downed");
+            Assert.IsFalse(ragdoll.IsKnockedDown, "The fall is the Dying clip, not a ragdoll");
+            yield return null;
+            Assert.IsTrue(animator.GetNextAnimatorStateInfo(DownedAnimation.Layer).IsName(DownedAnimation.FallStanding.StateName)
+                || animator.GetCurrentAnimatorStateInfo(DownedAnimation.Layer).IsName(DownedAnimation.FallStanding.StateName),
+                "A body standing still plays the standing fall");
+            float fallSeconds = (DownedAnimation.FallStanding.LastFrame - DownedAnimation.FallStanding.FirstFrame) / 30f;
+            yield return WaitFor(() => !ragdoll.IsFallingDowned, "the fallen body blends into the Downed pose",
+                fallSeconds + GetUpAnimation.BlendInSeconds + 1f);
+            Assert.IsTrue(animator.GetCurrentAnimatorStateInfo(DownedAnimation.Layer).IsName(DownedAnimation.CrawlState),
+                "The standing fall ends belly down, in the crawl state");
+            yield return null;
+            float hipsHeight = animator.GetBoneTransform(HumanBodyBones.Hips).position.y - dummy.transform.position.y;
+            Assert.Less(hipsHeight, 0.3f, "The Downed pose lies on the floor, not in the air");
+
             foreach (BodyZone zone in CenterMass)
             {
                 health.ApplyTreatment(zone, stopBleeding: true);
@@ -59,6 +75,7 @@ namespace SS3D.Tests
             yield return WaitFor(() => health.Snapshot.State == HealthState.Healthy, "the bandaged dummy stands on its own", secondsToStand + 3f);
             yield return WaitFor(() => ragdoll.Presentation == BodyPresentationState.Locomotion && body.Snapshot.State == BodyState.Locomotion,
                 "the body is upright again", 2f);
+            Assert.IsTrue(ragdoll.IsGettingUp, "Leaving Downed plays the get-up rather than snapping upright");
             Assert.IsFalse(body.Snapshot.IsCrawling);
 
             Burst(health, 14);

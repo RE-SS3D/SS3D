@@ -70,7 +70,7 @@ namespace SS3D.Systems.Testing
             Ragdoll ragdoll = entity.GetComponent<Ragdoll>();
             HumanoidBodyStateMachine body = entity.GetComponent<HumanoidBodyStateMachine>();
             HumanHealthController health = entity.GetComponent<HumanHealthController>();
-            yield return Wait(() => ragdoll.IsDowned && body.Snapshot.State == BodyState.Crawling && body.Snapshot.IsCrawling,
+            yield return Wait(() => ragdoll.IsDowned && !ragdoll.IsFallingDowned && body.Snapshot.State == BodyState.Crawling && body.Snapshot.IsCrawling,
                 timeoutSeconds, "assert_downed crawl");
 
             if (ragdoll.IsKnockedDown) throw new InvalidOperationException("assert_downed: a Downed body is ragdolled");

@@ -64,7 +64,7 @@ namespace SS3D.Systems.Inventory.Containers
                 return CanUse(
                     health == null || health.Snapshot.CanUseArm(_side == HandSide.Left ? BodyZone.LeftArm : BodyZone.RightArm),
                     ragdoll != null && ragdoll.IsKnockedDown,
-                    ragdoll != null && ragdoll.IsGettingUp);
+                    ragdoll != null && (ragdoll.IsGettingUp || ragdoll.IsFallingDowned));
             }
         }
 
