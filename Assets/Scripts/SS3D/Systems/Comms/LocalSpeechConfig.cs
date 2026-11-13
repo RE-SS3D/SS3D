@@ -47,6 +47,10 @@ namespace SS3D.Systems.Comms
         public float PerCharacterFadeSeconds = 0.02f;
         public float MaxFadeDuration = 8f;
 
+        [Header("Action lines - action-messages.md §5")]
+        [Tooltip("Seconds an action chip stays up: quicker than speech so it never reads as talk.")]
+        public float ActionFadeDuration = 2.5f;
+
         public float GetFadeDuration(int characterCount)
         {
             float duration = BaseFadeDuration + characterCount * PerCharacterFadeSeconds;

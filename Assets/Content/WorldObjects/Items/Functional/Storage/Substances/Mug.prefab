@@ -346,7 +346,7 @@ MonoBehaviour:
   _addedNetworkObject: {fileID: 7958861831329766982}
   _networkObjectCache: {fileID: 7958861831329766982}
   _asset: {fileID: 11400000, guid: 162ccd1fc7d534046874df3d9dcf2315, type: 2}
-  _name: 
+  _name: mug
   _weight: 0.3
   _sizeClass: 1
   _maxStackSize: 1

@@ -1,10 +1,10 @@
 {
-  "generated_at": "2026-11-06T19:08:35.446709+00:00",
+  "generated_at": "2026-11-12T16:27:18.758227+00:00",
   "purpose": "Agent reference for locating SS3D art assets and determining import status.",
   "sources": {
     "in_game": {
       "root": "Assets/Art",
-      "file_count": 5392
+      "file_count": 5434
     },
     "ss3d_art": {
       "repo": "https://github.com/RE-SS3D/SS3D-Art",
@@ -13,11 +13,11 @@
     }
   },
   "summary": {
-    "in_game_files": 5392,
+    "in_game_files": 5434,
     "ss3d_art_files": 2480,
-    "unique_assets": 7625,
+    "unique_assets": 7667,
     "imported": 247,
-    "in_game_only": 5155,
+    "in_game_only": 5197,
     "ss3d_art_only": 2223,
     "available_for_import": 2008,
     "artwork_only": 215
@@ -25,10 +25,10 @@
   "categories": [
     {
       "path": "Animations",
-      "in_game": 152,
+      "in_game": 181,
       "ss3d_art": 21,
       "imported": 3,
-      "in_game_only": 152,
+      "in_game_only": 181,
       "ss3d_art_only": 18
     },
     {
@@ -73,26 +73,26 @@
     },
     {
       "path": "Models",
-      "in_game": 93,
+      "in_game": 98,
       "ss3d_art": 749,
       "imported": 83,
-      "in_game_only": 10,
+      "in_game_only": 15,
       "ss3d_art_only": 666
     },
     {
       "path": "Sound",
-      "in_game": 183,
+      "in_game": 191,
       "ss3d_art": 218,
       "imported": 89,
-      "in_game_only": 94,
+      "in_game_only": 102,
       "ss3d_art_only": 129
     },
     {
       "path": "Textures",
-      "in_game": 128,
+      "in_game": 127,
       "ss3d_art": 579,
       "imported": 66,
-      "in_game_only": 68,
+      "in_game_only": 67,
       "ss3d_art_only": 513
     },
     {
@@ -162,6 +162,22 @@
       "ss3d_art_only": 6
     },
     {
+      "path": "Animations/GetUp",
+      "in_game": 2,
+      "ss3d_art": 0,
+      "imported": 0,
+      "in_game_only": 2,
+      "ss3d_art_only": 0
+    },
+    {
+      "path": "Animations/Interact",
+      "in_game": 7,
+      "ss3d_art": 0,
+      "imported": 0,
+      "in_game_only": 7,
+      "ss3d_art_only": 0
+    },
+    {
       "path": "Animations/Locomotion Pack",
       "in_game": 13,
       "ss3d_art": 0,
@@ -183,6 +199,14 @@
       "ss3d_art": 0,
       "imported": 0,
       "in_game_only": 14,
+      "ss3d_art_only": 0
+    },
+    {
+      "path": "Animations/Pistol",
+      "in_game": 18,
+      "ss3d_art": 0,
+      "imported": 0,
+      "in_game_only": 18,
       "ss3d_art_only": 0
     },
     {
@@ -239,6 +263,14 @@
       "ss3d_art": 0,
       "imported": 0,
       "in_game_only": 3,
+      "ss3d_art_only": 0
+    },
+    {
+      "path": "Animations/Throw",
+      "in_game": 2,
+      "ss3d_art": 0,
+      "imported": 0,
+      "in_game_only": 2,
       "ss3d_art_only": 0
     },
     {
@@ -1378,6 +1410,14 @@
       "ss3d_art_only": 1
     },
     {
+      "path": "Models/Items/Clothing/Jobs",
+      "in_game": 5,
+      "ss3d_art": 0,
+      "imported": 0,
+      "in_game_only": 5,
+      "ss3d_art_only": 0
+    },
+    {
       "path": "Models/Items/Clothing/Syndicate",
       "in_game": 2,
       "ss3d_art": 0,
@@ -2219,10 +2259,10 @@
     },
     {
       "path": "Sound/Items/Weapons/Explosive/SS14",
-      "in_game": 4,
+      "in_game": 12,
       "ss3d_art": 0,
       "imported": 0,
-      "in_game_only": 4,
+      "in_game_only": 12,
       "ss3d_art_only": 0
     },
     {
@@ -2427,10 +2467,10 @@
     },
     {
       "path": "Textures",
-      "in_game": -1,
+      "in_game": 0,
       "ss3d_art": 5,
       "imported": 0,
-      "in_game_only": -1,
+      "in_game_only": 0,
       "ss3d_art_only": 5
     },
     {
@@ -2990,9 +3030,9 @@
     "svg": 4248,
     "png": 2084,
     "blend": 671,
-    "fbx": 253,
+    "fbx": 287,
     "wav": 159,
-    "ogg": 135,
+    "ogg": 143,
     "mp3": 18,
     "ma": 13,
     "mp4": 12,
@@ -3410,6 +3450,105 @@
       "github_url": "https://github.com/RE-SS3D/SS3D-Art/blob/main/Assets/Animations/Characters/Humanoid/Misc/HumanStancesDef.fbx",
       "import_target_path": "Assets/Art/Animations/Characters/Humanoid/Misc/HumanStancesDef.fbx",
       "status": "ss3d_art_only"
+    },
+    {
+      "name": "X Bot@Stand Up From Back.fbx",
+      "stem": "x bot@stand up from back",
+      "extension": "fbx",
+      "category": "Animations/GetUp",
+      "in_game_path": "Assets/Art/Animations/GetUp/X Bot@Stand Up From Back.fbx",
+      "ss3d_art_path": null,
+      "github_url": null,
+      "import_target_path": null,
+      "status": "in_game_only"
+    },
+    {
+      "name": "X Bot@Standing Up From Stomach.fbx",
+      "stem": "x bot@standing up from stomach",
+      "extension": "fbx",
+      "category": "Animations/GetUp",
+      "in_game_path": "Assets/Art/Animations/GetUp/X Bot@Standing Up From Stomach.fbx",
+      "ss3d_art_path": null,
+      "github_url": null,
+      "import_target_path": null,
+      "status": "in_game_only"
+    },
+    {
+      "name": "X Bot@Attempting To Open A Door.fbx",
+      "stem": "x bot@attempting to open a door",
+      "extension": "fbx",
+      "category": "Animations/Interact",
+      "in_game_path": "Assets/Art/Animations/Interact/X Bot@Attempting To Open A Door.fbx",
+      "ss3d_art_path": null,
+      "github_url": null,
+      "import_target_path": null,
+      "status": "in_game_only"
+    },
+    {
+      "name": "X Bot@Man Working On Device.fbx",
+      "stem": "x bot@man working on device",
+      "extension": "fbx",
+      "category": "Animations/Interact",
+      "in_game_path": "Assets/Art/Animations/Interact/X Bot@Man Working On Device.fbx",
+      "ss3d_art_path": null,
+      "github_url": null,
+      "import_target_path": null,
+      "status": "in_game_only"
+    },
+    {
+      "name": "X Bot@Opening.fbx",
+      "stem": "x bot@opening",
+      "extension": "fbx",
+      "category": "Animations/Interact",
+      "in_game_path": "Assets/Art/Animations/Interact/X Bot@Opening.fbx",
+      "ss3d_art_path": null,
+      "github_url": null,
+      "import_target_path": null,
+      "status": "in_game_only"
+    },
+    {
+      "name": "X Bot@Picking Up.fbx",
+      "stem": "x bot@picking up",
+      "extension": "fbx",
+      "category": "Animations/Interact",
+      "in_game_path": "Assets/Art/Animations/Interact/X Bot@Picking Up.fbx",
+      "ss3d_art_path": null,
+      "github_url": null,
+      "import_target_path": null,
+      "status": "in_game_only"
+    },
+    {
+      "name": "X Bot@Pulling Lever.fbx",
+      "stem": "x bot@pulling lever",
+      "extension": "fbx",
+      "category": "Animations/Interact",
+      "in_game_path": "Assets/Art/Animations/Interact/X Bot@Pulling Lever.fbx",
+      "ss3d_art_path": null,
+      "github_url": null,
+      "import_target_path": null,
+      "status": "in_game_only"
+    },
+    {
+      "name": "X Bot@Putting Down An Object.fbx",
+      "stem": "x bot@putting down an object",
+      "extension": "fbx",
+      "category": "Animations/Interact",
+      "in_game_path": "Assets/Art/Animations/Interact/X Bot@Putting Down An Object.fbx",
+      "ss3d_art_path": null,
+      "github_url": null,
+      "import_target_path": null,
+      "status": "in_game_only"
+    },
+    {
+      "name": "X Bot@Searching The Top Drawer Of A File Cabinet.fbx",
+      "stem": "x bot@searching the top drawer of a file cabinet",
+      "extension": "fbx",
+      "category": "Animations/Interact",
+      "in_game_path": "Assets/Art/Animations/Interact/X Bot@Searching The Top Drawer Of A File Cabinet.fbx",
+      "ss3d_art_path": null,
+      "github_url": null,
+      "import_target_path": null,
+      "status": "in_game_only"
     },
     {
       "name": "idle.fbx",
@@ -3934,6 +4073,204 @@
       "extension": "fbx",
       "category": "Animations/Misc",
       "in_game_path": "Assets/Art/Animations/Misc/X Bot@Walking(1).fbx",
+      "ss3d_art_path": null,
+      "github_url": null,
+      "import_target_path": null,
+      "status": "in_game_only"
+    },
+    {
+      "name": "pistol idle.fbx",
+      "stem": "pistol idle",
+      "extension": "fbx",
+      "category": "Animations/Pistol",
+      "in_game_path": "Assets/Art/Animations/Pistol/pistol idle.fbx",
+      "ss3d_art_path": null,
+      "github_url": null,
+      "import_target_path": null,
+      "status": "in_game_only"
+    },
+    {
+      "name": "pistol kneel to stand.fbx",
+      "stem": "pistol kneel to stand",
+      "extension": "fbx",
+      "category": "Animations/Pistol",
+      "in_game_path": "Assets/Art/Animations/Pistol/pistol kneel to stand.fbx",
+      "ss3d_art_path": null,
+      "github_url": null,
+      "import_target_path": null,
+      "status": "in_game_only"
+    },
+    {
+      "name": "pistol kneeling idle.fbx",
+      "stem": "pistol kneeling idle",
+      "extension": "fbx",
+      "category": "Animations/Pistol",
+      "in_game_path": "Assets/Art/Animations/Pistol/pistol kneeling idle.fbx",
+      "ss3d_art_path": null,
+      "github_url": null,
+      "import_target_path": null,
+      "status": "in_game_only"
+    },
+    {
+      "name": "pistol run arc (2).fbx",
+      "stem": "pistol run arc (2)",
+      "extension": "fbx",
+      "category": "Animations/Pistol",
+      "in_game_path": "Assets/Art/Animations/Pistol/pistol run arc (2).fbx",
+      "ss3d_art_path": null,
+      "github_url": null,
+      "import_target_path": null,
+      "status": "in_game_only"
+    },
+    {
+      "name": "pistol run arc.fbx",
+      "stem": "pistol run arc",
+      "extension": "fbx",
+      "category": "Animations/Pistol",
+      "in_game_path": "Assets/Art/Animations/Pistol/pistol run arc.fbx",
+      "ss3d_art_path": null,
+      "github_url": null,
+      "import_target_path": null,
+      "status": "in_game_only"
+    },
+    {
+      "name": "pistol run backward arc (2).fbx",
+      "stem": "pistol run backward arc (2)",
+      "extension": "fbx",
+      "category": "Animations/Pistol",
+      "in_game_path": "Assets/Art/Animations/Pistol/pistol run backward arc (2).fbx",
+      "ss3d_art_path": null,
+      "github_url": null,
+      "import_target_path": null,
+      "status": "in_game_only"
+    },
+    {
+      "name": "pistol run backward arc.fbx",
+      "stem": "pistol run backward arc",
+      "extension": "fbx",
+      "category": "Animations/Pistol",
+      "in_game_path": "Assets/Art/Animations/Pistol/pistol run backward arc.fbx",
+      "ss3d_art_path": null,
+      "github_url": null,
+      "import_target_path": null,
+      "status": "in_game_only"
+    },
+    {
+      "name": "pistol run backward.fbx",
+      "stem": "pistol run backward",
+      "extension": "fbx",
+      "category": "Animations/Pistol",
+      "in_game_path": "Assets/Art/Animations/Pistol/pistol run backward.fbx",
+      "ss3d_art_path": null,
+      "github_url": null,
+      "import_target_path": null,
+      "status": "in_game_only"
+    },
+    {
+      "name": "pistol run.fbx",
+      "stem": "pistol run",
+      "extension": "fbx",
+      "category": "Animations/Pistol",
+      "in_game_path": "Assets/Art/Animations/Pistol/pistol run.fbx",
+      "ss3d_art_path": null,
+      "github_url": null,
+      "import_target_path": null,
+      "status": "in_game_only"
+    },
+    {
+      "name": "pistol stand to kneel.fbx",
+      "stem": "pistol stand to kneel",
+      "extension": "fbx",
+      "category": "Animations/Pistol",
+      "in_game_path": "Assets/Art/Animations/Pistol/pistol stand to kneel.fbx",
+      "ss3d_art_path": null,
+      "github_url": null,
+      "import_target_path": null,
+      "status": "in_game_only"
+    },
+    {
+      "name": "pistol strafe (2).fbx",
+      "stem": "pistol strafe (2)",
+      "extension": "fbx",
+      "category": "Animations/Pistol",
+      "in_game_path": "Assets/Art/Animations/Pistol/pistol strafe (2).fbx",
+      "ss3d_art_path": null,
+      "github_url": null,
+      "import_target_path": null,
+      "status": "in_game_only"
+    },
+    {
+      "name": "pistol strafe.fbx",
+      "stem": "pistol strafe",
+      "extension": "fbx",
+      "category": "Animations/Pistol",
+      "in_game_path": "Assets/Art/Animations/Pistol/pistol strafe.fbx",
+      "ss3d_art_path": null,
+      "github_url": null,
+      "import_target_path": null,
+      "status": "in_game_only"
+    },
+    {
+      "name": "pistol walk arc (2).fbx",
+      "stem": "pistol walk arc (2)",
+      "extension": "fbx",
+      "category": "Animations/Pistol",
+      "in_game_path": "Assets/Art/Animations/Pistol/pistol walk arc (2).fbx",
+      "ss3d_art_path": null,
+      "github_url": null,
+      "import_target_path": null,
+      "status": "in_game_only"
+    },
+    {
+      "name": "pistol walk arc.fbx",
+      "stem": "pistol walk arc",
+      "extension": "fbx",
+      "category": "Animations/Pistol",
+      "in_game_path": "Assets/Art/Animations/Pistol/pistol walk arc.fbx",
+      "ss3d_art_path": null,
+      "github_url": null,
+      "import_target_path": null,
+      "status": "in_game_only"
+    },
+    {
+      "name": "pistol walk backward arc (2).fbx",
+      "stem": "pistol walk backward arc (2)",
+      "extension": "fbx",
+      "category": "Animations/Pistol",
+      "in_game_path": "Assets/Art/Animations/Pistol/pistol walk backward arc (2).fbx",
+      "ss3d_art_path": null,
+      "github_url": null,
+      "import_target_path": null,
+      "status": "in_game_only"
+    },
+    {
+      "name": "pistol walk backward arc.fbx",
+      "stem": "pistol walk backward arc",
+      "extension": "fbx",
+      "category": "Animations/Pistol",
+      "in_game_path": "Assets/Art/Animations/Pistol/pistol walk backward arc.fbx",
+      "ss3d_art_path": null,
+      "github_url": null,
+      "import_target_path": null,
+      "status": "in_game_only"
+    },
+    {
+      "name": "pistol walk backward.fbx",
+      "stem": "pistol walk backward",
+      "extension": "fbx",
+      "category": "Animations/Pistol",
+      "in_game_path": "Assets/Art/Animations/Pistol/pistol walk backward.fbx",
+      "ss3d_art_path": null,
+      "github_url": null,
+      "import_target_path": null,
+      "status": "in_game_only"
+    },
+    {
+      "name": "pistol walk.fbx",
+      "stem": "pistol walk",
+      "extension": "fbx",
+      "category": "Animations/Pistol",
+      "in_game_path": "Assets/Art/Animations/Pistol/pistol walk.fbx",
       "ss3d_art_path": null,
       "github_url": null,
       "import_target_path": null,
@@ -4902,6 +5239,28 @@
       "extension": "fbx",
       "category": "Animations/Pulling",
       "in_game_path": "Assets/Art/Animations/Pulling/X Bot@Pull Heavy Object.fbx",
+      "ss3d_art_path": null,
+      "github_url": null,
+      "import_target_path": null,
+      "status": "in_game_only"
+    },
+    {
+      "name": "X Bot@Run And Throw Grenade.fbx",
+      "stem": "x bot@run and throw grenade",
+      "extension": "fbx",
+      "category": "Animations/Throw",
+      "in_game_path": "Assets/Art/Animations/Throw/X Bot@Run And Throw Grenade.fbx",
+      "ss3d_art_path": null,
+      "github_url": null,
+      "import_target_path": null,
+      "status": "in_game_only"
+    },
+    {
+      "name": "X Bot@Throw.fbx",
+      "stem": "x bot@throw",
+      "extension": "fbx",
+      "category": "Animations/Throw",
+      "in_game_path": "Assets/Art/Animations/Throw/X Bot@Throw.fbx",
       "ss3d_art_path": null,
       "github_url": null,
       "import_target_path": null,
@@ -70677,6 +71036,61 @@
       "status": "ss3d_art_only"
     },
     {
+      "name": "Command.fbx",
+      "stem": "command",
+      "extension": "fbx",
+      "category": "Models/Items/Clothing/Jobs",
+      "in_game_path": "Assets/Art/Models/Items/Clothing/Jobs/Command.fbx",
+      "ss3d_art_path": null,
+      "github_url": null,
+      "import_target_path": null,
+      "status": "in_game_only"
+    },
+    {
+      "name": "Engineering.fbx",
+      "stem": "engineering",
+      "extension": "fbx",
+      "category": "Models/Items/Clothing/Jobs",
+      "in_game_path": "Assets/Art/Models/Items/Clothing/Jobs/Engineering.fbx",
+      "ss3d_art_path": null,
+      "github_url": null,
+      "import_target_path": null,
+      "status": "in_game_only"
+    },
+    {
+      "name": "Medical.fbx",
+      "stem": "medical",
+      "extension": "fbx",
+      "category": "Models/Items/Clothing/Jobs",
+      "in_game_path": "Assets/Art/Models/Items/Clothing/Jobs/Medical.fbx",
+      "ss3d_art_path": null,
+      "github_url": null,
+      "import_target_path": null,
+      "status": "in_game_only"
+    },
+    {
+      "name": "Security.fbx",
+      "stem": "security",
+      "extension": "fbx",
+      "category": "Models/Items/Clothing/Jobs",
+      "in_game_path": "Assets/Art/Models/Items/Clothing/Jobs/Security.fbx",
+      "ss3d_art_path": null,
+      "github_url": null,
+      "import_target_path": null,
+      "status": "in_game_only"
+    },
+    {
+      "name": "Syndicate.fbx",
+      "stem": "syndicate",
+      "extension": "fbx",
+      "category": "Models/Items/Clothing/Jobs",
+      "in_game_path": "Assets/Art/Models/Items/Clothing/Jobs/Syndicate.fbx",
+      "ss3d_art_path": null,
+      "github_url": null,
+      "import_target_path": null,
+      "status": "in_game_only"
+    },
+    {
       "name": "HardsuitHelmet.fbx",
       "stem": "hardsuithelmet",
       "extension": "fbx",
@@ -77821,6 +78235,94 @@
       "extension": "ogg",
       "category": "Sound/Items/Weapons/Explosive/SS14",
       "in_game_path": "Assets/Art/Sound/Items/Weapons/Explosive/SS14/MinibombExplosion.ogg",
+      "ss3d_art_path": null,
+      "github_url": null,
+      "import_target_path": null,
+      "status": "in_game_only"
+    },
+    {
+      "name": "NukeAlarm.ogg",
+      "stem": "nukealarm",
+      "extension": "ogg",
+      "category": "Sound/Items/Weapons/Explosive/SS14",
+      "in_game_path": "Assets/Art/Sound/Items/Weapons/Explosive/SS14/NukeAlarm.ogg",
+      "ss3d_art_path": null,
+      "github_url": null,
+      "import_target_path": null,
+      "status": "in_game_only"
+    },
+    {
+      "name": "NukeArmBeep.ogg",
+      "stem": "nukearmbeep",
+      "extension": "ogg",
+      "category": "Sound/Items/Weapons/Explosive/SS14",
+      "in_game_path": "Assets/Art/Sound/Items/Weapons/Explosive/SS14/NukeArmBeep.ogg",
+      "ss3d_art_path": null,
+      "github_url": null,
+      "import_target_path": null,
+      "status": "in_game_only"
+    },
+    {
+      "name": "NukeArmed.ogg",
+      "stem": "nukearmed",
+      "extension": "ogg",
+      "category": "Sound/Items/Weapons/Explosive/SS14",
+      "in_game_path": "Assets/Art/Sound/Items/Weapons/Explosive/SS14/NukeArmed.ogg",
+      "ss3d_art_path": null,
+      "github_url": null,
+      "import_target_path": null,
+      "status": "in_game_only"
+    },
+    {
+      "name": "NukeDisarmed.ogg",
+      "stem": "nukedisarmed",
+      "extension": "ogg",
+      "category": "Sound/Items/Weapons/Explosive/SS14",
+      "in_game_path": "Assets/Art/Sound/Items/Weapons/Explosive/SS14/NukeDisarmed.ogg",
+      "ss3d_art_path": null,
+      "github_url": null,
+      "import_target_path": null,
+      "status": "in_game_only"
+    },
+    {
+      "name": "NukeDiskInsert.ogg",
+      "stem": "nukediskinsert",
+      "extension": "ogg",
+      "category": "Sound/Items/Weapons/Explosive/SS14",
+      "in_game_path": "Assets/Art/Sound/Items/Weapons/Explosive/SS14/NukeDiskInsert.ogg",
+      "ss3d_art_path": null,
+      "github_url": null,
+      "import_target_path": null,
+      "status": "in_game_only"
+    },
+    {
+      "name": "NukePanel.ogg",
+      "stem": "nukepanel",
+      "extension": "ogg",
+      "category": "Sound/Items/Weapons/Explosive/SS14",
+      "in_game_path": "Assets/Art/Sound/Items/Weapons/Explosive/SS14/NukePanel.ogg",
+      "ss3d_art_path": null,
+      "github_url": null,
+      "import_target_path": null,
+      "status": "in_game_only"
+    },
+    {
+      "name": "NukeTick.ogg",
+      "stem": "nuketick",
+      "extension": "ogg",
+      "category": "Sound/Items/Weapons/Explosive/SS14",
+      "in_game_path": "Assets/Art/Sound/Items/Weapons/Explosive/SS14/NukeTick.ogg",
+      "ss3d_art_path": null,
+      "github_url": null,
+      "import_target_path": null,
+      "status": "in_game_only"
+    },
+    {
+      "name": "NukeWireCut.ogg",
+      "stem": "nukewirecut",
+      "extension": "ogg",
+      "category": "Sound/Items/Weapons/Explosive/SS14",
+      "in_game_path": "Assets/Art/Sound/Items/Weapons/Explosive/SS14/NukeWireCut.ogg",
       "ss3d_art_path": null,
       "github_url": null,
       "import_target_path": null,

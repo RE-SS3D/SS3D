@@ -237,7 +237,7 @@ namespace SS3D.Tests
         protected IEnumerator HealFully() =>
             Console.Expect($"heal {ServerHelpers.LocalCkey}", "Player fully healed");
 
-        /// <summary>Deletes whatever the body holds; the job loadout fills a hand (Security's toolbox).</summary>
+        /// <summary>Deletes whatever the body holds; the job loadout fills a hand (Security's Taser, the Assistant's toolbox).</summary>
         protected static void EmptyHands(Entity body)
         {
             foreach (Hand hand in body.GetComponentInParent<HumanInventory>().Hands.PlayerHands)

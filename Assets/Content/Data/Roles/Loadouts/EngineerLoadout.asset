@@ -1,0 +1,55 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9fbd6da0c74d76746b141068081e0dc3, type: 3}
+  m_Name: EngineerLoadout
+  m_EditorClassIdentifier: 
+  HandLeftAsset: {fileID: 0}
+  HandRightAsset: {fileID: 0}
+  EquipmentAssets:
+    _list:
+    - _key: 512
+      _value: {fileID: 11400000, guid: c3e196c40ac645e4d840edb82a27baf9, type: 2}
+    - _key: 16
+      _value: {fileID: 11400000, guid: 78f7ac40e040cd99cb484e1ad8db85d9, type: 2}
+    - _key: 2048
+      _value: {fileID: 11400000, guid: 55deb25596d5d314b8b7dd58eafb8aec, type: 2}
+    - _key: 8192
+      _value: {fileID: 11400000, guid: f2914f9670967764e93aa1b262968344, type: 2}
+    - _key: 32768
+      _value: {fileID: 11400000, guid: 9cf2801a7b335074190840fc9112d582, type: 2}
+    - _key: 4
+      _value: {fileID: 11400000, guid: 9435365903a79d64184af9ee71e060e5, type: 2}
+    - _key: 256
+      _value: {fileID: 11400000, guid: 3382f491f257a3d8aaae2c0014959b0b, type: 2}
+    - _key: 64
+      _value: {fileID: 11400000, guid: 78d20e2cb9c3219f48a440ae5ac1902e, type: 2}
+    _new: 0
+  PocketAssets:
+  - {fileID: 11400000, guid: 4f4a376e135b3e46dbe041dbca673357, type: 2}
+  - {fileID: 11400000, guid: 4a50e327a934cd3438e1b88d2bb547cb, type: 2}
+  EquipmentContents:
+  - Slot: 32768
+    Items:
+    - {fileID: 11400000, guid: 9e4b9aa465bc48d4faa9b53cd0132f11, type: 2}
+    - {fileID: 11400000, guid: fd8e3cf550cdc704281d3b94b5c8d631, type: 2}
+    - {fileID: 11400000, guid: f784858d359bb434c9a7ea797c27552d, type: 2}
+    - {fileID: 11400000, guid: bd14f7dd0646a2240adf09ba61ce700a, type: 2}
+    - {fileID: 11400000, guid: 715777b8c0a0f1b4cb29ee4dab0326e4, type: 2}
+  - Slot: 4
+    Items:
+    - {fileID: 11400000, guid: 9310ba3e563558e42bdbd19ee6b8440c, type: 2}
+    - {fileID: 11400000, guid: 40f2a5ef12396ce469ae6fa7474a6bc6, type: 2}
+    - {fileID: 11400000, guid: 8cfc0ba9b0715224ca017ad6ddfbd66b, type: 2}
+    - {fileID: 11400000, guid: 8cfc0ba9b0715224ca017ad6ddfbd66b, type: 2}
+    - {fileID: 11400000, guid: cb8a18ff6b582ec45a3aa1f689a18564, type: 2}
+  HandLeftContents: []
+  HandRightContents: []

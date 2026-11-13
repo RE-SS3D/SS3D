@@ -38,6 +38,7 @@ namespace SS3D.Systems.Combat.Interactions
         private float _recoilSince;
         private bool _initialized;
         private NetworkObject _networkObject;
+        private RangedWeaponRoundsReadout _readout;
 
         public RangedWeaponProfile Profile => _profile;
 
@@ -171,6 +172,7 @@ namespace SS3D.Systems.Combat.Interactions
             }
 
             _rounds--;
+            PublishRounds();
             _recoilStacks = RecoilStacks + Mathf.Max(0f, _profile.RecoilPerShot);
             _recoilSince = Time.time;
             float cooldown = Mathf.Max(0.01f, _profile.FireCooldownSeconds);
@@ -208,6 +210,7 @@ namespace SS3D.Systems.Combat.Interactions
 
             PlayDueReloadCues();
             _rounds = MagazineSize;
+            PublishRounds();
             _reloadUntil = 0f;
             return true;
         }
@@ -282,6 +285,15 @@ namespace SS3D.Systems.Combat.Interactions
             }
 
             audio.PlayAudioSource(AudioType.Sfx, trackId, transform.position, null, false, volume, 1f, 8f, 40f);
+        }
+
+        /// <summary>Mirrors the count to observers for examine (server only; the readout ignores clients).</summary>
+        private void PublishRounds()
+        {
+            if (_readout != null || TryGetComponent(out _readout))
+            {
+                _readout.ServerPublish(_rounds);
+            }
         }
 
         private void EnsureInitialized()

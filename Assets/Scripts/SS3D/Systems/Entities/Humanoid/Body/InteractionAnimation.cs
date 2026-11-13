@@ -239,6 +239,9 @@ namespace SS3D.Systems.Entities.Humanoid.Body
                     return LightSwitch;
                 case "OpenAirlock":
                 case "AttachCharge":
+                // The nuclear device: a reach to slot the disk or set the arming switches.
+                case "NukeLoadDisk":
+                case "NukeArm":
                     return DoorReach;
                 case "DefuseC4":
                 case "Perform CPR":
@@ -259,6 +262,9 @@ namespace SS3D.Systems.Entities.Humanoid.Body
                 case "ConstructionPullPlate":
                 case "ConstructionLiftPane":
                 case "ConstructionDismantleGirder":
+                // Nuke defuse: both hands in the device's panel for the step's whole timer.
+                case "NukeOpenPanel":
+                case "NukeCutWires":
                     return WallWork;
                 default:
                     return None;

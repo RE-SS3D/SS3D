@@ -14,9 +14,9 @@ namespace SS3D.Systems.Tile.MapEditor
 
         /// <summary>
         /// Job tags available for authoring. Mirrors current <c>RoleData</c> names
-        /// (Assistant / Security); extend when new roles ship.
+        /// (Captain / Assistant / Security / Engineer / Doctor); extend when new roles ship.
         /// </summary>
-        public static readonly string[] DefaultJobNames = { "Assistant", "Security" };
+        public static readonly string[] DefaultJobNames = { "Captain", "Assistant", "Security", "Engineer", "Doctor" };
 
         public static string EncodeJob(string jobName) => $"{JobPrefix}{jobName}";
 

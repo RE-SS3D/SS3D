@@ -961,6 +961,8 @@ namespace SS3D.Systems.Tile
             int chunkIndex = 0;
             int placedTiles = 0;
             int placedItems = 0;
+            int gratingConverted = 0;
+            TileObjectSo plenumSo = null;
 
             foreach (SavedTileChunk savedChunk in savedChunks)
             {
@@ -976,12 +978,14 @@ namespace SS3D.Systems.Tile
 
                 ISavedTileLocation[] savedTiles = savedChunk.savedTiles ?? Array.Empty<ISavedTileLocation>();
 
+                // Resolve the chunk's assets first so the grating migration can see every layer of a cell.
+                var resolved = new List<(Vector2Int Cell, SavedPlacedTileObject Saved, TileObjectSo So)>(savedTiles.Length);
                 foreach (var savedTile in savedTiles)
                 {
                     foreach (SavedPlacedTileObject savedObject in savedTile.GetPlacedObjects())
                     {
-                        TileObjectSo toBePlaced = tileSystem.GetSavedAsset(savedObject.id, savedObject.tileObjectSOName) as TileObjectSo;
-                        if (toBePlaced == null)
+                        TileObjectSo so = tileSystem.GetSavedAsset(savedObject.id, savedObject.tileObjectSOName) as TileObjectSo;
+                        if (so == null)
                         {
                             Log.Warning(this,
                                 "Skipping unknown or removed tile asset '{assetName}' while loading map",
@@ -991,20 +995,45 @@ namespace SS3D.Systems.Tile
                             continue;
                         }
 
-                        Vector3 placePosition = chunk.GetWorldPosition(savedTile.Location.x, savedTile.Location.y);
-
-                        // Skipping build check here to allow loading tile objects in a non-valid order
-                        PlaceTileObject(toBePlaced, placePosition, savedObject.dir, true, false, true, out GameObject placedObject);
-                        placedTiles++;
-                        sinceYield++;
-
-                        if (yieldFrames && sinceYield >= BulkLoadYieldEveryPlacements)
-                        {
-                            sinceYield = 0;
-                            yield return null;
-                        }
+                        resolved.Add((savedTile.Location, savedObject, so));
                     }
                 }
+
+                HashSet<Vector2Int> gratingToPlenum = GratingUnderTurfMigration.FindCellsToConvert(
+                    resolved.Select(entry => (entry.Cell, entry.So)));
+                if (gratingToPlenum.Count > 0 && plenumSo == null)
+                    plenumSo = tileSystem.GetAsset(GratingUnderTurfMigration.PlenumAssetName) as TileObjectSo;
+
+                foreach ((Vector2Int cell, SavedPlacedTileObject savedObject, TileObjectSo so) in resolved)
+                {
+                    TileObjectSo toBePlaced = so;
+                    if (plenumSo != null && toBePlaced.layer == TileLayer.Plenum && gratingToPlenum.Contains(cell))
+                    {
+                        toBePlaced = plenumSo;
+                        gratingConverted++;
+                    }
+
+                    Vector3 placePosition = chunk.GetWorldPosition(cell.x, cell.y);
+
+                    // Skipping build check here to allow loading tile objects in a non-valid order
+                    PlaceTileObject(toBePlaced, placePosition, savedObject.dir, true, false, true, out GameObject placedObject);
+                    placedTiles++;
+                    sinceYield++;
+
+                    if (yieldFrames && sinceYield >= BulkLoadYieldEveryPlacements)
+                    {
+                        sinceYield = 0;
+                        yield return null;
+                    }
+                }
+            }
+
+            if (gratingConverted > 0)
+            {
+                Log.Warning(this,
+                    "Converted {count} catwalks or lattices under floors and walls to plenums while loading map; save it to keep the fix",
+                    Logs.ServerOnly,
+                    gratingConverted);
             }
 
             if (saveObject.savedAreas != null)

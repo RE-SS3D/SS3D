@@ -20,6 +20,33 @@ namespace SS3D.Tests
     [Category(TestCategories.Combat)]
     public class TaserScenarios : ScenarioFixture
     {
+        // Examine reads the charge off a replicated count (examine.md §7), not the holder-only fire state;
+        // a spawned NetworkBehaviour is the only place the SyncVar exists.
+        [UnityTest]
+        public IEnumerator TaserShot_LowersTheChargeExamineShows()
+        {
+            yield return Console.Expect("spawn Taser hand", "spawned in hand");
+            Item item = Body.GetComponent<HumanInventory>().Hands.SelectedHand.ItemInHand;
+            Assert.IsNotNull(item, "The taser is in hand");
+            SS3D.Systems.Combat.Interactions.RangedWeaponItemExtension weapon =
+                item.GetComponent<SS3D.Systems.Combat.Interactions.RangedWeaponItemExtension>();
+            RangedWeaponRoundsReadout readout = item.GetComponent<RangedWeaponRoundsReadout>();
+            Assert.IsNotNull(readout, "The taser prefab carries the rounds readout");
+
+            Assert.AreEqual("Charge: 3 shots.", ExamineLine(readout), "A fresh taser examines full");
+            Assert.IsTrue(weapon.ServerTryConsumeRound(), "The server spends a charge");
+            yield return null;
+            Assert.AreEqual("Charge: 2 shots.", ExamineLine(readout), "Examine follows the spent charge");
+            item.Delete();
+        }
+
+        private static string ExamineLine(RangedWeaponRoundsReadout readout)
+        {
+            var sections = new System.Collections.Generic.List<SS3D.Systems.Examine.ExamineSection>();
+            readout.AppendSections(null, sections);
+            return sections.Single().Text;
+        }
+
         [UnityTest]
         public IEnumerator TaserHit_KnocksDummyDown_ThenItStandsFrozen()
         {

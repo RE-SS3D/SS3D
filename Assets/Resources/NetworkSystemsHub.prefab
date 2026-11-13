@@ -45,6 +45,7 @@ GameObject:
   - component: {fileID: 8158633296796554082}
   - component: {fileID: 3335355118854265521}
   - component: {fileID: 1754970448278505657}
+  - component: {fileID: 3744748694784896477}
   m_Layer: 0
   m_Name: NetworkSystemsHub
   m_TagString: Untagged
@@ -113,6 +114,7 @@ MonoBehaviour:
   - {fileID: 8158633296796554082}
   - {fileID: 3335355118854265521}
   - {fileID: 1754970448278505657}
+  - {fileID: 3744748694784896477}
   <ParentNetworkObject>k__BackingField: {fileID: 0}
   <ChildNetworkObjects>k__BackingField: []
   SerializedTransformProperties:
@@ -672,5 +674,20 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: SS3D.Systems::SS3D.Systems.BugReports.BugReportIntake
   _componentIndexCache: 23
+  _addedNetworkObject: {fileID: 100004}
+  _networkObjectCache: {fileID: 100004}
+--- !u!114 &3744748694784896477
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 100001}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8e7f6f1a07512ed4cb63ba708e17a472, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: SS3D.Systems::SS3D.Systems.ActionMessages.ActionMessageSubSystem
+  _componentIndexCache: 24
   _addedNetworkObject: {fileID: 100004}
   _networkObjectCache: {fileID: 100004}

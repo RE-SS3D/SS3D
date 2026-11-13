@@ -55,6 +55,7 @@ namespace SS3D.Systems.Comms
             InstanceFinder.ClientManager.RegisterBroadcast<CommsMessage>(OnClientReceiveCommsMessage);
             InstanceFinder.ServerManager.RegisterBroadcast<CommsMessage>(OnServerReceiveCommsMessage);
             RegisterOocBroadcasts();
+            RegisterStationCueBroadcast();
         }
 
         private void EnsureChannelRegistry()
@@ -189,6 +190,7 @@ namespace SS3D.Systems.Comms
         public override void OnStopNetwork()
         {
             UnregisterOocBroadcasts();
+            UnregisterStationCueBroadcast();
             if (InstanceFinder.ClientManager != null)
             {
                 InstanceFinder.ClientManager.UnregisterBroadcast<CommsMessage>(OnClientReceiveCommsMessage);

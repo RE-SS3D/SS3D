@@ -3,6 +3,7 @@ using FishNet.Object;
 using SS3D.Core;
 using SS3D.Systems.Entities;
 using SS3D.Systems.Entities.Humanoid;
+using SS3D.Systems.Furniture;
 using SS3D.Systems.Health;
 using SS3D.Systems.Inventory.Items;
 using SS3D.Systems.Inventory.Items.Generic;
@@ -45,7 +46,7 @@ namespace SS3D.Systems.Gamemodes
                     livingOperatives[entity] = player.Ckey;
             }
 
-            return new NukeOpsSnapshot(squad, FindDiskCarrier(livingOperatives));
+            return new NukeOpsSnapshot(squad, FindDiskCarrier(livingOperatives), DiskInDevice());
         }
 
         /// <summary>Null-safe: during a death the new ghost is in the list before it holds the mind.</summary>
@@ -64,7 +65,19 @@ namespace SS3D.Systems.Gamemodes
             entity.GetComponent<HumanoidGhostController>() != null
             || (entity.TryGetComponent(out HumanHealthController health) && health.Snapshot.State == HealthState.Dead);
 
-        /// <summary>The ckey of the living operative holding any disk, else null.</summary>
+        /// <summary>Any nuclear device has a disk seated in its slot.</summary>
+        private static bool DiskInDevice()
+        {
+            foreach (Nuke nuke in SceneRegistry<Nuke>.All)
+            {
+                if (nuke != null && nuke.LoadedDisk != null)
+                    return true;
+            }
+
+            return false;
+        }
+
+                /// <summary>The ckey of the living operative holding any disk, else null.</summary>
         private static string FindDiskCarrier(Dictionary<Entity, string> livingOperatives)
         {
             if (livingOperatives.Count == 0)

@@ -179,14 +179,29 @@ namespace SS3D.Tests
                 "The room's north wall is there");
             var wall = (PlacedTileObject)occupant;
             Teleport(Body, new Vector3(0f, Body.transform.position.y, 0.6f));
-            yield return Console.Expect("spawninhand C4", "spawned in hand");
+            yield return Console.Expect("spawn C4 hand", "spawned in hand");
             yield return Hold(0.2f);
             TimedCharge charge = Object.FindObjectsByType<TimedCharge>(FindObjectsSortMode.None).Single();
 
-            string refusal = Body.GetComponent<InteractionController>().RunInteractionForTesting(
-                wall.gameObject, new Vector3(0f, 1.1f, 1.5f), "AttachCharge", IntentType.Help);
-            Assert.IsNull(refusal, refusal);
-            yield return WaitFor(() => charge.Armed && charge.GetComponent<Item>().Container == null, "the charge is on the wall and armed");
+            var narrations = new System.Collections.Generic.List<SS3D.Interactions.Interfaces.InteractionNarration>();
+            void Narrated(SS3D.Interactions.Interfaces.InteractionNarration narration) => narrations.Add(narration);
+            SS3D.Interactions.Interfaces.InteractionNarration.ServerNarrated += Narrated;
+            try
+            {
+                string refusal = Body.GetComponent<InteractionController>().RunInteractionForTesting(
+                    wall.gameObject, new Vector3(0f, 1.1f, 1.5f), "AttachCharge", IntentType.Help);
+                Assert.IsNull(refusal, refusal);
+                yield return WaitFor(() => charge.Armed && charge.GetComponent<Item>().Container == null, "the charge is on the wall and armed");
+            }
+            finally
+            {
+                SS3D.Interactions.Interfaces.InteractionNarration.ServerNarrated -= Narrated;
+            }
+
+            // Those beside the operative notice the plant (action-messages.md §4: Close).
+            Assert.AreEqual(1, narrations.Count(n => n.Key == SS3D.Systems.ActionMessages.ActionMessageKeys.PlantCharge
+                && n.Actor == Body.NetworkObject && n.Level == (byte)SS3D.Systems.ActionMessages.ActionVisibility.Close),
+                "Planting narrates one Close line with the planter as actor");
             yield return Hold(0.5f);
             float stuckHeight = charge.transform.position.y;
             Assert.Greater(stuckHeight, 0.5f, "The charge sits on the wall, above the floor");

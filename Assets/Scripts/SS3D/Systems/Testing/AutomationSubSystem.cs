@@ -518,6 +518,17 @@ namespace SS3D.Systems.Testing
                         float.Parse(instruction.Args[1], System.Globalization.CultureInfo.InvariantCulture)));
                     break;
 
+                // Server: narrates the examine cue from the host's body onto the first remote body (target-only line).
+                case "narrate_on_client":
+                    TestSignal.Emit(this, "ActionNarrated", NarrateOnClient());
+                    break;
+
+                // Client: an action line containing this text reached this process and was formatted here.
+                case "assert_action_line":
+                    yield return AssertActionLine(instruction.ArgsJoined);
+                    TestSignal.Emit(this, "ActionLineReceived", instruction.ArgsJoined);
+                    break;
+
                 // Host: the next round loads this map and mode. Map names may not contain spaces here.
                 case "use_station":
                     UseStation(instruction.Args[0], instruction.Args[1]);
@@ -770,6 +781,51 @@ namespace SS3D.Systems.Testing
             }
 
             throw new InvalidOperationException("blast_on_client: no remote body");
+        }
+
+        private static string NarrateOnClient()
+        {
+            Entity host = null;
+            Entity remote = null;
+            foreach (Entity body in SubSystems.Get<EntitySubSystem>().SpawnedPlayers)
+            {
+                if (body == null)
+                    continue;
+                if (body.IsOwner)
+                    host = body;
+                else if (remote == null)
+                    remote = body;
+            }
+
+            if (host == null || remote == null)
+                throw new InvalidOperationException("narrate_on_client: needs the host's body and a remote body");
+
+            SubSystems.Get<SS3D.Systems.ActionMessages.ActionMessageSubSystem>().Narrate(
+                SS3D.Systems.ActionMessages.ActionMessageKeys.ExamineCue, host.NetworkObject, remote.NetworkObject, null,
+                SS3D.Systems.ActionMessages.ActionVisibility.TargetOnly);
+            return remote.name;
+        }
+
+        private IEnumerator AssertActionLine(string expected)
+        {
+            SS3D.Systems.ActionMessages.ActionMessageSubSystem actions = null;
+            yield return WaitUntil(() => SubSystems.TryGet(out actions), _waitTimeoutSeconds, "assert_action_line subsystem");
+            string received = null;
+            void Handle(SS3D.Systems.ActionMessages.ActionLine line)
+            {
+                if (line.AimedAtViewer && line.Text.Contains(expected))
+                    received = line.Text;
+            }
+
+            actions.ClientLineReceived += Handle;
+            try
+            {
+                yield return WaitUntil(() => received != null, _waitTimeoutSeconds, $"assert_action_line {expected}");
+            }
+            finally
+            {
+                actions.ClientLineReceived -= Handle;
+            }
         }
 
         private static void UseStation(string map, string mode)

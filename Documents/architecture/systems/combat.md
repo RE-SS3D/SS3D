@@ -71,6 +71,7 @@ stamina drain), projectile travel, thrown-item damage.
 
 - **Incapacitated attacks:** hand capability gates apply to ranged fire/reload, melee start and the scheduled connect frame. A queued swing must not deal damage after the attacker collapses.
 
+- **A NetworkBehaviour added by a recipe isn't registered:** `PrefabUtility.SaveAsPrefabAsset` leaves `_componentIndexCache: 255` and the NetworkObject's `_networkBehaviours` list unchanged, so SyncVars never run, with no error. Call `CombatInteractionNetworkPrefabSetup.RebuildNetworkBehaviours` after `AddComponent` (as `RangedPrefabSetup.Configure` does for `RangedWeaponRoundsReadout`). Saving from prefab contents also writes a nonzero `_scenePathHash`; restore it to 0 before committing.
 - **`CombatEditorAssembly` needs `SS3D.Core`:** editor recipes that `AddComponent<CombatInteractionNetwork>()` (extends `NetworkActor`) fail CS0012/UNT0014 unless `CombatEditorAssembly.asmdef` references `SS3D.Core` — referencing `SS3D.Systems` alone is not enough to see the base type.
 - **Held gun never melee-swings** — `TryRunRangedFirePrimary` returns true whenever a ranged extension is held (including empty/cooldown); do not fall through to `CmdRunMeleeSwing`.
 - **Host optimistic fire lock** — same as melee: only optimistic-cooldown on pure clients (`!IsServer`); host uses server consume + TargetRpc.

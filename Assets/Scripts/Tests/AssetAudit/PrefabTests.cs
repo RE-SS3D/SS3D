@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Text;
@@ -14,6 +15,7 @@ using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
 using Object = UnityEngine.Object;
+using ObjectReference = SS3D.Data.AssetDatabases.ObjectAssetReference;
 
 namespace AssetAudit
 {
@@ -153,6 +155,28 @@ namespace AssetAudit
         }
 
         /// <summary>
+        /// Loadout contents spawn into the storage of the loadout item that holds them, and a container refuses
+        /// what doesn't fit (the item is despawned with only a warning). Every content list must name a held or
+        /// worn item with storage, and fit its slot count, size class and weight.
+        /// </summary>
+        [Test]
+        public void LoadoutContentsFitTheirStorage()
+        {
+            foreach (string guid in AssetDatabase.FindAssets("t:RoleLoadout"))
+            {
+                RoleLoadout loadout = AssetDatabase.LoadAssetAtPath<RoleLoadout>(AssetDatabase.GUIDToAssetPath(guid));
+                foreach (LoadoutContents contents in loadout.EquipmentContents)
+                {
+                    loadout.EquipmentAssets.TryGetValue(contents.Slot, out ObjectReference holder);
+                    AssertContentsFit($"{loadout.name} {contents.Slot}", holder, contents.Items);
+                }
+
+                AssertContentsFit($"{loadout.name} left hand", loadout.HandLeftAsset, loadout.HandLeftContents);
+                AssertContentsFit($"{loadout.name} right hand", loadout.HandRightAsset, loadout.HandRightContents);
+            }
+        }
+
+        /// <summary>
         /// A rigid helmet has no folded form, so every view of it shows one mesh.
         /// </summary>
         [Test]
@@ -181,6 +205,38 @@ namespace AssetAudit
         {
             return AssetAuditUtilities.AllPrefabs();
         }
+
+        private static void AssertContentsFit(string label, ObjectReference holder, List<ObjectReference> contents)
+        {
+            if (contents == null || contents.Count == 0)
+            {
+                return;
+            }
+
+            GameObject holderPrefab = LoadReferenced(holder);
+            Assert.IsNotNull(holderPrefab, $"{label}: contents name a slot the loadout leaves empty");
+            AttachedContainer storage = RoleLoadout.StorageOf(holderPrefab);
+            Assert.IsNotNull(storage, $"{label}: {holderPrefab.name} has no storage for its contents");
+            Assert.LessOrEqual(contents.Count, storage.Size.x * storage.Size.y,
+                $"{label}: more items than {holderPrefab.name} has slots");
+
+            Item holderItem = holderPrefab.GetComponent<Item>();
+            float weight = 0f;
+            foreach (ObjectReference content in contents)
+            {
+                GameObject prefab = LoadReferenced(content);
+                Item item = prefab != null ? prefab.GetComponent<Item>() : null;
+                Assert.IsNotNull(item, $"{label}: a content entry is not an item");
+                Assert.LessOrEqual(item.SizeClass, storage.MaxSizeClass, $"{label}: {item.name} is too big for {holderPrefab.name}");
+                Assert.IsTrue(AttachedContainer.CanNestStorage(holderItem, item), $"{label}: {item.name} can't nest in {holderPrefab.name}");
+                weight += item.Weight;
+            }
+
+            Assert.LessOrEqual(weight, storage.MaxWeight, $"{label}: contents are heavier than {holderPrefab.name} carries");
+        }
+
+        private static GameObject LoadReferenced(ObjectReference reference) =>
+            reference == null ? null : AssetDatabase.LoadAssetAtPath<GameObject>(AssetDatabase.GUIDToAssetPath(reference.Id));
 
         #endregion
     }

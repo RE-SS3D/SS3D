@@ -157,8 +157,8 @@ namespace SS3D.Tests.EditMode
                 floor, new Vector3(3, 0, 3), Direction.North, replaceExisting: false);
 
             Assert.IsFalse(preview.CanBuild);
-            CollectionAssert.Contains(preview.Failures, BuildFailReason.MissingOrInvalidPlenum);
-            Assert.AreEqual("Needs a plenum or catwalk underneath", preview.PrimaryMessage);
+            CollectionAssert.Contains(preview.Failures, BuildFailReason.TurfNeedsPlenum);
+            Assert.AreEqual("Floors and walls need a plenum underneath", preview.PrimaryMessage);
         }
 
         [Test]
@@ -214,8 +214,88 @@ namespace SS3D.Tests.EditMode
             BuildFailReason[] failures = BuildChecker.Evaluate(
                 locations, floor, Direction.North, Vector3.zero, new PlacedTileObject[8], replaceExisting: true);
 
-            CollectionAssert.Contains(failures, BuildFailReason.MissingOrInvalidPlenum);
+            CollectionAssert.Contains(failures, BuildFailReason.TurfNeedsPlenum);
             CollectionAssert.DoesNotContain(failures, BuildFailReason.LayerOccupied);
+        }
+
+        [TestCase("Catwalk")]
+        [TestCase("Lattice")]
+        public void Preview_WallOnCatwalkOrLattice_FailsWithTurfNeedsPlenum(string plenumName)
+        {
+            TileMapTestUtilities.MapContext context = TileMapTestUtilities.CreateContext(_instantiated);
+            Vector3 pos = new(6, 0, 6);
+            PlaceOnPlenumLayer(context, plenumName, pos);
+
+            PreviewResult preview = context.Construction.TryPreviewTile(
+                CreateWall("WallOnGrating"), pos, Direction.North, replaceExisting: false);
+
+            Assert.IsFalse(preview.CanBuild);
+            CollectionAssert.Contains(preview.Failures, BuildFailReason.TurfNeedsPlenum);
+        }
+
+        [TestCase("Catwalk")]
+        [TestCase("Lattice")]
+        public void Preview_FloorOnCatwalkOrLattice_FailsWithTurfNeedsPlenum(string plenumName)
+        {
+            TileMapTestUtilities.MapContext context = TileMapTestUtilities.CreateContext(_instantiated);
+            Vector3 pos = new(7, 0, 7);
+            PlaceOnPlenumLayer(context, plenumName, pos);
+
+            TileObjectSo floor = TileMapTestUtilities.CreateTileSo(TileLayer.Turf, "SteelFloor");
+            floor.genericType = TileObjectGenericType.Floor;
+
+            PreviewResult preview = context.Construction.TryPreviewTile(floor, pos, Direction.North, replaceExisting: false);
+
+            Assert.IsFalse(preview.CanBuild);
+            CollectionAssert.Contains(preview.Failures, BuildFailReason.TurfNeedsPlenum);
+        }
+
+        [TestCase("Catwalk")]
+        [TestCase("Lattice")]
+        public void Preview_WireOnCatwalkOrLattice_Succeeds(string plenumName)
+        {
+            TileMapTestUtilities.MapContext context = TileMapTestUtilities.CreateContext(_instantiated);
+            Vector3 pos = new(8, 0, 8);
+            PlaceOnPlenumLayer(context, plenumName, pos);
+
+            TileObjectSo wire = TileMapTestUtilities.CreateTileSo(TileLayer.Wire, "Cable");
+            wire.genericType = TileObjectGenericType.None;
+
+            PreviewResult preview = context.Construction.TryPreviewTile(wire, pos, Direction.North, replaceExisting: false);
+
+            Assert.IsTrue(preview.CanBuild, string.Join(", ", preview.Failures));
+        }
+
+        [Test]
+        public void InvalidatedByReplace_PlenumSwappedForCatwalk_ClearsTurfAndMountsButKeepsWire()
+        {
+            ITileLocation[] locations = CreateEmptyLocations();
+            SetPlaced(locations, TileLayer.Plenum, "Catwalk");
+            SetPlaced(locations, TileLayer.Turf, "TestWall");
+            SetPlaced(locations, TileLayer.Wire, "Cable");
+
+            List<ITileLocation> invalid = BuildChecker.GetInvalidatedByReplace(locations, TileLayer.Plenum);
+
+            CollectionAssert.Contains(invalid, locations[(int)TileLayer.Turf]);
+            CollectionAssert.Contains(invalid, locations[(int)TileLayer.WallMountHigh]);
+            CollectionAssert.Contains(invalid, locations[(int)TileLayer.WallMountLow]);
+            CollectionAssert.DoesNotContain(invalid, locations[(int)TileLayer.Wire]);
+        }
+
+        private static void PlaceOnPlenumLayer(TileMapTestUtilities.MapContext context, string name, Vector3 position)
+        {
+            TileObjectSo so = TileMapTestUtilities.CreateTileSo(TileLayer.Plenum, name);
+            so.genericType = TileObjectGenericType.None;
+            Assert.IsTrue(context.Construction.TryPlaceTile(so, position, Direction.North, replaceExisting: false).Success,
+                $"Expected {name} placement to succeed.");
+        }
+
+        private void SetPlaced(ITileLocation[] locations, TileLayer layer, string prefabName)
+        {
+            PlacedTileObject placed = PlacedTileObject.Create(Vector3.zero, Vector2Int.zero, Direction.North,
+                TileMapTestUtilities.CreateTileSo(layer, prefabName));
+            _instantiated.Add(placed.gameObject);
+            ((SingleTileLocation)locations[(int)layer]).PlacedObject = placed;
         }
 
         [Test]

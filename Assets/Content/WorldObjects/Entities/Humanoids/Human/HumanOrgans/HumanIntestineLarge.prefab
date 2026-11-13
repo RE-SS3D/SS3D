@@ -273,7 +273,7 @@ MonoBehaviour:
   _addedNetworkObject: {fileID: 8532088199163376958}
   _networkObjectCache: {fileID: 8532088199163376958}
   _asset: {fileID: 11400000, guid: 37fca3e0a17b5b24385bee5de8ead028, type: 2}
-  _name: 
+  _name: human intestine large
   _weight: 1
   _startingTraits: []
   _rigidbody: {fileID: 3362323121630547519}

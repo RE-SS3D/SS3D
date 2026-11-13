@@ -69,6 +69,11 @@ namespace SS3D.Systems.Audio.Editor
             { "SecurityIDCard", ItemCollisionMaterial.Plastic },
             { "SecurityPDA", ItemCollisionMaterial.Plastic },
             { "Sunglasses", ItemCollisionMaterial.Plastic },
+            { "GlassesSecurityHud", ItemCollisionMaterial.Plastic },
+            { "GogglesMeson", ItemCollisionMaterial.Plastic },
+            { "HardHatYellow", ItemCollisionMaterial.Plastic },
+            { "HelmetSecurity", ItemCollisionMaterial.Plastic },
+            { "WeldingMask", ItemCollisionMaterial.Plastic },
             { "GlassReinforcedSheet", ItemCollisionMaterial.Glass },
             { "GlassShard", ItemCollisionMaterial.Glass },
             { "LightBulb", ItemCollisionMaterial.Glass },
@@ -84,6 +89,10 @@ namespace SS3D.Systems.Audio.Editor
             "Backpack", "BrutePatch", "BurnPatch", "DonkPocket", "Doodad", "GloveInsulated", "JumpsuitGrey",
             "MedicalPatch", "Poster", "ShoeHiTops", "ShoeJackboots", "SyndicateHardsuit", "SyndicateHardsuitHelmet",
             "Toolbelt", "TruckerCap",
+            // Job clothing (ClothingImportSetup); its hard hats, helmets and glasses are Plastic above.
+            "ArmorVestSecurity", "ArmorVestSyndicate", "BackpackCommand", "BackpackMedical", "BackpackSecurity", "CapCaptain",
+            "CapSecurity", "GloveSyndicate", "JumpsuitCaptain", "JumpsuitMedical", "JumpsuitSyndicate", "LabCoat",
+            "ShoeSyndicateBoots", "ShoeWorkBoots",
         };
 
         private static readonly Dictionary<string, AmbientLoopKind> MachineLoops = new()

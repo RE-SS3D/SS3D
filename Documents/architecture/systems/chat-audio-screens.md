@@ -18,7 +18,7 @@ announcements (`CommsMessage` broadcast; radio to all clients, announcements onl
 with a spawned crew body, so lobby clients never get the round-start welcome). Legacy `ChatSubSystem` / `Engine.Chat` purged;
 channel SOs live under `Assets/Content/Data/Comms/Channels/` (`CommsChannel` / `CommsChannels`).
 
-Local speech: weighted chips + T-compose (Enter speak / Shift+Enter whisper / Ctrl+Enter shout).
+Local speech: weighted chips + T-compose (Enter speak / Shift+Enter whisper / Ctrl+Enter shout). Action lines ride the same chips as `SpeechMode.Action` (smaller, italic, 2.5 s) and share the crowd cap; `CrowdCapRanker.RankByTier` ranks speech above action lines ([action-messages](action-messages.md)). Chip text helpers: `LocalSpeechChipText`.
 **Tab / Shift+Tab** cycles Local → compose-available radio (Engineering/Security). Leading slash
 prefixes (`/eng`, `/sec`, `/announce`) also route commit (prefix wins over Tab); Announcement is
 prefix-only (not in Tab). Radio → `CmdSendRadio`; announce → `CmdSendAnnouncement`. Feed UI on
@@ -35,6 +35,7 @@ HUD feed yet.
 - `CommsSubSystem.cs` — local + radio/announce hub; `SendAnnouncement` / `HandleAnnouncementRequest`;
   `TryResolveComposePrefix`; transcript `Logs/Comms.txt` on server. `SendPrivateFeed` (server) puts one line
   in a single player's radio feed under a custom header, overheard by nobody (Nuke Ops `OperativeBriefing`).
+- `CommsSubSystem.StationCue.cs` — `SendStationCue(soundId)` (server): a sound with no banner for every player with a body, played by `CommsFeedController` on the announcement source (the nuke's final alarm)
 - `CommsSubSystem.Ooc.cs` — `SendOoc` / `RequestOocHistory` (client), `PostOocSystem` (server); `OocChat.cs` — messages, `OocChatRules`, `OocRateLimiter`, `OocChatHistory` (EditMode-tested in `OocChatTests`).
 - `LocalSpeechEmitter` — `CmdSpeak` / `CmdSendRadio` / `CmdSendAnnouncement` on the speaking Entity; `CanSpeak` reads health. All three server handlers refuse critical, unconscious, arrested or dead speakers; OOC remains separate.
 - `CommsComposePrefix` — pure `/token` parse/strip (EditMode-tested).

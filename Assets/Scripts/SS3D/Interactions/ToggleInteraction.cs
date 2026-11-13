@@ -8,7 +8,7 @@ namespace SS3D.Interactions
     /// <summary>
     /// Utility class for toggle interactions
     /// </summary>
-    public class ToggleInteraction : IInteraction, IClientInteractionSource
+    public class ToggleInteraction : IInteraction, IClientInteractionSource, INarratedInteraction
     {
         public string Name;
         public Sprite Icon;
@@ -34,6 +34,11 @@ namespace SS3D.Interactions
         /// The name for the interaction when state is false
         /// </summary>
         public string OffName { get; set; } = "Turn on";
+
+        /// <summary>
+        /// Action line key narrated to onlookers after a toggle (action-messages.md §2), or null for none.
+        /// </summary>
+        public string NarrationKey { get; set; }
 
         /// <summary>
         /// If the interaction should be range limited
@@ -95,6 +100,19 @@ namespace SS3D.Interactions
             }
 
             return false;
+        }
+
+        public bool TryGetNarration(InteractionEvent interactionEvent, out InteractionNarration narration)
+        {
+            narration = default;
+            if (string.IsNullOrEmpty(NarrationKey))
+            {
+                return false;
+            }
+
+            narration = new InteractionNarration(NarrationKey, 0,
+                InteractionNarration.ActorOf(interactionEvent), InteractionNarration.TargetOf(interactionEvent), null);
+            return true;
         }
     }
 }

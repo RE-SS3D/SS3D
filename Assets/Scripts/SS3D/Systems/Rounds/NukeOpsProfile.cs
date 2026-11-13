@@ -24,6 +24,14 @@ namespace SS3D.Systems.Rounds
         /// <summary>Overrides <see cref="MinimumReadyPlayers"/>, for tests: <c>-nukeops-min-ready=1</c>.</summary>
         public const string MinimumReadyFlag = "-nukeops-min-ready=";
 
+        /// <summary>Seconds from arming the nuclear device to detonation (antagonist-content.md §6 leaves it open).</summary>
+        public const int NukeCountdownSeconds = 180;
+        /// <summary>
+        /// Overrides <see cref="NukeCountdownSeconds"/> on any server, profile or not: <c>-nukeops-nuke-seconds=90</c>.
+        /// A short countdown suits a tiny station where the crew can be gone by the time the device is armed.
+        /// </summary>
+        public const string NukeSecondsFlag = "-nukeops-nuke-seconds=";
+
         public static bool RequestedOnCommandLine =>
             Environment.GetCommandLineArgs().Any(arg => string.Equals(arg, CommandLineFlag, StringComparison.OrdinalIgnoreCase));
 
@@ -40,6 +48,10 @@ namespace SS3D.Systems.Rounds
         /// <summary>The ready-player threshold from <see cref="MinimumReadyFlag"/>, else <see cref="MinimumReadyPlayers"/>.</summary>
         public static int MinimumReadyFrom(string[] args) =>
             IntFlag(args, MinimumReadyFlag, 1, 256) ?? MinimumReadyPlayers;
+
+        /// <summary>The device countdown from <see cref="NukeSecondsFlag"/>, else <see cref="NukeCountdownSeconds"/>.</summary>
+        public static int NukeSecondsFrom(string[] args) =>
+            IntFlag(args, NukeSecondsFlag, 10, 3600) ?? NukeCountdownSeconds;
 
         /// <summary>The Nuke Ops rules over <paramref name="settings"/>; map and server name are kept.</summary>
         public static ServerSettings Apply(ServerSettings settings)

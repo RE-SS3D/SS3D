@@ -49,7 +49,7 @@ namespace SS3D.Systems.Construction.Editor
         }
 
         /// <summary>Same rewrite as the hub rebuild and StorageContainerPrefabSetup (FishNet's UpdateNetworkBehaviours for assets).</summary>
-        private static void RebuildNetworkBehaviours(NetworkObject networkObject)
+        internal static void RebuildNetworkBehaviours(NetworkObject networkObject)
         {
             List<NetworkBehaviour> behaviours = new();
             CollectNetworkBehaviours(networkObject.transform, behaviours);
