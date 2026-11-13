@@ -74,7 +74,7 @@ namespace SS3D.Localization
 
             string key = localizedString.TableEntryReference.Key;
             StringTable table = GetOrLoadCurrentLocaleTable(localizedString.TableReference);
-            return GetFromTable(table, key, englishFallback ?? key);
+            return GetFromTable(table, localizedString.TableReference, key, englishFallback ?? key);
         }
 
         public static string GetString(LocalizedStringTable tableReference, string key, string englishFallback = null)
@@ -92,7 +92,7 @@ namespace SS3D.Localization
             }
 
             StringTable table = GetOrLoadCurrentLocaleTable(tableReference);
-            return GetFromTable(table, key, englishFallback ?? key);
+            return GetFromTable(table, tableReference.TableReference, key, englishFallback ?? key);
         }
 
         public static string GetFormattedString(string tableCollectionName, string key, object[] arguments, string englishFallback = null)
@@ -106,13 +106,9 @@ namespace SS3D.Localization
 
             TableReference tableReference = tableCollectionName;
             StringTable table = GetOrLoadCurrentLocaleTable(tableReference);
-            if (table == null)
-            {
-                return FormatMissing(key, englishFallback ?? key);
-            }
-
-            StringTableEntry entry = table.GetEntry(key);
-            if (entry == null || string.IsNullOrEmpty(entry.Value))
+            StringTableEntry entry = GetEntryWithValue(table, key)
+                ?? GetEntryWithValue(GetOrLoadProjectLocaleTable(tableReference), key);
+            if (entry == null)
             {
                 return FormatMissing(key, englishFallback ?? key);
             }
@@ -125,7 +121,7 @@ namespace SS3D.Localization
             return entry.GetLocalizedString(arguments);
         }
 
-        private static string GetFromTable(StringTable table, string key, string englishFallback)
+        private static string GetFromTable(StringTable table, TableReference tableReference, string key, string englishFallback)
         {
             string localized = TryGetEntryValue(table, key);
             if (!string.IsNullOrEmpty(localized))
@@ -133,7 +129,36 @@ namespace SS3D.Localization
                 return localized;
             }
 
+            // Untranslated in the selected locale: show the project (English) text rather than the key.
+            localized = TryGetEntryValue(GetOrLoadProjectLocaleTable(tableReference), key);
+            if (!string.IsNullOrEmpty(localized))
+            {
+                return localized;
+            }
+
             return FormatMissing(key, englishFallback);
+        }
+
+        private static StringTableEntry GetEntryWithValue(StringTable table, string key)
+        {
+            StringTableEntry entry = table?.GetEntry(key);
+            return entry == null || string.IsNullOrEmpty(entry.Value) ? null : entry;
+        }
+
+        /// <summary>
+        /// The project locale's table (English), used when the selected locale has no value for a key.
+        /// Null when the selected locale already is the project locale, so a genuine miss stays a miss.
+        /// </summary>
+        private static StringTable GetOrLoadProjectLocaleTable(TableReference tableReference)
+        {
+            Locale projectLocale = LocalizationSettings.ProjectLocale;
+            Locale selected = LocalizationSettings.SelectedLocale;
+            if (projectLocale == null || (selected != null && selected.Identifier.Equals(projectLocale.Identifier)))
+            {
+                return null;
+            }
+
+            return GetOrLoadTable(tableReference, projectLocale);
         }
 
         private static string TryGetEntryValue(StringTable table, string key)
@@ -173,11 +198,11 @@ namespace SS3D.Localization
         private static StringTable GetOrLoadCurrentLocaleTable(TableReference tableReference)
         {
             Locale locale = LocalizationSettings.SelectedLocale;
-            if (locale == null)
-            {
-                return null;
-            }
+            return locale == null ? null : GetOrLoadTable(tableReference, locale);
+        }
 
+        private static StringTable GetOrLoadTable(TableReference tableReference, Locale locale)
+        {
             string cacheKey = GetCacheKey(tableReference, locale);
             if (TableCache.TryGetValue(cacheKey, out StringTable cachedTable))
             {

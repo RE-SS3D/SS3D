@@ -2,11 +2,13 @@ using Coimbra.Services.Events;
 using Coimbra.Services.PlayerLoopEvents;
 using SS3D.Core;
 using SS3D.Core.Behaviours;
+using SS3D.Data.Generated;
 using SS3D.Systems.Area;
 using SS3D.Systems.Entities.Events;
 using SS3D.Systems.Entities.Humanoid;
 using SS3D.Systems.Entities.Humanoid.Body;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace SS3D.Systems.Audio
 {
@@ -75,6 +77,61 @@ namespace SS3D.Systems.Audio
 
             AddHandle(LocalPlayerObjectChanged.AddListener(HandlePlayerObjectChanged));
             AddHandle(UpdateEvent.AddListener(HandleUpdate));
+            SceneManager.sceneUnloaded += HandleSceneUnloaded;
+        }
+
+        protected override void OnDestroyed()
+        {
+            SceneManager.sceneUnloaded -= HandleSceneUnloaded;
+            base.OnDestroyed();
+        }
+
+        /// <summary>
+        /// Leaving to the main menu unloads Game. <see cref="LocalPlayerObjectChanged"/> never reports
+        /// "no body" then (the entity is no longer owned when it is destroyed), so this subsystem —
+        /// which lives across scenes — would keep the last area's bed, wind and occasional clips
+        /// playing under the launcher. Cut everything dead here, as <see cref="PersonalAudioSubSystem"/> does.
+        /// </summary>
+        private void HandleSceneUnloaded(Scene scene)
+        {
+            if (scene.name != Scenes.Game)
+            {
+                return;
+            }
+
+            _listenerTarget = null;
+            _livingBody = null;
+            _inArea = false;
+            _currentProfile = null;
+            _equipmentPowered = true;
+            _nearStation = true;
+            _occasionalVolume = 0f;
+            _air.Reset();
+            AudioSourceOcclusion.ListenerAir = _air.Air;
+
+            SilenceSource(_activeSource);
+            SilenceSource(_inactiveSource);
+            SilenceSource(_airSource);
+            SilenceSource(_occasionalSource);
+            SilenceSource(_spaceSource);
+            foreach (AudioSource wind in _windSources)
+            {
+                SilenceSource(wind);
+            }
+
+            DriveBreathing();
+        }
+
+        private static void SilenceSource(AudioSource source)
+        {
+            if (source == null)
+            {
+                return;
+            }
+
+            source.Stop();
+            source.volume = 0f;
+            source.clip = null;
         }
 
         private AudioSource BuildAmbienceSource(string name)

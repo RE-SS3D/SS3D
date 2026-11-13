@@ -229,7 +229,7 @@ namespace AssetAudit
                 Assert.IsNotNull(item, $"{label}: a content entry is not an item");
                 Assert.LessOrEqual(item.SizeClass, storage.MaxSizeClass, $"{label}: {item.name} is too big for {holderPrefab.name}");
                 Assert.IsTrue(AttachedContainer.CanNestStorage(holderItem, item), $"{label}: {item.name} can't nest in {holderPrefab.name}");
-                weight += item.Weight;
+                weight += item.Weight * Mathf.Max(1, item.InitialStackCount);
             }
 
             Assert.LessOrEqual(weight, storage.MaxWeight, $"{label}: contents are heavier than {holderPrefab.name} carries");

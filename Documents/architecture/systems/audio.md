@@ -105,7 +105,9 @@ sound *for a given listener*, which the server's "play clip X at position P" RPC
   under the launcher after Leave. It now zeroes every target when `LocalPlayerObjectChanged` names a
   different (or no) body, and stops every source outright on `SceneManager.sceneUnloaded` for Game.
   Do not rely on `LocalPlayerObjectChanged(false)` alone at session end: `Entity.OnDestroyed` checks
-  `IsOwner`, which is already false by then.
+  `IsOwner`, which is already false by then. `AmbienceSubSystem` had the same leak (bed, wind and
+  occasional clips kept playing under the launcher after Leave) and now also hard-stops every source and
+  clears its profile/air state on `sceneUnloaded` for Game.
 - **`PlayAudioSource` reaches only the observers present at that moment.** A loop started that way
   (machine hum, generator) is silent for late joiners and clients re-entering AOI. Persist the state in
   a `BufferLast` ObserversRpc that calls `PlayAudioSourceLocal`; and call `PlayAudioSource` /
