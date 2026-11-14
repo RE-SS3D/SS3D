@@ -1,7 +1,7 @@
 > Code paths: Assets/Scripts/SS3D/Systems/Gamemodes/, Assets/Scripts/SS3D/Systems/Roles/, Assets/Scripts/SS3D/Systems/Traits/
 > Entry points: GamemodeSubSystem, RoleSubSystem
 > Status: partial
-> Verified: 77ce6acb3 — 2026-11-12
+> Verified: e03d3fca — 2026-11-14
 
 # Gamemodes / roles / traits
 
@@ -57,7 +57,7 @@ The operative also gets a filled toolbelt (the Engineer's five tools) and a back
 
 ## Pitfalls
 
-- Operatives spawn on Nuclear Operatives markers (round-robin); everyone else still uses the legacy transform or first marker, so job markers are not routed.
+- **Map Check required job markers that spawning never read:** `ResolveSpawnPosition` put every crew member on the map's first marker, so a Doctor on Firststation woke up in Security, with no error. Crew now spawn on their job's markers in turn (`SpawnPointRegistry.TryGetJobSpawn`), operatives on Nuclear Operatives markers; the legacy transform and first marker are only fallbacks for a job with no marker. Hit 2026-11-14 (bug report 3).
 - Objectives must resolve inside `RoundSubSystem.BuildOutcome`: `Nuke.Detonate` (a `[Server]` entry; a ServerRpc called from the server's interaction tick is dropped on a dedicated server, pinned by `NukeDetonateContractTests`) ends the round before `NukeDetonateEvent` fires, so an event-driven objective would still be pending when the outcome is fixed.
 - `ServerSpawnedPlayersChanged` fires while a death is half done: the ghost is in `SpawnedPlayers` before `MindSubSystem.SwapMinds` gives it the mind. Find an operative's entity null-safely by mind (`NukeOpsWorld`); `EntitySubSystem.GetSpawnedEntity` dereferences `Mind` and throws on that ghost.
 - There is no voluntary ghost-out: a ghost always means the body died, so Decision 16's "ghosted-out bodies count as alive" has no case yet. An SSD body keeps its mind and counts as up.

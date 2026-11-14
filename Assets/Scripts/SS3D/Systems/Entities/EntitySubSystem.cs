@@ -59,6 +59,9 @@ namespace SS3D.Systems.Entities
         /// <summary>Server-only: latest lobby character per ckey.</summary>
         private readonly Dictionary<string, CharacterAppearance> _appearances = new();
 
+        /// <summary>Server-only: bodies placed per job this round, so a job's players spread over its markers.</summary>
+        private readonly Dictionary<string, int> _jobSpawnTurns = new(StringComparer.Ordinal);
+
         /// <summary>
         /// If the system already spawned all the players that were ready when the round started
         /// </summary>
@@ -374,10 +377,11 @@ namespace SS3D.Systems.Entities
 
         /// <summary>
         /// Operatives spawn on the map's Nuclear Operatives markers, spread over them in draw order.
-        /// Everyone else: the legacy inspector spawn transform; otherwise the first authored map spawn
+        /// Crew with a job spawn on that job's markers, taking them in turn. Everyone else (or a job with no
+        /// marker): the legacy inspector spawn transform; otherwise the first authored map spawn
         /// marker; otherwise the walkable deck nearest the hub transform (a map that has lost its markers, started
         /// with <see cref="RoundAdminAction.EditMapAnyway"/> to fix it); otherwise the hub transform itself (scene
-        /// spawn points are gone after Phase 3h). Crew job markers are not routed yet.
+        /// spawn points are gone after Phase 3h).
         /// </summary>
         private const int NoMarkerSearchRadius = 64;
 
@@ -386,6 +390,11 @@ namespace SS3D.Systems.Entities
             if (TryResolveOperativeSpawn(player, out Vector3 operativeSpawn))
             {
                 return operativeSpawn;
+            }
+
+            if (TryResolveJobSpawn(player, out Vector3 jobSpawn))
+            {
+                return jobSpawn;
             }
 
             if (_spawnPoint != null)
@@ -406,6 +415,26 @@ namespace SS3D.Systems.Entities
             }
 
             return transform.position;
+        }
+
+        private bool TryResolveJobSpawn(Player player, out Vector3 position)
+        {
+            position = default;
+            if (!SubSystems.TryGet(out RoleSubSystem roles) || !roles.TryGetRole(player, out RoleData role)
+                || role == null || role.IsAntagonist
+                || !SubSystems.TryGet(out TileSubSystem tile) || tile.SpawnPoints == null)
+            {
+                return false;
+            }
+
+            _jobSpawnTurns.TryGetValue(role.Name, out int turn);
+            if (!tile.SpawnPoints.TryGetJobSpawn(role.Name, turn, out position))
+            {
+                return false;
+            }
+
+            _jobSpawnTurns[role.Name] = turn + 1;
+            return true;
         }
 
         private static bool TryResolveOperativeSpawn(Player player, out Vector3 position)
@@ -499,6 +528,7 @@ namespace SS3D.Systems.Entities
             }
 
             _hasSpawnedInitialPlayers = false;
+            _jobSpawnTurns.Clear();
             _spawnedPlayers.Clear();
             _respawnCooldown.Clear();
             _observerCkeys.Clear();

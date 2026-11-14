@@ -122,5 +122,34 @@ namespace EditorTests
             Assert.Greater(spawn.LoadOrder, areas.LoadOrder);
             Assert.AreEqual("spawn-points", spawn.ContributorId);
         }
+
+        // Bug report 3: a Doctor spawned on the first marker (Security) instead of a Doctor marker.
+        [Test]
+        public void TryGetJobSpawn_PicksTheJobsMarker_NotTheFirstMarker()
+        {
+            var registry = new SpawnPointRegistry();
+            registry.TryPlace(SpawnPointRecord.ForJob("Security", new Vector3(-25f, 0f, 6f), Direction.North));
+            registry.TryPlace(SpawnPointRecord.ForAntagonist(
+                AntagonistSpawnCategory.NuclearOperatives, new Vector3(-8f, 0f, -59f), Direction.North));
+            registry.TryPlace(SpawnPointRecord.ForJob("Doctor", new Vector3(21f, 0f, -6f), Direction.North));
+            registry.TryPlace(SpawnPointRecord.ForJob("Doctor", new Vector3(21f, 0f, -3f), Direction.North));
+
+            Assert.IsTrue(registry.TryGetJobSpawn("Doctor", 0, out Vector3 first));
+            Assert.AreEqual(new Vector3(21f, 0f, -6f), first);
+            Assert.IsTrue(registry.TryGetJobSpawn("Doctor", 1, out Vector3 second));
+            Assert.AreEqual(new Vector3(21f, 0f, -3f), second);
+            Assert.IsTrue(registry.TryGetJobSpawn("Doctor", 2, out Vector3 wrapped));
+            Assert.AreEqual(first, wrapped);
+        }
+
+        [Test]
+        public void TryGetJobSpawn_JobWithoutMarker_ReturnsFalse()
+        {
+            var registry = new SpawnPointRegistry();
+            registry.TryPlace(SpawnPointRecord.ForJob("Security", new Vector3(-25f, 0f, 6f), Direction.North));
+
+            Assert.IsFalse(registry.TryGetJobSpawn("Doctor", 0, out _));
+            Assert.IsFalse(registry.TryGetJobSpawn(null, 0, out _));
+        }
     }
 }
