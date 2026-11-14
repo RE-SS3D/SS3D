@@ -6,7 +6,8 @@ namespace SS3D.Systems.Inputs
 {
     public sealed class KeybindRow
     {
-        public KeybindRow(string id, string label, string group, string path, string modifierPath, int contextMask, bool readOnly)
+        public KeybindRow(string id, string label, string group, string path, string modifierPath, int contextMask, bool readOnly,
+            string defaultPath = null, string hint = null, string fixedText = null)
         {
             Id = id;
             Label = label;
@@ -15,6 +16,9 @@ namespace SS3D.Systems.Inputs
             ModifierPath = modifierPath;
             ContextMask = contextMask;
             ReadOnly = readOnly;
+            DefaultPath = defaultPath ?? path;
+            Hint = hint;
+            FixedText = fixedText;
         }
 
         public string Id { get; }
@@ -24,6 +28,15 @@ namespace SS3D.Systems.Inputs
         public string ModifierPath { get; }
         public int ContextMask { get; }
         public bool ReadOnly { get; }
+
+        /// <summary>The key before any override; the Controls tab marks rows that differ.</summary>
+        public string DefaultPath { get; }
+
+        /// <summary>A line under the label ("Hold"), or null.</summary>
+        public string Hint { get; }
+
+        /// <summary>What a read-only row shows instead of its key ("Hold Shift"), or null for the key's name.</summary>
+        public string FixedText { get; }
     }
 
     public readonly struct KeybindChange

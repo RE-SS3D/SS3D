@@ -5,6 +5,7 @@
         "SS3D.Core",
         "SS3D.Systems",
         "SS3D.UI.Shell",
+        "SS3D.UI.SettingsPanel",
         "Unity.InputSystem",
         "SS3D.Permissions",
         "FishNet.Runtime",

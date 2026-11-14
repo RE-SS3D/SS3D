@@ -90,7 +90,10 @@ namespace SS3D.Launcher
 
         public string PlayerName = "";
         public int LocalPort;
-        /// <summary>Menu music on/off; its volume is the player's Music volume.</summary>
+        /// <summary>
+        /// Legacy: menu music on/off now lives in the player settings (<c>PlayerAudioSettings.MenuMusic</c>). A saved
+        /// false is carried over once and reset here.
+        /// </summary>
         public bool MusicOn = true;
         public List<RecentServer> Recent = new();
 
