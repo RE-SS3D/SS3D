@@ -610,6 +610,15 @@ jobs:
           seed_cwd_data "${WIN_ROOT}/Game"
           cp Builds/Update_SS3D.bat Builds/Update_SS3D.ps1 Builds/README.txt Builds/TESTERS.md "${WIN_ROOT}/"
           write_update_manifest "${WIN_ROOT}"
+          # Windows MAX_PATH (259): Update_SS3D.ps1 unpacks under
+          # <install>\.ss3d-update-xxxxxxxx\x\SS3D-Windows-<tag>\ (~45 chars). Capping release paths at
+          # 130 leaves ~85 for the tester's install folder (e.g. C:\Users\<name>\Downloads\<zip name>\<zip name>).
+          longest=$(cd "${WIN_ROOT}" && find . -mindepth 1 | sed 's|^\./||' | awk '{ print length($0) " " $0 }' | sort -n | tail -1)
+          echo "Longest Windows release path (${longest%% *} chars): ${longest#* }"
+          if [ "${longest%% *}" -gt 130 ]; then
+            echo "::error::Windows release path is ${longest%% *} chars (max 130); testers in deep folders could not update: ${longest#* }"
+            exit 1
+          fi
           (cd staging && zip -qq -r "../dist/SS3D-Windows-${TAG}.zip" "SS3D-Windows-${TAG}")
 
           FILES="dist/SS3D-Windows-${TAG}.zip"
