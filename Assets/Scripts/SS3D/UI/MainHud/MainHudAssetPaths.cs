@@ -27,5 +27,9 @@ namespace SS3D.UI.MainHud
 
         public const string IconRoot = "Assets/Art/Icons/Inventory/";
         public const string AlertIconRoot = "Assets/Art/Icons/Alerts/";
+
+        /// <summary>Open-box glyph on the corner button of a slot holding storage (shared with the storage panel).</summary>
+        public const string OpenStorageIcon =
+            "Assets/Art/Graphics/UI/Interactions/InteractionIcons/ContainerOpen.png";
     }
 }

@@ -1,10 +1,12 @@
 using SS3D.Systems.Settings;
+using System;
 using System.Collections.Generic;
 using SS3D.Core;
 using SS3D.Core.Behaviours;
 using SS3D.Data.Generated;
 using SS3D.Systems.Combat;
 using SS3D.Systems.Inputs;
+using SS3D.Systems.Interactions;
 using SS3D.Systems.Inventory.Containers;
 using SS3D.Systems.Inventory.Items;
 using SS3D.Systems.Screens;
@@ -62,12 +64,8 @@ namespace SS3D.UI.StoragePanel
         private readonly Dictionary<AttachedContainer, string> _pendingBreadcrumbs = new();
         private readonly List<HudDropTarget> _hudDropTargets = new();
 
-        /// <summary>How long a click on a container item waits for a second click (open) before taking it.</summary>
-        private const long DoubleClickWindowMs = 300;
-
         private VisualElement _root;
         private HumanInventory _localInventory;
-        private IVisualElementScheduledItem _pendingContainerTake;
         private int _cascadeIndex;
 
         // Active drag state (panel slot and/or HUD-origin drag).
@@ -457,6 +455,26 @@ namespace SS3D.UI.StoragePanel
             viewer.ShowContainerUI(container);
         }
 
+        /// <summary>Glyph for the corner open button on container items; Main HUD hands over its catalog sprite.</summary>
+        public Sprite OpenStorageIcon { get; set; }
+
+        /// <summary>A panel opened or closed: open buttons (HUD and panels) re-read <see cref="IsOpen"/>.</summary>
+        public event Action PanelsChanged;
+
+        public bool IsOpen(AttachedContainer container) => container != null && _openPanels.ContainsKey(container);
+
+        /// <summary>The open button: closes the container's panel if it is open, else opens it near the anchor.</summary>
+        public void ToggleNear(ContainerViewer viewer, AttachedContainer container, Vector2 screenAnchor)
+        {
+            if (IsOpen(container))
+            {
+                RequestClose(viewer, container);
+                return;
+            }
+
+            RequestOpenNear(viewer, container, screenAnchor);
+        }
+
         /// <summary>Player-initiated close (× button) — tears the panel down locally and notifies the server.</summary>
         public void RequestClose(ContainerViewer viewer, AttachedContainer container)
         {
@@ -479,18 +497,31 @@ namespace SS3D.UI.StoragePanel
             _pendingBreadcrumbs.TryGetValue(container, out string breadcrumb);
             _pendingBreadcrumbs.Remove(container);
 
-            StoragePanelView view = new(breadcrumb);
+            StoragePanelView view = new(breadcrumb, OpenStorageIcon);
             view.CloseRequested += () => RequestClose(viewer, container);
             view.SlotDragStarted += HandleSlotDragStarted;
             view.SlotDragMoved += HandleSlotDragMoved;
             view.SlotDragEnded += HandleSlotDragEnded;
             view.SlotClicked += HandleSlotClicked;
+            view.SlotOpenRequested += HandleSlotNestedOpenRequested;
+            view.SlotContextRequested += HandleSlotContextRequested;
             view.Bind(container);
 
             _root.Add(view);
             PositionPanel(view, anchor);
             _openPanels[container] = view;
             container.OpenPanel = view;
+            NotifyPanelsChanged();
+        }
+
+        private void NotifyPanelsChanged()
+        {
+            foreach (StoragePanelView panel in _openPanels.Values)
+            {
+                panel.RefreshOpenButtons(IsOpen);
+            }
+
+            PanelsChanged?.Invoke();
         }
 
         private void HandleContainerClosed(AttachedContainer container)
@@ -519,6 +550,8 @@ namespace SS3D.UI.StoragePanel
             {
                 container.OpenPanel = null;
             }
+
+            NotifyPanelsChanged();
         }
 
         private void PositionPanel(StoragePanelView view, Vector2 anchor)
@@ -775,62 +808,48 @@ namespace SS3D.UI.StoragePanel
         }
 
         /// <summary>
-        /// A click on a panel slot does what a click on a HUD slot does: with the active hand empty it takes the
-        /// item, with something held it stores that item in an empty slot it fits, else nothing
-        /// (<see cref="HumanInventory.ClientInteractWithContainerSlot"/>). A double-click opens a container item as a
-        /// nested panel, so its single click waits out the double-click window before taking it
-        /// (Documents/design/inventory-storage.md §6, §7).
+        /// A click on a panel slot does what a click on a HUD slot does: with the active hand empty it takes the item,
+        /// with something held it stores that item in an empty slot it fits, or inside a container item in the slot,
+        /// else nothing (<see cref="HumanInventory.ClientInteractWithContainerSlot"/>). Container items open from their
+        /// corner button instead of the design's double-click (inventory-storage.md §6, §7), so a click acts at once.
         /// </summary>
-        private void HandleSlotClicked(StoragePanelView panel, StorageSlot slot, int clickCount)
+        private void HandleSlotClicked(StoragePanelView panel, StorageSlot slot)
         {
-            _pendingContainerTake?.Pause();
-            _pendingContainerTake = null;
-
             if (_localInventory == null || panel.Container == null)
             {
                 return;
             }
 
-            bool opensNested = slot.BoundItem != null && slot.BoundItem.GetComponent<AttachedContainer>() != null;
-            if (clickCount >= 2)
+            Item held = _localInventory.Hands != null ? _localInventory.Hands.SelectedHand?.ItemInHand : null;
+            if (ItemStorage.TryFindStoreTarget(_localInventory, held, slot.BoundItem, out AttachedContainer storage, out Vector2Int position))
             {
-                // Anything that isn't a container went to the hand on the first click; don't put it straight back.
-                if (opensNested)
-                {
-                    HandleSlotNestedOpenRequested(panel, slot);
-                }
-
+                _localInventory.ClientTransferItem(held, position, storage);
                 return;
             }
 
-            AttachedContainer container = panel.Container;
-            Vector2Int position = slot.Position;
-            if (!opensNested)
-            {
-                _localInventory.ClientInteractWithContainerSlot(container, position);
-                return;
-            }
-
-            _pendingContainerTake = _root.schedule.Execute(() =>
-            {
-                _pendingContainerTake = null;
-                if (_localInventory != null && container != null)
-                {
-                    _localInventory.ClientInteractWithContainerSlot(container, position);
-                }
-            }).StartingIn(DoubleClickWindowMs);
+            _localInventory.ClientInteractWithContainerSlot(panel.Container, slot.Position);
         }
 
+        /// <summary>Right press on a stored item: the radial menu of its interactions, as in the world.</summary>
+        private void HandleSlotContextRequested(StoragePanelView panel, StorageSlot slot)
+        {
+            if (_localInventory != null && _localInventory.TryGetComponent(out InteractionController controller))
+            {
+                controller.ShowInventoryItemInteractions(slot.BoundItem);
+            }
+        }
+
+        /// <summary>The slot's open button: toggles the container item's panel, opened beside the slot.</summary>
         private void HandleSlotNestedOpenRequested(StoragePanelView panel, StorageSlot slot)
         {
-            if (_boundViewer == null || panel.Container == null || slot.BoundItem == null)
+            if (_boundViewer == null || panel.Container == null || !ItemStorage.TryGetStorageOn(slot.BoundItem, out AttachedContainer nested))
             {
                 return;
             }
 
-            AttachedContainer nested = slot.BoundItem.GetComponentInChildren<AttachedContainer>();
-            if (nested == null || _openPanels.ContainsKey(nested))
+            if (IsOpen(nested))
             {
+                RequestClose(_boundViewer, nested);
                 return;
             }
 

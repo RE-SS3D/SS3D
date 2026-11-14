@@ -9,7 +9,8 @@ namespace EditorTests
 {
     /// <summary>
     /// HUD hand/gear slot drags are left-button only (#214). UI Toolkit sends a down and an up per mouse button, so a
-    /// right press used to start a drag, and a second button mid-drag restarted it.
+    /// right press used to start a drag, and a second button mid-drag restarted it. A drag also needs the pointer to
+    /// move (<see cref="DragGesture"/>): a press used to show the drag ghost at once, so every click flashed one.
     /// </summary>
     public sealed class HudSlotDragButtonTests
     {
@@ -52,9 +53,32 @@ namespace EditorTests
         }
 
         [Test]
+        public void Click_WithoutMoving_IsNotADrag()
+        {
+            Send(EventType.MouseDown, 0);
+            Send(EventType.MouseUp, 0);
+
+            Assert.AreEqual(0, _started, "a press alone starts no drag");
+            Assert.AreEqual(0, _ended);
+            Assert.IsFalse(_slot.HasPointerCapture(PointerId.mousePointerId));
+        }
+
+        [Test]
+        public void MovingUnderTheThreshold_IsNotADrag()
+        {
+            Send(EventType.MouseDown, 0);
+            Move(new Vector2(DragGesture.ThresholdPx - 2f, 0f));
+            Send(EventType.MouseUp, 0);
+
+            Assert.AreEqual(0, _started);
+            Assert.AreEqual(0, _ended);
+        }
+
+        [Test]
         public void SecondButtonMidDrag_NeitherRestartsNorEndsTheDrag()
         {
             Send(EventType.MouseDown, 0);
+            Move(new Vector2(DragGesture.ThresholdPx + 5f, 0f));
             Send(EventType.MouseDown, 1);
             Send(EventType.MouseUp, 1);
 
@@ -66,6 +90,16 @@ namespace EditorTests
 
             Assert.AreEqual(1, _ended, "releasing the left button ends the drag");
             Assert.IsFalse(_slot.HasPointerCapture(PointerId.mousePointerId));
+        }
+
+        private void Move(Vector2 offset)
+        {
+            var systemEvent = new Event { type = EventType.MouseDrag, button = 0, mousePosition = _slot.worldBound.center + offset };
+            using (EventBase evt = PointerMoveEvent.GetPooled(systemEvent))
+            {
+                evt.target = _slot;
+                _slot.SendEvent(evt);
+            }
         }
 
         private void Send(EventType type, int button)
