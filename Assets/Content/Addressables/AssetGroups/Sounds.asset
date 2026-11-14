@@ -30,6 +30,11 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 12124330529c62a27b5d0c018a685aec
+    m_Address: BeaconArrival
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 1342f00d3f3444ba9d135ac709a632b4
     m_Address: Assets/Art/Sound/Entities/Humanoid/Footsteps/Socks.mp3
     m_ReadOnly: 0
@@ -87,6 +92,11 @@ MonoBehaviour:
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 46d1ebcf19d64594a03b8053351b1a3a
     m_Address: TaserFire
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 47b8a3c6738094074a602366c4c50448
+    m_Address: WrenchRatchet
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0

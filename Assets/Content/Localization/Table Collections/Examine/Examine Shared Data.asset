@@ -2099,6 +2099,50 @@ MonoBehaviour:
     m_Key: examine.weapon.fuel
     m_Metadata:
       m_Items: []
+  - m_Id: 299262768996130816
+    m_Key: items.weapons.syndicatebomb.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 299262769021296640
+    m_Key: items.weapons.syndicatebomb.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 299262771349135360
+    m_Key: items.weapons.syndicatebombbeacon.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 299262771349135361
+    m_Key: items.weapons.syndicatebombbeacon.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 299262962122858496
+    m_Key: action.bolt_down
+    m_Metadata:
+      m_Items: []
+  - m_Id: 299262962143830016
+    m_Key: action.unbolt
+    m_Metadata:
+      m_Items: []
+  - m_Id: 299262962143830017
+    m_Key: examine.syndicate_bomb.safe
+    m_Metadata:
+      m_Items: []
+  - m_Id: 299262962143830018
+    m_Key: examine.syndicate_bomb.armed
+    m_Metadata:
+      m_Items: []
+  - m_Id: 299262962143830019
+    m_Key: examine.syndicate_bomb.bolted
+    m_Metadata:
+      m_Items: []
+  - m_Id: 299262962143830020
+    m_Key: examine.syndicate_bomb.loose
+    m_Metadata:
+      m_Items: []
+  - m_Id: 299262962143830021
+    m_Key: examine.syndicate_bomb.panel_open
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

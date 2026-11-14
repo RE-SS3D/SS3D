@@ -43,6 +43,7 @@ MonoBehaviour:
     Items:
     - {fileID: 11400000, guid: cb8a18ff6b582ec45a3aa1f689a18564, type: 2}
     - {fileID: 11400000, guid: 4cc1691fd8fca4e7a840b0538053bab8, type: 2}
+  FirstHolderContents: []
   HandLeftContents:
   - {fileID: 11400000, guid: 8ec2a780fae01344a9431a9cb06d8a7c, type: 2}
   - {fileID: 11400000, guid: 8ec2a780fae01344a9431a9cb06d8a7c, type: 2}

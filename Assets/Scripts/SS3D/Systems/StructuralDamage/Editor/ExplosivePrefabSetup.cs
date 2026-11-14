@@ -27,6 +27,7 @@ namespace SS3D.Systems.StructuralDamage.Editor
             Build("X4", ExplosiveKind.X4, 1.2f);
             Build("SyndicateMiniBomb", ExplosiveKind.Minibomb, 0.5f);
             RegisterNukeSounds();
+            SyndicateBombPrefabSetup.SetupAll();
             DB.SaveAssets();
         }
 
@@ -46,22 +47,7 @@ namespace SS3D.Systems.StructuralDamage.Editor
         private static void Build(string name, ExplosiveKind kind, float weight)
         {
             string prefabPath = "Assets/Content/WorldObjects/Items/Weapons/" + name + ".prefab";
-            GameObject model = DB.LoadAssetAtPath<GameObject>(Art + name + ".fbx");
-            if (model == null) throw new InvalidOperationException("Missing explosive model: " + name);
-            MeshFilter source = model.GetComponentsInChildren<MeshFilter>(true).Single();
-            Mesh mesh = UnityEngine.Object.Instantiate(source.sharedMesh);
-            Matrix4x4 pose = source.transform.localToWorldMatrix;
-            Vector3[] vertices = mesh.vertices;
-            Vector3[] normals = mesh.normals;
-            for (int i = 0; i < vertices.Length; i++) vertices[i] = pose.MultiplyPoint3x4(vertices[i]);
-            for (int i = 0; i < normals.Length; i++) normals[i] = pose.inverse.transpose.MultiplyVector(normals[i]).normalized;
-            mesh.vertices = vertices; mesh.normals = normals; mesh.RecalculateBounds();
-            Vector3 center = mesh.bounds.center;
-            for (int i = 0; i < vertices.Length; i++) vertices[i] -= center;
-            mesh.vertices = vertices; mesh.RecalculateBounds(); mesh.name = name;
-            Mesh saved = DB.LoadAssetAtPath<Mesh>(Art + name + "Mesh.asset");
-            if (saved == null) DB.CreateAsset(mesh, Art + name + "Mesh.asset");
-            else { mesh.name = saved.name; EditorUtility.CopySerialized(mesh, saved); UnityEngine.Object.DestroyImmediate(mesh); mesh = saved; }
+            Mesh mesh = BakeMesh(name);
             if (DB.LoadAssetAtPath<GameObject>(prefabPath) == null)
                 DB.CopyAsset("Assets/Content/WorldObjects/Items/Functional/Tools/Engineering/Wirecutters.prefab", prefabPath);
             ObjectAssetReference reference = Reference(name, prefabPath, "Items", "c2644d7b34e956743a0bc485e7ca5e37");
@@ -132,6 +118,30 @@ namespace SS3D.Systems.StructuralDamage.Editor
             finally { PrefabUtility.UnloadPrefabContents(content); }
             DB.SaveAssets();
         }
+        /// <summary>
+        /// Bakes <c>Art/name.fbx</c>'s single mesh, including the FBX root's scale/axis conversion, centred on its
+        /// bounds, into <c>Art/nameMesh.asset</c> (updated in place on reruns).
+        /// </summary>
+        internal static Mesh BakeMesh(string name)
+        {
+            GameObject model = DB.LoadAssetAtPath<GameObject>(Art + name + ".fbx");
+            if (model == null) throw new InvalidOperationException("Missing explosive model: " + name);
+            MeshFilter source = model.GetComponentsInChildren<MeshFilter>(true).Single();
+            Mesh mesh = UnityEngine.Object.Instantiate(source.sharedMesh);
+            Matrix4x4 pose = source.transform.localToWorldMatrix;
+            Vector3[] vertices = mesh.vertices;
+            Vector3[] normals = mesh.normals;
+            for (int i = 0; i < vertices.Length; i++) vertices[i] = pose.MultiplyPoint3x4(vertices[i]);
+            for (int i = 0; i < normals.Length; i++) normals[i] = pose.inverse.transpose.MultiplyVector(normals[i]).normalized;
+            mesh.vertices = vertices; mesh.normals = normals; mesh.RecalculateBounds();
+            Vector3 center = mesh.bounds.center;
+            for (int i = 0; i < vertices.Length; i++) vertices[i] -= center;
+            mesh.vertices = vertices; mesh.RecalculateBounds(); mesh.name = name;
+            Mesh saved = DB.LoadAssetAtPath<Mesh>(Art + name + "Mesh.asset");
+            if (saved == null) DB.CreateAsset(mesh, Art + name + "Mesh.asset");
+            else { mesh.name = saved.name; EditorUtility.CopySerialized(mesh, saved); UnityEngine.Object.DestroyImmediate(mesh); mesh = saved; }
+            return mesh;
+        }
         private static Renderer Cube(Transform parent, string name, Vector3 position, Vector3 scale, Material material)
         {
             Transform existing = parent.Find(name);
@@ -148,14 +158,14 @@ namespace SS3D.Systems.StructuralDamage.Editor
             if (m == null) { m = new Material(Shader.Find("Universal Render Pipeline/Unlit")); DB.CreateAsset(m, path); }
             m.SetColor("_BaseColor", color); EditorUtility.SetDirty(m); return m;
         }
-        private static string RegisterSound(string name)
+        internal static string RegisterSound(string name)
         {
             string path = Sound + name + ".ogg";
             AudioImporter importer = (AudioImporter)AssetImporter.GetAtPath(path);
             if (!importer.forceToMono) { importer.forceToMono = true; importer.SaveAndReimport(); }
             return Reference(name, path, "Sounds", "43b69e36c49203a44bf20042cd83de81").Id;
         }
-        private static ObjectAssetReference Reference(string name, string path, string database, string databaseId)
+        internal static ObjectAssetReference Reference(string name, string path, string database, string databaseId)
         {
             ObjectAssetReference r = Ensure<ObjectAssetReference>("Assets/Content/Data/ObjectAssetReferences/" + name + ".asset");
             r.Id = DB.AssetPathToGUID(path); r.Database = databaseId; EditorUtility.SetDirty(r);
@@ -163,7 +173,7 @@ namespace SS3D.Systems.StructuralDamage.Editor
             AddressableAssetSettingsDefaultObject.Settings.CreateOrMoveEntry(r.Id, db.AssetGroup).address = name;
             db.Assets[r.Id] = DB.LoadAssetAtPath<UnityEngine.Object>(path); EditorUtility.SetDirty(db); return r;
         }
-        private static T Ensure<T>(string path) where T : ScriptableObject
+        internal static T Ensure<T>(string path) where T : ScriptableObject
         {
             T asset = DB.LoadAssetAtPath<T>(path);
             if (asset == null) { asset = ScriptableObject.CreateInstance<T>(); DB.CreateAsset(asset, path); } return asset;

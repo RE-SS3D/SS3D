@@ -60,7 +60,7 @@ namespace SS3D.Systems.Inventory.Interactions
                 // you can only pickup items (for now, TODO: we have to consider people too), which makes sense
                 Item item = targetBehaviour.GameObject.GetComponent<Item>();
 
-                if (item == null)
+                if (item == null || item.TooHeavyToLift)
                 {
                     return false;
                 }

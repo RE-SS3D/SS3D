@@ -791,7 +791,8 @@ namespace SS3D.Systems.Inventory.Containers
         /// </summary>
         public bool CanContainItem(Item item)
 		{
-            return CanStoreItem(item)
+            return !item.TooHeavyToLift
+                    && CanStoreItem(item)
                     && CanHoldItem(item)
                     && item.SizeClass <= _maxSizeClass // Flat size-class fit check (Documents/design/inventory-storage.md §4)
                     && !item.GetComponentsInChildren<AttachedContainer>().AsEnumerable().Contains(this) // Can't put an item in its own container

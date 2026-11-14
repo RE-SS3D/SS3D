@@ -250,6 +250,11 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 3f4cb34ca7d313d9497131616ada230b
+    m_Address: SyndicateBombBeacon
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 404443f7c306fc8469698745624fa3bf
     m_Address: Assets/Content/WorldObjects/Items/Functional/Generic/GreyFloorTile.prefab
     m_ReadOnly: 0
@@ -372,6 +377,11 @@ MonoBehaviour:
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 4e6899916bc8fd742a07f32b3a04de12
     m_Address: Assets/Content/WorldObjects/Items/Consumable/Drinks/Soda/SodaCanBeepyLime.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 4f33f4e24e81db98f94f16cd4bfe04c1
+    m_Address: SyndicateBomb
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
