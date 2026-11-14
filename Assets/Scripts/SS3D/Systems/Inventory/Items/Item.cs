@@ -8,6 +8,7 @@ using FishNet.Object.Synchronizing;
 using SS3D.Attributes;
 using SS3D.Data;
 using SS3D.Data.AssetDatabases;
+using SS3D.Data.Persistence;
 using SS3D.Interactions;
 using SS3D.Interactions.Interfaces;
 using SS3D.Logging;
@@ -41,7 +42,7 @@ namespace SS3D.Systems.Inventory.Items
     [RequireComponent(typeof(NetworkTransform))]
     [RequireComponent(typeof(Selectable))]
     [RequiredLayer("Items")]
-    public class Item : InteractionSource, IInteractionTarget, IWorldObjectAsset
+    public class Item : InteractionSource, IInteractionTarget, IWorldObjectAsset, ISetupRecordRoot
     {
         [SerializeField]
 #if UNITY_EDITOR

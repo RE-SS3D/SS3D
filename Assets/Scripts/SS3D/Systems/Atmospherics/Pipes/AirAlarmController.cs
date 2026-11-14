@@ -2,6 +2,7 @@ using FishNet.Object;
 using FishNet.Object.Synchronizing;
 using SS3D.Systems.Audio;
 using SS3D.Core;
+using SS3D.Data.Persistence;
 using SS3D.Systems.Area;
 using SS3D.Systems.Examine;
 using SS3D.Systems.Tile;
@@ -30,7 +31,7 @@ namespace SS3D.Systems.Atmospherics.Pipes
     [RequireComponent(typeof(PlacedTileObject))]
     [RequireComponent(typeof(BasicPowerConsumer))]
     [RequireComponent(typeof(ElectricDeviceAdjacencyConnector))]
-    public sealed class AirAlarmController : NetworkBehaviour, IAmbientLoopState, IAmbientLoopArea
+    public sealed class AirAlarmController : NetworkBehaviour, IAmbientLoopState, IAmbientLoopArea, IPersistentSetup, ISetupScope
     {
         /// <summary>Seconds lit and seconds dark while alarming.</summary>
         private const float FlashSeconds = 0.4f;
@@ -143,6 +144,38 @@ namespace SS3D.Systems.Atmospherics.Pipes
         {
             AtmosSubSystem.Channel.Unsubscribe(ServerSampleTick);
             UnsubscribePowerEvents();
+        }
+
+        public string SetupKey => "air-alarm";
+
+        [System.Serializable]
+        private sealed class AirAlarmSetup
+        {
+            public byte preset = (byte)AirAlarmPresetMode.Filtering;
+        }
+
+        /// <summary>The preset is the alarm's own setup; the vents and scrubbers it switched save their own settings.</summary>
+        public string CaptureSetup() =>
+            _activeMode == (byte)AirAlarmPresetMode.Filtering ? null : JsonUtility.ToJson(new AirAlarmSetup { preset = _activeMode });
+
+        /// <summary>Sets the preset without dispatching it: the room's devices restore their own saved settings.</summary>
+        public void RestoreSetup(string json)
+        {
+            AirAlarmSetup setup = new();
+            if (!string.IsNullOrEmpty(json))
+                JsonUtility.FromJsonOverwrite(json, setup);
+
+            _activeMode = System.Enum.IsDefined(typeof(AirAlarmPresetMode), setup.preset)
+                ? setup.preset
+                : (byte)AirAlarmPresetMode.Filtering;
+        }
+
+        /// <summary>The alarm's panel switches every vent and scrubber in its room.</summary>
+        public void CollectSetupScope(List<GameObject> into)
+        {
+            ResolveArea();
+            if (_hasArea)
+                AtmosAreaDeviceQuery.ForEachAreaPort(_areaId, (port, _) => into.Add(port.gameObject));
         }
 
         [Server]

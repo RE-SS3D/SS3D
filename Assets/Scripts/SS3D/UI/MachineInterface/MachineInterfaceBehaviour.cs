@@ -8,6 +8,7 @@ using SS3D.Interactions.Extensions;
 using SS3D.Interactions.Interfaces;
 using SS3D.Systems.Interactions;
 using SS3D.Systems.Inventory.Containers;
+using SS3D.Systems.Tile.MapEditor;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -97,7 +98,7 @@ namespace SS3D.UI.MachineInterface
             }
 
             LastControlConnection = conn;
-            ApplyControl(controlId, value);
+            MapEditorSetupTracker.Track(conn, () => ApplyControl(controlId, value), gameObject);
             LastControlConnection = null;
         }
 
@@ -110,7 +111,7 @@ namespace SS3D.UI.MachineInterface
             }
 
             LastControlConnection = conn;
-            ApplyNumericControl(controlId, delta);
+            MapEditorSetupTracker.Track(conn, () => ApplyNumericControl(controlId, delta), gameObject);
             LastControlConnection = null;
         }
 
@@ -123,7 +124,7 @@ namespace SS3D.UI.MachineInterface
             }
 
             LastControlConnection = conn;
-            ApplyActionControl(controlId, value);
+            MapEditorSetupTracker.Track(conn, () => ApplyActionControl(controlId, value), gameObject);
             LastControlConnection = null;
         }
 

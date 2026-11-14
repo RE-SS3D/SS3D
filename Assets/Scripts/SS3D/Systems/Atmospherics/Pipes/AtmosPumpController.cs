@@ -1,5 +1,6 @@
 using FishNet.Object;
 using FishNet.Object.Synchronizing;
+using System;
 using SS3D.Systems.Audio;
 using UnityEngine;
 
@@ -113,6 +114,32 @@ namespace SS3D.Systems.Atmospherics.Pipes
         public void ServerSetTargetOutletPressureKpa(int targetKpa)
         {
             _targetOutletPressureKpa = Mathf.Clamp(targetKpa, 0, 9000);
+        }
+
+        [Serializable]
+        private sealed class PumpSetup : PortSetup
+        {
+            public int targetOutletPressureKpa = AtmosPortConstants.PumpDefaultTargetKpa;
+            public int targetLitresPerSecond = AtmosPortConstants.VolumePumpDefaultLitresPerSecond;
+        }
+
+        protected override PortSetup DefaultSetup() => new PumpSetup();
+
+        protected override PortSetup CurrentSetup() => new PumpSetup
+        {
+            enabled = IsEnabled,
+            targetOutletPressureKpa = _targetOutletPressureKpa,
+            targetLitresPerSecond = _targetLitresPerSecond,
+        };
+
+        protected override void ApplySetup(PortSetup setup)
+        {
+            base.ApplySetup(setup);
+            if (setup is not PumpSetup pump)
+                return;
+
+            ServerSetTargetOutletPressureKpa(pump.targetOutletPressureKpa);
+            ServerSetTargetLitresPerSecond(pump.targetLitresPerSecond);
         }
 
         [Server]

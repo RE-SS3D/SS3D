@@ -1,5 +1,6 @@
 using FishNet.Object.Synchronizing;
 using FishNet.Object;
+using System;
 using SS3D.Core;
 using SS3D.Systems.Audio;
 using SS3D.Systems.Tile;
@@ -14,8 +15,10 @@ namespace SS3D.Systems.Atmospherics.Pipes
     {
         private static readonly int VentActiveId = Animator.StringToHash("ventActive");
 
+        private const int DefaultTargetPressureKpa = 101;
+
         [SyncVar]
-        private int _targetPressureKpa = 101;
+        private int _targetPressureKpa = DefaultTargetPressureKpa;
 
         public int TargetPressureKpa => _targetPressureKpa;
 
@@ -26,6 +29,23 @@ namespace SS3D.Systems.Atmospherics.Pipes
         public void ServerSetTargetPressureKpa(int targetKpa)
         {
             _targetPressureKpa = Mathf.Clamp(targetKpa, 0, 200);
+        }
+
+        [Serializable]
+        private sealed class VentSetup : PortSetup
+        {
+            public int targetPressureKpa = DefaultTargetPressureKpa;
+        }
+
+        protected override PortSetup DefaultSetup() => new VentSetup();
+
+        protected override PortSetup CurrentSetup() => new VentSetup { enabled = IsEnabled, targetPressureKpa = _targetPressureKpa };
+
+        protected override void ApplySetup(PortSetup setup)
+        {
+            base.ApplySetup(setup);
+            if (setup is VentSetup vent)
+                ServerSetTargetPressureKpa(vent.targetPressureKpa);
         }
 
         /// <summary>Pressure in the room and in the line this vent draws on; the line reads 0 with no pipe.</summary>

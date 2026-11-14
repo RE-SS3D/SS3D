@@ -467,6 +467,7 @@ namespace SS3D.Systems.Tile.MapEditor
                 ApplyEditorVisualSuppression(true);
                 RefreshTileHostVisibility();
                 EditorOpened?.Invoke();
+                ReportEditorOpen(true);
                 RpcRequestUndoState(LocalConnection);
                 ApplySessionSettingsOnOpen();
                 RequestValidation();
@@ -490,6 +491,8 @@ namespace SS3D.Systems.Tile.MapEditor
                 // IsActive is already false — re-apply HashGrid AOI host visibility.
                 RefreshTileHostVisibility();
                 ReleaseCursorLabel();
+                _setupCopy.Clear();
+                ReportEditorOpen(false);
                 EditorClosed?.Invoke();
             }
         }
@@ -692,6 +695,12 @@ namespace SS3D.Systems.Tile.MapEditor
                 return;
 
             CopyIntoActiveSelection(placed != null ? placed.NameString : item.NameString);
+
+            // The copy carries the object's setup and contents (object-setup-persistence Q5); only the server knows them.
+            if (placed != null)
+                RequestDropperSetup(placed.NameString, false, new Vector3(placed.WorldOrigin.x, 0f, placed.WorldOrigin.y), placed.Direction);
+            else
+                RequestDropperSetup(item.NameString, true, item.transform.position, Direction.North);
         }
 
         private void CopyIntoActiveSelection(string assetName)
@@ -1097,12 +1106,12 @@ namespace SS3D.Systems.Tile.MapEditor
                 TargetRememberTemplate(conn, mapName);
                 TargetSyncUndoState(conn, 0, 0, false);
                 SendMapValidation(conn, true);
-                string skipped = DescribeSkipped(_tileSystem.CurrentMap?.LastLoadSkipped);
-                if (skipped == null)
+                string message = DescribeLoad(mapName, DescribeSkipped(_tileSystem.CurrentMap?.LastLoadSkipped),
+                    _templatePersistence.LastLoadWasNewerVersion);
+                if (message == null)
                     TargetToast(conn, $"Loaded {mapName}.");
                 else
-                    TargetToastFor(conn, $"Loaded {mapName}, but this version doesn't have {skipped}. "
-                        + "They were left out. Saving over the map makes that permanent; save under a new name to keep the original.", 10f);
+                    TargetToastFor(conn, message, 10f);
             }
             catch (Exception exception)
             {
@@ -1205,7 +1214,12 @@ namespace SS3D.Systems.Tile.MapEditor
         /// A palette click. Search results come from every tab, so the entry's sub-tab opens first:
         /// delete scope, forms and hints all key off the open sub-tab.
         /// </summary>
-        private void OnPaletteEntryPicked(MapEditorCatalogEntry entry, GenericObjectSo asset) => SelectAsset(entry, asset);
+        private void OnPaletteEntryPicked(MapEditorCatalogEntry entry, GenericObjectSo asset)
+        {
+            // Placing from the palette always gives the default object (object-setup-persistence Q5).
+            _setupCopy.Clear();
+            SelectAsset(entry, asset);
+        }
 
         /// <summary>
         /// Dropper, search and Show in palette all select through here: the asset's family
@@ -1231,6 +1245,7 @@ namespace SS3D.Systems.Tile.MapEditor
             }
 
             _viewModel.SearchText = MapEditorCatalog.SearchTermFor(entry.AssetName);
+            _setupCopy.Clear();
             GenericObjectSo asset = null;
             if (!MapEditorCatalog.IsVirtualKey(entry.AssetName))
                 _catalog.TryGetAsset(entry.AssetName, _tileSystem.Loader, out asset);
@@ -1528,8 +1543,18 @@ namespace SS3D.Systems.Tile.MapEditor
             return commands.Where(command => !MapEditorSandboxRules.IsDenied(command)).ToArray();
         }
 
-        public void SubmitCommands(MapEditorCommandDto[] commands) =>
-            RpcExecuteCommands(commands, LocalConnection);
+        /// <summary>Client: sends one gesture's edits; places of the Dropper's copied asset carry its setup.</summary>
+        public void SubmitCommands(MapEditorCommandDto[] commands)
+        {
+            if (commands == null)
+                return;
+
+            _setupCopy.ApplyTo(commands);
+            if (MapEditorSetupCopy.Chars(commands) > MapEditorSetupCopy.MaxCharsPerSubmit)
+                ShowLocalToast(MapEditorSetupCopy.TooLargeMessage);
+            else
+                RpcExecuteCommands(commands, LocalConnection);
+        }
 
         [ServerRpc(RequireOwnership = false)]
         private void RpcExecuteCommands(MapEditorCommandDto[] commands, NetworkConnection conn = null)
@@ -1545,6 +1570,16 @@ namespace SS3D.Systems.Tile.MapEditor
             {
                 if (!RpcInput.IsInStation(dto.Position) || !RpcInput.IsInStation(dto.PreviousPosition))
                     return;
+            }
+
+            // Setup commands come from in-world changes on the server, never from a client.
+            if (commands.Any(dto => dto.Kind == MapEditorCommandKind.SetObjectSetup))
+                return;
+
+            if (MapEditorSetupCopy.Chars(commands) > MapEditorSetupCopy.MaxCharsPerSubmit)
+            {
+                TargetToastFor(conn, MapEditorSetupCopy.TooLargeMessage, 4f);
+                return;
             }
 
             commands = FilterDeniedCommands(commands, conn);
@@ -1569,7 +1604,8 @@ namespace SS3D.Systems.Tile.MapEditor
             if (list.Count == 0)
                 return;
 
-            if (IsThrottled(conn, list.Count))
+            // A pasted crate costs one operation per item it holds, contents included (object-setup-persistence Q15).
+            if (IsThrottled(conn, Math.Max(list.Count, commands.Sum(MapEditorSandboxRules.OperationCost))))
                 return;
 
             _commandService.ExecuteCompound(list, conn.ClientId);
@@ -1680,6 +1716,17 @@ namespace SS3D.Systems.Tile.MapEditor
                 _validationDueTime = Time.unscaledTime + ValidationDebounceSeconds;
             }
             _viewModel.SetUndoState(undoDepth, redoDepth);
+        }
+
+        /// <summary>The load toast when assets or settings didn't come through, or a newer version saved the map; null otherwise.</summary>
+        public static string DescribeLoad(string mapName, string skipped, bool savedByNewerVersion)
+        {
+            if (skipped == null && !savedByNewerVersion)
+                return null;
+
+            string what = skipped != null ? $"this version doesn't have {skipped}. They were left out" : "it was saved by a newer version, so some settings may be missing";
+            string also = skipped != null && savedByNewerVersion ? ". It was also saved by a newer version, so other settings may be missing" : "";
+            return $"Loaded {mapName}, but {what}{also}. Saving over the map makes that permanent; save under a new name to keep the original.";
         }
 
         /// <summary>"3 × OldLamp, 1 × RemovedChair" for the load summary, or null when nothing was skipped.</summary>

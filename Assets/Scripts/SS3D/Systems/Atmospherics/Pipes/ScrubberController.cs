@@ -28,6 +28,45 @@ namespace SS3D.Systems.Atmospherics.Pipes
 
         public int FlowRate => _flowRate;
 
+        [System.Serializable]
+        private sealed class ScrubberSetup : PortSetup
+        {
+            public int flowRate = AtmosPortConstants.ScrubberNormalFlowRate;
+            public bool filterO2;
+            public bool filterN2;
+            public bool filterCo2;
+            public bool filterToxins;
+        }
+
+        /// <summary>The everyday settings <see cref="ServerApplyNormalSettings"/> gives this scrubber.</summary>
+        protected override PortSetup DefaultSetup() => new ScrubberSetup
+        {
+            filterO2 = _isAirIntake,
+            filterN2 = _isAirIntake,
+            filterCo2 = !_isAirIntake,
+            filterToxins = false,
+        };
+
+        protected override PortSetup CurrentSetup() => new ScrubberSetup
+        {
+            enabled = IsEnabled,
+            flowRate = _flowRate,
+            filterO2 = _filterO2,
+            filterN2 = _filterN2,
+            filterCo2 = _filterCo2,
+            filterToxins = _filterToxins,
+        };
+
+        protected override void ApplySetup(PortSetup setup)
+        {
+            base.ApplySetup(setup);
+            if (setup is not ScrubberSetup scrubber)
+                return;
+
+            ServerSetFlowRate(scrubber.flowRate);
+            ServerSetFilters(scrubber.filterO2, scrubber.filterN2, scrubber.filterCo2, scrubber.filterToxins);
+        }
+
         public override void OnStartServer()
         {
             base.OnStartServer();

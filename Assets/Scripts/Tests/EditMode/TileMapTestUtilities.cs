@@ -67,6 +67,23 @@ namespace EditorTests
             _assetsRegistered = true;
         }
 
+        /// <summary>
+        /// A tile asset spawning <paramref name="prefab"/> (registered under <paramref name="prefabId"/>) instead of the
+        /// shared empty test prefab, for tests that need components on the placed object.
+        /// </summary>
+        internal static TileObjectSo CreateTileSo(TileLayer layer, string prefabName, GameObject prefab, string prefabId)
+        {
+            EnsureTestAssetsRegistered();
+            FieldInfo databasesField = typeof(Assets).GetField("Databases", BindingFlags.Static | BindingFlags.NonPublic);
+            var databases = (Dictionary<string, AssetDatabase>)databasesField!.GetValue(null)!;
+            databases[DatabaseId].Assets.Remove(prefabId);
+            databases[DatabaseId].Assets.TryAdd(prefabId, prefab);
+
+            TileObjectSo so = CreateTileSo(layer, prefabName);
+            so.PrefabAsset.Id = prefabId;
+            return so;
+        }
+
         internal static TileObjectSo CreateTileSo(TileLayer layer, string prefabName = null)
         {
             EnsureTestAssetsRegistered();

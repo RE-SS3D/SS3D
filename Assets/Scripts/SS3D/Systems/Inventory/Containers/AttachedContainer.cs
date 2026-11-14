@@ -20,7 +20,7 @@ namespace SS3D.Systems.Inventory.Containers
     /// AttachedContainer manages the networking  aspect of a container attached to a gameObject, and allows the user to set up a container,
     /// including it's size, interaction with it, what it can store and other options.
     /// </summary>
-    public class AttachedContainer : NetworkActor
+    public partial class AttachedContainer : NetworkActor
     {
         #region AttachedContainerOnlyFieldsAndProperties
 

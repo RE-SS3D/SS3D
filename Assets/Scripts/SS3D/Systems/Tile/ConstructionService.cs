@@ -1,5 +1,7 @@
 using FishNet;
 using SS3D.Data.AssetDatabases;
+using SS3D.Data.Persistence;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace SS3D.Systems.Tile
@@ -19,14 +21,14 @@ namespace SS3D.Systems.Tile
         }
 
         public PlaceResult TryPlaceTile(TileObjectSo tileObject, Vector3 worldPosition, Direction direction, bool replaceExisting,
-            bool skipBuildCheck = false)
+            bool skipBuildCheck = false, IReadOnlyList<SavedSetupEntry> setup = null)
         {
             if (_map == null || tileObject == null)
                 return PlaceResult.Failed;
 
             Vector3 gridPosition = TileHelper.GetClosestPosition(worldPosition);
             if (!_map.PlaceTileObject(tileObject, gridPosition, direction, skipBuildCheck, replaceExisting,
-                    skipAdjacency: false, out GameObject instance))
+                    skipAdjacency: false, setup, null, out GameObject instance))
             {
                 return PlaceResult.Failed;
             }
@@ -34,13 +36,14 @@ namespace SS3D.Systems.Tile
             return new PlaceResult { Success = true, Instance = instance };
         }
 
-        public PlaceResult TryPlaceItem(ItemObjectSo itemObject, Vector3 worldPosition, Quaternion rotation, GameObject existingItem = null)
+        public PlaceResult TryPlaceItem(ItemObjectSo itemObject, Vector3 worldPosition, Quaternion rotation, GameObject existingItem = null,
+            IReadOnlyList<SavedSetupEntry> setup = null)
         {
             if (_map == null || itemObject == null)
                 return PlaceResult.Failed;
 
-            _map.PlaceItemObject(worldPosition, rotation, itemObject, existingItem);
-            return new PlaceResult { Success = true, Instance = existingItem };
+            PlacedItemObject placed = _map.PlaceItemObject(worldPosition, rotation, itemObject, existingItem, setup, null);
+            return new PlaceResult { Success = true, Instance = placed != null ? placed.gameObject : existingItem };
         }
 
         public ClearResult TryClearTile(Vector3 worldPosition, TileLayer layer, Direction direction)
@@ -58,7 +61,8 @@ namespace SS3D.Systems.Tile
                 return ClearResult.Failed;
 
             // Success means an item was actually removed (the map editor's undo relies on it, tech-debt P2.4).
-            return new ClearResult { Success = _map.ClearItemObject(worldPosition, itemObject) };
+            bool cleared = _map.ClearItemObject(worldPosition, itemObject, out SavedSetupEntry[] setup);
+            return new ClearResult { Success = cleared, Setup = setup };
         }
 
         public PreviewResult TryPreviewTile(TileObjectSo tileObject, Vector3 worldPosition, Direction direction, bool replaceExisting)

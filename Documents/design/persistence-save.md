@@ -20,7 +20,7 @@ It also has one hard boundary to respect rather than redesign: `death-cloning-re
 
 | Layer | What it holds | Lifecycle | Tied to |
 |---|---|---|---|
-| **Station templates** | Map layout, Area metadata | Survives indefinitely until re-authored | A map, not a round or a player |
+| **Station templates** | Map layout, Area metadata, placed objects and items with their authored setup | Survives indefinitely until re-authored | A map, not a round or a player |
 | **Server meta** | Admin permissions, round config's pools, round history log | Survives until an admin changes it | The server itself |
 | **Player meta** | Playtime per role, job unlocks, saved lobby preferences, moderation notes | Survives across every round a player returns to | A player identity |
 | **Round snapshots** | Live world state, periodically captured | Superseded every round; retained briefly as a crash safety net | One in-progress round |
@@ -29,7 +29,21 @@ Each is real disk state; none of them is the diegetic crew record or ID card dat
 
 ## 3. Station templates
 
-**What's captured:** tile layout and Area metadata exactly as authored — nothing round-specific. Character positions, item placement, and live machine state don't belong here; this layer's job stops at what a map looks like before anyone's touched it, the same boundary the Map Editor's saving already draws (`creative-mode.md` §9), applied here to the pre-round baseline specifically.
+**What's captured:** everything the Map Editor's save writes (`creative-mode.md` §9) — tiles, Areas, placed objects and items, pipes and cables, spawn points and starting air — plus each object's **authored setup**, exactly as authored and nothing round-specific. This layer's job stops at what a map looks like before anyone's touched it, applied here to the pre-round baseline specifically. Character positions and anything a round has done to the station don't belong here.
+
+**Authored setup is what a builder chose, never what the simulation accumulated.** A builder sets an object up through its own interface, the way a player would (`creative-mode.md` §3), and the template keeps the result:
+
+- **Device settings** — a valve left open, a pump's target pressure, a vent or scrubber's mode, an air alarm's preset.
+- **Locks and doors** — a locker left locked or open.
+- **Container contents** — what's inside a locker, crate or backpack, including containers inside containers (`inventory-storage.md` §7), exactly as placed. Randomised contents are out of scope (§11).
+
+Three kinds of state stay out even though they live on the same objects:
+
+- **Stored resources** — charge, fuel, the gas in a canister or tank. A device starts in its default state so a newly built section stays honest about what it needs to come online (`creative-mode.md` §3).
+- **Damage and wear** — a playtest's broken window is not part of the map.
+- **Live simulation** — gas in pipes, power flowing, running timers. Room air at round start is authored separately, as starting air (`creative-mode.md` §9).
+
+Only what differs from an object's normal default is recorded, so an object nobody configured follows the game's default for it, including when that default later changes. A template the game can't fully restore says so when it loads, the same as removed objects do (`creative-mode.md` §9).
 
 **Authored in the Map Editor, chosen by round config.** A save from the Map Editor (`creative-mode.md` §9) becomes a new template; round config's map setting (`round-config.md` §2) is what decides which template a given round actually loads. This doc supplies the load, round config supplies the choice — the same "lobby doesn't invent it, it reads it" relationship this project draws everywhere else.
 
@@ -84,7 +98,7 @@ No new permanent chrome, same discipline as everywhere else in this project.
 | Step | What happens | Persistence state |
 |---|---|---|
 | 1 | The admin's map setting names "Outpost Station" as the countdown ends | Round config supplies the choice (`round-config.md` §2) |
-| 2 | This doc loads that station template | Tile/Area layout restored exactly as last authored |
+| 2 | This doc loads that station template | Tiles, Areas, objects and their authored setup restored exactly as last authored |
 | 3 | Round begins | Live simulation takes over; nothing further is read from the template until next round |
 
 **B — A returning player's playtime gates a job:**
@@ -136,3 +150,4 @@ No new permanent chrome, same discipline as everywhere else in this project.
 - **Admin-facing save/restore/rewind UI and permissions beyond the always-available override in §6** — `admin-tools.md`'s permission-tier model (§2) covers who could invoke this; the exact UI isn't detailed here
 - **Moderation policy** — what a ban actually restricts, appeal process, staff workflow — `admin-tools.md` §7's job; this doc only stores the note/flag
 - **Cross-server or off-machine backup/sync** — this doc assumes local disk, same as everything it builds on
+- **Randomised container contents** (SS13-style loot spawners) — a station template stores exact contents only (§3); varying them per round is a content design of its own

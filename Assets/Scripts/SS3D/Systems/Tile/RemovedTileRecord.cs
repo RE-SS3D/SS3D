@@ -1,3 +1,4 @@
+using SS3D.Data.Persistence;
 using System;
 using UnityEngine;
 
@@ -9,11 +10,12 @@ namespace SS3D.Systems.Tile
     /// </summary>
     public readonly struct RemovedTileRecord : IEquatable<RemovedTileRecord>
     {
-        public RemovedTileRecord(TileObjectSo tile, Vector3 origin, Direction direction)
+        public RemovedTileRecord(TileObjectSo tile, Vector3 origin, Direction direction, SavedSetupEntry[] setup = null)
         {
             Tile = tile;
             Origin = origin;
             Direction = direction;
+            Setup = setup;
         }
 
         public TileObjectSo Tile { get; }
@@ -23,6 +25,12 @@ namespace SS3D.Systems.Tile
 
         public Direction Direction { get; }
 
+        /// <summary>The object's setup when it was removed, so undo puts it back configured; null or empty at defaults.</summary>
+        public SavedSetupEntry[] Setup { get; }
+
+        public RemovedTileRecord WithSetup(SavedSetupEntry[] setup) => new(Tile, Origin, Direction, setup);
+
+        /// <summary>Identity is the slot: the setup describes the object, it doesn't tell two removals apart.</summary>
         public bool Equals(RemovedTileRecord other) =>
             Tile == other.Tile && Origin == other.Origin && Direction == other.Direction;
 

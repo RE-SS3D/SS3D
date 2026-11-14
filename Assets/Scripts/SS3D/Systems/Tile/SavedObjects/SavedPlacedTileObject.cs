@@ -1,6 +1,5 @@
+using SS3D.Data.Persistence;
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 namespace SS3D.Systems.Tile
@@ -23,5 +22,11 @@ namespace SS3D.Systems.Tile
         public string tileObjectSOName;
         public Vector2Int origin;
         public Direction dir;
+
+        /// <summary>
+        /// The object's authored setup (device settings, locks, container contents) where it differs from the prefab
+        /// default; empty for an object nobody configured, and in saves from before schema 3.
+        /// </summary>
+        public SavedSetupEntry[] setup;
     }
 }
