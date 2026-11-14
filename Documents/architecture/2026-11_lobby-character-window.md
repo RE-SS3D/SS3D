@@ -256,7 +256,7 @@ What Phase 6 built:
 - **Opening.** During a round the sidebar's Join opens the picker instead of spawning. It closes on Esc, the close button or a press on the backdrop. It also closes when the player gets a body, late joining turns off or the round leaves Ongoing.
 - **Open jobs.** Every job with a free slot, plus the fallback job (no cap), in roster order.
   - Each row shows the job's pictogram on a frame in its department colour, the department, and "open/total open" ("3/3 open"), or "unlimited" for the fallback.
-  - The description shows under the hovered job, or the chosen one when nothing is hovered.
+  - The description shows under the chosen job only. Hover showed it too at first; the owner found the rows jumping under the pointer annoying, so the hint reads "Pick a job to see what it does".
   - ↑/↓ change the job and Enter joins.
 - **The choice.** It starts on the character's best-ranked open job (High, then Medium, then Low), else the first open job, and starts over each time the picker opens.
   - It follows the replicated job list. If the chosen job fills, the choice moves the same way and an amber notice says which job filled.

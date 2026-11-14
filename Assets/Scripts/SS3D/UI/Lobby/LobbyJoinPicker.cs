@@ -39,7 +39,6 @@ namespace SS3D.UI.Lobby
         private IReadOnlyList<CrewManifestEntry> _crew = Array.Empty<CrewManifestEntry>();
         private string _jobsSignature;
         private string _manifestSignature;
-        private string _hovered;
         private bool _joining;
         private IVisualElementScheduledItem _joinRetry;
 
@@ -89,7 +88,6 @@ namespace SS3D.UI.Lobby
         {
             if (IsOpen) return;
             _model.Reset();
-            _hovered = null;
             SetJoining(false);
             _root.AddToClassList("lobby-join--open");
             _root.BringToFront();
@@ -222,19 +220,6 @@ namespace SS3D.UI.Lobby
             Label description = LobbyUi.Text(_describe(name), "lobby-join__description");
             description.name = "lobby-join-description";
             item.Add(description);
-
-            // The description shows under the hovered job, else the chosen one ("Hover a job for what it does").
-            item.RegisterCallback<PointerEnterEvent>(_ =>
-            {
-                _hovered = name;
-                Refresh();
-            });
-            item.RegisterCallback<PointerLeaveEvent>(_ =>
-            {
-                if (_hovered != name) return;
-                _hovered = null;
-                Refresh();
-            });
             return item;
         }
 
@@ -299,13 +284,13 @@ namespace SS3D.UI.Lobby
         /// <summary>Repaints the choice, the description, the notice and the Join button without rebuilding.</summary>
         private void Refresh()
         {
-            string shown = _hovered ?? _model.Selected;
+            // Only the chosen job shows its description; hover doesn't (owner feedback: rows jumped under the pointer).
             foreach ((string job, VisualElement item) in _jobs)
             {
                 bool on = job == _model.Selected;
                 item.EnableInClassList("lobby-join__job-item--on", on);
                 Label description = item.Q<Label>("lobby-join-description");
-                description.style.display = job == shown && description.text.Length > 0 ? DisplayStyle.Flex : DisplayStyle.None;
+                description.style.display = on && description.text.Length > 0 ? DisplayStyle.Flex : DisplayStyle.None;
             }
 
             _openCount.text = _model.OpenCountText;

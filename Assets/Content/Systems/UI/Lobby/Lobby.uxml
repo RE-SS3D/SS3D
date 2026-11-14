@@ -166,7 +166,7 @@
                             <ui:Label text="OPEN JOBS" class="lobby-join__section-title lb-titling" />
                             <ui:Label name="lobby-join-open-count" text="2 open" class="lobby-join__section-count lb-mono" />
                             <ui:VisualElement class="lobby__grow" />
-                            <ui:Label text="Hover a job for what it does" class="lobby-join__hint" />
+                            <ui:Label text="Pick a job to see what it does" class="lobby-join__hint" />
                         </ui:VisualElement>
                         <ui:VisualElement name="lobby-join-notice" class="lobby-join__notice lobby-join__notice--hidden">
                             <ui:VisualElement class="lobby__icon lobby__icon--info" picking-mode="Ignore" />
