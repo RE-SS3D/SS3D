@@ -1222,3 +1222,33 @@
 }
 
 .map-check__issue-toggle > .map-editor-vector-icon { width: 14px; height: 14px; flex-shrink: 0; }
+
+/* Systems views legend (creative-mode §4): under the left toolbar, open the first time a view is used. */
+.map-editor-systems-legend {
+    width: 280px;
+    margin-top: 12px;
+    background-color: var(--ss3d-surface-panel);
+    border-width: 1px;
+    border-color: var(--ss3d-border-default);
+    border-radius: var(--ss3d-radius-md);
+    -unity-font-definition: url("project://database/Assets/Art/Font/TextMesh%20Pro/Fonts/LiberationSans.ttf");
+}
+.map-editor-systems-legend--collapsed { width: auto; }
+.map-editor-systems-legend__header {
+    flex-direction: row;
+    align-items: center;
+    padding: 8px 10px;
+    background-color: var(--ss3d-surface-panel-raised);
+}
+.map-editor-systems-legend__title {
+    flex-grow: 1;
+    margin-right: 8px;
+    color: var(--ss3d-text-primary);
+    font-size: 13px;
+    -unity-font-definition: url("project://database/Assets/Content/Systems/UI/Font/Fonts/GurajadaRegularSDF.asset");
+}
+.map-editor-systems-legend__body { padding: 8px 10px; }
+.map-editor-systems-legend__row { flex-direction: row; align-items: flex-start; margin-bottom: 6px; }
+.map-editor-systems-legend__swatches { flex-direction: row; flex-shrink: 0; width: 42px; margin-top: 2px; }
+.map-editor-systems-legend__swatch { width: 10px; height: 10px; margin-right: 3px; border-radius: 2px; }
+.map-editor-systems-legend__text { flex-grow: 1; flex-shrink: 1; white-space: normal; color: var(--ss3d-text-secondary); font-size: 12px; }

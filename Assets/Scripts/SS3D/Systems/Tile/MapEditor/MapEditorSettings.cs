@@ -27,6 +27,7 @@ namespace SS3D.Systems.Tile.MapEditor
         {
             base.OnStopServer();
             ResetAuthoringState();
+            SystemsViews.Clear();
             ServerInteractionSteps.Wrap = null;
             ServerManager.OnRemoteConnectionState -= HandleRemoteConnectionState;
             LightingDevBypass.MapEditorOverride = false;
@@ -39,6 +40,7 @@ namespace SS3D.Systems.Tile.MapEditor
             {
                 EntityInvincibility.ClearServer(conn.ClientId);
                 SetEditing(conn.ClientId, false);
+                SystemsViews.Unsubscribe(conn.ClientId);
             }
         }
 

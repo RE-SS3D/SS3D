@@ -29,7 +29,10 @@ namespace SS3D.Tests.AssetAudit
         {
             // TECH_DEBT §1.9 and the plan's Phase 4-7 splits.
             { "LobbyShellView", 2568 },
-            { "MapEditorSubSystem", 2200 },
+            // 2026-11-14: +266 over 2200. About 202 lines are earlier drift (2402 before this change); about 64 are the
+            // systems view hub partial, which map-editor-systems-views Q10 puts on the hub. Its logic lives in
+            // SystemsViewPublisher and MapEditorSystemsViewClient.
+            { "MapEditorSubSystem", 2466 },
             { "MapEditorView", 2072 },
             { "InteractionController", 1663 },
             { "MainHudSubSystem", 1628 },

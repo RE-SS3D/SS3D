@@ -8,7 +8,15 @@ namespace SS3D.Systems.Tile.MapEditor
     /// </summary>
     public static class MapEditorLayerVisibility
     {
-        public static void Apply(MapEditorViewModel viewModel)
+        public static void Apply(MapEditorViewModel viewModel) => Apply(viewModel, onlyChanged: false);
+
+        /// <summary>
+        /// Applies only the groups whose visibility differs from <paramref name="viewModel"/>: a tab switch or a
+        /// systems view toggle changes a few groups, and re-dimming every group walks every chunk.
+        /// </summary>
+        public static void Sync(MapEditorViewModel viewModel) => Apply(viewModel, onlyChanged: true);
+
+        private static void Apply(MapEditorViewModel viewModel, bool onlyChanged)
         {
             if (viewModel == null)
                 return;
@@ -16,7 +24,9 @@ namespace SS3D.Systems.Tile.MapEditor
             foreach (TileLayerCategory category in TileLayerCategoryMapping.AllCategories)
             {
                 if (category == TileLayerCategory.Areas) continue; // Separate authoring overlay.
-                TileLayerVisibilityService.SetGroupVisible(category, viewModel.IsLayerCategoryVisible(category));
+                bool visible = viewModel.IsLayerCategoryVisible(category);
+                if (!onlyChanged || TileLayerVisibilityService.IsGroupVisible(category) != visible)
+                    TileLayerVisibilityService.SetGroupVisible(category, visible);
             }
         }
 

@@ -85,6 +85,9 @@ namespace SS3D.Systems.Tile.MapEditor
         {
             if (conn != null)
                 SetEditing(conn.ClientId, open && MapEditorPermissions.TryAuthorize(conn));
+            // Closing the editor ends its systems view subscription too.
+            if (conn != null && !IsEditing(conn))
+                SystemsViews.Unsubscribe(conn.ClientId);
         }
 
         /// <summary>Server: records who has the editor open; interaction steps are only wrapped while someone does.</summary>

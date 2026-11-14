@@ -246,6 +246,7 @@ namespace SS3D.Systems.Tile.MapEditor
             _mapEditorHandle?.Dispose();
             _mapEditorHandle = null;
             _areaOverlay.Dispose();
+            _systemsViewClient.Dispose();
             TeardownView();
             UnregisterDocument();
             if (_document != null)
@@ -323,6 +324,7 @@ namespace SS3D.Systems.Tile.MapEditor
             _view.CameraRotateRequested += OnCameraRotateRequested;
             _view.CameraZoomRequested += OnCameraZoomRequested;
             _view.LayerCategoryVisibilityChanged += OnLayerCategoryVisibilityChanged;
+            _view.SystemsViewSelected += OnSystemsViewSelected;
             _view.ModeSelected += OnModeSelected;
             _view.SubcategorySelected += OnSubcategorySelected;
             _view.SearchChanged += OnSearchChanged;
@@ -482,6 +484,7 @@ namespace SS3D.Systems.Tile.MapEditor
                 _lighting.Restore();
                 CancelAreaStroke();
                 _areaOverlay.SetVisible(false);
+                _systemsViewClient.Stop();
                 MapEditorLayerVisibility.Deactivate();
                 SetGameplayInputBlocked(false);
                 _mapEditorHandle?.Dispose();
@@ -567,6 +570,7 @@ namespace SS3D.Systems.Tile.MapEditor
 
         private void HandleUpdate(ref EventContext context, in UpdateEvent updateEvent)
         {
+            HandleSystemsViewServerUpdate();
             if (!_active)
                 return;
 
@@ -582,6 +586,7 @@ namespace SS3D.Systems.Tile.MapEditor
             _areaOverlay.SetVisible(showAreas);
             SubSystems.TryGet(out AreaSubSystem labelAreas);
             _view?.UpdateAreaLabels(_areaOverlay.LabelPositions, labelAreas?.FloorVisualCache, PickCamera, showAreas);
+            UpdateSystemsViewClient();
 
             UpdatePendingValidation();
 
@@ -881,6 +886,7 @@ namespace SS3D.Systems.Tile.MapEditor
             _view.CameraRotateRequested -= OnCameraRotateRequested;
             _view.CameraZoomRequested -= OnCameraZoomRequested;
             _view.LayerCategoryVisibilityChanged -= OnLayerCategoryVisibilityChanged;
+            _view.SystemsViewSelected -= OnSystemsViewSelected;
             _view.ModeSelected -= OnModeSelected;
             _view.SubcategorySelected -= OnSubcategorySelected;
             _view.SearchChanged -= OnSearchChanged;
@@ -1202,9 +1208,8 @@ namespace SS3D.Systems.Tile.MapEditor
 
         private void AfterSubTabChanged()
         {
-            TileLayerVisibilityService.SetGroupVisible(TileLayerCategory.Scripts,
-                _viewModel.IsLayerCategoryVisible(TileLayerCategory.Scripts));
-            SyncTurfsLayerVisibility();
+            // Scripts follows its tab, Turfs the Lower run tabs, the x-ray layers a systems view turning on or off.
+            MapEditorLayerVisibility.Sync(_viewModel);
             OnToolSelected(_viewModel.CurrentTool);
             SyncHologramToLibrarySelection();
             MapEditorLastTab.Save(_viewModel.CurrentSubcategory);
@@ -1251,14 +1256,6 @@ namespace SS3D.Systems.Tile.MapEditor
                 _catalog.TryGetAsset(entry.AssetName, _tileSystem.Loader, out asset);
             SelectAsset(entry, asset);
             _viewModel.NotifyChanged();
-        }
-
-        /// <summary>Lower run tabs (Cables, Gas Pipes, Disposal Pipes) toggle Turfs in the view model; only re-dim when it changed (walks the map).</summary>
-        private void SyncTurfsLayerVisibility()
-        {
-            bool visible = _viewModel.IsLayerCategoryVisible(TileLayerCategory.Turfs);
-            if (TileLayerVisibilityService.IsGroupVisible(TileLayerCategory.Turfs) != visible)
-                TileLayerVisibilityService.SetGroupVisible(TileLayerCategory.Turfs, visible);
         }
 
         /// <summary>

@@ -1,5 +1,6 @@
 using SS3D.Systems.Tile.GasMarkers;
 using SS3D.Data.AssetDatabases;
+using SS3D.Systems.Tile.MapEditor.SystemsView;
 using SS3D.Systems.Tile.TileMapCreator;
 using SS3D.Systems.Tile.Validation;
 using System;
@@ -83,8 +84,49 @@ namespace SS3D.Systems.Tile.MapEditor.UI
 
         private readonly Dictionary<TileLayerCategory, bool> _layerCategoryVisibility = new();
 
-        // True while a Lower run tab (Cables, Gas Pipes, Disposal Pipes) hid Turfs; leaving those tabs restores it. A manual Turfs toggle clears it.
-        private bool _turfsAutoHidden;
+        // Layers the editor hid by itself: Turfs on a Lower run tab (Cables, Gas Pipes, Disposal Pipes), and the x-ray
+        // layers while a systems view is on. Each comes back when its reason ends; a manual toggle of it clears the claim.
+        private readonly HashSet<TileLayerCategory> _autoHidden = new();
+
+        /// <summary>Dimmed while a systems view is on: floors and upper objects, so the runs underneath show (creative-mode §4).</summary>
+        public static readonly IReadOnlyList<TileLayerCategory> SystemsViewXRayLayers = new[]
+        {
+            TileLayerCategory.Turfs, TileLayerCategory.Furniture, TileLayerCategory.WallMounts, TileLayerCategory.Items,
+        };
+
+        /// <summary>The view the toolbar toggle keeps on from any tab; <see cref="SystemsViewKind.Off"/> leaves it to the tab.</summary>
+        public SystemsViewKind PinnedSystemsView { get; private set; }
+
+        // The sub-tab on which the author switched its own view off; it stays off there until another sub-tab opens.
+        private MapEditorSubcategory? _systemsViewDeclinedOn;
+
+        /// <summary>The view on now: the pinned one, else the open sub-tab's own (Gas Pipes → Atmos, Cables → Power).</summary>
+        public SystemsViewKind ActiveSystemsView =>
+            PinnedSystemsView != SystemsViewKind.Off ? PinnedSystemsView
+            : _systemsViewDeclinedOn == CurrentSubcategory ? SystemsViewKind.Off
+            : SystemsViewFor(CurrentSubcategory);
+
+        /// <summary>The view a sub-tab turns on by itself, the way Rooms shows rooms.</summary>
+        public static SystemsViewKind SystemsViewFor(MapEditorSubcategory subcategory) => subcategory switch
+        {
+            MapEditorSubcategory.GasPipes => SystemsViewKind.Atmos,
+            MapEditorSubcategory.Cables => SystemsViewKind.Power,
+            _ => SystemsViewKind.Off,
+        };
+
+        /// <summary>
+        /// The toolbar toggle. A view pins it on from any tab; Off unpins it, and on a tab with its own view also
+        /// turns that off until another sub-tab opens. Layers come back by the same rule the Lower tabs use.
+        /// </summary>
+        public void SetSystemsView(SystemsViewKind view)
+        {
+            PinnedSystemsView = view;
+            _systemsViewDeclinedOn = view == SystemsViewKind.Off && SystemsViewFor(CurrentSubcategory) != SystemsViewKind.Off
+                ? CurrentSubcategory
+                : null;
+            UpdateAutoHiddenLayers();
+            NotifyChanged();
+        }
 
         public event Action StateChanged;
 
@@ -103,7 +145,7 @@ namespace SS3D.Systems.Tile.MapEditor.UI
         public void SetLayerCategoryVisible(TileLayerCategory category, bool visible)
         {
             _layerCategoryVisibility[category] = visible;
-            if (category == TileLayerCategory.Turfs) _turfsAutoHidden = false;
+            _autoHidden.Remove(category);
             NotifyChanged();
         }
 
@@ -179,24 +221,46 @@ namespace SS3D.Systems.Tile.MapEditor.UI
             bool rooms = IsRoomCategory;
             if (CurrentTool == MapEditorTool.Area) CurrentTool = MapEditorTool.Edit;
             _layerCategoryVisibility[TileLayerCategory.Areas] = rooms;
-            UpdateTurfsForLowerRuns();
+            if (_systemsViewDeclinedOn != CurrentSubcategory)
+                _systemsViewDeclinedOn = null;
+            UpdateAutoHiddenLayers();
         }
 
-        /// <summary>Cables, gas pipes and disposals run under the turf, so their tabs hide Turfs until you leave them.</summary>
-        private void UpdateTurfsForLowerRuns()
+        /// <summary>
+        /// Cables, gas pipes and disposals run under the turf, so their tabs hide Turfs until you leave them; a systems
+        /// view dims <see cref="SystemsViewXRayLayers"/> until it turns off. A layer you had hidden yourself stays hidden,
+        /// and one you toggled meanwhile is yours: it isn't restored.
+        /// </summary>
+        private void UpdateAutoHiddenLayers()
         {
             bool underTurf = CurrentSubcategory is MapEditorSubcategory.Cables
                 or MapEditorSubcategory.GasPipes or MapEditorSubcategory.DisposalPipes;
-            if (underTurf && !_turfsAutoHidden && IsLayerCategoryVisible(TileLayerCategory.Turfs))
+            bool xRay = ActiveSystemsView != SystemsViewKind.Off;
+            foreach (TileLayerCategory category in TileLayerCategoryMapping.AllCategories)
             {
-                _layerCategoryVisibility[TileLayerCategory.Turfs] = false;
-                _turfsAutoHidden = true;
+                bool hide = (underTurf && category == TileLayerCategory.Turfs)
+                    || (xRay && IsXRayLayer(category));
+                if (hide && !_autoHidden.Contains(category) && IsLayerCategoryVisible(category))
+                {
+                    _layerCategoryVisibility[category] = false;
+                    _autoHidden.Add(category);
+                }
+                else if (!hide && _autoHidden.Remove(category))
+                {
+                    _layerCategoryVisibility[category] = true;
+                }
             }
-            else if (!underTurf && _turfsAutoHidden)
+        }
+
+        private static bool IsXRayLayer(TileLayerCategory category)
+        {
+            foreach (TileLayerCategory layer in SystemsViewXRayLayers)
             {
-                _layerCategoryVisibility[TileLayerCategory.Turfs] = true;
-                _turfsAutoHidden = false;
+                if (layer == category)
+                    return true;
             }
+
+            return false;
         }
 
         public void SelectEntry(MapEditorCatalogEntry entry, GenericObjectSo asset)

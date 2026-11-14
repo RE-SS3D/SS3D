@@ -1,12 +1,12 @@
 > Implements: Documents/design/creative-mode.md §4 ("Seeing what's connected"), §12
 > Touches systems: map-editor-creative-hooks, tile, atmospherics, electricity, area, networking-session
-> Status: planned
+> Status: in-progress
 
-**Progress:** Not started. Advances [map-authoring.md](../milestones/map-authoring.md) A10.
+**Progress:** Phase 0 (shared base) built 2026-11-14: tracker, DTO and delta, subscriptions, view mode and x-ray, overlay and legend shells; no domain source yet. Advances [map-authoring.md](../milestones/map-authoring.md) A10.
 
 # Map Editor systems views (Nov 2026)
 
-The Map Editor gets an **Atmos** view and a **Power** view. Each colours every network, shows device state, traces a clicked network with live numbers, and marks clear problems. The same problems also appear in Map Check. Scope was settled in a grill on 2026-11-14: rounds 1–3 at the gameplay altitude, which produced [creative-mode.md](../design/creative-mode.md) §4, and rounds 4–5 at the implementation altitude (Q1–Q12 below).
+The Map Editor gets an **Atmos** view and a **Power** view. Each colours every network, shows device state, traces a clicked network with live numbers, and marks clear problems. The same problems also appear in Map Check. Scope was settled in a grill on 2026-11-14: rounds 1–3 at the gameplay altitude, which produced [creative-mode.md](../design/creative-mode.md) §4, and rounds 4–5 at the implementation altitude (Q1–Q12 below; Q13 was settled while building Phase 0).
 
 ## Starting state (2026-11-14, `c82326f5`)
 
@@ -49,6 +49,7 @@ The Map Editor gets an **Atmos** view and a **Power** view. Each colours every n
 | Q10 | **Code split.** Analyzers, snapshot builders and the network → segment mapping live in each domain (`Atmospherics/…/SystemsView/`, `Electricity/…/SystemsView/`) behind one small interface, `ISystemsViewSource`. Subscription, transport and rendering are a `MapEditorSystemsView` piece beside `MapEditorArea`, on the existing networked hub, with no scene or prefab edits. New RPCs bump `ProtocolVersion`. |
 | Q11 | **Select on a device while a view is on** both traces its network(s) *and* opens its setup as usual. A bare pipe or cable has no setup, so a click only traces. Turning a view on never changes what a click does to an object. |
 | Q12 | **Milestone:** a new slice A10 in [map-authoring.md](../milestones/map-authoring.md), landing before A6 if possible. |
+| Q13 | **Turning a view Off on Gas Pipes or Cables** also turns that tab's own view off, and it stays off until another sub-tab opens; a view pinned from the toolbar wins over the tab's own. Settled in Phase 0 (2026-11-14). |
 
 ## Shape
 
@@ -57,7 +58,7 @@ Server                                              Client (editor open)
 ──────                                              ────────────────────
 GasPipeNetworkRegistry ─┐                           MapEditorSystemsView
 ElectricitySubSystem ───┤                             ├─ subscribe(view) / unsubscribe
-                        ▼                             ├─ SystemsViewOverlay   (chunk meshes, quads)
+                        ▼                             ├─ MapEditorSystemsOverlay (chunk meshes, quads)
 ISystemsViewSource (per domain)                       ├─ room tint            (area overlay, circuit colours)
   ├─ BuildStructure() → segments, devices             └─ UITK: toggle, legend, trace panel, labels
   ├─ Analyze()        → problems  ──────────► MapValidationReport.Issues
@@ -78,6 +79,8 @@ MapEditorSystemsView (server half)
 3. `MapEditorSystemsView`: subscribe and unsubscribe per connection (editor open and current view), and per-connection last-sent tracking. Unsubscribe when the editor closes or the client disconnects.
 4. View mode on `MapEditorViewModel`: Off, Atmos or Power; on by itself with Lower › Gas Pipes and Lower › Cables, and a toolbar toggle. X-ray layer handling goes through `MapEditorLayerVisibility` with the same restore rule the Lower tabs use.
 5. Overlay renderer skeleton and the legend shell (collapsible, open the first time, remembered in `PlayerPrefs` like `MapEditorLastTab`).
+
+`ISystemsViewSource` ships in Phase 0 with `View`, `StructureVersion` and `BuildStructure()` only; it gains `ReadLive(viewId)` in Phase 2 and `Analyze()` in Phase 4.
 
 ### Phase 1 — Atmos topology and badges
 

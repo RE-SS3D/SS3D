@@ -213,6 +213,7 @@ namespace SS3D.Systems.Tile.MapEditor.UI
             _leftToolbar.Add(_loadMapButton);
 
             region.Add(_leftToolbar);
+            BuildSystemsLegend(region);
             _hudLayer.Add(region);
         }
 
@@ -244,6 +245,7 @@ namespace SS3D.Systems.Tile.MapEditor.UI
                 CreateIconButton(_icons?.Settings, null, () => TogglePopover("settings")),
                 "Settings",
                 opensLeft: true));
+            AddSystemsViewToggle(_rightToolbar);
             toolbarWrap.Add(_rightToolbar);
             region.Add(toolbarWrap);
 
@@ -487,6 +489,7 @@ namespace SS3D.Systems.Tile.MapEditor.UI
             redoBtn?.EnableInClassList("map-editor-icon-btn--disabled", _vm.RedoDepth <= 0);
 
             RefreshMapCheck();
+            RefreshSystemsView();
             RefreshHint();
 
             if (!string.IsNullOrEmpty(_vm.ToastMessage))
