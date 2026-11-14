@@ -96,6 +96,11 @@ starts `Game/SS3D.exe` (also after a failure, once Enter is pressed, so the old 
 Updates require all SS3D processes closed. The script locks the installation against concurrent
 updates, downloads and checks GitHub's SHA-256 digest, checks archive paths and required files,
 and stages beside the installation before swapping `Game/`, the updater, guides and metadata.
+PowerShell 5.1 cannot create paths over Windows' MAX_PATH (259 characters per file), so staging
+names stay short (`.ss3d-update-<8 hex>\x\`). Before unpacking, the script checks every archive path
+under both the staging folder and a future `.ss3d-backups/<id>/`, and refuses with "move SS3D to
+a shorter folder such as C:\SS3D" instead of failing halfway through. On the release side, the
+Windows packaging step fails if any path inside the release is over 130 characters.
 Launch scripts left by releases before the main menu replaced them move into the backup.
 `Game/Config`, local data and logs carry forward. `.ss3d-release.json` records tag and shipped
 map hashes so unchanged bundled maps refresh while custom/edited maps survive, including name
