@@ -126,6 +126,22 @@ namespace SS3D.UI.Lobby
             }
         }
 
+        /// <summary>Same priorities, antagonist choices and fallback, whatever order the arrays hold them in.</summary>
+        public bool SameAs(CharacterPreferences other)
+        {
+            if (other == null || Fallback != other.Fallback)
+            {
+                return false;
+            }
+
+            Dictionary<string, JobPriority> mine = ToDictionary();
+            Dictionary<string, JobPriority> theirs = other.ToDictionary();
+            return mine.Count == theirs.Count
+                && mine.All(pair => theirs.TryGetValue(pair.Key, out JobPriority priority) && priority == pair.Value)
+                && new HashSet<string>(AntagonistOptIns).SetEquals(other.AntagonistOptIns)
+                && new HashSet<string>(AntagonistOptOuts).SetEquals(other.AntagonistOptOuts);
+        }
+
         public CharacterPreferences Clone() => new()
         {
             Jobs = (string[])Jobs.Clone(),

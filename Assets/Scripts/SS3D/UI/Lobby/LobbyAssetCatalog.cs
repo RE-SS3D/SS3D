@@ -19,6 +19,9 @@ namespace SS3D.UI.Lobby
 
         /// <summary>The lobby shell (<c>Lobby.uxml</c>, styled by <c>Lobby.uss</c>), lobby effort Phase 4.</summary>
         [SerializeField] private VisualTreeAsset _lobbyTemplate;
+
+        /// <summary>The character window (<c>CharacterWindow.uxml</c>, styled by <c>CharacterWindow.uss</c>), lobby effort Phase 5.</summary>
+        [SerializeField] private VisualTreeAsset _characterWindowTemplate;
         [SerializeField] private Sprite _previewPlaceholder;
         [SerializeField] private Sprite _serverInfoBanner;
         [SerializeField] private Texture2D _chevronDown;
@@ -55,6 +58,8 @@ namespace SS3D.UI.Lobby
         public StyleSheet LobbyStyle => _lobbyStyle;
 
         public VisualTreeAsset LobbyTemplate => _lobbyTemplate;
+
+        public VisualTreeAsset CharacterWindowTemplate => _characterWindowTemplate;
 
         public Sprite PreviewPlaceholder => _previewPlaceholder;
 
@@ -131,6 +136,12 @@ namespace SS3D.UI.Lobby
                 return false;
             }
 
+            if (_characterWindowTemplate == null)
+            {
+                missingField = "characterWindowTemplate";
+                return false;
+            }
+
             if (_previewPlaceholder == null)
             {
                 missingField = "previewPlaceholder";
@@ -188,10 +199,12 @@ namespace SS3D.UI.Lobby
             List<Color> hairColors,
             List<LobbyPreviewOutfit> previewOutfits,
             CharacterNameList characterNames,
-            VisualTreeAsset lobbyTemplate)
+            VisualTreeAsset lobbyTemplate,
+            VisualTreeAsset characterWindowTemplate)
         {
             _lobbyStyle = lobbyStyle;
             _lobbyTemplate = lobbyTemplate;
+            _characterWindowTemplate = characterWindowTemplate;
             _previewPlaceholder = previewPlaceholder;
             _serverInfoBanner = serverInfoBanner;
             _chevronDown = chevronDown;

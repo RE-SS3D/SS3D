@@ -73,15 +73,15 @@
     -unity-font-style: normal;
 }
 
-/* Department colour as text, and as a small swatch. */
-.lobby-theme .lb-dept--command { color: var(--dept-command); }
-.lobby-theme .lb-dept--security { color: var(--dept-security); }
-.lobby-theme .lb-dept--engineering { color: var(--dept-engineering); }
-.lobby-theme .lb-dept--medical { color: var(--dept-medical); }
-.lobby-theme .lb-dept--science { color: var(--dept-science); }
-.lobby-theme .lb-dept--cargo { color: var(--dept-cargo); }
-.lobby-theme .lb-dept--service { color: var(--dept-service); }
-.lobby-theme .lb-dept--civilian { color: var(--dept-civilian); }
+/* Department colour as text (the Label type outranks a view's own two-class text colour), and as a small swatch. */
+.lobby-theme Label.lb-dept--command { color: var(--dept-command); }
+.lobby-theme Label.lb-dept--security { color: var(--dept-security); }
+.lobby-theme Label.lb-dept--engineering { color: var(--dept-engineering); }
+.lobby-theme Label.lb-dept--medical { color: var(--dept-medical); }
+.lobby-theme Label.lb-dept--science { color: var(--dept-science); }
+.lobby-theme Label.lb-dept--cargo { color: var(--dept-cargo); }
+.lobby-theme Label.lb-dept--service { color: var(--dept-service); }
+.lobby-theme Label.lb-dept--civilian { color: var(--dept-civilian); }
 .lobby-theme .lb-swatch.lb-dept--command { background-color: var(--dept-command); }
 .lobby-theme .lb-swatch.lb-dept--security { background-color: var(--dept-security); }
 .lobby-theme .lb-swatch.lb-dept--engineering { background-color: var(--dept-engineering); }
@@ -90,6 +90,16 @@
 .lobby-theme .lb-swatch.lb-dept--cargo { background-color: var(--dept-cargo); }
 .lobby-theme .lb-swatch.lb-dept--service { background-color: var(--dept-service); }
 .lobby-theme .lb-swatch.lb-dept--civilian { background-color: var(--dept-civilian); }
+
+/* Department colour as an icon tint (white sprites). */
+.lobby-theme .lb-tint.lb-dept--command { -unity-background-image-tint-color: var(--dept-command); }
+.lobby-theme .lb-tint.lb-dept--security { -unity-background-image-tint-color: var(--dept-security); }
+.lobby-theme .lb-tint.lb-dept--engineering { -unity-background-image-tint-color: var(--dept-engineering); }
+.lobby-theme .lb-tint.lb-dept--medical { -unity-background-image-tint-color: var(--dept-medical); }
+.lobby-theme .lb-tint.lb-dept--science { -unity-background-image-tint-color: var(--dept-science); }
+.lobby-theme .lb-tint.lb-dept--cargo { -unity-background-image-tint-color: var(--dept-cargo); }
+.lobby-theme .lb-tint.lb-dept--service { -unity-background-image-tint-color: var(--dept-service); }
+.lobby-theme .lb-tint.lb-dept--civilian { -unity-background-image-tint-color: var(--dept-civilian); }
 
 .lobby-theme .lb-prio--high { color: var(--prio-high); }
 .lobby-theme .lb-prio--medium { color: var(--prio-medium); }

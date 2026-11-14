@@ -41,16 +41,29 @@ namespace SS3D.UI.Lobby
 
         public static CharacterCreatorDraft Create(CharacterNameList names, LookOptions look, System.Random random)
         {
-            string name = names != null ? names.RandomName(random) : "Alex Doe";
             CharacterCreatorDraft draft = new()
             {
                 Id = CharacterRoster.NewId(),
-                Name = CharacterNameRules.IsValid(name) ? CharacterNameRules.Normalize(name) : "Alex Doe",
-                SkinColorIndex = random.Next(CharacterCreatorMockData.SkinColors.Length),
-                EyeColorIndex = random.Next(CharacterCreatorMockData.EyeColors.Length),
+                Name = RandomName(names, random),
                 OutfitIndex = look.Outfits > 0 ? random.Next(look.Outfits) : 0,
                 Preferences = new CharacterPreferences(),
             };
+            RandomizeLook(draft, look, random);
+            return draft;
+        }
+
+        /// <summary>A random name from <paramref name="names"/>, normalised (Randomize name).</summary>
+        public static string RandomName(CharacterNameList names, System.Random random)
+        {
+            string name = names != null ? names.RandomName(random) : "Alex Doe";
+            return CharacterNameRules.IsValid(name) ? CharacterNameRules.Normalize(name) : "Alex Doe";
+        }
+
+        /// <summary>Re-rolls the body, skin, eyes, hair, facial hair and eyebrows; the name and preferences stay.</summary>
+        public static void RandomizeLook(CharacterCreatorDraft draft, LookOptions look, System.Random random)
+        {
+            draft.SkinColorIndex = random.Next(CharacterCreatorMockData.SkinColors.Length);
+            draft.EyeColorIndex = random.Next(CharacterCreatorMockData.EyeColors.Length);
 
             float female = random.NextDouble() < 0.5 ? 0f : (float)(0.6 + random.NextDouble() * 0.4);
             draft.SetMorph("height", Range(random, 0.3f, 0.7f));
@@ -70,7 +83,6 @@ namespace SS3D.UI.Lobby
             draft.Eyebrows = look.Eyebrows is { Count: > 0 }
                 ? CharacterAppearance.NormalizeEyebrowStyle(look.Eyebrows[random.Next(look.Eyebrows.Count)])
                 : draft.Eyebrows;
-            return draft;
         }
 
         private static float Range(System.Random random, float min, float max) => min + (float)random.NextDouble() * (max - min);

@@ -1,0 +1,105 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements">
+    <!-- Character window (lobby effort Phase 5), built to the "SS3D Lobby & Character window" canvas. CharacterWindowView binds it by name. -->
+    <ui:VisualElement name="character-window-surface" class="lobby charwin lobby-theme" focusable="true">
+        <!-- On the root, not the UXML: the view detaches this element from its TemplateContainer. -->
+        <ui:Style src="project://database/Assets/Content/Systems/UI/Lobby/CharacterWindow.uss" />
+        <ui:VisualElement class="charwin__veil" picking-mode="Ignore" />
+        <ui:VisualElement name="charwin-window" class="charwin__window">
+            <ui:VisualElement class="charwin__header">
+                <ui:Label text="CHARACTER" class="charwin__title lb-titling" />
+                <ui:Button name="charwin-switch" class="charwin__switch" tooltip="Switch character">
+                    <ui:VisualElement class="charwin__switch-thumb" picking-mode="Ignore">
+                        <ui:VisualElement name="charwin-switch-portrait" class="switcher__portrait-image" picking-mode="Ignore" />
+                    </ui:VisualElement>
+                    <ui:VisualElement class="charwin__switch-text" picking-mode="Ignore">
+                        <ui:Label name="charwin-switch-name" text="Rory Lindqvist" class="charwin__switch-name" picking-mode="Ignore" />
+                        <ui:VisualElement class="lobby__row" picking-mode="Ignore">
+                            <ui:Label name="charwin-switch-high-prefix" text="High:" class="charwin__switch-high" picking-mode="Ignore" />
+                            <ui:Label name="charwin-switch-high-job" text="Security Officer" class="charwin__switch-high charwin__switch-high-job" picking-mode="Ignore" />
+                        </ui:VisualElement>
+                    </ui:VisualElement>
+                    <ui:Label name="charwin-switch-count" text="3/10" class="charwin__switch-count lb-mono" picking-mode="Ignore" />
+                    <ui:VisualElement class="lobby__icon lobby__icon--chevron-down" picking-mode="Ignore" />
+                </ui:Button>
+                <ui:VisualElement class="lobby__grow" picking-mode="Ignore" />
+                <ui:VisualElement name="charwin-status" class="charwin__status" picking-mode="Ignore">
+                    <ui:VisualElement name="charwin-status-icon" class="charwin__status-icon" picking-mode="Ignore" />
+                    <ui:Label name="charwin-status-label" text="Saved" class="charwin__status-label" picking-mode="Ignore" />
+                </ui:VisualElement>
+                <ui:Button name="charwin-discard" text="DISCARD" class="charwin__button charwin__button--ghost lb-titling" tooltip="Throw away the unsaved changes" />
+                <ui:Button name="charwin-save" class="charwin__button charwin__button--primary charwin__save">
+                    <ui:VisualElement class="lobby__icon lobby__icon--check charwin__button-icon" picking-mode="Ignore" />
+                    <ui:Label text="SAVE" class="charwin__button-label lb-titling" picking-mode="Ignore" />
+                </ui:Button>
+                <ui:VisualElement class="charwin__sep" picking-mode="Ignore" />
+                <ui:Button name="charwin-return" class="charwin__return" tooltip="Return to the lobby (Esc)">
+                    <ui:VisualElement class="lobby__icon lobby__icon--chevron-left charwin__return-icon" picking-mode="Ignore" />
+                    <ui:Label text="RETURN TO LOBBY" class="charwin__return-label lb-titling" picking-mode="Ignore" />
+                    <ui:Label text="Esc" class="lobby__keycap lb-mono charwin__keyhint" picking-mode="Ignore" />
+                </ui:Button>
+            </ui:VisualElement>
+
+            <ui:VisualElement class="charwin__body">
+                <ui:VisualElement name="charwin-preview-column" class="charwin__preview-column">
+                    <ui:VisualElement name="charwin-preview" class="charwin__preview-frame" focusable="true" tooltip="Character preview. Left and right arrows rotate it.">
+                        <ui:VisualElement name="charwin-preview-image" class="charwin__preview-image" picking-mode="Ignore" />
+                    </ui:VisualElement>
+                    <ui:VisualElement class="charwin__rotate-row">
+                        <ui:Button name="charwin-rotate-left" class="charwin__icon-button" tooltip="Rotate left (Q)">
+                            <ui:VisualElement class="lobby__icon lobby__icon--refresh charwin__rotate-left-icon" picking-mode="Ignore" />
+                        </ui:Button>
+                        <ui:VisualElement name="charwin-angles" class="charwin__angles" picking-mode="Ignore">
+                            <ui:VisualElement class="charwin__angle" picking-mode="Ignore">
+                                <ui:Label text="Front" class="charwin__angle-label" picking-mode="Ignore" />
+                                <ui:VisualElement class="charwin__angle-bar" picking-mode="Ignore" />
+                            </ui:VisualElement>
+                            <ui:VisualElement class="charwin__angle" picking-mode="Ignore">
+                                <ui:Label text="Side" class="charwin__angle-label" picking-mode="Ignore" />
+                                <ui:VisualElement class="charwin__angle-bar" picking-mode="Ignore" />
+                            </ui:VisualElement>
+                            <ui:VisualElement class="charwin__angle" picking-mode="Ignore">
+                                <ui:Label text="Back" class="charwin__angle-label" picking-mode="Ignore" />
+                                <ui:VisualElement class="charwin__angle-bar" picking-mode="Ignore" />
+                            </ui:VisualElement>
+                        </ui:VisualElement>
+                        <ui:Button name="charwin-rotate-right" class="charwin__icon-button" tooltip="Rotate right (E)">
+                            <ui:VisualElement class="lobby__icon lobby__icon--refresh" picking-mode="Ignore" />
+                        </ui:Button>
+                    </ui:VisualElement>
+                    <ui:VisualElement class="charwin__clothing-row">
+                        <ui:Button name="charwin-show-clothing" class="lobby__switch-toggle lobby__switch-toggle--on" tooltip="Show clothing">
+                            <ui:VisualElement class="lobby__switch-knob" picking-mode="Ignore" />
+                        </ui:Button>
+                        <ui:Label text="Show clothing" class="charwin__clothing-label" />
+                        <ui:VisualElement class="lobby__grow" picking-mode="Ignore" />
+                        <ui:Label text="Q" class="lobby__keycap lb-mono charwin__keyhint" />
+                        <ui:Label text="E" class="lobby__keycap lb-mono charwin__keyhint" />
+                    </ui:VisualElement>
+                    <ui:Label name="charwin-outfit-caption" text="Wearing Security Officer clothes, from your High job." class="charwin__caption" />
+                </ui:VisualElement>
+
+                <ui:VisualElement class="charwin__main">
+                    <ui:VisualElement name="charwin-tabs" class="lobby__tabs charwin__tabs">
+                        <ui:Button name="charwin-tab-appearance" text="APPEARANCE" class="lobby__tab lb-titling" />
+                        <ui:Button name="charwin-tab-jobs" text="JOBS" class="lobby__tab lb-titling" />
+                        <ui:Button name="charwin-tab-antags" text="ANTAGS" class="lobby__tab lb-titling" />
+                    </ui:VisualElement>
+                    <ui:VisualElement name="charwin-tab-content" class="charwin__tab-content" />
+                </ui:VisualElement>
+            </ui:VisualElement>
+        </ui:VisualElement>
+
+        <ui:VisualElement name="charwin-prompt" class="lobby-prompt charwin__prompt">
+            <ui:VisualElement class="lobby-prompt__card">
+                <ui:Label text="UNSAVED CHANGES" class="lobby-prompt__title lb-titling" />
+                <ui:Label name="charwin-prompt-text" text="Save your changes to this character before you leave?" class="lobby-prompt__text" />
+                <ui:Label name="charwin-prompt-error" class="lobby-prompt__error" />
+                <ui:VisualElement class="lobby-prompt__buttons">
+                    <ui:Button name="charwin-prompt-save" text="SAVE" class="charwin__button charwin__button--primary charwin__prompt-button lb-titling" />
+                    <ui:Button name="charwin-prompt-discard" text="DISCARD" class="charwin__button charwin__button--ghost charwin__prompt-button lb-titling" />
+                    <ui:Button name="charwin-prompt-keep" text="KEEP EDITING" class="charwin__button charwin__button--chrome charwin__prompt-button lb-titling" />
+                </ui:VisualElement>
+            </ui:VisualElement>
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

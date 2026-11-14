@@ -43,7 +43,6 @@ namespace SS3D.Tests.AssetAudit
             // Over the cap but not yet planned for a split.
             { "LobbyLifecyclePilot", 2398 },
             { "HumanoidLocomotionBlendSetup", 2332 },
-            { "CharacterCreatorView", 1192 },
             { "HumanHealthController", 1150 },
             { "AtmosSimulation", 975 },
             { "LocalSpeechBubbleView", 955 },

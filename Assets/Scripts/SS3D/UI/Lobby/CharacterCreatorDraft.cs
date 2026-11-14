@@ -57,6 +57,57 @@ namespace SS3D.UI.Lobby
         }
 
         /// <summary>
+        /// Same name, look and preferences (the character window's Saved / Unsaved changes). The id and the old random
+        /// outfit index are not compared.
+        /// </summary>
+        public bool SameAs(CharacterCreatorDraft other)
+        {
+            if (other == null || Name != other.Name || !SameLookAs(other))
+            {
+                return false;
+            }
+
+            return (Preferences ?? new CharacterPreferences()).SameAs(other.Preferences ?? new CharacterPreferences());
+        }
+
+        private bool SameLookAs(CharacterCreatorDraft other)
+        {
+            if (Species != other.Species || EyeColorIndex != other.EyeColorIndex || SkinColorIndex != other.SkinColorIndex
+                || Eyebrows != other.Eyebrows || HairStyleIndex != other.HairStyleIndex
+                || BeardStyleIndex != other.BeardStyleIndex || HairColorIndex != other.HairColorIndex
+                || BeardColorIndex != other.BeardColorIndex || EyebrowColorIndex != other.EyebrowColorIndex
+                || BodyMorphs.Count != other.BodyMorphs.Count)
+            {
+                return false;
+            }
+
+            foreach (KeyValuePair<string, float> morph in BodyMorphs)
+            {
+                if (!other.BodyMorphs.TryGetValue(morph.Key, out float value) || System.Math.Abs(value - morph.Value) > 0.0001f)
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        /// <summary>Takes <paramref name="source"/>'s look; keeps this character's id, name and preferences (Randomize appearance).</summary>
+        public void CopyLookFrom(CharacterCreatorDraft source)
+        {
+            Species = source.Species;
+            EyeColorIndex = source.EyeColorIndex;
+            SkinColorIndex = source.SkinColorIndex;
+            Eyebrows = source.Eyebrows;
+            HairStyleIndex = source.HairStyleIndex;
+            BeardStyleIndex = source.BeardStyleIndex;
+            HairColorIndex = source.HairColorIndex;
+            BeardColorIndex = source.BeardColorIndex;
+            EyebrowColorIndex = source.EyebrowColorIndex;
+            CopyMorphsFrom(source.BodyMorphs);
+        }
+
+        /// <summary>
         /// The one mock starter (<see cref="CharacterCreatorMockData.Loadouts"/>) as it shipped, never edited. A store
         /// holding only this is replaced by a random character (lobby effort Decision 2). The outfit is ignored: it was
         /// picked at random.

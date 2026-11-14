@@ -89,6 +89,7 @@ namespace SS3D.Editor
 
             StyleSheet lobbyStyle = LoadRequired<StyleSheet>(LobbyAssetPaths.StyleSheet, missing);
             VisualTreeAsset lobbyTemplate = LoadRequired<VisualTreeAsset>(LobbyAssetPaths.Template, missing);
+            VisualTreeAsset characterWindowTemplate = LoadRequired<VisualTreeAsset>(LobbyAssetPaths.CharacterWindowTemplate, missing);
             Sprite preview = LoadRequiredSprite(LobbyAssetPaths.PreviewPlaceholder, missing);
             Sprite banner = LoadRequiredSprite(LobbyAssetPaths.ServerInfoBanner, missing);
             // Heroicons are Default Texture2D (not Sprite) — load as textures for UITK backgrounds.
@@ -222,7 +223,8 @@ namespace SS3D.Editor
                 hairColors,
                 previewOutfits,
                 characterNames,
-                lobbyTemplate);
+                lobbyTemplate,
+                characterWindowTemplate);
             EditorUtility.SetDirty(catalog);
             AssetDatabase.SaveAssets();
             return true;

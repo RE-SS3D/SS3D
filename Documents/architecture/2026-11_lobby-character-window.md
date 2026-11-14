@@ -2,7 +2,7 @@
 > Touches systems: rounds-lobby, gamemodes-roles-traits, entities, ui-shell, ui-shell-main-menu, audio, chat-audio-screens
 > Status: in progress
 
-**Progress:** Decided in the 2026-11-14 lobby grill. Phases 1–4 are built (2026-11-14). The lobby shell is the new UXML view; the character window is still the old creator until Phase 5. Everything ships before Playtest 1 ([mvp1-nuke-ops.md](../milestones/mvp1-nuke-ops.md) M11) on one branch and one pull request. Phases 1–3 are non-visual and run while the canvas is recoloured. Phases 4–6 build against the recoloured canvas. Phase 7 purges. Visual brief and recolour prompt: [lobby-character-window-visual-brief.md](../plans/lobby-character-window-visual-brief.md). Tests follow the [testing philosophy](2026-11_testing-philosophy.md).
+**Progress:** Decided in the 2026-11-14 lobby grill. Phases 1–5 are built (2026-11-14). The lobby shell and the character window are the new UXML views; the Join picker is Phase 6. Everything ships before Playtest 1 ([mvp1-nuke-ops.md](../milestones/mvp1-nuke-ops.md) M11) on one branch and one pull request. Phases 1–3 are non-visual and run while the canvas is recoloured. Phases 4–6 build against the recoloured canvas. Phase 7 purges. Visual brief and recolour prompt: [lobby-character-window-visual-brief.md](../plans/lobby-character-window-visual-brief.md). Tests follow the [testing philosophy](2026-11_testing-philosophy.md).
 
 # Lobby and character window (Nov 2026)
 
@@ -188,14 +188,50 @@ Interim until Phases 5–6:
 - **Switch character** opens the old creator, which has the slot list.
 - **Join** still resolves the character's priorities (`CmdSpawnLatePlayer`).
 
+Phase 5 ended the first three. Join still resolves priorities until Phase 6.
+
 ### Phase 5 — Character window
 
-- [ ] Window UXML/USS: top bar (switcher, Saved / Discard / Save, Return to lobby), the preview column with rotation and a show-clothing toggle, and the Appearance / Jobs / Antags tabs
-- [ ] Appearance: name with Randomize name and its error state; six sliders; skin and eye swatches; Hair / Facial hair / Eyebrows grids, each with a colour row; Randomize appearance
-- [ ] Jobs: departments with icons; total slots only; priority radio groups with the one-High rule and its notice; expandable descriptions; locked rows; the "no preferences" line; the pinned fallback choice
-- [ ] Antags: role rows with descriptions, off by default, and the mode-secrecy note
-- [ ] Switcher popover (lobby sidebar and top bar): select, New, Duplicate, Delete with confirm, the full state at 10
-- [ ] Preview wears the High job's outfit (Decision 14); Esc prompt for unsaved changes (Decision 5)
+- [x] Window UXML/USS: top bar (switcher, Saved / Discard / Save, Return to lobby), the preview column with rotation and a show-clothing toggle, and the Appearance / Jobs / Antags tabs
+- [x] Appearance: name with Randomize name and its error state; six sliders; skin and eye swatches; Hair / Facial hair / Eyebrows grids, each with a colour row; Randomize appearance
+- [x] Jobs: departments with icons; total slots only; priority radio groups with the one-High rule and its notice; expandable descriptions; locked rows; the "no preferences" line; the pinned fallback choice
+- [x] Antags: role rows with descriptions, off by default, and the mode-secrecy note
+- [x] Switcher popover (lobby sidebar and top bar): select, New, Duplicate, Delete with confirm, the full state at 10
+- [x] Preview wears the High job's outfit (Decision 14); Esc prompt for unsaved changes (Decision 5)
+
+What Phase 5 built:
+
+- **Files.** `CharacterWindow.uxml` and `CharacterWindow.uss`, and `CharacterSwitcher.uss` (`Content/Systems/UI/Lobby`).
+  - The window's root also carries `.lobby`, and its stylesheet imports `Lobby.uss`, so it reuses the shell's resets, icons, tabs, switches, keycaps, prompt card and `.lobby--compact`.
+  - `Lobby.uss` imports the switcher's stylesheet, so both screens have it.
+  - `LobbyAssetCatalog.CharacterWindowTemplate` holds the UXML.
+- **Views.**
+  - `CharacterWindowView` binds the UXML and hosts the three tabs: `CharacterAppearanceTab`, `CharacterJobsTab` and `CharacterAntagsTab`.
+  - `CharacterWindowModel` holds the saved character and the working copy the tabs edit, with no UI, so its rules are unit-tested. The rules are dirty, Save enabled, the name gate, the one-High notice, the all-Never notice and the outfit caption.
+  - `CharacterSwitcher` is the popover. The lobby sidebar and the window's top bar each host one; `LobbyUiSubSystem` handles their Select, New, Duplicate and Delete.
+  - `LobbyCharacterPreview` owns the booth, what it wears and the switcher portraits. It split out of `LobbyUiSubSystem`, which had reached the class-size cap.
+  - `CharacterCreatorView` is deleted.
+- **Save.** One Save covers all three tabs. It normalises the name, stores the character in the roster, writes `characters.json` and sends the look and preferences.
+  - Save stays disabled while the name is invalid, with the reason as its tooltip.
+  - Discard reloads the saved character.
+  - Esc, Return to lobby, or a switcher action that would leave the edited character asks Save / Discard / Keep editing first. Deleting another character doesn't ask.
+  - Keys: Ctrl+S saves. Ctrl+Tab cycles the tabs. Q / E rotate unless a text field has focus; ←/→ rotate with the preview focused.
+- **Jobs.** Departments come from the replicated job list, split into two columns of about half the jobs each (one column at 1366). Each row has its pictogram tinted in the department colour, or the department symbol when it has none. It also has "1 slot" / "N slots" / "unlimited" and an H/M/L/N radio group (Tab reaches it, ←/→ change it).
+  - A new High drops the old one to Medium. The moved row flashes and the notice names both jobs.
+  - With every job at Never, a green line says what happens instead: you join as Assistant, or you stay in the lobby, depending on the fallback.
+  - A chevron opens the job's description. It's hidden when the job has none.
+  - The fallback radio pair is pinned under the list.
+- **Antags.** One row per `AntagonistCategories` entry, which gained a description. An unset role shows the server's default (on under `-nukeops`), and the intro says so.
+- **Preview outfit.** `RoleSubSystem.LoadoutEquipmentOf(job)` returns the loadout's equipment prefabs from the local role assets. The booth wears every one with a `Cloth`, for the working copy's High job or the fallback job.
+  - `CharacterPreviewBooth.ApplyOutfit` now dresses any worn set, hides the parts nothing covers, applies occlusion and refits the body morphs.
+  - Show clothing off strips the booth.
+  - The lobby card shows the saved character dressed the same way.
+  - Before the role assets are reachable (not connected), it falls back to the catalog's first preview outfit.
+- **Switcher.** Rows show the head-crop portrait (or a silhouette before one is rendered), the name, "High: Job" in the department colour, and Selected. They also have Duplicate and Delete.
+  - ↑/↓ move, Enter selects and closes, Delete starts the confirm, and Esc backs out.
+  - At 10 characters, New and Duplicate disable and a line says to delete one first.
+  - A press outside the popover closes it.
+- **Icons.** Department symbols are game-icons.net SVGs already in `Art/Icons/External` (CC BY 3.0). The canvas's own department PNGs have no recorded source, so they weren't imported. `Art/Icons/Lobby/Jobs/Assistant.png` comes from SS3D-Art. A job without a pictogram uses its department symbol.
 
 ### Phase 6 — Join a round in progress
 
@@ -205,7 +241,8 @@ Interim until Phases 5–6:
 
 - [ ] Delete `CharacterCreatorView.cs`, `CharacterCreatorDraft.cs`, `LobbyMockData.cs` and `CharacterCreatorMockData.cs`, after moving their real data (palettes, slider definitions) into catalog or ScriptableObject data; move `JobPriorityUtil` out of mock data
 - [ ] Delete the "N interested" count (`JobSlotInfo.Interested`), `LobbyMockData.PlayerRow`, `LobbyAssetCatalog`'s unused banner and chevron fields, the species dropdown, the species dropdown, the step rail and the old "loadout" naming for character slots
-- [ ] Delete `LobbyShell.uss` (the shell no longer uses it; the old creator still does) and trim `CharacterCreator.uss`, or replace them
+- [ ] Delete `LobbyShell.uss` and `CharacterCreator.uss`: nothing uses them since Phase 5, but `LobbyAssetCatalog` still requires `_lobbyStyle`. Its `ChevronDown`, loadout thumbnails, department icons, placeholder and banner fields are unused too.
+- [ ] The draft's `OutfitIndex` (a random preview outfit) only feeds the booth's not-connected fallback since Phase 5
 - [ ] Record the dropped small Escape menu in [player settings](2026-10_player-settings.md)
 - [ ] Run `update-system-docs`: the [rounds-lobby](systems/rounds-lobby.md) map (overview, start-here, pitfalls), the [gamemodes-roles-traits](systems/gamemodes-roles-traits.md) and [ui-shell-main-menu](systems/ui-shell-main-menu.md) maps, the INDEX coverage row, and M11
 
@@ -228,6 +265,11 @@ Interim until Phases 5–6:
 - **Smokes:** the nightly `nukeops-round` smoke needs `-nukeops` to keep its default opt-in and connected threshold. Phase 2 added `-nukeops-countdown-seconds=20` to its conf; re-run it before the pull request.
 - **Per phase:** `Testing/ui/validate.sh --steps compile,editmode` plus the lifecycle step; add `visual` from Phase 4 on.
 - **Phase 4:** `LobbySidebarModelTests` (every sidebar state on the canvas) and `LobbyViewTests` (the shell binds the committed template, keeps its stylesheet, paints the sidebar, card and admin tabs). `LobbyUiPilot` and `LobbyLifecyclePilot` now target the new element names; the remote-client scenario too.
+- **Phase 5:**
+  - `CharacterWindowModelTests`: dirty across all three tabs, the name gate, Save normalising the name, the one-High notice, the all-Never notice per fallback, the outfit job, slot text, the column split.
+  - `CharacterWindowViewTests`: the window binds its template and paints the selected character, Saved / Unsaved, the invalid-name state, the unsaved prompt on Return, the Jobs and Antags tabs, and the switcher's delete confirm and full state. No panel means no change events, so edits go through the model.
+  - `LobbyUiPilot` drives the window, its tabs, the switcher (New, select, delete) and the unsaved prompt.
+  - `LobbyLifecyclePilot` sets Security High in the Jobs tab and checks that it reaches the server after Save. That replaces the Phase 4 reflection step.
 
 ## Deviations
 
@@ -235,6 +277,9 @@ Interim until Phases 5–6:
 - **From [lobby.md](../design/lobby.md) §4 (opt-in off by default):** the `-nukeops` profile keeps antag opt-ins on by default, for Playtest 1 only, so an 8-player squad draw finds operatives. Remove this after the playtest.
 - **From [lobby.md](../design/lobby.md) §7 and the canvas (Admin help):** players can't send to Admin chat; the server accepts it only from admins, and an admin has no way to reply to one player. The Chat tab shows the Admin channel to admins only. Player-to-admin help belongs to [admin-tools.md](../design/admin-tools.md).
 - **From [lobby.md](../design/lobby.md) §2 (playtime-locked jobs):** the locked row is built, but no job has a playtime requirement yet. That needs [player-accounts.md](../design/player-accounts.md) and player data.
+- **From the canvas (switcher, Duplicate):** the copy keeps the original's name instead of "Name (2)". Brackets break the name rule, and two characters may share a name (Decision 4).
+- **From the canvas (switcher rows):** Duplicate and Delete show on every row, dimmed until the row is hovered, focused or selected. The canvas shows them only on the hovered row; hidden buttons can't be reached with Tab.
+- **From the canvas (style grids):** the Hair, Facial hair and Eyebrows tiles show a generic head icon and the style's name. There are no per-style thumbnails yet.
 
 ## Related docs
 

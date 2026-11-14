@@ -58,6 +58,8 @@ namespace SS3D.UI.Lobby
         private Label _highPrefix;
         private Label _highJob;
         private Label _characterCount;
+        private Button _switchButton;
+        private CharacterSwitcher _switcher;
         private VisualElement _previewImage;
         private Button _ready;
         private Label _readyTitle;
@@ -98,8 +100,6 @@ namespace SS3D.UI.Lobby
         private int _onlineCount;
 
         public event Action CharacterCreatorRequested;
-        /// <summary>"Switch character". The Phase 5 switcher pops over here; until then it opens the character window.</summary>
-        public event Action SwitchCharacterRequested;
         /// <summary>Ready before the round (a toggle), Join during it.</summary>
         public event Action ReadyRequested;
         /// <summary>Observe: a ghost at once, before or during the round (Decision 9).</summary>
@@ -138,6 +138,17 @@ namespace SS3D.UI.Lobby
         public string ActiveTab => _activeTab;
 
         public bool HasLastRound => _lastRound?.Model != null;
+
+        /// <summary>The switcher popover beside "Switch character" (lobby effort Phase 5); the host owns its events.</summary>
+        public CharacterSwitcher Switcher => _switcher;
+
+        /// <summary>Hosts the character switcher; "Switch character" toggles it.</summary>
+        public void MountSwitcher(CharacterSwitcher switcher)
+        {
+            if (_root == null || switcher == null) return;
+            _switcher = switcher;
+            switcher.Mount(_root, _switchButton);
+        }
 
         private static VisualElement CreateSettingsHost()
         {
@@ -187,7 +198,6 @@ namespace SS3D.UI.Lobby
         public void Detach()
         {
             CharacterCreatorRequested = null;
-            SwitchCharacterRequested = null;
             ReadyRequested = null;
             ObserveRequested = null;
             QuitRequested = null;
@@ -215,6 +225,7 @@ namespace SS3D.UI.Lobby
             if (!visible)
             {
                 _textEntry.Exit();
+                _switcher?.Close();
                 Disarm();
                 Hidden?.Invoke();
             }
@@ -247,7 +258,8 @@ namespace SS3D.UI.Lobby
             _mapLoad = _root.Q<Label>("lobby-map-load-status");
 
             _root.Q<Button>("lobby-character").clicked += () => CharacterCreatorRequested?.Invoke();
-            _root.Q<Button>("lobby-switch-character").clicked += () => SwitchCharacterRequested?.Invoke();
+            _switchButton = _root.Q<Button>("lobby-switch-character");
+            _switchButton.clicked += () => _switcher?.Toggle(_switchButton, false);
             _characterName = _root.Q<Label>("lobby-character-name");
             _highSwatch = _root.Q("lobby-high-swatch");
             _highPrefix = _root.Q<Label>("lobby-high-prefix");

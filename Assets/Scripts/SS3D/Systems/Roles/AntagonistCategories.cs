@@ -11,14 +11,16 @@ namespace SS3D.Systems.Roles
     {
         public const string NuclearOperative = "nukeop";
 
-        public static readonly (string Key, string Name)[] All =
+        /// <summary>Key, display name and the character window's one-line description (lobby.md §4).</summary>
+        public static readonly (string Key, string Name, string Description)[] All =
         {
-            (NuclearOperative, "Nuclear Operative"),
+            (NuclearOperative, "Nuclear Operative",
+                "A member of a Syndicate strike team sent to destroy the station with a nuclear device."),
         };
 
         public static bool IsKnown(string key)
         {
-            foreach ((string known, string _) in All)
+            foreach ((string known, string _, string _) in All)
             {
                 if (known == key)
                 {

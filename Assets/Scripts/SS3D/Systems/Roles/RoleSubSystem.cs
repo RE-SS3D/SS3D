@@ -215,22 +215,59 @@ namespace SS3D.Systems.Roles
         /// The job's description (lobby.md §2), read from the local role assets so it needs no replication; empty
         /// when the job is unknown or has none.
         /// </summary>
-        public string DescriptionOf(string job)
+        public string DescriptionOf(string job) => RoleDataOf(job)?.Description ?? string.Empty;
+
+        /// <summary>
+        /// The prefabs of the job's loadout equipment (worn slots, bag, ID, PDA), from the local role assets; the
+        /// character window dresses its preview in the High job's clothing (lobby effort Decision 14). An unknown job
+        /// gives the fallback job's; empty without role assets.
+        /// </summary>
+        public List<GameObject> LoadoutEquipmentOf(string job)
+        {
+            List<GameObject> prefabs = new();
+            RoleData role = RoleDataOf(job);
+            if (role == null)
+            {
+                role = RoleDataOf(_fallbackRole);
+            }
+
+            RoleLoadout loadout = role != null ? role.Loadout : null;
+            if (loadout == null || loadout.EquipmentAssets == null)
+            {
+                return prefabs;
+            }
+
+            foreach (KeyValuePair<ContainerType, ObjectAssetReference> equipment in loadout.EquipmentAssets)
+            {
+                GameObject prefab = equipment.Value ? Assets.Get<GameObject>(equipment.Value) : null;
+                if (prefab)
+                {
+                    prefabs.Add(prefab);
+                }
+            }
+
+            return prefabs;
+        }
+
+        /// <summary>The job a player without a fit gets, uncapped (Assistant).</summary>
+        public string FallbackJob => _fallbackRole;
+
+        private RoleData RoleDataOf(string job)
         {
             if (_rolesAvailable == null || string.IsNullOrEmpty(job))
             {
-                return string.Empty;
+                return null;
             }
 
             foreach (RolesData role in _rolesAvailable.Roles)
             {
                 if (role.Data != null && role.Data.Name == job)
                 {
-                    return role.Data.Description;
+                    return role.Data;
                 }
             }
 
-            return string.Empty;
+            return null;
         }
 
         public bool TryGetRole(Player player, out RoleData role)

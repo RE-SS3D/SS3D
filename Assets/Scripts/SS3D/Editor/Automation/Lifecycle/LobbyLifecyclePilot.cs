@@ -285,7 +285,7 @@ namespace SS3D.Editor.Automation
                 Verify = () =>
                 {
                     Require(!LegacyLobbyCanvasPresent(), "No legacy uGUI lobby canvas in the scene");
-                    Require(!Visible(Creator()), "Creator hidden on boot");
+                    Require(!Visible(Window()), "Character window hidden on boot");
                     Require(BoothLive(), "Preview booth active with RT bound");
                     Require(Visible(Shell().Q("lobby-admin")), "Host owner sees the Admin switch");
                     Require(ReadyButton().enabledInHierarchy && ReadyText() == "READY UP", "Ready button enabled and reads READY UP");
@@ -621,20 +621,6 @@ namespace SS3D.Editor.Automation
             new Step { Name = "Ready again", Enter = () => Click(ReadyButton()), Until = IsReady },
             new Step
             {
-                // Interim until the Phase 5 character window has a Jobs tab: set the saved character's High job directly
-                // and resend, as its Save will.
-                Name = "Security High reaches the server",
-                Enter = SetSecurityHigh,
-                // The lobby repaints on its 200 ms refresh: wait on the card, not only the server.
-                Until = () => Job("Security").Interested == 1 && Shell().Q<Label>("lobby-high-job").text == "Security",
-                Verify = () =>
-                {
-                    Require(Job("Assistant").Interested == 0, "Only Security counts as interested");
-                    Require(Shell().Q<Label>("lobby-high-job").ClassListContains("lb-dept--security"), "High job wears its department colour");
-                },
-            },
-            new Step
-            {
                 Name = "Server Info shows live metadata",
                 Until = () => Shell().Q<Label>("server-info-motd")?.text == PilotMotd,
                 Verify = () =>
@@ -714,50 +700,15 @@ namespace SS3D.Editor.Automation
             },
             new Step
             {
-                Name = "Open creator before round start",
+                Name = "Open the character window before round start",
                 Enter = () => Click(Shell().Q<Button>("lobby-character")),
-                Until = () => Visible(Creator()) && !Visible(Shell()),
+                Until = () => Visible(Window()) && !Visible(Shell()),
+                Verify = () => Require(Window().Q<Label>("charwin-status-label").text == "Saved", "The window opens Saved"),
             },
             new Step
             {
-                Name = "Species menu shows unavailable models disabled",
-                Enter = () =>
-                {
-                    DropdownField species = Creator().Q<DropdownField>("character-species");
-                    Require(species.value == "Human" && species.choices.SequenceEqual(new string[] { "Human" }), "Human is the only selectable species");
-                    // Untargeted navigation events go to the focused element, so focus and target the field.
-                    species.Focus();
-                    using NavigationSubmitEvent evt = NavigationSubmitEvent.GetPooled();
-                    evt.target = species;
-                    species.SendEvent(evt);
-                },
-                Until = () => Creator().panel.visualTree.Query<Label>().ToList().Any(l => l.text == "Skrell (unavailable)"),
-                Verify = () =>
-                {
-                    foreach (string species in new string[] { "Skrell", "Vox" })
-                    {
-                        Label label = Creator().panel.visualTree.Query<Label>().ToList().First(l => l.text == species + " (unavailable)");
-                        Require(!label.enabledInHierarchy, species + " menu item is disabled");
-                    }
-                    Capture("species-unavailable");
-                },
-            },
-            new Step
-            {
-                Name = "Close species menu",
-                Enter = () =>
-                {
-                    Label human = Creator().panel.visualTree.Query<Label>().ToList().Last(l => l.text == "Human");
-                    using NavigationCancelEvent evt = NavigationCancelEvent.GetPooled();
-                    evt.target = human;
-                    human.SendEvent(evt);
-                },
-                Until = () => !Creator().panel.visualTree.Query<Label>().ToList().Any(l => l.text == "Skrell (unavailable)"),
-            },
-            new Step
-            {
-                Name = "Creator selector receives a rendered portrait",
-                Until = () => Creator()?.Q(className: "char-creator__loadout-thumb")?.resolvedStyle.backgroundImage.renderTexture != null,
+                Name = "Window top bar receives a rendered portrait",
+                Until = () => Window()?.Q("charwin-switch-portrait")?.resolvedStyle.backgroundImage.renderTexture != null,
                 Verify = () =>
                 {
                     CharacterPreviewBooth booth = UnityEngine.Object.FindAnyObjectByType<CharacterPreviewBooth>();
@@ -767,7 +718,7 @@ namespace SS3D.Editor.Automation
                     try
                     {
                         RenderTexture.active = sentinel;
-                        Require(booth.TryCapturePortrait(portrait), "Front preview produces a selector portrait");
+                        Require(booth.TryCapturePortrait(portrait), "Front preview produces a switcher portrait");
                         Require(RenderTexture.active == sentinel, "Portrait capture restores the active render texture");
                     }
                     finally
@@ -781,61 +732,40 @@ namespace SS3D.Editor.Automation
             },
             new Step
             {
-                Name = "Creator: name",
+                Name = "Window: name and body",
                 Enter = () =>
                 {
-                    Creator().Q<TextField>("character-name").value = PilotCharacterName;
-                    Click(FindButton(Creator(), "NEXT"));
+                    Window().Q<TextField>("charwin-name").value = PilotCharacterName;
+                    Window().Q<Slider>("body-height").value = PilotHeight;
+                    Window().Q<Slider>("body-fat").value = PilotFat;
+                    Click(Swatch("charwin-skin", 5));
                 },
-                Until = () => Creator().Q<Slider>("body-height") != null,
+                Until = () => SwatchSelectedAndLaidOut("charwin-skin", 5)
+                    && Window().Q<Label>("charwin-status-label").text == "Unsaved changes",
             },
             new Step
             {
-                Name = "Creator: body",
-                Enter = () =>
-                {
-                    Creator().Q<Slider>("body-height").value = PilotHeight;
-                    Creator().Q<Slider>("body-fat").value = PilotFat;
-                    Click(Swatch("skin-color-picker", 5));
-                },
-                // Each swatch click rebuilds the step; wait for the new elements to be laid out.
-                Until = () => SwatchSelectedAndLaidOut("skin-color-picker", 5),
+                Name = "Window: eye colour",
+                Enter = () => Click(Swatch("charwin-eyes", 1)),
+                Until = () => SwatchSelectedAndLaidOut("charwin-eyes", 1),
             },
             new Step
             {
-                Name = "Creator: eye color",
-                Enter = () => Click(Swatch("eye-color-picker", 1)),
-                Until = () => SwatchSelectedAndLaidOut("eye-color-picker", 1),
+                Name = "Window: first hair style",
+                Enter = () => Click(Tile("charwin-hair-styles", 1)),
+                Until = () => Tile("charwin-hair-styles", 1).ClassListContains("charwin-look__tile--selected"),
             },
             new Step
             {
-                Name = "Creator: body → style",
-                Enter = () => Click(FindButton(Creator(), "NEXT")),
-                Until = () => StyleTiles().Count > 1,
+                Name = "Window: eyebrow style",
+                Enter = () => Click(Window().Q<Button>("eyebrows-humaneyebrowsbold")),
+                Until = () => Window().Q("eyebrows-humaneyebrowsbold").ClassListContains("charwin-look__tile--selected"),
             },
             new Step
             {
-                Name = "Creator: first hair style",
-                Enter = () => Click(StyleTiles()[1]),
-                Until = () => StyleTiles()[1].ClassListContains("char-creator__style-tile--selected"),
-            },
-            new Step
-            {
-                Name = "Creator: eyebrows",
-                Enter = () => Click(FindButton(Creator(), "EYEBROWS")),
-                Until = () => Creator().Q("eyebrows-humaneyebrowsbold")?.worldBound.width > 0,
-            },
-            new Step
-            {
-                Name = "Creator: eyebrow style",
-                Enter = () => Click(Creator().Q("eyebrows-humaneyebrowsbold")),
-                Until = () => Swatch("style-color-picker", 4)?.worldBound.width > 0,
-            },
-            new Step
-            {
-                Name = "Creator: eyebrow color",
-                Enter = () => Click(Swatch("style-color-picker", 4)),
-                Until = () => SwatchSelectedAndLaidOut("style-color-picker", 4),
+                Name = "Window: eyebrow colour",
+                Enter = () => Click(Swatch("charwin-eyebrow-colour", 4)),
+                Until = () => SwatchSelectedAndLaidOut("charwin-eyebrow-colour", 4),
                 Verify = () =>
                 {
                     CharacterPreviewBooth booth = UnityEngine.Object.FindAnyObjectByType<CharacterPreviewBooth>();
@@ -843,16 +773,26 @@ namespace SS3D.Editor.Automation
                     Capture("creator-face");
                 },
             },
-            new Step { Name = "Creator: review", Enter = () => Click(FindButton(Creator(), "NEXT")), Until = () => FindButton(Creator(), "SAVE CHARACTER") != null },
+            new Step
+            {
+                Name = "Window: Jobs tab",
+                Enter = () => Click(Window().Q<Button>("charwin-tab-jobs")),
+                Until = () => Window().Q("charwin-job-Security")?.worldBound.width > 0,
+            },
+            new Step
+            {
+                Name = "Window: Security High",
+                Enter = () => Click(Window().Q("charwin-job-Security").Q<Button>("charwin-prio-high")),
+                Until = () => Window().Q("charwin-job-Security").Q<Button>("charwin-prio-high").ClassListContains("charwin-jobs__prio-option--high-on"),
+                Verify = () => Require(Window().Q<Label>("charwin-outfit-caption").text.Contains("Security"), "The preview wears Security's clothes"),
+            },
             new Step
             {
                 Name = "Save character",
-                Enter = () => Click(FindButton(Creator(), "SAVE CHARACTER")),
-                Until = () => FindButton(Creator(), "SAVED") != null,
+                Enter = () => Click(Window().Q<Button>("charwin-save")),
+                Until = () => Window().Q<Label>("charwin-status-label").text == "Saved",
                 Verify = () =>
                 {
-                    _savedName = CharacterName();
-                    Require(string.Equals(_savedName, PilotCharacterName, StringComparison.OrdinalIgnoreCase), "Lobby sidebar shows the saved name");
                     CharacterProfileStore.Profile profile = new CharacterProfileStore(CharacterProfileStore.DefaultPath).Load();
                     Require(profile != null, "Save writes a readable character profile to disk");
                     CharacterCreatorDraft saved = profile.Characters.First(c => c.Id == profile.SelectedId);
@@ -860,6 +800,29 @@ namespace SS3D.Editor.Automation
                         && Mathf.Approximately(saved.GetMorph("fat"), PilotFat) && saved.HairStyleIndex == 1 && saved.SkinColorIndex == 5 && saved.EyeColorIndex == 1
                         && saved.Eyebrows == "humaneyebrowsbold" && saved.EyebrowColorIndex == 4,
                         "Reloaded selected character preserves name, body and hair");
+                    Require(saved.Preferences.HighJob == "Security", "Reloaded selected character keeps its High job");
+                },
+            },
+            new Step
+            {
+                Name = "Security High reaches the server after Save",
+                // The lobby repaints on its 200 ms refresh: wait on the card, not only the server.
+                Until = () => Job("Security").Interested == 1 && Shell().Q<Label>("lobby-high-job").text == "Security",
+                Verify = () =>
+                {
+                    Require(Job("Assistant").Interested == 0, "Only Security counts as interested");
+                    Require(Shell().Q<Label>("lobby-high-job").ClassListContains("lb-dept--security"), "High job wears its department colour");
+                },
+            },
+            new Step
+            {
+                Name = "Return to the lobby",
+                Enter = () => Click(Window().Q<Button>("charwin-return")),
+                Until = () => Visible(Shell()) && !Visible(Window()),
+                Verify = () =>
+                {
+                    _savedName = CharacterName();
+                    Require(_savedName == PilotCharacterName, "Lobby sidebar shows the saved name");
                 },
             },
             new Step
@@ -867,7 +830,7 @@ namespace SS3D.Editor.Automation
                 Name = "Round start spawns ready player and hides lobby",
                 Enter = () => InstanceFinder.ClientManager.Broadcast(new ChangeRoundStateMessage(true)),
                 Timeout = 120,
-                Until = () => Rounds().CurrentRoundState == RoundState.Ongoing && Spawned() && !Visible(Shell()) && !Visible(Creator()),
+                Until = () => Rounds().CurrentRoundState == RoundState.Ongoing && Spawned() && !Visible(Shell()) && !Visible(Window()),
                 Verify = () =>
                 {
                     Require(!BoothLive(), "Booth deactivated while in world");
@@ -969,7 +932,7 @@ namespace SS3D.Editor.Automation
                 {
                     Require(!Shown(RoundEndPart("round-end-panel")) && !Shown(RoundEndPart("round-end-banner")),
                         "The summary overlay is gone in the lobby");
-                    Require(!Visible(Creator()), "Return shows shell, not creator");
+                    Require(!Visible(Window()), "Return shows shell, not the character window");
                     Require(BoothLive(), "Booth restored with RT bound");
                     Require(CharacterName() == _savedName, "Saved character name restored");
                     Require(AssignedRole() == null && Job("Security").Assigned == 0, "Round stop cleared job assignments");
@@ -1054,7 +1017,7 @@ namespace SS3D.Editor.Automation
                     SS3D.Networking.ClientConnectionRecovery.FailureUiOwnedElsewhere = true;
                     InstanceFinder.ClientManager.StopConnection();
                 },
-                Until = () => !InstanceFinder.ClientManager.Started && !Visible(Shell()) && !Visible(Creator()),
+                Until = () => !InstanceFinder.ClientManager.Started && !Visible(Shell()) && !Visible(Window()),
                 Verify = () => Require(!BoothLive(), "Booth deactivated offline"),
             },
             new Step
@@ -1445,14 +1408,20 @@ namespace SS3D.Editor.Automation
 
         private static VisualElement Swatch(string picker, int index)
         {
-            List<VisualElement> swatches = Creator()?.Q(picker)?.Query(className: "char-creator__swatch").ToList();
+            List<VisualElement> swatches = Window()?.Q(picker)?.Query(className: "charwin-look__swatch").ToList();
             return swatches != null && index < swatches.Count ? swatches[index] : null;
         }
 
         private static bool SwatchSelectedAndLaidOut(string picker, int index)
         {
             VisualElement swatch = Swatch(picker, index);
-            return swatch != null && swatch.worldBound.width > 0 && swatch.ClassListContains("char-creator__swatch--selected");
+            return swatch != null && swatch.worldBound.width > 0 && swatch.ClassListContains("charwin-look__swatch--selected");
+        }
+
+        private static VisualElement Tile(string grid, int index)
+        {
+            VisualElement tiles = Window()?.Q(grid);
+            return tiles != null && index < tiles.childCount ? tiles[index] : null;
         }
 
         private static List<string> ChatLines() =>
@@ -1481,7 +1450,7 @@ namespace SS3D.Editor.Automation
 
         private static VisualElement Shell() => Root()?.Q("lobby-shell-surface");
 
-        private static VisualElement Creator() => Root()?.Q("character-creator-surface");
+        private static VisualElement Window() => Root()?.Q("character-window-surface");
 
         // The uGUI lobby (LobbyCanvas, renamed "Lobby" in Game.unity) and Character Customizer canvases were purged in Phase F.
         private static bool LegacyLobbyCanvasPresent() => UnityEngine.Object.FindObjectsByType<Canvas>(FindObjectsInactive.Include, FindObjectsSortMode.None)
@@ -1503,16 +1472,6 @@ namespace SS3D.Editor.Automation
             return $"{online.Count(ready.IsReady)}/{online.Length} ready";
         }
 
-        /// <summary>Gives the selected saved character High Security and resends its preferences.</summary>
-        private static void SetSecurityHigh()
-        {
-            LobbyUiSubSystem lobby = SubSystems.Get<LobbyUiSubSystem>();
-            CharacterCreatorDraft draft = (CharacterCreatorDraft)typeof(LobbyUiSubSystem)
-                .GetField("_draft", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic).GetValue(lobby);
-            draft.Preferences.SetPriority("Security", JobPriority.High);
-            SubSystems.Get<SS3D.Systems.Session.ClientSessionSubSystem>().JobPreferencesChanged();
-        }
-
         private static string CharacterName() => Shell().Q<Label>("lobby-character-name")?.text;
 
         private static JobSlotInfo Job(string name) =>
@@ -1520,9 +1479,6 @@ namespace SS3D.Editor.Automation
 
         private static string AssignedRole() =>
             SubSystems.TryGet(out RoleSubSystem roles) && roles.TryGetRole(Local(), out RoleData role) ? role.Name : null;
-
-        private static List<VisualElement> StyleTiles() =>
-            Creator()?.Query(className: "char-creator__style-tile").ToList() ?? new List<VisualElement>();
 
         /// <summary>The saved lobby character reached the server and was applied to the spawned body.</summary>
         private static void VerifySpawnedAppearance()
@@ -1601,7 +1557,7 @@ namespace SS3D.Editor.Automation
         {
             RoundSubSystem rounds = Rounds();
             return $"online={Online()} local={Local() != null} round={(rounds != null ? rounds.CurrentRoundState.ToString() : "-")} "
-                + $"ready={IsReady()} spawned={Spawned()} shell={Visible(Shell())} creator={Visible(Creator())} "
+                + $"ready={IsReady()} spawned={Spawned()} shell={Visible(Shell())} window={Visible(Window())} "
                 + $"button='{(Shell() != null ? ReadyText() : "-")}' count='{(Shell() != null ? CountLabel() : "-")}'";
         }
 

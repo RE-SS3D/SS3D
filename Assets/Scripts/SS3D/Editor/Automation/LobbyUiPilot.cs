@@ -22,9 +22,7 @@ namespace SS3D.Editor.Automation
         private static readonly List<string> Errors = new();
         private static readonly List<string> Checks = new();
         private static int _step;
-        private static int _styleCheckStep;
         private static int _shellCheckStep;
-        private static int[] _initialOutfitMeshes;
         private static double _next;
         private static double _layoutDeadline;
         private static double _deadline;
@@ -37,7 +35,7 @@ namespace SS3D.Editor.Automation
             EditorApplication.playModeStateChanged += OnPlayModeChanged;
         }
 
-        // Guards: lobby shell, settings and Character Creator render and respond (rounds-lobby UI contracts) · Not cheaper because: needs rendered UI Toolkit panels and screenshots a human reviews; weekly graphical run
+        // Guards: lobby shell, settings, character window and switcher render and respond (rounds-lobby UI contracts) · Not cheaper because: needs rendered UI Toolkit panels and screenshots a human reviews; weekly graphical run
         [MenuItem("SS3D/Testing/Run Lobby UI Pilot")]
         public static void Run()
         {
@@ -72,7 +70,6 @@ namespace SS3D.Editor.Automation
                 Errors.Clear();
                 Checks.Clear();
                 _step = 0;
-                _styleCheckStep = 0;
                 _shellCheckStep = 0;
                 _pendingImage = null;
                 _running = true;
@@ -197,6 +194,15 @@ namespace SS3D.Editor.Automation
         private static void Click(VisualElement element)
         {
             Require(element != null && element.worldBound.width > 0, "Clickable element has layout");
+            // A Button acts on submit; a plain element (a switcher row) listens for ClickEvent.
+            if (element is Button button)
+            {
+                using NavigationSubmitEvent submit = NavigationSubmitEvent.GetPooled();
+                submit.target = button;
+                button.SendEvent(submit);
+                return;
+            }
+
             using (ClickEvent evt = ClickEvent.GetPooled())
             {
                 evt.target = element;
@@ -324,7 +330,7 @@ namespace SS3D.Editor.Automation
                     Require(previewLights.Length == 2 && previewLights.All(l => l.enabled && l.gameObject.activeInHierarchy),
                         "Preview lighting survives station initialization");
                     CheckPreviewFraming();
-                    _initialOutfitMeshes = PreviewOutfitMeshes();
+                    PreviewOutfitMeshes();
                     VisualElement info = shell.Q("server-info");
                     Require(info.worldBound.yMax <= shell.Q("lobby-tab-content").worldBound.yMax + 1f,
                         "Server Info content fits the panel");
@@ -446,7 +452,7 @@ namespace SS3D.Editor.Automation
                 VisualElement root = Root();
                 if (root == null) return;
                 VisualElement shell = root.Q("lobby-shell-surface");
-                VisualElement creator = root.Q("character-creator-surface");
+                VisualElement window = root.Q("character-window-surface");
                 switch (_step)
                 {
                     case 0:
@@ -477,140 +483,139 @@ namespace SS3D.Editor.Automation
                         Press(shell, "lobby-character");
                         break;
                     case 2:
-                        Require(creator != null && creator.resolvedStyle.display != DisplayStyle.None, "Character creator visible after preview click");
-                        Require(shell.resolvedStyle.display == DisplayStyle.None, "Lobby hidden while creator open");
-                        TextField field = creator.Q<TextField>();
-                        Require(field != null, "Identity name field exists");
-                        field.value = "Automation Pilot";
-                        Require(creator.Q(className: "char-creator__preview-image").resolvedStyle.backgroundImage.renderTexture != null,
+                        Require(window != null && window.resolvedStyle.display != DisplayStyle.None, "Character window visible after the card click");
+                        Require(shell.resolvedStyle.display == DisplayStyle.None, "Lobby hidden while the window is open");
+                        Require(window.Q("charwin-preview-image").resolvedStyle.backgroundImage.renderTexture != null,
                             "Live character RenderTexture attached");
-                        Require(creator.Q<DropdownField>("character-species") != null, "Species uses a dropdown");
-                        Require(!creator.Query<Label>().ToList().Any(l => l.text == "UNIFORM COLOR"), "Uniform color removed from Identity");
-                        Require(creator.Q<Button>(className: "char-creator__nav-btn").enabledInHierarchy == false,
-                            "Back disabled on Identity");
-                        Capture("02-identity");
+                        Require(window.Q<Label>("charwin-status-label").text == "Saved", "Opens Saved");
+                        Require(!window.Q<Button>("charwin-save").enabledInHierarchy, "Save waits for a change");
+                        Require(window.Q("charwin-randomize-look") != null && window.Q("charwin-randomize-name") != null, "Randomize buttons exist");
+                        Require(window.Query<Slider>().ToList().Count(slider => slider.name.StartsWith("body-")) == 6, "Six body sliders");
+                        Require(window.Q("charwin-hair-styles").childCount >= 2 && window.Q("charwin-beard-styles").childCount >= 2
+                            && window.Q("charwin-eyebrow-styles").childCount >= 2, "Hair, facial hair and eyebrow grids");
+                        window.Q<TextField>("charwin-name").value = "Pilot";
                         break;
-                    case 3: Submit(creator, "NEXT"); break;
+                    case 3:
+                        Require(!window.Q("charwin-name-error").ClassListContains("charwin-look__error--hidden"), "A one-word name shows its error");
+                        Require(!window.Q<Button>("charwin-save").enabledInHierarchy, "Save stays disabled while the name is invalid");
+                        Capture("02-appearance-name-error");
+                        break;
                     case 4:
-                        var sliders = creator.Query<Slider>().ToList();
-                        Require(sliders.Count >= 6, "Body morph controls exist");
-                        Require(!creator.Query<Label>().ToList().Any(l => l.text == "HAIR COLOR"), "Hair color removed from Body");
-                        sliders[0].value = 0.6f;
-                        sliders[1].value = 0.4f;
-                        Submit(creator, "›");
+                        window.Q<TextField>("charwin-name").value = "automation pilot";
+                        window.Q<Slider>("body-height").value = 0.6f;
+                        window.Q<Slider>("body-female").value = 0.4f;
+                        Click(window.Q("charwin-hair-colour").Children().ElementAt(2));
+                        Click(window.Q("charwin-beard-colour").Children().ElementAt(3));
+                        Click(window.Q("charwin-eyebrow-colour").Children().ElementAt(4));
                         break;
                     case 5:
-                        Require(creator.Q<Label>(className: "char-creator__angle-label").text == "Side", "Preview changed to Side");
-                        Require(PreviewOutfitMeshes().SequenceEqual(_initialOutfitMeshes), "Body edits preserve the chosen outfit");
-                        Capture("03-body-side");
+                        Require(window.Q("charwin-name-error").ClassListContains("charwin-look__error--hidden"), "A first and last name clears the error");
+                        Require(window.Q<Label>("charwin-status-label").text == "Unsaved changes", "Edits show Unsaved changes");
+                        Require(window.Q<Button>("charwin-save").enabledInHierarchy, "Save enabled with a valid change");
+                        Require(window.Q("charwin-hair-colour").Children().ElementAt(2).ClassListContains("charwin-look__swatch--selected")
+                            && window.Q("charwin-beard-colour").Children().ElementAt(3).ClassListContains("charwin-look__swatch--selected")
+                            && window.Q("charwin-eyebrow-colour").Children().ElementAt(4).ClassListContains("charwin-look__swatch--selected"),
+                            "Hair, facial hair and eyebrow colours are independent");
+                        Capture("03-appearance");
                         break;
-                    case 6: Submit(creator, "NEXT"); break;
+                    case 6: Press(window, "charwin-rotate-right"); break;
                     case 7:
-                        switch (_styleCheckStep)
-                        {
-                            case 0:
-                                Require(creator.Q("style-color-picker").Query<Label>().ToList().Any(l => l.text == "HAIR COLOR"), "Hair palette appears on Style");
-                                Click(creator.Q("style-color-picker").Query(className: "char-creator__swatch").ToList()[2]);
-                                break;
-                            case 1: Submit(creator, "FACIAL HAIR"); break;
-                            case 2:
-                                Require(creator.Q("style-color-picker").Query<Label>().ToList().Any(l => l.text == "FACIAL HAIR COLOR"), "Facial Hair palette has its own label");
-                                Click(creator.Q("style-color-picker").Query(className: "char-creator__swatch").ToList()[3]);
-                                break;
-                            case 3: Submit(creator, "EYEBROWS"); break;
-                            case 4:
-                                Require(creator.Q("style-color-picker").Query<Label>().ToList().Any(l => l.text == "EYEBROW COLOR"), "Eyebrow palette has its own label");
-                                Click(creator.Q("style-color-picker").Query(className: "char-creator__swatch").ToList()[4]);
-                                break;
-                            case 5: Submit(creator, "HAIR"); break;
-                            default:
-                                Require(creator.Q("style-color-picker").Query(className: "char-creator__swatch").ToList()[2]
-                                    .ClassListContains("char-creator__swatch--selected"), "Hair color survives changes to other style colors");
-                                Require(creator.Q("style-color-picker").worldBound.yMin >= creator.Q(className: "char-creator__style-scroll").worldBound.yMax,
-                                    "Color palette sits below style tiles");
-                                Capture("04-style");
-                                break;
-                        }
-                        if (_styleCheckStep++ < 6) _step--;
+                        Require(window.Q("charwin-angles").Children().ElementAt(1).ClassListContains("charwin__angle--active"), "Preview rotated to Side");
+                        Capture("04-appearance-side");
                         break;
-                    case 8: Submit(creator, "NEXT"); break;
-                    case 9:
-                        Require(creator.Query<Label>().ToList().Any(l => l.text.Contains("Automation Pilot")), "Review contains edited name");
-                        Require(creator.Query<Button>().ToList().Count(b => b.text == "SAVE CHARACTER") == 1,
-                            "Review has one Save action in the navigation footer");
-                        Button save = creator.Query<Button>().ToList().Single(b => b.text == "SAVE CHARACTER");
-                        Require(save.ClassListContains("char-creator__nav-btn--save"), "Save uses the green footer action");
-                        Require(save.worldBound.yMax <= creator.worldBound.yMax, "Save footer stays inside creator");
-                        Capture("05-review");
+                    case 8: Press(window, "charwin-rotate-left"); break;
+                    case 9: Press(window, "charwin-tab-jobs"); break;
+                    case 10:
+                        Require(window.Q("charwin-jobs") != null && window.Q("charwin-job-Security") != null, "Jobs tab lists the server's jobs");
+                        Require(window.Q("charwin-fallback") != null, "The fallback choice is pinned under the list");
+                        Press(window.Q("charwin-job-Engineer"), "charwin-prio-high");
                         break;
-                    case 10: Submit(creator, "SAVE CHARACTER"); break;
                     case 11:
-                        Require(creator.Query<Button>().ToList().Any(b => b.text == "SAVED" && !b.enabledInHierarchy),
-                            "Save confirms Saved and prevents duplicate submission");
-                        Submit(creator, "RETURN TO LOBBY");
+                        Press(window.Q("charwin-job-Security"), "charwin-prio-high");
                         break;
                     case 12:
-                        Require(shell.resolvedStyle.display != DisplayStyle.None, "Lobby restored after Return");
-                        Require(creator.resolvedStyle.display == DisplayStyle.None, "Creator hidden after Return");
-                        Require(shell.Q<Label>("lobby-character-name").text == "Automation Pilot", "Saved name displayed in lobby");
-                        Capture("06-saved-lobby");
+                        Require(window.Q("charwin-job-Engineer").Q<Button>("charwin-prio-medium").ClassListContains("charwin-jobs__prio-option--medium-on"),
+                            "A new High drops the old High to Medium");
+                        Require(!window.Q("charwin-jobs-notice").ClassListContains("charwin__notice--hidden"), "The notice says what moved");
+                        Require(window.Q<Label>("charwin-outfit-caption").text.Contains("Security"), "The preview wears the High job's clothes");
+                        Capture("05-jobs");
                         break;
-                    case 13: Press(shell, "lobby-character"); break;
-                    case 14: Click(creator.Q(className: "char-creator__loadout-btn")); break;
+                    case 13: Press(window, "charwin-show-clothing"); break;
+                    case 14:
+                        Require(!GameObject.Find("CharacterPreviewDummy").GetComponentsInChildren<SkinnedMeshRenderer>(true)
+                            .Single(r => r.name == "Jumpsuit").gameObject.activeInHierarchy, "Show clothing off strips the preview");
+                        Press(window, "charwin-show-clothing");
+                        break;
                     case 15:
-                        List<VisualElement> loadoutRows = creator.Query(className: "char-creator__loadout-row").ToList();
-                        Require(loadoutRows.Count == 1, "A first run has one (random) character before New Character");
-                        Click(loadoutRows[0]);
+                        PreviewOutfitMeshes();
+                        Press(window, "charwin-tab-antags");
                         break;
                     case 16:
-                        Require(creator.Q<TextField>("character-name").value == "Automation Pilot", "Reselecting the character keeps its draft");
-                        Click(creator.Q(className: "char-creator__loadout-btn"));
+                        Require(window.Q("charwin-antags") != null && window.Q("charwin-antags-note") != null, "Antags tab with the mode-secrecy note");
+                        Capture("06-antags");
                         break;
-                    case 17: Click(creator.Q(className: "char-creator__loadout-new")); break;
+                    case 17: Press(window, "charwin-save"); break;
                     case 18:
-                        string newName = creator.Q<TextField>("character-name").value;
-                        Require(!string.IsNullOrEmpty(newName) && newName != "Automation Pilot" && newName.Contains(" "),
-                            "New Character starts as a random character with a first and last name");
-                        Submit(creator, "NEXT");
+                        Require(window.Q<Label>("charwin-status-label").text == "Saved", "Save shows Saved");
+                        Require(window.Q<Label>("charwin-switch-name").text == "Automation Pilot", "Save normalises the name");
+                        Press(window, "charwin-return");
                         break;
                     case 19:
-                        // Random bodies never land on the saved character's Female 0.4 (it's either 0 or 0.6–1).
-                        Require(!Mathf.Approximately(creator.Q<Slider>("body-female").value, 0.4f), "New Character starts from a random body");
-                        Click(creator.Q(className: "char-creator__loadout-btn"));
+                        Require(shell.resolvedStyle.display != DisplayStyle.None, "Lobby restored after Return");
+                        Require(window.resolvedStyle.display == DisplayStyle.None, "Window hidden after Return");
+                        Require(shell.Q<Label>("lobby-character-name").text == "Automation Pilot", "Saved name on the lobby card");
+                        Require(shell.Q<Label>("lobby-high-job").text == "Security", "Saved High job on the lobby card");
+                        Capture("07-saved-lobby");
                         break;
-                    case 20:
-                        Click(creator.Query(className: "char-creator__loadout-row").ToList()
-                            .Single(e => e.Query<Label>().ToList().Any(l => l.text == "Automation Pilot")));
-                        break;
+                    case 20: Press(shell, "lobby-switch-character"); break;
                     case 21:
-                        Require(creator.Q<TextField>("character-name").value == "Automation Pilot", "Saved character restores edited name");
-                        Submit(creator, "NEXT");
+                        Require(shell.Q("character-switcher").ClassListContains("switcher--open"), "Switch character opens the switcher");
+                        Require(shell.Query("character-switcher-row").ToList().Count == 1, "A first run has one character");
+                        Capture("08-switcher");
                         break;
-                    case 22:
-                        Require(Mathf.Approximately(creator.Q<Slider>("body-height").value, 0.6f)
-                            && Mathf.Approximately(creator.Q<Slider>("body-female").value, 0.4f), "Saved character retains edited body morphs");
-                        Require(PreviewOutfitMeshes().SequenceEqual(_initialOutfitMeshes), "Saved character restores its chosen outfit");
-                        Submit(creator, "RETURN TO LOBBY");
+                    case 22: Press(shell, "character-switcher-new"); break;
+                    case 23:
+                        Require(shell.Query("character-switcher-row").ToList().Count == 2, "New adds a character");
+                        Require(shell.Q<Label>("lobby-character-name").text != "Automation Pilot", "New selects the new random character");
+                        Click(shell.Query("character-switcher-row").ToList()
+                            .Single(row => row.Query<Label>().ToList().Any(l => l.text == "Automation Pilot")));
                         break;
-                    case 23: Press(shell, "lobby-character"); break;
                     case 24:
-                        Click(creator.Query(className: "char-creator__rail-item").ToList()
-                            .Single(e => e.Query<Label>().ToList().Any(l => l.text == "STYLE")));
+                        Require(shell.Q<Label>("lobby-character-name").text == "Automation Pilot", "Selecting a row switches the card");
+                        Require(!shell.Q("character-switcher").ClassListContains("switcher--open"), "Selecting closes the switcher");
+                        Press(shell, "lobby-character");
                         break;
                     case 25:
-                        Require(creator.Q("style-color-picker").Query(className: "char-creator__swatch").ToList()[2]
-                            .ClassListContains("char-creator__swatch--selected"), "Saved draft restores hair color");
-                        Submit(creator, "FACIAL HAIR");
+                        Require(window.Q<TextField>("charwin-name").value == "Automation Pilot", "The window opens on the selected character");
+                        Require(Mathf.Approximately(window.Q<Slider>("body-height").value, 0.6f)
+                            && Mathf.Approximately(window.Q<Slider>("body-female").value, 0.4f), "Saved body sliders restored");
+                        Require(window.Q("charwin-hair-colour").Children().ElementAt(2).ClassListContains("charwin-look__swatch--selected"),
+                            "Saved hair colour restored");
+                        window.Q<Slider>("body-fat").value = 0.9f;
+                        Press(window, "charwin-return");
                         break;
                     case 26:
-                        Require(creator.Q("style-color-picker").Query(className: "char-creator__swatch").ToList()[3]
-                            .ClassListContains("char-creator__swatch--selected"), "Saved draft restores independent facial hair color");
-                        Submit(creator, "EYEBROWS");
+                        Require(window.Q("charwin-prompt").ClassListContains("charwin__prompt--open"), "Return with unsaved changes asks first");
+                        Capture("09-unsaved-prompt");
                         break;
-                    case 27:
-                        Require(creator.Q("style-color-picker").Query(className: "char-creator__swatch").ToList()[4]
-                            .ClassListContains("char-creator__swatch--selected"), "Saved draft restores independent eyebrow color");
-                        Submit(creator, "RETURN TO LOBBY");
+                    case 27: Press(window, "charwin-prompt-discard"); break;
+                    case 28:
+                        Require(window.resolvedStyle.display == DisplayStyle.None && shell.resolvedStyle.display != DisplayStyle.None,
+                            "Discard returns to the lobby");
+                        Press(shell, "lobby-switch-character");
+                        break;
+                    case 29:
+                        VisualElement other = shell.Query("character-switcher-row").ToList()
+                            .Single(row => !row.Query<Label>().ToList().Any(l => l.text == "Automation Pilot"));
+                        Press(other, "character-switcher-trash");
+                        break;
+                    case 30:
+                        Require(shell.Q("character-switcher-confirm") != null, "Delete asks for confirmation");
+                        Press(shell, "character-switcher-confirm-delete");
+                        break;
+                    case 31:
+                        Require(shell.Query("character-switcher-row").ToList().Count == 1, "Delete removes the character");
+                        shell.Q("character-switcher").RemoveFromClassList("switcher--open");
                         break;
                     default: Finish(null, true); return;
                 }

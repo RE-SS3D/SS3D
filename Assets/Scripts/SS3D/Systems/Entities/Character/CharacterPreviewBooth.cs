@@ -52,6 +52,8 @@ namespace SS3D.Systems.Entities.Character
         private GameObject _dummy;
         private RenderTexture _renderTexture;
         private int _angleIndex;
+        private float[] _morphs;
+        private bool _hasMorphs;
 
         public RenderTexture PreviewTexture => _renderTexture;
 
@@ -122,6 +124,8 @@ namespace SS3D.Systems.Entities.Character
             }
 
             HumanoidMorphApplier.Apply(_dummy, female, breasts, fat, muscle, jaw, height);
+            _morphs = new[] { female, breasts, fat, muscle, jaw, height };
+            _hasMorphs = true;
             // Do not reframe — auto-fit would cancel height scale in the viewport.
         }
 
@@ -153,41 +157,77 @@ namespace SS3D.Systems.Entities.Character
             SetLayerRecursively(_dummy.transform, PreviewLayer);
         }
 
-        /// <summary>Apply worn meshes to the existing rig; never spawn networked clothing Items.</summary>
-        public void ApplyOutfit(Cloth jumpsuit, Cloth shoes)
+        /// <summary>
+        /// Dresses the dummy in <paramref name="worn"/> (lobby effort Decision 14): each clothed body part takes the mesh
+        /// of the first item that has one for it, and every other part is hidden, so an empty list strips the dummy.
+        /// Applies meshes to the existing rig; never spawns networked clothing Items.
+        /// </summary>
+        public void ApplyOutfit(IReadOnlyList<Cloth> worn)
         {
-            if (_dummy == null || jumpsuit == null || shoes == null)
+            if (_dummy == null)
             {
                 return;
             }
 
             foreach (ClothedBodyPart part in _dummy.GetComponentsInChildren<ClothedBodyPart>(true))
             {
-                Cloth source;
-                switch (part.Type)
+                Cloth source = null;
+                Mesh mesh = null;
+                if (worn != null)
                 {
-                    case ClothType.Jumpsuit:
+                    foreach (Cloth cloth in worn)
                     {
-                        source = jumpsuit;
-                        break;
+                        if (cloth != null && cloth.TryGetClothMesh(part.Type, out mesh))
+                        {
+                            source = cloth;
+                            break;
+                        }
                     }
-                    case ClothType.ShoeLeft:
-                    case ClothType.ShoeRight:
-                    {
-                        source = shoes;
-                        break;
-                    }
-                    default: continue;
                 }
-                Mesh mesh = source.GetClothMesh(part.Type);
-                if (mesh != null && part.TryGetComponent(out SkinnedMeshRenderer renderer))
+
+                if (source == null || !part.TryGetComponent(out SkinnedMeshRenderer renderer))
                 {
-                    renderer.sharedMesh = mesh;
-                    renderer.enabled = true;
-                    part.gameObject.SetActive(true);
+                    part.gameObject.SetActive(false);
+                    continue;
                 }
+
+                renderer.sharedMesh = mesh;
+                renderer.enabled = true;
+                part.ApplyMaterials(renderer, source.WornMaterials);
+                part.gameObject.SetActive(true);
             }
+
+            ApplyOcclusion(worn);
+            // A new sharedMesh starts with zero shape-key weights; keep it fitted to the body.
+            if (_hasMorphs)
+            {
+                HumanoidMorphApplier.Apply(_dummy, _morphs[0], _morphs[1], _morphs[2], _morphs[3], _morphs[4], _morphs[5]);
+            }
+
             SetLayerRecursively(_dummy.transform, PreviewLayer);
+        }
+
+        /// <summary>Opaque clothing hides the body renderers it names, as <c>ClothesDisplayer</c> does in game.</summary>
+        private void ApplyOcclusion(IReadOnlyList<Cloth> worn)
+        {
+            foreach (Renderer renderer in _dummy.GetComponentsInChildren<Renderer>(true))
+            {
+                bool occluded = false;
+                if (worn != null)
+                {
+                    foreach (Cloth cloth in worn)
+                    {
+                        if (cloth != null && cloth.OccludedBodyRenderers != null
+                            && System.Array.IndexOf(cloth.OccludedBodyRenderers, renderer.name) >= 0)
+                        {
+                            occluded = true;
+                            break;
+                        }
+                    }
+                }
+
+                renderer.forceRenderingOff = occluded;
+            }
         }
 
         /// <summary>

@@ -14,11 +14,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: SS3D.UI.Lobby::SS3D.UI.Lobby.LobbyAssetCatalog
   _lobbyStyle: {fileID: 7433441132597879392, guid: 2bfe9922cb974e49aca2466dd348187d, type: 3}
   _lobbyTemplate: {fileID: 9197481963319205126, guid: beed3effbc3bc6874835f0bfdcf20dfc, type: 3}
+  _characterWindowTemplate: {fileID: 9197481963319205126, guid: 571dc5b41e8d9d7e2bddef83e9ae2344, type: 3}
   _previewPlaceholder: {fileID: 21300000, guid: 75ead553c05c482fae442fad6748b24a, type: 3}
   _serverInfoBanner: {fileID: 21300000, guid: 97eb5bc2a8f94653941b8defb224a3a7, type: 3}
   _chevronDown: {fileID: 2800000, guid: b503f0cc149527347bf81823be9e52fa, type: 3}
   _previewHumanPrefab: {fileID: 6415765038646171405, guid: 1c3eed1ea37ecc1448e41270cdc63486, type: 3}
   _jobIcons:
+  - Id: Assistant
+    Sprite: {fileID: 21300000, guid: e89d51cb5cb444719ae1898e4914e66e, type: 3}
   - Id: Bartender
     Sprite: {fileID: 21300000, guid: 6d5342d85e1a400b89f765c3930f40f3, type: 3}
   - Id: Captain

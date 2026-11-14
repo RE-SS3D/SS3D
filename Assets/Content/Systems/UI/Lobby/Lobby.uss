@@ -5,6 +5,7 @@
  * (the 1366 x 768 layout, Decision 19).
  */
 @import url("LobbyTokens.uss");
+@import url("CharacterSwitcher.uss");
 
 .lobby {
     position: absolute; left: 0; top: 0; right: 0; bottom: 0;
@@ -31,6 +32,24 @@
 .lobby__icon--logout { background-image: url("project://database/Assets/Art/Icons/Heroicons/Outline/Logout.png"); }
 .lobby__icon--external { background-image: url("project://database/Assets/Art/Icons/Heroicons/Outline/ExternalLink.png"); width: 12px; height: 12px; }
 .lobby__icon--send { background-image: url("project://database/Assets/Art/Icons/Heroicons/Outline/PaperAirplane.png"); width: 14px; height: 14px; }
+.lobby__icon--chevron-left { background-image: url("project://database/Assets/Art/Icons/Heroicons/Outline/ChevronLeft.png"); width: 14px; height: 14px; }
+.lobby__icon--refresh { background-image: url("project://database/Assets/Art/Icons/Heroicons/Outline/Refresh.png"); }
+.lobby__icon--duplicate { background-image: url("project://database/Assets/Art/Icons/Heroicons/Outline/Duplicate.png"); }
+.lobby__icon--trash { background-image: url("project://database/Assets/Art/Icons/Heroicons/Outline/Trash.png"); }
+.lobby__icon--plus { background-image: url("project://database/Assets/Art/Icons/Heroicons/Outline/Plus.png"); }
+.lobby__icon--info { background-image: url("project://database/Assets/Art/Icons/Heroicons/Outline/InformationCircle.png"); }
+.lobby__icon--warning { background-image: url("project://database/Assets/Art/Icons/Heroicons/Outline/Exclamation.png"); }
+.lobby__icon--user { background-image: url("project://database/Assets/Art/Icons/Heroicons/Solid/User.png"); }
+.lobby__icon--sparkles { background-image: url("project://database/Assets/Art/Icons/Heroicons/Outline/Sparkles.png"); }
+/* Department symbols (game-icons.net, CC BY 3.0; see Art/Icons/External/license.txt), tinted per department. */
+.lobby__icon--dept-command { background-image: url("project://database/Assets/Art/Icons/External/delapouite/captain-hat-profile.svg"); }
+.lobby__icon--dept-security { background-image: url("project://database/Assets/Art/Icons/External/delapouite/police-target.svg"); }
+.lobby__icon--dept-engineering { background-image: url("project://database/Assets/Art/Icons/External/lorc/cog.svg"); }
+.lobby__icon--dept-medical { background-image: url("project://database/Assets/Art/Icons/External/lorc/hospital-cross.svg"); }
+.lobby__icon--dept-science { background-image: url("project://database/Assets/Art/Icons/External/skoll/atom.svg"); }
+.lobby__icon--dept-cargo { background-image: url("project://database/Assets/Art/Icons/External/delapouite/cargo-crate.svg"); }
+.lobby__icon--dept-service { background-image: url("project://database/Assets/Art/Icons/External/lorc/beer-stein.svg"); }
+.lobby__icon--dept-civilian { background-image: url("project://database/Assets/Art/Icons/External/delapouite/bed.svg"); }
 
 .lobby .lobby__dot { width: 6px; height: 6px; border-radius: 3px; margin-right: 6px; background-color: var(--lb-text-2); }
 .lobby .lobby__dot--live { background-color: var(--lb-green); }
