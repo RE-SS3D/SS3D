@@ -120,6 +120,18 @@ namespace SS3D.Editor
                 missing.Add(LobbyAssetPaths.JobIconRoot);
             }
 
+            // Optional: missing thumbnails fall back to a generic icon; StyleThumbnailTests flags them.
+            List<LobbyNamedSprite> styleThumbnails = new();
+            if (Directory.Exists(LobbyAssetPaths.StyleThumbnailRoot))
+            {
+                foreach (string guid in AssetDatabase.FindAssets("t:Texture2D", new[] { LobbyAssetPaths.StyleThumbnailRoot.TrimEnd('/') }))
+                {
+                    string path = AssetDatabase.GUIDToAssetPath(guid);
+                    Sprite sprite = AssetDatabase.LoadAssetAtPath<Sprite>(path);
+                    if (sprite != null) styleThumbnails.Add(new LobbyNamedSprite(Path.GetFileNameWithoutExtension(path), sprite));
+                }
+            }
+
             List<LobbyNamedTexture> departmentIcons = new();
             foreach ((string id, string fileName) in DepartmentIconFiles)
             {
@@ -224,7 +236,8 @@ namespace SS3D.Editor
                 previewOutfits,
                 characterNames,
                 lobbyTemplate,
-                characterWindowTemplate);
+                characterWindowTemplate,
+                styleThumbnails);
             EditorUtility.SetDirty(catalog);
             AssetDatabase.SaveAssets();
             return true;

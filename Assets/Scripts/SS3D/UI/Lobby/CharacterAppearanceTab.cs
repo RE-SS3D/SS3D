@@ -241,7 +241,8 @@ namespace SS3D.UI.Lobby
             {
                 int index = i;
                 string label = i == 0 || styles == null ? "None" : DisplayName(styles[i].Id);
-                tiles.Add(Tile(kind + "-" + i, label, i == 0, i == selected, () => select(index)));
+                string id = i == 0 || styles == null ? "none" : styles[i].Id;
+                tiles.Add(Tile(kind + "-" + i, label, Thumbnail(kind, id), i == 0, i == selected, () => select(index)));
             }
 
             return tiles;
@@ -252,26 +253,41 @@ namespace SS3D.UI.Lobby
             VisualElement tiles = LobbyUi.Box("charwin-look__tiles");
             tiles.name = "charwin-eyebrow-styles";
             string current = CharacterAppearance.NormalizeEyebrowStyle(draft.Eyebrows);
-            tiles.Add(Tile("eyebrows-none", "None", true, current == "none", () => _model.Working.Eyebrows = "none"));
+            tiles.Add(Tile("eyebrows-none", "None", Thumbnail("eyebrows", "none"), true, current == "none", () => _model.Working.Eyebrows = "none"));
             if (_catalog == null || _catalog.EyebrowStyles == null) return tiles;
             foreach (LobbyNamedPrefab style in _catalog.EyebrowStyles)
             {
                 string id = CharacterAppearance.NormalizeEyebrowStyle(style.Id);
-                tiles.Add(Tile("eyebrows-" + id, DisplayName(style.Id), false, current == id, () => _model.Working.Eyebrows = id));
+                tiles.Add(Tile("eyebrows-" + id, DisplayName(style.Id), Thumbnail("eyebrows", id), false, current == id, () => _model.Working.Eyebrows = id));
             }
 
             return tiles;
         }
 
-        private Button Tile(string name, string label, bool none, bool selected, Action select)
+        /// <summary>The baked head render for a style, or null (the tile then shows a generic head).</summary>
+        private Sprite Thumbnail(string kind, string id) =>
+            _catalog != null && _catalog.TryGetStyleThumbnail(kind, id, out Sprite sprite) ? sprite : null;
+
+        private Button Tile(string name, string label, Sprite thumbnail, bool none, bool selected, Action select)
         {
             Button tile = new() { name = name, tooltip = label };
             tile.AddToClassList("charwin-look__tile");
-            tile.EnableInClassList("charwin-look__tile--none", none);
+            tile.EnableInClassList("charwin-look__tile--none", none && thumbnail == null);
             tile.EnableInClassList("charwin-look__tile--selected", selected);
-            VisualElement icon = LobbyUi.Icon("user");
-            icon.AddToClassList("charwin-look__tile-icon");
-            tile.Add(icon);
+            if (thumbnail != null)
+            {
+                VisualElement image = LobbyUi.Box("charwin-look__tile-thumb");
+                image.pickingMode = PickingMode.Ignore;
+                image.style.backgroundImage = new StyleBackground(thumbnail);
+                tile.Add(image);
+            }
+            else
+            {
+                VisualElement icon = LobbyUi.Icon("user");
+                icon.AddToClassList("charwin-look__tile-icon");
+                tile.Add(icon);
+            }
+
             tile.Add(LobbyUi.Text(label, "charwin-look__tile-label"));
             tile.clicked += () =>
             {

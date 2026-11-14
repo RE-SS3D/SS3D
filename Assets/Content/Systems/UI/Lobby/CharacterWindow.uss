@@ -167,6 +167,8 @@
 .lobby .charwin-look__tile--selected, .lobby .charwin-look__tile--selected:hover { border-color: var(--lb-text); }
 .lobby .charwin-look__tile-icon { width: 36px; height: 36px; margin-bottom: 6px; -unity-background-image-tint-color: #5a5d60; }
 .lobby .charwin-look__tile--none .charwin-look__tile-icon { opacity: 0.6; }
+/* A baked head render (CharacterStyleThumbnailBaker) fills the tile above its label. */
+.charwin-look__tile-thumb { width: 100%; flex-grow: 1; -unity-background-scale-mode: scale-and-crop; }
 .lobby .charwin-look__tile-label {
     width: 100%; height: 24px; font-size: 12px; color: var(--lb-text-2); -unity-text-align: middle-center;
     background-color: var(--lb-panel); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;

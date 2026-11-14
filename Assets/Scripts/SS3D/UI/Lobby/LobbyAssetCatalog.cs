@@ -37,6 +37,12 @@ namespace SS3D.UI.Lobby
         [SerializeField] private List<LobbyNamedPrefab> _beardStyles = new();
         [SerializeField] private List<LobbyNamedPrefab> _eyebrowStyles = new();
 
+        /// <summary>
+        /// Baked head renders for the style grids, keyed "hair-&lt;id&gt;", "beard-&lt;id&gt;" or "eyebrows-&lt;id&gt;"
+        /// (<see cref="LobbyAssetPaths.StyleThumbnailRoot"/>, SS3D → Data → Bake Character Style Thumbnails).
+        /// </summary>
+        [SerializeField] private List<LobbyNamedSprite> _styleThumbnails = new();
+
         /// <summary>Hair / skin tint colours shown in the Body colour pickers.</summary>
         [SerializeField] private List<Color> _hairColors = new();
 
@@ -83,6 +89,12 @@ namespace SS3D.UI.Lobby
         }
 
         public IReadOnlyList<Color> HairColors => _hairColors;
+
+        /// <summary>The baked thumbnail of a style: <paramref name="kind"/> is hair, beard or eyebrows; "none" is the bare head.</summary>
+        public bool TryGetStyleThumbnail(string kind, string id, out Sprite sprite) =>
+            TryGetNamedSprite(_styleThumbnails, StyleThumbnailKey(kind, id), out sprite);
+
+        public static string StyleThumbnailKey(string kind, string id) => kind + "-" + (id ?? "none").ToLowerInvariant();
 
         public bool TryGetJobIcon(string id, out Sprite sprite) => TryGetNamedSprite(_jobIcons, id, out sprite);
 
@@ -200,8 +212,10 @@ namespace SS3D.UI.Lobby
             List<LobbyPreviewOutfit> previewOutfits,
             CharacterNameList characterNames,
             VisualTreeAsset lobbyTemplate,
-            VisualTreeAsset characterWindowTemplate)
+            VisualTreeAsset characterWindowTemplate,
+            List<LobbyNamedSprite> styleThumbnails)
         {
+            _styleThumbnails = styleThumbnails ?? new List<LobbyNamedSprite>();
             _lobbyStyle = lobbyStyle;
             _lobbyTemplate = lobbyTemplate;
             _characterWindowTemplate = characterWindowTemplate;

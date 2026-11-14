@@ -234,7 +234,16 @@ namespace SS3D.Systems.Entities.Character
         /// Copies a square head crop of the last rendered frame into <paramref name="target"/>.
         /// Only the Front angle gives a usable portrait, so other angles return false.
         /// </summary>
-        public bool TryCapturePortrait(RenderTexture target)
+        public bool TryCapturePortrait(RenderTexture target) =>
+            CaptureHeadCrop(target, PortraitViewportHeight, PortraitHeadOffset, false);
+
+        /// <summary>
+        /// Copies a square crop around the head into <paramref name="target"/>: <paramref name="viewportHeight"/> is
+        /// the crop's height as a fraction of the frame, <paramref name="headOffset"/> lifts its centre above the head
+        /// bone in metres. <paramref name="renderNow"/> renders the camera first (the editor's style thumbnail baker,
+        /// which has no frame loop). Only the Front angle gives a usable crop, so other angles return false.
+        /// </summary>
+        public bool CaptureHeadCrop(RenderTexture target, float viewportHeight, float headOffset, bool renderNow)
         {
             if (target == null || _renderTexture == null || _previewCamera == null || !_previewCamera.enabled
                 || _dummy == null || _angleIndex != 0)
@@ -248,9 +257,14 @@ namespace SS3D.Systems.Entities.Character
                 return false;
             }
 
+            if (renderNow)
+            {
+                _previewCamera.Render();
+            }
+
             // Head bone sits at the skull base; aim slightly above it for the face.
-            Vector3 viewport = _previewCamera.WorldToViewportPoint(head.position + (Vector3.up * PortraitHeadOffset));
-            float height = PortraitViewportHeight;
+            Vector3 viewport = _previewCamera.WorldToViewportPoint(head.position + (Vector3.up * headOffset));
+            float height = viewportHeight;
             float width = height * _renderTexture.height / _renderTexture.width;
             Vector2 offset = new(
                 Mathf.Clamp(viewport.x - (width * 0.5f), 0f, 1f - width),

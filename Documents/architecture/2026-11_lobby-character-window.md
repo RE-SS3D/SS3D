@@ -231,6 +231,7 @@ What Phase 5 built:
   - ↑/↓ move, Enter selects and closes, Delete starts the confirm, and Esc backs out.
   - At 10 characters, New and Duplicate disable and a line says to delete one first.
   - A press outside the popover closes it.
+- **Style thumbnails.** Each Hair, Facial hair and Eyebrows tile shows a baked head render of its style, on a neutral skin tone with light-brown hair and dark-brown brows. `CharacterStyleThumbnailBaker` (SS3D → Data → Bake Character Style Thumbnails) renders them with the preview booth in edit mode, writes `Art/Icons/Lobby/Styles/<kind>-<id>.png` and rebuilds the catalog. Re-run it after adding a style; `StyleThumbnailTests` fails until you do. A tile without a thumbnail falls back to a generic head.
 - **Icons.** Department symbols are game-icons.net SVGs already in `Art/Icons/External` (CC BY 3.0). The canvas's own department PNGs have no recorded source, so they weren't imported. `Art/Icons/Lobby/Jobs/Assistant.png` comes from SS3D-Art. A job without a pictogram uses its department symbol.
 
 ### Phase 6 — Join a round in progress
@@ -281,7 +282,6 @@ What Phase 5 built:
 - **From the canvas (switcher, Duplicate):** the copy keeps the original's name instead of "Name (2)". Brackets break the name rule, and two characters may share a name (Decision 4).
 - **From the canvas (switcher rows):** Duplicate and Delete show on every row, dimmed until the row is hovered, focused or selected. The canvas shows them only on the hovered row; hidden buttons can't be reached with Tab.
 - **From the canvas (playtest Jobs board):** the owner asked for the full roster with unavailable jobs locked, so the five-job playtest board isn't what players see; its "no preferences" line is.
-- **From the canvas (style grids):** the Hair, Facial hair and Eyebrows tiles show a generic head icon and the style's name. There are no per-style thumbnails yet.
 
 ## Related docs
 

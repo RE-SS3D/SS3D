@@ -20,6 +20,9 @@ namespace SS3D.UI.Lobby
 
         public const string IconRoot = "Assets/Art/Icons/Lobby/";
         public const string JobIconRoot = IconRoot + "Jobs/";
+
+        /// <summary>Baked style thumbnails for the character window's grids (hair-*, beard-*, eyebrows-*).</summary>
+        public const string StyleThumbnailRoot = IconRoot + "Styles/";
         public const string PreviewPlaceholder = IconRoot + "PnSecurity.png";
         public const string LoadoutJanitor = IconRoot + "PnJanitor.png";
         public const string PreviewHumanPrefab =

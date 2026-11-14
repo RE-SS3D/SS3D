@@ -97,6 +97,31 @@ MonoBehaviour:
     Prefab: {fileID: 5774385816057912484, guid: b97162ddf78852c4b9ce6da43f1640c3, type: 3}
   - Id: humaneyebrowsdefault
     Prefab: {fileID: 5774385816057912484, guid: 8325b1a0a1718674bbce7405540336fd, type: 3}
+  _styleThumbnails:
+  - Id: beard-humanfacehairdanishfull
+    Sprite: {fileID: 21300000, guid: 11d5e393df74e4a7585bec780c92b841, type: 3}
+  - Id: beard-none
+    Sprite: {fileID: 21300000, guid: 598269fd53defe7d09e09752656e1f86, type: 3}
+  - Id: eyebrows-humaneyebrowsbold
+    Sprite: {fileID: 21300000, guid: d59bd4604ea736ea6b8e78346c573a4a, type: 3}
+  - Id: eyebrows-humaneyebrowscircle
+    Sprite: {fileID: 21300000, guid: e57bf4fc9004e4a7ea5d0f603fd9249b, type: 3}
+  - Id: eyebrows-humaneyebrowsclassic
+    Sprite: {fileID: 21300000, guid: 2c8350b03af734300878e93854f3e9e2, type: 3}
+  - Id: eyebrows-humaneyebrowsdainty
+    Sprite: {fileID: 21300000, guid: c71df7c073909d41bac2e0368d355bcb, type: 3}
+  - Id: eyebrows-humaneyebrowsdefault
+    Sprite: {fileID: 21300000, guid: 30183be4359aff29396a48088ce09b69, type: 3}
+  - Id: eyebrows-none
+    Sprite: {fileID: 21300000, guid: 58e30d44d72ba0b21b93f1e84f9ae80d, type: 3}
+  - Id: hair-humanhairanime
+    Sprite: {fileID: 21300000, guid: 6718f651cf0488b6d8e2d2c15f5e949b, type: 3}
+  - Id: hair-humanhairbeep
+    Sprite: {fileID: 21300000, guid: b97a440dfc292e9f8b29ecc8918ae5a7, type: 3}
+  - Id: hair-humanhairfry
+    Sprite: {fileID: 21300000, guid: 6b0a3df896f2a426a8e2dea9e634c751, type: 3}
+  - Id: hair-none
+    Sprite: {fileID: 21300000, guid: 76788b70e91dab43db636d7ca9a76403, type: 3}
   _hairColors:
   - {r: 0.07, g: 0.07, b: 0.07, a: 1}
   - {r: 0.25, g: 0.13, b: 0.07, a: 1}
