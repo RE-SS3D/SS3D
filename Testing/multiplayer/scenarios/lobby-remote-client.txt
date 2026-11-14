@@ -80,12 +80,16 @@ ui_wait #lobby-shell-surface visible
 ui_wait #character-creator-surface hidden
 screenshot remote-04-returned
 
-# Host starts round 2 without this client ready: Join Round late-spawns.
+# Host starts round 2 without this client ready: Join opens the picker, which late-spawns.
 wait_round Ongoing
 ui_text #lobby-ready-title JOIN
 ui_wait #lobby-ready enabled
 screenshot remote-05-join-round
 ui_submit #lobby-ready
+# Join opens the picker (lobby effort Phase 6); its Join button spawns.
+ui_wait #lobby-join-confirm enabled
+screenshot remote-05b-join-picker
+ui_submit #lobby-join-confirm
 assert_embarked
 ui_wait #lobby-shell-surface hidden
 

@@ -1,0 +1,154 @@
+/*
+ * Join picker (lobby effort Phase 6), to the canvas boards "7 · Join: two jobs open" and "7 · Join: only Assistant
+ * open". It sits in the lobby shell (Lobby.uxml, lobby-join) and Lobby.uss imports this sheet. Rules are prefixed
+ * with .lobby so they beat the shell's Label and Button resets.
+ */
+.lobby-join {
+    position: absolute; left: 0; top: 0; right: 0; bottom: 0; align-items: center; justify-content: center;
+    background-color: rgba(6, 7, 9, 0.35); display: none;
+}
+.lobby-join--open { display: flex; }
+.lobby .lobby-join__card {
+    width: 1280px; height: 800px; max-width: 96%; max-height: 94%;
+    /* No overflow: hidden here: with border-radius it renders the whole card white (stencil clip). */
+    background-color: var(--lb-panel); border-width: 1px; border-color: var(--lb-border); border-radius: 4px;
+}
+
+/* ---- Header ---- */
+.lobby .lobby-join__header {
+    flex-direction: row; align-items: center; height: 56px; flex-shrink: 0; padding: 0 16px 0 24px;
+    background-color: var(--lb-chrome);
+}
+.lobby .lobby-join__title { height: 16px; font-size: 20px; letter-spacing: 1.6px; -unity-text-align: middle-left; }
+.lobby .lobby-join__meta-key { margin-left: 16px; font-size: 13px; color: var(--lb-text-2); }
+.lobby .lobby-join__clock { margin-left: 16px; font-size: 14px; color: var(--lb-text); }
+.lobby .lobby-join__close { width: 32px; height: 32px; align-items: center; justify-content: center; border-width: 1px; border-color: rgba(0, 0, 0, 0); border-radius: 4px; }
+.lobby .lobby-join__close:hover { background-color: var(--lb-hover); }
+.lobby .lobby-join__close:focus { border-color: var(--lb-border-strong); }
+
+.lobby-join__body { flex-direction: row; flex-grow: 1; min-height: 0; }
+
+/* ---- Open jobs ---- */
+.lobby .lobby-join__jobs {
+    width: 520px; flex-shrink: 0; padding: 20px 24px;
+    border-right-width: 1px; border-right-color: var(--lb-border-subtle);
+}
+.lobby .lobby-join__section-head { flex-direction: row; align-items: center; flex-shrink: 0; margin-bottom: 12px; }
+.lobby .lobby-join__section-title { height: 16px; font-size: 20px; letter-spacing: 1.6px; -unity-text-align: middle-left; }
+.lobby .lobby-join__section-count { margin-left: 10px; font-size: 12px; color: var(--lb-text-2); }
+.lobby .lobby-join__hint { font-size: 12px; color: var(--lb-text-2); }
+.lobby .lobby-join__empty { font-size: 13px; color: var(--lb-text-2); white-space: normal; }
+
+.lobby .lobby-join__notice {
+    flex-direction: row; align-items: center; padding: 10px 12px; margin-bottom: 12px; flex-shrink: 0;
+    border-width: 1px; border-radius: 2px; border-color: rgba(61, 96, 137, 0.4); background-color: rgba(61, 96, 137, 0.15);
+}
+.lobby .lobby-join__notice .lobby__icon { margin-right: 10px; -unity-background-image-tint-color: #a9c4da; }
+.lobby .lobby-join__notice-text { flex-grow: 1; flex-shrink: 1; font-size: 13px; color: var(--lb-text); white-space: normal; }
+.lobby .lobby-join__notice--warning { border-color: rgba(230, 173, 83, 0.4); background-color: rgba(230, 173, 83, 0.12); }
+.lobby .lobby-join__notice--warning .lobby__icon { -unity-background-image-tint-color: var(--lb-amber); }
+.lobby .lobby-join__notice--hidden { display: none; }
+
+.lobby .lobby-join__job-list { flex-grow: 1; flex-shrink: 1; min-height: 0; }
+.lobby .lobby-join__job-item { margin-bottom: 6px; flex-shrink: 0; }
+.lobby .lobby-join__job {
+    flex-direction: row; align-items: center; height: 52px; padding: 0 14px; flex-shrink: 0;
+    background-color: var(--lb-panel); border-width: 1px; border-color: var(--lb-border-subtle); border-radius: 2px;
+}
+.lobby .lobby-join__job:hover { background-color: var(--lb-hover); }
+.lobby .lobby-join__job:focus { border-color: var(--lb-border-strong); }
+.lobby .lobby-join__job-item--on .lobby-join__job { background-color: rgba(197, 79, 48, 0.15); border-color: var(--lb-rust); }
+.lobby .lobby-join__ring {
+    width: 16px; height: 16px; margin-right: 12px; flex-shrink: 0; align-items: center; justify-content: center;
+    border-width: 1px; border-color: var(--lb-text-2); border-radius: 8px;
+}
+.lobby .lobby-join__ring-dot { width: 8px; height: 8px; border-radius: 4px; }
+.lobby .lobby-join__job-item--on .lobby-join__ring { border-color: var(--lb-text); }
+.lobby .lobby-join__job-item--on .lobby-join__ring-dot { background-color: var(--lb-text); }
+.lobby .lobby-join__job-frame {
+    width: 32px; height: 32px; margin-right: 12px; flex-shrink: 0; align-items: center; justify-content: center;
+    border-width: 1px; border-radius: 2px; border-color: var(--lb-border); background-color: var(--lb-inset);
+}
+.lobby .lobby-join__job-frame .lobby__icon { width: 24px; height: 24px; }
+.lobby .lobby-join__job-frame--command { background-color: rgba(143, 180, 242, 0.15); border-color: rgba(143, 180, 242, 0.4); }
+.lobby .lobby-join__job-frame--security { background-color: rgba(242, 145, 168, 0.15); border-color: rgba(242, 145, 168, 0.4); }
+.lobby .lobby-join__job-frame--engineering { background-color: rgba(236, 211, 94, 0.15); border-color: rgba(236, 211, 94, 0.4); }
+.lobby .lobby-join__job-frame--medical { background-color: rgba(98, 208, 214, 0.15); border-color: rgba(98, 208, 214, 0.4); }
+.lobby .lobby-join__job-frame--science { background-color: rgba(207, 157, 240, 0.15); border-color: rgba(207, 157, 240, 0.4); }
+.lobby .lobby-join__job-frame--cargo { background-color: rgba(201, 162, 124, 0.15); border-color: rgba(201, 162, 124, 0.4); }
+.lobby .lobby-join__job-frame--service { background-color: rgba(142, 219, 156, 0.15); border-color: rgba(142, 219, 156, 0.4); }
+.lobby .lobby-join__job-frame--civilian { background-color: rgba(221, 215, 203, 0.15); border-color: rgba(221, 215, 203, 0.4); }
+.lobby .lobby-join__job-text { flex-shrink: 1; }
+.lobby .lobby-join__job-name { font-size: 15px; -unity-font-style: bold; color: var(--lb-text); }
+.lobby .lobby-join__job-dept { font-size: 12px; margin-top: 1px; color: var(--lb-text-2); }
+.lobby .lobby-join__job-count { font-size: 13px; color: var(--lb-text); }
+.lobby .lobby-join__job-count-word { margin-left: 6px; font-size: 12px; color: var(--lb-text-2); }
+.lobby .lobby-join__description {
+    margin: 4px 0 0 44px; padding: 10px 12px; font-size: 13px; color: var(--lb-text); white-space: normal;
+    background-color: var(--lb-inset); border-width: 1px; border-color: var(--lb-border); border-radius: 2px;
+}
+
+/* ---- Joining as, and Join ---- */
+.lobby .lobby-join__as {
+    flex-direction: row; align-items: center; flex-shrink: 0; margin-top: 12px; padding: 10px 12px;
+    background-color: var(--lb-inset); border-width: 1px; border-color: var(--lb-border-subtle); border-radius: 2px;
+}
+.lobby .lobby-join__portrait-frame {
+    width: 36px; height: 48px; margin-right: 12px; flex-shrink: 0; overflow: hidden;
+    border-width: 1px; border-color: var(--lb-border); background-color: var(--lb-panel);
+}
+.lobby .lobby-join__portrait { flex-grow: 1; -unity-background-scale-mode: scale-and-crop; }
+.lobby .lobby-join__as-text { flex-grow: 1; flex-shrink: 1; }
+.lobby .lobby-join__character { margin-top: 2px; font-size: 14px; -unity-font-style: bold; color: var(--lb-text); }
+.lobby .lobby-join__change {
+    flex-direction: row; align-items: center; height: 32px; padding: 0 12px; flex-shrink: 0;
+    background-color: var(--lb-chrome); border-width: 1px; border-color: var(--lb-chrome); border-radius: 4px;
+}
+.lobby .lobby-join__change:hover { background-color: var(--lb-hover); }
+.lobby .lobby-join__change:focus { border-color: var(--lb-border-strong); }
+.lobby-join__change .lobby__icon { margin-right: 8px; -unity-background-image-tint-color: var(--lb-text); }
+.lobby .lobby-join__change-label { height: 16px; font-size: 18px; letter-spacing: 1.44px; -unity-text-align: middle-left; }
+
+.lobby .lobby-join__confirm {
+    flex-direction: row; align-items: center; height: 56px; margin-top: 12px; padding: 0 16px; flex-shrink: 0;
+    background-color: var(--lb-rust); border-radius: 4px;
+}
+.lobby .lobby-join__confirm:hover, .lobby .lobby-join__confirm:focus { background-color: var(--lb-rust-hover); }
+.lobby .lobby-join__confirm:active { background-color: var(--lb-rust-active); }
+.lobby .lobby-join__confirm:disabled { opacity: 1; background-color: var(--lb-inset); }
+.lobby .lobby-join__confirm-text { flex-grow: 1; }
+/* A 16px box holds Gurajada's capitals, as on the Ready button (its line box is about twice the font size). */
+.lobby .lobby-join__confirm-title { height: 16px; font-size: 20px; letter-spacing: 1.6px; color: var(--lb-on-accent); -unity-text-align: middle-left; }
+.lobby .lobby-join__confirm-subtitle { margin-top: 6px; font-size: 12px; color: var(--lb-on-accent); }
+.lobby .lobby-join__confirm-key { color: var(--lb-on-accent); border-color: rgba(255, 255, 255, 0.35); }
+.lobby-join__confirm:disabled .lobby-join__confirm-title, .lobby-join__confirm:disabled .lobby-join__confirm-subtitle,
+.lobby-join__confirm:disabled .lobby-join__confirm-key { color: var(--lb-disabled); }
+
+/* ---- Crew manifest ---- */
+.lobby .lobby-join__manifest-section { flex-grow: 1; flex-shrink: 1; min-width: 0; padding: 20px 24px; }
+.lobby .lobby-join__manifest-scroll { flex-grow: 1; flex-shrink: 1; min-height: 0; }
+.lobby .lobby-join__manifest { flex-direction: row; align-items: flex-start; }
+.lobby .lobby-join__column { flex-grow: 1; flex-basis: 0; min-width: 0; }
+.lobby .lobby-join__column--left { margin-right: 12px; }
+.lobby .lobby-join__group { margin-bottom: 10px; flex-shrink: 0; border-width: 1px; border-color: var(--lb-border-subtle); border-radius: 2px; }
+.lobby .lobby-join__group-head {
+    flex-direction: row; align-items: center; height: 36px; padding: 0 12px; background-color: var(--lb-chrome);
+}
+.lobby .lobby-join__group-icon { width: 18px; height: 18px; margin-right: 8px; }
+.lobby .lobby-join__group-name { height: 16px; font-size: 18px; letter-spacing: 1.44px; -unity-text-align: middle-left; }
+.lobby .lobby-join__group-count { font-size: 12px; color: var(--lb-text-2); }
+.lobby .lobby-join__crew {
+    flex-direction: row; justify-content: space-between; padding: 7px 12px;
+    border-top-width: 1px; border-top-color: var(--lb-border-subtle);
+}
+.lobby .lobby-join__crew-name { font-size: 13px; color: var(--lb-text); flex-shrink: 1; overflow: hidden; text-overflow: ellipsis; }
+.lobby .lobby-join__crew-job { margin-left: 12px; font-size: 13px; color: var(--lb-text-2); flex-shrink: 0; }
+.lobby .lobby-join__crew-missing {
+    padding: 7px 12px; font-size: 13px; color: var(--lb-text-2); -unity-font-style: italic;
+    border-top-width: 1px; border-top-color: var(--lb-border-subtle);
+}
+
+/* ---- 1366 x 768 (Decision 19) ---- */
+.lobby--compact .lobby-join__jobs { width: 440px; padding: 16px; }
+.lobby--compact .lobby-join__manifest-section { padding: 16px; }
+.lobby--compact .lobby-join__hint { display: none; }

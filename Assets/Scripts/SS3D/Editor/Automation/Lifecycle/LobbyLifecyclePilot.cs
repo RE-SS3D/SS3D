@@ -968,8 +968,21 @@ namespace SS3D.Editor.Automation
             },
             new Step
             {
-                Name = "Late join spawns",
+                Name = "Join opens the picker on the High job",
                 Enter = () => Click(ReadyButton()),
+                Until = () => Shell().Q("lobby-join").ClassListContains("lobby-join--open")
+                    && Shell().Q<Label>("lobby-join-confirm-title").text == "JOIN AS SECURITY",
+                Verify = () =>
+                {
+                    Require(!Spawned(), "Join only opens the picker");
+                    Require(Shell().Q("lobby-join-job-Assistant") != null, "The fallback job is always offered");
+                    Capture("lobby-join-picker");
+                },
+            },
+            new Step
+            {
+                Name = "Late join spawns",
+                Enter = () => Click(Shell().Q<Button>("lobby-join-confirm")),
                 Until = () => Spawned() && !Visible(Shell()),
                 Verify = () =>
                 {

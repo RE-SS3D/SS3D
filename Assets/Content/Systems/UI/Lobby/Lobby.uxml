@@ -147,5 +147,64 @@
 
             <ui:VisualElement name="lobby-tab-content" class="lobby__tab-content" />
         </ui:VisualElement>
+
+        <!-- Join picker (lobby effort Phase 6), opened by Join during a round. LobbyJoinPicker fills the lists. -->
+        <ui:VisualElement name="lobby-join" class="lobby-join">
+            <ui:VisualElement name="lobby-join-card" class="lobby-join__card">
+                <ui:VisualElement class="lobby-join__header">
+                    <ui:Label text="JOIN THE ROUND" class="lobby-join__title lb-titling" />
+                    <ui:Label text="Round time" class="lobby-join__meta-key" />
+                    <ui:Label name="lobby-join-round-time" text="00:47:12" class="lobby-join__clock lb-mono" />
+                    <ui:VisualElement class="lobby__grow" />
+                    <ui:Button name="lobby-join-close" class="lobby-join__close" tooltip="Close (Esc)">
+                        <ui:VisualElement class="lobby__icon lobby__icon--x" picking-mode="Ignore" />
+                    </ui:Button>
+                </ui:VisualElement>
+                <ui:VisualElement class="lobby-join__body">
+                    <ui:VisualElement name="lobby-join-jobs" class="lobby-join__jobs">
+                        <ui:VisualElement class="lobby-join__section-head">
+                            <ui:Label text="OPEN JOBS" class="lobby-join__section-title lb-titling" />
+                            <ui:Label name="lobby-join-open-count" text="2 open" class="lobby-join__section-count lb-mono" />
+                            <ui:VisualElement class="lobby__grow" />
+                            <ui:Label text="Hover a job for what it does" class="lobby-join__hint" />
+                        </ui:VisualElement>
+                        <ui:VisualElement name="lobby-join-notice" class="lobby-join__notice lobby-join__notice--hidden">
+                            <ui:VisualElement class="lobby__icon lobby__icon--info" picking-mode="Ignore" />
+                            <ui:Label name="lobby-join-notice-text" class="lobby-join__notice-text" />
+                        </ui:VisualElement>
+                        <ui:ScrollView name="lobby-join-job-list" class="lobby-join__job-list" />
+                        <ui:VisualElement class="lobby-join__as">
+                            <ui:VisualElement class="lobby-join__portrait-frame" picking-mode="Ignore">
+                                <ui:VisualElement name="lobby-join-portrait" class="lobby-join__portrait" picking-mode="Ignore" />
+                            </ui:VisualElement>
+                            <ui:VisualElement class="lobby-join__as-text" picking-mode="Ignore">
+                                <ui:Label text="JOINING AS" class="lobby__eyebrow" picking-mode="Ignore" />
+                                <ui:Label name="lobby-join-character" text="Rory Lindqvist" class="lobby-join__character" picking-mode="Ignore" />
+                            </ui:VisualElement>
+                            <ui:Button name="lobby-join-change" class="lobby-join__change" tooltip="Join as another of your characters">
+                                <ui:VisualElement class="lobby__icon lobby__icon--users" picking-mode="Ignore" />
+                                <ui:Label text="CHANGE" class="lobby-join__change-label lb-titling" picking-mode="Ignore" />
+                            </ui:Button>
+                        </ui:VisualElement>
+                        <ui:Button name="lobby-join-confirm" class="lobby-join__confirm">
+                            <ui:VisualElement class="lobby-join__confirm-text" picking-mode="Ignore">
+                                <ui:Label name="lobby-join-confirm-title" text="JOIN AS DOCTOR" class="lobby-join__confirm-title lb-titling" picking-mode="Ignore" />
+                                <ui:Label name="lobby-join-confirm-subtitle" text="Spawns you on the station straight away" class="lobby-join__confirm-subtitle" picking-mode="Ignore" />
+                            </ui:VisualElement>
+                            <ui:Label text="Enter" class="lobby__keycap lobby-join__confirm-key lb-mono" picking-mode="Ignore" />
+                        </ui:Button>
+                    </ui:VisualElement>
+                    <ui:VisualElement name="lobby-join-manifest-section" class="lobby-join__manifest-section">
+                        <ui:VisualElement class="lobby-join__section-head">
+                            <ui:Label text="CREW MANIFEST" class="lobby-join__section-title lb-titling" />
+                            <ui:Label name="lobby-join-aboard" text="12 aboard" class="lobby-join__section-count lb-mono" />
+                        </ui:VisualElement>
+                        <ui:ScrollView name="lobby-join-manifest-scroll" class="lobby-join__manifest-scroll">
+                            <ui:VisualElement name="lobby-join-manifest" class="lobby-join__manifest" />
+                        </ui:ScrollView>
+                    </ui:VisualElement>
+                </ui:VisualElement>
+            </ui:VisualElement>
+        </ui:VisualElement>
     </ui:VisualElement>
 </ui:UXML>

@@ -6,6 +6,7 @@
  */
 @import url("LobbyTokens.uss");
 @import url("CharacterSwitcher.uss");
+@import url("LobbyJoin.uss");
 
 .lobby {
     position: absolute; left: 0; top: 0; right: 0; bottom: 0;
@@ -37,6 +38,7 @@
 .lobby__icon--duplicate { background-image: url("project://database/Assets/Art/Icons/Heroicons/Outline/Duplicate.png"); }
 .lobby__icon--trash { background-image: url("project://database/Assets/Art/Icons/Heroicons/Outline/Trash.png"); }
 .lobby__icon--plus { background-image: url("project://database/Assets/Art/Icons/Heroicons/Outline/Plus.png"); }
+.lobby__icon--x { background-image: url("project://database/Assets/Art/Icons/Heroicons/Outline/X.png"); }
 .lobby__icon--info { background-image: url("project://database/Assets/Art/Icons/Heroicons/Outline/InformationCircle.png"); }
 .lobby__icon--warning { background-image: url("project://database/Assets/Art/Icons/Heroicons/Outline/Exclamation.png"); }
 .lobby__icon--user { background-image: url("project://database/Assets/Art/Icons/Heroicons/Solid/User.png"); }

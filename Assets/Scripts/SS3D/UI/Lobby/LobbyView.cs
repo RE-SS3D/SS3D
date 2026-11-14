@@ -42,6 +42,7 @@ namespace SS3D.UI.Lobby
         private LobbyServerSettingsView _serverSettings;
         private LobbyLastRoundView _lastRound;
         private LobbyMapStopPrompt _mapStop;
+        private LobbyJoinPicker _join;
         private VisualElement _settingsHost;
 
         private VisualElement _roundSection;
@@ -100,8 +101,10 @@ namespace SS3D.UI.Lobby
         private int _onlineCount;
 
         public event Action CharacterCreatorRequested;
-        /// <summary>Ready before the round (a toggle), Join during it.</summary>
+        /// <summary>Ready before the round (a toggle). During a round the button opens the Join picker instead.</summary>
         public event Action ReadyRequested;
+        /// <summary>The Join picker's Join, with the chosen job (lobby effort Phase 6).</summary>
+        public event Action<string> JoinRequested;
         /// <summary>Observe: a ghost at once, before or during the round (Decision 9).</summary>
         public event Action ObserveRequested;
         public event Action QuitRequested;
@@ -142,12 +145,15 @@ namespace SS3D.UI.Lobby
         /// <summary>The switcher popover beside "Switch character" (lobby effort Phase 5); the host owns its events.</summary>
         public CharacterSwitcher Switcher => _switcher;
 
-        /// <summary>Hosts the character switcher; "Switch character" toggles it.</summary>
+        /// <summary>The Join picker (lobby effort Phase 6); the host feeds it with <see cref="SetJoinData"/>.</summary>
+        public LobbyJoinPicker JoinPicker => _join;
+
+        /// <summary>Hosts the character switcher; "Switch character" and the Join picker's "Change" toggle it.</summary>
         public void MountSwitcher(CharacterSwitcher switcher)
         {
             if (_root == null || switcher == null) return;
             _switcher = switcher;
-            switcher.Mount(_root, _switchButton);
+            switcher.Mount(_root, _switchButton, _join.ChangeButton);
         }
 
         private static VisualElement CreateSettingsHost()
@@ -183,6 +189,9 @@ namespace SS3D.UI.Lobby
             _mapStop = new LobbyMapStopPrompt(_textEntry);
             _mapStop.Resolved += (token, choice, name) => MapStopResolved?.Invoke(token, choice, name);
             _root.Add(_mapStop.Root);
+            _join = new LobbyJoinPicker(_root.Q("lobby-join"), _catalog);
+            _join.JoinRequested += job => JoinRequested?.Invoke(job);
+            _join.ChangeRequested += anchor => _switcher?.Toggle(anchor, false);
 
             _root.RegisterCallback<GeometryChangedEvent>(e =>
                 _root.EnableInClassList("lobby--compact", e.newRect.width > 0f && e.newRect.width < CompactWidth));
@@ -199,6 +208,7 @@ namespace SS3D.UI.Lobby
         {
             CharacterCreatorRequested = null;
             ReadyRequested = null;
+            JoinRequested = null;
             ObserveRequested = null;
             QuitRequested = null;
             BugReportRequested = null;
@@ -226,6 +236,7 @@ namespace SS3D.UI.Lobby
             {
                 _textEntry.Exit();
                 _switcher?.Close();
+                _join?.Close();
                 Disarm();
                 Hidden?.Invoke();
             }
@@ -238,7 +249,7 @@ namespace SS3D.UI.Lobby
 
         private void FocusEntry()
         {
-            if (_root == null || _mapStop.IsOpen) return;
+            if (_root == null || _mapStop.IsOpen || _join.IsOpen) return;
             if (_ready.enabledSelf) _ready.Focus();
             else if (_observe.enabledSelf) _observe.Focus();
         }
@@ -268,7 +279,7 @@ namespace SS3D.UI.Lobby
             _previewImage = _root.Q("lobby-preview-image");
 
             _ready = _root.Q<Button>("lobby-ready");
-            _ready.clicked += () => ReadyRequested?.Invoke();
+            _ready.clicked += OnReadyClicked;
             _readyTitle = _root.Q<Label>("lobby-ready-title");
             _readySubtitle = _root.Q<Label>("lobby-ready-subtitle");
             _readyNote = _root.Q("lobby-ready-note");
@@ -327,6 +338,17 @@ namespace SS3D.UI.Lobby
             SetServerInfo(null, "", null, "", null);
         }
 
+        /// <summary>Ready toggles before the round; during it the button is Join and opens the picker (lobby.md §7).</summary>
+        private void OnReadyClicked()
+        {
+            if (_session.State == RoundState.Ongoing)
+            {
+                _switcher?.Close();
+                _join.Open();
+            }
+            else ReadyRequested?.Invoke();
+        }
+
         // ---- Quit: two clicks within 3 s ----
 
         private void OnQuitClicked()
@@ -359,7 +381,7 @@ namespace SS3D.UI.Lobby
 
         private void OnKeyDown(KeyDownEvent e)
         {
-            if (e.keyCode != KeyCode.Tab || !e.ctrlKey || _mapStop.IsOpen) return;
+            if (e.keyCode != KeyCode.Tab || !e.ctrlKey || _mapStop.IsOpen || _join.IsOpen) return;
             int index = Array.IndexOf(TabOrder, _activeTab);
             for (int step = 1; step <= TabOrder.Length; step++)
             {
@@ -476,6 +498,9 @@ namespace SS3D.UI.Lobby
             _observe.SetEnabled(observe.Enabled);
 
             _backToRound.EnableInClassList("lobby__back--shown", info.Spawned);
+            // The picker belongs to a round the player can still join; it closes when that stops being true.
+            if (!entry.Enabled || info.State != RoundState.Ongoing) _join.Close();
+            _join.SetRoundTime(LobbySidebarModel.LongClock(info.TimerSeconds));
             _serverSettings.SetSession(info, _readyCount, _onlineCount);
             _serverInfo.RefreshUptime();
         }
@@ -564,6 +589,7 @@ namespace SS3D.UI.Lobby
         private void ApplyPreviewTexture()
         {
             if (_previewImage == null) return;
+            _join?.SetPortrait(_previewTexture);
             _previewImage.style.backgroundImage = _previewTexture switch
             {
                 RenderTexture rt => Background.FromRenderTexture(rt),
@@ -586,6 +612,11 @@ namespace SS3D.UI.Lobby
             _musicTitle.text = on ? shown : "Off";
             if (!_musicDragging && Mathf.Abs(_musicVolume.value - volume) > 0.001f) _musicVolume.SetValueWithoutNotify(volume);
         }
+
+        /// <summary>The Join picker's jobs, crew manifest and selected character (lobby effort Phase 6).</summary>
+        public void SetJoinData(IReadOnlyList<SS3D.Systems.Roles.JobSlotInfo> jobs, string fallbackJob, Func<string, string> describe,
+            IReadOnlyList<SS3D.Systems.Roles.CrewManifestEntry> manifest, CharacterPreferences preferences, string characterName) =>
+            _join?.SetData(jobs, fallbackJob, describe, manifest, preferences, characterName);
 
         public void SetChat(IEnumerable<OocChatMessage> log, int version, bool admin, bool connected) =>
             _chat?.SetChat(log, version, admin, connected);

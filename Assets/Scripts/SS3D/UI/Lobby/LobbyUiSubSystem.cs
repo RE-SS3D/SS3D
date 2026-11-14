@@ -148,6 +148,7 @@ namespace SS3D.UI.Lobby
             _shellView.MusicNextRequested += HandleMusicNext;
             _shellView.MusicVolumeChanged += HandleMusicVolume;
             _shellView.ReadyRequested += HandleReadyRequested;
+            _shellView.JoinRequested += HandleJoinRequested;
             _shellView.ObserveRequested += HandleObserveRequested;
             _shellView.QuitRequested += HandleQuitRequested;
             _shellView.BugReportRequested += HandleBugReportRequested;
@@ -317,6 +318,7 @@ namespace SS3D.UI.Lobby
             _shellView.SetPlayers(onlineCount, readyCount, connected && serverSettings != null ? serverSettings.PublicPlayerCap : 0);
             RefreshCharacterCard();
             RefreshWindowData(serverSettings);
+            RefreshJoinPicker(rounds);
             RefreshMusicRow(spawned);
 
             RoundState state = rounds != null ? rounds.CurrentRoundState : RoundState.Stopped;
@@ -370,6 +372,16 @@ namespace SS3D.UI.Lobby
             _lobbySwitcher?.Refresh();
             // The booth's outfit follows the High job's loadout, which needs the role assets.
             if (!_window.IsVisible) _preview.ShowCharacter(_draft);
+        }
+
+        /// <summary>
+        /// Feeds the Join picker during a round: the replicated jobs and crew manifest, and the saved selected character
+        /// (lobby effort Phase 6). The picker rebuilds only when a count or a crew row changed.
+        /// </summary>
+        private void RefreshJoinPicker(RoundSubSystem rounds)
+        {
+            if (rounds == null || rounds.CurrentRoundState != RoundState.Ongoing || !SubSystems.TryGet(out RoleSubSystem roles)) return;
+            _shellView.SetJoinData(roles.Jobs, roles.FallbackJob, roles.DescriptionOf, roles.Manifest, _draft?.Preferences, _draft?.Name);
         }
 
         /// <summary>The music row drives the same menu music the main menu does (Decision 15).</summary>
@@ -566,12 +578,16 @@ namespace SS3D.UI.Lobby
                 || !SubSystems.TryGet(out RoundSubSystem rounds) || !SubSystems.TryGet(out ReadyPlayersSubSystem ready)) return;
             Player local = players.GetPlayer(InstanceFinder.ClientManager.Connection);
             if (local == null) return;
-            if (rounds.CurrentRoundState == RoundState.Ongoing)
-            {
-                if (SubSystems.TryGet(out EntitySubSystem entities)) entities.CmdSpawnLatePlayer(local);
-            }
-            else if (rounds.CurrentRoundState is not RoundState.Ending)
+            // During a round the button is Join, which opens the picker in the view instead.
+            if (rounds.CurrentRoundState is not (RoundState.Ending or RoundState.Ongoing))
                 InstanceFinder.ClientManager.Broadcast(new ChangePlayerReadyMessage(local.Ckey, !ready.IsReady(local)));
+        }
+
+        /// <summary>The Join picker's pick; the server re-checks the slot and spawns, or refuses in OOC (Decision 11).</summary>
+        private static void HandleJoinRequested(string job)
+        {
+            if (!InstanceFinder.ClientManager.Started || !SubSystems.TryGet(out EntitySubSystem entities)) return;
+            entities.CmdJoinAsJob(job);
         }
 
         /// <summary>Asks for an observer ghost now, before or during the round; the server decides (<c>observer.md</c> §2).</summary>

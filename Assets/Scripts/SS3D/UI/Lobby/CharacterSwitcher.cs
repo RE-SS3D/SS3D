@@ -76,15 +76,17 @@ namespace SS3D.UI.Lobby
 
         /// <summary>
         /// Puts the popover in <paramref name="host"/> and closes it on a press anywhere else in the host, except on
-        /// <paramref name="toggle"/>, which toggles it itself.
+        /// <paramref name="toggles"/>, which toggle it themselves.
         /// </summary>
-        public void Mount(VisualElement host, VisualElement toggle)
+        public void Mount(VisualElement host, params VisualElement[] toggles)
         {
             host.Add(Root);
             host.RegisterCallback<PointerDownEvent>(e =>
             {
                 if (!IsOpen || e.target is not VisualElement target) return;
-                if (Root.Contains(target) || (toggle != null && toggle.Contains(target))) return;
+                if (Root.Contains(target)) return;
+                foreach (VisualElement toggle in toggles)
+                    if (toggle != null && toggle.Contains(target)) return;
                 Close();
             }, TrickleDown.TrickleDown);
         }

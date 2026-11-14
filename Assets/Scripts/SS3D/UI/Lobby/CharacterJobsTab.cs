@@ -213,7 +213,7 @@ namespace SS3D.UI.Lobby
             VisualElement main = LobbyUi.Box("charwin-jobs__row-main");
 
             VisualElement frame = LobbyUi.Box("charwin-jobs__job-icon-frame");
-            frame.Add(JobIcon(name, department));
+            frame.Add(JobIcon(_catalog, name, department));
             main.Add(frame);
             main.Add(LobbyUi.Text(name, "charwin-jobs__job-name"));
 
@@ -256,11 +256,12 @@ namespace SS3D.UI.Lobby
             return row;
         }
 
-        private VisualElement JobIcon(string job, Department department)
+        /// <summary>A job's pictogram tinted in its department colour, or the department symbol when it has none.</summary>
+        internal static VisualElement JobIcon(LobbyAssetCatalog catalog, string job, Department department)
         {
             string id = IconAliases.TryGetValue(job, out string alias) ? alias : job.Replace(" ", "");
             VisualElement icon;
-            if (_catalog != null && _catalog.TryGetJobIcon(id, out Sprite sprite) && sprite != null)
+            if (catalog != null && catalog.TryGetJobIcon(id, out Sprite sprite) && sprite != null)
             {
                 icon = LobbyUi.Box("lobby__icon");
                 icon.pickingMode = PickingMode.Ignore;

@@ -1,5 +1,6 @@
 using NUnit.Framework;
 using SS3D.Systems.IdAccess;
+using SS3D.Systems.Roles;
 using SS3D.Systems.Rounds;
 using SS3D.UI.Lobby;
 using UnityEngine;
@@ -95,6 +96,51 @@ namespace SS3D.Tests.EditMode
             Assert.IsFalse(_view.Root.Q("lobby-admin").ClassListContains("lobby__admin--hidden"));
             Assert.IsTrue(_view.Root.Q("tab-server-settings").ClassListContains("lobby__tab--hidden"));
             Assert.IsTrue(_view.Root.Q("tab-last-round").ClassListContains("lobby__tab--hidden"), "No Last Round before a round ends");
+        }
+
+        [Test]
+        public void JoinPicker_PaintsOpenJobsAndTheManifest_AndClosesOnceSpawned()
+        {
+            LobbySessionInfo info = PreRound();
+            info.State = RoundState.Ongoing;
+            info.TimerSeconds = 2832;
+            _view.SetSession(info, false);
+            JobSlotInfo[] jobs =
+            {
+                new() { Name = "Assistant", Department = (byte)Department.Civilian },
+                new() { Name = "Doctor", Department = (byte)Department.Medical, Slots = 3 },
+                new() { Name = "Security", Department = (byte)Department.Security, Slots = 2, Assigned = 2 },
+            };
+            CrewManifestEntry[] crew = { new() { Name = "Lena Hart", Job = "Security" } };
+            CharacterPreferences preferences = new();
+            preferences.SetPriority("Doctor", JobPriority.Medium);
+            _view.SetJoinData(jobs, "Assistant", _ => "", crew, preferences, "Rory Lindqvist");
+
+            LobbyJoinPicker picker = _view.JoinPicker;
+            Assert.IsFalse(picker.IsOpen, "The picker waits for Join");
+            picker.Open();
+            VisualElement root = _view.Root;
+            Assert.IsTrue(picker.IsOpen);
+            Assert.AreEqual("00:47:12", root.Q<Label>("lobby-join-round-time").text);
+            Assert.AreEqual("2 open", root.Q<Label>("lobby-join-open-count").text, "Security is full");
+            Assert.IsNull(root.Q("lobby-join-job-Security"), "A full job isn't offered");
+            Assert.IsTrue(root.Q("lobby-join-job-Doctor").ClassListContains("lobby-join__job-item--on"), "Medium Doctor is chosen");
+            Assert.AreEqual("JOIN AS DOCTOR", root.Q<Label>("lobby-join-confirm-title").text);
+            Assert.AreEqual("Rory Lindqvist", root.Q<Label>("lobby-join-character").text);
+            Assert.AreEqual("1 aboard", root.Q<Label>("lobby-join-aboard").text);
+            Assert.IsNotNull(root.Q("lobby-join-dept-security"), "The manifest groups by department");
+            Assert.IsNotNull(root.Q("lobby-join-missing-Doctor"), "The open Doctor slot shows as a gap");
+            StringAssert.StartsWith("Treats the injured", root.Q("lobby-join-job-Doctor").Q<Label>("lobby-join-description").text,
+                "No role description: the roster's line");
+
+            jobs[1].Assigned = 3;
+            _view.SetJoinData(jobs, "Assistant", _ => "", crew, preferences, "Rory Lindqvist");
+            Assert.AreEqual("JOIN AS ASSISTANT", root.Q<Label>("lobby-join-confirm-title").text, "The filled pick moved");
+            Assert.IsFalse(root.Q("lobby-join-notice").ClassListContains("lobby-join__notice--hidden"), "And says why");
+
+            info.Spawned = true;
+            _view.SetSession(info, false);
+            Assert.IsFalse(picker.IsOpen, "A body closes the picker");
         }
 
         [Test]

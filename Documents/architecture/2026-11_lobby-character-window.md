@@ -2,7 +2,7 @@
 > Touches systems: rounds-lobby, gamemodes-roles-traits, entities, ui-shell, ui-shell-main-menu, audio, chat-audio-screens
 > Status: in progress
 
-**Progress:** Decided in the 2026-11-14 lobby grill. Phases 1–5 are built (2026-11-14). The lobby shell and the character window are the new UXML views; the Join picker is Phase 6. Everything ships before Playtest 1 ([mvp1-nuke-ops.md](../milestones/mvp1-nuke-ops.md) M11) on one branch and one pull request. Phases 1–3 are non-visual and run while the canvas is recoloured. Phases 4–6 build against the recoloured canvas. Phase 7 purges. Visual brief and recolour prompt: [lobby-character-window-visual-brief.md](../plans/lobby-character-window-visual-brief.md). Tests follow the [testing philosophy](2026-11_testing-philosophy.md).
+**Progress:** Decided in the 2026-11-14 lobby grill. Phases 1–6 are built (2026-11-14). The lobby shell, the character window and the Join picker are the new UXML views; Phase 7 purges. Everything ships before Playtest 1 ([mvp1-nuke-ops.md](../milestones/mvp1-nuke-ops.md) M11) on one branch and one pull request. Phases 1–3 are non-visual and run while the canvas is recoloured. Phases 4–6 build against the recoloured canvas. Phase 7 purges. Visual brief and recolour prompt: [lobby-character-window-visual-brief.md](../plans/lobby-character-window-visual-brief.md). Tests follow the [testing philosophy](2026-11_testing-philosophy.md).
 
 # Lobby and character window (Nov 2026)
 
@@ -247,7 +247,27 @@ What Phase 5 built:
 
 ### Phase 6 — Join a round in progress
 
-- [ ] Join picker: open jobs with open/total counts and descriptions, "Joining as … Change", and the crew manifest by department; live updates when the chosen job fills; the "only Assistant open" state
+- [x] Join picker: open jobs with open/total counts and descriptions, "Joining as … Change", and the crew manifest by department; live updates when the chosen job fills; the "only Assistant open" state
+
+What Phase 6 built:
+
+- **Files.** The picker's markup is in `Lobby.uxml` (`lobby-join`), so the catalog needed no new template. It's styled by `LobbyJoin.uss`, which `Lobby.uss` imports.
+- **Views.** `LobbyJoinPicker` binds the markup and builds the rows. `LobbyJoinModel` holds the rules with no UI (`LobbyJoinModelTests`).
+- **Opening.** During a round the sidebar's Join opens the picker instead of spawning. It closes on Esc, the close button or a press on the backdrop. It also closes when the player gets a body, late joining turns off or the round leaves Ongoing.
+- **Open jobs.** Every job with a free slot, plus the fallback job (no cap), in roster order.
+  - Each row shows the job's pictogram on a frame in its department colour, the department, and "open/total open" ("3/3 open"), or "unlimited" for the fallback.
+  - The description shows under the hovered job, or the chosen one when nothing is hovered.
+  - ↑/↓ change the job and Enter joins.
+- **The choice.** It starts on the character's best-ranked open job (High, then Medium, then Low), else the first open job, and starts over each time the picker opens.
+  - It follows the replicated job list. If the chosen job fills, the choice moves the same way and an amber notice says which job filled.
+  - A job the player picked by hand stays chosen while counts change.
+  - When only the fallback is open, a blue notice says every other job is full and that the player can observe instead.
+- **Joining as.** The live render of the selected character (the lobby card's texture) and its name. Change opens the character switcher beside it; the lobby's switcher is mounted with both toggles. Switching character re-picks from the new character's preferences unless the player picked by hand.
+- **Join.** "Join as <job>" calls `EntitySubSystem.CmdJoinAsJob`. The button reads "Joining…" until the body arrives, and comes back after 3 s in case the server refused the pick (its reason arrives as a private OOC line).
+- **Crew manifest.** `RoleSubSystem.Manifest` grouped by department in two columns of about equal rows, crew in roster job order, with the crew count in each header and "N aboard" in the title.
+  - Each open job nobody holds adds an italic "No <job> aboard" row to its department, the gap a latejoiner could fill. The canvas shows the same.
+- **Removed.** `CmdSpawnLatePlayer` is no longer called by the lobby; the PlayMode helpers and the lifecycle pilot's late-join-off check still use it.
+- **Pilots.** `LobbyLifecyclePilot` presses Join, checks the picker opened on the High job (Security) and captures `lobby-join-picker`, then joins through it. The remote-client scenario does the same with `ui_submit #lobby-join-confirm`.
 
 ### Phase 7 — Purge and docs
 
@@ -277,6 +297,7 @@ What Phase 5 built:
 - **Smokes:** the nightly `nukeops-round` smoke needs `-nukeops` to keep its default opt-in and connected threshold. Phase 2 added `-nukeops-countdown-seconds=20` to its conf; re-run it before the pull request.
 - **Per phase:** `Testing/ui/validate.sh --steps compile,editmode` plus the lifecycle step; add `visual` from Phase 4 on.
 - **Phase 4:** `LobbySidebarModelTests` (every sidebar state on the canvas) and `LobbyViewTests` (the shell binds the committed template, keeps its stylesheet, paints the sidebar, card and admin tabs). `LobbyUiPilot` and `LobbyLifecyclePilot` now target the new element names; the remote-client scenario too.
+- **Phase 6:** `LobbyJoinModelTests` (open jobs and their order, open/total text, the first choice, a filled choice moving with its notice, a hand pick surviving count changes, the only-fallback state, the manifest's departments and gaps, the column split) and a `LobbyViewTests` case (the picker paints the jobs and manifest, follows a filled job and closes once spawned).
 - **Phase 5:**
   - `CharacterWindowModelTests`: dirty across all three tabs, the name gate, Save normalising the name, the one-High notice, the all-Never notice per fallback, the outfit job, slot text, the column split.
   - `CharacterWindowModelTests` also covers `JobRoster.Merge`: the server's entries win, the rest lock, extras follow their department.
@@ -292,6 +313,7 @@ What Phase 5 built:
 - **From [lobby.md](../design/lobby.md) §2 (playtime-locked jobs):** the locked row is built, but no job has a playtime requirement yet. That needs [player-accounts.md](../design/player-accounts.md) and player data.
 - **From the canvas (switcher, Duplicate):** the copy keeps the original's name instead of "Name (2)". Brackets break the name rule, and two characters may share a name (Decision 4).
 - **From the canvas (switcher rows):** Duplicate and Delete show on every row, dimmed until the row is hovered, focused or selected. The canvas shows them only on the hovered row; hidden buttons can't be reached with Tab.
+- **From the canvas (Join boards):** the only-Assistant notice ends "or you can observe instead", not "keep observing": an observer ghost counts as spawned and can't open the picker. The picker also dims the lobby behind it a little, which the boards don't.
 - **From the canvas (playtest Jobs board):** the owner asked for the full roster with unavailable jobs locked, so the five-job playtest board isn't what players see; its "no preferences" line is.
 
 ## Related docs
