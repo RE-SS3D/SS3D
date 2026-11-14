@@ -1,6 +1,6 @@
 # Lobby and character window — Claude Design brief
 
-> Generated 2026-11-14 from `Documents/design/lobby.md` (§2–§8), `round-end.md` §6, `comms.md` §7 and `Assets/Content/Systems/UI/Tokens/ss3d-tokens.uss`. Regenerate rather than edit once those move. Current build state: [rounds-lobby](../architecture/systems/rounds-lobby.md).
+> Generated 2026-11-14 from `Documents/design/lobby.md` (§2–§8), `round-end.md` §6, `comms.md` §7 and the SS3D design-system palette in `Assets/Content/Systems/UI/SettingsPanel/Resources/PlayerSettingsPanel.uss` (revised the same day: the first pass named `ss3d-tokens.uss`, which clashed with the shipped main menu). Regenerate rather than edit once those move. Current build state: [rounds-lobby](../architecture/systems/rounds-lobby.md).
 
 Paste everything under **Prompt** into Claude Design. Bring the result back as static mockups; the build turns them into UI Toolkit layouts against the tokens. The implementation grill that follows decides HOW; this brief only fixes WHAT is on screen.
 
@@ -19,15 +19,15 @@ The lobby is a meta screen, not an in-fiction one, and it should look like a nat
 - Flat surfaces, hairline 1px borders, small radii (2–4px). No neon, no glow, no glitch effects, no sci-fi HUD decoration. Muted status colours used only for real meaning.
 - Sans for UI chrome, monospace for data readouts (timers, slot counts, build ids).
 - The UI engine has **no box-shadow, no gradients, no backdrop blur and no text shadows**. Depth comes from surface tone and borders only. Text inputs, dropdowns and image frames are **square-cornered** (rounded ones render wrong on one platform).
-- Tokens:
-  - Surfaces: void `#0a0b0d`, panel `#171a1e`, HUD `#161616`, elevated `#23262b`
-  - Text: primary `#e8e6e3`, secondary `#9a9690`, tertiary `#5c5955`
-  - Borders: subtle `#2a2d35`, strong `#3d4149`
-  - Accent: rust `#c54f30` (hover `#d45f40`, dim `#8a3822`)
-  - Feedback: success `#4a8f5c`, warning `#c9a227`, danger `#b94848`, info `#4a7a9f` (each also has a 15% background and a 40% border variant)
-  - Spacing on a 4px grid; motion 80 / 160 / 400 ms.
-- The current lobby uses its own greyer panels and pure-white text. Replace those with the tokens above, so the lobby and the in-game HUD read as one game.
-- **Department colours** (Command, Security, Engineering, Medical, Science, Cargo, Service, Civilian): use the set from the examine and feedback brief if one exists. Otherwise propose eight muted colours that sit with these tokens, stay distinguishable from the feedback colours and from each other, and pass contrast on the panel surface.
+- **Use the SS3D design system** (installed in the Claude Design project as `ss3d`), the same one the shipped main menu and the shared Settings panel use. The lobby, the main menu and Settings must read as one set of screens:
+  - Surfaces: panel `#353538`, chrome/header `#161616`, inset `#2a2a2e`, void `#222222`, hover `#45454a`
+  - Text: primary `#ffffff`, secondary `#aaaaaa`, disabled `#5a5d60`; text on rust is `#ffffff`
+  - Borders: subtle `rgba(216,216,216,0.1)`, default `rgba(216,216,216,0.18)`, strong `#717c7f`
+  - Accent: rust `#c54f30` (hover `#dc5528`, active `#93351f`)
+  - Feedback: green `#88b36a`, amber `#e6ad53`, red `#b13d3d`, blue `#3d6089` / `#5f86b3`
+  - Fonts: Gurajada (titling) for titles, tabs and buttons; Spessman (terminal) for readouts; LiberationSans for body text
+  - Spacing on a 4px grid; radii 2–4px.
+- **Department colours** (Command, Security, Engineering, Medical, Science, Cargo, Service, Civilian): propose eight muted colours that sit with these tokens, stay distinguishable from the feedback colours and from each other, and pass 4.5:1 on the `#353538` panel and the `#2a2a2e` inset.
 - **Priority colours** for the four job priorities (High, Medium, Low, Never): propose these too. High must stand out; Never must recede.
 
 ### The backdrop
@@ -110,3 +110,17 @@ Opened from Join (Screen 2). On one side, the jobs with open slots, each with it
 - Screens 1 and 4 again at 1366×768.
 - A one-page token sheet with your department and priority colour proposals, contrast-checked on the panel surface.
 - Brief annotations where a layout decision isn't obvious (what collapses at 1366×768, where focus starts, what the keyboard does).
+
+## Recolour prompt (for the existing canvas)
+
+The first canvas ("SS3D Lobby & Character window") used the wrong palette. Paste this into that canvas instead of regenerating it:
+
+> Recolour every artboard on this canvas with the installed SS3D design system (`ss3d`), the palette the shipped main menu and Settings screen use: panel `#353538`, chrome `#161616`, inset `#2a2a2e`, void `#222222`, hover `#45454a`; text `#ffffff` / `#aaaaaa` / disabled `#5a5d60`, white on rust; borders `rgba(216,216,216,0.1)` and `0.18`, strong `#717c7f`; rust `#c54f30` / `#dc5528` / `#93351f`; feedback green `#88b36a`, amber `#e6ad53`, red `#b13d3d`, blue `#3d6089`. Gurajada for titles, tabs and buttons; Spessman for readouts; LiberationSans for body. Keep every layout, state and annotation as it is. Re-tune the eight department colours and the four priority colours so each passes 4.5:1 on `#353538` and `#2a2a2e`, and update the token sheet with the new figures.
+>
+> Also make these copy and state fixes:
+> - Jobs fallback: "Return to lobby" says you can observe or join late, not "stay out of this round".
+> - Antags note: drop "until it starts"; the lobby never reveals the mode.
+> - Join, two open: Doctor reads 3/3 open, matching "No Doctor aboard".
+> - Before the round, job rows show total slots only ("1 slot"), never open counts or FULL. Open counts and FULL appear only on the Join screen. Redraw the Captain row accordingly.
+> - Observe is immediate: it takes the player into the round as a ghost at once, before or during the round. Ready and Observe aren't two toggles.
+> - Chat keeps channel buttons (OOC / LOOC / Admin help); drop the channel dropdown and the "Tab switches channel" hint.

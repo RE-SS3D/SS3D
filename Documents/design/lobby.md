@@ -18,7 +18,7 @@ The yardstick is what an SS13/SS14-style round actually needs before it starts. 
 
 ## 2. Job list
 
-The job list lives in the character window's **Jobs** tab (§6). It's grouped by department (Command, Security, Engineering, Medical, Science, Cargo, Service, Civilian). Each entry shows the job name, its department color (muted, from the existing status-color palette), its open and total slots (e.g. "Engineer — 2/4"), and its priority chip (§3). The access each job grants comes from id/access's job→access table (`id-access.md` §5). The lobby reads it; it doesn't author it.
+The job list lives in the character window's **Jobs** tab (§6). It's grouped by department (Command, Security, Engineering, Medical, Science, Cargo, Service, Civilian). Each entry shows the job name, its department color (muted, from the existing status-color palette), its slot count, and its priority chip (§3). Before the round nobody holds a job yet, so the list shows total slots only ("Engineer · 4 slots"); open counts and "full" belong to joining late (§7), when slots really are taken. The access each job grants comes from id/access's job→access table (`id-access.md` §5). The lobby reads it; it doesn't author it.
 
 **Every job has a short description**, on hover or expand. A new player should be able to tell what Engineer or Doctor does without opening a wiki. This is the same trap this project has flagged in comms' typed radio prefixes (§2) and crafting's freeform recipes (§1), applied to job names.
 
@@ -81,17 +81,17 @@ Fields that nothing in the game reads yet (age, voice, markings) aren't offered.
 
 **Joining late is a direct pick.** The player sees the jobs with open slots, each with its open and total count and its description (§2), next to the **crew manifest**: who is already aboard and in which job. They click a job and spawn as their selected character. This is first-come-first-served, and that's fine. A latejoiner is joining a world already in motion, not competing at a shared starting line, so the race concern §1 raised doesn't apply. The manifest lets them see that the station is short a Doctor. An admin can turn latejoin off for a round.
 
-**Observing is always available.** A player can choose not to take a body at all and enter the round as a ghost (`observer.md` §2).
+**Observing is always available, and immediate.** A player can choose not to take a body at all: Observe puts them into the round as a ghost at once, before the round starts or during it (`observer.md` §2), and leaves them out of round start. It isn't a second toggle beside Ready.
 
 ## 8. The lobby screen
 
 The lobby is what's on screen when a player isn't in a body: before the round, after it ends, and as the Escape menu during one.
 
-**The sidebar** carries the round's state and timer, the selected character with its preview and High job, and the entry buttons: **Ready** (or **Join** once the round runs, §7) and **Observe**. Clicking the character opens the character window (§6). Report a bug and quit-to-menu sit at the bottom.
+**The sidebar** carries the round's state and timer, the selected character with its preview and High job, and the entry buttons: **Ready** (or **Join** once the round runs, §7) and **Observe**. Clicking the character opens the character window (§6). The game's wordmark heads the sidebar. A **music** row (on/off, track name, next, volume) controls the same menu music the main menu plays, which carries on from the main menu into the lobby and fades out when the player takes a body or observes. Report a bug and quit-to-menu sit at the bottom.
 
 **The tabs** are:
 
-- **Server Info**, where a player lands. It shows the server's name, the message of the day, the map and the configured mode as plain text (a Secret server reads "Secret", so nothing leaks per §4), the build the server runs and its recent changes. A player knows where they are, what's being played and what changed since last time.
+- **Server Info**, where a player lands. It leads with a piece of the game's banner art (decoration only, never information) and shows the server's name, the message of the day, the map and the configured mode as plain text (a Secret server reads "Secret", so nothing leaks per §4), the build the server runs and its recent changes. A player knows where they are, what's being played and what changed since last time.
 - **Chat**, for OOC and the other out-of-character channels (`comms.md` §7).
 - **Settings**, for the player's own display, audio and controls.
 - **Last Round**, the previous round's summary (`round-end.md`), until the next round ends.
@@ -128,7 +128,7 @@ This screen doesn't inherit main HUD's minimal-permanent-chrome rule, and that's
 | Step | What happens | Lobby state |
 |---|---|---|
 | 1 | Round has been running for 20 minutes; a player connects | Join shows the open jobs next to the crew manifest |
-| 2 | The manifest lists one Engineer and no Doctor; Doctor shows 0/2 taken | Player picks Doctor and confirms; there's no resolution pass |
+| 2 | The manifest lists one Engineer and no Doctor; Doctor shows 2/2 open | Player picks Doctor and confirms; there's no resolution pass |
 | 3 | Selection resolves immediately | Player spawns right away as their selected character |
 
 ## 10. Integration notes
@@ -154,4 +154,3 @@ This screen doesn't inherit main HUD's minimal-permanent-chrome rule, and that's
 - The exact fairness/weighting algorithm inside preference resolution (a balancing/backend decision, not a design one)
 - Real authentication underlying a stable per-player key — designed in `player-accounts.md` (`persistence-save.md` §5 treats it as a black box)
 - What a ghost can do (`observer.md`). This doc only adds the entry point
-- Lobby music and title art (`audio.md`)
