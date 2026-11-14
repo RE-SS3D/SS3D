@@ -383,8 +383,10 @@ namespace SS3D.Editor.Automation
                         .rootVisualElement.Q(className: "main-hud").resolvedStyle.display != DisplayStyle.None,
                         "Body HUD returns on respawn");
                     Require(_corpse == null, "Sandbox removes the previous corpse after respawn");
-                    Vector3 spawn = SubSystems.Get<TileSubSystem>().SpawnPoints.Records[0].Position;
-                    Require(Vector3.Distance(Flat(body.transform.position), Flat(spawn)) < 1.5f, "New body stands at a spawn point");
+                    // Bodies with a job stand on one of that job's markers, so any marker counts.
+                    Vector3 bodyFlat = Flat(body.transform.position);
+                    Require(SubSystems.Get<TileSubSystem>().SpawnPoints.Records
+                        .Any(marker => Vector3.Distance(bodyFlat, Flat(marker.Position)) < 1.5f), "New body stands at a spawn point");
                     Capture("sandbox-respawned");
                 },
             },
