@@ -135,9 +135,13 @@
 .lobby .lobby__ready:hover { background-color: var(--lb-rust-hover); }
 .lobby .lobby__ready:active { background-color: var(--lb-rust-active); }
 .lobby__ready-text { flex-grow: 1; }
-.lobby__ready-title { font-size: 20px; letter-spacing: 1.6px; color: var(--lb-on-accent); }
-/* Gurajada sits low in its line box, so the canvas's 3px gap needs more here. */
-.lobby .lobby__ready-subtitle { font-size: 12px; margin-top: 7px; color: var(--lb-on-accent); }
+/*
+ * Gurajada's line box is about twice its size (~39px at 20px) with the capitals near its top, so a plain label makes
+ * the text block too tall and pushes the subtitle to the button's bottom edge. A 16px box with the text centred in
+ * it holds just the capitals, as the canvas's line-height: 1 does.
+ */
+.lobby .lobby__ready-title { height: 16px; font-size: 20px; letter-spacing: 1.6px; color: var(--lb-on-accent); -unity-text-align: middle-left; }
+.lobby .lobby__ready-subtitle { font-size: 12px; margin-top: 6px; color: var(--lb-on-accent); }
 .lobby .lobby__ready-check { display: none; width: 18px; height: 18px; margin-right: 12px; -unity-background-image-tint-color: var(--lb-on-light); }
 .lobby .lobby__ready--confirmed { background-color: var(--lb-green); }
 .lobby .lobby__ready--confirmed:hover { background-color: var(--lb-green-hover); }
@@ -161,9 +165,10 @@
 .lobby__observe:disabled .lobby__observe-title, .lobby__observe:disabled .lobby__observe-subtitle { color: var(--lb-disabled); }
 .lobby__observe:disabled .lobby__observe-icon { -unity-background-image-tint-color: var(--lb-disabled); }
 
-.lobby .lobby__ready:focus, .lobby .lobby__observe:focus, .lobby .lobby__switch:focus {
-    border-width: 1px; border-color: var(--lb-text);
-}
+/* Focus shows as the hover fill, not an outline: a clicked button keeps focus, and the canvas has no ring. */
+.lobby .lobby__ready:focus { background-color: var(--lb-rust-hover); }
+.lobby .lobby__ready--confirmed:focus { background-color: var(--lb-green-hover); }
+.lobby .lobby__observe:focus, .lobby .lobby__switch:focus { background-color: var(--lb-inset); }
 
 /* Quiet buttons: Next, Report a bug, Quit, Back to round. */
 .lobby .lobby__quiet-button {

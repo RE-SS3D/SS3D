@@ -30,28 +30,50 @@ namespace SS3D.Systems.Roles
             public string Key => GameName ?? Name;
         }
 
+        /// <summary>
+        /// Roster order and one-line descriptions (lobby.md §2: every job has one). A job with role data shows its
+        /// <see cref="RoleData.Description"/> instead; these cover the jobs not in the game yet.
+        /// </summary>
         public static readonly Entry[] All =
         {
-            new("Captain", Department.Command),
-            new("Head of Personnel", Department.Command),
-            new("Head of Security", Department.Security),
-            new("Security Officer", Department.Security, "Security"),
-            new("Detective", Department.Security),
-            new("Chief Engineer", Department.Engineering),
-            new("Engineer", Department.Engineering),
-            new("Atmospheric Technician", Department.Engineering),
-            new("Chief Medical Officer", Department.Medical),
-            new("Doctor", Department.Medical),
-            new("Chemist", Department.Medical),
-            new("Research Director", Department.Science),
-            new("Scientist", Department.Science),
+            new("Captain", Department.Command, null,
+                "Commands the station: sets priorities for every department and holds the highest access."),
+            new("Head of Personnel", Department.Command, null,
+                "Runs the crew: changes jobs and ID access at the ID console, and oversees Service and Cargo."),
+            new("Head of Security", Department.Security, null,
+                "Leads Security: assigns officers, keeps the armory and answers for the brig."),
+            new("Security Officer", Department.Security, "Security",
+                "Keeps the peace: patrols the station, stops crime and takes suspects to the brig."),
+            new("Detective", Department.Security, null,
+                "Investigates crimes: gathers evidence, examines scenes and builds the case for Security."),
+            new("Chief Engineer", Department.Engineering, null,
+                "Leads Engineering: keeps power, atmosphere and the hull running, and directs repairs."),
+            new("Engineer", Department.Engineering, null,
+                "Keeps the station running: sets up and repairs power, fixes breaches and builds what's needed."),
+            new("Atmospheric Technician", Department.Engineering, null,
+                "Keeps the air breathable: runs the pipes, scrubbers and vents, and refills what a breach drains."),
+            new("Chief Medical Officer", Department.Medical, null,
+                "Leads Medical: directs doctors and chemists and decides who gets treated first."),
+            new("Doctor", Department.Medical, null,
+                "Treats the injured: stops bleeding, mends wounds and brings people back from the brink."),
+            new("Chemist", Department.Medical, null,
+                "Makes medicine: mixes the chemicals Medical needs, and some that it doesn't."),
+            new("Research Director", Department.Science, null,
+                "Leads Science: sets what gets researched and guards the station's most dangerous experiments."),
+            new("Scientist", Department.Science, null,
+                "Researches new technology: runs experiments and turns the results into new equipment."),
             new("Quartermaster", Department.Cargo, null,
                 "Runs Cargo: approves orders from other departments, spends the station budget and decides what comes up on the supply shuttle."),
-            new("Cargo Technician", Department.Cargo),
-            new("Bartender", Department.Service),
-            new("Chef", Department.Service),
-            new("Janitor", Department.Service),
-            new("Assistant", Department.Civilian),
+            new("Cargo Technician", Department.Cargo, null,
+                "Moves supplies: unloads the shuttle, fills orders and delivers crates across the station."),
+            new("Bartender", Department.Service, null,
+                "Runs the bar: mixes drinks and keeps the crew's one place to unwind in order."),
+            new("Chef", Department.Service, null,
+                "Feeds the crew: cooks meals in the kitchen from what Cargo and the station provide."),
+            new("Janitor", Department.Service, null,
+                "Keeps the station clean: mops spills, clears debris and replaces broken lights."),
+            new("Assistant", Department.Civilian, null,
+                "Helps wherever needed: no department and little access, but free to lend a hand anywhere."),
         };
 
         /// <summary>The roster's description of <paramref name="job"/> (its key), or empty.</summary>

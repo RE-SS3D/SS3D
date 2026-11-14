@@ -72,7 +72,8 @@ namespace SS3D.UI.SettingsPanel
                 i => _settings.SetVSync(i == 1));
             int[] caps = PlayerDisplaySettings.FrameCaps;
             Segmented(screen, "frameCap", "Frame cap", caps.Select(c => c == 0 ? "Off" : c.ToString()).ToArray(),
-                () => Array.IndexOf(caps, Display.FrameCap), Array.IndexOf(caps, DisplayDefaults.FrameCap),
+                // VSync on ignores the cap, so the row reads Off; the saved cap returns when VSync goes off.
+                () => Array.IndexOf(caps, Display.VSync ? 0 : Display.FrameCap), Array.IndexOf(caps, DisplayDefaults.FrameCap),
                 i => _settings.SetFrameCap(caps[i]),
                 () => Display.VSync ? new RowState("Not used while VSync is on.", locked: true) : default);
 

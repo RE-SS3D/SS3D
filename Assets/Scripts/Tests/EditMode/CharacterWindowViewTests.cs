@@ -129,8 +129,10 @@ namespace SS3D.Tests.EditMode
             Assert.AreEqual("2 slots", security.Q<Label>(className: "charwin-jobs__slots").text);
             Assert.IsTrue(security.Q<Button>("charwin-prio-high").ClassListContains("charwin-jobs__prio-option--high-on"));
             Assert.AreEqual("unlimited", jobs.Q("charwin-job-Assistant").Q<Label>(className: "charwin-jobs__slots").text);
-            Assert.AreEqual(DisplayStyle.None, jobs.Q("charwin-job-Doctor").Q<Button>("charwin-job-about").style.display.value,
-                "No description, no expander");
+            Assert.AreEqual(JobRoster.DescriptionOf("Doctor"), jobs.Q("charwin-job-Doctor").Q<Label>("charwin-job-description").text,
+                "No role-data description: the roster's");
+            Assert.AreEqual("Runs the station.", jobs.Q("charwin-job-Captain").Q<Label>("charwin-job-description").text,
+                "The role data's description wins");
             Assert.IsTrue(jobs.Q<Button>("charwin-fallback-assistant").ClassListContains("charwin-jobs__radio--on"));
             Assert.IsTrue(jobs.Q("charwin-jobs-notice").ClassListContains("charwin__notice--hidden"));
 
@@ -138,6 +140,8 @@ namespace SS3D.Tests.EditMode
             Assert.IsNotNull(chief, "Every roster job shows, including ones the server doesn't run");
             Assert.IsTrue(chief.ClassListContains("charwin-jobs__row--locked"));
             Assert.IsNull(chief.Q("charwin-job-priority"), "A locked job has no priority control");
+            Assert.AreEqual(DisplayStyle.Flex, chief.Q<Button>("charwin-job-about").style.display.value, "A locked job keeps its description");
+            StringAssert.StartsWith("Leads Engineering", chief.Q<Label>("charwin-job-description").text);
             Assert.AreEqual(CharacterJobsTab.NotInGameReason, chief.Q<Label>(className: "charwin-jobs__locked-text").text);
             Assert.IsNull(jobs.Q("charwin-job-Security Officer"), "The game's Security is the roster's Security Officer");
             Assert.IsNotNull(jobs.Q("charwin-dept-science"));
