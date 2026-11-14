@@ -14,6 +14,9 @@ namespace SS3D.UI.Shell.MainMenu
     public sealed class MainMenuView : IUiSurface
     {
         public VisualElement Root { get; }
+
+        /// <summary>Where the owner mounts the shared Settings screen; shown while <see cref="MainMenuScreen.Settings"/> is.</summary>
+        public VisualElement SettingsHost => Root.Q("settings-host");
         private readonly MainMenuAssetCatalog _catalog;
         private Texture2D _blurredWallpaper;
         private Texture _blurredSource;
@@ -178,12 +181,9 @@ namespace SS3D.UI.Shell.MainMenu
             bool operation = model.Screen is MainMenuScreen.Connecting or MainMenuScreen.Hosting or MainMenuScreen.Updating;
             PresentWallpaper(model);
             Show("sidebar", !operation);
-            Show("side-panel", servers || settings);
-            Show("server-scroll", servers);
-            Show("settings-placeholder", settings);
-            Show("refresh", servers);
-            Root.Q<Label>("panel-title").text = settings ? "SETTINGS" : "JOIN A SERVER";
-            Root.Q<Label>("checked").text = settings ? "Esc" : model.CheckedText;
+            Show("side-panel", servers);
+            Show("settings-host", settings);
+            Root.Q<Label>("checked").text = model.CheckedText;
             VisualElement content = Root.Q("server-content");
             content.Clear();
             if (servers)

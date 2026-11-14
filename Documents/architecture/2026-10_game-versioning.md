@@ -55,7 +55,10 @@ MAJOR is 0 (1.0 means a complete game, far off); nightlies and `develop-*` cuts 
   broadcast signatures, or a FishNet upgrade. Mismatched clients are rejected with a message
   naming both versions.
 - **Bump `PersistenceEnvelope.CurrentSchemaVersion`** when saved station templates / server meta
-  written by the previous build no longer load as-is.
+  written by the previous build no longer load as-is, or when a save from the new build would lose
+  data in an older one (a new saved field, such as schema 3's object setup). An older build loads a
+  newer save but warns that some settings may be missing. Restamp shipped maps with
+  `Tools/map_import/asset_ids.py` (it writes the current version).
 - **Add `Version-Bump: minor`** as a commit trailer (last paragraph of the message) when a change
   completes a player-visible feature end to end without tripping a signal above — e.g. a whole new
   role, gamemode or system becomes playable. Ordinary fixes, polish and refactors get no trailer.

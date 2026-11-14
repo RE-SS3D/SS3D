@@ -21,6 +21,7 @@ using static UnityEngine.GraphicsBuffer;
 using SS3D.Systems.Combat;
 using SS3D.Systems.Interactions;
 using SS3D.Systems.Tile;
+using SS3D.Systems.Tile.MapEditor;
 
 namespace SS3D.Systems.Inventory.Containers
 {
@@ -385,7 +386,8 @@ namespace SS3D.Systems.Inventory.Containers
                 return;
             }
 
-            attachedTo.RemoveItem(item);
+            // Taking an item out of a placed locker or crate changes its saved contents (object-setup-persistence Q14).
+            MapEditorSetupTracker.Track(Owner, () => attachedTo.RemoveItem(item), attachedTo.gameObject);
         }
 
         [ServerRpc]
@@ -555,7 +557,9 @@ namespace SS3D.Systems.Inventory.Containers
                 return;
             }
 
-            itemContainer.TransferItemToOther(item, position, container);     
+            // Both ends may be placed containers whose saved contents change (object-setup-persistence Q14).
+            MapEditorSetupTracker.Track(Owner, () => itemContainer.TransferItemToOther(item, position, container),
+                itemContainer.gameObject, container.gameObject);
         }
 
 

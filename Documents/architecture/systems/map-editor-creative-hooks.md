@@ -1,7 +1,7 @@
 > Parent map: [tile.md](tile.md)
 > Code paths: Assets/Scripts/SS3D/Systems/Tile/MapEditor/, Assets/Scripts/SS3D/Systems/Tile/SpawnPoints/
 > Status: partial
-> Verified: 3190b2f1c — 2026-11-07
+> Verified: df4829f3d — 2026-11-14
 
 # Map Editor — creative mode extension hooks
 
@@ -15,6 +15,8 @@ Unsaved-change tracking (A4): `MapEditorUndoStack` keeps revision-based save poi
 branches and the bounded history. Successful persistence saves/loads set the template identity
 (`EditingTemplateName`) and save point; a failed save keeps the edits unsaved, and a new empty map
 starts unsaved. Round stop uses this to prompt or autosave before unloading; see [rounds-lobby](rounds-lobby.md).
+
+Object setup ([object-setup-persistence](../2026-11_object-setup-persistence.md)): saved maps keep each object's device settings, locks and container contents. Delete, move and replace undo carry the setup (`RemovedTileRecord.Setup`, `ClearResult.Setup`); the Dropper asks the server for the picked object's setup (`RpcCaptureDropperSetup`), and later places of that asset carry it in `MapEditorCommandDto.Setup` until a palette pick clears it (`MapEditorSetupCopy`, 64 KB cap per submit, refused not truncated). The server knows who has the editor open (`RpcSetEditorOpen`); for them, an interaction step (`ServerInteractionSteps`), a machine-panel control or an inventory move that changes a placed object's setup becomes a `SetObjectSetupCommand` they own (`MapEditorSetupTracker`), so Stop prompts and undo reverts it. Locker lock/unlock skip the ID check for them. Sandbox rules and the rate limit look inside a copy's nested contents.
 
 ## Start here
 
@@ -68,6 +70,8 @@ Data contracts for Phase 2 vertical slice (per creative-mode §10):
 
 - **A command that changed nothing must not undo anything:** tile, item and move commands implement `IReportsChange`. A refused place or move and an empty clear report `Changed == false`; `MapEditorCommandService.Execute` then returns false and pushes no undo step, and their `Revert` does nothing (before tech-debt P2.4, undoing a blocked place cleared whatever blocked it, and a blocked move deleted the source). `TryClearTile` reports success on an empty slot, so tile clears read the recorded removals instead; `TryClearItem` reports whether it removed one. `RpcMoveObject` toasts "Can't move that there." on a refusal.
 
+- **In-world changes land a frame after their RPC:** `InteractionSource.Interact` only queues an interaction; its `Start` runs in the source's next `Update`. Snapshotting setup around `CmdRunInteraction` saw no change and recorded nothing. Track around the step itself (`ServerInteractionSteps.Wrap`, installed only while someone has the editor open). Hit 2026-11-14.
+- **No in-world interaction with the editor open:** the MapEditor input context masks Interactions, so setup is set while playtesting (editor closed) and caught by the next save; the editor-open tracking and lock bypass only fire through server paths today. An in-editor Use tool is a follow-up. Owner decision 2026-11-14.
 - **A new item is missing from the library with no error:** the palette and saved maps only see assets under `Content/Data/TileMap/Resources`, so a prefab with an `ObjectAssetReference` but no `ItemObjectSo` works in play and cannot be placed. An item missing from the baked `MapEditorCatalog.asset` is inferred at runtime without its asset path, so it lands in Items › Misc, not its folder's sub-tab, until the catalog is regenerated. `AssetAudit.TileMapTests` checks this for `Items/Weapons/` only. Hit 2026-11-06 (C4, X4, energy weapons).
 - **A form test sees no edits outside a live panel:** UI Toolkit fields raise `ChangeEvent` only when attached to a panel, so `view.Build(new VisualElement())` passes the build and silently drops every edit. Host the view in an `EditorWindow`, as `GasMarkerAuthoringTests` and `MapEditorAreaViewTests` do. Hit 2026-11-05.
 - **The gas marker form closes itself off its sub-tab:** `RebuildGrid` closes it whenever the sub-tab isn't Starting Air, and any view model change can rebuild. A test must select Starting Air first or the form is gone by the next query. Hit 2026-11-05.
@@ -81,6 +85,7 @@ Data contracts for Phase 2 vertical slice (per creative-mode §10):
 - `MapEditorPaletteSearchTests`: palette-wide search (tab order, Scripts, sandbox, department), `OpenSubTab`, last-tab round trip and fallbacks, Map Check entry keys.
 - `SandboxServerTests`: sandbox profile, persistence gate, capabilities, denylist and catalog filter.
 - `MapFileSharingTests`, `MapLoadSkippedSummaryTests`, `MapEditorRateLimiterTests`, `AdminTokensTests`: export/import round trip, load-loss summary text, edit throttling, admin-name tokens.
+- `ObjectSetupPersistenceTests`: sparse capture, save round trip, schema 2 maps, load-loss reporting, undo of delete/move, Dropper copy, editor-user undo steps, newer-schema toast, sandbox nested refusal. `MapEditorScenarios`: restore after `OnStartServer`, a valve turned by hand with the editor open, nested locker contents. `ObjectSetupAuditTests`: setup keys unique per object.
 - `MapEditorAreaViewTests`: room drafts survive toast/undo-state refresh; department defaults and explicit access submit distinct masks; read-only department previews preserve custom overrides; Areas follows the Rooms category across its standard tools; overlay meshes preserve tile positions and gizmo colors. Run `Testing/ui/validate.sh --steps compile,editmode`; release dogfood remains A2.5.
 
 ## Related docs

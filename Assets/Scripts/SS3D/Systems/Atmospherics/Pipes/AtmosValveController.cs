@@ -39,6 +39,9 @@ namespace SS3D.Systems.Atmospherics.Pipes
             ServerSetEnabled(_startsOpen);
         }
 
+        /// <summary>Open or closed is the valve's whole setup; the prefab says which it starts as.</summary>
+        protected override PortSetup DefaultSetup() => new() { enabled = _startsOpen };
+
         public override IInteraction[] CreateTargetInteractions(InteractionEvent interactionEvent)
         {
             if (!_turnedByHand)

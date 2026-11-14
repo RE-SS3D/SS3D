@@ -1,4 +1,5 @@
 using FishNet.Object;
+using System;
 using UnityEngine;
 
 namespace SS3D.Systems.Atmospherics.Pipes
@@ -52,6 +53,32 @@ namespace SS3D.Systems.Atmospherics.Pipes
         public void ServerToggleGas(GasId gasId)
         {
             _selectedGases ^= GasBit(gasId);
+        }
+
+        [Serializable]
+        private sealed class FilterSetup : PortSetup
+        {
+            public int flowLitresPerSecond = AtmosPortConstants.FilterDefaultLitresPerSecond;
+            public ulong selectedGases;
+        }
+
+        protected override PortSetup DefaultSetup() => new FilterSetup();
+
+        protected override PortSetup CurrentSetup() => new FilterSetup
+        {
+            enabled = IsEnabled,
+            flowLitresPerSecond = _flowLitresPerSecond,
+            selectedGases = _selectedGases,
+        };
+
+        protected override void ApplySetup(PortSetup setup)
+        {
+            base.ApplySetup(setup);
+            if (setup is not FilterSetup filter)
+                return;
+
+            ServerSetFlowLitresPerSecond(filter.flowLitresPerSecond);
+            _selectedGases = filter.selectedGases;
         }
 
         /// <summary>

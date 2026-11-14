@@ -39,6 +39,9 @@ namespace SS3D.Systems.Roles
         private readonly Dictionary<string, Dictionary<string, JobPriority>> _preferences = new();
         private readonly Dictionary<string, HashSet<string>> _antagonistOptIns = new();
         private readonly Dictionary<Player, RoleData> _rolePlayers = new();
+
+        /// <summary>Loadouts whose <see cref="RoleLoadout.FirstHolderContents"/> went out this round.</summary>
+        private readonly HashSet<RoleLoadout> _firstHolderContentsGiven = new();
         private readonly Dictionary<string, RoleData> _antagonistRoles = new();
         private readonly List<Player> _operatives = new();
         private readonly System.Random _random = new();
@@ -201,6 +204,7 @@ namespace SS3D.Systems.Roles
 
             _rolePlayers.Clear();
             _operatives.Clear();
+            _firstHolderContentsGiven.Clear();
             RefreshJobCounts();
         }
         #endregion
@@ -215,6 +219,7 @@ namespace SS3D.Systems.Roles
         {
             _rolePlayers.Clear();
             _operatives.Clear();
+            _firstHolderContentsGiven.Clear();
             RefreshJobCounts();
 
             Dictionary<string, Player> byCkey = new();
@@ -457,6 +462,17 @@ namespace SS3D.Systems.Roles
                 if (contents != null)
                 {
                     SpawnContents(equipped.GetValueOrDefault(contents.Slot), contents.Items);
+                }
+            }
+
+            if (loadout.FirstHolderContents is { Count: > 0 } && _firstHolderContentsGiven.Add(loadout))
+            {
+                foreach (LoadoutContents contents in loadout.FirstHolderContents)
+                {
+                    if (contents != null)
+                    {
+                        SpawnContents(equipped.GetValueOrDefault(contents.Slot), contents.Items);
+                    }
                 }
             }
 

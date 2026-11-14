@@ -627,20 +627,31 @@ namespace SS3D.Systems.Interactions
         }
 
         [Client]
-        private void HandleUse(InputAction.CallbackContext callbackContext)
+        private void HandleUse(InputAction.CallbackContext callbackContext) => UseHeldItem();
+
+        /// <summary>
+        /// The Use key (E): activates the item in the selected hand, running its highest-priority in-hand
+        /// interaction (arm a minibomb, call down a bomb beacon, honk). Reload takes priority for firearms
+        /// (including two-hand rifles still wielded while the off-hand is selected).
+        /// </summary>
+        /// <remarks>
+        /// The source must be the selected <see cref="Hand"/>: the body root is not an interaction source, and
+        /// passing it made <see cref="InteractInHand"/> return without doing anything, so Use never activated
+        /// a held item.
+        /// </remarks>
+        [Client]
+        public void UseHeldItem()
         {
-            // Activate item in selected hand — reload takes priority for firearms
-            // (including two-hand rifles still wielded while the off-hand is selected).
             if (GetCombatNetwork()?.TryRunRangedReloadPrimary() == true)
             {
                 return;
             }
 
-            Hands hands = GetComponent<Hands>();
-            Item item = hands?.SelectedHand?.ItemInHand;
+            Hand hand = GetComponent<Hands>()?.SelectedHand;
+            Item item = hand != null ? hand.ItemInHand : null;
             if (item != null)
             {
-                InteractInHand(item.gameObject, gameObject);
+                InteractInHand(item.gameObject, hand.gameObject);
             }
         }
 

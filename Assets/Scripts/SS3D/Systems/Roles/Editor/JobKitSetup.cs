@@ -11,7 +11,7 @@ namespace SS3D.Systems.Roles.Editor
     /// <summary>
     /// Puts the Playtest 1 weapons and medical gear into the job loadouts (mvp1-nuke-ops.md M0/M1c):
     /// operatives carry the C-20r and a Stechkin, Security a security pistol and a stun baton, the Doctor
-    /// gauze in the medkit and a defibrillator. Clothing stays with ClothingImportSetup. Re-running it is idempotent.
+    /// gauze in the medkit and a defibrillator. The first operative each round also gets the Syndicate bomb beacon. Clothing stays with ClothingImportSetup. Re-running it is idempotent.
     /// </summary>
     public static class JobKitSetup
     {
@@ -24,6 +24,10 @@ namespace SS3D.Systems.Roles.Editor
             RoleLoadout operative = Load("OperativeLoadout");
             operative.HandRightAsset = Reference("C20R");
             AddToStorage(operative, ContainerType.Bag, "Stechkin");
+            // One bomb per squad: only the first operative to spawn each round carries its beacon.
+            LoadoutContents firstBag = operative.FirstHolderContents.FirstOrDefault(c => c.Slot == ContainerType.Bag);
+            if (firstBag == null) operative.FirstHolderContents.Add(firstBag = new LoadoutContents { Slot = ContainerType.Bag });
+            AddMissing(firstBag.Items, "SyndicateBombBeacon", 1);
             Save(operative);
 
             RoleLoadout security = Load("SecurityLoadout");

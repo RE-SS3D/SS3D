@@ -60,10 +60,13 @@ namespace AssetAudit
                 $"Weapon '{weapon.name}' has no ItemObjectSo under Content/Data/TileMap/Resources/Items/Weapons.\n");
         }
 
-        /// <summary>A weapon must fit a backpack, whatever it is.</summary>
+        /// <summary>A weapon must fit a backpack, whatever it is, unless nobody can lift it at all (the Syndicate bomb).</summary>
         [Test, TestCaseSource(nameof(AllWeaponPrefabs))]
         public void EveryWeaponFitsTheBackpack(GameObject weapon)
         {
+            if (weapon.GetComponent<Item>().TooHeavyToLift)
+                Assert.Ignore($"'{weapon.name}' is too heavy to lift; it is dragged, never carried.");
+
             GameObject backpack = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Content/WorldObjects/Items/Clothing/Backpack.prefab");
             AttachedContainer storage = backpack.GetComponentsInChildren<AttachedContainer>(true).First(container => container.HasUi);
 

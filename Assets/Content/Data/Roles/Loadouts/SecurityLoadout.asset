@@ -41,5 +41,6 @@ MonoBehaviour:
     - {fileID: 11400000, guid: 8ec2a780fae01344a9431a9cb06d8a7c, type: 2}
     - {fileID: 11400000, guid: e28b644ad26ceae45acf3ceb84b8cbff, type: 2}
     - {fileID: 11400000, guid: 711a5ee0617bbf3bc9a5029373a16fac, type: 2}
+  FirstHolderContents: []
   HandLeftContents: []
   HandRightContents: []

@@ -1,7 +1,7 @@
 > Code paths: Assets/Scripts/SS3D/Systems/Inventory/, Assets/Scripts/SS3D/UI/MainHud/, Assets/Scripts/SS3D/UI/StoragePanel/, Assets/Scripts/SS3D/Systems/Stamina/
 > Entry points: ItemSubSystem, MainHudSubSystem, StoragePanelHost, StaminaController
 > Status: partial
-> Verified: 77ce6acb3 — 2026-11-12
+> Verified: df4829f3d — 2026-11-14
 
 # Inventory
 
@@ -9,7 +9,7 @@
 
 Items, containers, hands, identification cards (`IDCard`, `PDA`), on-demand storage panel UI, and Main HUD equip/storage UX. ID cards bind to server-side crew records via [id-access](id-access.md); spawn-time binding in `RoleSubSystem`.
 
-**Container primitive:** `AttachedContainer` — position-grid slots (`Size.x × Size.y`), `SizeClass` fit ceiling, recursive computed `Weight`, `MaxWeight` panel readout, stacking (`Item.MaxStackSize`/`StackCount`, merge-on-add; split not built). `Item._initialStackCount` sets a fresh spawn's count (sheets 20, floor tiles 10); `[Server] Item.TryConsume(n)` spends units and deletes the item at 0. A loose stack picks up onto the matching stack in hand with **Add to stack** (`StackPickupInteraction`, `Hand.StackOnto`); Pick up still needs an empty hand. The HUD hand and gear slots show "×N" (`InventorySlot.StackCount`), read each frame by `MainHudSubSystem.RefreshStackCounts` because spending a stack raises no container event. Optional `AttachedContainerLock` ID-gates world containers. See [inventory-storage.md](../../design/inventory-storage.md).
+**Container primitive:** `AttachedContainer` — position-grid slots (`Size.x × Size.y`), `SizeClass` fit ceiling, recursive computed `Weight`, `MaxWeight` panel readout, stacking (`Item.MaxStackSize`/`StackCount`, merge-on-add; split not built). `Item._initialStackCount` sets a fresh spawn's count (sheets 20, floor tiles 10); `[Server] Item.TryConsume(n)` spends units and deletes the item at 0. A loose stack picks up onto the matching stack in hand with **Add to stack** (`StackPickupInteraction`, `Hand.StackOnto`); Pick up still needs an empty hand. The HUD hand and gear slots show "×N" (`InventorySlot.StackCount`), read each frame by `MainHudSubSystem.RefreshStackCounts` because spending a stack raises no container event. Optional `AttachedContainerLock` ID-gates world containers. `Item.TooHeavyToLift` (the Syndicate bomb) fails `CanContainItem` and hides Pick up, so no hand, slot or container takes the item; it moves only by dragging (`Draggable`) or physics. That is a flag beside the five design tiers (inventory-storage.md §4), not a sixth tier, and `TileMapTests.EveryWeaponFitsTheBackpack` skips such items. See [inventory-storage.md](../../design/inventory-storage.md).
 
 **Item orientation:** one contract per context. *Held:* `AttachmentPoint` (`AttachmentPointAlt` for the left hand, when it is its own transform) is the item's rotation in character space in the idle pose; the display's calibrated `GripSocket` turns it into a constant hand-local rotation. *Floor:* `Item._restRotation`, equal to the prefab root rotation, composed with yaw by `ItemPlacement`. *Icon:* `Item.IconRotation` (the rest pose unless overridden) under a fixed camera. Edit all three in the **Item Pose Editor**; `ItemPoseTests` enforces rest == root, an `AttachmentPoint` on every pickable item, and a flat rest pose unless `RestsUpright`.
 
@@ -53,6 +53,7 @@ Items, containers, hands, identification cards (`IDCard`, `PDA`), on-demand stor
 - `Assets/Scripts/SS3D/Systems/Inventory/Containers/Editor/ItemRestPoseAudit.cs` — lies-flat rule behind `ItemPoseTests` (rest pose thinnest vertically unless `RestsUpright`); `ItemRestPoseRecipe` migrated root rotations into `_restRotation`
 - `Assets/Scripts/SS3D/Utils/IconPreviewGenerator.cs` — bright `Unlit/ObjectIcon` for HUD/tile icons
 - `Assets/Scripts/SS3D/Systems/Inventory/Containers/AttachedContainer.cs` — container primitive
+- `Assets/Scripts/SS3D/Systems/Inventory/Containers/ContainerContentsSetup.cs` — a container's contents as saved map setup (Q13 of [object-setup-persistence](../2026-11_object-setup-persistence.md)): each stored item's asset, slot, stack size and its own setup, recursively; keyed `container` (root) or `container:<child name>`; restore replaces contents and is a no-op when they already match. `DeleteAllContents` despawns stored items before their placed holder is despawned
 - `Assets/Scripts/SS3D/Systems/Inventory/Containers/AttachedContainerLock.cs` — ID-gated world lock
 - `Assets/Scripts/SS3D/Systems/Inventory/Containers/HumanInventory.cs` — on-person containers, `CarriedWeight`
 - `Assets/Scripts/SS3D/Systems/Inventory/Containers/Cloth.cs` / `ClothesDisplayer.cs` / `ClothingItemPresentation.cs` — worn body mesh + folded world/hand form
@@ -106,6 +107,7 @@ Items, containers, hands, identification cards (`IDCard`, `PDA`), on-demand stor
 
 ## Pitfalls
 
+- **Filling and despawning a container in one tick writes into prefab assets:** the host's client reads the container's late SyncList after the server despawned it (FishNet logs "received a Read but was deinitialized on the server … ClientHost limitation"), resolves the stored items to their prefab assets, and `handleItemAdded` hides and freezes the assets themselves ("Transform resides in a Prefab asset"; `git status` shows the prefab dirty). Let a tick pass before despawning, and `git checkout` + force-reimport leaked prefabs. `MapRepairScenarios` hits it with loadout gear on develop too (nightly 2026-11-13). Hit 2026-11-14.
 - **Hand-edited sizes and weights revert:** `ItemSizeWeightRecipe` (and `GasTankSetup` / `SyndicateHardsuitSetup`, which now read the same table) reapply `ItemSizeWeightTable` on every **Run Content Prefab Recipes**, and `ItemSizeWeightTableTests.PrefabsMatchTable` fails on drift. Change the table, not the Inspector.
 - **Do not put the medkit or toolbox in `StorageContainerPrefabSetup.Targets`:** it forces `_isOpenable` off and `_onlyStoreWhenOpen` off, which breaks them. Their grids live in `ItemSizeWeightTable.Containers`.
 - **A Bulky item cannot go in a backpack:** that is intended (toolbox, backpack, toolbelt). Weapons are never Bulky: `TileMapTests.EveryWeaponFitsTheBackpack`. A new bag must be Bulky or it nests in itself.

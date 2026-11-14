@@ -14,6 +14,7 @@ using SS3D.Systems.Rounds;
 using SS3D.Systems.Rounds.Messages;
 using SS3D.Systems.ScreenEffects;
 using SS3D.Systems.Settings;
+using SS3D.UI.SettingsPanel;
 using SS3D.Core.Behaviours;
 using SS3D.Systems.Entities.Character;
 using SS3D.Systems.Inventory.Containers;
@@ -73,8 +74,8 @@ namespace SS3D.UI.Lobby
             _menuHandle?.Dispose();
             _menuHandle = null;
             ReleasePortraits();
-            if (_playerSettings != null) _playerSettings.Changed -= HandlePlayerSettingsChanged;
-            _playerSettings = null;
+            _settingsPanel?.Dispose();
+            _settingsPanel = null;
             if (_shellView != null)
             {
                 _shellView.CharacterCreatorRequested -= HandleCharacterCreatorRequested;
@@ -113,7 +114,6 @@ namespace SS3D.UI.Lobby
                 BindClientSession();
                 RefreshSession();
             }
-            RefreshDisplayConfirmation();
             if (_portraitDirty) TryCapturePortrait();
         }
 
@@ -191,7 +191,7 @@ namespace SS3D.UI.Lobby
             Debug.Log("[Lobby] UITK Lobby Shell + Character Creator attached (Phase E1 + hair styles).");
         }
 
-        private PlayerSettingsSubSystem _playerSettings;
+        private PlayerSettingsPanel _settingsPanel;
 
         /// <summary>Same strength as a diegetic machine panel (<c>MachineInterfaceHost.DiegeticBackdropBlur</c>).</summary>
         private const float MenuBackdropBlur = 0.7f;
@@ -208,53 +208,15 @@ namespace SS3D.UI.Lobby
             screenEffects.SetUiBackdropBlur(open ? MenuBackdropBlur : 0f);
         }
 
-        /// <summary>The Settings tab edits client-local player settings; no server round trip.</summary>
+        /// <summary>
+        /// The Settings tab shows the shared Settings screen (also the main menu's), which edits client-local player
+        /// settings with no server round trip. The lobby tab bar titles it, so it has no header of its own.
+        /// </summary>
         private void BindPlayerSettings()
         {
-            if (!SubSystems.TryGet(out _playerSettings)) return;
-            PlayerSettingsSubSystem settings = _playerSettings;
-            _shellView.VolumeChanged += settings.SetVolume;
-            _shellView.MuteAllChanged += settings.SetMuteAll;
-            _shellView.MuteWhenUnfocusedChanged += settings.SetMuteWhenUnfocused;
-            _shellView.AudioResetRequested += settings.ResetAudio;
-            _shellView.ResolutionChanged += settings.SetResolution;
-            _shellView.WindowModeChanged += settings.SetWindowMode;
-            _shellView.VSyncChanged += settings.SetVSync;
-            _shellView.FrameCapChanged += settings.SetFrameCap;
-            _shellView.QualityChanged += settings.SetQuality;
-            _shellView.RenderScaleChanged += settings.SetRenderScale;
-            _shellView.UpscalerChanged += settings.SetUpscaler;
-            _shellView.AntiAliasingChanged += settings.SetAntiAliasing;
-            _shellView.UiScaleChanged += settings.SetUiScale;
-            _shellView.ShowFpsChanged += settings.SetShowFps;
-            _shellView.ShowLogIndicatorChanged += settings.SetShowLogIndicator;
-            _shellView.DisplayResetRequested += settings.ResetDisplay;
-            _shellView.DisplayChangeKept += settings.ConfirmDisplayChange;
-            _shellView.DisplayChangeReverted += settings.RevertDisplayChange;
-            _shellView.KeyCaptureRequested += settings.BeginKeyCapture;
-            _shellView.KeyCaptureCancelled += settings.CancelKeyCapture;
-            _shellView.ControlsResetRequested += settings.ResetControls;
-            settings.Changed += HandlePlayerSettingsChanged;
-            HandlePlayerSettingsChanged();
-        }
-
-        private void HandlePlayerSettingsChanged()
-        {
-            if (_shellView == null) return;
-            _shellView.SetAudioSettings(_playerSettings.Settings.Audio);
-            _shellView.SetDisplaySettings(_playerSettings.Settings.Display, _playerSettings.ResolutionChoices,
-                _playerSettings.CurrentResolution, _playerSettings.StpSupported);
-            _shellView.SetControls(_playerSettings.KeybindRows,
-                _playerSettings.CapturingRowId, _playerSettings.ControlsNotice, _playerSettings.ControlsNoticeVersion);
-            RefreshDisplayConfirmation();
-        }
-
-        /// <summary>Countdown text for the "Keep these settings?" prompt; cheap enough to run every frame.</summary>
-        private void RefreshDisplayConfirmation()
-        {
-            if (_shellView == null || _playerSettings == null) return;
-            _shellView.SetDisplayConfirmation(_playerSettings.DisplayConfirmationPending,
-                Mathf.CeilToInt(_playerSettings.DisplayConfirmationSecondsLeft));
+            if (!SubSystems.TryGet(out PlayerSettingsSubSystem settings)) return;
+            _settingsPanel = new PlayerSettingsPanel(_shellView.SettingsHost, _shellView.Root, settings, null, false);
+            _shellView.Hidden += _settingsPanel.CancelTransient;
         }
 
         private float _nextSessionRefresh;
@@ -382,9 +344,10 @@ namespace SS3D.UI.Lobby
 
         private void HandleToggleMenu(InputAction.CallbackContext context)
         {
+            // A key capture or a pending display change takes Escape first, before or during a round.
+            if (_shellView != null && _settingsPanel != null && _settingsPanel.ConsumeEscape()) return;
             // Before spawn the shell is the whole screen; Escape there belongs to other owners.
             if (!_spawned || _shellView == null) return;
-            if (_shellView.IsCapturingKey) return;
             if (SubSystems.TryGet(out ArmedInteractionSubSystem armed) && armed.IsArmed) return;
             if (SubSystems.TryGet(out MapEditorSubSystem mapEditor) && mapEditor.IsActive) return;
             _menuOpen = !_menuOpen;

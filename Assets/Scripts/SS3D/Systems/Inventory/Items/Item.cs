@@ -8,6 +8,7 @@ using FishNet.Object.Synchronizing;
 using SS3D.Attributes;
 using SS3D.Data;
 using SS3D.Data.AssetDatabases;
+using SS3D.Data.Persistence;
 using SS3D.Interactions;
 using SS3D.Interactions.Interfaces;
 using SS3D.Logging;
@@ -41,7 +42,7 @@ namespace SS3D.Systems.Inventory.Items
     [RequireComponent(typeof(NetworkTransform))]
     [RequireComponent(typeof(Selectable))]
     [RequiredLayer("Items")]
-    public class Item : InteractionSource, IInteractionTarget, IWorldObjectAsset
+    public class Item : InteractionSource, IInteractionTarget, IWorldObjectAsset, ISetupRecordRoot
     {
         [SerializeField]
 #if UNITY_EDITOR
@@ -60,6 +61,9 @@ namespace SS3D.Systems.Inventory.Items
 
         [Tooltip("Physical size tier, checked against a container's MaxSizeClass fit ceiling."), SerializeField]
         private SizeClass _sizeClass = SizeClass.Normal;
+
+        [Tooltip("Too heavy to pick up or store anywhere: it stays in the world and can only be dragged (a Syndicate bomb)."), SerializeField]
+        private bool _tooHeavyToLift;
 
         [Tooltip("If greater than 1, identical items (same source asset) collapse into one stack up to this count."), SerializeField]
         private int _maxStackSize = 1;
@@ -151,6 +155,9 @@ namespace SS3D.Systems.Inventory.Items
         public float Weight => _weight;
 
         public SizeClass SizeClass => _sizeClass;
+
+        /// <summary>No hand, slot or container takes this item; it moves only by dragging or physics.</summary>
+        public bool TooHeavyToLift => _tooHeavyToLift;
 
         public int MaxStackSize => _maxStackSize;
 

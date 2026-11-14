@@ -18,6 +18,8 @@ namespace SS3D.Systems.ActionMessages
         public const string NukeArm = "action.nuke_arm";
         public const string NukeOpenPanel = "action.nuke_open_panel";
         public const string NukeCutWires = "action.nuke_cut_wires";
+        public const string BoltDown = "action.bolt_down";
+        public const string Unbolt = "action.unbolt";
 
         private static readonly Dictionary<string, string> English = new()
         {
@@ -30,6 +32,8 @@ namespace SS3D.Systems.ActionMessages
             { NukeArm, "{0} starts arming the {1}!" },
             { NukeOpenPanel, "{0} starts unscrewing the {1}'s wiring panel." },
             { NukeCutWires, "{0} starts cutting the {1}'s wires." },
+            { BoltDown, "{0} starts bolting the {1} to the floor." },
+            { Unbolt, "{0} starts unbolting the {1} from the floor." },
         };
 
         /// <summary>Lines aimed at the viewer that should outrank routine ones (action-messages.md §5).</summary>

@@ -1363,6 +1363,24 @@ MonoBehaviour:
     SearchTags:
     - item
     - clothing
+  - AssetName: SyndicateBomb
+    Mode: 2
+    Subcategory: 306
+    Heading: 
+    Family: 
+    VariantLabel: 
+    SearchTags:
+    - item
+    - weapons
+  - AssetName: SyndicateBombBeacon
+    Mode: 2
+    Subcategory: 306
+    Heading: 
+    Family: 
+    VariantLabel: 
+    SearchTags:
+    - item
+    - weapons
   - AssetName: SyndicateHardsuit
     Mode: 2
     Subcategory: 302

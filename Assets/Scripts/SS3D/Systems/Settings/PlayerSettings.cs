@@ -41,7 +41,7 @@ namespace SS3D.Systems.Settings
         Personal,
     }
 
-    /// <summary>Linear 0..1 volumes per audio.md §7 category, plus the two mutes (Decision 4).</summary>
+    /// <summary>Linear 0..1 volumes per audio.md §7 category, the two mutes (Decision 4) and main menu music.</summary>
     [Serializable]
     public sealed class PlayerAudioSettings
     {
@@ -53,6 +53,8 @@ namespace SS3D.Systems.Settings
         public float Personal = DefaultVolume;
         public bool MuteAll;
         public bool MuteWhenUnfocused = true;
+        /// <summary>The main menu's music bed; nothing else plays music there, and rounds ignore it.</summary>
+        public bool MenuMusic = true;
 
         public float Get(PlayerVolume volume) => volume switch
         {

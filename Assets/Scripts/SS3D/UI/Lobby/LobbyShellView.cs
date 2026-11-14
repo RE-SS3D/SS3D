@@ -8,7 +8,6 @@ using SS3D.Systems.IdAccess;
 using SS3D.Systems.Inputs;
 using SS3D.Systems.Roles;
 using SS3D.Systems.Rounds;
-using SS3D.Systems.Settings;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -49,44 +48,14 @@ namespace SS3D.UI.Lobby
         private bool _countingDown;
         private int _secondsLeft = 4 * 60 + 12;
         private string _playerSearch = string.Empty;
-        private string _settingsSubTab = "display";
         private OocChannel _chatChannel = OocChannel.Ooc;
         private OocChatMessage[] _chat = Array.Empty<OocChatMessage>();
         private int _chatVersion = -1;
         private bool _chatAdmin;
         private ScrollView _chatLog;
         private string _openPlayerId;
-        // PlayerSettingsSubSystem's Controls state; the capture itself runs in InputSubSystem.
-        private IReadOnlyList<KeybindRow> _keybindRows = Array.Empty<KeybindRow>();
-        private string _capturingRowId;
-        private int _controlsNoticeVersion;
-        private Label _toast;
-        private IVisualElementScheduledItem _toastHide;
-        // The Settings scroll view is rebuilt with the tab; keep the reader's place within one sub-tab.
-        private ScrollView _settingsScroll;
-        private string _settingsScrollSubTab;
-        private bool _confirmingControlsReset;
-        // PlayerSettingsSubSystem's live display values and what the machine offers.
-        private PlayerDisplaySettings _display = new();
-        private Vector2Int[] _resolutions = Array.Empty<Vector2Int>();
-        private Vector2Int _currentResolution;
-        private bool _stpSupported = true;
-        private bool _confirmingDisplayReset;
-        private bool _raisingDisplayIntent;
-        private VisualElement _displayPrompt;
-        private Label _displayPromptText;
-        // PlayerSettingsSubSystem's live audio values; the view only reads them and raises intents.
-        private PlayerAudioSettings _audio = new();
-        private bool _raisingAudioIntent;
-        private bool _confirmingAudioReset;
-        private static readonly (PlayerVolume Volume, string Key, string Title)[] VolumeSliders =
-        {
-            (PlayerVolume.Master, "masterVolume", "Master Volume"),
-            (PlayerVolume.Music, "musicVolume", "Music Volume"),
-            (PlayerVolume.Sfx, "sfxVolume", "SFX Volume"),
-            (PlayerVolume.Ambience, "ambienceVolume", "Ambience Volume"),
-            (PlayerVolume.Personal, "personalVolume", "Personal Volume"),
-        };
+        // The shared Settings screen (SS3D.UI.SettingsPanel) lives here; the Settings tab shows it.
+        private VisualElement _settingsHost;
 
         // Missing jobs are Never: an empty list is the explicit "no preference" (lobby.md §3).
         private readonly Dictionary<string, JobPriority> _priorities = new();
@@ -102,92 +71,22 @@ namespace SS3D.UI.Lobby
         public event Action ObserveRequested;
         public event Action QuitRequested;
 
+        /// <summary>The shell was hidden; the Settings screen stops listening for a key.</summary>
+        public event Action Hidden;
+
         /// <summary>"Report a bug": the host opens the bug report dialog (<c>sandbox-server.md</c> §7).</summary>
         public event Action BugReportRequested;
         public event Action<bool> RoundChangeRequested;
         public event Action JobPreferencesChanged;
         public event Action<OocChannel, string> ChatSubmitted;
-        public event Action<PlayerVolume, float> VolumeChanged;
-        public event Action<bool> MuteAllChanged;
-        public event Action<bool> MuteWhenUnfocusedChanged;
-        public event Action AudioResetRequested;
-        public event Action<Vector2Int> ResolutionChanged;
-        public event Action<PlayerWindowMode> WindowModeChanged;
-        public event Action<bool> VSyncChanged;
-        public event Action<int> FrameCapChanged;
-        public event Action<PlayerQualityTier> QualityChanged;
-        public event Action<float> RenderScaleChanged;
-        public event Action<PlayerUpscaler> UpscalerChanged;
-        public event Action<PlayerAntiAliasing> AntiAliasingChanged;
-        public event Action<float> UiScaleChanged;
-        public event Action<bool> ShowFpsChanged;
-        public event Action<bool> ShowLogIndicatorChanged;
-        public event Action DisplayResetRequested;
-        public event Action DisplayChangeKept;
-        public event Action DisplayChangeReverted;
-        public event Action<string> KeyCaptureRequested;
-        public event Action KeyCaptureCancelled;
-        public event Action ControlsResetRequested;
-
-        /// <summary>Supplies the Controls tab's rows and state; rebuilds an open Controls tab.</summary>
-        public void SetControls(IReadOnlyList<KeybindRow> rows, string capturingRowId, string notice, int noticeVersion)
-        {
-            _keybindRows = rows ?? Array.Empty<KeybindRow>();
-            _capturingRowId = capturingRowId;
-            if (noticeVersion != _controlsNoticeVersion)
-            {
-                _controlsNoticeVersion = noticeVersion;
-                if (!string.IsNullOrEmpty(notice)) ShowToast(notice);
-            }
-            if (_activeTab == TabSettings && _settingsSubTab == "keyboard" && _tabContent != null)
-                ShowTab(TabSettings);
-        }
-
-        /// <summary>A short message over the shell that fades on its own ("Use is now Q").</summary>
-        private void ShowToast(string text)
-        {
-            if (_toast == null) return;
-            _toast.text = text;
-            _toast.style.display = DisplayStyle.Flex;
-            _toastHide?.Pause();
-            _toastHide = _toast.schedule.Execute(() => _toast.style.display = DisplayStyle.None).StartingIn(3500);
-        }
-
-        private void CancelKeyCapture()
-        {
-            if (_capturingRowId != null) KeyCaptureCancelled?.Invoke();
-        }
-
-        /// <summary>Supplies the display settings and the machine's choices; rebuilds an open Display tab.</summary>
-        public void SetDisplaySettings(PlayerDisplaySettings display, Vector2Int[] resolutions, Vector2Int current, bool stpSupported)
-        {
-            _display = display ?? new PlayerDisplaySettings();
-            _resolutions = resolutions ?? Array.Empty<Vector2Int>();
-            _currentResolution = current;
-            _stpSupported = stpSupported;
-            // Skip the echo of a live UI Scale drag: rebuilding the tab would drop the drag.
-            if (!_raisingDisplayIntent && _activeTab == TabSettings && _settingsSubTab == "display" && _tabContent != null)
-                ShowTab(TabSettings);
-        }
-
-        /// <summary>Shows or hides the "Keep these settings?" prompt (Decision 3); called every refresh while pending.</summary>
-        public void SetDisplayConfirmation(bool pending, int secondsLeft)
-        {
-            if (_displayPrompt == null) return;
-            _displayPrompt.style.display = pending ? DisplayStyle.Flex : DisplayStyle.None;
-            if (pending) _displayPromptText.text = $"Keep these display settings? Reverting in {secondsLeft} s.";
-        }
-
         /// <summary>
-        /// Supplies the audio settings to show. Rebuilds an open Sound tab, except for the echo of the view's own
-        /// slider intent (rebuilding mid-drag would drop the drag).
+        /// The element the shared Settings screen fills (LobbyUiSubSystem mounts it). It survives tab switches: the
+        /// Settings tab re-parents it, so the screen keeps its sub-tab and state.
         /// </summary>
-        public void SetAudioSettings(PlayerAudioSettings audio)
-        {
-            _audio = audio ?? new PlayerAudioSettings();
-            if (!_raisingAudioIntent && _activeTab == TabSettings && _settingsSubTab == "sound" && _tabContent != null)
-                ShowTab(TabSettings);
-        }
+        public VisualElement SettingsHost => _settingsHost ??= new VisualElement { name = "lobby-settings-host" };
+
+        /// <summary>The shell's own root, which covers the screen: the Settings prompt sits on it.</summary>
+        public VisualElement Root => _root;
 
         public IReadOnlyDictionary<string, JobPriority> JobPriorities => _priorities;
 
@@ -200,9 +99,6 @@ namespace SS3D.UI.Lobby
         private Label _roundStatus;
         private RoundState _roundState;
         private bool _inRound;
-
-        /// <summary>True while a keybind button waits for its next key (Escape cancels it).</summary>
-        public bool IsCapturingKey => _capturingRowId != null;
 
         /// <param name="inRound">The local player has a body; the shell is open as the Escape menu.</param>
         public void SetSession(RoundState state, int seconds, bool ready, bool canAct,
@@ -322,12 +218,6 @@ namespace SS3D.UI.Lobby
 
             BuildChrome(window);
             _root.Add(BuildMapStopPrompt());
-            _root.Add(BuildDisplayPrompt());
-            _toast = new Label { name = "lobby-toast", pickingMode = PickingMode.Ignore };
-            _toast.AddToClassList("lobby-shell__toast");
-            _toast.AddToClassList("font-body");
-            _toast.style.display = DisplayStyle.None;
-            _root.Add(_toast);
             layerRoot.Add(_root);
             RefreshTabs();
             ShowTab(_activeTab);
@@ -342,34 +232,11 @@ namespace SS3D.UI.Lobby
             ObserveRequested = null;
             RoundChangeRequested = null;
             ServerSettingsChanged = null;
-            VolumeChanged = null;
-            MuteAllChanged = null;
-            MuteWhenUnfocusedChanged = null;
-            AudioResetRequested = null;
-            ResolutionChanged = null;
-            WindowModeChanged = null;
-            VSyncChanged = null;
-            FrameCapChanged = null;
-            QualityChanged = null;
-            RenderScaleChanged = null;
-            UpscalerChanged = null;
-            AntiAliasingChanged = null;
-            UiScaleChanged = null;
-            ShowFpsChanged = null;
-            ShowLogIndicatorChanged = null;
-            DisplayResetRequested = null;
-            DisplayChangeKept = null;
-            DisplayChangeReverted = null;
-            KeyCaptureRequested = null;
-            KeyCaptureCancelled = null;
-            ControlsResetRequested = null;
+            Hidden = null;
             MapStopResolved = null;
             _mapStopPrompt = null;
             _mapStopToken = 0;
-            _displayPrompt = null;
-            _displayPromptText = null;
-            _toast = null;
-            _settingsScroll = null;
+            _settingsHost?.RemoveFromHierarchy();
             RoundAdminRequested = null;
             JobPreferencesChanged = null;
             _tabBar = null;
@@ -397,8 +264,11 @@ namespace SS3D.UI.Lobby
                 return;
             }
 
-            CancelKeyCapture();
-            if (!visible) _textEntry.Exit();
+            if (!visible)
+            {
+                _textEntry.Exit();
+                Hidden?.Invoke();
+            }
             _root.style.display = visible ? DisplayStyle.Flex : DisplayStyle.None;
             _root.pickingMode = visible ? PickingMode.Position : PickingMode.Ignore;
         }
@@ -726,7 +596,6 @@ namespace SS3D.UI.Lobby
 
         private void SelectTab(string key)
         {
-            CancelKeyCapture();
             _activeTab = key;
             RefreshTabs();
             ShowTab(key);
@@ -1600,318 +1469,11 @@ namespace SS3D.UI.Lobby
             return btn;
         }
 
+        /// <summary>The shared Settings screen; LobbyUiSubSystem fills <see cref="SettingsHost"/>.</summary>
         private void BuildSettingsTab(VisualElement parent)
         {
-            VisualElement subTabs = new();
-            subTabs.AddToClassList("lobby-shell__settings-tabs");
-            AddSettingsSubTab(subTabs, "display", "Display");
-            AddSettingsSubTab(subTabs, "sound", "Audio");
-            AddSettingsSubTab(subTabs, "keyboard", "Controls");
-            parent.Add(subTabs);
-
-            ScrollView scroll = new(ScrollViewMode.Vertical);
-            scroll.AddToClassList("lobby-shell__settings-scroll");
-            if (_settingsScroll != null && _settingsScrollSubTab == _settingsSubTab)
-            {
-                Vector2 offset = _settingsScroll.scrollOffset;
-                // The new content has no layout yet; restore once it does, or the offset clamps to zero.
-                scroll.RegisterCallbackOnce<GeometryChangedEvent>(_ => scroll.scrollOffset = offset);
-            }
-            _settingsScroll = scroll;
-            _settingsScrollSubTab = _settingsSubTab;
-            parent.Add(scroll);
-            VisualElement form = new();
-            form.AddToClassList("lobby-shell__settings-form");
-            scroll.Add(form);
-            switch (_settingsSubTab)
-            {
-                case "sound":
-                {
-                    form.Add(SettingsToggle("muted", "Mute All Audio", _audio.MuteAll, value => MuteAllChanged?.Invoke(value)));
-                    form.Add(SettingsToggle("muteUnfocused", "Mute When Unfocused", _audio.MuteWhenUnfocused,
-                        value => MuteWhenUnfocusedChanged?.Invoke(value)));
-                    foreach ((PlayerVolume volume, string key, string title) in VolumeSliders)
-                    {
-                        PlayerVolume target = volume;
-                        form.Add(SettingsSlider(key, title, true, !_audio.MuteAll, _audio.Get(volume), value =>
-                        {
-                            _raisingAudioIntent = true;
-                            try { VolumeChanged?.Invoke(target, value); }
-                            finally { _raisingAudioIntent = false; }
-                        }));
-                    }
-                    form.Add(AudioResetButton());
-                    break;
-                }
-                case "keyboard":
-                {
-                    BuildControlsForm(form);
-                    break;
-                }
-                default:
-                {
-                    BuildDisplayForm(form);
-                    break;
-                }
-            }
-        }
-
-        private static Label SettingsLabel(string text)
-        {
-            Label label = MakeLabel(text.ToUpperInvariant(), "font-body");
-            label.AddToClassList("lobby-shell__settings-label");
-            return label;
-        }
-
-        private static Toggle SettingsToggle(string key, string label, bool value, Action<bool> changed)
-        {
-            Toggle toggle = new() { text = label, name = "settings-" + key, value = value };
-            toggle.AddToClassList("lobby-shell__settings-toggle");
-            toggle.AddToClassList("font-body");
-            toggle.RegisterValueChangedCallback(evt => changed(evt.newValue));
-            return toggle;
-        }
-
-        private static readonly string[] WindowModeLabels = { "Fullscreen", "Borderless", "Windowed" };
-        private static readonly string[] QualityLabels = { "Low", "Medium", "High", "Ultra" };
-        private static readonly string[] UpscalerLabels = { "STP", "FSR 1", "Bilinear" };
-        private static readonly string[] AntiAliasingLabels = { "Off", "FXAA", "SMAA", "TAA" };
-
-        private void BuildDisplayForm(VisualElement form)
-        {
-            Vector2Int[] resolutions = _resolutions.Length > 0 ? _resolutions : new Vector2Int[] { _currentResolution };
-            form.Add(SettingsDropdown("resolution", "Resolution", resolutions.Select(r => $"{r.x} × {r.y}").ToList(),
-                Array.IndexOf(resolutions, _currentResolution), i => ResolutionChanged?.Invoke(resolutions[i])));
-            form.Add(SettingsDropdown("windowMode", "Window Mode", WindowModeLabels.ToList(), (int)_display.WindowMode,
-                i => WindowModeChanged?.Invoke((PlayerWindowMode)i)));
-            form.Add(SettingsToggle("vsync", "VSync", _display.VSync, value => VSyncChanged?.Invoke(value)));
-            int[] caps = PlayerDisplaySettings.FrameCaps;
-            form.Add(SettingsDropdown("frameCap", "Frame Cap", caps.Select(c => c == 0 ? "Off" : c.ToString()).ToList(),
-                Array.IndexOf(caps, _display.FrameCap), i => FrameCapChanged?.Invoke(caps[i]), enabled: !_display.VSync,
-                tooltip: _display.VSync ? "VSync paces frames while it is on." : null));
-            form.Add(SettingsDropdown("quality", "Quality", QualityLabels.ToList(), (int)_display.Quality,
-                i => QualityChanged?.Invoke((PlayerQualityTier)i)));
-            float[] scales = PlayerDisplaySettings.RenderScales;
-            form.Add(SettingsDropdown("renderScale", "Render Scale", scales.Select(f => $"{Mathf.RoundToInt(f * 100f)} %").ToList(),
-                Array.IndexOf(scales, _display.RenderScale), i => RenderScaleChanged?.Invoke(scales[i])));
-            RenderPlan plan = PlayerDisplayPlan.Resolve(_display, _stpSupported);
-            bool upscaling = _display.RenderScale < 1f;
-            string upscalerHint = null;
-            if (!upscaling) upscalerHint = "Upscaling applies below 100 % render scale.";
-            else if (_display.Upscaler == PlayerUpscaler.Stp && !_stpSupported) upscalerHint = "STP is not supported on this GPU; FSR 1 is used.";
-            form.Add(SettingsDropdown("upscaler", "Upscaler", UpscalerLabels.ToList(), (int)_display.Upscaler,
-                i => UpscalerChanged?.Invoke((PlayerUpscaler)i), enabled: upscaling, tooltip: upscalerHint));
-            form.Add(SettingsDropdown("antiAliasing", "Anti-Aliasing", AntiAliasingLabels.ToList(),
-                (int)(plan.AntiAliasingLocked ? plan.AntiAliasing : _display.AntiAliasing),
-                i => AntiAliasingChanged?.Invoke((PlayerAntiAliasing)i), enabled: !plan.AntiAliasingLocked,
-                tooltip: plan.AntiAliasingLocked ? "STP upscaling requires TAA." : null));
-            form.Add(UiScaleSlider());
-            form.Add(SettingsToggle("showFps", "Show FPS", _display.ShowFps, value => ShowFpsChanged?.Invoke(value)));
-            form.Add(SettingsToggle("showLogIndicator", "Show Log Indicator", _display.ShowLogIndicator,
-                value => ShowLogIndicatorChanged?.Invoke(value)));
-            form.Add(DisplayResetButton());
-        }
-
-        private VisualElement SettingsDropdown(string key, string title, List<string> choices, int index, Action<int> changed,
-            bool enabled = true, string tooltip = null)
-        {
-            VisualElement field = new();
-            field.Add(SettingsLabel(title));
-            DropdownField dropdown = new(choices, Mathf.Clamp(index, 0, choices.Count - 1)) { name = "settings-" + key };
-            dropdown.AddToClassList("lobby-shell__settings-dropdown");
-            dropdown.AddToClassList("font-body");
-            dropdown.RegisterValueChangedCallback(_ =>
-            {
-                if (dropdown.index >= 0) changed(dropdown.index);
-            });
-            StyleDarkTextField(dropdown);
-            dropdown.SetEnabled(enabled);
-            if (tooltip != null) field.tooltip = tooltip;
-            field.Add(dropdown);
-            return field;
-        }
-
-        /// <summary>UI Scale applies live, one 1 % step at a time (owner's call, overriding Decision 8's apply-on-release).</summary>
-        private VisualElement UiScaleSlider() => SettingsSlider("uiScale", "UI Scale", true, true, _display.UiScale, value =>
-        {
-            if (Mathf.Approximately(value, _display.UiScale)) return;
-            _raisingDisplayIntent = true;
-            try { UiScaleChanged?.Invoke(value); }
-            finally { _raisingDisplayIntent = false; }
-        }, PlayerDisplaySettings.MinUiScale, PlayerDisplaySettings.MaxUiScale, PlayerDisplaySettings.UiScaleStep);
-
-        /// <summary>
-        /// Controls tab (Decisions 9–13): one heading per group in row order, a button per binding (read-only rows
-        /// disabled) and Reset to defaults; rebind notices show as a toast.
-        /// </summary>
-        private void BuildControlsForm(VisualElement form)
-        {
-            string group = null;
-            foreach (KeybindRow keybind in _keybindRows)
-            {
-                if (keybind.Group == null) continue;
-                if (keybind.Group != group)
-                {
-                    group = keybind.Group;
-                    form.Add(SettingsLabel(group));
-                }
-
-                VisualElement row = new();
-                row.AddToClassList("lobby-shell__binding-row");
-                Label label = MakeLabel(keybind.Label, "font-body");
-                label.AddToClassList("lobby-shell__binding-label");
-                row.Add(label);
-                string rowId = keybind.Id;
-                bool listening = _capturingRowId == rowId;
-                Button binding = new(() =>
-                {
-                    if (_capturingRowId == rowId) KeyCaptureCancelled?.Invoke();
-                    else KeyCaptureRequested?.Invoke(rowId);
-                })
-                {
-                    name = "bind-" + rowId,
-                    text = listening ? "Press a key… (Esc cancels)" : KeybindRules.DisplayName(keybind.Path, keybind.ModifierPath),
-                };
-                binding.AddToClassList("lobby-shell__binding-button");
-                binding.AddToClassList("font-terminal");
-                binding.EnableInClassList("lobby-shell__binding-button--listening", listening);
-                binding.SetEnabled(!keybind.ReadOnly);
-                if (keybind.ReadOnly) binding.tooltip = "This binding is fixed.";
-                row.Add(binding);
-                form.Add(row);
-            }
-
-            form.Add(ResetButton("settings-reset-controls", _confirmingControlsReset, () => _confirmingControlsReset = true, () =>
-            {
-                _confirmingControlsReset = false;
-                ControlsResetRequested?.Invoke();
-            }));
-        }
-
-        private Button DisplayResetButton() => ResetButton("settings-reset-display", _confirmingDisplayReset,
-            () => _confirmingDisplayReset = true, () =>
-            {
-                _confirmingDisplayReset = false;
-                DisplayResetRequested?.Invoke();
-            });
-
-        private VisualElement BuildDisplayPrompt()
-        {
-            _displayPrompt = new VisualElement { name = "settings-display-prompt" };
-            _displayPrompt.AddToClassList("lobby-shell__display-prompt");
-            _displayPrompt.style.display = DisplayStyle.None;
-            VisualElement card = new();
-            card.AddToClassList("lobby-shell__display-prompt-card");
-            _displayPromptText = MakeLabel("", "font-body");
-            _displayPromptText.AddToClassList("lobby-shell__display-prompt-text");
-            card.Add(_displayPromptText);
-            VisualElement row = new();
-            row.AddToClassList("lobby-shell__actions-row");
-            Button keep = new(() => DisplayChangeKept?.Invoke()) { name = "settings-display-keep", text = "KEEP" };
-            keep.AddToClassList("lobby-shell__btn");
-            keep.AddToClassList("lobby-shell__btn--prompt-keep");
-            keep.AddToClassList("font-titling");
-            Button revert = new(() => DisplayChangeReverted?.Invoke()) { name = "settings-display-revert", text = "REVERT" };
-            revert.AddToClassList("lobby-shell__btn");
-            revert.AddToClassList("lobby-shell__btn--observe");
-            revert.AddToClassList("font-titling");
-            row.Add(keep);
-            row.Add(revert);
-            card.Add(row);
-            _displayPrompt.Add(card);
-            return _displayPrompt;
-        }
-
-        /// <summary>Reset to defaults asks once more before acting (Decision 13).</summary>
-        private Button AudioResetButton() => ResetButton("settings-reset-audio", _confirmingAudioReset,
-            () => _confirmingAudioReset = true, () =>
-            {
-                _confirmingAudioReset = false;
-                AudioResetRequested?.Invoke();
-            });
-
-        private Button ResetButton(string name, bool confirming, Action arm, Action reset)
-        {
-            Button button = null;
-            button = new Button(() =>
-            {
-                if (!confirming)
-                {
-                    arm();
-                    confirming = true;
-                    button.text = "CONFIRM RESET";
-                    return;
-                }
-                reset();
-                ShowTab(TabSettings);
-            })
-            {
-                name = name,
-                text = confirming ? "CONFIRM RESET" : "RESET TO DEFAULTS",
-            };
-            button.AddToClassList("lobby-shell__btn");
-            button.AddToClassList("lobby-shell__btn--settings-reset");
-            button.AddToClassList("font-titling");
-            return button;
-        }
-
-        private VisualElement SettingsSlider(string key, string title, bool percentage, bool enabled, float value,
-            Action<float> changed, float min = 0f, float max = 1f, float step = 0f)
-        {
-            VisualElement field = new();
-            field.AddToClassList("lobby-shell__settings-slider-field");
-            field.Add(SettingsLabel(title));
-            VisualElement row = new();
-            row.AddToClassList("lobby-shell__settings-slider-row");
-            Slider slider = new(min, max) { name = "settings-" + key, value = value };
-            slider.AddToClassList("lobby-shell__settings-slider");
-            VisualElement fill = new() { pickingMode = PickingMode.Ignore };
-            fill.AddToClassList("lobby-shell__settings-slider-fill");
-            fill.style.width = Length.Percent((slider.value - min) / (max - min) * 100f);
-            slider.Q(className: "unity-base-slider__tracker").Add(fill);
-            string Display(float value) => percentage ? Mathf.RoundToInt(value * 100f).ToString()
-                : value.ToString("0.00", System.Globalization.CultureInfo.InvariantCulture);
-            Label number = MakeLabel(Display(slider.value), "font-terminal");
-            number.name = "settings-value-" + key;
-            number.AddToClassList("lobby-shell__settings-number");
-            slider.RegisterValueChangedCallback(evt =>
-            {
-                float value = evt.newValue;
-                if (step > 0f)
-                {
-                    value = Mathf.Clamp((float)Math.Round(Mathf.Round(value / step) * step, 2), min, max);
-                    slider.SetValueWithoutNotify(value);
-                }
-                changed(value);
-                number.text = Display(value);
-                fill.style.width = Length.Percent((value - min) / (max - min) * 100f);
-            });
-            slider.SetEnabled(enabled);
-            row.Add(slider);
-            row.Add(number);
-            field.Add(row);
-            return field;
-        }
-
-        private void AddSettingsSubTab(VisualElement parent, string key, string label)
-        {
-            Button btn = new(() =>
-            {
-                CancelKeyCapture();
-                _confirmingAudioReset = false;
-                _confirmingDisplayReset = false;
-                _confirmingControlsReset = false;
-                _settingsSubTab = key;
-                ShowTab(TabSettings);
-            })
-            {
-                name = "settings-tab-" + key,
-                text = label.ToUpperInvariant(),
-            };
-            btn.AddToClassList("lobby-shell__settings-tab");
-            btn.AddToClassList("font-titling");
-            btn.EnableInClassList("lobby-shell__settings-tab--active", _settingsSubTab == key);
-            parent.Add(btn);
+            SettingsHost.AddToClassList("lobby-shell__settings-host");
+            parent.Add(SettingsHost);
         }
 
         private static VisualElement SettingRow(string label, string value)

@@ -3,6 +3,7 @@ using FishNet.Connection;
 using FishNet.Object;
 using JetBrains.Annotations;
 using SS3D.Core;
+using SS3D.Data.Persistence;
 using SS3D.Logging;
 using SS3D.Systems.Tile.Connections;
 using SS3D.Systems.Inventory.Items;
@@ -229,9 +230,10 @@ namespace SS3D.Systems.Tile
                 new Vector3(placed.WorldOrigin.x, 0f, placed.WorldOrigin.y),
                 placed.Direction);
 
-            // A multi-cell object is cleared once per cell; keep one record.
+            // A multi-cell object is cleared once per cell; keep one record. The setup is read before the
+            // clear destroys the object, so undo puts it back configured.
             if (!_removalRecord.Contains(record))
-                _removalRecord.Add(record);
+                _removalRecord.Add(record.WithSetup(ObjectSetup.Capture(placed.gameObject)));
         }
 
         /// <summary>
@@ -589,7 +591,15 @@ namespace SS3D.Systems.Tile
         }
 
         public bool PlaceTileObject(TileObjectSo tileObjectSo, Vector3 placePosition, Direction dir,
-            bool skipBuildCheck, bool replaceExisting, bool skipAdjacency, out GameObject placedObjectGo)
+            bool skipBuildCheck, bool replaceExisting, bool skipAdjacency, out GameObject placedObjectGo) =>
+            PlaceTileObject(tileObjectSo, placePosition, dir, skipBuildCheck, replaceExisting, skipAdjacency, null, null,
+                out placedObjectGo);
+
+        /// <param name="setup">Saved setup applied right after the spawn (load, undo, Dropper copy); null for defaults.</param>
+        /// <param name="reportSkipped">Receives what the setup couldn't restore.</param>
+        public bool PlaceTileObject(TileObjectSo tileObjectSo, Vector3 placePosition, Direction dir,
+            bool skipBuildCheck, bool replaceExisting, bool skipAdjacency, IReadOnlyList<SavedSetupEntry> setup,
+            Action<string> reportSkipped, out GameObject placedObjectGo)
         {
             bool canBuild = skipBuildCheck || CanBuild(tileObjectSo, placePosition, dir, replaceExisting);
             placedObjectGo = null;
@@ -598,7 +608,8 @@ namespace SS3D.Systems.Tile
             {
                 TileChunk chunk = GetOrCreateChunk(placePosition);
                 Vector2Int origin = chunk.GetXY(placePosition);
-                PlacedTileObject placedObject = PlacedTileObject.Create(placePosition, origin, dir, tileObjectSo, MapId);
+                PlacedTileObject placedObject = PlacedTileObject.Create(placePosition, origin, dir, tileObjectSo, MapId,
+                    setup, reportSkipped);
                 placedObject.transform.SetParent(chunk.transform);
 
                 foreach (Vector2Int gridOffset in tileObjectSo.GetGridOffsetList(dir))
@@ -750,7 +761,13 @@ namespace SS3D.Systems.Tile
             }
         }
 
-        public void PlaceItemObject(Vector3 worldPosition, Quaternion rotation, ItemObjectSo itemObjectSo, GameObject existingItem = null)
+        public void PlaceItemObject(Vector3 worldPosition, Quaternion rotation, ItemObjectSo itemObjectSo, GameObject existingItem = null) =>
+            PlaceItemObject(worldPosition, rotation, itemObjectSo, existingItem, null, null);
+
+        /// <param name="setup">Saved setup applied right after the spawn (load, undo, Dropper copy); null for defaults.</param>
+        /// <param name="reportSkipped">Receives what the setup couldn't restore.</param>
+        public PlacedItemObject PlaceItemObject(Vector3 worldPosition, Quaternion rotation, ItemObjectSo itemObjectSo, GameObject existingItem,
+            IReadOnlyList<SavedSetupEntry> setup, Action<string> reportSkipped)
         {
             // Handle existing items that already have a PlacedItemObject component
             if (existingItem != null)
@@ -762,7 +779,7 @@ namespace SS3D.Systems.Tile
                     {
                         // Item is already tracked, just update its position
                         existingPlacedItem.UpdatePosition(worldPosition, rotation);
-                        return;
+                        return existingPlacedItem;
                     }
                     else
                     {
@@ -773,15 +790,38 @@ namespace SS3D.Systems.Tile
             }
             
             // Create new PlacedItemObject and add to tracking
-            PlacedItemObject placedItem = PlacedItemObject.Create(worldPosition, rotation, itemObjectSo, existingItem);
+            PlacedItemObject placedItem = PlacedItemObject.Create(worldPosition, rotation, itemObjectSo, existingItem, setup, reportSkipped);
             placedItem.transform.SetParent(transform);
             placedItem.Owner = this;
             _items.Add(placedItem);
+            return placedItem;
         }
 
         /// <returns>True when an item was found and removed.</returns>
-        public bool ClearItemObject(Vector3 worldPosition, ItemObjectSo itemObjectSo)
+        public bool ClearItemObject(Vector3 worldPosition, ItemObjectSo itemObjectSo) =>
+            ClearItemObject(worldPosition, itemObjectSo, out _);
+
+        /// <param name="setup">The removed item's setup, read before it was destroyed, so undo can put it back.</param>
+        /// <returns>True when an item was found and removed.</returns>
+        public bool ClearItemObject(Vector3 worldPosition, ItemObjectSo itemObjectSo, out SavedSetupEntry[] setup)
         {
+            setup = null;
+            PlacedItemObject toRemove = FindItemObject(worldPosition, itemObjectSo);
+            if (toRemove == null)
+                return false;
+
+            setup = ObjectSetup.Capture(toRemove.gameObject);
+            _items.Remove(toRemove);
+            toRemove.DestroySelf();
+            return true;
+        }
+
+        /// <summary>The tracked item of this asset nearest <paramref name="worldPosition"/>, within a metre; null when none.</summary>
+        public PlacedItemObject FindItemObject(Vector3 worldPosition, ItemObjectSo itemObjectSo)
+        {
+            if (itemObjectSo == null)
+                return null;
+
             PruneDestroyedItems();
             // The nearest match, not the last one in range: in a pile of the same item the map editor
             // would otherwise delete a different one than the item clicked.
@@ -800,12 +840,7 @@ namespace SS3D.Systems.Tile
                 }
             }
 
-            if (toRemove == null)
-                return false;
-
-            _items.Remove(toRemove);
-            toRemove.DestroySelf();
-            return true;
+            return toRemove;
         }
 
         /// <summary>
@@ -1015,8 +1050,10 @@ namespace SS3D.Systems.Tile
 
                     Vector3 placePosition = chunk.GetWorldPosition(cell.x, cell.y);
 
-                    // Skipping build check here to allow loading tile objects in a non-valid order
-                    PlaceTileObject(toBePlaced, placePosition, savedObject.dir, true, false, true, out GameObject placedObject);
+                    // Skipping build check here to allow loading tile objects in a non-valid order. A migrated
+                    // asset is a different object, so the old one's setup doesn't apply to it.
+                    PlaceTileObject(toBePlaced, placePosition, savedObject.dir, true, false, true,
+                        toBePlaced == so ? savedObject.setup : null, CountSkipped, out GameObject placedObject);
                     placedTiles++;
                     sinceYield++;
 
@@ -1060,7 +1097,7 @@ namespace SS3D.Systems.Tile
                     continue;
                 }
 
-                PlaceItemObject(savedItem.worldPosition, savedItem.rotation, toBePlaced);
+                PlaceItemObject(savedItem.worldPosition, savedItem.rotation, toBePlaced, null, savedItem.setup, CountSkipped);
                 placedItems++;
                 sinceYield++;
                 if (yieldFrames && sinceYield >= BulkLoadYieldEveryPlacements)

@@ -51,7 +51,9 @@ namespace SS3D.Interactions
                     // Runs the first tick of the interaction
                     if (instance.Interaction != null)
                     {
-                        bool running = instance.Interaction.Start(instance.Event, instance.Reference);
+                        bool running = ServerInteractionSteps.Wrap == null
+                            ? instance.Interaction.Start(instance.Event, instance.Reference)
+                            : ServerInteractionSteps.Run(instance, () => instance.Interaction.Start(instance.Event, instance.Reference));
                         InteractionNarration.TryRaise(instance.Interaction, instance.Event);
                         if (running)
                         {
@@ -62,7 +64,10 @@ namespace SS3D.Interactions
                 else
                 {
                     // Continue running the interaction until it's done
-                    if (instance.Interaction is IDelayedInteraction interaction && interaction.Update(instance.Event, instance.Reference))
+                    if (instance.Interaction is IDelayedInteraction interaction
+                        && (ServerInteractionSteps.Wrap == null
+                            ? interaction.Update(instance.Event, instance.Reference)
+                            : ServerInteractionSteps.Run(instance, () => interaction.Update(instance.Event, instance.Reference))))
                     {
                         continue;
                     }

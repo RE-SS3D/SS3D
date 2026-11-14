@@ -7,6 +7,7 @@ using SS3D.Logging;
 using SS3D.Systems.Furniture;
 using SS3D.Systems.Interactions;
 using SS3D.Systems.Inventory.Containers;
+using SS3D.Systems.Tile.MapEditor;
 using System;
 using UnityEngine;
 
@@ -51,13 +52,21 @@ namespace SS3D.Systems.Inventory.Interactions
                 return false;
             }
 
-            if (!InteractionPermission.HasPermission(interactionEvent, _permissionToUnlock))
+            if (!MayUseLock(interactionEvent))
             {
                 return false;
             }
 
             return !_locker.IsLocked && !_locker.IsOpen;
         }
+
+        /// <summary>
+        /// The ID check, skipped for someone with the map editor open: who has access stays the prefab's or the room's,
+        /// but an editor user sets lockers up without carrying every ID (object-setup-persistence Q7).
+        /// </summary>
+        private bool MayUseLock(InteractionEvent interactionEvent) =>
+            InteractionPermission.HasPermission(interactionEvent, _permissionToUnlock)
+            || (interactionEvent.Source is IGameObjectProvider provider && MapEditorSubSystem.IsEditorUser(provider.GameObject));
 
         public bool Start(InteractionEvent interactionEvent, InteractionReference reference)
         {
@@ -75,7 +84,7 @@ namespace SS3D.Systems.Inventory.Interactions
                 return true;
             }
 
-            if (!InteractionPermission.HasPermission(interactionEvent, _permissionToUnlock))
+            if (!MayUseLock(interactionEvent))
             {
                 Log.Information(this, "No permission to lock Locker!");
 
