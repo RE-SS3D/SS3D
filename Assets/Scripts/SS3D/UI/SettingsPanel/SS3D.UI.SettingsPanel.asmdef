@@ -1,0 +1,18 @@
+{
+    "name": "SS3D.UI.SettingsPanel",
+    "rootNamespace": "SS3D.UI.SettingsPanel",
+    "references": [
+        "SS3D.Core",
+        "SS3D.Systems",
+        "Unity.InputSystem"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

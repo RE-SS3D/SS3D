@@ -104,6 +104,19 @@ Implementation notes (2026-10-31):
 - Reset to defaults on each tab (Decision 13; Audio and Display get theirs in Phases 1–2).
 - Check that the lobby's text-field keybind masking still holds while a binding is being captured.
 
+### Settings screen redesign (2026-11-14) — **shipped**
+
+The Settings screen now follows the SS3D main-menu design (Claude Design project "SS3D Main menu design", page Settings) and is one shared component, `SS3D.UI.SettingsPanel.PlayerSettingsPanel`, mounted by both the main menu (main-menu.md §2, replacing its placeholder) and the lobby's Settings tab (which is also the Escape menu's).
+
+- Rows instead of a form: titled groups (Screen / Rendering / Interface; Volume / Muting / Main menu), segmented buttons for every choice, whole-percent sliders, a "changed from default" dot per row and notes under labels. Locked rows (Frame cap while VSync is on, AA while STP forces TAA) show the effective value with a padlock and say why.
+- Each tab has an intro line and a two-click Reset (the first click arms it for 4 s). Notices (key swaps, refusals, resets, reverts) show in a strip at the bottom of the panel.
+- The "Keep these settings?" prompt is a modal with what changed, what it reverts to, a countdown bar, Revert and Keep; Esc reverts.
+- Controls: a legend, then one column per group. Rebindable rows show the fixed modifier as a prefix ("Ctrl +") and the key as a keycap that pulses while listening; fixed rows show a description ("Hold Shift", "Middle-drag"). `KeybindRow` gained `DefaultPath`, `Hint` and `FixedText`; labels lost their parentheses ("Replace" + hint "Hold").
+- New setting **Main menu music** (`PlayerAudioSettings.MenuMusic`, default on). It replaces `MainMenuState.MusicOn`; a saved off is carried over once. The sidebar music toggle and the Audio row are the same setting.
+- Rows update in place on `PlayerSettingsSubSystem.Changed`, so a slider drag is never rebuilt away; only switching tabs rebuilds.
+- Divergence from the design: in the lobby the panel has no header of its own (the lobby tab bar titles it) and stays a tab rather than a centred overlay. The design's small in-round Escape menu (Resume / Settings / Disconnect) is not part of this change.
+- Pitfall: a rounded element that clips its content renders solid white at runtime on Linux; the resolution dropdown's input keeps square corners for that reason.
+
 ### Phase 4 — Verification
 
 - EditMode: model and store (Phase 1), conflict swap (Phase 3).

@@ -217,6 +217,22 @@ namespace SS3D.Editor.Automation
             }
         }
 
+        /// <summary>Like <see cref="Submit"/>, for a button found by name (segments and key rows have no text of their own).</summary>
+        private static void Press(VisualElement surface, string name)
+        {
+            Button button = surface.Q<Button>(name);
+            Require(button != null && button.enabledInHierarchy && button.worldBound.width > 0, "Enabled, laid-out button: " + name);
+            button.Focus();
+            using (NavigationSubmitEvent evt = NavigationSubmitEvent.GetPooled())
+            {
+                evt.target = button;
+                button.SendEvent(evt);
+            }
+        }
+
+        private static string _pilotBind;
+        private static string _pilotBindKey;
+
         private static void Capture(string name)
         {
             _pendingImage = Path.Combine(SessionState.GetString(OutputKey, ""), name + ".png");
@@ -329,29 +345,35 @@ namespace SS3D.Editor.Automation
                     break;
                 case 7: Submit(shell, "SETTINGS"); break;
                 case 8:
-                    Require(shell.Query(className: "lobby-shell__settings-tab").ToList().Count == 3, "Settings has three underlined subtabs");
-                    foreach (string dropdown in new[] { "resolution", "windowMode", "frameCap", "quality", "renderScale", "upscaler", "antiAliasing" })
-                        Require(shell.Q<DropdownField>("settings-" + dropdown) != null, $"Display has a {dropdown} dropdown");
-                    Require(shell.Q<Slider>("settings-brightness") == null, "Brightness is gone (darkness keeps its gameplay meaning)");
-                    shell.Q<DropdownField>("settings-quality").index = 0;
+                    Require(shell.Query(className: "settings-panel__tab").ToList().Count == 3, "Settings has Display, Audio and Controls tabs");
+                    Require(shell.Q<DropdownField>("settings-resolution") != null, "Display has a resolution dropdown");
+                    foreach (string row in new[] { "windowMode", "vsync", "frameCap", "quality", "renderScale", "upscaler", "antiAliasing", "showFps" })
+                        Require(shell.Q<Button>($"settings-{row}-0") != null, $"Display has a {row} row");
+                    Require(shell.Q("settings-row-brightness") == null, "Brightness is gone (darkness keeps its gameplay meaning)");
+                    Require(!shell.Q<Button>("settings-frameCap-0").enabledSelf, "Frame cap is locked while VSync is on");
+                    Press(shell, "settings-quality-0");
                     Capture("00-settings-display");
                     break;
                 case 9:
-                    Require(QualitySettings.GetQualityLevel() == 0, "Quality dropdown switches the quality level");
+                    Require(QualitySettings.GetQualityLevel() == 0, "Quality preset switches the quality level");
+                    Require(shell.Q<Button>("settings-quality-0").ClassListContains("settings-panel__segment--on"), "The picked preset shows as selected");
                     Submit(shell, "AUDIO");
                     break;
                 case 10:
-                    Require(shell.Query<Slider>(className: "lobby-shell__settings-slider").ToList().Count == 5,
-                        "Sound has Master, Music, SFX, Ambience and Personal sliders");
-                    Require(shell.Q<Toggle>("settings-muteUnfocused") != null, "Sound has Mute When Unfocused");
-                    shell.Q<Slider>("settings-masterVolume").value = 0.35f;
-                    shell.Q<Slider>("settings-musicVolume").value = 0.5f;
-                    shell.Q<Toggle>("settings-muted").value = true;
+                    Require(shell.Query<SliderInt>(className: "settings-panel__slider").ToList().Count == 5,
+                        "Audio has Master, Music, SFX, Ambience and Personal sliders");
+                    Require(shell.Q<Button>("settings-muteUnfocused-1") != null, "Audio has Mute when window unfocused");
+                    Require(shell.Q<Button>("settings-menuMusic-1") != null, "Audio has Main menu music");
+                    shell.Q<SliderInt>("settings-masterVolume").value = 35;
+                    shell.Q<SliderInt>("settings-musicVolume").value = 50;
+                    Press(shell, "settings-muteAll-1");
                     break;
                 case 11:
                 {
-                    Require(shell.Query<Slider>(className: "lobby-shell__settings-slider").ToList().All(s => !s.enabledInHierarchy), "Mute disables volume sliders");
-                    Require(shell.Q<Label>("settings-value-masterVolume").text == "35", "Sound slider readout updates");
+                    Require(shell.Q(className: "settings-panel__banner").resolvedStyle.display == DisplayStyle.Flex, "Mute All shows the muted banner");
+                    Require(shell.Query<SliderInt>(className: "settings-panel__slider").ToList().All(s => s.enabledInHierarchy),
+                        "Levels stay changeable while muted");
+                    Require(shell.Q<Label>("settings-value-masterVolume").text == "35 %", "Audio slider readout updates");
                     AudioMixer mixer = Resources.Load<AudioMixer>("MainMixer");
                     Require(mixer.GetFloat("MusicVolume", out float musicDb) && Mathf.Abs(musicDb - -6.02f) < 0.05f,
                         "Music slider drives the mixer's MusicVolume");
@@ -364,37 +386,43 @@ namespace SS3D.Editor.Automation
                     Capture("00-settings-muted");
                     break;
                 }
-                case 12: shell.Q<Toggle>("settings-muted").value = false; break;
+                case 12: Press(shell, "settings-muteAll-0"); break;
                 case 13:
-                    Require(shell.Query<Slider>(className: "lobby-shell__settings-slider").ToList().All(s => s.enabledInHierarchy), "Unmute restores volume controls");
+                    Require(shell.Q(className: "settings-panel__banner").resolvedStyle.display == DisplayStyle.None, "Unmute hides the muted banner");
                     Capture("00-settings-sound");
                     break;
                 case 14: Submit(shell, "CONTROLS"); break;
                 case 15:
                 {
-                    List<Button> bindings = shell.Query<Button>(className: "lobby-shell__binding-button").ToList();
-                    Require(bindings.Count >= 25, "Controls lists the player-visible actions from Controls.inputactions");
-                    Require(bindings.Any(b => b.text == "Ctrl + Q" && b.enabledSelf), "Modifier chords show their fixed prefix and stay rebindable");
-                    Require(bindings.Any(b => b.text == "Escape" && !b.enabledSelf), "Menu (Escape) is read-only");
+                    List<Button> bindings = shell.Query<Button>(className: "settings-panel__bind").ToList();
+                    Require(bindings.Count >= 20, "Controls lists the rebindable actions from Controls.inputactions");
+                    Require(bindings.Any(b => b.Q<Label>(className: "settings-panel__prefix")?.text == "Ctrl +"
+                        && b.Q<Label>(className: "settings-panel__keycap").text == "Q"), "Modifier chords show their fixed prefix and stay rebindable");
+                    Require(shell.Query<Label>(className: "settings-panel__fixed-key").ToList().Any(l => l.text == "Escape"), "Menu (Escape) is fixed");
                     Capture("00-settings-controls");
                     break;
                 }
-                case 16: Submit(shell, "E"); break;
+                case 16:
+                    _pilotBind = shell.Query<Button>(className: "settings-panel__bind").First().name;
+                    _pilotBindKey = shell.Q<Button>(_pilotBind).Q<Label>(className: "settings-panel__keycap").text;
+                    Press(shell, _pilotBind);
+                    break;
                 case 17:
                 {
-                    Button listening = shell.Q<Button>(className: "lobby-shell__binding-button--listening");
-                    Require(listening != null && listening.text.StartsWith("Press a key"), "Clicking a binding starts key capture");
-                    Submit(shell, listening.text);
+                    Button listening = shell.Q<Button>(_pilotBind);
+                    Require(listening.ClassListContains("settings-panel__bind--listening")
+                        && listening.Q<Label>(className: "settings-panel__keycap").text == "Press a key", "Clicking a binding starts key capture");
+                    Press(shell, _pilotBind);
                     break;
                 }
                 case 18:
-                    Require(shell.Q<Button>(className: "lobby-shell__binding-button--listening") == null
-                        && shell.Query<Button>(className: "lobby-shell__binding-button").ToList().Any(b => b.text == "E"),
+                    Require(shell.Q<Button>(className: "settings-panel__bind--listening") == null
+                        && shell.Q<Button>(_pilotBind).Q<Label>(className: "settings-panel__keycap").text == _pilotBindKey,
                         "Clicking the listening binding cancels capture and keeps the key");
                     Submit(shell, "DISPLAY");
                     break;
                 case 19:
-                    Require(shell.Q<DropdownField>("settings-quality").value == "Low", "Display choices persist across subtabs");
+                    Require(shell.Q<Button>("settings-quality-0").ClassListContains("settings-panel__segment--on"), "Display choices persist across tabs");
                     Submit(shell, "SERVER INFO");
                     break;
                 default: return true;

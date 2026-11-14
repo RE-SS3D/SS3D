@@ -118,6 +118,14 @@ namespace SS3D.Systems.Settings
             CommitAudio();
         }
 
+        /// <summary>Main menu music on or off; its level is the Music volume.</summary>
+        public void SetMenuMusic(bool on)
+        {
+            Settings.Audio.MenuMusic = on;
+            ScheduleSave();
+            Changed?.Invoke();
+        }
+
         /// <summary>The Audio tab's Reset to defaults (Decision 13).</summary>
         public void ResetAudio()
         {
@@ -129,6 +137,22 @@ namespace SS3D.Systems.Settings
         public float DisplayConfirmationSecondsLeft => _windowConfirmation.SecondsLeft(Time.unscaledTime);
 
         public bool DisplayConfirmationPending => _windowConfirmation.IsPending;
+
+        /// <summary>What a pending resolution/window change reverts to; false when nothing awaits confirmation.</summary>
+        public bool TryGetDisplayRevertTarget(out Vector2Int resolution, out PlayerWindowMode mode)
+        {
+            resolution = default;
+            mode = default;
+            if (!_windowConfirmation.IsPending) return false;
+            PlayerDisplaySettings previous = new();
+            _windowConfirmation.Previous.WriteTo(previous);
+            resolution = PlayerDisplayApplier.CurrentResolution(previous);
+            mode = previous.WindowMode;
+            return true;
+        }
+
+        /// <summary>The display's own size, which a 0×0 saved resolution stands for.</summary>
+        public Vector2Int NativeResolution => PlayerDisplayApplier.Native;
 
         /// <summary>Sizes the Resolution dropdown offers, largest first.</summary>
         public Vector2Int[] ResolutionChoices => PlayerDisplayApplier.ResolutionChoices();
@@ -249,6 +273,9 @@ namespace SS3D.Systems.Settings
         /// <summary>The last rebind outcome worth telling the player ("Use is now Q"), or null.</summary>
         public string ControlsNotice { get; private set; }
 
+        /// <summary>True when <see cref="ControlsNotice"/> explains a refused key rather than a swap.</summary>
+        public bool ControlsNoticeRefused { get; private set; }
+
         /// <summary>Bumps with every new <see cref="ControlsNotice"/>, so a view shows each one once.</summary>
         public int ControlsNoticeVersion { get; private set; }
 
@@ -269,6 +296,7 @@ namespace SS3D.Systems.Settings
                 CapturingRowId = null;
                 KeybindResult result = input.Rebind(rowId, path);
                 ControlsNotice = result.Notice;
+                ControlsNoticeRefused = !result.Accepted;
                 if (result.Notice != null) ControlsNoticeVersion++;
                 if (result.Accepted) StoreBindings(input);
                 Changed?.Invoke();

@@ -56,10 +56,10 @@ namespace SS3D.Systems.Inputs
                 shown.Add(action);
             }
 
-            void Plain(string group, InputAction action, string label, bool readOnly = false)
+            void Plain(string group, InputAction action, string label, bool readOnly = false, string hint = null, string fixedText = null)
             {
                 int index = action.bindings.IndexOf(b => !b.isComposite && !b.isPartOfComposite);
-                if (index >= 0) AddRow(rows, group, label, action, index, null, readOnly);
+                if (index >= 0) AddRow(rows, group, label, action, index, null, readOnly, hint, fixedText);
                 shown.Add(action);
             }
 
@@ -75,11 +75,11 @@ namespace SS3D.Systems.Inputs
             Chord("Camera", camera.HorizontalRotation, "Right", "Rotate Right");
             Chord("Camera", camera.SnapLeft, null, "Snap Left");
             Chord("Camera", camera.SnapRight, null, "Snap Right");
-            Part("Camera", camera.VerticalRotation, "negative", "Tilt (−)");
-            Part("Camera", camera.VerticalRotation, "positive", "Tilt (+)");
-            AddFixedRow(rows, "Camera", "Mouse Rotation (hold + drag)", "<Mouse>/middleButton", MaskOf(camera.MouseRotation));
+            Part("Camera", camera.VerticalRotation, "negative", "Tilt −");
+            Part("Camera", camera.VerticalRotation, "positive", "Tilt +");
+            AddFixedRow(rows, "Camera", "Mouse Rotation", "<Mouse>/middleButton", MaskOf(camera.MouseRotation), "Middle-drag");
             shown.Add(camera.MouseRotation);
-            AddFixedRow(rows, "Camera", "Zoom", "<Mouse>/scroll", MaskOf(camera.Zoom));
+            AddFixedRow(rows, "Camera", "Zoom", "<Mouse>/scroll", MaskOf(camera.Zoom), "Scroll wheel");
             shown.Add(camera.Zoom);
 
             Controls.HotkeysActions hotkeys = Inputs.Hotkeys;
@@ -91,29 +91,29 @@ namespace SS3D.Systems.Inputs
             Plain("Hotkeys", hotkeys.ThrowMode, "Throw Mode");
 
             Controls.InteractionsActions interactions = Inputs.Interactions;
-            Plain("Interactions", interactions.RunPrimary, "Interact", readOnly: true);
-            Plain("Interactions", interactions.ViewInteractions, "Interaction Menu", readOnly: true);
+            Plain("Interactions", interactions.RunPrimary, "Interact", readOnly: true, fixedText: "Left click");
+            Plain("Interactions", interactions.ViewInteractions, "Interaction Menu", readOnly: true, fixedText: "Right click");
             Plain("Interactions", interactions.CancelInteraction, "Cancel Interaction");
 
-            Plain("General", _toggleIntent, "Toggle Help / Harm");
+            Plain("General", _toggleIntent, "Toggle Help/Harm intent");
             Plain("General", _openLocalSpeechCompose, "Local Chat");
-            Plain("General", _detailedExamine, "Examine (hold)", readOnly: true);
+            Plain("General", _detailedExamine, "Examine", readOnly: true, fixedText: "Hold Shift");
             int gameplay = MaskOf(_toggleIntent);
-            AddFixedRow(rows, "General", "Disarm (hold + click)", "<Keyboard>/ctrl", gameplay);
-            AddFixedRow(rows, "General", "Grab (hold + click)", "<Keyboard>/alt", gameplay);
+            AddFixedRow(rows, "General", "Disarm", "<Keyboard>/ctrl", gameplay, "Hold Ctrl + click");
+            AddFixedRow(rows, "General", "Grab", "<Keyboard>/alt", gameplay, "Hold Alt + click");
             Plain("General", Inputs.Other.ToggleMenu, "Menu", readOnly: true);
             Plain("General", _openBugReport, "Report a Bug");
-            Plain("General", Inputs.Other.PrimaryClick, "Primary Click", readOnly: true);
-            Plain("General", Inputs.Other.SecondaryClick, "Secondary Click", readOnly: true);
+            Plain("General", Inputs.Other.PrimaryClick, "Primary Click", readOnly: true, fixedText: "Left click");
+            Plain("General", Inputs.Other.SecondaryClick, "Secondary Click", readOnly: true, fixedText: "Right click");
 
             Controls.TileCreatorActions tile = Inputs.TileCreator;
             Plain("Map Editor", tile.ToggleMenu, "Build Menu");
             Plain("Map Editor", tile.Rotate, "Rotate");
-            Plain("Map Editor", tile.CycleVariant, "Next Variant (Shift: previous)");
-            Plain("Map Editor", tile.Replace, "Replace (hold)");
-            Plain("Map Editor", tile.SquareDrag, "Square Drag (hold)");
-            Plain("Map Editor", tile.Place, "Place", readOnly: true);
-            Plain("Map Editor", tile.Delete, "Delete", readOnly: true);
+            Plain("Map Editor", tile.CycleVariant, "Next Variant", hint: "Shift + this key steps back");
+            Plain("Map Editor", tile.Replace, "Replace", hint: "Hold");
+            Plain("Map Editor", tile.SquareDrag, "Square Drag", hint: "Hold");
+            Plain("Map Editor", tile.Place, "Place", readOnly: true, fixedText: "Left click");
+            Plain("Map Editor", tile.Delete, "Delete", readOnly: true, fixedText: "Right click");
 
             // Everything else that still has a binding (console, debug toggles, hacks) is hidden but reserved.
             foreach (InputAction action in CollectAllActions().Where(a => !shown.Contains(a)))
@@ -210,17 +210,19 @@ namespace SS3D.Systems.Inputs
             }
         }
 
-        private void AddRow(List<KeybindRow> rows, string group, string label, InputAction action, int keyIndex, string modifier, bool readOnly)
+        private void AddRow(List<KeybindRow> rows, string group, string label, InputAction action, int keyIndex, string modifier, bool readOnly,
+            string hint = null, string fixedText = null)
         {
             string id = $"{action.actionMap?.name}/{action.name}/{keyIndex}";
             int[] extras = action.bindings.Select((b, i) => (b, i))
                 .Where(x => x.i != keyIndex && !x.b.isComposite && !x.b.isPartOfComposite).Select(x => x.i).ToArray();
             _rowTargets[id] = new RowTarget(action, keyIndex, extras);
-            rows.Add(new KeybindRow(id, label, group, action.bindings[keyIndex].effectivePath, modifier, MaskOf(action), readOnly));
+            InputBinding binding = action.bindings[keyIndex];
+            rows.Add(new KeybindRow(id, label, group, binding.effectivePath, modifier, MaskOf(action), readOnly, binding.path, hint, fixedText));
         }
 
-        private static void AddFixedRow(List<KeybindRow> rows, string group, string label, string path, int mask) =>
-            rows.Add(new KeybindRow("fixed/" + label, label, group, path, null, mask, true));
+        private static void AddFixedRow(List<KeybindRow> rows, string group, string label, string path, int mask, string fixedText) =>
+            rows.Add(new KeybindRow("fixed/" + label, label, group, path, null, mask, true, fixedText: fixedText));
 
         /// <summary>Bit per <see cref="InputContext"/> that enables the action: the arbiter's own notion of "active together".</summary>
         private int MaskOf(InputAction action)

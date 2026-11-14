@@ -18,6 +18,7 @@ using SS3D.Systems.Settings;
 using SS3D.UI.Shell;
 using SS3D.UI.Shell.Catalog;
 using SS3D.UI.Shell.MainMenu;
+using SS3D.UI.SettingsPanel;
 using UnityEngine;
 using UnityEngine.Rendering;
 using UnityEngine.SceneManagement;
@@ -64,6 +65,9 @@ namespace SS3D.Launcher
         private DateTime? _checkedAt;
         private bool _presentPending;
         private MainMenuMusic _music;
+        private PlayerSettingsPanel _settingsPanel;
+        private PlayerSettingsSubSystem _playerSettings;
+        private (bool On, float Volume) _shownMusic;
         private MainMenuVideoWallpaper _video;
         private MainMenuWallpaperRotation _rotation;
         private AudioListener _listener;
@@ -235,6 +239,7 @@ namespace SS3D.Launcher
             _view.FieldChanged += HandleField;
             _view.Attach(layer);
             _model.Screen = MainMenuScreen.Menu;
+            AttachSettings();
             _video ??= new MainMenuVideoWallpaper(gameObject);
             ChangeWallpaper();
             // A video opens on black: its fallback still would flash up before the first frame.
@@ -273,6 +278,7 @@ namespace SS3D.Launcher
                 _query = null;
             }
 
+            DetachSettings();
             if (_view != null)
             {
                 _view.CommandIssued -= HandleCommand;
@@ -306,6 +312,10 @@ namespace SS3D.Launcher
                 case MainMenuCommand.Settings:
                     _model.Screen = MainMenuScreen.Settings;
                     break;
+                case MainMenuCommand.Back when _model.Screen == MainMenuScreen.Settings && _settingsPanel != null:
+                    // Esc: the panel cancels a key capture or a pending display change first, else goes back.
+                    _settingsPanel.ConsumeEscape();
+                    return;
                 case MainMenuCommand.Back:
                     if (_model.OperationFailed)
                     {
@@ -361,8 +371,7 @@ namespace SS3D.Launcher
 
                     break;
                 case MainMenuCommand.ToggleMusic:
-                    _state.MusicOn = !_state.MusicOn;
-                    Save();
+                    _playerSettings?.SetMenuMusic(!MusicOn);
                     break;
                 case MainMenuCommand.NextTrack:
                     _music?.Next();
@@ -404,16 +413,7 @@ namespace SS3D.Launcher
                         && SubSystems.TryGet(out PlayerSettingsSubSystem playerSettings))
                     {
                         playerSettings.SetVolume(PlayerVolume.Music, volume);
-                        if (volume > 0 && !_state.MusicOn)
-                        {
-                            _state.MusicOn = true;
-                            Save();
-                            Present();
-                        }
-                        else
-                        {
-                            UpdateMusic();
-                        }
+                        if (volume > 0 && !MusicOn) playerSettings.SetMenuMusic(true);
                     }
 
                     break;
@@ -845,7 +845,8 @@ namespace SS3D.Launcher
 
             UpdateMusic();
             UpdateVideo();
-            _model.MusicOn = _state.MusicOn;
+            if (_model.Screen != MainMenuScreen.Settings) _settingsPanel?.CancelTransient();
+            _model.MusicOn = MusicOn;
             _model.MusicTitle = _music?.Title ?? "";
             _model.MusicVolume = SubSystems.TryGet(out PlayerSettingsSubSystem playerSettings) ? playerSettings.Settings.Audio.Music : 0.8f;
             _model.PlayerName = _state.PlayerName;
@@ -893,7 +894,51 @@ namespace SS3D.Launcher
         private void UpdateMusic()
         {
             bool screen = _model.Screen is MainMenuScreen.Menu or MainMenuScreen.Servers or MainMenuScreen.Settings or MainMenuScreen.Connecting;
-            _music?.SetAudible(_view != null && _state.MusicOn && screen);
+            _music?.SetAudible(_view != null && MusicOn && screen);
+        }
+
+        /// <summary>Menu music on/off is a player setting (Audio › Main menu music), shared with the sidebar toggle.</summary>
+        private bool MusicOn => _playerSettings == null || _playerSettings.Settings.Audio.MenuMusic;
+
+        /// <summary>The shared Settings screen fills the settings panel; Back returns to the menu.</summary>
+        private void AttachSettings()
+        {
+            if (!SubSystems.TryGet(out _playerSettings)) return;
+            if (!_state.MusicOn)
+            {
+                _playerSettings.SetMenuMusic(false);
+                _state.MusicOn = true;
+                Save();
+            }
+
+            _settingsPanel = new PlayerSettingsPanel(_view.SettingsHost, _view.Root, _playerSettings, "Main menu", true);
+            _settingsPanel.BackRequested += () =>
+            {
+                _model.Screen = MainMenuScreen.Menu;
+                Present();
+            };
+            _shownMusic = (MusicOn, _playerSettings.Settings.Audio.Music);
+            _playerSettings.Changed += HandlePlayerSettingsChanged;
+        }
+
+        private void DetachSettings()
+        {
+            if (_playerSettings != null) _playerSettings.Changed -= HandlePlayerSettingsChanged;
+            _settingsPanel?.Dispose();
+            _settingsPanel = null;
+        }
+
+        /// <summary>Only the music row mirrors player settings; other changes leave the menu alone.</summary>
+        private void HandlePlayerSettingsChanged()
+        {
+            if (_view == null) return;
+            (bool On, float Volume) music = (MusicOn, _playerSettings.Settings.Audio.Music);
+            if (music == _shownMusic) return;
+            bool toggled = music.On != _shownMusic.On;
+            _shownMusic = music;
+            UpdateMusic();
+            // The sidebar stays visible beside Settings: keep its music slider in step with the Music row.
+            if (toggled || _model.Screen == MainMenuScreen.Settings) RequestPresent();
         }
 
         /// <summary>Video plays behind the menu; the operation dialogs hold its frame for their blurred backdrop.</summary>
