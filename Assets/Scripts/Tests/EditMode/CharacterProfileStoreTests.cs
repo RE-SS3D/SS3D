@@ -26,11 +26,11 @@ namespace EditorTests
         [Test]
         public void NewStoreRestoresAllSlotsAndSelectedCharacter()
         {
-            CharacterCreatorDraft first = new() { Id = "first", Name = "First", HairStyleIndex = 3, HairColorIndex = 4, OutfitIndex = 2, SkinColorIndex = 5 };
+            SavedCharacter first = new() { Id = "first", Name = "First", HairStyleIndex = 3, HairColorIndex = 4, SkinColorIndex = 5 };
             first.SetMorph("fat", 0.73f);
-            CharacterCreatorDraft selected = new() { Id = "second", Name = "Second", BeardStyleIndex = 2, Species = "Human", EyeColorIndex = 3, Eyebrows = "thick" };
+            SavedCharacter selected = new() { Id = "second", Name = "Second", BeardStyleIndex = 2, EyeColorIndex = 3, Eyebrows = "thick" };
             selected.SetMorph("height", 0.81f);
-            Assert.That(new CharacterProfileStore(ProfilePath).Save(new CharacterCreatorDraft[] { first, selected }, selected.Id), Is.True);
+            Assert.That(new CharacterProfileStore(ProfilePath).Save(new SavedCharacter[] { first, selected }, selected.Id), Is.True);
 
             CharacterProfileStore.Profile loaded = new CharacterProfileStore(ProfilePath).Load();
             Assert.That(loaded.SelectedId, Is.EqualTo("second"));
@@ -39,7 +39,6 @@ namespace EditorTests
             Assert.That(loaded.Characters[0].HairStyleIndex, Is.EqualTo(3));
             Assert.That(loaded.Characters[0].HairColorIndex, Is.EqualTo(4));
             Assert.That(loaded.Characters[0].SkinColorIndex, Is.EqualTo(5));
-            Assert.That(loaded.Characters[0].OutfitIndex, Is.EqualTo(2));
             Assert.That(loaded.Characters[0].GetMorph("fat"), Is.EqualTo(0.73f));
             Assert.That(loaded.Characters[1].GetMorph("height"), Is.EqualTo(0.81f));
             Assert.That(loaded.Characters[1].BeardStyleIndex, Is.EqualTo(2));
@@ -50,12 +49,12 @@ namespace EditorTests
         [Test]
         public void UnsavedEditsDoNotChangeDiskAndSecondSaveReplacesFile()
         {
-            CharacterCreatorDraft draft = new() { Id = "slot", Name = "Saved" };
+            SavedCharacter draft = new() { Id = "slot", Name = "Saved" };
             CharacterProfileStore store = new(ProfilePath);
-            Assert.That(store.Save(new CharacterCreatorDraft[] { draft }, draft.Id), Is.True);
+            Assert.That(store.Save(new SavedCharacter[] { draft }, draft.Id), Is.True);
             draft.Name = "Edited";
             Assert.That(new CharacterProfileStore(ProfilePath).Load().Characters[0].Name, Is.EqualTo("Saved"));
-            Assert.That(store.Save(new CharacterCreatorDraft[] { draft }, draft.Id), Is.True);
+            Assert.That(store.Save(new SavedCharacter[] { draft }, draft.Id), Is.True);
             Assert.That(new CharacterProfileStore(ProfilePath).Load().Characters[0].Name, Is.EqualTo("Edited"));
             Assert.That(File.Exists(ProfilePath + ".tmp"), Is.False);
         }
@@ -71,7 +70,7 @@ namespace EditorTests
             CharacterProfileStore store = new(ProfilePath);
             LogAssert.Expect(LogType.Warning, new System.Text.RegularExpressions.Regex("Could not load character presets"));
             Assert.That(store.Load(), Is.Null);
-            Assert.That(store.Save(new CharacterCreatorDraft[] { new CharacterCreatorDraft() }, "default"), Is.False);
+            Assert.That(store.Save(new SavedCharacter[] { new SavedCharacter() }, "default"), Is.False);
             Assert.That(File.ReadAllText(ProfilePath), Is.EqualTo(original));
         }
 
@@ -84,7 +83,7 @@ namespace EditorTests
 
         // --- Schema v2 (lobby effort Decisions 1–2) ---
 
-        private static CharacterCreatorDraft RandomStub() => new() { Id = "random", Name = "Random Pick" };
+        private static SavedCharacter RandomStub() => new() { Id = "random", Name = "Random Pick" };
 
         private void WriteV1(params string[] characterJson)
         {
@@ -94,14 +93,15 @@ namespace EditorTests
             File.WriteAllText(ProfilePath, "{\"Version\":1,\"SelectedId\":\"" + selected + "\",\"Characters\":[" + entries + "]}");
         }
 
-        private static string V1Entry(CharacterCreatorDraft draft) =>
-            "{\"Draft\":" + JsonUtility.ToJson(draft) + ",\"MorphKeys\":[\"height\"],\"MorphValues\":[" +
+        // v1 files also carry Species and the random preview OutfitIndex, both since dropped; loading ignores them.
+        private static string V1Entry(SavedCharacter draft) =>
+            "{\"Draft\":{\"Species\":\"Human\",\"OutfitIndex\":3," + JsonUtility.ToJson(draft).Substring(1) + ",\"MorphKeys\":[\"height\"],\"MorphValues\":[" +
             draft.GetMorph("height").ToString(System.Globalization.CultureInfo.InvariantCulture) + "]}";
 
         [Test]
         public void PreferencesSurviveSaveAndLoad()
         {
-            CharacterCreatorDraft draft = new() { Id = "a", Name = "Ada Lovelace" };
+            SavedCharacter draft = new() { Id = "a", Name = "Ada Lovelace" };
             draft.Preferences.SetPriority("Engineer", JobPriority.High);
             draft.Preferences.SetPriority("Doctor", JobPriority.Low);
             draft.Preferences.SetAntagonist(AntagonistCategories.NuclearOperative, true);
@@ -120,8 +120,8 @@ namespace EditorTests
         [Test]
         public void V1UntouchedStarterIsReplacedByARandomCharacter()
         {
-            CharacterCreatorDraft starter = new() { OutfitIndex = 3 };
-            Assert.That(starter.IsUntouchedMockStarter, Is.True, "the outfit was random, so it doesn't count as an edit");
+            SavedCharacter starter = new();
+            Assert.That(starter.IsUntouchedMockStarter, Is.True);
             WriteV1(V1Entry(starter));
 
             CharacterProfileStore.Profile profile = new CharacterProfileStore(ProfilePath, RandomStub).Load();
@@ -136,14 +136,14 @@ namespace EditorTests
         [Test]
         public void V1EditedStarterKeepsItsLookWithNoPreferences()
         {
-            CharacterCreatorDraft starter = new() { HairStyleIndex = 4 };
+            SavedCharacter starter = new() { HairStyleIndex = 4 };
             starter.SetMorph("height", 0.8f);
             Assert.That(starter.IsUntouchedMockStarter, Is.False);
             WriteV1(V1Entry(starter));
 
             CharacterProfileStore.Profile profile = new CharacterProfileStore(ProfilePath, RandomStub).Load();
 
-            CharacterCreatorDraft kept = profile.Characters.Single();
+            SavedCharacter kept = profile.Characters.Single();
             Assert.That(kept.Id, Is.EqualTo(starter.Id));
             Assert.That(kept.HairStyleIndex, Is.EqualTo(4));
             Assert.That(kept.GetMorph("height"), Is.EqualTo(0.8f).Within(0.0001f));
@@ -153,8 +153,8 @@ namespace EditorTests
         [Test]
         public void V1WithSeveralCharactersKeepsThemAllAndTheSelection()
         {
-            CharacterCreatorDraft starter = new();
-            CharacterCreatorDraft second = new() { Id = "second", Name = "Bram Dekker", SkinColorIndex = 2 };
+            SavedCharacter starter = new();
+            SavedCharacter second = new() { Id = "second", Name = "Bram Dekker", SkinColorIndex = 2 };
             WriteV1(V1Entry(starter), V1Entry(second));
 
             CharacterProfileStore.Profile profile = new CharacterProfileStore(ProfilePath, RandomStub).Load();
@@ -163,7 +163,7 @@ namespace EditorTests
                 "the untouched starter stays when it isn't alone");
             Assert.That(profile.SelectedId, Is.EqualTo("second"));
             Assert.That(profile.Characters[1].SkinColorIndex, Is.EqualTo(2));
-            foreach (CharacterCreatorDraft character in profile.Characters) AssertNoPreferences(character.Preferences);
+            foreach (SavedCharacter character in profile.Characters) AssertNoPreferences(character.Preferences);
         }
 
         [Test]

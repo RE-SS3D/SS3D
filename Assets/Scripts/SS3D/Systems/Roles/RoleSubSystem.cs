@@ -488,33 +488,30 @@ namespace SS3D.Systems.Roles
         }
 
         /// <summary>
-        /// Recomputes replicated assigned/interested counts; only changed rows are resent.
+        /// Recomputes the replicated assigned counts; only changed rows are resent.
         /// </summary>
         [Server]
         private void RefreshJobCounts()
         {
-            HashSet<string> online = new(SubSystems.Get<PlayerSubSystem>().OnlinePlayers
-                .Where(player => player != null)
-                .Select(player => player.Ckey));
-
             for (int i = 0; i < _jobs.Count; i++)
             {
                 JobSlotInfo job = _jobs[i];
                 int assigned = _rolePlayers.Values.Count(role => role.Name == job.Name);
-                int interested = _preferences.Count(entry => online.Contains(entry.Key)
-                    && entry.Value.TryGetValue(job.Name, out JobPriority priority)
-                    && priority != JobPriority.Never);
-
-                if (assigned == job.Assigned && interested == job.Interested)
+                if (assigned == job.Assigned)
                 {
                     continue;
                 }
 
                 job.Assigned = assigned;
-                job.Interested = interested;
                 _jobs[i] = job;
             }
         }
+
+        /// <summary>The priority <paramref name="ckey"/>'s selected character gives <paramref name="job"/>; Never when unsent.</summary>
+        [Server]
+        public JobPriority PriorityOf(string ckey, string job) =>
+            ckey != null && _preferences.TryGetValue(ckey, out Dictionary<string, JobPriority> priorities)
+            && priorities.TryGetValue(job, out JobPriority priority) ? priority : JobPriority.Never;
         #endregion
 
         /// <summary>

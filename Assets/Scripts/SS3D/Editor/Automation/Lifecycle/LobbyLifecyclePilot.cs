@@ -795,7 +795,7 @@ namespace SS3D.Editor.Automation
                 {
                     CharacterProfileStore.Profile profile = new CharacterProfileStore(CharacterProfileStore.DefaultPath).Load();
                     Require(profile != null, "Save writes a readable character profile to disk");
-                    CharacterCreatorDraft saved = profile.Characters.First(c => c.Id == profile.SelectedId);
+                    SavedCharacter saved = profile.Characters.First(c => c.Id == profile.SelectedId);
                     Require(saved.Name == PilotCharacterName && Mathf.Approximately(saved.GetMorph("height"), PilotHeight)
                         && Mathf.Approximately(saved.GetMorph("fat"), PilotFat) && saved.HairStyleIndex == 1 && saved.SkinColorIndex == 5 && saved.EyeColorIndex == 1
                         && saved.Eyebrows == "humaneyebrowsbold" && saved.EyebrowColorIndex == 4,
@@ -807,10 +807,10 @@ namespace SS3D.Editor.Automation
             {
                 Name = "Security High reaches the server after Save",
                 // The lobby repaints on its 200 ms refresh: wait on the card, not only the server.
-                Until = () => Job("Security").Interested == 1 && Shell().Q<Label>("lobby-high-job").text == "Security",
+                Until = () => ServerPriority("Security") == JobPriority.High && Shell().Q<Label>("lobby-high-job").text == "Security",
                 Verify = () =>
                 {
-                    Require(Job("Assistant").Interested == 0, "Only Security counts as interested");
+                    Require(ServerPriority("Assistant") == JobPriority.Never, "Only Security is set on the server");
                     Require(Shell().Q<Label>("lobby-high-job").ClassListContains("lb-dept--security"), "High job wears its department colour");
                 },
             },
@@ -1487,6 +1487,9 @@ namespace SS3D.Editor.Automation
 
         private static string CharacterName() => Shell().Q<Label>("lobby-character-name")?.text;
 
+        private static JobPriority ServerPriority(string job) =>
+            SubSystems.Get<RoleSubSystem>().PriorityOf(SS3D.Core.Settings.LocalPlayer.Ckey, job);
+
         private static JobSlotInfo Job(string name) =>
             SubSystems.TryGet(out RoleSubSystem roles) ? roles.Jobs.FirstOrDefault(job => job.Name == name) : default;
 
@@ -1518,10 +1521,11 @@ namespace SS3D.Editor.Automation
 
         private static void VerifyFace(GameObject root)
         {
+            LobbyAssetCatalog catalog = (LobbyAssetCatalog)HumanoidStyleSource.Current;
             foreach ((string materialName, Color color, string property) in new (string, Color, string)[]
             {
-                ("HumanSkin", CharacterCreatorMockData.SkinColors[5], "_Color"),
-                ("HumanEye", CharacterCreatorMockData.EyeColors[1], "_BaseColor"),
+                ("HumanSkin", catalog.GetSkinColor(5), "_Color"),
+                ("HumanEye", catalog.GetEyeColor(1), "_BaseColor"),
             })
             {
                 bool found = false;

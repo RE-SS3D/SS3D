@@ -18,34 +18,36 @@ namespace SS3D.UI.Lobby
             public readonly int BeardStyles;
             public readonly int HairColors;
             public readonly IReadOnlyList<string> Eyebrows;
-            public readonly int Outfits;
+            public readonly int SkinColors;
+            public readonly int EyeColors;
 
-            public LookOptions(int hairStyles, int beardStyles, int hairColors, IReadOnlyList<string> eyebrows, int outfits)
+            public LookOptions(int hairStyles, int beardStyles, int hairColors, IReadOnlyList<string> eyebrows,
+                int skinColors, int eyeColors)
             {
                 HairStyles = hairStyles;
                 BeardStyles = beardStyles;
                 HairColors = hairColors;
                 Eyebrows = eyebrows;
-                Outfits = outfits;
+                SkinColors = skinColors;
+                EyeColors = eyeColors;
             }
 
             public static LookOptions From(LobbyAssetCatalog catalog) => catalog == null
-                ? new LookOptions(0, 0, 0, null, 0)
+                ? new LookOptions(0, 0, 0, null, 0, 0)
                 : new LookOptions(catalog.HairStyles?.Count ?? 0, catalog.BeardStyles?.Count ?? 0,
                     catalog.HairColors?.Count ?? 0, catalog.EyebrowStyles?.Select(style => style.Id).ToArray(),
-                    catalog.PreviewOutfits?.Count ?? 0);
+                    catalog.SkinColors?.Count ?? 0, catalog.EyeColors?.Count ?? 0);
         }
 
         /// <summary>Chance of a beard on a character whose Female slider is under half.</summary>
         private const double BeardChance = 0.35;
 
-        public static CharacterCreatorDraft Create(CharacterNameList names, LookOptions look, System.Random random)
+        public static SavedCharacter Create(CharacterNameList names, LookOptions look, System.Random random)
         {
-            CharacterCreatorDraft draft = new()
+            SavedCharacter draft = new()
             {
                 Id = CharacterRoster.NewId(),
                 Name = RandomName(names, random),
-                OutfitIndex = look.Outfits > 0 ? random.Next(look.Outfits) : 0,
                 Preferences = new CharacterPreferences(),
             };
             RandomizeLook(draft, look, random);
@@ -60,10 +62,10 @@ namespace SS3D.UI.Lobby
         }
 
         /// <summary>Re-rolls the body, skin, eyes, hair, facial hair and eyebrows; the name and preferences stay.</summary>
-        public static void RandomizeLook(CharacterCreatorDraft draft, LookOptions look, System.Random random)
+        public static void RandomizeLook(SavedCharacter draft, LookOptions look, System.Random random)
         {
-            draft.SkinColorIndex = random.Next(CharacterCreatorMockData.SkinColors.Length);
-            draft.EyeColorIndex = random.Next(CharacterCreatorMockData.EyeColors.Length);
+            draft.SkinColorIndex = look.SkinColors > 0 ? random.Next(look.SkinColors) : draft.SkinColorIndex;
+            draft.EyeColorIndex = look.EyeColors > 0 ? random.Next(look.EyeColors) : draft.EyeColorIndex;
 
             float female = random.NextDouble() < 0.5 ? 0f : (float)(0.6 + random.NextDouble() * 0.4);
             draft.SetMorph("height", Range(random, 0.3f, 0.7f));

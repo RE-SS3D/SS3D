@@ -30,7 +30,7 @@ namespace SS3D.Tests.EditMode
             new JobSlotInfo { Name = "Assistant", Department = (byte)Department.Civilian, Slots = 0 },
         };
 
-        private CharacterCreatorDraft Make(string name) => new() { Id = "c" + ++_made, Name = name };
+        private SavedCharacter Make(string name) => new() { Id = "c" + ++_made, Name = name };
 
         [SetUp]
         public void SetUp()
@@ -39,7 +39,7 @@ namespace SS3D.Tests.EditMode
             Assert.IsNotNull(catalog, "The lobby catalog is committed under Resources");
             Assert.IsTrue(catalog.HasRequiredAssets(out string missing), "Catalog is missing " + missing);
             _made = 0;
-            CharacterCreatorDraft rory = Make("Rory Lindqvist");
+            SavedCharacter rory = Make("Rory Lindqvist");
             rory.Preferences.SetPriority("Security", JobPriority.High);
             _roster = new CharacterRoster(new[] { rory, Make("Tomas Reyes") }, rory.Id, () => Make("Random Person"));
             _layer = new VisualElement();
@@ -77,7 +77,7 @@ namespace SS3D.Tests.EditMode
         [Test]
         public void AnEdit_IsUnsaved_UntilSaved()
         {
-            CharacterCreatorDraft stored = null;
+            SavedCharacter stored = null;
             _view.Saved += draft => stored = draft;
             _view.Model.Working.SetMorph("height", 0.9f);
             _view.Refresh();

@@ -1,12 +1,12 @@
 > Implements: Documents/design/lobby.md §2 (job list, descriptions, slot counts), §3 (per-character priorities, fallback), §4 (per-character antag opt-in, off by default), §5 (selected character only, guaranteed outcome), §6 (characters, random first character, one tabbed window, name, preview outfit), §7 (connected-count timer, direct latejoin with manifest, immediate Observe), §8 (lobby screen, music row, banner art); Documents/design/round-end.md §6; Documents/design/observer.md §2
 > Touches systems: rounds-lobby, gamemodes-roles-traits, entities, ui-shell, ui-shell-main-menu, audio, chat-audio-screens
-> Status: in progress
+> Status: shipped
 
-**Progress:** Decided in the 2026-11-14 lobby grill. Phases 1–6 are built (2026-11-14). The lobby shell, the character window and the Join picker are the new UXML views; Phase 7 purges. Everything ships before Playtest 1 ([mvp1-nuke-ops.md](../milestones/mvp1-nuke-ops.md) M11) on one branch and one pull request. Phases 1–3 are non-visual and run while the canvas is recoloured. Phases 4–6 build against the recoloured canvas. Phase 7 purges. Visual brief and recolour prompt: [lobby-character-window-visual-brief.md](../plans/lobby-character-window-visual-brief.md). Tests follow the [testing philosophy](2026-11_testing-philosophy.md).
+**Progress:** Decided in the 2026-11-14 lobby grill. All seven phases are built (2026-11-14). The lobby shell, the character window and the Join picker are the UXML views; Phase 7 purged the mock data and the old creator's leftovers. Everything ships before Playtest 1 ([mvp1-nuke-ops.md](../../milestones/mvp1-nuke-ops.md) M11) on one branch and one pull request. Phases 1–3 are non-visual and run while the canvas is recoloured. Phases 4–6 build against the recoloured canvas. Phase 7 purges. Visual brief and recolour prompt: [lobby-character-window-visual-brief.md](../plans/lobby-character-window-visual-brief.md). Tests follow the [testing philosophy](../../architecture/2026-11_testing-philosophy.md).
 
 # Lobby and character window (Nov 2026)
 
-Rebuild the lobby and the character creator to the revised [lobby.md](../design/lobby.md). In it the saved character is the unit: it carries the name, the look, the job priorities and the antag opt-ins. The round starts on a timer once enough players are connected. Joining late is a direct pick next to the crew manifest. The work also rebuilds both screens in UXML/USS to the Claude Design canvas "SS3D Lobby & Character window", recoloured to the SS3D design system.
+Rebuild the lobby and the character creator to the revised [lobby.md](../../design/lobby.md). In it the saved character is the unit: it carries the name, the look, the job priorities and the antag opt-ins. The round starts on a timer once enough players are connected. Joining late is a direct pick next to the crew manifest. The work also rebuilds both screens in UXML/USS to the Claude Design canvas "SS3D Lobby & Character window", recoloured to the SS3D design system.
 
 ## Starting state (2026-11-14, `de37a6ed`, develop at `e03d3fca`)
 
@@ -50,7 +50,7 @@ Rebuild the lobby and the character creator to the revised [lobby.md](../design/
 8. **Round start:**
    - The countdown runs once `MinimumConnected` players are connected: default 1, 4 in the `-nukeops` profile. It replaces `MinimumReady`.
    - Its length defaults to 120 s and admins can change it.
-   - If fewer players are ready than the mode needs when it ends, the round falls back to Extended ([round-config.md](../design/round-config.md) §5).
+   - If fewer players are ready than the mode needs when it ends, the round falls back to Extended ([round-config.md](../../design/round-config.md) §5).
    - Ready only decides who spawns.
 9. **Observe is immediate**, before or during the round. It's enabled only while a station is loaded. The pre-round observing toggle goes away.
 10. **Crew manifest:**
@@ -275,12 +275,20 @@ What Phase 6 built:
 
 ### Phase 7 — Purge and docs
 
-- [ ] Delete `CharacterCreatorView.cs`, `CharacterCreatorDraft.cs`, `LobbyMockData.cs` and `CharacterCreatorMockData.cs`, after moving their real data (palettes, slider definitions) into catalog or ScriptableObject data; move `JobPriorityUtil` out of mock data
-- [ ] Delete the "N interested" count (`JobSlotInfo.Interested`), `LobbyMockData.PlayerRow`, `LobbyAssetCatalog`'s unused banner and chevron fields, the species dropdown, the species dropdown, the step rail and the old "loadout" naming for character slots
-- [ ] Delete `LobbyShell.uss` and `CharacterCreator.uss`: nothing uses them since Phase 5, but `LobbyAssetCatalog` still requires `_lobbyStyle`. Its `ChevronDown`, loadout thumbnails, department icons, placeholder and banner fields are unused too.
-- [ ] The draft's `OutfitIndex` (a random preview outfit) only feeds the booth's not-connected fallback since Phase 5
-- [ ] Record the dropped small Escape menu in [player settings](2026-10_player-settings.md)
-- [ ] Run `update-system-docs`: the [rounds-lobby](systems/rounds-lobby.md) map (overview, start-here, pitfalls), the [gamemodes-roles-traits](systems/gamemodes-roles-traits.md) and [ui-shell-main-menu](systems/ui-shell-main-menu.md) maps, the INDEX coverage row, and M11
+- [x] Delete `CharacterCreatorView.cs`, `CharacterCreatorDraft.cs`, `LobbyMockData.cs` and `CharacterCreatorMockData.cs`, after moving their real data (palettes, slider definitions) into catalog or ScriptableObject data; move `JobPriorityUtil` out of mock data
+- [x] Delete the "N interested" count (`JobSlotInfo.Interested`), `LobbyMockData.PlayerRow`, `LobbyAssetCatalog`'s unused banner and chevron fields, the species dropdown, the step rail and the old "loadout" naming for character slots
+- [x] Delete `LobbyShell.uss` and `CharacterCreator.uss`, and `LobbyAssetCatalog`'s `_lobbyStyle`, `ChevronDown`, loadout thumbnails, department icons, placeholder and banner fields
+- [x] The draft's `OutfitIndex` (a random preview outfit) only fed the booth's not-connected fallback since Phase 5
+- [x] Record the dropped small Escape menu in [player settings](../../architecture/2026-10_player-settings.md)
+- [x] Run `update-system-docs`: the [rounds-lobby](../../architecture/systems/rounds-lobby.md) map (overview, start-here, pitfalls), the [gamemodes-roles-traits](../../architecture/systems/gamemodes-roles-traits.md) and [ui-shell-main-menu](../../architecture/systems/ui-shell-main-menu.md) maps, the INDEX coverage row, and M11
+
+What Phase 7 did:
+
+- **`SavedCharacter`** replaces `CharacterCreatorDraft` (`CharacterCreatorView` had gone in Phase 5). It lost `Species` (only Human exists) and `OutfitIndex`. `characters.json` still names each entry's field `Draft`, and JsonUtility ignores the two dropped fields in old files, so the schema stays v2.
+- **Palettes.** The skin and eye swatches joined the hair colours in `LobbyAssetCatalog` (`SkinColors`, `EyeColors`, `GetSkinColor`, `GetEyeColor`), authored in `LobbyAssetCatalogBuilder` like the hair colours. Saves store indices, so the palettes are append-only.
+- **Body sliders** are `CharacterBodySliders` in code, not catalog data: their keys are Human.fbx blend shapes that `HumanoidMorphApplier` and `SavedCharacter` name in code.
+- **The mock starter** survives only as two private constants in `SavedCharacter` and the field defaults, for the v1 migration check (Decision 2).
+- **Removed:** `JobPriorityUtil` (nothing used it any more), `JobSlotInfo.Interested` and its server count, `LobbyAssetPaths`' style sheet, placeholder, banner and chevron paths, and four unreferenced images (`PnSecurity.png`, `PnJanitor.png`, `DropdownArrow.png`, `ProbablyNotChaseBanner.png`). The lifecycle pilot now reads the server's stored priority (`RoleSubSystem.PriorityOf`) instead of the interest count.
 
 ## Tests
 
@@ -311,10 +319,10 @@ What Phase 6 built:
 
 ## Deviations
 
-- **From [persistence-save.md](../design/persistence-save.md) §5:** characters and their preferences are saved on the player's machine, not as server-side player data. That layer doesn't exist yet. A player on a second machine starts with a random character. Move them when the layer is built.
-- **From [lobby.md](../design/lobby.md) §4 (opt-in off by default):** the `-nukeops` profile keeps antag opt-ins on by default, for Playtest 1 only, so an 8-player squad draw finds operatives. Remove this after the playtest.
-- **From [lobby.md](../design/lobby.md) §7 and the canvas (Admin help):** players can't send to Admin chat; the server accepts it only from admins, and an admin has no way to reply to one player. The Chat tab shows the Admin channel to admins only. Player-to-admin help belongs to [admin-tools.md](../design/admin-tools.md).
-- **From [lobby.md](../design/lobby.md) §2 (playtime-locked jobs):** the locked row is built, but no job has a playtime requirement yet. That needs [player-accounts.md](../design/player-accounts.md) and player data.
+- **From [persistence-save.md](../../design/persistence-save.md) §5:** characters and their preferences are saved on the player's machine, not as server-side player data. That layer doesn't exist yet. A player on a second machine starts with a random character. Move them when the layer is built.
+- **From [lobby.md](../../design/lobby.md) §4 (opt-in off by default):** the `-nukeops` profile keeps antag opt-ins on by default, for Playtest 1 only, so an 8-player squad draw finds operatives. Remove this after the playtest.
+- **From [lobby.md](../../design/lobby.md) §7 and the canvas (Admin help):** players can't send to Admin chat; the server accepts it only from admins, and an admin has no way to reply to one player. The Chat tab shows the Admin channel to admins only. Player-to-admin help belongs to [admin-tools.md](../../design/admin-tools.md).
+- **From [lobby.md](../../design/lobby.md) §2 (playtime-locked jobs):** the locked row is built, but no job has a playtime requirement yet. That needs [player-accounts.md](../../design/player-accounts.md) and player data.
 - **From the canvas (switcher, Duplicate):** the copy keeps the original's name instead of "Name (2)". Brackets break the name rule, and two characters may share a name (Decision 4).
 - **From the canvas (switcher rows):** Duplicate and Delete show on every row, dimmed until the row is hovered, focused or selected. The canvas shows them only on the hovered row; hidden buttons can't be reached with Tab.
 - **From the canvas (Join boards):** the only-Assistant notice ends "or you can observe instead", not "keep observing": an observer ghost counts as spawned and can't open the picker. The picker also dims the lobby behind it a little, which the boards don't.
@@ -322,8 +330,8 @@ What Phase 6 built:
 
 ## Related docs
 
-- Design: [lobby.md](../design/lobby.md), [round-end.md](../design/round-end.md) §6, [observer.md](../design/observer.md) §2, [round-config.md](../design/round-config.md), [main-menu.md](../design/main-menu.md)
+- Design: [lobby.md](../../design/lobby.md), [round-end.md](../../design/round-end.md) §6, [observer.md](../../design/observer.md) §2, [round-config.md](../../design/round-config.md), [main-menu.md](../../design/main-menu.md)
 - Brief and recolour prompt: [lobby-character-window-visual-brief.md](../plans/lobby-character-window-visual-brief.md)
-- Maps: [rounds-lobby](systems/rounds-lobby.md), [gamemodes-roles-traits](systems/gamemodes-roles-traits.md), [ui-shell](systems/ui-shell.md), [ui-shell-main-menu](systems/ui-shell-main-menu.md)
-- Policy: [agent-first composition](2026-07_agent-first-composition.md), [testing philosophy](2026-11_testing-philosophy.md), [game versioning](2026-10_game-versioning.md)
-- Previous lobby effort: [lobby-uitk-redesign](../archive/architecture/2026-08_lobby-uitk-redesign.md)
+- Maps: [rounds-lobby](../../architecture/systems/rounds-lobby.md), [gamemodes-roles-traits](../../architecture/systems/gamemodes-roles-traits.md), [ui-shell](../../architecture/systems/ui-shell.md), [ui-shell-main-menu](../../architecture/systems/ui-shell-main-menu.md)
+- Policy: [agent-first composition](../../architecture/2026-07_agent-first-composition.md), [testing philosophy](../../architecture/2026-11_testing-philosophy.md), [game versioning](../../architecture/2026-10_game-versioning.md)
+- Previous lobby effort: [lobby-uitk-redesign](2026-08_lobby-uitk-redesign.md)

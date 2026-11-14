@@ -94,7 +94,7 @@ namespace SS3D.UI.Lobby
         }
 
         /// <summary>Shows <paramref name="character"/>: body, look and its High job's clothes (the fallback job's when none).</summary>
-        public void ShowCharacter(CharacterCreatorDraft character)
+        public void ShowCharacter(SavedCharacter character)
         {
             if (character == null) return;
             ApplyBody(character);
@@ -110,7 +110,7 @@ namespace SS3D.UI.Lobby
             if (_booth != null) _booth.SetAngleIndex(angleIndex);
         }
 
-        public void ApplyBody(CharacterCreatorDraft character)
+        public void ApplyBody(SavedCharacter character)
         {
             if (character == null) return;
             _characterId = character.Id;
@@ -126,7 +126,7 @@ namespace SS3D.UI.Lobby
         }
 
         /// <summary>Hair, facial hair, eyebrows, skin and eyes.</summary>
-        public void ApplyLook(CharacterCreatorDraft character)
+        public void ApplyLook(SavedCharacter character)
         {
             if (character == null) return;
             _characterId = character.Id;
@@ -134,8 +134,7 @@ namespace SS3D.UI.Lobby
             if (_booth == null || _catalog == null) return;
             _booth.ApplyStyle(_catalog.GetHairStyle(character.HairStyleIndex), _catalog.GetBeardStyle(character.BeardStyleIndex),
                 _catalog.GetHairColor(character.HairColorIndex), _catalog.GetHairColor(character.BeardColorIndex));
-            _booth.ApplyFace(PaletteColor(CharacterCreatorMockData.SkinColors, character.SkinColorIndex),
-                PaletteColor(CharacterCreatorMockData.EyeColors, character.EyeColorIndex),
+            _booth.ApplyFace(_catalog.GetSkinColor(character.SkinColorIndex), _catalog.GetEyeColor(character.EyeColorIndex),
                 _catalog.GetEyebrowStyle(CharacterAppearance.NormalizeEyebrowStyle(character.Eyebrows)),
                 _catalog.GetHairColor(character.EyebrowColorIndex));
         }
@@ -162,8 +161,6 @@ namespace SS3D.UI.Lobby
 
             _booth.ApplyOutfit(worn);
         }
-
-        public static Color PaletteColor(Color[] palette, int index) => palette[Mathf.Clamp(index, 0, palette.Length - 1)];
 
         /// <summary>Every item in <paramref name="job"/>'s loadout equipment that shows on the body.</summary>
         private static List<Cloth> WornClothesOf(string job)

@@ -24,10 +24,10 @@ namespace SS3D.UI.Lobby
         private string _movedTo;
 
         /// <summary>The character as last saved; the roster holds this instance.</summary>
-        public CharacterCreatorDraft Saved { get; private set; }
+        public SavedCharacter Saved { get; private set; }
 
         /// <summary>The copy the window edits. Discard throws it away; Save stores it.</summary>
-        public CharacterCreatorDraft Working { get; private set; }
+        public SavedCharacter Working { get; private set; }
 
         public bool IsDirty => Working != null && !Working.SameAs(Saved);
 
@@ -47,7 +47,7 @@ namespace SS3D.UI.Lobby
             }
         }
 
-        public void Load(CharacterCreatorDraft saved)
+        public void Load(SavedCharacter saved)
         {
             Saved = saved;
             Working = saved?.Clone(saved.Id);
@@ -58,14 +58,14 @@ namespace SS3D.UI.Lobby
         /// Stores the working copy with its name normalised and returns it; the caller puts it in the roster. Null
         /// when Save isn't allowed.
         /// </summary>
-        public CharacterCreatorDraft Commit()
+        public SavedCharacter Commit()
         {
             if (!CanSave)
             {
                 return null;
             }
 
-            CharacterCreatorDraft saved = Working.Clone(Working.Id);
+            SavedCharacter saved = Working.Clone(Working.Id);
             saved.Name = CharacterNameRules.Normalize(Working.Name);
             Load(saved);
             return saved;
@@ -152,7 +152,7 @@ namespace SS3D.UI.Lobby
         }
 
         /// <summary>"High: Job" or "No High job", the switcher's and the top bar's second line.</summary>
-        public static string HighLine(CharacterCreatorDraft character) =>
+        public static string HighLine(SavedCharacter character) =>
             character?.Preferences?.HighJob is { } high ? "High: " + high : "No High job";
 
         /// <summary>The department of <paramref name="job"/> in <paramref name="jobs"/>, None when unknown.</summary>

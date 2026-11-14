@@ -49,16 +49,19 @@ namespace SS3D.Editor
             ("teal",        new Color(0.08f, 0.62f, 0.62f)),
         };
 
-        private static readonly (string Id, string FileName)[] DepartmentIconFiles =
+        /// <summary>Skin tone swatches, light to dark. Saved characters store the index, so only append.</summary>
+        private static readonly Color[] DefaultSkinColors =
         {
-            ("command", "OfficeBuilding.png"),
-            ("security", "ShieldCheck.png"),
-            ("engineering", "Cog.png"),
-            ("medical", "Plus.png"),
-            ("science", "Beaker.png"),
-            ("cargo", "Truck.png"),
-            ("service", "Cake.png"),
-            ("civilian", "UserGroup.png"),
+            new(1f, 0.7411765f, 0.6f),
+            Hex("#f5dbc7"), Hex("#e7bc9b"), Hex("#ce9873"),
+            Hex("#ae7752"), Hex("#8c573c"), Hex("#68412f"), Hex("#462d24"),
+        };
+
+        /// <summary>Eye colour swatches. Saved characters store the index, so only append.</summary>
+        private static readonly Color[] DefaultEyeColors =
+        {
+            Hex("#3d2b1f"), Hex("#4c7ea8"), Hex("#4c8a5e"), Hex("#8a7130"),
+            Hex("#7d8a8a"), Hex("#b5813a"), Hex("#5b3a29"), Hex("#2f2f33"),
         };
 
         /// <summary>BatchMode: <c>-executeMethod SS3D.Editor.LobbyAssetCatalogBuilder.RebuildCatalogBatch</c></summary>
@@ -87,13 +90,8 @@ namespace SS3D.Editor
             error = null;
             List<string> missing = new();
 
-            StyleSheet lobbyStyle = LoadRequired<StyleSheet>(LobbyAssetPaths.StyleSheet, missing);
             VisualTreeAsset lobbyTemplate = LoadRequired<VisualTreeAsset>(LobbyAssetPaths.Template, missing);
             VisualTreeAsset characterWindowTemplate = LoadRequired<VisualTreeAsset>(LobbyAssetPaths.CharacterWindowTemplate, missing);
-            Sprite preview = LoadRequiredSprite(LobbyAssetPaths.PreviewPlaceholder, missing);
-            Sprite banner = LoadRequiredSprite(LobbyAssetPaths.ServerInfoBanner, missing);
-            // Heroicons are Default Texture2D (not Sprite) — load as textures for UITK backgrounds.
-            Texture2D chevron = LoadRequiredTexture(LobbyAssetPaths.ChevronDownIcon, missing);
             GameObject previewHuman = LoadRequired<GameObject>(LobbyAssetPaths.PreviewHumanPrefab, missing);
             CharacterNameList characterNames = LoadRequired<CharacterNameList>(CharacterNameList.AssetPath, missing);
 
@@ -130,29 +128,6 @@ namespace SS3D.Editor
                     Sprite sprite = AssetDatabase.LoadAssetAtPath<Sprite>(path);
                     if (sprite != null) styleThumbnails.Add(new LobbyNamedSprite(Path.GetFileNameWithoutExtension(path), sprite));
                 }
-            }
-
-            List<LobbyNamedTexture> departmentIcons = new();
-            foreach ((string id, string fileName) in DepartmentIconFiles)
-            {
-                Texture2D texture = LoadRequiredTexture(LobbyAssetPaths.HeroiconsOutlineRoot + fileName, missing);
-                if (texture != null)
-                {
-                    departmentIcons.Add(new LobbyNamedTexture(id, texture));
-                }
-            }
-
-            List<LobbyNamedSprite> loadoutThumbs = new();
-            Sprite securityThumb = LoadRequiredSprite(LobbyAssetPaths.PreviewPlaceholder, missing);
-            if (securityThumb != null)
-            {
-                loadoutThumbs.Add(new LobbyNamedSprite("PnSecurity", securityThumb));
-            }
-
-            Sprite janitorThumb = LoadRequiredSprite(LobbyAssetPaths.LoadoutJanitor, missing);
-            if (janitorThumb != null)
-            {
-                loadoutThumbs.Add(new LobbyNamedSprite("PnJanitor", janitorThumb));
             }
 
             // Hair: index 0 is the "none" sentinel (null prefab), then the styles. Saved characters and the network
@@ -223,18 +198,14 @@ namespace SS3D.Editor
             }
 
             catalog.EditorAssign(
-                lobbyStyle,
-                preview,
-                banner,
-                chevron,
                 previewHuman,
                 jobIcons,
-                departmentIcons,
-                loadoutThumbs,
                 hairStyles,
                 beardStyles,
                 new List<LobbyNamedPrefab>(DiscoverPrefabs("Assets/Content/WorldObjects/Entities/Humanoids/Human/HumanHair/Eyebrows")),
                 hairColors,
+                new List<Color>(DefaultSkinColors),
+                new List<Color>(DefaultEyeColors),
                 previewOutfits,
                 characterNames,
                 lobbyTemplate,
@@ -245,6 +216,8 @@ namespace SS3D.Editor
             return true;
         }
 
+        private static Color Hex(string hex) => ColorUtility.TryParseHtmlString(hex, out Color color) ? color : Color.white;
+
         private static T LoadRequired<T>(string path, List<string> missing) where T : Object
         {
             T asset = AssetDatabase.LoadAssetAtPath<T>(path);
@@ -254,28 +227,6 @@ namespace SS3D.Editor
             }
 
             return asset;
-        }
-
-        private static Sprite LoadRequiredSprite(string path, List<string> missing)
-        {
-            Sprite sprite = AssetDatabase.LoadAssetAtPath<Sprite>(path);
-            if (sprite == null)
-            {
-                missing.Add($"Sprite: {path}");
-            }
-
-            return sprite;
-        }
-
-        private static Texture2D LoadRequiredTexture(string path, List<string> missing)
-        {
-            Texture2D texture = AssetDatabase.LoadAssetAtPath<Texture2D>(path);
-            if (texture == null)
-            {
-                missing.Add($"Texture2D: {path}");
-            }
-
-            return texture;
         }
 
         /// <summary>

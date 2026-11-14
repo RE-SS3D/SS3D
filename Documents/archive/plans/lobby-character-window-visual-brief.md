@@ -1,6 +1,6 @@
 # Lobby and character window — Claude Design brief
 
-> Generated 2026-11-14 from `Documents/design/lobby.md` (§2–§8), `round-end.md` §6, `comms.md` §7 and the SS3D design-system palette in `Assets/Content/Systems/UI/SettingsPanel/Resources/PlayerSettingsPanel.uss` (revised the same day: the first pass named `ss3d-tokens.uss`, which clashed with the shipped main menu). Regenerate rather than edit once those move. Current build state: [rounds-lobby](../architecture/systems/rounds-lobby.md).
+> Generated 2026-11-14 from `Documents/design/lobby.md` (§2–§8), `round-end.md` §6, `comms.md` §7 and the SS3D design-system palette in `Assets/Content/Systems/UI/SettingsPanel/Resources/PlayerSettingsPanel.uss` (revised the same day: the first pass named `ss3d-tokens.uss`, which clashed with the shipped main menu). Regenerate rather than edit once those move. Current build state: [rounds-lobby](../../architecture/systems/rounds-lobby.md).
 
 Paste everything under **Prompt** into Claude Design. Bring the result back as static mockups; the build turns them into UI Toolkit layouts against the tokens. The implementation grill that follows decides HOW; this brief only fixes WHAT is on screen.
 

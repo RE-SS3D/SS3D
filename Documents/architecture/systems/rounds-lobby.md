@@ -1,7 +1,7 @@
 > Code paths: Assets/Scripts/SS3D/Systems/Rounds/, Assets/Scripts/SS3D/UI/Lobby/
 > Entry points: RoundSubSystem, ReadyPlayersSubSystem, RoundSubSystemBase, LobbyUiSubSystem
 > Status: partial
-> Verified: e2f86cf20 — 2026-11-05
+> Verified: e03d3fca9 — 2026-11-14
 
 # Rounds / lobby
 
@@ -9,29 +9,25 @@
 
 Round lifecycle state machine with single-flight `CancellationTokenSource` (prevents double start/stop and embark-during-ending races). States: `Stopped → Preparing → WarmingUp → Ongoing → Ending → Ended`. `PrepareRound` awaits `WorldReadinessSubSystem` `WorldReady` (not a fixed 500 ms delay).
 
-**UITK lobby:** `LobbyUiSubSystem` owns the shell and guided Character Creator on
-`UiLayer.Modal`. Ready/latejoin, player readiness/counts, round timer, admin controls and job
-preferences are networked. **Observe** ([observer.md](../../design/observer.md) §2, [lobby.md](../../design/lobby.md) §7): `EntitySubSystem.CmdObserve` makes a ghost at once whenever a station is loaded (`ObserveRules.StationLoaded`: WarmingUp or Ongoing), regardless of late-join, and takes the player off the ready list ([entities](entities.md)). The lobby countdown runs with no station, so before the round Observe opens only in the warmup. Round start skips anyone who already has an entity. The lobby has no job list ([lobby effort](../2026-11_lobby-character-window.md) Phase 4); until the Phase 5 character window, nothing edits priorities. The Join button resolves the character's saved preferences against
-open slots. `CmdJoinAsJob(job)` is the direct pick ([lobby effort](../2026-11_lobby-character-window.md) Decision 11): the server re-checks the slot (`JobResolver.LateJoinPickRefusal`) and refuses a full job in OOC; the Phase 6 picker will call it. `RoleSubSystem.Manifest` replicates the crew manifest (name and crew job of everyone who spawned with a crew job this round, no operatives or ghosts). Job priorities, antagonist choices and the no-job fallback belong to the
-selected saved character ([lobby effort](../2026-11_lobby-character-window.md) Phase 1), sent on connect and on save. Antagonist choices feed the squad draw (`RoleSubSystem`,
-[gamemodes-roles-traits](gamemodes-roles-traits.md)); one the character never set is off, except on the `-nukeops`
-profile. Playtime locks are absent.
+**UITK lobby** ([lobby effort](../../archive/architecture/2026-11_lobby-character-window.md), [lobby.md](../../design/lobby.md)): `LobbyUiSubSystem` owns three UXML/USS screens on `UiLayer.Modal`: the lobby shell (`Lobby.uxml`), the character window (`CharacterWindow.uxml`) and the Join picker (`lobby-join` inside `Lobby.uxml`). The sidebar's Ready toggle, round timer and connected count, the admin tabs and the saved character's card are networked. **Observe** ([observer.md](../../design/observer.md) §2, [lobby.md](../../design/lobby.md) §7): `EntitySubSystem.CmdObserve` makes a ghost at once whenever a station is loaded (`ObserveRules.StationLoaded`: WarmingUp or Ongoing), regardless of late-join, and takes the player off the ready list ([entities](entities.md)). The lobby countdown runs with no station, so before the round Observe opens only in the warmup. Round start skips anyone who already has an entity.
 
-The saved Human character (name, body morphs, hair/beard/eyebrows and independent colors, and since schema v2 its
-preferences) persists client-locally in `CharacterRoster` (up to 10) and is sent to the server for application to the
-next spawned body. A first run, or a v1 store holding only the untouched mock starter, starts with a random character
-(`RandomCharacter`, names from `CharacterNames.asset`). Names follow `CharacterNameRules` on both sides; the server
-clears an invalid one. Other species
-are disabled until models exist. Creator body controls are Height/Female/Fat/Muscle/Chest/Jaw,
-matching the model's available controls. Character slots and the last saved selection survive
-restarts; unsaved drafts do not overwrite saved slots.
+**Characters carry the preferences.** The saved character (name, body morphs, hair / beard / eyebrows with their own colours, and since schema v2 its job priorities, antagonist choices and no-job fallback) lives client-locally in `CharacterRoster` (up to 10, `SavedCharacter`) and is sent on connect, on selecting and on Save. The character window edits a working copy (`CharacterWindowModel`) across the Appearance, Jobs and Antags tabs; one Save covers all three. The Jobs tab shows the whole `JobRoster` merged with the replicated job list; jobs the server doesn't run are locked rows. The booth wears the High job's loadout. A first run, or a v1 store holding only the untouched mock starter, starts with a random character (`RandomCharacter`, names from `CharacterNames.asset`). Names follow `CharacterNameRules` on both sides; the server clears an invalid one. Only Human exists, so there is no species choice. Skin, eye and hair palettes are catalog data (`LobbyAssetCatalog`); body sliders are `CharacterBodySliders`. Antagonist choices feed the squad draw (`RoleSubSystem`, [gamemodes-roles-traits](gamemodes-roles-traits.md)); one the character never set is off, except on the `-nukeops` profile. Playtime locks are absent.
+
+**Joining a round in progress** opens the Join picker: open jobs with open/total counts, "Joining as" with Change, and the crew manifest (`RoleSubSystem.Manifest`: name and crew job of everyone who spawned with a crew job this round, no operatives or ghosts). Join calls `EntitySubSystem.CmdJoinAsJob(job)`; the server re-checks the slot (`JobResolver.LateJoinPickRefusal`) and refuses a full job in OOC.
+
+**Deviations from the lobby design** (owner-approved in the [lobby effort](../../archive/architecture/2026-11_lobby-character-window.md)):
+- Characters and their preferences are saved on the player's machine, not as server-side player data ([persistence-save.md](../../design/persistence-save.md) §5); a second machine starts with a random character. Move them when player data exists.
+- The `-nukeops` profile keeps antagonist opt-ins on by default ([lobby.md](../../design/lobby.md) §4) for Playtest 1, so an 8-player draw finds operatives. Remove after the playtest.
+- Players can't send to Admin chat; the Chat tab shows the Admin channel to admins only (§7). Player-to-admin help belongs to [admin-tools.md](../../design/admin-tools.md).
+- The locked job row exists, but no job has a playtime requirement yet (§2); that needs [player-accounts.md](../../design/player-accounts.md).
+- From the canvas: Duplicate keeps the original's name (brackets break the name rule); switcher rows show Duplicate / Delete on every row, dimmed until hovered, focused or selected, so Tab reaches them; the Join picker's only-Assistant notice says "or you can observe instead" (an observer ghost can't open the picker) and dims the lobby behind it; the Jobs tab shows the full roster with unrun jobs locked, not the five-job playtest board.
 
 The shell is also the in-round Escape menu (`InputContext.Menu`). Its Display, Audio and Controls
 tabs apply through `PlayerSettingsSubSystem`; controls use real binding overrides and conflict
 rules ([player settings](../2026-10_player-settings.md), [inputs](inputs.md)). The Chat tab carries
 OOC/LOOC/Admin chat ([comms](chat-audio-screens.md)). Server Info shows persisted server name/MOTD,
-configured mode, server build/uptime and git-generated change log. Per-server banner art and
-ping/account-age fields are absent.
+configured mode, server build/uptime, git-generated change log and one of five banners per round
+(`RoundId` mod 5). Ping and account-age fields are absent.
 
 The UITK shell is the sole lobby UI. Do not restore the removed uGUI lobby/customizer or
 `GameScreens`; the round simulation remains live ([composition policy](../2026-07_agent-first-composition.md)).
@@ -43,8 +39,7 @@ clears the station (`TileMap.Clear`, load state `NotLoaded`); the next Start res
 The lobby blurs the world (`SetMenuBlur`) whenever it is visible, not only as the Escape menu.
 The sidebar has a two-click **Quit to menu** button (`QuitRequested` → `NetworkSessionSubSystem.LeaveToMainMenu`): it leaves the session (ending it when hosting) and opens the [main menu](ui-shell-main-menu.md). The Server Info **Change Log**
 lists first-parent changes (merged PRs by title, `#N` links) grouped under the `v*` release tag that
-shipped them ("In development" before a tag) and links to the GitHub releases page. One starter
-character ships (`CharacterCreatorMockData.Loadouts`).
+shipped them ("In development" before a tag) and links to the GitHub releases page.
 
 Server Settings now has the reference state card, countdown actions, map/mode selectors,
 player cap/round-length inputs and rule checkboxes. `ServerSettingsService` (its own hub subsystem since tech-debt P6.5)
@@ -80,17 +75,21 @@ original) and tells admins in Admin chat. Unloading resets the editor's history 
 
 ## Start here
 
-- `Assets/Scripts/SS3D/UI/Lobby/LobbyUiSubSystem.cs` — UITK shell + Character Creator host; attaches into Modal
+- `Assets/Scripts/SS3D/UI/Lobby/LobbyUiSubSystem.cs` — host of the shell, character window and Join picker; attaches into Modal; handles the switchers' Select / New / Duplicate / Delete
 - `Assets/Scripts/SS3D/UI/Lobby/LobbyView.cs` — the lobby shell from `Content/Systems/UI/Lobby/Lobby.uxml` + `Lobby.uss` (tokens in `LobbyTokens.uss`): sidebar, header, tabs; hosts `LobbyServerInfoView`, `LobbyChatView`, `LobbyServerSettingsView`, `LobbyLastRoundView` (in `RoundEnd/`), `LobbyMapStopPrompt`. `LobbySidebarModel` is the pure round-state and Ready / Join / Observe text
-- `Assets/Scripts/SS3D/UI/Lobby/CharacterCreatorView.cs` — guided-steps Character Creator, local character slots + pinned Save footer
+- `Assets/Scripts/SS3D/UI/Lobby/CharacterWindowView.cs` — the character window from `CharacterWindow.uxml` + `CharacterWindow.uss`; hosts `CharacterAppearanceTab`, `CharacterJobsTab`, `CharacterAntagsTab`. `CharacterWindowModel` is the pure saved/working-copy rules (dirty, name gate, one-High and all-Never notices)
+- `Assets/Scripts/SS3D/UI/Lobby/CharacterSwitcher.cs` — the character popover (lobby sidebar, window top bar, Join picker's Change)
+- `Assets/Scripts/SS3D/UI/Lobby/LobbyJoinPicker.cs` / `LobbyJoinModel.cs` — the Join picker and its pure rules (open jobs, first choice, filled-job notice, manifest columns)
+- `Assets/Scripts/SS3D/UI/Lobby/LobbyCharacterPreview.cs` — the booth, its outfit and the switcher portraits
 - `Assets/Scripts/SS3D/UI/Lobby/CharacterProfileStore.cs` — versioned local presets (schema v2, v1 migrated on load) under `Application.persistentDataPath/Lobby/characters.json`; atomic replacement, unreadable/newer file preservation, pilot-isolated profiles
 - `Assets/Scripts/SS3D/UI/Lobby/CharacterRoster.cs` / `CharacterPreferences.cs` — saved characters and selection (New, Duplicate, Delete, cap 10); per-character priorities (one High), antagonist in/out/unset, fallback, `ToMessage`
 - `Assets/Scripts/SS3D/UI/Lobby/RandomCharacter.cs` / `CharacterNameList.cs` — random first character; names in `Assets/Content/Data/Characters/CharacterNames.asset`, referenced from `LobbyAssetCatalog`
-- `Assets/Scripts/SS3D/Systems/Entities/Character/CharacterNameRules.cs` — shared name normalise/validate (creator and `EntitySubSystem.HandleCharacterAppearance`)
-- `Assets/Scripts/SS3D/UI/Lobby/CharacterCreatorDraft.cs` — local name/species/body/style/preferences + separate hair/beard/brow colors + stable outfit index
+- `Assets/Scripts/SS3D/Systems/Entities/Character/CharacterNameRules.cs` — shared name normalise/validate (character window and `EntitySubSystem.HandleCharacterAppearance`)
+- `Assets/Scripts/SS3D/UI/Lobby/SavedCharacter.cs` — one saved character or the window's working copy: name, body, style and colour indices, preferences (`characters.json` still keys it `Draft`)
 - `Assets/Scripts/SS3D/Systems/Entities/Character/CharacterAppearance.cs` — replicated character + server sanitization; `Human.cs` applies it, `Mind.DisplayName` is the in-world name
 - `Assets/Scripts/SS3D/Systems/Entities/Character/CharacterPreviewBooth.cs` — off-map RT booth (layer 23, own lights), worn jumpsuit/shoe mesh application
-- `Assets/Scripts/SS3D/UI/Lobby/LobbyAssetCatalog.cs` / `Assets/Scripts/SS3D/Editor/LobbyAssetCatalogBuilder.cs` — curated preview outfit references; umbrella catalog rebuild
+- `Assets/Scripts/SS3D/UI/Lobby/LobbyAssetCatalog.cs` / `Assets/Scripts/SS3D/Editor/LobbyAssetCatalogBuilder.cs` — the two templates, hair / beard / eyebrow styles and thumbnails, the hair, skin and eye palettes, job icons, the not-connected preview outfit; umbrella catalog rebuild
+- `Assets/Scripts/SS3D/Editor/CharacterStyleThumbnailBaker.cs` / `HairStyleImportSetup.cs` — bake the style tiles; import SS3D-Art hair
 - `Assets/Scripts/SS3D/Systems/Roles/RoleSubSystem.cs` / `JobResolver.cs` — replicated job slots, `JobPreferencesMessage` handling, round-start + latejoin assignment ([roles map](gamemodes-roles-traits.md))
 - `Assets/Scripts/SS3D/UI/Lobby/LobbyServerSettingsView.cs` — admin form and live enabled states (only rules with a consumer: late join, auto start)
 - `Assets/Scripts/SS3D/Systems/Tile/Validation/` — shared map requirements/report and tracked-map content adapter
@@ -125,7 +124,7 @@ original) and tells admins in Admin chat. Unloading resets the editor's history 
 - Round transitions: extend `RoundSubSystemBase` state handlers and messages in `Messages/`.
 - Ending a round: call `RoundSubSystem.RequestRoundEnd` (or `GamemodeSubSystem.EndRound(request)`) with the winner and wording; never `RequestRoundStateChange(false)` directly, or the outcome falls back to an admin end. Nuke Ops rules (P3) build the request; antagonist rows set `RoundOutcomePlayer.Antagonist`.
 - Spawn flow: `SpawnReadyPlayersEvent` after Ongoing (world must already be ready from PrepareRound).
-- Lobby UITK: session snapshots and actions live in `LobbyUiSubSystem`, which builds a `LobbySessionInfo` each refresh; `LobbyView` paints it. A new sidebar state goes in `LobbySidebarModel` with a test. Character Creator is a separate Modal screen.
+- Lobby UITK: session snapshots and actions live in `LobbyUiSubSystem`, which builds a `LobbySessionInfo` each refresh; `LobbyView` paints it. A new sidebar state goes in `LobbySidebarModel` with a test. The character window is a separate Modal screen; a new character rule goes in `CharacterWindowModel` with a test. A new style needs a catalog rebuild and a thumbnail re-bake (`StyleThumbnailTests` fails until then). Palettes are append-only: saves store indices.
 
 ## Pitfalls
 
@@ -156,9 +155,12 @@ original) and tells admins in Admin chat. Unloading resets the editor's history 
 - **Ready window:** the server accepts ready toggles in every state except Ongoing/Ending and spawns whoever is ready on Ongoing, so Ready stays enabled through Preparing/WarmingUp (countdown). Ongoing switches it to Join Round (late spawn RPC).
 - **Pilot clicks:** a synthetic `ClickEvent` does not fire `Button.clicked` (its `Clickable` listens to pointer/submit). Drive buttons with `NavigationSubmitEvent`; keep `ClickEvent` for `RegisterCallback<ClickEvent>` surfaces such as the preview. UI snapshots lag subsystem state by the 200ms refresh — wait on the UI, not only the backend.
 - **No boot restore:** `TileSubSystem.Setup` creates only an empty container, never a saved station. The first Start waits for tile resources, restores the selected map and then awaits `WorldReady`. A default selection prefers saved `classic-ministation`, otherwise the first saved template; it is not loaded until Start.
-- **Session lifetime:** the lobby host survives network teardown. Read replicated subsystem snapshots with `TryGet`, hide both surfaces/booth offline or when the local player is spawned, and restore the saved draft on return.
-- **Preferences ride on the saved character, not the view:** a creator Save replaces the roster entry with a new draft object. Any view that edits `CharacterPreferences` in place (the Phase 5 Jobs tab) must be handed the new draft's preferences after a save, or later edits change an orphan the store never writes.
-- **Jobs prefs:** shell uses H/M/L/N chips (attached design), not drag-ranked lists (`lobby.md` §3) — an accepted presentation deviation. Jobs come only from `StartingRoles.asset`; a job needs a `RoleData` there to appear. Job resolution must run before `SpawnPlayer` (loadout reads the assignment); anything spawning players outside `SpawnReadyPlayers` falls through to latejoin assignment.
+- **Session lifetime:** the lobby host survives network teardown. Read replicated subsystem snapshots with `TryGet`, hide both surfaces/booth offline or when the local player is spawned, and restore the saved character on return.
+- **Preferences ride on the saved character, not the view:** Save replaces the roster entry with a new object. A view that edits `CharacterPreferences` in place must be handed the new character's preferences after a save, or later edits change an orphan the store never writes.
+- **Jobs prefs:** the Jobs tab uses H/M/L/N radio groups (the canvas), not drag-ranked lists (`lobby.md` §3) — an accepted presentation deviation. Server jobs come only from `StartingRoles.asset`; one without a `RoleData` there shows as a locked roster row. Job resolution must run before `SpawnPlayer` (loadout reads the assignment); anything spawning players outside `SpawnReadyPlayers` falls through to latejoin assignment.
+- **USS resets beat single-class rules:** `.lobby Label` / `.lobby Button` (specificity 11) override a one-class margin or colour rule, so lobby and window rules are prefixed with `.lobby`; department text colour needs `Label.lb-dept--x`.
+- **`overflow: hidden` + `border-radius` turned the whole character window white** (stencil clip on Linux). Clip with square corners or round an inner element.
+- **No change events without a panel:** EditMode view tests drive edits through the model and call `view.Refresh()`; a Button's row action needs `clicked` (NavigationSubmit), not `ClickEvent`. Pilot `Capture` runs at end of frame, so make it a step's last action.
 - **Preview booth:** live preview uses `CharacterPreviewBooth` on layer **23** with its own camera/lights/RT at (-250, -250, 250). Never share layer 22 or (-250, -250, -250) with `RuntimePreviewGenerator`: sharing put the dummy in every item icon — (the old `LobbyCameraRenderTexture`/`StaticWorldObjects` customizer was deleted in Phase F). Dispose the booth on host destroy; deactivate (don’t destroy) on Return to avoid respawn hitch.
 - **E1 vs E2:** Save stores local character slots on disk and sends the saved slot as `CharacterAppearanceMessage` (also once per connection); `EntitySubSystem` sanitizes/stores it per ckey and stamps `Mind.CharacterName` + `Human.SetAppearance` at spawn. Save never changes a living body. Skin/eye tint and catalog-backed eyebrows render in the booth and on spawned bodies; account/server player-meta persistence is separate from local presets.
 - **Spawned height:** scale the armature (`HumanoidRigReferences.ArmatureRoot`), never the networked root (capsule, NetworkTransform). The server applies morphs too so bone hit colliders match. Clothing mesh swaps reset shape keys — `ClothesDisplayer` calls `Human.ReapplyBodyMorphs`.
@@ -167,8 +169,8 @@ original) and tells admins in Admin chat. Unloading resets the editor's history 
 - **Preview stripping order:** remove combat/speech/movement dependents and the non-networked `HumanoidBodyStateBridge` before the generic network pass; prefab component order is not dependency order and Unity refuses required-component removal.
 - **Preview orientation:** Human faces +Z at yaw 0 and the booth camera sits on +Z; a 180° base yaw silently swaps Front/Back. Keep base yaw at 0; verify the face in screenshots, not just the RenderTexture binding.
 
-- **Creator colors:** lobby and creator are sibling Modal surfaces; variables declared only on `.lobby-shell` do not reach the creator. Scope shared lobby variables to both roots; reference text colors are overridden locally on `.char-creator`.
-- **Character drafts:** live preview callbacks must not mutate the saved draft; commit on Save only, or switching/New Character silently overwrites the saved body/style. The loadout popup is the window's last absolute child so the step form cannot paint over it.
+- **Window colours:** the shell and the character window are sibling Modal surfaces; the window's root also carries `.lobby` and its stylesheet imports `Lobby.uss`, so the tokens and resets reach both. Variables declared only on the shell's root don't.
+- **Working copy:** live preview callbacks must not mutate the saved character; the window edits `CharacterWindowModel.Working` and commits on Save only, or switching / New silently overwrites the saved body and style.
 
 - **Slider fill:** Unity 6's Slider has no `unity-base-slider__fill` element; styling that selector silently leaves an empty track. Add a non-picking fill under the tracker and update its percentage width with the value.
 
@@ -176,9 +178,9 @@ original) and tells admins in Admin chat. Unloading resets the editor's history 
 - **Settings toggles:** use `Toggle.text` for check-before-label layout; forcing its input to `flex-grow: 0` collapses the text. Keep the input growing with an automatic basis.
 - **Settings tests:** a `ScrollView` contains internal `Slider`s for its scrollers. Query `lobby-shell__settings-slider` when counting or checking enabled volume controls.
 
-- **Startup preview goes black:** `AreaSubSystem.CompleteSetup` runs the orphan-light guard after an early booth is created. The guard must exempt `CharacterPreviewBooth`-owned lights; delaying the booth until creator open only hides the ownership bug.
+- **Startup preview goes black:** `AreaSubSystem.CompleteSetup` runs the orphan-light guard after an early booth is created. The guard must exempt `CharacterPreviewBooth`-owned lights; delaying the booth until the window opens only hides the ownership bug.
 
-- **Preview clothes:** use `Cloth.GetClothMesh` on catalog prefab assets and activate the dummy's existing Jumpsuit/ShoeLeft/ShoeRight renderers. Do not instantiate folded Item prefabs or route offline preview through server-only `ClothesDisplayer`. Pick an outfit once per draft, not on each appearance callback.
+- **Preview clothes:** use `Cloth.GetClothMesh` on catalog prefab assets and activate the dummy's existing Jumpsuit/ShoeLeft/ShoeRight renderers. Do not instantiate folded Item prefabs or route offline preview through server-only `ClothesDisplayer`. The booth wears the High (or fallback) job's loadout from local role assets; before those are reachable it wears the catalog's first preview outfit.
 - **Remote client booth threw in `HumanoidController.Setup`:** instantiating the active Human prefab ran every gameplay `Awake` before stripping; on a remote client the booth is built before `CameraSubSystem` exists. The dummy is now instantiated under an inactive staging parent and stripped with `DestroyImmediate` before activation. Host-only pilots never saw this — run the remote pilot after booth changes.
 - **Disabled lobby buttons looked clickable:** fill-colour button rules with no `:disabled` state render a disabled button like a live one, and `ui_wait … disabled` still passes. `Lobby.uss` gives Ready, Observe and the admin buttons explicit `:disabled` looks. UI renders in linear colour space, so a low opacity reads lighter than the number suggests: judge the screenshot.
 - **Server name/MOTD are not round config:** they bypass the idle-only settings gate, and a whole-form save keeps the current values. Pilots that edit them must restore the originals, because the file is the real `ServerMeta` data.
@@ -194,7 +196,7 @@ original) and tells admins in Admin chat. Unloading resets the editor's history 
 
 - `Testing/ui/validate.sh --steps compile,round-reset` checks blood/bullet decal cleanup and atmos reseeding on an immediate host stop/restart, without the full sandbox timer or UI suite.
 
-- `Testing/ui/validate.sh --weekly` runs these graphical pilots. `LobbyUiPilot` covers shell/creator visuals; `LobbyLifecyclePilot` covers host lifecycle, saved characters and settings; the remote pilot checks a built non-admin client. Review screenshots as well as assertions; OS-input Ready/chat checks do not imply every pilot action uses real input.
+- `Testing/ui/validate.sh --weekly` runs these graphical pilots. `LobbyUiPilot` covers the shell, character window, switcher and Join picker visuals; `LobbyLifecyclePilot` covers host lifecycle, saved characters and settings; the remote pilot checks a built non-admin client. Review screenshots as well as assertions; OS-input Ready/chat checks do not imply every pilot action uses real input.
 - **Run Sandbox Pilot** (`LobbyLifecyclePilot.Sandbox.cs`, on demand with `validate.sh --steps sandbox`; the nightly `sandbox-reset` smoke covers the reset loop) applies the profile in Play Mode (`ApplyServerSettingsForTesting`) and runs two automatic rounds: countdown without Ready, death → ghost editing → Respawn, `/bug`, the F8 dialog saving a local bundle, 1-minute warning, wipe without autosave, reset-health lines with no leftover tile objects/items and flat NetworkObject counts. `SandboxServerTests` covers the pure rules.
 - **Round end** (tier per the [testing philosophy](../2026-11_testing-philosophy.md)): `RoundEndLoopTests` (EditMode) covers the outcome per trigger, respawned players listed once, the viewer's fate and row, the beat and hold, countdown text, minimum-ready auto-start and the dedicated default; `SquadDrawTests` covers the draw. `validate.sh --steps lifecycle`: one host stop checks the overlay over a living player, the admin hold reaching the UI, return to the lobby and the Last Round tab (`round-end-summary.png`, `round-end-held.png`, `round-end-banner.png`, `lobby-last-round.png`). The nightly `sandbox-reset` smoke asserts that the outcome reaches a remote client (`assert_outcome Timer`). `NukeOpsProfileTests` covers the `-nukeops` profile, the ready and connected thresholds, the countdown flag and the default opt-in. The nightly `nukeops-round` smoke runs `-nukeops` with one-minute rounds, a threshold of 1 and a 20 s countdown: a client whose character never set the operative choice is drawn (the profile's `AntagonistOptInDefault`), the timer gives a crew win that lists it as an antagonist (`assert_outcome Timer Crew antagonist`), and the next round auto-starts. PlayMode tests and pilots run a 3 s beat (`ServerHelpers.TestEndBeatSeconds`, `RoundSubSystem.SetEndBeatSecondsForTesting`); only the pilot's summary step runs the real 30 s.
 - `MapValidationTests` covers mode/job requirements, combined failures, repair, warnings and the scrollable save report.
@@ -217,4 +219,4 @@ original) and tells admins in Admin chat. Unloading resets the editor's history 
 - [2026-07_comms-non-diegetic-feed](../../archive/architecture/2026-07_comms-non-diegetic-feed.md)
 - [INDEX.md](../INDEX.md)
 
-- **Preview framing:** authored skinned-renderer bounds include animation padding; empty equipment slots can report large bounds despite having no mesh. Fit the shared lobby/creator camera to baked visible geometry after evaluating the initial pose, skipping inactive renderers and null meshes. Keep framing fixed during morph edits so Height remains visible; padding leaves room for shoes and walking.
+- **Preview framing:** authored skinned-renderer bounds include animation padding; empty equipment slots can report large bounds despite having no mesh. Fit the shared lobby/window camera to baked visible geometry after evaluating the initial pose, skipping inactive renderers and null meshes. Keep framing fixed during morph edits so Height remains visible; padding leaves room for shoes and walking.

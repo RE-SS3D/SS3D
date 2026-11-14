@@ -48,7 +48,7 @@ namespace SS3D.UI.Lobby
         private CharacterSwitcher _lobbySwitcher;
         private string _jobsSignature;
         private LobbyCharacterPreview _preview;
-        private CharacterCreatorDraft _draft;
+        private SavedCharacter _draft;
         private CharacterProfileStore _profileStore;
         private CharacterRoster _roster;
         private readonly System.Random _random = new();
@@ -521,7 +521,7 @@ namespace SS3D.UI.Lobby
         private void SaveRoster() => _profileStore?.Save(_roster.Characters, _roster.SelectedId);
 
         /// <summary>A random character from the catalog's names and looks (Decision 3).</summary>
-        private CharacterCreatorDraft CreateRandomCharacter() =>
+        private SavedCharacter CreateRandomCharacter() =>
             RandomCharacter.Create(_catalog != null ? _catalog.CharacterNames : null, RandomCharacter.LookOptions.From(_catalog), _random);
 
         private void NotifyAppearanceChanged()
@@ -549,8 +549,8 @@ namespace SS3D.UI.Lobby
                 BeardStyle = _draft.BeardStyleIndex,
                 HairColor = _catalog.GetHairColor(_draft.HairColorIndex),
                 BeardColor = _catalog.GetHairColor(_draft.BeardColorIndex),
-                SkinColor = LobbyCharacterPreview.PaletteColor(CharacterCreatorMockData.SkinColors, _draft.SkinColorIndex),
-                EyeColor = LobbyCharacterPreview.PaletteColor(CharacterCreatorMockData.EyeColors, _draft.EyeColorIndex),
+                SkinColor = _catalog.GetSkinColor(_draft.SkinColorIndex),
+                EyeColor = _catalog.GetEyeColor(_draft.EyeColorIndex),
                 EyebrowColor = _catalog.GetHairColor(_draft.EyebrowColorIndex),
                 EyebrowStyle = CharacterAppearance.NormalizeEyebrowStyle(_draft.Eyebrows),
             };
@@ -684,7 +684,7 @@ namespace SS3D.UI.Lobby
             _shellView.SetVisible(true);
         }
 
-        private void HandleCharacterSaved(CharacterCreatorDraft saved)
+        private void HandleCharacterSaved(SavedCharacter saved)
         {
             if (saved == null || !_roster.Replace(saved))
             {

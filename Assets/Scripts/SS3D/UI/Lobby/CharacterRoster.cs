@@ -14,16 +14,16 @@ namespace SS3D.UI.Lobby
     {
         public const int MaxCharacters = 10;
 
-        private readonly List<CharacterCreatorDraft> _characters = new();
-        private readonly Func<CharacterCreatorDraft> _createRandom;
+        private readonly List<SavedCharacter> _characters = new();
+        private readonly Func<SavedCharacter> _createRandom;
 
         /// <param name="characters">Saved characters; duplicates by id keep the first. Empty adds a random one.</param>
         /// <param name="selectedId">The selected character; an unknown id selects the first.</param>
         /// <param name="createRandom">Makes a new random character (New, and an empty roster).</param>
-        public CharacterRoster(IEnumerable<CharacterCreatorDraft> characters, string selectedId, Func<CharacterCreatorDraft> createRandom)
+        public CharacterRoster(IEnumerable<SavedCharacter> characters, string selectedId, Func<SavedCharacter> createRandom)
         {
             _createRandom = createRandom ?? throw new ArgumentNullException(nameof(createRandom));
-            foreach (CharacterCreatorDraft character in characters ?? Enumerable.Empty<CharacterCreatorDraft>())
+            foreach (SavedCharacter character in characters ?? Enumerable.Empty<SavedCharacter>())
             {
                 if (character != null && !string.IsNullOrEmpty(character.Id) && Find(character.Id) == null)
                 {
@@ -39,13 +39,13 @@ namespace SS3D.UI.Lobby
             SelectedId = Find(selectedId) != null ? selectedId : _characters[0].Id;
         }
 
-        public IReadOnlyList<CharacterCreatorDraft> Characters => _characters;
+        public IReadOnlyList<SavedCharacter> Characters => _characters;
 
         public int Count => _characters.Count;
 
         public string SelectedId { get; private set; }
 
-        public CharacterCreatorDraft Selected => Find(SelectedId);
+        public SavedCharacter Selected => Find(SelectedId);
 
         /// <summary>False at <see cref="MaxCharacters"/>: New and Duplicate are refused.</summary>
         public bool CanAdd => _characters.Count < MaxCharacters;
@@ -53,7 +53,7 @@ namespace SS3D.UI.Lobby
         /// <summary>False for the last character: there must always be one to play.</summary>
         public bool CanDelete => _characters.Count > 1;
 
-        public CharacterCreatorDraft Find(string id) =>
+        public SavedCharacter Find(string id) =>
             string.IsNullOrEmpty(id) ? null : _characters.Find(character => character.Id == id);
 
         /// <summary>The label the switcher shows: the character's name.</summary>
@@ -71,14 +71,14 @@ namespace SS3D.UI.Lobby
         }
 
         /// <summary>Adds a random character and selects it; null when the roster is full.</summary>
-        public CharacterCreatorDraft AddRandom()
+        public SavedCharacter AddRandom()
         {
-            CharacterCreatorDraft character = _createRandom();
+            SavedCharacter character = _createRandom();
             return Add(character) ? character : null;
         }
 
         /// <summary>Adds a new character at the end and selects it; false when the roster is full. A clashing id is replaced.</summary>
-        public bool Add(CharacterCreatorDraft character)
+        public bool Add(SavedCharacter character)
         {
             if (character == null || !CanAdd)
             {
@@ -96,15 +96,15 @@ namespace SS3D.UI.Lobby
         }
 
         /// <summary>Copies a character, look and preferences, under a new id right after it, and selects the copy.</summary>
-        public CharacterCreatorDraft Duplicate(string id)
+        public SavedCharacter Duplicate(string id)
         {
-            CharacterCreatorDraft source = Find(id);
+            SavedCharacter source = Find(id);
             if (source == null || !CanAdd)
             {
                 return null;
             }
 
-            CharacterCreatorDraft copy = source.Clone(NewId());
+            SavedCharacter copy = source.Clone(NewId());
             _characters.Insert(_characters.IndexOf(source) + 1, copy);
             SelectedId = copy.Id;
             return copy;
@@ -116,7 +116,7 @@ namespace SS3D.UI.Lobby
         /// </summary>
         public bool Delete(string id)
         {
-            CharacterCreatorDraft character = Find(id);
+            SavedCharacter character = Find(id);
             if (character == null || !CanDelete)
             {
                 return false;
@@ -133,7 +133,7 @@ namespace SS3D.UI.Lobby
         }
 
         /// <summary>Stores a saved edit of an existing character (matched by id); false for an unknown id.</summary>
-        public bool Replace(CharacterCreatorDraft saved)
+        public bool Replace(SavedCharacter saved)
         {
             int index = saved == null ? -1 : _characters.FindIndex(character => character.Id == saved.Id);
             if (index < 0)

@@ -29,7 +29,7 @@ namespace SS3D.UI.Lobby
         private readonly LobbyAssetCatalog _catalog;
         private readonly InputTextEntryScope _textEntry;
         private readonly Func<string> _randomName;
-        private readonly Action<CharacterCreatorDraft> _randomizeLook;
+        private readonly Action<SavedCharacter> _randomizeLook;
         private readonly ScrollView _scroll;
         private TextField _name;
         private VisualElement _error;
@@ -40,7 +40,7 @@ namespace SS3D.UI.Lobby
         /// <param name="randomName">A new random name (Randomize name).</param>
         /// <param name="randomizeLook">Re-rolls the look of the draft it's given (Randomize appearance).</param>
         public CharacterAppearanceTab(CharacterWindowModel model, LobbyAssetCatalog catalog, InputTextEntryScope textEntry,
-            Func<string> randomName, Action<CharacterCreatorDraft> randomizeLook)
+            Func<string> randomName, Action<SavedCharacter> randomizeLook)
         {
             _model = model;
             _catalog = catalog;
@@ -65,7 +65,7 @@ namespace SS3D.UI.Lobby
             // A focused field removed by the rebuild gets no FocusOut.
             _textEntry.Exit();
             _scroll.Clear();
-            CharacterCreatorDraft draft = _model.Working;
+            SavedCharacter draft = _model.Working;
             if (draft == null) return;
 
             VisualElement top = LobbyUi.Box("charwin-look__top");
@@ -94,7 +94,7 @@ namespace SS3D.UI.Lobby
 
         // ---- Name ----
 
-        private VisualElement BuildName(CharacterCreatorDraft draft)
+        private VisualElement BuildName(SavedCharacter draft)
         {
             VisualElement section = LobbyUi.Box("charwin-look__section");
             section.Add(LobbyUi.Text("NAME", "charwin-tab__eyebrow"));
@@ -138,25 +138,25 @@ namespace SS3D.UI.Lobby
 
         // ---- Body ----
 
-        private VisualElement BuildBody(CharacterCreatorDraft draft)
+        private VisualElement BuildBody(SavedCharacter draft)
         {
             VisualElement section = LobbyUi.Box("charwin-look__section");
             section.Add(LobbyUi.Text("BODY", "charwin-tab__eyebrow"));
             VisualElement grid = LobbyUi.Box("charwin-look__sliders");
-            for (int i = 0; i < CharacterCreatorMockData.BodySliders.Length; i++)
+            for (int i = 0; i < CharacterBodySliders.All.Length; i++)
             {
-                grid.Add(BuildSlider(CharacterCreatorMockData.BodySliders[i], i % 2 == 1, draft));
+                grid.Add(BuildSlider(CharacterBodySliders.All[i], i % 2 == 1, draft));
             }
 
             section.Add(grid);
             section.Add(LobbyUi.Text("Skin tone", "charwin-tab__label"));
-            section.Add(Swatches("charwin-skin", CharacterCreatorMockData.SkinColors, draft.SkinColorIndex, index =>
+            section.Add(Swatches("charwin-skin", Palette(_catalog != null ? _catalog.SkinColors : null), draft.SkinColorIndex, index =>
             {
                 _model.Working.SkinColorIndex = index;
                 return CharacterLookChange.Look;
             }));
             section.Add(LobbyUi.Text("Eye colour", "charwin-tab__label"));
-            section.Add(Swatches("charwin-eyes", CharacterCreatorMockData.EyeColors, draft.EyeColorIndex, index =>
+            section.Add(Swatches("charwin-eyes", Palette(_catalog != null ? _catalog.EyeColors : null), draft.EyeColorIndex, index =>
             {
                 _model.Working.EyeColorIndex = index;
                 return CharacterLookChange.Look;
@@ -164,7 +164,7 @@ namespace SS3D.UI.Lobby
             return section;
         }
 
-        private VisualElement BuildSlider(CharacterCreatorMockData.SliderDef def, bool rightColumn, CharacterCreatorDraft draft)
+        private VisualElement BuildSlider(CharacterBodySlider def, bool rightColumn, SavedCharacter draft)
         {
             VisualElement cell = LobbyUi.Box("charwin-look__slider-cell");
             cell.EnableInClassList("charwin-look__slider-cell--right", rightColumn);
@@ -193,11 +193,11 @@ namespace SS3D.UI.Lobby
 
         // ---- Style ----
 
-        private VisualElement BuildStyle(CharacterCreatorDraft draft)
+        private VisualElement BuildStyle(SavedCharacter draft)
         {
             VisualElement section = LobbyUi.Box("charwin-look__section");
             section.Add(LobbyUi.Text("STYLE", "charwin-tab__eyebrow"));
-            Color[] hairColors = HairColors();
+            Color[] hairColors = Palette(_catalog != null ? _catalog.HairColors : null);
 
             section.Add(LobbyUi.Text("Hair", "charwin-tab__label"));
             section.Add(StyleTiles("hair", _catalog != null ? _catalog.HairStyles : null, draft.HairStyleIndex, index =>
@@ -219,16 +219,12 @@ namespace SS3D.UI.Lobby
             return section;
         }
 
-        private Color[] HairColors()
+        /// <summary>A catalog palette as an array; empty without a catalog.</summary>
+        private static Color[] Palette(IReadOnlyList<Color> colors)
         {
-            if (_catalog != null && _catalog.HairColors is { Count: > 0 })
-            {
-                Color[] colors = new Color[_catalog.HairColors.Count];
-                for (int i = 0; i < colors.Length; i++) colors[i] = _catalog.HairColors[i];
-                return colors;
-            }
-
-            return CharacterCreatorMockData.HairColors;
+            Color[] palette = new Color[colors?.Count ?? 0];
+            for (int i = 0; i < palette.Length; i++) palette[i] = colors[i];
+            return palette;
         }
 
         /// <summary>Hair or facial hair: index 0 is None.</summary>
@@ -248,7 +244,7 @@ namespace SS3D.UI.Lobby
             return tiles;
         }
 
-        private VisualElement EyebrowTiles(CharacterCreatorDraft draft)
+        private VisualElement EyebrowTiles(SavedCharacter draft)
         {
             VisualElement tiles = LobbyUi.Box("charwin-look__tiles");
             tiles.name = "charwin-eyebrow-styles";

@@ -132,7 +132,7 @@ namespace SS3D.UI.Lobby
             _rows.Clear();
             _list.Clear();
             _count.text = $"{_roster.Count}/{CharacterRoster.MaxCharacters}";
-            foreach (CharacterCreatorDraft character in _roster.Characters)
+            foreach (SavedCharacter character in _roster.Characters)
             {
                 VisualElement row = BuildRow(character);
                 _rows.Add(row);
@@ -155,7 +155,7 @@ namespace SS3D.UI.Lobby
             Root.schedule.Execute(() => Root.Q<Button>("character-switcher-cancel")?.Focus()).ExecuteLater(1);
         }
 
-        private VisualElement BuildRow(CharacterCreatorDraft character)
+        private VisualElement BuildRow(SavedCharacter character)
         {
             string id = character.Id;
             bool selected = id == _roster.SelectedId;
@@ -235,7 +235,7 @@ namespace SS3D.UI.Lobby
             return button;
         }
 
-        private VisualElement BuildConfirm(CharacterCreatorDraft character)
+        private VisualElement BuildConfirm(SavedCharacter character)
         {
             string id = character.Id;
             VisualElement confirm = LobbyUi.Box("switcher__confirm");

@@ -39,7 +39,7 @@ One row per gameplay domain that has, or should eventually have, a design doc. A
 | health | [health](../design/health.md) | [health plan](../plans/health_implementation_plan.md) — in-progress; [body-presentation-authority](../archive/architecture/2026-07_body-presentation-authority.md), [health-env-feel](../archive/architecture/2026-07_health-env-feel.md) — shipped | [health](systems/health.md) — partial |
 | id-access | [id-access](../design/id-access.md) | none yet | [id-access](systems/id-access.md) — partial |
 | inventory-storage | [inventory-storage](../design/inventory-storage.md) | [inventory-storage-redesign](../archive/architecture/2026-07_inventory-storage-redesign.md) — shipped | [inventory](systems/inventory.md) — partial |
-| lobby | [lobby](../design/lobby.md) | [lobby-character-window](2026-11_lobby-character-window.md) — planned; [lobby-uitk-redesign](../archive/architecture/2026-08_lobby-uitk-redesign.md) — shipped | [rounds-lobby](systems/rounds-lobby.md) — partial |
+| lobby | [lobby](../design/lobby.md) | [lobby-character-window](../archive/architecture/2026-11_lobby-character-window.md) — shipped; [lobby-uitk-redesign](../archive/architecture/2026-08_lobby-uitk-redesign.md) — shipped | [rounds-lobby](systems/rounds-lobby.md) — partial |
 | main-menu | [main-menu](../design/main-menu.md) | none yet | none yet (dev Launcher scene: [networking-session](systems/networking-session.md)) |
 | main-hud | [main-hud](../design/main-hud.md) | [machine-interface phase 1](../archive/architecture/2026-07_machine-interface-phase1-foundation.md), [2](../archive/architecture/2026-07_machine-interface-phase2-apc-networking.md), [3](../archive/architecture/2026-07_machine-interface-phase3-smes-generalization.md), [diegetic-screen-ui-framework](../archive/architecture/2026-07_diegetic-screen-ui-framework.md), [mi-path-catalog](../archive/architecture/2026-07_mi-path-catalog.md), [screen-space-effects](../archive/architecture/2026-07_screen-space-effects.md) — shipped; [ui-shell-consolidation](2026-07_ui-shell-consolidation.md) — shipped | [inventory](systems/inventory.md), [machine-interface](systems/machine-interface.md), [screen-effects](systems/screen-effects.md), [ui-shell](systems/ui-shell.md) |
 | networking | [networking](../design/networking.md) | [headless-dedicated-server](../archive/architecture/2026-07_headless-dedicated-server.md), [session-world-lifecycle](../archive/architecture/2026-07_session-world-lifecycle.md), [multiplayer-test-harness](../archive/architecture/2026-07_multiplayer-test-harness.md), [ci-develop-release-pipeline](2026-07_ci-develop-release-pipeline.md), [game-versioning](2026-10_game-versioning.md), [test-harness-rework](../archive/architecture/2026-11_test-harness-rework.md) — shipped; [multiplayer-testing-self-hosted-ci](2026-07_multiplayer-testing-self-hosted-ci.md) — in-progress | [networking-session](systems/networking-session.md) — partial |
@@ -101,7 +101,7 @@ Infrastructure and gameplay maps, including the ones with no design doc (interac
 | [persistence](systems/persistence.md) | partial | Station templates, server meta |
 | [player-control](systems/player-control.md) | partial | Connect/authorize/disconnect, reconnect-to-body |
 | [rendering](systems/rendering.md) | partial | URP features, selection pick, living-body Vision FOV, decals, world-only health blackout |
-| [rounds-lobby](systems/rounds-lobby.md) | partial | Round state machine, UITK lobby, Server Settings, pre-countdown map validation |
+| [rounds-lobby](systems/rounds-lobby.md) | partial | Round state machine, UITK lobby, character window and Join picker, Server Settings, pre-countdown map validation |
 | [scene-management](systems/scene-management.md) | partial | `SceneSubSystem`, scene transitions |
 | [screen-effects](systems/screen-effects.md) | partial | URP Volume overlays driven by health/atmos |
 | [selection](systems/selection.md) | shipped | Shader-ID mesh picking, pick-grid index |
@@ -141,13 +141,11 @@ Only work that is in flight, planned, or kept as standing reference. Everything 
 | [2026-11_examine-and-action-feedback](2026-11_examine-and-action-feedback.md) | in-progress (phases 1–4 built, 5–6 partly) |
 | [2026-11_testing-philosophy](2026-11_testing-philosophy.md) | shipped (standing policy) |
 | [2026-11_object-setup-persistence](2026-11_object-setup-persistence.md) | in-progress (both slices built; owner hand test pending) |
-| [2026-11_lobby-character-window](2026-11_lobby-character-window.md) | planned |
 | [2026-11_tech-debt-paydown](2026-11_tech-debt-paydown.md) | in-progress (Phases 0–3 shipped; Phase 6 under way: P6.1–P6.4 done) |
 | [agent_validation_loop.plan](../plans/agent_validation_loop.plan.md) | shipped (reference) |
 | [eva-gear.plan](../plans/eva-gear.plan.md) | in-progress |
 | [ooc-column.plan](../plans/ooc-column.plan.md) | planned |
 | [examine-feedback-visual-brief](../plans/examine-feedback-visual-brief.md) | Claude Design brief |
-| [lobby-character-window-visual-brief](../plans/lobby-character-window-visual-brief.md) | Claude Design brief |
 | [combat_implementation_plan](../plans/combat_implementation_plan.md) | in-progress |
 | [health_implementation_plan](../plans/health_implementation_plan.md) | in-progress |
 | [persistence_architecture_design_2fe61864.plan](../plans/persistence_architecture_design_2fe61864.plan.md) | in-progress |

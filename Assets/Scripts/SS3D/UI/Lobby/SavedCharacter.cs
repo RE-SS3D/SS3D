@@ -4,22 +4,26 @@ using UnityEngine;
 namespace SS3D.UI.Lobby
 {
     /// <summary>
-    /// A saved character or the creator's working draft: the look, the name and, since schema v2, its job priorities,
-    /// antagonist choices and fallback (<see cref="Preferences"/>; lobby effort Decision 1).
+    /// A saved character, or the character window's working copy of one: the look, the name and, since schema v2, its
+    /// job priorities, antagonist choices and fallback (<see cref="Preferences"/>; lobby effort Decision 1). New
+    /// characters come from <see cref="RandomCharacter"/>; the field defaults are the old mock starter's look.
     /// </summary>
     [System.Serializable]
-    public sealed class CharacterCreatorDraft
+    public sealed class SavedCharacter
     {
-        public string Id = CharacterCreatorMockData.Loadouts[0].Id;
-        public string Name = LobbyMockData.CharacterName;
-        public string Species = CharacterCreatorMockData.SpeciesOptions[0];
+        /// <summary>The id and name every pre-v2 store started with (the single "Marcus Voss" slot).</summary>
+        private const string MockStarterId = "marcus-voss";
+        private const string MockStarterName = "Marcus Voss";
+
+        public string Id = MockStarterId;
+        public string Name = MockStarterName;
+        /// <summary>Index into <see cref="LobbyAssetCatalog.EyeColors"/>.</summary>
         public int EyeColorIndex;
+        /// <summary>Index into <see cref="LobbyAssetCatalog.SkinColors"/>.</summary>
         public int SkinColorIndex;
         public string Eyebrows = "thin";
-        /// <summary>Chosen once from the curated preview outfits; retained when this draft is saved.</summary>
-        public int OutfitIndex;
 
-        /// <summary>Body slider keys → 0–1 values (see <see cref="CharacterCreatorMockData.BodySliders"/>).</summary>
+        /// <summary>Body slider keys → 0–1 values (see <see cref="CharacterBodySliders"/>).</summary>
         public Dictionary<string, float> BodyMorphs => _bodyMorphs;
 
         private Dictionary<string, float> _bodyMorphs = CreateDefaultMorphs();
@@ -47,9 +51,9 @@ namespace SS3D.UI.Lobby
         public CharacterPreferences Preferences = new();
 
         /// <summary>A deep copy under <paramref name="id"/> (Duplicate, and edits that must not touch the saved slot).</summary>
-        public CharacterCreatorDraft Clone(string id)
+        public SavedCharacter Clone(string id)
         {
-            CharacterCreatorDraft copy = (CharacterCreatorDraft)MemberwiseClone();
+            SavedCharacter copy = (SavedCharacter)MemberwiseClone();
             copy.Id = id;
             copy.Preferences = (Preferences ?? new CharacterPreferences()).Clone();
             copy._bodyMorphs = new Dictionary<string, float>(BodyMorphs);
@@ -57,10 +61,9 @@ namespace SS3D.UI.Lobby
         }
 
         /// <summary>
-        /// Same name, look and preferences (the character window's Saved / Unsaved changes). The id and the old random
-        /// outfit index are not compared.
+        /// Same name, look and preferences (the character window's Saved / Unsaved changes). The id is not compared.
         /// </summary>
-        public bool SameAs(CharacterCreatorDraft other)
+        public bool SameAs(SavedCharacter other)
         {
             if (other == null || Name != other.Name || !SameLookAs(other))
             {
@@ -70,9 +73,9 @@ namespace SS3D.UI.Lobby
             return (Preferences ?? new CharacterPreferences()).SameAs(other.Preferences ?? new CharacterPreferences());
         }
 
-        private bool SameLookAs(CharacterCreatorDraft other)
+        private bool SameLookAs(SavedCharacter other)
         {
-            if (Species != other.Species || EyeColorIndex != other.EyeColorIndex || SkinColorIndex != other.SkinColorIndex
+            if (EyeColorIndex != other.EyeColorIndex || SkinColorIndex != other.SkinColorIndex
                 || Eyebrows != other.Eyebrows || HairStyleIndex != other.HairStyleIndex
                 || BeardStyleIndex != other.BeardStyleIndex || HairColorIndex != other.HairColorIndex
                 || BeardColorIndex != other.BeardColorIndex || EyebrowColorIndex != other.EyebrowColorIndex
@@ -93,9 +96,8 @@ namespace SS3D.UI.Lobby
         }
 
         /// <summary>Takes <paramref name="source"/>'s look; keeps this character's id, name and preferences (Randomize appearance).</summary>
-        public void CopyLookFrom(CharacterCreatorDraft source)
+        public void CopyLookFrom(SavedCharacter source)
         {
-            Species = source.Species;
             EyeColorIndex = source.EyeColorIndex;
             SkinColorIndex = source.SkinColorIndex;
             Eyebrows = source.Eyebrows;
@@ -108,16 +110,15 @@ namespace SS3D.UI.Lobby
         }
 
         /// <summary>
-        /// The one mock starter (<see cref="CharacterCreatorMockData.Loadouts"/>) as it shipped, never edited. A store
-        /// holding only this is replaced by a random character (lobby effort Decision 2). The outfit is ignored: it was
-        /// picked at random.
+        /// The one mock starter every pre-v2 store began with, never edited. A store holding only this is replaced by a
+        /// random character (lobby effort Decision 2).
         /// </summary>
         public bool IsUntouchedMockStarter
         {
             get
             {
-                CharacterCreatorDraft starter = new();
-                if (Id != starter.Id || Name != starter.Name || Species != starter.Species
+                SavedCharacter starter = new();
+                if (Id != MockStarterId || Name != MockStarterName
                     || EyeColorIndex != starter.EyeColorIndex || SkinColorIndex != starter.SkinColorIndex
                     || Eyebrows != starter.Eyebrows || HairStyleIndex != starter.HairStyleIndex
                     || BeardStyleIndex != starter.BeardStyleIndex || HairColorIndex != starter.HairColorIndex
@@ -141,7 +142,7 @@ namespace SS3D.UI.Lobby
         public static Dictionary<string, float> CreateDefaultMorphs()
         {
             Dictionary<string, float> morphs = new();
-            foreach (CharacterCreatorMockData.SliderDef slider in CharacterCreatorMockData.BodySliders)
+            foreach (CharacterBodySlider slider in CharacterBodySliders.All)
             {
                 morphs[slider.Key] = slider.DefaultValue;
             }

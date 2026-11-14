@@ -67,7 +67,7 @@ namespace SS3D.UI.Lobby
         /// <summary>Return to lobby, after any unsaved changes were saved or discarded.</summary>
         public event Action ReturnRequested;
         /// <summary>Save: the stored character, name normalised. The host puts it in the roster, writes and sends it.</summary>
-        public event Action<CharacterCreatorDraft> Saved;
+        public event Action<SavedCharacter> Saved;
         /// <summary>A switcher choice, once unsaved changes are resolved.</summary>
         public event Action<string> SelectRequested;
         public event Action<string> DuplicateRequested;
@@ -76,9 +76,9 @@ namespace SS3D.UI.Lobby
         /// <summary>0 = Front, 1 = Side, 2 = Back.</summary>
         public event Action<int> AngleChanged;
         /// <summary>The working copy's body sliders changed.</summary>
-        public event Action<CharacterCreatorDraft> BodyChanged;
+        public event Action<SavedCharacter> BodyChanged;
         /// <summary>The working copy's hair, facial hair, eyebrows, skin or eyes changed.</summary>
-        public event Action<CharacterCreatorDraft> LookChanged;
+        public event Action<SavedCharacter> LookChanged;
         /// <summary>The preview's outfit: the job whose clothes it wears, and whether clothing shows (Decision 14).</summary>
         public event Action<string, bool> OutfitChanged;
 
@@ -195,7 +195,7 @@ namespace SS3D.UI.Lobby
         }
 
         /// <summary>Edits <paramref name="saved"/> from scratch (open, or the roster's selection changed).</summary>
-        public void Load(CharacterCreatorDraft saved)
+        public void Load(SavedCharacter saved)
         {
             if (_root == null || saved == null) return;
             _model.Load(saved);
@@ -375,7 +375,7 @@ namespace SS3D.UI.Lobby
         /// <summary>Saves the working copy; false when there is nothing to save or the name is invalid.</summary>
         public bool Save()
         {
-            CharacterCreatorDraft saved = _model.Commit();
+            SavedCharacter saved = _model.Commit();
             if (saved == null)
             {
                 if (PromptOpen) ShowPromptError();
@@ -517,9 +517,9 @@ namespace SS3D.UI.Lobby
 
         private void RefreshTopBar()
         {
-            CharacterCreatorDraft working = _model.Working;
+            SavedCharacter working = _model.Working;
             if (working == null) return;
-            CharacterCreatorDraft saved = _model.Saved;
+            SavedCharacter saved = _model.Saved;
             _switchName.text = string.IsNullOrWhiteSpace(saved.Name) ? "Unnamed" : saved.Name;
             string high = saved.Preferences?.HighJob;
             _switchHighPrefix.text = high != null ? "High:" : "No High job";

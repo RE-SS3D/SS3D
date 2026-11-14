@@ -27,7 +27,8 @@ namespace SS3D.UI.Lobby
         [Serializable]
         private sealed class Entry
         {
-            public CharacterCreatorDraft Draft;
+            // Kept as "Draft" (the old type name): it is the key in every saved characters.json.
+            public SavedCharacter Draft;
             // JsonUtility cannot serialize the draft's dictionary. Store morphs by key, not UI order.
             public string[] MorphKeys;
             public float[] MorphValues;
@@ -36,7 +37,7 @@ namespace SS3D.UI.Lobby
         public sealed class Profile
         {
             public string SelectedId;
-            public CharacterCreatorDraft[] Characters;
+            public SavedCharacter[] Characters;
             /// <summary>The file was an older schema and has been rewritten (or, when read-only, would have been).</summary>
             public bool Migrated;
         }
@@ -56,14 +57,14 @@ namespace SS3D.UI.Lobby
         }
 
         private readonly string _path;
-        private readonly Func<CharacterCreatorDraft> _createRandom;
+        private readonly Func<SavedCharacter> _createRandom;
         private bool _readOnly;
 
         /// <param name="createRandom">
         /// Makes the random character that replaces a v1 store holding only the untouched mock starter (Decision 2).
         /// Without it the starter is kept.
         /// </param>
-        public CharacterProfileStore(string path, Func<CharacterCreatorDraft> createRandom = null)
+        public CharacterProfileStore(string path, Func<SavedCharacter> createRandom = null)
         {
             _path = path;
             _createRandom = createRandom;
@@ -78,11 +79,11 @@ namespace SS3D.UI.Lobby
                 if (data == null || data.Version is < 1 or > CurrentVersion || data.Characters == null)
                     throw new InvalidDataException("Unsupported or incomplete character profile.");
                 bool migrating = data.Version < CurrentVersion;
-                List<CharacterCreatorDraft> characters = new();
+                List<SavedCharacter> characters = new();
                 HashSet<string> ids = new();
                 foreach (Entry entry in data.Characters)
                 {
-                    CharacterCreatorDraft draft = entry?.Draft;
+                    SavedCharacter draft = entry?.Draft;
                     if (draft == null || string.IsNullOrWhiteSpace(draft.Id) || !ids.Add(draft.Id))
                         throw new InvalidDataException("Invalid or duplicate character slot.");
                     if (entry.MorphKeys == null || entry.MorphValues == null || entry.MorphKeys.Length != entry.MorphValues.Length)
@@ -115,7 +116,7 @@ namespace SS3D.UI.Lobby
                 {
                     if (characters.Count == 1 && characters[0].IsUntouchedMockStarter && _createRandom?.Invoke() is { } random)
                     {
-                        profile.Characters = new CharacterCreatorDraft[] { random };
+                        profile.Characters = new SavedCharacter[] { random };
                         profile.SelectedId = random.Id;
                     }
 
@@ -134,7 +135,7 @@ namespace SS3D.UI.Lobby
             }
         }
 
-        public bool Save(IEnumerable<CharacterCreatorDraft> characters, string selectedId)
+        public bool Save(IEnumerable<SavedCharacter> characters, string selectedId)
         {
             if (_readOnly) return false;
             string temporary = _path + ".tmp";

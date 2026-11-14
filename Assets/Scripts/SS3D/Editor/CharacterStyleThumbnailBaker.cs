@@ -72,8 +72,8 @@ namespace SS3D.Editor
                 booth.ApplyOutfit(new List<SS3D.Systems.Inventory.Containers.Cloth>());
                 booth.ApplyBodyMorphs(0f, 0f, 0f, 0f, 0.5f, 0.5f);
 
-                Color skin = CharacterCreatorMockData.SkinColors[SkinIndex];
-                Color eyes = CharacterCreatorMockData.EyeColors[EyeIndex];
+                Color skin = catalog.GetSkinColor(SkinIndex);
+                Color eyes = catalog.GetEyeColor(EyeIndex);
                 Color hair = catalog.GetHairColor(HairColorIndex);
                 Color brows = catalog.GetHairColor(BrowColorIndex);
                 GameObject defaultBrows = catalog.GetEyebrowStyle("humaneyebrowsdefault");

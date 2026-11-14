@@ -25,7 +25,7 @@ direct-connect errors, the GitHub update banner and **Update and restart**, Quit
 random first track then in order. It plays on the menu, server list, settings and Connecting, and
 fades out for Starting local session / Update. The source belongs to the process-wide `MenuMusicSubSystem`
 (Systems/Audio), not the menu: after a join it plays on into the lobby, which fades it when the player
-spawns or observes ([lobby effort](../2026-11_lobby-character-window.md) Decision 15). Returning to Launcher restarts
+spawns or observes ([lobby effort](../../archive/architecture/2026-11_lobby-character-window.md) Decision 15). Returning to Launcher restarts
 the current track from the beginning; toggling music off/on within one visit still resumes it. On/off is saved in
 `main-menu.json`; the slider is the player's **Music** volume (same as the in-game Sound tab), and
 the source plays through the mixer's Music group. `Space Theme` was converted from the 65 MB WAV to OGG. Not live: the PUBLIC list always shows its empty state (no list
@@ -112,5 +112,5 @@ This diverges from [main-menu.md](../../design/main-menu.md), on the owner's req
 
 ## Related docs
 
-- [rounds-lobby](rounds-lobby.md) — the lobby the menu hands over to; its Settings tabs are what the placeholder should eventually mount
+- [rounds-lobby](rounds-lobby.md) — the lobby the menu hands over to; it mounts the same `PlayerSettingsPanel` as its Settings tab, and its sidebar music row drives the same `MenuMusicSubSystem`
 - [agent-first composition](../2026-07_agent-first-composition.md)

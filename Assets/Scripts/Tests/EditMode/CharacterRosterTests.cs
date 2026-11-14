@@ -12,7 +12,7 @@ namespace EditorTests
     {
         private int _made;
 
-        private CharacterCreatorDraft MakeRandom() => new() { Id = "r" + ++_made, Name = "Random Person" };
+        private SavedCharacter MakeRandom() => new() { Id = "r" + ++_made, Name = "Random Person" };
 
         [SetUp]
         public void SetUp() => _made = 0;
@@ -40,12 +40,12 @@ namespace EditorTests
         [Test]
         public void Duplicate_CopiesLookAndPreferences_UnderANewId_AndSelectsIt()
         {
-            CharacterCreatorDraft source = new() { Id = "a", Name = "Ada Lovelace", HairStyleIndex = 3 };
+            SavedCharacter source = new() { Id = "a", Name = "Ada Lovelace", HairStyleIndex = 3 };
             source.SetMorph("fat", 0.7f);
             source.Preferences.SetPriority("Doctor", JobPriority.High);
-            CharacterRoster roster = new(new[] { source, new CharacterCreatorDraft { Id = "b", Name = "Bram Dekker" } }, "a", MakeRandom);
+            CharacterRoster roster = new(new[] { source, new SavedCharacter { Id = "b", Name = "Bram Dekker" } }, "a", MakeRandom);
 
-            CharacterCreatorDraft copy = roster.Duplicate("a");
+            SavedCharacter copy = roster.Duplicate("a");
 
             Assert.AreNotEqual("a", copy.Id);
             Assert.AreEqual(copy.Id, roster.SelectedId);
@@ -66,7 +66,7 @@ namespace EditorTests
         {
             CharacterRoster roster = new(new[]
             {
-                new CharacterCreatorDraft { Id = "a" }, new CharacterCreatorDraft { Id = "b" }, new CharacterCreatorDraft { Id = "c" },
+                new SavedCharacter { Id = "a" }, new SavedCharacter { Id = "b" }, new SavedCharacter { Id = "c" },
             }, "b", MakeRandom);
 
             Assert.IsTrue(roster.Delete("b"));
@@ -113,11 +113,11 @@ namespace EditorTests
         {
             CharacterNameList names = CharacterNameList.Create(new[] { "ada" }, new[] { "o'hara" });
             RandomCharacter.LookOptions look = new(hairStyles: 5, beardStyles: 3, hairColors: 4,
-                eyebrows: new[] { "HumanEyebrowsBold" }, outfits: 2);
+                eyebrows: new[] { "HumanEyebrowsBold" }, skinColors: 8, eyeColors: 8);
 
             for (int seed = 0; seed < 20; seed++)
             {
-                CharacterCreatorDraft draft = RandomCharacter.Create(names, look, new System.Random(seed));
+                SavedCharacter draft = RandomCharacter.Create(names, look, new System.Random(seed));
                 Assert.AreEqual("Ada O'hara", draft.Name);
                 Assert.That(draft.HairStyleIndex, Is.InRange(1, 4));
                 Assert.That(draft.BeardStyleIndex, Is.InRange(0, 2));

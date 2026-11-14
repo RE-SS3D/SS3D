@@ -12,12 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fae0d5b5d14683e70a7fffdee7b85b9d, type: 3}
   m_Name: LobbyAssetCatalog
   m_EditorClassIdentifier: SS3D.UI.Lobby::SS3D.UI.Lobby.LobbyAssetCatalog
-  _lobbyStyle: {fileID: 7433441132597879392, guid: 2bfe9922cb974e49aca2466dd348187d, type: 3}
   _lobbyTemplate: {fileID: 9197481963319205126, guid: beed3effbc3bc6874835f0bfdcf20dfc, type: 3}
   _characterWindowTemplate: {fileID: 9197481963319205126, guid: 571dc5b41e8d9d7e2bddef83e9ae2344, type: 3}
-  _previewPlaceholder: {fileID: 21300000, guid: 75ead553c05c482fae442fad6748b24a, type: 3}
-  _serverInfoBanner: {fileID: 21300000, guid: 97eb5bc2a8f94653941b8defb224a3a7, type: 3}
-  _chevronDown: {fileID: 2800000, guid: b503f0cc149527347bf81823be9e52fa, type: 3}
   _previewHumanPrefab: {fileID: 6415765038646171405, guid: 1c3eed1ea37ecc1448e41270cdc63486, type: 3}
   _jobIcons:
   - Id: Assistant
@@ -50,28 +46,6 @@ MonoBehaviour:
     Sprite: {fileID: 21300000, guid: 2d1647a28e974e0093d9fe959b15740f, type: 3}
   - Id: Warden
     Sprite: {fileID: 21300000, guid: 693ee013412b45a88a832ce17b0fb096, type: 3}
-  _departmentIcons:
-  - Id: command
-    Texture: {fileID: 2800000, guid: 313bf655852b8d94abe6336caa161d4c, type: 3}
-  - Id: security
-    Texture: {fileID: 2800000, guid: 999d37f454fe45b42acaf47935ba37dc, type: 3}
-  - Id: engineering
-    Texture: {fileID: 2800000, guid: 826ed57d18f5733488130a90866d52e1, type: 3}
-  - Id: medical
-    Texture: {fileID: 2800000, guid: 63eb5b29ab261d546877b72ce2c8f21f, type: 3}
-  - Id: science
-    Texture: {fileID: 2800000, guid: 1deff6dc039deee4ca3c20fc4306041f, type: 3}
-  - Id: cargo
-    Texture: {fileID: 2800000, guid: a4a125d636696b94f8fa6e31d2172414, type: 3}
-  - Id: service
-    Texture: {fileID: 2800000, guid: 5cab647fe28f9404bbeeaa4deda0e4c3, type: 3}
-  - Id: civilian
-    Texture: {fileID: 2800000, guid: e21eabc818f98c34aae4cc1fbd2ca565, type: 3}
-  _loadoutThumbs:
-  - Id: PnSecurity
-    Sprite: {fileID: 21300000, guid: 75ead553c05c482fae442fad6748b24a, type: 3}
-  - Id: PnJanitor
-    Sprite: {fileID: 21300000, guid: 0c4c46a799be4c079d3544a17242efb4, type: 3}
   _hairStyles:
   - Id: none
     Prefab: {fileID: 0}
@@ -321,6 +295,24 @@ MonoBehaviour:
   - {r: 0.14, g: 0.32, b: 0.87, a: 1}
   - {r: 0.1, g: 0.6, b: 0.25, a: 1}
   - {r: 0.08, g: 0.62, b: 0.62, a: 1}
+  _skinColors:
+  - {r: 1, g: 0.7411765, b: 0.6, a: 1}
+  - {r: 0.9607843, g: 0.85882354, b: 0.78039217, a: 1}
+  - {r: 0.90588236, g: 0.7372549, b: 0.60784316, a: 1}
+  - {r: 0.80784315, g: 0.59607846, b: 0.4509804, a: 1}
+  - {r: 0.68235296, g: 0.46666667, b: 0.32156864, a: 1}
+  - {r: 0.54901963, g: 0.34117648, b: 0.23529412, a: 1}
+  - {r: 0.40784314, g: 0.25490198, b: 0.18431373, a: 1}
+  - {r: 0.27450982, g: 0.1764706, b: 0.14117648, a: 1}
+  _eyeColors:
+  - {r: 0.23921569, g: 0.16862746, b: 0.12156863, a: 1}
+  - {r: 0.29803923, g: 0.49411765, b: 0.65882355, a: 1}
+  - {r: 0.29803923, g: 0.5411765, b: 0.36862746, a: 1}
+  - {r: 0.5411765, g: 0.44313726, b: 0.1882353, a: 1}
+  - {r: 0.49019608, g: 0.5411765, b: 0.5411765, a: 1}
+  - {r: 0.70980394, g: 0.5058824, b: 0.22745098, a: 1}
+  - {r: 0.35686275, g: 0.22745098, b: 0.16078432, a: 1}
+  - {r: 0.18431373, g: 0.18431373, b: 0.2, a: 1}
   _previewOutfits:
   - Id: civilian
     Jumpsuit: {fileID: 624365323667193292, guid: 236b51ddc6f9aa94ca92579082370c06, type: 3}

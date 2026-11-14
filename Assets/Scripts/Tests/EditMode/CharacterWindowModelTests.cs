@@ -13,9 +13,9 @@ namespace SS3D.Tests.EditMode
     /// </summary>
     public sealed class CharacterWindowModelTests
     {
-        private static CharacterCreatorDraft Saved()
+        private static SavedCharacter Saved()
         {
-            CharacterCreatorDraft draft = new() { Id = "a", Name = "Rory Lindqvist" };
+            SavedCharacter draft = new() { Id = "a", Name = "Rory Lindqvist" };
             draft.Preferences.SetPriority("Janitor", JobPriority.High);
             return draft;
         }
@@ -27,7 +27,7 @@ namespace SS3D.Tests.EditMode
         public void Load_IsClean_EditsMakeItDirty_DiscardRestores()
         {
             CharacterWindowModel model = new();
-            CharacterCreatorDraft saved = Saved();
+            SavedCharacter saved = Saved();
             model.Load(saved);
             Assert.IsFalse(model.IsDirty);
             Assert.IsFalse(model.CanSave, "Nothing to save");
@@ -77,10 +77,10 @@ namespace SS3D.Tests.EditMode
         public void Commit_NormalisesTheName_AndBecomesTheSavedCopy()
         {
             CharacterWindowModel model = new();
-            CharacterCreatorDraft original = Saved();
+            SavedCharacter original = Saved();
             model.Load(original);
             model.Working.Name = "  ada   o'hara ";
-            CharacterCreatorDraft stored = model.Commit();
+            SavedCharacter stored = model.Commit();
             Assert.IsNotNull(stored);
             Assert.AreEqual("Ada O'hara", stored.Name);
             Assert.AreEqual("a", stored.Id, "Same character");
@@ -188,8 +188,8 @@ namespace SS3D.Tests.EditMode
         [Test]
         public void RandomizeLook_KeepsTheNameAndPreferences()
         {
-            CharacterCreatorDraft draft = Saved();
-            RandomCharacter.RandomizeLook(draft, new RandomCharacter.LookOptions(5, 3, 4, new[] { "HumanEyebrowsBold" }, 1), new System.Random(3));
+            SavedCharacter draft = Saved();
+            RandomCharacter.RandomizeLook(draft, new RandomCharacter.LookOptions(5, 3, 4, new[] { "HumanEyebrowsBold" }, 8, 8), new System.Random(3));
             Assert.AreEqual("Rory Lindqvist", draft.Name);
             Assert.AreEqual(JobPriority.High, draft.Preferences.PriorityOf("Janitor"));
             Assert.That(draft.HairStyleIndex, Is.InRange(1, 4));
