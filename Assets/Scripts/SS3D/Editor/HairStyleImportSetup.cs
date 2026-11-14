@@ -41,6 +41,20 @@ namespace SS3D.Editor
             "TwintailExtensions", "Priest", "ScholarsLushiousLocks", "ScholarsLushiousBeard", "HipsterPonytail1", "Ponytails",
         };
 
+        /// <summary>
+        /// Per-model corrections for art that is placed off the reference head, keyed by cleaned file name. LongHair is
+        /// authored back to front (its cap mirrors ShortHair's across the art origin), so it turns 180° about the art
+        /// origin's vertical. BigCEO and GrizzlyOutlaw sit about 2 cm low and a little forward, so the scalp shows
+        /// through from above; the offset (metres in head space: x right, y up, z forward) is the smallest that clears
+        /// the head in the preview booth.
+        /// </summary>
+        private static readonly Dictionary<string, (bool TurnAround, Vector3 Offset)> Fits = new()
+        {
+            { "LongHair", (true, Vector3.zero) },
+            { "BigCEO", (false, new Vector3(0f, 0.0175f, -0.005f)) },
+            { "GrizzlyOutlaw", (false, new Vector3(0f, 0.02f, -0.01f)) },
+        };
+
         private static readonly (string Source, string Prefix, string Prefabs, string Child)[] Kinds =
         {
             ("Head", "HumanHair", "Head", "Hair"),
@@ -92,6 +106,35 @@ namespace SS3D.Editor
             return $"Made {made} style prefabs from {pending.Count} models; skipped {skipped.Count} ({string.Join(", ", skipped)}).";
         }
 
+        [MenuItem("SS3D/Data/Rebuild Imported Hair Style Prefabs")]
+        public static void RebuildMenu() => Debug.Log("[HairImport] " + Rebuild());
+
+        /// <summary>
+        /// Rebuilds the prefabs of the imported models listed in <see cref="Fits"/>, overwriting them in place so each
+        /// GUID (and so its catalog entry and index) stays. Run after changing <see cref="Fits"/>, then re-bake the
+        /// style thumbnails.
+        /// </summary>
+        public static string Rebuild()
+        {
+            if (!TryHeadPivot(out Vector3 pivot)) return "No '" + ReferenceMesh + "' in " + ReferenceModel;
+            Material material = AssetDatabase.LoadAssetAtPath<Material>(HairMaterial);
+            if (material == null) return "No hair material at " + HairMaterial;
+
+            int made = 0;
+            foreach ((string source, string prefix, string prefabs, string child) in Kinds)
+            {
+                if (!Directory.Exists(ModelRoot + source)) continue;
+                foreach (string model in Directory.GetFiles(ModelRoot + source, "*.fbx").OrderBy(f => f))
+                {
+                    if (!Fits.ContainsKey(Path.GetFileNameWithoutExtension(model))) continue;
+                    made += BuildPrefabs(model.Replace('\\', '/'), prefix, PrefabRoot + prefabs + "/", child, pivot, material, true);
+                }
+            }
+
+            AssetDatabase.SaveAssets();
+            return $"Rebuilt {made} style prefabs.";
+        }
+
         /// <summary>"Scholar_s Lushious Locks" → "ScholarsLushiousLocks", "Afro 2" → "Afro2".</summary>
         public static string CleanName(string file)
         {
@@ -133,12 +176,16 @@ namespace SS3D.Editor
         /// One prefab per mesh in the model: a file with one mesh makes "Prefix+FileName"; a file holding several
         /// variants side by side (LongHair, Ponytails: Long / Medium / Short a metre apart) makes "Prefix+MeshName" for
         /// each, moved back to the centre line. The socket the prefab hangs on is the head bone turned -90° about X, so
-        /// a mesh at art-space transform T sits at Rx(+90) · Translate(-pivot - sideways offset) · T under the root.
+        /// a mesh at art-space transform T sits at Rx(+90) · Translate(offset - pivot - sideways offset) · Fit · T under
+        /// the root, where Fit turns the style around when <see cref="Fits"/> says so.
         /// </summary>
-        private static int BuildPrefabs(string model, string prefix, string folder, string childName, Vector3 pivot, Material material)
+        private static int BuildPrefabs(string model, string prefix, string folder, string childName, Vector3 pivot, Material material,
+            bool overwrite = false)
         {
             GameObject source = AssetDatabase.LoadAssetAtPath<GameObject>(model);
             if (source == null) return 0;
+            Fits.TryGetValue(Path.GetFileNameWithoutExtension(model), out (bool TurnAround, Vector3 Offset) fit);
+            Matrix4x4 turn = Matrix4x4.Rotate(Quaternion.Euler(0f, fit.TurnAround ? 180f : 0f, 0f));
             List<(Transform Part, Mesh Mesh)> parts = new();
             foreach (Transform part in source.GetComponentsInChildren<Transform>(true))
             {
@@ -158,11 +205,12 @@ namespace SS3D.Editor
             {
                 string name = parts.Count == 1 ? Path.GetFileNameWithoutExtension(model) : CleanName(part.name);
                 string path = folder + prefix + name + ".prefab";
-                if (File.Exists(path)) continue;
+                if (!overwrite && File.Exists(path)) continue;
+                Matrix4x4 art = turn * part.localToWorldMatrix;
                 // Variants are laid out on whole metres along X; the worn one sits on the centre line.
-                float sideways = Mathf.Round(part.localToWorldMatrix.MultiplyPoint3x4(mesh.bounds.center).x);
+                float sideways = Mathf.Round(art.MultiplyPoint3x4(mesh.bounds.center).x);
                 Matrix4x4 local = Matrix4x4.Rotate(Quaternion.Euler(90f, 0f, 0f))
-                    * Matrix4x4.Translate(-pivot - new Vector3(sideways, 0f, 0f)) * part.localToWorldMatrix;
+                    * Matrix4x4.Translate(fit.Offset - pivot - new Vector3(sideways, 0f, 0f)) * art;
                 if (SavePrefab(path, childName, mesh, local, material)) made++;
             }
 

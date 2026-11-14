@@ -235,6 +235,10 @@ What Phase 5 built:
 - **More styles.** `HairStyleImportSetup` (SS3D → Data → Import Hair Styles From SS3D-Art) brought in the SS3D-Art hair and facial hair FBXs: 29 new hair styles (32 in all) and 20 new facial hair styles (21).
   - Each art FBX sits on the full-height human; the importer moves the mesh into head space using `HumanHair.fbx` as the reference fit.
   - LongHair's three variants (Long / Medium / Short, laid out a metre apart) become three styles.
+  - Some art sits off the reference head; `HairStyleImportSetup.Fits` corrects it per model (SS3D → Data → Rebuild Imported Hair Style Prefabs reapplies it in place, keeping GUIDs):
+    - LongHair is authored back to front, so it turns 180°.
+    - Big CEO and Grizzly Outlaw sit about 2 cm low, so the scalp showed through from above; they're raised and moved back 0.5–1 cm.
+    - Clown's bare top and Big CEO's notches around the ears are the art's design, not clipping.
   - Left out until fixed in Blender (`HairStyleImportSetup.Skipped`):
     - Twintail Extensions: a 2.3 m strip of loose pieces.
     - Priest: floats about 14 cm above the head.
