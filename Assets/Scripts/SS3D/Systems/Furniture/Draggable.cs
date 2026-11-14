@@ -37,9 +37,15 @@ public class Draggable : NetworkActor, IInteractionTarget, IGameObjectProvider
 
     public IInteraction[] CreateTargetInteractions(InteractionEvent interactionEvent)
     {
+        if (!_dragged && IsLocked)
+            return System.Array.Empty<IInteraction>();
+
         DragInteraction dragInteraction = new DragInteraction();
         return new IInteraction[] { dragInteraction };
     }
+
+    /// <summary>True when a sibling <see cref="IDragLock"/> forbids starting a drag.</summary>
+    public bool IsLocked => TryGetComponent(out IDragLock dragLock) && dragLock.DragLocked;
 
     protected override void OnStart()
     {
@@ -59,6 +65,9 @@ public class Draggable : NetworkActor, IInteractionTarget, IGameObjectProvider
     {
         if (IsServer)
         {
+            if (drag && !_dragged && IsLocked)
+                return;
+
             ApplyDrag(drag, dragger);
             return;
         }
@@ -77,6 +86,9 @@ public class Draggable : NetworkActor, IInteractionTarget, IGameObjectProvider
             return;
 
         if (!MayChangeDrag(drag, entity.transform, _dragged ? _dragger : null, transform.position))
+            return;
+
+        if (drag && !_dragged && IsLocked)
             return;
 
         ApplyDrag(drag, entity.transform);

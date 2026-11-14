@@ -17,6 +17,7 @@ using SS3D.Systems.Inventory.Items.Generic;
 using SS3D.Systems.Roles;
 using SS3D.Systems.Rounds;
 using SS3D.Systems.ScreenEffects;
+using SS3D.Systems.StructuralDamage;
 using SS3D.Systems.Tile;
 using SS3D.Systems.Tile.SpawnPoints;
 using UnityEngine;
@@ -88,6 +89,9 @@ namespace SS3D.Tests
 
             Hands hands = Body.GetComponentInParent<HumanInventory>().Hands;
             Assert.IsTrue(hands.PlayerHands.Any(hand => hand.ItemInHand != null), "The operative kit puts a gun in hand");
+            SyndicateBombBeacon[] beacons = Object.FindObjectsByType<SyndicateBombBeacon>(FindObjectsSortMode.None);
+            Assert.AreEqual(1, beacons.Length, "The first operative carries the squad's one bomb beacon");
+            Assert.IsNotNull(beacons[0].GetComponent<Item>().Container, "The beacon fits in the operative's bag");
 
             yield return WaitFor(() => Briefings.Count > 0, "the briefing reaches the operative's feed", 10f);
             StringAssert.Contains("Operative", Briefings[0], "The briefing names the role");

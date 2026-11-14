@@ -24,6 +24,10 @@ namespace SS3D.Systems.Roles
             + "Slot is the EquipmentAssets key of the item that holds them.")]
         public List<LoadoutContents> EquipmentContents = new();
 
+        [Tooltip("Like EquipmentContents, but only for the first player given this loadout each round "
+            + "(one Syndicate bomb beacon per squad).")]
+        public List<LoadoutContents> FirstHolderContents = new();
+
         [Tooltip("Items spawned inside the storage of the left hand item (a filled medkit).")]
         public List<ObjectAssetReference> HandLeftContents = new();
 

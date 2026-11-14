@@ -129,6 +129,8 @@ namespace SS3D.Systems.Inventory.Containers.Editor
             new("Weapons/Taser", SizeClass.Normal, 0.6f),
             new("Weapons/C4", SizeClass.Normal, 0.8f),
             new("Weapons/X4", SizeClass.Normal, 1.2f),
+            new("Weapons/SyndicateBomb", SizeClass.Huge, 100f),
+            new("Weapons/SyndicateBombBeacon", SizeClass.Small, 0.3f),
             new("Weapons/IonRifle", SizeClass.Normal, 2.5f),
             new("Weapons/LaserRifle", SizeClass.Normal, 2.5f),
             new("Weapons/M4", SizeClass.Normal, 3.5f),

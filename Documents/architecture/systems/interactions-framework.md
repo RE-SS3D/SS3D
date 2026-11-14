@@ -46,6 +46,8 @@ RPCs identify interactions with `InteractionIdentifier` (`genericName` + `target
 
 ## Pitfalls
 
+- **In-hand use needs the Hand as source:** `InteractInHand(target, sourceObject)` silently returns when `sourceObject` has no `IInteractionSource`, and the body root has none (only `Hand` and `Item` are sources). The Use key (E) passed the root, so it never activated a held item, only its firearm reload shortcut (fixed 2026-11-14: `InteractionController.UseHeldItem` passes the selected hand). Use runs the highest-priority viable in-hand interaction with no menu. The `showMenu` path of `InteractInHand` has no caller, and clicking a hand in the HUD only selects it, so an item with several in-hand actions offers only the top one. `SyndicateBombScenarios` drives the beacon through `UseHeldItem`.
+
 - **Pickable ≠ rangeable** (shared with [selection](selection.md)): shader pick works without colliders, but range checks and drop need a point resolved from colliders. A `Selectable` wall mount without a collider silently gets `HasPoint == false` and falls back to its transform. Ship a `BoxCollider` for selection rays.
 - **Source-only vs outline:** Drop is `IsSourceOnly`. Outline LateUpdate must use `TryEvaluateOutlineInteractability` (skips source discovery) or `FilterForOutline` — never treat full Discover as “available on this hover.”
 - **Unresolved point:** build events with the two-arg ctor (`HasPoint = false`), not `Point = Vector3.zero`. World-origin hits use the four-arg ctor with `Point = zero` and `HasPoint = true`.

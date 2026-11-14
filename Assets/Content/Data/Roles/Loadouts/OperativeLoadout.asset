@@ -50,5 +50,9 @@ MonoBehaviour:
     - {fileID: 11400000, guid: e2e5a3bc6dba95ae6b6167ce7df8f6fc, type: 2}
     - {fileID: 11400000, guid: cb8a18ff6b582ec45a3aa1f689a18564, type: 2}
     - {fileID: 11400000, guid: e1be91a48608ab64e822afa33347459c, type: 2}
+  FirstHolderContents:
+  - Slot: 4
+    Items:
+    - {fileID: 11400000, guid: 8233cf2c893d4d0e69548d9beb5e95d2, type: 2}
   HandLeftContents: []
   HandRightContents: []

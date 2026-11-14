@@ -1,10 +1,10 @@
 {
-  "generated_at": "2026-11-13T22:31:34.830831+00:00",
+  "generated_at": "2026-11-14T09:19:58.409207+00:00",
   "purpose": "Agent reference for locating SS3D art assets and determining import status.",
   "sources": {
     "in_game": {
       "root": "Assets/Art",
-      "file_count": 5487
+      "file_count": 5494
     },
     "ss3d_art": {
       "repo": "https://github.com/RE-SS3D/SS3D-Art",
@@ -13,11 +13,11 @@
     }
   },
   "summary": {
-    "in_game_files": 5487,
+    "in_game_files": 5494,
     "ss3d_art_files": 2480,
-    "unique_assets": 7684,
+    "unique_assets": 7691,
     "imported": 283,
-    "in_game_only": 5214,
+    "in_game_only": 5221,
     "ss3d_art_only": 2187,
     "available_for_import": 1972,
     "artwork_only": 215
@@ -73,18 +73,18 @@
     },
     {
       "path": "Models",
-      "in_game": 105,
+      "in_game": 107,
       "ss3d_art": 749,
       "imported": 89,
-      "in_game_only": 16,
+      "in_game_only": 18,
       "ss3d_art_only": 660
     },
     {
       "path": "Sound",
-      "in_game": 201,
+      "in_game": 206,
       "ss3d_art": 218,
       "imported": 89,
-      "in_game_only": 112,
+      "in_game_only": 117,
       "ss3d_art_only": 129
     },
     {
@@ -1795,10 +1795,10 @@
     },
     {
       "path": "Models/Items/Weapons/Explosive",
-      "in_game": 3,
+      "in_game": 5,
       "ss3d_art": 10,
       "imported": 3,
-      "in_game_only": 0,
+      "in_game_only": 2,
       "ss3d_art_only": 7
     },
     {
@@ -2051,10 +2051,10 @@
     },
     {
       "path": "Sound/Entities/Humanoid/Personal",
-      "in_game": 3,
+      "in_game": 4,
       "ss3d_art": 0,
       "imported": 0,
-      "in_game_only": 3,
+      "in_game_only": 4,
       "ss3d_art_only": 0
     },
     {
@@ -2267,10 +2267,10 @@
     },
     {
       "path": "Sound/Items/Weapons/Explosive/SS14",
-      "in_game": 12,
+      "in_game": 14,
       "ss3d_art": 0,
       "imported": 0,
-      "in_game_only": 12,
+      "in_game_only": 14,
       "ss3d_art_only": 0
     },
     {
@@ -2323,10 +2323,10 @@
     },
     {
       "path": "Sound/UI/Comms",
-      "in_game": 2,
+      "in_game": 3,
       "ss3d_art": 0,
       "imported": 0,
-      "in_game_only": 2,
+      "in_game_only": 3,
       "ss3d_art_only": 0
     },
     {
@@ -2355,10 +2355,10 @@
     },
     {
       "path": "Sound/World/Ambience/Alarms",
-      "in_game": 1,
+      "in_game": 2,
       "ss3d_art": 1,
       "imported": 1,
-      "in_game_only": 0,
+      "in_game_only": 1,
       "ss3d_art_only": 0
     },
     {
@@ -3054,9 +3054,9 @@
     "svg": 4248,
     "png": 2086,
     "blend": 665,
-    "fbx": 298,
+    "fbx": 300,
     "wav": 159,
-    "ogg": 153,
+    "ogg": 158,
     "mp3": 18,
     "ma": 13,
     "mp4": 12,
@@ -74547,6 +74547,28 @@
       "status": "ss3d_art_only"
     },
     {
+      "name": "SyndicateBomb.fbx",
+      "stem": "syndicatebomb",
+      "extension": "fbx",
+      "category": "Models/Items/Weapons/Explosive",
+      "in_game_path": "Assets/Art/Models/Items/Weapons/Explosive/SyndicateBomb.fbx",
+      "ss3d_art_path": null,
+      "github_url": null,
+      "import_target_path": null,
+      "status": "in_game_only"
+    },
+    {
+      "name": "SyndicateBombBeacon.fbx",
+      "stem": "syndicatebombbeacon",
+      "extension": "fbx",
+      "category": "Models/Items/Weapons/Explosive",
+      "in_game_path": "Assets/Art/Models/Items/Weapons/Explosive/SyndicateBombBeacon.fbx",
+      "ss3d_art_path": null,
+      "github_url": null,
+      "import_target_path": null,
+      "status": "in_game_only"
+    },
+    {
       "name": "SyndicateMiniBomb.fbx",
       "stem": "syndicateminibomb",
       "extension": "fbx",
@@ -76901,6 +76923,17 @@
       "status": "in_game_only"
     },
     {
+      "name": "Internals.ogg",
+      "stem": "internals",
+      "extension": "ogg",
+      "category": "Sound/Entities/Humanoid/Personal",
+      "in_game_path": "Assets/Art/Sound/Entities/Humanoid/Personal/Internals.ogg",
+      "ss3d_art_path": null,
+      "github_url": null,
+      "import_target_path": null,
+      "status": "in_game_only"
+    },
+    {
       "name": "BoneBreak1.mp3",
       "stem": "bonebreak1",
       "extension": "mp3",
@@ -78287,6 +78320,17 @@
       "status": "in_game_only"
     },
     {
+      "name": "BeaconArrival.ogg",
+      "stem": "beaconarrival",
+      "extension": "ogg",
+      "category": "Sound/Items/Weapons/Explosive/SS14",
+      "in_game_path": "Assets/Art/Sound/Items/Weapons/Explosive/SS14/BeaconArrival.ogg",
+      "ss3d_art_path": null,
+      "github_url": null,
+      "import_target_path": null,
+      "status": "in_game_only"
+    },
+    {
       "name": "C4Defused.ogg",
       "stem": "c4defused",
       "extension": "ogg",
@@ -78413,6 +78457,17 @@
       "extension": "ogg",
       "category": "Sound/Items/Weapons/Explosive/SS14",
       "in_game_path": "Assets/Art/Sound/Items/Weapons/Explosive/SS14/NukeWireCut.ogg",
+      "ss3d_art_path": null,
+      "github_url": null,
+      "import_target_path": null,
+      "status": "in_game_only"
+    },
+    {
+      "name": "WrenchRatchet.ogg",
+      "stem": "wrenchratchet",
+      "extension": "ogg",
+      "category": "Sound/Items/Weapons/Explosive/SS14",
+      "in_game_path": "Assets/Art/Sound/Items/Weapons/Explosive/SS14/WrenchRatchet.ogg",
       "ss3d_art_path": null,
       "github_url": null,
       "import_target_path": null,
@@ -78837,6 +78892,17 @@
       "status": "in_game_only"
     },
     {
+      "name": "NukeOpsStart.ogg",
+      "stem": "nukeopsstart",
+      "extension": "ogg",
+      "category": "Sound/UI/Comms",
+      "in_game_path": "Assets/Art/Sound/UI/Comms/NukeOpsStart.ogg",
+      "ss3d_art_path": null,
+      "github_url": null,
+      "import_target_path": null,
+      "status": "in_game_only"
+    },
+    {
       "name": "Welcome.ogg",
       "stem": "welcome",
       "extension": "ogg",
@@ -78945,6 +79011,17 @@
       "github_url": "https://github.com/RE-SS3D/SS3D-Art/blob/main/Assets/Sound/World/Ambience/Air/WindViolent.wav",
       "import_target_path": "Assets/Art/Sound/World/Ambience/Air/WindViolent.wav",
       "status": "imported"
+    },
+    {
+      "name": "AirAlarm.ogg",
+      "stem": "airalarm",
+      "extension": "ogg",
+      "category": "Sound/World/Ambience/Alarms",
+      "in_game_path": "Assets/Art/Sound/World/Ambience/Alarms/AirAlarm.ogg",
+      "ss3d_art_path": null,
+      "github_url": null,
+      "import_target_path": null,
+      "status": "in_game_only"
     },
     {
       "name": "Alarm 1.wav",
