@@ -1,7 +1,7 @@
 > Goal: Playtest 1 — eight players play Nuclear Operatives rounds on the 24/7 server: ops spawn geared and breach for the disk, a five-job crew fights back, keeps the hull and power up and patches the wounded, and every round ends with a summary and restarts
 > Status: in-progress
 > Depends on: —
-> Current focus: M0, M1c, M1s, M3, M8/M9 thin, M10 construction thin (the [humanoid animation pass](../architecture/2026-11_humanoid-animation-pass.md) shipped) — session stability, the 24/7 server and smoke live on [test-server.md](test-server.md) T3/T8
+> Current focus: M0, M1c, M1s, M3, M8/M9 thin, M10 construction thin, M11 lobby (the [humanoid animation pass](../architecture/2026-11_humanoid-animation-pass.md) shipped) — session stability, the 24/7 server and smoke live on [test-server.md](test-server.md) T3/T8
 > Roadmap: Nuclear Operatives round — Play a full Nuke Ops round from spawn to end screen
 > Pillars: 2, 4, 6 (1 thin) — [vision.md](../design/vision.md) §2
 
@@ -60,6 +60,7 @@ flowchart TB
   build[Repair_rebuild_walls]
   power[APC_lights_matter]
   server[Always_on_server_T8]
+  lobby[Lobby_character_window]
 
   mvp1 --> map
   mvp1 --> roles
@@ -68,6 +69,7 @@ flowchart TB
   mvp1 --> nuke
   mvp1 --> mode
   mvp1 --> roundend
+  mvp1 --> lobby
   mvp1 --> vacuum
   mvp1 --> power
   mvp1 --> server
@@ -131,7 +133,8 @@ flowchart TB
 | M8 | Vacuum and hull (thin): vacuum kills; suit seal and internals protect; an engineer seals a hull hole with plating | partial — breach wind, knockdown/pull, loose items in the wind, wind and muffling you can hear, turf exposure and equal-pressure turf mixing shipped ([health-env-feel](../archive/architecture/2026-07_health-env-feel.md)); seal, internals and magboots shipped ([EVA gear plan](../plans/eva-gear.plan.md)); steel sheets patch a hull hole and the cell holds air ([construction](../architecture/systems/construction.md)); hull work has no dedicated gear until M0 adds the Engineer | [armor.md](../design/armor.md) §3; [construction.md](../design/construction.md) §3; [health](../architecture/systems/health.md); [atmospherics](../architecture/systems/atmospherics.md); [ambience-and-impact-audio](../archive/architecture/2026-11_ambience-and-impact-audio.md) | Space kills you, suits and internals protect you, and engineers can patch the hull (exposure damage and breach wind with knockdown/pull work) |
 | M9 | Power and light (thin): test-map APCs drive the lights. Done when a cut cable or dead APC darkens a room on the test station, seen by a remote client | partial — APC battery carries a cut-off room (Emergency, then sheds Lighting last); APCs break to rounds, swings and blasts and go dead on the wall; each fixture's own cell keeps it dim red for ~2 min, then dark; bulbs and tubes shoot out and are replaced by hand (YouTool spares) ([#202](https://github.com/henkhooft/SS3D/pull/202), host-tested). Cables are cut only by blasts that hole the floor (no hand wirecutting); the M0 test station's APCs and lights, and remote-client acceptance, are open | [electricity.md](../design/electricity.md) §4–§5; [rendering-lighting.md](../design/rendering-lighting.md) §4; [electricity](../architecture/systems/electricity.md); [area](../architecture/systems/area.md) | Station power and lights matter: lose power and the room goes dark (smash an APC or shoot out the lights, and the room goes red, then black; fixtures can be relamped) |
 | M10 | Construction (thin): re-lay floors, weld walls, windows and plating back to Intact, rebuild a destroyed wall (girder → plate → weld) or window (girder → glass), barricade on any floor, deconstruct plain walls, salvage wreckage. Done when a crew member can rebuild a blown wall and a patched room refills | partial — [construction-mvp1](../architecture/2026-11_construction-mvp1.md) implemented: floors and hull patch, weld repair, girder → plate → weld and girder → glass, deconstruction, wreckage salvage, one tile item per laid floor; separate-client acceptance open; "a patched room refills" waits for M0's supply network | [construction.md](../design/construction.md) §2–§11; [construction](../architecture/systems/construction.md); [structural-destruction](../architecture/systems/structural-destruction.md); [tile](../architecture/systems/tile.md) | Engineers repair and rebuild what the ops blow up, and the crew can barricade (welding, plating, glazing, prying and rebuilding walls work; refilling a patched room does not yet) |
-| M6 | Playtest 1 | pending | depends M0–M5, M1m, M1c, M1s, M8, M9, M10; [test-server.md](test-server.md) T3, T8 | Finish line: eight players play Nuke Ops rounds together on the always-on server |
+| M11 | Lobby and character window to the revised lobby design. Done when a new player connects to a random character, sets job priorities and antag opt-ins on it, readies up on the connected-count countdown and spawns in their job; Observe and joining late (direct pick beside the crew manifest) work; the screens match the recoloured canvas | pending — decided in the 2026-11-14 lobby grill; recolour pass on the canvas outstanding | [lobby.md](../design/lobby.md) §2–§8; [lobby-character-window](../architecture/2026-11_lobby-character-window.md); [visual brief](../plans/lobby-character-window-visual-brief.md); [rounds-lobby](../architecture/systems/rounds-lobby.md) | Make your character once and keep it: name, look, the jobs you want and whether you'll play an antagonist, then ready up or join a round already running (today the lobby works, but everyone starts as the same placeholder character) |
+| M6 | Playtest 1 | pending | depends M0–M5, M1m, M1c, M1s, M8, M9, M10, M11; [test-server.md](test-server.md) T3, T8 | Finish line: eight players play Nuke Ops rounds together on the always-on server |
 
 ## Explicitly deferred
 
