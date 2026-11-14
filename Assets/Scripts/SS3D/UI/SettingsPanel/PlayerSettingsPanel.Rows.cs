@@ -140,8 +140,8 @@ namespace SS3D.UI.SettingsPanel
                 AudioDefaults.MuteWhenUnfocused ? 1 : 0, i => _settings.SetMuteWhenUnfocused(i == 1));
 
             VisualElement menu = Group("Main menu");
-            Segmented(menu, "menuMusic", "Main menu music", OffOn, () => Audio.MenuMusic ? 1 : 0, AudioDefaults.MenuMusic ? 1 : 0,
-                i => _settings.SetMenuMusic(i == 1), () => new RowState("Plays on the main menu only."));
+            Segmented(menu, "menuMusic", "Menu music", OffOn, () => Audio.MenuMusic ? 1 : 0, AudioDefaults.MenuMusic ? 1 : 0,
+                i => _settings.SetMenuMusic(i == 1), () => new RowState("Plays on the main menu and in the lobby."));
         }
 
         private VisualElement Group(string title)

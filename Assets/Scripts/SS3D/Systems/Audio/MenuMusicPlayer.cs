@@ -1,17 +1,16 @@
 using System.Collections.Generic;
 using System.Text;
-using SS3D.Systems.Audio;
 using UnityEngine;
 
-namespace SS3D.Launcher
+namespace SS3D.Systems.Audio
 {
     /// <summary>
-    /// Main-menu music: one 2D source on the mixer's Music group (so the player's Music and Master
+    /// Menu music source for <see cref="MenuMusicSubSystem"/>: one 2D source on the mixer's Music group (so the player's Music and Master
     /// volumes apply), a random first track, then the next one when a track ends. Fades in over
     /// 0.9 s and out over 0.5 s, pausing at silence so a track resumes where it stopped.
     /// Call <see cref="Tick"/> every frame.
     /// </summary>
-    public sealed class MainMenuMusic
+    public sealed class MenuMusicPlayer
     {
         private const float FadeInSeconds = 0.9f;
         private const float FadeOutSeconds = 0.5f;
@@ -26,7 +25,7 @@ namespace SS3D.Launcher
         private int _track;
         private bool _audible;
 
-        public MainMenuMusic(GameObject host, AudioClip[] tracks)
+        public MenuMusicPlayer(GameObject host, AudioClip[] tracks)
         {
             _tracks = tracks ?? System.Array.Empty<AudioClip>();
             _source = host.AddComponent<AudioSource>();

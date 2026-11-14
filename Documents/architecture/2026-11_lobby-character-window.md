@@ -2,7 +2,7 @@
 > Touches systems: rounds-lobby, gamemodes-roles-traits, entities, ui-shell, ui-shell-main-menu, audio, chat-audio-screens
 > Status: in progress
 
-**Progress:** Decided in the 2026-11-14 lobby grill. Phases 1–2 are built (2026-11-14), on the old views until Phases 4–6 replace them. Everything ships before Playtest 1 ([mvp1-nuke-ops.md](../milestones/mvp1-nuke-ops.md) M11) on one branch and one pull request. Phases 1–3 are non-visual and run while the canvas is recoloured. Phases 4–6 build against the recoloured canvas. Phase 7 purges. Visual brief and recolour prompt: [lobby-character-window-visual-brief.md](../plans/lobby-character-window-visual-brief.md). Tests follow the [testing philosophy](2026-11_testing-philosophy.md).
+**Progress:** Decided in the 2026-11-14 lobby grill. Phases 1–3 are built (2026-11-14), on the old views until Phases 4–6 replace them. Everything ships before Playtest 1 ([mvp1-nuke-ops.md](../milestones/mvp1-nuke-ops.md) M11) on one branch and one pull request. Phases 1–3 are non-visual and run while the canvas is recoloured. Phases 4–6 build against the recoloured canvas. Phase 7 purges. Visual brief and recolour prompt: [lobby-character-window-visual-brief.md](../plans/lobby-character-window-visual-brief.md). Tests follow the [testing philosophy](2026-11_testing-philosophy.md).
 
 # Lobby and character window (Nov 2026)
 
@@ -22,7 +22,7 @@ Rebuild the lobby and the character creator to the revised [lobby.md](../design/
 - **Late join:** resolves the H/M/L/N chips against open slots. There's no crew manifest.
 - **Players tab:** fake Ping/Joined/Account-age fields and stub Kick/Ban/Mute buttons.
 - **Server Settings:** three rule toggles are always disabled. Friendly Fire is drawn ticked.
-- **Menu music:** `MainMenuMusic` belongs to `MainMenuSubSystem` and fades out when the game loads. `PlayerAudioSettings.MenuMusic` is the saved on/off.
+- **Menu music:** `MainMenuMusic` (now `MenuMusicPlayer`) belongs to `MainMenuSubSystem` and fades out when the game loads. `PlayerAudioSettings.MenuMusic` is the saved on/off.
 - **Palette:** the lobby styles use a local palette. The main menu and `PlayerSettingsPanel` use the SS3D design-system palette.
 
 ## Decisions
@@ -139,8 +139,18 @@ What Phase 2 built:
 
 ### Phase 3 — Menu music service (non-visual)
 
-- [ ] Move `MainMenuMusic` into a process-wide service in `SystemsBootstrap`; the main menu drives it as today (Decision 15)
-- [ ] Keep it playing through session load into the lobby; fade on spawn or observe; hide the lobby row in the in-round Escape menu
+- [x] Move `MainMenuMusic` into a process-wide service in `SystemsBootstrap`; the main menu drives it as today (Decision 15)
+- [x] Keep it playing through session load into the lobby; fade on spawn or observe. Hiding the lobby's music row in the in-round Escape menu moved to Phase 4, which builds the row.
+
+What Phase 3 built:
+
+- **Service.** `MenuMusicSubSystem` (`Systems/Audio`) is created by `SystemsBootstrap` on clients, beside the main menu. It owns the source (`MenuMusicPlayer`, formerly `MainMenuMusic`) and loads the tracks from the main-menu catalog itself, so a session started from the command line has music in the lobby too.
+- **Who wants it.** `MenuMusicDemand` holds three inputs: the main menu's screen, the lobby and a handover. The music plays when any of them wants it and `PlayerAudioSettings.MenuMusic` is on.
+  - The main menu reports its screen as before: menu, server list, settings and Connecting yes; Starting local session and Update no.
+  - When the menu hides because a session loaded, `HandOverToLobby` keeps the music playing until the lobby reports, at most 30 s.
+  - The lobby reports `connected ? !spawned : null` on each session refresh. A ghost counts as spawned, so the music fades on spawn, on observe and in the in-round Escape menu.
+  - Hosting starts from the silent Starting screen, so nothing is handed over there; the lobby fades the paused track back in.
+- **Setting.** The Audio row is now "Menu music", described as playing on the main menu and in the lobby. The saved field is unchanged.
 
 ### Phase 4 — Lobby shell (needs the recoloured canvas)
 
@@ -152,7 +162,7 @@ What Phase 2 built:
 - [ ] Move Chat, Last Round and Server Settings into their own view classes; mount `PlayerSettingsPanel` in Settings (Decision 17)
 - [ ] Server Settings hides Random Events, Friendly Fire and Respawn until their systems exist
 - [ ] The 1366 layout class (Decision 19); focus order and keys as annotated on the canvas
-- [ ] The in-round Escape state: Join / In round / late join off
+- [ ] The in-round Escape state: Join / In round / late join off; the music row hidden (moved from Phase 3)
 
 ### Phase 5 — Character window
 
@@ -182,6 +192,7 @@ What Phase 2 built:
   - the name validator and name normalisation
   - character schema migration, covering the untouched starter, an edited starter and a v1 save with several characters
   - the countdown's connected-count gating and the Extended fallback
+  - menu music: the join handover, fading on spawn or observe, the handover timeout (`MenuMusicDemandTests`)
   - the manifest leaves out operatives and ghosts
   - the server rejects a late-join pick for a full job
 - **Pilots:** rewrite `LobbyUiPilot` (shell, character window, switcher and join visuals) and `LobbyLifecyclePilot`:

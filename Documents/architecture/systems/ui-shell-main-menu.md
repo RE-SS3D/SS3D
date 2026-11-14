@@ -22,8 +22,10 @@ direct-connect errors, the GitHub update banner and **Update and restart**, Quit
 (on/off, track title, Next, volume) and links to the SS3D Discord and the SS3D-Art repo.
 
 **Music:** every clip in `Assets/Art/Sound/World/Music` except `Intro` / `IntroSneeze`, streamed,
-random first track then in order. It plays on the menu, server list, settings and Connecting,
-fades out for Starting local session / Update and when Game loads. Returning to Launcher restarts
+random first track then in order. It plays on the menu, server list, settings and Connecting, and
+fades out for Starting local session / Update. The source belongs to the process-wide `MenuMusicSubSystem`
+(Systems/Audio), not the menu: after a join it plays on into the lobby, which fades it when the player
+spawns or observes ([lobby effort](../2026-11_lobby-character-window.md) Decision 15). Returning to Launcher restarts
 the current track from the beginning; toggling music off/on within one visit still resumes it. On/off is saved in
 `main-menu.json`; the slider is the player's **Music** volume (same as the in-game Sound tab), and
 the source plays through the mixer's Music group. `Space Theme` was converted from the 65 MB WAV to OGG. Not live: the PUBLIC list always shows its empty state (no list
@@ -39,7 +41,7 @@ This diverges from [main-menu.md](../../design/main-menu.md), on the owner's req
 - `Assets/Scripts/SS3D/Launcher/MainMenuState.cs` — `MainMenuJoinAttempt` (one join, kept for Retry), `MainMenuState` / `RecentServer` (newest five) and `MainMenuStore` (`persistentDataPath/Settings/main-menu.json`; tokens in plain text)
 - `Assets/Scripts/SS3D/Launcher/MainMenuAddress.cs`, `MainMenuServers.cs` — address parsing; status → row (`Classify` by protocol and capacity)
 - `Assets/Scripts/SS3D/Launcher/ReleaseCheck.cs` — newest stable `vX.Y.Z` with this platform's zip; `IsNewer` (dev builds of the same version are older; `0.0.0-*` never updates)
-- `Assets/Scripts/SS3D/Launcher/MainMenuMusic.cs` — source, fades, track order, readable titles (`TitleOf`)
+- `Assets/Scripts/SS3D/Systems/Audio/MenuMusicSubSystem.cs` — menu music for the whole process; the menu calls `SetMainMenu`, `HandOverToLobby` (on hiding for a session), `Restart`, `Next` and reads `Title` / `TrackChanged`. Source and titles: `MenuMusicPlayer.cs`
 - `Assets/Scripts/SS3D/Launcher/MainMenuVideoWallpaper.cs` — `VideoPlayer` into a render texture; `Frame` is null until there is one to show
 - `Assets/Scripts/SS3D/Launcher/MainMenuWallpaperRotation.cs` — pure timing of the hold, dip, swap and lift; `HoldSeconds` sets the interval
 - `Assets/Scripts/SS3D/Launcher/UpdaterLauncher.cs` — starts `Update_SS3D.ps1 -WaitPid -Restart` (visible console) or `update_ss3d.sh --wait-pid --restart` (detached, `update.log`), then the menu quits
@@ -77,7 +79,7 @@ This diverges from [main-menu.md](../../design/main-menu.md), on the owner's req
 - **`NetworkSettings` is an asset.** In the editor, the menu's writes (name, address, port, network type) outlived Play Mode and overwrote the developer's editor settings. `MainMenuSubSystem` remembers the first values it overwrites and restores them in `OnDestroyed`.
 - **Leaving a session must wait for FishNet's offline swap.** Stopping the client makes `DefaultScene` load Empty (Single); loading Launcher immediately would be replaced by it. `LeaveToMainMenu` waits until both transports are stopped and Empty is active, then loads Launcher. The menu re-unlocks the cursor on show.
 - **No AudioListener after a failed join.** The Empty scene has no camera, so the music went silent ("no audio listeners" spam). The menu adds its own listener whenever none exists and removes it on hide.
-- **Launcher music survives scene changes.** The DDOL source pauses after fading out; `Show` must stop/reset it before presenting a fresh launcher visit or it resumes the old playback position.
+- **Launcher music survives scene changes.** The DDOL source pauses after fading out; `Show` must call `MenuMusicSubSystem.Restart` before presenting a fresh launcher visit or it resumes the old playback position.
 - **Unity's Slider sits high in a row.** Its field box is taller than the tracker and the tracker hugs its top. The thumb must use absolute positioning to avoid its default relative vertical offset. The music slider pins the input, drag container, tracker and dragger to a 16px box, with a rounded thumb and a value-driven filled track matching the reference.
 - Wallpaper imports must preserve NPOT dimensions; the catalog builder keeps the supplied 1920×1080 size, disables mips and uses BC7 (`CompressedHQ`).
 - **The catalog sits in Resources, so a plain `Texture2D[]` loads every wallpaper at launch.** `_wallpapers` is `LazyLoadReference<Texture2D>[]`; validate with `.isSet`, because `.asset` would load them all.

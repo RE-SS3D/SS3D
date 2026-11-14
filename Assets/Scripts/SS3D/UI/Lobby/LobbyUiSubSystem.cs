@@ -4,6 +4,7 @@ using FishNet;
 using FishNet.Connection;
 using FishNet.Managing;
 using SS3D.Permissions;
+using SS3D.Systems.Audio;
 using SS3D.Systems.Comms;
 using SS3D.Systems.Entities;
 using SS3D.Systems.PlayerControl;
@@ -263,6 +264,10 @@ namespace SS3D.UI.Lobby
             bool spawned = local != null && entities != null && entities.IsPlayerSpawned(InstanceFinder.ClientManager.Connection);
             _spawned = spawned;
             if (!spawned) _menuOpen = false;
+            // Menu music plays on from the main menu into the lobby and fades once the player has a body or a ghost,
+            // the in-round Escape menu included (lobby effort Decision 15). No opinion until connected, so a handover
+            // from the main menu keeps playing through the session load.
+            if (SubSystems.TryGet(out MenuMusicSubSystem music)) music.SetLobby(connected ? !spawned : null);
             BindToggleMenu(SubSystems.TryGet(out InputSubSystem input) ? input : null);
             bool visible = connected && (!spawned || _menuOpen);
             bool holdMenu = visible && spawned;

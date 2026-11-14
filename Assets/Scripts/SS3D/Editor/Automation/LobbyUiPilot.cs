@@ -363,7 +363,7 @@ namespace SS3D.Editor.Automation
                     Require(shell.Query<SliderInt>(className: "settings-panel__slider").ToList().Count == 5,
                         "Audio has Master, Music, SFX, Ambience and Personal sliders");
                     Require(shell.Q<Button>("settings-muteUnfocused-1") != null, "Audio has Mute when window unfocused");
-                    Require(shell.Q<Button>("settings-menuMusic-1") != null, "Audio has Main menu music");
+                    Require(shell.Q<Button>("settings-menuMusic-1") != null, "Audio has Menu music");
                     shell.Q<SliderInt>("settings-masterVolume").value = 35;
                     shell.Q<SliderInt>("settings-musicVolume").value = 50;
                     Press(shell, "settings-muteAll-1");

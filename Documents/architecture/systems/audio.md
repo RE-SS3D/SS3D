@@ -45,8 +45,8 @@ sound *for a given listener*, which the server's "play clip X at position P" RPC
 - Looping machine sound (e.g. `FuelPowerGenerator`): sync the running state with an `[ObserversRpc(BufferLast = true)]` that calls `PlayAudioSourceLocal` / `StopAudioSourceLocal`.
 - New positional source: add `AudioSourceOcclusion` and call `PrepareForPlayback` before `Play()`, or it ignores walls and keeps playing in vacuum. Set `IgnoresWalls` for one that should only take the air.
 - Volume settings: `SubSystems.Get<PlayerSettingsSubSystem>().SetVolume(PlayerVolume, linear)`; never `SetFloat` the exposed volumes from elsewhere, the next settings apply overwrites them.
-- Main-menu music is `SS3D.Launcher.MainMenuMusic` (non-positional, Music group, tracks from the main-menu catalog), outside this folder.
-- Not built yet: PDA notification cues, in-game lobby music bed (Phase 5); see [audio-foundation](../2026-07_audio-foundation.md).
+- Menu music: `MenuMusicSubSystem` (client-only, created by `SystemsBootstrap`, non-positional, Music group, tracks from the main-menu catalog). The main menu and the lobby each report whether their screen wants it (`MenuMusicDemand`); it plays when one does and the player's Menu music setting is on. `PlayerSettingsSubSystem` pushes that setting into `MenuMusicSubSystem.Enabled`, because Audio must not reference Settings (`SystemsFolderCycleTests`). A join hands over from menu to lobby, so it carries on through the session load ([lobby effort](../2026-11_lobby-character-window.md) Decision 15).
+- Not built yet: PDA notification cues; see [audio-foundation](../2026-07_audio-foundation.md).
 
 ## Pitfalls
 
