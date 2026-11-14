@@ -45,7 +45,8 @@ namespace SS3D.Systems.Audio
         public const string GasPump = "01a9546d7ca743a9be934057b41a9062";
         public const string PowerHum = "dc98662fc0431164bb4cf043fc5a1951";
         public const string Machinery = "d343550d1c1c4dd28149bc530f85407f";
-        public const string Alarm = "89185afdd1154c6aa893b8f814af572c";
+        /// <summary>SS14 Machines/alarm.ogg, the atmos alarm SS14 itself uses.</summary>
+        public const string Alarm = "9073a7ffe5ff49cbbb8a0abc29503e17";
 
         public static AmbientLoopSettings Get(AmbientLoopKind kind) => kind switch
         {

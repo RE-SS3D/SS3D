@@ -194,7 +194,8 @@ namespace SS3D.Systems.Gamemodes
                 IEnumerable<string> squadmates = members.Where(other => other != member)
                     .Select(other => names.TryGetValue(other, out string name) ? name : other.Ckey);
                 comms.SendPrivateFeed(member.Owner, OperativeBriefing.Header,
-                    OperativeBriefing.Text(role, objectives.Select(objective => objective.Title), squadmates));
+                    OperativeBriefing.Text(role, objectives.Select(objective => objective.Title), squadmates),
+                    OperativeBriefing.SoundId);
             }
         }
 

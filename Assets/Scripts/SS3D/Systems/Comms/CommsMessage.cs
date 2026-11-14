@@ -18,7 +18,7 @@ namespace SS3D.Systems.Comms
         /// <summary>
         /// Optional follow-up <c>AssetDatabases.Sounds</c> id started with the announcement banner
         /// after <see cref="CommsAudioTrackIds.StationAnnounce"/> finishes. Empty = chime then
-        /// banner only (no second clip).
+        /// banner only (no second clip). On a private feed line it plays once as the line appears.
         /// </summary>
         public string SoundId;
     }

@@ -13,13 +13,13 @@ How sound clips are found, registered and named in code, plus which registered c
 
 - `Assets/Content/Data/Databases/Sounds.asset` — the sound database; clips resolve via `Assets.Get<AudioClip>(AssetDatabases.Sounds, id)`, the single clip-lookup path
 - Per-domain id classes name registered clips instead of inlining GUIDs:
-  - `Systems/Audio/AudioTrackIds.cs` — personal audio (`Heartbeat`, `HeavyBreathing`, `AlertCue`)
+  - `Systems/Audio/AudioTrackIds.cs` — personal audio (`Heartbeat`, `HeavyBreathing`, `Breathing`, `AlertCue`), plus `MagbootClunk` and `InternalsOn` (SS14 `Effects/internals.ogg`) for the EVA switches
   - `Systems/Audio/FootstepAudioTrackIds.cs` — Socks / Shoes / Boots under `Assets/Art/Sound/Entities/Humanoid/Footsteps/`
-  - `Systems/Audio/AmbientLoopTrackIds.cs` — machine loops, with each `AmbientLoopKind`'s level and reach
+  - `Systems/Audio/AmbientLoopTrackIds.cs` — machine loops, with each `AmbientLoopKind`'s level and reach; the air alarm is SS14 `Machines/alarm.ogg` (`World/Ambience/Alarms/AirAlarm.ogg`, SS14 default licence), replacing SS3D-Art `Alarm 1` on 2026-11-14
   - `Systems/Area/LightSwitchAudioTrackIds.cs` — wall switch click (`LightSwitchController.Toggle`)
   - `Systems/Audio/VendorAudioTrackIds.cs` — vending dispense (`VendingMachineController.PlayVendSound`)
   - `Systems/Furniture/AirlockAudioTrackIds.cs` — airlock deny (`AirLockOpener.ServerPlayAccessDenied`); open/close use generated `Sounds.AirlockOpen` / `AirlockClose`
-  - `Systems/Comms/CommsAudioTrackIds.cs` — `Announce.ogg` chime, optional `Welcome.ogg` follow-up
+  - `Systems/Comms/CommsAudioTrackIds.cs` — `Announce.ogg` chime, optional `Welcome.ogg` follow-up. `OperativeBriefing.SoundId` (SS14 `Ambience/Antag/nukeops_start.ogg`, `UI/Comms/NukeOpsStart.ogg`) rides the operative's private briefing (`CommsSubSystem.SendPrivateFeed`'s `soundId`), and `CommsFeedController` plays it on the announce source
   - `Systems/Furniture/NukeAudioTrackIds.cs` — nuclear device clips (SS14 imports under `Items/Weapons/Explosive/SS14/Nuke*.ogg`), registered by `ExplosivePrefabSetup.RegisterNukeSounds`; `NukeAudioTests`
   - `CombatAudioTrackIds` (gunfire / surface / `FleshHit` arrays, empty click, reload), `HealthAudioTrackIds` (gasp / choke / scream / blood)
   - `Systems/Audio/ItemCollisionAudioTrackIds.cs` — clip sets per `ItemCollisionMaterial` (metal, heavy metal, can, wood, plastic, glass) for `NoisyCollision`

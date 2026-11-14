@@ -115,6 +115,7 @@ namespace SS3D.Systems.Comms
                 : (message.ChannelId ?? "RADIO").ToUpperInvariant();
             Color accent = channel != null ? channel.Color : new Color(0.37f, 0.53f, 0.7f);
             _view.PushRadio(header, message.Sender, message.Text, accent);
+            PlayAnnounceCue(message.SoundId);
         }
 
         /// <summary>A station cue plays at once on the announcement source, with no banner.</summary>

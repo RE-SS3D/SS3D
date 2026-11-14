@@ -31,7 +31,6 @@ namespace SS3D.Systems.Audio
 
         private AudioSource _heartbeatSource;
         private AudioSource _breathingSource;
-        private AudioSource _internalsSource;
         private AudioSource _calmBreathingSource;
         private AudioSource _alertCueSource;
 
@@ -39,7 +38,7 @@ namespace SS3D.Systems.Audio
         private float _staminaBreathingTarget;
         private float _healthBreathingTarget;
         private float _breathingTarget;
-        private float _internalsTarget;
+        private bool _onInternals;
         private float _calmBreathingTarget;
         private float _nextAlertCueTime;
         private GameObject _localPlayerObject;
@@ -50,7 +49,6 @@ namespace SS3D.Systems.Audio
 
             _heartbeatSource = BuildPersonalSource("HeartbeatSource");
             _breathingSource = BuildPersonalSource("BreathingSource");
-            _internalsSource = BuildPersonalSource("InternalsSource");
             _calmBreathingSource = BuildPersonalSource("CalmBreathingSource");
             _alertCueSource = BuildPersonalSource("AlertCueSource", loop: false);
 
@@ -104,7 +102,7 @@ namespace SS3D.Systems.Audio
             _staminaBreathingTarget = 0f;
             _healthBreathingTarget = 0f;
             _breathingTarget = 0f;
-            _internalsTarget = 0f;
+            _onInternals = false;
             _calmBreathingTarget = 0f;
         }
 
@@ -112,7 +110,7 @@ namespace SS3D.Systems.Audio
         public void SilenceAll()
         {
             ClearTargets();
-            AudioSource[] sources = { _heartbeatSource, _breathingSource, _internalsSource, _calmBreathingSource, _alertCueSource };
+            AudioSource[] sources = { _heartbeatSource, _breathingSource, _calmBreathingSource, _alertCueSource };
             foreach (AudioSource source in sources)
             {
                 if (source == null)
@@ -180,17 +178,18 @@ namespace SS3D.Systems.Audio
         }
 
         /// <summary>
-        /// Calm breathing through the mask while on internals, alongside any labored breathing.
+        /// Internals have no loop of their own: the valve sound plays once when they open
+        /// (<c>EvaGearController</c>). Breathing from a tank silences the calm vacuum breathing,
+        /// while labored breathing still plays.
         /// </summary>
-        public void SetInternalsBreathingIntensity(float intensity)
+        public void SetOnInternals(bool onInternals)
         {
-            _internalsTarget = Mathf.Clamp01(intensity);
-            EnsurePlayingIfAudible(_internalsSource, AudioTrackIds.Breathing, _internalsTarget);
+            _onInternals = onInternals;
         }
 
         /// <summary>
         /// Calm breathing where no air carries anything else (audio.md §2, "Outside the station").
-        /// Heavy breathing takes over from it as stamina or health drive that one up, and so do internals.
+        /// Heavy breathing takes over from it as stamina or health drive that one up. Internals silence it.
         /// </summary>
         public void SetCalmBreathingIntensity(float intensity)
         {
@@ -245,14 +244,12 @@ namespace SS3D.Systems.Audio
 
             _heartbeatSource.volume = Mathf.MoveTowards(_heartbeatSource.volume, _heartbeatTarget, step);
             _breathingSource.volume = Mathf.MoveTowards(_breathingSource.volume, _breathingTarget, step);
-            _internalsSource.volume = Mathf.MoveTowards(_internalsSource.volume, _internalsTarget, step);
 
-            float calmTarget = CalmBreathingVolume * Mathf.Max(_calmBreathingTarget - Mathf.Max(_breathingTarget, _internalsTarget), 0f);
+            float calmTarget = _onInternals ? 0f : CalmBreathingVolume * Mathf.Max(_calmBreathingTarget - _breathingTarget, 0f);
             _calmBreathingSource.volume = Mathf.MoveTowards(_calmBreathingSource.volume, calmTarget, step);
 
             StopIfSilent(_heartbeatSource, _heartbeatTarget);
             StopIfSilent(_breathingSource, _breathingTarget);
-            StopIfSilent(_internalsSource, _internalsTarget);
             StopIfSilent(_calmBreathingSource, _calmBreathingTarget);
         }
 
