@@ -1,14 +1,15 @@
 #!/usr/bin/env python3
 """Prefab ids for saved maps, read without Unity.
 
-Saved maps (schema 2) store each placed tile object and item by its prefab's
+Saved maps (schema 2 and up) store each placed tile object and item by its prefab's
 ObjectAssetReference.Id (the prefab's asset GUID, which a rename keeps) beside its name.
 This module reads that name -> id table from the asset files, and stamps ids into map files.
 
     python3 Tools/map_import/asset_ids.py Builds/Game/Data/StationTemplates/*.json Builds/Game/Data/Tilemaps/*.json
 
 Stamping sets the `id` of every entry whose name is a tile asset, leaves the rest alone, raises a
-station template's schemaVersion to 2, and prints the names it could not resolve.
+station template's schemaVersion to the current one, and prints the names it could not resolve.
+Schema 3 added each object's optional `setup`; a map without it loads every object at its defaults.
 """
 import json
 import pathlib
@@ -18,7 +19,7 @@ import sys
 REPO = pathlib.Path(__file__).resolve().parents[2]
 TILE_ASSETS = REPO / "Assets/Content/Data/TileMap/Resources"
 ASSET_REFERENCES = REPO / "Assets/Content/Data/ObjectAssetReferences"
-SCHEMA_VERSION = 2
+SCHEMA_VERSION = 3  # PersistenceEnvelope.CurrentSchemaVersion
 NAME_KEYS = ("tileObjectSOName", "itemName")
 
 

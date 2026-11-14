@@ -1,6 +1,7 @@
 using FishNet.Connection;
 using FishNet.Object;
 using FishNet.Transporting;
+using SS3D.Interactions;
 using SS3D.Systems.Electricity;
 using SS3D.Systems.Entities;
 using UnityEngine;
@@ -26,15 +27,19 @@ namespace SS3D.Systems.Tile.MapEditor
         {
             base.OnStopServer();
             ResetAuthoringState();
+            ServerInteractionSteps.Wrap = null;
             ServerManager.OnRemoteConnectionState -= HandleRemoteConnectionState;
             LightingDevBypass.MapEditorOverride = false;
         }
 
-        private static void HandleRemoteConnectionState(NetworkConnection conn, RemoteConnectionStateArgs args)
+        private void HandleRemoteConnectionState(NetworkConnection conn, RemoteConnectionStateArgs args)
         {
-            // FishNet reuses client ids; never let a new joiner inherit a builder's invincibility.
+            // FishNet reuses client ids; never let a new joiner inherit a builder's invincibility or open editor.
             if (args.ConnectionState == RemoteConnectionState.Stopped)
+            {
                 EntityInvincibility.ClearServer(conn.ClientId);
+                SetEditing(conn.ClientId, false);
+            }
         }
 
         /// <summary>Invincible defaults on; push it the first time the editor opens this session.</summary>

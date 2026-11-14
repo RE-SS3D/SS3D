@@ -1,7 +1,7 @@
 > Code paths: Assets/Scripts/SS3D/Systems/Inventory/, Assets/Scripts/SS3D/UI/MainHud/, Assets/Scripts/SS3D/UI/StoragePanel/, Assets/Scripts/SS3D/Systems/Stamina/
 > Entry points: ItemSubSystem, MainHudSubSystem, StoragePanelHost, StaminaController
 > Status: partial
-> Verified: 77ce6acb3 — 2026-11-12
+> Verified: df4829f3d — 2026-11-14
 
 # Inventory
 
@@ -53,6 +53,7 @@ Items, containers, hands, identification cards (`IDCard`, `PDA`), on-demand stor
 - `Assets/Scripts/SS3D/Systems/Inventory/Containers/Editor/ItemRestPoseAudit.cs` — lies-flat rule behind `ItemPoseTests` (rest pose thinnest vertically unless `RestsUpright`); `ItemRestPoseRecipe` migrated root rotations into `_restRotation`
 - `Assets/Scripts/SS3D/Utils/IconPreviewGenerator.cs` — bright `Unlit/ObjectIcon` for HUD/tile icons
 - `Assets/Scripts/SS3D/Systems/Inventory/Containers/AttachedContainer.cs` — container primitive
+- `Assets/Scripts/SS3D/Systems/Inventory/Containers/ContainerContentsSetup.cs` — a container's contents as saved map setup (Q13 of [object-setup-persistence](../2026-11_object-setup-persistence.md)): each stored item's asset, slot, stack size and its own setup, recursively; keyed `container` (root) or `container:<child name>`; restore replaces contents and is a no-op when they already match. `DeleteAllContents` despawns stored items before their placed holder is despawned
 - `Assets/Scripts/SS3D/Systems/Inventory/Containers/AttachedContainerLock.cs` — ID-gated world lock
 - `Assets/Scripts/SS3D/Systems/Inventory/Containers/HumanInventory.cs` — on-person containers, `CarriedWeight`
 - `Assets/Scripts/SS3D/Systems/Inventory/Containers/Cloth.cs` / `ClothesDisplayer.cs` / `ClothingItemPresentation.cs` — worn body mesh + folded world/hand form
@@ -106,6 +107,7 @@ Items, containers, hands, identification cards (`IDCard`, `PDA`), on-demand stor
 
 ## Pitfalls
 
+- **Filling and despawning a container in one tick writes into prefab assets:** the host's client reads the container's late SyncList after the server despawned it (FishNet logs "received a Read but was deinitialized on the server … ClientHost limitation"), resolves the stored items to their prefab assets, and `handleItemAdded` hides and freezes the assets themselves ("Transform resides in a Prefab asset"; `git status` shows the prefab dirty). Let a tick pass before despawning, and `git checkout` + force-reimport leaked prefabs. `MapRepairScenarios` hits it with loadout gear on develop too (nightly 2026-11-13). Hit 2026-11-14.
 - **Hand-edited sizes and weights revert:** `ItemSizeWeightRecipe` (and `GasTankSetup` / `SyndicateHardsuitSetup`, which now read the same table) reapply `ItemSizeWeightTable` on every **Run Content Prefab Recipes**, and `ItemSizeWeightTableTests.PrefabsMatchTable` fails on drift. Change the table, not the Inspector.
 - **Do not put the medkit or toolbox in `StorageContainerPrefabSetup.Targets`:** it forces `_isOpenable` off and `_onlyStoreWhenOpen` off, which breaks them. Their grids live in `ItemSizeWeightTable.Containers`.
 - **A Bulky item cannot go in a backpack:** that is intended (toolbox, backpack, toolbelt). Weapons are never Bulky: `TileMapTests.EveryWeaponFitsTheBackpack`. A new bag must be Bulky or it nests in itself.

@@ -1,4 +1,5 @@
 using FishNet.Object;
+using System;
 using UnityEngine;
 
 namespace SS3D.Systems.Atmospherics.Pipes
@@ -62,6 +63,32 @@ namespace SS3D.Systems.Atmospherics.Pipes
         public void ServerSetTargetOutletPressureKpa(int targetKpa)
         {
             _targetOutletPressureKpa = Mathf.Clamp(targetKpa, 0, AtmosPortConstants.MaxTargetPressureKpa);
+        }
+
+        [Serializable]
+        private sealed class MixerSetup : PortSetup
+        {
+            public int inlet1Percent = AtmosPortConstants.MixerDefaultInlet1Percent;
+            public int targetOutletPressureKpa = AtmosPortConstants.PumpDefaultTargetKpa;
+        }
+
+        protected override PortSetup DefaultSetup() => new MixerSetup();
+
+        protected override PortSetup CurrentSetup() => new MixerSetup
+        {
+            enabled = IsEnabled,
+            inlet1Percent = _inlet1Percent,
+            targetOutletPressureKpa = _targetOutletPressureKpa,
+        };
+
+        protected override void ApplySetup(PortSetup setup)
+        {
+            base.ApplySetup(setup);
+            if (setup is not MixerSetup mixer)
+                return;
+
+            ServerSetInlet1Percent(mixer.inlet1Percent);
+            ServerSetTargetOutletPressureKpa(mixer.targetOutletPressureKpa);
         }
 
         /// <summary>

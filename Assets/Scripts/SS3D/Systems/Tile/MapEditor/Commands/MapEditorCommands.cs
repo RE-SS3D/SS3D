@@ -1,4 +1,5 @@
 using SS3D.Data.AssetDatabases;
+using SS3D.Data.Persistence;
 using SS3D.Systems.Tile.GasMarkers;
 using SS3D.Systems.Tile.SpawnPoints;
 using System;
@@ -15,15 +16,18 @@ namespace SS3D.Systems.Tile.MapEditor.Commands
         private readonly bool _replaceExisting;
         private readonly string _previousAssetName;
         private readonly Direction _previousDirection;
+        private readonly SavedSetupEntry[] _setup;
         private readonly List<RemovedTileRecord> _displaced = new();
 
+        /// <param name="setup">A Dropper copy's setup, applied to the placed object; null places the prefab default.</param>
         public PlaceTileCommand(
             string assetName,
             Vector3 position,
             Direction direction,
             bool replaceExisting,
             string previousAssetName = null,
-            Direction previousDirection = Direction.North)
+            Direction previousDirection = Direction.North,
+            SavedSetupEntry[] setup = null)
         {
             _assetName = assetName;
             _position = position;
@@ -31,6 +35,7 @@ namespace SS3D.Systems.Tile.MapEditor.Commands
             _replaceExisting = replaceExisting;
             _previousAssetName = previousAssetName;
             _previousDirection = previousDirection;
+            _setup = setup;
         }
 
         public MapEditorCommandDto ToDto() =>
@@ -41,6 +46,7 @@ namespace SS3D.Systems.Tile.MapEditor.Commands
                 Position = _position,
                 Direction = _direction,
                 ReplaceExisting = _replaceExisting,
+                Setup = _setup,
             };
 
         public bool Changed { get; private set; }
@@ -68,7 +74,8 @@ namespace SS3D.Systems.Tile.MapEditor.Commands
                 && ctx.ResolveAsset(_previousAssetName) is TileObjectSo previousTile)
             {
                 ctx.Construction.TryPlaceTile(
-                    previousTile, _position, _previousDirection, replaceExisting: true, skipBuildCheck: false);
+                    previousTile, _position, _previousDirection, replaceExisting: true, skipBuildCheck: false,
+                    DisplacedTiles.SetupOf(_displaced, previousTile, _position, _previousDirection));
             }
             else
             {
@@ -82,7 +89,7 @@ namespace SS3D.Systems.Tile.MapEditor.Commands
         {
             GenericObjectSo asset = ctx.ResolveAsset(_assetName);
             return asset is TileObjectSo tile
-                && ctx.Construction.TryPlaceTile(tile, position, direction, _replaceExisting, skipBuildCheck: false).Success;
+                && ctx.Construction.TryPlaceTile(tile, position, direction, _replaceExisting, skipBuildCheck: false, _setup).Success;
         }
     }
 
@@ -91,12 +98,15 @@ namespace SS3D.Systems.Tile.MapEditor.Commands
         private readonly string _assetName;
         private readonly Vector3 _position;
         private readonly Direction _direction;
+        private readonly SavedSetupEntry[] _setup;
 
-        public PlaceItemCommand(string assetName, Vector3 position, Direction direction)
+        /// <param name="setup">A Dropper copy's setup (a filled bag), or a cleared item's on undo; null for the default.</param>
+        public PlaceItemCommand(string assetName, Vector3 position, Direction direction, SavedSetupEntry[] setup = null)
         {
             _assetName = assetName;
             _position = position;
             _direction = direction;
+            _setup = setup;
         }
 
         public MapEditorCommandDto ToDto() =>
@@ -106,6 +116,7 @@ namespace SS3D.Systems.Tile.MapEditor.Commands
                 AssetName = _assetName,
                 Position = _position,
                 Direction = _direction,
+                Setup = _setup,
             };
 
         public bool Changed { get; private set; }
@@ -118,7 +129,7 @@ namespace SS3D.Systems.Tile.MapEditor.Commands
             {
                 Quaternion rotation = SS3D.Systems.Inventory.Items.ItemPlacement.WorldRotation(
                 item, TileHelper.GetRotationAngle(_direction));
-                Changed = ctx.Construction.TryPlaceItem(item, _position, rotation).Success;
+                Changed = ctx.Construction.TryPlaceItem(item, _position, rotation, setup: _setup).Success;
             }
         }
 
@@ -199,6 +210,8 @@ namespace SS3D.Systems.Tile.MapEditor.Commands
         private readonly Vector3 _position;
         private readonly Direction _direction;
 
+        private SavedSetupEntry[] _removedSetup;
+
         public ClearItemCommand(string assetName, Vector3 position, Direction direction = Direction.North)
         {
             _assetName = assetName;
@@ -222,14 +235,18 @@ namespace SS3D.Systems.Tile.MapEditor.Commands
             Changed = false;
             GenericObjectSo asset = ctx.ResolveAsset(_assetName);
             if (asset is ItemObjectSo item)
-                Changed = ctx.Construction.TryClearItem(_position, item).Success;
+            {
+                ClearResult result = ctx.Construction.TryClearItem(_position, item);
+                Changed = result.Success;
+                _removedSetup = result.Setup;
+            }
         }
 
-        /// <summary>Re-places the item only if this clear removed one.</summary>
+        /// <summary>Re-places the item, set up as it was, only if this clear removed one.</summary>
         public void Revert(MapEditorCommandContext ctx)
         {
             if (Changed)
-                new PlaceItemCommand(_assetName, _position, _direction).Apply(ctx);
+                new PlaceItemCommand(_assetName, _position, _direction, _removedSetup).Apply(ctx);
         }
     }
 
@@ -301,10 +318,12 @@ namespace SS3D.Systems.Tile.MapEditor.Commands
             if (!ctx.Construction.TryPreviewTile(tile, to, direction, replaceExisting: false).CanBuild)
                 return false;
 
+            // The object moves with its setup; a failed place puts it back through the displaced records, which carry it too.
+            SavedSetupEntry[] setup = ObjectSetup.Capture(placed.gameObject);
             if (!ctx.Construction.TryClearTile(from, tile.layer, direction).Success)
                 return false;
 
-            return ctx.Construction.TryPlaceTile(tile, to, direction, replaceExisting: false, skipBuildCheck: false).Success;
+            return ctx.Construction.TryPlaceTile(tile, to, direction, replaceExisting: false, skipBuildCheck: false, setup).Success;
         }
     }
 
@@ -352,15 +371,16 @@ namespace SS3D.Systems.Tile.MapEditor.Commands
             if (ctx.ResolveAsset(_assetName) is not ItemObjectSo item)
                 return false;
 
-            if (!ctx.Construction.TryClearItem(from, item).Success)
+            ClearResult cleared = ctx.Construction.TryClearItem(from, item);
+            if (!cleared.Success)
                 return false;
 
             Quaternion rotation = SS3D.Systems.Inventory.Items.ItemPlacement.WorldRotation(
                 item, TileHelper.GetRotationAngle(_direction));
-            if (ctx.Construction.TryPlaceItem(item, to, rotation).Success)
+            if (ctx.Construction.TryPlaceItem(item, to, rotation, setup: cleared.Setup).Success)
                 return true;
 
-            ctx.Construction.TryPlaceItem(item, from, rotation);
+            ctx.Construction.TryPlaceItem(item, from, rotation, setup: cleared.Setup);
             return false;
         }
     }
@@ -617,8 +637,24 @@ namespace SS3D.Systems.Tile.MapEditor.Commands
                 // These objects stood here before the edit, so skip the build rules: a neighbour
                 // rule must not refuse to restore the exact state the map was in.
                 ctx.Construction.TryPlaceTile(
-                    record.Tile, record.Origin, record.Direction, replaceExisting: false, skipBuildCheck: true);
+                    record.Tile, record.Origin, record.Direction, replaceExisting: false, skipBuildCheck: true, record.Setup);
             }
+        }
+
+        /// <summary>The setup a recorded removal of <paramref name="tile"/> at that slot carried; null when none matches.</summary>
+        public static SavedSetupEntry[] SetupOf(List<RemovedTileRecord> records, TileObjectSo tile, Vector3 position, Direction direction)
+        {
+            Vector3 grid = TileHelper.GetClosestPosition(position);
+            foreach (RemovedTileRecord record in records)
+            {
+                if (record.Tile == tile && record.Direction == direction
+                    && Mathf.Approximately(record.Origin.x, grid.x) && Mathf.Approximately(record.Origin.z, grid.z))
+                {
+                    return record.Setup;
+                }
+            }
+
+            return null;
         }
     }
 

@@ -2,11 +2,13 @@ using FishNet.Object;
 using FishNet.Object.Synchronizing;
 using SS3D.Systems.Audio;
 using SS3D.Core;
+using SS3D.Data.Persistence;
 using SS3D.Interactions;
 using SS3D.Interactions.Interfaces;
 using SS3D.Systems.Atmospherics;
 using SS3D.Systems.Tile;
 using SS3D.Systems.Electricity;
+using System;
 using UnityEngine;
 
 namespace SS3D.Systems.Atmospherics.Pipes
@@ -15,7 +17,7 @@ namespace SS3D.Systems.Atmospherics.Pipes
     /// Shared toggle, pipe resolution, animator sync, and port registration for vents and scrubbers.
     /// </summary>
     [RequireComponent(typeof(PlacedTileObject))]
-    public abstract class AtmosPortControllerBase : InteractionTargetNetworkBehaviour, IAtmosPortDevice, IToggleable
+    public abstract class AtmosPortControllerBase : InteractionTargetNetworkBehaviour, IAtmosPortDevice, IToggleable, IPersistentSetup
     {
         private static readonly int DeviceActiveId = Animator.StringToHash("deviceActive");
 
@@ -76,6 +78,42 @@ namespace SS3D.Systems.Atmospherics.Pipes
         }
 
         public bool GetState() => _enabled;
+
+        /// <summary>
+        /// The settings a player can change on this device (on/off, plus each device's own targets), as saved in station
+        /// templates. Subclasses extend it with their own fields and pre-fill <see cref="DefaultSetup"/> with their
+        /// prefab defaults, so a field missing from saved JSON reads as its default.
+        /// </summary>
+        [Serializable]
+        protected class PortSetup
+        {
+            public bool enabled = true;
+        }
+
+        public string SetupKey => "atmos-device";
+
+        /// <summary>This device's settings as a freshly spawned one has them.</summary>
+        protected virtual PortSetup DefaultSetup() => new() { enabled = true };
+
+        protected virtual PortSetup CurrentSetup() => new() { enabled = _enabled };
+
+        /// <summary>Server: applies every field of <paramref name="setup"/>, clamped as its setters clamp.</summary>
+        protected virtual void ApplySetup(PortSetup setup) => ServerSetEnabled(setup.enabled);
+
+        public string CaptureSetup()
+        {
+            string current = JsonUtility.ToJson(CurrentSetup());
+            return current == JsonUtility.ToJson(DefaultSetup()) ? null : current;
+        }
+
+        public void RestoreSetup(string json)
+        {
+            PortSetup setup = DefaultSetup();
+            if (!string.IsNullOrEmpty(json))
+                JsonUtility.FromJsonOverwrite(json, setup);
+
+            ApplySetup(setup);
+        }
 
         public override void OnStartServer()
         {

@@ -1,3 +1,4 @@
+using SS3D.Systems.Inventory.Containers;
 using SS3D.Systems.Tile.MapEditor.Commands;
 using System;
 using System.Collections.Generic;
@@ -22,10 +23,40 @@ namespace SS3D.Systems.Tile.MapEditor
             !string.IsNullOrEmpty(assetName)
             && (MapEditorSpawnCatalog.IsSpawnKey(assetName) || DeniedAssets.Contains(assetName));
 
-        /// <summary>Every spawn-point command, and anything else that names a denied asset.</summary>
-        public static bool IsDenied(MapEditorCommandDto command) =>
-            command.Kind is MapEditorCommandKind.PlaceSpawnPoint or MapEditorCommandKind.ClearSpawnPoint
-            || IsDeniedAsset(command.AssetName);
+        /// <summary>
+        /// Every spawn-point command, and anything else that names a denied asset, itself or anywhere in the contents
+        /// its copied setup carries: a crate holding the disk is refused whole (object-setup-persistence Q15).
+        /// </summary>
+        public static bool IsDenied(MapEditorCommandDto command)
+        {
+            if (command.Kind is MapEditorCommandKind.PlaceSpawnPoint or MapEditorCommandKind.ClearSpawnPoint
+                || IsDeniedAsset(command.AssetName))
+                return true;
+
+            if (command.Setup == null || command.Setup.Length == 0)
+                return false;
+
+            List<string> contained = new();
+            ContainerContentsSetup.CollectItemNames(command.Setup, contained);
+            foreach (string itemName in contained)
+            {
+                if (IsDeniedAsset(itemName))
+                    return true;
+            }
+
+            return false;
+        }
+
+        /// <summary>Edit operations a command costs against the sandbox budget: one, plus one per item its copy carries.</summary>
+        public static int OperationCost(MapEditorCommandDto command)
+        {
+            if (command.Setup == null || command.Setup.Length == 0)
+                return 1;
+
+            List<string> contained = new();
+            ContainerContentsSetup.CollectItemNames(command.Setup, contained);
+            return 1 + contained.Count;
+        }
     }
 
     /// <summary>The server's per-connection answer to what the map editor UI should offer.</summary>

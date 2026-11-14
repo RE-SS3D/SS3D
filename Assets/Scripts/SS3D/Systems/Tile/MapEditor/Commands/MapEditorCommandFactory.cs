@@ -18,7 +18,7 @@ namespace SS3D.Systems.Tile.MapEditor.Commands
             {
                 MapEditorCommandKind.PlaceTile => CreatePlaceTile(dto, ctx),
                 MapEditorCommandKind.PlaceItem =>
-                    new PlaceItemCommand(dto.AssetName, dto.Position, dto.Direction),
+                    new PlaceItemCommand(dto.AssetName, dto.Position, dto.Direction, dto.Setup),
                 MapEditorCommandKind.ClearTile =>
                     new ClearTileCommand(dto.AssetName, dto.Position, dto.Direction),
                 MapEditorCommandKind.ClearItem =>
@@ -37,6 +37,8 @@ namespace SS3D.Systems.Tile.MapEditor.Commands
                     CreatePlaceGasMarker(dto.GasMarker, ctx),
                 MapEditorCommandKind.ClearGasMarker =>
                     CreateClearGasMarker(dto.Position, ctx),
+                MapEditorCommandKind.SetObjectSetup =>
+                    new SetObjectSetupCommand(dto.AssetName, dto.Position, dto.Direction, dto.PreviousSetup, dto.Setup),
                 _ => CreatePlaceTile(dto, ctx),
             };
         }
@@ -111,7 +113,7 @@ namespace SS3D.Systems.Tile.MapEditor.Commands
                 return true;
             }
 
-            into.Add(new PlaceItemCommand(dto.AssetName, dto.Position, dto.Direction));
+            into.Add(new PlaceItemCommand(dto.AssetName, dto.Position, dto.Direction, dto.Setup));
             return true;
         }
 
@@ -139,7 +141,8 @@ namespace SS3D.Systems.Tile.MapEditor.Commands
                 dto.Direction,
                 dto.ReplaceExisting,
                 previousName,
-                previousDir);
+                previousDir,
+                dto.Setup);
         }
 
         private static SetFloorDecalCommand CreateSetFloorDecal(

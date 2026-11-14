@@ -1,4 +1,6 @@
 using SS3D.Data.AssetDatabases;
+using SS3D.Data.Persistence;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace SS3D.Systems.Tile
@@ -8,10 +10,13 @@ namespace SS3D.Systems.Tile
     /// </summary>
     public interface IConstructionService
     {
+        /// <param name="setup">Saved setup applied right after the spawn (undo, Dropper copy); null for prefab defaults.</param>
         PlaceResult TryPlaceTile(TileObjectSo tileObject, Vector3 worldPosition, Direction direction, bool replaceExisting,
-            bool skipBuildCheck = false);
+            bool skipBuildCheck = false, IReadOnlyList<SavedSetupEntry> setup = null);
 
-        PlaceResult TryPlaceItem(ItemObjectSo itemObject, Vector3 worldPosition, Quaternion rotation, GameObject existingItem = null);
+        /// <param name="setup">Saved setup applied right after the spawn (undo, Dropper copy); null for prefab defaults.</param>
+        PlaceResult TryPlaceItem(ItemObjectSo itemObject, Vector3 worldPosition, Quaternion rotation, GameObject existingItem = null,
+            IReadOnlyList<SavedSetupEntry> setup = null);
 
         ClearResult TryClearTile(Vector3 worldPosition, TileLayer layer, Direction direction);
 
@@ -36,6 +41,9 @@ namespace SS3D.Systems.Tile
     public readonly struct ClearResult
     {
         public bool Success { get; init; }
+
+        /// <summary>For a cleared item, its setup read before it was destroyed; null otherwise.</summary>
+        public SavedSetupEntry[] Setup { get; init; }
 
         public static ClearResult Failed => new() { Success = false };
     }

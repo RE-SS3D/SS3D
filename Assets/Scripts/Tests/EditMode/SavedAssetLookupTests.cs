@@ -86,9 +86,9 @@ namespace SS3D.Tests.EditMode
         }
 
         [Test]
-        public void SchemaVersion_IsTwo()
+        public void SchemaVersion_IsThree()
         {
-            Assert.AreEqual(2, PersistenceEnvelope.CurrentSchemaVersion, "schema 2 adds the placed-object id");
+            Assert.AreEqual(3, PersistenceEnvelope.CurrentSchemaVersion, "schema 3 adds placed-object setup");
         }
 
         [Test]

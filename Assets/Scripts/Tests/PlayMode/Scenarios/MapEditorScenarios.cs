@@ -2,8 +2,16 @@ using System.Collections;
 using System.Linq;
 using System.Reflection;
 using FishNet;
+using FishNet.Connection;
 using NUnit.Framework;
 using SS3D.Core;
+using SS3D.Data;
+using SS3D.Data.Persistence;
+using SS3D.Interactions;
+using SS3D.Systems.Atmospherics.Pipes;
+using SS3D.Systems.Interactions;
+using SS3D.Systems.Inventory.Containers;
+using SS3D.Systems.Inventory.Items;
 using SS3D.Systems.Tile;
 using SS3D.Systems.Tile.MapEditor;
 using UnityEngine;
@@ -51,6 +59,130 @@ namespace SS3D.Tests
                 if (editor.IsActive)
                     SetEditorActive(editor, false);
             }
+        }
+
+        // Guards: saved setup applied right after ServerManager.Spawn wins over the starting state OnStartServer set (object-setup-persistence Q12, the spawn-timing risk) · Not cheaper because: OnStartServer only runs inside a real FishNet spawn
+        [UnityTest]
+        public IEnumerator SavedSetup_WinsOverTheValvesStartingState()
+        {
+            ChangesRoom = true;
+            AtmosValveController plain = PlaceValve(RoomTile());
+            bool startsOpen = plain.IsOpen;
+            Assert.IsEmpty(ObjectSetup.Capture(plain.gameObject), "a valve at its starting state saves no setup");
+
+            SavedSetupEntry[] flipped = { new("atmos-device", $"{{\"enabled\":{(!startsOpen).ToString().ToLowerInvariant()}}}") };
+            var valveSo = (TileObjectSo)Tiles.GetAsset(ManualValve);
+            Assert.IsTrue(Tiles.CurrentMap.PlaceTileObject(valveSo, RoomTile() + Vector3.right, Direction.North, true, false, false,
+                flipped, null, out GameObject configured));
+
+            AtmosValveController valve = configured.GetComponent<AtmosValveController>();
+            Assert.AreEqual(!startsOpen, valve.IsOpen, "the saved setup is applied after OnStartServer, not overwritten by it");
+            Assert.AreEqual(1, ObjectSetup.Capture(configured).Length, "and saving it again keeps it");
+            yield return null;
+        }
+
+        // Guards: an editor user turning a valve by hand records an undo step they own, the map reads unsaved for the Stop prompt, and undo turns it back (MapEditorSetupTracker hooked into CmdRunInteraction, RpcSetEditorOpen) · Not cheaper because: the change crosses FishNet's interaction and editor RPCs, which EditMode can't reach
+        [UnityTest]
+        public IEnumerator AnEditorUsersValveTurn_IsAnUndoStep_ThatLeavesTheMapUnsaved()
+        {
+            ChangesRoom = true;
+            MapEditorSubSystem editor = SubSystems.Get<MapEditorSubSystem>();
+            AtmosValveController valve = PlaceValve(RoomTile());
+            bool startsOpen = valve.IsOpen;
+            var host = (NetworkConnection)Host.Owner;
+
+            SetEditorActive(editor, true);
+            try
+            {
+                yield return WaitFor(() => editor.IsEditing(host), "the server knows the editor is open");
+                long revision = editor.EditRevision;
+
+                string refusal = Body.GetComponent<InteractionController>().RunInteractionForTesting(
+                    valve.gameObject, valve.transform.position, "Toggle", IntentType.Help);
+                Assert.IsNull(refusal, refusal);
+                yield return WaitFor(() => valve.IsOpen != startsOpen, "the turn goes through");
+
+                Assert.AreNotEqual(revision, editor.EditRevision, "the turn is an edit");
+                Assert.IsTrue(editor.HasUnsavedChanges, "Stop prompts to save it");
+
+                typeof(MapEditorSubSystem).GetMethod("OnUndoRequested", BindingFlags.Instance | BindingFlags.NonPublic)
+                    .Invoke(editor, null);
+                yield return WaitFor(() => valve.IsOpen == startsOpen, "undo turns the valve back");
+            }
+            finally
+            {
+                if (editor.IsActive)
+                    SetEditorActive(editor, false);
+            }
+
+            yield return WaitFor(() => !editor.IsEditing(host), "closing the editor stops the tracking");
+        }
+
+        // Guards: a locker's contents save recursively and come back whole, three containers deep, and restoring twice leaves one copy (AttachedContainer setup, Q6/Q13) · Not cheaper because: contents are real spawned items found through the station's asset catalog
+        [UnityTest]
+        public IEnumerator ALockersNestedContents_ComeBackWhole()
+        {
+            ChangesRoom = true;
+            var lockerSo = (TileObjectSo)Tiles.GetAsset("Locker");
+            Vector3 position = RoomTile();
+            AttachedContainer storage = StorageOf(PlaceTile(lockerSo, position));
+            AttachedContainer backpack = Store("Backpack", storage);
+            AttachedContainer medkit = Store("Medkit", backpack);
+            Store("HealthScanner", medkit);
+
+            // Let the stores reach the host's client before the locker goes (FishNet's ClientHost reads a despawned
+            // container's late sync against stale references).
+            yield return Hold(0.3f);
+            SavedSetupEntry[] setup = ObjectSetup.Capture(storage.GetComponentInParent<PlacedTileObject>().gameObject);
+            Tiles.CurrentMap.ClearTileObject(position, lockerSo.layer, Direction.North);
+            yield return null;
+
+            Assert.IsTrue(Tiles.CurrentMap.PlaceTileObject(lockerSo, position, Direction.North, true, false, false,
+                setup, null, out GameObject restoredLocker));
+            ObjectSetup.Restore(restoredLocker, setup);
+            yield return Hold(0.3f);
+
+            Item restoredBackpack = OnlyItem(StorageOf(restoredLocker), "Backpack");
+            Item restoredMedkit = OnlyItem(restoredBackpack.GetComponentInChildren<AttachedContainer>(), "Medkit");
+            OnlyItem(restoredMedkit.GetComponentInChildren<AttachedContainer>(), "HealthScanner");
+        }
+
+        private const string ManualValve = "AtmosValveManual";
+
+        private static TileSubSystem Tiles => SubSystems.Get<TileSubSystem>();
+
+        private Vector3 RoomTile()
+        {
+            Vector3 body = Body.transform.position;
+            return new Vector3(Mathf.Round(body.x) + 1f, 0f, Mathf.Round(body.z) + 1f);
+        }
+
+        private static AtmosValveController PlaceValve(Vector3 position) =>
+            PlaceTile((TileObjectSo)Tiles.GetAsset(ManualValve), position).GetComponent<AtmosValveController>();
+
+        private static GameObject PlaceTile(TileObjectSo tile, Vector3 position)
+        {
+            Assert.IsTrue(Tiles.CurrentMap.PlaceTileObject(tile, position, Direction.North, true, false, false, out GameObject placed),
+                $"{tile.NameString} places at {position}");
+            return placed;
+        }
+
+        private static AttachedContainer StorageOf(GameObject placed) => placed.GetComponentInChildren<AttachedContainer>();
+
+        private static AttachedContainer Store(string itemName, AttachedContainer into)
+        {
+            var itemSo = (ItemObjectSo)Tiles.GetAsset(itemName);
+            Item item = SubSystems.Get<ItemSubSystem>().SpawnItemInContainer(Assets.Get<GameObject>(itemSo.PrefabAsset), into);
+            Assert.IsNotNull(item, $"{itemName} fits in {into.name}");
+            return item.GetComponentInChildren<AttachedContainer>();
+        }
+
+        private static Item OnlyItem(AttachedContainer container, string expected)
+        {
+            Item[] items = container.Items.ToArray();
+            Assert.AreEqual(1, items.Length, $"{container.name} holds exactly one item");
+            StringAssert.StartsWith(expected, items[0].name);
+            return items[0];
         }
 
         private static bool AnyRendererEnabled(PlacedTileObject placed) =>

@@ -7,9 +7,11 @@ using SS3D.Attributes;
 using SS3D.Core;
 using SS3D.Data;
 using SS3D.Data.AssetDatabases;
+using SS3D.Data.Persistence;
 using SS3D.Interactions.Interfaces;
 using SS3D.Logging;
 using SS3D.Rendering.URP;
+using SS3D.Systems.Inventory.Containers;
 using SS3D.Systems.StructuralDamage;
 using SS3D.Systems.Tile.Connections;
 using SS3D.Systems.Tile.MapEditor;
@@ -31,7 +33,17 @@ namespace SS3D.Systems.Tile
         /// Creates a new PlacedTileObject from a TileObjectSO at a given position and direction. 
         /// Uses NetworkServer.Spawn() if a server is running.
         /// </summary>
-        public static PlacedTileObject Create(Vector3 worldPosition, Vector2Int origin, Direction dir, TileObjectSo tileObjectSo, int mapId = 0)
+        public static PlacedTileObject Create(Vector3 worldPosition, Vector2Int origin, Direction dir, TileObjectSo tileObjectSo, int mapId = 0) =>
+            Create(worldPosition, origin, dir, tileObjectSo, mapId, null, null);
+
+        /// <summary>
+        /// As <see cref="Create(Vector3, Vector2Int, Direction, TileObjectSo, int)"/>, then applies the saved
+        /// <paramref name="setup"/> right after the spawn. FishNet runs <c>OnStartServer</c> inside
+        /// <c>ServerManager.Spawn</c>, so the setup overrides the prefab defaults it applied.
+        /// </summary>
+        /// <param name="reportSkipped">Receives what the setup couldn't restore (the map's load report).</param>
+        public static PlacedTileObject Create(Vector3 worldPosition, Vector2Int origin, Direction dir, TileObjectSo tileObjectSo, int mapId,
+            IReadOnlyList<SavedSetupEntry> setup, Action<string> reportSkipped)
         {
             GameObject tileObjectPrefab = Assets.Get<GameObject>(tileObjectSo.PrefabAsset);
             GameObject placedGameObject = Instantiate(tileObjectPrefab);
@@ -69,6 +81,9 @@ namespace SS3D.Systems.Tile
                 else
                     InstanceFinder.ServerManager.Spawn(placedGameObject);
             }
+
+            if (setup != null && setup.Count > 0)
+                ObjectSetup.Restore(placedGameObject, setup, tileObjectSo.NameString, reportSkipped);
 
             return placedObject;
         }
@@ -613,6 +628,9 @@ namespace SS3D.Systems.Tile
         [Server]
         public void DestroySelf()
         {
+            if (InstanceFinder.ServerManager != null && InstanceFinder.IsServer)
+                ContainerContentsSetup.DeleteAllContents(gameObject);
+
             if (InstanceFinder.ServerManager != null)
                 InstanceFinder.ServerManager.Despawn(gameObject);
             else
@@ -639,6 +657,7 @@ namespace SS3D.Systems.Tile
                 tileObjectSOName = _tileObjectSo.NameString,
                 origin = _origin,
                 dir = _dir,
+                setup = ObjectSetup.Capture(gameObject),
             };
         }
 

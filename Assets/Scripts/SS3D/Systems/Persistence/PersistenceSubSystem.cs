@@ -38,6 +38,15 @@ namespace SS3D.Systems.Persistence
         public event Action<string> StationTemplateSaved;
         public event Action<string> StationTemplateLoaded;
 
+        /// <summary>
+        /// The schema version of the last station template loaded; above
+        /// <see cref="PersistenceEnvelope.CurrentSchemaVersion"/> when a newer build saved it.
+        /// </summary>
+        public int LastLoadedSchemaVersion { get; private set; }
+
+        /// <summary>The last loaded template came from a newer build, so some of its settings may be missing.</summary>
+        public bool LastLoadWasNewerVersion => PersistenceEnvelope.IsNewerThanThisBuild(LastLoadedSchemaVersion);
+
         public event Action<PersistenceLayer> OnBeforeRestore;
 
         public event Action<PersistenceLayer> OnAfterRestore;
@@ -352,6 +361,14 @@ namespace SS3D.Systems.Persistence
             string templateName,
             bool timeSlice)
         {
+            // Nothing before schema 3 compared versions, so an older build loaded a newer map silently.
+            LastLoadedSchemaVersion = envelope.schemaVersion;
+            if (PersistenceEnvelope.IsNewerThanThisBuild(envelope.schemaVersion))
+            {
+                Log.Warning(this, "Station template {templateName} was saved by a newer version (schema {saved}, this build reads {current}); some settings may be missing",
+                    Logs.Important, templateName, envelope.schemaVersion, PersistenceEnvelope.CurrentSchemaVersion);
+            }
+
             OnBeforeRestore?.Invoke(PersistenceLayer.StationTemplate);
 
             // Direct notify — WorldReadiness is DDOL and may not have bound to OnBeforeRestore yet

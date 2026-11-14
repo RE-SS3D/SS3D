@@ -1,6 +1,5 @@
+using SS3D.Data.Persistence;
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 namespace SS3D.Systems.Tile
@@ -23,5 +22,11 @@ namespace SS3D.Systems.Tile
         public string itemName;
         public Vector3 worldPosition;
         public Quaternion rotation;
+
+        /// <summary>
+        /// The item's authored setup (a bag's contents) where it differs from the prefab default; empty for an item
+        /// nobody configured, and in saves from before schema 3.
+        /// </summary>
+        public SavedSetupEntry[] setup;
     }
 }

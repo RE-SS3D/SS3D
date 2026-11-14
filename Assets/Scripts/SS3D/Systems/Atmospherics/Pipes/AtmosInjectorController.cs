@@ -25,6 +25,8 @@ namespace SS3D.Systems.Atmospherics.Pipes
             ServerSetEnabled(false);
         }
 
+        protected override PortSetup DefaultSetup() => new() { enabled = false };
+
         public override IInteraction[] CreateTargetInteractions(InteractionEvent interactionEvent)
         {
             return new IInteraction[]

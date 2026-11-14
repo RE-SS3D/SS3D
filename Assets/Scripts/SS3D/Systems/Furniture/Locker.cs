@@ -4,6 +4,7 @@ using FishNet.Object;
 using FishNet.Object.Synchronizing;
 using JetBrains.Annotations;
 using SS3D.Core.Behaviours;
+using SS3D.Data.Persistence;
 using SS3D.Interactions;
 using SS3D.Interactions.Interfaces;
 using SS3D.Systems.Inventory.Containers;
@@ -21,7 +22,7 @@ namespace SS3D.Systems.Furniture
     /// view/store only while open; closing the door closes any open storage panels.
     /// </summary>
     [RequireComponent(typeof(Selectable))]
-    public class Locker : NetworkActor, IInteractionTarget, IStorageAccessGate
+    public class Locker : NetworkActor, IInteractionTarget, IStorageAccessGate, IPersistentSetup
     {
         private static readonly int ColorPropertyIndex = Shader.PropertyToID("_Color");
 
@@ -55,8 +56,48 @@ namespace SS3D.Systems.Furniture
 
         private Material _lightMaterial;
 
+        // The prefab's door and lock state, read on Awake before anything changes them: the setup default.
+        private bool _defaultOpen;
+        private bool _defaultLocked;
+
         /// <inheritdoc />
         public bool AllowsStorageAccess => IsOpen;
+
+        protected override void OnAwake()
+        {
+            base.OnAwake();
+            _defaultOpen = IsOpen;
+            _defaultLocked = IsLocked;
+        }
+
+        public string SetupKey => "locker";
+
+        [System.Serializable]
+        private sealed class LockerSetup
+        {
+            public bool isOpen;
+            public bool isLocked;
+        }
+
+        public string CaptureSetup() =>
+            IsOpen == _defaultOpen && IsLocked == _defaultLocked
+                ? null
+                : JsonUtility.ToJson(new LockerSetup { isOpen = IsOpen, isLocked = IsLocked });
+
+        /// <summary>Opens or closes the door and sets the lock, as the locker's own interactions would.</summary>
+        [Server]
+        public void RestoreSetup(string json)
+        {
+            LockerSetup setup = new() { isOpen = _defaultOpen, isLocked = _defaultLocked };
+            if (!string.IsNullOrEmpty(json))
+                JsonUtility.FromJsonOverwrite(json, setup);
+
+            bool wasOpen = IsOpen;
+            IsOpen = setup.isOpen;
+            IsLocked = Lockable && setup.isLocked;
+            if (wasOpen && !IsOpen)
+                CloseStorageUIs();
+        }
 
         protected override void OnStart()
         {

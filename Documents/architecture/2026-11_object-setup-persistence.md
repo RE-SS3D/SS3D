@@ -1,8 +1,8 @@
 > Implements: Documents/design/creative-mode.md §3, §9; Documents/design/persistence-save.md §3; Documents/design/inventory-storage.md §7, §8
 > Touches systems: persistence, tile, map-editor-creative-hooks, atmospherics, inventory, interactions, furniture
-> Status: planned
+> Status: in-progress
 
-**Progress:** not started. Advances [map-authoring.md](../milestones/map-authoring.md) A9.
+**Progress:** Slices 1 and 2 built in one PR; EditMode, MapEditor and Atmos scenarios pass; owner hand test pending. Advances [map-authoring.md](../milestones/map-authoring.md) A9.
 
 # Object setup persistence (Nov 2026)
 
@@ -91,7 +91,7 @@ New types (names are proposals):
 
 ## Phases
 
-### Slice 1 — Framework and device settings — **planned**
+### Slice 1 — Framework and device settings — **built**
 
 1. `IPersistentSetup`, `SavedSetupEntry`, `ObjectSetup`; `setup` lists on `SavedPlacedTileObject` and `SavedPlacedItemObject`; `PlacedTileObject.Save` and `PlacedItemObject.Save` fill them.
 2. `PlacedTileObject.Create` and item placement take an optional setup list and restore it after `Spawn` (Q12). `TileMap.LoadRoutine` passes saved setup through.
@@ -102,7 +102,7 @@ New types (names are proposals):
 7. Dropper copy (Q5): picking a placed object keeps its captured setup alongside the palette selection; `PlaceTileCommand`, `PlaceItemCommand` and their DTOs carry an optional setup list. Placing from the palette clears it.
 8. Load loss (Q17) for settings; schema 3 and the newer-version toast (Q18); the forward-direction rule in [2026-10_game-versioning](2026-10_game-versioning.md).
 
-### Slice 2 — Contents — **planned**
+### Slice 2 — Contents — **built**
 
 1. `AttachedContainer : IPersistentSetup` (Q13), restoring nested item records through `AddItemPosition` and recursing into each item's setup.
 2. AssetAudit: `ContainerName` unique within each prefab that has more than one container.
@@ -128,11 +128,26 @@ Validate with `Testing/ui/validate.sh --steps compile,editmode,scenarios:MapEdit
 
 ## Risks to check while building
 
-- **Spawn timing.** Q12 assumes FishNet runs `OnStartServer` before `ServerManager.Spawn` returns. The restore-after-start test confirms it; if that's wrong, apply setup from a post-spawn callback instead.
-- **`ContainerName` uniqueness.** It hasn't been verified on every prefab. Run the Slice 2 audit first; a failure is a prefab fix, through a tier-B recipe ([2026-07_agent-first-composition](2026-07_agent-first-composition.md)), never by hand-editing YAML.
+- **Spawn timing — confirmed.** `ServerManager.Spawn` → `SpawnWithoutChecks` → `SetupWithoutSynchronization` → `NetworkObject.Initialize(asServer)` → `InitializeCallbacks` calls every behaviour's `OnStartServer`, children included, before `Spawn` returns. `MapEditorScenarios.SavedSetup_WinsOverTheValvesStartingState` covers it.
+- **`ContainerName` uniqueness — passes.** Only Human, TestHuman and four body-part prefabs have more than one container, all uniquely named; no placeable object has two. `ObjectSetupAuditTests` keeps both this and setup-key uniqueness.
 - **Copy payload size.** A filled crate's setup travels in the command DTO. Keep FishNet's packet limits in mind for large copies, and split or refuse rather than truncate.
 
+## Implementation notes
+
+Where the build diverged from the decisions above:
+
+- **No in-world interaction with the editor open (owner, 2026-11-14).** The MapEditor input context masks Interactions, so nobody can turn a valve or fill a locker while the editor is open. The server now tracks who has it open (`RpcSetEditorOpen`), and Q7 and Q14 are built against that and tested through server paths. Mappers set objects up while playtesting and save (Q4). An in-editor Use tool is a follow-up.
+- **The interaction hook sits at the step, not the RPC.** `CmdRunInteraction` only queues an interaction; its `Start` runs a frame later in `InteractionSource.Update`. `ServerInteractionSteps.Wrap` (in `SS3D.Interactions`) wraps each `Start` and delayed `Update`, and is installed only while someone has the editor open. Machine panels and `HumanInventory` drop/transfer use `MapEditorSetupTracker.Track` directly; `Hands`, `Hand` and `ContainerViewer` change no placed object's contents and aren't hooked.
+- **Container keys** are `container` for a container on the object's root and `container:<child name>` otherwise, not `ContainerName`: that is the prefab or item name and changes on a rename. The audit checks both.
+- **`ObjectSetup` and `ISetupScope` live in `SS3D.Data.Persistence`** with `IPersistentSetup`; a marker `ISetupRecordRoot` on `Item` stops a capture at a stored item. Keeping them in `Systems/Persistence` added two Systems folder cycles (G4). `ISetupScope` lets the air alarm add its room's vents and scrubbers to a tracked panel change.
+- **Stack sizes** are a `count` on each stored-item record; a world item's stack size still isn't saved.
+- **Dropper copy:** the server sends the picked object's setup back (`RpcCaptureDropperSetup`); a submit carrying more than 64 KB of setup is refused with a toast (risk 3).
+- **Despawning a placed object despawns its stored items first** (`ContainerContentsSetup.DeleteAllContents`), so undo and redo of a filled locker don't leave orphaned network objects.
+- **Tests:** the device round trips and the nested locker → backpack → medkit → scanner case run in `scenarios:MapEditor`, because `[Server]` setters and item spawns need FishNet. Device restore in EditMode is covered with a stand-in component.
+
 ## Follow-ups
+
+- **In-editor Use tool:** interact with objects from the editor camera, so Q7 and Q14 fire during authoring.
 
 - **SS13 DMM var-edits (Q21):** map `open` (valves) and `locked` (lockers) through `Tools/map_import/ss13_type_map.yaml` into setup entries.
 - **Randomised contents (Q8):** needs its own design first.

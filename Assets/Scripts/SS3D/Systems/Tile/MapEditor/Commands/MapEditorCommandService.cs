@@ -67,6 +67,19 @@ namespace SS3D.Systems.Tile.MapEditor.Commands
             return true;
         }
 
+        /// <summary>
+        /// Records an edit that has already happened (an in-world setup change under an editor user) as an undo step,
+        /// without applying it. False when it changed nothing.
+        /// </summary>
+        public bool Record(IMapEditorCommand command, int owner = MapEditorUndoStack.AnyOwner)
+        {
+            if (command == null || command is IReportsChange { Changed: false })
+                return false;
+
+            _undoStack.Push(command, owner);
+            return true;
+        }
+
         public bool ExecuteCompound(IReadOnlyList<IMapEditorCommand> commands, int owner = MapEditorUndoStack.AnyOwner)
         {
             if (commands == null || commands.Count == 0)

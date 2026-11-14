@@ -3,6 +3,7 @@ using FishNet;
 using FishNet.Object;
 using SS3D.Core;
 using SS3D.Data;
+using SS3D.Data.Persistence;
 using SS3D.Logging;
 using SS3D.Systems.Tile.TileMapCreator;
 using System;
@@ -28,7 +29,15 @@ namespace SS3D.Systems.Tile
         /// <param name="itemSo"></param>
         /// <param name="existingItem">The existing Item GameObject to add the PlacedItemObject component to</param>
         /// <returns></returns>
-        public static PlacedItemObject Create(Vector3 worldPosition, Quaternion rotation, ItemObjectSo itemSo, GameObject existingItem = null)
+        public static PlacedItemObject Create(Vector3 worldPosition, Quaternion rotation, ItemObjectSo itemSo, GameObject existingItem = null) =>
+            Create(worldPosition, rotation, itemSo, existingItem, null, null);
+
+        /// <summary>
+        /// As <see cref="Create(Vector3, Quaternion, ItemObjectSo, GameObject)"/>, then applies the saved
+        /// <paramref name="setup"/> right after the spawn, over the defaults <c>OnStartServer</c> set.
+        /// </summary>
+        public static PlacedItemObject Create(Vector3 worldPosition, Quaternion rotation, ItemObjectSo itemSo, GameObject existingItem,
+            IReadOnlyList<SavedSetupEntry> setup, Action<string> reportSkipped)
         {
             GameObject placedGameObject;
             
@@ -71,6 +80,9 @@ namespace SS3D.Systems.Tile
                 Log.Warning(SubSystems.Get<TileSubSystem>(), "{placedObject} does not have a Network Component and will not be spawned",
                     Logs.Generic, placedObject.NameString);
             }
+
+            if (setup != null && setup.Count > 0)
+                ObjectSetup.Restore(placedGameObject, setup, itemSo.NameString, reportSkipped);
 
             return placedObject;
         }
@@ -153,6 +165,7 @@ namespace SS3D.Systems.Tile
                 itemName = _itemSo.NameString,
                 worldPosition = _worldPosition,
                 rotation = _rotation,
+                setup = ObjectSetup.Capture(gameObject),
             };
         }
     }

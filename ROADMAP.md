@@ -16,7 +16,7 @@ do end to end. Each goal is split into **slices**, the smaller pieces that have 
 | Goal | What you'll be able to do | Progress |
 |------|---------------------------|----------|
 | [Test server](#test-server) | Download a release, click join, play with others on a live server | 6 of 8 done, 2 partial |
-| [Map authoring](#map-authoring) | Build your own station in a release build and hand it in | 9 of 11 done |
+| [Map authoring](#map-authoring) | Build your own station in a release build and hand it in | 9 of 11 done, 1 partial |
 | [Nuclear Operatives round](#nuclear-operatives-round) | Play a full Nuke Ops round from spawn to end screen | 5 of 12 done, 7 partial |
 | [Station round](#station-round) | Play a short, bare-bones SS13 shift with jobs and antagonists | 0 of 7 done, 1 partial |
 
@@ -56,7 +56,7 @@ What already works, system by system, is listed in
 | ⬜ | A6 | A tester builds a Nuke Ops station from the download using only the guide, and it ships with the game |
 | ✅ | A7 | Close the game and run Update_SS3D.bat (Windows) or ./update_ss3d.sh (Linux) to get the latest stable release without losing maps; the previous build stays available |
 | ✅ | A8 | Every object in the editor's palette sits in a tab named for where it goes, and search finds anything from any tab (objects are filed under their new tabs, search finds them from any tab, Furniture and Machines are split under headings, and an object's variants share one slot that V cycles) |
-| ⬜ | A9 | A valve you open, a locker you lock or fill in the editor stays that way when the map is saved and loaded |
+| 🟡 | A9 | A valve you open, a locker you lock or fill in the editor stays that way when the map is saved and loaded (set a valve, pump, vent, scrubber, air alarm preset or locker while playtesting, or fill a locker or bag, and the next save keeps it; undo and Dropper copy carry it) |
 
 ## Nuclear Operatives round
 
