@@ -47,7 +47,7 @@ One row per gameplay domain that has, or should eventually have, a design doc. A
 | observer | [observer](../design/observer.md) | none yet | [entities](systems/entities.md) — partial (first pass: lobby Observe → ghost, no respawn) |
 | onboarding-tutorial | none yet | none yet | none yet |
 | pda | [pda](../design/pda.md) | none yet | [inventory](systems/inventory.md) — partial |
-| persistence-save | [persistence-save](../design/persistence-save.md) | [persistence plan](../plans/persistence_architecture_design_2fe61864.plan.md) — in-progress | [persistence](systems/persistence.md) — partial |
+| persistence-save | [persistence-save](../design/persistence-save.md) | [persistence plan](../plans/persistence_architecture_design_2fe61864.plan.md) — in-progress; [object-setup-persistence](2026-11_object-setup-persistence.md) — planned | [persistence](systems/persistence.md) — partial |
 | player-accounts | [player-accounts](../design/player-accounts.md) | none yet | none yet |
 | rd-material-economy | none yet | none yet | none yet |
 | rendering-lighting | [rendering-lighting](../design/rendering-lighting.md) | [srp-batcher-gpu-instancing](2026-07_srp-batcher-gpu-instancing.md) — shipped; [urp-lighting-look-polish](2026-07_urp-lighting-look-polish.md) — in-progress | [rendering](systems/rendering.md) — partial |
@@ -140,6 +140,7 @@ Only work that is in flight, planned, or kept as standing reference. Everything 
 | [2026-11_construction-mvp1](2026-11_construction-mvp1.md) | in-progress |
 | [2026-11_examine-and-action-feedback](2026-11_examine-and-action-feedback.md) | in-progress (phases 1–4 built, 5–6 partly) |
 | [2026-11_testing-philosophy](2026-11_testing-philosophy.md) | shipped (standing policy) |
+| [2026-11_object-setup-persistence](2026-11_object-setup-persistence.md) | planned |
 | [2026-11_tech-debt-paydown](2026-11_tech-debt-paydown.md) | in-progress (Phases 0–3 shipped; Phase 6 under way: P6.1–P6.4 done) |
 | [agent_validation_loop.plan](../plans/agent_validation_loop.plan.md) | shipped (reference) |
 | [eva-gear.plan](../plans/eva-gear.plan.md) | in-progress |
