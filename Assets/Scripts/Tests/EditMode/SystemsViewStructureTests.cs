@@ -29,6 +29,7 @@ namespace SS3D.Tests.EditMode
             structure.Set(new SystemsViewBadge { Key = Key(0, 0, 7), Kind = 1, State = ventState, Facing = Direction.North, ViewId = 1 });
             structure.Set(new SystemsViewBadge { Key = Key(4, 0, 7), Kind = 2, State = 0, Facing = Direction.East, ViewId = 1, OtherViewId = 2 });
             structure.Set(new SystemsViewMarker { Key = Key(5, 0, 1), IssueId = "atmos-open-end" });
+            structure.Set(new SystemsViewRoom { AreaId = 3, ViewId = 1000003, CircuitViewId = 1, Flags = 1 });
             return structure;
         }
 
@@ -39,6 +40,7 @@ namespace SS3D.Tests.EditMode
             CollectionAssert.AreEquivalent(expected.Networks, actual.Networks);
             CollectionAssert.AreEquivalent(expected.Badges, actual.Badges);
             CollectionAssert.AreEquivalent(expected.Markers, actual.Markers);
+            CollectionAssert.AreEquivalent(expected.Rooms, actual.Rooms);
         }
 
         [Test]
@@ -91,9 +93,12 @@ namespace SS3D.Tests.EditMode
             after.Segments.Remove(Key(5, 0));
             after.Networks.Remove(2);
             after.Markers.Clear();
+            after.Rooms.Clear();
             after.Set(new SystemsViewSegment { Key = Key(3, 0), ViewId = 3 });
 
             SystemsViewDelta delta = SystemsViewStructure.Diff(before, after);
+
+            CollectionAssert.AreEqual(new ushort[] { 3 }, delta.RoomsRemoved);
 
             CollectionAssert.AreEqual(new[] { Key(5, 0) }, delta.SegmentsRemoved);
             CollectionAssert.AreEqual(new[] { 2 }, delta.NetworksRemoved);
@@ -245,6 +250,7 @@ namespace SS3D.Tests.EditMode
             SystemsViewDelta sent = SystemsViewStructure.Diff(null, Station());
             sent.SegmentsRemoved = new[] { Key(-300, 2, 4) };
             sent.NetworksRemoved = new[] { 9 };
+            sent.RoomsRemoved = new ushort[] { 7, 65535 };
 
             PooledWriter writer = WriterPool.Retrieve();
             try
@@ -263,6 +269,8 @@ namespace SS3D.Tests.EditMode
                 CollectionAssert.AreEqual(sent.NetworksRemoved, read.NetworksRemoved);
                 CollectionAssert.AreEquivalent(sent.BadgesSet, read.BadgesSet);
                 CollectionAssert.AreEquivalent(sent.MarkersSet, read.MarkersSet);
+                CollectionAssert.AreEquivalent(sent.RoomsSet, read.RoomsSet);
+                CollectionAssert.AreEqual(sent.RoomsRemoved, read.RoomsRemoved);
             }
             finally
             {

@@ -32,7 +32,7 @@ Per-consumer power gating and **area-scoped APC cell drain** via [electricity](e
 - `Assets/Scripts/SS3D/Systems/Area/AreaDeviceTileResolver.cs` — wall-mount front-tile + floor-cache area resolve
 - `Assets/Scripts/SS3D/Systems/Area/AreaDevSettings.cs` — dev toggle (`SS3D → Dev → Areas → Show Area Gizmos`)
 - `Assets/Scripts/SS3D/Systems/Area/AreaDebugGizmoDrawer.cs` — Scene-view tile overlay, APC labels (host/server map only)
-- `Assets/Scripts/SS3D/Systems/Tile/MapEditor/MapEditorAreaOverlay.cs` — release-build Areas layer: cached membership + shared gizmo colors, chunk meshes, no colliders; automatic with Scripts → Rooms and manually toggled in Layer View Mode; room-name labels use buffered `RpcSyncAreaNames` / `FloorVisualCache.GetAreaName`, updated by rename and membership snapshots
+- `Assets/Scripts/SS3D/Systems/Tile/MapEditor/MapEditorAreaOverlay.cs` — release-build Areas layer: cached membership + shared gizmo colors, chunk meshes, no colliders; automatic with Scripts → Rooms and manually toggled in Layer View Mode; room-name labels use buffered `RpcSyncAreaNames` / `FloorVisualCache.GetAreaName`, updated by rename and membership snapshots; a second instance built with a tint (`MapEditorAreaOverlay.Tint`) is the Power systems view's room tint (each room in its APC's circuit colour or hatched, [map-editor-systems-views](../2026-11_map-editor-systems-views.md) Phase 3)
 - `Assets/Scripts/Tests/EditMode/AreaFloodFillTests.cs` — flood-fill and boundary edit-mode tests
 - `Assets/Scripts/Tests/EditMode/Area/AreaFloorVisualCacheTests.cs` — client cache world-grid lookup
 - `Assets/Scripts/Tests/EditMode/ElectricityTests/AreaLightFixturePolicyTests.cs` — fixture policy tests

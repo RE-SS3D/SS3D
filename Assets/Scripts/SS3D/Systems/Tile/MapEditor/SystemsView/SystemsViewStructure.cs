@@ -72,6 +72,13 @@ namespace SS3D.Systems.Tile.MapEditor.SystemsView
         };
 
         public static bool Has(byte links, Direction direction) => (links & Bit(direction)) != 0;
+
+        /// <summary>The tile one step toward <paramref name="direction"/> (diagonals included), as an offset.</summary>
+        public static Vector2Int Step(Direction direction)
+        {
+            Tuple<int, int> step = TileHelper.ToCardinalVector(direction);
+            return new Vector2Int(step.Item1, step.Item2);
+        }
     }
 
     /// <summary>A network's name label ("Supply 3", "Circuit 2"), so nothing depends on colour alone.</summary>
@@ -157,6 +164,33 @@ namespace SS3D.Systems.Tile.MapEditor.SystemsView
     }
 
     /// <summary>
+    /// A room as a view shows it (the Power view's room tint, creative-mode §4): which circuit its APC hangs off, so the
+    /// client tints the room's tiles (room membership already reaches clients through <c>AreaSubSystem</c>) in that
+    /// circuit's colour, or hatches it when it has no APC. <see cref="ViewId"/> names the room as a traceable network
+    /// (its label is in <see cref="SystemsViewStructure.Networks"/>). One entry per room; the Atmos view sends none.
+    /// </summary>
+    public struct SystemsViewRoom : IEquatable<SystemsViewRoom>
+    {
+        /// <summary>The room's <c>AreaId</c> value: the id its floor tiles carry in the client's area cache.</summary>
+        public ushort AreaId;
+        public int ViewId;
+        /// <summary>The view id of the circuit its APC is on; 0 when it has no APC or the APC is on no cable.</summary>
+        public int CircuitViewId;
+        /// <summary>Domain flags in the low bits (the Power view's: has an APC, the APC is broken), plus <see cref="Hatched"/>.</summary>
+        public byte Flags;
+
+        /// <summary>Shared flag: the client draws the room hatched (Power: no APC, or a broken one, so nothing there gets power).</summary>
+        public const byte Hatched = 0x80;
+
+        public bool IsHatched => (Flags & Hatched) != 0;
+
+        public bool Equals(SystemsViewRoom other) =>
+            AreaId == other.AreaId && ViewId == other.ViewId && CircuitViewId == other.CircuitViewId && Flags == other.Flags;
+        public override bool Equals(object obj) => obj is SystemsViewRoom other && Equals(other);
+        public override int GetHashCode() => HashCode.Combine(AreaId, ViewId, CircuitViewId, Flags);
+    }
+
+    /// <summary>
     /// What changed in one view since the last delta a client was sent (Documents/architecture/2026-11_map-editor-systems-views.md Q2).
     /// <see cref="Reset"/> means "clear, then apply": the first send of a subscription. Arrays are never null.
     /// </summary>
@@ -172,17 +206,21 @@ namespace SS3D.Systems.Tile.MapEditor.SystemsView
         public SystemsViewKey[] BadgesRemoved;
         public SystemsViewMarker[] MarkersSet;
         public SystemsViewKey[] MarkersRemoved;
+        public SystemsViewRoom[] RoomsSet;
+        public ushort[] RoomsRemoved;
 
         /// <summary>Nothing to send: not a reset and no entry set or removed.</summary>
         public bool IsEmpty => !Reset
             && Length(SegmentsSet) + Length(SegmentsRemoved) + Length(NetworksSet) + Length(NetworksRemoved)
-            + Length(BadgesSet) + Length(BadgesRemoved) + Length(MarkersSet) + Length(MarkersRemoved) == 0;
+            + Length(BadgesSet) + Length(BadgesRemoved) + Length(MarkersSet) + Length(MarkersRemoved)
+            + Length(RoomsSet) + Length(RoomsRemoved) == 0;
 
         private static int Length(Array array) => array?.Length ?? 0;
     }
 
     /// <summary>
-    /// The structure stream of one view (Q2): segment → view id, view id → label, device badges and problem markers.
+    /// The structure stream of one view (Q2): segment → view id, view id → label, device badges, problem markers and
+    /// (Power) rooms.
     /// A source builds a fresh one per <see cref="ISystemsViewSource.BuildStructure"/>; the server keeps one per
     /// subscriber as "what that client was sent", and the client keeps the one it has applied.
     /// </summary>
@@ -195,11 +233,29 @@ namespace SS3D.Systems.Tile.MapEditor.SystemsView
         public Dictionary<int, SystemsViewNetwork> Networks { get; } = new();
         public Dictionary<SystemsViewKey, SystemsViewBadge> Badges { get; } = new();
         public Dictionary<SystemsViewKey, SystemsViewMarker> Markers { get; } = new();
+        public Dictionary<ushort, SystemsViewRoom> Rooms { get; } = new();
 
         public void Set(SystemsViewSegment segment) => Segments[segment.Key] = segment;
         public void Set(SystemsViewNetwork network) => Networks[network.ViewId] = network;
         public void Set(SystemsViewBadge badge) => Badges[badge.Key] = badge;
         public void Set(SystemsViewMarker marker) => Markers[marker.Key] = marker;
+        public void Set(SystemsViewRoom room) => Rooms[room.AreaId] = room;
+
+        /// <summary>The room whose <see cref="SystemsViewRoom.ViewId"/> is <paramref name="viewId"/>; false when no room has it.</summary>
+        public bool TryGetRoomByViewId(int viewId, out SystemsViewRoom room)
+        {
+            foreach (SystemsViewRoom candidate in Rooms.Values)
+            {
+                if (candidate.ViewId == viewId && viewId > 0)
+                {
+                    room = candidate;
+                    return true;
+                }
+            }
+
+            room = default;
+            return false;
+        }
 
         public void Clear()
         {
@@ -207,6 +263,7 @@ namespace SS3D.Systems.Tile.MapEditor.SystemsView
             Networks.Clear();
             Badges.Clear();
             Markers.Clear();
+            Rooms.Clear();
         }
 
         /// <summary>
@@ -224,6 +281,7 @@ namespace SS3D.Systems.Tile.MapEditor.SystemsView
             DiffInto(reset ? null : sent.Networks, current.Networks, out delta.NetworksSet, out delta.NetworksRemoved);
             DiffInto(reset ? null : sent.Badges, current.Badges, out delta.BadgesSet, out delta.BadgesRemoved);
             DiffInto(reset ? null : sent.Markers, current.Markers, out delta.MarkersSet, out delta.MarkersRemoved);
+            DiffInto(reset ? null : sent.Rooms, current.Rooms, out delta.RoomsSet, out delta.RoomsRemoved);
             return delta;
         }
 
@@ -240,6 +298,7 @@ namespace SS3D.Systems.Tile.MapEditor.SystemsView
             ApplyInto(Networks, delta.NetworksSet, delta.NetworksRemoved, network => network.ViewId);
             ApplyInto(Badges, delta.BadgesSet, delta.BadgesRemoved, badge => badge.Key);
             ApplyInto(Markers, delta.MarkersSet, delta.MarkersRemoved, marker => marker.Key);
+            ApplyInto(Rooms, delta.RoomsSet, delta.RoomsRemoved, room => room.AreaId);
         }
 
         private static void DiffInto<TKey, TValue>(Dictionary<TKey, TValue> before, Dictionary<TKey, TValue> after,

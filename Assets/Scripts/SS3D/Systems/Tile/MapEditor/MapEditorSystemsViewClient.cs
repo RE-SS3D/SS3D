@@ -10,10 +10,18 @@ namespace SS3D.Systems.Tile.MapEditor
     /// it asked the server for, the structure the server has sent for it, the overlay drawing that structure, and the
     /// trace (Phase 2): which networks a Select followed, the live numbers the server sends for them, and the label.
     /// The RPCs live on the hub, in <c>MapEditorSystemsView.cs</c>; it sends what <see cref="TakeTraceRequest"/> hands it.
+    /// A view that sends rooms (Power, Phase 3) also tints them: the synced room membership drawn by a
+    /// <see cref="MapEditorAreaOverlay"/> in each room's circuit colour, hatched for a room with no APC.
     /// </summary>
     public sealed class MapEditorSystemsViewClient : IDisposable
     {
+        /// <summary>Under the systems overlay's runs (4000), above the world.</summary>
+        public const int RoomTintQueue = 3999;
+
         private readonly MapEditorSystemsOverlay _overlay = new();
+        private readonly MapEditorAreaOverlay _roomTint;
+
+        public MapEditorSystemsViewClient() => _roomTint = new MapEditorAreaOverlay(RoomTint, RoomTintQueue, "MapEditorSystemsRoomTint");
 
         /// <summary>The view last asked of the server.</summary>
         public SystemsViewKind Requested { get; private set; }
@@ -24,8 +32,10 @@ namespace SS3D.Systems.Tile.MapEditor
         /// <summary>
         /// Every frame while the editor is open, with the view now on. Returns true when that differs from
         /// <see cref="Requested"/>, so the server must be asked for it; the old view's structure is dropped.
+        /// <paramref name="roomsOverlayShown"/>: the Scripts › Rooms overlay is up, whose room colours painting needs, so
+        /// the room tint stays off under it.
         /// </summary>
-        public bool Update(SystemsViewKind active)
+        public bool Update(SystemsViewKind active, bool roomsOverlayShown = false)
         {
             bool changed = active != Requested;
             if (changed)
@@ -33,13 +43,53 @@ namespace SS3D.Systems.Tile.MapEditor
                 Requested = active;
                 Structure = null;
                 _overlay.SetStructure(null);
+                _tintApplied.Clear();
+                _roomTint.Invalidate();
                 _hoverRevision++;
                 // The server starts the new view (or none) with no trace, so nothing needs asking.
                 EndTrace(tellServer: false);
             }
 
             _overlay.SetVisible(active != SystemsViewKind.Off);
+            _roomTint.SetVisible(ShowsRoomTint && !roomsOverlayShown);
             return changed;
+        }
+
+        /// <summary>The structure has rooms to tint (the Power view; Atmos sends none).</summary>
+        public bool ShowsRoomTint => Requested != SystemsViewKind.Off && Structure != null && Structure.Rooms.Count > 0;
+
+        /// <summary>The room tint, for tests and the visual pilot.</summary>
+        public MapEditorAreaOverlay RoomTintOverlay => _roomTint;
+
+        /// <summary>
+        /// A room's tint: its APC's circuit colour (grey for an APC on no cable), or hatched when it has no APC. While a
+        /// trace is on, rooms neither traced nor on a traced circuit dim like the runs.
+        /// </summary>
+        public MapEditorAreaOverlay.Tint RoomTint(ushort areaId)
+        {
+            if (Structure == null || !Structure.Rooms.TryGetValue(areaId, out SystemsViewRoom room))
+                return MapEditorAreaOverlay.Tint.None;
+
+            bool hatched = room.IsHatched;
+            Color color = hatched ? HatchColor : SystemsViewPalette.ColorFor(room.CircuitViewId);
+            if (_focusIds.Count > 0 && !_focusIds.Contains(room.ViewId) && (room.CircuitViewId <= 0 || !_focusIds.Contains(room.CircuitViewId)))
+                color.a *= MapEditorSystemsOverlay.UntracedAlpha;
+            return new MapEditorAreaOverlay.Tint(color, hatched);
+        }
+
+        /// <summary>The stripes of a hatched room, as the view's domain gives them.</summary>
+        private Color HatchColor => SystemsViewDomains.For(Requested)?.RoomHatch ?? SystemsViewPalette.None;
+
+        /// <summary>
+        /// The colour that names a network in the panel and the trace label: its palette colour, or for a room its APC's
+        /// circuit colour (the hatch colour when it has none), so a room reads in the colour it is tinted.
+        /// </summary>
+        public Color ColorOf(int viewId)
+        {
+            if (Structure != null && Structure.Rooms.Count > 0 && Structure.TryGetRoomByViewId(viewId, out SystemsViewRoom room))
+                return room.IsHatched ? new Color(HatchColor.r, HatchColor.g, HatchColor.b, 1f) : SystemsViewPalette.ColorFor(room.CircuitViewId);
+
+            return SystemsViewPalette.ColorFor(viewId);
         }
 
         /// <summary>
@@ -58,6 +108,14 @@ namespace SS3D.Systems.Tile.MapEditor
 
             Structure.Apply(delta);
             _overlay.Apply(Structure, delta);
+            if (delta.Reset)
+            {
+                _tintApplied.Clear();
+                _roomTint.Invalidate();
+            }
+
+            if (delta.Reset || delta.RoomsSet?.Length > 0 || delta.RoomsRemoved?.Length > 0)
+                RefreshRoomTint();
             _hoverRevision++;
             if (IsTracing)
                 FollowStructure();
@@ -106,6 +164,7 @@ namespace SS3D.Systems.Tile.MapEditor
             Structure = null;
             _overlay.SetStructure(null);
             _overlay.SetVisible(false);
+            _roomTint.SetVisible(false);
             EndTrace(tellServer: false);
             _traceRequestPending = false;
         }
@@ -277,14 +336,72 @@ namespace SS3D.Systems.Tile.MapEditor
         private void TraceChanged()
         {
             TraceRevision++;
+            bool focusChanged = _focusIds.Count != _traceSides.Count;
+            for (int i = 0; !focusChanged && i < _traceSides.Count; i++)
+                focusChanged = _focusIds[i] != _traceSides[i].ViewId;
+            if (!focusChanged)
+                return;
+
             _focusIds.Clear();
             foreach (SystemsViewTraceSide side in _traceSides)
                 _focusIds.Add(side.ViewId);
             _overlay.SetFocus(_focusIds);
+            RefreshRoomTint();
         }
 
         private readonly List<int> _focusIds = new();
+        private readonly Dictionary<ushort, MapEditorAreaOverlay.Tint> _tintApplied = new();
+        private readonly List<ushort> _tintChanged = new();
 
-        public void Dispose() => _overlay.Dispose();
+        /// <summary>How many times a room's tint changed and its chunks were marked to rebuild; for tests.</summary>
+        public int RoomTintInvalidations { get; private set; }
+
+        /// <summary>The rooms whose tint the last refresh changed (only their chunks rebuild); for tests.</summary>
+        public IReadOnlyList<ushort> LastTintChangedRooms => _tintChanged;
+
+        /// <summary>
+        /// Compares every room's tint with the one last drawn and rebuilds only the chunks of rooms that changed: a delta
+        /// or a trace that leaves the rooms' colours alone rebuilds nothing.
+        /// </summary>
+        private void RefreshRoomTint()
+        {
+            _tintChanged.Clear();
+            if (Structure != null)
+            {
+                foreach (ushort areaId in Structure.Rooms.Keys)
+                {
+                    MapEditorAreaOverlay.Tint tint = RoomTint(areaId);
+                    if (_tintApplied.TryGetValue(areaId, out MapEditorAreaOverlay.Tint drawn) && drawn.Equals(tint))
+                        continue;
+
+                    _tintApplied[areaId] = tint;
+                    _tintChanged.Add(areaId);
+                }
+            }
+
+            foreach (ushort areaId in _tintApplied.Keys)
+            {
+                if (Structure == null || !Structure.Rooms.ContainsKey(areaId))
+                    _tintChanged.Add(areaId);
+            }
+
+            foreach (ushort areaId in _tintChanged)
+            {
+                if (Structure == null || !Structure.Rooms.ContainsKey(areaId))
+                    _tintApplied.Remove(areaId);
+            }
+
+            if (_tintChanged.Count > 0)
+            {
+                _roomTint.InvalidateAreas(_tintChanged);
+                RoomTintInvalidations++;
+            }
+        }
+
+        public void Dispose()
+        {
+            _overlay.Dispose();
+            _roomTint.Dispose();
+        }
     }
 }

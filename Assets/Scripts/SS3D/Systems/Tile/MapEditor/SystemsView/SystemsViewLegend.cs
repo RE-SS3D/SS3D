@@ -30,13 +30,6 @@ namespace SS3D.Systems.Tile.MapEditor.SystemsView
         public static readonly Color[] NetworkSwatches =
             { SystemsViewPalette.ColorFor(1), SystemsViewPalette.ColorFor(2), SystemsViewPalette.ColorFor(3) };
 
-        // Until the Power domain registers its own lines (Phase 3).
-        private static readonly SystemsViewLegendEntry[] Power =
-        {
-            new("Each colour is one cable circuit, joining generators, SMES units and APCs.", NetworkSwatches),
-            new("Floors and objects are dimmed so the cables underneath show through."),
-        };
-
         public static string TitleFor(SystemsViewKind view) => view switch
         {
             SystemsViewKind.Atmos => "Atmos view",
@@ -44,10 +37,9 @@ namespace SS3D.Systems.Tile.MapEditor.SystemsView
             _ => string.Empty,
         };
 
-        /// <summary>The registered domain's lines (<see cref="SystemsViewDomains"/>), or a placeholder for Power until it has one.</summary>
+        /// <summary>The registered domain's lines (<see cref="SystemsViewDomains"/>); none for a view no domain has registered.</summary>
         public static IReadOnlyList<SystemsViewLegendEntry> EntriesFor(SystemsViewKind view) =>
-            SystemsViewDomains.For(view)?.Legend
-            ?? (view == SystemsViewKind.Power ? Power : Array.Empty<SystemsViewLegendEntry>());
+            SystemsViewDomains.For(view)?.Legend ?? Array.Empty<SystemsViewLegendEntry>();
 
         /// <summary>Open the first time a view is used, then however the author left it (like <c>MapEditorLastTab</c>).</summary>
         public static bool LoadOpen() => PlayerPrefs.GetInt(OpenPrefsKey, 1) != 0;

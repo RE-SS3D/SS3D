@@ -64,6 +64,50 @@ namespace SS3D.Systems.Electricity
             return linked;
         }
 
+        /// <summary>Whether an HV cable lies on <paramref name="grid"/> (the Wire layer, a <see cref="CablesAdjacencyConnector"/>).</summary>
+        public static bool HasCable(TileMap map, Vector2Int grid) => map != null && TryGetCableOnTile(map, grid, out _);
+
+        /// <summary>
+        /// The cable run through <paramref name="grid"/>: every cable tile joined to it side by side, by the walk that links
+        /// grid devices (<see cref="GetCableLinkedDevices"/>); empty when no cable lies there.
+        /// </summary>
+        public static HashSet<Vector2Int> CollectCableRun(TileMap map, Vector2Int grid)
+        {
+            if (!HasCable(map, grid))
+            {
+                return new HashSet<Vector2Int>();
+            }
+
+            HashSet<Vector2Int> run = CollectCableNetworkTiles(map, grid);
+            run.Add(grid);
+            return run;
+        }
+
+        /// <summary>Every tile of <paramref name="map"/> with an HV cable on it.</summary>
+        public static IEnumerable<Vector2Int> EnumerateCableTiles(TileMap map)
+        {
+            if (map == null)
+            {
+                yield break;
+            }
+
+            foreach (TileChunk chunk in map.GetAllChunks())
+            {
+                for (int x = 0; x < TileChunk.ChunkSize; x++)
+                {
+                    for (int y = 0; y < TileChunk.ChunkSize; y++)
+                    {
+                        Vector3 world = chunk.GetWorldPosition(x, y);
+                        Vector2Int grid = new(Mathf.RoundToInt(world.x), Mathf.RoundToInt(world.z));
+                        if (TryGetCableOnTile(map, grid, out _))
+                        {
+                            yield return grid;
+                        }
+                    }
+                }
+            }
+        }
+
         private static HashSet<Vector2Int> CollectCableNetworkTiles(TileMap map, Vector2Int originGrid)
         {
             var visited = new HashSet<Vector2Int>();

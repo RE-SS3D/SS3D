@@ -29,9 +29,11 @@ namespace SS3D.Editor.Automation
     /// Rendered check of the Map Editor's Atmos view (Documents/architecture/2026-11_map-editor-systems-views.md Q9): a
     /// host round on a station with pipes, the editor open with the view on, screenshots of the overview with its legend,
     /// a close-up of device badges and a hover readout, a device switched off reaching the client's badge, and a Select
-    /// tracing a two-network device (panel, label, the rest dimmed). It also
-    /// logs the first-open structure size against the send budget. <c>Testing/ui/validate.sh --steps visual</c> runs it
-    /// after the lobby pilot; screenshots land in <c>artifacts/ui/systems-view-*</c>.
+    /// tracing a two-network device (panel, label, the rest dimmed). Then the Power view (Phase 3): the overview with
+    /// circuit colours, the room tint (a hatched room with no APC, when the station has one) and consumer dots, a
+    /// traced cable circuit and a traced room, each with its panel. It also logs both views' first-open structure size
+    /// against the send budget and their build costs. <c>Testing/ui/validate.sh --steps visual</c> runs it after the
+    /// lobby pilot; screenshots land in <c>artifacts/ui/systems-view-*</c>.
     /// </summary>
     [InitializeOnLoad]
     public static class MapEditorSystemsPilot
@@ -68,7 +70,7 @@ namespace SS3D.Editor.Automation
         private static VentController _switchedVent;
         private static Vector2Int _traceTile;
 
-        private sealed class Step
+        internal sealed class Step
         {
             public string Name;
             public Action Enter;
@@ -122,6 +124,7 @@ namespace SS3D.Editor.Automation
                 _index = 0;
                 _entered = false;
                 _switchedVent = null;
+                MapEditorSystemsPowerPilot.Reset();
                 _running = true;
                 _deadline = EditorApplication.timeSinceStartup + Seconds + ExtraLoadSeconds;
                 Application.logMessageReceived += OnLog;
@@ -192,9 +195,11 @@ namespace SS3D.Editor.Automation
             catch (Exception exception) { Finish(exception.ToString(), true); }
         }
 
-        private static string Station => SessionState.GetString(StationKey, DefaultStation);
+        internal static string Station => SessionState.GetString(StationKey, DefaultStation);
 
-        private static Step[] BuildSteps() => new Step[]
+        private static Step[] BuildSteps() => AtmosSteps().Concat(MapEditorSystemsPowerPilot.Steps()).ToArray();
+
+        private static Step[] AtmosSteps() => new Step[]
         {
             new Step
             {
@@ -410,7 +415,7 @@ namespace SS3D.Editor.Automation
                     Editor().AutomationSelectClick();
                     // The pick is described only for a failure: it raycasts and reads the map again.
                     if (!Client().IsTracing)
-                        Require(false, $"Select on {_traceTile} traced its network(s) ({DescribePick()})");
+                        Require(false, $"Select on {_traceTile} traced its network(s) ({DescribePick(_traceTile)})");
                     Checks.Add($"Select on {_traceTile} traced its network(s)");
                 },
             },
@@ -456,15 +461,15 @@ namespace SS3D.Editor.Automation
         };
 
         /// <summary>What Select's pick sees under the pointer, for a trace that didn't start.</summary>
-        private static string DescribePick()
+        internal static string DescribePick(Vector2Int tile)
         {
             bool picked = MapEditorCursorPick.TryPick(Editor().PickCamera, SubSystems.Get<TileSubSystem>().CurrentMap,
                 Editor().AutomationViewModel, out PlacedTileObject placed, out PlacedItemObject item);
             Vector3 pointed = TileHelper.GetPointedPosition(true, Editor().PickCamera);
-            string badges = string.Join(",", Client().Structure.Badges.Keys.Where(k => k.Tile == _traceTile).Select(k => ((TileLayer)k.Slot).ToString()));
+            string badges = string.Join(",", Client().Structure.Badges.Keys.Where(k => k.Tile == tile).Select(k => ((TileLayer)k.Slot).ToString()));
             return $"picked={picked} placed={(placed != null ? placed.NameString + "@" + placed.WorldOrigin + "/" + placed.Layer : "-")} "
                 + $"item={(item != null ? item.NameString : "-")} pointed={pointed} tool={Editor().CurrentTool} badges here: {badges} "
-                + $"camera={Editor().PickCamera.transform.position} tileScreen={Editor().PickCamera.WorldToScreenPoint(new Vector3(_traceTile.x, 0.2f, _traceTile.y))} "
+                + $"camera={Editor().PickCamera.transform.position} tileScreen={Editor().PickCamera.WorldToScreenPoint(new Vector3(tile.x, 0.2f, tile.y))} "
                 + $"mouse={Mouse.current?.position.ReadValue()} devices={string.Join(",", InputSystem.devices.OfType<Mouse>().Select(m => m.name + m.position.ReadValue()))}";
         }
 
@@ -518,6 +523,7 @@ namespace SS3D.Editor.Automation
                     + $"(walks {probe.LastWalkedNetworks} of {atmos.PipeRegistry.NetworkCount} networks, re-links {probe.LastRelinkedRuns} pipes)");
             }
 
+            MapEditorSystemsPowerPilot.Measure();
             Debug.Log("[systems-view-budget] " + string.Join(" | ", Measurements));
             Require(structure.Segments.Count > 0, $"{Station} has pipe runs for the view");
 
@@ -547,7 +553,7 @@ namespace SS3D.Editor.Automation
             .First();
 
         /// <summary>Moves the Input System pointer over a tile, as a hand on the mouse would.</summary>
-        private static void Point(Vector2Int tile, InputUpdateType buffer = default)
+        internal static void Point(Vector2Int tile, InputUpdateType buffer = default)
         {
             Vector3 screen = Editor().PickCamera.WorldToScreenPoint(new Vector3(tile.x, 0.2f, tile.y));
             Mouse mouse = Mouse.current ?? InputSystem.AddDevice<Mouse>();
@@ -566,13 +572,13 @@ namespace SS3D.Editor.Automation
         private static bool Spawned() => Online() && SubSystems.TryGet(out EntitySubSystem entities)
             && entities.IsPlayerSpawned(InstanceFinder.ClientManager.Connection);
 
-        private static MapEditorSubSystem Editor() => SubSystems.TryGet(out MapEditorSubSystem editor) ? editor : null;
+        internal static MapEditorSubSystem Editor() => SubSystems.TryGet(out MapEditorSubSystem editor) ? editor : null;
 
-        private static MapEditorSystemsViewClient Client() => Editor().SystemsViewClient;
+        internal static MapEditorSystemsViewClient Client() => Editor().SystemsViewClient;
 
         private static string CursorLabel() => SubSystems.TryGet(out ExamineSubSystem examine) ? examine.CursorLabelOverride : null;
 
-        private static VisualElement EditorRoot() => UnityEngine.Object.FindObjectsByType<UIDocument>(FindObjectsSortMode.None)
+        internal static VisualElement EditorRoot() => UnityEngine.Object.FindObjectsByType<UIDocument>(FindObjectsSortMode.None)
             .Select(d => d.rootVisualElement)
             .First(r => r != null && r.Q("systems-view-atmos") != null);
 
@@ -581,9 +587,9 @@ namespace SS3D.Editor.Automation
             .FirstOrDefault(shell => shell != null && shell.resolvedStyle.display != DisplayStyle.None)
             ?.Q<Button>(className: "lobby-shell__btn--ready");
 
-        private static void Settle(double seconds) => _settleUntil = EditorApplication.timeSinceStartup + seconds;
+        internal static void Settle(double seconds) => _settleUntil = EditorApplication.timeSinceStartup + seconds;
 
-        private static bool Settled() => EditorApplication.timeSinceStartup > _settleUntil;
+        internal static bool Settled() => EditorApplication.timeSinceStartup > _settleUntil;
 
         private static void TapKey(Key key)
         {
@@ -593,7 +599,7 @@ namespace SS3D.Editor.Automation
         }
 
         // Button.clicked ignores synthetic ClickEvents; buttons get NavigationSubmit.
-        private static void Submit(Button button)
+        internal static void Submit(Button button)
         {
             Require(button != null && button.enabledInHierarchy && button.worldBound.width > 0, "Enabled, laid-out button: " + button?.name);
             button.Focus();
@@ -602,7 +608,12 @@ namespace SS3D.Editor.Automation
             button.SendEvent(submit);
         }
 
-        private static void Require(bool value, string message)
+        /// <summary>A check or a measurement for the report, from the Power steps.</summary>
+        internal static void AddCheck(string check) => Checks.Add(check);
+
+        internal static void AddMeasurement(string measurement) => Measurements.Add(measurement);
+
+        internal static void Require(bool value, string message)
         {
             if (!value) throw new InvalidOperationException(message + " | " + Describe());
             Checks.Add(message);
@@ -617,7 +628,7 @@ namespace SS3D.Editor.Automation
             return $"online={Online()} round={(rounds != null ? rounds.CurrentRoundState.ToString() : "-")} spawned={Spawned()} {view}";
         }
 
-        private static void Capture(string name) =>
+        internal static void Capture(string name) =>
             ScreenCapture.CaptureScreenshot(Path.Combine(SessionState.GetString(OutputKey, ""), name + ".png"));
 
         [Serializable]
@@ -638,6 +649,7 @@ namespace SS3D.Editor.Automation
         private static void Finish(string failure, bool stopPlay)
         {
             _running = false;
+            MapEditorSystemsPowerPilot.Reset();
             EditorApplication.update -= Tick;
             Application.logMessageReceived -= OnLog;
             Report report = new()

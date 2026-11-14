@@ -1,6 +1,7 @@
 using FishNet.Connection;
 using FishNet.Object;
 using SS3D.Systems.Tile.MapEditor.SystemsView;
+using SS3D.Systems.Tile.TileMapCreator;
 using UnityEngine;
 
 namespace SS3D.Systems.Tile.MapEditor
@@ -32,7 +33,7 @@ namespace SS3D.Systems.Tile.MapEditor
         private void UpdateSystemsViewClient()
         {
             bool online = NetworkObject != null && NetworkObject.IsSpawned && IsClient;
-            if (_systemsViewClient.Update(_viewModel.ActiveSystemsView) && online)
+            if (_systemsViewClient.Update(_viewModel.ActiveSystemsView, _viewModel.IsLayerCategoryVisible(TileLayerCategory.Areas)) && online)
                 RpcSetSystemsView(_systemsViewClient.Requested, LocalConnection);
             // After the view request, so the server has the subscription the trace belongs to.
             if (_systemsViewClient.TakeTraceRequest(out int traceId, out int[] viewIds) && online)

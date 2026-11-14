@@ -182,9 +182,7 @@ namespace SS3D.Systems.Atmospherics.SystemsView
                 devices.Add(new SystemsViewLiveDevice { Key = badge.Key, Label = KindName(badge.Kind), Detail = detail });
             }
 
-            // West to east, so the list keeps its order between reads.
-            devices.Sort((a, b) => a.Key.Tile.x != b.Key.Tile.x ? a.Key.Tile.x.CompareTo(b.Key.Tile.x)
-                : a.Key.Tile.y != b.Key.Tile.y ? a.Key.Tile.y.CompareTo(b.Key.Tile.y) : a.Key.Slot.CompareTo(b.Key.Slot));
+            SystemsViewText.SortWestToEast(devices);
             live = new SystemsViewLiveNetwork { ViewId = viewId, Rows = rows.ToArray(), Devices = devices.ToArray() };
             return true;
         }
@@ -198,8 +196,7 @@ namespace SS3D.Systems.Atmospherics.SystemsView
             return gas < GasDefaults.Core.Length ? GasDefaults.Core[gas].Symbol : $"Gas {gas}";
         }
 
-        private static string Number(float value, string format) =>
-            value.ToString(format, System.Globalization.CultureInfo.InvariantCulture);
+        private static string Number(float value, string format) => SystemsViewText.Number(value, format);
 
         private void Poll()
         {

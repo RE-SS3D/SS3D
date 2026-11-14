@@ -100,7 +100,7 @@ namespace SS3D.Systems.Tile.MapEditor.UI
                 section.name = "systems-trace-network-" + i;
                 VisualElement heading = Element("map-editor-systems-trace__heading");
                 VisualElement swatch = Element("map-editor-systems-legend__swatch");
-                swatch.style.backgroundColor = SystemsViewPalette.ColorFor(side.ViewId);
+                swatch.style.backgroundColor = client.ColorOf(side.ViewId);
                 heading.Add(swatch);
                 heading.Add(Text(client.TraceLabel(side), "map-editor-systems-trace__network"));
                 section.Add(heading);
@@ -229,7 +229,7 @@ namespace SS3D.Systems.Tile.MapEditor.UI
             foreach (SystemsViewTraceSide side in client.TraceSides)
             {
                 Label line = Text(client.TraceLabel(side), "map-editor-systems-trace-label__line");
-                line.style.borderBottomColor = SystemsViewPalette.ColorFor(side.ViewId);
+                line.style.borderBottomColor = client.ColorOf(side.ViewId);
                 _label.Add(line);
             }
         }

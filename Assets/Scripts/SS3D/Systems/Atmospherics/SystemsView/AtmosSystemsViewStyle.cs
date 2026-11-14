@@ -135,7 +135,7 @@ namespace SS3D.Systems.Atmospherics.SystemsView
                 if (!structure.Badges.TryGetValue(new SystemsViewKey(tile, slot), out SystemsViewBadge badge))
                     continue;
 
-                NewRow(text).Append(KindName(badge.Kind)).Append(": ").Append(StateWords(badge.Kind, badge.State)).Append(" · ");
+                SystemsViewText.NewRow(text).Append(KindName(badge.Kind)).Append(": ").Append(StateWords(badge.Kind, badge.State)).Append(" · ");
                 if (IsTwoNetwork(badge.Kind))
                     text.Append(LabelOf(structure, badge.ViewId)).Append(" → ").Append(LabelOf(structure, badge.OtherViewId));
                 else
@@ -151,7 +151,7 @@ namespace SS3D.Systems.Atmospherics.SystemsView
 
                 string line = LineName(LineOf(slot, out bool manifold));
                 string label = LabelOf(structure, segment.ViewId);
-                NewRow(text);
+                SystemsViewText.NewRow(text);
                 if (label.StartsWith(line, StringComparison.Ordinal))
                     text.Append(label);
                 else
@@ -176,13 +176,13 @@ namespace SS3D.Systems.Atmospherics.SystemsView
             {
                 if (!IsTwoNetwork(badge.Kind))
                 {
-                    AddTarget(into, badge.ViewId, null);
+                    SystemsViewText.AddTarget(into, badge.ViewId, null);
                     return;
                 }
 
                 // Back, front, then a filter's or mixer's side; a pump or valve has no side network (0, skipped).
                 for (byte port = PortBack; port < SystemsViewBadge.PortCount; port++)
-                    AddTarget(into, badge.ViewIdAt(port), PortName(badge.Kind, port));
+                    SystemsViewText.AddTarget(into, badge.ViewIdAt(port), PortName(badge.Kind, port));
                 return;
             }
 
@@ -191,32 +191,15 @@ namespace SS3D.Systems.Atmospherics.SystemsView
                 for (byte line = Supply; line <= Surface; line++)
                 {
                     if (structure.Segments.TryGetValue(new SystemsViewKey(tile, (byte)(ManifoldSlotBase + line)), out SystemsViewSegment run))
-                        AddTarget(into, run.ViewId, LineName(line) + " line");
+                        SystemsViewText.AddTarget(into, run.ViewId, LineName(line) + " line");
                 }
 
                 return;
             }
 
             if (TryGetLineSlot(layer, out byte slot) && structure.Segments.TryGetValue(new SystemsViewKey(tile, slot), out SystemsViewSegment segment))
-                AddTarget(into, segment.ViewId, null);
+                SystemsViewText.AddTarget(into, segment.ViewId, null);
         }
-
-        // A port on no pipe traces nothing; a network on two sides of one device (a loop) is listed once, by its first.
-        private static void AddTarget(List<SystemsViewTraceSide> into, int viewId, string side)
-        {
-            if (viewId <= 0)
-                return;
-
-            foreach (SystemsViewTraceSide existing in into)
-            {
-                if (existing.ViewId == viewId)
-                    return;
-            }
-
-            into.Add(new SystemsViewTraceSide(viewId, side));
-        }
-
-        private static StringBuilder NewRow(StringBuilder text) => text.Length > 0 ? text.Append('\n') : text;
 
         private static string LabelOf(SystemsViewStructure structure, int viewId) =>
             viewId <= 0 ? "no pipe" : structure.Networks.TryGetValue(viewId, out SystemsViewNetwork network) ? network.Label : $"network {viewId}";

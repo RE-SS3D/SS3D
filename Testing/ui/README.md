@@ -176,11 +176,16 @@ starts a round on `classic-ministation`, opens the Map Editor and turns the Atmo
 `11-atmos-hover-closeup.png` (a two-network device with the cursor badge reading it, from a synthetic Input System
 pointer) and `12-atmos-gaspipes-placing-hover.png` (Lower › Gas Pipes with the tab's first entry held: placing label
 and hovered line together) and `13-atmos-trace.png` (a Select on that device through the Select tool's click handler:
-the trace panel, both sides' world labels and every other network dimmed). It checks that the client got runs, labelled
+the trace panel, both sides' world labels and every other network dimmed). Then it turns the Power view on (Phase 3):
+`20-power-overview.png` (circuit-coloured cables, APC and SMES badges, consumer dots, rooms tinted by their APC's
+circuit), `22-power-circuit-trace.png` (Select on a cable of the circuit with the most grid devices: supply, demand,
+storage and its devices), `23-power-room-trace.png` (Select on a floor of the room with the most machines: its APC's
+rows and machines) and `21-power-hatched-room.png` (a room's APC smashed for the shot, so the room is hatched, the APC
+shows its red cross and the machines red dots; the APC is repaired afterwards, and on abort). It checks that the client got runs, labelled
 networks and badges, that the legend is open, that the hover text is the hovered tile's, that a vent switched off on the
 server reaches the client's badge, that the trace opens its panel and label with live numbers and Clear ends it, and that
-turning the view off clears it. Its `measurements` give the station's first-open structure size against the send budget and the
-source's cold and warm build times (also logged as `[systems-view-budget]`). To measure another station, put its
+turning the view off clears it. Its `measurements` give each view's first-open structure size against the send budget and the
+sources' cold and warm build times, and the Power source's per-poll cost (also logged as `[systems-view-budget]`). To measure another station, put its
 template in `Builds/Game/Data/StationTemplates/` and set `SessionState` `SS3D.SystemsViewPilot.Station` to its name
 before running the menu item. A non-default station gets 15 minutes to load, and one that can't start a round (a template copy with no job spawns) is measured once its atmos is up, then the pilot stops; erase the key afterwards.
 

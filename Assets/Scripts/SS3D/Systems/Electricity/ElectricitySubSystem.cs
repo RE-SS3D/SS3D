@@ -101,11 +101,13 @@ namespace SS3D.Systems.Electricity
             _circuits = new();
             SubSystems.Get<TileSubSystem>().RegisterTileMutationObserver(this);
             AwaitAreasThenMarkReady().Forget();
+            EnsureSystemsViewRegistered();
         }
 
         protected override void OnDestroyed()
         {
             UnsubscribeFromChannel();
+            UnregisterSystemsView();
 
             _readinessCts?.Cancel();
             _readinessCts?.Dispose();
@@ -236,6 +238,7 @@ namespace SS3D.Systems.Electricity
             _electricityGraph?.Clear();
             _graphIsDirty = true;
             _apcConsumerIndexDirty = true;
+            BumpSystemsViewTopology();
         }
 
         /// <summary>
@@ -245,9 +248,16 @@ namespace SS3D.Systems.Electricity
         public void InvalidateAreaConsumerIndex()
         {
             _apcConsumerIndexDirty = true;
+            BumpSystemsViewTopology();
         }
 
-        private void HandleChannelResumed() => _graphIsDirty = true;
+        // A template load ends in a resumption: the graph rebuilds on the next tick, and the Power view's structure is
+        // rebuilt now too, or it would keep the map from before the load (map-editor-systems-views Risks).
+        private void HandleChannelResumed()
+        {
+            _graphIsDirty = true;
+            BumpSystemsViewTopology();
+        }
 
         private void HandleChannelTick()
         {
@@ -258,6 +268,7 @@ namespace SS3D.Systems.Electricity
                 if (IsServer && _circuits != null)
                 {
                     HandleCircuitsUpdate();
+                    EnsureSystemsViewRegistered();
                 }
 
                 using (OnTickPerformanceMarker.Auto())
@@ -466,6 +477,7 @@ namespace SS3D.Systems.Electricity
 
             _graphIsDirty = true;
             _apcConsumerIndexDirty = true;
+            PowerStateVersion.Bump();
         }
 
         [Server]
@@ -496,6 +508,7 @@ namespace SS3D.Systems.Electricity
 
             _graphIsDirty = true;
             _apcConsumerIndexDirty = true;
+            PowerStateVersion.Bump();
         }
 
         [Server]
@@ -595,7 +608,10 @@ namespace SS3D.Systems.Electricity
                 return;
 
             if (placed.Connector is CablesAdjacencyConnector)
+            {
                 RefreshNeighbouringElectricDevices(placed);
+                BumpSystemsViewTopology();
+            }
         }
 
         [Server]
@@ -605,7 +621,10 @@ namespace SS3D.Systems.Electricity
                 return;
 
             if (placed.Connector is CablesAdjacencyConnector)
+            {
                 RefreshNeighbouringElectricDevices(placed);
+                BumpSystemsViewTopology();
+            }
         }
 
         public void OnChunkCreated(TileChunkRef chunk)
@@ -675,6 +694,8 @@ namespace SS3D.Systems.Electricity
                 circuit.SetCableDistributionFilter(consumer => !IsIndexedAreaScopedConsumer(consumer));
                 _circuits.Add(circuit);
             }
+
+            BumpSystemsViewTopology();
         }
 
         private ApcControlFlags ResolveEnabledChannelsForConsumer(Circuit circuit, IPowerConsumer consumer)

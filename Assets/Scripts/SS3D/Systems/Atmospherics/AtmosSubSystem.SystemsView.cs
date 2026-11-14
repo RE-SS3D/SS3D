@@ -1,7 +1,7 @@
 using SS3D.Core;
 using SS3D.Systems.Atmospherics.SystemsView;
 using SS3D.Systems.Tile;
-using SS3D.Systems.Tile.MapEditor;
+using SS3D.Systems.Tile.MapEditor.SystemsView;
 
 namespace SS3D.Systems.Atmospherics
 {
@@ -13,7 +13,7 @@ namespace SS3D.Systems.Atmospherics
     public sealed partial class AtmosSubSystem
     {
         private AtmosSystemsViewSource _systemsViewSource;
-        private MapEditorSubSystem _systemsViewHost;
+        private readonly SystemsViewRegistration _systemsViewRegistration = new();
 
         /// <summary>Server: the Atmos view's structure source; null on a pure client.</summary>
         public AtmosSystemsViewSource SystemsViewSource => _systemsViewSource;
@@ -30,18 +30,9 @@ namespace SS3D.Systems.Atmospherics
                 () => SimulationPaused,
                 gas => _gasRegistry != null && _gasRegistry.TryGetDefinition(new GasId((ushort)gas), out GasDefinition definition)
                     ? definition.Symbol : null);
-            if (_systemsViewHost != null || !SubSystems.TryGet(out MapEditorSubSystem host))
-                return;
-
-            host.SystemsViews.Register(_systemsViewSource);
-            _systemsViewHost = host;
+            _systemsViewRegistration.Ensure(_systemsViewSource);
         }
 
-        private void UnregisterSystemsView()
-        {
-            if (_systemsViewHost != null && _systemsViewSource != null)
-                _systemsViewHost.SystemsViews.Unregister(_systemsViewSource);
-            _systemsViewHost = null;
-        }
+        private void UnregisterSystemsView() => _systemsViewRegistration.Release(_systemsViewSource);
     }
 }

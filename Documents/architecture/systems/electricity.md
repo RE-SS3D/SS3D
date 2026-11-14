@@ -65,6 +65,7 @@ Power circuit simulation, APC channel gating, SMES storage, and tile-linked elec
 - `Assets/Scripts/SS3D/Systems/Electricity/MachineVibrate.cs` — client vibrate FX; capture rest rotation on enable (not `OnStart`)
 - `Assets/Scripts/SS3D/Systems/Tile/Connections/BasicElectricDevice.cs` — tile-placed electric device base
 - `Assets/Scripts/SS3D/UI/MachineInterface/ApcController.cs` — APC façade; `IAreaApcOrigin` + storage SyncVars + MI
+- `Assets/Scripts/SS3D/Systems/Electricity/SystemsView/` — the Map Editor's Power view ([map-editor-systems-views](../2026-11_map-editor-systems-views.md) Phase 3): `PowerSystemsViewSource` (server: Wire-layer cable runs joined by the graph's circuits into "Circuit N" networks with tracked view ids, grid device and consumer badges, rooms with their APC's circuit; `ReadLive` for a circuit's supply/demand/storage or a room's APC and machines) reading `IPowerSystemsViewWorld`, which `ElectricitySubSystem.SystemsView.cs` implements on the server and registers on the map editor hub each tick; `PowerSystemsViewCodes` (wire codes: `CableSlot`, `DeviceSlot` = layer and facing, kinds, consumer status, APC breakers, `RoomViewIdBase`), `PowerSystemsViewStyle` (client: badge marks, status dots, hover, `TraceTargets`), `PowerSystemsViewDomain` (style, legend, Cables as own layer)
 
 ## Extension points
 
@@ -76,6 +77,7 @@ Power circuit simulation, APC channel gating, SMES storage, and tile-linked elec
 - Light fixtures and bulb items: re-run `SS3D/Electricity/Run Content Prefab Recipes` (`LightFixturePrefabSetup`). A new fixture kind needs `*` and `*Broken` socket meshes, a `LightBulbKind`, and a matching item pair.
 - Machine panels: register via [machine-interface](machine-interface.md). Solar tracker/panels intentionally have **no** MI (diegetic Toggle / Rotate only).
 - Area membership changes: Area APC register/unregister/rebuild calls `ElectricitySubSystem.InvalidateAreaConsumerIndex()`.
+- Systems view: `SystemsViewTopologyVersion` moves on a cable edit, a graph rebuild, `Resumed` and an area index invalidation; anything new that changes cable runs, circuits or room → APC links without one of those must bump it (`BumpSystemsViewTopology`). Device state the view shows is announced by `PowerStateVersion.Bump()` (consumer `PowerStatus` writes, APC breakers and condition, SMES `IsOn`, device add/remove): a new writer of such state must bump it, or the view only catches up at the next topology move. Producers are read every poll. A new consumer or grid device type needs only a kind in `PowerSystemsViewSource.KindOf`. `SimulationPaused` reads the server channel for the view's trace. Cable runs for the view come from `ElectricCableConnectivity.EnumerateCableTiles` / `CollectCableRun`, the same rule that links grid devices.
 - Powered-device init: await `ElectricityReady` / `WorldReady` (`IWorldReady` / `WorldReadinessSubSystem`) — obsolete `IsSetUp` is an `IsReady` shim only.
 
 ## Pitfalls
@@ -102,6 +104,8 @@ Power circuit simulation, APC channel gating, SMES storage, and tile-linked elec
 - **Machine "Turn on" snaps facing to prefab/default:** `MachineVibrate` used to cache rest rotation in `OnStart`, then force it when Enable becomes true. Tile-placed machines (Pacman / `FuelPowerGenerator`) often get their final yaw later (spawn sync, `PlacedTileObject` direction). Capture rest pose when vibration starts, restore it when stopping — never from a stale Start snapshot.
 - **Solar aim visual vs placement yaw:** `SolarPanel` SyncVar aim drives world yaw independently of tile placement direction. Never assign `rotation = Euler(0, yaw, 0)` on an FBX armature bone — that zeros Blender rest pitch/roll and tumbles the rig toward north. Capture rest, strip world-Y, then `AngleAxis(yaw, up) * restNoYaw`. Prefer aim transform = `Model` (FBX root), not a skinned bone.
 
+- **A circuit is not a cable run:** the graph also joins electric devices side by side on one layer and on one tile, so `_circuits` holds tiny "circuits" of adjacent consumers, and two cable runs bridged by adjacent grid devices are one circuit. The Power view joins runs through the circuits of grid devices only (`IPowerProducer` / `IPowerStorage`) and ignores consumer circuits; consumers draw from their room's APC. The graph rebuilds a tick after a cable edit, so anything reading circuits right after one sees the old split. Hit 2026-11-14.
+
 - **`OnTick` handlers subscribed in `OnStartClient` must unsubscribe in `OnStopClient`.** A client that leaves an object's observer range and comes back runs `OnStartClient` again. `SmesBattery` unsubscribed only in `OnDestroyed`, so the first handler outlived the SMES and threw `MissingReferenceException` on its destroyed renderer every tick after a round reload. Hit 2026-11-03 by the space ragdoll scenario.
 - **Generator silent on remote clients and late joiners:** `AudioSubSystem.PlayAudioSource`/`StopAudioSource` are `[Server]`, so a client SyncVar hook calling them only logs and returns, and a one-shot play reaches only observers present at that moment. Start/stop looping machine sounds from the server through a `BufferLast` ObserversRpc that calls the `*Local` variants (`FuelPowerGenerator.RpcSyncRunningSound`). Hit 2026-11-05 (#153).
 
@@ -112,12 +116,12 @@ Power circuit simulation, APC channel gating, SMES storage, and tile-linked elec
 
 ## Tests
 
-`Assets/Scripts/Tests/EditMode/ElectricityTests/`: circuit distribution, cable connectivity, consumer allocation, `PowerGate`, APC status/consumer index, area APC distribution and lighting state/fixture policy, solar generation, bulb rules and fixture wiring (`LightFixtureBulbTests`), fixture cells and the broken APC (`PowerLossLightingTests`). Run `Testing/ui/validate.sh --steps compile,editmode`. PlayMode `LightBulbScenarios` (Combat category) fires the server path at a test-room fixture, then removes and replaces the bulb by hand. `PowerLossScenarios` shoots the test room's APC until it breaks and blows its wall away, and checks the room runs on fixture cells, then goes dark.
+`Assets/Scripts/Tests/EditMode/ElectricityTests/`: circuit distribution, cable connectivity, consumer allocation, `PowerGate`, APC status/consumer index, area APC distribution and lighting state/fixture policy, solar generation, bulb rules and fixture wiring (`LightFixtureBulbTests`), fixture cells and the broken APC (`PowerLossLightingTests`). Run `Testing/ui/validate.sh --steps compile,editmode`. PlayMode `LightBulbScenarios` (Combat category) fires the server path at a test-room fixture, then removes and replaces the bulb by hand. `PowerLossScenarios` shoots the test room's APC until it breaks and blows its wall away, and checks the room runs on fixture cells, then goes dark. `PowerSystemsViewSourceTests` covers the Power view's source on a hand-built world: circuits, a run with no device, grid device badges, a consumer in each status, a hatched room, colours kept through a cable cut and rejoin, a state change moving one badge without a rescan, circuit and room `ReadLive` rows (an SMES rate over ticks), `TraceTargets`, and `Resumed` moving the topology version. `visual` (`MapEditorSystemsPilot`) screenshots the Power view on classic-ministation.
 
 ## Depends on / Used by
 
 - **Depends on:** [tile](tile.md), [area](area.md) (channel gating + lighting state), [rounds-lobby](rounds-lobby.md) (preview-booth light ownership)
-- **Used by:** [combat](combat.md) (ranged rounds break bulbs); [machine-interface](machine-interface.md); [area](area.md) (`LightSwitchController` lighting-channel consumer)
+- **Used by:** [combat](combat.md) (ranged rounds break bulbs); [machine-interface](machine-interface.md); [map-editor-creative-hooks](map-editor-creative-hooks.md) (Power systems view); [area](area.md) (`LightSwitchController` lighting-channel consumer)
 
 ## Related docs
 

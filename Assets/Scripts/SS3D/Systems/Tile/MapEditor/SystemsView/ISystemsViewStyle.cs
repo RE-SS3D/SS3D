@@ -39,11 +39,14 @@ namespace SS3D.Systems.Tile.MapEditor.SystemsView
         /// doesn't compete with network colours, but it never gets harder to pick: <c>MapEditorViewModel.IsLayerPickable</c>.
         /// </summary>
         public TileLayerCategory? OwnLayer;
+        /// <summary>The stripes of a hatched room (<see cref="SystemsViewRoom.Hatched"/>), for a domain that sends rooms.</summary>
+        public Color RoomHatch;
     }
 
     /// <summary>
     /// Domains register here the way their server sources register on the publisher, so a new view adds files rather
-    /// than editing shared switches. The Atmos domain registers itself on load (<c>AtmosSystemsViewDomain</c>).
+    /// than editing shared switches. Each domain registers itself on load (<c>AtmosSystemsViewDomain</c>,
+    /// <c>PowerSystemsViewDomain</c>).
     /// </summary>
     public static class SystemsViewDomains
     {
@@ -62,7 +65,7 @@ namespace SS3D.Systems.Tile.MapEditor.SystemsView
 
     public static class SystemsViewStyles
     {
-        /// <summary>The style of a view's domain; null when none is registered (Power until Phase 3).</summary>
+        /// <summary>The style of a view's domain; null when none is registered.</summary>
         public static ISystemsViewStyle For(SystemsViewKind view) => SystemsViewDomains.For(view)?.Style;
     }
 }

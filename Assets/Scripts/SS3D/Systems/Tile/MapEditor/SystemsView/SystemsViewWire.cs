@@ -12,8 +12,8 @@ namespace SS3D.Systems.Tile.MapEditor.SystemsView
     /// </summary>
     public static class SystemsViewWire
     {
-        // View and Reset, plus eight packed counts of up to three bytes each (a count under 2,097,152).
-        private const int HeaderReserve = 2 + 8 * 3;
+        // View and Reset, plus ten packed counts of up to three bytes each (a count under 2,097,152).
+        private const int HeaderReserve = 2 + 10 * 3;
 
         public static void WriteSystemsViewDelta(this Writer writer, SystemsViewDelta delta)
         {
@@ -27,6 +27,8 @@ namespace SS3D.Systems.Tile.MapEditor.SystemsView
             WriteArray(writer, delta.BadgesRemoved, WriteKey);
             WriteArray(writer, delta.MarkersSet, WriteMarker);
             WriteArray(writer, delta.MarkersRemoved, WriteKey);
+            WriteArray(writer, delta.RoomsSet, WriteRoom);
+            WriteArray(writer, delta.RoomsRemoved, (w, id) => w.WriteUInt16(id));
         }
 
         public static SystemsViewDelta ReadSystemsViewDelta(this Reader reader) => new()
@@ -41,6 +43,8 @@ namespace SS3D.Systems.Tile.MapEditor.SystemsView
             BadgesRemoved = ReadArray(reader, ReadKey),
             MarkersSet = ReadArray(reader, ReadMarker),
             MarkersRemoved = ReadArray(reader, ReadKey),
+            RoomsSet = ReadArray(reader, ReadRoom),
+            RoomsRemoved = ReadArray(reader, r => r.ReadUInt16()),
         };
 
         /// <summary>The live stream's message (<see cref="SystemsViewLive"/>): a few networks of a few rows each.</summary>
@@ -77,7 +81,7 @@ namespace SS3D.Systems.Tile.MapEditor.SystemsView
 
         /// <summary>
         /// Cuts <paramref name="delta"/> down to what fits in <paramref name="maxBytes"/>: removals first, then labels,
-        /// segments, badges and markers, in their array order. Returns whether anything was left out; the caller sends
+        /// rooms, segments, badges and markers, in their array order. Returns whether anything was left out; the caller sends
         /// the rest on a later poll by diffing again against what it did send. Always keeps at least one entry, so a
         /// cut delta still makes progress.
         /// </summary>
@@ -94,7 +98,9 @@ namespace SS3D.Systems.Tile.MapEditor.SystemsView
                 delta.NetworksRemoved = budget.Take(delta.NetworksRemoved, (w, id) => w.WriteInt32(id));
                 delta.BadgesRemoved = budget.Take(delta.BadgesRemoved, WriteKey);
                 delta.MarkersRemoved = budget.Take(delta.MarkersRemoved, WriteKey);
+                delta.RoomsRemoved = budget.Take(delta.RoomsRemoved, (w, id) => w.WriteUInt16(id));
                 delta.NetworksSet = budget.Take(delta.NetworksSet, WriteNetwork);
+                delta.RoomsSet = budget.Take(delta.RoomsSet, WriteRoom);
                 delta.SegmentsSet = budget.Take(delta.SegmentsSet, WriteSegment);
                 delta.BadgesSet = budget.Take(delta.BadgesSet, WriteBadge);
                 delta.MarkersSet = budget.Take(delta.MarkersSet, WriteMarker);
@@ -248,6 +254,22 @@ namespace SS3D.Systems.Tile.MapEditor.SystemsView
             ViewId = reader.ReadInt32(),
             Rows = ReadArray(reader, r => new SystemsViewLiveRow(r.ReadString(), r.ReadString())),
             Devices = ReadArray(reader, r => new SystemsViewLiveDevice { Key = ReadKey(r), Label = r.ReadString(), Detail = r.ReadString() }),
+        };
+
+        private static void WriteRoom(Writer writer, SystemsViewRoom room)
+        {
+            writer.WriteUInt16(room.AreaId);
+            writer.WriteInt32(room.ViewId);
+            writer.WriteInt32(room.CircuitViewId);
+            writer.WriteByte(room.Flags);
+        }
+
+        private static SystemsViewRoom ReadRoom(Reader reader) => new()
+        {
+            AreaId = reader.ReadUInt16(),
+            ViewId = reader.ReadInt32(),
+            CircuitViewId = reader.ReadInt32(),
+            Flags = reader.ReadByte(),
         };
 
         private static void WriteMarker(Writer writer, SystemsViewMarker marker)
