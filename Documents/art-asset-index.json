@@ -1,10 +1,10 @@
 {
-  "generated_at": "2026-11-14T09:19:58.409207+00:00",
+  "generated_at": "2026-11-14T13:18:10.061209+00:00",
   "purpose": "Agent reference for locating SS3D art assets and determining import status.",
   "sources": {
     "in_game": {
       "root": "Assets/Art",
-      "file_count": 5494
+      "file_count": 5499
     },
     "ss3d_art": {
       "repo": "https://github.com/RE-SS3D/SS3D-Art",
@@ -13,11 +13,11 @@
     }
   },
   "summary": {
-    "in_game_files": 5494,
+    "in_game_files": 5499,
     "ss3d_art_files": 2480,
-    "unique_assets": 7691,
+    "unique_assets": 7696,
     "imported": 283,
-    "in_game_only": 5221,
+    "in_game_only": 5226,
     "ss3d_art_only": 2187,
     "available_for_import": 1972,
     "artwork_only": 215
@@ -89,10 +89,10 @@
     },
     {
       "path": "Textures",
-      "in_game": 158,
+      "in_game": 163,
       "ss3d_art": 579,
       "imported": 96,
-      "in_game_only": 68,
+      "in_game_only": 73,
       "ss3d_art_only": 483
     },
     {
@@ -2762,6 +2762,14 @@
       "ss3d_art_only": 0
     },
     {
+      "path": "Textures/Lobby/Banners",
+      "in_game": 5,
+      "ss3d_art": 0,
+      "imported": 0,
+      "in_game_only": 5,
+      "ss3d_art_only": 0
+    },
+    {
       "path": "Textures/Structures/Floors/TileOverlays",
       "in_game": 6,
       "ss3d_art": 7,
@@ -3052,7 +3060,7 @@
   ],
   "extensions": {
     "svg": 4248,
-    "png": 2086,
+    "png": 2091,
     "blend": 665,
     "fbx": 300,
     "wav": 159,
@@ -82637,6 +82645,61 @@
       "extension": "png",
       "category": "Textures/Lobby",
       "in_game_path": "Assets/Art/Textures/Lobby/ProbablyNotChaseBanner.png",
+      "ss3d_art_path": null,
+      "github_url": null,
+      "import_target_path": null,
+      "status": "in_game_only"
+    },
+    {
+      "name": "LobbyBannerBreach.png",
+      "stem": "lobbybannerbreach",
+      "extension": "png",
+      "category": "Textures/Lobby/Banners",
+      "in_game_path": "Assets/Art/Textures/Lobby/Banners/LobbyBannerBreach.png",
+      "ss3d_art_path": null,
+      "github_url": null,
+      "import_target_path": null,
+      "status": "in_game_only"
+    },
+    {
+      "name": "LobbyBannerCarp.png",
+      "stem": "lobbybannercarp",
+      "extension": "png",
+      "category": "Textures/Lobby/Banners",
+      "in_game_path": "Assets/Art/Textures/Lobby/Banners/LobbyBannerCarp.png",
+      "ss3d_art_path": null,
+      "github_url": null,
+      "import_target_path": null,
+      "status": "in_game_only"
+    },
+    {
+      "name": "LobbyBannerChase.png",
+      "stem": "lobbybannerchase",
+      "extension": "png",
+      "category": "Textures/Lobby/Banners",
+      "in_game_path": "Assets/Art/Textures/Lobby/Banners/LobbyBannerChase.png",
+      "ss3d_art_path": null,
+      "github_url": null,
+      "import_target_path": null,
+      "status": "in_game_only"
+    },
+    {
+      "name": "LobbyBannerSpacewalk.png",
+      "stem": "lobbybannerspacewalk",
+      "extension": "png",
+      "category": "Textures/Lobby/Banners",
+      "in_game_path": "Assets/Art/Textures/Lobby/Banners/LobbyBannerSpacewalk.png",
+      "ss3d_art_path": null,
+      "github_url": null,
+      "import_target_path": null,
+      "status": "in_game_only"
+    },
+    {
+      "name": "LobbyBannerStation.png",
+      "stem": "lobbybannerstation",
+      "extension": "png",
+      "category": "Textures/Lobby/Banners",
+      "in_game_path": "Assets/Art/Textures/Lobby/Banners/LobbyBannerStation.png",
       "ss3d_art_path": null,
       "github_url": null,
       "import_target_path": null,

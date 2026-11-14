@@ -11,10 +11,9 @@ Round lifecycle state machine with single-flight `CancellationTokenSource` (prev
 
 **UITK lobby:** `LobbyUiSubSystem` owns the shell and guided Character Creator on
 `UiLayer.Modal`. Ready/latejoin, player readiness/counts, round timer, admin controls and job
-preferences are networked. **Observe** ([observer.md](../../design/observer.md) §2, [lobby.md](../../design/lobby.md) §7): `EntitySubSystem.CmdObserve` makes a ghost at once whenever a station is loaded (`ObserveRules.StationLoaded`: WarmingUp or Ongoing), regardless of late-join, and takes the player off the ready list ([entities](entities.md)). The lobby countdown runs with no station, so before the round Observe opens only in the warmup. Round start skips anyone who already has an entity. Jobs use H/M/L/N chips; the Join Round button resolves those preferences against
+preferences are networked. **Observe** ([observer.md](../../design/observer.md) §2, [lobby.md](../../design/lobby.md) §7): `EntitySubSystem.CmdObserve` makes a ghost at once whenever a station is loaded (`ObserveRules.StationLoaded`: WarmingUp or Ongoing), regardless of late-join, and takes the player off the ready list ([entities](entities.md)). The lobby countdown runs with no station, so before the round Observe opens only in the warmup. Round start skips anyone who already has an entity. The lobby has no job list ([lobby effort](../2026-11_lobby-character-window.md) Phase 4); until the Phase 5 character window, nothing edits priorities. The Join button resolves the character's saved preferences against
 open slots. `CmdJoinAsJob(job)` is the direct pick ([lobby effort](../2026-11_lobby-character-window.md) Decision 11): the server re-checks the slot (`JobResolver.LateJoinPickRefusal`) and refuses a full job in OOC; the Phase 6 picker will call it. `RoleSubSystem.Manifest` replicates the crew manifest (name and crew job of everyone who spawned with a crew job this round, no operatives or ghosts). Job priorities, antagonist choices and the no-job fallback belong to the
-selected saved character ([lobby effort](../2026-11_lobby-character-window.md) Phase 1); the interim Jobs tab edits them
-in place and the lobby saves and resends at once. Antagonist choices feed the squad draw (`RoleSubSystem`,
+selected saved character ([lobby effort](../2026-11_lobby-character-window.md) Phase 1), sent on connect and on save. Antagonist choices feed the squad draw (`RoleSubSystem`,
 [gamemodes-roles-traits](gamemodes-roles-traits.md)); one the character never set is off, except on the `-nukeops`
 profile. Playtime locks are absent.
 
@@ -82,7 +81,7 @@ original) and tells admins in Admin chat. Unloading resets the editor's history 
 ## Start here
 
 - `Assets/Scripts/SS3D/UI/Lobby/LobbyUiSubSystem.cs` — UITK shell + Character Creator host; attaches into Modal
-- `Assets/Scripts/SS3D/UI/Lobby/LobbyShellView.cs` — Player View tabs/sidebar, Chat tab (`SetChat` / `ChatSubmitted`) + Display/Audio/Controls intents
+- `Assets/Scripts/SS3D/UI/Lobby/LobbyView.cs` — the lobby shell from `Content/Systems/UI/Lobby/Lobby.uxml` + `Lobby.uss` (tokens in `LobbyTokens.uss`): sidebar, header, tabs; hosts `LobbyServerInfoView`, `LobbyChatView`, `LobbyServerSettingsView`, `LobbyLastRoundView` (in `RoundEnd/`), `LobbyMapStopPrompt`. `LobbySidebarModel` is the pure round-state and Ready / Join / Observe text
 - `Assets/Scripts/SS3D/UI/Lobby/CharacterCreatorView.cs` — guided-steps Character Creator, local character slots + pinned Save footer
 - `Assets/Scripts/SS3D/UI/Lobby/CharacterProfileStore.cs` — versioned local presets (schema v2, v1 migrated on load) under `Application.persistentDataPath/Lobby/characters.json`; atomic replacement, unreadable/newer file preservation, pilot-isolated profiles
 - `Assets/Scripts/SS3D/UI/Lobby/CharacterRoster.cs` / `CharacterPreferences.cs` — saved characters and selection (New, Duplicate, Delete, cap 10); per-character priorities (one High), antagonist in/out/unset, fallback, `ToMessage`
@@ -93,7 +92,7 @@ original) and tells admins in Admin chat. Unloading resets the editor's history 
 - `Assets/Scripts/SS3D/Systems/Entities/Character/CharacterPreviewBooth.cs` — off-map RT booth (layer 23, own lights), worn jumpsuit/shoe mesh application
 - `Assets/Scripts/SS3D/UI/Lobby/LobbyAssetCatalog.cs` / `Assets/Scripts/SS3D/Editor/LobbyAssetCatalogBuilder.cs` — curated preview outfit references; umbrella catalog rebuild
 - `Assets/Scripts/SS3D/Systems/Roles/RoleSubSystem.cs` / `JobResolver.cs` — replicated job slots, `JobPreferencesMessage` handling, round-start + latejoin assignment ([roles map](gamemodes-roles-traits.md))
-- `Assets/Scripts/SS3D/UI/Lobby/LobbyServerSettingsView.cs` — admin form and live enabled states
+- `Assets/Scripts/SS3D/UI/Lobby/LobbyServerSettingsView.cs` — admin form and live enabled states (only rules with a consumer: late join, auto start)
 - `Assets/Scripts/SS3D/Systems/Tile/Validation/` — shared map requirements/report and tracked-map content adapter
 - `Assets/Scripts/SS3D/Systems/Rounds/NukeOpsProfile.cs` — the `-nukeops` 24/7 profile and its test flags
 - `Assets/Scripts/SS3D/Systems/Rounds/SandboxProfile.cs`, `RoundAutoStart.cs`, `RoundObservability.cs`, `ServerLifetime.cs` — sandbox profile, auto-start/warnings, reset-health writer, heartbeat/exit-after-N
@@ -112,7 +111,7 @@ original) and tells admins in Admin chat. Unloading resets the editor's history 
 - `Assets/Scripts/SS3D/Systems/Rounds/ServerStatusPublisher.cs` — answers the main menu's status query; lives here but is mapped in [networking-session](networking-session.md)
 - `Assets/Scripts/SS3D/Systems/Rounds/RoundEnd.cs` — `RequestRoundEnd`, outcome build, buffered outcome RPC, summary beat and admin hold
 - `Assets/Scripts/SS3D/Systems/Rounds/Outcome/` — `RoundOutcome`/`RoundEndRequest` (record + triggers), `RoundEndBeat` + `RoundOutcomeBuilder`, `RoundSummaryModel` (viewer-relative fate/rows); pure, EditMode-tested
-- `Assets/Scripts/SS3D/UI/Lobby/RoundEnd/` — `RoundEndUiSubSystem` (client host, Tab), `RoundEndOverlay` (panel + banner), `RoundSummaryView` (shared ledger builder), `LobbyShellView.LastRound.cs` (Last Round tab); styles `Content/Systems/UI/RoundEnd/RoundEnd.uss` via `RoundEndAssetCatalog` (umbrella rebuild)
+- `Assets/Scripts/SS3D/UI/Lobby/RoundEnd/` — `RoundEndUiSubSystem` (client host, Tab), `RoundEndOverlay` (panel + banner), `RoundSummaryView` (shared ledger builder), `LobbyLastRoundView` (Last Round tab); styles `Content/Systems/UI/RoundEnd/RoundEnd.uss` via `RoundEndAssetCatalog` (umbrella rebuild)
 - `Assets/Scripts/SS3D/Systems/Rounds/ReadyPlayersSubSystem.cs` — player ready tracking; spawns on `Ongoing`
 - `Assets/Scripts/SS3D/Systems/WorldReadiness/WorldReadinessSubSystem.cs` — readiness gate for prepare
 
@@ -126,9 +125,11 @@ original) and tells admins in Admin chat. Unloading resets the editor's history 
 - Round transitions: extend `RoundSubSystemBase` state handlers and messages in `Messages/`.
 - Ending a round: call `RoundSubSystem.RequestRoundEnd` (or `GamemodeSubSystem.EndRound(request)`) with the winner and wording; never `RequestRoundStateChange(false)` directly, or the outcome falls back to an admin end. Nuke Ops rules (P3) build the request; antagonist rows set `RoundOutcomePlayer.Antagonist`.
 - Spawn flow: `SpawnReadyPlayersEvent` after Ongoing (world must already be ready from PrepareRound).
-- Lobby UITK: Session snapshots/actions live in `LobbyUiSubSystem` (including job preference sends); `LobbyShellView` renders `RoleSubSystem.Jobs`; Character Creator is a separate Modal screen.
+- Lobby UITK: session snapshots and actions live in `LobbyUiSubSystem`, which builds a `LobbySessionInfo` each refresh; `LobbyView` paints it. A new sidebar state goes in `LobbySidebarModel` with a test. Character Creator is a separate Modal screen.
 
 ## Pitfalls
+
+- **A UXML `<Style>` at the top level is lost when the root leaves its TemplateContainer.** `CloneTree` attaches top-level stylesheets to the container, not to the cloned root. `LobbyView` detaches `lobby-shell-surface` into the Modal layer, so `Lobby.uxml` puts `<ui:Style>` inside that element. `LobbyViewTests` checks the root keeps a stylesheet.
 
 - **Round-end typography must use explicit line boxes.** Web `line-height: 1`/`1.1` is not the fonts' natural TextCore height; leaving result/reason and roster labels unconstrained bloats the result and clips row text. Reset theme Label padding locally, constrain those labels, and keep the roster flexible. The overlay switches to 680 px wide with 16/84 px top/bottom clearance at panel heights ≤720.
 - **The legacy `OdetoIdleGamingSDF` contains Spessman face/glyph data.** Round-end uses `RoundEndArcade.asset`, generated from the real Ode font by `RoundEndAssetCatalogBuilder`; don't replace it with the legacy asset. TextCore tracking uses percent-of-font-size units: the reference's `0.12em` requires `letter-spacing: 12px`, while badges/statuses use zero tracking.
@@ -139,7 +140,7 @@ original) and tells admins in Admin chat. Unloading resets the editor's history 
 
 - **Surface decals are client-local round state:** clearing the tilemap does not clear blood/bullet projectors held by static spawners. `SyncRoundState(Stopped)` clears both spawners on server/host and pure clients, including their instance materials.
 
-- **The empty change log needs its own label style.** `lobby-shell__changelog-text` has `flex-basis: 0` for the row layout; reused on the lone "No change log in this build." label in the ScrollView's column it collapses to ~0 px and only the tops of the glyphs show (v0.1.0, every build without `BuildInfo.json`). The editor always has the file, so only player builds show it. Use `lobby-shell__changelog-empty`.
+- **The empty change log needs its own label style.** A row label with `flex-basis: 0` reused on the lone "No change log in this build." label in the ScrollView's column collapses to ~0 px, and only the tops of the glyphs show (v0.1.0, every build without `BuildInfo.json`). The editor always has the file, so only player builds show it. The empty line uses `lobby-info__empty`.
 - **Portrait capture must restore `RenderTexture.active`:** `Graphics.Blit` changes the global active target. Save/restore it around the head crop so later rendering/readback does not inherit the portrait target; the lifecycle pilot uses a sentinel target to check this.
 
 - **Long map status displaced Ready over the preview:** wrapping a full save name made the fixed sidebar too tall. Keep status labels single-line with ellipsis; the lifecycle pilot uses a long temporary map name to check this.
@@ -156,7 +157,7 @@ original) and tells admins in Admin chat. Unloading resets the editor's history 
 - **Pilot clicks:** a synthetic `ClickEvent` does not fire `Button.clicked` (its `Clickable` listens to pointer/submit). Drive buttons with `NavigationSubmitEvent`; keep `ClickEvent` for `RegisterCallback<ClickEvent>` surfaces such as the preview. UI snapshots lag subsystem state by the 200ms refresh — wait on the UI, not only the backend.
 - **No boot restore:** `TileSubSystem.Setup` creates only an empty container, never a saved station. The first Start waits for tile resources, restores the selected map and then awaits `WorldReady`. A default selection prefers saved `classic-ministation`, otherwise the first saved template; it is not loaded until Start.
 - **Session lifetime:** the lobby host survives network teardown. Read replicated subsystem snapshots with `TryGet`, hide both surfaces/booth offline or when the local player is spawned, and restore the saved draft on return.
-- **Preferences ride on the saved character, not the shell:** the Jobs tab holds a reference to the selected draft's `CharacterPreferences` (`SetCharacterPreferences`). A creator Save replaces the roster entry with a new draft object, so the host must hand the shell the new draft's preferences, or later chip clicks edit an orphan the store never writes.
+- **Preferences ride on the saved character, not the view:** a creator Save replaces the roster entry with a new draft object. Any view that edits `CharacterPreferences` in place (the Phase 5 Jobs tab) must be handed the new draft's preferences after a save, or later edits change an orphan the store never writes.
 - **Jobs prefs:** shell uses H/M/L/N chips (attached design), not drag-ranked lists (`lobby.md` §3) — an accepted presentation deviation. Jobs come only from `StartingRoles.asset`; a job needs a `RoleData` there to appear. Job resolution must run before `SpawnPlayer` (loadout reads the assignment); anything spawning players outside `SpawnReadyPlayers` falls through to latejoin assignment.
 - **Preview booth:** live preview uses `CharacterPreviewBooth` on layer **23** with its own camera/lights/RT at (-250, -250, 250). Never share layer 22 or (-250, -250, -250) with `RuntimePreviewGenerator`: sharing put the dummy in every item icon — (the old `LobbyCameraRenderTexture`/`StaticWorldObjects` customizer was deleted in Phase F). Dispose the booth on host destroy; deactivate (don’t destroy) on Return to avoid respawn hitch.
 - **E1 vs E2:** Save stores local character slots on disk and sends the saved slot as `CharacterAppearanceMessage` (also once per connection); `EntitySubSystem` sanitizes/stores it per ckey and stamps `Mind.CharacterName` + `Human.SetAppearance` at spawn. Save never changes a living body. Skin/eye tint and catalog-backed eyebrows render in the booth and on spawned bodies; account/server player-meta persistence is separate from local presets.
@@ -179,7 +180,7 @@ original) and tells admins in Admin chat. Unloading resets the editor's history 
 
 - **Preview clothes:** use `Cloth.GetClothMesh` on catalog prefab assets and activate the dummy's existing Jumpsuit/ShoeLeft/ShoeRight renderers. Do not instantiate folded Item prefabs or route offline preview through server-only `ClothesDisplayer`. Pick an outfit once per draft, not on each appearance callback.
 - **Remote client booth threw in `HumanoidController.Setup`:** instantiating the active Human prefab ran every gameplay `Awake` before stripping; on a remote client the booth is built before `CameraSubSystem` exists. The dummy is now instantiated under an inactive staging parent and stripped with `DestroyImmediate` before activation. Host-only pilots never saw this — run the remote pilot after booth changes.
-- **Disabled lobby buttons looked clickable:** the fill-colour button rules had no `:disabled` state, so a non-admin's Admin (and the then-unwired Observe) rendered like live buttons; `ui_wait … disabled` still passed. `.lobby-shell__btn:disabled` dims them. UI renders in linear colour space, so opacity 0.35 reads closer to 60% — judge the screenshot, not the number.
+- **Disabled lobby buttons looked clickable:** fill-colour button rules with no `:disabled` state render a disabled button like a live one, and `ui_wait … disabled` still passes. `Lobby.uss` gives Ready, Observe and the admin buttons explicit `:disabled` looks. UI renders in linear colour space, so a low opacity reads lighter than the number suggests: judge the screenshot.
 - **Server name/MOTD are not round config:** they bypass the idle-only settings gate, and a whole-form save keeps the current values. Pilots that edit them must restore the originals, because the file is the real `ServerMeta` data.
 - **Appearance colors are `Color32`:** FishNet's default `Color` serializer truncates channels to hundredths. Keep replicated colors as `Color32`.
 - **Chat Return ignored in real play:** a real Return keydown targets the `TextField`'s inner text element, which consumes it before it bubbles; the composer's bubble-phase `KeyDownEvent` handler never ran, while synthetic events sent to the field itself passed. Register Return/submit handlers on text fields with `TrickleDown.TrickleDown`; found by the remote pilot's real keyboard input.

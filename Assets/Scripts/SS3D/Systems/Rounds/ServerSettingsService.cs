@@ -46,6 +46,8 @@ namespace SS3D.Systems.Rounds
         [SyncVar] private string _serverBuild = "";
         [SyncVar] private long _serverStartedUnix;
         [SyncVar] private bool _antagonistOptInDefault;
+        [SyncVar] private int _publicPlayerCap = ServerSettings.Default.PlayerCap;
+        [SyncVar] private int _publicMinimumConnected = ServerSettings.Default.MinimumConnected;
 
         /// <summary>
         /// Server: an admin save replaced the round configuration (previous, current). Name/MOTD and auto start
@@ -59,6 +61,12 @@ namespace SS3D.Systems.Rounds
         /// <summary>Server: the authoritative settings.</summary>
         public ServerSettings Current => _settings;
         public int PlayerCap => _settings.PlayerCap;
+
+        /// <summary>Public: the player cap, for the lobby header's player count.</summary>
+        public int PublicPlayerCap => _publicPlayerCap;
+
+        /// <summary>Public: connected players the lobby countdown waits for (<see cref="ServerSettings.MinimumConnected"/>).</summary>
+        public int PublicMinimumConnected => _publicMinimumConnected;
 
         public bool AllowLateJoin => _allowLateJoin;
         public string ServerName => _serverName;
@@ -276,6 +284,8 @@ namespace SS3D.Systems.Rounds
             _allowLateJoin = _settings.AllowLateJoin;
             _publicMode = _settings.Mode;
             _antagonistOptInDefault = _settings.AntagonistOptInDefault;
+            _publicPlayerCap = _settings.PlayerCap;
+            _publicMinimumConnected = _settings.MinimumConnected;
             _serverName = _settings.ServerName;
             _motd = _settings.Motd;
         }

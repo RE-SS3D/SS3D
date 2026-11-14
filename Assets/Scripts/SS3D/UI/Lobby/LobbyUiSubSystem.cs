@@ -6,6 +6,7 @@ using FishNet.Managing;
 using SS3D.Permissions;
 using SS3D.Systems.Audio;
 using SS3D.Systems.Comms;
+using SS3D.Systems.IdAccess;
 using SS3D.Systems.Entities;
 using SS3D.Systems.PlayerControl;
 using SS3D.Systems.Session;
@@ -42,7 +43,7 @@ namespace SS3D.UI.Lobby
     public sealed class LobbyUiSubSystem : SubSystem
     {
         private LobbyAssetCatalog _catalog;
-        private LobbyShellView _shellView;
+        private LobbyView _shellView;
         private CharacterCreatorView _creatorView;
         private CharacterPreviewBooth _booth;
         private CharacterCreatorDraft _draft;
@@ -146,14 +147,19 @@ namespace SS3D.UI.Lobby
             if (profile == null) SaveRoster();
             _draft = _roster.Selected;
 
-            _shellView = new LobbyShellView(_catalog);
+            _shellView = new LobbyView(_catalog);
             _shellView.Attach(modalLayer);
             _shellView.CharacterCreatorRequested += HandleCharacterCreatorRequested;
+            // Until the Phase 5 switcher, Switch character opens the character window, which has the slot list.
+            _shellView.SwitchCharacterRequested += HandleCharacterCreatorRequested;
+            _shellView.BackToRoundRequested += HandleBackToRound;
+            _shellView.MusicToggleRequested += HandleMusicToggle;
+            _shellView.MusicNextRequested += HandleMusicNext;
+            _shellView.MusicVolumeChanged += HandleMusicVolume;
             _shellView.ReadyRequested += HandleReadyRequested;
             _shellView.ObserveRequested += HandleObserveRequested;
             _shellView.QuitRequested += HandleQuitRequested;
             _shellView.BugReportRequested += HandleBugReportRequested;
-            _shellView.RoundChangeRequested += HandleRoundChangeRequested;
             _shellView.ServerSettingsChanged += (field, settings) =>
             {
                 if (CanAdmin() && SubSystems.TryGet(out ServerSettingsService service)) service.CmdUpdateServerSetting(field, settings);
@@ -166,11 +172,9 @@ namespace SS3D.UI.Lobby
             {
                 if (CanAdmin() && SubSystems.TryGet(out MapEditorStopFlow stopFlow)) stopFlow.CmdResolveMapStop(token, choice, name);
             };
-            _shellView.JobPreferencesChanged += HandleJobPreferencesChanged;
             _shellView.ChatSubmitted += HandleChatSubmitted;
             BindPlayerSettings();
-            _shellView.SetCharacterName(_draft.Name);
-            _shellView.SetCharacterPreferences(_draft.Preferences, AntagonistOptInDefault());
+            RefreshCharacterCard();
 
             _creatorView = new CharacterCreatorView(_catalog, _roster, CreateRandomCharacter);
             _creatorView.Attach(modalLayer);
@@ -254,7 +258,6 @@ namespace SS3D.UI.Lobby
                 _lastStationName = rounds.StationName;
             }
             _nextSessionRefresh = Time.unscaledTime + 0.2f;
-            _shellView?.SetCharacterPreferences(_draft?.Preferences, AntagonistOptInDefault());
             bool online = NetworkManager.Instances.Count > 0 && InstanceFinder.ClientManager != null && InstanceFinder.ClientManager.Started;
             bool connected = online && SubSystems.TryGet(out PlayerSubSystem _) && SubSystems.TryGet(out RoundSubSystem _);
             SubSystems.TryGet(out PlayerSubSystem players);
@@ -291,8 +294,7 @@ namespace SS3D.UI.Lobby
                 _inWorld = false;
                 HandleReturnToLobbyRequested();
             }
-            _shellView.SetJobs(connected && SubSystems.TryGet(out RoleSubSystem roles)
-                ? roles.Jobs : System.Array.Empty<JobSlotInfo>());
+
             SubSystems.TryGet(out ServerSettingsService serverSettings);
             if (connected && serverSettings != null)
                 _shellView.SetServerInfo(serverSettings.ServerName, serverSettings.Motd, serverSettings.PublicMode,
@@ -302,27 +304,102 @@ namespace SS3D.UI.Lobby
             RefreshLastRound(connected ? rounds : null, visible);
             _shellView.SetStationLoadState(rounds != null ? rounds.CurrentStationLoadState : StationLoadState.NotLoaded,
                 rounds != null ? rounds.StationName : "");
+            if (rounds != null) _shellView.SetRoundId(rounds.RoundId);
             bool admin = CanAdmin();
             ShowAdminSettings();
             if (SubSystems.TryGet(out CommsSubSystem comms))
-                _shellView.SetChat(comms.OocLog, comms.OocLogVersion, connected && admin);
+                _shellView.SetChat(comms.OocLog, comms.OocLogVersion, connected && admin, connected);
             MapEditorStopFlow stopFlow = null;
             bool mapPrompt = connected && admin && rounds != null && rounds.CurrentRoundState == RoundState.Ongoing
                 && SubSystems.TryGet(out stopFlow);
             _shellView.SetMapStopPrompt(mapPrompt ? stopFlow.MapStopToken : 0,
                 mapPrompt ? stopFlow.MapStopEditingMap : "", mapPrompt ? stopFlow.MapStopError : "");
-            LobbyMockData.PlayerRow[] rows = connected ? players.OnlinePlayers.Where(p => p != null)
-                .Select(p => new LobbyMockData.PlayerRow(p.Ckey, p.Ckey, ready != null && ready.IsReady(p),
-                    null, "—", "—", "—")).ToArray() : System.Array.Empty<LobbyMockData.PlayerRow>();
-            _shellView.SetAutoStart(rounds != null && rounds.AutoStartEnabled, rounds != null && rounds.AutoStartHeld,
-                rounds != null ? rounds.AutoStartSecondsLeft : 0);
-            _shellView.SetRoundEnd(rounds != null && rounds.EndHeld, rounds != null ? rounds.EndSecondsLeft : 0);
-            // Observing is immediate (lobby effort Decision 9): no late-join gate, only a loaded station and no body yet.
-            _shellView.SetObserve(false, local != null && !spawned && rounds != null
-                && ObserveRules.StationLoaded(rounds.CurrentRoundState, rounds.CurrentStationLoadState));
-            _shellView.SetSession(rounds != null ? rounds.CurrentRoundState : RoundState.Stopped,
-                rounds != null ? rounds.CurrentTimerSeconds : 0,
-                local != null && ready != null && ready.IsReady(local), local != null && (rounds == null || rounds.CurrentRoundState != RoundState.Ongoing || serverSettings == null || serverSettings.AllowLateJoin), admin, rows, spawned);
+
+            int onlineCount = 0;
+            int readyCount = 0;
+            if (connected)
+                foreach (Player player in players.OnlinePlayers)
+                {
+                    if (player == null) continue;
+                    onlineCount++;
+                    if (ready != null && ready.IsReady(player)) readyCount++;
+                }
+            _shellView.SetPlayers(onlineCount, readyCount, connected && serverSettings != null ? serverSettings.PublicPlayerCap : 0);
+            RefreshCharacterCard();
+            RefreshMusicRow(spawned);
+
+            RoundState state = rounds != null ? rounds.CurrentRoundState : RoundState.Stopped;
+            _shellView.SetSession(new LobbySessionInfo
+            {
+                State = state,
+                TimerSeconds = rounds != null ? rounds.CurrentTimerSeconds : 0,
+                AutoStartEnabled = rounds != null && rounds.AutoStartEnabled,
+                AutoStartHeld = rounds != null && rounds.AutoStartHeld,
+                AutoStartSecondsLeft = rounds != null ? rounds.AutoStartSecondsLeft : 0,
+                Connected = onlineCount,
+                MinimumConnected = serverSettings != null ? serverSettings.PublicMinimumConnected : 1,
+                EndHeld = rounds != null && rounds.EndHeld,
+                EndSecondsLeft = rounds != null ? rounds.EndSecondsLeft : 0,
+                Ready = local != null && ready != null && ready.IsReady(local),
+                Spawned = spawned,
+                LateJoinAllowed = serverSettings == null || serverSettings.AllowLateJoin,
+                // Observing is immediate (lobby effort Decision 9): no late-join gate, only a loaded station and no body yet.
+                CanObserve = local != null && !spawned && rounds != null
+                    && ObserveRules.StationLoaded(rounds.CurrentRoundState, rounds.CurrentStationLoadState),
+                FirstName = LobbySidebarModel.FirstName(_draft?.Name),
+            }, admin);
+        }
+
+        /// <summary>The sidebar card: the saved selected character, its High job and that job's department.</summary>
+        private void RefreshCharacterCard()
+        {
+            if (_shellView == null || _draft == null) return;
+            string high = _draft.Preferences?.HighJob;
+            Department department = Department.None;
+            if (high != null && SubSystems.TryGet(out RoleSubSystem roles))
+                foreach (JobSlotInfo job in roles.Jobs)
+                    if (job.Name == high) department = (Department)job.Department;
+            _shellView.SetCharacter(_draft.Name, high, department, _roster?.Count ?? 1, CharacterRoster.MaxCharacters);
+        }
+
+        /// <summary>The music row drives the same menu music the main menu does (Decision 15).</summary>
+        private void RefreshMusicRow(bool spawned)
+        {
+            SubSystems.TryGet(out PlayerSettingsSubSystem settings);
+            SubSystems.TryGet(out MenuMusicSubSystem music);
+            bool on = settings == null || settings.Settings.Audio.MenuMusic;
+            _shellView.SetMusic(!spawned && music != null && music.HasTracks, on, music != null ? music.Title : "",
+                settings != null ? settings.Settings.Audio.Music : 0.8f);
+        }
+
+        private void HandleMusicToggle()
+        {
+            if (!SubSystems.TryGet(out PlayerSettingsSubSystem settings)) return;
+            settings.SetMenuMusic(!settings.Settings.Audio.MenuMusic);
+            _nextSessionRefresh = 0f;
+        }
+
+        private void HandleMusicNext()
+        {
+            if (SubSystems.TryGet(out MenuMusicSubSystem music)) music.Next();
+            _nextSessionRefresh = 0f;
+        }
+
+        private void HandleMusicVolume(float volume)
+        {
+            if (!SubSystems.TryGet(out PlayerSettingsSubSystem settings)) return;
+            settings.SetVolume(PlayerVolume.Music, volume);
+            // Turning the volume up turns the music on, as on the main menu.
+            if (volume > 0f && !settings.Settings.Audio.MenuMusic) settings.SetMenuMusic(true);
+        }
+
+        /// <summary>"Back to round" closes the in-round Escape menu, the same as Escape.</summary>
+        private void HandleBackToRound()
+        {
+            if (!_spawned) return;
+            _menuOpen = false;
+            _nextSessionRefresh = 0f;
+            RefreshSession();
         }
 
         /// <summary>Follows InputSubSystem across scene reloads (it owns a new Controls each time).</summary>
@@ -412,16 +489,6 @@ namespace SS3D.UI.Lobby
             _shellView.SetServerSettings(service.AdminSettings, service.AdminMaps, service.AdminSettingsStatus);
         }
 
-        /// <summary>
-        /// The interim Jobs tab edited the selected saved character's preferences in place: save it and resend. The
-        /// Phase 5 character window replaces this with its own Save.
-        /// </summary>
-        private void HandleJobPreferencesChanged()
-        {
-            SaveRoster();
-            SendJobPreferences();
-        }
-
         private static void SendJobPreferences()
         {
             if (SubSystems.TryGet(out ClientSessionSubSystem session)) session.JobPreferencesChanged();
@@ -432,9 +499,6 @@ namespace SS3D.UI.Lobby
         /// <summary>A random character from the catalog's names and looks (Decision 3).</summary>
         private CharacterCreatorDraft CreateRandomCharacter() =>
             RandomCharacter.Create(_catalog != null ? _catalog.CharacterNames : null, RandomCharacter.LookOptions.From(_catalog), _random);
-
-        private static bool AntagonistOptInDefault() =>
-            SubSystems.TryGet(out ServerSettingsService settings) && settings.AntagonistOptInDefault;
 
         private void NotifyAppearanceChanged()
         {
@@ -473,12 +537,6 @@ namespace SS3D.UI.Lobby
         private void HandleChatSubmitted(OocChannel channel, string text)
         {
             if (SubSystems.TryGet(out CommsSubSystem comms)) comms.SendOoc(channel, text);
-        }
-
-        private void HandleRoundChangeRequested(bool start)
-        {
-            if (CanAdmin() && InstanceFinder.ClientManager.Started)
-                InstanceFinder.ClientManager.Broadcast(new ChangeRoundStateMessage(start));
         }
 
         /// <summary>Leaves the session (ending it when hosting) and returns to the main menu.</summary>
@@ -603,7 +661,7 @@ namespace SS3D.UI.Lobby
             // Return shows the last explicitly saved character, not unsaved preview edits.
             _creatorView.ApplyDraft(_draft);
             PushPreviewTexture();
-            _shellView.SetCharacterName(_draft?.Name ?? LobbyMockData.CharacterName);
+            RefreshCharacterCard();
             _creatorView.SetVisible(false);
             _shellView.SetVisible(true);
             Debug.Log("[Lobby] Returned to Lobby Shell from Character Creator.");
@@ -619,8 +677,7 @@ namespace SS3D.UI.Lobby
             _draft = draft;
             _roster.Select(draft.Id);
             SaveRoster();
-            _shellView?.SetCharacterName(_draft.Name);
-            _shellView?.SetCharacterPreferences(_draft.Preferences, AntagonistOptInDefault());
+            RefreshCharacterCard();
             HandleOutfitChanged(_draft.OutfitIndex);
             ApplyBodyMorphsToBooth(_draft.BodyMorphs);
             ApplyStyleToBooth(_draft.HairStyleIndex, _draft.BeardStyleIndex, _draft.HairColorIndex, _draft.BeardColorIndex);

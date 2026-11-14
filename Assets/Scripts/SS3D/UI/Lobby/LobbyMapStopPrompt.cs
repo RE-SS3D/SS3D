@@ -1,61 +1,45 @@
 using System;
+using SS3D.Systems.Inputs;
 using SS3D.Systems.Rounds;
 using UnityEngine;
 using UnityEngine.UIElements;
 
 namespace SS3D.UI.Lobby
 {
-    public sealed partial class LobbyShellView
+    /// <summary>
+    /// The admin's Stop confirmation while the map editor has unsaved edits (A4): Save and stop, Discard and stop or
+    /// Cancel. It covers the whole lobby; Escape cancels.
+    /// </summary>
+    public sealed class LobbyMapStopPrompt
     {
-        private VisualElement _mapStopPrompt;
-        private VisualElement _mapStopCard;
-        private Label _mapStopText;
-        private Label _mapStopError;
-        private TextField _mapStopName;
-        private int _mapStopToken;
-        public event Action<int, MapStopChoice, string> MapStopResolved;
+        private readonly VisualElement _card;
+        private readonly Label _text;
+        private readonly Label _error;
+        private readonly TextField _name;
+        private int _token;
 
-        /// <summary>Shows the admin's Stop confirmation while the map editor has unsaved edits (token 0 hides it).</summary>
-        public void SetMapStopPrompt(int token, string editingMap, string error)
-        {
-            if (_mapStopPrompt == null) return;
-            bool changed = token != _mapStopToken;
-            _mapStopToken = token;
-            _mapStopPrompt.style.display = token == 0 ? DisplayStyle.None : DisplayStyle.Flex;
-            if (token == 0) return;
-            _mapStopCard.SetEnabled(true);
-            bool unnamed = string.IsNullOrEmpty(editingMap);
-            _mapStopText.text = unnamed
-                ? "This new map has unsaved changes. Stopping the round unloads the station. Save and stop saves it under a new name first; Discard loses these edits."
-                : $"{editingMap} has unsaved changes. Stopping the round unloads the station. Save and stop overwrites {editingMap} first; Discard loses these edits.";
-            _mapStopName.style.display = unnamed ? DisplayStyle.Flex : DisplayStyle.None;
-            if (changed) _mapStopName.SetValueWithoutNotify(unnamed ? "" : editingMap);
-            _mapStopError.text = error ?? "";
-            if (changed) _mapStopPrompt.Q<Button>("map-stop-cancel").Focus();
-        }
+        /// <summary>The prompt's token, the chosen action and the map name typed for an unnamed map.</summary>
+        public event Action<int, MapStopChoice, string> Resolved;
 
-        private VisualElement BuildMapStopPrompt()
+        public VisualElement Root { get; }
+
+        public LobbyMapStopPrompt(InputTextEntryScope textEntry)
         {
-            _mapStopPrompt = new VisualElement { name = "map-stop-prompt" };
-            _mapStopPrompt.AddToClassList("lobby-shell__display-prompt");
-            _mapStopPrompt.style.display = DisplayStyle.None;
-            _mapStopCard = new VisualElement();
-            _mapStopCard.AddToClassList("lobby-shell__display-prompt-card");
-            Label title = MakeLabel("UNSAVED MAP CHANGES", "font-titling");
-            title.AddToClassList("lobby-shell__display-prompt-text");
-            _mapStopCard.Add(title);
-            _mapStopText = MakeLabel("", "font-body");
-            _mapStopText.AddToClassList("lobby-shell__display-prompt-text");
-            _mapStopCard.Add(_mapStopText);
-            _mapStopName = new TextField("New map name") { name = "map-stop-name", maxLength = 80 };
-            _mapStopName.AddToClassList("lobby-shell__server-text");
-            _mapStopName.AddToClassList("font-body");
-            StyleDarkTextField(_mapStopName);
-            HoldTextEntry(_mapStopName);
-            _mapStopCard.Add(_mapStopName);
-            _mapStopError = MakeLabel("", "font-body");
-            _mapStopError.AddToClassList("lobby-shell__display-prompt-text");
-            _mapStopCard.Add(_mapStopError);
+            Root = LobbyUi.Box("lobby-prompt");
+            Root.name = "map-stop-prompt";
+            Root.style.display = DisplayStyle.None;
+            _card = LobbyUi.Box("lobby-prompt__card");
+            _card.Add(LobbyUi.Titling("Unsaved map changes", "lobby-prompt__title"));
+            _text = LobbyUi.Text("", "lobby-prompt__text");
+            _card.Add(_text);
+            _name = new TextField("New map name") { name = "map-stop-name", maxLength = 80 };
+            _name.AddToClassList("lobby-admin__text");
+            LobbyUi.DarkInput(_name);
+            LobbyUi.HoldTextEntry(_name, textEntry);
+            _card.Add(_name);
+            _error = LobbyUi.Text("", "lobby-prompt__error");
+            _card.Add(_error);
+            VisualElement buttons = LobbyUi.Box("lobby-prompt__buttons");
             foreach ((string name, string label, MapStopChoice choice) in new (string, string, MapStopChoice)[]
             {
                 ("map-stop-save", "Save and stop", MapStopChoice.SaveAndStop),
@@ -63,26 +47,56 @@ namespace SS3D.UI.Lobby
                 ("map-stop-cancel", "Cancel", MapStopChoice.Cancel),
             })
             {
-                Button button = AdminButton(label, () => ResolveMapStop(choice));
-                button.name = name;
-                _mapStopCard.Add(button);
+                Button button = new(() => Resolve(choice)) { name = name, text = label.ToUpperInvariant() };
+                button.AddToClassList("lobby-admin__button");
+                button.AddToClassList("lb-titling");
+                if (choice == MapStopChoice.SaveAndStop) button.AddToClassList("lobby-admin__button--start");
+                buttons.Add(button);
             }
-            _mapStopPrompt.RegisterCallback<KeyDownEvent>(e =>
+
+            _card.Add(buttons);
+            Root.RegisterCallback<KeyDownEvent>(e =>
             {
                 if (e.keyCode != KeyCode.Escape) return;
-                ResolveMapStop(MapStopChoice.Cancel);
+                Resolve(MapStopChoice.Cancel);
                 e.StopPropagation();
             }, TrickleDown.TrickleDown);
-            _mapStopPrompt.Add(_mapStopCard);
-            return _mapStopPrompt;
+            Root.Add(_card);
         }
 
-        private void ResolveMapStop(MapStopChoice choice)
+        public bool IsOpen => _token != 0;
+
+        /// <summary>Shows the prompt for <paramref name="token"/>; 0 hides it.</summary>
+        public void Set(int token, string editingMap, string error)
         {
-            if (_mapStopToken == 0 || !_mapStopCard.enabledSelf) return;
-            _mapStopName.Blur();
-            _mapStopCard.SetEnabled(false);
-            MapStopResolved?.Invoke(_mapStopToken, choice, _mapStopName.value);
+            bool changed = token != _token;
+            _token = token;
+            Root.style.display = token == 0 ? DisplayStyle.None : DisplayStyle.Flex;
+            if (token == 0) return;
+            _card.SetEnabled(true);
+            bool unnamed = string.IsNullOrEmpty(editingMap);
+            _text.text = unnamed
+                ? "This new map has unsaved changes. Stopping the round unloads the station. Save and stop saves it under a new name first; Discard loses these edits."
+                : $"{editingMap} has unsaved changes. Stopping the round unloads the station. Save and stop overwrites {editingMap} first; Discard loses these edits.";
+            _name.style.display = unnamed ? DisplayStyle.Flex : DisplayStyle.None;
+            if (changed) _name.SetValueWithoutNotify(unnamed ? "" : editingMap);
+            _error.text = error ?? "";
+            if (changed) Root.Q<Button>("map-stop-cancel").Focus();
+        }
+
+        /// <summary>Forgets the open prompt (the shell detached).</summary>
+        public void Reset()
+        {
+            _token = 0;
+            Resolved = null;
+        }
+
+        private void Resolve(MapStopChoice choice)
+        {
+            if (_token == 0 || !_card.enabledSelf) return;
+            _name.Blur();
+            _card.SetEnabled(false);
+            Resolved?.Invoke(_token, choice, _name.value);
         }
     }
 }

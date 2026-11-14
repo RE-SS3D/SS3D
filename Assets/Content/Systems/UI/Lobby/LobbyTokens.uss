@@ -1,0 +1,97 @@
+/*
+ * Lobby and character window tokens (lobby effort Decision 16). The SS3D design-system palette, the same as the main
+ * menu and the Settings panel, plus the department and priority colours from the canvas token sheet. Every
+ * department and priority colour passes 4.5:1 as text on the panel (#353538) and the inset (#2a2a2e).
+ * Put .lobby-theme on a view's root.
+ */
+.lobby-theme {
+    /* Surfaces */
+    --lb-panel: #353538;
+    --lb-chrome: #161616;
+    --lb-inset: #2a2a2e;
+    --lb-void: #222222;
+    --lb-hover: #45454a;
+    --lb-sidebar: rgba(34, 34, 34, 0.97);
+
+    /* Text. White on rust: the design system's #fff8ef reaches only about 4.4:1 there. */
+    --lb-text: #ffffff;
+    --lb-text-2: #aaaaaa;
+    --lb-disabled: #5a5d60;
+    --lb-on-accent: #ffffff;
+    --lb-on-light: #161616;
+
+    /* Borders */
+    --lb-border-subtle: rgba(216, 216, 216, 0.1);
+    --lb-border: rgba(216, 216, 216, 0.18);
+    --lb-border-strong: #717c7f;
+
+    /* Accent */
+    --lb-rust: #c54f30;
+    --lb-rust-hover: #dc5528;
+    --lb-rust-active: #93351f;
+
+    /* Feedback */
+    --lb-green: #88b36a;
+    --lb-green-hover: #a8cf8c;
+    --lb-amber: #e6ad53;
+    --lb-red: #b13d3d;
+    --lb-red-text: #d17a7a;
+    --lb-red-bg: rgba(185, 72, 72, 0.14);
+    --lb-blue: #3d6089;
+    --lb-blue-text: #5f86b3;
+
+    /* Departments */
+    --dept-command: #8fb4f2;
+    --dept-security: #f291a8;
+    --dept-engineering: #ecd35e;
+    --dept-medical: #62d0d6;
+    --dept-science: #cf9df0;
+    --dept-cargo: #c9a27c;
+    --dept-service: #8edb9c;
+    --dept-civilian: #ddd7cb;
+
+    /* Job priorities: High is the only solid fill (chrome-dark label on it, 7.2:1). */
+    --prio-high: #f0875f;
+    --prio-medium: #e8b7a6;
+    --prio-low: #c4c4cc;
+    --prio-never: #aaaaaa;
+
+    -unity-font-definition: url("project://database/Assets/Art/Font/TextMesh%20Pro/Fonts/LiberationSans.ttf");
+    -unity-font-style: normal;
+    font-size: 14px;
+    color: var(--lb-text);
+}
+
+/* Fonts: Gurajada for titles, tabs and buttons; Spessman for readouts; LiberationSans for body text. */
+.lobby-theme .lb-titling {
+    -unity-font-definition: url("project://database/Assets/Art/Font/Fonts/GurajadaRegular.ttf");
+    -unity-font-style: normal;
+}
+
+.lobby-theme .lb-mono {
+    -unity-font-definition: url("project://database/Assets/Art/Font/Fonts/SpessmanFont.ttf");
+    -unity-font-style: normal;
+}
+
+/* Department colour as text, and as a small swatch. */
+.lb-dept--command { color: var(--dept-command); }
+.lb-dept--security { color: var(--dept-security); }
+.lb-dept--engineering { color: var(--dept-engineering); }
+.lb-dept--medical { color: var(--dept-medical); }
+.lb-dept--science { color: var(--dept-science); }
+.lb-dept--cargo { color: var(--dept-cargo); }
+.lb-dept--service { color: var(--dept-service); }
+.lb-dept--civilian { color: var(--dept-civilian); }
+.lb-swatch.lb-dept--command { background-color: var(--dept-command); }
+.lb-swatch.lb-dept--security { background-color: var(--dept-security); }
+.lb-swatch.lb-dept--engineering { background-color: var(--dept-engineering); }
+.lb-swatch.lb-dept--medical { background-color: var(--dept-medical); }
+.lb-swatch.lb-dept--science { background-color: var(--dept-science); }
+.lb-swatch.lb-dept--cargo { background-color: var(--dept-cargo); }
+.lb-swatch.lb-dept--service { background-color: var(--dept-service); }
+.lb-swatch.lb-dept--civilian { background-color: var(--dept-civilian); }
+
+.lb-prio--high { color: var(--prio-high); }
+.lb-prio--medium { color: var(--prio-medium); }
+.lb-prio--low { color: var(--prio-low); }
+.lb-prio--never { color: var(--prio-never); }

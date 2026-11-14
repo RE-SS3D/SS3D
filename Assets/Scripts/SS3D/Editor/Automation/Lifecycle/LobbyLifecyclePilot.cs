@@ -287,12 +287,12 @@ namespace SS3D.Editor.Automation
                     Require(!LegacyLobbyCanvasPresent(), "No legacy uGUI lobby canvas in the scene");
                     Require(!Visible(Creator()), "Creator hidden on boot");
                     Require(BoothLive(), "Preview booth active with RT bound");
-                    Require(AdminButton().enabledInHierarchy, "Host owner has Admin enabled");
-                    Require(ReadyButton().enabledInHierarchy && ReadyButton().text == "NOT READY", "Ready button enabled and NOT READY");
-                    Require(CountLabel() == "0/1 ready", "Sidebar shows 0/1 ready");
+                    Require(Visible(Shell().Q("lobby-admin")), "Host owner sees the Admin switch");
+                    Require(ReadyButton().enabledInHierarchy && ReadyText() == "READY UP", "Ready button enabled and reads READY UP");
+                    Require(CountLabel() == "0/1 ready", "Nobody is ready yet");
                     Require(SubSystems.Get<SS3D.Systems.Tile.TileSubSystem>().CurrentMap.ChunkCount == 0, "Lobby boots without station chunks");
                     Require(Rounds().CurrentStationLoadState == StationLoadState.NotLoaded
-                        && Shell().Q<Label>("lobby-map-load-status").text == "No map loaded", "Lobby reports no map loaded");
+                        && Shell().Q<Label>("lobby-header-map").text == "No map", "Lobby reports no map loaded");
                     CreateValidationStation(valid: false);
                     _savedName = CharacterName();
                 },
@@ -312,15 +312,15 @@ namespace SS3D.Editor.Automation
                     Require(!Shell().Q<Button>("server-force").enabledInHierarchy && !Shell().Q<Button>("server-extend").enabledInHierarchy
                         && !Shell().Q<Button>("server-cancel").enabledInHierarchy, "Countdown actions disabled while waiting");
                     foreach (string name in new string[] { "server-random-events", "server-friendly-fire", "server-respawn" })
-                        Require(!Shell().Q<Toggle>(name).enabledInHierarchy && !string.IsNullOrEmpty(Shell().Q<Toggle>(name).tooltip), "Unsupported rule explains its disabled state: " + name);
+                        Require(Shell().Q<Toggle>(name) == null, "A rule with no consumer in the game isn't shown (lobby.md §8): " + name);
                     Capture("server-settings-waiting");
                 },
             },
             new Step
             {
                 Name = "Inspect numeric fields and round rules",
-                Enter = () => Shell().Q<ScrollView>("server-settings-scroll").ScrollTo(Shell().Q("server-respawn")),
-                Until = () => Shell().Q("server-respawn").worldBound.yMax <= Shell().Q<ScrollView>("server-settings-scroll").contentViewport.worldBound.yMax,
+                Enter = () => Shell().Q<ScrollView>("server-settings-scroll").ScrollTo(Shell().Q("server-auto-start")),
+                Until = () => Shell().Q("server-auto-start").worldBound.yMax <= Shell().Q<ScrollView>("server-settings-scroll").contentViewport.worldBound.yMax,
                 Verify = () => Capture("server-settings-rules"),
             },
             new Step
@@ -614,27 +614,25 @@ namespace SS3D.Editor.Automation
                     && Shell().Q<Toggle>("server-late-join").value && Shell().Q<IntegerField>("server-round-length").value == ServerSettings.Default.RoundLengthMinutes,
             },
             new Step { Name = "Leave admin before lifecycle", Enter = () => Click(AdminButton()), Until = () => Shell().Q("server-settings-form") == null },
-            new Step { Name = "Ready", Enter = () => Click(ReadyButton()), Until = () => IsReady() && ReadyButton().text.Contains("READY") && CountLabel() == "1/1 ready",
-                Verify = () => Require(ReadyButton().text == "✓  READY", "Ready reflected in button and count") },
+            new Step { Name = "Ready", Enter = () => Click(ReadyButton()), Until = () => IsReady() && ReadyText() == "READY" && CountLabel() == "1/1 ready",
+                Verify = () => Require(ReadyButton().ClassListContains("lobby__ready--confirmed"), "Ready reflected in the button") },
             new Step { Name = "Unready", Enter = () => Click(ReadyButton()), Until = () => !IsReady() && CountLabel() == "0/1 ready",
-                Verify = () => Require(ReadyButton().text == "NOT READY", "Unready reflected in button and count") },
+                Verify = () => Require(ReadyText() == "READY UP", "Unready reflected in the button") },
             new Step { Name = "Ready again", Enter = () => Click(ReadyButton()), Until = IsReady },
-            new Step { Name = "Open Jobs tab", Enter = () => Click(Shell().Q<Button>("tab-jobs")), Until = () => SecurityChip("H") != null },
             new Step
             {
+                // Interim until the Phase 5 character window has a Jobs tab: set the saved character's High job directly
+                // and resend, as its Save will.
                 Name = "Security High reaches the server",
-                Enter = () => Click(SecurityChip("H")),
-                // The shell reads replicated jobs on its 200ms refresh: wait on the UI, not only the server.
-                Until = () => Job("Security").Interested == 1 && SecurityRowText().Contains("1 interested"),
+                Enter = SetSecurityHigh,
+                Until = () => Job("Security").Interested == 1,
                 Verify = () =>
                 {
-                    Require(SecurityChip("H").ClassListContains("lobby-shell__priority-chip--high"), "Security H chip selected");
                     Require(Job("Assistant").Interested == 0, "Only Security counts as interested");
-                    Require(SecurityRowText().Contains("1/1"), "Jobs tab shows Security slots");
-                    Capture("jobs-security-high");
+                    Require(Shell().Q<Label>("lobby-high-job").text == "Security", "The character card shows High: Security");
+                    Require(Shell().Q<Label>("lobby-high-job").ClassListContains("lb-dept--security"), "High job wears its department colour");
                 },
             },
-            new Step { Name = "Back to Server Info", Enter = () => Click(Shell().Q<Button>("tab-server-info")), Until = () => SecurityChip("H") == null },
             new Step
             {
                 Name = "Server Info shows live metadata",
@@ -688,7 +686,7 @@ namespace SS3D.Editor.Automation
                 {
                     OocChatMessage line = SubSystems.Get<CommsSubSystem>().OocLog.Last(m => !m.IsSystem);
                     Require(line.Sender == SS3D.Core.Settings.LocalPlayer.Ckey, "Server attributes the line to the sender's ckey");
-                    Require(Shell().Query<Label>(className: "lobby-shell__chat-text").ToList().All(l => !l.enableRichText),
+                    Require(Shell().Query<Label>(className: "lobby-chat__text").ToList().All(l => !l.enableRichText),
                         "Chat text renders tags literally");
                     Require(Shell().Q<Button>("chat-channel-admin") != null, "Administrator sees the Admin channel");
                     Capture("chat-ooc");
@@ -716,7 +714,7 @@ namespace SS3D.Editor.Automation
             new Step
             {
                 Name = "Open creator before round start",
-                Enter = () => Click(Shell().Q(className: "lobby-shell__preview")),
+                Enter = () => Click(Shell().Q<Button>("lobby-character")),
                 Until = () => Visible(Creator()) && !Visible(Shell()),
             },
             new Step
@@ -887,7 +885,7 @@ namespace SS3D.Editor.Automation
                 {
                     Require(Spawned(), "Still spawned while the menu is open");
                     Require(BoothLive(), "Booth live while the menu is open");
-                    Require(!ReadyButton().enabledInHierarchy && ReadyButton().text == "IN ROUND", "Action button reads IN ROUND, disabled");
+                    Require(!ReadyButton().enabledInHierarchy && ReadyText() == "IN ROUND", "Action button reads IN ROUND, disabled");
                     Require(!GameplayMapEnabled(), "Movement input masked while the menu is open");
                     Capture("escape-menu");
                 },
@@ -997,7 +995,7 @@ namespace SS3D.Editor.Automation
                 Name = "Admin Force Start leaves unready player in lobby",
                 Enter = () => Click(Shell().Q<Button>("server-force")),
                 Timeout = 120,
-                Until = () => Rounds().CurrentRoundState == RoundState.Ongoing && ReadyButton().text == "JOIN ROUND",
+                Until = () => Rounds().CurrentRoundState == RoundState.Ongoing && ReadyText() == "JOIN",
                 Verify = () =>
                 {
                     Require(!Spawned() && Visible(Shell()), "Unready player stays in lobby");
@@ -1088,7 +1086,7 @@ namespace SS3D.Editor.Automation
                     && CountLabel() == "0/1 ready",
                 Verify = () =>
                 {
-                    Require(AdminButton().enabledInHierarchy, "Host owner has Admin enabled");
+                    Require(Visible(Shell().Q("lobby-admin")), "Host owner sees the Admin switch");
                     CreateValidationStation(valid: true);
                     ServerSettings settings = ServerSettings.Default;
                     settings.Map = _validationStation;
@@ -1122,7 +1120,7 @@ namespace SS3D.Editor.Automation
                     Require(Rounds().CurrentRoundState == RoundState.Stopped, "Non-admin start request did not start a round");
                     Require(ClientLog().Contains("ServerSettingsPermissionVerified"), "Remote cannot read admin configuration");
                     Require(Settings().Current.PlayerCap == 32 && Settings().AllowLateJoin, "Non-admin configuration writes were rejected");
-                    Require(ClientSignal("UiText", ".lobby-shell__countdown-sub Stopped"), "Client observed Stopped after its start request");
+                    Require(ClientSignal("UiText", "#lobby-round-status Pre-round"), "Client observed Stopped after its start request");
                     Require(!IsReady(), "Host stays unready");
                     Require(_osInputsDone >= 1 && !ClientLog().Contains("UiSubmitted"), "Remote readied through a real OS click, not a synthetic submit");
                 },
@@ -1176,11 +1174,11 @@ namespace SS3D.Editor.Automation
                 Enter = () => Click(FindButton(Shell(), "START ROUND")),
                 Timeout = 120,
                 // UI snapshots trail round state by the 200ms refresh: wait for the label too.
-                Until = () => Rounds().CurrentRoundState == RoundState.Ongoing && RemoteSpawned() && ReadyButton().text == "JOIN ROUND",
+                Until = () => Rounds().CurrentRoundState == RoundState.Ongoing && RemoteSpawned() && ReadyText() == "JOIN",
                 Verify = () =>
                 {
                     Require(!Spawned() && Visible(Shell()), "Unready host stays in lobby");
-                    Require(ReadyButton().text == "JOIN ROUND", "Host shows Join Round while Ongoing");
+                    Require(ReadyText() == "JOIN", "Host shows Join Round while Ongoing");
                     Require(!Visible(Shell().Q("server-start")) && Visible(Shell().Q("server-stop")), "Host shows Stop without Start while remote is in round");
                 },
             },
@@ -1199,7 +1197,7 @@ namespace SS3D.Editor.Automation
                 Enter = () => Click(FindButton(Shell(), "START ROUND")),
                 Timeout = 120,
                 Until = () => Rounds().CurrentRoundState == RoundState.Ongoing && RemoteSpawned(),
-                Verify = () => Require(ClientSignal("UiText", ".lobby-shell__btn--ready JOIN ROUND"), "Remote saw Join Round before spawning"),
+                Verify = () => Require(ClientSignal("UiText", "#lobby-ready-title JOIN"), "Remote saw Join Round before spawning"),
             },
             new Step
             {
@@ -1457,12 +1455,12 @@ namespace SS3D.Editor.Automation
         }
 
         private static List<string> ChatLines() =>
-            Shell()?.Query<Label>(className: "lobby-shell__chat-text").ToList().ConvertAll(l => l.text) ?? new List<string>();
+            Shell()?.Query<Label>(className: "lobby-chat__text").ToList().ConvertAll(l => l.text) ?? new List<string>();
 
         private static bool HostChatContains(string text) =>
             SubSystems.TryGet(out CommsSubSystem comms) && comms.OocLog.Any(m => m.Text == text);
 
-        private static TextField ChatInput() => Shell()?.Q<TextField>(className: "lobby-shell__chat-input");
+        private static TextField ChatInput() => Shell()?.Q<TextField>("chat-input");
 
         private static bool MapEditorActive() => SubSystems.TryGet(out MapEditorSubSystem mapEditor) && mapEditor.IsActive;
 
@@ -1490,28 +1488,37 @@ namespace SS3D.Editor.Automation
 
         private static bool Visible(VisualElement surface) => surface != null && surface.resolvedStyle.display != DisplayStyle.None;
 
-        private static Button ReadyButton() => Shell().Q<Button>(className: "lobby-shell__btn--ready");
+        private static Button ReadyButton() => Shell().Q<Button>("lobby-ready");
 
-        private static Button AdminButton() => Shell().Q<Button>(className: "lobby-shell__btn--admin");
+        private static string ReadyText() => Shell()?.Q<Label>("lobby-ready-title")?.text;
 
-        private static string CountLabel() => Shell().Q<Label>(className: "lobby-shell__countdown")?.text;
+        private static Button AdminButton() => Shell().Q<Button>("lobby-admin-switch");
 
-        private static string CharacterName() => Shell().Q<Label>(className: "lobby-shell__character-name")?.text;
+        /// <summary>Ready over online players. The lobby no longer shows it (lobby.md §7: Ready only decides who spawns).</summary>
+        private static string CountLabel()
+        {
+            if (!SubSystems.TryGet(out PlayerSubSystem players) || !SubSystems.TryGet(out ReadyPlayersSubSystem ready)) return null;
+            Player[] online = players.OnlinePlayers.Where(p => p != null).ToArray();
+            return $"{online.Count(ready.IsReady)}/{online.Length} ready";
+        }
+
+        /// <summary>Gives the selected saved character High Security and resends its preferences.</summary>
+        private static void SetSecurityHigh()
+        {
+            LobbyUiSubSystem lobby = SubSystems.Get<LobbyUiSubSystem>();
+            CharacterCreatorDraft draft = (CharacterCreatorDraft)typeof(LobbyUiSubSystem)
+                .GetField("_draft", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic).GetValue(lobby);
+            draft.Preferences.SetPriority("Security", JobPriority.High);
+            SubSystems.Get<SS3D.Systems.Session.ClientSessionSubSystem>().JobPreferencesChanged();
+        }
+
+        private static string CharacterName() => Shell().Q<Label>("lobby-character-name")?.text;
 
         private static JobSlotInfo Job(string name) =>
             SubSystems.TryGet(out RoleSubSystem roles) ? roles.Jobs.FirstOrDefault(job => job.Name == name) : default;
 
         private static string AssignedRole() =>
             SubSystems.TryGet(out RoleSubSystem roles) && roles.TryGetRole(Local(), out RoleData role) ? role.Name : null;
-
-        private static VisualElement SecurityRow() => Shell()?.Query(className: "lobby-shell__job-row")
-            .Where(row => row.Q<Label>(className: "lobby-shell__job-name")?.text == "Security").First();
-
-        private static string SecurityRowText() =>
-            string.Join(" ", SecurityRow()?.Query<Label>().ToList().Select(label => label.text) ?? Array.Empty<string>());
-
-        private static Button SecurityChip(string text) =>
-            SecurityRow()?.Query<Button>(className: "lobby-shell__priority-chip").Where(chip => chip.text == text).First();
 
         private static List<VisualElement> StyleTiles() =>
             Creator()?.Query(className: "char-creator__style-tile").ToList() ?? new List<VisualElement>();
@@ -1585,7 +1592,7 @@ namespace SS3D.Editor.Automation
             CharacterPreviewBooth booth = UnityEngine.Object.FindAnyObjectByType<CharacterPreviewBooth>();
             if (booth == null || booth.PreviewTexture == null) return false;
             bool camera = booth.GetComponentsInChildren<Camera>(true).Any(c => c.enabled);
-            VisualElement image = Shell()?.Q(className: "lobby-shell__preview-image");
+            VisualElement image = Shell()?.Q("lobby-preview-image");
             return camera && image != null && image.resolvedStyle.backgroundImage.renderTexture == booth.PreviewTexture;
         }
 
@@ -1594,7 +1601,7 @@ namespace SS3D.Editor.Automation
             RoundSubSystem rounds = Rounds();
             return $"online={Online()} local={Local() != null} round={(rounds != null ? rounds.CurrentRoundState.ToString() : "-")} "
                 + $"ready={IsReady()} spawned={Spawned()} shell={Visible(Shell())} creator={Visible(Creator())} "
-                + $"button='{(Shell() != null ? ReadyButton()?.text : "-")}' count='{(Shell() != null ? CountLabel() : "-")}'";
+                + $"button='{(Shell() != null ? ReadyText() : "-")}' count='{(Shell() != null ? CountLabel() : "-")}'";
         }
 
         private static void Require(bool value, string message)

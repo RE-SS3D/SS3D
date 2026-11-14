@@ -1,267 +1,234 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using SS3D.Systems.Inputs;
 using SS3D.Systems.Rounds;
 using UnityEngine;
 using UnityEngine.UIElements;
 
 namespace SS3D.UI.Lobby
 {
-    public sealed partial class LobbyShellView
+    /// <summary>
+    /// The admin's Server Settings tab (round-config.md): round controls, server name and MOTD, map and mode, the
+    /// numeric round fields and the rules that have a consumer in the game (lobby.md §1, §8). Built once; the host
+    /// feeds it snapshots, and it never rewrites a field the admin is typing in.
+    /// </summary>
+    public sealed class LobbyServerSettingsView
     {
-        private StationLoadState _stationLoadState;
-        private string _stationName = "";
-        private Label _stationLoadLabel;
-        private Label _headerMapLabel;
-
-        public void SetStationLoadState(StationLoadState state, string stationName)
-        {
-            bool changed = state != _stationLoadState;
-            _stationLoadState = state;
-            _stationName = stationName ?? "";
-            if (_headerMapLabel != null) _headerMapLabel.text = string.IsNullOrEmpty(_stationName) ? "No map loaded" : _stationName;
-            Label infoMap = _root?.Q<Label>("server-info-map");
-            if (infoMap != null) infoMap.text = string.IsNullOrEmpty(_stationName) ? "No map loaded" : _stationName;
-            UpdateStationIndicator(_stationLoadLabel);
-            // Edit Map Anyway shows only for an unplayable map.
-            if (changed) RefreshServerSettings();
-            UpdateStationIndicator(_tabContent?.Q<Label>("server-map-load-status"));
-        }
-
-        private void UpdateStationIndicator(Label label)
-        {
-            if (label == null) return;
-            // The admin form's line under the map picker spells out why a map can't start; the round card stays short.
-            bool detailed = label.name == "server-map-load-status";
-            label.text = _stationLoadState switch
-            {
-                StationLoadState.Loading => $"Loading map: {_stationName}…",
-                StationLoadState.Initializing => $"Initializing station: {_stationName}…",
-                StationLoadState.Ready => $"Map ready: {_stationName}",
-                StationLoadState.Failed => "Map load failed — select a map and retry",
-                StationLoadState.Unplayable when detailed && !string.IsNullOrEmpty(_serverSettingsStatus) =>
-                    _serverSettingsStatus + "\nEdit Map Anyway starts an Extended round on it so you can fix it in the Map Editor.",
-                StationLoadState.Unplayable => $"{_stationName} can't start a round yet — see Server Settings",
-                _ => "No map loaded",
-            };
-            label.EnableInClassList("lobby-shell__map-load-status--loading",
-                _stationLoadState is StationLoadState.Loading or StationLoadState.Initializing);
-            label.EnableInClassList("lobby-shell__map-load-status--ready", _stationLoadState == StationLoadState.Ready);
-            label.EnableInClassList("lobby-shell__map-load-status--failed",
-                _stationLoadState is StationLoadState.Failed or StationLoadState.Unplayable);
-            label.EnableInClassList("lobby-shell__map-load-status--detail",
-                detailed && _stationLoadState == StationLoadState.Unplayable);
-        }
-
-        private ServerSettings _serverSettings = ServerSettings.Default;
-        private string[] _serverMaps = Array.Empty<string>();
-        private bool _hasServerSettings;
-        private string _serverSettingsStatus = "Loading server settings…";
         private const float PendingServerTextSeconds = 5f;
+
+        private readonly InputTextEntryScope _textEntry;
         private readonly Dictionary<ServerSetting, (string Value, float Expires)> _pendingServerText = new();
         private readonly HashSet<VisualElement> _editingFields = new();
-        private bool _endHeld;
-        private int _endSecondsLeft;
+        private readonly VisualElement _form;
 
-        /// <summary>The round-end summary beat (Ending); call before <c>SetSession</c>.</summary>
-        public void SetRoundEnd(bool held, int secondsLeft)
-        {
-            _endHeld = held;
-            _endSecondsLeft = secondsLeft;
-        }
-        public event Action<ServerSetting, ServerSettings> ServerSettingsChanged;
+        private ServerSettings _settings = ServerSettings.Default;
+        private string[] _maps = Array.Empty<string>();
+        private bool _hasSettings;
+        private string _status = "Loading server settings…";
+        private LobbySessionInfo _session;
+        private int _ready;
+        private int _online;
+        private StationLoadState _stationLoadState;
+        private string _stationName = "";
+
+        public event Action<ServerSetting, ServerSettings> Changed;
         public event Action<RoundAdminAction> RoundAdminRequested;
 
-        public void SetServerSettings(ServerSettings settings, string[] maps, string status)
+        public VisualElement Root { get; }
+
+        public LobbyServerSettingsView(InputTextEntryScope textEntry)
         {
-            _serverSettings = settings;
-            ApplyPendingServerText();
-            _serverMaps = maps ?? Array.Empty<string>();
-            _hasServerSettings = true;
-            _serverSettingsStatus = status ?? "";
-            RefreshServerSettings();
+            _textEntry = textEntry;
+            ScrollView scroll = new() { name = "server-settings-scroll" };
+            scroll.AddToClassList("lobby-admin__scroll");
+            Root = scroll;
+            _form = LobbyUi.Box("lobby-admin");
+            _form.name = "server-settings-form";
+            scroll.Add(_form);
+            Build();
+            Refresh();
         }
 
-        private void BuildServerSettingsTab(VisualElement parent)
+        private void Build()
         {
-            _editingFields.Clear();
-            ScrollView scroll = new() { name = "server-settings-scroll" };
-            scroll.AddToClassList("lobby-shell__server-settings-scroll");
-            parent.Add(scroll);
-            VisualElement form = new() { name = "server-settings-form" };
-            form.AddToClassList("lobby-shell__server-settings");
-            scroll.Add(form);
-
-            VisualElement card = new();
-            card.AddToClassList("lobby-shell__round-card");
-            Label heading = new("●   ROUND STATE");
-            heading.AddToClassList("lobby-shell__round-card-heading");
-            heading.AddToClassList("font-titling");
-            card.Add(heading);
-            VisualElement body = new();
-            body.AddToClassList("lobby-shell__round-card-body");
+            VisualElement card = LobbyUi.Box("lobby-admin__card");
+            card.Add(LobbyUi.Titling("Round state", "lobby-admin__card-heading"));
+            VisualElement body = LobbyUi.Box("lobby-admin__card-body");
             VisualElement state = new();
-            Label title = new() { name = "server-round-state" };
-            title.AddToClassList("lobby-shell__round-state");
-            title.AddToClassList("font-titling");
+            Label title = LobbyUi.Titling("", "lobby-admin__round-state");
+            title.name = "server-round-state";
             state.Add(title);
-            Label detail = new() { name = "server-round-detail" };
-            detail.AddToClassList("lobby-shell__round-detail");
-            detail.AddToClassList("font-terminal");
+            Label detail = LobbyUi.Mono("", "lobby-admin__round-detail");
+            detail.name = "server-round-detail";
             state.Add(detail);
             body.Add(state);
             VisualElement ready = new();
-            ready.Add(new Label("READY"));
-            Label ratio = new() { name = "server-ready-ratio" };
-            ratio.AddToClassList("lobby-shell__ready-ratio");
-            ratio.AddToClassList("font-terminal");
+            ready.Add(LobbyUi.Text("READY", "lobby-admin__ready-label"));
+            Label ratio = LobbyUi.Mono("", "lobby-admin__ready-ratio");
+            ratio.name = "server-ready-ratio";
             ready.Add(ratio);
             body.Add(ready);
             card.Add(body);
-            form.Add(card);
+            _form.Add(card);
 
-            form.Add(SectionTitle("Round Controls"));
-            VisualElement controls = new();
-            controls.AddToClassList("lobby-shell__admin-controls");
-            AddRoundAction(controls, "Start Round", "server-start", RoundAdminAction.Start);
-            AddRoundAction(controls, "Force Start", "server-force", RoundAdminAction.ForceStart, true);
+            _form.Add(LobbyUi.Titling("Round controls", "lobby-admin__section-title"));
+            VisualElement controls = LobbyUi.Box("lobby-admin__controls");
+            AddRoundAction(controls, "Start Round", "server-start", RoundAdminAction.Start, true);
+            AddRoundAction(controls, "Force Start", "server-force", RoundAdminAction.ForceStart);
             // Only offered after a start found the map unplayable (creative-mode §8's block, with a way back into the editor).
-            AddRoundAction(controls, "Edit Map Anyway", "server-edit-anyway", RoundAdminAction.EditMapAnyway, true);
-            AddRoundAction(controls, "Extend Timer", "server-extend", RoundAdminAction.ExtendTimer, true);
-            AddRoundAction(controls, "Cancel Countdown", "server-cancel", RoundAdminAction.CancelCountdown, true);
-            // Stop is an in-round extension to the pre-round reference.
-            AddRoundAction(controls, "Stop Round", "server-stop", RoundAdminAction.Stop, true);
+            AddRoundAction(controls, "Edit Map Anyway", "server-edit-anyway", RoundAdminAction.EditMapAnyway);
+            AddRoundAction(controls, "Extend Timer", "server-extend", RoundAdminAction.ExtendTimer);
+            AddRoundAction(controls, "Cancel Countdown", "server-cancel", RoundAdminAction.CancelCountdown);
+            AddRoundAction(controls, "Stop Round", "server-stop", RoundAdminAction.Stop);
             // The 30 s round-end summary: hold it for a discussion, resume to return everyone to the lobby.
-            AddRoundAction(controls, "Hold Summary", "server-hold-end", RoundAdminAction.HoldEnd, true);
-            AddRoundAction(controls, "Resume Summary", "server-resume-end", RoundAdminAction.ResumeEnd, true);
-            form.Add(controls);
+            AddRoundAction(controls, "Hold Summary", "server-hold-end", RoundAdminAction.HoldEnd);
+            AddRoundAction(controls, "Resume Summary", "server-resume-end", RoundAdminAction.ResumeEnd);
+            _form.Add(controls);
 
-            form.Add(SectionTitle("Server Info"));
-            AddServerText(form, "Server Name", "server-name", ServerSetting.ServerName, ServerInfoText.MaxNameLength, false,
-                value => _serverSettings.ServerName = value);
-            AddServerText(form, "Message of the Day", "server-motd", ServerSetting.Motd, ServerInfoText.MaxMotdLength, true,
-                value => _serverSettings.Motd = value);
+            _form.Add(LobbyUi.Titling("Server info", "lobby-admin__section-title"));
+            AddServerText("Server Name", "server-name", ServerSetting.ServerName, ServerInfoText.MaxNameLength, false,
+                value => _settings.ServerName = value);
+            AddServerText("Message of the Day", "server-motd", ServerSetting.Motd, ServerInfoText.MaxMotdLength, true,
+                value => _settings.Motd = value);
 
-            form.Add(SectionTitle("Map & Mode"));
+            _form.Add(LobbyUi.Titling("Map and mode", "lobby-admin__section-title"));
             DropdownField map = new("Map") { name = "server-map" };
-            map.AddToClassList("lobby-shell__server-select");
-            map.AddToClassList("lobby-shell__server-map");
-            Label swatch = new("M") { name = "server-map-initial" };
-            swatch.AddToClassList("lobby-shell__server-map-swatch");
-            swatch.pickingMode = PickingMode.Ignore;
-            map.Add(swatch);
+            map.AddToClassList("lobby-admin__select");
             map.RegisterValueChangedCallback(e =>
             {
-                // The swatch is a Label inside the dropdown: its text changes bubble up as ChangeEvent<string> too,
-                // and would select a map named after its initial.
                 if (e.target != map) return;
-                _serverSettings.Map = e.newValue;
-                SaveServerSettings(ServerSetting.Map);
+                _settings.Map = e.newValue;
+                Save(ServerSetting.Map);
             });
-            form.Add(map);
-            Label mapStatus = new() { name = "server-map-load-status" };
-            mapStatus.AddToClassList("lobby-shell__map-load-status");
-            form.Add(mapStatus);
-            UpdateStationIndicator(mapStatus);
+            _form.Add(map);
+            Label mapStatus = LobbyUi.Text("", "lobby-admin__map-load");
+            mapStatus.name = "server-map-load-status";
+            _form.Add(mapStatus);
             DropdownField mode = new("Game Mode", new List<string> { "Secret", "Extended", "Nuclear Emergency" }, 0)
                 { name = "server-mode" };
-            mode.AddToClassList("lobby-shell__server-select");
-            mode.RegisterValueChangedCallback(e => { _serverSettings.Mode = e.newValue; SaveServerSettings(ServerSetting.Mode); });
-            form.Add(mode);
+            mode.AddToClassList("lobby-admin__select");
+            mode.RegisterValueChangedCallback(e =>
+            {
+                if (e.target != mode) return;
+                _settings.Mode = e.newValue;
+                Save(ServerSetting.Mode);
+            });
+            _form.Add(mode);
 
-            VisualElement numbers = new();
-            numbers.AddToClassList("lobby-shell__server-numbers");
-            AddServerNumber(numbers, "Player Cap", "server-player-cap", ServerSetting.PlayerCap, value => _serverSettings.PlayerCap = value);
-            AddServerNumber(numbers, "Round Length (min)", "server-round-length", ServerSetting.RoundLengthMinutes, value => _serverSettings.RoundLengthMinutes = value);
-            AddServerNumber(numbers, "Minimum Connected", "server-minimum-connected", ServerSetting.MinimumConnected, value => _serverSettings.MinimumConnected = value);
-            AddServerNumber(numbers, "Countdown (s)", "server-countdown", ServerSetting.CountdownSeconds, value => _serverSettings.CountdownSeconds = value);
-            AddServerNumber(numbers, "Minimum Operatives", "server-minimum-operatives", ServerSetting.MinimumOperatives, value => _serverSettings.MinimumOperatives = value);
-            form.Add(numbers);
-            form.Add(SectionTitle("Round Rules"));
-            Toggle late = ServerRule("Allow Late Join", "server-late-join", true, "");
-            late.RegisterValueChangedCallback(e => { _serverSettings.AllowLateJoin = e.newValue; SaveServerSettings(ServerSetting.AllowLateJoin); });
-            form.Add(late);
-            Toggle autoStart = ServerRule("Auto Start Rounds", "server-auto-start", true,
+            VisualElement numbers = LobbyUi.Box("lobby-admin__numbers");
+            AddNumber(numbers, "Player Cap", "server-player-cap", ServerSetting.PlayerCap, v => _settings.PlayerCap = v);
+            AddNumber(numbers, "Round Length (min)", "server-round-length", ServerSetting.RoundLengthMinutes, v => _settings.RoundLengthMinutes = v);
+            AddNumber(numbers, "Minimum Connected", "server-minimum-connected", ServerSetting.MinimumConnected, v => _settings.MinimumConnected = v);
+            AddNumber(numbers, "Countdown (s)", "server-countdown", ServerSetting.CountdownSeconds, v => _settings.CountdownSeconds = v);
+            AddNumber(numbers, "Minimum Operatives", "server-minimum-operatives", ServerSetting.MinimumOperatives, v => _settings.MinimumOperatives = v);
+            _form.Add(numbers);
+
+            // Only rules with a consumer in the game (lobby.md §8): Random Events, Friendly Fire and Respawn come back
+            // when their systems exist.
+            _form.Add(LobbyUi.Titling("Round rules", "lobby-admin__section-title"));
+            Toggle late = Rule("Allow Late Join", "server-late-join", "");
+            late.RegisterValueChangedCallback(e => { _settings.AllowLateJoin = e.newValue; Save(ServerSetting.AllowLateJoin); });
+            _form.Add(late);
+            Toggle autoStart = Rule("Auto Start Rounds", "server-auto-start",
                 "Start a countdown on its own once enough players are connected, and again after every round.");
-            autoStart.RegisterValueChangedCallback(e => { _serverSettings.AutoStart = e.newValue; SaveServerSettings(ServerSetting.AutoStart); });
-            form.Add(autoStart);
-            form.Add(ServerRule("Random Events", "server-random-events", false, "Random events are not implemented yet."));
-            form.Add(ServerRule("Friendly Fire", "server-friendly-fire", false, "Combat has no friendly-fire policy yet."));
-            form.Add(ServerRule("Allow Respawn (Cloning)", "server-respawn", false, "Cloning is not implemented yet."));
-            Label status = new() { name = "server-settings-status", enableRichText = false };
-            status.AddToClassList("lobby-shell__server-status");
-            form.Add(status);
-            RefreshServerSettings();
+            autoStart.RegisterValueChangedCallback(e => { _settings.AutoStart = e.newValue; Save(ServerSetting.AutoStart); });
+            _form.Add(autoStart);
+
+            Label status = LobbyUi.Text("", "lobby-admin__status");
+            status.name = "server-settings-status";
+            _form.Add(status);
         }
 
-        private void SaveServerSettings(ServerSetting field)
+        public void SetServerSettings(ServerSettings settings, string[] maps, string status)
         {
-            if (!_hasServerSettings) return;
-            if (!_serverSettings.IsValid)
+            _settings = settings;
+            ApplyPendingServerText();
+            _maps = maps ?? Array.Empty<string>();
+            _hasSettings = true;
+            _status = status ?? "";
+            Refresh();
+        }
+
+        public void SetSession(in LobbySessionInfo session, int ready, int online)
+        {
+            _session = session;
+            _ready = ready;
+            _online = online;
+            Refresh();
+        }
+
+        public void SetStationLoadState(StationLoadState state, string stationName)
+        {
+            _stationLoadState = state;
+            _stationName = stationName ?? "";
+            Refresh();
+        }
+
+        private void Save(ServerSetting field)
+        {
+            if (!_hasSettings) return;
+            if (!_settings.IsValid)
             {
-                _serverSettingsStatus = "Player cap and minimum ready must be 1–256; round length must be 1–1440 minutes.";
-                _tabContent.Q<Label>("server-settings-status").text = _serverSettingsStatus;
+                _status = "Player cap and minimum ready must be 1–256; round length must be 1–1440 minutes.";
+                _form.Q<Label>("server-settings-status").text = _status;
                 return;
             }
-            ServerSettingsChanged?.Invoke(field, _serverSettings);
+
+            Changed?.Invoke(field, _settings);
         }
 
-        private void AddRoundAction(VisualElement parent, string text, string name, RoundAdminAction action, bool secondary = false)
+        private void AddRoundAction(VisualElement parent, string text, string name, RoundAdminAction action, bool primary = false)
         {
-            Button button = AdminButton(text, () => RoundAdminRequested?.Invoke(action));
-            button.name = name;
-            button.AddToClassList(secondary ? "lobby-shell__admin-btn--outline" : "lobby-shell__admin-btn--start");
+            Button button = new(() => RoundAdminRequested?.Invoke(action)) { name = name, text = text.ToUpperInvariant() };
+            button.AddToClassList("lobby-admin__button");
+            button.AddToClassList("lb-titling");
+            if (primary) button.AddToClassList("lobby-admin__button--start");
             parent.Add(button);
         }
 
-        private void AddServerNumber(VisualElement parent, string label, string name, ServerSetting field, Action<int> update)
+        private void AddNumber(VisualElement parent, string label, string name, ServerSetting field, Action<int> update)
         {
-            VisualElement column = new();
-            column.AddToClassList("lobby-shell__server-number");
-            column.Add(new Label(label.ToUpperInvariant()));
+            VisualElement column = LobbyUi.Box("lobby-admin__number");
+            column.Add(LobbyUi.Text(label, "lobby-admin__number-label"));
             IntegerField input = new() { name = name, isDelayed = true };
-            input.AddToClassList("font-terminal");
-            input.RegisterValueChangedCallback(e => { update(e.newValue); SaveServerSettings(field); });
-            input.RegisterCallback<FocusInEvent>(_ => _textEntry.Enter());
-            input.RegisterCallback<FocusOutEvent>(_ => _textEntry.Exit());
+            input.AddToClassList("lb-mono");
+            input.RegisterValueChangedCallback(e => { update(e.newValue); Save(field); });
+            LobbyUi.HoldTextEntry(input, _textEntry);
             TrackEditing(input);
             column.Add(input);
             parent.Add(column);
         }
 
         /// <summary>Commits on Enter (name) or focus loss (both); editable in any round state.</summary>
-        private void AddServerText(VisualElement parent, string label, string name, ServerSetting field, int maxLength,
-            bool multiline, Action<string> update)
+        private void AddServerText(string label, string name, ServerSetting field, int maxLength, bool multiline,
+            Action<string> update)
         {
             // Not isDelayed: multiline delayed fields do not reliably commit on blur, so commit explicitly.
             TextField input = new(label) { name = name, maxLength = maxLength, multiline = multiline };
-            input.AddToClassList("lobby-shell__server-text");
-            input.AddToClassList("font-body");
-            input.EnableInClassList("lobby-shell__server-text--multiline", multiline);
+            input.AddToClassList("lobby-admin__text");
+            input.EnableInClassList("lobby-admin__text--multiline", multiline);
             input.RegisterCallback<FocusOutEvent>(_ =>
             {
-                if (!_hasServerSettings || input.value == ServerTextValue(_serverSettings, field)) return;
+                if (!_hasSettings || input.value == TextValue(_settings, field)) return;
                 _pendingServerText[field] = (input.value, Time.unscaledTime + PendingServerTextSeconds);
                 update(input.value);
-                SaveServerSettings(field);
+                Save(field);
             });
             if (!multiline)
-            {
                 input.RegisterCallback<KeyDownEvent>(e =>
                 {
                     if (e.keyCode is KeyCode.Return or KeyCode.KeypadEnter) input.Blur();
                 }, TrickleDown.TrickleDown);
-            }
-            StyleDarkTextField(input);
-            HoldTextEntry(input);
+            LobbyUi.DarkInput(input);
+            LobbyUi.HoldTextEntry(input, _textEntry);
             TrackEditing(input);
-            parent.Add(input);
+            _form.Add(input);
         }
 
         /// <summary>
-        /// Marks a field as being edited between focus in/out (both bubble from the inner text input), so
-        /// the per-frame refresh never rewrites text under the caret. focusController.focusedElement was
-        /// not reliable for this: rewriting mid-typing reset the text and broke the caret index.
+        /// Marks a field as being edited between focus in and out, so the periodic refresh never rewrites text under
+        /// the caret (rewriting mid-typing reset the text and broke the caret index).
         /// </summary>
         private void TrackEditing(VisualElement field)
         {
@@ -269,12 +236,12 @@ namespace SS3D.UI.Lobby
             field.RegisterCallback<FocusOutEvent>(_ => _editingFields.Remove(field));
         }
 
-        private static string ServerTextValue(ServerSettings settings, ServerSetting field) =>
+        private static string TextValue(ServerSettings settings, ServerSetting field) =>
             field == ServerSetting.ServerName ? settings.ServerName : settings.Motd;
 
         /// <summary>
-        /// Keeps a committed name/MOTD over the periodic admin snapshot until the server echoes it,
-        /// so a reply that was already in flight does not snap the field back to the old text.
+        /// Keeps a committed name or MOTD over the periodic admin snapshot until the server echoes it, so a reply that
+        /// was already in flight does not snap the field back to the old text.
         /// </summary>
         private void ApplyPendingServerText()
         {
@@ -283,116 +250,133 @@ namespace SS3D.UI.Lobby
                 (string value, float expires) = _pendingServerText[field];
                 string sanitized = field == ServerSetting.ServerName
                     ? ServerInfoText.SanitizeName(value) : ServerInfoText.SanitizeMotd(value);
-                if (ServerTextValue(_serverSettings, field) == sanitized || Time.unscaledTime > expires)
+                if (TextValue(_settings, field) == sanitized || Time.unscaledTime > expires)
                 {
                     _pendingServerText.Remove(field);
                     continue;
                 }
-                if (field == ServerSetting.ServerName) _serverSettings.ServerName = value;
-                else _serverSettings.Motd = value;
+
+                if (field == ServerSetting.ServerName) _settings.ServerName = value;
+                else _settings.Motd = value;
             }
         }
 
-        private static Toggle ServerRule(string text, string name, bool supported, string reason)
+        private static Toggle Rule(string text, string name, string reason)
         {
             Toggle toggle = new() { name = name, text = text, tooltip = reason };
-            toggle.AddToClassList("lobby-shell__settings-toggle");
-            toggle.SetValueWithoutNotify(name == "server-friendly-fire");
-            toggle.SetEnabled(supported);
+            toggle.AddToClassList("lobby-admin__toggle");
             return toggle;
         }
 
-        private void RefreshServerSettings()
+        private void Refresh()
         {
-            VisualElement form = _tabContent?.Q("server-settings-form");
-            if (form == null) return;
-            bool idle = _roundState is RoundState.Stopped or RoundState.Ended;
-            bool warming = _roundState == RoundState.WarmingUp;
-            form.Q<Label>("server-round-state").text = warming ? "STARTING IN" : _roundState switch
+            RoundState round = _session.State;
+            bool idle = round is RoundState.Stopped or RoundState.Ended;
+            bool warming = round == RoundState.WarmingUp;
+            int countdown = idle ? _session.AutoStartSecondsLeft : _session.TimerSeconds;
+            _form.Q<Label>("server-round-state").text = (warming ? "Starting in" : round switch
             {
-                RoundState.Preparing => "LOADING STATION", RoundState.Ongoing => "ROUND IN PROGRESS",
-                RoundState.Ending => "ENDING ROUND", _ => "WAITING FOR PLAYERS",
-            };
-            string detailText = "Please wait…";
-            if (warming) detailText = $"{_secondsLeft / 60:00}:{_secondsLeft % 60:00}";
-            else if (idle && _autoStartSeconds > 0) detailText = $"Auto start in {_secondsLeft / 60:00}:{_secondsLeft % 60:00}";
-            else if (idle && !_autoStartEnabled) detailText = "Manual start";
-            else if (idle && _autoStartHeld) detailText = "Auto start held. Start resumes it.";
-            else if (idle) detailText = "Auto start when a player is ready";
-            else if (_roundState == RoundState.Ongoing) detailText = $"{_secondsLeft / 60:00}:{_secondsLeft % 60:00} elapsed";
-            else if (_roundState == RoundState.Ending) detailText = RoundSummaryModel.Countdown(_endSecondsLeft, _endHeld, shortForm: true);
-            form.Q<Label>("server-round-detail").text = detailText;
-            form.Q<Label>("server-ready-ratio").text = $"{_players.Count(p => p.Ready)}/{_players.Length}";
-            Button start = form.Q<Button>("server-start");
+                RoundState.Preparing => "Loading station",
+                RoundState.Ongoing => "Round in progress",
+                RoundState.Ending => "Ending round",
+                _ => "Waiting for players",
+            }).ToUpperInvariant();
+            string detail = "Please wait…";
+            if (warming) detail = LobbySidebarModel.Clock(countdown);
+            else if (idle && _session.AutoStartSecondsLeft > 0) detail = $"Auto start in {LobbySidebarModel.Clock(countdown)}";
+            else if (idle && !_session.AutoStartEnabled) detail = "Manual start";
+            else if (idle && _session.AutoStartHeld) detail = "Auto start held. Start resumes it.";
+            else if (idle) detail = $"Auto start at {Math.Max(1, _session.MinimumConnected)} connected";
+            else if (round == RoundState.Ongoing) detail = $"{LobbySidebarModel.LongClock(_session.TimerSeconds)} elapsed";
+            else if (round == RoundState.Ending) detail = RoundSummaryModel.Countdown(_session.EndSecondsLeft, _session.EndHeld, shortForm: true);
+            _form.Q<Label>("server-round-detail").text = detail;
+            _form.Q<Label>("server-ready-ratio").text = $"{_ready}/{_online}";
+
+            Button start = _form.Q<Button>("server-start");
             start.style.display = idle ? DisplayStyle.Flex : DisplayStyle.None;
-            start.SetEnabled(idle && _hasServerSettings && _serverMaps.Contains(_serverSettings.Map));
-            Button editAnyway = form.Q<Button>("server-edit-anyway");
-            bool unplayable = idle && _hasServerSettings && _stationLoadState == StationLoadState.Unplayable;
+            start.SetEnabled(idle && _hasSettings && _maps.Contains(_settings.Map));
+            Button editAnyway = _form.Q<Button>("server-edit-anyway");
+            bool unplayable = idle && _hasSettings && _stationLoadState == StationLoadState.Unplayable;
             editAnyway.style.display = unplayable ? DisplayStyle.Flex : DisplayStyle.None;
             editAnyway.SetEnabled(unplayable);
             foreach (string name in new string[] { "server-force", "server-extend", "server-cancel" })
             {
-                Button action = form.Q<Button>(name);
+                Button action = _form.Q<Button>(name);
                 action.style.display = idle || warming ? DisplayStyle.Flex : DisplayStyle.None;
                 // Cancel also holds the idle auto-start countdown.
-                action.SetEnabled(warming || (name == "server-cancel" && idle && _autoStartSeconds > 0));
+                action.SetEnabled(warming || (name == "server-cancel" && idle && _session.AutoStartSecondsLeft > 0));
             }
-            Button stop = form.Q<Button>("server-stop");
-            stop.style.display = _roundState == RoundState.Ongoing ? DisplayStyle.Flex : DisplayStyle.None;
-            stop.SetEnabled(_roundState == RoundState.Ongoing);
-            bool ending = _roundState == RoundState.Ending;
-            Button holdEnd = form.Q<Button>("server-hold-end");
-            holdEnd.style.display = ending && !_endHeld ? DisplayStyle.Flex : DisplayStyle.None;
-            holdEnd.SetEnabled(ending && !_endHeld);
-            Button resumeEnd = form.Q<Button>("server-resume-end");
-            resumeEnd.style.display = ending && _endHeld ? DisplayStyle.Flex : DisplayStyle.None;
-            resumeEnd.SetEnabled(ending && _endHeld);
-            DropdownField map = form.Q<DropdownField>("server-map");
-            map.choices = _serverMaps.ToList();
-            map.SetValueWithoutNotify(_serverSettings.Map ?? "");
-            form.Q<Label>("server-map-initial").text = string.IsNullOrEmpty(_serverSettings.Map)
-                ? "M" : _serverSettings.Map.Substring(0, 1).ToUpperInvariant();
-            map.SetEnabled(idle && _hasServerSettings);
-            DropdownField mode = form.Q<DropdownField>("server-mode");
-            mode.SetValueWithoutNotify(_serverSettings.Mode);
-            mode.SetEnabled(idle && _hasServerSettings);
-            IntegerField cap = form.Q<IntegerField>("server-player-cap");
-            IntegerField length = form.Q<IntegerField>("server-round-length");
-            // Do not replace text while an admin is typing in a delayed field.
-            if (!_editingFields.Contains(cap))
-                cap.SetValueWithoutNotify(_serverSettings.PlayerCap);
-            if (!_editingFields.Contains(length))
-                length.SetValueWithoutNotify(_serverSettings.RoundLengthMinutes);
-            IntegerField minimumConnected = form.Q<IntegerField>("server-minimum-connected");
-            if (!_editingFields.Contains(minimumConnected))
-                minimumConnected.SetValueWithoutNotify(_serverSettings.MinimumConnected);
-            IntegerField countdown = form.Q<IntegerField>("server-countdown");
-            if (!_editingFields.Contains(countdown))
-                countdown.SetValueWithoutNotify(_serverSettings.CountdownSeconds);
-            IntegerField minimumOperatives = form.Q<IntegerField>("server-minimum-operatives");
-            if (!_editingFields.Contains(minimumOperatives))
-                minimumOperatives.SetValueWithoutNotify(_serverSettings.MinimumOperatives);
-            cap.SetEnabled(idle && _hasServerSettings);
-            length.SetEnabled(idle && _hasServerSettings);
-            minimumConnected.SetEnabled(idle && _hasServerSettings);
-            countdown.SetEnabled(idle && _hasServerSettings);
-            minimumOperatives.SetEnabled(idle && _hasServerSettings);
-            Toggle autoStart = form.Q<Toggle>("server-auto-start");
-            autoStart.SetValueWithoutNotify(_serverSettings.AutoStart);
-            autoStart.SetEnabled(_hasServerSettings);
-            foreach ((string name, string value) in new (string, string)[] { ("server-name", _serverSettings.ServerName), ("server-motd", _serverSettings.Motd) })
+
+            Button stop = _form.Q<Button>("server-stop");
+            stop.style.display = round == RoundState.Ongoing ? DisplayStyle.Flex : DisplayStyle.None;
+            stop.SetEnabled(round == RoundState.Ongoing);
+            bool ending = round == RoundState.Ending;
+            Button holdEnd = _form.Q<Button>("server-hold-end");
+            holdEnd.style.display = ending && !_session.EndHeld ? DisplayStyle.Flex : DisplayStyle.None;
+            holdEnd.SetEnabled(ending && !_session.EndHeld);
+            Button resumeEnd = _form.Q<Button>("server-resume-end");
+            resumeEnd.style.display = ending && _session.EndHeld ? DisplayStyle.Flex : DisplayStyle.None;
+            resumeEnd.SetEnabled(ending && _session.EndHeld);
+
+            DropdownField map = _form.Q<DropdownField>("server-map");
+            map.choices = _maps.ToList();
+            map.SetValueWithoutNotify(_settings.Map ?? "");
+            map.SetEnabled(idle && _hasSettings);
+            DropdownField mode = _form.Q<DropdownField>("server-mode");
+            mode.SetValueWithoutNotify(_settings.Mode);
+            mode.SetEnabled(idle && _hasSettings);
+
+            SetNumber("server-player-cap", _settings.PlayerCap, idle);
+            SetNumber("server-round-length", _settings.RoundLengthMinutes, idle);
+            SetNumber("server-minimum-connected", _settings.MinimumConnected, idle);
+            SetNumber("server-countdown", _settings.CountdownSeconds, idle);
+            SetNumber("server-minimum-operatives", _settings.MinimumOperatives, idle);
+
+            Toggle autoStart = _form.Q<Toggle>("server-auto-start");
+            autoStart.SetValueWithoutNotify(_settings.AutoStart);
+            autoStart.SetEnabled(_hasSettings);
+            foreach ((string name, string value) in new (string, string)[] { ("server-name", _settings.ServerName), ("server-motd", _settings.Motd) })
             {
-                TextField text = form.Q<TextField>(name);
+                TextField text = _form.Q<TextField>(name);
                 // Same rule as the number fields: never replace text the admin is editing.
-                if (!_editingFields.Contains(text))
-                    text.SetValueWithoutNotify(value ?? "");
-                text.SetEnabled(_hasServerSettings);
+                if (!_editingFields.Contains(text)) text.SetValueWithoutNotify(value ?? "");
+                text.SetEnabled(_hasSettings);
             }
-            Toggle late = form.Q<Toggle>("server-late-join");
-            late.SetValueWithoutNotify(_serverSettings.AllowLateJoin);
-            late.SetEnabled(idle && _hasServerSettings);
-            form.Q<Label>("server-settings-status").text = _serverSettingsStatus;
-            UpdateStationIndicator(form.Q<Label>("server-map-load-status"));
+
+            Toggle late = _form.Q<Toggle>("server-late-join");
+            late.SetValueWithoutNotify(_settings.AllowLateJoin);
+            late.SetEnabled(idle && _hasSettings);
+            _form.Q<Label>("server-settings-status").text = _status;
+            UpdateMapStatus(_form.Q<Label>("server-map-load-status"));
+        }
+
+        private void SetNumber(string name, int value, bool idle)
+        {
+            IntegerField field = _form.Q<IntegerField>(name);
+            // Do not replace text while an admin is typing in a delayed field.
+            if (!_editingFields.Contains(field)) field.SetValueWithoutNotify(value);
+            field.SetEnabled(idle && _hasSettings);
+        }
+
+        /// <summary>The line under the map picker spells out why a map can't start.</summary>
+        private void UpdateMapStatus(Label label)
+        {
+            label.text = _stationLoadState switch
+            {
+                StationLoadState.Loading => $"Loading map: {_stationName}…",
+                StationLoadState.Initializing => $"Initializing station: {_stationName}…",
+                StationLoadState.Ready => $"Map ready: {_stationName}",
+                StationLoadState.Failed => "Map load failed — select a map and retry",
+                StationLoadState.Unplayable when !string.IsNullOrEmpty(_status) =>
+                    _status + "\nEdit Map Anyway starts an Extended round on it so you can fix it in the Map Editor.",
+                StationLoadState.Unplayable => $"{_stationName} can't start a round yet",
+                _ => "No map loaded",
+            };
+            label.EnableInClassList("lobby-admin__map-load--loading",
+                _stationLoadState is StationLoadState.Loading or StationLoadState.Initializing);
+            label.EnableInClassList("lobby-admin__map-load--ready", _stationLoadState == StationLoadState.Ready);
+            label.EnableInClassList("lobby-admin__map-load--failed",
+                _stationLoadState is StationLoadState.Failed or StationLoadState.Unplayable);
         }
     }
 }

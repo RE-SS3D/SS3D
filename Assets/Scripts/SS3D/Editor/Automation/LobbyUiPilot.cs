@@ -292,13 +292,17 @@ namespace SS3D.Editor.Automation
 
         private const double LayoutSettleSeconds = 15;
 
+        /// <summary>LobbyView.CompactWidth: below it the shell takes the 1366 × 768 layout.</summary>
+        private const float CompactWidth = 1600f;
+
         private static bool ShellLayoutResolved(VisualElement shell)
         {
             Rect panel = shell.panel.visualTree.layout;
             Rect window = shell.Q("lobby-shell-window").worldBound;
-            Rect sidebar = shell.Q(className: "lobby-shell__sidebar").worldBound;
+            Rect sidebar = shell.Q("lobby-sidebar").worldBound;
+            float expected = panel.width < CompactWidth ? 320f : 400f;
             return Mathf.Approximately(panel.width, Screen.width) && Mathf.Approximately(panel.height, Screen.height)
-                && Mathf.Abs(window.width - 1180f) < 1f && Mathf.Abs(sidebar.width - 280f) < 1f;
+                && Mathf.Abs(sidebar.width - expected) < 1f && window.xMin > sidebar.xMax;
         }
 
         private static bool CheckShell(VisualElement shell)
@@ -306,11 +310,14 @@ namespace SS3D.Editor.Automation
             switch (_shellCheckStep++)
             {
                 case 0:
-                    float windowWidth = shell.Q("lobby-shell-window").worldBound.width;
-                    float sidebarWidth = shell.Q(className: "lobby-shell__sidebar").worldBound.width;
-                    Require(Mathf.Abs(windowWidth - 1180f) < 1f, $"Shell matches reference maximum width (got {windowWidth}, screen {Screen.width}x{Screen.height})");
-                    Require(Mathf.Abs(sidebarWidth - 280f) < 1f, $"Shell has 280px sidebar (got {sidebarWidth})");
-                    Require(shell.Q(className: "lobby-shell__preview-image").resolvedStyle.backgroundImage.renderTexture != null,
+                    Rect panelRect = shell.panel.visualTree.layout;
+                    float sidebarWidth = shell.Q("lobby-sidebar").worldBound.width;
+                    float expectedSidebar = panelRect.width < CompactWidth ? 320f : 400f;
+                    Require(Mathf.Abs(sidebarWidth - expectedSidebar) < 1f,
+                        $"Sidebar is {expectedSidebar}px at {panelRect.width}px wide (got {sidebarWidth})");
+                    Require(shell.ClassListContains("lobby--compact") == panelRect.width < CompactWidth,
+                        "The 1366 layout class follows the panel width");
+                    Require(shell.Q("lobby-preview-image").resolvedStyle.backgroundImage.renderTexture != null,
                         "Lobby starts with a live character preview");
                     Light[] previewLights = UnityEngine.Object.FindObjectsByType<Light>(FindObjectsInactive.Include, FindObjectsSortMode.None)
                         .Where(l => l.name.StartsWith("CharacterPreview")).ToArray();
@@ -318,33 +325,26 @@ namespace SS3D.Editor.Automation
                         "Preview lighting survives station initialization");
                     CheckPreviewFraming();
                     _initialOutfitMeshes = PreviewOutfitMeshes();
-                    Require(shell.Q(className: "lobby-shell__server-scroll") == null, "Server Info has no outer scroll view");
-                    VisualElement info = shell.Q(className: "lobby-shell__server-information");
-                    Require(info.worldBound.yMax <= shell.Q(className: "lobby-shell__tab-content").worldBound.yMax,
+                    VisualElement info = shell.Q("server-info");
+                    Require(info.worldBound.yMax <= shell.Q("lobby-tab-content").worldBound.yMax + 1f,
                         "Server Info content fits the panel");
-                    VisualElement preview = shell.Q(className: "lobby-shell__preview");
-                    VisualElement actions = shell.Q(className: "lobby-shell__actions");
-                    Require(actions.worldBound.yMin - preview.worldBound.yMax >= 16f,
-                        "Ready action has spacing below character preview");
+                    Require(shell.Q("lobby-ready").worldBound.yMin >= shell.Q("lobby-character").worldBound.yMax + 8f,
+                        "Ready sits below the character card");
+                    Require(shell.Q("lobby-quit").worldBound.yMax <= panelRect.height + 1f,
+                        "The sidebar footer fits on screen");
+                    Require(shell.Q("tab-jobs") == null && shell.Q("tab-players") == null,
+                        "No job list or player list in the lobby (lobby.md §8)");
                     Capture("00-server-info");
                     break;
-                case 1: Submit(shell, "JOBS"); break;
+                case 1: Press(shell, "tab-chat"); break;
                 case 2:
-                    Require(shell.Q(className: "lobby-shell__priority") != null, "Jobs has segmented priorities");
-                    Capture("00-jobs");
-                    break;
-                case 3: Submit(shell, "CHAT"); break;
-                case 4:
-                    Require(shell.Q<TextField>(className: "lobby-shell__chat-input") != null, "Chat composer exists");
+                    Require(shell.Q<TextField>("chat-input") != null, "Chat composer exists");
+                    Require(shell.Q<Button>("chat-channel-ooc") != null && shell.Q<Button>("chat-channel-looc") != null,
+                        "Chat has OOC and LOOC channel buttons");
                     Capture("00-chat");
                     break;
-                case 5: Submit(shell, "PLAYERS"); break;
-                case 6:
-                    Require(shell.Q(className: "lobby-shell__player-card") != null, "Players list exists");
-                    Capture("00-players");
-                    break;
-                case 7: Submit(shell, "SETTINGS"); break;
-                case 8:
+                case 3: Submit(shell, "SETTINGS"); break;
+                case 4:
                     Require(shell.Query(className: "settings-panel__tab").ToList().Count == 3, "Settings has Display, Audio and Controls tabs");
                     Require(shell.Q<DropdownField>("settings-resolution") != null, "Display has a resolution dropdown");
                     foreach (string row in new[] { "windowMode", "vsync", "frameCap", "quality", "renderScale", "upscaler", "antiAliasing", "showFps" })
@@ -354,12 +354,12 @@ namespace SS3D.Editor.Automation
                     Press(shell, "settings-quality-0");
                     Capture("00-settings-display");
                     break;
-                case 9:
+                case 5:
                     Require(QualitySettings.GetQualityLevel() == 0, "Quality preset switches the quality level");
                     Require(shell.Q<Button>("settings-quality-0").ClassListContains("settings-panel__segment--on"), "The picked preset shows as selected");
                     Submit(shell, "AUDIO");
                     break;
-                case 10:
+                case 6:
                     Require(shell.Query<SliderInt>(className: "settings-panel__slider").ToList().Count == 5,
                         "Audio has Master, Music, SFX, Ambience and Personal sliders");
                     Require(shell.Q<Button>("settings-muteUnfocused-1") != null, "Audio has Mute when window unfocused");
@@ -368,7 +368,7 @@ namespace SS3D.Editor.Automation
                     shell.Q<SliderInt>("settings-musicVolume").value = 50;
                     Press(shell, "settings-muteAll-1");
                     break;
-                case 11:
+                case 7:
                 {
                     Require(shell.Q(className: "settings-panel__banner").resolvedStyle.display == DisplayStyle.Flex, "Mute All shows the muted banner");
                     Require(shell.Query<SliderInt>(className: "settings-panel__slider").ToList().All(s => s.enabledInHierarchy),
@@ -386,13 +386,13 @@ namespace SS3D.Editor.Automation
                     Capture("00-settings-muted");
                     break;
                 }
-                case 12: Press(shell, "settings-muteAll-0"); break;
-                case 13:
+                case 8: Press(shell, "settings-muteAll-0"); break;
+                case 9:
                     Require(shell.Q(className: "settings-panel__banner").resolvedStyle.display == DisplayStyle.None, "Unmute hides the muted banner");
                     Capture("00-settings-sound");
                     break;
-                case 14: Submit(shell, "CONTROLS"); break;
-                case 15:
+                case 10: Submit(shell, "CONTROLS"); break;
+                case 11:
                 {
                     List<Button> bindings = shell.Query<Button>(className: "settings-panel__bind").ToList();
                     Require(bindings.Count >= 20, "Controls lists the rebindable actions from Controls.inputactions");
@@ -402,12 +402,12 @@ namespace SS3D.Editor.Automation
                     Capture("00-settings-controls");
                     break;
                 }
-                case 16:
+                case 12:
                     _pilotBind = shell.Query<Button>(className: "settings-panel__bind").First().name;
                     _pilotBindKey = shell.Q<Button>(_pilotBind).Q<Label>(className: "settings-panel__keycap").text;
                     Press(shell, _pilotBind);
                     break;
-                case 17:
+                case 13:
                 {
                     Button listening = shell.Q<Button>(_pilotBind);
                     Require(listening.ClassListContains("settings-panel__bind--listening")
@@ -415,13 +415,13 @@ namespace SS3D.Editor.Automation
                     Press(shell, _pilotBind);
                     break;
                 }
-                case 18:
+                case 14:
                     Require(shell.Q<Button>(className: "settings-panel__bind--listening") == null
                         && shell.Q<Button>(_pilotBind).Q<Label>(className: "settings-panel__keycap").text == _pilotBindKey,
                         "Clicking the listening binding cancels capture and keeps the key");
                     Submit(shell, "DISPLAY");
                     break;
-                case 19:
+                case 15:
                     Require(shell.Q<Button>("settings-quality-0").ClassListContains("settings-panel__segment--on"), "Display choices persist across tabs");
                     Submit(shell, "SERVER INFO");
                     break;
@@ -474,13 +474,7 @@ namespace SS3D.Editor.Automation
                         Capture("01-lobby");
                         break;
                     case 1:
-                        VisualElement preview = shell.Q(className: "lobby-shell__preview");
-                        Require(preview != null && preview.worldBound.width > 0, "Lobby preview has layout");
-                        using (ClickEvent evt = ClickEvent.GetPooled())
-                        {
-                            evt.target = preview;
-                            preview.SendEvent(evt);
-                        }
+                        Press(shell, "lobby-character");
                         break;
                     case 2:
                         Require(creator != null && creator.resolvedStyle.display != DisplayStyle.None, "Character creator visible after preview click");
@@ -558,10 +552,10 @@ namespace SS3D.Editor.Automation
                     case 12:
                         Require(shell.resolvedStyle.display != DisplayStyle.None, "Lobby restored after Return");
                         Require(creator.resolvedStyle.display == DisplayStyle.None, "Creator hidden after Return");
-                        Require(shell.Query<Label>().ToList().Any(l => l.text == "AUTOMATION PILOT"), "Saved name displayed in lobby");
+                        Require(shell.Q<Label>("lobby-character-name").text == "Automation Pilot", "Saved name displayed in lobby");
                         Capture("06-saved-lobby");
                         break;
-                    case 13: Click(shell.Q(className: "lobby-shell__preview")); break;
+                    case 13: Press(shell, "lobby-character"); break;
                     case 14: Click(creator.Q(className: "char-creator__loadout-btn")); break;
                     case 15:
                         List<VisualElement> loadoutRows = creator.Query(className: "char-creator__loadout-row").ToList();
@@ -598,7 +592,7 @@ namespace SS3D.Editor.Automation
                         Require(PreviewOutfitMeshes().SequenceEqual(_initialOutfitMeshes), "Saved character restores its chosen outfit");
                         Submit(creator, "RETURN TO LOBBY");
                         break;
-                    case 23: Click(shell.Q(className: "lobby-shell__preview")); break;
+                    case 23: Press(shell, "lobby-character"); break;
                     case 24:
                         Click(creator.Query(className: "char-creator__rail-item").ToList()
                             .Single(e => e.Query<Label>().ToList().Any(l => l.text == "STYLE")));

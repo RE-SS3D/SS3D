@@ -11,10 +11,10 @@ wait_timeout 180
 wait_connected
 ui_wait #lobby-shell-surface visible
 ui_wait #character-creator-surface hidden
-ui_wait .lobby-shell__btn--ready enabled
-ui_wait .lobby-shell__btn--admin disabled
-ui_text .lobby-shell__countdown 0/2 ready
-ui_text #lobby-map-load-status No map loaded
+ui_wait #lobby-ready enabled
+ui_wait #lobby-admin hidden
+ui_text #lobby-header-players 2/
+ui_text #lobby-header-map No map
 # Let the scene fade-in finish before capturing.
 wait_seconds 2
 screenshot remote-01-lobby
@@ -23,13 +23,13 @@ screenshot remote-01-lobby
 probe_server_settings_permissions
 start_round
 wait_seconds 5
-ui_text .lobby-shell__countdown-sub Stopped
+ui_text #lobby-round-status Pre-round
 
 # Real OS input from here to the chat line: the host performs os_* requests via uinput, so hit
 # testing (nothing covering the button) and keyboard focus are exercised, not just callbacks.
-os_click .lobby-shell__btn--ready
-ui_text .lobby-shell__btn--ready ✓
-ui_text .lobby-shell__countdown 1/2 ready
+os_click #lobby-ready
+ui_text #lobby-ready-title READY
+ui_text #lobby-ready-subtitle Click to cancel
 screenshot remote-02-ready
 
 # File a report through the real dialog and broadcast transport. The host verifies the JSONL
@@ -61,7 +61,7 @@ ui_wait #window hidden
 
 # Keyboard focus: click into the chat composer, type, send with Return (the host checks client.log).
 os_click #tab-chat
-os_click .lobby-shell__chat-input
+os_click #chat-input
 os_type remoteprobe real keyboard
 wait_seconds 2
 screenshot remote-02-chat-typed
@@ -69,7 +69,7 @@ os_key Return
 
 # Host starts round 1: ready client spawns and the lobby hides.
 wait_round Ongoing
-ui_text #lobby-map-load-status Map ready:
+ui_text #lobby-round-status In progress
 assert_embarked
 ui_wait #lobby-shell-surface hidden
 screenshot remote-03-spawned
@@ -82,10 +82,10 @@ screenshot remote-04-returned
 
 # Host starts round 2 without this client ready: Join Round late-spawns.
 wait_round Ongoing
-ui_text .lobby-shell__btn--ready JOIN ROUND
-ui_wait .lobby-shell__btn--ready enabled
+ui_text #lobby-ready-title JOIN
+ui_wait #lobby-ready enabled
 screenshot remote-05-join-round
-ui_submit .lobby-shell__btn--ready
+ui_submit #lobby-ready
 assert_embarked
 ui_wait #lobby-shell-surface hidden
 

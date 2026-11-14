@@ -28,7 +28,6 @@ namespace SS3D.Tests.AssetAudit
         private static readonly Dictionary<string, int> GrandfatheredClassLines = new()
         {
             // TECH_DEBT §1.9 and the plan's Phase 4-7 splits.
-            { "LobbyShellView", 2568 },
             { "MapEditorSubSystem", 2200 },
             { "MapEditorView", 2072 },
             { "InteractionController", 1663 },

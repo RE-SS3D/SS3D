@@ -88,6 +88,7 @@ namespace SS3D.Editor
             List<string> missing = new();
 
             StyleSheet lobbyStyle = LoadRequired<StyleSheet>(LobbyAssetPaths.StyleSheet, missing);
+            VisualTreeAsset lobbyTemplate = LoadRequired<VisualTreeAsset>(LobbyAssetPaths.Template, missing);
             Sprite preview = LoadRequiredSprite(LobbyAssetPaths.PreviewPlaceholder, missing);
             Sprite banner = LoadRequiredSprite(LobbyAssetPaths.ServerInfoBanner, missing);
             // Heroicons are Default Texture2D (not Sprite) — load as textures for UITK backgrounds.
@@ -220,7 +221,8 @@ namespace SS3D.Editor
                 new List<LobbyNamedPrefab>(DiscoverPrefabs("Assets/Content/WorldObjects/Entities/Humanoids/Human/HumanHair/Eyebrows")),
                 hairColors,
                 previewOutfits,
-                characterNames);
+                characterNames,
+                lobbyTemplate);
             EditorUtility.SetDirty(catalog);
             AssetDatabase.SaveAssets();
             return true;

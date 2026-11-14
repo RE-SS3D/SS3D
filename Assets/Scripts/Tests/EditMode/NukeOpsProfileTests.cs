@@ -120,13 +120,13 @@ namespace SS3D.Tests.EditMode
         }
 
         [Test]
-        public void LobbyList_ShowsUnsetRolesAsTheServerDefault()
+        public void UnsetRoles_FollowTheServerDefault()
         {
-            LobbyShellView view = new(null);
-            CollectionAssert.IsEmpty(view.AntagonistOptIns, "a character with nothing set shows every role off");
-
-            view.SetCharacterPreferences(new CharacterPreferences(), true);
-            CollectionAssert.AreEquivalent(AntagonistCategories.All.Select(role => role.Key), view.AntagonistOptIns);
+            CharacterPreferences preferences = new();
+            Assert.IsTrue(AntagonistCategories.All.All(role => !preferences.IsAntagonistOn(role.Key, false)),
+                "a character with nothing set has every role off");
+            Assert.IsTrue(AntagonistCategories.All.All(role => preferences.IsAntagonistOn(role.Key, true)),
+                "on the -nukeops profile an unset role counts as on");
         }
     }
 }

@@ -2,7 +2,7 @@
 > Touches systems: rounds-lobby, gamemodes-roles-traits, entities, ui-shell, ui-shell-main-menu, audio, chat-audio-screens
 > Status: in progress
 
-**Progress:** Decided in the 2026-11-14 lobby grill. Phases 1–3 are built (2026-11-14), on the old views until Phases 4–6 replace them. Everything ships before Playtest 1 ([mvp1-nuke-ops.md](../milestones/mvp1-nuke-ops.md) M11) on one branch and one pull request. Phases 1–3 are non-visual and run while the canvas is recoloured. Phases 4–6 build against the recoloured canvas. Phase 7 purges. Visual brief and recolour prompt: [lobby-character-window-visual-brief.md](../plans/lobby-character-window-visual-brief.md). Tests follow the [testing philosophy](2026-11_testing-philosophy.md).
+**Progress:** Decided in the 2026-11-14 lobby grill. Phases 1–4 are built (2026-11-14). The lobby shell is the new UXML view; the character window is still the old creator until Phase 5. Everything ships before Playtest 1 ([mvp1-nuke-ops.md](../milestones/mvp1-nuke-ops.md) M11) on one branch and one pull request. Phases 1–3 are non-visual and run while the canvas is recoloured. Phases 4–6 build against the recoloured canvas. Phase 7 purges. Visual brief and recolour prompt: [lobby-character-window-visual-brief.md](../plans/lobby-character-window-visual-brief.md). Tests follow the [testing philosophy](2026-11_testing-philosophy.md).
 
 # Lobby and character window (Nov 2026)
 
@@ -154,15 +154,39 @@ What Phase 3 built:
 
 ### Phase 4 — Lobby shell (needs the recoloured canvas)
 
-- [ ] Tokens: department and priority colours, `#ffffff` on rust, fonts (Decision 16)
-- [ ] Shell UXML/USS:
+- [x] Tokens: department and priority colours, `#ffffff` on rust, fonts (Decision 16)
+- [x] Shell UXML/USS:
   - the sidebar: wordmark, round state with waiting / countdown / held / in-round states, character card with switch, Ready, Observe, music row, Report a bug, Quit
   - the header strip
   - the tabs: Server Info with banner art, Chat, Settings, Last Round, Server Settings behind the Admin switch in the tab bar
-- [ ] Move Chat, Last Round and Server Settings into their own view classes; mount `PlayerSettingsPanel` in Settings (Decision 17)
-- [ ] Server Settings hides Random Events, Friendly Fire and Respawn until their systems exist
-- [ ] The 1366 layout class (Decision 19); focus order and keys as annotated on the canvas
-- [ ] The in-round Escape state: Join / In round / late join off; the music row hidden (moved from Phase 3)
+- [x] Move Chat, Last Round and Server Settings into their own view classes; mount `PlayerSettingsPanel` in Settings (Decision 17)
+- [x] Server Settings hides Random Events, Friendly Fire and Respawn until their systems exist
+- [x] The 1366 layout class (Decision 19); focus order and keys as annotated on the canvas
+- [x] The in-round Escape state: Join / In round / late join off; the music row hidden (moved from Phase 3)
+
+What Phase 4 built:
+
+- **Files.** `Lobby.uxml` and `Lobby.uss` (`Content/Systems/UI/Lobby`), with the tokens in `LobbyTokens.uss` (`.lobby-theme`, imported by `Lobby.uss`; Phase 5 reuses it). `LobbyAssetCatalog.LobbyTemplate` holds the UXML; the UXML links its own stylesheet. Icons, the wordmark and the five framed banners from the canvas (`Art/Textures/Lobby/Banners`) are `url()` references in the USS, so the catalog gained only the template.
+- **Views.** `LobbyView` binds the UXML by element name and hosts `LobbyServerInfoView`, `LobbyChatView`, `LobbyServerSettingsView`, `LobbyLastRoundView` and `LobbyMapStopPrompt`, each built once and swapped into the tab area. `LobbySidebarModel` is the pure text-and-state rule for the round section, Ready / Join and Observe (`LobbySidebarModelTests`).
+  - `LobbyShellView` and its partials are deleted now rather than in Phase 7: nothing used them once the shell switched. The old Jobs and Players tabs went with them.
+  - `LobbyShell.uss` stays: the old character creator still uses it until Phase 5.
+- **Sidebar.**
+  - The round section shows Pre-round / Starting / In progress / Round over. The waiting state reads "3/5 connected. The countdown starts at 5." The held state strikes the last countdown value through and says "Countdown held by an admin". With auto start off it reads "Waiting for an admin".
+  - `ServerSettingsService` replicates `PublicPlayerCap` and `PublicMinimumConnected` for the header and the waiting line (protocol stays 56, see Phase 2).
+  - The card shows the saved character's name and "High: Job" in the department colour (`CharacterPreferences.HighJob`), or "No job preferences".
+  - Ready is a toggle (rust, then green "Ready"). During a round it's Join, "In round" with a body, or disabled with a note when late joining is off.
+  - The music row drives `PlayerAudioSettings.MenuMusic`, the Music volume and `MenuMusicSubSystem.Next`, and hides once the player has a body or a ghost.
+  - Quit arms for 3 s; Esc or focus loss disarms it.
+- **Header and tabs.** Server name, Map, Mode, Players `online/cap`, the round status, and "Back to round (Esc)" in the in-round menu. The Admin switch shows only for admins; on adds Server Settings and opens it, off falls back to Server Info. Ctrl+Tab cycles the tabs. Focus starts on Ready, or on Observe when Ready is disabled.
+- **Server Info.** One banner per round (`RoundId` mod 5, the same on every client), the MOTD, Map / Mode / Build / Uptime, and the change log grouped by release with a "Release notes" link per release.
+- **Chat.** One log of every channel the player can read, tagged OOC / LOOC / ADMIN. The channel buttons pick where a line goes; Send or Enter sends.
+- **1366.** `.lobby--compact` switches on below 1600 px of panel width: sidebar 320, preview 80 × 136, gutters 12, timer 36.
+
+Interim until Phases 5–6:
+
+- **No job editor.** Nothing edits job priorities, antag opt-ins or the fallback until the Phase 5 Jobs and Antags tabs. Saved preferences still reach the server. The lifecycle pilot sets High Security by reflection for now.
+- **Switch character** opens the old creator, which has the slot list.
+- **Join** still resolves the character's priorities (`CmdSpawnLatePlayer`).
 
 ### Phase 5 — Character window
 
@@ -179,9 +203,9 @@ What Phase 3 built:
 
 ### Phase 7 — Purge and docs
 
-- [ ] Delete `LobbyShellView.cs`, `CharacterCreatorView.cs`, `CharacterCreatorDraft.cs`, `LobbyMockData.cs` and `CharacterCreatorMockData.cs`, after moving their real data (palettes, slider definitions) into catalog or ScriptableObject data; move `JobPriorityUtil` out of mock data
-- [ ] Delete the old Jobs and Players tab code, the "N interested" demand line, the species dropdown, the step rail and the old "loadout" naming for character slots
-- [ ] Trim `LobbyShell.uss` and `CharacterCreator.uss` down to what the new views use, or replace them
+- [ ] Delete `CharacterCreatorView.cs`, `CharacterCreatorDraft.cs`, `LobbyMockData.cs` and `CharacterCreatorMockData.cs`, after moving their real data (palettes, slider definitions) into catalog or ScriptableObject data; move `JobPriorityUtil` out of mock data
+- [ ] Delete the "N interested" count (`JobSlotInfo.Interested`), `LobbyMockData.PlayerRow`, `LobbyAssetCatalog`'s unused banner and chevron fields, the species dropdown, the species dropdown, the step rail and the old "loadout" naming for character slots
+- [ ] Delete `LobbyShell.uss` (the shell no longer uses it; the old creator still does) and trim `CharacterCreator.uss`, or replace them
 - [ ] Record the dropped small Escape menu in [player settings](2026-10_player-settings.md)
 - [ ] Run `update-system-docs`: the [rounds-lobby](systems/rounds-lobby.md) map (overview, start-here, pitfalls), the [gamemodes-roles-traits](systems/gamemodes-roles-traits.md) and [ui-shell-main-menu](systems/ui-shell-main-menu.md) maps, the INDEX coverage row, and M11
 
@@ -203,11 +227,13 @@ What Phase 3 built:
   - review screenshots against the canvas
 - **Smokes:** the nightly `nukeops-round` smoke needs `-nukeops` to keep its default opt-in and connected threshold. Phase 2 added `-nukeops-countdown-seconds=20` to its conf; re-run it before the pull request.
 - **Per phase:** `Testing/ui/validate.sh --steps compile,editmode` plus the lifecycle step; add `visual` from Phase 4 on.
+- **Phase 4:** `LobbySidebarModelTests` (every sidebar state on the canvas) and `LobbyViewTests` (the shell binds the committed template, keeps its stylesheet, paints the sidebar, card and admin tabs). `LobbyUiPilot` and `LobbyLifecyclePilot` now target the new element names; the remote-client scenario too.
 
 ## Deviations
 
 - **From [persistence-save.md](../design/persistence-save.md) §5:** characters and their preferences are saved on the player's machine, not as server-side player data. That layer doesn't exist yet. A player on a second machine starts with a random character. Move them when the layer is built.
 - **From [lobby.md](../design/lobby.md) §4 (opt-in off by default):** the `-nukeops` profile keeps antag opt-ins on by default, for Playtest 1 only, so an 8-player squad draw finds operatives. Remove this after the playtest.
+- **From [lobby.md](../design/lobby.md) §7 and the canvas (Admin help):** players can't send to Admin chat; the server accepts it only from admins, and an admin has no way to reply to one player. The Chat tab shows the Admin channel to admins only. Player-to-admin help belongs to [admin-tools.md](../design/admin-tools.md).
 - **From [lobby.md](../design/lobby.md) §2 (playtime-locked jobs):** the locked row is built, but no job has a playtime requirement yet. That needs [player-accounts.md](../design/player-accounts.md) and player data.
 
 ## Related docs

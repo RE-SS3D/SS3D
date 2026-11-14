@@ -12,6 +12,9 @@ namespace SS3D.UI.Lobby
 
         public const string StyleSheet = "Assets/Content/Systems/UI/Lobby/LobbyShell.uss";
 
+        /// <summary>The lobby shell; it links <c>Lobby.uss</c> itself.</summary>
+        public const string Template = "Assets/Content/Systems/UI/Lobby/Lobby.uxml";
+
         public const string IconRoot = "Assets/Art/Icons/Lobby/";
         public const string JobIconRoot = IconRoot + "Jobs/";
         public const string PreviewPlaceholder = IconRoot + "PnSecurity.png";

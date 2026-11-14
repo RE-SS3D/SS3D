@@ -34,6 +34,18 @@ namespace SS3D.UI.Lobby
             return index >= 0 ? (JobPriority)Priorities[index] : JobPriority.Never;
         }
 
+        /// <summary>The job at High, or null when nothing is High (the lobby card shows it).</summary>
+        public string HighJob
+        {
+            get
+            {
+                if (Jobs == null || Priorities == null) return null;
+                for (int i = 0; i < Jobs.Length && i < Priorities.Length; i++)
+                    if ((JobPriority)Priorities[i] == JobPriority.High) return Jobs[i];
+                return null;
+            }
+        }
+
         /// <summary>
         /// Sets one job's priority. Only one job can be High (lobby.md §3): setting a new High drops the old one to
         /// Medium.
