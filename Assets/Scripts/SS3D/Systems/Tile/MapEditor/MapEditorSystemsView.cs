@@ -31,6 +31,19 @@ namespace SS3D.Systems.Tile.MapEditor
                 RpcSetSystemsView(_systemsViewClient.Requested, LocalConnection);
         }
 
+        /// <summary>Hovering names what the view shows under the cursor (creative-mode §4: a pipe's line and network).</summary>
+        private string SystemsViewHoverLabel()
+        {
+            if (_viewModel.ActiveSystemsView == SystemsViewKind.Off)
+                return string.Empty;
+
+            Vector3 pointed = TileHelper.GetPointedPosition(true, PickCamera);
+            return _systemsViewClient.HoverText(new Vector2Int(Mathf.RoundToInt(pointed.x), Mathf.RoundToInt(pointed.z)));
+        }
+
+        /// <summary>The client half, for the visual pilot and tests.</summary>
+        public MapEditorSystemsViewClient SystemsViewClient => _systemsViewClient;
+
         [ServerRpc(RequireOwnership = false)]
         private void RpcSetSystemsView(SystemsViewKind view, NetworkConnection conn = null)
         {

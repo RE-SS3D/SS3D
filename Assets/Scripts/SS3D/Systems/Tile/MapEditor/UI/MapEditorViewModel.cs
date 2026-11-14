@@ -94,6 +94,34 @@ namespace SS3D.Systems.Tile.MapEditor.UI
             TileLayerCategory.Turfs, TileLayerCategory.Furniture, TileLayerCategory.WallMounts, TileLayerCategory.Items,
         };
 
+        /// <summary>
+        /// What <paramref name="view"/> dims: <see cref="SystemsViewXRayLayers"/>, plus the layer the view's domain draws
+        /// over (<see cref="SystemsViewDomain.OwnLayer"/>, Gas Pipes for Atmos), so that layer's own paint never competes
+        /// with network colours. The own layer stays pickable (<see cref="IsLayerPickable"/>).
+        /// </summary>
+        public static bool IsXRayLayer(SystemsViewKind view, TileLayerCategory category)
+        {
+            if (view == SystemsViewKind.Off)
+                return false;
+            if (SystemsViewDomains.For(view)?.OwnLayer == category)
+                return true;
+
+            foreach (TileLayerCategory layer in SystemsViewXRayLayers)
+            {
+                if (layer == category)
+                    return true;
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// Whether picks prefer this layer like a visible one: visible layers, and the active view's own layer while the
+        /// view dims it. A view never makes its own layer harder to pick (Select traces it, hover names it).
+        /// </summary>
+        public bool IsLayerPickable(TileLayerCategory category) =>
+            IsLayerCategoryVisible(category) || SystemsViewDomains.For(ActiveSystemsView)?.OwnLayer == category;
+
         /// <summary>The view the toolbar toggle keeps on from any tab; <see cref="SystemsViewKind.Off"/> leaves it to the tab.</summary>
         public SystemsViewKind PinnedSystemsView { get; private set; }
 
@@ -228,18 +256,17 @@ namespace SS3D.Systems.Tile.MapEditor.UI
 
         /// <summary>
         /// Cables, gas pipes and disposals run under the turf, so their tabs hide Turfs until you leave them; a systems
-        /// view dims <see cref="SystemsViewXRayLayers"/> until it turns off. A layer you had hidden yourself stays hidden,
+        /// view dims its x-ray layers (<see cref="IsXRayLayer"/>) until it turns off. A layer you had hidden yourself stays hidden,
         /// and one you toggled meanwhile is yours: it isn't restored.
         /// </summary>
         private void UpdateAutoHiddenLayers()
         {
             bool underTurf = CurrentSubcategory is MapEditorSubcategory.Cables
                 or MapEditorSubcategory.GasPipes or MapEditorSubcategory.DisposalPipes;
-            bool xRay = ActiveSystemsView != SystemsViewKind.Off;
+            SystemsViewKind view = ActiveSystemsView;
             foreach (TileLayerCategory category in TileLayerCategoryMapping.AllCategories)
             {
-                bool hide = (underTurf && category == TileLayerCategory.Turfs)
-                    || (xRay && IsXRayLayer(category));
+                bool hide = (underTurf && category == TileLayerCategory.Turfs) || IsXRayLayer(view, category);
                 if (hide && !_autoHidden.Contains(category) && IsLayerCategoryVisible(category))
                 {
                     _layerCategoryVisibility[category] = false;
@@ -250,17 +277,6 @@ namespace SS3D.Systems.Tile.MapEditor.UI
                     _layerCategoryVisibility[category] = true;
                 }
             }
-        }
-
-        private static bool IsXRayLayer(TileLayerCategory category)
-        {
-            foreach (TileLayerCategory layer in SystemsViewXRayLayers)
-            {
-                if (layer == category)
-                    return true;
-            }
-
-            return false;
         }
 
         public void SelectEntry(MapEditorCatalogEntry entry, GenericObjectSo asset)

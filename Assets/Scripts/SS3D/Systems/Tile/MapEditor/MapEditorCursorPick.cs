@@ -71,10 +71,7 @@ namespace SS3D.Systems.Tile.MapEditor
                 return false;
 
             // Prefer visible layer groups when the user has dimmed plenums/etc.
-            if (TryPickFromLayers(locations, viewModel, requireVisible: true, out placedTile))
-                return true;
-
-            return TryPickFromLayers(locations, viewModel, requireVisible: false, out placedTile);
+            return TryPickFromLocations(locations, viewModel, out placedTile);
         }
 
         private static bool TryRaycast(Camera camera, out Ray ray, out RaycastHit hit)
@@ -134,6 +131,14 @@ namespace SS3D.Systems.Tile.MapEditor
             return mount != null;
         }
 
+        /// <summary>
+        /// The tile-grid half of <see cref="TryPick"/>: the first object in <see cref="LayerPickOrder"/> on these
+        /// locations, preferring pickable layers (<see cref="MapEditorViewModel.IsLayerPickable"/>).
+        /// </summary>
+        public static bool TryPickFromLocations(ITileLocation[] locations, MapEditorViewModel viewModel, out PlacedTileObject placed) =>
+            TryPickFromLayers(locations, viewModel, requireVisible: true, out placed)
+            || TryPickFromLayers(locations, viewModel, requireVisible: false, out placed);
+
         private static bool TryPickFromLayers(
             ITileLocation[] locations,
             MapEditorViewModel viewModel,
@@ -167,12 +172,13 @@ namespace SS3D.Systems.Tile.MapEditor
             return false;
         }
 
+        // Pickable, not merely visible: a systems view dims its own layer but keeps it first to pick.
         private static bool IsLayerVisible(MapEditorViewModel viewModel, TileLayer layer)
         {
             if (!TileLayerCategoryMapping.TryGetCategoryForLayer(layer, out TileLayerCategory category))
                 return true;
 
-            return viewModel.IsLayerCategoryVisible(category);
+            return viewModel.IsLayerPickable(category);
         }
     }
 }

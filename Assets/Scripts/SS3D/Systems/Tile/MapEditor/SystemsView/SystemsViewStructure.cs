@@ -39,10 +39,39 @@ namespace SS3D.Systems.Tile.MapEditor.SystemsView
         public SystemsViewKey Key;
         /// <summary>From <see cref="NetworkIdentityTracker{TSegment}"/>; also the palette index (<see cref="SystemsViewPalette"/>).</summary>
         public int ViewId;
+        /// <summary>
+        /// Which sides of its tile the run leaves by, as <see cref="SystemsViewLinks"/> bits: the real connections,
+        /// including into a device port or a manifold, so the overlay draws what is joined rather than what is adjacent.
+        /// </summary>
+        public byte Links;
 
-        public bool Equals(SystemsViewSegment other) => Key.Equals(other.Key) && ViewId == other.ViewId;
+        public bool Equals(SystemsViewSegment other) => Key.Equals(other.Key) && ViewId == other.ViewId && Links == other.Links;
         public override bool Equals(object obj) => obj is SystemsViewSegment other && Equals(other);
-        public override int GetHashCode() => HashCode.Combine(Key, ViewId);
+        public override int GetHashCode() => HashCode.Combine(Key, ViewId, Links);
+    }
+
+    /// <summary>The four sides of a tile as bits of <see cref="SystemsViewSegment.Links"/>.</summary>
+    public static class SystemsViewLinks
+    {
+        /// <summary>The four cardinal directions, in bit order.</summary>
+        public static readonly Direction[] Sides = { Direction.North, Direction.East, Direction.South, Direction.West };
+
+        public const byte North = 1;
+        public const byte East = 2;
+        public const byte South = 4;
+        public const byte West = 8;
+
+        /// <summary>The bit for a cardinal direction; 0 for a diagonal.</summary>
+        public static byte Bit(Direction direction) => direction switch
+        {
+            Direction.North => North,
+            Direction.East => East,
+            Direction.South => South,
+            Direction.West => West,
+            _ => 0,
+        };
+
+        public static bool Has(byte links, Direction direction) => (links & Bit(direction)) != 0;
     }
 
     /// <summary>A network's name label ("Supply 3", "Circuit 2"), so nothing depends on colour alone.</summary>
@@ -70,11 +99,13 @@ namespace SS3D.Systems.Tile.MapEditor.SystemsView
         public int ViewId;
         /// <summary>0 when the device sits on one network.</summary>
         public int OtherViewId;
+        /// <summary>A three-port device's third network (a filter's or mixer's side port); 0 for every other device.</summary>
+        public int SideViewId;
 
         public bool Equals(SystemsViewBadge other) => Key.Equals(other.Key) && Kind == other.Kind && State == other.State
-            && Facing == other.Facing && ViewId == other.ViewId && OtherViewId == other.OtherViewId;
+            && Facing == other.Facing && ViewId == other.ViewId && OtherViewId == other.OtherViewId && SideViewId == other.SideViewId;
         public override bool Equals(object obj) => obj is SystemsViewBadge other && Equals(other);
-        public override int GetHashCode() => HashCode.Combine(Key, Kind, State, Facing, ViewId, OtherViewId);
+        public override int GetHashCode() => HashCode.Combine(Key, Kind, State, Facing, ViewId, OtherViewId, SideViewId);
     }
 
     /// <summary>A problem marker. <see cref="IssueId"/> is the same id Map Check reports, so both share one wording.</summary>

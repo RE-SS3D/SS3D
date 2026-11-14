@@ -783,6 +783,9 @@ namespace SS3D.Systems.Tile.MapEditor
                     label = PlacingLabel(_viewModel.SelectedEntry);
             }
 
+            if (!_viewModel.HideUI && !_mouseOverUI)
+                label = MapEditorSystemsViewClient.CursorLabel(label, SystemsViewHoverLabel());
+
             _examine.SetCursorLabelOverride(label);
         }
 

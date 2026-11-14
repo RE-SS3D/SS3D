@@ -77,7 +77,8 @@ namespace SS3D.Systems.Tile.MapEditor.UI
             if (!_systemsLegendOpen)
                 return;
 
-            VisualElement body = new() { pickingMode = PickingMode.Ignore };
+            // Scrolls when the screen is too short for every line, rather than running under the library.
+            ScrollView body = new(ScrollViewMode.Vertical) { horizontalScrollerVisibility = ScrollerVisibility.Hidden };
             body.AddToClassList("map-editor-systems-legend__body");
             foreach (SystemsViewLegendEntry entry in SystemsViewLegend.EntriesFor(view))
                 body.Add(LegendRow(entry));

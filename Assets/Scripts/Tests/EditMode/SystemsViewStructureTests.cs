@@ -1,4 +1,6 @@
+using FishNet.Serializing;
 using NUnit.Framework;
+using SS3D.Systems.Atmospherics.SystemsView;
 using SS3D.Systems.Tile;
 using SS3D.Systems.Tile.MapEditor;
 using SS3D.Systems.Tile.MapEditor.SystemsView;
@@ -199,31 +201,109 @@ namespace SS3D.Tests.EditMode
         }
 
         [Test]
-        public void OverlayChunkMesh_HasAQuadPerSegment_InItsNetworkColour()
+        public void OverlayRunMesh_DrawsHalfBandsTowardItsLinks_InTheNetworkColour_OverAnUnderlay()
         {
             SystemsViewSegment[] segments =
             {
-                new() { Key = Key(-1, -1), ViewId = 1 },
-                new() { Key = Key(0, 0), ViewId = 2 },
-                new() { Key = Key(17, 3), ViewId = 2 },
+                new() { Key = Key(17, 3, AtmosSystemsViewCodes.Supply), ViewId = 2, Links = SystemsViewLinks.East | SystemsViewLinks.West },
             };
 
-            Dictionary<Vector2Int, List<SystemsViewSegment>> chunks = MapEditorSystemsOverlay.GroupByChunk(segments);
-
-            CollectionAssert.AreEquivalent(new[] { new Vector2Int(-1, -1), Vector2Int.zero, new Vector2Int(1, 0) }, chunks.Keys);
-            Mesh mesh = MapEditorSystemsOverlay.BuildChunkMesh(new Vector2Int(1, 0), chunks[new Vector2Int(1, 0)]);
+            Mesh mesh = MapEditorSystemsOverlay.BuildRunMesh(new Vector2Int(1, 0), segments, AtmosSystemsViewStyle.Instance);
             try
             {
-                Assert.AreEqual(4, mesh.vertexCount);
-                Color expected = SystemsViewPalette.ColorFor(2);
-                Assert.AreEqual(expected.r, mesh.colors[0].r, 1e-4f);
-                Assert.AreEqual(1f, mesh.bounds.center.x, 1e-4f);
-                Assert.AreEqual(3f, mesh.bounds.center.z, 1e-4f);
+                // Two passes (underlay, colour) of a joint plus two half bands.
+                Assert.AreEqual(2 * 3 * 4, mesh.vertexCount);
+                Assert.AreEqual(SystemsViewMeshBuilder.ToStored(MapEditorSystemsOverlay.Underlay), mesh.colors[0]);
+                Assert.AreEqual(SystemsViewMeshBuilder.ToStored(SystemsViewPalette.ColorFor(2)), mesh.colors[12]);
+                // Tile 17 is chunk-local 1; East and West reach both tile edges, on Supply's offset across the run.
+                Vector2 offset = AtmosSystemsViewStyle.Instance.SlotOffset(AtmosSystemsViewCodes.Supply);
+                Assert.AreEqual(0.5f, mesh.bounds.min.x, 1e-4f);
+                Assert.AreEqual(1.5f, mesh.bounds.max.x, 1e-4f);
+                Assert.AreEqual(3f + offset.y, mesh.bounds.center.z, 1e-4f);
             }
             finally
             {
                 Object.DestroyImmediate(mesh);
             }
+        }
+
+        [Test]
+        public void OverlayDelta_DirtiesOnlyTheChunksItTouches()
+        {
+            SystemsViewDelta delta = SystemsViewStructure.Diff(Station(), Station(ventState: 0));
+            delta.SegmentsRemoved = new[] { Key(-1, -1) };
+            HashSet<Vector2Int> dirty = new();
+
+            MapEditorSystemsOverlay.DirtyChunks(delta, dirty);
+
+            CollectionAssert.AreEquivalent(new[] { Vector2Int.zero, new Vector2Int(-1, -1) }, dirty);
+        }
+
+        [Test]
+        public void Wire_RoundTripsEveryCollection()
+        {
+            SystemsViewDelta sent = SystemsViewStructure.Diff(null, Station());
+            sent.SegmentsRemoved = new[] { Key(-300, 2, 4) };
+            sent.NetworksRemoved = new[] { 9 };
+
+            PooledWriter writer = WriterPool.Retrieve();
+            try
+            {
+                writer.WriteSystemsViewDelta(sent);
+                Assert.AreEqual(writer.Length, SystemsViewWire.SizeOf(sent));
+                PooledReader reader = ReaderPool.Retrieve(writer.GetArraySegment(), null);
+                SystemsViewDelta read = reader.ReadSystemsViewDelta();
+                reader.Store();
+
+                Assert.AreEqual(sent.View, read.View);
+                Assert.AreEqual(sent.Reset, read.Reset);
+                CollectionAssert.AreEquivalent(sent.SegmentsSet, read.SegmentsSet);
+                CollectionAssert.AreEqual(sent.SegmentsRemoved, read.SegmentsRemoved);
+                CollectionAssert.AreEquivalent(sent.NetworksSet, read.NetworksSet);
+                CollectionAssert.AreEqual(sent.NetworksRemoved, read.NetworksRemoved);
+                CollectionAssert.AreEquivalent(sent.BadgesSet, read.BadgesSet);
+                CollectionAssert.AreEquivalent(sent.MarkersSet, read.MarkersSet);
+            }
+            finally
+            {
+                writer.Store();
+            }
+        }
+
+        [Test]
+        public void Publisher_SendsABigFirstOpenInParts_UnderItsBudget()
+        {
+            SystemsViewStructure big = new(SystemsViewKind.Atmos);
+            for (int x = 0; x < 60; x++)
+            for (int y = 0; y < 50; y++)
+                big.Set(new SystemsViewSegment { Key = Key(x, y), ViewId = 1 + x / 10, Links = SystemsViewLinks.North });
+            for (int id = 1; id <= 6; id++)
+                big.Set(new SystemsViewNetwork { ViewId = id, Label = $"Supply {id}" });
+            FakeSource source = new(SystemsViewKind.Atmos) { Structure = big };
+            SystemsViewPublisher publisher = new() { MaxBytesPerSend = 4096 };
+            publisher.Register(source);
+            publisher.Subscribe(1, SystemsViewKind.Atmos);
+            Assert.Greater(SystemsViewWire.SizeOf(SystemsViewStructure.Diff(null, big)), 4096 * 3);
+
+            SystemsViewStructure client = new(SystemsViewKind.Off);
+            List<SystemsViewDelta> sent = new();
+            for (int poll = 0; poll < 100; poll++)
+            {
+                int before = sent.Count;
+                publisher.Publish((_, delta) => sent.Add(delta));
+                if (sent.Count == before)
+                    break;
+            }
+
+            Assert.Greater(sent.Count, 3, "The first open went out over several polls");
+            Assert.IsTrue(sent[0].Reset);
+            Assert.IsTrue(sent.Skip(1).All(delta => !delta.Reset));
+            Assert.IsTrue(sent.All(delta => SystemsViewWire.SizeOf(delta) <= 4096));
+            Assert.AreEqual(6, sent[0].NetworksSet.Length, "Labels go first, so a part on screen is named");
+            foreach (SystemsViewDelta delta in sent)
+                client.Apply(delta);
+            AssertSame(big, client);
+            Assert.AreEqual(1, source.Builds, "Parts come from one build");
         }
 
         private sealed class FakeSource : ISystemsViewSource

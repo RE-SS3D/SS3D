@@ -1,8 +1,11 @@
+using System.Collections.Generic;
 using NUnit.Framework;
+using SS3D.Systems.Tile;
 using SS3D.Systems.Tile.MapEditor;
 using SS3D.Systems.Tile.MapEditor.SystemsView;
 using SS3D.Systems.Tile.MapEditor.UI;
 using SS3D.Systems.Tile.TileMapCreator;
+using UnityEngine;
 
 namespace SS3D.Tests.EditMode
 {
@@ -24,8 +27,65 @@ namespace SS3D.Tests.EditMode
         {
             foreach (TileLayerCategory layer in MapEditorViewModel.SystemsViewXRayLayers)
                 Assert.AreEqual(!dimmed, viewModel.IsLayerCategoryVisible(layer), layer.ToString());
-            Assert.IsTrue(viewModel.IsLayerCategoryVisible(TileLayerCategory.GasPipes));
+            // These all run the Atmos view, which also dims the pipes' own paint.
+            Assert.AreEqual(!dimmed, viewModel.IsLayerCategoryVisible(TileLayerCategory.GasPipes), "GasPipes");
             Assert.IsTrue(viewModel.IsLayerCategoryVisible(TileLayerCategory.Cables));
+        }
+
+        [Test]
+        public void AtmosView_DimsThePipes_ButAPipeStillWinsThePickOverAWireUnderIt()
+        {
+            MapEditorViewModel viewModel = Open(MapEditorSubcategory.Machines);
+            viewModel.SetSystemsView(SystemsViewKind.Atmos);
+            Assert.IsFalse(viewModel.IsLayerCategoryVisible(TileLayerCategory.GasPipes));
+            Assert.IsTrue(viewModel.IsLayerCategoryVisible(TileLayerCategory.Cables));
+
+            List<GameObject> created = new();
+            try
+            {
+                ITileLocation[] locations = new ITileLocation[System.Enum.GetValues(typeof(TileLayer)).Length];
+                PlacedTileObject pipe = PlaceAt(locations, TileLayer.PipeLeft, created);
+                PlaceAt(locations, TileLayer.Wire, created);
+
+                Assert.IsTrue(MapEditorCursorPick.TryPickFromLocations(locations, viewModel, out PlacedTileObject picked));
+                Assert.AreSame(pipe, picked, "The view's own layer stays first to pick while it is dimmed");
+            }
+            finally
+            {
+                foreach (GameObject go in created)
+                    Object.DestroyImmediate(go);
+            }
+        }
+
+        private static PlacedTileObject PlaceAt(ITileLocation[] locations, TileLayer layer, List<GameObject> created)
+        {
+            GameObject go = new(layer.ToString());
+            created.Add(go);
+            PlacedTileObject placed = go.AddComponent<PlacedTileObject>();
+            locations[(int)layer] = TileHelper.CreateTileLocation(layer, 0, 0);
+            locations[(int)layer].AddPlacedObject(placed);
+            return placed;
+        }
+
+        [Test]
+        public void CursorLabel_KeepsThePlacingLabel_AndAddsTheHoveredLine()
+        {
+            Assert.AreEqual("Placing Pipe\nSupply 3", MapEditorSystemsViewClient.CursorLabel("Placing Pipe", "Supply 3"));
+            Assert.AreEqual("Supply 3", MapEditorSystemsViewClient.CursorLabel(string.Empty, "Supply 3"));
+            Assert.AreEqual("Placing Pipe", MapEditorSystemsViewClient.CursorLabel("Placing Pipe", string.Empty));
+        }
+
+        [Test]
+        public void SwitchingFromAtmosToPower_GivesThePipesBack()
+        {
+            MapEditorViewModel viewModel = Open(MapEditorSubcategory.Machines);
+            viewModel.SetSystemsView(SystemsViewKind.Atmos);
+            Assert.IsFalse(viewModel.IsLayerCategoryVisible(TileLayerCategory.GasPipes));
+
+            viewModel.SetSystemsView(SystemsViewKind.Power);
+
+            Assert.IsTrue(viewModel.IsLayerCategoryVisible(TileLayerCategory.GasPipes));
+            Assert.IsFalse(viewModel.IsLayerCategoryVisible(TileLayerCategory.Furniture), "the shared x-ray stays");
         }
 
         [Test]

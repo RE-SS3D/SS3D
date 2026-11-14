@@ -1,5 +1,6 @@
 using System;
 using SS3D.Systems.Tile.MapEditor.SystemsView;
+using UnityEngine;
 
 namespace SS3D.Systems.Tile.MapEditor
 {
@@ -30,6 +31,7 @@ namespace SS3D.Systems.Tile.MapEditor
                 Requested = active;
                 Structure = null;
                 _overlay.SetStructure(null);
+                _hoverRevision++;
             }
 
             _overlay.SetVisible(active != SystemsViewKind.Off);
@@ -51,9 +53,45 @@ namespace SS3D.Systems.Tile.MapEditor
                 return false;
 
             Structure.Apply(delta);
-            _overlay.SetStructure(Structure);
+            _overlay.Apply(Structure, delta);
+            _hoverRevision++;
             return true;
         }
+
+        private int _hoverRevision;
+        private int _describedRevision = -1;
+        private Vector2Int _describedTile;
+        private string _described = string.Empty;
+
+        /// <summary>
+        /// What the view shows on <paramref name="tile"/> in words ("Supply 3", "Pump: on · Surface 2 → Surface 5"), or
+        /// empty; worded by the view's domain (<see cref="ISystemsViewStyle.Describe"/>). Cached per tile and delta.
+        /// </summary>
+        public string HoverText(Vector2Int tile)
+        {
+            if (Structure == null || Requested == SystemsViewKind.Off)
+                return string.Empty;
+
+            if (_describedRevision == _hoverRevision && _describedTile == tile)
+                return _described;
+
+            _describedRevision = _hoverRevision;
+            _describedTile = tile;
+            _described = SystemsViewStyles.For(Structure.View)?.Describe(Structure, tile) ?? string.Empty;
+            return _described;
+        }
+
+        /// <summary>
+        /// The cursor badge with a view on: what is being placed, then what the view shows under the cursor, so a pipe's
+        /// line and network show on Lower › Gas Pipes too, where the view turns itself on while you place.
+        /// </summary>
+        public static string CursorLabel(string placing, string hover) =>
+            string.IsNullOrEmpty(hover) ? placing ?? string.Empty
+            : string.IsNullOrEmpty(placing) ? hover
+            : placing + "\n" + hover;
+
+        /// <summary>The overlay, for tests and the visual pilot.</summary>
+        public MapEditorSystemsOverlay Overlay => _overlay;
 
         /// <summary>The editor closed; the server drops the subscription with the editor-open report.</summary>
         public void Stop()

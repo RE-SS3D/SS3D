@@ -19,22 +19,18 @@ namespace SS3D.Systems.Tile.MapEditor.SystemsView
     }
 
     /// <summary>
-    /// The legend's lines per view, and whether it is open. Later phases add their badge, dot and marker lines here,
-    /// next to the strings the markers and Map Check share.
+    /// The legend's lines per view, and whether it is open. Each domain registers its own lines with its
+    /// <see cref="SystemsViewDomain"/>, next to the strings its badges, markers and Map Check share.
     /// </summary>
     public static class SystemsViewLegend
     {
         public const string OpenPrefsKey = "SS3D.MapEditor.SystemsLegendOpen";
 
-        private static readonly Color[] NetworkSwatches =
+        /// <summary>Three palette colours, for a legend line about network colours.</summary>
+        public static readonly Color[] NetworkSwatches =
             { SystemsViewPalette.ColorFor(1), SystemsViewPalette.ColorFor(2), SystemsViewPalette.ColorFor(3) };
 
-        private static readonly SystemsViewLegendEntry[] Atmos =
-        {
-            new("Each colour is one pipe network: one connected run on one line. A valve, pump or filter sits between two networks.", NetworkSwatches),
-            new("Floors and objects are dimmed so the pipes underneath show through."),
-        };
-
+        // Until the Power domain registers its own lines (Phase 3).
         private static readonly SystemsViewLegendEntry[] Power =
         {
             new("Each colour is one cable circuit, joining generators, SMES units and APCs.", NetworkSwatches),
@@ -48,12 +44,10 @@ namespace SS3D.Systems.Tile.MapEditor.SystemsView
             _ => string.Empty,
         };
 
-        public static IReadOnlyList<SystemsViewLegendEntry> EntriesFor(SystemsViewKind view) => view switch
-        {
-            SystemsViewKind.Atmos => Atmos,
-            SystemsViewKind.Power => Power,
-            _ => Array.Empty<SystemsViewLegendEntry>(),
-        };
+        /// <summary>The registered domain's lines (<see cref="SystemsViewDomains"/>), or a placeholder for Power until it has one.</summary>
+        public static IReadOnlyList<SystemsViewLegendEntry> EntriesFor(SystemsViewKind view) =>
+            SystemsViewDomains.For(view)?.Legend
+            ?? (view == SystemsViewKind.Power ? Power : Array.Empty<SystemsViewLegendEntry>());
 
         /// <summary>Open the first time a view is used, then however the author left it (like <c>MapEditorLastTab</c>).</summary>
         public static bool LoadOpen() => PlayerPrefs.GetInt(OpenPrefsKey, 1) != 0;

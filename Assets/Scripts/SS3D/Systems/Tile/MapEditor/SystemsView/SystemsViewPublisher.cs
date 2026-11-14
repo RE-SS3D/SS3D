@@ -15,6 +15,15 @@ namespace SS3D.Systems.Tile.MapEditor.SystemsView
         private readonly Dictionary<int, Subscriber> _subscribers = new();
         private readonly List<int> _clientIds = new();
         private int _buildStamp;
+        private int _publishCount;
+
+        /// <summary>
+        /// Most bytes one send may take (<see cref="SystemsViewWire"/>). A bigger delta, such as a large station's first
+        /// open, goes out over several polls, the way the atmos chunk patches keep under their budget: 16 patches of
+        /// 3,084 bytes per 0.2 s tick. At the hub's 0.25 s poll this is about 190 KB/s at most, under the 300 KB/s
+        /// per client those patches are held to.
+        /// </summary>
+        public int MaxBytesPerSend { get; set; } = 48 * 1024;
 
         public bool HasSubscribers => _subscribers.Count > 0;
 
@@ -76,6 +85,7 @@ namespace SS3D.Systems.Tile.MapEditor.SystemsView
             if (send == null || _subscribers.Count == 0)
                 return;
 
+            _publishCount++;
             _clientIds.Clear();
             _clientIds.AddRange(_subscribers.Keys);
             foreach (int clientId in _clientIds)
@@ -86,7 +96,9 @@ namespace SS3D.Systems.Tile.MapEditor.SystemsView
                     continue;
 
                 SystemsViewDelta delta = SystemsViewStructure.Diff(subscriber.Sent, built.Structure);
-                subscriber.SentStamp = built.Stamp;
+                // Over budget: send a part now and leave the stamp, so the next poll diffs again and sends the rest.
+                if (!SystemsViewWire.Limit(ref delta, MaxBytesPerSend))
+                    subscriber.SentStamp = built.Stamp;
                 if (delta.IsEmpty)
                     continue;
 
@@ -98,14 +110,21 @@ namespace SS3D.Systems.Tile.MapEditor.SystemsView
 
         private Built Current(SystemsViewKind view)
         {
+            // A source's version may poll device state, so read it once per publish however many clients watch.
+            if (_built.TryGetValue(view, out Built built) && built.CheckedAt == _publishCount)
+                return built;
+
             bool hasSource = _sources.TryGetValue(view, out ISystemsViewSource source);
             int version = hasSource ? source.StructureVersion : 0;
-            if (_built.TryGetValue(view, out Built built) && built.Version == version)
+            if (built != null && built.Version == version)
+            {
+                built.CheckedAt = _publishCount;
                 return built;
+            }
 
             // A view with no source yet (Phase 0) is an empty structure: the client still gets its reset.
             built = new Built(hasSource ? source.BuildStructure() ?? new SystemsViewStructure(view) : new SystemsViewStructure(view),
-                version, ++_buildStamp);
+                version, ++_buildStamp) { CheckedAt = _publishCount };
             _built[view] = built;
             return built;
         }
@@ -115,6 +134,7 @@ namespace SS3D.Systems.Tile.MapEditor.SystemsView
             public readonly SystemsViewStructure Structure;
             public readonly int Version;
             public readonly int Stamp;
+            public int CheckedAt;
 
             public Built(SystemsViewStructure structure, int version, int stamp)
             {

@@ -1,7 +1,7 @@
 > Code paths: Assets/Scripts/SS3D/Systems/Atmospherics/, Assets/Scripts/SS3D/Rendering/URP/Atmos*
 > Entry points: AtmosSubSystem, AtmosSimulation, AtmosRendererFeature
 > Status: partial
-> Verified: 5ad42b7f2 — 2026-11-11
+> Verified: 312ffb45c — 2026-11-14
 
 # Atmospherics
 
@@ -52,6 +52,7 @@ Destroyed walls automatically produce wind, because wind is the air speed the ed
 - `Assets/Scripts/SS3D/Systems/Atmospherics/Pipes/AtmosMixerController.cs` — two inlets at a ratio up to a target pressure; stops if an inlet it needs is dry
 - `Assets/Scripts/SS3D/Systems/Atmospherics/Pipes/AtmosMeterController.cs` / `AtmosInjectorController.cs` — on `FurnitureBase` over any line on their tile; a meter keeps 40 s of pressure history, an injector is opened by hand and pours until pressures level
 - `Assets/Scripts/SS3D/Systems/Atmospherics/Pipes/GasPipeManifold.cs` — on `TileLayer.PipeManifold`; a network segment spanning several lines, connecting at its front and back only
+- `Assets/Scripts/SS3D/Systems/Atmospherics/SystemsView/` — the Map Editor's Atmos view ([map-editor-systems-views](../2026-11_map-editor-systems-views.md)): `AtmosSystemsViewSource` (server: registry segments → runs with their real links, a manifold once per spanned line, view ids from `NetworkIdentityTracker`, badges from `AtmosPortRegistry` resolved against the current registry; registered on the map editor hub by `AtmosSubSystem.SystemsView.cs`), `AtmosSystemsViewCodes` (slot, kind and state codes on the wire), `AtmosSystemsViewStyle` (client: line offsets, badge marks, hover words), `AtmosSystemsViewDomain` (registers style, legend lines and Gas Pipes as the view's own layer on load)
 - `Assets/Scripts/Tests/EditMode/Atmospherics/` — flux, combustion, neighbour, GPU, visual-metrics, air-alarm sampler tests
 
 ## Extension points
@@ -68,6 +69,9 @@ Destroyed walls automatically produce wind, because wind is the air speed the ed
 - Client VFX Phase 2 (late-join bootstrap / AOI): extend dirty-chunk path — see [2026-07_atmos-client-visualization-sync.md](../2026-07_atmos-client-visualization-sync.md).
 
 ## Pitfalls
+
+- **A device placed beside a pipe end changes the pipe without a rebuild:** `AtmosPipeObserver` rebuilds only for objects that join a network, so a pump or valve dropped at a run's end leaves `TopologyVersion` alone while the pipe's mesh now joins its port. `AtmosSystemsViewSource` compares every device with its last poll and re-walks the networks beside one that came, went, moved or turned, not only on a topology bump; anything else caching pipe links needs the same. Hit 2026-11-14.
+- **`ServerSetEnabled` throws in an EditMode test after it has set the value:** `RefreshAnimatorAuthorityState` reads `IsServer` with no NetworkManager. Change a device's state through a plain field (`_pumpRegulation`, scrubber filters) in EditMode, and cover on/off in a Play Mode pilot. Hit 2026-11-14.
 
 - **`_EMISSION` is not a keyword of the toon shader:** it sits under `m_InvalidKeywords` on `PaletteEmission`, so `IsKeywordEnabled` returns false and a filter on it finds no material, with no error. Air alarms never lit up red until `AirAlarmController.GlowsWhenPowered` chose by emission colour instead. Hit 2026-11-06.
 - **A panel's view model defaults are mockups:** `Create*` factories hold made-up readings, so a value the mapper doesn't overwrite looks real. The vent panel showed 101.3 kPa in vacuum. Hit 2026-11-06.
@@ -123,6 +127,8 @@ Destroyed walls automatically produce wind, because wind is the air speed the ed
 ## Tests
 
 - `AtmosWindTests` covers sealed edges, destruction/repair, vacuum fade, continuous sampling, drag and flow encoding. `AtmosNeighbourTests` covers chunk borders in both load orders. `AtmosEdgeFlowTests` covers edge flow's conservation, stability, sleep, doors and chunk borders. `AtmosEdgeFlowReferenceTests` asserts room-scale drain time, far-field onset and knockdown reach against the design targets, and logs the numbers as `[edge-flow-ref]`. `Testing/fixtures/stations/atmostest.json` is the sealed map for atmos budget runs. `AtmosLooseBodiesTests` covers mass scaling, the cap, held bodies and drift. `scenarios:Environment` covers owner gust knockdown, upright drift, a live hull breach through to streaks and pull, and an item blown through the hole to rest in space. `Testing/ui/validate.sh --steps mppm:breach` proves the same on a remote owner, including wind and thin air in what it hears, and saves `breach-wind.png` from the client. `--steps mppm:breach-budget` measures tick cost and traffic on that map with 64 loose items and a real client, logged as `[atmos-budget]`, with what the client really received in Player 2's log. Wind tuning is in `AtmosWind`; streak tuning is in `AtmosWindView`; visuals use `Assets/Resources/Atmospherics/Wind.shader`.
+
+- `AtmosSystemsViewSourceTests` covers the Atmos view's source on a small row: runs per line with their links, a manifold on each line it spans, a pump's back and front networks and labels, a state change that moves only its badge and walks no pipes, a device added or removed walking only the network beside it whatever the registration order, and colours kept through an extension and a split with the real tracker and registry.
 
 - `AtmosPipeTests` covers gas conservation across merges, splits and removal, line attachment, manifolds, inline ports, valves and both pump modes. `AtmosPortDeviceTests` covers the pump curve. `AtmosThreeWayDeviceTests` covers side ports, plate line choice, filter splits and stalls, mixer ratio, target and dry inlets, and meter history. `AtmosGasSupplyTests` covers held cells and mixes. `AtmosSupplyScenarios` runs `classic-ministation`: lines wired, chamber to room through the air pump and a vent, CO₂ to Waste, the waste valve holding then venting to space, and sources hidden outside the map editor. `AtmosDeviceScenarios` (`scenarios:Atmos`) places the real filter, mixer plate and meter prefabs, moves gas through them and opens each panel through its RPC; it clears the devices' power consumer, since the test room has no APC. `RenamedTileObjectsTests` checks each saved-name rename lands on a real asset. `AtmosTileChangeTests` covers gas across shot-out walls, doors and placed objects in an emptied room. `RoomPumpedDown_ShowsLowPressureOnTheHud` (`scenarios:Environment`) covers the tile sample path to the HUD alert state.
 

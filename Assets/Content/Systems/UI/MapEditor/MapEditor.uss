@@ -1247,7 +1247,7 @@
     font-size: 13px;
     -unity-font-definition: url("project://database/Assets/Content/Systems/UI/Font/Fonts/GurajadaRegularSDF.asset");
 }
-.map-editor-systems-legend__body { padding: 8px 10px; }
+.map-editor-systems-legend__body { padding: 8px 10px; max-height: 300px; }
 .map-editor-systems-legend__row { flex-direction: row; align-items: flex-start; margin-bottom: 6px; }
 .map-editor-systems-legend__swatches { flex-direction: row; flex-shrink: 0; width: 42px; margin-top: 2px; }
 .map-editor-systems-legend__swatch { width: 10px; height: 10px; margin-right: 3px; border-radius: 2px; }

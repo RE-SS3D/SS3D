@@ -83,7 +83,7 @@ Run it outside the agent's Bash sandbox (the dialog watchdog needs X11). It prin
 passed step and stops at the first failure, printing that step's details and report path. It lists
 screenshots only when the `visual` step ran. Every run writes `artifacts/ui/validate-<UTC>/summary.md`
 with the full table. Exit status is nonzero on any failure. Rough warm timings on tomnas: EditMode
-~40 s, PlayMode ~6.5 min, visual ~70 s, lifecycle ~85 s, build ~30 s, remote ~50 s, smoke
+~40 s, PlayMode ~6.5 min, visual ~2.5 min (lobby ~70 s, map editor systems ~80 s), lifecycle ~85 s, build ~30 s, remote ~50 s, smoke
 ~9 min; the sandbox pilot is ~4.5 min on demand. Agents run targeted steps, never `--nightly` or `--weekly` unless the owner
 asks; see [2026-11_testing-philosophy.md](../../Documents/architecture/2026-11_testing-philosophy.md).
 
@@ -102,7 +102,7 @@ while another editor is open, so `ss3d-dev stop` when you're done. A red run ope
 | playmode | `--nightly`. All PlayMode tests via MCP `run_tests`; failures are checked against `playmode-known-issues.txt` (see [PlayMode step](#playmode-step)). Same scene-restore check as editmode. |
 | scenarios:&lt;category&gt; | The PlayMode tests in one NUnit category (MCP `run_tests` `category_names`), checked like `playmode`; `scenarios-<category>.json`. Fails if the category has no tests. |
 | mppm:&lt;scenario&gt; | `late-join` or `reconnect` in Multiplayer Play Mode: MPPM tags the main editor with the host script and Player 2 with the client script, launches the clone, enters Play Mode, and waits for both players' `Temp/mppm-automation/*.json`. The host writes a `host-ready` marker once Game is loaded and the clone waits for it before connecting. Fails on anything but `ScriptComplete` or on any logged error (the smoke log gate). On demand only; the built `smoke` step stays the nightly gate. |
-| visual / lifecycle | The two pilots below. Each refuses on a failed preflight (a failed `status.json` at once) and, after Play exits and 3 s of settling, re-runs the check as a postcondition: a leaked `Chunk [` fails the report (`postconditions` field). Reports pass through `verifying` before `passed`/`failed`. |
+| visual / lifecycle | The pilots below; `visual` runs the lobby UI pilot, then the [Map Editor systems pilot](#map-editor-systems-pilot). Each refuses on a failed preflight (a failed `status.json` at once) and, after Play exits and 3 s of settling, re-runs the check as a postcondition: a leaked `Chunk [` fails the report (`postconditions` field). Reports pass through `verifying` before `passed`/`failed`. |
 | build | Client and dedicated server, each skipped when its `Builds/{Game,GameServer}/ss3d-build-hash.txt` matches `python3 Testing/ui/source_hash.py`. Otherwise `AutomationBuild.BuildClient()` / `BuildServer()`: preflight, then the build on the next editor tick; the driver waits on `artifacts/ui/{client,server}-build-result.json` (`status`, `seconds`, `error`, `sourceHash`), since a build blocks the main thread and MCP. The server build restores the editor's standalone subtarget afterwards, so the editor never stays on UNITY_SERVER. Cold server build ~6.5 min on tomnas. |
 | sandbox | On demand (`--steps sandbox`), not in `--weekly`: the reset loop is the nightly `sandbox-reset` smoke scenario, so the weekly only needs the graphical pilots. The pilot below (~4.5 min). |
 | remote | The remote client pilot. Run directly with a stale build, it refuses with both hashes. |
@@ -165,6 +165,21 @@ changes exercise UI callbacks, but do not establish OS input, hit testing, focus
 arbitration, multiplayer synchronization, or layout at other resolutions. Initial
 startup messages before the EnteredPlayMode callback and teardown after the report
 are outside its error collection window; consult `artifacts/ui/editor.log` too.
+
+## Map Editor systems pilot
+
+`SS3D/Testing/Run Map Editor Systems Pilot` (`MapEditorSystemsPilot`, the second half of `visual`) readies the host,
+starts a round on `classic-ministation`, opens the Map Editor and turns the Atmos view on from its toolbar button
+([map-editor-systems-views](../../Documents/architecture/2026-11_map-editor-systems-views.md) Q9). It writes
+`artifacts/ui/systems-view-<UTC>/status.json` with `10-atmos-overview.png` (coloured runs, badges, legend) and
+`11-atmos-hover-closeup.png` (a two-network device with the cursor badge reading it, from a synthetic Input System
+pointer) and `12-atmos-gaspipes-placing-hover.png` (Lower › Gas Pipes with the tab's first entry held: placing label
+and hovered line together). It checks that the client got runs, labelled networks and badges, that the legend is open, that the hover
+text is the hovered tile's, that a vent switched off on the server reaches the client's badge, and that turning the
+view off clears it. Its `measurements` give the station's first-open structure size against the send budget and the
+source's cold and warm build times (also logged as `[systems-view-budget]`). To measure another station, put its
+template in `Builds/Game/Data/StationTemplates/` and set `SessionState` `SS3D.SystemsViewPilot.Station` to its name
+before running the menu item. A non-default station gets 15 minutes to load, and one that can't start a round (a template copy with no job spawns) is measured once its atmos is up, then the pilot stops; erase the key afterwards.
 
 ## Lobby lifecycle pilot
 

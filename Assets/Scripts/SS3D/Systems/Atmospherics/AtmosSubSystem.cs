@@ -110,6 +110,7 @@ namespace SS3D.Systems.Atmospherics
             }
 
             Channel.Subscribe(HandleChannelTick);
+            EnsureSystemsViewRegistered();
             InitializeWhenMapReady().Forget();
         }
 
@@ -279,6 +280,7 @@ namespace SS3D.Systems.Atmospherics
             }
 
             Channel.Unsubscribe(HandleChannelTick);
+            UnregisterSystemsView();
             DisposeSimulation();
             _visualizationBridge = null;
             _clientVisualizationBridge = null;
@@ -313,6 +315,7 @@ namespace SS3D.Systems.Atmospherics
 
         private void HandleChannelTick()
         {
+            EnsureSystemsViewRegistered();
             if (!IsServer || _simulation == null)
                 return;
 

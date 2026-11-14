@@ -2,7 +2,7 @@
 > Touches systems: map-editor-creative-hooks, tile, atmospherics, electricity, area, networking-session
 > Status: in-progress
 
-**Progress:** Phase 0 (shared base) built 2026-11-14: tracker, DTO and delta, subscriptions, view mode and x-ray, overlay and legend shells; no domain source yet. Advances [map-authoring.md](../milestones/map-authoring.md) A10.
+**Progress:** Phase 0 (shared base) built 2026-11-14: tracker, DTO and delta, subscriptions, view mode and x-ray, overlay and legend shells. Phase 1 (Atmos topology and badges) built 2026-11-14: the Atmos source and domain registration, per-chunk run and badge meshes, hover readout, legend lines and a `visual` pilot; see [Phase 1 deviations](#phase-1-deviations). Advances [map-authoring.md](../milestones/map-authoring.md) A10.
 
 # Map Editor systems views (Nov 2026)
 
@@ -87,6 +87,11 @@ MapEditorSystemsView (server half)
 1. An atmos source: segment → network per line, manifolds included (`TryGetManifoldPort`), and devices from `AtmosPortRegistry`. Badge state covers vents and scrubbers (on, off, mode), valves (open, closed), and pumps, filters and mixers (direction, from their front and back). Two-network devices carry both view ids.
 2. The overlay draws runs in their network colour, with real pipe colours dimmed. Hovering names the line.
 
+#### Phase 1 deviations
+
+- **Deviates from Q4 ("instanced world-space quads draw device badges")** because the area overlay shader has no instancing path. Badges are world-space quads in a per-chunk mesh, one render queue above the runs, rebuilt with their chunk. A few hundred badges cost one draw per chunk, so instancing would buy nothing yet. Phase 4's markers can follow the same path, or move both to instancing then.
+- **Real pipe colours are dimmed by the x-ray, not covered.** The Atmos view dims the Gas Pipes layer to the x-ray alpha (its domain's own layer, `SystemsViewDomain.OwnLayer`), because the overlay's line offsets cannot match the real pipe meshes. That layer stays first to pick (`MapEditorViewModel.IsLayerPickable`), so Select and hover still hit pipes.
+
 ### Phase 2 — Atmos tracing
 
 1. With a view on, Select traces the clicked pipe or device (Q11). The trace dims the rest, sets a label, and shows a UITK panel with pressure, temperature, mix, volume and the attached devices with Locate. A two-network device shows both sides, labelled.
@@ -119,10 +124,10 @@ MapEditorSystemsView (server half)
 
 ## Risks to check while building
 
-- **MetaStation traffic and mesh cost.** A full structure snapshot on first open could be large. Measure it, and fall back to chunked sending, oldest first, as the atmos patches do, if it passes the existing patch budget.
+- **MetaStation traffic and mesh cost.** A full structure snapshot on first open could be large. Measure it, and fall back to chunked sending, oldest first, as the atmos patches do, if it passes the existing patch budget. *Phase 1:* MetaStation's first open is 45,878 B (5,759 runs, 54 networks, 513 badges), one send under the 48 KB `MaxBytesPerSend`; larger deltas go out over several polls, removals and labels first.
 - **Ports resolve their network lazily** against `TopologyVersion`. The source must read the current registry, not port caches, or a just-edited device shows its old network for a tick.
 - **The electricity graph rebuild** after a world suspension (`Resumed`) must also bump the structure, or the Power view goes stale after a template load.
-- **A device-state change has no single event.** Each badge-carrying device needs a cheap server-side "changed" signal, or the source polls on the atmos tick and compares.
+- **A device-state change has no single event.** Each badge-carrying device needs a cheap server-side "changed" signal, or the source polls on the atmos tick and compares. *Phase 1:* the Atmos source compares each device with its last poll (4 Hz, only while watched). On MetaStation, in the editor: a cold build walking all 54 networks takes 90 ms and a warm one 2 ms; a device added or removed re-links only the pipes beside it, 5.5 ms (4 pipes, no network walked), where it first re-walked every network (92 ms).
 - **Pausing while an `mppm` client is mid-trace:** live numbers stop changing; the panel should say "Paused" rather than look frozen.
 
 ## Follow-ups

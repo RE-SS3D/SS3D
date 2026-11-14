@@ -104,14 +104,9 @@ namespace SS3D.Editor.Automation
             string previous = SessionState.GetString(SceneKey, "");
             EditorSceneManager.playModeStartScene = string.IsNullOrEmpty(previous)
                 ? null : AssetDatabase.LoadAssetAtPath<SceneAsset>(previous);
-            GameViewSizeProperty().SetValue(GameView(), SessionState.GetInt(SizeKey, 0));
+            AutomationGameView.Restore(SessionState.GetInt(SizeKey, 0));
             SessionState.SetBool(ActiveKey, false);
         }
-
-        // Unity has no public Game View size API. Keep the version-sensitive reflection
-        // here, fail explicitly if it changes, and restore the user's selected size.
-        private static EditorWindow GameView() => EditorWindow.GetWindow(
-            typeof(UnityEditor.Editor).Assembly.GetType("UnityEditor.GameView", true));
 
         // Mirrors of PlayerSettings' file shape; this editor assembly does not reference the runtime ones.
         [Serializable]
@@ -137,39 +132,7 @@ namespace SS3D.Editor.Automation
             return false;
         }
 
-        private static PropertyInfo GameViewSizeProperty() => GameView().GetType().GetProperty(
-            "selectedSizeIndex", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
-
-        private static void SetGameViewSize()
-        {
-            var assembly = typeof(UnityEditor.Editor).Assembly;
-            var sizesType = assembly.GetType("UnityEditor.GameViewSizes", true);
-            var singleton = typeof(ScriptableSingleton<>).MakeGenericType(sizesType);
-            object sizes = singleton.GetProperty("instance").GetValue(null);
-            object group = sizesType.GetMethod("GetGroup").Invoke(sizes, new object[] { 0 });
-            Type groupType = group.GetType();
-            int builtIn = (int)groupType.GetMethod("GetBuiltinCount").Invoke(group, null);
-            int custom = (int)groupType.GetMethod("GetCustomCount").Invoke(group, null);
-            const string label = "SS3D UI Pilot 1920x1080";
-            int selected = -1;
-            for (int i = 0; i < builtIn + custom; i++)
-            {
-                object size = groupType.GetMethod("GetGameViewSize").Invoke(group, new object[] { i });
-                if ((string)size.GetType().GetProperty("baseText").GetValue(size) == label) selected = i;
-            }
-            if (selected < 0)
-            {
-                var sizeType = assembly.GetType("UnityEditor.GameViewSize", true);
-                var kindType = assembly.GetType("UnityEditor.GameViewSizeType", true);
-                object size = Activator.CreateInstance(sizeType, Enum.ToObject(kindType, 1), 1920, 1080, label);
-                groupType.GetMethod("AddCustomSize").Invoke(group, new[] { size });
-                selected = builtIn + custom;
-            }
-            EditorWindow view = GameView();
-            SessionState.SetInt(SizeKey, (int)GameViewSizeProperty().GetValue(view));
-            GameViewSizeProperty().SetValue(view, selected);
-            view.Focus();
-        }
+        private static void SetGameViewSize() => SessionState.SetInt(SizeKey, AutomationGameView.Select1080p());
 
         private static void OnLog(string message, string stack, LogType type)
         {
