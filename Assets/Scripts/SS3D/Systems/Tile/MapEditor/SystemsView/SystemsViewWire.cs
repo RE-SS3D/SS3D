@@ -5,7 +5,7 @@ using UnityEngine;
 namespace SS3D.Systems.Tile.MapEditor.SystemsView
 {
     /// <summary>
-    /// Custom FishNet wire format for <see cref="SystemsViewDelta"/> (Write/Read + type name, FishNet's custom-serializer
+    /// Custom FishNet wire format for <see cref="SystemsViewDelta"/> and <see cref="SystemsViewLive"/> (Write/Read + type name, FishNet's custom-serializer
     /// convention, as <c>AtmosChunkPatchSerializer</c>). Tiles, ids and counts are packed integers, so a station's
     /// structure costs a few bytes per pipe tile. <see cref="SizeOf"/> and <see cref="Limit"/> measure with the same
     /// writer, so the send budget (<see cref="SystemsViewPublisher.MaxBytesPerSend"/>) is counted in real wire bytes.
@@ -41,6 +41,23 @@ namespace SS3D.Systems.Tile.MapEditor.SystemsView
             BadgesRemoved = ReadArray(reader, ReadKey),
             MarkersSet = ReadArray(reader, ReadMarker),
             MarkersRemoved = ReadArray(reader, ReadKey),
+        };
+
+        /// <summary>The live stream's message (<see cref="SystemsViewLive"/>): a few networks of a few rows each.</summary>
+        public static void WriteSystemsViewLive(this Writer writer, SystemsViewLive live)
+        {
+            writer.WriteByte((byte)live.View);
+            writer.WriteInt32(live.TraceId);
+            writer.WriteBoolean(live.Paused);
+            WriteArray(writer, live.Networks, WriteLiveNetwork);
+        }
+
+        public static SystemsViewLive ReadSystemsViewLive(this Reader reader) => new()
+        {
+            View = (SystemsViewKind)reader.ReadByte(),
+            TraceId = reader.ReadInt32(),
+            Paused = reader.ReadBoolean(),
+            Networks = ReadArray(reader, ReadLiveNetwork),
         };
 
         /// <summary>Bytes <paramref name="delta"/> takes on the wire, before FishNet's RPC header.</summary>
@@ -208,6 +225,29 @@ namespace SS3D.Systems.Tile.MapEditor.SystemsView
             ViewId = reader.ReadInt32(),
             OtherViewId = reader.ReadInt32(),
             SideViewId = reader.ReadInt32(),
+        };
+
+        private static void WriteLiveNetwork(Writer writer, SystemsViewLiveNetwork network)
+        {
+            writer.WriteInt32(network.ViewId);
+            WriteArray(writer, network.Rows, (w, row) =>
+            {
+                w.WriteString(row.Label);
+                w.WriteString(row.Value);
+            });
+            WriteArray(writer, network.Devices, (w, device) =>
+            {
+                WriteKey(w, device.Key);
+                w.WriteString(device.Label);
+                w.WriteString(device.Detail);
+            });
+        }
+
+        private static SystemsViewLiveNetwork ReadLiveNetwork(Reader reader) => new()
+        {
+            ViewId = reader.ReadInt32(),
+            Rows = ReadArray(reader, r => new SystemsViewLiveRow(r.ReadString(), r.ReadString())),
+            Devices = ReadArray(reader, r => new SystemsViewLiveDevice { Key = ReadKey(r), Label = r.ReadString(), Detail = r.ReadString() }),
         };
 
         private static void WriteMarker(Writer writer, SystemsViewMarker marker)

@@ -56,6 +56,7 @@ Testing/ui/validate.sh --steps mppm:reconnect
 Testing/ui/validate.sh --steps mppm:breach   # breach wind on a remote owner: pushed body and streaks
 Testing/ui/validate.sh --steps mppm:blast   # blast on a remote owner: shoved upright, then floored and thrown
 Testing/ui/validate.sh --steps mppm:action-line   # a target-only action line (examine cue) reaches a remote owner and is formatted there
+Testing/ui/validate.sh --steps mppm:systems-view   # a remote client in the map editor gets the Atmos view, traces a valve and sees its pressures meet once it opens
 Testing/ui/validate.sh --steps mppm:breach-budget   # atmos tick cost and traffic during a hull breach with loose items, logged as [atmos-budget]
 Testing/ui/compile.sh             # = --steps compile
 Testing/ui/validate.sh --nightly  # owner only: + PlayMode, client+server build if stale, multiplayer smoke
@@ -174,9 +175,11 @@ starts a round on `classic-ministation`, opens the Map Editor and turns the Atmo
 `artifacts/ui/systems-view-<UTC>/status.json` with `10-atmos-overview.png` (coloured runs, badges, legend) and
 `11-atmos-hover-closeup.png` (a two-network device with the cursor badge reading it, from a synthetic Input System
 pointer) and `12-atmos-gaspipes-placing-hover.png` (Lower › Gas Pipes with the tab's first entry held: placing label
-and hovered line together). It checks that the client got runs, labelled networks and badges, that the legend is open, that the hover
-text is the hovered tile's, that a vent switched off on the server reaches the client's badge, and that turning the
-view off clears it. Its `measurements` give the station's first-open structure size against the send budget and the
+and hovered line together) and `13-atmos-trace.png` (a Select on that device through the Select tool's click handler:
+the trace panel, both sides' world labels and every other network dimmed). It checks that the client got runs, labelled
+networks and badges, that the legend is open, that the hover text is the hovered tile's, that a vent switched off on the
+server reaches the client's badge, that the trace opens its panel and label with live numbers and Clear ends it, and that
+turning the view off clears it. Its `measurements` give the station's first-open structure size against the send budget and the
 source's cold and warm build times (also logged as `[systems-view-budget]`). To measure another station, put its
 template in `Builds/Game/Data/StationTemplates/` and set `SessionState` `SS3D.SystemsViewPilot.Station` to its name
 before running the menu item. A non-default station gets 15 minutes to load, and one that can't start a round (a template copy with no job spawns) is measured once its atmos is up, then the pilot stops; erase the key afterwards.

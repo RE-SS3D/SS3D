@@ -19,8 +19,15 @@ namespace SS3D.Systems.Tile.MapEditor.SystemsView
 
         public int VertexCount => _vertices.Count;
 
+        /// <summary>
+        /// Scales the alpha of every shape added while set: a trace dims what it doesn't follow (creative-mode §4
+        /// Tracing). 1 draws as given.
+        /// </summary>
+        public float Alpha { get; set; } = 1f;
+
         public void Clear()
         {
+            Alpha = 1f;
             _vertices.Clear();
             _colors.Clear();
             _triangles.Clear();
@@ -28,7 +35,7 @@ namespace SS3D.Systems.Tile.MapEditor.SystemsView
 
         public void AddTriangle(Vector3 a, Vector3 b, Vector3 c, Color color)
         {
-            color = ToStored(color);
+            color = Faded(color);
             int start = _vertices.Count;
             _vertices.Add(a);
             _vertices.Add(b);
@@ -44,7 +51,7 @@ namespace SS3D.Systems.Tile.MapEditor.SystemsView
         /// <summary>A quad from four corners in order around its edge.</summary>
         public void AddQuad(Vector3 a, Vector3 b, Vector3 c, Vector3 d, Color color)
         {
-            color = ToStored(color);
+            color = Faded(color);
             int start = _vertices.Count;
             _vertices.Add(a);
             _vertices.Add(b);
@@ -81,6 +88,13 @@ namespace SS3D.Systems.Tile.MapEditor.SystemsView
 
             Vector3 side = new Vector3(-along.z, 0f, along.x).normalized * (width * 0.5f);
             AddQuad(from - side, from + side, to + side, to - side, color);
+        }
+
+        private Color Faded(Color color)
+        {
+            color = ToStored(color);
+            color.a *= Alpha;
+            return color;
         }
 
         /// <summary>How a colour is stored in the mesh: linear RGB, alpha unchanged.</summary>

@@ -21,7 +21,11 @@ namespace SS3D.Systems.Atmospherics.SystemsView
     /// polls the ports when the publisher asks (four times a second, and only while an editor watches) and moves when the
     /// topology or any device changed. A pipe edit walks only the records the registry replaced; a device added, removed,
     /// moved or turned re-links only the pipes beside it; a state change walks none. The networks of all three ports of a
-    /// filter or mixer are on its badge, so the Phase 2 trace panel can list them.
+    /// filter or mixer are on its badge, so the trace panel lists them.
+    /// </para>
+    /// <para>
+    /// <see cref="ReadLive"/> (Phase 2's trace) reads a traced network's record from the current registry, through the
+    /// view ids the last build gave, and lists the devices whose badges in that build touch it.
     /// </para>
     /// </summary>
     public sealed class AtmosSystemsViewSource : ISystemsViewSource
@@ -34,6 +38,11 @@ namespace SS3D.Systems.Atmospherics.SystemsView
         // seen before still has the same segments and links; only replaced ones are walked again.
         private readonly Dictionary<GasPipeNetworkRecord, NetworkRuns> _runs = new();
         private readonly Dictionary<GasPipeNetworkId, int> _viewIds = new();
+        private readonly Dictionary<int, GasPipeNetworkId> _networkIds = new();
+        // The badges of the last build, for the devices of a traced network.
+        private readonly List<SystemsViewBadge> _badges = new();
+        private readonly Func<bool> _paused;
+        private readonly Func<int, string> _gasName;
         private readonly List<NetworkRuns> _ordered = new();
         private GasPipeNetworkRegistry _seenRegistry;
         private int _seenTopology;
@@ -45,14 +54,21 @@ namespace SS3D.Systems.Atmospherics.SystemsView
         private bool _runsStale = true;
         private int _version;
 
-        public AtmosSystemsViewSource(Func<TileMap> map, Func<GasPipeNetworkRegistry> registry, AtmosPortRegistry ports)
+        /// <param name="paused">Whether the atmos simulation is paused (<c>AtmosSubSystem.SimulationPaused</c>); never, when null.</param>
+        /// <param name="gasName">A gas slot's short name for the mix rows; the core gases' symbols, when null.</param>
+        public AtmosSystemsViewSource(Func<TileMap> map, Func<GasPipeNetworkRegistry> registry, AtmosPortRegistry ports,
+            Func<bool> paused = null, Func<int, string> gasName = null)
         {
             _map = map ?? throw new ArgumentNullException(nameof(map));
             _registry = registry ?? throw new ArgumentNullException(nameof(registry));
             _ports = ports ?? throw new ArgumentNullException(nameof(ports));
+            _paused = paused;
+            _gasName = gasName;
         }
 
         public SystemsViewKind View => SystemsViewKind.Atmos;
+
+        public bool SimulationPaused => _paused != null && _paused();
 
         public int StructureVersion
         {
@@ -90,15 +106,100 @@ namespace SS3D.Systems.Atmospherics.SystemsView
                     structure.Set(new SystemsViewSegment { Key = run.Key, ViewId = runs.ViewId, Links = run.Links });
             }
 
+            _badges.Clear();
             IReadOnlyList<IAtmosPortDevice> ports = _ports.Ports;
             for (int i = 0; i < ports.Count; i++)
             {
-                if (TryDescribe(ports[i], out Device device))
-                    structure.Set(Badge(map, registry, device));
+                if (!TryDescribe(ports[i], out Device device))
+                    continue;
+
+                SystemsViewBadge badge = Badge(map, registry, device);
+                structure.Set(badge);
+                _badges.Add(badge);
             }
 
             return structure;
         }
+
+        /// <summary>
+        /// A traced network's pressure, temperature, mix and volume, read now from the current registry, and the devices
+        /// on it as the last build saw them, each with its state and the side it touches. Values are formatted at the
+        /// panel's precision, so the live stream only sends what a reader would see change.
+        /// </summary>
+        public bool ReadLive(int viewId, out SystemsViewLiveNetwork live)
+        {
+            live = default;
+            GasPipeNetworkRegistry registry = _registry();
+            TileMap map = _map();
+            if (viewId <= 0 || registry == null || map == null)
+                return false;
+
+            // An edit since the last build replaced records: give them their view ids first, or a network that only
+            // changed shape would read as gone. The version moves too, so the next publish sends the new structure.
+            if (registry != _seenRegistry || registry.TopologyVersion != _seenTopology)
+            {
+                Poll();
+                if (_runsStale)
+                    RebuildRuns(map, registry);
+            }
+
+            if (!_networkIds.TryGetValue(viewId, out GasPipeNetworkId id)
+                || !registry.TryGetNetwork(id, out GasPipeNetworkRecord record))
+                return false;
+
+            List<SystemsViewLiveRow> rows = new();
+            int gases = record.Moles.Length;
+            float total = record.GetTotalMoles(gases);
+            rows.Add(new SystemsViewLiveRow("Pressure", Number(record.GetPressure(gases), "0.0") + " kPa"));
+            rows.Add(new SystemsViewLiveRow("Temperature",
+                $"{Number(record.Temperature, "0.0")} K ({Number(record.Temperature - 273.15f, "0")} °C)"));
+            rows.Add(new SystemsViewLiveRow("Volume", Number(record.Volume, "0.0") + " m³"));
+            if (total <= 1e-4f)
+            {
+                rows.Add(new SystemsViewLiveRow("Mix", "empty"));
+            }
+            else
+            {
+                for (int gas = 0; gas < gases; gas++)
+                {
+                    float share = record.Moles[gas] / total * 100f;
+                    if (share >= 0.05f)
+                        rows.Add(new SystemsViewLiveRow(GasName(gas), Number(share, share >= 10f ? "0" : "0.0") + " %"));
+                }
+            }
+
+            List<SystemsViewLiveDevice> devices = new();
+            foreach (SystemsViewBadge badge in _badges)
+            {
+                // Codes keep a one-network device's other ports at 0, so this is the side it touches.
+                int port = badge.PortOf(viewId);
+                if (port < 0)
+                    continue;
+
+                string detail = StateWords(badge.Kind, badge.State);
+                if (IsTwoNetwork(badge.Kind))
+                    detail += " · " + PortName(badge.Kind, (byte)port).ToLowerInvariant();
+                devices.Add(new SystemsViewLiveDevice { Key = badge.Key, Label = KindName(badge.Kind), Detail = detail });
+            }
+
+            // West to east, so the list keeps its order between reads.
+            devices.Sort((a, b) => a.Key.Tile.x != b.Key.Tile.x ? a.Key.Tile.x.CompareTo(b.Key.Tile.x)
+                : a.Key.Tile.y != b.Key.Tile.y ? a.Key.Tile.y.CompareTo(b.Key.Tile.y) : a.Key.Slot.CompareTo(b.Key.Slot));
+            live = new SystemsViewLiveNetwork { ViewId = viewId, Rows = rows.ToArray(), Devices = devices.ToArray() };
+            return true;
+        }
+
+        private string GasName(int gas)
+        {
+            string name = _gasName?.Invoke(gas);
+            if (!string.IsNullOrEmpty(name))
+                return name;
+
+            return gas < GasDefaults.Core.Length ? GasDefaults.Core[gas].Symbol : $"Gas {gas}";
+        }
+
+        private static string Number(float value, string format) =>
+            value.ToString(format, System.Globalization.CultureInfo.InvariantCulture);
 
         private void Poll()
         {
@@ -111,6 +212,9 @@ namespace SS3D.Systems.Atmospherics.SystemsView
                 _tracker.Clear();
                 _runs.Clear();
                 _touched.Clear();
+                _viewIds.Clear();
+                _networkIds.Clear();
+                _badges.Clear();
                 _runsStale = true;
                 _version++;
             }
@@ -256,10 +360,12 @@ namespace SS3D.Systems.Atmospherics.SystemsView
 
             int[] ids = _tracker.Assign(networks);
             _viewIds.Clear();
+            _networkIds.Clear();
             for (int i = 0; i < _ordered.Count; i++)
             {
                 _ordered[i].ViewId = ids[i];
                 _viewIds[_ordered[i].Record.Id] = ids[i];
+                _networkIds[ids[i]] = _ordered[i].Record.Id;
             }
 
             LastWalkedNetworks = walked;

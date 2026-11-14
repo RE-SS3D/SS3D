@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Reflection;
 using FishNet;
 using SS3D.Core;
 using SS3D.Systems.Atmospherics;
@@ -29,7 +28,8 @@ namespace SS3D.Editor.Automation
     /// <summary>
     /// Rendered check of the Map Editor's Atmos view (Documents/architecture/2026-11_map-editor-systems-views.md Q9): a
     /// host round on a station with pipes, the editor open with the view on, screenshots of the overview with its legend,
-    /// a close-up of device badges and a hover readout, and a device switched off reaching the client's badge. It also
+    /// a close-up of device badges and a hover readout, a device switched off reaching the client's badge, and a Select
+    /// tracing a two-network device (panel, label, the rest dimmed). It also
     /// logs the first-open structure size against the send budget. <c>Testing/ui/validate.sh --steps visual</c> runs it
     /// after the lobby pilot; screenshots land in <c>artifacts/ui/systems-view-*</c>.
     /// </summary>
@@ -66,6 +66,7 @@ namespace SS3D.Editor.Automation
         private static Vector2Int _focus;
         private static Vector2Int _hoverTile;
         private static VentController _switchedVent;
+        private static Vector2Int _traceTile;
 
         private sealed class Step
         {
@@ -266,7 +267,7 @@ namespace SS3D.Editor.Automation
                 {
                     // The editor reopens on the last tab (PlayerPrefs), and Lower › Gas Pipes turns Atmos on by itself;
                     // the toolbar press below would then turn it off (Q13). Start every run from the same tab.
-                    Invoke("OpenSubTab", MapEditorSubcategory.Floors);
+                    Editor().AutomationOpenSubTab(MapEditorSubcategory.Floors);
                     Require(Editor().CurrentSubcategory == MapEditorSubcategory.Floors, "The editor starts on Upper › Floors");
                     Settle(1);
                 },
@@ -313,8 +314,8 @@ namespace SS3D.Editor.Automation
                 Enter = () =>
                 {
                     _hoverTile = PickHoverTile(Client().Structure);
-                    Session("CenterOn", new Vector3(_hoverTile.x, 0f, _hoverTile.y));
-                    Session("ZoomStep", 13f);
+                    Editor().AutomationCenterOn(new Vector3(_hoverTile.x, 0f, _hoverTile.y));
+                    Editor().AutomationZoomStep(13f);
                     Settle(0.6);
                 },
                 Until = Settled,
@@ -346,7 +347,7 @@ namespace SS3D.Editor.Automation
                 {
                     Require(Editor().TryGetSubcategoryPrototypeAssetName(MapEditorSubcategory.GasPipes, out string pipe),
                         "Gas Pipes has something to place");
-                    Invoke("OnPaletteEntryPicked", new MapEditorCatalogEntry { AssetName = pipe }, SubSystems.Get<TileSubSystem>().GetAsset(pipe));
+                    Editor().AutomationPickPaletteEntry(new MapEditorCatalogEntry { AssetName = pipe }, SubSystems.Get<TileSubSystem>().GetAsset(pipe));
                     _hoverTile = PickRunTile(Client().Structure);
                     Point(_hoverTile);
                     Settle(0.8);
@@ -381,6 +382,71 @@ namespace SS3D.Editor.Automation
             },
             new Step
             {
+                Name = "Select on a two-network device traces both sides",
+                Enter = () =>
+                {
+                    _traceTile = PickHoverTile(Client().Structure);
+                    Editor().AutomationSelectTool(MapEditorTool.Select);
+                    Editor().AutomationCenterOn(new Vector3(_traceTile.x, 0f, _traceTile.y));
+                    Settle(1.2);
+                },
+                Until = Settled,
+            },
+            new Step
+            {
+                Name = "The click traces through the Select tool",
+                // Pointed once the camera has stopped moving, so the screen point still lands on the device.
+                Enter = () =>
+                {
+                    Point(_traceTile);
+                    Settle(0.3);
+                },
+                Until = Settled,
+                Verify = () =>
+                {
+                    // HandleSelectClick is what a press of Place runs with the Select tool (Q11): the pick, then the trace.
+                    // Called from the editor's update, which reads the Input System's editor state buffer: point there too.
+                    Point(_traceTile, InputUpdateType.Editor);
+                    Editor().AutomationSelectClick();
+                    // The pick is described only for a failure: it raycasts and reads the map again.
+                    if (!Client().IsTracing)
+                        Require(false, $"Select on {_traceTile} traced its network(s) ({DescribePick()})");
+                    Checks.Add($"Select on {_traceTile} traced its network(s)");
+                },
+            },
+            new Step
+            {
+                Name = "Trace panel, label and the rest dimmed",
+                Until = () => Client().Live is { } live && live.Networks.Length == Client().TraceSides.Count,
+                Timeout = 5,
+                Verify = () =>
+                {
+                    VisualElement panel = EditorRoot().Q("systems-trace");
+                    Require(panel != null && panel.resolvedStyle.display == DisplayStyle.Flex, "The trace panel is open");
+                    Require(panel.Query<Label>().ToList().Any(l => l.text == "Pressure"), "It shows the traced network's pressure");
+                    Require(panel.Q<Button>("systems-trace-locate-0") != null || Client().Live.Value.Networks.All(n => n.Devices.Length == 0),
+                        "Each attached device has a Locate");
+                    VisualElement label = EditorRoot().Q("systems-trace-label");
+                    Require(label != null && label.resolvedStyle.display == DisplayStyle.Flex, "The network's name label is in the world");
+                    Require(Client().Overlay.Focus.Count == Client().TraceSides.Count, "The overlay dims everything but the traced networks");
+                    Measurements.Add($"trace {_traceTile}: " + string.Join(" | ", Client().TraceSides.Select(side => Client().TraceLabel(side)
+                        + " " + Client().Live.Value.Networks.First(n => n.ViewId == side.ViewId).ValueOf("Pressure"))));
+                    Capture("13-atmos-trace");
+                    Settle(0.5);
+                },
+            },
+            new Step
+            {
+                Name = "Clear ends the trace",
+                Until = Settled,
+                Verify = () =>
+                {
+                    Submit(EditorRoot().Q<Button>("systems-trace-close"));
+                    Require(!Client().IsTracing && Client().Overlay.Focus.Count == 0, "Clear ends the trace and undims the overlay");
+                },
+            },
+            new Step
+            {
                 Name = "Turning the view off clears the overlay",
                 Enter = () => Submit(EditorRoot().Q<Button>("systems-view-atmos")),
                 Until = () => Client().Structure == null,
@@ -388,6 +454,19 @@ namespace SS3D.Editor.Automation
                     "The legend hides with the view"),
             },
         };
+
+        /// <summary>What Select's pick sees under the pointer, for a trace that didn't start.</summary>
+        private static string DescribePick()
+        {
+            bool picked = MapEditorCursorPick.TryPick(Editor().PickCamera, SubSystems.Get<TileSubSystem>().CurrentMap,
+                Editor().AutomationViewModel, out PlacedTileObject placed, out PlacedItemObject item);
+            Vector3 pointed = TileHelper.GetPointedPosition(true, Editor().PickCamera);
+            string badges = string.Join(",", Client().Structure.Badges.Keys.Where(k => k.Tile == _traceTile).Select(k => ((TileLayer)k.Slot).ToString()));
+            return $"picked={picked} placed={(placed != null ? placed.NameString + "@" + placed.WorldOrigin + "/" + placed.Layer : "-")} "
+                + $"item={(item != null ? item.NameString : "-")} pointed={pointed} tool={Editor().CurrentTool} badges here: {badges} "
+                + $"camera={Editor().PickCamera.transform.position} tileScreen={Editor().PickCamera.WorldToScreenPoint(new Vector3(_traceTile.x, 0.2f, _traceTile.y))} "
+                + $"mouse={Mouse.current?.position.ReadValue()} devices={string.Join(",", InputSystem.devices.OfType<Mouse>().Select(m => m.name + m.position.ReadValue()))}";
+        }
 
         private static SystemsViewBadge? VentBadge()
         {
@@ -446,7 +525,7 @@ namespace SS3D.Editor.Automation
                 .GroupBy(key => MapEditorSystemsOverlay.ChunkOf(key.Tile))
                 .OrderByDescending(group => group.Count() + 4 * structure.Badges.Keys.Count(b => MapEditorSystemsOverlay.ChunkOf(b.Tile) == group.Key))
                 .First().Key * TileConstants.ChunkSize + new Vector2Int(TileConstants.ChunkSize / 2, TileConstants.ChunkSize / 2);
-            Session("CenterOn", new Vector3(_focus.x, 0f, _focus.y));
+            Editor().AutomationCenterOn(new Vector3(_focus.x, 0f, _focus.y));
         }
 
         /// <summary>A two-network device near the framed chunk if there is one, so the close-up shows both colours; else any badge.</summary>
@@ -468,20 +547,11 @@ namespace SS3D.Editor.Automation
             .First();
 
         /// <summary>Moves the Input System pointer over a tile, as a hand on the mouse would.</summary>
-        private static void Point(Vector2Int tile)
+        private static void Point(Vector2Int tile, InputUpdateType buffer = default)
         {
             Vector3 screen = Editor().PickCamera.WorldToScreenPoint(new Vector3(tile.x, 0.2f, tile.y));
             Mouse mouse = Mouse.current ?? InputSystem.AddDevice<Mouse>();
-            InputState.Change(mouse.position, new Vector2(screen.x, screen.y));
-        }
-
-        private static void Invoke(string method, params object[] arguments) =>
-            typeof(MapEditorSubSystem).GetMethod(method, BindingFlags.Instance | BindingFlags.NonPublic).Invoke(Editor(), arguments);
-
-        private static void Session(string method, object argument)
-        {
-            object session = typeof(MapEditorSubSystem).GetField("_session", BindingFlags.Instance | BindingFlags.NonPublic).GetValue(Editor());
-            session.GetType().GetMethod(method).Invoke(session, new object[] { argument });
+            InputState.Change(mouse.position, new Vector2(screen.x, screen.y), buffer);
         }
 
         private static bool Online() => InstanceFinder.ClientManager != null && InstanceFinder.ClientManager.Started;
@@ -560,8 +630,9 @@ namespace SS3D.Editor.Automation
             public string[] measurements;
             public string[] errors;
             public string[] postconditions;
-            public string scope = "Single-editor host round; the view is driven through its toolbar button and the hover through a "
-                + "synthetic Input System pointer. Screenshots need visual review; no pixel baseline. Does not cover a remote client.";
+            public string scope = "Single-editor host round; the view is driven through its toolbar button, the hover through a "
+                + "synthetic Input System pointer and the trace through the Select tool's click handler. Screenshots need visual review; "
+                + "no pixel baseline. Does not cover a remote client (mppm:systems-view does).";
         }
 
         private static void Finish(string failure, bool stopPlay)

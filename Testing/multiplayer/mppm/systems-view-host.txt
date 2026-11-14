@@ -1,0 +1,21 @@
+# Guards: a pure client in the map editor gets the Atmos view's structure, traces a valve's two networks and sees their live pressures meet once the host opens it (map-editor-systems-views Q2, Phase 2) · Not cheaper because: the per-connection structure and live TargetRpcs, the trace ServerRpc and FishNet's custom serializers only run between two processes
+# Main editor (host) side. Player2 runs scenarios/systems-view-client.txt.
+# The host lets clients open the editor for the run, shuts the station's valve and fills its two sides far apart
+# (back 400 kPa, front 5 kPa), waits until the client traces it, then opens it.
+wait_timeout 180
+wait_connected
+wait_clients 1
+editor_for_clients
+use_station classic-ministation Extended
+ready
+start_round
+wait_round Ongoing
+embark
+assert_embarked
+wait_players 2
+prime_valve
+wait_systems_trace
+wait_seconds 2
+open_primed_valve
+wait_seconds 45
+restore_editor_access

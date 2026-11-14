@@ -108,6 +108,7 @@ namespace SS3D.Tests.AssetAudit
             { "MapEditorSubSystem.RpcSetEditorOpen", AuthorityCheck.MapEditorPermission }, // only an authorized open is recorded
             { "MapEditorSubSystem.RpcCaptureDropperSetup", AuthorityCheck.MapEditorPermission },
             { "MapEditorSubSystem.RpcSetSystemsView", AuthorityCheck.MapEditorPermission }, // and only while its editor is open
+            { "MapEditorSubSystem.RpcTraceSystemsView", AuthorityCheck.MapEditorPermission }, // as RpcSetSystemsView; a trace only follows the caller's own subscription
 
             // Machine interfaces
             { "MachineInterfaceBehaviour.CmdSetControl", AuthorityCheck.Viewer },

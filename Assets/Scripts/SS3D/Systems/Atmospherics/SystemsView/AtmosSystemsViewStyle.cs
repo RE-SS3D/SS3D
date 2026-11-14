@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Text;
 using SS3D.Systems.Tile;
 using SS3D.Systems.Tile.MapEditor.SystemsView;
@@ -160,6 +161,59 @@ namespace SS3D.Systems.Atmospherics.SystemsView
             }
 
             return text.ToString();
+        }
+
+        /// <summary>
+        /// A device traces every network it touches, each named by its side; a pipe its run's network; a manifold each
+        /// line it spans, named by line.
+        /// </summary>
+        public void TraceTargets(SystemsViewStructure structure, Vector2Int tile, TileLayer layer, List<SystemsViewTraceSide> into)
+        {
+            if (structure == null || into == null)
+                return;
+
+            if (structure.Badges.TryGetValue(new SystemsViewKey(tile, (byte)layer), out SystemsViewBadge badge))
+            {
+                if (!IsTwoNetwork(badge.Kind))
+                {
+                    AddTarget(into, badge.ViewId, null);
+                    return;
+                }
+
+                // Back, front, then a filter's or mixer's side; a pump or valve has no side network (0, skipped).
+                for (byte port = PortBack; port < SystemsViewBadge.PortCount; port++)
+                    AddTarget(into, badge.ViewIdAt(port), PortName(badge.Kind, port));
+                return;
+            }
+
+            if (layer == TileLayer.PipeManifold)
+            {
+                for (byte line = Supply; line <= Surface; line++)
+                {
+                    if (structure.Segments.TryGetValue(new SystemsViewKey(tile, (byte)(ManifoldSlotBase + line)), out SystemsViewSegment run))
+                        AddTarget(into, run.ViewId, LineName(line) + " line");
+                }
+
+                return;
+            }
+
+            if (TryGetLineSlot(layer, out byte slot) && structure.Segments.TryGetValue(new SystemsViewKey(tile, slot), out SystemsViewSegment segment))
+                AddTarget(into, segment.ViewId, null);
+        }
+
+        // A port on no pipe traces nothing; a network on two sides of one device (a loop) is listed once, by its first.
+        private static void AddTarget(List<SystemsViewTraceSide> into, int viewId, string side)
+        {
+            if (viewId <= 0)
+                return;
+
+            foreach (SystemsViewTraceSide existing in into)
+            {
+                if (existing.ViewId == viewId)
+                    return;
+            }
+
+            into.Add(new SystemsViewTraceSide(viewId, side));
         }
 
         private static StringBuilder NewRow(StringBuilder text) => text.Length > 0 ? text.Append('\n') : text;

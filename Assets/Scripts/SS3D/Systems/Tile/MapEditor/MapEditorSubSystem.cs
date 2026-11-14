@@ -300,6 +300,7 @@ namespace SS3D.Systems.Tile.MapEditor
 
         private void WireViewEvents()
         {
+            BindSystemsTraceView(true);
             _view.ValidationLocateRequested += OnValidationLocateRequested;
             _view.ValidationShowInPaletteRequested += OnValidationShowInPaletteRequested;
             _view.ToolSelected += OnToolSelected;
@@ -667,8 +668,10 @@ namespace SS3D.Systems.Tile.MapEditor
             if (TryPickGasMarker(MapEditorTool.Select))
                 return;
 
-            if (!MapEditorCursorPick.TryPick(PickCamera, _tileSystem.CurrentMap, _viewModel,
-                    out PlacedTileObject placed, out PlacedItemObject item))
+            bool picked = MapEditorCursorPick.TryPick(PickCamera, _tileSystem.CurrentMap, _viewModel,
+                out PlacedTileObject placed, out PlacedItemObject item);
+            TraceSystemsView(picked ? placed : null);
+            if (!picked)
                 return;
 
             if (placed != null)
@@ -865,6 +868,7 @@ namespace SS3D.Systems.Tile.MapEditor
             if (_view == null)
                 return;
 
+            BindSystemsTraceView(false);
             _view.ValidationLocateRequested -= OnValidationLocateRequested;
             _view.ValidationShowInPaletteRequested -= OnValidationShowInPaletteRequested;
             _view.ToolSelected -= OnToolSelected;

@@ -6,15 +6,19 @@ using UnityEngine;
 namespace SS3D.Systems.Tile.MapEditor
 {
     /// <summary>
-    /// Systems views transport on the hub (Documents/architecture/2026-11_map-editor-systems-views.md Q2, Q10). The server
-    /// half is <see cref="SystemsViewPublisher"/>, the client half <see cref="MapEditorSystemsViewClient"/>.
+    /// Systems views transport on the hub (Documents/architecture/2026-11_map-editor-systems-views.md Q2, Q10): the
+    /// structure stream, and the live stream of a traced network to the one client tracing it. The server half is
+    /// <see cref="SystemsViewPublisher"/>, the client half <see cref="MapEditorSystemsViewClient"/>.
     /// </summary>
     public sealed partial class MapEditorSubSystem
     {
         private const float SystemsViewPollSeconds = 0.25f;
+        /// <summary>Traced numbers are re-read every this many structure polls: about 2 Hz (Q2).</summary>
+        private const int SystemsViewPollsPerLive = 2;
 
         private readonly MapEditorSystemsViewClient _systemsViewClient = new();
         private float _systemsViewNextPoll;
+        private int _systemsViewPolls;
 
         /// <summary>Server: domain sources register here; only editor clients are ever subscribed.</summary>
         public SystemsViewPublisher SystemsViews { get; } = new();
@@ -27,8 +31,48 @@ namespace SS3D.Systems.Tile.MapEditor
 
         private void UpdateSystemsViewClient()
         {
-            if (_systemsViewClient.Update(_viewModel.ActiveSystemsView) && NetworkObject != null && NetworkObject.IsSpawned && IsClient)
+            bool online = NetworkObject != null && NetworkObject.IsSpawned && IsClient;
+            if (_systemsViewClient.Update(_viewModel.ActiveSystemsView) && online)
                 RpcSetSystemsView(_systemsViewClient.Requested, LocalConnection);
+            // After the view request, so the server has the subscription the trace belongs to.
+            if (_systemsViewClient.TakeTraceRequest(out int traceId, out int[] viewIds) && online)
+                RpcTraceSystemsView(_systemsViewClient.Requested, traceId, viewIds, LocalConnection);
+            _view?.UpdateSystemsTrace(_systemsViewClient, PickCamera);
+        }
+
+        /// <summary>
+        /// Select with a view on also traces (Q11): the clicked object's network or networks, beside whatever Select
+        /// does to the object itself. The pick's raycast stops at the first collider, often a dimmed floor, table or
+        /// wall, so when that object isn't part of the view the trace reads the tile under the cursor at the overlay's
+        /// height, the view's own layer first (<see cref="MapEditorSystemsViewClient.TraceSelect"/>). Nothing in the
+        /// view there ends the trace.
+        /// </summary>
+        private void TraceSystemsView(PlacedTileObject placed)
+        {
+            if (_viewModel.ActiveSystemsView == SystemsViewKind.Off)
+                return;
+
+            Vector2Int? pointed = MapEditorCursorPick.TryGetPointedTile(PickCamera, MapEditorSystemsOverlay.Height, out Vector2Int tile)
+                ? tile : null;
+            _systemsViewClient.TraceSelect(placed != null ? placed.WorldOrigin : null, placed != null ? placed.Layer : default, pointed);
+        }
+
+        private void OnSystemsTraceLocate(Vector2Int tile) => _session.CenterOn(new Vector3(tile.x, 0f, tile.y));
+
+        private void OnSystemsTraceClosed() => _systemsViewClient.ClearTrace();
+
+        private void BindSystemsTraceView(bool bind)
+        {
+            if (_view == null)
+                return;
+
+            _view.SystemsTraceLocateRequested -= OnSystemsTraceLocate;
+            _view.SystemsTraceCloseRequested -= OnSystemsTraceClosed;
+            if (!bind)
+                return;
+
+            _view.SystemsTraceLocateRequested += OnSystemsTraceLocate;
+            _view.SystemsTraceCloseRequested += OnSystemsTraceClosed;
         }
 
         /// <summary>Hovering names what the view shows under the cursor (creative-mode §4: a pipe's line and network).</summary>
@@ -37,8 +81,9 @@ namespace SS3D.Systems.Tile.MapEditor
             if (_viewModel.ActiveSystemsView == SystemsViewKind.Off)
                 return string.Empty;
 
-            Vector3 pointed = TileHelper.GetPointedPosition(true, PickCamera);
-            return _systemsViewClient.HoverText(new Vector2Int(Mathf.RoundToInt(pointed.x), Mathf.RoundToInt(pointed.z)));
+            // The overlay's own plane, as Select's trace reads it, so what hover names is what a click traces.
+            return MapEditorCursorPick.TryGetPointedTile(PickCamera, MapEditorSystemsOverlay.Height, out Vector2Int tile)
+                ? _systemsViewClient.HoverText(tile) : string.Empty;
         }
 
         /// <summary>The client half, for the visual pilot and tests.</summary>
@@ -58,6 +103,26 @@ namespace SS3D.Systems.Tile.MapEditor
                 _systemsViewClient.Receive(delta);
         }
 
+        /// <summary>Starts, replaces or (no ids) ends this client's trace; gated like <see cref="RpcSetSystemsView"/>.</summary>
+        [ServerRpc(RequireOwnership = false)]
+        private void RpcTraceSystemsView(SystemsViewKind view, int traceId, int[] viewIds, NetworkConnection conn = null)
+        {
+            if (conn == null)
+                return;
+
+            if (IsEditing(conn) && MapEditorPermissions.TryAuthorize(conn))
+                SystemsViews.Trace(conn.ClientId, view, traceId, viewIds);
+            else
+                SystemsViews.ClearTrace(conn.ClientId);
+        }
+
+        [TargetRpc]
+        private void TargetSystemsViewLive(NetworkConnection conn, SystemsViewLive live)
+        {
+            if (_active)
+                _systemsViewClient.ReceiveLive(live);
+        }
+
         private void HandleSystemsViewServerUpdate()
         {
             if (!IsServer || !SystemsViews.HasSubscribers || Time.unscaledTime < _systemsViewNextPoll)
@@ -68,6 +133,16 @@ namespace SS3D.Systems.Tile.MapEditor
             {
                 if (ServerManager.Clients.TryGetValue(clientId, out NetworkConnection conn))
                     TargetSystemsViewDelta(conn, delta);
+            });
+
+            // Right after the structure, so traced view ids are those just sent.
+            if (++_systemsViewPolls % SystemsViewPollsPerLive != 0 || !SystemsViews.HasTraces)
+                return;
+
+            SystemsViews.PublishLive((clientId, live) =>
+            {
+                if (ServerManager.Clients.TryGetValue(clientId, out NetworkConnection conn))
+                    TargetSystemsViewLive(conn, live);
             });
         }
     }

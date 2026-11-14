@@ -26,7 +26,10 @@ namespace SS3D.Systems.Atmospherics
             _systemsViewSource ??= new AtmosSystemsViewSource(
                 () => SubSystems.TryGet(out TileSubSystem tiles) ? tiles.CurrentMap : null,
                 () => _pipeRegistry,
-                _portRegistry);
+                _portRegistry,
+                () => SimulationPaused,
+                gas => _gasRegistry != null && _gasRegistry.TryGetDefinition(new GasId((ushort)gas), out GasDefinition definition)
+                    ? definition.Symbol : null);
             if (_systemsViewHost != null || !SubSystems.TryGet(out MapEditorSubSystem host))
                 return;
 

@@ -1,0 +1,17 @@
+# Client side of mppm:systems-view: joins the running round, opens the map editor, turns the Atmos view on and
+# receives its structure, traces the valve the host shut and primed (both sides, labelled), then sees the two traced
+# pressures close at least half their gap after the valve opens, in the live numbers and in the trace panel.
+# No screenshot: the MPPM clone's game view is a strip too small to show the panel; the visual pilot covers the look.
+wait_timeout 60
+wait_connected
+wait_round Ongoing
+wait_seconds 1
+ready
+embark
+assert_embarked
+open_map_editor
+systems_view atmos
+trace_valve
+assert_trace_pressure_change
+close_map_editor
+disconnect

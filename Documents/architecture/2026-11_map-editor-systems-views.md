@@ -2,7 +2,7 @@
 > Touches systems: map-editor-creative-hooks, tile, atmospherics, electricity, area, networking-session
 > Status: in-progress
 
-**Progress:** Phase 0 (shared base) built 2026-11-14: tracker, DTO and delta, subscriptions, view mode and x-ray, overlay and legend shells. Phase 1 (Atmos topology and badges) built 2026-11-14: the Atmos source and domain registration, per-chunk run and badge meshes, hover readout, legend lines and a `visual` pilot; see [Phase 1 deviations](#phase-1-deviations). Advances [map-authoring.md](../milestones/map-authoring.md) A10.
+**Progress:** Phase 0 (shared base) built 2026-11-14: tracker, DTO and delta, subscriptions, view mode and x-ray, overlay and legend shells. Phase 1 (Atmos topology and badges) built 2026-11-14: the Atmos source and domain registration, per-chunk run and badge meshes, hover readout, legend lines and a `visual` pilot; see [Phase 1 deviations](#phase-1-deviations). Phase 2 (Atmos tracing) built 2026-11-14: Select traces a pipe's or device's networks with a world label, dims the rest, and opens a live panel (pressure, temperature, mix, volume, devices with Locate) fed by a per-connection live stream at 2 Hz, sent only on change; `mppm:systems-view` proves it on a pure client; see [Phase 2 notes](#phase-2-notes). Advances [map-authoring.md](../milestones/map-authoring.md) A10.
 
 # Map Editor systems views (Nov 2026)
 
@@ -97,6 +97,16 @@ MapEditorSystemsView (server half)
 1. With a view on, Select traces the clicked pipe or device (Q11). The trace dims the rest, sets a label, and shows a UITK panel with pressure, temperature, mix, volume and the attached devices with Locate. A two-network device shows both sides, labelled.
 2. The live stream (Q2): the traced view id per connection; values are re-read every ~0.5 s and sent only when they change.
 
+#### Phase 2 notes
+
+- **The live DTO is generic** (`SystemsViewLive.cs`): a message is `SystemsViewLive {View, TraceId, Paused, Networks[]}`, each `SystemsViewLiveNetwork {ViewId, Rows[], Devices[]}`, a row `{Label, Value}` and a device `{Key, Label, Detail}`. The server words and formats every value, so the panel stays domain-free, Phase 3 fills the same shape with supply, demand and charge rows, and a change below the shown precision is no change at all. `ISystemsViewSource` gains `bool ReadLive(int viewId, out SystemsViewLiveNetwork live)` (false means the network is gone) and `bool SimulationPaused`.
+- **Trace state per connection** lives on the publisher's subscriber: the client's `TraceId`, up to `MaxTracedNetworks` (4: a manifold's four lines) view ids in the client's order, and the live message last sent. `RpcTraceSystemsView` (gated like `RpcSetSystemsView`) sets it; no ids ends it; switching views, closing the editor and disconnecting end it with the subscription. `PublishLive` runs on every second structure poll (0.5 s), right after `Publish`, so view ids match the structure just sent; it sends `TargetSystemsViewLive` only when the message differs from the last one sent to that client.
+- **Stale traces.** A traced network keeps its view id through edits by the tracker, so the trace follows it. When an id disappears (the network went, or merged into one with a lower id), `ReadLive` returns false: the server drops it from the trace, and when none is left it sends one empty message and ends the trace. The client drops a side whose network leaves the structure or a live message, and ends the trace when none is left. The Atmos source re-maps view ids itself if an edit landed since its last build, so a network that only changed shape never reads as gone.
+- **Pause hook.** `SystemsViewLive.Paused` comes from `ISystemsViewSource.SimulationPaused` (`AtmosSubSystem.SimulationPaused` for Atmos), the change detection includes it, and the panel shows a "Paused" tag (`systems-trace-paused`). Phase 5 only has to pause the channel.
+- **Select picks for the trace separately.** Select's raycast stops at the first collider, which under the x-ray is usually the dimmed floor, a table or a wall, not the pipe the cursor is over. When the picked object is not part of the view, the trace reads the tile under the cursor on the overlay's own plane (`MapEditorCursorPick.TryGetPointedTile` at `MapEditorSystemsOverlay.Height`, which the hover readout now uses too), trying the view's own layer first (`TraceLayerOrder`). It never traces a tile other than the picked object's or the pointed one. Select still does what it did to the object it picked (Q11).
+- **Rooms for Phase 3.** The pointed-tile fallback tries every layer, Turf and Plenum included, so the Power style's `TraceTargets` can answer a floor tile with a room target: the power source gives each room its own view id (a `SystemsViewNetwork` labelled with the room) and its `ReadLive` returns the APC's rows and the room's consumers as devices. No wire change is needed.
+- **The panel floats beside the left column's top**, not under the legend as Q4's sketch put it, because the toolbar and an open legend leave no room under them above the library at 1080p.
+
 ### Phase 3 — Power
 
 1. An electricity source: cable circuits, producers, SMES, APC → circuit, room → APC (`TryGetEffectiveApcForDevice`), and consumer status (powered, channel off, unpowered).
@@ -118,7 +128,7 @@ MapEditorSystemsView (server half)
 ## Tests
 
 - **EditMode:** `NetworkIdentityTrackerTests`; atmos and power analyzer tests, one fixture per problem plus a clean map; structure delta tests (no change → nothing sent; a badge change → only that badge); `MapValidationTests` gains the new issue ids.
-- **Remote client:** an `mppm` step where a pure client opens the editor, turns on Atmos, receives structure, traces a network and sees its pressure change after a valve opens.
+- **Remote client:** an `mppm` step where a pure client opens the editor, turns on Atmos, receives structure, traces a network and sees its pressure change after a valve opens. *Phase 2:* `--steps mppm:systems-view` (`Testing/multiplayer/mppm/systems-view-host.txt`, `scenarios/systems-view-client.txt`).
 - **Visual:** `--steps visual` for Phases 1, 3 and 5 only.
 - Run `Testing/ui/validate.sh --steps compile,editmode` plus the focused steps for each phase.
 
@@ -128,7 +138,7 @@ MapEditorSystemsView (server half)
 - **Ports resolve their network lazily** against `TopologyVersion`. The source must read the current registry, not port caches, or a just-edited device shows its old network for a tick.
 - **The electricity graph rebuild** after a world suspension (`Resumed`) must also bump the structure, or the Power view goes stale after a template load.
 - **A device-state change has no single event.** Each badge-carrying device needs a cheap server-side "changed" signal, or the source polls on the atmos tick and compares. *Phase 1:* the Atmos source compares each device with its last poll (4 Hz, only while watched). On MetaStation, in the editor: a cold build walking all 54 networks takes 90 ms and a warm one 2 ms; a device added or removed re-links only the pipes beside it, 5.5 ms (4 pipes, no network walked), where it first re-walked every network (92 ms).
-- **Pausing while an `mppm` client is mid-trace:** live numbers stop changing; the panel should say "Paused" rather than look frozen.
+- **Pausing while an `mppm` client is mid-trace:** live numbers stop changing; the panel should say "Paused" rather than look frozen. *Phase 2:* the live message carries `Paused` and the panel shows it; Phase 5 sets it.
 
 ## Follow-ups
 

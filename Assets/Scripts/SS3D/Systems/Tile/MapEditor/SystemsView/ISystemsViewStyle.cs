@@ -19,6 +19,13 @@ namespace SS3D.Systems.Tile.MapEditor.SystemsView
 
         /// <summary>The hover readout for one tile: its badges and the networks of its runs; empty when nothing is there.</summary>
         string Describe(SystemsViewStructure structure, Vector2Int tile);
+
+        /// <summary>
+        /// What Select traces from the object on <paramref name="layer"/> at <paramref name="tile"/> (creative-mode §4
+        /// Tracing, Q11): its network, or each network of a device between several, with the side's name ("Inlet"), in
+        /// panel order. Adds nothing for an object that isn't part of the view.
+        /// </summary>
+        void TraceTargets(SystemsViewStructure structure, Vector2Int tile, TileLayer layer, List<SystemsViewTraceSide> into);
     }
 
     /// <summary>What one domain gives the shared systems view code on the client: its style, legend lines and own layer.</summary>

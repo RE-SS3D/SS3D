@@ -1252,3 +1252,83 @@
 .map-editor-systems-legend__swatches { flex-direction: row; flex-shrink: 0; width: 42px; margin-top: 2px; }
 .map-editor-systems-legend__swatch { width: 10px; height: 10px; margin-right: 3px; border-radius: 2px; }
 .map-editor-systems-legend__text { flex-grow: 1; flex-shrink: 1; white-space: normal; color: var(--ss3d-text-secondary); font-size: 12px; }
+
+/* Systems view trace (map-editor-systems-views Phase 2): a panel floating beside the left column's top, where the
+   toolbar and legend leave no room under them above the library; a label anchored at the traced tile. */
+.map-editor-systems-trace {
+    position: absolute;
+    left: 100%;
+    top: 0;
+    margin-left: 12px;
+    width: 280px;
+    background-color: var(--ss3d-surface-panel);
+    border-width: 1px;
+    border-color: var(--ss3d-border-default);
+    border-radius: var(--ss3d-radius-md);
+    -unity-font-definition: url("project://database/Assets/Art/Font/TextMesh%20Pro/Fonts/LiberationSans.ttf");
+}
+.map-editor-systems-trace__header {
+    flex-direction: row;
+    align-items: center;
+    padding: 6px 10px;
+    background-color: var(--ss3d-surface-panel-raised);
+}
+.map-editor-systems-trace__title {
+    flex-grow: 1;
+    color: var(--ss3d-text-primary);
+    font-size: 13px;
+    -unity-font-definition: url("project://database/Assets/Content/Systems/UI/Font/Fonts/GurajadaRegularSDF.asset");
+}
+.map-editor-systems-trace__paused {
+    margin-right: 6px;
+    padding: 2px 6px;
+    font-size: 11px;
+    color: var(--ss3d-text-primary);
+    background-color: var(--ss3d-accent-rust-dim);
+    border-radius: var(--ss3d-radius-sm);
+}
+.map-editor-systems-trace__button {
+    background-color: var(--ss3d-surface-panel);
+    color: var(--ss3d-text-primary);
+    border-width: 1px;
+    border-color: var(--ss3d-border-default);
+    border-radius: var(--ss3d-radius-sm);
+    padding: 3px 7px;
+    margin: 0;
+    font-size: 11px;
+}
+.map-editor-systems-trace__button:hover { background-color: var(--ss3d-surface-panel-raised); }
+.map-editor-systems-trace__body { padding: 6px 10px; max-height: 560px; }
+.map-editor-systems-trace__section { margin-bottom: 8px; flex-shrink: 0; }
+.map-editor-systems-trace__heading { flex-direction: row; align-items: center; margin-bottom: 4px; }
+.map-editor-systems-trace__network { color: var(--ss3d-text-primary); font-size: 13px; -unity-font-style: bold; }
+.map-editor-systems-trace__row { flex-direction: row; justify-content: space-between; margin-bottom: 1px; }
+.map-editor-systems-trace__label { color: var(--ss3d-text-secondary); font-size: 12px; }
+.map-editor-systems-trace__value { color: var(--ss3d-text-primary); font-size: 12px; }
+.map-editor-systems-trace__subtitle { color: var(--ss3d-text-secondary); font-size: 11px; margin-top: 4px; margin-bottom: 2px; }
+.map-editor-systems-trace__empty { color: var(--ss3d-text-secondary); font-size: 12px; }
+.map-editor-systems-trace__device {
+    flex-direction: row;
+    align-items: center;
+    padding: 2px 0;
+    border-top-width: 1px;
+    border-top-color: var(--ss3d-border-subtle);
+}
+.map-editor-systems-trace__device-words { flex-grow: 1; flex-shrink: 1; }
+.map-editor-systems-trace__device-name { color: var(--ss3d-text-primary); font-size: 12px; }
+.map-editor-systems-trace__device-detail { color: var(--ss3d-text-secondary); font-size: 11px; white-space: normal; }
+.map-editor-systems-trace-label {
+    position: absolute;
+    translate: -50% -100%;
+    align-items: center;
+}
+.map-editor-systems-trace-label__line {
+    -unity-font-definition: url("project://database/Assets/Art/Font/TextMesh%20Pro/Fonts/LiberationSans.ttf");
+    font-size: 13px;
+    color: var(--ss3d-text-primary);
+    background-color: rgba(18, 21, 25, 0.9);
+    border-bottom-width: 3px;
+    padding: 3px 8px;
+    margin-top: 2px;
+    -unity-text-align: middle-center;
+}

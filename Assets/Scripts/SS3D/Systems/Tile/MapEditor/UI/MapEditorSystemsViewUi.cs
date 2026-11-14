@@ -7,8 +7,8 @@ using UnityEngine.UIElements;
 namespace SS3D.Systems.Tile.MapEditor.UI
 {
     /// <summary>
-    /// Systems view chrome (creative-mode §4): the Atmos / Power toolbar toggle and the collapsible legend. The trace
-    /// panel and network labels join here in later phases (Documents/architecture/2026-11_map-editor-systems-views.md Q4).
+    /// Systems view chrome (creative-mode §4): the Atmos / Power toolbar toggle, the collapsible legend, and beside its column the
+    /// trace panel with its world label (<see cref="MapEditorSystemsTracePanel"/>; Documents/architecture/2026-11_map-editor-systems-views.md Q4).
     /// </summary>
     public sealed partial class MapEditorView
     {
@@ -19,8 +19,27 @@ namespace SS3D.Systems.Tile.MapEditor.UI
         private bool _renderedLegendOpen;
         private bool _legendRendered;
 
+        private readonly MapEditorSystemsTracePanel _systemsTrace = new();
+
         /// <summary>The toolbar toggle: a view to pin on, or Off.</summary>
         public event Action<SystemsViewKind> SystemsViewSelected;
+
+        /// <summary>Locate on a traced network's device: the tile to frame.</summary>
+        public event Action<Vector2Int> SystemsTraceLocateRequested
+        {
+            add => _systemsTrace.LocateRequested += value;
+            remove => _systemsTrace.LocateRequested -= value;
+        }
+
+        /// <summary>The trace panel's Clear.</summary>
+        public event Action SystemsTraceCloseRequested
+        {
+            add => _systemsTrace.CloseRequested += value;
+            remove => _systemsTrace.CloseRequested -= value;
+        }
+
+        /// <summary>Every frame while open: the trace panel and its world label follow the client's trace.</summary>
+        public void UpdateSystemsTrace(MapEditorSystemsViewClient client, Camera camera) => _systemsTrace.Update(client, _root, camera);
 
         private void AddSystemsViewToggle(VisualElement toolbar)
         {
@@ -45,6 +64,7 @@ namespace SS3D.Systems.Tile.MapEditor.UI
             _systemsLegend.AddToClassList("map-editor-systems-legend");
             _systemsLegend.style.display = DisplayStyle.None;
             column.Add(_systemsLegend);
+            _systemsTrace.Build(column);
         }
 
         private void RefreshSystemsView()

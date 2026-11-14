@@ -322,6 +322,18 @@ namespace SS3D.Tests.EditMode
                 Builds++;
                 return Structure;
             }
+
+            /// <summary>Live numbers per view id; an id not here is a network that is gone.</summary>
+            public readonly Dictionary<int, SystemsViewLiveNetwork> Live = new();
+            public int LiveReads;
+
+            public bool ReadLive(int viewId, out SystemsViewLiveNetwork live)
+            {
+                LiveReads++;
+                return Live.TryGetValue(viewId, out live);
+            }
+
+            public bool SimulationPaused { get; set; }
         }
     }
 }

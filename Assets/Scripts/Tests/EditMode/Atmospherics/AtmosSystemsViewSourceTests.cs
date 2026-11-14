@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using NUnit.Framework;
 using SS3D.Systems.Atmospherics;
@@ -201,6 +202,125 @@ namespace EditorTests.Atmospherics
             Assert.AreEqual(0, _source.LastWalkedNetworks);
             Assert.AreEqual(SystemsViewLinks.West, removed.Segments[Run(8, Surface)].Links);
             Assert.IsFalse(removed.Badges.ContainsKey(new SystemsViewKey(new Vector2Int(9, 5), (byte)TileLayer.PipeSurface)));
+        }
+
+        private GasPipeNetworkRecord NetworkAt(int x, TileLayer layer)
+        {
+            foreach (GasPipeNetworkRecord record in _registry.NetworkRecords)
+            {
+                foreach (GasPipeSegmentKey key in record.Segments)
+                {
+                    if (key.Coord.Grid == new Vector2Int(x, 5) && key.Layer == layer)
+                        return record;
+                }
+            }
+
+            Assert.Fail($"No network at {x} on {layer}");
+            return null;
+        }
+
+        [Test]
+        public void ReadLive_GivesPressureTemperatureMixAndVolume_AndTheDevicesOnTheNetwork()
+        {
+            Build();
+            GasPipeNetworkRecord west = NetworkAt(2, TileLayer.PipeLeft);
+            west.Moles[AtmosConstants.Oxygen.Value] = 1f;
+            west.Moles[AtmosConstants.Nitrogen.Value] = 3f;
+            west.Temperature = 300f;
+
+            Assert.IsTrue(_source.ReadLive(1, out SystemsViewLiveNetwork live));
+            Assert.AreEqual(1, live.ViewId);
+            float kpa = west.GetPressure(AtmosConstants.DefaultGasCount);
+            Assert.AreEqual(kpa.ToString("0.0", System.Globalization.CultureInfo.InvariantCulture) + " kPa", live.ValueOf("Pressure"));
+            Assert.AreEqual("300.0 K (27 °C)", live.ValueOf("Temperature"));
+            Assert.AreEqual(west.Volume.ToString("0.0", System.Globalization.CultureInfo.InvariantCulture) + " m³", live.ValueOf("Volume"));
+            Assert.Greater(west.Volume, 0f);
+            Assert.AreEqual("25 %", live.ValueOf("O2"));
+            Assert.AreEqual("75 %", live.ValueOf("N2"));
+            Assert.IsNull(live.ValueOf("CO2"), "A gas that isn't there gets no row");
+
+            // The vent on Supply and the pump drawing from this network, each saying which side of it this is.
+            Assert.AreEqual(2, live.Devices.Length);
+            Assert.AreEqual("Vent", live.Devices[0].Label);
+            Assert.AreEqual("on", live.Devices[0].Detail);
+            Assert.AreEqual(new Vector2Int(2, 5), live.Devices[0].Key.Tile, "Locate goes to the device's tile");
+            Assert.AreEqual("Pump", live.Devices[1].Label);
+            Assert.AreEqual("on, to a pressure · inlet", live.Devices[1].Detail);
+
+            Assert.IsTrue(_source.ReadLive(2, out SystemsViewLiveNetwork east));
+            Assert.AreEqual("Mix", east.Rows[3].Label);
+            Assert.AreEqual("empty", east.ValueOf("Mix"));
+            Assert.AreEqual("on, to a pressure · outlet", east.Devices.Single().Detail);
+            Assert.IsFalse(_source.ReadLive(3, out _), "No such network");
+            Assert.IsFalse(_source.SimulationPaused);
+            Assert.IsTrue(new AtmosSystemsViewSource(() => _context.Map, () => _registry, _ports, () => true).SimulationPaused,
+                "Paused reads the simulation's pause");
+        }
+
+        [Test]
+        public void ReadLive_ChangesOnlyWithWhatThePanelShows()
+        {
+            Build();
+            GasPipeNetworkRecord west = NetworkAt(2, TileLayer.PipeLeft);
+            west.Moles[AtmosConstants.Nitrogen.Value] = 10f;
+            _source.ReadLive(1, out SystemsViewLiveNetwork before);
+            _source.ReadLive(1, out SystemsViewLiveNetwork again);
+            Assert.IsTrue(before.Equals(again), "Nothing changed: the same reading");
+
+            west.Moles[AtmosConstants.Nitrogen.Value] += 1e-5f;
+            _source.ReadLive(1, out SystemsViewLiveNetwork tiny);
+            Assert.IsTrue(before.Equals(tiny), "A change below the shown precision is no change");
+
+            west.Moles[AtmosConstants.Nitrogen.Value] += 5f;
+            _source.ReadLive(1, out SystemsViewLiveNetwork after);
+            Assert.IsFalse(before.Equals(after), "A real change reads differently");
+            Assert.AreNotEqual(before.ValueOf("Pressure"), after.ValueOf("Pressure"));
+        }
+
+        [Test]
+        public void ReadLive_FollowsANetworkThroughAnEdit_AndDropsOneThatWent()
+        {
+            Build();
+            // Cut the east run's first pipe: the rest keeps view id 2 (the tracker), read before any new build.
+            _context.Map.GetOrCreateTileLocation(TileLayer.PipeSurface, new Vector3(7, 0, 5)).ClearAllPlacedObject();
+            _registry.RebuildAround(_context.Map, new TileCoord(_context.Map.MapId, 7, 5));
+            Assert.IsTrue(_source.ReadLive(2, out SystemsViewLiveNetwork cut), "A network that changed shape is still traced");
+            Assert.AreEqual(NetworkAt(8, TileLayer.PipeSurface).Volume.ToString("0.0", System.Globalization.CultureInfo.InvariantCulture) + " m³",
+                cut.ValueOf("Volume"));
+
+            // Take the last of it away: the id is gone, so the trace drops it.
+            _context.Map.GetOrCreateTileLocation(TileLayer.PipeSurface, new Vector3(8, 0, 5)).ClearAllPlacedObject();
+            _registry.RebuildAround(_context.Map, new TileCoord(_context.Map.MapId, 8, 5));
+            Assert.IsFalse(_source.ReadLive(2, out _));
+            Assert.IsTrue(_source.ReadLive(1, out _), "The untouched network still reads");
+            Assert.IsFalse(Build().Networks.ContainsKey(2));
+        }
+
+        [Test]
+        public void TraceTargets_NameEachSideOfADevice_AndAPipeOrManifoldsNetwork()
+        {
+            SystemsViewStructure structure = Build();
+            List<SystemsViewTraceSide> targets = new();
+            AtmosSystemsViewStyle.Instance.TraceTargets(structure, new Vector2Int(6, 5), TileLayer.PipeSurface, targets);
+            CollectionAssert.AreEqual(new[] { new SystemsViewTraceSide(1, "Inlet"), new SystemsViewTraceSide(2, "Outlet") }, targets,
+                "A pump traces both networks, labelled");
+
+            targets.Clear();
+            AtmosSystemsViewStyle.Instance.TraceTargets(structure, new Vector2Int(3, 5), TileLayer.PipeLeft, targets);
+            CollectionAssert.AreEqual(new[] { new SystemsViewTraceSide(1) }, targets, "A pipe traces its run's network");
+
+            targets.Clear();
+            AtmosSystemsViewStyle.Instance.TraceTargets(structure, new Vector2Int(4, 5), TileLayer.PipeManifold, targets);
+            CollectionAssert.AreEqual(new[] { new SystemsViewTraceSide(1, "Supply line") }, targets,
+                "A manifold's lines are one network here: listed once");
+
+            targets.Clear();
+            AtmosSystemsViewStyle.Instance.TraceTargets(structure, new Vector2Int(2, 5), TileLayer.FurnitureBase, targets);
+            CollectionAssert.AreEqual(new[] { new SystemsViewTraceSide(1) }, targets, "A vent traces its line's network");
+
+            targets.Clear();
+            AtmosSystemsViewStyle.Instance.TraceTargets(structure, new Vector2Int(2, 5), TileLayer.Turf, targets);
+            Assert.IsEmpty(targets, "Something outside the view traces nothing");
         }
 
         private PlacedTileObject PlacePipe(int x, int y, TileLayer layer)

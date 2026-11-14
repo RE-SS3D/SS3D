@@ -102,6 +102,43 @@ namespace SS3D.Systems.Tile.MapEditor.SystemsView
         /// <summary>A three-port device's third network (a filter's or mixer's side port); 0 for every other device.</summary>
         public int SideViewId;
 
+        /// <summary>Ports in <see cref="ViewIdAt"/>: back, front, side.</summary>
+        public const int PortCount = 3;
+
+        /// <summary>The network at one port: 0 back (<see cref="ViewId"/>), 1 front, 2 side; 0 when none.</summary>
+        public int ViewIdAt(int port) => port switch
+        {
+            0 => ViewId,
+            1 => OtherViewId,
+            2 => SideViewId,
+            _ => 0,
+        };
+
+        /// <summary>The first port on network <paramref name="viewId"/>, or -1 when the device doesn't touch it.</summary>
+        public int PortOf(int viewId)
+        {
+            for (int port = 0; viewId > 0 && port < PortCount; port++)
+            {
+                if (ViewIdAt(port) == viewId)
+                    return port;
+            }
+
+            return -1;
+        }
+
+        /// <summary>Whether any port is on one of <paramref name="viewIds"/>.</summary>
+        public bool TouchesAny(ICollection<int> viewIds)
+        {
+            for (int port = 0; viewIds != null && port < PortCount; port++)
+            {
+                int viewId = ViewIdAt(port);
+                if (viewId > 0 && viewIds.Contains(viewId))
+                    return true;
+            }
+
+            return false;
+        }
+
         public bool Equals(SystemsViewBadge other) => Key.Equals(other.Key) && Kind == other.Kind && State == other.State
             && Facing == other.Facing && ViewId == other.ViewId && OtherViewId == other.OtherViewId && SideViewId == other.SideViewId;
         public override bool Equals(object obj) => obj is SystemsViewBadge other && Equals(other);

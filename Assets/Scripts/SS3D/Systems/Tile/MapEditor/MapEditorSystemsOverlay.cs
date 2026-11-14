@@ -16,13 +16,18 @@ namespace SS3D.Systems.Tile.MapEditor
     /// </summary>
     public sealed class MapEditorSystemsOverlay : IDisposable
     {
-        /// <summary>Above floor level; the shader draws on top regardless (ZTest Always).</summary>
-        private const float Height = 0.2f;
+        /// <summary>
+        /// Above floor level; the shader draws on top regardless (ZTest Always), so this plane is where the overlay
+        /// sits under the cursor, whatever is in front of it: hover and Select's trace read their tile there.
+        /// </summary>
+        public const float Height = 0.2f;
         public const float RunWidth = 0.13f;
         public const float UnderlayWidth = 0.22f;
         public static readonly Color Underlay = new(0.04f, 0.05f, 0.07f, 0.8f);
         private const int RunQueue = 4000;
         private const int BadgeQueue = 4001;
+        /// <summary>How much of its alpha a network keeps while a trace follows others (creative-mode §4: the rest dims).</summary>
+        public const float UntracedAlpha = 0.2f;
 
         private readonly Dictionary<Vector2Int, Chunk> _chunks = new();
         private readonly HashSet<Vector2Int> _dirty = new();
@@ -33,6 +38,7 @@ namespace SS3D.Systems.Tile.MapEditor
         private Material _runMaterial;
         private Material _badgeMaterial;
         private bool _allDirty = true;
+        private readonly HashSet<int> _focus = new();
 
         /// <summary>Chunks rebuilt by the last visible frame that had work; for tests and the visual pilot.</summary>
         public int LastRebuiltChunks { get; private set; }
@@ -47,6 +53,24 @@ namespace SS3D.Systems.Tile.MapEditor
             _allDirty = true;
             _dirty.Clear();
         }
+
+        /// <summary>
+        /// The networks a trace follows; every other run and badge dims. Empty draws everything at full strength. A change
+        /// rebuilds every chunk on the next visible frame.
+        /// </summary>
+        public void SetFocus(IEnumerable<int> viewIds)
+        {
+            HashSet<int> next = viewIds != null ? new HashSet<int>(viewIds) : new HashSet<int>();
+            if (next.SetEquals(_focus))
+                return;
+
+            _focus.Clear();
+            _focus.UnionWith(next);
+            _allDirty = true;
+        }
+
+        /// <summary>The networks the overlay draws at full strength while tracing; empty when no trace is on.</summary>
+        public IReadOnlyCollection<int> Focus => _focus;
 
         /// <summary><paramref name="structure"/> has just applied <paramref name="delta"/>: rebuild only the chunks it touched.</summary>
         public void Apply(SystemsViewStructure structure, SystemsViewDelta delta)
@@ -124,8 +148,8 @@ namespace SS3D.Systems.Tile.MapEditor
                 if (!_chunks.TryGetValue(chunk, out Chunk target))
                     _chunks[chunk] = target = new Chunk(_root.transform, chunk, _runMaterial, _badgeMaterial);
 
-                target.SetRuns(chunkSegments != null ? BuildRunMesh(chunk, chunkSegments, _style, _builder) : null);
-                target.SetBadges(chunkBadges != null ? BuildBadgeMesh(chunk, chunkBadges, _style, _builder) : null);
+                target.SetRuns(chunkSegments != null ? BuildRunMesh(chunk, chunkSegments, _style, _builder, _focus) : null);
+                target.SetBadges(chunkBadges != null ? BuildBadgeMesh(chunk, chunkBadges, _style, _builder, _focus) : null);
             }
 
             LastRebuiltChunks = _dirty.Count;
@@ -162,7 +186,7 @@ namespace SS3D.Systems.Tile.MapEditor
         /// other half, so runs meet at tile edges and chunk borders. A segment with no links draws a short stub.
         /// </summary>
         public static Mesh BuildRunMesh(Vector2Int chunk, IReadOnlyList<SystemsViewSegment> segments, ISystemsViewStyle style,
-            SystemsViewMeshBuilder builder = null)
+            SystemsViewMeshBuilder builder = null, ICollection<int> focus = null)
         {
             builder ??= new SystemsViewMeshBuilder();
             builder.Clear();
@@ -173,6 +197,7 @@ namespace SS3D.Systems.Tile.MapEditor
                 foreach (SystemsViewSegment segment in segments)
                 {
                     Color color = pass == 0 ? Underlay : SystemsViewPalette.ColorFor(segment.ViewId);
+                    builder.Alpha = IsFocused(focus, segment.ViewId) ? 1f : UntracedAlpha;
                     Vector2 offset = style?.SlotOffset(segment.Key.Slot) ?? Vector2.zero;
                     float tileX = segment.Key.Tile.x - origin.x;
                     float tileZ = segment.Key.Tile.y - origin.y;
@@ -197,15 +222,24 @@ namespace SS3D.Systems.Tile.MapEditor
 
         /// <summary>The badges of one chunk, in chunk-local space, as the domain style draws them at each tile centre.</summary>
         public static Mesh BuildBadgeMesh(Vector2Int chunk, IReadOnlyList<SystemsViewBadge> badges, ISystemsViewStyle style,
-            SystemsViewMeshBuilder builder = null)
+            SystemsViewMeshBuilder builder = null, ICollection<int> focus = null)
         {
             builder ??= new SystemsViewMeshBuilder();
             builder.Clear();
             Vector2Int origin = chunk * TileConstants.ChunkSize;
             foreach (SystemsViewBadge badge in badges)
+            {
+                // A device on any traced network stays lit, so a trace shows everything attached to it.
+                builder.Alpha = focus == null || focus.Count == 0 || badge.TouchesAny(focus) ? 1f : UntracedAlpha;
                 style?.DrawBadge(builder, new Vector3(badge.Key.Tile.x - origin.x, 0f, badge.Key.Tile.y - origin.y), badge);
+            }
+
             return builder.ToMesh("SystemsBadgeChunk");
         }
+
+        /// <summary>Drawn at full strength: no trace is on, or it follows this network.</summary>
+        private static bool IsFocused(ICollection<int> focus, int viewId) =>
+            focus == null || focus.Count == 0 || (viewId > 0 && focus.Contains(viewId));
 
         private void DestroyChunks()
         {

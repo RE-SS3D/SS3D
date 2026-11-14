@@ -104,6 +104,28 @@ namespace SS3D.Systems.Atmospherics.SystemsView
             _ => "Device",
         };
 
+        /// <summary>A device's ports, numbered as <c>SystemsViewBadge.ViewIdAt</c> numbers them; worded by <see cref="PortName"/>.</summary>
+        public const byte PortBack = 0;
+        public const byte PortFront = 1;
+        public const byte PortSide = 2;
+
+        /// <summary>
+        /// Which side of a device a network is on, in plain words: the trace panel's side headings and its device rows.
+        /// Gas enters a pump, filter or mixer at its back and leaves at its front; a filter's side lets the chosen
+        /// gases out, a mixer's takes its second gas in. A valve has no direction, so its sides are back and front.
+        /// </summary>
+        public static string PortName(byte kind, byte port) => (kind, port) switch
+        {
+            (KindValve, PortBack) => "Back",
+            (KindValve, PortFront) => "Front",
+            (KindFilter, PortSide) => "Filtered out",
+            (KindMixer, PortBack) => "Inlet 1",
+            (KindMixer, PortSide) => "Inlet 2",
+            (_, PortBack) => "Inlet",
+            (_, PortFront) => "Outlet",
+            _ => "Side",
+        };
+
         /// <summary>A badge's state in plain words, the way the hover readout and legend say it.</summary>
         public static string StateWords(byte kind, byte state)
         {
