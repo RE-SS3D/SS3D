@@ -20,3 +20,4 @@ MonoBehaviour:
   _startingAccessBits: 100356
   _loadout: {fileID: 11400000, guid: ca071ea962ac49c4999f25cd90bf4a55, type: 2}
   _antagonistCategory: 
+  _description: Keeps the hull sealed and the power on. Patches breaches, repairs walls and floors, and lays cable with the tools on their belt.

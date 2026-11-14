@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using SS3D.Systems.Entities.Character;
 using SS3D.Systems.Inputs;
 using SS3D.UI.Shell;
 using UnityEngine;
@@ -30,7 +31,11 @@ namespace SS3D.UI.Lobby
         private string _editName = LobbyMockData.CharacterName;
         private string _species = CharacterCreatorMockData.SpeciesOptions[0];
         private bool _saved;
-        private readonly Dictionary<string, CharacterCreatorDraft> _characters = new();
+        private readonly CharacterRoster _roster;
+        private readonly Func<CharacterCreatorDraft> _createRandom;
+        // The edited character's preferences, carried through Save untouched (the lobby's Jobs tab edits them).
+        private CharacterPreferences _editPreferences = new();
+        private Label _nameError;
         // Booth head crops per character id; owned (and released) by LobbyUiSubSystem.
         private readonly Dictionary<string, Texture> _portraits = new();
         private int _outfitIndex;
@@ -45,7 +50,7 @@ namespace SS3D.UI.Lobby
         private int _hairStyleIndex;
         private int _beardStyleIndex;
         private string _selectedBrows = "thin";
-        private string _loadoutId = CharacterCreatorMockData.Loadouts[0].Id;
+        private string _loadoutId;
         private bool _loadoutOpen;
 
         private readonly Dictionary<string, float> _sliders = new();
@@ -69,14 +74,14 @@ namespace SS3D.UI.Lobby
         public event Action<int, int, int, int> StyleChanged;
         public event Action<Color, Color, string, Color> FaceChanged;
 
-        public CharacterCreatorView(LobbyAssetCatalog catalog, CharacterCreatorDraft initialDraft, IEnumerable<CharacterCreatorDraft> savedCharacters = null)
+        /// <param name="roster">The saved characters; Save stores into it and the host writes it to disk.</param>
+        /// <param name="createRandom">Makes the unsaved character "+ New Character" starts from (Decision 3).</param>
+        public CharacterCreatorView(LobbyAssetCatalog catalog, CharacterRoster roster, Func<CharacterCreatorDraft> createRandom)
         {
             _catalog = catalog;
-            foreach (CharacterCreatorMockData.LoadoutDef loadout in CharacterCreatorMockData.Loadouts)
-                _characters[loadout.Id] = new CharacterCreatorDraft { Id = loadout.Id, Name = loadout.Name, OutfitIndex = _catalog.ChoosePreviewOutfitIndex() };
-            if (savedCharacters != null)
-                foreach (CharacterCreatorDraft saved in savedCharacters) _characters[saved.Id] = saved;
-            _characters[initialDraft.Id] = initialDraft;
+            _roster = roster;
+            _createRandom = createRandom;
+            _loadoutId = roster.SelectedId;
             foreach (CharacterCreatorMockData.SliderDef slider in CharacterCreatorMockData.BodySliders)
             {
                 _sliders[slider.Key] = slider.DefaultValue;
@@ -173,6 +178,7 @@ namespace SS3D.UI.Lobby
             }
 
             _loadoutId = draft.Id;
+            _editPreferences = draft.Preferences ?? new CharacterPreferences();
             _outfitIndex = draft.OutfitIndex;
             OutfitChanged?.Invoke(_outfitIndex);
             _hairStyleIndex = draft.HairStyleIndex;
@@ -223,7 +229,7 @@ namespace SS3D.UI.Lobby
         /// <summary>Id of the character currently being edited.</summary>
         public string CurrentCharacterId => _loadoutId;
 
-        public IEnumerable<CharacterCreatorDraft> SavedCharacters => _characters.Values;
+        public IEnumerable<CharacterCreatorDraft> SavedCharacters => _roster.Characters;
 
         /// <summary>Shows a rendered portrait for the character in the selector and its menu row.</summary>
         public void SetPortrait(string characterId, Texture portrait)
@@ -435,8 +441,7 @@ namespace SS3D.UI.Lobby
         {
             if (_loadoutNameLabel != null)
             {
-                _loadoutNameLabel.text = _characters.TryGetValue(_loadoutId, out CharacterCreatorDraft saved)
-                    ? saved.Name : _editName;
+                _loadoutNameLabel.text = _roster.Find(_loadoutId)?.Name ?? _editName;
             }
 
             ApplyPortrait(_loadoutThumb, _loadoutId);
@@ -453,10 +458,9 @@ namespace SS3D.UI.Lobby
                 return;
             }
 
-            foreach (KeyValuePair<string, CharacterCreatorDraft> character in _characters)
+            foreach (CharacterCreatorDraft saved in _roster.Characters)
             {
-                string id = character.Key;
-                CharacterCreatorDraft saved = character.Value;
+                string id = saved.Id;
                 VisualElement row = new();
                 row.AddToClassList("char-creator__loadout-row");
                 row.EnableInClassList("char-creator__loadout-row--active", id == _loadoutId);
@@ -493,10 +497,13 @@ namespace SS3D.UI.Lobby
             newLabel.AddToClassList("font-body");
             newRow.Add(newLabel);
             newRow.pickingMode = PickingMode.Position;
+            // Up to CharacterRoster.MaxCharacters; a full roster hides New.
+            newRow.style.display = _roster.CanAdd ? DisplayStyle.Flex : DisplayStyle.None;
             newRow.RegisterCallback<ClickEvent>(_ =>
             {
-                _loadoutId = Guid.NewGuid().ToString("N");
-                ApplyDraft(new CharacterCreatorDraft { Id = _loadoutId, Name = "New Character", OutfitIndex = _catalog.ChoosePreviewOutfitIndex() });
+                CharacterCreatorDraft random = _createRandom();
+                _loadoutId = random.Id;
+                ApplyDraft(random);
                 _angleIndex = 0;
                 PreviewAngleChanged?.Invoke(_angleIndex);
                 _loadoutOpen = false;
@@ -552,11 +559,19 @@ namespace SS3D.UI.Lobby
             {
                 _editName = evt.newValue ?? string.Empty;
                 _saved = false;
+                ShowNameError();
             });
             StyleDarkTextField(nameField);
             nameField.RegisterCallback<FocusInEvent>(_ => _textEntry.Enter());
             nameField.RegisterCallback<FocusOutEvent>(_ => _textEntry.Exit());
             panel.Add(nameField);
+            // Interim error line until the Phase 5 window; the rules are shared with the server (Decision 4).
+            _nameError = new Label { name = "character-name-error" };
+            _nameError.AddToClassList("font-body");
+            _nameError.style.color = new Color(1f, 0.55f, 0.5f);
+            _nameError.style.whiteSpace = WhiteSpace.Normal;
+            panel.Add(_nameError);
+            ShowNameError();
 
             panel.Add(FieldLabel("Species"));
             DropdownField species = new(new List<string> { "Human" }, 0)
@@ -1065,12 +1080,28 @@ namespace SS3D.UI.Lobby
             ApplyThumb(_previewImage, loadout.ThumbId);
         }
 
+        private void ShowNameError()
+        {
+            if (_nameError == null) return;
+            string text = CharacterNameRules.Describe(CharacterNameRules.Validate(_editName));
+            _nameError.text = text;
+            _nameError.style.display = string.IsNullOrEmpty(text) ? DisplayStyle.None : DisplayStyle.Flex;
+        }
+
+        /// <summary>Saves the edited character into the roster. An invalid name, or a full roster for a new one, refuses it.</summary>
         private void SaveCharacter()
         {
+            if (!CharacterNameRules.TryNormalize(_editName, out string name, out _))
+            {
+                _stepIndex = 0;
+                return;
+            }
+
             CharacterCreatorDraft draft = new()
             {
                 Id = _loadoutId,
-                Name = string.IsNullOrWhiteSpace(_editName) ? LobbyMockData.CharacterName : _editName.Trim(),
+                Name = name,
+                Preferences = _editPreferences.Clone(),
                 HairStyleIndex = _hairStyleIndex,
                 BeardStyleIndex = _beardStyleIndex,
                 OutfitIndex = _outfitIndex,
@@ -1083,8 +1114,15 @@ namespace SS3D.UI.Lobby
                 Eyebrows = _selectedBrows,
             };
             draft.CopyMorphsFrom(_sliders);
+            if (!_roster.Replace(draft) && !_roster.Add(draft))
+            {
+                return;
+            }
+
+            _loadoutId = draft.Id;
+
             _editName = draft.Name;
-            _characters[_loadoutId] = draft;
+            _editPreferences = draft.Preferences;
             _saved = true;
             CharacterSaved?.Invoke(draft);
         }

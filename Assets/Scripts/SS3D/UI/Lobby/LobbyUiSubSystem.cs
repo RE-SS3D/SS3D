@@ -46,6 +46,8 @@ namespace SS3D.UI.Lobby
         private CharacterPreviewBooth _booth;
         private CharacterCreatorDraft _draft;
         private CharacterProfileStore _profileStore;
+        private CharacterRoster _roster;
+        private readonly System.Random _random = new();
         private bool _attached;
         private readonly Dictionary<string, RenderTexture> _portraits = new();
         private bool _portraitDirty;
@@ -136,10 +138,12 @@ namespace SS3D.UI.Lobby
             if (SubSystems.TryGet(out PlayerSettingsSubSystem playerSettings)) playerSettings.RegisterUiPanel(uiShell.Document.panelSettings);
             InputInterface.RegisterDocument(uiShell.Document);
 
-            _profileStore = new CharacterProfileStore(CharacterProfileStore.DefaultPath);
+            _profileStore = new CharacterProfileStore(CharacterProfileStore.DefaultPath, CreateRandomCharacter);
             CharacterProfileStore.Profile profile = _profileStore.Load();
-            _draft = profile?.Characters.FirstOrDefault(c => c.Id == profile.SelectedId)
-                ?? new CharacterCreatorDraft { OutfitIndex = _catalog.ChoosePreviewOutfitIndex() };
+            // No saved characters yet: the player starts with a random one, saved at once (Decision 3).
+            _roster = new CharacterRoster(profile?.Characters, profile?.SelectedId, CreateRandomCharacter);
+            if (profile == null) SaveRoster();
+            _draft = _roster.Selected;
 
             _shellView = new LobbyShellView(_catalog);
             _shellView.Attach(modalLayer);
@@ -165,8 +169,9 @@ namespace SS3D.UI.Lobby
             _shellView.ChatSubmitted += HandleChatSubmitted;
             BindPlayerSettings();
             _shellView.SetCharacterName(_draft.Name);
+            _shellView.SetCharacterPreferences(_draft.Preferences, AntagonistOptInDefault());
 
-            _creatorView = new CharacterCreatorView(_catalog, _draft, profile?.Characters);
+            _creatorView = new CharacterCreatorView(_catalog, _roster, CreateRandomCharacter);
             _creatorView.Attach(modalLayer);
             _creatorView.ReturnToLobbyRequested += HandleReturnToLobbyRequested;
             _creatorView.CharacterSaved += HandleCharacterSaved;
@@ -248,6 +253,7 @@ namespace SS3D.UI.Lobby
                 _lastStationName = rounds.StationName;
             }
             _nextSessionRefresh = Time.unscaledTime + 0.2f;
+            _shellView?.SetCharacterPreferences(_draft?.Preferences, AntagonistOptInDefault());
             bool online = NetworkManager.Instances.Count > 0 && InstanceFinder.ClientManager != null && InstanceFinder.ClientManager.Started;
             bool connected = online && SubSystems.TryGet(out PlayerSubSystem _) && SubSystems.TryGet(out RoundSubSystem _);
             SubSystems.TryGet(out PlayerSubSystem players);
@@ -401,28 +407,37 @@ namespace SS3D.UI.Lobby
             _shellView.SetServerSettings(service.AdminSettings, service.AdminMaps, service.AdminSettingsStatus);
         }
 
+        /// <summary>
+        /// The interim Jobs tab edited the selected saved character's preferences in place: save it and resend. The
+        /// Phase 5 character window replaces this with its own Save.
+        /// </summary>
         private void HandleJobPreferencesChanged()
+        {
+            SaveRoster();
+            SendJobPreferences();
+        }
+
+        private static void SendJobPreferences()
         {
             if (SubSystems.TryGet(out ClientSessionSubSystem session)) session.JobPreferencesChanged();
         }
+
+        private void SaveRoster() => _profileStore?.Save(_roster.Characters, _roster.SelectedId);
+
+        /// <summary>A random character from the catalog's names and looks (Decision 3).</summary>
+        private CharacterCreatorDraft CreateRandomCharacter() =>
+            RandomCharacter.Create(_catalog != null ? _catalog.CharacterNames : null, RandomCharacter.LookOptions.From(_catalog), _random);
+
+        private static bool AntagonistOptInDefault() =>
+            SubSystems.TryGet(out ServerSettingsService settings) && settings.AntagonistOptInDefault;
 
         private void NotifyAppearanceChanged()
         {
             if (SubSystems.TryGet(out ClientSessionSubSystem session)) session.AppearanceChanged();
         }
 
-        /// <summary>The full preference list; the server keeps it per ckey until the next change.</summary>
-        private JobPreferencesMessage? BuildJobPreferences()
-        {
-            if (_shellView == null) return null;
-            string[] jobs = _shellView.JobPriorities.Keys.ToArray();
-            return new JobPreferencesMessage
-            {
-                Jobs = jobs,
-                Priorities = jobs.Select(job => (byte)_shellView.JobPriorities[job]).ToArray(),
-                AntagonistOptIns = _shellView.AntagonistOptIns.ToArray(),
-            };
-        }
+        /// <summary>The selected saved character's preferences; the server keeps them per ckey until the next send.</summary>
+        private JobPreferencesMessage? BuildJobPreferences() => _draft?.Preferences?.ToMessage();
 
         /// <summary>The saved character (never unsaved creator edits).</summary>
         private CharacterAppearance? BuildCharacterAppearance()
@@ -608,8 +623,10 @@ namespace SS3D.UI.Lobby
             }
 
             _draft = draft;
-            _profileStore.Save(_creatorView.SavedCharacters, draft.Id);
+            _roster.Select(draft.Id);
+            SaveRoster();
             _shellView?.SetCharacterName(_draft.Name);
+            _shellView?.SetCharacterPreferences(_draft.Preferences, AntagonistOptInDefault());
             HandleOutfitChanged(_draft.OutfitIndex);
             ApplyBodyMorphsToBooth(_draft.BodyMorphs);
             ApplyStyleToBooth(_draft.HairStyleIndex, _draft.BeardStyleIndex, _draft.HairColorIndex, _draft.BeardColorIndex);
@@ -617,6 +634,8 @@ namespace SS3D.UI.Lobby
                 CharacterCreatorView.PaletteColor(CharacterCreatorMockData.EyeColors, _draft.EyeColorIndex),
                 CharacterAppearance.NormalizeEyebrowStyle(_draft.Eyebrows), _catalog.GetHairColor(_draft.EyebrowColorIndex));
             NotifyAppearanceChanged();
+            // Saving selects the character: its preferences go to the server too (Decision 1).
+            SendJobPreferences();
             Debug.Log($"[Lobby] Character draft saved: {_draft.Name}");
         }
 

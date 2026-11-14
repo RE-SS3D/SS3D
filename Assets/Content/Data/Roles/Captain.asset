@@ -20,3 +20,4 @@ MonoBehaviour:
   _startingAccessBits: 102399
   _loadout: {fileID: 11400000, guid: baacc3daee01470081ff5a9c0646d3ea, type: 2}
   _antagonistCategory: 
+  _description: Runs the station and has access to almost everything. Keeps the crew working together and guards the nuclear authentication disk.

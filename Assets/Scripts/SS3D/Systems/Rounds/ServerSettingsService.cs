@@ -45,6 +45,7 @@ namespace SS3D.Systems.Rounds
         [SyncVar] private string _publicMode = ServerSettings.Default.Mode;
         [SyncVar] private string _serverBuild = "";
         [SyncVar] private long _serverStartedUnix;
+        [SyncVar] private bool _antagonistOptInDefault;
 
         /// <summary>
         /// Server: an admin save replaced the round configuration (previous, current). Name/MOTD and auto start
@@ -65,6 +66,8 @@ namespace SS3D.Systems.Rounds
         /// <summary>The configured mode (Secret stays secret: it only resolves at round start).</summary>
         public string PublicMode => _publicMode;
         public string ServerBuild => _serverBuild;
+        /// <summary>Public: whether an antagonist category a character never set counts as opted in (<see cref="ServerSettings.AntagonistOptInDefault"/>).</summary>
+        public bool AntagonistOptInDefault => _antagonistOptInDefault;
         public DateTimeOffset ServerStarted => DateTimeOffset.FromUnixTimeSeconds(_serverStartedUnix);
 
         public ServerSettings AdminSettings { get; private set; } = ServerSettings.Default;
@@ -270,6 +273,7 @@ namespace SS3D.Systems.Rounds
         {
             _allowLateJoin = _settings.AllowLateJoin;
             _publicMode = _settings.Mode;
+            _antagonistOptInDefault = _settings.AntagonistOptInDefault;
             _serverName = _settings.ServerName;
             _motd = _settings.Motd;
         }

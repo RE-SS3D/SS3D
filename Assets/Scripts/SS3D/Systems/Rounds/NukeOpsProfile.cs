@@ -71,6 +71,7 @@ namespace SS3D.Systems.Rounds
             settings.RespawnEnabled = false;
             settings.RemoveCorpseOnRespawn = false;
             settings.MapPersistence = true;
+            settings.AntagonistOptInDefault = true;
             settings.Motd = MotdFor(minimumReady);
             return settings;
         }

@@ -79,6 +79,13 @@ namespace SS3D.Systems.Comms
             DispatchOoc(NewOocMessage(channel, "", ServerRoleTypes.None, text, true));
         }
 
+        /// <summary>Server: a system line in one player's OOC chat that nobody else sees and history doesn't keep.</summary>
+        public void SendOocNoticeTo(NetworkConnection target, string text)
+        {
+            if (!IsServer || target == null || !target.IsActive || !OocChatRules.TryNormalize(text, out text)) return;
+            SendOocNotice(target, OocChannel.Ooc, text);
+        }
+
         private void OnClientReceiveOoc(OocChatMessage message)
         {
             if (!_clientOocLog.Add(message)) return;

@@ -57,10 +57,11 @@ namespace SS3D.UI.Lobby
         // The shared Settings screen (SS3D.UI.SettingsPanel) lives here; the Settings tab shows it.
         private VisualElement _settingsHost;
 
-        // Missing jobs are Never: an empty list is the explicit "no preference" (lobby.md §3).
-        private readonly Dictionary<string, JobPriority> _priorities = new();
-        // Every antagonist role starts ticked (round-end loop Decision 22); the player opts out here.
-        private readonly HashSet<string> _antagSelected = new(AntagonistCategories.All.Select(role => role.Key));
+        // The selected saved character's preferences (lobby effort Decision 1), edited in place: the host saves the
+        // character and resends on JobPreferencesChanged. Missing jobs are Never; an antagonist the character never set
+        // shows the server default (off, except on the -nukeops profile).
+        private CharacterPreferences _preferences = new();
+        private bool _antagonistDefault;
         private JobSlotInfo[] _jobs = Array.Empty<JobSlotInfo>();
         private readonly HashSet<string> _collapsedDepts = new();
 
@@ -88,9 +89,24 @@ namespace SS3D.UI.Lobby
         /// <summary>The shell's own root, which covers the screen: the Settings prompt sits on it.</summary>
         public VisualElement Root => _root;
 
-        public IReadOnlyDictionary<string, JobPriority> JobPriorities => _priorities;
+        public IReadOnlyDictionary<string, JobPriority> JobPriorities => _preferences.ToDictionary();
 
-        public IReadOnlyCollection<string> AntagonistOptIns => _antagSelected;
+        /// <summary>The antagonist categories shown ticked.</summary>
+        public IReadOnlyCollection<string> AntagonistOptIns => AntagonistCategories.All
+            .Where(role => _preferences.IsAntagonistOn(role.Key, _antagonistDefault)).Select(role => role.Key).ToArray();
+
+        /// <summary>
+        /// Shows and edits <paramref name="preferences"/>, the selected saved character's. <paramref name="antagonistDefault"/>
+        /// is the server's <c>AntagonistOptInDefault</c>, shown for categories the character never set.
+        /// </summary>
+        public void SetCharacterPreferences(CharacterPreferences preferences, bool antagonistDefault)
+        {
+            preferences ??= new CharacterPreferences();
+            if (ReferenceEquals(preferences, _preferences) && antagonistDefault == _antagonistDefault) return;
+            _preferences = preferences;
+            _antagonistDefault = antagonistDefault;
+            if (_activeTab == TabJobs) ShowTab(TabJobs);
+        }
         private bool _runtime;
         // Focused lobby text fields mask keybinds (B = map editor, Escape = menu).
         private readonly InputTextEntryScope _textEntry = new();
@@ -1001,15 +1017,14 @@ namespace SS3D.UI.Lobby
         {
             VisualElement chips = new();
             chips.AddToClassList("lobby-shell__priority");
-            JobPriority current = _priorities.TryGetValue(jobId, out JobPriority p) ? p : JobPriority.Never;
+            JobPriority current = _preferences.PriorityOf(jobId);
 
             foreach (JobPriority level in JobPriorityUtil.CycleOrder)
             {
                 JobPriority captured = level;
                 Button chip = new(() =>
                 {
-                    if (captured == JobPriority.Never) _priorities.Remove(jobId);
-                    else _priorities[jobId] = captured;
+                    _preferences.SetPriority(jobId, captured);
                     JobPreferencesChanged?.Invoke();
                     ShowTab(TabJobs);
                 })
@@ -1056,7 +1071,7 @@ namespace SS3D.UI.Lobby
             title.style.marginBottom = 0;
             titleRow.Add(title);
 
-            bool allOn = AntagonistCategories.All.All(role => _antagSelected.Contains(role.Key));
+            bool allOn = AntagonistCategories.All.All(role => _preferences.IsAntagonistOn(role.Key, _antagonistDefault));
 
             Label toggleAll = new(allOn ? "Clear All" : "Select All");
             toggleAll.AddToClassList("lobby-shell__link");
@@ -1066,8 +1081,7 @@ namespace SS3D.UI.Lobby
             {
                 foreach ((string key, string _) in AntagonistCategories.All)
                 {
-                    if (allOn) _antagSelected.Remove(key);
-                    else _antagSelected.Add(key);
+                    _preferences.SetAntagonist(key, !allOn);
                 }
 
                 JobPreferencesChanged?.Invoke();
@@ -1078,15 +1092,14 @@ namespace SS3D.UI.Lobby
 
             foreach ((string key, string roleLabel) in AntagonistCategories.All)
             {
-                bool on = _antagSelected.Contains(key);
+                bool on = _preferences.IsAntagonistOn(key, _antagonistDefault);
 
                 VisualElement row = new();
                 row.AddToClassList("lobby-shell__antag-row");
                 row.pickingMode = PickingMode.Position;
                 row.RegisterCallback<ClickEvent>(_ =>
                 {
-                    if (on) _antagSelected.Remove(key);
-                    else _antagSelected.Add(key);
+                    _preferences.SetAntagonist(key, !on);
                     JobPreferencesChanged?.Invoke();
                     ShowTab(TabJobs);
                 });

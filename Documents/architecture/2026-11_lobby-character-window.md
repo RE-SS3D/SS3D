@@ -1,8 +1,8 @@
 > Implements: Documents/design/lobby.md §2 (job list, descriptions, slot counts), §3 (per-character priorities, fallback), §4 (per-character antag opt-in, off by default), §5 (selected character only, guaranteed outcome), §6 (characters, random first character, one tabbed window, name, preview outfit), §7 (connected-count timer, direct latejoin with manifest, immediate Observe), §8 (lobby screen, music row, banner art); Documents/design/round-end.md §6; Documents/design/observer.md §2
 > Touches systems: rounds-lobby, gamemodes-roles-traits, entities, ui-shell, ui-shell-main-menu, audio, chat-audio-screens
-> Status: planned
+> Status: in progress
 
-**Progress:** Decided in the 2026-11-14 lobby grill. Nothing built yet. Everything ships before Playtest 1 ([mvp1-nuke-ops.md](../milestones/mvp1-nuke-ops.md) M11) on one branch and one pull request. Phases 1–3 are non-visual and run while the canvas is recoloured. Phases 4–6 build against the recoloured canvas. Phase 7 purges. Visual brief and recolour prompt: [lobby-character-window-visual-brief.md](../plans/lobby-character-window-visual-brief.md). Tests follow the [testing philosophy](2026-11_testing-philosophy.md).
+**Progress:** Decided in the 2026-11-14 lobby grill. Phase 1 is built (2026-11-14), on the old views until Phases 4–5 replace them. Everything ships before Playtest 1 ([mvp1-nuke-ops.md](../milestones/mvp1-nuke-ops.md) M11) on one branch and one pull request. Phases 1–3 are non-visual and run while the canvas is recoloured. Phases 4–6 build against the recoloured canvas. Phase 7 purges. Visual brief and recolour prompt: [lobby-character-window-visual-brief.md](../plans/lobby-character-window-visual-brief.md). Tests follow the [testing philosophy](2026-11_testing-philosophy.md).
 
 # Lobby and character window (Nov 2026)
 
@@ -80,13 +80,37 @@ Rebuild the lobby and the character creator to the revised [lobby.md](../design/
 
 ### Phase 1 — Characters carry preferences (non-visual)
 
-- [ ] Character schema v2 in `CharacterProfileStore`: priorities, antag opt-ins, fallback; migration (Decisions 1–2)
-- [ ] Add, duplicate and delete characters (cap 10); a character's name is its label
-- [ ] Random name lists ScriptableObject and a random-character generator (Decision 3)
-- [ ] Shared name validator used by client and server (Decision 4)
-- [ ] Preferences message carries the selected character's priorities, opt-ins and fallback; `ProtocolVersion` bump (Decision 6)
-- [ ] `RoleSubSystem` and `JobResolver`: fallback per character; antag opt-in defaults to off, except the `-nukeops` profile (deviation below)
-- [ ] `RoleData` description field, filled for the five Playtest 1 jobs
+- [x] Character schema v2 in `CharacterProfileStore`: priorities, antag opt-ins, fallback; migration (Decisions 1–2)
+- [x] Add, duplicate and delete characters (cap 10); a character's name is its label
+- [x] Random name lists ScriptableObject and a random-character generator (Decision 3)
+- [x] Shared name validator used by client and server (Decision 4)
+- [x] Preferences message carries the selected character's priorities, opt-ins and fallback; `ProtocolVersion` bump (Decision 6)
+- [x] `RoleSubSystem` and `JobResolver`: fallback per character; antag opt-in defaults to off, except the `-nukeops` profile (deviation below)
+- [x] `RoleData` description field, filled for the five Playtest 1 jobs
+
+What Phase 1 built:
+
+- **Data.** `CharacterPreferences` lives on each `CharacterCreatorDraft`, and `characters.json` is schema v2.
+  - A v1 file is migrated on load and written back.
+  - A store holding only the untouched "Marcus Voss" starter gets a random character instead (`IsUntouchedMockStarter`).
+  - A first run with no file also starts with a random character, saved at once.
+- **Roster.** `CharacterRoster` holds the characters and the selection: New (random), Duplicate (a deep copy placed right after its source), Delete (never the last one), cap 10.
+  - The old creator uses it for New and Save. Duplicate and Delete have no UI until the Phase 5 switcher.
+- **Names.** `CharacterNameRules` (in `Systems/Entities/Character`) normalises and validates names.
+  - The creator refuses to save an invalid name and shows an interim error line under the field.
+  - The server clears an invalid name, so the body goes by the ckey, and logs a warning.
+  - `CharacterNameList` (`Assets/Content/Data/Characters/CharacterNames.asset`, 200 + 200 names) is referenced from `LobbyAssetCatalog`. `RandomCharacter` builds the look from the catalog's choices.
+- **Antagonists.** A character's choice is three-way: in, out or unset. The message carries `AntagonistOptOuts` beside `AntagonistOptIns`.
+  - Unset takes `ServerSettings.AntagonistOptInDefault`: off, except that the `-nukeops` profile turns it on.
+  - The default is replicated as `ServerSettingsService.AntagonistOptInDefault`, so the lobby shows it.
+- **Fallback.** `JobFallback` is sent as `JobPreferencesMessage.Fallback`.
+  - A player left without a job whose character returns to the lobby is not spawned at round start (`ResolveRoundStartRoles` returns them) or at late join (`TryAssignLateJoinRole`).
+  - They get a private OOC notice (`CommsSubSystem.SendOocNoticeTo`).
+  - `ProtocolVersion` is 56.
+- **Interim Jobs tab.** The old Jobs tab now edits the selected saved character's preferences in place. `LobbyUiSubSystem` saves the store and resends on every change.
+  - Its chips follow the one-High rule (`CharacterPreferences.SetPriority`).
+  - There's no fallback control yet, so every character stays on Assistant until Phase 5.
+- **Descriptions.** `RoleData.Description` is filled for Captain, Security, Engineer, Doctor and Assistant. `RoleSubSystem.DescriptionOf` reads it from local assets, so nothing extra is replicated.
 
 ### Phase 2 — Round flow (non-visual)
 

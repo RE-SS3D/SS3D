@@ -40,6 +40,11 @@ namespace SS3D.Systems.Rounds
         /// An explicit Nuclear Emergency skips the check. The <c>-nukeops</c> profile sets it (<see cref="NukeOpsProfile"/>).
         /// </summary>
         public int MinimumReadyForNukeOps;
+        /// <summary>
+        /// Antagonist categories a character never set count as opted in. Off by default (lobby.md §4); the
+        /// <c>-nukeops</c> profile turns it on for Playtest 1 so a squad draw finds operatives (lobby effort deviation).
+        /// </summary>
+        public bool AntagonistOptInDefault;
 
         public static ServerSettings Default => new()
         {
@@ -76,6 +81,7 @@ namespace SS3D.Systems.Rounds
             result.RespawnCooldownSeconds = current.RespawnCooldownSeconds;
             result.MapPersistence = current.MapPersistence;
             result.MinimumReadyForNukeOps = current.MinimumReadyForNukeOps;
+            result.AntagonistOptInDefault = current.AntagonistOptInDefault;
             return result;
         }
     }

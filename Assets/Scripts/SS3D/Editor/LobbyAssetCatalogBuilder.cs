@@ -93,6 +93,7 @@ namespace SS3D.Editor
             // Heroicons are Default Texture2D (not Sprite) — load as textures for UITK backgrounds.
             Texture2D chevron = LoadRequiredTexture(LobbyAssetPaths.ChevronDownIcon, missing);
             GameObject previewHuman = LoadRequired<GameObject>(LobbyAssetPaths.PreviewHumanPrefab, missing);
+            CharacterNameList characterNames = LoadRequired<CharacterNameList>(CharacterNameList.AssetPath, missing);
 
             List<LobbyNamedSprite> jobIcons = new();
             if (Directory.Exists(LobbyAssetPaths.JobIconRoot))
@@ -218,7 +219,8 @@ namespace SS3D.Editor
                 beardStyles,
                 new List<LobbyNamedPrefab>(DiscoverPrefabs("Assets/Content/WorldObjects/Entities/Humanoids/Human/HumanHair/Eyebrows")),
                 hairColors,
-                previewOutfits);
+                previewOutfits,
+                characterNames);
             EditorUtility.SetDirty(catalog);
             AssetDatabase.SaveAssets();
             return true;

@@ -19,3 +19,4 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 921240e0c27686d4eaf2ff761944c5eb, type: 2}
   _startingAccessBits: 98432
   _loadout: {fileID: 11400000, guid: 5db09cbd548ecf34f97473fb3898e95e, type: 2}
+  _description: Has no set duties and no slot limit. Helps wherever the station needs a hand, and is the job anyone becomes when their others are full.

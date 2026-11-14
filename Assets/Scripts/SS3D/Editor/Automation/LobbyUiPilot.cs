@@ -565,7 +565,7 @@ namespace SS3D.Editor.Automation
                     case 14: Click(creator.Q(className: "char-creator__loadout-btn")); break;
                     case 15:
                         List<VisualElement> loadoutRows = creator.Query(className: "char-creator__loadout-row").ToList();
-                        Require(loadoutRows.Count == 1, "Only the one starter character ships before New Character");
+                        Require(loadoutRows.Count == 1, "A first run has one (random) character before New Character");
                         Click(loadoutRows[0]);
                         break;
                     case 16:
@@ -574,12 +574,14 @@ namespace SS3D.Editor.Automation
                         break;
                     case 17: Click(creator.Q(className: "char-creator__loadout-new")); break;
                     case 18:
-                        Require(creator.Q<TextField>("character-name").value == "New Character", "New Character resets identity");
+                        string newName = creator.Q<TextField>("character-name").value;
+                        Require(!string.IsNullOrEmpty(newName) && newName != "Automation Pilot" && newName.Contains(" "),
+                            "New Character starts as a random character with a first and last name");
                         Submit(creator, "NEXT");
                         break;
                     case 19:
-                        Require(Mathf.Approximately(creator.Q<Slider>("body-height").value, 0.5f)
-                            && Mathf.Approximately(creator.Q<Slider>("body-female").value, 0f), "New Character resets body morphs");
+                        // Random bodies never land on the saved character's Female 0.4 (it's either 0 or 0.6–1).
+                        Require(!Mathf.Approximately(creator.Q<Slider>("body-female").value, 0.4f), "New Character starts from a random body");
                         Click(creator.Q(className: "char-creator__loadout-btn"));
                         break;
                     case 20:

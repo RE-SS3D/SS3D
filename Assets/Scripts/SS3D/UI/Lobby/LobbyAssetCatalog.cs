@@ -36,6 +36,10 @@ namespace SS3D.UI.Lobby
 
         private static readonly System.Random PreviewOutfitRandom = new();
         [SerializeField] private List<LobbyPreviewOutfit> _previewOutfits = new();
+        [SerializeField] private CharacterNameList _characterNames;
+
+        /// <summary>Random character names (<see cref="CharacterNameList.AssetPath"/>); null in an unbuilt catalog.</summary>
+        public CharacterNameList CharacterNames => _characterNames;
 
         public IReadOnlyList<LobbyPreviewOutfit> PreviewOutfits => _previewOutfits;
 
@@ -170,7 +174,8 @@ namespace SS3D.UI.Lobby
             List<LobbyNamedPrefab> beardStyles,
             List<LobbyNamedPrefab> eyebrowStyles,
             List<Color> hairColors,
-            List<LobbyPreviewOutfit> previewOutfits)
+            List<LobbyPreviewOutfit> previewOutfits,
+            CharacterNameList characterNames)
         {
             _lobbyStyle = lobbyStyle;
             _previewPlaceholder = previewPlaceholder;
@@ -185,6 +190,7 @@ namespace SS3D.UI.Lobby
             _eyebrowStyles = eyebrowStyles ?? new List<LobbyNamedPrefab>();
             _hairColors = hairColors ?? new List<Color>();
             _previewOutfits = previewOutfits ?? new List<LobbyPreviewOutfit>();
+            _characterNames = characterNames;
         }
 #endif
 

@@ -187,7 +187,16 @@ namespace SS3D.Systems.Entities
                 return;
             }
 
-            _appearances[player.Ckey] = message.Appearance.Sanitized();
+            CharacterAppearance appearance = message.Appearance.Sanitized();
+            // The creator only saves valid names; anything else came from an old or modified client. The body keeps
+            // the look and goes by the player's ckey (Mind.DisplayName).
+            if (!CharacterNameRules.TryNormalize(appearance.Name, out string name, out CharacterNameError error))
+            {
+                Log.Warning(this, "Refused character name from {ckey}: {error}", Logs.ServerOnly, player.Ckey, error);
+            }
+
+            appearance.Name = name;
+            _appearances[player.Ckey] = appearance;
         }
 
         private void ServerAddEventListeners()
@@ -292,6 +301,12 @@ namespace SS3D.Systems.Entities
 
             if (!IsPlayerSpawned(player) && _hasSpawnedInitialPlayers)
             {
+                if (!SubSystems.Get<RoleSubSystem>().TryAssignLateJoinRole(player))
+                {
+                    SubSystems.GetOrNull<CommsSubSystem>()?.SendOocNoticeTo(player.Owner, RoleSubSystem.ReturnedToLobbyNotice);
+                    return;
+                }
+
                 Entity entity = SpawnPlayer(player);
 
                 string job = SubSystems.Get<RoleSubSystem>().TryGetRole(player, out RoleData role)
@@ -454,10 +469,16 @@ namespace SS3D.Systems.Entities
                 Log.Information(this, "No players to spawn", Logs.ServerOnly);
             }
 
-            SubSystems.Get<RoleSubSystem>().ResolveRoundStartRoles(players);
+            IReadOnlyList<Player> stayInLobby = SubSystems.Get<RoleSubSystem>().ResolveRoundStartRoles(players);
 
             foreach (Player ckey in players)
             {
+                if (stayInLobby.Contains(ckey))
+                {
+                    SubSystems.GetOrNull<CommsSubSystem>()?.SendOocNoticeTo(ckey.Owner, RoleSubSystem.ReturnedToLobbyNotice);
+                    continue;
+                }
+
                 SpawnPlayer(ckey);
             }
 

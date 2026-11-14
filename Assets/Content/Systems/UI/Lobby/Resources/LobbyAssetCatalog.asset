@@ -125,3 +125,4 @@ MonoBehaviour:
   - Id: security
     Jumpsuit: {fileID: 6330158209413936013, guid: 93ad90421a3b2f64e8fdb9e95a42ba90, type: 3}
     Shoes: {fileID: 2653363475000095017, guid: 535ed7c02b5cbdc43ae2b234a963c5cc, type: 3}
+  _characterNames: {fileID: 11400000, guid: c4d2fb84bcad458083340a2fa903037e, type: 2}

@@ -9,7 +9,7 @@ namespace SS3D.Tests.EditMode
 {
     /// <summary>
     /// Round-end loop P4: the <c>-nukeops</c> 24/7 server profile, Secret's ready-player threshold (Decision 23)
-    /// and Nuclear Operative opt-in on by default (Decision 22).
+    /// and Nuclear Operative opt-in on by default on that profile only (lobby effort deviation from lobby.md §4).
     /// </summary>
     public sealed class NukeOpsProfileTests
     {
@@ -89,25 +89,39 @@ namespace SS3D.Tests.EditMode
         }
 
         [Test]
-        public void OptIn_IsOnWhenNoPreferencesWereSent()
+        public void OptIn_UnsetTakesTheServerDefault()
         {
-            Assert.IsTrue(AntagonistCategories.IsOptedIn(null, AntagonistCategories.NuclearOperative));
-            Assert.IsFalse(AntagonistCategories.IsOptedIn(null, "traitor"), "unknown categories never count");
+            Assert.IsFalse(AntagonistCategories.IsOptedIn(null, null, AntagonistCategories.NuclearOperative, false),
+                "off by default (lobby.md §4)");
+            Assert.IsTrue(AntagonistCategories.IsOptedIn(null, null, AntagonistCategories.NuclearOperative, true),
+                "the -nukeops profile turns unset categories on");
+            Assert.IsFalse(AntagonistCategories.IsOptedIn(null, null, "traitor", true), "unknown categories never count");
         }
 
         [Test]
-        public void OptIn_FollowsSentPreferences()
+        public void OptIn_ExplicitChoiceBeatsTheDefault()
         {
-            Assert.IsFalse(AntagonistCategories.IsOptedIn(new HashSet<string>(), AntagonistCategories.NuclearOperative), "an empty list is an opt-out");
-            Assert.IsTrue(AntagonistCategories.IsOptedIn(new HashSet<string> { AntagonistCategories.NuclearOperative },
-                AntagonistCategories.NuclearOperative));
+            HashSet<string> nukeop = new() { AntagonistCategories.NuclearOperative };
+            Assert.IsTrue(AntagonistCategories.IsOptedIn(nukeop, null, AntagonistCategories.NuclearOperative, false));
+            Assert.IsFalse(AntagonistCategories.IsOptedIn(null, nukeop, AntagonistCategories.NuclearOperative, true));
         }
 
         [Test]
-        public void LobbyList_StartsWithEveryAntagonistRoleTicked()
+        public void Profile_TurnsAntagonistOptInDefaultOn_AndItSurvivesAnAdminFormSave()
+        {
+            Assert.IsFalse(ServerSettings.Default.AntagonistOptInDefault);
+            ServerSettings current = NukeOpsProfile.Apply(ServerSettings.Default, 30, 4);
+            Assert.IsTrue(current.AntagonistOptInDefault);
+            Assert.IsTrue(ServerSettings.Default.WithRulesOf(current).AntagonistOptInDefault);
+        }
+
+        [Test]
+        public void LobbyList_ShowsUnsetRolesAsTheServerDefault()
         {
             LobbyShellView view = new(null);
+            CollectionAssert.IsEmpty(view.AntagonistOptIns, "a character with nothing set shows every role off");
 
+            view.SetCharacterPreferences(new CharacterPreferences(), true);
             CollectionAssert.AreEquivalent(AntagonistCategories.All.Select(role => role.Key), view.AntagonistOptIns);
         }
     }

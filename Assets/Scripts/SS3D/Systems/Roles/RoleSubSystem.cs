@@ -25,8 +25,10 @@ using RoundStateUpdated = SS3D.Systems.Rounds.Events.RoundStateUpdated;
 namespace SS3D.Systems.Roles
 {
     /// <summary>
-    /// Job slots, lobby job/antagonist preferences and job assignment (lobby.md §3–5). Round start
-    /// resolves every spawning player in one pass; latejoiners take their highest ranked open job.
+    /// Job slots, lobby job/antagonist preferences and job assignment (lobby.md §3–5). The preferences are the
+    /// selected character's, sent by the client. Round start resolves every spawning player in one pass;
+    /// latejoiners take their highest ranked open job. A player with no open job becomes the fallback job or
+    /// stays in the lobby, as their character says.
     /// </summary>
     public class RoleSubSystem : NetworkSubSystem
     {
@@ -38,6 +40,8 @@ namespace SS3D.Systems.Roles
         private readonly Dictionary<string, RoleData> _roleData = new();
         private readonly Dictionary<string, Dictionary<string, JobPriority>> _preferences = new();
         private readonly Dictionary<string, HashSet<string>> _antagonistOptIns = new();
+        private readonly Dictionary<string, HashSet<string>> _antagonistOptOuts = new();
+        private readonly Dictionary<string, JobFallback> _fallbacks = new();
         private readonly Dictionary<Player, RoleData> _rolePlayers = new();
 
         /// <summary>Loadouts whose <see cref="RoleLoadout.FirstHolderContents"/> went out this round.</summary>
@@ -141,27 +145,48 @@ namespace SS3D.Systems.Roles
                 }
             }
 
-            HashSet<string> antagonists = new();
-            foreach (string key in message.AntagonistOptIns ?? Array.Empty<string>())
-            {
-                if (AntagonistCategories.IsKnown(key))
-                {
-                    antagonists.Add(key);
-                }
-            }
+            HashSet<string> optIns = KnownCategories(message.AntagonistOptIns);
+            HashSet<string> optOuts = KnownCategories(message.AntagonistOptOuts);
+            optOuts.ExceptWith(optIns);
 
             _preferences[player.Ckey] = priorities;
-            _antagonistOptIns[player.Ckey] = antagonists;
+            _antagonistOptIns[player.Ckey] = optIns;
+            _antagonistOptOuts[player.Ckey] = optOuts;
+            _fallbacks[player.Ckey] = message.Fallback == (byte)JobFallback.ReturnToLobby
+                ? JobFallback.ReturnToLobby
+                : JobFallback.Assistant;
             RefreshJobCounts();
         }
 
+        private static HashSet<string> KnownCategories(string[] keys)
+        {
+            HashSet<string> result = new();
+            foreach (string key in keys ?? Array.Empty<string>())
+            {
+                if (AntagonistCategories.IsKnown(key))
+                {
+                    result.Add(key);
+                }
+            }
+
+            return result;
+        }
+
         /// <summary>
-        /// Whether the player opted into consideration for an antagonist category. Gamemodes
-        /// choose among opted-in players; opting in guarantees nothing. A player who never sent
-        /// preferences is opted into every category (round-end loop Decision 22), as the lobby list starts ticked.
+        /// Whether the player opted into consideration for an antagonist category. Gamemodes choose among
+        /// opted-in players; opting in guarantees nothing. A category the selected character never set takes
+        /// <see cref="ServerSettings.AntagonistOptInDefault"/>: off, except on the <c>-nukeops</c> profile.
         /// </summary>
         public bool IsAntagonistOptedIn(string ckey, string category) =>
-            ckey != null && AntagonistCategories.IsOptedIn(_antagonistOptIns.GetValueOrDefault(ckey), category);
+            ckey != null && AntagonistCategories.IsOptedIn(_antagonistOptIns.GetValueOrDefault(ckey),
+                _antagonistOptOuts.GetValueOrDefault(ckey), category, AntagonistOptInDefault);
+
+        private static bool AntagonistOptInDefault =>
+            SubSystems.TryGet(out ServerSettingsService settings) && settings.Current.AntagonistOptInDefault;
+
+        /// <summary>Server: what the player's selected character does when none of its jobs is open.</summary>
+        public JobFallback FallbackFor(string ckey) =>
+            ckey != null && _fallbacks.TryGetValue(ckey, out JobFallback fallback) ? fallback : JobFallback.Assistant;
 
         /// <summary>Automation: opts a player into an antagonist category without a lobby preferences message.</summary>
         [Server]
@@ -173,6 +198,29 @@ namespace SS3D.Systems.Roles
             }
 
             set.Add(category);
+            _antagonistOptOuts.GetValueOrDefault(ckey)?.Remove(category);
+        }
+
+        /// <summary>
+        /// The job's description (lobby.md §2), read from the local role assets so it needs no replication; empty
+        /// when the job is unknown or has none.
+        /// </summary>
+        public string DescriptionOf(string job)
+        {
+            if (_rolesAvailable == null || string.IsNullOrEmpty(job))
+            {
+                return string.Empty;
+            }
+
+            foreach (RolesData role in _rolesAvailable.Roles)
+            {
+                if (role.Data != null && role.Data.Name == job)
+                {
+                    return role.Data.Description;
+                }
+            }
+
+            return string.Empty;
         }
 
         public bool TryGetRole(Player player, out RoleData role)
@@ -214,8 +262,12 @@ namespace SS3D.Systems.Roles
         /// One resolution pass over the players spawning at round start. Replaces earlier assignments.
         /// A Nuke Ops round draws its squad first; drawn players skip job resolution (Decision 11).
         /// </summary>
+        /// <returns>
+        /// The players who stay in the lobby: no job of theirs was open and their character returns to the lobby
+        /// (<see cref="JobFallback.ReturnToLobby"/>). They get no role and must not be spawned.
+        /// </returns>
         [Server]
-        public void ResolveRoundStartRoles(IReadOnlyList<Player> players)
+        public IReadOnlyList<Player> ResolveRoundStartRoles(IReadOnlyList<Player> players)
         {
             _rolePlayers.Clear();
             _operatives.Clear();
@@ -248,15 +300,31 @@ namespace SS3D.Systems.Roles
                 }
             }
 
+            HashSet<string> returnsToLobby = new(byCkey.Keys.Where(ckey => FallbackFor(ckey) == JobFallback.ReturnToLobby));
             Dictionary<string, string> assignments =
-                JobResolver.Resolve(byCkey.Keys.ToList(), preferences, _jobs, _fallbackRole, _random);
-            foreach (KeyValuePair<string, string> assignment in assignments)
+                JobResolver.Resolve(byCkey.Keys.ToList(), preferences, _jobs, _fallbackRole, _random, returnsToLobby);
+            List<Player> stayInLobby = new();
+            foreach (KeyValuePair<string, Player> entry in byCkey)
             {
-                Assign(byCkey[assignment.Key], assignment.Value);
+                if (assignments.TryGetValue(entry.Key, out string job))
+                {
+                    Assign(entry.Value, job);
+                }
+                else
+                {
+                    stayInLobby.Add(entry.Value);
+                    Log.Information(this, "{ckey} has no open job and returns to the lobby", Logs.ServerOnly, entry.Key);
+                }
             }
 
             RefreshJobCounts();
+            return stayInLobby;
         }
+
+        /// <summary>The notice a player sent back to the lobby reads (round start or a late join).</summary>
+        public const string ReturnedToLobbyNotice =
+            "None of your character's jobs was open, so you stayed in the lobby. Your character is set to return to the lobby "
+            + "rather than join as Assistant.";
 
         /// <summary>
         /// Draws the squad when the configured mode runs Nuke Ops; tells the round to run as Extended when
@@ -300,12 +368,33 @@ namespace SS3D.Systems.Roles
             return result.Squad;
         }
 
+        /// <summary>
+        /// Server: gives a latejoiner their highest ranked open job before they spawn. False, with no role assigned,
+        /// when none is open and their character returns to the lobby; the caller must not spawn them.
+        /// </summary>
         [Server]
-        private void AssignLateJoinRole(Player player)
+        public bool TryAssignLateJoinRole(Player player)
         {
+            if (player == null)
+            {
+                return false;
+            }
+
+            if (_rolePlayers.ContainsKey(player))
+            {
+                return true;
+            }
+
             _preferences.TryGetValue(player.Ckey, out Dictionary<string, JobPriority> priorities);
-            Assign(player, JobResolver.ResolveLateJoin(priorities, _jobs, _fallbackRole, _random));
+            string job = JobResolver.ResolveLateJoin(priorities, _jobs, _fallbackRole, _random, FallbackFor(player.Ckey));
+            if (job == null)
+            {
+                return false;
+            }
+
+            Assign(player, job);
             RefreshJobCounts();
+            return true;
         }
 
         [Server]
@@ -363,7 +452,9 @@ namespace SS3D.Systems.Roles
 
             if (!_rolePlayers.ContainsKey(player))
             {
-                AssignLateJoinRole(player);
+                // Spawns outside round start and late join (a respawn, a test) always get a job.
+                Assign(player, JobResolver.ResolveLateJoin(_preferences.GetValueOrDefault(player.Ckey), _jobs, _fallbackRole, _random));
+                RefreshJobCounts();
             }
 
             if (!_rolePlayers.TryGetValue(player, out RoleData roleData))

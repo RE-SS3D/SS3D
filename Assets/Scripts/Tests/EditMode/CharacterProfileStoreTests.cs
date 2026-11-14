@@ -1,6 +1,8 @@
 using System;
 using System.IO;
+using System.Linq;
 using NUnit.Framework;
+using SS3D.Systems.Roles;
 using SS3D.UI.Lobby;
 using UnityEngine;
 using UnityEngine.TestTools;
@@ -59,6 +61,7 @@ namespace EditorTests
         }
 
         [TestCase("invalid json")]
+        [TestCase("{\"Version\":3,\"SelectedId\":\"a\",\"Characters\":[]}")]
         [TestCase("{\"Version\":2,\"Characters\":[]}")]
         [TestCase("{\"Version\":1,\"SelectedId\":\"missing\",\"Characters\":[]}")]
         public void UnreadableProfileIsPreservedWhenSavingDefaults(string original)
@@ -77,6 +80,111 @@ namespace EditorTests
         {
             Assert.That(new CharacterProfileStore(ProfilePath).Load(), Is.Null);
             Assert.That(File.Exists(ProfilePath), Is.False);
+        }
+
+        // --- Schema v2 (lobby effort Decisions 1–2) ---
+
+        private static CharacterCreatorDraft RandomStub() => new() { Id = "random", Name = "Random Pick" };
+
+        private void WriteV1(params string[] characterJson)
+        {
+            Directory.CreateDirectory(_directory);
+            string entries = string.Join(",", characterJson);
+            string selected = System.Text.RegularExpressions.Regex.Match(characterJson[^1], "\"Id\":\"([^\"]+)\"").Groups[1].Value;
+            File.WriteAllText(ProfilePath, "{\"Version\":1,\"SelectedId\":\"" + selected + "\",\"Characters\":[" + entries + "]}");
+        }
+
+        private static string V1Entry(CharacterCreatorDraft draft) =>
+            "{\"Draft\":" + JsonUtility.ToJson(draft) + ",\"MorphKeys\":[\"height\"],\"MorphValues\":[" +
+            draft.GetMorph("height").ToString(System.Globalization.CultureInfo.InvariantCulture) + "]}";
+
+        [Test]
+        public void PreferencesSurviveSaveAndLoad()
+        {
+            CharacterCreatorDraft draft = new() { Id = "a", Name = "Ada Lovelace" };
+            draft.Preferences.SetPriority("Engineer", JobPriority.High);
+            draft.Preferences.SetPriority("Doctor", JobPriority.Low);
+            draft.Preferences.SetAntagonist(AntagonistCategories.NuclearOperative, true);
+            draft.Preferences.Fallback = JobFallback.ReturnToLobby;
+            Assert.That(new CharacterProfileStore(ProfilePath).Save(new[] { draft }, "a"), Is.True);
+
+            CharacterPreferences loaded = new CharacterProfileStore(ProfilePath).Load().Characters[0].Preferences;
+            Assert.That(loaded.PriorityOf("Engineer"), Is.EqualTo(JobPriority.High));
+            Assert.That(loaded.PriorityOf("Doctor"), Is.EqualTo(JobPriority.Low));
+            Assert.That(loaded.PriorityOf("Captain"), Is.EqualTo(JobPriority.Never));
+            Assert.That(loaded.AntagonistChoice(AntagonistCategories.NuclearOperative), Is.True);
+            Assert.That(loaded.Fallback, Is.EqualTo(JobFallback.ReturnToLobby));
+            StringAssert.Contains("\"Version\": 2", File.ReadAllText(ProfilePath));
+        }
+
+        [Test]
+        public void V1UntouchedStarterIsReplacedByARandomCharacter()
+        {
+            CharacterCreatorDraft starter = new() { OutfitIndex = 3 };
+            Assert.That(starter.IsUntouchedMockStarter, Is.True, "the outfit was random, so it doesn't count as an edit");
+            WriteV1(V1Entry(starter));
+
+            CharacterProfileStore.Profile profile = new CharacterProfileStore(ProfilePath, RandomStub).Load();
+
+            Assert.That(profile.Migrated, Is.True);
+            Assert.That(profile.Characters.Length, Is.EqualTo(1));
+            Assert.That(profile.Characters[0].Name, Is.EqualTo("Random Pick"));
+            Assert.That(profile.SelectedId, Is.EqualTo("random"));
+            Assert.That(new CharacterProfileStore(ProfilePath).Load().Characters[0].Id, Is.EqualTo("random"), "the migration is written back");
+        }
+
+        [Test]
+        public void V1EditedStarterKeepsItsLookWithNoPreferences()
+        {
+            CharacterCreatorDraft starter = new() { HairStyleIndex = 4 };
+            starter.SetMorph("height", 0.8f);
+            Assert.That(starter.IsUntouchedMockStarter, Is.False);
+            WriteV1(V1Entry(starter));
+
+            CharacterProfileStore.Profile profile = new CharacterProfileStore(ProfilePath, RandomStub).Load();
+
+            CharacterCreatorDraft kept = profile.Characters.Single();
+            Assert.That(kept.Id, Is.EqualTo(starter.Id));
+            Assert.That(kept.HairStyleIndex, Is.EqualTo(4));
+            Assert.That(kept.GetMorph("height"), Is.EqualTo(0.8f).Within(0.0001f));
+            AssertNoPreferences(kept.Preferences);
+        }
+
+        [Test]
+        public void V1WithSeveralCharactersKeepsThemAllAndTheSelection()
+        {
+            CharacterCreatorDraft starter = new();
+            CharacterCreatorDraft second = new() { Id = "second", Name = "Bram Dekker", SkinColorIndex = 2 };
+            WriteV1(V1Entry(starter), V1Entry(second));
+
+            CharacterProfileStore.Profile profile = new CharacterProfileStore(ProfilePath, RandomStub).Load();
+
+            Assert.That(profile.Characters.Select(c => c.Id), Is.EqualTo(new[] { starter.Id, "second" }),
+                "the untouched starter stays when it isn't alone");
+            Assert.That(profile.SelectedId, Is.EqualTo("second"));
+            Assert.That(profile.Characters[1].SkinColorIndex, Is.EqualTo(2));
+            foreach (CharacterCreatorDraft character in profile.Characters) AssertNoPreferences(character.Preferences);
+        }
+
+        [Test]
+        public void MalformedV2PreferencesArePreserved()
+        {
+            Directory.CreateDirectory(_directory);
+            string original = "{\"Version\":2,\"SelectedId\":\"a\",\"Characters\":[{\"Draft\":{\"Id\":\"a\",\"Name\":\"Ada Lovelace\"," +
+                "\"Preferences\":{\"Jobs\":[\"Engineer\"],\"Priorities\":[],\"AntagonistOptIns\":[],\"AntagonistOptOuts\":[],\"Fallback\":0}}," +
+                "\"MorphKeys\":[],\"MorphValues\":[]}]}";
+            File.WriteAllText(ProfilePath, original);
+            LogAssert.Expect(LogType.Warning, new System.Text.RegularExpressions.Regex("Could not load character presets"));
+            Assert.That(new CharacterProfileStore(ProfilePath).Load(), Is.Null);
+            Assert.That(File.ReadAllText(ProfilePath), Is.EqualTo(original));
+        }
+
+        private static void AssertNoPreferences(CharacterPreferences preferences)
+        {
+            Assert.That(preferences.ToDictionary(), Is.Empty, "every job starts at Never");
+            Assert.That(preferences.AntagonistChoice(AntagonistCategories.NuclearOperative), Is.Null, "antagonists start unset (off)");
+            Assert.That(preferences.IsAntagonistOn(AntagonistCategories.NuclearOperative, false), Is.False);
+            Assert.That(preferences.Fallback, Is.EqualTo(JobFallback.Assistant));
         }
     }
 }
