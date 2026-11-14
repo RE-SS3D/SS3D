@@ -22,9 +22,7 @@ namespace SS3D.Editor.Automation
         private static readonly List<string> Errors = new();
         private static readonly List<string> Checks = new();
         private static int _step;
-        private static int _styleCheckStep;
         private static int _shellCheckStep;
-        private static int[] _initialOutfitMeshes;
         private static double _next;
         private static double _layoutDeadline;
         private static double _deadline;
@@ -37,7 +35,7 @@ namespace SS3D.Editor.Automation
             EditorApplication.playModeStateChanged += OnPlayModeChanged;
         }
 
-        // Guards: lobby shell, settings and Character Creator render and respond (rounds-lobby UI contracts) · Not cheaper because: needs rendered UI Toolkit panels and screenshots a human reviews; weekly graphical run
+        // Guards: lobby shell, settings, character window and switcher render and respond (rounds-lobby UI contracts) · Not cheaper because: needs rendered UI Toolkit panels and screenshots a human reviews; weekly graphical run
         [MenuItem("SS3D/Testing/Run Lobby UI Pilot")]
         public static void Run()
         {
@@ -72,7 +70,6 @@ namespace SS3D.Editor.Automation
                 Errors.Clear();
                 Checks.Clear();
                 _step = 0;
-                _styleCheckStep = 0;
                 _shellCheckStep = 0;
                 _pendingImage = null;
                 _running = true;
@@ -197,6 +194,15 @@ namespace SS3D.Editor.Automation
         private static void Click(VisualElement element)
         {
             Require(element != null && element.worldBound.width > 0, "Clickable element has layout");
+            // A Button acts on submit; a plain element (a switcher row) listens for ClickEvent.
+            if (element is Button button)
+            {
+                using NavigationSubmitEvent submit = NavigationSubmitEvent.GetPooled();
+                submit.target = button;
+                button.SendEvent(submit);
+                return;
+            }
+
             using (ClickEvent evt = ClickEvent.GetPooled())
             {
                 evt.target = element;
@@ -292,13 +298,17 @@ namespace SS3D.Editor.Automation
 
         private const double LayoutSettleSeconds = 15;
 
+        /// <summary>LobbyView.CompactWidth: below it the shell takes the 1366 × 768 layout.</summary>
+        private const float CompactWidth = 1600f;
+
         private static bool ShellLayoutResolved(VisualElement shell)
         {
             Rect panel = shell.panel.visualTree.layout;
             Rect window = shell.Q("lobby-shell-window").worldBound;
-            Rect sidebar = shell.Q(className: "lobby-shell__sidebar").worldBound;
+            Rect sidebar = shell.Q("lobby-sidebar").worldBound;
+            float expected = panel.width < CompactWidth ? 320f : 400f;
             return Mathf.Approximately(panel.width, Screen.width) && Mathf.Approximately(panel.height, Screen.height)
-                && Mathf.Abs(window.width - 1180f) < 1f && Mathf.Abs(sidebar.width - 280f) < 1f;
+                && Mathf.Abs(sidebar.width - expected) < 1f && window.xMin > sidebar.xMax;
         }
 
         private static bool CheckShell(VisualElement shell)
@@ -306,45 +316,41 @@ namespace SS3D.Editor.Automation
             switch (_shellCheckStep++)
             {
                 case 0:
-                    float windowWidth = shell.Q("lobby-shell-window").worldBound.width;
-                    float sidebarWidth = shell.Q(className: "lobby-shell__sidebar").worldBound.width;
-                    Require(Mathf.Abs(windowWidth - 1180f) < 1f, $"Shell matches reference maximum width (got {windowWidth}, screen {Screen.width}x{Screen.height})");
-                    Require(Mathf.Abs(sidebarWidth - 280f) < 1f, $"Shell has 280px sidebar (got {sidebarWidth})");
-                    Require(shell.Q(className: "lobby-shell__preview-image").resolvedStyle.backgroundImage.renderTexture != null,
+                    Rect panelRect = shell.panel.visualTree.layout;
+                    float sidebarWidth = shell.Q("lobby-sidebar").worldBound.width;
+                    float expectedSidebar = panelRect.width < CompactWidth ? 320f : 400f;
+                    Require(Mathf.Abs(sidebarWidth - expectedSidebar) < 1f,
+                        $"Sidebar is {expectedSidebar}px at {panelRect.width}px wide (got {sidebarWidth})");
+                    Require(shell.ClassListContains("lobby--compact") == panelRect.width < CompactWidth,
+                        "The 1366 layout class follows the panel width");
+                    Require(shell.Q("lobby-preview-image").resolvedStyle.backgroundImage.renderTexture != null,
                         "Lobby starts with a live character preview");
                     Light[] previewLights = UnityEngine.Object.FindObjectsByType<Light>(FindObjectsInactive.Include, FindObjectsSortMode.None)
                         .Where(l => l.name.StartsWith("CharacterPreview")).ToArray();
                     Require(previewLights.Length == 2 && previewLights.All(l => l.enabled && l.gameObject.activeInHierarchy),
                         "Preview lighting survives station initialization");
                     CheckPreviewFraming();
-                    _initialOutfitMeshes = PreviewOutfitMeshes();
-                    Require(shell.Q(className: "lobby-shell__server-scroll") == null, "Server Info has no outer scroll view");
-                    VisualElement info = shell.Q(className: "lobby-shell__server-information");
-                    Require(info.worldBound.yMax <= shell.Q(className: "lobby-shell__tab-content").worldBound.yMax,
+                    PreviewOutfitMeshes();
+                    VisualElement info = shell.Q("server-info");
+                    Require(info.worldBound.yMax <= shell.Q("lobby-tab-content").worldBound.yMax + 1f,
                         "Server Info content fits the panel");
-                    VisualElement preview = shell.Q(className: "lobby-shell__preview");
-                    VisualElement actions = shell.Q(className: "lobby-shell__actions");
-                    Require(actions.worldBound.yMin - preview.worldBound.yMax >= 16f,
-                        "Ready action has spacing below character preview");
+                    Require(shell.Q("lobby-ready").worldBound.yMin >= shell.Q("lobby-character").worldBound.yMax + 8f,
+                        "Ready sits below the character card");
+                    Require(shell.Q("lobby-quit").worldBound.yMax <= panelRect.height + 1f,
+                        "The sidebar footer fits on screen");
+                    Require(shell.Q("tab-jobs") == null && shell.Q("tab-players") == null,
+                        "No job list or player list in the lobby (lobby.md §8)");
                     Capture("00-server-info");
                     break;
-                case 1: Submit(shell, "JOBS"); break;
+                case 1: Press(shell, "tab-chat"); break;
                 case 2:
-                    Require(shell.Q(className: "lobby-shell__priority") != null, "Jobs has segmented priorities");
-                    Capture("00-jobs");
-                    break;
-                case 3: Submit(shell, "CHAT"); break;
-                case 4:
-                    Require(shell.Q<TextField>(className: "lobby-shell__chat-input") != null, "Chat composer exists");
+                    Require(shell.Q<TextField>("chat-input") != null, "Chat composer exists");
+                    Require(shell.Q<Button>("chat-channel-ooc") != null && shell.Q<Button>("chat-channel-looc") != null,
+                        "Chat has OOC and LOOC channel buttons");
                     Capture("00-chat");
                     break;
-                case 5: Submit(shell, "PLAYERS"); break;
-                case 6:
-                    Require(shell.Q(className: "lobby-shell__player-card") != null, "Players list exists");
-                    Capture("00-players");
-                    break;
-                case 7: Submit(shell, "SETTINGS"); break;
-                case 8:
+                case 3: Submit(shell, "SETTINGS"); break;
+                case 4:
                     Require(shell.Query(className: "settings-panel__tab").ToList().Count == 3, "Settings has Display, Audio and Controls tabs");
                     Require(shell.Q<DropdownField>("settings-resolution") != null, "Display has a resolution dropdown");
                     foreach (string row in new[] { "windowMode", "vsync", "frameCap", "quality", "renderScale", "upscaler", "antiAliasing", "showFps" })
@@ -354,21 +360,21 @@ namespace SS3D.Editor.Automation
                     Press(shell, "settings-quality-0");
                     Capture("00-settings-display");
                     break;
-                case 9:
+                case 5:
                     Require(QualitySettings.GetQualityLevel() == 0, "Quality preset switches the quality level");
                     Require(shell.Q<Button>("settings-quality-0").ClassListContains("settings-panel__segment--on"), "The picked preset shows as selected");
                     Submit(shell, "AUDIO");
                     break;
-                case 10:
+                case 6:
                     Require(shell.Query<SliderInt>(className: "settings-panel__slider").ToList().Count == 5,
                         "Audio has Master, Music, SFX, Ambience and Personal sliders");
                     Require(shell.Q<Button>("settings-muteUnfocused-1") != null, "Audio has Mute when window unfocused");
-                    Require(shell.Q<Button>("settings-menuMusic-1") != null, "Audio has Main menu music");
+                    Require(shell.Q<Button>("settings-menuMusic-1") != null, "Audio has Menu music");
                     shell.Q<SliderInt>("settings-masterVolume").value = 35;
                     shell.Q<SliderInt>("settings-musicVolume").value = 50;
                     Press(shell, "settings-muteAll-1");
                     break;
-                case 11:
+                case 7:
                 {
                     Require(shell.Q(className: "settings-panel__banner").resolvedStyle.display == DisplayStyle.Flex, "Mute All shows the muted banner");
                     Require(shell.Query<SliderInt>(className: "settings-panel__slider").ToList().All(s => s.enabledInHierarchy),
@@ -386,13 +392,13 @@ namespace SS3D.Editor.Automation
                     Capture("00-settings-muted");
                     break;
                 }
-                case 12: Press(shell, "settings-muteAll-0"); break;
-                case 13:
+                case 8: Press(shell, "settings-muteAll-0"); break;
+                case 9:
                     Require(shell.Q(className: "settings-panel__banner").resolvedStyle.display == DisplayStyle.None, "Unmute hides the muted banner");
                     Capture("00-settings-sound");
                     break;
-                case 14: Submit(shell, "CONTROLS"); break;
-                case 15:
+                case 10: Submit(shell, "CONTROLS"); break;
+                case 11:
                 {
                     List<Button> bindings = shell.Query<Button>(className: "settings-panel__bind").ToList();
                     Require(bindings.Count >= 20, "Controls lists the rebindable actions from Controls.inputactions");
@@ -402,12 +408,12 @@ namespace SS3D.Editor.Automation
                     Capture("00-settings-controls");
                     break;
                 }
-                case 16:
+                case 12:
                     _pilotBind = shell.Query<Button>(className: "settings-panel__bind").First().name;
                     _pilotBindKey = shell.Q<Button>(_pilotBind).Q<Label>(className: "settings-panel__keycap").text;
                     Press(shell, _pilotBind);
                     break;
-                case 17:
+                case 13:
                 {
                     Button listening = shell.Q<Button>(_pilotBind);
                     Require(listening.ClassListContains("settings-panel__bind--listening")
@@ -415,13 +421,13 @@ namespace SS3D.Editor.Automation
                     Press(shell, _pilotBind);
                     break;
                 }
-                case 18:
+                case 14:
                     Require(shell.Q<Button>(className: "settings-panel__bind--listening") == null
                         && shell.Q<Button>(_pilotBind).Q<Label>(className: "settings-panel__keycap").text == _pilotBindKey,
                         "Clicking the listening binding cancels capture and keeps the key");
                     Submit(shell, "DISPLAY");
                     break;
-                case 19:
+                case 15:
                     Require(shell.Q<Button>("settings-quality-0").ClassListContains("settings-panel__segment--on"), "Display choices persist across tabs");
                     Submit(shell, "SERVER INFO");
                     break;
@@ -446,7 +452,7 @@ namespace SS3D.Editor.Automation
                 VisualElement root = Root();
                 if (root == null) return;
                 VisualElement shell = root.Q("lobby-shell-surface");
-                VisualElement creator = root.Q("character-creator-surface");
+                VisualElement window = root.Q("character-window-surface");
                 switch (_step)
                 {
                     case 0:
@@ -474,147 +480,142 @@ namespace SS3D.Editor.Automation
                         Capture("01-lobby");
                         break;
                     case 1:
-                        VisualElement preview = shell.Q(className: "lobby-shell__preview");
-                        Require(preview != null && preview.worldBound.width > 0, "Lobby preview has layout");
-                        using (ClickEvent evt = ClickEvent.GetPooled())
-                        {
-                            evt.target = preview;
-                            preview.SendEvent(evt);
-                        }
+                        Press(shell, "lobby-character");
                         break;
                     case 2:
-                        Require(creator != null && creator.resolvedStyle.display != DisplayStyle.None, "Character creator visible after preview click");
-                        Require(shell.resolvedStyle.display == DisplayStyle.None, "Lobby hidden while creator open");
-                        TextField field = creator.Q<TextField>();
-                        Require(field != null, "Identity name field exists");
-                        field.value = "Automation Pilot";
-                        Require(creator.Q(className: "char-creator__preview-image").resolvedStyle.backgroundImage.renderTexture != null,
+                        Require(window != null && window.resolvedStyle.display != DisplayStyle.None, "Character window visible after the card click");
+                        Require(shell.resolvedStyle.display == DisplayStyle.None, "Lobby hidden while the window is open");
+                        Require(window.Q("charwin-preview-image").resolvedStyle.backgroundImage.renderTexture != null,
                             "Live character RenderTexture attached");
-                        Require(creator.Q<DropdownField>("character-species") != null, "Species uses a dropdown");
-                        Require(!creator.Query<Label>().ToList().Any(l => l.text == "UNIFORM COLOR"), "Uniform color removed from Identity");
-                        Require(creator.Q<Button>(className: "char-creator__nav-btn").enabledInHierarchy == false,
-                            "Back disabled on Identity");
-                        Capture("02-identity");
+                        Require(window.Q<Label>("charwin-status-label").text == "Saved", "Opens Saved");
+                        Require(!window.Q<Button>("charwin-save").enabledInHierarchy, "Save waits for a change");
+                        Require(window.Q("charwin-randomize-look") != null && window.Q("charwin-randomize-name") != null, "Randomize buttons exist");
+                        Require(window.Query<Slider>().ToList().Count(slider => slider.name.StartsWith("body-")) == 6, "Six body sliders");
+                        Require(window.Q("charwin-hair-styles").childCount >= 2 && window.Q("charwin-beard-styles").childCount >= 2
+                            && window.Q("charwin-eyebrow-styles").childCount >= 2, "Hair, facial hair and eyebrow grids");
+                        window.Q<TextField>("charwin-name").value = "Pilot";
                         break;
-                    case 3: Submit(creator, "NEXT"); break;
+                    case 3:
+                        Require(!window.Q("charwin-name-error").ClassListContains("charwin-look__error--hidden"), "A one-word name shows its error");
+                        Require(!window.Q<Button>("charwin-save").enabledInHierarchy, "Save stays disabled while the name is invalid");
+                        Capture("02-appearance-name-error");
+                        break;
                     case 4:
-                        var sliders = creator.Query<Slider>().ToList();
-                        Require(sliders.Count >= 6, "Body morph controls exist");
-                        Require(!creator.Query<Label>().ToList().Any(l => l.text == "HAIR COLOR"), "Hair color removed from Body");
-                        sliders[0].value = 0.6f;
-                        sliders[1].value = 0.4f;
-                        Submit(creator, "›");
+                        window.Q<TextField>("charwin-name").value = "automation pilot";
+                        window.Q<Slider>("body-height").value = 0.6f;
+                        window.Q<Slider>("body-female").value = 0.4f;
+                        Click(window.Q("charwin-hair-colour").Children().ElementAt(2));
+                        Click(window.Q("charwin-beard-colour").Children().ElementAt(3));
+                        Click(window.Q("charwin-eyebrow-colour").Children().ElementAt(4));
                         break;
                     case 5:
-                        Require(creator.Q<Label>(className: "char-creator__angle-label").text == "Side", "Preview changed to Side");
-                        Require(PreviewOutfitMeshes().SequenceEqual(_initialOutfitMeshes), "Body edits preserve the chosen outfit");
-                        Capture("03-body-side");
+                        Require(window.Q("charwin-name-error").ClassListContains("charwin-look__error--hidden"), "A first and last name clears the error");
+                        Require(window.Q<Label>("charwin-status-label").text == "Unsaved changes", "Edits show Unsaved changes");
+                        Require(window.Q<Button>("charwin-save").enabledInHierarchy, "Save enabled with a valid change");
+                        Require(window.Q("charwin-hair-colour").Children().ElementAt(2).ClassListContains("charwin-look__swatch--selected")
+                            && window.Q("charwin-beard-colour").Children().ElementAt(3).ClassListContains("charwin-look__swatch--selected")
+                            && window.Q("charwin-eyebrow-colour").Children().ElementAt(4).ClassListContains("charwin-look__swatch--selected"),
+                            "Hair, facial hair and eyebrow colours are independent");
+                        Capture("03-appearance");
                         break;
-                    case 6: Submit(creator, "NEXT"); break;
+                    case 6: Press(window, "charwin-rotate-right"); break;
                     case 7:
-                        switch (_styleCheckStep)
-                        {
-                            case 0:
-                                Require(creator.Q("style-color-picker").Query<Label>().ToList().Any(l => l.text == "HAIR COLOR"), "Hair palette appears on Style");
-                                Click(creator.Q("style-color-picker").Query(className: "char-creator__swatch").ToList()[2]);
-                                break;
-                            case 1: Submit(creator, "FACIAL HAIR"); break;
-                            case 2:
-                                Require(creator.Q("style-color-picker").Query<Label>().ToList().Any(l => l.text == "FACIAL HAIR COLOR"), "Facial Hair palette has its own label");
-                                Click(creator.Q("style-color-picker").Query(className: "char-creator__swatch").ToList()[3]);
-                                break;
-                            case 3: Submit(creator, "EYEBROWS"); break;
-                            case 4:
-                                Require(creator.Q("style-color-picker").Query<Label>().ToList().Any(l => l.text == "EYEBROW COLOR"), "Eyebrow palette has its own label");
-                                Click(creator.Q("style-color-picker").Query(className: "char-creator__swatch").ToList()[4]);
-                                break;
-                            case 5: Submit(creator, "HAIR"); break;
-                            default:
-                                Require(creator.Q("style-color-picker").Query(className: "char-creator__swatch").ToList()[2]
-                                    .ClassListContains("char-creator__swatch--selected"), "Hair color survives changes to other style colors");
-                                Require(creator.Q("style-color-picker").worldBound.yMin >= creator.Q(className: "char-creator__style-scroll").worldBound.yMax,
-                                    "Color palette sits below style tiles");
-                                Capture("04-style");
-                                break;
-                        }
-                        if (_styleCheckStep++ < 6) _step--;
+                        Require(window.Q("charwin-angles").Children().ElementAt(1).ClassListContains("charwin__angle--active"), "Preview rotated to Side");
+                        Capture("04-appearance-side");
                         break;
-                    case 8: Submit(creator, "NEXT"); break;
-                    case 9:
-                        Require(creator.Query<Label>().ToList().Any(l => l.text.Contains("Automation Pilot")), "Review contains edited name");
-                        Require(creator.Query<Button>().ToList().Count(b => b.text == "SAVE CHARACTER") == 1,
-                            "Review has one Save action in the navigation footer");
-                        Button save = creator.Query<Button>().ToList().Single(b => b.text == "SAVE CHARACTER");
-                        Require(save.ClassListContains("char-creator__nav-btn--save"), "Save uses the green footer action");
-                        Require(save.worldBound.yMax <= creator.worldBound.yMax, "Save footer stays inside creator");
-                        Capture("05-review");
+                    case 8: Press(window, "charwin-rotate-left"); break;
+                    case 9: Press(window, "charwin-tab-jobs"); break;
+                    case 10:
+                        Require(window.Q("charwin-jobs") != null && window.Q("charwin-job-Security") != null, "Jobs tab lists the server's jobs");
+                        Require(window.Q("charwin-fallback") != null, "The fallback choice is pinned under the list");
+                        Press(window.Q("charwin-job-Engineer"), "charwin-prio-high");
                         break;
-                    case 10: Submit(creator, "SAVE CHARACTER"); break;
                     case 11:
-                        Require(creator.Query<Button>().ToList().Any(b => b.text == "SAVED" && !b.enabledInHierarchy),
-                            "Save confirms Saved and prevents duplicate submission");
-                        Submit(creator, "RETURN TO LOBBY");
+                        Press(window.Q("charwin-job-Security"), "charwin-prio-high");
                         break;
                     case 12:
-                        Require(shell.resolvedStyle.display != DisplayStyle.None, "Lobby restored after Return");
-                        Require(creator.resolvedStyle.display == DisplayStyle.None, "Creator hidden after Return");
-                        Require(shell.Query<Label>().ToList().Any(l => l.text == "AUTOMATION PILOT"), "Saved name displayed in lobby");
-                        Capture("06-saved-lobby");
+                        Require(window.Q("charwin-job-Engineer").Q<Button>("charwin-prio-medium").ClassListContains("charwin-jobs__prio-option--medium-on"),
+                            "A new High drops the old High to Medium");
+                        Require(!window.Q("charwin-jobs-notice").ClassListContains("charwin__notice--hidden"), "The notice says what moved");
+                        Require(window.Q<Label>("charwin-outfit-caption").text.Contains("Security"), "The preview wears the High job's clothes");
+                        Capture("05-jobs");
                         break;
-                    case 13: Click(shell.Q(className: "lobby-shell__preview")); break;
-                    case 14: Click(creator.Q(className: "char-creator__loadout-btn")); break;
+                    case 13: Press(window, "charwin-show-clothing"); break;
+                    case 14:
+                        Require(!GameObject.Find("CharacterPreviewDummy").GetComponentsInChildren<SkinnedMeshRenderer>(true)
+                            .Single(r => r.name == "Jumpsuit").gameObject.activeInHierarchy, "Show clothing off strips the preview");
+                        Press(window, "charwin-show-clothing");
+                        break;
                     case 15:
-                        List<VisualElement> loadoutRows = creator.Query(className: "char-creator__loadout-row").ToList();
-                        Require(loadoutRows.Count == 1, "Only the one starter character ships before New Character");
-                        Click(loadoutRows[0]);
+                        PreviewOutfitMeshes();
+                        Press(window, "charwin-tab-antags");
                         break;
                     case 16:
-                        Require(creator.Q<TextField>("character-name").value == "Automation Pilot", "Reselecting the character keeps its draft");
-                        Click(creator.Q(className: "char-creator__loadout-btn"));
+                        Require(window.Q("charwin-antags") != null && window.Q("charwin-antags-note") != null, "Antags tab with the mode-secrecy note");
+                        Capture("06-antags");
                         break;
-                    case 17: Click(creator.Q(className: "char-creator__loadout-new")); break;
+                    case 17: Press(window, "charwin-save"); break;
                     case 18:
-                        Require(creator.Q<TextField>("character-name").value == "New Character", "New Character resets identity");
-                        Submit(creator, "NEXT");
+                        Require(window.Q<Label>("charwin-status-label").text == "Saved", "Save shows Saved");
+                        Require(window.Q<Label>("charwin-switch-name").text == "Automation Pilot", "Save normalises the name");
+                        Press(window, "charwin-return");
                         break;
                     case 19:
-                        Require(Mathf.Approximately(creator.Q<Slider>("body-height").value, 0.5f)
-                            && Mathf.Approximately(creator.Q<Slider>("body-female").value, 0f), "New Character resets body morphs");
-                        Click(creator.Q(className: "char-creator__loadout-btn"));
+                        Require(shell.resolvedStyle.display != DisplayStyle.None, "Lobby restored after Return");
+                        Require(window.resolvedStyle.display == DisplayStyle.None, "Window hidden after Return");
+                        Require(shell.Q<Label>("lobby-character-name").text == "Automation Pilot", "Saved name on the lobby card");
+                        Require(shell.Q<Label>("lobby-high-job").text == "Security", "Saved High job on the lobby card");
+                        Capture("07-saved-lobby");
                         break;
-                    case 20:
-                        Click(creator.Query(className: "char-creator__loadout-row").ToList()
-                            .Single(e => e.Query<Label>().ToList().Any(l => l.text == "Automation Pilot")));
-                        break;
+                    case 20: Press(shell, "lobby-switch-character"); break;
                     case 21:
-                        Require(creator.Q<TextField>("character-name").value == "Automation Pilot", "Saved character restores edited name");
-                        Submit(creator, "NEXT");
+                        Require(shell.Q("character-switcher").ClassListContains("switcher--open"), "Switch character opens the switcher");
+                        Require(shell.Query("character-switcher-row").ToList().Count == 1, "A first run has one character");
+                        Capture("08-switcher");
                         break;
-                    case 22:
-                        Require(Mathf.Approximately(creator.Q<Slider>("body-height").value, 0.6f)
-                            && Mathf.Approximately(creator.Q<Slider>("body-female").value, 0.4f), "Saved character retains edited body morphs");
-                        Require(PreviewOutfitMeshes().SequenceEqual(_initialOutfitMeshes), "Saved character restores its chosen outfit");
-                        Submit(creator, "RETURN TO LOBBY");
+                    case 22: Press(shell, "character-switcher-new"); break;
+                    case 23:
+                        Require(shell.Query("character-switcher-row").ToList().Count == 2, "New adds a character");
+                        Require(shell.Q<Label>("lobby-character-name").text != "Automation Pilot", "New selects the new random character");
+                        Click(shell.Query("character-switcher-row").ToList()
+                            .Single(row => row.Query<Label>().ToList().Any(l => l.text == "Automation Pilot")));
                         break;
-                    case 23: Click(shell.Q(className: "lobby-shell__preview")); break;
                     case 24:
-                        Click(creator.Query(className: "char-creator__rail-item").ToList()
-                            .Single(e => e.Query<Label>().ToList().Any(l => l.text == "STYLE")));
+                        Require(shell.Q<Label>("lobby-character-name").text == "Automation Pilot", "Selecting a row switches the card");
+                        Require(!shell.Q("character-switcher").ClassListContains("switcher--open"), "Selecting closes the switcher");
+                        Press(shell, "lobby-character");
                         break;
                     case 25:
-                        Require(creator.Q("style-color-picker").Query(className: "char-creator__swatch").ToList()[2]
-                            .ClassListContains("char-creator__swatch--selected"), "Saved draft restores hair color");
-                        Submit(creator, "FACIAL HAIR");
+                        Require(window.Q<TextField>("charwin-name").value == "Automation Pilot", "The window opens on the selected character");
+                        Require(Mathf.Approximately(window.Q<Slider>("body-height").value, 0.6f)
+                            && Mathf.Approximately(window.Q<Slider>("body-female").value, 0.4f), "Saved body sliders restored");
+                        Require(window.Q("charwin-hair-colour").Children().ElementAt(2).ClassListContains("charwin-look__swatch--selected"),
+                            "Saved hair colour restored");
+                        window.Q<Slider>("body-fat").value = 0.9f;
+                        Press(window, "charwin-return");
                         break;
                     case 26:
-                        Require(creator.Q("style-color-picker").Query(className: "char-creator__swatch").ToList()[3]
-                            .ClassListContains("char-creator__swatch--selected"), "Saved draft restores independent facial hair color");
-                        Submit(creator, "EYEBROWS");
+                        Require(window.Q("charwin-prompt").ClassListContains("charwin__prompt--open"), "Return with unsaved changes asks first");
+                        Capture("09-unsaved-prompt");
                         break;
-                    case 27:
-                        Require(creator.Q("style-color-picker").Query(className: "char-creator__swatch").ToList()[4]
-                            .ClassListContains("char-creator__swatch--selected"), "Saved draft restores independent eyebrow color");
-                        Submit(creator, "RETURN TO LOBBY");
+                    case 27: Press(window, "charwin-prompt-discard"); break;
+                    case 28:
+                        Require(window.resolvedStyle.display == DisplayStyle.None && shell.resolvedStyle.display != DisplayStyle.None,
+                            "Discard returns to the lobby");
+                        Press(shell, "lobby-switch-character");
+                        break;
+                    case 29:
+                        VisualElement other = shell.Query("character-switcher-row").ToList()
+                            .Single(row => !row.Query<Label>().ToList().Any(l => l.text == "Automation Pilot"));
+                        Press(other, "character-switcher-trash");
+                        break;
+                    case 30:
+                        Require(shell.Q("character-switcher-confirm") != null, "Delete asks for confirmation");
+                        Press(shell, "character-switcher-confirm-delete");
+                        break;
+                    case 31:
+                        Require(shell.Query("character-switcher-row").ToList().Count == 1, "Delete removes the character");
+                        shell.Q("character-switcher").RemoveFromClassList("switcher--open");
                         break;
                     default: Finish(null, true); return;
                 }

@@ -1,0 +1,80 @@
+/*
+ * Character switcher popover (lobby effort Phase 5): opens beside "Switch character" in the lobby sidebar and beside the
+ * character window's top-bar button. Imported by Lobby.uss, so both screens have it.
+ */
+.lobby .switcher {
+    position: absolute; width: 440px; display: none;
+    background-color: var(--lb-panel); border-width: 1px; border-color: var(--lb-border); border-radius: 2px;
+}
+.lobby .switcher--open { display: flex; }
+.lobby .switcher__head {
+    flex-direction: row; align-items: center; height: 44px; padding: 0 14px; flex-shrink: 0;
+    background-color: var(--lb-chrome); border-bottom-width: 1px; border-bottom-color: var(--lb-border);
+}
+.lobby .switcher__title { font-size: 22px; letter-spacing: 1.76px; margin-right: 10px; }
+.lobby .switcher__count { font-size: 12px; color: var(--lb-text-2); }
+.lobby .switcher__hint { font-size: 12px; color: var(--lb-text-2); }
+.lobby .switcher__list { max-height: 660px; flex-shrink: 1; }
+.lobby .switcher__list .unity-scroll-view__content-container { padding: 6px; }
+.lobby .switcher__row {
+    flex-direction: row; align-items: center; height: 62px; padding: 0 8px; margin-bottom: 2px; flex-shrink: 0;
+    border-width: 1px; border-color: rgba(0, 0, 0, 0); border-radius: 2px;
+}
+.lobby .switcher__row:hover { background-color: var(--lb-hover); }
+.lobby .switcher__row:focus { border-color: var(--lb-border-strong); }
+.lobby .switcher__row--selected { background-color: var(--lb-inset); border-color: var(--lb-border); }
+.lobby .switcher__portrait {
+    width: 36px; height: 48px; margin-right: 12px; flex-shrink: 0; align-items: center; justify-content: center;
+    border-width: 1px; border-color: var(--lb-border); background-color: var(--lb-inset); overflow: hidden;
+}
+.switcher__portrait-image { position: absolute; left: 0; top: 0; right: 0; bottom: 0; -unity-background-scale-mode: scale-and-crop; }
+.lobby .switcher__silhouette { width: 26px; height: 40px; -unity-background-image-tint-color: #5a5d60; }
+.switcher__text { flex-grow: 1; flex-shrink: 1; min-width: 0; }
+.lobby .switcher__name { font-size: 14px; -unity-font-style: bold; color: var(--lb-text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.lobby .switcher__high { flex-direction: row; margin-top: 3px; }
+.lobby .switcher__high-prefix { font-size: 12px; color: var(--lb-text-2); margin-right: 4px; }
+.lobby .switcher__high-job { font-size: 12px; color: var(--lb-text-2); }
+.lobby .switcher__selected { flex-direction: row; align-items: center; margin: 0 10px; }
+.lobby .switcher__selected .lobby__icon { width: 12px; height: 12px; margin-right: 4px; -unity-background-image-tint-color: var(--lb-green); }
+.lobby .switcher__selected-label { font-size: 12px; -unity-font-style: bold; color: var(--lb-text); }
+.lobby .switcher__action {
+    width: 30px; height: 30px; align-items: center; justify-content: center; margin-left: 4px; flex-shrink: 0;
+    border-width: 1px; border-color: rgba(0, 0, 0, 0); border-radius: 2px; opacity: 0.45;
+}
+/* Always laid out, so Tab reaches them; full strength on the hovered, focused or selected row. */
+.lobby .switcher__row:hover .switcher__action, .lobby .switcher__row--selected .switcher__action,
+.lobby .switcher__row:focus .switcher__action, .lobby .switcher__action:focus { opacity: 1; }
+.lobby .switcher__action:hover { background-color: var(--lb-inset); border-color: var(--lb-border); }
+.lobby .switcher__action:focus { border-color: var(--lb-border-strong); }
+.switcher__action .lobby__icon { width: 14px; height: 14px; }
+.lobby .switcher__action:disabled, .lobby .switcher__row--selected .switcher__action:disabled { opacity: 0.2; }
+.lobby .switcher__confirm {
+    padding: 12px; margin: 0 0 6px; flex-shrink: 0;
+    border-width: 1px; border-radius: 2px; border-color: rgba(177, 61, 61, 0.4); background-color: var(--lb-red-bg);
+}
+.lobby .switcher__confirm-text { font-size: 14px; color: var(--lb-text); white-space: normal; margin-bottom: 10px; }
+.lobby .switcher__confirm-buttons { flex-direction: row; }
+.lobby .switcher__confirm-button {
+    flex-direction: row; align-items: center; height: 32px; padding: 0 12px; margin-right: 8px; border-radius: 2px;
+    border-width: 1px; border-color: var(--lb-chrome); background-color: var(--lb-chrome);
+}
+.lobby .switcher__confirm-button:hover { background-color: var(--lb-hover); }
+.lobby .switcher__confirm-button:focus { border-color: var(--lb-text); }
+.lobby .switcher__confirm-button--danger { background-color: var(--lb-red); border-color: var(--lb-red); }
+.lobby .switcher__confirm-button--danger:hover { background-color: #c54a4a; }
+.switcher__confirm-button .lobby__icon { width: 14px; height: 14px; margin-right: 8px; -unity-background-image-tint-color: var(--lb-text); }
+.lobby .switcher__confirm-label { font-size: 18px; letter-spacing: 1.44px; color: var(--lb-text); }
+.lobby .switcher__foot { padding: 10px 14px 12px; flex-shrink: 0; border-top-width: 1px; border-top-color: var(--lb-border); }
+.lobby .switcher__new {
+    flex-direction: row; align-items: center; justify-content: center; height: 36px; border-radius: 2px;
+    border-width: 1px; border-color: var(--lb-chrome); background-color: var(--lb-chrome);
+}
+.lobby .switcher__new:hover { background-color: var(--lb-hover); }
+.lobby .switcher__new:focus { border-color: var(--lb-border-strong); }
+.switcher__new .lobby__icon { width: 14px; height: 14px; margin-right: 8px; -unity-background-image-tint-color: var(--lb-text); }
+.lobby .switcher__new-label { font-size: 20px; letter-spacing: 1.6px; }
+.lobby .switcher__new:disabled { opacity: 1; background-color: var(--lb-inset); }
+.lobby .switcher__new:disabled .switcher__new-label { color: var(--lb-disabled); }
+.lobby .switcher__new:disabled .lobby__icon { -unity-background-image-tint-color: var(--lb-disabled); }
+.lobby .switcher__full { font-size: 12px; color: var(--lb-text-2); margin-top: 8px; white-space: normal; }
+.lobby .switcher__full--hidden { display: none; }

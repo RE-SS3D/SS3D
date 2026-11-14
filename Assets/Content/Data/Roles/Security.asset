@@ -20,3 +20,4 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 6f6e80ff9f87f7e4d810b2e9dcb013df, type: 2}
   _startingAccessBits: 110722
   _loadout: {fileID: 11400000, guid: b960cfb4622f98a41bda8879b31656f8, type: 2}
+  _description: Keeps the peace and protects the crew. Carries a baton and a gun, and is first to meet anyone who boards the station by force.

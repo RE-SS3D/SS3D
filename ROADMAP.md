@@ -17,7 +17,7 @@ do end to end. Each goal is split into **slices**, the smaller pieces that have 
 |------|---------------------------|----------|
 | [Test server](#test-server) | Download a release, click join, play with others on a live server | 6 of 8 done, 2 partial |
 | [Map authoring](#map-authoring) | Build your own station in a release build and hand it in | 9 of 11 done, 1 partial |
-| [Nuclear Operatives round](#nuclear-operatives-round) | Play a full Nuke Ops round from spawn to end screen | 5 of 12 done, 7 partial |
+| [Nuclear Operatives round](#nuclear-operatives-round) | Play a full Nuke Ops round from spawn to end screen | 5 of 13 done, 8 partial |
 | [Station round](#station-round) | Play a short, bare-bones SS13 shift with jobs and antagonists | 0 of 7 done, 1 partial |
 
 What already works, system by system, is listed in
@@ -76,6 +76,7 @@ What already works, system by system, is listed in
 | 🟡 | M8 | Space kills you, suits and internals protect you, and engineers can patch the hull (exposure damage and breach wind with knockdown/pull work) |
 | 🟡 | M9 | Station power and lights matter: lose power and the room goes dark (smash an APC or shoot out the lights, and the room goes red, then black; fixtures can be relamped) |
 | 🟡 | M10 | Engineers repair and rebuild what the ops blow up, and the crew can barricade (welding, plating, glazing, prying and rebuilding walls work; refilling a patched room does not yet) |
+| 🟡 | M11 | Make your character once and keep it: name, look, the jobs you want and whether you'll play an antagonist, then ready up or join a round already running (built: random first character, a character window with Jobs and Antags tabs, the countdown on connected players, and a job pick beside the crew manifest when joining late) |
 
 **Finish line (M6):** eight players play Nuke Ops rounds together on the always-on server.
 

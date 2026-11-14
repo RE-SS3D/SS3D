@@ -72,7 +72,8 @@ namespace SS3D.UI.SettingsPanel
                 i => _settings.SetVSync(i == 1));
             int[] caps = PlayerDisplaySettings.FrameCaps;
             Segmented(screen, "frameCap", "Frame cap", caps.Select(c => c == 0 ? "Off" : c.ToString()).ToArray(),
-                () => Array.IndexOf(caps, Display.FrameCap), Array.IndexOf(caps, DisplayDefaults.FrameCap),
+                // VSync on ignores the cap, so the row reads Off; the saved cap returns when VSync goes off.
+                () => Array.IndexOf(caps, Display.VSync ? 0 : Display.FrameCap), Array.IndexOf(caps, DisplayDefaults.FrameCap),
                 i => _settings.SetFrameCap(caps[i]),
                 () => Display.VSync ? new RowState("Not used while VSync is on.", locked: true) : default);
 
@@ -140,8 +141,8 @@ namespace SS3D.UI.SettingsPanel
                 AudioDefaults.MuteWhenUnfocused ? 1 : 0, i => _settings.SetMuteWhenUnfocused(i == 1));
 
             VisualElement menu = Group("Main menu");
-            Segmented(menu, "menuMusic", "Main menu music", OffOn, () => Audio.MenuMusic ? 1 : 0, AudioDefaults.MenuMusic ? 1 : 0,
-                i => _settings.SetMenuMusic(i == 1), () => new RowState("Plays on the main menu only."));
+            Segmented(menu, "menuMusic", "Menu music", OffOn, () => Audio.MenuMusic ? 1 : 0, AudioDefaults.MenuMusic ? 1 : 0,
+                i => _settings.SetMenuMusic(i == 1), () => new RowState("Plays on the main menu and in the lobby."));
         }
 
         private VisualElement Group(string title)

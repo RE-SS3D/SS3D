@@ -6,13 +6,20 @@ using UnityEngine;
 
 namespace SS3D.UI.Lobby
 {
-    /// <summary>Local character presets, independent of server-owned player meta and crew records.</summary>
+    /// <summary>
+    /// The player's saved characters on this machine, independent of server-owned player meta and crew records
+    /// (a deviation from persistence-save.md §5 until server player data exists). Schema v2 adds each character's job
+    /// priorities, antagonist choices and fallback (lobby effort Decisions 1–2); a v1 file is migrated on load and
+    /// written back as v2.
+    /// </summary>
     public sealed class CharacterProfileStore
     {
+        public const int CurrentVersion = 2;
+
         [Serializable]
         private sealed class FileData
         {
-            public int Version = 1;
+            public int Version = CurrentVersion;
             public string SelectedId;
             public Entry[] Characters;
         }
@@ -20,7 +27,8 @@ namespace SS3D.UI.Lobby
         [Serializable]
         private sealed class Entry
         {
-            public CharacterCreatorDraft Draft;
+            // Kept as "Draft" (the old type name): it is the key in every saved characters.json.
+            public SavedCharacter Draft;
             // JsonUtility cannot serialize the draft's dictionary. Store morphs by key, not UI order.
             public string[] MorphKeys;
             public float[] MorphValues;
@@ -29,7 +37,9 @@ namespace SS3D.UI.Lobby
         public sealed class Profile
         {
             public string SelectedId;
-            public CharacterCreatorDraft[] Characters;
+            public SavedCharacter[] Characters;
+            /// <summary>The file was an older schema and has been rewritten (or, when read-only, would have been).</summary>
+            public bool Migrated;
         }
 
         public static string DefaultPath
@@ -47,9 +57,18 @@ namespace SS3D.UI.Lobby
         }
 
         private readonly string _path;
+        private readonly Func<SavedCharacter> _createRandom;
         private bool _readOnly;
 
-        public CharacterProfileStore(string path) => _path = path;
+        /// <param name="createRandom">
+        /// Makes the random character that replaces a v1 store holding only the untouched mock starter (Decision 2).
+        /// Without it the starter is kept.
+        /// </param>
+        public CharacterProfileStore(string path, Func<SavedCharacter> createRandom = null)
+        {
+            _path = path;
+            _createRandom = createRandom;
+        }
 
         public Profile Load()
         {
@@ -57,17 +76,28 @@ namespace SS3D.UI.Lobby
             try
             {
                 FileData data = JsonUtility.FromJson<FileData>(File.ReadAllText(_path));
-                if (data == null || data.Version != 1 || data.Characters == null)
+                if (data == null || data.Version is < 1 or > CurrentVersion || data.Characters == null)
                     throw new InvalidDataException("Unsupported or incomplete character profile.");
-                List<CharacterCreatorDraft> characters = new();
+                bool migrating = data.Version < CurrentVersion;
+                List<SavedCharacter> characters = new();
                 HashSet<string> ids = new();
                 foreach (Entry entry in data.Characters)
                 {
-                    CharacterCreatorDraft draft = entry?.Draft;
+                    SavedCharacter draft = entry?.Draft;
                     if (draft == null || string.IsNullOrWhiteSpace(draft.Id) || !ids.Add(draft.Id))
                         throw new InvalidDataException("Invalid or duplicate character slot.");
                     if (entry.MorphKeys == null || entry.MorphValues == null || entry.MorphKeys.Length != entry.MorphValues.Length)
                         throw new InvalidDataException("Invalid character morph data.");
+                    if (migrating)
+                    {
+                        // v1 had no preferences: every job Never, every antagonist unset (off), fallback Assistant.
+                        draft.Preferences = new CharacterPreferences();
+                    }
+                    else if (draft.Preferences == null || !draft.Preferences.IsWellFormed)
+                    {
+                        throw new InvalidDataException("Invalid character preferences.");
+                    }
+
                     for (int i = 0; i < entry.MorphKeys.Length; i++)
                     {
                         string key = entry.MorphKeys[i];
@@ -81,7 +111,20 @@ namespace SS3D.UI.Lobby
                 }
                 if (!characters.Any(c => c.Id == data.SelectedId))
                     throw new InvalidDataException("Selected character slot is missing.");
-                return new Profile { SelectedId = data.SelectedId, Characters = characters.ToArray() };
+                Profile profile = new() { SelectedId = data.SelectedId, Characters = characters.ToArray(), Migrated = migrating };
+                if (migrating)
+                {
+                    if (characters.Count == 1 && characters[0].IsUntouchedMockStarter && _createRandom?.Invoke() is { } random)
+                    {
+                        profile.Characters = new SavedCharacter[] { random };
+                        profile.SelectedId = random.Id;
+                    }
+
+                    Save(profile.Characters, profile.SelectedId);
+                    Debug.Log($"[Lobby] Migrated character presets from schema v{data.Version} to v{CurrentVersion}.");
+                }
+
+                return profile;
             }
             catch (Exception exception) when (exception is IOException or InvalidDataException or UnauthorizedAccessException or ArgumentException)
             {
@@ -92,7 +135,7 @@ namespace SS3D.UI.Lobby
             }
         }
 
-        public bool Save(IEnumerable<CharacterCreatorDraft> characters, string selectedId)
+        public bool Save(IEnumerable<SavedCharacter> characters, string selectedId)
         {
             if (_readOnly) return false;
             string temporary = _path + ".tmp";

@@ -111,6 +111,8 @@ namespace SS3D.Systems.Bootstrap
             }
 
 #if !UNITY_SERVER
+            // Menu music outlives scenes: it plays on from the main menu into the lobby (lobby effort Decision 15).
+            EnsureSubSystem<MenuMusicSubSystem>();
             EnsureSubSystemType(MainMenuTypeName);
 #endif
             EnsureSubSystem<ApplicationInitializerSubSystem>();

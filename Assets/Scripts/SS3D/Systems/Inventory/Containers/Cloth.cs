@@ -42,5 +42,12 @@ namespace SS3D.Systems.Inventory.Containers
 
             return null;
         }
+
+        /// <summary>The mesh this item shows on <paramref name="clothType"/>, if it covers that body part.</summary>
+        public bool TryGetClothMesh(ClothType clothType, out Mesh mesh)
+        {
+            mesh = null;
+            return _clothMeshes != null && _clothMeshes.TryGetValue(clothType, out mesh) && mesh != null;
+        }
     }
 }

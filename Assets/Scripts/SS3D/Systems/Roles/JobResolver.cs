@@ -7,7 +7,7 @@ namespace SS3D.Systems.Roles
     /// Server-side job allocation (lobby.md §5). Round start runs one pass: every player's High jobs
     /// are tried before anyone's Medium, then Low, in a fresh random player order per tier and a random
     /// pick among a player's equally ranked open jobs. Players left over get the fallback job, which
-    /// ignores its cap so nobody is unable to join.
+    /// ignores its cap so nobody is unable to join, unless their character returns to the lobby instead.
     /// </summary>
     public static class JobResolver
     {
@@ -17,12 +17,17 @@ namespace SS3D.Systems.Roles
         /// <param name="preferences">Per-player job priorities; missing players or jobs mean Never.</param>
         /// <param name="jobs">Open jobs. Slots of 0 or less are unlimited.</param>
         /// <param name="fallback">Job given to anyone the pass could not place.</param>
+        /// <param name="returnsToLobby">
+        /// Players whose character returns to the lobby (<see cref="JobFallback.ReturnToLobby"/>) rather than take the
+        /// fallback job. A player of these the pass could not place is left out of the result.
+        /// </param>
         public static Dictionary<string, string> Resolve(
             IReadOnlyList<string> players,
             IReadOnlyDictionary<string, IReadOnlyDictionary<string, JobPriority>> preferences,
             IReadOnlyList<JobSlotInfo> jobs,
             string fallback,
-            Random random)
+            Random random,
+            ICollection<string> returnsToLobby = null)
         {
             Dictionary<string, int> open = OpenSlots(jobs);
             Dictionary<string, string> result = new();
@@ -47,7 +52,10 @@ namespace SS3D.Systems.Roles
 
             foreach (string player in unassigned)
             {
-                result[player] = fallback;
+                if (returnsToLobby == null || !returnsToLobby.Contains(player))
+                {
+                    result[player] = fallback;
+                }
             }
 
             return result;
@@ -55,13 +63,14 @@ namespace SS3D.Systems.Roles
 
         /// <summary>
         /// Latejoin is first come, first served: the player's highest ranked job that is still open,
-        /// otherwise the fallback.
+        /// otherwise the fallback job, or null when the character returns to the lobby instead.
         /// </summary>
         public static string ResolveLateJoin(
             IReadOnlyDictionary<string, JobPriority> preferences,
             IReadOnlyList<JobSlotInfo> jobs,
             string fallback,
-            Random random)
+            Random random,
+            JobFallback whenNoneOpen = JobFallback.Assistant)
         {
             Dictionary<string, int> open = OpenSlots(jobs);
             foreach (JobPriority tier in Tiers)
@@ -72,7 +81,32 @@ namespace SS3D.Systems.Roles
                 }
             }
 
-            return fallback;
+            return whenNoneOpen == JobFallback.ReturnToLobby ? null : fallback;
+        }
+
+        /// <summary>
+        /// Why a latejoiner's direct pick of <paramref name="job"/> is refused, or null when it is open (lobby effort
+        /// Decision 11). First come, first served: the server re-checks the slot when the request arrives. The
+        /// fallback job ignores its cap, like at round start.
+        /// </summary>
+        public static string LateJoinPickRefusal(string job, IReadOnlyList<JobSlotInfo> jobs, string fallback)
+        {
+            if (string.IsNullOrEmpty(job))
+            {
+                return "Pick a job to join as.";
+            }
+
+            foreach (JobSlotInfo slot in jobs)
+            {
+                if (slot.Name != job)
+                {
+                    continue;
+                }
+
+                return job == fallback || slot.Open > 0 ? null : $"{job} is full. Pick another job.";
+            }
+
+            return $"{job} is not a job on this station.";
         }
 
         private static Dictionary<string, int> OpenSlots(IReadOnlyList<JobSlotInfo> jobs)

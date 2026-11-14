@@ -1,0 +1,210 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements">
+    <!-- Lobby shell (lobby effort Phase 4), built to the "SS3D Lobby & Character window" canvas. LobbyView binds it by name. -->
+    <ui:VisualElement name="lobby-shell-surface" class="lobby lobby-theme" focusable="true">
+        <!-- On the root, not the UXML: LobbyView detaches this element from its TemplateContainer. -->
+        <ui:Style src="project://database/Assets/Content/Systems/UI/Lobby/Lobby.uss" />
+        <ui:VisualElement class="lobby__veil" picking-mode="Ignore" />
+        <ui:VisualElement name="lobby-sidebar" class="lobby__sidebar">
+            <ui:VisualElement class="lobby__wordmark-block" picking-mode="Ignore">
+                <ui:VisualElement name="lobby-wordmark" class="lobby__wordmark" picking-mode="Ignore" tooltip="Space Station 3D" />
+            </ui:VisualElement>
+
+            <ui:VisualElement name="lobby-round" class="lobby__section lobby__round">
+                <ui:VisualElement class="lobby__row">
+                    <ui:Label text="ROUND" class="lobby__eyebrow" />
+                    <ui:VisualElement class="lobby__grow" />
+                    <ui:VisualElement name="lobby-round-dot" class="lobby__dot" />
+                    <ui:Label name="lobby-round-status" text="Pre-round" class="lobby__status" />
+                </ui:VisualElement>
+                <ui:Label name="lobby-round-caption" text="Round starts in" class="lobby__round-caption" />
+                <ui:VisualElement name="lobby-round-timer-wrap" class="lobby__timer-wrap">
+                    <ui:Label name="lobby-round-timer" text="02:41" class="lobby__timer lb-mono" />
+                    <ui:VisualElement name="lobby-round-strike" class="lobby__timer-strike" picking-mode="Ignore" />
+                </ui:VisualElement>
+                <ui:VisualElement name="lobby-round-note" class="lobby__row lobby__note">
+                    <ui:VisualElement name="lobby-round-note-icon" class="lobby__icon lobby__icon--lock lobby__note-icon" />
+                    <ui:Label name="lobby-round-note-text" class="lobby__note-text" />
+                </ui:VisualElement>
+                <ui:Label name="lobby-map-load-status" class="lobby__map-load" />
+            </ui:VisualElement>
+
+            <ui:VisualElement class="lobby__section lobby__character">
+                <ui:Button name="lobby-character" class="lobby__card" tooltip="Open the character window">
+                    <ui:VisualElement class="lobby__preview-frame" picking-mode="Ignore">
+                        <ui:VisualElement name="lobby-preview-image" class="lobby__preview-image" picking-mode="Ignore" />
+                    </ui:VisualElement>
+                    <ui:VisualElement class="lobby__card-text" picking-mode="Ignore">
+                        <ui:Label text="PLAYING AS" class="lobby__eyebrow" picking-mode="Ignore" />
+                        <ui:Label name="lobby-character-name" text="Rory Lindqvist" class="lobby__character-name" picking-mode="Ignore" />
+                        <ui:VisualElement class="lobby__row lobby__high" picking-mode="Ignore">
+                            <ui:VisualElement name="lobby-high-swatch" class="lobby__high-swatch lb-swatch" picking-mode="Ignore" />
+                            <ui:Label name="lobby-high-prefix" text="High:" class="lobby__high-prefix" picking-mode="Ignore" />
+                            <ui:Label name="lobby-high-job" text="Security Officer" class="lobby__high-job" picking-mode="Ignore" />
+                        </ui:VisualElement>
+                        <ui:VisualElement class="lobby__grow" picking-mode="Ignore" />
+                        <ui:VisualElement class="lobby__row lobby__card-edit" picking-mode="Ignore">
+                            <ui:Label text="EDIT CHARACTER" class="lobby__card-edit-label lb-titling" picking-mode="Ignore" />
+                            <ui:VisualElement class="lobby__icon lobby__icon--chevron-right" picking-mode="Ignore" />
+                        </ui:VisualElement>
+                    </ui:VisualElement>
+                </ui:Button>
+                <ui:Button name="lobby-switch-character" class="lobby__switch" tooltip="Switch to another of your characters">
+                    <ui:VisualElement class="lobby__icon lobby__icon--users" picking-mode="Ignore" />
+                    <ui:Label text="SWITCH CHARACTER" class="lobby__switch-label lb-titling" picking-mode="Ignore" />
+                    <ui:VisualElement class="lobby__grow" picking-mode="Ignore" />
+                    <ui:Label name="lobby-character-count" text="3/10" class="lobby__switch-count lb-mono" picking-mode="Ignore" />
+                    <ui:VisualElement class="lobby__icon lobby__icon--chevron-down" picking-mode="Ignore" />
+                </ui:Button>
+            </ui:VisualElement>
+
+            <ui:VisualElement class="lobby__section lobby__entry">
+                <ui:Button name="lobby-ready" class="lobby__ready lobby__ready--accent">
+                    <ui:VisualElement name="lobby-ready-check" class="lobby__icon lobby__icon--check lobby__ready-check" picking-mode="Ignore" />
+                    <ui:VisualElement class="lobby__ready-text" picking-mode="Ignore">
+                        <ui:Label name="lobby-ready-title" text="READY UP" class="lobby__ready-title lb-titling" picking-mode="Ignore" />
+                        <ui:Label name="lobby-ready-subtitle" text="Spawn as Rory when the round starts" class="lobby__ready-subtitle" picking-mode="Ignore" />
+                    </ui:VisualElement>
+                </ui:Button>
+                <ui:VisualElement name="lobby-ready-note" class="lobby__row lobby__note lobby__entry-note">
+                    <ui:VisualElement class="lobby__icon lobby__icon--lock lobby__note-icon" />
+                    <ui:Label name="lobby-ready-note-text" class="lobby__note-text" />
+                </ui:VisualElement>
+                <ui:Button name="lobby-observe" class="lobby__observe">
+                    <ui:VisualElement class="lobby__icon lobby__icon--ghost lobby__observe-icon" picking-mode="Ignore" />
+                    <ui:Label name="lobby-observe-title" text="OBSERVE" class="lobby__observe-title lb-titling" picking-mode="Ignore" />
+                    <ui:Label name="lobby-observe-subtitle" text="Go in now as a ghost, no body" class="lobby__observe-subtitle" picking-mode="Ignore" />
+                </ui:Button>
+            </ui:VisualElement>
+
+            <ui:VisualElement class="lobby__grow" picking-mode="Ignore" />
+
+            <ui:VisualElement name="lobby-music" class="lobby__music">
+                <ui:Button name="lobby-music-toggle" class="lobby__music-toggle" tooltip="Turn music off">
+                    <ui:VisualElement name="lobby-music-icon" class="lobby__icon lobby__icon--music" picking-mode="Ignore" />
+                </ui:Button>
+                <ui:VisualElement class="lobby__music-text" picking-mode="Ignore">
+                    <ui:Label text="MUSIC" class="lobby__eyebrow" picking-mode="Ignore" />
+                    <ui:Label name="lobby-music-title" text="Breach" class="lobby__music-title lb-mono" picking-mode="Ignore" />
+                </ui:VisualElement>
+                <ui:Button name="lobby-music-next" text="NEXT" class="lobby__quiet-button lobby__music-next lb-titling" tooltip="Next track" />
+                <ui:Slider name="lobby-music-volume" low-value="0" high-value="1" value="0.8" class="lobby__slider lobby__music-volume" tooltip="Music volume" />
+            </ui:VisualElement>
+
+            <ui:VisualElement class="lobby__footer">
+                <ui:Button name="lobby-report-bug" class="lobby__quiet-button lobby__footer-button" tooltip="Report a bug (F8)">
+                    <ui:VisualElement class="lobby__icon lobby__icon--bug" picking-mode="Ignore" />
+                    <ui:Label text="REPORT A BUG" class="lobby__footer-label lb-titling" picking-mode="Ignore" />
+                    <ui:Label text="F8" class="lobby__keycap lb-mono" picking-mode="Ignore" />
+                </ui:Button>
+                <ui:Button name="lobby-quit" class="lobby__quiet-button lobby__footer-button lobby__quit">
+                    <ui:VisualElement class="lobby__icon lobby__icon--logout" picking-mode="Ignore" />
+                    <ui:Label name="lobby-quit-label" text="QUIT TO MENU" class="lobby__footer-label lb-titling" picking-mode="Ignore" />
+                </ui:Button>
+            </ui:VisualElement>
+        </ui:VisualElement>
+
+        <ui:VisualElement name="lobby-shell-window" class="lobby__main">
+            <ui:VisualElement class="lobby__header">
+                <ui:Label name="lobby-server-name" text="RE:SS3D SANDBOX" class="lobby__server-name lb-titling" />
+                <ui:VisualElement class="lobby__header-meta">
+                    <ui:Label text="Map" class="lobby__meta-key" />
+                    <ui:Label name="lobby-header-map" text="Box Station" class="lobby__meta-value" />
+                    <ui:VisualElement class="lobby__meta-sep" />
+                    <ui:Label text="Mode" class="lobby__meta-key" />
+                    <ui:Label name="lobby-header-mode" text="Secret" class="lobby__meta-value" />
+                    <ui:VisualElement class="lobby__meta-sep" />
+                    <ui:Label text="Players" class="lobby__meta-key" />
+                    <ui:Label name="lobby-header-players" text="14/40" class="lobby__meta-value lb-mono" />
+                    <ui:VisualElement class="lobby__meta-sep" />
+                    <ui:Label text="Round" class="lobby__meta-key" />
+                    <ui:VisualElement name="lobby-header-round-dot" class="lobby__dot" />
+                    <ui:Label name="lobby-header-round" text="Pre-round" class="lobby__meta-value" />
+                </ui:VisualElement>
+                <ui:VisualElement class="lobby__grow" />
+                <ui:Button name="lobby-back-to-round" class="lobby__quiet-button lobby__back" tooltip="Close this menu (Esc)">
+                    <ui:Label text="BACK TO ROUND" class="lobby__back-label lb-titling" picking-mode="Ignore" />
+                    <ui:Label text="Esc" class="lobby__keycap lb-mono" picking-mode="Ignore" />
+                </ui:Button>
+            </ui:VisualElement>
+
+            <ui:VisualElement name="lobby-tabs" class="lobby__tabs">
+                <ui:Button name="tab-server-info" text="SERVER INFO" class="lobby__tab lb-titling" />
+                <ui:Button name="tab-chat" text="CHAT" class="lobby__tab lb-titling" />
+                <ui:Button name="tab-settings" text="SETTINGS" class="lobby__tab lb-titling" />
+                <ui:Button name="tab-last-round" text="LAST ROUND" class="lobby__tab lb-titling" />
+                <ui:Button name="tab-server-settings" class="lobby__tab lb-titling">
+                    <ui:Label text="SERVER SETTINGS" class="lobby__tab-label" picking-mode="Ignore" />
+                    <ui:Label text="ADMIN" class="lobby__tab-badge lb-mono" picking-mode="Ignore" />
+                </ui:Button>
+                <ui:VisualElement class="lobby__grow" picking-mode="Ignore" />
+                <ui:VisualElement name="lobby-admin" class="lobby__admin">
+                    <ui:Label text="Admin" class="lobby__admin-label" />
+                    <ui:Button name="lobby-admin-switch" class="lobby__switch-toggle" tooltip="Show Server Settings">
+                        <ui:VisualElement class="lobby__switch-knob" picking-mode="Ignore" />
+                    </ui:Button>
+                </ui:VisualElement>
+            </ui:VisualElement>
+
+            <ui:VisualElement name="lobby-tab-content" class="lobby__tab-content" />
+        </ui:VisualElement>
+
+        <!-- Join picker (lobby effort Phase 6), opened by Join during a round. LobbyJoinPicker fills the lists. -->
+        <ui:VisualElement name="lobby-join" class="lobby-join">
+            <ui:VisualElement name="lobby-join-card" class="lobby-join__card">
+                <ui:VisualElement class="lobby-join__header">
+                    <ui:Label text="JOIN THE ROUND" class="lobby-join__title lb-titling" />
+                    <ui:Label text="Round time" class="lobby-join__meta-key" />
+                    <ui:Label name="lobby-join-round-time" text="00:47:12" class="lobby-join__clock lb-mono" />
+                    <ui:VisualElement class="lobby__grow" />
+                    <ui:Button name="lobby-join-close" class="lobby-join__close" tooltip="Close (Esc)">
+                        <ui:VisualElement class="lobby__icon lobby__icon--x" picking-mode="Ignore" />
+                    </ui:Button>
+                </ui:VisualElement>
+                <ui:VisualElement class="lobby-join__body">
+                    <ui:VisualElement name="lobby-join-jobs" class="lobby-join__jobs">
+                        <ui:VisualElement class="lobby-join__section-head">
+                            <ui:Label text="OPEN JOBS" class="lobby-join__section-title lb-titling" />
+                            <ui:Label name="lobby-join-open-count" text="2 open" class="lobby-join__section-count lb-mono" />
+                            <ui:VisualElement class="lobby__grow" />
+                            <ui:Label text="Pick a job to see what it does" class="lobby-join__hint" />
+                        </ui:VisualElement>
+                        <ui:VisualElement name="lobby-join-notice" class="lobby-join__notice lobby-join__notice--hidden">
+                            <ui:VisualElement class="lobby__icon lobby__icon--info" picking-mode="Ignore" />
+                            <ui:Label name="lobby-join-notice-text" class="lobby-join__notice-text" />
+                        </ui:VisualElement>
+                        <ui:ScrollView name="lobby-join-job-list" class="lobby-join__job-list" />
+                        <ui:VisualElement class="lobby-join__as">
+                            <ui:VisualElement class="lobby-join__portrait-frame" picking-mode="Ignore">
+                                <ui:VisualElement name="lobby-join-portrait" class="lobby-join__portrait" picking-mode="Ignore" />
+                            </ui:VisualElement>
+                            <ui:VisualElement class="lobby-join__as-text" picking-mode="Ignore">
+                                <ui:Label text="JOINING AS" class="lobby__eyebrow" picking-mode="Ignore" />
+                                <ui:Label name="lobby-join-character" text="Rory Lindqvist" class="lobby-join__character" picking-mode="Ignore" />
+                            </ui:VisualElement>
+                            <ui:Button name="lobby-join-change" class="lobby-join__change" tooltip="Join as another of your characters">
+                                <ui:VisualElement class="lobby__icon lobby__icon--users" picking-mode="Ignore" />
+                                <ui:Label text="CHANGE" class="lobby-join__change-label lb-titling" picking-mode="Ignore" />
+                            </ui:Button>
+                        </ui:VisualElement>
+                        <ui:Button name="lobby-join-confirm" class="lobby-join__confirm">
+                            <ui:VisualElement class="lobby-join__confirm-text" picking-mode="Ignore">
+                                <ui:Label name="lobby-join-confirm-title" text="JOIN AS DOCTOR" class="lobby-join__confirm-title lb-titling" picking-mode="Ignore" />
+                                <ui:Label name="lobby-join-confirm-subtitle" text="Spawns you on the station straight away" class="lobby-join__confirm-subtitle" picking-mode="Ignore" />
+                            </ui:VisualElement>
+                            <ui:Label text="Enter" class="lobby__keycap lobby-join__confirm-key lb-mono" picking-mode="Ignore" />
+                        </ui:Button>
+                    </ui:VisualElement>
+                    <ui:VisualElement name="lobby-join-manifest-section" class="lobby-join__manifest-section">
+                        <ui:VisualElement class="lobby-join__section-head">
+                            <ui:Label text="CREW MANIFEST" class="lobby-join__section-title lb-titling" />
+                            <ui:Label name="lobby-join-aboard" text="12 aboard" class="lobby-join__section-count lb-mono" />
+                        </ui:VisualElement>
+                        <ui:ScrollView name="lobby-join-manifest-scroll" class="lobby-join__manifest-scroll">
+                            <ui:VisualElement name="lobby-join-manifest" class="lobby-join__manifest" />
+                        </ui:ScrollView>
+                    </ui:VisualElement>
+                </ui:VisualElement>
+            </ui:VisualElement>
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

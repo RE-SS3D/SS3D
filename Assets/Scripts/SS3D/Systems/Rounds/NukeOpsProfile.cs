@@ -5,8 +5,8 @@ namespace SS3D.Systems.Rounds
 {
     /// <summary>
     /// The 24/7 Nuke Ops server profile (test-server.md T8; effort <c>2026-11_round-end-loop</c> P4): a server
-    /// launched with <see cref="CommandLineFlag"/> runs Secret rounds on its own, 30 minutes each, and only
-    /// draws a squad once <see cref="MinimumReadyPlayers"/> players are ready. Unlike <see cref="SandboxProfile"/>
+    /// launched with <see cref="CommandLineFlag"/> runs Secret rounds on its own, 30 minutes each. Its countdown waits
+    /// for <see cref="MinimumReadyPlayers"/> connected players, and it only draws a squad once that many are ready. Unlike <see cref="SandboxProfile"/>
     /// it keeps the normal server rules: no open build, no respawn, map persistence on, players ready
     /// themselves. Like it, the flag only overlays the in-memory <see cref="ServerSettings"/> at boot and
     /// never writes saved settings.
@@ -21,8 +21,13 @@ namespace SS3D.Systems.Rounds
 
         /// <summary>Overrides <see cref="RoundLengthMinutes"/>, for tests: <c>-nukeops-round-minutes=1</c>.</summary>
         public const string RoundMinutesFlag = "-nukeops-round-minutes=";
-        /// <summary>Overrides <see cref="MinimumReadyPlayers"/>, for tests: <c>-nukeops-min-ready=1</c>.</summary>
+        /// <summary>
+        /// Overrides <see cref="MinimumReadyPlayers"/>, for tests: <c>-nukeops-min-ready=1</c>. It sets both the connected
+        /// count the countdown waits for and the ready count a squad needs.
+        /// </summary>
         public const string MinimumReadyFlag = "-nukeops-min-ready=";
+        /// <summary>Overrides the 120 s lobby countdown, for tests: <c>-nukeops-countdown-seconds=20</c>.</summary>
+        public const string CountdownSecondsFlag = "-nukeops-countdown-seconds=";
 
         /// <summary>Seconds from arming the nuclear device to detonation (antagonist-content.md §6 leaves it open).</summary>
         public const int NukeCountdownSeconds = 180;
@@ -49,6 +54,10 @@ namespace SS3D.Systems.Rounds
         public static int MinimumReadyFrom(string[] args) =>
             IntFlag(args, MinimumReadyFlag, 1, 256) ?? MinimumReadyPlayers;
 
+        /// <summary>The lobby countdown from <see cref="CountdownSecondsFlag"/>, else <see cref="ServerSettings.DefaultCountdownSeconds"/>.</summary>
+        public static int CountdownSecondsFrom(string[] args) =>
+            IntFlag(args, CountdownSecondsFlag, 5, 3600) ?? ServerSettings.DefaultCountdownSeconds;
+
         /// <summary>The device countdown from <see cref="NukeSecondsFlag"/>, else <see cref="NukeCountdownSeconds"/>.</summary>
         public static int NukeSecondsFrom(string[] args) =>
             IntFlag(args, NukeSecondsFlag, 10, 3600) ?? NukeCountdownSeconds;
@@ -57,20 +66,24 @@ namespace SS3D.Systems.Rounds
         public static ServerSettings Apply(ServerSettings settings)
         {
             string[] args = Environment.GetCommandLineArgs();
-            return Apply(settings, RoundMinutesFrom(args), MinimumReadyFrom(args));
+            return Apply(settings, RoundMinutesFrom(args), MinimumReadyFrom(args), CountdownSecondsFrom(args));
         }
 
-        public static ServerSettings Apply(ServerSettings settings, int roundLengthMinutes, int minimumReady)
+        public static ServerSettings Apply(ServerSettings settings, int roundLengthMinutes, int minimumReady,
+            int countdownSeconds = ServerSettings.DefaultCountdownSeconds)
         {
             settings.Mode = "Secret";
             settings.RoundLengthMinutes = roundLengthMinutes;
             settings.MinimumReadyForNukeOps = minimumReady;
+            settings.MinimumConnected = minimumReady;
+            settings.CountdownSeconds = countdownSeconds;
             settings.AllowLateJoin = true;
             settings.AutoStart = true;
             settings.AllConnectedReady = false;
             settings.RespawnEnabled = false;
             settings.RemoveCorpseOnRespawn = false;
             settings.MapPersistence = true;
+            settings.AntagonistOptInDefault = true;
             settings.Motd = MotdFor(minimumReady);
             return settings;
         }
