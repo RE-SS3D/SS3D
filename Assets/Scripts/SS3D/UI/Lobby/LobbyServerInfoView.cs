@@ -58,7 +58,7 @@ namespace SS3D.UI.Lobby
             _map = AddRow(right, "Map", "server-info-map", false);
             _mode = AddRow(right, "Mode", "server-info-mode", false);
             _build = AddRow(right, "Build", "server-info-build", true);
-            _uptime = AddRow(right, "Uptime", "server-info-meta", true);
+            _uptime = AddRow(right, "Uptime", "server-info-uptime", true);
             right.Add(BuildChangelog());
             Root.Add(right);
         }

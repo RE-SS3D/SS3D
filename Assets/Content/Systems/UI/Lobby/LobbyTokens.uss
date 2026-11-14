@@ -74,24 +74,24 @@
 }
 
 /* Department colour as text, and as a small swatch. */
-.lb-dept--command { color: var(--dept-command); }
-.lb-dept--security { color: var(--dept-security); }
-.lb-dept--engineering { color: var(--dept-engineering); }
-.lb-dept--medical { color: var(--dept-medical); }
-.lb-dept--science { color: var(--dept-science); }
-.lb-dept--cargo { color: var(--dept-cargo); }
-.lb-dept--service { color: var(--dept-service); }
-.lb-dept--civilian { color: var(--dept-civilian); }
-.lb-swatch.lb-dept--command { background-color: var(--dept-command); }
-.lb-swatch.lb-dept--security { background-color: var(--dept-security); }
-.lb-swatch.lb-dept--engineering { background-color: var(--dept-engineering); }
-.lb-swatch.lb-dept--medical { background-color: var(--dept-medical); }
-.lb-swatch.lb-dept--science { background-color: var(--dept-science); }
-.lb-swatch.lb-dept--cargo { background-color: var(--dept-cargo); }
-.lb-swatch.lb-dept--service { background-color: var(--dept-service); }
-.lb-swatch.lb-dept--civilian { background-color: var(--dept-civilian); }
+.lobby-theme .lb-dept--command { color: var(--dept-command); }
+.lobby-theme .lb-dept--security { color: var(--dept-security); }
+.lobby-theme .lb-dept--engineering { color: var(--dept-engineering); }
+.lobby-theme .lb-dept--medical { color: var(--dept-medical); }
+.lobby-theme .lb-dept--science { color: var(--dept-science); }
+.lobby-theme .lb-dept--cargo { color: var(--dept-cargo); }
+.lobby-theme .lb-dept--service { color: var(--dept-service); }
+.lobby-theme .lb-dept--civilian { color: var(--dept-civilian); }
+.lobby-theme .lb-swatch.lb-dept--command { background-color: var(--dept-command); }
+.lobby-theme .lb-swatch.lb-dept--security { background-color: var(--dept-security); }
+.lobby-theme .lb-swatch.lb-dept--engineering { background-color: var(--dept-engineering); }
+.lobby-theme .lb-swatch.lb-dept--medical { background-color: var(--dept-medical); }
+.lobby-theme .lb-swatch.lb-dept--science { background-color: var(--dept-science); }
+.lobby-theme .lb-swatch.lb-dept--cargo { background-color: var(--dept-cargo); }
+.lobby-theme .lb-swatch.lb-dept--service { background-color: var(--dept-service); }
+.lobby-theme .lb-swatch.lb-dept--civilian { background-color: var(--dept-civilian); }
 
-.lb-prio--high { color: var(--prio-high); }
-.lb-prio--medium { color: var(--prio-medium); }
-.lb-prio--low { color: var(--prio-low); }
-.lb-prio--never { color: var(--prio-never); }
+.lobby-theme .lb-prio--high { color: var(--prio-high); }
+.lobby-theme .lb-prio--medium { color: var(--prio-medium); }
+.lobby-theme .lb-prio--low { color: var(--prio-low); }
+.lobby-theme .lb-prio--never { color: var(--prio-never); }

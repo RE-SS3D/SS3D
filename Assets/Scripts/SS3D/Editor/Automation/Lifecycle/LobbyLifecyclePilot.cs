@@ -616,8 +616,8 @@ namespace SS3D.Editor.Automation
             new Step { Name = "Leave admin before lifecycle", Enter = () => Click(AdminButton()), Until = () => Shell().Q("server-settings-form") == null },
             new Step { Name = "Ready", Enter = () => Click(ReadyButton()), Until = () => IsReady() && ReadyText() == "READY" && CountLabel() == "1/1 ready",
                 Verify = () => Require(ReadyButton().ClassListContains("lobby__ready--confirmed"), "Ready reflected in the button") },
-            new Step { Name = "Unready", Enter = () => Click(ReadyButton()), Until = () => !IsReady() && CountLabel() == "0/1 ready",
-                Verify = () => Require(ReadyText() == "READY UP", "Unready reflected in the button") },
+            new Step { Name = "Unready", Enter = () => Click(ReadyButton()), Until = () => !IsReady() && CountLabel() == "0/1 ready" && ReadyText() == "READY UP",
+                Verify = () => Require(!ReadyButton().ClassListContains("lobby__ready--confirmed"), "Unready reflected in the button") },
             new Step { Name = "Ready again", Enter = () => Click(ReadyButton()), Until = IsReady },
             new Step
             {
@@ -625,11 +625,11 @@ namespace SS3D.Editor.Automation
                 // and resend, as its Save will.
                 Name = "Security High reaches the server",
                 Enter = SetSecurityHigh,
-                Until = () => Job("Security").Interested == 1,
+                // The lobby repaints on its 200 ms refresh: wait on the card, not only the server.
+                Until = () => Job("Security").Interested == 1 && Shell().Q<Label>("lobby-high-job").text == "Security",
                 Verify = () =>
                 {
                     Require(Job("Assistant").Interested == 0, "Only Security counts as interested");
-                    Require(Shell().Q<Label>("lobby-high-job").text == "Security", "The character card shows High: Security");
                     Require(Shell().Q<Label>("lobby-high-job").ClassListContains("lb-dept--security"), "High job wears its department colour");
                 },
             },
@@ -641,7 +641,8 @@ namespace SS3D.Editor.Automation
                 {
                     Require(!Shell().Q<Label>("server-info-motd").enableRichText, "MOTD renders tags literally");
                     Require(Shell().Query<Label>().ToList().Any(l => l.text == PilotServerName.ToUpperInvariant()), "Server Info title is the configured name");
-                    Require(Shell().Q<Label>("server-info-meta").text.StartsWith("build " + Settings().ServerBuild), "Server Info shows the server build");
+                    Require(Shell().Q<Label>("server-info-build").text == Settings().ServerBuild, "Server Info shows the server build");
+                    Require(Shell().Q<Label>("server-info-uptime").text != "—", "Server Info shows the uptime");
                     Require(!Shell().Query<Label>().ToList().Any(l => l.text.Contains("USS Horizon") || l.text.Contains("0.14.2")),
                         "No mock server metadata remains");
                     Capture("server-info-live");
