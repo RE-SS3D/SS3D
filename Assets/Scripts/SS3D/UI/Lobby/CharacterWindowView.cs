@@ -229,7 +229,7 @@ namespace SS3D.UI.Lobby
         {
             if (_root == null) return;
             _fallbackJob = string.IsNullOrEmpty(fallbackJob) ? "Assistant" : fallbackJob;
-            // No job has a playtime requirement yet (effort deviation): every row is open.
+            // No job has a playtime requirement yet (effort deviation): only jobs not in the game are locked.
             _jobs.SetJobs(jobs, describe, _ => null, _fallbackJob);
             _jobs.Rebuild();
             RefreshPreviewControls();

@@ -133,6 +133,14 @@ namespace SS3D.Tests.EditMode
                 "No description, no expander");
             Assert.IsTrue(jobs.Q<Button>("charwin-fallback-assistant").ClassListContains("charwin-jobs__radio--on"));
             Assert.IsTrue(jobs.Q("charwin-jobs-notice").ClassListContains("charwin__notice--hidden"));
+
+            VisualElement chief = jobs.Q("charwin-job-Chief Engineer");
+            Assert.IsNotNull(chief, "Every roster job shows, including ones the server doesn't run");
+            Assert.IsTrue(chief.ClassListContains("charwin-jobs__row--locked"));
+            Assert.IsNull(chief.Q("charwin-job-priority"), "A locked job has no priority control");
+            Assert.AreEqual(CharacterJobsTab.NotInGameReason, chief.Q<Label>(className: "charwin-jobs__locked-text").text);
+            Assert.IsNull(jobs.Q("charwin-job-Security Officer"), "The game's Security is the roster's Security Officer");
+            Assert.IsNotNull(jobs.Q("charwin-dept-science"));
         }
 
         [Test]

@@ -216,7 +216,7 @@ What Phase 5 built:
   - Discard reloads the saved character.
   - Esc, Return to lobby, or a switcher action that would leave the edited character asks Save / Discard / Keep editing first. Deleting another character doesn't ask.
   - Keys: Ctrl+S saves. Ctrl+Tab cycles the tabs. Q / E rotate unless a text field has focus; ←/→ rotate with the preview focused.
-- **Jobs.** Departments come from the replicated job list, split into two columns of about half the jobs each (one column at 1366). Each row has its pictogram tinted in the department colour, or the department symbol when it has none. It also has "1 slot" / "N slots" / "unlimited" and an H/M/L/N radio group (Tab reaches it, ←/→ change it).
+- **Jobs.** The tab shows the whole station roster from the canvas's Jobs board (`JobRoster`, Systems/Roles), merged with the replicated job list. A roster job the server runs is a normal row (the game's "Security" is the roster's Security Officer). One it doesn't run is a locked row reading "Not in the game yet", with no slot count, as lobby.md §2 asks ("locked jobs stay visible"). A server job the roster lacks follows its department's roster jobs. Departments split into two columns of about half the rows each (one column at 1366). Each row has its pictogram tinted in the department colour, or the department symbol when it has none. It also has "1 slot" / "N slots" / "unlimited" and an H/M/L/N radio group (Tab reaches it, ←/→ change it).
   - A new High drops the old one to Medium. The moved row flashes and the notice names both jobs.
   - With every job at Never, a green line says what happens instead: you join as Assistant, or you stay in the lobby, depending on the fallback.
   - A chevron opens the job's description. It's hidden when the job has none.
@@ -267,7 +267,8 @@ What Phase 5 built:
 - **Phase 4:** `LobbySidebarModelTests` (every sidebar state on the canvas) and `LobbyViewTests` (the shell binds the committed template, keeps its stylesheet, paints the sidebar, card and admin tabs). `LobbyUiPilot` and `LobbyLifecyclePilot` now target the new element names; the remote-client scenario too.
 - **Phase 5:**
   - `CharacterWindowModelTests`: dirty across all three tabs, the name gate, Save normalising the name, the one-High notice, the all-Never notice per fallback, the outfit job, slot text, the column split.
-  - `CharacterWindowViewTests`: the window binds its template and paints the selected character, Saved / Unsaved, the invalid-name state, the unsaved prompt on Return, the Jobs and Antags tabs, and the switcher's delete confirm and full state. No panel means no change events, so edits go through the model.
+  - `CharacterWindowModelTests` also covers `JobRoster.Merge`: the server's entries win, the rest lock, extras follow their department.
+  - `CharacterWindowViewTests`: the window binds its template and paints the selected character, Saved / Unsaved, the invalid-name state, the unsaved prompt on Return, the Jobs tab (locked roster rows included) and the Antags tab, and the switcher's delete confirm and full state. No panel means no change events, so edits go through the model.
   - `LobbyUiPilot` drives the window, its tabs, the switcher (New, select, delete) and the unsaved prompt.
   - `LobbyLifecyclePilot` sets Security High in the Jobs tab and checks that it reaches the server after Save. That replaces the Phase 4 reflection step.
 
@@ -279,6 +280,7 @@ What Phase 5 built:
 - **From [lobby.md](../design/lobby.md) §2 (playtime-locked jobs):** the locked row is built, but no job has a playtime requirement yet. That needs [player-accounts.md](../design/player-accounts.md) and player data.
 - **From the canvas (switcher, Duplicate):** the copy keeps the original's name instead of "Name (2)". Brackets break the name rule, and two characters may share a name (Decision 4).
 - **From the canvas (switcher rows):** Duplicate and Delete show on every row, dimmed until the row is hovered, focused or selected. The canvas shows them only on the hovered row; hidden buttons can't be reached with Tab.
+- **From the canvas (playtest Jobs board):** the owner asked for the full roster with unavailable jobs locked, so the five-job playtest board isn't what players see; its "no preferences" line is.
 - **From the canvas (style grids):** the Hair, Facial hair and Eyebrows tiles show a generic head icon and the style's name. There are no per-style thumbnails yet.
 
 ## Related docs

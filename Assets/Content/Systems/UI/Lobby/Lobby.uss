@@ -78,7 +78,8 @@
     -unity-background-scale-mode: scale-to-fit;
 }
 .lobby .lobby__section { padding: 24px; flex-shrink: 0; border-bottom-width: 1px; border-bottom-color: var(--lb-border-subtle); }
-.lobby__entry { border-bottom-width: 0; }
+/* The canvas has no divider under Ready / Observe; .lobby .lobby__section would otherwise draw one. */
+.lobby .lobby__entry { border-bottom-width: 0; }
 
 .lobby .lobby__round-caption { font-size: 13px; color: var(--lb-text-2); margin-top: 10px; }
 .lobby__round--waiting .lobby__round-caption { font-size: 17px; color: var(--lb-text); -unity-font-style: bold; }
@@ -135,7 +136,8 @@
 .lobby .lobby__ready:active { background-color: var(--lb-rust-active); }
 .lobby__ready-text { flex-grow: 1; }
 .lobby__ready-title { font-size: 20px; letter-spacing: 1.6px; color: var(--lb-on-accent); }
-.lobby .lobby__ready-subtitle { font-size: 12px; margin-top: 3px; color: var(--lb-on-accent); }
+/* Gurajada sits low in its line box, so the canvas's 3px gap needs more here. */
+.lobby .lobby__ready-subtitle { font-size: 12px; margin-top: 7px; color: var(--lb-on-accent); }
 .lobby .lobby__ready-check { display: none; width: 18px; height: 18px; margin-right: 12px; -unity-background-image-tint-color: var(--lb-on-light); }
 .lobby .lobby__ready--confirmed { background-color: var(--lb-green); }
 .lobby .lobby__ready--confirmed:hover { background-color: var(--lb-green-hover); }
@@ -228,7 +230,9 @@
 }
 .lobby .lobby__tab:hover { color: var(--lb-text); background-color: var(--lb-inset); }
 .lobby .lobby__tab--active, .lobby .lobby__tab--active:hover { color: var(--lb-text); background-color: var(--lb-panel); }
-.lobby .lobby__tab:focus { border-width: 1px; border-color: var(--lb-border-strong); }
+/* No outline (the canvas has none, and a clicked tab keeps focus); keyboard focus shows as white text. */
+.lobby .lobby__tab:focus { color: var(--lb-text); }
+.lobby__tab:focus .lobby__tab-label { color: var(--lb-text); }
 .lobby .lobby__tab--hidden { display: none; }
 .lobby__tab-label { font-size: 18px; letter-spacing: 1.44px; color: var(--lb-text-2); }
 .lobby__tab--active .lobby__tab-label, .lobby__tab:hover .lobby__tab-label { color: var(--lb-text); }

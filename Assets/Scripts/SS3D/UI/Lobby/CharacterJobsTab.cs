@@ -9,13 +9,17 @@ using UnityEngine.UIElements;
 namespace SS3D.UI.Lobby
 {
     /// <summary>
-    /// The character window's Jobs tab (lobby.md §2–§3, lobby effort Phase 5): jobs by department, total slots only
-    /// (Decision 12), a High / Medium / Low / Never radio group per job under the one-High rule, expandable
-    /// descriptions, locked rows, the notice line and the pinned fallback choice. It edits
+    /// The character window's Jobs tab (lobby.md §2–§3, lobby effort Phase 5): the whole station roster by department
+    /// (<see cref="JobRoster"/>), total slots only (Decision 12), a High / Medium / Low / Never radio group per job under
+    /// the one-High rule, expandable descriptions, locked rows for jobs this server doesn't run, the notice line and the
+    /// pinned fallback choice. It edits
     /// <see cref="CharacterWindowModel.Working"/>.
     /// </summary>
     public sealed class CharacterJobsTab
     {
+        /// <summary>The lock reason of a roster job with no role data on this server.</summary>
+        public const string NotInGameReason = "Not in the game yet";
+
         private static readonly JobPriority[] Priorities = { JobPriority.High, JobPriority.Medium, JobPriority.Low, JobPriority.Never };
 
         /// <summary>A job with no pictogram of its own uses its department's symbol (canvas note on icons).</summary>
@@ -57,14 +61,22 @@ namespace SS3D.UI.Lobby
         public VisualElement Root { get; }
 
         /// <summary>
-        /// The server's jobs in authoring order, their descriptions, the playtime lock reason (null when open; no job
-        /// has a requirement yet, see the effort's deviations) and the uncapped fallback job.
+        /// The server's jobs, merged into the full roster (a roster job the server doesn't run is locked as not in the
+        /// game yet); their descriptions; the playtime lock reason (null when open; no job has a requirement yet, see
+        /// the effort's deviations); and the uncapped fallback job.
         /// </summary>
         public void SetJobs(IReadOnlyList<JobSlotInfo> jobs, Func<string, string> describe, Func<string, string> lockedReason, string fallbackJob)
         {
-            _jobs = jobs ?? Array.Empty<JobSlotInfo>();
-            _describe = describe ?? (_ => string.Empty);
-            _lockedReason = lockedReason ?? (_ => null);
+            HashSet<string> notInGame = new();
+            _jobs = JobRoster.Merge(jobs ?? Array.Empty<JobSlotInfo>(), notInGame);
+            Func<string, string> serverDescription = describe ?? (_ => string.Empty);
+            _describe = job =>
+            {
+                string text = serverDescription(job);
+                return string.IsNullOrEmpty(text) ? JobRoster.DescriptionOf(job) : text;
+            };
+            Func<string, string> playtime = lockedReason ?? (_ => null);
+            _lockedReason = job => notInGame.Contains(job) ? NotInGameReason : playtime(job);
             _fallbackJob = string.IsNullOrEmpty(fallbackJob) ? "Assistant" : fallbackJob;
         }
 
@@ -212,11 +224,14 @@ namespace SS3D.UI.Lobby
             about.style.display = string.IsNullOrEmpty(description) ? DisplayStyle.None : DisplayStyle.Flex;
             main.Add(about);
             main.Add(LobbyUi.Box("lobby__grow"));
-            main.Add(LobbyUi.Mono(CharacterWindowModel.SlotsText(job), "charwin-jobs__slots"));
-
             string locked = _lockedReason(name);
+            // A job not in the game has no slots to count.
+            if (locked != NotInGameReason) main.Add(LobbyUi.Mono(CharacterWindowModel.SlotsText(job), "charwin-jobs__slots"));
+
             if (locked != null)
             {
+                row.AddToClassList("charwin-jobs__row--locked");
+                row.tooltip = name + ": " + locked;
                 VisualElement lockBox = LobbyUi.Box("charwin-jobs__locked");
                 lockBox.Add(LobbyUi.Icon("lock"));
                 lockBox.Add(LobbyUi.Text(locked, "charwin-jobs__locked-text"));

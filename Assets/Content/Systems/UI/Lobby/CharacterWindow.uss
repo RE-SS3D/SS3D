@@ -192,6 +192,7 @@
 .lobby .charwin-jobs__dept-name { font-size: 20px; letter-spacing: 1.6px; }
 .lobby .charwin-jobs__row { border-top-width: 1px; border-top-color: var(--lb-border-subtle); }
 .lobby .charwin-jobs__row-main { flex-direction: row; align-items: center; height: 44px; padding: 0 10px 0 12px; }
+.lobby .charwin-jobs__row--locked .charwin-jobs__job-icon-frame { opacity: 0.45; }
 .lobby .charwin-jobs__row--flash { background-color: rgba(61, 96, 137, 0.2); }
 .lobby .charwin-jobs__job-icon-frame {
     width: 32px; height: 32px; margin-right: 10px; align-items: center; justify-content: center; flex-shrink: 0;

@@ -155,6 +155,23 @@ namespace SS3D.Tests.EditMode
         }
 
         [Test]
+        public void Roster_MergesTheServersJobs_AndLocksTheRest()
+        {
+            HashSet<string> locked = new();
+            List<JobSlotInfo> merged = JobRoster.Merge(new List<JobSlotInfo>
+            {
+                Job("Security", Department.Security, 2), Job("Assistant", Department.Civilian, 0), Job("Clown", Department.Service),
+            }, locked);
+
+            Assert.AreEqual(JobRoster.All.Length + 1, merged.Count, "The whole roster plus a job it lacks");
+            Assert.AreEqual(2, merged.Find(job => job.Name == "Security").Slots, "The server's entry wins");
+            CollectionAssert.DoesNotContain(locked, "Security");
+            CollectionAssert.Contains(locked, "Head of Personnel");
+            Assert.AreEqual("Captain", merged[0].Name, "Department order: Command first");
+            Assert.AreEqual("Janitor", merged[merged.FindIndex(job => job.Name == "Clown") - 1].Name, "An extra job follows its department");
+        }
+
+        [Test]
         public void SameAs_IgnoresArrayOrder()
         {
             CharacterPreferences a = new();
