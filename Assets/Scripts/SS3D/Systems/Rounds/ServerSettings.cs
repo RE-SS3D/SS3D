@@ -11,8 +11,13 @@ namespace SS3D.Systems.Rounds
         public int PlayerCap;
         public int RoundLengthMinutes;
         public bool AllowLateJoin;
-        /// <summary>Ready players needed before the auto-start countdown runs (lobby.md §7).</summary>
-        public int MinimumReady;
+        /// <summary>
+        /// Connected players needed before the auto-start countdown runs (lobby.md §7, lobby effort Decision 8). Ready
+        /// only decides who spawns.
+        /// </summary>
+        public int MinimumConnected;
+        /// <summary>Length of the auto-start countdown, in seconds (<see cref="DefaultCountdownSeconds"/>).</summary>
+        public int CountdownSeconds;
         /// <summary>Nuclear Operative opt-ins a Nuke Ops round needs among ready players, 1–5; fewer runs Extended (Decision 10).</summary>
         public int MinimumOperatives;
         public string ServerName;
@@ -21,7 +26,7 @@ namespace SS3D.Systems.Rounds
         // Server rules with no admin form field yet; the sandbox and Nuke Ops profiles set them at boot
         // (SandboxProfile, NukeOpsProfile). A whole-form admin save keeps the current values.
         /// <summary>
-        /// Starts a countdown on its own while Stopped once <see cref="MinimumReady"/> players are ready
+        /// Starts a countdown on its own while Stopped once <see cref="MinimumConnected"/> players are connected
         /// (lobby.md §7). On by default for a dedicated server (<see cref="ForDedicatedServer"/>).
         /// </summary>
         public bool AutoStart;
@@ -46,10 +51,12 @@ namespace SS3D.Systems.Rounds
         /// </summary>
         public bool AntagonistOptInDefault;
 
+        public const int DefaultCountdownSeconds = 120;
+
         public static ServerSettings Default => new()
         {
-            Map = "", Mode = "Secret", PlayerCap = 32, RoundLengthMinutes = 30, AllowLateJoin = true, MinimumReady = 1,
-            MinimumOperatives = 1,
+            Map = "", Mode = "Secret", PlayerCap = 32, RoundLengthMinutes = 30, AllowLateJoin = true, MinimumConnected = 1,
+            CountdownSeconds = DefaultCountdownSeconds, MinimumOperatives = 1,
             ServerName = ServerInfoText.DefaultName, Motd = ServerInfoText.DefaultMotd,
             RespawnCooldownSeconds = 30, MapPersistence = true, MinimumReadyForNukeOps = NukeOpsProfile.MinimumReadyPlayers,
         };
@@ -62,7 +69,8 @@ namespace SS3D.Systems.Rounds
         }
 
         public bool IsValid => PlayerCap is >= 1 and <= 256
-            && MinimumReady is >= 1 and <= 256
+            && MinimumConnected is >= 1 and <= 256
+            && CountdownSeconds is >= 5 and <= 3600
             && MinimumOperatives is >= 1 and <= Roles.SquadDraw.MaxSize
             && RoundLengthMinutes is >= 1 and <= 1440
             && RespawnCooldownSeconds is >= 0 and <= 3600
@@ -89,7 +97,7 @@ namespace SS3D.Systems.Rounds
     /// <summary><see cref="Unplayable"/>: the map loaded but fails the round-start check (creative-mode §8).</summary>
     public enum StationLoadState { NotLoaded, Loading, Initializing, Ready, Failed, Unplayable }
 
-    public enum ServerSetting { Map, Mode, PlayerCap, RoundLengthMinutes, AllowLateJoin, ServerName, Motd, MinimumReady, AutoStart, MinimumOperatives }
+    public enum ServerSetting { Map, Mode, PlayerCap, RoundLengthMinutes, AllowLateJoin, ServerName, Motd, MinimumConnected, AutoStart, MinimumOperatives, CountdownSeconds }
 
     /// <summary>
     /// <see cref="EditMapAnyway"/> starts a round on a map that failed the round-start check, so it can be fixed in the

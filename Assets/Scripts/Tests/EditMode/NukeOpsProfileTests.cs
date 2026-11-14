@@ -28,6 +28,8 @@ namespace SS3D.Tests.EditMode
             Assert.AreEqual("Secret", profile.Mode);
             Assert.AreEqual(30, profile.RoundLengthMinutes);
             Assert.AreEqual(4, profile.MinimumReadyForNukeOps);
+            Assert.AreEqual(4, profile.MinimumConnected, "the countdown waits for as many players as a squad needs");
+            Assert.AreEqual(ServerSettings.DefaultCountdownSeconds, profile.CountdownSeconds);
             Assert.IsTrue(profile.AutoStart);
             Assert.IsTrue(profile.AllowLateJoin);
             Assert.IsFalse(profile.AllConnectedReady, "players ready themselves, as on a normal server");
@@ -42,9 +44,11 @@ namespace SS3D.Tests.EditMode
         [Test]
         public void Flags_OverrideRoundLengthAndThreshold_ForTests()
         {
-            string[] args = { "game", "-nukeops", "-nukeops-round-minutes=1", "-nukeops-min-ready=1" };
+            string[] args = { "game", "-nukeops", "-nukeops-round-minutes=1", "-nukeops-min-ready=1", "-nukeops-countdown-seconds=20" };
             Assert.AreEqual(1, NukeOpsProfile.RoundMinutesFrom(args));
             Assert.AreEqual(1, NukeOpsProfile.MinimumReadyFrom(args));
+            Assert.AreEqual(20, NukeOpsProfile.CountdownSecondsFrom(args));
+            Assert.AreEqual(ServerSettings.DefaultCountdownSeconds, NukeOpsProfile.CountdownSecondsFrom(new[] { "-nukeops-countdown-seconds=2" }));
 
             string[] invalid = { "-nukeops", "-nukeops-round-minutes=0", "-nukeops-min-ready=abc" };
             Assert.AreEqual(NukeOpsProfile.RoundLengthMinutes, NukeOpsProfile.RoundMinutesFrom(invalid));

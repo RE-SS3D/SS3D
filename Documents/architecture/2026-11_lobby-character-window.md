@@ -2,7 +2,7 @@
 > Touches systems: rounds-lobby, gamemodes-roles-traits, entities, ui-shell, ui-shell-main-menu, audio, chat-audio-screens
 > Status: in progress
 
-**Progress:** Decided in the 2026-11-14 lobby grill. Phase 1 is built (2026-11-14), on the old views until Phases 4–5 replace them. Everything ships before Playtest 1 ([mvp1-nuke-ops.md](../milestones/mvp1-nuke-ops.md) M11) on one branch and one pull request. Phases 1–3 are non-visual and run while the canvas is recoloured. Phases 4–6 build against the recoloured canvas. Phase 7 purges. Visual brief and recolour prompt: [lobby-character-window-visual-brief.md](../plans/lobby-character-window-visual-brief.md). Tests follow the [testing philosophy](2026-11_testing-philosophy.md).
+**Progress:** Decided in the 2026-11-14 lobby grill. Phases 1–2 are built (2026-11-14), on the old views until Phases 4–6 replace them. Everything ships before Playtest 1 ([mvp1-nuke-ops.md](../milestones/mvp1-nuke-ops.md) M11) on one branch and one pull request. Phases 1–3 are non-visual and run while the canvas is recoloured. Phases 4–6 build against the recoloured canvas. Phase 7 purges. Visual brief and recolour prompt: [lobby-character-window-visual-brief.md](../plans/lobby-character-window-visual-brief.md). Tests follow the [testing philosophy](2026-11_testing-philosophy.md).
 
 # Lobby and character window (Nov 2026)
 
@@ -114,11 +114,28 @@ What Phase 1 built:
 
 ### Phase 2 — Round flow (non-visual)
 
-- [ ] `MinimumConnected` replaces `MinimumReady` in `ServerSettingsService`, the admin form and the profiles; 120 s default countdown (Decision 8)
-- [ ] When the countdown ends below the mode's ready minimum, the round falls back to Extended, with the existing round-history log line
-- [ ] Immediate Observe before the round; remove the observing toggle from `ReadyPlayersSubSystem` (Decision 9)
-- [ ] Crew manifest data replicated to all clients (Decision 10)
-- [ ] Late-join pick: the client requests a job, the server checks the slot and spawns (Decision 11)
+- [x] `MinimumConnected` replaces `MinimumReady` in `ServerSettingsService`, the admin form and the profiles; 120 s default countdown (Decision 8)
+- [x] When the countdown ends below the mode's ready minimum, the round falls back to Extended, with the existing round-history log line
+- [x] Immediate Observe before the round; remove the observing toggle from `ReadyPlayersSubSystem` (Decision 9)
+- [x] Crew manifest data replicated to all clients (Decision 10)
+- [x] Late-join pick: the client requests a job, the server checks the slot and spawns (Decision 11)
+
+What Phase 2 built:
+
+- **Countdown.** `ServerSettings.MinimumConnected` (default 1) and `CountdownSeconds` (default 120, 5–3600) drive `AutoStartCountdown`, which now counts online players, not ready ones.
+  - The admin form has Minimum Connected and Countdown (s) fields, idle-only like the other round fields.
+  - `-sandbox` keeps a 20 s countdown (`SandboxProfile.CountdownSeconds`, the design's "short countdown").
+  - `-nukeops` sets `MinimumConnected` to the same value as `MinimumReadyForNukeOps` (4), so `-nukeops-min-ready=N` lowers both. `-nukeops-countdown-seconds=N` shortens the countdown; the `nukeops-round` smoke passes 20.
+- **Extended fallback.** Already built by the round-end loop: `SquadDraw.HasEnoughReady` against `MinimumReadyForNukeOps` calls `FallBackToExtended`, and round history records it as `fallbackMap`. Nothing changed.
+- **Observe.** `EntitySubSystem.CmdObserve` makes a ghost at once whenever a station is loaded (`ObserveRules.StationLoaded`: WarmingUp or Ongoing, load state Ready) and takes the player off the ready list.
+  - The lobby countdown runs in Stopped with no station loaded, so before the round Observe is open only during the warmup.
+  - `ChangePlayerObservingMessage` and the observing list are deleted. Round start skips anyone who already has an entity, including under `AllConnectedReady`, and the server ignores Ready from them.
+- **Manifest.** `RoleSubSystem.Manifest` is a replicated list of `CrewManifestEntry` (name, job). `CrewManifest` keeps one row per ckey, so a respawn updates its row.
+  - Rows are written when a body gets its role loadout. Antagonist roles are left out, and observer ghosts never get a role, so they're left out too.
+  - The list is cleared at Stopped. Nothing shows it until Phase 6.
+- **Late-join pick.** `EntitySubSystem.CmdJoinAsJob(job)` → `RoleSubSystem.TryAssignLateJoinPick` → `JobResolver.LateJoinPickRefusal`. A full or unknown job is refused with a private OOC notice; the fallback job has no cap.
+  - The interim Join Round button still resolves the character's priorities (`CmdSpawnLatePlayer`). Phase 6's picker calls `CmdJoinAsJob`.
+- **Protocol.** `ProtocolVersion` stays 56: develop is on 55, and this branch ships as one pull request.
 
 ### Phase 3 — Menu music service (non-visual)
 
@@ -173,7 +190,7 @@ What Phase 1 built:
   - Observe works before the round
   - the countdown starts at the connected minimum
   - review screenshots against the canvas
-- **Smokes:** the nightly `nukeops-round` smoke needs `-nukeops` to keep its default opt-in and connected threshold. Re-run it once Phase 2 lands.
+- **Smokes:** the nightly `nukeops-round` smoke needs `-nukeops` to keep its default opt-in and connected threshold. Phase 2 added `-nukeops-countdown-seconds=20` to its conf; re-run it before the pull request.
 - **Per phase:** `Testing/ui/validate.sh --steps compile,editmode` plus the lifecycle step; add `visual` from Phase 4 on.
 
 ## Deviations

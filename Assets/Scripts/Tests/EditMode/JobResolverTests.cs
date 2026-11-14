@@ -170,5 +170,41 @@ namespace EditorTests
             Assert.IsNull(JobResolver.ResolveLateJoin(prefs, jobs, Fallback, new System.Random(11), JobFallback.ReturnToLobby));
             Assert.AreEqual(Fallback, JobResolver.ResolveLateJoin(prefs, jobs, Fallback, new System.Random(11), JobFallback.Assistant));
         }
+
+        [Test]
+        public void LateJoinPick_RejectsAFullJob()
+        {
+            JobSlotInfo[] jobs =
+            {
+                new() { Name = Fallback, Slots = 1, Assigned = 1 },
+                new() { Name = "Security", Slots = 1, Assigned = 1 },
+                new() { Name = "Engineer", Slots = 2, Assigned = 1 },
+            };
+
+            StringAssert.Contains("full", JobResolver.LateJoinPickRefusal("Security", jobs, Fallback));
+            Assert.IsNull(JobResolver.LateJoinPickRefusal("Engineer", jobs, Fallback));
+            Assert.IsNull(JobResolver.LateJoinPickRefusal(Fallback, jobs, Fallback), "The fallback job has no cap");
+            Assert.IsNotNull(JobResolver.LateJoinPickRefusal("Captain", jobs, Fallback), "Not a job on this station");
+            Assert.IsNotNull(JobResolver.LateJoinPickRefusal("", jobs, Fallback));
+        }
+
+        [Test]
+        public void Manifest_ListsCrewOnce_LeavesOutOperatives()
+        {
+            CrewManifest manifest = new();
+            Assert.AreEqual(0, manifest.Record("a", "Ann Lee", "Engineer", antagonist: false));
+            Assert.AreEqual(-1, manifest.Record("op", "Agent Red", "Nuclear Operative", antagonist: true));
+            Assert.AreEqual(-1, manifest.Record("ghost", "Watcher", null, antagonist: false), "Observers have no job");
+            Assert.AreEqual(1, manifest.Record("b", "", Fallback, antagonist: false));
+
+            Assert.AreEqual(0, manifest.Record("a", "Ann Lee", "Security", antagonist: false), "A respawn updates its row");
+
+            Assert.AreEqual(2, manifest.Entries.Count);
+            Assert.AreEqual("Security", manifest.Entries[0].Job);
+            Assert.AreEqual("b", manifest.Entries[1].Name, "No character name falls back to the ckey");
+
+            manifest.Clear();
+            Assert.AreEqual(0, manifest.Entries.Count);
+        }
     }
 }

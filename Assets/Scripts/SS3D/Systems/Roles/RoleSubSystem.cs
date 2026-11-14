@@ -37,6 +37,10 @@ namespace SS3D.Systems.Roles
 
         [SyncObject] private readonly SyncList<JobSlotInfo> _jobs = new();
 
+        /// <summary>The round's crew manifest, sent to every client: names and crew jobs only (Decision 10).</summary>
+        [SyncObject] private readonly SyncList<CrewManifestEntry> _manifest = new();
+        private readonly CrewManifest _manifestBook = new();
+
         private readonly Dictionary<string, RoleData> _roleData = new();
         private readonly Dictionary<string, Dictionary<string, JobPriority>> _preferences = new();
         private readonly Dictionary<string, HashSet<string>> _antagonistOptIns = new();
@@ -52,6 +56,12 @@ namespace SS3D.Systems.Roles
 
         /// <summary>Replicated job list in authoring order.</summary>
         public IReadOnlyList<JobSlotInfo> Jobs => _jobs;
+
+        /// <summary>
+        /// Replicated crew manifest: everyone given a crew job this round, dead or alive, in spawn order. Leaves out
+        /// operatives and ghosts. Empty between rounds.
+        /// </summary>
+        public IReadOnlyList<CrewManifestEntry> Manifest => _manifest;
 
         /// <summary>Server: this round's drawn Nuke Ops squad, in draw order. Empty outside a Nuke Ops round.</summary>
         public IReadOnlyList<Player> Operatives => _operatives;
@@ -253,6 +263,8 @@ namespace SS3D.Systems.Roles
             _rolePlayers.Clear();
             _operatives.Clear();
             _firstHolderContentsGiven.Clear();
+            _manifestBook.Clear();
+            _manifest.Clear();
             RefreshJobCounts();
         }
         #endregion
@@ -397,6 +409,37 @@ namespace SS3D.Systems.Roles
             return true;
         }
 
+        /// <summary>
+        /// Server: gives a latejoiner the job they picked, if it is still open (Decision 11). False, with
+        /// <paramref name="refusal"/> set and no role assigned, when it is full or unknown.
+        /// </summary>
+        [Server]
+        public bool TryAssignLateJoinPick(Player player, string job, out string refusal)
+        {
+            refusal = null;
+            if (player == null)
+            {
+                refusal = "Unknown player.";
+                return false;
+            }
+
+            if (_rolePlayers.ContainsKey(player))
+            {
+                return true;
+            }
+
+            refusal = JobResolver.LateJoinPickRefusal(job, _jobs, _fallbackRole);
+            if (refusal != null)
+            {
+                Log.Information(this, "Late-join pick {job} refused for {ckey}: {reason}", Logs.ServerOnly, job, player.Ckey, refusal);
+                return false;
+            }
+
+            Assign(player, job);
+            RefreshJobCounts();
+            return true;
+        }
+
         [Server]
         private void Assign(Player player, string job)
         {
@@ -463,11 +506,32 @@ namespace SS3D.Systems.Roles
             }
 
             Log.Information(this, entity.Ckey + " embarked with role " + roleData.Name);
+            RecordInManifest(player, entity, roleData);
             SpawnIdentificationItems(entity, roleData);
 
             if (roleData.Loadout != null)
             {
                 SpawnLoadoutItems(entity, roleData.Loadout);
+            }
+        }
+
+        [Server]
+        private void RecordInManifest(Player player, Entity entity, RoleData role)
+        {
+            int row = _manifestBook.Record(player.Ckey, entity.Mind.DisplayName, role.Name, role.IsAntagonist);
+            if (row < 0)
+            {
+                return;
+            }
+
+            CrewManifestEntry entry = _manifestBook.Entries[row];
+            if (row < _manifest.Count)
+            {
+                _manifest[row] = entry;
+            }
+            else
+            {
+                _manifest.Add(entry);
             }
         }
 

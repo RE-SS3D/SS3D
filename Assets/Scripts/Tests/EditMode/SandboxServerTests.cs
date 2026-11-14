@@ -161,17 +161,17 @@ namespace SS3D.Tests.EditMode
         }
     
         [Test]
-        public void AutoStart_CountsDownOnceAPlayerIsReady_ThenStartsOnce()
+        public void AutoStart_CountsDownOnceAPlayerIsConnected_ThenStartsOnce()
         {
             AutoStartCountdown countdown = new();
-            Assert.IsFalse(countdown.Tick(enabled: true, idle: true, readyCount: 0));
+            Assert.IsFalse(countdown.Tick(enabled: true, idle: true, connectedCount: 0));
             Assert.AreEqual(0, countdown.SecondsLeft);
 
             Assert.IsFalse(countdown.Tick(true, true, 1));
-            Assert.AreEqual(AutoStartCountdown.CountdownSeconds, countdown.SecondsLeft);
+            Assert.AreEqual(ServerSettings.DefaultCountdownSeconds, countdown.SecondsLeft);
 
             int starts = 0;
-            for (int i = 0; i < AutoStartCountdown.CountdownSeconds; i++)
+            for (int i = 0; i < ServerSettings.DefaultCountdownSeconds; i++)
                 if (countdown.Tick(true, true, 1)) starts++;
             Assert.AreEqual(1, starts);
             Assert.AreEqual(0, countdown.SecondsLeft);
@@ -181,15 +181,15 @@ namespace SS3D.Tests.EditMode
         [TestCase(true, false, 3, false)]
         [TestCase(true, true, 0, false)]
         [TestCase(true, true, 3, true)]
-        public void AutoStart_CountsOnlyWhenEnabledIdleAndReady(bool enabled, bool idle, int ready, bool counts)
+        public void AutoStart_CountsOnlyWhenEnabledIdleAndConnected(bool enabled, bool idle, int connected, bool counts)
         {
             AutoStartCountdown countdown = new();
-            countdown.Tick(enabled, idle, ready);
+            countdown.Tick(enabled, idle, connected);
             Assert.AreEqual(counts, countdown.SecondsLeft > 0);
         }
 
         [Test]
-        public void AutoStart_ResetsWhenReadyPlayersLeave_AndHoldStopsIt()
+        public void AutoStart_ResetsWhenPlayersLeave_AndHoldStopsIt()
         {
             AutoStartCountdown countdown = new();
             countdown.Tick(true, true, 1);
@@ -199,7 +199,7 @@ namespace SS3D.Tests.EditMode
 
             countdown.Tick(true, true, 1);
             countdown.Held = true;
-            for (int i = 0; i <= AutoStartCountdown.CountdownSeconds; i++)
+            for (int i = 0; i <= ServerSettings.DefaultCountdownSeconds; i++)
                 Assert.IsFalse(countdown.Tick(true, true, 1));
             Assert.AreEqual(0, countdown.SecondsLeft);
         }
@@ -248,14 +248,30 @@ namespace SS3D.Tests.EditMode
         }
 
         [Test]
-        public void ObserveRules_OnlyIntoARunningRoundWithoutABody()
+        public void ObserveRules_OnlyWithALoadedStationAndNoBody()
         {
-            Assert.IsNull(SS3D.Systems.Entities.ObserveRules.Refusal(roundOngoing: true, hasEntity: false));
-            Assert.IsNotNull(SS3D.Systems.Entities.ObserveRules.Refusal(roundOngoing: false, hasEntity: false));
-            Assert.IsNotNull(SS3D.Systems.Entities.ObserveRules.Refusal(roundOngoing: true, hasEntity: true),
+            Assert.IsNull(SS3D.Systems.Entities.ObserveRules.Refusal(stationLoaded: true, hasEntity: false));
+            Assert.IsNotNull(SS3D.Systems.Entities.ObserveRules.Refusal(stationLoaded: false, hasEntity: false));
+            Assert.IsNotNull(SS3D.Systems.Entities.ObserveRules.Refusal(stationLoaded: true, hasEntity: true),
                 "A living player or a ghost can't become an observer");
         }
-    
+
+        [TestCase(RoundState.Stopped, StationLoadState.NotLoaded, false)]
+        [TestCase(RoundState.Preparing, StationLoadState.Loading, false)]
+        [TestCase(RoundState.WarmingUp, StationLoadState.Ready, true)]
+        [TestCase(RoundState.Ongoing, StationLoadState.Ready, true)]
+        [TestCase(RoundState.Ending, StationLoadState.Ready, false)]
+        public void ObserveRules_BeforeTheRoundOnlyOnceTheStationLoaded(RoundState state, StationLoadState load, bool allowed)
+        {
+            Assert.AreEqual(allowed, SS3D.Systems.Entities.ObserveRules.StationLoaded(state, load));
+        }
+
+        [Test]
+        public void SandboxProfile_KeepsAShortCountdown()
+        {
+            Assert.AreEqual(SandboxProfile.CountdownSeconds, SandboxProfile.Apply(ServerSettings.Default, 20).CountdownSeconds);
+        }
+
         [TestCase("/bug the door ate me", true, "the door ate me")]
         [TestCase("/BUG  spaced  ", true, "spaced")]
         [TestCase("/bug", true, "")]

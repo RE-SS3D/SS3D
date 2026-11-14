@@ -217,6 +217,18 @@ namespace SS3D.Systems.Entities
             SpawnLatePlayer(player);
         }
 
+        /// <summary>
+        /// Asks the server to late-join the caller as <paramref name="job"/> (lobby effort Decision 11). The server
+        /// re-checks the slot, first come first served, and tells the caller in OOC when it is gone.
+        /// </summary>
+        [ServerRpc(RequireOwnership = false)]
+        public void CmdJoinAsJob(string job, NetworkConnection networkConnection = null)
+        {
+            Player player = SubSystems.Get<PlayerSubSystem>().GetPlayer(networkConnection);
+            if (player == null) return;
+            SpawnLatePlayer(player, job);
+        }
+
         public bool TryGetOwnedEntity(NetworkConnection conn, out Entity entity)
         {
             foreach(Entity e in SpawnedPlayers)
@@ -287,11 +299,13 @@ namespace SS3D.Systems.Entities
         }
 
         /// <summary>
-        /// Spawns a player after the round has started
+        /// Spawns a player after the round has started, as <paramref name="pickedJob"/> when given (Decision 11),
+        /// else as their character's highest ranked open job.
         /// </summary>
-        /// <param name="playerThe player's ckey</param>
+        /// <param name="player">The latejoiner.</param>
+        /// <param name="pickedJob">The job picked on the Join screen; null resolves the character's priorities.</param>
         [Server]
-        private void SpawnLatePlayer(Player player)
+        private void SpawnLatePlayer(Player player, string pickedJob = null)
         {
             if (SubSystems.Get<RoundSubSystem>().CurrentRoundState != RoundState.Ongoing
                 || !SubSystems.Get<ServerSettingsService>().AllowLateJoin)
@@ -301,7 +315,16 @@ namespace SS3D.Systems.Entities
 
             if (!IsPlayerSpawned(player) && _hasSpawnedInitialPlayers)
             {
-                if (!SubSystems.Get<RoleSubSystem>().TryAssignLateJoinRole(player))
+                RoleSubSystem roles = SubSystems.Get<RoleSubSystem>();
+                if (pickedJob != null)
+                {
+                    if (!roles.TryAssignLateJoinPick(player, pickedJob, out string refusal))
+                    {
+                        SubSystems.GetOrNull<CommsSubSystem>()?.SendOocNoticeTo(player.Owner, refusal);
+                        return;
+                    }
+                }
+                else if (!roles.TryAssignLateJoinRole(player))
                 {
                     SubSystems.GetOrNull<CommsSubSystem>()?.SendOocNoticeTo(player.Owner, RoleSubSystem.ReturnedToLobbyNotice);
                     return;
@@ -456,11 +479,11 @@ namespace SS3D.Systems.Entities
         }
 
         /// <summary>
-        /// Spawns all the players that are ready when the round starts, then puts the lobby's observers
-        /// in as ghosts.
+        /// Spawns all the players that are ready when the round starts. Players who observed during the warmup
+        /// already have their ghost and are left out by <see cref="ReadyPlayersSubSystem"/>.
         /// </summary>
         [Server]
-        private void SpawnReadyPlayers(List<Player> players, List<Player> observers)
+        private void SpawnReadyPlayers(List<Player> players)
         {
             if (_hasSpawnedInitialPlayers) return;
 
@@ -480,14 +503,6 @@ namespace SS3D.Systems.Entities
                 }
 
                 SpawnPlayer(ckey);
-            }
-
-            foreach (Player observer in observers)
-            {
-                if (observer != null && observer.Owner != null && observer.Owner.IsActive)
-                {
-                    SpawnObserver(observer);
-                }
             }
 
             _hasSpawnedInitialPlayers = true;
@@ -542,7 +557,7 @@ namespace SS3D.Systems.Entities
         [Server]
         private void HandleSpawnReadyPlayers(ref EventContext context, in SpawnReadyPlayersEvent e)
         {
-            SpawnReadyPlayers(e.ReadyPlayers, e.Observers);
+            SpawnReadyPlayers(e.ReadyPlayers);
         }
 
         private void HandleSpawnedPlayersChanged(SyncListOperation op, int index, Entity old, Entity @new, bool asServer)

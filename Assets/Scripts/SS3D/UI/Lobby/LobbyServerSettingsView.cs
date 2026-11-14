@@ -173,7 +173,8 @@ namespace SS3D.UI.Lobby
             numbers.AddToClassList("lobby-shell__server-numbers");
             AddServerNumber(numbers, "Player Cap", "server-player-cap", ServerSetting.PlayerCap, value => _serverSettings.PlayerCap = value);
             AddServerNumber(numbers, "Round Length (min)", "server-round-length", ServerSetting.RoundLengthMinutes, value => _serverSettings.RoundLengthMinutes = value);
-            AddServerNumber(numbers, "Minimum Ready", "server-minimum-ready", ServerSetting.MinimumReady, value => _serverSettings.MinimumReady = value);
+            AddServerNumber(numbers, "Minimum Connected", "server-minimum-connected", ServerSetting.MinimumConnected, value => _serverSettings.MinimumConnected = value);
+            AddServerNumber(numbers, "Countdown (s)", "server-countdown", ServerSetting.CountdownSeconds, value => _serverSettings.CountdownSeconds = value);
             AddServerNumber(numbers, "Minimum Operatives", "server-minimum-operatives", ServerSetting.MinimumOperatives, value => _serverSettings.MinimumOperatives = value);
             form.Add(numbers);
             form.Add(SectionTitle("Round Rules"));
@@ -181,7 +182,7 @@ namespace SS3D.UI.Lobby
             late.RegisterValueChangedCallback(e => { _serverSettings.AllowLateJoin = e.newValue; SaveServerSettings(ServerSetting.AllowLateJoin); });
             form.Add(late);
             Toggle autoStart = ServerRule("Auto Start Rounds", "server-auto-start", true,
-                "Start a countdown on its own once enough players are ready, and again after every round.");
+                "Start a countdown on its own once enough players are connected, and again after every round.");
             autoStart.RegisterValueChangedCallback(e => { _serverSettings.AutoStart = e.newValue; SaveServerSettings(ServerSetting.AutoStart); });
             form.Add(autoStart);
             form.Add(ServerRule("Random Events", "server-random-events", false, "Random events are not implemented yet."));
@@ -362,15 +363,19 @@ namespace SS3D.UI.Lobby
                 cap.SetValueWithoutNotify(_serverSettings.PlayerCap);
             if (!_editingFields.Contains(length))
                 length.SetValueWithoutNotify(_serverSettings.RoundLengthMinutes);
-            IntegerField minimumReady = form.Q<IntegerField>("server-minimum-ready");
-            if (!_editingFields.Contains(minimumReady))
-                minimumReady.SetValueWithoutNotify(_serverSettings.MinimumReady);
+            IntegerField minimumConnected = form.Q<IntegerField>("server-minimum-connected");
+            if (!_editingFields.Contains(minimumConnected))
+                minimumConnected.SetValueWithoutNotify(_serverSettings.MinimumConnected);
+            IntegerField countdown = form.Q<IntegerField>("server-countdown");
+            if (!_editingFields.Contains(countdown))
+                countdown.SetValueWithoutNotify(_serverSettings.CountdownSeconds);
             IntegerField minimumOperatives = form.Q<IntegerField>("server-minimum-operatives");
             if (!_editingFields.Contains(minimumOperatives))
                 minimumOperatives.SetValueWithoutNotify(_serverSettings.MinimumOperatives);
             cap.SetEnabled(idle && _hasServerSettings);
             length.SetEnabled(idle && _hasServerSettings);
-            minimumReady.SetEnabled(idle && _hasServerSettings);
+            minimumConnected.SetEnabled(idle && _hasServerSettings);
+            countdown.SetEnabled(idle && _hasServerSettings);
             minimumOperatives.SetEnabled(idle && _hasServerSettings);
             Toggle autoStart = form.Q<Toggle>("server-auto-start");
             autoStart.SetValueWithoutNotify(_serverSettings.AutoStart);

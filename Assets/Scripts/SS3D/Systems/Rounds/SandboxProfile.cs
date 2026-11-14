@@ -17,6 +17,8 @@ namespace SS3D.Systems.Rounds
         public const int RoundLengthMinutes = 20;
         public const int PlayerCap = 16;
         public const int RespawnCooldownSeconds = 30;
+        /// <summary>The "short countdown" between sandbox rounds (sandbox-server.md); a normal server waits 120 s.</summary>
+        public const int CountdownSeconds = 20;
 
         public const string Motd = "Sandbox server: everything is allowed. Anyone can build with the map editor (press B), "
             + "and you can respawn after dying. The station resets every 20 minutes and nothing is saved. "
@@ -54,6 +56,7 @@ namespace SS3D.Systems.Rounds
             settings.AllowLateJoin = true;
             settings.PlayerCap = PlayerCap;
             settings.AutoStart = true;
+            settings.CountdownSeconds = CountdownSeconds;
             settings.RespawnEnabled = true;
             settings.RemoveCorpseOnRespawn = true;
             settings.RespawnCooldownSeconds = RespawnCooldownSeconds;

@@ -84,6 +84,31 @@ namespace SS3D.Systems.Roles
             return whenNoneOpen == JobFallback.ReturnToLobby ? null : fallback;
         }
 
+        /// <summary>
+        /// Why a latejoiner's direct pick of <paramref name="job"/> is refused, or null when it is open (lobby effort
+        /// Decision 11). First come, first served: the server re-checks the slot when the request arrives. The
+        /// fallback job ignores its cap, like at round start.
+        /// </summary>
+        public static string LateJoinPickRefusal(string job, IReadOnlyList<JobSlotInfo> jobs, string fallback)
+        {
+            if (string.IsNullOrEmpty(job))
+            {
+                return "Pick a job to join as.";
+            }
+
+            foreach (JobSlotInfo slot in jobs)
+            {
+                if (slot.Name != job)
+                {
+                    continue;
+                }
+
+                return job == fallback || slot.Open > 0 ? null : $"{job} is full. Pick another job.";
+            }
+
+            return $"{job} is not a job on this station.";
+        }
+
         private static Dictionary<string, int> OpenSlots(IReadOnlyList<JobSlotInfo> jobs)
         {
             Dictionary<string, int> open = new();

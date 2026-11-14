@@ -18,22 +18,19 @@ using RoundStateUpdated = SS3D.Systems.Rounds.Events.RoundStateUpdated;
 namespace SS3D.Systems.Rounds
 {
     /// <summary>
-    /// Sets what players are ready or not, and who will watch the next round as an observer
-    /// (<c>observer.md</c> §2). Ready and observing exclude each other.
+    /// Sets what players are ready or not; the ready players spawn when the round starts. Observing is not a
+    /// lobby state: Observe makes a ghost at once (<see cref="EntitySubSystem.TryObserve"/>, lobby effort
+    /// Decision 9), which takes the player off this list.
     /// </summary>
     public class ReadyPlayersSubSystem : NetworkSubSystem
     {
         [SyncObject] private readonly SyncList<Player> _readyPlayers = new();
-
-        /// <summary>Players who chose Observe before the round; they enter it as ghosts.</summary>
-        [SyncObject] private readonly SyncList<Player> _observingPlayers = new();
 
         public override void OnStartServer()
         {
             base.OnStartServer();
 
             ServerManager.RegisterBroadcast<ChangePlayerReadyMessage>(HandleChangePlayerReady);
-            ServerManager.RegisterBroadcast<ChangePlayerObservingMessage>(HandleChangePlayerObserving);
 
             AddHandle(OnlinePlayersChanged.AddListener(HandleUserLeftServer));
             AddHandle(RoundStateUpdated.AddListener(HandleRoundStateUpdated));
@@ -54,17 +51,15 @@ namespace SS3D.Systems.Rounds
                 return;
             }
 
-            // Sandbox rule: everyone connected joins, ready or not, except those who chose to observe.
+            // Sandbox rule: everyone connected joins, ready or not, except those already observing as ghosts.
             bool allConnected = SubSystems.TryGet(out ServerSettingsService settings) && settings.Current.AllConnectedReady;
-            List<Player> observers = _observingPlayers.Where(p => p != null).ToList();
             List<Player> spawning = (allConnected
                 ? SubSystems.Get<PlayerSubSystem>().OnlinePlayers.ToList()
-                : _readyPlayers.ToList()).Where(p => p != null && !observers.Contains(p)).ToList();
-            SpawnReadyPlayersEvent spawnReadyPlayersEvent = new(spawning, observers);
+                : _readyPlayers.ToList()).Where(p => p != null && !InRound(p)).ToList();
+            SpawnReadyPlayersEvent spawnReadyPlayersEvent = new(spawning);
             spawnReadyPlayersEvent.Invoke(this);
 
             _readyPlayers.Clear();
-            _observingPlayers.Clear();
         }
 
         [Server]
@@ -84,9 +79,21 @@ namespace SS3D.Systems.Rounds
             {
                 _readyPlayers.Remove(player);
             }
-
-            _observingPlayers.Remove(player);
         }
+
+        /// <summary>Server: takes <paramref name="player"/> off the ready list, as when they start observing.</summary>
+        [Server]
+        public void Unready(Player player)
+        {
+            if (player != null)
+            {
+                _readyPlayers.Remove(player);
+            }
+        }
+
+        /// <summary>Server: the player already has an entity this round, such as an observer ghost made during warmup.</summary>
+        private static bool InRound(Player player) =>
+            SubSystems.TryGet(out EntitySubSystem entities) && entities.IsPlayerSpawned(player);
 
         /// <summary>
         /// Sets the player ready state
@@ -103,7 +110,6 @@ namespace SS3D.Systems.Rounds
                 case true when !playerIsReady:
                     Log.Information(this, "player is {ckey} is ready", Logs.ServerOnly, player.Ckey);
                     _readyPlayers.Add(player);
-                    _observingPlayers.Remove(player);
                     break;
                 case false when playerIsReady:
                     Log.Information(this, "player is {cCkey} is not ready", Logs.ServerOnly, player.Ckey);
@@ -122,48 +128,12 @@ namespace SS3D.Systems.Rounds
             }
 
             Player player = SubSystems.Get<PlayerSubSystem>().GetPlayer(sender);
-            if (player == null)
+            if (player == null || InRound(player))
             {
                 return;
             }
 
             SetPlayerReady(player, m.Ready);
-        }
-
-        /// <summary>Observing un-readies the player; un-observing leaves them not ready.</summary>
-        [Server]
-        private void SetPlayerObserving(Player player, bool observing)
-        {
-            bool isObserving = _observingPlayers.Contains(player);
-            if (observing && !isObserving)
-            {
-                Log.Information(this, "player {ckey} will observe", Logs.ServerOnly, player.Ckey);
-                _readyPlayers.Remove(player);
-                _observingPlayers.Add(player);
-            }
-            else if (!observing && isObserving)
-            {
-                Log.Information(this, "player {ckey} will no longer observe", Logs.ServerOnly, player.Ckey);
-                _observingPlayers.Remove(player);
-            }
-        }
-
-        [Server]
-        private void HandleChangePlayerObserving(NetworkConnection sender, ChangePlayerObservingMessage m)
-        {
-            RoundState roundState = SubSystems.Get<RoundSubSystem>().CurrentRoundState;
-            if (roundState is RoundState.Ongoing or RoundState.Ending)
-            {
-                return;
-            }
-
-            Player player = SubSystems.Get<PlayerSubSystem>().GetPlayer(sender);
-            if (player == null)
-            {
-                return;
-            }
-
-            SetPlayerObserving(player, m.Observing);
         }
 
         private void HandleReadyPlayersChanged(SyncListOperation op, int index, Player oldItem, Player newItem, bool asServer)
@@ -195,19 +165,16 @@ namespace SS3D.Systems.Rounds
         public int Count => _readyPlayers.Count;
 
         /// <summary>
-        /// Players who would join a round starting now: everyone online when
+        /// Players who would join a round starting now: everyone online and not observing when
         /// <paramref name="allConnected"/> (<see cref="ServerSettings.AllConnectedReady"/>), else the ready list.
         /// </summary>
         [Server]
         public int EffectiveReadyCount(bool allConnected) =>
             allConnected
-                ? SubSystems.Get<PlayerSubSystem>().OnlinePlayers.Count(p => p != null && !_observingPlayers.Contains(p))
+                ? SubSystems.Get<PlayerSubSystem>().OnlinePlayers.Count(p => p != null && !InRound(p))
                 : _readyPlayers.Count;
 
         public bool IsReady(Player player) => player != null && _readyPlayers.Contains(player);
-
-        /// <summary>True while <paramref name="player"/> has chosen to observe the next round.</summary>
-        public bool IsObserving(Player player) => player != null && _observingPlayers.Contains(player);
 
 #if UNITY_EDITOR
         /// <summary>
@@ -222,13 +189,6 @@ namespace SS3D.Systems.Rounds
         public void ChangePlayerReadyMessageStubBroadcast(NetworkConnection sender, ChangePlayerReadyMessage m)
         {
             HandleChangePlayerReady(sender, m);
-        }
-
-        /// <summary>Automation only: handles a <see cref="ChangePlayerObservingMessage"/> as if <paramref name="sender"/> sent it.</summary>
-        [Server]
-        public void ChangePlayerObservingMessageStubBroadcast(NetworkConnection sender, ChangePlayerObservingMessage m)
-        {
-            HandleChangePlayerObserving(sender, m);
         }
 #endif
     }
