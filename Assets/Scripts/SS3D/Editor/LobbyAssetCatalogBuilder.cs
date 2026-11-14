@@ -155,12 +155,14 @@ namespace SS3D.Editor
                 loadoutThumbs.Add(new LobbyNamedSprite("PnJanitor", janitorThumb));
             }
 
-            // Hair: index 0 is the "none" sentinel (null prefab), then alpha-sorted discoveries.
+            // Hair: index 0 is the "none" sentinel (null prefab), then the styles. Saved characters and the network
+            // appearance store an index, so styles the catalog already has keep their place; new ones are appended.
+            LobbyAssetCatalog previous = AssetDatabase.LoadAssetAtPath<LobbyAssetCatalog>(LobbyAssetPaths.CatalogAssetPath);
             List<LobbyNamedPrefab> hairStyles = new() { new LobbyNamedPrefab("none", null) };
-            hairStyles.AddRange(DiscoverPrefabs(HairPrefabRoot));
+            hairStyles.AddRange(StableOrder(DiscoverPrefabs(HairPrefabRoot), previous != null ? previous.HairStyles : null));
 
             List<LobbyNamedPrefab> beardStyles = new() { new LobbyNamedPrefab("none", null) };
-            beardStyles.AddRange(DiscoverPrefabs(BeardPrefabRoot));
+            beardStyles.AddRange(StableOrder(DiscoverPrefabs(BeardPrefabRoot), previous != null ? previous.BeardStyles : null));
 
             List<Color> hairColors = new();
             foreach ((string _, Color c) in DefaultHairColors)
@@ -274,6 +276,30 @@ namespace SS3D.Editor
             }
 
             return texture;
+        }
+
+        /// <summary>
+        /// <paramref name="discovered"/> (alpha-sorted) reordered so ids in <paramref name="previous"/> keep their
+        /// order and come first; ids new to the catalog follow alphabetically. A removed style shifts later indices.
+        /// </summary>
+        public static List<LobbyNamedPrefab> StableOrder(List<LobbyNamedPrefab> discovered, IReadOnlyList<LobbyNamedPrefab> previous)
+        {
+            List<LobbyNamedPrefab> ordered = new();
+            if (previous != null)
+            {
+                foreach (LobbyNamedPrefab old in previous)
+                {
+                    LobbyNamedPrefab match = discovered.Find(style => style.Id == old?.Id);
+                    if (match != null) ordered.Add(match);
+                }
+            }
+
+            foreach (LobbyNamedPrefab style in discovered)
+            {
+                if (!ordered.Contains(style)) ordered.Add(style);
+            }
+
+            return ordered;
         }
 
         private static List<LobbyNamedPrefab> DiscoverPrefabs(string folder)

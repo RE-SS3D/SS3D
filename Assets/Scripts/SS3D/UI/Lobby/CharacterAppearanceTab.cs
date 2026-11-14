@@ -23,7 +23,7 @@ namespace SS3D.UI.Lobby
     /// </summary>
     public sealed class CharacterAppearanceTab
     {
-        private static readonly System.Text.RegularExpressions.Regex WordBoundary = new("([a-z])([A-Z])");
+        private static readonly System.Text.RegularExpressions.Regex WordBoundary = new("([a-z])([A-Z0-9])");
 
         private readonly CharacterWindowModel _model;
         private readonly LobbyAssetCatalog _catalog;
@@ -240,7 +240,7 @@ namespace SS3D.UI.Lobby
             for (int i = 0; i < count; i++)
             {
                 int index = i;
-                string label = i == 0 || styles == null ? "None" : DisplayName(styles[i].Id);
+                string label = i == 0 || styles == null ? "None" : DisplayName(NameOf(styles[i]));
                 string id = i == 0 || styles == null ? "none" : styles[i].Id;
                 tiles.Add(Tile(kind + "-" + i, label, Thumbnail(kind, id), i == 0, i == selected, () => select(index)));
             }
@@ -258,7 +258,7 @@ namespace SS3D.UI.Lobby
             foreach (LobbyNamedPrefab style in _catalog.EyebrowStyles)
             {
                 string id = CharacterAppearance.NormalizeEyebrowStyle(style.Id);
-                tiles.Add(Tile("eyebrows-" + id, DisplayName(style.Id), Thumbnail("eyebrows", id), false, current == id, () => _model.Working.Eyebrows = id));
+                tiles.Add(Tile("eyebrows-" + id, DisplayName(NameOf(style)), Thumbnail("eyebrows", id), false, current == id, () => _model.Working.Eyebrows = id));
             }
 
             return tiles;
@@ -350,7 +350,10 @@ namespace SS3D.UI.Lobby
             return button;
         }
 
-        /// <summary>"HumanHairSidePart" → "Side Part".</summary>
+        /// <summary>The prefab's name keeps its capitals ("HumanHairShortMessy"); the catalog id is lower case.</summary>
+        private static string NameOf(LobbyNamedPrefab style) => style.Prefab != null ? style.Prefab.name : style.Id;
+
+        /// <summary>"HumanHairSidePart" → "Side Part", "HumanHairAfro2" → "Afro 2".</summary>
         public static string DisplayName(string id)
         {
             string name = id ?? string.Empty;

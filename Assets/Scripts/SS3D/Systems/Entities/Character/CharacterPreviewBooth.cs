@@ -37,6 +37,8 @@ namespace SS3D.Systems.Entities.Character
         /// <summary>Portrait crop height as a fraction of the full-body frame.</summary>
         private const float PortraitViewportHeight = 0.2f;
         private const float PortraitHeadOffset = 0.08f;
+        /// <summary>Space above the bare body that the framing keeps for hair.</summary>
+        private const float HairHeadroom = 0.15f;
 
         [SerializeField] private GameObject _humanPrefab;
         [SerializeField] private Camera _previewCamera;
@@ -521,6 +523,8 @@ namespace SS3D.Systems.Entities.Character
                     animator.Update(0f);
             }
             Bounds bounds = CalculateBounds(_dummy);
+            // Framed on the bare body; leave room for tall hair (Afro 2 rises ~13 cm above the head).
+            bounds.Encapsulate(bounds.max + (Vector3.up * HairHeadroom));
             float height = Mathf.Max(bounds.size.y, 0.75f);
 
             // True body center — upper-torso bias pushed the dummy down and cropped the feet.

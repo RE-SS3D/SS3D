@@ -232,6 +232,17 @@ What Phase 5 built:
   - At 10 characters, New and Duplicate disable and a line says to delete one first.
   - A press outside the popover closes it.
 - **Style thumbnails.** Each Hair, Facial hair and Eyebrows tile shows a baked head render of its style, on a neutral skin tone with light-brown hair and dark-brown brows. `CharacterStyleThumbnailBaker` (SS3D → Data → Bake Character Style Thumbnails) renders them with the preview booth in edit mode, writes `Art/Icons/Lobby/Styles/<kind>-<id>.png` and rebuilds the catalog. Re-run it after adding a style; `StyleThumbnailTests` fails until you do. A tile without a thumbnail falls back to a generic head.
+- **More styles.** `HairStyleImportSetup` (SS3D → Data → Import Hair Styles From SS3D-Art) brought in the SS3D-Art hair and facial hair FBXs: 29 new hair styles (32 in all) and 20 new facial hair styles (21).
+  - Each art FBX sits on the full-height human; the importer moves the mesh into head space using `HumanHair.fbx` as the reference fit.
+  - LongHair's three variants (Long / Medium / Short, laid out a metre apart) become three styles.
+  - Left out until fixed in Blender (`HairStyleImportSetup.Skipped`):
+    - Twintail Extensions: a 2.3 m strip of loose pieces.
+    - Priest: floats about 14 cm above the head.
+    - Scholar's Lushious Locks and Beard: both about 17 cm too high.
+    - Hipster Ponytail 1: a bun with no hair on the head.
+    - Ponytails: the tails stick forward out of the forehead.
+  - The catalog builder keeps existing styles at their index (saved characters and the network appearance store indices) and appends new ones.
+  - The booth's framing leaves 15 cm of headroom for tall hair.
 - **Icons.** Department symbols are game-icons.net SVGs already in `Art/Icons/External` (CC BY 3.0). The canvas's own department PNGs have no recorded source, so they weren't imported. `Art/Icons/Lobby/Jobs/Assistant.png` comes from SS3D-Art. A job without a pictogram uses its department symbol.
 
 ### Phase 6 — Join a round in progress
