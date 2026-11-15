@@ -52,7 +52,8 @@ namespace SS3D.Tests.AssetAudit
             // Entities and body
             { "EntitySubSystem.CmdSpawnLatePlayer", AuthorityCheck.OwnerOfArgument },
             { "EntitySubSystem.CmdRespawn", AuthorityCheck.ServerDerived },
-            { "EntitySubSystem.CmdObserve", AuthorityCheck.ServerDerived }, // the caller's own player; running round, no entity yet
+            { "EntitySubSystem.CmdJoinAsJob", AuthorityCheck.ServerDerived }, // the caller's own player; server re-checks the slot
+            { "EntitySubSystem.CmdObserve", AuthorityCheck.ServerDerived }, // the caller's own player; station loaded, no entity yet
             { "MindSubSystem.CmdSwapMinds", AuthorityCheck.NoClientOwner },
             { "HumanoidBodyStateMachine.CmdTrySit", AuthorityCheck.Revalidated },
             { "Draggable.CmdSetDrag", AuthorityCheck.ServerDerived },

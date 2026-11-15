@@ -10,22 +10,29 @@ using UnityEngine;
 
 namespace SS3D.Systems.Entities
 {
-    /// <summary>Server rules for the lobby's Observe button (<c>observer.md</c> §2, <c>lobby.md</c> §7).</summary>
+    /// <summary>
+    /// Server rules for the lobby's Observe button (<c>observer.md</c> §2, <c>lobby.md</c> §7). Observing is immediate,
+    /// before or during the round, but only while a station is loaded (lobby effort Decision 9): during the warmup
+    /// before the round starts and while it runs. The lobby countdown runs with no station, so it can't be observed.
+    /// </summary>
     public static class ObserveRules
     {
-        /// <summary>Why a mid-round observe request is refused, or null when it is allowed.</summary>
-        public static string Refusal(bool roundOngoing, bool hasEntity)
+        /// <summary>The round states with a loaded station a ghost can enter.</summary>
+        public static bool StationLoaded(RoundState state, StationLoadState load) =>
+            (state is RoundState.WarmingUp or RoundState.Ongoing) && load == StationLoadState.Ready;
+
+        /// <summary>Why an observe request is refused, or null when it is allowed.</summary>
+        public static string Refusal(bool stationLoaded, bool hasEntity)
         {
-            if (!roundOngoing) return "You can only observe a running round.";
+            if (!stationLoaded) return "You can only observe once the station is loaded.";
             return hasEntity ? "You are already in the round." : null;
         }
     }
 
     /// <summary>
     /// Observer mode (<c>observer.md</c> §2 first pass): a player who chose Observe enters the round as a
-    /// ghost with no body behind it. Players who chose it in the lobby become ghosts when the round starts;
-    /// during a round the button makes one straight away. An observer can never respawn or late-join that
-    /// round; round end returns them to the lobby like everyone else.
+    /// ghost with no body behind it, straight away, and is taken off the ready list. An observer can never
+    /// respawn or late-join that round; round end returns them to the lobby like everyone else.
     /// </summary>
     public partial class EntitySubSystem
     {
@@ -36,7 +43,7 @@ namespace SS3D.Systems.Entities
         [Server]
         public bool IsObserver(Player player) => player != null && _observerCkeys.Contains(player.Ckey);
 
-        /// <summary>Asks the server to put the caller in the running round as an observer ghost.</summary>
+        /// <summary>Asks the server to put the caller in the round as an observer ghost, now.</summary>
         [ServerRpc(RequireOwnership = false)]
         public void CmdObserve(NetworkConnection conn = null) => TryObserve(conn, out _);
 
@@ -51,15 +58,17 @@ namespace SS3D.Systems.Entities
                 return false;
             }
 
-            bool ongoing = SubSystems.Get<RoundSubSystem>().CurrentRoundState == RoundState.Ongoing;
+            RoundSubSystem rounds = SubSystems.Get<RoundSubSystem>();
             bool hasEntity = _spawnedPlayers.FindIndex(e => e != null && e.Mind != null && e.Mind.player == player) >= 0;
-            refusal = ObserveRules.Refusal(ongoing && _hasSpawnedInitialPlayers, hasEntity);
+            refusal = ObserveRules.Refusal(
+                ObserveRules.StationLoaded(rounds.CurrentRoundState, rounds.CurrentStationLoadState), hasEntity);
             if (refusal != null)
             {
                 Log.Information(this, "Observe refused for {ckey}: {reason}", Logs.ServerOnly, player.Ckey, refusal);
                 return false;
             }
 
+            SubSystems.GetOrNull<ReadyPlayersSubSystem>()?.Unready(player);
             return SpawnObserver(player) != null;
         }
 

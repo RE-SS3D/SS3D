@@ -45,6 +45,9 @@ namespace SS3D.Systems.Rounds
         [SyncVar] private string _publicMode = ServerSettings.Default.Mode;
         [SyncVar] private string _serverBuild = "";
         [SyncVar] private long _serverStartedUnix;
+        [SyncVar] private bool _antagonistOptInDefault;
+        [SyncVar] private int _publicPlayerCap = ServerSettings.Default.PlayerCap;
+        [SyncVar] private int _publicMinimumConnected = ServerSettings.Default.MinimumConnected;
 
         /// <summary>
         /// Server: an admin save replaced the round configuration (previous, current). Name/MOTD and auto start
@@ -59,12 +62,20 @@ namespace SS3D.Systems.Rounds
         public ServerSettings Current => _settings;
         public int PlayerCap => _settings.PlayerCap;
 
+        /// <summary>Public: the player cap, for the lobby header's player count.</summary>
+        public int PublicPlayerCap => _publicPlayerCap;
+
+        /// <summary>Public: connected players the lobby countdown waits for (<see cref="ServerSettings.MinimumConnected"/>).</summary>
+        public int PublicMinimumConnected => _publicMinimumConnected;
+
         public bool AllowLateJoin => _allowLateJoin;
         public string ServerName => _serverName;
         public string Motd => _motd;
         /// <summary>The configured mode (Secret stays secret: it only resolves at round start).</summary>
         public string PublicMode => _publicMode;
         public string ServerBuild => _serverBuild;
+        /// <summary>Public: whether an antagonist category a character never set counts as opted in (<see cref="ServerSettings.AntagonistOptInDefault"/>).</summary>
+        public bool AntagonistOptInDefault => _antagonistOptInDefault;
         public DateTimeOffset ServerStarted => DateTimeOffset.FromUnixTimeSeconds(_serverStartedUnix);
 
         public ServerSettings AdminSettings { get; private set; } = ServerSettings.Default;
@@ -103,8 +114,9 @@ namespace SS3D.Systems.Rounds
             {
                 // In memory only, as above.
                 _settings = NukeOpsProfile.Apply(_settings);
-                Log.Information(this, "Nuke Ops profile applied: {minutes} min rounds, {ready} ready players for a squad",
-                    Logs.ServerOnly, _settings.RoundLengthMinutes, _settings.MinimumReadyForNukeOps);
+                Log.Information(this, "Nuke Ops profile applied: {minutes} min rounds, {connected} connected to count down, "
+                    + "{ready} ready players for a squad", Logs.ServerOnly, _settings.RoundLengthMinutes,
+                    _settings.MinimumConnected, _settings.MinimumReadyForNukeOps);
             }
             ApplyServerRules();
             PublishPublicSettings();
@@ -219,7 +231,8 @@ namespace SS3D.Systems.Rounds
                 case ServerSetting.PlayerCap: updated.PlayerCap = value.PlayerCap; break;
                 case ServerSetting.RoundLengthMinutes: updated.RoundLengthMinutes = value.RoundLengthMinutes; break;
                 case ServerSetting.AllowLateJoin: updated.AllowLateJoin = value.AllowLateJoin; break;
-                case ServerSetting.MinimumReady: updated.MinimumReady = value.MinimumReady; break;
+                case ServerSetting.MinimumConnected: updated.MinimumConnected = value.MinimumConnected; break;
+                case ServerSetting.CountdownSeconds: updated.CountdownSeconds = value.CountdownSeconds; break;
                 case ServerSetting.MinimumOperatives: updated.MinimumOperatives = value.MinimumOperatives; break;
                 default: SendServerSettings(sender, "Unknown setting rejected."); return;
             }
@@ -270,6 +283,9 @@ namespace SS3D.Systems.Rounds
         {
             _allowLateJoin = _settings.AllowLateJoin;
             _publicMode = _settings.Mode;
+            _antagonistOptInDefault = _settings.AntagonistOptInDefault;
+            _publicPlayerCap = _settings.PlayerCap;
+            _publicMinimumConnected = _settings.MinimumConnected;
             _serverName = _settings.ServerName;
             _motd = _settings.Motd;
         }

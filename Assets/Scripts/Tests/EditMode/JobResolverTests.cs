@@ -123,5 +123,88 @@ namespace EditorTests
         {
             Assert.AreEqual(Fallback, JobResolver.ResolveLateJoin(null, Jobs, Fallback, new System.Random(7)));
         }
+
+        // --- Per-character fallback (lobby effort Decision 7) ---
+
+        [Test]
+        public void Resolve_AssistantFallbackIsGuaranteed_EvenPastSlotCounts()
+        {
+            string[] players = Enumerable.Range(0, 12).Select(i => "p" + i).ToArray();
+            Dictionary<string, string> result = JobResolver.Resolve(
+                players, Prefs(players.Select(p => (p, "Security", JobPriority.High)).ToArray()), Jobs, Fallback, new System.Random(8));
+
+            Assert.AreEqual(players.Length, result.Count, "everybody comes out with a job");
+            Assert.AreEqual(1, result.Values.Count(job => job == "Security"));
+            Assert.AreEqual(players.Length - 1, result.Values.Count(job => job == Fallback));
+        }
+
+        [Test]
+        public void Resolve_ReturnToLobby_LeavesUnplacedPlayersOut()
+        {
+            Dictionary<string, string> result = JobResolver.Resolve(
+                new[] { "a", "b", "c" },
+                Prefs(("a", "Security", JobPriority.High), ("b", "Security", JobPriority.High)),
+                Jobs, Fallback, new System.Random(9), new HashSet<string> { "a", "b", "c" });
+
+            Assert.AreEqual(1, result.Count, "one Security slot; the others have no open job and return to the lobby");
+            Assert.AreEqual("Security", result.Values.Single());
+            Assert.IsFalse(result.ContainsKey("c"), "no preferences and return-to-lobby means no job");
+        }
+
+        [Test]
+        public void Resolve_ReturnToLobby_IsPerPlayer()
+        {
+            Dictionary<string, string> result = JobResolver.Resolve(
+                new[] { "lobby", "assistant" }, Prefs(), Jobs, Fallback, new System.Random(10), new HashSet<string> { "lobby" });
+
+            Assert.IsFalse(result.ContainsKey("lobby"));
+            Assert.AreEqual(Fallback, result["assistant"]);
+        }
+
+        [Test]
+        public void ResolveLateJoin_ReturnToLobby_ReturnsNullWhenNothingIsOpen()
+        {
+            JobSlotInfo[] jobs = { new() { Name = Fallback, Slots = 0 }, new() { Name = "Security", Slots = 1, Assigned = 1 } };
+            Dictionary<string, JobPriority> prefs = new() { ["Security"] = JobPriority.High };
+
+            Assert.IsNull(JobResolver.ResolveLateJoin(prefs, jobs, Fallback, new System.Random(11), JobFallback.ReturnToLobby));
+            Assert.AreEqual(Fallback, JobResolver.ResolveLateJoin(prefs, jobs, Fallback, new System.Random(11), JobFallback.Assistant));
+        }
+
+        [Test]
+        public void LateJoinPick_RejectsAFullJob()
+        {
+            JobSlotInfo[] jobs =
+            {
+                new() { Name = Fallback, Slots = 1, Assigned = 1 },
+                new() { Name = "Security", Slots = 1, Assigned = 1 },
+                new() { Name = "Engineer", Slots = 2, Assigned = 1 },
+            };
+
+            StringAssert.Contains("full", JobResolver.LateJoinPickRefusal("Security", jobs, Fallback));
+            Assert.IsNull(JobResolver.LateJoinPickRefusal("Engineer", jobs, Fallback));
+            Assert.IsNull(JobResolver.LateJoinPickRefusal(Fallback, jobs, Fallback), "The fallback job has no cap");
+            Assert.IsNotNull(JobResolver.LateJoinPickRefusal("Captain", jobs, Fallback), "Not a job on this station");
+            Assert.IsNotNull(JobResolver.LateJoinPickRefusal("", jobs, Fallback));
+        }
+
+        [Test]
+        public void Manifest_ListsCrewOnce_LeavesOutOperatives()
+        {
+            CrewManifest manifest = new();
+            Assert.AreEqual(0, manifest.Record("a", "Ann Lee", "Engineer", antagonist: false));
+            Assert.AreEqual(-1, manifest.Record("op", "Agent Red", "Nuclear Operative", antagonist: true));
+            Assert.AreEqual(-1, manifest.Record("ghost", "Watcher", null, antagonist: false), "Observers have no job");
+            Assert.AreEqual(1, manifest.Record("b", "", Fallback, antagonist: false));
+
+            Assert.AreEqual(0, manifest.Record("a", "Ann Lee", "Security", antagonist: false), "A respawn updates its row");
+
+            Assert.AreEqual(2, manifest.Entries.Count);
+            Assert.AreEqual("Security", manifest.Entries[0].Job);
+            Assert.AreEqual("b", manifest.Entries[1].Name, "No character name falls back to the ckey");
+
+            manifest.Clear();
+            Assert.AreEqual(0, manifest.Entries.Count);
+        }
     }
 }

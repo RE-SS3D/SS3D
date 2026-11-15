@@ -118,10 +118,11 @@ namespace SS3D.Systems.Settings
             CommitAudio();
         }
 
-        /// <summary>Main menu music on or off; its level is the Music volume.</summary>
+        /// <summary>Menu music (main menu and lobby) on or off; its level is the Music volume.</summary>
         public void SetMenuMusic(bool on)
         {
             Settings.Audio.MenuMusic = on;
+            MenuMusicSubSystem.Enabled = on;
             ScheduleSave();
             Changed?.Invoke();
         }
@@ -368,6 +369,8 @@ namespace SS3D.Systems.Settings
 
         private void ApplyAudio()
         {
+            // Pushed, not read: Audio must not depend on Settings (SystemsFolderCycleTests).
+            MenuMusicSubSystem.Enabled = Settings.Audio.MenuMusic;
             if (!_active) return;
             AudioMixer mixer = MainAudioMixer.Mixer;
             if (mixer == null)

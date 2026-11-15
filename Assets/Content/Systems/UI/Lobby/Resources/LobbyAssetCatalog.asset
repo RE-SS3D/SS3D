@@ -12,12 +12,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fae0d5b5d14683e70a7fffdee7b85b9d, type: 3}
   m_Name: LobbyAssetCatalog
   m_EditorClassIdentifier: SS3D.UI.Lobby::SS3D.UI.Lobby.LobbyAssetCatalog
-  _lobbyStyle: {fileID: 7433441132597879392, guid: 2bfe9922cb974e49aca2466dd348187d, type: 3}
-  _previewPlaceholder: {fileID: 21300000, guid: 75ead553c05c482fae442fad6748b24a, type: 3}
-  _serverInfoBanner: {fileID: 21300000, guid: 97eb5bc2a8f94653941b8defb224a3a7, type: 3}
-  _chevronDown: {fileID: 2800000, guid: b503f0cc149527347bf81823be9e52fa, type: 3}
+  _lobbyTemplate: {fileID: 9197481963319205126, guid: beed3effbc3bc6874835f0bfdcf20dfc, type: 3}
+  _characterWindowTemplate: {fileID: 9197481963319205126, guid: 571dc5b41e8d9d7e2bddef83e9ae2344, type: 3}
   _previewHumanPrefab: {fileID: 6415765038646171405, guid: 1c3eed1ea37ecc1448e41270cdc63486, type: 3}
   _jobIcons:
+  - Id: Assistant
+    Sprite: {fileID: 21300000, guid: e89d51cb5cb444719ae1898e4914e66e, type: 3}
   - Id: Bartender
     Sprite: {fileID: 21300000, guid: 6d5342d85e1a400b89f765c3930f40f3, type: 3}
   - Id: Captain
@@ -46,28 +46,6 @@ MonoBehaviour:
     Sprite: {fileID: 21300000, guid: 2d1647a28e974e0093d9fe959b15740f, type: 3}
   - Id: Warden
     Sprite: {fileID: 21300000, guid: 693ee013412b45a88a832ce17b0fb096, type: 3}
-  _departmentIcons:
-  - Id: command
-    Texture: {fileID: 2800000, guid: 313bf655852b8d94abe6336caa161d4c, type: 3}
-  - Id: security
-    Texture: {fileID: 2800000, guid: 999d37f454fe45b42acaf47935ba37dc, type: 3}
-  - Id: engineering
-    Texture: {fileID: 2800000, guid: 826ed57d18f5733488130a90866d52e1, type: 3}
-  - Id: medical
-    Texture: {fileID: 2800000, guid: 63eb5b29ab261d546877b72ce2c8f21f, type: 3}
-  - Id: science
-    Texture: {fileID: 2800000, guid: 1deff6dc039deee4ca3c20fc4306041f, type: 3}
-  - Id: cargo
-    Texture: {fileID: 2800000, guid: a4a125d636696b94f8fa6e31d2172414, type: 3}
-  - Id: service
-    Texture: {fileID: 2800000, guid: 5cab647fe28f9404bbeeaa4deda0e4c3, type: 3}
-  - Id: civilian
-    Texture: {fileID: 2800000, guid: e21eabc818f98c34aae4cc1fbd2ca565, type: 3}
-  _loadoutThumbs:
-  - Id: PnSecurity
-    Sprite: {fileID: 21300000, guid: 75ead553c05c482fae442fad6748b24a, type: 3}
-  - Id: PnJanitor
-    Sprite: {fileID: 21300000, guid: 0c4c46a799be4c079d3544a17242efb4, type: 3}
   _hairStyles:
   - Id: none
     Prefab: {fileID: 0}
@@ -77,11 +55,101 @@ MonoBehaviour:
     Prefab: {fileID: 5774385816057912484, guid: 55d79b8cdc40d5a4ea61ec53a77ee40d, type: 3}
   - Id: humanhairfry
     Prefab: {fileID: 5774385816057912484, guid: af9ab580a04337e4ca9b51a7e5162ea9, type: 3}
+  - Id: humanhairafro
+    Prefab: {fileID: 5797215517639168, guid: 1fd8b09cc906611f894358dca4e5ceb2, type: 3}
+  - Id: humanhairafro2
+    Prefab: {fileID: 7419625258915228900, guid: 8f44e99ae83c293ec929219f6a1e2217, type: 3}
+  - Id: humanhairbalding1
+    Prefab: {fileID: 1072972969088357793, guid: 26067a1b9ea942c17924eef88f0dd155, type: 3}
+  - Id: humanhairbalding2
+    Prefab: {fileID: 9020169964463875869, guid: 0233a849f2a9f182e937f9d66854f06e, type: 3}
+  - Id: humanhairbigceo
+    Prefab: {fileID: 7890777945564870955, guid: 352e271debf9a407180a93ad779b6a2c, type: 3}
+  - Id: humanhairclown
+    Prefab: {fileID: 2827360908996766204, guid: 086a706720d24dd4eaa3d30071aec26f, type: 3}
+  - Id: humanhaircrewcut
+    Prefab: {fileID: 504914286423577128, guid: 12f508352cc30d3ea8fb727077bb20a0, type: 3}
+  - Id: humanhairdyhr
+    Prefab: {fileID: 9001231818960674595, guid: e82671df8005158d7a4530af6feb9aa5, type: 3}
+  - Id: humanhairemo
+    Prefab: {fileID: 274667334184280481, guid: 1f980e5e116f06ba98d1370cf7247725, type: 3}
+  - Id: humanhairfancykid
+    Prefab: {fileID: 1507325941516360570, guid: 77ba9640f0b53588581325520818024b, type: 3}
+  - Id: humanhairgrizzlyoutlaw
+    Prefab: {fileID: 7337796608515227774, guid: 0f93622c460fc7b8c932505480d92125, type: 3}
+  - Id: humanhairhipsterponytail2
+    Prefab: {fileID: 4156075904174233821, guid: 245e5bf7b6b8f9a1c876fc9a1aed1c7f, type: 3}
+  - Id: humanhairlonghairlong
+    Prefab: {fileID: 8944038203809191569, guid: b68c6a3b3e2aaf710b0fd0a156410107, type: 3}
+  - Id: humanhairlonghairmedium
+    Prefab: {fileID: 7092408385677121644, guid: 0b2993159bc6c659bbae32ef61529e89, type: 3}
+  - Id: humanhairlonghairshort
+    Prefab: {fileID: 3382161233389727222, guid: f25d358787bcdf36a87aef3d47f45532, type: 3}
+  - Id: humanhairmane
+    Prefab: {fileID: 1064355059670576044, guid: 8667a22d81543f5eca6b831d5ea91d3a, type: 3}
+  - Id: humanhairmohawk
+    Prefab: {fileID: 8484663943144737165, guid: a731a08fb34cba1678951323988858d5, type: 3}
+  - Id: humanhairmohawkalternative
+    Prefab: {fileID: 1379227091921152932, guid: af235f3ff12f6f1458f162ce3fb11fd1, type: 3}
+  - Id: humanhairmullet
+    Prefab: {fileID: 8165796544900042415, guid: 99657a7a05615dfba872904c6c51c134, type: 3}
+  - Id: humanhairpoofybangsshort
+    Prefab: {fileID: 890332993554774684, guid: 6f8686efcaa716c5d989cafcf94c339c, type: 3}
+  - Id: humanhairshorthair
+    Prefab: {fileID: 6621787363090152840, guid: 975d22874a62c382989026a18bf2df02, type: 3}
+  - Id: humanhairshortmessy
+    Prefab: {fileID: 7447237786411080313, guid: 4f4a6883131a3a9f4b016c3220cecd57, type: 3}
+  - Id: humanhairsimple1
+    Prefab: {fileID: 6368763371818696692, guid: b93ae1725d1ad0ed2a0725b4ddb308e8, type: 3}
+  - Id: humanhairsimple2
+    Prefab: {fileID: 531584334088606205, guid: bb2406571eca28a36a01cd71f7294324, type: 3}
+  - Id: humanhairsimple3
+    Prefab: {fileID: 1609796924946648103, guid: 3021513bd2f5ce8ffae7196ba5d3951a, type: 3}
+  - Id: humanhairsimplehime
+    Prefab: {fileID: 1486239569536971519, guid: a23291870688cc067854b6066c1e7dbc, type: 3}
   _beardStyles:
   - Id: none
     Prefab: {fileID: 0}
   - Id: humanfacehairdanishfull
     Prefab: {fileID: 5774385816057912484, guid: 2e0dd555bfcda7c4aa2d9bb994a9e2f2, type: 3}
+  - Id: humanfacehairamish
+    Prefab: {fileID: 4039861033358673129, guid: e74e2499b6713963fbff1414b1f052f3, type: 3}
+  - Id: humanfacehaircabron
+    Prefab: {fileID: 7033808706642087453, guid: 80c10627596d9fbda954113d68bc0e21, type: 3}
+  - Id: humanfacehairchaplin
+    Prefab: {fileID: 8392208610457761437, guid: 9edc4b40f5f7ec4b7b73edd4ec381d5e, type: 3}
+  - Id: humanfacehairdali
+    Prefab: {fileID: 2260249942016593334, guid: 996fec14541a7e155993ecded236348a, type: 3}
+  - Id: humanfacehairdanishmustache
+    Prefab: {fileID: 6702095321062261038, guid: 7453b437bee904fbd9dcd78f6b53e288, type: 3}
+  - Id: humanfacehairfreeman
+    Prefab: {fileID: 8564749450865912991, guid: 18e5b96c95464b5a88d9d8823d6eb29b, type: 3}
+  - Id: humanfacehairfrenchie
+    Prefab: {fileID: 1402731744706920539, guid: 5a8e0d01eea367a838a00540a30d734c, type: 3}
+  - Id: humanfacehairfull
+    Prefab: {fileID: 7606891843999532415, guid: 9c34966905a0dd7d886b16e7a799da0d, type: 3}
+  - Id: humanfacehairfuller
+    Prefab: {fileID: 3858555875565930747, guid: ed98e5d5b37bc8957b27489b98b2406f, type: 3}
+  - Id: humanfacehairfumanchu
+    Prefab: {fileID: 1485001709776774530, guid: d779ba4328011f0b8a9e2d1dd62dbdda, type: 3}
+  - Id: humanfacehairgoatee
+    Prefab: {fileID: 9140461755466244941, guid: 8fd91d4feacac599aa78d9c124d26425, type: 3}
+  - Id: humanfacehairmayor
+    Prefab: {fileID: 5526356533285628760, guid: 278426a3f2303b17e96177f675607975, type: 3}
+  - Id: humanfacehairmustache
+    Prefab: {fileID: 9015935343128228793, guid: e07f469b985833ddc867d9da476a2c9c, type: 3}
+  - Id: humanfacehairmuttonchops
+    Prefab: {fileID: 6793198358031448300, guid: cb50b3cf25512c26eaf0b22d20430ed3, type: 3}
+  - Id: humanfacehairplumber
+    Prefab: {fileID: 8070953990705255276, guid: 0da368e1dd21bb8dabf6d1644cbd6001, type: 3}
+  - Id: humanfacehairrancher
+    Prefab: {fileID: 9216100666676801364, guid: f17496a154990eff18d1d8a12da116a4, type: 3}
+  - Id: humanfacehairsaxonthegnsstache
+    Prefab: {fileID: 635031097315189270, guid: d6e1fa515c3b5ae51836affa0f739a0f, type: 3}
+  - Id: humanfacehairshadow
+    Prefab: {fileID: 823367508023123951, guid: 068e7168e5707aafa97851c27550eda2, type: 3}
+  - Id: humanfacehairusualmike
+    Prefab: {fileID: 6973182298544123702, guid: b333359d12caadb87ae21e87095ffc0e, type: 3}
   _eyebrowStyles:
   - Id: humaneyebrowsbold
     Prefab: {fileID: 5774385816057912484, guid: d22873970c77411469da85a704dccedd, type: 3}
@@ -93,6 +161,121 @@ MonoBehaviour:
     Prefab: {fileID: 5774385816057912484, guid: b97162ddf78852c4b9ce6da43f1640c3, type: 3}
   - Id: humaneyebrowsdefault
     Prefab: {fileID: 5774385816057912484, guid: 8325b1a0a1718674bbce7405540336fd, type: 3}
+  _styleThumbnails:
+  - Id: beard-humanfacehairamish
+    Sprite: {fileID: 21300000, guid: d320b8f332b36517ba36067e58b3a786, type: 3}
+  - Id: beard-humanfacehaircabron
+    Sprite: {fileID: 21300000, guid: d56478f0dabe8cfc480b55b28b00a429, type: 3}
+  - Id: beard-humanfacehairchaplin
+    Sprite: {fileID: 21300000, guid: 2090ac7a5db07df2bb94689a3b3db0b6, type: 3}
+  - Id: beard-humanfacehairdali
+    Sprite: {fileID: 21300000, guid: 9c54e7c903c706b06b5223098cae195a, type: 3}
+  - Id: beard-humanfacehairdanishfull
+    Sprite: {fileID: 21300000, guid: 11d5e393df74e4a7585bec780c92b841, type: 3}
+  - Id: beard-humanfacehairdanishmustache
+    Sprite: {fileID: 21300000, guid: eb3afabc707c623c0815c32c5e421d8e, type: 3}
+  - Id: beard-humanfacehairfreeman
+    Sprite: {fileID: 21300000, guid: 218d5de50323e3ba684ccab8a5f2b3ae, type: 3}
+  - Id: beard-humanfacehairfrenchie
+    Sprite: {fileID: 21300000, guid: 74f6eda1e917b2049a70c4da5acae3e9, type: 3}
+  - Id: beard-humanfacehairfull
+    Sprite: {fileID: 21300000, guid: 27c437773846fcc6cb75371a3fc934ac, type: 3}
+  - Id: beard-humanfacehairfuller
+    Sprite: {fileID: 21300000, guid: 5194eb72d1ad2403e97a5bb0fd607cdd, type: 3}
+  - Id: beard-humanfacehairfumanchu
+    Sprite: {fileID: 21300000, guid: 39a04e800aba05e23a679788d486d6d6, type: 3}
+  - Id: beard-humanfacehairgoatee
+    Sprite: {fileID: 21300000, guid: 1e745f54459e35ee3905adda56a63fba, type: 3}
+  - Id: beard-humanfacehairmayor
+    Sprite: {fileID: 21300000, guid: 5baf6d44232aeb53e923f9a4aa9df0a7, type: 3}
+  - Id: beard-humanfacehairmustache
+    Sprite: {fileID: 21300000, guid: c078ff9833b00994d99ca2afb7d9ceef, type: 3}
+  - Id: beard-humanfacehairmuttonchops
+    Sprite: {fileID: 21300000, guid: d42ae5b8689ee5241b2a09eed1dfd047, type: 3}
+  - Id: beard-humanfacehairplumber
+    Sprite: {fileID: 21300000, guid: b157f3a030fb89fbba50474ddafea8fc, type: 3}
+  - Id: beard-humanfacehairrancher
+    Sprite: {fileID: 21300000, guid: aecccee339c06f44bb40fd03a4270b8a, type: 3}
+  - Id: beard-humanfacehairsaxonthegnsstache
+    Sprite: {fileID: 21300000, guid: a207360f12865040688413cc8e15837e, type: 3}
+  - Id: beard-humanfacehairshadow
+    Sprite: {fileID: 21300000, guid: e3be630c0454cc6319f079e351e8cb68, type: 3}
+  - Id: beard-humanfacehairusualmike
+    Sprite: {fileID: 21300000, guid: 7eae4a1f6d75615a2a92d732ef7c3d14, type: 3}
+  - Id: beard-none
+    Sprite: {fileID: 21300000, guid: 598269fd53defe7d09e09752656e1f86, type: 3}
+  - Id: eyebrows-humaneyebrowsbold
+    Sprite: {fileID: 21300000, guid: d59bd4604ea736ea6b8e78346c573a4a, type: 3}
+  - Id: eyebrows-humaneyebrowscircle
+    Sprite: {fileID: 21300000, guid: e57bf4fc9004e4a7ea5d0f603fd9249b, type: 3}
+  - Id: eyebrows-humaneyebrowsclassic
+    Sprite: {fileID: 21300000, guid: 2c8350b03af734300878e93854f3e9e2, type: 3}
+  - Id: eyebrows-humaneyebrowsdainty
+    Sprite: {fileID: 21300000, guid: c71df7c073909d41bac2e0368d355bcb, type: 3}
+  - Id: eyebrows-humaneyebrowsdefault
+    Sprite: {fileID: 21300000, guid: 30183be4359aff29396a48088ce09b69, type: 3}
+  - Id: eyebrows-none
+    Sprite: {fileID: 21300000, guid: 58e30d44d72ba0b21b93f1e84f9ae80d, type: 3}
+  - Id: hair-humanhairafro
+    Sprite: {fileID: 21300000, guid: 1fee6f79e33b9408caaa3ba433870859, type: 3}
+  - Id: hair-humanhairafro2
+    Sprite: {fileID: 21300000, guid: 41d8125bdc80c387cab2d0fae9f9ad93, type: 3}
+  - Id: hair-humanhairanime
+    Sprite: {fileID: 21300000, guid: 6718f651cf0488b6d8e2d2c15f5e949b, type: 3}
+  - Id: hair-humanhairbalding1
+    Sprite: {fileID: 21300000, guid: c9cfa208436f8c81a8eee5ed0fcb5933, type: 3}
+  - Id: hair-humanhairbalding2
+    Sprite: {fileID: 21300000, guid: 2086c84e1fb5aabb0badba29966874c0, type: 3}
+  - Id: hair-humanhairbeep
+    Sprite: {fileID: 21300000, guid: b97a440dfc292e9f8b29ecc8918ae5a7, type: 3}
+  - Id: hair-humanhairbigceo
+    Sprite: {fileID: 21300000, guid: b933c0b88d4809260aea02ea341046e9, type: 3}
+  - Id: hair-humanhairclown
+    Sprite: {fileID: 21300000, guid: ff96e1470e59e4297a874b93b4804678, type: 3}
+  - Id: hair-humanhaircrewcut
+    Sprite: {fileID: 21300000, guid: 9c8d2b00aaca5b6eb958a5c7b8cfbdbd, type: 3}
+  - Id: hair-humanhairdyhr
+    Sprite: {fileID: 21300000, guid: 9a3093d485622a60a89087eaa27834aa, type: 3}
+  - Id: hair-humanhairemo
+    Sprite: {fileID: 21300000, guid: 08df2ef22ce85683d96ed36576141f0e, type: 3}
+  - Id: hair-humanhairfancykid
+    Sprite: {fileID: 21300000, guid: 40ea7c8d04830cccb8026757b3da6ef1, type: 3}
+  - Id: hair-humanhairfry
+    Sprite: {fileID: 21300000, guid: 6b0a3df896f2a426a8e2dea9e634c751, type: 3}
+  - Id: hair-humanhairgrizzlyoutlaw
+    Sprite: {fileID: 21300000, guid: d4794baf362bb773fbebdc3f84a5869d, type: 3}
+  - Id: hair-humanhairhipsterponytail2
+    Sprite: {fileID: 21300000, guid: e82974a251090d0978c06d7b262f6960, type: 3}
+  - Id: hair-humanhairlonghairlong
+    Sprite: {fileID: 21300000, guid: 46b3df9dfc2c1c52a87a1481fecfa19f, type: 3}
+  - Id: hair-humanhairlonghairmedium
+    Sprite: {fileID: 21300000, guid: 3bedc09c7eaa0f2e48c3897fc5b5b49d, type: 3}
+  - Id: hair-humanhairlonghairshort
+    Sprite: {fileID: 21300000, guid: 08ffd167634cdd11594a59720ca8784a, type: 3}
+  - Id: hair-humanhairmane
+    Sprite: {fileID: 21300000, guid: 3c2b7dc33dc9635828d38f789305ba39, type: 3}
+  - Id: hair-humanhairmohawk
+    Sprite: {fileID: 21300000, guid: 529ab621fbf7a8321a248d56b7cfb3ca, type: 3}
+  - Id: hair-humanhairmohawkalternative
+    Sprite: {fileID: 21300000, guid: 85a4653ea06a1539b853d34339fc6974, type: 3}
+  - Id: hair-humanhairmullet
+    Sprite: {fileID: 21300000, guid: 3b943c6179cdcb806a726f5dcd08de42, type: 3}
+  - Id: hair-humanhairpoofybangsshort
+    Sprite: {fileID: 21300000, guid: ff1d53cbea303f5b9b8c3a6a9325bf1e, type: 3}
+  - Id: hair-humanhairshorthair
+    Sprite: {fileID: 21300000, guid: 8dd02d5b11241fc7da32befa5604f86e, type: 3}
+  - Id: hair-humanhairshortmessy
+    Sprite: {fileID: 21300000, guid: 1ad2613c81e11053e91a503c3bd551f5, type: 3}
+  - Id: hair-humanhairsimple1
+    Sprite: {fileID: 21300000, guid: 5d80c1d20b220d015aa753ef598583b0, type: 3}
+  - Id: hair-humanhairsimple2
+    Sprite: {fileID: 21300000, guid: 783afa6c04cdbf758806a4204ec6f7bc, type: 3}
+  - Id: hair-humanhairsimple3
+    Sprite: {fileID: 21300000, guid: 79d5770750697e9f195eaf8a664a2d89, type: 3}
+  - Id: hair-humanhairsimplehime
+    Sprite: {fileID: 21300000, guid: e09c38255ea21179bb18ab8ee59f645e, type: 3}
+  - Id: hair-none
+    Sprite: {fileID: 21300000, guid: 76788b70e91dab43db636d7ca9a76403, type: 3}
   _hairColors:
   - {r: 0.07, g: 0.07, b: 0.07, a: 1}
   - {r: 0.25, g: 0.13, b: 0.07, a: 1}
@@ -112,6 +295,24 @@ MonoBehaviour:
   - {r: 0.14, g: 0.32, b: 0.87, a: 1}
   - {r: 0.1, g: 0.6, b: 0.25, a: 1}
   - {r: 0.08, g: 0.62, b: 0.62, a: 1}
+  _skinColors:
+  - {r: 1, g: 0.7411765, b: 0.6, a: 1}
+  - {r: 0.9607843, g: 0.85882354, b: 0.78039217, a: 1}
+  - {r: 0.90588236, g: 0.7372549, b: 0.60784316, a: 1}
+  - {r: 0.80784315, g: 0.59607846, b: 0.4509804, a: 1}
+  - {r: 0.68235296, g: 0.46666667, b: 0.32156864, a: 1}
+  - {r: 0.54901963, g: 0.34117648, b: 0.23529412, a: 1}
+  - {r: 0.40784314, g: 0.25490198, b: 0.18431373, a: 1}
+  - {r: 0.27450982, g: 0.1764706, b: 0.14117648, a: 1}
+  _eyeColors:
+  - {r: 0.23921569, g: 0.16862746, b: 0.12156863, a: 1}
+  - {r: 0.29803923, g: 0.49411765, b: 0.65882355, a: 1}
+  - {r: 0.29803923, g: 0.5411765, b: 0.36862746, a: 1}
+  - {r: 0.5411765, g: 0.44313726, b: 0.1882353, a: 1}
+  - {r: 0.49019608, g: 0.5411765, b: 0.5411765, a: 1}
+  - {r: 0.70980394, g: 0.5058824, b: 0.22745098, a: 1}
+  - {r: 0.35686275, g: 0.22745098, b: 0.16078432, a: 1}
+  - {r: 0.18431373, g: 0.18431373, b: 0.2, a: 1}
   _previewOutfits:
   - Id: civilian
     Jumpsuit: {fileID: 624365323667193292, guid: 236b51ddc6f9aa94ca92579082370c06, type: 3}
@@ -125,3 +326,4 @@ MonoBehaviour:
   - Id: security
     Jumpsuit: {fileID: 6330158209413936013, guid: 93ad90421a3b2f64e8fdb9e95a42ba90, type: 3}
     Shoes: {fileID: 2653363475000095017, guid: 535ed7c02b5cbdc43ae2b234a963c5cc, type: 3}
+  _characterNames: {fileID: 11400000, guid: c4d2fb84bcad458083340a2fa903037e, type: 2}

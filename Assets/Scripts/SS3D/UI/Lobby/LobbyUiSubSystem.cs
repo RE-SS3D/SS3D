@@ -4,7 +4,9 @@ using FishNet;
 using FishNet.Connection;
 using FishNet.Managing;
 using SS3D.Permissions;
+using SS3D.Systems.Audio;
 using SS3D.Systems.Comms;
+using SS3D.Systems.IdAccess;
 using SS3D.Systems.Entities;
 using SS3D.Systems.PlayerControl;
 using SS3D.Systems.Session;
@@ -33,24 +35,24 @@ using SS3D.UI.Shell.Catalog;
 namespace SS3D.UI.Lobby
 {
     /// <summary>
-    /// Self-bootstrapping host for the UITK pre-round lobby shell and Character Creator.
-    /// Attaches into <see cref="UiLayer.Modal"/>. Phase E1: live booth preview + local draft.
-    /// Owns session visibility, ready/late-join and administrator round requests. While the local
-    /// player has a body, Escape (<c>Other/Toggle Menu</c>) opens the shell as an in-round menu.
+    /// Self-bootstrapping host for the UITK lobby shell and the character window (lobby effort Phases 4–5).
+    /// Attaches into <see cref="UiLayer.Modal"/>. Owns the saved characters, the live preview booth, session
+    /// visibility, ready/late-join and administrator round requests. While the local player has a body, Escape
+    /// (<c>Other/Toggle Menu</c>) opens the shell as an in-round menu.
     /// </summary>
     public sealed class LobbyUiSubSystem : SubSystem
     {
         private LobbyAssetCatalog _catalog;
-        private LobbyShellView _shellView;
-        private CharacterCreatorView _creatorView;
-        private CharacterPreviewBooth _booth;
-        private CharacterCreatorDraft _draft;
+        private LobbyView _shellView;
+        private CharacterWindowView _window;
+        private CharacterSwitcher _lobbySwitcher;
+        private string _jobsSignature;
+        private LobbyCharacterPreview _preview;
+        private SavedCharacter _draft;
         private CharacterProfileStore _profileStore;
+        private CharacterRoster _roster;
+        private readonly System.Random _random = new();
         private bool _attached;
-        private readonly Dictionary<string, RenderTexture> _portraits = new();
-        private bool _portraitDirty;
-        private int _portraitDirtyFrame;
-        private const int PortraitSize = 128;
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
         private static void Bootstrap()
@@ -73,7 +75,6 @@ namespace SS3D.UI.Lobby
             SetMenuBlur(false);
             _menuHandle?.Dispose();
             _menuHandle = null;
-            ReleasePortraits();
             _settingsPanel?.Dispose();
             _settingsPanel = null;
             if (_shellView != null)
@@ -83,18 +84,8 @@ namespace SS3D.UI.Lobby
                 _shellView = null;
             }
 
-            if (_creatorView != null)
-            {
-                _creatorView.ReturnToLobbyRequested -= HandleReturnToLobbyRequested;
-                _creatorView.CharacterSaved -= HandleCharacterSaved;
-                _creatorView.PreviewAngleChanged -= HandlePreviewAngleChanged;
-                _creatorView.OutfitChanged -= HandleOutfitChanged;
-            _creatorView.BodyMorphsChanged -= HandleBodyMorphsChanged;
-            _creatorView.StyleChanged -= HandleStyleChanged;
-            _creatorView.FaceChanged -= HandleFaceChanged;
-            _creatorView.Detach();
-                _creatorView = null;
-            }
+            _window?.Detach();
+            _window = null;
 
             if (ReferenceEquals(HumanoidStyleSource.Current, _catalog))
             {
@@ -102,7 +93,8 @@ namespace SS3D.UI.Lobby
             }
 
             UnbindClientSession();
-            DisposeBooth();
+            _preview?.Dispose();
+            _preview = null;
             base.OnDestroyed();
         }
 
@@ -114,7 +106,7 @@ namespace SS3D.UI.Lobby
                 BindClientSession();
                 RefreshSession();
             }
-            if (_portraitDirty) TryCapturePortrait();
+            _preview?.Tick();
         }
 
         private void TryAttachShell()
@@ -136,19 +128,30 @@ namespace SS3D.UI.Lobby
             if (SubSystems.TryGet(out PlayerSettingsSubSystem playerSettings)) playerSettings.RegisterUiPanel(uiShell.Document.panelSettings);
             InputInterface.RegisterDocument(uiShell.Document);
 
-            _profileStore = new CharacterProfileStore(CharacterProfileStore.DefaultPath);
+            _profileStore = new CharacterProfileStore(CharacterProfileStore.DefaultPath, CreateRandomCharacter);
             CharacterProfileStore.Profile profile = _profileStore.Load();
-            _draft = profile?.Characters.FirstOrDefault(c => c.Id == profile.SelectedId)
-                ?? new CharacterCreatorDraft { OutfitIndex = _catalog.ChoosePreviewOutfitIndex() };
+            // No saved characters yet: the player starts with a random one, saved at once (Decision 3).
+            _roster = new CharacterRoster(profile?.Characters, profile?.SelectedId, CreateRandomCharacter);
+            if (profile == null) SaveRoster();
+            _draft = _roster.Selected;
 
-            _shellView = new LobbyShellView(_catalog);
+            _shellView = new LobbyView(_catalog);
             _shellView.Attach(modalLayer);
             _shellView.CharacterCreatorRequested += HandleCharacterCreatorRequested;
+            _preview = new LobbyCharacterPreview(_catalog);
+            _preview.PortraitCaptured += RepaintPortraits;
+            _lobbySwitcher = new CharacterSwitcher(_roster, _preview.PortraitOf, DepartmentOf);
+            BindSwitcher(_lobbySwitcher);
+            _shellView.MountSwitcher(_lobbySwitcher);
+            _shellView.BackToRoundRequested += HandleBackToRound;
+            _shellView.MusicToggleRequested += HandleMusicToggle;
+            _shellView.MusicNextRequested += HandleMusicNext;
+            _shellView.MusicVolumeChanged += HandleMusicVolume;
             _shellView.ReadyRequested += HandleReadyRequested;
+            _shellView.JoinRequested += HandleJoinRequested;
             _shellView.ObserveRequested += HandleObserveRequested;
             _shellView.QuitRequested += HandleQuitRequested;
             _shellView.BugReportRequested += HandleBugReportRequested;
-            _shellView.RoundChangeRequested += HandleRoundChangeRequested;
             _shellView.ServerSettingsChanged += (field, settings) =>
             {
                 if (CanAdmin() && SubSystems.TryGet(out ServerSettingsService service)) service.CmdUpdateServerSetting(field, settings);
@@ -161,34 +164,32 @@ namespace SS3D.UI.Lobby
             {
                 if (CanAdmin() && SubSystems.TryGet(out MapEditorStopFlow stopFlow)) stopFlow.CmdResolveMapStop(token, choice, name);
             };
-            _shellView.JobPreferencesChanged += HandleJobPreferencesChanged;
             _shellView.ChatSubmitted += HandleChatSubmitted;
             BindPlayerSettings();
-            _shellView.SetCharacterName(_draft.Name);
+            RefreshCharacterCard();
 
-            _creatorView = new CharacterCreatorView(_catalog, _draft, profile?.Characters);
-            _creatorView.Attach(modalLayer);
-            _creatorView.ReturnToLobbyRequested += HandleReturnToLobbyRequested;
-            _creatorView.CharacterSaved += HandleCharacterSaved;
-            _creatorView.PreviewAngleChanged += HandlePreviewAngleChanged;
-            _creatorView.OutfitChanged += HandleOutfitChanged;
-            _creatorView.BodyMorphsChanged += HandleBodyMorphsChanged;
-            _creatorView.StyleChanged += HandleStyleChanged;
-            _creatorView.FaceChanged += HandleFaceChanged;
-            if (!EnsureBooth())
+            _window = new CharacterWindowView(_catalog, _roster, _preview.PortraitOf, DepartmentOf);
+            _window.Attach(modalLayer);
+            _window.ReturnRequested += HandleReturnToLobbyRequested;
+            _window.Saved += HandleCharacterSaved;
+            _window.SelectRequested += HandleSelectCharacter;
+            _window.NewRequested += HandleNewCharacter;
+            _window.DuplicateRequested += HandleDuplicateCharacter;
+            _window.DeleteRequested += HandleDeleteCharacter;
+            _window.AngleChanged += _preview.SetAngle;
+            _window.BodyChanged += _preview.ApplyBody;
+            _window.LookChanged += _preview.ApplyLook;
+            _window.OutfitChanged += _preview.ApplyOutfit;
+            if (!_preview.Ensure())
             {
                 Debug.LogError("[Lobby] Could not initialize the live character preview.");
             }
-            _creatorView.ApplyDraft(_draft);
-            if (_booth != null)
-            {
-                _booth.SetAngleIndex(0);
-            }
+            _preview.ShowCharacter(_draft);
             PushPreviewTexture();
 
             _shellView.SetVisible(true);
-            _creatorView.SetVisible(false);
-            Debug.Log("[Lobby] UITK Lobby Shell + Character Creator attached (Phase E1 + hair styles).");
+            _window.SetVisible(false);
+            Debug.Log("[Lobby] UITK lobby shell and character window attached.");
         }
 
         private PlayerSettingsPanel _settingsPanel;
@@ -257,6 +258,10 @@ namespace SS3D.UI.Lobby
             bool spawned = local != null && entities != null && entities.IsPlayerSpawned(InstanceFinder.ClientManager.Connection);
             _spawned = spawned;
             if (!spawned) _menuOpen = false;
+            // Menu music plays on from the main menu into the lobby and fades once the player has a body or a ghost,
+            // the in-round Escape menu included (lobby effort Decision 15). No opinion until connected, so a handover
+            // from the main menu keeps playing through the session load.
+            if (SubSystems.TryGet(out MenuMusicSubSystem music)) music.SetLobby(connected ? !spawned : null);
             BindToggleMenu(SubSystems.TryGet(out InputSubSystem input) ? input : null);
             bool visible = connected && (!spawned || _menuOpen);
             bool holdMenu = visible && spawned;
@@ -271,8 +276,8 @@ namespace SS3D.UI.Lobby
             if (!visible)
             {
                 _shellView.SetVisible(false);
-                _creatorView.SetVisible(false);
-                if (_booth != null) _booth.SetActive(false);
+                _window.SetVisible(false);
+                _preview?.SetActive(false);
                 _inWorld = true;
             }
             else if (_inWorld)
@@ -280,8 +285,7 @@ namespace SS3D.UI.Lobby
                 _inWorld = false;
                 HandleReturnToLobbyRequested();
             }
-            _shellView.SetJobs(connected && SubSystems.TryGet(out RoleSubSystem roles)
-                ? roles.Jobs : System.Array.Empty<JobSlotInfo>());
+
             SubSystems.TryGet(out ServerSettingsService serverSettings);
             if (connected && serverSettings != null)
                 _shellView.SetServerInfo(serverSettings.ServerName, serverSettings.Motd, serverSettings.PublicMode,
@@ -291,27 +295,133 @@ namespace SS3D.UI.Lobby
             RefreshLastRound(connected ? rounds : null, visible);
             _shellView.SetStationLoadState(rounds != null ? rounds.CurrentStationLoadState : StationLoadState.NotLoaded,
                 rounds != null ? rounds.StationName : "");
+            if (rounds != null) _shellView.SetRoundId(rounds.RoundId);
             bool admin = CanAdmin();
             ShowAdminSettings();
             if (SubSystems.TryGet(out CommsSubSystem comms))
-                _shellView.SetChat(comms.OocLog, comms.OocLogVersion, connected && admin);
+                _shellView.SetChat(comms.OocLog, comms.OocLogVersion, connected && admin, connected);
             MapEditorStopFlow stopFlow = null;
             bool mapPrompt = connected && admin && rounds != null && rounds.CurrentRoundState == RoundState.Ongoing
                 && SubSystems.TryGet(out stopFlow);
             _shellView.SetMapStopPrompt(mapPrompt ? stopFlow.MapStopToken : 0,
                 mapPrompt ? stopFlow.MapStopEditingMap : "", mapPrompt ? stopFlow.MapStopError : "");
-            LobbyMockData.PlayerRow[] rows = connected ? players.OnlinePlayers.Where(p => p != null)
-                .Select(p => new LobbyMockData.PlayerRow(p.Ckey, p.Ckey, ready != null && ready.IsReady(p),
-                    null, "—", "—", "—")).ToArray() : System.Array.Empty<LobbyMockData.PlayerRow>();
-            _shellView.SetAutoStart(rounds != null && rounds.AutoStartEnabled, rounds != null && rounds.AutoStartHeld,
-                rounds != null ? rounds.AutoStartSecondsLeft : 0);
-            _shellView.SetRoundEnd(rounds != null && rounds.EndHeld, rounds != null ? rounds.EndSecondsLeft : 0);
-            // Observing is always available (lobby.md §7): no late-join gate, only "not already in the round".
-            _shellView.SetObserve(local != null && ready != null && ready.IsObserving(local),
-                local != null && !spawned && rounds != null && rounds.CurrentRoundState is not RoundState.Ending);
-            _shellView.SetSession(rounds != null ? rounds.CurrentRoundState : RoundState.Stopped,
-                rounds != null ? rounds.CurrentTimerSeconds : 0,
-                local != null && ready != null && ready.IsReady(local), local != null && (rounds == null || rounds.CurrentRoundState != RoundState.Ongoing || serverSettings == null || serverSettings.AllowLateJoin), admin, rows, spawned);
+
+            int onlineCount = 0;
+            int readyCount = 0;
+            if (connected)
+                foreach (Player player in players.OnlinePlayers)
+                {
+                    if (player == null) continue;
+                    onlineCount++;
+                    if (ready != null && ready.IsReady(player)) readyCount++;
+                }
+            _shellView.SetPlayers(onlineCount, readyCount, connected && serverSettings != null ? serverSettings.PublicPlayerCap : 0);
+            RefreshCharacterCard();
+            RefreshWindowData(serverSettings);
+            RefreshJoinPicker(rounds);
+            RefreshMusicRow(spawned);
+
+            RoundState state = rounds != null ? rounds.CurrentRoundState : RoundState.Stopped;
+            _shellView.SetSession(new LobbySessionInfo
+            {
+                State = state,
+                TimerSeconds = rounds != null ? rounds.CurrentTimerSeconds : 0,
+                AutoStartEnabled = rounds != null && rounds.AutoStartEnabled,
+                AutoStartHeld = rounds != null && rounds.AutoStartHeld,
+                AutoStartSecondsLeft = rounds != null ? rounds.AutoStartSecondsLeft : 0,
+                Connected = onlineCount,
+                MinimumConnected = serverSettings != null ? serverSettings.PublicMinimumConnected : 1,
+                EndHeld = rounds != null && rounds.EndHeld,
+                EndSecondsLeft = rounds != null ? rounds.EndSecondsLeft : 0,
+                Ready = local != null && ready != null && ready.IsReady(local),
+                Spawned = spawned,
+                LateJoinAllowed = serverSettings == null || serverSettings.AllowLateJoin,
+                // Observing is immediate (lobby effort Decision 9): no late-join gate, only a loaded station and no body yet.
+                CanObserve = local != null && !spawned && rounds != null
+                    && ObserveRules.StationLoaded(rounds.CurrentRoundState, rounds.CurrentStationLoadState),
+                FirstName = LobbySidebarModel.FirstName(_draft?.Name),
+            }, admin);
+        }
+
+        /// <summary>The sidebar card: the saved selected character, its High job and that job's department.</summary>
+        private void RefreshCharacterCard()
+        {
+            if (_shellView == null || _draft == null) return;
+            string high = _draft.Preferences?.HighJob;
+            Department department = Department.None;
+            if (high != null && SubSystems.TryGet(out RoleSubSystem roles))
+                foreach (JobSlotInfo job in roles.Jobs)
+                    if (job.Name == high) department = (Department)job.Department;
+            _shellView.SetCharacter(_draft.Name, high, department, _roster?.Count ?? 1, CharacterRoster.MaxCharacters);
+        }
+
+        /// <summary>
+        /// Feeds the character window the replicated job list (rebuilt only when it changes) and the server's
+        /// antagonist default.
+        /// </summary>
+        private void RefreshWindowData(ServerSettingsService serverSettings)
+        {
+            if (_window == null) return;
+            _window.SetAntagonistDefault(serverSettings != null && serverSettings.AntagonistOptInDefault);
+            if (!SubSystems.TryGet(out RoleSubSystem roles)) return;
+            System.Text.StringBuilder signature = new();
+            foreach (JobSlotInfo job in roles.Jobs) signature.Append(job.Name).Append('/').Append(job.Department).Append('/').Append(job.Slots).Append(';');
+            if (signature.ToString() == _jobsSignature) return;
+            _jobsSignature = signature.ToString();
+            _window.SetJobs(roles.Jobs.ToList(), roles.DescriptionOf, roles.FallbackJob);
+            _lobbySwitcher?.Refresh();
+            // The booth's outfit follows the High job's loadout, which needs the role assets.
+            if (!_window.IsVisible) _preview.ShowCharacter(_draft);
+        }
+
+        /// <summary>
+        /// Feeds the Join picker during a round: the replicated jobs and crew manifest, and the saved selected character
+        /// (lobby effort Phase 6). The picker rebuilds only when a count or a crew row changed.
+        /// </summary>
+        private void RefreshJoinPicker(RoundSubSystem rounds)
+        {
+            if (rounds == null || rounds.CurrentRoundState != RoundState.Ongoing || !SubSystems.TryGet(out RoleSubSystem roles)) return;
+            _shellView.SetJoinData(roles.Jobs, roles.FallbackJob, roles.DescriptionOf, roles.Manifest, _draft?.Preferences, _draft?.Name);
+        }
+
+        /// <summary>The music row drives the same menu music the main menu does (Decision 15).</summary>
+        private void RefreshMusicRow(bool spawned)
+        {
+            SubSystems.TryGet(out PlayerSettingsSubSystem settings);
+            SubSystems.TryGet(out MenuMusicSubSystem music);
+            bool on = settings == null || settings.Settings.Audio.MenuMusic;
+            _shellView.SetMusic(!spawned && music != null && music.HasTracks, on, music != null ? music.Title : "",
+                settings != null ? settings.Settings.Audio.Music : 0.8f);
+        }
+
+        private void HandleMusicToggle()
+        {
+            if (!SubSystems.TryGet(out PlayerSettingsSubSystem settings)) return;
+            settings.SetMenuMusic(!settings.Settings.Audio.MenuMusic);
+            _nextSessionRefresh = 0f;
+        }
+
+        private void HandleMusicNext()
+        {
+            if (SubSystems.TryGet(out MenuMusicSubSystem music)) music.Next();
+            _nextSessionRefresh = 0f;
+        }
+
+        private void HandleMusicVolume(float volume)
+        {
+            if (!SubSystems.TryGet(out PlayerSettingsSubSystem settings)) return;
+            settings.SetVolume(PlayerVolume.Music, volume);
+            // Turning the volume up turns the music on, as on the main menu.
+            if (volume > 0f && !settings.Settings.Audio.MenuMusic) settings.SetMenuMusic(true);
+        }
+
+        /// <summary>"Back to round" closes the in-round Escape menu, the same as Escape.</summary>
+        private void HandleBackToRound()
+        {
+            if (!_spawned) return;
+            _menuOpen = false;
+            _nextSessionRefresh = 0f;
+            RefreshSession();
         }
 
         /// <summary>Follows InputSubSystem across scene reloads (it owns a new Controls each time).</summary>
@@ -344,6 +454,8 @@ namespace SS3D.UI.Lobby
 
         private void HandleToggleMenu(InputAction.CallbackContext context)
         {
+            // The character window takes Escape itself (Return to lobby, or its unsaved-changes prompt).
+            if (_window != null && _window.IsVisible) return;
             // A key capture or a pending display change takes Escape first, before or during a round.
             if (_shellView != null && _settingsPanel != null && _settingsPanel.ConsumeEscape()) return;
             // Before spawn the shell is the whole screen; Escape there belongs to other owners.
@@ -401,28 +513,24 @@ namespace SS3D.UI.Lobby
             _shellView.SetServerSettings(service.AdminSettings, service.AdminMaps, service.AdminSettingsStatus);
         }
 
-        private void HandleJobPreferencesChanged()
+        private static void SendJobPreferences()
         {
             if (SubSystems.TryGet(out ClientSessionSubSystem session)) session.JobPreferencesChanged();
         }
+
+        private void SaveRoster() => _profileStore?.Save(_roster.Characters, _roster.SelectedId);
+
+        /// <summary>A random character from the catalog's names and looks (Decision 3).</summary>
+        private SavedCharacter CreateRandomCharacter() =>
+            RandomCharacter.Create(_catalog != null ? _catalog.CharacterNames : null, RandomCharacter.LookOptions.From(_catalog), _random);
 
         private void NotifyAppearanceChanged()
         {
             if (SubSystems.TryGet(out ClientSessionSubSystem session)) session.AppearanceChanged();
         }
 
-        /// <summary>The full preference list; the server keeps it per ckey until the next change.</summary>
-        private JobPreferencesMessage? BuildJobPreferences()
-        {
-            if (_shellView == null) return null;
-            string[] jobs = _shellView.JobPriorities.Keys.ToArray();
-            return new JobPreferencesMessage
-            {
-                Jobs = jobs,
-                Priorities = jobs.Select(job => (byte)_shellView.JobPriorities[job]).ToArray(),
-                AntagonistOptIns = _shellView.AntagonistOptIns.ToArray(),
-            };
-        }
+        /// <summary>The selected saved character's preferences; the server keeps them per ckey until the next send.</summary>
+        private JobPreferencesMessage? BuildJobPreferences() => _draft?.Preferences?.ToMessage();
 
         /// <summary>The saved character (never unsaved creator edits).</summary>
         private CharacterAppearance? BuildCharacterAppearance()
@@ -441,8 +549,8 @@ namespace SS3D.UI.Lobby
                 BeardStyle = _draft.BeardStyleIndex,
                 HairColor = _catalog.GetHairColor(_draft.HairColorIndex),
                 BeardColor = _catalog.GetHairColor(_draft.BeardColorIndex),
-                SkinColor = CharacterCreatorView.PaletteColor(CharacterCreatorMockData.SkinColors, _draft.SkinColorIndex),
-                EyeColor = CharacterCreatorView.PaletteColor(CharacterCreatorMockData.EyeColors, _draft.EyeColorIndex),
+                SkinColor = _catalog.GetSkinColor(_draft.SkinColorIndex),
+                EyeColor = _catalog.GetEyeColor(_draft.EyeColorIndex),
                 EyebrowColor = _catalog.GetHairColor(_draft.EyebrowColorIndex),
                 EyebrowStyle = CharacterAppearance.NormalizeEyebrowStyle(_draft.Eyebrows),
             };
@@ -453,12 +561,6 @@ namespace SS3D.UI.Lobby
         private void HandleChatSubmitted(OocChannel channel, string text)
         {
             if (SubSystems.TryGet(out CommsSubSystem comms)) comms.SendOoc(channel, text);
-        }
-
-        private void HandleRoundChangeRequested(bool start)
-        {
-            if (CanAdmin() && InstanceFinder.ClientManager.Started)
-                InstanceFinder.ClientManager.Broadcast(new ChangeRoundStateMessage(start));
         }
 
         /// <summary>Leaves the session (ending it when hosting) and returns to the main menu.</summary>
@@ -476,30 +578,23 @@ namespace SS3D.UI.Lobby
                 || !SubSystems.TryGet(out RoundSubSystem rounds) || !SubSystems.TryGet(out ReadyPlayersSubSystem ready)) return;
             Player local = players.GetPlayer(InstanceFinder.ClientManager.Connection);
             if (local == null) return;
-            if (rounds.CurrentRoundState == RoundState.Ongoing)
-            {
-                if (SubSystems.TryGet(out EntitySubSystem entities)) entities.CmdSpawnLatePlayer(local);
-            }
-            else if (rounds.CurrentRoundState is not RoundState.Ending)
+            // During a round the button is Join, which opens the picker in the view instead.
+            if (rounds.CurrentRoundState is not (RoundState.Ending or RoundState.Ongoing))
                 InstanceFinder.ClientManager.Broadcast(new ChangePlayerReadyMessage(local.Ckey, !ready.IsReady(local)));
         }
 
-        /// <summary>
-        /// Before a round, toggles watching the next one; during a round, asks for an observer ghost now.
-        /// The server decides either way (<c>observer.md</c> §2).
-        /// </summary>
+        /// <summary>The Join picker's pick; the server re-checks the slot and spawns, or refuses in OOC (Decision 11).</summary>
+        private static void HandleJoinRequested(string job)
+        {
+            if (!InstanceFinder.ClientManager.Started || !SubSystems.TryGet(out EntitySubSystem entities)) return;
+            entities.CmdJoinAsJob(job);
+        }
+
+        /// <summary>Asks for an observer ghost now, before or during the round; the server decides (<c>observer.md</c> §2).</summary>
         private void HandleObserveRequested()
         {
-            if (!InstanceFinder.ClientManager.Started || !SubSystems.TryGet(out PlayerSubSystem players)
-                || !SubSystems.TryGet(out RoundSubSystem rounds) || !SubSystems.TryGet(out ReadyPlayersSubSystem ready)) return;
-            Player local = players.GetPlayer(InstanceFinder.ClientManager.Connection);
-            if (local == null) return;
-            if (rounds.CurrentRoundState == RoundState.Ongoing)
-            {
-                if (SubSystems.TryGet(out EntitySubSystem entities)) entities.CmdObserve();
-            }
-            else if (rounds.CurrentRoundState is not RoundState.Ending)
-                InstanceFinder.ClientManager.Broadcast(new ChangePlayerObservingMessage(!ready.IsObserving(local)));
+            if (!InstanceFinder.ClientManager.Started || !SubSystems.TryGet(out EntitySubSystem entities)) return;
+            entities.CmdObserve();
         }
 
         private bool TryEnsureCatalog()
@@ -534,25 +629,19 @@ namespace SS3D.UI.Lobby
 
         private void HandleCharacterCreatorRequested()
         {
-            if (_shellView == null || _creatorView == null)
+            if (_shellView == null || _window == null)
             {
                 return;
             }
 
-            if (!EnsureBooth())
+            if (!_preview.Ensure())
             {
-                Debug.LogWarning("[Lobby] Character Creator opened without live preview (human prefab missing).");
-            }
-            else
-            {
-                ApplyBodyMorphsToBooth(_creatorView.CurrentBodyMorphs);
-                _creatorView.NotifyStyleChanged();
+                Debug.LogWarning("[Lobby] Character window opened without live preview (human prefab missing).");
             }
 
             PushPreviewTexture();
             _shellView.SetVisible(false);
-            _creatorView.Open();
-            Debug.Log("[Lobby] Character Creator opened.");
+            _window.Open();
         }
 
         /// <summary>
@@ -580,195 +669,107 @@ namespace SS3D.UI.Lobby
 
         private void HandleReturnToLobbyRequested()
         {
-            if (_shellView == null || _creatorView == null)
+            if (_shellView == null || _window == null)
             {
                 return;
             }
 
-            if (_booth != null)
-            {
-                // Keep booth warm for lobby sidebar RT; camera stays on.
-                _booth.SetActive(true);
-            }
-
-            // Return shows the last explicitly saved character, not unsaved preview edits.
-            _creatorView.ApplyDraft(_draft);
+            // Keep the booth warm for the lobby card; it shows the saved character, dressed, never unsaved window edits.
+            _preview.SetActive(true);
+            _preview.SetAngle(0);
+            _preview.ShowCharacter(_draft);
             PushPreviewTexture();
-            _shellView.SetCharacterName(_draft?.Name ?? LobbyMockData.CharacterName);
-            _creatorView.SetVisible(false);
+            RefreshCharacterCard();
+            _window.SetVisible(false);
             _shellView.SetVisible(true);
-            Debug.Log("[Lobby] Returned to Lobby Shell from Character Creator.");
         }
 
-        private void HandleCharacterSaved(CharacterCreatorDraft draft)
+        private void HandleCharacterSaved(SavedCharacter saved)
         {
-            if (draft == null)
+            if (saved == null || !_roster.Replace(saved))
             {
                 return;
             }
 
-            _draft = draft;
-            _profileStore.Save(_creatorView.SavedCharacters, draft.Id);
-            _shellView?.SetCharacterName(_draft.Name);
-            HandleOutfitChanged(_draft.OutfitIndex);
-            ApplyBodyMorphsToBooth(_draft.BodyMorphs);
-            ApplyStyleToBooth(_draft.HairStyleIndex, _draft.BeardStyleIndex, _draft.HairColorIndex, _draft.BeardColorIndex);
-            HandleFaceChanged(CharacterCreatorView.PaletteColor(CharacterCreatorMockData.SkinColors, _draft.SkinColorIndex),
-                CharacterCreatorView.PaletteColor(CharacterCreatorMockData.EyeColors, _draft.EyeColorIndex),
-                CharacterAppearance.NormalizeEyebrowStyle(_draft.Eyebrows), _catalog.GetHairColor(_draft.EyebrowColorIndex));
+            _roster.Select(saved.Id);
+            CharacterSelectionChanged();
+            Debug.Log($"[Lobby] Character saved: {saved.Name}");
+        }
+
+        private void BindSwitcher(CharacterSwitcher switcher)
+        {
+            switcher.SelectRequested += HandleSelectCharacter;
+            switcher.NewRequested += HandleNewCharacter;
+            switcher.DuplicateRequested += HandleDuplicateCharacter;
+            switcher.DeleteRequested += HandleDeleteCharacter;
+        }
+
+        private void HandleSelectCharacter(string id)
+        {
+            if (_roster.Select(id)) CharacterSelectionChanged();
+        }
+
+        /// <summary>New makes a random character and selects it (Decision 3); refused at the cap of ten.</summary>
+        private void HandleNewCharacter()
+        {
+            if (_roster.AddRandom() != null) CharacterSelectionChanged();
+        }
+
+        /// <summary>
+        /// Duplicate places a copy right below the original and selects it. It keeps the name: "Name (2)" on the
+        /// canvas breaks the name rule, and two characters may share a name (Decision 4).
+        /// </summary>
+        private void HandleDuplicateCharacter(string id)
+        {
+            if (_roster.Duplicate(id) != null) CharacterSelectionChanged();
+        }
+
+        private void HandleDeleteCharacter(string id)
+        {
+            if (!_roster.Delete(id)) return;
+            _preview.ForgetPortrait(id);
+            CharacterSelectionChanged();
+        }
+
+        /// <summary>
+        /// The roster changed (saved, selected, added, duplicated or deleted): write it, send the selected character's
+        /// look and preferences (Decision 1), and repaint the card, both switchers, the window and the booth.
+        /// </summary>
+        private void CharacterSelectionChanged()
+        {
+            _draft = _roster.Selected;
+            SaveRoster();
             NotifyAppearanceChanged();
-            Debug.Log($"[Lobby] Character draft saved: {_draft.Name}");
-        }
-
-        /// <summary>Recapture the current character's selector portrait once the booth renders the change.</summary>
-        private void MarkPortraitDirty()
-        {
-            _portraitDirty = true;
-            _portraitDirtyFrame = Time.frameCount;
-        }
-
-        private void TryCapturePortrait()
-        {
-            // The booth camera renders at end of frame: wait one full frame after the change.
-            if (_booth == null || _creatorView == null || Time.frameCount <= _portraitDirtyFrame + 1) return;
-            string id = _creatorView.CurrentCharacterId;
-            if (string.IsNullOrEmpty(id)) return;
-            if (!_portraits.TryGetValue(id, out RenderTexture portrait) || portrait == null)
+            SendJobPreferences();
+            RefreshCharacterCard();
+            _lobbySwitcher?.Refresh();
+            if (_window != null && _window.IsVisible)
             {
-                portrait = new RenderTexture(PortraitSize, PortraitSize, 0, RenderTextureFormat.ARGB32)
-                {
-                    name = "CharacterPortraitRT",
-                    filterMode = FilterMode.Bilinear,
-                };
-                portrait.Create();
-                _portraits[id] = portrait;
+                // After the window's own Save it already edits the stored character.
+                if (!ReferenceEquals(_window.Model.Saved, _draft)) _window.Load(_draft);
+                _window.RefreshRoster();
             }
-
-            // Side/Back angles keep the flag set until the preview returns to Front.
-            if (!_booth.TryCapturePortrait(portrait)) return;
-            _portraitDirty = false;
-            _creatorView.SetPortrait(id, portrait);
-        }
-
-        private void ReleasePortraits()
-        {
-            foreach (RenderTexture portrait in _portraits.Values)
+            else
             {
-                if (portrait == null) continue;
-                portrait.Release();
-                Destroy(portrait);
-            }
-
-            _portraits.Clear();
-        }
-
-        private void HandleOutfitChanged(int outfitIndex)
-        {
-            MarkPortraitDirty();
-            if (_booth == null || _catalog == null)
-            {
-                return;
-            }
-            LobbyPreviewOutfit outfit = _catalog.GetPreviewOutfit(outfitIndex);
-            _booth.ApplyOutfit(outfit.Jumpsuit.GetComponent<Cloth>(), outfit.Shoes.GetComponent<Cloth>());
-        }
-
-        private void HandlePreviewAngleChanged(int angleIndex)
-        {
-            MarkPortraitDirty();
-            if (_booth != null)
-            {
-                _booth.SetAngleIndex(angleIndex);
+                _preview.ShowCharacter(_draft);
+                _window?.RefreshRoster();
             }
         }
 
-        private void HandleBodyMorphsChanged(IReadOnlyDictionary<string, float> morphs)
-        {
-            MarkPortraitDirty();
-            ApplyBodyMorphsToBooth(morphs);
-        }
-
-        private void HandleFaceChanged(Color skin, Color eyes, string eyebrows, Color browColor)
-        {
-            MarkPortraitDirty();
-            if (_booth != null) _booth.ApplyFace(skin, eyes, _catalog.GetEyebrowStyle(eyebrows), browColor);
-        }
-
-        private void HandleStyleChanged(int hairIndex, int beardIndex, int colorIndex, int beardColorIndex)
-        {
-            MarkPortraitDirty();
-            ApplyStyleToBooth(hairIndex, beardIndex, colorIndex, beardColorIndex);
-        }
-
-        private void ApplyStyleToBooth(int hairIndex, int beardIndex, int colorIndex, int beardColorIndex)
-        {
-            if (_booth == null || _catalog == null)
-            {
-                return;
-            }
-
-            GameObject hairPrefab = _catalog.GetHairStyle(hairIndex);
-            GameObject beardPrefab = _catalog.GetBeardStyle(beardIndex);
-            Color hairColor = _catalog.GetHairColor(colorIndex);
-            _booth.ApplyStyle(hairPrefab, beardPrefab, hairColor, _catalog.GetHairColor(beardColorIndex));
-        }
-
-        private void ApplyBodyMorphsToBooth(IReadOnlyDictionary<string, float> morphs)
-        {
-            if (_booth == null || morphs == null)
-            {
-                return;
-            }
-
-            float Get(string key, float fallback) =>
-                morphs.TryGetValue(key, out float value) ? value : fallback;
-
-            _booth.ApplyBodyMorphs(
-                female: Get("female", 0f),
-                breasts: Get("breasts", 0f),
-                fat: Get("fat", 0f),
-                muscle: Get("muscle", 0f),
-                jaw: Get("jaw", 0.5f),
-                height: Get("height", 0.5f));
-        }
-
-        private bool EnsureBooth()
-        {
-            if (_booth != null)
-            {
-                _booth.SetActive(true);
-                return _booth.PreviewTexture != null;
-            }
-
-            GameObject prefab = _catalog != null ? _catalog.PreviewHumanPrefab : null;
-            if (prefab == null)
-            {
-                return false;
-            }
-
-            GameObject host = new("CharacterPreviewBooth");
-            DontDestroyOnLoad(host);
-            _booth = host.AddComponent<CharacterPreviewBooth>();
-            _booth.Initialize(prefab);
-            return _booth.PreviewTexture != null;
-        }
+        private static Department DepartmentOf(string job) =>
+            SubSystems.TryGet(out RoleSubSystem roles) ? CharacterWindowModel.DepartmentOf(job, roles.Jobs) : Department.None;
 
         private void PushPreviewTexture()
         {
-            Texture texture = _booth != null ? _booth.PreviewTexture : null;
-            _creatorView?.SetPreviewTexture(texture);
+            Texture texture = _preview?.Texture;
+            _window?.SetPreviewTexture(texture);
             _shellView?.SetPreviewTexture(texture);
         }
 
-        private void DisposeBooth()
+        private void RepaintPortraits()
         {
-            if (_booth == null)
-            {
-                return;
-            }
-
-            _booth.DisposeBooth();
-            _booth = null;
+            _window?.RefreshRoster();
+            if (_lobbySwitcher != null && _lobbySwitcher.IsOpen) _lobbySwitcher.Refresh();
         }
     }
 }

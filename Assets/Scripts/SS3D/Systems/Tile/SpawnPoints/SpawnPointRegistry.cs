@@ -41,6 +41,46 @@ namespace SS3D.Systems.Tile.SpawnPoints
         public bool HasAt(Vector3 worldPosition) => _indexByTile.ContainsKey(TileKey(worldPosition));
 
         /// <summary>
+        /// Position of the <paramref name="turn"/>-th marker for <paramref name="jobName"/> (wrapping), so
+        /// players of one job spread over its markers. Job names match ordinally, as Map Check does.
+        /// Returns false when the job has no marker.
+        /// </summary>
+        public bool TryGetJobSpawn(string jobName, int turn, out Vector3 position)
+        {
+            position = default;
+            if (string.IsNullOrEmpty(jobName))
+                return false;
+
+            int count = 0;
+            foreach (SpawnPointRecord record in _records)
+            {
+                if (IsJobMarker(record, jobName))
+                    count++;
+            }
+
+            if (count == 0)
+                return false;
+
+            int target = ((turn % count) + count) % count;
+            foreach (SpawnPointRecord record in _records)
+            {
+                if (!IsJobMarker(record, jobName))
+                    continue;
+
+                if (target-- == 0)
+                {
+                    position = record.Position;
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        private static bool IsJobMarker(SpawnPointRecord record, string jobName) =>
+            record.Kind == SpawnPointKind.Job && string.Equals(record.JobName, jobName, StringComparison.Ordinal);
+
+        /// <summary>
         /// Places or replaces the marker on the snapped tile. Returns false if
         /// <paramref name="record"/> is invalid.
         /// </summary>

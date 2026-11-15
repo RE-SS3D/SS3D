@@ -158,7 +158,7 @@ namespace SS3D.Editor.Automation
                 $"Spawned network objects match the first reset ({_firstReset.networkObjects} → {entry.networkObjects})");
         }
 
-        private static string SidebarSub() => Shell()?.Q<Label>(className: "lobby-shell__countdown-sub")?.text;
+        private static string SidebarSub() => Shell()?.Q<Label>("lobby-round-caption")?.text;
 
         private static void VerifyAtmosReset()
         {
@@ -224,7 +224,7 @@ namespace SS3D.Editor.Automation
                     settings.RespawnCooldownSeconds = 8;
                     Settings().ApplyServerSettingsForTesting(settings);
                 },
-                Until = () => Rounds().AutoStartSecondsLeft > 0 && SidebarSub() == "Starting In",
+                Until = () => Rounds().AutoStartSecondsLeft > 0 && SidebarSub() == "Round starts in",
                 Verify = () =>
                 {
                     Require(!IsReady(), "Countdown started without anyone pressing Ready");
@@ -383,8 +383,10 @@ namespace SS3D.Editor.Automation
                         .rootVisualElement.Q(className: "main-hud").resolvedStyle.display != DisplayStyle.None,
                         "Body HUD returns on respawn");
                     Require(_corpse == null, "Sandbox removes the previous corpse after respawn");
-                    Vector3 spawn = SubSystems.Get<TileSubSystem>().SpawnPoints.Records[0].Position;
-                    Require(Vector3.Distance(Flat(body.transform.position), Flat(spawn)) < 1.5f, "New body stands at a spawn point");
+                    // Bodies with a job stand on one of that job's markers, so any marker counts.
+                    Vector3 bodyFlat = Flat(body.transform.position);
+                    Require(SubSystems.Get<TileSubSystem>().SpawnPoints.Records
+                        .Any(marker => Vector3.Distance(bodyFlat, Flat(marker.Position)) < 1.5f), "New body stands at a spawn point");
                     Capture("sandbox-respawned");
                 },
             },

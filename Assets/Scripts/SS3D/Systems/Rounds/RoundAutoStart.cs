@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Threading;
 using Cysharp.Threading.Tasks;
 using FishNet.Object;
@@ -6,28 +7,30 @@ using FishNet.Object.Synchronizing;
 using SS3D.Core;
 using SS3D.Logging;
 using SS3D.Systems.Comms;
+using SS3D.Systems.PlayerControl;
 using SS3D.Systems.Rounds.Messages;
 
 namespace SS3D.Systems.Rounds
 {
     /// <summary>
-    /// The lobby's self-starting countdown (<c>lobby.md</c> §7), one tick per second. While the round is
-    /// idle and enough players are ready, it counts down and then asks for a start. An admin hold
-    /// (cancelling a countdown, or a failed station load) stops it until an admin starts a round.
+    /// The lobby's self-starting countdown (<c>lobby.md</c> §7), one tick per second. While the round is idle and
+    /// enough players are connected (lobby effort Decision 8), it counts down and then asks for a start; Ready only
+    /// decides who spawns. An admin hold (cancelling a countdown, or a failed station load) stops it until an admin
+    /// starts a round.
     /// </summary>
     public sealed class AutoStartCountdown
     {
-        public const int CountdownSeconds = 20;
-
         /// <summary>Seconds until the start request; 0 when not counting.</summary>
         public int SecondsLeft { get; private set; }
 
         public bool Held { get; set; }
 
         /// <summary>Advances one second; true exactly when the round should start now.</summary>
-        public bool Tick(bool enabled, bool idle, int readyCount, int minimumReady = 1)
+        /// <param name="countdownSeconds">Where a fresh countdown starts (<see cref="ServerSettings.CountdownSeconds"/>).</param>
+        public bool Tick(bool enabled, bool idle, int connectedCount, int minimumConnected = 1,
+            int countdownSeconds = ServerSettings.DefaultCountdownSeconds)
         {
-            if (!enabled || Held || !idle || readyCount < Math.Max(1, minimumReady))
+            if (!enabled || Held || !idle || connectedCount < Math.Max(1, minimumConnected))
             {
                 SecondsLeft = 0;
                 return false;
@@ -35,7 +38,7 @@ namespace SS3D.Systems.Rounds
 
             if (SecondsLeft == 0)
             {
-                SecondsLeft = CountdownSeconds;
+                SecondsLeft = Math.Max(1, countdownSeconds);
                 return false;
             }
 
@@ -105,17 +108,22 @@ namespace SS3D.Systems.Rounds
         private void TickAutoStart()
         {
             bool idle = CurrentRoundState is RoundState.Stopped or RoundState.Ended;
-            int ready = SubSystems.TryGet(out ReadyPlayersSubSystem readyPlayers)
-                ? readyPlayers.EffectiveReadyCount(Settings.AllConnectedReady)
+            int connected = SubSystems.TryGet(out PlayerSubSystem players)
+                ? players.OnlinePlayers.Count(player => player != null)
                 : 0;
-            bool start = _autoStart.Tick(Settings.AutoStart, idle, ready, Settings.MinimumReady);
+            bool start = _autoStart.Tick(Settings.AutoStart, idle, connected, Settings.MinimumConnected,
+                Settings.CountdownSeconds);
             _autoStartEnabled = Settings.AutoStart;
             _autoStartHeld = _autoStart.Held;
             _autoStartSeconds = _autoStart.SecondsLeft;
             if (!start)
                 return;
 
-            Log.Information(this, "Auto-starting round with {ready} ready players", Logs.ServerOnly, ready);
+            int ready = SubSystems.TryGet(out ReadyPlayersSubSystem readyPlayers)
+                ? readyPlayers.EffectiveReadyCount(Settings.AllConnectedReady)
+                : 0;
+            Log.Information(this, "Auto-starting round with {connected} connected and {ready} ready players",
+                Logs.ServerOnly, connected, ready);
             RequestRoundStateChange(new ChangeRoundStateMessage(true));
         }
 

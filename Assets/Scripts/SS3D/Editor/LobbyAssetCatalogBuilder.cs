@@ -49,16 +49,19 @@ namespace SS3D.Editor
             ("teal",        new Color(0.08f, 0.62f, 0.62f)),
         };
 
-        private static readonly (string Id, string FileName)[] DepartmentIconFiles =
+        /// <summary>Skin tone swatches, light to dark. Saved characters store the index, so only append.</summary>
+        private static readonly Color[] DefaultSkinColors =
         {
-            ("command", "OfficeBuilding.png"),
-            ("security", "ShieldCheck.png"),
-            ("engineering", "Cog.png"),
-            ("medical", "Plus.png"),
-            ("science", "Beaker.png"),
-            ("cargo", "Truck.png"),
-            ("service", "Cake.png"),
-            ("civilian", "UserGroup.png"),
+            new(1f, 0.7411765f, 0.6f),
+            Hex("#f5dbc7"), Hex("#e7bc9b"), Hex("#ce9873"),
+            Hex("#ae7752"), Hex("#8c573c"), Hex("#68412f"), Hex("#462d24"),
+        };
+
+        /// <summary>Eye colour swatches. Saved characters store the index, so only append.</summary>
+        private static readonly Color[] DefaultEyeColors =
+        {
+            Hex("#3d2b1f"), Hex("#4c7ea8"), Hex("#4c8a5e"), Hex("#8a7130"),
+            Hex("#7d8a8a"), Hex("#b5813a"), Hex("#5b3a29"), Hex("#2f2f33"),
         };
 
         /// <summary>BatchMode: <c>-executeMethod SS3D.Editor.LobbyAssetCatalogBuilder.RebuildCatalogBatch</c></summary>
@@ -87,12 +90,10 @@ namespace SS3D.Editor
             error = null;
             List<string> missing = new();
 
-            StyleSheet lobbyStyle = LoadRequired<StyleSheet>(LobbyAssetPaths.StyleSheet, missing);
-            Sprite preview = LoadRequiredSprite(LobbyAssetPaths.PreviewPlaceholder, missing);
-            Sprite banner = LoadRequiredSprite(LobbyAssetPaths.ServerInfoBanner, missing);
-            // Heroicons are Default Texture2D (not Sprite) — load as textures for UITK backgrounds.
-            Texture2D chevron = LoadRequiredTexture(LobbyAssetPaths.ChevronDownIcon, missing);
+            VisualTreeAsset lobbyTemplate = LoadRequired<VisualTreeAsset>(LobbyAssetPaths.Template, missing);
+            VisualTreeAsset characterWindowTemplate = LoadRequired<VisualTreeAsset>(LobbyAssetPaths.CharacterWindowTemplate, missing);
             GameObject previewHuman = LoadRequired<GameObject>(LobbyAssetPaths.PreviewHumanPrefab, missing);
+            CharacterNameList characterNames = LoadRequired<CharacterNameList>(CharacterNameList.AssetPath, missing);
 
             List<LobbyNamedSprite> jobIcons = new();
             if (Directory.Exists(LobbyAssetPaths.JobIconRoot))
@@ -117,35 +118,26 @@ namespace SS3D.Editor
                 missing.Add(LobbyAssetPaths.JobIconRoot);
             }
 
-            List<LobbyNamedTexture> departmentIcons = new();
-            foreach ((string id, string fileName) in DepartmentIconFiles)
+            // Optional: missing thumbnails fall back to a generic icon; StyleThumbnailTests flags them.
+            List<LobbyNamedSprite> styleThumbnails = new();
+            if (Directory.Exists(LobbyAssetPaths.StyleThumbnailRoot))
             {
-                Texture2D texture = LoadRequiredTexture(LobbyAssetPaths.HeroiconsOutlineRoot + fileName, missing);
-                if (texture != null)
+                foreach (string guid in AssetDatabase.FindAssets("t:Texture2D", new[] { LobbyAssetPaths.StyleThumbnailRoot.TrimEnd('/') }))
                 {
-                    departmentIcons.Add(new LobbyNamedTexture(id, texture));
+                    string path = AssetDatabase.GUIDToAssetPath(guid);
+                    Sprite sprite = AssetDatabase.LoadAssetAtPath<Sprite>(path);
+                    if (sprite != null) styleThumbnails.Add(new LobbyNamedSprite(Path.GetFileNameWithoutExtension(path), sprite));
                 }
             }
 
-            List<LobbyNamedSprite> loadoutThumbs = new();
-            Sprite securityThumb = LoadRequiredSprite(LobbyAssetPaths.PreviewPlaceholder, missing);
-            if (securityThumb != null)
-            {
-                loadoutThumbs.Add(new LobbyNamedSprite("PnSecurity", securityThumb));
-            }
-
-            Sprite janitorThumb = LoadRequiredSprite(LobbyAssetPaths.LoadoutJanitor, missing);
-            if (janitorThumb != null)
-            {
-                loadoutThumbs.Add(new LobbyNamedSprite("PnJanitor", janitorThumb));
-            }
-
-            // Hair: index 0 is the "none" sentinel (null prefab), then alpha-sorted discoveries.
+            // Hair: index 0 is the "none" sentinel (null prefab), then the styles. Saved characters and the network
+            // appearance store an index, so styles the catalog already has keep their place; new ones are appended.
+            LobbyAssetCatalog previous = AssetDatabase.LoadAssetAtPath<LobbyAssetCatalog>(LobbyAssetPaths.CatalogAssetPath);
             List<LobbyNamedPrefab> hairStyles = new() { new LobbyNamedPrefab("none", null) };
-            hairStyles.AddRange(DiscoverPrefabs(HairPrefabRoot));
+            hairStyles.AddRange(StableOrder(DiscoverPrefabs(HairPrefabRoot), previous != null ? previous.HairStyles : null));
 
             List<LobbyNamedPrefab> beardStyles = new() { new LobbyNamedPrefab("none", null) };
-            beardStyles.AddRange(DiscoverPrefabs(BeardPrefabRoot));
+            beardStyles.AddRange(StableOrder(DiscoverPrefabs(BeardPrefabRoot), previous != null ? previous.BeardStyles : null));
 
             List<Color> hairColors = new();
             foreach ((string _, Color c) in DefaultHairColors)
@@ -206,23 +198,25 @@ namespace SS3D.Editor
             }
 
             catalog.EditorAssign(
-                lobbyStyle,
-                preview,
-                banner,
-                chevron,
                 previewHuman,
                 jobIcons,
-                departmentIcons,
-                loadoutThumbs,
                 hairStyles,
                 beardStyles,
                 new List<LobbyNamedPrefab>(DiscoverPrefabs("Assets/Content/WorldObjects/Entities/Humanoids/Human/HumanHair/Eyebrows")),
                 hairColors,
-                previewOutfits);
+                new List<Color>(DefaultSkinColors),
+                new List<Color>(DefaultEyeColors),
+                previewOutfits,
+                characterNames,
+                lobbyTemplate,
+                characterWindowTemplate,
+                styleThumbnails);
             EditorUtility.SetDirty(catalog);
             AssetDatabase.SaveAssets();
             return true;
         }
+
+        private static Color Hex(string hex) => ColorUtility.TryParseHtmlString(hex, out Color color) ? color : Color.white;
 
         private static T LoadRequired<T>(string path, List<string> missing) where T : Object
         {
@@ -235,26 +229,28 @@ namespace SS3D.Editor
             return asset;
         }
 
-        private static Sprite LoadRequiredSprite(string path, List<string> missing)
+        /// <summary>
+        /// <paramref name="discovered"/> (alpha-sorted) reordered so ids in <paramref name="previous"/> keep their
+        /// order and come first; ids new to the catalog follow alphabetically. A removed style shifts later indices.
+        /// </summary>
+        public static List<LobbyNamedPrefab> StableOrder(List<LobbyNamedPrefab> discovered, IReadOnlyList<LobbyNamedPrefab> previous)
         {
-            Sprite sprite = AssetDatabase.LoadAssetAtPath<Sprite>(path);
-            if (sprite == null)
+            List<LobbyNamedPrefab> ordered = new();
+            if (previous != null)
             {
-                missing.Add($"Sprite: {path}");
+                foreach (LobbyNamedPrefab old in previous)
+                {
+                    LobbyNamedPrefab match = discovered.Find(style => style.Id == old?.Id);
+                    if (match != null) ordered.Add(match);
+                }
             }
 
-            return sprite;
-        }
-
-        private static Texture2D LoadRequiredTexture(string path, List<string> missing)
-        {
-            Texture2D texture = AssetDatabase.LoadAssetAtPath<Texture2D>(path);
-            if (texture == null)
+            foreach (LobbyNamedPrefab style in discovered)
             {
-                missing.Add($"Texture2D: {path}");
+                if (!ordered.Contains(style)) ordered.Add(style);
             }
 
-            return texture;
+            return ordered;
         }
 
         private static List<LobbyNamedPrefab> DiscoverPrefabs(string folder)

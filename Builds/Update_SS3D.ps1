@@ -45,11 +45,38 @@ function Start-SS3DGame([string]$Root) {
     Start-Process -FilePath (Join-Path $game 'SS3D.exe') -WorkingDirectory $game
 }
 
-function Expand-SS3DRelease([string]$Zip, [string]$Destination, [string]$Tag) {
+function Assert-SS3DPathLength([string[]]$Names, [string[]]$Roots) {
+    # Windows PowerShell 5.1 (.NET Framework) cannot create a file path over 259 characters or a
+    # folder path over 247 (MAX_PATH), and reports it as "Could not find a part of the path".
+    # $Names are '/'-separated paths relative to each root; a trailing '/' marks a folder.
+    $excess = 0
+    foreach ($root in $Roots) {
+        $base = [IO.Path]::GetFullPath($root).TrimEnd('\', '/').Length + 1
+        foreach ($name in $Names) {
+            if (-not $name) { continue }
+            if ($name.EndsWith('/')) {
+                $excess = [Math]::Max($excess, $base + $name.Length - 1 - 247)
+            } else {
+                $excess = [Math]::Max($excess, $base + $name.Length - 259)
+                $slash = $name.LastIndexOf('/')
+                if ($slash -gt 0) { $excess = [Math]::Max($excess, $base + $slash - 247) }
+            }
+        }
+    }
+    if ($excess -gt 0) {
+        throw ("The SS3D folder's path is too long for Windows to unpack this update ($excess character(s) over the limit). " +
+            'Move the whole SS3D folder somewhere shorter, such as C:\SS3D, then run the updater again. ' +
+            'Your installation has not been changed.')
+    }
+}
+
+function Expand-SS3DRelease([string]$Zip, [string]$Destination, [string]$Tag, [string[]]$AlsoUnder = @()) {
+    # $AlsoUnder: other folders the release will later live under (e.g. the backup), checked for length too.
     Add-Type -AssemblyName System.IO.Compression.FileSystem
     $archive = [IO.Compression.ZipFile]::OpenRead($Zip)
     try {
         $prefix = "SS3D-Windows-$Tag/"
+        $relative = New-Object System.Collections.Generic.List[string]
         # Validate ALL paths before extraction; Windows treats backslashes as separators too.
         foreach ($entry in $archive.Entries) {
             $name = $entry.FullName.Replace('\', '/')
@@ -58,7 +85,9 @@ function Expand-SS3DRelease([string]$Zip, [string]$Destination, [string]$Tag) {
                 $name -match '[\x00-\x1f]' -or $name -match '[. ](/|$)') {
                 throw "Unsafe or unexpected archive path: $name"
             }
+            $relative.Add($name.Substring($prefix.Length))
         }
+        Assert-SS3DPathLength $relative.ToArray() (@(Join-Path $Destination "SS3D-Windows-$Tag") + $AlsoUnder)
     } finally { $archive.Dispose() }
     [IO.Compression.ZipFile]::ExtractToDirectory($Zip, $Destination)
     $root = Join-Path $Destination "SS3D-Windows-$Tag"
@@ -192,7 +221,8 @@ function Update-SS3D([string]$Root, [switch]$CheckOnly) {
         }
         $expectedUrl = "https://github.com/henkhooft/SS3D/releases/download/$tag/SS3D-Windows-$tag.zip"
         if ($asset.browser_download_url -cne $expectedUrl) { throw 'Unexpected release download URL.' }
-        $stage = Join-Path $Root ('.ss3d-update-' + [guid]::NewGuid().ToString('N'))
+        # Keep staging names short: release files sit several folders deep under it (MAX_PATH).
+        $stage = Join-Path $Root ('.ss3d-update-' + [guid]::NewGuid().ToString('N').Substring(0, 8))
         New-Item -ItemType Directory -Path $stage | Out-Null
         $zip = Join-Path $stage 'release.zip'
         Write-Host "Downloading $tag... Your current installation stays in place until verification finishes."
@@ -200,7 +230,9 @@ function Update-SS3D([string]$Root, [switch]$CheckOnly) {
         if ((Get-FileHash -LiteralPath $zip -Algorithm SHA256).Hash -ne $asset.digest.Substring(7)) {
             throw 'Download SHA-256 mismatch. Your installation has not been changed.'
         }
-        $newRoot = Expand-SS3DRelease $zip (Join-Path $stage 'extract') $tag
+        # This release becomes the next update's backup; check it fits there too (same name length as below).
+        $nextBackup = Join-Path $Root '.ss3d-backups/00000000-000000-00000000'
+        $newRoot = Expand-SS3DRelease $zip (Join-Path $stage 'x') $tag @($nextBackup)
         # Capture defaults BEFORE copying local maps over them. Also supports older releases without metadata.
         $defaults = @{}
         foreach ($folder in @('Game/Data/StationTemplates', 'Game/Data/Tilemaps')) {

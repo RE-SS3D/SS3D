@@ -28,7 +28,6 @@ namespace SS3D.Tests.AssetAudit
         private static readonly Dictionary<string, int> GrandfatheredClassLines = new()
         {
             // TECH_DEBT §1.9 and the plan's Phase 4-7 splits.
-            { "LobbyShellView", 2568 },
             // 2026-11-14: +266 over 2200. About 202 lines are earlier drift (2402 before this change); about 64 are the
             // systems view hub partial, which map-editor-systems-views (Code split) puts on the hub. Its logic lives in
             // SystemsViewPublisher and MapEditorSystemsViewClient.
@@ -47,7 +46,6 @@ namespace SS3D.Tests.AssetAudit
             // Over the cap but not yet planned for a split.
             { "LobbyLifecyclePilot", 2398 },
             { "HumanoidLocomotionBlendSetup", 2332 },
-            { "CharacterCreatorView", 1192 },
             { "HumanHealthController", 1150 },
             { "AtmosSimulation", 975 },
             { "LocalSpeechBubbleView", 955 },
