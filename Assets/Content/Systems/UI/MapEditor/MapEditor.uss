@@ -1253,6 +1253,42 @@
 .map-editor-systems-legend__swatch { width: 10px; height: 10px; margin-right: 3px; border-radius: 2px; }
 .map-editor-systems-legend__text { flex-grow: 1; flex-shrink: 1; white-space: normal; color: var(--ss3d-text-secondary); font-size: 12px; }
 
+/* Systems views bar (map-editor-systems-views Phase 5): Room air, and an admin's Pause / Step, above the legend. */
+.map-editor-systems-sim {
+    flex-direction: row;
+    align-items: center;
+    width: 280px;
+    margin-top: 12px;
+    padding: 5px 8px;
+    background-color: var(--ss3d-surface-panel);
+    border-width: 1px;
+    border-color: var(--ss3d-border-default);
+    border-radius: var(--ss3d-radius-md);
+    -unity-font-definition: url("project://database/Assets/Art/Font/TextMesh%20Pro/Fonts/LiberationSans.ttf");
+}
+.map-editor-systems-sim__spacer { flex-grow: 1; }
+.map-editor-systems-sim__button {
+    background-color: var(--ss3d-surface-panel);
+    color: var(--ss3d-text-primary);
+    border-width: 1px;
+    border-color: var(--ss3d-border-default);
+    border-radius: var(--ss3d-radius-sm);
+    padding: 3px 8px;
+    margin: 0 0 0 4px;
+    font-size: 12px;
+}
+.map-editor-systems-sim__button:hover { background-color: var(--ss3d-surface-panel-raised); }
+.map-editor-systems-sim__button--on { background-color: var(--ss3d-accent-rust-dim); border-color: var(--ss3d-accent-rust-dim); }
+.map-editor-systems-sim__button:disabled { opacity: 0.45; }
+.map-editor-systems-sim__paused {
+    margin-left: 6px;
+    padding: 2px 6px;
+    font-size: 11px;
+    color: var(--ss3d-text-primary);
+    background-color: var(--ss3d-accent-rust-dim);
+    border-radius: var(--ss3d-radius-sm);
+}
+
 /* Systems view trace (map-editor-systems-views Phase 2): a panel floating beside the left column's top, where the
    toolbar and legend leave no room under them above the library; a label anchored at the traced tile. */
 .map-editor-systems-trace {

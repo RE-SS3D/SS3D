@@ -14,7 +14,7 @@ namespace SS3D.Systems.Electricity
     /// editor hub is spawned on another object with no fixed start order, so the server retries from each electricity
     /// tick until it finds one, and offers again if that hub is replaced, as the atmos source does.
     /// </summary>
-    public partial class ElectricitySubSystem
+    public partial class ElectricitySubSystem : ISystemsViewSimulation
     {
         private PowerSystemsViewSource _systemsViewSource;
         private readonly SystemsViewRegistration _systemsViewRegistration = new();
@@ -25,10 +25,30 @@ namespace SS3D.Systems.Electricity
         public PowerSystemsViewSource SystemsViewSource => _systemsViewSource;
 
         /// <summary>
-        /// Whether the server's electricity channel is paused. Phase 5's admin pause sets the channel's <c>Paused</c>
-        /// (with a step to come, <c>StepOnce</c>); the Power view's trace reads it here to say "Paused".
+        /// Whether this peer's electricity channel is paused: the map editor's admin pause (Phase 5) sets it on the server
+        /// only, and the Power view's trace reads it here to say "Paused". A pure client's own channel keeps ticking its
+        /// local device visuals (tech-debt P6.1), which follow the server's SyncVars. The setter writes <see cref="Channel"/>,
+        /// which outlives <c>OnStopNetwork</c>, so a pause lifted as the server stops never stays into the next session.
         /// </summary>
-        public bool SimulationPaused => _channel != null && _channel.Paused;
+        public bool SimulationPaused
+        {
+            get => _channel != null && _channel.Paused;
+            set
+            {
+                if (Channel != null)
+                    Channel.Paused = value;
+            }
+        }
+
+        /// <summary>
+        /// Server: exactly one electricity tick now, paused or not (the map editor's admin step, Q6). It fires the channel,
+        /// so everything on it steps and the tick is counted (an SMES's rate reads across it, not "paused").
+        /// </summary>
+        public void StepOnce()
+        {
+            if (IsServer && _channel != null)
+                _channel.Step();
+        }
 
         /// <summary>What the Power view's source compares to know cable runs, circuits or room links may have changed.</summary>
         public int SystemsViewTopologyVersion => _systemsViewTopology;

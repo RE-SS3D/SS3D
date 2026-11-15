@@ -156,6 +156,34 @@ namespace SS3D.Systems.Tile.MapEditor.UI
             NotifyChanged();
         }
 
+        /// <summary>The Atmos view's Room air sub-toggle (creative-mode §4): off by default, for this session only.</summary>
+        public bool SystemsRoomAir { get; private set; }
+
+        public void SetSystemsRoomAir(bool on)
+        {
+            if (SystemsRoomAir == on)
+                return;
+
+            SystemsRoomAir = on;
+            NotifyChanged();
+        }
+
+        /// <summary>The server's word: its atmospherics and power are paused by an admin (Phase 5, Q6).</summary>
+        public bool SystemsSimulationPaused { get; private set; }
+
+        /// <summary>The server's word: this player may pause and step them (an admin or the host, never a sandbox player).</summary>
+        public bool MaySystemsSimulationControl { get; private set; }
+
+        public void SetSystemsSimulation(bool paused, bool mayControl)
+        {
+            if (SystemsSimulationPaused == paused && MaySystemsSimulationControl == mayControl)
+                return;
+
+            SystemsSimulationPaused = paused;
+            MaySystemsSimulationControl = mayControl;
+            NotifyChanged();
+        }
+
         public event Action StateChanged;
 
         public void EnsureLayerDefaults()

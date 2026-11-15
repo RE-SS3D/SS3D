@@ -3,10 +3,12 @@ using SS3D.Core;
 using SS3D.Systems.Atmospherics;
 using SS3D.Systems.Atmospherics.Pipes;
 using SS3D.Systems.Atmospherics.SystemsView;
+using SS3D.Systems.Electricity;
 using SS3D.Systems.Tile;
 using SS3D.Systems.Tile.MapEditor;
 using SS3D.Systems.Tile.MapEditor.Authorizers;
 using SS3D.Systems.Tile.MapEditor.SystemsView;
+using SS3D.Systems.Tile.MapEditor.UI;
 using System;
 using System.Collections;
 using System.Globalization;
@@ -34,6 +36,7 @@ namespace SS3D.Systems.Testing
         {
             "editor_for_clients", "prime_valve", "wait_systems_trace", "open_primed_valve", "restore_editor_access",
             "open_map_editor", "systems_view", "trace_valve", "assert_trace_pressure_change", "close_map_editor",
+            "systems_simulation", "systems_steps", "assert_simulation_running", "assert_pause_refused", "assert_trace_paused_step",
         };
 
         /// <summary>
@@ -85,6 +88,28 @@ namespace SS3D.Systems.Testing
                     yield return AssertTracePressureChange(timeoutSeconds, text => seen = text);
                     TestSignal.Emit(sender, "TracePressureChanged", seen);
                     break;
+                case "systems_simulation":
+                    yield return RequestSimulation(Enum.Parse<SystemsViewSimulationAction>(args[0], ignoreCase: true), timeoutSeconds);
+                    TestSignal.Emit(sender, "SystemsSimulation", args[0]);
+                    break;
+                case "systems_steps":
+                    string stepped = null;
+                    yield return StepSimulation(int.Parse(args[0], CultureInfo.InvariantCulture), timeoutSeconds, text => stepped = text);
+                    TestSignal.Emit(sender, "SystemsStepped", stepped);
+                    break;
+                case "assert_simulation_running":
+                    yield return AssertSimulationRunning(timeoutSeconds);
+                    TestSignal.Emit(sender, "SystemsSimulationRunning");
+                    break;
+                case "assert_pause_refused":
+                    yield return AssertPauseRefused(timeoutSeconds);
+                    TestSignal.Emit(sender, "SystemsPauseRefused");
+                    break;
+                case "assert_trace_paused_step":
+                    string steppedSeen = null;
+                    yield return AssertTracePausedStep(timeoutSeconds, text => steppedSeen = text);
+                    TestSignal.Emit(sender, "TracePausedStepped", steppedSeen);
+                    break;
                 default:
                     throw new InvalidOperationException($"SystemsViewAutomation has no step '{opcode}'");
             }
@@ -118,6 +143,121 @@ namespace SS3D.Systems.Testing
         {
             RestoreEditorAccess();
             _primed = null;
+            // A run never leaves the server's simulations paused (map-editor-systems-views Phase 5).
+            if (InstanceFinder.IsServer && SubSystems.TryGet(out MapEditorSubSystem editor))
+                editor.SimulationPause.ResumeAll();
+        }
+
+        /// <summary>
+        /// Host, with its editor open: Pause or Resume through the editor's own request (the admin-gated ServerRpc), then
+        /// waits until the server's atmos and electricity channels say so.
+        /// </summary>
+        public static IEnumerator RequestSimulation(SystemsViewSimulationAction action, float timeoutSeconds)
+        {
+            MapEditorSubSystem editor = SubSystems.Get<MapEditorSubSystem>();
+            editor.RequestSystemsSimulation(action);
+            bool paused = action == SystemsViewSimulationAction.Pause;
+            yield return Wait(() => editor.SimulationPause.IsPaused == paused && ServerChannelsPaused() == paused,
+                timeoutSeconds, $"systems_simulation {action}");
+        }
+
+        /// <summary>Host: <paramref name="count"/> Steps, one a frame; each is exactly one atmos and one electricity tick.</summary>
+        public static IEnumerator StepSimulation(int count, float timeoutSeconds, Action<string> report)
+        {
+            MapEditorSubSystem editor = SubSystems.Get<MapEditorSubSystem>();
+            AtmosSubSystem atmos = SubSystems.Get<AtmosSubSystem>();
+            if (!editor.SimulationPause.IsPaused)
+                throw new InvalidOperationException("systems_steps: pause first");
+
+            int atmosFrom = atmos.TickCount;
+            long powerFrom = ElectricitySubSystem.Channel.TickCount;
+            for (int i = 0; i < count; i++)
+            {
+                int expected = atmosFrom + i + 1;
+                editor.RequestSystemsSimulation(SystemsViewSimulationAction.Step);
+                yield return Wait(() => atmos.TickCount >= expected, timeoutSeconds, $"step {i + 1}");
+            }
+
+            // A few frames more: a paused channel must not tick by itself.
+            for (int i = 0; i < 10; i++)
+                yield return null;
+            int atmosTicks = atmos.TickCount - atmosFrom;
+            long powerTicks = ElectricitySubSystem.Channel.TickCount - powerFrom;
+            if (atmosTicks != count || powerTicks != count)
+                throw new InvalidOperationException($"systems_steps {count}: atmos ran {atmosTicks} ticks, electricity {powerTicks}");
+            report($"{count} steps: {atmosTicks} atmos and {powerTicks} electricity ticks");
+        }
+
+        /// <summary>Host: nothing holds the simulations any more (the pausing editor closed), and atmos ticks again.</summary>
+        public static IEnumerator AssertSimulationRunning(float timeoutSeconds)
+        {
+            MapEditorSubSystem editor = SubSystems.Get<MapEditorSubSystem>();
+            AtmosSubSystem atmos = SubSystems.Get<AtmosSubSystem>();
+            yield return Wait(() => !editor.SimulationPause.IsPaused && !ServerChannelsPaused(), timeoutSeconds, "the simulations to resume");
+            int from = atmos.TickCount;
+            yield return Wait(() => atmos.TickCount > from + 2, timeoutSeconds, "atmos to tick by itself again");
+        }
+
+        private static bool ServerChannelsPaused() => AtmosSubSystem.Channel.Paused && ElectricitySubSystem.Channel.Paused;
+
+        /// <summary>
+        /// Client, not an admin: its editor offers no Pause or Step, and the request sent anyway is refused by the server,
+        /// which says so in a toast.
+        /// </summary>
+        public static IEnumerator AssertPauseRefused(float timeoutSeconds)
+        {
+            MapEditorSubSystem editor = SubSystems.Get<MapEditorSubSystem>();
+            MapEditorViewModel vm = editor.AutomationViewModel;
+            if (vm.MaySystemsSimulationControl)
+                throw new InvalidOperationException("assert_pause_refused: the server offered this client the pause");
+            VisualElement pause = Find("systems-sim-pause");
+            if (pause != null && pause.resolvedStyle.display != DisplayStyle.None)
+                throw new InvalidOperationException("assert_pause_refused: the client's bar shows Pause");
+
+            editor.RequestSystemsSimulation(SystemsViewSimulationAction.Pause);
+            yield return Wait(() => vm.ToastMessage == "Only admins can pause or step the simulation.", timeoutSeconds,
+                "the server to refuse the client's pause");
+            if (vm.SystemsSimulationPaused)
+                throw new InvalidOperationException("assert_pause_refused: the client reads the simulation as paused");
+        }
+
+        /// <summary>
+        /// Client, tracing the valve: the host admin pauses (the live numbers say Paused and the panel shows it), re-primes the
+        /// valve and opens it while paused; the gap holds while nothing steps, then closes some once the host steps, still
+        /// paused; then the live numbers stop saying Paused when the host's editor closes. Returns what it saw.
+        /// </summary>
+        public static IEnumerator AssertTracePausedStep(float timeoutSeconds, Action<string> report)
+        {
+            MapEditorSystemsViewClient client = SubSystems.Get<MapEditorSubSystem>().SystemsViewClient;
+            Vector2Int tile = client.TraceOrigin;
+            yield return Wait(() => client.Live is { Paused: true } && Find("systems-trace-paused") != null, timeoutSeconds,
+                "the trace to read Paused, in the live numbers and the panel");
+
+            float held = 0f;
+            yield return Wait(() => IsOpen(client.Structure, tile) && Gap(client, out _, out _) is { } gap && gap > 100f && (held = gap) > 0f,
+                timeoutSeconds, "the host to re-prime the valve and open it while paused");
+            float start = Time.time;
+            yield return Wait(() => Time.time - start > 1.5f, timeoutSeconds, "a moment of nothing stepping");
+            if (Gap(client, out _, out _) is not { } still || Mathf.Abs(still - held) > 0.05f || client.Live is not { Paused: true })
+                throw new InvalidOperationException($"assert_trace_paused_step: the gap moved with nothing stepping ({held:0.0} kPa)");
+
+            float stepped = 0f;
+            yield return Wait(() => client.Live is { Paused: true } && Gap(client, out _, out _) is { } gap && gap < held - 0.5f && (stepped = gap) >= 0f,
+                timeoutSeconds, $"a step to change the traced pressures while paused (gap {held:0.0} kPa)");
+            yield return Wait(() => client.Live is { Paused: false }, timeoutSeconds, "the pause to lift when the host's editor closes");
+            report($"paused gap {held:0.0} kPa, after steps {stepped:0.0} kPa, then resumed");
+        }
+
+        private static VisualElement Find(string name)
+        {
+            foreach (UIDocument document in UnityEngine.Object.FindObjectsByType<UIDocument>(FindObjectsSortMode.None))
+            {
+                VisualElement element = document.rootVisualElement?.Q(name);
+                if (element != null)
+                    return element;
+            }
+
+            return null;
         }
 
         /// <summary>Server: shuts the chosen valve and fills its back network high and its front low. Returns what it did.</summary>

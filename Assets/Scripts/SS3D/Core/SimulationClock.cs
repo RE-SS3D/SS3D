@@ -148,6 +148,22 @@ namespace SS3D.Core
         /// <summary>Drops the remainder, so the next tick is a full interval away (a system restarting its simulation).</summary>
         public void ResetPhase() => _elapsed = 0d;
 
+        /// <summary>
+        /// Fires one tick now, paused or not, and counts it (the map editor's admin step, map-editor-systems-views Q6).
+        /// Nothing fires while a world suspension holds this channel: devices may be despawning. Returns whether it fired.
+        /// </summary>
+        public bool Step()
+        {
+            if (PausedByWorldSuspension && WorldSimSuspension.IsSuspended)
+            {
+                return false;
+            }
+
+            TickCount++;
+            Fire();
+            return true;
+        }
+
         internal void Advance(double seconds, bool worldSuspended)
         {
             if (PausedByWorldSuspension)

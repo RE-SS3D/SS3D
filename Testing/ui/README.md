@@ -56,7 +56,7 @@ Testing/ui/validate.sh --steps mppm:reconnect
 Testing/ui/validate.sh --steps mppm:breach   # breach wind on a remote owner: pushed body and streaks
 Testing/ui/validate.sh --steps mppm:blast   # blast on a remote owner: shoved upright, then floored and thrown
 Testing/ui/validate.sh --steps mppm:action-line   # a target-only action line (examine cue) reaches a remote owner and is formatted there
-Testing/ui/validate.sh --steps mppm:systems-view   # a remote client in the map editor gets the Atmos view, traces a valve and sees its pressures meet once it opens
+Testing/ui/validate.sh --steps mppm:systems-view   # a remote client in the map editor gets the Atmos view, traces a valve and sees its pressures meet once it opens; it is refused the pause, and sees the host admin's pause, steps and resume in its trace
 Testing/ui/validate.sh --steps mppm:breach-budget   # atmos tick cost and traffic during a hull breach with loose items, logged as [atmos-budget]
 Testing/ui/compile.sh             # = --steps compile
 Testing/ui/validate.sh --nightly  # owner only: + PlayMode, client+server build if stale, multiplayer smoke
@@ -181,7 +181,7 @@ the trace panel, both sides' world labels and every other network dimmed). Then 
 circuit), `22-power-circuit-trace.png` (Select on a cable of the circuit with the most grid devices: supply, demand,
 storage and its devices), `23-power-room-trace.png` (Select on a floor of the room with the most machines: its APC's
 rows and machines) and `21-power-hatched-room.png` (a room's APC smashed for the shot, so the room is hatched, the APC
-shows its red cross and the machines red dots; the APC is repaired afterwards, and on abort). It checks that the client got runs, labelled
+shows its red cross and the machines red dots; the APC is repaired afterwards, and on abort). Then Phase 5 (`MapEditorSystemsAirPilot`): the Atmos view with Room air on and the host paused from the bar, a nitrogen puff stepped in one tick, `30-atmos-room-air.png` (floors tinted by pressure, the puff a blue-purple cross, no fog or wind, PAUSED in the bar), and `31-atmos-paused-trace.png` (the trace panel's Paused tag); each Step must be exactly one atmos and one electricity tick, and Resume, Room air off and the view off follow (an abort resumes the simulations). It checks that the client got runs, labelled
 networks and badges, that the legend is open, that the hover text is the hovered tile's, that a vent switched off on the
 server reaches the client's badge, that the trace opens its panel and label with live numbers and Clear ends it, and that
 turning the view off clears it. Its `measurements` give each view's first-open structure size against the send budget and the

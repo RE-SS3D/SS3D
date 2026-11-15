@@ -1,9 +1,11 @@
 using System.Collections.Generic;
 using FishNet.Connection;
 using FishNet.Object;
+using Coimbra.Services.Events;
 using SS3D.Systems.Tile.MapEditor.SystemsView;
 using SS3D.Systems.Tile.TileMapCreator;
 using UnityEngine;
+using RoundStateUpdated = SS3D.Systems.Rounds.Events.RoundStateUpdated;
 
 namespace SS3D.Systems.Tile.MapEditor
 {
@@ -39,6 +41,8 @@ namespace SS3D.Systems.Tile.MapEditor
             // After the view request, so the server has the subscription the trace belongs to.
             if (_systemsViewClient.TakeTraceRequest(out int traceId, out int[] viewIds) && online)
                 RpcTraceSystemsView(_systemsViewClient.Requested, traceId, viewIds, LocalConnection);
+            if (_systemsViewClient.UpdateRoomAir(_viewModel.SystemsRoomAir) && online)
+                RpcSetSystemsRoomAir(_systemsViewClient.RoomAirRequested, LocalConnection);
             _view?.UpdateSystemsTrace(_systemsViewClient, PickCamera);
         }
 
@@ -70,11 +74,24 @@ namespace SS3D.Systems.Tile.MapEditor
 
             _view.SystemsTraceLocateRequested -= OnSystemsTraceLocate;
             _view.SystemsTraceCloseRequested -= OnSystemsTraceClosed;
+            _view.SystemsRoomAirToggled -= OnSystemsRoomAirToggled;
+            _view.SystemsSimulationRequested -= RequestSystemsSimulation;
             if (!bind)
                 return;
 
             _view.SystemsTraceLocateRequested += OnSystemsTraceLocate;
             _view.SystemsTraceCloseRequested += OnSystemsTraceClosed;
+            _view.SystemsRoomAirToggled += OnSystemsRoomAirToggled;
+            _view.SystemsSimulationRequested += RequestSystemsSimulation;
+        }
+
+        private void OnSystemsRoomAirToggled() => _viewModel.SetSystemsRoomAir(!_viewModel.SystemsRoomAir);
+
+        /// <summary>Client: an admin's Pause, Resume or Step; the server decides (<see cref="RpcSystemsSimulation"/>).</summary>
+        internal void RequestSystemsSimulation(SystemsViewSimulationAction action)
+        {
+            if (NetworkObject != null && NetworkObject.IsSpawned && IsClient)
+                RpcSystemsSimulation(action, LocalConnection);
         }
 
         /// <summary>Hovering names what the view shows under the cursor (creative-mode §4: a pipe's line and network).</summary>
@@ -125,6 +142,41 @@ namespace SS3D.Systems.Tile.MapEditor
                 _systemsViewClient.ReceiveLive(live);
         }
 
+        /// <summary>Room air (Phase 5) on or off for this client's Atmos view: a pure client is sent every atmos chunk once.</summary>
+        [ServerRpc(RequireOwnership = false)]
+        private void RpcSetSystemsRoomAir(bool on, NetworkConnection conn = null) => SystemsViewServer.SetRoomAir(conn,
+            on && IsEditing(conn) && MapEditorPermissions.TryAuthorize(conn) && SystemsViews.ViewOf(conn.ClientId) == SystemsViewKind.Atmos);
+
+        private MapEditorSystemsViewServer _systemsViewServer;
+
+        /// <summary>Server: the systems views' pause, step and Room air resync (Phase 5).</summary>
+        private MapEditorSystemsViewServer SystemsViewServer => _systemsViewServer ??= new MapEditorSystemsViewServer(IsEditing,
+            MapEditorPermissions.MayControlSimulation, () => ServerManager.Clients.Values, TargetSystemsSimulation, TargetToast);
+
+        /// <summary>Server: the admin pause and step (Q6), which lift when their admin closes the editor or leaves, and at round end.</summary>
+        public SystemsViewSimulationControl SimulationPause => SystemsViewServer.Pause;
+
+        /// <summary>Pause, Resume or Step, for an editor user who is an admin or the host (<see cref="MapEditorPermissions.MayControlSimulation(NetworkConnection)"/>).</summary>
+        [ServerRpc(RequireOwnership = false)]
+        private void RpcSystemsSimulation(SystemsViewSimulationAction action, NetworkConnection conn = null) => SystemsViewServer.Request(conn, action);
+
+        [TargetRpc]
+        private void TargetSystemsSimulation(NetworkConnection conn, bool paused, bool mayControl) => _viewModel.SetSystemsSimulation(paused, mayControl);
+
+        /// <summary>Server: the editor opened or closed, or the client left (its view, Room air and any pause it holds end).</summary>
+        private void SystemsViewEditorOpenChanged(NetworkConnection conn, bool open)
+        {
+            if (!open)
+                SystemsViews.Unsubscribe(conn.ClientId);
+            SystemsViewServer.EditorOpenChanged(conn, open);
+        }
+
+        private void HandleSystemsRoundState(ref EventContext context, in RoundStateUpdated e)
+        {
+            if (IsServer)
+                SystemsViewServer.RoundStateChanged(e.RoundState);
+        }
+
         // Map Check reports sent while a systems view's analysis was still catching up (right after a load, when the power
         // graph rebuilds a tick later): each such client gets its report again once every source is current.
         private readonly HashSet<int> _validationAwaitingSystems = new();
@@ -155,6 +207,8 @@ namespace SS3D.Systems.Tile.MapEditor
         {
             if (IsServer)
                 ResendValidationOnceSystemsSettle();
+            if (IsServer)
+                SystemsViewServer.Update(Time.unscaledTime);
             if (!IsServer || !SystemsViews.HasSubscribers || Time.unscaledTime < _systemsViewNextPoll)
                 return;
 

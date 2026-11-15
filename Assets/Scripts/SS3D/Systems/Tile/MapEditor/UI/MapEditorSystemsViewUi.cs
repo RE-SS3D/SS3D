@@ -20,6 +20,21 @@ namespace SS3D.Systems.Tile.MapEditor.UI
         private bool _legendRendered;
 
         private readonly MapEditorSystemsTracePanel _systemsTrace = new();
+        private readonly MapEditorSystemsSimBar _systemsSim = new();
+
+        /// <summary>The Room air sub-toggle (Atmos view only).</summary>
+        public event Action SystemsRoomAirToggled
+        {
+            add => _systemsSim.RoomAirToggled += value;
+            remove => _systemsSim.RoomAirToggled -= value;
+        }
+
+        /// <summary>An admin's Pause, Resume or Step.</summary>
+        public event Action<SystemsViewSimulationAction> SystemsSimulationRequested
+        {
+            add => _systemsSim.SimulationRequested += value;
+            remove => _systemsSim.SimulationRequested -= value;
+        }
 
         /// <summary>The toolbar toggle: a view to pin on, or Off.</summary>
         public event Action<SystemsViewKind> SystemsViewSelected;
@@ -63,6 +78,7 @@ namespace SS3D.Systems.Tile.MapEditor.UI
             _systemsLegend = new VisualElement { name = "systems-legend", pickingMode = PickingMode.Position };
             _systemsLegend.AddToClassList("map-editor-systems-legend");
             _systemsLegend.style.display = DisplayStyle.None;
+            _systemsSim.Build(column);
             column.Add(_systemsLegend);
             _systemsTrace.Build(column);
         }
@@ -72,6 +88,7 @@ namespace SS3D.Systems.Tile.MapEditor.UI
             SystemsViewKind view = _vm.ActiveSystemsView;
             foreach (KeyValuePair<SystemsViewKind, Button> pair in _systemsViewButtons)
                 pair.Value.EnableInClassList("map-editor-icon-btn--active", pair.Key == view);
+            _systemsSim.Refresh(_vm);
 
             if (_systemsLegend == null
                 || (_legendRendered && _renderedLegendView == view && _renderedLegendOpen == _systemsLegendOpen))

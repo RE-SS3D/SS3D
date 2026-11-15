@@ -22,6 +22,7 @@ namespace SS3D.Systems.Atmospherics.SystemsView
             new("Marks: white running, grey switched off, amber switched on but no power.",
                 AtmosSystemsViewStyle.MarkOn, AtmosSystemsViewStyle.MarkOff, AtmosSystemsViewStyle.MarkNoPower),
             new("Floors, objects and the pipes' own paint are dimmed so the networks show through."),
+            AtmosRoomAirPalette.Legend,
         }.Concat(SystemsViewProblems.Legend(AtmosProblemAnalyzer.Kinds)).ToArray();
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]

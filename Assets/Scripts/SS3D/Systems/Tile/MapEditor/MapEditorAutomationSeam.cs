@@ -5,6 +5,8 @@ using UnityEngine;
 
 // The editor pilots (MapEditorSystemsPilot) drive the editor through the seam below; the mppm steps live in this assembly.
 [assembly: InternalsVisibleTo("SS3D.Editor.Automation.Lifecycle")]
+// EditMode tests stand in for roles and FishNet's host through MapEditorPermissions.HostOrAdministrator.
+[assembly: InternalsVisibleTo("SS3D.Tests.EditMode")]
 
 namespace SS3D.Systems.Tile.MapEditor
 {

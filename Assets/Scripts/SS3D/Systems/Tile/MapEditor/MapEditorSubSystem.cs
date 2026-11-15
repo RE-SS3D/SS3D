@@ -32,6 +32,7 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.UIElements;
 using UserPermissionsChangedEvent = SS3D.Permissions.Events.UserPermissionsChangedEvent;
+using RoundStateUpdated = SS3D.Systems.Rounds.Events.RoundStateUpdated;
 using InputSubSystem = SS3D.Systems.Inputs.InputSubSystem;
 
 namespace SS3D.Systems.Tile.MapEditor
@@ -228,6 +229,7 @@ namespace SS3D.Systems.Tile.MapEditor
             base.OnEnabled();
             AddHandle(UpdateEvent.AddListener(HandleUpdate));
             AddHandle(UserPermissionsChangedEvent.AddListener(HandleUserPermissionsChanged));
+            AddHandle(RoundStateUpdated.AddListener(HandleSystemsRoundState));
         }
 
         protected override void OnDestroyed()
@@ -485,7 +487,7 @@ namespace SS3D.Systems.Tile.MapEditor
                 _lighting.Restore();
                 CancelAreaStroke();
                 _areaOverlay.SetVisible(false);
-                _systemsViewClient.Stop();
+                _systemsViewClient.Stop(_viewModel);
                 MapEditorLayerVisibility.Deactivate();
                 SetGameplayInputBlocked(false);
                 _mapEditorHandle?.Dispose();

@@ -31,7 +31,8 @@ namespace SS3D.Editor.Automation
     /// a close-up of device badges and a hover readout, a device switched off reaching the client's badge, and a Select
     /// tracing a two-network device (panel, label, the rest dimmed). Then the Power view (Phase 3): the overview with
     /// circuit colours, the room tint (a hatched room with no APC, when the station has one) and consumer dots, a
-    /// traced cable circuit and a traced room, each with its panel. It also logs both views' first-open structure size
+    /// traced cable circuit and a traced room, each with its panel. Then Phase 5 (<see cref="MapEditorSystemsAirPilot"/>):
+    /// Room air's pressure tint with the fog and wind still hidden, and a trace while the host admin has paused. It also logs both views' first-open structure size
     /// against the send budget and their build costs. <c>Testing/ui/validate.sh --steps visual</c> runs it after the
     /// lobby pilot; screenshots land in <c>artifacts/ui/systems-view-*</c>.
     /// </summary>
@@ -47,7 +48,7 @@ namespace SS3D.Editor.Automation
         /// <summary>A station template to run on instead of the shipped classic-ministation (e.g. a MetaStation copy for budget numbers).</summary>
         public const string StationKey = "SS3D.SystemsViewPilot.Station";
         private const string DefaultStation = "classic-ministation";
-        private const double Seconds = 240;
+        private const double Seconds = 300;
         // A big station override (MetaStation loads for minutes in the editor) gets this long for loading.
         private static double LoadSeconds => Station == DefaultStation ? 120 : 900;
         // The start step may wait two loads plus a minute (Timeout = 2 * LoadSeconds + 60); the default budget already
@@ -69,6 +70,9 @@ namespace SS3D.Editor.Automation
         private static Vector2Int _hoverTile;
         private static VentController _switchedVent;
         private static Vector2Int _traceTile;
+
+        /// <summary>The two-network device the Atmos trace followed, for the Room air and pause steps.</summary>
+        internal static Vector2Int TraceTile => _traceTile;
 
         internal sealed class Step
         {
@@ -197,7 +201,7 @@ namespace SS3D.Editor.Automation
 
         internal static string Station => SessionState.GetString(StationKey, DefaultStation);
 
-        private static Step[] BuildSteps() => AtmosSteps().Concat(MapEditorSystemsPowerPilot.Steps()).ToArray();
+        private static Step[] BuildSteps() => AtmosSteps().Concat(MapEditorSystemsPowerPilot.Steps()).Concat(MapEditorSystemsAirPilot.Steps()).ToArray();
 
         private static Step[] AtmosSteps() => new Step[]
         {
@@ -670,6 +674,7 @@ namespace SS3D.Editor.Automation
         {
             _running = false;
             MapEditorSystemsPowerPilot.Reset();
+            MapEditorSystemsAirPilot.Reset();
             EditorApplication.update -= Tick;
             Application.logMessageReceived -= OnLog;
             Report report = new()

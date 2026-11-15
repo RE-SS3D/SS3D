@@ -274,6 +274,13 @@ namespace EditorTests
             _world.Paused = true;
             Assert.IsTrue(_source.ReadLive(1, out live));
             Assert.AreEqual("50 % · paused · output on", live.Devices[1].Detail);
+            // An admin's step while paused (Phase 5) is one counted tick: the trace reads fresh numbers across it.
+            _smes.Stored += 0.001f;
+            _world.TickCount += 1;
+            Assert.IsTrue(_source.ReadLive(1, out live));
+            StringAssert.StartsWith("50 % · charging 18.0 kW", live.Devices[1].Detail);
+            Assert.IsTrue(_source.ReadLive(1, out live));
+            Assert.AreEqual("50 % · paused · output on", live.Devices[1].Detail, "and holds still again until the next step");
             _world.Paused = false;
 
             Assert.IsTrue(_source.ReadLive(2, out SystemsViewLiveNetwork lone));

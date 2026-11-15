@@ -65,12 +65,15 @@ namespace SS3D.Systems.Electricity
         private float _tickRate = 0.2f;
         private SimulationChannel _channel;
 
+        /// <summary>This process's electricity channel, kept after the subsystem stops (the map editor's pause lifts it then too).</summary>
+        public static SimulationChannel Channel { get; private set; }
+
         public override void OnStartNetwork()
         {
             base.OnStartNetwork();
             // World suspension (map load, clear, import) pauses this channel, so ticks never walk devices whose
             // despawn is still draining; the graph is rebuilt on the first tick after the last scope closes.
-            _channel = SimulationClock.GetOrCreate("electricity", _tickRate, pausedByWorldSuspension: true);
+            _channel = Channel = SimulationClock.GetOrCreate("electricity", _tickRate, pausedByWorldSuspension: true);
             _channel.Resumed -= HandleChannelResumed;
             _channel.Resumed += HandleChannelResumed;
             _channel.Subscribe(HandleChannelTick);

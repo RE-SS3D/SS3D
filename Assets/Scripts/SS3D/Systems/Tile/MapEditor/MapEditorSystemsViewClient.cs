@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
+using SS3D.Systems.Atmospherics;
 using SS3D.Systems.Tile.MapEditor.SystemsView;
+using SS3D.Systems.Tile.MapEditor.UI;
 using UnityEngine;
 
 namespace SS3D.Systems.Tile.MapEditor
@@ -187,14 +189,48 @@ namespace SS3D.Systems.Tile.MapEditor
         /// <summary>The overlay, for tests and the visual pilot.</summary>
         public MapEditorSystemsOverlay Overlay => _overlay;
 
-        /// <summary>The editor closed; the server drops the subscription with the editor-open report.</summary>
-        public void Stop()
+        private readonly MapEditorRoomAirOverlay _roomAir = new();
+
+        /// <summary>Room air as last asked of the server: wanted, and the Atmos view on (Phase 5).</summary>
+        public bool RoomAirRequested { get; private set; }
+
+        /// <summary>The Room air overlay, for tests and the visual pilot.</summary>
+        public MapEditorRoomAirOverlay RoomAirOverlay => _roomAir;
+
+        /// <summary>
+        /// Every frame while the editor is open, after <see cref="Update"/>: Room air shows only with the Atmos view on.
+        /// Returns true when that changed, so the server must be told (it sends a pure client every chunk once). On a host
+        /// the server's snapshot is widened to the whole station while it shows.
+        /// </summary>
+        public bool UpdateRoomAir(bool wanted)
         {
+            bool show = wanted && Requested == SystemsViewKind.Atmos;
+            bool changed = show != RoomAirRequested;
+            if (changed)
+            {
+                RoomAirRequested = show;
+                AtmosSubSystem.SetRoomAirRequested(show);
+            }
+
+            _roomAir.SetVisible(show);
+            return changed;
+        }
+
+        /// <summary>
+        /// The editor closed; the server drops the subscription, Room air and any pause it holds with the editor-open report.
+        /// Room air goes back off for the next open (creative-mode §4: off by default, so it doesn't bury the pipes).
+        /// </summary>
+        public void Stop(MapEditorViewModel viewModel = null)
+        {
+            viewModel?.SetSystemsRoomAir(false);
             Requested = SystemsViewKind.Off;
             Structure = null;
             _overlay.SetStructure(null);
             _overlay.SetVisible(false);
             _roomTint.SetVisible(false);
+            RoomAirRequested = false;
+            AtmosSubSystem.SetRoomAirRequested(false);
+            _roomAir.SetVisible(false);
             EndTrace(tellServer: false);
             _traceRequestPending = false;
         }
@@ -432,6 +468,11 @@ namespace SS3D.Systems.Tile.MapEditor
         {
             _overlay.Dispose();
             _roomTint.Dispose();
+            _roomAir.Dispose();
+            // The hub going away (OnDestroyed, a disconnect with the editor open) must never leave the static request latched,
+            // or the host uploads the whole station every tick of the next session.
+            AtmosSubSystem.SetRoomAirRequested(false);
+            RoomAirRequested = false;
         }
     }
 }
