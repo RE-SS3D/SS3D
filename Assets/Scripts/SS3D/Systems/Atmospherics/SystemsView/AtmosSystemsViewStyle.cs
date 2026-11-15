@@ -59,7 +59,7 @@ namespace SS3D.Systems.Atmospherics.SystemsView
             return new Vector2(t, -t);
         }
 
-        public void DrawBadge(SystemsViewMeshBuilder mesh, Vector3 centre, SystemsViewBadge badge)
+        public void DrawBadge(SystemsViewMeshBuilder mesh, Vector3 centre, SystemsViewBadge badge, Func<int, Color> colorOf)
         {
             Vector3 forward = Step(badge.Facing);
             Vector3 right = new(forward.z, 0f, -forward.x);
@@ -67,12 +67,12 @@ namespace SS3D.Systems.Atmospherics.SystemsView
             if (IsTwoNetwork(badge.Kind))
             {
                 // Back half in the network gas comes from, front half in the one it goes to.
-                DrawHalf(mesh, centre, -forward, right, SystemsViewPalette.ColorFor(badge.ViewId));
-                DrawHalf(mesh, centre, forward, right, SystemsViewPalette.ColorFor(badge.OtherViewId));
+                DrawHalf(mesh, centre, -forward, right, colorOf(badge.ViewId));
+                DrawHalf(mesh, centre, forward, right, colorOf(badge.OtherViewId));
             }
             else
             {
-                mesh.AddSquare(centre, FrameHalf, SystemsViewPalette.ColorFor(badge.ViewId));
+                mesh.AddSquare(centre, FrameHalf, colorOf(badge.ViewId));
             }
 
             Vector3 side = IsSideOnLeft(badge.State) ? -right : right;
@@ -82,7 +82,7 @@ namespace SS3D.Systems.Atmospherics.SystemsView
                 Vector3 edge = centre + side * FrameHalf;
                 mesh.AddQuad(edge - forward * 0.12f, edge - forward * 0.12f + side * (OutlineHalf - FrameHalf + 0.02f),
                     edge + forward * 0.12f + side * (OutlineHalf - FrameHalf + 0.02f), edge + forward * 0.12f,
-                    SystemsViewPalette.ColorFor(badge.SideViewId));
+                    colorOf(badge.SideViewId));
             }
 
             mesh.AddSquare(centre, InnerHalf, Backing);

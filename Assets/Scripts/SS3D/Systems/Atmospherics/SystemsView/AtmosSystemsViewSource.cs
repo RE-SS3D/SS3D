@@ -48,6 +48,8 @@ namespace SS3D.Systems.Atmospherics.SystemsView
         private readonly Dictionary<int, GasPipeNetworkId> _networkIds = new();
         // The badges of the last build, for the devices of a traced network.
         private readonly List<SystemsViewBadge> _badges = new();
+        // Each badge's room name at the last build, so a traced network's device list says where each device is.
+        private readonly Dictionary<SystemsViewKey, string> _badgeRooms = new();
         private readonly Func<bool> _paused;
         private readonly Func<int, string> _gasName;
         private readonly List<NetworkRuns> _ordered = new();
@@ -131,12 +133,13 @@ namespace SS3D.Systems.Atmospherics.SystemsView
 
             foreach (NetworkRuns runs in _ordered)
             {
-                structure.Set(new SystemsViewNetwork { ViewId = runs.ViewId, Label = $"{LineName(runs.Line)} {runs.ViewId}" });
+                structure.Set(new SystemsViewNetwork { ViewId = runs.ViewId, Label = $"{LineName(runs.Line)} {runs.ViewId}", Family = LineHue(runs.Line) });
                 foreach (Run run in runs.Runs)
                     structure.Set(new SystemsViewSegment { Key = run.Key, ViewId = runs.ViewId, Links = run.Links });
             }
 
             _badges.Clear();
+            _badgeRooms.Clear();
             IReadOnlyList<IAtmosPortDevice> ports = _ports.Ports;
             for (int i = 0; i < ports.Count; i++)
             {
@@ -146,6 +149,8 @@ namespace SS3D.Systems.Atmospherics.SystemsView
                 SystemsViewBadge badge = Badge(map, registry, device);
                 structure.Set(badge);
                 _badges.Add(badge);
+                if (device.Port.TryGetComponent(out PlacedTileObject placed) && ReadRoom(placed).Name is { Length: > 0 } room)
+                    _badgeRooms[badge.Key] = room;
             }
 
             LastAnalyzed = false;
@@ -367,7 +372,8 @@ namespace SS3D.Systems.Atmospherics.SystemsView
                 string detail = StateWords(badge.Kind, badge.State);
                 if (IsTwoNetwork(badge.Kind))
                     detail += " · " + PortName(badge.Kind, (byte)port).ToLowerInvariant();
-                devices.Add(new SystemsViewLiveDevice { Key = badge.Key, Label = KindName(badge.Kind), Detail = detail });
+                string label = _badgeRooms.TryGetValue(badge.Key, out string room) ? $"{KindName(badge.Kind)} · {room}" : KindName(badge.Kind);
+                devices.Add(new SystemsViewLiveDevice { Key = badge.Key, Label = label, Detail = detail });
             }
 
             SystemsViewText.SortWestToEast(devices);
@@ -400,6 +406,7 @@ namespace SS3D.Systems.Atmospherics.SystemsView
                 _viewIds.Clear();
                 _networkIds.Clear();
                 _badges.Clear();
+                _badgeRooms.Clear();
                 _deviceRooms.Clear();
                 _runsStale = true;
                 _analysisStale = true;

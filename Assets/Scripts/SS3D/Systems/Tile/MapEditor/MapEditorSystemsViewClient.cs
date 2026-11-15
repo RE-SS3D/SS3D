@@ -91,7 +91,7 @@ namespace SS3D.Systems.Tile.MapEditor
             if (Structure != null && Structure.Rooms.Count > 0 && Structure.TryGetRoomByViewId(viewId, out SystemsViewRoom room))
                 return room.IsHatched ? new Color(HatchColor.r, HatchColor.g, HatchColor.b, 1f) : SystemsViewPalette.ColorFor(room.CircuitViewId);
 
-            return SystemsViewPalette.ColorFor(viewId);
+            return Structure?.ColorOf(viewId) ?? SystemsViewPalette.ColorFor(viewId);
         }
 
         /// <summary>

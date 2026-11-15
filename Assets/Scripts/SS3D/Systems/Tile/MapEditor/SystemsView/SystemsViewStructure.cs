@@ -81,15 +81,20 @@ namespace SS3D.Systems.Tile.MapEditor.SystemsView
         }
     }
 
-    /// <summary>A network's name label ("Supply 3", "Circuit 2"), so nothing depends on colour alone.</summary>
+    /// <summary>
+    /// A network's name label ("Supply 3", "Circuit 2"), so nothing depends on colour alone, and the hue its colour is a
+    /// shade of (<see cref="SystemsViewPalette"/>; <see cref="SystemsViewPalette.AnyHue"/> for the whole palette).
+    /// </summary>
     public struct SystemsViewNetwork : IEquatable<SystemsViewNetwork>
     {
         public int ViewId;
         public string Label;
+        public byte Family;
 
-        public bool Equals(SystemsViewNetwork other) => ViewId == other.ViewId && string.Equals(Label, other.Label, StringComparison.Ordinal);
+        public bool Equals(SystemsViewNetwork other) => ViewId == other.ViewId && Family == other.Family
+            && string.Equals(Label, other.Label, StringComparison.Ordinal);
         public override bool Equals(object obj) => obj is SystemsViewNetwork other && Equals(other);
-        public override int GetHashCode() => HashCode.Combine(ViewId, Label);
+        public override int GetHashCode() => HashCode.Combine(ViewId, Label, Family);
     }
 
     /// <summary>
@@ -237,6 +242,10 @@ namespace SS3D.Systems.Tile.MapEditor.SystemsView
 
         public void Set(SystemsViewSegment segment) => Segments[segment.Key] = segment;
         public void Set(SystemsViewNetwork network) => Networks[network.ViewId] = network;
+
+        /// <summary>A network's palette colour, a shade of its <see cref="SystemsViewNetwork.Family"/> when it names one.</summary>
+        public Color ColorOf(int viewId) =>
+            SystemsViewPalette.ColorFor(viewId, Networks.TryGetValue(viewId, out SystemsViewNetwork network) ? network.Family : SystemsViewPalette.AnyHue);
         public void Set(SystemsViewBadge badge) => Badges[badge.Key] = badge;
         public void Set(SystemsViewMarker marker) => Markers[marker.Key] = marker;
         public void Set(SystemsViewRoom room) => Rooms[room.AreaId] = room;

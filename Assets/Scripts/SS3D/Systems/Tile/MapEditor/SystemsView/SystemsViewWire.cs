@@ -203,12 +203,14 @@ namespace SS3D.Systems.Tile.MapEditor.SystemsView
         {
             writer.WriteInt32(network.ViewId);
             writer.WriteString(network.Label);
+            writer.WriteByte(network.Family);
         }
 
         private static SystemsViewNetwork ReadNetwork(Reader reader) => new()
         {
             ViewId = reader.ReadInt32(),
             Label = reader.ReadString(),
+            Family = reader.ReadByte(),
         };
 
         private static void WriteBadge(Writer writer, SystemsViewBadge badge)

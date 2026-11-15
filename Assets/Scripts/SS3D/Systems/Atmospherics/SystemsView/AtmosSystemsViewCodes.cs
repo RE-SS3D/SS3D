@@ -1,4 +1,5 @@
 using SS3D.Systems.Tile;
+using SS3D.Systems.Tile.MapEditor.SystemsView;
 
 namespace SS3D.Systems.Atmospherics.SystemsView
 {
@@ -82,6 +83,16 @@ namespace SS3D.Systems.Atmospherics.SystemsView
             manifold = slot >= ManifoldSlotBase;
             return (byte)(manifold ? slot - ManifoldSlotBase : slot);
         }
+
+        /// <summary>The hue a line's networks are shades of, matching the pipes' own paint: Supply blue, Waste red.</summary>
+        public static byte LineHue(byte line) => line switch
+        {
+            Supply => SystemsViewPalette.Blue,
+            Mixed => SystemsViewPalette.Green,
+            Waste => SystemsViewPalette.Red,
+            Surface => SystemsViewPalette.Amber,
+            _ => SystemsViewPalette.AnyHue,
+        };
 
         /// <summary>The line's name as the editor's palette and the design use it.</summary>
         public static string LineName(byte line) => line switch

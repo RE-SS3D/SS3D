@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using SS3D.Systems.Tile.TileMapCreator;
 using UnityEngine;
@@ -14,8 +15,11 @@ namespace SS3D.Systems.Tile.MapEditor.SystemsView
         /// <summary>Where a run on <paramref name="slot"/> sits within its tile (x, z from the tile centre), so lines sharing a tile sit side by side.</summary>
         Vector2 SlotOffset(byte slot);
 
-        /// <summary>Adds a badge's marking around <paramref name="centre"/> (mesh space, at overlay height).</summary>
-        void DrawBadge(SystemsViewMeshBuilder mesh, Vector3 centre, SystemsViewBadge badge);
+        /// <summary>
+        /// Adds a badge's marking around <paramref name="centre"/> (mesh space, at overlay height), each network side in
+        /// <paramref name="colorOf"/>'s colour for its view id (<see cref="SystemsViewStructure.ColorOf"/>).
+        /// </summary>
+        void DrawBadge(SystemsViewMeshBuilder mesh, Vector3 centre, SystemsViewBadge badge, Func<int, Color> colorOf);
 
         /// <summary>The hover readout for one tile: its badges and the networks of its runs; empty when nothing is there.</summary>
         string Describe(SystemsViewStructure structure, Vector2Int tile);

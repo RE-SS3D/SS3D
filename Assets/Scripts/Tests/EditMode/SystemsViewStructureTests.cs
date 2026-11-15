@@ -25,7 +25,7 @@ namespace SS3D.Tests.EditMode
                 structure.Set(new SystemsViewSegment { Key = Key(x, 0), ViewId = 1 });
             structure.Set(new SystemsViewSegment { Key = Key(5, 0), ViewId = 2 });
             structure.Set(new SystemsViewNetwork { ViewId = 1, Label = "Supply 1" });
-            structure.Set(new SystemsViewNetwork { ViewId = 2, Label = "Supply 2" });
+            structure.Set(new SystemsViewNetwork { ViewId = 2, Label = "Supply 2", Family = SystemsViewPalette.Blue });
             structure.Set(new SystemsViewBadge { Key = Key(0, 0, 7), Kind = 1, State = ventState, Facing = Direction.North, ViewId = 1 });
             structure.Set(new SystemsViewBadge { Key = Key(4, 0, 7), Kind = 2, State = 0, Facing = Direction.East, ViewId = 1, OtherViewId = 2 });
             structure.Set(new SystemsViewMarker { Key = Key(5, 0, 1), IssueId = "atmos-open-end" });
@@ -283,6 +283,25 @@ namespace SS3D.Tests.EditMode
             List<SystemsViewIssue> issues = new();
             publisher.Analyze(issues);
             CollectionAssert.AreEqual(new[] { "open-end:0:1:1", "no-apc:1" }, issues.Select(issue => issue.Id));
+        }
+
+        [Test]
+        public void Palette_AFamilyGivesDistinctShadesOfItsHue_AndAnyHueTheWholePalette()
+        {
+            Color blue1 = SystemsViewPalette.ColorFor(1, SystemsViewPalette.Blue);
+            Color blue2 = SystemsViewPalette.ColorFor(2, SystemsViewPalette.Blue);
+            Color red1 = SystemsViewPalette.ColorFor(1, SystemsViewPalette.Red);
+            Assert.Greater(blue1.b, blue1.r);
+            Assert.Greater(blue2.b, blue2.r);
+            Assert.Greater(red1.r, red1.b);
+            Assert.AreNotEqual(blue1, blue2, "Two networks of one line still read as two");
+            Assert.AreEqual(SystemsViewPalette.ColorFor(5), SystemsViewPalette.ColorFor(5, SystemsViewPalette.AnyHue));
+            Assert.AreEqual(SystemsViewPalette.None, SystemsViewPalette.ColorFor(0, SystemsViewPalette.Red));
+
+            SystemsViewStructure structure = Station();
+            Assert.AreEqual(SystemsViewPalette.ColorFor(1), structure.ColorOf(1), "A network naming no hue");
+            Assert.AreEqual(blue2, structure.ColorOf(2));
+            Assert.AreEqual(SystemsViewPalette.ColorFor(7), structure.ColorOf(7), "An unknown network");
         }
 
         [Test]

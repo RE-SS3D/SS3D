@@ -213,7 +213,7 @@ namespace SS3D.Systems.Tile.MapEditor.UI
             _leftToolbar.Add(_loadMapButton);
 
             region.Add(_leftToolbar);
-            BuildSystemsLegend(region);
+            _systemsTrace.Build(region);
             _hudLayer.Add(region);
         }
 
@@ -249,6 +249,7 @@ namespace SS3D.Systems.Tile.MapEditor.UI
             toolbarWrap.Add(_rightToolbar);
             region.Add(toolbarWrap);
 
+            BuildSystemsLegend(region);
             BuildMapCheck(region);
             _hudLayer.Add(region);
         }

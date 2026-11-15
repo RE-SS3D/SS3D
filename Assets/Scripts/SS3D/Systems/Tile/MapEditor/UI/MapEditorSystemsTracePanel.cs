@@ -10,8 +10,8 @@ namespace SS3D.Systems.Tile.MapEditor.UI
 {
     /// <summary>
     /// The trace's UI Toolkit half (creative-mode §4 Tracing, Documents/architecture/systems/map-editor-systems-views.md,
-    /// Tracing): a panel floating beside the top of the left column (the legend's) with each traced network's live rows
-    /// and its devices with Locate, and a name label anchored in the world at the traced tile, the way room names are
+    /// Tracing): a panel floating beside the left toolbar's top with each traced network's live rows and its devices
+    /// (a row each, clicked to locate it), and a name label anchored in the world at the traced tile, the way room names are
     /// (<c>MapEditorAreaView.UpdateAreaLabels</c>). Domain-free: rows and devices come worded from the server, side
     /// names from the domain's style. Redraws only when <see cref="MapEditorSystemsViewClient.TraceRevision"/> moves.
     /// </summary>
@@ -124,7 +124,7 @@ namespace SS3D.Systems.Tile.MapEditor.UI
                 }
 
                 SystemsViewLiveDevice[] devices = network.Value.Devices;
-                section.Add(Text(devices.Length == 0 ? "No devices attached." : $"Devices ({devices.Length})",
+                section.Add(Text(devices.Length == 0 ? "No devices attached." : $"Devices ({devices.Length}), click one to find it",
                     "map-editor-systems-trace__subtitle"));
                 foreach (SystemsViewLiveDevice device in devices)
                     section.Add(DeviceRow(device, deviceIndex++));
@@ -183,24 +183,21 @@ namespace SS3D.Systems.Tile.MapEditor.UI
             return index == _values.Count;
         }
 
+        // One line per device: its name (and room) and its state; the whole row is the Locate button.
         private VisualElement DeviceRow(SystemsViewLiveDevice device, int index)
         {
-            VisualElement row = Element("map-editor-systems-trace__device");
-            VisualElement words = Element("map-editor-systems-trace__device-words");
-            words.Add(Text(device.Label, "map-editor-systems-trace__device-name"));
-            Label detail = Text(device.Detail, "map-editor-systems-trace__device-detail");
-            _values.Add(detail);
-            words.Add(detail);
-            row.Add(words);
             Vector2Int tile = device.Key.Tile;
-            Button locate = new(() => LocateRequested?.Invoke(tile))
+            Button row = new(() => LocateRequested?.Invoke(tile))
             {
                 name = "systems-trace-locate-" + index,
-                text = "Locate",
-                tooltip = "Move the camera to this device",
+                text = string.Empty,
+                tooltip = device.Label + ": click to move the camera here",
             };
-            locate.AddToClassList("map-editor-systems-trace__button");
-            row.Add(locate);
+            row.AddToClassList("map-editor-systems-trace__device");
+            row.Add(Text(device.Label, "map-editor-systems-trace__device-name"));
+            Label detail = Text(device.Detail, "map-editor-systems-trace__device-detail");
+            _values.Add(detail);
+            row.Add(detail);
             return row;
         }
 

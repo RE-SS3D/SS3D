@@ -82,8 +82,20 @@ namespace SS3D.Systems.Tile.MapEditor
                 return;
             }
 
-            if (!_allDirty)
-                DirtyChunks(delta, _dirty);
+            if (_allDirty)
+                return;
+
+            DirtyChunks(delta, _dirty);
+            if (delta.NetworksSet is not { Length: > 0 })
+                return;
+
+            // A network's colour can change (a new hue) without its segments changing: redraw where it and its devices are.
+            HashSet<int> recoloured = new();
+            foreach (SystemsViewNetwork network in delta.NetworksSet) recoloured.Add(network.ViewId);
+            foreach (SystemsViewSegment segment in structure.Segments.Values)
+                if (recoloured.Contains(segment.ViewId)) _dirty.Add(ChunkOf(segment.Key.Tile));
+            foreach (SystemsViewBadge badge in structure.Badges.Values)
+                if (badge.TouchesAny(recoloured)) _dirty.Add(ChunkOf(badge.Key.Tile));
         }
 
         public void SetVisible(bool visible)
@@ -154,9 +166,9 @@ namespace SS3D.Systems.Tile.MapEditor
                 if (!_chunks.TryGetValue(chunk, out Chunk target))
                     _chunks[chunk] = target = new Chunk(_root.transform, chunk, _runMaterial, _badgeMaterial);
 
-                target.SetRuns(chunkSegments != null ? BuildRunMesh(chunk, chunkSegments, _style, _builder, _focus) : null);
+                target.SetRuns(chunkSegments != null ? BuildRunMesh(chunk, chunkSegments, _style, _builder, _focus, _structure.ColorOf) : null);
                 target.SetBadges(chunkBadges != null || chunkMarkers != null
-                    ? BuildBadgeMesh(chunk, chunkBadges, _style, _builder, _focus, chunkMarkers) : null);
+                    ? BuildBadgeMesh(chunk, chunkBadges, _style, _builder, _focus, chunkMarkers, _structure.ColorOf) : null);
             }
 
             LastRebuiltChunks = _dirty.Count;
@@ -195,8 +207,9 @@ namespace SS3D.Systems.Tile.MapEditor
         /// other half, so runs meet at tile edges and chunk borders. A segment with no links draws a short stub.
         /// </summary>
         public static Mesh BuildRunMesh(Vector2Int chunk, IReadOnlyList<SystemsViewSegment> segments, ISystemsViewStyle style,
-            SystemsViewMeshBuilder builder = null, ICollection<int> focus = null)
+            SystemsViewMeshBuilder builder = null, ICollection<int> focus = null, Func<int, Color> colorOf = null)
         {
+            colorOf ??= SystemsViewPalette.ColorFor;
             builder ??= new SystemsViewMeshBuilder();
             builder.Clear();
             Vector2Int origin = chunk * TileConstants.ChunkSize;
@@ -205,7 +218,7 @@ namespace SS3D.Systems.Tile.MapEditor
                 float width = pass == 0 ? UnderlayWidth : RunWidth;
                 foreach (SystemsViewSegment segment in segments)
                 {
-                    Color color = pass == 0 ? Underlay : SystemsViewPalette.ColorFor(segment.ViewId);
+                    Color color = pass == 0 ? Underlay : colorOf(segment.ViewId);
                     builder.Alpha = IsFocused(focus, segment.ViewId) ? 1f : UntracedAlpha;
                     Vector2 offset = style?.SlotOffset(segment.Key.Slot) ?? Vector2.zero;
                     float tileX = segment.Key.Tile.x - origin.x;
@@ -234,8 +247,10 @@ namespace SS3D.Systems.Tile.MapEditor
         /// problem markers on top, one per tile however many problems it has. A trace never dims a marker.
         /// </summary>
         public static Mesh BuildBadgeMesh(Vector2Int chunk, IReadOnlyList<SystemsViewBadge> badges, ISystemsViewStyle style,
-            SystemsViewMeshBuilder builder = null, ICollection<int> focus = null, IReadOnlyList<SystemsViewMarker> markers = null)
+            SystemsViewMeshBuilder builder = null, ICollection<int> focus = null, IReadOnlyList<SystemsViewMarker> markers = null,
+            Func<int, Color> colorOf = null)
         {
+            colorOf ??= SystemsViewPalette.ColorFor;
             builder ??= new SystemsViewMeshBuilder();
             builder.Clear();
             Vector2Int origin = chunk * TileConstants.ChunkSize;
@@ -244,7 +259,7 @@ namespace SS3D.Systems.Tile.MapEditor
                 SystemsViewBadge badge = badges[i];
                 // A device on any traced network stays lit, so a trace shows everything attached to it.
                 builder.Alpha = focus == null || focus.Count == 0 || badge.TouchesAny(focus) ? 1f : UntracedAlpha;
-                style?.DrawBadge(builder, new Vector3(badge.Key.Tile.x - origin.x, 0f, badge.Key.Tile.y - origin.y), badge);
+                style?.DrawBadge(builder, new Vector3(badge.Key.Tile.x - origin.x, 0f, badge.Key.Tile.y - origin.y), badge, colorOf);
             }
 
             builder.Alpha = 1f;

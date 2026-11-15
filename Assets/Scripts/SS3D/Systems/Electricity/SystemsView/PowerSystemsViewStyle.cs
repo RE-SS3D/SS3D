@@ -56,7 +56,7 @@ namespace SS3D.Systems.Electricity.SystemsView
 
         public Vector2 SlotOffset(byte slot) => Vector2.zero;
 
-        public void DrawBadge(SystemsViewMeshBuilder mesh, Vector3 centre, SystemsViewBadge badge)
+        public void DrawBadge(SystemsViewMeshBuilder mesh, Vector3 centre, SystemsViewBadge badge, Func<int, Color> colorOf)
         {
             if (IsConsumer(badge.Kind))
             {
@@ -70,7 +70,7 @@ namespace SS3D.Systems.Electricity.SystemsView
             }
 
             mesh.AddSquare(centre, OutlineHalf, Backing);
-            mesh.AddSquare(centre, FrameHalf, SystemsViewPalette.ColorFor(badge.ViewId));
+            mesh.AddSquare(centre, FrameHalf, colorOf(badge.ViewId));
             mesh.AddSquare(centre, InnerHalf, Backing);
             Color mark = (badge.State & Running) != 0 ? MarkOn : MarkOff;
             switch (badge.Kind)

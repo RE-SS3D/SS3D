@@ -221,6 +221,45 @@ namespace EditorTests.Atmospherics
         }
 
         [Test]
+        public void Structure_GivesEachNetworkItsLinesHue_SupplyBlueWasteRed()
+        {
+            SystemsViewStructure structure = Build();
+
+            Assert.AreEqual(SystemsViewPalette.Blue, structure.Networks[1].Family, "Supply pipes are painted blue");
+            Assert.AreEqual(SystemsViewPalette.Amber, structure.Networks[2].Family);
+            Assert.AreEqual(SystemsViewPalette.Red, LineHue(Waste), "Waste pipes are painted red");
+            Assert.AreEqual(SystemsViewPalette.ColorFor(1, SystemsViewPalette.Blue), structure.ColorOf(1));
+        }
+
+        [Test]
+        public void ReadLive_NamesTheRoomEachDeviceIsIn()
+        {
+            FakeRooms rooms = new();
+            rooms.Names[_vent.GetComponent<PlacedTileObject>()] = "Kitchen";
+            _source = new AtmosSystemsViewSource(() => _context.Map, () => _registry, _ports, rooms: () => rooms);
+            Build();
+
+            Assert.IsTrue(_source.ReadLive(1, out SystemsViewLiveNetwork live));
+            Assert.AreEqual("Vent · Kitchen", live.Devices[0].Label);
+            Assert.AreEqual("Pump", live.Devices[1].Label, "A device outside every room keeps its bare name");
+        }
+
+        private sealed class FakeRooms : ISystemsViewRooms
+        {
+            public readonly Dictionary<PlacedTileObject, string> Names = new();
+
+            public int Version => 1;
+
+            public bool TryGetRoom(PlacedTileObject device, out ushort areaId, out string name)
+            {
+                areaId = Names.TryGetValue(device, out name) ? (ushort)3 : (ushort)0;
+                return areaId != 0;
+            }
+
+            public bool HasPower(ushort areaId) => true;
+        }
+
+        [Test]
         public void ReadLive_GivesPressureTemperatureMixAndVolume_AndTheDevicesOnTheNetwork()
         {
             Build();

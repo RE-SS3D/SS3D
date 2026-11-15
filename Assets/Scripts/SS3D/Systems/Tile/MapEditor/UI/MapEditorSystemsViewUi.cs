@@ -7,8 +7,8 @@ using UnityEngine.UIElements;
 namespace SS3D.Systems.Tile.MapEditor.UI
 {
     /// <summary>
-    /// Systems view chrome (creative-mode §4): the Atmos / Power toolbar toggle, the collapsible legend, and beside its column the
-    /// trace panel with its world label (<see cref="MapEditorSystemsTracePanel"/>; Documents/architecture/systems/map-editor-systems-views.md, Drawing).
+    /// Systems view chrome (creative-mode §4): the Atmos / Power toolbar toggle with the sim bar and collapsible legend under
+    /// it in the right column, and beside the left toolbar the trace panel with its world label (<see cref="MapEditorSystemsTracePanel"/>; Documents/architecture/systems/map-editor-systems-views.md, Drawing).
     /// </summary>
     public sealed partial class MapEditorView
     {
@@ -80,7 +80,6 @@ namespace SS3D.Systems.Tile.MapEditor.UI
             _systemsLegend.style.display = DisplayStyle.None;
             _systemsSim.Build(column);
             column.Add(_systemsLegend);
-            _systemsTrace.Build(column);
         }
 
         private void RefreshSystemsView()
