@@ -25,6 +25,12 @@ namespace SS3D.Systems.Electricity.SystemsView
         /// </summary>
         int StateVersion { get; }
 
+        /// <summary>
+        /// The circuit graph has been rebuilt since the map last changed. Right after a template load or a cable edit it is a
+        /// tick behind, and <see cref="CircuitOf"/> answers from the old map (or null), so the problems wait for it.
+        /// </summary>
+        bool CircuitsCurrent { get; }
+
         /// <summary>The server's electricity channel is paused, so traced numbers hold still on purpose.</summary>
         bool Paused { get; }
 

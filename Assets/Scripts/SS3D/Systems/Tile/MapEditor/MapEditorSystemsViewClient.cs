@@ -142,7 +142,37 @@ namespace SS3D.Systems.Tile.MapEditor
             _describedRevision = _hoverRevision;
             _describedTile = tile;
             _described = SystemsViewStyles.For(Structure.View)?.Describe(Structure, tile) ?? string.Empty;
+            string problems = ProblemText(Structure, tile);
+            if (problems.Length > 0)
+                _described = _described.Length > 0 ? problems + "\n" + _described : problems;
             return _described;
+        }
+
+        /// <summary>
+        /// The problems marked on <paramref name="tile"/>, one row each in the legend's words ("Open pipe end: the pipe
+        /// stops here, joined to nothing."), first in the hover so a marker reads before what it sits on.
+        /// </summary>
+        public static string ProblemText(SystemsViewStructure structure, Vector2Int tile)
+        {
+            if (structure == null || structure.Markers.Count == 0)
+                return string.Empty;
+
+            IReadOnlyList<SystemsViewProblemKind> kinds = SystemsViewDomains.For(structure.View)?.Problems;
+            System.Text.StringBuilder text = null;
+            for (int slot = 0; slot <= byte.MaxValue; slot++)
+            {
+                if (!structure.Markers.ContainsKey(new SystemsViewKey(tile, (byte)slot))
+                    || !SystemsViewProblems.TryGetKind(kinds, SystemsViewProblems.CodeOf((byte)slot), out SystemsViewProblemKind kind))
+                    continue;
+
+                text ??= new System.Text.StringBuilder();
+                if (text.Length > 0 && text.ToString().Contains(kind.Sentence))
+                    continue;
+
+                SystemsViewText.NewRow(text).Append(kind.Sentence);
+            }
+
+            return text?.ToString() ?? string.Empty;
         }
 
         /// <summary>

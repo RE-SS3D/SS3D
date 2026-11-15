@@ -1,4 +1,7 @@
 using NUnit.Framework;
+using SS3D.Systems.Atmospherics.SystemsView;
+using SS3D.Systems.Electricity.SystemsView;
+using SS3D.Systems.Tile.MapEditor.SystemsView;
 using SS3D.Systems.Tile;
 using SS3D.Systems.Tile.GasMarkers;
 using SS3D.Systems.Tile.MapEditor;
@@ -159,11 +162,17 @@ namespace SS3D.Tests.EditMode
             MapValidationReport report = new();
             MapValidator.AddRoomDeviceChecks(report, new[]
             {
-                new RoomDeviceRecord(RoomDeviceKind.Vent, Vector3.zero, 1, "Bar", roomHasApc: false),
+                new RoomDeviceRecord(RoomDeviceKind.Vent, Vector3.zero, 1, "Bar"),
             }, paintedRooms: true);
 
             Assert.AreEqual(MapValidator.AirAlarmEntry, Issue(report, "air-alarm:1").EntryKey);
             Assert.AreEqual(MapValidator.ScrubberEntry, Issue(report, "no-scrubber:1").EntryKey);
+
+            // A room with no APC is the Power view's problem now (Phase 4); its Show in palette still finds the APC.
+            PowerProblemInput power = new();
+            power.Devices.Add(new PowerProblemDevice { Kind = PowerSystemsViewCodes.KindConsumer, Key = new SystemsViewKey(Vector2Int.zero), AreaId = 1 });
+            power.Rooms.Add(new PowerProblemRoom { AreaId = 1, Name = "Bar", HasApc = false });
+            MapValidator.AddSystemsIssues(report, PowerProblemAnalyzer.Analyze(power));
             Assert.AreEqual(MapValidator.ApcEntry, Issue(report, "no-apc:1").EntryKey);
         }
 

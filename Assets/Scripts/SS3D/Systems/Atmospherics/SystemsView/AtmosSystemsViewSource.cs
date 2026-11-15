@@ -27,6 +27,13 @@ namespace SS3D.Systems.Atmospherics.SystemsView
     /// <see cref="ReadLive"/> (Phase 2's trace) reads a traced network's record from the current registry, through the
     /// view ids the last build gave, and lists the devices whose badges in that build touch it.
     /// </para>
+    /// <para>
+    /// <see cref="Analyze"/> (Phase 4) runs <see cref="AtmosProblemAnalyzer"/> over the same runs, the networks at every
+    /// device's ports (meters and injectors too, which have no badge), line fills and each powered device's room, and
+    /// the build puts its issues in as markers. It runs again only when something it reads changed: a rebuild or re-link
+    /// of the runs, a device or line fill coming, going, moving or turning, or a room's power
+    /// (<see cref="ISystemsViewRooms.Version"/>); a switch or mode flip moves only a badge.
+    /// </para>
     /// </summary>
     public sealed class AtmosSystemsViewSource : ISystemsViewSource
     {
@@ -54,17 +61,40 @@ namespace SS3D.Systems.Atmospherics.SystemsView
         private bool _runsStale = true;
         private int _version;
 
+        // Phase 4: the last analysis, and what it read that the runs and badges don't cover.
+        private readonly Func<ISystemsViewRooms> _rooms;
+        private readonly Func<IReadOnlyList<AtmosLineFill>> _lineFills;
+        private readonly Func<bool> _ready;
+        private bool _seenCurrent = true;
+        private List<SystemsViewIssue> _issues = new();
+        private bool _analysisStale = true;
+        private int _seenRoomsVersion;
+        private readonly Dictionary<AtmosPortControllerBase, Room> _deviceRooms = new();
+        private readonly List<(AtmosPortControllerBase Port, TileCoord Coord)> _readers = new();
+        private readonly List<(AtmosPortControllerBase Port, TileCoord Coord)> _readersNow = new();
+        private readonly List<AtmosLineFill> _fills = new();
+
         /// <param name="paused">Whether the atmos simulation is paused (<c>AtmosSubSystem.SimulationPaused</c>); never, when null.</param>
         /// <param name="gasName">A gas slot's short name for the mix rows; the core gases' symbols, when null.</param>
+        /// <param name="rooms">Each device's room and its power (the electricity side's); no room problems, when null.</param>
+        /// <param name="lineFills">The map's line fill markers, which feed their line; none, when null.</param>
+        /// <param name="ready">Whether atmos has initialised on the current map (<c>AtmosSubSystem.IsReady</c>); always, when null.</param>
         public AtmosSystemsViewSource(Func<TileMap> map, Func<GasPipeNetworkRegistry> registry, AtmosPortRegistry ports,
-            Func<bool> paused = null, Func<int, string> gasName = null)
+            Func<bool> paused = null, Func<int, string> gasName = null, Func<ISystemsViewRooms> rooms = null,
+            Func<IReadOnlyList<AtmosLineFill>> lineFills = null, Func<bool> ready = null)
         {
+            _ready = ready;
             _map = map ?? throw new ArgumentNullException(nameof(map));
             _registry = registry ?? throw new ArgumentNullException(nameof(registry));
             _ports = ports ?? throw new ArgumentNullException(nameof(ports));
             _paused = paused;
             _gasName = gasName;
+            _rooms = rooms;
+            _lineFills = lineFills;
         }
+
+        /// <summary>Whether the last <see cref="Analyze"/> or build ran the analyzer again (not a cached result); for tests.</summary>
+        public bool LastAnalyzed { get; private set; }
 
         public SystemsViewKind View => SystemsViewKind.Atmos;
 
@@ -118,7 +148,165 @@ namespace SS3D.Systems.Atmospherics.SystemsView
                 _badges.Add(badge);
             }
 
+            LastAnalyzed = false;
+            EnsureAnalysis(map, registry);
+            SystemsViewProblems.AddMarkers(structure, _issues);
             return structure;
+        }
+
+        /// <summary>The problems now (Phase 4), the same ones the next build marks; cached until something they read changes.</summary>
+        public IReadOnlyList<SystemsViewIssue> Analyze()
+        {
+            Poll();
+            TileMap map = _map();
+            GasPipeNetworkRegistry registry = _registry();
+            LastAnalyzed = false;
+            if (map == null || registry == null)
+                return SystemsViewProblems.None;
+
+            if (_runsStale)
+                RebuildRuns(map, registry);
+            EnsureAnalysis(map, registry);
+            return _issues;
+        }
+
+        /// <summary>Atmos runs on the current map, so its networks are the map's (not mid-reload).</summary>
+        public bool AnalysisCurrent => (_ready == null || _ready()) && _map() != null && _registry() != null;
+
+        private void EnsureAnalysis(TileMap map, GasPipeNetworkRegistry registry)
+        {
+            if (!_analysisStale)
+                return;
+            // Mid-reload: report nothing and stay stale; atmos becoming ready replaces the registry, which analyses again.
+            if (!AnalysisCurrent)
+            {
+                _issues = new List<SystemsViewIssue>();
+                return;
+            }
+
+            _analysisStale = false;
+            LastAnalyzed = true;
+            AtmosProblemInput input = new();
+            foreach (NetworkRuns runs in _ordered)
+            {
+                foreach (Run run in runs.Runs)
+                {
+                    byte line = LineOf(run.Key.Slot, out bool manifold);
+                    if (!manifold)
+                        input.Pipes.Add(new AtmosProblemPipe { Tile = run.Key.Tile, Line = line, Links = run.Links, ViewId = runs.ViewId });
+                }
+            }
+
+            IReadOnlyList<IAtmosPortDevice> ports = _ports.Ports;
+            for (int i = 0; i < ports.Count; i++)
+            {
+                if (TryDescribeProblemDevice(map, registry, ports[i], out AtmosProblemDevice device))
+                    input.Devices.Add(device);
+            }
+
+            foreach (AtmosLineFill fill in _fills)
+            {
+                TileLayer[] line = { fill.Line };
+                AtmosDevicePipeResolver.TryResolveNetwork(map, registry, fill.Coord, line, out GasPipeNetworkId id, out _);
+                input.Devices.Add(new AtmosProblemDevice
+                {
+                    Kind = AtmosProblemDeviceKind.LineFill,
+                    Tile = fill.Coord.Grid,
+                    Slot = byte.MaxValue,
+                    Position = fill.Position,
+                    BackViewId = ViewIdOf(id),
+                    HasPipe = AtmosDevicePipeResolver.HasPipeSegment(map, fill.Coord, line),
+                });
+            }
+
+            _issues = AtmosProblemAnalyzer.Analyze(input);
+        }
+
+        /// <summary>A port device as the analyzer reads it: its networks resolved as its badge's are, by the rule it attaches by.</summary>
+        private bool TryDescribeProblemDevice(TileMap map, GasPipeNetworkRegistry registry, IAtmosPortDevice port, out AtmosProblemDevice device)
+        {
+            device = default;
+            if (port is not AtmosPortControllerBase controller || controller == null
+                || !controller.TryGetComponent(out PlacedTileObject placed))
+                return false;
+
+            AtmosProblemDeviceKind? kind = controller switch
+            {
+                VentController => AtmosProblemDeviceKind.Vent,
+                ScrubberController => AtmosProblemDeviceKind.Scrubber,
+                AtmosPumpController => AtmosProblemDeviceKind.Pump,
+                AtmosValveController => AtmosProblemDeviceKind.Valve,
+                AtmosFilterController => AtmosProblemDeviceKind.Filter,
+                AtmosMixerController => AtmosProblemDeviceKind.Mixer,
+                AtmosMeterController => AtmosProblemDeviceKind.Meter,
+                AtmosInjectorController => AtmosProblemDeviceKind.Injector,
+                _ => null,
+            };
+            if (kind == null)
+                return false;
+
+            TileCoord coord = new(placed.MapId, placed.WorldOrigin);
+            GasPipeNetworkId back = GasPipeNetworkId.None;
+            GasPipeNetworkId front = GasPipeNetworkId.None;
+            GasPipeNetworkId side = GasPipeNetworkId.None;
+            bool hasPipe;
+            switch (controller)
+            {
+                case AtmosInlineDeviceBase:
+                    AtmosDevicePipeResolver.TryResolveInlineNetworks(map, registry, coord, placed.Direction, out back, out front);
+                    hasPipe = AtmosDevicePipeResolver.HasInlinePipes(map, coord, placed.Direction);
+                    break;
+                case AtmosThreeWayDeviceBase threeWay:
+                    AtmosDevicePipeResolver.TryResolveThreeWayNetworks(map, registry, coord, placed.Direction,
+                        threeWay.SideOnLeft, threeWay.PipeLayers, out back, out front, out side);
+                    hasPipe = AtmosDevicePipeResolver.HasThreeWayPipes(map, coord, placed.Direction, threeWay.SideOnLeft, threeWay.PipeLayers);
+                    break;
+                default:
+                    TileLayer[] lines = controller.PipeLayers;
+                    AtmosDevicePipeResolver.TryResolveNetwork(map, registry, coord, lines, out back, out _);
+                    hasPipe = lines == null || AtmosDevicePipeResolver.HasPipeSegment(map, coord, lines);
+                    break;
+            }
+
+            Room room = RoomOf(controller, placed);
+            device = new AtmosProblemDevice
+            {
+                Kind = kind.Value,
+                Tile = coord.Grid,
+                Slot = (byte)placed.Layer,
+                Position = placed.transform.position,
+                BackViewId = ViewIdOf(back),
+                FrontViewId = ViewIdOf(front),
+                SideViewId = ViewIdOf(side),
+                HasPipe = hasPipe,
+                NeedsPower = controller.NeedsPower,
+                AreaId = room.AreaId,
+                RoomName = room.Name,
+                RoomPowered = room.Powered,
+            };
+            return true;
+        }
+
+        /// <summary>A powered device's room, kept until the rooms' version moves or the device moves.</summary>
+        private Room RoomOf(AtmosPortControllerBase controller, PlacedTileObject placed)
+        {
+            if (!controller.NeedsPower)
+                return default;
+            if (_deviceRooms.TryGetValue(controller, out Room known))
+                return known;
+
+            Room room = ReadRoom(placed);
+            _deviceRooms[controller] = room;
+            return room;
+        }
+
+        private Room ReadRoom(PlacedTileObject placed)
+        {
+            ISystemsViewRooms rooms = _rooms?.Invoke();
+            if (rooms == null || placed == null || !rooms.TryGetRoom(placed, out ushort areaId, out string name) || areaId == 0)
+                return default;
+
+            return new Room(areaId, name, rooms.HasPower(areaId));
         }
 
         /// <summary>
@@ -212,7 +400,9 @@ namespace SS3D.Systems.Atmospherics.SystemsView
                 _viewIds.Clear();
                 _networkIds.Clear();
                 _badges.Clear();
+                _deviceRooms.Clear();
                 _runsStale = true;
+                _analysisStale = true;
                 _version++;
             }
             else if (registry != null && registry.TopologyVersion != _seenTopology)
@@ -224,6 +414,88 @@ namespace SS3D.Systems.Atmospherics.SystemsView
 
             if (PollDevices())
                 _version++;
+            if (PollAnalysisInputs())
+                _version++;
+        }
+
+        /// <summary>
+        /// What the analysis reads beyond the runs and badges: meters and injectors (no badge), line fills, and the rooms'
+        /// power. Marks the analysis stale and returns true when any of them changed.
+        /// </summary>
+        private bool PollAnalysisInputs()
+        {
+            bool changed = false;
+            _readersNow.Clear();
+            IReadOnlyList<IAtmosPortDevice> ports = _ports.Ports;
+            for (int i = 0; i < ports.Count; i++)
+            {
+                if (ports[i] is AtmosMeterController or AtmosInjectorController && ports[i] is AtmosPortControllerBase reader
+                    && reader != null && reader.TryGetComponent(out PlacedTileObject placed))
+                    _readersNow.Add((reader, new TileCoord(placed.MapId, placed.WorldOrigin)));
+            }
+
+            if (!SameReaders())
+            {
+                foreach ((AtmosPortControllerBase port, _) in _readers)
+                    _deviceRooms.Remove(port);
+                _readers.Clear();
+                _readers.AddRange(_readersNow);
+                changed = true;
+            }
+
+            IReadOnlyList<AtmosLineFill> fills = _lineFills?.Invoke();
+            int fillCount = fills?.Count ?? 0;
+            bool sameFills = fillCount == _fills.Count;
+            for (int i = 0; sameFills && i < fillCount; i++)
+                sameFills = fills[i].Equals(_fills[i]);
+            if (!sameFills)
+            {
+                _fills.Clear();
+                for (int i = 0; i < fillCount; i++)
+                    _fills.Add(fills[i]);
+                changed = true;
+            }
+
+            bool current = AnalysisCurrent;
+            if (current != _seenCurrent)
+            {
+                _seenCurrent = current;
+                changed = true;
+            }
+
+            ISystemsViewRooms rooms = _rooms?.Invoke();
+            int roomsVersion = rooms?.Version ?? 0;
+            if (roomsVersion != _seenRoomsVersion)
+            {
+                _seenRoomsVersion = roomsVersion;
+                List<AtmosPortControllerBase> keys = new(_deviceRooms.Keys);
+                foreach (AtmosPortControllerBase port in keys)
+                {
+                    Room now = port != null && port.TryGetComponent(out PlacedTileObject placed) ? ReadRoom(placed) : default;
+                    if (!now.Equals(_deviceRooms[port]))
+                    {
+                        _deviceRooms[port] = now;
+                        changed = true;
+                    }
+                }
+            }
+
+            _analysisStale |= changed;
+            return changed;
+        }
+
+        private bool SameReaders()
+        {
+            if (_readers.Count != _readersNow.Count)
+                return false;
+
+            for (int i = 0; i < _readers.Count; i++)
+            {
+                if (_readers[i].Port != _readersNow[i].Port || !_readers[i].Coord.Equals(_readersNow[i].Coord))
+                    return false;
+            }
+
+            return true;
         }
 
         /// <summary>
@@ -256,6 +528,7 @@ namespace SS3D.Systems.Atmospherics.SystemsView
                 {
                     Touch(before.Coord);
                     Touch(now.Coord);
+                    _deviceRooms.Remove(pair.Key);
                     changed = true;
                 }
                 else if (before.State != now.State || before.Facing != now.Facing)
@@ -269,6 +542,7 @@ namespace SS3D.Systems.Atmospherics.SystemsView
                 if (!_current.ContainsKey(pair.Key))
                 {
                     Touch(pair.Value.Coord);
+                    _deviceRooms.Remove(pair.Key);
                     changed = true;
                 }
             }
@@ -317,6 +591,8 @@ namespace SS3D.Systems.Atmospherics.SystemsView
         private void RebuildRuns(TileMap map, GasPipeNetworkRegistry registry)
         {
             _runsStale = false;
+            // Runs, links or view ids may have changed: the problems are read again.
+            _analysisStale = true;
             RelinkTouchedRuns(map, registry);
             HashSet<GasPipeNetworkRecord> live = new();
             _ordered.Clear();
@@ -551,6 +827,22 @@ namespace SS3D.Systems.Atmospherics.SystemsView
                 Facing = device.Facing;
                 HasPipePorts = device.Port is IPipePortDevice;
             }
+        }
+
+        private readonly struct Room : IEquatable<Room>
+        {
+            public readonly ushort AreaId;
+            public readonly string Name;
+            public readonly bool Powered;
+
+            public Room(ushort areaId, string name, bool powered)
+            {
+                AreaId = areaId;
+                Name = name;
+                Powered = powered;
+            }
+
+            public bool Equals(Room other) => AreaId == other.AreaId && Powered == other.Powered && string.Equals(Name, other.Name, StringComparison.Ordinal);
         }
 
         private readonly struct Run

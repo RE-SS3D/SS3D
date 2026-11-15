@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using FishNet.Connection;
 using FishNet.Object;
 using SS3D.Systems.Tile.MapEditor.SystemsView;
@@ -124,8 +125,36 @@ namespace SS3D.Systems.Tile.MapEditor
                 _systemsViewClient.ReceiveLive(live);
         }
 
+        // Map Check reports sent while a systems view's analysis was still catching up (right after a load, when the power
+        // graph rebuilds a tick later): each such client gets its report again once every source is current.
+        private readonly HashSet<int> _validationAwaitingSystems = new();
+
+        /// <summary>After a Map Check send: if the systems' problems were not current yet, send this client the report again later.</summary>
+        private void AwaitSystemsForValidation(NetworkConnection conn)
+        {
+            if (conn != null && !SystemsViews.AnalysisCurrent)
+                _validationAwaitingSystems.Add(conn.ClientId);
+        }
+
+        private void ResendValidationOnceSystemsSettle()
+        {
+            if (_validationAwaitingSystems.Count == 0 || !SystemsViews.AnalysisCurrent)
+                return;
+
+            int[] clientIds = new int[_validationAwaitingSystems.Count];
+            _validationAwaitingSystems.CopyTo(clientIds);
+            _validationAwaitingSystems.Clear();
+            foreach (int clientId in clientIds)
+            {
+                if (ServerManager.Clients.TryGetValue(clientId, out NetworkConnection conn) && IsEditing(conn))
+                    SendMapValidation(conn);
+            }
+        }
+
         private void HandleSystemsViewServerUpdate()
         {
+            if (IsServer)
+                ResendValidationOnceSystemsSettle();
             if (!IsServer || !SystemsViews.HasSubscribers || Time.unscaledTime < _systemsViewNextPoll)
                 return;
 

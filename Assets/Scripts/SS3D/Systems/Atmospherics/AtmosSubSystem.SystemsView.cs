@@ -1,6 +1,9 @@
+using System.Collections.Generic;
 using SS3D.Core;
+using SS3D.Systems.Electricity;
 using SS3D.Systems.Atmospherics.SystemsView;
 using SS3D.Systems.Tile;
+using SS3D.Systems.Tile.GasMarkers;
 using SS3D.Systems.Tile.MapEditor.SystemsView;
 
 namespace SS3D.Systems.Atmospherics
@@ -29,10 +32,35 @@ namespace SS3D.Systems.Atmospherics
                 _portRegistry,
                 () => SimulationPaused,
                 gas => _gasRegistry != null && _gasRegistry.TryGetDefinition(new GasId((ushort)gas), out GasDefinition definition)
-                    ? definition.Symbol : null);
+                    ? definition.Symbol : null,
+                // A device's room and its power come from electricity's room → APC links (Phase 4), not read here.
+                () => SubSystems.TryGet(out ElectricitySubSystem electricity) ? electricity.SystemsViewRooms : null,
+                SystemsViewLineFills,
+                () => IsReady);
             _systemsViewRegistration.Ensure(_systemsViewSource);
         }
 
         private void UnregisterSystemsView() => _systemsViewRegistration.Release(_systemsViewSource);
+
+        private readonly List<AtmosLineFill> _systemsViewFills = new();
+
+        /// <summary>The map's line fill markers in a stable order (west to east), for the Atmos view's analysis.</summary>
+        private IReadOnlyList<AtmosLineFill> SystemsViewLineFills()
+        {
+            _systemsViewFills.Clear();
+            if (!SubSystems.TryGet(out TileSubSystem tiles) || tiles.CurrentMap == null || tiles.GasMarkers == null)
+                return _systemsViewFills;
+
+            foreach (GasMarkerRecord marker in tiles.GasMarkers.Records)
+            {
+                if (marker.Kind == GasMarkerKind.LineFill)
+                    _systemsViewFills.Add(new AtmosLineFill(tiles.QueryService.WorldToTile(marker.Position, tiles.CurrentMap.MapId),
+                        marker.Line, marker.Position));
+            }
+
+            _systemsViewFills.Sort((a, b) => a.Coord.Grid != b.Coord.Grid ? SystemsViewProblems.CompareTiles(a.Coord.Grid, b.Coord.Grid)
+                : a.Line.CompareTo(b.Line));
+            return _systemsViewFills;
+        }
     }
 }

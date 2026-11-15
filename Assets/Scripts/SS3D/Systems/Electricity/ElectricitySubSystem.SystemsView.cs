@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using SS3D.Core;
 using SS3D.Systems.Area;
 using SS3D.Systems.Electricity.SystemsView;
+using SS3D.Systems.StructuralDamage;
 using SS3D.Systems.Tile;
 using SS3D.Systems.Tile.MapEditor.SystemsView;
 
@@ -48,6 +49,46 @@ namespace SS3D.Systems.Electricity
 
         private void UnregisterSystemsView() => _systemsViewRegistration.Release(_systemsViewSource);
 
+        private SystemsViewRoomPower _systemsViewRooms;
+
+        /// <summary>
+        /// Server: each device's room and whether it has power, as the Power view hatches rooms (none, or a broken APC),
+        /// for the Atmos view's "device in a room with no power" (Phase 4); the atmos side reads only this interface.
+        /// </summary>
+        public ISystemsViewRooms SystemsViewRooms => _systemsViewRooms ??= new SystemsViewRoomPower(this);
+
+        private sealed class SystemsViewRoomPower : ISystemsViewRooms
+        {
+            private readonly ElectricitySubSystem _electricity;
+
+            public SystemsViewRoomPower(ElectricitySubSystem electricity) => _electricity = electricity;
+
+            // Room membership and APC links move the topology; an APC registered, removed, broken or repaired moves the state.
+            public int Version => unchecked(_electricity.SystemsViewTopologyVersion + PowerStateVersion.Current);
+
+            public bool TryGetRoom(PlacedTileObject device, out ushort areaId, out string name)
+            {
+                areaId = 0;
+                name = null;
+                if (device == null || !SubSystems.TryGet(out AreaSubSystem areas)
+                    || !areas.TryGetAreaForDevice(device, out AreaRecord record) || record == null || record.Id.IsNone)
+                    return false;
+
+                areaId = record.Id.Value;
+                name = record.DisplayName;
+                return true;
+            }
+
+            public bool HasPower(ushort areaId)
+            {
+                if (areaId == 0 || !SubSystems.TryGet(out AreaSubSystem areas) || !areas.TryGetAreaApc(new AreaId(areaId), out IApcChannelSource apc)
+                    || apc is not UnityEngine.Component component || component == null)
+                    return false;
+
+                return !component.TryGetComponent(out BreakableDevice breakable) || !breakable.IsBroken;
+            }
+        }
+
         /// <summary>The server's electricity state as the Power view's source reads it.</summary>
         private sealed class SystemsViewWorld : IPowerSystemsViewWorld
         {
@@ -60,6 +101,8 @@ namespace SS3D.Systems.Electricity
             public int TopologyVersion => _electricity.SystemsViewTopologyVersion;
 
             public bool Paused => _electricity.SimulationPaused;
+
+            public bool CircuitsCurrent => !_electricity._graphIsDirty;
 
             public int StateVersion => PowerStateVersion.Current;
 

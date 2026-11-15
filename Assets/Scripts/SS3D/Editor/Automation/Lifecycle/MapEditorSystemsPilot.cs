@@ -524,6 +524,7 @@ namespace SS3D.Editor.Automation
             }
 
             MapEditorSystemsPowerPilot.Measure();
+            MeasureProblems();
             Debug.Log("[systems-view-budget] " + string.Join(" | ", Measurements));
             Require(structure.Segments.Count > 0, $"{Station} has pipe runs for the view");
 
@@ -612,6 +613,25 @@ namespace SS3D.Editor.Automation
         internal static void AddCheck(string check) => Checks.Add(check);
 
         internal static void AddMeasurement(string measurement) => Measurements.Add(measurement);
+
+        /// <summary>
+        /// Phase 4's shipped-map check: how many of each problem the analyzers raise here (an id's kind is its prefix),
+        /// how long a cold analysis takes, and every issue's title in problems.txt beside the report, to read for false alarms.
+        /// </summary>
+        private static void MeasureProblems()
+        {
+            List<SystemsViewIssue> issues = new();
+            Stopwatch analyze = Stopwatch.StartNew();
+            Editor().SystemsViews.Analyze(issues);
+            analyze.Stop();
+            string counts = string.Join(", ", issues.GroupBy(issue => issue.Category + " " + issue.Id.Split(':')[0])
+                .OrderBy(group => group.Key).Select(group => $"{group.Key} {group.Count()}"));
+            Measurements.Add($"problems ({analyze.Elapsed.TotalMilliseconds:0.0} ms): {(counts.Length > 0 ? counts : "none")}");
+            string output = SessionState.GetString(OutputKey, null);
+            if (!string.IsNullOrEmpty(output))
+                File.WriteAllLines(Path.Combine(output, "problems.txt"),
+                    issues.Select(issue => $"{issue.Id}\t{issue.Markers?.Length ?? 0} marker(s)\t{issue.Title}"));
+        }
 
         internal static void Require(bool value, string message)
         {

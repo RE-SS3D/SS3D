@@ -1,3 +1,4 @@
+using System.Linq;
 using SS3D.Systems.Tile.MapEditor.SystemsView;
 using SS3D.Systems.Tile.TileMapCreator;
 using UnityEngine;
@@ -11,7 +12,7 @@ namespace SS3D.Systems.Electricity.SystemsView
     /// </summary>
     public static class PowerSystemsViewDomain
     {
-        public static readonly SystemsViewLegendEntry[] Legend =
+        public static readonly SystemsViewLegendEntry[] Legend = new SystemsViewLegendEntry[]
         {
             new("Each colour is one cable circuit, joining generators, SMES units and APCs. Point at a cable to see its name.",
                 SystemsViewLegend.NetworkSwatches),
@@ -23,7 +24,7 @@ namespace SS3D.Systems.Electricity.SystemsView
                 PowerSystemsViewStyle.DotPowered, PowerSystemsViewStyle.DotChannelOff, PowerSystemsViewStyle.DotUnpowered),
             new("Select a cable or device to trace its circuit, or a floor, machine or APC to trace its room."),
             new("Floors, objects and the cables' own paint are dimmed so the circuits show through."),
-        };
+        }.Concat(SystemsViewProblems.Legend(PowerProblemAnalyzer.Kinds)).ToArray();
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
 #if UNITY_EDITOR
@@ -36,6 +37,7 @@ namespace SS3D.Systems.Electricity.SystemsView
             Legend = Legend,
             OwnLayer = TileLayerCategory.Cables,
             RoomHatch = PowerSystemsViewStyle.Hatch,
+            Problems = PowerProblemAnalyzer.Kinds,
         });
     }
 }

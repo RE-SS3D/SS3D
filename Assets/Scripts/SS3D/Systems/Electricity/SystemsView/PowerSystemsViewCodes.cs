@@ -1,3 +1,4 @@
+using System.Text;
 using SS3D.Systems.Tile;
 
 namespace SS3D.Systems.Electricity.SystemsView
@@ -70,6 +71,9 @@ namespace SS3D.Systems.Electricity.SystemsView
 
         public static bool IsConsumer(byte kind) => kind is KindLight or KindConsumer;
 
+        /// <summary>A grid device that feeds a circuit: a generator, solar panel or SMES (an APC's cell feeds only its room).</summary>
+        public static bool IsSupply(byte kind) => kind is KindGenerator or KindSolar or KindSmes;
+
         public static byte ConsumerState(byte status, PowerChannel channel) =>
             (byte)((status & StatusMask) | (((int)channel << ChannelShift) & ChannelMask));
 
@@ -138,5 +142,26 @@ namespace SS3D.Systems.Electricity.SystemsView
         };
 
         private static string OnOff(ApcControlFlags channels, ApcControlFlags channel) => (channels & channel) != 0 ? "on" : "off";
+
+        /// <summary>"LightFixtureTube" → "Light Fixture Tube": an asset name in words, for a consumer's row.</summary>
+        public static string Words(string name)
+        {
+            StringBuilder words = new(name.Length + 4);
+            for (int i = 0; i < name.Length; i++)
+            {
+                char c = name[i];
+                if (c == '_' || c == '-')
+                {
+                    words.Append(' ');
+                    continue;
+                }
+
+                if (i > 0 && char.IsUpper(c) && (char.IsLower(name[i - 1]) || (i + 1 < name.Length && char.IsLower(name[i + 1]) && char.IsUpper(name[i - 1]))))
+                    words.Append(' ');
+                words.Append(c);
+            }
+
+            return words.ToString().Trim();
+        }
     }
 }

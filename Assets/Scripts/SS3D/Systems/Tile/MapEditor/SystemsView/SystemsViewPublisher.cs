@@ -67,6 +67,37 @@ namespace SS3D.Systems.Tile.MapEditor.SystemsView
             _built.Remove(source.View);
         }
 
+        /// <summary>
+        /// Map Check's half of Q5: every registered source's problems, Atmos first, then Power. The same issues the views
+        /// draw as markers, read whether or not anyone watches a view.
+        /// </summary>
+        public void Analyze(List<SystemsViewIssue> into)
+        {
+            if (into == null)
+                return;
+
+            foreach (SystemsViewKind view in new[] { SystemsViewKind.Atmos, SystemsViewKind.Power })
+            {
+                if (_sources.TryGetValue(view, out ISystemsViewSource source) && source.Analyze() is { } issues)
+                    into.AddRange(issues);
+            }
+        }
+
+        /// <summary>Every registered source's analysis reads settled state (<see cref="ISystemsViewSource.AnalysisCurrent"/>).</summary>
+        public bool AnalysisCurrent
+        {
+            get
+            {
+                foreach (ISystemsViewSource source in _sources.Values)
+                {
+                    if (!source.AnalysisCurrent)
+                        return false;
+                }
+
+                return true;
+            }
+        }
+
         /// <summary>The view <paramref name="clientId"/> watches, or <see cref="SystemsViewKind.Off"/>.</summary>
         public SystemsViewKind ViewOf(int clientId) =>
             _subscribers.TryGetValue(clientId, out Subscriber subscriber) ? subscriber.View : SystemsViewKind.Off;

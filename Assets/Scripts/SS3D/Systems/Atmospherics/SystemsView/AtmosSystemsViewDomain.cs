@@ -1,3 +1,4 @@
+using System.Linq;
 using SS3D.Systems.Tile.MapEditor.SystemsView;
 using SS3D.Systems.Tile.TileMapCreator;
 using UnityEngine;
@@ -11,7 +12,7 @@ namespace SS3D.Systems.Atmospherics.SystemsView
     /// </summary>
     public static class AtmosSystemsViewDomain
     {
-        public static readonly SystemsViewLegendEntry[] Legend =
+        public static readonly SystemsViewLegendEntry[] Legend = new SystemsViewLegendEntry[]
         {
             new("Each colour is one pipe network: a connected run on one line. Point at a pipe to see its line and name.",
                 SystemsViewLegend.NetworkSwatches),
@@ -21,7 +22,7 @@ namespace SS3D.Systems.Atmospherics.SystemsView
             new("Marks: white running, grey switched off, amber switched on but no power.",
                 AtmosSystemsViewStyle.MarkOn, AtmosSystemsViewStyle.MarkOff, AtmosSystemsViewStyle.MarkNoPower),
             new("Floors, objects and the pipes' own paint are dimmed so the networks show through."),
-        };
+        }.Concat(SystemsViewProblems.Legend(AtmosProblemAnalyzer.Kinds)).ToArray();
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
 #if UNITY_EDITOR
@@ -33,6 +34,7 @@ namespace SS3D.Systems.Atmospherics.SystemsView
             Style = AtmosSystemsViewStyle.Instance,
             Legend = Legend,
             OwnLayer = TileLayerCategory.GasPipes,
+            Problems = AtmosProblemAnalyzer.Kinds,
         });
     }
 }

@@ -402,6 +402,116 @@ namespace EditorTests
             Assert.IsTrue(_source.LastRescannedCables);
         }
 
+        // Phase 4: the Storeroom has a machine and no APC; everything else on this map is sound (the lone run powers nothing).
+        [Test]
+        public void Structure_CarriesTheAnalyzersMarkers_AndAFixRemovesItsMarker()
+        {
+            SystemsViewStructure structure = Build();
+            SystemsViewKey noApc = new(new Vector2Int(6, 3), SystemsViewProblems.MarkerSlot(PowerProblemAnalyzer.CodeRoomNoApc));
+            Assert.AreEqual(1, structure.Markers.Count);
+            Assert.AreEqual("no-apc:2", structure.Markers[noApc].IssueId);
+            SystemsViewIssue issue = _source.Analyze().Single();
+            Assert.AreEqual("no-apc:2", issue.Id);
+            Assert.AreEqual("No APC in Storeroom (6, 3)", issue.Title);
+            Assert.IsFalse(_source.LastAnalyzed, "Analyze after a build reads the cached result");
+
+            // A consumer's status changing moves only its badge; the analysis isn't run again.
+            _starved.PowerStatus = PowerStatus.Powered;
+            _world.StateVersion++;
+            SystemsViewStructure powered = Build();
+            Assert.IsFalse(_source.LastAnalyzed);
+            Assert.IsEmpty(SystemsViewStructure.Diff(structure, powered).MarkersRemoved);
+
+            // The room gains an APC: its marker goes, from the view and from Map Check.
+            _world.Rooms[1] = new PowerSystemsViewRoomInfo(Storeroom, "Storeroom", _apc);
+            SystemsViewStructure fixedRoom = Build();
+            Assert.IsTrue(_source.LastAnalyzed);
+            CollectionAssert.AreEqual(new[] { noApc }, SystemsViewStructure.Diff(powered, fixedRoom).MarkersRemoved);
+            Assert.IsEmpty(_source.Analyze());
+
+            // The APC's cable cut away: it is on no cable now.
+            for (int x = 0; x <= 4; x++)
+                _context.Map.GetOrCreateTileLocation(TileLayer.Wire, new Vector3(x, 0, 0)).ClearAllPlacedObject();
+            _world.Circuits.Clear();
+            _world.TopologyVersion++;
+            CollectionAssert.AreEquivalent(new[] { "apc-cable:4:0", "smes-circuit:2:0" }, _source.Analyze().Select(found => found.Id));
+        }
+
+        // Phase 4: "needs more than it gives" compares ratings, never the output or draw of the moment, so it doesn't flicker.
+        [Test]
+        public void DemandAboveSupply_ReadsRatings_NotTheMomentsOutputOrDraw()
+        {
+            _world.DeviceList.Remove(_generator);
+            _world.DeviceList.Remove(_smes);
+            // Switched off (or a solar panel at night): it produces nothing now, but counts at its 5 kW rating.
+            RatedProducer off = new(Place(0, 0, TileLayer.FurnitureBase, Direction.North)) { Rated = 5f };
+            RatedConsumer machine = new(Place(4, 3, TileLayer.FurnitureBase, Direction.North)) { Rated = 2.5f, Now = 0.1f };
+            _world.DeviceList.Add(off);
+            _world.Circuits[off] = _circuit;
+            _world.DeviceList.Add(machine);
+            _world.ApcOf[machine] = _apc;
+            _world.RoomOf[machine] = Bridge;
+
+            // The Bridge draws 0.4 + 1 + 0.5 + 2.5 at most: 4.4 kW against 5.
+            Build();
+            Assert.IsFalse(_source.Analyze().Any(issue => issue.Id.StartsWith("circuit-")), "A generator switched off still counts at its rating");
+
+            // At most 4 kW for the machine (idle, it draws 0.1): 5.9 against 5.
+            machine.Rated = 4f;
+            _world.TopologyVersion++;
+            SystemsViewIssue over = _source.Analyze().Single(issue => issue.Id.StartsWith("circuit-"));
+            Assert.AreEqual("circuit-demand:4:0", over.Id);
+            StringAssert.Contains("up to 5.9 kW against at most 5.0 kW", over.Body);
+
+            // The machine goes into use and back: the reading moves, the check doesn't.
+            machine.Now = 4f;
+            _world.TopologyVersion++;
+            Assert.AreEqual(over.Body, _source.Analyze().Single(issue => issue.Id.StartsWith("circuit-")).Body);
+        }
+
+        // Phase 4: right after a template load the circuit graph is a tick behind; the source reports nothing until it is current.
+        [Test]
+        public void Analysis_WaitsForTheCircuitGraph_ThenReportsOnItsRebuild()
+        {
+            _world.CircuitsCurrent = false;
+            _world.Circuits.Clear();
+            _world.TopologyVersion++;
+            Assert.IsFalse(_source.AnalysisCurrent);
+            Assert.IsEmpty(_source.Analyze(), "No bogus \"on no circuit\" rows from a graph that hasn't caught up");
+            Assert.IsEmpty(Build().Markers);
+
+            // The graph rebuilds (which moves the topology): the real problems now.
+            foreach (IElectricDevice device in new IElectricDevice[] { _generator, _smes, _apc })
+                _world.Circuits[device] = _circuit;
+            _world.CircuitsCurrent = true;
+            _world.TopologyVersion++;
+            Assert.IsTrue(_source.AnalysisCurrent);
+            CollectionAssert.AreEqual(new[] { "no-apc:2" }, _source.Analyze().Select(issue => issue.Id));
+        }
+
+        [Test]
+        public void Ratings_OfTheRealProducersAndMachines_DontMoveWithTheirState()
+        {
+            GameObject go = new("RatedPowerTest");
+            _instantiated.Add(go);
+            FuelPowerGenerator generator = go.AddComponent<FuelPowerGenerator>();
+            SetPrivateField(generator, "_powerProduction", 25f);
+            Assert.AreEqual(0f, generator.PowerProduction, "Off, it produces nothing");
+            Assert.AreEqual(25f, generator.RatedPowerKw, "Its rating is the prefab's output, read before it starts");
+
+            SolarPanel panel = go.AddComponent<SolarPanel>();
+            panel.PeakPowerKw = 8f;
+            Assert.AreEqual(8f, panel.RatedPowerKw, "A panel's rating is its peak, sun or no sun");
+
+            MachinePowerConsumer machine = go.AddComponent<MachinePowerConsumer>();
+            SetPrivateField(machine, "_powerConsumptionIdle", 0.5f);
+            SetPrivateField(machine, "_powerConsumptionInUse", 3f);
+            machine.isIdle = true;
+            Assert.AreEqual(3f, machine.RatedPowerKw);
+            machine.isIdle = false;
+            Assert.AreEqual(3f, machine.RatedPowerKw);
+        }
+
         private void PlaceCable(int x, int y)
         {
             PlacedTileObject placed = Place(x, y, TileLayer.Wire, Direction.North);
@@ -454,6 +564,7 @@ namespace EditorTests
             public int TopologyVersion { get; set; }
             public int StateVersion { get; set; }
             public bool Paused { get; set; }
+            public bool CircuitsCurrent { get; set; } = true;
             public long TickCount { get; set; }
             public float TickSeconds { get; set; } = 0.2f;
             public IReadOnlyList<IElectricDevice> Devices => DeviceList;
@@ -506,6 +617,27 @@ namespace EditorTests
             public Apc(PlacedTileObject tile) : base(tile) { }
 
             public ApcControlFlags Channels { get; set; }
+        }
+
+        private sealed class RatedProducer : Device, IRatedPowerProducer
+        {
+            public RatedProducer(PlacedTileObject tile) : base(tile) { }
+
+            public float Rated;
+            public float PowerProduction => 0f;
+            public float RatedPowerKw => Rated;
+        }
+
+        private sealed class RatedConsumer : Device, IRatedPowerConsumer
+        {
+            public RatedConsumer(PlacedTileObject tile) : base(tile) { }
+
+            public float Rated;
+            public float Now;
+            public float PowerNeeded => Now;
+            public float RatedPowerKw => Rated;
+            public PowerStatus PowerStatus { get; set; }
+            public PowerChannel Channel => PowerChannel.Equipment;
         }
 
         private sealed class Consumer : Device, IPowerConsumer

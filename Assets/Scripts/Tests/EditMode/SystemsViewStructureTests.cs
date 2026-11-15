@@ -244,6 +244,47 @@ namespace SS3D.Tests.EditMode
             CollectionAssert.AreEquivalent(new[] { Vector2Int.zero, new Vector2Int(-1, -1) }, dirty);
         }
 
+        // Phase 4: a marker set or removed rebuilds its chunk, draws in the badge mesh (one per tile, never dimmed by a trace),
+        // and the publisher hands Map Check every source's issues, Atmos first.
+        [Test]
+        public void Markers_DirtyTheirChunk_DrawOverBadges_AndThePublisherCollectsEverySourcesIssues()
+        {
+            SystemsViewStructure moved = Station();
+            moved.Markers.Clear();
+            moved.Set(new SystemsViewMarker { Key = Key(40, 40, 9), IssueId = "open-end:0:40:40" });
+            HashSet<Vector2Int> dirty = new();
+            MapEditorSystemsOverlay.DirtyChunks(SystemsViewStructure.Diff(Station(), moved), dirty);
+            CollectionAssert.AreEquivalent(new[] { Vector2Int.zero, MapEditorSystemsOverlay.ChunkOf(new Vector2Int(40, 40)) }, dirty,
+                "The chunk the marker left and the one it went to");
+
+            SystemsViewMarker[] markers =
+            {
+                new() { Key = Key(1, 1, 9), IssueId = "a" },
+                new() { Key = Key(1, 1, 17), IssueId = "b" },
+            };
+            Mesh mesh = MapEditorSystemsOverlay.BuildBadgeMesh(Vector2Int.zero, null, AtmosSystemsViewStyle.Instance, null, new[] { 1 }, markers);
+            try
+            {
+                // Two diamonds, a bar and a dot: one marker for the tile's two problems, at full strength while a trace is on.
+                Assert.AreEqual(4 * 4, mesh.vertexCount);
+                Assert.AreEqual(1f, mesh.colors[4].a, 1e-4f);
+                Assert.AreEqual(SystemsViewMeshBuilder.ToStored(SystemsViewProblems.MarkerColor), mesh.colors[4]);
+            }
+            finally
+            {
+                Object.DestroyImmediate(mesh);
+            }
+
+            SystemsViewPublisher publisher = new();
+            FakeSource power = new(SystemsViewKind.Power) { Issues = { new SystemsViewIssue { Id = "no-apc:1" } } };
+            FakeSource atmos = new(SystemsViewKind.Atmos) { Issues = { new SystemsViewIssue { Id = "open-end:0:1:1" } } };
+            publisher.Register(power);
+            publisher.Register(atmos);
+            List<SystemsViewIssue> issues = new();
+            publisher.Analyze(issues);
+            CollectionAssert.AreEqual(new[] { "open-end:0:1:1", "no-apc:1" }, issues.Select(issue => issue.Id));
+        }
+
         [Test]
         public void Wire_RoundTripsEveryCollection()
         {
@@ -342,6 +383,12 @@ namespace SS3D.Tests.EditMode
             }
 
             public bool SimulationPaused { get; set; }
+
+            public List<SystemsViewIssue> Issues = new();
+
+            public IReadOnlyList<SystemsViewIssue> Analyze() => Issues;
+
+            public bool AnalysisCurrent { get; set; } = true;
         }
     }
 }

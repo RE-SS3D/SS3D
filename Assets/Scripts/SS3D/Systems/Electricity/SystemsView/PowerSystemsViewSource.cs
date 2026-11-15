@@ -32,6 +32,11 @@ namespace SS3D.Systems.Electricity.SystemsView
     /// <see cref="ReadLive"/> (the trace) reads a circuit's supply, demand and storage and every grid device on it, or a
     /// room's APC (charge, breakers, load) and the consumers it powers, now, through the view ids of the last build.
     /// </para>
+    /// <para>
+    /// <see cref="Analyze"/> (Phase 4) runs <see cref="PowerProblemAnalyzer"/> over the same circuits, devices and rooms, and
+    /// the build puts its issues in as markers. It runs again only after a topology move or circuit join, a device coming,
+    /// going or moving or changing room or APC, or a room's APC changing; a status dot or breaker flip moves only a badge.
+    /// </para>
     /// </summary>
     public sealed class PowerSystemsViewSource : ISystemsViewSource
     {
@@ -44,22 +49,22 @@ namespace SS3D.Systems.Electricity.SystemsView
         private readonly List<List<Vector2Int>> _runs = new();
 
         // Circuits of the last join: networks by view id, and each grid device's view id.
-        private readonly List<CircuitNetwork> _circuits = new();
-        private readonly Dictionary<int, CircuitNetwork> _circuitByViewId = new();
+        private readonly List<PowerCircuitNetwork> _circuits = new();
+        private readonly Dictionary<int, PowerCircuitNetwork> _circuitByViewId = new();
         private readonly Dictionary<IElectricDevice, int> _circuitViewIdOf = new();
         private readonly Dictionary<Vector2Int, int> _cableViewIdOf = new();
 
         // What each device and room was at the last poll, keyed by the device or the room's id, so order never matters.
-        private Dictionary<IElectricDevice, Seen> _seen = new();
-        private Dictionary<IElectricDevice, Seen> _current = new();
-        private Dictionary<ushort, SeenRoom> _seenRooms = new();
-        private Dictionary<ushort, SeenRoom> _currentRooms = new();
+        private Dictionary<IElectricDevice, PowerSeen> _seen = new();
+        private Dictionary<IElectricDevice, PowerSeen> _current = new();
+        private Dictionary<ushort, PowerSeenRoom> _seenRooms = new();
+        private Dictionary<ushort, PowerSeenRoom> _currentRooms = new();
         private readonly List<PowerSystemsViewRoomInfo> _roomScratch = new();
 
         // Rooms of the last build: their consumers and APC, for a traced room.
         private readonly Dictionary<ushort, List<IElectricDevice>> _roomConsumers = new();
         // SMES rates between reads: energy and tick at the last read.
-        private readonly Dictionary<IPowerStorage, Rate> _rates = new();
+        private readonly Dictionary<IPowerStorage, PowerRate> _rates = new();
 
         // A smashed APC's casing, looked up once per APC.
         private readonly Dictionary<IApcChannelSource, BreakableDevice> _breakables = new();
@@ -75,6 +80,8 @@ namespace SS3D.Systems.Electricity.SystemsView
         private bool _cablesStale = true;
         private bool _circuitsStale = true;
         private int _version;
+        private List<SystemsViewIssue> _issues = new();
+        private bool _analysisStale = true;
 
         public PowerSystemsViewSource(IPowerSystemsViewWorld world)
         {
@@ -102,6 +109,9 @@ namespace SS3D.Systems.Electricity.SystemsView
 
         public bool LastRejoinedCircuits { get; private set; }
 
+        /// <summary>Whether the last <see cref="Analyze"/> or build ran the analyzer again (not a cached result); for tests.</summary>
+        public bool LastAnalyzed { get; private set; }
+
         /// <summary>Builds from what the last <see cref="StructureVersion"/> read saw; the publisher reads it first.</summary>
         public SystemsViewStructure BuildStructure()
         {
@@ -117,7 +127,7 @@ namespace SS3D.Systems.Electricity.SystemsView
             if (_circuitsStale)
                 JoinCircuits();
 
-            foreach (CircuitNetwork circuit in _circuits)
+            foreach (PowerCircuitNetwork circuit in _circuits)
                 structure.Set(new SystemsViewNetwork { ViewId = circuit.ViewId, Label = "Circuit " + circuit.ViewId });
             foreach (KeyValuePair<Vector2Int, int> cable in _cableViewIdOf)
             {
@@ -131,9 +141,9 @@ namespace SS3D.Systems.Electricity.SystemsView
 
             foreach (List<IElectricDevice> consumers in _roomConsumers.Values)
                 consumers.Clear();
-            foreach (KeyValuePair<IElectricDevice, Seen> pair in _seen)
+            foreach (KeyValuePair<IElectricDevice, PowerSeen> pair in _seen)
             {
-                Seen seen = pair.Value;
+                PowerSeen seen = pair.Value;
                 int room = RoomViewId(seen.Room);
                 int viewId = IsGrid(seen.Kind) ? CircuitViewIdOf(pair.Key)
                     : seen.Apc != null ? CircuitViewIdOf(seen.Apc) : 0;
@@ -155,7 +165,7 @@ namespace SS3D.Systems.Electricity.SystemsView
                 }
             }
 
-            foreach (SeenRoom room in _seenRooms.Values)
+            foreach (PowerSeenRoom room in _seenRooms.Values)
             {
                 int viewId = RoomViewId(room.AreaId);
                 structure.Set(new SystemsViewNetwork { ViewId = viewId, Label = RoomLabel(room) });
@@ -169,7 +179,79 @@ namespace SS3D.Systems.Electricity.SystemsView
                 });
             }
 
+            LastAnalyzed = false;
+            EnsureAnalysis();
+            SystemsViewProblems.AddMarkers(structure, _issues);
             return structure;
+        }
+
+        /// <summary>The problems now (Phase 4), the same ones the next build marks; cached until something they read changes.</summary>
+        public IReadOnlyList<SystemsViewIssue> Analyze()
+        {
+            Poll();
+            LastAnalyzed = false;
+            TileMap map = _world.Map;
+            if (map == null)
+                return SystemsViewProblems.None;
+
+            if (_cablesStale)
+                RescanCables(map);
+            if (_circuitsStale)
+                JoinCircuits();
+            EnsureAnalysis();
+            return _issues;
+        }
+
+        /// <summary>The electricity graph has caught up with the map (not a tick after a load or cable edit), so problems are real.</summary>
+        public bool AnalysisCurrent => _world.CircuitsCurrent;
+
+        private void EnsureAnalysis()
+        {
+            if (!_analysisStale)
+                return;
+            // Circuits read null until the graph rebuilds; its rebuild moves the topology, which analyses again.
+            if (!_world.CircuitsCurrent)
+            {
+                _issues = new List<SystemsViewIssue>();
+                return;
+            }
+
+            _analysisStale = false;
+            LastAnalyzed = true;
+            PowerProblemInput input = new();
+            foreach (KeyValuePair<IElectricDevice, PowerSeen> pair in _seen)
+            {
+                PowerSeen seen = pair.Value;
+                if (!IsLive(pair.Key))
+                    continue;
+
+                input.Devices.Add(new PowerProblemDevice
+                {
+                    Kind = seen.Kind,
+                    Key = seen.Key,
+                    Position = seen.Placed != null ? seen.Placed.transform.position : SystemsViewProblems.TileCentre(seen.Key.Tile),
+                    CircuitViewId = IsGrid(seen.Kind) ? CircuitViewIdOf(pair.Key) : seen.Apc != null ? CircuitViewIdOf(seen.Apc) : 0,
+                    AreaId = seen.Room,
+                    SupplyKw = pair.Key switch
+                    {
+                        IApcChannelSource => 0f,
+                        IPowerStorage storage => storage.MaxDischargeRateKw,
+                        IRatedPowerProducer rated => rated.RatedPowerKw,
+                        IPowerProducer producer => producer.PowerProduction,
+                        _ => 0f,
+                    },
+                    DemandKw = pair.Key switch
+                    {
+                        IRatedPowerConsumer rated => rated.RatedPowerKw,
+                        IPowerConsumer consumer => consumer.PowerNeeded,
+                        _ => 0f,
+                    },
+                });
+            }
+
+            foreach (PowerSeenRoom room in _seenRooms.Values)
+                input.Rooms.Add(new PowerProblemRoom { AreaId = room.AreaId, Name = room.Name, HasApc = room.Apc != null });
+            _issues = PowerProblemAnalyzer.Analyze(input);
         }
 
         /// <summary>
@@ -186,7 +268,7 @@ namespace SS3D.Systems.Electricity.SystemsView
             if (IsRoomViewId(viewId))
                 return ReadRoom((ushort)(viewId - RoomViewIdBase), out live);
 
-            if (!_circuitByViewId.TryGetValue(viewId, out CircuitNetwork circuit))
+            if (!_circuitByViewId.TryGetValue(viewId, out PowerCircuitNetwork circuit))
                 return false;
 
             float supply = 0f;
@@ -196,7 +278,7 @@ namespace SS3D.Systems.Electricity.SystemsView
             List<SystemsViewLiveDevice> devices = new();
             foreach (IElectricDevice device in circuit.Devices)
             {
-                if (!IsLive(device) || !_seen.TryGetValue(device, out Seen seen))
+                if (!IsLive(device) || !_seen.TryGetValue(device, out PowerSeen seen))
                     continue;
 
                 string detail;
@@ -241,7 +323,7 @@ namespace SS3D.Systems.Electricity.SystemsView
         private bool ReadRoom(ushort areaId, out SystemsViewLiveNetwork live)
         {
             live = default;
-            if (!_seenRooms.TryGetValue(areaId, out SeenRoom room))
+            if (!_seenRooms.TryGetValue(areaId, out PowerSeenRoom room))
                 return false;
 
             List<SystemsViewLiveRow> rows = new();
@@ -274,7 +356,7 @@ namespace SS3D.Systems.Electricity.SystemsView
                         ApcPowerState.Overload => "short: the cell covers the rest",
                         _ => "the grid covers the load",
                     }));
-                if (_seen.TryGetValue(apc, out Seen apcSeen))
+                if (_seen.TryGetValue(apc, out PowerSeen apcSeen))
                     devices.Add(new SystemsViewLiveDevice { Key = apcSeen.Key, Label = "APC", Detail = ApcDetail(apc, apcSeen) });
             }
 
@@ -283,7 +365,7 @@ namespace SS3D.Systems.Electricity.SystemsView
             {
                 foreach (IElectricDevice device in inRoom)
                 {
-                    if (!IsLive(device) || device is not IPowerConsumer consumer || !_seen.TryGetValue(device, out Seen seen))
+                    if (!IsLive(device) || device is not IPowerConsumer consumer || !_seen.TryGetValue(device, out PowerSeen seen))
                         continue;
 
                     byte state = ConsumerState(StatusOf(consumer, apc), consumer.Channel);
@@ -312,6 +394,7 @@ namespace SS3D.Systems.Electricity.SystemsView
                 _resolveLinks = true;
                 _cablesStale = true;
                 _circuitsStale = true;
+                _analysisStale = true;
                 _version++;
             }
             else if (_world.TopologyVersion != _seenTopology)
@@ -342,7 +425,10 @@ namespace SS3D.Systems.Electricity.SystemsView
             }
 
             if (PollRooms())
+            {
                 _version++;
+                _analysisStale = true;
+            }
         }
 
         /// <summary>Re-reads only the producers; one that went makes the next poll compare everything.</summary>
@@ -351,7 +437,7 @@ namespace SS3D.Systems.Electricity.SystemsView
             bool changed = false;
             foreach (IElectricDevice device in _producers)
             {
-                if (!_seen.TryGetValue(device, out Seen before) || !TryDescribe(device, before, out Seen now))
+                if (!_seen.TryGetValue(device, out PowerSeen before) || !TryDescribe(device, before, out PowerSeen now))
                 {
                     _pollAll = true;
                     return true;
@@ -378,31 +464,36 @@ namespace SS3D.Systems.Electricity.SystemsView
             for (int i = 0; devices != null && i < devices.Count; i++)
             {
                 IElectricDevice device = devices[i];
-                if (device != null && TryDescribe(device, _seen.TryGetValue(device, out Seen before) ? before : (Seen?)null, out Seen now))
+                if (device != null && TryDescribe(device, _seen.TryGetValue(device, out PowerSeen before) ? before : (PowerSeen?)null, out PowerSeen now))
                     _current[device] = now;
             }
 
             bool changed = false;
-            foreach (KeyValuePair<IElectricDevice, Seen> pair in _current)
+            foreach (KeyValuePair<IElectricDevice, PowerSeen> pair in _current)
             {
-                if (!_seen.TryGetValue(pair.Key, out Seen before))
+                if (!_seen.TryGetValue(pair.Key, out PowerSeen before))
                 {
                     changed = true;
+                    _analysisStale = true;
                     _circuitsStale |= IsGrid(pair.Value.Kind);
                 }
                 else if (!before.Equals(pair.Value))
                 {
                     changed = true;
                     _circuitsStale |= IsGrid(pair.Value.Kind) && !before.Key.Equals(pair.Value.Key);
+                    // A device that moved, or changed room or APC; a state change alone leaves the problems as they were.
+                    _analysisStale |= !before.Key.Equals(pair.Value.Key) || before.Room != pair.Value.Room
+                        || !ReferenceEquals(before.Apc, pair.Value.Apc);
                 }
             }
 
-            foreach (KeyValuePair<IElectricDevice, Seen> pair in _seen)
+            foreach (KeyValuePair<IElectricDevice, PowerSeen> pair in _seen)
             {
                 if (_current.ContainsKey(pair.Key))
                     continue;
 
                 changed = true;
+                _analysisStale = true;
                 _circuitsStale |= IsGrid(pair.Value.Kind);
                 if (pair.Key is IPowerStorage storage)
                     _rates.Remove(storage);
@@ -413,7 +504,7 @@ namespace SS3D.Systems.Electricity.SystemsView
             (_seen, _current) = (_current, _seen);
             _resolveLinks = false;
             _producers.Clear();
-            foreach (KeyValuePair<IElectricDevice, Seen> pair in _seen)
+            foreach (KeyValuePair<IElectricDevice, PowerSeen> pair in _seen)
             {
                 if (pair.Value.Kind is KindGenerator or KindSolar)
                     _producers.Add(pair.Key);
@@ -433,15 +524,15 @@ namespace SS3D.Systems.Electricity.SystemsView
                     continue;
 
                 IApcChannelSource apc = info.Apc != null && IsLive(info.Apc) ? info.Apc : null;
-                _currentRooms[info.AreaId] = new SeenRoom(info.AreaId, info.Name, apc, apc != null && Broken(apc));
+                _currentRooms[info.AreaId] = new PowerSeenRoom(info.AreaId, info.Name, apc, apc != null && Broken(apc));
             }
 
             bool changed = _currentRooms.Count != _seenRooms.Count;
             if (!changed)
             {
-                foreach (KeyValuePair<ushort, SeenRoom> pair in _currentRooms)
+                foreach (KeyValuePair<ushort, PowerSeenRoom> pair in _currentRooms)
                 {
-                    if (!_seenRooms.TryGetValue(pair.Key, out SeenRoom before) || !before.Equals(pair.Value))
+                    if (!_seenRooms.TryGetValue(pair.Key, out PowerSeenRoom before) || !before.Equals(pair.Value))
                     {
                         changed = true;
                         break;
@@ -458,7 +549,7 @@ namespace SS3D.Systems.Electricity.SystemsView
         /// name, which never change (an asset name is a fresh string per read), its tile object, and its APC and room
         /// until the topology moves (area membership and APC changes move it) or the device does. On MetaStation these cut a poll of ~1,800 devices from ~11 ms.
         /// </summary>
-        private bool TryDescribe(IElectricDevice device, Seen? before, out Seen seen)
+        private bool TryDescribe(IElectricDevice device, PowerSeen? before, out PowerSeen seen)
         {
             seen = default;
             PlacedTileObject placed = before?.Placed;
@@ -503,7 +594,7 @@ namespace SS3D.Systems.Electricity.SystemsView
             SystemsViewKey key = new(placed.WorldOrigin, DeviceSlot(placed.Layer, placed.Direction));
             ushort room = before is { } known && !_resolveLinks && known.Key.Equals(key) ? known.Room
                 : _world.TryGetRoomOf(device, out ushort areaId) ? areaId : (ushort)0;
-            seen = new Seen(key, kind, state, placed.Direction, room, apc, before?.Name ?? NameOf(placed), placed);
+            seen = new PowerSeen(key, kind, state, placed.Direction, room, apc, before?.Name ?? NameOf(placed), placed);
             return true;
         }
 
@@ -583,11 +674,12 @@ namespace SS3D.Systems.Electricity.SystemsView
         private void JoinCircuits()
         {
             _circuitsStale = false;
+            _analysisStale = true;
             LastRejoinedCircuits = true;
             int runCount = _runs.Count;
             List<IElectricDevice> grid = new();
-            List<Seen> gridSeen = new();
-            foreach (KeyValuePair<IElectricDevice, Seen> pair in _seen)
+            List<PowerSeen> gridSeen = new();
+            foreach (KeyValuePair<IElectricDevice, PowerSeen> pair in _seen)
             {
                 if (IsGrid(pair.Value.Kind))
                 {
@@ -615,23 +707,23 @@ namespace SS3D.Systems.Electricity.SystemsView
                     firstInCircuit[circuit] = nodeOf[i];
             }
 
-            Dictionary<int, CircuitNetwork> byRoot = new();
+            Dictionary<int, PowerCircuitNetwork> byRoot = new();
             for (int run = 0; run < runCount; run++)
             {
-                CircuitNetwork network = NetworkFor(byRoot, Find(parent, run));
+                PowerCircuitNetwork network = NetworkFor(byRoot, Find(parent, run));
                 foreach (Vector2Int tile in _runs[run])
                     network.Add(new SystemsViewKey(tile, CableSlot), tile, cable: true);
             }
 
             for (int i = 0; i < grid.Count; i++)
             {
-                CircuitNetwork network = NetworkFor(byRoot, Find(parent, nodeOf[i]));
+                PowerCircuitNetwork network = NetworkFor(byRoot, Find(parent, nodeOf[i]));
                 network.Devices.Add(grid[i]);
                 network.Add(gridSeen[i].Key, gridSeen[i].Key.Tile, cable: false);
             }
 
             _circuits.Clear();
-            foreach (CircuitNetwork network in byRoot.Values)
+            foreach (PowerCircuitNetwork network in byRoot.Values)
             {
                 // A device alone on no cable is on no circuit.
                 if (network.CableTiles > 0 || network.Devices.Count > 1)
@@ -640,7 +732,7 @@ namespace SS3D.Systems.Electricity.SystemsView
 
             _circuits.Sort((a, b) => CompareTiles(a.First, b.First));
             List<IEnumerable<SystemsViewKey>> segments = new(_circuits.Count);
-            foreach (CircuitNetwork network in _circuits)
+            foreach (PowerCircuitNetwork network in _circuits)
                 segments.Add(network.Segments);
 
             int[] ids = _tracker.Assign(segments);
@@ -649,7 +741,7 @@ namespace SS3D.Systems.Electricity.SystemsView
             _cableViewIdOf.Clear();
             for (int i = 0; i < _circuits.Count; i++)
             {
-                CircuitNetwork network = _circuits[i];
+                PowerCircuitNetwork network = _circuits[i];
                 network.ViewId = ids[i];
                 _circuitByViewId[ids[i]] = network;
                 foreach (IElectricDevice device in network.Devices)
@@ -662,10 +754,10 @@ namespace SS3D.Systems.Electricity.SystemsView
             }
         }
 
-        private static CircuitNetwork NetworkFor(Dictionary<int, CircuitNetwork> byRoot, int root)
+        private static PowerCircuitNetwork NetworkFor(Dictionary<int, PowerCircuitNetwork> byRoot, int root)
         {
-            if (!byRoot.TryGetValue(root, out CircuitNetwork network))
-                byRoot[root] = network = new CircuitNetwork();
+            if (!byRoot.TryGetValue(root, out PowerCircuitNetwork network))
+                byRoot[root] = network = new PowerCircuitNetwork();
             return network;
         }
 
@@ -695,7 +787,7 @@ namespace SS3D.Systems.Electricity.SystemsView
         private int CircuitViewIdOf(IElectricDevice device) =>
             device != null && _circuitViewIdOf.TryGetValue(device, out int viewId) ? viewId : 0;
 
-        private string ApcDetail(IApcChannelSource apc, Seen seen)
+        private string ApcDetail(IApcChannelSource apc, PowerSeen seen)
         {
             if (Broken(apc))
                 return "broken";
@@ -703,7 +795,7 @@ namespace SS3D.Systems.Electricity.SystemsView
             StringBuilder detail = new();
             if (apc is IPowerStorage cell)
                 detail.Append(Percent(cell.StoredEnergyKwh, cell.MaxCapacityKwh)).Append(" · ");
-            if (seen.Room != 0 && _seenRooms.TryGetValue(seen.Room, out SeenRoom room))
+            if (seen.Room != 0 && _seenRooms.TryGetValue(seen.Room, out PowerSeenRoom room))
                 detail.Append(RoomLabel(room)).Append(" · ");
             detail.Append(ChannelWords(apc.Channels));
             return detail.ToString();
@@ -715,9 +807,9 @@ namespace SS3D.Systems.Electricity.SystemsView
             long tick = _world.TickCount;
             float energy = storage.StoredEnergyKwh;
             bool advanced = false;
-            if (!_rates.TryGetValue(storage, out Rate rate))
+            if (!_rates.TryGetValue(storage, out PowerRate rate))
             {
-                rate = new Rate { Tick = tick, Energy = energy };
+                rate = new PowerRate { Tick = tick, Energy = energy };
             }
             else if (tick > rate.Tick && _world.TickSeconds > 0f)
             {
@@ -749,31 +841,10 @@ namespace SS3D.Systems.Electricity.SystemsView
         private static string Breaker(ApcControlFlags channels, ApcControlFlags channel, float loadKw) =>
             (channels & channel) != 0 ? "on · " + Kw(loadKw) : "off";
 
-        private string DeviceLabel(Seen seen) =>
+        private string DeviceLabel(PowerSeen seen) =>
             seen.Kind is KindLight or KindConsumer && !string.IsNullOrEmpty(seen.Name) ? Words(seen.Name) : KindName(seen.Kind);
 
-        private static string RoomLabel(SeenRoom room) => string.IsNullOrWhiteSpace(room.Name) ? "Room " + room.AreaId : room.Name;
-
-        /// <summary>"LightFixtureTube" → "Light Fixture Tube": an asset name in words, for a consumer's row.</summary>
-        public static string Words(string name)
-        {
-            StringBuilder words = new(name.Length + 4);
-            for (int i = 0; i < name.Length; i++)
-            {
-                char c = name[i];
-                if (c == '_' || c == '-')
-                {
-                    words.Append(' ');
-                    continue;
-                }
-
-                if (i > 0 && char.IsUpper(c) && (char.IsLower(name[i - 1]) || (i + 1 < name.Length && char.IsLower(name[i + 1]) && char.IsUpper(name[i - 1]))))
-                    words.Append(' ');
-                words.Append(c);
-            }
-
-            return words.ToString().Trim();
-        }
+        private static string RoomLabel(PowerSeenRoom room) => string.IsNullOrWhiteSpace(room.Name) ? "Room " + room.AreaId : room.Name;
 
         private static string Kw(float kw) => Number(kw, "0.0") + " kW";
 
@@ -809,84 +880,6 @@ namespace SS3D.Systems.Electricity.SystemsView
 
             placed = device.TileObject;
             return placed != null;
-        }
-
-        private readonly struct Seen : IEquatable<Seen>
-        {
-            public readonly SystemsViewKey Key;
-            public readonly byte Kind;
-            public readonly byte State;
-            public readonly Direction Facing;
-            public readonly ushort Room;
-            /// <summary>A consumer's APC, compared by reference: the badge's circuit follows it.</summary>
-            public readonly IApcChannelSource Apc;
-            public readonly string Name;
-            /// <summary>Its tile object, kept so a poll doesn't look it up again; not part of the comparison.</summary>
-            public readonly PlacedTileObject Placed;
-
-            public Seen(SystemsViewKey key, byte kind, byte state, Direction facing, ushort room, IApcChannelSource apc, string name,
-                PlacedTileObject placed)
-            {
-                Placed = placed;
-                Key = key;
-                Kind = kind;
-                State = state;
-                Facing = facing;
-                Room = room;
-                Apc = apc;
-                Name = name;
-            }
-
-            public bool Equals(Seen other) => Key.Equals(other.Key) && Kind == other.Kind && State == other.State
-                && Facing == other.Facing && Room == other.Room && ReferenceEquals(Apc, other.Apc);
-        }
-
-        private readonly struct SeenRoom : IEquatable<SeenRoom>
-        {
-            public readonly ushort AreaId;
-            public readonly string Name;
-            public readonly IApcChannelSource Apc;
-            public readonly bool ApcBroken;
-
-            public SeenRoom(ushort areaId, string name, IApcChannelSource apc, bool apcBroken)
-            {
-                AreaId = areaId;
-                Name = name;
-                Apc = apc;
-                ApcBroken = apcBroken;
-            }
-
-            public bool Equals(SeenRoom other) => AreaId == other.AreaId && string.Equals(Name, other.Name, StringComparison.Ordinal)
-                && ReferenceEquals(Apc, other.Apc) && ApcBroken == other.ApcBroken;
-        }
-
-        private struct Rate
-        {
-            public long Tick;
-            public float Energy;
-            public float Kw;
-        }
-
-        private sealed class CircuitNetwork
-        {
-            public readonly List<SystemsViewKey> Segments = new();
-            public readonly List<IElectricDevice> Devices = new();
-            public Vector2Int First;
-            public int CableTiles;
-            public int ViewId;
-            private bool _hasFirst;
-
-            public void Add(SystemsViewKey key, Vector2Int tile, bool cable)
-            {
-                Segments.Add(key);
-                if (cable)
-                    CableTiles++;
-                if (!_hasFirst || CompareTiles(tile, First) < 0)
-                {
-                    First = tile;
-                    _hasFirst = true;
-                }
-            }
         }
     }
 }

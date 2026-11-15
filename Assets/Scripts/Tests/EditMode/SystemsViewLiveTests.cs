@@ -359,6 +359,10 @@ namespace SS3D.Tests.EditMode
                 LiveReads++;
                 return _live.TryGetValue(viewId, out live);
             }
+
+            public IReadOnlyList<SystemsViewIssue> Analyze() => SystemsViewProblems.None;
+
+            public bool AnalysisCurrent => true;
         }
     }
 }

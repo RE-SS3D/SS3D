@@ -8,6 +8,7 @@ using SS3D.Systems.Atmospherics.SystemsView;
 using SS3D.Systems.Tile;
 using SS3D.Systems.Tile.Connections;
 using SS3D.Systems.Tile.MapEditor.SystemsView;
+using SS3D.Systems.Tile.MapEditor;
 using UnityEngine;
 using static SS3D.Systems.Atmospherics.SystemsView.AtmosSystemsViewCodes;
 using Object = UnityEngine.Object;
@@ -321,6 +322,45 @@ namespace EditorTests.Atmospherics
             targets.Clear();
             AtmosSystemsViewStyle.Instance.TraceTargets(structure, new Vector2Int(2, 5), TileLayer.Turf, targets);
             Assert.IsEmpty(targets, "Something outside the view traces nothing");
+        }
+
+        // Phase 4: the analysis behind the markers, on this row. The east run's end at 8 is open, and nothing feeds the
+        // west network (its vent and the pump's inlet both take gas out of it).
+        [Test]
+        public void Structure_CarriesTheAnalyzersMarkers_AndAFixRemovesItsMarker()
+        {
+            SystemsViewStructure structure = Build();
+            SystemsViewKey openEnd = new(new Vector2Int(8, 5), SystemsViewProblems.MarkerSlot(AtmosProblemAnalyzer.CodeOpenEnd, Surface));
+            SystemsViewKey unfed = new(new Vector2Int(2, 5), SystemsViewProblems.MarkerSlot(AtmosProblemAnalyzer.CodeNoSource));
+            Assert.AreEqual("open-end:3:8:5", structure.Markers[openEnd].IssueId);
+            Assert.AreEqual("no-source:2:5", structure.Markers[unfed].IssueId);
+            CollectionAssert.AreEquivalent(_source.Analyze().Select(issue => issue.Id), structure.Markers.Values.Select(marker => marker.IssueId).Distinct(),
+                "Map Check's issues and the view's markers are the same problems");
+            Assert.IsFalse(_source.LastAnalyzed, "Analyze after a build reads the cached result");
+            StringAssert.Contains(AtmosProblemAnalyzer.OpenEnd.Sentence, MapEditorSystemsViewClient.ProblemText(structure, new Vector2Int(8, 5)),
+                "Hover names the marker in the legend's words");
+
+            // A state flip moves only a badge: the analysis is not run again and no marker changes.
+            SetPrivateField(_pump, "_pumpRegulation", PumpRegulation.Volume);
+            SystemsViewStructure flipped = Build();
+            Assert.IsFalse(_source.LastAnalyzed);
+            SystemsViewDelta flip = SystemsViewStructure.Diff(structure, flipped);
+            Assert.IsEmpty(flip.MarkersSet);
+            Assert.IsEmpty(flip.MarkersRemoved);
+
+            // A pump at the open end closes it: that marker goes, with no topology rebuild. Its back is now on the east
+            // network, which still has the old pump's outlet feeding it.
+            int version = _source.StructureVersion;
+            AtmosPumpController pump = Place(9, 5, TileLayer.PipeSurface, Direction.East).gameObject.AddComponent<AtmosPumpController>();
+            _ports.Register(pump);
+            Assert.AreNotEqual(version, _source.StructureVersion);
+            SystemsViewStructure fixedEnd = _source.BuildStructure();
+            Assert.IsTrue(_source.LastAnalyzed);
+            SystemsViewDelta delta = SystemsViewStructure.Diff(flipped, fixedEnd);
+            CollectionAssert.Contains(delta.MarkersRemoved, openEnd);
+            Assert.IsFalse(fixedEnd.Markers.ContainsKey(openEnd));
+            Assert.IsTrue(fixedEnd.Markers.ContainsKey(unfed), "The other problem stays");
+            Assert.IsFalse(_source.Analyze().Any(issue => issue.Id == "open-end:3:8:5"), "and Map Check drops it too");
         }
 
         private PlacedTileObject PlacePipe(int x, int y, TileLayer layer)

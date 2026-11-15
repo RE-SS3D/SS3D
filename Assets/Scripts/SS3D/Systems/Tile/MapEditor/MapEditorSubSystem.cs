@@ -1460,6 +1460,7 @@ namespace SS3D.Systems.Tile.MapEditor
             string mode = SubSystems.Get<ServerSettingsService>().Current.Mode;
             Validation.MapValidationReport report = Validation.MapValidationService.Validate(_tileSystem, mode);
             TargetMapValidation(conn, report.Issues.ToArray(), mode, resetDismissed);
+            AwaitSystemsForValidation(conn);
         }
 
         [TargetRpc]

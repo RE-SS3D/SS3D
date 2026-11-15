@@ -10,7 +10,8 @@ namespace SS3D.Systems.Tile.MapEditor
     /// <summary>
     /// Client-local systems view overlay (Documents/architecture/2026-11_map-editor-systems-views.md Q4), in the
     /// <see cref="MapEditorAreaOverlay"/> style: per chunk, one line mesh for the runs (a dark band under each run hides
-    /// the pipe's own paint, the network colour on top) and one mesh of badge quads drawn above the runs. Both use the
+    /// the pipe's own paint, the network colour on top) and one mesh of badge quads drawn above the runs, with the
+    /// problem markers (Phase 4) on top of the badges in a tile's corner (<see cref="SystemsViewProblems.DrawMarker"/>). Both use the
     /// area overlay's Resources shader. A delta rebuilds only the chunks it touches; the domain's
     /// <see cref="ISystemsViewStyle"/> places the lines of a tile and draws the badges.
     /// </summary>
@@ -112,6 +113,7 @@ namespace SS3D.Systems.Tile.MapEditor
                 {
                     foreach (SystemsViewKey key in _structure.Segments.Keys) _dirty.Add(ChunkOf(key.Tile));
                     foreach (SystemsViewKey key in _structure.Badges.Keys) _dirty.Add(ChunkOf(key.Tile));
+                    foreach (SystemsViewKey key in _structure.Markers.Keys) _dirty.Add(ChunkOf(key.Tile));
                 }
 
                 _allDirty = false;
@@ -127,19 +129,23 @@ namespace SS3D.Systems.Tile.MapEditor
         {
             Dictionary<Vector2Int, List<SystemsViewSegment>> segments = new();
             Dictionary<Vector2Int, List<SystemsViewBadge>> badges = new();
+            Dictionary<Vector2Int, List<SystemsViewMarker>> markers = new();
             if (_structure != null && _style != null)
             {
                 foreach (SystemsViewSegment segment in _structure.Segments.Values)
                     AddIfDirty(segments, segment.Key.Tile, segment);
                 foreach (SystemsViewBadge badge in _structure.Badges.Values)
                     AddIfDirty(badges, badge.Key.Tile, badge);
+                foreach (SystemsViewMarker marker in _structure.Markers.Values)
+                    AddIfDirty(markers, marker.Key.Tile, marker);
             }
 
             foreach (Vector2Int chunk in _dirty)
             {
                 segments.TryGetValue(chunk, out List<SystemsViewSegment> chunkSegments);
                 badges.TryGetValue(chunk, out List<SystemsViewBadge> chunkBadges);
-                if (chunkSegments == null && chunkBadges == null)
+                markers.TryGetValue(chunk, out List<SystemsViewMarker> chunkMarkers);
+                if (chunkSegments == null && chunkBadges == null && chunkMarkers == null)
                 {
                     if (_chunks.Remove(chunk, out Chunk gone)) gone.Dispose();
                     continue;
@@ -149,7 +155,8 @@ namespace SS3D.Systems.Tile.MapEditor
                     _chunks[chunk] = target = new Chunk(_root.transform, chunk, _runMaterial, _badgeMaterial);
 
                 target.SetRuns(chunkSegments != null ? BuildRunMesh(chunk, chunkSegments, _style, _builder, _focus) : null);
-                target.SetBadges(chunkBadges != null ? BuildBadgeMesh(chunk, chunkBadges, _style, _builder, _focus) : null);
+                target.SetBadges(chunkBadges != null || chunkMarkers != null
+                    ? BuildBadgeMesh(chunk, chunkBadges, _style, _builder, _focus, chunkMarkers) : null);
             }
 
             LastRebuiltChunks = _dirty.Count;
@@ -171,13 +178,15 @@ namespace SS3D.Systems.Tile.MapEditor
         public static Vector2Int ChunkOf(Vector2Int tile) =>
             new(Mathf.FloorToInt(tile.x / (float)TileConstants.ChunkSize), Mathf.FloorToInt(tile.y / (float)TileConstants.ChunkSize));
 
-        /// <summary>Adds the chunks whose meshes <paramref name="delta"/> changes: segments and badges set or removed.</summary>
+        /// <summary>Adds the chunks whose meshes <paramref name="delta"/> changes: segments, badges and markers set or removed.</summary>
         public static void DirtyChunks(SystemsViewDelta delta, HashSet<Vector2Int> into)
         {
             if (delta.SegmentsSet != null) foreach (SystemsViewSegment segment in delta.SegmentsSet) into.Add(ChunkOf(segment.Key.Tile));
             if (delta.SegmentsRemoved != null) foreach (SystemsViewKey key in delta.SegmentsRemoved) into.Add(ChunkOf(key.Tile));
             if (delta.BadgesSet != null) foreach (SystemsViewBadge badge in delta.BadgesSet) into.Add(ChunkOf(badge.Key.Tile));
             if (delta.BadgesRemoved != null) foreach (SystemsViewKey key in delta.BadgesRemoved) into.Add(ChunkOf(key.Tile));
+            if (delta.MarkersSet != null) foreach (SystemsViewMarker marker in delta.MarkersSet) into.Add(ChunkOf(marker.Key.Tile));
+            if (delta.MarkersRemoved != null) foreach (SystemsViewKey key in delta.MarkersRemoved) into.Add(ChunkOf(key.Tile));
         }
 
         /// <summary>
@@ -220,18 +229,33 @@ namespace SS3D.Systems.Tile.MapEditor
             return builder.ToMesh("SystemsRunChunk");
         }
 
-        /// <summary>The badges of one chunk, in chunk-local space, as the domain style draws them at each tile centre.</summary>
+        /// <summary>
+        /// The badges of one chunk, in chunk-local space, as the domain style draws them at each tile centre, then its
+        /// problem markers on top, one per tile however many problems it has. A trace never dims a marker.
+        /// </summary>
         public static Mesh BuildBadgeMesh(Vector2Int chunk, IReadOnlyList<SystemsViewBadge> badges, ISystemsViewStyle style,
-            SystemsViewMeshBuilder builder = null, ICollection<int> focus = null)
+            SystemsViewMeshBuilder builder = null, ICollection<int> focus = null, IReadOnlyList<SystemsViewMarker> markers = null)
         {
             builder ??= new SystemsViewMeshBuilder();
             builder.Clear();
             Vector2Int origin = chunk * TileConstants.ChunkSize;
-            foreach (SystemsViewBadge badge in badges)
+            for (int i = 0; badges != null && i < badges.Count; i++)
             {
+                SystemsViewBadge badge = badges[i];
                 // A device on any traced network stays lit, so a trace shows everything attached to it.
                 builder.Alpha = focus == null || focus.Count == 0 || badge.TouchesAny(focus) ? 1f : UntracedAlpha;
                 style?.DrawBadge(builder, new Vector3(badge.Key.Tile.x - origin.x, 0f, badge.Key.Tile.y - origin.y), badge);
+            }
+
+            builder.Alpha = 1f;
+            HashSet<Vector2Int> marked = null;
+            for (int i = 0; markers != null && i < markers.Count; i++)
+            {
+                Vector2Int tile = markers[i].Key.Tile;
+                if (!(marked ??= new HashSet<Vector2Int>()).Add(tile))
+                    continue;
+
+                SystemsViewProblems.DrawMarker(builder, new Vector3(tile.x - origin.x, 0f, tile.y - origin.y));
             }
 
             return builder.ToMesh("SystemsBadgeChunk");

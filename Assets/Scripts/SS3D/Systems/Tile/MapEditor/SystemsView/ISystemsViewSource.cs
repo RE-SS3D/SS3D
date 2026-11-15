@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+
 namespace SS3D.Systems.Tile.MapEditor.SystemsView
 {
     /// <summary>
@@ -29,5 +31,21 @@ namespace SS3D.Systems.Tile.MapEditor.SystemsView
 
         /// <summary>Server: the simulation behind this view is paused, so traced numbers hold still on purpose.</summary>
         bool SimulationPaused { get; }
+
+        /// <summary>
+        /// Server: the problems the domain's pure analyzer finds in the current state (Q5, Phase 4), with tile positions.
+        /// <see cref="BuildStructure"/> puts the same issues in as markers and Map Check reports them as warnings, so the
+        /// two agree by construction. Cached until something the analyzer reads changes (topology, a device coming,
+        /// going or moving, a room's power), never on a plain state flip, and such a change moves
+        /// <see cref="StructureVersion"/> too.
+        /// </summary>
+        IReadOnlyList<SystemsViewIssue> Analyze();
+
+        /// <summary>
+        /// Server: the state <see cref="Analyze"/> reads has caught up with the map. False for a moment after a template load
+        /// (the power graph rebuilds a tick later, atmos re-initialises), when <see cref="Analyze"/> reports nothing rather
+        /// than bogus problems; Map Check sends its report again once every source is current.
+        /// </summary>
+        bool AnalysisCurrent { get; }
     }
 }

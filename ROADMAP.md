@@ -57,7 +57,7 @@ What already works, system by system, is listed in
 | ✅ | A7 | Close the game and run Update_SS3D.bat (Windows) or ./update_ss3d.sh (Linux) to get the latest stable release without losing maps; the previous build stays available |
 | ✅ | A8 | Every object in the editor's palette sits in a tab named for where it goes, and search finds anything from any tab (objects are filed under their new tabs, search finds them from any tab, Furniture and Machines are split under headings, and an object's variants share one slot that V cycles) |
 | 🟡 | A9 | A valve you open, a locker you lock or fill in the editor stays that way when the map is saved and loaded (set a valve, pump, vent, scrubber, air alarm preset or locker while playtesting, or fill a locker or bag, and the next save keeps it; undo and Dropper copy carry it) |
-| 🟡 | A10 | Turn on the Atmos or Power view to see what every pipe and cable is connected to, click one to follow it, and see what won't work before a round shows you (both views colour every network, show each device's state and trace a clicked network with live numbers; the Power view also tints each room by its APC's circuit and dots every machine powered, switched off or unpowered; problem markers are not built yet) |
+| 🟡 | A10 | Turn on the Atmos or Power view to see what every pipe and cable is connected to, click one to follow it, and see what won't work before a round shows you (both views colour every network, show each device's state and trace a clicked network with live numbers; the Power view also tints each room by its APC's circuit and dots every machine powered, switched off or unpowered; a red marker sits on each clear mistake, worded as Map Check words it) |
 
 ## Nuclear Operatives round
 

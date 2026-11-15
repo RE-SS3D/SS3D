@@ -8,6 +8,8 @@ using SS3D.Systems.Furniture;
 using SS3D.Systems.Inventory.Items.Generic;
 using SS3D.Systems.Roles;
 using SS3D.Systems.Tile.GasMarkers;
+using SS3D.Systems.Tile.MapEditor;
+using SS3D.Systems.Tile.MapEditor.SystemsView;
 using UnityEngine;
 
 namespace SS3D.Systems.Tile.Validation
@@ -15,7 +17,12 @@ namespace SS3D.Systems.Tile.Validation
     /// <summary>Validates only objects tracked by the current template, excluding inventory/preview objects.</summary>
     public static class MapValidationService
     {
-        public static MapValidationReport Validate(TileSubSystem tiles, string mode)
+        /// <param name="includeSystemsViews">
+        /// Add the systems views' problems (Phase 4: pipes, power), read from the server's live networks through the map
+        /// editor's sources. Round start passes false: they are warnings only, and right after a template load the
+        /// networks are not rebuilt yet (a source that isn't current reports nothing anyway).
+        /// </param>
+        public static MapValidationReport Validate(TileSubSystem tiles, string mode, bool includeSystemsViews = true)
         {
             if (tiles == null || tiles.CurrentMap == null)
             {
@@ -47,6 +54,13 @@ namespace SS3D.Systems.Tile.Validation
             }
             CheckRoomDevices(report, tiles, map, tileObjects);
             CheckGasMarkerRooms(report, tiles, map);
+            if (includeSystemsViews && SubSystems.TryGet(out MapEditorSubSystem editor))
+            {
+                List<SystemsViewIssue> issues = new();
+                editor.SystemsViews.Analyze(issues);
+                MapValidator.AddSystemsIssues(report, issues);
+            }
+
             return report;
         }
 
@@ -77,36 +91,10 @@ namespace SS3D.Systems.Tile.Validation
                 // The same lookup these devices use at runtime, so a wall mount counts for the room it faces.
                 bool inRoom = areas.TryGetAreaForDevice(placed, out AreaRecord room) && !room.Id.IsNone;
                 string roomName = !inRoom ? null
-                    : string.IsNullOrWhiteSpace(room.DisplayName) ? "Unnamed room" : room.DisplayName;
-                bool hasPipe = HasPipe(map, placed);
-                devices.Add(new RoomDeviceRecord(kind, placed.transform.position, inRoom ? room.Id.Value : AreaId.None, roomName,
-                    inRoom && areas.TryGetAreaApc(room.Id, out _),
-                    hasPipe));
-            }
-            foreach (GasMarkerRecord marker in tiles.GasMarkers.Records)
-            {
-                if (marker.Kind != GasMarkerKind.LineFill)
-                    continue;
-
-                bool hasPipe = AtmosDevicePipeResolver.HasPipeSegment(map,
-                    tiles.QueryService.WorldToTile(marker.Position, map.MapId), new[] { marker.Line });
-                devices.Add(new RoomDeviceRecord(RoomDeviceKind.LineFill, marker.Position, AreaId.None, null, false, hasPipe));
+                    : SystemsViewProblems.RoomName(room.DisplayName);
+                devices.Add(new RoomDeviceRecord(kind, placed.transform.position, inRoom ? room.Id.Value : AreaId.None, roomName));
             }
             MapValidator.AddRoomDeviceChecks(report, devices, areas.HasAuthoredAreas);
-        }
-
-        // The same rule each device attaches by at runtime.
-        private static bool HasPipe(TileMap map, PlacedTileObject placed)
-        {
-            TileCoord coord = new(placed.MapId, placed.WorldOrigin);
-            if (placed.TryGetComponent<AtmosInlineDeviceBase>(out _))
-                return AtmosDevicePipeResolver.HasInlinePipes(map, coord, placed.Direction);
-
-            if (placed.TryGetComponent(out AtmosThreeWayDeviceBase threeWay))
-                return AtmosDevicePipeResolver.HasThreeWayPipes(map, coord, placed.Direction, threeWay.SideOnLeft, threeWay.PipeLayers);
-
-            TileLayer[] lines = placed.TryGetComponent(out AtmosPortControllerBase port) ? port.PipeLayers : null;
-            return lines == null || AtmosDevicePipeResolver.HasPipeSegment(map, coord, lines);
         }
 
         private static bool TryGetRoomDeviceKind(PlacedTileObject placed, out RoomDeviceKind kind)

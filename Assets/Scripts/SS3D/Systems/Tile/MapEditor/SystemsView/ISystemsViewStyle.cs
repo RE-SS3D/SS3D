@@ -41,6 +41,11 @@ namespace SS3D.Systems.Tile.MapEditor.SystemsView
         public TileLayerCategory? OwnLayer;
         /// <summary>The stripes of a hatched room (<see cref="SystemsViewRoom.Hatched"/>), for a domain that sends rooms.</summary>
         public Color RoomHatch;
+        /// <summary>
+        /// The problem kinds this domain's analyzer marks (Phase 4), by the code in a marker's slot: the hover names a
+        /// marker with them, in the words the legend and Map Check use.
+        /// </summary>
+        public IReadOnlyList<SystemsViewProblemKind> Problems;
     }
 
     /// <summary>
