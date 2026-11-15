@@ -8,7 +8,7 @@ namespace SS3D.Systems.Atmospherics.Visualization
     /// Server: the clients that asked for every atmos chunk once, and which chunks each still has to get. The dirty-chunk
     /// broadcast (<see cref="AtmosDirtyChunkTracker"/>) only sends what changed since it last reported, from awake cells, so
     /// a pure client that joined after the station settled never hears of its calm rooms. The map editor's Room air
-    /// (Documents/architecture/2026-11_map-editor-systems-views.md Q2, Phase 5) tints every floor by pressure, so its
+    /// (Documents/architecture/systems/map-editor-systems-views.md, Room air) tints every floor by pressure, so its
     /// client is sent the whole station through the same patch path, a few chunks per call; after that the broadcast
     /// keeps it current like any client. Pure C#.
     /// </summary>

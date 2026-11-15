@@ -38,7 +38,7 @@ namespace SS3D.Systems.Tile.MapEditor.SystemsView
     }
 
     /// <summary>
-    /// Server: the admin pause and step of Documents/architecture/2026-11_map-editor-systems-views.md Q6, pure C#. The hub
+    /// Server: the admin pause and step (Documents/architecture/systems/map-editor-systems-views.md, Pause and step), pure C#. The hub
     /// gates every request (<c>MapEditorPermissions.MayControlSimulation</c>: an admin or the host with the editor open,
     /// never a sandbox player) and passes the verdict in; this class remembers who paused, so the simulations resume when
     /// that admin closes the editor or leaves (<see cref="Release"/>) and when the round ends (<see cref="ResumeAll"/>).

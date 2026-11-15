@@ -1253,7 +1253,7 @@
 .map-editor-systems-legend__swatch { width: 10px; height: 10px; margin-right: 3px; border-radius: 2px; }
 .map-editor-systems-legend__text { flex-grow: 1; flex-shrink: 1; white-space: normal; color: var(--ss3d-text-secondary); font-size: 12px; }
 
-/* Systems views bar (map-editor-systems-views Phase 5): Room air, and an admin's Pause / Step, above the legend. */
+/* Systems views bar (map-editor-systems-views, Pause and step): Room air, and an admin's Pause / Step, above the legend. */
 .map-editor-systems-sim {
     flex-direction: row;
     align-items: center;
@@ -1289,7 +1289,7 @@
     border-radius: var(--ss3d-radius-sm);
 }
 
-/* Systems view trace (map-editor-systems-views Phase 2): a panel floating beside the left column's top, where the
+/* Systems view trace (map-editor-systems-views, Tracing): a panel floating beside the left column's top, where the
    toolbar and legend leave no room under them above the library; a label anchored at the traced tile. */
 .map-editor-systems-trace {
     position: absolute;

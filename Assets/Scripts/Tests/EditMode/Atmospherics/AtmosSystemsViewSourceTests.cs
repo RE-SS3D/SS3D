@@ -16,7 +16,7 @@ using Object = UnityEngine.Object;
 namespace EditorTests.Atmospherics
 {
     /// <summary>
-    /// The Atmos view's source (Documents/architecture/2026-11_map-editor-systems-views.md, Phase 1): runs per line with
+    /// The Atmos view's source (Documents/architecture/systems/map-editor-systems-views.md): runs per line with
     /// their real links, a manifold on every line it spans, badges with both networks of a pump, and colours that stay
     /// put through a pipe edit with the real tracker and registry.
     /// </summary>

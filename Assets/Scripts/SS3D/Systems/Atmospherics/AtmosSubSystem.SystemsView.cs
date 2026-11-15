@@ -12,9 +12,9 @@ using SS3D.Systems.Tile.MapEditor.SystemsView;
 namespace SS3D.Systems.Atmospherics
 {
     /// <summary>
-    /// Offers the map editor's Atmos view its source (Documents/architecture/2026-11_map-editor-systems-views.md Q10).
+    /// Offers the map editor's Atmos view its source (Documents/architecture/systems/map-editor-systems-views.md, Code split).
     /// The editor hub is spawned on another object with no fixed start order, so the server retries from each atmos tick
-    /// until it finds one, and offers again if that hub is replaced. Also the Atmos half of Phase 5: the admin pause and
+    /// until it finds one, and offers again if that hub is replaced. Also the Atmos half of the admin pause and
     /// step (<see cref="ISystemsViewSimulation"/>) and the Room air resync of every chunk to one client.
     /// </summary>
     public sealed partial class AtmosSubSystem : ISystemsViewSimulation

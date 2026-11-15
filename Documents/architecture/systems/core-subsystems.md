@@ -1,7 +1,7 @@
 > Code paths: Assets/Scripts/SS3D/Core/, Assets/Scripts/SS3D/Systems/Bootstrap/, Assets/Scripts/SS3D/Systems/WorldReadiness/, Assets/Scripts/SS3D/Networking/NetworkSystemsHub.cs
 > Entry points: SubSystem, NetworkSubSystem, SubSystems, SystemsBootstrap, WorldReadinessSubSystem, NetworkSystemsHub
 > Status: partial
-> Verified: 77ce6acb3 — 2026-11-13
+> Verified: e03d3fca9 — 2026-11-15
 
 # Core / SubSystems
 
@@ -16,7 +16,7 @@ Process-wide services: `SystemsBootstrap` (DDOL, `AfterSceneLoad`; creates netwo
 - `Assets/Scripts/SS3D/Core/Behaviours/SubSystem.cs` — non-networked subsystem base (bootstrap-owned)
 - `Assets/Scripts/SS3D/Core/Behaviours/NetworkSubSystem.cs` — networked subsystem base (hub prefab only)
 - `Assets/Scripts/SS3D/Core/Subsystems.cs` — locator; FindObject fallback skipped while quitting / WaitingForServer, and logs a warning on every hit (removed once none are seen)
-- `Assets/Scripts/SS3D/Core/SimulationClock.cs` — one clock on FishNet `TimeManager.OnTick` with named fixed-rate channels (`atmos`, `electricity`, `health`); `WorldSimSuspension` pauses the channels that opt in
+- `Assets/Scripts/SS3D/Core/SimulationClock.cs` — one clock on FishNet `TimeManager.OnTick` with named fixed-rate channels (`atmos`, `electricity`, `health`, `napalm`); `WorldSimSuspension` pauses the channels that opt in
 - `Assets/Scripts/SS3D/Core/SceneRegistry.cs` — `SceneRegistry<T>`: components register on enable (or spawn), so gameplay never scans the scene
 - `Assets/Scripts/SS3D/Core/BlittableEquality.cs` — allocation-free `IEquatable<T>` for plain-data `[SyncVar]` structs
 - `Assets/Scripts/SS3D/Core/WorldReadiness/IWorldReady.cs` + `WorldReadyPhase.cs` — readiness contract
@@ -31,7 +31,7 @@ Process-wide services: `SystemsBootstrap` (DDOL, `AfterSceneLoad`; creates netwo
 - New process-wide SubSystem: add to `SystemsBootstrap.EnsureProcessWideServices`, before `ApplicationInitializerSubSystem`. Types in assemblies `SS3D.Systems` cannot reference (Networking, CommandLine, Launcher) go through `EnsureSubSystemType` by assembly-qualified name.
 - New networked domain: add type to hub rebuild menu list, then append it with a tier-B recipe (`ConstructionHubRecipe`, `ActionMessageHubRecipe`: `AddComponent` + `RebuildNetworkBehaviours`) — do not edit Game.unity. Prefer that to `SS3D/Bootstrap/Rebuild NetworkSystemsHub Prefab`: the rebuild copies serialized fields from Game's system objects, which the Phase 3 strip removed, so by reading the code it would reset hub settings to defaults (unverified by a run).
 - World sim: implement `IWorldReady`; notify via `WorldReadinessSubSystem` after TileMapLoaded / AreasFlooded — never treat `OnMapCreated` as ready.
-- Fixed-rate sim: `SimulationClock.GetOrCreate(name, interval, pausedByWorldSuspension)` and `Subscribe`, never an `Update` accumulator. Every caller of a name must agree on its interval. `SimulationChannel.Step()` fires one counted tick now, paused or not (never during a world suspension): the map editor's admin step and the F1 atmos step use it, so everything on the channel steps together. Each fire runs inside an `SS3D.Clock.<name>` Profiler marker, which is where to read its per-tick GC.
+- Fixed-rate sim: `SimulationClock.GetOrCreate(name, interval, pausedByWorldSuspension)` and `Subscribe`, never an `Update` accumulator. Every caller of a name must agree on its interval. `SimulationChannel.Step()` fires one counted tick now, paused or not (never during a world suspension): the map editor's admin step ([map-editor-systems-views](map-editor-systems-views.md)) and the F1 atmos step use it, so everything on the channel steps together. Each fire runs inside an `SS3D.Clock.<name>` Profiler marker, which is where to read its per-tick GC.
 - Finding live instances: register in `SceneRegistry<T>` from `OnEnabled`/`OnDisabled` (or server start/stop when only spawned ones count), never `FindObjectsByType` in gameplay code. Edit mode runs no `OnEnable`, so EditMode tests register by hand.
 - Consumers: `IsReady` / `WhenReady` / `WaitUntilAsync` — not `Get` in Update.
 

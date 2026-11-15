@@ -26,7 +26,7 @@ using Debug = UnityEngine.Debug;
 namespace SS3D.Editor.Automation
 {
     /// <summary>
-    /// Rendered check of the Map Editor's Atmos view (Documents/architecture/2026-11_map-editor-systems-views.md Q9): a
+    /// Rendered check of the Map Editor's Atmos view (Documents/architecture/systems/map-editor-systems-views.md, Tests): a
     /// host round on a station with pipes, the editor open with the view on, screenshots of the overview with its legend,
     /// a close-up of device badges and a hover readout, a device switched off reaching the client's badge, and a Select
     /// tracing a two-network device (panel, label, the rest dimmed). Then the Power view (Phase 3): the overview with
@@ -88,7 +88,7 @@ namespace SS3D.Editor.Automation
             EditorApplication.playModeStateChanged += OnPlayModeChanged;
         }
 
-        // Guards: the Map Editor's Atmos view draws coloured runs, badges, legend and hover on a real station (map-editor-systems-views Q9) · Not cheaper because: needs the rendered overlay and UI Toolkit chrome in a live host round, reviewed by eye
+        // Guards: the Map Editor's Atmos view draws coloured runs, badges, legend and hover on a real station (map-editor-systems-views, Tests) · Not cheaper because: needs the rendered overlay and UI Toolkit chrome in a live host round, reviewed by eye
         [MenuItem("SS3D/Testing/Run Map Editor Systems Pilot")]
         public static void Run()
         {

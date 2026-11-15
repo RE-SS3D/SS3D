@@ -10,7 +10,7 @@ using static SS3D.Systems.Atmospherics.SystemsView.AtmosSystemsViewCodes;
 namespace SS3D.Systems.Atmospherics.SystemsView
 {
     /// <summary>
-    /// Server: the Atmos view's structure (Documents/architecture/2026-11_map-editor-systems-views.md, Phase 1). Every
+    /// Server: the Atmos view's structure (Documents/architecture/systems/map-editor-systems-views.md). Every
     /// segment of <see cref="GasPipeNetworkRegistry"/> becomes a run on its line (a manifold one per line it spans), with
     /// a view id from a <see cref="NetworkIdentityTracker{TSegment}"/> so colours survive the registry replacing its
     /// records on every edit. Every device in <see cref="AtmosPortRegistry"/> becomes a badge; codes are

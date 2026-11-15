@@ -12,7 +12,7 @@ namespace SS3D.Systems.Tile.MapEditor
     /// <summary>
     /// Client-local authoring overlay using the same membership and colors as area gizmos. A second instance built with a
     /// tint draws the same synced membership in colours its owner picks per room: the Power view's room tint
-    /// (Documents/architecture/2026-11_map-editor-systems-views.md Q4), each room in its APC's circuit colour or hatched.
+    /// (Documents/architecture/systems/map-editor-systems-views.md, Drawing), each room in its APC's circuit colour or hatched.
     /// </summary>
     public sealed class MapEditorAreaOverlay : IDisposable
     {

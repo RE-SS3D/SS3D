@@ -8,7 +8,7 @@ namespace SS3D.Systems.Tile.MapEditor.UI
 {
     /// <summary>
     /// Systems view chrome (creative-mode §4): the Atmos / Power toolbar toggle, the collapsible legend, and beside its column the
-    /// trace panel with its world label (<see cref="MapEditorSystemsTracePanel"/>; Documents/architecture/2026-11_map-editor-systems-views.md Q4).
+    /// trace panel with its world label (<see cref="MapEditorSystemsTracePanel"/>; Documents/architecture/systems/map-editor-systems-views.md, Drawing).
     /// </summary>
     public sealed partial class MapEditorView
     {

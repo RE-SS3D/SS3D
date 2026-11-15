@@ -69,7 +69,7 @@ namespace SS3D.Systems.Tile.MapEditor.SystemsView
     }
 
     /// <summary>
-    /// The live stream of one client's trace (Documents/architecture/2026-11_map-editor-systems-views.md Q2): the numbers
+    /// The live stream of one client's trace (Documents/architecture/systems/map-editor-systems-views.md, Streams): the numbers
     /// of every traced network that still exists, in the order the client asked for them. Sent only to the tracing
     /// client and only when it differs from what that client was last sent. A traced network that is gone is left out;
     /// an empty <see cref="Networks"/> means the whole trace is gone and the server has dropped it.

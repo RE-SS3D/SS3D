@@ -85,7 +85,7 @@ namespace SS3D.Systems.Tile.MapEditor
         public static bool MayToggleInvincibility(NetworkConnection conn) => MayToggleInvincibility(IsSandboxPlayer(conn));
 
         /// <summary>
-        /// The systems views' pause and step (creative-mode §4 "Live, and pausable"; map-editor-systems-views Q6): stops the
+        /// The systems views' pause and step (creative-mode §4 "Live, and pausable"; map-editor-systems-views, Pause and step): stops the
         /// round for everyone, so only an editor user who is an administrator or the host. Being let into the editor is not
         /// enough (the open-build authorizer lets every player in); a sandbox player is by definition neither, so needs no
         /// check of its own.

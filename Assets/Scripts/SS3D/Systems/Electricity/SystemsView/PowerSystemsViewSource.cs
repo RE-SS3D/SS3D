@@ -11,7 +11,7 @@ using static SS3D.Systems.Electricity.SystemsView.PowerSystemsViewCodes;
 namespace SS3D.Systems.Electricity.SystemsView
 {
     /// <summary>
-    /// Server: the Power view's structure (Documents/architecture/2026-11_map-editor-systems-views.md, Phase 3), read from
+    /// Server: the Power view's structure (Documents/architecture/systems/map-editor-systems-views.md), read from
     /// the server's electricity state through <see cref="IPowerSystemsViewWorld"/>. Codes are <see cref="PowerSystemsViewCodes"/>.
     /// <para>
     /// <b>Circuits.</b> Every HV cable tile is a segment. Cable runs (cables joined side by side, as

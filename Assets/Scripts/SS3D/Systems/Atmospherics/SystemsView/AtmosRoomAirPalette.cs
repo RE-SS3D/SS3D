@@ -5,7 +5,7 @@ namespace SS3D.Systems.Atmospherics.SystemsView
 {
     /// <summary>
     /// The Atmos view's Room air colours (creative-mode §4: "tints floors by pressure, which is how you see a vent actually
-    /// filling its room"; map-editor-systems-views Phase 5). A floor's pressure is read into one of
+    /// filling its room"; map-editor-systems-views, Room air). A floor's pressure is read into one of
     /// <see cref="Levels"/> steps, so the overlay redraws a chunk only when a tile crosses a step, and each step has one
     /// colour: red with no air, amber thin, green about normal (101 kPa), blue then purple above it.
     /// </summary>

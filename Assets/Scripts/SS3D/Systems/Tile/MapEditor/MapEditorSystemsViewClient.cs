@@ -8,7 +8,7 @@ using UnityEngine;
 namespace SS3D.Systems.Tile.MapEditor
 {
     /// <summary>
-    /// Client half of the systems views (Documents/architecture/2026-11_map-editor-systems-views.md Q2, Q10): which view
+    /// Client half of the systems views (Documents/architecture/systems/map-editor-systems-views.md, Streams, Code split): which view
     /// it asked the server for, the structure the server has sent for it, the overlay drawing that structure, and the
     /// trace (Phase 2): which networks a Select followed, the live numbers the server sends for them, and the label.
     /// The RPCs live on the hub, in <c>MapEditorSystemsView.cs</c>; it sends what <see cref="TakeTraceRequest"/> hands it.

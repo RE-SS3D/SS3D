@@ -15,7 +15,7 @@ using Object = UnityEngine.Object;
 namespace EditorTests
 {
     /// <summary>
-    /// The Power view's source (Documents/architecture/2026-11_map-editor-systems-views.md, Phase 3): cable circuits with
+    /// The Power view's source (Documents/architecture/systems/map-editor-systems-views.md): cable circuits with
     /// their grid devices, rooms tinted by their APC's circuit or hatched, consumer status dots, colours that stay put
     /// through a cable edit, the trace's live rows, and the structure moving after a world resumption.
     /// </summary>

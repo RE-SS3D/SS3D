@@ -3,7 +3,7 @@ using SS3D.Systems.Tile;
 namespace SS3D.Systems.Atmospherics.SystemsView
 {
     /// <summary>
-    /// What the atmos view's domain codes mean (Documents/architecture/2026-11_map-editor-systems-views.md, Phase 1). These
+    /// What the atmos view's domain codes mean (Documents/architecture/systems/map-editor-systems-views.md). These
     /// values go on the wire inside <c>SystemsViewSegment</c> and <c>SystemsViewBadge</c>: never renumber, only add.
     /// <list type="bullet">
     /// <item><b>Segment slot</b>: the line, Supply 0, Mixed 1, Waste 2, Surface 3. A manifold spans several lines, so it

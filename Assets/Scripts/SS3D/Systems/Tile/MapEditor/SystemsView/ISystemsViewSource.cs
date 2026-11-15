@@ -3,7 +3,7 @@ using System.Collections.Generic;
 namespace SS3D.Systems.Tile.MapEditor.SystemsView
 {
     /// <summary>
-    /// One domain's server-side half of a systems view (Documents/architecture/2026-11_map-editor-systems-views.md Q10):
+    /// One domain's server-side half of a systems view (Documents/architecture/systems/map-editor-systems-views.md, Code split):
     /// the atmos source under <c>Atmospherics/…/SystemsView/</c>, the power source under <c>Electricity/…/SystemsView/</c>.
     /// Registered on the map editor's server half, which polls it only while some editor client shows this view.
     /// </summary>

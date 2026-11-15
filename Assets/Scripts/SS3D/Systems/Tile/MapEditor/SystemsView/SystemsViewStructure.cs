@@ -191,7 +191,7 @@ namespace SS3D.Systems.Tile.MapEditor.SystemsView
     }
 
     /// <summary>
-    /// What changed in one view since the last delta a client was sent (Documents/architecture/2026-11_map-editor-systems-views.md Q2).
+    /// What changed in one view since the last delta a client was sent (Documents/architecture/systems/map-editor-systems-views.md, Streams).
     /// <see cref="Reset"/> means "clear, then apply": the first send of a subscription. Arrays are never null.
     /// </summary>
     public struct SystemsViewDelta

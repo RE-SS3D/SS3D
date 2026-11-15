@@ -10,7 +10,7 @@ using SS3D.Systems.Tile.MapEditor.SystemsView;
 namespace SS3D.Systems.Tile.MapEditor
 {
     /// <summary>
-    /// The server's Phase 5 jobs for the systems views (Documents/architecture/2026-11_map-editor-systems-views.md Q6, Q2),
+    /// The server's pause and Room air jobs for the systems views (Documents/architecture/systems/map-editor-systems-views.md, Pause and step, Room air),
     /// kept out of <see cref="MapEditorSubSystem"/>, which owns only the RPCs (<c>MapEditorSystemsView.cs</c>):
     /// <list type="bullet">
     /// <item>the admin pause and step (<see cref="Pause"/>): the gate, who is told the state (every open editor, with whether

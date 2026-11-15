@@ -6,7 +6,7 @@ namespace SS3D.Systems.Tile.MapEditor.UI
 {
     /// <summary>
     /// The systems views' small bar under the left toolbar, above the legend (creative-mode §4; Documents/architecture/
-    /// 2026-11_map-editor-systems-views.md Phase 5): the Atmos view's Room air sub-toggle, and for admins and the host the
+    /// systems/map-editor-systems-views.md, Pause and step): the Atmos view's Room air sub-toggle, and for admins and the host the
     /// Pause / Resume and Step of the server's atmospherics and power. Everyone in the editor sees a "Paused" tag while
     /// an admin holds the simulations; a player who may not pause sees no controls at all (the server refuses them anyway).
     /// Shown while a view is on, and while paused.

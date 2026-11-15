@@ -5,7 +5,7 @@ using UnityEngine;
 namespace SS3D.Systems.Tile.MapEditor.SystemsView
 {
     /// <summary>
-    /// The client half of one domain's view (Documents/architecture/2026-11_map-editor-systems-views.md Q4, Q10): how the
+    /// The client half of one domain's view (Documents/architecture/systems/map-editor-systems-views.md, Drawing, Code split): how the
     /// overlay lays out that domain's slots, draws its badge codes and words its hover readout. The overlay and the
     /// hover stay domain-free; each domain keeps the meaning of its Slot, Kind and State codes next to its source.
     /// </summary>

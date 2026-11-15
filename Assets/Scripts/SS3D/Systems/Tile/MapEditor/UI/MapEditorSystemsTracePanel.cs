@@ -9,8 +9,8 @@ using UnityEngine.UIElements;
 namespace SS3D.Systems.Tile.MapEditor.UI
 {
     /// <summary>
-    /// The trace's UI Toolkit half (creative-mode §4 Tracing, Documents/architecture/2026-11_map-editor-systems-views.md
-    /// Phase 2): a panel floating beside the top of the left column (the legend's) with each traced network's live rows
+    /// The trace's UI Toolkit half (creative-mode §4 Tracing, Documents/architecture/systems/map-editor-systems-views.md,
+    /// Tracing): a panel floating beside the top of the left column (the legend's) with each traced network's live rows
     /// and its devices with Locate, and a name label anchored in the world at the traced tile, the way room names are
     /// (<c>MapEditorAreaView.UpdateAreaLabels</c>). Domain-free: rows and devices come worded from the server, side
     /// names from the domain's style. Redraws only when <see cref="MapEditorSystemsViewClient.TraceRevision"/> moves.

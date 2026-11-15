@@ -10,7 +10,7 @@ using static SS3D.Systems.Electricity.SystemsView.PowerSystemsViewCodes;
 namespace EditorTests
 {
     /// <summary>
-    /// The Power view's problems (Documents/architecture/2026-11_map-editor-systems-views.md Phase 4) on hand-built data:
+    /// The Power view's problems (Documents/architecture/systems/map-editor-systems-views.md, Problems) on hand-built data:
     /// a clean station that raises nothing, then one fixture per v1 problem.
     /// </summary>
     public class PowerProblemAnalyzerTests

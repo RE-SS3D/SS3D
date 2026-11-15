@@ -19,7 +19,7 @@ using UnityEngine.UIElements;
 namespace SS3D.Systems.Testing
 {
     /// <summary>
-    /// Automation steps for mppm:systems-view (Documents/architecture/2026-11_map-editor-systems-views.md Tests, Phase 2):
+    /// Automation steps for mppm:systems-view (Documents/architecture/systems/map-editor-systems-views.md, Tests):
     /// a pure client opens the map editor, turns the Atmos view on, receives structure, traces a valve's two
     /// networks and sees their pressures meet once the host opens it. Both sides pick the same valve: the one with a
     /// different network on each side, lowest tile first (Classic MiniStation has one, on Waste, open at round start,
@@ -143,7 +143,7 @@ namespace SS3D.Systems.Testing
         {
             RestoreEditorAccess();
             _primed = null;
-            // A run never leaves the server's simulations paused (map-editor-systems-views Phase 5).
+            // A run never leaves the server's simulations paused (map-editor-systems-views, Pause and step).
             if (InstanceFinder.IsServer && SubSystems.TryGet(out MapEditorSubSystem editor))
                 editor.SimulationPause.ResumeAll();
         }

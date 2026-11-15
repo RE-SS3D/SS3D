@@ -6,7 +6,7 @@ using System.Linq;
 namespace SS3D.Tests.EditMode
 {
     /// <summary>
-    /// Q3 of Documents/architecture/2026-11_map-editor-systems-views.md: a network keeps its view id (its colour)
+    /// View ids in Documents/architecture/systems/map-editor-systems-views.md: a network keeps its view id (its colour)
     /// through rebuilds; the side sharing most segments keeps it, ties go to the lower id, others get fresh ids.
     /// </summary>
     public sealed class NetworkIdentityTrackerTests

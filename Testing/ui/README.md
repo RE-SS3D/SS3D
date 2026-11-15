@@ -171,7 +171,7 @@ are outside its error collection window; consult `artifacts/ui/editor.log` too.
 
 `SS3D/Testing/Run Map Editor Systems Pilot` (`MapEditorSystemsPilot`, the second half of `visual`) readies the host,
 starts a round on `classic-ministation`, opens the Map Editor and turns the Atmos view on from its toolbar button
-([map-editor-systems-views](../../Documents/architecture/2026-11_map-editor-systems-views.md) Q9). It writes
+([map-editor-systems-views](../../Documents/architecture/systems/map-editor-systems-views.md#tests)). It writes
 `artifacts/ui/systems-view-<UTC>/status.json` with `10-atmos-overview.png` (coloured runs, badges, legend) and
 `11-atmos-hover-closeup.png` (a two-network device with the cursor badge reading it, from a synthetic Input System
 pointer) and `12-atmos-gaspipes-placing-hover.png` (Lower › Gas Pipes with the tab's first entry held: placing label

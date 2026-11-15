@@ -11,7 +11,7 @@ using UnityEngine.Rendering;
 namespace SS3D.Systems.Tile.MapEditor
 {
     /// <summary>
-    /// The Atmos view's Room air (creative-mode §4; Documents/architecture/2026-11_map-editor-systems-views.md Q2, Phase 5):
+    /// The Atmos view's Room air (creative-mode §4; Documents/architecture/systems/map-editor-systems-views.md, Room air):
     /// every simulated floor tinted by its pressure (<see cref="AtmosRoomAirPalette"/>), client-local per-chunk meshes in
     /// the <see cref="MapEditorAreaOverlay"/> style under the view's runs. It reads the CPU copy of the atmos snapshot
     /// (<see cref="AtmosRenderContext.Snapshot.PressureData"/>), which the host fills from its simulation and a pure client

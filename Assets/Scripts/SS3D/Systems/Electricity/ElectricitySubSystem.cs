@@ -255,7 +255,7 @@ namespace SS3D.Systems.Electricity
         }
 
         // A template load ends in a resumption: the graph rebuilds on the next tick, and the Power view's structure is
-        // rebuilt now too, or it would keep the map from before the load (map-editor-systems-views Risks).
+        // rebuilt now too, or it would keep the map from before the load (electricity map, Extension points: Systems view).
         private void HandleChannelResumed()
         {
             _graphIsDirty = true;

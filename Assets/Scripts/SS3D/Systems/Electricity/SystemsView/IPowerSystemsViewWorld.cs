@@ -4,7 +4,7 @@ using SS3D.Systems.Tile;
 namespace SS3D.Systems.Electricity.SystemsView
 {
     /// <summary>
-    /// What the Power view's source reads (Documents/architecture/2026-11_map-editor-systems-views.md Q1, Phase 3): the
+    /// What the Power view's source reads (Documents/architecture/systems/map-editor-systems-views.md, Server-authored): the
     /// server's electricity state, never a client's own channel (every peer ticks its own, tech-debt P6.1).
     /// <c>ElectricitySubSystem</c> implements it on the server; EditMode tests give a hand-built one.
     /// </summary>

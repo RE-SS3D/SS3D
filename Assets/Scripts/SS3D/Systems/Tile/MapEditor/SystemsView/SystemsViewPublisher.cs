@@ -5,7 +5,7 @@ namespace SS3D.Systems.Tile.MapEditor.SystemsView
 {
     /// <summary>
     /// Server: who is watching which systems view, what each of them was last sent, and which networks each traces
-    /// (Documents/architecture/2026-11_map-editor-systems-views.md Q2). Pure C#; <c>MapEditorSystemsView</c> owns the
+    /// (Documents/architecture/systems/map-editor-systems-views.md, Streams). Pure C#; <c>MapEditorSystemsView</c> owns the
     /// RPCs and calls <see cref="Publish"/> and <see cref="PublishLive"/> on a timer. Clients without the editor open
     /// are never subscribed.
     /// </summary>

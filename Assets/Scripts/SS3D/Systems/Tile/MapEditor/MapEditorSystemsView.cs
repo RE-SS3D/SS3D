@@ -10,7 +10,7 @@ using RoundStateUpdated = SS3D.Systems.Rounds.Events.RoundStateUpdated;
 namespace SS3D.Systems.Tile.MapEditor
 {
     /// <summary>
-    /// Systems views transport on the hub (Documents/architecture/2026-11_map-editor-systems-views.md Q2, Q10): the
+    /// Systems views transport on the hub (Documents/architecture/systems/map-editor-systems-views.md, Streams, Code split): the
     /// structure stream, and the live stream of a traced network to the one client tracing it. The server half is
     /// <see cref="SystemsViewPublisher"/>, the client half <see cref="MapEditorSystemsViewClient"/>.
     /// </summary>

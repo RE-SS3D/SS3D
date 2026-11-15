@@ -8,7 +8,7 @@ using UnityEngine.Rendering;
 namespace SS3D.Systems.Tile.MapEditor
 {
     /// <summary>
-    /// Client-local systems view overlay (Documents/architecture/2026-11_map-editor-systems-views.md Q4), in the
+    /// Client-local systems view overlay (Documents/architecture/systems/map-editor-systems-views.md, Drawing), in the
     /// <see cref="MapEditorAreaOverlay"/> style: per chunk, one line mesh for the runs (a dark band under each run hides
     /// the pipe's own paint, the network colour on top) and one mesh of badge quads drawn above the runs, with the
     /// problem markers (Phase 4) on top of the badges in a tile's corner (<see cref="SystemsViewProblems.DrawMarker"/>). Both use the

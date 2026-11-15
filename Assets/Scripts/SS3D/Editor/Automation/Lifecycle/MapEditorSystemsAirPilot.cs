@@ -15,7 +15,7 @@ using static SS3D.Editor.Automation.MapEditorSystemsPilot;
 namespace SS3D.Editor.Automation
 {
     /// <summary>
-    /// Phase 5's half of <see cref="MapEditorSystemsPilot"/> (Documents/architecture/2026-11_map-editor-systems-views.md):
+    /// The pause, step and Room air half of <see cref="MapEditorSystemsPilot"/> (Documents/architecture/systems/map-editor-systems-views.md, Tests):
     /// the Atmos view back on with Room air, the host admin pausing from the bar, a puff of nitrogen stepped in one tick so
     /// the pressure tint has something to show (with the fog, glow and wind still hidden), a trace while paused, a step that
     /// is exactly one atmos and one electricity tick, then Resume, Room air off and the view off. Runs after the Power steps;

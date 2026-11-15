@@ -1,30 +1,30 @@
 > Implements: Documents/design/creative-mode.md §4 ("Seeing what's connected"), §12
 > Touches systems: map-editor-creative-hooks, tile, atmospherics, electricity, area, networking-session
-> Status: in-progress
+> Status: shipped
 
-**Progress:** Phase 0 (shared base) built 2026-11-14: tracker, DTO and delta, subscriptions, view mode and x-ray, overlay and legend shells. Phase 1 (Atmos topology and badges) built 2026-11-14: the Atmos source and domain registration, per-chunk run and badge meshes, hover readout, legend lines and a `visual` pilot; see [Phase 1 deviations](#phase-1-deviations). Phase 2 (Atmos tracing) built 2026-11-14: Select traces a pipe's or device's networks with a world label, dims the rest, and opens a live panel (pressure, temperature, mix, volume, devices with Locate) fed by a per-connection live stream at 2 Hz, sent only on change; `mppm:systems-view` proves it on a pure client; see [Phase 2 notes](#phase-2-notes). Phase 3 (Power) built 2026-11-14: an electricity source over the server's circuits, devices and rooms, circuit-coloured cables, grid device badges and consumer status dots, rooms tinted by their APC's circuit (hatched when nothing powers them) through the area overlay, and circuit and room traces with live supply, demand, storage and APC rows; `ElectricityDebugGizmoDrawer` is retired (Q7); see [Phase 3 notes](#phase-3-notes). Phase 4 (Problems and Map Check) built 2026-11-15: a pure analyzer per domain (`AtmosProblemAnalyzer`, `PowerProblemAnalyzer`) behind `ISystemsViewSource.Analyze()`, whose issues are both the view's red markers (with hover and legend lines in the same words) and Map Check warnings with Locate; the old "device on no pipe" and "no APC" rows moved into them with their ids and wording; classic-ministation raises 3 open pipe ends; see [Phase 4 notes](#phase-4-notes). Phase 5 (Pause, step and Room air) built 2026-11-15: an admin or the host pauses and steps the server's atmospherics and power from a bar above the legend (others get no controls, and the ServerRpc refuses them), the pause lifts when its admin's editor closes, they leave or the round stops, and the Atmos view's Room air tints every floor by pressure from the atmos snapshot while the fog and wind stay hidden; see [Phase 5 notes](#phase-5-notes). All phases are built. Advances [map-authoring.md](../milestones/map-authoring.md) A10.
+**Progress:** shipped 2026-11-15: all six phases built and validated (compile, EditMode, `visual` and `mppm:systems-view`): shared base; Atmos topology and badges; Atmos tracing; Power; problems and Map Check; pause, step and Room air. Live contracts, deviations and pitfalls were harvested into [map-editor-systems-views](../../architecture/systems/map-editor-systems-views.md); follow-ups went to [map-authoring.md](../../milestones/map-authoring.md) **Explicitly deferred**. A10 of that gate.
 
 # Map Editor systems views (Nov 2026)
 
-The Map Editor gets an **Atmos** view and a **Power** view. Each colours every network, shows device state, traces a clicked network with live numbers, and marks clear problems. The same problems also appear in Map Check. Scope was settled in a grill on 2026-11-14: rounds 1–3 at the gameplay altitude, which produced [creative-mode.md](../design/creative-mode.md) §4, and rounds 4–5 at the implementation altitude (Q1–Q12 below; Q13 was settled while building Phase 0).
+The Map Editor gets an **Atmos** view and a **Power** view. Each colours every network, shows device state, traces a clicked network with live numbers, and marks clear problems. The same problems also appear in Map Check. Scope was settled in a grill on 2026-11-14: rounds 1–3 at the gameplay altitude, which produced [creative-mode.md](../../design/creative-mode.md) §4, and rounds 4–5 at the implementation altitude (Q1–Q12 below; Q13 was settled while building Phase 0).
 
 ## Starting state (2026-11-14, `c82326f5`)
 
 - **Network state is server-only.** Pipe networks live in `GasPipeNetworkRegistry` and power circuits in `ElectricitySubSystem._circuits`. Both are plain classes on the server. Clients have pipes and cables as tiles in their tilemap, but no networks, pressures or circuit numbers.
-- **Network records are replaced on every pipe edit** (`RebuildAround`; [atmospherics](systems/atmospherics.md) Pitfalls). Ports cache network ids against `TopologyVersion`. Nothing gives a network an identity that survives an edit.
+- **Network records are replaced on every pipe edit** (`RebuildAround`; [atmospherics](../../architecture/systems/atmospherics.md) Pitfalls). Ports cache network ids against `TopologyVersion`. Nothing gives a network an identity that survives an edit.
 - **Debug queries exist server-side:** `AtmosCellDebugInfo` and `AtmosPipeDebugInfo` (used by `AtmosDebugController`), and `ElectricityDeviceDebugInfo` (`ElectricitySubSystem.Debug.cs`).
 - **Debug views today:** `AtmosDebugController` is an IMGUI panel opened from F1, host-only, with turf and pipe colouring, inspection, gas spawning and region waking. `ElectricityDebugGizmoDrawer` draws circuit links in the Scene view only. Neither reaches a remote client or a release build's editor.
 - **Overlay precedent:** `MapEditorAreaOverlay` draws synced room membership as client-local per-chunk meshes with a Resources shader. It switches on with Scripts → Rooms and off on other tabs. Room names show as UI Toolkit labels anchored near each room centre. Room membership and names reach clients through buffered `ObserversRpc`s on `AreaSubSystem`.
 - **Layer visibility:** `MapEditorLayerVisibility` → `TileLayerVisibilityService` (client-only). The Cables, Gas Pipes and Disposal Pipes tabs hide Turfs and restore them on leaving, unless the user toggled Turfs meanwhile.
 - **Pause:** each sim has a `SimulationChannel` with `Paused`. `AtmosSubSystem.SimulationPaused` wraps it, and `AtmosSubSystem.StepOnce()` runs one server tick. Electricity has no step. Every peer runs its own electricity channel (tech-debt P6.1). Opening the editor hides atmos *visuals* (`AtmosRenderContext.SetRenderingSuppressed`) but keeps the sim running.
-- **Map Check:** `MapValidationReport.Issues` carries typed server-authored issues with an optional camera position (Locate). The mockup's atmosphere and power checks were never built ([tile](systems/tile.md)).
-- **Select tool** opens an object's setup through its own interface ([object-setup-persistence](2026-11_object-setup-persistence.md)).
+- **Map Check:** `MapValidationReport.Issues` carries typed server-authored issues with an optional camera position (Locate). The mockup's atmosphere and power checks were never built ([tile](../../architecture/systems/tile.md)).
+- **Select tool** opens an object's setup through its own interface ([object-setup-persistence](../../architecture/2026-11_object-setup-persistence.md)).
 
 ## Decisions
 
 ### Gameplay (premises)
 
-[creative-mode.md](../design/creative-mode.md) §4 "Seeing what's connected" is the spec. In short:
+[creative-mode.md](../../design/creative-mode.md) §4 "Seeing what's connected" is the spec. In short:
 
 - Two views, Atmos and Power. Each switches on with its Lower tab, and a toolbar toggle keeps it on from any tab. While a view is on, floors and upper objects dim like an x-ray.
 - Colour per network. Device badges show state and flow direction. Rooms are tinted by their APC's circuit, and consumers get status dots.
@@ -40,7 +40,7 @@ The Map Editor gets an **Atmos** view and a **Power** view. Each colours every n
 | Q1 | **The server computes everything**: network identity, colour ids, device states and problems. It sends them to clients that have the editor open. Rejected: clients rebuilding topology from their own tilemap. Problems must match the server-authored Map Check, and client reconstruction is the class of bug that host play hides. |
 | Q2 | **Two data streams.** *Structure* (segment → view id, view id → colour and label, device badges, problem markers) is pushed to subscribed editor clients **on change**. A change is a topology version bump, a circuit rebuild, a device state change or a problem change, compared with what was last sent to *that* client (the atmos dirty-tracking pitfall). *Live numbers* are sent **only for the traced network**, to the client tracing it, at about 2 Hz. Room air reuses the existing atmos chunk-patch path, and only while its sub-toggle is on. Clients without the editor open get nothing. |
 | Q3 | **One shared identity tracker** (pure C#), used by pipes and circuits alike. After a rebuild, each new network takes the view id of the old network it shares the most segments with. Ties go to the lower id. Others get fresh ids. The view id indexes a fixed colour palette and drives the label ("Supply 3", "Circuit 2"). |
-| Q4 | **Rendering:** client-local per-chunk line meshes for runs, in the `MapEditorAreaOverlay` style. Room tint reuses that overlay with circuit colours. Instanced world-space quads draw device badges and problem markers. UI Toolkit draws the view toggle, trace panel, legend and trace labels, anchored like room-name labels. No Gizmos, no IMGUI ([agent-first-composition](2026-07_agent-first-composition.md) UI policy). |
+| Q4 | **Rendering:** client-local per-chunk line meshes for runs, in the `MapEditorAreaOverlay` style. Room tint reuses that overlay with circuit colours. Instanced world-space quads draw device badges and problem markers. UI Toolkit draws the view toggle, trace panel, legend and trace labels, anchored like room-name labels. No Gizmos, no IMGUI ([agent-first-composition](../../architecture/2026-07_agent-first-composition.md) UI policy). |
 | Q5 | **Problem analyzers are pure and server-side, one per domain.** Each returns typed issues with tile positions. The view snapshot and `MapValidationReport.Issues` both consume them, inside this effort, as their own phase. |
 | Q6 | **Pause and step** go through an admin-gated ServerRpc (`MapEditorPermissions` with admin required, refused for sandbox players). It sets `Paused` on the atmos and electricity server channels and steps them, which means adding `ElectricitySubSystem.StepOnce`. Clients keep their local electricity tick, since visuals come from server SyncVars. The server **auto-resumes** when the pausing admin closes the editor or disconnects, and when the round ends. |
 | Q7 | **Retire `ElectricityDebugGizmoDrawer`** once the Power view ships. **Keep the F1 `AtmosDebugController`** for its dev-only turf inspection, gas spawning and region waking, which are out of scope for an authoring tool. |
@@ -48,7 +48,7 @@ The Map Editor gets an **Atmos** view and a **Power** view. Each colours every n
 | Q9 | **Validation:** EditMode covers the tracker, analyzers, snapshot builders and change detection. One `mppm` step checks that a pure client in the editor receives structure and a traced network's numbers. A `visual` step runs only for overlay phases. |
 | Q10 | **Code split.** Analyzers, snapshot builders and the network → segment mapping live in each domain (`Atmospherics/…/SystemsView/`, `Electricity/…/SystemsView/`) behind one small interface, `ISystemsViewSource`. Subscription, transport and rendering are a `MapEditorSystemsView` piece beside `MapEditorArea`, on the existing networked hub, with no scene or prefab edits. New RPCs bump `ProtocolVersion`. |
 | Q11 | **Select on a device while a view is on** both traces its network(s) *and* opens its setup as usual. A bare pipe or cable has no setup, so a click only traces. Turning a view on never changes what a click does to an object. |
-| Q12 | **Milestone:** a new slice A10 in [map-authoring.md](../milestones/map-authoring.md), landing before A6 if possible. |
+| Q12 | **Milestone:** a new slice A10 in [map-authoring.md](../../milestones/map-authoring.md), landing before A6 if possible. |
 | Q13 | **Turning a view Off on Gas Pipes or Cables** also turns that tab's own view off, and it stays off until another sub-tab opens; a view pinned from the toolbar wins over the tab's own. Settled in Phase 0 (2026-11-14). |
 
 ## Shape
@@ -180,6 +180,6 @@ MapEditorSystemsView (server half)
 
 ## Follow-ups
 
-- A disposals view ([creative-mode.md](../design/creative-mode.md) §15).
+- A disposals view ([creative-mode.md](../../design/creative-mode.md) §15).
 - An admin toggle in normal rounds, and in-world scanners: design work in `atmospherics.md` and `electricity.md` first.
 - Gas meter line choice ([#280](https://github.com/henkhooft/SS3D/issues/280)) touches the same "which line is this device on" question as the hover readout.

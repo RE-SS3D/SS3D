@@ -5,7 +5,7 @@ using UnityEngine;
 namespace SS3D.Systems.Tile.MapEditor.SystemsView
 {
     /// <summary>
-    /// One problem a domain's analyzer found (Documents/architecture/2026-11_map-editor-systems-views.md Q5, Phase 4). Map
+    /// One problem a domain's analyzer found (Documents/architecture/systems/map-editor-systems-views.md, Problems). Map
     /// Check reports it as a warning (<see cref="Id"/>, <see cref="Title"/>, <see cref="Body"/>, Locate at
     /// <see cref="Position"/>), and the view puts a marker at each of <see cref="Markers"/> carrying the same id, so the
     /// two show the same problems by construction.

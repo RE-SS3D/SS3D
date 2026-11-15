@@ -4,7 +4,7 @@ using System.Collections.Generic;
 namespace SS3D.Systems.Tile.MapEditor.SystemsView
 {
     /// <summary>
-    /// Gives networks a view id that survives edits (Documents/architecture/2026-11_map-editor-systems-views.md Q3), so
+    /// Gives networks a view id that survives edits (Documents/architecture/systems/map-editor-systems-views.md, View ids), so
     /// colours stay put while pipe networks and circuits are rebuilt as new records. Shared by every domain; pure C#.
     /// After each rebuild a new network takes the id of the old network it shares the most segments with (ties go to the
     /// lower id), so on a split the larger side keeps its colour and on a merge the larger part's colour wins. Every other

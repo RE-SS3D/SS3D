@@ -20,7 +20,7 @@ using UnityEngine.UIElements;
 namespace SS3D.Tests.EditMode
 {
     /// <summary>
-    /// Map editor systems views Phase 5 (Documents/architecture/2026-11_map-editor-systems-views.md Q6, Q2): the admin gate
+    /// Map editor systems views pause, step and Room air (Documents/architecture/systems/map-editor-systems-views.md, Pause and step, Room air): the admin gate
     /// on pause and step, the pause that lifts when its admin closes the editor, leaves or the round ends, one step being
     /// exactly one tick, the bar that shows the controls only to admins, and Room air's chunk resync and pressure steps.
     /// </summary>

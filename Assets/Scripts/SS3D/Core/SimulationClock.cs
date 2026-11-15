@@ -149,7 +149,7 @@ namespace SS3D.Core
         public void ResetPhase() => _elapsed = 0d;
 
         /// <summary>
-        /// Fires one tick now, paused or not, and counts it (the map editor's admin step, map-editor-systems-views Q6).
+        /// Fires one tick now, paused or not, and counts it (the map editor's admin step, map-editor-systems-views, Pause and step).
         /// Nothing fires while a world suspension holds this channel: devices may be despawning. Returns whether it fired.
         /// </summary>
         public bool Step()

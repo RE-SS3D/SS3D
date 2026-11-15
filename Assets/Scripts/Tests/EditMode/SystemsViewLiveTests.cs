@@ -12,8 +12,8 @@ using static SS3D.Systems.Atmospherics.SystemsView.AtmosSystemsViewCodes;
 namespace SS3D.Tests.EditMode
 {
     /// <summary>
-    /// The live stream of the Map Editor systems views (Documents/architecture/2026-11_map-editor-systems-views.md Q2,
-    /// Phase 2): a trace per connection, numbers only to the client tracing them and only when they change, a network
+    /// The live stream of the Map Editor systems views (Documents/architecture/systems/map-editor-systems-views.md, Streams
+    /// and Tracing): a trace per connection, numbers only to the client tracing them and only when they change, a network
     /// that goes leaving the trace, and the trace ending with the subscription.
     /// </summary>
     public sealed class SystemsViewLiveTests

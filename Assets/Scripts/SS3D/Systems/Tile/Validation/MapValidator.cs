@@ -167,7 +167,7 @@ namespace SS3D.Systems.Tile.Validation
         }
 
         /// <summary>
-        /// The systems views' problems (Documents/architecture/2026-11_map-editor-systems-views.md Q5, Phase 4): each
+        /// The systems views' problems (Documents/architecture/systems/map-editor-systems-views.md, Problems): each
         /// analyzer's issues as warnings with Locate, never a round-start block, under the same ids the views' markers
         /// carry. An id already in the report is not added twice.
         /// </summary>

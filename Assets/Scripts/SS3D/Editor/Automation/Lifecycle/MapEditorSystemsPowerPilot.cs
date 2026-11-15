@@ -17,8 +17,8 @@ using static SS3D.Editor.Automation.MapEditorSystemsPilot;
 namespace SS3D.Editor.Automation
 {
     /// <summary>
-    /// The Power view's half of <see cref="MapEditorSystemsPilot"/> (Documents/architecture/2026-11_map-editor-systems-views.md
-    /// Phase 3): the overview with circuit colours, room tint and consumer dots, a traced cable circuit, a traced room, and a
+    /// The Power view's half of <see cref="MapEditorSystemsPilot"/> (Documents/architecture/systems/map-editor-systems-views.md,
+    /// Tests): the overview with circuit colours, room tint and consumer dots, a traced cable circuit, a traced room, and a
     /// hatched room (an APC smashed for the shot, repaired after and on abort). Runs after the Atmos steps.
     /// </summary>
     internal static class MapEditorSystemsPowerPilot

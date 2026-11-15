@@ -11,7 +11,7 @@ using UnityEngine;
 namespace SS3D.Tests.EditMode
 {
     /// <summary>
-    /// Structure stream of the Map Editor systems views (Documents/architecture/2026-11_map-editor-systems-views.md Q2):
+    /// Structure stream of the Map Editor systems views (Documents/architecture/systems/map-editor-systems-views.md, Streams):
     /// a client is sent only what changed since what it was last sent, and nothing when nothing did.
     /// </summary>
     public sealed class SystemsViewStructureTests

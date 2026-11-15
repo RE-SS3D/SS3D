@@ -9,7 +9,7 @@ using static SS3D.Systems.Tile.MapEditor.SystemsView.SystemsViewProblems;
 namespace SS3D.Systems.Electricity.SystemsView
 {
     /// <summary>
-    /// The Power view's problems (Documents/architecture/2026-11_map-editor-systems-views.md Q5, Phase 4; creative-mode §4
+    /// The Power view's problems (Documents/architecture/systems/map-editor-systems-views.md, Problems; creative-mode §4
     /// "The views point out problems"), found from plain data so it is pure and testable: the source fills a
     /// <see cref="PowerProblemInput"/> from the circuits, devices and rooms it sends, and the issues go both into the view
     /// as markers and into Map Check as warnings. The v1 list:

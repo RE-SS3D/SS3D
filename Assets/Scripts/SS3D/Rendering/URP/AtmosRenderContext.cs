@@ -64,7 +64,7 @@ namespace SS3D.Rendering.URP
 
         /// <summary>
         /// When true, the host fills its snapshot for the whole station rather than its player's area of interest. The map
-        /// editor's Room air sets it while it tints floors by pressure (map-editor-systems-views Phase 5). It only widens
+        /// editor's Room air sets it while it tints floors by pressure (map-editor-systems-views, Room air). It only widens
         /// what the CPU copy (<see cref="Snapshot.PressureData"/>) covers; <see cref="IsRenderingSuppressed"/> still hides
         /// the fog, glow and wind.
         /// </summary>

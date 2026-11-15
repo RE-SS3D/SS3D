@@ -426,7 +426,7 @@ async def run_pilot(editor, menu, pattern, expected, timeout, screenshots=False)
 
 async def step_visual(editor, ctx):
     lobby = await run_pilot(editor, "SS3D/Testing/Run Lobby UI Pilot", "[0-9]*/status.json", 120, 300, screenshots=True)
-    # Overlay phases of map-editor-systems-views (Q9): the Map Editor's Atmos and Power views on classic-ministation.
+    # Overlays of map-editor-systems-views (Tests): the Map Editor's Atmos and Power views on classic-ministation.
     systems = await run_pilot(editor, "SS3D/Testing/Run Map Editor Systems Pilot", "systems-view-*/status.json", 150, 360,
                               screenshots=True)
     return Done(f"lobby {lobby.note}; map editor systems {systems.note} ({systems.report})", lobby.report,

@@ -4,7 +4,7 @@ using SS3D.Systems.Tile;
 namespace SS3D.Systems.Electricity.SystemsView
 {
     /// <summary>
-    /// What the Power view's domain codes mean (Documents/architecture/2026-11_map-editor-systems-views.md, Phase 3). These
+    /// What the Power view's domain codes mean (Documents/architecture/systems/map-editor-systems-views.md). These
     /// values go on the wire inside <c>SystemsViewSegment</c>, <c>SystemsViewBadge</c> and <c>SystemsViewRoom</c>: never
     /// renumber, only add.
     /// <list type="bullet">

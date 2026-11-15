@@ -9,7 +9,7 @@ using SS3D.Systems.Tile.MapEditor.SystemsView;
 namespace SS3D.Systems.Electricity
 {
     /// <summary>
-    /// Offers the map editor's Power view its source (Documents/architecture/2026-11_map-editor-systems-views.md Q10), read
+    /// Offers the map editor's Power view its source (Documents/architecture/systems/map-editor-systems-views.md, Code split), read
     /// from this server's circuits, devices and rooms (never a client's own electricity channel, tech-debt P6.1). The
     /// editor hub is spawned on another object with no fixed start order, so the server retries from each electricity
     /// tick until it finds one, and offers again if that hub is replaced, as the atmos source does.
