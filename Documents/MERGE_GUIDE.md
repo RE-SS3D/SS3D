@@ -158,14 +158,15 @@ GitBook still helps with generic Unity and FishNet concepts. Shipped efforts and
 | Workflow | What it does |
 |---|---|
 | `develop-release.yml` | Manual numbered releases and `develop-<suffix>` test cuts; nightly `develop-nightly` prerelease |
-| `editmodetestrunner.yml` | EditMode on pushes to `develop`, PRs, nightly and manual runs |
-| `multiplayer-smoke-test.yml` | Nightly PlayMode and headless smoke scenarios; on PRs labelled `test:multiplayer` |
+| `editmodetestrunner.yml` | EditMode on PRs from this repository's branches, nightly and manual runs; a maintainer runs fork PRs with `-f pr=<number>` |
+| `multiplayer-smoke-test.yml` | Nightly PlayMode and headless smoke scenarios; on this repository's PRs labelled `test:multiplayer` |
 | `weekly-graphical.yml` | Weekly rendered-editor pilots (`validate.sh --weekly`) |
 | `updater-tests.yml`, `updater-e2e.yml` | Updater regression tests on PRs; a real previous-stable → latest-stable update after releases |
-| `docs-check.yml` | Fails when `ROADMAP.md` or the README roadmap block is stale |
+| `docs-check.yml` | On every PR: fails when `ROADMAP.md` or the README roadmap block is stale, or something links to the old fork |
 | `asset-hygiene.yml` | Fails on orphan `.meta` files under `Assets/` |
 
-Heavy jobs run on a self-hosted runner for trusted events and fall back to GitHub-hosted runners; how
+Heavy jobs run on a self-hosted runner, and only for trusted code: branches of this repository, schedules and
+maintainer dispatches. PR code from forks never reaches it; how
 the project's infrastructure is run is in [2026-11_project-infrastructure.md](architecture/2026-11_project-infrastructure.md).
 Failed nightly and weekly runs open issues labelled `nightly-failure` / `weekly-failure`, closed by the next green run.
 

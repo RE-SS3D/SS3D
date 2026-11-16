@@ -175,6 +175,12 @@ try/catch turns into a `ScriptFailed` the harness already fails on — no new DS
 
 ## Pitfalls (anticipated)
 
+- **PR code from forks must never reach the self-hosted runner.** It runs on the maintainer's own
+  machine and network. Every Unity job gates PRs on `head.repo.full_name == github.repository`
+  (only people with write access push branches here). A label is not a gate on its own: it stays
+  on the PR, so the fork's next push would run unreviewed. Fork PRs get a notice job; a maintainer
+  who has read the change dispatches the workflow with `pr: <number>`. Fork PRs also never receive
+  secrets, so a Unity job on one could not activate a license anyway.
 - **Warm `Library/` cache is the whole win — protect it.** A step that clears it, or a
   container that doesn't mount the volume, silently drops you back to 45-min cold builds with
   no error. Verify cache reuse in run logs. **Never stash a failed build's Library** — a

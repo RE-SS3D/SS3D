@@ -1,6 +1,9 @@
 #https://game.ci/docs/github/test-runner
 # pull_request (not pull_request_target): checkout and workflow YAML come from the PR head.
-# Same-repo PRs still get unity_tests secrets; fork PRs would need a separate trusted path.
+# Only PRs from branches of this repository (people with write access) run Unity here. PRs from
+# forks get no secrets and never run on the self-hosted runner: their run posts a notice instead,
+# and a maintainer who has read the change runs it with
+#   gh workflow run editmodetestrunner.yml --ref develop -f pr=<number>
 #
 # Runs on the self-hosted runner (labels self-hosted/linux/x64/unity); dispatch with runner=github
 # for GitHub-hosted ubuntu-latest. See
@@ -33,6 +36,10 @@ on:
           - self-hosted
           - github
         default: self-hosted
+      pr:
+        description: "PR number to test (a fork PR a maintainer has read); empty = the dispatched branch"
+        type: string
+        default: ""
 concurrency:
   # One group per PR, so a new push cancels the older run. An edit that is not a base change gets a
   # group of its own, so it cannot cancel a real run before its jobs are skipped.
@@ -101,10 +108,30 @@ jobs:
             pick_self_hosted
           fi
 
+  fork_pr_notice:
+    name: Unity tests wait for a maintainer (PR from a fork)
+    if: >-
+      github.event_name == 'pull_request' &&
+      github.event.pull_request.head.repo.full_name != github.repository &&
+      (github.event.action != 'edited' || github.event.changes.base)
+    runs-on: ubuntu-latest
+    permissions: {}
+    steps:
+      - name: Explain how this PR gets tested
+        env:
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        run: |
+          msg="PRs from forks get no Unity license and never run on the self-hosted runner. After reading the change, a maintainer runs EditMode with: gh workflow run editmodetestrunner.yml --ref develop -f pr=${PR_NUMBER}"
+          echo "::notice::$msg"
+          echo "$msg" >> "$GITHUB_STEP_SUMMARY"
+
   run_tests:
     name: Run tests
     needs: pick_runner
-    if: needs.pick_runner.outputs.run == 'true'
+    # Never PR code from a fork: it would get no secrets and must not reach the self-hosted runner.
+    if: >-
+      needs.pick_runner.outputs.run == 'true' &&
+      (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository)
     permissions:
       contents: read
       # game-ci's test runner posts the results as a check run.
@@ -116,9 +143,9 @@ jobs:
       name: unity_tests
     env:
       FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
-      # Separate from smoke's /home/cu6e/.cache/ss3d/Library so a failed EditMode discard
-      # cannot wipe the warm build cache. Only used when self_hosted=true.
-      SS3D_UNITY_LIBRARY_STASH: /home/cu6e/.cache/ss3d/Library-editmode
+      # Under ~/.cache/ss3d/ on the runner. Separate from smoke's Library so a failed EditMode
+      # discard cannot wipe the warm build cache. Only used when self_hosted=true.
+      SS3D_UNITY_LIBRARY_STASH_NAME: Library-editmode
     steps:
       - name: Checkout project code
         uses: actions/checkout@v4
@@ -127,13 +154,14 @@ jobs:
           # runner's reused workspace, a partial clone left by develop-release's blob:none checkouts.
           lfs: false
           # Explicit PR head (and its repo) so we never silently test the base branch.
-          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          # A maintainer's dispatch with -f pr=<number> tests that PR's head instead.
+          ref: ${{ inputs.pr && format('refs/pull/{0}/head', inputs.pr) || github.event.pull_request.head.sha || github.sha }}
           repository: ${{ github.event.pull_request.head.repo.full_name || github.repository }}
       - name: Restore Unity Library stash
         if: needs.pick_runner.outputs.self_hosted == 'true'
         run: |
           set -euo pipefail
-          stash="${SS3D_UNITY_LIBRARY_STASH}"
+          stash="${HOME}/.cache/ss3d/${SS3D_UNITY_LIBRARY_STASH_NAME}"
           workspace_lib="${GITHUB_WORKSPACE}/Library"
           mkdir -p "$(dirname "$stash")"
           if [[ -d "$workspace_lib" ]]; then
@@ -211,7 +239,7 @@ jobs:
         if: needs.pick_runner.outputs.self_hosted == 'true' && success()
         run: |
           set -euo pipefail
-          stash="${SS3D_UNITY_LIBRARY_STASH}"
+          stash="${HOME}/.cache/ss3d/${SS3D_UNITY_LIBRARY_STASH_NAME}"
           workspace_lib="${GITHUB_WORKSPACE}/Library"
           mkdir -p "$(dirname "$stash")"
           if [[ -d "$workspace_lib" ]]; then

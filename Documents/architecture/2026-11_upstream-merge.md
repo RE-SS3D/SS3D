@@ -2,7 +2,7 @@
 > Touches systems: networking-session (CI, releases, updaters), ui-shell-main-menu (release banner), application (bug reports), docs governance (`AGENTS.md`, `CLAUDE.md`, `Documents/SKILL.md`, `Documents/MERGE_GUIDE.md`, milestones)
 > Status: in-progress
 
-**Progress:** Phases 0–2 done on `upstream-prep`. Phases 3–5 open.
+**Progress:** Phases 0–3 done on `upstream-prep`. Phases 4–5 open.
 
 # Upstream merge (Nov 2026)
 
@@ -54,9 +54,12 @@ Settled with the owner in a grilling session, 2026-11-15/16.
    description states the AI-assisted share plainly.
 7. **`Documents/` is the canonical documentation.** Milestones and the generated `ROADMAP.md` replace upstream's
    GitHub-milestone and project-board automation, which stays deleted. GitBook stays background reading only.
-8. **PR code never runs on the self-hosted runner.** PR jobs run GitHub-hosted. The self-hosted runner takes only
-   pushes to `develop`, schedules, manual dispatch and maintainer-labelled PRs (`test:*`). Upstream requires
-   approval before outside contributors' workflows run.
+8. **Fork PR code never runs on the self-hosted runner.** The runner takes only trusted code: schedules, manual
+   dispatch (including a maintainer's `pr: <number>` run of a fork PR they have read), and PRs from branches of
+   this repository, which only people with write access can push. Upstream requires approval before outside
+   contributors' workflows run. *Refined in Phase 3:* the grilling said "PR jobs run GitHub-hosted" with labelled
+   PRs as the exception. Same-repo PRs stay on the runner because their authors can already dispatch any
+   workflow, and a label alone is not a safe gate for fork PRs (it survives the fork's next push).
 9. **Unity secrets:** a project-owned Unity account if one exists, otherwise the owner's re-added with a note on
    who owns them. Fork PRs get no secrets, so their Unity jobs skip with a clear "maintainer runs this" status.
 10. **Releases keep the fork's numbering.** v0.17.1 ships from the fork after the merge and points the updaters
@@ -110,11 +113,12 @@ Settled with the owner in a grilling session, 2026-11-15/16.
 
 ### Phase 3: CI for a public repository
 
-- [ ] PR events never pick the self-hosted runner unless a maintainer label asks for it (decision 8)
-- [ ] Unity jobs on fork PRs skip with a clear status when secrets are absent (decision 9)
-- [ ] `docs-check.yml` fails on `henkhooft/SS3D` outside an allowlist (`Documents/archive/`, fork PR links in milestones, `ServerInfoTests.cs` inputs, `.mailmap`)
-- [ ] Self-hosted stash paths are hardcoded to the runner user's home (`SS3D_UNITY_LIBRARY_STASH` in three workflows, `persistent-upm-cache` default); derive them from the runner's `$HOME`
-- [ ] Sync [2026-07_ci-develop-release-pipeline](2026-07_ci-develop-release-pipeline.md) and [2026-07_multiplayer-testing-self-hosted-ci](2026-07_multiplayer-testing-self-hosted-ci.md)
+- [x] Fork PRs never reach the self-hosted runner (decision 8): `editmodetestrunner.yml` and `multiplayer-smoke-test.yml` gate PR runs on `head.repo.full_name == github.repository`; both take a `pr` dispatch input that checks out `refs/pull/<n>/head`
+- [x] Fork PRs get a notice job (EditMode always, smoke when labelled) naming the maintainer's dispatch command, instead of a Unity job that fails at license activation (decision 9)
+- [x] `docs-check.yml` runs on every PR and push to `develop` (path filter dropped; both checks take seconds) and adds `Tools/ci/check_fork_links.py`: fails on `henkhooft/SS3D` outside the allowlist; historical `henkhooft/SS3D#N` and `/pull/N` / `/issues/N` links pass anywhere; the repository copies are left to `test_project_repo.py`
+- [x] Stash and UPM cache paths come from the runner user's `$HOME` (`SS3D_UNITY_LIBRARY_STASH_NAME`; `persistent-upm-cache` default)
+- [x] Synced [2026-07_ci-develop-release-pipeline](2026-07_ci-develop-release-pipeline.md), [2026-07_multiplayer-testing-self-hosted-ci](2026-07_multiplayer-testing-self-hosted-ci.md) (new Pitfall), [networking-session-testing](systems/networking-session-testing.md), [project infrastructure](2026-11_project-infrastructure.md), `CONTRIBUTING.md` and the merge guide
+- Not run yet: these workflow changes are only checked by YAML parsing and by reading the expressions. The first PR from `upstream-prep` exercises the same-repo path; a fork PR, the notice jobs and the `pr` dispatch are checked on merge day (step 2)
 
 ### Phase 4: the switch commit
 
@@ -133,7 +137,8 @@ Settled with the owner in a grilling session, 2026-11-15/16.
 1. Announce on Discord and freeze fork `develop`. Final `develop` → `upstream-prep` merge; rerun Phase 5.
 2. Prepare upstream: create the labels (`nightly-failure`, `weekly-failure`, `editmode-nightly-failure`,
    `test:multiplayer`, `map-authoring`, `visual`, `blocker`); set the secrets (decision 9); require approval for
-   outside contributors; register the self-hosted runner for trusted events only; give the nightly release
+   outside contributors; register the self-hosted runner (the workflows keep fork PRs off it); open a test PR from a
+   fork and confirm the EditMode notice job, then dispatch `-f pr=<number>`; give the nightly release
    dispatcher ([2026-11_project-infrastructure](2026-11_project-infrastructure.md)) a token for upstream.
 3. Push the fork's `v*` tags to upstream (see Pitfalls). Open the PR from `upstream-prep`, linking the reviewer
    guide and stating the AI share; close #1525 in favour of it; close the outdated upstream PRs with a short note.

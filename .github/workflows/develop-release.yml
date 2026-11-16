@@ -225,8 +225,9 @@ jobs:
       name: unity_tests
     env:
       FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
-      # Share smoke's warm build Library on the self-hosted runner (same FS as runner workdir — mv is rename).
-      SS3D_UNITY_LIBRARY_STASH: /home/cu6e/.cache/ss3d/Library
+      # Share smoke's warm build Library under ~/.cache/ss3d/ on the self-hosted runner (same FS as
+      # runner workdir — mv is rename).
+      SS3D_UNITY_LIBRARY_STASH_NAME: Library
       SERVER_BUILD_DIR: ${{ github.workspace }}/build/GameServer/StandaloneLinux64
       CLIENT_BUILD_DIR: ${{ github.workspace }}/build/Game/StandaloneLinux64
       # Unity 6 Linux players no longer append .x86_64; game-ci -customBuildPath uses buildName as-is.
@@ -246,7 +247,7 @@ jobs:
         if: needs.prepare.outputs.self_hosted == 'true'
         run: |
           set -euo pipefail
-          stash="${SS3D_UNITY_LIBRARY_STASH}"
+          stash="${HOME}/.cache/ss3d/${SS3D_UNITY_LIBRARY_STASH_NAME}"
           workspace_lib="${GITHUB_WORKSPACE}/Library"
           mkdir -p "$(dirname "$stash")"
           if [[ -d "$workspace_lib" ]]; then
@@ -318,7 +319,7 @@ jobs:
         if: needs.prepare.outputs.self_hosted == 'true' && success()
         run: |
           set -euo pipefail
-          stash="${SS3D_UNITY_LIBRARY_STASH}"
+          stash="${HOME}/.cache/ss3d/${SS3D_UNITY_LIBRARY_STASH_NAME}"
           workspace_lib="${GITHUB_WORKSPACE}/Library"
           mkdir -p "$(dirname "$stash")"
           if [[ -d "$workspace_lib" ]]; then
@@ -371,7 +372,7 @@ jobs:
       name: unity_tests
     env:
       FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
-      SS3D_UNITY_LIBRARY_STASH: /home/cu6e/.cache/ss3d/Library
+      SS3D_UNITY_LIBRARY_STASH_NAME: Library
     steps:
       - name: Checkout project code
         uses: actions/checkout@v4
@@ -384,7 +385,7 @@ jobs:
         if: needs.prepare.outputs.self_hosted == 'true'
         run: |
           set -euo pipefail
-          stash="${SS3D_UNITY_LIBRARY_STASH}"
+          stash="${HOME}/.cache/ss3d/${SS3D_UNITY_LIBRARY_STASH_NAME}"
           workspace_lib="${GITHUB_WORKSPACE}/Library"
           mkdir -p "$(dirname "$stash")"
           if [[ -d "$workspace_lib" ]]; then
@@ -449,7 +450,7 @@ jobs:
         if: needs.prepare.outputs.self_hosted == 'true' && success()
         run: |
           set -euo pipefail
-          stash="${SS3D_UNITY_LIBRARY_STASH}"
+          stash="${HOME}/.cache/ss3d/${SS3D_UNITY_LIBRARY_STASH_NAME}"
           workspace_lib="${GITHUB_WORKSPACE}/Library"
           mkdir -p "$(dirname "$stash")"
           if [[ -d "$workspace_lib" ]]; then

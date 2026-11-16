@@ -148,11 +148,12 @@ a manual release check.
 
 ### Related workflow changes
 
-- `multiplayer-smoke-test.yml` — label-gated PR + `workflow_dispatch` + nightly 04:00 UTC;
+- `multiplayer-smoke-test.yml` — label-gated PR (branches of this repository only) + `workflow_dispatch`
+  (`pr: <number>` for a fork PR a maintainer has read) + nightly 04:00 UTC;
   self-hosted runner + `BuildBothForCi`. Prefer this (or `build_linux` + `run_smoke` on develop-release)
   when you need a smoke gate.
 - `editmodetestrunner.yml` — cheap PR/`develop` EditMode on the self-hosted runner (dispatch `runner: github`
-  for `ubuntu-latest`). Prefer this (or `run_editmode: true` on develop-release) when you
+  for `ubuntu-latest`). PRs from forks only get a notice job; a maintainer runs them with `pr: <number>`. Prefer this (or `run_editmode: true` on develop-release) when you
   need an EditMode gate on a cut.
 - `main.yml` (Automated Build) — **removed**; Windows prereleases go through
   `develop-release.yml`. Upstream milestone/project YAML deleted (`23b75ad36`); ghost

@@ -80,9 +80,11 @@ The rules agents follow apply to you as well. The ones that cost the most when b
 
 PRs are squash-merged, so the PR title becomes the commit message on `develop`.
 
-**CI on your PR.** EditMode tests run on every PR that touches more than docs. PRs from forks don't receive the project's Unity license,
-so their Unity jobs wait for a maintainer to run them; run `validate.sh` locally before you ask. Maintainers
-can add `test:multiplayer` to run the multiplayer smoke set.
+**CI on your PR.** The docs and link checks run on every PR. Unity jobs (EditMode, and the multiplayer smoke set
+when a PR is labelled `test:multiplayer`) run on PRs from branches of this repository. PRs from forks never
+receive the project's Unity license, so their Unity jobs wait for a maintainer, who reads the change and runs
+them by hand (`gh workflow run editmodetestrunner.yml -f pr=<number>`). Run `validate.sh` locally before you
+ask.
 
 ## Code style
 
