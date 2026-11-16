@@ -334,6 +334,15 @@ namespace SS3D.UI.StoragePanel
             }
         }
 
+        /// <summary>Stack counts change without a contents event (merge, spend); see <see cref="StorageSlot.RefreshStackCount"/>.</summary>
+        public void RefreshStackCounts()
+        {
+            foreach (StorageSlot slot in _slots)
+            {
+                slot.RefreshStackCount();
+            }
+        }
+
         /// <summary>Marks each container item's open button while its own panel is open.</summary>
         public void RefreshOpenButtons(Func<AttachedContainer, bool> isOpen)
         {

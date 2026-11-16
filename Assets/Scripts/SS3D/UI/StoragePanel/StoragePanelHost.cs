@@ -108,6 +108,11 @@ namespace SS3D.UI.StoragePanel
             EnsureMachineUiSubscription();
             EnsureMenuSubscription();
             EnsureMapEditorSubscription();
+
+            foreach (StoragePanelView panel in _openPanels.Values)
+            {
+                panel.RefreshStackCounts();
+            }
         }
 
         private void Update()

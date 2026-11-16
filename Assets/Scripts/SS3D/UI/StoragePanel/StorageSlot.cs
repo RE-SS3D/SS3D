@@ -46,6 +46,7 @@ namespace SS3D.UI.StoragePanel
         public event Action<StorageSlot> Clicked;
 
         private readonly Label _stackLabel;
+        private int _shownStackCount = -1;
 
         private int _pressPointerId = -1;
         private Vector2 _pressPosition;
@@ -79,12 +80,28 @@ namespace SS3D.UI.StoragePanel
             BoundItem = item;
             ItemIcon = item != null ? item.ItemSprite : null;
             ShowOpenButton = ItemStorage.TryGetStorageOn(item, out _);
-
-            bool showStack = item != null && item.IsStackable && item.StackCount > 1;
-            _stackLabel.text = showStack ? $"×{item.StackCount}" : string.Empty;
-            _stackLabel.style.display = showStack ? DisplayStyle.Flex : DisplayStyle.None;
+            _shownStackCount = -1;
+            RefreshStackCount();
 
             EnableInClassList("storage-slot--empty", item == null);
+        }
+
+        /// <summary>
+        /// Re-reads the bound stack's count. A merge into this stack or a spent unit changes only the item's synced
+        /// count, not the container's contents, so no contents event redraws the panel; the host calls this each frame.
+        /// </summary>
+        public void RefreshStackCount()
+        {
+            int count = BoundItem != null && BoundItem.IsStackable ? BoundItem.StackCount : 0;
+            if (count == _shownStackCount)
+            {
+                return;
+            }
+
+            _shownStackCount = count;
+            bool showStack = count > 1;
+            _stackLabel.text = showStack ? $"×{count}" : string.Empty;
+            _stackLabel.style.display = showStack ? DisplayStyle.Flex : DisplayStyle.None;
         }
 
         public void SetDropState(SlotDropState state)
