@@ -58,8 +58,14 @@ namespace SS3D.Systems.Inventory.Containers.Editor
             /// </summary>
             public readonly bool CoversBody;
 
+            /// <summary>
+            /// The source faces +Y, the back of Human's head, so the worn mesh is turned 180° about the vertical axis.
+            /// The Drive hard hat needs this: its lamp otherwise sits at the back. Drop it if the source is fixed upstream.
+            /// </summary>
+            public readonly bool FacesBack;
+
             public Garment(string name, string set, Slot slot, string displayName, string description, ArmorProfile? armor = null,
-                bool coversBody = false)
+                bool coversBody = false, bool facesBack = false)
             {
                 Name = name;
                 Set = set;
@@ -68,6 +74,7 @@ namespace SS3D.Systems.Inventory.Containers.Editor
                 Description = description;
                 Armor = armor;
                 CoversBody = coversBody;
+                FacesBack = facesBack;
             }
 
             /// <summary>Examine key stem, e.g. <c>jumpsuit_captain</c>.</summary>
@@ -105,7 +112,7 @@ namespace SS3D.Systems.Inventory.Containers.Editor
             new("CapSecurity", "Security", Slot.Head, "Security Cap", "A red cap marked POLICE."),
             new("GlassesSecurityHud", "Security", Slot.Glasses, "Security Glasses", "Red-tinted security glasses."),
             new("BackpackSecurity", "Security", Slot.Back, "Security Backpack", "A black backpack with red trim."),
-            new("HardHatYellow", "Engineering", Slot.Head, "Hard Hat", "A yellow hard hat with a lamp."),
+            new("HardHatYellow", "Engineering", Slot.Head, "Hard Hat", "A yellow hard hat with a lamp.", facesBack: true),
             new("ShoeWorkBoots", "Engineering", Slot.Shoes, "Work Boots", "A pair of laced yellow work boots."),
             new("WeldingMask", "Engineering", Slot.Head, "Welding Helmet", "A dark-visored welding helmet."),
             new("GogglesMeson", "Engineering", Slot.Glasses, "Meson Goggles", "Green-lensed engineering goggles."),
@@ -220,6 +227,7 @@ namespace SS3D.Systems.Inventory.Containers.Editor
         {
             SkinnedMeshRenderer source = Worn(model, garment);
             Mesh adapted = Hardsuit.AdaptMesh(source, target);
+            if (garment.FacesBack) TurnAround(adapted);
             (ClothType type, Mesh mesh)[] meshes;
             bool[] left = source.sharedMesh.boneWeights.Select(w => source.bones[w.boneIndex0].name.EndsWith("_l")).ToArray();
             Func<int, bool> paired = null;
@@ -267,6 +275,26 @@ namespace SS3D.Systems.Inventory.Containers.Editor
             }
 
             Hardsuit.RegisterItem(reference, path, garment.Name);
+        }
+
+        /// <summary>
+        /// Turns a worn mesh 180° about the vertical axis through its own centre, so it stays on the head. Worn meshes
+        /// are in Human's bind space: Z up, the face toward -Y.
+        /// </summary>
+        private static void TurnAround(Mesh mesh)
+        {
+            Vector3 centre = mesh.bounds.center;
+            Vector3[] vertices = mesh.vertices;
+            Vector3[] normals = mesh.normals;
+            Vector4[] tangents = mesh.tangents;
+            for (int i = 0; i < vertices.Length; i++)
+                vertices[i] = new Vector3(2f * centre.x - vertices[i].x, 2f * centre.y - vertices[i].y, vertices[i].z);
+            for (int i = 0; i < normals.Length; i++) normals[i] = new Vector3(-normals[i].x, -normals[i].y, normals[i].z);
+            for (int i = 0; i < tangents.Length; i++) tangents[i] = new Vector4(-tangents[i].x, -tangents[i].y, tangents[i].z, tangents[i].w);
+            mesh.vertices = vertices;
+            mesh.normals = normals;
+            mesh.tangents = tangents;
+            mesh.RecalculateBounds();
         }
 
         /// <summary>
