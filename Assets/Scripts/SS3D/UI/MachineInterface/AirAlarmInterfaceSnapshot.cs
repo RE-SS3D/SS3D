@@ -23,6 +23,12 @@ namespace SS3D.UI.MachineInterface
 
         public byte Scenario;
 
+        /// <summary><see cref="SS3D.Systems.Atmospherics.Pipes.AirAlarmState"/> flags, so the panel names what tripped.</summary>
+        public byte AlarmState;
+
+        /// <summary><see cref="SS3D.Systems.Atmospherics.Pipes.AirAlarmIndicator"/>: filling, draining or steady.</summary>
+        public byte Indicator;
+
         public bool AccessGranted;
 
         public bool AccessScanning;

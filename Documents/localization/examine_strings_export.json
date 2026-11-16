@@ -136,6 +136,13 @@
             "EnDescription": "An air scrubber. Sucks out any harmful gases in the atmosphere."
         },
         {
+            "AssetPath": "Assets/Content/Data/Examine/String/Furniture/Machines/Atmospherics/ScrubberIntake.asset",
+            "NameKey": "furniture.machines.atmospherics.scrubber_intake.name",
+            "DescriptionKey": "furniture.machines.atmospherics.scrubber_intake.desc",
+            "EnName": "Chamber intake",
+            "EnDescription": "A gas storage chamber's intake. Draws in <k=warn>all air</k>, oxygen and nitrogen too: placed in a room, it empties it."
+        },
+        {
             "AssetPath": "Assets/Content/Data/Examine/String/Furniture/Machines/Atmospherics/Vent.asset",
             "NameKey": "furniture.machines.atmospherics.vent.name",
             "DescriptionKey": "furniture.machines.atmospherics.vent.desc",

@@ -33,8 +33,15 @@ namespace SS3D.Systems.Atmospherics.Pipes
     [RequireComponent(typeof(ElectricDeviceAdjacencyConnector))]
     public sealed class AirAlarmController : NetworkBehaviour, IAmbientLoopState, IAmbientLoopArea, IPersistentSetup, ISetupScope
     {
-        /// <summary>Seconds lit and seconds dark while alarming.</summary>
-        private const float FlashSeconds = 0.4f;
+        /// <summary>Seconds lit and seconds dark for a dangerous room: a fast flash.</summary>
+        private const float DangerFlashSeconds = 0.25f;
+
+        /// <summary>Seconds lit and seconds dark while the room fills or drains: a slow blink.</summary>
+        private const float TrendBlinkSeconds = 0.6f;
+
+        private static readonly Color NominalEmission = new(0.25f, 2.2f, 0.45f, 1f);
+        private static readonly Color RepressurizingEmission = new(0.3f, 0.9f, 3f, 1f);
+        private static readonly Color AlarmEmission = new(3f, 0.3f, 0.2f, 1f);
 
         private static readonly int EmissionColorId = Shader.PropertyToID("_EmissionColor");
 
@@ -44,8 +51,11 @@ namespace SS3D.Systems.Atmospherics.Pipes
         [SerializeField]
         private Renderer[] _emissiveRenderers;
 
-        [SyncVar(OnChange = nameof(HandleAlarmStateChanged))]
+        [SyncVar]
         private AirAlarmState _alarmState;
+
+        [SyncVar(OnChange = nameof(HandleIndicatorChanged))]
+        private AirAlarmIndicator _indicator;
 
         [SyncVar]
         private float _samplePressureKpa;
@@ -75,14 +85,23 @@ namespace SS3D.Systems.Atmospherics.Pipes
         private AreaId _areaId;
         private bool _hasArea;
         private EmissiveMaterialSlots _emissiveSlots;
-        private Color _alarmEmission = new(3f, 0.3f, 0.2f, 1f);
         private bool _powerEventsSubscribed;
-        private bool _flashing;
-        private bool _flashLit;
+        private float _blinkSeconds;
+        private Color _blinkEmission;
+        private bool _blinkLit;
+        private bool _hasTrendSample;
+        private float _trendPressureKpa;
+        private float _smoothedRateKpaPerSecond;
+        private AirAlarmPressureTrend _trend;
 
         public AirAlarmState AlarmState => _alarmState;
 
-        public bool IsLoopRunning => _alarmState != AirAlarmState.None && IsPowered();
+        /// <summary>The face's state, which also tells the panel whether the room is filling or draining.</summary>
+        public AirAlarmIndicator Indicator => _indicator;
+
+        /// <summary>The siren sounds for danger and leaks, not while vents refill a room.</summary>
+        public bool IsLoopRunning =>
+            (_indicator == AirAlarmIndicator.Danger || _indicator == AirAlarmIndicator.Depressurizing) && IsPowered();
 
         public AirAlarmPresetMode ActiveMode => (AirAlarmPresetMode)_activeMode;
 
@@ -245,8 +264,7 @@ namespace SS3D.Systems.Atmospherics.Pipes
             ResolveArea();
             if (!_hasArea || !IsPowered())
             {
-                _alarmState = AirAlarmState.None;
-                _hasSample = false;
+                ClearSample(IsPowered());
                 return;
             }
 
@@ -255,8 +273,7 @@ namespace SS3D.Systems.Atmospherics.Pipes
                 || atmosSubSystem.Simulation == null
                 || _tileObject == null)
             {
-                _alarmState = AirAlarmState.None;
-                _hasSample = false;
+                ClearSample(true);
                 return;
             }
 
@@ -270,8 +287,7 @@ namespace SS3D.Systems.Atmospherics.Pipes
 
             if (!AtmosAreaSampler.TrySampleTile(sampleCoord, atmosSubSystem.Simulation, out AtmosAreaSample sample))
             {
-                _alarmState = AirAlarmState.None;
-                _hasSample = false;
+                ClearSample(true);
                 return;
             }
 
@@ -298,6 +314,34 @@ namespace SS3D.Systems.Atmospherics.Pipes
                 next |= AirAlarmState.HighTemperature;
 
             _alarmState = next;
+            UpdateTrend(sample.AveragePressureKpa);
+            _indicator = AirAlarmIndicatorRules.Resolve(powered: true, next, _trend);
+        }
+
+        /// <summary>No reading: no flags, no trend. A powered alarm with nothing to read shows plain green.</summary>
+        [Server]
+        private void ClearSample(bool powered)
+        {
+            _alarmState = AirAlarmState.None;
+            _hasSample = false;
+            _hasTrendSample = false;
+            _smoothedRateKpaPerSecond = 0f;
+            _trend = AirAlarmPressureTrend.Steady;
+            _indicator = powered ? AirAlarmIndicator.Nominal : AirAlarmIndicator.Off;
+        }
+
+        [Server]
+        private void UpdateTrend(float pressureKpa)
+        {
+            if (_hasTrendSample)
+            {
+                _smoothedRateKpaPerSecond = AirAlarmIndicatorRules.SmoothRate(
+                    _smoothedRateKpaPerSecond, _trendPressureKpa, pressureKpa, AtmosConstants.TickInterval);
+            }
+
+            _hasTrendSample = true;
+            _trendPressureKpa = pressureKpa;
+            _trend = AirAlarmIndicatorRules.ResolveTrend(_smoothedRateKpaPerSecond, _trend);
         }
 
         public void AppendExamineSections(List<ExamineSection> sections)
@@ -318,9 +362,14 @@ namespace SS3D.Systems.Atmospherics.Pipes
             }
 
             // Alarm state reads at range (coarse device state); the readings are fine print.
-            string status = _alarmState == AirAlarmState.None
-                ? "<k=good>Nominal</k>"
-                : $"<k=danger>{_alarmState}</k>";
+            AirAlarmStatus described = AirAlarmStatusText.Describe(true, _hasSample, _alarmState, _indicator);
+            string key = described.Severity switch
+            {
+                AirAlarmSeverity.Danger => "danger",
+                AirAlarmSeverity.Warning => "warn",
+                _ => "good",
+            };
+            string status = $"<k={key}>{described.Headline.ToLowerInvariant().Replace("co2", "CO₂")}</k>";
             float temperatureC = _sampleTemperatureKelvin - 273.15f;
             sections.Add(new ExamineSection($"Air alarm: {status}."));
             sections.Add(new ExamineSection(
@@ -399,7 +448,7 @@ namespace SS3D.Systems.Atmospherics.Pipes
             RefreshVisuals();
         }
 
-        private void HandleAlarmStateChanged(AirAlarmState _, AirAlarmState __, bool asServer)
+        private void HandleIndicatorChanged(AirAlarmIndicator _, AirAlarmIndicator __, bool asServer)
         {
             if (!asServer)
                 RefreshVisuals();
@@ -416,36 +465,50 @@ namespace SS3D.Systems.Atmospherics.Pipes
             if (_emissiveSlots == null)
                 CacheEmissiveMaterials();
 
-            bool powered = IsPowered();
-            bool alarming = _alarmState != AirAlarmState.None;
-            SetFlashing(powered && alarming);
-            if (!powered)
-                _emissiveSlots.ApplyPowered(false);
-            else if (!alarming)
-                _emissiveSlots.Apply(0.35f, Color.white * 0.35f);
+            // Power reaches the client before the server's next sample, so an unpowered alarm goes dark at once.
+            AirAlarmIndicator indicator = IsPowered() ? _indicator : AirAlarmIndicator.Off;
+            switch (indicator)
+            {
+                case AirAlarmIndicator.Nominal:
+                    SetBlink(0f, Color.black);
+                    _emissiveSlots.ApplyEmissionOverride(1f, NominalEmission);
+                    break;
+                case AirAlarmIndicator.Repressurizing:
+                    SetBlink(TrendBlinkSeconds, RepressurizingEmission);
+                    break;
+                case AirAlarmIndicator.Depressurizing:
+                    SetBlink(TrendBlinkSeconds, AlarmEmission);
+                    break;
+                case AirAlarmIndicator.Danger:
+                    SetBlink(DangerFlashSeconds, AlarmEmission);
+                    break;
+                default:
+                    SetBlink(0f, Color.black);
+                    _emissiveSlots.ApplyPowered(false);
+                    break;
+            }
         }
 
-        private void SetFlashing(bool flashing)
+        /// <summary>Blinks the face in <paramref name="emission"/> every <paramref name="seconds"/>; zero stops blinking.</summary>
+        private void SetBlink(float seconds, Color emission)
         {
-            if (_flashing == flashing)
+            if (Mathf.Approximately(_blinkSeconds, seconds) && _blinkEmission == emission)
                 return;
 
-            _flashing = flashing;
-            if (flashing)
-            {
-                _flashLit = false;
-                InvokeRepeating(nameof(ToggleFlash), 0f, FlashSeconds);
-            }
-            else
-            {
-                CancelInvoke(nameof(ToggleFlash));
-            }
+            CancelInvoke(nameof(ToggleBlink));
+            _blinkSeconds = seconds;
+            _blinkEmission = emission;
+            if (seconds <= 0f)
+                return;
+
+            _blinkLit = false;
+            InvokeRepeating(nameof(ToggleBlink), 0f, seconds);
         }
 
-        private void ToggleFlash()
+        private void ToggleBlink()
         {
-            _flashLit = !_flashLit;
-            _emissiveSlots.ApplyEmissionOverride(1f, _flashLit ? _alarmEmission : Color.black);
+            _blinkLit = !_blinkLit;
+            _emissiveSlots.ApplyEmissionOverride(1f, _blinkLit ? _blinkEmission : Color.black);
         }
 
         private bool IsPowered() => AtmosPortPower.IsPowered(_powerConsumer);

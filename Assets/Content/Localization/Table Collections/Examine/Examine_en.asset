@@ -2206,6 +2206,14 @@ MonoBehaviour:
     m_Localized: Its wiring panel is <k=warn>open</k>.
     m_Metadata:
       m_Items: []
+  - m_Id: 299262962143830022
+    m_Localized: Chamber intake
+    m_Metadata:
+      m_Items: []
+  - m_Id: 299262962143830023
+    m_Localized: 'A gas storage chamber''s intake. Draws in <k=warn>all air</k>, oxygen and nitrogen too: placed in a room, it empties it.'
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

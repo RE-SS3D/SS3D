@@ -2143,6 +2143,14 @@ MonoBehaviour:
     m_Key: examine.syndicate_bomb.panel_open
     m_Metadata:
       m_Items: []
+  - m_Id: 299262962143830022
+    m_Key: furniture.machines.atmospherics.scrubber_intake.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 299262962143830023
+    m_Key: furniture.machines.atmospherics.scrubber_intake.desc
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:
