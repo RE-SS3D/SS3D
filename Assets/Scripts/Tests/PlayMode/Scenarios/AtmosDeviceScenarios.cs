@@ -22,6 +22,7 @@ namespace SS3D.Tests
     {
         private const string SurfacePipe = "AtmosPipesSurface";
         private const string SupplyPipe = "AtmosPipesSupply";
+        private const string WastePipe = "AtmosPipesWaste";
         private const float FillKpa = 300f;
 
         private static AtmosSubSystem Atmos => SubSystems.Get<AtmosSubSystem>();
@@ -99,6 +100,45 @@ namespace SS3D.Tests
 
             yield return WaitFor(() => HistoryNewest(meter) > FillKpa - 1f, "a sample lands in the history", 5f);
             yield return OpenPanel(meter.GetComponent<MeterInterfaceController>(), MachineInterfaceIds.Meter);
+        }
+
+        // Guards: a meter on Supply and Waste reads Supply first, steps to Waste from its panel, saves that choice, and reads a Waste-only tile on its own (AtmosMeterController.ServerSelectNextLine, MeterSetup, issue #280) · Not cheaper because: the line choice resolves against a live tilemap and pipe networks built from real prefabs
+        [UnityTest]
+        public IEnumerator Meter_OnTwoLines_SwitchesToWaste_AndSavesTheChoice()
+        {
+            ChangesRoom = true;
+            Vector3 centre = RoomTile();
+            PlacedTileObject supply = Place(SupplyPipe, centre);
+            PlacedTileObject waste = Place(WastePipe, centre);
+            AtmosMeterController meter = Place("AtmosMeter", centre).GetComponent<AtmosMeterController>();
+            Atmos.PipeRegistry.TryFillNetwork(GasPipeSegmentKey.From(waste), AtmosGasMix.Air(), FillKpa);
+
+            yield return WaitFor(() => meter.TryGetLine(out _), "the meter finds a line", 5f);
+            Assert.AreEqual(2, meter.CountLinesOnTile());
+            Assert.AreSame(Network(supply), Line(meter), "With no choice made it reads Supply first");
+
+            meter.ServerSelectNextLine();
+            Assert.AreEqual(TileLayer.PipeRight, meter.ChosenLine);
+            Assert.AreSame(Network(waste), Line(meter), "It switches without waiting for a tick");
+            StringAssert.Contains("PipeRight", meter.CaptureSetup());
+
+            meter.ServerSelectNextLine();
+            Assert.AreSame(Network(supply), Line(meter), "Stepping past the last line wraps around");
+
+            meter.RestoreSetup(meter.CaptureSetup().Replace("PipeLeft", "PipeRight"));
+            yield return WaitFor(() => meter.TryGetLine(out GasPipeNetworkRecord line) && line == Network(waste), "a restored choice reads Waste", 5f);
+
+            PlacedTileObject wasteOnly = Place(WastePipe, centre + Vector3.right);
+            AtmosMeterController wasteMeter = Place("AtmosMeter", centre + Vector3.right).GetComponent<AtmosMeterController>();
+            yield return WaitFor(() => wasteMeter.TryGetLine(out _), "a meter on Waste alone finds it", 5f);
+            Assert.AreSame(Network(wasteOnly), Line(wasteMeter));
+            Assert.AreEqual(1, wasteMeter.CountLinesOnTile());
+        }
+
+        private static GasPipeNetworkRecord Line(AtmosMeterController meter)
+        {
+            Assert.IsTrue(meter.TryGetLine(out GasPipeNetworkRecord line));
+            return line;
         }
 
         private static float HistoryNewest(AtmosMeterController meter)

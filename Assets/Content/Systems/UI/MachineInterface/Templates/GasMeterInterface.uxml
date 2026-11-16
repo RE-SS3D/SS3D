@@ -14,6 +14,7 @@
     <ui:Style src="project://database/Assets/Content/Systems/UI/MachineInterface/Components/GasHistoryBars.uss" />
     <ui:Style src="project://database/Assets/Content/Systems/UI/MachineInterface/Components/StatusBadge.uss" />
     <ui:Style src="project://database/Assets/Content/Systems/UI/MachineInterface/Components/DeviceFooter.uss" />
+    <ui:Style src="project://database/Assets/Content/Systems/UI/MachineInterface/Components/SteelButton.uss" />
     <ui:Style src="project://database/Assets/Content/Systems/UI/MachineInterface/Templates/GasMeterInterface.uss" />
 
     <ss3d:DiegeticDeviceShell name="device-shell"
@@ -33,8 +34,9 @@
         <ui:VisualElement class="gas-meter-columns">
             <ui:VisualElement class="panel-section gas-meter-columns__column gas-meter-columns__column--first" name="line-section">
                 <ui:VisualElement class="panel-section__clip">
-                    <ui:VisualElement class="panel-section__header">
+                    <ui:VisualElement class="panel-section__header panel-section__header--split">
                         <ui:Label class="panel-section__header-title font-titling" text="Line Conditions" />
+                        <ss3d:SteelButton name="line-switch" text="Next line" class="gas-meter-line-switch" style="display: none;" />
                     </ui:VisualElement>
                     <ui:VisualElement class="panel-section__content">
                         <ui:VisualElement name="pressure-card" class="gas-meter-pressure">

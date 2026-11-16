@@ -16,6 +16,9 @@ namespace SS3D.UI.MachineInterface
 
         public bool Connected;
 
+        /// <summary>Lines running through the meter's tile; above one, the panel offers a switch.</summary>
+        public byte LinesOnTile;
+
         public float TemperatureKelvin;
 
         public float Moles;

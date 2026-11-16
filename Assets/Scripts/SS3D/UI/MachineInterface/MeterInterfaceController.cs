@@ -8,7 +8,7 @@ using UnityEngine;
 namespace SS3D.UI.MachineInterface
 {
     /// <summary>
-    /// Read-only panel for a pipe meter. Open to anyone: there's nothing on it to lock.
+    /// Panel for a pipe meter. Open to anyone: its only control picks which line on its tile it reads.
     /// </summary>
     [RequireComponent(typeof(AtmosMeterController))]
     public sealed class MeterInterfaceController : MachineInterfaceBehaviour
@@ -33,6 +33,18 @@ namespace SS3D.UI.MachineInterface
         public override string InterfaceId => MachineInterfaceIds.Meter;
 
         protected override bool ApplyControl(byte controlId, bool value) => false;
+
+        protected override bool ApplyActionControl(byte controlId, int value)
+        {
+            if (controlId != MachineInterfaceControlIds.Atmos.NextLine || Meter == null)
+            {
+                return false;
+            }
+
+            Meter.ServerSelectNextLine();
+            RefreshAllViewers();
+            return true;
+        }
 
         protected override void SendOpenToViewer(NetworkConnection conn)
         {
@@ -72,6 +84,7 @@ namespace SS3D.UI.MachineInterface
                 Subtitle = MachineAreaLabel.ComposeForDevice(this, _deviceKind),
                 LineLabel = connected ? FormatLine(line) : string.Empty,
                 Connected = connected,
+                LinesOnTile = Meter != null ? (byte)Meter.CountLinesOnTile() : (byte)0,
                 TemperatureKelvin = connected ? line.Temperature : 0f,
                 Moles = connected ? line.GetTotalMoles(AtmosConstants.DefaultGasCount) : 0f,
                 VolumeLitres = connected ? line.Volume * LitresPerCubicMetre : 0f,
