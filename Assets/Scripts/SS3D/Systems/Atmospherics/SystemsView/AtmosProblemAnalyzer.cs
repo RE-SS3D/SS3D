@@ -86,7 +86,7 @@ namespace SS3D.Systems.Atmospherics.SystemsView
         /// </summary>
         public static bool IsSource(AtmosProblemDevice device, int viewId) => viewId > 0 && device.Kind switch
         {
-            AtmosProblemDeviceKind.Scrubber or AtmosProblemDeviceKind.LineFill => device.BackViewId == viewId,
+            AtmosProblemDeviceKind.Scrubber or AtmosProblemDeviceKind.Intake or AtmosProblemDeviceKind.LineFill => device.BackViewId == viewId,
             AtmosProblemDeviceKind.Pump or AtmosProblemDeviceKind.Mixer => device.FrontViewId == viewId,
             AtmosProblemDeviceKind.Filter => device.FrontViewId == viewId || device.SideViewId == viewId,
             AtmosProblemDeviceKind.Valve => device.BackViewId == viewId || device.FrontViewId == viewId,
@@ -162,7 +162,8 @@ namespace SS3D.Systems.Atmospherics.SystemsView
             {
                 AtmosProblemDeviceKind kind = vents ? AtmosProblemDeviceKind.Vent : AtmosProblemDeviceKind.Scrubber;
                 foreach (IGrouping<int, AtmosProblemDevice> network in devices
-                             .Where(device => device.Kind == kind && device.HasPipe && device.BackViewId > 0)
+                             .Where(device => (device.Kind == kind || (!vents && device.Kind == AtmosProblemDeviceKind.Intake))
+                                 && device.HasPipe && device.BackViewId > 0)
                              .GroupBy(device => device.BackViewId))
                 {
                     int viewId = network.Key;
@@ -173,10 +174,13 @@ namespace SS3D.Systems.Atmospherics.SystemsView
                     AtmosProblemDevice[] marked = network.ToArray();
                     Vector2Int first = marked[0].Tile;
                     int count = marked.Length;
+                    string takers = marked.All(device => device.Kind == AtmosProblemDeviceKind.Intake) ? "chamber intakes"
+                        : marked.Any(device => device.Kind == AtmosProblemDeviceKind.Intake) ? "scrubbers and chamber intakes"
+                        : "scrubbers";
                     string title = vents
                         ? count == 1 ? $"Nothing feeds the vent at {Cell(first)}" : $"Nothing feeds {count} vents on one network (first at {Cell(first)})"
-                        : count == 1 ? $"Scrubber at {Cell(first)} has nowhere to send gas"
-                        : $"{count} scrubbers on one network (first at {Cell(first)}) have nowhere to send gas";
+                        : count == 1 ? $"{DeviceName(marked[0].Kind)} at {Cell(first)} has nowhere to send gas"
+                        : $"{count} {takers} on one network (first at {Cell(first)}) have nowhere to send gas";
                     string body = vents
                         ? $"{title}: {NoSource.Words}. Connect the network to a pump's outlet, a gas intake or a line fill."
                         : $"{title}: {NoSink.Words}. Connect the network to a pump's inlet, a valve or a vent out to space.";
@@ -214,6 +218,7 @@ namespace SS3D.Systems.Atmospherics.SystemsView
         /// from its last tile is meant to stop there).
         /// </summary>
         public static bool EndsPipes(AtmosProblemDeviceKind kind) => kind is AtmosProblemDeviceKind.Vent or AtmosProblemDeviceKind.Scrubber
+            or AtmosProblemDeviceKind.Intake
             or AtmosProblemDeviceKind.Meter or AtmosProblemDeviceKind.Injector or AtmosProblemDeviceKind.LineFill;
 
         private static int LinkCount(byte links)
@@ -228,6 +233,7 @@ namespace SS3D.Systems.Atmospherics.SystemsView
         {
             AtmosProblemDeviceKind.Vent => "Vent",
             AtmosProblemDeviceKind.Scrubber => "Scrubber",
+            AtmosProblemDeviceKind.Intake => "Chamber intake",
             AtmosProblemDeviceKind.Pump => "Gas pump",
             AtmosProblemDeviceKind.Valve => "Valve",
             AtmosProblemDeviceKind.Filter or AtmosProblemDeviceKind.Mixer => "Filter or mixer",
@@ -240,6 +246,7 @@ namespace SS3D.Systems.Atmospherics.SystemsView
         {
             AtmosProblemDeviceKind.Vent => "Vent",
             AtmosProblemDeviceKind.Scrubber => "Scrubber",
+            AtmosProblemDeviceKind.Intake => "Intake",
             AtmosProblemDeviceKind.Pump => "GasPump",
             AtmosProblemDeviceKind.Valve => "Valve",
             AtmosProblemDeviceKind.Filter or AtmosProblemDeviceKind.Mixer => "ThreeWay",
@@ -250,7 +257,7 @@ namespace SS3D.Systems.Atmospherics.SystemsView
         private static string PipeLineName(AtmosProblemDeviceKind kind) => kind switch
         {
             AtmosProblemDeviceKind.Vent => "Supply or Mixed",
-            AtmosProblemDeviceKind.Scrubber => "Waste or Mixed",
+            AtmosProblemDeviceKind.Scrubber or AtmosProblemDeviceKind.Intake => "Waste or Mixed",
             AtmosProblemDeviceKind.Meter or AtmosProblemDeviceKind.Injector => "gas",
             _ => "matching",
         };
@@ -268,6 +275,8 @@ namespace SS3D.Systems.Atmospherics.SystemsView
         Meter,
         Injector,
         LineFill,
+        /// <summary>A chamber intake: a scrubber that takes all air. Last, so the older values keep their numbers.</summary>
+        Intake,
     }
 
     /// <summary>One pipe as the view draws it: its line (a run slot, Supply 0 to Surface 3), real links and network.</summary>

@@ -190,6 +190,8 @@ namespace EditorTests
                 Title = "AIR ALARM",
                 AreaName = "Medbay",
                 ActiveMode = (byte)AirAlarmPresetMode.Panic,
+                AlarmState = (byte)(AirAlarmState.LowPressure | AirAlarmState.LowOxygen),
+                Indicator = (byte)AirAlarmIndicator.Repressurizing,
                 HasSample = true,
                 PressureKpa = 101.3f,
                 OxygenFraction = 0.21f,
@@ -228,6 +230,8 @@ namespace EditorTests
             Assert.AreEqual(original.MachineObjectId, roundTripped.MachineObjectId);
             Assert.AreEqual(original.AreaName, roundTripped.AreaName);
             Assert.AreEqual(original.ActiveMode, roundTripped.ActiveMode);
+            Assert.AreEqual(original.AlarmState, roundTripped.AlarmState);
+            Assert.AreEqual(original.Indicator, roundTripped.Indicator);
             Assert.AreEqual(original.HasSample, roundTripped.HasSample);
             Assert.AreEqual(original.PlasmaFraction, roundTripped.PlasmaFraction);
             Assert.AreEqual(original.TemperatureKelvin, roundTripped.TemperatureKelvin);

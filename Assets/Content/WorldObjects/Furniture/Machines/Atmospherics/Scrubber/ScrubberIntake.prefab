@@ -66,7 +66,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 695c4de41b9578049a93f19b1eef7213, type: 2}
+  - {fileID: 2100000, guid: dc834a6437fd40ffb070bfc95b922264, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -170,9 +170,9 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 695c4de41b9578049a93f19b1eef7213, type: 2}
+  - {fileID: 2100000, guid: dc834a6437fd40ffb070bfc95b922264, type: 2}
   - {fileID: 2100000, guid: b35e5d5edbcc63442bf15e5482e4cfe4, type: 2}
-  - {fileID: 2100000, guid: 695c4de41b9578049a93f19b1eef7213, type: 2}
+  - {fileID: 2100000, guid: dc834a6437fd40ffb070bfc95b922264, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -314,7 +314,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 38640bf88ae0c29409092a258bd36878, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  key: {fileID: 11400000, guid: 93cfd32d90f8a4c49bde37b7a4927f8f, type: 2}
+  key: {fileID: 11400000, guid: fe212ece69e14ee3826ca94cf99003be, type: 2}
 --- !u!114 &1381324400789219920
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -405,10 +405,10 @@ MonoBehaviour:
   _accessGranted: 0
   _accessScanning: 0
   _accessDenied: 0
-  _title: "SCRUBBER \xB7 ATMOSPHERICS"
-  _modelLabel: "SCB-09 \xB7 atmospheric scrubber unit"
+  _title: "CHAMBER INTAKE \xB7 ATMOSPHERICS"
+  _modelLabel: "SCB-09 \xB7 chamber intake unit"
   _deviceTitle: SCB-09
-  _deviceKind: Atmospheric Scrubber
+  _deviceKind: Chamber Intake
   _powerConsumer: {fileID: 4504072263253761078}
 --- !u!114 &452209128191744419
 MonoBehaviour:
