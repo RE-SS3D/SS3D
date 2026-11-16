@@ -786,8 +786,8 @@ namespace SS3D.Systems.Interactions
 
             if (showMenu && interactions.Count > 0)
             {
+                // The view keeps the wheel on screen (RadialInteractionMenuView.PositionAt).
                 Vector3 mousePosition = Mouse.current.position.ReadValue();
-                mousePosition.y = Mathf.Max(_radialView.MenuHeight, mousePosition.y);
 
                 // Same hold-right-button menu as the world radial (ViewTargetInteractions): left clicks pick a petal.
                 _radialView.SuppressLeftButtonForMenu();

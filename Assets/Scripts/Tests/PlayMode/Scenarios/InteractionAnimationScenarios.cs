@@ -54,6 +54,27 @@ namespace SS3D.Tests
             wrench.Delete();
         }
 
+        // Playtest 2026-11-16: dragging a held item from the HUD into the world played the drop animation but left the
+        // item in the hand. The UI drag ends in HumanInventory.ClientPlaceItemInWorld.
+        [UnityTest]
+        public IEnumerator DragToWorld_PlacesTheHeldItemAtTheContactFrame()
+        {
+            PlaceBody();
+            Hand hand = Body.GetComponent<Hands>().SelectedHand;
+            HumanInventory inventory = Body.GetComponent<HumanInventory>();
+            Item wrench = SubSystems.Get<ItemSubSystem>().SpawnItem(Wrench, Body.transform.position, Quaternion.identity);
+            Assert.IsTrue(hand.Container.AddItem(wrench), "The wrench goes in the active hand");
+            yield return Hold(0.5f);
+
+            Vector3 point = Body.transform.position + (Body.transform.forward * 0.6f);
+            Assert.IsTrue(Physics.Raycast(point + Vector3.up, Vector3.down, out RaycastHit floor, 3f), "There is floor in front");
+            inventory.ClientPlaceItemInWorld(wrench, floor.point, floor.normal);
+
+            yield return WaitFor(() => hand.ItemInHand != wrench, "the wrench leaves the hand", 2f);
+            Assert.Less(Vector3.Distance(wrench.transform.position, floor.point), 0.5f, "It lies where it was dropped");
+            wrench.Delete();
+        }
+
         // Playtest bug "Item miniatures": the height morph scales the armature the hands sit under, and
         // each pickup and drop multiplied the item by that scale, so a short holder shrank it a bit more
         // every time.
