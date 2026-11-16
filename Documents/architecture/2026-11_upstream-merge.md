@@ -2,7 +2,7 @@
 > Touches systems: networking-session (CI, releases, updaters), ui-shell-main-menu (release banner), application (bug reports), docs governance (`AGENTS.md`, `CLAUDE.md`, `Documents/SKILL.md`, `Documents/MERGE_GUIDE.md`, milestones)
 > Status: in-progress
 
-**Progress:** Phases 0–4 done on `upstream-prep`; Phase 5 has the test prerelease left.
+**Progress:** Phases 0–5 done on `upstream-prep`; `develop` frozen since 2026-11-16. Next: merge day.
 
 # Upstream merge (Nov 2026)
 
@@ -130,7 +130,7 @@ Settled with the owner in a grilling session, 2026-11-15/16.
 
 - [x] `Testing/ui/validate.sh --steps compile,editmode` passes after the switch (5428/5429, 2026-11-16); the updater tests pass locally, the PowerShell one under `pwsh` (CI uses Windows PowerShell 5.1)
 - [x] The Phase 3 stray-link check passes
-- [ ] A `develop-<suffix>` prerelease cut from `upstream-prep` on the fork builds, and its updater finds nothing newer on upstream
+- [x] `develop-upstream-prep` prerelease (fork run 43922814045, 2026-11-16): Windows build and both updater jobs green. In the zip, the release check, bug report link and bundled updater name `RE-SS3D/SS3D`; `Update_SS3D.ps1 -CheckOnly` reports no stable numbered release upstream. The build info's `repository` still reads the fork because it comes from the build checkout's `origin`; upstream builds write their own
 
 ## Merge day
 
