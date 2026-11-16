@@ -2,7 +2,7 @@
 > Touches systems: rendering, tile, entities, examine, action-messages, map-editor-creative-hooks
 > Status: planned
 
-**Progress:** not started. Grilled with the owner on 2026-11-16, after an architecture review of the FOV and playtest feedback that the black "shadows don't match the walls". The same grill produced [fov.md](../design/fov.md). Serves [mvp1-nuke-ops.md](../milestones/mvp1-nuke-ops.md) M12.
+**Progress:** P0 done 2026-11-16 (findings under P0). Grilled with the owner on 2026-11-16, after an architecture review of the FOV and playtest feedback that the black "shadows don't match the walls". The same grill produced [fov.md](../design/fov.md). Serves [mvp1-nuke-ops.md](../milestones/mvp1-nuke-ops.md) M12.
 
 # Field of view rework: walls drawn whole, sharp edges, one raycast batch (Nov 2026)
 
@@ -49,10 +49,17 @@ Read directly from code and prefabs; the [rendering](systems/rendering.md) map i
 
 ### P0: spike
 
-- [ ] Confirm a custom URP 17.3 RenderGraph pass can read the rendering-layers texture produced by the Decal Layers depth-normals prepass (`UniversalResourceData.renderingLayersTexture` or equivalent), and that adding a bit to character renderers doesn't change their lighting or decal receipt. Record the answer under D9
-- [ ] Baseline `Vision.ViewPoints` and `Vision.VisionMap` on the Metastation (Profiler markdown export, `.cursor/skills/analyze-unity-perf`)
-- [ ] Before screenshots: the playtester's corner at 10°, 45° and 80° tilt, and the doorway from the first owner screenshot
+- [x] Confirm a custom URP 17.3 RenderGraph pass can read the rendering-layers texture produced by the Decal Layers depth-normals prepass (`UniversalResourceData.renderingLayersTexture` or equivalent), and that adding a bit to character renderers doesn't change their lighting or decal receipt. Record the answer under D9
+- [x] Baseline `Vision.ViewPoints` and `Vision.VisionMap` (Profiler markdown export, `.cursor/skills/analyze-unity-perf`)
+- [x] Before screenshots: the playtester's corner at 10°, 45° and 80° tilt, and the doorway from the first owner screenshot
 - Validation: none (no code change)
+
+**Findings (2026-11-16):**
+
+- **Rendering layers: yes, with a named layer.** `UniversalResourceData.renderingLayersTexture` is public and written by the depth-normals prepass when the Decal feature has `decalLayers: 1` (ours does); a pass reads it with `UseTexture` and `LOAD_TEXTURE2D_X(_CameraRenderingLayersTexture)` (`DeclareRenderingLayerTexture.hlsl`). Its format follows the number of *named* rendering layers: two today, so `R8_UInt`, and URP masks every renderer's bits with the defined layers (`RenderingLayerUtils.ToValidRenderingLayers`). The entity bit must therefore be a named layer under 8: `VisionEntity` at index 2 in `TagManager` `m_RenderingLayers`, not bit 31 like `SelectionRenderingLayers`. Lights and decal projectors test for overlap with their own masks (Default, `ReceiveWorldDecals`), so an extra bit changes neither.
+- **Baseline** on Classic MiniStation (the Metastation template isn't in the repo), editor Play Mode on tomnas, standing at the nearest airlock, 120 frames: `Vision.ViewPoints` 1.91 ms mean / 7.08 ms max, `Vision.VisionMap` 0.21 / 0.67 ms.
+- **Shots.** The owner's and playtester's exact spots aren't in the repo, so the doorway and the wall corner beside the airlock nearest spawn on Classic MiniStation stand in for them. `VisionShots` (PlayMode, explicit, `validate.sh --steps scenarios:VisionShots`) writes them with the timings to `artifacts/ui/vision-shots-<UTC>/`; the P0 set is `vision-shots-20261116-134149`.
+- **Deviation:** the engine-driven wall connectors swap the mesh in `TileAdjacencyView.UpdateMeshAndDirection`, not `AbstractHorizontalConnector` (its path is only the legacy SyncVar one). P1 hooks the arms there.
 
 ### P1: occluders
 
