@@ -73,8 +73,8 @@ Settled with the owner in a grilling session, 2026-11-15/16.
     Claude Code and Cursor, with `AGENTS.md` as the entry point, and walks the loop with the skill for each step.
     The PR template keeps upstream's networking checklist and adds "docs synced via `update-system-docs`".
     Hand-written PRs meet the same bar.
-15. **Repo pages:** README keeps the fork's play-first layout plus upstream's Community and Donate sections and
-    badges; restore `FUNDING.yml`; keep the YAML issue forms (ideas go to Discussions); Code of Conduct contact
+15. **Repo pages:** README stays upstream's (info, downloads to the latest release, donate, community,
+    contributing) with a generated roadmap section, no Trello, and contributing pointed at `CONTRIBUTING.md` and `Documents/`; restore `FUNDING.yml`; keep the YAML issue forms (ideas go to Discussions); Code of Conduct contact
     becomes upstream's; drop "Not an official RE:SS3D build" from `Builds/README.txt`; GitBook mentions in code
     comments point at `Documents/`; the deleted `.bat` files and license file stay deleted.
 16. **One identity: BroodjeKipcorn `<henkhooft@gmail.com>`.** `.mailmap` folds the other names and addresses
@@ -104,7 +104,7 @@ Settled with the owner in a grilling session, 2026-11-15/16.
 
 - [x] Root [CONTRIBUTING.md](../../CONTRIBUTING.md), agent-assisted (decision 14): agent setup table, the seven-step loop with the skill for each step, what a mergeable PR looks like. `Documents/CONTRIBUTING.md` removed. Its "CI on your PR" paragraph describes the Phase 3 behaviour for fork PRs
 - [x] `.github/PULL_REQUEST_TEMPLATE.md`: validation, design-deviation, `update-system-docs` and versioning checklist; AI-assistance section; upstream's networking checklist kept
-- [x] `README.md` (decision 15): play-first layout pointed at upstream, upstream's intro, Community and Donate sections and a Discord badge; the generated roadmap block is unchanged
+- [x] `README.md` (decision 15): upstream's README, plus a ROADMAP section holding the generated block (now without its own heading); Trello and the milestones board removed; contributing points at `CONTRIBUTING.md` and `Documents/`; the dead `archive/master.zip` link points at `develop`
 - [x] `.github/FUNDING.yml` restored; issue form, `Config.yml` and `Builds/TESTERS.md` links point upstream; `Documents/CODE_OF_CONDUCT.md` is upstream's text again (the project email as contact)
 - [x] "Never add `Version-Bump: major`" now says it's a team decision
 
@@ -158,6 +158,8 @@ Settled with the owner in a grilling session, 2026-11-15/16.
 - **`updater-e2e.yml` needs two upstream stable releases** (previous → latest); before v0.19.0 it has only one.
 - **`develop` merges that touch `Documents/FORK_STATUS.md` conflict** (deleted on `upstream-prep`). Carry the change into
   [MERGE_GUIDE.md](../MERGE_GUIDE.md) if it matters to reviewers, then keep the deletion.
+- **`develop` merges that touch `README.md` or the roadmap conflict**: the README is upstream's on `upstream-prep`.
+  Keep `upstream-prep`'s README, then run `python3 Tools/generate_roadmap.py` to refresh its roadmap block.
 - **GitHub's contributor graph ignores `.mailmap`;** it only affects `git log`, `shortlog` and blame.
 
 ## Open questions
