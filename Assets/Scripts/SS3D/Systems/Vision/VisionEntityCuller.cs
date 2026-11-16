@@ -55,7 +55,7 @@ namespace SS3D.Systems.Vision
         {
             _frame++;
             Vector3 eye = vision.DetectionCenter;
-            float reach = vision.ViewRange + MaxRadius;
+            float reach = VisionSubSystem.ViewRange + MaxRadius;
 
             // Index loops: foreach over an IReadOnlyList boxes its enumerator every frame.
             IReadOnlyList<Entity> entities = SceneRegistry<Entity>.All;

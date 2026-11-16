@@ -1,60 +1,38 @@
+using Unity.Collections;
 using UnityEditor;
 using UnityEngine;
 
 namespace SS3D.Systems.Vision
 {
+    /// <summary>Scene-view gizmo for the last cast's rays, with <c>Show Debug</c> ticked on the subsystem.</summary>
     [CustomEditor(typeof(VisionSubSystem))]
     public class VisionSystemEditor : UnityEditor.Editor
     {
         private VisionSubSystem _vision;
 
-        private SerializedProperty _viewConeWidthProp;
-        private SerializedProperty _viewRangeProp;
-
         protected void OnEnable()
         {
             _vision = (VisionSubSystem)target;
-
-            _viewConeWidthProp = serializedObject.FindProperty("viewConeWidth");
-            _viewRangeProp = serializedObject.FindProperty("viewRange");
         }
 
         protected void OnSceneGUI()
         {
-            if (!_vision.showDebug || _vision.target == null)
+            if (!_vision.ShowDebug || _vision.Target == null || !_vision.ViewPoints.IsCreated || _vision.StepCount <= 0)
             {
                 return;
             }
 
-            if (!_vision.viewPoints.IsCreated || _vision.stepCount <= 0)
-            {
-                return;
-            }
-
-            serializedObject.Update();
-
-            float range = _viewRangeProp.floatValue;
-            float halfCone = _viewConeWidthProp.floatValue * 0.5f;
             Vector3 center = _vision.DetectionCenter;
-            Vector3 edgeA = _vision.DirectionFromAngle(-halfCone, false);
-            Vector3 edgeB = _vision.DirectionFromAngle(halfCone, false);
 
             Handles.color = Color.green;
             Handles.Label(center, "ViewPoint");
-            Handles.DrawWireArc(center, Vector3.up, Vector3.forward, 360f, range);
-            Handles.DrawLine(center, center + (edgeA * range));
-            Handles.DrawLine(center, center + (edgeB * range));
+            Handles.DrawWireArc(center, Vector3.up, Vector3.forward, 360f, VisionSubSystem.ViewRange);
 
-            Handles.color = Color.yellow;
-            GUIStyle labelStyle = new GUIStyle { normal = { textColor = Color.red } };
-            Unity.Collections.NativeArray<Vector3> viewPoints = _vision.viewPoints;
-            int count = _vision.stepCount;
-
-            Handles.Label(viewPoints[0], "0", labelStyle);
+            NativeArray<Vector3> viewPoints = _vision.ViewPoints;
+            int count = _vision.StepCount;
             for (int i = 0; i < count; i++)
             {
                 int next = (i + 1) % count;
-                Handles.Label(viewPoints[i], i.ToString(), labelStyle);
                 Handles.color = Color.yellow;
                 Handles.DrawLine(center, viewPoints[i]);
                 Handles.color = Color.cyan;

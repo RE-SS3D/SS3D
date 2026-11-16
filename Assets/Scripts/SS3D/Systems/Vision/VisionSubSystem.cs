@@ -6,7 +6,6 @@ using Unity.Profiling;
 using UnityEngine;
 using UnityEngine.Rendering;
 using SS3D.Systems.Entities;
-using SS3D.Systems.Entities.Humanoid;
 using SS3D.Systems.Entities.Events;
 using SS3D.Systems.Tile.Connections;
 using SS3D.Rendering.URP;
@@ -70,30 +69,19 @@ namespace SS3D.Systems.Vision
 
         private readonly VisionEntityCuller _culler = new();
 
-        [SerializeField]
-        public bool showDebug;
+        /// <summary>How far sight reaches, in metres. Balancing, not design (fov.md §2).</summary>
+        public const float ViewRange = 35f;
+
+        /// <summary>Width of sight in degrees: all around (fov.md §2); a narrower cone is out of scope (§9).</summary>
+        private const float ViewConeWidth = 360f;
+
+        private const float RaysPerDegree = 3f;
 
         [SerializeField]
-        public Transform target;
+        [Tooltip("Draw the last cast's rays in the Scene view.")]
+        private bool _showDebug;
 
-        [SerializeField]
-        private float viewRange = 35;
-
-        [Range(0, 360)]
-        [SerializeField]
-        [Tooltip("The field of view width")]
-        private float viewConeWidth = 360;
-
-        [SerializeField]
-        [Tooltip("Rays per degree of the view cone.")]
-        private float resolution = 3f;
-
-        /// <summary>Ray hit points from the last completed cast (editor gizmo, scenarios).</summary>
-        [NonSerialized]
-        public NativeArray<Vector3> viewPoints;
-
-        [NonSerialized]
-        public int stepCount;
+        private NativeArray<Vector3> _viewPoints;
 
         private Entity _targetEntity;
         private bool _clientVisionInitialized;
@@ -130,7 +118,17 @@ namespace SS3D.Systems.Vision
 
         public VisionState State { get; private set; }
 
-        public float ViewRange => viewRange;
+        /// <summary>The living body sight comes from, or null (no body, or a ghost).</summary>
+        public Transform Target { get; private set; }
+
+        /// <summary>Rays per cast: one per angular bin of <c>_VisionMap</c>.</summary>
+        public int StepCount { get; private set; }
+
+        /// <summary>Ray hit points from the last completed cast (editor gizmo).</summary>
+        public NativeArray<Vector3> ViewPoints => _viewPoints;
+
+        public bool ShowDebug => _showDebug;
+
 
         /// <summary>World-space origin used for casts and the shader's <c>_PlayerPos</c>.</summary>
         public Vector3 DetectionCenter
@@ -140,7 +138,7 @@ namespace SS3D.Systems.Vision
                 if (_targetEntity != null && _targetEntity.ViewPoint != null)
                     return _targetEntity.ViewPoint.transform.position;
 
-                return target != null ? target.position + (Vector3.up * VisionOccluder.EyeHeight) : Vector3.zero;
+                return Target != null ? Target.position + (Vector3.up * VisionOccluder.EyeHeight) : Vector3.zero;
             }
         }
 
@@ -162,7 +160,7 @@ namespace SS3D.Systems.Vision
                 return;
 
             _clientVisionInitialized = true;
-            EnsureBuffers(Mathf.Max(1, Mathf.CeilToInt(viewConeWidth * resolution)));
+            EnsureBuffers(Mathf.Max(1, Mathf.CeilToInt(ViewConeWidth * RaysPerDegree)));
             RenderPipelineManager.beginContextRendering += HandleBeginContextRendering;
         }
 
@@ -201,7 +199,7 @@ namespace SS3D.Systems.Vision
             if (State != VisionState.Active || !_hasCast)
                 return true;
 
-            return IsWithinDepths(_depths, stepCount, viewRange, viewConeWidth, _castCenter, _castYaw, worldPoint)
+            return IsWithinDepths(_depths, StepCount, ViewRange, ViewConeWidth, _castCenter, _castYaw, worldPoint)
                 || IsPartOfSeenWall(_seenTiles, _tileSize, _castTileOrigin, _castFloorY, worldPoint);
         }
 
@@ -227,12 +225,12 @@ namespace SS3D.Systems.Vision
         public float DepthAlong(Vector3 direction)
         {
             if (!_hasCast)
-                return viewRange;
+                return ViewRange;
 
             float angle = Mathf.Atan2(direction.x, direction.z) * Mathf.Rad2Deg;
-            float fromConeStart = Mathf.Repeat(angle - _castYaw + (viewConeWidth * 0.5f), 360f);
-            int bin = Mathf.Clamp(Mathf.FloorToInt(fromConeStart / viewConeWidth * stepCount), 0, stepCount - 1);
-            return _depths[bin] * viewRange;
+            float fromConeStart = Mathf.Repeat(angle - _castYaw + (ViewConeWidth * 0.5f), 360f);
+            int bin = Mathf.Clamp(Mathf.FloorToInt(fromConeStart / ViewConeWidth * StepCount), 0, StepCount - 1);
+            return _depths[bin] * ViewRange;
         }
 
         /// <summary>
@@ -268,25 +266,16 @@ namespace SS3D.Systems.Vision
             return new Vector2Int(Mathf.FloorToInt(inside.x + 0.5f), Mathf.FloorToInt(inside.z + 0.5f));
         }
 
-        public Vector3 DirectionFromAngle(float angleInDegrees, bool angleIsGlobal)
-        {
-            if (!angleIsGlobal && target != null)
-                angleInDegrees += target.eulerAngles.y;
-
-            return Quaternion.AngleAxis(angleInDegrees, Vector3.up) * Vector3.forward;
-        }
-
         private void HandlePlayerObjectChanged(ref EventContext context, in LocalPlayerObjectChanged e)
         {
             _targetEntity = e.PlayerObject != null ? e.PlayerObject.GetComponent<Entity>() : null;
-            target = _targetEntity != null && _targetEntity.GetComponent<HumanoidGhostController>() == null
-                ? _targetEntity.transform : null;
+            Target = _targetEntity != null && _targetEntity.HasFieldOfView ? _targetEntity.transform : null;
             UpdateState();
         }
 
         private void UpdateState()
         {
-            if (!_clientVisionInitialized || target == null)
+            if (!_clientVisionInitialized || Target == null)
                 SetState(VisionState.Off);
             else
                 SetState(_suppressed ? VisionState.Suppressed : VisionState.Active);
@@ -332,22 +321,22 @@ namespace SS3D.Systems.Vision
 
         private void ScheduleCast()
         {
-            int count = Mathf.Max(1, Mathf.CeilToInt(viewConeWidth * resolution));
-            if (count != stepCount)
+            int count = Mathf.Max(1, Mathf.CeilToInt(ViewConeWidth * RaysPerDegree));
+            if (count != StepCount)
                 EnsureBuffers(count);
 
             Vector3 center = DetectionCenter;
-            float yaw = target.eulerAngles.y;
-            float stepAngle = viewConeWidth / stepCount;
+            float yaw = Target.eulerAngles.y;
+            float stepAngle = ViewConeWidth / StepCount;
             int half = (_tileSize - 1) / 2;
             Vector2Int tileOrigin = new(Mathf.FloorToInt(center.x + 0.5f) - half, Mathf.FloorToInt(center.z + 0.5f) - half);
 
             VisionRayCommandsJob commands = new()
             {
                 Center = center,
-                FirstAngle = (yaw - (viewConeWidth * 0.5f) + (stepAngle * 0.5f)) * Mathf.Deg2Rad,
+                FirstAngle = (yaw - (ViewConeWidth * 0.5f) + (stepAngle * 0.5f)) * Mathf.Deg2Rad,
                 StepAngle = stepAngle * Mathf.Deg2Rad,
-                Range = viewRange,
+                Range = ViewRange,
                 Query = new QueryParameters(VisionOccluder.Mask, false, QueryTriggerInteraction.Ignore, false),
                 Commands = _rayCommands,
             };
@@ -355,7 +344,7 @@ namespace SS3D.Systems.Vision
             VisionHitsJob hits = new()
             {
                 Center = center,
-                Range = viewRange,
+                Range = ViewRange,
                 TileOrigin = tileOrigin,
                 TileSize = _tileSize,
                 Commands = _rayCommands,
@@ -366,7 +355,7 @@ namespace SS3D.Systems.Vision
                 SeenTiles = _jobSeenTiles,
             };
 
-            JobHandle filled = commands.Schedule(stepCount, 64);
+            JobHandle filled = commands.Schedule(StepCount, 64);
             JobHandle cast = RaycastCommand.ScheduleBatch(_rayCommands, _rayHits, 32, 1, filled);
             _castHandle = hits.Schedule(cast);
             JobHandle.ScheduleBatchedJobs();
@@ -374,13 +363,13 @@ namespace SS3D.Systems.Vision
             _castPending = true;
             _pendingCenter = center;
             _pendingYaw = yaw;
-            _pendingFloorY = target.position.y;
+            _pendingFloorY = Target.position.y;
             _pendingTileOrigin = tileOrigin;
 
             Shader.SetGlobalVector(PlayerPosId, center);
             Shader.SetGlobalFloat(PlayerAngleId, yaw * Mathf.Deg2Rad);
-            Shader.SetGlobalFloat(ViewConeWidthId, viewConeWidth * Mathf.Deg2Rad);
-            Shader.SetGlobalFloat(ViewRangeId, viewRange);
+            Shader.SetGlobalFloat(ViewConeWidthId, ViewConeWidth * Mathf.Deg2Rad);
+            Shader.SetGlobalFloat(ViewRangeId, ViewRange);
             Shader.SetGlobalFloat(DepthEpsilonId, DepthEpsilon);
             Shader.SetGlobalFloat(NearBubbleId, NearBubble);
             Shader.SetGlobalFloat(WallMinYId, _pendingFloorY + WallMinHeight);
@@ -398,14 +387,14 @@ namespace SS3D.Systems.Vision
                 _castPending = false;
 
                 _jobDepths.CopyTo(_depths);
-                _jobPoints.CopyTo(viewPoints);
+                _jobPoints.CopyTo(_viewPoints);
                 _jobSeenTiles.CopyTo(_seenTiles);
                 _visionMap.SetPixelData(_jobDepthUpload, 0);
                 _visionMap.Apply(false);
                 _tileMap.SetPixelData(_jobSeenTiles, 0);
                 _tileMap.Apply(false);
                 Shader.SetGlobalTexture(VisionMapId, _visionMap);
-                Shader.SetGlobalVector(VisionMapTexelSizeId, new Vector4(1f / stepCount, 1f, stepCount, 1f));
+                Shader.SetGlobalVector(VisionMapTexelSizeId, new Vector4(1f / StepCount, 1f, StepCount, 1f));
                 Shader.SetGlobalTexture(VisionTilesId, _tileMap);
 
                 _castCenter = _pendingCenter;
@@ -426,8 +415,8 @@ namespace SS3D.Systems.Vision
             _hasCast = false;
             DisposeBuffers();
 
-            stepCount = count;
-            viewPoints = new NativeArray<Vector3>(count, Allocator.Persistent);
+            StepCount = count;
+            _viewPoints = new NativeArray<Vector3>(count, Allocator.Persistent);
             _rayCommands = new NativeArray<RaycastCommand>(count, Allocator.Persistent);
             _rayHits = new NativeArray<RaycastHit>(count, Allocator.Persistent);
             _jobDepths = new NativeArray<float>(count, Allocator.Persistent);
@@ -447,7 +436,7 @@ namespace SS3D.Systems.Vision
             };
 
             // One texel per tile, covering every tile a ray can reach.
-            _tileSize = (2 * (Mathf.CeilToInt(viewRange) + 1)) + 1;
+            _tileSize = (2 * (Mathf.CeilToInt(ViewRange) + 1)) + 1;
             _seenTiles = new byte[_tileSize * _tileSize];
             _jobSeenTiles = new NativeArray<byte>(_seenTiles.Length, Allocator.Persistent);
             if (_tileMap == null || _tileMap.width != _tileSize)
@@ -466,8 +455,8 @@ namespace SS3D.Systems.Vision
 
         private void DisposeBuffers()
         {
-            if (viewPoints.IsCreated)
-                viewPoints.Dispose();
+            if (_viewPoints.IsCreated)
+                _viewPoints.Dispose();
             if (_rayCommands.IsCreated)
                 _rayCommands.Dispose();
             if (_rayHits.IsCreated)

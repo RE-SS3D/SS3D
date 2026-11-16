@@ -41,6 +41,9 @@ namespace SS3D.Systems.Entities
         private HumanInventory _cachedHumanInventory;
 
         /// <summary>Cached inventory lookup for hot paths (airlock proximity, etc.).</summary>
+        /// <summary>Whether this body sees through a field of view; a ghost sees everything (observer.md §2, fov.md §5).</summary>
+        public bool HasFieldOfView => !TryGetComponent(out HumanoidGhostController _);
+
         public bool TryGetHumanInventory(out HumanInventory inventory)
         {
             if (_cachedHumanInventory == null)

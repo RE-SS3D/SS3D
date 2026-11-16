@@ -33,7 +33,7 @@ Steel wall/table debris is separate from tile occupancy: `TileSubSystem.Wreckage
 - `Assets/Scripts/SS3D/Systems/Tile/Validation/` — offered-job/mode requirements; warnings on editor save, hard gate before countdown ([rounds-lobby](rounds-lobby.md)); only tracked map objects count
 - `Assets/Scripts/SS3D/Systems/Tile/SpawnPoints/` — `SpawnPointRegistry`, records, editor pin view
 - `Assets/Scripts/SS3D/Systems/Tile/Connections/AdjacencyEngine.cs` — queued adjacency recompute
-- `Assets/Scripts/SS3D/Systems/Tile/Connections/TileAdjacencyView.cs` — local mesh/direction visuals; refreshes structural damage overlays on adjacency mesh changes
+- `Assets/Scripts/SS3D/Systems/Tile/Connections/TileAdjacencyView.cs` — local mesh/direction visuals; refreshes structural damage overlays on adjacency mesh changes; switches a wall's sight-blocking arms (`Connections/VisionOccluder.cs`, built by `Editor/VisionOccluderRecipe.cs`; see [fov](fov.md))
 - `Assets/Scripts/SS3D/Systems/Tile/ConstructionService.cs` — server-authoritative placement
 - `Assets/Scripts/SS3D/Systems/Tile/TileQueryService.cs` — read-only tile queries (`ITileQueryService`)
 - `Assets/Scripts/SS3D/Systems/Tile/ITileMutationObserver.cs` — hook for systems reacting to tile changes

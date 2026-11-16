@@ -170,7 +170,7 @@ namespace SS3D.Tests
         private static VisionSubSystem LiveVision()
         {
             VisionSubSystem vision = SubSystems.Get<VisionSubSystem>();
-            Assume.That(vision != null && vision.viewPoints.IsCreated, "FOV needs a graphics device");
+            Assume.That(vision != null && vision.ViewPoints.IsCreated, "FOV needs a graphics device");
             Assert.AreEqual(VisionState.Active, vision.State, "A living body sees through the FOV");
             Assert.GreaterOrEqual(VisionOccluder.Layer, 0, "The sight layer exists");
             return vision;

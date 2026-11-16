@@ -1,4 +1,4 @@
-> Code paths: Assets/Scripts/SS3D/Rendering/, Assets/Content/Resources/Simple Toon/, Assets/Scripts/SS3D/Systems/Vision/, Assets/Content/Resources/Vision/
+> Code paths: Assets/Scripts/SS3D/Rendering/, Assets/Content/Resources/Simple Toon/
 > Entry points: SelectionPickRendererFeature, AtmosRendererFeature, VisionRendererFeature
 > Status: partial
 > Verified: f481dc3b1 — 2026-11-05
@@ -11,7 +11,7 @@ URP rendering extensions for this fork. The selection pick pass ([selection](sel
 
 Station materials use the **Simple Toon** shader stack (`STDefault` / `STTransparent`). ST already has `UnityPerMaterial` + `#pragma multi_compile_instancing` — Metastation wins come from enabling material instancing and keeping MeshRenderers free of permanent MaterialPropertyBlocks (see [srp-batcher-gpu-instancing](../2026-07_srp-batcher-gpu-instancing.md)). Palette emission must sample `_EmissionMap` (same UV swatch pattern as albedo) — a flat `_EmissionColor` alone washes shared `PaletteEmission` materials white. `STDefault` includes DepthOnly + DepthNormals (with `_WRITE_RENDERING_LAYERS`) so URP Decal Layers can distinguish characters from tiles, and ForwardLit samples DBuffer (`ApplyDecalToBaseColor`) so health blood / surface `DecalProjector`s tint skin and worn clothing. **SSAO is enabled** on `SS3D_ForwardPlusRenderer` for contact grounding (downsampled, intensity 1, radius 0.32, direct strength 0.8). Opaque ST variants sample URP AO and pass it into additional-light evaluation; emission stays unaffected. This deliberately revisits [design §8](../../design/rendering-lighting.md#8-post-processing-stack), which deprioritizes AO. DepthNormals also serves DBuffer + Decal Layers. Skin, hair, cut surfaces and eight floor materials use half-toon; PaletteEmission retains its separate emissive behavior.
 
-Client FOV / fog-of-war is a hard black mask driven by batched physics raycasts from `Entity.ViewPoint` (`VisionSubSystem` → `_VisionMap`) and composited by `VisionRendererFeature`. Unseen areas are fully opaque black, not soft fog. Rays advance in `RaycastCommand` waves, skipping furniture/props until the nearest wall/door (non-window); a capped multi-hit buffer previously filled with props and leaked vision through walls. Triggers and inventory preview cameras are ignored. Gameplay asks the same depths through `VisionSubSystem.IsVisible` ([examine](examine.md) gates on it); it answers true whenever no mask is showing, as for ghosts and the map editor.
+Client FOV / fog of war (`VisionRendererFeature` and its mask and composite passes) belongs to the [fov](fov.md) map: walls drawn whole from a raycast map, an inward-only soft edge, and people shown whole or not at all.
 
 ## Start here
 
@@ -21,9 +21,8 @@ Client FOV / fog-of-war is a hard black mask driven by batched physics raycasts 
 - `Assets/Scripts/SS3D/Rendering/URP/DecalRenderingLayers.cs` — floor vs character DecalProjector masks (`ReceiveWorldDecals`)
 - `Assets/Scripts/SS3D/Rendering/URP/AtmosRendererFeature.cs` — gas scatter, glow, distortion passes
 - `Assets/Scripts/SS3D/Rendering/URP/AtmosRenderContext.cs` — shared GPU snapshot for atmos shaders
-- `Assets/Scripts/SS3D/Rendering/URP/VisionRendererFeature.cs` — FOV mask + hard black composite
+- `Assets/Scripts/SS3D/Rendering/URP/VisionRendererFeature.cs` — FOV mask and composite; see [fov](fov.md)
 - `Assets/Scripts/SS3D/Rendering/URP/UiBackdropBlurRendererFeature.cs` — Dual Kawase world blur behind diegetic machine UI
-- `Assets/Scripts/SS3D/Systems/Vision/VisionSubSystem.cs` — client `RaycastCommand` waves → R16 `_VisionMap` (occluder cache; float dilate + `SetPixelData`)
 - `Assets/Content/Resources/Simple Toon/Shaders/STLighting.hlsl` — half-toon lighting + palette emission sample
 - `Assets/Content/Resources/Simple Toon/Shaders/STDefault.shader` — opaque toon (+ DepthNormals for Decal Layers)
 - `Assets/Content/Resources/Simple Toon/Shaders/ObjectIcon.shader` — unlit bright full-toon for UI icon previews
@@ -46,7 +45,6 @@ Client FOV / fog-of-war is a hard black mask driven by batched physics raycasts 
 
 - **Half-toon fixtures lose color and intensity:** legacy `_AmbientCol: 1` blends light radiance away in opaque materials. Half-toon must multiply albedo by `light.color`; keep the legacy color blend only for full toon. Specular uses the already-lit texture color once, avoiding squared light intensity.
 - **Near-light shadows wash out:** apply the soft-near distance limiter before multiplying shadow visibility; limiting their product brightens partial shadows. Fixture spots cast soft shadows at the medium resolution tier; PointFill stays unshadowed. Low quality disables additional-light shadows at the pipeline level.
-- **Ghost FOV:** `VisionSubSystem` clears its target and disables the composite on a `HumanoidGhostController` body. Map-editor suppression must not reactivate vision for a ghost; respawning into a living body restores targeting.
 - **Atmos visuals outlive a paused sim:** `AtmosSubSystem.SimulationPaused` stops the tick, not the render path — the retained GPU snapshot keeps scatter/glow/distortion and `AtmosWindView` animating (and a remote client's map editor cannot pause the server). `AtmosRenderContext.SetRenderingSuppressed` is checked by both `AtmosRendererFeature.AddRenderPasses` and `AtmosWindView.Update`; `MapEditorSubSystem` owns the toggle and must clear the statically-held flag on destroy too. Hit 2026-11-04 (#147).
 - **Decal technique is pinned to DBuffer, not Automatic:** `SS3D_ForwardPlusRenderer` Decal feature `technique: 1`. Automatic resolves through URP's cached `SHADER_API_MOBILE` check, which differs between the headless CI editor and a desktop player: v0.3.3's CI build kept only `DecalScreenSpaceProjector`, the desktop player chose DBuffer, found no `DBufferProjector` pass, and URP's `DecalDrawErrorSystem` drew every bullet hole and blood decal with the magenta error material (#111). Local builds kept DBuffer, so they never showed it. `Shader Graphs/Decal` and `Hidden/SS3D/MultiplyTint` also stay in Always Included Shaders. To check a player build, run the `assert_bullet_decal` automation opcode (fails if the DBuffer pass is missing) or `stamp_bullet_holes` + `screenshot`. Hit 2026-11-02.
 - **Borderless below native resolution offsets the mouse:** `Screen.SetResolution` in `FullScreenWindow` at a smaller size stretches the swapchain to the desktop, but Linux/X11 still reports pointer coordinates in desktop pixels, so map editor and diegetic UI clicks land off-target. `PlayerDisplayApplier.ApplyWindow` always uses native size in Borderless; the saved resolution only applies to Fullscreen/Windowed. Hit 2026-10-31.
@@ -69,20 +67,17 @@ Client FOV / fog-of-war is a hard black mask driven by batched physics raycasts 
 - **GPU instancing still limited after probes Off:** Frame Debugger on Metastation — after Content probe clear + GenericShadeless instancing, remaining breaks are mostly different adjacency/door meshes and intentional emissive MPBs; do not expect floor-like instance counts on airlocks. Hit 2026-07-29.
 - **Item/tile icons dark or black under half-toon / fixture-only lighting:** do not render icons with live ST half-toon mats or bare scene lights. Use `IconPreviewGenerator` (`Unlit/ObjectIcon` overrides). `RuntimePreviewGenerator` still spawns temporary preview lights as a fallback path — do not rely on scene lighting. Keep `ObjectIcon` in Always Included Shaders (same pattern as InteractionOutline).
 - **Shiny player head under PointFill:** close URP point lights create a bright N·L hotspot on bald/curved meshes (bloom amplifies it). Soft-near atten in `STLighting.hlsl` + keep character `_SpecIntensity: 0`; raise/dim fill rather than copying Built-in intensities.
-- **Vision FOV must not use fixed multi-hit RaycastAll buffers:** a dense prop pile can exhaust the hit slots and report a clear line through walls. Keep iterative/wave single-hit casts that skip non-occluders (`VisionSubSystem` `RaycastCommand` waves + collider occluder cache).
-- **Vision occluder slack must stop before the far face the mesh draws, not the far collider face:** rays light a little past each hit so the wall's own mesh isn't painted black, but colliders are much thicker than the meshes. A `SteelWallI` box fills the tile, while its faces sit 0.22 m from the tile centre above the flared base (posters mount there), and airlock door faces 0.17 m. The old constant 1.15 m showed an arc of the next room (#145); 0.85 m stayed inside the collider and still showed far faces, posters and the floor strip when walking straight at a door. Slack is now 0.45 m of depth, about the centre line, measured along the occluder's normal, so a glancing ray gets more length (capped at 1.1 m) and recessed near faces stay lit. A door jamb's cap is 0.05 m thick along the wall, so a ray hitting its side gets a normal that runs along the wall: measured that way, slack crossed the wall beside the door from the door's recess (a diagonal sliver), or, trimmed, blacked out that wall when standing beside the door. `OcclusionNormal` measures such thin-collider hits along the wall's thickness instead. An earlier attempt kept full slack for rays still in solid a tile on; that leaked at T-junctions, where the stem is solid. `VisionSubSystem.ShaderDepthSlack` must match the constant in `VisionSampleWallDepth`.
-- **Vision map upload:** do not `new Color[]` / `SetPixels` on the LateUpdate path — dilate with persistent float scratch and upload R16 via `SetPixelData` (`Vision.VisionMap` was a multi-MB/frame GC hotspot).
 
 ## Depends on / Used by
 
 - **Used by:** [selection](selection.md), [atmospherics](atmospherics.md), [screen-effects](screen-effects.md) / [machine-interface](machine-interface.md) (UI backdrop blur)
-- **Vision FOV depends on:** `PlacedTileObject` Wall/Door (or `Walls` layer) colliders; cast origin from [entities](entities.md) `Entity.ViewPoint` when present
+- **FOV:** [fov](fov.md) owns the vision producer, occluders and culling; this map keeps only the URP feature registration
 
 ## Related docs
 
 - [FORK_STATUS.md](../../FORK_STATUS.md) § URP migration
 - Plan: [urp_lighting_look_plan_d42c32f5.plan.md](../../plans/urp_lighting_look_plan_d42c32f5.plan.md)
-- Effort (planned): [2026-11_fov-rework.md](../2026-11_fov-rework.md) — replaces the FOV occluder slack, waves and mask passes; design [fov.md](../../design/fov.md)
+- FOV: [fov](fov.md) map; effort [2026-11_fov-rework.md](../2026-11_fov-rework.md)
 - Polish handoff: [2026-07_urp-lighting-look-polish.md](../2026-07_urp-lighting-look-polish.md)
 - Effort (shipped): [2026-07_srp-batcher-gpu-instancing.md](../2026-07_srp-batcher-gpu-instancing.md)
 - Effort (shipped): [2026-07_unity-framedebug-ai-tooling.md](../2026-07_unity-framedebug-ai-tooling.md) — Frame Debugger → `Logs/framedebug/` markdown

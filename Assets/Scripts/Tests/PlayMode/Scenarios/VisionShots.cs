@@ -39,7 +39,7 @@ namespace SS3D.Tests
         public IEnumerator Capture()
         {
             VisionSubSystem vision = SubSystems.Get<VisionSubSystem>();
-            Assume.That(vision != null && vision.viewPoints.IsCreated, "FOV needs a graphics device");
+            Assume.That(vision != null && vision.ViewPoints.IsCreated, "FOV needs a graphics device");
             CameraFollow follow = Object.FindFirstObjectByType<CameraFollow>();
             Assert.IsNotNull(follow, "The game camera follows the body");
 

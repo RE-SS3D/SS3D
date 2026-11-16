@@ -45,7 +45,7 @@ Coverage means how much of the design intent is playable today, not “code exis
 | [Body animation](#player-body-animation-foundation) | partial | Peaceful / melee / ranged stance; injured limp; Ragdoll owns collapsed/dead/critical presentation; ranged aim IK deferred |
 | [Screen effects](#screen-space-effects) | partial | Health overlays + hit/blast flash; turf temp/fire from `HealthSnapshot.Environment` |
 | [Audio](#audio-foundation) | partial | SFX occlusion, impact and machine sounds, department room tone, wind and sound needs air, personal heartbeat/breathing, alert cues, footsteps; music/volume categories pending |
-| [Vision / FOV](#vision-fov) | shipped | Hard black fog-of-war from viewpoint raycasts (hot-path GC cut) |
+| [Vision / FOV](#vision-fov) | shipped | Black fog of war matching wall outlines; people shown or hidden whole; one Burst-backed raycast batch |
 | [Station lighting (URP)](#urp-lighting-phase-1) | partial | Fixture-driven half-toon Forward+ look; client SyncVar fixture visuals; visual plate polish still open |
 | [Areas + station power](#area-foundation) | partial | APC-seeded areas, kWh cells, channel shedding, area lights/switches; [solar panels + tracker](#solar-generation); live remesh pending |
 | [Machine interfaces](#machine-interfaces) | shipped | Diegetic UITK APC/SMES/atmos ports/vending; engineering ID swipe; host-echo TargetRpc gate |
@@ -803,16 +803,18 @@ System map: [structural-destruction.md](architecture/systems/structural-destruct
 
 ### Vision / FOV
 
-**Paths:** `SS3D.Systems.Vision`, `SS3D.Rendering.URP.VisionRendererFeature`
+**Paths:** `SS3D.Systems.Vision`, `SS3D.Rendering.URP.Vision*`, `Assets/Content/Resources/Vision/`
 
-Client raycast FOV / fog-of-war as a **hard black mask** (not soft fog); rework planned in [fov-rework](architecture/2026-11_fov-rework.md) per [fov.md](design/fov.md):
+Client fog of war per [fov.md](design/fov.md), reworked in [fov-rework](architecture/2026-11_fov-rework.md) (Nov 2026):
 
-- **`VisionSubSystem`** — `RaycastCommand` batch from `Entity.ViewPoint` → `_VisionMap`
-- **`VisionRendererFeature`** composites the mask; unseen areas are fully opaque black
-- Rays skip furniture/props until the nearest wall/door; triggers and inventory preview cameras
-  ignored so open airlocks and dense props do not leak or stripe vision
+- **One raycast batch** per frame against a `VisionOccluder` layer that holds only sight blockers (wall arms sized to the mesh, airlock leaves), filled and read by Burst jobs off the main thread
+- **Walls drawn whole:** a wall tile any ray hit shows top and faces, so the black starts at wall outlines at any camera tilt
+- **Inward-only soft edge:** mask blurred at half resolution, multiplied in; hidden stays opaque black
+- **People, items and wall mounts** shown whole or hidden whole (no shadow), via `VisionEntityCuller` and a `VisionEntity` rendering layer the mask honours
+- `VisionLineOfSight.HasSight` for gameplay that needs the rule without rendering
 
-Lives under the rendering system map ([rendering.md](architecture/systems/rendering.md)).
+Upstream's port (RE-SS3D #1491) casts 360 rays against a layer mask with a depth-aware edge blur; the fork's
+version differs in all of the above. System map: [fov.md](architecture/systems/fov.md).
 Merged via PR #11 (supersedes stalled `feature/vision-urp-tilemap`). Hot-path GC/CPU cut in PR #28.
 
 ### Main HUD (UI Toolkit)

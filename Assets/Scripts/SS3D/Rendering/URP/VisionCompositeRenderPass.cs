@@ -11,7 +11,7 @@ namespace SS3D.Rendering.URP
     /// mask at half resolution, then the scene times mask × blur(mask) into a new colour target that
     /// becomes the camera colour. Hidden pixels stay fully black, so nothing about an unseen tile leaks.
     /// </summary>
-    public sealed class VisionBlurRenderPass : ScriptableRenderPass
+    public sealed class VisionCompositeRenderPass : ScriptableRenderPass
     {
         /// <summary>How far the fade reaches into what is visible, as a fraction of screen height.</summary>
         const float EdgeWidth = 0.005f;
@@ -29,7 +29,7 @@ namespace SS3D.Rendering.URP
         readonly Material _material;
         VisionRendererFeature _feature;
 
-        public VisionBlurRenderPass(Material material)
+        public VisionCompositeRenderPass(Material material)
         {
             _material = material;
             renderPassEvent = (RenderPassEvent)((int)RenderPassEvent.BeforeRenderingPostProcessing + 1);

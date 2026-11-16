@@ -1,4 +1,4 @@
-Shader "Vision/VisionMaskBlur"
+Shader "Vision/VisionComposite"
 {
     // 2026-11_fov-rework D7: the visibility mask is blurred at half resolution and the composite
     // multiplies the scene by mask × blur(mask). Hidden pixels stay fully black (mask 0); visible ones
