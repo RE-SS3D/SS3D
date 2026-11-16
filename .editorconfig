@@ -289,7 +289,7 @@ indent_style = space
 indent_size = 4
 
 [*.cs]
-# StyleCop disabled for this fork — strict layout/naming rules are costly for AI-assisted edits.
+# StyleCop disabled — strict layout/naming rules are costly for AI-assisted edits.
 dotnet_analyzer_diagnostic.category-StyleCop.CSharp.DocumentationRules.severity = none
 dotnet_analyzer_diagnostic.category-StyleCop.CSharp.LayoutRules.severity = none
 dotnet_analyzer_diagnostic.category-StyleCop.CSharp.MaintainabilityRules.severity = none

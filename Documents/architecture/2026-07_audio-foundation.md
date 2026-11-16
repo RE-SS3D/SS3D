@@ -13,10 +13,10 @@ Navigation map: [systems/audio.md](systems/audio.md) — split out of
 [systems/chat-audio-screens.md](systems/chat-audio-screens.md) now that Phase 1 has shipped
 (cold-start step 3, [SKILL.md](../SKILL.md)).
 
-## What already exists (upstream legacy)
+## What already exists (pre-2026 legacy)
 
 `Assets/Scripts/SS3D/Systems/Audio/` carries inherited, unwired audio code. This effort keeps the
-good bones and replaces the parts that predate the fork's Area/electricity/health/occlusion systems:
+good bones and replaces the parts that predate the current Area/electricity/health/occlusion systems:
 
 | File | Verdict | Why |
 |---|---|---|

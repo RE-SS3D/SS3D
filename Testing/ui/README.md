@@ -24,7 +24,7 @@ editor against an already-open checkout; use **SS3D → Testing → Connect Unit
 in the existing editor instead. Script recompilation reconnects automatically
 when launched with `open-unity.sh`.
 
-Codex registration (already performed on Rutger's machine):
+Codex registration (once per machine):
 
 ```bash
 codex mcp add ss3d-unity --url http://127.0.0.1:8080/mcp
@@ -83,12 +83,12 @@ Scenario categories (`scenarios:<category>`): `Medical`, `Atmos`, `Access`, `Env
 Run it outside the agent's Bash sandbox (the dialog watchdog needs X11). It prints one `ok` line per
 passed step and stops at the first failure, printing that step's details and report path. It lists
 screenshots only when the `visual` step ran. Every run writes `artifacts/ui/validate-<UTC>/summary.md`
-with the full table. Exit status is nonzero on any failure. Rough warm timings on tomnas: EditMode
+with the full table. Exit status is nonzero on any failure. Rough warm timings on the self-hosted runner: EditMode
 ~40 s, PlayMode ~6.5 min, visual ~2.5 min (lobby ~70 s, map editor systems ~80 s), lifecycle ~85 s, build ~30 s, remote ~50 s, smoke
 ~9 min; the sandbox pilot is ~4.5 min on demand. Agents run targeted steps, never `--nightly` or `--weekly` unless the owner
 asks; see [2026-11_testing-philosophy.md](../../Documents/architecture/2026-11_testing-philosophy.md).
 
-Both run unattended on TomNAS. The nightly (`multiplayer-smoke-test.yml`) runs PlayMode in a
+Both run unattended on the self-hosted runner. The nightly (`multiplayer-smoke-test.yml`) runs PlayMode in a
 batchmode editor (`Tools/run_playmode_tests.sh`, ~4–5 min) instead of through MCP, then builds and
 runs the smoke set. The weekly (`weekly-graphical.yml`, Sunday) opens an editor on the runner's
 checkout with `Tools/ci/editor_session.sh` (MCP on :8097) and runs `--weekly`; it refuses to start
@@ -104,10 +104,10 @@ while another editor is open, so `ss3d-dev stop` when you're done. A red run ope
 | scenarios:&lt;category&gt; | The PlayMode tests in one NUnit category (MCP `run_tests` `category_names`), checked like `playmode`; `scenarios-<category>.json`. Fails if the category has no tests. |
 | mppm:&lt;scenario&gt; | `late-join` or `reconnect` in Multiplayer Play Mode: MPPM tags the main editor with the host script and Player 2 with the client script, launches the clone, enters Play Mode, and waits for both players' `Temp/mppm-automation/*.json`. The host writes a `host-ready` marker once Game is loaded and the clone waits for it before connecting. Fails on anything but `ScriptComplete` or on any logged error (the smoke log gate). On demand only; the built `smoke` step stays the nightly gate. |
 | visual / lifecycle | The pilots below; `visual` runs the lobby UI pilot, then the [Map Editor systems pilot](#map-editor-systems-pilot). Each refuses on a failed preflight (a failed `status.json` at once) and, after Play exits and 3 s of settling, re-runs the check as a postcondition: a leaked `Chunk [` fails the report (`postconditions` field). Reports pass through `verifying` before `passed`/`failed`. |
-| build | Client and dedicated server, each skipped when its `Builds/{Game,GameServer}/ss3d-build-hash.txt` matches `python3 Testing/ui/source_hash.py`. Otherwise `AutomationBuild.BuildClient()` / `BuildServer()`: preflight, then the build on the next editor tick; the driver waits on `artifacts/ui/{client,server}-build-result.json` (`status`, `seconds`, `error`, `sourceHash`), since a build blocks the main thread and MCP. The server build restores the editor's standalone subtarget afterwards, so the editor never stays on UNITY_SERVER. Cold server build ~6.5 min on tomnas. |
+| build | Client and dedicated server, each skipped when its `Builds/{Game,GameServer}/ss3d-build-hash.txt` matches `python3 Testing/ui/source_hash.py`. Otherwise `AutomationBuild.BuildClient()` / `BuildServer()`: preflight, then the build on the next editor tick; the driver waits on `artifacts/ui/{client,server}-build-result.json` (`status`, `seconds`, `error`, `sourceHash`), since a build blocks the main thread and MCP. The server build restores the editor's standalone subtarget afterwards, so the editor never stays on UNITY_SERVER. Cold server build ~6.5 min on the self-hosted runner. |
 | sandbox | On demand (`--steps sandbox`), not in `--weekly`: the reset loop is the nightly `sandbox-reset` smoke scenario, so the weekly only needs the graphical pilots. The pilot below (~4.5 min). |
 | remote | The remote client pilot. Run directly with a stale build, it refuses with both hashes. |
-| smoke | `--nightly`. `Testing/multiplayer/run_smoketest.sh` for each scenario in `Testing/multiplayer/smoke-set.txt` (late-join, reconnect, observer-sync, sandbox-reset, nukeops-round), the same set as `multiplayer-smoke-test.yml`. It runs a real headless dedicated server and clients from the current builds (refuses if either is stale). One log per scenario, `smoke-<scenario>.log` in the validate folder, which names the preserved `Testing/multiplayer/.runs/` directory. Runs every scenario, then fails if any failed. ~9 min on tomnas before `nukeops-round` (~3.5 min) was added. |
+| smoke | `--nightly`. `Testing/multiplayer/run_smoketest.sh` for each scenario in `Testing/multiplayer/smoke-set.txt` (late-join, reconnect, observer-sync, sandbox-reset, nukeops-round), the same set as `multiplayer-smoke-test.yml`. It runs a real headless dedicated server and clients from the current builds (refuses if either is stale). One log per scenario, `smoke-<scenario>.log` in the validate folder, which names the preserved `Testing/multiplayer/.runs/` directory. Runs every scenario, then fails if any failed. ~9 min on the self-hosted runner before `nukeops-round` (~3.5 min) was added. |
 
 Each step has an expected duration and a timeout. Past the expected duration,
 `Testing/ui/watch-dialogs.sh` runs every 30 s; a modal dialog fails the step at once. On
@@ -135,7 +135,7 @@ Two editor behaviours the tooling works around:
 ### PlayMode step
 
 `playmode` (in `--nightly`) runs every PlayMode test through MCP `run_tests` (~6.5 min on
-tomnas) and writes `validate-*/playmode.json`. Failures are checked against
+the self-hosted runner) and writes `validate-*/playmode.json`. Failures are checked against
 [`playmode-known-issues.txt`](playmode-known-issues.txt), which lists expected failures:
 - a listed test that fails is reported and does not fail the step;
 - a listed test that passes is flagged, so its entry can be removed;
@@ -233,7 +233,7 @@ to window pixels and emits an `OsClick` test signal; the pilot reads `client.log
 during the run; don't use the desktop meanwhile. A transparent overlay over the shell makes the
 click miss and fails the pilot at the Ready step; synthetic events would have passed.
 
-Requirements: write access to `/dev/uinput` for the session user (on Rutger's machine Steam's
+Requirements: write access to `/dev/uinput` for the session user (on the maintainer's machine Steam's
 `60-steam-input.rules` grants it via uaccess; otherwise add a udev rule such as
 `KERNEL=="uinput", TAG+="uaccess"`), `xdotool` for the client window lookup only, and every monitor
 at scale 1 (the absolute pointer spans the X root, which then equals GNOME's logical desktop).

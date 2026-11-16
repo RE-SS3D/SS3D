@@ -46,7 +46,10 @@ namespace SS3D.Systems.Inventory.Containers
 
         private readonly HashSet<Renderer> _occludedRenderers = new();
 
-        private void RefreshOcclusion()
+        /// <summary>
+        /// Hides the renderers the worn clothing covers. Human calls it again after respawning the hair, which a hat hides.
+        /// </summary>
+        public void RefreshOcclusion()
         {
             foreach (Renderer renderer in _occludedRenderers)
             {
@@ -56,11 +59,10 @@ namespace SS3D.Systems.Inventory.Containers
             Renderer[] renderers = GetComponentsInChildren<Renderer>(true);
             foreach (ClothDisplayData data in _clothedBodyParts)
             {
-                if (data.ClothToDisplay == null || !data.ClothToDisplay.TryGetComponent(out Cloth cloth)
-                    || cloth.OccludedBodyRenderers == null) continue;
+                if (data.ClothToDisplay == null || !data.ClothToDisplay.TryGetComponent(out Cloth cloth)) continue;
                 foreach (Renderer renderer in renderers)
                 {
-                    if (!cloth.OccludedBodyRenderers.Contains(renderer.name)) continue;
+                    if (!cloth.Occludes(renderer)) continue;
                     RendererHiding.Set(renderer, RendererHiding.Reason.CoveredByClothes, true);
                     _occludedRenderers.Add(renderer);
                 }

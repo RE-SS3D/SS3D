@@ -1,8 +1,8 @@
-SS3D — quick start (this fork)
+SS3D — quick start
 
 Building maps? Read TESTERS.md: how to build, save, share and report bugs.
 
-Not an official RE:SS3D build. Default port is 1151 everywhere.
+Default port is 1151 everywhere.
 
 WINDOWS (SS3D-Windows-<version>.zip)
 

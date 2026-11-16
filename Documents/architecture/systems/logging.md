@@ -37,5 +37,4 @@ Serilog-based structured logging with a mandatory sender and a `Logs` category, 
 
 ## Related docs
 
-- [FORK_STATUS.md](../../FORK_STATUS.md) § Structured logging
 - [networking-session](networking-session.md) — multiplayer harness

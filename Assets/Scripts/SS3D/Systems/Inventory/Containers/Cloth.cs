@@ -1,5 +1,7 @@
+using System;
 using Coimbra;
 using SS3D.Logging;
+using SS3D.Systems.Entities.Character;
 using UnityEngine;
 
 namespace SS3D.Systems.Inventory.Containers
@@ -22,6 +24,20 @@ namespace SS3D.Systems.Inventory.Containers
 
         /// <summary>Opaque equipment can conceal underlying body/clothing surfaces to prevent clipping.</summary>
         public string[] OccludedBodyRenderers => _occludedBodyRenderers;
+
+        /// <summary>Anything worn on the head (hats, helmets, hoods) hides the head hair, which would poke through it.</summary>
+        public bool HidesHair => TryGetClothMesh(ClothType.Head, out _);
+
+        /// <summary>
+        /// Whether wearing this item hides <paramref name="renderer"/>: a body renderer it names, or the head hair
+        /// when <see cref="HidesHair"/>. Beards and eyebrows stay visible.
+        /// </summary>
+        public bool Occludes(Renderer renderer)
+        {
+            if (renderer == null) return false;
+            if (_occludedBodyRenderers != null && Array.IndexOf(_occludedBodyRenderers, renderer.name) >= 0) return true;
+            return HidesHair && HumanoidStyleApplier.IsHeadHair(renderer.transform);
+        }
 
         /// <summary>Optional per-item materials; empty preserves the body's palette material.</summary>
         public Material[] WornMaterials => _wornMaterials;

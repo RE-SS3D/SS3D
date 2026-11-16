@@ -77,4 +77,4 @@ Keep the reply short unless the user asks for a deep dive.
 - Treat Editor Play Mode cost as a release blocker without noting `source: Editor Profiler`.
 - “Fix” condemned uGUI / grow `Human.prefab` as the first performance lever
   ([agent-first composition](../../../Documents/architecture/2026-07_agent-first-composition.md)).
-- Edit `Documents/design/*` or `Documents/FORK_STATUS.md`.
+- Edit `Documents/design/*`.

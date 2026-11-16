@@ -216,7 +216,7 @@ selection/drop behavior or the Nuke Ops happy path.
 **Blast radius: low today, compounding — trend: stable**
 
 StyleCop analyzers were disabled project-wide on 2026-07-14 "to reduce friction on AI-assisted
-edits" ([FORK_STATUS.md](../FORK_STATUS.md) § Analyzer tooling). `.editorconfig` still encodes the
+edits" ([MERGE_GUIDE.md](../MERGE_GUIDE.md#analyzer-tooling) § Analyzer tooling). `.editorconfig` still encodes the
 naming/formatting rules, but nothing enforces them in CI — conformance now depends entirely on
 reviewer attention (human or AI) at PR time, with no automated signal when a change drifts from
 convention. As the volume of AI-assisted PRs grows, this is the kind of gate that's cheap to skip
@@ -252,7 +252,7 @@ What still scans, and why:
 
 **Blast radius: medium — trend: improving (F1 registry shipped; separate panels remain)**
 
-Player settings Phase 3 (`fdf2de0d8`, PR #90) replaced scattered H/P/I/L/Y/F2–F6 debug keys with
+Player settings Phase 3 (`fdf2de0d8`, PR henkhooft/SS3D#90) replaced scattered H/P/I/L/Y/F2–F6 debug keys with
 one arbitrated F1 window in Editor/development builds. `Core/Debugging/DebugTools` owns named
 registrations; tool owners subscribe to `Invoked` and provide `IsOn` for toggles. Old debug action
 bindings are erased at boot so those keys are available for player rebinding. F12 remains console.
@@ -352,7 +352,7 @@ chunks batched per command group; keep one full snapshot for late joiners (M).
 ServerRpc of this kind with its check; the holes below are its `Unchecked` entries.
 
 - ~~Console commands at `AccessLevel User` run on the server for any player.~~ Fixed by the console
-  rework (#223): `accessgrant`, `accessrevoke`, `accesspreset` and `spawn` need Administrator, and an unknown
+  rework (henkhooft/SS3D#223): `accessgrant`, `accessrevoke`, `accesspreset` and `spawn` need Administrator, and an unknown
   command gets an answer instead of throwing. `CommandRegistryTests.RealCommands_ServerCommandsBelowAdminAreSelfOnly`
   (tech-debt G2) fails on any new server command below Administrator that isn't listed as self-only
   (today only `ghostjump`).
@@ -397,14 +397,14 @@ upper-body model (M–L).
 
 ### 1.21 Item holder and visibility are written by many classes
 
-**Blast radius: medium — trend: recurring bugs (#203, #208)**
+**Blast radius: medium — trend: recurring bugs (henkhooft/SS3D#203, #208)**
 
 Where an item is held and whether it renders is set by `AttachedContainer` (add/remove plus
 NetworkTransform toggles, `:338-432`), `ContainerItemDisplay` (`:105-122`, `:171-197`),
 `DisposalSubSystem` (`:199-352`) and `DisposalOutlet` (`:143-146`). Release-to-world exists three
 times: `Hand.PlaceHeldItemOutOfHand` (`:213-232`, registers TileMap tracking even for a throw),
 `HumanInventory.ServerPlaceItemInWorld` (`:429-438`), and `Hand.Dump` (`:193-199`, **skips** tracking).
-The #208 fix guards out-of-order network arrival with a per-peer `Item.LocalHolder`
+The henkhooft/SS3D#208 fix guards out-of-order network arrival with a per-peer `Item.LocalHolder`
 (`AttachedContainer.cs:368`) instead of one replicated holder.
 
 **Fix:** a replicated holder on `Item`, applied by one routine on every peer; one
@@ -515,12 +515,12 @@ See §6.
 
 ## 2. Hot-path GC / performance debt (tracked, partially paid down)
 
-PR #13 fixed a first wave of per-tick allocation ([FORK_STATUS.md](../FORK_STATUS.md) § Hot-path
+PR henkhooft/SS3D#13 fixed a first wave of per-tick allocation ([MERGE_GUIDE.md](../MERGE_GUIDE.md#hot-path-performance) § Hot-path
 performance): `TileCoord` boxing on dictionary lookups, atmos GPU-upload allocations, pipe-network
 list churn, and `SubstanceContainer.AsReadOnly()` on bleed ticks. The pattern keeps recurring in new
 code rather than being structurally prevented (no analyzer/test flags a new per-tick `List.AsReadOnly()`
 or `new float[]` in a hot loop) — treat every new tick-driven system (atmospherics ports, area
-recompute, electricity distribution) as needing the same review pass PR #13 did, not as automatically
+recompute, electricity distribution) as needing the same review pass PR henkhooft/SS3D#13 did, not as automatically
 safe because "the pattern was fixed once."
 
 - Full list of pitfalls-with-fixes: [tile.md](systems/tile.md), [atmospherics.md](systems/atmospherics.md), [substances.md](systems/substances.md) § Pitfalls
@@ -565,11 +565,11 @@ tables before starting any redesign that touches `Human.prefab` or a condemned s
 
 ---
 
-## 5. Accepted fork deviations (not debt — do not "fix" without a design change)
+## 5. Accepted design deviations (not debt — do not "fix" without a design change)
 
 Several intentional divergences from design docs are already recorded as accepted, not scheduled for
 rework, each directly in its owning system map: Main HUD fully hides rather than layers under machine
-UI ([inventory.md](systems/inventory.md) § Fork deviation), Area is APC-seeded rather than
+UI ([inventory.md](systems/inventory.md) § Design deviation), Area is APC-seeded rather than
 auto-detected ([area.md](systems/area.md)), combat's primary click always swings rather than requiring
 a hover target ([combat.md](systems/combat.md)). Examine's hover name tooltip used to be listed here; the
 2026-11 revision of [examine.md](../design/examine.md) §4 made it the design. Listed

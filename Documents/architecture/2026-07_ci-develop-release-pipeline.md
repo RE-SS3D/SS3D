@@ -6,7 +6,7 @@
 
 ## Goal
 
-Give this fork a path from a known commit to a downloadable **Windows** player zip
+Give the project a path from a known commit to a downloadable **Windows** player zip
 (self-host via `Builds/*.bat`), with optional secondary Linux client/server artifacts.
 Default **manual** dispatch is a numbered **stable** `vX.Y.Z` release with Windows + Linux
 client/server (Linux is forced on, since both client updaters follow stable releases).
@@ -22,7 +22,7 @@ Not triggered on every develop merge (license cost + release spam at high PR vol
 ### Workflow: `.github/workflows/develop-release.yml`
 
 **Triggers:** `workflow_dispatch` only. The nightly is started by an external dispatcher at
-05:17 UTC via `workflow_dispatch` (after smoke at 04:00 so TomNAS `Library` is warm).
+05:17 UTC via `workflow_dispatch` (after smoke at 04:00 so the self-hosted runner's `Library` is warm).
 `concurrency: develop-release` / `cancel-in-progress: false`.
 
 **Nightly (automated or manual `tag_suffix=nightly`):** forces `build_linux=true`, `skip_release=false`, EditMode/smoke off,
@@ -48,25 +48,25 @@ afterward.
 | `skip_release` | `false` | When true, skip Windows build and GitHub prerelease (Linux-only if `build_linux`). |
 | `version_bump` | `auto` | Release bump level; `auto` derives it from signals — see [2026-10_game-versioning](2026-10_game-versioning.md). |
 | `tag_suffix` | _(empty)_ | Unversioned test cut tagged `develop-<suffix>`; `nightly` forces the full nightly path. |
-| `runner` | `tomnas` | `tomnas` / `github` — TomNAS self-hosted, or GitHub-hosted `ubuntu-latest`. |
+| `runner` | `self-hosted` | `self-hosted` / `github` — the self-hosted runner, or GitHub-hosted `ubuntu-latest`. |
 
 **Jobs:**
 
 1. **Prepare** — resolve schedule vs dispatch flags; compute the game version with
    `Tools/versioning/next_version.py` (full-history checkout; [2026-10_game-versioning](2026-10_game-versioning.md));
-   probe whether `TomNAS-unity` is online and set `runs_on` / `self_hosted` for build jobs.
+   set `runs_on` / `self_hosted` for build jobs: the self-hosted runner unless `runner: github` (no online probe).
    Both builder steps pass `customParameters: -ss3dVersion <version>`.
 2. **EditMode** (opt-in) — same `game-ci/unity-test-runner@v4` / `6000.3.28f1` pattern as
    `editmodetestrunner.yml`, including secret preflight and `environment: unity_tests`.
    Skipped when `run_editmode` is false (always skipped on nightly).
 3. **Linux build** (nightly, or opt-in via `build_linux`) — **one** `unity-builder` step with
-   `ClientAndServerBuildScript.BuildBothForCi` (avoids TomNAS PackageCache race from two
+   `ClientAndServerBuildScript.BuildBothForCi` (avoids a PackageCache race on the self-hosted runner from two
    sequential builder sessions). `versioning: None`. Unity 6 Linux binaries are
-   `SS3D-Server` / `SS3D-Client` (no `.x86_64` suffix). On TomNAS: restore/save shared
-   `/home/cu6e/.cache/ss3d/Library` stash + `runAsHostUser: true`.
+   `SS3D-Server` / `SS3D-Client` (no `.x86_64` suffix). On the self-hosted runner: restore/save the shared
+   `~/.cache/ss3d/Library` stash + `runAsHostUser: true`.
 4. **Smoke** (opt-in step on the Linux job) — harness scenarios when `run_smoke`; logs uploaded.
 5. **Windows client** — default manual path and always on nightly; `StandaloneWindows64`
-   (`buildName: SS3D`). Same TomNAS Library stash / `runAsHostUser` when self-hosted. Not
+   (`buildName: SS3D`). Same Library stash / `runAsHostUser` when self-hosted. Not
    smoke-tested on Windows. Skipped when `skip_release` is set.
 6. **Prerelease** — primary zip `SS3D-Windows-<tag>.zip` with layout:
    `Update_SS3D.bat`, `Update_SS3D.ps1`, `.ss3d-release.json`, `TESTERS.md` and `README.txt`
@@ -148,11 +148,12 @@ a manual release check.
 
 ### Related workflow changes
 
-- `multiplayer-smoke-test.yml` — label-gated PR + `workflow_dispatch` + nightly 04:00 UTC;
-  TomNAS + `BuildBothForCi`. Prefer this (or `build_linux` + `run_smoke` on develop-release)
+- `multiplayer-smoke-test.yml` — label-gated PR (branches of this repository only) + `workflow_dispatch`
+  (`pr: <number>` for a fork PR a maintainer has read) + nightly 04:00 UTC;
+  self-hosted runner + `BuildBothForCi`. Prefer this (or `build_linux` + `run_smoke` on develop-release)
   when you need a smoke gate.
-- `editmodetestrunner.yml` — cheap PR/`develop` EditMode on TomNAS (dispatch `runner: github`
-  for `ubuntu-latest`). Prefer this (or `run_editmode: true` on develop-release) when you
+- `editmodetestrunner.yml` — cheap PR/`develop` EditMode on the self-hosted runner (dispatch `runner: github`
+  for `ubuntu-latest`). PRs from forks only get a notice job; a maintainer runs them with `pr: <number>`. Prefer this (or `run_editmode: true` on develop-release) when you
   need an EditMode gate on a cut.
 - `main.yml` (Automated Build) — **removed**; Windows prereleases go through
   `develop-release.yml`. Upstream milestone/project YAML deleted (`23b75ad36`); ghost
@@ -202,8 +203,9 @@ a manual release check.
 - **Ghost workflows after rename/delete stay `active` until disabled.** Deleting YAML is not
   enough — `gh workflow disable <id|path>` or the Actions UI. `testrunner.yml` and
   `AddToRoadmap.yml` were disabled after their files were removed.
-- **Offline TomNAS queues forever without a probe.** `prepare` picks GitHub-hosted when
-  `TomNAS-unity` is not `online` (job `timeout-minutes` does not cover queue wait).
+- **An offline self-hosted runner queues jobs until it returns.** There is no online probe: `github.token`
+  cannot list repo runners (HTTP 403). Dispatch with `runner: github` to build without it; job
+  `timeout-minutes` does not cover queue wait.
 
 ## Out of scope
 

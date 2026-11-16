@@ -6,22 +6,22 @@
 
 # Addressables expansion & migration
 
-Scopes turning this fork's already-configured but functionally inert Addressables setup into the
+Scopes turning the project's already-configured but functionally inert Addressables setup into the
 thing it's supposed to be: on-demand async asset loading with ref-counting and unload, instead of
 every configured asset being hard-referenced into RAM at startup.
 
 ## Why
 
-Upstream tracks this exact problem as
+The repository tracks this exact problem as
 [RE-SS3D/SS3D#1494](https://github.com/RE-SS3D/SS3D/issues/1494) ("Excessive memory usage" — up to
-600MB from `AssetDatabase.Assets` directly referencing everything from the start) and has an open,
-unreviewed rewrite attempting to fix it:
+600MB from `AssetDatabase.Assets` directly referencing everything from the start) and had an
+unreviewed rewrite attempting to fix it, closed unmerged at the 2026 merge:
 [RE-SS3D/SS3D#1500](https://github.com/RE-SS3D/SS3D/pull/1500) ("Make adressables great again").
 
-This fork has the identical root cause today, independently of upstream's PR. Investigated
+The merged codebase has the identical root cause, independently of that PR. Investigated
 2026-07-21:
 
-## Current state (this fork)
+## Current state
 
 - **Addressables package is present and configured.** `com.unity.addressables` **2.9.1** pinned
   directly in `Packages/manifest.json` (Unity 6), active settings at
@@ -39,7 +39,7 @@ This fork has the identical root cause today, independently of upstream's PR. In
   [ui-shell.md](systems/ui-shell.md) / [2026-07_ui-shell-consolidation.md](2026-07_ui-shell-consolidation.md)
   (MI/Main HUD/Storage still `Resources.Load`), [TECH_DEBT.md](TECH_DEBT.md) § 1.5 / § 1.15.
 
-## What upstream PR #1500 offers (and why not to merge it wholesale)
+## What RE-SS3D/SS3D#1500 offers (and why not to merge it wholesale)
 
 The PR's shape is a reasonable reference design:
 
@@ -52,12 +52,11 @@ The PR's shape is a reasonable reference design:
   of relying on FishNet's default prefab-collection index
 - Deletes the legacy static `Assets` lookup entirely once migrated
 
-It is **not mergeable as-is**: it targets Unity 2021.3 + upstream's pre-fork `Data/` layout, this
-fork has diverged substantially (Unity 6, different codegen, ~641 commits ahead), it's unreviewed
-even upstream, and it migrates ~470 call sites/assets in one shot with only automated test coverage
+It is **not mergeable as-is**: it targets Unity 2021.3 and the pre-merge `Data/` layout, the codebase
+has since diverged substantially (Unity 6, different codegen), it was never reviewed, and it migrates ~470 call sites/assets in one shot with only automated test coverage
 (no confirmed manual multiplayer smoke). Adopt the **design** — async handle + ref-count model, and
-critically the network-preload-barrier idea, since this fork is multiplayer-first via FishNet just
-like upstream — not the diff.
+critically the network-preload-barrier idea, since SS3D is multiplayer-first via FishNet — not the
+diff.
 
 ## Target model
 
@@ -70,10 +69,10 @@ like upstream — not the diff.
    already works; only the storage/retrieval mechanism underneath changes from a hard-referenced
    dictionary to an Addressables key lookup.
 3. **FishNet spawn ordering** — any networked prefab or synced asset reference needs to be resolvable
-   client-side before the spawn/RPC that uses it lands, same problem upstream's `NetworkBarrier`
-   solves. Needs a concrete design pass against this fork's `NetworkSpawner`/`NetworkObjectsGenerator`
+   client-side before the spawn/RPC that uses it lands, same problem #1500's `NetworkBarrier`
+   solves. Needs a concrete design pass against our `NetworkSpawner`/`NetworkObjectsGenerator`
    equivalents (see [networking-session.md](systems/networking-session.md)) rather than assuming
-   upstream's mechanism transfers unchanged.
+   #1500's mechanism transfers unchanged.
 4. **Migrate database-by-database, not all at once** — start with a database that's easy to verify in
    isolation and has no networked-spawn dependency (e.g. `InteractionIcons` — UI-only, no FishNet
    path) before touching anything that gates a networked prefab spawn (`Items`).
@@ -140,8 +139,8 @@ like upstream — not the diff.
 - **Bundle build verification.** Content-bundle build path still needs a real player build-and-run
   pass; Editor Play Mode can mask load failures via the Editor fast-path. Checklist above tracks the
   manual content build; CI gate not yet added.
-- **Dedicated server implications.** `UNITY_SERVER` builds ([FORK_STATUS.md](../FORK_STATUS.md) §
-  Headless dedicated server) skip renderers/audio but still need correct gameplay assets — async
+- **Dedicated server implications.** `UNITY_SERVER` builds ([networking-session](systems/networking-session.md),
+  headless dedicated server) skip renderers/audio but still need correct gameplay assets — async
   loading changes startup-order assumptions there too (InteractionIcons preload is client-UI-only,
   low risk; Items migration will not be).
 - **Test coverage:** EditMode `AssetProviderTests` cover handle/ref-count with a fake backend
@@ -150,14 +149,14 @@ like upstream — not the diff.
 
 ## Explicit non-goals (this doc)
 
-- Porting upstream PR #1500's code directly — design reference only, per above.
+- Porting RE-SS3D/SS3D#1500's code directly — design reference only, per above.
 - Migrating MI/Main HUD/Storage Panel onto `UiShellSubSystem` — that's
   [2026-07_ui-shell-consolidation.md](2026-07_ui-shell-consolidation.md)'s own later phases; this
   effort only makes their eventual catalog migration land on async Addressables loading instead of
   the current `Resources.Load` pattern once that migration happens.
 - Scene/bundle-based Addressables (remote content delivery, CDN hosting) — local-bundle async
-  loading only, matching this fork's build-from-source / manual-prerelease distribution model
-  ([FORK_STATUS.md](../FORK_STATUS.md)).
+  loading only, matching the project's build-from-source / numbered-release distribution model
+  ([ci-develop-release-pipeline](2026-07_ci-develop-release-pipeline.md)).
 
 ## Related docs
 
@@ -166,4 +165,4 @@ like upstream — not the diff.
 - [systems/networking-session.md](systems/networking-session.md)
 - [TECH_DEBT.md](TECH_DEBT.md) § 1.4, § 1.5, § 1.15
 - [TECH_DEBT.md](TECH_DEBT.md) § 6 (resolved 1.7: self-initializing subsystems) — unrelated root cause, do not conflate
-- Upstream: [RE-SS3D/SS3D#1494](https://github.com/RE-SS3D/SS3D/issues/1494), [RE-SS3D/SS3D#1500](https://github.com/RE-SS3D/SS3D/pull/1500)
+- Issue and PR: [RE-SS3D/SS3D#1494](https://github.com/RE-SS3D/SS3D/issues/1494), [RE-SS3D/SS3D#1500](https://github.com/RE-SS3D/SS3D/pull/1500)

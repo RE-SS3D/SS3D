@@ -248,7 +248,7 @@ struct DockBridge
 Consumers opt in:
 
 - **Adjacency**: `AdjacencyEngine` checks bridge table for cross-map neighbor resolution when docked.
-- **Areas**: optional area-id bridge or merged flood-fill post-dock (fork already blocks cross-MapId in `[AreaBoundaryEvaluator](Assets/Scripts/SS3D/Systems/Area/AreaBoundaryEvaluator.cs)`).
+- **Areas**: optional area-id bridge or merged flood-fill post-dock (the code already blocks cross-MapId in `[AreaBoundaryEvaluator](Assets/Scripts/SS3D/Systems/Area/AreaBoundaryEvaluator.cs)`).
 - **Electricity**: cable adjacency connector reads bridge for circuit merge.
 - **Atmospherics**: zone merge at bridge (depends on atmos branch).
 

@@ -41,7 +41,7 @@ Connect/disconnect lifecycle, server-side:
 - **`OnClientLoadedStartScenes` must gate on `asServer`:** host also fires the client-side (`asServer=false`) callback before `LoadedStartScenes(true)` is set. Spawning there warns and can create a duplicate UnauthorizedPlayer that later fails despawn ("already deinitializing"). Match FishNet `PlayerSpawner`.
 - **Despawn UnauthorizedPlayer carefully:** snapshot `conn.Objects.ToArray()` and skip non-spawned objects before `ServerManager.Despawn` (`IsDeinitializing` is FishNet-internal).
 
-- **Late client SyncDictionary values may be null before the Player NetworkObject spawns.** `ServerPlayers` / `OnlinePlayers`, sync callbacks and lookups filter/skip unresolved values. Preserve these guards; dictionary membership alone does not prove the Player exists (`18d28be1e`, `f1221aaae`, PR #92).
+- **Late client SyncDictionary values may be null before the Player NetworkObject spawns.** `ServerPlayers` / `OnlinePlayers`, sync callbacks and lookups filter/skip unresolved values. Preserve these guards; dictionary membership alone does not prove the Player exists (`18d28be1e`, `f1221aaae`, PR henkhooft/SS3D#92).
 
 ## Depends on / Used by
 

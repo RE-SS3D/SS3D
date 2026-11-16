@@ -17,7 +17,7 @@ namespace SS3D.Core.Behaviours
     ///
     /// https://github.com/coimbrastudios/framework/blob/master/Documentation~/EventService.md
     /// </remarks>
-    // TODO: Add a Guide into using PlayerLoopTiming events to GitBook.
+    // TODO: Document PlayerLoopTiming events in Documents/architecture/systems/core-subsystems.md.
     public class Actor : MonoBehaviour, IActor
     {
         /// <summary>

@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<RuleSet Name="SS3D rules (StyleCop disabled)" Description="StyleCop disabled for this fork." ToolsVersion="17.0">
+<RuleSet Name="SS3D rules (StyleCop disabled)" Description="StyleCop disabled." ToolsVersion="17.0">
     <Rules AnalyzerId="StyleCop.Analyzers" RuleNamespace="StyleCop.Analyzers.DocumentationRules">
         <Rule Id="SA1600" Action="Hidden" />
         <Rule Id="SA1601" Action="Hidden" />

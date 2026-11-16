@@ -36,6 +36,10 @@ namespace SS3D.UI.MainHud
         [FormerlySerializedAs("_iconPda")]
         [SerializeField] private Sprite _iconPocket;
         [SerializeField] private Sprite _iconBack;
+        [SerializeField] private Sprite _iconSuit;
+        [SerializeField] private Sprite _iconSuitStorage;
+        [SerializeField] private Sprite _iconEquipmentToggle;
+        [SerializeField] private Sprite _iconOpenStorage;
 
         [SerializeField] private Sprite _alertFire;
         [SerializeField] private Sprite _alertHot;
@@ -81,6 +85,10 @@ namespace SS3D.UI.MainHud
             Id = _iconId,
             Pocket = _iconPocket,
             Back = _iconBack,
+            Suit = _iconSuit,
+            SuitStorage = _iconSuitStorage,
+            EquipmentToggle = _iconEquipmentToggle,
+            OpenStorage = _iconOpenStorage,
         };
 
         public AlertIconSet AlertIcons => new()
@@ -187,6 +195,10 @@ namespace SS3D.UI.MainHud
             _iconId = icons.Id;
             _iconPocket = icons.Pocket;
             _iconBack = icons.Back;
+            _iconSuit = icons.Suit;
+            _iconSuitStorage = icons.SuitStorage;
+            _iconEquipmentToggle = icons.EquipmentToggle;
+            _iconOpenStorage = icons.OpenStorage;
             _alertFire = alertIcons.Fire;
             _alertHot = alertIcons.Hot;
             _alertCold = alertIcons.Cold;

@@ -2,6 +2,6 @@
 # One test full name, or a fixture/method prefix, per line; '#' starts a comment.
 # A listed test that fails is reported but doesn't fail the step. A listed test that passes is
 # flagged so the entry can be removed. Any unlisted failure fails the step.
-# Triage 2026-10-31 (tomnas, cursor/lobby-uitk-phase-a):
+# Triage 2026-10-31 (self-hosted runner, cursor/lobby-uitk-phase-a):
 
 # (none: all PlayMode tests pass as of 2026-10-31)

@@ -104,5 +104,5 @@ evidence (signals / ScriptFailed), and what to try next. Do not thrash builds.
 
 - `cat` full `unity.log` or `artifacts/build-client-server.log`.
 - Commit Unity mat/font/URP/Addressables dirt or `artifacts/`.
-- Edit `Documents/design/*` / `Documents/FORK_STATUS.md` unless the owner asks.
+- Edit `Documents/design/*` unless the owner asks.
 - Claim PASS without a green `run_smoketest.sh` exit after the latest rebuild.

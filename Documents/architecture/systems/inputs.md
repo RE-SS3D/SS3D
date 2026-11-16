@@ -95,7 +95,7 @@ bindings. Arbitration model: [2026-07_input-arbitration.md](../../archive/archit
 - **Escape owners:** `Other/Toggle Menu` = in-round lobby menu (`LobbyUiSubSystem`, `Menu` context);
   `UiCancel` = machine panel; armed interactions poll the key and win (the lobby menu skips while armed);
   the bug report dialog pushes `InputContext.Dialog` (every action off) and polls Escape / Ctrl+Enter itself.
-- **Console context follows field focus, not Open/Close:** `ConsolePanelView` holds `InputContext.Console` through an `InputTextEntryScope` on the field's select/deselect, and F12 `Open` toggles. Open and Close share F12 inside `Console`, so a press-scoped handle could fire both in either order and leave the console open over a live Gameplay context (T/B opened chat or the map editor, #154).
+- **Console context follows field focus, not Open/Close:** `ConsolePanelView` holds `InputContext.Console` through an `InputTextEntryScope` on the field's select/deselect, and F12 `Open` toggles. Open and Close share F12 inside `Console`, so a press-scoped handle could fire both in either order and leave the console open over a live Gameplay context (T/B opened chat or the map editor, henkhooft/SS3D#154).
 - **Regenerating `Controls.cs`:** re-apply Caps / Backspace (and startup erasures, including the retired F6 debug binding) if the generator
   restores old paths — asset + generated wrapper must match [2026-07_default-input-scheme.md](../../archive/architecture/2026-07_default-input-scheme.md).
 

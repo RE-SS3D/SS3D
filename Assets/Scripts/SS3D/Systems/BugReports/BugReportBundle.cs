@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
 using System.Text;
+using SS3D.Utils;
 using UnityEngine;
 
 namespace SS3D.Systems.BugReports
@@ -158,10 +159,10 @@ namespace SS3D.Systems.BugReports
         }
     }
 
-    /// <summary>Builds a pre-filled issue link for the fork's GitHub issue forms (<c>.github/ISSUE_TEMPLATE</c>).</summary>
+    /// <summary>Builds a pre-filled issue link for the project's GitHub issue forms (<c>.github/ISSUE_TEMPLATE</c>).</summary>
     public static class BugReportIssueLink
     {
-        public const string NewIssueUrl = "https://github.com/henkhooft/SS3D/issues/new";
+        public const string NewIssueUrl = ProjectRepository.Url + "/issues/new";
 
         /// <summary>Browsers and GitHub reject very long URLs; the bundle carries the full text.</summary>
         private const int MaxFieldLength = 1500;

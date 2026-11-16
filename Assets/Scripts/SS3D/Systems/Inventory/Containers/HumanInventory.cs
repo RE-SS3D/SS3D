@@ -22,6 +22,7 @@ using SS3D.Systems.Combat;
 using SS3D.Systems.Interactions;
 using SS3D.Systems.Tile;
 using SS3D.Systems.Tile.MapEditor;
+using SS3D.Utils;
 
 namespace SS3D.Systems.Inventory.Containers
 {
@@ -490,13 +491,16 @@ namespace SS3D.Systems.Inventory.Containers
                 return false;
             }
 
+            // Skip this body's own colliders: from the eyes, a drop near the feet passes the head and chest, and how
+            // much of them the ray grazes depends on the pose, so short drops were refused at random.
             Vector3 direction = toPoint / distance;
-            if (!Physics.Raycast(
+            if (!LineOfSight.TryGetFirstHitIgnoring(
                     viewPosition,
                     direction,
-                    out RaycastHit hit,
                     distance + 0.25f,
                     StationBounds.WithoutCeiling(Physics.DefaultRaycastLayers),
+                    entity.transform,
+                    out RaycastHit hit,
                     QueryTriggerInteraction.Ignore))
             {
                 return false;

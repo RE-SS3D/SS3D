@@ -7,8 +7,8 @@ description: >
   UPM_CACHE_ROOT cannot be passed any other way.
 inputs:
   cache-dir:
-    description: Host directory that keeps the UPM cache between jobs.
-    default: /home/cu6e/.cache/ss3d/upm
+    description: Host directory that keeps the UPM cache between jobs (default ~/.cache/ss3d/upm of the runner user).
+    default: ''
 runs:
   using: composite
   steps:
@@ -17,6 +17,7 @@ runs:
         UPM_HOST_CACHE: ${{ inputs.cache-dir }}
       run: |
         set -euo pipefail
+        UPM_HOST_CACHE="${UPM_HOST_CACHE:-$HOME/.cache/ss3d/upm}"
         mkdir -p "$UPM_HOST_CACHE"
         shim_dir="$RUNNER_TEMP/upm-cache-shim"
         mkdir -p "$shim_dir"

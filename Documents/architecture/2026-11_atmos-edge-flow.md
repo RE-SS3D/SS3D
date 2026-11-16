@@ -2,7 +2,7 @@
 > Touches systems: atmospherics, entities, rendering, networking-session
 > Status: in-progress
 
-**Progress:** All five phases built. Open before this effort ships: Decision 10's 8-client line, which has only been run with one client, the whole-tick peak over 4 ms, and the owner's review of Decisions 12 and 13. Phase 0 pinned fixtures and budgets, phase 1 put edge flow in `ShareGasJob`, phase 2 made it the only transport, phase 3 tuned drain time and felt wind and brought patch traffic under budget, and [phase 4](#phase-4-results) made loose items ride the wind. Scheduled in M8's slot. The consumer smoothing it builds on shipped in #143. Serves [mvp1-nuke-ops.md](../milestones/mvp1-nuke-ops.md) M8 and must hold [test-server.md](../milestones/test-server.md) T3's 8-client breach line. Tests follow the [testing philosophy](2026-11_testing-philosophy.md).
+**Progress:** All five phases built. Open before this effort ships: Decision 10's 8-client line, which has only been run with one client, the whole-tick peak over 4 ms, and the owner's review of Decisions 12 and 13. Phase 0 pinned fixtures and budgets, phase 1 put edge flow in `ShareGasJob`, phase 2 made it the only transport, phase 3 tuned drain time and felt wind and brought patch traffic under budget, and [phase 4](#phase-4-results) made loose items ride the wind. Scheduled in M8's slot. The consumer smoothing it builds on shipped in henkhooft/SS3D#143. Serves [mvp1-nuke-ops.md](../milestones/mvp1-nuke-ops.md) M8 and must hold [test-server.md](../milestones/test-server.md) T3's 8-client breach line. Tests follow the [testing philosophy](2026-11_testing-philosophy.md).
 
 # Atmos edge flow: pressure-driven wind on the tile grid (Nov 2026)
 
@@ -58,7 +58,7 @@ Settled in an implementation grill on 2026-11-04.
 | 10 | Budgets during a Metastation breach: at most 4 ms per atmos tick, and at most 300 KB/s per client with 8 clients. Phase 0 measures both. Over on network puts [client sync](2026-07_atmos-client-visualization-sync.md) Phase 2 AOI ahead of phase 1; over on sim reviews the substep rule first. |
 | 11 | Loose items are phase 4: anything with a free server `Rigidbody`, drag scaled by mass, with a cap on how many respond at once. Placed furniture stays put. Item physics is already server-only, so no prefab or ownership changes. |
 | 12 | Felt wind is air speed × `AtmosWind.AirSpeedGain` (3). Decision 5's drain time fixes true air speed, so a gain closes the gap and Decision 7's 5 m/s line stands. Chosen in phase 3 and open to the owner's review. |
-| 13 | An item in space slows to rest, as `AtmosLooseBodies.DriftDamping` sets; `Item` already drops its gravity there (#123). It is never deleted, because design treats something ejected as still out there (disposal §6) and the authentication disk can go this way. Chosen in phase 4 and open to the owner's review. |
+| 13 | An item in space slows to rest, as `AtmosLooseBodies.DriftDamping` sets; `Item` already drops its gravity there (henkhooft/SS3D#123). It is never deleted, because design treats something ejected as still out there (disposal §6) and the authentication disk can go this way. Chosen in phase 4 and open to the owner's review. |
 
 Coasting velocity and fire rendering stay separate follow-ups. They read the same field and do not block this effort.
 
@@ -176,7 +176,7 @@ Measured 2026-11-04. `AtmosLooseBodies` ticks with the wind: it picks the `MaxPu
 
 Most item prefabs have the default 1 kg mass, so most items respond alike. Boombox (5 kg) and patches (0.08 kg) differ.
 
-**Bodies past the hull.** `Item` turns gravity off in space (#123), and an item that keeps its velocity sends `NetworkTransform` traffic forever. Decision 13 covers this: `AtmosLooseBodies` damps any registered body without gravity until it rests, and restores its damping when gravity returns. This also applies to items dropped in space, not only blown ones.
+**Bodies past the hull.** `Item` turns gravity off in space (henkhooft/SS3D#123), and an item that keeps its velocity sends `NetworkTransform` traffic forever. Decision 13 covers this: `AtmosLooseBodies` damps any registered body without gravity until it rests, and restores its damping when gravity returns. This also applies to items dropped in space, not only blown ones.
 
 **Budgets:** `mppm:breach-budget` now scatters 64 wrenches around the hole. `scatter_items` is its new step, and `client_traffic` reads what the remote client really received, so the number includes everything the server sends rather than patches alone. Burst safety checks were on, so compare these with phase 3's first three rows, not its last.
 

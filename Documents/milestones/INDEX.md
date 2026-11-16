@@ -15,23 +15,23 @@ A 3D Space Station 13. Every gate names the [vision](../design/vision.md) pillar
 
 **Gameplay** — [mvp1-nuke-ops.md](mvp1-nuke-ops.md), in this order:
 
-1. ~~**Animation pass**~~ — shipped: [humanoid-animation-pass](../architecture/2026-11_humanoid-animation-pass.md) (get-up, pistol stance, throwing, interaction animations). M1m (responsive movement) shipped in [#138](https://github.com/henkhooft/SS3D/pull/138); dragging moved to the feel pass
-2. **M0** — in-house test station; Captain, Security, Engineer, Doctor, Assistant with loadouts and access; ops suit identity
-3. **M1c** — combat core: C20R, Stechkin, security pistol, M4, stun baton; physical magazines; C4/X4 and minibomb (implemented; multiplayer acceptance pending); sounds; no debug chrome
-4. **M1s** — shock and Downed: getting shot puts you on the floor before you bleed out, so fights end ([shock-and-downed plan](../plans/shock-and-downed.plan.md))
-5. **M3** — nuke loop (thin) with floor and furniture damage
-6. **M8 + M9 (thin)** — vacuum kills, suit seal and internals protect, engineers patch hull holes; APC lights matter (M9 partial: breakable APCs, fixture emergency cells and breakable bulbs in [#202](https://github.com/henkhooft/SS3D/pull/202); needs the M0 station's APCs and lights and a remote-client check)
-7. **M10 (thin)** — construction: engineers repair and rebuild floors, walls and windows; the crew can barricade ([construction.md](../design/construction.md)). Implemented in [construction-mvp1](../architecture/2026-11_construction-mvp1.md); a separate-client check remains, and "a patched room refills" waits on M0's supply network
-8. **M12** — fog of war that lines up with the walls: walls in sight drawn whole, inward-soft edges, people shown or hidden whole ([fov.md](../design/fov.md); built in [fov-rework](../architecture/2026-11_fov-rework.md), owner review pending)
+1. ~~**Animation pass**~~ — shipped: [humanoid-animation-pass](../architecture/2026-11_humanoid-animation-pass.md); M1m (responsive movement) in [#138](https://github.com/henkhooft/SS3D/pull/138)
+2. **M0** — test station and five jobs are in; open: an engineering closet with sheets, glass and floor tiles
+3. **M1c** — guns, C4/X4 and minibomb hand-tested; open: stun baton hand test, physical magazines, the M4 in an armory
+4. **M12** — playtest readiness: the in-round OOC column ([ooc-column plan](../plans/ooc-column.plan.md)) and prying open an unpowered airlock (needs a design rule)
+5. **M13** — fog of war that lines up with the walls: walls in sight drawn whole, inward-soft edges, people shown or hidden whole ([fov.md](../design/fov.md); built in [fov-rework](../architecture/2026-11_fov-rework.md), owner review pending)
+6. **M6** — Playtest 1 itself
+
+Shipped 2026-11-16 after the owner's hand tests: M1s shock and Downed ([#272](https://github.com/henkhooft/SS3D/pull/272)), M3 nuke loop ([#260](https://github.com/henkhooft/SS3D/pull/260)), M8 vacuum and hull, M9 power and light ([#202](https://github.com/henkhooft/SS3D/pull/202)), M10 construction ([#254](https://github.com/henkhooft/SS3D/pull/254)), M11 lobby ([#282](https://github.com/henkhooft/SS3D/pull/282)).
 
 M4 (win/lose) and M5 (end screen, restart) shipped: [round-end loop](../archive/architecture/2026-11_round-end-loop.md), [#131](https://github.com/henkhooft/SS3D/pull/131)–[#137](https://github.com/henkhooft/SS3D/pull/137).
 
 **Enabler** — [test-server.md](test-server.md), serves Playtest 1:
 
-- **T3** — exit line: doors for remote clients (admin force-end and disk teleport shipped as `round end` and `disk`); Nuke Ops smoke green nightly; 8 clients through a breach without hitching
-- **T8** — 24/7 Nuke Ops server, separate from the sandbox; Extended below 4 ready players. Announcing it publicly closes the gate (T5)
+- **T3** — exit line: the scheduled Multiplayer Smoke Test is red and needs to go green; 8 clients through a breach gets its real check at Playtest 1 (doors for remote clients, force-end and disk teleport work)
+- ~~**T8**~~ — shipped: the 24/7 Nuke Ops server is live. Announcing it publicly closes the gate (T5)
 
-**Maintenance** — [map-authoring.md](map-authoring.md): A9 object setup awaits the owner's hand test; triage tester reports. A6 (a tester-built station) is off the critical path.
+**Maintenance** — [map-authoring.md](map-authoring.md): testers are building Nuke Ops maps (A6); triage their reports. A9 object setup shipped in [#277](https://github.com/henkhooft/SS3D/pull/277). A6 is off the critical path.
 
 After Playtest 1, a **feel pass** ordered by what testers report: [mvp1-nuke-ops.md](mvp1-nuke-ops.md) **Explicitly deferred**.
 
@@ -44,7 +44,7 @@ Not focus: Area-id merge on breach, shuttles, PDA/uplink/Traitor, handcuffs, ran
 | Test server — hop-on/off playtest | in-progress | enabler for MVP1 | — (parallel; reuses MVP1 M5 loop) | [test-server.md](test-server.md) |
 | Map authoring — tester-built maps | in-progress | enabler for MVP1 (maintenance) | test-server T1 | [map-authoring.md](map-authoring.md) |
 | MVP1 — Nuclear Operatives round | in-progress | 2, 4, 6 (1 thin) | — | [mvp1-nuke-ops.md](mvp1-nuke-ops.md) |
-| MVP2 — Bare-bones station round | planned | 1, 3, 4, 5 | MVP1 | [mvp2-station-round.md](mvp2-station-round.md) |
+| MVP2 — Bare-bones station round | in-progress | 1, 3, 4, 5 | MVP1 | [mvp2-station-round.md](mvp2-station-round.md) |
 
 ### Beyond MVP2
 

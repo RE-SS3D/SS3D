@@ -76,7 +76,7 @@ Thin sync layer on top of existing types — no renderer rewrite.
 - Generic VFX framework (particles, decals unrelated to turf grid)
 - Liquid/solid phase rendering (separate future work per design §10)
 
-## Documented fork deviation (until Phase 2)
+## Documented design deviation (until Phase 2)
 
 - Pure clients that join **after** gas state has settled won't see already-stable atmos visuals until the next meaningful change ticks a chunk dirty again — there's no late-join bootstrap or AOI scoping yet (Phase 2). Newly-changing chunks (fires, breaches, venting) sync immediately.
 

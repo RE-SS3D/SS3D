@@ -6,8 +6,11 @@ using UnityEngine.UIElements;
 namespace SS3D.UI.MainHud.Components
 {
     /// <summary>
-    /// Bottom-left worn-equipment doll: head/eyes/face-cover/ears on top, gloves/shirt/suit/feet below, with suit storage beside the feet while a suit is worn.
-    /// Gloves and feet are one slot each, covering both the left and right containers.
+    /// Bottom-left worn-equipment doll, collapsed behind a small toggle by default (main-hud.md §4 keeps only the
+    /// hands and gear strip permanent). Laid out like the character-examine paperdoll (<c>CharacterPaperdollGrid</c>)
+    /// so your own gear and another player's read the same: head on top, eyes/face/ears, suit/shirt/gloves, then
+    /// feet with suit storage beside them while a suit is worn. Gloves and feet are one slot each, covering both the
+    /// left and right containers.
     /// Click transfers with the active hand; drag participates in storage-panel cross-surface DnD.
     /// </summary>
     public class EquipmentGrid : VisualElement
@@ -25,10 +28,20 @@ namespace SS3D.UI.MainHud.Components
             SuitStorage,
         }
 
+        /// <summary>Same well size as the examine window's paperdoll.</summary>
+        public const float SlotSize = 64f;
+
         public event Action<Slot> SlotClicked;
         public event Action<Slot, Vector2> SlotDragStarted;
         public event Action<Slot, Vector2> SlotDragMoved;
         public event Action<Slot, Vector2> SlotDragEnded;
+
+        /// <summary>The doll was shown or hidden from its toggle.</summary>
+        public event Action<bool> ExpandedChanged;
+
+        private readonly VisualElement _panel;
+        private readonly VisualElement _toggle;
+        private readonly Label _toggleLabel;
 
         private readonly InventorySlot _head;
         private readonly InventorySlot _eyes;
@@ -40,28 +53,76 @@ namespace SS3D.UI.MainHud.Components
         private readonly InventorySlot _suit;
         private readonly InventorySlot _suitStorage;
 
-        private Slot? _dragSlot;
+        private Slot? _pressSlot;
         private bool _dragMoved;
+        private Vector2 _dragOrigin;
+        private bool _expanded = true;
 
         public EquipmentGrid(MainHudIconSet icons)
         {
             AddToClassList("equipment-grid");
+            pickingMode = PickingMode.Ignore;
 
-            _head = CreateSlot(Slot.Head, "Head", icons.Head);
-            _eyes = CreateSlot(Slot.Eyes, "Eyes", icons.Eyes);
-            _face = CreateSlot(Slot.Face, "Face Cover", icons.Face);
-            _ears = CreateSlot(Slot.Ears, "Ears", icons.Ears);
-            _gloves = CreateSlot(Slot.Gloves, "Gloves", icons.Gloves);
-            _shirt = CreateSlot(Slot.Shirt, "Shirt", icons.Shirt);
-            _feet = CreateSlot(Slot.Feet, "Feet", icons.Feet);
-            _suit = CreateSlot(Slot.Suit, "Suit", icons.Shirt);
-            _suitStorage = CreateSlot(Slot.SuitStorage, "Suit Storage", icons.Shirt);
+            Sprite suitIcon = icons.Suit != null ? icons.Suit : icons.Shirt;
+            _head = CreateSlot(Slot.Head, icons.Head);
+            _eyes = CreateSlot(Slot.Eyes, icons.Eyes);
+            _face = CreateSlot(Slot.Face, icons.Face);
+            _ears = CreateSlot(Slot.Ears, icons.Ears);
+            _suit = CreateSlot(Slot.Suit, suitIcon);
+            _shirt = CreateSlot(Slot.Shirt, icons.Shirt);
+            _gloves = CreateSlot(Slot.Gloves, icons.Gloves);
+            _feet = CreateSlot(Slot.Feet, icons.Feet);
+            _suitStorage = CreateSlot(Slot.SuitStorage, icons.SuitStorage != null ? icons.SuitStorage : suitIcon);
             SetSuitStorageVisible(false);
 
-            Add(BuildRow(BuildSpacer(), _head, BuildSpacer()));
-            Add(BuildRow(_eyes, _face, _ears));
-            Add(BuildRow(_gloves, _shirt, _suit));
-            Add(BuildRow(BuildSpacer(), _feet, _suitStorage));
+            _panel = new VisualElement();
+            _panel.AddToClassList("equipment-grid__panel");
+            _panel.Add(BuildRow(BuildSpacer(), _head, BuildSpacer()));
+            _panel.Add(BuildRow(_eyes, _face, _ears));
+            _panel.Add(BuildRow(_suit, _shirt, _gloves));
+            _panel.Add(BuildRow(BuildSpacer(), _feet, _suitStorage));
+
+            _toggle = new VisualElement();
+            _toggle.AddToClassList("equipment-grid__toggle");
+            VisualElement toggleGlyph = new();
+            toggleGlyph.AddToClassList("equipment-grid__toggle-glyph");
+            toggleGlyph.pickingMode = PickingMode.Ignore;
+            if (icons.EquipmentToggle != null)
+            {
+                toggleGlyph.style.backgroundImage = new StyleBackground(icons.EquipmentToggle);
+            }
+
+            _toggleLabel = new Label();
+            _toggleLabel.AddToClassList("equipment-grid__toggle-label");
+            _toggleLabel.AddToClassList("font-body");
+            _toggleLabel.pickingMode = PickingMode.Ignore;
+            // Host wider than the 64 px well, centred, so the chip fits its text (see EquipmentGrid.uss).
+            VisualElement toggleLabelHost = new();
+            toggleLabelHost.AddToClassList("equipment-grid__toggle-label-host");
+            toggleLabelHost.pickingMode = PickingMode.Ignore;
+            toggleLabelHost.Add(_toggleLabel);
+            _toggle.Add(toggleGlyph);
+            _toggle.Add(toggleLabelHost);
+            _toggle.RegisterCallback<ClickEvent>(_ =>
+            {
+                SetExpanded(!_expanded);
+                ExpandedChanged?.Invoke(_expanded);
+            });
+
+            Add(_panel);
+            Add(_toggle);
+            SetExpanded(false);
+        }
+
+        public bool Expanded => _expanded;
+
+        /// <summary>Shows or hides the doll; only the toggle stays on screen while collapsed.</summary>
+        public void SetExpanded(bool expanded)
+        {
+            _expanded = expanded;
+            _panel.style.display = expanded ? DisplayStyle.Flex : DisplayStyle.None;
+            _toggle.EnableInClassList("equipment-grid__toggle--open", expanded);
+            _toggleLabel.text = expanded ? "Hide equipment" : "Show equipment";
         }
 
         /// <summary>Suit storage exists only while a suit is worn; the slot keeps its place in the grid.</summary>
@@ -109,6 +170,7 @@ namespace SS3D.UI.MainHud.Components
             _ => null,
         };
 
+        /// <summary>Same names as the examine paperdoll.</summary>
         private static string DefaultLabel(Slot slot) => slot switch
         {
             Slot.Head => "Head",
@@ -123,14 +185,14 @@ namespace SS3D.UI.MainHud.Components
             _ => string.Empty,
         };
 
-        private InventorySlot CreateSlot(Slot slot, string label, Sprite emptyIcon)
+        private InventorySlot CreateSlot(Slot slot, Sprite emptyIcon)
         {
             InventorySlot inventorySlot = new()
             {
-                Unknown = emptyIcon == null,
+                Unknown = false,
                 EmptyIcon = emptyIcon,
-                Size = 72,
-                SlotLabel = label,
+                Size = SlotSize,
+                SlotLabel = DefaultLabel(slot),
             };
 
             inventorySlot.RegisterCallback<ClickEvent>(_ =>
@@ -147,16 +209,13 @@ namespace SS3D.UI.MainHud.Components
             inventorySlot.RegisterCallback<PointerUpEvent>(evt => OnPointerUp(slot, inventorySlot, evt));
             inventorySlot.RegisterCallback<PointerCaptureOutEvent>(_ =>
             {
-                if (_dragSlot == slot)
+                if (_pressSlot == slot)
                 {
-                    _dragSlot = null;
+                    _pressSlot = null;
                 }
             });
             return inventorySlot;
         }
-
-        private Vector2 _dragOrigin;
-        private const float DragThresholdSq = 25f;
 
         private void OnPointerDown(Slot slot, InventorySlot inventorySlot, PointerDownEvent evt)
         {
@@ -180,41 +239,47 @@ namespace SS3D.UI.MainHud.Components
                 return;
             }
 
-            _dragSlot = slot;
+            // The drag itself starts once the pointer moves (DragGesture); a release before that is a click.
+            _pressSlot = slot;
             inventorySlot.CapturePointer(evt.pointerId);
-            SlotDragStarted?.Invoke(slot, (Vector2)evt.position);
             evt.StopPropagation();
         }
 
         private void OnPointerMove(Slot slot, InventorySlot inventorySlot, PointerMoveEvent evt)
         {
-            if (_dragSlot != slot || !inventorySlot.HasPointerCapture(evt.pointerId))
+            if (_pressSlot != slot || !inventorySlot.HasPointerCapture(evt.pointerId))
             {
                 return;
             }
 
-            Vector2 delta = (Vector2)evt.position - _dragOrigin;
-            if (!_dragMoved && delta.sqrMagnitude >= DragThresholdSq)
+            if (!_dragMoved)
             {
+                if (!DragGesture.PastThreshold(_dragOrigin, (Vector2)evt.position))
+                {
+                    return;
+                }
+
                 _dragMoved = true;
+                SlotDragStarted?.Invoke(slot, _dragOrigin);
             }
 
-            if (_dragMoved)
-            {
-                SlotDragMoved?.Invoke(slot, (Vector2)evt.position);
-            }
+            SlotDragMoved?.Invoke(slot, (Vector2)evt.position);
         }
 
         private void OnPointerUp(Slot slot, InventorySlot inventorySlot, PointerUpEvent evt)
         {
-            if (evt.button != (int)MouseButton.LeftMouse || _dragSlot != slot || !inventorySlot.HasPointerCapture(evt.pointerId))
+            if (evt.button != (int)MouseButton.LeftMouse || _pressSlot != slot || !inventorySlot.HasPointerCapture(evt.pointerId))
             {
                 return;
             }
 
             inventorySlot.ReleasePointer(evt.pointerId);
-            SlotDragEnded?.Invoke(slot, (Vector2)evt.position);
-            _dragSlot = null;
+            if (_dragMoved)
+            {
+                SlotDragEnded?.Invoke(slot, (Vector2)evt.position);
+            }
+
+            _pressSlot = null;
         }
 
         private static VisualElement BuildRow(params VisualElement[] children)
@@ -233,6 +298,7 @@ namespace SS3D.UI.MainHud.Components
         {
             VisualElement spacer = new();
             spacer.AddToClassList("equipment-grid__spacer");
+            spacer.style.width = SlotSize;
             return spacer;
         }
     }

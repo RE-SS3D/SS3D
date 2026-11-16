@@ -7,7 +7,7 @@ namespace SS3D.UI.MainHud.Components
 {
     /// <summary>
     /// Hazards the alert icon stack can show. Base set matches main-hud.md §9; Bleeding and
-    /// CardiacArrest are fork additions (health vitals) not yet in that design table.
+    /// CardiacArrest are additions (health vitals) not yet in that design table.
     /// Health hazards (LowOxygen, Dying, Bleeding, CardiacArrest) are live via
     /// <see cref="SS3D.Systems.Health.HealthAlertStackMapper"/>; turf Hot/Cold/pressure/Fire
     /// (+ turf LowOxygen), SealBreach and TankLow via <see cref="SS3D.Systems.Health.AtmosAlertStackMapper"/>. Remaining

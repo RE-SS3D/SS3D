@@ -13,7 +13,7 @@ namespace SS3D.UI.Examine
     /// paperdoll grid, anchored near the cursor while an <see cref="ExamineType.CHARACTER"/>-tagged
     /// examinable is hovered. Unlike every other examinable, this shows on plain hover with no
     /// Shift/hold-to-peek gate — see
-    /// Documents/architecture/systems/examine.md fork-deviations for why character examine's
+    /// the Deviations list in Documents/architecture/2026-11_examine-and-action-feedback.md for why character examine's
     /// hover/Shift+Click model departs from the general hold-to-peek rule.
     /// </summary>
     public sealed class CharacterQuickLookView : IUiSurface

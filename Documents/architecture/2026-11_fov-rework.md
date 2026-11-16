@@ -2,7 +2,7 @@
 > Touches systems: rendering, tile, entities, examine, action-messages, map-editor-creative-hooks
 > Status: in-progress
 
-**Progress:** P0–P4 built 2026-11-16 on `feature/jolly-newton-n5itdr` (findings under each phase). Left: the owner's look at the 10° shots and a Metastation check of the cast budget; then archive. The map is now [fov](systems/fov.md). Grilled with the owner on 2026-11-16, after an architecture review of the FOV and playtest feedback that the black "shadows don't match the walls". The same grill produced [fov.md](../design/fov.md). Serves [mvp1-nuke-ops.md](../milestones/mvp1-nuke-ops.md) M12.
+**Progress:** P0–P4 built 2026-11-16 on `feature/jolly-newton-n5itdr` (findings under each phase). Left: the owner's look at the 10° shots and a Metastation check of the cast budget; then archive. The map is now [fov](systems/fov.md). Grilled with the owner on 2026-11-16, after an architecture review of the FOV and playtest feedback that the black "shadows don't match the walls". The same grill produced [fov.md](../design/fov.md). Serves [mvp1-nuke-ops.md](../milestones/mvp1-nuke-ops.md) M13.
 
 # Field of view rework: walls drawn whole, sharp edges, one raycast batch (Nov 2026)
 
@@ -121,9 +121,9 @@ Read directly from code and prefabs; the [rendering](systems/rendering.md) map i
 ### P4: cleanup and docs
 
 - [x] Rename `VisionBlurRenderPass` and `VisionMaskBlur` to composite; delete `SpacePlane.shader`, `Spaceplane.mat`, unused `ViewCastInfo` fields, `transform.position` write, dead `[SerializeField]`s; `.editorconfig` naming on public members; ghost check through an `Entity` capability rather than `HumanoidGhostController`
-- [x] Rewrite `systems/fov.md`; move the vision pitfalls out of `rendering.md`, dropping the slack pitfall; `FORK_STATUS.md` Vision section
+- [x] Rewrite `systems/fov.md`; move the vision pitfalls out of `rendering.md`, dropping the slack pitfall; `MERGE_GUIDE.md` Vision row (was `FORK_STATUS.md`)
 - [ ] Owner looks at the 10° screenshots; decide whether to raise the camera's minimum tilt
-- [x] `update-system-docs`; M12 status
+- [x] `update-system-docs`; M13 status
 - Validation: `compile,editmode`
 
 **As built (2026-11-16):** `VisionCompositeRenderPass` and `Vision/VisionComposite` (the shader keeps its GUID, so the renderer asset's field was renamed in place to `_visionCompositeShader`). `ViewCastInfo`, `DirectionFromAngle` and the `transform.position` write went with P2. View range, cone width and rays per degree are constants (`VisionSubSystem.ViewRange` is public); only the `Show Debug` gizmo toggle stays serialized. Public members are `Target`, `StepCount`, `ViewPoints`, `ShowDebug`. `Entity.HasFieldOfView` replaces the ghost component check. `systems/fov.md` is the new map; `rendering.md` keeps a pointer.
@@ -152,5 +152,5 @@ Read directly from code and prefabs; the [rendering](systems/rendering.md) map i
 
 - Design: [fov.md](../design/fov.md); [examine.md](../design/examine.md) §2; [action-messages.md](../design/action-messages.md); [combat.md](../design/combat.md) §3; [comms.md](../design/comms.md) §3; [construction.md](../design/construction.md) §6–§7
 - Maps: [fov](systems/fov.md); [rendering](systems/rendering.md) (URP feature registration); [tile](systems/tile.md); [examine](systems/examine.md); [action-messages](systems/action-messages.md)
-- Milestone: [mvp1-nuke-ops.md](../milestones/mvp1-nuke-ops.md) M12
+- Milestone: [mvp1-nuke-ops.md](../milestones/mvp1-nuke-ops.md) M13
 - Policy: [agent-first composition](2026-07_agent-first-composition.md) (tier-B recipes); [editor tooling tiers](2026-07_editor-tooling-tiers.md); [testing philosophy](2026-11_testing-philosophy.md)

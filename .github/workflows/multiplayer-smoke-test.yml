@@ -6,8 +6,11 @@
 #      binary, then runs the curated smoke set (Testing/multiplayer/smoke-set.txt) against them.
 #   3. report (scheduled runs only): opens, updates or closes the `nightly-failure` issue.
 # Each job prints its wall-clock time against its budget (D7/D9 in
-# Documents/architecture/2026-11_testing-philosophy.md). Opt-in for PRs (label test:multiplayer;
-# nightly-only smoke scenarios are skipped there), manual dispatch, and nightly on develop.
+# Documents/architecture/2026-11_testing-philosophy.md). Opt-in for PRs from branches of this
+# repository (label test:multiplayer; nightly-only smoke scenarios are skipped there), manual
+# dispatch, and nightly on develop. PRs from forks never run on the self-hosted runner: a maintainer
+# who has read the change runs them with
+#   gh workflow run multiplayer-smoke-test.yml --ref develop -f pr=<number>
 #
 # Server+client are built in ONE Editor session (ClientAndServerBuildScript.BuildBothForCi).
 # Two sequential unity-builder steps share Library across Docker restarts and race PackageCache
@@ -20,14 +23,39 @@ name: Multiplayer Smoke Test
 on:
   pull_request:
     types: [labeled, synchronize, opened, reopened]
-  workflow_dispatch: {}
+  workflow_dispatch:
+    inputs:
+      pr:
+        description: "PR number to test (a fork PR a maintainer has read); empty = the dispatched branch"
+        type: string
+        default: ""
   schedule:
     # Nightly UTC — self-hosted minutes are free; keep the warm Library stashes exercised.
     - cron: "0 4 * * *"
 jobs:
+  fork_pr_notice:
+    name: Smoke waits for a maintainer (PR from a fork)
+    if: >-
+      github.event_name == 'pull_request' &&
+      github.event.pull_request.head.repo.full_name != github.repository &&
+      contains(github.event.pull_request.labels.*.name, 'test:multiplayer')
+    runs-on: ubuntu-latest
+    permissions: {}
+    steps:
+      - name: Explain how this PR gets tested
+        env:
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        run: |
+          msg="PRs from forks never run on the self-hosted runner. After reading the change, a maintainer runs the smoke set with: gh workflow run multiplayer-smoke-test.yml --ref develop -f pr=${PR_NUMBER}"
+          echo "::notice::$msg"
+          echo "$msg" >> "$GITHUB_STEP_SUMMARY"
+
   playmode:
     name: PlayMode tests (scenarios + nightly)
-    if: github.event_name != 'pull_request' || contains(github.event.pull_request.labels.*.name, 'test:multiplayer')
+    # PR runs need the label and a branch of this repository: fork code never reaches the runner.
+    if: >-
+      github.event_name != 'pull_request' ||
+      (github.event.pull_request.head.repo.full_name == github.repository && contains(github.event.pull_request.labels.*.name, 'test:multiplayer'))
     # weekly-graphical.yml uses the same Library stash; never move it out from under another job.
     concurrency:
       group: ss3d-editor-library
@@ -49,6 +77,7 @@ jobs:
       - name: Checkout project code
         uses: actions/checkout@v4
         with:
+          ref: ${{ inputs.pr && format('refs/pull/{0}/head', inputs.pr) || '' }}
           lfs: false
       - name: Restore editor Library stash
         run: |
@@ -89,15 +118,18 @@ jobs:
     name: Build and run multiplayer smoke test
     # After playmode, never alongside it; runs even when PlayMode failed.
     needs: playmode
-    if: always() && (github.event_name != 'pull_request' || contains(github.event.pull_request.labels.*.name, 'test:multiplayer'))
+    if: >-
+      always() && (github.event_name != 'pull_request' ||
+      (github.event.pull_request.head.repo.full_name == github.repository && contains(github.event.pull_request.labels.*.name, 'test:multiplayer')))
     runs-on: [self-hosted, linux, x64, unity]
     environment:
       name: unity_tests
     env:
       FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
-      # Host-side warm Library cache (same filesystem as the runner workdir — mv is rename).
-      # Shared with develop-release.yml's self-hosted builds. Never wipe between successful runs.
-      SS3D_UNITY_LIBRARY_STASH: /home/cu6e/.cache/ss3d/Library
+      # Host-side warm Library cache under ~/.cache/ss3d/ (same filesystem as the runner workdir —
+      # mv is rename). Shared with develop-release.yml's self-hosted builds. Never wipe between
+      # successful runs.
+      SS3D_UNITY_LIBRARY_STASH_NAME: Library
       SERVER_BUILD_DIR: ${{ github.workspace }}/build/GameServer/StandaloneLinux64
       CLIENT_BUILD_DIR: ${{ github.workspace }}/build/Game/StandaloneLinux64
       # Unity 6 Linux players no longer append .x86_64; game-ci -customBuildPath uses buildName as-is.
@@ -109,12 +141,13 @@ jobs:
       - name: Checkout project code
         uses: actions/checkout@v4
         with:
+          ref: ${{ inputs.pr && format('refs/pull/{0}/head', inputs.pr) || '' }}
           # No LFS-tracked files; git lfs fetch fails ("missing object") in the reused partial-clone workspace.
           lfs: false
       - name: Restore Unity Library stash
         run: |
           set -euo pipefail
-          stash="${SS3D_UNITY_LIBRARY_STASH}"
+          stash="${HOME}/.cache/ss3d/${SS3D_UNITY_LIBRARY_STASH_NAME}"
           workspace_lib="${GITHUB_WORKSPACE}/Library"
           mkdir -p "$(dirname "$stash")"
           # Self-hosted workdirs persist; never keep a leftover workspace Library.
@@ -176,7 +209,7 @@ jobs:
         if: success()
         run: |
           set -euo pipefail
-          stash="${SS3D_UNITY_LIBRARY_STASH}"
+          stash="${HOME}/.cache/ss3d/${SS3D_UNITY_LIBRARY_STASH_NAME}"
           workspace_lib="${GITHUB_WORKSPACE}/Library"
           mkdir -p "$(dirname "$stash")"
           if [[ -d "$workspace_lib" ]]; then
@@ -201,7 +234,7 @@ jobs:
           SS3D_CLIENT_BUILD_DIR: ${{ env.CLIENT_BUILD_DIR }}
           SS3D_SERVER_BIN_NAME: ${{ env.SERVER_BIN_NAME }}
           SS3D_CLIENT_BIN_NAME: ${{ env.CLIENT_BIN_NAME }}
-          SMOKE_ARGS: ${{ github.event_name == 'pull_request' && '--skip-nightly-only' || '' }}
+          SMOKE_ARGS: ${{ (github.event_name == 'pull_request' || inputs.pr) && '--skip-nightly-only' || '' }}
         run: |
           chmod +x "$SERVER_BUILD_DIR/$SERVER_BIN_NAME" "$CLIENT_BUILD_DIR/$CLIENT_BIN_NAME"
           echo "Client + server build: $(( ($(date +%s) - SS3D_JOB_START) / 60 ))m (outside the smoke budget)" | tee -a "$GITHUB_STEP_SUMMARY"

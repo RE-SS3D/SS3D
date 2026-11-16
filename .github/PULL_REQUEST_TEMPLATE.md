@@ -1,64 +1,50 @@
-<!-- The notes within these arrows are for you but can be deleted. -->
-<!-- Add "[WIP]" to the beginning of your title if you aren't immediately ready for review. -->
-<!-- Optional fields should be removed for readability if not used. -->
+<!-- Notes inside these arrows are for you and can be deleted. Remove optional sections you don't use. -->
+<!-- Add "[WIP]" to the start of the title if this isn't ready for review. The title becomes the squash commit message. -->
 
 # Summary
 
-<!-- Provide a general summary of your change here. -->
+<!-- What does this change do for players or contributors, and why? Link the milestone slice, design doc section, effort or plan it implements. -->
 
-<!-- Follow with a more concise explanation of your change here. -->
+#### Checklist
+- [ ] One feature or fix: no unrelated changes, stray Unity reserialization or trash files.
+- [ ] `Testing/ui/validate.sh --steps compile,editmode` passes, plus the focused steps for what I touched (`visual` for visual changes).
+- [ ] Follows its design doc, or the deviation is recorded in the system map or effort (say where below).
+- [ ] Docs synced with `update-system-docs`: system maps (`Verified` stamp, new Pitfalls), INDEX, plan or effort, milestone slice.
+- [ ] Save or protocol version bumped if old saves or clients break; `Version-Bump: minor` trailer if this completes a player-visible feature.
 
-<!-- What features does this change include/not include? -->
+#### AI assistance
+<!-- Name the agent(s) you used: Claude Code, Cursor, another, or none. -->
+- Agent used:
+- [ ] I have read and understood every change in this PR.
 
-#### PR checklist
-- [ ] The game builds properly without errors.
-<!--  (ex. "Update BikeHorn prefab" changed HumanOrgans.fbx for some reason) -->
-- [ ] No unrelated changes are present.
-<!--  (ex. An auto-generated Unity file that if updated when you open Unity, if necessary, update .gitignore). -->
-- [ ] No "trash" files are committed.
-<!-- optional, if no code -->
-- [ ] Relevant code is documented.
-<!-- optional, if doc is needed -->
-- [ ] Update the related design or architecture doc in `Documents/`, or create one if needed.
-
-<!-- optional. -->
+<!-- optional -->
 # Pictures/Videos
 
-<!-- Include photos or videos if possible to help reviewers. -->
-<!-- It may also be used in our monthly devblog. -->
+<!-- Screenshots or clips help reviewers, and may end up in a devblog. -->
 
 # Testing
 
-<!-- Explain how can a reviewer test this PR. -->
+<!-- How can a reviewer check this? Which validate.sh steps, scenarios or manual steps did you run? -->
 
-<!-- The networking checklist is optional if your feature doesn't require that. You can remove this list if unused. -->
+<!-- The networking checklist is for anything networked. Remove it otherwise. -->
 #### Networking checklist
 <!-- (ex. The host can open a door.) -->
 - [ ] Works from host in host mode.
 <!-- (ex. The server can open a door, even if not interacting directly.) -->
 - [ ] Works from server in server mode.
-<!-- (ex. The client tries to open a door, and the server opens it. The client and the server have to see the same thing. This would fail if only the client sees this interaction.). -->
+<!-- (ex. The client tries to open a door, and the server opens it. The client and the server have to see the same thing. This would fail if only the client sees this interaction.) -->
 - [ ] Works on server in client mode.
-<!-- (ex. The client tries to open a door, the server opens it, and another client sees that interaction.). -->
-- [ ] Works and is syncronized across different clients.
-<!-- (ex. The client opens a door, the server opens it. The client closes the game, reopens it, and rejoins the server. The client sees the door open.). -->
+<!-- (ex. The client tries to open a door, the server opens it, and another client sees that interaction.) -->
+- [ ] Works and is synchronized across different clients.
+<!-- (ex. The client opens a door, the server opens it. The client closes the game, reopens it, and rejoins the server. The client sees the door open.) -->
 - [ ] Is persistent.
 
-<!-- optional, but encouraged to give technical context. -->
-<!-- changes to files, technical notes and known issues. -->
+<!-- optional, but encouraged for technical context -->
 # Changes
 
-<!-- List any major asset/script/scene changes and why/how they were changed. -->
-
-<!-- Provide a more technical description of your changes to help save the reviewers some time. -->
-
-<!-- List ANYTHING not working correctly, either part of your new change, or another part of the game. -->
-
-<!-- Any known bugs will likely require sorting out before the PR is merged. -->
+<!-- Major asset, script or scene changes and why. Anything not working correctly, in this change or elsewhere. -->
 
 <!-- optional -->
-# Related issues/PRs 
+# Related issues/PRs
 
-<!-- List any issues or other PRs connected to this one. -->
-
-<!-- If this PR CLOSES any issues/PRs, add "Closes" before the number (e.g. "Closes #123"). -->
+<!-- If this PR closes an issue, write "Closes #123". -->

@@ -10,7 +10,7 @@ param(
 $ErrorActionPreference = "Stop"
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
 
-$Repo = "henkhooft/SS3D"
+$Repo = "RE-SS3D/SS3D"
 $Api = "https://api.github.com/repos/$Repo"
 $Headers = @{
     "User-Agent" = "SS3D-Launcher"

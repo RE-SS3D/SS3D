@@ -42,6 +42,10 @@ namespace SS3D.Editor
                 Id = LoadRequiredSprite("Neck", missing),
                 Pocket = LoadRequiredSprite("Pocket", missing),
                 Back = LoadRequiredSprite("BeepBack", missing),
+                Suit = LoadRequiredSprite("Suit", missing),
+                SuitStorage = LoadRequiredSprite("SuitStorage", missing),
+                EquipmentToggle = LoadRequiredSprite("Expand", missing),
+                OpenStorage = LoadRequired<Sprite>(MainHudAssetPaths.OpenStorageIcon, missing),
             };
 
             AlertIconSet alertIcons = new()

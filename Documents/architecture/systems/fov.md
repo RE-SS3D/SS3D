@@ -66,4 +66,4 @@ Client fog of war per [fov.md](../../design/fov.md): what the local living body 
 
 - Design: [fov.md](../../design/fov.md)
 - Effort: [2026-11_fov-rework.md](../2026-11_fov-rework.md)
-- Milestone: [mvp1-nuke-ops.md](../../milestones/mvp1-nuke-ops.md) M12
+- Milestone: [mvp1-nuke-ops.md](../../milestones/mvp1-nuke-ops.md) M13

@@ -68,7 +68,7 @@ and stay in force. Code, CI and `AGENTS.md` cite them by number.
 | D4 | Scenarios drive their steps through the console helper so they stay portable to the DSL. Any logged error fails a scenario; intended ones are declared with `LogAssert.Expect`. |
 | D5 | The multiplayer smoke set is curated in one file, `Testing/multiplayer/smoke-set.txt`, and runs against the real dedicated-server build. |
 | D6 | Pilots run on demand; the lobby UI, lifecycle core and remote client pilots also run in the weekly graphical set. |
-| D7 | Wall-clock budgets on TomNAS (N100): nightly PlayMode 15 min, smoke 20 min, weekly graphical 20 min. Each job prints its time against its budget (`Tools/ci/budget.sh`). Over budget means cull before that tier gets anything new. |
+| D7 | Wall-clock budgets on the self-hosted runner (an Intel N100 box): nightly PlayMode 15 min, smoke 20 min, weekly graphical 20 min. Each job prints its time against its budget (`Tools/ci/budget.sh`). Over budget means cull before that tier gets anything new. |
 | D8 | Each tier 2–4 check has a header: `Guards: <contract or issue #> · Not cheaper because: <reason>` (rule 4). |
 | D9 | A red scheduled nightly or weekly opens or updates one issue labelled `nightly-failure` / `weekly-failure` (`Tools/ci/nightly_issue.sh`), closed by the next green run. The nightly EditMode run on `develop` uses its own label, `editmode-nightly-failure`. Agents check both at session start. |
 | D10 | Each system map's **Tests** section names the validate step and scenario category for its domain. |
@@ -85,5 +85,5 @@ and stay in force. Code, CI and `AGENTS.md` cite them by number.
   client pilots) mix tier 2 and tier 4 checks. The lobby UI, lifecycle core and remote client pilots
   run in the weekly graphical set; the sandbox pilot is on demand and its reset loop runs as the
   nightly `sandbox-reset` smoke scenario. They are under review against rules 2–4.
-- **Nightly CI** on TomNAS runs every PlayMode test in a batchmode editor, then the curated smoke
+- **Nightly CI** on the self-hosted runner runs every PlayMode test in a batchmode editor, then the curated smoke
   set; a weekly run drives the graphical pilots through `validate.sh --weekly`.

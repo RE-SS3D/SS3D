@@ -3,7 +3,7 @@ using UnityEngine;
 namespace SS3D.UI.Examine
 {
     /// <summary>
-    /// Empty-slot silhouette sprites for the character-examine paperdoll's 14 wells
+    /// Empty-slot silhouette sprites for the character-examine paperdoll's 15 wells
     /// (<see cref="SS3D.Systems.Examine.CharacterExamineSlot"/>), sourced from the same shipped
     /// <c>Assets/Art/Icons/Inventory</c> silhouettes Main HUD's equipment doll uses.
     /// </summary>
@@ -24,5 +24,6 @@ namespace SS3D.UI.Examine
         public Sprite Pocket;
         public Sprite HandLeft;
         public Sprite HandRight;
+        public Sprite SuitStorage;
     }
 }

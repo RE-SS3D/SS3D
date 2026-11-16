@@ -101,7 +101,7 @@ automatic rounds and the reset writes `reset-health.jsonl`; `nukeops-round` (nig
 with one-minute rounds and a one-player threshold: a client that never sent lobby preferences is drawn as an
 operative by the default opt-in, gets a timer crew win naming it on the antagonist roster, and readies into the
 next automatic round. The nightly runs the set after the
-PlayMode job; PR label `test:multiplayer` runs both without the nightly-only scenarios. Budgets and
+PlayMode job; PR label `test:multiplayer` runs both without the nightly-only scenarios, for PRs from branches of this repository; a fork PR runs only when a maintainer dispatches `-f pr=<number>`. Budgets and
 the `nightly-failure` issue: [testing philosophy](../2026-11_testing-philosophy.md#harness-contracts) D7 and D9.
 GitHub disables scheduled workflows after 60 days without repo activity; check
 `gh workflow list --all` if nightly runs stop.

@@ -2,7 +2,7 @@
 > Touches systems: rounds-lobby, map-editor-creative-hooks (tile), entities, networking-session, persistence, ui-shell, inputs
 > Status: in-progress
 
-**Progress:** P1–P4 built and pilot-tested in the editor (`Run Sandbox Pilot`), plus the bug report dialog (below); P5's server-build half (heartbeat, exit after N rounds) is in, and the server is live on TomNAS, deployed and maintained outside this repo (no `Tools/sandbox-server/` files); P6 waits on session data. Advances [test-server.md](../milestones/test-server.md) T7.
+**Progress:** P1–P4 built and pilot-tested in the editor (`Run Sandbox Pilot`), plus the bug report dialog (below); P5's server-build half (heartbeat, exit after N rounds) is in, and the server is live on the project test-server host, deployed and maintained outside this repo (no `Tools/sandbox-server/` files); P6 waits on session data. Advances [test-server.md](../milestones/test-server.md) T7.
 
 # Sandbox server (Nov 2026)
 
@@ -19,7 +19,7 @@ A separate dedicated instance where everyone can build and fight, with a 20-minu
 - **Player invincibility** is a per-client toggle in `MapEditorSettings` (`EntityInvincibility.SetServer`), authorized with `MapEditorPermissions.TryAuthorize` — anyone on `-sandbox`. It persists after closing the editor until disconnect.
 - **Persistence calls** are separate server RPCs on `MapEditorSubSystem`: `RpcSaveMap`, `RpcExportMap`, `RpcLoadMap`, `RpcDeleteMap`, `RpcNewMap`. Round-end autosave lives in `MapEditorStopFlow`.
 - **Spawn points** have their own command kinds (`PlaceSpawnPoint`, `ClearSpawnPoint` in `MapEditorCommandKind`).
-- **TomNAS** already runs Docker and user systemd with linger for the CI runner ([2026-07_multiplayer-testing-self-hosted-ci](2026-07_multiplayer-testing-self-hosted-ci.md)).
+- **The test-server host** (which also carries the self-hosted CI runner) already runs Docker and user systemd with linger ([2026-07_multiplayer-testing-self-hosted-ci](2026-07_multiplayer-testing-self-hosted-ci.md)).
 
 ## Decisions
 
@@ -37,7 +37,7 @@ A separate dedicated instance where everyone can build and fight, with a 20-minu
 | 10 | Round ID: an incrementing counter per server lifetime, stamped on round start/end log lines and on every record below. |
 | 11 | **`reset-health.jsonl`** in the server's `Data/`, one line per Stopped: round ID, player count, spawned NetworkObjects, GameObject count, managed heap, total allocated memory, tile objects and items still registered after unload. Separate from `RoundHistoryEntry`. |
 | 12 | **`/bug <note>`** appends ckey, round ID, UTC time, position, alive/ghost and the note to `Data/bugs.jsonl`, and confirms in chat. No Discord webhook until the server is public. |
-| 13 | Hosting: a **Docker container** on TomNAS, `restart: unless-stopped`. A main-thread heartbeat writes a timestamp file every 5 s; the healthcheck fails when it goes stale. The server **exits after N rounds** (~12, about 4 h) with code 0; a crash exits nonzero. `Data/` sits on the container volume. |
+| 13 | Hosting: a **Docker container** on the test-server host, `restart: unless-stopped`. A main-thread heartbeat writes a timestamp file every 5 s; the healthcheck fails when it goes stale. The server **exits after N rounds** (~12, about 4 h) with code 0; a crash exits nonzero. `Data/` sits on the container volume. |
 | 14 | The build is the Linux dedicated server from the manual CI prerelease ([2026-07_ci-develop-release-pipeline](2026-07_ci-develop-release-pipeline.md)), deployed by hand. Auto-deploy stays deferred per the milestone. |
 | 15 | **Caps** come last, with numbers from `reset-health.jsonl` and the first session: total placed items, items per asset, total placed tile objects, and a NetworkObject ceiling as backstop. A refused build gets a chat message with the reset time and a server log line. Gas/atmos caps are out. |
 | 16 | The **first invite-only Discord session** runs after P1–P5, without caps. Invite-only plus the watchdog make that acceptable, and it produces the cap numbers. |
@@ -79,7 +79,7 @@ A separate dedicated instance where everyone can build and fight, with a 20-minu
 - Round ID in logs (Decision 10), `reset-health.jsonl` (Decision 11), `/bug` (Decision 12).
 - Tests: multiplayer smoke step where a remote client survives one reset and `reset-health.jsonl` gains a line.
 
-### P5 — TomNAS hosting — **in-progress** (server-build half done)
+### P5 — Test-server hosting — **in-progress** (server-build half done)
 
 - Heartbeat writer and exit-after-N-rounds in the server build (Decision 13).
 - `Tools/sandbox-server/` Dockerfile, compose with healthcheck and volume, runbook.
@@ -112,4 +112,4 @@ Where the built code differs from the plan above, or adds to it:
 
 ## Parked
 
-Discord webhook for `/bug` · vote-kick, extend and reset-now votes · public default server target in release builds · auto-deploy to TomNAS · purpose-built sandbox map and map rotation · gas/atmos caps · client-side export of a build · a real Sandbox/Builder gamemode ([creative-mode.md](../design/creative-mode.md) §15).
+Discord webhook for `/bug` · vote-kick, extend and reset-now votes · public default server target in release builds · auto-deploy to the test-server host · purpose-built sandbox map and map rotation · gas/atmos caps · client-side export of a build · a real Sandbox/Builder gamemode ([creative-mode.md](../design/creative-mode.md) §15).

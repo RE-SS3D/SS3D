@@ -105,6 +105,10 @@ namespace SS3D.UI.MainHud
         private bool _mapEditorOpen;
         private bool _subscribedToMapEditor;
         private MapEditorSubSystem _mapEditor;
+        private StoragePanelHost _boundPanelHost;
+
+        /// <summary>Every HUD well with the item it shows, for open buttons and right-click menus.</summary>
+        private readonly List<(InventorySlot Slot, Func<Item> Resolve)> _slotItems = new();
 
         protected override void OnAwake()
         {
@@ -441,7 +445,137 @@ namespace SS3D.UI.MainHud
             _view.HandDragMoved += HandleHudDragMoved;
             _view.HandDragEnded += HandleHudDragEnded;
             _view.Attach(_document.rootVisualElement);
+            WireSlotActions();
             RefreshAlerts();
+        }
+
+        /// <summary>
+        /// Open button and right-click on every HUD well. The resolver reads the item at click time, so wells stay
+        /// wired across rebinds and respawns.
+        /// </summary>
+        private void WireSlotActions()
+        {
+            _slotItems.Clear();
+            foreach (EquipmentGrid.Slot slot in Enum.GetValues(typeof(EquipmentGrid.Slot)))
+            {
+                Wire(_view.Equipment.GetInventorySlot(slot),
+                    () => TryGetEquipmentContainer(slot, out AttachedContainer container) ? container.Items.FirstOrDefault() : null);
+            }
+
+            foreach (HandsGearStrip.GearSlot slot in Enum.GetValues(typeof(HandsGearStrip.GearSlot)))
+            {
+                if (slot != HandsGearStrip.GearSlot.Pocket)
+                {
+                    Wire(_view.HandsGear.GetGearInventorySlot(slot), () => ItemIn(GearSlotToContainerType(slot)));
+                }
+            }
+
+            // The pocket well is the pocket itself, a container on the body: its open button toggles the pocket panels
+            // whatever is inside, and right-click shows the first item's menu.
+            InventorySlot pocketSlot = _view.HandsGear.GetGearInventorySlot(HandsGearStrip.GearSlot.Pocket);
+            pocketSlot.OpenButtonIcon = _icons.OpenStorage;
+            pocketSlot.OpenRequested += TogglePocketPanels;
+            pocketSlot.ContextRequested += _ => ShowItemInteractions(ItemIn(ContainerType.Pocket));
+
+            Wire(_view.HandsGear.GetHandInventorySlot(HandsGearStrip.HandSlot.Left), () => HandItemAt(0));
+            Wire(_view.HandsGear.GetHandInventorySlot(HandsGearStrip.HandSlot.Right), () => HandItemAt(1));
+
+            void Wire(InventorySlot slot, Func<Item> item)
+            {
+                slot.OpenButtonIcon = _icons.OpenStorage;
+                slot.OpenRequested += () => ToggleItemStorageNear(item(), slot.worldBound);
+                slot.ContextRequested += _ => ShowItemInteractions(item());
+                _slotItems.Add((slot, item));
+            }
+        }
+
+        /// <summary>Open buttons show on wells holding storage, lit while that storage's panel is open.</summary>
+        private void RefreshOpenButtons()
+        {
+            SubSystems.TryGet(out StoragePanelHost panelHost);
+            foreach ((InventorySlot slot, Func<Item> resolve) in _slotItems)
+            {
+                AttachedContainer storage = null;
+                bool hasStorage = _inventory != null && ItemStorage.TryGetStorageOn(resolve(), out storage);
+                slot.ShowOpenButton = hasStorage;
+                slot.OpenButtonActive = hasStorage && panelHost != null && panelHost.IsOpen(storage);
+            }
+
+            InventorySlot pocketSlot = _view.HandsGear.GetGearInventorySlot(HandsGearStrip.GearSlot.Pocket);
+            List<AttachedContainer> pockets = PocketContainers();
+            pocketSlot.ShowOpenButton = pockets.Count > 0;
+            pocketSlot.OpenButtonActive = panelHost != null && pockets.Any(panelHost.IsOpen);
+        }
+
+        private List<AttachedContainer> PocketContainers()
+        {
+            List<AttachedContainer> pockets = new();
+            for (int i = 0; _inventory != null && _inventory.TryGetTypeContainer(ContainerType.Pocket, i, out AttachedContainer pocket); i++)
+            {
+                pockets.Add(pocket);
+            }
+
+            return pockets;
+        }
+
+        /// <summary>The pocket well's open button: closes the pocket panels if any is open, else opens them.</summary>
+        private void TogglePocketPanels()
+        {
+            if (_inventory?.containerViewer == null || !SubSystems.TryGet(out StoragePanelHost panelHost))
+            {
+                return;
+            }
+
+            List<AttachedContainer> pockets = PocketContainers();
+            if (!pockets.Any(panelHost.IsOpen))
+            {
+                OpenPocketPanelsNearGear();
+                return;
+            }
+
+            foreach (AttachedContainer pocket in pockets.Where(panelHost.IsOpen))
+            {
+                panelHost.RequestClose(_inventory.containerViewer, pocket);
+            }
+        }
+
+        /// <summary>
+        /// Pocket well click, like any slot: the held item goes into the first pocket it fits; with an empty hand the
+        /// item the well shows comes out.
+        /// </summary>
+        private void HandlePocketClicked()
+        {
+            Hand hand = _hands != null ? _hands.SelectedHand : null;
+            Item held = hand != null ? hand.ItemInHand : null;
+            foreach (AttachedContainer pocket in PocketContainers())
+            {
+                if (held != null)
+                {
+                    if (pocket.TryFindPositionFor(held, out Vector2Int position))
+                    {
+                        _inventory.ClientTransferItem(held, position, pocket);
+                        return;
+                    }
+
+                    continue;
+                }
+
+                Item stored = pocket.Items.FirstOrDefault();
+                if (stored != null)
+                {
+                    _inventory.ClientInteractWithContainerSlot(pocket, pocket.PositionOf(stored));
+                    return;
+                }
+            }
+        }
+
+        /// <summary>Right-click on a well: the item's radial menu, with the selected hand as source.</summary>
+        private void ShowItemInteractions(Item item)
+        {
+            if (item != null && _inventory != null && _inventory.TryGetComponent(out InteractionController controller))
+            {
+                controller.ShowInventoryItemInteractions(item);
+            }
         }
 
         /// <summary>
@@ -687,6 +821,9 @@ namespace SS3D.UI.MainHud
                 if (_inventory.containerViewer != null && SubSystems.TryGet(out StoragePanelHost panelHost))
                 {
                     panelHost.BindContainerViewer(_inventory.containerViewer);
+                    panelHost.OpenStorageIcon = _icons.OpenStorage;
+                    panelHost.PanelsChanged += RefreshOpenButtons;
+                    _boundPanelHost = panelHost;
                 }
             }
 
@@ -734,6 +871,12 @@ namespace SS3D.UI.MainHud
                 _inventory.OnInventoryContainerRemoved -= HandleInventoryChanged;
                 _inventory.OnContainerContentChanged -= HandleContainerContentChanged;
                 _inventory.OnInventorySetUp -= RefreshEquipmentAndGear;
+            }
+
+            if (_boundPanelHost != null)
+            {
+                _boundPanelHost.PanelsChanged -= RefreshOpenButtons;
+                _boundPanelHost = null;
             }
 
             if (SubSystems.TryGet(out StoragePanelHost panelHost))
@@ -937,6 +1080,24 @@ namespace SS3D.UI.MainHud
                 return;
             }
 
+            // Clicking the active hand uses what it holds (open a can, arm a grenade), like the Use key. A bag with no
+            // in-hand use opens instead; its corner button does that too.
+            Item held = hand.ItemInHand;
+            if (hand == _hands.SelectedHand)
+            {
+                if (held == null
+                    || !_inventory.TryGetComponent(out InteractionController controller)
+                    || controller.TryUseHeldItem()
+                    || _view == null)
+                {
+                    return;
+                }
+
+                HandsGearStrip.HandSlot handSlot = leftHand ? HandsGearStrip.HandSlot.Left : HandsGearStrip.HandSlot.Right;
+                ToggleItemStorageNear(held, _view.HandsGear.GetHandInventorySlot(handSlot).worldBound);
+                return;
+            }
+
             if (!_hands.CanSelectHand(hand))
             {
                 return;
@@ -944,22 +1105,11 @@ namespace SS3D.UI.MainHud
 
             // Same path as legacy SingleItemContainerSlot — ServerRpc via HumanInventory.ActivateHand.
             _inventory.ActivateHand(hand.Container);
-
-            // Hands never open the 1-slot hand container UI — only a held item that is itself storage (bag).
-            Item held = hand.ItemInHand;
-            if (held != null && _view != null)
-            {
-                HandsGearStrip.HandSlot handSlot = leftHand
-                    ? HandsGearStrip.HandSlot.Left
-                    : HandsGearStrip.HandSlot.Right;
-                Rect bound = _view.HandsGear.GetHandInventorySlot(handSlot).worldBound;
-                TryOpenItemStorageNear(held, new Vector2(bound.xMin, bound.yMin));
-            }
         }
 
         /// <summary>
-        /// Gear strip (belt/ID/pocket/back): equip/unequip vs active hand for 1-slot mounts; pocket opens
-        /// its storage panel(s). Worn bags (backpack, tool belt) still open their own grids on click.
+        /// Gear strip (belt/ID/pocket/back): equip/unequip vs active hand, or store the held item in a worn bag;
+        /// pocket puts in or takes out. Worn bags and pockets open from the well's corner button, not the click.
         /// </summary>
         private void HandleGearSlotClicked(HandsGearStrip.GearSlot slot)
         {
@@ -970,7 +1120,7 @@ namespace SS3D.UI.MainHud
 
             if (slot == HandsGearStrip.GearSlot.Pocket)
             {
-                OpenPocketPanelsNearGear();
+                HandlePocketClicked();
                 return;
             }
 
@@ -980,26 +1130,16 @@ namespace SS3D.UI.MainHud
                 return;
             }
 
-            Item item = container.Items.FirstOrDefault();
-            if (TryStoreHeldItemIn(item))
+            if (TryStoreHeldItemIn(container.Items.FirstOrDefault()))
             {
                 return;
-            }
-
-            if (item != null && _view != null)
-            {
-                Rect bound = _view.GetGearSlotWorldBound(slot);
-                if (TryOpenItemStorageNear(item, new Vector2(bound.xMin, bound.yMin)))
-                {
-                    return;
-                }
             }
 
             _inventory.ClientInteractWithContainerSlot(container, Vector2Int.zero);
         }
 
         /// <summary>
-        /// Equipment doll: equip/unequip vs active hand, unless the worn item is itself storage.
+        /// Equipment doll: equip/unequip vs active hand, or store the held item in worn storage.
         /// </summary>
         private void HandleEquipmentSlotClicked(EquipmentGrid.Slot slot)
         {
@@ -1013,45 +1153,24 @@ namespace SS3D.UI.MainHud
                 return;
             }
 
-            Item item = container.Items.FirstOrDefault();
-            if (TryStoreHeldItemIn(item))
+            if (TryStoreHeldItemIn(container.Items.FirstOrDefault()))
             {
                 return;
-            }
-
-            if (item != null && _view?.Equipment != null)
-            {
-                Rect bound = _view.Equipment.GetSlotWorldBound(slot);
-                if (TryOpenItemStorageNear(item, new Vector2(bound.xMin, bound.yMin)))
-                {
-                    return;
-                }
             }
 
             _inventory.ClientInteractWithContainerSlot(container, Vector2Int.zero);
         }
 
         /// <summary>
-        /// Clicking a worn bag with something in the active hand puts it in the bag, the same as
-        /// clicking the bag in the world. Returns false (caller opens the bag) when the hand is
-        /// empty, the item has no storage of its own, or the held item doesn't fit.
+        /// Clicking a worn bag with something in the active hand puts it in the bag, the same as clicking the bag in
+        /// the world. Returns false (caller equips/unequips) when the hand is empty, the item has no storage of its
+        /// own, or the held item doesn't fit.
         /// </summary>
         private bool TryStoreHeldItemIn(Item wornItem)
         {
             Hand hand = _hands?.SelectedHand;
             Item held = hand != null ? hand.ItemInHand : null;
-            if (held == null
-                || held == wornItem
-                || !TryGetStorageContainerOnItem(wornItem, out AttachedContainer storage)
-                || storage.GetComponentInParent<Item>() == held
-                || !storage.IsAccessibleBy(_inventory)
-                || !storage.TryFindPositionFor(held, out Vector2Int position))
-            {
-                return false;
-            }
-
-            IStorageAccessGate gate = storage.GetComponentInParent<IStorageAccessGate>();
-            if (gate != null && !gate.AllowsStorageAccess)
+            if (!ItemStorage.TryFindStoreTarget(_inventory, held, wornItem, out AttachedContainer storage, out Vector2Int position))
             {
                 return false;
             }
@@ -1061,60 +1180,20 @@ namespace SS3D.UI.MainHud
         }
 
         /// <summary>
-        /// Opens a panel for storage living on an item (bag pockets, backpack grid). Returns false when
-        /// the item has no <see cref="AttachedContainer"/> of its own — callers then equip/unequip.
+        /// The open button: opens the panel for storage on the item (bag grid, belt pouches) beside the well, or
+        /// closes it when open. Returns false when the item has no storage of its own.
         /// </summary>
-        private bool TryOpenItemStorageNear(Item item, Vector2 anchor)
+        private bool ToggleItemStorageNear(Item item, Rect slotBound)
         {
-            if (item == null
-                || _inventory?.containerViewer == null
-                || !TryGetStorageContainerOnItem(item, out AttachedContainer storage)
+            if (_inventory?.containerViewer == null
+                || !ItemStorage.TryGetStorageOn(item, out AttachedContainer storage)
                 || !SubSystems.TryGet(out StoragePanelHost panelHost))
             {
                 return false;
             }
 
-            panelHost.RequestOpenNear(_inventory.containerViewer, storage, anchor);
+            panelHost.ToggleNear(_inventory.containerViewer, storage, new Vector2(slotBound.xMin, slotBound.yMin));
             return true;
-        }
-
-        /// <summary>
-        /// Storage capacity attached to an item prefab (backpack, belt pouch). Prefer
-        /// <see cref="AttachedContainer.HasUi"/> content grids; never use <see cref="Item.Container"/> —
-        /// that is where the item is stored, not storage on the item. Body equip mounts use
-        /// <see cref="AttachedContainer.DisplayAsSlotInUI"/> and live on the human, not the worn item.
-        /// </summary>
-        private static bool TryGetStorageContainerOnItem(Item item, out AttachedContainer storage)
-        {
-            storage = null;
-            if (item == null)
-            {
-                return false;
-            }
-
-            AttachedContainer fallback = null;
-            foreach (AttachedContainer candidate in item.GetComponentsInChildren<AttachedContainer>())
-            {
-                // Nested items' containers live under this item too — only take ones owned by this item.
-                if (candidate.GetComponentInParent<Item>() != item)
-                {
-                    continue;
-                }
-
-                if (candidate.HasUi)
-                {
-                    storage = candidate;
-                    return true;
-                }
-
-                if (fallback == null && !candidate.DisplayAsSlotInUI)
-                {
-                    fallback = candidate;
-                }
-            }
-
-            storage = fallback;
-            return storage != null;
         }
 
         private void HandleEquipmentDragStarted(EquipmentGrid.Slot slot, Vector2 position)
@@ -1372,6 +1451,7 @@ namespace SS3D.UI.MainHud
             SetGear(HandsGearStrip.GearSlot.Back, ContainerType.Bag);
 
             RegisterHudDropTargets();
+            RefreshOpenButtons();
 
             void SetEquipment(EquipmentGrid.Slot slot, ContainerType type)
             {
@@ -1613,6 +1693,10 @@ namespace SS3D.UI.MainHud
                     Id = LoadSprite("Neck"),
                     Pocket = LoadSprite("Pocket"),
                     Back = LoadSprite("BeepBack"),
+                Suit = LoadSprite("Suit"),
+                SuitStorage = LoadSprite("SuitStorage"),
+                EquipmentToggle = LoadSprite("Expand"),
+                OpenStorage = UnityEditor.AssetDatabase.LoadAssetAtPath<Sprite>(MainHudAssetPaths.OpenStorageIcon),
                 };
             }
 

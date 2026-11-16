@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Text.RegularExpressions;
+using SS3D.Utils;
 using UnityEngine;
 using UnityEngine.Networking;
 
@@ -13,8 +14,8 @@ namespace SS3D.Launcher
     /// </summary>
     public static class ReleaseCheck
     {
-        public const string ReleasesApi = "https://api.github.com/repos/henkhooft/SS3D/releases?per_page=100";
-        public const string ReleasesPage = "https://github.com/henkhooft/SS3D/releases/latest";
+        public const string ReleasesApi = ProjectRepository.ApiUrl + "/releases?per_page=100";
+        public const string ReleasesPage = ProjectRepository.Url + "/releases/latest";
         private static readonly Regex Tag = new(@"^v(\d+)\.(\d+)\.(\d+)$");
         private static readonly Regex Local = new(@"^(\d+)\.(\d+)\.(\d+)(-[^+]*)?(\+.*)?$");
 

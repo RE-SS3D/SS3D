@@ -6,7 +6,7 @@
 
 ## Why this exists
 
-The fork's intended split — `Assets/Art/` for raw art assets organized by type then domain, `Assets/Content/`
+The project's intended split — `Assets/Art/` for raw art assets organized by type then domain, `Assets/Content/`
 for game data and composition (Addressables, ScriptableObject data, scenes, per-domain system prefabs/UI) — is
 sound as a concept. At ~12k files in, adherence has drifted: icons alone now live in at least eight separate
 locations, "Misc" has been used as a folder name five separate times, and there's no written rule for when a
