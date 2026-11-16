@@ -53,7 +53,7 @@ namespace SS3D.UI.Examine.Components
             InventorySlot belt = CreateSlot(CharacterExamineSlot.Belt, icons.Belt, slotSize);
             InventorySlot idCard = CreateSlot(CharacterExamineSlot.IdCard, icons.IdCard, slotSize);
             InventorySlot pocket = CreateSlot(CharacterExamineSlot.Pocket, icons.Pocket, slotSize);
-            InventorySlot suitStorage = CreateSlot(CharacterExamineSlot.SuitStorage, icons.Suit, slotSize);
+            InventorySlot suitStorage = CreateSlot(CharacterExamineSlot.SuitStorage, icons.SuitStorage != null ? icons.SuitStorage : icons.Suit, slotSize);
             InventorySlot handLeft = CreateSlot(CharacterExamineSlot.HandLeft, icons.HandLeft, slotSize);
             InventorySlot handRight = CreateSlot(CharacterExamineSlot.HandRight, icons.HandRight, slotSize);
 

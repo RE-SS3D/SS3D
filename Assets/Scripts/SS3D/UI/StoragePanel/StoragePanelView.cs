@@ -42,11 +42,16 @@ namespace SS3D.UI.StoragePanel
         public event Action<StoragePanelView, StorageSlot, Vector2> SlotDragEnded;
 
         /// <summary>
-        /// Fired on a left click of a slot, bound or empty, with the click count (2 on a double-click). The host
-        /// takes the item into the active hand, stores the held item, or opens a nested container
-        /// (Documents/design/inventory-storage.md §6, §7).
+        /// Fired on a left click of a slot, bound or empty. The host takes the item into the active hand or stores the
+        /// held item, in the slot or inside a container item there (Documents/design/inventory-storage.md §6, §7).
         /// </summary>
-        public event Action<StoragePanelView, StorageSlot, int> SlotClicked;
+        public event Action<StoragePanelView, StorageSlot> SlotClicked;
+
+        /// <summary>The corner open button of a slot holding a container item was clicked: open or close it nested.</summary>
+        public event Action<StoragePanelView, StorageSlot> SlotOpenRequested;
+
+        /// <summary>Right press on a bound slot: show the item's interactions.</summary>
+        public event Action<StoragePanelView, StorageSlot> SlotContextRequested;
 
         private readonly VisualElement _header;
         private readonly VisualElement _closeButton;
@@ -56,6 +61,7 @@ namespace SS3D.UI.StoragePanel
         private readonly VisualElement _weightFill;
         private readonly VisualElement _slotGrid;
         private readonly List<StorageSlot> _slots = new();
+        private readonly Sprite _openStorageIcon;
 
         private bool _isDragging;
         private Vector2 _dragStartPointer;
@@ -63,8 +69,9 @@ namespace SS3D.UI.StoragePanel
 
         public AttachedContainer Container { get; private set; }
 
-        public StoragePanelView(string originBreadcrumb)
+        public StoragePanelView(string originBreadcrumb, Sprite openStorageIcon = null)
         {
+            _openStorageIcon = openStorageIcon;
             AddToClassList("storage-panel");
 
             VisualElement clip = new();
@@ -301,7 +308,7 @@ namespace SS3D.UI.StoragePanel
 
                 for (int x = 0; x < size.x; x++)
                 {
-                    StorageSlot slot = new();
+                    StorageSlot slot = new() { OpenButtonIcon = _openStorageIcon };
                     if (x < size.x - 1)
                     {
                         slot.AddToClassList("storage-slot--gap-right");
@@ -310,12 +317,38 @@ namespace SS3D.UI.StoragePanel
                     slot.DragStarted += (s, pos) => SlotDragStarted?.Invoke(this, s, pos);
                     slot.DragMoved += (_, pos) => SlotDragMoved?.Invoke(pos);
                     slot.DragEnded += (s, pos) => SlotDragEnded?.Invoke(this, s, pos);
-                    slot.Clicked += (s, clicks) => SlotClicked?.Invoke(this, s, clicks);
+                    slot.Clicked += s => SlotClicked?.Invoke(this, s);
+                    slot.OpenRequested += () => SlotOpenRequested?.Invoke(this, slot);
+                    slot.ContextRequested += _ =>
+                    {
+                        if (slot.BoundItem != null)
+                        {
+                            SlotContextRequested?.Invoke(this, slot);
+                        }
+                    };
                     _slots.Add(slot);
                     row.Add(slot);
                 }
 
                 _slotGrid.Add(row);
+            }
+        }
+
+        /// <summary>Stack counts change without a contents event (merge, spend); see <see cref="StorageSlot.RefreshStackCount"/>.</summary>
+        public void RefreshStackCounts()
+        {
+            foreach (StorageSlot slot in _slots)
+            {
+                slot.RefreshStackCount();
+            }
+        }
+
+        /// <summary>Marks each container item's open button while its own panel is open.</summary>
+        public void RefreshOpenButtons(Func<AttachedContainer, bool> isOpen)
+        {
+            foreach (StorageSlot slot in _slots)
+            {
+                slot.OpenButtonActive = ItemStorage.TryGetStorageOn(slot.BoundItem, out AttachedContainer storage) && isOpen(storage);
             }
         }
 

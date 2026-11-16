@@ -41,6 +41,7 @@ namespace SS3D.Editor
                 Pocket = LoadRequiredSprite("Pocket", missing),
                 HandLeft = LoadRequiredSprite("HandLeft", missing),
                 HandRight = LoadRequiredSprite("HandRight", missing),
+                SuitStorage = LoadRequiredSprite("SuitStorage", missing),
             };
 
             if (missing.Count > 0)

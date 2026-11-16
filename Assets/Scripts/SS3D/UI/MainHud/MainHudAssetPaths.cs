@@ -27,5 +27,11 @@ namespace SS3D.UI.MainHud
 
         public const string IconRoot = "Assets/Art/Icons/Inventory/";
         public const string AlertIconRoot = "Assets/Art/Icons/Alerts/";
+
+        /// <summary>
+        /// Grid glyph on the corner button of a slot holding storage (shared with the storage panel). A simple shape:
+        /// the button is 22 px, too small for the detailed open-box interaction icon.
+        /// </summary>
+        public const string OpenStorageIcon = "Assets/Art/Icons/Heroicons/Solid/ViewGrid.png";
     }
 }

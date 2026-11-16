@@ -23,5 +23,13 @@ namespace SS3D.UI.MainHud
         public Sprite Id;
         public Sprite Pocket;
         public Sprite Back;
+        public Sprite Suit;
+        public Sprite SuitStorage;
+
+        /// <summary>Show/hide button for the worn-equipment doll.</summary>
+        public Sprite EquipmentToggle;
+
+        /// <summary>Corner button on a slot whose item is itself storage (backpack, toolbelt, box).</summary>
+        public Sprite OpenStorage;
     }
 }

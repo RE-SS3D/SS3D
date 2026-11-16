@@ -33,6 +33,7 @@ namespace SS3D.UI.Examine
         [SerializeField] private Sprite _iconPocket;
         [SerializeField] private Sprite _iconHandLeft;
         [SerializeField] private Sprite _iconHandRight;
+        [SerializeField] private Sprite _iconSuitStorage;
 
         public StyleSheet ExamineStyle => _examineStyle;
 
@@ -58,6 +59,7 @@ namespace SS3D.UI.Examine
             Pocket = _iconPocket,
             HandLeft = _iconHandLeft,
             HandRight = _iconHandRight,
+            SuitStorage = _iconSuitStorage,
         };
 
         public bool HasRequiredAssets(out string missingField)
@@ -101,6 +103,7 @@ namespace SS3D.UI.Examine
             _iconPocket = icons.Pocket;
             _iconHandLeft = icons.HandLeft;
             _iconHandRight = icons.HandRight;
+            _iconSuitStorage = icons.SuitStorage;
         }
 #endif
     }

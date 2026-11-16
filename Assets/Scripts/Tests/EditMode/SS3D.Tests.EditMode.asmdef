@@ -21,6 +21,7 @@
         "SS3D.Tests.Common",
         "SS3D.UI.MachineInterface",
         "SS3D.UI.MainHud",
+        "SS3D.UI.StoragePanel",
         "SS3D.UI.Lobby",
         "SS3D.Localization",
         "Unity.Localization",
