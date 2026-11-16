@@ -169,7 +169,8 @@ so a failed step 4 is undone by not continuing.
 - **Slug casing is checked.** The updaters compare `browser_download_url` case-sensitively and refuse to install
   on a mismatch. Use the owner/name casing GitHub puts in upstream's release URLs, not a lowercase clone URL.
 - **A merge with history closes upstream #1494** via the quoted "closes #1494" in `bdd12c395`. Reopen it.
-- **`updater-e2e.yml` needs two upstream stable releases** (previous → latest); before v0.19.0 it has only one.
+- **`updater-e2e.yml` needs two upstream stable releases** (previous → latest). Until v0.19.0 it skips with a
+  notice; its first real run updates v0.18.0 → v0.19.0.
 - **`develop` merges that touch `Documents/FORK_STATUS.md` conflict** (deleted on `upstream-prep`). Carry the change into
   [MERGE_GUIDE.md](../MERGE_GUIDE.md) if it matters to reviewers, then keep the deletion.
 - **`develop` merges that touch `README.md` or the roadmap conflict**: the README is upstream's on `upstream-prep`.

@@ -65,11 +65,14 @@ New-Item -ItemType Directory -Path $WorkDir | Out-Null
 $releases = gh api "repos/$repo/releases?per_page=100" | Out-String | ConvertFrom-Json
 $stable = @($releases | Where-Object { -not $_.draft -and -not $_.prerelease -and $_.tag_name -cmatch '^v[0-9]+\.[0-9]+\.[0-9]+$' } |
     Sort-Object { [version]$_.tag_name.Substring(1) } -Descending)
-$toTag = $stable[0].tag_name
-if (-not $FromTag) {
-    if ($stable.Count -lt 2) { throw 'Need two stable releases (or pass -FromTag).' }
-    $FromTag = $stable[1].tag_name
+# A repository with fewer than two numbered releases (as right after the 2026 move to RE-SS3D/SS3D) has
+# nothing to update between: skip with a notice instead of failing every updater PR.
+if ($stable.Count -eq 0 -or (-not $FromTag -and $stable.Count -lt 2)) {
+    Write-Host "::notice::Skipped: $repo has $($stable.Count) stable numbered release(s); the end-to-end update needs two (or -FromTag and one)."
+    exit 0
 }
+$toTag = $stable[0].tag_name
+if (-not $FromTag) { $FromTag = $stable[1].tag_name }
 Write-Host "Updating $FromTag -> $toTag (latest stable)"
 Assert ([version]$FromTag.Substring(1) -lt [version]$toTag.Substring(1)) 'Start version is older than latest stable'
 # Updaters from v0.3.1 on replace their own .ps1 and keep only the previous installation.
