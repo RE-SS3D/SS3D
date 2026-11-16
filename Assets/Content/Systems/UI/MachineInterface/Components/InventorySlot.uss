@@ -78,3 +78,40 @@
     border-color: var(--ss3d-feedback-info);
     background-color: var(--ss3d-feedback-info-bg);
 }
+
+/* Corner open button on a slot holding storage (backpack, toolbelt, box): opens/closes its panel while the
+   slot's own click stays take/put/use. */
+.inventory-slot__open-button {
+    position: absolute;
+    top: 3px;
+    right: 3px;
+    width: 22px;
+    height: 22px;
+    align-items: center;
+    justify-content: center;
+    background-color: rgba(0, 0, 0, 0.55);
+    border-radius: 6px;
+    border-width: 1px;
+    border-color: var(--ss3d-border-subtle);
+}
+
+.inventory-slot__open-button:hover {
+    border-color: var(--ss3d-text-secondary);
+    background-color: rgba(0, 0, 0, 0.75);
+}
+
+.inventory-slot__open-button--active {
+    border-color: var(--ss3d-accent-rust);
+}
+
+.inventory-slot__open-button-icon {
+    width: 70%;
+    height: 70%;
+    -unity-background-scale-mode: scale-to-fit;
+    -unity-background-image-tint-color: var(--ss3d-text-secondary);
+}
+
+.inventory-slot__open-button:hover .inventory-slot__open-button-icon,
+.inventory-slot__open-button--active .inventory-slot__open-button-icon {
+    -unity-background-image-tint-color: var(--ss3d-text-primary);
+}

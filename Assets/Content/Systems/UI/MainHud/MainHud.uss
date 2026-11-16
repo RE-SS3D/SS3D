@@ -108,8 +108,9 @@
 /* Full-width host + flex-center so the chip recenters when text changes (translate -50% does not). */
 .main-hud .inventory-slot__label-host {
     position: absolute;
-    left: 0;
-    right: 0;
+    /* Wider than the well on both sides, so a long name fits: a Label measures its text at most as wide as its parent. */
+    left: -160px;
+    right: -160px;
     bottom: 100%;
     margin-top: 0;
     margin-bottom: var(--ss3d-space-2);
@@ -118,6 +119,7 @@
 
 .main-hud .inventory-slot__label {
     max-width: none;
+    flex-shrink: 0;
     white-space: nowrap;
     opacity: 0;
     background-color: var(--ss3d-surface-hud);

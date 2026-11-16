@@ -30,3 +30,4 @@ MonoBehaviour:
   _iconPocket: {fileID: 21300000, guid: 95d839a0c2741cb47aa6b0cbe40b3b26, type: 3}
   _iconHandLeft: {fileID: 21300000, guid: 049e06c80fc074b43b69bfd8afb881d6, type: 3}
   _iconHandRight: {fileID: 21300000, guid: c68bc06a6a4cc094492bc1ddc556084f, type: 3}
+  _iconSuitStorage: {fileID: 21300000, guid: 4ab833fd8d2ca4b498e55107ffd80bc4, type: 3}

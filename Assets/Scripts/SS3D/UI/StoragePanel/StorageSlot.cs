@@ -25,7 +25,8 @@ namespace SS3D.UI.StoragePanel
     /// Documents/architecture/systems/inventory.md § Overview on why this is a
     /// new UITK implementation rather than the world-space InteractionTier.Combine grammar).
     /// A press becomes a drag once the pointer moves <see cref="DragThresholdPx"/>; a release before that is a
-    /// click (Documents/design/inventory-storage.md §6).
+    /// click (Documents/design/inventory-storage.md §6). A container item shows the shared corner open button
+    /// (<see cref="InventorySlot.ShowOpenButton"/>) instead of the design's double-click, which proved unreliable.
     /// </summary>
     public class StorageSlot : InventorySlot
     {
@@ -41,17 +42,14 @@ namespace SS3D.UI.StoragePanel
         /// <summary>Fired when the drag gesture ends (pointer released). Position is panel-space (release point).</summary>
         public event Action<StorageSlot, Vector2> DragEnded;
 
-        /// <summary>
-        /// Fired on a left click (press and release without dragging), bound or empty. The int is the click count:
-        /// 2 for the second click of a double-click.
-        /// </summary>
-        public event Action<StorageSlot, int> Clicked;
+        /// <summary>Fired on a left click (press and release without dragging), bound or empty.</summary>
+        public event Action<StorageSlot> Clicked;
 
         private readonly Label _stackLabel;
+        private int _shownStackCount = -1;
 
         private int _pressPointerId = -1;
         private Vector2 _pressPosition;
-        private int _pressClickCount;
         private bool _dragging;
 
         public Vector2Int Position { get; set; }
@@ -81,12 +79,29 @@ namespace SS3D.UI.StoragePanel
         {
             BoundItem = item;
             ItemIcon = item != null ? item.ItemSprite : null;
-
-            bool showStack = item != null && item.IsStackable && item.StackCount > 1;
-            _stackLabel.text = showStack ? $"×{item.StackCount}" : string.Empty;
-            _stackLabel.style.display = showStack ? DisplayStyle.Flex : DisplayStyle.None;
+            ShowOpenButton = ItemStorage.TryGetStorageOn(item, out _);
+            _shownStackCount = -1;
+            RefreshStackCount();
 
             EnableInClassList("storage-slot--empty", item == null);
+        }
+
+        /// <summary>
+        /// Re-reads the bound stack's count. A merge into this stack or a spent unit changes only the item's synced
+        /// count, not the container's contents, so no contents event redraws the panel; the host calls this each frame.
+        /// </summary>
+        public void RefreshStackCount()
+        {
+            int count = BoundItem != null && BoundItem.IsStackable ? BoundItem.StackCount : 0;
+            if (count == _shownStackCount)
+            {
+                return;
+            }
+
+            _shownStackCount = count;
+            bool showStack = count > 1;
+            _stackLabel.text = showStack ? $"×{count}" : string.Empty;
+            _stackLabel.style.display = showStack ? DisplayStyle.Flex : DisplayStyle.None;
         }
 
         public void SetDropState(SlotDropState state)
@@ -104,7 +119,6 @@ namespace SS3D.UI.StoragePanel
 
             _pressPointerId = evt.pointerId;
             _pressPosition = evt.position;
-            _pressClickCount = evt.clickCount;
             _dragging = false;
             this.CapturePointer(evt.pointerId);
             evt.StopPropagation();
@@ -140,7 +154,6 @@ namespace SS3D.UI.StoragePanel
             }
 
             bool dragging = _dragging;
-            int clickCount = _pressClickCount;
             ResetPress();
             this.ReleasePointer(evt.pointerId);
 
@@ -152,7 +165,7 @@ namespace SS3D.UI.StoragePanel
 
             if (worldBound.Contains(evt.position))
             {
-                Clicked?.Invoke(this, clickCount);
+                Clicked?.Invoke(this);
             }
         }
 
