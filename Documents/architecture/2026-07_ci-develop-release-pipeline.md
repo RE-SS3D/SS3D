@@ -208,7 +208,7 @@ a manual release check.
   `timeout-minutes` does not cover queue wait.
 - **`updater-e2e.yml` needs two stable releases on this repository** (previous → latest). With fewer,
   `Tools/updater/e2e-windows.ps1` skips with a notice. After the 2026 move its first real run is
-  v0.18.0 → v0.19.0.
+  v0.17.2 → the release after it.
 
 ## Out of scope
 

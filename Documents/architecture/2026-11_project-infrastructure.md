@@ -44,14 +44,14 @@ If the repository itself moves, as it did in 2026 ([merge effort](../archive/arc
    ([2026-10_game-versioning](2026-10_game-versioning.md)); without them the first release numbers itself v0.1.0.
 2. Run `python3 Tools/updater/set_project_repo.py <Owner/Name>` with the casing GitHub uses in release URLs,
    because the updaters compare those URLs case-sensitively.
-3. Cut one patch release from the old repository with the switched slug, so installed updaters follow the move.
-   Then cut the new repository's first release one minor level higher, so the two never claim the same number.
+3. Cut one patch release from the old repository with the switched slug, so installed updaters follow the move,
+   and push its tag to the new repository too. The new repository's releases then continue from that number.
 
 ## After the 2026 move
 
 Steps left open when the merge effort was archived (2026-11-16):
 
-- [ ] Cut v0.18.0 on this repository with `version_bump: minor`. The central team then points ss3d.space at
+- [ ] Cut v0.17.2 on this repository (`version_bump: patch`, or `auto`). The central team then points ss3d.space at
   this repository's releases page.
 - [ ] Protect `develop` with the EditMode run as a required check.
 - [ ] Give the nightly release dispatcher a token for this repository.
