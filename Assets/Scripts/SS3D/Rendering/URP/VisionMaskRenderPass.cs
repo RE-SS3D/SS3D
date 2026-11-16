@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.Experimental.Rendering;
 using UnityEngine.Rendering;
 using UnityEngine.Rendering.RenderGraphModule;
 using UnityEngine.Rendering.RenderGraphModule.Util;
@@ -7,7 +8,7 @@ using UnityEngine.Rendering.Universal;
 namespace SS3D.Rendering.URP
 {
     /// <summary>
-    /// Fullscreen pass: scene depth → vision visibility mask render target.
+    /// Fullscreen pass: scene depth → R8 visibility mask (1 seen, 0 hidden) at full resolution.
     /// </summary>
     public sealed class VisionMaskRenderPass : ScriptableRenderPass
     {
@@ -50,11 +51,16 @@ namespace SS3D.Rendering.URP
             Matrix4x4 viewProjection = gpuProjection * camera.worldToCameraMatrix;
             _maskMaterial.SetMatrix(s_InvViewProjId, viewProjection.inverse);
 
-            TextureDesc maskDesc = resourceData.activeColorTexture.GetDescriptor(renderGraph);
-            maskDesc.name = "VisionMask";
-            maskDesc.depthBufferBits = 0;
-            maskDesc.msaaSamples = MSAASamples.None;
-            maskDesc.clearBuffer = true;
+            TextureDesc colorDesc = resourceData.activeColorTexture.GetDescriptor(renderGraph);
+            TextureDesc maskDesc = new(colorDesc.width, colorDesc.height)
+            {
+                name = "VisionMask",
+                format = GraphicsFormat.R8_UNorm,
+                msaaSamples = MSAASamples.None,
+                filterMode = FilterMode.Bilinear,
+                wrapMode = TextureWrapMode.Clamp,
+                clearBuffer = true,
+            };
 
             TextureHandle maskTexture = renderGraph.CreateTexture(maskDesc);
             _feature.MaskTexture = maskTexture;

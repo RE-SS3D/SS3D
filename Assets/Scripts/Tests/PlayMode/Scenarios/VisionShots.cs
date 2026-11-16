@@ -27,7 +27,7 @@ namespace SS3D.Tests
     public class VisionShots : ScenarioFixture
     {
         private static readonly float[] Tilts = { 10f, 45f, 80f };
-        private static readonly string[] Markers = { "Vision.ViewPoints", "Vision.VisionMap", "Vision.Cast", "Vision.Cull" };
+        private static readonly string[] Markers = { "Vision.ViewPoints", "Vision.VisionMap", "Vision.Cull" };
 
         protected override string StationFixture => "Builds/Game/Data/StationTemplates/classic-ministation.json";
 
@@ -62,8 +62,9 @@ namespace SS3D.Tests
 
             // Let the round-start announcement clear the top of the screen.
             yield return Hold(6f);
-            yield return Shoot(follow, doorway, height, through, "doorway", output);
-            yield return Shoot(follow, corner, height, through + (along * 0.6f), "corner", output);
+            yield return Shoot(vision, follow, doorway, height, through, "doorway", output);
+            yield return Shoot(vision, follow, corner, height, through + (along * 0.6f), "corner", output);
+            report.Append(Diagnose(vision, doorTransform.position, height));
 
             Teleport(Body, new Vector3(doorway.x, height, doorway.z));
             yield return Hold(0.5f);
@@ -73,7 +74,7 @@ namespace SS3D.Tests
             Debug.Log($"[VisionShots] wrote {output}");
         }
 
-        private IEnumerator Shoot(CameraFollow follow, Vector3 stand, float height, Vector3 towardCamera, string label, string output)
+        private IEnumerator Shoot(VisionSubSystem vision, CameraFollow follow, Vector3 stand, float height, Vector3 towardCamera, string label, string output)
         {
             Teleport(Body, new Vector3(stand.x, height, stand.z));
             towardCamera = Flat(towardCamera);
@@ -87,6 +88,15 @@ namespace SS3D.Tests
                 yield return new WaitForEndOfFrame();
                 ScreenCapture.CaptureScreenshot(Path.Combine(output, $"{label}-{tilt:0}.png"));
                 yield return null;
+                yield return null;
+
+                // The same view with the FOV off, to tell what the black covers.
+                vision.SetSuppressed(true);
+                yield return null;
+                yield return new WaitForEndOfFrame();
+                ScreenCapture.CaptureScreenshot(Path.Combine(output, $"{label}-{tilt:0}-open.png"));
+                yield return null;
+                vision.SetSuppressed(false);
                 yield return null;
             }
         }
@@ -118,6 +128,25 @@ namespace SS3D.Tests
                 report.AppendLine($"| {Markers[r]} | {sum[r] / frames:F3} | {max[r]:F3} |");
                 recorders[r].Dispose();
             }
+        }
+
+        /// <summary>What the rays meet toward the door from where the body stands, for reading a picture.</summary>
+        private static string Diagnose(VisionSubSystem vision, Vector3 door, float floor)
+        {
+            StringBuilder text = new();
+            Vector3 eye = vision.DetectionCenter;
+            text.AppendLine($"\nstanding at {eye}, state {vision.State}");
+            foreach (Vector3 offset in new[] { Vector3.zero, Vector3.right * 0.3f, Vector3.left * 0.3f })
+            {
+                Vector3 aim = door + offset;
+                Vector3 direction = Flat(aim - eye);
+                bool hit = Physics.Raycast(eye, direction, out RaycastHit info, 35f, SS3D.Systems.Tile.Connections.VisionOccluder.Mask, QueryTriggerInteraction.Ignore);
+                text.AppendLine($"toward door{offset}: depth {vision.DepthAlong(direction):F2}; ray hits {(hit ? info.collider.name + " at " + info.point + " n " + info.normal + " tile " + VisionSubSystem.HitTile(info.point, info.normal) : "nothing")}");
+            }
+
+            foreach (float y in new[] { 0.5f, 1.5f, 2.2f })
+                text.AppendLine($"door tile at {y} m visible: {vision.IsVisible(new Vector3(door.x, floor + y, door.z))}");
+            return text.ToString();
         }
 
         private static Vector3 Flat(Vector3 vector)

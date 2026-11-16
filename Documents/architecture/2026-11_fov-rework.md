@@ -2,7 +2,7 @@
 > Touches systems: rendering, tile, entities, examine, action-messages, map-editor-creative-hooks
 > Status: planned
 
-**Progress:** P0 and P1 done 2026-11-16 (findings under each phase). Grilled with the owner on 2026-11-16, after an architecture review of the FOV and playtest feedback that the black "shadows don't match the walls". The same grill produced [fov.md](../design/fov.md). Serves [mvp1-nuke-ops.md](../milestones/mvp1-nuke-ops.md) M12.
+**Progress:** P0–P2 done 2026-11-16 (findings under each phase); P3 next. Grilled with the owner on 2026-11-16, after an architecture review of the FOV and playtest feedback that the black "shadows don't match the walls". The same grill produced [fov.md](../design/fov.md). Serves [mvp1-nuke-ops.md](../milestones/mvp1-nuke-ops.md) M12.
 
 # Field of view rework: walls drawn whole, sharp edges, one raycast batch (Nov 2026)
 
@@ -81,14 +81,25 @@ Read directly from code and prefabs; the [rendering](systems/rendering.md) map i
 
 ### P2: rays and mask (one PR)
 
-- [ ] One batch on `VisionOccluder` (D2), scheduled and completed per D10
-- [ ] Hit tile per bin and the seen-occluder-tile texture (D4)
-- [ ] Shader: D1 wall rule, D7 mask, blur and composite; constants as globals (D8)
-- [ ] Delete waves, `ClassifyVisionOccluder`, the instance-id cache, `OccluderSlack`, `OcclusionNormal`, `ThinOccluder`, both hole fills (D5), the copy-back blit
-- [ ] One vision state owner (D6); `MapEditorLighting` through `SetSuppressed` only
-- [ ] `VisionLineOfSight.HasSight` (D11); `IsVisible` mirrors D1 for points inside a seen occluder tile
-- [ ] Profile against the P0 baseline; after screenshots at the same spots
+- [x] One batch on `VisionOccluder` (D2), scheduled and completed per D10
+- [x] Hit tile per bin and the seen-occluder-tile texture (D4)
+- [x] Shader: D1 wall rule, D7 mask, blur and composite; constants as globals (D8)
+- [x] Delete waves, `ClassifyVisionOccluder`, the instance-id cache, `OccluderSlack`, `OcclusionNormal`, `ThinOccluder`, both hole fills (D5), the copy-back blit
+- [x] One vision state owner (D6); `MapEditorLighting` through `SetSuppressed` only
+- [x] `VisionLineOfSight.HasSight` (D11); `IsVisible` mirrors D1 for points inside a seen occluder tile
+- [x] Profile against the P0 baseline; after screenshots at the same spots
 - Validation: `compile,editmode,scenarios:Vision,visual`
+
+**As built (2026-11-16):**
+
+- **Cast.** `LateUpdate` schedules three chained jobs: `VisionRayCommandsJob` (Burst, one ray per bin centre), `RaycastCommand.ScheduleBatch` against `VisionOccluder.Mask`, and `VisionHitsJob` (Burst: depth per bin, R16 upload values, hit points, seen tiles). `RenderPipelineManager.beginContextRendering` completes them and uploads; a frame that never renders is completed by the next `LateUpdate`. The managed copies `IsVisible` reads are taken at completion.
+- **Cost** on the P0 spot, editor Play Mode: `Vision.ViewPoints` 0.035 ms mean / 0.29 max, `Vision.VisionMap` 0.047 / 0.094 (baseline 1.91 / 7.08 and 0.21 / 0.67). The first run after a compile is slower while Burst compiles.
+- **Map and rule.** `_VisionMap` is point-sampled, so the shader and `IsWithinDepths` read the same bin. `_VisionTiles` is an R8 grid of `2 × (range + 1) + 1` tiles around the eye, origin in `_VisionTileOrigin`. The wall rule needs the point above `_VisionWallMinY`, the body's feet plus `VisionSubSystem.WallMinHeight` (0.08 m): a seen door tile's floor keeps the depth test, so the strip behind a closed leaf stays black. Height is from the body because the station has one plane but the body can stand on a raised floor.
+- **Constants as globals:** `_VisionDepthEpsilon` (0.02 m, rounding only), `_VisionNearBubble` (1 m), `_VisionWallMinY`. No constant is duplicated in HLSL.
+- **Mask and composite.** `VisionMaskRenderPass` writes an R8 mask at full resolution. `VisionBlurRenderPass` blurs it horizontally into half resolution, then vertically (nine taps, sigma two taps, eight steps across `EdgeWidth` = 0.5 % of screen height), and composites `colour × mask × blur` into a new colour texture that replaces `resourceData.cameraColor`; no copy back. The composite skips when the camera writes straight to the back buffer.
+- **State.** `VisionSubSystem.State` is `Off` / `Suppressed` / `Active`; it alone calls `VisionRenderContext.Publish`. `VisionRenderContext.Suppressed` is gone.
+- **Shots.** `VisionShots` now also saves each view with the FOV suppressed (`*-open.png`) and logs what a ray toward the door hits; the P2 set is `vision-shots-20261116-141536`. Walls beside the player draw whole at every tilt, and the black keeps to what the eye can't reach past a door jamb or through a half-open door.
+- **Tests.** `VisionFovTests` lost the slack cases and gained `HitTile` and `IsPartOfSeenWall` cases. `VisionScenarios`: hugging a wall (ray stops on the drawn face; far face and top shown; next room's floor black), a point behind a wall, and an airlock opening revealing the room.
 
 ### P3: people, items and wall mounts
 

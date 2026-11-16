@@ -6,9 +6,9 @@ using UnityEngine.Rendering.Universal;
 namespace SS3D.Rendering.URP
 {
     /// <summary>
-    /// URP fog-of-war fullscreen mask + hard composite for the player camera. Visibility comes
-    /// from the polar raycast map produced by <c>VisionSubSystem</c>; unseen areas are fully
-    /// opaque black - a mask, not a soft fog.
+    /// URP fog-of-war for the player camera (fov.md §3): a visibility mask from the polar raycast map and
+    /// seen-wall tiles produced by <c>VisionSubSystem</c>, softened inward and composited. Unseen areas are
+    /// fully opaque black - a mask, not a soft fog.
     /// </summary>
     public sealed class VisionRendererFeature : ScriptableRendererFeature
     {
@@ -40,8 +40,7 @@ namespace SS3D.Rendering.URP
 
         public override void AddRenderPasses(ScriptableRenderer renderer, ref RenderingData renderingData)
         {
-            if (_maskMaterial == null || _blurMaterial == null || !VisionRenderContext.Enabled ||
-                VisionRenderContext.Suppressed)
+            if (_maskMaterial == null || _blurMaterial == null || !VisionRenderContext.Enabled)
                 return;
 
             Camera camera = renderingData.cameraData.camera;

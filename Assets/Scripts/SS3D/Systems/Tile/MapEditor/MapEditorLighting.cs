@@ -1,5 +1,4 @@
 using SS3D.Core;
-using SS3D.Rendering.URP;
 using SS3D.Systems.Vision;
 using UnityEngine;
 
@@ -25,8 +24,6 @@ namespace SS3D.Systems.Tile.MapEditor
                 return;
 
             Shader.SetGlobalFloat(FullbrightGlobal, 1f);
-            VisionRenderContext.Suppressed = true;
-            VisionRenderContext.Enabled = false;
 
             if (SubSystems.TryGet(out VisionSubSystem vision))
                 vision.SetSuppressed(true);
@@ -40,7 +37,6 @@ namespace SS3D.Systems.Tile.MapEditor
                 return;
 
             Shader.SetGlobalFloat(FullbrightGlobal, 0f);
-            VisionRenderContext.Suppressed = false;
 
             if (SubSystems.TryGet(out VisionSubSystem vision))
                 vision.SetSuppressed(false);
