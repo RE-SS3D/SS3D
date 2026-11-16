@@ -34,6 +34,8 @@ namespace SS3D.Systems.Atmospherics.SystemsView
         public const byte KindValve = 4;
         public const byte KindFilter = 5;
         public const byte KindMixer = 6;
+        /// <summary>A scrubber set up as a gas chamber's intake (<c>ScrubberIntake</c>): it takes all air.</summary>
+        public const byte KindIntake = 7;
 
         public const byte Off = 0;
         public const byte On = 1;
@@ -112,6 +114,7 @@ namespace SS3D.Systems.Atmospherics.SystemsView
             KindValve => "Valve",
             KindFilter => "Filter",
             KindMixer => "Mixer",
+            KindIntake => "Chamber intake",
             _ => "Device",
         };
 
@@ -151,6 +154,7 @@ namespace SS3D.Systems.Atmospherics.SystemsView
             return kind switch
             {
                 KindScrubber => ModeOf(state) == ModeSiphon ? "on, siphoning" : "on, scrubbing",
+                KindIntake => ModeOf(state) == ModeSiphon ? "on, siphoning" : "on, drawing air",
                 KindPump => ModeOf(state) == ModeVolume ? "on, set volume" : "on, to a pressure",
                 _ => "on",
             };

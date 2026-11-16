@@ -99,6 +99,13 @@ namespace SS3D.Systems.Atmospherics.SystemsView
                     if (ModeOf(badge.State) == ModeSiphon)
                         mesh.AddSquare(centre, 0.045f, mark);
                     break;
+                case KindIntake:
+                    // Marks point in from the corners, so it never reads as a room scrubber.
+                    foreach (Vector3 d in Diagonals(forward, right))
+                        Arrowhead(mesh, centre + d * 0.22f, -d, 0.12f, 0.08f, mark);
+                    if (ModeOf(badge.State) == ModeSiphon)
+                        mesh.AddSquare(centre, 0.045f, mark);
+                    break;
                 case KindPump:
                     Arrow(mesh, centre, forward, right, mark);
                     break;
@@ -212,6 +219,13 @@ namespace SS3D.Systems.Atmospherics.SystemsView
         }
 
         private static Vector3[] Cardinals(Vector3 forward, Vector3 right) => new[] { forward, right, -forward, -right };
+
+        private static Vector3[] Diagonals(Vector3 forward, Vector3 right)
+        {
+            Vector3 a = (forward + right).normalized;
+            Vector3 b = (forward - right).normalized;
+            return new[] { a, b, -a, -b };
+        }
 
         private static void DrawHalf(SystemsViewMeshBuilder mesh, Vector3 centre, Vector3 toward, Vector3 right, Color color)
         {

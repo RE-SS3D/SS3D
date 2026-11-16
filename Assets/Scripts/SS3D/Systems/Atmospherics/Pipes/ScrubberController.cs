@@ -28,6 +28,9 @@ namespace SS3D.Systems.Atmospherics.Pipes
 
         public int FlowRate => _flowRate;
 
+        /// <summary>A chamber intake: takes O₂ and N₂ too, so it belongs on a gas chamber, never in a room.</summary>
+        public bool IsAirIntake => _isAirIntake;
+
         [System.Serializable]
         private sealed class ScrubberSetup : PortSetup
         {

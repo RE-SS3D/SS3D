@@ -175,6 +175,36 @@ namespace EditorTests.Atmospherics
         }
 
         [Test]
+        public void ChamberIntake_IsNamedAsItselfNotAsAScrubber()
+        {
+            AtmosProblemInput input = Clean();
+            input.Devices.RemoveAll(device => device.Kind == AtmosProblemDeviceKind.Pump);
+            input.Devices.RemoveAll(device => device.Kind == AtmosProblemDeviceKind.Vent);
+            input.Pipes.RemoveAll(pipe => pipe.Line == Supply);
+            for (int i = 0; i < input.Devices.Count; i++)
+            {
+                AtmosProblemDevice device = input.Devices[i];
+                if (device.Kind == AtmosProblemDeviceKind.Scrubber)
+                    device.Kind = AtmosProblemDeviceKind.Intake;
+                input.Devices[i] = device;
+            }
+
+            SystemsViewIssue issue = Analyze(input).Single();
+            Assert.AreEqual("Chamber intake at (5, 0) has nowhere to send gas", issue.Title);
+            Assert.IsTrue(AtmosProblemAnalyzer.EndsPipes(AtmosProblemDeviceKind.Intake));
+        }
+
+        [Test]
+        public void ChamberIntakeBadge_HasItsOwnNameAndStateWords()
+        {
+            Assert.AreEqual("Chamber intake", KindName(
+                KindIntake));
+            Assert.AreEqual("on, drawing air", StateWords(
+                KindIntake,
+                State(On)));
+        }
+
+        [Test]
         public void DeviceInARoomWithNoPower_OneIssuePerRoom_OnlyForDevicesThatNeedPower()
         {
             AtmosProblemInput input = Clean();

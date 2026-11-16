@@ -238,6 +238,7 @@ namespace SS3D.Systems.Atmospherics.SystemsView
             AtmosProblemDeviceKind? kind = controller switch
             {
                 VentController => AtmosProblemDeviceKind.Vent,
+                ScrubberController { IsAirIntake: true } => AtmosProblemDeviceKind.Intake,
                 ScrubberController => AtmosProblemDeviceKind.Scrubber,
                 AtmosPumpController => AtmosProblemDeviceKind.Pump,
                 AtmosValveController => AtmosProblemDeviceKind.Valve,
@@ -766,6 +767,7 @@ namespace SS3D.Systems.Atmospherics.SystemsView
             byte kind = controller switch
             {
                 VentController => KindVent,
+                ScrubberController { IsAirIntake: true } => KindIntake,
                 ScrubberController => KindScrubber,
                 AtmosPumpController => KindPump,
                 AtmosValveController => KindValve,
