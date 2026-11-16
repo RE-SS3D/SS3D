@@ -60,6 +60,21 @@ namespace SS3D.Rendering.URP
             s_RenderingSuppressed = suppressed;
         }
 
+        static bool s_FullAtlasRequested;
+
+        /// <summary>
+        /// When true, the host fills its snapshot for the whole station rather than its player's area of interest. The map
+        /// editor's Room air sets it while it tints floors by pressure (map-editor-systems-views, Room air). It only widens
+        /// what the CPU copy (<see cref="Snapshot.PressureData"/>) covers; <see cref="IsRenderingSuppressed"/> still hides
+        /// the fog, glow and wind.
+        /// </summary>
+        public static bool FullAtlasRequested => s_FullAtlasRequested;
+
+        public static void SetFullAtlasRequested(bool requested)
+        {
+            s_FullAtlasRequested = requested;
+        }
+
         public static void SetRequest(Request request)
         {
             s_Request = request.SourceCamera != null ? request : null;

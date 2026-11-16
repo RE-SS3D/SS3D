@@ -4,6 +4,7 @@ using System.Linq;
 using UnityEngine;
 using SS3D.Systems.Tile.GasMarkers;
 using SS3D.Systems.Tile.MapEditor;
+using SS3D.Systems.Tile.MapEditor.SystemsView;
 using SS3D.Systems.Tile.SpawnPoints;
 
 namespace SS3D.Systems.Tile.Validation
@@ -110,7 +111,8 @@ namespace SS3D.Systems.Tile.Validation
         /// Warns about devices that are placed but cannot do their job. "Room" here is an area
         /// (the editor's Rooms sub-tab): an APC's flood fill bounded by walls and doors, or a
         /// painted room once the map is authored. Device names can repeat across rooms, so
-        /// titles carry a position.
+        /// titles carry a position. A device on no pipe and a room with no APC are the systems
+        /// views' problems now (<see cref="AddSystemsIssues"/>), so the view and Map Check agree.
         /// </summary>
         public static void AddRoomDeviceChecks(MapValidationReport report,
             IEnumerable<RoomDeviceRecord> devices, bool paintedRooms)
@@ -125,20 +127,6 @@ namespace SS3D.Systems.Tile.Validation
                 Vector2Int cell = SpawnPointRegistry.TileKey(device.Position);
                 string name = KindName(device.Kind);
                 string place = $"{cell.x}:{cell.y}";
-                if (!device.HasPipe && IsInline(device.Kind))
-                    AddWarning(report, $"pipe:{device.Kind}:{place}", device,
-                        $"{name} at ({cell.x}, {cell.y}) needs a Surface pipe at both ports",
-                        "so it can't move any gas. Run one up to its front and its back.");
-                else if (!device.HasPipe && device.Kind == RoomDeviceKind.ThreeWay)
-                    AddWarning(report, $"pipe:{device.Kind}:{place}", device,
-                        $"{name} at ({cell.x}, {cell.y}) can't tell which pipe line it's on",
-                        "so it can't move any gas. Its line needs a pipe at all three ports and none under it, and only one line may fit.");
-                else if (!device.HasPipe)
-                    AddWarning(report, $"pipe:{device.Kind}:{place}", device,
-                        $"{name} at ({cell.x}, {cell.y}) has no {PipeLineName(device.Kind)} pipe on its tile",
-                        device.Kind == RoomDeviceKind.LineReader
-                            ? "so it has no line to work on. Run one under it."
-                            : "so it can't move any gas. Run one under it.");
                 if (device.AreaId == 0 && device.Kind == RoomDeviceKind.AirAlarm)
                     AddWarning(report, $"alarm-room:{place}", device,
                         $"{name} at ({cell.x}, {cell.y}) faces no room",
@@ -175,11 +163,26 @@ namespace SS3D.Systems.Tile.Validation
                     AddWarning(report, $"apc-shared:{room.Key}", apcs[1], $"{apcs.Length} APCs in {RoomLabel(apcs[0])}",
                         $"so only one of them powers it. Remove or turn the APC at {string.Join(", ", apcs.Skip(1).Select(Cell))}, or paint its tile into a room of its own under {RoomsPath}.",
                         ApcEntry);
+            }
+        }
 
-                RoomDeviceRecord first = room.First();
-                if (!first.RoomHasApc)
-                    AddWarning(report, $"no-apc:{room.Key}", first, $"No APC in {RoomLabel(first)}",
-                        "so nothing here gets local power. Place an APC in the room.", ApcEntry);
+        /// <summary>
+        /// The systems views' problems (Documents/architecture/systems/map-editor-systems-views.md, Problems): each
+        /// analyzer's issues as warnings with Locate, never a round-start block, under the same ids the views' markers
+        /// carry. An id already in the report is not added twice.
+        /// </summary>
+        public static void AddSystemsIssues(MapValidationReport report, IEnumerable<SystemsViewIssue> issues)
+        {
+            if (issues == null)
+                return;
+
+            HashSet<string> ids = new(report.Issues.Select(issue => issue.Id), StringComparer.Ordinal);
+            foreach (SystemsViewIssue issue in issues)
+            {
+                if (string.IsNullOrEmpty(issue.Id) || !ids.Add(issue.Id))
+                    continue;
+
+                report.AddIssue(issue.Id, true, issue.Category, issue.Title, issue.Body, issue.Position, true, issue.EntryKey);
             }
         }
 
@@ -199,16 +202,6 @@ namespace SS3D.Systems.Tile.Validation
             report.AddIssue(id, true, "Atmos", title, $"{title}, {consequence}", device.Position, true, entryKey);
 
         private static bool IsPort(RoomDeviceKind kind) => kind is RoomDeviceKind.Vent or RoomDeviceKind.Scrubber;
-
-        private static bool IsInline(RoomDeviceKind kind) => kind is RoomDeviceKind.GasPump or RoomDeviceKind.Valve;
-
-        private static string PipeLineName(RoomDeviceKind kind) => kind switch
-        {
-            RoomDeviceKind.Vent => "Supply or Mixed",
-            RoomDeviceKind.Scrubber => "Waste or Mixed",
-            RoomDeviceKind.LineReader => "gas",
-            _ => "matching",
-        };
 
         private static string KindName(RoomDeviceKind kind) => kind switch
         {
@@ -274,18 +267,13 @@ namespace SS3D.Systems.Tile.Validation
         public readonly Vector3 Position;
         public readonly ushort AreaId;
         public readonly string AreaName;
-        public readonly bool RoomHasApc;
-        public readonly bool HasPipe;
 
-        public RoomDeviceRecord(RoomDeviceKind kind, Vector3 position, ushort areaId, string areaName,
-            bool roomHasApc = true, bool hasPipe = true)
+        public RoomDeviceRecord(RoomDeviceKind kind, Vector3 position, ushort areaId, string areaName)
         {
             Kind = kind;
             Position = position;
             AreaId = areaId;
             AreaName = areaName;
-            RoomHasApc = roomHasApc;
-            HasPipe = hasPipe;
         }
     }
 

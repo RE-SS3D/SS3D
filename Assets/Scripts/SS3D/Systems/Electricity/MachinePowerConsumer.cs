@@ -8,7 +8,7 @@ using System;
 using UnityEngine;
 namespace SS3D.Systems.Electricity
 {
-    public class MachinePowerConsumer : BasicElectricDevice, IPowerConsumer, IExamineContentProvider
+    public class MachinePowerConsumer : BasicElectricDevice, IRatedPowerConsumer, IExamineContentProvider
     {
         [SerializeField]
         private float _powerConsumptionIdle = 1f;
@@ -27,6 +27,8 @@ namespace SS3D.Systems.Electricity
                 return isIdle ? _powerConsumptionIdle : _powerConsumptionInUse;
             }
         }
+
+        public float RatedPowerKw => Mathf.Max(_powerConsumptionIdle, _powerConsumptionInUse);
         
         public event EventHandler<PowerStatus> OnPowerStatusUpdated;
         public PowerStatus PowerStatus

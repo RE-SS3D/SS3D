@@ -18,7 +18,6 @@ GameObject:
   - component: {fileID: 6698922726868555104}
   - component: {fileID: 2194240513049141295}
   - component: {fileID: 1897167308358021154}
-  - component: {fileID: 344790952904243429}
   - component: {fileID: 5148212729836953631}
   - component: {fileID: 5554236862455870120}
   - component: {fileID: 7469834619507746928}
@@ -248,18 +247,6 @@ MonoBehaviour:
   _addedNetworkObject: {fileID: 100004}
   _networkObjectCache: {fileID: 100004}
   _tickRate: 0.2
---- !u!114 &344790952904243429
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 100001}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c8e3f0a25d7b6491c0e4f2a8b3c9d567, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: SS3D.Systems::SS3D.Systems.Electricity.ElectricityDebugGizmoDrawer
 --- !u!114 &5148212729836953631
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -703,7 +690,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 1515171b101aab07faf8e27fd6de5328, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: SS3D.Systems::SS3D.Systems.Combat.NapalmSubSystem
   _componentIndexCache: 25
   _addedNetworkObject: {fileID: 100004}

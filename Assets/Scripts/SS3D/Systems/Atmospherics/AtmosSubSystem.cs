@@ -110,6 +110,7 @@ namespace SS3D.Systems.Atmospherics
             }
 
             Channel.Subscribe(HandleChannelTick);
+            EnsureSystemsViewRegistered();
             InitializeWhenMapReady().Forget();
         }
 
@@ -279,6 +280,7 @@ namespace SS3D.Systems.Atmospherics
             }
 
             Channel.Unsubscribe(HandleChannelTick);
+            UnregisterSystemsView();
             DisposeSimulation();
             _visualizationBridge = null;
             _clientVisualizationBridge = null;
@@ -291,6 +293,7 @@ namespace SS3D.Systems.Atmospherics
         {
             IsReady = false;
             SimulationPaused = false;
+            _chunkResync.Restart();
             Channel.ResetPhase();
             LastTickMilliseconds = 0f;
             SubSystems.TryGet(out TileSubSystem tileSubSystem);
@@ -313,18 +316,23 @@ namespace SS3D.Systems.Atmospherics
 
         private void HandleChannelTick()
         {
+            EnsureSystemsViewRegistered();
             if (!IsServer || _simulation == null)
                 return;
 
             SimTick();
         }
 
+        /// <summary>
+        /// Server: one atmos tick now, paused or not (the F1 debug step and the map editor's admin step). It fires the
+        /// channel, so what samples it per tick (air alarms) steps with the simulation and the tick is counted.
+        /// </summary>
         public void StepOnce()
         {
             if (!IsServer || _simulation == null)
                 return;
 
-            SimTick();
+            Channel.Step();
         }
 
         public void DebugWakeRegion(TileCoord coord, int radius)
@@ -431,6 +439,13 @@ namespace SS3D.Systems.Atmospherics
 
         [ObserversRpc]
         private void RpcApplyChunkPatch(AtmosChunkPatch patch)
+        {
+            _clientVisualizationBridge?.ApplyChunkPatch(patch);
+        }
+
+        /// <summary>One chunk for one client: the Room air resync (<see cref="BeginChunkResync"/>).</summary>
+        [TargetRpc]
+        private void TargetApplyChunkPatch(NetworkConnection conn, AtmosChunkPatch patch)
         {
             _clientVisualizationBridge?.ApplyChunkPatch(patch);
         }

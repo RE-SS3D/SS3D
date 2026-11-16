@@ -110,7 +110,7 @@ namespace SS3D.Systems.Rounds
                     FailStationLoad("Station could not be loaded. Select another saved map.");
                     return;
                 }
-                MapValidationReport validation = MapValidationService.Validate(tiles, settings.Mode);
+                MapValidationReport validation = MapValidationService.Validate(tiles, settings.Mode, includeSystemsViews: false);
                 if (!validation.CanStart)
                 {
                     if (!editMapAnyway)

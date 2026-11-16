@@ -13,6 +13,9 @@ namespace SS3D.Systems.Atmospherics.Pipes
 
         public int PortCount => _ports.Count;
 
+        /// <summary>Every registered port, in registration order; a <c>for</c> over it allocates nothing.</summary>
+        public IReadOnlyList<IAtmosPortDevice> Ports => _ports;
+
         public void Register(IAtmosPortDevice port)
         {
             if (port != null && !_ports.Contains(port))

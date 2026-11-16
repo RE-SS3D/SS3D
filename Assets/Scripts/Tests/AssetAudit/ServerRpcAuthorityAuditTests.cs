@@ -108,6 +108,10 @@ namespace SS3D.Tests.AssetAudit
             { "MapEditorSubSystem.RpcRequestOpen", AuthorityCheck.MapEditorPermission },
             { "MapEditorSubSystem.RpcSetEditorOpen", AuthorityCheck.MapEditorPermission }, // only an authorized open is recorded
             { "MapEditorSubSystem.RpcCaptureDropperSetup", AuthorityCheck.MapEditorPermission },
+            { "MapEditorSubSystem.RpcSetSystemsView", AuthorityCheck.MapEditorPermission }, // and only while its editor is open
+            { "MapEditorSubSystem.RpcTraceSystemsView", AuthorityCheck.MapEditorPermission }, // as RpcSetSystemsView; a trace only follows the caller's own subscription
+            { "MapEditorSubSystem.RpcSetSystemsRoomAir", AuthorityCheck.MapEditorPermission }, // and only while its editor shows the Atmos view; resends atmos chunks to the caller only
+            { "MapEditorSubSystem.RpcSystemsSimulation", AuthorityCheck.Admin }, // MapEditorPermissions.MayControlSimulation: an admin or the host with the editor open, never a sandbox player
 
             // Machine interfaces
             { "MachineInterfaceBehaviour.CmdSetControl", AuthorityCheck.Viewer },
