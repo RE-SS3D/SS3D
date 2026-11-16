@@ -92,9 +92,12 @@ namespace EditorTests
             Assert.IsFalse(_slot.HasPointerCapture(PointerId.mousePointerId));
         }
 
+        /// <summary>Fixed point: the window is never laid out, so the slot's worldBound is NaN.</summary>
+        private static readonly Vector2 PressPoint = new(20f, 20f);
+
         private void Move(Vector2 offset)
         {
-            var systemEvent = new Event { type = EventType.MouseDrag, button = 0, mousePosition = _slot.worldBound.center + offset };
+            var systemEvent = new Event { type = EventType.MouseDrag, button = 0, mousePosition = PressPoint + offset };
             using (EventBase evt = PointerMoveEvent.GetPooled(systemEvent))
             {
                 evt.target = _slot;
@@ -104,7 +107,7 @@ namespace EditorTests
 
         private void Send(EventType type, int button)
         {
-            var systemEvent = new Event { type = type, button = button, mousePosition = _slot.worldBound.center, clickCount = 1 };
+            var systemEvent = new Event { type = type, button = button, mousePosition = PressPoint, clickCount = 1 };
             EventBase evt = type == EventType.MouseDown
                 ? PointerDownEvent.GetPooled(systemEvent)
                 : PointerUpEvent.GetPooled(systemEvent);

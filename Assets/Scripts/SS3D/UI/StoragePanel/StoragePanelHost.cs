@@ -820,7 +820,8 @@ namespace SS3D.UI.StoragePanel
                 return;
             }
 
-            Item held = _localInventory.Hands != null ? _localInventory.Hands.SelectedHand?.ItemInHand : null;
+            Hand selectedHand = _localInventory.Hands != null ? _localInventory.Hands.SelectedHand : null;
+            Item held = selectedHand != null ? selectedHand.ItemInHand : null;
             if (ItemStorage.TryFindStoreTarget(_localInventory, held, slot.BoundItem, out AttachedContainer storage, out Vector2Int position))
             {
                 _localInventory.ClientTransferItem(held, position, storage);
