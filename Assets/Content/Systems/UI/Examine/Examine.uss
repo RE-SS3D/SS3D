@@ -36,6 +36,8 @@
 
 .character-paperdoll-grid .inventory-slot__label {
     max-width: none;
+    /* Size to the text: the host is only as wide as the well and flex would shrink the chip under a long name. */
+    flex-shrink: 0;
     white-space: nowrap;
     opacity: 0;
     background-color: var(--ss3d-surface-hud);

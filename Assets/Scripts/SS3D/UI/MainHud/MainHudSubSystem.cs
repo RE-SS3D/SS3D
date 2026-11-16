@@ -464,8 +464,18 @@ namespace SS3D.UI.MainHud
 
             foreach (HandsGearStrip.GearSlot slot in Enum.GetValues(typeof(HandsGearStrip.GearSlot)))
             {
-                Wire(_view.HandsGear.GetGearInventorySlot(slot), () => ItemIn(GearSlotToContainerType(slot)));
+                if (slot != HandsGearStrip.GearSlot.Pocket)
+                {
+                    Wire(_view.HandsGear.GetGearInventorySlot(slot), () => ItemIn(GearSlotToContainerType(slot)));
+                }
             }
+
+            // The pocket well is the pocket itself, a container on the body: its open button toggles the pocket panels
+            // whatever is inside, and right-click shows the first item's menu.
+            InventorySlot pocketSlot = _view.HandsGear.GetGearInventorySlot(HandsGearStrip.GearSlot.Pocket);
+            pocketSlot.OpenButtonIcon = _icons.OpenStorage;
+            pocketSlot.OpenRequested += TogglePocketPanels;
+            pocketSlot.ContextRequested += _ => ShowItemInteractions(ItemIn(ContainerType.Pocket));
 
             Wire(_view.HandsGear.GetHandInventorySlot(HandsGearStrip.HandSlot.Left), () => HandItemAt(0));
             Wire(_view.HandsGear.GetHandInventorySlot(HandsGearStrip.HandSlot.Right), () => HandItemAt(1));
@@ -489,6 +499,73 @@ namespace SS3D.UI.MainHud
                 bool hasStorage = _inventory != null && ItemStorage.TryGetStorageOn(resolve(), out storage);
                 slot.ShowOpenButton = hasStorage;
                 slot.OpenButtonActive = hasStorage && panelHost != null && panelHost.IsOpen(storage);
+            }
+
+            InventorySlot pocketSlot = _view.HandsGear.GetGearInventorySlot(HandsGearStrip.GearSlot.Pocket);
+            List<AttachedContainer> pockets = PocketContainers();
+            pocketSlot.ShowOpenButton = pockets.Count > 0;
+            pocketSlot.OpenButtonActive = panelHost != null && pockets.Any(panelHost.IsOpen);
+        }
+
+        private List<AttachedContainer> PocketContainers()
+        {
+            List<AttachedContainer> pockets = new();
+            for (int i = 0; _inventory != null && _inventory.TryGetTypeContainer(ContainerType.Pocket, i, out AttachedContainer pocket); i++)
+            {
+                pockets.Add(pocket);
+            }
+
+            return pockets;
+        }
+
+        /// <summary>The pocket well's open button: closes the pocket panels if any is open, else opens them.</summary>
+        private void TogglePocketPanels()
+        {
+            if (_inventory?.containerViewer == null || !SubSystems.TryGet(out StoragePanelHost panelHost))
+            {
+                return;
+            }
+
+            List<AttachedContainer> pockets = PocketContainers();
+            if (!pockets.Any(panelHost.IsOpen))
+            {
+                OpenPocketPanelsNearGear();
+                return;
+            }
+
+            foreach (AttachedContainer pocket in pockets.Where(panelHost.IsOpen))
+            {
+                panelHost.RequestClose(_inventory.containerViewer, pocket);
+            }
+        }
+
+        /// <summary>
+        /// Pocket well click, like any slot: the held item goes into the first pocket it fits; with an empty hand the
+        /// item the well shows comes out.
+        /// </summary>
+        private void HandlePocketClicked()
+        {
+            Hand hand = _hands != null ? _hands.SelectedHand : null;
+            Item held = hand != null ? hand.ItemInHand : null;
+            foreach (AttachedContainer pocket in PocketContainers())
+            {
+                if (held != null)
+                {
+                    if (pocket.TryFindPositionFor(held, out Vector2Int position))
+                    {
+                        _inventory.ClientTransferItem(held, position, pocket);
+                        return;
+                    }
+
+                    continue;
+                }
+
+                Item stored = pocket.Items.FirstOrDefault();
+                if (stored != null)
+                {
+                    _inventory.ClientInteractWithContainerSlot(pocket, pocket.PositionOf(stored));
+                    return;
+                }
             }
         }
 
@@ -1032,7 +1109,7 @@ namespace SS3D.UI.MainHud
 
         /// <summary>
         /// Gear strip (belt/ID/pocket/back): equip/unequip vs active hand, or store the held item in a worn bag;
-        /// pocket opens its storage panel(s). Worn bags open from the well's corner button, not the click.
+        /// pocket puts in or takes out. Worn bags and pockets open from the well's corner button, not the click.
         /// </summary>
         private void HandleGearSlotClicked(HandsGearStrip.GearSlot slot)
         {
@@ -1043,7 +1120,7 @@ namespace SS3D.UI.MainHud
 
             if (slot == HandsGearStrip.GearSlot.Pocket)
             {
-                OpenPocketPanelsNearGear();
+                HandlePocketClicked();
                 return;
             }
 
