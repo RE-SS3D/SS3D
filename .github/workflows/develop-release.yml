@@ -694,7 +694,7 @@ jobs:
             Built from `${{ github.sha }}` (short `${{ steps.tag.outputs.short_sha }}`).
             ${{ steps.tag.outputs.kind_line }}
 
-            Not an official RE:SS3D build. Windows player built from this commit.
+            Windows player built from this commit.
             Linux client + dedicated server are included when this was a nightly run or when
             `build_linux` was enabled. EditMode / multiplayer smoke only when opted in on
             dispatch (see the Actions run). Windows is not smoke-tested.
