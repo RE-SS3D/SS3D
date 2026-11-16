@@ -19,7 +19,7 @@ namespace SS3D.Systems.Atmospherics.SystemsView
                 SystemsViewPalette.FamilySwatch(SystemsViewPalette.Green), SystemsViewPalette.FamilySwatch(SystemsViewPalette.Amber)),
             new("Devices are squares edged in their network's colour. Pumps, valves, filters and mixers show the network on each side; grey means no pipe there."),
             new("Vent: marks point out, gas goes into the room. Scrubber: marks point in; a dot in the middle means it is siphoning."),
-            new("Chamber intake: marks point in from the corners. It draws all air, oxygen and nitrogen too, so it belongs in a gas chamber, not a room."),
+            new("Chamber intake: marks point in from the corners. It draws every gas, air included, so it belongs in a gas chamber, not a room."),
             new("Pump, filter, mixer: the arrow is the way gas moves; a filter's or mixer's side notch has its side network's colour. Valve: a bar along the pipe is open, across it is closed."),
             new("Marks: white running, grey switched off, amber switched on but no power.",
                 AtmosSystemsViewStyle.MarkOn, AtmosSystemsViewStyle.MarkOff, AtmosSystemsViewStyle.MarkNoPower),

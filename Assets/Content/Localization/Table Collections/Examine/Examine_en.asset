@@ -2211,7 +2211,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 299262962143830023
-    m_Localized: 'A gas storage chamber''s intake. Draws in <k=warn>all air</k>, oxygen and nitrogen too: placed in a room, it empties it.'
+    m_Localized: 'A gas storage chamber''s intake. Draws in <k=warn>every gas</k>, air included: placed in a room, it empties it.'
     m_Metadata:
       m_Items: []
   references:
