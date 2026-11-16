@@ -8,7 +8,11 @@ current review capacity supports.
 This document is the plain-language divergence log. It is updated periodically — not per-commit.
 For doc authoring conventions see [SKILL.md](SKILL.md).
 
-**Last updated:** 2026-11-07
+**Last updated:** 2026-11-16
+
+**Merging upstream:** this fork is moving into `RE-SS3D/SS3D`; plan and status in
+[2026-11_upstream-merge.md](architecture/2026-11_upstream-merge.md). At merge time this file becomes the
+reviewer guide and is archived.
 
 ---
 
@@ -21,8 +25,8 @@ For doc authoring conventions see [SKILL.md](SKILL.md).
 | Render pipeline | Built-in | **URP 17** |
 | Release channel | Tagged releases on GitHub | **Stable numbered releases** (`vMAJOR.MINOR.PATCH`, Windows + Linux client/server) cut manually via `develop-release.yml`, with an in-game and scripted updater; nightlies (`develop-nightly`) and `develop-<suffix>` test cuts stay prereleases |
 | Documentation | GitBook ([ss3d.gitbook.io](https://ss3d.gitbook.io/dev-guide/)) | `Documents/design/` + `Documents/architecture/` + system maps + [milestones](milestones/INDEX.md) |
-| Commits ahead of upstream | — | **~1056** (1 behind as of 2026-10-31: upstream #1491 "Port Vision System") |
-| Files changed vs upstream | — | ~16.1k files, +1.65M / −322k lines |
+| Commits ahead of upstream | — | **~1,480** (1 behind as of 2026-11-15: upstream #1491 "Port Vision System", already ported; recorded as merged on `upstream-prep`) |
+| Files changed vs upstream | — | ~19.6k files, +1.76M / −340k lines |
 
 ### Shipped gameplay
 
@@ -91,7 +95,7 @@ were **removed** from this fork. Remaining workflows:
   `tag_suffix` cuts and nightlies stay prereleases. EditMode / smoke are opt-in; runs on TomNAS (dispatch `runner: github` for GitHub-hosted) — see
   [2026-07_ci-develop-release-pipeline.md](architecture/2026-07_ci-develop-release-pipeline.md)
 - [editmodetestrunner.yml](../.github/workflows/editmodetestrunner.yml) — EditMode tests on push to
-  `develop`, PRs (`pull_request_target`), and manual dispatch; forces Node 24 for JS actions;
+  `develop`, PRs (`pull_request`), and manual dispatch; forces Node 24 for JS actions;
   validates `UNITY_LICENSE` / `UNITY_SERIAL` secrets before running; TomNAS-prefer with GitHub
   fallback ([2026-07_multiplayer-testing-self-hosted-ci.md](architecture/2026-07_multiplayer-testing-self-hosted-ci.md))
 - [multiplayer-smoke-test.yml](../.github/workflows/multiplayer-smoke-test.yml) — nightly PlayMode

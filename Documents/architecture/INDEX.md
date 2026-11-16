@@ -142,6 +142,7 @@ Only work that is in flight, planned, or kept as standing reference. Everything 
 | [2026-11_testing-philosophy](2026-11_testing-philosophy.md) | shipped (standing policy) |
 | [2026-11_object-setup-persistence](2026-11_object-setup-persistence.md) | in-progress (both slices built; owner hand test pending) |
 | [2026-11_tech-debt-paydown](2026-11_tech-debt-paydown.md) | in-progress (Phases 0–3 shipped; Phase 6 under way: P6.1–P6.4 done) |
+| [2026-11_upstream-merge](2026-11_upstream-merge.md) | in-progress |
 | [agent_validation_loop.plan](../plans/agent_validation_loop.plan.md) | shipped (reference) |
 | [eva-gear.plan](../plans/eva-gear.plan.md) | in-progress |
 | [ooc-column.plan](../plans/ooc-column.plan.md) | planned |
