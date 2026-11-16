@@ -108,7 +108,8 @@ namespace SS3D.Systems.Construction.Editor
                 for (int i = root.transform.childCount - 1; i >= 0; i--)
                 {
                     Transform child = root.transform.GetChild(i);
-                    if (!keepNames.Contains(child.name))
+                    // The sight blocker (VisionOccluderRecipe) is not a connector but stays.
+                    if (!keepNames.Contains(child.name) && child.name != VisionOccluder.HolderName)
                     {
                         Object.DestroyImmediate(child.gameObject);
                         changed = true;

@@ -1,4 +1,5 @@
 #if UNITY_EDITOR
+using SS3D.Systems.Tile.Editor;
 using UnityEditor;
 using UnityEngine;
 
@@ -14,10 +15,12 @@ namespace SS3D.Editor.Rendering
         public static void RunAllMenu()
         {
             int probePrefabs = RendererProbeUsageSetup.SetupAll();
+            int occluderPrefabs = VisionOccluderRecipe.SetupAll();
             EditorUtility.DisplayDialog(
                 "Rendering Content Recipes",
                 $"Disabled light/reflection probes on renderers in {probePrefabs} prefab(s) under Assets/Content.\n" +
-                "(SS3D does not use probe lighting; BlendProbes blocks GPU instancing.)",
+                "(SS3D does not use probe lighting; BlendProbes blocks GPU instancing.)\n" +
+                $"Rebuilt sight occluders on {occluderPrefabs} wall/door prefab(s).",
                 "OK");
         }
 
@@ -28,6 +31,8 @@ namespace SS3D.Editor.Rendering
         {
             int probePrefabs = RendererProbeUsageSetup.SetupAll();
             Debug.Log($"[RenderingContentPrefabRecipes] Probe usage cleared on {probePrefabs} prefab(s).");
+            int occluderPrefabs = VisionOccluderRecipe.SetupAll();
+            Debug.Log($"[RenderingContentPrefabRecipes] Sight occluders rebuilt on {occluderPrefabs} prefab(s).");
 
             if (UnityEngine.Application.isBatchMode)
             {

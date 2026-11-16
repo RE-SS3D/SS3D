@@ -2,7 +2,7 @@
 > Touches systems: rendering, tile, entities, examine, action-messages, map-editor-creative-hooks
 > Status: planned
 
-**Progress:** P0 done 2026-11-16 (findings under P0). Grilled with the owner on 2026-11-16, after an architecture review of the FOV and playtest feedback that the black "shadows don't match the walls". The same grill produced [fov.md](../design/fov.md). Serves [mvp1-nuke-ops.md](../milestones/mvp1-nuke-ops.md) M12.
+**Progress:** P0 and P1 done 2026-11-16 (findings under each phase). Grilled with the owner on 2026-11-16, after an architecture review of the FOV and playtest feedback that the black "shadows don't match the walls". The same grill produced [fov.md](../design/fov.md). Serves [mvp1-nuke-ops.md](../milestones/mvp1-nuke-ops.md) M12.
 
 # Field of view rework: walls drawn whole, sharp edges, one raycast batch (Nov 2026)
 
@@ -63,12 +63,21 @@ Read directly from code and prefabs; the [rendering](systems/rendering.md) map i
 
 ### P1: occluders
 
-- [ ] `VisionOccluder` layer in `TagManager`
-- [ ] `VisionOccluderRecipe`: arms and centre block on every wall-type prefab whose tile blocks sight (steel, reinforced, plated girder); remove the inactive `*ViewObstacle` children; airlock leaves to the layer
-- [ ] Connector switches arms where it swaps the mesh (`AbstractHorizontalConnector`)
-- [ ] `AssetAudit`: occluders exist exactly where `blocksVision` is true on wall-type tiles; arm extents match mesh bounds at eye height
-- [ ] Nothing reads the layer yet; the arms sit inside today's 1 × 1 box, so the first hit doesn't change
+- [x] `VisionOccluder` layer in `TagManager`
+- [x] `VisionOccluderRecipe`: arms and centre block on every wall-type prefab whose tile blocks sight (steel, reinforced, plated girder); remove the inactive `*ViewObstacle` children; airlock leaves to the layer
+- [x] Connector switches arms where it swaps the mesh (`AbstractHorizontalConnector`)
+- [x] `AssetAudit`: occluders exist exactly where `blocksVision` is true on wall-type tiles; arm extents match mesh bounds at eye height
+- [x] Nothing reads the layer yet; the arms sit inside today's 1 × 1 box, so the first hit doesn't change
 - Validation: `compile,editmode`
+
+**As built (2026-11-16):**
+
+- **Layer 14 `VisionOccluder`** collides with nothing in the physics matrix; only queries see it. The audit checks that.
+- **`VisionOccluder`** (`Systems/Tile/Connections`, not `Systems/Vision`, so Tile doesn't gain a cycle with Vision) sits on the wall root and holds a `VisionOccluder` child with `Centre` plus `North`/`East`/`South`/`West` arm boxes. `TileAdjacencyView` calls `ApplyConnections` after it turns the root, and the holder is reset to grid-aligned, so arm names are world directions. The plated girder's occluder is on its root, above the two connector children, and `GirderStageRecipe.KeepOnly` now keeps that child.
+- **Sizes** come from the straight (`i`) mesh sliced at `VisionOccluder.EyeHeight` (1.5 m, the Human `ViewPoint`): steel and reinforced walls 0.432 m, the plated girder's sheets 0.398 m (its frame is see-through); height is the mesh's top. Arms run to the tile edge.
+- **Airlock leaves (deviation):** the leaves keep their Default box, because speech (Default) and combat cover (Default + `Walls`) read it; each leaf gets a `VisionOccluder` child box the size of its mesh (0.342 m thick against the 0.8 m collider, 1.93 m tall). Leaves are found as direct children with a solid box and a mesh, on every `Door` tile's prefab.
+- **`VisionOccluderRecipe`** lives in `Systems/Tile/Editor` (Systems assembly) so `VisionOccluderAuditTests` can call its `Drift()`; it is registered on **SS3D/Rendering/Run Content Prefab Recipes**.
+- **Other queries:** many gameplay casts use every layer but the ceiling (`StationBounds.WithoutCeiling(~0)`), so they can now hit an occluder box. Each sits inside the Default collider it belongs to, so the outer one is hit first from outside; a `RaycastAll` gets one extra hit whose parent is the same wall or door.
 
 ### P2: rays and mask (one PR)
 

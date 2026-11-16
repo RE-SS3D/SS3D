@@ -4,6 +4,7 @@ using NUnit.Framework;
 using SS3D.Systems.Construction;
 using SS3D.Systems.Construction.Editor;
 using SS3D.Systems.Tile;
+using SS3D.Systems.Tile.Connections;
 using UnityEditor;
 using UnityEngine;
 using Object = UnityEngine.Object;
@@ -182,8 +183,9 @@ namespace EditorTests
             Assert.IsNotNull(plated, "Run SS3D → Construction → Run Content Prefab Recipes");
             Assert.AreEqual(1, girder.transform.childCount, "Girder keeps GirderShape only (D1)");
             Assert.IsNotNull(girder.transform.Find(GirderStageRecipe.GirderShape));
-            Assert.AreEqual(2, plated.transform.childCount);
+            Assert.AreEqual(3, plated.transform.childCount, "Plated girder: GirderShape, SteelWallSheets and its sight occluder");
             Assert.IsNotNull(plated.transform.Find(GirderStageRecipe.WallSheets));
+            Assert.IsNotNull(plated.transform.Find(VisionOccluder.HolderName));
 
             Assert.IsFalse(AssetDatabase.LoadAssetAtPath<TileObjectSo>(GirderStageRecipe.GirderTile).airtight);
             Assert.IsFalse(AssetDatabase.LoadAssetAtPath<TileObjectSo>(GirderStageRecipe.PlatedTile).airtight);
