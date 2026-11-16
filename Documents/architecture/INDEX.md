@@ -35,6 +35,7 @@ One row per gameplay domain that has, or should eventually have, a design doc. A
 | electricity | [electricity](../design/electricity.md) | [solar-generation](../archive/architecture/2026-07_solar-generation.md), [mi-area-electricity-debt](../archive/architecture/2026-07_mi-area-electricity-debt.md) — shipped | [electricity](systems/electricity.md) — partial |
 | examine | [examine](../design/examine.md) | [examine-and-action-feedback](2026-11_examine-and-action-feedback.md) — in-progress | [examine](systems/examine.md) — partial |
 | explosives-destruction | [explosives-destruction](../design/explosives-destruction.md) | [structural-destruction](2026-07_structural-destruction.md) — in-progress | [structural-destruction](systems/structural-destruction.md) — partial |
+| fov | [fov](../design/fov.md) | [fov-rework](2026-11_fov-rework.md) — planned | [rendering](systems/rendering.md) — partial (FOV section until the effort's own map) |
 | hacking-interface | [hacking-interface](../design/hacking-interface.md) | none yet | none yet |
 | health | [health](../design/health.md) | [health plan](../plans/health_implementation_plan.md) — in-progress; [body-presentation-authority](../archive/architecture/2026-07_body-presentation-authority.md), [health-env-feel](../archive/architecture/2026-07_health-env-feel.md) — shipped | [health](systems/health.md) — partial |
 | id-access | [id-access](../design/id-access.md) | none yet | [id-access](systems/id-access.md) — partial |
@@ -139,6 +140,7 @@ Only work that is in flight, planned, or kept as standing reference. Everything 
 | [2026-11_atmos-edge-flow](2026-11_atmos-edge-flow.md) | in-progress |
 | [2026-11_humanoid-animation-pass](2026-11_humanoid-animation-pass.md) | shipped |
 | [2026-11_construction-mvp1](2026-11_construction-mvp1.md) | in-progress |
+| [2026-11_fov-rework](2026-11_fov-rework.md) | planned |
 | [2026-11_examine-and-action-feedback](2026-11_examine-and-action-feedback.md) | in-progress (phases 1–4 built, 5–6 partly) |
 | [2026-11_testing-philosophy](2026-11_testing-philosophy.md) | shipped (standing policy) |
 | [2026-11_object-setup-persistence](2026-11_object-setup-persistence.md) | in-progress (both slices built; owner hand test pending) |

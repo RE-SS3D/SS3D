@@ -82,6 +82,7 @@ Client FOV / fog-of-war is a hard black mask driven by batched physics raycasts 
 
 - [FORK_STATUS.md](../../FORK_STATUS.md) § URP migration
 - Plan: [urp_lighting_look_plan_d42c32f5.plan.md](../../plans/urp_lighting_look_plan_d42c32f5.plan.md)
+- Effort (planned): [2026-11_fov-rework.md](../2026-11_fov-rework.md) — replaces the FOV occluder slack, waves and mask passes; design [fov.md](../../design/fov.md)
 - Polish handoff: [2026-07_urp-lighting-look-polish.md](../2026-07_urp-lighting-look-polish.md)
 - Effort (shipped): [2026-07_srp-batcher-gpu-instancing.md](../2026-07_srp-batcher-gpu-instancing.md)
 - Effort (shipped): [2026-07_unity-framedebug-ai-tooling.md](../2026-07_unity-framedebug-ai-tooling.md) — Frame Debugger → `Logs/framedebug/` markdown

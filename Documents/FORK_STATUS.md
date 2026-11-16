@@ -805,7 +805,7 @@ System map: [structural-destruction.md](architecture/systems/structural-destruct
 
 **Paths:** `SS3D.Systems.Vision`, `SS3D.Rendering.URP.VisionRendererFeature`
 
-Client grid-based FOV / fog-of-war as a **hard black mask** (not soft fog):
+Client raycast FOV / fog-of-war as a **hard black mask** (not soft fog); rework planned in [fov-rework](architecture/2026-11_fov-rework.md) per [fov.md](design/fov.md):
 
 - **`VisionSubSystem`** — `RaycastCommand` batch from `Entity.ViewPoint` → `_VisionMap`
 - **`VisionRendererFeature`** composites the mask; unseen areas are fully opaque black
