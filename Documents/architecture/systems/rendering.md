@@ -80,7 +80,7 @@ Client FOV / fog-of-war is a hard black mask driven by batched physics raycasts 
 
 ## Related docs
 
-- [MERGE_GUIDE.md](../../MERGE_GUIDE.md#urp-migration) § URP migration
+- [merge guide](../../archive/architecture/2026-11_merge-guide.md#urp-migration) § URP migration
 - Plan: [urp_lighting_look_plan_d42c32f5.plan.md](../../plans/urp_lighting_look_plan_d42c32f5.plan.md)
 - Polish handoff: [2026-07_urp-lighting-look-polish.md](../2026-07_urp-lighting-look-polish.md)
 - Effort (shipped): [2026-07_srp-batcher-gpu-instancing.md](../2026-07_srp-batcher-gpu-instancing.md)

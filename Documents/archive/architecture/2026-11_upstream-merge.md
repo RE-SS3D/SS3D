@@ -1,8 +1,10 @@
 > Implements: infrastructure — moving development from the `henkhooft/SS3D` fork into `RE-SS3D/SS3D`, decided by the owner (now upstream maintainer) on 2026-11-15/16
 > Touches systems: networking-session (CI, releases, updaters), ui-shell-main-menu (release banner), application (bug reports), docs governance (`AGENTS.md`, `CLAUDE.md`, `Documents/SKILL.md`, `Documents/MERGE_GUIDE.md`, milestones)
-> Status: in-progress
+> Status: shipped
 
-**Progress:** Phases 0–5 done on `upstream-prep`; `develop` frozen since 2026-11-16. Next: merge day.
+**Progress:** merged 2026-11-16 as #1526; v0.17.1 moved players to this repository the same day. Steps still open
+at archiving (v0.18.0, branch protection, nightly token, fork shutdown) moved to
+[2026-11_project-infrastructure](../../architecture/2026-11_project-infrastructure.md) § After the 2026 move.
 
 # Upstream merge (Nov 2026)
 
@@ -49,7 +51,7 @@ Settled with the owner in a grilling session, 2026-11-15/16.
    `develop` freezes only for merge day.
 5. **The repository is named once per consumer.** `SS3D.Utils.ProjectRepository`, both updaters and both
    launchers each hold one copy; `Tools/updater/set_project_repo.py` switches them all and
-   `test_project_repo.py` fails when they disagree ([Tools/updater/README.md](../../Tools/updater/README.md)).
+   `test_project_repo.py` fails when they disagree ([Tools/updater/README.md](../../../Tools/updater/README.md)).
 6. **Agent tooling ships.** `AGENTS.md`, `CLAUDE.md`, `.claude/` and `.cursor/` move upstream; the PR
    description states the AI-assisted share plainly.
 7. **`Documents/` is the canonical documentation.** Milestones and the generated `ROADMAP.md` replace upstream's
@@ -65,11 +67,11 @@ Settled with the owner in a grilling session, 2026-11-15/16.
 10. **Releases keep the fork's numbering.** v0.17.1 ships from the fork after the merge and points the updaters
     and bug reports at upstream; v0.18.0 is then the first upstream release. Upstream's old builds stay as they
     are. MAJOR bumps are a team decision. ss3d.space links to upstream's releases page; the central team edits it.
-11. **`FORK_STATUS.md` became the reviewer guide** [MERGE_GUIDE.md](../MERGE_GUIDE.md) ("What the 2026 merge
+11. **`FORK_STATUS.md` became the reviewer guide** [MERGE_GUIDE.md](2026-11_merge-guide.md) ("What the 2026 merge
     brought": Shipped-gameplay table, engine and CI changes), linked from the PR and archived after the merge. All "this fork" wording is rewritten
     to describe the project.
 12. **Docs name roles, never hosts.** "The self-hosted runner", "the project test server"; no machine names anywhere.
-    [2026-11_project-infrastructure](2026-11_project-infrastructure.md) lists the roles, who runs each, and what breaks without it.
+    [2026-11_project-infrastructure](../../architecture/2026-11_project-infrastructure.md) lists the roles, who runs each, and what breaks without it.
 13. **Fork issues:** the owner triages them, closes the irrelevant ones and recreates the rest upstream by hand.
     Fork PR links in docs stay as history. Issues and Discussions are then disabled on the fork.
 14. **Contributing steers toward agent-assisted work.** Root `CONTRIBUTING.md` (where GitHub finds it) names
@@ -95,17 +97,17 @@ Settled with the owner in a grilling session, 2026-11-15/16.
 
 ### Phase 1: project framing and docs — done
 
-- [x] `FORK_STATUS.md` → [MERGE_GUIDE.md](../MERGE_GUIDE.md); citations retargeted (`AGENTS.md`, `CLAUDE.md`, `Documents/SKILL.md`, `.cursor/skills/*`, maps, `TECH_DEBT.md`, `Tools/generate_roadmap.py`). The vendored-FishNet rule moved to [networking-session](systems/networking-session.md) § Extension points
+- [x] `FORK_STATUS.md` → [MERGE_GUIDE.md](2026-11_merge-guide.md); citations retargeted (`AGENTS.md`, `CLAUDE.md`, `Documents/SKILL.md`, `.cursor/skills/*`, maps, `TECH_DEBT.md`, `Tools/generate_roadmap.py`). The vendored-FishNet rule moved to [networking-session](../../architecture/systems/networking-session.md) § Extension points
 - [x] "This fork" framing rewritten in agent docs, efforts, maps, plans, code comments, rulesets, `Builds/README.txt`; "fork deviation" is now "design deviation" (TECH_DEBT §5 anchor updated)
 - [x] Bare fork `#N` references in active docs qualified as `henkhooft/SS3D#N`; `CLAUDE.md` tells agents how to read `#N` in pre-merge commits
-- [x] Role wording for every machine-name mention, including the workflows' `runner` input (`self-hosted` / `github`); [2026-11_project-infrastructure](2026-11_project-infrastructure.md) added (decision 12)
+- [x] Role wording for every machine-name mention, including the workflows' `runner` input (`self-hosted` / `github`); [2026-11_project-infrastructure](../../architecture/2026-11_project-infrastructure.md) added (decision 12)
 - [x] GitBook mentions in code comments → `Documents/`; `GasDefaults.cs` wording
-- [x] MAJOR bumps described as a team decision (`AGENTS.md`, [2026-10_game-versioning](2026-10_game-versioning.md))
+- [x] MAJOR bumps described as a team decision (`AGENTS.md`, [2026-10_game-versioning](../../architecture/2026-10_game-versioning.md))
 - Left for the owner (design docs are owner-only): "fork" wording in `design/player-accounts.md` (lines 17, 44, 50) and `design/shuttles.md` (line 33)
 
 ### Phase 2: repository pages — done
 
-- [x] Root [CONTRIBUTING.md](../../CONTRIBUTING.md), agent-assisted (decision 14): agent setup table, the seven-step loop with the skill for each step, what a mergeable PR looks like. `Documents/CONTRIBUTING.md` removed. Its "CI on your PR" paragraph describes the Phase 3 behaviour for fork PRs
+- [x] Root [CONTRIBUTING.md](../../../CONTRIBUTING.md), agent-assisted (decision 14): agent setup table, the seven-step loop with the skill for each step, what a mergeable PR looks like. `Documents/CONTRIBUTING.md` removed. Its "CI on your PR" paragraph describes the Phase 3 behaviour for fork PRs
 - [x] `.github/PULL_REQUEST_TEMPLATE.md`: validation, design-deviation, `update-system-docs` and versioning checklist; AI-assistance section; upstream's networking checklist kept
 - [x] `README.md` (decision 15): upstream's README, plus a ROADMAP section holding the generated block (now without its own heading); Trello and the milestones board removed; contributing points at `CONTRIBUTING.md` and `Documents/`; the dead `archive/master.zip` link points at `develop`
 - [x] `.github/FUNDING.yml` restored; issue form, `Config.yml` and `Builds/TESTERS.md` links point upstream; `Documents/CODE_OF_CONDUCT.md` is upstream's text again (the project email as contact)
@@ -117,7 +119,7 @@ Settled with the owner in a grilling session, 2026-11-15/16.
 - [x] Fork PRs get a notice job (EditMode always, smoke when labelled) naming the maintainer's dispatch command, instead of a Unity job that fails at license activation (decision 9)
 - [x] `docs-check.yml` runs on every PR and push to `develop` (path filter dropped; both checks take seconds) and adds `Tools/ci/check_fork_links.py`: fails on `henkhooft/SS3D` outside the allowlist; historical `henkhooft/SS3D#N` and `/pull/N` / `/issues/N` links pass anywhere; the repository copies are left to `test_project_repo.py`
 - [x] Stash and UPM cache paths come from the runner user's `$HOME` (`SS3D_UNITY_LIBRARY_STASH_NAME`; `persistent-upm-cache` default)
-- [x] Synced [2026-07_ci-develop-release-pipeline](2026-07_ci-develop-release-pipeline.md), [2026-07_multiplayer-testing-self-hosted-ci](2026-07_multiplayer-testing-self-hosted-ci.md) (new Pitfall), [networking-session-testing](systems/networking-session-testing.md), [project infrastructure](2026-11_project-infrastructure.md), `CONTRIBUTING.md` and the merge guide
+- [x] Synced [2026-07_ci-develop-release-pipeline](../../architecture/2026-07_ci-develop-release-pipeline.md), [2026-07_multiplayer-testing-self-hosted-ci](../../architecture/2026-07_multiplayer-testing-self-hosted-ci.md) (new Pitfall), [networking-session-testing](../../architecture/systems/networking-session-testing.md), [project infrastructure](../../architecture/2026-11_project-infrastructure.md), `CONTRIBUTING.md` and the merge guide
 - Not run yet: these workflow changes are only checked by YAML parsing and by reading the expressions. The first PR from `upstream-prep` exercises the same-repo path; a fork PR, the notice jobs and the `pr` dispatch are checked on merge day (step 2)
 
 ### Phase 4: the switch commit — done
@@ -142,7 +144,7 @@ so a failed step 4 is undone by not continuing.
 2. Prepare upstream: create the labels (`nightly-failure`, `weekly-failure`, `editmode-nightly-failure`,
    `test:multiplayer`, `map-authoring`, `visual`, `blocker`); set the secrets (decision 9); require approval for
    outside contributors; register the self-hosted runner (the workflows keep fork PRs off it); give the nightly
-   release dispatcher ([2026-11_project-infrastructure](2026-11_project-infrastructure.md)) a token for upstream;
+   release dispatcher ([2026-11_project-infrastructure](../../architecture/2026-11_project-infrastructure.md)) a token for upstream;
    push the fork's `v*` tags to upstream (see Pitfalls).
 3. Open the PR from `upstream-prep`, linking the reviewer guide and stating the AI share; close #1525 in favour
    of it; close the outdated upstream PRs with a short note. Merge with **Create a merge commit**. Reopen #1494.
@@ -157,7 +159,7 @@ so a failed step 4 is undone by not continuing.
 8. Fork: tag the old `develop` head `pre-upstream-merge`, reset `develop` to upstream's; disable scheduled
    workflows and Actions, deregister the runner, disable Issues and Discussions.
 9. The owner recreates the relevant fork issues upstream. Archive this effort and the reviewer guide; point
-   `Tools/generate_roadmap.py`'s "what already works" link at the [coverage table](INDEX.md) and regenerate.
+   `Tools/generate_roadmap.py`'s "what already works" link at the [coverage table](../../architecture/INDEX.md) and regenerate.
 
 ## Pitfalls
 
@@ -172,7 +174,7 @@ so a failed step 4 is undone by not continuing.
 - **`updater-e2e.yml` needs two upstream stable releases** (previous → latest). Until v0.19.0 it skips with a
   notice; its first real run updates v0.18.0 → v0.19.0.
 - **`develop` merges that touch `Documents/FORK_STATUS.md` conflict** (deleted on `upstream-prep`). Carry the change into
-  [MERGE_GUIDE.md](../MERGE_GUIDE.md) if it matters to reviewers, then keep the deletion.
+  [MERGE_GUIDE.md](2026-11_merge-guide.md) if it matters to reviewers, then keep the deletion.
 - **`develop` merges that touch `README.md` or the roadmap conflict**: the README is upstream's on `upstream-prep`.
   Keep `upstream-prep`'s README, then run `python3 Tools/generate_roadmap.py` to refresh its roadmap block.
 - **GitHub's contributor graph ignores `.mailmap`;** it only affects `git log`, `shortlog` and blame.
