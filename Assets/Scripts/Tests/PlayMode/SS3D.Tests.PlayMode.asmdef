@@ -12,6 +12,7 @@
         "SS3D.UI",
         "SS3D.UI.MachineInterface",
         "SS3D.UI.MainHud",
+        "SS3D.UI.StoragePanel",
         "Coimbra",
         "Coimbra.Editor",
         "Coimbra.Services",

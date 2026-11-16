@@ -108,11 +108,6 @@ namespace SS3D.UI.StoragePanel
             EnsureMachineUiSubscription();
             EnsureMenuSubscription();
             EnsureMapEditorSubscription();
-
-            foreach (StoragePanelView panel in _openPanels.Values)
-            {
-                panel.RefreshStackCounts();
-            }
         }
 
         private void Update()
@@ -121,6 +116,12 @@ namespace SS3D.UI.StoragePanel
             EnsureMachineUiSubscription();
             EnsureMenuSubscription();
             EnsureMapEditorSubscription();
+
+            // Stack merges and spends change only an item's synced count, not container contents (no event).
+            foreach (StoragePanelView panel in _openPanels.Values)
+            {
+                panel.RefreshStackCounts();
+            }
         }
 
         protected override void OnDestroyed()
