@@ -196,6 +196,16 @@ namespace SS3D.Systems.Atmospherics.Pipes
 
         protected virtual bool ShouldAnimateWhileIdle() => true;
 
+        /// <summary>
+        /// Drops the cached network so the next resolve looks again, for a device whose
+        /// <see cref="PipeLayers"/> just changed.
+        /// </summary>
+        protected void InvalidateConnectedNetwork()
+        {
+            _networkId = GasPipeNetworkId.None;
+            _resolvedTopologyVersion = -1;
+        }
+
         protected virtual void ResolveConnectedNetwork()
         {
             if (!TryGetPipeContext(out TileMap map, out GasPipeNetworkRegistry registry))

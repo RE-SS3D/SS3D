@@ -56,6 +56,7 @@ namespace EditorTests
             MeterInterfaceSnapshot original = CreateMeter(101.3f, 0.2f, 0.8f, 0f, 0f);
             original.History = new[] { 90f, 95f, 101.3f };
             original.Subtitle = "Atmospherics — Pipe Gas Meter";
+            original.LinesOnTile = 3;
 
             using PooledWriter writer = WriterPool.Retrieve();
             writer.WriteMeterInterfaceSnapshot(original);
@@ -64,6 +65,7 @@ namespace EditorTests
 
             Assert.AreEqual(original.Subtitle, read.Subtitle);
             Assert.AreEqual(original.LineLabel, read.LineLabel);
+            Assert.AreEqual(original.LinesOnTile, read.LinesOnTile);
             Assert.AreEqual(original.TemperatureKelvin, read.TemperatureKelvin);
             CollectionAssert.AreEqual(original.History, read.History);
         }
@@ -122,6 +124,17 @@ namespace EditorTests
             MeterInterfaceSnapshot snapshot = CreateMeter(pressure, 0.2f, 0.8f - plasma, 0f, plasma);
 
             Assert.AreEqual(expected, MeterInterfaceSnapshotMapper.ToViewModel(snapshot).Scenario);
+        }
+
+        [TestCase(0, false)]
+        [TestCase(1, false)]
+        [TestCase(2, true)]
+        public void MeterMapper_OffersALineSwitch_OnlyWithAnotherLineOnTheTile(int lines, bool expected)
+        {
+            MeterInterfaceSnapshot snapshot = CreateMeter(101.3f, 0.2f, 0.8f, 0f, 0f);
+            snapshot.LinesOnTile = (byte)lines;
+
+            Assert.AreEqual(expected, MeterInterfaceSnapshotMapper.ToViewModel(snapshot).CanSwitchLine);
         }
 
         [Test]

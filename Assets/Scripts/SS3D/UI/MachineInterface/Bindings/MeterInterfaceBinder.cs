@@ -7,13 +7,13 @@ namespace SS3D.UI.MachineInterface.Bindings
 {
     public sealed class MeterInterfaceBinder : IMachineInterfaceBinder
     {
-#pragma warning disable CS0067 // A meter has no controls; the interface asks for these events.
+#pragma warning disable CS0067 // A meter's one control is an action; the interface asks for these events.
         public event Action<byte, bool> BoolControlChanged;
 
         public event Action<byte, float> NumericControlChanged;
+#pragma warning restore CS0067
 
         public event Action<byte, int> ActionControlChanged;
-#pragma warning restore CS0067
 
         public event Action CloseRequested;
 
@@ -21,6 +21,7 @@ namespace SS3D.UI.MachineInterface.Bindings
         private readonly ConnectionStatusRow _connectionRow;
         private readonly DeviceIdentityBlock _identity;
         private readonly GlanceableStatusChip _statusChip;
+        private readonly SteelButton _lineSwitch;
         private readonly Label _pressureValue;
         private readonly VisualElement _pressureCard;
         private readonly VisualElement _pressureSafe;
@@ -46,6 +47,7 @@ namespace SS3D.UI.MachineInterface.Bindings
             _connectionRow = queryRoot.Q<ConnectionStatusRow>("connection-row");
             _identity = queryRoot.Q<DeviceIdentityBlock>("identity");
             _statusChip = queryRoot.Q<GlanceableStatusChip>("status-chip");
+            _lineSwitch = queryRoot.Q<SteelButton>("line-switch");
             _pressureValue = queryRoot.Q<Label>("pressure-value");
             _pressureCard = queryRoot.Q<VisualElement>("pressure-card");
             _pressureSafe = queryRoot.Q<VisualElement>("pressure-safe");
@@ -65,6 +67,11 @@ namespace SS3D.UI.MachineInterface.Bindings
             if (_shell != null)
             {
                 _shell.CloseClicked += HandleCloseRequested;
+            }
+
+            if (_lineSwitch != null)
+            {
+                _lineSwitch.Clicked += HandleNextLine;
             }
         }
 
@@ -94,6 +101,11 @@ namespace SS3D.UI.MachineInterface.Bindings
                 _identity.Subtitle = model.Subtitle;
             }
 
+            if (_lineSwitch != null)
+            {
+                _lineSwitch.style.display = model.CanSwitchLine ? DisplayStyle.Flex : DisplayStyle.None;
+            }
+
             _statusChip?.SetContent(model.StatusHeadline, model.StatusBadgeText, model.StatusTone, model.StatusSubline);
             BindPressure(model);
             BindStats(model);
@@ -117,6 +129,11 @@ namespace SS3D.UI.MachineInterface.Bindings
             if (_shell != null)
             {
                 _shell.CloseClicked -= HandleCloseRequested;
+            }
+
+            if (_lineSwitch != null)
+            {
+                _lineSwitch.Clicked -= HandleNextLine;
             }
         }
 
@@ -200,5 +217,7 @@ namespace SS3D.UI.MachineInterface.Bindings
         }
 
         private void HandleCloseRequested() => CloseRequested?.Invoke();
+
+        private void HandleNextLine() => ActionControlChanged?.Invoke(MachineInterfaceControlIds.Atmos.NextLine, 0);
     }
 }

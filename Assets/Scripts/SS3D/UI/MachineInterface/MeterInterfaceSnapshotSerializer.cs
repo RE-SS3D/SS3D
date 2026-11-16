@@ -13,6 +13,7 @@ namespace SS3D.UI.MachineInterface
             writer.WriteString(snapshot.Subtitle);
             writer.WriteString(snapshot.LineLabel);
             writer.WriteBoolean(snapshot.Connected);
+            writer.WriteByte(snapshot.LinesOnTile);
             writer.WriteSingle(snapshot.TemperatureKelvin);
             writer.WriteSingle(snapshot.Moles);
             writer.WriteSingle(snapshot.VolumeLitres);
@@ -38,6 +39,7 @@ namespace SS3D.UI.MachineInterface
                 Subtitle = reader.ReadString(),
                 LineLabel = reader.ReadString(),
                 Connected = reader.ReadBoolean(),
+                LinesOnTile = reader.ReadByte(),
                 TemperatureKelvin = reader.ReadSingle(),
                 Moles = reader.ReadSingle(),
                 VolumeLitres = reader.ReadSingle(),

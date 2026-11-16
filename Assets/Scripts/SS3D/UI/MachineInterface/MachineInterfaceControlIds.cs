@@ -55,6 +55,8 @@ namespace SS3D.UI.MachineInterface
             public const byte DeviceFilter = 7;
 
             public const byte InletRatio = 8;
+
+            public const byte NextLine = 9;
         }
     }
 }
