@@ -1,45 +1,12 @@
-using Coimbra.Services.Events;
-using SS3D.Systems.GameModes.Events;
 using UnityEngine;
 
 namespace SS3D.Systems.Gamemodes.Objectives
 {
     /// <summary>
-    /// Objective which the goal is to detonate the nuke. 
+    /// The Nuke Ops team objective: detonate the station's device (<c>antagonist-content.md</c> §6). It is
+    /// resolved when the round ends, by <see cref="SS3D.Systems.GameModes.Modes.NukeGamemode.ResolveObjectives"/>:
+    /// met only if the round ended with the station destroyed.
     /// </summary>
     [CreateAssetMenu(menuName = "Gamemode/Objectives/DetonateNuke", fileName = "DetonateNuke")]
-    public class DetonateNukeObjective : GamemodeObjective
-    {
-        /// <inheritdoc />
-        public override void InitializeObjective()
-        {
-            base.InitializeObjective();
-        }
-
-        /// <inheritdoc />
-        public override void AddEventListeners()
-        {
-            NukeDetonateEvent.AddListener(HandleNukeDetonateEvent);
-        }
-
-        /// <inheritdoc />
-        public override void FinalizeObjective()
-        {
-            Succeed();
-        }
-
-        public override void CheckCompletion()
-        {
-            
-        }
-
-        private void HandleNukeDetonateEvent(ref EventContext context, in NukeDetonateEvent e)
-        {
-
-            if (e.Author == AssigneeCkey)
-            {
-                FinalizeObjective();
-            }
-        }
-    }
+    public class DetonateNukeObjective : GamemodeObjective { }
 }

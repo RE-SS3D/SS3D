@@ -1,0 +1,156 @@
+using System.Collections.Generic;
+using System.Linq;
+using SS3D.Systems.Inventory.Containers;
+using SS3D.Systems.Inventory.Items;
+using SS3D.Systems.Inventory.Items.Generic;
+using UnityEngine;
+
+namespace SS3D.Systems.Examine
+{
+    /// <summary>
+    /// Resolved icon/name for one paperdoll slot. Both fields are null for an empty slot, and for a
+    /// <see cref="IsHidden"/> slot: occupied, but what is in it can't be seen (examine.md §5).
+    /// </summary>
+    public readonly struct CharacterExamineSlotContent
+    {
+        public CharacterExamineSlot Slot { get; }
+
+        public Sprite ItemIcon { get; }
+
+        public string ItemName { get; }
+
+        /// <summary>Occupied, contents not visible: a conscious character's pocket or suit storage.</summary>
+        public bool IsHidden { get; }
+
+        public bool IsOccupied => IsHidden || ItemIcon != null || !string.IsNullOrEmpty(ItemName);
+
+        public CharacterExamineSlotContent(CharacterExamineSlot slot, Sprite itemIcon, string itemName, bool isHidden = false)
+        {
+            Slot = slot;
+            ItemIcon = itemIcon;
+            ItemName = itemName;
+            IsHidden = isHidden;
+        }
+    }
+
+    /// <summary>
+    /// Builds the character-examine paperdoll's slot contents from a (possibly remote) character's
+    /// <see cref="HumanInventory"/> — read-only, works for any character, not just the local player
+    /// (Documents/architecture/systems/examine.md § character examine).
+    /// </summary>
+    public static class CharacterExamineContentBuilder
+    {
+        private static readonly CharacterExamineSlot[] ContainerBackedSlots =
+        {
+            CharacterExamineSlot.Head,
+            CharacterExamineSlot.Eyes,
+            CharacterExamineSlot.Face,
+            CharacterExamineSlot.Ears,
+            CharacterExamineSlot.Suit,
+            CharacterExamineSlot.Shirt,
+            CharacterExamineSlot.Gloves,
+            CharacterExamineSlot.Back,
+            CharacterExamineSlot.Feet,
+            CharacterExamineSlot.Belt,
+            CharacterExamineSlot.IdCard,
+            CharacterExamineSlot.Pocket,
+            CharacterExamineSlot.SuitStorage,
+        };
+
+        /// <summary>
+        /// Builds all 15 paperdoll slots (13 container-backed + 2 hands). Unless
+        /// <paramref name="revealHidden"/> (the target is dead, unconscious or restrained), pockets and
+        /// suit storage show only occupied or empty (examine.md §5). Clothing covering other slots is
+        /// not modelled: no item data says what an outer layer hides.
+        /// </summary>
+        public static IReadOnlyList<CharacterExamineSlotContent> BuildSlots(HumanInventory inventory, bool revealHidden = true)
+        {
+            List<CharacterExamineSlotContent> slots = new(14);
+
+            foreach (CharacterExamineSlot slot in ContainerBackedSlots)
+            {
+                CharacterExamineSlotContent content = BuildContainerSlot(inventory, slot);
+                slots.Add(!revealHidden && IsHiddenWhileAlert(slot) && content.IsOccupied
+                    ? new CharacterExamineSlotContent(slot, null, null, isHidden: true)
+                    : content);
+            }
+
+            slots.Add(BuildHandSlot(inventory, CharacterExamineSlot.HandLeft, 0));
+            slots.Add(BuildHandSlot(inventory, CharacterExamineSlot.HandRight, 1));
+            return slots;
+        }
+
+        /// <summary>Slots whose contents a look can't see on a conscious character (examine.md §5).</summary>
+        public static bool IsHiddenWhileAlert(CharacterExamineSlot slot) =>
+            slot == CharacterExamineSlot.Pocket || slot == CharacterExamineSlot.SuitStorage;
+
+        /// <summary>
+        /// Resolves the item currently shown in a paperdoll slot (container-backed or hand).
+        /// </summary>
+        public static bool TryGetItemInSlot(HumanInventory inventory, CharacterExamineSlot slot, out Item item)
+        {
+            item = null;
+            if (inventory == null)
+            {
+                return false;
+            }
+
+            if (slot == CharacterExamineSlot.HandLeft)
+            {
+                item = ItemInHand(inventory, 0);
+                return item != null;
+            }
+
+            if (slot == CharacterExamineSlot.HandRight)
+            {
+                item = ItemInHand(inventory, 1);
+                return item != null;
+            }
+
+            if (!CharacterExamineSlotContainerMap.TryGetContainerTypes(slot, out ContainerType primary, out ContainerType secondary))
+            {
+                return false;
+            }
+
+            item = ItemIn(inventory, primary);
+            if (item == null && secondary != ContainerType.None)
+            {
+                item = ItemIn(inventory, secondary);
+            }
+
+            return item != null;
+        }
+
+        private static CharacterExamineSlotContent BuildContainerSlot(HumanInventory inventory, CharacterExamineSlot slot)
+        {
+            if (!TryGetItemInSlot(inventory, slot, out Item item))
+            {
+                return new CharacterExamineSlotContent(slot, null, null);
+            }
+
+            return new CharacterExamineSlotContent(slot, item.GetHudSprite(preferWornShape: true), item.Name);
+        }
+
+        private static CharacterExamineSlotContent BuildHandSlot(HumanInventory inventory, CharacterExamineSlot slot, int handIndex)
+        {
+            Item item = ItemInHand(inventory, handIndex);
+            return new CharacterExamineSlotContent(slot, item?.ItemSprite, item?.Name);
+        }
+
+        private static Item ItemInHand(HumanInventory inventory, int handIndex)
+        {
+            Hand hand = inventory?.Hands != null && handIndex < inventory.Hands.PlayerHands.Count
+                ? inventory.Hands.PlayerHands[handIndex]
+                : null;
+            return hand?.ItemInHand;
+        }
+
+        private static Item ItemIn(HumanInventory inventory, ContainerType type)
+        {
+            return inventory.TryGetTypeContainer(type, 0, out AttachedContainer container)
+                ? container.Items.FirstOrDefault()
+                : null;
+        }
+    }
+}
+

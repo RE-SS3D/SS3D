@@ -1,27 +1,33 @@
 using Coimbra;
 using DG.Tweening;
+using FishNet.Object;
 using FishNet.Object.Synchronizing;
 using JetBrains.Annotations;
 using SS3D.Core.Behaviours;
+using SS3D.Data.Persistence;
 using SS3D.Interactions;
 using SS3D.Interactions.Interfaces;
+using SS3D.Systems.Inventory.Containers;
 using SS3D.Systems.Inventory.Interactions;
-using System;
+using SS3D.Systems.Selection;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Serialization;
+using SS3D.Core;
 
 namespace SS3D.Systems.Furniture
 {
     /// <summary>
-    /// A temporary locker class for easily testing permission checking
+    /// Station locker: door open/close + optional ID lock. Storage UI is gated on the door —
+    /// view/store only while open; closing the door closes any open storage panels.
     /// </summary>
-    public class Locker : NetworkActor, IInteractionTarget
+    [RequireComponent(typeof(Selectable))]
+    public class Locker : NetworkActor, IInteractionTarget, IStorageAccessGate, IPersistentSetup
     {
         private static readonly int ColorPropertyIndex = Shader.PropertyToID("_Color");
-        
+
         [FormerlySerializedAs("Locked")]
-        [SyncVar(OnChange = nameof(OnLocked))] 
+        [SyncVar(OnChange = nameof(OnLocked))]
         public bool IsLocked;
 
         [SyncVar(OnChange = nameof(SyncIsOpen))]
@@ -32,7 +38,7 @@ namespace SS3D.Systems.Furniture
         [SyncVar]
         [Header("Define if the locker is lockable")]
         public bool Lockable;
-        
+
         [SerializeField]
         [SyncVar]
         [Header("Optional")]
@@ -40,15 +46,58 @@ namespace SS3D.Systems.Furniture
 
         [SerializeField]
         private GameObject _door;
-        
+
         [SerializeField]
         private Vector3 _doorChangePunch = new Vector3(-.1f, -.05f, 0);
-        
+
         [CanBeNull]
         [Header("Optional")]
         public GameObject LockLight;
 
         private Material _lightMaterial;
+
+        // The prefab's door and lock state, read on Awake before anything changes them: the setup default.
+        private bool _defaultOpen;
+        private bool _defaultLocked;
+
+        /// <inheritdoc />
+        public bool AllowsStorageAccess => IsOpen;
+
+        protected override void OnAwake()
+        {
+            base.OnAwake();
+            _defaultOpen = IsOpen;
+            _defaultLocked = IsLocked;
+        }
+
+        public string SetupKey => "locker";
+
+        [System.Serializable]
+        private sealed class LockerSetup
+        {
+            public bool isOpen;
+            public bool isLocked;
+        }
+
+        public string CaptureSetup() =>
+            IsOpen == _defaultOpen && IsLocked == _defaultLocked
+                ? null
+                : JsonUtility.ToJson(new LockerSetup { isOpen = IsOpen, isLocked = IsLocked });
+
+        /// <summary>Opens or closes the door and sets the lock, as the locker's own interactions would.</summary>
+        [Server]
+        public void RestoreSetup(string json)
+        {
+            LockerSetup setup = new() { isOpen = _defaultOpen, isLocked = _defaultLocked };
+            if (!string.IsNullOrEmpty(json))
+                JsonUtility.FromJsonOverwrite(json, setup);
+
+            bool wasOpen = IsOpen;
+            IsOpen = setup.isOpen;
+            IsLocked = Lockable && setup.isLocked;
+            if (wasOpen && !IsOpen)
+                CloseStorageUIs();
+        }
 
         protected override void OnStart()
         {
@@ -60,20 +109,51 @@ namespace SS3D.Systems.Furniture
             }
         }
 
+        /// <summary>
+        /// Server: close storage UI for every <see cref="ContainerViewer"/> still showing this locker's
+        /// containers. Called when the door closes so panels cannot outlive the open door.
+        /// </summary>
+        [Server]
+        public void CloseStorageUIs()
+        {
+            AttachedContainer[] containers = GetComponentsInChildren<AttachedContainer>();
+            if (containers.Length == 0)
+            {
+                return;
+            }
+
+            IReadOnlyList<ContainerViewer> viewers = SceneRegistry<ContainerViewer>.All;
+            foreach (AttachedContainer container in containers)
+            {
+                if (!container.HasUi)
+                {
+                    continue;
+                }
+
+                foreach (ContainerViewer viewer in viewers)
+                {
+                    if (viewer != null && viewer.HasContainer(container))
+                    {
+                        viewer.CloseContainerUI(container);
+                    }
+                }
+            }
+        }
+
         private void SyncIsOpen(bool prev, bool next, bool asServer)
         {
             if (asServer)
             {
                 return;
             }
-            
+
             bool isOpen = next;
 
             DOTween.Kill(_door.transform);
             DOTween.Kill(transform, true);
-            
+
             Vector3 doorRotation = _door.transform.localEulerAngles;
-            
+
             // end value
             doorRotation = new Vector3(doorRotation.x, isOpen ? 130 : 0, doorRotation.z);
             Vector3 doorChangePunch = new Vector3(_doorChangePunch.x, isOpen ? -_doorChangePunch.y : _doorChangePunch.y, _doorChangePunch.z);
@@ -81,14 +161,14 @@ namespace SS3D.Systems.Furniture
             transform.DOPunchScale(doorChangePunch, .25f).SetEase(Ease.OutExpo);
             _door.transform.DOLocalRotate(doorRotation, .45f).SetEase(Ease.OutExpo);
         }
-        
+
         private void OnLocked(bool prev, bool next, bool asServer)
         {
             if (LockLight == null)
             {
                 return;
             }
-            
+
             DOTween.Kill(_lightMaterial);
 
             _lightMaterial.DOColor(next ? Color.red : Color.green, ColorPropertyIndex, 0.25f);
@@ -100,17 +180,17 @@ namespace SS3D.Systems.Furniture
 
             LockLockerInteraction lockLockerInteraction = new(this, permissionToUnlock);
             UnlockLockerInteraction unlockLockerInteraction = new(this, permissionToUnlock);
-            
+
             LockerDoorInteraction lockerDoorInteraction = new(this)
             {
                 Name = IsOpen ? "Close Locker" : "Open Locker",
             };
-            
+
             interactions.Add(lockLockerInteraction);
             interactions.Add(unlockLockerInteraction);
-            
+
             interactions.Add(lockerDoorInteraction);
-            
+
             IInteraction[] targetInteractions = interactions.ToArray();
             ListPool.Push(interactions);
 

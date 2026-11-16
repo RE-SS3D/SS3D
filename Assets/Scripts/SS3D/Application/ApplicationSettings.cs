@@ -30,6 +30,28 @@ namespace SS3D.Application
         public bool ForceLauncher;
 
         /// <summary>
+        /// Path to a multiplayer test harness automation script for this process to run, set via
+        /// the "-testscript=" command line arg. Empty outside of harness-driven runs.
+        /// </summary>
+        public string TestScriptPath;
+
+        /// <summary>
+        /// The automation script this process runs: <see cref="TestScriptPath"/>, or in the editor
+        /// the script named by this Multiplayer Play Mode player's <c>smoke:</c> tag. Empty for
+        /// normal play.
+        /// </summary>
+        public string ActiveTestScriptPath => string.IsNullOrEmpty(TestScriptPath)
+            ? MultiplayerPlayModePlayer.TaggedScriptPath
+            : TestScriptPath;
+
+        /// <summary>
+        /// Editor-only station template loaded at boot instead of the most recently saved one.
+        /// Empty keeps the most-recent behaviour; built executables always ignore it.
+        /// </summary>
+        [Tooltip("Editor only: station template file name (without .json) loaded at boot, e.g. a small map for fast playtests. Empty loads the most recently saved template.")]
+        public string EditorStationTemplate;
+
+        /// <summary>
         /// Resets our settings if we are ona built executable.
         /// </summary>
         public static void ResetOnBuiltApplication()
@@ -39,6 +61,8 @@ namespace SS3D.Application
             applicationSettings.SkipIntro = false;
             applicationSettings.EnableDiscord = false;
             applicationSettings.ForceLauncher = false;
+            applicationSettings.TestScriptPath = string.Empty;
+            applicationSettings.EditorStationTemplate = string.Empty;
         }
     }
 }

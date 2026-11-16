@@ -1,3 +1,4 @@
+using SS3D.Systems.Entities.Humanoid.Body;
 using UnityEngine;
 
 namespace SS3D.Systems.Entities.Data
@@ -7,11 +8,67 @@ namespace SS3D.Systems.Entities.Data
         public static class Humanoid
         {
             public static readonly int MovementSpeed = Animator.StringToHash("Speed");
+            public static readonly int VelX = Animator.StringToHash("VelX");
+            public static readonly int VelZ = Animator.StringToHash("VelZ");
+            public static readonly int Turn = Animator.StringToHash("Turn");
+            /// <summary>Base-layer locomotion playback multiplier (exhaustion); default 1 in the controller.</summary>
+            public static readonly int LocoRate = Animator.StringToHash("LocoRate");
+            public static readonly int Floating = Animator.StringToHash("Floating");
+            public static readonly int LimpSide = Animator.StringToHash("LimpSide");
+            public static readonly int IsCrawling = Animator.StringToHash("IsCrawling");
+            public static readonly int IsDragging = Animator.StringToHash("IsDragging");
+            public static readonly int ArmHold = Animator.StringToHash("ArmHold");
+            public static readonly int InjuredArmLeft = Animator.StringToHash("InjuredArmLeft");
+            public static readonly int InjuredArmRight = Animator.StringToHash("InjuredArmRight");
+            public static readonly int InjuredLeg = Animator.StringToHash("InjuredLeg");
+            public static readonly int IsSeated = Animator.StringToHash("IsSeated");
+            public static readonly int CombatMode = Animator.StringToHash("CombatMode");
+            public static readonly int CombatStance = Animator.StringToHash("CombatStance");
+            public static readonly int AimYaw = Animator.StringToHash("AimYaw");
+            public static readonly int AimPitch = Animator.StringToHash("AimPitch");
+            public static readonly int AttackSwing = Animator.StringToHash("AttackSwing");
+            public static readonly int AttackStab = Animator.StringToHash("AttackStab");
+            public static readonly int AttackVariant = Animator.StringToHash("AttackVariant");
+            /// <summary>Melee swing state speed: wind-up rate until the strike frame, then 1. Default 1 in the controller.</summary>
+            public static readonly int AttackRate = Animator.StringToHash("AttackRate");
+            public static readonly int MirrorUpperBody = Animator.StringToHash("MirrorUpperBody");
+            /// <summary>0 rifle hold, 1 pistol hold; blended by the orchestrator over <see cref="PistolStanceAnimation.BlendSeconds"/>.</summary>
+            public static readonly int PistolHold = Animator.StringToHash(PistolStanceAnimation.HoldParameter);
+            /// <summary>VelX for the Ranged Locomotion trees, negated while a left-hand gun mirrors that state.</summary>
+            public static readonly int RangedVelX = Animator.StringToHash(PistolStanceAnimation.StrafeParameter);
+            public static readonly int Throw = Animator.StringToHash("Throw");
+            public static readonly int Interact = Animator.StringToHash(InteractionAnimation.TriggerParameter);
+            public static readonly int InteractClip = Animator.StringToHash(InteractionAnimation.ClipParameter);
+            public static readonly int InteractKneel = Animator.StringToHash(InteractionAnimation.KneelParameter);
+            public static readonly int InteractWork = Animator.StringToHash(InteractionAnimation.WorkParameter);
+            public static readonly int Emote = Animator.StringToHash("Emote");
+            public static readonly int Flinch = Animator.StringToHash("Flinch");
+            public static readonly int FireRifle = Animator.StringToHash("FireRifle");
+            public static readonly int Reload = Animator.StringToHash("Reload");
+            public static readonly int Jump = Animator.StringToHash("Jump");
+            public static readonly int TurnLeft90 = Animator.StringToHash("TurnLeft90");
+            public static readonly int TurnRight90 = Animator.StringToHash("TurnRight90");
+
+            public static int GetTriggerHash(AnimationTriggerId trigger)
+            {
+                return trigger switch
+                {
+                    AnimationTriggerId.AttackSwing => AttackSwing,
+                    AnimationTriggerId.AttackStab => AttackStab,
+                    AnimationTriggerId.Throw => Throw,
+                    AnimationTriggerId.Emote => Emote,
+                    AnimationTriggerId.Flinch => Flinch,
+                    AnimationTriggerId.FireRifle => FireRifle,
+                    AnimationTriggerId.Reload => Reload,
+                    _ => 0,
+                };
+            }
         }
 
         public static class Silicon
         {
             public static readonly int Power = Animator.StringToHash("Power");
+            public static readonly int MovementSpeed = Animator.StringToHash("Speed");
         }
     }
 }

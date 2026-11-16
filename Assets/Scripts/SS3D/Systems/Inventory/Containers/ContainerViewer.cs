@@ -6,7 +6,6 @@ using SS3D.Core;
 using SS3D.Core.Behaviours;
 using SS3D.Systems.Entities;
 using SS3D.Systems.Inventory.Containers;
-using SS3D.Systems.Inventory.UI;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -35,18 +34,27 @@ namespace SS3D.Systems.Inventory.Containers
         // Reference to the player's inventory.
         public HumanInventory inventory;
 
+        protected override void OnEnabled()
+        {
+            base.OnEnabled();
+            SceneRegistry<ContainerViewer>.Register(this);
+        }
+
+        protected override void OnDisabled()
+        {
+            SceneRegistry<ContainerViewer>.Unregister(this);
+            base.OnDisabled();
+        }
+
         public override void OnStartClient()
         {
             base.OnStartClient();
             if (!IsOwner) { return; }
-            SetupView();
-            AddHandle(UpdateEvent.AddListener(HandleUpdate));
-        }
 
-        private void SetupView()
-        {
-            var containerView = ViewLocator.Get<ContainerView>().First();
-            containerView.Setup(this);
+            // No UI lookup here — Systems-layer code must not depend on a UI assembly. The UI side
+            // (StoragePanelHost, via MainHudSubSystem's existing local-player tracking) discovers this
+            // ContainerViewer and subscribes to OnContainerOpened/OnContainerClosed itself.
+            AddHandle(UpdateEvent.AddListener(HandleUpdate));
         }
 
         /// <summary>
@@ -111,7 +119,6 @@ namespace SS3D.Systems.Inventory.Containers
         {
             if (_displayedContainers.Remove(container))
             {
-                Debug.Log("client call remove");
                 SetOpenState(container.gameObject, false);
                 NetworkConnection client = Owner;
                 if (client != null)

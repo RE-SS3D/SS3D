@@ -8,13 +8,14 @@ using SS3D.Core.Behaviours;
 using SS3D.Interactions;
 using SS3D.Interactions.Interfaces;
 using SS3D.Logging;
+using SS3D.Systems.Combat;
 using SS3D.Systems.Inputs;
+using SS3D.Systems.Interactions;
+using SS3D.Systems.Entities.Humanoid.Body;
 using SS3D.Systems.Inventory.Items;
-using SS3D.Systems.Inventory.UI;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using UnityEngine.UI;
 using InputSubSystem = SS3D.Systems.Inputs.InputSubSystem;
 
 namespace SS3D.Systems.Inventory.Containers
@@ -34,24 +35,13 @@ namespace SS3D.Systems.Inventory.Containers
 
 
         private Controls.HotkeysActions _controls;
+        private bool _controlsInitialized;
 
         /// <summary>
         /// Reference to the inventory linked to Hands.
         /// </summary>
         [NonSerialized]
         public HumanInventory Inventory;
-
-        /// <summary>
-        /// Color of selected hand, or when mouse passes over the slot.
-        /// </summary>
-        [SerializeField]
-        private Color _selectedColor;
-
-        /// <summary>
-        /// Color of unselected hand
-        /// </summary>
-        [SerializeField]
-        private Color _defaultColor;
 
         /// <summary>
         /// The selected hand, should be part of PlayerHands list.
@@ -76,43 +66,84 @@ namespace SS3D.Systems.Inventory.Containers
             {
                 hand.HandsController = this;
                 hand.OnHandDisabled += HandleHandRemoved;
+                if (hand.Container != null)
+                {
+                    hand.Container.OnItemAttached += HandleHandItemAttached;
+                }
             }
             // Set the selected hand to be the first available one.
             _selectedHand = PlayerHands.FirstOrDefault();
         }
 
         /// <summary>
-        /// Sync for clients, set highlight on slots properly.
+        /// After a two-hand rifle lands in its required hand (pickup/transfer auto-route), make that
+        /// hand active so the HUD and verbs match the grip.
+        /// </summary>
+        [Server]
+        private void HandleHandItemAttached(object sender, Item item)
+        {
+            if (!TwoHandedWeaponRules.RequiresBothHands(item, out HandSide requiredSide))
+            {
+                return;
+            }
+
+            Hand grip = TwoHandedWeaponRules.FindHand(this, requiredSide);
+            if (grip == null || sender as AttachedContainer != grip.Container)
+            {
+                return;
+            }
+
+            _selectedHand = grip;
+        }
+
+        [Server]
+        public void ServerSelectHand(Hand hand)
+        {
+            if (hand == null || !PlayerHands.Contains(hand))
+            {
+                return;
+            }
+
+            _selectedHand = hand;
+        }
+
+        /// <summary>
+        /// Sync for clients. Active-hand highlighting now lives on the Main HUD gear strip
+        /// (HandsGearStrip.SetActiveHand), driven by MainHudSubSystem watching SelectedHand — nothing
+        /// left to do here beyond the SyncVar itself.
         /// </summary>
         public void SyncSelectedHand(Hand oldHand, Hand newHand, bool asServer)
         {
-            if (asServer || !IsOwner) return;
-            if(oldHand != null)
-            {
-                SetHandHighlight(oldHand, false);
-            }
-            if (newHand != null)
-            {
-                SetHandHighlight(newHand, true);
-            }
         }
 
-        [Client]
+        /// <summary>
+        /// Link this hands controller to an inventory. Safe on server and client.
+        /// Hotkey bind stays client-only via <see cref="OnInventorySetUp"/>.
+        /// </summary>
         public void SetInventory(HumanInventory inventory)
         {
             Inventory = inventory;
-            Inventory.OnInventorySetUp += OnInventorySetUp;
+            if (!IsClient || inventory == null)
+            {
+                return;
+            }
+
+            inventory.OnInventorySetUp -= OnInventorySetUp;
+            inventory.OnInventorySetUp += OnInventorySetUp;
         }
 
         [Client]
         private void OnInventorySetUp()
         {
-            SetHandHighlight(PlayerHands.First(), true);
+            if (_controlsInitialized)
+                return;
 
             // Set up hand related controls.
             _controls = SubSystems.Get<InputSubSystem>().Inputs.Hotkeys;
             _controls.SwapHands.performed += HandleSwapHands;
             _controls.Drop.performed += HandleDropHeldItem;
+            _controls.ToggleInternalClothing.performed += HandleTogglePockets;
+            _controlsInitialized = true;
 
             Inventory.OnInventorySetUp -= OnInventorySetUp;
         }
@@ -121,11 +152,18 @@ namespace SS3D.Systems.Inventory.Containers
         {
             base.OnDestroyed();
 
-            if (IsOwner)
+            // Death removes ownership before destroying Hands. Subscription lifetime must not
+            // depend on current ownership or callbacks keep a destroyed component alive.
+            if (_controlsInitialized)
             {
                 _controls.SwapHands.performed -= HandleSwapHands;
                 _controls.Drop.performed -= HandleDropHeldItem;
+                _controls.ToggleInternalClothing.performed -= HandleTogglePockets;
+                _controlsInitialized = false;
             }
+
+            if (Inventory != null)
+                Inventory.OnInventorySetUp -= OnInventorySetUp;
         }
 
         [Client]
@@ -136,6 +174,19 @@ namespace SS3D.Systems.Inventory.Containers
             {
                 return;
             }
+
+            int index = PlayerHands.FindIndex(0, x => x == SelectedHand);
+            if (index < 0)
+            {
+                return;
+            }
+
+            Hand next = PlayerHands[(index + 1) % PlayerHands.Count];
+            if (!CanSelectHand(next))
+            {
+                return;
+            }
+
             CmdNextHand();
         }
 
@@ -164,18 +215,60 @@ namespace SS3D.Systems.Inventory.Containers
 
             if (hand != null)
             {
+                if (!CanSelectHand(hand))
+                {
+                    return;
+                }
+
                 _selectedHand = hand;
             }
             else
             {
-                Debug.LogError("selectedContainer is not in HandContainers.");
+                Log.Error(this, "selectedContainer is not in HandContainers.");
             }
         }
 
         [Client]
         private void HandleDropHeldItem(InputAction.CallbackContext context)
         {
+            // Nothing to drop: the server would ignore it, but the put-down would already be playing here.
+            if (!IsOwner || !enabled || SelectedHand == null || SelectedHand.IsEmpty())
+                return;
+
+            // Drop is a Help-mode world verb; Harm is combat-exclusive (melee / future combat chords).
+            IIntentProvider intentProvider = GetComponentInParent<IIntentProvider>()
+                ?? GetComponent<IIntentProvider>();
+            if (intentProvider != null && intentProvider.CurrentIntent != IntentType.Help)
+            {
+                return;
+            }
+
+            InteractionController interactions = GetComponentInParent<InteractionController>();
+            if (interactions != null && !interactions.BeginOwnerHandAction(
+                    InteractionAnimation.FloorPutDown, InteractionAnimation.DropPointAhead(interactions.transform)))
+            {
+                return;
+            }
+
             SelectedHand.CmdDropHeldItem();
+        }
+
+        /// <summary>
+        /// Opens pocket containers via ContainerViewer (StoragePanelHost listens) —
+        /// replaces the old internal-clothing UI toggle.
+        /// </summary>
+        [Client]
+        private void HandleTogglePockets(InputAction.CallbackContext context)
+        {
+            if (!IsOwner || !enabled || Inventory?.containerViewer == null)
+            {
+                return;
+            }
+
+            for (int i = 0; Inventory.TryGetTypeContainer(ContainerType.Pocket, i, out AttachedContainer pocket); i++)
+            {
+                Inventory.containerViewer.ShowContainerUI(pocket);
+            }
         }
 
         [ServerRpc]
@@ -187,28 +280,32 @@ namespace SS3D.Systems.Inventory.Containers
         [Server]
         private void NextHand()
         {
+            if (PlayerHands.Count == 0)
+            {
+                return;
+            }
+
             int index = PlayerHands.FindIndex(0, x => x == SelectedHand);
-            _selectedHand = PlayerHands[(index + 1) % PlayerHands.Count];
+            if (index < 0)
+            {
+                index = 0;
+            }
+
+            for (int step = 1; step <= PlayerHands.Count; step++)
+            {
+                Hand candidate = PlayerHands[(index + step) % PlayerHands.Count];
+                if (CanSelectHand(candidate))
+                {
+                    _selectedHand = candidate;
+                    return;
+                }
+            }
         }
 
-        [Client]
-        private void SetHandHighlight(Hand hand, bool highlight)
+        /// <summary>False while the hand is reserved by a two-hand firearm in the other grip.</summary>
+        public bool CanSelectHand(Hand hand)
         {
-            Transform handSlot = ViewLocator.Get<InventoryView>().First().GetHandSlot(hand);
-            Button button = handSlot.GetComponent<Button>();
-            ColorBlock buttonColors = button.colors;
-            if (highlight)
-            {
-                buttonColors.normalColor = _selectedColor;
-                buttonColors.highlightedColor = _selectedColor; // The selected hand keeps the same color, highlighted or not.
-            }
-            else
-            {
-                buttonColors.normalColor = _defaultColor;
-                buttonColors.highlightedColor = _selectedColor;
-            }
-
-            button.colors = buttonColors;
+            return hand != null && !TwoHandedWeaponRules.IsHandReserved(hand, this);
         }
 
         /// <summary>
@@ -238,6 +335,11 @@ namespace SS3D.Systems.Inventory.Containers
         [Server]
         public void HandleHandRemoved(Hand hand)
         {
+            if (hand?.Container != null)
+            {
+                hand.Container.OnItemAttached -= HandleHandItemAttached;
+            }
+
             if (!PlayerHands.Remove(hand))
             {
                 return;
@@ -260,6 +362,13 @@ namespace SS3D.Systems.Inventory.Containers
         public void AddHand(Hand hand)
         {
             PlayerHands.Add(hand);
+            hand.HandsController = this;
+            hand.OnHandDisabled += HandleHandRemoved;
+            if (hand.Container != null)
+            {
+                hand.Container.OnItemAttached += HandleHandItemAttached;
+            }
+
             if(PlayerHands.Count == 1)
             {
                 _selectedHand = hand;

@@ -32,6 +32,13 @@ namespace SS3D.Systems.Inventory.Containers.ObserverConditions
             Vector3 thisPosition = NetworkObject.transform.position;
             foreach (NetworkObject nob in connection.Objects)
             {
+                // A destroyed object can still be listed (e.g. a previous body); skip it rather than throw
+                // mid-rebuild, which aborted spawns (late join after an earlier round in the same server).
+                if (nob == null)
+                {
+                    continue;
+                }
+
                 //If within distance.
                 if (Vector3.SqrMagnitude(nob.transform.position - thisPosition) <= sqrMaximumDistance)
                 {

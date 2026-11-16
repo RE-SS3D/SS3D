@@ -136,10 +136,26 @@ namespace SS3D.Systems.Tile
         /// Get position on the tile grid, that mouse points to.
         /// </summary>
         /// <param name="isTilePosition">If true, position snaps to the center of a tile</param>
-        /// <returns></returns>
-        public static Vector3 GetPointedPosition(bool isTilePosition = false)
+        /// <param name="camera">Camera to pick from; defaults to <see cref="Camera.main"/>.</param>
+        public static Vector3 GetPointedPosition(bool isTilePosition = false, Camera camera = null)
         {
-            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+            if (camera == null)
+            {
+                camera = Camera.main;
+            }
+
+            if (camera == null)
+            {
+                return Vector3.zero;
+            }
+
+            // Prefer Input System mouse; legacy Input.mousePosition can lag or stick when
+            // the project is Input System–primary (activeInputHandler Both/Package).
+            Vector2 screenPosition = UnityEngine.InputSystem.Mouse.current != null
+                ? UnityEngine.InputSystem.Mouse.current.position.ReadValue()
+                : (Vector2)Input.mousePosition;
+
+            Ray ray = camera.ScreenPointToRay(screenPosition);
             if (new Plane(Vector3.up, 0).Raycast(ray, out float distance))
             {
                 Vector3 point = ray.GetPoint(distance);
@@ -313,7 +329,7 @@ namespace SS3D.Systems.Tile
                     return new Vector2Int(-1, 1);
 
                 default:
-                    Debug.LogError("direction not handled, returning (0,0)");
+                    Log.Error(typeof(TileHelper), "direction not handled, returning (0,0)");
                     return new Vector2Int(0, 0);
             }
         }
@@ -349,6 +365,8 @@ namespace SS3D.Systems.Tile
                     return new SingleTileLocation(layer, x, y);
                 case TileLayer.PipeLeft:
                     return new SingleTileLocation(layer, x, y);
+                case TileLayer.PipeManifold:
+                    return new SingleTileLocation(layer, x, y);
                 case TileLayer.WallMountHigh:
                     return new CardinalTileLocation(layer, x, y);
                 case TileLayer.WallMountLow:
@@ -357,10 +375,8 @@ namespace SS3D.Systems.Tile
                     return new SingleTileLocation(layer, x, y);
                 case TileLayer.FurnitureTop:
                     return new SingleTileLocation(layer, x, y);
-                case TileLayer.Overlays:
-                    return new SingleTileLocation(layer, x, y);
                 default:
-                    Debug.LogError($"no objects defined for layer {layer}, add a case to this switch.");
+                    Log.Error(typeof(TileHelper), "no objects defined for layer {layer}, add a case to this switch.", Logs.Generic, layer);
                     return null;
             }
         }

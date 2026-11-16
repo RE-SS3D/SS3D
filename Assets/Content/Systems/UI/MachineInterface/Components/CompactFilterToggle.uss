@@ -1,0 +1,44 @@
+
+.compact-filter-toggle {
+    flex-direction: column;
+    align-items: center;
+    margin-right: 16px;
+}
+
+.compact-filter-toggle__track {
+    position: relative;
+    width: 44px;
+    height: 24px;
+    background-color: var(--ss3d-diegetic-inset);
+    border-width: 1px;
+    border-color: var(--ss3d-border-default);
+    border-radius: var(--ss3d-radius-sm);
+    margin-bottom: 6px;
+}
+
+.compact-filter-toggle__thumb {
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 18px;
+    height: 18px;
+    border-radius: var(--ss3d-radius-sm);
+    background-color: #6b6b70;
+}
+
+.compact-filter-toggle--on .compact-filter-toggle__thumb {
+    left: 24px;
+    background-color: var(--ss3d-accent-rust);
+}
+
+.compact-filter-toggle__label {
+    font-size: 9px;
+    letter-spacing: 2px;
+    color: var(--ss3d-text-secondary);
+    padding: 0;
+    background-color: rgba(0, 0, 0, 0);
+}
+
+.compact-filter-toggle--locked {
+    opacity: 0.45;
+}

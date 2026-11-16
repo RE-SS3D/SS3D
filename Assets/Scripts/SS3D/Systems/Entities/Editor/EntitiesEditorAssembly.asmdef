@@ -1,0 +1,23 @@
+{
+    "name": "EntitiesEditorAssembly",
+    "rootNamespace": "",
+    "references": [
+        "GUID:ca7dfa56d1d490249a5fe56aee92a13c",
+        "GUID:7c88a4a7926ee5145ad2dfa06f454c67",
+        "GUID:b8f9ecae9b4fef949a5027c83ac0ddae",
+        "GUID:eb242eaf9f292954eb8c6fbd63c46deb",
+        "GUID:0f067f83ff4f9534dbcfbb008079314a",
+        "GUID:a9b8c7d6e5f44321a0b1c2d3e4f5a6b7"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

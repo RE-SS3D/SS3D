@@ -23,7 +23,14 @@ namespace SS3D.Logging.LogSettings
 	    [FormerlySerializedAs("defaultLogLevel")]
 	    public LogEventLevel DefaultLogLevel = LogEventLevel.Verbose;
 
-        public bool UseCompactJsonFormatter = false;
+        /// <summary>
+        /// When true, Serilog's file sink writes compact JSON (<c>.json</c>); when false, plain text (<c>.log</c>).
+        /// Defaults to true — the multiplayer harness tails <c>LogServer.json</c>/<c>LogClient*.json</c>, and the C#
+        /// field default is what Unity writes back if it re-serializes this Project Settings asset on open
+        /// (Coimbra <c>OnValidate</c> marks it dirty). A <c>false</c> default was silently reverting the
+        /// asset to plain-text logs every Editor launch.
+        /// </summary>
+        public bool UseCompactJsonFormatter = true;
 
         /// <summary>
         /// Get all the name of the SS3D namespaces in alphanumerical order.

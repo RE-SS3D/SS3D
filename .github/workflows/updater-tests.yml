@@ -1,0 +1,44 @@
+name: Client updater tests
+on:
+  pull_request:
+    paths:
+      - 'Builds/Update_SS3D.*'
+      - 'Builds/update_ss3d.*'
+      - 'Tools/updater/test-update.ps1'
+      - 'Tools/updater/test_update_linux.py'
+      - 'Tools/updater/*project_repo.py'
+      - 'Tools/updater/SS3D-Launcher.ps1'
+      - 'Tools/updater/ss3d-launcher.sh'
+      - 'Tools/updater/e2e-windows.ps1'
+      - 'Assets/Scripts/SS3D/Utils/ProjectRepository.cs'
+      - '.github/workflows/updater-tests.yml'
+      - '.github/workflows/develop-release.yml'
+  workflow_dispatch:
+jobs:
+  linux-updater:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          lfs: false
+          sparse-checkout: |
+            Builds
+            Tools/updater
+            Assets/Scripts/SS3D/Utils
+      - name: Exercise Linux updater without network or a real game
+        run: python3 -B Tools/updater/test_update_linux.py
+      - name: Every build-facing copy names the same repository
+        run: python3 -B Tools/updater/test_project_repo.py
+
+  updater:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          lfs: false
+          sparse-checkout: |
+            Builds
+            Tools/updater
+      - name: Exercise updater with isolated fake releases (Windows PowerShell 5.1)
+        shell: powershell
+        run: ./Tools/updater/test-update.ps1

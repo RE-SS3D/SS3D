@@ -18,7 +18,7 @@ namespace FishNet.Component.Prediction
             Position = rb.transform.position;
             Rotation = rb.transform.rotation;
             IsKinematic = isKinematic;
-            Velocity = rb.velocity;
+            Velocity = rb.linearVelocity;
             AngularVelocity = rb.angularVelocity;
             LocalTick = tick;
 
@@ -29,7 +29,7 @@ namespace FishNet.Component.Prediction
             Position = rb.transform.position;
             Rotation = rb.transform.rotation;
             IsKinematic = rb.isKinematic;
-            Velocity = rb.velocity;
+            Velocity = rb.linearVelocity;
             AngularVelocity = rb.angularVelocity;
             LocalTick = tick;
         }
@@ -49,7 +49,7 @@ namespace FishNet.Component.Prediction
         {
             Position = rb.transform.position;
             Rotation = rb.transform.rotation;
-            Velocity = rb.velocity;
+            Velocity = rb.linearVelocity;
             AngularVelocity = rb.angularVelocity;
             Simulated = simulated;
             IsKinematic = rb.isKinematic;
@@ -60,7 +60,7 @@ namespace FishNet.Component.Prediction
         {
             Position = rb.transform.position;
             Rotation = rb.transform.rotation;
-            Velocity = rb.velocity;
+            Velocity = rb.linearVelocity;
             AngularVelocity = rb.angularVelocity;
             Simulated = rb.simulated;
             IsKinematic = rb.isKinematic;

@@ -9,13 +9,18 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8033135651520204425}
+  - component: {fileID: 3892405132348698506}
   - component: {fileID: -5414623717715724467}
   - component: {fileID: -4242734897733728731}
-  - component: {fileID: 7561631995620174181}
   - component: {fileID: 6345351447614513914}
   - component: {fileID: -7870356800615129184}
   - component: {fileID: 4840393447774820463}
-  - component: {fileID: 8399519541836331320}
+  - component: {fileID: 8822334455667788993}
+  - component: {fileID: -8042033815713799156}
+  - component: {fileID: 6668858524289100644}
+  - component: {fileID: 3918526211917721676}
+  - component: {fileID: 2247973501942322004}
+  - component: {fileID: 1184324759519932641}
   m_Layer: 0
   m_Name: SMES
   m_TagString: Untagged
@@ -30,6 +35,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1918783493706165866}
+  serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
@@ -37,7 +43,6 @@ Transform:
   m_Children:
   - {fileID: 608453462504062702}
   m_Father: {fileID: 0}
-  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &-5414623717715724467
 MonoBehaviour:
@@ -51,13 +56,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 26b716c41e9b56b4baafaf13a523ba2e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  NetworkObserver: {fileID: 0}
+  <PrefabId>k__BackingField: 154
+  <SpawnableCollectionId>k__BackingField: 0
+  _scenePathHash: 0
+  <SceneId>k__BackingField: 0
+  <AssetPathHash>k__BackingField: 16232551768262221016
   <IsNested>k__BackingField: 0
   <ComponentIndex>k__BackingField: 0
   <PredictedSpawn>k__BackingField: {fileID: 0}
   _networkBehaviours:
   - {fileID: 6345351447614513914}
   - {fileID: -7870356800615129184}
-  - {fileID: 8399519541836331320}
+  - {fileID: 8822334455667788993}
+  - {fileID: 3918526211917721676}
   <ParentNetworkObject>k__BackingField: {fileID: 0}
   <ChildNetworkObjects>k__BackingField: []
   SerializedTransformProperties:
@@ -68,12 +80,6 @@ MonoBehaviour:
   _isGlobal: 0
   _initializeOrder: 0
   _defaultDespawnType: 0
-  NetworkObserver: {fileID: 0}
-  <PrefabId>k__BackingField: 154
-  <SpawnableCollectionId>k__BackingField: 0
-  _scenePathHash: 0
-  <SceneId>k__BackingField: 0
-  <AssetPathHash>k__BackingField: 16232551768262221016
 --- !u!114 &-4242734897733728731
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -86,19 +92,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e00534faac6488c47893490f2bf4c5a2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &7561631995620174181
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1918783493706165866}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 38640bf88ae0c29409092a258bd36878, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  key: {fileID: 11400000, guid: 4e5b5032bc8027c4485bde316ce4057f, type: 2}
 --- !u!114 &6345351447614513914
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -114,10 +107,11 @@ MonoBehaviour:
   _componentIndexCache: 0
   _addedNetworkObject: {fileID: -5414623717715724467}
   _networkObjectCache: {fileID: -5414623717715724467}
-  _maxCapacity: 1000
-  _storedPower: 0
-  _maxPowerRate: 10
-  _isOn: 0
+  _maxCapacityKwh: 100
+  _storedEnergyKwh: 100
+  _maxDischargeRateKw: 50
+  _maxChargeRateKw: 50
+  _isOn: 1
   _smesSkinnedMesh: {fileID: 755838239801065349}
   _updateLightPeriod: 3
 --- !u!114 &-7870356800615129184
@@ -143,12 +137,20 @@ BoxCollider:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1918783493706165866}
   m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
   m_IsTrigger: 0
+  m_ProvidesContacts: 0
   m_Enabled: 1
-  serializedVersion: 2
+  serializedVersion: 3
   m_Size: {x: 0.8063088, y: 0.96126163, z: 0.85666853}
   m_Center: {x: -0.011621445, y: 0.4648589, z: 0.0058107674}
---- !u!114 &8399519541836331320
+--- !u!114 &8822334455667788993
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -157,13 +159,104 @@ MonoBehaviour:
   m_GameObject: {fileID: 1918783493706165866}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b621d3404247f2e4da4ab459ad43eec7, type: 3}
+  m_Script: {fileID: 11500000, guid: b2c8e4f61a9d3e5470b1c2d3e4f5a6b7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   _componentIndexCache: 2
   _addedNetworkObject: {fileID: -5414623717715724467}
   _networkObjectCache: {fileID: -5414623717715724467}
-  _on: 0
+  _accessGranted: 0
+  _accessScanning: 0
+  _accessDenied: 0
+  _title: "SMES \xB7 ENERGY STORAGE"
+  _inputEnabled: 1
+  _outputEnabled: 1
+  _inputMaxKw: 10
+  _outputMaxKw: 10
+--- !u!114 &-8042033815713799156
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1918783493706165866}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c71fd7f855ec523429999fc4e14a1928, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _overrideType: 3
+  _updateHostVisibility: 1
+  _observerConditions:
+  - {fileID: 11400000, guid: cc503f7541ebd424c94541e6a767efee, type: 2}
+--- !u!114 &6668858524289100644
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1918783493706165866}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c8f9a0b1d2e3f4a5b6c7d8e9f0a1b2c3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: SS3D.Systems::SS3D.Systems.IdAccess.AuthLogDeviceBehaviour
+  _deviceId: SMES
+  _logCapacity: 32
+--- !u!114 &3918526211917721676
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1918783493706165866}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ff65a9dda1ef18f4cbc16ee4d1aee066, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: SS3D.Systems::SS3D.Systems.Tile.PlacedTileObject
+  _componentIndexCache: 3
+  _addedNetworkObject: {fileID: -5414623717715724467}
+  _networkObjectCache: {fileID: -5414623717715724467}
+  _asset: {fileID: 0}
+  _tileObjectSo: {fileID: 0}
+  _syncAssetId: 65535
+  _syncOriginX: 0
+  _syncOriginY: 0
+  _syncWorldOriginX: 0
+  _syncWorldOriginY: 0
+  _syncDirection: 0
+  _syncLayer: 0
+  _syncMapId: 0
+  _syncIntegrityRemaining: -1
+  _syncIntegrityStage: 0
+--- !u!114 &2247973501942322004
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1918783493706165866}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8497fbc0a2e5407588e8b4f873285d28, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: SS3D.Systems::SS3D.Systems.StructuralDamage.StructuralIntegrityPresenter
+  _crackedHiss: {fileID: 0}
+  _hissVolume: 0.35
+--- !u!114 &1184324759519932641
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1918783493706165866}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 23a78eb0cc1c4b01ad68f5123895213c, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: SS3D.Systems::SS3D.Systems.Examine.StructuralIntegrityExaminable
+  key: {fileID: 11400000, guid: 4e5b5032bc8027c4485bde316ce4057f, type: 2}
 --- !u!1 &4379219507269237858
 GameObject:
   m_ObjectHideFlags: 0
@@ -188,13 +281,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4379219507269237858}
+  serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 8033135651520204425}
-  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!137 &755838239801065349
 SkinnedMeshRenderer:
@@ -209,10 +302,15 @@ SkinnedMeshRenderer:
   m_DynamicOccludee: 1
   m_StaticShadowCaster: 0
   m_MotionVectors: 1
-  m_LightProbeUsage: 1
-  m_ReflectionProbeUsage: 1
+  m_LightProbeUsage: 0
+  m_ReflectionProbeUsage: 0
   m_RayTracingMode: 3
   m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
+  m_ForceMeshLod: -1
+  m_MeshLodSelectionBias: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -235,9 +333,11 @@ SkinnedMeshRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
+  m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_MaskInteraction: 0
   serializedVersion: 2
   m_Quality: 0
   m_UpdateWhenOffscreen: 0
@@ -264,3 +364,16 @@ SkinnedMeshRenderer:
     m_Center: {x: -0.000000014901161, y: 0.48807514, z: 0.025044113}
     m_Extent: {x: 0.41364294, y: 0.48807514, z: 0.43868694}
   m_DirtyAABB: 0
+--- !u!114 &3892405132348698506
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1918783493706165866}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e3a888f0183bca1cda8899b6b48e89a3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: SS3D.Systems::SS3D.Systems.Audio.AmbientLoopSource
+  _kind: 5

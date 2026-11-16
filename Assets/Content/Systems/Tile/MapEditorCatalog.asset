@@ -1,0 +1,1701 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 16071b6ebb628c15c88b3a88969175a5, type: 3}
+  m_Name: MapEditorCatalog
+  m_EditorClassIdentifier: SS3D.Systems::SS3D.Systems.Tile.MapEditor.MapEditorCatalogSo
+  Entries:
+  - AssetName: APC
+    Mode: 0
+    Subcategory: 103
+    Heading: 
+    Family: 
+    VariantLabel: 
+    SearchTags:
+    - wall mounts
+  - AssetName: AirAlarm
+    Mode: 0
+    Subcategory: 103
+    Heading: 
+    Family: 
+    VariantLabel: 
+    SearchTags:
+    - wall mounts
+  - AssetName: AtmosFilterL
+    Mode: 1
+    Subcategory: 202
+    Heading: 
+    Family: Filter
+    VariantLabel: Left
+    SearchTags:
+    - gas pipes
+  - AssetName: AtmosFilterL2
+    Mode: 1
+    Subcategory: 202
+    Heading: 
+    Family: Inline Filter
+    VariantLabel: Left
+    SearchTags:
+    - gas pipes
+  - AssetName: AtmosFilterR
+    Mode: 1
+    Subcategory: 202
+    Heading: 
+    Family: Filter
+    VariantLabel: Right
+    SearchTags:
+    - gas pipes
+  - AssetName: AtmosFilterR2
+    Mode: 1
+    Subcategory: 202
+    Heading: 
+    Family: Inline Filter
+    VariantLabel: Right
+    SearchTags:
+    - gas pipes
+  - AssetName: AtmosInjector
+    Mode: 0
+    Subcategory: 105
+    Heading: Atmos
+    Family: 
+    VariantLabel: 
+    SearchTags:
+    - machines
+  - AssetName: AtmosManifold3
+    Mode: 1
+    Subcategory: 202
+    Heading: 
+    Family: 
+    VariantLabel: 
+    SearchTags:
+    - gas pipes
+  - AssetName: AtmosManifold4
+    Mode: 1
+    Subcategory: 202
+    Heading: 
+    Family: 
+    VariantLabel: 
+    SearchTags:
+    - gas pipes
+  - AssetName: AtmosMeter
+    Mode: 0
+    Subcategory: 105
+    Heading: Atmos
+    Family: 
+    VariantLabel: 
+    SearchTags:
+    - machines
+  - AssetName: AtmosMixerL
+    Mode: 1
+    Subcategory: 202
+    Heading: 
+    Family: Mixer
+    VariantLabel: Left
+    SearchTags:
+    - gas pipes
+  - AssetName: AtmosMixerR
+    Mode: 1
+    Subcategory: 202
+    Heading: 
+    Family: Mixer
+    VariantLabel: Right
+    SearchTags:
+    - gas pipes
+  - AssetName: AtmosPipesMixed
+    Mode: 1
+    Subcategory: 202
+    Heading: 
+    Family: 
+    VariantLabel: 
+    SearchTags:
+    - gas pipes
+  - AssetName: AtmosPipesSupply
+    Mode: 1
+    Subcategory: 202
+    Heading: 
+    Family: 
+    VariantLabel: 
+    SearchTags:
+    - gas pipes
+  - AssetName: AtmosPipesSurface
+    Mode: 1
+    Subcategory: 202
+    Heading: 
+    Family: Surface Pipe
+    VariantLabel: Standard
+    SearchTags:
+    - gas pipes
+  - AssetName: AtmosPipesSurfaceBlue
+    Mode: 1
+    Subcategory: 202
+    Heading: 
+    Family: Surface Pipe
+    VariantLabel: Blue
+    SearchTags:
+    - gas pipes
+  - AssetName: AtmosPipesSurfaceCyan
+    Mode: 1
+    Subcategory: 202
+    Heading: 
+    Family: Surface Pipe
+    VariantLabel: Cyan
+    SearchTags:
+    - gas pipes
+  - AssetName: AtmosPipesSurfaceGreen
+    Mode: 1
+    Subcategory: 202
+    Heading: 
+    Family: Surface Pipe
+    VariantLabel: Green
+    SearchTags:
+    - gas pipes
+  - AssetName: AtmosPipesSurfaceOrange
+    Mode: 1
+    Subcategory: 202
+    Heading: 
+    Family: Surface Pipe
+    VariantLabel: Orange
+    SearchTags:
+    - gas pipes
+  - AssetName: AtmosPipesSurfacePurple
+    Mode: 1
+    Subcategory: 202
+    Heading: 
+    Family: Surface Pipe
+    VariantLabel: Purple
+    SearchTags:
+    - gas pipes
+  - AssetName: AtmosPipesSurfaceRed
+    Mode: 1
+    Subcategory: 202
+    Heading: 
+    Family: Surface Pipe
+    VariantLabel: Red
+    SearchTags:
+    - gas pipes
+  - AssetName: AtmosPipesSurfaceYellow
+    Mode: 1
+    Subcategory: 202
+    Heading: 
+    Family: Surface Pipe
+    VariantLabel: Yellow
+    SearchTags:
+    - gas pipes
+  - AssetName: AtmosPipesWaste
+    Mode: 1
+    Subcategory: 202
+    Heading: 
+    Family: 
+    VariantLabel: 
+    SearchTags:
+    - gas pipes
+  - AssetName: AtmosPumpVolume
+    Mode: 1
+    Subcategory: 202
+    Heading: 
+    Family: 
+    VariantLabel: 
+    SearchTags:
+    - gas pipes
+  - AssetName: AtmosValveDigital
+    Mode: 1
+    Subcategory: 202
+    Heading: 
+    Family: 
+    VariantLabel: 
+    SearchTags:
+    - gas pipes
+  - AssetName: AtmosValveManual
+    Mode: 1
+    Subcategory: 202
+    Heading: 
+    Family: 
+    VariantLabel: 
+    SearchTags:
+    - gas pipes
+  - AssetName: Backpack
+    Mode: 2
+    Subcategory: 302
+    Heading: 
+    Family: 
+    VariantLabel: 
+    SearchTags:
+    - item
+    - clothing
+  - AssetName: BikeHorn
+    Mode: 2
+    Subcategory: 307
+    Heading: 
+    Family: 
+    VariantLabel: 
+    SearchTags:
+    - item
+    - misc
+  - AssetName: Blender
+    Mode: 0
+    Subcategory: 105
+    Heading: Kitchen
+    Family: 
+    VariantLabel: 
+    SearchTags:
+    - machines
+  - AssetName: Boombox
+    Mode: 2
+    Subcategory: 305
+    Heading: 
+    Family: 
+    VariantLabel: 
+    SearchTags:
+    - item
+    - devices
+  - AssetName: BrutePatch
+    Mode: 2
+    Subcategory: 303
+    Heading: 
+    Family: 
+    VariantLabel: 
+    SearchTags:
+    - item
+    - medical
+  - AssetName: BurnPatch
+    Mode: 2
+    Subcategory: 303
+    Heading: 
+    Family: 
+    VariantLabel: 
+    SearchTags:
+    - item
+    - medical
+  - AssetName: C20R
+    Mode: 2
+    Subcategory: 306
+    Heading: 
+    Family: 
+    VariantLabel: 
+    SearchTags:
+    - item
+    - weapons
+  - AssetName: C4
+    Mode: 2
+    Subcategory: 306
+    Heading: 
+    Family: 
+    VariantLabel: 
+    SearchTags:
+    - item
+    - weapons
+  - AssetName: Cables
+    Mode: 1
+    Subcategory: 201
+    Heading: 
+    Family: 
+    VariantLabel: 
+    SearchTags:
+    - cables
+  - AssetName: Catwalk
+    Mode: 1
+    Subcategory: 200
+    Heading: 
+    Family: 
+    VariantLabel: 
+    SearchTags:
+    - subfloor
+  - AssetName: ChemicalDispenser
+    Mode: 0
+    Subcategory: 105
+    Heading: Medical
+    Family: 
+    VariantLabel: 
+    SearchTags:
+    - machines
+  - AssetName: CivillianAirlock
+    Mode: 0
+    Subcategory: 102
+    Heading: 
+    Family: 
+    VariantLabel: 
+    SearchTags:
+    - doors
+  - AssetName: Crowbar
+    Mode: 2
+    Subcategory: 300
+    Heading: 
+    Family: 
+    VariantLabel: 
+    SearchTags:
+    - item
+    - tools
+  - AssetName: Cryotube
+    Mode: 0
+    Subcategory: 105
+    Heading: Medical
+    Family: 
+    VariantLabel: 
+    SearchTags:
+    - machines
+  - AssetName: DinnerBooth
+    Mode: 0
+    Subcategory: 104
+    Heading: Seats
+    Family: 
+    VariantLabel: 
+    SearchTags:
+    - furniture
+  - AssetName: DisposalBin
+    Mode: 0
+    Subcategory: 105
+    Heading: Disposal
+    Family: 
+    VariantLabel: 
+    SearchTags:
+    - machines
+  - AssetName: DisposalOutlet
+    Mode: 0
+    Subcategory: 105
+    Heading: Disposal
+    Family: 
+    VariantLabel: 
+    SearchTags:
+    - machines
+  - AssetName: DisposalPipes
+    Mode: 1
+    Subcategory: 203
+    Heading: 
+    Family: 
+    VariantLabel: 
+    SearchTags:
+    - disposal pipes
+  - AssetName: DonkPocket
+    Mode: 2
+    Subcategory: 304
+    Heading: 
+    Family: 
+    VariantLabel: 
+    SearchTags:
+    - item
+    - food & drink
+  - AssetName: Doodad
+    Mode: 2
+    Subcategory: 307
+    Heading: 
+    Family: 
+    VariantLabel: 
+    SearchTags:
+    - item
+    - misc
+  - AssetName: ElectricalCable
+    Mode: 2
+    Subcategory: 301
+    Heading: 
+    Family: 
+    VariantLabel: 
+    SearchTags:
+    - item
+    - materials & parts
+  - AssetName: ElectricalWire
+    Mode: 2
+    Subcategory: 301
+    Heading: 
+    Family: 
+    VariantLabel: 
+    SearchTags:
+    - item
+    - materials & parts
+  - AssetName: EmergencyOxygenTank
+    Mode: 2
+    Subcategory: 307
+    Heading: 
+    Family: 
+    VariantLabel: 
+    SearchTags:
+    - item
+    - misc
+  - AssetName: FacewearGasMask
+    Mode: 2
+    Subcategory: 302
+    Heading: 
+    Family: 
+    VariantLabel: 
+    SearchTags:
+    - item
+    - clothing
+  - AssetName: FancyCarpetRed
+    Mode: 0
+    Subcategory: 100
+    Heading: 
+    Family: 
+    VariantLabel: 
+    SearchTags:
+    - floors
+  - AssetName: FireAlarm
+    Mode: 0
+    Subcategory: 103
+    Heading: 
+    Family: 
+    VariantLabel: 
+    SearchTags:
+    - wall mounts
+  - AssetName: Flamethrower
+    Mode: 2
+    Subcategory: 306
+    Heading: 
+    Family: 
+    VariantLabel: 
+    SearchTags:
+    - item
+    - weapons
+  - AssetName: FlashlightBlue
+    Mode: 2
+    Subcategory: 305
+    Heading: 
+    Family: 
+    VariantLabel: 
+    SearchTags:
+    - item
+    - devices
+  - AssetName: FloorTile
+    Mode: 2
+    Subcategory: 301
+    Heading: 
+    Family: 
+    VariantLabel: 
+    SearchTags:
+    - item
+    - materials & parts
+  - AssetName: FloorTileBar
+    Mode: 2
+    Subcategory: 301
+    Heading: 
+    Family: 
+    VariantLabel: 
+    SearchTags:
+    - item
+    - materials & parts
+  - AssetName: FloorTileGreyDark
+    Mode: 2
+    Subcategory: 301
+    Heading: 
+    Family: 
+    VariantLabel: 
+    SearchTags:
+    - item
+    - materials & parts
+  - AssetName: FloorTileKitchen
+    Mode: 2
+    Subcategory: 301
+    Heading: 
+    Family: 
+    VariantLabel: 
+    SearchTags:
+    - item
+    - materials & parts
+  - AssetName: FloorTileWhite
+    Mode: 2
+    Subcategory: 301
+    Heading: 
+    Family: 
+    VariantLabel: 
+    SearchTags:
+    - item
+    - materials & parts
+  - AssetName: FloorTileWood
+    Mode: 2
+    Subcategory: 301
+    Heading: 
+    Family: 
+    VariantLabel: 
+    SearchTags:
+    - item
+    - materials & parts
+  - AssetName: FuelTank
+    Mode: 0
+    Subcategory: 105
+    Heading: General
+    Family: 
+    VariantLabel: 
+    SearchTags:
+    - machines
+  - AssetName: GasPump
+    Mode: 1
+    Subcategory: 202
+    Heading: 
+    Family: 
+    VariantLabel: 
+    SearchTags:
+    - gas pipes
+  - AssetName: Gauze
+    Mode: 2
+    Subcategory: 303
+    Heading: 
+    Family: 
+    VariantLabel: 
+    SearchTags:
+    - item
+    - medical
+  - AssetName: Gibber
+    Mode: 0
+    Subcategory: 105
+    Heading: Kitchen
+    Family: 
+    VariantLabel: 
+    SearchTags:
+    - machines
+  - AssetName: GlassReinforcedSheet
+    Mode: 2
+    Subcategory: 301
+    Heading: 
+    Family: 
+    VariantLabel: 
+    SearchTags:
+    - item
+    - materials & parts
+  - AssetName: GlassShard
+    Mode: 2
+    Subcategory: 301
+    Heading: 
+    Family: 
+    VariantLabel: 
+    SearchTags:
+    - item
+    - materials & parts
+  - AssetName: GlassSheet
+    Mode: 2
+    Subcategory: 301
+    Heading: 
+    Family: 
+    VariantLabel: 
+    SearchTags:
+    - item
+    - materials & parts
+  - AssetName: GloveInsulated
+    Mode: 2
+    Subcategory: 302
+    Heading: 
+    Family: 
+    VariantLabel: 
+    SearchTags:
+    - item
+    - clothing
+  - AssetName: Hatchet
+    Mode: 2
+    Subcategory: 300
+    Heading: 
+    Family: 
+    VariantLabel: 
+    SearchTags:
+    - item
+    - tools
+  - AssetName: Headset
+    Mode: 2
+    Subcategory: 305
+    Heading: 
+    Family: 
+    VariantLabel: 
+    SearchTags:
+    - item
+    - devices
+  - AssetName: HeadsetSecurity
+    Mode: 2
+    Subcategory: 305
+    Heading: 
+    Family: 
+    VariantLabel: 
+    SearchTags:
+    - item
+    - devices
+  - AssetName: HealthScanner
+    Mode: 2
+    Subcategory: 303
+    Heading: 
+    Family: 
+    VariantLabel: 
+    SearchTags:
+    - item
+    - medical
+  - AssetName: IDCard
+    Mode: 2
+    Subcategory: 305
+    Heading: 
+    Family: 
+    VariantLabel: 
+    SearchTags:
+    - item
+    - devices
+  - AssetName: IonRifle
+    Mode: 2
+    Subcategory: 306
+    Heading: 
+    Family: 
+    VariantLabel: 
+    SearchTags:
+    - item
+    - weapons
+  - AssetName: JukeboxBlueGreen
+    Mode: 0
+    Subcategory: 104
+    Heading: General
+    Family: 
+    VariantLabel: 
+    SearchTags:
+    - furniture
+  - AssetName: JumpsuitBotany
+    Mode: 2
+    Subcategory: 302
+    Heading: 
+    Family: 
+    VariantLabel: 
+    SearchTags:
+    - item
+    - clothing
+  - AssetName: JumpsuitEngineer
+    Mode: 2
+    Subcategory: 302
+    Heading: 
+    Family: 
+    VariantLabel: 
+    SearchTags:
+    - item
+    - clothing
+  - AssetName: JumpsuitGrey
+    Mode: 2
+    Subcategory: 302
+    Heading: 
+    Family: 
+    VariantLabel: 
+    SearchTags:
+    - item
+    - clothing
+  - AssetName: JumpsuitSecurity
+    Mode: 2
+    Subcategory: 302
+    Heading: 
+    Family: 
+    VariantLabel: 
+    SearchTags:
+    - item
+    - clothing
+  - AssetName: KitchenKnife
+    Mode: 2
+    Subcategory: 300
+    Heading: 
+    Family: 
+    VariantLabel: 
+    SearchTags:
+    - item
+    - tools
+  - AssetName: LaserRifle
+    Mode: 2
+    Subcategory: 306
+    Heading: 
+    Family: 
+    VariantLabel: 
+    SearchTags:
+    - item
+    - weapons
+  - AssetName: Lattice
+    Mode: 1
+    Subcategory: 200
+    Heading: 
+    Family: 
+    VariantLabel: 
+    SearchTags:
+    - subfloor
+  - AssetName: LightBulb
+    Mode: 2
+    Subcategory: 301
+    Heading: 
+    Family: 
+    VariantLabel: 
+    SearchTags:
+    - item
+    - materials & parts
+  - AssetName: LightBulbBroken
+    Mode: 2
+    Subcategory: 301
+    Heading: 
+    Family: 
+    VariantLabel: 
+    SearchTags:
+    - item
+    - materials & parts
+  - AssetName: LightBulbFixture
+    Mode: 0
+    Subcategory: 103
+    Heading: 
+    Family: 
+    VariantLabel: 
+    SearchTags:
+    - wall mounts
+  - AssetName: LightSwitch
+    Mode: 0
+    Subcategory: 103
+    Heading: 
+    Family: 
+    VariantLabel: 
+    SearchTags:
+    - wall mounts
+  - AssetName: LightTube
+    Mode: 2
+    Subcategory: 301
+    Heading: 
+    Family: 
+    VariantLabel: 
+    SearchTags:
+    - item
+    - materials & parts
+  - AssetName: LightTubeBroken
+    Mode: 2
+    Subcategory: 301
+    Heading: 
+    Family: 
+    VariantLabel: 
+    SearchTags:
+    - item
+    - materials & parts
+  - AssetName: LightTubeFixture
+    Mode: 0
+    Subcategory: 103
+    Heading: 
+    Family: 
+    VariantLabel: 
+    SearchTags:
+    - wall mounts
+  - AssetName: Locker
+    Mode: 0
+    Subcategory: 104
+    Heading: Lockers
+    Family: 
+    VariantLabel: 
+    SearchTags:
+    - furniture
+  - AssetName: LockerSecure
+    Mode: 0
+    Subcategory: 104
+    Heading: Lockers
+    Family: 
+    VariantLabel: 
+    SearchTags:
+    - furniture
+  - AssetName: M4
+    Mode: 2
+    Subcategory: 306
+    Heading: 
+    Family: 
+    VariantLabel: 
+    SearchTags:
+    - item
+    - weapons
+  - AssetName: MachineFrame
+    Mode: 0
+    Subcategory: 105
+    Heading: General
+    Family: 
+    VariantLabel: 
+    SearchTags:
+    - machines
+  - AssetName: MatterBin
+    Mode: 2
+    Subcategory: 301
+    Heading: 
+    Family: 
+    VariantLabel: 
+    SearchTags:
+    - item
+    - materials & parts
+  - AssetName: MedicalPatch
+    Mode: 2
+    Subcategory: 303
+    Heading: 
+    Family: 
+    VariantLabel: 
+    SearchTags:
+    - item
+    - medical
+  - AssetName: Medkit
+    Mode: 2
+    Subcategory: 303
+    Heading: 
+    Family: 
+    VariantLabel: 
+    SearchTags:
+    - item
+    - medical
+  - AssetName: MicroLaser
+    Mode: 2
+    Subcategory: 301
+    Heading: 
+    Family: 
+    VariantLabel: 
+    SearchTags:
+    - item
+    - materials & parts
+  - AssetName: Microwave
+    Mode: 0
+    Subcategory: 105
+    Heading: Kitchen
+    Family: 
+    VariantLabel: 
+    SearchTags:
+    - machines
+  - AssetName: Mirror
+    Mode: 0
+    Subcategory: 103
+    Heading: 
+    Family: 
+    VariantLabel: 
+    SearchTags:
+    - wall mounts
+  - AssetName: Mug
+    Mode: 2
+    Subcategory: 304
+    Heading: 
+    Family: 
+    VariantLabel: 
+    SearchTags:
+    - item
+    - food & drink
+  - AssetName: Multitool
+    Mode: 2
+    Subcategory: 300
+    Heading: 
+    Family: 
+    VariantLabel: 
+    SearchTags:
+    - item
+    - tools
+  - AssetName: NuclearAuthenticationDisk
+    Mode: 2
+    Subcategory: 305
+    Heading: 
+    Family: 
+    VariantLabel: 
+    SearchTags:
+    - item
+    - devices
+  - AssetName: NukeCart
+    Mode: 0
+    Subcategory: 105
+    Heading: General
+    Family: 
+    VariantLabel: 
+    SearchTags:
+    - machines
+  - AssetName: OfficeChair
+    Mode: 0
+    Subcategory: 104
+    Heading: Seats
+    Family: Office Chair
+    VariantLabel: Standard
+    SearchTags:
+    - furniture
+  - AssetName: OfficeChairBlue
+    Mode: 0
+    Subcategory: 104
+    Heading: Seats
+    Family: Office Chair
+    VariantLabel: Blue
+    SearchTags:
+    - furniture
+  - AssetName: OfficeChairGrey
+    Mode: 0
+    Subcategory: 104
+    Heading: Seats
+    Family: Office Chair
+    VariantLabel: Grey
+    SearchTags:
+    - furniture
+  - AssetName: OxygenTank
+    Mode: 2
+    Subcategory: 307
+    Heading: 
+    Family: 
+    VariantLabel: 
+    SearchTags:
+    - item
+    - misc
+  - AssetName: PDA
+    Mode: 2
+    Subcategory: 305
+    Heading: 
+    Family: 
+    VariantLabel: 
+    SearchTags:
+    - item
+    - devices
+  - AssetName: PacManGenerator
+    Mode: 0
+    Subcategory: 105
+    Heading: Power
+    Family: 
+    VariantLabel: 
+    SearchTags:
+    - machines
+  - AssetName: PlantEarth
+    Mode: 0
+    Subcategory: 104
+    Heading: Plants
+    Family: Plant
+    VariantLabel: Earth
+    SearchTags:
+    - furniture
+  - AssetName: PlantExotic
+    Mode: 0
+    Subcategory: 104
+    Heading: Plants
+    Family: Plant
+    VariantLabel: Exotic
+    SearchTags:
+    - furniture
+  - AssetName: PlasmaTank
+    Mode: 2
+    Subcategory: 307
+    Heading: 
+    Family: 
+    VariantLabel: 
+    SearchTags:
+    - item
+    - misc
+  - AssetName: PlasticChair
+    Mode: 0
+    Subcategory: 104
+    Heading: Seats
+    Family: Plastic Chair
+    VariantLabel: Standard
+    SearchTags:
+    - furniture
+  - AssetName: PlasticChairBlue
+    Mode: 0
+    Subcategory: 104
+    Heading: Seats
+    Family: Plastic Chair
+    VariantLabel: Blue
+    SearchTags:
+    - furniture
+  - AssetName: PlasticChairGrey
+    Mode: 0
+    Subcategory: 104
+    Heading: Seats
+    Family: Plastic Chair
+    VariantLabel: Grey
+    SearchTags:
+    - furniture
+  - AssetName: Plenum
+    Mode: 1
+    Subcategory: 200
+    Heading: 
+    Family: 
+    VariantLabel: 
+    SearchTags:
+    - subfloor
+  - AssetName: PortableDefibrillator
+    Mode: 2
+    Subcategory: 303
+    Heading: 
+    Family: 
+    VariantLabel: 
+    SearchTags:
+    - item
+    - medical
+  - AssetName: Poster
+    Mode: 2
+    Subcategory: 307
+    Heading: 
+    Family: 
+    VariantLabel: 
+    SearchTags:
+    - item
+    - misc
+  - AssetName: PosterHorizontal
+    Mode: 0
+    Subcategory: 103
+    Heading: 
+    Family: 
+    VariantLabel: 
+    SearchTags:
+    - wall mounts
+  - AssetName: PosterVertical
+    Mode: 0
+    Subcategory: 103
+    Heading: 
+    Family: 
+    VariantLabel: 
+    SearchTags:
+    - wall mounts
+  - AssetName: PowerCell
+    Mode: 2
+    Subcategory: 301
+    Heading: 
+    Family: 
+    VariantLabel: 
+    SearchTags:
+    - item
+    - materials & parts
+  - AssetName: PowerCellAdmin
+    Mode: 2
+    Subcategory: 301
+    Heading: 
+    Family: 
+    VariantLabel: 
+    SearchTags:
+    - item
+    - materials & parts
+  - AssetName: PowerCellCharger
+    Mode: 0
+    Subcategory: 105
+    Heading: Power
+    Family: 
+    VariantLabel: 
+    SearchTags:
+    - machines
+  - AssetName: SMES
+    Mode: 0
+    Subcategory: 105
+    Heading: Power
+    Family: 
+    VariantLabel: 
+    SearchTags:
+    - machines
+  - AssetName: ScrewdriverBlue
+    Mode: 2
+    Subcategory: 300
+    Heading: 
+    Family: 
+    VariantLabel: 
+    SearchTags:
+    - item
+    - tools
+  - AssetName: Scrubber
+    Mode: 0
+    Subcategory: 105
+    Heading: Atmos
+    Family: 
+    VariantLabel: 
+    SearchTags:
+    - machines
+  - AssetName: ScrubberIntake
+    Mode: 0
+    Subcategory: 105
+    Heading: Atmos
+    Family: 
+    VariantLabel: 
+    SearchTags:
+    - machines
+  - AssetName: SecurityAirlock
+    Mode: 0
+    Subcategory: 102
+    Heading: 
+    Family: 
+    VariantLabel: 
+    SearchTags:
+    - doors
+  - AssetName: SecurityIDCard
+    Mode: 2
+    Subcategory: 305
+    Heading: 
+    Family: 
+    VariantLabel: 
+    SearchTags:
+    - item
+    - devices
+  - AssetName: SecurityLocker
+    Mode: 0
+    Subcategory: 104
+    Heading: Lockers
+    Family: 
+    VariantLabel: 
+    SearchTags:
+    - furniture
+  - AssetName: SecurityPDA
+    Mode: 2
+    Subcategory: 305
+    Heading: 
+    Family: 
+    VariantLabel: 
+    SearchTags:
+    - item
+    - devices
+  - AssetName: SecurityPistol
+    Mode: 2
+    Subcategory: 306
+    Heading: 
+    Family: 
+    VariantLabel: 
+    SearchTags:
+    - item
+    - weapons
+  - AssetName: ShoeHiTops
+    Mode: 2
+    Subcategory: 302
+    Heading: 
+    Family: 
+    VariantLabel: 
+    SearchTags:
+    - item
+    - clothing
+  - AssetName: ShoeJackboots
+    Mode: 2
+    Subcategory: 302
+    Heading: 
+    Family: 
+    VariantLabel: 
+    SearchTags:
+    - item
+    - clothing
+  - AssetName: Sink
+    Mode: 0
+    Subcategory: 104
+    Heading: General
+    Family: 
+    VariantLabel: 
+    SearchTags:
+    - furniture
+  - AssetName: SleeperBed
+    Mode: 0
+    Subcategory: 105
+    Heading: Medical
+    Family: 
+    VariantLabel: 
+    SearchTags:
+    - machines
+  - AssetName: SlotMachine
+    Mode: 0
+    Subcategory: 105
+    Heading: General
+    Family: 
+    VariantLabel: 
+    SearchTags:
+    - machines
+  - AssetName: SodaCanBeepsSoda
+    Mode: 2
+    Subcategory: 304
+    Heading: 
+    Family: Soda Can
+    VariantLabel: Beeps Soda
+    SearchTags:
+    - item
+    - food & drink
+  - AssetName: SodaCanBeepyLime
+    Mode: 2
+    Subcategory: 304
+    Heading: 
+    Family: Soda Can
+    VariantLabel: Beepy Lime
+    SearchTags:
+    - item
+    - food & drink
+  - AssetName: SodaCanCannedAir
+    Mode: 2
+    Subcategory: 304
+    Heading: 
+    Family: Soda Can
+    VariantLabel: Canned Air
+    SearchTags:
+    - item
+    - food & drink
+  - AssetName: SodaCanCannedLaughter
+    Mode: 2
+    Subcategory: 304
+    Heading: 
+    Family: Soda Can
+    VariantLabel: Canned Laughter
+    SearchTags:
+    - item
+    - food & drink
+  - AssetName: SodaCanCola
+    Mode: 2
+    Subcategory: 304
+    Heading: 
+    Family: Soda Can
+    VariantLabel: Cola
+    SearchTags:
+    - item
+    - food & drink
+  - AssetName: SodaCanDukePurpleTea
+    Mode: 2
+    Subcategory: 304
+    Heading: 
+    Family: Soda Can
+    VariantLabel: Duke Purple Tea
+    SearchTags:
+    - item
+    - food & drink
+  - AssetName: SodaCanTonic
+    Mode: 2
+    Subcategory: 304
+    Heading: 
+    Family: Soda Can
+    VariantLabel: Tonic
+    SearchTags:
+    - item
+    - food & drink
+  - AssetName: SolarPanel
+    Mode: 0
+    Subcategory: 105
+    Heading: Power
+    Family: 
+    VariantLabel: 
+    SearchTags:
+    - machines
+  - AssetName: SolarTrackingBeacon
+    Mode: 0
+    Subcategory: 105
+    Heading: Power
+    Family: 
+    VariantLabel: 
+    SearchTags:
+    - machines
+  - AssetName: Stechkin
+    Mode: 2
+    Subcategory: 306
+    Heading: 
+    Family: 
+    VariantLabel: 
+    SearchTags:
+    - item
+    - weapons
+  - AssetName: SteelGirder
+    Mode: 0
+    Subcategory: 101
+    Heading: 
+    Family: 
+    VariantLabel: 
+    SearchTags:
+    - walls & windows
+  - AssetName: SteelGirderPlated
+    Mode: 0
+    Subcategory: 101
+    Heading: 
+    Family: 
+    VariantLabel: 
+    SearchTags:
+    - walls & windows
+  - AssetName: SteelGirderUnbolted
+    Mode: 2
+    Subcategory: 301
+    Heading: 
+    Family: 
+    VariantLabel: 
+    SearchTags:
+    - item
+    - materials & parts
+  - AssetName: SteelReinforcedSheet
+    Mode: 2
+    Subcategory: 301
+    Heading: 
+    Family: 
+    VariantLabel: 
+    SearchTags:
+    - item
+    - materials & parts
+  - AssetName: SteelRod
+    Mode: 2
+    Subcategory: 301
+    Heading: 
+    Family: 
+    VariantLabel: 
+    SearchTags:
+    - item
+    - materials & parts
+  - AssetName: SteelSheet
+    Mode: 2
+    Subcategory: 301
+    Heading: 
+    Family: 
+    VariantLabel: 
+    SearchTags:
+    - item
+    - materials & parts
+  - AssetName: SteelWall
+    Mode: 0
+    Subcategory: 101
+    Heading: 
+    Family: 
+    VariantLabel: 
+    SearchTags:
+    - walls & windows
+  - AssetName: SteelWallReinforced
+    Mode: 0
+    Subcategory: 101
+    Heading: 
+    Family: 
+    VariantLabel: 
+    SearchTags:
+    - walls & windows
+  - AssetName: SteelWindow
+    Mode: 0
+    Subcategory: 101
+    Heading: 
+    Family: 
+    VariantLabel: 
+    SearchTags:
+    - walls & windows
+  - AssetName: SteelWindowReinforced
+    Mode: 0
+    Subcategory: 101
+    Heading: 
+    Family: 
+    VariantLabel: 
+    SearchTags:
+    - walls & windows
+  - AssetName: StunBaton
+    Mode: 2
+    Subcategory: 306
+    Heading: 
+    Family: 
+    VariantLabel: 
+    SearchTags:
+    - item
+    - weapons
+  - AssetName: Sunglasses
+    Mode: 2
+    Subcategory: 302
+    Heading: 
+    Family: 
+    VariantLabel: 
+    SearchTags:
+    - item
+    - clothing
+  - AssetName: SyndicateBomb
+    Mode: 2
+    Subcategory: 306
+    Heading: 
+    Family: 
+    VariantLabel: 
+    SearchTags:
+    - item
+    - weapons
+  - AssetName: SyndicateBombBeacon
+    Mode: 2
+    Subcategory: 306
+    Heading: 
+    Family: 
+    VariantLabel: 
+    SearchTags:
+    - item
+    - weapons
+  - AssetName: SyndicateHardsuit
+    Mode: 2
+    Subcategory: 302
+    Heading: 
+    Family: 
+    VariantLabel: 
+    SearchTags:
+    - item
+    - clothing
+  - AssetName: SyndicateHardsuitHelmet
+    Mode: 2
+    Subcategory: 302
+    Heading: 
+    Family: 
+    VariantLabel: 
+    SearchTags:
+    - item
+    - clothing
+  - AssetName: SyndicateMagboots
+    Mode: 2
+    Subcategory: 302
+    Heading: 
+    Family: 
+    VariantLabel: 
+    SearchTags:
+    - item
+    - clothing
+  - AssetName: SyndicateMiniBomb
+    Mode: 2
+    Subcategory: 306
+    Heading: 
+    Family: 
+    VariantLabel: 
+    SearchTags:
+    - item
+    - weapons
+  - AssetName: TableBoozeDispenser
+    Mode: 0
+    Subcategory: 105
+    Heading: Kitchen
+    Family: 
+    VariantLabel: 
+    SearchTags:
+    - machines
+  - AssetName: TableFrameSteel
+    Mode: 0
+    Subcategory: 104
+    Heading: Tables
+    Family: 
+    VariantLabel: 
+    SearchTags:
+    - furniture
+  - AssetName: TableFrameWood
+    Mode: 0
+    Subcategory: 104
+    Heading: Tables
+    Family: 
+    VariantLabel: 
+    SearchTags:
+    - furniture
+  - AssetName: TableGlass
+    Mode: 0
+    Subcategory: 104
+    Heading: Tables
+    Family: 
+    VariantLabel: 
+    SearchTags:
+    - furniture
+  - AssetName: TablePoker
+    Mode: 0
+    Subcategory: 104
+    Heading: Tables
+    Family: 
+    VariantLabel: 
+    SearchTags:
+    - furniture
+  - AssetName: TableSteel
+    Mode: 0
+    Subcategory: 104
+    Heading: Tables
+    Family: 
+    VariantLabel: 
+    SearchTags:
+    - furniture
+  - AssetName: TableWood
+    Mode: 0
+    Subcategory: 104
+    Heading: Tables
+    Family: 
+    VariantLabel: 
+    SearchTags:
+    - furniture
+  - AssetName: Taser
+    Mode: 2
+    Subcategory: 306
+    Heading: 
+    Family: 
+    VariantLabel: 
+    SearchTags:
+    - item
+    - weapons
+  - AssetName: TileBar
+    Mode: 0
+    Subcategory: 100
+    Heading: 
+    Family: 
+    VariantLabel: 
+    SearchTags:
+    - floors
+  - AssetName: TileDirt1
+    Mode: 0
+    Subcategory: 100
+    Heading: 
+    Family: 
+    VariantLabel: 
+    SearchTags:
+    - floors
+  - AssetName: TileGrass
+    Mode: 0
+    Subcategory: 100
+    Heading: 
+    Family: 
+    VariantLabel: 
+    SearchTags:
+    - floors
+  - AssetName: TileGrey
+    Mode: 0
+    Subcategory: 100
+    Heading: 
+    Family: 
+    VariantLabel: 
+    SearchTags:
+    - floors
+  - AssetName: TileGreyDark
+    Mode: 0
+    Subcategory: 100
+    Heading: 
+    Family: 
+    VariantLabel: 
+    SearchTags:
+    - floors
+  - AssetName: TileKitchen
+    Mode: 0
+    Subcategory: 100
+    Heading: 
+    Family: 
+    VariantLabel: 
+    SearchTags:
+    - floors
+  - AssetName: TilePlating
+    Mode: 0
+    Subcategory: 100
+    Heading: 
+    Family: 
+    VariantLabel: 
+    SearchTags:
+    - floors
+  - AssetName: TileReinforced
+    Mode: 0
+    Subcategory: 100
+    Heading: 
+    Family: 
+    VariantLabel: 
+    SearchTags:
+    - floors
+  - AssetName: TileWhite
+    Mode: 0
+    Subcategory: 100
+    Heading: 
+    Family: 
+    VariantLabel: 
+    SearchTags:
+    - floors
+  - AssetName: TileWood
+    Mode: 0
+    Subcategory: 100
+    Heading: 
+    Family: 
+    VariantLabel: 
+    SearchTags:
+    - floors
+  - AssetName: Toolbelt
+    Mode: 2
+    Subcategory: 302
+    Heading: 
+    Family: 
+    VariantLabel: 
+    SearchTags:
+    - item
+    - clothing
+  - AssetName: ToolboxBlue
+    Mode: 2
+    Subcategory: 300
+    Heading: 
+    Family: 
+    VariantLabel: 
+    SearchTags:
+    - item
+    - tools
+  - AssetName: TruckerCap
+    Mode: 2
+    Subcategory: 302
+    Heading: 
+    Family: 
+    VariantLabel: 
+    SearchTags:
+    - item
+    - clothing
+  - AssetName: VendorHotDrinks
+    Mode: 0
+    Subcategory: 105
+    Heading: Vendors
+    Family: 
+    VariantLabel: 
+    SearchTags:
+    - machines
+  - AssetName: VendorRobustSoftdrinks
+    Mode: 0
+    Subcategory: 105
+    Heading: Vendors
+    Family: 
+    VariantLabel: 
+    SearchTags:
+    - machines
+  - AssetName: VendorSecTech
+    Mode: 0
+    Subcategory: 105
+    Heading: Vendors
+    Family: 
+    VariantLabel: 
+    SearchTags:
+    - machines
+  - AssetName: VendorYouTool
+    Mode: 0
+    Subcategory: 105
+    Heading: Vendors
+    Family: 
+    VariantLabel: 
+    SearchTags:
+    - machines
+  - AssetName: Vent
+    Mode: 0
+    Subcategory: 105
+    Heading: Atmos
+    Family: 
+    VariantLabel: 
+    SearchTags:
+    - machines
+  - AssetName: WaterCooler
+    Mode: 0
+    Subcategory: 104
+    Heading: General
+    Family: 
+    VariantLabel: 
+    SearchTags:
+    - furniture
+  - AssetName: WaterTank
+    Mode: 0
+    Subcategory: 105
+    Heading: General
+    Family: 
+    VariantLabel: 
+    SearchTags:
+    - machines
+  - AssetName: Welder
+    Mode: 2
+    Subcategory: 300
+    Heading: 
+    Family: 
+    VariantLabel: 
+    SearchTags:
+    - item
+    - tools
+  - AssetName: Wirecutters
+    Mode: 2
+    Subcategory: 300
+    Heading: 
+    Family: 
+    VariantLabel: 
+    SearchTags:
+    - item
+    - tools
+  - AssetName: WoodLog
+    Mode: 2
+    Subcategory: 301
+    Heading: 
+    Family: 
+    VariantLabel: 
+    SearchTags:
+    - item
+    - materials & parts
+  - AssetName: WoodPlank
+    Mode: 2
+    Subcategory: 301
+    Heading: 
+    Family: 
+    VariantLabel: 
+    SearchTags:
+    - item
+    - materials & parts
+  - AssetName: Wrench
+    Mode: 2
+    Subcategory: 300
+    Heading: 
+    Family: 
+    VariantLabel: 
+    SearchTags:
+    - item
+    - tools
+  - AssetName: X4
+    Mode: 2
+    Subcategory: 306
+    Heading: 
+    Family: 
+    VariantLabel: 
+    SearchTags:
+    - item
+    - weapons

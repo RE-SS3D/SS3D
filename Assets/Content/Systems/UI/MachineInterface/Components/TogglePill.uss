@@ -1,0 +1,19 @@
+
+.toggle-pill__button {
+    min-width: 90px;
+    height: 32px;
+    padding: 0 var(--ss3d-space-2);
+    border-width: 1px;
+    border-color: var(--ss3d-border-subtle);
+    border-radius: var(--ss3d-radius-sm);
+    background-color: var(--ss3d-surface-inset);
+    color: var(--ss3d-text-tertiary);
+    font-size: 9px;
+    letter-spacing: 1px;
+}
+
+.toggle-pill__button--on {
+    color: var(--ss3d-text-primary);
+    border-color: var(--ss3d-feedback-info-border);
+    background-color: var(--ss3d-feedback-info-bg);
+}

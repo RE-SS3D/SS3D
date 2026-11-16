@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using SS3D.Logging;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Serialization;
 
@@ -34,8 +35,7 @@ namespace SS3D.Systems.Tile.TileMapCreator
             int index = _allowedDirections.IndexOf(dir);
             if(index == -1) 
             {
-                Debug.LogError("Direction not part of any allowed directions for this tile objects," +
-                    "returning the first allowed direction.");
+                Log.Error(this, "Direction not part of any allowed directions for this tile object, returning the first allowed direction.");
                 return _allowedDirections[0];
             }
             if(index == _allowedDirections.Count - 1)

@@ -14,6 +14,19 @@ namespace FishNet.Transporting.Tugboat.Server
 {
     public class ServerSocket : CommonSocket
     {
+        /// <summary>
+        /// SS3D patch: answers LiteNetLib unconnected messages on the game port (main-menu server
+        /// status query). Receives the request bytes and returns the reply, or null to ignore it.
+        /// May run on the socket thread: return cached bytes only. Re-apply on FishNet upgrades.
+        /// </summary>
+        public static Func<byte[], byte[]> UnconnectedRequestHandler;
+
+        /// <summary>
+        /// SS3D patch: per-address and global limit on answered status queries (<see cref="UnconnectedRequestLimiter"/>).
+        /// </summary>
+        public static readonly UnconnectedRequestLimiter UnconnectedLimiter = new();
+
+        private static readonly System.Diagnostics.Stopwatch UnconnectedClock = System.Diagnostics.Stopwatch.StartNew();
 
         #region Public.
         /// <summary>
@@ -130,8 +143,13 @@ namespace FishNet.Transporting.Tugboat.Server
             listener.PeerConnectedEvent += Listener_PeerConnectedEvent;
             listener.NetworkReceiveEvent += Listener_NetworkReceiveEvent;
             listener.PeerDisconnectedEvent += Listener_PeerDisconnectedEvent;
+            // SS3D patch: see UnconnectedRequestHandler.
+            listener.NetworkReceiveUnconnectedEvent += Listener_NetworkReceiveUnconnectedEvent;
 
             _server = new NetManager(listener, _packetLayer);
+            _server.UnconnectedMessagesEnabled = true;
+            // SS3D patch: answer status queries on arrival (see UnconnectedRequestHandler).
+            _server.UnsyncedUnconnectedEvent = true;
             _server.MtuOverride = (_mtu + NetConstants.FragmentedHeaderTotalSize);
 
             UpdateTimeout(_timeout);
@@ -363,6 +381,31 @@ namespace FishNet.Transporting.Tugboat.Server
         /// Called when data is received from a peer.
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        /// <summary>
+        /// SS3D patch: replies to unconnected status queries through <see cref="UnconnectedRequestHandler"/>.
+        /// </summary>
+        private void Listener_NetworkReceiveUnconnectedEvent(IPEndPoint remoteEndPoint, NetPacketReader reader, UnconnectedMessageType messageType)
+        {
+            try
+            {
+                Func<byte[], byte[]> handler = UnconnectedRequestHandler;
+                if (handler == null || messageType != UnconnectedMessageType.BasicMessage)
+                    return;
+
+                // SS3D patch: drop floods before building a reply (tech-debt P1.8).
+                if (!UnconnectedLimiter.TryAcquire(remoteEndPoint?.Address, UnconnectedClock.Elapsed.TotalSeconds))
+                    return;
+
+                byte[] reply = handler(reader.GetRemainingBytes());
+                if (reply != null)
+                    _server?.SendUnconnectedMessage(reply, remoteEndPoint);
+            }
+            finally
+            {
+                reader.Recycle();
+            }
+        }
+
         private void Listener_NetworkReceiveEvent(NetPeer fromPeer, NetPacketReader reader, byte channel, DeliveryMethod deliveryMethod)
         {
             //If over the MTU.

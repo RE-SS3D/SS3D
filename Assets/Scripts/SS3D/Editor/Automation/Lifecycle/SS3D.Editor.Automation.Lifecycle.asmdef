@@ -1,0 +1,26 @@
+{
+    "name": "SS3D.Editor.Automation.Lifecycle",
+    "rootNamespace": "SS3D.Editor.Automation",
+    "references": [
+        "SS3D.Networking",
+        "SS3D.Core",
+        "Coimbra",
+        "SS3D.UI.Lobby",
+        "SS3D.UI.MainHud",
+        "SS3D.UI.Shell",
+        "SS3D.Systems",
+        "SS3D.Rendering.URP",
+        "SS3D.Interactions",
+        "SS3D.Data",
+        "SS3D.Permissions",
+        "FishNet.Runtime",
+        "Unity.InputSystem",
+        "Unity.RenderPipelines.Universal.Runtime",
+        "SS3D.Editor",
+        "SS3D.Editor.Automation"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "autoReferenced": false
+}

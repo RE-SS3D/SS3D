@@ -1,0 +1,37 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b7c6d5e4f3a291807162534435261708, type: 3}
+  m_Name: BleedingVfxCatalog
+  m_EditorClassIdentifier: SS3D.Systems::SS3D.Systems.Health.BleedingVfxCatalog
+  _splatters:
+  - {fileID: 2800000, guid: 783c95252050366a3bf7eb1e177bd377, type: 3}
+  - {fileID: 2800000, guid: 3d232eaaf6e9dd63c987f17f606b2127, type: 3}
+  - {fileID: 2800000, guid: d366dd9cf87b9231ea0f8ff1157ddb8f, type: 3}
+  - {fileID: 2800000, guid: 5faa37adbfbe8b48282091c5f41580a4, type: 3}
+  - {fileID: 2800000, guid: 9fe7b6d0c9bafce459fb45ad9bf0ed2d, type: 3}
+  - {fileID: 2800000, guid: daf341488f7f4b7bc8e5368cef322eae, type: 3}
+  - {fileID: 2800000, guid: 8508e2fc275a53fd6a7107d05a83676f, type: 3}
+  - {fileID: 2800000, guid: 37a41ed48886d8f38b189c2b4943d35f, type: 3}
+  - {fileID: 2800000, guid: 29a48c2bb6db556e8922968159c2ce40, type: 3}
+  - {fileID: 2800000, guid: ae704ebe184411557b8e24741995e5dd, type: 3}
+  - {fileID: 2800000, guid: 78ece461385b4a9c09ff7f99eafaa46b, type: 3}
+  - {fileID: 2800000, guid: 6157016dafac4fa3b8bbbdc11e05f0ff, type: 3}
+  - {fileID: 2800000, guid: 3ee79739beedfdfb6a921d4965ae250c, type: 3}
+  - {fileID: 2800000, guid: a089026d160b41b3b6b98179b9332656, type: 3}
+  - {fileID: 2800000, guid: e9b4d7ec111f4354a9ea1ff3067c1f89, type: 3}
+  - {fileID: 2800000, guid: bef0dc19b21d48ecb3ca3f040a82ffc2, type: 3}
+  - {fileID: 2800000, guid: e2be1b89d3314f94be796fdcac073166, type: 3}
+  - {fileID: 2800000, guid: e2aeda2db48a45578d19a0bfcfe79a84, type: 3}
+  _particleMaterial: {fileID: 2100000, guid: af5a53a5bf82c30439df60069f07f424, type: 2}
+  _bloodDecalMaterial: {fileID: 2100000, guid: e2d3c4b5a697887960523342b2c1d0e9, type: 2}
+  _floorDecalPrefab: {fileID: 8012345678901234567, guid: 7e8a9b0c1d2e3f405162738495a6b7c0, type: 3}
+  _multiplyTintShader: {fileID: 4800000, guid: cf88f09667ed419d98051a601f8c0f48, type: 3}

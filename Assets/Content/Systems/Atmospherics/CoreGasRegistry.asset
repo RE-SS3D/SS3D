@@ -1,0 +1,19 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f69008bfecfbfed70b6f95d0fbfc69d3, type: 3}
+  m_Name: CoreGasRegistry
+  m_EditorClassIdentifier: SS3D.Systems::SS3D.Systems.Atmospherics.GasRegistry
+  _definitions:
+  - {fileID: 11400000, guid: 516a0a2e66d9d330394eea7e4a84954a, type: 2}
+  - {fileID: 11400000, guid: 76ae0f1194dade9bc84004d7071b1e4f, type: 2}
+  - {fileID: 11400000, guid: dacd4f6b51faaf6ee9782fa46afbedcd, type: 2}
+  - {fileID: 11400000, guid: ff11c0fa7f22b39f98f50c23ac593bff, type: 2}

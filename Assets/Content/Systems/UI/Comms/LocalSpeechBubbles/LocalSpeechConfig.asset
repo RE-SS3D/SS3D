@@ -1,0 +1,28 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 60da38aa45004c90a0fad9cc685a2266, type: 3}
+  m_Name: LocalSpeechConfig
+  m_EditorClassIdentifier:
+  ClearDistance: 5
+  InaudibleDistance: 10
+  GraceDistance: 5
+  OcclusionMask:
+    serializedVersion: 2
+    m_Bits: 1
+  MaxVisibleBubbles: 3
+  RerankIntervalSeconds: 0.25
+  MaxStackedMessagesPerSpeaker: 3
+  StackSpacingPixels: 48
+  DriftPixelsPerSecond: 14
+  BaseFadeDuration: 4
+  PerCharacterFadeSeconds: 0.02
+  MaxFadeDuration: 8

@@ -1,0 +1,82 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:ss3d="SS3D.UI.MachineInterface.Components" editor-extension-mode="False">
+    <ui:Style src="project://database/Assets/Content/Systems/UI/Tokens/ss3d-tokens.uss" />
+    <ui:Style src="project://database/Assets/Content/Systems/UI/Tokens/ss3d-typography.uss" />
+    <ui:Style src="project://database/Assets/Content/Systems/UI/MachineInterface/Tokens/diegetic-tokens.uss" />
+    <ui:Style src="project://database/Assets/Content/Systems/UI/MachineInterface/Tokens/diegetic-tones.uss" />
+    <ui:Style src="project://database/Assets/Content/Systems/UI/MachineInterface/Components/DiegeticDeviceShell.uss" />
+    <ui:Style src="project://database/Assets/Content/Systems/UI/MachineInterface/Components/StatusDot.uss" />
+    <ui:Style src="project://database/Assets/Content/Systems/UI/MachineInterface/Components/ConnectionStatusRow.uss" />
+    <ui:Style src="project://database/Assets/Content/Systems/UI/MachineInterface/Components/DeviceIdentityBlock.uss" />
+    <ui:Style src="project://database/Assets/Content/Systems/UI/MachineInterface/Components/GlanceableStatusChip.uss" />
+    <ui:Style src="project://database/Assets/Content/Systems/UI/MachineInterface/Components/PanelSection.uss" />
+    <ui:Style src="project://database/Assets/Content/Systems/UI/MachineInterface/Components/StorageCellRow.uss" />
+    <ui:Style src="project://database/Assets/Content/Systems/UI/MachineInterface/Components/SmesPowerFlowRow.uss" />
+    <ui:Style src="project://database/Assets/Content/Systems/UI/MachineInterface/Components/RateControlSection.uss" />
+    <ui:Style src="project://database/Assets/Content/Systems/UI/MachineInterface/Components/ToggleSwitch.uss" />
+    <ui:Style src="project://database/Assets/Content/Systems/UI/MachineInterface/Components/AccessGatePanel.uss" />
+    <ui:Style src="project://database/Assets/Content/Systems/UI/MachineInterface/Components/AccessGatedRegion.uss" />
+    <ui:Style src="project://database/Assets/Content/Systems/UI/MachineInterface/Components/AccessStrip.uss" />
+    <ui:Style src="project://database/Assets/Content/Systems/UI/MachineInterface/Components/SteelButton.uss" />
+    <ui:Style src="project://database/Assets/Content/Systems/UI/MachineInterface/Components/Badge.uss" />
+    <ui:Style src="project://database/Assets/Content/Systems/UI/MachineInterface/Components/StatusBadge.uss" />
+    <ui:Style src="project://database/Assets/Content/Systems/UI/MachineInterface/Components/DeviceFooter.uss" />
+    <ui:Style src="project://database/Assets/Content/Systems/UI/MachineInterface/Templates/SmesUnitInterface.uss" />
+
+    <ss3d:DiegeticDeviceShell name="device-shell"
+        class="diegetic-device-shell--smes"
+        model-label="SMES-02 · magnetic energy storage bank"
+        power-ok="true"
+        style="align-self: center; margin-top: 24px;">
+        <ss3d:ConnectionStatusRow name="connection-row"
+            status-text="WIRED · POWER NET · PORT J1" />
+        <ss3d:DeviceIdentityBlock name="identity"
+            title="SMES-02"
+            subtitle="Engineering — Substation Storage Bank" />
+        <ss3d:GlanceableStatusChip name="status-chip" />
+        <ui:VisualElement class="panel-section" name="storage-flow-section">
+            <ui:VisualElement class="panel-section__clip">
+                <ui:VisualElement class="panel-section__header">
+                    <ui:Label class="panel-section__header-title font-titling" text="Storage &amp; Flow" />
+                </ui:VisualElement>
+                <ui:VisualElement class="panel-section__content">
+                    <ui:VisualElement class="smes-metrics-row">
+                        <ui:VisualElement class="smes-storage-column">
+                            <ui:Label text="ENERGY STORAGE" class="smes-section-title font-titling" />
+                            <ss3d:StorageCellRow name="storage-cells" charge-pct="0.72" />
+                            <ui:VisualElement class="smes-storage-footer">
+                                <ui:Label name="charge-pct" text="72%" class="font-terminal" />
+                                <ui:Label name="charge-trend-text" text="steady" class="font-terminal smes-charge-trend" />
+                            </ui:VisualElement>
+                        </ui:VisualElement>
+                        <ui:VisualElement class="smes-power-flow-column">
+                            <ui:Label text="POWER FLOW" class="smes-section-title font-titling" />
+                            <ss3d:SmesPowerFlowRow name="power-flow" />
+                        </ui:VisualElement>
+                    </ui:VisualElement>
+                </ui:VisualElement>
+            </ui:VisualElement>
+        </ui:VisualElement>
+        <ss3d:AccessGatedRegion name="access-region" class="smes-access-region">
+            <ss3d:AccessGatePanel name="access-gate"
+                locked-subline="Insert ID card to access input/output controls" />
+            <ui:VisualElement name="access-controls"
+                class="access-gated-region__controls access-gated-region__controls--hidden">
+                <ss3d:AccessStrip name="access-strip" authorized-text="Engineering — Authorized" />
+                <ui:VisualElement class="panel-section" name="controls-section">
+                    <ui:VisualElement class="panel-section__clip">
+                        <ui:VisualElement class="panel-section__header">
+                            <ui:Label class="panel-section__header-title font-titling" text="Input / Output Controls" />
+                        </ui:VisualElement>
+                        <ui:VisualElement class="panel-section__content">
+                            <ui:VisualElement class="smes-controls-row">
+                                <ss3d:RateControlSection name="input-control" />
+                                <ss3d:RateControlSection name="output-control" />
+                            </ui:VisualElement>
+                        </ui:VisualElement>
+                    </ui:VisualElement>
+                </ui:VisualElement>
+            </ui:VisualElement>
+        </ss3d:AccessGatedRegion>
+        <ss3d:DeviceFooter name="footer" text="SS3D Superconducting Magnetic Energy Storage — Model SMES-02" />
+    </ss3d:DiegeticDeviceShell>
+</ui:UXML>

@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using SS3D.Systems.Combat;
 using SS3D.Systems.Inventory.Items;
 using System.Linq;
 using SS3D.Interactions.Interfaces;
@@ -6,9 +7,20 @@ using SS3D.Interactions;
 using FishNet.Object;
 using SS3D.Systems.Tile;
 using SS3D.Core;
+using SS3D.Systems.Stamina;
+using SS3D.Systems.Health;
+using SS3D.Systems.Entities.Humanoid;
+using SS3D.Systems.Interactions;
+using SS3D.Systems.Entities.Humanoid.Body;
 
 namespace SS3D.Systems.Inventory.Containers
 {
+    public enum HandSide : byte
+    {
+        Right = 0,
+        Left = 1,
+    }
+
     /// <summary>
     /// A hand is what an entity uses to grab and hold items, to interact with things in range.
     /// </summary>
@@ -28,10 +40,8 @@ namespace SS3D.Systems.Inventory.Containers
         // TODO: When AssetData is on, we should update this to not use this
         [SerializeField] private Sprite _pickupIcon;
 
-        /// <summary>
-        /// The item held in this hand, if it exists
-        /// </summary>
-        public Item ItemInHand => Container.Items.FirstOrDefault();
+        /// <summary>Left vs right — drives upper-body animation Mirror for Mixamo holds/swings.</summary>
+        [SerializeField] private HandSide _side = HandSide.Right;
 
         /// <summary>
         /// Point from where distances for interaction is computed.
@@ -42,6 +52,32 @@ namespace SS3D.Systems.Inventory.Containers
         /// the hands script controlling this hand.
         /// </summary>
         public Hands HandsController;
+
+        public HandSide Side => _side;
+
+        public bool CanUseHand
+        {
+            get
+            {
+                HumanHealthController health = GetComponentInParent<HumanHealthController>();
+                Ragdoll ragdoll = GetComponentInParent<Ragdoll>();
+                return CanUse(
+                    health == null || health.Snapshot.CanUseArm(_side == HandSide.Left ? BodyZone.LeftArm : BodyZone.RightArm),
+                    ragdoll != null && ragdoll.IsKnockedDown,
+                    ragdoll != null && (ragdoll.IsGettingUp || ragdoll.IsFallingDowned));
+            }
+        }
+
+        /// <summary>
+        /// The hand rule: working arms, not knocked down, and not in the stand-up after a knockdown, which is the victim's
+        /// vulnerable window (combat §5; tech-debt P2.8). P4.1 replaces the several "can act" rules with one.
+        /// </summary>
+        public static bool CanUse(bool armsWork, bool knockedDown, bool gettingUp) => armsWork && !knockedDown && !gettingUp;
+
+        /// <summary>
+        /// The item held in this hand, if it exists
+        /// </summary>
+        public Item ItemInHand => Container.Items.FirstOrDefault();
 
         public Vector3 InteractionOrigin => _interactionOrigin.position;
 
@@ -89,22 +125,89 @@ namespace SS3D.Systems.Inventory.Containers
             return _range;
         }
 
+        public override bool CanExecuteInteraction(IInteraction interaction)
+        {
+            StaminaController stamina = GetComponentInParent<StaminaController>();
+
+            if (stamina != null && !stamina.CanCommenceInteraction)
+            {
+                return false;
+            }
+
+            if (!CanUseHand)
+            {
+                return false;
+            }
+
+            return base.CanExecuteInteraction(interaction);
+        }
+
+        public override bool CanContinueInteraction()
+        {
+            StaminaController stamina = GetComponentInParent<StaminaController>();
+
+            return CanUseHand && (stamina == null || stamina.CanContinueInteraction);
+        }
+
         [Server]
         public void Pickup(Item item)
         {
-            item.GiveOwnership(Owner);
-            if (!IsEmpty())
+            if (!CanUseHand)
+                return;
+
+            Hands hands = HandsController;
+            if (hands == null)
+            {
+                hands = GetComponentInParent<Hands>();
+            }
+
+            // Two-hand rifles auto-route to RequiredHand when the off-hand is active.
+            if (!TwoHandedWeaponRules.TryResolveHandForItem(hands, item, this, out Hand target) || target == null)
             {
                 return;
             }
 
-			if (item.Container != null && item.Container != Container)
+            if (target.Container == null || !target.Container.CanContainItem(item))
+            {
+                return;
+            }
+
+            item.GiveOwnership(target.Owner);
+
+			if (item.Container != null && item.Container != target.Container)
 			{
 				item.Container.RemoveItem(item);
 			}
 
-			Container.AddItem(item);
+			target.Container.AddItem(item);
 		}
+
+        /// <summary>Whether <paramref name="item"/> would merge whole into the stack this hand holds.</summary>
+        public bool CanStackOnto(Item item)
+        {
+            Item held = ItemInHand;
+            return CanUseHand && held != null && item != null && held != item && held.CanMergeWith(item)
+                && ItemStackRules.CanMerge(held.StackCount, item.StackCount, held.MaxStackSize)
+                && Container != null && Container.CanContainItem(item);
+        }
+
+        /// <summary>Adds a loose stack to the matching stack in this hand; the container merge despawns it.</summary>
+        [Server]
+        public void StackOnto(Item item)
+        {
+            if (!CanStackOnto(item))
+            {
+                return;
+            }
+
+            item.GiveOwnership(Owner);
+            if (item.Container != null && item.Container != Container)
+            {
+                item.Container.RemoveItem(item);
+            }
+
+            Container.AddItem(item);
+        }
 
         [ServerRpc]
         public void CmdDropHeldItem()
@@ -114,9 +217,28 @@ namespace SS3D.Systems.Inventory.Containers
                 return;
             }
 
+            InteractionController interactions = GetComponentInParent<InteractionController>();
+            if (interactions == null)
+            {
+                DumpHeldItem();
+                return;
+            }
+
+            // The item leaves the hand when the put-down reaches the floor (animation pass Phase 4).
+            Item item = ItemInHand;
+            interactions.ServerRunHandAction(
+                InteractionAnimation.FloorPutDown,
+                InteractionAnimation.DropPointAhead(interactions.transform),
+                () => ItemInHand == item,
+                DumpHeldItem);
+		}
+
+        [Server]
+        private void DumpHeldItem()
+        {
 			Container.Dump();
             ItemInHand?.GiveOwnership(null);
-		}
+        }
 
 
         /// <summary>
@@ -133,15 +255,15 @@ namespace SS3D.Systems.Inventory.Containers
             item.Container.RemoveItem(item);
             ItemUtility.Place(item, position, rotation);
 
-            // Register with TileMap for saving
-            TileMap tileMap = SubSystems.Get<TileSubSystem>().CurrentMap;
-            if (tileMap != null)
+            ItemObjectSo itemObjectSo = SubSystems.Get<TileSubSystem>().GetAsset(item.Asset) as ItemObjectSo;
+            if (itemObjectSo != null)
             {
-                ItemObjectSo itemObjectSo = SubSystems.Get<TileSubSystem>().GetAsset(item.Asset) as ItemObjectSo;
-                if (itemObjectSo != null)
-                {
-                    tileMap.PlaceItemObject(position, rotation, itemObjectSo, item.gameObject);
-                }
+                // Pass the lifted pose from ItemUtility.Place; the raw surface point sinks the item.
+                SubSystems.Get<TileSubSystem>().Construction.TryPlaceItem(
+                    itemObjectSo,
+                    item.transform.position,
+                    item.transform.rotation,
+                    item.gameObject);
             }
         }
 

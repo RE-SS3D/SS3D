@@ -5,20 +5,25 @@ PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Modification:
+    serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 808270407970017625, guid: 852d57bdb0508494fb6047f36e813c69, type: 3}
+      propertyPath: key
+      value: 
+      objectReference: {fileID: 11400000, guid: 399184e97f6018b48b78956da1731cb8, type: 2}
     - target: {fileID: -5414623717715724467, guid: 852d57bdb0508494fb6047f36e813c69, type: 3}
       propertyPath: _networkBehaviours.Array.size
-      value: 1
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: -5414623717715724467, guid: 852d57bdb0508494fb6047f36e813c69, type: 3}
       propertyPath: <AssetPathHash>k__BackingField
       value: 2477242480858721136
       objectReference: {fileID: 0}
     - target: {fileID: -5414623717715724467, guid: 852d57bdb0508494fb6047f36e813c69, type: 3}
-      propertyPath: _networkBehaviours.Array.data[0]
+      propertyPath: '_networkBehaviours.Array.data[0]'
       value: 
-      objectReference: {fileID: 7183660215950146939}
+      objectReference: {fileID: 2434301885240263179}
     - target: {fileID: 1698900335226549537, guid: 852d57bdb0508494fb6047f36e813c69, type: 3}
       propertyPath: m_Mesh
       value: 
@@ -33,7 +38,7 @@ PrefabInstance:
       objectReference: {fileID: 878121055090666314}
     - target: {fileID: 6576855241110462844, guid: 852d57bdb0508494fb6047f36e813c69, type: 3}
       propertyPath: _componentIndexCache
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8033135651520204425, guid: 852d57bdb0508494fb6047f36e813c69, type: 3}
       propertyPath: m_RootOrder
@@ -80,6 +85,9 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 852d57bdb0508494fb6047f36e813c69, type: 3}
 --- !u!114 &878121055090666314 stripped
 MonoBehaviour:
@@ -92,14 +100,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 26b716c41e9b56b4baafaf13a523ba2e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &7183660215950146939 stripped
+--- !u!114 &2434301885240263179 stripped
 MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 6576855241110462844, guid: 852d57bdb0508494fb6047f36e813c69, type: 3}
+  m_CorrespondingSourceObject: {fileID: 1818524827503369740, guid: 852d57bdb0508494fb6047f36e813c69, type: 3}
   m_PrefabInstance: {fileID: 4104136164709915655}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1a85f26fb7523bc4fadefb445dc09f8c, type: 3}
+  m_Script: {fileID: 11500000, guid: ff65a9dda1ef18f4cbc16ee4d1aee066, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: 
+  m_EditorClassIdentifier: SS3D.Systems::SS3D.Systems.Tile.PlacedTileObject

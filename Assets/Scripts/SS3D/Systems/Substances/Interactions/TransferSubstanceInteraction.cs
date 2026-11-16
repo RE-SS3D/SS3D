@@ -1,31 +1,29 @@
+using SS3D.Interactions;
 using SS3D.Interactions.Extensions;
 using SS3D.Interactions.Interfaces;
-using SS3D.Interactions;
 using System;
 using UnityEngine;
 
-namespace SS3D.Substances
+namespace SS3D.Systems.Substances
 {
-    public class TransferSubstanceInteraction : IInteraction
+    /// <summary>Tier 2 armed pour from source container into a targeted container.</summary>
+    public class TransferSubstanceInteraction : IInteraction, IInteractionTierProvider, ITargetedInteraction
     {
-        public string Name;
-        public Sprite Icon;
-        /// <summary>
-        /// Checks if the interaction should be possible
-        /// </summary>
-        public Predicate<InteractionEvent> CanInteractCallback { get; set; } = _ => true;
+        public float TransferVolumeMl { get; set; } = SubstanceConstants.DefaultTransferVolumeMl;
 
-        public string GetName(InteractionEvent interactionEvent)
+        public string GetName(InteractionEvent interactionEvent) => "Transfer";
+
+        public string GetGenericName() => "TransferSubstance";
+
+        public InteractionTier GetTier(InteractionEvent interactionEvent) => InteractionTier.Targeted;
+
+        public bool CanTarget(InteractionEvent originEvent, InteractionEvent targetEvent)
         {
-            return "Transfer";
+            InteractionEvent combined = targetEvent.WithSource(originEvent.Source);
+            return CanInteract(combined);
         }
 
-        public string GetGenericName() => throw new NotImplementedException();
-
-        public Sprite GetIcon(InteractionEvent interactionEvent)
-        {
-            return null;
-        }
+        public Sprite GetIcon(InteractionEvent interactionEvent) => InteractionIconLookup.Transfer;
 
         public bool CanInteract(InteractionEvent interactionEvent)
         {
@@ -34,48 +32,41 @@ namespace SS3D.Substances
                 return false;
             }
 
-            IGameObjectProvider provider = interactionEvent.Source;
-
-            if (provider == null)
+            if (interactionEvent.Source is not IGameObjectProvider provider)
             {
                 return false;
             }
 
-            SubstanceContainer container = provider.GameObject.GetComponent<SubstanceContainer>();
-
-            if (container == null)
+            SubstanceContainer source = provider.GameObject.GetComponent<SubstanceContainer>();
+            if (source == null || source.Locked || source.IsEmpty)
             {
                 return false;
             }
 
-            if (container.Locked)
+            SubstanceContainer target = interactionEvent.Target.GetComponent<SubstanceContainer>();
+            if (target == null || target == source || target.Locked || target.RemainingVolumeMl <= SubstanceConstants.VolumeEpsilonMl)
             {
                 return false;
             }
 
-            if (container.IsEmpty)
-            {
-                return false;
-            }
-
-            return CanInteractCallback.Invoke(interactionEvent);
+            return true;
         }
 
         public bool Start(InteractionEvent interactionEvent, InteractionReference reference)
         {
-            if (interactionEvent.Source is IGameObjectProvider provider)
+            if (interactionEvent.Source is not IGameObjectProvider provider)
             {
-                var container = provider.GameObject.GetComponent<SubstanceContainer>();
-
-                if (container != null)
-                {
-                    var targetContainer = interactionEvent.Target.GetComponent<SubstanceContainer>();
-                    container.TransferVolume(targetContainer, 25);
-                    container.SetDirty();
-                    targetContainer.SetDirty();
-                }
+                return false;
             }
 
+            SubstanceContainer source = provider.GameObject.GetComponent<SubstanceContainer>();
+            SubstanceContainer target = interactionEvent.Target.GetComponent<SubstanceContainer>();
+            if (source == null || target == null)
+            {
+                return false;
+            }
+
+            source.TransferVolume(target, TransferVolumeMl);
             return false;
         }
     }

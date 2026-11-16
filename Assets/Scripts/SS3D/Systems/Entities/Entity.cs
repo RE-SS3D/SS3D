@@ -1,13 +1,14 @@
 ﻿using System;
 using Coimbra;
+using FishNet.Connection;
 using FishNet.Object;
 using FishNet.Object.Synchronizing;
 using SS3D.Core.Behaviours;
 using SS3D.Systems.Entities.Events;
 using SS3D.Systems.Entities.Humanoid;
-using SS3D.Systems.Health;
 using SS3D.Systems.Interactions;
 using SS3D.Systems.Inventory.Containers;
+using SS3D.Systems.Networking;
 using UnityEngine;
 
 namespace SS3D.Systems.Entities
@@ -36,6 +37,23 @@ namespace SS3D.Systems.Entities
 
         public string Ckey => _mind.player.Ckey;
 
+        private HumanInventory _cachedHumanInventory;
+
+        /// <summary>Cached inventory lookup for hot paths (airlock proximity, etc.).</summary>
+        public bool TryGetHumanInventory(out HumanInventory inventory)
+        {
+            if (_cachedHumanInventory == null)
+                TryGetComponent(out _cachedHumanInventory);
+
+            inventory = _cachedHumanInventory;
+            return inventory != null;
+        }
+
+        private const float ObserverGridCheckIntervalSeconds = 0.25f;
+
+        private Vector2Int? _lastObserverGridCell;
+        private float _nextObserverGridCheckTime;
+
         protected override void OnStart()
         {
             base.OnStart();
@@ -43,9 +61,48 @@ namespace SS3D.Systems.Entities
             OnSpawn();
         }
 
+        private void Update()
+        {
+            if (!IsServer)
+                return;
+
+            NetworkConnection owner = Owner;
+            if (!owner.IsValid || owner.FirstObject != NetworkObject)
+                return;
+
+            float now = Time.unscaledTime;
+            if (now < _nextObserverGridCheckTime)
+                return;
+
+            _nextObserverGridCheckTime = now + ObserverGridCheckIntervalSeconds;
+
+            Vector2Int gridCell = TileObserverConstants.GetHashGridCell(transform.position);
+            if (_lastObserverGridCell == gridCell)
+                return;
+
+            _lastObserverGridCell = gridCell;
+            ServerManager.Objects.RebuildObservers(owner, timedOnly: false);
+        }
+
         private void OnSpawn()
         {
             OnMindChanged?.Invoke(Mind);
+        }
+
+        public override void OnOwnershipClient(NetworkConnection prevOwner)
+        {
+            base.OnOwnershipClient(prevOwner);
+
+            // Reclaim restores ownership without changing Mind SyncVar — HUD listens to this
+            // event, but lobby used to wait only on SpawnedPlayersUpdated (which does not re-fire).
+            if (IsOwner)
+            {
+                InvokeLocalPlayerObjectChanged();
+            }
+            else if (prevOwner != null && prevOwner == LocalConnection)
+            {
+                new LocalPlayerObjectChanged(GameObject, false).Invoke(this);
+            }
         }
 
         protected override void OnDestroyed()
@@ -61,9 +118,9 @@ namespace SS3D.Systems.Entities
 
         private void InvokeLocalPlayerObjectChanged()
         {
-            if (Mind == null || Mind.player == null) return;
-
-            if (!Mind.player.IsLocalConnection)
+            bool isLocal = IsOwner
+                || (Mind?.player != null && Mind.player.IsLocalConnection);
+            if (!isLocal)
             {
                 return;
             }
@@ -96,8 +153,15 @@ namespace SS3D.Systems.Entities
         [Server]
         public void SetMind(Mind mind)
         {
-            this._mind = mind;
-            if(mind == null) return;
+            _mind = mind;
+            // Ghosts ship with a null mind; SwapMinds assigns that to the corpse. Must clear FishNet
+            // ownership or the dead player keeps Owner and still receives corpse TargetRpcs (hit flash).
+            if (mind == null || mind == Mind.Empty)
+            {
+                RemoveOwnership();
+                return;
+            }
+
             GiveOwnership(mind.Owner);
         }
 

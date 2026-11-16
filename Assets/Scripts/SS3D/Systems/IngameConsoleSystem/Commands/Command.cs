@@ -1,83 +1,51 @@
-﻿using FishNet.Connection;
+using System;
+using System.Collections.Generic;
 using SS3D.Permissions;
 
 namespace SS3D.Systems.IngameConsoleSystem.Commands
 {
-    // All commands, that inherit Command will be added to CommandsController and have to contain Command suffix
+    /// <summary>
+    /// A console command. Concrete subclasses are discovered by reflection in every loaded assembly
+    /// (<see cref="CommandRegistry.DiscoverCommands"/>) and need a public parameterless constructor.
+    /// Declare <see cref="Parameters"/> (or <see cref="Subcommands"/>); the registry parses, validates
+    /// and writes help from them, so <see cref="Perform"/> only sees valid, typed values.
+    /// </summary>
     public abstract class Command
     {
-        protected struct CheckArgsResponse
-        {
-            public bool IsValid;
-            public string InvalidArgs;
-            public ICalculatedValues CalculatedValues;
-            public CheckArgsResponse MakeInvalid(string invalidArgs)
-            {
-                InvalidArgs = invalidArgs;
-                IsValid = false;
-                return this;
-            }
-            public CheckArgsResponse MakeValid(ICalculatedValues calculatedValues)
-            {
-                CalculatedValues = calculatedValues;
-                IsValid = true;
-                return this;
-            }
-        }
-        /// <summary>
-        /// Struct to transfer calculated values between CheckArgs and Perform methods
-        /// </summary>
-        protected interface ICalculatedValues { }
+        protected static readonly IReadOnlyList<CommandParameter> NoParameters = Array.Empty<CommandParameter>();
 
-        /// <summary>
-        /// Is the command going to be executed server or client side ?
-        /// </summary>
-        public abstract CommandType Type { get; }
+        /// <summary>What players type; lowercase, unique.</summary>
+        public abstract string Name { get; }
 
-        /// <summary>
-        /// Desription, that will be shown after "help" command
-        /// </summary>
-        public abstract string ShortDescription { get; }
+        public abstract CommandCategory Category { get; }
 
-        /// <summary>
-        /// Detailed description of the command. Will be shown after "help (command name)" command
-        /// </summary>
-        public virtual string LongDescription => ShortDescription;
+        /// <summary>One short sentence; help shows it after the signature. Don't repeat the usage here.</summary>
+        public abstract string Description { get; }
 
-        /// <summary>
-        /// how to use the command.
-        /// Syntax for writing usage: arguments in () - necessary; [] - optional; {} - list of arguments with undefined size
-        /// </summary>
-        public virtual string Usage => "";
-
-        /// <summary>
-        /// The requested role to be able to perform this command.
-        /// </summary>
+        /// <summary>The lowest role allowed to run it. Ignored for <see cref="CommandType.Local"/> commands.</summary>
         public abstract ServerRoleTypes AccessLevel { get; }
 
-        /// <summary>
-        /// Perform the given command.
-        /// </summary>
-        /// <param name="args"> An array of arguments for the command.</param>
-        /// <param name="conn"> The connection of the player executing this command, sometimes useful. </param>
-        /// <returns> A message indicating if the command performed as expected, or requested informations.</returns>
-        public abstract string Perform(string[] args, NetworkConnection conn = null);
+        public abstract CommandType Type { get; }
+
+        /// <summary>Arguments for a command without subcommands.</summary>
+        public virtual IReadOnlyList<CommandParameter> Parameters => NoParameters;
 
         /// <summary>
-        /// Validate the arguments of the command.
+        /// Modes with their own arguments; when non-null the first argument picks one and
+        /// <see cref="Parameters"/> and <see cref="Perform"/> are unused. Cache the list in a field.
         /// </summary>
-        protected abstract CheckArgsResponse CheckArgs(string[] args);
-        protected const string WrongArgsText = "Wrong args. Type \"(command) help\"";
+        public virtual IReadOnlyList<Subcommand> Subcommands => null;
 
         /// <summary>
-        /// Store CheckArgs response and get if response is valid.
+        /// Example arguments (after the command name) shown by <c>help (command)</c>. An EditMode test parses
+        /// every example, so a stale one fails. Null means no example; empty means the bare command.
         /// </summary>
-        /// <returns>If respons is valid</returns>
-        protected bool ReceiveCheckResponse<T>(string[] args, out CheckArgsResponse response, out T calculatedValues) where T: ICalculatedValues
-        {
-            response = CheckArgs(args);
-            calculatedValues = (T)response.CalculatedValues;
-            return response.IsValid;
-        }
+        public virtual string Example => null;
+
+        /// <summary>Run the command with arguments the registry already bound and validated.</summary>
+        public virtual CommandResult Perform(CommandContext context, CommandArgs args) =>
+            CommandResult.Error($"{Name} has subcommands; this should not be reached");
+
+        public bool HasSubcommands => Subcommands != null && Subcommands.Count > 0;
     }
 }

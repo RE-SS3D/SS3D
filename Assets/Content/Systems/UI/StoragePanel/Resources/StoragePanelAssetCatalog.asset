@@ -1,0 +1,17 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9ba7fdb311bb0d4548b11952549ed89c, type: 3}
+  m_Name: StoragePanelAssetCatalog
+  m_EditorClassIdentifier: 
+  _panelSettings: {fileID: 11400000, guid: d9e8accab86f453aacb827761d335103, type: 2}
+  _storagePanelStyle: {fileID: 7433441132597879392, guid: 47cb34fc8c3bc4a4ebb8a5340e91e684, type: 3}
+  _inventorySlotStyle: {fileID: 7433441132597879392, guid: c1047cfd2dc96f64e965c17afa9f9707, type: 3}

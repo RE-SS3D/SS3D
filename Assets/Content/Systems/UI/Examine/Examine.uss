@@ -1,0 +1,200 @@
+/* Examine overlay UI: generic hover/detail (all examinables) + character paperdoll grid, shared by
+   the hover quick-look preview and the full examine window. */
+
+.character-paperdoll-grid {
+    flex-direction: column;
+    overflow: visible;
+}
+
+.character-paperdoll-grid__row {
+    flex-direction: row;
+    overflow: visible;
+}
+
+.character-paperdoll-grid__row > .inventory-slot {
+    position: relative;
+    margin-right: 2px;
+    margin-bottom: 2px;
+}
+
+.character-paperdoll-grid__row > .inventory-slot:hover {
+    z-index: 10;
+}
+
+/* Hover chip above the well — same pattern as Main HUD inventory slots (MainHud.uss). */
+.character-paperdoll-grid .inventory-slot__label-host {
+    position: absolute;
+    /* Wider than the well on both sides, so a long name fits: a Label measures its text at most as wide as its parent. */
+    left: -160px;
+    right: -160px;
+    bottom: 100%;
+    margin-top: 0;
+    margin-bottom: var(--ss3d-space-2);
+    height: auto;
+    min-height: auto;
+    z-index: 1;
+}
+
+.character-paperdoll-grid .inventory-slot__label {
+    max-width: none;
+    flex-shrink: 0;
+    white-space: nowrap;
+    opacity: 0;
+    background-color: var(--ss3d-surface-hud);
+    color: var(--ss3d-text-secondary);
+    border-radius: var(--ss3d-radius-sm);
+    border-width: 1px;
+    border-color: var(--ss3d-border-subtle);
+    padding: 2px 8px;
+    transition-property: opacity;
+    transition-duration: var(--ss3d-duration-fast);
+}
+
+.character-paperdoll-grid .inventory-slot:hover .inventory-slot__label {
+    opacity: 1;
+}
+
+.character-paperdoll-grid__hand-row {
+    margin-top: 2px;
+}
+
+/* Hover quick-look preview */
+
+.character-quicklook {
+    position: absolute;
+    width: 220px;
+    border-radius: var(--ss3d-radius-md);
+    border-width: 1px;
+    border-color: var(--ss3d-border-subtle);
+    background-color: var(--ss3d-surface-panel);
+}
+
+.character-quicklook__clip {
+    flex-direction: column;
+    align-items: center;
+    /* No border-radius here — outer .character-quicklook paints the radius; combining
+       radius + overflow:hidden on one element whites out the panel (UITK masking pitfall). */
+    overflow: hidden;
+    padding: var(--ss3d-space-3);
+}
+
+.character-quicklook__name {
+    font-size: 13px;
+    letter-spacing: var(--ss3d-space-1);
+    -unity-text-align: middle-center;
+    margin-bottom: var(--ss3d-space-2);
+}
+
+.character-quicklook__grid {
+    align-items: center;
+}
+
+/* Full examine window — beat .machine-window { width: 380px } so the chrome hugs the 3-slot grid
+   (3×64 + margins + content padding), not empty horizontal space.
+   Semi-transparent panel chrome only — do not use opacity (would fade slot wells too). */
+.machine-window.character-examine-window {
+    width: 244px;
+    background-color: rgba(23, 26, 30, 0.75);
+}
+
+.character-examine-window .machine-window__header {
+    background-color: rgba(35, 38, 43, 0.75);
+}
+
+.character-examine-window .machine-window__content {
+    align-items: center;
+    /* Labels sit above wells (bottom: 100%); default content overflow:hidden would clip them. */
+    overflow: visible;
+}
+
+.character-examine-window .character-paperdoll-grid {
+    align-items: center;
+}
+
+.character-examine-window .character-paperdoll-grid__row {
+    justify-content: center;
+}
+
+.character-examine-window__hint {
+    margin-top: var(--ss3d-space-2);
+    font-size: 10px;
+    letter-spacing: 1px;
+    color: var(--ss3d-accent-rust);
+    -unity-text-align: middle-center;
+}
+
+.character-examine-window .machine-window__title {
+    letter-spacing: 1px;
+    font-size: 15px;
+    white-space: normal;
+}
+
+/* Hold-to-take affordance — a modifier on the shared InventorySlot component's well. */
+
+.inventory-slot--drop-target .inventory-slot__well {
+    border-color: var(--ss3d-feedback-info);
+    background-color: var(--ss3d-feedback-info-bg);
+}
+
+.inventory-slot--taking .inventory-slot__well {
+    border-color: var(--ss3d-feedback-info);
+    background-color: var(--ss3d-feedback-info-bg);
+}
+
+/* Generic hover/detail (replaces the condemned uGUI ExamineUI/ExamineDetailedView/ExamineImageDetailedView) */
+
+.examine-hover-name {
+    position: absolute;
+    font-size: 12px;
+    color: var(--ss3d-text-primary);
+    background-color: var(--ss3d-surface-panel);
+    border-radius: var(--ss3d-radius-sm);
+    border-width: 1px;
+    border-color: var(--ss3d-border-subtle);
+    padding: 3px 8px;
+}
+
+.examine-detail-text {
+    position: absolute;
+    flex-direction: column;
+    max-width: 320px;
+    background-color: var(--ss3d-surface-panel);
+    border-radius: var(--ss3d-radius-md);
+    border-width: 1px;
+    border-color: var(--ss3d-border-subtle);
+    padding: var(--ss3d-space-3);
+}
+
+.examine-detail-text__name {
+    font-size: 14px;
+    letter-spacing: 1px;
+    margin-bottom: var(--ss3d-space-1);
+}
+
+.examine-detail-text__description {
+    font-size: 12px;
+    white-space: normal;
+}
+
+.examine-detail-image {
+    position: absolute;
+    flex-direction: column;
+    align-items: center;
+    background-color: var(--ss3d-surface-panel);
+    border-radius: var(--ss3d-radius-md);
+    border-width: 1px;
+    border-color: var(--ss3d-border-subtle);
+    padding: var(--ss3d-space-3);
+}
+
+.examine-detail-image__image {
+    width: 260px;
+    height: 175px;
+}
+
+.examine-detail-image__caption {
+    margin-top: var(--ss3d-space-1);
+    font-size: 12px;
+    white-space: normal;
+    -unity-text-align: middle-center;
+}

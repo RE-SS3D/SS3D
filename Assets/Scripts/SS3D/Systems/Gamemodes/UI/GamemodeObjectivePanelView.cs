@@ -1,38 +1,30 @@
 ﻿using System.Collections.Generic;
 using Coimbra;
 using Coimbra.Services.Events;
-using SS3D.Core;
-using SS3D.Systems.Inputs;
 using SS3D.Systems.Rounds;
 using SS3D.Systems.Rounds.Events;
 using SS3D.Utils;
 using UnityEngine;
-using UnityEngine.InputSystem;
 using Actor = SS3D.Core.Behaviours.Actor;
-using InputSubSystem = SS3D.Systems.Inputs.InputSubSystem;
 
 namespace SS3D.Systems.Gamemodes.UI
 {
+    /// <summary>
+    /// Legacy uGUI objectives panel — kept for data wiring but hidden on screen.
+    /// Design surface is the PDA objectives tab (objectives.md §8).
+    /// </summary>
     public class GamemodeObjectivePanelView : Actor
     {
         [SerializeField] private UiFade _fade;
 
         [SerializeField] private GamemodeObjectiveItemView _itemViewPrefab;
         [SerializeField] private GameObject _content;
-        private Controls.OtherActions _controls;
 
         private Dictionary<int, GamemodeObjectiveItemView> _gamemodeObjectiveItems;
-        
+
         protected override void OnAwake()
         {
             base.OnAwake();
-            
-            InputSubSystem inputSystem = SubSystems.Get<InputSubSystem>();
-
-            if (inputSystem)
-            {
-                _controls = inputSystem.Inputs.Other;
-            }
 
             _gamemodeObjectiveItems = new Dictionary<int, GamemodeObjectiveItemView>();
 
@@ -43,33 +35,16 @@ namespace SS3D.Systems.Gamemodes.UI
         {
             base.OnStart();
 
-            _fade.SetFade(false);
-        }
+            // Hidden until the PDA objectives tab ships — no hold-to-show hotkey revival.
+            if (_fade != null)
+            {
+                _fade.SetFade(false);
+            }
 
-        protected override void OnEnabled()
-        {
-            base.OnEnabled();
-            
-            _controls.Fade.performed += HandleFadePerformed;
-            _controls.Fade.canceled += HandleFadeCanceled;
-        }
-        
-        protected override void OnDisabled()
-        {
-            base.OnDisabled();
-            
-            _controls.Fade.performed -= HandleFadePerformed;
-            _controls.Fade.canceled -= HandleFadeCanceled;
-        }
-
-        private void HandleFadePerformed(InputAction.CallbackContext context)
-        {
-            _fade.SetFade(true);
-        }
-
-        private void HandleFadeCanceled(InputAction.CallbackContext context)
-        {
-            _fade.SetFade(false);
+            if (_content != null)
+            {
+                _content.SetActive(false);
+            }
         }
 
         private void HandleRoundStateUpdated(ref EventContext context, in RoundStateUpdated e)
@@ -84,13 +59,13 @@ namespace SS3D.Systems.Gamemodes.UI
 
         public void ProcessObjectiveUpdated(GamemodeObjective objective)
         {
+            // Panel is disabled; still accept updates so state is ready when PDA tab lands.
             bool hasValue = _gamemodeObjectiveItems.TryGetValue(objective.Id, out GamemodeObjectiveItemView view);
 
             if (hasValue)
             {
                 view.UpdateObjective(objective);
             }
-
             else
             {
                 CreateItemView(objective);
@@ -99,8 +74,13 @@ namespace SS3D.Systems.Gamemodes.UI
 
         private void CreateItemView(GamemodeObjective objective)
         {
+            if (_itemViewPrefab == null || _content == null)
+            {
+                return;
+            }
+
             GamemodeObjectiveItemView itemView = Instantiate(_itemViewPrefab, _content.transform);
-            itemView.SetActive(true);
+            itemView.SetActive(false);
 
             _gamemodeObjectiveItems.Add(objective.Id, itemView);
             itemView.UpdateObjective(objective);
@@ -108,7 +88,7 @@ namespace SS3D.Systems.Gamemodes.UI
 
         private void ClearObjectivesList()
         {
-            foreach (KeyValuePair<int,GamemodeObjectiveItemView> view in _gamemodeObjectiveItems)
+            foreach (KeyValuePair<int, GamemodeObjectiveItemView> view in _gamemodeObjectiveItems)
             {
                 view.Value.GameObject.Dispose(true);
             }

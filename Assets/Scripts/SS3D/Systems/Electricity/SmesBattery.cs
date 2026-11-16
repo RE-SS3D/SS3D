@@ -1,15 +1,15 @@
-﻿using FishNet.Object;
+using FishNet.Object;
 using SS3D.Core;
-using SS3D.Interactions;
+using SS3D.Systems.Audio;
 using UnityEngine;
 using UnityEngine.Serialization;
 
-namespace System.Electricity
+namespace SS3D.Systems.Electricity
 {
     /// <summary>
     /// Script for SMES battery, mostly to handle displaying visual indicators on the SMES models.
     /// </summary>
-    public class SmesBattery : BasicBattery
+    public class SmesBattery : BasicBattery, IAmbientLoopState
     {
         [FormerlySerializedAs("SmesSkinnedMesh")]
         [SerializeField]
@@ -19,7 +19,7 @@ namespace System.Electricity
         private const int ChargeblendIndex = 0;
         private const int OnBlendIndex = 12;
         private const int OffBlendIndex = 13;
-        private float _previousPowerStored = 0f;
+        private float _previousEnergyStored;
         private int _currentLightOutput = 0;
         private int _lightOutputTarget = 0;
 
@@ -30,19 +30,36 @@ namespace System.Electricity
         private int _updateLightPeriod = 3;
         private int _updateCount = 0;
 
+        public bool IsLoopRunning => _isOn && StoredEnergyKwh > 0f;
+
         public override void OnStartClient()
         {
             base.OnStartClient();
-            GetComponent<GenericToggleInteractionTarget>().OnToggle += HandleBatteryToggle;
-            HandleBatteryToggle(_isOn);
+            HandleSyncEnabled(false, _isOn, false);
 
             SubSystems.Get<ElectricitySubSystem>().OnTick += HandleTick;
+        }
+
+        // A client that leaves the SMES's observer range and comes back runs OnStartClient again;
+        // without this the first handler outlives the object and throws on its destroyed renderer.
+        public override void OnStopClient()
+        {
+            base.OnStopClient();
+            if (SubSystems.TryGet(out ElectricitySubSystem electricitySystem))
+            {
+                electricitySystem.OnTick -= HandleTick;
+            }
         }
 
         protected override void OnDestroyed()
         {
             base.OnDestroyed();
-            SubSystems.Get<ElectricitySubSystem>().OnTick -= HandleTick;
+
+            // Hub may already be unregistered during client disconnect teardown.
+            if (SubSystems.TryGet(out ElectricitySubSystem electricitySystem))
+            {
+                electricitySystem.OnTick -= HandleTick;
+            }
         }
 
         [Client]
@@ -51,7 +68,7 @@ namespace System.Electricity
             AdjustBatteryLevel();
             AdjustBatteryOutput();
             AdjustBatteryInput();
-            _previousPowerStored = StoredPower;
+            _previousEnergyStored = StoredEnergyKwh;
             _updateCount++;
         }
 
@@ -61,7 +78,7 @@ namespace System.Electricity
         [Client]
         private void AdjustBatteryLevel()
         {
-            float chargeLevelNormalized = StoredPower / MaxCapacity;
+            float chargeLevelNormalized = StoredEnergyKwh / MaxCapacityKwh;
             _smesSkinnedMesh.SetBlendShapeWeight(ChargeblendIndex, chargeLevelNormalized*100);
         }
 
@@ -71,9 +88,9 @@ namespace System.Electricity
         [Client]
         private void AdjustBatteryInput()
         {
-            float powerAdded = Mathf.Max(StoredPower - _previousPowerStored, 0f);
+            float energyAdded = Mathf.Max(StoredEnergyKwh - _previousEnergyStored, 0f);
 
-            if(powerAdded > 0f)
+            if(energyAdded > 0f)
             {
                 _smesSkinnedMesh.SetBlendShapeWeight(11, 100f);
             }
@@ -115,19 +132,11 @@ namespace System.Electricity
         [Client]
         private void ComputeLightOutputTarget()
         {
-            float powerRemoved = Mathf.Max(_previousPowerStored - StoredPower, 0f);
-            float relativeRate = Mathf.Floor(10 * powerRemoved / MaxPowerRate);
+            float energyRemoved = Mathf.Max(_previousEnergyStored - StoredEnergyKwh, 0f);
+            float removedKw = ElectricityUnits.KwhToKw(energyRemoved);
+            float relativeRate = Mathf.Floor(10f * removedKw / MaxDischargeRateKw);
 
             _lightOutputTarget = (int)relativeRate; 
-        }
-
-        /// <summary>
-        /// Called when the SMES battery is toggled on or off.
-        /// </summary>
-        /// <param name="toggle"> True if the battery is on.</param>
-        private void HandleBatteryToggle(bool toggle)
-        {
-            _isOn = toggle;
         }
 
         protected override void HandleSyncEnabled(bool oldValue, bool newValue, bool asServer)

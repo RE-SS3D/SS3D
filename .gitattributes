@@ -28,3 +28,6 @@
 *.ttf binary
 *.otf binary
 *tss binary
+
+# Windows launch scripts: cmd.exe needs CRLF.
+*.bat text eol=crlf

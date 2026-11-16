@@ -4,8 +4,8 @@ using FishNet.Broadcast;
 namespace SS3D.Systems.Rounds.Messages
 {
     /// <summary>
-    /// Used by the player to start a round
-    /// TODO: Make this based on player permissions
+    /// Asks the server to start (true) or stop (false) the round; the server accepts it from administrators only
+    /// (<c>RoundSubSystemBase.AuthorizeChangeRoundState</c>).
     /// </summary>
     [Serializable]
     public struct ChangeRoundStateMessage : IBroadcast

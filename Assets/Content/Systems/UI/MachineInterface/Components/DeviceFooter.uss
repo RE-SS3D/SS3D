@@ -1,0 +1,12 @@
+
+.device-footer {
+    align-items: center;
+    padding: 6px 0 2px;
+}
+
+.device-footer__label {
+    font-size: 9px;
+    letter-spacing: 1px;
+    color: rgba(255, 255, 255, 0.15);
+    -unity-text-align: middle-center;
+}

@@ -1,0 +1,45 @@
+
+.tone-info {
+    color: var(--ss3d-feedback-info);
+}
+
+.tone-success {
+    color: var(--ss3d-feedback-success);
+}
+
+.tone-warning {
+    color: var(--ss3d-feedback-warning);
+}
+
+.tone-danger {
+    color: var(--ss3d-feedback-danger);
+}
+
+.tone-neutral {
+    color: var(--ss3d-text-tertiary);
+}
+
+.tone-bg-info {
+    background-color: var(--ss3d-feedback-info-bg);
+    border-color: var(--ss3d-feedback-info-border);
+}
+
+.tone-bg-success {
+    background-color: var(--ss3d-feedback-success-bg);
+    border-color: var(--ss3d-feedback-success-border);
+}
+
+.tone-bg-warning {
+    background-color: var(--ss3d-feedback-warning-bg);
+    border-color: var(--ss3d-feedback-warning-border);
+}
+
+.tone-bg-danger {
+    background-color: var(--ss3d-feedback-danger-bg);
+    border-color: var(--ss3d-feedback-danger-border);
+}
+
+.tone-bg-neutral {
+    background-color: var(--ss3d-diegetic-inset);
+    border-color: var(--ss3d-border-subtle);
+}

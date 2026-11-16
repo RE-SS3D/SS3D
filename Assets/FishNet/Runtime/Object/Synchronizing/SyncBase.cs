@@ -185,8 +185,28 @@ namespace FishNet.Object.Synchronizing.Internal
         /// </summary>
         protected void LogServerNotActiveWarning()
         {
-            if (NetworkManager != null)
-                NetworkManager.LogWarning($"Cannot complete operation as server when server is not active. You can disable this warning by setting WritePermissions to {WritePermission.ClientUnsynchronized.ToString()}.");
+            if (NetworkManager == null)
+                return;
+
+            // Include behaviour/object identity — release player stacks often strip managed
+            // frames down to NetworkActor.Start, which is useless for SyncVar denylist triage.
+            NetworkBehaviour nb = NetworkBehaviour;
+            string behaviour = nb != null ? nb.GetType().FullName : "?";
+            string objectName = nb != null ? nb.name : "?";
+            int objectId = -1;
+            try
+            {
+                if (nb != null && nb.NetworkObject != null)
+                    objectId = nb.ObjectId;
+            }
+            catch
+            {
+                // Ignore — identity is best-effort for triage logging.
+            }
+            NetworkManager.LogWarning(
+                $"Cannot complete operation as server when server is not active. " +
+                $"Behaviour={behaviour} Object={objectName} ObjectId={objectId}. " +
+                $"You can disable this warning by setting WritePermissions to {WritePermission.ClientUnsynchronized.ToString()}.");
         }
 
         /// <summary>

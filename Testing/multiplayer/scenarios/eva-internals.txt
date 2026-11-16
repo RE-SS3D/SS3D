@@ -1,0 +1,8 @@
+# Guards: an operative's kit gives a real remote client working internals: the tank spawns in suit storage after the suit, and the client's toggle reaches the server's breath · Not cheaper because: needs a client process whose owned body only sees replicated gear, on a UNITY_SERVER build that runs the health tick; nightly only
+# Dedicated-server side of eva-internals. The client readies, auto-start draws it into the squad, and
+# the server stays up while the client toggles.
+wait_timeout 240
+wait_connected
+wait_round Ongoing
+wait_seconds 30
+disconnect

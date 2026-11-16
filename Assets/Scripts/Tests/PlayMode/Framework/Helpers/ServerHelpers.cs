@@ -1,88 +1,91 @@
-﻿using NUnit.Framework;
+using FishNet;
 using SS3D.Core;
 using SS3D.Systems.Entities;
 using SS3D.Systems.PlayerControl;
 using SS3D.Systems.Rounds;
 using SS3D.Systems.Rounds.Messages;
 using System.Collections;
-using System.Diagnostics;
-using UnityEngine;
 using System.Linq;
-using Tests.Play_Mode.Framework.Helpers;
+using NUnit.Framework;
+using UnityEngine;
 
 namespace SS3D.Tests
 {
     /// <summary>
     /// This class is simply a container for helper methods for the Server, for use
-    /// in UnityTests.
+    /// in UnityTests. Only valid for single-process (Host or in-Editor DedicatedServer)
+    /// PlayMode tests - the stub broadcast methods it calls are Editor-only and don't compile
+    /// into a real built player/server. For real multi-process coverage, see
+    /// Testing/multiplayer/ (Documents/architecture/systems/networking-session-testing.md).
     /// </summary>
     public static class ServerHelpers
     {
-        public static Process[] CreateClients(int amount, ProcessWindowStyle windowStyle = ProcessWindowStyle.Minimized)
+        /// <summary>Ckey of the local player in single-process PlayMode tests (see PlayModeTest.SetApplicationSettings).</summary>
+        public const string LocalCkey = "john";
+
+        /// <summary>
+        /// Round-end summary beat in PlayMode tests: the 3 s Ending delay rounds had before the 30 s summary,
+        /// so tests that stop a round for set-up or teardown don't each wait 30 s (testing philosophy D7).
+        /// </summary>
+        public const int TestEndBeatSeconds = 3;
+
+        /// <summary>Shortens the round-end beat to <see cref="TestEndBeatSeconds"/> for this server session. No-op off the server.</summary>
+        public static void UseTestEndBeat()
         {
-            string filePath;
-            Process[] result;
-
-            // Initialize the process return array
-            result = new Process[amount];
-
-            // Get relevant executable file path
-            filePath = Application.dataPath;
-            filePath = filePath.Substring(0, filePath.Length - 6);     // Needed to remove the "Assets" folder.
-            filePath += "Builds/Game";                                    // Needed to add the "Builds" folder.
-
-            for (int i = 0; i < amount; i++)
+            if (InstanceFinder.ServerManager != null && InstanceFinder.ServerManager.Started
+                && SubSystems.TryGet(out RoundSubSystem rounds))
             {
-                // Fire up the client.
-                result[i] = new Process();
-                result[i].StartInfo.WindowStyle = windowStyle;
-                result[i].StartInfo.Arguments = $"-ip=localhost -ckey=player_{i} -port=1151 -skipintro";
-                result[i].StartInfo.FileName = "SS3D.exe";
-                result[i].StartInfo.WorkingDirectory = filePath;
-                result[i].Start();
-            }
-
-            
-
-            return result;
-        }
-
-
-
-        public static IEnumerator SetWindowPositions(Process[] process)
-        {
-            for (int i = 0; i < process.Length;i++)
-            {
-                LoadFileHelpers.PlaceQuadWindow(process[i], i);
-                yield return new WaitForSeconds(0.5f);
+                rounds.SetEndBeatSecondsForTesting(TestEndBeatSeconds);
             }
         }
 
-        public static IEnumerator WaitUntilClientsLoaded(int amountOfClients, float timeout = 60f)
+        public static RoundState CurrentRoundState => SubSystems.Get<RoundSubSystem>().CurrentRoundState;
+
+        /// <summary>Polls the server's round state (no event observer needed).</summary>
+        public static IEnumerator WaitForRoundState(RoundState target, float timeout = 30f)
         {
-            PlayerSubSystem playerSystem = SubSystems.Get<PlayerSubSystem>();
-            int currentOnlineSouls = 0;
             float startTime = Time.time;
-
-            // This loop simply waits until all players have joined.
-            while (currentOnlineSouls < amountOfClients)
+            while (CurrentRoundState != target)
             {
-                // Allow timeout if needed.
-                Assert.IsTrue(Time.time < startTime + timeout, $"Only {currentOnlineSouls} of {amountOfClients} clients loaded after timeout of {timeout} seconds.");
-
-                // Check whether all souls are online.
-                currentOnlineSouls = 0;
-                foreach (Player player in playerSystem.OnlinePlayers)
-                {
-                    currentOnlineSouls++;
-                }
-                
-                yield return new WaitForSeconds(2f);
+                Assert.IsTrue(Time.time - startTime < timeout, $"Expected round state {target} but was {CurrentRoundState} after {timeout} seconds.");
+                yield return null;
             }
-
-            yield return new WaitForSeconds(2f);
         }
 
+        public static bool IsPlayerSpawned(string ckey)
+        {
+            Player player = SubSystems.Get<PlayerSubSystem>().GetPlayer(ckey);
+            return player != null && SubSystems.Get<EntitySubSystem>().IsPlayerSpawned(player);
+        }
+
+        /// <summary>Joins the Ongoing round as <paramref name="ckey"/> unless already spawned, and waits for the body.</summary>
+        public static IEnumerator EmbarkPlayer(string ckey, float timeout = 15f)
+        {
+            yield return WaitForRoundState(RoundState.Ongoing, timeout);
+            if (!IsPlayerSpawned(ckey))
+            {
+                SpawnLatePlayer(ckey);
+            }
+
+            float startTime = Time.time;
+            while (!IsPlayerSpawned(ckey))
+            {
+                Assert.IsTrue(Time.time - startTime < timeout, $"{ckey} was not spawned within {timeout} seconds of embarking.");
+                yield return null;
+            }
+        }
+
+        /// <summary>Stops a running or starting round and waits until it is Stopped. Safe when no round runs.</summary>
+        public static IEnumerator StopRound(float timeout = 30f)
+        {
+            if (!SubSystems.TryGet(out RoundSubSystem rounds) || rounds.CurrentRoundState == RoundState.Stopped)
+            {
+                yield break;
+            }
+
+            ChangeRoundState(false);
+            yield return WaitForRoundState(RoundState.Stopped, timeout);
+        }
 
         /// <summary>
         /// Sets all players ready.
@@ -92,7 +95,7 @@ namespace SS3D.Tests
             PlayerSubSystem playerSystem = SubSystems.Get<PlayerSubSystem>();
             ReadyPlayersSubSystem readyPlayersSystem = SubSystems.Get<ReadyPlayersSubSystem>();
             ChangePlayerReadyMessage msg;
-                
+
             foreach (Player player in playerSystem.OnlinePlayers)
             {
                 msg = new ChangePlayerReadyMessage(player.Ckey, true);
@@ -127,7 +130,5 @@ namespace SS3D.Tests
             Player player = playerSystem.GetPlayer(Ckey);
             entitySystem.CmdSpawnLatePlayer(player);
         }
-
-
     }
 }

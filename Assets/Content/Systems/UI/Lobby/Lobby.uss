@@ -1,0 +1,449 @@
+/*
+ * Lobby shell (lobby effort Phase 4), to the "SS3D Lobby & Character window" canvas. Tokens: LobbyTokens.uss.
+ * UI Toolkit has no gap, box-shadow or text decoration: spacing is margins, depth is surface tone and 1px borders,
+ * and the held timer's strike is its own element. LobbyView switches .lobby--compact on below 1600 px of panel width
+ * (the 1366 x 768 layout, Decision 19).
+ */
+@import url("LobbyTokens.uss");
+@import url("CharacterSwitcher.uss");
+@import url("LobbyJoin.uss");
+
+.lobby {
+    position: absolute; left: 0; top: 0; right: 0; bottom: 0;
+    background-color: rgba(0, 0, 0, 0);
+}
+.lobby Label { margin: 0; padding: 0; }
+.lobby Button { margin: 0; padding: 0; border-width: 0; border-radius: 0; background-color: rgba(0, 0, 0, 0); color: var(--lb-text); -unity-font-style: normal; -unity-text-align: middle-left; }
+.lobby .lobby-chat__channel-button, .lobby .lobby-admin__button, .lobby .lobby__switch-toggle { -unity-text-align: middle-center; }
+.lobby__veil { position: absolute; left: 0; top: 0; right: 0; bottom: 0; background-color: rgba(6, 7, 9, 0.45); }
+.lobby__grow { flex-grow: 1; }
+.lobby__row { flex-direction: row; align-items: center; }
+.lobby__eyebrow { font-size: 11px; letter-spacing: 1.32px; color: var(--lb-text-2); -unity-font-style: bold; }
+
+/* Icons: white sprites, tinted per use. */
+.lobby__icon { width: 16px; height: 16px; flex-shrink: 0; -unity-background-scale-mode: scale-to-fit; -unity-background-image-tint-color: var(--lb-text-2); }
+.lobby__icon--lock { background-image: url("project://database/Assets/Art/Icons/Heroicons/Outline/LockClosed.png"); }
+.lobby__icon--chevron-right { background-image: url("project://database/Assets/Art/Icons/Heroicons/Outline/ChevronRight.png"); }
+.lobby__icon--chevron-down { background-image: url("project://database/Assets/Art/Icons/Heroicons/Outline/ChevronDown.png"); width: 14px; height: 14px; }
+.lobby__icon--users { background-image: url("project://database/Assets/Art/Icons/Heroicons/Outline/Users.png"); }
+.lobby__icon--check { background-image: url("project://database/Assets/Art/Icons/Heroicons/Outline/Check.png"); }
+.lobby__icon--ghost { background-image: url("project://database/Assets/Art/Icons/External/lorc/ghost.svg"); }
+.lobby__icon--music { background-image: url("project://database/Assets/Art/Icons/Heroicons/Solid/MusicNote.png"); }
+.lobby__icon--bug { background-image: url("project://database/Assets/Art/Icons/External/lorc/long-antennae-bug.svg"); }
+.lobby__icon--logout { background-image: url("project://database/Assets/Art/Icons/Heroicons/Outline/Logout.png"); }
+.lobby__icon--external { background-image: url("project://database/Assets/Art/Icons/Heroicons/Outline/ExternalLink.png"); width: 12px; height: 12px; }
+.lobby__icon--send { background-image: url("project://database/Assets/Art/Icons/Heroicons/Outline/PaperAirplane.png"); width: 14px; height: 14px; }
+.lobby__icon--chevron-left { background-image: url("project://database/Assets/Art/Icons/Heroicons/Outline/ChevronLeft.png"); width: 14px; height: 14px; }
+.lobby__icon--refresh { background-image: url("project://database/Assets/Art/Icons/Heroicons/Outline/Refresh.png"); }
+.lobby__icon--duplicate { background-image: url("project://database/Assets/Art/Icons/Heroicons/Outline/Duplicate.png"); }
+.lobby__icon--trash { background-image: url("project://database/Assets/Art/Icons/Heroicons/Outline/Trash.png"); }
+.lobby__icon--plus { background-image: url("project://database/Assets/Art/Icons/Heroicons/Outline/Plus.png"); }
+.lobby__icon--x { background-image: url("project://database/Assets/Art/Icons/Heroicons/Outline/X.png"); }
+.lobby__icon--info { background-image: url("project://database/Assets/Art/Icons/Heroicons/Outline/InformationCircle.png"); }
+.lobby__icon--warning { background-image: url("project://database/Assets/Art/Icons/Heroicons/Outline/Exclamation.png"); }
+.lobby__icon--user { background-image: url("project://database/Assets/Art/Icons/Heroicons/Solid/User.png"); }
+.lobby__icon--sparkles { background-image: url("project://database/Assets/Art/Icons/Heroicons/Outline/Sparkles.png"); }
+/* Department symbols (game-icons.net, CC BY 3.0; see Art/Icons/External/license.txt), tinted per department. */
+.lobby__icon--dept-command { background-image: url("project://database/Assets/Art/Icons/External/delapouite/captain-hat-profile.svg"); }
+.lobby__icon--dept-security { background-image: url("project://database/Assets/Art/Icons/External/delapouite/police-target.svg"); }
+.lobby__icon--dept-engineering { background-image: url("project://database/Assets/Art/Icons/External/lorc/cog.svg"); }
+.lobby__icon--dept-medical { background-image: url("project://database/Assets/Art/Icons/External/lorc/hospital-cross.svg"); }
+.lobby__icon--dept-science { background-image: url("project://database/Assets/Art/Icons/External/skoll/atom.svg"); }
+.lobby__icon--dept-cargo { background-image: url("project://database/Assets/Art/Icons/External/delapouite/cargo-crate.svg"); }
+.lobby__icon--dept-service { background-image: url("project://database/Assets/Art/Icons/External/lorc/beer-stein.svg"); }
+.lobby__icon--dept-civilian { background-image: url("project://database/Assets/Art/Icons/External/delapouite/bed.svg"); }
+
+.lobby .lobby__dot { width: 6px; height: 6px; border-radius: 3px; margin-right: 6px; background-color: var(--lb-text-2); }
+.lobby .lobby__dot--live { background-color: var(--lb-green); }
+.lobby .lobby__dot--warning { background-color: var(--lb-amber); }
+.lobby__status { font-size: 12px; color: var(--lb-text-2); }
+.lobby__status--live { color: var(--lb-green); }
+.lobby__status--warning { color: var(--lb-amber); }
+
+.lobby .lobby__keycap {
+    font-size: 11px; color: var(--lb-text-2); padding: 1px 5px; margin-left: 8px;
+    border-width: 1px; border-color: var(--lb-border); border-radius: 2px;
+}
+
+/* ---- Sidebar ---- */
+.lobby__sidebar {
+    position: absolute; left: 0; top: 0; bottom: 0; width: 400px;
+    background-color: var(--lb-sidebar); border-right-width: 1px; border-right-color: var(--lb-border);
+}
+.lobby .lobby__wordmark-block {
+    padding: 24px 24px 16px; align-items: center; flex-shrink: 0;
+    border-bottom-width: 1px; border-bottom-color: var(--lb-border-subtle);
+}
+.lobby__wordmark {
+    width: 216px; height: 101px;
+    background-image: url("project://database/Assets/Art/Textures/UI/Logos/SS3DLogo.png");
+    -unity-background-scale-mode: scale-to-fit;
+}
+.lobby .lobby__section { padding: 24px; flex-shrink: 0; border-bottom-width: 1px; border-bottom-color: var(--lb-border-subtle); }
+/* The canvas has no divider under Ready / Observe; .lobby .lobby__section would otherwise draw one. */
+.lobby .lobby__entry { border-bottom-width: 0; }
+
+.lobby .lobby__round-caption { font-size: 13px; color: var(--lb-text-2); margin-top: 10px; }
+.lobby__round--waiting .lobby__round-caption { font-size: 17px; color: var(--lb-text); -unity-font-style: bold; }
+.lobby .lobby__timer-wrap { margin-top: 8px; align-self: flex-start; }
+.lobby__timer { font-size: 48px; color: var(--lb-text); letter-spacing: 1px; }
+.lobby__timer-strike { position: absolute; left: 0; right: 0; top: 50%; height: 2px; background-color: var(--lb-disabled); display: none; }
+.lobby__timer-wrap--held .lobby__timer { color: var(--lb-disabled); }
+.lobby__timer-wrap--held .lobby__timer-strike { display: flex; }
+.lobby .lobby__note { margin-top: 10px; align-items: flex-start; }
+.lobby .lobby__note-icon { width: 12px; height: 12px; margin: 2px 6px 0 0; }
+.lobby__note-text { flex-shrink: 1; flex-grow: 1; font-size: 12px; color: var(--lb-text-2); white-space: normal; }
+.lobby__note--warning .lobby__note-text { color: var(--lb-amber); }
+.lobby__note--warning .lobby__note-icon { -unity-background-image-tint-color: var(--lb-amber); }
+.lobby .lobby__map-load { margin-top: 8px; font-size: 12px; color: var(--lb-text-2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.lobby .lobby__map-load--loading { color: var(--lb-amber); }
+.lobby .lobby__map-load--failed { color: var(--lb-red-text); }
+
+/* Character card: the whole card opens the character window. */
+.lobby .lobby__card {
+    flex-direction: row; align-items: stretch; padding: 12px;
+    background-color: var(--lb-inset); border-width: 1px; border-color: var(--lb-border-subtle); border-radius: 4px;
+}
+.lobby .lobby__card:hover { background-color: var(--lb-hover); border-color: var(--lb-border); }
+.lobby .lobby__card:focus { border-color: var(--lb-border-strong); }
+.lobby .lobby__preview-frame {
+    width: 124px; height: 211px; flex-shrink: 0; margin-right: 16px;
+    border-width: 1px; border-color: var(--lb-border); background-color: var(--lb-panel);
+}
+.lobby__preview-image { flex-grow: 1; -unity-background-scale-mode: scale-and-crop; }
+.lobby__card-text { flex-grow: 1; flex-shrink: 1; min-width: 0; }
+.lobby .lobby__character-name { margin-top: 6px; font-size: 18px; -unity-font-style: bold; color: var(--lb-text); white-space: normal; }
+.lobby .lobby__high { margin-top: 6px; flex-wrap: wrap; }
+.lobby .lobby__high-swatch { width: 8px; height: 8px; margin-right: 6px; }
+.lobby .lobby__high-prefix { font-size: 13px; color: var(--lb-text-2); margin-right: 4px; }
+.lobby__high-job { font-size: 13px; }
+.lobby__card-edit-label { font-size: 18px; letter-spacing: 1.44px; flex-shrink: 1; white-space: normal; }
+.lobby__card-edit .lobby__icon { margin-left: 4px; -unity-background-image-tint-color: var(--lb-text); width: 14px; height: 14px; }
+
+.lobby .lobby__switch {
+    flex-direction: row; align-items: center; height: 36px; margin-top: 8px; padding: 0 12px;
+    background-color: var(--lb-chrome); border-radius: 4px;
+}
+.lobby .lobby__switch:hover { background-color: var(--lb-inset); }
+.lobby__switch .lobby__icon--users { margin-right: 8px; }
+.lobby__switch-label { font-size: 18px; letter-spacing: 1.44px; }
+.lobby .lobby__switch-count { font-size: 12px; color: var(--lb-text-2); margin-right: 6px; }
+
+/* Ready / Join: the most prominent control on screen. */
+.lobby .lobby__ready {
+    flex-direction: row; align-items: center; height: 72px; padding: 0 16px; border-radius: 4px;
+    background-color: var(--lb-rust);
+}
+.lobby .lobby__ready:hover { background-color: var(--lb-rust-hover); }
+.lobby .lobby__ready:active { background-color: var(--lb-rust-active); }
+.lobby__ready-text { flex-grow: 1; }
+/*
+ * Gurajada's line box is about twice its size (~39px at 20px) with the capitals near its top, so a plain label makes
+ * the text block too tall and pushes the subtitle to the button's bottom edge. A 16px box with the text centred in
+ * it holds just the capitals, as the canvas's line-height: 1 does.
+ */
+.lobby .lobby__ready-title { height: 16px; font-size: 20px; letter-spacing: 1.6px; color: var(--lb-on-accent); -unity-text-align: middle-left; }
+.lobby .lobby__ready-subtitle { font-size: 12px; margin-top: 6px; color: var(--lb-on-accent); }
+.lobby .lobby__ready-check { display: none; width: 18px; height: 18px; margin-right: 12px; -unity-background-image-tint-color: var(--lb-on-light); }
+.lobby .lobby__ready--confirmed { background-color: var(--lb-green); }
+.lobby .lobby__ready--confirmed:hover { background-color: var(--lb-green-hover); }
+.lobby__ready--confirmed .lobby__ready-check { display: flex; }
+.lobby__ready--confirmed .lobby__ready-title, .lobby__ready--confirmed .lobby__ready-subtitle { color: var(--lb-on-light); }
+.lobby .lobby__ready:disabled { background-color: var(--lb-inset); opacity: 1; }
+.lobby__ready:disabled .lobby__ready-title, .lobby__ready:disabled .lobby__ready-subtitle { color: var(--lb-disabled); }
+.lobby .lobby__entry-note { margin-top: 8px; display: none; }
+.lobby .lobby__entry-note--shown { display: flex; }
+
+.lobby .lobby__observe {
+    flex-direction: row; align-items: center; height: 48px; margin-top: 8px; padding: 0 16px; border-radius: 4px;
+    background-color: var(--lb-chrome);
+}
+.lobby .lobby__observe:hover { background-color: var(--lb-inset); }
+.lobby .lobby__observe:active { background-color: var(--lb-rust-active); }
+.lobby .lobby__observe-icon { width: 18px; height: 18px; margin-right: 10px; -unity-background-image-tint-color: var(--lb-text); }
+.lobby .lobby__observe-title { font-size: 20px; letter-spacing: 1.6px; margin-right: 10px; }
+.lobby__observe-subtitle { font-size: 12px; color: var(--lb-text-2); flex-shrink: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.lobby .lobby__observe:disabled { opacity: 1; background-color: var(--lb-inset); }
+.lobby__observe:disabled .lobby__observe-title, .lobby__observe:disabled .lobby__observe-subtitle { color: var(--lb-disabled); }
+.lobby__observe:disabled .lobby__observe-icon { -unity-background-image-tint-color: var(--lb-disabled); }
+
+/* Focus shows as the hover fill, not an outline: a clicked button keeps focus, and the canvas has no ring. */
+.lobby .lobby__ready:focus { background-color: var(--lb-rust-hover); }
+.lobby .lobby__ready--confirmed:focus { background-color: var(--lb-green-hover); }
+.lobby .lobby__observe:focus, .lobby .lobby__switch:focus { background-color: var(--lb-inset); }
+
+/* Quiet buttons: Next, Report a bug, Quit, Back to round. */
+.lobby .lobby__quiet-button {
+    flex-direction: row; align-items: center; height: 32px; padding: 0 8px; border-radius: 2px;
+    border-width: 1px; border-color: rgba(0, 0, 0, 0); color: var(--lb-text-2);
+}
+.lobby .lobby__quiet-button:hover { background-color: var(--lb-inset); color: var(--lb-text); }
+.lobby .lobby__quiet-button:focus { border-color: var(--lb-border-strong); }
+
+.lobby .lobby__music {
+    flex-direction: row; align-items: center; padding: 10px 24px; flex-shrink: 0;
+    border-top-width: 1px; border-top-color: var(--lb-border-subtle);
+}
+.lobby .lobby__music-toggle {
+    width: 32px; height: 32px; flex-shrink: 0; align-items: center; justify-content: center; margin-right: 10px;
+    background-color: var(--lb-chrome); border-radius: 2px;
+}
+.lobby .lobby__music-toggle:hover { background-color: var(--lb-inset); }
+.lobby__music-toggle .lobby__icon { -unity-background-image-tint-color: #e6e6e6; }
+.lobby__music--off .lobby__music-toggle .lobby__icon { -unity-background-image-tint-color: var(--lb-disabled); }
+.lobby__music-text { flex-grow: 1; flex-shrink: 1; min-width: 0; }
+.lobby .lobby__music-title { font-size: 12px; margin-top: 2px; color: var(--lb-text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.lobby__music--off .lobby__music-title { color: var(--lb-text-2); }
+.lobby .lobby__music-next { font-size: 16px; letter-spacing: 1.28px; flex-shrink: 0; margin-right: 8px; }
+.lobby .lobby__slider { width: 88px; flex-shrink: 0; margin: 0; }
+.lobby__slider .unity-base-slider__input { height: 20px; }
+.lobby__slider .unity-base-slider__tracker { height: 4px; margin-top: -2px; border-width: 0; border-radius: 0; background-color: var(--lb-border); }
+.lobby__slider .unity-base-slider__dragger { width: 10px; height: 18px; margin-top: -9px; border-width: 1px; border-color: var(--lb-void); border-radius: 1px; background-color: var(--lb-text); }
+.lobby__slider .unity-base-slider__dragger-border { display: none; }
+
+.lobby .lobby__footer {
+    flex-direction: row; justify-content: space-between; align-items: center; padding: 16px; flex-shrink: 0;
+    border-top-width: 1px; border-top-color: var(--lb-border-subtle);
+}
+.lobby__footer-button .lobby__icon { margin-right: 8px; }
+.lobby__footer-label { font-size: 18px; letter-spacing: 1.44px; }
+.lobby .lobby__quit--armed { background-color: var(--lb-red-bg); border-color: var(--lb-red); color: var(--lb-red-text); }
+.lobby .lobby__quit--armed:hover { background-color: var(--lb-red-bg); color: var(--lb-red-text); }
+.lobby__quit--armed .lobby__icon { -unity-background-image-tint-color: var(--lb-red-text); }
+
+/* ---- Main panel ---- */
+.lobby__main {
+    position: absolute; left: 424px; top: 24px; right: 24px; bottom: 24px;
+    background-color: var(--lb-panel); border-width: 1px; border-color: var(--lb-border); border-radius: 4px;
+}
+.lobby .lobby__header {
+    flex-direction: row; align-items: center; height: 60px; padding: 0 20px; flex-shrink: 0;
+    background-color: var(--lb-chrome); border-top-left-radius: 3px; border-top-right-radius: 3px;
+}
+.lobby .lobby__server-name { font-size: 20px; letter-spacing: 1.6px; margin-right: 24px; white-space: nowrap; flex-shrink: 0; }
+.lobby__header-meta { flex-direction: row; align-items: center; flex-shrink: 1; overflow: hidden; }
+.lobby .lobby__meta-key { font-size: 12px; color: var(--lb-text-2); margin-right: 6px; }
+.lobby__meta-value { font-size: 13px; color: var(--lb-text); white-space: nowrap; }
+.lobby .lobby__meta-sep { width: 1px; height: 14px; margin: 0 16px; background-color: var(--lb-border); }
+.lobby__back { height: 36px; display: none; }
+.lobby__back--shown { display: flex; }
+.lobby__back-label { font-size: 20px; letter-spacing: 1.6px; color: var(--lb-text); }
+
+.lobby .lobby__tabs { flex-direction: row; align-items: stretch; flex-shrink: 0; padding: 0 12px; background-color: var(--lb-chrome); }
+.lobby .lobby__tab {
+    flex-direction: row; align-items: center; height: 40px; margin: 4px 2px 0 0; padding: 0 18px;
+    border-top-left-radius: 2px; border-top-right-radius: 2px;
+    font-size: 18px; letter-spacing: 1.44px; color: var(--lb-text-2);
+}
+.lobby .lobby__tab:hover { color: var(--lb-text); background-color: var(--lb-inset); }
+.lobby .lobby__tab--active, .lobby .lobby__tab--active:hover { color: var(--lb-text); background-color: var(--lb-panel); }
+/* No outline (the canvas has none, and a clicked tab keeps focus); keyboard focus shows as white text. */
+.lobby .lobby__tab:focus { color: var(--lb-text); }
+.lobby__tab:focus .lobby__tab-label { color: var(--lb-text); }
+.lobby .lobby__tab--hidden { display: none; }
+.lobby__tab-label { font-size: 18px; letter-spacing: 1.44px; color: var(--lb-text-2); }
+.lobby__tab--active .lobby__tab-label, .lobby__tab:hover .lobby__tab-label { color: var(--lb-text); }
+.lobby .lobby__tab-badge {
+    margin-left: 8px; padding: 1px 4px; font-size: 9px; color: var(--lb-amber);
+    border-width: 1px; border-color: var(--lb-amber); border-radius: 2px;
+}
+.lobby .lobby__admin { flex-direction: row; align-items: center; padding-right: 16px; }
+.lobby .lobby__admin--hidden { display: none; }
+.lobby .lobby__admin-label { font-size: 13px; color: var(--lb-text-2); margin-right: 8px; }
+.lobby .lobby__switch-toggle {
+    width: 36px; height: 20px; flex-shrink: 0; border-width: 1px; border-color: var(--lb-border); border-radius: 2px;
+    background-color: var(--lb-void);
+}
+.lobby .lobby__switch-toggle:hover { border-color: var(--lb-border-strong); background-color: var(--lb-void); }
+.lobby__switch-knob { position: absolute; top: 2px; left: 2px; width: 14px; height: 14px; border-radius: 1px; background-color: var(--lb-text-2); }
+.lobby .lobby__switch-toggle--on, .lobby .lobby__switch-toggle--on:hover { background-color: var(--lb-green); border-color: var(--lb-green); }
+.lobby__switch-toggle--on .lobby__switch-knob { left: 18px; background-color: var(--lb-on-light); }
+
+.lobby__tab-content { flex-grow: 1; min-height: 0; }
+
+/* Scrollers in every tab. */
+.lobby .unity-scroller--vertical { width: 8px; min-width: 8px; max-width: 8px; }
+.lobby .unity-scroller__low-button, .lobby .unity-scroller__high-button { display: none; }
+.lobby .unity-scroller__slider { margin: 0; }
+.lobby .unity-scroller__slider .unity-base-slider__tracker { border-width: 0; border-radius: 3px; background-color: var(--lb-panel); }
+.lobby .unity-scroller__slider .unity-base-slider__dragger { border-width: 0; border-radius: 3px; background-color: var(--lb-hover); }
+
+/* ---- Server Info ---- */
+.lobby .lobby-info { flex-grow: 1; flex-direction: row; padding: 24px; min-height: 0; }
+.lobby .lobby-info__left { flex-grow: 1; flex-shrink: 1; min-width: 0; padding-right: 24px; }
+.lobby .lobby-info__banner { flex-shrink: 0; -unity-background-scale-mode: scale-to-fit; margin-bottom: 24px; }
+.lobby-info__banner--1 { background-image: url("project://database/Assets/Art/Textures/Lobby/Banners/LobbyBannerChase.png"); }
+.lobby-info__banner--2 { background-image: url("project://database/Assets/Art/Textures/Lobby/Banners/LobbyBannerBreach.png"); }
+.lobby-info__banner--3 { background-image: url("project://database/Assets/Art/Textures/Lobby/Banners/LobbyBannerCarp.png"); }
+.lobby-info__banner--4 { background-image: url("project://database/Assets/Art/Textures/Lobby/Banners/LobbyBannerSpacewalk.png"); }
+.lobby-info__banner--5 { background-image: url("project://database/Assets/Art/Textures/Lobby/Banners/LobbyBannerStation.png"); }
+.lobby-info__motd-scroll { flex-grow: 1; flex-shrink: 1; min-height: 0; }
+.lobby .lobby-info__motd { max-width: 568px; font-size: 15px; color: var(--lb-text); white-space: normal; margin-top: 12px; }
+.lobby .lobby-info__right {
+    width: 480px; flex-shrink: 0; padding-left: 24px;
+    border-left-width: 1px; border-left-color: var(--lb-border-subtle);
+}
+.lobby-info__kv {
+    flex-direction: row; justify-content: space-between; align-items: center; height: 36px; flex-shrink: 0;
+    border-bottom-width: 1px; border-bottom-color: var(--lb-border-subtle);
+}
+.lobby-info__key { font-size: 13px; color: var(--lb-text-2); }
+.lobby-info__value { font-size: 13px; color: var(--lb-text); }
+.lobby .lobby-info__section-gap { margin-top: 36px; }
+.lobby .lobby-info__links { flex-direction: row; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+.lobby .lobby-info__log { flex-grow: 1; flex-shrink: 1; min-height: 0; margin-top: 8px; }
+.lobby .lobby-info__release { padding: 12px 0; border-bottom-width: 1px; border-bottom-color: var(--lb-border-subtle); flex-shrink: 0; }
+.lobby-info__release-head { flex-direction: row; align-items: center; }
+.lobby .lobby-info__release-version { font-size: 13px; color: var(--lb-text); margin-right: 10px; }
+.lobby-info__release-date { font-size: 13px; color: var(--lb-text-2); flex-grow: 1; }
+.lobby-info__link { flex-direction: row; align-items: center; font-size: 12px; color: var(--lb-text-2); }
+.lobby-info__link:hover { color: var(--lb-text); }
+.lobby-info__link .lobby__icon { margin-left: 6px; }
+.lobby .lobby-info__entry { flex-direction: row; align-items: flex-start; margin-top: 6px; padding-left: 4px; }
+.lobby-info__entry--link:hover .lobby-info__entry-text { color: var(--lb-text); }
+.lobby .lobby-info__bullet { width: 4px; height: 4px; border-radius: 2px; margin: 7px 10px 0 4px; flex-shrink: 0; background-color: var(--lb-text-2); }
+.lobby-info__entry-text { flex-grow: 1; flex-shrink: 1; font-size: 13px; color: #d8d8d8; white-space: normal; }
+.lobby .lobby-info__entry-ref { font-size: 11px; color: var(--lb-text-2); margin-left: 8px; flex-shrink: 0; }
+.lobby .lobby-info__empty { font-size: 13px; color: var(--lb-text-2); margin-top: 8px; white-space: normal; }
+
+/* ---- Chat ---- */
+.lobby .lobby-chat { flex-grow: 1; padding: 20px 24px 16px; min-height: 0; }
+.lobby-chat__log {
+    flex-grow: 1; min-height: 0; background-color: var(--lb-inset);
+    border-width: 1px; border-color: var(--lb-border-subtle);
+}
+/* Descendant, not child: Unity 6 nests the viewport in a content-and-scroller container. */
+.lobby .lobby-chat__log .unity-scroll-view__content-container { padding: 12px 16px; }
+.lobby .lobby-chat__line { flex-direction: row; align-items: flex-start; padding: 4px 0; }
+.lobby .lobby-chat__time { width: 48px; flex-shrink: 0; font-size: 12px; color: var(--lb-text-2); margin-top: 2px; }
+.lobby .lobby-chat__channel { width: 64px; flex-shrink: 0; font-size: 11px; -unity-font-style: bold; letter-spacing: 0.66px; color: var(--lb-text-2); margin-top: 2px; }
+.lobby .lobby-chat__channel--looc { color: var(--lb-blue-text); }
+.lobby .lobby-chat__channel--admin { color: var(--lb-amber); }
+.lobby-chat__body { flex-grow: 1; flex-shrink: 1; flex-direction: row; flex-wrap: wrap; }
+.lobby .lobby-chat__name { font-size: 14px; -unity-font-style: bold; color: var(--lb-text); margin-right: 6px; }
+.lobby .lobby-chat__name--admin { color: var(--lb-amber); }
+.lobby-chat__text { flex-shrink: 1; font-size: 14px; color: var(--lb-text); white-space: normal; }
+.lobby-chat__system { font-size: 13px; color: var(--lb-text-2); white-space: normal; flex-shrink: 1; }
+.lobby-chat__empty { font-size: 13px; color: var(--lb-text-2); }
+.lobby .lobby-chat__composer { flex-direction: row; align-items: stretch; height: 40px; margin-top: 12px; flex-shrink: 0; }
+.lobby .lobby-chat__channel-button {
+    height: 40px; padding: 0 12px; margin-right: 4px; border-radius: 2px;
+    background-color: var(--lb-chrome); font-size: 20px; letter-spacing: 1.6px; color: var(--lb-text);
+}
+.lobby .lobby-chat__channel-button:hover { background-color: var(--lb-inset); }
+.lobby .lobby-chat__channel-button--active, .lobby .lobby-chat__channel-button--active:hover { background-color: var(--lb-rust); color: var(--lb-on-accent); }
+.lobby .lobby-chat__input { flex-grow: 1; margin: 0 8px 0 4px; }
+.lobby-chat__input > .unity-text-field__input, .lobby-chat__input > .unity-base-text-field__input {
+    margin: 0; padding: 0 12px; height: 40px; border-width: 1px; border-color: var(--lb-border); border-radius: 0;
+    background-color: var(--lb-inset); color: var(--lb-text); font-size: 14px;
+}
+.lobby-chat__input:focus > .unity-text-field__input, .lobby-chat__input:focus > .unity-base-text-field__input { border-color: var(--lb-border-strong); }
+.lobby-chat__input .unity-base-text-field__input--placeholder { color: var(--lb-disabled); }
+.lobby .lobby-chat__send {
+    flex-direction: row; align-items: center; height: 40px; padding: 0 14px; border-radius: 2px;
+    background-color: var(--lb-chrome);
+}
+.lobby .lobby-chat__send:hover { background-color: var(--lb-inset); }
+.lobby-chat__send .lobby__icon { margin-right: 8px; -unity-background-image-tint-color: var(--lb-text); }
+.lobby-chat__send-label { font-size: 20px; letter-spacing: 1.6px; }
+.lobby .lobby-chat__hint { margin-top: 10px; font-size: 12px; color: var(--lb-text-2); }
+
+/* ---- Settings and Last Round: their content gets the whole panel under the tab bar. ---- */
+.lobby__settings-host { flex-grow: 1; min-height: 0; }
+.lobby .round-end--tab { flex-grow: 1; }
+
+/* ---- Server Settings (admin) ---- */
+.lobby-admin__scroll { flex-grow: 1; min-height: 0; }
+.lobby .lobby-admin__scroll .unity-scroll-view__content-container { padding: 20px 24px; }
+.lobby-admin { max-width: 640px; flex-shrink: 0; }
+.lobby .lobby-admin__card { background-color: var(--lb-inset); border-width: 1px; border-color: var(--lb-border-subtle); border-radius: 4px; margin-bottom: 22px; flex-shrink: 0; }
+.lobby .lobby-admin__card-heading {
+    height: 40px; padding: 0 14px; -unity-text-align: middle-left; background-color: var(--lb-chrome);
+    border-bottom-width: 1px; border-bottom-color: var(--lb-border); font-size: 20px; letter-spacing: 1.6px;
+}
+.lobby .lobby-admin__card-body { flex-direction: row; justify-content: space-between; align-items: center; padding: 12px 14px; }
+.lobby-admin__round-state { font-size: 24px; letter-spacing: 1.92px; color: var(--lb-text); }
+.lobby .lobby-admin__round-detail { font-size: 14px; color: var(--lb-text-2); margin-top: 4px; }
+.lobby-admin__ready-label { font-size: 11px; color: var(--lb-text-2); -unity-text-align: middle-right; -unity-font-style: bold; letter-spacing: 1.32px; }
+.lobby-admin__ready-ratio { font-size: 24px; color: var(--lb-text); -unity-text-align: middle-right; }
+.lobby .lobby-admin__section-title { margin: 0 0 10px; font-size: 20px; letter-spacing: 1.6px; color: var(--lb-text-2); }
+.lobby .lobby-admin__controls { flex-direction: row; flex-wrap: wrap; margin-bottom: 14px; }
+.lobby .lobby-admin__button {
+    height: 36px; padding: 0 14px; margin: 0 8px 8px 0; border-radius: 4px; font-size: 18px; letter-spacing: 1.44px;
+    background-color: var(--lb-chrome); color: var(--lb-text);
+}
+.lobby .lobby-admin__button:hover { background-color: var(--lb-hover); }
+.lobby .lobby-admin__button--start { background-color: var(--lb-rust); color: var(--lb-on-accent); }
+.lobby .lobby-admin__button--start:hover { background-color: var(--lb-rust-hover); }
+.lobby .lobby-admin__button:disabled { opacity: 0.4; }
+.lobby .lobby-admin__text { flex-shrink: 0; flex-direction: column; align-items: stretch; margin: 0 0 12px; }
+.lobby-admin__text > .unity-base-field__label { min-width: 0; height: 18px; margin: 0 0 6px; padding: 0; font-size: 12px; color: var(--lb-text-2); }
+.lobby-admin__text > .unity-base-field__input {
+    min-height: 36px; padding: 8px 10px; border-width: 1px; border-color: var(--lb-border); border-radius: 0;
+    background-color: var(--lb-inset); color: var(--lb-text); font-size: 14px;
+}
+.lobby-admin__text--multiline > .unity-base-field__input { min-height: 96px; white-space: normal; -unity-text-align: upper-left; }
+.lobby .lobby-admin__select { flex-shrink: 0; flex-direction: column; align-items: stretch; margin: 0 0 12px; }
+.lobby-admin__select > .unity-base-field__label { min-width: 0; height: 18px; margin: 0 0 6px; padding: 0; font-size: 12px; color: var(--lb-text-2); }
+.lobby-admin__select > .unity-base-field__input {
+    height: 36px; padding: 0 10px; border-width: 1px; border-color: var(--lb-border); border-radius: 0;
+    background-color: var(--lb-inset); color: var(--lb-text); font-size: 14px;
+}
+.lobby-admin__select .unity-base-popup-field__arrow { -unity-background-image-tint-color: var(--lb-text-2); }
+.lobby .lobby-admin__numbers { flex-direction: row; flex-wrap: wrap; margin: 4px 0 10px; flex-shrink: 0; }
+.lobby .lobby-admin__number { width: 30%; min-width: 150px; margin: 0 12px 12px 0; }
+.lobby-admin__number > Label { height: 18px; margin: 0 0 6px; font-size: 12px; color: var(--lb-text-2); }
+.lobby-admin__number .unity-base-field { margin: 0; }
+.lobby-admin__number .unity-base-field__input {
+    min-height: 36px; padding: 8px 10px; border-width: 1px; border-color: var(--lb-border); border-radius: 0;
+    background-color: var(--lb-inset); color: var(--lb-text); font-size: 15px;
+}
+.lobby .lobby-admin__toggle { min-height: 32px; flex-shrink: 0; margin: 0; }
+.lobby-admin__toggle .unity-base-field__input { flex-grow: 1; justify-content: flex-start; background-color: rgba(0, 0, 0, 0); }
+.lobby-admin__toggle .unity-toggle__checkmark {
+    width: 16px; height: 16px; margin-right: 10px; border-width: 1px; border-color: var(--lb-border-strong);
+    border-radius: 2px; background-color: var(--lb-inset);
+}
+.lobby-admin__toggle:checked .unity-toggle__checkmark { background-color: var(--lb-rust); border-color: var(--lb-rust); }
+.lobby-admin__toggle .unity-toggle__text { margin-left: 0; font-size: 14px; color: var(--lb-text); }
+.lobby .lobby-admin__status { margin-top: 12px; font-size: 12px; color: var(--lb-text-2); white-space: normal; }
+.lobby .lobby-admin__map-load { margin: -6px 0 12px; font-size: 12px; color: var(--lb-text-2); white-space: normal; }
+.lobby .lobby-admin__map-load--loading { color: var(--lb-amber); }
+.lobby .lobby-admin__map-load--ready { color: var(--lb-green); }
+.lobby .lobby-admin__map-load--failed { color: var(--lb-red-text); }
+
+/* ---- Unsaved-map Stop prompt ---- */
+.lobby-prompt {
+    position: absolute; left: 0; top: 0; right: 0; bottom: 0; align-items: center; justify-content: center;
+    background-color: rgba(0, 0, 0, 0.6);
+}
+.lobby .lobby-prompt__card {
+    width: 520px; padding: 20px; background-color: var(--lb-panel);
+    border-width: 1px; border-color: var(--lb-border); border-radius: 4px;
+}
+.lobby .lobby-prompt__title { font-size: 22px; letter-spacing: 1.76px; margin-bottom: 10px; }
+.lobby .lobby-prompt__text { font-size: 14px; color: var(--lb-text); white-space: normal; margin-bottom: 12px; }
+.lobby .lobby-prompt__error { font-size: 13px; color: var(--lb-red-text); white-space: normal; margin-bottom: 8px; }
+.lobby-prompt__buttons { flex-direction: row; flex-wrap: wrap; }
+
+/* ---- 1366 x 768 (Decision 19): sidebar 320, preview 80 x 136, gutters 12, timer 36. ---- */
+.lobby--compact .lobby__sidebar { width: 320px; }
+.lobby--compact .lobby__main { left: 332px; top: 12px; right: 12px; bottom: 12px; }
+.lobby--compact .lobby__wordmark-block { padding: 12px 16px 8px; }
+.lobby--compact .lobby__wordmark { width: 160px; height: 75px; }
+.lobby--compact .lobby__section { padding: 14px 16px; }
+.lobby--compact .lobby__timer { font-size: 36px; }
+.lobby--compact .lobby__preview-frame { width: 80px; height: 136px; margin-right: 12px; }
+.lobby--compact .lobby__ready { height: 60px; }
+.lobby--compact .lobby__observe { height: 44px; }
+.lobby--compact .lobby__music { padding: 8px 16px; }
+.lobby--compact .lobby__footer { padding: 10px 8px; }
+.lobby--compact .lobby__footer-label { font-size: 16px; }
+.lobby--compact .lobby__header { height: 48px; padding: 0 14px; }
+.lobby--compact .lobby__server-name { font-size: 18px; margin-right: 16px; }
+.lobby--compact .lobby__meta-sep { margin: 0 10px; }
+.lobby--compact .lobby__tab { padding: 0 12px; font-size: 16px; }
+.lobby--compact .lobby-info { padding: 16px; }
+.lobby--compact .lobby-info__right { width: 360px; padding-left: 16px; }
+.lobby--compact .lobby-info__left { padding-right: 16px; }
+.lobby--compact .lobby-chat { padding: 12px 16px; }

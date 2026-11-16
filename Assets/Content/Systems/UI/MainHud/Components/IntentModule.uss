@@ -1,0 +1,74 @@
+.intent-module {
+    flex-direction: column;
+    align-items: flex-end;
+}
+
+.intent-module__hints {
+    flex-direction: row;
+    margin-bottom: var(--ss3d-space-2);
+    padding-right: 2px;
+}
+
+.intent-hint {
+    flex-direction: row;
+    align-items: center;
+    margin-left: var(--ss3d-space-3);
+    opacity: 0.85;
+}
+
+.intent-hint__key {
+    font-size: 10px;
+    color: var(--ss3d-text-tertiary);
+    background-color: var(--ss3d-surface-hud);
+    border-width: 1px;
+    border-color: var(--ss3d-border-default);
+    border-radius: var(--ss3d-radius-sm);
+    padding: 1px 5px;
+    margin-right: 4px;
+}
+
+.intent-hint__label {
+    font-size: 10px;
+    color: var(--ss3d-text-secondary);
+}
+
+/* Each half paints its own fill + outer corners so active/inactive edges stay flush
+ * (no nested shell radius under a segment fill — that caused a 1px poke). */
+.intent-toggle {
+    flex-direction: row;
+    align-items: stretch;
+}
+
+.intent-toggle__segment {
+    margin: 0;
+    padding: 12px 28px;
+    border-width: 0;
+    font-size: 17px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--ss3d-text-tertiary);
+    background-color: var(--ss3d-surface-panel-raised);
+    -unity-text-align: middle-center;
+}
+
+.intent-toggle__segment--help {
+    border-top-left-radius: 4px;
+    border-bottom-left-radius: 4px;
+}
+
+.intent-toggle__segment--harm {
+    border-top-right-radius: 4px;
+    border-bottom-right-radius: 4px;
+}
+
+.intent-toggle__segment--active {
+    color: var(--ss3d-text-on-accent);
+}
+
+.intent-toggle__segment--help.intent-toggle__segment--active {
+    background-color: var(--ss3d-btn-green-bg);
+}
+
+.intent-toggle__segment--harm.intent-toggle__segment--active {
+    background-color: var(--ss3d-feedback-danger);
+}

@@ -1,4 +1,4 @@
-﻿using Coimbra.Services.Events;
+using Coimbra.Services.Events;
 using Coimbra.Services.PlayerLoopEvents;
 using FishNet;
 using SS3D.Core.Behaviours;
@@ -13,7 +13,7 @@ public class MachineVibrate : Actor
     private float _amplitude = 1; // How much is the amplitude of the vibration.
     [SerializeField]
     private float _frequency = 35;       // Vibrating speed.
-    private Quaternion _initialRotation; // Rotation of the generator at rest.
+    private Quaternion _restRotation; // World rotation at rest (captured when vibration starts).
     private Vector3 _directionOfShake;   // In which direction the generator shake.
     private bool _enable = false;
     private float _elapsedTime = 0f; // Elapsed time for the vibrating stuff.
@@ -31,8 +31,6 @@ public class MachineVibrate : Actor
         if (InstanceFinder.IsServerOnly) return;
 
         AddHandle(FixedUpdateEvent.AddListener(HandleFixedUpdate));
-        _initialRotation = Rotation;
-        _directionOfShake = Transform.right;
     }
 
     private void HandleFixedUpdate(ref EventContext context, in FixedUpdateEvent updateEvent)
@@ -46,15 +44,30 @@ public class MachineVibrate : Actor
     private void Vibrate()
     {
         _elapsedTime += Time.fixedDeltaTime;
-        transform.rotation = _initialRotation * Quaternion.Euler(_directionOfShake * (-_amplitude + Mathf.PingPong(_frequency * _elapsedTime, 2f * _amplitude)));
+        transform.rotation = _restRotation * Quaternion.Euler(_directionOfShake * (-_amplitude + Mathf.PingPong(_frequency * _elapsedTime, 2f * _amplitude)));
     }
 
     private void SetEnable(bool enable)
     {
-        _enable = enable;
+        if (enable == _enable)
+        {
+            return;
+        }
+
         if (enable)
         {
-            Rotation = _initialRotation;
+            // Capture rest pose at enable time — OnStart is too early for tile-placed objects
+            // (FishNet spawn / direction sync / adjacency can still rotate the transform after Start).
+            // Using a stale OnStart snapshot snaps facing back to prefab/default on "Turn on".
+            _restRotation = Rotation;
+            _directionOfShake = Transform.right;
+            _elapsedTime = 0f;
+            _enable = true;
+        }
+        else
+        {
+            _enable = false;
+            Rotation = _restRotation;
         }
     }
 }

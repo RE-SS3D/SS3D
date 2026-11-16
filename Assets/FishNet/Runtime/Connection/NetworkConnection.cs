@@ -225,7 +225,9 @@ namespace FishNet.Connection
             /* Set PacketTick to current values so
             * that timeouts and other things around
            * first packet do not occur due to an unset value. */
-            PacketTick.Update(nm.TimeManager, 0, OldTickOption.SetLastRemoteTick);
+            // SS3D patch: SetLastRemoteTick rejects remoteTick 0, leaving LocalTick unset (0), so a
+            // connection made 60s+ after server start was timed out before its first packet.
+            PacketTick.Update(nm.TimeManager, 0, OldTickOption.SetRemoteTick);
             Observers_Initialize(nm);
             Prediction_Initialize(nm, asServer);
             //Only the server uses the ping and buffer.

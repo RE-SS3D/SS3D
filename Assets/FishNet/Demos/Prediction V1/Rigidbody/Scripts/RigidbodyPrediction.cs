@@ -130,7 +130,7 @@ namespace FishNet.Example.Prediction.Rigidbodies
             {
                 if (Input.GetKeyDown(KeyCode.RightAlt))
                 {
-                    _rigidbody.velocity = Vector3.zero;
+                    _rigidbody.linearVelocity = Vector3.zero;
                     _rigidbody.angularVelocity = Vector3.zero;
                 }
                 if (Input.GetKeyDown(KeyCode.Space) && Time.time > _nextJumpTime)
@@ -192,7 +192,7 @@ namespace FishNet.Example.Prediction.Rigidbodies
              * want to send the rb data AFTER the simulation. */
             if (base.IsServer)
             {
-                ReconcileData rd = new ReconcileData(transform.position, transform.rotation, _rigidbody.velocity, _rigidbody.angularVelocity);
+                ReconcileData rd = new ReconcileData(transform.position, transform.rotation, _rigidbody.linearVelocity, _rigidbody.angularVelocity);
                 Reconciliation(rd, true);
             }
         }
@@ -273,7 +273,7 @@ namespace FishNet.Example.Prediction.Rigidbodies
         {
             transform.position = rd.Position;
             transform.rotation = rd.Rotation;
-            _rigidbody.velocity = rd.Velocity;
+            _rigidbody.linearVelocity = rd.Velocity;
             _rigidbody.angularVelocity = rd.AngularVelocity;
         }
 

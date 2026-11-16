@@ -16,6 +16,7 @@ namespace SS3D.SceneManagement
             Scenes.Intro,
             Scenes.Game,
             Scenes.Launcher,
+            Scenes.Empty,
         };
         #endif
 

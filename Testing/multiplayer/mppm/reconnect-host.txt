@@ -1,0 +1,16 @@
+# Guards: reconnect under Multiplayer Play Mode (agent-local check) · Not cheaper because: needs a real transport drop from a second editor process
+# Main editor (host) side of reconnect under MPPM. The built smoke run's dedicated server only
+# observes; here the host must also start the round, because Player2 (ckey "Player2") has no
+# Administrator permission and its start_round is refused. Player2 runs
+# scenarios/reconnect-client.txt unchanged.
+#
+# Wait for Player2's client to load the start scenes before starting the round (see
+# late-join-host.txt). No tail wait: unlike the built smoke, where the server script's completion
+# tears the server down, this editor keeps hosting until the driver stops Play Mode - and that
+# waits for Player2's result, so the round stays up for its disconnect/reconnect round trip.
+wait_timeout 180
+wait_connected
+wait_clients 1
+ready
+start_round
+wait_round Ongoing

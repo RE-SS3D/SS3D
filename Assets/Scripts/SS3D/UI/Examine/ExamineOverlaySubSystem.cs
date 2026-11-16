@@ -1,0 +1,881 @@
+using System;
+using System.Collections.Generic;
+using Coimbra.Services.Events;
+using SS3D.Core;
+using SS3D.Core.Behaviours;
+using SS3D.Localization;
+using SS3D.Systems.Entities.Events;
+using SS3D.Systems.Examine;
+using SS3D.Systems.Health;
+using SS3D.Systems.Inputs;
+using SS3D.Systems.Interactions;
+using SS3D.Systems.Inventory.Containers;
+using SS3D.Systems.Screens;
+using SS3D.Systems.Selection;
+using SS3D.Systems.Vision;
+using SS3D.UI.Shell;
+using UnityEngine;
+using UnityEngine.InputSystem;
+using UnityEngine.UIElements;
+
+namespace SS3D.UI.Examine
+{
+    /// <summary>
+    /// Owns every examine hover/detail UI surface: the generic hover-name/detailed-text/detailed-image
+    /// view (<see cref="GenericExamineHoverView"/>, replacing the condemned uGUI <c>ExamineUI</c>) for
+    /// ordinary examinables, and the character-examine hover preview / persistent window
+    /// (<see cref="CharacterQuickLookView"/> / <see cref="CharacterExamineWindowView"/>) for characters
+    /// — discriminated via <see cref="ExamineData.Type"/> == <see cref="ExamineType.CHARACTER"/>, not a
+    /// dedicated marker component (<c>Human.prefab</c>'s existing <c>Selectable</c>/<c>SimpleExaminable</c>
+    /// already make characters examinable). Self-bootstraps like <see cref="UiShellSubSystem"/> so
+    /// adopting it needs no Boot/Game scene edit.
+    /// </summary>
+    public sealed class ExamineOverlaySubSystem : SubSystem
+    {
+        /// <summary>While examine is held, the target's content rebuilds this often (examine.md §4: live).</summary>
+        private const float LiveRebuildInterval = 0.1f;
+
+        private readonly ExamineContentResolver _contentResolver = new();
+
+        private ExamineSubSystem _examineSystem;
+        private InputSubSystem _inputSystem;
+        private ExamineOverlayAssetCatalog _catalog;
+        private GenericExamineHoverView _genericView;
+        private CharacterQuickLookView _quickLookView;
+        private CharacterExamineWindowView _windowView;
+
+        private IExaminable _currentExaminable;
+        private HumanInventory _hoveredCharacterInventory;
+        private HumanInventory _windowVictimInventory;
+        private InteractionController _interactionController;
+        private GameObject _localPlayer;
+        private bool _pinnedDetailedExamine;
+        private bool _wasDetailedExamineHeld;
+        private bool _takeInProgress;
+
+        private IExaminable _cachedExaminable;
+        private ExamineContent _cachedContent;
+        private bool _hasCachedContent;
+        private bool _targetHidden;
+        private float _nextVisibilityCheck;
+        private float _nextLiveRebuild;
+        private float _nextWindowCheck;
+        private HumanInventory _cueSentFor;
+        private bool _examineEventsBound;
+
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
+        private static void Bootstrap()
+        {
+            if (SubSystems.TryGet(out ExamineOverlaySubSystem _))
+            {
+                return;
+            }
+
+            GameObject host = new(nameof(ExamineOverlaySubSystem));
+            UnityEngine.Object.DontDestroyOnLoad(host);
+            host.AddComponent<ExamineOverlaySubSystem>();
+        }
+
+        protected override void OnStart()
+        {
+            base.OnStart();
+            AddHandle(LocalPlayerObjectChanged.AddListener(HandleLocalPlayerObjectChanged));
+        }
+
+        protected override void OnEnabled()
+        {
+            base.OnEnabled();
+
+            LocalizedTextService.EnsureInitialized();
+            LocalizedTextService.LocaleChanged += HandleLocaleChanged;
+            SubSystems.TryGet(out _inputSystem);
+            TryBindExamineSystemEvents();
+        }
+
+        protected override void OnDisabled()
+        {
+            base.OnDisabled();
+
+            LocalizedTextService.LocaleChanged -= HandleLocaleChanged;
+            UnsubscribeInteractionController();
+            UnsubscribeExamineSystemEvents();
+        }
+
+        protected override void OnDestroyed()
+        {
+            UnsubscribeWindowView();
+            UnsubscribeInteractionController();
+            UnsubscribeExamineSystemEvents();
+            _genericView?.Detach();
+            _quickLookView?.Detach();
+            _windowView?.Detach();
+            _genericView = null;
+            _quickLookView = null;
+            _windowView = null;
+            base.OnDestroyed();
+        }
+
+        private void Update()
+        {
+            // ExamineSubSystem lives on NetworkSystemsHub (Online only). This overlay is DDOL and
+            // often enables before the hub exists — keep retrying until events are bound.
+            TryBindExamineSystemEvents();
+
+            if (_inputSystem == null)
+            {
+                SubSystems.TryGet(out _inputSystem);
+            }
+
+            // The hover target can be destroyed with no selection change (a disconnect despawns the
+            // round's objects). The interface null check misses a destroyed Unity object.
+            if ((_currentExaminable is UnityEngine.Object target && target == null)
+                || (_currentExaminable is ItemFallbackExaminable fallback && fallback.Item == null))
+            {
+                _currentExaminable = null;
+                _hoveredCharacterInventory = null;
+                InvalidateContentCache();
+                RefreshGenericDisplay();
+            }
+
+            // The hover target can leave the FOV with no selection change: a door shuts, or the
+            // player walks behind a wall.
+            if (Time.unscaledTime >= _nextVisibilityCheck && UpdateTargetVisibility())
+            {
+                RefreshGenericDisplay();
+            }
+
+            bool detailedHeld = IsDetailedExamineHeld();
+            if (!detailedHeld)
+            {
+                _cueSentFor = null;
+            }
+
+            if (detailedHeld != _wasDetailedExamineHeld)
+            {
+                _wasDetailedExamineHeld = detailedHeld;
+                RefreshGenericDisplay();
+            }
+            else if (detailedHeld)
+            {
+                // The cache serves hover; a held panel re-resolves so tanks, seals and timers stay live.
+                if (Time.unscaledTime >= _nextLiveRebuild)
+                {
+                    _nextLiveRebuild = Time.unscaledTime + LiveRebuildInterval;
+                    InvalidateContentCache();
+                }
+
+                RefreshGenericDisplay();
+            }
+
+            if (_windowView != null && _windowView.IsOpen)
+            {
+                _windowView.Tick(Time.deltaTime);
+                RefreshOpenWindow();
+            }
+
+            if (_takeInProgress
+                && (_interactionController == null || !_interactionController.HasActiveDelayedInteraction))
+            {
+                HandleTakeFromCharacterEnded();
+            }
+
+            if (Mouse.current == null)
+            {
+                return;
+            }
+
+            Vector2 mousePosition = Mouse.current.position.ReadValue();
+            _genericView?.UpdateAnchor(mousePosition);
+            if (_windowView == null || !_windowView.IsOpen)
+            {
+                _quickLookView?.UpdateAnchor(mousePosition);
+            }
+        }
+
+        private void HandleLocalPlayerObjectChanged(ref EventContext context, in LocalPlayerObjectChanged e)
+        {
+            UnsubscribeInteractionController();
+            _localPlayer = e.PlayerHasObject ? e.PlayerObject : null;
+            TryBindInteractionController();
+        }
+
+        private void HandleLocaleChanged()
+        {
+            InvalidateContentCache();
+            RefreshGenericDisplay();
+        }
+
+        /// <summary>
+        /// Binds hover/window events once <see cref="ExamineSubSystem"/> is registered (after Online).
+        /// Hub teardown clears the bind so the next Online session can re-subscribe.
+        /// </summary>
+        private void TryBindExamineSystemEvents()
+        {
+            if (_examineEventsBound && _examineSystem == null)
+            {
+                _examineEventsBound = false;
+            }
+
+            if (_examineEventsBound)
+            {
+                return;
+            }
+
+            if (!SubSystems.TryGet(out _examineSystem) || _examineSystem == null)
+            {
+                return;
+            }
+
+            _examineSystem.OnExaminableChanged += HandleExaminableChanged;
+            _examineSystem.OnDetailedExamineRequested += HandleDetailedExamineRequested;
+            _examineSystem.OnCharacterWindowRequested += HandleWindowRequested;
+            _examineSystem.OnCursorLabelOverrideChanged += RefreshGenericDisplay;
+            _examineEventsBound = true;
+
+            // Catch up whatever is under the cursor so hover is not blank until selection moves.
+            if (SubSystems.TryGet(out SelectionSubSystem selection))
+            {
+                HandleExaminableChanged(_examineSystem.GetCurrentExaminable());
+            }
+        }
+
+        private void UnsubscribeExamineSystemEvents()
+        {
+            if (_examineSystem != null)
+            {
+                _examineSystem.OnExaminableChanged -= HandleExaminableChanged;
+                _examineSystem.OnDetailedExamineRequested -= HandleDetailedExamineRequested;
+                _examineSystem.OnCharacterWindowRequested -= HandleWindowRequested;
+                _examineSystem.OnCursorLabelOverrideChanged -= RefreshGenericDisplay;
+            }
+
+            _examineSystem = null;
+            _examineEventsBound = false;
+        }
+
+        private void HandleExaminableChanged(IExaminable examinable)
+        {
+            if (_pinnedDetailedExamine && examinable != _currentExaminable && examinable != null)
+            {
+                _pinnedDetailedExamine = false;
+            }
+
+            _currentExaminable = examinable;
+            _wasDetailedExamineHeld = IsDetailedExamineHeld();
+            _hoveredCharacterInventory = ResolveCharacterInventory(examinable);
+
+            // Clothing pick under a human: still treat as character hover for name / Shift+Click.
+            if (_hoveredCharacterInventory == null
+                && examinable is Component component
+                && CharacterExamineTargetUtility.TryResolveFromTransform(
+                    component.transform,
+                    out IExaminable characterExaminable,
+                    out HumanInventory inventory))
+            {
+                _currentExaminable = characterExaminable;
+                _hoveredCharacterInventory = inventory;
+            }
+
+            UpdateTargetVisibility();
+
+            if (!EnsureViews())
+            {
+                return;
+            }
+
+            if (_windowView.IsOpen)
+            {
+                // The full window pins its own target; hover changes elsewhere don't affect either
+                // preview while it's open (mirrors the design mock's `if (!fullOpen) showPreview`).
+                return;
+            }
+
+            // Characters: name on hover, ExamineData details on Shift — paperdoll is Shift+Click
+            // on others only (CharacterExamineWindowView). No pickable quick-look under the cursor.
+            _quickLookView.Hide();
+            RefreshGenericDisplay();
+        }
+
+        private void HandleDetailedExamineRequested(IExaminable examinable)
+        {
+            _pinnedDetailedExamine = true;
+            HandleExaminableChanged(examinable);
+        }
+
+        private void HandleWindowRequested(IExaminable examinable)
+        {
+            HumanInventory inventory = ResolveCharacterInventory(examinable);
+            if (inventory == null || !EnsureViews())
+            {
+                return;
+            }
+
+            // Main HUD already shows the local player's worn inventory.
+            if (IsLocalPlayerInventory(inventory))
+            {
+                return;
+            }
+
+            CancelActiveTake();
+            _windowVictimInventory = inventory;
+            TryBindInteractionController();
+            _quickLookView.Hide();
+            _genericView.Hide();
+            IReadOnlyList<CharacterExamineSlotContent> slots =
+                CharacterExamineContentBuilder.BuildSlots(inventory, CharacterLootUtility.IsLootable(inventory));
+            Vector2 screenPosition = Mouse.current != null
+                ? Mouse.current.position.ReadValue()
+                : Vector2.zero;
+            _windowView.Show(PresentedIdentity.DisplayName(inventory), slots, takeAllowed: true, screenPosition);
+        }
+
+        /// <summary>
+        /// Search stays open only while you stand next to them (examine.md §4), and a target passing
+        /// out reveals their pockets, so the open window re-checks reach and slots on the poll tick.
+        /// </summary>
+        private void RefreshOpenWindow()
+        {
+            if (Time.unscaledTime < _nextWindowCheck)
+            {
+                return;
+            }
+
+            _nextWindowCheck = Time.unscaledTime + LiveRebuildInterval;
+            Hands hands = _localPlayer != null ? _localPlayer.GetComponentInChildren<Hands>() : null;
+            Hand hand = hands != null ? hands.SelectedHand : null;
+            if (_windowVictimInventory == null || hand == null || !hand.CanInteract(_windowVictimInventory.gameObject))
+            {
+                HandleCloseRequested();
+                return;
+            }
+
+            if (!_takeInProgress)
+            {
+                RefreshWindowSlots();
+            }
+        }
+
+        private void HandleCloseRequested()
+        {
+            CancelActiveTake();
+            _windowVictimInventory = null;
+            _windowView.Hide();
+            HandleExaminableChanged(_currentExaminable);
+        }
+
+        private void HandleTakeHoldStarted(CharacterExamineSlot slot)
+        {
+            if (_windowVictimInventory == null)
+            {
+                return;
+            }
+
+            if (!TryBindInteractionController())
+            {
+                return;
+            }
+
+            // Click starts a new windup; replace any in-flight take first.
+            if (_interactionController.HasActiveDelayedInteraction)
+            {
+                _interactionController.CancelActiveDelayedInteraction();
+            }
+
+            _interactionController.RequestTakeFromCharacter(_windowVictimInventory, slot);
+        }
+
+        private void HandleTakeHoldCancelled()
+        {
+            CancelActiveTake();
+        }
+
+        private void HandleTakeFromCharacterStarted(CharacterExamineSlot slot, float delaySeconds)
+        {
+            if (_windowView == null || !_windowView.IsOpen)
+            {
+                return;
+            }
+
+            _takeInProgress = true;
+            _windowView.BeginTakeProgress(slot, delaySeconds);
+        }
+
+        private void HandleTakeFromCharacterEnded()
+        {
+            bool wasTaking = _takeInProgress;
+            _takeInProgress = false;
+            _windowView?.ClearTakeProgress();
+
+            if (wasTaking || (_windowView != null && _windowView.IsOpen))
+            {
+                RefreshWindowSlots();
+            }
+        }
+
+        private void CancelActiveTake()
+        {
+            if (_interactionController != null && _interactionController.HasActiveDelayedInteraction)
+            {
+                _interactionController.CancelActiveDelayedInteraction();
+            }
+
+            _takeInProgress = false;
+            _windowView?.ClearTakeProgress();
+        }
+
+        private void RefreshWindowSlots()
+        {
+            if (_windowView == null || !_windowView.IsOpen || _windowVictimInventory == null)
+            {
+                return;
+            }
+
+            IReadOnlyList<CharacterExamineSlotContent> slots = CharacterExamineContentBuilder.BuildSlots(
+                _windowVictimInventory, CharacterLootUtility.IsLootable(_windowVictimInventory));
+            _windowView.RefreshSlots(PresentedIdentity.DisplayName(_windowVictimInventory), slots);
+        }
+
+        private bool TryBindInteractionController()
+        {
+            if (_interactionController != null)
+            {
+                return true;
+            }
+
+            if (_localPlayer == null)
+            {
+                return false;
+            }
+
+            if (!_localPlayer.TryGetComponent(out _interactionController))
+            {
+                _interactionController = _localPlayer.GetComponentInChildren<InteractionController>();
+            }
+
+            if (_interactionController == null)
+            {
+                return false;
+            }
+
+            _interactionController.TakeFromCharacterStarted += HandleTakeFromCharacterStarted;
+            _interactionController.TakeFromCharacterEnded += HandleTakeFromCharacterEnded;
+            return true;
+        }
+
+        private void UnsubscribeInteractionController()
+        {
+            if (_interactionController == null)
+            {
+                return;
+            }
+
+            _interactionController.TakeFromCharacterStarted -= HandleTakeFromCharacterStarted;
+            _interactionController.TakeFromCharacterEnded -= HandleTakeFromCharacterEnded;
+            _interactionController = null;
+        }
+
+        private void UnsubscribeWindowView()
+        {
+            if (_windowView == null)
+            {
+                return;
+            }
+
+            _windowView.CloseRequested -= HandleCloseRequested;
+            _windowView.TakeHoldStarted -= HandleTakeHoldStarted;
+            _windowView.TakeHoldCancelled -= HandleTakeHoldCancelled;
+        }
+
+        private static HumanInventory ResolveCharacterInventory(IExaminable examinable)
+        {
+            if (examinable is not Component component)
+            {
+                return null;
+            }
+
+            ExamineData data = examinable.GetData();
+            if (data == null || data.Type != ExamineType.CHARACTER)
+            {
+                return null;
+            }
+
+            return component.TryGetComponent(out HumanInventory inventory) ? inventory : null;
+        }
+
+        private bool IsLocalPlayerInventory(HumanInventory inventory)
+        {
+            if (inventory == null || _localPlayer == null)
+            {
+                return false;
+            }
+
+            if (!_localPlayer.TryGetComponent(out HumanInventory localInventory))
+            {
+                localInventory = _localPlayer.GetComponentInChildren<HumanInventory>();
+            }
+
+            return localInventory != null
+                && !CharacterLootUtility.IsOtherCharacter(localInventory, inventory);
+        }
+
+        private void ShowCharacterExamineDisplay(IExaminable examinable, HumanInventory inventory, bool isSelf)
+        {
+            string displayName = PresentedIdentity.DisplayName(inventory);
+            ExamineContent content = GetCachedContent(examinable);
+
+            if (IsDetailedExamineHeld())
+            {
+                // Health sections rebuild every frame while Shift is held so bleed/crit updates live.
+                bool close = isSelf || IsWithinCloseRange(examinable);
+                SendExamineCue(inventory, isSelf, close);
+                string detailed = CharacterExamineDetail.Build(content, inventory, isSelf, close);
+                if (!string.IsNullOrWhiteSpace(detailed))
+                {
+                    _genericView.ShowDetailedText(displayName, ExamineKeywordFormatter.Format(detailed));
+                    if (Mouse.current != null)
+                    {
+                        _genericView.UpdateAnchor(Mouse.current.position.ReadValue());
+                    }
+
+                    return;
+                }
+            }
+
+            _genericView.ShowHoverName(displayName);
+            if (Mouse.current != null)
+            {
+                _genericView.UpdateAnchor(Mouse.current.position.ReadValue());
+            }
+        }
+
+        /// <summary>
+        /// Holding examine on someone up close is noticed (examine.md §4): one request per hold and
+        /// target; the server re-checks range and rate-limits. Hover never sends it.
+        /// </summary>
+        private void SendExamineCue(HumanInventory target, bool isSelf, bool close)
+        {
+            if (isSelf || !close || target == null || target == _cueSentFor
+                || !SubSystems.TryGet(out SS3D.Systems.ActionMessages.ActionMessageSubSystem actions))
+            {
+                return;
+            }
+
+            _cueSentFor = target;
+            actions.RequestExamineCue(target.NetworkObject);
+        }
+
+        private void RefreshGenericDisplay()
+        {
+            if (_genericView == null)
+            {
+                return;
+            }
+
+            // Shift is held for Shift+Click open; Update() re-calls this every frame while detailed.
+            // Re-showing the hover name after HandleWindowRequested.Hide() is what stuck
+            // "Unidentified Crew Member" on the cursor with the paperdoll already open.
+            if (_windowView != null && _windowView.IsOpen)
+            {
+                _genericView.Hide();
+                return;
+            }
+
+            // Map Editor: the badge names what is about to be placed; nothing under the pointer is examined.
+            string labelOverride = _examineSystem != null ? _examineSystem.CursorLabelOverride : null;
+            if (labelOverride != null)
+            {
+                _quickLookView?.Hide();
+                if (labelOverride.Length == 0)
+                {
+                    _genericView.Hide();
+                    return;
+                }
+
+                _genericView.ShowHoverName(labelOverride);
+                if (Mouse.current != null)
+                {
+                    _genericView.UpdateAnchor(Mouse.current.position.ReadValue());
+                }
+
+                return;
+            }
+
+            // Nothing under the cursor never means yourself (examine.md §2): self-examine is pointing
+            // at your own model, which resolves to the character like anyone else.
+            if (_targetHidden || _currentExaminable?.GetData() == null)
+            {
+                _genericView.Hide();
+                InvalidateContentCache();
+                return;
+            }
+
+            // Prefer visible identity for characters (ID card) over the static ExamineData name.
+            // Hover = name; Shift = details + health lines; Shift+Click paperdoll is others-only.
+            if (_hoveredCharacterInventory != null)
+            {
+                bool isSelf = IsLocalPlayerInventory(_hoveredCharacterInventory);
+                ShowCharacterExamineDisplay(_currentExaminable, _hoveredCharacterInventory, isSelf);
+                return;
+            }
+
+            ExamineContent nonCharacterContent = GetCachedContent(_currentExaminable);
+
+            if (IsDetailedExamineHeld())
+            {
+                ExamineData data = _currentExaminable.GetData();
+                bool close = IsWithinCloseRange(_currentExaminable);
+                if (data.Type == ExamineType.SIMPLE_IMAGE
+                    && close
+                    && TryGetImageDetailedContent(
+                        _currentExaminable,
+                        nonCharacterContent,
+                        out Sprite image,
+                        out string caption,
+                        out Vector2 imageSize))
+                {
+                    _genericView.ShowDetailedImage(image, ExamineKeywordFormatter.Format(caption), imageSize);
+                    if (Mouse.current != null)
+                    {
+                        _genericView.UpdateAnchor(Mouse.current.position.ReadValue());
+                    }
+
+                    return;
+                }
+
+                string detailed = ExamineDetailText.Build(nonCharacterContent, close);
+                if (!string.IsNullOrWhiteSpace(detailed))
+                {
+                    _genericView.ShowDetailedText(nonCharacterContent.Name, ExamineKeywordFormatter.Format(detailed));
+                    if (Mouse.current != null)
+                    {
+                        _genericView.UpdateAnchor(Mouse.current.position.ReadValue());
+                    }
+
+                    return;
+                }
+            }
+
+            string hoverName = string.IsNullOrEmpty(nonCharacterContent.Name) ? "???" : nonCharacterContent.Name;
+            _genericView.ShowHoverName(hoverName);
+            if (Mouse.current != null)
+            {
+                _genericView.UpdateAnchor(Mouse.current.position.ReadValue());
+            }
+        }
+
+        private ExamineContent GetCachedContent(IExaminable examinable)
+        {
+            if (_hasCachedContent && _cachedExaminable == examinable)
+            {
+                return _cachedContent;
+            }
+
+            _cachedContent = _contentResolver.Resolve(examinable);
+            _cachedExaminable = examinable;
+            _hasCachedContent = true;
+            return _cachedContent;
+        }
+
+        private void InvalidateContentCache()
+        {
+            _hasCachedContent = false;
+            _cachedExaminable = null;
+            _cachedContent = ExamineContent.Empty;
+        }
+
+        private bool TryGetImageDetailedContent(
+            IExaminable examinable,
+            ExamineContent content,
+            out Sprite image,
+            out string caption,
+            out Vector2 imageSize)
+        {
+            image = null;
+            caption = string.Empty;
+            imageSize = Vector2.zero;
+
+            ExamineData data = examinable?.GetData();
+            if (data == null || data.Type != ExamineType.SIMPLE_IMAGE || examinable is not IImageExaminable imageExaminable)
+            {
+                return false;
+            }
+
+            image = imageExaminable.GetDetailedImage();
+            if (image == null)
+            {
+                return false;
+            }
+
+            imageSize = data.DetailedImageSize;
+            caption = content.Description;
+            return true;
+        }
+
+        /// <summary>Re-reads whether the FOV hides the hover target. Returns true if that changed.</summary>
+        private bool UpdateTargetVisibility()
+        {
+            const float checkInterval = 0.1f;
+            _nextVisibilityCheck = Time.unscaledTime + checkInterval;
+
+            bool hidden = IsHoverPointHiddenByVision();
+            bool changed = hidden != _targetHidden;
+            _targetHidden = hidden;
+            return changed;
+        }
+
+        /// <summary>
+        /// Examine sees what the player sees (examine.md §2). Tests the point under the cursor, not
+        /// the object's center, so a long wall stays examinable where it shows. The pick pass does
+        /// not know about the FOV mask, so it still reports targets under the black.
+        /// </summary>
+        private bool IsHoverPointHiddenByVision()
+        {
+            if (_currentExaminable == null
+                || !SubSystems.TryGet(out VisionSubSystem vision)
+                || !SubSystems.TryGet(out SelectionSubSystem selection)
+                || !selection.TryGetCurrentSelectable(out Selectable selectable))
+            {
+                return false;
+            }
+
+            Camera camera = null;
+            if (SubSystems.TryGet(out CameraSubSystem cameras) && cameras.PlayerCamera != null)
+            {
+                camera = cameras.PlayerCamera.GetComponent<Camera>();
+            }
+
+            if (!SelectionTargetUtility.TryResolveInteractionPoint(camera, selectable, out Vector3 point, out _))
+            {
+                point = selectable.PickWorldCenter;
+            }
+
+            return !vision.IsVisible(point);
+        }
+
+        /// <summary>Fine print, the flavour line and the image show only inside the close band (examine.md §2).</summary>
+        private bool IsWithinCloseRange(IExaminable examinable)
+        {
+            if (!TryGetPlayerExamineOrigin(out Vector3 origin))
+            {
+                return false;
+            }
+
+            return ExamineRangeUtility.IsWithinRange(examinable, origin, ExamineConfig.CloseRange);
+        }
+
+        private bool TryGetPlayerExamineOrigin(out Vector3 origin)
+        {
+            origin = default;
+
+            if (_localPlayer == null)
+            {
+                return false;
+            }
+
+            Hands hands = _localPlayer.GetComponentInChildren<Hands>();
+            if (hands == null)
+            {
+                return false;
+            }
+
+            Hand hand = hands.SelectedHand;
+            if (hand == null)
+            {
+                return false;
+            }
+
+            origin = hand.InteractionOrigin;
+            return true;
+        }
+
+        private bool IsDetailedExamineHeld()
+        {
+            if (_pinnedDetailedExamine)
+            {
+                return true;
+            }
+
+            Keyboard keyboard = Keyboard.current;
+            if (keyboard != null
+                && (keyboard.leftShiftKey.isPressed || keyboard.rightShiftKey.isPressed))
+            {
+                return true;
+            }
+
+            return _inputSystem != null && _inputSystem.DetailedExamine.IsPressed();
+        }
+
+        private bool EnsureViews()
+        {
+            if (_genericView != null && _quickLookView != null && _windowView != null)
+            {
+                return true;
+            }
+
+            if (!TryEnsureCatalog())
+            {
+                return false;
+            }
+
+            if (!SubSystems.TryGet(out UiShellSubSystem uiShell)
+                || !uiShell.TryGetLayer(UiLayer.Overlay, out VisualElement overlayLayer))
+            {
+                Debug.LogError("ExamineOverlaySubSystem could not find the UiShellSubSystem overlay layer.", this);
+                return false;
+            }
+
+            // See RadialInteractionSubSystem for why this register is never paired with an unregister here.
+            InputInterface.RegisterDocument(uiShell.Document);
+
+            _genericView = new GenericExamineHoverView(_catalog.ExamineStyle);
+            _genericView.Attach(overlayLayer);
+
+            CharacterExamineIconSet icons = _catalog.Icons;
+            _quickLookView = new CharacterQuickLookView(
+                _catalog.ExamineStyle, _catalog.InventorySlotStyle, _catalog.DiegeticTokensStyle, icons);
+            _quickLookView.Attach(overlayLayer);
+
+            _windowView = new CharacterExamineWindowView(
+                _catalog.ExamineStyle,
+                _catalog.InventorySlotStyle,
+                _catalog.DiegeticTokensStyle,
+                _catalog.MachineWindowStyle,
+                icons);
+            _windowView.Attach(overlayLayer);
+            _windowView.CloseRequested += HandleCloseRequested;
+            _windowView.TakeHoldStarted += HandleTakeHoldStarted;
+            _windowView.TakeHoldCancelled += HandleTakeHoldCancelled;
+
+            return true;
+        }
+
+        private bool TryEnsureCatalog()
+        {
+            if (_catalog != null)
+            {
+                return true;
+            }
+
+            _catalog = Resources.Load<ExamineOverlayAssetCatalog>(ExamineOverlayAssetPaths.ResourcesCatalogName);
+            if (_catalog == null)
+            {
+                Debug.LogError(
+                    $"ExamineOverlaySubSystem could not load Resources/{ExamineOverlayAssetPaths.ResourcesCatalogName}. "
+                    + "Run SS3D → Data → Rebuild All UI Catalogs and commit the asset.",
+                    this);
+                return false;
+            }
+
+            if (!_catalog.HasRequiredAssets(out string missingField))
+            {
+                Debug.LogError(
+                    $"ExamineOverlayAssetCatalog is missing required assets ({missingField}). "
+                    + "Run SS3D → Data → Rebuild All UI Catalogs.",
+                    this);
+                return false;
+            }
+
+            return true;
+        }
+    }
+}

@@ -1,0 +1,12 @@
+# Client 1 of the late-join scenario: connects immediately but only readies/embarks after the
+# round is already Ongoing and client 0 has already embarked - the real-process equivalent of
+# the old KnownIssueReproduction/Issue1002_LateJoinFails_HostPerspective.cs
+# (ClientCanEmbarkAfterRoundStartWhenHostHasAlreadyEmbarked).
+wait_connected
+wait_round Ongoing
+wait_seconds 3
+ready
+embark
+console playerlist
+wait_seconds 2
+disconnect

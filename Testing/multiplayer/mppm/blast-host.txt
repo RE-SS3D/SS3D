@@ -1,0 +1,17 @@
+# Guards: a blast reaches a remote owner, as CharacterController motion while upright and as bone motion once floored (agent-local check) · Not cheaper because: remote ownership needs a second process
+# Main editor (host) side. Each blast lands on the remote body's tile, so its force is exactly the yield.
+# Player2 runs scenarios/blast-client.txt.
+wait_timeout 180
+wait_connected
+wait_clients 1
+ready
+start_round
+wait_round Ongoing
+embark
+assert_embarked
+wait_players 2
+wait_seconds 4
+blast_on_client 60 30
+wait_seconds 4
+blast_on_client 120 45
+wait_seconds 20

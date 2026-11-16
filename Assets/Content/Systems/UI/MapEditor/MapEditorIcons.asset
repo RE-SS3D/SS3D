@@ -1,0 +1,69 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4a8c2f1e9b3d4a5c8e7f6d5c4b3a2910, type: 3}
+  m_Name: MapEditorIcons
+  m_EditorClassIdentifier: SS3D.Systems::SS3D.Systems.Tile.MapEditor.MapEditorIconsSo
+  _select: {fileID: 7388822144124034973, guid: a3d66ac8773fd6707891aa531aeba349, type: 3}
+  _construct: {fileID: 7388822144124034973, guid: 8d63883b0ddd71ae2909325a91178a26, type: 3}
+  _move: {fileID: 7388822144124034973, guid: 0908689b9cd5371d9b470c8cab2513d5, type: 3}
+  _dropper: {fileID: 7388822144124034973, guid: 0361fa8008af97efda6b235183fa27cf, type: 3}
+  _delete: {fileID: 7388822144124034973, guid: fb7bf1b35d17501369f394a9e8e11a13, type: 3}
+  _undo: {fileID: 7388822144124034973, guid: a45f5c7feb9b45ded88943e3be4a8570, type: 3}
+  _redo: {fileID: 7388822144124034973, guid: 0cfedd0cd24e8ff3da627f0238092bc2, type: 3}
+  _saveMap: {fileID: 7388822144124034973, guid: 0486df65a6468d60cab443aec846983b, type: 3}
+  _openMap: {fileID: 7388822144124034973, guid: c8bde30d75948eb9fa782405f9ba1378, type: 3}
+  _rotateLeft: {fileID: 7388822144124034973, guid: 5dc4ccf2cbd53b82dac3e4a4a07e265e, type: 3}
+  _rotateRight: {fileID: 7388822144124034973, guid: 795b588a683496a12bfb9f120b65153d, type: 3}
+  _zoomIn: {fileID: 7388822144124034973, guid: fee6fefd5e5ae379fb5b65d02873befc, type: 3}
+  _zoomOut: {fileID: 7388822144124034973, guid: 680a7db649134a9029283e1bb44e2272, type: 3}
+  _panelExpand: {fileID: 7388822144124034973, guid: fe467050f280546fb89a6f17d2468585, type: 3}
+  _panelCollapse: {fileID: 7388822144124034973, guid: 44349bbcdb53c1217a3bfaafc54a5a40, type: 3}
+  _resetView: {fileID: 7388822144124034973, guid: a39de330cfc8f1bfcbb10426fb9aecad, type: 3}
+  _layers: {fileID: 7388822144124034973, guid: 6b1afc38e37a4ad4781a0ac10cb5ab74, type: 3}
+  _eyeOff: {fileID: 7388822144124034973, guid: e81346976a7d5a8e6b460beeadef1dda, type: 3}
+  _camera: {fileID: 7388822144124034973, guid: bd761adbd9bf0aed68fe127e29c609d7, type: 3}
+  _settings: {fileID: 7388822144124034973, guid: 1aeda4b24f664d348af21d625225f576, type: 3}
+  _search: {fileID: 7388822144124034973, guid: 1fe2738261f78b8428f0b8a63c8877d1, type: 3}
+  _modeUpper: {fileID: 7388822144124034973, guid: fe467050f280546fb89a6f17d2468585, type: 3}
+  _modeLower: {fileID: 7388822144124034973, guid: 44349bbcdb53c1217a3bfaafc54a5a40, type: 3}
+  _modeItems: {fileID: 7388822144124034973, guid: 3345fc0f1528d1ca1b704f083e78148f, type: 3}
+  _modeScripting: {fileID: 7388822144124034973, guid: 5d5ab8e0a5b65bbcba03493815981cb7, type: 3}
+  _subTabIcons:
+  - Path: Assets/Art/Icons/map-editor/grid.svg
+    Image: {fileID: 7388822144124034973, guid: fa24165f243afb33792e14e5ba0e44c7, type: 3}
+  - Path: Assets/Art/Icons/map-editor/bracket.svg
+    Image: {fileID: 7388822144124034973, guid: 41a35a27b113ae238b7750214849f86e, type: 3}
+  - Path: Assets/Art/Icons/map-editor/door.svg
+    Image: {fileID: 7388822144124034973, guid: 5bb9413eab508e210b0c2a4807f625fb, type: 3}
+  - Path: Assets/Art/Icons/map-editor/pin.svg
+    Image: {fileID: 7388822144124034973, guid: e42e5f1a6d5ae88779a25bc3dc312d63, type: 3}
+  - Path: Assets/Art/Icons/map-editor/cube.svg
+    Image: {fileID: 7388822144124034973, guid: 265b46093e309c4c8a8b3dd727e22dc5, type: 3}
+  - Path: Assets/Art/Icons/map-editor/settings.svg
+    Image: {fileID: 7388822144124034973, guid: 1aeda4b24f664d348af21d625225f576, type: 3}
+  - Path: Assets/Art/Icons/map-editor/layers.svg
+    Image: {fileID: 7388822144124034973, guid: 6b1afc38e37a4ad4781a0ac10cb5ab74, type: 3}
+  - Path: Assets/Art/Icons/map-editor/dots9.svg
+    Image: {fileID: 7388822144124034973, guid: c128cd8f86d8b4aa19b7a7831cabf741, type: 3}
+  - Path: Assets/Art/Icons/map-editor/bolt.svg
+    Image: {fileID: 7388822144124034973, guid: 99f76c5ad3eaff1a6b5eaeb71d5d3666, type: 3}
+  - Path: Assets/Art/Icons/map-editor/pipe.svg
+    Image: {fileID: 7388822144124034973, guid: bc06b383f02d69538b7a2e0a21488060, type: 3}
+  - Path: Assets/Art/Icons/map-editor/trash.svg
+    Image: {fileID: 7388822144124034973, guid: fb7bf1b35d17501369f394a9e8e11a13, type: 3}
+  - Path: Assets/Art/Icons/map-editor/box.svg
+    Image: {fileID: 7388822144124034973, guid: 3345fc0f1528d1ca1b704f083e78148f, type: 3}
+  _spawnAssistant: {fileID: 7388822144124034973, guid: 05a2eaa02b8cc3f0d881840632b4bfd6, type: 3}
+  _spawnSecurity: {fileID: 7388822144124034973, guid: a329af8d1a6738ba4b7750ba45a72a88, type: 3}
+  _spawnTraitor: {fileID: 7388822144124034973, guid: d9cefe08cafd7c20192fe4a0a44e5e4d, type: 3}
+  _spawnMalfunctioningAI: {fileID: 7388822144124034973, guid: 96f2ac857b908dd2a8917fa7f4e86097, type: 3}
+  _spawnNuclearOperatives: {fileID: 7388822144124034973, guid: fcd3a7ef92f963580bf0c458a48ef77e, type: 3}

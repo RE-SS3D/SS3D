@@ -1,57 +1,280 @@
 #https://game.ci/docs/github/test-runner
+# pull_request (not pull_request_target): checkout and workflow YAML come from the PR head.
+# Only PRs from branches of this repository (people with write access) run Unity here. PRs from
+# forks get no secrets and never run on the self-hosted runner: their run posts a notice instead,
+# and a maintainer who has read the change runs it with
+#   gh workflow run editmodetestrunner.yml --ref develop -f pr=<number>
+#
+# Runs on the self-hosted runner (labels self-hosted/linux/x64/unity); dispatch with runner=github
+# for GitHub-hosted ubuntu-latest. See
+# Documents/architecture/2026-07_multiplayer-testing-self-hosted-ci.md.
+#
+# One run per change (testing philosophy D12). Agents already ran compile + EditMode locally, so CI
+# is the record, not the first check:
+# - PRs into develop only. A stacked PR runs once its base becomes develop ("edited" with a base
+#   change); other edits (title, body) are ignored. A newer push cancels the PR's older run.
+# - Docs-only PRs skip Unity.
+# - No run per merge. A nightly run on develop catches PRs that pass alone but break together, and
+#   is skipped when develop has not moved since the last green nightly.
 name: Run Tests
 on:
- [push, pull_request_target, workflow_dispatch]
+  pull_request:
+    branches: [develop]
+    types: [opened, synchronize, reopened, ready_for_review, edited]
+    paths-ignore:
+      - "Documents/**"
+      - "**/*.md"
+  schedule:
+    # Before the 04:00 smoke nightly, which shares the self-hosted runner.
+    - cron: "30 2 * * *"
+  workflow_dispatch:
+    inputs:
+      runner:
+        description: "Runner (self-hosted by default; github = GitHub-hosted ubuntu-latest)"
+        type: choice
+        options:
+          - self-hosted
+          - github
+        default: self-hosted
+      pr:
+        description: "PR number to test (a fork PR a maintainer has read); empty = the dispatched branch"
+        type: string
+        default: ""
+concurrency:
+  # One group per PR, so a new push cancels the older run. An edit that is not a base change gets a
+  # group of its own, so it cannot cancel a real run before its jobs are skipped.
+  group: >-
+    run-tests-${{ github.event.pull_request.number || github.ref }}${{
+    github.event.action == 'edited' && !github.event.changes.base && format('-edit-{0}', github.run_id) || '' }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 jobs:
+  pick_runner:
+    name: Pick runner
+    # A PR edit only matters when it moved the base (a stacked PR now targeting develop).
+    if: github.event.action != 'edited' || github.event.changes.base
+    runs-on: ubuntu-latest
+    permissions:
+      actions: read
+      contents: read
+    outputs:
+      runs_on: ${{ steps.pick.outputs.runs_on }}
+      self_hosted: ${{ steps.pick.outputs.self_hosted }}
+      run: ${{ steps.moved.outputs.run }}
+    steps:
+      - name: Skip a nightly when develop has not moved since the last green one
+        id: moved
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          if [ "${{ github.event_name }}" != "schedule" ]; then
+            echo "run=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          last=$(gh api "repos/${{ github.repository }}/actions/workflows/editmodetestrunner.yml/runs?event=schedule&status=success&per_page=1" \
+            --jq '.workflow_runs[0].head_sha // ""')
+          if [ "$last" = "${{ github.sha }}" ]; then
+            echo "develop is still at $last, which the last green nightly tested. Skipping."
+            echo "run=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "run=true" >> "$GITHUB_OUTPUT"
+          fi
+      - name: Pick the self-hosted runner unless GitHub-hosted is requested
+        id: pick
+        env:
+          RUNNER_PREF: ${{ github.event_name == 'workflow_dispatch' && inputs.runner || 'self-hosted' }}
+        run: |
+          set -euo pipefail
+          self_hosted_json='["self-hosted","linux","x64","unity"]'
+          github_json='["ubuntu-latest"]'
+
+          pick_self_hosted() {
+            echo "runs_on=${self_hosted_json}" >> "$GITHUB_OUTPUT"
+            echo "self_hosted=true" >> "$GITHUB_OUTPUT"
+            echo "Selected the self-hosted Unity runner"
+          }
+          pick_github() {
+            echo "runs_on=${github_json}" >> "$GITHUB_OUTPUT"
+            echo "self_hosted=false" >> "$GITHUB_OUTPUT"
+            echo "Selected ubuntu-latest (GitHub-hosted)"
+          }
+
+          # Always self-hosted unless GitHub-hosted is asked for explicitly. There is no online check:
+          # github.token cannot list repo runners (HTTP 403), so an "auto" check always fell back.
+          # If the self-hosted runner is offline, the job queues until it is back.
+          if [ "$RUNNER_PREF" = "github" ]; then
+            pick_github
+          else
+            pick_self_hosted
+          fi
+
+  fork_pr_notice:
+    name: Unity tests wait for a maintainer (PR from a fork)
+    if: >-
+      github.event_name == 'pull_request' &&
+      github.event.pull_request.head.repo.full_name != github.repository &&
+      (github.event.action != 'edited' || github.event.changes.base)
+    runs-on: ubuntu-latest
+    permissions: {}
+    steps:
+      - name: Explain how this PR gets tested
+        env:
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        run: |
+          msg="PRs from forks get no Unity license and never run on the self-hosted runner. After reading the change, a maintainer runs EditMode with: gh workflow run editmodetestrunner.yml --ref develop -f pr=${PR_NUMBER}"
+          echo "::notice::$msg"
+          echo "$msg" >> "$GITHUB_STEP_SUMMARY"
+
   run_tests:
     name: Run tests
-    runs-on: ubuntu-latest
+    needs: pick_runner
+    # Never PR code from a fork: it would get no secrets and must not reach the self-hosted runner.
+    if: >-
+      needs.pick_runner.outputs.run == 'true' &&
+      (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository)
+    permissions:
+      contents: read
+      # game-ci's test runner posts the results as a check run.
+      checks: write
+      # The nightly opens or closes its failure issue.
+      issues: write
+    runs-on: ${{ fromJSON(needs.pick_runner.outputs.runs_on) }}
     environment:
       name: unity_tests
+    env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+      # Under ~/.cache/ss3d/ on the runner. Separate from smoke's Library so a failed EditMode
+      # discard cannot wipe the warm build cache. Only used when self_hosted=true.
+      SS3D_UNITY_LIBRARY_STASH_NAME: Library-editmode
     steps:
       - name: Checkout project code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
-          lfs: true
-      - name: Setup node
-        uses: actions/setup-node@v3
-        with:
-          node-version: 'lts/*'
-      - run: npm install @actions/core
-      - run: npm install @actions/github
-      - run: npm install jsdom
-      - run: npm install fs
-      - name: Run tests
+          # No LFS-tracked files; git lfs fetch fails ("missing object") in the self-hosted
+          # runner's reused workspace, a partial clone left by develop-release's blob:none checkouts.
+          lfs: false
+          # Explicit PR head (and its repo) so we never silently test the base branch.
+          # A maintainer's dispatch with -f pr=<number> tests that PR's head instead.
+          ref: ${{ inputs.pr && format('refs/pull/{0}/head', inputs.pr) || github.event.pull_request.head.sha || github.sha }}
+          repository: ${{ github.event.pull_request.head.repo.full_name || github.repository }}
+      - name: Restore Unity Library stash
+        if: needs.pick_runner.outputs.self_hosted == 'true'
+        run: |
+          set -euo pipefail
+          stash="${HOME}/.cache/ss3d/${SS3D_UNITY_LIBRARY_STASH_NAME}"
+          workspace_lib="${GITHUB_WORKSPACE}/Library"
+          mkdir -p "$(dirname "$stash")"
+          if [[ -d "$workspace_lib" ]]; then
+            echo "Removing leftover workspace Library/ before restore"
+            rm -rf "$workspace_lib"
+          fi
+          if [[ -d "$stash" ]]; then
+            echo "Restoring warm Library stash from $stash"
+            du -sh "$stash" || true
+            # Copy, not mv: a cancelled run skips both the save and the discard step, so a
+            # moved stash would be lost.
+            cp -a "$stash" "$workspace_lib"
+          else
+            echo "No Library stash at $stash — cold import this run"
+          fi
+      - name: Validate Unity CI secrets
+        run: |
+          missing=0
+          if [ -z "${{ secrets.UNITY_LICENSE }}" ] && [ -z "${{ secrets.UNITY_SERIAL }}" ]; then
+            echo "::error::Neither UNITY_LICENSE nor UNITY_SERIAL is set in the unity_tests environment."
+            echo "Personal license: activate locally, then add UNITY_LICENSE to the unity_tests environment."
+            echo "Professional license: set UNITY_SERIAL, UNITY_EMAIL, and UNITY_PASSWORD on unity_tests."
+            echo "See https://game.ci/docs/github/activation"
+            missing=1
+          fi
+          if [ -n "${{ secrets.UNITY_SERIAL }}" ] && { [ -z "${{ secrets.UNITY_EMAIL }}" ] || [ -z "${{ secrets.UNITY_PASSWORD }}" ]; }; then
+            echo "::error::UNITY_SERIAL is set but UNITY_EMAIL or UNITY_PASSWORD is missing."
+            missing=1
+          fi
+          exit $missing
+      - name: Keep the Unity package cache between jobs
+        if: needs.pick_runner.outputs.self_hosted == 'true'
+        uses: ./.github/actions/persistent-upm-cache
+      - name: Pre-create game-ci license dir as the runner user
+        # game-ci's entrypoint mkdirs $GITHUB_WORKSPACE/_activate-license~ as root, then su's to the
+        # host user (runAsHostUser), which cannot write UnityLicenseFile.ulf into it ("Permission
+        # denied"). mkdir -p keeps an existing dir, so creating it here gives the host user ownership.
+        if: needs.pick_runner.outputs.self_hosted == 'true'
+        run: rm -rf "$GITHUB_WORKSPACE/_activate-license~" && mkdir -p "$GITHUB_WORKSPACE/_activate-license~"
+      - name: Import changed assets in their own editor session
+        # The stash only holds the last green Library, so a PR's new assets import during startup.
+        # If a database imports before the assets it lists, its dictionary keeps bare Object
+        # references for them until the next domain reload, and tests in that same session see
+        # them as the wrong type. This filter matches no test, which Unity exits 0 on.
         uses: game-ci/unity-test-runner@v4
         with:
           testMode: editmode
+          unityVersion: 6000.3.28f1
+          customParameters: -testFilter ImportPassMatchesNoTest
+          # Host UID for Docker mounts on the self-hosted runner; unused/harmless on GitHub-hosted.
+          runAsHostUser: ${{ needs.pick_runner.outputs.self_hosted == 'true' }}
         env:
           UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
           UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
           UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
+          UNITY_SERIAL: ${{ secrets.UNITY_SERIAL }}
+      - name: Recreate game-ci license dir for the test run
+        # The import pass does not leave this dir usable by the host user, so repeat the step above.
+        if: needs.pick_runner.outputs.self_hosted == 'true'
+        run: rm -rf "$GITHUB_WORKSPACE/_activate-license~" && mkdir -p "$GITHUB_WORKSPACE/_activate-license~"
+      - name: Run tests
+        id: run-tests
+        uses: game-ci/unity-test-runner@v4
+        with:
+          testMode: editmode
+          unityVersion: 6000.3.28f1
+          # Host UID for Docker mounts on the self-hosted runner; unused/harmless on GitHub-hosted.
+          runAsHostUser: ${{ needs.pick_runner.outputs.self_hosted == 'true' }}
+        env:
+          UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
+          UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
+          UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
+          UNITY_SERIAL: ${{ secrets.UNITY_SERIAL }}
+      - name: Save Unity Library stash
+        if: needs.pick_runner.outputs.self_hosted == 'true' && success()
+        run: |
+          set -euo pipefail
+          stash="${HOME}/.cache/ss3d/${SS3D_UNITY_LIBRARY_STASH_NAME}"
+          workspace_lib="${GITHUB_WORKSPACE}/Library"
+          mkdir -p "$(dirname "$stash")"
+          if [[ -d "$workspace_lib" ]]; then
+            rm -rf "$stash"
+            mv "$workspace_lib" "$stash"
+            echo "Saved Library stash to $stash"
+            du -sh "$stash" || true
+          else
+            echo "No workspace Library/ to stash"
+          fi
+      - name: Discard Library after failed tests
+        if: needs.pick_runner.outputs.self_hosted == 'true' && failure()
+        run: |
+          set -euo pipefail
+          # The stash still holds the last green Library; do not write a failed one back.
+          rm -rf "${GITHUB_WORKSPACE}/Library"
+          echo "Discarded workspace Library/ after failure"
       - name: Produce summary output
         uses: ./.github/actions/interpret-test-results
-        if: always()
+        if: success() || failure()
         id: interpret-test-results
         with:
           XML_PATH: artifacts/editmode-results.xml
-      - name: Notify discord if tests fail
-        uses: rjstone/discord-webhook-notify@v1
-        if: failure() && github.event_name != 'pull_request'
-        with:
-          severity: error
-          details: ${{ steps.interpret-test-results.outputs.DISPLAY_STRING }}
-          webhookUrl: ${{ secrets.DISCORD_WEBHOOK_TEST_RESULTS }}
-      - name: Notify discord if tests succeed
-        uses: rjstone/discord-webhook-notify@v1
-        if: success() && github.event_name != 'pull_request'
-        with:
-          severity: info
-          details: ${{ steps.interpret-test-results.outputs.DISPLAY_STRING }}
-          webhookUrl: ${{ secrets.DISCORD_WEBHOOK_TEST_RESULTS }}
       - name: Upload test results
         uses: actions/upload-artifact@v4
         if: always()
         with:
           name: Test results
           path: artifacts
+      - name: Open or close the nightly failure issue (D9)
+        if: github.event_name == 'schedule' && (success() || failure())
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          outcome=success
+          [ "${{ steps.run-tests.outcome }}" = success ] || outcome=failure
+          Tools/ci/nightly_issue.sh editmode-nightly-failure "Nightly EditMode tests failing on develop" "$outcome" \
+            "EditMode on develop at ${{ github.sha }}: ${{ steps.run-tests.outcome }}. Logs: the run's \`Test results\` artifact."

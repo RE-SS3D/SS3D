@@ -1,46 +1,22 @@
 ﻿using SS3D.Core.Behaviours;
-using SS3D.Systems.Entities.Data;
+using SS3D.Systems.Entities.Humanoid.Body;
 using UnityEngine;
 
 namespace SS3D.Systems.Entities.Humanoid
 {
+    /// <summary>
+    /// Legacy wrapper — delegates to <see cref="AnimationOrchestrator"/>.
+    /// Kept for prefab compatibility during migration.
+    /// </summary>
+    [RequireComponent(typeof(AnimationOrchestrator))]
     public class HumanoidAnimatorController : Actor
     {
-        [SerializeField] private HumanoidController _movementController;
+        private AnimationOrchestrator _orchestrator;
 
-        [SerializeField] private Animator _animator;
-        [SerializeField] private float _lerpMultiplier;
-
-        protected override void OnStart()
+        protected override void OnAwake()
         {
-            base.OnStart();
-            SubscribeToEvents();    
-        }
-
-        protected override void OnDestroyed()
-        {
-            base.OnDestroyed();
-            UnsubscribeFromEvents();
-        }
-
-        private void SubscribeToEvents()
-        {
-            _movementController.OnSpeedChangeEvent += UpdateMovement;
-        }
-
-        private void UnsubscribeFromEvents()
-        {
-            _movementController.OnSpeedChangeEvent -= UpdateMovement;
-        }
-
-        private void UpdateMovement(float speed)
-        {
-            bool isMoving = speed != 0;
-            float currentSpeed = _animator.GetFloat(Animations.Humanoid.MovementSpeed);
-            float newLerpModifier = isMoving ? _lerpMultiplier : (_lerpMultiplier * 3);
-            speed = Mathf.Lerp(currentSpeed, speed, Time.deltaTime * newLerpModifier);
-            
-            _animator.SetFloat(Animations.Humanoid.MovementSpeed, speed);
+            base.OnAwake();
+            _orchestrator = GetComponent<AnimationOrchestrator>();
         }
     }
 }

@@ -1,0 +1,121 @@
+
+#identity,
+#status-chip {
+    margin-bottom: 14px;
+}
+
+.gas-flow-row {
+    flex-direction: row;
+    align-items: stretch;
+}
+
+.gas-flow-row__single,
+.gas-flow-row__stack {
+    flex-grow: 1;
+    flex-basis: 0;
+    min-width: 0;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.gas-flow-row__next {
+    margin-top: 8px;
+}
+
+.gas-flow-row__glyph {
+    width: 40px;
+    flex-shrink: 0;
+    font-size: 18px;
+    -unity-text-align: middle-center;
+    align-self: center;
+    padding: 0;
+    background-color: rgba(0, 0, 0, 0);
+}
+
+.gas-controls-row {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.gas-power-group {
+    flex-direction: row;
+    align-items: center;
+}
+
+.gas-power-group .toggle-switch {
+    margin-right: 12px;
+}
+
+.gas-power-group .toggle-switch__label {
+    display: none;
+}
+
+.gas-power-caption {
+    font-size: 9px;
+    letter-spacing: 2px;
+    color: var(--ss3d-text-secondary);
+    padding: 0;
+    background-color: rgba(0, 0, 0, 0);
+}
+
+.gas-target-group {
+    flex-direction: row;
+    align-items: center;
+}
+
+.gas-target-labels {
+    flex-direction: column;
+    align-items: flex-end;
+    margin-right: 14px;
+}
+
+.gas-target-title {
+    font-size: 11px;
+    color: var(--ss3d-text-tertiary);
+    padding: 0;
+    background-color: rgba(0, 0, 0, 0);
+}
+
+.gas-gated-hint {
+    font-size: 9.5px;
+    color: var(--ss3d-text-tertiary);
+    padding: 0;
+    background-color: rgba(0, 0, 0, 0);
+}
+
+.filter-gases {
+    flex-direction: column;
+    margin-top: 16px;
+    padding-top: 12px;
+    border-top-width: 1px;
+    border-top-color: var(--ss3d-border-subtle);
+}
+
+.filter-gases__header {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 8px;
+}
+
+.filter-gases__title {
+    font-size: 12px;
+    letter-spacing: 2px;
+    color: var(--ss3d-text-secondary);
+    padding: 0;
+    background-color: rgba(0, 0, 0, 0);
+}
+
+.filter-gases__registry {
+    font-size: 10.5px;
+    color: var(--ss3d-text-tertiary);
+    padding: 0;
+    background-color: rgba(0, 0, 0, 0);
+}
+
+.filter-gases__grid {
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: space-between;
+}

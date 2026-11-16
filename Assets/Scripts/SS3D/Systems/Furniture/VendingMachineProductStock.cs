@@ -7,5 +7,6 @@ namespace SS3D.Systems.Furniture
     {
         public ItemObjectSo Product;
         public int Stock;
+        public bool RequiresId;
     }
 }

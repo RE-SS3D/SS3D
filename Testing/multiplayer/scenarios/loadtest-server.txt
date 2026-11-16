@@ -1,0 +1,6 @@
+# Server side of the load/soak scenario. run_loadtest.sh replaces __DURATION__.
+wait_timeout 240
+wait_connected
+wait_round Ongoing
+wait_seconds __DURATION__
+disconnect

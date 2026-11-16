@@ -1,0 +1,28 @@
+{
+    "name": "SS3D.UI.MainHud",
+    "rootNamespace": "SS3D.UI.MainHud",
+    "references": [
+        "Coimbra",
+        "Coimbra.Services.Events",
+        "Coimbra.Services.PlayerLoopEvents",
+        "FishNet.Runtime",
+        "IngameDebugConsole.Runtime",
+        "SS3D.Core",
+        "SS3D.Interactions",
+        "SS3D.Permissions",
+        "SS3D.Systems",
+        "SS3D.UI.MachineInterface",
+        "SS3D.UI.StoragePanel",
+        "Unity.InputSystem",
+        "GUID:fa8dbf94b90efa1478e7c833397cb0b2"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

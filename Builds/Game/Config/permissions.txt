@@ -1,4 +1,0 @@
-john ServerOwner
-editorUser ServerOwner
-hostingUser ServerOwner
-unknown ServerOwner

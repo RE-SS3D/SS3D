@@ -7,7 +7,7 @@ using SS3D.Systems.Entities;
 using SS3D.Systems.Interactions;
 using SS3D.Systems.Inventory.Containers;
 using SS3D.Systems.Inventory.Items;
-using SS3D.UI.Buttons;
+using SS3D.Systems.Rounds;
 using System.Collections;
 using System.Linq;
 using UnityEngine;
@@ -25,11 +25,6 @@ namespace SS3D.Tests
         private const string HorizontalAxis = "Horizontal";
         private const string VerticalAxis = "Vertical";
         private const string CancelButton = "Cancel";
-        private const string ReadyButtonName = "Ready";
-        private const string EmbarkButtonName = "Embark";
-
-        private const string ServerSettingsTabName = "Server Settings";
-        private const string StartRoundButtonName = "Start Round";
         #endregion
 
         /// <summary>
@@ -45,52 +40,40 @@ namespace SS3D.Tests
             return result;
         }
 
+        // Round flow goes through the server (ServerHelpers), not lobby buttons: these tests cover
+        // gameplay, and the lobby UI has its own pilots (Testing/ui).
+
+        /// <summary>Starts a round, waits until it is Ongoing, then embarks the local player after <paramref name="delay"/>.</summary>
         public static IEnumerator StartAndEnterRound(float delay = 0f)
         {
             yield return StartRound();
+            yield return ServerHelpers.WaitForRoundState(RoundState.Ongoing, 60f);
             yield return new WaitForSeconds(delay);
-            yield return PressButtonWhenAvailable(EmbarkButtonName);
+            yield return Embark();
         }
 
-        /// <summary>
-        /// This method simulates the user in the lobby switching to the "Server Settings" tab, and clicking "Start Round".
-        /// </summary>
-        /// <param name="delay">Time delay between actions.</param>
-        /// <returns>IEnumerator for yielding in UnityTest.</returns>
+        /// <summary>Requests a round start, as an administrator's Start Round would.</summary>
         public static IEnumerator StartRound(float delay = 0.5f)
         {
-            SetTabActive(ServerSettingsTabName);
-
-            yield return new WaitForSeconds(delay);
-            PressButton(StartRoundButtonName);
-
+            ServerHelpers.ChangeRoundState(true);
             yield return new WaitForSeconds(delay);
         }
 
+        /// <summary>Starts a round without readying up, then joins it late.</summary>
         public static IEnumerator LateJoinRound()
         {
-            // Fire up the game
-            SetTabActive(ServerSettingsTabName);
-
-            yield return new WaitForSeconds(1f);
-            PressButton(StartRoundButtonName);
-
-            yield return new WaitForSeconds(1f);
-
-            // Give a few moments pause before we try and late join
+            ServerHelpers.SetPlayerReadiness(ServerHelpers.LocalCkey, false);
+            yield return StartRound();
+            yield return ServerHelpers.WaitForRoundState(RoundState.Ongoing, 60f);
             yield return new WaitForSeconds(5f);
-
-            // Now we join.
-            PressButton(EmbarkButtonName);
-
-            yield return new WaitForSeconds(3f);
-
+            yield return Embark();
         }
 
+        /// <summary>Joins the Ongoing round as the local player (no-op if already spawned), then lets the body settle.</summary>
         public static IEnumerator Embark()
         {
-            PressButton(EmbarkButtonName);
-
+            yield return ServerHelpers.EmbarkPlayer(ServerHelpers.LocalCkey);
+            // A fresh body drops onto the floor after spawning; movement tests measure positions.
             yield return new WaitForSeconds(3f);
         }
 
@@ -117,51 +100,15 @@ namespace SS3D.Tests
 
         public static IEnumerator FinishAndExitRound()
         {
-            // Press and release the Escape key
-            //TODO: ScriptedInput input = UserInput.GetInputService() as ScriptedInput;
-            //input.HandleButton(CancelButton, true);
-            yield return null;
-
-            //input.HandleButton(CancelButton, false);
-
-            // Change to the server settings tab, and cancel the round
-            SetTabActive(ServerSettingsTabName);
-
-            yield return new WaitForSeconds(1f);
-            PressButton(StartRoundButtonName);
-
-            yield return new WaitForSeconds(1f);
-
-            // Give a moment's pause before test formally concludes. (It takes a while for the round to reset).
-            yield return new WaitForSeconds(4f);
+            yield return TryFinishAndExitRound();
         }
 
-        public static void PressButton(string buttonName)
+        /// <summary>
+        /// Stops an active round and waits until it is Stopped. Safe to call from TearDown after a failed SetUp.
+        /// </summary>
+        public static IEnumerator TryFinishAndExitRound()
         {
-            GetButton(buttonName).Press();
-        }
-
-        public static IEnumerator PressButtonWhenAvailable(string buttonName, float timeout = 15f)
-        {
-            LabelButton button = GetButton(buttonName);
-            float startTime = Time.time;
-
-            while (button == null)
-            {
-                Assert.IsTrue(Time.time < startTime + timeout, $"Timeout of {timeout} reached when trying to press {buttonName} button");
-
-                yield return new WaitForSeconds(1f);
-                button = GetButton(buttonName);
-            }
-
-            button.Press();
-        }
-
-        public static LabelButton GetButton(string buttonName)
-        {
-            LabelButton button = GameObject.Find(buttonName)?.GetComponent<LabelButton>();
-
-            return button;
+            yield return ServerHelpers.StopRound();
         }
 
         public static void SetTabActive(string tabName)
@@ -194,7 +141,14 @@ namespace SS3D.Tests
             {
                 Item itemToSpawn = Assets.Get<GameObject>(AssetDatabases.Items, item)?.GetComponent<Item>();
 
-                itemSystem.CmdSpawnItemInContainer(itemToSpawn, hand.Container);
+                if (InstanceFinder.IsServer)
+                {
+                    itemSystem.SpawnItemInContainer(itemToSpawn.Name, hand.Container);
+                }
+                else
+                {
+                    itemSystem.CmdSpawnItemInContainer(itemToSpawn, hand.Container);
+                }
 
                 return hand.Container;
             }
@@ -204,12 +158,16 @@ namespace SS3D.Tests
             return null;
         }
 
+        /// <summary>The local player's InteractionController, or null until the owned entity is registered.</summary>
         public static InteractionController GetLocalInteractionController()
         {
             EntitySubSystem entitySystem = SubSystems.Get<EntitySubSystem>();
-            entitySystem.TryGetOwnedEntity(InstanceFinder.ClientManager.Connection, out Entity entity);
+            if (!entitySystem.TryGetOwnedEntity(InstanceFinder.ClientManager.Connection, out Entity entity))
+            {
+                return null;
+            }
 
-            return entity.gameObject.GetComponent<InteractionController>();
+            return entity.GetComponent<InteractionController>();
         }
 
         public static Vector3 GetLocalPlayerPosition()

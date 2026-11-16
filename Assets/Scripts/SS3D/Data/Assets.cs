@@ -1,4 +1,5 @@
 ﻿using Coimbra;
+using Cysharp.Threading.Tasks;
 using JetBrains.Annotations;
 using SS3D.Data.AssetDatabases;
 using SS3D.Logging;
@@ -6,19 +7,13 @@ using System;
 using System.Collections.Generic;
 using AssetDatabase = SS3D.Data.AssetDatabases.AssetDatabase;
 using Object = UnityEngine.Object;
-#if UNITY_EDITOR
-using System.IO;
-using UnityEditor;
-using UnityEditor.AddressableAssets;
-using UnityEditor.AddressableAssets.Settings;
-#endif
 
 namespace SS3D.Data
 {
     /// <summary>
     /// A class to get specific assets on the project, without having to assign them on the inspector or hardcoding Resources.Load.
     ///
-    /// A more concise and in depth explanation on how this system works and how to use is present on the GitBook page for AssetData.
+    /// How this system works and how to use it: Documents/architecture/systems/data-codegen.md.
     /// </summary>
     public static class Assets
     {
@@ -48,12 +43,45 @@ namespace SS3D.Data
         }
 
         /// <summary>
+        /// Async load via Addressables (ref-counted). Prefer for databases with
+        /// <see cref="AssetDatabaseLoadMode.AddressablesAsync"/>; also works for GUID keys in general.
+        /// </summary>
+        public static UniTask<AssetHandle<TAsset>> GetAsync<TAsset>([NotNull] string databaseId, [NotNull] string assetId)
+            where TAsset : Object
+        {
+            AssetDatabase database = GetDatabase(databaseId);
+            if (database == null)
+            {
+                return UniTask.FromException<AssetHandle<TAsset>>(
+                    new InvalidOperationException($"Database '{databaseId}' not found."));
+            }
+
+            if (database.LoadMode == AssetDatabaseLoadMode.AddressablesAsync
+                && database.AssetKeys != null
+                && !database.AssetKeys.Contains(assetId))
+            {
+                return UniTask.FromException<AssetHandle<TAsset>>(
+                    new InvalidOperationException(
+                        $"Asset '{assetId}' is not listed on AddressablesAsync database '{database.DatabaseName}'."));
+            }
+
+            return AssetProvider.AcquireAsync<TAsset>(assetId);
+        }
+
+        /// <summary>
         /// Returns an asset from a database casting the object found to TAsset.
         /// </summary>
         public static bool TryGet<TAsset>([NotNull] string databaseId, [NotNull] string assetId, [CanBeNull] out TAsset asset)
             where TAsset : Object
         {
-            return GetDatabase(databaseId).TryGet(assetId, out asset);
+            AssetDatabase database = GetDatabase(databaseId);
+            if (database == null)
+            {
+                asset = null;
+                return false;
+            }
+
+            return database.TryGet(assetId, out asset);
         }
 
         /// <summary>
@@ -68,10 +96,66 @@ namespace SS3D.Data
             for (int index = 0; index < assetDatabases.Count; index++)
             {
                 AssetDatabase database = assetDatabases[index];
+                if (database == null || string.IsNullOrEmpty(database.DatabaseID))
+                {
+                    Log.Warning(
+                        typeof(Assets),
+                        "IncludedAssetDatabases[{index}] is missing or has no DatabaseID; skipping (stale settings entry?)",
+                        Logs.Important,
+                        index);
+                    continue;
+                }
+
                 Databases.Add(database.DatabaseID, database);
             }
 
-            Log.Information(typeof(Assets), "{assetDatabasesCount} Asset Databases initialized", Logs.Important, assetDatabases.Count);
+            Log.Debug(typeof(Assets), "{assetDatabasesCount} Asset Databases initialized", Logs.Important, assetDatabases.Count);
+        }
+
+        /// <summary>
+        /// Warm-cache all <see cref="AssetDatabaseLoadMode.AddressablesAsync"/> databases so sync Get still works.
+        /// </summary>
+        public static void PreloadAddressableDatabases()
+        {
+            if (Databases.Count == 0)
+            {
+                LoadAssetDatabases();
+            }
+
+            foreach (AssetDatabase database in Databases.Values)
+            {
+                if (database.LoadMode != AssetDatabaseLoadMode.AddressablesAsync)
+                {
+                    continue;
+                }
+
+                if (database.AssetKeys == null || database.AssetKeys.Count == 0)
+                {
+                    Log.Warning(
+                        typeof(Assets),
+                        "AddressablesAsync database {name} has no AssetKeys; sync Get will fail until keys are loaded.",
+                        Logs.Important,
+                        database.DatabaseName);
+                    continue;
+                }
+
+                Log.Debug(
+                    typeof(Assets),
+                    "Preloading {count} Addressables keys for {name}",
+                    Logs.Important,
+                    database.AssetKeys.Count,
+                    database.DatabaseName);
+
+                // InteractionIcons are Sprite assets; typed load avoids Addressables Object cast failures.
+                if (string.Equals(database.DatabaseName, "InteractionIcons", StringComparison.Ordinal))
+                {
+                    AssetProvider.PreloadAndHoldSync<UnityEngine.Sprite>(database.AssetKeys);
+                }
+                else
+                {
+                    AssetProvider.PreloadAndHoldSync(database.AssetKeys);
+                }
+            }
         }
 
         /// <summary>

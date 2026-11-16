@@ -1,0 +1,476 @@
+using System;
+using System.Collections.Generic;
+
+namespace SS3D.Systems.Health
+{
+    /// <summary>
+    /// Pure health simulation math — testable without Unity/FishNet.
+    /// </summary>
+    public static class HealthSimulation
+    {
+        public static float SumBleedingRates(IReadOnlyList<ZoneDamageState> zones)
+        {
+            float total = 0f;
+            for (int i = 0; i < zones.Count; i++)
+            {
+                total += zones[i].BleedingRate;
+            }
+
+            return total;
+        }
+
+        public static float GetOrganFunction(IReadOnlyList<OrganState> organs, OrganType type, float bloodVolumeRatio = 1f)
+        {
+            float stored = OrganSimulation.GetStoredOrganFunction(organs, type);
+            return OrganSimulation.EffectiveOrganFunction(stored, bloodVolumeRatio);
+        }
+
+        public static float LungIntake(IReadOnlyList<OrganState> organs, float atmosphereO2 = 1f, float bloodVolumeRatio = 1f)
+        {
+            float left = GetOrganFunction(organs, OrganType.LeftLung, bloodVolumeRatio) / 100f;
+            float right = GetOrganFunction(organs, OrganType.RightLung, bloodVolumeRatio) / 100f;
+            return (left + right) * 0.5f * atmosphereO2 * HealthConstants.BaseOxygenDemand;
+        }
+
+        public static float HeartDelivery(IReadOnlyList<OrganState> organs, float bloodVolumeRatio)
+        {
+            float heart = GetOrganFunction(organs, OrganType.Heart, bloodVolumeRatio) / 100f;
+            float deliveryVolume = MathF.Pow(Math.Max(bloodVolumeRatio, 0f), HealthConstants.BloodDeliveryVolumeExponent);
+            return heart * deliveryVolume * HealthConstants.BaseOxygenDemand;
+        }
+
+        public static float LiverClearance(IReadOnlyList<OrganState> organs, float bloodVolumeRatio = 1f)
+        {
+            float liver = GetOrganFunction(organs, OrganType.Liver, bloodVolumeRatio) / 100f;
+            float renal = liver * HealthConstants.RenalClearanceFactor;
+            return (liver + renal) * HealthConstants.LiverClearanceRate;
+        }
+
+        public static SystemicPools TickPools(
+            SystemicPools pools,
+            IReadOnlyList<ZoneDamageState> zones,
+            IReadOnlyList<OrganState> organs,
+            float atmosphereO2 = 1f,
+            float toxinIntake = HealthConstants.BaseToxinIntake)
+        {
+            float bloodDelta = -SumBleedingRates(zones) * HealthConstants.BleedingBloodDrainScale;
+            float lungIntake = LungIntake(organs, atmosphereO2, pools.BloodVolumeRatio);
+            float heartDelivery = HeartDelivery(organs, pools.BloodVolumeRatio);
+            // Vacuum / destroyed lungs: no O₂ enters the blood — always accumulate unmet demand
+            // (the Min(intake,delivery) shortfall form made vacuum correct but made hemorrhagic
+            // hypoxia outrun blood critical). Breathable air keeps the bleed-tuned formula so
+            // oxy critical still lands after blood critical (LowBloodOxyDebtGainScale).
+            float oxyDelta = lungIntake <= 0f
+                ? HealthConstants.BaseOxygenDemand
+                : lungIntake - heartDelivery - HealthConstants.BaseOxygenDemand;
+
+            // Hemorrhagic hypoxia scales continuously with blood lost — shock before empty.
+            oxyDelta += (1f - pools.BloodVolumeRatio) * HealthConstants.LowBloodOxyDebtGainScale;
+
+            float toxinDelta = toxinIntake - LiverClearance(organs, pools.BloodVolumeRatio);
+
+            return new SystemicPools
+            {
+                BloodVolumeRatio = Clamp01(pools.BloodVolumeRatio + bloodDelta),
+                OxyDebt = Math.Max(0f, pools.OxyDebt + oxyDelta),
+                ToxinConcentration = Math.Max(0f, pools.ToxinConcentration + toxinDelta),
+            };
+        }
+
+        public static WoundSeverity SeverityFromBrute(float brute)
+        {
+            if (brute >= HealthConstants.DisabledThreshold) return WoundSeverity.Disabled;
+            if (brute >= HealthConstants.SevereThreshold) return WoundSeverity.Severe;
+            if (brute >= HealthConstants.WoundThreshold) return WoundSeverity.Wound;
+            if (brute >= HealthConstants.BruisedThreshold) return WoundSeverity.Bruised;
+            return WoundSeverity.None;
+        }
+
+        public static WoundSeverity SeverityFromBurn(float burn)
+        {
+            if (burn >= HealthConstants.BurnDisabledThreshold) return WoundSeverity.Disabled;
+            if (burn >= HealthConstants.BurnSevereThreshold) return WoundSeverity.Severe;
+            if (burn >= HealthConstants.BurnWoundThreshold) return WoundSeverity.Wound;
+            return WoundSeverity.None;
+        }
+
+        public static WoundSeverity ResolveZoneSeverity(float brute, float burn)
+        {
+            WoundSeverity bruteSeverity = SeverityFromBrute(brute);
+            WoundSeverity burnSeverity = SeverityFromBurn(burn);
+            return (WoundSeverity)Math.Max((int)bruteSeverity, (int)burnSeverity);
+        }
+
+        public static float BleedingRateForSeverity(WoundSeverity severity)
+        {
+            return severity switch
+            {
+                WoundSeverity.Wound => 0.5f,
+                WoundSeverity.Severe => 1f,
+                WoundSeverity.Disabled => 1.5f,
+                WoundSeverity.Severed => 2f,
+                _ => 0f,
+            };
+        }
+
+        public static bool IsSeverableZone(BodyZone zone)
+        {
+            return zone is BodyZone.Head
+                or BodyZone.LeftArm
+                or BodyZone.RightArm
+                or BodyZone.LeftLeg
+                or BodyZone.RightLeg;
+        }
+
+        public static void ApplySeverance(ref ZoneDamageState state)
+        {
+            state.IsSevered = true;
+            state.Severity = WoundSeverity.Severed;
+            state.IsDisabled = true;
+            state.BleedingRate = BleedingRateForSeverity(WoundSeverity.Severed);
+        }
+
+        public static void RefreshZoneDerivedState(ref ZoneDamageState state)
+        {
+            if (state.IsSevered)
+            {
+                state.Severity = WoundSeverity.Severed;
+                state.IsDisabled = true;
+                return;
+            }
+
+            state.Severity = ResolveZoneSeverity(state.Brute, state.Burn);
+            state.IsDisabled = state.Severity >= WoundSeverity.Disabled;
+        }
+
+        public static bool IsSystemicallyCritical(SystemicPools pools)
+        {
+            return pools.BloodVolumeRatio <= HealthConstants.CriticalBloodVolumeRatio
+                || pools.OxyDebt >= HealthConstants.CriticalOxyDebt
+                || pools.ToxinConcentration >= HealthConstants.CriticalToxinConcentration;
+        }
+
+        public static bool IsBrainCriticallyLow(float brainFunctionPercent)
+        {
+            return brainFunctionPercent <= HealthConstants.CriticalBrainFunctionPercent;
+        }
+
+        public static bool IsBrainDead(float brainFunctionPercent)
+        {
+            return brainFunctionPercent <= 0f;
+        }
+
+        public static bool IsCardiacArrest(float heartFunctionPercent)
+        {
+            return heartFunctionPercent <= 0f;
+        }
+
+        public static bool IsConscious(float brainFunctionPercent)
+        {
+            return brainFunctionPercent > HealthConstants.ConsciousnessBrainFunctionPercent;
+        }
+
+        public static HealthCriticalFlags BuildCriticalFlags(SystemicPools pools, float brainEffectiveFunctionPercent, float shock = 0f)
+        {
+            HealthCriticalFlags flags = HealthCriticalFlags.None;
+
+            if (pools.BloodVolumeRatio <= HealthConstants.CriticalBloodVolumeRatio)
+            {
+                flags |= HealthCriticalFlags.LowBlood;
+            }
+
+            if (pools.OxyDebt >= HealthConstants.CriticalOxyDebt)
+            {
+                flags |= HealthCriticalFlags.HighOxyDebt;
+            }
+
+            if (pools.ToxinConcentration >= HealthConstants.CriticalToxinConcentration)
+            {
+                flags |= HealthCriticalFlags.HighToxin;
+            }
+
+            if (IsBrainCriticallyLow(brainEffectiveFunctionPercent))
+            {
+                flags |= HealthCriticalFlags.LowBrain;
+            }
+
+            if (ShockSimulation.IsCritical(shock))
+            {
+                flags |= HealthCriticalFlags.HighShock;
+            }
+
+            return flags;
+        }
+
+        public static HealthState EvaluateHealthState(
+            SystemicPools pools,
+            IReadOnlyList<OrganState> organs)
+        {
+            return EvaluateHealthState(pools, organs, null, 0f, HealthState.Healthy);
+        }
+
+        /// <summary>
+        /// Dead, CardiacArrest, Critical (systemic, brain or shock), Downed (shock or no usable leg), Healthy — first
+        /// match wins. <paramref name="previous"/> gives Downed its hysteresis (health.md §4).
+        /// </summary>
+        public static HealthState EvaluateHealthState(
+            SystemicPools pools,
+            IReadOnlyList<OrganState> organs,
+            IReadOnlyList<ZoneDamageState> zones,
+            float shock,
+            HealthState previous)
+        {
+            float bloodVolume = pools.BloodVolumeRatio;
+            float brainStored = OrganSimulation.GetStoredOrganFunction(organs, OrganType.Brain);
+            float heartStored = OrganSimulation.GetStoredOrganFunction(organs, OrganType.Heart);
+            float brainEffective = GetOrganFunction(organs, OrganType.Brain, bloodVolume);
+
+            if (IsBrainDead(brainStored))
+            {
+                return HealthState.Dead;
+            }
+
+            if (IsCardiacArrest(heartStored))
+            {
+                return HealthState.CardiacArrest;
+            }
+
+            if (IsSystemicallyCritical(pools) || IsBrainCriticallyLow(brainEffective) || ShockSimulation.IsCritical(shock))
+            {
+                return HealthState.Critical;
+            }
+
+            // A body coming out of Critical is still at least as hurt as Downed, so it keeps Downed's lower stand line.
+            bool wasDown = previous is HealthState.Downed or HealthState.Critical;
+            if (ShockSimulation.IsDowned(shock, ShockSimulation.HasUsableLeg(zones), wasDown))
+            {
+                return HealthState.Downed;
+            }
+
+            return HealthState.Healthy;
+        }
+
+        public static HealthSnapshot BuildSnapshot(
+            SystemicPools pools,
+            IReadOnlyList<ZoneDamageState> zones,
+            IReadOnlyList<OrganState> organs)
+        {
+            return BuildSnapshot(pools, zones, organs, ShockState.None, HealthState.Healthy);
+        }
+
+        public static HealthSnapshot BuildSnapshot(
+            SystemicPools pools,
+            IReadOnlyList<ZoneDamageState> zones,
+            IReadOnlyList<OrganState> organs,
+            ShockState shock,
+            HealthState previous)
+        {
+            float worstBrute = 0f;
+            float worstBurn = 0f;
+            bool bleeding = false;
+            int bleedingMask = 0;
+            int severedMask = 0;
+            int disabledMask = 0;
+            int bleedingRatePacked = 0;
+            float totalBleedingRate = 0f;
+
+            for (int i = 0; i < zones.Count; i++)
+            {
+                worstBrute = Math.Max(worstBrute, zones[i].Brute);
+                worstBurn = Math.Max(worstBurn, zones[i].Burn);
+                float zoneBleed = zones[i].BleedingRate;
+                if (zoneBleed > 0f)
+                {
+                    bleeding = true;
+                    bleedingMask |= 1 << i;
+                    totalBleedingRate += zoneBleed;
+                }
+
+                if (i < HealthConstants.ZoneCount)
+                {
+                    int code = (int)Math.Round(zoneBleed * 2f);
+                    if (code < 0)
+                    {
+                        code = 0;
+                    }
+                    else if (code > 7)
+                    {
+                        code = 7;
+                    }
+
+                    bleedingRatePacked |= code << (i * 3);
+                }
+
+                if (zones[i].IsSevered)
+                {
+                    severedMask |= 1 << i;
+                }
+
+                if (OrganSimulation.IsLimbZone((BodyZone)i) && OrganSimulation.IsLimbFunctionallyDisabled(zones[i]))
+                {
+                    disabledMask |= 1 << i;
+                }
+            }
+
+            float brainStored = OrganSimulation.GetStoredOrganFunction(organs, OrganType.Brain);
+            float heartStored = OrganSimulation.GetStoredOrganFunction(organs, OrganType.Heart);
+            float brainEffective = GetOrganFunction(organs, OrganType.Brain, pools.BloodVolumeRatio);
+            HealthState state = EvaluateHealthState(pools, organs, zones, shock.Shock, previous);
+            bool canAct = state != HealthState.Dead && state != HealthState.Critical
+                && IsConscious(brainEffective) && !IsCardiacArrest(heartStored);
+
+            return new HealthSnapshot
+            {
+                State = state,
+                Pools = pools,
+                WorstZoneBrute = worstBrute,
+                WorstZoneBurn = worstBurn,
+                IsBleeding = bleeding,
+                IsConscious = IsConscious(brainEffective),
+                IsCardiacArrest = IsCardiacArrest(heartStored),
+                BleedingZoneMask = bleedingMask,
+                SeveredZoneMask = severedMask,
+                BleedingRatePacked = bleedingRatePacked,
+                TotalBleedingRate = totalBleedingRate,
+                BrainFunctionPercent = brainStored,
+                HeartFunctionPercent = heartStored,
+                MovementSpeedMultiplier = !canAct ? 0f
+                    : state == HealthState.Downed ? HealthConstants.DownedCrawlSpeedMultiplier
+                    : OrganSimulation.ComputeMovementSpeedMultiplier(zones)
+                        * (shock.Shock >= HealthConstants.ShockWarningThreshold ? HealthConstants.ShockStumbleSpeedMultiplier : 1f),
+                CanSprint = canAct && state != HealthState.Downed,
+                DisabledZoneMask = disabledMask,
+                HeadTraumaBlur = HeadTraumaBlur(zones),
+                CanUseArms = canAct && OrganSimulation.CanUseArms(zones),
+                CriticalFlags = BuildCriticalFlags(pools, brainEffective, shock.Shock),
+                CanDefibrillate = IsCardiacArrest(heartStored) && brainStored > 0f,
+                Environment = HealthEnvironmentState.SafeDefault,
+                Shock = shock.Shock,
+                IncomingPain = shock.IncomingPain,
+            };
+        }
+
+        /// <summary>The few seconds after being helped up: slower, and no sprint.</summary>
+        public static HealthSnapshot ApplyUnsteady(HealthSnapshot snapshot, bool unsteady)
+        {
+            snapshot.IsUnsteady = unsteady && snapshot.State == HealthState.Healthy;
+            if (snapshot.IsUnsteady)
+            {
+                snapshot.MovementSpeedMultiplier *= HealthConstants.UnsteadySpeedMultiplier;
+                snapshot.CanSprint = false;
+            }
+
+            return snapshot;
+        }
+
+        public static float HeadTraumaBlur(IReadOnlyList<ZoneDamageState> zones)
+        {
+            if (zones == null || zones.Count <= (int)BodyZone.Head)
+            {
+                return 0f;
+            }
+
+            return zones[(int)BodyZone.Head].Severity switch
+            {
+                WoundSeverity.Severe => HealthConstants.HeadSevereBlur,
+                >= WoundSeverity.Disabled => HealthConstants.HeadDisabledBlur,
+                _ => 0f,
+            };
+        }
+
+        /// <summary>
+        /// Lands damage that already got past armor on one zone: severity, disabled and bleeding follow it.
+        /// Returns the severity before the hit, for the tier spikes in <see cref="ShockSimulation.HitPain"/>.
+        /// </summary>
+        public static WoundSeverity ApplyZoneHit(ref ZoneDamageState state, float brute, float burn)
+        {
+            WoundSeverity before = state.Severity;
+            state.Brute += brute;
+            state.Burn += burn;
+            RefreshZoneDerivedState(ref state);
+            if (!state.IsSevered)
+            {
+                state.BleedingRate = BleedingRateForSeverity(state.Severity);
+            }
+
+            return before;
+        }
+
+        public static DefibrillatorOutcome ApplyDefibrillation(
+            BodyZone zone,
+            List<OrganState> organs,
+            ZoneDamageState[] zones,
+            out float burnApplied)
+        {
+            burnApplied = 0f;
+
+            if (zone != BodyZone.Chest)
+            {
+                return DefibrillatorOutcome.WrongZone;
+            }
+
+            float brainFunction = OrganSimulation.GetStoredOrganFunction(organs, OrganType.Brain);
+            if (brainFunction <= 0f)
+            {
+                return DefibrillatorOutcome.NoResponse;
+            }
+
+            float heartFunction = OrganSimulation.GetStoredOrganFunction(organs, OrganType.Heart);
+            if (heartFunction <= 0f)
+            {
+                OrganSimulation.SetOrganFunction(organs, OrganType.Heart, HealthConstants.DefibrillatorHeartRestorePercent);
+                return DefibrillatorOutcome.Success;
+            }
+
+            burnApplied = HealthConstants.DefibrillatorMisshockBurnDamage;
+            int chestIndex = (int)BodyZone.Chest;
+            ZoneDamageState chest = zones[chestIndex];
+            chest.Burn += burnApplied;
+            chest.Severity = ResolveZoneSeverity(chest.Brute, chest.Burn);
+            zones[chestIndex] = chest;
+            return DefibrillatorOutcome.UnnecessaryShock;
+        }
+
+        public static SystemicPools ApplyBloodTransfusion(SystemicPools pools, float bloodRestore)
+        {
+            return new SystemicPools
+            {
+                BloodVolumeRatio = Clamp01(pools.BloodVolumeRatio + bloodRestore),
+                OxyDebt = pools.OxyDebt,
+                ToxinConcentration = pools.ToxinConcentration,
+            };
+        }
+
+        public static SystemicPools ApplyOxyRelief(SystemicPools pools, float oxyRelief)
+        {
+            return new SystemicPools
+            {
+                BloodVolumeRatio = pools.BloodVolumeRatio,
+                OxyDebt = Math.Max(0f, pools.OxyDebt - oxyRelief),
+                ToxinConcentration = pools.ToxinConcentration,
+            };
+        }
+
+        public static SystemicPools ApplyOxyDebt(SystemicPools pools, float oxyDebtGain)
+        {
+            return new SystemicPools
+            {
+                BloodVolumeRatio = pools.BloodVolumeRatio,
+                OxyDebt = Math.Max(0f, pools.OxyDebt + Math.Max(0f, oxyDebtGain)),
+                ToxinConcentration = pools.ToxinConcentration,
+            };
+        }
+
+        public static SystemicPools ApplyAntitoxin(SystemicPools pools, float toxinReduction)
+        {
+            return new SystemicPools
+            {
+                BloodVolumeRatio = pools.BloodVolumeRatio,
+                OxyDebt = pools.OxyDebt,
+                ToxinConcentration = Math.Max(0f, pools.ToxinConcentration - toxinReduction),
+            };
+        }
+
+        private static float Clamp01(float value) => Math.Clamp(value, 0f, 1f);
+    }
+}

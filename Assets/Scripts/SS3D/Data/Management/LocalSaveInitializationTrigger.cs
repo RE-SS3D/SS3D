@@ -14,12 +14,12 @@ namespace SS3D.Data.Management
         {
             base.OnAwake();
 
-            ApplicationInitializing.AddListener(HandleApplicationInitializing);
+            AddHandle(ApplicationInitializing.AddListener(HandleApplicationInitializing));
         }
 
         private void HandleApplicationInitializing(ref EventContext context, in ApplicationInitializing e)
         {
-            Log.Information(this, "Initializing local save files", Logs.Important);
+            Log.Debug(this, "Initializing local save files", Logs.Important);
 
             LocalStorage.Initialize();
         }

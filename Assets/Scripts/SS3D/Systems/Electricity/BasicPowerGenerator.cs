@@ -1,12 +1,13 @@
-﻿using SS3D.Systems.Tile.Connections;
+using SS3D.Systems.Tile.Connections;
+using System;
 using UnityEngine;
 
-namespace System.Electricity
+namespace SS3D.Systems.Electricity
 {
     /// <summary>
     /// very basic power generator, producing constant infinite power.
     /// </summary>
-    public class BasicPowerGenerator : BasicElectricDevice, IPowerProducer
+    public class BasicPowerGenerator : BasicElectricDevice, IRatedPowerProducer
     {
         [SerializeField]
         private float _powerProduction = 10f;
@@ -16,5 +17,7 @@ namespace System.Electricity
           get => _powerProduction;
           set => _powerProduction = MathF.Max(value, 0f);
         }
+
+        public float RatedPowerKw => _powerProduction;
     }
 }

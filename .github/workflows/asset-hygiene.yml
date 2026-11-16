@@ -1,0 +1,25 @@
+# Fails when a tracked .meta file under Assets/ has no tracked asset or files in its folder.
+# Unity deletes such files on import, which then shows up as noise in an unrelated PR.
+# Fix locally with: python3 Tools/check_orphan_metas.py --delete
+name: Asset hygiene
+on:
+  push:
+    branches: [develop]
+    paths:
+      - Assets/**
+      - Tools/check_orphan_metas.py
+      - .github/workflows/asset-hygiene.yml
+  pull_request:
+    paths:
+      - Assets/**
+      - Tools/check_orphan_metas.py
+      - .github/workflows/asset-hygiene.yml
+permissions:
+  contents: read
+jobs:
+  orphan-metas:
+    name: No orphaned .meta files
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: python3 Tools/check_orphan_metas.py

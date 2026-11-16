@@ -12,7 +12,9 @@ namespace SS3D.Systems.Tile
     public class SavedTileMap
     {
         public string mapName;
+        public bool hasAuthoredAreas;
         public SavedTileChunk[] savedChunkList;
         public SavedPlacedItemObject[] savedItemList;
+        public SavedAreaRecord[] savedAreas;
     }
 }

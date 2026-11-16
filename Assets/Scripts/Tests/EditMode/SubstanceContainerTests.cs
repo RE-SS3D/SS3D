@@ -1,78 +1,150 @@
 ﻿using NUnit.Framework;
-using SS3D.Substances;
-using SS3D.Systems.Health;
-using System.Collections;
+using SS3D.Systems.Substances;
 using System.Collections.Generic;
-using System.Linq;
+using System.Reflection;
 using UnityEngine;
 
-/// <summary>
-/// Set of tests for the substanceContainer class
-/// </summary>
+/// <summary>Volume-first mixture math and reaction resolution (no FishNet host required).</summary>
 public class SubstanceContainerTests
 {
-    private SubstanceContainer _container;
-    private SubstanceContainer _containerLocked;
-    private Substance _beer;
-    private Substance _water;
-
-    [SetUp]
-    public void SetUp()
+    [Test]
+    public void CantAddMoreWhenFull()
     {
-        GameObject go = new GameObject();
-        _container = go.AddComponent<SubstanceContainer>();
-        _container.Init(10000f, false);
-
-        GameObject go2 = new GameObject();
-        _containerLocked = go2.AddComponent<SubstanceContainer>();
-        _containerLocked.Init(10000f, true);
-
-
-        _beer = ScriptableObject.CreateInstance<Substance>();
-        _beer.Color = Color.red;
-        _beer.MillilitersPerMilliMoles = 0.05f;
-        _beer.Type = SubstanceType.Beer;
-
-        _water = ScriptableObject.CreateInstance<Substance>();
-        _water.Color = Color.yellow;
-        _water.MillilitersPerMilliMoles = 0.035f;
-        _water.Type = SubstanceType.Water;
+        var entries = new List<MixtureEntry>();
+        float accepted = MixtureOperations.Add(entries, "beer", 99999f, remainingCapacityMl: 100f);
+        Assert.AreEqual(100f, accepted);
+        Assert.AreEqual(100f, MixtureOperations.TotalVolumeMl(entries));
+        float second = MixtureOperations.Add(entries, "beer", 10f, remainingCapacityMl: 0f);
+        Assert.AreEqual(0f, second);
     }
 
     [Test]
-    public void CantAddMoreWhenSubstanceContainerIsFull()
+    public void CantRemoveWhenEmpty()
     {
-        _container.AddSubstance(_beer, int.MaxValue );
-        float currentVolume = _container.CurrentVolume;
-        Assert.AreEqual(currentVolume, _container.Volume );
+        var entries = new List<MixtureEntry>();
+        float removed = MixtureOperations.Remove(entries, "beer", 10f);
+        Assert.AreEqual(0f, removed);
     }
 
     [Test]
-    public void CantRemoveMoreWhenSubstanceContainerIsEmpty()
+    public void RemoveProportionalKeepsRatio()
     {
-        _container.RemoveSubstance(_beer, int.MaxValue );
-        float currentVolume = _container.CurrentVolume;
-        Assert.AreEqual(currentVolume, 0);
+        var entries = new List<MixtureEntry>
+        {
+            new("beer", 10f),
+            new("water", 5f),
+        };
+
+        List<MixtureEntry> removed = MixtureOperations.RemoveProportional(entries, 1.5f);
+        Assert.AreEqual(9f, MixtureOperations.GetVolume(entries, "beer"), 0.001f);
+        Assert.AreEqual(4.5f, MixtureOperations.GetVolume(entries, "water"), 0.001f);
+        Assert.AreEqual(1.5f, MixtureOperations.TotalVolumeMl(removed), 0.001f);
     }
 
     [Test]
-    public void CantAddSubstanceWhenLocked()
+    public void ExactRecipeProducesYieldAndThermalDelta()
     {
-       
-        _containerLocked.AddSubstance(_beer, int.MaxValue);
-        float currentVolume = _containerLocked.CurrentVolume;
-        Assert.AreEqual(currentVolume, 0);
+        ReagentRegistry registry = ScriptableObject.CreateInstance<ReagentRegistry>();
+        RecipeDefinition recipe = CreateRecipe(
+            "product_c",
+            new[] { Comp("precursor_a", 1f), Comp("precursor_b", 1f) },
+            new[] { Comp("product_c", 1f) },
+            tMin: float.NegativeInfinity,
+            thermal: 5f);
+
+        var resolver = new ReactionResolver(registry, new[] { recipe });
+        var mixture = new List<MixtureEntry>
+        {
+            new("precursor_a", 10f),
+            new("precursor_b", 10f),
+        };
+
+        ReactionResult result = resolver.Resolve(mixture, temperatureKelvin: 293f);
+        Assert.AreEqual(ReactionOutcome.Success, result.Outcome);
+        Assert.AreEqual(5f, result.TemperatureDeltaKelvin);
+        Assert.AreEqual(0f, MixtureOperations.GetVolume(mixture, "precursor_a"), 0.01f);
+        Assert.AreEqual(0f, MixtureOperations.GetVolume(mixture, "precursor_b"), 0.01f);
+        Assert.Greater(MixtureOperations.GetVolume(mixture, "product_c"), 0f);
     }
 
     [Test]
-    public void RemoveCorrectAmountOfEachSubstanceWhenRemovingMoles()
+    public void HeatGatedRecipeNearMissesWhenCold()
     {
-        _container.AddSubstance(_beer, 10);
-        _container.AddSubstance(_water, 5);
-        _container.RemoveMoles(1.5f);
-        float waterMole = _container.Substances.FirstOrDefault(x => x.Substance.Type == _water.Type).MilliMoles;
-        float beerMole = _container.Substances.FirstOrDefault(x => x.Substance.Type == _beer.Type).MilliMoles;
-        Assert.AreEqual(9f, beerMole);
-        Assert.AreEqual(4.5f, waterMole);
+        ReagentRegistry registry = ScriptableObject.CreateInstance<ReagentRegistry>();
+        RecipeDefinition recipe = CreateRecipe(
+            "heat_product",
+            new[] { Comp("heat_precursor", 1f), Comp("water", 1f) },
+            new[] { Comp("heat_product", 1f) },
+            tMin: 350f,
+            thermal: 40f,
+            nearMiss: HazardKind.GasRelease);
+
+        var resolver = new ReactionResolver(registry, new[] { recipe });
+        var mixture = new List<MixtureEntry>
+        {
+            new("heat_precursor", 10f),
+            new("water", 10f),
+        };
+
+        ReactionResult result = resolver.Resolve(mixture, temperatureKelvin: 293f);
+        Assert.AreEqual(ReactionOutcome.NearMiss, result.Outcome);
+        Assert.AreEqual(HazardKind.GasRelease, result.Hazard);
+    }
+
+    [Test]
+    public void IncompatiblePairRaisesHazard()
+    {
+        ReagentRegistry registry = ScriptableObject.CreateInstance<ReagentRegistry>();
+        SetField(registry, "_incompatiblePairs", new[]
+        {
+            new ReagentRegistry.IncompatiblePair
+            {
+                ReagentIdA = "volatile_x",
+                ReagentIdB = "volatile_y",
+                Hazard = HazardKind.SmallBlast,
+            },
+        });
+
+        var resolver = new ReactionResolver(registry, System.Array.Empty<RecipeDefinition>());
+        var mixture = new List<MixtureEntry>
+        {
+            new("volatile_x", 5f),
+            new("volatile_y", 5f),
+        };
+
+        ReactionResult result = resolver.Resolve(mixture, 293f);
+        Assert.AreEqual(ReactionOutcome.Incompatible, result.Outcome);
+        Assert.AreEqual(HazardKind.SmallBlast, result.Hazard);
+    }
+
+    private static RecipeDefinition.RecipeComponent Comp(string id, float amount) =>
+        new() { ReagentId = id, RelativeAmount = amount };
+
+    private static RecipeDefinition CreateRecipe(
+        string id,
+        RecipeDefinition.RecipeComponent[] ingredients,
+        RecipeDefinition.RecipeComponent[] results,
+        float tMin,
+        float thermal,
+        HazardKind nearMiss = HazardKind.Foam)
+    {
+        RecipeDefinition recipe = ScriptableObject.CreateInstance<RecipeDefinition>();
+        SetField(recipe, "_id", id);
+        SetField(recipe, "_ingredients", ingredients);
+        SetField(recipe, "_results", results);
+        SetField(recipe, "_minimumTemperatureKelvin", tMin);
+        SetField(recipe, "_maximumTemperatureKelvin", float.PositiveInfinity);
+        SetField(recipe, "_thermalDeltaKelvin", thermal);
+        SetField(recipe, "_nearMissHazard", nearMiss);
+        return recipe;
+    }
+
+    private static void SetField(object target, string fieldName, object value)
+    {
+        FieldInfo field = target.GetType().GetField(
+            fieldName,
+            BindingFlags.Instance | BindingFlags.NonPublic);
+        Assert.IsNotNull(field, $"Missing field {fieldName} on {target.GetType().Name}");
+        field.SetValue(target, value);
     }
 }

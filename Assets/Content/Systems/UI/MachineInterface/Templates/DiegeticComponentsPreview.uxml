@@ -1,0 +1,64 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:ss3d="SS3D.UI.MachineInterface.Components" editor-extension-mode="False">
+    <ui:Style src="project://database/Assets/Content/Systems/UI/Tokens/ss3d-tokens.uss" />
+    <ui:Style src="project://database/Assets/Content/Systems/UI/MachineInterface/Tokens/diegetic-tokens.uss" />
+    <ui:Style src="project://database/Assets/Content/Systems/UI/MachineInterface/Tokens/diegetic-tones.uss" />
+    <ui:Style src="project://database/Assets/Content/Systems/UI/Tokens/ss3d-typography.uss" />
+    <ui:Style src="project://database/Assets/Content/Systems/UI/MachineInterface/Components/DiegeticDeviceShell.uss" />
+    <ui:Style src="project://database/Assets/Content/Systems/UI/MachineInterface/Components/ConnectionStatusRow.uss" />
+    <ui:Style src="project://database/Assets/Content/Systems/UI/MachineInterface/Components/DeviceIdentityBlock.uss" />
+    <ui:Style src="project://database/Assets/Content/Systems/UI/MachineInterface/Components/PanelSection.uss" />
+    <ui:Style src="project://database/Assets/Content/Systems/UI/MachineInterface/Components/DeviceFooter.uss" />
+    <ui:Style src="project://database/Assets/Content/Systems/UI/MachineInterface/Components/ActionLog.uss" />
+    <ui:Style src="project://database/Assets/Content/Systems/UI/MachineInterface/Components/SteelButton.uss" />
+    <ui:Style src="project://database/Assets/Content/Systems/UI/MachineInterface/Components/StatusDot.uss" />
+    <ui:Style src="project://database/Assets/Content/Systems/UI/MachineInterface/Components/InventorySlot.uss" />
+    <ui:Style src="project://database/Assets/Content/Systems/UI/MachineInterface/Components/Badge.uss" />
+    <ui:Style src="project://database/Assets/Content/Systems/UI/MachineInterface/Templates/DiegeticComponentsPreview.uss" />
+
+    <ss3d:DiegeticDeviceShell name="device-shell"
+        model-label="FDU-2 · field diagnostic unit"
+        power-ok="true"
+        style="align-self: center; margin-top: 24px;">
+        <ss3d:ConnectionStatusRow name="connection-row"
+            status-text="WIRED · DATA CABLE · PORT J1"
+            readout-text="BATT 84%" />
+        <ss3d:DeviceIdentityBlock name="identity"
+            title="AIRLOCK-ENG-03"
+            subtitle="Airlock — Engineering Bay 3"
+            metadata="HW-ID 0x7F2C-AE19-004B9D · Firmware 3.4.1" />
+        <ss3d:PanelSection name="status-section" title="Hardware Overview">
+            <ui:VisualElement class="diegetic-preview__grid">
+                <ui:VisualElement class="diegetic-preview__grid-cell">
+                    <ui:Label text="Control MCU" class="font-body diegetic-preview__cell-label" />
+                    <ss3d:StatusDot tone="Success" />
+                </ui:VisualElement>
+                <ui:VisualElement class="diegetic-preview__grid-cell">
+                    <ui:Label text="Sensor Array" class="font-body diegetic-preview__cell-label" />
+                    <ss3d:StatusDot tone="Success" />
+                </ui:VisualElement>
+                <ui:VisualElement class="diegetic-preview__grid-cell">
+                    <ui:Label text="Actuator Driver" class="font-body diegetic-preview__cell-label" />
+                    <ss3d:StatusDot tone="Warning" />
+                </ui:VisualElement>
+                <ui:VisualElement class="diegetic-preview__grid-cell">
+                    <ui:Label text="Power Regulation" class="font-body diegetic-preview__cell-label" />
+                    <ss3d:StatusDot tone="Success" />
+                </ui:VisualElement>
+            </ui:VisualElement>
+        </ss3d:PanelSection>
+        <ss3d:PanelSection name="actions-section" title="Actions">
+            <ui:VisualElement class="diegetic-preview__actions">
+                <ss3d:SteelButton name="scan-button" text="Run Diagnostic" />
+                <ss3d:Badge text="Authorized" tone="Success" />
+            </ui:VisualElement>
+        </ss3d:PanelSection>
+        <ss3d:PanelSection name="slot-section" title="Inventory Slot">
+            <ui:VisualElement class="diegetic-preview__slots">
+                <ss3d:InventorySlot unknown="true" size="48" slot-label="Unknown" />
+                <ss3d:InventorySlot unknown="false" size="48" slot-label="Occupied" />
+            </ui:VisualElement>
+        </ss3d:PanelSection>
+        <ss3d:ActionLog name="action-log" />
+        <ss3d:DeviceFooter name="footer" text="SS3D Field Diagnostic Unit — Model FDU-2" />
+    </ss3d:DiegeticDeviceShell>
+</ui:UXML>

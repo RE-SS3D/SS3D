@@ -1,7 +1,9 @@
 ﻿using SS3D.Core;
 using SS3D.Core.Behaviours;
+using SS3D.Systems.Electricity;
 using System.Collections.Generic;
 using System.Linq;
+using UnityEngine;
 
 namespace SS3D.Systems.Tile.Connections
 {
@@ -28,10 +30,7 @@ namespace SS3D.Systems.Tile.Connections
         public List<PlacedTileObject> GetNeighbours()
         {
             Setup();
-            List<PlacedTileObject> neighbours = GetElectricDevicesOnSameTile();
-            neighbours.AddRange(GetNeighbourElectricDevicesOnSameLayer());
-            neighbours.RemoveAll(x => x == null);
-            return neighbours;
+            return ElectricNeighbourLookup.GetNeighbours(PlacedObject);
         }
 
         public bool IsConnected(PlacedTileObject neighbourObject)
@@ -42,39 +41,85 @@ namespace SS3D.Systems.Tile.Connections
         public abstract void UpdateAllConnections();
 
         public abstract bool UpdateSingleConnection(Direction dir, PlacedTileObject neighbourObject, bool updateNeighbour);
+    }
 
-        private List<PlacedTileObject> GetElectricDevicesOnSameTile()
+    /// <summary>
+    /// Shared neighbour discovery for electric connectors (same-tile devices plus cardinal layer neighbours).
+    /// </summary>
+    internal static class ElectricNeighbourLookup
+    {
+        public static List<PlacedTileObject> GetNeighbours(PlacedTileObject placedObject)
         {
-            TileSubSystem tileSystem = SubSystems.Get<TileSubSystem>();
-            TileMap map = tileSystem.CurrentMap;
+            if (placedObject == null)
+                return new List<PlacedTileObject>();
 
-            List<PlacedTileObject> devicesOnSameTile = new();
-
-            TileChunk currentChunk = map.GetChunk(PlacedObject.gameObject.transform.position);
-            List<ITileLocation> deviceLocations = currentChunk.GetTileLocations(PlacedObject.Origin.x, PlacedObject.Origin.y);
-
-            foreach(ITileLocation location in deviceLocations)
+            HashSet<PlacedTileObject> neighbours = new HashSet<PlacedTileObject>();
+            foreach (PlacedTileObject neighbour in GetElectricDevicesOnSameTile(placedObject))
             {
-                foreach(PlacedTileObject tileObject in location.GetAllPlacedObject())
+                neighbours.Add(neighbour);
+            }
+
+            foreach (PlacedTileObject neighbour in GetNeighbourElectricDevicesOnSameLayer(placedObject))
+            {
+                neighbours.Add(neighbour);
+            }
+
+            foreach (PlacedTileObject neighbour in ElectricCableConnectivity.GetCableLinkedDevices(placedObject))
+            {
+                neighbours.Add(neighbour);
+            }
+
+            neighbours.Remove(placedObject);
+            neighbours.RemoveWhere(x => x == null);
+            return neighbours.ToList();
+        }
+
+        private static List<PlacedTileObject> GetElectricDevicesOnSameTile(PlacedTileObject placedObject)
+        {
+            List<PlacedTileObject> devicesOnSameTile = new();
+            if (placedObject == null || !SubSystems.TryGet(out TileSubSystem tileSystem))
+                return devicesOnSameTile;
+
+            TileMap map = tileSystem.CurrentMap;
+            if (map == null)
+                return devicesOnSameTile;
+
+            // Prefer WorldOrigin — transform can lag; after TileMap.Clear the chunk dict is empty while
+            // FishNet despawn is still pending, so GetChunk may return null (MetaStation import). Hit 2026-07-28.
+            Vector3 worldPosition = new(placedObject.WorldOrigin.x, 0f, placedObject.WorldOrigin.y);
+            TileChunk currentChunk = map.GetChunk(worldPosition);
+            if (currentChunk == null)
+                return devicesOnSameTile;
+
+            List<ITileLocation> deviceLocations = currentChunk.GetTileLocations(placedObject.Origin.x, placedObject.Origin.y);
+
+            foreach (ITileLocation location in deviceLocations)
+            {
+                foreach (PlacedTileObject tileObject in location.GetAllPlacedObject())
                 {
-                    if(tileObject.gameObject.TryGetComponent(out IElectricDevice device))
-                    {
+                    if (tileObject != null && tileObject.gameObject.TryGetComponent(out IElectricDevice _))
                         devicesOnSameTile.Add(tileObject);
-                    }
                 }
             }
 
-            devicesOnSameTile.Remove(PlacedObject);
+            devicesOnSameTile.Remove(placedObject);
 
             return devicesOnSameTile;
         }
 
-        private List<PlacedTileObject> GetNeighbourElectricDevicesOnSameLayer()
+        private static List<PlacedTileObject> GetNeighbourElectricDevicesOnSameLayer(PlacedTileObject placedObject)
         {
-            TileSubSystem tileSystem = SubSystems.Get<TileSubSystem>();
+            if (placedObject == null || !SubSystems.TryGet(out TileSubSystem tileSystem))
+                return new List<PlacedTileObject>();
+
             TileMap map = tileSystem.CurrentMap;
-            IEnumerable<PlacedTileObject> electricNeighbours = map.GetCardinalNeighbourPlacedObjects(PlacedObject.Layer,
-                PlacedObject.gameObject.transform.position).Where(x => x!= null && x.gameObject.TryGetComponent(out IElectricDevice device));
+            if (map == null)
+                return new List<PlacedTileObject>();
+
+            Vector3 worldPosition = new(placedObject.WorldOrigin.x, 0f, placedObject.WorldOrigin.y);
+            IEnumerable<PlacedTileObject> electricNeighbours = map.GetCardinalNeighbourPlacedObjects(
+                    placedObject.Layer, worldPosition)
+                .Where(x => x != null && x.gameObject.TryGetComponent(out IElectricDevice _));
 
             return electricNeighbours.ToList();
         }

@@ -1,4 +1,5 @@
-﻿using FishNet.Object.Synchronizing;
+﻿using FishNet.Object;
+using FishNet.Object.Synchronizing;
 using SS3D.Interactions.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -29,6 +30,7 @@ namespace SS3D.Interactions
             return _on;
         }
 
+        [Server]
         public void Toggle()
         {
             _on = !_on;

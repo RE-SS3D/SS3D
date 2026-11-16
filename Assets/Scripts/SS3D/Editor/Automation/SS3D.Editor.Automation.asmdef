@@ -1,0 +1,7 @@
+{
+    "name": "SS3D.Editor.Automation",
+    "rootNamespace": "SS3D.Editor.Automation",
+    "references": ["MCPForUnity.Editor"],
+    "includePlatforms": ["Editor"],
+    "autoReferenced": true
+}

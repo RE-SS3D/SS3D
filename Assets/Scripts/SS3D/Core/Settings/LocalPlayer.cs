@@ -14,5 +14,16 @@ namespace SS3D.Core.Settings
         {
             Ckey = ckey;
         }
+
+        /// <summary>
+        /// Secret from <c>-token=</c>. Sent at login; a dedicated server only grants an admin
+        /// name when it matches that name's line in <c>Config/admin-tokens.txt</c>.
+        /// </summary>
+        public static string AccessToken { get; private set; }
+
+        public static void UpdateAccessToken(string token)
+        {
+            AccessToken = token;
+        }
     }
 }

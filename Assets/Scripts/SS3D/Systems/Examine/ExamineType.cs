@@ -5,7 +5,8 @@
     {
         SIMPLE_TEXT,
         SIMPLE_IMAGE,
-        IDENTIFICATION_CARD
+        IDENTIFICATION_CARD,
+        CHARACTER
     }
 
 }

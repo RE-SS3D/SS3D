@@ -15,10 +15,18 @@ namespace SS3D.Systems.Tile.TileMapCreator
         public GameObject Hologram;
         private Vector3 _targetPosition;
         private Direction _direction;
+        private Quaternion _worldRestRotation;
         public Direction Direction => _direction;
         public bool ActiveSelf => Hologram.activeSelf;
         public bool SetActive { set => Hologram.SetActive(value); }
         public Vector3 TargetPosition { get => _targetPosition; set => _targetPosition = value; }
+        public float PlacementYOffset { get; private set; }
+
+        /// <summary>Yaw from direction composed with the rest pose (an item's, or a tile object's root rotation).</summary>
+        public Quaternion TargetWorldRotation =>
+            SS3D.Systems.Inventory.Items.ItemPlacement.WorldRotation(
+                _worldRestRotation,
+                TileHelper.GetRotationAngle(_direction));
         
         /// <summary>
         /// Build a new hologram
@@ -27,14 +35,19 @@ namespace SS3D.Systems.Tile.TileMapCreator
         /// <param name="targetTargetPosition"> the initial position of the hologram in space.</param>
         /// <param name="dir"> the expected original direction. Note that not all directions are compatible with
         /// all tile objects. If it's not, it will choose another available direction.</param>
-        public ConstructionHologram(GameObject ghostObject, Vector3 targetPosition, Direction dir, ConstructionMode mode = ConstructionMode.Valid)
+        public ConstructionHologram(GameObject ghostObject, Vector3 targetPosition, Direction dir, float placementYOffset = 0f, ConstructionMode mode = ConstructionMode.Valid)
         {
 
             DisableBehaviours(ghostObject);
 
             Hologram = ghostObject;
             _targetPosition = targetPosition;
+            PlacementYOffset = placementYOffset;
             _direction = dir;
+            // Capture the rest pose before CreateHologram overwrites the root with yaw-only (M4 -90° X, etc.).
+            _worldRestRotation = ghostObject.TryGetComponent(out SS3D.Systems.Inventory.Items.Item ghostItem)
+                ? ghostItem.WorldRestRotation
+                : ghostObject.transform.localRotation;
 
             if (ghostObject.TryGetComponent(out ICustomGhostRotation customRotationComponent) 
                 && !customRotationComponent.GetAllowedRotations().Contains(dir))
@@ -52,15 +65,25 @@ namespace SS3D.Systems.Tile.TileMapCreator
             {
                 col.enabled = false;
             }
+            foreach (HologramOnly hologramOnly in ghostObject.GetComponentsInChildren<HologramOnly>(true))
+            {
+                hologramOnly.gameObject.SetActive(true);
+            }
+
             ChangeHologramColor(mode);
         }
+
+        private ConstructionMode _appliedMode = (ConstructionMode)(-1);
 
         /// <summary>
         /// Chooses which material to set on the ghost based on which mode we are building.
         /// </summary>
-        /// <param name="mode"></param>
         public void ChangeHologramColor(ConstructionMode mode)
         {
+            if (_appliedMode == mode)
+                return;
+
+            _appliedMode = mode;
             Material ghostMat = null;
 
             string ghostMatName = mode switch
@@ -105,8 +128,11 @@ namespace SS3D.Systems.Tile.TileMapCreator
         public void UpdateRotationAndPosition()
         {
             // Small offset is added so that meshes don't overlap with already placed objects.
-            Hologram.transform.position = Vector3.Lerp(Hologram.transform.position, _targetPosition + new Vector3(0, 0.1f, 0), Time.deltaTime * 15f);
-            Hologram.transform.rotation = Quaternion.Lerp(Hologram.transform.rotation, Quaternion.Euler(0, TileHelper.GetRotationAngle(_direction), 0), Time.deltaTime * 15f);
+            Hologram.transform.position = Vector3.Lerp(
+                Hologram.transform.position,
+                _targetPosition + new Vector3(0, PlacementYOffset + 0.1f, 0),
+                Time.deltaTime * 15f);
+            Hologram.transform.rotation = Quaternion.Lerp(Hologram.transform.rotation, TargetWorldRotation, Time.deltaTime * 15f);
         }
 
         /// <summary>

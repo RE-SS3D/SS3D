@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Construction — Map Editor HUD</title>
+<link rel="stylesheet" href="_ds/ss3d-design-system-41b9f411-f4ff-429b-a9e9-8d22194e11be/tokens/colors.css">
+<link rel="stylesheet" href="_ds/ss3d-design-system-41b9f411-f4ff-429b-a9e9-8d22194e11be/tokens/typography.css">
+<link rel="stylesheet" href="_ds/ss3d-design-system-41b9f411-f4ff-429b-a9e9-8d22194e11be/tokens/spacing.css">
+<link rel="stylesheet" href="_ds/ss3d-design-system-41b9f411-f4ff-429b-a9e9-8d22194e11be/tokens/fonts.css">
+<link rel="stylesheet" href="_ds/ss3d-design-system-41b9f411-f4ff-429b-a9e9-8d22194e11be/styles.css">
+<style>
+  html, body { margin: 0; padding: 0; background: #000; overflow: hidden; height: 100%; }
+  #stage-outer { position: fixed; inset: 0; display: flex; align-items: center; justify-content: center; background: #000; }
+  #canvas { width: 1920px; height: 1080px; position: relative; transform-origin: center center; overflow: hidden; }
+  * { box-sizing: border-box; }
+  ::-webkit-scrollbar { width: 8px; height: 8px; }
+  ::-webkit-scrollbar-thumb { background: var(--ramp-space-100); border-radius: 4px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+</style>
+</head>
+<body>
+<div id="stage-outer"><div id="canvas"><div id="root"></div></div></div>
+
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+
+<script>
+  function fitStage() {
+    var canvas = document.getElementById('canvas');
+    var scale = Math.min(window.innerWidth / 1920, window.innerHeight / 1080);
+    canvas.style.transform = 'scale(' + scale + ')';
+  }
+  window.addEventListener('resize', fitStage);
+  fitStage();
+</script>
+
+<script src="_ds/ss3d-design-system-41b9f411-f4ff-429b-a9e9-8d22194e11be/_ds_bundle.js"></script>
+<script type="text/babel" src="icons.jsx"></script>
+<script type="text/babel" src="app.jsx"></script>
+</body>
+</html>

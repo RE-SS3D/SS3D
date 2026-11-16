@@ -1,0 +1,12 @@
+services:
+  ss3d-server:
+    build:
+      context: ./build/StandaloneLinux64
+      dockerfile: ../../Dockerfile
+    ports:
+      - "1151:1151/udp"
+    volumes:
+      - ss3d-server-config:/server/Config
+
+volumes:
+  ss3d-server-config:

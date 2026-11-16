@@ -1,0 +1,120 @@
+using System.Collections.Generic;
+using FishNet.Connection;
+using FishNet.Object;
+using SS3D.Systems.Atmospherics;
+using SS3D.Systems.Health;
+using UnityEngine;
+
+namespace SS3D.Systems.Entities.Humanoid
+{
+    public partial class Ragdoll
+    {
+        internal static readonly HashSet<Ragdoll> WindBodies = new();
+
+        /// <summary>
+        /// Time on the ground after a gust knocks a body down. 3 s lay still too long before the get-up
+        /// (owner hand test, 2026-11-09). Recovery still waits for floor support.
+        /// </summary>
+        private const float WindKnockdownSeconds = 1.5f;
+
+        /// <summary>A gust while already down keeps the body down at least this long.</summary>
+        private const float WindKnockdownHoldSeconds = 1f;
+        private bool _windKnockdown;
+        private Vector3 _windTarget;
+        private Vector3 _windFelt;
+        private float _windExpires;
+
+        public override void OnStopNetwork()
+        {
+            WindBodies.Remove(this);
+            base.OnStopNetwork();
+        }
+
+        public Vector3 WindSamplePosition => _hips != null && IsKnockedDown ? _hips.position : transform.position;
+
+        [Server]
+        public void ServerApplyWind(Vector3 wind)
+        {
+            if (wind.sqrMagnitude < AtmosWind.MinSpeed * AtmosWind.MinSpeed) return;
+            // Boots hold an upright body; wind it already felt fades by itself (armor.md §3).
+            if (TryGetComponent(out EvaGearController gear) && gear.ServerAnchored()) return;
+            // Do not convert an existing health-owned timeless collapse to a timed knockdown.
+            if (!IsKnockedDown && wind.magnitude >= AtmosWind.KnockdownSpeed)
+            {
+                _windKnockdown = true;
+                ServerKnockdown(WindKnockdownSeconds);
+            }
+            else if (_isKnockdownTimed)
+                _knockdownTimer = Mathf.Max(_knockdownTimer, WindKnockdownHoldSeconds);
+
+            if (_deathRagdoll || !Owner.IsValid)
+            {
+                if (IsKnockedDown) ApplyPresentation(_presentation, false);
+                FeelWind(wind);
+            }
+            else
+                RpcWind(Owner, wind, _presentation);
+        }
+
+        [TargetRpc]
+        private void RpcWind(NetworkConnection connection, Vector3 wind, BodyPresentationState presentation)
+        {
+            // Round teardown opens the hull, so a reliable gust can land the frame its body despawns.
+            if (this == null) return;
+            // RPC ordering must not leave the first gust on a still-kinematic body.
+            if (presentation != BodyPresentationState.Locomotion) ApplyPresentation(presentation, false);
+            FeelWind(wind);
+        }
+
+        private void FeelWind(Vector3 wind)
+        {
+            _windTarget = wind;
+            _windExpires = Time.time + AtmosWind.HoldSeconds;
+            // Human.prefab ships this component disabled until something needs its updates.
+            enabled = true;
+        }
+
+        /// <summary>Eases the 5 Hz field and pushes an upright owner a little every frame.</summary>
+        private void TickWind(float seconds)
+        {
+            Vector3 target = Time.time < _windExpires ? _windTarget : Vector3.zero;
+            if (target == Vector3.zero && _windFelt == Vector3.zero) return;
+            _windFelt = AtmosWind.Follow(_windFelt, target, seconds);
+            if (target == Vector3.zero && _windFelt.sqrMagnitude < 0.0001f) _windFelt = Vector3.zero;
+
+            // Living bodies move owner-side.
+            if (_currentState != RagdollState.Walking || !IsRagdollPhysicsAuthority() || _characterController == null)
+                return;
+
+            MoveUpright(_windFelt * seconds);
+        }
+
+        private void MoveUpright(Vector3 motion)
+        {
+            if (IsOwner)
+            {
+                if (_characterController.enabled) _characterController.Move(motion);
+                return;
+            }
+
+            // Nobody owns this body, so the server moves it. The controller stays on only for the move,
+            // so that it never adds a capsule to server raycasts or blocks a teleport.
+            _characterController.enabled = true;
+            _characterController.Move(motion);
+            _characterController.enabled = false;
+        }
+
+        private void FixedUpdate()
+        {
+            if (_windFelt == Vector3.zero || _currentState != RagdollState.Ragdoll || !IsRagdollPhysicsAuthority())
+                return;
+
+            foreach (Transform part in _ragdollParts)
+            {
+                Rigidbody body = part.GetComponent<Rigidbody>();
+                if (!body.isKinematic)
+                    body.AddForce(AtmosWind.DragAcceleration(_windFelt, body.linearVelocity), ForceMode.Acceleration);
+            }
+        }
+    }
+}

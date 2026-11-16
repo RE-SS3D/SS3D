@@ -13,30 +13,32 @@ MonoBehaviour:
   m_Name: Localization-Locales
   m_EditorClassIdentifier: 
   m_GroupName: Localization-Locales
-  m_Data:
-    m_SerializedData: []
   m_GUID: 0fbd4763b8cc63b4884a2c57f1230a81
   m_SerializeEntries:
-  - m_GUID: df5d58e26085bf3498b9546e7f7c2ff9
-    m_Address: English (en)
-    m_ReadOnly: 1
-    m_SerializedLabels:
-    - Locale
-  - m_GUID: 52a126cfdb836704f97b83052a3b2d95
-    m_Address: French (fr)
-    m_ReadOnly: 1
-    m_SerializedLabels:
-    - Locale
-  - m_GUID: 8ad15d4fbfe40d544a55b3dfd1117975
-    m_Address: Portuguese (Brazil) (pt-BR)
-    m_ReadOnly: 1
-    m_SerializedLabels:
-    - Locale
   - m_GUID: 3ca26206e09a2e84392af96afe6c3e63
     m_Address: Russian (Russia) (ru-RU)
     m_ReadOnly: 1
     m_SerializedLabels:
     - Locale
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 52a126cfdb836704f97b83052a3b2d95
+    m_Address: French (fr)
+    m_ReadOnly: 1
+    m_SerializedLabels:
+    - Locale
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 8ad15d4fbfe40d544a55b3dfd1117975
+    m_Address: Portuguese (Brazil) (pt-BR)
+    m_ReadOnly: 1
+    m_SerializedLabels:
+    - Locale
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: df5d58e26085bf3498b9546e7f7c2ff9
+    m_Address: English (en)
+    m_ReadOnly: 1
+    m_SerializedLabels:
+    - Locale
+    FlaggedDuringContentUpdateRestriction: 0
   m_ReadOnly: 1
   m_Settings: {fileID: 11400000, guid: ddc57d0f5f9fb874e8a26db0c5b215e0, type: 2}
   m_SchemaSet:

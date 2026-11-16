@@ -41,8 +41,13 @@ namespace SS3D.Systems.Audio
         [SerializeField]
         private int _purgeFrequency = 2;
 
+        private const float CollisionMinRange = 2f;
+        private const float CollisionMaxRange = 30f;
+
+        private readonly CollisionSoundLimiter _collisionLimiter = new();
+
         private List<AudioSourcesList> _audioSourcesLists;
-        
+
         protected override void OnAwake()
         {
             base.OnAwake();
@@ -57,8 +62,12 @@ namespace SS3D.Systems.Audio
 
         private void Start()
         {
+#if !UNITY_SERVER
+            // Audio playback (RpcPlayAudioSource et al.) is [ObserversRpc] and only ever runs on
+            // observing clients, so the server never needs its own local AudioSource pool.
             CreateAudioSourceIndex();
             StartCoroutine(PurgeCountdown());
+#endif
         }
 
         /// <summary>
@@ -79,6 +88,24 @@ namespace SS3D.Systems.Audio
             bool isLooping = false, float volume = 0.7f, float pitch = 1f, float minRange = 1f, float maxRange = 500f)
         {
             RpcPlayAudioSource(audioType, audioClipId, position, parent, isLooping, volume, pitch, minRange, maxRange);
+        }
+
+        /// <summary>
+        /// Plays a collision sound for a material unless <see cref="CollisionSoundLimiter"/> holds
+        /// it back. <paramref name="sourceReadyTime"/> is the source's own cooldown state.
+        /// </summary>
+        [Server]
+        public void TryPlayCollisionSound(ItemCollisionMaterial material, Vector3 position, float volume,
+            ref float sourceReadyTime)
+        {
+            if (!_collisionLimiter.TryPlay(Time.time, ref sourceReadyTime))
+            {
+                return;
+            }
+
+            string[] clips = ItemCollisionAudioTrackIds.ClipsFor(material);
+            PlayAudioSource(AudioType.Sfx, clips[Random.Range(0, clips.Length)], position, null,
+                false, volume, Random.Range(0.92f, 1.08f), CollisionMinRange, CollisionMaxRange);
         }
 
         [Server]
@@ -103,25 +130,66 @@ namespace SS3D.Systems.Audio
         public void RpcPlayAudioSource(AudioType type, string audioClipID, Vector3 position, NetworkObject parent,
             bool isLooping = false, float volume = 0.7f, float pitch = 1f, float minRange = 1f, float maxRange = 500f)
         {
+            PlayAudioSourceLocal(type, audioClipID, position, parent, isLooping, volume, pitch, minRange, maxRange);
+        }
+
+        /// <summary>
+        /// Plays a clip from the local audio pool. Shared by the observers RPC and by per-object
+        /// buffered state RPCs (a machine's looping sound must also reach late observers).
+        /// </summary>
+        [ServerOrClient]
+        public AudioSource PlayAudioSourceLocal(AudioType type, string audioClipID, Vector3 position, NetworkObject parent,
+            bool isLooping = false, float volume = 0.7f, float pitch = 1f, float minRange = 1f, float maxRange = 500f,
+            float startTime = 0f)
+        {
+            // The server never builds a pool (see Start); only clients have one.
+            if (_audioSourcesLists == null)
+                return null;
+
             AudioSource audioSource = FindAvailableAudioSource(type);
 
             audioSource.gameObject.transform.position = position;
             audioSource.clip = Assets.Get<AudioClip>(AssetDatabases.Sounds, audioClipID);
+            if (audioSource.clip == null)
+            {
+                // Missing Sounds.asset ref (common after hand-adding files) — don't Play() a null clip.
+                return null;
+            }
+
             audioSource.volume = volume;
             audioSource.pitch = pitch;
             audioSource.minDistance = minRange;
             audioSource.maxDistance = maxRange;
+            // Station props animate (airlocks, etc.); Doppler on a parented pooled source warbles
+            // the attack of the clip into a compression-like pitch scoop.
+            audioSource.dopplerLevel = 0f;
 
             //If we want to attach the audio source to something specific, do that. Otherwise, detach it from any parents.
             //This is useful for things that are obviously creating the sound, like a mouse's squeak
             //-- we don't want the mouse to leave the squeak behind as it travels, but a flying soda can making a sound at the site of impact is probably fine.
             audioSource.transform.parent = parent == null ? null : parent.transform;
             audioSource.loop = isLooping;
+
+            // Reset any muffle state left over from this pooled source's previous clip before it
+            // starts sampling occlusion fresh (audio.md §3 — client-local, seventh LineOfSight consumer).
+            audioSource.GetComponent<AudioSourceOcclusion>()?.PrepareForPlayback(volume);
+
+            audioSource.time = Mathf.Clamp(startTime, 0f, Mathf.Max(0f, audioSource.clip.length - 0.001f));
             audioSource.Play();
+            return audioSource;
         }
 
         [ObserversRpc]
         public void RpcStopAudioSource(NetworkObject parent)
+        {
+            StopAudioSourceLocal(parent);
+        }
+
+        /// <summary>
+        /// Stops the audio source parented to <paramref name="parent"/>, if this client has one.
+        /// </summary>
+        [ServerOrClient]
+        public void StopAudioSourceLocal(NetworkObject parent)
         {
             AudioSource audioSource = parent.GetComponentInChildren<AudioSource>();
             audioSource?.Stop();
@@ -222,6 +290,15 @@ namespace SS3D.Systems.Audio
             public void CreateNewAudioSource()
             {
                 AudioSource newAudioSource = Instantiate(Prefab, AudioSystem.transform.position, Quaternion.identity).GetComponent<AudioSource>();
+
+                // Sfx only — Music (jukebox) must not get the 800Hz occlusion lowpass or it reads
+                // as permanently muddled even in the same room (furniture/wall false hits on Default).
+                if (AudioType is AudioType.Sfx or AudioType.Music)
+                {
+                    AudioSourceOcclusion occlusion = newAudioSource.gameObject.AddComponent<AudioSourceOcclusion>();
+                    occlusion.IgnoresWalls = AudioType is AudioType.Music;
+                }
+
                 List.Add(newAudioSource);
                 newAudioSource.transform.parent = AudioSystem.transform;
             }
@@ -231,16 +308,34 @@ namespace SS3D.Systems.Audio
             /// </summary>
             public void PurgeUnusedAudioSources()
             {
-                foreach (AudioSource source in List)
-                {
-                    //Check that the audio source is idle, and we have more than our minimum number.
-                    if (source == null || (!source.isPlaying && List.Count > MinAudioSources))
-                    {
-                        List.Remove(source);
-                        source?.gameObject.Dispose(true);
-                    }
-                }
+                PurgeIdleAudioSources(List, MinAudioSources);
             }
+        }
+
+        /// <summary>
+        /// Removes destroyed sources from <paramref name="sources"/>, then destroys idle ones until only
+        /// <paramref name="minSources"/> are left. Playing sources are always kept.
+        /// </summary>
+        /// <returns>How many entries were removed.</returns>
+        public static int PurgeIdleAudioSources(List<AudioSource> sources, int minSources)
+        {
+            int removed = sources.RemoveAll(source => source == null);
+
+            // Backwards, so removing an entry doesn't skip the next one.
+            for (int i = sources.Count - 1; i >= 0 && sources.Count > minSources; i--)
+            {
+                AudioSource source = sources[i];
+                if (source.isPlaying)
+                {
+                    continue;
+                }
+
+                sources.RemoveAt(i);
+                source.gameObject.Dispose(true);
+                removed++;
+            }
+
+            return removed;
         }
 
 #if UNITY_EDITOR

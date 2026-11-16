@@ -1,0 +1,28 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 43a9b39dd01e49f58dbe76029c0bf285, type: 3}
+  m_Name: BlastVfxCatalog
+  m_EditorClassIdentifier: SS3D.Systems::SS3D.Systems.StructuralDamage.BlastVfxCatalog
+  _burstPrefab: {fileID: 9200000000000000001, guid: 74e88e3ff3994b30b2f6cc1015e7da19, type: 3}
+  _scorchFloorPrefab: {fileID: 9100000000000000001, guid: ca2e6e857e424717bc7a528fbe8b1319, type: 3}
+  _scorchDecalMaterial: {fileID: 2100000, guid: b64485b107c849c2a30aca850bfb0da3, type: 2}
+  _particleMaterial: {fileID: 2100000, guid: af5a53a5bf82c30439df60069f07f424, type: 2}
+  _shakeFullRange: 6
+  _shakeMaxRange: 24
+  _flashFullRange: 4
+  _flashMaxRange: 20
+  _shakeAmplitude: 0.75
+  _shakeDuration: 0.85
+  _lightIntensity: 35
+  _lightRange: 14
+  _lightDuration: 0.4
+  _effectLifetime: 1.2

@@ -3,10 +3,6 @@ using SS3D.Data;
 using SS3D.Logging;
 using UnityEngine;
 
-#if UNITY_EDITOR
-using ParrelSync;
-#endif
-
 namespace SS3D.Networking.Settings
 {
 	[ProjectSettings("SS3D/Core", "Network Settings")]
@@ -42,7 +38,7 @@ namespace SS3D.Networking.Settings
 		/// The server port used when start connecting to a server.
 		/// Defined via command line args when in a built executable or the EditorServerAddress when in the Editor.
 		/// </summary>
-		public ushort ServerPort = 2222;
+		public ushort ServerPort = 1151;
 
 		/// <summary>
 		/// Enables Fish-net's bandwidth UI in the game.
@@ -52,12 +48,7 @@ namespace SS3D.Networking.Settings
 
         public string Ckey
         {
-            get =>
-                #if UNITY_EDITOR
-                ClonesManager.IsClone() ? _ckey + ClonesManager.CloneNameSuffix : _ckey;
-                #else 
-                _ckey;
-                #endif
+            get => _ckey;
             set => _ckey = value;
         }
 
@@ -70,7 +61,11 @@ namespace SS3D.Networking.Settings
 
 			Log.Information(nameof(NetworkSettings), $"Network settings reset on the built executable");
 
+#if UNITY_SERVER
+			networkSettings.NetworkType = NetworkType.DedicatedServer;
+#else
 			networkSettings.NetworkType = NetworkType.Client;
+#endif
 			networkSettings.ServerAddress = string.Empty;
 			networkSettings._ckey = string.Empty;
 			networkSettings.ServerPort = ushort.MinValue;

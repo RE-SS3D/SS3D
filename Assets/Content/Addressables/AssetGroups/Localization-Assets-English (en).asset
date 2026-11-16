@@ -13,20 +13,20 @@ MonoBehaviour:
   m_Name: Localization-Assets-English (en)
   m_EditorClassIdentifier: 
   m_GroupName: Localization-Assets-English (en)
-  m_Data:
-    m_SerializedData: []
   m_GUID: 314cdd9274792f44591b2ce389200783
   m_SerializeEntries:
-  - m_GUID: 871f8e8aac0529a4d833c4732d5efd95
-    m_Address: TMPFontHeader2
-    m_ReadOnly: 1
-    m_SerializedLabels:
-    - Locale-en
   - m_GUID: 211cc0b58afe00e479d31e1cc6ba11b6
     m_Address: TMPFontText
     m_ReadOnly: 1
     m_SerializedLabels:
     - Locale-en
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 871f8e8aac0529a4d833c4732d5efd95
+    m_Address: TMPFontHeader2
+    m_ReadOnly: 1
+    m_SerializedLabels:
+    - Locale-en
+    FlaggedDuringContentUpdateRestriction: 0
   m_ReadOnly: 1
   m_Settings: {fileID: 11400000, guid: ddc57d0f5f9fb874e8a26db0c5b215e0, type: 2}
   m_SchemaSet:

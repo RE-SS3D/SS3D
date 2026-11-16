@@ -1,0 +1,426 @@
+@import url("../../Tokens/ss3d-tokens.uss");
+@import url("../../Tokens/ss3d-typography.uss");
+
+/*
+ * Local speech chips — Claude Design mockup option 1a (weighted chips).
+ * Soft translucent plate, no comic outline. Name = Gurajada titling;
+ * dialogue = UI sans body.
+ */
+
+.comms-subtitle {
+    translate: -50% 0;
+    max-width: 420px;
+    flex-grow: 0;
+    flex-shrink: 0;
+    flex-direction: column;
+    align-items: center;
+    background-color: rgba(10, 10, 10, 0.42);
+    border-width: 0;
+    border-radius: 10px;
+    padding: 6px 14px 7px 14px;
+}
+
+.comms-subtitle__name {
+    margin-bottom: 0;
+    margin-top: 0;
+    padding-bottom: 0;
+    white-space: nowrap;
+    -unity-text-align: middle-center;
+    /* .font-titling → Gurajada — pull tight against the line below */
+    font-size: 16px;
+    letter-spacing: 1px;
+    color: rgb(170, 170, 170);
+    -unity-font-style: normal;
+}
+
+.comms-subtitle__line {
+    margin-top: -6px;
+    padding-top: 0;
+    white-space: normal;
+    -unity-text-align: middle-center;
+    /* .font-body → UI sans */
+    font-size: 21px;
+    color: rgb(255, 255, 255); /* --text-primary */
+    -unity-font-style: normal;
+}
+
+/* Older stacked lines — smaller, no name. */
+.comms-subtitle--aged {
+    border-radius: 8px;
+    padding: 5px 12px;
+    background-color: rgba(10, 10, 10, 0.36);
+}
+
+.comms-subtitle--aged .comms-subtitle__line {
+    margin-top: 0;
+    font-size: 18px;
+    color: rgb(200, 200, 200);
+}
+
+.comms-subtitle--aged-far .comms-subtitle__line {
+    font-size: 16px;
+}
+
+.comms-subtitle--muffled {
+    background-color: rgba(10, 10, 10, 0.38);
+}
+
+.comms-subtitle--muffled .comms-subtitle__name,
+.comms-subtitle--muffled .comms-subtitle__line {
+    color: rgb(190, 190, 190);
+    letter-spacing: 1px;
+}
+
+/* --- Mode treatments (mock 1a) --- */
+
+.comms-subtitle--whisper {
+    background-color: rgba(10, 10, 10, 0.38);
+    border-radius: 8px;
+    padding: 4px 10px;
+    max-width: 300px;
+}
+
+.comms-subtitle--whisper .comms-subtitle__line {
+    margin-top: 0;
+    font-size: 16px;
+    letter-spacing: 1px;
+    color: rgb(220, 220, 220);
+    -unity-font-style: italic;
+}
+
+.comms-subtitle--shout {
+    scale: 1.1;
+    background-color: rgba(10, 10, 10, 0.48);
+    border-width: 0;
+    padding: 7px 16px 8px 16px;
+    max-width: 480px;
+}
+
+.comms-subtitle--shout .comms-subtitle__name {
+    font-size: 17px;
+    color: rgb(216, 216, 216);
+}
+
+.comms-subtitle--shout .comms-subtitle__line {
+    font-size: 23px;
+    color: rgb(255, 255, 255);
+    -unity-font-style: bold;
+    letter-spacing: 1px;
+}
+
+.comms-subtitle--shout.comms-subtitle--aged {
+    background-color: rgba(10, 10, 10, 0.4);
+}
+
+.comms-subtitle--shout.comms-subtitle--aged .comms-subtitle__line {
+    color: rgb(230, 230, 230);
+    -unity-font-style: bold;
+}
+
+.comms-subtitle--emote {
+    background-color: rgba(10, 10, 10, 0.38);
+    border-radius: 8px;
+    padding: 5px 12px;
+}
+
+.comms-subtitle--emote .comms-subtitle__line {
+    margin-top: 0;
+    font-size: 18px;
+    color: rgb(220, 220, 220);
+    -unity-font-style: italic;
+}
+
+/* Action line (action-messages.md §5): smaller, italic, quieter surface than speech so it never
+   reads as someone talking. Interim look until the examine-feedback visual brief returns. */
+.comms-subtitle--action {
+    background-color: rgba(10, 10, 10, 0.3);
+    border-width: 1px;
+    border-color: rgba(154, 150, 144, 0.35);
+    border-radius: 3px;
+    padding: 3px 8px;
+}
+
+.comms-subtitle--action .comms-subtitle__line {
+    margin-top: 0;
+    font-size: 15px;
+    color: rgb(200, 197, 192);
+    -unity-font-style: italic;
+}
+
+.comms-subtitle--radio {
+    background-color: rgba(61, 96, 137, 0.26);
+    border-left-width: 2px;
+    border-left-color: rgb(95, 134, 179); /* ramp-blue-300 */
+    border-top-left-radius: 4px;
+    border-bottom-left-radius: 4px;
+    border-top-right-radius: 10px;
+    border-bottom-right-radius: 10px;
+    padding: 7px 12px;
+    align-items: flex-start;
+    max-width: 260px;
+}
+
+.comms-subtitle--radio .comms-subtitle__name {
+    /* channel tag uses terminal face */
+    -unity-font-definition: url("project://database/Assets/Content/Systems/UI/Font/Fonts/SpessmanFontSDF.asset");
+    font-size: 13px;
+    letter-spacing: 1px;
+    color: rgb(95, 134, 179);
+}
+
+.comms-subtitle--radio .comms-subtitle__line {
+    -unity-font-definition: url("project://database/Assets/Content/Systems/UI/Font/Fonts/SpessmanFontSDF.asset");
+    font-size: 19px;
+    color: rgb(255, 255, 255);
+    -unity-text-align: middle-left;
+}
+
+.comms-subtitle--announce {
+    background-color: rgba(201, 143, 56, 0.24);
+    border-top-width: 2px;
+    border-top-color: rgb(230, 173, 83); /* ramp-amber-400 */
+    border-top-left-radius: 4px;
+    border-top-right-radius: 4px;
+    border-bottom-left-radius: 10px;
+    border-bottom-right-radius: 10px;
+    padding: 8px 20px 10px 20px;
+    max-width: 420px;
+}
+
+.comms-subtitle--announce .comms-subtitle__name {
+    /* arcade-ish small label — OdeToIdleGaming */
+    -unity-font-definition: url("project://database/Assets/Content/Systems/UI/Font/Fonts/OdetoIdleGamingSDF.asset");
+    font-size: 12px;
+    letter-spacing: 1px;
+    color: rgb(240, 196, 125); /* ramp-amber-300 */
+}
+
+.comms-subtitle--announce .comms-subtitle__line {
+    /* announce body stays titling */
+    -unity-font-definition: url("project://database/Assets/Content/Systems/UI/Font/Fonts/GurajadaRegularSDF.asset");
+    font-size: 21px;
+    letter-spacing: 1px;
+    color: rgb(255, 255, 255);
+}
+
+.comms-overflow-chip {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    background-color: rgba(10, 10, 10, 0.28);
+    border-width: 0;
+    border-radius: 10px;
+    padding: 4px 10px;
+}
+
+.comms-overflow-chip__label {
+    font-size: 13px;
+    color: rgb(113, 124, 127);
+}
+
+/*
+ * Draft compose chip (mock 2a) — same anchor as a finished line.
+ * Dashed outline is painted in C# (UITK has no border-style: dashed).
+ * Body matches finished-chip size/contrast so typing stays readable;
+ * dashed plate (not dim gray type) signals unsent.
+ */
+.comms-draft {
+    /* Positioned in code: left = headX - width/2 (no translate — UITK stale-% bug while typing). */
+    max-width: 420px;
+    flex-grow: 0;
+    flex-shrink: 0;
+    flex-direction: column;
+    align-items: center;
+    background-color: rgba(10, 10, 10, 0.42);
+    border-width: 0;
+    border-radius: 10px;
+    padding: 8px 16px 9px 16px;
+    /* Dashed stroke is painted on the outer padding-box edge and may sit half-outside. */
+    overflow: visible;
+}
+
+.comms-draft__name {
+    margin: 0 0 2px 0;
+    padding: 0;
+    min-height: 16px;
+    flex-grow: 0;
+    flex-shrink: 0;
+    white-space: nowrap;
+    -unity-text-align: middle-center;
+    font-size: 14px;
+    letter-spacing: 1px;
+    color: rgb(200, 200, 190);
+    -unity-font-style: normal;
+    opacity: 1;
+}
+
+/* Channel header present — never let the TextField climb on top of it. */
+.comms-draft--channelled .comms-draft__field {
+    margin-top: 0;
+}
+
+/* Off-screen text measure proxy (must stay display:flex so fonts resolve). */
+.comms-draft__measure {
+    position: absolute;
+    left: -10000px;
+    top: 0;
+    opacity: 0;
+    margin: 0;
+    padding: 0;
+    font-size: 21px;
+    white-space: nowrap;
+    -unity-font-style: normal;
+}
+
+.comms-draft--whisper .comms-draft__measure {
+    font-size: 16px;
+    letter-spacing: 1px;
+    -unity-font-style: italic;
+}
+
+.comms-draft--shout .comms-draft__measure {
+    font-size: 23px;
+    letter-spacing: 1px;
+    -unity-font-style: bold;
+}
+
+/* Visible TextField — real UITK caret; wrap budget matches finished chips.
+ * Size/color also forced in C# (ApplyDraftTypeStyles) — .font-body is 11px gray. */
+.comms-draft__field {
+    margin-top: 0;
+    margin-bottom: 0;
+    margin-left: 0;
+    margin-right: 0;
+    padding: 0;
+    flex-grow: 0;
+    flex-shrink: 0;
+    min-width: 12px;
+    background-color: rgba(0, 0, 0, 0);
+    font-size: 21px;
+    color: rgb(245, 245, 245);
+}
+
+.comms-draft__field.font-body {
+    font-size: 21px;
+    color: rgb(245, 245, 245);
+}
+
+.comms-draft__field > .unity-base-text-field__input {
+    margin: 0;
+    padding: 0;
+    background-color: rgba(0, 0, 0, 0);
+    border-width: 0;
+    border-radius: 0;
+    --unity-cursor-color: rgb(255, 255, 255);
+    cursor-color: rgb(255, 255, 255);
+}
+
+.comms-draft__field .unity-base-text-field__input > TextElement,
+.comms-draft__field Label {
+    margin: 0;
+    padding: 0;
+    font-size: 21px;
+    color: rgb(245, 245, 245);
+    -unity-text-align: middle-center;
+    white-space: normal;
+    -unity-font-style: normal;
+}
+
+.comms-draft--whisper {
+    background-color: rgba(10, 10, 10, 0.38);
+    border-radius: 8px;
+    padding: 4px 10px;
+    max-width: 300px;
+}
+
+.comms-draft--whisper .comms-draft__field {
+    margin-top: 0;
+}
+
+.comms-draft--whisper .comms-draft__field,
+.comms-draft--whisper .comms-draft__field.font-body {
+    font-size: 16px;
+    color: rgb(235, 235, 235);
+}
+
+.comms-draft--whisper .comms-draft__field .unity-base-text-field__input > TextElement,
+.comms-draft--whisper .comms-draft__field Label {
+    font-size: 16px;
+    letter-spacing: 1px;
+    -unity-font-style: italic;
+    color: rgb(235, 235, 235);
+}
+
+.comms-draft--shout {
+    background-color: rgba(10, 10, 10, 0.48);
+    padding: 7px 16px 8px 16px;
+    max-width: 480px;
+    scale: 1.1;
+}
+
+.comms-draft--shout .comms-draft__name {
+    font-size: 17px;
+    color: rgb(216, 216, 216);
+}
+
+.comms-draft--shout .comms-draft__field,
+.comms-draft--shout .comms-draft__field.font-body {
+    font-size: 23px;
+    color: rgb(255, 255, 255);
+}
+
+.comms-draft--shout .comms-draft__field .unity-base-text-field__input > TextElement,
+.comms-draft--shout .comms-draft__field Label {
+    font-size: 23px;
+    letter-spacing: 1px;
+    -unity-font-style: bold;
+    color: rgb(255, 255, 255);
+}
+
+.comms-draft--radio {
+    align-items: flex-start;
+    background-color: rgba(18, 28, 42, 0.72);
+    border-left-width: 2px;
+    border-left-color: rgb(95, 134, 179);
+    border-top-left-radius: 4px;
+    border-bottom-left-radius: 4px;
+    border-top-right-radius: 10px;
+    border-bottom-right-radius: 10px;
+    max-width: 320px;
+}
+
+.comms-draft--announce {
+    align-items: flex-start;
+    background-color: rgba(48, 36, 22, 0.88);
+    border-left-width: 2px;
+    border-left-color: rgb(230, 173, 83);
+    border-top-left-radius: 4px;
+    border-bottom-left-radius: 4px;
+    border-top-right-radius: 10px;
+    border-bottom-right-radius: 10px;
+    max-width: 360px;
+}
+
+.comms-draft__name--radio {
+    -unity-font-definition: url("project://database/Assets/Content/Systems/UI/Font/Fonts/SpessmanFontSDF.asset");
+    font-size: 13px;
+    letter-spacing: 1px;
+    color: rgb(95, 134, 179);
+    -unity-text-align: middle-left;
+}
+
+.comms-draft__name--announce {
+    -unity-font-definition: url("project://database/Assets/Content/Systems/UI/Font/Fonts/OdetoIdleGamingSDF.asset");
+    font-size: 13px;
+    letter-spacing: 2px;
+    color: rgb(240, 196, 125);
+    -unity-text-align: middle-left;
+}
+
+.comms-draft--channelled .comms-draft__name {
+    -unity-font-definition: url("project://database/Assets/Content/Systems/UI/Font/Fonts/SpessmanFontSDF.asset");
+}
+
+.comms-draft--announce.comms-draft--channelled .comms-draft__name {
+    -unity-font-definition: url("project://database/Assets/Content/Systems/UI/Font/Fonts/OdetoIdleGamingSDF.asset");
+}

@@ -1,0 +1,35 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 377776cd7c2b4a01af84ffdcb85c3d21, type: 3}
+  m_Name: CoreReagentRegistry
+  m_EditorClassIdentifier: 
+  _definitions:
+  - {fileID: 11400000, guid: d99e98a85a454aa78e8ba7c97cd24aac, type: 2}
+  - {fileID: 11400000, guid: a87e4464db394d5f8654200fb1ff86b5, type: 2}
+  - {fileID: 11400000, guid: 3811b090211345b4a26e045f79fff852, type: 2}
+  - {fileID: 11400000, guid: 73d3a657fbd843ca9322010b37e41b65, type: 2}
+  - {fileID: 11400000, guid: ebc8c5ac8e374dd19e87f6a0b09bf6f7, type: 2}
+  - {fileID: 11400000, guid: fc613a0e1f334d4da82925935f92d632, type: 2}
+  - {fileID: 11400000, guid: dd5a57e5f46048758bfd425e1d722a27, type: 2}
+  - {fileID: 11400000, guid: 0ad9a620754b45d0ab45577089800e5c, type: 2}
+  - {fileID: 11400000, guid: 83ab5aef75ff463da4cfe0454a50101e, type: 2}
+  - {fileID: 11400000, guid: a8bcdcc10275417c960342b2bce93584, type: 2}
+  - {fileID: 11400000, guid: aac1941aff774d5ab972fd3e383aafa9, type: 2}
+  - {fileID: 11400000, guid: 2790780abf304121b7f122d82f510904, type: 2}
+  - {fileID: 11400000, guid: eb67435b0bc447298afa11fac5c9cdb7, type: 2}
+  _recipes:
+  - {fileID: 11400000, guid: 4c87f851692e4b1d895af4e855164690, type: 2}
+  - {fileID: 11400000, guid: 25c08252d52442beafe3c922a0732301, type: 2}
+  _incompatiblePairs:
+  - ReagentIdA: volatile_x
+    ReagentIdB: volatile_y
+    Hazard: 5

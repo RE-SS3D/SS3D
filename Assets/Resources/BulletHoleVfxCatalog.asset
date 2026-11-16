@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1c6b2b3afbee4eaf8cf2c046de9c2dac, type: 3}
+  m_Name: BulletHoleVfxCatalog
+  m_EditorClassIdentifier: SS3D.Systems::SS3D.Systems.Combat.BulletHoleVfxCatalog
+  _holes:
+  - {fileID: 2800000, guid: 39e3bb5de29f4055a8d9702488a98faf, type: 3}
+  - {fileID: 2800000, guid: efb7de4589024556bec4e064d55b50f4, type: 3}
+  - {fileID: 2800000, guid: beb05f9e101249b6adfddfb2c13286a2, type: 3}
+  - {fileID: 2800000, guid: 34537c1954ae42f7aa85099f6054f25c, type: 3}
+  - {fileID: 2800000, guid: 497ecef5f5444fb3aa1da25360e1557e, type: 3}
+  _decalMaterial: {fileID: 2100000, guid: cee41ebbce674bcdb7f5aaae0af2e34c, type: 2}
+  _floorDecalPrefab: {fileID: 8123456789012345678, guid: e5edd16174b54cba8aa8a83fce892f5b, type: 3}
+  _multiplyTintShader: {fileID: 4800000, guid: cf88f09667ed419d98051a601f8c0f48, type: 3}

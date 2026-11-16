@@ -1,0 +1,21 @@
+{
+    "name": "SS3D.Tile.MapImport.Editor",
+    "rootNamespace": "",
+    "references": [
+        "GUID:ca7dfa56d1d490249a5fe56aee92a13c",
+        "GUID:eb242eaf9f292954eb8c6fbd63c46deb",
+        "GUID:eb124556ba20d60469be9771eb1f0360",
+        "FishNet.Runtime"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

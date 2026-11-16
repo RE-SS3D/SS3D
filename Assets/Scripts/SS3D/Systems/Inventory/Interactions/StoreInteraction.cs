@@ -20,12 +20,19 @@ namespace SS3D.Systems.Inventory.Interactions
             _attachedContainer = attachedContainer;
         }
 
+        /// <summary>
+        /// One above View/Open/Take (25): Store is only viable with an item in hand that fits, and
+        /// then a plain click on the container should put it in. The tie used to resolve by an
+        /// unstable sort, so the click often opened or viewed the container instead.
+        /// </summary>
+        public int Priority => 26;
+
         public string GetName(InteractionEvent interactionEvent)
         {
             return "Store in " + _attachedContainer.ContainerName;
         }
 
-        public string GetGenericName() => throw new System.NotImplementedException();
+        public string GetGenericName() => "Store:" + _attachedContainer.ContainerName;
 
         public Sprite GetIcon(InteractionEvent interactionEvent)
         {
@@ -49,6 +56,17 @@ namespace SS3D.Systems.Inventory.Interactions
             Hands hands = sourceGameObjectProvider.GameObject.GetComponentInParent<Hands>();
 
             if (!hands || !_attachedContainer)
+            {
+                return false;
+            }
+
+            if (!_attachedContainer.IsAccessibleBy(hands.GetComponentInParent<HumanInventory>()))
+            {
+                return false;
+            }
+
+            IStorageAccessGate gate = _attachedContainer.GetComponentInParent<IStorageAccessGate>();
+            if (gate != null && !gate.AllowsStorageAccess)
             {
                 return false;
             }
@@ -77,7 +95,8 @@ namespace SS3D.Systems.Inventory.Interactions
                 Hands hands = sourceGameObjectProvider.GameObject.GetComponentInParent<Hands>();
                 Item item = hands.SelectedHand.ItemInHand;
 
-                hands.SelectedHand.Container.Dump();
+                // Move only the item being stored — the hand may still hold other items via other slots.
+                hands.SelectedHand.Container.RemoveItem(item);
                 _attachedContainer.AddItem(item);
             }
 

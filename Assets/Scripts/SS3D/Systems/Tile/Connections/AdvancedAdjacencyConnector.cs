@@ -1,32 +1,25 @@
-﻿using FishNet.Object;
-using FishNet.Object.Synchronizing;
-using SS3D.Logging;
-using SS3D.Systems.Tile.Connections.AdjacencyTypes;
-using System.Collections;
-using System.Collections.Generic;
+﻿using SS3D.Systems.Tile.Connections.AdjacencyTypes;
 using UnityEngine;
-using UnityEngine.Serialization;
 
 namespace SS3D.Systems.Tile.Connections
 {
     /// <summary>
-    /// Basic connector using the Advanced connector struct for resolving shape and direction.
+    /// Connector using <see cref="AdvancedConnector"/> for resolving shape and direction.
+    /// Connection rules match <see cref="SimpleConnectionRule"/> (shared generic/specific type).
     /// </summary>
-    public class AdvancedAdjacencyConnector : AbstractHorizontalConnector, IAdjacencyConnector
+    public class AdvancedAdjacencyConnector : EngineDrivenHorizontalConnector
     {
         [SerializeField] private AdvancedConnector advancedAdjacency;
+
         protected override IMeshAndDirectionResolver AdjacencyResolver => advancedAdjacency;
 
-        public override bool IsConnected(PlacedTileObject neighbourObject)
+        public override IConnectionRule ConnectionRule
         {
-            bool isConnected = false;
-            if (neighbourObject)
+            get
             {
-                isConnected = (neighbourObject && neighbourObject.HasAdjacencyConnector);
-                isConnected &= neighbourObject.GenericType == _genericType || _genericType == TileObjectGenericType.None;
-                isConnected &= neighbourObject.SpecificType == _specificType || _specificType == TileObjectSpecificType.None;
+                Setup();
+                return new SimpleConnectionRule(PlacedObject.GenericType, PlacedObject.SpecificType);
             }
-            return isConnected;
         }
     }
 }

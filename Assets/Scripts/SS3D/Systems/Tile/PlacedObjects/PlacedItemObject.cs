@@ -1,8 +1,11 @@
-﻿using FishNet;
+﻿using Coimbra;
+using FishNet;
 using FishNet.Object;
 using SS3D.Core;
 using SS3D.Data;
+using SS3D.Data.Persistence;
 using SS3D.Logging;
+using SS3D.Systems.Tile.TileMapCreator;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -16,7 +19,9 @@ namespace SS3D.Systems.Tile
     public class PlacedItemObject : NetworkBehaviour
     {
         /// <summary>
-        ///  Places an item on the tilemap at a given position and rotation
+        ///  Places an item on the tilemap at a given position and exact world rotation. Callers placing a fresh item
+        ///  at rest compose yaw with <see cref="SS3D.Systems.Inventory.Items.ItemPlacement"/>; a map load passes the
+        ///  saved world rotation back unchanged.
         /// </summary>
         /// <param name="worldPosition"></param>
         /// <param name="origin"></param>
@@ -24,21 +29,34 @@ namespace SS3D.Systems.Tile
         /// <param name="itemSo"></param>
         /// <param name="existingItem">The existing Item GameObject to add the PlacedItemObject component to</param>
         /// <returns></returns>
-        public static PlacedItemObject Create(Vector3 worldPosition, Quaternion rotation, ItemObjectSo itemSo, GameObject existingItem = null)
+        public static PlacedItemObject Create(Vector3 worldPosition, Quaternion rotation, ItemObjectSo itemSo, GameObject existingItem = null) =>
+            Create(worldPosition, rotation, itemSo, existingItem, null, null);
+
+        /// <summary>
+        /// As <see cref="Create(Vector3, Quaternion, ItemObjectSo, GameObject)"/>, then applies the saved
+        /// <paramref name="setup"/> right after the spawn, over the defaults <c>OnStartServer</c> set.
+        /// </summary>
+        public static PlacedItemObject Create(Vector3 worldPosition, Quaternion rotation, ItemObjectSo itemSo, GameObject existingItem,
+            IReadOnlyList<SavedSetupEntry> setup, Action<string> reportSkipped)
         {
             GameObject placedGameObject;
             
             if (existingItem != null)
             {
-                // Use the existing item GameObject
+                // Use the existing item GameObject (drop/place callers pass its resulting pose).
                 placedGameObject = existingItem;
             }
             else
             {
                 GameObject itemPrefab = Assets.Get<GameObject>(itemSo.PrefabAsset);
                 placedGameObject = Instantiate(itemPrefab);
+
+#if UNITY_SERVER
+                ServerVisualsUtility.DisableRenderingComponents(placedGameObject);
+#endif
             }
-            placedGameObject.transform.SetPositionAndRotation(worldPosition, rotation);
+
+            SS3D.Systems.Inventory.Items.ItemUtility.SetWorldPose(placedGameObject.transform, worldPosition, rotation);
 
             PlacedItemObject placedObject = placedGameObject.GetComponent<PlacedItemObject>();
             if (placedObject == null)
@@ -49,14 +67,22 @@ namespace SS3D.Systems.Tile
 
             placedObject.Setup(worldPosition, rotation, itemSo);
 
-            if (InstanceFinder.ServerManager != null && placedObject.GetComponent<NetworkObject>() != null)
+            NetworkObject networkObject = placedObject.GetComponent<NetworkObject>();
+            if (InstanceFinder.ServerManager != null && networkObject != null)
             {
-                if (placedObject.GetComponent<NetworkObject>() == null)
-                    Log.Warning(SubSystems.Get<TileSubSystem>(), "{placedObject} does not have a Network Component and will not be spawned",
-                        Logs.Generic, placedObject.NameString);
-                else
+                if (!networkObject.IsSpawned)
+                {
                     InstanceFinder.ServerManager.Spawn(placedGameObject);
+                }
             }
+            else if (networkObject == null)
+            {
+                Log.Warning(SubSystems.Get<TileSubSystem>(), "{placedObject} does not have a Network Component and will not be spawned",
+                    Logs.Generic, placedObject.NameString);
+            }
+
+            if (setup != null && setup.Count > 0)
+                ObjectSetup.Restore(placedGameObject, setup, itemSo.NameString, reportSkipped);
 
             return placedObject;
         }
@@ -66,6 +92,13 @@ namespace SS3D.Systems.Tile
         private Quaternion _rotation;
 
         public string NameString => _itemSo.NameString;
+
+        /// <summary>
+        /// The map tracking this item, set by <see cref="TileMap.PlaceItemObject"/>. Unity's OnDestroy
+        /// is used rather than a FishNet stop callback because this component is added at runtime and
+        /// is not registered with the NetworkObject.
+        /// </summary>
+        internal TileMap Owner { get; set; }
 
         /// <summary>
         /// Set up a new item object.
@@ -80,6 +113,18 @@ namespace SS3D.Systems.Tile
             _itemSo = itemSo;
         }
 
+        public override void OnStartClient()
+        {
+            base.OnStartClient();
+            TileLayerVisibilityService.TryApplyPlacedItem(this);
+        }
+
+        private void OnDestroy()
+        {
+            if (Owner != null)
+                Owner.ForgetDestroyedItem(this);
+        }
+
         /// <summary>
         /// Updates the position and rotation of this placed item object.
         /// </summary>
@@ -89,7 +134,7 @@ namespace SS3D.Systems.Tile
         {
             _worldPosition = worldPosition;
             _rotation = rotation;
-            transform.SetPositionAndRotation(worldPosition, rotation);
+            SS3D.Systems.Inventory.Items.ItemUtility.SetWorldPose(transform, worldPosition, rotation);
         }
 
         /// <summary>
@@ -97,6 +142,14 @@ namespace SS3D.Systems.Tile
         /// </summary>
         public void DestroySelf()
         {
+            // Pure clients hit this during teardown after StopConnection; ServerManager.Despawn
+            // then spam-logs "Cannot despawn object because server nor client are active."
+            if (InstanceFinder.ServerManager == null || !InstanceFinder.IsServer)
+            {
+                gameObject.Dispose(true);
+                return;
+            }
+
             InstanceFinder.ServerManager.Despawn(gameObject);
         }
 
@@ -108,9 +161,11 @@ namespace SS3D.Systems.Tile
         {
             return new SavedPlacedItemObject
             {
+                id = SavedAssetLookup.IdOf(_itemSo),
                 itemName = _itemSo.NameString,
                 worldPosition = _worldPosition,
                 rotation = _rotation,
+                setup = ObjectSetup.Capture(gameObject),
             };
         }
     }

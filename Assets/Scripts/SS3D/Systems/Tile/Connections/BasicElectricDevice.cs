@@ -1,6 +1,6 @@
 ﻿using SS3D.Core;
 using SS3D.Core.Behaviours;
-using System.Electricity;
+using SS3D.Systems.Electricity;
 
 namespace SS3D.Systems.Tile.Connections
 {
@@ -10,29 +10,46 @@ namespace SS3D.Systems.Tile.Connections
     /// </summary>
     public class BasicElectricDevice : NetworkActor, IElectricDevice
     {
-        public PlacedTileObject TileObject => gameObject.GetComponent<PlacedTileObject>();
+        // Destroyed Unity objects throw on .gameObject; callers (area/APC power) null-check TileObject.
+        public PlacedTileObject TileObject => this ? GetComponent<PlacedTileObject>() : null;
 
         public override void OnStartServer()
         {
             base.OnStartServer();
 
             ElectricitySubSystem electricitySystem = SubSystems.Get<ElectricitySubSystem>();
-            if (electricitySystem.IsSetUp)
+            if (electricitySystem.IsReady)
                 electricitySystem.AddElectricalElement(this);
             else
-                electricitySystem.OnSystemSetUp += OnElectricitySystemSetup;
+                electricitySystem.WhenReady += OnElectricitySystemSetup;
+        }
+
+        // Unregister on despawn: FishNet clears IsServer before Unity's OnDestroy, so a server-gated
+        // OnDestroyed never ran and removed devices lingered until the next graph rebuild pruned them.
+        public override void OnStopServer()
+        {
+            if (SubSystems.TryGet(out ElectricitySubSystem electricitySystem))
+            {
+                electricitySystem.WhenReady -= OnElectricitySystemSetup;
+                electricitySystem.RemoveElectricalElement(this);
+            }
+
+            base.OnStopServer();
         }
 
         protected override void OnDestroyed()
         {
             base.OnDestroyed();
-            ElectricitySubSystem electricitySystem = SubSystems.Get<ElectricitySubSystem>();
-            electricitySystem.RemoveElectricalElement(this);
+
+            // Tile icon previews DestroyImmediate prefabs that never started as server objects.
+            if (SubSystems.TryGet(out ElectricitySubSystem electricitySystem))
+                electricitySystem.WhenReady -= OnElectricitySystemSetup;
         }
 
         private void OnElectricitySystemSetup()
         {
             ElectricitySubSystem electricitySystem = SubSystems.Get<ElectricitySubSystem>();
+            electricitySystem.WhenReady -= OnElectricitySystemSetup;
             electricitySystem.AddElectricalElement(this);
         }
     }

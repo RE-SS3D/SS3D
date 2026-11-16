@@ -2,51 +2,72 @@ Shader "Custom/SpacePlane"
 {
     Properties
     {
-        _Color ("Color", Color) = (1,1,1,1)
-        _MainTex ("Albedo (RGB)", 2D) = "black" {}
-        _Glossiness ("Smoothness", Range(0,1)) = 0.5
-        _Metallic ("Metallic", Range(0,1)) = 0.0
+        _BaseMap ("Albedo", 2D) = "black" {}
+        _BaseColor ("Color", Color) = (1, 1, 1, 1)
     }
+
     SubShader
     {
-        ZWrite On 
-        Tags {"Queue"="Transparent" "RenderType"="Transparent" }
-        LOD 200
-        CGPROGRAM
-        #include "VisionCG.cginc"
-        #pragma surface surf Standard fullforwardshadows alpha
-
-        // Use shader model 3.0 target, to get nicer looking lighting
-        #pragma target 3.0
-
-        sampler2D _MainTex;
-
-        struct Input
+        Tags
         {
-            float2 uv_MainTex;
-            float3 worldPos;
-        };
-
-        half _Glossiness;
-        half _Metallic;
-        fixed4 _Color;
-
-        void surf (Input IN, inout SurfaceOutputStandard o)
-        {
-            if(IsVisible(IN.worldPos)) 
-            {
-                discard;
-            }
-            
-            float4 c = tex2D(_MainTex, IN.uv_MainTex);
-            o.Albedo = c.rgba;
-            // Metallic and smoothness come from slider variables
-            o.Metallic = _Metallic;
-            o.Smoothness = _Glossiness;
-            o.Alpha = c.a;
-            
+            "RenderType" = "Transparent"
+            "Queue" = "Transparent"
+            "RenderPipeline" = "UniversalPipeline"
         }
-        ENDCG
+
+        Pass
+        {
+            Name "SpacePlane"
+            Tags { "LightMode" = "UniversalForward" }
+
+            ZWrite On
+            Blend SrcAlpha OneMinusSrcAlpha
+            Cull Back
+
+            HLSLPROGRAM
+            #pragma target 3.0
+            #pragma vertex Vert
+            #pragma fragment Frag
+
+            #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
+            #include "Vision.hlsl"
+
+            TEXTURE2D(_BaseMap);
+            SAMPLER(sampler_BaseMap);
+            float4 _BaseColor;
+
+            struct Attributes
+            {
+                float4 positionOS : POSITION;
+                float2 uv         : TEXCOORD0;
+            };
+
+            struct Varyings
+            {
+                float4 positionCS : SV_POSITION;
+                float2 uv         : TEXCOORD0;
+                float3 positionWS : TEXCOORD1;
+            };
+
+            Varyings Vert(Attributes input)
+            {
+                Varyings output;
+                VertexPositionInputs vertexInput = GetVertexPositionInputs(input.positionOS.xyz);
+                output.positionCS = vertexInput.positionCS;
+                output.positionWS = vertexInput.positionWS;
+                output.uv = input.uv;
+                return output;
+            }
+
+            half4 Frag(Varyings input) : SV_Target
+            {
+                if (VisionIsVisibleWorld(input.positionWS))
+                    discard;
+
+                half4 albedo = SAMPLE_TEXTURE2D(_BaseMap, sampler_BaseMap, input.uv) * _BaseColor;
+                return albedo;
+            }
+            ENDHLSL
+        }
     }
-        Fallback "Diffuse"
 }

@@ -1,0 +1,17 @@
+{
+    "name": "SS3D.UI.Shell",
+    "rootNamespace": "SS3D.UI.Shell",
+    "references": [
+        "GUID:eb242eaf9f292954eb8c6fbd63c46deb",
+        "GUID:fa8dbf94b90efa1478e7c833397cb0b2"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

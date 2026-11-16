@@ -5,16 +5,20 @@ using UnityEngine;
 namespace SS3D.Interactions
 {
     /// <summary>
-    /// Interaction target for target game objects without their own interaction target
+    /// Interaction target for target game objects without their own interaction target.
     /// </summary>
     public class InteractionTargetGameObject : IInteractionTarget, IGameObjectProvider
     {
+        public InteractionTargetGameObject()
+        {
+        }
+
         public InteractionTargetGameObject(GameObject gameObject)
         {
             GameObject = gameObject;
         }
 
-        public GameObject GameObject { get; }
+        public GameObject GameObject { get; set; }
 
         public IInteraction[] CreateTargetInteractions(InteractionEvent interactionEvent)
         {

@@ -1,0 +1,19 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 806d260f3b969a8acb5ec9737e1e5807, type: 3}
+  m_Name: BugReportAssetCatalog
+  m_EditorClassIdentifier: SS3D.UI.Shell::SS3D.UI.Shell.BugReport.BugReportAssetCatalog
+  _panelSettings: {fileID: 11400000, guid: d9e8accab86f453aacb827761d335103, type: 2}
+  _ss3dTokensStyle: {fileID: 7433441132597879392, guid: 73b8fe755692049198490f1974236d47, type: 3}
+  _ss3dTypographyStyle: {fileID: 7433441132597879392, guid: 5c5d40e591a47dca8a2ac25e2b23b4c8, type: 3}
+  _template: {fileID: 9197481963319205126, guid: d4cceaefe0eba35bbb7c39eebbe62d90, type: 3}
+  _style: {fileID: 7433441132597879392, guid: eb52a28c4229e4f3f85eedca0c210376, type: 3}

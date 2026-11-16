@@ -1,0 +1,167 @@
+
+.atmos-id-reader-row {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.atmos-id-reader-row__left {
+    flex-direction: row;
+    align-items: center;
+    flex-grow: 1;
+    min-width: 0;
+    margin-right: 12px;
+}
+
+.atmos-id-reader-row__lock {
+    width: 20px;
+    height: 20px;
+    flex-shrink: 0;
+    margin-right: 10px;
+    opacity: 0.9;
+    position: relative;
+}
+
+.atmos-id-reader-row__lock.tone-success {
+    opacity: 0.7;
+}
+
+.atmos-id-reader-row__lock.tone-info {
+    opacity: 0.7;
+}
+
+.atmos-id-reader-row__lock.tone-danger {
+    opacity: 0.9;
+}
+
+.atmos-id-reader-row__lock-shackle {
+    position: absolute;
+    left: 4px;
+    top: 0;
+    width: 12px;
+    height: 10px;
+    border-top-width: 2px;
+    border-left-width: 2px;
+    border-right-width: 2px;
+    border-bottom-width: 0;
+    border-color: var(--ss3d-text-tertiary);
+    border-top-left-radius: 6px;
+    border-top-right-radius: 6px;
+}
+
+.atmos-id-reader-row__lock.tone-success .atmos-id-reader-row__lock-shackle,
+.atmos-id-reader-row__lock.tone-success .atmos-id-reader-row__lock-body {
+    border-color: var(--ss3d-feedback-success);
+    background-color: var(--ss3d-feedback-success);
+}
+
+.atmos-id-reader-row__lock.tone-danger .atmos-id-reader-row__lock-shackle,
+.atmos-id-reader-row__lock.tone-danger .atmos-id-reader-row__lock-body {
+    border-color: var(--ss3d-feedback-danger);
+    background-color: var(--ss3d-feedback-danger);
+}
+
+.atmos-id-reader-row__lock-body {
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 20px;
+    height: 12px;
+    background-color: var(--ss3d-text-tertiary);
+    border-radius: 2px;
+}
+
+.atmos-id-reader-row__copy {
+    flex-direction: column;
+    flex-grow: 1;
+    min-width: 0;
+}
+
+.atmos-id-reader-row__status {
+    font-size: 13px;
+    color: var(--ss3d-text-primary);
+    padding: 0;
+    white-space: normal;
+}
+
+.atmos-id-reader-row__status.tone-success {
+    color: var(--ss3d-feedback-success);
+}
+
+.atmos-id-reader-row__status.tone-danger {
+    color: var(--ss3d-feedback-danger);
+}
+
+.atmos-id-reader-row__sub {
+    font-size: 10.5px;
+    color: var(--ss3d-text-tertiary);
+    margin-top: 2px;
+    padding: 0;
+    white-space: normal;
+}
+
+.atmos-id-reader-row__sub.font-terminal {
+    color: var(--ss3d-text-tertiary);
+}
+
+.atmos-id-reader-row__button.steel-button {
+    flex-shrink: 0;
+    width: 140px;
+}
+
+.atmos-id-reader-row__button .steel-button__control {
+    width: 100%;
+    min-width: 0;
+    min-height: 40px;
+    margin: 0;
+    padding: 8px 14px 6px;
+    -unity-text-align: middle-center;
+    border-radius: var(--ss3d-radius-sm);
+    border-top-width: 1px;
+    border-right-width: 1px;
+    border-left-width: 1px;
+    border-bottom-width: 4px;
+    border-top-color: #2e3138;
+    border-right-color: #2e3138;
+    border-left-color: #2e3138;
+    border-bottom-color: rgba(0, 0, 0, 0.55);
+    background-color: var(--ss3d-diegetic-panel-raised);
+    color: var(--ss3d-text-primary);
+}
+
+.atmos-id-reader-row__button .steel-button__control:hover {
+    background-color: #35373a;
+}
+
+.atmos-id-reader-row__button .steel-button__control:active {
+    background-color: var(--ss3d-accent-rust-dim);
+    color: var(--ss3d-text-on-accent);
+    border-bottom-width: 1px;
+    padding-top: 10px;
+    margin-top: 3px;
+}
+
+.atmos-id-reader-row__button .steel-button__control:disabled {
+    color: var(--ss3d-text-tertiary);
+    border-bottom-width: 1px;
+    padding-top: 8px;
+    margin-top: 0;
+}
+
+.atmos-id-reader-row__button.steel-button--danger .steel-button__control {
+    background-color: var(--ss3d-feedback-danger-bg);
+    border-top-color: var(--ss3d-feedback-danger-border);
+    border-right-color: var(--ss3d-feedback-danger-border);
+    border-left-color: var(--ss3d-feedback-danger-border);
+    border-bottom-color: rgba(0, 0, 0, 0.55);
+    color: var(--ss3d-feedback-danger);
+}
+
+.atmos-id-reader-row__button.steel-button--danger .steel-button__control:hover {
+    background-color: rgba(185, 72, 72, 0.22);
+}
+
+.panel-section__content .atmos-id-reader-row__status,
+.panel-section__content .atmos-id-reader-row__sub {
+    background-color: rgba(0, 0, 0, 0);
+}

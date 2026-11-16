@@ -8,7 +8,7 @@ namespace SS3D.Interactions
     /// <summary>
     /// Utility class for toggle interactions
     /// </summary>
-    public class ToggleInteraction : IInteraction, IClientInteractionSource
+    public class ToggleInteraction : IInteraction, IClientInteractionSource, INarratedInteraction
     {
         public string Name;
         public Sprite Icon;
@@ -36,6 +36,11 @@ namespace SS3D.Interactions
         public string OffName { get; set; } = "Turn on";
 
         /// <summary>
+        /// Action line key narrated to onlookers after a toggle (action-messages.md §2), or null for none.
+        /// </summary>
+        public string NarrationKey { get; set; }
+
+        /// <summary>
         /// If the interaction should be range limited
         /// </summary>
         public bool RangeCheck { get; set; } = true;
@@ -50,16 +55,27 @@ namespace SS3D.Interactions
             return null;
         }
 
-        public string GetGenericName() => throw new NotImplementedException();
+        public string GetGenericName() => "Toggle";
+
+        /// <summary>
+        /// World device toggles (generators, switches) sit above inventory fallbacks but below machine UI panels.
+        /// </summary>
+        public int Priority => 40;
 
         public Sprite GetIcon(InteractionEvent interactionEvent)
         {
+            Sprite stateIcon = null;
             if (interactionEvent.Target is IToggleable toggle)
             {
-                return toggle.GetState() ? IconOn : IconOff;
+                stateIcon = toggle.GetState() ? IconOn : IconOff;
             }
 
-            return null;
+            if (stateIcon)
+            {
+                return stateIcon;
+            }
+
+            return Icon ? Icon : InteractionIconLookup.Power;
         }
 
         public bool CanInteract(InteractionEvent interactionEvent)
@@ -84,6 +100,19 @@ namespace SS3D.Interactions
             }
 
             return false;
+        }
+
+        public bool TryGetNarration(InteractionEvent interactionEvent, out InteractionNarration narration)
+        {
+            narration = default;
+            if (string.IsNullOrEmpty(NarrationKey))
+            {
+                return false;
+            }
+
+            narration = new InteractionNarration(NarrationKey, 0,
+                InteractionNarration.ActorOf(interactionEvent), InteractionNarration.TargetOf(interactionEvent), null);
+            return true;
         }
     }
 }

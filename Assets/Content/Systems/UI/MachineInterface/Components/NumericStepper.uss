@@ -1,0 +1,58 @@
+
+.numeric-stepper {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.numeric-stepper__labels {
+    flex-direction: column;
+    flex-grow: 1;
+    min-width: 0;
+    margin-right: 12px;
+}
+
+.numeric-stepper__hint {
+    font-size: 11px;
+    color: var(--ss3d-text-tertiary);
+    padding: 0;
+    white-space: normal;
+}
+
+.numeric-stepper__controls {
+    flex-direction: row;
+    align-items: center;
+    flex-shrink: 0;
+}
+
+.numeric-stepper__button {
+    width: 26px;
+    height: 26px;
+    min-width: 26px;
+    margin: 0;
+    padding: 0;
+    border-width: 1px;
+    border-color: var(--ss3d-border-subtle);
+    border-radius: var(--ss3d-radius-sm);
+    background-color: var(--ss3d-diegetic-inset);
+    color: var(--ss3d-text-secondary);
+    -unity-text-align: middle-center;
+}
+
+.numeric-stepper__value {
+    min-width: 76px;
+    font-size: 13px;
+    color: var(--ss3d-text-primary);
+    -unity-text-align: middle-center;
+    padding: 0 6px;
+    background-color: rgba(0, 0, 0, 0);
+}
+
+.numeric-stepper--locked {
+    opacity: 0.45;
+}
+
+.panel-section__content .numeric-stepper__hint,
+.panel-section__content .numeric-stepper__value {
+    background-color: rgba(0, 0, 0, 0);
+}

@@ -46,6 +46,10 @@ namespace SS3D.Systems.IngameConsoleSystem
         private Controls _controls;
         private Controls.ConsoleActions _consoleControls;
         private InputSubSystem _inputSystem;
+        // Tied to the text field's focus, not to Open/Close: both actions sit on F12 in the
+        // Console context, so a single press could run them in either order and leave the
+        // console open with the gameplay context still live (T/B then open chat/the editor).
+        private readonly InputTextEntryScope _consoleEntry = new(InputContext.Console);
 
         protected override void OnStart()
         {
@@ -54,7 +58,10 @@ namespace SS3D.Systems.IngameConsoleSystem
             _inputSystem = SubSystems.Get<InputSubSystem>();
             _controls = _inputSystem.Inputs;
             _consoleControls = _controls.Console;
-            _inputSystem.ToggleAction(_consoleControls.Open, true);
+            // Console.Open is always enabled by the Global context.
+
+            _inputField.onSelect.AddListener(HandleInputFieldSelected);
+            _inputField.onDeselect.AddListener(HandleInputFieldDeselected);
 
             AddHandle(UpdateEvent.AddListener(HandleUpdate));
         }
@@ -91,7 +98,13 @@ namespace SS3D.Systems.IngameConsoleSystem
                 consoleInputs.SwitchCommand.performed -= HandleSwitchCommand;
                 consoleInputs.Submit.performed -= HandleSubmit;
             }
+
+            _consoleEntry.Exit();
         }
+
+        private void HandleInputFieldSelected(string _) => _consoleEntry.Enter();
+
+        private void HandleInputFieldDeselected(string _) => _consoleEntry.Exit();
 
         private void HandleUpdate(ref EventContext context, in UpdateEvent updateEvent)
         {
@@ -102,30 +115,53 @@ namespace SS3D.Systems.IngameConsoleSystem
         }
 
         /// <summary>
-        /// Move the console offscreen and disable all console controls, except of Open action
+        /// Moves the console offscreen. Ignored when already closed or mid-slide.
         /// </summary>
         private void HandleClose(InputAction.CallbackContext context)
         {
-            _isSliding = true;
-            _targetPointMin = Vector2.zero;
-            _targetPointMax = _targetPointMin + new Vector2(0, _consolePanel.rect.height);
-            _inputField.DeactivateInputField();
-            _inputSystem.ToggleAllActions(true, ((InputActionMap)_consoleControls).ToArray());
-            _inputSystem.ToggleAction(_consoleControls.Open, true);
-            _inputSystem.ToggleActionMap(_consoleControls, false, new []{_consoleControls.Open});
+            if (_isSliding || !_isShowed)
+            {
+                return;
+            }
+
+            CloseConsole();
         }
+
         /// <summary>
-        /// Move console to screen, enable all controls, disable Open action
+        /// Opens the console, or closes it when already open. Treating Open as a toggle keeps F12
+        /// working when the field has lost focus (the console context, and with it Close, is only
+        /// live while the field is focused).
         /// </summary>
         private void HandleOpen(InputAction.CallbackContext context)
+        {
+            if (_isSliding)
+            {
+                return;
+            }
+
+            if (_isShowed)
+            {
+                CloseConsole();
+                return;
+            }
+
+            OpenConsole();
+        }
+
+        private void OpenConsole()
         {
             _isSliding = true;
             _targetPointMin = new Vector2(0, -_consolePanel.rect.height);
             _targetPointMax = _targetPointMin + new Vector2(0, _consolePanel.rect.height);
             _inputField.ActivateInputField();
-            _inputSystem.ToggleAllActions(false, ((InputActionMap)_consoleControls).ToArray());
-            _inputSystem.ToggleActionMap(_consoleControls, true, new []{_consoleControls.Open});
-            _inputSystem.ToggleAction(_consoleControls.Open, false);
+        }
+
+        private void CloseConsole()
+        {
+            _isSliding = true;
+            _targetPointMin = Vector2.zero;
+            _targetPointMax = _targetPointMin + new Vector2(0, _consolePanel.rect.height);
+            _inputField.DeactivateInputField();
         }
         /// <summary>
         /// Put previously used commands in input field

@@ -1,0 +1,66 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements">
+    <ui:Style src="project://database/Assets/Content/Systems/UI/Tokens/ss3d-tokens.uss" />
+    <ui:Style src="project://database/Assets/Content/Systems/UI/BugReport/BugReport.uss" />
+    <ui:VisualElement name="bug-report-root" class="bug-report">
+        <ui:VisualElement name="scrim" class="bug-report__scrim" />
+        <ui:VisualElement name="window" class="bug-report__window">
+            <ui:VisualElement class="bug-report__header">
+                <ui:Label text="BUG REPORT" class="bug-report__title" />
+                <ui:Button name="close" text="×" class="bug-report__close" tooltip="Close" />
+            </ui:VisualElement>
+            <ui:ScrollView name="body-scroll" horizontal-scroller-visibility="Hidden" class="bug-report__scroll">
+                <ui:VisualElement class="bug-report__body">
+                    <ui:VisualElement class="bug-report__context-row">
+                        <ui:Label name="capture-context" text="ROUND #1187 · CAPTURED AT 00:14:32" class="bug-report__mono bug-report__secondary" />
+                        <ui:Label name="context-badge" text="IN ROUND · ALIVE" class="bug-report__badge" />
+                    </ui:VisualElement>
+                    <ui:VisualElement name="form">
+                        <ui:VisualElement class="bug-report__section">
+                            <ui:VisualElement class="bug-report__row">
+                                <ui:Label text="SUMMARY" class="bug-report__heading" />
+                                <ui:Label name="summary-count" text="0/80" class="bug-report__mono bug-report__muted" />
+                            </ui:VisualElement>
+                            <ui:TextField name="summary" max-length="80" class="bug-report__input" />
+                        </ui:VisualElement>
+                        <ui:VisualElement class="bug-report__section">
+                            <ui:VisualElement class="bug-report__label-row"><ui:Label text="WHAT HAPPENED" class="bug-report__heading" /><ui:Label text="— optional" class="bug-report__optional" /></ui:VisualElement>
+                            <ui:TextField name="details" multiline="true" class="bug-report__input bug-report__details" />
+                        </ui:VisualElement>
+                        <ui:Toggle name="crashed" text="The game crashed or froze" class="bug-report__toggle" />
+                        <ui:VisualElement class="bug-report__section">
+                            <ui:VisualElement class="bug-report__label-row"><ui:Label text="SEVERITY" class="bug-report__heading" /><ui:Label text="— optional" class="bug-report__optional" /></ui:VisualElement>
+                            <ui:VisualElement class="bug-report__severity-row">
+                                <ui:VisualElement class="bug-report__severity"><ui:Button name="minor" text="MINOR" class="bug-report__button" /><ui:Label text="Cosmetic, easy to ignore" class="bug-report__hint" /></ui:VisualElement>
+                                <ui:VisualElement class="bug-report__severity"><ui:Button name="major" text="MAJOR" class="bug-report__button" /><ui:Label text="Breaks a mechanic or task" class="bug-report__hint" /></ui:VisualElement>
+                                <ui:VisualElement class="bug-report__severity bug-report__severity--last"><ui:Button name="blocker" text="BLOCKER" class="bug-report__button" /><ui:Label text="Can’t keep playing" class="bug-report__hint" /></ui:VisualElement>
+                            </ui:VisualElement>
+                        </ui:VisualElement>
+                        <ui:VisualElement class="bug-report__attachment">
+                            <ui:VisualElement name="screenshot" class="bug-report__thumbnail"><ui:Label name="no-screenshot" text="No screenshot" class="bug-report__mono bug-report__muted bug-report__hidden" /></ui:VisualElement>
+                            <ui:VisualElement class="bug-report__attachment-copy"><ui:Label name="screenshot-title" text="Screenshot · taken when you pressed F8" class="bug-report__small" /><ui:Label name="screenshot-file" text="frame_001432.png · 1920×1080" class="bug-report__mono bug-report__muted" /></ui:VisualElement>
+                            <ui:Button name="remove-screenshot" text="REMOVE" class="bug-report__button" />
+                        </ui:VisualElement>
+                        <ui:Toggle name="include-map" text="Include current map (ministation, unsaved edits included)" value="true" class="bug-report__toggle bug-report__hidden" />
+                        <ui:VisualElement class="bug-report__metadata">
+                            <ui:Button name="metadata-toggle" class="bug-report__metadata-toggle"><ui:Label text="LOGGED AUTOMATICALLY" class="bug-report__heading" /><ui:Label name="metadata-caption" text="11 FIELDS · SHOW +" class="bug-report__mono" /></ui:Button>
+                            <ui:VisualElement name="metadata-fields" class="bug-report__metadata-fields bug-report__hidden" />
+                        </ui:VisualElement>
+                        <ui:Label name="rate-limit" text="You can send another report in 0:42" class="bug-report__warning bug-report__hidden" />
+                        <ui:VisualElement class="bug-report__footer">
+                            <ui:VisualElement class="bug-report__shortcuts"><ui:Label text="ESC CANCEL" class="bug-report__mono bug-report__muted" /><ui:Label text="CTRL+ENTER SUBMIT" class="bug-report__mono bug-report__muted" /></ui:VisualElement>
+                            <ui:VisualElement class="bug-report__actions"><ui:Button name="cancel" text="CANCEL" class="bug-report__button" /><ui:Button name="submit" text="SEND REPORT" class="bug-report__button bug-report__button--accent" /></ui:VisualElement>
+                        </ui:VisualElement>
+                    </ui:VisualElement>
+                    <ui:VisualElement name="saved" class="bug-report__hidden">
+                        <ui:Label text="Report saved to" class="bug-report__saved-label" />
+                        <ui:Label name="saved-path" text="Data/Exports/bug-1187-001432.zip" class="bug-report__saved-path bug-report__mono" />
+                        <ui:VisualElement class="bug-report__saved-actions"><ui:Button name="open-folder" text="OPEN REPORT FOLDER" class="bug-report__button bug-report__button--first" /><ui:Button name="open-issue" text="OPEN GITHUB ISSUE" class="bug-report__button bug-report__button--blue" /></ui:VisualElement>
+                        <ui:Label name="saved-hint" text="or post the zip in the project’s Discord" class="bug-report__hint bug-report__saved-hint" />
+                        <ui:VisualElement class="bug-report__saved-footer"><ui:Button name="saved-close" text="CLOSE" class="bug-report__button" /></ui:VisualElement>
+                    </ui:VisualElement>
+                </ui:VisualElement>
+            </ui:ScrollView>
+        </ui:VisualElement>
+        <ui:VisualElement name="success-toast" class="bug-report__toast bug-report__hidden"><ui:VisualElement name="toast-dot" class="bug-report__success-dot" /><ui:Label name="toast-text" text="Bug report saved (round 1187). Thanks!" class="bug-report__small" /></ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

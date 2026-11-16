@@ -1,0 +1,89 @@
+
+#identity {
+    margin-bottom: 0;
+}
+
+#status-chip {
+    margin-top: 14px;
+    margin-bottom: 14px;
+}
+
+.air-alarm-metrics-row {
+    flex-direction: row;
+    align-items: stretch;
+    width: 100%;
+    margin-bottom: 14px;
+}
+
+.air-alarm-metrics-row .air-alarm-metrics-tile {
+    flex-grow: 1;
+    flex-basis: 0;
+    min-width: 0;
+}
+
+#pressure-tile {
+    margin-right: 8px;
+}
+
+.air-alarm-gas-section-title {
+    font-size: 12px;
+    letter-spacing: 2px;
+    color: var(--ss3d-text-secondary);
+    margin-bottom: 10px;
+}
+
+.air-alarm-gas-list {
+    flex-direction: column;
+    width: 100%;
+}
+
+.air-alarm-gas-list .gas-bar-row {
+    margin-bottom: 10px;
+}
+
+.air-alarm-mode-grid {
+    flex-direction: column;
+    width: 100%;
+}
+
+.air-alarm-mode-row {
+    flex-direction: row;
+    align-items: stretch;
+    width: 100%;
+    margin-bottom: 10px;
+}
+
+.air-alarm-mode-row .preset-mode-button {
+    flex-grow: 1;
+    flex-basis: 0;
+    min-width: 0;
+    margin-bottom: 0;
+}
+
+#mode-filtering,
+#mode-fill {
+    margin-right: 10px;
+}
+
+#mode-panic,
+#mode-off {
+    margin-right: 0;
+}
+
+.air-alarm-mode-locked-hint {
+    font-size: 10.5px;
+    color: var(--ss3d-text-tertiary);
+    padding: 0;
+    margin-left: var(--ss3d-space-3);
+    flex-shrink: 0;
+    -unity-text-align: middle-right;
+    background-color: rgba(0, 0, 0, 0);
+}
+
+.air-alarm-device-list {
+    flex-direction: column;
+}
+
+.air-alarm-device-list .connected-device-row {
+    margin-bottom: 6px;
+}

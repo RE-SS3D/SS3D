@@ -1,0 +1,12 @@
+# Client 0 starts the round after giving the other clients time to connect.
+# run_loadtest.sh replaces __DURATION__ with the soak duration.
+wait_timeout 240
+wait_connected
+wait_seconds 45
+ready
+start_round
+wait_round Ongoing
+embark
+assert_embarked
+wait_seconds __DURATION__
+disconnect

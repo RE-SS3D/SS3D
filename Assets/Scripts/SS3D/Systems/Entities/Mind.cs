@@ -17,6 +17,13 @@ namespace SS3D.Systems.Entities
         [SyncVar]
         public Entity Entity;
 
+        /// <summary>In-character name from the player's lobby character; empty if none was sent.</summary>
+        [SyncVar]
+        public string CharacterName;
+
+        /// <summary>The name shown in-world: the character name, else the ckey.</summary>
+        public string DisplayName => !string.IsNullOrEmpty(CharacterName) ? CharacterName : player?.Ckey;
+
         public static Mind Empty { get; private set; }
 
         protected override void OnStart()

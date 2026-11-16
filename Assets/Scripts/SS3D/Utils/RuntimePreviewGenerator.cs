@@ -6,6 +6,9 @@ using UnityEngine;
 #if UNITY_2018_2_OR_NEWER
 using UnityEngine.Rendering;
 #endif
+#if UNITY_RENDER_PIPELINE_UNIVERSAL
+using UnityEngine.Rendering.Universal;
+#endif
 using Object = UnityEngine.Object;
 
 public static class RuntimePreviewGenerator
@@ -72,6 +75,7 @@ public static class RuntimePreviewGenerator
 		}
 	}
 
+	// SS3D: CharacterPreviewBooth uses layer 23 at its own origin; keep the two isolated.
 	private const int PREVIEW_LAYER = 22;
 	private static Vector3 PREVIEW_POSITION = new Vector3( -250f, -250f, -250f );
 
@@ -100,6 +104,7 @@ public static class RuntimePreviewGenerator
 				m_internalCamera.nearClipPlane = 0.01f;
 				m_internalCamera.cullingMask = 1 << PREVIEW_LAYER;
 				m_internalCamera.gameObject.hideFlags = HideFlags.HideAndDontSave;
+				ConfigurePreviewCameraForActivePipeline( m_internalCamera );
 			}
 
 			return m_internalCamera;
@@ -139,6 +144,31 @@ public static class RuntimePreviewGenerator
 	{
 		get { return m_orthographicMode; }
 		set { m_orthographicMode = value; }
+	}
+
+	private static Quaternion m_previewRotation = Quaternion.identity;
+	/// <summary>
+	/// Rotation applied to non-static preview roots before framing (default identity). The camera is fixed, so
+	/// this alone decides which side faces it. Item icons set it to Item.IconRotation.
+	/// </summary>
+	public static Quaternion PreviewRotation
+	{
+		get { return m_previewRotation; }
+		set { m_previewRotation = value; }
+	}
+
+	/// <summary>SS3D: fixed in world space, not following the object (that turned a taser icon upside down).</summary>
+	public static Quaternion CameraRotation => Quaternion.LookRotation( m_previewDirection, Vector3.up );
+
+	private static Transform m_boundsTarget = null;
+	/// <summary>
+	/// SS3D: frame the camera on this descendant of the model instead of the whole model (null: the model).
+	/// The item pose contact sheet frames the held item while the whole Human renders around it.
+	/// </summary>
+	public static Transform BoundsTarget
+	{
+		get { return m_boundsTarget; }
+		set { m_boundsTarget = value; }
 	}
 
 	private static bool m_useLocalBounds = false;
@@ -292,15 +322,16 @@ public static class RuntimePreviewGenerator
 			if( !isStatic )
 			{
 				previewObject.position = PREVIEW_POSITION;
-				previewObject.rotation = Quaternion.identity;
+				previewObject.rotation = m_previewRotation;
 			}
 
 			if( !wasActive )
 				previewObject.gameObject.SetActive( true );
 
-			Quaternion cameraRotation = Quaternion.LookRotation( previewObject.rotation * m_previewDirection, previewObject.up );
+			Quaternion cameraRotation = CameraRotation;
 			Bounds previewBounds = new Bounds();
-			if( !CalculateBounds( previewObject, shouldIgnoreParticleSystems, cameraRotation, out previewBounds ) )
+			Transform boundsTarget = m_boundsTarget != null && !shouldCloneModel && m_boundsTarget.IsChildOf( previewObject ) ? m_boundsTarget : previewObject;
+			if( !CalculateBounds( boundsTarget, shouldIgnoreParticleSystems, cameraRotation, out previewBounds ) )
 			{
 #if UNITY_2018_2_OR_NEWER
 				if( asyncCallback != null )
@@ -339,8 +370,16 @@ public static class RuntimePreviewGenerator
 
 			RenderTexture activeRT = RenderTexture.active;
 			RenderTexture renderTexture = null;
+			List<Light> previewLights = null;
+			AmbientMode previousAmbientMode = RenderSettings.ambientMode;
+			Color previousAmbientLight = RenderSettings.ambientLight;
+			float previousAmbientIntensity = RenderSettings.ambientIntensity;
 			try
 			{
+				// Gameplay lighting is fixture-only (zero ambient, main light disabled). Icon
+				// previews would render black without a temporary light setup of their own.
+				previewLights = CreatePreviewLights( previewBounds );
+
 				int supersampledWidth = Mathf.RoundToInt( width * m_renderSupersampling );
 				int supersampledHeight = Mathf.RoundToInt( height * m_renderSupersampling );
 
@@ -428,6 +467,11 @@ public static class RuntimePreviewGenerator
 			}
 			finally
 			{
+				DestroyPreviewLights( previewLights );
+				RenderSettings.ambientMode = previousAmbientMode;
+				RenderSettings.ambientLight = previousAmbientLight;
+				RenderSettings.ambientIntensity = previousAmbientIntensity;
+
 				RenderTexture.active = activeRT;
 
 				if( renderTexture )
@@ -730,10 +774,92 @@ public static class RuntimePreviewGenerator
 		else
 			renderCamera = InternalCamera;
 
+		ConfigurePreviewCameraForActivePipeline( renderCamera );
+
 		renderCamera.backgroundColor = m_backgroundColor;
 		renderCamera.orthographic = m_orthographicMode;
 		renderCamera.clearFlags = m_backgroundColor.a < 1f ? CameraClearFlags.Depth : CameraClearFlags.Color;
 	}
+
+	/// <summary>
+	/// Temporary lights for icon/tile previews. Point lights only — the gameplay URP asset
+	/// disables main (directional) light rendering, so a directional key would be ignored.
+	/// </summary>
+	private static List<Light> CreatePreviewLights( Bounds previewBounds )
+	{
+		RenderSettings.ambientMode = AmbientMode.Flat;
+		RenderSettings.ambientLight = new Color( 0.4f, 0.4f, 0.42f, 1f );
+		RenderSettings.ambientIntensity = 1f;
+
+		float extent = Mathf.Max( previewBounds.extents.magnitude, 0.15f );
+		Vector3 center = previewBounds.center;
+		Vector3 keyOffset = -m_previewDirection * ( extent * 3f );
+		Vector3 fillOffset = ( Vector3.up + Vector3.right ) * ( extent * 2.5f );
+
+		var lights = new List<Light>( 2 );
+		try
+		{
+			lights.Add( CreatePreviewPointLight( center + keyOffset, intensity: 1.35f, range: extent * 10f ) );
+			lights.Add( CreatePreviewPointLight( center + fillOffset, intensity: 0.45f, range: extent * 10f ) );
+			return lights;
+		}
+		catch
+		{
+			DestroyPreviewLights( lights );
+			throw;
+		}
+	}
+
+	private static Light CreatePreviewPointLight( Vector3 position, float intensity, float range )
+	{
+		var lightObject = new GameObject( "ModelPreviewGeneratorLight" )
+		{
+			hideFlags = HideFlags.HideAndDontSave,
+		};
+		lightObject.transform.position = position;
+
+		Light light = lightObject.AddComponent<Light>();
+		light.type = LightType.Point;
+		light.color = Color.white;
+		light.intensity = intensity;
+		light.range = range;
+		light.shadows = LightShadows.None;
+		light.cullingMask = 1 << PREVIEW_LAYER;
+		return light;
+	}
+
+	private static void DestroyPreviewLights( List<Light> lights )
+	{
+		if( lights == null )
+			return;
+
+		for( int i = 0; i < lights.Count; i++ )
+		{
+			if( lights[i] != null )
+				Object.DestroyImmediate( lights[i].gameObject );
+		}
+
+		lights.Clear();
+	}
+
+#if UNITY_RENDER_PIPELINE_UNIVERSAL
+	private static void ConfigurePreviewCameraForActivePipeline( Camera camera )
+	{
+		if( camera == null || GraphicsSettings.currentRenderPipeline == null )
+			return;
+
+		var cameraData = camera.GetUniversalAdditionalCameraData();
+		cameraData.renderType = CameraRenderType.Base;
+		cameraData.requiresColorOption = CameraOverrideOption.Off;
+		cameraData.requiresDepthOption = CameraOverrideOption.Off;
+		cameraData.renderShadows = false;
+		cameraData.dithering = false;
+	}
+#else
+	private static void ConfigurePreviewCameraForActivePipeline( Camera camera )
+	{
+	}
+#endif
 
 	private static bool IsStatic( Transform obj )
 	{

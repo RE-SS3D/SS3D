@@ -5,6 +5,6 @@
         /// <summary>
         /// Creates a client interaction (client-side)
         /// </summary>
-        IClientInteraction CreateClient(InteractionEvent interactionEvent) => new ClientDelayedInteraction();
+        IClientInteraction CreateClient(InteractionEvent interactionEvent) => null;
     }
 }

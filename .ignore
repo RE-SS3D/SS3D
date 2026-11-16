@@ -1,0 +1,3 @@
+# Hide archived docs from default ripgrep/Grep searches; they stay tracked in git.
+# Search them explicitly with: rg --no-ignore-dot <pattern> Documents/archive
+Documents/archive/

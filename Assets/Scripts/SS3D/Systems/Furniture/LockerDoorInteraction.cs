@@ -18,16 +18,32 @@ namespace SS3D.Systems.Furniture
             _locker = locker;
         }
 
+        public int Priority => _locker.IsOpen ? 15 : 30;
+
+        /// <summary>True when running this opens the door, false when it shuts it.</summary>
+        public bool OpensDoor => !_locker.IsOpen;
+
         public string GetName(InteractionEvent interactionEvent)
         {
-            return !string.IsNullOrEmpty(Name) ? Name : "Open or Close Locker";
+            if (!string.IsNullOrEmpty(Name))
+            {
+                return Name;
+            }
+
+            return _locker.IsOpen ? "Close Locker" : "Open Locker";
         }
 
-        public string GetGenericName() => throw new System.NotImplementedException();
+        public string GetGenericName() => "OpenLocker";
 
         public Sprite GetIcon(InteractionEvent interactionEvent)
         {
-            return Icon ? Icon : Assets.Get<Sprite>(AssetDatabases.InteractionIcons, InteractionIcons.Open);
+            if (Icon)
+            {
+                return Icon;
+            }
+
+            string iconId = _locker.IsOpen ? InteractionIcons.Close : InteractionIcons.Open;
+            return Assets.Get<Sprite>(AssetDatabases.InteractionIcons, iconId);
         }
 
         public bool CanInteract(InteractionEvent interactionEvent)
@@ -42,7 +58,14 @@ namespace SS3D.Systems.Furniture
 
         public bool Start(InteractionEvent interactionEvent, InteractionReference reference)
         {
-            _locker.IsOpen = !_locker.IsOpen;
+            bool wasOpen = _locker.IsOpen;
+            _locker.IsOpen = !wasOpen;
+
+            // Closing the door must tear down any open storage panels (server closes viewers → UI).
+            if (wasOpen)
+            {
+                _locker.CloseStorageUIs();
+            }
 
             return true;
         }

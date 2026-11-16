@@ -1,11 +1,14 @@
-﻿using FishNet.Object.Synchronizing;
+using System.Collections.Generic;
+using FishNet.Object.Synchronizing;
 using SS3D.Core;
+using SS3D.Systems.Examine;
 using SS3D.Systems.Furniture;
 using SS3D.Systems.Tile.Connections;
+using System;
 using UnityEngine;
-namespace System.Electricity
+namespace SS3D.Systems.Electricity
 {
-    public class MachinePowerConsumer : BasicElectricDevice, IPowerConsumer
+    public class MachinePowerConsumer : BasicElectricDevice, IRatedPowerConsumer, IExamineContentProvider
     {
         [SerializeField]
         private float _powerConsumptionIdle = 1f;
@@ -24,9 +27,33 @@ namespace System.Electricity
                 return isIdle ? _powerConsumptionIdle : _powerConsumptionInUse;
             }
         }
+
+        public float RatedPowerKw => Mathf.Max(_powerConsumptionIdle, _powerConsumptionInUse);
         
         public event EventHandler<PowerStatus> OnPowerStatusUpdated;
-        public PowerStatus PowerStatus { get => _powerStatus; set => _powerStatus = value; }
+        public PowerStatus PowerStatus
+        {
+            get => _powerStatus;
+            set
+            {
+                // Allow EditMode/offline; block pure clients only.
+                // NetworkObject first — IsServer NREs when _networkObjectCache is null.
+                if (NetworkObject != null && NetworkObject.IsSpawned && !IsServer)
+                {
+                    return;
+                }
+
+                _powerStatus = value;
+            }
+        }
+
+        public PowerChannel Channel => PowerChannel.Equipment;
+
+        public override void OnStartClient()
+        {
+            base.OnStartClient();
+            OnPowerStatusUpdated?.Invoke(this, _powerStatus);
+        }
 
         private void SyncPowerStatus(PowerStatus oldValue, PowerStatus newValue, bool asServer)
         {
@@ -42,8 +69,13 @@ namespace System.Electricity
         
         private void HandleMachineWasUsed()
         {
+            isIdle = true;
             _machineUsedOnce = false;
             SubSystems.Get<ElectricitySubSystem>().OnTick -= HandleMachineWasUsed;
         }
+
+        /// <summary>Powered or unpowered on examine, at any range (examine.md §7).</summary>
+        public void AppendSections(IExaminable examinable, List<ExamineSection> sections) =>
+            ExamineDeviceKeys.AppendPower(PowerStatus == PowerStatus.Powered, sections);
     }
 }

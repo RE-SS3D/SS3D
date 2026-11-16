@@ -1,0 +1,12 @@
+# Guards: a -nukeops dedicated server draws a remote client into the squad by default, ends the timed round with a Nuke Ops outcome every client receives, and starts the next round on its own · Not cheaper because: needs the -nukeops flag on a UNITY_SERVER build and a remote client that never opted in; nightly only (D5)
+# Dedicated-server side of nukeops-round (2026-11_round-end-loop.md P4). The server runs with -nukeops,
+# one-minute rounds and a one-player threshold (nukeops-round.conf). Nobody starts a round: the
+# client readies and auto-start does the rest. It waits for the first round to end and stays up
+# while the client joins the second.
+wait_timeout 240
+wait_connected
+wait_round Ongoing
+wait_round Stopped
+wait_round Ongoing
+wait_seconds 20
+disconnect

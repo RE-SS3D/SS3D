@@ -1,45 +1,37 @@
-﻿using FishNet.Connection;
-using FishNet.Object;
-using SS3D.Core;
+using System.Collections.Generic;
 using SS3D.Permissions;
-using SS3D.Systems.Entities;
-using SS3D.Systems.PlayerControl;
 using SS3D.Systems.Health;
 
 namespace SS3D.Systems.IngameConsoleSystem.Commands
 {
     public class KillCommand : Command
     {
-        public override string ShortDescription => "Kill player";
-        public override string Usage => "(ckey)";
+        private static readonly IReadOnlyList<CommandParameter> Params = new[] { P.Target() };
+
+        public override string Name => "kill";
+        public override CommandCategory Category => CommandCategory.Admin;
+        public override string Description => "Kill the target (brain death, so health reflects it)";
         public override ServerRoleTypes AccessLevel => ServerRoleTypes.Administrator;
         public override CommandType Type => CommandType.Server;
+        public override IReadOnlyList<CommandParameter> Parameters => Params;
+        public override string Example => "nearest";
 
-        private record CalculatedValues(Entity Entity) : ICalculatedValues;
-
-        [Server]
-        public override string Perform(string[] args, NetworkConnection conn = null)
+        public override CommandResult Perform(CommandContext context, CommandArgs args)
         {
-            if (!ReceiveCheckResponse(args, out CheckArgsResponse response, out CalculatedValues values)) return response.InvalidArgs;
-            
-            values.Entity.Kill();
-            return "Player killed";
-        }
+            CommandTarget target = args.Target();
 
-        [Server]
-        protected override CheckArgsResponse CheckArgs(string[] args)
-        {
-            CheckArgsResponse response = new();
-            
-            if (args.Length != 1) return response.MakeInvalid("Invalid number of arguments");
-            
-            Player playerToKill = SubSystems.Get<PlayerSubSystem>().GetPlayer(args[0]);
-            if (playerToKill == null) return response.MakeInvalid("This player doesn't exist");
-            
-            Entity entityToKill = SubSystems.Get<EntitySubSystem>().GetSpawnedEntity(playerToKill);
-            if (entityToKill == null) return response.MakeInvalid("This entity doesn't exist");
-            
-            return response.MakeValid(new CalculatedValues(entityToKill));
+            // Route through the canonical brain-death trigger (health.md) rather than
+            // ghosting the entity directly, so health state reflects the death.
+            if (target.TryGetComponent(out HumanHealthController health))
+            {
+                health.ForceBrainDeath();
+            }
+            else
+            {
+                target.Entity.Kill();
+            }
+
+            return CommandResult.Success($"Player killed: {target.DisplayName}");
         }
     }
 }

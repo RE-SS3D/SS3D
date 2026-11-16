@@ -1,0 +1,98 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:ss3d="SS3D.UI.MachineInterface.Components" editor-extension-mode="False">
+    <ui:Style src="project://database/Assets/Content/Systems/UI/Tokens/ss3d-tokens.uss" />
+    <ui:Style src="project://database/Assets/Content/Systems/UI/Tokens/ss3d-typography.uss" />
+    <ui:Style src="project://database/Assets/Content/Systems/UI/MachineInterface/Tokens/diegetic-tokens.uss" />
+    <ui:Style src="project://database/Assets/Content/Systems/UI/MachineInterface/Tokens/diegetic-tones.uss" />
+    <ui:Style src="project://database/Assets/Content/Systems/UI/MachineInterface/Components/DiegeticDeviceShell.uss" />
+    <ui:Style src="project://database/Assets/Content/Systems/UI/MachineInterface/Components/StatusDot.uss" />
+    <ui:Style src="project://database/Assets/Content/Systems/UI/MachineInterface/Components/ConnectionStatusRow.uss" />
+    <ui:Style src="project://database/Assets/Content/Systems/UI/MachineInterface/Components/DeviceIdentityBlock.uss" />
+    <ui:Style src="project://database/Assets/Content/Systems/UI/MachineInterface/Components/GlanceableStatusChip.uss" />
+    <ui:Style src="project://database/Assets/Content/Systems/UI/MachineInterface/Components/PanelSection.uss" />
+    <ui:Style src="project://database/Assets/Content/Systems/UI/MachineInterface/Components/GasMixBar.uss" />
+    <ui:Style src="project://database/Assets/Content/Systems/UI/MachineInterface/Components/GasPortCard.uss" />
+    <ui:Style src="project://database/Assets/Content/Systems/UI/MachineInterface/Components/GasFilterRow.uss" />
+    <ui:Style src="project://database/Assets/Content/Systems/UI/MachineInterface/Components/AtmosIdReaderRow.uss" />
+    <ui:Style src="project://database/Assets/Content/Systems/UI/MachineInterface/Components/ToggleSwitch.uss" />
+    <ui:Style src="project://database/Assets/Content/Systems/UI/MachineInterface/Components/NumericStepper.uss" />
+    <ui:Style src="project://database/Assets/Content/Systems/UI/MachineInterface/Components/SteelButton.uss" />
+    <ui:Style src="project://database/Assets/Content/Systems/UI/MachineInterface/Components/StatusBadge.uss" />
+    <ui:Style src="project://database/Assets/Content/Systems/UI/MachineInterface/Components/DeviceFooter.uss" />
+    <ui:Style src="project://database/Assets/Content/Systems/UI/MachineInterface/Templates/FilterUnitInterface.uss" />
+
+    <ss3d:DiegeticDeviceShell name="device-shell"
+        class="diegetic-device-shell--filter"
+        model-label="FLT-04 · gas filter unit"
+        power-ok="true"
+        style="align-self: center; margin-top: 24px;">
+        <ss3d:ConnectionStatusRow name="connection-row"
+            status-text="WIRED · PIPE NET · PORT F1"
+            readout-text="0 L/s" />
+        <ss3d:DeviceIdentityBlock name="identity"
+            title="FLT-04"
+            subtitle="Atmospherics Distro — Gas Filter" />
+        <ss3d:GlanceableStatusChip name="status-chip" />
+
+        <ui:VisualElement class="panel-section" name="pressure-readouts-section">
+            <ui:VisualElement class="panel-section__clip">
+                <ui:VisualElement class="panel-section__header">
+                    <ui:Label class="panel-section__header-title font-titling" text="Pressure Readouts" />
+                </ui:VisualElement>
+                <ui:VisualElement class="panel-section__content">
+                    <ui:VisualElement class="gas-flow-row">
+                        <ss3d:GasPortCard name="inlet-card" class="gas-flow-row__single" />
+                        <ui:Label name="flow-glyph" class="gas-flow-row__glyph" text="·" />
+                        <ui:VisualElement class="gas-flow-row__stack">
+                            <ss3d:GasPortCard name="outlet-card" raised="true" />
+                            <ss3d:GasPortCard name="filter-outlet-card" class="gas-flow-row__next" raised="true" />
+                        </ui:VisualElement>
+                    </ui:VisualElement>
+                </ui:VisualElement>
+            </ui:VisualElement>
+        </ui:VisualElement>
+
+        <ui:VisualElement class="panel-section" name="id-reader-section">
+            <ui:VisualElement class="panel-section__clip">
+                <ui:VisualElement class="panel-section__header">
+                    <ui:Label class="panel-section__header-title font-titling" text="ID Reader" />
+                </ui:VisualElement>
+                <ui:VisualElement class="panel-section__content">
+                    <ss3d:AtmosIdReaderRow name="id-reader" />
+                </ui:VisualElement>
+            </ui:VisualElement>
+        </ui:VisualElement>
+
+        <ui:VisualElement class="panel-section" name="controls-section">
+            <ui:VisualElement class="panel-section__clip">
+                <ui:VisualElement class="panel-section__header">
+                    <ui:Label class="panel-section__header-title font-titling" text="Filter Controls" />
+                </ui:VisualElement>
+                <ui:VisualElement class="panel-section__content">
+                    <ui:VisualElement class="gas-controls-row">
+                        <ui:VisualElement class="gas-power-group">
+                            <ss3d:ToggleSwitch name="power-toggle" is-on="true" on-label="ON" off-label="OFF" />
+                            <ui:Label text="Pwr" class="gas-power-caption font-arcade" />
+                        </ui:VisualElement>
+                        <ui:VisualElement class="gas-target-group">
+                            <ui:VisualElement class="gas-target-labels">
+                                <ui:Label text="Flow rate" class="gas-target-title font-body" />
+                                <ui:Label name="flow-gated-hint" class="gas-gated-hint font-terminal" text="" />
+                            </ui:VisualElement>
+                            <ss3d:NumericStepper name="flow-stepper" value-text="50 L/s" />
+                        </ui:VisualElement>
+                    </ui:VisualElement>
+
+                    <ui:VisualElement class="filter-gases">
+                        <ui:VisualElement class="filter-gases__header">
+                            <ui:Label text="FILTERING FOR" class="filter-gases__title font-titling" />
+                            <ui:Label name="registry-text" class="filter-gases__registry font-terminal" text="" />
+                        </ui:VisualElement>
+                        <ui:VisualElement name="gas-grid" class="filter-gases__grid" />
+                    </ui:VisualElement>
+                </ui:VisualElement>
+            </ui:VisualElement>
+        </ui:VisualElement>
+
+        <ss3d:DeviceFooter name="footer" text="SS3D Atmospherics — Filter Unit Model FLT-04" />
+    </ss3d:DiegeticDeviceShell>
+</ui:UXML>

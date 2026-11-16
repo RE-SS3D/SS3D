@@ -1,8 +1,11 @@
-﻿/// <summary>
-/// Simple status for powered device, that can be either inactive or powered.
-/// </summary>
-public enum PowerStatus 
+namespace SS3D.Systems.Electricity
 {
-    Inactive = 0,
-    Powered = 1,
+    /// <summary>
+    /// Simple status for powered device, that can be either inactive or powered.
+    /// </summary>
+    public enum PowerStatus
+    {
+        Inactive = 0,
+        Powered = 1,
+    }
 }

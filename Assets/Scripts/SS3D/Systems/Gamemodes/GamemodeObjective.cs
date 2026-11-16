@@ -94,11 +94,6 @@ namespace SS3D.Systems.Gamemodes
         public bool Failed => Status == ObjectiveStatus.Failed;
 
         /// <summary>
-        /// Handy call to check objective cancellation.
-        /// </summary>
-        public bool Cancelled => Status == ObjectiveStatus.Cancelled;
-
-        /// <summary>
         /// Handy call to check if the objective is in progress.
         /// </summary>
         public bool InProgress => Status == ObjectiveStatus.InProgress;
@@ -130,17 +125,6 @@ namespace SS3D.Systems.Gamemodes
             }
 
             SetStatus(ObjectiveStatus.Success);
-        }
-
-        /// <inheritdoc />
-        public void Cancel()
-        {
-            if (Status != ObjectiveStatus.InProgress)
-            {
-                return;
-            }
-
-            SetStatus(ObjectiveStatus.Cancelled);
         }
 
         /// <inheritdoc />

@@ -61,11 +61,11 @@ namespace SS3D.Core
                 return match.Cast<T>().ToList();
             }
 
-            string message = $"No views of type {typeof(T).Name} found.";
+            // Empty list (not null) so FirstOrDefault / foreach stay safe when UI is intentionally absent.
             // ReSharper disable once Unity.PerformanceCriticalCodeInvocation
-            Log.Error(typeof(SubSystems), "No views of type {typeName} found", Logs.Important, typeof(T).Name);
+            Log.Warning(typeof(SubSystems), "No views of type {typeName} found", Logs.Generic, typeof(T).Name);
 
-            return null;
+            return new List<T>();
         }
     }
 }

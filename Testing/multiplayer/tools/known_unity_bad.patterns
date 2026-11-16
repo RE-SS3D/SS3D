@@ -1,0 +1,13 @@
+# Extended-regex patterns that must never appear in unity.log during smoke.
+# One pattern per line; blank lines and # comments ignored.
+# Used by run_smoketest.sh (hard fail) and triage_run.sh (report counts).
+#
+# Prefer fixing the source over removing a pattern. These are not "noise" —
+# they are client/server authority mistakes that previously slipped past the
+# exception-only unity.log gate (FishNet LogWarning, not Exception:).
+
+Cannot complete operation as server when server is not active
+
+# FishNet kicks a client whose ServerRpc throws on the server (2026-11-02: muzzle flash built a
+# Material on the shaderless dedicated server). The player gets a hard disconnect.
+will be kicked immediately

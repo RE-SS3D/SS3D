@@ -1,4 +1,4 @@
-﻿#if UNITY_EDITOR
+#if UNITY_EDITOR
 
 using Serilog.Events;
 using UnityEditor;
@@ -16,6 +16,8 @@ namespace SS3D.Logging.LogSettings.InspectorEditor
         public override void OnInspectorGUI()
         {
             serializedObject.Update();
+
+            EditorGUI.BeginChangeCheck();
 
 			SerializedProperty useCompactJsonFormatter = serializedObject.FindProperty(nameof(LogSettings.UseCompactJsonFormatter));
             EditorGUILayout.PropertyField(useCompactJsonFormatter);
@@ -44,7 +46,10 @@ namespace SS3D.Logging.LogSettings.InspectorEditor
                 EditorGUILayout.PropertyField(sp.GetArrayElementAtIndex(i));
             }
 
-            serializedObject.ApplyModifiedProperties();
+            if (EditorGUI.EndChangeCheck())
+            {
+                serializedObject.ApplyModifiedProperties();
+            }
         }
     }
 }

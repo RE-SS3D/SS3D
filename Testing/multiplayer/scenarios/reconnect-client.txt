@@ -1,0 +1,22 @@
+# Client side of the reconnect scenario: regression coverage for the disconnect/reconnect
+# ownership fix (PlayerSubSystem.ProcessPlayerDisconnect / ProcessAuthorizePlayer,
+# EntitySubSystem.TryReclaimEntity - see Documents/architecture/systems/player-control.md).
+#
+# Embarks, confirms it controls a spawned body, disconnects, reconnects with the same ckey
+# (same process - "reconnect" reuses the ip/port/ckey this process already resolved at
+# startup), and confirms it regained control of that same body instead of being left stuck
+# with no controllable entity while the old one sits ownerless in the world.
+wait_connected
+ready
+start_round
+wait_round Ongoing
+embark
+assert_embarked
+wait_seconds 2
+disconnect
+wait_seconds 3
+reconnect
+wait_connected
+assert_embarked
+wait_seconds 2
+disconnect

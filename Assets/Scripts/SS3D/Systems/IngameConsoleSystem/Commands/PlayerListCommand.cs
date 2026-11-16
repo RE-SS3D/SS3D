@@ -1,40 +1,27 @@
-﻿using System.Collections.Generic;
 using System.Linq;
-using FishNet.Connection;
 using SS3D.Core;
 using SS3D.Permissions;
-using SS3D.Systems.Entities;
 using SS3D.Systems.PlayerControl;
 
 namespace SS3D.Systems.IngameConsoleSystem.Commands
 {
+    /// <summary>
+    /// Lists online ckeys from this client's replicated player list. Client type on purpose: the
+    /// multiplayer late-join smoke uses it as a client→server→client round trip.
+    /// </summary>
     public class PlayerListCommand : Command
     {
-        public override string ShortDescription => "Show all players online";
+        public override string Name => "playerlist";
+        public override CommandCategory Category => CommandCategory.Admin;
+        public override string Description => "Show every player online";
         public override ServerRoleTypes AccessLevel => ServerRoleTypes.User;
         public override CommandType Type => CommandType.Client;
+        public override string Example => "";
 
-        private record CalculatedValues : ICalculatedValues;
-
-        public override string Perform(string[] args, NetworkConnection conn = null)
+        public override CommandResult Perform(CommandContext context, CommandArgs args)
         {
-            if (!ReceiveCheckResponse(args, out CheckArgsResponse response, out CalculatedValues values)) return response.InvalidArgs;
-
-            string ret = "";
-            List<Player> players = SubSystems.Get<PlayerSubSystem>().OnlinePlayers.ToList();
-            foreach (Player i in players)
-            {
-                ret += i.Ckey + "\t";
-            }
-            return ret;
-        }
-
-        protected override CheckArgsResponse CheckArgs(string[] args)
-        {
-            CheckArgsResponse response = new ();
-            if (args.Length != 0) return response.MakeInvalid("Invalid number of arguments");
-
-            return response.MakeValid(new CalculatedValues());
+            string players = string.Join("\t", SubSystems.Get<PlayerSubSystem>().OnlinePlayers.Select(p => p.Ckey));
+            return CommandResult.Success(players);
         }
     }
 }

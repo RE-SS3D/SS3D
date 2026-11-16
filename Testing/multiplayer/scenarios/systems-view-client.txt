@@ -1,0 +1,22 @@
+# Client side of mppm:systems-view: joins the running round, opens the map editor, turns the Atmos view on and
+# receives its structure, traces the valve the host shut and primed (both sides, labelled), then sees the two traced
+# pressures close at least half their gap after the valve opens, in the live numbers and in the trace panel. It is not
+# an admin, so it has no Pause and the one it asks for anyway is refused; then it watches the host admin's pause: Paused
+# in the live numbers and the panel, the gap holding while nothing steps and moving with the host's steps, and Paused
+# gone once the host's editor closes.
+# No screenshot: the MPPM clone's game view is a strip too small to show the panel; the visual pilot covers the look.
+wait_timeout 60
+wait_connected
+wait_round Ongoing
+wait_seconds 1
+ready
+embark
+assert_embarked
+open_map_editor
+systems_view atmos
+assert_pause_refused
+trace_valve
+assert_trace_pressure_change
+assert_trace_paused_step
+close_map_editor
+disconnect

@@ -1,0 +1,58 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f7c3a91e4b2d48c6a5e1039d8d6b4e81, type: 3}
+  m_Name: MainHudAssetCatalog
+  m_EditorClassIdentifier: 
+  _panelSettings: {fileID: 11400000, guid: d9e8accab86f453aacb827761d335103, type: 2}
+  _mainHudStyle: {fileID: 7433441132597879392, guid: a82f6b51fea1f76aa9c8922dd7e91458, type: 3}
+  _alertIconStackStyle: {fileID: 7433441132597879392, guid: 016c045932f19d611b26a8c195c7a14d, type: 3}
+  _intentModuleStyle: {fileID: 7433441132597879392, guid: 674b0bfbced2cb8528c6ce375d60b74f, type: 3}
+  _handsGearStripStyle: {fileID: 7433441132597879392, guid: 20c1cdc590d238ef88173f0be1480330, type: 3}
+  _equipmentGridStyle: {fileID: 7433441132597879392, guid: c8059f7475f77099cad13d6db9b4c21d, type: 3}
+  _inventorySlotStyle: {fileID: 7433441132597879392, guid: c1047cfd2dc96f64e965c17afa9f9707, type: 3}
+  _iconHead: {fileID: 21300000, guid: b52f7b3b6afe87346bbc8716d97ecfdf, type: 3}
+  _iconEyes: {fileID: 21300000, guid: 00a2398fe3e33f04fb4870807dfd5dfc, type: 3}
+  _iconFace: {fileID: 21300000, guid: 964f6872303d47e47bfadfe2598aa0ee, type: 3}
+  _iconEars: {fileID: 21300000, guid: e4cad8751dcb12b4cb03564aa9bf956c, type: 3}
+  _iconHandLeft: {fileID: 21300000, guid: 049e06c80fc074b43b69bfd8afb881d6, type: 3}
+  _iconHandRight: {fileID: 21300000, guid: c68bc06a6a4cc094492bc1ddc556084f, type: 3}
+  _iconGloves: {fileID: 21300000, guid: c58dc13327da85046b4979011054275d, type: 3}
+  _iconShirt: {fileID: 21300000, guid: 3f845be2ffa4267479e20d9e4d40b265, type: 3}
+  _iconFeet: {fileID: 21300000, guid: ce96537487f0c0a4eb0aabf2c26d919f, type: 3}
+  _iconBelt: {fileID: 21300000, guid: b39932adf71ab734aabebaab0412954f, type: 3}
+  _iconId: {fileID: 21300000, guid: 64f4962d7f3e86a41b25ee48ce05e8ac, type: 3}
+  _iconPocket: {fileID: 21300000, guid: 95d839a0c2741cb47aa6b0cbe40b3b26, type: 3}
+  _iconBack: {fileID: 21300000, guid: e3f92c7c96d5c844e933479427109147, type: 3}
+  _iconSuit: {fileID: 21300000, guid: f324930803db07c4385a71a54f7ce617, type: 3}
+  _iconSuitStorage: {fileID: 21300000, guid: 4ab833fd8d2ca4b498e55107ffd80bc4, type: 3}
+  _iconEquipmentToggle: {fileID: 21300000, guid: c052ad542a9e58c498d52d71477c71c0, type: 3}
+  _iconOpenStorage: {fileID: 21300000, guid: 027975b3348c66642a80ec07756ce571, type: 3}
+  _alertFire: {fileID: 21300000, guid: 352d4305acb44594925eaffe7f81e23b, type: 3}
+  _alertHot: {fileID: 21300000, guid: 2c85abc5f7a34db3b9882961de2dfeb4, type: 3}
+  _alertCold: {fileID: 21300000, guid: 868138d70fcf4fdb861a7c3390e27459, type: 3}
+  _alertLowPressure: {fileID: 21300000, guid: 32c1ce3515944dad8c6e3c95ab4e2dc7, type: 3}
+  _alertHighPressure: {fileID: 21300000, guid: 2d4aab2592104831ab2b8c70efad4115, type: 3}
+  _alertRadiation: {fileID: 21300000, guid: 5d49550e00574e1dbfc896b68a4402c4, type: 3}
+  _alertHunger: {fileID: 21300000, guid: 60b0c5f0533f4010a7eea9e92f8886fa, type: 3}
+  _alertThirst: {fileID: 21300000, guid: 93ad3b7ff2104cd7bf30cf4a30948ec6, type: 3}
+  _alertPulling: {fileID: 21300000, guid: ba645f15a26342c8959f0ebbd44fad31, type: 3}
+  _alertRestrained: {fileID: 21300000, guid: 2dfb5350e39c40088de56fa05e47f2b2, type: 3}
+  _alertLowOxygen: {fileID: 21300000, guid: 4932236c496847daa69b79d2d8b2cb5c, type: 3}
+  _alertDying: {fileID: 21300000, guid: ab8990ca57cd474a8e9c935fd243684e, type: 3}
+  _alertBleeding: {fileID: 21300000, guid: 1d2dbb9bb06c437b82ae213a5bca7a70, type: 3}
+  _alertCardiacArrest: {fileID: 21300000, guid: 5f3e03921ca04a2fb3b265376ea5ef90, type: 3}
+  _alertSealBreach: {fileID: 21300000, guid: 7cb5d8629ed9460d8345de5043b28aff, type: 3}
+  _alertInvincible: {fileID: 21300000, guid: a6f07d6253524134aae87021a072575b, type: 3}
+  _alertTankLow: {fileID: 21300000, guid: e4de13b1211b4ac0b9d1eb97b634a4cc, type: 3}
+  _alertShock: {fileID: 21300000, guid: 9567bac6c68e43a5a1f3e1336294739b, type: 3}
+  _internals: {fileID: 21300000, guid: ad3b1a0ac7854491b9e4e977594d3bc9, type: 3}
+  _magboots: {fileID: 21300000, guid: 908e6fd9eeb04607bd6bb7fb1d999e91, type: 3}

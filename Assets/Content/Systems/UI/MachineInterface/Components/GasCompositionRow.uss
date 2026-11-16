@@ -1,0 +1,66 @@
+
+.gas-composition-row {
+    flex-direction: row;
+    align-items: center;
+    padding: 6px 2px;
+    border-bottom-width: 1px;
+    border-bottom-color: var(--ss3d-border-subtle);
+}
+
+.gas-composition-row--absent {
+    opacity: 0.45;
+}
+
+.gas-composition-row__swatch {
+    width: 8px;
+    height: 8px;
+    flex-shrink: 0;
+    margin-right: 10px;
+    border-radius: 1px;
+}
+
+.gas-composition-row__symbol {
+    width: 64px;
+    flex-shrink: 0;
+    font-size: 13px;
+    color: var(--ss3d-text-primary);
+    padding: 0;
+    background-color: rgba(0, 0, 0, 0);
+}
+
+.gas-composition-row__name {
+    flex-grow: 1;
+    flex-basis: 0;
+    min-width: 0;
+    font-size: 11px;
+    color: var(--ss3d-text-tertiary);
+    padding: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    background-color: rgba(0, 0, 0, 0);
+}
+
+.gas-composition-row__percent {
+    width: 64px;
+    flex-shrink: 0;
+    font-size: 12px;
+    color: var(--ss3d-text-primary);
+    -unity-text-align: middle-right;
+    padding: 0;
+    background-color: rgba(0, 0, 0, 0);
+}
+
+.gas-composition-row--hazard .gas-composition-row__percent {
+    color: var(--ss3d-feedback-warning);
+}
+
+.gas-composition-row__pressure {
+    width: 72px;
+    flex-shrink: 0;
+    font-size: 11px;
+    color: var(--ss3d-text-tertiary);
+    -unity-text-align: middle-right;
+    padding: 0;
+    background-color: rgba(0, 0, 0, 0);
+}

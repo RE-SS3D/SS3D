@@ -64,6 +64,9 @@ namespace SS3D.Systems.Screens
         
         private Controls.CameraActions _controls;
         private InputSubSystem _inputSystem;
+        private IInputHandle _gameplayHandle;
+        private IInputHandle _transitionSuppress;
+        private IInputHandle _mouseRotationSuppress;
         
         // Sensitivities and Accelerations
         private const float DistanceAcceleration = 10.0f;
@@ -79,6 +82,32 @@ namespace SS3D.Systems.Screens
         private const float DistanceScaling = 1.18f;
         private const float HorizontalRotationSensitivity = 150f;
         private const float VerticalRotationSensitivity = 80f;
+
+        /// <summary>
+        /// Multiplier applied on top of <see cref="DistanceAcceleration"/>, adjustable from the map
+        /// editor's camera options popover. 1 is the default speed.
+        /// </summary>
+        public float ZoomSpeedMultiplier
+        {
+            get => _zoomSpeedMultiplier;
+            set => _zoomSpeedMultiplier = Mathf.Clamp(value, 0.2f, 3f);
+        }
+
+        /// <summary>
+        /// Multiplier applied on top of the rotation sensitivities, adjustable from the map editor's
+        /// camera options popover. 1 is the default speed.
+        /// </summary>
+        public float RotationSpeedMultiplier
+        {
+            get => _rotationSpeedMultiplier;
+            set => _rotationSpeedMultiplier = Mathf.Clamp(value, 0.2f, 3f);
+        }
+
+        private float _zoomSpeedMultiplier = 1f;
+        private float _rotationSpeedMultiplier = 1f;
+        private float _shakeAmplitude;
+        private float _shakeDuration;
+        private float _shakeElapsed;
         // Limits
         private const float MinTransitionSpeed = 3f;
         private const float MaxTransitionSpeed = 6f;
@@ -98,41 +127,66 @@ namespace SS3D.Systems.Screens
             _inputSystem = SubSystems.Get<InputSubSystem>();
             _controls = _inputSystem.Inputs.Camera;
 
-            AddHandle(UpdateEvent.AddListener(HandleUpdate));
+            // LateUpdate, not Update: Coimbra gives no order between Update listeners, and this one
+            // registers before the player spawns, so it read last frame's body position and the
+            // owner's body jittered on screen by one frame of uneven movement.
+            AddHandle(LateUpdateEvent.AddListener(HandleLateUpdate));
         }
 
         protected override void OnEnabled()
         {
             base.OnEnabled();
+            SceneRegistry<CameraFollow>.Register(this);
             
             _controls.Zoom.performed += HandleZoom;
             _controls.SnapRight.performed += HandleSnapRight;
             _controls.SnapLeft.performed += HandleSnapLeft;
             _controls.MouseRotation.performed += HandleMouseRotation;
-            
-            _inputSystem.ToggleActionMap(_controls, true);
+
+            _gameplayHandle = _inputSystem.PushContext(InputContext.Gameplay);
         }
 
         protected override void OnDisabled()
         {
+            SceneRegistry<CameraFollow>.Unregister(this);
             base.OnDisabled();
             
             _controls.Zoom.performed -= HandleZoom;
             _controls.SnapRight.performed -= HandleSnapRight;
             _controls.SnapLeft.performed -= HandleSnapLeft;
             _controls.MouseRotation.performed -= HandleMouseRotation;
-            
-            _inputSystem.ToggleActionMap(_controls, false);
+
+            _mouseRotationSuppress?.Dispose();
+            _mouseRotationSuppress = null;
+            _transitionSuppress?.Dispose();
+            _transitionSuppress = null;
+            _gameplayHandle?.Dispose();
+            _gameplayHandle = null;
         }
 
-        private void HandleUpdate(ref EventContext context, in UpdateEvent updateEvent)
+        private void HandleLateUpdate(ref EventContext context, in LateUpdateEvent lateUpdateEvent)
         {
+            // Coimbra player-loop events keep firing after enabled=false (same pitfall as
+            // AnimationOrchestrator). Without this guard, ProcessCameraPosition overwrites
+            // MapEditorSession's orbit every frame and hologram picks stay locked to the
+            // follow-camera axes (mouse X = world east/west regardless of editor yaw).
+            if (!isActiveAndEnabled)
+            {
+                return;
+            }
+
             ProcessCameraPosition();
         }
         
         private void HandleZoom(InputAction.CallbackContext context) 
         {
-           _cameraDistance = Mathf.Clamp(_cameraDistance - context.ReadValue<float>(), MinDistance, MaxDistance); 
+           // Scrolling a UI panel (console, chat, inventory) scrolls the panel, not the camera.
+           if (InputInterface.IsPointerOverInterface())
+           {
+               return;
+           }
+
+           _cameraDistance = Mathf.Clamp(_cameraDistance - context.ReadValue<float>() * _zoomSpeedMultiplier, MinDistance, MaxDistance);
         }
         
         // There are two button-type actions for snap, because Tap actions don't return values when performed
@@ -157,19 +211,20 @@ namespace SS3D.Systems.Screens
             if (Math.Abs(value) > MouseSnapThreshold)
             {
                 Snap(value > 0);
-                _inputSystem.ToggleAction(_controls.MouseRotation, false);
+                _mouseRotationSuppress ??= _inputSystem.SuppressAction(_controls.MouseRotation);
                 StartCoroutine(MouseRotationTimeout(.4f));
             }
             else
             {
-                _horizontalAngle += value * HorizontalRotationSensitivity;
+                _horizontalAngle += value * HorizontalRotationSensitivity * _rotationSpeedMultiplier;
             }
         }
 
         private IEnumerator MouseRotationTimeout(float time)
         {
             yield return new WaitForSeconds(time);
-            _inputSystem.ToggleAction(_controls.MouseRotation, true);
+            _mouseRotationSuppress?.Dispose();
+            _mouseRotationSuppress = null;
         }
 
         /// <summary>
@@ -197,17 +252,17 @@ namespace SS3D.Systems.Screens
         /// </summary>
         private void MoveAroundTarget()
         {
-            _horizontalAngle = (_horizontalAngle + _controls.HorizontalRotation.ReadValue<float>() 
-                * HorizontalRotationSensitivity * Time.deltaTime) % 360;
-            _verticalAngle = Mathf.Clamp(_verticalAngle + _controls.VerticalRotation.ReadValue<float>() 
-                * VerticalRotationSensitivity * Time.deltaTime, MinVerticalAngle, MaxVerticalAngle);
+            _horizontalAngle = (_horizontalAngle + _controls.HorizontalRotation.ReadValue<float>()
+                * HorizontalRotationSensitivity * _rotationSpeedMultiplier * Time.deltaTime) % 360;
+            _verticalAngle = Mathf.Clamp(_verticalAngle + _controls.VerticalRotation.ReadValue<float>()
+                * VerticalRotationSensitivity * _rotationSpeedMultiplier * Time.deltaTime, MinVerticalAngle, MaxVerticalAngle);
             // Smooth the distance and angle before using it
-            _currentHorizontalAngle = Mathf.LerpAngle(_currentHorizontalAngle, _horizontalAngle, 
+            _currentHorizontalAngle = Mathf.LerpAngle(_currentHorizontalAngle, _horizontalAngle,
                 Time.deltaTime * AngleAcceleration);
-            _currentVerticalAngle = Mathf.LerpAngle(_currentVerticalAngle, _verticalAngle, 
+            _currentVerticalAngle = Mathf.LerpAngle(_currentVerticalAngle, _verticalAngle,
                 Time.deltaTime * AngleAcceleration);
-            _currentDistance = Mathf.MoveTowards(_currentDistance, _cameraDistance, 
-                Time.deltaTime * DistanceAcceleration);
+            _currentDistance = Mathf.MoveTowards(_currentDistance, _cameraDistance,
+                Time.deltaTime * DistanceAcceleration * _zoomSpeedMultiplier);
             // The position is determined by the orientation and the distance, where distance has an exponential effect.
             Vector3 relativePosition = Quaternion.Euler(0, _currentHorizontalAngle, _verticalAngle) 
                                        * new Vector3(Mathf.Pow(DistanceScaling, _currentDistance), 0, 0);
@@ -217,6 +272,7 @@ namespace SS3D.Systems.Screens
             // Look at that part from the correct position
             Position = targetPosition + relativePosition;
             LookAt(targetPosition);
+            ApplyShakeOffset();
         }
         /// <summary>
         /// Move to the new target
@@ -231,7 +287,8 @@ namespace SS3D.Systems.Screens
             if (Vector3.Distance(Position, newPosition) <= _endTransitionDistance)
             {
                 _inTransition = false;
-                _inputSystem.ToggleActionMap(_controls, true);
+                _transitionSuppress?.Dispose();
+                _transitionSuppress = null;
                 return;
             }
             //The lower the offset, the more transition slows down at the end
@@ -239,6 +296,7 @@ namespace SS3D.Systems.Screens
             Position = Vector3.Lerp(Position, newPosition + newPositionOffset, _transitionSpeed * Time.deltaTime);
             Position += targetPosition - _prevTargetPosition;
             _prevTargetPosition = targetPosition;
+            ApplyShakeOffset();
         }
         /// <summary>
         /// Set variables for moving to the new target
@@ -256,7 +314,7 @@ namespace SS3D.Systems.Screens
             // Smoothes movement at the end
             _endTransitionDistance = 0.05f / _transitionSpeed;
             _prevTargetPosition = targetPosition;
-            _inputSystem.ToggleActionMap(_controls, false);
+            _transitionSuppress ??= _inputSystem.SuppressMap(_controls.Get());
         }
 
         /// <summary>
@@ -273,6 +331,34 @@ namespace SS3D.Systems.Screens
             }
             TransitToNewTargetStart(newTarget);
             _target = newTarget;
+        }
+
+        /// <summary>
+        /// Short positional impulse (blast rumble). Stacks by taking the stronger amplitude/duration.
+        /// </summary>
+        public void AddImpulse(float amplitude, float duration)
+        {
+            if (amplitude <= 0f || duration <= 0f)
+                return;
+
+            _shakeAmplitude = Mathf.Max(_shakeAmplitude, amplitude);
+            _shakeDuration = Mathf.Max(_shakeDuration, duration);
+            _shakeElapsed = 0f;
+        }
+
+        private void ApplyShakeOffset()
+        {
+            if (_shakeDuration <= 0f || _shakeElapsed >= _shakeDuration)
+            {
+                _shakeAmplitude = 0f;
+                _shakeDuration = 0f;
+                return;
+            }
+
+            _shakeElapsed += Time.deltaTime;
+            float t = 1f - Mathf.Clamp01(_shakeElapsed / _shakeDuration);
+            Vector3 offset = UnityEngine.Random.insideUnitSphere * (_shakeAmplitude * t * t);
+            Position += offset;
         }
     }
 }

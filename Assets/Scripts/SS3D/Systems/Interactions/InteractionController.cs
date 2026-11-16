@@ -1,7 +1,9 @@
 ﻿using FishNet.Connection;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using FishNet.Object;
+using FishNet.Object.Synchronizing;
 using SS3D.Core;
 using SS3D.Core.Behaviours;
 using SS3D.Interactions;
@@ -9,34 +11,79 @@ using SS3D.Interactions.Extensions;
 using SS3D.Interactions.Interfaces;
 using SS3D.Logging;
 using SS3D.Systems.Inputs;
+using SS3D.Systems.Entities;
+using SS3D.Systems.Entities.Humanoid;
+using SS3D.Systems.Examine;
+using SS3D.Systems.Entities.Humanoid.Body;
+using SS3D.Systems.Combat;
 using SS3D.Systems.Screens;
+using SS3D.Systems.Selection;
 using SS3D.Systems.Inventory.Containers;
 using SS3D.Systems.Inventory.Items;
-using System.Collections;
+using SS3D.Systems.Inventory.Interactions;
 using UnityEngine;
-using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
 using InputSubSystem = SS3D.Systems.Inputs.InputSubSystem;
 
 namespace SS3D.Systems.Interactions
 {
     /// <summary>
-    /// Attached to the player, initiates interactions.
+    /// Player-owned interaction router: input policy (Shift Search → armed → Harm combat → Help primary),
+    /// intent SyncVar, world/inventory/examine RPCs, and delayed-interaction tracking.
+    /// Combat Harm primary lives on sibling <see cref="CombatInteractionNetwork"/>.
+    /// Discovery/dispatch/outline helpers: <see cref="InteractionDiscovery"/>,
+    /// <see cref="InteractionDispatch"/>, <see cref="InteractionOutlineDriver"/>.
     /// </summary>
-    public sealed class InteractionController : NetworkActor
+    public sealed partial class InteractionController : NetworkActor, IIntentProvider
     {
-        /// <summary>
-        /// Mask for physics to use when finding targets
-        /// </summary>
-        [Tooltip("Mask for physics to use when finding targets")]
-        [SerializeField] private LayerMask _selectionMask = 0;
-
         private Controls.InteractionsActions _controls;
         private Controls.HotkeysActions _hotkeysControls;
+        private InputAction _cancelInteractionAction;
         private InputSubSystem _inputSystem;
+        private IInputHandle _gameplayHandle;
 
         private Camera _camera;
         private RadialInteractionSubSystem _radialView;
+        private Action<IInteraction> _pendingRadialSelection;
+        private ArmedInteractionSubSystem _armedSystem;
+        private SelectionSubSystem _selectionSystem;
+
+        [SyncVar(OnChange = nameof(SyncIntent))] private IntentType _currentIntent = IntentType.Help;
+
+        private IntentType _ownerIntent = IntentType.Help;
+
+        private CombatInteractionNetwork _combatNetwork;
+
+        private bool _armedEvaluatorSubscribed;
+
+        private readonly InteractionOutlineDriver _outlineDriver = new();
+        private readonly DelayedInteractionTracker _delayedTracker = new();
+
+        public IntentType CurrentIntent => IsOwner ? _ownerIntent : _currentIntent;
+
+        /// <summary>The local player's controller (owning client), or null.</summary>
+        public static InteractionController Local { get; private set; }
+
+        /// <summary>
+        /// Fired on the owning client when a character-examine take windup is accepted by the server.
+        /// </summary>
+        public event Action<CharacterExamineSlot, float> TakeFromCharacterStarted;
+
+        /// <summary>
+        /// Fired on the owning client when a character-examine take ends (complete, cancel, or reject).
+        /// </summary>
+        public event Action TakeFromCharacterEnded;
+
+        /// <summary>
+        /// True while the owning client is tracking an active delayed interaction (including take-from-character).
+        /// </summary>
+        public bool HasActiveDelayedInteraction => IsClient && _delayedTracker.HasClientActive;
+
+        /// <summary>Owner: the hovered target has its own interaction for the held item (its outline is Available).</summary>
+        public bool HoveredTargetHasInteraction => _outlineDriver.HoveredHasInteraction;
+
+        /// <summary>Client: asked for the primary click and the Cancel key before target interactions (construction ghost).</summary>
+        public static IWorldClickHandler WorldClickHandler { get; set; }
 
         public override void OnOwnershipClient(NetworkConnection prevOwner)
         {
@@ -44,10 +91,16 @@ namespace SS3D.Systems.Interactions
 
             if (IsOwner)
             {
+                Local = this;
                 SubscribeToInput();
             }
             else if (prevOwner.Equals(LocalConnection))
             {
+                if (Local == this)
+                {
+                    Local = null;
+                }
+
                 UnsubscribeFromInput();
             }
         }
@@ -56,13 +109,67 @@ namespace SS3D.Systems.Interactions
         {
             base.OnAwake();
 
-            _radialView = SubSystems.Get<RadialInteractionSubSystem>();
-            _camera = SubSystems.Get<CameraSubSystem>().PlayerCamera.GetComponent<Camera>();
-
+            // Wire inputs before camera — a missing PlayerCamera must not leave _controls null
+            // (OnOwnershipClient → SubscribeToInput would cascade-NRE).
             _inputSystem = SubSystems.Get<InputSubSystem>();
             Controls controls = _inputSystem.Inputs;
             _controls = controls.Interactions;
             _hotkeysControls = controls.Hotkeys;
+            _cancelInteractionAction = controls.Interactions.Get().FindAction("Cancel Interaction", throwIfNotFound: true);
+
+            _radialView = SubSystems.Get<RadialInteractionSubSystem>();
+            _armedSystem = SubSystems.Get<ArmedInteractionSubSystem>();
+            _selectionSystem = SubSystems.Get<SelectionSubSystem>();
+
+            Actor playerCamera = SubSystems.GetOrNull<CameraSubSystem>()?.PlayerCamera;
+            if (playerCamera != null)
+            {
+                _camera = playerCamera.GetComponent<Camera>();
+            }
+
+            if (_camera == null)
+            {
+                _camera = Camera.main;
+            }
+
+            if (_camera == null)
+            {
+                Log.Error(this, "No gameplay camera resolved for InteractionController", Logs.Important);
+            }
+
+            _combatNetwork = GetComponent<CombatInteractionNetwork>();
+        }
+
+        private void Update()
+        {
+            if (IsServer)
+            {
+                RefreshServerDelayedInteractionTracking();
+                TickPendingHandAction();
+            }
+
+            if (!IsOwner)
+            {
+                return;
+            }
+
+            // Client-side tracking for interactions that registered a ClientInteract instance.
+            // Take-from-character (CreateClient => null) waits for TargetNotify / Cancel instead.
+            RefreshClientDelayedInteractionTracking();
+            GetCombatNetwork()?.ContinueRangedFirePrimary(
+                _controls.RunPrimary.enabled && _controls.RunPrimary.IsPressed()
+                && CurrentIntent == IntentType.Harm && !_armedSystem.IsArmed
+                && !IsShiftModifierHeld() && !InputInterface.IsPointerOverInterface());
+        }
+
+        private void LateUpdate()
+        {
+            if (!IsOwner)
+            {
+                return;
+            }
+
+            _outlineDriver.Refresh(_selectionSystem, _camera, CurrentIntent, GetActiveInteractionSource());
         }
 
         protected override void OnEnabled()
@@ -81,24 +188,84 @@ namespace SS3D.Systems.Interactions
 
             if (IsOwner)
             {
-                UnsubscribeFromInput();
+                _outlineDriver.Clear();
             }
+
+            // Not gated on IsOwner: when the session ends, ownership is already gone by the time the body is
+            // torn down, but the input actions outlive it and would keep calling into the destroyed controller.
+            UnsubscribeFromInput();
         }
 
         private void SubscribeToInput()
         {
+            if (!_armedEvaluatorSubscribed && _armedSystem != null)
+            {
+                _armedSystem.EvaluateTarget += EvaluateArmedTarget;
+                _armedEvaluatorSubscribed = true;
+            }
+
+            // OnEnabled and OnOwnershipClient can both fire for an owner; subscribe exactly once.
+            if (_gameplayHandle != null)
+            {
+                return;
+            }
+
             _controls.RunPrimary.performed += HandleRunPrimary;
             _controls.ViewInteractions.performed += HandleView;
+            _cancelInteractionAction.performed += HandleCancelInteraction;
             _hotkeysControls.Use.performed += HandleUse;
-            _inputSystem.ToggleActionMap(_controls, true);
+            _gameplayHandle = _inputSystem.PushContext(InputContext.Gameplay);
         }
 
         private void UnsubscribeFromInput()
         {
+            if (_armedEvaluatorSubscribed)
+            {
+                if (_armedSystem != null)
+                {
+                    _armedSystem.EvaluateTarget -= EvaluateArmedTarget;
+                }
+
+                _armedEvaluatorSubscribed = false;
+            }
+
             _controls.RunPrimary.performed -= HandleRunPrimary;
             _controls.ViewInteractions.performed -= HandleView;
+            _cancelInteractionAction.performed -= HandleCancelInteraction;
             _hotkeysControls.Use.performed -= HandleUse;
-            _inputSystem.ToggleActionMap(_controls, false);
+            _gameplayHandle?.Dispose();
+            _gameplayHandle = null;
+        }
+
+        protected override void OnDestroyed()
+        {
+            if (Local == this)
+            {
+                Local = null;
+            }
+
+            base.OnDestroyed();
+        }
+
+        [Client]
+        private void HandleCancelInteraction(InputAction.CallbackContext callbackContext)
+        {
+            if (WorldClickHandler != null && WorldClickHandler.TryCancelLocal())
+            {
+                return;
+            }
+
+            if (!_delayedTracker.HasClientActive)
+            {
+                return;
+            }
+
+            int referenceId = _delayedTracker.ClientActiveReferenceId;
+            ClearClientActiveInteractionTracking();
+            InteractionOptimisticFeedback.CancelLocal();
+            InteractionOutlineView.ClearPending();
+            TakeFromCharacterEnded?.Invoke();
+            CmdCancelInteraction(referenceId);
         }
 
         /// <summary>
@@ -107,12 +274,53 @@ namespace SS3D.Systems.Interactions
         [Client]
         public void HandleRunPrimary(InputAction.CallbackContext callbackContext)
         {
-            if (EventSystem.current.IsPointerOverGameObject())
+            // Caps Lock is sprint; Shift is examine-only (2026-07 input scheme).
+            // Read Shift from Keyboard — DetailedExamine.IsPressed can lag behind the device.
+            if (IsShiftModifierHeld() && TryRunSearchOnCharacterSelection())
             {
                 return;
             }
-            Ray ray = _camera.ScreenPointToRay(Mouse.current.position.ReadValue());
-            List<InteractionEntry> viableInteractions = GetViableInteractions(ray, out InteractionEvent interactionEvent);
+
+            if (InputInterface.IsPointerOverInterface())
+            {
+                return;
+            }
+
+            // Throw mode (R) replaces this click's interaction, in Help and Harm alike.
+            if (GetCombatNetwork()?.TryRunThrowPrimary() == true)
+            {
+                return;
+            }
+
+            if (_armedSystem.IsArmed)
+            {
+                TryResolveArmedInteraction();
+                return;
+            }
+
+            // Harm is combat-exclusive: ranged fire when holding a firearm, else melee swing.
+            // Never fall through to Drop/Open/MI.
+            if (CurrentIntent == IntentType.Harm)
+            {
+                CombatInteractionNetwork combat = GetCombatNetwork();
+                if (combat != null && combat.TryRunRangedFirePrimary())
+                {
+                    return;
+                }
+
+                combat?.TryRunMeleeSwingPrimary();
+                return;
+            }
+
+            // A visible construction ghost takes the click. It hides itself while the hovered target has its
+            // own interaction for the held item, so what the ghost shows is what the click does.
+            if (WorldClickHandler != null && WorldClickHandler.TryHandlePrimaryClick())
+            {
+                return;
+            }
+
+            List<InteractionEntry> viableInteractions = FilterRadialInteractions(
+                GetViableInteractionsFromSelection(out InteractionEvent interactionEvent));
 
             if (viableInteractions.Count <= 0)
             {
@@ -120,43 +328,371 @@ namespace SS3D.Systems.Interactions
             }
 
             InteractionEntry interaction = viableInteractions[0];
-            string interactionName = interaction.Interaction.GetName(interactionEvent);
-            interactionEvent.Target = interaction.Target;
+            interactionEvent.Target = interaction.Target ?? ResolveFallbackTarget(interactionEvent, interaction);
 
-            Log.Information(this, "Running interaction {interactionName} on target {target}", Logs.Generic, interactionName, interaction.Target);
-            CmdRunInteraction(ray, interactionName);
+            Log.Information(this, "Running interaction {interactionId} on target {target}", Logs.Generic, interaction.Id.GenericName, interaction.Target);
+            if (!TryGetNetworkTargetForDispatch(interaction, interactionEvent, out NetworkObject networkTarget))
+            {
+                return;
+            }
+
+            if (!BeginOwnerInteraction(interaction.Interaction, interactionEvent))
+            {
+                return;
+            }
+
+            InteractionOptimisticFeedback.TryBeginDelayed(interaction.Interaction, interactionEvent);
+            InteractionOutlineView.TryBeginPending(interaction.Interaction, interactionEvent);
+            SendRunInteraction(networkTarget, interactionEvent.Point, interaction.Id.GenericName, interaction.Id.TargetComponentIndex);
+        }
+
+        /// <summary>
+        /// Shift+Click shortcut for <see cref="SearchInteraction"/> — same Discover/RPC path as the radial petal.
+        /// </summary>
+        [Client]
+        private bool TryRunSearchOnCharacterSelection()
+        {
+            if (_selectionSystem == null)
+            {
+                SubSystems.TryGet(out _selectionSystem);
+            }
+
+            if (!CharacterExamineTargetUtility.TryResolveFromSelectable(
+                    _selectionSystem?.GetCurrentSelectable(),
+                    out _,
+                    out HumanInventory victimInventory))
+            {
+                return false;
+            }
+
+            HumanInventory selfInventory = GetComponent<HumanInventory>();
+            if (selfInventory == null)
+            {
+                selfInventory = GetComponentInChildren<HumanInventory>();
+            }
+
+            if (!CharacterLootUtility.IsOtherCharacter(selfInventory, victimInventory))
+            {
+                return false;
+            }
+
+            List<InteractionEntry> viableInteractions = FilterRadialInteractions(
+                GetViableInteractionsFromSelection(out InteractionEvent interactionEvent));
+
+            InteractionEntry searchEntry = default;
+            bool found = false;
+            for (int i = 0; i < viableInteractions.Count; i++)
+            {
+                if (viableInteractions[i].Interaction?.GetGenericName() == SearchInteraction.GenericName)
+                {
+                    searchEntry = viableInteractions[i];
+                    found = true;
+                    break;
+                }
+            }
+
+            if (!found)
+            {
+                return false;
+            }
+
+            interactionEvent.Target = searchEntry.Target ?? ResolveFallbackTarget(interactionEvent, searchEntry);
+            if (!TryGetNetworkTargetForDispatch(searchEntry, interactionEvent, out NetworkObject networkTarget))
+            {
+                return false;
+            }
+
+            if (!BeginOwnerInteraction(searchEntry.Interaction, interactionEvent))
+            {
+                return false;
+            }
+
+            InteractionOptimisticFeedback.TryBeginDelayed(searchEntry.Interaction, interactionEvent);
+            InteractionOutlineView.TryBeginPending(searchEntry.Interaction, interactionEvent);
+            SendRunInteraction(networkTarget, interactionEvent.Point, searchEntry.Id.GenericName, searchEntry.Id.TargetComponentIndex);
+            return true;
+        }
+
+        private bool IsShiftModifierHeld()
+        {
+            Keyboard keyboard = Keyboard.current;
+            if (keyboard != null
+                && (keyboard.leftShiftKey.isPressed || keyboard.rightShiftKey.isPressed))
+            {
+                return true;
+            }
+
+            // Caps Lock is sprint; Shift is examine-only after the 2026-07 input scheme pass.
+            return _inputSystem != null && _inputSystem.DetailedExamine.IsPressed();
+        }
+
+        /// <summary>
+        /// Starts a delayed take of the item in <paramref name="slot"/> from <paramref name="victim"/>
+        /// into the active hand. Paperdoll slots are not Discover targets — this bypasses
+        /// <see cref="CmdRunInteraction"/> name resolution.
+        /// </summary>
+        [Client]
+        public void RequestTakeFromCharacter(HumanInventory victim, CharacterExamineSlot slot)
+        {
+            if (!IsOwner || victim == null || victim.NetworkObject == null)
+            {
+                return;
+            }
+
+            CmdStartTakeFromCharacter(victim.NetworkObject, (byte)slot);
+        }
+
+        /// <summary>
+        /// Cancels the active delayed interaction (take windup, CPR, etc.) — same path as the Cancel key.
+        /// </summary>
+        [Client]
+        public void CancelActiveDelayedInteraction()
+        {
+            if (!_delayedTracker.HasClientActive)
+            {
+                return;
+            }
+
+            int referenceId = _delayedTracker.ClientActiveReferenceId;
+            ClearClientActiveInteractionTracking();
+            InteractionOptimisticFeedback.CancelLocal();
+            InteractionOutlineView.ClearPending();
+            TakeFromCharacterEnded?.Invoke();
+            CmdCancelInteraction(referenceId);
+        }
+
+        [ServerRpc(RequireOwnership = true)]
+        private void CmdStartTakeFromCharacter(NetworkObject victimObject, byte slotByte)
+        {
+            if (victimObject == null
+                || !Enum.IsDefined(typeof(CharacterExamineSlot), (int)slotByte))
+            {
+                TargetRejectTakeFromCharacter(Owner);
+                return;
+            }
+
+            CharacterExamineSlot slot = (CharacterExamineSlot)slotByte;
+            Hands hands = GetComponent<Hands>();
+            Hand hand = hands?.SelectedHand;
+            if (hand == null)
+            {
+                TargetRejectTakeFromCharacter(Owner);
+                return;
+            }
+
+            HumanInventory victimInventory = victimObject.GetComponent<HumanInventory>();
+            if (victimInventory == null)
+            {
+                victimInventory = victimObject.GetComponentInChildren<HumanInventory>();
+            }
+
+            HumanInventory takerInventory = GetComponent<HumanInventory>();
+            if (takerInventory == null)
+            {
+                takerInventory = GetComponentInChildren<HumanInventory>();
+            }
+
+            if (victimInventory == null
+                || !CharacterLootUtility.IsOtherCharacter(takerInventory, victimInventory)
+                || !CharacterExamineContentBuilder.TryGetItemInSlot(victimInventory, slot, out Item item))
+            {
+                TargetRejectTakeFromCharacter(Owner);
+                return;
+            }
+
+            // Anyone in reach (inventory-storage.md §9); an alert victim takes longer and is warned.
+            bool incapacitated = CharacterLootUtility.IsLootable(victimInventory);
+            bool blind = !incapacitated && CharacterExamineContentBuilder.IsHiddenWhileAlert(slot);
+            Vector3 point = victimInventory.transform.position;
+            InteractionEvent interactionEvent = new(hand, item, point, Vector3.up);
+            TakeFromCharacterInteraction interaction = new(
+                victimInventory, slot, item, CharacterLootUtility.TakeSeconds(incapacitated, blind));
+
+            if (!interaction.CanInteract(interactionEvent) || !hand.CanExecuteInteraction(interaction))
+            {
+                TargetRejectTakeFromCharacter(Owner);
+                return;
+            }
+
+            InteractionReference reference = hand.Interact(interactionEvent, interaction);
+            TrackActiveInteraction(hand, reference, interaction);
+            TargetTakeFromCharacterStarted(Owner, (byte)slot, interaction.DelaySeconds, reference.Id);
+            TakeFromCharacterWarning.ServerWarn(NetworkObject, victimInventory, blind, item);
+        }
+
+        [TargetRpc]
+        private void TargetTakeFromCharacterStarted(
+            NetworkConnection connection,
+            byte slotByte,
+            float delaySeconds,
+            int referenceId)
+        {
+            Hands hands = GetComponent<Hands>();
+            Hand hand = hands?.SelectedHand;
+            if (hand == null)
+            {
+                return;
+            }
+
+            _delayedTracker.SetClientActive(hand, referenceId);
+            TakeFromCharacterStarted?.Invoke((CharacterExamineSlot)slotByte, delaySeconds);
+        }
+
+        [TargetRpc]
+        private void TargetRejectTakeFromCharacter(NetworkConnection connection)
+        {
+            ClearClientActiveInteractionTracking();
+            TakeFromCharacterEnded?.Invoke();
+        }
+
+        [Client]
+        public void RequestToggleIntent()
+        {
+            _ownerIntent = _ownerIntent == IntentType.Harm ? IntentType.Help : IntentType.Harm;
+            CmdSetIntent(_ownerIntent);
+            ApplyCombatModeForIntent(_ownerIntent);
+        }
+
+        public override void OnStartClient()
+        {
+            base.OnStartClient();
+
+            if (IsOwner)
+            {
+                _ownerIntent = _currentIntent;
+                ApplyCombatModeForIntent(_ownerIntent);
+            }
+        }
+
+        private void SyncIntent(IntentType oldValue, IntentType newValue, bool asServer)
+        {
+            if (IsOwner)
+            {
+                _ownerIntent = newValue;
+                ApplyCombatModeForIntent(newValue);
+            }
+        }
+
+        /// <summary>
+        /// Harm always enters combat stance; Help returns to peaceful. Owner-driven Cmd.
+        /// </summary>
+        [Client]
+        private void ApplyCombatModeForIntent(IntentType intent)
+        {
+            if (!IsOwner)
+            {
+                return;
+            }
+
+            if (!TryGetComponent(out HumanoidBodyStateMachine body))
+            {
+                return;
+            }
+
+            if (intent == IntentType.Harm)
+            {
+                HumanoidCombatMode stance = HumanoidCombatMode.Melee;
+                if (TryGetComponent(out HumanoidBodyStateBridge bridge))
+                {
+                    stance = bridge.ResolveCombatStance();
+                }
+
+                if (body.CombatMode != stance)
+                {
+                    body.CmdSetCombatMode(stance);
+                }
+            }
+            else if (body.CombatMode.IsCombat())
+            {
+                body.CmdSetCombatMode(HumanoidCombatMode.Peaceful);
+            }
         }
 
         [Client]
         private void HandleView(InputAction.CallbackContext callbackContext)
         {
-            // leftButton is enabled in RadialInteractionView HandleDisappear
-            _inputSystem.ToggleBinding("<Mouse>/leftButton", false);
-            if (EventSystem.current.IsPointerOverGameObject())
+            if (_armedSystem.IsArmed)
+            {
+                _armedSystem.Cancel();
+                return;
+            }
+
+            if (InputInterface.IsPointerOverInterface())
             {
                 return;
             }
-            Ray ray = _camera.ScreenPointToRay(Mouse.current.position.ReadValue());
-            List<InteractionEntry> viableInteractions = GetViableInteractions(ray, out InteractionEvent interactionEvent);
+            List<InteractionEntry> viableInteractions = FilterRadialInteractions(
+                GetViableInteractionsFromSelection(out InteractionEvent interactionEvent));
 
-            ViewTargetInteractions(viableInteractions, interactionEvent, ray);
+            ViewTargetInteractions(viableInteractions, interactionEvent);
         }
 
         [Client]
-        private void HandleUse(InputAction.CallbackContext callbackContext)
+        private void HandleUse(InputAction.CallbackContext callbackContext) => UseHeldItem();
+
+        /// <summary>
+        /// One pending radial selection at a time. A menu closed without a pick leaves its handler subscribed; drop it
+        /// before the next menu so a later pick can't also run against the old menu's entries.
+        /// </summary>
+        [Client]
+        private void SubscribeRadialSelection(Action<IInteraction> handler)
         {
-            // Activate item in selected hand
-            Hands hands = GetComponent<Hands>();
-            if (hands == null)
+            if (_pendingRadialSelection != null)
+            {
+                _radialView.OnInteractionSelected -= _pendingRadialSelection;
+            }
+
+            _pendingRadialSelection = handler;
+            _radialView.OnInteractionSelected += handler;
+        }
+
+        /// <summary>
+        /// The Use key (E): activates the item in the selected hand, running its highest-priority in-hand
+        /// interaction (arm a minibomb, call down a bomb beacon, honk). Reload takes priority for firearms
+        /// (including two-hand rifles still wielded while the off-hand is selected).
+        /// </summary>
+        /// <remarks>
+        /// The source must be the selected <see cref="Hand"/>: the body root is not an interaction source, and
+        /// passing it made <see cref="InteractInHand"/> return without doing anything, so Use never activated
+        /// a held item.
+        /// </remarks>
+        [Client]
+        public void UseHeldItem() => TryUseHeldItem();
+
+        /// <summary>
+        /// <see cref="UseHeldItem"/> that reports whether anything ran: false when the selected hand is empty or its item
+        /// has no in-hand interaction (a bag, say, which the HUD then opens instead).
+        /// </summary>
+        [Client]
+        public bool TryUseHeldItem()
+        {
+            if (GetCombatNetwork()?.TryRunRangedReloadPrimary() == true)
+            {
+                return true;
+            }
+
+            Hand hand = GetComponent<Hands>()?.SelectedHand;
+            Item item = hand != null ? hand.ItemInHand : null;
+            // Target-bound entries only: the source's own verbs are Drop (never a "use") and Reload (handled above).
+            return item != null && InteractInHand(item.gameObject, hand.gameObject, includeSourceOnly: false);
+        }
+
+        /// <summary>
+        /// Right-click on an inventory slot (HUD well or storage panel): the radial menu for that item, with the selected
+        /// hand as source, the same as right-clicking it in the world. For the held item this is its in-hand menu
+        /// (Drop included); for anything else only target-bound entries show, so the menu never offers the held item's
+        /// own verbs (Drop) as if they were the clicked item's.
+        /// </summary>
+        [Client]
+        public void ShowInventoryItemInteractions(Item item)
+        {
+            Hand hand = GetComponent<Hands>()?.SelectedHand;
+            if (item == null || hand == null || _radialView == null)
             {
                 return;
             }
 
-            Item item = hands.SelectedHand.ItemInHand;
-            if (item != null)
-            {
-                InteractInHand(item.gameObject, gameObject);
-            }
+            InteractInHand(item.gameObject, hand.gameObject, showMenu: true, includeSourceOnly: hand.ItemInHand == item);
         }
 
         /// <summary>
@@ -164,24 +700,49 @@ namespace SS3D.Systems.Interactions
         /// </summary>
         /// <param name="viableInteractions"></param>
         /// <param name="interactionEvent"></param>
-        /// <param name="ray"></param>
         [Client]
-        private void ViewTargetInteractions(List<InteractionEntry> viableInteractions, InteractionEvent interactionEvent, Ray ray)
+        private void ViewTargetInteractions(List<InteractionEntry> viableInteractions, InteractionEvent interactionEvent)
         {
             List<IInteraction> interactions = viableInteractions.Select(entry => entry.Interaction).ToList();
 
             if (interactions.Count <= 0) { return; }
 
-            void handleInteractionSelected(IInteraction interaction, RadialInteractionButton _)
+            _radialView.SuppressLeftButtonForMenu();
+
+            void handleInteractionSelected(IInteraction interaction)
             {
                 _radialView.OnInteractionSelected -= handleInteractionSelected;
-                string interactionName = interaction.GetName(interactionEvent);
 
-                CmdRunInteraction(ray, interactionName);
+                if (!TryRouteRadialInteraction(interaction, interactionEvent, out _))
+                {
+                    return;
+                }
+
+                InteractionEntry entry = viableInteractions.Find(e => e.Interaction == interaction);
+                if (entry.Interaction == null)
+                {
+                    return;
+                }
+
+                interactionEvent.Target = entry.Target ?? ResolveFallbackTarget(interactionEvent, entry);
+
+                if (!TryGetNetworkTargetForDispatch(entry, interactionEvent, out NetworkObject networkTarget))
+                {
+                    return;
+                }
+
+                if (!BeginOwnerInteraction(entry.Interaction, interactionEvent))
+                {
+                    return;
+                }
+
+                InteractionOptimisticFeedback.TryBeginDelayed(entry.Interaction, interactionEvent);
+                InteractionOutlineView.TryBeginPending(entry.Interaction, interactionEvent);
+                SendRunInteraction(networkTarget, interactionEvent.Point, entry.Id.GenericName, entry.Id.TargetComponentIndex);
             }
 
             _radialView.SetInteractions(interactions, interactionEvent, Mouse.current.position.ReadValue());
-            _radialView.OnInteractionSelected += handleInteractionSelected;
+            SubscribeRadialSelection(handleInteractionSelected);
             _radialView.ShowInteractionsMenu();
         }
 
@@ -191,22 +752,33 @@ namespace SS3D.Systems.Interactions
         /// <param name="target">The target clicked on</param>
         /// <param name="source">The current selected item or the hands</param>
         /// <param name="showMenu">If a selection menu should be shown</param>
+        /// <param name="includeSourceOnly">Keep the source's own verbs (Drop) in the list; off for items not in the source hand.</param>
+        /// <returns>True when an interaction ran or a menu opened.</returns>
         [Client]
-        public void InteractInHand(GameObject target, GameObject sourceObject, bool showMenu = false)
+        public bool InteractInHand(GameObject target, GameObject sourceObject, bool showMenu = false, bool includeSourceOnly = true)
         {
             if (!sourceObject.TryGetComponent(out IInteractionSource source))
             {
-                return;
+                return false;
             }
 
-            InteractionEvent interactionEvent = new(source, null, source.GameObject.transform.position);
+            InteractionEvent interactionEvent = new(source, null, source.GameObject.transform.position, Vector3.up);
 
             List<IInteractionTarget> targets = GetTargetsFromGameObject(source, target);
-            List<InteractionEntry> entries = GetInteractionsFromTargets(source, targets, interactionEvent);
+            List<InteractionEntry> entries = InteractionPipeline.GetViableInteractions(source, targets, interactionEvent, CurrentIntent);
+            if (!includeSourceOnly)
+            {
+                entries = entries.Where(entry => entry.Target != null).ToList();
+            }
+
+            if (showMenu)
+            {
+                entries = FilterRadialInteractions(entries);
+            }
 
             if (entries.Count < 1)
             {
-                return;
+                return false;
             }
 
             interactionEvent.Target = entries[0].Target;
@@ -214,214 +786,548 @@ namespace SS3D.Systems.Interactions
 
             if (showMenu && interactions.Count > 0)
             {
+                // The view keeps the wheel on screen (RadialInteractionMenuView.PositionAt).
                 Vector3 mousePosition = Mouse.current.position.ReadValue();
-                mousePosition.y = Mathf.Max(_radialView.RectTransform.rect.height, mousePosition.y);
 
+                // Same hold-right-button menu as the world radial (ViewTargetInteractions): left clicks pick a petal.
+                _radialView.SuppressLeftButtonForMenu();
                 _radialView.SetInteractions(interactions, interactionEvent, mousePosition);
 
-                void handleInteractionSelected(IInteraction interaction, RadialInteractionButton _)
+                void handleInteractionSelected(IInteraction interaction)
                 {
-                    int index = entries.FindIndex(x => x.Interaction == interaction);
-                    string interactionName = interaction.GetName(interactionEvent);
+                    _radialView.OnInteractionSelected -= handleInteractionSelected;
 
-                    CmdRunInventoryInteraction(target, sourceObject, index, interactionName);
+                    if (!TryRouteRadialInteraction(interaction, interactionEvent, out _))
+                    {
+                        return;
+                    }
+
+                    InteractionEntry entry = entries.Find(x => x.Interaction == interaction);
+                    if (entry.Interaction == null)
+                    {
+                        return;
+                    }
+
+                    interactionEvent.Target = entry.Target;
+                    if (!BeginOwnerInteraction(entry.Interaction, interactionEvent))
+                    {
+                        return;
+                    }
+
+                    InteractionOptimisticFeedback.TryBeginDelayed(entry.Interaction, interactionEvent);
+                    InteractionOutlineView.TryBeginPending(entry.Interaction, interactionEvent);
+                    CmdRunInventoryInteraction(target, sourceObject, entry.Id.GenericName, entry.Id.TargetComponentIndex);
                 }
 
-                _radialView.OnInteractionSelected += handleInteractionSelected;
+                SubscribeRadialSelection(handleInteractionSelected);
+                _radialView.ShowInteractionsMenu();
             }
             else
             {
-                IInteraction firstInteraction = entries.First().Interaction;
-                CmdRunInventoryInteraction(target, sourceObject, 0, firstInteraction.GetName(interactionEvent));
+                InteractionEntry firstEntry = entries.First();
+                if (!BeginOwnerInteraction(firstEntry.Interaction, interactionEvent))
+                {
+                    return false;
+                }
+
+                InteractionOptimisticFeedback.TryBeginDelayed(firstEntry.Interaction, interactionEvent);
+                InteractionOutlineView.TryBeginPending(firstEntry.Interaction, interactionEvent);
+                CmdRunInventoryInteraction(target, sourceObject, firstEntry.Id.GenericName, firstEntry.Id.TargetComponentIndex);
             }
+
+            return true;
+        }
+
+        [ServerRpc]
+        private void CmdSetIntent(IntentType intent)
+        {
+            _currentIntent = intent;
+        }
+
+        [Client]
+        private bool TryRouteRadialInteraction(IInteraction interaction, InteractionEvent interactionEvent, out string interactionName)
+        {
+            interactionName = interaction.GetName(interactionEvent);
+            InteractionTier tier = interaction.GetInteractionTier(interactionEvent);
+
+            if (tier == InteractionTier.Instant)
+            {
+                return true;
+            }
+
+            _armedSystem.Arm(interaction, interactionEvent, tier, interactionName);
+            return false;
+        }
+
+        [Client]
+        private ArmedTargetEvaluation EvaluateArmedTarget(Selectable selectable)
+        {
+            if (!_armedSystem.IsArmed)
+            {
+                return ArmedTargetEvaluation.None;
+            }
+
+            ArmedInteractionState state = _armedSystem.CurrentState;
+            if (!TryBuildArmedTargetEvent(selectable, state.OriginEvent, out InteractionEvent targetEvent))
+            {
+                return ArmedTargetEvaluation.None;
+            }
+
+            bool isValid = ValidateArmedTarget(state, targetEvent);
+            return new ArmedTargetEvaluation(true, isValid);
+        }
+
+        [Client]
+        private bool TryResolveArmedInteraction()
+        {
+            ArmedInteractionState state = _armedSystem.CurrentState;
+            if (state == null)
+            {
+                return false;
+            }
+
+            if (!_selectionSystem.TryGetCurrentSelectable(out Selectable selectable))
+            {
+                return false;
+            }
+
+            if (!TryBuildArmedTargetEvent(selectable, state.OriginEvent, out InteractionEvent targetEvent))
+            {
+                return false;
+            }
+
+            if (!ValidateArmedTarget(state, targetEvent))
+            {
+                return false;
+            }
+
+            List<InteractionEntry> viableInteractions = GetViableInteractionsFromTarget(
+                selectable.gameObject,
+                targetEvent.HasPoint,
+                targetEvent.Point,
+                targetEvent.Normal,
+                out _);
+
+            string genericName = state.Interaction.GetGenericName();
+            InteractionEntry entry = viableInteractions.Find(e => e.Interaction.GetGenericName() == genericName);
+            if (entry.Interaction == null)
+            {
+                return false;
+            }
+
+            targetEvent.Target = entry.Target;
+
+            if (!TryGetNetworkTarget(targetEvent, out NetworkObject networkTarget))
+            {
+                return false;
+            }
+
+            if (!BeginOwnerInteraction(entry.Interaction, targetEvent))
+            {
+                return false;
+            }
+
+            InteractionOptimisticFeedback.TryBeginDelayed(entry.Interaction, targetEvent);
+            InteractionOutlineView.TryBeginPending(entry.Interaction, targetEvent);
+            _armedSystem.Cancel();
+            SendRunInteraction(networkTarget, targetEvent.Point, entry.Id.GenericName, entry.Id.TargetComponentIndex);
+            return true;
+        }
+
+        [Client]
+        private bool TryBuildArmedTargetEvent(Selectable selectable, InteractionEvent originEvent, out InteractionEvent targetEvent)
+        {
+            targetEvent = null;
+
+            if (selectable == null || originEvent == null)
+            {
+                return false;
+            }
+
+            IInteractionSource source = originEvent.Source;
+            if (!SelectionTargetUtility.TryResolveInteractionPoint(_camera, selectable, out Vector3 point, out Vector3 normal))
+            {
+                point = selectable.transform.position;
+                normal = Vector3.up;
+            }
+
+            List<IInteractionTarget> targets = GetTargetsFromGameObject(source, selectable.gameObject);
+            if (targets.Count < 1)
+            {
+                return false;
+            }
+
+            targetEvent = new InteractionEvent(source, targets[0], point, normal);
+            return true;
+        }
+
+        [Client]
+        private static bool ValidateArmedTarget(ArmedInteractionState state, InteractionEvent targetEvent)
+        {
+            if (state.Interaction is ITargetedInteraction targeted)
+            {
+                return targeted.CanTarget(state.OriginEvent, targetEvent);
+            }
+
+            return state.Interaction.CanInteract(targetEvent);
+        }
+
+#if UNITY_EDITOR
+        /// <summary>
+        /// Automation only: picks <paramref name="genericName"/> from the active hand's interactions on
+        /// <paramref name="target"/> at <paramref name="point"/> under <paramref name="intent"/>, then sends it
+        /// through the same server RPC as a click, so the server revalidates range, intent and gameplay gates.
+        /// Returns why it could not be sent, or null.
+        /// </summary>
+        [Client]
+        public string RunInteractionForTesting(GameObject target, Vector3 point, string genericName, IntentType intent)
+        {
+            if (_ownerIntent != intent)
+            {
+                RequestToggleIntent();
+            }
+
+            List<InteractionEntry> viable = GetViableInteractionsFromTarget(target, true, point, Vector3.up, out InteractionEvent interactionEvent);
+            InteractionEntry entry = viable.Find(e => e.Interaction.GetGenericName() == genericName);
+            if (entry.Interaction == null)
+            {
+                return $"No viable '{genericName}' on {target.name}; viable: "
+                    + string.Join(", ", viable.Select(e => e.Interaction.GetGenericName()));
+            }
+
+            interactionEvent.Target = entry.Target;
+            if (!TryGetNetworkTarget(interactionEvent, out NetworkObject networkTarget))
+            {
+                return $"'{genericName}' target on {target.name} has no NetworkObject";
+            }
+
+            if (!BeginOwnerInteraction(entry.Interaction, interactionEvent))
+            {
+                return $"'{genericName}' dropped: a hand action is still in flight";
+            }
+
+            SendRunInteraction(networkTarget, point, entry.Id.GenericName, entry.Id.TargetComponentIndex);
+            return null;
+        }
+#endif
+
+        /// <summary>Client: <see cref="CmdRunInteraction"/> with this client's eye, which the server only logs (P1.9).</summary>
+        [Client]
+        private void SendRunInteraction(NetworkObject target, Vector3 point, string genericName, int targetComponentIndex) =>
+            CmdRunInteraction(target, point, genericName, targetComponentIndex, EyePosition());
+
+        /// <summary>The body's eye on this peer: <see cref="Entity.ViewPoint"/>, else the root.</summary>
+        private Vector3 EyePosition()
+        {
+            Entity entity = GetComponent<Entity>();
+            return entity != null && entity.ViewPoint != null ? entity.ViewPoint.transform.position : transform.position;
         }
 
         /// <summary>
         /// Runs an interaction (chosen on the client) on the server. For reasons of serialization and security, some code is re-run.
+        /// <paramref name="clientEye"/> is diagnostics only: the server never acts on it (tech-debt P1.9, #192).
         /// </summary>
-        /// <param name="ray">The ray the click came from. RaycastHit is not serializable and this ensures hat a user can't try to interact with something that should be invisible.</param>
-        /// <param name="index">The index into the prioritised interaction list this interaction is at</param>
-        /// <param name="name">To confirm the interaction is the correctly selected one.</param>
         [ServerRpc]
-        private void CmdRunInteraction(Ray ray, string interactionName)
+        private void CmdRunInteraction(NetworkObject target, Vector3 point, string genericName, int targetComponentIndex, Vector3 clientEye)
         {
-            List<InteractionEntry> viableInteractions = GetViableInteractions(ray, out InteractionEvent interactionEvent);
+            if (!RpcInput.IsInStation(point))
+            {
+                TargetRejectInteraction(Owner);
+                return;
+            }
 
-            InteractionEntry interaction = viableInteractions.Find(entry => entry.Interaction.GetName(interactionEvent) == interactionName);
-
-            interactionEvent.Target = interaction.Target;
-
-            InteractionReference reference = interactionEvent.Source.Interact(interactionEvent, interaction.Interaction);
-            RpcExecuteClientInteraction(ray, interactionName, reference.Id);
-
-            // TODO: Keep track of interactions for cancellation
-        }
-
-        /// <summary>
-        /// Confirms an interaction issued by a client
-        /// </summary>
-        [ObserversRpc]
-        private void RpcExecuteClientInteraction(Ray ray, string interactionName, int referenceId)
-        {
-            List<InteractionEntry> viableInteractions = GetViableInteractions(ray, out InteractionEvent interactionEvent);
-            InteractionEntry interaction =
-                viableInteractions.Find(entry => entry.Interaction.GetName(interactionEvent) == interactionName);
-
-            interactionEvent.Target = interaction.Target;
-
-            if (interaction.Interaction?.GetName(interactionEvent) != interactionName)
+            if (!TryValidateInteractionTarget(target, out GameObject targetGameObject))
             {
                 return;
             }
 
-            interactionEvent.Source.ClientInteract(interactionEvent, interaction.Interaction, new InteractionReference(referenceId));
+            List<InteractionEntry> viableInteractions = GetViableInteractionsFromTarget(targetGameObject, point, out InteractionEvent interactionEvent);
+            InteractionIdentifier id = new(genericName, targetComponentIndex);
+
+            if (!TryResolveDispatchedInteraction(viableInteractions, id, out InteractionEntry interaction))
+            {
+                LogRevalidationFailure(targetGameObject, point, id, clientEye);
+                TargetRejectInteraction(Owner);
+                return;
+            }
+
+            if (!TryValidateGameplayGates(interaction.Interaction, interactionEvent))
+            {
+                Log.Warning(this, "Rejected interaction {genericName} due to gameplay gates", Logs.Generic, genericName);
+                TargetRejectInteraction(Owner);
+                return;
+            }
+
+            interactionEvent.Target = interaction.Target;
+
+            bool accepted = ServerRunWithAnimation(interaction.Interaction, interactionEvent, () =>
+            {
+                InteractionReference reference = interactionEvent.Source.Interact(interactionEvent, interaction.Interaction);
+                TrackActiveInteraction(interactionEvent.Source, reference, interaction.Interaction);
+                if (Owner.IsValid)
+                {
+                    TargetExecuteClientInteraction(Owner, target, point, genericName, targetComponentIndex, reference.Id);
+                }
+            });
+            if (!accepted)
+            {
+                TargetRejectInteraction(Owner);
+            }
         }
 
         /// <summary>
-        /// Gets all possible interactions, given a ray
+        /// Confirms an interaction issued by a client. Sent to the owner only.
         /// </summary>
-        /// <param name="ray">The ray to use in ray casting</param>
-        /// <param name="interactionEvent">The produced interaction event</param>
-        /// <returns>A list of possible interactions</returns>
-        [ServerOrClient]
-        private List<InteractionEntry> GetViableInteractions(Ray ray, out InteractionEvent interactionEvent)
+        [TargetRpc(RunLocally = true)]
+        private void TargetExecuteClientInteraction(NetworkConnection conn, NetworkObject target, Vector3 point, string genericName, int targetComponentIndex, int referenceId)
         {
-            // Get source that's currently interacting (eg. hand, tool)
+            if (!IsOwner)
+            {
+                return;
+            }
+
+            try
+            {
+                if (!TryValidateInteractionTarget(target, out GameObject targetGameObject))
+                {
+                    return;
+                }
+
+                List<InteractionEntry> viableInteractions = GetViableInteractionsFromTarget(targetGameObject, point, out InteractionEvent interactionEvent);
+                InteractionIdentifier id = new(genericName, targetComponentIndex);
+
+                if (!TryResolveDispatchedInteraction(viableInteractions, id, out InteractionEntry interaction))
+                {
+                    Log.Warning(this, "Observer failed to resolve interaction {genericName} at target index {targetIndex}",
+                        Logs.Generic, genericName, targetComponentIndex);
+
+                    return;
+                }
+
+                interactionEvent.Target = interaction.Target;
+                interactionEvent.Source.ClientInteract(interactionEvent, interaction.Interaction, new InteractionReference(referenceId));
+                _delayedTracker.SetClientActive(interactionEvent.Source, referenceId);
+            }
+            finally
+            {
+                InteractionOutlineView.ClearPending();
+            }
+        }
+
+        /// <summary>
+        /// Gets all possible interactions from the shader selection pick on the client.
+        /// </summary>
+        [Client]
+        private List<InteractionEntry> GetViableInteractionsFromSelection(out InteractionEvent interactionEvent)
+        {
+            return InteractionDiscovery.GetViableInteractionsFromSelection(
+                GetActiveInteractionSource(),
+                _selectionSystem.GetCurrentSelectable(),
+                _camera,
+                CurrentIntent,
+                out interactionEvent);
+        }
+
+        /// <summary>
+        /// Gets all possible interactions for a resolved target object and interaction point.
+        /// </summary>
+        [ServerOrClient]
+        private List<InteractionEntry> GetViableInteractionsFromTarget(
+            GameObject targetGameObject,
+            bool hasPoint,
+            Vector3 point,
+            Vector3 normal,
+            out InteractionEvent interactionEvent)
+        {
+            return InteractionDiscovery.GetViableInteractionsFromTarget(
+                GetActiveInteractionSource(),
+                targetGameObject,
+                hasPoint,
+                point,
+                normal,
+                CurrentIntent,
+                out interactionEvent);
+        }
+
+        /// <summary>
+        /// Resolves a client-dispatched interaction. Exact <see cref="InteractionIdentifier"/> match first;
+        /// falls back to generic name when the client hovered a child Selectable (body part) but the RPC
+        /// revalidates against the parent NetworkObject root (different target-component indices).
+        /// </summary>
+        /// <summary>
+        /// Server diagnostics for #192 (tech-debt P1.9 step 1): why the server's copy of the body refused an interaction
+        /// the client offered. Logs the failing check, and for Drop how far the eye's line of sight missed the clicked
+        /// point and how far the server's eye is from the client's. Changes nothing.
+        /// </summary>
+        [Server]
+        private void LogRevalidationFailure(GameObject targetGameObject, Vector3 point, InteractionIdentifier id, Vector3 clientEye)
+        {
+            InteractionPipeline.ViabilityFailure reason = InteractionPipeline.ViabilityFailure.NoSuchInteraction;
             IInteractionSource source = GetActiveInteractionSource();
-
-            if (source == null)
+            if (source != null)
             {
-                interactionEvent = null;
-                return new List<InteractionEntry>();
+                List<IInteractionTarget> targets = InteractionDiscovery.GetTargetsFromGameObject(source, targetGameObject);
+                InteractionEvent interactionEvent = new(source, targets.Count > 0 ? targets[0] : null, point, Vector3.zero);
+                List<InteractionEntry> discovered = InteractionPipeline.Discover(source, targets, interactionEvent);
+                reason = InteractionPipeline.ExplainNotViable(source, discovered, interactionEvent, CurrentIntent, id);
             }
 
-            List<IInteractionTarget> targets = new();
-
-            // Raycast to find target game object
-            Vector3 point = Vector3.zero;
-            Vector3 normal = Vector3.zero;
-            bool raycast = Physics.Raycast(ray, out RaycastHit hit, float.PositiveInfinity, _selectionMask, QueryTriggerInteraction.Ignore);
-            if (raycast)
+            Vector3 serverEye = EyePosition();
+            float eyeDelta = RpcInput.IsFinite(clientEye) ? Vector3.Distance(serverEye, clientEye) : -1f;
+            if (id.GenericName == "Drop")
             {
-                point = hit.point;
-                normal = hit.normal;
-                GameObject target = hit.transform.gameObject;
-                targets = GetTargetsFromGameObject(source, target);
+                Log.Warning(this,
+                    "Server refused {genericName} on {target}: {reason}. LOS miss {losMiss:F3} m (allowed {losTolerance} m), server/client eye delta {eyeDelta:F3} m",
+                    Logs.Generic, id.GenericName, targetGameObject, reason,
+                    DropInteraction.LineOfSightMiss(serverEye, point), DropInteraction.LineOfSightTolerance, eyeDelta);
+                return;
             }
 
-            interactionEvent = new InteractionEvent(source, targets[0], point, normal);
+            Log.Warning(this,
+                "Server refused {genericName} at target index {targetIndex} on {target}: {reason}. Server/client eye delta {eyeDelta:F3} m",
+                Logs.Generic, id.GenericName, id.TargetComponentIndex, targetGameObject, reason, eyeDelta);
+        }
 
-            return GetInteractionsFromTargets(source, targets, interactionEvent);
+        private static bool TryResolveDispatchedInteraction(
+            List<InteractionEntry> viableInteractions,
+            InteractionIdentifier id,
+            out InteractionEntry interaction)
+        {
+            return InteractionDispatch.TryResolveDispatchedInteraction(viableInteractions, id, out interaction);
+        }
+
+        /// <summary>
+        /// RPC path: point was chosen on the client and sent over the wire (always treated as resolved).
+        /// </summary>
+        [ServerOrClient]
+        private List<InteractionEntry> GetViableInteractionsFromTarget(GameObject targetGameObject, Vector3 point, out InteractionEvent interactionEvent)
+        {
+            return InteractionDiscovery.GetViableInteractionsFromTarget(
+                GetActiveInteractionSource(),
+                targetGameObject,
+                point,
+                CurrentIntent,
+                out interactionEvent);
+        }
+
+        [Client]
+        private static bool TryGetNetworkTarget(InteractionEvent interactionEvent, out NetworkObject networkObject)
+        {
+            return InteractionDispatch.TryGetNetworkTarget(interactionEvent, out networkObject);
+        }
+
+        [Client]
+        private bool TryGetNetworkTargetForDispatch(
+            InteractionEntry entry,
+            InteractionEvent interactionEvent,
+            out NetworkObject networkObject)
+        {
+            return InteractionDispatch.TryGetNetworkTargetForDispatch(
+                entry,
+                interactionEvent,
+                _selectionSystem.GetCurrentSelectable(),
+                out networkObject);
+        }
+
+        [Client]
+        private static bool TryGetNetworkObject(IInteractionTarget target, out NetworkObject networkObject)
+        {
+            return InteractionDispatch.TryGetNetworkObject(target, out networkObject);
+        }
+
+        [Client]
+        private IInteractionTarget ResolveFallbackTarget(InteractionEvent interactionEvent, InteractionEntry entry)
+        {
+            return InteractionDispatch.ResolveFallbackTarget(
+                interactionEvent,
+                entry,
+                _selectionSystem.GetCurrentSelectable(),
+                GetActiveInteractionSource());
+        }
+
+        [Client]
+        private static List<InteractionEntry> FilterRadialInteractions(List<InteractionEntry> interactions)
+        {
+            return InteractionDispatch.FilterRadialInteractions(interactions);
+        }
+
+        [ServerOrClient]
+        private static bool TryValidateInteractionTarget(NetworkObject target, out GameObject targetGameObject)
+        {
+            return InteractionDispatch.TryValidateInteractionTarget(target, out targetGameObject);
+        }
+
+        private void ClearInteractionOutline()
+        {
+            _outlineDriver.Clear();
         }
 
         /// <summary>
         /// Gets all valid interaction targets from a game object
         /// </summary>
-        /// <param name="source">The source of the interaction</param>
-        /// <param name="targetGameObject">The game objects the interaction targets are on</param>
-        /// <returns>A list of all valid interaction targets</returns>
         [ServerOrClient]
         private List<IInteractionTarget> GetTargetsFromGameObject(IInteractionSource source, GameObject targetGameObject)
         {
-            List<IInteractionTarget> targets = new();
-
-            // Get all target components which are not disabled and the source can interact with
-            targets.AddRange(targetGameObject.GetComponents<IInteractionTarget>().Where(x => (x as MonoBehaviour)?.enabled != false && source.CanInteractWithTarget(x)));
-            if (targets.Count < 1)
-            {
-                targets.Add(new InteractionTargetGameObject(targetGameObject));
-            }
-
-            return targets;
-        }
-
-        /// <summary>
-        /// Generates all possible interactions, given both a source and targets
-        /// </summary>
-        /// <param name="source">The interaction source</param>
-        /// <param name="targets">The interaction targets</param>
-        /// <param name="interactionEvent">The interaction event data</param>
-        /// <returns>A list of all possible interaction entries</returns>
-        [ServerOrClient]
-        private List<InteractionEntry> GetInteractionsFromTargets(IInteractionSource source, List<IInteractionTarget> targets, InteractionEvent interactionEvent)
-        {
-            List<InteractionEntry> interactions = new();
-            Vector3 point = interactionEvent.Point;
-
-            // Generate interactions on targets
-            foreach (IInteractionTarget target in targets)
-            {
-                InteractionEvent e = new(source, target, point);
-                IInteraction[] targetInteractions = target.CreateTargetInteractions(e);
-
-                foreach (IInteraction interaction in targetInteractions)
-                {
-                    InteractionEntry entry = new(target, interaction);
-                    interactions.Add(entry);
-                }
-            }
-
-            // Allow the source to add its own interactions
-            source.CreateSourceInteractions(targets.ToArray(), interactions);
-
-            // Filter interactions to possible ones
-            List<InteractionEntry> interactionsFromTargets = new();
-            foreach (InteractionEntry entry in interactions)
-            {
-                InteractionEvent e = new(source, entry.Target, point);
-
-                if (entry.Interaction.CanInteract(e))
-                {
-                    interactionsFromTargets.Add(entry);
-                }
-            }
-
-            return interactionsFromTargets;
+            return InteractionDiscovery.GetTargetsFromGameObject(source, targetGameObject);
         }
 
         [ServerOrClient]
         private IInteractionSource GetActiveInteractionSource()
         {
-            IHandsController handsController = GetComponent<IHandsController>();
-            var interactionSource = handsController.GetActiveInteractionSource();
-
-            return interactionSource;
+            return InteractionDiscovery.GetActiveInteractionSource(this);
         }
 
         [ServerRpc]
-        private void CmdRunInventoryInteraction(GameObject target, GameObject sourceObject, int index, string interactionName)
+        private void CmdRunInventoryInteraction(GameObject target, GameObject sourceObject, string genericName, int targetComponentIndex)
         {
+            if (!TryValidateInventorySource(sourceObject))
+            {
+                Log.Error(this, "Rejected inventory interaction from invalid source {source}", Logs.Generic, sourceObject);
+                TargetRejectInteraction(Owner);
+                return;
+            }
+
             IInteractionSource source = sourceObject.GetComponent<IInteractionSource>();
             List<IInteractionTarget> targets = GetTargetsFromGameObject(source, target);
-            InteractionEvent interactionEvent = new(source, null, source.GameObject.transform.position);
+            InteractionEvent interactionEvent = new(source, null, source.GameObject.transform.position, Vector3.up);
 
-            List<InteractionEntry> entries = GetInteractionsFromTargets(source, targets, interactionEvent);
+            List<InteractionEntry> entries = InteractionPipeline.GetViableInteractions(source, targets, interactionEvent, CurrentIntent);
 
-            // TODO: Validate access to inventory
+            InteractionIdentifier id = new(genericName, targetComponentIndex);
 
-            // Check for valid interaction index
-            if (index < 0 || entries.Count <= index)
+            if (!InteractionEntry.TryResolve(entries, id, out InteractionEntry chosenEntry))
             {
-                Log.Error(target, "Inventory interaction with invalid index {index}", Logs.Generic, index);
+                Log.Error(target, "Failed to resolve inventory interaction {genericName} at target index {targetIndex}",
+                    Logs.Generic, genericName, targetComponentIndex);
 
+                TargetRejectInteraction(Owner);
                 return;
             }
 
-            InteractionEntry chosenEntry = entries[index];
+            if (!TryValidateGameplayGates(chosenEntry.Interaction, interactionEvent))
+            {
+                Log.Warning(this, "Rejected inventory interaction {genericName} due to gameplay gates", Logs.Generic, genericName);
+                TargetRejectInteraction(Owner);
+                return;
+            }
+
             interactionEvent.Target = chosenEntry.Target;
 
-            if (chosenEntry.Interaction.GetName(interactionEvent) != interactionName)
+            bool accepted = ServerRunWithAnimation(chosenEntry.Interaction, interactionEvent, () =>
             {
-                Log.Error(target, "Interaction at index {index} did not have the expected name of {interactionName}",
-                    Logs.Generic, index, interactionName);
-
-                return;
-            }
-
-            InteractionReference reference = interactionEvent.Source.Interact(interactionEvent, chosenEntry.Interaction);
-            if (chosenEntry.Interaction is IClientInteractionSource)
+                InteractionReference reference = interactionEvent.Source.Interact(interactionEvent, chosenEntry.Interaction);
+                TrackActiveInteraction(source, reference, chosenEntry.Interaction);
+                if (chosenEntry.Interaction is IClientInteractionSource)
+                {
+                    if (Owner.IsValid)
+                    {
+                        TargetExecuteClientInventoryInteraction(Owner, target, sourceObject, genericName, targetComponentIndex, reference.Id);
+                    }
+                }
+            });
+            if (!accepted)
             {
-                RpcExecuteClientInventoryInteraction(target, sourceObject, interactionName, reference.Id);
+                TargetRejectInteraction(Owner);
             }
         }
 
@@ -432,23 +1338,178 @@ namespace SS3D.Systems.Interactions
         /// <param name="sourceObject"></param>
         /// <param name="interactionName"></param>
         /// <param name="referenceId"></param>
-        [ObserversRpc]
-        private void RpcExecuteClientInventoryInteraction(GameObject target, GameObject sourceObject, string interactionName, int referenceId)
+        [TargetRpc(RunLocally = true)]
+        private void TargetExecuteClientInventoryInteraction(NetworkConnection conn, GameObject target, GameObject sourceObject, string genericName, int targetComponentIndex, int referenceId)
         {
-            if (IsServer)
+            if (!IsOwner)
             {
                 return;
             }
 
-            IInteractionSource source = sourceObject.GetComponent<IInteractionSource>();
-            List<IInteractionTarget> targets = GetTargetsFromGameObject(source, target);
-            InteractionEvent interactionEvent = new(source, new InteractionTargetGameObject(target));
-            List<InteractionEntry> entries = GetInteractionsFromTargets(source, targets, interactionEvent);
+            try
+            {
+                IInteractionSource source = sourceObject.GetComponent<IInteractionSource>();
+                List<IInteractionTarget> targets = GetTargetsFromGameObject(source, target);
+                InteractionEvent interactionEvent = new(source, new InteractionTargetGameObject(target));
+                List<InteractionEntry> entries = InteractionPipeline.GetViableInteractions(source, targets, interactionEvent, CurrentIntent);
+                InteractionIdentifier id = new(genericName, targetComponentIndex);
 
-            InteractionEntry chosenInteraction = entries.Find(entry => entry.Interaction.GetName(interactionEvent) == interactionName);
-            interactionEvent.Target = chosenInteraction.Target;
+                if (!InteractionEntry.TryResolve(entries, id, out InteractionEntry chosenInteraction))
+                {
+                    Log.Warning(this, "Observer failed to resolve inventory interaction {genericName} at target index {targetIndex}",
+                        Logs.Generic, genericName, targetComponentIndex);
 
-            interactionEvent.Source.ClientInteract(interactionEvent, chosenInteraction.Interaction, new InteractionReference(referenceId));
+                    return;
+                }
+
+                interactionEvent.Target = chosenInteraction.Target;
+                interactionEvent.Source.ClientInteract(interactionEvent, chosenInteraction.Interaction, new InteractionReference(referenceId));
+                _delayedTracker.SetClientActive(source, referenceId);
+            }
+            finally
+            {
+                InteractionOutlineView.ClearPending();
+            }
+        }
+
+        [ServerRpc]
+        private void CmdCancelInteraction(int referenceId)
+        {
+            GetCombatNetwork()?.ClearPendingMeleeConnect();
+
+            if (_delayedTracker.TryCancelServer(referenceId))
+            {
+                ClearActiveInteractionTracking();
+            }
+        }
+
+        [Server]
+        private void TrackActiveInteraction(IInteractionSource source, InteractionReference reference, IInteraction interaction)
+        {
+            _delayedTracker.TrackServer(source, reference, interaction);
+            UpdateInteractionKneel(interaction);
+        }
+
+        [Server]
+        private void ClearActiveInteractionTracking()
+        {
+            _delayedTracker.ClearServer();
+            SetServerHold(InteractionAnimation.None);
+            CombatInteractionNetwork combat = GetCombatNetwork();
+            combat?.ClearPendingMeleeConnect();
+            combat?.ClearMeleeAimPoint();
+        }
+
+        private void ClearClientActiveInteractionTracking()
+        {
+            _delayedTracker.ClearClient();
+        }
+
+        [Server]
+        private void RefreshServerDelayedInteractionTracking()
+        {
+            if (!_delayedTracker.TryRefreshServerEnded())
+            {
+                return;
+            }
+
+            SetServerHold(InteractionAnimation.None);
+
+            // Combat connect may still be pending when a DelayedInteraction ends.
+            CombatInteractionNetwork combat = GetCombatNetwork();
+            combat?.ClearPendingMeleeConnect();
+            combat?.ClearMeleeAimPoint();
+
+            if (Owner != null)
+            {
+                TargetNotifyDelayedInteractionEnded(Owner);
+            }
+        }
+
+        [Client]
+        private void RefreshClientDelayedInteractionTracking()
+        {
+            _delayedTracker.RefreshClient();
+        }
+
+        [TargetRpc]
+        private void TargetNotifyDelayedInteractionEnded(NetworkConnection connection)
+        {
+            ClearClientActiveInteractionTracking();
+            TakeFromCharacterEnded?.Invoke();
+        }
+
+        /// <summary>Clears optimistic UI when the server rejects an interaction for the owner.</summary>
+        [Server]
+        public void RejectInteractionForOwner()
+        {
+            if (Owner != null)
+            {
+                TargetRejectInteraction(Owner);
+            }
+        }
+
+        /// <summary>Melee swing Rpc — no client DelayedInteraction; track id for cancel/aim paths.</summary>
+        public void SetClientActiveDelayed(IInteractionSource source, int referenceId)
+        {
+            _delayedTracker.SetClientActive(source, referenceId);
+        }
+
+        private CombatInteractionNetwork GetCombatNetwork()
+        {
+            if (_combatNetwork == null)
+            {
+                _combatNetwork = GetComponent<CombatInteractionNetwork>();
+            }
+
+            return _combatNetwork;
+        }
+
+        [TargetRpc]
+        private void TargetRejectInteraction(NetworkConnection connection)
+        {
+            ClearClientActiveInteractionTracking();
+            InteractionOptimisticFeedback.ClearAll();
+            InteractionOutlineView.ClearPending();
+            TakeFromCharacterEnded?.Invoke();
+        }
+
+        private bool TryValidateGameplayGates(IInteraction interaction, InteractionEvent interactionEvent)
+        {
+            if (!InteractionPipeline.MatchesIntent(interaction, _currentIntent))
+            {
+                return false;
+            }
+
+            return interactionEvent.Source.CanExecuteInteraction(interaction);
+        }
+
+        private bool TryValidateInventorySource(GameObject sourceObject)
+        {
+            if (sourceObject == null)
+            {
+                return false;
+            }
+
+            if (sourceObject == gameObject)
+            {
+                return true;
+            }
+
+            if (sourceObject.transform.IsChildOf(transform))
+            {
+                return true;
+            }
+
+            Hands hands = GetComponent<Hands>();
+            Item item = sourceObject.GetComponent<Item>();
+
+            if (hands != null && item != null && hands.SelectedHand?.ItemInHand == item)
+            {
+                return true;
+            }
+
+            return false;
         }
     }
 }

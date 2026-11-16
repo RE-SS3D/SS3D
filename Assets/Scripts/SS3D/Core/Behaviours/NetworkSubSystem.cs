@@ -1,8 +1,9 @@
 ﻿namespace SS3D.Core.Behaviours
 {
     /// <summary>
-    /// Used on networked objects that won't have two of them at the same time.
-    /// Should not be instantiated at runtime.
+    /// Networked singleton service. One instance per type via <see cref="SubSystems"/>.
+    /// Live on the <c>NetworkSystemsHub</c> prefab (edit-time components); spawned with the hub Online —
+    /// do not <c>AddComponent</c> networked subsystems at runtime.
     /// </summary>
     public class NetworkSubSystem : NetworkActor, ISubSystem
     {

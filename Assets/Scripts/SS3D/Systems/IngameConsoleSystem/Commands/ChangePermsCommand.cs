@@ -1,49 +1,31 @@
-﻿using System;
-using System.Linq;
-using FishNet.Connection;
+using System.Collections.Generic;
 using SS3D.Core;
 using SS3D.Permissions;
 
 namespace SS3D.Systems.IngameConsoleSystem.Commands
 {
+    /// <summary>Grant a server role. admin-tools.md §2: only a ServerOwner grants and revokes roles.</summary>
     public class ChangePermsCommand : Command
     {
-        public override string ShortDescription => "Change user permission";
-        public override string Usage => "(user ckey) (required role)";
-        public override ServerRoleTypes AccessLevel => ServerRoleTypes.Administrator;
+        private static readonly IReadOnlyList<CommandParameter> Params = new[]
+        {
+            P.Text("ckey"),
+            P.Enum("role", ServerRoleTypes.Restricted, ServerRoleTypes.User, ServerRoleTypes.Administrator, ServerRoleTypes.ServerOwner),
+        };
+
+        public override string Name => "changeperms";
+        public override CommandCategory Category => CommandCategory.Admin;
+        public override string Description => "Set a player's server role";
+        public override ServerRoleTypes AccessLevel => ServerRoleTypes.ServerOwner;
         public override CommandType Type => CommandType.Server;
-        
-        private record CalculatedValues(string Ckey, ServerRoleTypes Role) : ICalculatedValues;
+        public override IReadOnlyList<CommandParameter> Parameters => Params;
+        public override string Example => "editorUser Administrator";
 
-        public override string Perform(string[] args, NetworkConnection conn = null)
+        public override CommandResult Perform(CommandContext context, CommandArgs args)
         {
-            if (!ReceiveCheckResponse(args, out CheckArgsResponse response, out CalculatedValues values)) return response.InvalidArgs;
-
-            SubSystems.Get<PermissionSubSystem>().ChangeUserPermission(values.Ckey, values.Role);
-            return "Permission changed to " + args[1];
-        }
-        
-        protected override CheckArgsResponse CheckArgs(string[] args)
-        {
-            CheckArgsResponse response = new();
-            if (args.Length != 2) return response.MakeInvalid("Invalid number of arguments");
-
-            ServerRoleTypes role = FindRole(args[1]);
-            if (role == ServerRoleTypes.None) return response.MakeInvalid("Role doesn't exist");
-            
-            return response.MakeValid(new CalculatedValues(args[0], role));
-        }
-
-        private ServerRoleTypes FindRole(string name)
-        {
-            string[] roleNames = typeof(ServerRoleTypes).GetFields().Select(item => item.Name).ToArray();
-            string foundRoleName = Array.Find(roleNames, item => item.ToLower() == name);
-            if (foundRoleName != null)
-            {
-                ServerRoleTypes.TryParse(foundRoleName, out ServerRoleTypes foundRole);
-                return foundRole;
-            }
-            return ServerRoleTypes.None;
+            ServerRoleTypes role = args.Get<ServerRoleTypes>("role");
+            SubSystems.Get<PermissionSubSystem>().ChangeUserPermission(args.Text("ckey"), role);
+            return CommandResult.Success($"Permission of {args.Text("ckey")} changed to {role}");
         }
     }
 }

@@ -1,0 +1,21 @@
+
+/* Painted track: radius and border only. The clip below cuts. */
+.gas-mix-bar {
+    height: 6px;
+    flex-shrink: 0;
+    background-color: var(--ss3d-diegetic-screen-bg);
+    border-width: 1px;
+    border-color: var(--ss3d-border-subtle);
+    border-radius: var(--ss3d-radius-sm);
+}
+
+.gas-mix-bar__clip {
+    flex-direction: row;
+    flex-grow: 1;
+    overflow: hidden;
+}
+
+.gas-mix-bar__segment {
+    height: 100%;
+    flex-basis: 0;
+}

@@ -1,6 +1,5 @@
 #if UNITY_EDITOR
 
-using EditorTools;
 using JetBrains.Annotations;
 using System;
 using System.Collections;

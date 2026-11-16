@@ -1,0 +1,58 @@
+# Real-Windows end-to-end check of the shipped updater: previous stable release -> latest stable,
+# via the release's own Update_SS3D.bat, then headless launches of the updated game and the backup.
+# See Tools/updater/README.md. Runs after manual Develop Release runs (numbered releases), on
+# demand, and on PRs that touch the e2e harness.
+name: Updater end-to-end (Windows)
+on:
+  workflow_run:
+    workflows: [Develop Release]
+    types: [completed]
+  workflow_dispatch:
+    inputs:
+      from_tag:
+        description: Stable release to update from (default = the one before the latest)
+        type: string
+        default: ''
+      repo_updater:
+        description: Test this branch's Builds/Update_SS3D.ps1 instead of the one the release shipped
+        type: boolean
+        default: false
+  pull_request:
+    paths:
+      - 'Builds/Update_SS3D.*'
+      - 'Tools/updater/e2e-*'
+      - '.github/workflows/updater-e2e.yml'
+
+jobs:
+  windows:
+    # Nightlies don't change the stable channel; only manual (numbered) release runs matter.
+    if: ${{ github.event_name != 'workflow_run' || (github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.event == 'workflow_dispatch') }}
+    runs-on: windows-latest
+    timeout-minutes: 30
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          lfs: false
+          sparse-checkout: |
+            Builds
+            Tools/updater
+      - name: Update previous stable release to latest with its own Update_SS3D.bat
+        shell: powershell
+        env:
+          GH_TOKEN: ${{ github.token }}
+          FROM_TAG: ${{ inputs.from_tag }}
+          # PRs test the changed updater; post-release runs test what players actually have.
+          REPO_UPDATER: ${{ github.event_name == 'pull_request' || inputs.repo_updater == true }}
+        run: ./Tools/updater/e2e-windows.ps1 -FromTag "$env:FROM_TAG" -WorkDir "$env:RUNNER_TEMP\ss3d-e2e" -UseRepoUpdater:($env:REPO_UPDATER -eq 'true')
+      - name: Upload game logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: updater-e2e-windows-logs
+          path: |
+            ${{ runner.temp }}/ss3d-e2e/*.log
+            ${{ runner.temp }}/ss3d-e2e/*.json
+          if-no-files-found: ignore
+          retention-days: 7

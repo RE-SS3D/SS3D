@@ -1,0 +1,3 @@
+# Headless host smoke for e2e-windows.ps1: the game boots, hosts and connects its own client.
+wait_connected
+wait_seconds 2

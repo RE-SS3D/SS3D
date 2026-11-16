@@ -1,0 +1,2164 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5b11a58205ec3474ca216360e9fa74a8, type: 3}
+  m_Name: Examine Shared Data
+  m_EditorClassIdentifier: 
+  m_TableCollectionName: Examine
+  m_TableCollectionNameGuidString: 8a4f2c1e9b3d4657a8e1f0c2d3b4a501
+  m_Entries:
+  - m_Id: 252934895001268224
+    m_Key: entities.humanoids.human.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239744
+    m_Key: entities.humanoids.human.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239745
+    m_Key: entities.silicon.engineering_borg.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239746
+    m_Key: entities.silicon.engineering_borg.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239747
+    m_Key: furniture.flora.potted_plants.plant_0.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239748
+    m_Key: furniture.flora.potted_plants.plant_0.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239749
+    m_Key: furniture.flora.potted_plants.plant_7.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239750
+    m_Key: furniture.flora.potted_plants.plant_7.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239751
+    m_Key: furniture.nuclear_device.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239752
+    m_Key: furniture.nuclear_device.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239753
+    m_Key: furniture.nuke_cart.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239754
+    m_Key: furniture.nuke_cart.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239755
+    m_Key: furniture.seats.chairs.office_chair.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239756
+    m_Key: furniture.seats.chairs.office_chair.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239757
+    m_Key: furniture.seats.chairs.plastic_chair.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239758
+    m_Key: furniture.seats.chairs.plastic_chair.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239759
+    m_Key: furniture.seats.diner_booth.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239760
+    m_Key: furniture.seats.diner_booth.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239761
+    m_Key: furniture.sink.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239762
+    m_Key: furniture.sink.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239763
+    m_Key: furniture.surfaces.tables.table_frame_steel.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239764
+    m_Key: furniture.surfaces.tables.table_frame_steel.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239765
+    m_Key: furniture.surfaces.tables.table_frame_wood.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239766
+    m_Key: furniture.surfaces.tables.table_frame_wood.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239767
+    m_Key: furniture.surfaces.tables.table_glass.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239768
+    m_Key: furniture.surfaces.tables.table_glass.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239769
+    m_Key: furniture.surfaces.tables.table_poker.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239770
+    m_Key: furniture.surfaces.tables.table_poker.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239771
+    m_Key: furniture.surfaces.tables.table_steel.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239772
+    m_Key: furniture.surfaces.tables.table_steel.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239773
+    m_Key: furniture.surfaces.tables.table_wood.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239774
+    m_Key: furniture.surfaces.tables.table_wood.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239775
+    m_Key: furniture.water_cooler.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239776
+    m_Key: furniture.water_cooler.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239777
+    m_Key: furniture.machines.atmospherics.scrubber.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239778
+    m_Key: furniture.machines.atmospherics.scrubber.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239779
+    m_Key: furniture.machines.atmospherics.vent.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239780
+    m_Key: furniture.machines.atmospherics.vent.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239781
+    m_Key: furniture.machines.engineering.pac_man_generator.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239782
+    m_Key: furniture.machines.engineering.pac_man_generator.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239783
+    m_Key: furniture.machines.engineering.power_cell_charger.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239784
+    m_Key: furniture.machines.engineering.power_cell_charger.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239785
+    m_Key: furniture.machines.engineering.smes.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239786
+    m_Key: furniture.machines.engineering.smes.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239787
+    m_Key: furniture.machines.engineering.solar_panel.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239788
+    m_Key: furniture.machines.engineering.solar_panel.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239789
+    m_Key: furniture.machines.engineering.solar_tracking_beacon.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239790
+    m_Key: furniture.machines.engineering.solar_tracking_beacon.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239791
+    m_Key: furniture.machines.slot_machine.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239792
+    m_Key: furniture.machines.slot_machine.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239793
+    m_Key: furniture.machines.tanks.fuel_tank.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239794
+    m_Key: furniture.machines.tanks.fuel_tank.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239795
+    m_Key: furniture.machines.tanks.water_tank.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239796
+    m_Key: furniture.machines.tanks.water_tank.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239797
+    m_Key: furniture.machines.kitchen.blender.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239798
+    m_Key: furniture.machines.kitchen.blender.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239799
+    m_Key: furniture.machines.kitchen.gibber.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239800
+    m_Key: furniture.machines.kitchen.gibber.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239801
+    m_Key: furniture.machines.kitchen.microwave.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239802
+    m_Key: furniture.machines.kitchen.microwave.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239803
+    m_Key: furniture.machines.kitchen.table_booze_dispenser.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239804
+    m_Key: furniture.machines.kitchen.table_booze_dispenser.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239805
+    m_Key: furniture.machines.machine_frame.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239806
+    m_Key: furniture.machines.machine_frame.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239807
+    m_Key: furniture.machines.medical.chemical_dispenser.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239808
+    m_Key: furniture.machines.medical.chemical_dispenser.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239809
+    m_Key: furniture.machines.medical.cryotube.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239810
+    m_Key: furniture.machines.medical.cryotube.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239811
+    m_Key: furniture.machines.medical.sleeper_bed.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239812
+    m_Key: furniture.machines.medical.sleeper_bed.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239813
+    m_Key: furniture.machines.supply.disposal_bin.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239814
+    m_Key: furniture.machines.supply.disposal_bin.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239815
+    m_Key: furniture.machines.supply.disposal_outlet.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239816
+    m_Key: furniture.machines.supply.disposal_outlet.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239817
+    m_Key: furniture.machines.vendors.vendor_hot_drinks.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239818
+    m_Key: furniture.machines.vendors.vendor_hot_drinks.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239819
+    m_Key: furniture.machines.vendors.vendor_robust_soft_drinks.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239820
+    m_Key: furniture.machines.vendors.vendor_robust_soft_drinks.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239821
+    m_Key: furniture.machines.vendors.vendor_sec_tech.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239822
+    m_Key: furniture.machines.vendors.vendor_sec_tech.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239823
+    m_Key: furniture.machines.vendors.vendor_you_tool.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239824
+    m_Key: furniture.machines.vendors.vendor_you_tool.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239825
+    m_Key: furniture.storage.lockers.locker.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239826
+    m_Key: furniture.storage.lockers.locker.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239827
+    m_Key: furniture.storage.lockers.locker_secure.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239828
+    m_Key: furniture.storage.lockers.locker_secure.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239829
+    m_Key: furniture.storage.lockers.security_locker.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239830
+    m_Key: furniture.storage.lockers.security_locker.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239831
+    m_Key: items.clothing.backpack.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239832
+    m_Key: items.clothing.backpack.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239833
+    m_Key: items.clothing.facewear_gas_mask.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239834
+    m_Key: items.clothing.facewear_gas_mask.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239835
+    m_Key: items.clothing.glove_insulated.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239836
+    m_Key: items.clothing.glove_insulated.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239837
+    m_Key: items.clothing.headset.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239838
+    m_Key: items.clothing.headset.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239839
+    m_Key: items.clothing.headset_security.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239840
+    m_Key: items.clothing.headset_security.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239841
+    m_Key: items.clothing.jumpsuit_botany.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239842
+    m_Key: items.clothing.jumpsuit_botany.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239843
+    m_Key: items.clothing.jumpsuit_engineer.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239844
+    m_Key: items.clothing.jumpsuit_engineer.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239845
+    m_Key: items.clothing.jumpsuit_grey.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239846
+    m_Key: items.clothing.jumpsuit_grey.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239847
+    m_Key: items.clothing.jumpsuit_security.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239848
+    m_Key: items.clothing.jumpsuit_security.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239849
+    m_Key: items.clothing.shoe_hi_tops.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239850
+    m_Key: items.clothing.shoe_hi_tops.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239851
+    m_Key: items.clothing.shoe_jackboots.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239852
+    m_Key: items.clothing.shoe_jackboots.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239853
+    m_Key: items.clothing.sunglasses.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239854
+    m_Key: items.clothing.sunglasses.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239855
+    m_Key: items.clothing.toolbelt.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239856
+    m_Key: items.clothing.toolbelt.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239857
+    m_Key: items.clothing.trucker_cap.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239858
+    m_Key: items.clothing.trucker_cap.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239859
+    m_Key: items.consumable.chemical.medications.brute_patch.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239860
+    m_Key: items.consumable.chemical.medications.brute_patch.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239861
+    m_Key: items.consumable.chemical.medications.burn_patch.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239862
+    m_Key: items.consumable.chemical.medications.burn_patch.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239863
+    m_Key: items.consumable.chemical.medications.medical_patch.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239864
+    m_Key: items.consumable.chemical.medications.medical_patch.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239865
+    m_Key: items.consumable.food.drinks.soda.soda_can_beeps_soda.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239866
+    m_Key: items.consumable.food.drinks.soda.soda_can_beeps_soda.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239867
+    m_Key: items.consumable.food.drinks.soda.soda_can_beepy_lime.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239868
+    m_Key: items.consumable.food.drinks.soda.soda_can_beepy_lime.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239869
+    m_Key: items.consumable.food.drinks.soda.soda_can_canned_air.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239870
+    m_Key: items.consumable.food.drinks.soda.soda_can_canned_air.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239871
+    m_Key: items.consumable.food.drinks.soda.soda_can_canned_laughter.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239872
+    m_Key: items.consumable.food.drinks.soda.soda_can_canned_laughter.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239873
+    m_Key: items.consumable.food.drinks.soda.soda_can_cola.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239874
+    m_Key: items.consumable.food.drinks.soda.soda_can_cola.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239875
+    m_Key: items.consumable.food.drinks.soda.soda_can_duke_purple_tea.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239876
+    m_Key: items.consumable.food.drinks.soda.soda_can_duke_purple_tea.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239877
+    m_Key: items.consumable.food.drinks.soda.soda_can_generic.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239878
+    m_Key: items.consumable.food.drinks.soda.soda_can_generic.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239879
+    m_Key: items.consumable.food.drinks.soda.soda_can_tonic.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239880
+    m_Key: items.consumable.food.drinks.soda.soda_can_tonic.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239881
+    m_Key: items.consumable.food.general.snacks.donk_pocket.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239882
+    m_Key: items.consumable.food.general.snacks.donk_pocket.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239883
+    m_Key: items.cosmetic.bike_horn.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239884
+    m_Key: items.cosmetic.bike_horn.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239885
+    m_Key: items.doodad.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239886
+    m_Key: items.doodad.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239887
+    m_Key: items.boombox.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239888
+    m_Key: items.boombox.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239889
+    m_Key: items.floor_tile_grey.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239890
+    m_Key: items.floortile.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239891
+    m_Key: items.grey_floor_tile.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239892
+    m_Key: items.grey_floor_tile.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239893
+    m_Key: items.identification.id_card.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239894
+    m_Key: items.identification.id_card.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239895
+    m_Key: items.identification.pda.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239896
+    m_Key: items.identification.pda.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239897
+    m_Key: items.identification.security_id_card.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239898
+    m_Key: items.identification.security_id_card.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239899
+    m_Key: items.identification.security_pda.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239900
+    m_Key: items.identification.security_pda.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239901
+    m_Key: items.poster.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239902
+    m_Key: items.poster.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239903
+    m_Key: items.tanks.oxygen_tank.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239904
+    m_Key: items.tanks.oxygen_tank.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239905
+    m_Key: items.tanks.plasma_tank.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239906
+    m_Key: items.tanks.plasma_tank.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239907
+    m_Key: items.materials.electrical_cable.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239908
+    m_Key: items.materials.electrical_cable.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239909
+    m_Key: items.materials.electrical_wire.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239910
+    m_Key: items.materials.electrical_wire.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239911
+    m_Key: items.materials.glass_reinforced_sheet.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239912
+    m_Key: items.materials.glass_reinforced_sheet.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239913
+    m_Key: items.materials.glass_shard.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239914
+    m_Key: items.materials.glass_shard.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239915
+    m_Key: items.materials.glass_sheet.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239916
+    m_Key: items.materials.glass_sheet.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239917
+    m_Key: items.materials.steel_reinforced_sheet.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239918
+    m_Key: items.materials.steel_reinforced_sheet.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239919
+    m_Key: items.materials.steel_rod.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239920
+    m_Key: items.materials.steel_rod.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239921
+    m_Key: items.materials.steel_sheet.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239922
+    m_Key: items.materials.steel_sheet.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239923
+    m_Key: items.materials.wood_log.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239924
+    m_Key: items.materials.wood_log.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239925
+    m_Key: items.materials.wood_plank.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239926
+    m_Key: items.materials.wood_plank.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239927
+    m_Key: items.parts.machine_parts.matter_bin.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239928
+    m_Key: items.parts.machine_parts.matter_bin.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239929
+    m_Key: items.parts.machine_parts.micro_laser.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239930
+    m_Key: items.parts.machine_parts.micro_laser.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239931
+    m_Key: items.parts.power_cells.power_cell.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239932
+    m_Key: items.parts.power_cells.power_cell.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239933
+    m_Key: items.parts.power_cells.power_cell_admin.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239934
+    m_Key: items.parts.power_cells.power_cell_admin.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239935
+    m_Key: items.storage.objects.medkit.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239936
+    m_Key: items.storage.objects.medkit.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239937
+    m_Key: items.storage.objects.toolboxblue.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239938
+    m_Key: items.storage.objects.toolboxblue.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239939
+    m_Key: items.storage.substances.mug.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239940
+    m_Key: items.storage.substances.mug.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239941
+    m_Key: items.tools.botany.hatchet.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239942
+    m_Key: items.tools.botany.hatchet.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239943
+    m_Key: items.tools.command.nuclear_authentication_disc.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239944
+    m_Key: items.tools.command.nuclear_authentication_disc.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239945
+    m_Key: items.tools.engineering.crowbar.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239946
+    m_Key: items.tools.engineering.crowbar.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239947
+    m_Key: items.tools.engineering.multitool.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239948
+    m_Key: items.tools.engineering.multitool.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239949
+    m_Key: items.tools.engineering.screwdriver.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239950
+    m_Key: items.tools.engineering.screwdriver.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239951
+    m_Key: items.tools.engineering.welder.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239952
+    m_Key: items.tools.engineering.welder.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239953
+    m_Key: items.tools.engineering.wirecutters.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239954
+    m_Key: items.tools.engineering.wirecutters.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239955
+    m_Key: items.tools.engineering.wrench.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239956
+    m_Key: items.tools.engineering.wrench.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239957
+    m_Key: items.tools.flashlight.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239958
+    m_Key: items.tools.flashlight.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239959
+    m_Key: items.tools.kitchen.kitchen_knife.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239960
+    m_Key: items.tools.kitchen.kitchen_knife.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239961
+    m_Key: items.tools.medical.health_scanner.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239962
+    m_Key: items.tools.medical.health_scanner.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239963
+    m_Key: structures.doors.civilian_airlock.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239964
+    m_Key: structures.doors.civilian_airlock.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239965
+    m_Key: structures.doors.security_airlock.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239966
+    m_Key: structures.doors.security_airlock.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239967
+    m_Key: structures.floors.catwalk.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239968
+    m_Key: structures.floors.catwalk.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239969
+    m_Key: structures.floors.lattice.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239970
+    m_Key: structures.floors.lattice.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239971
+    m_Key: structures.floors.plenum.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239972
+    m_Key: structures.floors.plenum.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239973
+    m_Key: structures.floors.tiles.airlock_floor_tile.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239974
+    m_Key: structures.floors.tiles.airlock_floor_tile.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239975
+    m_Key: structures.floors.tiles.fancy_carpet_red.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239976
+    m_Key: structures.floors.tiles.fancy_carpet_red.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239977
+    m_Key: structures.floors.tiles.tile_bar.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239978
+    m_Key: structures.floors.tiles.tile_bar.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239979
+    m_Key: structures.floors.tiles.tile_grey.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239980
+    m_Key: structures.floors.tiles.tile_grey.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239981
+    m_Key: structures.floors.tiles.tile_grey_dark.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239982
+    m_Key: structures.floors.tiles.tile_grey_dark.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239983
+    m_Key: structures.floors.tiles.tile_kitchen.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239984
+    m_Key: structures.floors.tiles.tile_kitchen.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239985
+    m_Key: structures.floors.tiles.tile_plating.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239986
+    m_Key: structures.floors.tiles.tile_plating.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239987
+    m_Key: structures.floors.tiles.tile_white.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239988
+    m_Key: structures.floors.tiles.tile_white.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239989
+    m_Key: structures.floors.tiles.tile_wood.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239990
+    m_Key: structures.floors.tiles.tile_wood.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239991
+    m_Key: structures.pipes.atmos_pipe.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239992
+    m_Key: structures.pipes.atmos_pipes_supply.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239993
+    m_Key: structures.pipes.atmos_pipes_mixed.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239994
+    m_Key: structures.pipes.atmos_pipes_waste.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239995
+    m_Key: structures.pipes.atmos_pipes_surface.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239996
+    m_Key: structures.pipes.disposal_pipe.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239997
+    m_Key: structures.pipes.disposal_pipes.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239998
+    m_Key: structures.wall_mounts.apc.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239999
+    m_Key: structures.wall_mounts.apc.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022240000
+    m_Key: structures.wall_mounts.air_alarm.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022240001
+    m_Key: structures.wall_mounts.air_alarm.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022240002
+    m_Key: structures.wall_mounts.fire_alarm.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022240003
+    m_Key: structures.wall_mounts.fire_alarm.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022240004
+    m_Key: structures.wall_mounts.light_switch.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022240005
+    m_Key: structures.wall_mounts.light_switch.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022240006
+    m_Key: structures.wall_mounts.lights.light_bulb_fixture.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022240007
+    m_Key: structures.wall_mounts.lights.light_bulb_fixture.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022240008
+    m_Key: structures.wall_mounts.lights.light_tube_fixture.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022240009
+    m_Key: structures.wall_mounts.lights.light_tube_fixture.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022240010
+    m_Key: structures.wall_mounts.mirror.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022240011
+    m_Key: structures.wall_mounts.mirror.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022240012
+    m_Key: structures.wall_mounts.mirror_broken.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022240013
+    m_Key: structures.wall_mounts.mirror_broken.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022240014
+    m_Key: structures.wall_mounts.posters.poster_horizontal.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022240015
+    m_Key: structures.wall_mounts.posters.poster_horizontal.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022240016
+    m_Key: structures.wall_mounts.posters.poster_vertical.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022240017
+    m_Key: structures.wall_mounts.posters.poster_vertical.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022240018
+    m_Key: structures.walls.steel_girder.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022240019
+    m_Key: structures.walls.steel_girder.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022240020
+    m_Key: structures.walls.steel_wall.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022240021
+    m_Key: structures.walls.steel_wall.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022240022
+    m_Key: structures.walls.steel_wall_reinforced.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022240023
+    m_Key: structures.walls.steel_wall_reinforced.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022240024
+    m_Key: structures.walls.steel_window.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022240025
+    m_Key: structures.walls.steel_window.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022240026
+    m_Key: structures.walls.steel_window_reinforced.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022240027
+    m_Key: structures.walls.steel_window_reinforced.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022240028
+    m_Key: structures.wires.cables.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022240029
+    m_Key: structures.wires.cables.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022240030
+    m_Key: structures.wires.wires.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022240031
+    m_Key: structures.wires.wires.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022240032
+    m_Key: furniture.machines.atmospherics.gas_pump.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022240033
+    m_Key: furniture.machines.atmospherics.gas_pump.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252937831022456832
+    m_Key: examine.identification.owner
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252937831043428352
+    m_Key: examine.identification.role
+    m_Metadata:
+      m_Items: []
+  - m_Id: 257390954000543744
+    m_Key: examine.structural.damaged
+    m_Metadata:
+      m_Items: []
+  - m_Id: 257390954025709568
+    m_Key: examine.structural.cracked
+    m_Metadata:
+      m_Items: []
+  - m_Id: 257390954050000000
+    m_Key: character_examine.unidentified_crew_member
+    m_Metadata:
+      m_Items: []
+  - m_Id: 257391100000000001
+    m_Key: examine.health.dead.self
+    m_Metadata:
+      m_Items: []
+  - m_Id: 257391100000000002
+    m_Key: examine.health.dead.other
+    m_Metadata:
+      m_Items: []
+  - m_Id: 257391100000000003
+    m_Key: examine.health.cardiac_arrest.self
+    m_Metadata:
+      m_Items: []
+  - m_Id: 257391100000000004
+    m_Key: examine.health.cardiac_arrest.other
+    m_Metadata:
+      m_Items: []
+  - m_Id: 257391100000000005
+    m_Key: examine.health.critical.self
+    m_Metadata:
+      m_Items: []
+  - m_Id: 257391100000000006
+    m_Key: examine.health.critical.other
+    m_Metadata:
+      m_Items: []
+  - m_Id: 257391100000000007
+    m_Key: examine.health.unconscious.self
+    m_Metadata:
+      m_Items: []
+  - m_Id: 257391100000000008
+    m_Key: examine.health.unconscious.other
+    m_Metadata:
+      m_Items: []
+  - m_Id: 257391100000000009
+    m_Key: examine.health.severed
+    m_Metadata:
+      m_Items: []
+  - m_Id: 257391100000000010
+    m_Key: examine.health.bleeding
+    m_Metadata:
+      m_Items: []
+  - m_Id: 257391100000000011
+    m_Key: examine.health.zone_severity
+    m_Metadata:
+      m_Items: []
+  - m_Id: 257391100000000012
+    m_Key: examine.health.organ_strained
+    m_Metadata:
+      m_Items: []
+  - m_Id: 257391100000000013
+    m_Key: examine.health.organ_failing
+    m_Metadata:
+      m_Items: []
+  - m_Id: 257391100000000014
+    m_Key: examine.health.organ_critical
+    m_Metadata:
+      m_Items: []
+  - m_Id: 257391100000000015
+    m_Key: examine.health.organ_destroyed
+    m_Metadata:
+      m_Items: []
+  - m_Id: 257391100000000016
+    m_Key: examine.health.other.hurt_and_bleeding
+    m_Metadata:
+      m_Items: []
+  - m_Id: 257391100000000017
+    m_Key: examine.health.other.bleeding
+    m_Metadata:
+      m_Items: []
+  - m_Id: 257391100000000018
+    m_Key: examine.health.other.hurt
+    m_Metadata:
+      m_Items: []
+  - m_Id: 257391100000000019
+    m_Key: examine.health.other.missing
+    m_Metadata:
+      m_Items: []
+  - m_Id: 257391100000000020
+    m_Key: examine.health.other.missing_hurt_bleeding
+    m_Metadata:
+      m_Items: []
+  - m_Id: 257391100000000021
+    m_Key: examine.health.other.missing_bleeding
+    m_Metadata:
+      m_Items: []
+  - m_Id: 257391100000000022
+    m_Key: examine.health.other.missing_hurt
+    m_Metadata:
+      m_Items: []
+  - m_Id: 257391100000000023
+    m_Key: examine.health.self.hurt_and_bleeding
+    m_Metadata:
+      m_Items: []
+  - m_Id: 257391100000000024
+    m_Key: examine.health.self.bleeding
+    m_Metadata:
+      m_Items: []
+  - m_Id: 257391100000000025
+    m_Key: examine.health.self.hurt
+    m_Metadata:
+      m_Items: []
+  - m_Id: 257391100000000026
+    m_Key: examine.health.self.missing
+    m_Metadata:
+      m_Items: []
+  - m_Id: 257391100000000027
+    m_Key: examine.health.self.missing_hurt_bleeding
+    m_Metadata:
+      m_Items: []
+  - m_Id: 257391100000000028
+    m_Key: examine.health.self.missing_bleeding
+    m_Metadata:
+      m_Items: []
+  - m_Id: 257391100000000029
+    m_Key: examine.health.self.missing_hurt
+    m_Metadata:
+      m_Items: []
+  - m_Id: 257391100000000030
+    m_Key: examine.health.feel.dizzy
+    m_Metadata:
+      m_Items: []
+  - m_Id: 257391100000000031
+    m_Key: examine.health.feel.fading
+    m_Metadata:
+      m_Items: []
+  - m_Id: 257391100000000032
+    m_Key: examine.health.feel.weak
+    m_Metadata:
+      m_Items: []
+  - m_Id: 257391100000000033
+    m_Key: examine.health.feel.breathless
+    m_Metadata:
+      m_Items: []
+  - m_Id: 257391100000000034
+    m_Key: examine.health.feel.nauseous
+    m_Metadata:
+      m_Items: []
+  - m_Id: 257391100000000035
+    m_Key: examine.health.feel.heart_tight
+    m_Metadata:
+      m_Items: []
+  - m_Id: 257391100000000036
+    m_Key: examine.health.feel.breath_hurts
+    m_Metadata:
+      m_Items: []
+  - m_Id: 257391100000000037
+    m_Key: examine.health.feel.side_aches
+    m_Metadata:
+      m_Items: []
+  - m_Id: 257391100000000038
+    m_Key: examine.health.feel.limb_useless
+    m_Metadata:
+      m_Items: []
+  - m_Id: 295629502976073728
+    m_Key: examine.structural.torn_metal
+    m_Metadata:
+      m_Items: []
+  - m_Id: 295631575918551040
+    m_Key: examine.structural.gouged_wood
+    m_Metadata:
+      m_Items: []
+  - m_Id: 295631575939522560
+    m_Key: examine.structural.split_wood
+    m_Metadata:
+      m_Items: []
+  - m_Id: 295634111387901952
+    m_Key: examine.structural.chipped_glass
+    m_Metadata:
+      m_Items: []
+  - m_Id: 295634111404679168
+    m_Key: examine.structural.fractured_glass
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252937831064399873
+    m_Key: examine.seal.intact
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252937831064399874
+    m_Key: examine.seal.breached
+    m_Metadata:
+      m_Items: []
+  - m_Id: 296172240830177280
+    m_Key: structures.pipes.atmos_pump_volume.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 296172240855343104
+    m_Key: structures.pipes.atmos_pump_volume.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 296172240855343105
+    m_Key: structures.pipes.atmos_valve_manual.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 296172240855343106
+    m_Key: structures.pipes.atmos_valve_manual.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 296172240855343107
+    m_Key: structures.pipes.atmos_valve_digital.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 296172240855343108
+    m_Key: structures.pipes.atmos_valve_digital.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 296172240855343109
+    m_Key: structures.pipes.atmos_manifold_3.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 296172240855343110
+    m_Key: structures.pipes.atmos_manifold_3.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 296172240855343111
+    m_Key: structures.pipes.atmos_manifold_4.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 296172240855343112
+    m_Key: structures.pipes.atmos_manifold_4.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 296342594903056384
+    m_Key: structures.pipes.atmos_filter.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 296342594932416512
+    m_Key: structures.pipes.atmos_filter.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 296342594932416513
+    m_Key: structures.pipes.atmos_mixer.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 296342594936610816
+    m_Key: structures.pipes.atmos_mixer.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 296342594936610817
+    m_Key: structures.pipes.atmos_meter.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 296342594936610818
+    m_Key: structures.pipes.atmos_meter.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 296342594936610819
+    m_Key: structures.pipes.atmos_injector.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 296342594936610820
+    m_Key: structures.pipes.atmos_injector.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 296089487001546752
+    m_Key: examine.tank.fill
+    m_Metadata:
+      m_Items: []
+  - m_Id: 296112289708535808
+    m_Key: items.clothing.syndicate_magboots.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 296112289742090240
+    m_Key: items.clothing.syndicate_magboots.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 296137613293887488
+    m_Key: items.clothing.syndicate_hardsuit.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 296137613323247616
+    m_Key: items.clothing.syndicate_hardsuit.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 296137613323247617
+    m_Key: items.clothing.syndicate_hardsuit_helmet.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 296137613323247618
+    m_Key: items.clothing.syndicate_hardsuit_helmet.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 296406898272608256
+    m_Key: items.weapons.ionrifle.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 296406898314551296
+    m_Key: items.weapons.ionrifle.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 296407231195488256
+    m_Key: items.weapons.laserrifle.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 296407231203876864
+    m_Key: items.weapons.laserrifle.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 296407234903252992
+    m_Key: items.weapons.taser.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 296407234903252993
+    m_Key: items.weapons.taser.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 296422524005359616
+    m_Key: items.weapons.c4.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 296422524022136832
+    m_Key: items.weapons.c4.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 296446533984034816
+    m_Key: items.weapons.x4.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 296446534005006336
+    m_Key: items.weapons.x4.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 296446538652295168
+    m_Key: items.weapons.syndicateminibomb.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 296446538652295169
+    m_Key: items.weapons.syndicateminibomb.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 296457849096347648
+    m_Key: examine.structural.fractured_floor
+    m_Metadata:
+      m_Items: []
+  - m_Id: 296457849121513472
+    m_Key: examine.structural.damaged_plating
+    m_Metadata:
+      m_Items: []
+  - m_Id: 297502203608068096
+    m_Key: items.parts.light_bulb.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 297502203650011136
+    m_Key: items.parts.light_bulb.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 297502208683175936
+    m_Key: items.parts.light_bulb_broken.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 297502208683175937
+    m_Key: items.parts.light_bulb_broken.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 297502212634210304
+    m_Key: items.parts.light_tube.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 297502212634210305
+    m_Key: items.parts.light_tube.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 297502216304226304
+    m_Key: items.parts.light_tube_broken.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 297502216304226305
+    m_Key: items.parts.light_tube_broken.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 297530947802525696
+    m_Key: examine.device.dented
+    m_Metadata:
+      m_Items: []
+  - m_Id: 297530947844468736
+    m_Key: examine.device.broken
+    m_Metadata:
+      m_Items: []
+  - m_Id: 297583453850017792
+    m_Key: examine.construction.floor_pry
+    m_Metadata:
+      m_Items: []
+  - m_Id: 297583453879377920
+    m_Key: examine.construction.bare_plating
+    m_Metadata:
+      m_Items: []
+  - m_Id: 297583453879377921
+    m_Key: examine.construction.repair_welder
+    m_Metadata:
+      m_Items: []
+  - m_Id: 297583453879377922
+    m_Key: examine.construction.girder
+    m_Metadata:
+      m_Items: []
+  - m_Id: 297583453879377923
+    m_Key: examine.construction.girder_plated
+    m_Metadata:
+      m_Items: []
+  - m_Id: 297583453879377924
+    m_Key: examine.construction.wall_cut_seams
+    m_Metadata:
+      m_Items: []
+  - m_Id: 297583453879377925
+    m_Key: examine.construction.window_lift_pane
+    m_Metadata:
+      m_Items: []
+  - m_Id: 297583453879377926
+    m_Key: examine.construction.reinforced
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298192516493320192
+    m_Key: examine.construction.floor_damaged
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298314483225567232
+    m_Key: examine.tank.fill_low
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298314483246538752
+    m_Key: examine.substance.empty
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298314483246538753
+    m_Key: examine.substance.contains
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298314483246538754
+    m_Key: examine.substance.volume.few
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298314483246538755
+    m_Key: examine.substance.volume.small
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298314483246538756
+    m_Key: examine.substance.volume.moderate
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298314483246538757
+    m_Key: examine.substance.volume.large
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298314483246538758
+    m_Key: examine.substance.feels
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298314483246538759
+    m_Key: examine.substance.temp.frozen
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298314483246538760
+    m_Key: examine.substance.temp.cold
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298314483246538761
+    m_Key: examine.substance.temp.cool
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298314483246538762
+    m_Key: examine.substance.temp.warm
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298314483246538763
+    m_Key: examine.substance.temp.hot
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298314483246538764
+    m_Key: examine.substance.temp.scalding
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298314483246538765
+    m_Key: examine.substance.looks
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298314483246538766
+    m_Key: examine.substance.color.clear
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298314483246538767
+    m_Key: examine.substance.color.murky
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298314483246538768
+    m_Key: examine.substance.color.red
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298314483246538769
+    m_Key: examine.substance.color.orange
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298314483246538770
+    m_Key: examine.substance.color.yellow
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298314483246538771
+    m_Key: examine.substance.color.green
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298314483246538772
+    m_Key: examine.substance.color.blue
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298314483246538773
+    m_Key: examine.substance.color.purple
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298317283615547392
+    m_Key: examine.item.size
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298317283632324608
+    m_Key: examine.item.stack
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298317283632324609
+    m_Key: examine.item.size.tiny
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298317283632324610
+    m_Key: examine.item.size.small
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298317283632324611
+    m_Key: examine.item.size.normal
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298317283632324612
+    m_Key: examine.item.size.bulky
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298317283632324613
+    m_Key: examine.item.size.huge
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298317283632324614
+    m_Key: character_examine.unknown_in_outfit
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298317283632324615
+    m_Key: examine.self.presenting
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298317283632324616
+    m_Key: examine.self.presenting_no_job
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298317283632324617
+    m_Key: examine.self.presenting_nothing
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298320605231685632
+    m_Key: examine.disposal.tag
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298320605248462848
+    m_Key: examine.device.powered
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298320605248462849
+    m_Key: examine.device.unpowered
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298320605248462850
+    m_Key: examine.weapon.rounds
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298320605248462851
+    m_Key: examine.weapon.rounds_empty
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298320605248462852
+    m_Key: examine.weapon.charge
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298320605248462853
+    m_Key: examine.weapon.charge_empty
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298326310546284544
+    m_Key: action.examine_cue
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298326310563061760
+    m_Key: action.take_blind
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298326310563061761
+    m_Key: action.take_open
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298329279073329152
+    m_Key: action.light_switch
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298330755267010560
+    m_Key: action.plant_charge
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298583315651469312
+    m_Key: furniture.jukebox.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298583315676635136
+    m_Key: furniture.jukebox.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298583317127864320
+    m_Key: structures.doors.airlock_panel.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298583317127864321
+    m_Key: structures.doors.airlock_panel.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298583318595870720
+    m_Key: structures.floors.tiles.tile_dirt.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298583318595870721
+    m_Key: structures.floors.tiles.tile_dirt.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298583320034516992
+    m_Key: structures.floors.tiles.tile_grass.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298583320034516993
+    m_Key: structures.floors.tiles.tile_grass.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298583321477357568
+    m_Key: structures.floors.tiles.tile_reinforced.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298583321477357569
+    m_Key: structures.floors.tiles.tile_reinforced.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298600052098834432
+    m_Key: action.nuke_load_disk
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298600052119805952
+    m_Key: action.nuke_arm
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298600052119805953
+    m_Key: action.nuke_open_panel
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298600052119805954
+    m_Key: action.nuke_cut_wires
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298600052119805955
+    m_Key: examine.nuke.disk_empty
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298600052119805956
+    m_Key: examine.nuke.disk_loaded
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298600052119805957
+    m_Key: examine.nuke.safe
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298600052119805958
+    m_Key: examine.nuke.armed
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298600052119805959
+    m_Key: examine.nuke.panel_open
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298639841044963328
+    m_Key: items.clothing.jumpsuit_captain.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298639841065934848
+    m_Key: items.clothing.jumpsuit_captain.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298639841065934849
+    m_Key: items.clothing.cap_captain.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298639841065934850
+    m_Key: items.clothing.cap_captain.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298639841065934851
+    m_Key: items.clothing.backpack_command.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298639841065934852
+    m_Key: items.clothing.backpack_command.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298639841065934853
+    m_Key: items.clothing.jumpsuit_medical.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298639841065934854
+    m_Key: items.clothing.jumpsuit_medical.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298639841065934855
+    m_Key: items.clothing.lab_coat.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298639841065934856
+    m_Key: items.clothing.lab_coat.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298639841065934857
+    m_Key: items.clothing.backpack_medical.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298639841065934858
+    m_Key: items.clothing.backpack_medical.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298639841065934859
+    m_Key: items.clothing.armor_vest_security.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298639841065934860
+    m_Key: items.clothing.armor_vest_security.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298639841065934861
+    m_Key: items.clothing.helmet_security.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298639841065934862
+    m_Key: items.clothing.helmet_security.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298639841065934863
+    m_Key: items.clothing.cap_security.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298639841065934864
+    m_Key: items.clothing.cap_security.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298639841065934865
+    m_Key: items.clothing.glasses_security_hud.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298639841065934866
+    m_Key: items.clothing.glasses_security_hud.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298639841065934867
+    m_Key: items.clothing.backpack_security.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298639841065934868
+    m_Key: items.clothing.backpack_security.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298639841065934869
+    m_Key: items.clothing.hard_hat_yellow.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298639841065934870
+    m_Key: items.clothing.hard_hat_yellow.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298639841065934871
+    m_Key: items.clothing.shoe_work_boots.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298639841065934872
+    m_Key: items.clothing.shoe_work_boots.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298639841065934873
+    m_Key: items.clothing.welding_mask.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298639841065934874
+    m_Key: items.clothing.welding_mask.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298639841065934875
+    m_Key: items.clothing.goggles_meson.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298639841065934876
+    m_Key: items.clothing.goggles_meson.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298639841065934877
+    m_Key: items.clothing.jumpsuit_syndicate.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298639841065934878
+    m_Key: items.clothing.jumpsuit_syndicate.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298639841065934879
+    m_Key: items.clothing.armor_vest_syndicate.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298639841065934880
+    m_Key: items.clothing.armor_vest_syndicate.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298639841065934881
+    m_Key: items.clothing.shoe_syndicate_boots.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298639841065934882
+    m_Key: items.clothing.shoe_syndicate_boots.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298639841065934883
+    m_Key: items.clothing.glove_syndicate.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298639841065934884
+    m_Key: items.clothing.glove_syndicate.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298977481593221120
+    m_Key: examine.health.downed.self
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298977481626775552
+    m_Key: examine.health.downed.other
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298977481626775553
+    m_Key: examine.health.shock.self
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298977481626775554
+    m_Key: examine.health.shock.other
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298702715700355072
+    m_Key: items.weapons.stunbaton.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298702715717132288
+    m_Key: items.weapons.stunbaton.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298702720939040768
+    m_Key: items.weapons.c20r.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298702720939040769
+    m_Key: items.weapons.c20r.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298702725540192256
+    m_Key: items.weapons.stechkin.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298702725540192257
+    m_Key: items.weapons.stechkin.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298703054059053056
+    m_Key: items.weapons.securitypistol.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298703054059053057
+    m_Key: items.weapons.securitypistol.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298703058354020352
+    m_Key: items.medical.gauze.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298703058354020353
+    m_Key: items.medical.gauze.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298703062535741440
+    m_Key: items.medical.defibrillator.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298703062535741441
+    m_Key: items.medical.defibrillator.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298714254427791360
+    m_Key: items.weapons.flamethrower.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298714254444568576
+    m_Key: items.weapons.flamethrower.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298715341041934336
+    m_Key: examine.weapon.fuel
+    m_Metadata:
+      m_Items: []
+  - m_Id: 299262768996130816
+    m_Key: items.weapons.syndicatebomb.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 299262769021296640
+    m_Key: items.weapons.syndicatebomb.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 299262771349135360
+    m_Key: items.weapons.syndicatebombbeacon.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 299262771349135361
+    m_Key: items.weapons.syndicatebombbeacon.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 299262962122858496
+    m_Key: action.bolt_down
+    m_Metadata:
+      m_Items: []
+  - m_Id: 299262962143830016
+    m_Key: action.unbolt
+    m_Metadata:
+      m_Items: []
+  - m_Id: 299262962143830017
+    m_Key: examine.syndicate_bomb.safe
+    m_Metadata:
+      m_Items: []
+  - m_Id: 299262962143830018
+    m_Key: examine.syndicate_bomb.armed
+    m_Metadata:
+      m_Items: []
+  - m_Id: 299262962143830019
+    m_Key: examine.syndicate_bomb.bolted
+    m_Metadata:
+      m_Items: []
+  - m_Id: 299262962143830020
+    m_Key: examine.syndicate_bomb.loose
+    m_Metadata:
+      m_Items: []
+  - m_Id: 299262962143830021
+    m_Key: examine.syndicate_bomb.panel_open
+    m_Metadata:
+      m_Items: []
+  - m_Id: 299262962143830022
+    m_Key: furniture.machines.atmospherics.scrubber_intake.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 299262962143830023
+    m_Key: furniture.machines.atmospherics.scrubber_intake.desc
+    m_Metadata:
+      m_Items: []
+  m_Metadata:
+    m_Items: []
+  m_KeyGenerator:
+    rid: 1882488387670638700
+  references:
+    version: 2
+    RefIds:
+    - rid: 1882488387670638700
+      type: {class: DistributedUIDGenerator, ns: UnityEngine.Localization.Tables, asm: Unity.Localization}
+      data:
+        m_CustomEpoch: 1723297884683

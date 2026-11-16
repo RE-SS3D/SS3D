@@ -1,0 +1,10 @@
+# Other clients: ready before the round; if a client connects late, embark still late-spawns.
+# run_loadtest.sh replaces __DURATION__ with the soak duration.
+wait_timeout 240
+wait_connected
+ready
+wait_round Ongoing
+embark
+assert_embarked
+wait_seconds __DURATION__
+disconnect

@@ -13,22 +13,23 @@ MonoBehaviour:
   m_Name: Materials
   m_EditorClassIdentifier: 
   m_GroupName: Materials
-  m_Data:
-    m_SerializedData: []
   m_GUID: ca573a7d9c8fb1044a5ceb85f048f213
   m_SerializeEntries:
-  - m_GUID: ed5a1263eb564c94abc6407ac0919ea7
-    m_Address: Assets/Content/WorldObjects/World/VFX/Construction/DeleteConstruction.mat
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-  - m_GUID: e9b99cfb2e59ffa40a062c2f4b88b729
-    m_Address: Assets/Content/WorldObjects/World/VFX/Construction/InvalidConstruction.mat
-    m_ReadOnly: 0
-    m_SerializedLabels: []
   - m_GUID: 6d2a18aa72cbaf94694dce9f8451160b
     m_Address: Assets/Content/WorldObjects/World/VFX/Construction/ValidConstruction.mat
     m_ReadOnly: 0
     m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: e9b99cfb2e59ffa40a062c2f4b88b729
+    m_Address: Assets/Content/WorldObjects/World/VFX/Construction/InvalidConstruction.mat
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: ed5a1263eb564c94abc6407ac0919ea7
+    m_Address: Assets/Content/WorldObjects/World/VFX/Construction/DeleteConstruction.mat
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: ddc57d0f5f9fb874e8a26db0c5b215e0, type: 2}
   m_SchemaSet:

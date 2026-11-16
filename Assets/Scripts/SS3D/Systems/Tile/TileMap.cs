@@ -1,13 +1,16 @@
-﻿using FishNet;
+using FishNet;
+using FishNet.Connection;
 using FishNet.Object;
 using JetBrains.Annotations;
 using SS3D.Core;
+using SS3D.Data.Persistence;
 using SS3D.Logging;
 using SS3D.Systems.Tile.Connections;
 using SS3D.Systems.Inventory.Items;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using UnityEngine;
 
@@ -22,18 +25,61 @@ namespace SS3D.Systems.Tile
     {
         private Dictionary<Vector2Int, TileChunk> _chunks;
         private List<PlacedItemObject> _items;
+        private readonly List<ITileMutationObserver> _mutationObservers = new();
+        private readonly List<SavedAreaRecord> _loadedAreaRecords = new();
+        private AdjacencyEngine _adjacencyEngine;
         private string _mapName;
+        private int _bulkMutationDepth;
+        private int _structureVersion;
+        private List<RemovedTileRecord> _removalRecord;
+
+        /// <summary>Placements between yields during time-sliced <see cref="LoadRoutine"/> / DMM apply.</summary>
+        public const int BulkLoadYieldEveryPlacements = 64;
+
+        public int MapId { get; private set; }
+
+        public AdjacencyEngine AdjacencyEngine => _adjacencyEngine;
 
         public int ChunkCount => _chunks.Count;
 
+        public IReadOnlyList<PlacedItemObject> PlacedItems => _items;
+
+        public IReadOnlyList<SavedAreaRecord> LoadedAreaRecords => _loadedAreaRecords;
+
+        private readonly Dictionary<string, int> _lastLoadSkipped = new();
+
+        /// <summary>
+        /// Asset names the last <see cref="LoadRoutine"/> could not resolve, with how many placements
+        /// each dropped. Non-empty means the map was saved by a build with objects this build lacks;
+        /// saving it now would make the loss permanent.
+        /// </summary>
+        public IReadOnlyDictionary<string, int> LastLoadSkipped => _lastLoadSkipped;
+
+        private void CountSkipped(string assetName)
+        {
+            string key = string.IsNullOrEmpty(assetName) ? "(unnamed)" : assetName;
+            _lastLoadSkipped[key] = _lastLoadSkipped.TryGetValue(key, out int count) ? count + 1 : 1;
+        }
+
+        public void SetLoadedAreaRecords(IEnumerable<SavedAreaRecord> records)
+        {
+            _loadedAreaRecords.Clear();
+            if (records == null)
+            {
+                return;
+            }
+
+            _loadedAreaRecords.AddRange(records);
+        }
+
         public event EventHandler OnMapLoaded;
 
-        public static TileMap Create(string name)
+        public static TileMap Create(string name, int mapId = 0)
         {
             GameObject mapObject = new GameObject(name);
 
             TileMap map = mapObject.AddComponent<TileMap>();
-            map.Setup(name);
+            map.Setup(name, mapId);
 
             if (InstanceFinder.ServerManager != null && mapObject.GetComponent<NetworkObject>() != null)
             {
@@ -43,13 +89,161 @@ namespace SS3D.Systems.Tile
             return map;
         }
 
-        private void Setup(string mapName)
+        private void Setup(string mapName, int mapId)
         {
             _chunks = new Dictionary<Vector2Int, TileChunk>();
             _items = new List<PlacedItemObject>();
             name = mapName;
             _mapName = mapName;
+            MapId = mapId;
+            _adjacencyEngine = new AdjacencyEngine(this);
         }
+
+        /// <summary>
+        /// Inserts an already-spawned <see cref="PlacedTileObject"/> into the logical map. Used on a remote
+        /// client to mirror server-side placement into a client-local map (chunks are created on demand),
+        /// so read-only systems such as vision can query occupancy. Does not run adjacency processing;
+        /// clients receive derived adjacency through the objects' own synced state.
+        /// </summary>
+        public void AddClientPlacedObject(PlacedTileObject placed)
+        {
+            if (placed == null || placed.tileObjectSO == null)
+                return;
+
+            Vector3 origin = new Vector3(placed.WorldOrigin.x, 0, placed.WorldOrigin.y);
+
+            foreach (Vector2Int gridOffset in placed.GridOffsetList)
+            {
+                Vector3 cell = origin + new Vector3(gridOffset.x, 0, gridOffset.y);
+                GetOrCreateTileLocation(placed.Layer, cell).AddPlacedObject(placed, placed.Direction);
+            }
+
+            NotifyTilePlaced(placed, origin);
+
+            if (placed.Layer == TileLayer.Turf)
+                TileUnderfloorVisibility.RefreshUnderfloorForTurf(this, placed);
+        }
+
+        /// <summary>
+        /// Removes a placed object from the client-local map (e.g. when it despawns).
+        /// </summary>
+        public void RemoveClientPlacedObject(PlacedTileObject placed)
+        {
+            if (placed == null || placed.tileObjectSO == null)
+                return;
+
+            TileLayer layer = placed.Layer;
+            Vector2Int worldOrigin = placed.WorldOrigin;
+            List<Vector2Int> gridOffsets = placed.GridOffsetList;
+            Vector3 origin = new Vector3(worldOrigin.x, 0, worldOrigin.y);
+
+            foreach (Vector2Int gridOffset in gridOffsets)
+            {
+                Vector3 cell = origin + new Vector3(gridOffset.x, 0, gridOffset.y);
+                if (!TryGetTileLocation(placed.Layer, cell, out ITileLocation location))
+                    continue;
+
+                // FishNet is already despawning it. DestroySelf would call the server-only Despawn,
+                // and one warning per tile froze the client when a chunk left its view.
+                location.TryForgetPlacedObject(placed.Direction);
+            }
+
+            NotifyTileCleared(placed, origin, layer);
+
+            if (layer == TileLayer.Turf)
+            {
+                foreach (Vector2Int gridOffset in gridOffsets)
+                {
+                    Vector3 cell = origin + new Vector3(gridOffset.x, 0, gridOffset.y);
+                    TileUnderfloorVisibility.RefreshUnderfloorAt(this, cell);
+                }
+            }
+        }
+
+        public void RegisterMutationObserver(ITileMutationObserver observer)
+        {
+            if (observer != null && !_mutationObservers.Contains(observer))
+                _mutationObservers.Add(observer);
+        }
+
+        public void UnregisterMutationObserver(ITileMutationObserver observer)
+        {
+            _mutationObservers.Remove(observer);
+        }
+
+        /// <summary>
+        /// Suppress place/clear mutation notifies (atmos UpdateCell, cable graph refresh, etc.)
+        /// during bulk place. Nestable. Chunk-created notifies still fire so late observers can
+        /// track structure; prefer <see cref="GetChunkRefs"/> seeding after restore.
+        /// </summary>
+        public void BeginBulkMutation() => _bulkMutationDepth++;
+
+        public void EndBulkMutation()
+        {
+            if (_bulkMutationDepth <= 0)
+                return;
+
+            _bulkMutationDepth--;
+            if (_bulkMutationDepth == 0)
+                BumpStructureVersion();
+        }
+
+        public bool IsBulkMutationActive => _bulkMutationDepth > 0;
+
+        /// <summary>
+        /// Records every tile object <see cref="ClearTileObject"/> removes into <paramref name="into"/>,
+        /// cascaded dependents included, until the scope is disposed. Undo uses it to put back
+        /// what a clear or replace took with it, such as the wall mounts on a cleared wall.
+        /// </summary>
+        public RemovalRecordingScope RecordRemovals(List<RemovedTileRecord> into)
+        {
+            List<RemovedTileRecord> previous = _removalRecord;
+            _removalRecord = into;
+            return new RemovalRecordingScope(this, previous);
+        }
+
+        public readonly struct RemovalRecordingScope : IDisposable
+        {
+            private readonly TileMap _map;
+            private readonly List<RemovedTileRecord> _previous;
+
+            internal RemovalRecordingScope(TileMap map, List<RemovedTileRecord> previous)
+            {
+                _map = map;
+                _previous = previous;
+            }
+
+            public void Dispose()
+            {
+                if (_map != null)
+                    _map._removalRecord = _previous;
+            }
+        }
+
+        private void RecordRemoval(PlacedTileObject placed)
+        {
+            if (_removalRecord == null || placed == null || placed.tileObjectSO == null)
+                return;
+
+            var record = new RemovedTileRecord(
+                placed.tileObjectSO,
+                new Vector3(placed.WorldOrigin.x, 0f, placed.WorldOrigin.y),
+                placed.Direction);
+
+            // A multi-cell object is cleared once per cell; keep one record. The setup is read before the
+            // clear destroys the object, so undo puts it back configured.
+            if (!_removalRecord.Contains(record))
+                _removalRecord.Add(record.WithSetup(ObjectSetup.Capture(placed.gameObject)));
+        }
+
+        /// <summary>
+        /// Monotonic counter bumped when place/clear/chunk/clear-map changes occupancy.
+        /// Not bumped for door open/close (<see cref="NotifyTileStateChanged"/>) — area membership
+        /// ignores door state. Consumers cache device→area resolves against this version.
+        /// </summary>
+        public int StructureVersion => _structureVersion;
+
+        public void BumpStructureVersion() => _structureVersion++;
 
         /// <summary>
         /// Returns the chunk key to be used based on a world position.
@@ -72,6 +266,13 @@ namespace SS3D.Systems.Tile
         /// <returns></returns>
         private TileChunk CreateChunk(Vector2Int chunkKey, Vector3 origin)
         {
+            // An async station load can outlive its map (Play Mode exit, scene unload). Creating the
+            // chunk first would orphan it in whatever scene is active - in the editor, the saved Game scene.
+            if (this == null)
+            {
+                throw new OperationCanceledException("Tile map was destroyed while loading.");
+            }
+
             TileChunk chunk = TileChunk.Create(chunkKey, origin);
             chunk.transform.SetParent(transform);
 
@@ -92,6 +293,7 @@ namespace SS3D.Systems.Tile
                 Vector3 origin = new Vector3 { x = key.x * TileChunk.ChunkSize, z = key.y * TileChunk.ChunkSize };
                 chunk = CreateChunk(key, origin);
                 _chunks[key] = chunk;
+                NotifyChunkCreated(key, origin);
             }
 
             return chunk;
@@ -111,12 +313,136 @@ namespace SS3D.Systems.Tile
             }
         }
 
+        public IEnumerable<TileChunk> GetAllChunks() => _chunks.Values;
+
+        public bool TryGetAreaId(TileCoord coord, out ushort areaId)
+        {
+            areaId = 0;
+            if (coord.MapId != MapId)
+                return false;
+
+            Vector3 world = new Vector3(coord.Grid.x, 0, coord.Grid.y);
+            TileChunk chunk = GetChunk(world);
+            if (chunk == null)
+                return false;
+
+            Vector2Int local = chunk.GetXY(world);
+            areaId = chunk.GetAreaId(local.x, local.y);
+            return true;
+        }
+
+        public bool TrySetAreaId(TileCoord coord, ushort areaId)
+        {
+            if (coord.MapId != MapId)
+                return false;
+
+            Vector3 world = new Vector3(coord.Grid.x, 0, coord.Grid.y);
+            TileChunk chunk = GetOrCreateChunk(world);
+            Vector2Int local = chunk.GetXY(world);
+            chunk.SetAreaId(local.x, local.y, areaId);
+            return true;
+        }
+
+        public bool TryGetFloorDecalId(Vector3 worldPosition, out ushort decalId)
+        {
+            decalId = 0;
+            TileChunk chunk = GetChunk(worldPosition);
+            if (chunk == null)
+                return false;
+
+            Vector2Int local = chunk.GetXY(worldPosition);
+            decalId = chunk.GetFloorDecalId(local.x, local.y);
+            return true;
+        }
+
+        public bool TrySetFloorDecal(Vector3 worldPosition, ushort decalId)
+        {
+            if (!HasPlenumAt(worldPosition))
+                return false;
+
+            TileChunk chunk = GetOrCreateChunk(worldPosition);
+            Vector2Int local = chunk.GetXY(worldPosition);
+            chunk.SetFloorDecalId(local.x, local.y, decalId);
+            OnFloorDecalsChanged?.Invoke(GetKey(worldPosition));
+            return true;
+        }
+
+        public bool TryClearFloorDecal(Vector3 worldPosition) => TrySetFloorDecal(worldPosition, 0);
+
+        public event Action<Vector2Int> OnFloorDecalsChanged;
+
+        private bool HasPlenumAt(Vector3 worldPosition)
+        {
+            if (!TryGetTileLocation(TileLayer.Plenum, worldPosition, out ITileLocation plenumLocation))
+                return false;
+
+            return !plenumLocation.IsFullyEmpty();
+        }
+
+        public void ClearAllAreaIds()
+        {
+            foreach (TileChunk chunk in _chunks.Values)
+                chunk.ClearAreaIds();
+        }
+
         public ITileLocation GetTileLocation(TileLayer layer, Vector3 worldPosition)
         {
-            TileChunk chunk = GetOrCreateChunk(worldPosition); // TODO: creates unnessary empty chunk when checking whether building can be done
+            return GetOrCreateTileLocation(layer, worldPosition);
+        }
+
+        public ITileLocation GetOrCreateTileLocation(TileLayer layer, Vector3 worldPosition)
+        {
+            TileChunk chunk = GetOrCreateChunk(worldPosition);
             return chunk.GetTileObject(layer, worldPosition);
         }
 
+        public bool TryGetTileLocation(TileLayer layer, Vector3 worldPosition, out ITileLocation location)
+        {
+            TileChunk chunk = GetChunk(worldPosition);
+            if (chunk == null)
+            {
+                location = CreateEmptyTileLocation(layer, worldPosition);
+                return false;
+            }
+
+            location = chunk.GetTileObject(layer, worldPosition);
+            return true;
+        }
+
+        public bool TryGetTileLocations(Vector3 worldPosition, out ITileLocation[] tileLocations)
+        {
+            tileLocations = new ITileLocation[TileHelper.GetTileLayers().Length];
+            TileChunk chunk = GetChunk(worldPosition);
+
+            if (chunk == null)
+            {
+                foreach (TileLayer layer in TileHelper.GetTileLayers())
+                    tileLocations[(int)layer] = CreateEmptyTileLocation(layer, worldPosition);
+
+                return false;
+            }
+
+            foreach (TileLayer layer in TileHelper.GetTileLayers())
+                tileLocations[(int)layer] = chunk.GetTileObject(layer, worldPosition);
+
+            return true;
+        }
+
+        /// <summary>
+        /// <see cref="TryGetTileLocations"/> into a caller's buffer (one slot per <see cref="TileLayer"/>), for per-tick
+        /// callers. False, with the buffer untouched, when no chunk covers the position.
+        /// </summary>
+        public bool TryFillTileLocations(Vector3 worldPosition, ITileLocation[] buffer)
+        {
+            TileChunk chunk = GetChunk(worldPosition);
+            if (chunk == null)
+                return false;
+
+            foreach (TileLayer layer in TileHelper.GetTileLayers())
+                buffer[(int)layer] = chunk.GetTileObject(layer, worldPosition);
+
+            return true;
+        }
 
         public ITileLocation[] GetTileLocations(Vector3 worldPosition)
         {
@@ -124,10 +450,27 @@ namespace SS3D.Systems.Tile
 
             foreach (TileLayer layer in TileHelper.GetTileLayers())
             {
-                tileObjects[(int)layer] = GetTileLocation(layer, worldPosition);
+                tileObjects[(int)layer] = GetOrCreateTileLocation(layer, worldPosition);
             }
 
             return tileObjects;
+        }
+
+        private static ITileLocation CreateEmptyTileLocation(TileLayer layer, Vector3 worldPosition)
+        {
+            Vector2Int local = GetLocalTileCoordinates(worldPosition);
+            return TileHelper.CreateTileLocation(layer, local.x, local.y);
+        }
+
+        private static Vector2Int GetLocalTileCoordinates(Vector3 worldPosition)
+        {
+            int chunkX = (int)Math.Floor(worldPosition.x / TileChunk.ChunkSize);
+            int chunkY = (int)Math.Floor(worldPosition.z / TileChunk.ChunkSize);
+            Vector3 chunkOrigin = new Vector3(chunkX * TileChunk.ChunkSize, 0, chunkY * TileChunk.ChunkSize);
+
+            return new Vector2Int(
+                (int)Math.Round(worldPosition.x - chunkOrigin.x),
+                (int)Math.Round(worldPosition.z - chunkOrigin.z));
         }
 
         /// <summary>
@@ -147,7 +490,8 @@ namespace SS3D.Systems.Tile
             for (Direction direction = Direction.North; direction <= Direction.NorthWest; direction++)
             {
                 Tuple<int, int> vector = TileHelper.ToCardinalVector(direction);
-                ITileLocation neighbourLocation = GetTileLocation(layer, worldPosition + new Vector3(vector.Item1, 0, vector.Item2));
+                Vector3 neighbourPosition = worldPosition + new Vector3(vector.Item1, 0, vector.Item2);
+                TryGetTileLocation(layer, neighbourPosition, out ITileLocation neighbourLocation);
                 neighbourLocation.TryGetPlacedObject(out PlacedTileObject neighbourObject, TileHelper.GetOpposite(direction));
                 adjacentObjects[(int)direction] = neighbourObject;
             }
@@ -162,8 +506,9 @@ namespace SS3D.Systems.Tile
             for (Direction direction = Direction.North; direction <= Direction.NorthWest; direction+= 2)
             {
                 Tuple<int, int> vector = TileHelper.ToCardinalVector(direction);
-                adjacentObjects.AddRange(
-                    GetTileLocation(layer, worldPosition + new Vector3(vector.Item1, 0, vector.Item2)).GetAllPlacedObject());
+                Vector3 neighbourPosition = worldPosition + new Vector3(vector.Item1, 0, vector.Item2);
+                TryGetTileLocation(layer, neighbourPosition, out ITileLocation neighbourLocation);
+                adjacentObjects.AddRange(neighbourLocation.GetAllPlacedObject());
             }
 
             return adjacentObjects;
@@ -178,36 +523,93 @@ namespace SS3D.Systems.Tile
         /// <param name="dir">Direction the object is facing</param>
         /// <param name="replaceExisting">Replace an existing object</param>
         /// <returns></returns>
-        public bool CanBuild(TileObjectSo tileObjectSo, Vector3 placePosition, Direction dir, bool replaceExisting)
-        {
-            // Get the right chunk
-            TileChunk chunk = GetOrCreateChunk(placePosition);
-            List<Vector2Int> gridPositionList = tileObjectSo.GetGridOffsetList(dir);
+        public bool CanBuild(TileObjectSo tileObjectSo, Vector3 placePosition, Direction dir, bool replaceExisting) =>
+            EvaluateBuild(tileObjectSo, placePosition, dir, replaceExisting).Length == 0;
 
-            bool canBuild = true;
+        /// <summary>
+        /// Whether a player body stands in the given cell. A wall or a closed door built there spawns its
+        /// colliders on the body, and the character controller then pushes it out into the next wall.
+        /// Defaults to the spawned players; EditMode tests swap it, since they have no entities.
+        /// </summary>
+        public Func<Vector3, bool> IsBodyInCell { get; set; } = IsSpawnedPlayerInCell;
+
+        private static bool IsSolidTurf(TileObjectSo tileObjectSo) =>
+            tileObjectSo.layer == TileLayer.Turf
+            && tileObjectSo.genericType is TileObjectGenericType.Wall or TileObjectGenericType.Door;
+
+        private static bool IsSpawnedPlayerInCell(Vector3 gridPosition)
+        {
+            if (!SubSystems.TryGet(out SS3D.Systems.Entities.EntitySubSystem entities))
+                return false;
+
+            Vector3 cell = TileHelper.GetClosestPosition(gridPosition);
+            IReadOnlyList<SS3D.Systems.Entities.Entity> players = entities.SpawnedPlayers;
+            for (int i = 0; i < players.Count; i++)
+            {
+                if (players[i] != null && TileHelper.GetClosestPosition(players[i].transform.position) == cell)
+                    return true;
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// Aggregates <see cref="BuildChecker"/> failures across every cell the object occupies.
+        /// </summary>
+        public BuildFailReason[] EvaluateBuild(TileObjectSo tileObjectSo, Vector3 placePosition, Direction dir, bool replaceExisting)
+        {
+            List<Vector2Int> gridPositionList = tileObjectSo.GetGridOffsetList(dir);
+            var failures = new List<BuildFailReason>();
+
             foreach (Vector2Int gridOffset in gridPositionList)
             {
-                // Verify if we are allowed to build for this grid position
                 Vector3 gridPosition = new(placePosition.x + gridOffset.x, 0, placePosition.z + gridOffset.y);
+                TryGetTileLocations(gridPosition, out ITileLocation[] tileLocations);
 
-                canBuild &= BuildChecker.CanBuild(GetTileLocations(gridPosition), tileObjectSo, dir, gridPosition,
-                    GetNeighbourPlacedObjects(TileLayer.Turf, gridPosition), replaceExisting);
+                BuildFailReason[] cellFailures = BuildChecker.Evaluate(
+                    tileLocations,
+                    tileObjectSo,
+                    dir,
+                    gridPosition,
+                    GetNeighbourPlacedObjects(TileLayer.Turf, gridPosition),
+                    replaceExisting,
+                    this);
+
+                if (IsSolidTurf(tileObjectSo) && IsBodyInCell(gridPosition) && !failures.Contains(BuildFailReason.BodyInTheWay))
+                    failures.Add(BuildFailReason.BodyInTheWay);
+
+                foreach (BuildFailReason failure in cellFailures)
+                {
+                    if (!failures.Contains(failure))
+                        failures.Add(failure);
+                }
             }
-            
-            return canBuild;
+
+            return failures.Count == 0
+                ? System.Array.Empty<BuildFailReason>()
+                : failures.ToArray();
         }
 
         public bool PlaceTileObject(TileObjectSo tileObjectSo, Vector3 placePosition, Direction dir,
-            bool skipBuildCheck, bool replaceExisting, bool skipAdjacency, out GameObject placedObjectGo)
+            bool skipBuildCheck, bool replaceExisting, bool skipAdjacency, out GameObject placedObjectGo) =>
+            PlaceTileObject(tileObjectSo, placePosition, dir, skipBuildCheck, replaceExisting, skipAdjacency, null, null,
+                out placedObjectGo);
+
+        /// <param name="setup">Saved setup applied right after the spawn (load, undo, Dropper copy); null for defaults.</param>
+        /// <param name="reportSkipped">Receives what the setup couldn't restore.</param>
+        public bool PlaceTileObject(TileObjectSo tileObjectSo, Vector3 placePosition, Direction dir,
+            bool skipBuildCheck, bool replaceExisting, bool skipAdjacency, IReadOnlyList<SavedSetupEntry> setup,
+            Action<string> reportSkipped, out GameObject placedObjectGo)
         {
-            bool canBuild = CanBuild(tileObjectSo, placePosition, dir, replaceExisting);
+            bool canBuild = skipBuildCheck || CanBuild(tileObjectSo, placePosition, dir, replaceExisting);
             placedObjectGo = null;
 
             if (canBuild || skipBuildCheck)
             {
                 TileChunk chunk = GetOrCreateChunk(placePosition);
                 Vector2Int origin = chunk.GetXY(placePosition);
-                PlacedTileObject placedObject = PlacedTileObject.Create(placePosition, origin, dir, tileObjectSo);
+                PlacedTileObject placedObject = PlacedTileObject.Create(placePosition, origin, dir, tileObjectSo, MapId,
+                    setup, reportSkipped);
                 placedObject.transform.SetParent(chunk.transform);
 
                 foreach (Vector2Int gridOffset in tileObjectSo.GetGridOffsetList(dir))
@@ -215,55 +617,117 @@ namespace SS3D.Systems.Tile
                     Vector3 gridPosition = new(placePosition.x + gridOffset.x, 0, placePosition.z + gridOffset.y);
                     chunk = GetOrCreateChunk(gridPosition);
 
-                    // Remove an existing object if there
+                    // Swap out an existing object without the dependency cascade: the turf is
+                    // only empty for this instant, so a wall swap must keep its wall mounts.
                     if (replaceExisting)
-                        ClearTileObject(gridPosition, tileObjectSo.layer, dir);
+                        ClearTileObject(gridPosition, tileObjectSo.layer, dir, cascade: false);
 
                     // Place new object
                     chunk.GetTileObject(tileObjectSo.layer, gridPosition).AddPlacedObject(placedObject, dir);
                 }
 
                 // Handle Adjacency connectors, can skip it particulary when loading the map.
-                if (!skipAdjacency){
-                    placedObject.UpdateAdjacencies();
+                if (!skipAdjacency)
+                {
+                    UpdateAdjacenciesFor(placedObject);
+                    _adjacencyEngine.ProcessQueue();
+                }
+
+                // Now drop the dependents the new object cannot hold (wall mounts on a floor).
+                if (replaceExisting)
+                {
+                    foreach (Vector2Int gridOffset in tileObjectSo.GetGridOffsetList(dir))
+                    {
+                        Vector3 gridPosition = new(placePosition.x + gridOffset.x, 0, placePosition.z + gridOffset.y);
+                        TryGetTileLocations(gridPosition, out ITileLocation[] cellLocations);
+                        ClearLocations(BuildChecker.GetInvalidatedByReplace(cellLocations, tileObjectSo.layer), gridPosition);
+                    }
                 }
 
                 placedObjectGo = placedObject.gameObject;
+                NotifyTilePlaced(placedObject, placePosition);
+
+                if (tileObjectSo.layer == TileLayer.Turf)
+                    TileUnderfloorVisibility.RefreshUnderfloorForTurf(this, placedObject);
             }
 
             return canBuild;
         }
 
-        public void ClearTileObject(Vector3 placePosition, TileLayer layer, Direction dir)
+        public void ClearTileObject(Vector3 placePosition, TileLayer layer, Direction dir) =>
+            ClearTileObject(placePosition, layer, dir, cascade: true);
+
+        /// <param name="cascade">
+        /// Also remove the objects this one supported (wall mounts on a wall, everything on a plenum).
+        /// Only a replace passes false, and it checks the dependents itself once the new object is in.
+        /// </param>
+        private void ClearTileObject(Vector3 placePosition, TileLayer layer, Direction dir, bool cascade)
         {
-            ITileLocation[] tileLocations = GetTileLocations(placePosition);
+            TryGetTileLocations(placePosition, out ITileLocation[] tileLocations);
             ITileLocation tileLocation = tileLocations[(int)layer];
-            tileLocation.TryGetPlacedObject(out var placed, dir);
+            tileLocation.TryGetPlacedObject(out PlacedTileObject placed, dir);
 
-
-            if (placed != null && placed.TryGetComponent(out IAdjacencyConnector connector))
+            // Capture the footprint before DestroySelf so underfloor can reappear after clear. A plenum
+            // counts too: clearing it cascades to the turf above without going through this branch.
+            List<Vector3> underfloorRefreshCells = null;
+            if (layer is TileLayer.Turf or TileLayer.Plenum && placed != null)
             {
-                List<PlacedTileObject> neighbours = connector.GetNeighbours();
-                ResetAdjacencies(placed, tileLocation, neighbours);
+                underfloorRefreshCells = new List<Vector3>();
+                Vector3 turfOrigin = new Vector3(placed.WorldOrigin.x, 0f, placed.WorldOrigin.y);
+                foreach (Vector2Int gridOffset in placed.GridOffsetList)
+                    underfloorRefreshCells.Add(turfOrigin + new Vector3(gridOffset.x, 0f, gridOffset.y));
             }
-            else
+
+            if (placed != null)
             {
-                tileLocation.TryClearPlacedObject(dir);
+                RecordRemoval(placed);
+                NotifyTileCleared(placed, placePosition, layer);
+                TileLayer[] portLines = placed.TryGetComponent(out IPipePortDevice device) ? device.PortLines : null;
+
+                if (placed.TryGetComponent(out IAdjacencyConnector connector))
+                {
+                    List<PlacedTileObject> neighbours = connector.GetNeighbours();
+                    ResetAdjacencies(placed, tileLocation, neighbours);
+                }
+                else
+                {
+                    tileLocation.TryClearPlacedObject(dir);
+                }
+
+                if (portLines != null)
+                    RedrawPipesBeside(portLines, placePosition);
             }
 
             // Remove any invalid tile combinations
-            List<ITileLocation> toClearLocations = BuildChecker.GetToBeClearedLocations(tileLocations);
+            if (cascade)
+                ClearLocations(BuildChecker.GetToBeClearedLocations(tileLocations), placePosition);
 
+            if (underfloorRefreshCells != null)
+            {
+                for (int i = 0; i < underfloorRefreshCells.Count; i++)
+                    TileUnderfloorVisibility.RefreshUnderfloorAt(this, underfloorRefreshCells[i]);
+            }
+        }
+
+        private void ClearLocations(List<ITileLocation> toClearLocations, Vector3 placePosition)
+        {
             foreach (ITileLocation clearLocation in toClearLocations)
             {
                 var allPlaced = clearLocation.GetAllPlacedObject();
 
+                foreach (PlacedTileObject removed in allPlaced)
+                    RecordRemoval(removed);
+
+                // Cascaded removal must reach gas, cable and pipe observers just like a direct clear.
+                foreach (PlacedTileObject removed in allPlaced)
+                    if (removed != null) NotifyTileCleared(removed, placePosition, removed.Layer);
+
                 foreach (PlacedTileObject placedToClear in allPlaced)
                 {
-                    if (placed != null && placedToClear.TryGetComponent(out connector))
+                    if (placedToClear != null && placedToClear.TryGetComponent(out IAdjacencyConnector connectorToClear))
                     {
-                        List<PlacedTileObject> neighbours = connector.GetNeighbours();
-                        ResetAdjacencies(placed, clearLocation, neighbours);
+                        List<PlacedTileObject> neighbours = connectorToClear.GetNeighbours();
+                        ResetAdjacencies(placedToClear, clearLocation, neighbours);
                     }
                 }
 
@@ -297,7 +761,13 @@ namespace SS3D.Systems.Tile
             }
         }
 
-        public void PlaceItemObject(Vector3 worldPosition, Quaternion rotation, ItemObjectSo itemObjectSo, GameObject existingItem = null)
+        public void PlaceItemObject(Vector3 worldPosition, Quaternion rotation, ItemObjectSo itemObjectSo, GameObject existingItem = null) =>
+            PlaceItemObject(worldPosition, rotation, itemObjectSo, existingItem, null, null);
+
+        /// <param name="setup">Saved setup applied right after the spawn (load, undo, Dropper copy); null for defaults.</param>
+        /// <param name="reportSkipped">Receives what the setup couldn't restore.</param>
+        public PlacedItemObject PlaceItemObject(Vector3 worldPosition, Quaternion rotation, ItemObjectSo itemObjectSo, GameObject existingItem,
+            IReadOnlyList<SavedSetupEntry> setup, Action<string> reportSkipped)
         {
             // Handle existing items that already have a PlacedItemObject component
             if (existingItem != null)
@@ -309,7 +779,7 @@ namespace SS3D.Systems.Tile
                     {
                         // Item is already tracked, just update its position
                         existingPlacedItem.UpdatePosition(worldPosition, rotation);
-                        return;
+                        return existingPlacedItem;
                     }
                     else
                     {
@@ -320,26 +790,83 @@ namespace SS3D.Systems.Tile
             }
             
             // Create new PlacedItemObject and add to tracking
-            PlacedItemObject placedItem = PlacedItemObject.Create(worldPosition, rotation, itemObjectSo, existingItem);
+            PlacedItemObject placedItem = PlacedItemObject.Create(worldPosition, rotation, itemObjectSo, existingItem, setup, reportSkipped);
             placedItem.transform.SetParent(transform);
+            placedItem.Owner = this;
             _items.Add(placedItem);
+            return placedItem;
         }
 
-        public void ClearItemObject(Vector3 worldPosition, ItemObjectSo itemObjectSo)
-        {
-            List<PlacedItemObject> placedItems = _items.FindAll(item => item.NameString == itemObjectSo.NameString);
-            PlacedItemObject toRemove = null;
+        /// <returns>True when an item was found and removed.</returns>
+        public bool ClearItemObject(Vector3 worldPosition, ItemObjectSo itemObjectSo) =>
+            ClearItemObject(worldPosition, itemObjectSo, out _);
 
-            foreach (PlacedItemObject item in placedItems)
+        /// <param name="setup">The removed item's setup, read before it was destroyed, so undo can put it back.</param>
+        /// <returns>True when an item was found and removed.</returns>
+        public bool ClearItemObject(Vector3 worldPosition, ItemObjectSo itemObjectSo, out SavedSetupEntry[] setup)
+        {
+            setup = null;
+            PlacedItemObject toRemove = FindItemObject(worldPosition, itemObjectSo);
+            if (toRemove == null)
+                return false;
+
+            setup = ObjectSetup.Capture(toRemove.gameObject);
+            _items.Remove(toRemove);
+            toRemove.DestroySelf();
+            return true;
+        }
+
+        /// <summary>The tracked item of this asset nearest <paramref name="worldPosition"/>, within a metre; null when none.</summary>
+        public PlacedItemObject FindItemObject(Vector3 worldPosition, ItemObjectSo itemObjectSo)
+        {
+            if (itemObjectSo == null)
+                return null;
+
+            PruneDestroyedItems();
+            // The nearest match, not the last one in range: in a pile of the same item the map editor
+            // would otherwise delete a different one than the item clicked.
+            PlacedItemObject toRemove = null;
+            float nearest = 1f;
+            foreach (PlacedItemObject item in _items)
             {
-                if (Vector3.Distance(item.transform.position, worldPosition) < 1f)
+                if (item.NameString != itemObjectSo.NameString)
+                    continue;
+
+                float distance = Vector3.Distance(item.transform.position, worldPosition);
+                if (distance < nearest)
                 {
+                    nearest = distance;
                     toRemove = item;
                 }
             }
 
-            toRemove?.DestroySelf();
-            _items.Remove(toRemove);
+            return toRemove;
+        }
+
+        /// <summary>
+        /// Called by <see cref="PlacedItemObject"/> when its GameObject is destroyed (despawned by a
+        /// detonation, consumed, etc.) so the list never holds dead entries. Uses reference equality
+        /// so the match never depends on Unity's destroyed-object null semantics mid-teardown.
+        /// </summary>
+        internal void ForgetDestroyedItem(PlacedItemObject placedItemObject)
+        {
+            if (_items == null)
+                return;
+
+            for (int i = _items.Count - 1; i >= 0; i--)
+            {
+                if (ReferenceEquals(_items[i], placedItemObject))
+                    _items.RemoveAt(i);
+            }
+        }
+
+        /// <summary>
+        /// Drops entries whose GameObject was destroyed without going through the map
+        /// (backstop for <see cref="ForgetDestroyedItem"/>).
+        /// </summary>
+        private void PruneDestroyedItems()
+        {
+            _items.RemoveAll(item => item == null);
         }
 
         /// <summary>
@@ -357,24 +884,31 @@ namespace SS3D.Systems.Tile
 
         public void Clear()
         {
+            if (SubSystems.TryGet(out TileSubSystem owner) && owner.CurrentMap == this &&
+                SubSystems.TryGet(out Area.AreaSubSystem areas)) areas.ResetForMapClear();
             foreach (TileChunk chunk in _chunks.Values)
             {
                 chunk.Clear();
             }
 
             _chunks.Clear();
+            BumpStructureVersion();
 
-            // Clear items list safely, checking for null references
+            // Take each entry out before destroying it: destruction calls back into ForgetDestroyedItem.
             while (_items.Count > 0)
             {
-                PlacedItemObject item = _items.First();
-                if (item != null && item.gameObject != null)
+                PlacedItemObject item = _items[_items.Count - 1];
+                _items.RemoveAt(_items.Count - 1);
+                if (item != null)
                 {
                     item.DestroySelf();
                 }
-                
-                _items.RemoveAt(0);
             }
+
+            // Template restore skips missing spawn chunks — wipe markers with the map so stale
+            // points cannot survive a load that has no spawn-points contributor payload.
+            if (SubSystems.TryGet(out TileSubSystem tileSubSystem) && tileSubSystem.CurrentMap == this)
+                tileSubSystem.ClearMarkers();
         }
 
         /// <summary>
@@ -393,6 +927,8 @@ namespace SS3D.Systems.Tile
                 chunkObjectSaveList.Add(chunk.Save());
             }
 
+            // Exploded/despawned items must not be written back into the save.
+            PruneDestroyedItems();
             foreach (PlacedItemObject item in _items)
             {
                 itemSaveList.Add(item.Save());
@@ -401,81 +937,357 @@ namespace SS3D.Systems.Tile
             return new SavedTileMap
             {
                 mapName = _mapName,
+                hasAuthoredAreas = SubSystems.TryGet(out Area.AreaSubSystem areas) && areas.HasAuthoredAreas,
                 savedChunkList = chunkObjectSaveList.ToArray(),
-                savedItemList = itemSaveList.ToArray()
+                savedItemList = itemSaveList.ToArray(),
+                savedAreas = BuildSavedAreas(),
             };
         }
 
-        public void Load([CanBeNull] SavedTileMap saveObject)
+        private SavedAreaRecord[] BuildSavedAreas()
+        {
+            if (SubSystems.TryGet(out Area.AreaSubSystem areaSubSystem))
+                return areaSubSystem.BuildSavedAreaRecords();
+
+            return Array.Empty<SavedAreaRecord>();
+        }
+
+        public void Load([CanBeNull] SavedTileMap saveObject, bool invokeMapLoadedEvent = true)
+        {
+            IEnumerator routine = LoadRoutine(saveObject, invokeMapLoadedEvent, yieldFrames: false);
+            while (routine.MoveNext())
+            {
+            }
+        }
+
+        /// <summary>
+        /// Time-sliced station template restore. Yield every
+        /// <see cref="BulkLoadYieldEveryPlacements"/> so FishNet heartbeats keep ticking on MetaStation.
+        /// Pair with <see cref="BeginBulkMutation"/> and deferred area/disposal rebuilds.
+        /// </summary>
+        public IEnumerator LoadRoutine(
+            [CanBeNull] SavedTileMap saveObject,
+            bool invokeMapLoadedEvent = true,
+            bool yieldFrames = true)
         {
             if (saveObject == null)
             {
                 Log.Warning(this, "The intended save object is null");
-                return;
+                yield break;
             }
+
+            Stopwatch loadTimer = Stopwatch.StartNew();
+            int startFrame = Time.frameCount;
 
             // Clear TileMap data first (this clears the _items list)
             Clear();
-            
+            _loadedAreaRecords.Clear();
+            _lastLoadSkipped.Clear();
+
             // Then clear all items in the scene, not just those tracked by TileMap
             ClearUntrackedItems();
+            if (yieldFrames)
+                yield return null;
 
-            TileSubSystem tileSystem = SubSystems.Get<TileSubSystem>();
+            SubSystems.TryGet(out TileSubSystem tileSystem);
 
-            foreach (SavedTileChunk savedChunk in saveObject.savedChunkList)
+            SavedTileChunk[] savedChunks = saveObject.savedChunkList ?? Array.Empty<SavedTileChunk>();
+            int sinceYield = 0;
+            int chunkIndex = 0;
+            int placedTiles = 0;
+            int placedItems = 0;
+            int gratingConverted = 0;
+            TileObjectSo plenumSo = null;
+
+            foreach (SavedTileChunk savedChunk in savedChunks)
             {
+                chunkIndex++;
                 TileChunk chunk = GetOrCreateChunk(savedChunk.originPosition);
-                ISavedTileLocation[] savedTiles = savedChunk.savedTiles;
+                if (savedChunk.areaIds != null)
+                    chunk.SetAreaIds(savedChunk.areaIds);
+                if (savedChunk.floorDecalIds != null)
+                    chunk.SetFloorDecalIds(savedChunk.floorDecalIds);
 
+                if (tileSystem == null)
+                    continue;
+
+                ISavedTileLocation[] savedTiles = savedChunk.savedTiles ?? Array.Empty<ISavedTileLocation>();
+
+                // Resolve the chunk's assets first so the grating migration can see every layer of a cell.
+                var resolved = new List<(Vector2Int Cell, SavedPlacedTileObject Saved, TileObjectSo So)>(savedTiles.Length);
                 foreach (var savedTile in savedTiles)
                 {
                     foreach (SavedPlacedTileObject savedObject in savedTile.GetPlacedObjects())
                     {
-                        TileObjectSo toBePlaced = (TileObjectSo)tileSystem.GetAsset(savedObject.tileObjectSOName);
-                        Vector3 placePosition = chunk.GetWorldPosition(savedTile.Location.x, savedTile.Location.y);
+                        TileObjectSo so = tileSystem.GetSavedAsset(savedObject.id, savedObject.tileObjectSOName) as TileObjectSo;
+                        if (so == null)
+                        {
+                            Log.Warning(this,
+                                "Skipping unknown or removed tile asset '{assetName}' while loading map",
+                                Logs.Generic,
+                                savedObject.tileObjectSOName);
+                            CountSkipped(savedObject.tileObjectSOName);
+                            continue;
+                        }
 
-                        // Skipping build check here to allow loading tile objects in a non-valid order
-                        PlaceTileObject(toBePlaced, placePosition, savedObject.dir, true, false, true, out GameObject placedObject);
+                        resolved.Add((savedTile.Location, savedObject, so));
+                    }
+                }
+
+                HashSet<Vector2Int> gratingToPlenum = GratingUnderTurfMigration.FindCellsToConvert(
+                    resolved.Select(entry => (entry.Cell, entry.So)));
+                if (gratingToPlenum.Count > 0 && plenumSo == null)
+                    plenumSo = tileSystem.GetAsset(GratingUnderTurfMigration.PlenumAssetName) as TileObjectSo;
+
+                foreach ((Vector2Int cell, SavedPlacedTileObject savedObject, TileObjectSo so) in resolved)
+                {
+                    TileObjectSo toBePlaced = so;
+                    if (plenumSo != null && toBePlaced.layer == TileLayer.Plenum && gratingToPlenum.Contains(cell))
+                    {
+                        toBePlaced = plenumSo;
+                        gratingConverted++;
+                    }
+
+                    Vector3 placePosition = chunk.GetWorldPosition(cell.x, cell.y);
+
+                    // Skipping build check here to allow loading tile objects in a non-valid order. A migrated
+                    // asset is a different object, so the old one's setup doesn't apply to it.
+                    PlaceTileObject(toBePlaced, placePosition, savedObject.dir, true, false, true,
+                        toBePlaced == so ? savedObject.setup : null, CountSkipped, out GameObject placedObject);
+                    placedTiles++;
+                    sinceYield++;
+
+                    if (yieldFrames && sinceYield >= BulkLoadYieldEveryPlacements)
+                    {
+                        sinceYield = 0;
+                        yield return null;
                     }
                 }
             }
 
-            foreach (SavedPlacedItemObject savedItem in saveObject.savedItemList)
+            if (gratingConverted > 0)
             {
-                ItemObjectSo toBePlaced = (ItemObjectSo)tileSystem.GetAsset(savedItem.itemName);
-                PlaceItemObject(savedItem.worldPosition, savedItem.rotation, toBePlaced);
+                Log.Warning(this,
+                    "Converted {count} catwalks or lattices under floors and walls to plenums while loading map; save it to keep the fix",
+                    Logs.ServerOnly,
+                    gratingConverted);
             }
 
-            OnMapLoaded?.Invoke(this, EventArgs.Empty);
-            UpdateAllAdjacencies();
+            if (saveObject.savedAreas != null)
+                _loadedAreaRecords.AddRange(saveObject.savedAreas);
+
+            if (tileSystem == null)
+            {
+                if (invokeMapLoadedEvent)
+                {
+                    OnMapLoaded?.Invoke(this, EventArgs.Empty);
+                }
+
+                yield break;
+            }
+
+            SavedPlacedItemObject[] savedItems = saveObject.savedItemList ?? Array.Empty<SavedPlacedItemObject>();
+            foreach (SavedPlacedItemObject savedItem in savedItems)
+            {
+                if (tileSystem.GetSavedAsset(savedItem.id, savedItem.itemName) is not ItemObjectSo toBePlaced)
+                {
+                    Log.Warning(this, "Skipping unknown or removed item asset '{assetName}' while loading map",
+                        Logs.Generic, savedItem.itemName);
+                    CountSkipped(savedItem.itemName);
+                    continue;
+                }
+
+                PlaceItemObject(savedItem.worldPosition, savedItem.rotation, toBePlaced, null, savedItem.setup, CountSkipped);
+                placedItems++;
+                sinceYield++;
+                if (yieldFrames && sinceYield >= BulkLoadYieldEveryPlacements)
+                {
+                    sinceYield = 0;
+                    yield return null;
+                }
+            }
+
+            long placeMs = loadTimer.ElapsedMilliseconds;
+
+            if (invokeMapLoadedEvent)
+            {
+                OnMapLoaded?.Invoke(this, EventArgs.Empty);
+            }
+
+            if (yieldFrames)
+                yield return null;
+            long adjacencyStartMs = loadTimer.ElapsedMilliseconds;
+            RefreshAllAdjacencies();
+            long adjacencyMs = loadTimer.ElapsedMilliseconds - adjacencyStartMs;
+
+            if (yieldFrames)
+                yield return null;
+            // Template load skips per-tile observer churn; re-apply AOI + underfloor occlusion now
+            // that every covering turf is present.
+            RefreshAllHostVisibility();
+
+            // Host may have had empty Observers during the first pass (debug: all outOfAoi).
+            // Rebuild then refresh so in-AOI cells take the cover-hide branch after AOI show.
+            if (InstanceFinder.ServerManager != null
+                && InstanceFinder.IsClient
+                && InstanceFinder.ClientManager != null)
+            {
+                NetworkConnection conn = InstanceFinder.ClientManager.Connection;
+                if (conn != null && conn.IsValid)
+                {
+                    InstanceFinder.ServerManager.Objects.RebuildObservers(conn, timedOnly: false);
+                    if (yieldFrames)
+                        yield return null;
+                    RefreshAllHostVisibility();
+                }
+            }
+
+            loadTimer.Stop();
+            // Wall time includes the frames spent yielding, so it is how long the load took, not pure
+            // CPU. Placement covers clear + tiles + items; adjacency is the one-shot refresh after.
+            Log.Information(this,
+                "Map load finished: {chunks} chunks, {tiles} tiles, {items} items, {skipped} skipped in {totalMs} ms over {frames} frames (placement {placeMs} ms, adjacency {adjacencyMs} ms)",
+                Logs.ServerOnly,
+                savedChunks.Length,
+                placedTiles,
+                placedItems,
+                _lastLoadSkipped.Values.Sum(),
+                loadTimer.ElapsedMilliseconds,
+                Time.frameCount - startFrame,
+                placeMs,
+                adjacencyMs);
         }
 
         /// <summary>
-        /// Update every adjacency of each placed tile object when the map is loaded.
+        /// Recompute adjacency for every placed tile that has a connector.
+        /// Used after bulk load/import that skipped per-tile adjacency.
         /// </summary>
-        private void UpdateAllAdjacencies()
+        public void RefreshAllAdjacencies()
         {
-            foreach(TileChunk chunk in _chunks.Values)
+            foreach (TileChunk chunk in _chunks.Values)
             {
-                foreach(PlacedTileObject obj in chunk.GetAllTilePlacedObjects())
+                foreach (PlacedTileObject obj in chunk.GetAllTilePlacedObjects())
                 {
                     if (obj.HasAdjacencyConnector)
-                    {
-                        var pos = chunk.GetWorldPosition(obj.Origin.x, obj.Origin.y);
-                        obj.UpdateAdjacencies();
-                    }
+                        UpdateAdjacenciesFor(obj);
                 }
             }
+
+            _adjacencyEngine.ProcessQueue();
+        }
+
+        /// <summary>
+        /// Re-apply host MeshRenderer visibility for every placed tile (Map Editor open → all
+        /// visible; closed → HashGrid AOI). See <see cref="PlacedTileObject.RefreshHostVisibility"/>.
+        /// </summary>
+        public void RefreshAllHostVisibility()
+        {
+            foreach (TileChunk chunk in _chunks.Values)
+            {
+                foreach (PlacedTileObject obj in chunk.GetAllTilePlacedObjects())
+                {
+                    if (obj != null)
+                        obj.RefreshHostVisibility();
+                }
+            }
+        }
+
+        private void UpdateAdjacenciesFor(PlacedTileObject placedObject)
+        {
+            if (placedObject.TryGetComponent(out IPipePortDevice device))
+                RedrawPipesBeside(device.PortLines, placedObject.transform.position);
+            else if (placedObject.TryGetComponent<IEngineDrivenAdjacency>(out _))
+                _adjacencyEngine.QueueCascadeFrom(placedObject);
+            else
+                placedObject.UpdateAdjacencies();
+        }
+
+        private void RedrawPipesBeside(TileLayer[] lines, Vector3 position)
+        {
+            foreach (TileLayer line in lines)
+                _adjacencyEngine.QueueNeighbours(line, position);
+
+            _adjacencyEngine.ProcessQueue();
         }
 
         /// <summary>
         /// Clear untracked items in the scene that are not in containers and don't have a PlacedItemObject component
         /// </summary>
+        private void NotifyChunkCreated(Vector2Int chunkKey, Vector3 origin)
+        {
+            TileChunkRef chunkRef = new TileChunkRef
+            {
+                MapId = MapId,
+                ChunkKey = chunkKey,
+                Origin = origin,
+            };
+
+            foreach (ITileMutationObserver observer in _mutationObservers)
+                observer.OnChunkCreated(chunkRef);
+
+            BumpStructureVersion();
+        }
+
+        /// <summary>
+        /// Enumerates the chunks that currently exist on the map. Lets observers that register
+        /// after chunks were created (e.g. atmospherics) seed themselves from existing state.
+        /// </summary>
+        public IEnumerable<TileChunkRef> GetChunkRefs()
+        {
+            foreach (KeyValuePair<Vector2Int, TileChunk> pair in _chunks)
+            {
+                yield return new TileChunkRef
+                {
+                    MapId = MapId,
+                    ChunkKey = pair.Key,
+                    Origin = new Vector3(pair.Key.x * TileChunk.ChunkSize, 0, pair.Key.y * TileChunk.ChunkSize),
+                };
+            }
+        }
+
+        private void NotifyTilePlaced(PlacedTileObject placedObject, Vector3 worldPosition)
+        {
+            if (_bulkMutationDepth > 0)
+                return;
+
+            TileCoord coord = new TileCoord(MapId, Mathf.RoundToInt(worldPosition.x), Mathf.RoundToInt(worldPosition.z));
+
+            foreach (ITileMutationObserver observer in _mutationObservers)
+                observer.OnTilePlaced(placedObject, coord);
+
+            BumpStructureVersion();
+        }
+
+        private void NotifyTileCleared(PlacedTileObject placedObject, Vector3 worldPosition, TileLayer layer)
+        {
+            if (_bulkMutationDepth > 0)
+                return;
+
+            TileCoord coord = new TileCoord(MapId, Mathf.RoundToInt(worldPosition.x), Mathf.RoundToInt(worldPosition.z));
+
+            foreach (ITileMutationObserver observer in _mutationObservers)
+                observer.OnTileCleared(placedObject, coord, layer);
+
+            BumpStructureVersion();
+        }
+
+        /// <summary>
+        /// Notifies observers that a tile cell's runtime state changed (e.g. door open/close).
+        /// </summary>
+        public void NotifyTileStateChanged(Vector3 worldPosition)
+        {
+            TileCoord coord = new TileCoord(MapId, Mathf.RoundToInt(worldPosition.x), Mathf.RoundToInt(worldPosition.z));
+
+            foreach (ITileMutationObserver observer in _mutationObservers)
+                observer.OnTileStateChanged(coord);
+        }
+
         private void ClearUntrackedItems()
         {
-            // Find all Item components in the scene
-            Item[] allItems = FindObjectsOfType<Item>();
-            
+            // A copy: destroying an item unregisters it.
+            var allItems = new List<Item>();
+            SceneRegistry<Item>.CopyTo(allItems);
+
             foreach (Item item in allItems)
             {
                 // Skip items that are in containers (player inventory, etc.)
@@ -488,7 +1300,8 @@ namespace SS3D.Systems.Tile
                 // Destroy items that are in the world but not tracked by TileMap
                 if (item.gameObject != null)
                 {
-                    Debug.LogWarning($"Destroying untracked item: {item.gameObject.name} at position {item.gameObject.transform.position}");
+                    Log.Warning(this, "Destroying untracked item: {itemName} at position {position}",
+                        Logs.Generic, item.gameObject.name, item.gameObject.transform.position);
                     DestroyImmediate(item.gameObject);
                 }
             }

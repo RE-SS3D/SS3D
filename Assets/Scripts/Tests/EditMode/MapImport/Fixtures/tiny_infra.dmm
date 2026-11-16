@@ -1,0 +1,51 @@
+"aaa" = (
+/turf/open/space/basic,
+/area/space)
+"aab" = (
+/obj/structure/cable,
+/obj/machinery/atmospherics/pipe/smart/manifold4w/supply{
+	piping_layer = 2
+	},
+/obj/machinery/atmospherics/pipe/smart/manifold4w/scrubbers{
+	piping_layer = 1
+	},
+/turf/open/floor/iron,
+/area/hallway)
+"aac" = (
+/obj/structure/disposalpipe/segment,
+/obj/machinery/disposal/bin,
+/turf/open/floor/iron,
+/area/hallway)
+"aad" = (
+/obj/machinery/atmospherics/components/unary/vent_pump{
+	dir = 2
+	},
+/turf/open/floor/iron,
+/area/hallway)
+"aae" = (
+/obj/machinery/power/apc/auto_name/directional/east,
+/obj/machinery/light/directional/west,
+/turf/open/floor/iron,
+/area/hallway)
+"aaf" = (
+/obj/machinery/atmospherics/pipe/smart/pipe/layer4{
+	piping_layer = 4
+	},
+/turf/open/floor/iron,
+/area/hallway)
+"aag" = (
+/turf/closed/wall,
+/area/hallway)
+"aah" = (
+/obj/machinery/door/airlock,
+/turf/open/floor/iron,
+/area/hallway)
+
+(1,1,1) = {"
+aagaabaag
+aagaacaag
+aagaadaag
+aagaaeaag
+aagaafaag
+aagaahaag
+"}

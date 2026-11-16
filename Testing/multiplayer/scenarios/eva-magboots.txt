@@ -1,0 +1,9 @@
+# Guards: an operative's boots anchor a real remote client: the toggle reaches the server, the server stops sending wind, and switching off lets it through again · Not cheaper because: needs a client process whose owned body moves itself, with wind arriving only as a TargetRpc; nightly only
+# Dedicated-server side of eva-magboots. The client readies, auto-start draws it into the squad, and
+# the server blows gentle wind at it while it toggles.
+wait_timeout 240
+wait_connected
+wait_round Ongoing
+wait_seconds 15
+wind_on_clients 3 45
+disconnect

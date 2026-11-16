@@ -3,10 +3,13 @@ using Coimbra.Services.Events;
 using SS3D.Application;
 using SS3D.Application.Events;
 using SS3D.Core.Behaviours;
-using SS3D.Data.AssetDatabases;
 using SS3D.Data.Generated;
 using SS3D.Logging;
 using System;
+using UnityEngine;
+using UnityEngine.SceneManagement;
+using UnityScene = UnityEngine.SceneManagement.Scene;
+using UnitySceneManager = UnityEngine.SceneManagement.SceneManager;
 
 // ReSharper disable ConditionIsAlwaysTrueOrFalse
 namespace SS3D.SceneManagement
@@ -20,7 +23,14 @@ namespace SS3D.SceneManagement
 		{
 			base.OnAwake();
 
-			ApplicationInitializing.AddListener(HandleApplicationInitializing);
+			AddHandle(ApplicationInitializing.AddListener(HandleApplicationInitializing));
+			UnitySceneManager.sceneLoaded += HandleUnitySceneLoaded;
+		}
+
+		protected override void OnDestroyed()
+		{
+			UnitySceneManager.sceneLoaded -= HandleUnitySceneLoaded;
+			base.OnDestroyed();
 		}
 
 		private void HandleApplicationInitializing(ref EventContext context, in ApplicationInitializing e)
@@ -28,12 +38,82 @@ namespace SS3D.SceneManagement
 			LoadMainScene();
 		}
 
+		/// <summary>
+		/// FishNet loads Game additively and cannot unload Intro while it is still the only scene,
+		/// so Intro (EventSystem + AudioListener) would otherwise stick around and spam the console.
+		/// </summary>
+		private void HandleUnitySceneLoaded(UnityScene scene, LoadSceneMode mode)
+		{
+			if (scene.name != Scenes.Game)
+			{
+				return;
+			}
+
+			UnitySceneManager.SetActiveScene(scene);
+			// Unload is async — disable Intro/Launcher EventSystems immediately so they
+			// do not coexist with Game's EventSystem for one or more frames.
+			DisableEventSystemsInScene(Scenes.Intro);
+			DisableEventSystemsInScene(Scenes.Launcher);
+			UnloadIfLoaded(Scenes.Intro);
+			UnloadIfLoaded(Scenes.Launcher);
+		}
+
+		private static void DisableEventSystemsInScene(string sceneName)
+		{
+			UnityScene loaded = UnitySceneManager.GetSceneByName(sceneName);
+			if (!loaded.IsValid() || !loaded.isLoaded)
+			{
+				return;
+			}
+
+			foreach (GameObject root in loaded.GetRootGameObjects())
+			{
+				UnityEngine.EventSystems.EventSystem[] eventSystems =
+					root.GetComponentsInChildren<UnityEngine.EventSystems.EventSystem>(true);
+				for (int i = 0; i < eventSystems.Length; i++)
+				{
+					eventSystems[i].enabled = false;
+				}
+			}
+		}
+
+		private static void UnloadIfLoaded(string sceneName)
+		{
+			UnityScene loaded = UnitySceneManager.GetSceneByName(sceneName);
+			if (loaded.IsValid() && loaded.isLoaded)
+			{
+				UnitySceneManager.UnloadSceneAsync(loaded);
+			}
+		}
+
         /// <summary>
         /// Starts the launcher or the game, depending if the game was opened without or with command line args.
         /// </summary>
         private void LoadMainScene()
         {
+#if UNITY_SERVER
+            Log.Debug(this, "Loading main scene as Game (dedicated server)", Logs.Important);
+
+            // This call is async and not awaited. Hence the pragma disable.
+            #pragma warning disable CS4014
+            Scene.LoadAsync(Scenes.Game);
+            #pragma warning restore CS4014
+
+            return;
+#else
             ApplicationSettings applicationSettings = ScriptableSettings.GetOrFind<ApplicationSettings>();
+
+            // An editor automation host (Multiplayer Play Mode's smoke: tags) must load Game the way
+            // a dedicated server does. Loading Intro/Launcher here races FishNet's online-scene load -
+            // the host's local client can time out before Game is up. Clients keep the Intro load:
+            // starting in Boot makes FishNet register Game's scene objects before they exist.
+            if (UnityEngine.Application.isEditor
+                && !string.IsNullOrEmpty(applicationSettings.ActiveTestScriptPath)
+                && !MultiplayerPlayModePlayer.IsVirtualPlayer)
+            {
+                Log.Debug(this, "Skipping the main scene for an automation host", Logs.Important);
+                return;
+            }
 
             bool isUsingCommandLineArgs = false;
 
@@ -43,8 +123,6 @@ namespace SS3D.SceneManagement
             }
 
             string sceneToLoad = isUsingCommandLineArgs ? Scenes.Intro : Scenes.Launcher;
-
-            Log.Information(this, $"Loading main scene as {sceneToLoad}", Logs.Important);
 
             if (applicationSettings.ForceLauncher)
             {
@@ -62,10 +140,13 @@ namespace SS3D.SceneManagement
                 }
             }
 
+            Log.Debug(this, $"Loading main scene as {sceneToLoad}", Logs.Important);
+
             // This call is async and not awaited. Hence the pragma disable.
 			#pragma warning disable CS4014
 			Scene.LoadAsync(sceneToLoad);
 			#pragma warning restore CS4014
+#endif
 		}
 	}
 }

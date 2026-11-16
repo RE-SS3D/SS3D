@@ -1,0 +1,9 @@
+# Client side of connection-refused: started without -token, so its admin name is refused.
+wait_disconnect_reason AdminToken
+reconnect
+wait_disconnect_reason AdminToken
+set_token smoke-{ckey}
+reconnect
+wait_connected
+assert_login_accepted
+wait_disconnect_reason Kicked

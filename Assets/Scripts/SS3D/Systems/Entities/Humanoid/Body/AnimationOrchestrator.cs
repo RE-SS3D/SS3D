@@ -1,0 +1,898 @@
+using Coimbra.Services.Events;
+using Coimbra.Services.PlayerLoopEvents;
+using SS3D.Core.Behaviours;
+using SS3D.Systems.Entities.Data;
+using SS3D.Systems.Entities.Humanoid.Body;
+using System;
+using System.Text;
+using FishNet.Object;
+using UnityEngine;
+
+namespace SS3D.Systems.Entities.Humanoid
+{
+    /// <summary>
+    /// Single writer to the Unity Animator for humanoids.
+    /// Maps body state snapshots to animator parameters and layer weights.
+    /// </summary>
+    [RequireComponent(typeof(Animator))]
+    public class AnimationOrchestrator : Actor
+    {
+        public event Action<AnimationTriggerId> OnTriggerFired;
+
+        [SerializeField] private HumanoidController _movementController;
+        [SerializeField] private HumanoidBodyStateMachine _bodyStateMachine;
+        [SerializeField] private Animator _animator;
+        /// <summary>
+        /// Remote-only smoothing of the replicated Speed SyncVar (arrives in tick-sized steps).
+        /// The owner's controller already ramps locomotion at M1m pace, so the owner applies it directly.
+        /// </summary>
+        [SerializeField] private float _remoteLocomotionLerp = 14f;
+        /// <summary>Smoothing for the per-frame yaw-delta Turn parameter, which is noisy frame to frame.</summary>
+        [SerializeField] private float _turnLerp = 10f;
+        [SerializeField] private HumanoidIkController _ikController;
+
+        private float _currentSpeed;
+        private float _targetSpeed;
+        private float _currentVelX;
+        private float _currentVelZ;
+        private float _currentTurn;
+        private float _targetVelX;
+        private float _targetVelZ;
+        private float _targetTurn;
+        /// <summary>Set once the controller publishes VelX/VelZ; scalar Speed events then only carry stops.</summary>
+        private bool _controllerPublishesVelocity;
+        /// <summary>Other controllers (silicon, preview) may lack LocoRate; avoid the missing-parameter warning spam.</summary>
+        private bool _hasLocoRateParameter;
+        private BodyAnimationSnapshot _lastSnapshot = BodyAnimationSnapshot.Default;
+        private AnimationTriggerId _lastConsumedTrigger = AnimationTriggerId.None;
+        private byte _lastTriggerSequence;
+        private bool _ownerPredictedAttack;
+        private float _upperBodyWeight;
+        private float _upperBodyWeightTarget;
+        private AdditiveLayerWeight _additive;
+        private bool _posingSuppressed;
+        private int _nextAttackVariant;
+        private bool _hasAttackRateParameter;
+        /// <summary>Time.time at which the active swing reaches its strike frame; AttackRate returns to 1 after.</summary>
+        private float _swingStrikeTime = float.NegativeInfinity;
+        /// <summary>Time.time until which a throw holds the Upper Body layer up (it is off in Peaceful).</summary>
+        private float _throwLayerUntil = float.NegativeInfinity;
+        /// <summary>Time.time until which an interaction reach holds the Upper Body layer up.</summary>
+        private float _interactUpperUntil = float.NegativeInfinity;
+        /// <summary>Time.time until which a floor bend plays on the Base Layer (Upper Body held down).</summary>
+        private float _interactFullBodyUntil = float.NegativeInfinity;
+        private bool _hasInteractParameters;
+        /// <summary>The kneel or wall-work loop is playing (replicated snapshot bits, honoured while on foot).</summary>
+        private bool _kneeling, _working, _hasWorkParameter;
+        private bool _hasPistolHoldParameter;
+        private bool _hasRangedVelXParameter;
+        private float _pistolHold;
+        private float _pistolHoldTarget;
+        /// <summary>Off Hand layer indices, -1 on controllers without them (silicon, preview).</summary>
+        private int _offHandLeftLayer = -1;
+        private int _offHandRightLayer = -1;
+        private float _offHandLeftWeight;
+        private float _offHandRightWeight;
+        private float _offHandLeftTarget;
+        private float _offHandRightTarget;
+
+        /// <summary>Horizontal / downward / backhand cycle for melee AttackSwing.</summary>
+        private static int MeleeSwingVariantCount => MeleeSwingAnimation.Variants.Length;
+
+        /// <summary>Leg brute at/above this → stumble idle on injured blend; prefer base over arm additive.</summary>
+        private const float StumbleLegThreshold = 0.65f;
+
+        /// <summary>
+        /// Soft Additive weight while Staggered so Additive Flinch (gut) fades in/out.
+        /// Do not slam to 1 — Empty Additive is remapped to hurting idle and reads as a snap.
+        /// </summary>
+        private const float StaggerAdditiveWeight = 0.75f;
+
+        /// <summary>
+        /// Soft fade when entering/leaving Melee stance (Upper Body layer on/off).
+        /// Swing clip lifetime is Animator exit-time owned — do not add swing duration constants here.
+        /// </summary>
+        [SerializeField] private float _upperBodyWeightLerp = 6f;
+
+        /// <summary>Upper Body fade rate around a throw: fast enough that the wind-up shows from its first frames.</summary>
+        private const float ThrowLayerWeightLerp = 12f;
+
+        /// <summary>
+        /// Upper Body fade-out after an interaction reach in Peaceful: the hold pose and the locomotion arms differ,
+        /// so a throw-fast drop reads as a snap at the end of the reach.
+        /// </summary>
+        private const float InteractionLayerFadeOutLerp = 1f / InteractionAnimation.LayerFadeOutSeconds;
+
+        [SerializeField] private float _additiveWeightLerp = 8f;
+
+        private static readonly int[] SwingStateHashes = Array.ConvertAll(
+            MeleeSwingAnimation.Variants, swing => Animator.StringToHash(swing.StateName));
+        private static readonly int RifleAimIdleStateHash = Animator.StringToHash("Rifle Aim Idle");
+        private static readonly int PistolAimIdleStateHash = Animator.StringToHash(PistolStanceAnimation.AimIdleState);
+        private static readonly int FireRifleStateHash = Animator.StringToHash("Fire Rifle");
+        private static readonly int ReloadRifleStateHash = Animator.StringToHash("Reload Rifle");
+        private static readonly int HoldDefaultStateHash = Animator.StringToHash("Hold Default");
+
+        private HumanoidCombatMode _lastAppliedCombatMode = HumanoidCombatMode.Peaceful;
+
+        public Animator Animator => _animator;
+
+        protected override void OnStart()
+        {
+            base.OnStart();
+            if (_bodyStateMachine == null)
+            {
+                _bodyStateMachine = GetComponent<HumanoidBodyStateMachine>();
+            }
+            if (_movementController == null)
+            {
+                _movementController = GetComponent<HumanoidController>();
+            }
+
+            EnsureAnimator();
+
+            LogMissingAnimatorParametersOnce();
+            _hasLocoRateParameter = HasFloatParameter(Animations.Humanoid.LocoRate);
+            _hasAttackRateParameter = HasFloatParameter(Animations.Humanoid.AttackRate);
+            _hasPistolHoldParameter = HasFloatParameter(Animations.Humanoid.PistolHold);
+            _hasRangedVelXParameter = HasFloatParameter(Animations.Humanoid.RangedVelX);
+            _hasInteractParameters = HasParameter(Animations.Humanoid.InteractClip, AnimatorControllerParameterType.Int);
+            _hasWorkParameter = HasParameter(Animations.Humanoid.InteractWork, AnimatorControllerParameterType.Bool);
+            if (_animator != null && _animator.runtimeAnimatorController != null)
+            {
+                _offHandLeftLayer = _animator.GetLayerIndex(PistolStanceAnimation.OffHandLeftLayer);
+                _offHandRightLayer = _animator.GetLayerIndex(PistolStanceAnimation.OffHandRightLayer);
+            }
+            SubscribeToEvents();
+
+            if (_bodyStateMachine != null)
+            {
+                _targetSpeed = _bodyStateMachine.Snapshot.MovementSpeed;
+                _targetVelX = _bodyStateMachine.Snapshot.MovementVelX;
+                _targetVelZ = _bodyStateMachine.Snapshot.MovementVelZ;
+                ApplySnapshot(_bodyStateMachine.Snapshot);
+            }
+            else if (_animator != null)
+            {
+                _targetSpeed = 0f;
+                _animator.SetFloat(Animations.Humanoid.MovementSpeed, 0f);
+                _animator.SetFloat(Animations.Humanoid.VelX, 0f);
+                _animator.SetFloat(Animations.Humanoid.VelZ, 0f);
+                _animator.SetFloat(Animations.Humanoid.Turn, 0f);
+            }
+        }
+
+        private bool HasFloatParameter(int hash) => HasParameter(hash, AnimatorControllerParameterType.Float);
+
+        private bool HasParameter(int hash, AnimatorControllerParameterType type)
+        {
+            if (_animator == null || _animator.runtimeAnimatorController == null)
+            {
+                return false;
+            }
+
+            foreach (AnimatorControllerParameter parameter in _animator.parameters)
+            {
+                if (parameter.nameHash == hash && parameter.type == type)
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        private void EnsureAnimator()
+        {
+            if (_animator == null)
+            {
+                _animator = GetComponent<Animator>();
+            }
+
+            if (_animator == null)
+            {
+                _animator = GetComponentInChildren<Animator>(true);
+            }
+        }
+
+        private void LogMissingAnimatorParametersOnce()
+        {
+            if (_animator == null || _animator.runtimeAnimatorController == null)
+            {
+                UnityEngine.Debug.LogError(
+                    $"[AnimationOrchestrator] No runtimeAnimatorController on '{name}'.",
+                    this);
+                return;
+            }
+
+            AnimatorControllerParameter[] parameters = _animator.parameters;
+            bool Has(int hash)
+            {
+                for (int i = 0; i < parameters.Length; i++)
+                {
+                    if (parameters[i].nameHash == hash)
+                    {
+                        return true;
+                    }
+                }
+
+                return false;
+            }
+
+            (string Name, int Hash)[] required =
+            {
+                ("Speed", Animations.Humanoid.MovementSpeed),
+                ("Floating", Animations.Humanoid.Floating),
+                ("LimpSide", Animations.Humanoid.LimpSide),
+                ("IsCrawling", Animations.Humanoid.IsCrawling),
+                ("IsDragging", Animations.Humanoid.IsDragging),
+                ("ArmHold", Animations.Humanoid.ArmHold),
+                ("InjuredArmLeft", Animations.Humanoid.InjuredArmLeft),
+                ("InjuredArmRight", Animations.Humanoid.InjuredArmRight),
+                ("InjuredLeg", Animations.Humanoid.InjuredLeg),
+                ("IsSeated", Animations.Humanoid.IsSeated),
+                ("CombatMode", Animations.Humanoid.CombatMode),
+                ("CombatStance", Animations.Humanoid.CombatStance),
+                ("AimYaw", Animations.Humanoid.AimYaw),
+                ("AimPitch", Animations.Humanoid.AimPitch),
+                ("AttackVariant", Animations.Humanoid.AttackVariant),
+                ("MirrorUpperBody", Animations.Humanoid.MirrorUpperBody),
+                ("VelX", Animations.Humanoid.VelX),
+                ("VelZ", Animations.Humanoid.VelZ),
+                ("Turn", Animations.Humanoid.Turn),
+            };
+
+            StringBuilder missing = null;
+            foreach ((string Name, int Hash) entry in required)
+            {
+                if (Has(entry.Hash))
+                {
+                    continue;
+                }
+
+                missing ??= new StringBuilder();
+                missing.Append(missing.Length == 0 ? entry.Name : ", " + entry.Name);
+            }
+
+            if (missing == null)
+            {
+                return;
+            }
+
+            StringBuilder present = new StringBuilder();
+            for (int i = 0; i < parameters.Length; i++)
+            {
+                if (i > 0)
+                {
+                    present.Append(", ");
+                }
+
+                present.Append(parameters[i].name);
+            }
+
+            UnityEngine.Debug.LogError(
+                $"[AnimationOrchestrator] Animator on '{name}' is missing parameters: {missing}. "
+                + $"Controller '{_animator.runtimeAnimatorController.name}' currently has "
+                + $"[{present}]. Run SS3D → Animation → Rebind Humanoid Animator Parameters.",
+                this);
+        }
+
+        protected override void OnEnabled()
+        {
+            base.OnEnabled();
+            AddHandle(UpdateEvent.AddListener(HandleUpdate));
+        }
+
+        protected override void OnDestroyed()
+        {
+            base.OnDestroyed();
+            UnsubscribeFromEvents();
+        }
+
+        private void HandleUpdate(ref EventContext context, in UpdateEvent updateEvent)
+        {
+            // Coimbra UpdateEvent still fires after enabled=false — must guard or walk params keep writing.
+            if (!isActiveAndEnabled || _posingSuppressed || _animator == null || !_animator.enabled)
+            {
+                return;
+            }
+
+            ApplyLocomotionVelocity();
+            TickSwingTempo();
+            TickUpperBodyWeight();
+            TickAdditiveWeight();
+            TickPistolHold();
+        }
+
+        /// <summary>
+        /// Ragdoll/collapse sets this so Coimbra listeners cannot keep driving walk cycles.
+        /// </summary>
+        public void SetPosingSuppressed(bool suppressed)
+        {
+            _posingSuppressed = suppressed;
+            if (suppressed && _animator != null)
+            {
+                _animator.SetFloat(Animations.Humanoid.MovementSpeed, 0f);
+                _animator.SetFloat(Animations.Humanoid.VelX, 0f);
+                _animator.SetFloat(Animations.Humanoid.VelZ, 0f);
+                _animator.enabled = false;
+            }
+        }
+
+        private void SubscribeToEvents()
+        {
+            if (_movementController != null)
+            {
+                _movementController.OnSpeedChangeEvent += HandleSpeedChanged;
+                _movementController.OnLocomotionVelocityChanged += HandleLocomotionVelocityChanged;
+            }
+            if (_bodyStateMachine != null)
+            {
+                _bodyStateMachine.OnSnapshotChanged += ApplySnapshot;
+            }
+        }
+
+        private void UnsubscribeFromEvents()
+        {
+            if (_movementController != null)
+            {
+                _movementController.OnSpeedChangeEvent -= HandleSpeedChanged;
+                _movementController.OnLocomotionVelocityChanged -= HandleLocomotionVelocityChanged;
+            }
+            if (_bodyStateMachine != null)
+            {
+                _bodyStateMachine.OnSnapshotChanged -= ApplySnapshot;
+            }
+        }
+
+        private void HandleSpeedChanged(float speed)
+        {
+            // Controllers that publish VelX/VelZ (living, predicted) also fire the scalar gait
+            // first each frame; it must not overwrite their strafe axes. A zero still lands —
+            // HumanoidController sends only Speed 0 while the body cannot move.
+            if (_controllerPublishesVelocity && speed > 0.001f)
+            {
+                return;
+            }
+
+            _targetSpeed = speed;
+            if (_controllerPublishesVelocity)
+            {
+                _targetVelX = 0f;
+                _targetVelZ = 0f;
+            }
+
+            _bodyStateMachine?.SetLocomotionSpeed(speed);
+        }
+
+        private void HandleLocomotionVelocityChanged(float velX, float velZ, float turn)
+        {
+            _controllerPublishesVelocity = true;
+            _targetVelX = velX;
+            _targetVelZ = velZ;
+            _targetTurn = turn;
+            _targetSpeed = new Vector2(velX, velZ).magnitude;
+            _bodyStateMachine?.SetLocomotionVelocity(velX, velZ);
+        }
+
+        /// <summary>
+        /// Plays a one-shot locomotion pack trigger (Jump / Turn90). Local visual for now.
+        /// </summary>
+        public void PlayLocomotionTrigger(int triggerHash)
+        {
+            if (_animator != null && triggerHash != 0)
+            {
+                _animator.SetTrigger(triggerHash);
+            }
+        }
+
+        /// <summary>
+        /// Owner-side immediate attack playback. Returns the swing variant used (0–2) for AttackSwing,
+        /// or <paramref name="throwVariant"/> for Throw.
+        /// </summary>
+        public byte PlayAttackTrigger(AnimationTriggerId trigger, byte attackWindup = 0, byte throwVariant = 0)
+        {
+            if (_animator == null)
+            {
+                return 0;
+            }
+
+            int hash = Animations.Humanoid.GetTriggerHash(trigger);
+            if (hash == 0)
+            {
+                return 0;
+            }
+
+            byte variant = 0;
+            if (IsRifleOnlyOneshot(trigger))
+            {
+                // The pistol has no fire or reload clip: the IK kick and the timed refill stand in.
+                _ownerPredictedAttack = true;
+                return 0;
+            }
+
+            if (trigger == AnimationTriggerId.AttackSwing)
+            {
+                variant = (byte)(_nextAttackVariant % MeleeSwingVariantCount);
+                _nextAttackVariant = (_nextAttackVariant + 1) % MeleeSwingVariantCount;
+                _animator.SetInteger(Animations.Humanoid.AttackVariant, variant);
+                BeginSwingTempo(variant, attackWindup);
+            }
+            else if (trigger == AnimationTriggerId.Throw)
+            {
+                variant = (byte)(throwVariant & 0x3);
+                BeginThrow(variant);
+            }
+
+            _ownerPredictedAttack = true;
+
+            _animator.ResetTrigger(hash);
+            _animator.SetTrigger(hash);
+            return variant;
+        }
+
+        /// <summary>
+        /// Plays the swing's wind-up at the rate that lands its strike frame at the weapon's effective
+        /// windup (when the server connects), then lets the follow-through run at natural speed.
+        /// </summary>
+        private void BeginSwingTempo(int variant, byte attackWindup)
+        {
+            if (!_hasAttackRateParameter)
+            {
+                return;
+            }
+
+            float windupSeconds = MeleeSwingAnimation.DequantizeWindup(attackWindup);
+            float rate = MeleeSwingAnimation.ComputeWindupRate(variant, windupSeconds);
+            _animator.SetFloat(Animations.Humanoid.AttackRate, rate);
+            _swingStrikeTime = MeleeSwingAnimation.TryGetSwing(variant, out MeleeSwingAnimation.Swing swing)
+                ? Time.time + swing.StrikeSeconds / rate
+                : float.NegativeInfinity;
+        }
+
+        private void TickSwingTempo()
+        {
+            if (!_hasAttackRateParameter || float.IsNegativeInfinity(_swingStrikeTime) || Time.time < _swingStrikeTime)
+            {
+                return;
+            }
+
+            _swingStrikeTime = float.NegativeInfinity;
+            _animator.SetFloat(Animations.Humanoid.AttackRate, 1f);
+        }
+
+        /// <summary>Selects the throw clip and keeps the Upper Body layer up while it plays.</summary>
+        private void BeginThrow(int variant)
+        {
+            _animator.SetInteger(Animations.Humanoid.AttackVariant, variant);
+            _throwLayerUntil = Time.time + ThrowAnimation.PlaySeconds(variant);
+        }
+
+        /// <summary>
+        /// Plays an interaction clip (<see cref="InteractionAnimation"/>) on this peer, or nothing when the upper
+        /// body is busy (a swing, a throw, the kneel, an aimed rifle) or the body is not up. The interaction's
+        /// effect does not wait for it. Returns the clip played, after the moving fallback, or None.
+        /// </summary>
+        public int PlayInteraction(int clip)
+        {
+            if (_animator == null || !_hasInteractParameters)
+            {
+                return InteractionAnimation.None;
+            }
+
+            BodyAnimationSnapshot snapshot = _lastSnapshot;
+            bool up = snapshot.State == BodyState.Locomotion || snapshot.State == BodyState.Seated;
+            bool aimedRifle = snapshot.CombatMode == HumanoidCombatMode.Ranged && !snapshot.PistolHold;
+            if (!up || _kneeling || _working || aimedRifle || IsUpperBodyOneshotPlaying())
+            {
+                return InteractionAnimation.None;
+            }
+
+            bool standing = snapshot.State == BodyState.Locomotion && !snapshot.IsFloating && !snapshot.IsCrawling;
+            int played = InteractionAnimation.ResolvePlayback(clip, _currentSpeed > InteractionAnimation.MoveExitSpeed, standing);
+            if (!InteractionAnimation.TryGetClip(played, out InteractionAnimation.Clip entry)
+                || (!entry.FullBody && Time.time < _interactFullBodyUntil))
+            {
+                // A reach cannot show over a floor bend (Upper Body is held down); a new bend restarts the bend.
+                return InteractionAnimation.None;
+            }
+
+            _animator.SetInteger(Animations.Humanoid.InteractClip, played);
+            _animator.ResetTrigger(Animations.Humanoid.Interact);
+            _animator.SetTrigger(Animations.Humanoid.Interact);
+            float until = Time.time + entry.PlaySeconds;
+            if (entry.FullBody)
+            {
+                _interactFullBodyUntil = until;
+            }
+            else
+            {
+                _interactUpperUntil = until;
+            }
+
+            return played;
+        }
+
+        /// <summary>A floor bend, the kneel or wall work owns the whole body; upper-body posing and aim IK stand aside.</summary>
+        public bool IsFullBodyInteractionPlaying => _kneeling || _working || Time.time < _interactFullBodyUntil;
+
+        private bool IsUpperBodyOneshotPlaying()
+        {
+            if (Time.time < _throwLayerUntil)
+            {
+                return true;
+            }
+
+            if (_animator.layerCount <= 1)
+            {
+                return false;
+            }
+
+            int current = _animator.GetCurrentAnimatorStateInfo(1).shortNameHash;
+            int next = _animator.IsInTransition(1) ? _animator.GetNextAnimatorStateInfo(1).shortNameHash : 0;
+            return Array.IndexOf(SwingStateHashes, current) >= 0 || Array.IndexOf(SwingStateHashes, next) >= 0;
+        }
+
+        private void TickUpperBodyWeight()
+        {
+            if (_animator == null || _animator.layerCount <= 1)
+            {
+                return;
+            }
+
+            bool alive = _lastSnapshot.State != BodyState.Ragdoll;
+            bool fullBody = alive && IsFullBodyInteractionPlaying;
+            bool oneshotUp = alive && !fullBody && (Time.time < _throwLayerUntil || Time.time < _interactUpperUntil);
+            float oneshotEnd = Mathf.Max(_throwLayerUntil, Mathf.Max(_interactUpperUntil, _interactFullBodyUntil));
+            bool interactionLast = _interactUpperUntil >= _throwLayerUntil;
+            float fadeOut = interactionLast ? InteractionLayerFadeOutLerp : ThrowLayerWeightLerp;
+            bool oneshotFading = !oneshotUp && !fullBody && Time.time < oneshotEnd + 1f / fadeOut;
+            float rate = oneshotUp || fullBody ? ThrowLayerWeightLerp
+                : oneshotFading ? fadeOut
+                : _upperBodyWeightLerp;
+            _upperBodyWeight = Mathf.MoveTowards(
+                _upperBodyWeight,
+                fullBody ? 0f : oneshotUp ? 1f : _upperBodyWeightTarget,
+                Time.deltaTime * rate);
+            _animator.SetLayerWeight(1, _upperBodyWeight);
+        }
+
+        /// <summary>
+        /// The rifle fire and reload clips would yank a pistol into the rifle pose. Skip their triggers
+        /// rather than gate them in the animator: an unconsumed trigger stays latched and fires later.
+        /// </summary>
+        private bool IsRifleOnlyOneshot(AnimationTriggerId trigger)
+        {
+            return _lastSnapshot.PistolHold
+                && (trigger == AnimationTriggerId.FireRifle || trigger == AnimationTriggerId.Reload);
+        }
+
+        private void TickPistolHold()
+        {
+            float step = Time.deltaTime / PistolStanceAnimation.BlendSeconds;
+            if (_hasPistolHoldParameter)
+            {
+                _pistolHold = Mathf.MoveTowards(_pistolHold, _pistolHoldTarget, step);
+                _animator.SetFloat(Animations.Humanoid.PistolHold, _pistolHold);
+            }
+
+            if (_offHandLeftLayer >= 0)
+            {
+                _offHandLeftWeight = Mathf.MoveTowards(
+                    _offHandLeftWeight, IsFullBodyInteractionPlaying ? 0f : _offHandLeftTarget, step);
+                _animator.SetLayerWeight(_offHandLeftLayer, _offHandLeftWeight);
+            }
+
+            if (_offHandRightLayer >= 0)
+            {
+                _offHandRightWeight = Mathf.MoveTowards(
+                    _offHandRightWeight, IsFullBodyInteractionPlaying ? 0f : _offHandRightTarget, step);
+                _animator.SetLayerWeight(_offHandRightLayer, _offHandRightWeight);
+            }
+        }
+
+        private void TickAdditiveWeight()
+        {
+            if (_animator == null || _animator.layerCount <= 2)
+            {
+                return;
+            }
+
+            _animator.SetLayerWeight(2, _additive.Tick(Time.deltaTime, _additiveWeightLerp, Time.time));
+        }
+
+        public void ApplySnapshot(BodyAnimationSnapshot snapshot)
+        {
+            EnsureAnimator();
+            if (_posingSuppressed || _animator == null || !_animator.enabled)
+            {
+                return;
+            }
+
+            if (snapshot.State == BodyState.Ragdoll)
+            {
+                return;
+            }
+
+            _lastSnapshot = snapshot;
+            if (!IsLocalMovementAuthority())
+            {
+                _targetSpeed = snapshot.MovementSpeed;
+                _targetVelX = snapshot.MovementVelX;
+                _targetVelZ = snapshot.MovementVelZ;
+                _targetTurn = 0f;
+            }
+            ApplyLocomotion(snapshot);
+            ApplyUpperBody(snapshot);
+            ApplyCombat(snapshot);
+            ApplyInjuries(snapshot);
+            ApplyFullBodyOverride(snapshot);
+
+            if (_bodyStateMachine != null)
+            {
+                byte sequence = _bodyStateMachine.TriggerSequence;
+                if (sequence != _lastTriggerSequence && snapshot.ActiveTrigger != AnimationTriggerId.None)
+                {
+                    _lastTriggerSequence = sequence;
+                    // Owner already played predictively — skip duplicate SetTrigger on host/client echo.
+                    if (_ownerPredictedAttack)
+                    {
+                        _ownerPredictedAttack = false;
+                        _lastConsumedTrigger = snapshot.ActiveTrigger;
+                        OnTriggerFired?.Invoke(snapshot.ActiveTrigger);
+                    }
+                    else
+                    {
+                        ConsumeTrigger(snapshot.ActiveTrigger, snapshot.AttackVariant, snapshot.AttackWindup);
+                    }
+                }
+            }
+        }
+
+        private void ApplyLocomotionVelocity()
+        {
+            if (IsLocalMovementAuthority())
+            {
+                // Controller publishes eased VelX/VelZ in step with world speed — no second lag here.
+                _currentVelX = _targetVelX;
+                _currentVelZ = _targetVelZ;
+                _currentSpeed = _targetSpeed;
+            }
+            else
+            {
+                float lerp = Mathf.Clamp01(Time.deltaTime * _remoteLocomotionLerp);
+                _currentVelX = Mathf.Lerp(_currentVelX, _targetVelX, lerp);
+                _currentVelZ = Mathf.Lerp(_currentVelZ, _targetVelZ, lerp);
+                _currentSpeed = Mathf.Lerp(_currentSpeed, _targetSpeed, lerp);
+            }
+
+            _currentTurn = Mathf.Lerp(_currentTurn, _targetTurn, Mathf.Clamp01(Time.deltaTime * _turnLerp));
+
+            _animator.SetFloat(Animations.Humanoid.VelX, _currentVelX);
+            if (_hasRangedVelXParameter)
+            {
+                _animator.SetFloat(Animations.Humanoid.RangedVelX, _lastSnapshot.MirrorUpperBody ? -_currentVelX : _currentVelX);
+            }
+            _animator.SetFloat(Animations.Humanoid.VelZ, _currentVelZ);
+            _animator.SetFloat(Animations.Humanoid.Turn, _currentTurn);
+            _animator.SetFloat(Animations.Humanoid.MovementSpeed, _currentSpeed);
+            if (_hasLocoRateParameter)
+            {
+                _animator.SetFloat(
+                    Animations.Humanoid.LocoRate,
+                    _movementController != null ? _movementController.LocomotionPlaybackRate : 1f);
+            }
+        }
+
+        private void ApplyLocomotion(BodyAnimationSnapshot snapshot)
+        {
+            _animator.SetBool(Animations.Humanoid.Floating, snapshot.IsFloating);
+            _animator.SetBool(Animations.Humanoid.IsCrawling, snapshot.IsCrawling);
+            _animator.SetInteger(Animations.Humanoid.LimpSide, (int)snapshot.LimpSide);
+            _animator.SetBool(Animations.Humanoid.IsDragging, snapshot.IsDragging);
+        }
+
+        private void ApplyUpperBody(BodyAnimationSnapshot snapshot)
+        {
+            _animator.SetInteger(Animations.Humanoid.ArmHold, (int)snapshot.ArmHold);
+            _animator.SetBool(Animations.Humanoid.IsSeated, snapshot.IsSeated);
+            _animator.SetBool(Animations.Humanoid.MirrorUpperBody, snapshot.MirrorUpperBody);
+            bool onFoot = snapshot.State == BodyState.Locomotion && !snapshot.IsFloating && !snapshot.IsCrawling;
+            _kneeling = snapshot.InteractKneel && onFoot;
+            _working = snapshot.InteractWork && onFoot && _hasWorkParameter;
+            if (_hasInteractParameters)
+            {
+                _animator.SetBool(Animations.Humanoid.InteractKneel, _kneeling);
+            }
+
+            if (_hasWorkParameter)
+            {
+                _animator.SetBool(Animations.Humanoid.InteractWork, _working);
+            }
+
+            if (_animator.layerCount <= 1)
+            {
+                return;
+            }
+
+            // Peaceful: full base locomotion.
+            // Melee: Upper Body weight 1 (Hold Default / AttackSwing).
+            // Ranged: Upper Body weight 1 (Rifle Aim Idle / FireRifle / Reload) so shots don't
+            // pulse layer weight; Base Ranged FreeformCartesian keeps the legs.
+            bool needsUpperBodyLayer = snapshot.State != BodyState.Ragdoll
+                && snapshot.CombatMode.IsCombat();
+            _upperBodyWeightTarget = needsUpperBodyLayer ? 1f : 0f;
+
+            // Pistol with a full off-hand: that arm's Off Hand layer overrides the two-handed grip.
+            // The gun is in the left hand when the upper body mirrors, so the off-hand is then the right.
+            bool pistolStance = needsUpperBodyLayer && snapshot.PistolHold
+                && snapshot.CombatMode == HumanoidCombatMode.Ranged;
+            bool offHandPose = pistolStance && snapshot.OffHandBusy
+                && snapshot.State != BodyState.Seated && snapshot.State != BodyState.Crawling;
+            _pistolHoldTarget = snapshot.PistolHold ? 1f : 0f;
+            _offHandLeftTarget = offHandPose && !snapshot.MirrorUpperBody ? 1f : 0f;
+            _offHandRightTarget = offHandPose && snapshot.MirrorUpperBody ? 1f : 0f;
+        }
+
+        private void ApplyCombat(BodyAnimationSnapshot snapshot)
+        {
+            bool inCombat = snapshot.CombatMode.IsCombat();
+            _animator.SetBool(Animations.Humanoid.CombatMode, inCombat);
+            _animator.SetInteger(Animations.Humanoid.CombatStance, (int)snapshot.CombatMode);
+            _animator.SetFloat(Animations.Humanoid.AimYaw, snapshot.AimYaw);
+            _animator.SetFloat(Animations.Humanoid.AimPitch, snapshot.AimPitch);
+            _ikController?.SetCombatLookAt(inCombat, snapshot.AimYaw, snapshot.AimPitch);
+            _ikController?.SetRangedAimActive(snapshot.CombatMode == HumanoidCombatMode.Ranged && snapshot.State != BodyState.Ragdoll);
+
+            // Hold Item/Weapon have no path to Rifle Aim Idle unless wired — CrossFade on stance
+            // enter so a held gun doesn't show melee Hold Weapon until the first shot.
+            if (snapshot.CombatMode == HumanoidCombatMode.Ranged
+                && _lastAppliedCombatMode != HumanoidCombatMode.Ranged)
+            {
+                EnsureUpperBodyState(snapshot.PistolHold ? PistolAimIdleStateHash : RifleAimIdleStateHash, 0.1f);
+            }
+            else if (snapshot.CombatMode == HumanoidCombatMode.Melee
+                     && _lastAppliedCombatMode == HumanoidCombatMode.Ranged)
+            {
+                EnsureUpperBodyState(HoldDefaultStateHash, 0.1f);
+            }
+
+            _lastAppliedCombatMode = snapshot.CombatMode;
+        }
+
+        private void EnsureUpperBodyState(int stateHash, float fixedTransitionDuration)
+        {
+            if (_animator == null || _animator.layerCount <= 1)
+            {
+                return;
+            }
+
+            AnimatorStateInfo current = _animator.GetCurrentAnimatorStateInfo(1);
+            if (current.shortNameHash == stateHash
+                || current.shortNameHash == FireRifleStateHash
+                || current.shortNameHash == ReloadRifleStateHash)
+            {
+                return;
+            }
+
+            if (_animator.IsInTransition(1))
+            {
+                int next = _animator.GetNextAnimatorStateInfo(1).shortNameHash;
+                if (next == stateHash || next == FireRifleStateHash || next == ReloadRifleStateHash)
+                {
+                    return;
+                }
+            }
+
+            _animator.CrossFadeInFixedTime(stateHash, fixedTransitionDuration, 1);
+        }
+
+        private void ApplyInjuries(BodyAnimationSnapshot snapshot)
+        {
+            _animator.SetFloat(Animations.Humanoid.InjuredArmLeft, snapshot.InjuredArmLeft);
+            _animator.SetFloat(Animations.Humanoid.InjuredArmRight, snapshot.InjuredArmRight);
+            _animator.SetFloat(Animations.Humanoid.InjuredLeg, snapshot.InjuredLeg);
+
+            if (_animator.layerCount > 2)
+            {
+                float armMax = Mathf.Max(snapshot.InjuredArmLeft, snapshot.InjuredArmRight);
+                float leg = snapshot.InjuredLeg;
+
+                float injuryWeight;
+                if (leg >= StumbleLegThreshold && leg >= armMax)
+                {
+                    // Stumble idle already reads on base; keep arm additive light.
+                    injuryWeight = armMax * 0.25f;
+                }
+                else if (armMax > 0.01f)
+                {
+                    injuryWeight = Mathf.Lerp(0.15f, 0.55f, armMax);
+                }
+                else
+                {
+                    injuryWeight = 0f;
+                }
+
+                // Soft target only — TickAdditiveWeight lerps. Stagger raises Additive so unmuted
+                // Additive Flinch (gut) shows; never slam Empty Additive (hurting idle) to 1.
+                _additive.Target = snapshot.State == BodyState.Staggered
+                    ? Mathf.Max(injuryWeight, StaggerAdditiveWeight)
+                    : injuryWeight;
+            }
+        }
+
+        private void ApplyFullBodyOverride(BodyAnimationSnapshot snapshot)
+        {
+            if (_animator.layerCount <= 3)
+            {
+                return;
+            }
+
+            // Staggered uses Base + Additive Flinch — do not half-weight Full Body Override.
+            float overrideWeight = snapshot.State switch
+            {
+                BodyState.Seated => 1f,
+                BodyState.Crawling => 1f,
+                _ => 0f,
+            };
+            _animator.SetLayerWeight(3, overrideWeight);
+        }
+
+        private void ConsumeTrigger(AnimationTriggerId trigger, byte attackVariant = 0, byte attackWindup = 0)
+        {
+            // Sequence already gates re-entry; allow the same trigger id to fire repeatedly (e.g. swing spam).
+            if (trigger == AnimationTriggerId.None)
+            {
+                return;
+            }
+
+            _lastConsumedTrigger = trigger;
+            if (IsRifleOnlyOneshot(trigger))
+            {
+                OnTriggerFired?.Invoke(trigger);
+                return;
+            }
+
+            if (trigger == AnimationTriggerId.AttackSwing)
+            {
+                _animator.SetInteger(Animations.Humanoid.AttackVariant, attackVariant & 0x3);
+                BeginSwingTempo(attackVariant & 0x3, attackWindup);
+            }
+            else if (trigger == AnimationTriggerId.Throw)
+            {
+                BeginThrow(attackVariant & 0x3);
+            }
+            else if (trigger == AnimationTriggerId.Flinch)
+            {
+                _additive.Flinch(attackVariant, Time.time);
+            }
+
+            int hash = Animations.Humanoid.GetTriggerHash(trigger);
+            if (hash != 0)
+            {
+                _animator.ResetTrigger(hash);
+                _animator.SetTrigger(hash);
+            }
+
+            OnTriggerFired?.Invoke(trigger);
+        }
+
+        /// <summary>Owner: the server refused the one-shot this client predicted, so don't skip the next echo.</summary>
+        public void DropOwnerPrediction() => _ownerPredictedAttack = false;
+
+        public void FireLocalTrigger(AnimationTriggerId trigger)
+        {
+            _bodyStateMachine?.CmdFireTrigger(trigger, 0, 0);
+        }
+
+        private bool IsLocalMovementAuthority()
+        {
+            if (_movementController is NetworkBehaviour networkBehaviour)
+            {
+                return networkBehaviour.IsOwner;
+            }
+
+            return false;
+        }
+    }
+}

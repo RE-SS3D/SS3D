@@ -1,7 +1,40 @@
 fileFormatVersion: 2
 guid: 4579acb688ceb27499fa2daf435b95c4
-DefaultImporter:
+PluginImporter:
   externalObjects: {}
+  serializedVersion: 3
+  iconMap: {}
+  executionOrder: {}
+  defineConstraints: []
+  isPreloaded: 0
+  isOverridable: 0
+  isExplicitlyReferenced: 0
+  validateReferences: 1
+  platformData:
+    Any:
+      enabled: 1
+      settings: {}
+    Editor:
+      enabled: 0
+      settings:
+        CPU: x86_64
+        DefaultValueInitialized: true
+    Linux64:
+      enabled: 1
+      settings:
+        CPU: x86_64
+    OSXUniversal:
+      enabled: 1
+      settings:
+        CPU: x86_64
+    Win:
+      enabled: 0
+      settings:
+        CPU: None
+    Win64:
+      enabled: 1
+      settings:
+        CPU: x86_64
   userData: 
   assetBundleName: 
   assetBundleVariant: 

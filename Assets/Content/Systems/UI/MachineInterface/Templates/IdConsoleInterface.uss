@@ -1,0 +1,28 @@
+@import url("../Tokens/diegetic-tokens.uss");
+
+.id-console__prompt {
+    margin-bottom: 8px;
+    white-space: normal;
+}
+
+.id-console__target {
+    margin-bottom: 4px;
+    white-space: normal;
+}
+
+.id-console__levels {
+    flex-direction: column;
+    gap: 6px;
+}
+
+.id-console__level-row {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    padding: 4px 0;
+}
+
+.id-console__level-name {
+    flex-shrink: 1;
+    margin-right: 12px;
+}

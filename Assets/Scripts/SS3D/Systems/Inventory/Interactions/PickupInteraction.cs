@@ -2,9 +2,9 @@
 using SS3D.Interactions;
 using SS3D.Interactions.Extensions;
 using SS3D.Interactions.Interfaces;
-using SS3D.Systems.GameModes.Events;
 using UnityEngine;
 using SS3D.Data.Generated;
+using SS3D.Systems.Combat;
 using SS3D.Systems.Inventory.Containers;
 using SS3D.Systems.Inventory.Items;
 
@@ -18,12 +18,14 @@ namespace SS3D.Systems.Inventory.Interactions
         public string Name;
         public Sprite Icon;
 
+        public int Priority => 30;
+
         public string GetName(InteractionEvent interactionEvent)
         {
             return "Pick up";
         }
 
-        public string GetGenericName() => throw new System.NotImplementedException();
+        public string GetGenericName() => "Pickup";
 
         public Sprite GetIcon(InteractionEvent interactionEvent)
         {
@@ -47,17 +49,18 @@ namespace SS3D.Systems.Inventory.Interactions
                     return false;
                 }
 
-                // check that our hand is empty
-                if (!hand.IsEmpty())
+                // check that our hand is empty (two-hand rifles may still route to the other hand)
+                Hands hands = hand.HandsController;
+                if (hands == null)
                 {
-                    return false;
+                    hands = hand.GetComponentInParent<Hands>();
                 }
 
                 // try to get the Item component from the GameObject we just interacted with
                 // you can only pickup items (for now, TODO: we have to consider people too), which makes sense
                 Item item = targetBehaviour.GameObject.GetComponent<Item>();
 
-                if (item == null)
+                if (item == null || item.TooHeavyToLift)
                 {
                     return false;
                 }
@@ -68,7 +71,8 @@ namespace SS3D.Systems.Inventory.Interactions
                     return false;
                 }
 
-                return true;
+                // Active left + empty right still offers Pick up for an M4 (auto-routes to right).
+                return TwoHandedWeaponRules.TryResolveHandForItem(hands, item, hand, out _);
             }
 
             return false;
@@ -81,20 +85,8 @@ namespace SS3D.Systems.Inventory.Interactions
             if (interactionEvent.Source is Hand hand && interactionEvent.Target is Item target)
             {
                 // and then we run the function that adds it to the container
+                // (Hand.Pickup auto-routes two-hand rifles to RequiredHand)
                 hand.Pickup(target);
-
-
-                try
-                {
-                    string ckey = hand.HandsController.Inventory.Body.Mind.player.Ckey;
-
-                    // and call the event for picking up items for the Game Mode System
-                    new ItemPickedUpEvent(target, ckey).Invoke(this);
-                }
-                catch
-                {
-                    Debug.Log("Couldn't get Player Ckey");
-                }
             }
 
             return false;

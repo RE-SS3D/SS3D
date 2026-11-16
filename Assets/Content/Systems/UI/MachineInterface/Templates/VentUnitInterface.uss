@@ -1,0 +1,56 @@
+
+#identity,
+#status-chip {
+    margin-bottom: 14px;
+}
+
+.vent-controls-row {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.atmos-power-caption {
+    font-size: 9px;
+    letter-spacing: 2px;
+    color: var(--ss3d-text-secondary);
+    margin-top: 8px;
+    padding: 0;
+    background-color: rgba(0, 0, 0, 0);
+}
+
+.vent-power-column {
+    flex-direction: column;
+    align-items: center;
+    margin-right: 20px;
+}
+
+.vent-power-column .toggle-switch__label {
+    display: none;
+}
+
+.vent-target-column {
+    flex-direction: column;
+    align-items: flex-end;
+    flex-grow: 1;
+}
+
+.vent-target-labels {
+    flex-direction: column;
+    align-items: flex-end;
+    margin-bottom: 6px;
+}
+
+.vent-target-title {
+    font-size: 11px;
+    color: var(--ss3d-text-tertiary);
+    padding: 0;
+    background-color: rgba(0, 0, 0, 0);
+}
+
+.vent-gated-hint {
+    font-size: 9.5px;
+    color: var(--ss3d-text-tertiary);
+    padding: 0;
+    background-color: rgba(0, 0, 0, 0);
+}

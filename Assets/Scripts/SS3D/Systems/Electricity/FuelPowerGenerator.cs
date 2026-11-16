@@ -1,20 +1,21 @@
-﻿using FishNet.Object;
+using FishNet.Object;
 using FishNet.Object.Synchronizing;
 using SS3D.Core;
 using SS3D.Data;
 using SS3D.Data.Generated;
 using SS3D.Interactions;
+using SS3D.Logging;
 using SS3D.Systems.Audio;
 using SS3D.Systems.Tile.Connections;
 using UnityEngine;
 using AudioType = SS3D.Systems.Audio.AudioType;
 
-namespace System.Electricity
+namespace SS3D.Systems.Electricity
 {
     /// <summary>
     /// Script for the pacman generator, handling light and noise when turning it on and off. 
     /// </summary>
-    public class FuelPowerGenerator : BasicElectricDevice, IPowerProducer
+    public class FuelPowerGenerator : BasicElectricDevice, IRatedPowerProducer
     {
         [SerializeField]
         private float _powerProduction = 10f;
@@ -24,17 +25,42 @@ namespace System.Electricity
         private const string OnBlendShapeName = "On";
         private const string OutputBlendShapeName = "Output";
         private const string LowFuel = "LowFuel";
-        public float PowerProduction => _powerProduction;
+        public float PowerProduction => _enabled ? _onPowerProduction : 0f;
 
         [SyncVar(OnChange = nameof(SyncGeneratorToggle))]
         private bool _enabled = false; // If the generator is working.
         private float _onPowerProduction = 10f;
 
+        private bool _ratingCaptured;
+
+        /// <summary>
+        /// What it gives while running, off or on: the prefab's output, until starting copies it aside (toggling then
+        /// writes the serialized field to 0 while it is off).
+        /// </summary>
+        public float RatedPowerKw => _ratingCaptured ? _onPowerProduction : _powerProduction;
+
+        public override void OnStartServer()
+        {
+            base.OnStartServer();
+            _onPowerProduction = _powerProduction;
+            _ratingCaptured = true;
+            // OnToggle is raised on the server only; subscribing in OnStartClient never ran on a dedicated server.
+            GetComponent<GenericToggleInteractionTarget>().OnToggle += HandleGeneratorToggle;
+        }
+
+        public override void OnStopServer()
+        {
+            if (TryGetComponent(out GenericToggleInteractionTarget toggle))
+                toggle.OnToggle -= HandleGeneratorToggle;
+
+            base.OnStopServer();
+        }
+
         public override void OnStartClient()
         {
             base.OnStartClient();
-            GetComponent<GenericToggleInteractionTarget>().OnToggle += HandleGeneratorToggle;
             _onPowerProduction = _powerProduction;
+            _ratingCaptured = true;
             HandlePowerGenerated(false);
         }
 
@@ -42,27 +68,47 @@ namespace System.Electricity
         private void HandleGeneratorToggle(bool isEnabled)
         {
             _enabled = isEnabled;
+            _powerProduction = isEnabled ? _onPowerProduction : 0f;
         }
 
         private void SyncGeneratorToggle(bool oldValue, bool newValue, bool asServer)
         {
-            if (asServer) return;
+            if (asServer)
+            {
+                // Playback is server-owned: the audio subsystem's play/stop entry points are
+                // [Server], so a client calling them only logs "server is not active" and
+                // returns. Broadcast from here instead.
+                RpcSyncRunningSound(newValue);
+                return;
+            }
 
-            HandleSound(newValue);
             HandleLights(newValue);
             HandlePowerGenerated(newValue);
             GetComponent<MachineVibrate>().Enable = newValue;
         }
 
-        private void HandleSound(bool isEnabled)
+        /// <summary>
+        /// Buffered so a client that joins, or comes back into AOI, while the generator is
+        /// already running starts the loop. The audio subsystem's play call is one-shot and
+        /// only reaches observers that existed at that moment.
+        /// </summary>
+        [ObserversRpc(BufferLast = true)]
+        private void RpcSyncRunningSound(bool isEnabled)
         {
-            if (!isEnabled)
+            AudioSubSystem audio = SubSystems.Get<AudioSubSystem>();
+            if (audio == null)
             {
-                SubSystems.Get<AudioSubSystem>().StopAudioSource(NetworkObject);
+                return;
+            }
+
+            if (isEnabled)
+            {
+                audio.PlayAudioSourceLocal(AudioType.Music, Sounds.FuelPowerGenerator, Position, NetworkObject,
+                    true, 0.7f, 1, 1, 10);
             }
             else
             {
-                SubSystems.Get<AudioSubSystem>().PlayAudioSource(AudioType.Music, Sounds.FuelPowerGenerator, Position, NetworkObject, true, 0.7f, 1, 1, 10);
+                audio.StopAudioSourceLocal(NetworkObject);
             }
         }
 
@@ -77,7 +123,7 @@ namespace System.Electricity
             }
             else
             {
-                Debug.LogError("Blend shape " + OnBlendShapeName + " not found.");
+                Log.Error(typeof(FuelPowerGenerator), "Blend shape {blendShapeName} not found.", Logs.Generic, OnBlendShapeName);
             }
 
             if (outputBlendShapeIndex != -1)
@@ -86,7 +132,7 @@ namespace System.Electricity
             }
             else
             {
-                Debug.LogError("Blend shape " + OnBlendShapeName + " not found.");
+                Log.Error(typeof(FuelPowerGenerator), "Blend shape {blendShapeName} not found.", Logs.Generic, OutputBlendShapeName);
             }
         }
 

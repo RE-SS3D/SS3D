@@ -1,0 +1,18 @@
+# Guards: Decision 10's atmos budgets during a hull breach on a real remote client: tick cost, patch traffic and loose items in the wind, logged as [atmos-budget] · Not cheaper because: patches only flow with a remote client, and the sealed map needs a full round start
+# Main editor (host) side. The 3,387-cell map is one connected region, so one hole wakes all of it.
+# Player2 runs breach-budget-client.txt. See Documents/architecture/2026-11_atmos-edge-flow.md.
+wait_timeout 180
+wait_connected
+wait_clients 1
+use_station atmostest Extended
+ready
+start_round
+wait_round Ongoing
+embark
+assert_embarked
+wait_players 2
+wait_seconds 4
+atmos_budget 5
+breach_hull
+scatter_items 64
+atmos_budget 45

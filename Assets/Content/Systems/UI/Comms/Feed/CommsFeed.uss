@@ -1,0 +1,146 @@
+/*
+ * Non-diegetic comms feed — radio stack (left) + all-station banner (top).
+ * Visual language matches the Claude Design radio / ALL-STATION mocks.
+ */
+
+@import url("../../Tokens/ss3d-tokens.uss");
+@import url("../../Tokens/ss3d-typography.uss");
+
+.comms-feed {
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    flex-grow: 1;
+}
+
+.comms-feed__radio-stack {
+    position: absolute;
+    left: 16px;
+    top: 0;
+    bottom: 0;
+    width: 440px;
+    flex-direction: column-reverse;
+    justify-content: center;
+    align-items: flex-start;
+}
+
+.comms-feed__radio-card {
+    flex-direction: column;
+    align-items: stretch;
+    background-color: rgba(18, 28, 42, 0.72);
+    border-left-width: 3px;
+    border-left-color: rgb(95, 134, 179);
+    border-top-left-radius: 4px;
+    border-bottom-left-radius: 4px;
+    border-top-right-radius: 10px;
+    border-bottom-right-radius: 10px;
+    padding: 10px 16px 12px 16px;
+    margin-top: 8px;
+    max-width: 440px;
+    min-width: 280px;
+}
+
+.comms-feed__radio-top {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+.comms-feed__radio-header-cluster {
+    flex-direction: row;
+    align-items: center;
+    flex-grow: 1;
+    flex-shrink: 1;
+    min-width: 0;
+}
+
+.comms-feed__radio-icon {
+    width: 28px;
+    height: 28px;
+    flex-grow: 0;
+    flex-shrink: 0;
+    margin-right: 10px;
+    -unity-background-scale-mode: scale-to-fit;
+}
+
+.comms-feed__radio-header {
+    margin: 0;
+    padding: 0;
+    flex-grow: 1;
+    flex-shrink: 1;
+    -unity-font-definition: url("project://database/Assets/Content/Systems/UI/Font/Fonts/SpessmanFontSDF.asset");
+    font-size: 16px;
+    letter-spacing: 1px;
+    color: rgb(95, 134, 179);
+    -unity-text-align: middle-left;
+    white-space: nowrap;
+}
+
+.comms-feed__radio-sender {
+    margin: 0 0 0 10px;
+    padding: 0;
+    flex-grow: 0;
+    flex-shrink: 0;
+    -unity-font-definition: url("project://database/Assets/Content/Systems/UI/Font/Fonts/SpessmanFontSDF.asset");
+    font-size: 16px;
+    letter-spacing: 1px;
+    color: rgb(170, 185, 200);
+    -unity-text-align: middle-right;
+    white-space: nowrap;
+}
+
+.comms-feed__radio-body {
+    margin-top: 4px;
+    padding: 0;
+    /* Readable dialogue sans — terminal Spessman stays on header/sender only. */
+    -unity-font-definition: url("project://database/Assets/Art/Font/TextMesh%20Pro/Fonts/LiberationSans.ttf");
+    font-size: 26px;
+    color: rgb(255, 255, 255);
+    -unity-text-align: middle-left;
+    white-space: normal;
+}
+
+.comms-feed__announce {
+    position: absolute;
+    top: 0;
+    /* left set in code: panelWidth/2 - width/2 (avoid USS translate:-50% staleness) */
+    min-width: 480px;
+    max-width: 760px;
+    flex-direction: column;
+    align-items: center;
+    background-color: rgba(48, 36, 22, 0.88);
+    border-top-width: 3px;
+    border-top-color: rgb(230, 173, 83);
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+    border-bottom-left-radius: 12px;
+    border-bottom-right-radius: 12px;
+    padding: 12px 32px 16px 32px;
+}
+
+.comms-feed__announce-title {
+    margin: 0;
+    padding: 0;
+    -unity-font-definition: url("project://database/Assets/Content/Systems/UI/Font/Fonts/OdetoIdleGamingSDF.asset");
+    font-size: 18px;
+    letter-spacing: 2px;
+    color: rgb(240, 196, 125);
+    -unity-text-align: middle-center;
+    white-space: nowrap;
+}
+
+.comms-feed__announce-body {
+    margin-top: 4px;
+    padding: 0;
+    -unity-font-definition: url("project://database/Assets/Content/Systems/UI/Font/Fonts/GurajadaRegularSDF.asset");
+    font-size: 36px;
+    letter-spacing: 1px;
+    color: rgb(255, 255, 255);
+    -unity-text-align: middle-center;
+    white-space: normal;
+}

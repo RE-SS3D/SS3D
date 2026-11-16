@@ -540,6 +540,9 @@ namespace FishNet.Component.Prediction
 
             void ResetGraphicalTransform()
             {
+                if (_graphicalObject == null)
+                    return;
+
                 _graphicalObject.position = (transform.position + _graphicalInstantiatedOffsetPosition);
                 _graphicalObject.rotation = (_graphicalInstantiatedOffsetRotation * transform.rotation);
             }
@@ -581,7 +584,9 @@ namespace FishNet.Component.Prediction
         {
             if (Application.isPlaying)
             {
-                InitializeSmoother(true);
+                // Demo / incomplete prefabs often leave Graphical Object unassigned; don't NRE in OnValidate.
+                if (_graphicalObject != null)
+                    InitializeSmoother(true);
             }
             else
             {

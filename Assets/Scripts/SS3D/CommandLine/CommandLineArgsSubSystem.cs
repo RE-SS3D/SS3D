@@ -1,4 +1,4 @@
-﻿using Coimbra;
+using Coimbra;
 using Coimbra.Services.Events;
 using SS3D.Logging;
 using SS3D.Networking;
@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using SS3D.Core.Behaviours;
+using SS3D.Core.Settings;
 
 namespace SS3D.CommandLine
 {
@@ -27,12 +28,17 @@ namespace SS3D.CommandLine
         {
             base.OnAwake();
 
-            ApplicationPreInitializing.AddListener(HandleApplicationPreInitializing);
+            AddHandle(ApplicationPreInitializing.AddListener(HandleApplicationPreInitializing));
         }
 
         private void HandleApplicationPreInitializing(ref EventContext context, in ApplicationPreInitializing e)
         {
             ProcessCommandLineArgs();
+
+            // Log path depends on NetworkType/Ckey from the CLI above — must run here, not from
+            // another PreInitializing listener that may fire before us (see NetworkSessionSubSystem.GetFileLogName).
+            LogManager.Initialize(NetworkSessionSubSystem.GetFileLogName(_networkSettings));
+            Log.Debug(this, "Getting command line args", Logs.Important);
         }
 
         /// <summary>
@@ -40,8 +46,6 @@ namespace SS3D.CommandLine
         /// </summary>
         private void ProcessCommandLineArgs()
         {
-            Log.Information(this, "Getting command line args", Logs.Important);
-
             LoadCommandLineArgs();
 
             if (!UnityEngine.Application.isEditor)
@@ -57,6 +61,23 @@ namespace SS3D.CommandLine
             {
                 ProcessCommandArg(arg);
             }
+
+            ApplyMultiplayerPlayModeRole();
+        }
+
+        /// <summary>
+        /// A Multiplayer Play Mode clone joins the main editor's host as a client under its own
+        /// ckey ("Player2"). The clone opens its project read-only, so this never reaches the asset.
+        /// </summary>
+        private void ApplyMultiplayerPlayModeRole()
+        {
+            if (!MultiplayerPlayModePlayer.IsVirtualPlayer)
+            {
+                return;
+            }
+
+            _networkSettings.NetworkType = NetworkType.Client;
+            _networkSettings.Ckey = MultiplayerPlayModePlayer.Name;
         }
 
         public bool HasCommandLineArgs()
@@ -76,9 +97,10 @@ namespace SS3D.CommandLine
                 _networkSettings.NetworkType = NetworkType.Host;
             }
 
+            // Address only — do not force Client. Host also needs 127.0.0.1 for its local
+            // client; combining -host with -ip= used to flip NetworkType to Client.
             if (arg.Contains(CommandLineArgs.Ip))
             {
-                _networkSettings.NetworkType = NetworkType.Client;
                 _networkSettings.ServerAddress = arg.Replace(CommandLineArgs.Ip, "");
             }
 
@@ -87,6 +109,11 @@ namespace SS3D.CommandLine
                 string ckey = arg.Replace(CommandLineArgs.Ckey, "");
 
                 _networkSettings.Ckey = ckey;
+            }
+
+            if (arg.StartsWith(CommandLineArgs.AccessToken, StringComparison.Ordinal))
+            {
+                LocalPlayer.UpdateAccessToken(arg.Substring(CommandLineArgs.AccessToken.Length));
             }
 
             if (arg.Contains(CommandLineArgs.Port))
@@ -115,6 +142,11 @@ namespace SS3D.CommandLine
             {
                 _applicationSettings.ForceLauncher = true;
             }
+
+            if (arg.Contains(CommandLineArgs.TestScript))
+            {
+                _applicationSettings.TestScriptPath = arg.Replace(CommandLineArgs.TestScript, "");
+            }
         }
 
         /// <summary>
@@ -128,7 +160,7 @@ namespace SS3D.CommandLine
             }
             catch (Exception e)
             {
-                Log.Information(this,e,$"Failed to load command line arguments");
+                Log.Error(this, e, "Failed to load command line arguments");
                 throw;
             }
         }

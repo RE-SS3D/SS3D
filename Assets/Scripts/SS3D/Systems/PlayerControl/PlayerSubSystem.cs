@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Linq;
 using FishNet.Connection;
 using FishNet.Object;
@@ -7,6 +7,7 @@ using FishNet.Transporting;
 using SS3D.Core;
 using SS3D.Core.Behaviours;
 using SS3D.Logging;
+using SS3D.Networking;
 using SS3D.Permissions;
 using SS3D.Systems.Entities;
 using SS3D.Systems.PlayerControl.Events;
@@ -32,8 +33,10 @@ namespace SS3D.Systems.PlayerControl
         [SyncObject]
         private readonly SyncDictionary<string, Player> _onlinePlayers = new();
 
-        public IEnumerable<Player> ServerPlayers => _serverPlayers.Values;
-        public IEnumerable<Player> OnlinePlayers => _onlinePlayers.Values;
+        // SyncDictionary can briefly contain a null value on a late-joining client before the
+        // referenced Player NetworkObject is spawned. Never expose those nulls to callers.
+        public IEnumerable<Player> ServerPlayers => _serverPlayers.Values.Where(player => player != null);
+        public IEnumerable<Player> OnlinePlayers => _onlinePlayers.Values.Where(player => player != null);
 
         protected override void OnStart()
         {
@@ -71,6 +74,14 @@ namespace SS3D.Systems.PlayerControl
 
         private void HandleClientLoadedStartScenes(NetworkConnection conn, bool asServer)
         {
+            // Host also fires this with asServer=false after the client-side load path.
+            // Spawning there runs while LoadedStartScenes(asServer:true) is still false and
+            // can create a second UnauthorizedPlayer — match FishNet PlayerSpawner.
+            if (!asServer)
+            {
+                return;
+            }
+
             ProcessPlayerJoin(conn);
         }
 
@@ -78,7 +89,10 @@ namespace SS3D.Systems.PlayerControl
         {
             ChangeType changeType;
 
-            if (key == null)
+            // A late-joining client can receive the dictionary entry before the referenced
+            // Player NetworkObject is spawned, so value is briefly null. Skip it; the real
+            // value arrives through a later sync operation.
+            if (key == null || value == null)
             {
                 return;
             }
@@ -96,7 +110,8 @@ namespace SS3D.Systems.PlayerControl
                     break;
             }
 
-            OnlinePlayersChanged serverPlayersChanged = new(_onlinePlayers.Values.ToList(), changeType, value, key, asServer);
+            OnlinePlayersChanged serverPlayersChanged = new(
+                _onlinePlayers.Values.Where(player => player != null).ToList(), changeType, value, key, asServer);
             serverPlayersChanged.Invoke(this);
         }
 
@@ -104,6 +119,14 @@ namespace SS3D.Systems.PlayerControl
         {
             foreach (Player player in _onlinePlayers.Values)
             {
+                // Initial SyncDictionary replication can expose a null Player before its
+                // NetworkObject is spawned on a late-joining client (seen with 8 clients
+                // connecting at once); skip it and let the later sync deliver the value.
+                if (player == null)
+                {
+                    continue;
+                }
+
                 HandleSyncOnlinePlayers(SyncDictionaryOperation.Add, player.Ckey, player, false);
             }
         }
@@ -111,6 +134,11 @@ namespace SS3D.Systems.PlayerControl
         private void HandleSyncServerPlayersChanged(SyncDictionaryOperation op, string key, Player value, bool asServer)
         {
             ChangeType changeType;
+
+            if (key == null || value == null)
+            {
+                return;
+            }
 
             switch (op)
             {
@@ -125,7 +153,8 @@ namespace SS3D.Systems.PlayerControl
                     break;
             }
 
-            ServerPlayersChanged serverPlayersChanged = new(_serverPlayers.Values.ToList(), changeType, value);
+            ServerPlayersChanged serverPlayersChanged = new(
+                _serverPlayers.Values.Where(player => player != null).ToList(), changeType, value);
             serverPlayersChanged.Invoke(this);
         }
 
@@ -133,7 +162,12 @@ namespace SS3D.Systems.PlayerControl
         {
             foreach (Player player in _serverPlayers.Values)
             {
-                HandleSyncOnlinePlayers(SyncDictionaryOperation.Add, player.Ckey, player, false);
+                if (player == null)
+                {
+                    continue;
+                }
+
+                HandleSyncServerPlayersChanged(SyncDictionaryOperation.Add, player.Ckey, player, false);
             }
         }
 
@@ -144,8 +178,7 @@ namespace SS3D.Systems.PlayerControl
         [Server]
         private void ProcessPlayerJoin(NetworkConnection conn)
         {
-            string message = $"Player joined the server - {conn.ClientId} {conn.GetAddress()}";
-            Log.Information(this, "Player joined the server - {clientId} {connectionAddress}", Logs.ServerOnly, conn.ClientId, conn.GetAddress());
+            Log.Debug(this, "Player joined the server - {clientId} {connectionAddress}", Logs.ServerOnly, conn.ClientId, conn.GetAddress());
 
             NetworkObject unauthorizedUser = Instantiate(_unauthorizedUserPrefab, Vector3.zero, Quaternion.identity);
             ServerManager.Spawn(unauthorizedUser, conn);
@@ -160,16 +193,34 @@ namespace SS3D.Systems.PlayerControl
         [Server]
         private void ProcessAuthorizePlayer(NetworkConnection conn, UserAuthorizationMessage userAuthorizationMessage)
         {
+            if (SubSystems.TryGet(out SS3D.Systems.Rounds.ServerSettingsService settings)
+                && _onlinePlayers.Count >= settings.PlayerCap
+                && !_onlinePlayers.ContainsKey(userAuthorizationMessage.Ckey))
+            {
+                ConnectionNotices.Disconnect(conn, DisconnectCode.ServerFull);
+                return;
+            }
             string ckey = userAuthorizationMessage.Ckey;
-            bool playedHasConnectedAlready = _serverPlayers.TryGetValue(ckey, out Player player);
+
+            if (!conn.IsHost
+                && SubSystems.TryGet(out PermissionSubSystem permissions)
+                && permissions.TryGetUserRole(ckey, out ServerRoleTypes role)
+                && !AdminTokens.IsAdmitted(role, ckey, userAuthorizationMessage.Token, IsServerOnly, out string reason))
+            {
+                Log.Warning(this, "Rejected login from client {clientId}: {reason}", Logs.Important, conn.ClientId, reason);
+                ConnectionNotices.Disconnect(conn, DisconnectCode.AdminToken);
+                return;
+            }
+
+            bool playedHasConnectedAlready = _serverPlayers.TryGetValue(ckey, out Player player) && player != null;
 
             if (playedHasConnectedAlready)
             {
-                Log.Information(this, "Player match for {ckey} found, reassigning to client", Logs.ServerOnly, ckey);
+                Log.Debug(this, "Player match for {ckey} found, reassigning to client", Logs.ServerOnly, ckey);
             }
             else
             {
-                Log.Information(this, "No Player match for {ckey} found, creating a new one", Logs.ServerOnly, ckey);
+                Log.Debug(this, "No Player match for {ckey} found, creating a new one", Logs.ServerOnly, ckey);
 
                 player = Instantiate(_playerPrefab);
                 ServerManager.Spawn(player.gameObject);
@@ -178,28 +229,75 @@ namespace SS3D.Systems.PlayerControl
 
                 if (conn.IsHost && PermissionSettings.AddServerOwnerPermissionToServerHost)
                 {
-                    Log.Information(this, $"Adding ServerOwner permission to server owner: {ckey}", Logs.ServerOnly, ckey);
+                    Log.Debug(this, $"Adding ServerOwner permission to server owner: {ckey}", Logs.ServerOnly, ckey);
 
                     SubSystems.Get<PermissionSubSystem>().ChangeUserPermission(ckey, ServerRoleTypes.ServerOwner);
                 }
 
-                _serverPlayers.Add(ckey, player);
+                // A previous sync can leave the key present with a null value; replace it
+                // instead of throwing ArgumentException on a duplicate Add.
+                if (_serverPlayers.ContainsKey(ckey))
+                {
+                    _serverPlayers[ckey] = player;
+                }
+                else
+                {
+                    _serverPlayers.Add(ckey, player);
+                }
             }
 
             player.GiveOwnership(conn);
 
-            bool hasOnlinePlayer = _onlinePlayers.TryGetValue(ckey, out Player onlinePlayer);
+            bool hasOnlinePlayer = _onlinePlayers.TryGetValue(ckey, out Player onlinePlayer) && onlinePlayer != null;
             if (!hasOnlinePlayer)
             {
-                _onlinePlayers.Add(ckey, player);
+                if (_onlinePlayers.ContainsKey(ckey))
+                {
+                    _onlinePlayers[ckey] = player;
+                }
+                else
+                {
+                    _onlinePlayers.Add(ckey, player);
+                }
+            }
+
+            // If this player already had a body in the round (e.g. they disconnected and are
+            // rejoining), reconnect them to it instead of leaving it stranded, ownerless, in the world.
+            EntitySubSystem entitySystem = SubSystems.Get<EntitySubSystem>();
+            if (entitySystem.IsPlayerSpawned(player))
+            {
+                entitySystem.TryReclaimEntity(player, conn);
+            }
+
+            DespawnUnauthorizedPlayer(conn);
+            ConnectionNotices.AcceptLogin(conn);
+        }
+
+        [Server]
+        private void DespawnUnauthorizedPlayer(NetworkConnection conn)
+        {
+            // Snapshot: Despawn mutates conn.Objects. FishNet's IsDeinitializing is internal;
+            // IsSpawned is the public gate for "safe to despawn".
+            foreach (NetworkObject networkObject in conn.Objects.ToArray())
+            {
+                if (networkObject == null || !networkObject.IsSpawned)
+                {
+                    continue;
+                }
+
+                if (networkObject.GetComponent<UnauthorizedPlayer>() == null)
+                {
+                    continue;
+                }
+
+                ServerManager.Despawn(networkObject);
             }
         }
 
         [Server]
         private void ProcessPlayerDisconnect(NetworkConnection conn)
         {
-            string message = $"Client {conn.ClientId} {conn.GetAddress()} disconnected";
-            Log.Information(this, "Client {clientId} {connectionAddress} disconnected", Logs.ServerOnly, conn.ClientId, conn.GetAddress());
+            Log.Debug(this, "Client {clientId} {connectionAddress} disconnected", Logs.ServerOnly, conn.ClientId, conn.GetAddress());
 
             NetworkObject[] ownedObjects = conn.Objects.ToArray();
             if (ownedObjects.Length == 0)
@@ -210,35 +308,45 @@ namespace SS3D.Systems.PlayerControl
 
             foreach (NetworkObject networkIdentity in ownedObjects)
             {
-                Log.Information(this, "Client {connectionAddress}'s owned object: {networkIdentity}",
+                Log.Debug(this, "Client {connectionAddress}'s owned object: {networkIdentity}",
                     Logs.ServerOnly, conn.GetAddress(), networkIdentity.name);
+
+                // A login that never passed leaves this placeholder. It must not outlive its connection.
+                if (networkIdentity.GetComponent<UnauthorizedPlayer>() != null)
+                {
+                    ServerManager.Despawn(networkIdentity);
+                    continue;
+                }
 
                 Player player = networkIdentity.GetComponent<Player>();
                 if (player != null)
                 {
                     _onlinePlayers.Remove(player.Ckey);
-                    player.RemoveOwnership();
-                    Log.Information(this, "Invoking the player server left event: {ckey}", Logs.ServerOnly, player.Ckey);
-
-                    return;
+                    Log.Debug(this, "Invoking the player server left event: {ckey}", Logs.ServerOnly, player.Ckey);
                 }
+
+                // conn.Objects is a HashSet with no defined order, and this connection is disconnecting
+                // regardless, so every owned object (Player, spawned Entity/body, held items, etc.) must have
+                // its ownership released here - returning early after the first Player match left whichever
+                // objects hadn't been enumerated yet (frequently the player's own body) still bound to the
+                // now-dead connection.
                 networkIdentity.RemoveOwnership();
             }
         }
 
         public string GetCkey(NetworkConnection conn)
         {
-            return ServerPlayers.ToList().Find(player => player.Owner == conn)?.Ckey;
+            return ServerPlayers.FirstOrDefault(player => player != null && player.Owner == conn)?.Ckey;
         }
 
         public Player GetPlayer(string ckey)
         {
-            return ServerPlayers.ToList().Find(player => player.Ckey == ckey);
+            return ServerPlayers.FirstOrDefault(player => player != null && player.Ckey == ckey);
         }
 
         public Player GetPlayer(NetworkConnection conn)
         {
-            return ServerPlayers.ToList().Find(player => player.Owner == conn);
+            return ServerPlayers.FirstOrDefault(player => player != null && player.Owner == conn);
         }
     }
 }

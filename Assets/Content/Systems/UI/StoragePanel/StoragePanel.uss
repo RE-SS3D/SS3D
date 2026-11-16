@@ -1,0 +1,202 @@
+@import url("../Tokens/ss3d-tokens.uss");
+@import url("../Tokens/ss3d-typography.uss");
+@import url("../MachineInterface/Tokens/diegetic-tokens.uss");
+
+.storage-panel {
+    position: absolute;
+    flex-direction: column;
+    /* Width set in StoragePanelView from container column count. */
+    min-width: 160px;
+    background-color: var(--ss3d-surface-panel);
+    border-radius: var(--ss3d-radius-md);
+}
+
+/* Clip only — never combine with border-radius on this node (UITK white-block bug). */
+.storage-panel__clip {
+    flex-direction: column;
+    flex-grow: 1;
+    overflow: hidden;
+}
+
+.storage-panel__header {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    background-color: var(--ss3d-surface-panel-raised);
+    padding: 10px 14px;
+    /* Match outer radius — child paints would otherwise square the top corners. */
+    border-top-left-radius: var(--ss3d-radius-md);
+    border-top-right-radius: var(--ss3d-radius-md);
+}
+
+.storage-panel__title {
+    color: var(--ss3d-text-primary);
+    -unity-font-style: bold;
+    font-size: 14px;
+    flex-grow: 1;
+    flex-shrink: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    margin-right: var(--ss3d-space-2);
+}
+
+.storage-panel__slot-count {
+    color: var(--ss3d-text-tertiary);
+    font-size: 10px;
+    flex-shrink: 0;
+    margin-right: var(--ss3d-space-2);
+}
+
+.storage-panel__close {
+    width: 28px;
+    height: 28px;
+    min-width: 28px;
+    min-height: 28px;
+    margin-left: 0;
+    padding: 0;
+    flex-shrink: 0;
+    background-color: var(--ss3d-surface-elevated);
+    border-width: 0;
+    border-radius: var(--ss3d-radius-sm);
+    color: var(--ss3d-text-tertiary);
+    font-size: 16px;
+    -unity-font-style: bold;
+    -unity-text-align: middle-center;
+}
+
+.storage-panel__close:hover {
+    background-color: var(--ss3d-border-strong);
+    color: var(--ss3d-text-primary);
+}
+
+.storage-panel__body {
+    flex-direction: column;
+    padding: var(--ss3d-space-4);
+    border-bottom-left-radius: var(--ss3d-radius-md);
+    border-bottom-right-radius: var(--ss3d-radius-md);
+}
+
+.storage-panel__breadcrumb {
+    color: var(--ss3d-text-tertiary);
+    font-size: 11px;
+    margin-bottom: var(--ss3d-space-2);
+}
+
+.storage-panel__weight-row {
+    flex-direction: row;
+    justify-content: space-between;
+    margin-bottom: var(--ss3d-space-1);
+}
+
+.storage-panel__weight-caption {
+    color: var(--ss3d-text-tertiary);
+    font-size: 10px;
+}
+
+.storage-panel__weight-value {
+    color: var(--ss3d-feedback-info);
+    font-size: 11px;
+}
+
+/* Painted outer track: radius and fill only — no overflow clipping here. */
+.storage-panel__weight-track {
+    height: 8px;
+    background-color: var(--ss3d-surface-inset);
+    border-radius: var(--ss3d-radius-sm);
+    margin-bottom: var(--ss3d-space-4);
+}
+
+/* Inner clip: overflow only — never combine border-radius with overflow on this node. */
+.storage-panel__weight-track-clip {
+    height: 100%;
+    flex-direction: row;
+    overflow: hidden;
+}
+
+.storage-panel__weight-fill {
+    height: 100%;
+    background-color: var(--ss3d-feedback-info);
+}
+
+.storage-panel__weight-fill--warning {
+    background-color: var(--ss3d-feedback-warning);
+}
+
+.storage-panel__weight-fill--danger {
+    background-color: var(--ss3d-feedback-danger);
+}
+
+.storage-panel__grid {
+    flex-direction: column;
+}
+
+.storage-panel__grid-row {
+    flex-direction: row;
+}
+
+.storage-panel__grid-row--spaced {
+    margin-bottom: var(--ss3d-space-2);
+}
+
+/* Outer StorageSlot is an InventorySlot column — chrome lives on the well so the
+   empty label doesn't shove the icon up inside a fixed-height box. */
+.storage-slot {
+    width: 72px;
+    flex-direction: column;
+    align-items: stretch;
+    background-color: rgba(0, 0, 0, 0);
+    border-width: 0;
+}
+
+.storage-slot--gap-right {
+    margin-right: var(--ss3d-space-2);
+}
+
+.storage-slot .inventory-slot__well {
+    background-color: var(--ss3d-surface-panel-raised);
+    border-width: 1.5px;
+    border-color: var(--ss3d-border-default);
+    border-radius: var(--ss3d-radius-md);
+    align-items: center;
+    justify-content: center;
+}
+
+.storage-slot .inventory-slot__label-host,
+.storage-slot .inventory-slot__label {
+    display: none;
+    height: 0;
+    margin: 0;
+    padding: 0;
+}
+
+.storage-slot .inventory-slot__icon {
+    margin: 0;
+    padding: 0;
+}
+
+.storage-slot--empty .inventory-slot__well {
+    border-color: var(--ss3d-border-subtle);
+}
+
+.storage-slot__stack-count {
+    position: absolute;
+    bottom: 3px;
+    right: 4px;
+    color: var(--ss3d-text-primary);
+    font-size: 10px;
+    background-color: rgba(0, 0, 0, 0.55);
+    padding: 1px 4px;
+    border-radius: var(--ss3d-radius-sm);
+}
+
+.storage-drag-ghost {
+    position: absolute;
+    width: 52px;
+    height: 52px;
+    background-color: var(--ss3d-surface-panel-raised);
+    border-width: 1.5px;
+    border-color: var(--ss3d-border-strong);
+    border-radius: var(--ss3d-radius-md);
+    opacity: 0.92;
+}

@@ -9,7 +9,6 @@
         "DOTween.Modules",
         "Serilog.Sinks.Unity3D",
         "SerilogExternal",
-        "ToolbarExtender.Editor",
         "Analysers",
         "Coimbra",
         "Coimbra.Services.Events",

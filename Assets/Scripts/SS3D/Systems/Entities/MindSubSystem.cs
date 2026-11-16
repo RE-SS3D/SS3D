@@ -1,4 +1,5 @@
-﻿using FishNet.Connection;
+﻿using FishNet;
+using FishNet.Connection;
 using FishNet.Object;
 using FishNet.Object.Synchronizing;
 using SS3D.Core;
@@ -107,6 +108,25 @@ namespace SS3D.Systems.Entities
 
             origin.SetMind(targetMind);
             target.SetMind(originMind);
+
+            // SetMind(null) leaves an invalid (-1) owner on the body, which can't take a FirstObject.
+            if (origin.Owner != null && origin.Owner.IsValid)
+            {
+                origin.Owner.SetFirstObject(origin.NetworkObject);
+                if (InstanceFinder.ServerManager?.Objects != null)
+                {
+                    InstanceFinder.ServerManager.Objects.RebuildObservers(origin.Owner, timedOnly: false);
+                }
+            }
+
+            if (target.Owner != null && target.Owner.IsValid)
+            {
+                target.Owner.SetFirstObject(target.NetworkObject);
+                if (InstanceFinder.ServerManager?.Objects != null)
+                {
+                    InstanceFinder.ServerManager.Objects.RebuildObservers(target.Owner, timedOnly: false);
+                }
+            }
         }
     }
 }

@@ -1,0 +1,546 @@
+using System.Collections;
+using System.Diagnostics;
+using System.Linq;
+using System.Reflection;
+using Coimbra;
+using FishNet;
+using FishNet.Component.Animating;
+using NUnit.Framework;
+using SS3D.Core;
+using SS3D.Data.Generated;
+using SS3D.Rendering.URP;
+using SS3D.Systems.Atmospherics;
+using SS3D.Systems.Entities;
+using SS3D.Systems.Entities.Humanoid;
+using SS3D.Systems.Entities.Humanoid.Body;
+using SS3D.Systems.Health;
+using SS3D.Systems.Inventory.Items;
+using SS3D.Systems.ScreenEffects;
+using SS3D.Systems.Tile;
+using SS3D.Systems.Tile.MapEditor;
+using SS3D.UI.MainHud;
+using SS3D.UI.MainHud.Components;
+using UnityEngine;
+using UnityEngine.InputSystem;
+using UnityEngine.InputSystem.LowLevel;
+using UnityEngine.TestTools;
+using Debug = UnityEngine.Debug;
+
+namespace SS3D.Tests
+{
+    /// <summary>
+    /// What the environment does to a body: toxic air drives it critical, and a critical or dead ragdoll keeps
+    /// gravity on the deck and loses it in space. Replaces the lifecycle pilot's ragdoll-space and
+    /// critical-reclaim partials.
+    /// </summary>
+    [Category(TestCategories.Scenarios)]
+    [Category(TestCategories.Environment)]
+    public class EnvironmentScenarios : ScenarioFixture
+    {
+        /// <summary>Plasma added at the body's tile. The main room holds about 2,600 mol of station air.</summary>
+        private const int PlasmaMoles = 10000;
+
+        // Guards: room air reaches the body's health tick and toxic air drives it critical, collapsing it with ragdoll gravity on the deck (health §environment, HumanHealthController.TickHealthFromEnvironment, Ragdoll) · Not cheaper because: needs the atmos simulation, the tile under the body and the server health tick together
+        [UnityTest]
+        public IEnumerator PlasmaInRoom_DrivesBodyCritical_CollapsesWithGravity()
+        {
+            ChangesRoom = true;
+            HumanHealthController health = Body.GetComponent<HumanHealthController>();
+            yield return Console.Expect($"atmos gas plasma {PlasmaMoles}", "Added");
+
+            Stopwatch exposure = Stopwatch.StartNew();
+            yield return WaitFor(() => health.Snapshot.State == HealthState.Critical, "plasma drives the body critical", 60f);
+            Debug.Log($"[Scenario] plasma made the body critical after {exposure.Elapsed.TotalSeconds:F1}s");
+            Assert.IsTrue((health.Snapshot.CriticalFlags & HealthCriticalFlags.HighToxin) != 0, "Toxin is what made it critical");
+
+            yield return WaitFor(() => Body.GetComponent<Ragdoll>().Presentation == BodyPresentationState.Collapsed,
+                "the critical body collapses");
+            AssertRagdollGravity(Body, true, "A body collapsed on the deck falls with gravity");
+        }
+
+        // Guards: a room pumped down with no breach reaches the HUD as low pressure, through the tile sample path a vacuum cell skips (HumanHealthController.SampleEnvironmentAtBody, AtmosAlertStackMapper, MainHudSubSystem) · Not cheaper because: needs the server health tick, the snapshot and the bound HUD on a live body
+        [UnityTest]
+        public IEnumerator RoomPumpedDown_ShowsLowPressureOnTheHud()
+        {
+            ChangesRoom = true;
+            HumanHealthController health = Body.GetComponent<HumanHealthController>();
+            MainHudSubSystem hud = SubSystems.Get<MainHudSubSystem>();
+            AtmosSimulation simulation = SubSystems.Get<AtmosSubSystem>().Simulation;
+            simulation.ForEachCoord(coord =>
+            {
+                simulation.TryGetGasMoles(coord, AtmosConstants.Oxygen, out float oxygen);
+                simulation.TryGetGasMoles(coord, AtmosConstants.Nitrogen, out float nitrogen);
+                simulation.TryRemoveMoles(coord, AtmosConstants.Oxygen, oxygen * 0.7f, out _, out _);
+                simulation.TryRemoveMoles(coord, AtmosConstants.Nitrogen, nitrogen * 0.7f, out _, out _);
+            });
+
+            yield return Hold(3f);
+
+            HealthEnvironmentState environment = health.Snapshot.Environment;
+            FieldInfo alerts = typeof(MainHudSubSystem).GetField("_lastAlertState", BindingFlags.NonPublic | BindingFlags.Instance);
+            AlertStackState shown = (AlertStackState)alerts.GetValue(hud);
+            Debug.Log($"[Scenario] pumped down: sample={environment.HasSample} vacuum={environment.IsVacuum} {environment.PressureKpa:F1} kPa {environment.TemperatureKelvin:F0} K hudLowPressure={shown.LowPressure} hudLowOxygen={shown.LowOxygen}");
+            Assert.IsTrue(environment.HasSample, "The body samples its tile");
+            Assert.Less(environment.PressureKpa, 40f, "The snapshot carries the thin air");
+            Assert.AreEqual(AlertSeverity.Warning, shown.LowPressure, "The HUD warns of low pressure");
+        }
+
+        // Guards: session invincibility stops the harm but not the reading, so an admin who opened the map editor still sees low pressure (TickHealthFromEnvironment, EntityInvincibility) · Not cheaper because: needs the server health tick and a connection's flag on a live body
+        [UnityTest]
+        public IEnumerator InvincibleBody_StillReadsThinAir_AndTakesNoHarm()
+        {
+            ChangesRoom = true;
+            int clientId = InstanceFinder.ClientManager.Connection.ClientId;
+            HumanHealthController health = Body.GetComponent<HumanHealthController>();
+            AtmosSimulation simulation = SubSystems.Get<AtmosSubSystem>().Simulation;
+            float brain = health.Snapshot.BrainFunctionPercent;
+            EntityInvincibility.SetServer(clientId, true);
+            try
+            {
+                simulation.ForEachCoord(coord =>
+                {
+                    simulation.TryRemoveMoles(coord, AtmosConstants.Oxygen, float.MaxValue, out _, out _);
+                    simulation.TryRemoveMoles(coord, AtmosConstants.Nitrogen, float.MaxValue, out _, out _);
+                });
+
+                yield return WaitFor(() => health.Snapshot.Environment.HasSample && health.Snapshot.Environment.PressureKpa < 1f,
+                    "the invincible body reads the empty room");
+                yield return Hold(2f);
+                Assert.AreEqual(AtmosAlertStackMapper.Severity.Critical, AtmosAlertStackMapper.Compute(health.Snapshot.Environment).LowPressure);
+                Assert.AreEqual(brain, health.Snapshot.BrainFunctionPercent, "Invincible means no harm");
+            }
+            finally
+            {
+                EntityInvincibility.ClearServer(clientId);
+            }
+        }
+
+        // Guards: a critical or dead ragdoll in open space floats near deck height and regains gravity back on the deck (the old ragdoll-space pilot) · Not cheaper because: needs ragdoll physics on a live networked body and the station's floor support
+        [UnityTest]
+        public IEnumerator CriticalAndDeadInSpace_RagdollIsWeightless()
+        {
+            Vector3 deck = Body.transform.position;
+            Teleport(Body, new Vector3(10000f, deck.y, 10000f));
+            Body.GetComponent<HumanoidBodyStateMachine>().SetFloating(true);
+            yield return Hold(0.5f);
+            Assert.AreEqual(HumanoidSupportState.Unsupported, HumanoidSpaceSupport.GetSupportAt(Body.transform.position),
+                "The body is beyond the station's floor");
+
+            MakeCritical(Body);
+            AssertRagdollGravity(Body, false, "A critical ragdoll in space has no gravity");
+            yield return AssertHipsHold("A critical ragdoll in space stays near deck height");
+
+            yield return Console.Expect($"kill {ServerHelpers.LocalCkey}", "Player killed");
+            yield return WaitFor(() => Body.GetComponent<Ragdoll>().Presentation == BodyPresentationState.Dead, "the body dies");
+            AssertRagdollGravity(Body, false, "A corpse in space has no gravity");
+            yield return AssertHipsHold("A corpse in space stays near deck height");
+
+            Body.transform.position = deck;
+            yield return Hold(0.5f);
+            AssertRagdollGravity(Body, true, "A corpse back on the deck falls with gravity");
+        }
+
+        // Guards: a walker stranded metres above the station (a wind ragdoll that got up over it) falls back to the deck instead of walking on air (#193; HumanoidSpaceSupport.GetDropToDeck) · Not cheaper because: needs the owner's CharacterController, the station's floor colliders and its tile map together
+        [UnityTest]
+        public IEnumerator StrandedAboveStation_FallsBackToDeck()
+        {
+            Vector3 deck = Body.transform.position;
+            Teleport(Body, deck + (Vector3.up * 5f));
+            yield return Hold(0.1f);
+            Assert.AreEqual(HumanoidSupportState.Supported, HumanoidSpaceSupport.GetSupportAt(Body.transform.position),
+                "Tile support ignores height, so the body still counts as over the station");
+
+            yield return WaitFor(() => Body.transform.position.y < deck.y + 0.3f, "the stranded body falls back to the deck", 5f);
+            yield return Hold(0.5f);
+            Assert.AreEqual(deck.y, Body.transform.position.y, 0.3f, "The body stays on the deck");
+        }
+
+        // Guards: a critical body keeps its collapse through ownership loss and reclaim, and treatment restores animation (reconnect while critical; the old critical-reclaim pilot) · Not cheaper because: needs FishNet ownership changes on a live body
+        [UnityTest]
+        public IEnumerator CriticalOwner_KeepsCollapseThroughReclaim_AndRecovers()
+        {
+            bool networkAnimatorWasEnabled = Body.GetComponent<NetworkAnimator>().enabled;
+            MakeCritical(Body);
+            Assert.IsTrue(BonesKinematic(false), "A collapsed owner simulates its bones");
+
+            Body.RemoveOwnership();
+            Body.Mind.RemoveOwnership();
+            yield return WaitFor(() => !Body.IsOwner, "the host loses ownership");
+            yield return Hold(0.5f);
+            Assert.IsTrue(BonesKinematic(false), "Without an owner the server simulates the collapsed bones");
+            Assert.IsFalse(Body.GetComponent<Animator>().enabled, "A collapsed body does not resume animation without an owner");
+
+            Assert.IsTrue(SubSystems.Get<EntitySubSystem>().TryReclaimEntity(Host, InstanceFinder.ClientManager.Connection),
+                "The host reclaims its body");
+            yield return WaitFor(() => Body.IsOwner, "the host owns its body again");
+            yield return Hold(0.5f);
+            Assert.AreSame(Body, HostEntity, "Reclaim keeps the same body");
+            Assert.AreEqual(BodyPresentationState.Collapsed, Body.GetComponent<Ragdoll>().Presentation, "Reclaim keeps the collapse");
+            Assert.IsTrue(BonesKinematic(false), "The reclaiming owner simulates the bones again");
+
+            // A late joiner sees the collapse SyncVar before OnStartNetwork runs.
+            Body.GetComponent<Ragdoll>().OnStartNetwork();
+            Assert.IsFalse(Body.GetComponent<NetworkAnimator>().enabled, "Network animation stays off while critical");
+
+            yield return HealFully();
+            HumanoidBodyStateMachine stateMachine = Body.GetComponent<HumanoidBodyStateMachine>();
+            yield return WaitFor(() => stateMachine.enabled, "treatment restores body animation", 10f);
+            yield return WaitFor(() => BonesKinematic(true), "recovered bones return to the animator");
+            Assert.IsTrue(Body.GetComponent<Animator>().enabled, "Recovery enables the Animator");
+            Assert.AreEqual(networkAnimatorWasEnabled, Body.GetComponent<NetworkAnimator>().enabled,
+                "Recovery restores the NetworkAnimator as it was");
+        }
+
+        // Guards: server wind reaches the physics owner, collapses a standing body and accelerates its bones.
+        // Not cheaper because: FishNet TargetRpc delivery and non-kinematic ragdoll ownership are runtime contracts.
+        [UnityTest]
+        public IEnumerator ViolentGust_KnocksDownAndPullsOwner_ThenRecovers()
+        {
+            Ragdoll ragdoll = Body.GetComponent<Ragdoll>();
+            Vector3 start = ragdoll.WindSamplePosition;
+            ragdoll.ServerApplyWind(Vector3.right * 30f);
+            yield return WaitFor(() => ragdoll.Presentation == BodyPresentationState.Collapsed,
+                "a violent gust knocks the owner down");
+            yield return Hold(0.25f);
+            Assert.That(ragdoll.WindSamplePosition.x, Is.GreaterThan(start.x + 0.1f),
+                "the owning ragdoll moves with the gust");
+            Assert.IsTrue(BonesKinematic(false), "Only the owner runs living ragdoll physics");
+            yield return WaitFor(() => ragdoll.Presentation == BodyPresentationState.Locomotion,
+                "the conscious body recovers after the wind stops", 8f);
+        }
+
+        // Guards: recovery hands walking back to HumanoidLivingController · Not cheaper because: the bug is the two movement paths' live enable state, and only real key input shows it
+        [UnityTest]
+        public IEnumerator KnockedDownOwner_WalksAgainAfterRecovering()
+        {
+            Ragdoll ragdoll = Body.GetComponent<Ragdoll>();
+            // The editor running this is rarely the focused window, and unfocused it drops device input.
+            InputSettings.BackgroundBehavior background = InputSystem.settings.backgroundBehavior;
+            InputSettings.EditorInputBehaviorInPlayMode editor = InputSystem.settings.editorInputBehaviorInPlayMode;
+            InputSystem.settings.backgroundBehavior = InputSettings.BackgroundBehavior.IgnoreFocus;
+            InputSystem.settings.editorInputBehaviorInPlayMode = InputSettings.EditorInputBehaviorInPlayMode.AllDeviceInputAlwaysGoesToGameView;
+            Keyboard keyboard = InputSystem.AddDevice<Keyboard>();
+            try
+            {
+                yield return WalkAFewSteps(ragdoll, keyboard, "before the knockdown, so a failure below is not the test's key press");
+
+                ragdoll.ServerKnockdown(1f);
+                yield return WaitFor(() => ragdoll.IsKnockedDown, "the body goes down");
+                yield return WaitFor(() => !ragdoll.IsKnockedDown, "the body recovers", 8f);
+
+                yield return WalkAFewSteps(ragdoll, keyboard, "after standing back up");
+            }
+            finally
+            {
+                InputSystem.RemoveDevice(keyboard);
+                InputSystem.settings.backgroundBehavior = background;
+                InputSystem.settings.editorInputBehaviorInPlayMode = editor;
+            }
+        }
+
+        // Guards: the stand-up blends the ragdoll into the clip's lying first frame instead of the avatar's T-pose,
+        // without dragging the body, and hands movement back on the table's schedule (animation pass Phase 1).
+        // Not cheaper because: the blend runs on live ragdoll bones after a FishNet recovery.
+        [UnityTest]
+        public IEnumerator KnockedDownBody_StandsUpFromItsLyingPose_FaceUp() => StandsUpFromItsLyingPose(faceDown: false);
+
+        [UnityTest]
+        public IEnumerator KnockedDownBody_StandsUpFromItsLyingPose_FaceDown() => StandsUpFromItsLyingPose(faceDown: true);
+
+        private IEnumerator StandsUpFromItsLyingPose(bool faceDown)
+        {
+            Ragdoll ragdoll = Body.GetComponent<Ragdoll>();
+            yield return LayBodyDown(ragdoll, faceDown);
+            Transform hips = Body.GetComponent<Animator>().GetBoneTransform(HumanBodyBones.Hips);
+            Vector3 lyingHips = hips.position;
+
+            ragdoll.ServerRecover();
+            Stopwatch getUp = Stopwatch.StartNew();
+            float highestBlendHips = 0f;
+            float blendDrift = 0f;
+            int blendFrames = 0;
+            while (ragdoll.IsGettingUp && getUp.Elapsed.TotalSeconds < 10f)
+            {
+                if (!Body.GetComponent<Animator>().enabled)
+                {
+                    // The bone blend: the Animator stays off until the clip starts.
+                    blendFrames++;
+                    highestBlendHips = Mathf.Max(highestBlendHips, hips.position.y - ragdoll.transform.position.y);
+                    blendDrift = Mathf.Max(blendDrift, Vector3.ProjectOnPlane(hips.position - lyingHips, Vector3.up).magnitude);
+                }
+
+                yield return null;
+            }
+
+            GetUpAnimation.Clip clip = GetUpAnimation.For(faceDown);
+            float seconds = (float)getUp.Elapsed.TotalSeconds;
+            Debug.Log($"[Scenario] {clip.StateName}: control back after {seconds:F2}s, blend hips peak {highestBlendHips:F2} m, drift {blendDrift:F2} m");
+            Assert.Greater(blendFrames, 0, "Recovery blends the bones before the clip");
+            Assert.Less(highestBlendHips, 0.35f, "The blend stays lying down (a T-pose target lifts the hips to standing height)");
+            Assert.Less(blendDrift, 0.2f, "The blend does not drag the body across the floor");
+            float expected = GetUpAnimation.BlendInSeconds + clip.DurationSeconds * GetUpAnimation.BlendOutStart;
+            Assert.That(seconds, Is.EqualTo(expected).Within(0.4f), "Movement returns at the clip's blend-out point");
+            Assert.IsTrue(Body.GetComponent<HumanoidLivingController>().enabled, "The owner can move again");
+        }
+
+        // Guards: a hit while standing up knocks the body down again, as for anyone standing (combat §5, Decision 3).
+        // Not cheaper because: needs the live get-up states and ragdoll physics authority.
+        [UnityTest]
+        public IEnumerator BodyGettingUp_IsKnockedDownAgainByAHit()
+        {
+            Ragdoll ragdoll = Body.GetComponent<Ragdoll>();
+            yield return LayBodyDown(ragdoll, faceDown: false);
+            ragdoll.ServerRecover();
+            yield return WaitFor(() => ragdoll.IsGettingUp && Body.GetComponent<Animator>().enabled, "the stand-up clip plays");
+
+            ragdoll.ServerKnockdown(1f);
+            Assert.IsTrue(ragdoll.IsKnockedDown, "The hit collapses the body");
+            Assert.IsFalse(ragdoll.IsGettingUp, "The stand-up is abandoned");
+            yield return Hold(0.25f);
+            Assert.IsTrue(BonesKinematic(false), "The owner simulates the bones again");
+            yield return WaitFor(() => !ragdoll.IsKnockedDown && !ragdoll.IsGettingUp, "the body stands up after the second knockdown", 10f);
+        }
+
+        /// <summary>Collapses the owner and turns the ragdoll onto its back or front, then lets it settle.</summary>
+        private IEnumerator LayBodyDown(Ragdoll ragdoll, bool faceDown)
+        {
+            ragdoll.ServerKnockdownTimeless();
+            yield return WaitFor(() => BonesKinematic(false), "the owner simulates the collapsed bones");
+            Transform hips = Body.GetComponent<Animator>().GetBoneTransform(HumanBodyBones.Hips);
+            Vector3 heading = Vector3.ProjectOnPlane(ragdoll.transform.forward, Vector3.up).normalized;
+            // Hips forward is the belly, hips up runs toward the head: lie along the heading.
+            hips.SetPositionAndRotation(
+                new Vector3(hips.position.x, ragdoll.transform.position.y + 0.15f, hips.position.z),
+                Quaternion.LookRotation(faceDown ? Vector3.down : Vector3.up, heading));
+            foreach (Rigidbody bone in Body.GetComponentsInChildren<RagdollPart>(true).Select(part => part.GetComponent<Rigidbody>()))
+            {
+                bone.linearVelocity = Vector3.zero;
+                bone.angularVelocity = Vector3.zero;
+            }
+
+            yield return Hold(2f);
+            Assert.AreEqual(faceDown, hips.forward.y < 0f, faceDown ? "The body settles face down" : "The body settles face up");
+        }
+
+        private static IEnumerator WalkAFewSteps(Ragdoll ragdoll, Keyboard keyboard, string when)
+        {
+            Vector3 start = ragdoll.transform.position;
+            bool forward = true;
+            try
+            {
+                float elapsed = 0f;
+                while (Vector3.Distance(ragdoll.transform.position, start) < 0.3f && elapsed < 8f)
+                {
+                    // Turn round now and then so that a wall cannot end the test.
+                    if (Mathf.Repeat(elapsed, 2f) < Time.deltaTime) forward = !forward;
+                    InputSystem.QueueStateEvent(keyboard, new KeyboardState(forward ? Key.W : Key.S));
+                    elapsed += Time.deltaTime;
+                    yield return null;
+                }
+
+                Assert.That(Vector3.Distance(ragdoll.transform.position, start), Is.GreaterThanOrEqualTo(0.3f), $"The owner can walk {when}");
+            }
+            finally
+            {
+                InputSystem.QueueStateEvent(keyboard, new KeyboardState());
+            }
+        }
+
+        // Guards: wind wakes the disabled-by-prefab Ragdoll and pushes an upright body a little every
+        // frame instead of one jump per atmos tick.
+        // Not cheaper because: component enable state and CharacterController motion need a live body.
+        [UnityTest]
+        public IEnumerator GentleWind_DriftsUprightOwner_InSmallSteps()
+        {
+            Ragdoll ragdoll = Body.GetComponent<Ragdoll>();
+            Vector3 start = Body.transform.position;
+            Vector3 previous = start;
+            float largestStep = 0f;
+            float nextUpdate = 0f;
+            for (float elapsed = 0f; elapsed < 1f; elapsed += Time.deltaTime)
+            {
+                if (elapsed >= nextUpdate)
+                {
+                    ragdoll.ServerApplyWind(Vector3.right * 3f);
+                    nextUpdate += AtmosConstants.TickInterval;
+                }
+
+                yield return null;
+                Vector3 position = Body.transform.position;
+                largestStep = Mathf.Max(largestStep, Vector3.Distance(position, previous));
+                previous = position;
+            }
+
+            Assert.That(ragdoll.Presentation, Is.EqualTo(BodyPresentationState.Locomotion), "below knockdown strength");
+            Assert.That(previous.x, Is.GreaterThan(start.x + 0.5f), "the body drifts with the wind");
+            Assert.That(largestStep, Is.LessThan(0.25f), "no per-tick jumps");
+        }
+
+        // Guards: a body nobody owns (combat dummy) drifts in wind under the server's authority and still stops at walls.
+        // Not cheaper because: the unowned path needs a spawned body, its CharacterController and the tile colliders.
+        [UnityTest]
+        public IEnumerator GentleWind_DriftsUnownedDummy_UpToTheWall()
+        {
+            float wallFace = ScenarioAtmos.MainRoom.xMin - 0.5f;
+            var spawn = new Vector3(0f, Body.transform.position.y, ScenarioAtmos.MainRoom.yMin + 2f);
+            Entity dummy = SubSystems.Get<EntitySubSystem>().ServerSpawnCombatDummy(spawn, Quaternion.identity);
+            try
+            {
+                Ragdoll ragdoll = dummy.GetComponent<Ragdoll>();
+                float nextUpdate = 0f;
+                for (float elapsed = 0f; elapsed < 2f; elapsed += Time.deltaTime)
+                {
+                    if (elapsed >= nextUpdate)
+                    {
+                        ragdoll.ServerApplyWind(Vector3.left * 3f);
+                        nextUpdate += AtmosConstants.TickInterval;
+                    }
+
+                    yield return null;
+                }
+
+                Assert.That(ragdoll.Presentation, Is.EqualTo(BodyPresentationState.Locomotion), "below knockdown strength");
+                Assert.That(dummy.transform.position.x, Is.LessThan(wallFace + 1f), "the wind carries the dummy to the wall");
+                Assert.That(dummy.transform.position.x, Is.GreaterThan(wallFace), "the wall stops it");
+                Assert.IsFalse(dummy.GetComponent<CharacterController>().enabled,
+                    "An unowned body keeps its controller off between pushes");
+            }
+            finally
+            {
+                InstanceFinder.ServerManager.Despawn(dummy.NetworkObject);
+            }
+        }
+
+        // Guards: a real hull breach reaches both consumers: the shared flow atlas shows wind toward the hole
+        // and client streaks appear from it, with no wind traffic of their own.
+        // Not cheaper because: needs the tile observer, the host atlas and the render context running together.
+        [UnityTest]
+        public IEnumerator HullBreach_FillsFlowAtlas_AndShowsWindStreaks()
+        {
+            ChangesRoom = true;
+            AtmosWindView view = SubSystems.Get<AtmosSubSystem>().GetComponent<AtmosWindView>();
+            Assert.IsNotNull(view, "Clients get a wind view");
+            Assert.That(view.VisibleStreaks, Is.Zero, "Sealed rooms have no wind");
+
+            // The scenario harness runs without a rendering player camera, so nothing registers an
+            // AtmosRenderContext request the way AtmosCamera does in play. Register a look-down test
+            // camera over the room so the streak spawner has a focus; clear it in the finally.
+            GameObject cameraHost = new("Wind test camera");
+            cameraHost.transform.SetPositionAndRotation(new Vector3(0f, 5f, 0f), Quaternion.Euler(90f, 0f, 0f));
+            Camera camera = cameraHost.AddComponent<Camera>();
+            AtmosRenderContext.SetRequest(new AtmosRenderContext.Request { SourceCamera = camera });
+            try
+            {
+                var breach = new Vector3(ScenarioAtmos.MainRoom.xMin - 1, 0f, -1f);
+                Assert.IsTrue(SubSystems.Get<TileSubSystem>().Construction.TryClearTile(breach, TileLayer.Turf, Direction.North).Success,
+                    "The hull wall is removed");
+
+                yield return WaitFor(() => view.VisibleStreaks > 0, "wind streaks appear after the breach", 5f);
+
+                Vector2 flow = view.SampleFlow(ScenarioAtmos.MainRoom.xMin, -1f);
+                Assert.That(flow.x, Is.LessThan(-0.1f), "Flow beside the hole points out through it");
+                Ragdoll ragdoll = Body.GetComponent<Ragdoll>();
+                Vector3 bodyStart = ragdoll.WindSamplePosition;
+                yield return Hold(1.5f);
+                // The test room's chunk borders run through the body's tile, so this also guards border links.
+                Assert.That(Vector3.Distance(ragdoll.WindSamplePosition, bodyStart), Is.GreaterThan(0.3f),
+                    "The wind carries the body toward the breach");
+            }
+            finally
+            {
+                AtmosRenderContext.ClearRequest();
+                cameraHost.Dispose(true);
+            }
+        }
+
+        // Guards: opening the map editor hides body feedback and wind without throwing, on the editor's own update loop, and closing restores both (#126, #147).
+        // Not cheaper because: needs the editor's open path, the screen effects update and the wind view running together.
+        [UnityTest]
+        public IEnumerator MapEditor_HidesFeedbackAndWind_ThenRestores()
+        {
+            ChangesRoom = true;
+            MapEditorSubSystem editor = SubSystems.Get<MapEditorSubSystem>();
+            ScreenEffectsSubSystem effects = SubSystems.Get<ScreenEffectsSubSystem>();
+            AtmosWindView view = Object.FindFirstObjectByType<AtmosWindView>();
+            MethodInfo setActive = typeof(MapEditorSubSystem).GetMethod("SetActive", BindingFlags.Instance | BindingFlags.NonPublic);
+
+            GameObject cameraHost = new("Wind test camera");
+            cameraHost.transform.SetPositionAndRotation(new Vector3(0f, 5f, 0f), Quaternion.Euler(90f, 0f, 0f));
+            Camera camera = cameraHost.AddComponent<Camera>();
+            AtmosRenderContext.SetRequest(new AtmosRenderContext.Request { SourceCamera = camera });
+            try
+            {
+                var breach = new Vector3(ScenarioAtmos.MainRoom.xMin - 1, 0f, -1f);
+                Assert.IsTrue(SubSystems.Get<TileSubSystem>().Construction.TryClearTile(breach, TileLayer.Turf, Direction.North).Success,
+                    "The hull wall is removed");
+                yield return WaitFor(() => view.VisibleStreaks > 0, "wind streaks appear after the breach", 5f);
+
+                setActive.Invoke(editor, new object[] { true });
+                yield return Hold(0.5f);
+                Assert.IsTrue(effects.IsGameplayFeedbackSuppressed, "Body feedback is hidden in the editor");
+                Assert.IsTrue(AtmosRenderContext.IsRenderingSuppressed, "Atmos rendering is hidden in the editor");
+                Assert.That(view.VisibleStreaks, Is.Zero, "No wind streaks in the editor");
+                Assert.IsTrue(EntityInvincibility.LocalPlayerInvincible, "The editor protects its builder");
+
+                setActive.Invoke(editor, new object[] { false });
+                Assert.IsTrue(EntityInvincibility.LocalPlayerInvincible, "Invincibility outlives the editor for play-testing");
+                FieldInfo alerts = typeof(MainHudSubSystem).GetField("_lastAlertState", BindingFlags.NonPublic | BindingFlags.Instance);
+                yield return WaitFor(() => ((AlertStackState)alerts.GetValue(SubSystems.Get<MainHudSubSystem>())).Invincible == AlertSeverity.Warning,
+                    "the HUD badges invincibility left on by the editor");
+                Assert.IsFalse(effects.IsGameplayFeedbackSuppressed, "Body feedback returns on close");
+                Assert.IsFalse(AtmosRenderContext.IsRenderingSuppressed, "Atmos rendering returns on close");
+                yield return WaitFor(() => view.VisibleStreaks > 0, "wind streaks resume after close", 5f);
+            }
+            finally
+            {
+                if (editor.IsActive)
+                    setActive.Invoke(editor, new object[] { false });
+
+                // The first open turns on the admin's session invincibility, which outlives the editor.
+                EntityInvincibility.ClearServer(InstanceFinder.ClientManager.Connection.ClientId);
+                EntityInvincibility.LocalPlayerInvincible = false;
+                AtmosRenderContext.ClearRequest();
+                cameraHost.Dispose(true);
+            }
+        }
+
+        // Guards: a loose item beside a real hull breach is carried out through the hole and comes to rest adrift in space, sending no more traffic (Decision 11).
+        // Not cheaper because: needs item physics on the server, the tile collider under the hole and the live wind field together.
+        [UnityTest]
+        public IEnumerator HullBreach_BlowsLooseItemIntoSpace_WhereItComesToRest()
+        {
+            ChangesRoom = true;
+            var breach = new Vector3(ScenarioAtmos.MainRoom.xMin - 1, 0f, -1f);
+            Item item = SubSystems.Get<ItemSubSystem>().SpawnItem(Items.Wrench, breach + new Vector3(1.5f, 0.2f, 0f), Quaternion.identity);
+            Rigidbody body = item.GetComponent<Rigidbody>();
+            yield return Hold(0.5f);
+            Assert.IsTrue(SubSystems.Get<TileSubSystem>().Construction.TryClearTile(breach, TileLayer.Turf, Direction.North).Success,
+                "The hull wall is removed");
+
+            yield return WaitFor(() => body.position.x < breach.x - 1f, "the wind carries the item out through the hole", 10f);
+            yield return WaitFor(() => !body.useGravity, "the item loses gravity past the deck", 3f);
+            float height = body.position.y;
+            yield return WaitFor(() => body.linearVelocity.magnitude < 0.05f, "drag brings the item to rest", 20f);
+            Assert.That(body.position.y, Is.EqualTo(height).Within(0.2f), "It drifts rather than falling away");
+        }
+
+        private bool BonesKinematic(bool kinematic) => Body.GetComponentsInChildren<RagdollPart>(true)
+            .All(part => part.GetComponent<Rigidbody>().isKinematic == kinematic);
+
+        private static void AssertRagdollGravity(Entity body, bool gravity, string what)
+        {
+            Rigidbody[] bones = body.GetComponentsInChildren<RagdollPart>(true).Select(part => part.GetComponent<Rigidbody>()).ToArray();
+            Assert.IsNotEmpty(bones, "The body has ragdoll bones");
+            Assert.IsTrue(bones.All(bone => !bone.isKinematic && bone.useGravity == gravity), what);
+        }
+
+        private IEnumerator AssertHipsHold(string what)
+        {
+            float start = Hips();
+            yield return Hold(3f);
+            Assert.Less(Mathf.Abs(Hips() - start), 1f, what);
+        }
+
+        private float Hips() => Body.GetComponent<Animator>().GetBoneTransform(HumanBodyBones.Hips).position.y;
+    }
+}

@@ -1,0 +1,28 @@
+
+.connection-status-row {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    padding-bottom: var(--ss3d-space-3);
+    border-bottom-width: 1px;
+    border-bottom-color: var(--ss3d-border-subtle);
+    margin-bottom: 14px;
+}
+
+.connection-status-row__left {
+    flex-direction: row;
+    align-items: center;
+}
+
+.connection-status-row__status {
+    font-size: 11px;
+    letter-spacing: 1px;
+    color: var(--ss3d-text-secondary);
+    margin-left: 7px;
+    -unity-text-align: middle-left;
+}
+
+.connection-status-row__readout {
+    font-size: 11px;
+    color: var(--ss3d-text-tertiary);
+}

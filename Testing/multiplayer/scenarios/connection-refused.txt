@@ -1,0 +1,11 @@
+# Guards: disconnect reasons and the rejected-login leak (Documents/architecture/systems/networking.md) · Not cheaper because: the reason must survive a real transport close between separate processes
+# Server side: the client is refused twice, logs in with its token, then gets kicked. Refused logins
+# must leave no UnauthorizedPlayer behind.
+wait_connected
+wait_online_players 1
+wait_seconds 1
+assert_no_unauthorized
+wait_seconds 2
+kick_all Harness kick
+wait_seconds 3
+disconnect

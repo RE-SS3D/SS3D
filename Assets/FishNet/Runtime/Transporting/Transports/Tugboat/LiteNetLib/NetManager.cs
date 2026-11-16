@@ -249,6 +249,12 @@ namespace LiteNetLib
         public bool UnsyncedDeliveryEvent = false;
 
         /// <summary>
+        /// SS3D patch: if true - unconnected message events are called from the "receive" thread immediately
+        /// instead of on the next PollEvents call, so a status query is not delayed by the game tick.
+        /// </summary>
+        public bool UnsyncedUnconnectedEvent = false;
+
+        /// <summary>
         /// Allows receive broadcast packets
         /// </summary>
         public bool BroadcastReceiveEnabled = false;
@@ -527,6 +533,8 @@ namespace LiteNetLib
                 Interlocked.Increment(ref _connectedPeersCount);
             else if (type == NetEvent.EType.MessageDelivered)
                 unsyncEvent = UnsyncedDeliveryEvent;
+            else if (type == NetEvent.EType.ReceiveUnconnected && UnsyncedUnconnectedEvent)
+                unsyncEvent = true;
 
             lock(_eventLock)
             {

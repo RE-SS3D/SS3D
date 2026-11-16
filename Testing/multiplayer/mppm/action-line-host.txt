@@ -1,0 +1,14 @@
+# Guards: a server-narrated target-only action line reaches the remote target and is formatted there (examine cue, action-messages.md §4) · Not cheaper because: TargetRpc delivery to a remote owner needs a second process
+# Main editor (host) side. Player2 runs scenarios/action-line-client.txt.
+wait_timeout 180
+wait_connected
+wait_clients 1
+ready
+start_round
+wait_round Ongoing
+embark
+assert_embarked
+wait_players 2
+wait_seconds 6
+narrate_on_client
+wait_seconds 10

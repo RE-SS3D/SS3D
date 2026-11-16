@@ -1,0 +1,1394 @@
+@import url("../Tokens/ss3d-tokens.uss");
+@import url("../Tokens/ss3d-typography.uss");
+
+:root {
+    --map-editor-toolbar-bg: var(--ss3d-surface-panel);
+    --map-editor-accent: var(--ss3d-accent-rust);
+}
+
+.map-editor-root {
+    flex-grow: 1;
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+}
+
+.map-editor-hidden {
+    display: none;
+}
+
+.map-editor-toolbar-strip {
+    flex-direction: row;
+    align-items: center;
+    background-color: var(--map-editor-toolbar-bg);
+    border-width: 1px;
+    border-color: var(--ss3d-border-default);
+    border-radius: var(--ss3d-radius-md);
+    padding: 6px;
+}
+
+.map-editor-toolbar-strip > * {
+    margin-left: 3px;
+    margin-right: 3px;
+}
+
+.map-editor-toolbar-strip--vertical > * {
+    margin-left: 0;
+    margin-right: 0;
+    margin-top: 3px;
+    margin-bottom: 3px;
+}
+
+.map-editor-toolbar-strip--vertical {
+    flex-direction: column;
+    padding-left: 6px;
+    padding-right: 6px;
+    overflow: visible;
+}
+
+.map-editor-toolbar-btn-wrap {
+    position: relative;
+    overflow: visible;
+}
+
+.map-editor-toolbar-hint {
+    position: absolute;
+    top: 0;
+    height: 38px;
+    padding-left: 12px;
+    padding-right: 12px;
+    background-color: var(--ss3d-surface-panel);
+    border-width: 1px;
+    border-color: var(--ss3d-border-default);
+    border-radius: var(--ss3d-radius-sm);
+    color: var(--ss3d-text-primary);
+    font-size: 16px;
+    -unity-text-align: middle-left;
+    white-space: nowrap;
+    align-items: center;
+    justify-content: center;
+    z-index: 50;
+}
+
+.map-editor-toolbar-hint--opens-right {
+    left: 100%;
+    margin-left: 8px;
+}
+
+.map-editor-toolbar-hint--opens-left {
+    right: 100%;
+    margin-right: 8px;
+}
+
+.map-editor-icon-btn {
+    width: 38px;
+    height: 38px;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--ss3d-surface-elevated);
+    border-width: 1px;
+    border-color: var(--ss3d-border-default);
+    border-radius: var(--ss3d-radius-sm);
+    color: var(--ss3d-text-primary);
+    -unity-text-align: middle-center;
+    font-size: 0;
+}
+
+.map-editor-icon-btn__icon {
+    width: 19px;
+    height: 19px;
+}
+
+.map-editor-vector-icon {
+    -unity-background-scale-mode: scale-to-fit;
+    -unity-background-image-tint-color: var(--ss3d-text-primary);
+}
+
+.map-editor-icon-btn--active .map-editor-vector-icon {
+    -unity-background-image-tint-color: var(--ss3d-text-on-accent);
+}
+
+.map-editor-icon-btn--disabled .map-editor-vector-icon {
+    -unity-background-image-tint-color: var(--ss3d-text-tertiary);
+}
+
+.map-editor-mode-tab__icon {
+    width: 16px;
+    height: 16px;
+    margin-bottom: 3px;
+    flex-shrink: 0;
+}
+
+.map-editor-mode-tab .map-editor-vector-icon {
+    -unity-background-image-tint-color: var(--ss3d-text-secondary);
+}
+
+.map-editor-mode-tab--active .map-editor-vector-icon {
+    -unity-background-image-tint-color: var(--ss3d-text-on-accent);
+}
+
+.map-editor-mode-tab__label {
+    font-size: 11px;
+    letter-spacing: 1px;
+    white-space: nowrap;
+    -unity-text-align: middle-center;
+    -unity-font-definition: url("project://database/Assets/Content/Systems/UI/Font/Fonts/GurajadaRegularSDF.asset");
+    color: var(--ss3d-text-secondary);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
+    margin: 0;
+    padding: 0;
+    flex-shrink: 0;
+}
+
+.map-editor-subcat-tab__icon {
+    width: 14px;
+    height: 14px;
+    margin-right: 4px;
+    flex-shrink: 0;
+}
+
+.map-editor-subcat-tab .map-editor-vector-icon {
+    -unity-background-image-tint-color: var(--ss3d-text-secondary);
+}
+
+.map-editor-subcat-tab--active .map-editor-vector-icon {
+    -unity-background-image-tint-color: var(--ss3d-text-on-accent);
+}
+
+.map-editor-subcat-tab__label {
+    font-size: 11px;
+    letter-spacing: 1px;
+    white-space: nowrap;
+    -unity-font-definition: url("project://database/Assets/Content/Systems/UI/Font/Fonts/GurajadaRegularSDF.asset");
+    color: var(--ss3d-text-secondary);
+    margin: 0;
+    padding: 0;
+}
+
+.map-editor-search-icon {
+    width: 14px;
+    height: 14px;
+    flex-shrink: 0;
+    opacity: 0.55;
+}
+
+.map-editor-search .map-editor-vector-icon {
+    -unity-background-image-tint-color: var(--ss3d-text-secondary);
+}
+
+.map-editor-icon-btn:hover {
+    background-color: var(--ss3d-surface-panel-raised);
+}
+
+.map-editor-icon-btn--active {
+    background-color: var(--ss3d-accent-rust-dim);
+    border-color: var(--map-editor-accent);
+    color: var(--ss3d-text-on-accent);
+}
+
+.map-editor-icon-btn--disabled {
+    color: var(--ss3d-text-tertiary);
+}
+
+.map-editor-separator {
+    height: 1px;
+    align-self: stretch;
+    background-color: var(--ss3d-border-default);
+    margin-left: 2px;
+    margin-right: 2px;
+}
+
+.map-editor-separator--vertical {
+    height: 1px;
+    margin-top: 2px;
+    margin-bottom: 2px;
+    margin-left: 0;
+    margin-right: 0;
+}
+
+.map-editor-region {
+    position: absolute;
+}
+
+.map-editor-region--top-left { left: 24px; top: 24px; overflow: visible; }
+.map-editor-region--top-right { right: 24px; top: 24px; overflow: visible; }
+.map-editor-region--bottom { left: 24px; right: 24px; bottom: 24px; height: 210px; }
+
+.map-editor-right-column {
+    flex-direction: column;
+    align-items: flex-end;
+}
+
+.map-editor-right-column > * {
+    margin-bottom: 12px;
+}
+
+.map-editor-window {
+    background-color: var(--ss3d-surface-panel);
+    border-width: 1px;
+    border-color: var(--ss3d-border-default);
+    border-radius: var(--ss3d-radius-md);
+    padding: 12px;
+}
+
+.map-editor-popover-window {
+    padding: 0;
+    background-color: var(--ss3d-surface-panel);
+    border-radius: 4px;
+    border-width: 1px;
+    border-color: var(--ss3d-border-default);
+}
+
+.map-editor-popover-window__clip {
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.map-editor-popover-window__header {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    background-color: var(--ss3d-surface-panel-raised);
+    padding: 5px 6px 5px 10px;
+    min-height: 0;
+    border-bottom-width: 1px;
+    border-bottom-color: var(--ss3d-border-default);
+}
+
+.map-editor-popover-window__header .map-editor-window__title {
+    margin-bottom: 0;
+    flex-grow: 1;
+    flex-shrink: 1;
+    font-size: 14px;
+    letter-spacing: 0.5px;
+    padding-top: 0;
+    padding-bottom: 0;
+}
+
+.map-editor-popover-close {
+    width: 20px;
+    height: 20px;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    margin: 0;
+    border-width: 1px;
+    border-color: rgba(0, 0, 0, 0);
+    background-color: rgba(0, 0, 0, 0);
+    border-radius: var(--ss3d-radius-sm);
+}
+
+.map-editor-popover-close:hover {
+    background-color: var(--ss3d-surface-elevated);
+    border-color: var(--ss3d-border-default);
+}
+
+.map-editor-popover-close:hover .map-editor-popover-close__glyph {
+    color: var(--ss3d-text-primary);
+}
+
+.map-editor-popover-close:active {
+    background-color: var(--ss3d-accent-rust-dim);
+    border-color: var(--map-editor-accent);
+}
+
+.map-editor-popover-close:active .map-editor-popover-close__glyph {
+    color: var(--ss3d-text-on-accent);
+}
+
+.map-editor-popover-close__glyph {
+    font-size: 15px;
+    color: var(--ss3d-text-tertiary);
+    -unity-text-align: middle-center;
+    padding: 0;
+    margin: 0;
+}
+
+.map-editor-popover-window__body {
+    background-color: var(--ss3d-surface-panel);
+    padding: 8px 12px 12px;
+}
+
+.map-editor-switch-row {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    padding-top: 6px;
+    padding-bottom: 6px;
+}
+
+.map-editor-switch-row__label {
+    color: var(--ss3d-text-secondary);
+    font-size: 12px;
+}
+
+.map-editor-switch {
+    position: relative;
+    width: 32px;
+    height: 18px;
+    flex-shrink: 0;
+    border-radius: 9px;
+    border-width: 1px;
+    border-color: var(--ss3d-border-default);
+    background-color: var(--ss3d-surface-inset);
+}
+
+.map-editor-switch--on {
+    background-color: var(--ss3d-accent-rust);
+    border-color: var(--ss3d-accent-rust);
+}
+
+.map-editor-switch__thumb {
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 14px;
+    height: 14px;
+    border-radius: 7px;
+    background-color: var(--ss3d-text-primary);
+}
+
+.map-editor-switch--on .map-editor-switch__thumb {
+    left: 16px;
+}
+
+.map-editor-window__title {
+    color: var(--ss3d-text-secondary);
+    -unity-font-definition: url("project://database/Assets/Content/Systems/UI/Font/Fonts/GurajadaRegularSDF.asset");
+    font-size: 12px;
+    margin-bottom: 8px;
+    letter-spacing: 1px;
+    -unity-text-align: upper-left;
+}
+
+.map-editor-popover-label {
+    color: var(--ss3d-text-secondary);
+    font-size: 12px;
+    margin-bottom: 4px;
+}
+
+.map-editor-popover-hint {
+    color: var(--ss3d-text-secondary);
+    font-size: 11px;
+    white-space: normal;
+    margin-top: 6px;
+}
+
+/* -- Camera dial ---------------------------------------------------- */
+/* Matches Construction Map Editor mockup: 76px panel, 56px dial, gap 8. */
+
+.map-editor-camera-dial-wrap {
+    flex-direction: column;
+    align-items: center;
+    width: 76px;
+    background-color: var(--map-editor-toolbar-bg);
+    border-width: 1px;
+    border-color: var(--ss3d-border-default);
+    border-radius: var(--ss3d-radius-md);
+    padding: 10px;
+}
+
+.map-editor-camera-dial {
+    position: relative;
+    width: 56px;
+    height: 56px;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+    overflow: visible;
+}
+
+.map-editor-camera-dial__ring {
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    border-radius: 999px;
+    background-color: var(--ss3d-surface-inset);
+    border-width: 1.5px;
+    border-color: var(--ss3d-border-strong);
+}
+
+.map-editor-camera-dial__open {
+    position: absolute;
+    left: 14px;
+    top: 14px;
+    width: 28px;
+    height: 28px;
+    min-width: 28px;
+    min-height: 28px;
+    max-width: 28px;
+    max-height: 28px;
+    border-radius: 999px;
+    background-color: rgba(0, 0, 0, 0);
+    border-width: 0;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    margin: 0;
+}
+
+.map-editor-camera-dial__open .map-editor-vector-icon,
+.map-editor-camera-dial__open .map-editor-icon-btn__icon {
+    width: 18px;
+    height: 18px;
+    margin: 0;
+}
+
+.map-editor-camera-dial__open.map-editor-camera-dial__open--active {
+    background-color: var(--ss3d-accent-rust-dim);
+}
+
+.map-editor-camera-dial__open.map-editor-camera-dial__open--active .map-editor-vector-icon {
+    -unity-background-image-tint-color: var(--ss3d-text-on-accent);
+}
+
+.map-editor-camera-dial__btn {
+    position: absolute;
+    width: 22px;
+    height: 22px;
+    min-width: 22px;
+    min-height: 22px;
+    max-width: 22px;
+    max-height: 22px;
+    border-radius: 999px;
+    background-color: var(--ss3d-surface-elevated);
+    border-width: 1px;
+    border-color: var(--ss3d-border-default);
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    margin: 0;
+}
+
+.map-editor-camera-dial__btn-icon {
+    width: 13px;
+    height: 13px;
+    margin: 0;
+}
+
+.map-editor-camera-dial__rotate-left {
+    left: -4px;
+    top: 17px;
+}
+
+.map-editor-camera-dial__rotate-right {
+    right: -4px;
+    top: 17px;
+}
+
+.map-editor-camera-dial__zoom-row {
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    margin-top: 8px;
+    flex-shrink: 0;
+}
+
+.map-editor-camera-dial__zoom-row > .map-editor-camera-dial__btn {
+    position: relative;
+    margin-left: 3px;
+    margin-right: 3px;
+}
+
+/* -- Object library panel -------------------------------------------- */
+
+.map-editor-mode-rail {
+    width: 108px;
+    flex-shrink: 0;
+    flex-grow: 0;
+    background-color: var(--ss3d-surface-panel);
+    border-width: 1px;
+    border-color: var(--ss3d-border-default);
+    border-radius: var(--ss3d-radius-md);
+    padding-top: 6px;
+    padding-bottom: 6px;
+    padding-left: 6px;
+    padding-right: 6px;
+    justify-content: flex-start;
+    align-items: stretch;
+    align-self: stretch;
+}
+
+.map-editor-mode-tab {
+    padding: 0;
+    margin-bottom: 2px;
+    border-width: 0;
+    background-color: rgba(0, 0, 0, 0);
+    flex-grow: 1;
+    flex-shrink: 1;
+    flex-basis: 0;
+    /* Do not use width: 100% — in UITK that ignores parent padding and flush-hits the rail edge. */
+    min-height: 0;
+    height: auto;
+    max-height: none;
+}
+
+.map-editor-mode-tab:last-child {
+    margin-bottom: 0;
+}
+
+.map-editor-mode-tab__surface {
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding-top: 4px;
+    padding-bottom: 4px;
+    padding-left: 2px;
+    padding-right: 2px;
+    border-width: 1px;
+    border-color: rgba(0, 0, 0, 0);
+    border-radius: var(--ss3d-radius-sm);
+    background-color: rgba(0, 0, 0, 0);
+    color: var(--ss3d-text-secondary);
+    width: 100%;
+    height: 100%;
+    min-height: 0;
+}
+
+.map-editor-mode-tab--active .map-editor-mode-tab__surface {
+    background-color: var(--ss3d-accent-rust-dim);
+    border-color: var(--map-editor-accent);
+    color: var(--ss3d-text-on-accent);
+}
+
+.map-editor-mode-tab--active .map-editor-mode-tab__label {
+    color: var(--ss3d-text-on-accent);
+}
+
+.map-editor-subcat-tab {
+    padding: 0;
+    margin-right: 4px;
+    margin-bottom: 0;
+    border-width: 0;
+    background-color: rgba(0, 0, 0, 0);
+    min-height: 0;
+    height: 28px;
+}
+
+.map-editor-subcat-tab__surface {
+    flex-direction: row;
+    align-items: center;
+    padding-top: 2px;
+    padding-bottom: 2px;
+    padding-left: 8px;
+    padding-right: 8px;
+    border-width: 1px;
+    border-color: rgba(0, 0, 0, 0);
+    border-radius: var(--ss3d-radius-sm);
+    background-color: rgba(0, 0, 0, 0);
+    color: var(--ss3d-text-secondary);
+    height: 100%;
+    min-height: 0;
+}
+
+.map-editor-subcat-tab--active .map-editor-subcat-tab__surface {
+    background-color: var(--ss3d-accent-rust-dim);
+    border-color: var(--map-editor-accent);
+    color: var(--ss3d-text-on-accent);
+}
+
+.map-editor-subcat-tab--active .map-editor-subcat-tab__label {
+    color: var(--ss3d-text-on-accent);
+}
+
+.map-editor-search {
+    flex-direction: row;
+    align-items: center;
+    background-color: var(--ss3d-surface-inset);
+    border-width: 1px;
+    border-color: var(--ss3d-border-default);
+    border-radius: var(--ss3d-radius-sm);
+    padding-top: 2px;
+    padding-bottom: 2px;
+    padding-left: 8px;
+    padding-right: 8px;
+    min-width: 220px;
+    min-height: 0;
+    height: 28px;
+}
+
+.map-editor-search-field {
+    flex-grow: 1;
+    background-color: rgba(0, 0, 0, 0);
+    border-width: 0;
+    color: var(--ss3d-text-primary);
+    margin-left: 6px;
+    margin-top: 0;
+    margin-bottom: 0;
+    margin-right: 0;
+    padding: 0;
+    min-height: 0;
+    height: 100%;
+    font-size: 12px;
+}
+
+.map-editor-search-field > .unity-base-field__input,
+.map-editor-search-field > .unity-text-field__input {
+    background-color: rgba(0, 0, 0, 0);
+    border-width: 0;
+    margin: 0;
+    padding: 0;
+    min-height: 0;
+    height: 100%;
+}
+
+.map-editor-search-field .unity-base-text-field__input--placeholder {
+    color: var(--ss3d-text-tertiary);
+}
+
+.map-editor-library-header {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    background-color: var(--ss3d-surface-panel-raised);
+    padding: 4px 10px;
+    min-height: 0;
+    border-top-left-radius: var(--ss3d-radius-md);
+    border-top-right-radius: var(--ss3d-radius-md);
+}
+
+.map-editor-library-header__title {
+    color: var(--ss3d-text-primary);
+    -unity-font-definition: url("project://database/Assets/Content/Systems/UI/Font/Fonts/GurajadaRegularSDF.asset");
+    font-size: 15px;
+    letter-spacing: 0.5px;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+    flex-grow: 1;
+    flex-shrink: 1;
+    margin-top: 0;
+    margin-bottom: 0;
+    margin-right: 8px;
+    padding-top: 0;
+    padding-bottom: 0;
+}
+
+.map-editor-library-header__buttons {
+    flex-direction: row;
+    flex-shrink: 0;
+}
+
+.map-editor-header-icon-btn {
+    width: 22px;
+    height: 22px;
+    align-items: center;
+    justify-content: center;
+    background-color: rgba(0, 0, 0, 0);
+    border-width: 0;
+    border-radius: var(--ss3d-radius-sm);
+    padding: 0;
+    margin-left: 2px;
+}
+
+.map-editor-header-icon-btn__icon {
+    width: 12px;
+    height: 12px;
+}
+
+.map-editor-header-icon-btn .map-editor-vector-icon {
+    -unity-background-image-tint-color: var(--ss3d-text-tertiary);
+}
+
+.map-editor-header-icon-btn:hover {
+    background-color: var(--ss3d-surface-elevated);
+}
+
+.map-editor-header-icon-btn--active {
+    background-color: var(--ss3d-accent-rust-dim);
+}
+
+.map-editor-header-icon-btn--active .map-editor-vector-icon {
+    -unity-background-image-tint-color: var(--ss3d-text-on-accent);
+}
+
+.map-editor-library-body {
+    flex-grow: 1;
+    flex-shrink: 1;
+    padding: 10px;
+}
+
+.map-editor-grid {
+    flex-direction: column;
+    flex-shrink: 0;
+}
+
+.map-editor-grid-scroll {
+    flex-grow: 1;
+    margin-top: 6px;
+}
+
+.map-editor-grid-row {
+    flex-direction: row;
+    flex-shrink: 0;
+}
+
+/* Search groups ("UPPER › MACHINES") and folder headings ("POWER") in a sub-tab grid. */
+.map-editor-grid-heading {
+    flex-shrink: 0;
+    color: var(--ss3d-text-secondary);
+    font-size: 11px;
+    letter-spacing: 1px;
+    -unity-font-style: bold;
+    padding: 6px 4px 2px 4px;
+}
+
+/* Compact view: the heading runs bottom-to-top beside its group's first row, so the row keeps the slot height. */
+.map-editor-grid-side-heading {
+    width: 24px;
+    height: 104px;
+    margin: 4px 4px 4px 0;
+    flex-shrink: 0;
+    border-right-width: 1px;
+    border-color: var(--ss3d-border-default);
+}
+
+/* Laid out 104 × 24, then turned a quarter about its centre to fill the 24 × 104 column. */
+.map-editor-grid-side-heading__label {
+    position: absolute;
+    width: 104px;
+    height: 24px;
+    left: -40px;
+    top: 40px;
+    rotate: -90deg;
+    transform-origin: center;
+    color: var(--ss3d-text-secondary);
+    font-size: 9px;
+    letter-spacing: 1px;
+    -unity-font-style: bold;
+    -unity-text-align: middle-center;
+    white-space: normal;
+    overflow: hidden;
+    margin: 0;
+    padding: 0;
+}
+
+.map-editor-slot {
+    width: 108px;
+    height: 104px;
+    min-height: 0;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: flex-start;
+    margin: 4px;
+    padding: 7px 6px 6px;
+    background-color: rgba(0, 0, 0, 0);
+    border-width: 1.5px;
+    border-color: var(--ss3d-border-default);
+    border-radius: 8px;
+}
+
+.map-editor-slot--active {
+    border-color: var(--map-editor-accent);
+}
+
+.map-editor-slot__icon-frame {
+    width: 60px;
+    height: 60px;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 3px;
+}
+
+.map-editor-slot__icon {
+    width: 56px;
+    height: 56px;
+    background-color: rgba(0, 0, 0, 0);
+    border-radius: 6px;
+    -unity-background-scale-mode: scale-to-fit;
+}
+
+/* Spawn marker glyphs: tinted like the in-world spawn pins (blue job, red antagonist). */
+.map-editor-slot__icon--spawn-job,
+.map-editor-slot__icon--spawn-antag {
+    width: 44px;
+    height: 44px;
+}
+.map-editor-slot__icon--spawn-job { -unity-background-image-tint-color: rgb(64, 191, 255); }
+.map-editor-slot__icon--spawn-antag { -unity-background-image-tint-color: rgb(255, 89, 64); }
+
+.map-editor-slot__label {
+    font-size: 10.5px;
+    color: var(--ss3d-text-secondary);
+    /* Two lines of words (MapEditorCatalog.PaletteLabel); longer names still end in an ellipsis. */
+    -unity-text-align: upper-center;
+    white-space: normal;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
+    height: 25px;
+    min-height: 0;
+    flex-shrink: 0;
+    flex-grow: 0;
+    margin-top: 0;
+    margin-bottom: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+}
+
+/* Variant families (palette S6): family on line 1, variant on line 2, "n/N" badge, ‹ › on hover or while held. */
+.map-editor-slot__label--family {
+    flex-direction: column;
+    align-items: stretch;
+}
+.map-editor-slot__family,
+.map-editor-slot__variant {
+    font-size: 10.5px;
+    -unity-text-align: upper-center;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    height: 12.5px;
+    margin: 0;
+    padding: 0;
+}
+.map-editor-slot__family { color: var(--ss3d-text-secondary); }
+.map-editor-slot__variant { color: var(--ss3d-text-primary); }
+.map-editor-slot__badge {
+    position: absolute;
+    top: 3px;
+    right: 4px;
+    font-size: 9px;
+    padding: 0 3px;
+    margin: 0;
+    border-radius: 4px;
+    color: var(--ss3d-text-secondary);
+    background-color: var(--ss3d-surface-inset);
+}
+.map-editor-slot__cycle {
+    display: none;
+    position: absolute;
+    top: 18px;
+    width: 18px;
+    height: 24px;
+    margin: 0;
+    padding: 0;
+    font-size: 16px;
+    -unity-font-style: bold;
+    -unity-text-align: middle-center;
+    border-width: 0;
+    border-radius: 4px;
+    color: var(--ss3d-text-primary);
+    background-color: var(--ss3d-surface-inset);
+}
+.map-editor-slot__cycle--previous { left: -14px; }
+.map-editor-slot__cycle--next { right: -14px; }
+.map-editor-slot__cycle:hover { color: var(--map-editor-accent); }
+.map-editor-slot--family:hover .map-editor-slot__cycle,
+.map-editor-slot--family.map-editor-slot--active .map-editor-slot__cycle {
+    display: flex;
+}
+
+/* Lives in the view's popover layer; MapEditorView.PlacePopover sets top/left/right beside its anchor. */
+.map-editor-popover {
+    position: absolute;
+    width: 260px;
+}
+
+.map-editor-popover--wide {
+    width: 320px;
+}
+
+.map-editor-slider-row {
+    margin-top: 6px;
+    margin-bottom: 6px;
+}
+
+.map-editor-slider-row__label {
+    color: var(--ss3d-text-secondary);
+    font-size: 13px;
+}
+
+.map-editor-slider-row__value {
+    color: var(--ss3d-text-primary);
+    font-size: 12px;
+}
+
+.map-editor-slider-row__slider {
+    margin-top: 2px;
+}
+
+.map-editor-map-row {
+    width: 100%;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 6px;
+    padding-bottom: 6px;
+    border-bottom-width: 1px;
+    border-bottom-color: var(--ss3d-border-subtle);
+    background-color: rgba(0, 0, 0, 0);
+    border-left-width: 0;
+    border-right-width: 0;
+    border-top-width: 0;
+    border-radius: 0;
+    margin: 0;
+}
+
+.map-editor-map-row:hover {
+    background-color: var(--ss3d-surface-panel-raised);
+}
+
+.map-editor-map-name {
+    color: var(--ss3d-text-primary);
+    font-size: 13px;
+}
+
+.map-editor-map-name--overwrite-target {
+    color: var(--map-editor-accent);
+}
+
+.map-editor-map-badge {
+    font-size: 11px;
+    color: var(--ss3d-text-primary);
+    background-color: var(--ss3d-feedback-info-bg);
+    border-width: 1px;
+    border-color: var(--ss3d-feedback-info-border);
+    border-radius: var(--ss3d-radius-sm);
+    padding: 2px 8px;
+    margin-left: 8px;
+}
+
+.map-editor-map-badge--warning {
+    color: var(--ss3d-text-primary);
+    background-color: var(--ss3d-feedback-warning-bg);
+    border-color: var(--ss3d-feedback-warning-border);
+}
+
+.map-editor-action-btn {
+    padding: 4px 10px;
+    background-color: var(--ss3d-feedback-info-bg);
+    border-width: 1px;
+    border-color: var(--ss3d-feedback-info-border);
+    border-radius: var(--ss3d-radius-sm);
+    color: var(--ss3d-text-primary);
+    font-size: 12px;
+    margin-left: 8px;
+}
+
+.map-editor-action-btn--primary {
+    width: 100%;
+    padding: 8px 10px;
+    background-color: var(--map-editor-accent);
+    border-color: var(--map-editor-accent);
+    color: var(--ss3d-text-on-accent);
+    margin-left: 0;
+    -unity-text-align: middle-center;
+}
+
+.map-editor-stub-message {
+    color: var(--ss3d-text-tertiary);
+    font-size: 13px;
+    padding: 20px 8px;
+    -unity-text-align: middle-center;
+    white-space: normal;
+}
+
+.map-editor-toast {
+    position: absolute;
+    bottom: 296px;
+    left: 50%;
+    translate: -50% 0;
+    background-color: var(--ss3d-surface-panel-raised);
+    border-width: 1px;
+    border-color: var(--map-editor-accent);
+    border-radius: var(--ss3d-radius-sm);
+    padding: 12px 20px;
+    color: var(--ss3d-text-primary);
+    font-size: 17px;
+    max-width: 720px;
+    white-space: normal;
+    -unity-text-align: middle-center;
+}
+
+.map-editor-hint {
+    position: absolute;
+    top: 12px;
+    left: 50%;
+    translate: -50% 0;
+    background-color: var(--ss3d-surface-panel-raised);
+    border-width: 1px;
+    border-color: var(--map-editor-accent);
+    border-radius: var(--ss3d-radius-sm);
+    padding: 8px 18px;
+    color: var(--ss3d-text-primary);
+    font-size: 18px;
+    opacity: 0.92;
+}
+
+.map-editor-reveal-btn {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    width: 34px;
+    height: 34px;
+    align-items: center;
+    justify-content: center;
+    background-color: rgba(23, 26, 30, 0.7);
+    border-width: 1px;
+    border-color: var(--ss3d-border-default);
+    border-radius: var(--ss3d-radius-sm);
+    color: var(--ss3d-text-secondary);
+}
+
+.map-editor-reveal-btn .map-editor-vector-icon {
+    -unity-background-image-tint-color: var(--ss3d-text-secondary);
+}
+
+.map-editor-bottom-row {
+    flex-direction: row;
+    flex-grow: 1;
+}
+
+.map-editor-library {
+    flex-grow: 1;
+    flex-shrink: 1;
+    margin-left: 12px;
+}
+
+/* Room properties need an explicit runtime font; the editor theme is not in player panels. */
+.map-editor-area-form {
+    -unity-font-definition: url("project://database/Assets/Art/Font/TextMesh%20Pro/Fonts/LiberationSans.ttf");
+    font-size: 13px;
+    color: var(--ss3d-text-primary);
+}
+
+.map-editor-area-form Label {
+    -unity-font-definition: url("project://database/Assets/Art/Font/TextMesh%20Pro/Fonts/LiberationSans.ttf");
+    color: var(--ss3d-text-secondary);
+    font-size: 12px;
+    white-space: normal;
+    margin-top: 4px;
+    margin-bottom: 4px;
+    flex-shrink: 0;
+}
+
+.map-editor-area-field {
+    margin: 0 0 8px;
+    min-width: 0;
+    min-height: 30px;
+    flex-shrink: 0;
+}
+
+.map-editor-area-field > .unity-base-field__input {
+    min-width: 0;
+    min-height: 30px;
+    flex-grow: 1;
+    background-color: var(--ss3d-surface-inset);
+    border-width: 1px;
+    border-color: var(--ss3d-border-default);
+    border-radius: 0;
+    color: var(--ss3d-text-primary);
+    padding: 5px 8px;
+}
+
+.map-editor-area-field .unity-base-popup-field__text {
+    color: var(--ss3d-text-primary);
+}
+
+.map-editor-area-access {
+    height: 200px;
+    flex-shrink: 0;
+    margin-top: 4px;
+    margin-bottom: 12px;
+    padding: 4px 14px 4px 8px;
+    background-color: var(--ss3d-surface-inset);
+}
+
+
+.map-editor-area-access .unity-scroll-view__content-container {
+    padding-right: 12px;
+}
+
+
+.map-editor-area-name {
+    position: absolute;
+    translate: -50% -100%;
+    -unity-font-definition: url("project://database/Assets/Art/Font/TextMesh%20Pro/Fonts/LiberationSans.ttf");
+    font-size: 13px;
+    color: var(--ss3d-text-primary);
+    background-color: rgba(18, 21, 25, 0.9);
+    border-bottom-width: 3px;
+    padding: 4px 8px;
+    max-width: 240px;
+    white-space: normal;
+    -unity-text-align: middle-center;
+}
+
+
+
+/* Room fields use the exact layer switch component and its existing styles. */
+.map-editor-area-form .map-editor-switch-row__label {
+    margin: 0;
+    min-width: 0;
+    flex-shrink: 1;
+}
+
+
+.map-editor-room-create-glyph {
+    -unity-font-definition: url("project://database/Assets/Art/Font/TextMesh%20Pro/Fonts/LiberationSans.ttf");
+    font-size: 40px;
+    color: var(--ss3d-text-primary);
+    -unity-text-align: middle-center;
+    flex-grow: 1;
+}
+
+.map-editor-slot--create .map-editor-slot__icon-frame {
+    background-color: var(--ss3d-surface-inset);
+}
+
+/* Map Check: persistent server validation, aligned above the library dock. */
+.map-editor-right-column > .map-check { margin-bottom: 0; }
+.map-editor-right-column > * { flex-shrink: 0; }
+.map-editor-right-column > .map-editor-systems-legend { flex-shrink: 1; }
+.map-check {
+    width: 340px;
+    min-height: 0;
+    flex-shrink: 1;
+    background-color: var(--ss3d-surface-panel);
+    border-radius: var(--ss3d-radius-md);
+    -unity-font-definition: url("project://database/Assets/Art/Font/TextMesh%20Pro/Fonts/LiberationSans.ttf");
+}
+.map-check--collapsed { width: auto; }
+.map-check__header {
+    flex-direction: row;
+    align-items: center;
+    flex-shrink: 0;
+    padding: 10px;
+    background-color: var(--ss3d-surface-panel-raised);
+}
+.map-check__title { flex-grow: 1; color: var(--ss3d-text-primary); font-size: 14px; }
+.map-check__badge { background-color: var(--ss3d-surface-inset); color: var(--ss3d-text-primary); border-radius: 3px; padding: 3px 6px; margin-right: 6px; font-size: 11px; }
+.map-check__danger { color: var(--ss3d-feedback-danger); }
+.map-check__warning { color: var(--ss3d-feedback-warning); }
+.map-check__filters { flex-direction: row; padding: 8px; flex-shrink: 0; border-bottom-width: 1px; border-bottom-color: var(--ss3d-border-subtle); }
+.map-check__button {
+    background-color: var(--ss3d-surface-panel);
+    color: var(--ss3d-text-primary);
+    border-width: 1px;
+    border-color: var(--ss3d-border-default);
+    border-radius: var(--ss3d-radius-sm);
+    padding: 5px 8px;
+    margin: 0 2px;
+    font-size: 12px;
+}
+.map-check__button:hover { background-color: var(--ss3d-surface-panel-raised); }
+.map-check__filter { flex-grow: 1; font-size: 16px; }
+.map-check__filter--active { background-color: var(--ss3d-accent-rust-dim); border-color: var(--ss3d-accent-rust); }
+.map-check__issues { min-height: 0; flex-shrink: 1; }
+.map-check__issue { border-bottom-width: 1px; border-bottom-color: var(--ss3d-border-subtle); flex-shrink: 0; }
+.map-check__issue--open, .map-check__issue:hover { background-color: var(--ss3d-surface-panel-raised); }
+.map-check__issue-toggle {
+    flex-direction: row;
+    align-items: flex-start;
+    background-color: transparent;
+    border-width: 0;
+    border-radius: 0;
+    padding: 5px 10px;
+    margin: 0;
+}
+/* One line per closed issue: title, then its category on the right. */
+.map-check__heading { flex-direction: row; align-items: flex-start; flex-grow: 1; flex-shrink: 1; margin-left: 8px; margin-right: 6px; }
+.map-check__issue-title { flex-grow: 1; flex-shrink: 1; white-space: normal; color: var(--ss3d-text-primary); font-size: 12px; }
+.map-check__category { flex-shrink: 0; color: var(--ss3d-text-tertiary); font-size: 10px; margin-left: 6px; margin-top: 1px; }
+.map-check__detail { padding: 0 10px 8px 30px; }
+.map-check__body { white-space: normal; color: var(--ss3d-text-secondary); font-size: 12px; }
+.map-check__actions { flex-direction: row; margin-top: 10px; }
+.map-check__footer { flex-direction: row; align-items: center; flex-wrap: wrap; flex-shrink: 0; padding: 8px; border-top-width: 1px; border-top-color: var(--ss3d-border-subtle); }
+.map-check__status { flex-grow: 1; font-size: 11px; color: var(--ss3d-text-secondary); }
+.map-check__status.map-check__danger { color: var(--ss3d-feedback-danger); }
+.map-check__empty { padding: 20px 14px; color: var(--ss3d-text-tertiary); font-size: 12px; white-space: normal; }
+
+.map-check__checks { margin-top: 10px; padding: 8px 10px; background-color: var(--ss3d-surface-inset); border-radius: var(--ss3d-radius-sm); }
+.map-check__check { flex-direction: row; align-items: center; margin-bottom: 4px; }
+.map-check__check-label { flex-grow: 1; flex-shrink: 1; white-space: normal; color: var(--ss3d-text-secondary); font-size: 12px; }
+.map-check__success { color: var(--ss3d-feedback-success); }
+.map-check__badge.map-check__danger { background-color: var(--ss3d-feedback-danger-bg); }
+.map-check__badge.map-check__warning { background-color: var(--ss3d-feedback-warning-bg); }
+.map-check__badge.map-check__success { background-color: var(--ss3d-feedback-success-bg); border-width: 1px; border-color: var(--ss3d-feedback-success-border); }
+
+.map-check__title, .map-check__filter {
+    -unity-font-definition: url("project://database/Assets/Content/Systems/UI/Font/Fonts/GurajadaRegularSDF.asset");
+}
+.map-check__category, .map-check__badge, .map-check__status {
+    -unity-font-definition: url("project://database/Assets/Content/Systems/UI/Font/Fonts/SpessmanFontSDF.asset");
+}
+
+.map-check__issue-toggle > .map-editor-vector-icon { width: 14px; height: 14px; flex-shrink: 0; }
+
+/* Systems views legend (creative-mode §4): in the right column under the view toggles, open the first time a view is used. */
+.map-editor-systems-legend {
+    width: 340px;
+    flex-shrink: 1;
+    min-height: 0;
+    background-color: var(--ss3d-surface-panel);
+    border-width: 1px;
+    border-color: var(--ss3d-border-default);
+    border-radius: var(--ss3d-radius-md);
+    -unity-font-definition: url("project://database/Assets/Art/Font/TextMesh%20Pro/Fonts/LiberationSans.ttf");
+}
+.map-editor-systems-legend--collapsed { width: auto; }
+.map-editor-systems-legend__header {
+    flex-direction: row;
+    align-items: center;
+    padding: 8px 10px;
+    background-color: var(--ss3d-surface-panel-raised);
+}
+.map-editor-systems-legend__title {
+    flex-grow: 1;
+    margin-right: 8px;
+    color: var(--ss3d-text-primary);
+    font-size: 13px;
+    -unity-font-definition: url("project://database/Assets/Content/Systems/UI/Font/Fonts/GurajadaRegularSDF.asset");
+}
+.map-editor-systems-legend__body { padding: 8px 10px; max-height: 360px; flex-shrink: 1; }
+.map-editor-systems-legend__row { flex-direction: row; align-items: flex-start; margin-bottom: 6px; }
+.map-editor-systems-legend__swatches { flex-direction: row; flex-shrink: 0; width: 56px; margin-top: 2px; }
+.map-editor-systems-legend__swatch { width: 10px; height: 10px; margin-right: 3px; border-radius: 2px; }
+.map-editor-systems-legend__text { flex-grow: 1; flex-shrink: 1; white-space: normal; color: var(--ss3d-text-secondary); font-size: 12px; }
+
+/* Systems views bar (map-editor-systems-views, Pause and step): Room air, and an admin's Pause / Step, above the legend. */
+.map-editor-systems-sim {
+    flex-direction: row;
+    align-items: center;
+    width: 340px;
+    padding: 5px 8px;
+    background-color: var(--ss3d-surface-panel);
+    border-width: 1px;
+    border-color: var(--ss3d-border-default);
+    border-radius: var(--ss3d-radius-md);
+    -unity-font-definition: url("project://database/Assets/Art/Font/TextMesh%20Pro/Fonts/LiberationSans.ttf");
+}
+.map-editor-systems-sim__spacer { flex-grow: 1; }
+.map-editor-systems-sim__button {
+    background-color: var(--ss3d-surface-panel);
+    color: var(--ss3d-text-primary);
+    border-width: 1px;
+    border-color: var(--ss3d-border-default);
+    border-radius: var(--ss3d-radius-sm);
+    padding: 3px 8px;
+    margin: 0 0 0 4px;
+    font-size: 12px;
+}
+.map-editor-systems-sim__button:hover { background-color: var(--ss3d-surface-panel-raised); }
+.map-editor-systems-sim__button--on { background-color: var(--ss3d-accent-rust-dim); border-color: var(--ss3d-accent-rust-dim); }
+.map-editor-systems-sim__button:disabled { opacity: 0.45; }
+.map-editor-systems-sim__paused {
+    margin-left: 6px;
+    padding: 2px 6px;
+    font-size: 11px;
+    color: var(--ss3d-text-primary);
+    background-color: var(--ss3d-accent-rust-dim);
+    border-radius: var(--ss3d-radius-sm);
+}
+
+/* Systems view trace (map-editor-systems-views, Tracing): a panel floating beside the left toolbar's top, where the
+   toolbar leaves no room under it above the library; a label anchored at the traced tile. */
+.map-editor-systems-trace {
+    position: absolute;
+    left: 100%;
+    top: 0;
+    margin-left: 12px;
+    width: 340px;
+    background-color: var(--ss3d-surface-panel);
+    border-width: 1px;
+    border-color: var(--ss3d-border-default);
+    border-radius: var(--ss3d-radius-md);
+    -unity-font-definition: url("project://database/Assets/Art/Font/TextMesh%20Pro/Fonts/LiberationSans.ttf");
+}
+.map-editor-systems-trace__header {
+    flex-direction: row;
+    align-items: center;
+    padding: 6px 10px;
+    background-color: var(--ss3d-surface-panel-raised);
+}
+.map-editor-systems-trace__title {
+    flex-grow: 1;
+    color: var(--ss3d-text-primary);
+    font-size: 13px;
+    -unity-font-definition: url("project://database/Assets/Content/Systems/UI/Font/Fonts/GurajadaRegularSDF.asset");
+}
+.map-editor-systems-trace__paused {
+    margin-right: 6px;
+    padding: 2px 6px;
+    font-size: 11px;
+    color: var(--ss3d-text-primary);
+    background-color: var(--ss3d-accent-rust-dim);
+    border-radius: var(--ss3d-radius-sm);
+}
+.map-editor-systems-trace__button {
+    background-color: var(--ss3d-surface-panel);
+    color: var(--ss3d-text-primary);
+    border-width: 1px;
+    border-color: var(--ss3d-border-default);
+    border-radius: var(--ss3d-radius-sm);
+    padding: 3px 7px;
+    margin: 0;
+    font-size: 11px;
+}
+.map-editor-systems-trace__button:hover { background-color: var(--ss3d-surface-panel-raised); }
+.map-editor-systems-trace__body { padding: 6px 10px; max-height: 560px; }
+.map-editor-systems-trace__section { margin-bottom: 8px; flex-shrink: 0; }
+.map-editor-systems-trace__heading { flex-direction: row; align-items: center; margin-bottom: 4px; }
+.map-editor-systems-trace__network { color: var(--ss3d-text-primary); font-size: 13px; -unity-font-style: bold; }
+.map-editor-systems-trace__row { flex-direction: row; justify-content: space-between; margin-bottom: 1px; }
+.map-editor-systems-trace__label { color: var(--ss3d-text-secondary); font-size: 12px; }
+.map-editor-systems-trace__value { color: var(--ss3d-text-primary); font-size: 12px; }
+.map-editor-systems-trace__subtitle { color: var(--ss3d-text-secondary); font-size: 11px; margin-top: 4px; margin-bottom: 2px; }
+.map-editor-systems-trace__empty { color: var(--ss3d-text-secondary); font-size: 12px; }
+.map-editor-systems-trace__device {
+    flex-direction: row;
+    align-items: center;
+    margin: 0;
+    padding: 3px 4px;
+    border-width: 0;
+    border-radius: 0;
+    border-top-width: 1px;
+    border-top-color: var(--ss3d-border-subtle);
+    background-color: rgba(0, 0, 0, 0);
+}
+.map-editor-systems-trace__device:hover { background-color: var(--ss3d-surface-panel-raised); }
+.map-editor-systems-trace__device-name {
+    flex-shrink: 1;
+    min-width: 0;
+    margin-right: 8px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    color: var(--ss3d-text-primary);
+    font-size: 12px;
+}
+.map-editor-systems-trace__device-detail {
+    flex-grow: 1;
+    flex-shrink: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    -unity-text-align: middle-right;
+    color: var(--ss3d-text-secondary);
+    font-size: 11px;
+}
+.map-editor-systems-trace-label {
+    position: absolute;
+    translate: -50% -100%;
+    align-items: center;
+}
+.map-editor-systems-trace-label__line {
+    -unity-font-definition: url("project://database/Assets/Art/Font/TextMesh%20Pro/Fonts/LiberationSans.ttf");
+    font-size: 13px;
+    color: var(--ss3d-text-primary);
+    background-color: rgba(18, 21, 25, 0.9);
+    border-bottom-width: 3px;
+    padding: 3px 8px;
+    margin-top: 2px;
+    -unity-text-align: middle-center;
+}

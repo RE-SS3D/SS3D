@@ -1,0 +1,357 @@
+@import url("../Tokens/ss3d-tokens.uss");
+@import url("../Tokens/ss3d-typography.uss");
+@import url("../MachineInterface/Tokens/diegetic-tokens.uss");
+
+.main-hud {
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+}
+
+/* Transient refusal line (MainHudView.ShowNotice). Sibling of .main-hud so it shows while the HUD is hidden. */
+.main-hud-notice {
+    position: absolute;
+    top: 96px;
+    left: 50%;
+    translate: -50% 0;
+    padding: var(--ss3d-space-2) var(--ss3d-space-4);
+    background-color: var(--ss3d-feedback-warning-bg);
+    border-width: 1px;
+    border-color: var(--ss3d-feedback-warning-border);
+    border-radius: var(--ss3d-radius-md);
+    color: var(--ss3d-text-primary);
+    font-size: 14px;
+    -unity-text-align: middle-center;
+    white-space: nowrap;
+    opacity: 0;
+    transition-property: opacity;
+    transition-duration: var(--ss3d-duration-medium);
+}
+
+.main-hud-notice--visible {
+    opacity: 1;
+}
+
+.main-hud__zone {
+    position: absolute;
+}
+
+.main-hud__zone--alerts {
+    /* Inset farther than other chrome so the stack doesn't hug the corner. */
+    top: 48px;
+    right: 48px;
+    flex-direction: row;
+}
+
+.main-hud__zone--equipment {
+    bottom: var(--ss3d-space-5);
+    left: var(--ss3d-space-5);
+    overflow: visible;
+}
+
+.main-hud__zone--hands-gear {
+    bottom: var(--ss3d-space-5);
+    left: 50%;
+    translate: -50% 0;
+    flex-direction: row;
+    align-items: flex-end;
+    overflow: visible;
+}
+
+.main-hud__zone--intent {
+    bottom: var(--ss3d-space-5);
+    right: var(--ss3d-space-5);
+    flex-direction: column;
+    align-items: flex-end;
+}
+
+/* Icon wells only — design #161616. Scoped so Machine Interface slots keep diegetic tokens.
+ * Do NOT add overflow:hidden here — well already has border-radius (UITK white-block pitfall). */
+.main-hud .inventory-slot__well {
+    background-color: var(--ss3d-surface-hud);
+    position: relative;
+}
+
+.main-hud .inventory-slot--unknown .inventory-slot__well {
+    background-color: var(--ss3d-surface-hud);
+}
+
+/*
+ * Main HUD slots: label floats above the well (absolute, no layout cost) in a surface-hud chip.
+ * z-index on hover raises the chip above neighboring wells without reordering flex children.
+ */
+.main-hud .inventory-slot {
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+    overflow: visible;
+}
+
+.main-hud .inventory-slot:hover {
+    z-index: 10;
+}
+
+.main-hud .equipment-grid__row,
+.main-hud .hands-gear-strip__gear,
+.main-hud .hands-gear-strip__hands {
+    position: relative;
+}
+
+.main-hud .equipment-grid__row:hover,
+.main-hud .hands-gear-strip__gear:hover,
+.main-hud .hands-gear-strip__hands:hover {
+    z-index: 10;
+}
+
+/* Full-width host + flex-center so the chip recenters when text changes (translate -50% does not). */
+.main-hud .inventory-slot__label-host {
+    position: absolute;
+    /* Wider than the well on both sides, so a long name fits: a Label measures its text at most as wide as its parent. */
+    left: -160px;
+    right: -160px;
+    bottom: 100%;
+    margin-top: 0;
+    margin-bottom: var(--ss3d-space-2);
+    z-index: 1;
+}
+
+.main-hud .inventory-slot__label {
+    max-width: none;
+    flex-shrink: 0;
+    white-space: nowrap;
+    opacity: 0;
+    background-color: var(--ss3d-surface-hud);
+    color: var(--ss3d-text-secondary);
+    border-radius: var(--ss3d-radius-sm);
+    border-width: 1px;
+    border-color: var(--ss3d-border-subtle);
+    padding: 2px 8px;
+    transition-property: opacity;
+    transition-duration: var(--ss3d-duration-fast);
+}
+
+.main-hud .inventory-slot:hover .inventory-slot__label {
+    opacity: 1;
+}
+
+/* Active hand: outline the icon well only, not the label chip. */
+.main-hud .inventory-slot--active-hand .inventory-slot__well {
+    border-width: 2px;
+    border-color: var(--ss3d-accent-rust);
+}
+
+/* Off-hand reserved by a two-hand firearm — dim + ban badge. */
+.main-hud .inventory-slot--reserved .inventory-slot__well {
+    opacity: 0.55;
+    border-color: var(--ss3d-text-tertiary);
+}
+
+.main-hud .inventory-slot--reserved .inventory-slot__label {
+    opacity: 1;
+    color: var(--ss3d-text-tertiary);
+}
+
+.main-hud .inventory-slot__reserved-badge {
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    align-items: center;
+    justify-content: center;
+    display: none;
+}
+
+.main-hud .inventory-slot__reserved-ring {
+    width: 34px;
+    height: 34px;
+    border-radius: 17px;
+    border-width: 2px;
+    border-color: var(--ss3d-accent-rust);
+    background-color: rgba(0, 0, 0, 0.35);
+}
+
+.main-hud .inventory-slot__reserved-slash {
+    position: absolute;
+    width: 2px;
+    height: 30px;
+    background-color: var(--ss3d-accent-rust);
+    rotate: 45deg;
+}
+
+/* Zone targeting reticle (main-hud §6) — corner brackets + center dot; terminal zone label. */
+.zone-target-overlay {
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+}
+
+.zone-target-reticle {
+    position: absolute;
+    width: 52px;
+    height: 52px;
+    --zone-reticle-color: var(--ss3d-text-tertiary);
+}
+
+.zone-target-reticle__shake {
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+}
+
+.zone-target-reticle--valid {
+    --zone-reticle-color: var(--ss3d-ramp-blue-300);
+}
+
+.zone-target-reticle--recharging {
+    --zone-reticle-color: var(--ss3d-feedback-danger);
+}
+
+.zone-target-reticle__corner {
+    position: absolute;
+    width: 16px;
+    height: 16px;
+}
+
+.zone-target-reticle__corner--tl {
+    left: 0;
+    top: 0;
+}
+
+.zone-target-reticle__corner--tr {
+    right: 0;
+    top: 0;
+}
+
+.zone-target-reticle__corner--bl {
+    left: 0;
+    bottom: 0;
+}
+
+.zone-target-reticle__corner--br {
+    right: 0;
+    bottom: 0;
+}
+
+.zone-target-reticle__arm {
+    position: absolute;
+    background-color: var(--zone-reticle-color);
+}
+
+.zone-target-reticle__arm--h {
+    height: 2px;
+    left: 0;
+    right: 0;
+}
+
+.zone-target-reticle__arm--v {
+    width: 2px;
+    top: 0;
+    bottom: 0;
+}
+
+.zone-target-reticle__corner--tl .zone-target-reticle__arm--h {
+    top: 0;
+}
+
+.zone-target-reticle__corner--tl .zone-target-reticle__arm--v {
+    left: 0;
+}
+
+.zone-target-reticle__corner--tr .zone-target-reticle__arm--h {
+    top: 0;
+}
+
+.zone-target-reticle__corner--tr .zone-target-reticle__arm--v {
+    right: 0;
+}
+
+.zone-target-reticle__corner--bl .zone-target-reticle__arm--h {
+    bottom: 0;
+}
+
+.zone-target-reticle__corner--bl .zone-target-reticle__arm--v {
+    left: 0;
+}
+
+.zone-target-reticle__corner--br .zone-target-reticle__arm--h {
+    bottom: 0;
+}
+
+.zone-target-reticle__corner--br .zone-target-reticle__arm--v {
+    right: 0;
+}
+
+.zone-target-reticle__dot {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 6px;
+    height: 6px;
+    margin-left: -3px;
+    margin-top: -3px;
+    background-color: var(--zone-reticle-color);
+}
+
+/* Design 2A option B — white cross flash on successful melee connect. */
+.zone-target-reticle__cross-flash {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 32px;
+    height: 32px;
+    margin-left: -16px;
+    margin-top: -16px;
+    display: none;
+    opacity: 0;
+    transform-origin: 50% 50%;
+}
+
+.zone-target-reticle__cross-pivot {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 0;
+    height: 0;
+}
+
+.zone-target-reticle__cross-arm {
+    position: absolute;
+    left: 7px;
+    top: -1.5px;
+    width: 16px;
+    height: 3px;
+    background-color: #ffffff;
+    border-top-width: 1px;
+    border-right-width: 1px;
+    border-bottom-width: 1px;
+    border-left-width: 1px;
+    border-color: #14141a;
+    border-top-left-radius: 999px;
+    border-top-right-radius: 999px;
+    border-bottom-left-radius: 999px;
+    border-bottom-right-radius: 999px;
+}
+
+.zone-target-label {
+    position: absolute;
+    font-size: 17px;
+    color: var(--ss3d-text-tertiary);
+    white-space: nowrap;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+}
+
+.zone-target-label--valid {
+    color: var(--ss3d-ramp-blue-300);
+}
+
+.zone-target-label--recharging {
+    color: var(--ss3d-feedback-danger);
+}

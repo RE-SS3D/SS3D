@@ -1,10 +1,6 @@
 ﻿using JetBrains.Annotations;
 using System.IO;
 
-#if UNITY_EDITOR
-using ParrelSync;
-#endif
-
 namespace SS3D.Data
 {
 	/// <summary>
@@ -22,11 +18,27 @@ namespace SS3D.Data
 		/// Gets the full path to the application folder.
 		/// </summary>
 		[NotNull]
-		private static string FullGamePath => 
+		private static string FullGamePath =>
 #if UNITY_EDITOR
-            ClonesManager.IsClone() ? ClonesManager.GetOriginalProjectPath() : Path.GetFullPath(".");
-#else
             Path.GetFullPath(".");
+#else
+            _executableFolder ??= ExecutableFolder();
+#endif
+
+#if !UNITY_EDITOR
+		/// <summary>
+		/// The folder holding the executable. Config/ and Data/ ship beside it, so a player started from
+		/// another working directory (e.g. <c>./Game/SS3D-Client</c>) still finds its maps and permissions.
+		/// </summary>
+		private static string _executableFolder;
+
+		/// <summary>Application.dataPath is main-thread only, so resolve it before any scene loads.</summary>
+		[UnityEngine.RuntimeInitializeOnLoadMethod(UnityEngine.RuntimeInitializeLoadType.SubsystemRegistration)]
+		private static void CacheExecutableFolder() => _executableFolder = ExecutableFolder();
+
+		// dataPath is <folder>/<product>_Data on Windows and Linux players.
+		private static string ExecutableFolder() =>
+			Path.GetDirectoryName(Path.GetFullPath(UnityEngine.Application.dataPath)) ?? Path.GetFullPath(".");
 #endif
 
 		/// <summary>

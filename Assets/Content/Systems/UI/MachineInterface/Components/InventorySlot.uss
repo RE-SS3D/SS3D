@@ -1,0 +1,117 @@
+
+.inventory-slot {
+    flex-direction: column;
+    align-items: center;
+}
+
+.inventory-slot__well {
+    position: relative;
+    background-color: var(--ss3d-diegetic-inset);
+    border-radius: 10px;
+    border-width: 1px;
+    border-color: var(--ss3d-border-subtle);
+    align-items: center;
+    justify-content: center;
+}
+
+.inventory-slot--unknown .inventory-slot__well {
+    background-color: var(--ss3d-diegetic-panel-raised);
+}
+
+.inventory-slot__unknown-glyph {
+    font-size: 22px;
+    color: var(--ss3d-text-tertiary);
+    display: none;
+}
+
+.inventory-slot__icon {
+    width: 62%;
+    height: 62%;
+    display: none;
+    -unity-background-scale-mode: scale-to-fit;
+}
+
+.inventory-slot__icon--placeholder {
+    opacity: 0.65;
+}
+
+.inventory-slot__label-host {
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    margin-top: 4px;
+}
+
+.inventory-slot__label {
+    font-size: 10px;
+    color: var(--ss3d-text-tertiary);
+    -unity-text-align: middle-center;
+    white-space: normal;
+    max-width: 64px;
+}
+
+.inventory-slot--valid-drop .inventory-slot__well {
+    border-color: var(--ss3d-feedback-info);
+    background-color: var(--ss3d-feedback-info-bg);
+}
+
+.inventory-slot--invalid-drop .inventory-slot__well {
+    border-color: var(--ss3d-feedback-danger);
+    background-color: var(--ss3d-feedback-danger-bg);
+}
+
+.inventory-slot__take-progress {
+    position: absolute;
+    left: 12%;
+    top: 12%;
+    right: 12%;
+    bottom: 12%;
+    border-radius: 50%;
+    border-width: 3px;
+    border-color: rgba(0, 0, 0, 0);
+    border-top-color: var(--ss3d-accent-rust);
+    border-right-color: var(--ss3d-accent-rust);
+    display: none;
+}
+
+.inventory-slot--taking .inventory-slot__well {
+    border-color: var(--ss3d-feedback-info);
+    background-color: var(--ss3d-feedback-info-bg);
+}
+
+/* Corner open button on a slot holding storage (backpack, toolbelt, box): opens/closes its panel while the
+   slot's own click stays take/put/use. */
+.inventory-slot__open-button {
+    position: absolute;
+    top: 3px;
+    right: 3px;
+    width: 22px;
+    height: 22px;
+    align-items: center;
+    justify-content: center;
+    background-color: rgba(0, 0, 0, 0.55);
+    border-radius: 6px;
+    border-width: 1px;
+    border-color: var(--ss3d-border-subtle);
+}
+
+.inventory-slot__open-button:hover {
+    border-color: var(--ss3d-text-secondary);
+    background-color: rgba(0, 0, 0, 0.75);
+}
+
+.inventory-slot__open-button--active {
+    border-color: var(--ss3d-accent-rust);
+}
+
+.inventory-slot__open-button-icon {
+    width: 70%;
+    height: 70%;
+    -unity-background-scale-mode: scale-to-fit;
+    -unity-background-image-tint-color: var(--ss3d-text-secondary);
+}
+
+.inventory-slot__open-button:hover .inventory-slot__open-button-icon,
+.inventory-slot__open-button--active .inventory-slot__open-button-icon {
+    -unity-background-image-tint-color: var(--ss3d-text-primary);
+}

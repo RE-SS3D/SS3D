@@ -60,9 +60,24 @@ namespace SS3D.Systems.Selection
         }
 
         /// <summary>
+        /// Returns the selectable directly under the cursor from the color pick, without
+        /// walking ancestors. Use this for interactions that target the deepest pick.
+        /// </summary>
+        public Selectable GetCurrentSelectable() => _current;
+
+        /// <summary>
+        /// Returns whether a selectable is currently under the cursor.
+        /// </summary>
+        public bool TryGetCurrentSelectable(out Selectable selectable)
+        {
+            selectable = _current;
+            return selectable != null;
+        }
+
+        /// <summary>
         /// Called by systems that use the Selection System to get the selectable object
-        /// in their desired type. In most instances, the selectable object will be the
-        /// one stored in the _current variable.
+        /// in their desired type. Walks ancestors when the direct pick does not have T
+        /// (e.g. IExaminable on a parent while a child selectable is hovered).
         /// </summary>
         /// <typeparam name="T">The component type sought by the external system (e.g. IExaminable for Examine System)</typeparam>
         /// <returns>A component of type T attached to the currently hovered selectable or their nearest ancestor.</returns>

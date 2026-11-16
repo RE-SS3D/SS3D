@@ -1,0 +1,2219 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e9620f8c34305754d8cc9a7e49e852d9, type: 3}
+  m_Name: Examine_en
+  m_EditorClassIdentifier: 
+  m_LocaleId:
+    m_Code: en
+  m_SharedData: {fileID: 11400000, guid: 8a4f2c1e9b3d4657a8e1f0c2d3b4a501, type: 2}
+  m_Metadata:
+    m_Items: []
+  m_TableData:
+  - m_Id: 252934895001268224
+    m_Localized: Some guy
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239744
+    m_Localized: Yup. Thats some guy.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239745
+    m_Localized: Engineering Cyborg
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239746
+    m_Localized: It's not moving... it must be out of power.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239747
+    m_Localized: Potted Plant
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239748
+    m_Localized: An Earth species planted in a pot.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239749
+    m_Localized: Potted Plant
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239750
+    m_Localized: Some exotic species planted in a pot.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239751
+    m_Localized: Nuclear Device
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239752
+    m_Localized: Whatever you do, don't activate this using the authentication disk
+      the captain has!
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239753
+    m_Localized: Nuke Cart
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239754
+    m_Localized: Just a simple cart for a precious nuclear device.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239755
+    m_Localized: Office Chair
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239756
+    m_Localized: Classic office chair you can slide around in.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239757
+    m_Localized: Plastic Chair
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239758
+    m_Localized: A modern chair made of plastic. It looks more comfortable than it
+      is.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239759
+    m_Localized: DinerBooth
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239760
+    m_Localized: A typical squarish booth you see at small diners.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239761
+    m_Localized: Sink
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239762
+    m_Localized: Dispenses tap water.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239763
+    m_Localized: Steel Table Frame
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239764
+    m_Localized: A frame for a table made of steel.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239765
+    m_Localized: Wood Table Frame
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239766
+    m_Localized: A frame for a table made of wood.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239767
+    m_Localized: Glass Table
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239768
+    m_Localized: A table with a glass surface and steel frame.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239769
+    m_Localized: Poker Table
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239770
+    m_Localized: A table with a felt surface and wood frame.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239771
+    m_Localized: Steel Table
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239772
+    m_Localized: A steel table.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239773
+    m_Localized: Wood table.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239774
+    m_Localized: A wood table.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239775
+    m_Localized: Water Cooler
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239776
+    m_Localized: Dispenses cold water.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239777
+    m_Localized: Scrubber
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239778
+    m_Localized: An air scrubber. Sucks out any harmful gases in the atmosphere.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239779
+    m_Localized: Vent
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239780
+    m_Localized: An air vent. Provides rooms with an air supply.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239781
+    m_Localized: PacMan Generator
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239782
+    m_Localized: Generates electricity from specific fuels.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239783
+    m_Localized: Power Cell Charger
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239784
+    m_Localized: Charges power cells.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239785
+    m_Localized: SMES
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239786
+    m_Localized: A large power storage unit.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239787
+    m_Localized: Solar Panel
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239788
+    m_Localized: Converts photons into electricity.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239789
+    m_Localized: Solar Tracking Beacon
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239790
+    m_Localized: Senses the direction of the nearest star so nearby solar panels
+      can align themselves to it.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239791
+    m_Localized: Slot Machine
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239792
+    m_Localized: Try your luck!
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239793
+    m_Localized: Fuel Tank
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239794
+    m_Localized: A tank of fuel.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239795
+    m_Localized: Water Tank
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239796
+    m_Localized: A tank of water.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239797
+    m_Localized: Blender
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239798
+    m_Localized: Will it blend?
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239799
+    m_Localized: Gibber
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239800
+    m_Localized: Grinds big things into little things.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239801
+    m_Localized: Microwave
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239802
+    m_Localized: Cooks food using low frequency radiation.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239803
+    m_Localized: Table Booze Dispenser
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239804
+    m_Localized: Dispenses booze!
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239805
+    m_Localized: Machine Frame
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239806
+    m_Localized: A metal frame to construct a machine from.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239807
+    m_Localized: Chemical Dispenser
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239808
+    m_Localized: Dispenses chemicals.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239809
+    m_Localized: Cryotube
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239810
+    m_Localized: Slowly heals wounds using a comination of temperature and substances.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239811
+    m_Localized: Sleeper Bed
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239812
+    m_Localized: Slowly heals wounds using state of the art electricity.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239813
+    m_Localized: Disposal Bin
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239814
+    m_Localized: Basically an automated trash can.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239815
+    m_Localized: Disposal Outlet
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239816
+    m_Localized: Ejects the contents of connected disposal pipes.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239817
+    m_Localized: Hot Drinks Vendor
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239818
+    m_Localized: Vends hot beverages.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239819
+    m_Localized: Robust Soft Drinks Vendor
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239820
+    m_Localized: Vends carbonated beverages.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239821
+    m_Localized: Security Tech Vendor
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239822
+    m_Localized: Vends security gadgets.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239823
+    m_Localized: YouTool Vendor
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239824
+    m_Localized: Vends construction tools.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239825
+    m_Localized: Locker
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239826
+    m_Localized: A plain unsecure locker.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239827
+    m_Localized: Secure Locker
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239828
+    m_Localized: A plain secure locker.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239829
+    m_Localized: Security Locker
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239830
+    m_Localized: A locker for security officers.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239831
+    m_Localized: Backpack
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239832
+    m_Localized: Worn on the back and stores stuff.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239833
+    m_Localized: Gas Mask
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239834
+    m_Localized: Protect's the wearer's airways and can supply fresh air to them
+      from a tank.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239835
+    m_Localized: Insulated Gloves
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239836
+    m_Localized: A pair of insulated gloves.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239837
+    m_Localized: Headset
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239838
+    m_Localized: A headset for listenting to the station's comms.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239839
+    m_Localized: Security Headset
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239840
+    m_Localized: A headset for listenting to the security's comms.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239841
+    m_Localized: Botany Jumpsuit
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239842
+    m_Localized: A botany issue jumpsuit from Nanotrasen.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239843
+    m_Localized: Engineer Jumpsuit
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239844
+    m_Localized: A engineer issue jumpsuit from Nanotrasen.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239845
+    m_Localized: Grey Jumpsuit
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239846
+    m_Localized: A regular issue jumpsuit from Nanotrasen, this one is grey.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239847
+    m_Localized: Security Jumpsuit
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239848
+    m_Localized: A security issue jumpsuit from Nanotrasen.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239849
+    m_Localized: High Top Sneakers
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239850
+    m_Localized: Stylin' foot swag.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239851
+    m_Localized: Jackboots
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239852
+    m_Localized: A pair of jackboots.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239853
+    m_Localized: Sunglasses
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239854
+    m_Localized: It's bright in space, protect your eyes with these Nanotrasen brand
+      sunglasses!
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239855
+    m_Localized: Toolbelt
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239856
+    m_Localized: It's a belt, it stores tools.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239857
+    m_Localized: Trucker Cap
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239858
+    m_Localized: A billed hated often worn by truckers to keep their mullets out
+      of their face.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239859
+    m_Localized: Brute Patch
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239860
+    m_Localized: Heals brute damage.<br>Not implemented.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239861
+    m_Localized: Burn Patch
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239862
+    m_Localized: Heals burn damage.<br>Not implemented.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239863
+    m_Localized: Medical Patch
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239864
+    m_Localized: Slightly heals all damage.<br>Not implemented.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239865
+    m_Localized: Beep's Soda
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239866
+    m_Localized: Tastes like a *beep!
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239867
+    m_Localized: Beepy Lime
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239868
+    m_Localized: Still *beep-y but now with lime!
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239869
+    m_Localized: Canned Air
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239870
+    m_Localized: Hey, theres nothing in this! Oh wait, *technically^ there is air
+      in it.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239871
+    m_Localized: Canned Laughter
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239872
+    m_Localized: Laughter in.. a can?
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239873
+    m_Localized: Beep's Cola.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239874
+    m_Localized: This this the best *beep cola I ever had!
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239875
+    m_Localized: Duke Purple Tea
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239876
+    m_Localized: It's that stuff, that purp.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239877
+    m_Localized: Generic Pop
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239878
+    m_Localized: Not sure what kind of pop but it's generic alright.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239879
+    m_Localized: Tonic
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239880
+    m_Localized: Tonic water.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239881
+    m_Localized: Donk Pocket
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239882
+    m_Localized: A pocket of donk. Recommend to warm it before consuming.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239883
+    m_Localized: Bike Horn
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239884
+    m_Localized: '*honk*'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239885
+    m_Localized: Doodad
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239886
+    m_Localized: Test item. Used to test object orientation. Import, export, hold
+      positions, etc.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239887
+    m_Localized: Boombox
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239888
+    m_Localized: Bumps sick beats.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239889
+    m_Localized: Grey Floortile
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239890
+    m_Localized: A generic grey floortile.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239891
+    m_Localized: Grey Floor Tile
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239892
+    m_Localized: A common grey floor tile.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239893
+    m_Localized: ID Card
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239894
+    m_Localized: A standard issue ID card.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239895
+    m_Localized: PDA
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239896
+    m_Localized: A standard issue PDA.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239897
+    m_Localized: Security ID Card
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239898
+    m_Localized: A security issue ID card.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239899
+    m_Localized: Security PDA
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239900
+    m_Localized: A security issue PDA.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239901
+    m_Localized: Poster
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239902
+    m_Localized: Placed on walls, usually.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239903
+    m_Localized: Oxygen Tank
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239904
+    m_Localized: A tank of oxygen.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239905
+    m_Localized: Plasma Tank
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239906
+    m_Localized: A tank of plasma.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239907
+    m_Localized: Electrical Cable
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239908
+    m_Localized: Cable used for high-voltage electrical purposes.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239909
+    m_Localized: Electrical Wire
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239910
+    m_Localized: Wire used for general electrical purposes.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239911
+    m_Localized: Reinforced Glass Sheet
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239912
+    m_Localized: A sheet of reinforced glass.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239913
+    m_Localized: Glass Shard
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239914
+    m_Localized: A shard of glass.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239915
+    m_Localized: Glass Sheet
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239916
+    m_Localized: A sheet of glass.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239917
+    m_Localized: Reinforced Steel Sheet
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239918
+    m_Localized: A sheet of reinforced steel.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239919
+    m_Localized: Steel Rod
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239920
+    m_Localized: A rod made of steel.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239921
+    m_Localized: Steel Sheet
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239922
+    m_Localized: A sheet of steel.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239923
+    m_Localized: Wood Log
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239924
+    m_Localized: A log of wood.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239925
+    m_Localized: Wood Plank
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239926
+    m_Localized: A plank of wood.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239927
+    m_Localized: Matter Bin
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239928
+    m_Localized: A simple bin for containing matter.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239929
+    m_Localized: Micro Laser
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239930
+    m_Localized: Applies a concentrated photon stream in various advanced technologies.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239931
+    m_Localized: Power Cell
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239932
+    m_Localized: Stores power.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239933
+    m_Localized: Admin Power Cell
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239934
+    m_Localized: Has infinite electricity. ADMIN ONLY!
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239935
+    m_Localized: Medkit
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239936
+    m_Localized: A box for carrying medical items.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239937
+    m_Localized: Toolbox
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239938
+    m_Localized: A box for carrying your tools.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239939
+    m_Localized: Mug
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239940
+    m_Localized: A simple beverage container.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239941
+    m_Localized: Hatchet
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239942
+    m_Localized: A tool for chopping wood.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239943
+    m_Localized: Nuclear Authentication Disc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239944
+    m_Localized: Whatever you do, don't put this in the nuclear device found in the
+      vault!
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239945
+    m_Localized: Crowbar
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239946
+    m_Localized: Prys stuff open.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239947
+    m_Localized: Multitool
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239948
+    m_Localized: An electrical tool with various functions.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239949
+    m_Localized: Screwdriver.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239950
+    m_Localized: Drives those screws.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239951
+    m_Localized: Welder
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239952
+    m_Localized: Used to weld pieces of metal together.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239953
+    m_Localized: Wirecutters.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239954
+    m_Localized: Cuts.... wires.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239955
+    m_Localized: Wrench
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239956
+    m_Localized: Used to get leverage when torquing nuts.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239957
+    m_Localized: Flashlight
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239958
+    m_Localized: Points a light.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239959
+    m_Localized: Kitchen Knife
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239960
+    m_Localized: This knife is a kitchen knife. Do NOT use it for non-kitchen stuff!
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239961
+    m_Localized: Health Scanner
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239962
+    m_Localized: Scans the health of the target.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239963
+    m_Localized: Civilian Airlock
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239964
+    m_Localized: A common airlock for all.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239965
+    m_Localized: Security Airlock
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239966
+    m_Localized: A security access airlock.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239967
+    m_Localized: Lattice
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239968
+    m_Localized: A small structural piece with supports.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239969
+    m_Localized: Lattice
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239970
+    m_Localized: A small structural piece with no support.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239971
+    m_Localized: Plenum
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239972
+    m_Localized: The structural base of the floor which also houses pipes and wires.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239973
+    m_Localized: Floor Tile
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239974
+    m_Localized: A split floor tile to accomodate doors.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239975
+    m_Localized: Fancy Carpet
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239976
+    m_Localized: Really fancy carpet in a beautiful red.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239977
+    m_Localized: Bar Floor Tile
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239978
+    m_Localized: Red and grey checkered floor tile.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239979
+    m_Localized: Floor Tile
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239980
+    m_Localized: Common grey floor tile.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239981
+    m_Localized: Dark Grey Floor Tile
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239982
+    m_Localized: Dark grey floor tile.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239983
+    m_Localized: Kitchen Floor Tile
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239984
+    m_Localized: White and grey checkered floor tile.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239985
+    m_Localized: Plating
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239986
+    m_Localized: Floor plating.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239987
+    m_Localized: White Floor Tile
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239988
+    m_Localized: White floor tile.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239989
+    m_Localized: Wood Floor Tile
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239990
+    m_Localized: Planks of wood combined into a floor tile.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239991
+    m_Localized: Atmospheric Pipe
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239992
+    m_Localized: An atmospheric pipe on the supply line. Vents connect to it.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239993
+    m_Localized: An atmospheric pipe on the mixed line. Vents and scrubbers both
+      connect to it.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239994
+    m_Localized: An atmospheric pipe on the waste line. Scrubbers connect to it.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239995
+    m_Localized: An atmospheric pipe on the floor. Only inline devices connect to
+      it.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239996
+    m_Localized: Disposal Pipe
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239997
+    m_Localized: A disposal pipe.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239998
+    m_Localized: APC
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022239999
+    m_Localized: Distributes power to different components in the area.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022240000
+    m_Localized: Air Alarm
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022240001
+    m_Localized: Ensures a safe atmosphere in the area.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022240002
+    m_Localized: Fire Alarm
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022240003
+    m_Localized: Warns of and helps prevent the spread of fires.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022240004
+    m_Localized: Light Switch
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022240005
+    m_Localized: A switch for turning nearby lights on and off.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022240006
+    m_Localized: Light Bulb Fixture
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022240007
+    m_Localized: A fixture with a light bulb.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022240008
+    m_Localized: Light Tube Fixture
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022240009
+    m_Localized: A fixture with a light tube in it.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022240010
+    m_Localized: Mirror
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022240011
+    m_Localized: Reflects light.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022240012
+    m_Localized: Mirror
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022240013
+    m_Localized: It's broken, that can't be good luck..
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022240014
+    m_Localized: Horizontal Poster
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022240015
+    m_Localized: A poster that is wider than tall.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022240016
+    m_Localized: Vertical Poster
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022240017
+    m_Localized: A poster that is taller than wide.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022240018
+    m_Localized: Steel Girder
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022240019
+    m_Localized: A steel girder. The structural base for steel walls and windows.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022240020
+    m_Localized: Steel Wall
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022240021
+    m_Localized: A solid steel wall.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022240022
+    m_Localized: Reinforced Steel Wall
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022240023
+    m_Localized: A solid reinforced steel wall.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022240024
+    m_Localized: Steel Window
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022240025
+    m_Localized: A steel framed window.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022240026
+    m_Localized: Reinforced Steel Window
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022240027
+    m_Localized: A reinforced steel framed window.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022240028
+    m_Localized: Cables
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022240029
+    m_Localized: High powered electrical cables.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022240030
+    m_Localized: Wires
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022240031
+    m_Localized: Electrical wires.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022240032
+    m_Localized: Gas Pump
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252934895022240033
+    m_Localized: A gas pump. Moves gas from the pipe behind it to the pipe in front,
+      up to a target pressure.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252937831022456832
+    m_Localized: 'Registered to: {0}'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252937831043428352
+    m_Localized: 'Assignment: {0}'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 257390954000543744
+    m_Localized: It looks <k=warn>dented</k> and scorched.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 257390954025709568
+    m_Localized: "It is <k=danger>cracked</k> and hissing \u2014 atmosphere is leaking
+      through."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 257390954050000000
+    m_Localized: Unidentified Crew Member
+    m_Metadata:
+      m_Items: []
+  - m_Id: 257391100000000001
+    m_Localized: I am <k=danger>dead</k>.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 257391100000000002
+    m_Localized: He is <k=danger>dead</k>.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 257391100000000003
+    m_Localized: My heart has <k=danger>stopped</k>.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 257391100000000004
+    m_Localized: He is in <k=danger>cardiac arrest</k>.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 257391100000000005
+    m_Localized: I feel myself <k=danger>slipping away</k>.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 257391100000000006
+    m_Localized: He is in <k=danger>critical condition</k>.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 257391100000000007
+    m_Localized: Everything goes dark.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 257391100000000008
+    m_Localized: He is unconscious.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 257391100000000009
+    m_Localized: Missing {0}.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 257391100000000010
+    m_Localized: Bleeding from the {0}.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 257391100000000011
+    m_Localized: '{0} is {1}.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 257391100000000012
+    m_Localized: '{0} is strained.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 257391100000000013
+    m_Localized: '{0} is failing.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 257391100000000014
+    m_Localized: '{0} is critically damaged.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 257391100000000015
+    m_Localized: '{0} has failed.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 257391100000000016
+    m_Localized: He seems to be <k=warn>hurt</k> and <k=danger>bleeding</k> from
+      the {0}.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 257391100000000017
+    m_Localized: He seems to be <k=danger>bleeding</k> from the {0}.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 257391100000000018
+    m_Localized: He seems to be <k=warn>hurt</k>.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 257391100000000019
+    m_Localized: He is <k=danger>missing</k> his {0}.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 257391100000000020
+    m_Localized: He is <k=danger>missing</k> his {0} and seems to be <k=warn>hurt</k>
+      and <k=danger>bleeding</k> from the {1}.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 257391100000000021
+    m_Localized: He is <k=danger>missing</k> his {0} and seems to be <k=danger>bleeding</k>
+      from the {1}.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 257391100000000022
+    m_Localized: He is <k=danger>missing</k> his {0} and seems to be <k=warn>hurt</k>.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 257391100000000023
+    m_Localized: I am <k=warn>hurt</k> and <k=danger>bleeding</k> from the {0}.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 257391100000000024
+    m_Localized: I am <k=danger>bleeding</k> from the {0}.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 257391100000000025
+    m_Localized: I am <k=warn>hurt</k>.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 257391100000000026
+    m_Localized: I am <k=danger>missing</k> my {0}.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 257391100000000027
+    m_Localized: I am <k=danger>missing</k> my {0} and am <k=warn>hurt</k> and <k=danger>bleeding</k>
+      from the {1}.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 257391100000000028
+    m_Localized: I am <k=danger>missing</k> my {0} and am <k=danger>bleeding</k>
+      from the {1}.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 257391100000000029
+    m_Localized: I am <k=danger>missing</k> my {0} and am <k=warn>hurt</k>.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 257391100000000030
+    m_Localized: I feel dizzy.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 257391100000000031
+    m_Localized: I can barely stay conscious.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 257391100000000032
+    m_Localized: I feel weak and lightheaded.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 257391100000000033
+    m_Localized: I can't catch my breath.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 257391100000000034
+    m_Localized: I feel nauseous.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 257391100000000035
+    m_Localized: My chest feels tight.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 257391100000000036
+    m_Localized: Every breath hurts.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 257391100000000037
+    m_Localized: My side aches.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 257391100000000038
+    m_Localized: I can't move my {0}.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 295629502976073728
+    m_Localized: The metal is deeply dented and <k=danger>torn</k>.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 295631575918551040
+    m_Localized: The wood is <k=warn>gouged</k> and chipped.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 295631575939522560
+    m_Localized: Deep <k=danger>splits</k> run along the wood grain, exposing splintered
+      fibres.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 295634111387901952
+    m_Localized: The glass is <k=warn>chipped</k>, with a small star of cracks.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 295634111404679168
+    m_Localized: Branching <k=danger>fractures</k> spread across the glass.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252937831064399873
+    m_Localized: 'Seal: <k=good>intact</k>.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252937831064399874
+    m_Localized: 'Seal: <k=danger>breached</k>.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 296172240830177280
+    m_Localized: Volume Pump
+    m_Metadata:
+      m_Items: []
+  - m_Id: 296172240855343104
+    m_Localized: A gas pump that moves a set volume of gas each second, from the
+      pipe behind it to the pipe in front.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 296172240855343105
+    m_Localized: Manual Valve
+    m_Metadata:
+      m_Items: []
+  - m_Id: 296172240855343106
+    m_Localized: A hand-turned pipe valve. Connects the pipes on either side while
+      open.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 296172240855343107
+    m_Localized: Digital Valve
+    m_Metadata:
+      m_Items: []
+  - m_Id: 296172240855343108
+    m_Localized: A powered pipe valve, switched from its panel. Connects the pipes
+      on either side while open.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 296172240855343109
+    m_Localized: Pipe Manifold
+    m_Metadata:
+      m_Items: []
+  - m_Id: 296172240855343110
+    m_Localized: Joins the underfloor pipes running through this tile into one line.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 296172240855343111
+    m_Localized: Pipe Manifold
+    m_Metadata:
+      m_Items: []
+  - m_Id: 296172240855343112
+    m_Localized: Joins the pipes running through this tile, the Surface line included,
+      into one line.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 296342594903056384
+    m_Localized: Gas Filter
+    m_Metadata:
+      m_Items: []
+  - m_Id: 296342594932416512
+    m_Localized: Sends the gases it's set to out of its side port. Everything else
+      carries straight on.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 296342594932416513
+    m_Localized: Gas Mixer
+    m_Metadata:
+      m_Items: []
+  - m_Id: 296342594936610816
+    m_Localized: Combines two lines at a set ratio, up to a target pressure. Stops
+      if a line it needs runs dry.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 296342594936610817
+    m_Localized: Gas Meter
+    m_Metadata:
+      m_Items: []
+  - m_Id: 296342594936610818
+    m_Localized: 'Reads the pipe line it sits on: pressure, temperature and what
+      the gas is made of.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 296342594936610819
+    m_Localized: Gas Injector
+    m_Metadata:
+      m_Items: []
+  - m_Id: 296342594936610820
+    m_Localized: A floor nozzle that releases a pipe line's gas into the room while
+      it's open.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 296089487001546752
+    m_Localized: 'Tank: {0}% full.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 296112289708535808
+    m_Localized: Syndicate Magboots
+    m_Metadata:
+      m_Items: []
+  - m_Id: 296112289742090240
+    m_Localized: Magnetic boots. Switched on, they hold you to the deck against moving
+      air.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 296137613293887488
+    m_Localized: Syndicate Hardsuit
+    m_Metadata:
+      m_Items: []
+  - m_Id: 296137613323247616
+    m_Localized: Armored pressure suit. Sealed with its helmet it keeps out vacuum
+      and cold, but it does not supply air.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 296137613323247617
+    m_Localized: Syndicate Hardsuit Helmet
+    m_Metadata:
+      m_Items: []
+  - m_Id: 296137613323247618
+    m_Localized: Armored sealed helmet. It completes the hardsuit's seal and doubles
+      as a mask for internals.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 296406898272608256
+    m_Localized: Ion Rifle
+    m_Metadata:
+      m_Items: []
+  - m_Id: 296406898314551296
+    m_Localized: A cyan ion rifle. Burns its target; no EMP effect. Use to replenish
+      its charge.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 296407231195488256
+    m_Localized: Laser Rifle
+    m_Metadata:
+      m_Items: []
+  - m_Id: 296407231203876864
+    m_Localized: A focused laser rifle. Delivers burn damage. Use to replenish its
+      charge.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 296407234903252992
+    m_Localized: Taser
+    m_Metadata:
+      m_Items: []
+  - m_Id: 296407234903252993
+    m_Localized: A short-range electrical weapon. Knocks an unarmored target down
+      and drains stamina; a hardsuit stops the knockdown. Holds three charges and
+      recharges slowly. Use to replenish its charge.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 296422524005359616
+    m_Localized: C4
+    m_Metadata:
+      m_Items: []
+  - m_Id: 296422524022136832
+    m_Localized: A timed demolition charge. Place it and arm from the interaction
+      menu, or use it on a wall or door to attach and arm. Its red display counts
+      down fifteen seconds; an audible countdown runs throughout and speeds up at
+      the end. Wirecutters take three seconds to defuse it; stay in reach.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 296446533984034816
+    m_Localized: X4
+    m_Metadata:
+      m_Items: []
+  - m_Id: 296446534005006336
+    m_Localized: A powerful directional demolition charge. Hold it and use it on
+      a wall or door to attach and arm. Its fifteen-second audible countdown speeds
+      up toward detonation. Extra blast force spreads in a cone through the far side
+      of the target. Wirecutters take three seconds to defuse it.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 296446538652295168
+    m_Localized: Syndicate minibomb
+    m_Metadata:
+      m_Items: []
+  - m_Id: 296446538652295169
+    m_Localized: A compact syndicate grenade. Arm it in hand or use Throw minibomb
+      to pull the pin and throw. Its five-second fuse ends in a small explosion.
+      An armed minibomb cannot be defused.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 296457849096347648
+    m_Localized: The flooring is badly <k=danger>cracked</k> and scorched.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 296457849121513472
+    m_Localized: The hull plating is badly <k=warn>damaged</k>, but remains <k=good>sealed</k>.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 297502203608068096
+    m_Localized: Light bulb
+    m_Metadata:
+      m_Items: []
+  - m_Id: 297502203650011136
+    m_Localized: A replacement bulb for a small light fixture.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 297502208683175936
+    m_Localized: Broken light bulb
+    m_Metadata:
+      m_Items: []
+  - m_Id: 297502208683175937
+    m_Localized: The shattered remains of a light bulb. Mind your fingers.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 297502212634210304
+    m_Localized: Light tube
+    m_Metadata:
+      m_Items: []
+  - m_Id: 297502212634210305
+    m_Localized: A replacement fluorescent tube for a light fixture.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 297502216304226304
+    m_Localized: Broken light tube
+    m_Metadata:
+      m_Items: []
+  - m_Id: 297502216304226305
+    m_Localized: What's left of a fluorescent tube.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 297530947802525696
+    m_Localized: Its casing is <k=warn>dented</k> and scorched.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 297530947844468736
+    m_Localized: It's <k=danger>smashed</k> and dead. Sparks spit from the broken
+      casing.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 297583453850017792
+    m_Localized: A crowbar would pry the tile up.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 297583453879377920
+    m_Localized: Bare hull plating. Floor tiles would cover it.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 297583453879377921
+    m_Localized: A welder would repair it.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 297583453879377922
+    m_Localized: A bare steel girder. Steel sheets would plate it, glass sheets would
+      glaze it; a welder would cut it apart.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 297583453879377923
+    m_Localized: 'Plated girder. Seams unwelded: a welder would seal it, a crowbar
+      would pull the plate off.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 297583453879377924
+    m_Localized: A welder could cut its seams.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 297583453879377925
+    m_Localized: A crowbar could lift the pane out.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 297583453879377926
+    m_Localized: Reinforced. A welder can patch it, but only explosives will take
+      it apart.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298192516493320192
+    m_Localized: The tile is damaged. A crowbar would pry it up for a new one.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298314483225567232
+    m_Localized: 'Tank: {0}% full, <k=warn>low</k>.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298314483246538752
+    m_Localized: Empty.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298314483246538753
+    m_Localized: Contains about {0} of liquid.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298314483246538754
+    m_Localized: a few milliliters
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298314483246538755
+    m_Localized: a small amount
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298314483246538756
+    m_Localized: a moderate amount
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298314483246538757
+    m_Localized: a large amount
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298314483246538758
+    m_Localized: Feels {0}.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298314483246538759
+    m_Localized: frosted / bitterly cold
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298314483246538760
+    m_Localized: cold
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298314483246538761
+    m_Localized: cool
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298314483246538762
+    m_Localized: warm
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298314483246538763
+    m_Localized: hot
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298314483246538764
+    m_Localized: <k=danger>scalding</k>
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298314483246538765
+    m_Localized: The liquid looks {0}.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298314483246538766
+    m_Localized: clear
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298314483246538767
+    m_Localized: murky
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298314483246538768
+    m_Localized: reddish
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298314483246538769
+    m_Localized: orange
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298314483246538770
+    m_Localized: yellow
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298314483246538771
+    m_Localized: green
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298314483246538772
+    m_Localized: blue
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298314483246538773
+    m_Localized: purple
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298317283615547392
+    m_Localized: 'Size: {0}.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298317283632324608
+    m_Localized: '{0} in the stack.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298317283632324609
+    m_Localized: tiny
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298317283632324610
+    m_Localized: small
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298317283632324611
+    m_Localized: normal
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298317283632324612
+    m_Localized: bulky
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298317283632324613
+    m_Localized: huge
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298317283632324614
+    m_Localized: Unknown crew member in {0}
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298317283632324615
+    m_Localized: 'You are presenting: {0}, {1}.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298317283632324616
+    m_Localized: 'You are presenting: {0}.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298317283632324617
+    m_Localized: You are presenting no ID.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298320605231685632
+    m_Localized: 'Disposal tag: {0}.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298320605248462848
+    m_Localized: <k=good>Powered</k>.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298320605248462849
+    m_Localized: <k=warn>Unpowered</k>.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298320605248462850
+    m_Localized: 'Rounds: {0}.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298320605248462851
+    m_Localized: Magazine <k=warn>empty</k>.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298320605248462852
+    m_Localized: 'Charge: {0} shots.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298320605248462853
+    m_Localized: Charge <k=warn>empty</k>.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298326310546284544
+    m_Localized: '{0} looks you over.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298326310563061760
+    m_Localized: '{0} is reaching into your pockets!'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298326310563061761
+    m_Localized: '{0} is trying to take your {2}!'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298329279073329152
+    m_Localized: '{0} flicks the light switch.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298330755267010560
+    m_Localized: '{0} plants something on the {1}.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298583315651469312
+    m_Localized: Jukebox
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298583315676635136
+    m_Localized: A jukebox with a worn selection of songs.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298583317127864320
+    m_Localized: Airlock Panel
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298583317127864321
+    m_Localized: The control panel on an airlock.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298583318595870720
+    m_Localized: Dirt
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298583318595870721
+    m_Localized: A patch of packed dirt.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298583320034516992
+    m_Localized: Grass
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298583320034516993
+    m_Localized: A patch of grass, somehow growing on a space station.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298583321477357568
+    m_Localized: Reinforced Floor
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298583321477357569
+    m_Localized: Heavy reinforced floor plating.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298600052098834432
+    m_Localized: '{0} slides a disk into the {1}.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298600052119805952
+    m_Localized: '{0} starts arming the {1}!'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298600052119805953
+    m_Localized: '{0} starts unscrewing the {1}''s wiring panel.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298600052119805954
+    m_Localized: '{0} starts cutting the {1}''s wires.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298600052119805955
+    m_Localized: The disk slot is <k=good>empty</k>.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298600052119805956
+    m_Localized: An authentication disk is <k=warn>loaded</k>.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298600052119805957
+    m_Localized: It is <k=good>not armed</k>.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298600052119805958
+    m_Localized: '<k=danger>Armed</k>: {0} left.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298600052119805959
+    m_Localized: Its wiring panel is <k=warn>open</k>.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298639841044963328
+    m_Localized: Captain's Jumpsuit
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298639841065934848
+    m_Localized: A navy jumpsuit with gold trim, cut for whoever is in charge.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298639841065934849
+    m_Localized: Captain's Garrison Cap
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298639841065934850
+    m_Localized: A blue garrison cap with a gold badge.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298639841065934851
+    m_Localized: Command Backpack
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298639841065934852
+    m_Localized: A backpack in command blue.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298639841065934853
+    m_Localized: Medical Scrubs
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298639841065934854
+    m_Localized: White scrubs, easy to spot blood on.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298639841065934855
+    m_Localized: Lab Coat
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298639841065934856
+    m_Localized: A long white coat worn over the uniform.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298639841065934857
+    m_Localized: Medical Backpack
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298639841065934858
+    m_Localized: A white backpack with a green stripe.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298639841065934859
+    m_Localized: Armor Vest
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298639841065934860
+    m_Localized: A ballistic vest. Good against blows and bullets, poor against fire.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298639841065934861
+    m_Localized: Security Helmet
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298639841065934862
+    m_Localized: A hard helmet marked POLICE.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298639841065934863
+    m_Localized: Security Cap
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298639841065934864
+    m_Localized: A red cap marked POLICE.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298639841065934865
+    m_Localized: Security Glasses
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298639841065934866
+    m_Localized: Red-tinted security glasses.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298639841065934867
+    m_Localized: Security Backpack
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298639841065934868
+    m_Localized: A black backpack with red trim.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298639841065934869
+    m_Localized: Hard Hat
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298639841065934870
+    m_Localized: A yellow hard hat with a lamp.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298639841065934871
+    m_Localized: Work Boots
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298639841065934872
+    m_Localized: A pair of laced yellow work boots.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298639841065934873
+    m_Localized: Welding Helmet
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298639841065934874
+    m_Localized: A dark-visored welding helmet.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298639841065934875
+    m_Localized: Meson Goggles
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298639841065934876
+    m_Localized: Green-lensed engineering goggles.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298639841065934877
+    m_Localized: Tactical Turtleneck
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298639841065934878
+    m_Localized: Black fatigues with red bands. Nobody on the crew wears these.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298639841065934879
+    m_Localized: Syndicate Armor Vest
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298639841065934880
+    m_Localized: A black plate vest with shoulder guards.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298639841065934881
+    m_Localized: Combat Boots
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298639841065934882
+    m_Localized: A pair of black combat boots.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298639841065934883
+    m_Localized: Combat Gloves
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298639841065934884
+    m_Localized: Black fingerless combat gloves.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298977481593221120
+    m_Localized: I am <k=warn>down</k>, and everything hurts.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298977481626775552
+    m_Localized: He is <k=warn>down</k>, conscious and in pain.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298977481626775553
+    m_Localized: I am <k=warn>shaking</k> and feel faint.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298977481626775554
+    m_Localized: He is <k=warn>pale and shaking</k>.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298702715700355072
+    m_Localized: Stun Baton
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298702715717132288
+    m_Localized: A Security baton with a charged head. A hit knocks the target down
+      and tires them out; it goes through armor.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298702720939040768
+    m_Localized: C-20r SMG
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298702720939040769
+    m_Localized: A compact Syndicate submachine gun. Fast and light-hitting, it needs
+      both hands. Use to reload.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298702725540192256
+    m_Localized: Stechkin Pistol
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298702725540192257
+    m_Localized: 'A Syndicate pistol: small, one-handed and hard-hitting. Use to
+      reload.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298703054059053056
+    m_Localized: Security Pistol
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298703054059053057
+    m_Localized: The standard Security sidearm. One-handed, with a ten-round magazine.
+      Use to reload.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298703058354020352
+    m_Localized: Gauze
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298703058354020353
+    m_Localized: A roll of gauze. Use it on a bleeding body part to stop the bleeding.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298703062535741440
+    m_Localized: Defibrillator
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298703062535741441
+    m_Localized: A portable defibrillator. Use it on the chest of a patient whose
+      heart has stopped, before the brain dies. Shocking a beating heart burns it.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298714254427791360
+    m_Localized: Flamethrower
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298714254444568576
+    m_Localized: A two-handed flame projector. Hold primary in Harm to spray a wide
+      fan of burning fuel up to four metres. Fuel sticks to people and surfaces,
+      burns for six seconds and blackens surfaces. Holds sixty fuel pulses. Use to
+      refill in four seconds.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298715341041934336
+    m_Localized: 'Fuel: {0} pulses.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 299262768996130816
+    m_Localized: Syndicate bomb
+    m_Metadata:
+      m_Items: []
+  - m_Id: 299262769021296640
+    m_Localized: 'A huge, heavy Syndicate explosive: too big to lift, so it has to
+      be dragged into place. Set its timer (90 seconds at least) and arm it, then
+      bolt it to the floor with a wrench; once armed the bolts lock, so nobody can
+      drag it off. It beeps loudly enough to hear from the next room. Defusing takes
+      a screwdriver to open its wiring panel, then wirecutters.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 299262771349135360
+    m_Localized: Syndicate bomb beacon
+    m_Metadata:
+      m_Items: []
+  - m_Id: 299262771349135361
+    m_Localized: A one-use Syndicate beacon. Use it in hand and a Syndicate bomb
+      lands in front of you; the bomb is too heavy to carry, so only call it down
+      where you mean to use it.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 299262962122858496
+    m_Localized: '{0} starts bolting the {1} to the floor.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 299262962143830016
+    m_Localized: '{0} starts unbolting the {1} from the floor.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 299262962143830017
+    m_Localized: It is <k=good>not armed</k>. The timer is set to {0}.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 299262962143830018
+    m_Localized: '<k=danger>Armed</k>: {0} left.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 299262962143830019
+    m_Localized: It is <k=warn>bolted to the floor</k>.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 299262962143830020
+    m_Localized: It is not bolted down.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 299262962143830021
+    m_Localized: Its wiring panel is <k=warn>open</k>.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 299262962143830022
+    m_Localized: Chamber intake
+    m_Metadata:
+      m_Items: []
+  - m_Id: 299262962143830023
+    m_Localized: 'A gas storage chamber''s intake. Draws in <k=warn>every gas</k>, air included: placed in a room, it empties it.'
+    m_Metadata:
+      m_Items: []
+  references:
+    version: 2
+    RefIds: []

@@ -1,0 +1,40 @@
+"aaa" = (
+/turf/open/space/basic,
+/area/space)
+"aab" = (
+/obj/structure/lattice,
+/turf/open/space/basic,
+/area/space)
+"aac" = (
+/obj/structure/lattice/catwalk,
+/turf/open/space/basic,
+/area/space)
+"aad" = (
+/obj/structure/table/wood,
+/turf/open/floor/iron,
+/area/hallway)
+"aae" = (
+/obj/structure/table,
+/turf/open/floor/iron,
+/area/hallway)
+"aaf" = (
+/obj/machinery/power/smes{
+	dir = 4
+	},
+/turf/open/floor/iron,
+/area/hallway)
+"aag" = (
+/turf/closed/wall,
+/area/hallway)
+"aah" = (
+/turf/open/floor/iron,
+/area/hallway)
+
+(1,1,1) = {"
+aagaagaag
+aagaadaag
+aagaaeaag
+aagaafaag
+aagaahaag
+aaaaabaac
+"}

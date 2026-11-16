@@ -23,13 +23,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 742329524854909756}
+  serializedVersion: 2
   m_LocalRotation: {x: 0.7071068, y: 0, z: 0, w: 0.7071068}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 212662597122105200}
-  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 90, y: 0, z: 0}
 --- !u!1 &3794527162878356835
 GameObject:
@@ -49,7 +49,8 @@ GameObject:
   - component: {fileID: 6377164133976095912}
   - component: {fileID: 5464842264619517571}
   - component: {fileID: 2986267657943188832}
-  - component: {fileID: 4004628490018734234}
+  - component: {fileID: 9182736450123456803}
+  - component: {fileID: 7288519122837885757}
   m_Layer: 10
   m_Name: KitchenKnife
   m_TagString: Untagged
@@ -64,14 +65,14 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3794527162878356835}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0.7071068, w: 0.7071068}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 8869951128713715569}
   m_Father: {fileID: 0}
-  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!33 &9198744343412122950
 MeshFilter:
@@ -94,10 +95,15 @@ MeshRenderer:
   m_DynamicOccludee: 1
   m_StaticShadowCaster: 0
   m_MotionVectors: 1
-  m_LightProbeUsage: 1
-  m_ReflectionProbeUsage: 1
+  m_LightProbeUsage: 0
+  m_ReflectionProbeUsage: 0
   m_RayTracingMode: 2
   m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
+  m_ForceMeshLod: -1
+  m_MeshLodSelectionBias: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -119,9 +125,11 @@ MeshRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
+  m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
 --- !u!54 &2709008034070362697
 Rigidbody:
@@ -130,10 +138,21 @@ Rigidbody:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3794527162878356835}
-  serializedVersion: 2
+  serializedVersion: 5
   m_Mass: 0.195
-  m_Drag: 0
-  m_AngularDrag: 0.05
+  m_LinearDamping: 0
+  m_AngularDamping: 0.05
+  m_CenterOfMass: {x: 0, y: 0, z: 0}
+  m_InertiaTensor: {x: 1, y: 1, z: 1}
+  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ImplicitCom: 1
+  m_ImplicitTensor: 1
   m_UseGravity: 1
   m_IsKinematic: 0
   m_Interpolate: 0
@@ -147,9 +166,17 @@ BoxCollider:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3794527162878356835}
   m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
   m_IsTrigger: 0
+  m_ProvidesContacts: 0
   m_Enabled: 1
-  serializedVersion: 2
+  serializedVersion: 3
   m_Size: {x: 0.035348337, y: 0.58146214, z: 0.08455253}
   m_Center: {x: -0.000000052154064, y: 0.22054851, z: 0.021314973}
 --- !u!114 &1363585423008195204
@@ -209,6 +236,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 26b716c41e9b56b4baafaf13a523ba2e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  NetworkObserver: {fileID: 0}
+  <PrefabId>k__BackingField: 6
+  <SpawnableCollectionId>k__BackingField: 0
+  _scenePathHash: 0
+  <SceneId>k__BackingField: 0
+  <AssetPathHash>k__BackingField: 577235181563610316
   <IsNested>k__BackingField: 0
   <ComponentIndex>k__BackingField: 0
   <PredictedSpawn>k__BackingField: {fileID: 0}
@@ -225,12 +258,6 @@ MonoBehaviour:
   _isGlobal: 0
   _initializeOrder: 0
   _defaultDespawnType: 0
-  NetworkObserver: {fileID: 0}
-  <PrefabId>k__BackingField: 6
-  <SpawnableCollectionId>k__BackingField: 0
-  _scenePathHash: 0
-  <SceneId>k__BackingField: 0
-  <AssetPathHash>k__BackingField: 577235181563610316
 --- !u!114 &6377164133976095912
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -248,11 +275,18 @@ MonoBehaviour:
   _networkObjectCache: {fileID: 261983550380735922}
   _asset: {fileID: 11400000, guid: f5a2860feace1434ea982b06d2445f9f, type: 2}
   _name: Kitchen knife
-  _weight: 1
+  _weight: 0.5
+  _sizeClass: 1
+  _maxStackSize: 1
+  _initialStackCount: 1
+  _stackCount: 1
   _startingTraits: []
   _rigidbody: {fileID: 2709008034070362697}
   AttachmentPoint: {fileID: 8869951128713715569}
   AttachmentPointAlt: {fileID: 8869951128713715569}
+  _restRotation: {x: 0, y: 0, z: 90}
+  _overrideIconRotation: 1
+  _iconRotation: {x: 0, y: 0, z: 0}
   _container: {fileID: 0}
 --- !u!114 &5464842264619517571
 MonoBehaviour:
@@ -279,7 +313,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   key: {fileID: 11400000, guid: 8a5c0f9e0f2b82648852272822078abc, type: 2}
---- !u!114 &4004628490018734234
+--- !u!114 &9182736450123456803
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -288,7 +322,27 @@ MonoBehaviour:
   m_GameObject: {fileID: 3794527162878356835}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1dd866b0631d05441982a4824740ff8d, type: 3}
+  m_Script: {fileID: 11500000, guid: f2a3b4c5d6e7489a0b1c2d3e4f5a6789, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  type: 2
+  _profile:
+    BruteDamage: 12
+    BurnDamage: 0
+    WindupSeconds: 0.2
+    RecoverySeconds: 0.55
+    StaminaCost: 9
+    CanSever: 1
+    StructuralForce: 4
+--- !u!114 &7288519122837885757
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3794527162878356835}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c1ed2939192a85040bcf588bd471b6c7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: SS3D.Systems::SS3D.Systems.Audio.NoisyCollision
+  _material: 0

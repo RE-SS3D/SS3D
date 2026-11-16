@@ -1,0 +1,13 @@
+# Client side of mppm:downed: joins the running round, sees its own body crawl Downed, then stand once healed.
+wait_timeout 60
+wait_connected
+wait_round Ongoing
+wait_seconds 1
+ready
+embark
+assert_embarked
+assert_downed
+screenshot downed-client
+assert_stood
+wait_seconds 4
+disconnect

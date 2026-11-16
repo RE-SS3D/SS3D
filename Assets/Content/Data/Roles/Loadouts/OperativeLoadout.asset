@@ -1,0 +1,58 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9fbd6da0c74d76746b141068081e0dc3, type: 3}
+  m_Name: OperativeLoadout
+  m_EditorClassIdentifier: 
+  HandLeftAsset: {fileID: 0}
+  HandRightAsset: {fileID: 11400000, guid: fa54ce89709c7df79b33f29216e85a10, type: 2}
+  EquipmentAssets:
+    _list:
+    - _key: 512
+      _value: {fileID: 11400000, guid: 26575872a7adeab948ad4ea4b700efe3, type: 2}
+    - _key: 16
+      _value: {fileID: 11400000, guid: a41a1dfa72bfb1f068f59940813a6d31, type: 2}
+    - _key: 128
+      _value: {fileID: 11400000, guid: 4a50e327a934cd3438e1b88d2bb547cb, type: 2}
+    - _key: 2048
+      _value: {fileID: 11400000, guid: cafdd28cc4f134534a914521851f8ce0, type: 2}
+    - _key: 32768
+      _value: {fileID: 11400000, guid: 9cf2801a7b335074190840fc9112d582, type: 2}
+    - _key: 4
+      _value: {fileID: 11400000, guid: 9435365903a79d64184af9ee71e060e5, type: 2}
+    - _key: 1024
+      _value: {fileID: 11400000, guid: 07875cb9b07567f608c409b35f917fd6, type: 2}
+    - _key: 256
+      _value: {fileID: 11400000, guid: 08db124c308ef12468512352cb307c60, type: 2}
+    - _key: 131072
+      _value: {fileID: 11400000, guid: b42f227c43baa2141938339b7dda3f71, type: 2}
+    _new: 0
+  PocketAssets: []
+  EquipmentContents:
+  - Slot: 32768
+    Items:
+    - {fileID: 11400000, guid: 9e4b9aa465bc48d4faa9b53cd0132f11, type: 2}
+    - {fileID: 11400000, guid: fd8e3cf550cdc704281d3b94b5c8d631, type: 2}
+    - {fileID: 11400000, guid: f784858d359bb434c9a7ea797c27552d, type: 2}
+    - {fileID: 11400000, guid: bd14f7dd0646a2240adf09ba61ce700a, type: 2}
+    - {fileID: 11400000, guid: 715777b8c0a0f1b4cb29ee4dab0326e4, type: 2}
+  - Slot: 4
+    Items:
+    - {fileID: 11400000, guid: 85c7d64ad33dbc7d6a808f7e759dab07, type: 2}
+    - {fileID: 11400000, guid: e2e5a3bc6dba95ae6b6167ce7df8f6fc, type: 2}
+    - {fileID: 11400000, guid: cb8a18ff6b582ec45a3aa1f689a18564, type: 2}
+    - {fileID: 11400000, guid: e1be91a48608ab64e822afa33347459c, type: 2}
+  FirstHolderContents:
+  - Slot: 4
+    Items:
+    - {fileID: 11400000, guid: 8233cf2c893d4d0e69548d9beb5e95d2, type: 2}
+  HandLeftContents: []
+  HandRightContents: []

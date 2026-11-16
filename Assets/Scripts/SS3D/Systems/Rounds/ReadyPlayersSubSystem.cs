@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using Coimbra.Services.Events;
 using FishNet.Connection;
 using FishNet.Object;
@@ -17,7 +18,9 @@ using RoundStateUpdated = SS3D.Systems.Rounds.Events.RoundStateUpdated;
 namespace SS3D.Systems.Rounds
 {
     /// <summary>
-    /// Sets what players are ready or not.
+    /// Sets what players are ready or not; the ready players spawn when the round starts. Observing is not a
+    /// lobby state: Observe makes a ghost at once (<see cref="EntitySubSystem.TryObserve"/>, lobby effort
+    /// Decision 9), which takes the player off this list.
     /// </summary>
     public class ReadyPlayersSubSystem : NetworkSubSystem
     {
@@ -48,7 +51,12 @@ namespace SS3D.Systems.Rounds
                 return;
             }
 
-            SpawnReadyPlayersEvent spawnReadyPlayersEvent = new(_readyPlayers.ToList());
+            // Sandbox rule: everyone connected joins, ready or not, except those already observing as ghosts.
+            bool allConnected = SubSystems.TryGet(out ServerSettingsService settings) && settings.Current.AllConnectedReady;
+            List<Player> spawning = (allConnected
+                ? SubSystems.Get<PlayerSubSystem>().OnlinePlayers.ToList()
+                : _readyPlayers.ToList()).Where(p => p != null && !InRound(p)).ToList();
+            SpawnReadyPlayersEvent spawnReadyPlayersEvent = new(spawning);
             spawnReadyPlayersEvent.Invoke(this);
 
             _readyPlayers.Clear();
@@ -72,6 +80,20 @@ namespace SS3D.Systems.Rounds
                 _readyPlayers.Remove(player);
             }
         }
+
+        /// <summary>Server: takes <paramref name="player"/> off the ready list, as when they start observing.</summary>
+        [Server]
+        public void Unready(Player player)
+        {
+            if (player != null)
+            {
+                _readyPlayers.Remove(player);
+            }
+        }
+
+        /// <summary>Server: the player already has an entity this round, such as an observer ghost made during warmup.</summary>
+        private static bool InRound(Player player) =>
+            SubSystems.TryGet(out EntitySubSystem entities) && entities.IsPlayerSpawned(player);
 
         /// <summary>
         /// Sets the player ready state
@@ -99,7 +121,17 @@ namespace SS3D.Systems.Rounds
         [Server]
         private void HandleChangePlayerReady(NetworkConnection sender, ChangePlayerReadyMessage m)
         {
-            Player player = SubSystems.Get<PlayerSubSystem>().GetPlayer(m.Ckey);
+            RoundState roundState = SubSystems.Get<RoundSubSystem>().CurrentRoundState;
+            if (roundState is RoundState.Ongoing or RoundState.Ending)
+            {
+                return;
+            }
+
+            Player player = SubSystems.Get<PlayerSubSystem>().GetPlayer(sender);
+            if (player == null || InRound(player))
+            {
+                return;
+            }
 
             SetPlayerReady(player, m.Ready);
         }
@@ -131,6 +163,18 @@ namespace SS3D.Systems.Rounds
         }
 
         public int Count => _readyPlayers.Count;
+
+        /// <summary>
+        /// Players who would join a round starting now: everyone online and not observing when
+        /// <paramref name="allConnected"/> (<see cref="ServerSettings.AllConnectedReady"/>), else the ready list.
+        /// </summary>
+        [Server]
+        public int EffectiveReadyCount(bool allConnected) =>
+            allConnected
+                ? SubSystems.Get<PlayerSubSystem>().OnlinePlayers.Count(p => p != null && !InRound(p))
+                : _readyPlayers.Count;
+
+        public bool IsReady(Player player) => player != null && _readyPlayers.Contains(player);
 
 #if UNITY_EDITOR
         /// <summary>

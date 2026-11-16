@@ -49,15 +49,25 @@ namespace SS3D.Interactions
                     instance.FirstTick = false;
 
                     // Runs the first tick of the interaction
-                    if (instance.Interaction != null && instance.Interaction.Start(instance.Event, instance.Reference))
+                    if (instance.Interaction != null)
                     {
-                        continue;
+                        bool running = ServerInteractionSteps.Wrap == null
+                            ? instance.Interaction.Start(instance.Event, instance.Reference)
+                            : ServerInteractionSteps.Run(instance, () => instance.Interaction.Start(instance.Event, instance.Reference));
+                        InteractionNarration.TryRaise(instance.Interaction, instance.Event);
+                        if (running)
+                        {
+                            continue;
+                        }
                     }
                 }
                 else
                 {
                     // Continue running the interaction until it's done
-                    if (instance.Interaction is IDelayedInteraction interaction && interaction.Update(instance.Event, instance.Reference))
+                    if (instance.Interaction is IDelayedInteraction interaction
+                        && (ServerInteractionSteps.Wrap == null
+                            ? interaction.Update(instance.Event, instance.Reference)
+                            : ServerInteractionSteps.Run(instance, () => interaction.Update(instance.Event, instance.Reference))))
                     {
                         continue;
                     }
@@ -101,11 +111,11 @@ namespace SS3D.Interactions
         /// <summary>
         /// Creates the interactions from the source object
         /// </summary>
-        public virtual void CreateSourceInteractions(IInteractionTarget[] targets, List<InteractionEntry> entries)
+        public virtual void CreateSourceInteractions(IInteractionTarget[] targets, List<InteractionEntry> entries, InteractionEvent context)
         {
             foreach (IInteractionSourceExtension extension in GetComponents<IInteractionSourceExtension>())
             {
-                extension.GetSourceInteractions(targets, entries);
+                extension.GetSourceInteractions(targets, entries, context);
             }
         }
 
@@ -116,6 +126,21 @@ namespace SS3D.Interactions
 
         public virtual bool CanExecuteInteraction(IInteraction interaction)
         {
+            if (Source != null && !ReferenceEquals(Source, this))
+            {
+                return Source.CanExecuteInteraction(interaction);
+            }
+
+            return true;
+        }
+
+        public virtual bool CanContinueInteraction()
+        {
+            if (Source != null && !ReferenceEquals(Source, this))
+            {
+                return Source.CanContinueInteraction();
+            }
+
             return true;
         }
 
@@ -144,6 +169,24 @@ namespace SS3D.Interactions
             return _interactions.FirstOrDefault(x => x.Reference.Equals(reference));
         }
 
+        public bool HasInteraction(InteractionReference reference)
+        {
+            if (IsServer)
+            {
+                return GetInstanceFromReference(reference) != null;
+            }
+
+            for (int i = 0; i < _clientInteractions.Count; i++)
+            {
+                if (_clientInteractions[i].Reference.Id == reference.Id)
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
         public void ClientInteract(InteractionEvent interactionEvent, IInteraction interaction, InteractionReference reference)
         {
             if (interaction is not IClientInteractionSource clientInteractionSource)
@@ -161,7 +204,11 @@ namespace SS3D.Interactions
         }
 
         [Server]
-        public void CancelInteraction(InteractionReference reference)
+        public void CancelInteraction(InteractionReference reference) =>
+            CancelInteraction(reference, DelayedCancelReason.Manual);
+
+        [Server]
+        public void CancelInteraction(InteractionReference reference, DelayedCancelReason reason)
         {
             InteractionInstance instance = _interactions.FirstOrDefault(i => Equals(reference, i.Reference));
             if (instance == null || instance.Interaction is not IDelayedInteraction interaction)
@@ -169,13 +216,19 @@ namespace SS3D.Interactions
                 return;
             }
 
-            RpcCancelInteraction(reference.Id);
+            if (interaction is DelayedInteraction delayed)
+            {
+                delayed.ReleaseCancelHooks();
+            }
+
+            // Observers: only the client that started the step holds a client instance for this id.
+            RpcCancelInteraction(reference.Id, (byte)reason);
             interaction.Cancel(instance.Event, reference);
             _interactions.Remove(instance);
         }
 
         [ObserversRpc]
-        private void RpcCancelInteraction(int id)
+        private void RpcCancelInteraction(int id, byte reason)
         {
             ClientInteractionInstance instance = _clientInteractions.FirstOrDefault(i => i.Reference.Id == id);
 
@@ -184,7 +237,15 @@ namespace SS3D.Interactions
                 return;
             }
 
-            instance.Interaction.ClientCancel(instance.Event);
+            if (instance.Interaction is IReasonedClientCancel reasoned)
+            {
+                reasoned.ClientCancel(instance.Event, (DelayedCancelReason)reason);
+            }
+            else
+            {
+                instance.Interaction.ClientCancel(instance.Event);
+            }
+
             _clientInteractions.Remove(instance);
         }
     }

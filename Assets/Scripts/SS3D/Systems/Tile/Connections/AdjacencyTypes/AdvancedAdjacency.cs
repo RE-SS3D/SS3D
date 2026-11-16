@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SS3D.Logging;
+using System;
 using UnityEngine;
 
 namespace SS3D.Systems.Tile.Connections.AdjacencyTypes
@@ -120,7 +121,7 @@ namespace SS3D.Systems.Tile.Connections.AdjacencyTypes
                     mesh = xQuad;
                     break;
                 default:
-                    Debug.LogError($"Received unexpected shape from advanced shape resolver: {shape}");
+                    Log.Error(typeof(AdvancedConnector), "Received unexpected shape from advanced shape resolver: {shape}", Logs.Generic, shape);
                     mesh = o;
                     break;
             }

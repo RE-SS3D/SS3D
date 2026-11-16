@@ -1,4 +1,4 @@
-﻿namespace System.Electricity
+namespace SS3D.Systems.Electricity
 {
     /// <summary>
     /// Interface for anything producing electric power.

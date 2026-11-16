@@ -1,0 +1,289 @@
+/*
+ * Character window (lobby effort Phase 5), to the "SS3D Lobby & Character window" canvas. The root also carries
+ * .lobby, so the shell's resets, icons, tabs, switches, keycaps and prompt card apply here too. Rules are prefixed with
+ * .lobby where the shell's `.lobby Label` / `.lobby Button` resets (specificity 11) would beat a single class.
+ * CharacterWindowView switches .lobby--compact on below 1600 px of panel width (the 1366 x 768 layout, Decision 19).
+ */
+@import url("Lobby.uss");
+
+.charwin__veil { position: absolute; left: 0; top: 0; right: 0; bottom: 0; background-color: rgba(6, 7, 9, 0.55); }
+.charwin__window {
+    position: absolute; left: 24px; top: 24px; right: 24px; bottom: 24px;
+    background-color: var(--lb-panel); border-width: 1px; border-color: var(--lb-border); border-radius: 4px;
+}
+
+/* ---- Top bar ---- */
+.lobby .charwin__header {
+    flex-direction: row; align-items: center; height: 64px; padding: 0 16px; flex-shrink: 0; background-color: var(--lb-chrome);
+    border-top-left-radius: 3px; border-top-right-radius: 3px;
+}
+.lobby .charwin__title { font-size: 20px; letter-spacing: 1.6px; margin: 0 20px 0 4px; }
+.lobby .charwin__switch { flex-direction: row; align-items: center; height: 44px; padding: 0 10px 0 4px; border-radius: 4px; border-width: 1px; border-color: rgba(0, 0, 0, 0); }
+.lobby .charwin__switch:hover, .lobby .charwin__switch--open { background-color: var(--lb-inset); }
+.lobby .charwin__switch:focus { border-color: var(--lb-border-strong); }
+.lobby .charwin__switch-thumb { width: 28px; height: 36px; margin-right: 10px; border-width: 1px; border-color: var(--lb-border); background-color: var(--lb-panel); overflow: hidden; }
+.charwin__switch-text { margin-right: 12px; }
+.lobby .charwin__switch-name { font-size: 14px; -unity-font-style: bold; color: var(--lb-text); }
+.lobby .charwin__switch-high { font-size: 12px; color: var(--lb-text-2); margin-right: 4px; }
+.lobby .charwin__switch-count { font-size: 12px; color: var(--lb-text-2); margin-right: 6px; }
+
+.lobby .charwin__status { flex-direction: row; align-items: center; margin-right: 12px; }
+.lobby .charwin__status-icon {
+    width: 14px; height: 14px; margin-right: 6px; -unity-background-scale-mode: scale-to-fit;
+    background-image: url("project://database/Assets/Art/Icons/Heroicons/Outline/Check.png"); -unity-background-image-tint-color: var(--lb-green);
+}
+.lobby .charwin__status--dirty .charwin__status-icon { width: 8px; height: 8px; margin: 0 8px 0 3px; border-radius: 4px; background-image: none; background-color: var(--lb-amber); }
+.lobby .charwin__status-label { font-size: 13px; color: var(--lb-text-2); }
+
+.lobby .charwin__button {
+    flex-direction: row; align-items: center; justify-content: center; height: 36px; padding: 0 12px; margin-left: 12px;
+    border-width: 1px; border-radius: 4px; font-size: 18px; letter-spacing: 1.44px; -unity-text-align: middle-center;
+}
+.lobby .charwin__button--ghost { border-color: var(--lb-border); color: var(--lb-text); }
+.lobby .charwin__button--ghost:hover { background-color: var(--lb-inset); }
+.lobby .charwin__button--primary { border-color: var(--lb-rust); background-color: var(--lb-rust); color: var(--lb-on-accent); }
+.lobby .charwin__button--primary:hover { border-color: var(--lb-rust-hover); background-color: var(--lb-rust-hover); }
+.lobby .charwin__button--chrome { border-color: var(--lb-chrome); background-color: var(--lb-chrome); color: var(--lb-text); }
+.lobby .charwin__button--chrome:hover { background-color: var(--lb-hover); }
+.lobby .charwin__button:focus { border-color: var(--lb-text); }
+.lobby .charwin__button:disabled { opacity: 1; background-color: var(--lb-inset); border-color: var(--lb-inset); color: var(--lb-disabled); }
+.lobby .charwin__button:disabled .charwin__button-label { color: var(--lb-disabled); }
+.lobby .charwin__button:disabled .charwin__button-icon { -unity-background-image-tint-color: var(--lb-disabled); }
+.lobby .charwin__save { width: 96px; }
+.lobby .charwin__button-icon { margin-right: 8px; -unity-background-image-tint-color: var(--lb-on-accent); }
+.lobby .charwin__button-label { font-size: 18px; letter-spacing: 1.44px; color: var(--lb-on-accent); }
+.lobby .charwin__sep { width: 1px; height: 24px; margin: 0 12px; background-color: var(--lb-border); }
+.lobby .charwin__return { flex-direction: row; align-items: center; height: 36px; padding: 0 12px; border-radius: 4px; border-width: 1px; border-color: rgba(0, 0, 0, 0); }
+.lobby .charwin__return:hover { background-color: var(--lb-inset); }
+.lobby .charwin__return:focus { border-color: var(--lb-border-strong); }
+.lobby .charwin__return-icon { margin-right: 8px; -unity-background-image-tint-color: var(--lb-text); }
+.lobby .charwin__return-label { font-size: 18px; letter-spacing: 1.44px; }
+
+/* ---- Body ---- */
+.charwin__body { flex-direction: row; flex-grow: 1; min-height: 0; }
+.lobby .charwin__preview-column {
+    width: 520px; flex-shrink: 0; align-items: center; padding: 24px 24px;
+    border-right-width: 1px; border-right-color: var(--lb-border-subtle);
+}
+.lobby .charwin__preview-frame {
+    width: 472px; height: 628px; flex-shrink: 1; min-height: 200px;
+    border-width: 1px; border-color: var(--lb-border); background-color: var(--lb-panel);
+}
+.lobby .charwin__preview-frame:focus { border-color: var(--lb-border-strong); }
+.charwin__preview-image { flex-grow: 1; -unity-background-scale-mode: scale-and-crop; }
+.lobby .charwin__rotate-row { flex-direction: row; align-items: center; justify-content: space-between; width: 472px; margin-top: 14px; flex-shrink: 0; }
+.lobby .charwin__icon-button {
+    width: 36px; height: 36px; align-items: center; justify-content: center; border-radius: 4px;
+    border-width: 1px; border-color: var(--lb-chrome); background-color: var(--lb-chrome);
+}
+.lobby .charwin__icon-button:hover { background-color: var(--lb-inset); }
+.lobby .charwin__icon-button:focus { border-color: var(--lb-border-strong); }
+.charwin__icon-button .lobby__icon { -unity-background-image-tint-color: var(--lb-text); }
+.charwin__rotate-left-icon { scale: -1 1; }
+.charwin__angles { flex-direction: row; }
+.lobby .charwin__angle { width: 48px; align-items: center; }
+.lobby .charwin__angle-label { font-size: 12px; color: var(--lb-text-2); -unity-text-align: middle-center; }
+.lobby .charwin__angle-bar { width: 28px; height: 2px; margin-top: 4px; background-color: var(--lb-border); }
+.lobby .charwin__angle--active .charwin__angle-label { color: var(--lb-text); -unity-font-style: bold; }
+.lobby .charwin__angle--active .charwin__angle-bar { background-color: var(--lb-rust); }
+.lobby .charwin__clothing-row { flex-direction: row; align-items: center; width: 472px; margin-top: 14px; flex-shrink: 0; }
+.lobby .charwin__clothing-label { font-size: 13px; color: var(--lb-text); margin-left: 10px; }
+.lobby .charwin__keyhint { margin-left: 6px; }
+.lobby .charwin__caption { width: 472px; margin-top: 14px; font-size: 12px; color: var(--lb-text-2); white-space: normal; flex-shrink: 0; }
+
+.charwin__main { flex-grow: 1; flex-shrink: 1; min-width: 0; }
+.charwin__tab-content { flex-grow: 1; min-height: 0; }
+
+/* ---- Tab scaffolding ---- */
+.charwin-tab { flex-grow: 1; min-height: 0; }
+.charwin-tab__scroll { flex-grow: 1; min-height: 0; }
+.lobby .charwin-tab__scroll .unity-scroll-view__content-container { padding: 24px 28px; }
+.lobby .charwin-tab__intro { font-size: 13px; color: var(--lb-text-2); white-space: normal; max-width: 520px; }
+.lobby .charwin-tab__eyebrow { font-size: 11px; letter-spacing: 1.32px; color: var(--lb-text-2); -unity-font-style: bold; margin-bottom: 12px; }
+.lobby .charwin-tab__label { font-size: 13px; color: var(--lb-text); margin-bottom: 8px; }
+.lobby .charwin-tab__heading { font-size: 20px; letter-spacing: 1.6px; color: var(--lb-text); margin-bottom: 6px; }
+.lobby .charwin__action {
+    flex-direction: row; align-items: center; height: 40px; padding: 0 14px; border-radius: 2px; flex-shrink: 0;
+    border-width: 1px; border-color: var(--lb-chrome); background-color: var(--lb-chrome);
+}
+.lobby .charwin__action:hover { background-color: var(--lb-hover); }
+.lobby .charwin__action:focus { border-color: var(--lb-border-strong); }
+.charwin__action .lobby__icon { margin-right: 8px; -unity-background-image-tint-color: var(--lb-text); }
+.lobby .charwin__action-label { font-size: 20px; letter-spacing: 1.6px; }
+
+/* Notice lines: info blue, success green. */
+.lobby .charwin__notice {
+    flex-direction: row; align-items: center; padding: 10px 12px; margin-top: 16px; flex-shrink: 0;
+    border-width: 1px; border-radius: 2px; border-color: rgba(61, 96, 137, 0.4); background-color: rgba(61, 96, 137, 0.15);
+}
+.lobby .charwin__notice .lobby__icon { margin-right: 10px; -unity-background-image-tint-color: #a9c4da; }
+.lobby .charwin__notice-text { flex-grow: 1; flex-shrink: 1; font-size: 13px; color: var(--lb-text); white-space: normal; }
+.lobby .charwin__notice--success { border-color: rgba(136, 179, 106, 0.4); background-color: rgba(136, 179, 106, 0.15); }
+.lobby .charwin__notice--success .lobby__icon { -unity-background-image-tint-color: var(--lb-green); }
+.lobby .charwin__notice--hidden { display: none; }
+
+/* ---- Appearance ---- */
+.lobby .charwin-look__top { flex-direction: row; justify-content: space-between; align-items: center; margin-bottom: 28px; }
+.charwin-look__columns { flex-direction: row; align-items: flex-start; }
+.lobby .charwin-look__left { width: 50%; flex-shrink: 1; padding-right: 20px; }
+.lobby .charwin-look__right { width: 50%; flex-shrink: 1; padding-left: 20px; }
+.lobby .charwin-look__section { margin-bottom: 32px; flex-shrink: 0; }
+.lobby .charwin-look__name-row { flex-direction: row; align-items: stretch; }
+.lobby .charwin-look__name { flex-grow: 1; margin: 0 8px 0 0; }
+.charwin-look__name > .unity-text-field__input, .charwin-look__name > .unity-base-text-field__input {
+    margin: 0; padding: 0 12px; height: 40px; border-width: 1px; border-color: var(--lb-border); border-radius: 0;
+    background-color: var(--lb-inset); color: var(--lb-text); font-size: 15px;
+}
+.charwin-look__name:focus > .unity-text-field__input, .charwin-look__name:focus > .unity-base-text-field__input { border-color: var(--lb-border-strong); }
+.charwin-look__name--error > .unity-text-field__input, .charwin-look__name--error > .unity-base-text-field__input { border-color: var(--lb-red); }
+.charwin-look__name .unity-base-text-field__input--placeholder { color: var(--lb-disabled); }
+.lobby .charwin-look__error { flex-direction: row; align-items: center; margin-top: 8px; }
+.lobby .charwin-look__error .lobby__icon { width: 14px; height: 14px; margin-right: 6px; -unity-background-image-tint-color: var(--lb-red-text); }
+.lobby .charwin-look__error-text { font-size: 13px; color: var(--lb-red-text); }
+.lobby .charwin-look__error--hidden { display: none; }
+.charwin-look__sliders { flex-direction: row; flex-wrap: wrap; }
+.lobby .charwin-look__slider-cell { width: 50%; padding-right: 12px; margin-bottom: 14px; }
+.lobby .charwin-look__slider-cell--right { padding-right: 0; padding-left: 12px; }
+.charwin-look__slider-head { flex-direction: row; justify-content: space-between; align-items: center; }
+.lobby .charwin-look__slider-label { font-size: 13px; color: var(--lb-text); }
+.lobby .charwin-look__slider-value { font-size: 12px; color: var(--lb-text-2); }
+.lobby .charwin-look__slider { width: auto; margin-top: 6px; }
+.charwin-look__swatches { flex-direction: row; flex-wrap: wrap; align-items: center; margin-bottom: 18px; }
+.lobby .charwin-look__swatch {
+    width: 28px; height: 28px; margin: 0 8px 8px 0; border-width: 2px; border-color: rgba(0, 0, 0, 0); border-radius: 2px;
+}
+.lobby .charwin-look__swatch:hover { border-color: var(--lb-border-strong); }
+.lobby .charwin-look__swatch:focus { border-color: var(--lb-border-strong); }
+.lobby .charwin-look__swatch--selected, .lobby .charwin-look__swatch--selected:hover { border-color: var(--lb-text); }
+.lobby .charwin-look__colour-row { flex-direction: row; align-items: center; margin: 4px 0 18px; }
+.lobby .charwin-look__colour-label { width: 60px; font-size: 13px; color: var(--lb-text-2); margin-bottom: 8px; }
+.charwin-look__tiles { flex-direction: row; flex-wrap: wrap; }
+.lobby .charwin-look__tile {
+    width: 80px; height: 84px; margin: 0 8px 8px 0; padding: 0; flex-direction: column; align-items: center; justify-content: flex-end;
+    background-color: var(--lb-inset); border-width: 1px; border-color: var(--lb-border-subtle); border-radius: 0;
+}
+.lobby .charwin-look__tile:hover { border-color: var(--lb-border); background-color: var(--lb-hover); }
+.lobby .charwin-look__tile:focus { border-color: var(--lb-border-strong); }
+.lobby .charwin-look__tile--selected, .lobby .charwin-look__tile--selected:hover { border-color: var(--lb-text); }
+.lobby .charwin-look__tile-icon { width: 36px; height: 36px; margin-bottom: 6px; -unity-background-image-tint-color: #5a5d60; }
+.lobby .charwin-look__tile--none .charwin-look__tile-icon { opacity: 0.6; }
+/* A baked head render (CharacterStyleThumbnailBaker) fills the tile above its label. */
+.charwin-look__tile-thumb { width: 100%; flex-grow: 1; -unity-background-scale-mode: scale-and-crop; }
+.lobby .charwin-look__tile-label {
+    width: 100%; height: 24px; font-size: 12px; color: var(--lb-text-2); -unity-text-align: middle-center;
+    background-color: var(--lb-panel); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.lobby .charwin-look__tile--selected .charwin-look__tile-label { color: var(--lb-text); -unity-font-style: bold; }
+
+/* ---- Jobs ---- */
+.lobby .charwin-jobs__top { flex-direction: row; align-items: flex-start; }
+.lobby .charwin-jobs__legend { flex-direction: row; align-items: center; margin-left: 24px; }
+.lobby .charwin-jobs__legend-item { flex-direction: row; align-items: center; margin-right: 14px; }
+.lobby .charwin-jobs__legend-swatch { width: 12px; height: 12px; margin-right: 6px; }
+.lobby .charwin-jobs__legend-label { font-size: 12px; color: var(--lb-text-2); }
+.charwin-jobs__legend-swatch--high { background-color: var(--prio-high); }
+.charwin-jobs__legend-swatch--medium { background-color: var(--prio-medium); }
+.charwin-jobs__legend-swatch--low { background-color: var(--prio-low); }
+.charwin-jobs__legend-swatch--never { background-color: var(--prio-never); }
+.lobby .charwin-jobs__columns { flex-direction: row; align-items: flex-start; margin-top: 16px; }
+.lobby .charwin-jobs__column { flex-grow: 1; flex-basis: 0; min-width: 0; }
+.lobby .charwin-jobs__column--left { margin-right: 16px; }
+.lobby .charwin-jobs__dept { margin-bottom: 12px; border-width: 1px; border-color: var(--lb-border-subtle); border-radius: 2px; flex-shrink: 0; }
+.lobby .charwin-jobs__dept-head { flex-direction: row; align-items: center; height: 36px; padding: 0 12px; background-color: var(--lb-chrome); }
+.lobby .charwin-jobs__dept-icon { width: 18px; height: 18px; margin-right: 8px; }
+.lobby .charwin-jobs__dept-name { font-size: 20px; letter-spacing: 1.6px; }
+.lobby .charwin-jobs__row { border-top-width: 1px; border-top-color: var(--lb-border-subtle); }
+.lobby .charwin-jobs__row-main { flex-direction: row; align-items: center; height: 44px; padding: 0 10px 0 12px; }
+.lobby .charwin-jobs__row--locked .charwin-jobs__job-icon-frame { opacity: 0.45; }
+.lobby .charwin-jobs__row--flash { background-color: rgba(61, 96, 137, 0.2); }
+.lobby .charwin-jobs__job-icon-frame {
+    width: 32px; height: 32px; margin-right: 10px; align-items: center; justify-content: center; flex-shrink: 0;
+    border-width: 1px; border-radius: 2px; border-color: var(--lb-border); background-color: var(--lb-inset);
+}
+.lobby .charwin-jobs__job-icon { width: 24px; height: 24px; }
+.lobby .charwin-jobs__job-name { font-size: 14px; color: var(--lb-text-2); flex-shrink: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.lobby .charwin-jobs__row--set .charwin-jobs__job-name { color: var(--lb-text); }
+.lobby .charwin-jobs__row--high .charwin-jobs__job-name { -unity-font-style: bold; }
+.lobby .charwin-jobs__about { width: 24px; height: 24px; margin-left: 6px; align-items: center; justify-content: center; border-width: 1px; border-color: rgba(0, 0, 0, 0); border-radius: 2px; flex-shrink: 0; }
+.lobby .charwin-jobs__about:hover { background-color: var(--lb-inset); }
+.lobby .charwin-jobs__about:focus { border-color: var(--lb-border-strong); }
+.charwin-jobs__about .lobby__icon { width: 14px; height: 14px; }
+.charwin-jobs__about--open .lobby__icon { rotate: 90deg; }
+.lobby .charwin-jobs__slots { width: 76px; margin-right: 10px; font-size: 13px; color: var(--lb-text-2); -unity-text-align: middle-right; flex-shrink: 0; }
+.lobby .charwin-jobs__prio {
+    flex-direction: row; flex-shrink: 0; border-width: 1px; border-color: var(--lb-border); border-radius: 2px;
+    background-color: var(--lb-void);
+}
+.lobby .charwin-jobs__prio:focus { border-color: var(--lb-text); }
+.lobby .charwin-jobs__prio-option {
+    width: 62px; height: 26px; font-size: 16px; letter-spacing: 1.28px; color: var(--lb-text-2); -unity-text-align: middle-center;
+    border-left-width: 1px; border-left-color: var(--lb-border-subtle);
+}
+.lobby .charwin-jobs__prio-option--first { border-left-width: 0; }
+.lobby .charwin-jobs__prio-option:hover { color: var(--lb-text); background-color: var(--lb-inset); }
+.lobby .charwin-jobs__prio-option--high-on, .lobby .charwin-jobs__prio-option--high-on:hover { background-color: var(--prio-high); color: var(--lb-on-light); }
+.lobby .charwin-jobs__prio-option--medium-on, .lobby .charwin-jobs__prio-option--medium-on:hover { background-color: rgba(232, 183, 166, 0.15); color: var(--prio-medium); }
+.lobby .charwin-jobs__prio-option--low-on, .lobby .charwin-jobs__prio-option--low-on:hover { background-color: rgba(196, 196, 204, 0.15); color: var(--prio-low); }
+.lobby .charwin-jobs__prio-option--never-on, .lobby .charwin-jobs__prio-option--never-on:hover { background-color: var(--lb-void); color: var(--lb-text-2); border-bottom-width: 2px; border-bottom-color: var(--lb-text-2); }
+.lobby .charwin-jobs__locked {
+    flex-direction: row; align-items: center; width: 253px; height: 28px; padding: 0 8px; flex-shrink: 0;
+    border-width: 1px; border-color: var(--lb-border); border-radius: 2px;
+}
+.lobby .charwin-jobs__locked .lobby__icon { width: 14px; height: 14px; margin-right: 6px; }
+.lobby .charwin-jobs__locked-text { font-size: 12px; color: var(--lb-text-2); }
+.lobby .charwin-jobs__description { padding: 0 16px 12px 66px; font-size: 13px; color: var(--lb-text-2); white-space: normal; max-width: 620px; }
+.lobby .charwin-jobs__empty { font-size: 13px; color: var(--lb-text-2); margin-top: 16px; white-space: normal; }
+.lobby .charwin-jobs__fallback {
+    flex-direction: row; align-items: center; flex-wrap: wrap; padding: 14px 28px; flex-shrink: 0;
+    background-color: var(--lb-chrome); border-top-width: 1px; border-top-color: var(--lb-border-subtle);
+}
+.lobby .charwin-jobs__fallback-label { font-size: 13px; color: var(--lb-text-2); margin-right: 24px; }
+.lobby .charwin-jobs__radio { flex-direction: row; align-items: center; margin-right: 24px; padding: 4px; border-width: 1px; border-color: rgba(0, 0, 0, 0); border-radius: 2px; }
+.lobby .charwin-jobs__radio:focus { border-color: var(--lb-border-strong); }
+.lobby .charwin-jobs__radio-ring { width: 16px; height: 16px; border-width: 1px; border-color: var(--lb-text-2); border-radius: 8px; margin-right: 8px; align-items: center; justify-content: center; }
+.lobby .charwin-jobs__radio-dot { width: 8px; height: 8px; border-radius: 4px; }
+.lobby .charwin-jobs__radio--on .charwin-jobs__radio-ring { border-color: var(--lb-text); }
+.lobby .charwin-jobs__radio--on .charwin-jobs__radio-dot { background-color: var(--lb-text); }
+.lobby .charwin-jobs__radio-label { font-size: 14px; color: var(--lb-text); margin-right: 8px; }
+.lobby .charwin-jobs__radio--on .charwin-jobs__radio-label { -unity-font-style: bold; }
+.lobby .charwin-jobs__radio-hint { font-size: 12px; color: var(--lb-text-2); }
+
+/* ---- Antags ---- */
+.lobby .charwin-antags { max-width: 880px; }
+.lobby .charwin-antags__row {
+    flex-direction: row; align-items: center; padding: 16px 20px; margin-top: 10px; flex-shrink: 0;
+    border-width: 1px; border-radius: 2px; border-color: var(--lb-border-subtle); background-color: var(--lb-panel);
+}
+.lobby .charwin-antags__row--on { border-color: rgba(177, 61, 61, 0.4); background-color: rgba(177, 61, 61, 0.15); }
+.lobby .charwin-antags__icon-frame {
+    width: 44px; height: 44px; margin-right: 16px; align-items: center; justify-content: center; flex-shrink: 0;
+    border-width: 1px; border-color: var(--lb-border); background-color: var(--lb-void);
+}
+.lobby .charwin-antags__icon { width: 24px; height: 24px; background-image: url("project://database/Assets/Art/Icons/External/lorc/radioactive.svg"); }
+.lobby .charwin-antags__row--on .charwin-antags__icon { -unity-background-image-tint-color: #e8a0a0; }
+.charwin-antags__text { flex-grow: 1; flex-shrink: 1; min-width: 0; }
+.lobby .charwin-antags__name { font-size: 20px; letter-spacing: 1.6px; margin-bottom: 4px; }
+.lobby .charwin-antags__description { font-size: 13px; color: var(--lb-text-2); white-space: normal; }
+.lobby .charwin-antags__state { font-size: 13px; color: var(--lb-text-2); margin: 0 10px 0 16px; }
+.lobby .charwin-antags__row--on .charwin-antags__state { color: var(--lb-text); -unity-font-style: bold; }
+
+/* ---- Unsaved prompt ---- */
+.lobby .charwin__prompt { display: none; }
+.lobby .charwin__prompt--open { display: flex; }
+.lobby .charwin__prompt-button { margin: 0 8px 0 0; }
+
+/* ---- 1366 x 768 (Decision 19): preview 292 (render 260 x 346), one department column, "Med", no legend or key hints. ---- */
+.lobby--compact .charwin__window { left: 12px; top: 12px; right: 12px; bottom: 12px; }
+.lobby--compact .charwin__header { height: 56px; }
+.lobby--compact .charwin__preview-column { width: 292px; padding: 12px 16px; }
+.lobby--compact .charwin__preview-frame { width: 260px; height: 346px; }
+.lobby--compact .charwin__rotate-row, .lobby--compact .charwin__clothing-row, .lobby--compact .charwin__caption { width: 260px; }
+.lobby--compact .charwin__keyhint, .lobby--compact .charwin-jobs__legend { display: none; }
+.lobby--compact .charwin-jobs__columns { flex-direction: column; }
+.lobby--compact .charwin-jobs__column { flex-basis: auto; width: 100%; }
+.lobby--compact .charwin-jobs__column--left { margin-right: 0; }
+.lobby--compact .charwin-jobs__prio-option { width: 52px; }
+.lobby--compact .charwin-tab__scroll .unity-scroll-view__content-container { padding: 16px 20px; }
+.lobby--compact .charwin-look__columns { flex-direction: column; }
+.lobby--compact .charwin-look__left, .lobby--compact .charwin-look__right { width: 100%; padding: 0; }
+.lobby--compact .charwin-jobs__fallback { padding: 10px 20px; }

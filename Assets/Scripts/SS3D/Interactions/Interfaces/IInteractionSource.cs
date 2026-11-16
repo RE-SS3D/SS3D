@@ -11,11 +11,14 @@ namespace SS3D.Interactions.Interfaces
         IInteractionSource Source { get; set; }
 
         /// <summary>
-        /// Allows the source to manipulate existing interactions and add new ones
+        /// Allows the source to manipulate existing interactions and add new ones.
+        /// Discover may pre-filter candidates; <see cref="InteractionPipeline.FilterAndSort"/> is the
+        /// sole full viability gate. Source-only verbs use <see cref="InteractionEntry.SourceOnly"/>.
         /// </summary>
         /// <param name="targets">The interaction targets of this interaction</param>
         /// <param name="entries">The already present interactions</param>
-        void CreateSourceInteractions(IInteractionTarget[] targets, List<InteractionEntry> entries);
+        /// <param name="context">Discover event (source + optional resolved point/normal)</param>
+        void CreateSourceInteractions(IInteractionTarget[] targets, List<InteractionEntry> entries, InteractionEvent context);
         /// <summary>
         /// Checks if this source can interact with a certain target
         /// </summary>
@@ -28,6 +31,11 @@ namespace SS3D.Interactions.Interfaces
         /// <param name="interaction">The interaction to check</param>
         /// <returns>If this interaction source can execute the interaction</returns>
         bool CanExecuteInteraction(IInteraction interaction);
+
+        /// <summary>
+        /// Checks if this source can continue an in-progress interaction.
+        /// </summary>
+        bool CanContinueInteraction();
 
         /// <summary>
         /// Executes the interaction (server-side)
@@ -50,6 +58,16 @@ namespace SS3D.Interactions.Interfaces
         /// <param name="reference">The reference to the interaction</param>
         void CancelInteraction(InteractionReference reference);
 
+        /// <summary>
+        /// Cancels an interaction and tells the owning client why (progress ring reason).
+        /// </summary>
+        void CancelInteraction(InteractionReference reference, DelayedCancelReason reason);
+
         InteractionInstance GetInstanceFromReference(InteractionReference reference);
+
+        /// <summary>
+        /// Returns whether an interaction with the given reference is still active on this source.
+        /// </summary>
+        bool HasInteraction(InteractionReference reference);
     }
 }

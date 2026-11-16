@@ -6,19 +6,16 @@ namespace SS3D.Systems.Examine
     [CreateAssetMenu(menuName = "Examine", fileName = "ExamineData")]
     public class ExamineData : ScriptableObject
     {
-        /// <summary>
-        /// The table holding the localization strings for this object.
-        /// </summary>
-        public LocalizedStringTable LocalizationTable;
+        public ExamineType Type = ExamineType.SIMPLE_TEXT;
+
+        public LocalizedString Name;
+
+        public LocalizedString Description;
 
         /// <summary>
-        /// Key to access the name of the object, when the cursor hovers over the item.
+        /// Display size for the detailed image view of <see cref="ExamineType.SIMPLE_IMAGE"/> types.
+        /// The sprite itself is provided by the examinable object.
         /// </summary>
-        public string NameKey;
-
-        /// <summary>
-        /// Key to access the description shown below the name, when the cursor hovers over the item while holding Shift.
-        /// </summary>
-        public string DescriptionKey;
+        public Vector2 DetailedImageSize = new Vector2(260f, 175f);
     }
 }

@@ -1,6 +1,6 @@
 ﻿using Coimbra;
 using SS3D.Systems.Inventory.Items;
-using SS3D.Systems.Inventory.Containers;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Assertions;
 
@@ -22,6 +22,9 @@ namespace SS3D.Systems.Inventory.Containers
         /// The list of items displayed in the container;
         /// </summary>
         private Item[] _displayedItems;
+
+        /// <summary>Displays already warned about a missing calibration, so the warning shows once each.</summary>
+        private readonly HashSet<Transform> _warnedUncalibrated = new();
 
         public void Awake()
         {
@@ -56,43 +59,61 @@ namespace SS3D.Systems.Inventory.Containers
                 return;
             }
 
-            Transform itemTransform = item.transform;
+            Transform display = attachedContainer.Displays[index].transform;
+            PlaceAtDisplay(item, display, Mirrored, ReferenceRotation(display));
+            _displayedItems[index] = item;
+        }
 
-            // Check if a custom attachment point should be used
+        /// <summary>
+        /// Parent <paramref name="item"/> to <paramref name="display"/> at its grip: the item's
+        /// <c>AttachmentPoint</c> (or <c>AttachmentPointAlt</c> when <paramref name="mirrored"/>) sits on the
+        /// display, turned by the display's calibrated reference rotation. Constant hand-local, so the same
+        /// whatever pose the hand is in right now (spawn, mid-walk, Harm stance). Also used by the item pose
+        /// contact sheet. Documents/architecture/systems/inventory.md.
+        /// </summary>
+        public static void PlaceAtDisplay(Item item, Transform display, bool mirrored, Quaternion referenceRotation)
+        {
+            Transform itemTransform = item.transform;
             Transform attachmentPoint = item.AttachmentPoint;
-            if (Mirrored && item.AttachmentPointAlt != null)
+            if (mirrored && item.AttachmentPointAlt != null)
             {
                 attachmentPoint = item.AttachmentPointAlt;
             }
 
-            if (attachmentPoint != null)
+            if (attachmentPoint == null)
             {
-                // Create new (temporary) point
-                // HACK: Required because rotation pivot can be different
-                GameObject temporaryPoint = new GameObject("TempPivotPoint");
-
-                temporaryPoint.transform.SetParent(attachedContainer.Displays[index].transform, false);
-                temporaryPoint.transform.localPosition = Vector3.zero;
-
-                // Assign parent
-                itemTransform.SetParent(temporaryPoint.transform, false);
-
-                // Very sketchy, as the root is not reliable to be things we want them to be.
-                // Maybe we can tweak this in the future
-                temporaryPoint.transform.rotation = attachmentPoint.root.rotation * attachmentPoint.localRotation;
-               
-                // Assign the relative position between the attachment point and the object
-                itemTransform.localPosition = -attachmentPoint.localPosition;
+                itemTransform.SetParent(display, false);
+                itemTransform.localPosition = Vector3.zero;
                 itemTransform.localRotation = Quaternion.identity;
-            }
-            else
-            {
-                itemTransform.SetParent(attachedContainer.Displays[index].transform, false);
-                itemTransform.localPosition = new Vector3();
-                itemTransform.localRotation = new Quaternion();
+                return;
             }
 
-            _displayedItems[index] = item;
+            GameObject temporaryPoint = new GameObject("TempPivotPoint");
+            temporaryPoint.transform.SetParent(display, false);
+            temporaryPoint.transform.localPosition = Vector3.zero;
+
+            itemTransform.SetParent(temporaryPoint.transform, false);
+            itemTransform.localRotation = Quaternion.identity;
+            itemTransform.localPosition = -attachmentPoint.localPosition;
+            temporaryPoint.transform.localRotation =
+                HeldItemGrip.PivotLocalRotation(referenceRotation, attachmentPoint.localRotation);
+        }
+
+        private Quaternion ReferenceRotation(Transform display)
+        {
+            if (display.TryGetComponent(out GripSocket socket) && socket.IsCalibrated)
+            {
+                return socket.ReferenceRotation;
+            }
+
+            if (_warnedUncalibrated.Add(display))
+            {
+                Debug.LogWarning($"[ContainerItemDisplay] Display '{display.name}' on '{display.root.name}' has no calibrated "
+                    + "GripSocket; held items use an identity reference and may sit at the wrong angle. "
+                    + "Run SS3D → Inventory → Calibrate Hand Grip Sockets.", display);
+            }
+
+            return Quaternion.identity;
         }
 
         private void ContainerOnItemDetached(object sender, Item item)
@@ -112,12 +133,26 @@ namespace SS3D.Systems.Inventory.Containers
                 return;
             }
 
+            Transform display = attachedContainer.Displays[index];
             Transform itemParent = item.transform.parent;
-            if (itemParent != null && itemParent != attachedContainer.Displays[index])
+            if (itemParent != null && itemParent != display && itemParent.parent == display)
             {
+                // Still on our grip pivot: let go of the item and drop the pivot.
                 item.transform.SetParent(null, true);
-                // It's currently deleting the game object containing the item, why is this here ?
                 itemParent.gameObject.Dispose(true);
+            }
+            else
+            {
+                // The item already moved on (its new container's add arrived first on this client): it is
+                // parented there now, so leave it and only clear away our empty pivots.
+                for (int i = display.childCount - 1; i >= 0; i--)
+                {
+                    Transform child = display.GetChild(i);
+                    if (child.name == "TempPivotPoint" && child.childCount == 0)
+                    {
+                        child.gameObject.Dispose(true);
+                    }
+                }
             }
 
             _displayedItems[index] = null;

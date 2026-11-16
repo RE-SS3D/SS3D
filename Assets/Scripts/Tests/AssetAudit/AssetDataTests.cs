@@ -78,6 +78,18 @@ namespace AssetAudit
         [Test, TestCaseSource(nameof(AllAssetDatabases))]
         public void IncludedAssetDatabasesDoNotContainNullObjects(AssetDatabase assetDatabase)
         {
+            if (assetDatabase.LoadMode == AssetDatabaseLoadMode.AddressablesAsync)
+            {
+                Assert.IsNotNull(assetDatabase.AssetKeys);
+                Assert.IsNotEmpty(
+                    assetDatabase.AssetKeys,
+                    $"{assetDatabase.name} is AddressablesAsync but has no AssetKeys");
+                Assert.IsTrue(
+                    assetDatabase.Assets == null || assetDatabase.Assets.Count == 0,
+                    $"{assetDatabase.name} is AddressablesAsync but still has eager Assets entries");
+                return;
+            }
+
             bool hasNullAssets = false;
             Dictionary<AssetDatabase, List<int>> assetDatabasesNullRefIndexes = new();
 

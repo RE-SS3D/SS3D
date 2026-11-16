@@ -1,0 +1,29 @@
+
+.diegetic-badge {
+    flex-direction: row;
+    align-items: center;
+    padding: 2px 8px;
+    border-radius: var(--ss3d-radius-sm);
+    border-width: 1px;
+}
+
+.diegetic-badge__label {
+    font-size: 9px;
+    letter-spacing: 1px;
+}
+
+.diegetic-badge.tone-bg-success .diegetic-badge__label {
+    color: var(--ss3d-feedback-success);
+}
+
+.diegetic-badge.tone-bg-warning .diegetic-badge__label {
+    color: var(--ss3d-feedback-warning);
+}
+
+.diegetic-badge.tone-bg-danger .diegetic-badge__label {
+    color: var(--ss3d-feedback-danger);
+}
+
+.diegetic-badge.tone-bg-info .diegetic-badge__label {
+    color: var(--ss3d-feedback-info);
+}

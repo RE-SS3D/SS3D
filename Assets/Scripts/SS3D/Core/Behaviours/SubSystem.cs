@@ -1,8 +1,8 @@
 ﻿namespace SS3D.Core.Behaviours
 {
     /// <summary>
-    /// Used on objects that won't have two of them at the same time.
-    /// Should not be instantiated at runtime.
+    /// Process-wide or world-scoped singleton service. One instance per type via <see cref="SubSystems"/>.
+    /// Owned by <c>SystemsBootstrap</c> (DDOL) or scene/hub composition — not hand-placed ad hoc at runtime.
     /// </summary>
     public class SubSystem : Actor, ISubSystem
     {

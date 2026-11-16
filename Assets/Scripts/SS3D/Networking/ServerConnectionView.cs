@@ -1,6 +1,7 @@
 using DG.Tweening;
 using FishNet;
 using FishNet.Transporting;
+using SS3D.Core;
 using SS3D.Data.Messages;
 using SS3D.Utils;
 using TMPro;
@@ -59,6 +60,11 @@ namespace SS3D.Networking
         {
             _quitButton.onClick.RemoveListener(UnityEngine.Application.Quit);
             _retryButton.onClick.RemoveListener(OnRetryButtonPressed);
+
+            if (InstanceFinder.ClientManager != null)
+            {
+                InstanceFinder.ClientManager.OnClientConnectionState -= HandleServerConnectionFailed;
+            }
         }
         
         private void UpdateMessageText(string message)
@@ -86,6 +92,11 @@ namespace SS3D.Networking
             UpdateMessageText(ApplicationMessages.Network.ConnectingToServer);
 
             ProcessConnectingToServer();
+
+            if (SubSystems.TryGet(out NetworkSessionSubSystem session))
+            {
+                session.StartNetworkSession();
+            }
         }
         
         private void HandleServerConnectionFailed(ClientConnectionStateArgs clientConnectionStateArgs)
@@ -94,13 +105,18 @@ namespace SS3D.Networking
             {
                 return;
             }
-            
+
+            if (_buttons == null || _loadingIcon == null)
+            {
+                return;
+            }
+
             _connectionFailed = true;
             _buttons.SetActive(true);
             _loadingIcon.gameObject.SetActive(false);
             _buttonsUiFade.ProcessFade();
 
-            UpdateMessageText(ApplicationMessages.Network.ConnectionFailed);
+            UpdateMessageText(ConnectionNotices.HasReason ? ConnectionNotices.LastReason : ApplicationMessages.Network.ConnectionFailed);
         }
     }
 }

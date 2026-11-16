@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using Coimbra;
@@ -8,15 +8,25 @@ using FishNet.Object.Synchronizing;
 using SS3D.Attributes;
 using SS3D.Data;
 using SS3D.Data.AssetDatabases;
+using SS3D.Data.Persistence;
 using SS3D.Interactions;
 using SS3D.Interactions.Interfaces;
 using SS3D.Logging;
+using SS3D.Systems.Atmospherics;
 using SS3D.Systems.Inventory.Containers;
 using SS3D.Systems.Inventory.Interactions;
+using SS3D.Systems.Combat;
+using SS3D.Systems.Combat.Interactions;
+using SS3D.Systems.Entities;
+using SS3D.Systems.Entities.Humanoid.Body;
+using SS3D.Systems.Health;
 using SS3D.Systems.Selection;
+using SS3D.Systems.Tile;
+using SS3D.Utils;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.Serialization;
+using SS3D.Core;
 #if UNITY_EDITOR
 using AssetDatabase = UnityEditor.AssetDatabase;
 using UnityEditor;
@@ -32,7 +42,7 @@ namespace SS3D.Systems.Inventory.Items
     [RequireComponent(typeof(NetworkTransform))]
     [RequireComponent(typeof(Selectable))]
     [RequiredLayer("Items")]
-    public class Item : InteractionSource, IInteractionTarget, IWorldObjectAsset
+    public class Item : InteractionSource, IInteractionTarget, IWorldObjectAsset, ISetupRecordRoot
     {
         [SerializeField]
 #if UNITY_EDITOR
@@ -49,10 +59,36 @@ namespace SS3D.Systems.Inventory.Items
         [FormerlySerializedAs("Weight")]
         [SerializeField] private float _weight;
 
+        [Tooltip("Physical size tier, checked against a container's MaxSizeClass fit ceiling."), SerializeField]
+        private SizeClass _sizeClass = SizeClass.Normal;
+
+        [Tooltip("Too heavy to pick up or store anywhere: it stays in the world and can only be dragged (a Syndicate bomb)."), SerializeField]
+        private bool _tooHeavyToLift;
+
+        [Tooltip("If greater than 1, identical items (same source asset) collapse into one stack up to this count."), SerializeField]
+        private int _maxStackSize = 1;
+
+        [Tooltip("Stack count a freshly spawned instance starts with (loadouts, map-placed stock). Clamped to the stack size."), SerializeField]
+        private int _initialStackCount = 1;
+
+        /// <summary>
+        /// How many units this item instance currently represents. Only meaningful when MaxStackSize > 1.
+        /// </summary>
+        [SyncVar]
+        private int _stackCount = 1;
+
         [FormerlySerializedAs("Traits")]
         [SerializeField] private List<Trait> _startingTraits;
 
         [SerializeField] private Rigidbody _rigidbody;
+
+        /// <summary>
+        /// How often a loose server-simulated item re-checks floor support to decide whether it
+        /// should fall. Items rest for long stretches, so this does not need to run per frame.
+        /// </summary>
+        private const float SupportCheckInterval = 0.25f;
+
+        private float _nextSupportCheckTime;
 
         private Sprite _sprite;
 
@@ -63,6 +99,22 @@ namespace SS3D.Systems.Inventory.Items
 
         [Tooltip("same point but for the left hand, in cases where it's needed")]
         public Transform AttachmentPointAlt;
+
+        [Header("Pose settings")]
+
+        [Tooltip("Euler rotation the item lies at on the floor, at yaw 0 (e.g. -90 X so a long item lies on its side). "
+            + "Spawns, drops and placements compose yaw with it. Keep the prefab root rotation equal to it.")]
+        [SerializeField] private Vector3 _restRotation;
+
+        [Tooltip("The item stands at rest on purpose (a can, a tank, a boot), so its rest pose need not lie flat. "
+            + "Only the editor audit reads it.")]
+        [SerializeField] private bool _restsUpright;
+
+        [Tooltip("Off: the inventory icon renders the item at its rest rotation. On: it uses Icon Rotation.")]
+        [SerializeField] private bool _overrideIconRotation;
+
+        [Tooltip("Euler rotation the inventory icon renders the item at, when Override Icon Rotation is on.")]
+        [SerializeField] private Vector3 _iconRotation;
 
         /// <summary>
         /// The list of characteristics this Item has
@@ -76,7 +128,44 @@ namespace SS3D.Systems.Inventory.Items
         [SyncVar]
         private AttachedContainer _container;
 
-        public string Name => _name;
+        public string Name
+        {
+            get
+            {
+                if (!string.IsNullOrEmpty(_name))
+                {
+                    return _name;
+                }
+
+                string objectName = gameObject.name;
+                const string cloneSuffix = "(Clone)";
+                if (objectName.EndsWith(cloneSuffix))
+                {
+                    objectName = objectName[..^cloneSuffix.Length].TrimEnd();
+                }
+
+                return objectName;
+            }
+        }
+
+        /// <summary>
+        /// This item's own weight. Does not include the recursive weight of anything stored inside it —
+        /// see AttachedContainer.Weight for that (Documents/design/inventory-storage.md §2, §7).
+        /// </summary>
+        public float Weight => _weight;
+
+        public SizeClass SizeClass => _sizeClass;
+
+        /// <summary>No hand, slot or container takes this item; it moves only by dragging or physics.</summary>
+        public bool TooHeavyToLift => _tooHeavyToLift;
+
+        public int MaxStackSize => _maxStackSize;
+
+        public bool IsStackable => _maxStackSize > 1;
+
+        public int StackCount => _stackCount;
+
+        public int InitialStackCount => _initialStackCount;
 
         public ReadOnlyCollection<Trait> Traits => ((List<Trait>) _traits.Collection).AsReadOnly();
 
@@ -84,6 +173,13 @@ namespace SS3D.Systems.Inventory.Items
         /// Where the item is stored
         /// </summary>
         public AttachedContainer Container => _container;
+
+        /// <summary>
+        /// On this peer, the container whose add callback last took the item in (hid, froze and parented it).
+        /// <see cref="Container"/> is server-only, and on a client the two containers' callbacks for one move
+        /// arrive in either order, so a late remove from the old container checks this before undoing anything.
+        /// </summary>
+        public AttachedContainer LocalHolder { get; internal set; }
 
         private bool _initialised = false;
         
@@ -114,13 +210,30 @@ namespace SS3D.Systems.Inventory.Items
             {
                 if (UnityEngine.Application.isPlaying)
                 {
-                    Serilog.Log.Warning($"Field {nameof(Asset)} is being modified in runtime. This should not happen in normal conditions.");
+                    Log.Warning(this, "Field {fieldName} is being modified in runtime. This should not happen in normal conditions.", Logs.Generic, nameof(Asset));
                 }
                 _asset = value;
             }
         }
 
         public Item Prefab => Asset ? Assets.Get<Item>(Asset) : null;
+
+        /// <summary>
+        /// The floor pose: authored pitch/roll at yaw 0 (e.g. -90° X so long items lie on their side). It is serialized
+        /// on the item, so an instance reads it directly whatever its current rotation.
+        /// </summary>
+        public Quaternion WorldRestRotation => Quaternion.Euler(_restRotation);
+
+        /// <summary>The rotation the inventory icon renders the item at; the rest pose unless overridden.</summary>
+        public Quaternion IconRotation => _overrideIconRotation ? Quaternion.Euler(_iconRotation) : WorldRestRotation;
+
+        public bool OverridesIconRotation => _overrideIconRotation;
+
+        /// <summary>
+        /// True when the rest pose stands the item up on purpose; otherwise the editor audit expects it to lie flat
+        /// (thinnest bounds axis vertical). Documents/architecture/systems/inventory.md.
+        /// </summary>
+        public bool RestsUpright => _restsUpright;
 
         /// <summary>
         /// Initialise this item fields. Can only be called once.
@@ -147,13 +260,62 @@ namespace SS3D.Systems.Inventory.Items
             set => _sprite = value;
         }
         
+        /// <summary>
+        /// The item's own scale, from its prefab. Hands sit under the character's armature, which the
+        /// height morph scales by 0.88–1.12. Attaching keeps the item's local scale (so held and worn
+        /// gear scales with the body) and detaching keeps its world scale, so without a reset every
+        /// pickup and drop multiplied the item by the holder's height.
+        /// </summary>
+        private Vector3 _restScale = Vector3.one;
+
+        protected override void OnAwake()
+        {
+            base.OnAwake();
+            _restScale = transform.localScale;
+        }
+
+        protected override void OnEnabled()
+        {
+            base.OnEnabled();
+            SceneRegistry<Item>.Register(this);
+        }
+
+        protected override void OnDisabled()
+        {
+            SceneRegistry<Item>.Unregister(this);
+            base.OnDisabled();
+        }
+
+        /// <summary>
+        /// Sets the local scale so the item's world scale is its own again, whatever its parent's scale.
+        /// Containers call it when an item leaves them.
+        /// </summary>
+        public void ApplyRestScale()
+        {
+            Transform parent = transform.parent;
+            if (parent == null)
+            {
+                transform.localScale = _restScale;
+                return;
+            }
+
+            Vector3 parentScale = parent.lossyScale;
+            transform.localScale = new Vector3(
+                SafeDivide(_restScale.x, parentScale.x),
+                SafeDivide(_restScale.y, parentScale.y),
+                SafeDivide(_restScale.z, parentScale.z));
+        }
+
+        private static float SafeDivide(float value, float divisor) =>
+            Mathf.Approximately(divisor, 0f) ? value : value / divisor;
+
         protected override void OnStart()
         {
             base.OnStart();
 
             foreach (Animator animator in GetComponents<Animator>())
             {
-                animator.keepAnimatorControllerStateOnDisable = true;
+                animator.keepAnimatorStateOnDisable = true;
             }
 
             // Clients don't need to calculate physics for rigidbodies as this is handled by the server
@@ -163,7 +325,6 @@ namespace SS3D.Systems.Inventory.Items
             }
 
             _nativeColliders ??= GetNativeColliders();
-            Debug.Log("Start " + name);
         }
 
         /// <summary>
@@ -172,18 +333,101 @@ namespace SS3D.Systems.Inventory.Items
         private Collider[] GetNativeColliders()
         {
             List<Collider> collidersToExcept = new();
-            AttachedContainer[] containers = GetComponentsInChildren<AttachedContainer>();
+            AttachedContainer[] containers = GetComponentsInChildren<AttachedContainer>(true);
             foreach (Item item in containers.SelectMany(container => container.Items))
             {
-                collidersToExcept.AddRange(item.GetComponentsInChildren<Collider>());
+                collidersToExcept.AddRange(item.GetComponentsInChildren<Collider>(true));
             }
-            return GetComponentsInChildren<Collider>().Except(collidersToExcept).ToArray();
+
+            // includeInactive: clothing may keep a folded child inactive until presentation applies;
+            // root colliders must still participate in Freeze/Unfreeze.
+            return GetComponentsInChildren<Collider>(true).Except(collidersToExcept).ToArray();
         }
 
         public override void OnStartServer()
         {
             base.OnStartServer();
             _traits.AddRange(_startingTraits);
+            // Salvage and merges call SetStackCount after spawn, which overrides this.
+            if (_initialStackCount > 1 && _stackCount == 1)
+            {
+                _stackCount = ItemStackRules.ClampCount(_initialStackCount, _maxStackSize);
+            }
+            if (_rigidbody != null) AtmosLooseBodies.Register(_rigidbody);
+        }
+
+        public override void OnStopServer()
+        {
+            if (_rigidbody != null) AtmosLooseBodies.Unregister(_rigidbody);
+            base.OnStopServer();
+        }
+
+        public override void Update()
+        {
+            base.Update();
+
+            if (!IsServer || _rigidbody == null || _rigidbody.isKinematic)
+            {
+                return;
+            }
+
+            float now = Time.time;
+            if (now < _nextSupportCheckTime)
+            {
+                return;
+            }
+
+            _nextSupportCheckTime = now + SupportCheckInterval;
+            KeepInStation();
+            ApplySupportGravity();
+        }
+
+        /// <summary>A loose item above the ceiling or below the deck goes back onto the nearest floor.</summary>
+        [Server]
+        private void KeepInStation()
+        {
+            Vector3 position = transform.position;
+            if (!StationBoundsRescue.IsOutOfBounds(position)
+                || !StationBoundsRescue.TryGetRescuePosition(position, out Vector3 rescue))
+            {
+                return;
+            }
+
+            StationBoundsRescue.LogRescue(this, position, _rigidbody.linearVelocity, rescue);
+            _rigidbody.linearVelocity = Vector3.zero;
+            _rigidbody.angularVelocity = Vector3.zero;
+            ItemUtility.Place(this, rescue, transform.rotation);
+        }
+
+        /// <summary>
+        /// Loose items follow the same zero-g rule as ragdolls: gravity only over floor support.
+        /// Unknown support (no map yet / AOI lag) leaves the current setting alone.
+        /// </summary>
+        public static bool? UseGravityForSupport(HumanoidSupportState support) => support switch
+        {
+            HumanoidSupportState.Supported => true,
+            HumanoidSupportState.Unsupported => false,
+            _ => null,
+        };
+
+        [Server]
+        private void ApplySupportGravity()
+        {
+            bool? useGravity = UseGravityForSupport(HumanoidSpaceSupport.GetSupportAt(transform.position));
+            if (!useGravity.HasValue || _rigidbody.useGravity == useGravity.Value)
+            {
+                return;
+            }
+
+            if (!useGravity.Value)
+            {
+                // Do not carry deck-settling fall speed into zero-g drift.
+                Vector3 velocity = _rigidbody.linearVelocity;
+                velocity.y = 0f;
+                _rigidbody.linearVelocity = velocity;
+            }
+
+            _rigidbody.useGravity = useGravity.Value;
         }
 
 
@@ -203,7 +447,11 @@ namespace SS3D.Systems.Inventory.Items
         [Server]
         public void Delete()
         {
-            Container.RemoveItem(this);
+            // A loose item (dropped, thrown, map-placed) has no container to leave.
+            if (Container != null)
+            {
+                Container.RemoveItem(this);
+            }
 
             if (GameObject != null)
             {
@@ -219,6 +467,14 @@ namespace SS3D.Systems.Inventory.Items
         {
             if (_rigidbody != null)
             {
+                // Clients keep items kinematic (server simulates). Setting velocity on a
+                // kinematic body warns every SyncList add — only clear when physics is live.
+                if (!_rigidbody.isKinematic)
+                {
+                    _rigidbody.linearVelocity = Vector3.zero;
+                    _rigidbody.angularVelocity = Vector3.zero;
+                }
+
                 _rigidbody.isKinematic = true;
             }
             ToggleCollider(false);
@@ -233,7 +489,13 @@ namespace SS3D.Systems.Inventory.Items
             if (_rigidbody != null)
             {
                 if (IsServer)
+                {
                     _rigidbody.isKinematic = false;
+                    // Take effect on the first physics step, before the item can start falling
+                    // through deep space; Update's throttled check keeps it current afterwards.
+                    ApplySupportGravity();
+                    _nextSupportCheckTime = Time.time + SupportCheckInterval;
+                }
             }
             ToggleCollider(true);
         }
@@ -251,15 +513,79 @@ namespace SS3D.Systems.Inventory.Items
             }
         }
         
+        /// <summary>
+        /// Removes any interaction outline shells (added by <see cref="SS3D.Systems.Interactions.InteractionOutlineView"/>)
+        /// from a preview clone, so they can't leak into generated icons.
+        /// Must DestroyImmediate: Coimbra Dispose → Destroy is end-of-frame, but the preview camera
+        /// renders in this frame while hover shells are still enabled.
+        /// </summary>
+        private static void RemoveInteractionOutlines(Transform root)
+        {
+            for (int i = root.childCount - 1; i >= 0; i--)
+            {
+                Transform child = root.GetChild(i);
+                if (child.name == SS3D.Systems.Interactions.InteractionOutlineView.OutlineObjectName)
+                {
+                    UnityEngine.Object.DestroyImmediate(child.gameObject);
+                    continue;
+                }
+
+                RemoveInteractionOutlines(child);
+            }
+        }
+
         /// <param name="visible">Should the item be visible</param>
         [ServerOrClient]
         public void SetVisibility(bool visible)
         {
+            // Re-assert folded world form before enabling renderers so unequip/drop shows the pile,
+            // not the body-shaped child (ClothingItemPresentation / ClothesDisplayer).
+            if (visible && TryGetComponent(out ClothingItemPresentation clothingPresentation))
+            {
+                clothingPresentation.ApplyWorldForm();
+            }
+
             // TODO: Make this handle multiple renderers, with different states
             Renderer[] renderers = GetComponentsInChildren<Renderer>();
             foreach (Renderer childRenderer in renderers)
             {
+                // Interaction outline shells manage their own visibility (see InteractionOutlineView);
+                // toggling them here would leave them stuck visible when the outline is meant to be hidden.
+                if (SS3D.Systems.Interactions.InteractionOutlineView.IsOutlineRenderer(childRenderer))
+                {
+                    continue;
+                }
+
+                // Hiding takes everything stored inside along. Showing must not: stored items sit at their
+                // container's position, so re-enabling them piled every nested toolbox's contents on top
+                // of the dropped one. They come back below only if their container shows its items.
+                if (visible && childRenderer.GetComponentInParent<Item>() != this)
+                {
+                    continue;
+                }
+
                 childRenderer.enabled = visible;
+            }
+
+            if (!visible)
+            {
+                return;
+            }
+
+            foreach (AttachedContainer container in GetComponentsInChildren<AttachedContainer>())
+            {
+                if (container.HideItems || container.GetComponentInParent<Item>() != this)
+                {
+                    continue;
+                }
+
+                foreach (Item storedItem in container.Items)
+                {
+                    if (storedItem != null)
+                    {
+                        storedItem.SetVisibility(true);
+                    }
+                }
             }
         }
 
@@ -272,16 +598,44 @@ namespace SS3D.Systems.Inventory.Items
 
         public virtual IInteraction[] CreateTargetInteractions(InteractionEvent interactionEvent)
         {
-            return new IInteraction[] { new PickupInteraction { Icon = null } };
+            // Pickup needs an empty hand; Add to stack is for the matching stack already in hand.
+            return new IInteraction[] { new PickupInteraction { Icon = null }, new StackPickupInteraction() };
         }
 
         // this creates the base interactions for an item, in this case, the drop interaction
-        public override void CreateSourceInteractions(IInteractionTarget[] targets, List<InteractionEntry> interactions)
+        public override void CreateSourceInteractions(IInteractionTarget[] targets, List<InteractionEntry> interactions, InteractionEvent context)
         {
-            base.CreateSourceInteractions(targets, interactions);
-            DropInteraction dropInteraction = new();
+            base.CreateSourceInteractions(targets, interactions, context);
+            interactions.Add(InteractionEntry.SourceOnly(new DropInteraction()));
 
-            interactions.Add(new InteractionEntry(null, dropInteraction));
+            // Improvised melee for any held item without a dedicated weapon profile.
+            if (TryGetComponent(out MeleeWeaponItemExtension _)
+                || TryGetComponent(out RangedWeaponItemExtension _))
+            {
+                return;
+            }
+
+            var improvisedHit = new MeleeHitInteraction(MeleeWeaponProfile.Improvised);
+            if (!improvisedHit.CanStartSwing(this))
+            {
+                return;
+            }
+
+            foreach (IInteractionTarget target in targets)
+            {
+                if (target is not IGameObjectProvider provider)
+                {
+                    continue;
+                }
+
+                Entity entity = provider.GameObject.GetComponentInParent<Entity>();
+                if (entity == null || entity.GetComponentInChildren<HumanHealthController>() == null)
+                {
+                    continue;
+                }
+
+                interactions.Add(new InteractionEntry(target, improvisedHit));
+            }
         }
 
         /// <summary>
@@ -314,7 +668,26 @@ namespace SS3D.Systems.Inventory.Items
         [ServerOrClient]
         public bool HasTrait(Trait trait)
         {
-            return _traits.Contains(trait);
+            if (trait == null)
+            {
+                return false;
+            }
+
+            // SyncList traits on clients are CreateInstance copies — match Name+Category, not refs.
+            foreach (Trait owned in _traits)
+            {
+                if (owned == null)
+                {
+                    continue;
+                }
+
+                if (owned == trait || (owned.Name == trait.Name && owned.Category == trait.Category))
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
 
         /// <summary>
@@ -326,58 +699,186 @@ namespace SS3D.Systems.Inventory.Items
             _container = newContainer;
         }
 
+        /// <summary>
+        /// Whether this item and <paramref name="other"/> are the same stackable definition and could
+        /// share one stack. Does not check remaining capacity — see AttachedContainer's merge logic.
+        /// </summary>
+        [ServerOrClient]
+        public bool CanMergeWith(Item other)
+        {
+            return IsStackable
+                && other != null
+                && other.IsStackable
+                && Asset != null
+                && other.Asset != null
+                && Asset.Equals(other.Asset);
+        }
+
+        [Server]
+        public void SetStackCount(int count)
+        {
+            _stackCount = ItemStackRules.ClampCount(count, _maxStackSize);
+        }
+
+        /// <summary>
+        /// Spends <paramref name="amount"/> units of this stack. Deletes the item when the stack is used up.
+        /// Returns false and spends nothing when the stack holds fewer.
+        /// </summary>
+        [Server]
+        public bool TryConsume(int amount)
+        {
+            if (!ItemStackRules.TryResolveConsume(_stackCount, amount, out int remaining, out bool deleteItem))
+            {
+                return false;
+            }
+
+            if (deleteItem)
+            {
+                Delete();
+                return true;
+            }
+
+            _stackCount = remaining;
+            return true;
+        }
+
        
+
+        /// <summary>
+        /// Sprite for Main HUD / storage slots. Hands and world use the default (folded for clothing).
+        /// Equipment-doll worn slots pass <paramref name="preferWornShape"/>.
+        /// </summary>
+        [ServerOrClient]
+        public Sprite GetHudSprite(bool preferWornShape = false)
+        {
+            if (preferWornShape && TryGetComponent(out ClothingItemPresentation clothingPresentation))
+            {
+                Sprite worn = clothingPresentation.GetWornHudSprite(this);
+                if (worn != null)
+                {
+                    return worn;
+                }
+            }
+
+            return ItemSprite;
+        }
 
         // Generate preview of the same object, but without stored items.
         [ServerOrClient]
-        public Sprite GenerateIcon()
+        public Sprite GenerateIcon(bool useWornShapedForm = false)
         {
-            RuntimePreviewGenerator.BackgroundColor = new Color(0, 0, 0, 0);
-            RuntimePreviewGenerator.OrthographicMode = true;
+#if UNITY_SERVER
+            // Icon generation renders a camera to produce a preview texture, which is unavailable and
+            // unnecessary on a dedicated server (no shaders are included in the build for it to use).
+            return null;
+#else
+            // Same for headless / -nographics clients (multiplayer harness): NullGfxDevice cannot
+            // run RuntimePreviewGenerator without URP GraphicsBuffer/Blitter exceptions.
+            if (UnityEngine.Application.isBatchMode
+                || SystemInfo.graphicsDeviceType == UnityEngine.Rendering.GraphicsDeviceType.Null)
+            {
+                return null;
+            }
+
+            Quaternion previousPreviewRotation = RuntimePreviewGenerator.PreviewRotation;
+            RuntimePreviewGenerator.PreviewRotation = IconRotation;
+
             // Find stored items
             AttachedContainer[] containers = GetComponentsInChildren<AttachedContainer>();
             // If stored items are found, temporarily set their parents to null,
-            // so RuntimePreviewGenerator won't generate stored items
+            // so IconPreviewGenerator won't generate stored items
             Dictionary<Transform, Transform> storedItemsWithParents = new Dictionary<Transform, Transform>();
-            foreach (AttachedContainer attachedContainer in containers)
-            {
-                
-                IEnumerable<Item> storedItems = attachedContainer.Items;
-                foreach (Item item in storedItems)
-                {
-                    Transform itemTransform = item.transform;
-                    storedItemsWithParents.Add(itemTransform, itemTransform.parent);
-                }
-            }
-            foreach (Transform storedItem in storedItemsWithParents.Keys)
-            {
-                storedItem.parent = null;
-            }
-
-            Transform previewObject = Instantiate(transform, null, false);
-            previewObject.gameObject.hideFlags = HideFlags.HideAndDontSave;
-            previewObject.GetComponent<Item>().SetVisibility(true);
-            Sprite icon;
+            Transform previewObject = null;
+            Sprite icon = null;
             try
             {
-                Texture2D texture = RuntimePreviewGenerator.GenerateModelPreviewWithShader(previewObject,
-                    Shader.Find("Legacy Shaders/Diffuse"), null, 128, 128);
-                icon = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), 
-                    new Vector2(0.5f, 0.5f), 100);
-                icon.name = transform.name;
+                foreach (AttachedContainer attachedContainer in containers)
+                {
+                    IEnumerable<Item> storedItems = attachedContainer.Items;
+                    foreach (Item item in storedItems)
+                    {
+                        Transform itemTransform = item.transform;
+                        storedItemsWithParents.Add(itemTransform, itemTransform.parent);
+                    }
+                }
+                foreach (Transform storedItem in storedItemsWithParents.Keys)
+                {
+                    storedItem.parent = null;
+                }
+
+                // Stay in a loaded scene until bake finishes. HideAndDontSave makes
+                // scene.IsValid() false, so RuntimePreviewGenerator re-clones; ClothingItemPresentation.Awake
+                // then ApplyWorldForm and a worn bake becomes the folded pile again.
+                previewObject = Instantiate(transform, null, false);
+                RemoveInteractionOutlines(previewObject);
+                Item previewItem = previewObject.GetComponent<Item>();
+                if (previewItem.TryGetComponent(out ClothingItemPresentation presentation))
+                {
+                    presentation.PrepareIconPreview(useWornShapedForm);
+                }
+                if (useWornShapedForm && presentation != null)
+                {
+                    // Bypass SetVisibility — that re-applies world (folded) form.
+                    presentation.ApplyWornShapedForm();
+                    SetChildRenderersEnabled(previewObject, true);
+                }
+                else
+                {
+                    previewItem.SetVisibility(true);
+                }
+
+                try
+                {
+                    // Bright full-toon ObjectIcon — not live half-toon world mats.
+                    Texture2D texture = IconPreviewGenerator.Generate(previewObject, 128, 128);
+                    if (texture == null)
+                    {
+                        Log.Warning(this, "Can't generate icon for " + name + ".");
+                        icon = null;
+                    }
+                    else
+                    {
+                        icon = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height),
+                            new Vector2(0.5f, 0.5f), 100);
+                        icon.name = transform.name;
+                    }
+                }
+                catch (NullReferenceException)
+                {
+                    Log.Warning(this, "Can't generate icon for " + name + ".");
+                    icon = null;
+                }
             }
-            catch (NullReferenceException)
+            finally
             {
-                Log.Warning(this, "Can't generate icon for " + name + ".");
-                icon = null;
+                RuntimePreviewGenerator.PreviewRotation = previousPreviewRotation;
+                if (previewObject != null)
+                {
+                    previewObject.gameObject.Dispose(false);
+                }
+                foreach (KeyValuePair<Transform, Transform> storedItemWithParent in storedItemsWithParents)
+                {
+                    storedItemWithParent.Key.parent = storedItemWithParent.Value;
+                }
             }
-            // Return stored items back to their parents
-            previewObject.gameObject.Dispose(false);
-            foreach (KeyValuePair<Transform, Transform> storedItemWithParent in storedItemsWithParents)
-            {
-                storedItemWithParent.Key.parent = storedItemWithParent.Value;
-            }
+
             return icon;
+#endif
+        }
+
+        private static void SetChildRenderersEnabled(Transform root, bool visible)
+        {
+            // includeInactive: worn-shaped clothing children start disabled; preview must enable them.
+            Renderer[] renderers = root.GetComponentsInChildren<Renderer>(true);
+            foreach (Renderer childRenderer in renderers)
+            {
+                if (SS3D.Systems.Interactions.InteractionOutlineView.IsOutlineRenderer(childRenderer))
+                {
+                    continue;
+                }
+
+                childRenderer.enabled = visible;
+            }
         }
 
         /// <summary>
@@ -407,6 +908,13 @@ namespace SS3D.Systems.Inventory.Items
 
         #region Editor
 #if UNITY_EDITOR
+        /// <summary>A newly added Item takes its rest pose from the root rotation it was authored at.</summary>
+        protected override void Reset()
+        {
+            base.Reset();
+            _restRotation = transform.localEulerAngles;
+        }
+
         private void OnDrawGizmos()
         {
             // Make sure gizmo only draws in prefab mode

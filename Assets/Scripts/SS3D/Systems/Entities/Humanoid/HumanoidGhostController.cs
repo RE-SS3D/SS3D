@@ -1,8 +1,5 @@
-using System;
-using SS3D.Core;
-using SS3D.Core.Behaviours;
-using SS3D.Systems.Health;
-using SS3D.Systems.Screens;
+using FishNet.Connection;
+using FishNet.Object;
 using UnityEngine;
 
 namespace SS3D.Systems.Entities.Humanoid
@@ -13,6 +10,14 @@ namespace SS3D.Systems.Entities.Humanoid
     /// </summary>
     public class HumanoidGhostController : HumanoidController
     {
+        public override void OnStartClient()
+        {
+            base.OnStartClient();
+            // Base OnAwake/Setup already resolves HumanoidBodyStateMachine — do not redeclare
+            // _bodyStateMachine here (Unity serializes the duplicate name and warns on rebuild).
+            BodyStateMachine?.SetFloating(true);
+        }
+
         /// <summary>
         /// Executes the movement code and updates the IK targets
         /// </summary>
@@ -29,8 +34,29 @@ namespace SS3D.Systems.Entities.Humanoid
             else
             {
                 MovePlayer();
-                MoveMovementTarget(Vector2.zero, 5);
+                MoveMovementTarget(Vector2.zero);
             }
+        }
+
+        /// <summary>
+        /// Server: moves the ghost to <paramref name="position"/>. Ghost movement is driven by the
+        /// owning client, so the owner is told to move too; a server-only write would be overwritten
+        /// by the owner's next position update.
+        /// </summary>
+        [Server]
+        public void ServerTeleport(Vector3 position)
+        {
+            transform.position = position;
+            if (Owner != null && Owner.IsValid)
+            {
+                TargetTeleport(Owner, position);
+            }
+        }
+
+        [TargetRpc]
+        private void TargetTeleport(NetworkConnection conn, Vector3 position)
+        {
+            transform.position = position;
         }
 
         /// <summary>
@@ -41,5 +67,4 @@ namespace SS3D.Systems.Entities.Humanoid
             transform.position += TargetMovement * ((_movementSpeed) * Time.deltaTime);
         }
     }
-
 }

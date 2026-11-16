@@ -12,7 +12,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 827764dff5251cd4ebdef8908d68f3dd, type: 3}
   m_Name: PlasmaTank
   m_EditorClassIdentifier: 
-  prefab: {fileID: 7125681683583715523, guid: e3fb39f0a84acf541b6ee828550a1708, type: 3}
   PrefabAsset: {fileID: 11400000, guid: a34baef34dca37c449a6f5872216edfc, type: 2}
   icon: {fileID: 0}
-  _nameString: 

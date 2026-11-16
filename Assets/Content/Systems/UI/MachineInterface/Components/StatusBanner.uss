@@ -1,0 +1,46 @@
+
+.status-banner {
+    flex-direction: column;
+    padding: var(--ss3d-space-3) var(--ss3d-space-4);
+    border-radius: var(--ss3d-radius-sm);
+    border-width: 1px;
+    margin-bottom: var(--ss3d-space-3);
+}
+
+.status-banner__header {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--ss3d-space-2);
+}
+
+.status-banner__headline {
+    font-size: 14px;
+    -unity-font-style: bold;
+    letter-spacing: 2px;
+}
+
+.status-banner__explanation {
+    font-size: 11px;
+    white-space: normal;
+}
+
+.status-banner.tone-bg-info {
+    background-color: var(--ss3d-feedback-info-bg);
+    border-color: var(--ss3d-feedback-info-border);
+}
+
+.status-banner.tone-bg-success {
+    background-color: var(--ss3d-feedback-success-bg);
+    border-color: var(--ss3d-feedback-success-border);
+}
+
+.status-banner.tone-bg-warning {
+    background-color: var(--ss3d-feedback-warning-bg);
+    border-color: var(--ss3d-feedback-warning-border);
+}
+
+.status-banner.tone-bg-danger {
+    background-color: var(--ss3d-feedback-danger-bg);
+    border-color: var(--ss3d-feedback-danger-border);
+}

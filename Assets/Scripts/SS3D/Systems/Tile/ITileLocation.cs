@@ -39,6 +39,12 @@ namespace SS3D.Systems.Tile
         public bool TryClearPlacedObject(Direction direction = Direction.North);
 
         /// <summary>
+        /// Drop this location's reference without destroying the object. For a client whose object
+        /// FishNet is already despawning: only the server may despawn it.
+        /// </summary>
+        public bool TryForgetPlacedObject(Direction direction = Direction.North);
+
+        /// <summary>
         /// Remove all tile objects from the tile in all given direction.
         /// </summary>
         public void ClearAllPlacedObject();

@@ -12,7 +12,6 @@ using UnityEditor.UIElements;
 using UnityEditor.IMGUI.Controls;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using UnityEngine.UIElements;
 
 namespace Hierarchy2
 {

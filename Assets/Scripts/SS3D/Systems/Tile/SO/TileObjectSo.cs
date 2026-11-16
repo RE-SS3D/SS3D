@@ -24,6 +24,36 @@ namespace SS3D.Systems.Tile
         // Whether or not a wall mount is large
         public bool isLarge;
 
+        [Tooltip("Extra height applied when the object is placed on the tile grid. Used for inset floor furniture such as vents.")]
+        public float placementYOffset;
+
+        [Tooltip("Opt this FurnitureBase object into metal casing damage. Tables use their material automatically.")]
+        public bool structuralDamageEnabled;
+
+        [Tooltip("Max structural HP. 0 = use StructuralIntegrityRules defaults.")]
+        public float structuralMaxIntegrity;
+
+        [Tooltip("False for structures air passes through: a girder or an unwelded plated girder (construction.md §6). Read by TileOccupancyEvaluator.")]
+        public bool airtight = true;
+
+        [Tooltip("False for structures you can see through: a bare girder (construction.md §6). Read by TileOccupancyEvaluator and VisionSubSystem; windows are see-through by type.")]
+        public bool blocksVision = true;
+
+        [Tooltip("Reinforced walls and windows: repairable, never deconstructed or built (construction.md §9, D10).")]
+        public bool reinforced;
+
+        [Tooltip("Sound and debris material when this differs from what genericType and specificType imply, e.g. a window typed as a steel wall.")]
+        public StructuralMaterialOverride impactMaterial;
+
+        /// <summary>
+        /// World position for a tile grid anchor, including any placement height offset.
+        /// </summary>
+        public Vector3 GetPlacedWorldPosition(Vector3 gridPosition)
+        {
+            gridPosition.y += placementYOffset;
+            return gridPosition;
+        }
+
         /// <summary>
         /// TODO : document and understand properly this method. Why the diagonal directions are not treated ?
         /// </summary>

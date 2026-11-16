@@ -1,0 +1,23 @@
+{
+    "name": "SS3D.UI.Lobby",
+    "rootNamespace": "SS3D.UI.Lobby",
+    "references": [
+        "SS3D.Core",
+        "SS3D.Systems",
+        "SS3D.UI.Shell",
+        "SS3D.UI.SettingsPanel",
+        "Unity.InputSystem",
+        "SS3D.Permissions",
+        "FishNet.Runtime",
+        "SS3D.Networking"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

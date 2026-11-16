@@ -12,9 +12,13 @@ namespace SS3D.Systems.PlayerControl.Messages
     {
         public readonly string Ckey;
 
-        public  UserAuthorizationMessage(string ckey)
+        /// <summary>Optional admin secret from <c>-token=</c>; see <see cref="SS3D.Permissions.AdminTokens"/>.</summary>
+        public readonly string Token;
+
+        public UserAuthorizationMessage(string ckey, string token = null)
         {
             Ckey = ckey;
+            Token = token;
         }
     }
 }

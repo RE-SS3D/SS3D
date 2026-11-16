@@ -17,3 +17,5 @@ MonoBehaviour:
   EnableDiscord: 0
   SkipIntro: 1
   ForceLauncher: 0
+  TestScriptPath: 
+  EditorStationTemplate: classic-ministation

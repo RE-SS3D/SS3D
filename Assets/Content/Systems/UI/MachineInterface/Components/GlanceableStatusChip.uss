@@ -1,0 +1,84 @@
+
+.glanceable-status-chip {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 16px;
+    border-width: 1px;
+    border-radius: var(--ss3d-radius-md);
+    flex-shrink: 0;
+}
+
+.glanceable-status-chip__left {
+    flex-direction: row;
+    align-items: center;
+    flex-shrink: 1;
+    min-width: 0;
+}
+
+.glanceable-status-chip__headline {
+    font-size: 20px;
+    letter-spacing: 1.6px;
+    margin-right: 12px;
+    padding: 0;
+    -unity-text-align: middle-left;
+}
+
+.glanceable-status-chip__left .status-badge {
+    align-self: center;
+}
+
+.glanceable-status-chip__right {
+    font-size: 12px;
+    color: var(--ss3d-text-secondary);
+    white-space: normal;
+    flex-shrink: 1;
+    min-width: 0;
+    margin-left: var(--ss3d-space-2);
+    -unity-text-align: middle-right;
+}
+
+.glanceable-status-chip.tone-bg-info {
+    background-color: var(--ss3d-feedback-info-bg);
+    border-color: var(--ss3d-feedback-info);
+}
+
+.glanceable-status-chip.tone-bg-success {
+    background-color: var(--ss3d-feedback-success-bg);
+    border-color: var(--ss3d-feedback-success);
+}
+
+.glanceable-status-chip.tone-bg-warning {
+    background-color: var(--ss3d-feedback-warning-bg);
+    border-color: var(--ss3d-feedback-warning);
+}
+
+.glanceable-status-chip.tone-bg-danger {
+    background-color: var(--ss3d-feedback-danger-bg);
+    border-color: var(--ss3d-feedback-danger);
+}
+
+.glanceable-status-chip.tone-bg-neutral {
+    background-color: var(--ss3d-diegetic-inset);
+    border-color: var(--ss3d-border-subtle);
+}
+
+.glanceable-status-chip.tone-bg-info .glanceable-status-chip__headline {
+    color: var(--ss3d-feedback-info);
+}
+
+.glanceable-status-chip.tone-bg-success .glanceable-status-chip__headline {
+    color: var(--ss3d-feedback-success);
+}
+
+.glanceable-status-chip.tone-bg-warning .glanceable-status-chip__headline {
+    color: var(--ss3d-feedback-warning);
+}
+
+.glanceable-status-chip.tone-bg-danger .glanceable-status-chip__headline {
+    color: var(--ss3d-feedback-danger);
+}
+
+.glanceable-status-chip.tone-bg-neutral .glanceable-status-chip__headline {
+    color: var(--ss3d-text-secondary);
+}

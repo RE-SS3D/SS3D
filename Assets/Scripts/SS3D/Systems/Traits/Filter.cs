@@ -22,11 +22,13 @@ namespace SS3D.Systems
 
             foreach (Trait trait in item.Traits)
             {
-                if (acceptedTraits.Contains(trait))
+                // Match by Name+Category: client SyncList deserializes Traits via CreateInstance,
+                // so reference Contains against asset filter lists always fails on pure clients.
+                if (ListContainsTrait(acceptedTraits, trait))
                 {
                     traitCount++;
                 }
-                else if (deniedTraits.Contains(trait))
+                else if (ListContainsTrait(deniedTraits, trait))
                 {
                     return false;
                 }
@@ -41,6 +43,35 @@ namespace SS3D.Systems
             {
                 return traitCount > 0;
             }
+        }
+
+        private static bool ListContainsTrait(List<Trait> list, Trait candidate)
+        {
+            if (candidate == null || list == null)
+            {
+                return false;
+            }
+
+            for (int i = 0; i < list.Count; i++)
+            {
+                Trait entry = list[i];
+                if (entry == null)
+                {
+                    continue;
+                }
+
+                if (entry == candidate)
+                {
+                    return true;
+                }
+
+                if (entry.Name == candidate.Name && entry.Category == candidate.Category)
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
         
         //Hash for identification

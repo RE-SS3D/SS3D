@@ -1,0 +1,57 @@
+name: Bug report
+description: Something in the game is broken or behaves wrongly.
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for reporting! Questions and ideas belong in [Discussions](https://github.com/RE-SS3D/SS3D/discussions); what's planned is on the [roadmap](https://github.com/RE-SS3D/SS3D/blob/develop/ROADMAP.md).
+  - type: input
+    id: version
+    attributes:
+      label: Game version
+      description: Shown as "build …" in the lobby's Server Info panel, or in the name of the release zip you downloaded. In the Editor, give the commit you're on.
+      placeholder: 0.1.1-dev.12+5da58b9
+    validations:
+      required: true
+  - type: dropdown
+    id: build
+    attributes:
+      label: How were you playing?
+      options:
+        - Release download (Windows)
+        - Release download (Linux)
+        - Unity Editor
+    validations:
+      required: true
+  - type: dropdown
+    id: role
+    attributes:
+      label: Were you hosting or joining?
+      options:
+        - Hosting (or playing alone)
+        - Joined someone else's server
+        - Dedicated server
+        - Not sure
+    validations:
+      required: true
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened, and what did you expect?
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. Start a round on …
+        2. …
+    validations:
+      required: true
+  - type: textarea
+    id: extra
+    attributes:
+      label: Logs, screenshots or map file
+      description: Drag files in here. Logs are in the `Game/Logs/` folder of the release download. For map bugs, use the Map editor bug form instead.

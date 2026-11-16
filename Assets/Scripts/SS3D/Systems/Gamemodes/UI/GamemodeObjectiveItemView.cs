@@ -37,9 +37,6 @@ namespace SS3D.Systems.Gamemodes.UI
                 case ObjectiveStatus.Failed:
                     _text.color = Color.red;
                     break;
-                case ObjectiveStatus.Cancelled:
-                    _text.color = Color.gray;
-                    break;
                 case ObjectiveStatus.InProgress:
                     _text.color = Color.yellow;
                     break;

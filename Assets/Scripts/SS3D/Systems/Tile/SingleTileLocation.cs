@@ -37,6 +37,17 @@ namespace SS3D.Systems.Tile
             return false;
         }
 
+        public bool TryForgetPlacedObject(Direction direction = Direction.North)
+        {
+            if (PlacedObject == null)
+            {
+                return false;
+            }
+
+            PlacedObject = null;
+            return true;
+        }
+
         /// <summary>
         /// Saves this tileObject and includes the information from any PlacedTileObject.
         /// </summary>

@@ -1,0 +1,34 @@
+{
+  "_doc": "Input for Tools/clothing/export_clothing.py. Each set becomes Assets/Art/Models/Items/Clothing/Jobs/<set>.fbx: HumanArmature plus one skinned worn mesh per item (named after the item) and an optional static world mesh (<name>Folded or <name>Item). Sources: hb = HUMAN_BODY blend object, drive = Drive FBX path#object, syn = Syndicate blend objects joined with +. weights: keep | transfer:<hb object> | bone:<bone>. grid: the Drive file lays pieces out on a 1 m grid; shift x/y back to the body. morphs: bake the body shape keys from Reference Jumpsuit. folded: auto (recolour JumpsuitGreyFolded from the worn mesh) or a source object for the world mesh.",
+  "sets": {
+    "Command": [
+      {"name": "JumpsuitCaptain", "src": "drive:Sets/Departments/Command/Captain/Captain Jumpsuit.fbx#Jumpsuit - Captain", "weights": "transfer:Reference Jumpsuit", "morphs": true, "folded": "auto"},
+      {"name": "CapCaptain", "src": "drive:Sets/Departments/Command/Captain/Captain Garrison Cap.fbx#Captain Garrison Cap", "weights": "bone:head", "grid": true},
+      {"name": "BackpackCommand", "src": "drive:Sets/Departments/Command/Backpack Command.fbx#Misc - Backpack Command", "weights": "transfer:Misc - Backpack"}
+    ],
+    "Medical": [
+      {"name": "JumpsuitMedical", "src": "drive:Sets/Departments/Medical/Doctor/Medical Jumpsuit.fbx#Jumpsuit - Medical", "weights": "transfer:Reference Jumpsuit", "morphs": true, "folded": "auto"},
+      {"name": "LabCoat", "src": "drive:Generic/Overwear/LabCoat.fbx#Oversuit - Lab Coat", "weights": "transfer:Oversuit - Lab Coat", "morphs": true, "folded": "hb:Item - Jumpsuit Item Lab Coat"},
+      {"name": "BackpackMedical", "src": "hb:Misc - Backpack Medical", "weights": "keep"}
+    ],
+    "Security": [
+      {"name": "ArmorVestSecurity", "src": "hb:Jumpsuit - Body Armor", "weights": "keep"},
+      {"name": "HelmetSecurity", "src": "drive:Sets/Departments/Security/Security Helmet.fbx#Headgear - Sec Helmet", "weights": "bone:head", "grid": true},
+      {"name": "CapSecurity", "src": "drive:Sets/Departments/Security/Security Officer/Security Cap.fbx#Headgear - Security Cap", "weights": "bone:head", "grid": true},
+      {"name": "GlassesSecurityHud", "src": "drive:Sets/Departments/Security/Security HUD Glasses.fbx#Mask - Sec Glasses", "weights": "bone:head", "grid": true},
+      {"name": "BackpackSecurity", "src": "hb:Misc - Backpack Security", "weights": "keep"}
+    ],
+    "Engineering": [
+      {"name": "HardHatYellow", "src": "drive:Generic/Headwear/Helmets/#HardHats.fbx#HardHatYellow", "weights": "bone:head", "grid": true},
+      {"name": "ShoeWorkBoots", "src": "drive:Sets/Departments/Engineering/WorkBootsYellow.fbx#WorkBootsYellow", "weights": "transfer:Shoes - Jackboots", "folded": "drive:Sets/Departments/Engineering/WorkBootsYellow.fbx#WorkBootsYellowItem"},
+      {"name": "WeldingMask", "src": "hb:Headgear - Welding Mask Down", "weights": "keep"},
+      {"name": "GogglesMeson", "src": "drive:Generic/Eyewear/Optical Mason Scanner Goggles.fbx#MasonScannerGoggles", "weights": "bone:head", "folded": "drive:Generic/Eyewear/Optical Mason Scanner Goggles.fbx#MasonScannerGoggles_Item"}
+    ],
+    "Syndicate": [
+      {"name": "JumpsuitSyndicate", "src": "syn:Syndicate pants+Syndicate suit up+Syndicate belt", "weights": "transfer:Reference Jumpsuit", "morphs": true, "folded": "auto"},
+      {"name": "ArmorVestSyndicate", "src": "syn:Vest+Vest shields", "weights": "transfer:Jumpsuit - Body Armor", "morphs": true},
+      {"name": "ShoeSyndicateBoots", "src": "syn:Bots", "weights": "transfer:Shoes - Jackboots"},
+      {"name": "GloveSyndicate", "src": "syn:Gloves", "weights": "transfer:Gloves - Insulated"}
+    ]
+  }
+}

@@ -1,0 +1,715 @@
+# Manual Windows prerelease (+ optional Linux / EditMode / smoke), plus nightly full cut.
+# Default dispatch: Windows client → versioned GitHub release vX.Y.Z (bump worked out by
+# Tools/versioning/next_version.py — see Documents/architecture/2026-10_game-versioning.md).
+# Linux, EditMode, and smoke are opt-in. tag_suffix gives an unversioned develop-<suffix> test cut.
+# Nightly (05:17 UTC): Windows + Linux client + Linux dedicated server → floating develop-nightly,
+# started by an external workflow_dispatch (GitHub's `schedule` trigger was delayed/dropped).
+# Runs on the self-hosted runner (dispatch runner=github for GitHub-hosted). Not triggered on every develop merge.
+# See Documents/architecture/2026-07_ci-develop-release-pipeline.md.
+name: Develop Release
+on:
+  workflow_dispatch:
+    inputs:
+      build_linux:
+        description: Also build Linux dedicated server + client (~30–45 min; always on for numbered vX.Y.Z releases)
+        type: boolean
+        default: false
+      run_editmode:
+        description: Run EditMode tests before player builds (default off — use editmodetestrunner.yml for cheap feedback)
+        type: boolean
+        default: false
+      run_smoke:
+        description: Run multiplayer smoke after Linux builds (requires build_linux; default off — use multiplayer-smoke-test.yml)
+        type: boolean
+        default: false
+      skip_release:
+        description: Skip Windows build and GitHub prerelease (Linux-only when build_linux is on)
+        type: boolean
+        default: false
+      version_bump:
+        description: Release version bump (auto = from save/protocol/milestone/trailer signals; major is the owner's call)
+        type: choice
+        options:
+          - auto
+          - patch
+          - minor
+          - major
+        default: auto
+      tag_suffix:
+        description: Unversioned develop-<suffix> test cut; nightly restores the full nightly prerelease
+        type: string
+        default: ''
+      runner:
+        description: Runner (self-hosted by default; github = GitHub-hosted ubuntu-latest)
+        type: choice
+        options:
+          - self-hosted
+          - github
+        default: self-hosted
+
+concurrency:
+  group: develop-release
+  cancel-in-progress: false
+
+jobs:
+  prepare:
+    name: Prepare flags + runner
+    runs-on: ubuntu-latest
+    permissions:
+      actions: read
+      contents: read
+    outputs:
+      runs_on: ${{ steps.pick.outputs.runs_on }}
+      self_hosted: ${{ steps.pick.outputs.self_hosted }}
+      build_linux: ${{ steps.flags.outputs.build_linux }}
+      skip_release: ${{ steps.flags.outputs.skip_release }}
+      run_editmode: ${{ steps.flags.outputs.run_editmode }}
+      run_smoke: ${{ steps.flags.outputs.run_smoke }}
+      tag_suffix: ${{ steps.flags.outputs.tag_suffix }}
+      version: ${{ steps.version.outputs.version }}
+      release_tag: ${{ steps.version.outputs.release_tag }}
+      versioned: ${{ steps.version.outputs.versioned }}
+      bump: ${{ steps.version.outputs.bump }}
+      bump_reasons: ${{ steps.version.outputs.reasons }}
+    steps:
+      - name: Checkout history for versioning
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          filter: blob:none
+          lfs: false
+      - name: Resolve dispatch flags
+        id: flags
+        run: |
+          set -euo pipefail
+          if [ "${{ inputs.tag_suffix == 'nightly' }}" = "true" ]; then
+            echo "build_linux=true" >> "$GITHUB_OUTPUT"
+            echo "skip_release=false" >> "$GITHUB_OUTPUT"
+            echo "run_editmode=false" >> "$GITHUB_OUTPUT"
+            echo "run_smoke=false" >> "$GITHUB_OUTPUT"
+            echo "tag_suffix=nightly" >> "$GITHUB_OUTPUT"
+            echo "Nightly: full Windows + Linux client/server, tag develop-nightly"
+            exit 0
+          fi
+
+          bool() {
+            # workflow_dispatch booleans arrive as true/false strings.
+            case "$1" in
+              true|True) echo true ;;
+              *) echo false ;;
+            esac
+          }
+
+          build_linux=$(bool '${{ inputs.build_linux }}')
+          skip_release=$(bool '${{ inputs.skip_release }}')
+          if [ "$skip_release" = "false" ] && [ -z "${{ inputs.tag_suffix }}" ] && [ "$build_linux" = "false" ]; then
+            # Numbered releases publish as stable and reach both updaters, so they need the Linux client too.
+            build_linux=true
+            echo "::notice::Numbered release: building Linux client + server as well (stable releases ship every platform)"
+          fi
+          echo "build_linux=$build_linux" >> "$GITHUB_OUTPUT"
+          echo "skip_release=$skip_release" >> "$GITHUB_OUTPUT"
+          echo "run_editmode=$(bool '${{ inputs.run_editmode }}')" >> "$GITHUB_OUTPUT"
+          echo "run_smoke=$(bool '${{ inputs.run_smoke }}')" >> "$GITHUB_OUTPUT"
+          echo "tag_suffix=${{ inputs.tag_suffix }}" >> "$GITHUB_OUTPUT"
+      - name: Resolve game version
+        id: version
+        env:
+          SKIP_RELEASE: ${{ steps.flags.outputs.skip_release }}
+          TAG_SUFFIX: ${{ steps.flags.outputs.tag_suffix }}
+          VERSION_BUMP: ${{ github.event_name == 'workflow_dispatch' && inputs.version_bump || 'auto' }}
+        run: |
+          set -euo pipefail
+          # Nightly, tag_suffix test cuts and Linux-only runs are dev builds (0.1.1-dev.N+sha);
+          # a plain manual release gets the next vX.Y.Z.
+          if [ -n "$TAG_SUFFIX" ] || [ "$SKIP_RELEASE" = "true" ]; then
+            python3 Tools/versioning/next_version.py describe | tee -a "$GITHUB_OUTPUT"
+            echo "release_tag=develop-${TAG_SUFFIX}" >> "$GITHUB_OUTPUT"
+            echo "versioned=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          out="$(python3 Tools/versioning/next_version.py next --bump "$VERSION_BUMP")"
+          echo "$out" | tee -a "$GITHUB_OUTPUT"
+          version="$(echo "$out" | sed -n 's/^version=//p')"
+          echo "release_tag=v${version}" >> "$GITHUB_OUTPUT"
+          echo "versioned=true" >> "$GITHUB_OUTPUT"
+          echo "::notice::Releasing v${version} ($(echo "$out" | sed -n 's/^bump=//p'): $(echo "$out" | sed -n 's/^reasons=//p')"
+      - name: Pick the self-hosted runner unless GitHub-hosted is requested
+        id: pick
+        env:
+          RUNNER_PREF: ${{ github.event_name == 'workflow_dispatch' && inputs.runner || 'self-hosted' }}
+        run: |
+          set -euo pipefail
+          self_hosted_json='["self-hosted","linux","x64","unity"]'
+          github_json='["ubuntu-latest"]'
+
+          pick_self_hosted() {
+            echo "runs_on=${self_hosted_json}" >> "$GITHUB_OUTPUT"
+            echo "self_hosted=true" >> "$GITHUB_OUTPUT"
+            echo "Selected the self-hosted Unity runner"
+          }
+          pick_github() {
+            echo "runs_on=${github_json}" >> "$GITHUB_OUTPUT"
+            echo "self_hosted=false" >> "$GITHUB_OUTPUT"
+            echo "Selected ubuntu-latest (GitHub-hosted)"
+          }
+
+          # Always self-hosted unless GitHub-hosted is asked for explicitly. There is no online check:
+          # github.token cannot list repo runners (HTTP 403), so an "auto" check always fell back.
+          # If the self-hosted runner is offline, the job queues until it is back.
+          if [ "$RUNNER_PREF" = "github" ]; then
+            pick_github
+          else
+            pick_self_hosted
+          fi
+
+  editmode:
+    name: EditMode tests
+    needs: prepare
+    if: ${{ needs.prepare.outputs.run_editmode == 'true' }}
+    runs-on: ubuntu-latest
+    environment:
+      name: unity_tests
+    env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+    steps:
+      - name: Checkout project code
+        uses: actions/checkout@v4
+        with:
+          lfs: true
+      - name: Validate Unity CI secrets
+        run: |
+          missing=0
+          if [ -z "${{ secrets.UNITY_LICENSE }}" ] && [ -z "${{ secrets.UNITY_SERIAL }}" ]; then
+            echo "::error::Neither UNITY_LICENSE nor UNITY_SERIAL is set in the unity_tests environment."
+            echo "Personal license: activate locally, then add UNITY_LICENSE to the unity_tests environment."
+            echo "Professional license: set UNITY_SERIAL, UNITY_EMAIL, and UNITY_PASSWORD on unity_tests."
+            echo "See https://game.ci/docs/github/activation"
+            missing=1
+          fi
+          if [ -n "${{ secrets.UNITY_SERIAL }}" ] && { [ -z "${{ secrets.UNITY_EMAIL }}" ] || [ -z "${{ secrets.UNITY_PASSWORD }}" ]; }; then
+            echo "::error::UNITY_SERIAL is set but UNITY_EMAIL or UNITY_PASSWORD is missing."
+            missing=1
+          fi
+          exit $missing
+      - name: Run tests
+        id: run-tests
+        uses: game-ci/unity-test-runner@v4
+        with:
+          testMode: editmode
+          unityVersion: 6000.3.28f1
+        env:
+          UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
+          UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
+          UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
+          UNITY_SERIAL: ${{ secrets.UNITY_SERIAL }}
+      - name: Produce summary output
+        uses: ./.github/actions/interpret-test-results
+        if: success() || failure()
+        with:
+          XML_PATH: artifacts/editmode-results.xml
+      - name: Upload test results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: develop-release-editmode-results
+          path: artifacts
+
+  build-linux:
+    name: Build Linux client + server
+    needs: [prepare, editmode]
+    # EditMode skipped/green + build_linux. always() breaks skip-cascade from EditMode.
+    if: ${{ always() && (needs.editmode.result == 'success' || needs.editmode.result == 'skipped') && needs.prepare.outputs.build_linux == 'true' }}
+    runs-on: ${{ fromJSON(needs.prepare.outputs.runs_on) }}
+    environment:
+      name: unity_tests
+    env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+      # Share smoke's warm build Library under ~/.cache/ss3d/ on the self-hosted runner (same FS as
+      # runner workdir — mv is rename).
+      SS3D_UNITY_LIBRARY_STASH_NAME: Library
+      SERVER_BUILD_DIR: ${{ github.workspace }}/build/GameServer/StandaloneLinux64
+      CLIENT_BUILD_DIR: ${{ github.workspace }}/build/Game/StandaloneLinux64
+      # Unity 6 Linux players no longer append .x86_64; game-ci -customBuildPath uses buildName as-is.
+      SERVER_BIN_NAME: SS3D-Server
+      CLIENT_BIN_NAME: SS3D-Client
+    steps:
+      - name: Checkout project code
+        uses: actions/checkout@v4
+        with:
+          # No LFS-tracked files; lfs: true makes git-lfs scan history of the partial
+          # clone and fail on blobs it never fetched ("missing object").
+          lfs: false
+          # BuildInfoGenerator reads history and v* tags for the lobby change log.
+          fetch-depth: 0
+          filter: blob:none
+      - name: Restore Unity Library stash
+        if: needs.prepare.outputs.self_hosted == 'true'
+        run: |
+          set -euo pipefail
+          stash="${HOME}/.cache/ss3d/${SS3D_UNITY_LIBRARY_STASH_NAME}"
+          workspace_lib="${GITHUB_WORKSPACE}/Library"
+          mkdir -p "$(dirname "$stash")"
+          if [[ -d "$workspace_lib" ]]; then
+            echo "Removing leftover workspace Library/ before restore"
+            rm -rf "$workspace_lib"
+          fi
+          if [[ -d "$stash" ]]; then
+            echo "Restoring warm Library stash from $stash"
+            du -sh "$stash" || true
+            # Copy, not mv: a cancelled run skips both the save and the discard step, so a
+            # moved stash would be lost.
+            cp -a "$stash" "$workspace_lib"
+          else
+            echo "No Library stash at $stash — cold import this run"
+          fi
+      - name: Validate Unity CI secrets
+        run: |
+          missing=0
+          if [ -z "${{ secrets.UNITY_LICENSE }}" ] && [ -z "${{ secrets.UNITY_SERIAL }}" ]; then
+            echo "::error::Neither UNITY_LICENSE nor UNITY_SERIAL is set in the unity_tests environment."
+            missing=1
+          fi
+          if [ -n "${{ secrets.UNITY_SERIAL }}" ] && { [ -z "${{ secrets.UNITY_EMAIL }}" ] || [ -z "${{ secrets.UNITY_PASSWORD }}" ]; }; then
+            echo "::error::UNITY_SERIAL is set but UNITY_EMAIL or UNITY_PASSWORD is missing."
+            missing=1
+          fi
+          exit $missing
+      # One Editor session — two sequential unity-builder steps race PackageCache on the self-hosted runner.
+      - name: Keep the Unity package cache between jobs
+        if: needs.prepare.outputs.self_hosted == 'true'
+        uses: ./.github/actions/persistent-upm-cache
+      - name: Pre-create game-ci license dir as the runner user
+        # game-ci's entrypoint mkdirs $GITHUB_WORKSPACE/_activate-license~ as root, then su's to the
+        # host user (runAsHostUser), which cannot write UnityLicenseFile.ulf into it ("Permission
+        # denied"). mkdir -p keeps an existing dir, so creating it here gives the host user ownership.
+        if: needs.prepare.outputs.self_hosted == 'true'
+        run: rm -rf "$GITHUB_WORKSPACE/_activate-license~" && mkdir -p "$GITHUB_WORKSPACE/_activate-license~"
+      - name: Build dedicated server and client
+        uses: game-ci/unity-builder@v4
+        env:
+          UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
+          UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
+          UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
+          UNITY_SERIAL: ${{ secrets.UNITY_SERIAL }}
+        with:
+          buildName: SS3D-Client
+          buildsPath: build/Game
+          targetPlatform: StandaloneLinux64
+          buildMethod: SS3D.Editor.ClientAndServerBuildScript.BuildBothForCi
+          versioning: None
+          customParameters: -ss3dVersion ${{ needs.prepare.outputs.version }}
+          unityVersion: 6000.3.28f1
+          runAsHostUser: ${{ needs.prepare.outputs.self_hosted == 'true' }}
+      - name: Verify lobby change log was generated
+        run: |
+          set -euo pipefail
+          # Written by BuildInfoGenerator inside the Unity container; gitignored, so a missing
+          # file means git failed there and the lobby shows "No change log in this build".
+          f=Assets/Content/Systems/UI/Lobby/Resources/BuildInfo.json
+          test -s "$f" || { echo "::warning::$f was not generated"; exit 0; }
+          grep -q '"subject"' "$f" || { echo "::warning::$f has no change log entries"; exit 0; }
+      - name: Verify server and client binaries
+        run: |
+          set -euo pipefail
+          test -x "$SERVER_BUILD_DIR/$SERVER_BIN_NAME"
+          test -x "$CLIENT_BUILD_DIR/$CLIENT_BIN_NAME"
+          ls -la "$SERVER_BUILD_DIR/$SERVER_BIN_NAME" "$CLIENT_BUILD_DIR/$CLIENT_BIN_NAME"
+      - name: Save Unity Library stash
+        if: needs.prepare.outputs.self_hosted == 'true' && success()
+        run: |
+          set -euo pipefail
+          stash="${HOME}/.cache/ss3d/${SS3D_UNITY_LIBRARY_STASH_NAME}"
+          workspace_lib="${GITHUB_WORKSPACE}/Library"
+          mkdir -p "$(dirname "$stash")"
+          if [[ -d "$workspace_lib" ]]; then
+            rm -rf "$stash"
+            mv "$workspace_lib" "$stash"
+            echo "Saved Library stash to $stash"
+            du -sh "$stash" || true
+          else
+            echo "No workspace Library/ to stash"
+          fi
+      - name: Discard Library after failed build
+        if: needs.prepare.outputs.self_hosted == 'true' && failure()
+        run: |
+          set -euo pipefail
+          rm -rf "${GITHUB_WORKSPACE}/Library"
+          echo "Discarded workspace Library/ after failure"
+      - name: Run multiplayer smoke tests
+        if: ${{ needs.prepare.outputs.run_smoke == 'true' }}
+        env:
+          SS3D_SERVER_BUILD_DIR: ${{ env.SERVER_BUILD_DIR }}
+          SS3D_CLIENT_BUILD_DIR: ${{ env.CLIENT_BUILD_DIR }}
+          SS3D_SERVER_BIN_NAME: ${{ env.SERVER_BIN_NAME }}
+          SS3D_CLIENT_BIN_NAME: ${{ env.CLIENT_BIN_NAME }}
+        run: |
+          chmod +x "$SERVER_BUILD_DIR/$SERVER_BIN_NAME" "$CLIENT_BUILD_DIR/$CLIENT_BIN_NAME"
+          ./Testing/multiplayer/run_smoke_set.sh --skip-nightly-only
+      - name: Upload harness logs
+        uses: actions/upload-artifact@v4
+        if: ${{ always() && needs.prepare.outputs.run_smoke == 'true' }}
+        with:
+          name: develop-release-smoke-logs
+          path: Testing/multiplayer/.runs
+          if-no-files-found: ignore
+          retention-days: 7
+      - name: Upload Linux player builds
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: develop-release-linux-builds
+          path: build
+          retention-days: 7
+
+  build-windows:
+    name: Build Windows client
+    needs: [prepare, editmode, build-linux]
+    # always() required so skipped EditMode / skipped Linux (default manual) do not cascade-skip Windows.
+    if: ${{ always() && (needs.editmode.result == 'success' || needs.editmode.result == 'skipped') && (needs.build-linux.result == 'success' || needs.build-linux.result == 'skipped') && needs.prepare.outputs.skip_release != 'true' }}
+    runs-on: ${{ fromJSON(needs.prepare.outputs.runs_on) }}
+    environment:
+      name: unity_tests
+    env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+      SS3D_UNITY_LIBRARY_STASH_NAME: Library
+    steps:
+      - name: Checkout project code
+        uses: actions/checkout@v4
+        with:
+          lfs: false
+          # BuildInfoGenerator reads history and v* tags for the lobby change log.
+          fetch-depth: 0
+          filter: blob:none
+      - name: Restore Unity Library stash
+        if: needs.prepare.outputs.self_hosted == 'true'
+        run: |
+          set -euo pipefail
+          stash="${HOME}/.cache/ss3d/${SS3D_UNITY_LIBRARY_STASH_NAME}"
+          workspace_lib="${GITHUB_WORKSPACE}/Library"
+          mkdir -p "$(dirname "$stash")"
+          if [[ -d "$workspace_lib" ]]; then
+            echo "Removing leftover workspace Library/ before restore"
+            rm -rf "$workspace_lib"
+          fi
+          if [[ -d "$stash" ]]; then
+            echo "Restoring warm Library stash from $stash"
+            du -sh "$stash" || true
+            # Copy, not mv: a cancelled run skips both the save and the discard step, so a
+            # moved stash would be lost.
+            cp -a "$stash" "$workspace_lib"
+          else
+            echo "No Library stash at $stash — cold import this run"
+          fi
+      - name: Validate Unity CI secrets
+        run: |
+          missing=0
+          if [ -z "${{ secrets.UNITY_LICENSE }}" ] && [ -z "${{ secrets.UNITY_SERIAL }}" ]; then
+            echo "::error::Neither UNITY_LICENSE nor UNITY_SERIAL is set in the unity_tests environment."
+            missing=1
+          fi
+          if [ -n "${{ secrets.UNITY_SERIAL }}" ] && { [ -z "${{ secrets.UNITY_EMAIL }}" ] || [ -z "${{ secrets.UNITY_PASSWORD }}" ]; }; then
+            echo "::error::UNITY_SERIAL is set but UNITY_EMAIL or UNITY_PASSWORD is missing."
+            missing=1
+          fi
+          exit $missing
+      # Default game-ci builder (not ClientBuildScript — that hardcodes StandaloneLinux64).
+      - name: Keep the Unity package cache between jobs
+        if: needs.prepare.outputs.self_hosted == 'true'
+        uses: ./.github/actions/persistent-upm-cache
+      - name: Pre-create game-ci license dir as the runner user
+        # game-ci's entrypoint mkdirs $GITHUB_WORKSPACE/_activate-license~ as root, then su's to the
+        # host user (runAsHostUser), which cannot write UnityLicenseFile.ulf into it ("Permission
+        # denied"). mkdir -p keeps an existing dir, so creating it here gives the host user ownership.
+        if: needs.prepare.outputs.self_hosted == 'true'
+        run: rm -rf "$GITHUB_WORKSPACE/_activate-license~" && mkdir -p "$GITHUB_WORKSPACE/_activate-license~"
+      - name: Build Windows client
+        uses: game-ci/unity-builder@v4
+        env:
+          UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
+          UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
+          UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
+          UNITY_SERIAL: ${{ secrets.UNITY_SERIAL }}
+        with:
+          buildName: SS3D
+          buildsPath: build/Game
+          targetPlatform: StandaloneWindows64
+          versioning: None
+          customParameters: -ss3dVersion ${{ needs.prepare.outputs.version }}
+          unityVersion: 6000.3.28f1
+          runAsHostUser: ${{ needs.prepare.outputs.self_hosted == 'true' }}
+      - name: Verify lobby change log was generated
+        run: |
+          set -euo pipefail
+          # Written by BuildInfoGenerator inside the Unity container; gitignored, so a missing
+          # file means git failed there and the lobby shows "No change log in this build".
+          f=Assets/Content/Systems/UI/Lobby/Resources/BuildInfo.json
+          test -s "$f" || { echo "::warning::$f was not generated"; exit 0; }
+          grep -q '"subject"' "$f" || { echo "::warning::$f has no change log entries"; exit 0; }
+      - name: Save Unity Library stash
+        if: needs.prepare.outputs.self_hosted == 'true' && success()
+        run: |
+          set -euo pipefail
+          stash="${HOME}/.cache/ss3d/${SS3D_UNITY_LIBRARY_STASH_NAME}"
+          workspace_lib="${GITHUB_WORKSPACE}/Library"
+          mkdir -p "$(dirname "$stash")"
+          if [[ -d "$workspace_lib" ]]; then
+            rm -rf "$stash"
+            mv "$workspace_lib" "$stash"
+            echo "Saved Library stash to $stash"
+            du -sh "$stash" || true
+          else
+            echo "No workspace Library/ to stash"
+          fi
+      - name: Discard Library after failed build
+        if: needs.prepare.outputs.self_hosted == 'true' && failure()
+        run: |
+          set -euo pipefail
+          rm -rf "${GITHUB_WORKSPACE}/Library"
+          echo "Discarded workspace Library/ after failure"
+      - name: Upload Windows player build
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: develop-release-windows-builds
+          path: build/Game/StandaloneWindows64
+          retention-days: 7
+
+  updater-tests:
+    name: Windows updater regression tests
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          lfs: false
+          sparse-checkout: |
+            Builds
+            Tools/updater
+      - name: Exercise updater without network or a real game
+        shell: powershell
+        run: ./Tools/updater/test-update.ps1
+
+  linux-updater-tests:
+    name: Linux client updater regression tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          lfs: false
+          sparse-checkout: |
+            Builds
+            Tools/updater
+      - name: Exercise updater without network or a real game
+        run: python3 -B Tools/updater/test_update_linux.py
+
+  release:
+    name: GitHub release
+    needs: [prepare, build-linux, build-windows, updater-tests, linux-updater-tests]
+    # Same skip-cascade override; Linux may be skipped when build_linux is off.
+    if: ${{ always() && needs.build-windows.result == 'success' && needs.updater-tests.result == 'success' && needs.linux-updater-tests.result == 'success' && (needs.build-linux.result == 'success' || needs.build-linux.result == 'skipped') && needs.prepare.outputs.skip_release != 'true' }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+    steps:
+      - name: Checkout release files
+        uses: actions/checkout@v4
+        with:
+          lfs: false
+          sparse-checkout: Builds
+          sparse-checkout-cone-mode: true
+      - name: Resolve release tag
+        id: tag
+        env:
+          VERSION: ${{ needs.prepare.outputs.version }}
+          VERSIONED: ${{ needs.prepare.outputs.versioned }}
+          BUMP: ${{ needs.prepare.outputs.bump }}
+          BUMP_REASONS: ${{ needs.prepare.outputs.bump_reasons }}
+        run: |
+          set -euo pipefail
+          echo "tag_name=${{ needs.prepare.outputs.release_tag }}" >> "$GITHUB_OUTPUT"
+          echo "short_sha=${GITHUB_SHA:0:7}" >> "$GITHUB_OUTPUT"
+          if [ "${{ needs.prepare.outputs.release_tag }}" = "develop-nightly" ]; then
+            echo "title=Nightly — ${VERSION}" >> "$GITHUB_OUTPUT"
+            echo "kind_line=**Nightly build** \`${VERSION}\` (floating develop-nightly tag — overwritten each night)." >> "$GITHUB_OUTPUT"
+          elif [ "$VERSIONED" = "true" ]; then
+            echo "title=SS3D v${VERSION}" >> "$GITHUB_OUTPUT"
+            echo "kind_line=**Release v${VERSION}** (${BUMP} bump: ${BUMP_REASONS})." >> "$GITHUB_OUTPUT"
+          else
+            echo "title=Develop ${{ needs.prepare.outputs.release_tag }}" >> "$GITHUB_OUTPUT"
+            echo "kind_line=Manual test cut \`${VERSION}\` (unversioned)." >> "$GITHUB_OUTPUT"
+          fi
+          # Numbered vX.Y.Z releases (0.x included) publish as stable, so the client updaters offer them
+          # straight away. Nightlies and develop-<suffix> test cuts stay prereleases.
+          if [ "$VERSIONED" = "true" ]; then
+            echo "prerelease=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "prerelease=true" >> "$GITHUB_OUTPUT"
+          fi
+      - name: Download Linux player builds
+        if: ${{ needs.prepare.outputs.build_linux == 'true' }}
+        uses: actions/download-artifact@v4
+        with:
+          name: develop-release-linux-builds
+          path: build-linux
+      - name: Download Windows player build
+        uses: actions/download-artifact@v4
+        with:
+          name: develop-release-windows-builds
+          path: build-windows
+      - name: Stage and zip artifacts
+        id: stage
+        run: |
+          set -euo pipefail
+          TAG="${{ steps.tag.outputs.tag_name }}"
+          mkdir -p dist
+
+          # Paths.cs resolves Config/ and Data/ beside the player binary. Unity player builds do
+          # not include those trees — seed the git-tracked fixtures from Builds/Game.
+          # Never copy Data/ServerMeta (runtime state).
+          seed_cwd_data() {
+            local dest="$1"
+            test -f Builds/Game/Config/permissions.default.txt
+            test -f Builds/Game/Config/network.json
+            test -d Builds/Game/Data/Tilemaps
+            test -f Builds/Game/Data/StationTemplates/ministation.json
+            test -f Builds/Game/Data/StationTemplates/classic-ministation.json
+            mkdir -p "${dest}/Config" "${dest}/Data/Tilemaps" "${dest}/Data/StationTemplates"
+            cp -a Builds/Game/Config/. "${dest}/Config/"
+            # The live permissions.txt is gitignored; ship the tracked defaults under the live name too,
+            # because updaters already in testers' hands require Game/Config/permissions.txt in the zip.
+            cp Builds/Game/Config/permissions.default.txt "${dest}/Config/permissions.txt"
+            cp -a Builds/Game/Data/Tilemaps/. "${dest}/Data/Tilemaps/"
+            cp -a Builds/Game/Data/StationTemplates/. "${dest}/Data/StationTemplates/"
+          }
+
+          # Burst's debug symbols are a few MB the player never reads.
+          strip_debug() { rm -rf "$1"/*_BurstDebugInformation_DoNotShip; }
+
+          # Shared metadata format for the Windows and Linux client updaters.
+          write_update_manifest() {
+            python3 - "$1" "$TAG" <<'PY'
+          import hashlib, json, pathlib, sys
+          root = pathlib.Path(sys.argv[1])
+          defaults = {}
+          for folder in ('StationTemplates', 'Tilemaps'):
+              for path in (root / 'Game/Data' / folder).rglob('*'):
+                  if path.is_file():
+                      defaults[path.relative_to(root).as_posix()] = hashlib.sha256(path.read_bytes()).hexdigest()
+          (root / '.ss3d-release.json').write_text(json.dumps({'tag': sys.argv[2], 'defaults': defaults}), encoding='utf-8')
+          PY
+          }
+
+          # --- Primary: Windows client + updater ---
+          WIN_ROOT="staging/SS3D-Windows-${TAG}"
+          mkdir -p "${WIN_ROOT}/Game"
+          # Artifact is the StandaloneWindows64 tree (SS3D.exe + *_Data, etc.).
+          test -f build-windows/SS3D.exe
+          cp -a build-windows/. "${WIN_ROOT}/Game/"
+          strip_debug "${WIN_ROOT}/Game"
+          seed_cwd_data "${WIN_ROOT}/Game"
+          cp Builds/Update_SS3D.bat Builds/Update_SS3D.ps1 Builds/README.txt Builds/TESTERS.md "${WIN_ROOT}/"
+          write_update_manifest "${WIN_ROOT}"
+          # Windows MAX_PATH (259): Update_SS3D.ps1 unpacks under
+          # <install>\.ss3d-update-xxxxxxxx\x\SS3D-Windows-<tag>\ (~45 chars). Capping release paths at
+          # 130 leaves ~85 for the tester's install folder (e.g. C:\Users\<name>\Downloads\<zip name>\<zip name>).
+          longest=$(cd "${WIN_ROOT}" && find . -mindepth 1 | sed 's|^\./||' | awk '{ print length($0) " " $0 }' | sort -n | tail -1)
+          echo "Longest Windows release path (${longest%% *} chars): ${longest#* }"
+          # Addressables' built-in and monoscript bundles use the short "ss3d" prefix
+          # (AddressableAssetSettings, Custom naming); the default 32-hex prefix overshoots.
+          if [ "${longest%% *}" -gt 130 ]; then
+            (cd "${WIN_ROOT}" && find . -mindepth 1 | sed 's|^\./||' | awk 'length($0) > 130 { print "::error::Windows release path is " length($0) " chars (max 130); testers in deep folders could not update: " $0 }')
+            exit 1
+          fi
+          (cd staging && zip -qq -r "../dist/SS3D-Windows-${TAG}.zip" "SS3D-Windows-${TAG}")
+
+          FILES="dist/SS3D-Windows-${TAG}.zip"
+          NOTES_LINUX="_(not built for this dispatch — enable build_linux to attach Linux zips)_"
+
+          if [ "${{ needs.prepare.outputs.build_linux }}" = "true" ]; then
+            # Same shape as Windows: scripts at the top, the player under Game/ or
+            # GameServer/. upload-artifact drops the exec bit, so restore it before zipping
+            # (zip keeps Unix modes; unzip restores them).
+            stage_linux() {
+              local kind="$1" src="$2" sub="$3" bin="$4"; shift 4
+              local root="staging/SS3D-Linux-${kind}-${TAG}"
+              test -f "${src}/${bin}"
+              mkdir -p "${root}/${sub}"
+              cp -a "${src}/." "${root}/${sub}/"
+              strip_debug "${root}/${sub}"
+              seed_cwd_data "${root}/${sub}"
+              chmod +x "${root}/${sub}/${bin}"
+              for script in "$@"; do
+                cp "Builds/${script}" "${root}/"
+                chmod +x "${root}/${script}"
+              done
+              cp Builds/README.txt Builds/TESTERS.md "${root}/"
+              if [ "$kind" = "Client" ]; then
+                cp Builds/update_ss3d.py "${root}/"
+                write_update_manifest "$root"
+              fi
+              (cd staging && zip -qq -r "../dist/SS3D-Linux-${kind}-${TAG}.zip" "SS3D-Linux-${kind}-${TAG}")
+            }
+            stage_linux Client build-linux/Game/StandaloneLinux64 Game SS3D-Client \
+              update_ss3d.sh play_ss3d_opengl.sh
+            stage_linux Server build-linux/GameServer/StandaloneLinux64 GameServer SS3D-Server \
+              start_ss3d_server.sh
+            FILES="$(printf '%s\n%s\n%s' "$FILES" "dist/SS3D-Linux-Server-${TAG}.zip" "dist/SS3D-Linux-Client-${TAG}.zip")"
+            NOTES_LINUX="$(printf -- '- `%s` — unzip, run `Game/SS3D-Client` to open the main menu\n- `%s` — unzip, run `./start_ss3d_server.sh`' "SS3D-Linux-Client-${TAG}.zip" "SS3D-Linux-Server-${TAG}.zip")"
+          fi
+
+          ls -lh dist
+          {
+            echo "files<<EOF"
+            echo "$FILES"
+            echo "EOF"
+            echo "linux_notes<<EOF"
+            echo "$NOTES_LINUX"
+            echo "EOF"
+          } >> "$GITHUB_OUTPUT"
+      - name: Move nightly tag to the built commit
+        if: needs.prepare.outputs.release_tag == 'develop-nightly'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const repo = { owner: context.repo.owner, repo: context.repo.repo };
+            try {
+              await github.rest.git.getRef({ ...repo, ref: 'tags/develop-nightly' });
+            } catch (error) {
+              if (error.status !== 404) throw error;
+              await github.rest.git.createRef({ ...repo, ref: 'refs/tags/develop-nightly', sha: context.sha });
+              return;
+            }
+            await github.rest.git.updateRef({ ...repo, ref: 'tags/develop-nightly', sha: context.sha, force: true });
+      - name: Create release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.tag.outputs.tag_name }}
+          target_commitish: ${{ github.sha }}
+          name: ${{ steps.tag.outputs.title }}
+          prerelease: ${{ steps.tag.outputs.prerelease }}
+          generate_release_notes: true
+          body: |
+            Built from `${{ github.sha }}` (short `${{ steps.tag.outputs.short_sha }}`).
+            ${{ steps.tag.outputs.kind_line }}
+
+            Not an official RE:SS3D build. Windows player built from this commit.
+            Linux client + dedicated server are included when this was a nightly run or when
+            `build_linux` was enabled. EditMode / multiplayer smoke only when opted in on
+            dispatch (see the Actions run). Windows is not smoke-tested.
+
+            **Player download (Windows):** `SS3D-Windows-${{ steps.tag.outputs.tag_name }}.zip`
+            — unzip and run `Game\SS3D.exe`. The main menu hosts a local game or joins a server.
+
+            Close the game and run `Update_SS3D.bat` to get the newest stable numbered release while
+            preserving local data. Prereleases and nightlies are excluded; the previous installation is kept.
+
+            Linux:
+            ${{ steps.stage.outputs.linux_notes }}
+
+            Linux clients: close the game and run `./update_ss3d.sh` (requires Python 3)
+            for stable-release updates with preserved local data and a previous-install backup.
+          files: ${{ steps.stage.outputs.files }}
+        env:
+          GITHUB_TOKEN: ${{ github.token }}

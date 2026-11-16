@@ -1,0 +1,25 @@
+# Cheap repository checks that run on every PR and every push to develop (seconds, GitHub-hosted):
+# - ROADMAP.md and the README roadmap block match Documents/milestones/.
+#   Fix locally with: python3 Tools/generate_roadmap.py
+# - Nothing links to the old development fork where it should link here.
+#   Run locally with: python3 Tools/ci/check_fork_links.py
+name: Docs check
+on:
+  push:
+    branches: [develop]
+  pull_request:
+permissions:
+  contents: read
+jobs:
+  roadmap:
+    name: Roadmap up to date
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: python3 Tools/generate_roadmap.py --check
+  fork-links:
+    name: No links to the old fork
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: python3 -B Tools/ci/check_fork_links.py

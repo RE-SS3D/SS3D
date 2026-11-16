@@ -10,14 +10,19 @@ using SS3D.Logging;
 using SS3D.Systems.Entities;
 using SS3D.Systems.Inventory.Containers;
 using SS3D.Systems.Inventory.Items;
-using SS3D.Systems.Inventory.UI;
+using SS3D.Core;
+using SS3D.Systems.IdAccess;
 using SS3D.Systems.Roles;
 using UnityEngine;
 using System.Collections;
 using FishNet.Object.Synchronizing;
 using System.ComponentModel;
 using static UnityEngine.GraphicsBuffer;
+using SS3D.Systems.Combat;
 using SS3D.Systems.Interactions;
+using SS3D.Systems.Tile;
+using SS3D.Systems.Tile.MapEditor;
+using SS3D.Utils;
 
 namespace SS3D.Systems.Inventory.Containers
 {
@@ -50,10 +55,39 @@ namespace SS3D.Systems.Inventory.Containers
         // When the inventory is done doing its setup
         public event Notify OnInventorySetUp;
 
+        /// <summary>
+        /// Fired when <see cref="CarriedWeight"/> may have changed (container add/remove or contents).
+        /// </summary>
+        public event Notify OnCarriedWeightChanged;
+
         // reference to the component allowing to display out of inventory containers.
         public ContainerViewer containerViewer;
 
         public List<AttachedContainer> Containers => ContainersOnPlayer.Collection.ToList();
+
+        /// <summary>
+        /// Total carried weight for encumbrance: every inventory container's recursive
+        /// <see cref="AttachedContainer.Weight"/> (includes hands, worn gear, and nested contents).
+        /// Always computed, never cached (Documents/design/inventory-storage.md §2, §7, §10).
+        /// </summary>
+        public float CarriedWeight
+        {
+            get
+            {
+                float total = 0f;
+                foreach (AttachedContainer container in ContainersOnPlayer)
+                {
+                    if (container == null)
+                    {
+                        continue;
+                    }
+
+                    total += container.Weight;
+                }
+
+                return total;
+            }
+        }
 
         /// <summary>
         /// The controllable body of the owning player
@@ -107,14 +141,31 @@ namespace SS3D.Systems.Inventory.Containers
         /// </summary>
         private void SyncInventoryContainerChange(SyncListOperation op, int index, AttachedContainer oldContainer, AttachedContainer newContainer, bool asServer)
         {
-            if (asServer) return;
+            if (asServer)
+            {
+                return;
+            }
+
             switch (op)
             {
                 case SyncListOperation.Add:
+                    // Server AddContainer already wires contents; clients only get this SyncList path.
+                    SubscribeContainerContents(newContainer);
                     OnInventoryContainerAdded?.Invoke(newContainer);
+                    OnCarriedWeightChanged?.Invoke();
                     break;
                 case SyncListOperation.RemoveAt:
+                    UnsubscribeContainerContents(oldContainer);
                     OnInventoryContainerRemoved?.Invoke(oldContainer);
+                    OnCarriedWeightChanged?.Invoke();
+                    break;
+                case SyncListOperation.Complete:
+                    foreach (AttachedContainer container in ContainersOnPlayer)
+                    {
+                        SubscribeContainerContents(container);
+                    }
+
+                    OnCarriedWeightChanged?.Invoke();
                     break;
             }
         }
@@ -128,7 +179,12 @@ namespace SS3D.Systems.Inventory.Containers
             }
 
             Hands.SetInventory(this);
-            SetupView();
+
+            // Catch containers already present before OnChange (or if Complete already fired).
+            foreach (AttachedContainer container in ContainersOnPlayer)
+            {
+                SubscribeContainerContents(container);
+            }
         }
 
         public void TriggerInventorySetup()
@@ -148,6 +204,11 @@ namespace SS3D.Systems.Inventory.Containers
         {
             base.OnStartServer();
             SetUpContainers();
+            // Owning clients set this in OnStartClient; server/dedicated need it for Hands consumers.
+            if (Hands != null)
+            {
+                Hands.SetInventory(this);
+            }
         }
 
         /// <summary>
@@ -165,22 +226,9 @@ namespace SS3D.Systems.Inventory.Containers
             }
         }
 
-        [Client]
-        private void SetupView()
-        {
-            var inventoryView = ViewLocator.Get<InventoryView>().First();
-            inventoryView.Setup(this);
-        }
-
 		protected override void OnDisabled()
 		{
 			base.OnDisabled();
-			
-			if (!IsOwner) return;
-			
-			InventoryView inventoryView = ViewLocator.Get<InventoryView>().First();
-			inventoryView.DestroyAllSlots();
-
 		}
 
 		/// <summary>
@@ -191,7 +239,7 @@ namespace SS3D.Systems.Inventory.Containers
         private void AddContainer(AttachedContainer container)
         {
             ContainersOnPlayer.Add(container);
-            container.OnContentsChanged += HandleContainerContentChanged;
+            SubscribeContainerContents(container);
             container.OnItemAttached += HandleTryAddContainerOnItemAttached;
             container.OnItemDetached += HandleTryRemoveContainerOnItemDetached;
 
@@ -209,10 +257,35 @@ namespace SS3D.Systems.Inventory.Containers
         private void RemoveContainer(AttachedContainer container)
         {
             ContainersOnPlayer.Remove(container);
-            container.OnContentsChanged -= HandleContainerContentChanged;
+            UnsubscribeContainerContents(container);
             container.OnItemAttached -= HandleTryAddContainerOnItemAttached;
             container.OnItemDetached -= HandleTryRemoveContainerOnItemDetached;
             container.OnAttachedContainerDisabled -= RemoveContainer;
+        }
+
+        /// <summary>
+        /// Wire content changes into <see cref="OnContainerContentChanged"/> (Main HUD icons, weight).
+        /// Idempotent: safe on host where server <see cref="AddContainer"/> already subscribed.
+        /// </summary>
+        private void SubscribeContainerContents(AttachedContainer container)
+        {
+            if (container == null)
+            {
+                return;
+            }
+
+            container.OnContentsChanged -= HandleContainerContentChanged;
+            container.OnContentsChanged += HandleContainerContentChanged;
+        }
+
+        private void UnsubscribeContainerContents(AttachedContainer container)
+        {
+            if (container == null)
+            {
+                return;
+            }
+
+            container.OnContentsChanged -= HandleContainerContentChanged;
         }
 
         /// <summary>
@@ -250,6 +323,7 @@ namespace SS3D.Systems.Inventory.Containers
 		private void HandleContainerContentChanged(AttachedContainer container, Item oldItem, Item newItem, ContainerChangeType type)
         {
             OnContainerContentChanged?.Invoke(container,oldItem,newItem,type);
+            OnCarriedWeightChanged?.Invoke();
         }
 
         /// <summary>
@@ -259,6 +333,26 @@ namespace SS3D.Systems.Inventory.Containers
         public void ClientDropItem(Item item)
         {
             CmdDropItem(item.gameObject);
+        }
+
+        /// <summary>
+        /// Requests the server to place an inventory item into the world at a point (UI drag-to-world,
+        /// same placement rules as <see cref="SS3D.Systems.Inventory.Interactions.DropInteraction"/>).
+        /// </summary>
+        public void ClientPlaceItemInWorld(Item item, Vector3 point, Vector3 surfaceNormal)
+        {
+            if (item == null)
+            {
+                return;
+            }
+
+            if (TryGetComponent(out InteractionController interactions) && !interactions.BeginOwnerHandAction(
+                    Entities.Humanoid.Body.InteractionAnimation.ChooseClip("Drop", point.y - transform.position.y), point))
+            {
+                return;
+            }
+
+            CmdPlaceItemInWorld(item.gameObject, point, surfaceNormal);
         }
 
         /// <summary>
@@ -273,6 +367,9 @@ namespace SS3D.Systems.Inventory.Containers
         [ServerRpc]
         private void CmdDropItem(GameObject gameObject)
         {
+            if (Hands == null || Hands.SelectedHand == null || !Hands.SelectedHand.CanUseHand)
+                return;
+
             Item item = gameObject.GetComponent<Item>();
             if (item == null)
             {
@@ -290,7 +387,126 @@ namespace SS3D.Systems.Inventory.Containers
                 return;
             }
 
+            // Taking an item out of a placed locker or crate changes its saved contents (object-setup-persistence Q14).
+            MapEditorSetupTracker.Track(Owner, () => attachedTo.RemoveItem(item), attachedTo.gameObject);
+        }
+
+        [ServerRpc]
+        private void CmdPlaceItemInWorld(GameObject itemObject, Vector3 point, Vector3 surfaceNormal)
+        {
+            if (!RpcInput.IsInStation(point) || !RpcInput.IsDirection(surfaceNormal))
+                return;
+
+            if (Hands == null || Hands.SelectedHand == null || !Hands.SelectedHand.CanUseHand)
+                return;
+
+            Item item = itemObject != null ? itemObject.GetComponent<Item>() : null;
+            if (item == null || !CanPlaceInventoryItemInWorld(item, point, surfaceNormal))
+            {
+                return;
+            }
+
+            // The item leaves the hand when the hand reaches the surface (animation pass Phase 4).
+            if (!TryGetComponent(out InteractionController interactions))
+            {
+                ServerPlaceItemInWorld(item, point);
+                return;
+            }
+
+            int clip = Entities.Humanoid.Body.InteractionAnimation.ChooseClip("Drop", point.y - transform.position.y);
+            interactions.ServerRunHandAction(clip, point,
+                () => item != null && Hands != null && Hands.SelectedHand != null && Hands.SelectedHand.CanUseHand
+                    && CanPlaceInventoryItemInWorld(item, point, surfaceNormal),
+                () => ServerPlaceItemInWorld(item, point));
+        }
+
+        [Server]
+        private void ServerPlaceItemInWorld(Item item, Vector3 point)
+        {
+            Hands hands = GetComponent<Hands>();
+            Hand hand = hands != null ? hands.SelectedHand : null;
+            Quaternion rotation = ItemPlacement.WorldRotation(item, transform.eulerAngles.y);
+            if (hand != null && hand.ItemInHand == item)
+            {
+                hand.PlaceHeldItemOutOfHand(point, rotation);
+                return;
+            }
+
+            AttachedContainer attachedTo = item.Container;
+            item.GiveOwnership(null);
             attachedTo.RemoveItem(item);
+            ItemUtility.Place(item, point, rotation);
+
+            if (SubSystems.TryGet(out TileSubSystem tile)
+                && tile.GetAsset(item.Asset) is ItemObjectSo itemObjectSo)
+            {
+                tile.Construction.TryPlaceItem(itemObjectSo, item.transform.position, item.transform.rotation, item.gameObject);
+            }
+        }
+
+        /// <summary>
+        /// Placement checks for UI drag-to-world: container permission, hand range, and a mostly-upward
+        /// surface. Line-of-sight uses an unmasked ray from the entity ViewPoint (tile floors are often
+        /// not on the Default layer, so DropInteraction's Default-only mask is too strict here).
+        /// </summary>
+        [Server]
+        private bool CanPlaceInventoryItemInWorld(Item item, Vector3 point, Vector3 surfaceNormal)
+        {
+            AttachedContainer attachedTo = item.Container;
+            if (attachedTo == null || containerViewer == null || !containerViewer.CanModifyContainer(attachedTo))
+            {
+                return false;
+            }
+
+            Hands hands = GetComponent<Hands>();
+            Hand hand = hands != null ? hands.SelectedHand : null;
+            if (hand == null || !hand.GetInteractionRange().IsInRange(hand.InteractionOrigin, point))
+            {
+                return false;
+            }
+
+            // Allow slightly steeper floors than DropInteraction's 10° — tile meshes are rarely flat.
+            const float maxSurfaceAngle = 35f;
+            if (Vector3.Angle(surfaceNormal, Vector3.up) > maxSurfaceAngle)
+            {
+                return false;
+            }
+
+            Entity entity = GetComponent<Entity>();
+            if (entity == null)
+            {
+                entity = GetComponentInParent<Entity>();
+            }
+
+            if (entity == null || entity.ViewPoint == null)
+            {
+                return false;
+            }
+
+            Vector3 viewPosition = entity.ViewPoint.transform.position;
+            Vector3 toPoint = point - viewPosition;
+            float distance = toPoint.magnitude;
+            if (distance < 0.01f)
+            {
+                return false;
+            }
+
+            // Skip this body's own colliders: from the eyes, a drop near the feet passes the head and chest, and how
+            // much of them the ray grazes depends on the pose, so short drops were refused at random.
+            Vector3 direction = toPoint / distance;
+            if (!LineOfSight.TryGetFirstHitIgnoring(
+                    viewPosition,
+                    direction,
+                    distance + 0.25f,
+                    StationBounds.WithoutCeiling(Physics.DefaultRaycastLayers),
+                    entity.transform,
+                    out RaycastHit hit,
+                    QueryTriggerInteraction.Ignore))
+            {
+                return false;
+            }
+
+            return Vector3.Distance(point, hit.point) <= 0.35f;
         }
 
 
@@ -307,6 +523,9 @@ namespace SS3D.Systems.Inventory.Containers
         [ServerRpc]
         private void CmdTransferItem(GameObject itemObject, Vector2Int position, AttachedContainer container)
         {
+            if (Hands == null || Hands.SelectedHand == null || !Hands.SelectedHand.CanUseHand)
+                return;
+
             Item item = itemObject.GetComponent<Item>();
             if (item == null)
             {
@@ -327,7 +546,7 @@ namespace SS3D.Systems.Inventory.Containers
 
             if (container == null)
             {
-                Log.Error(this, $"Client sent invalid container reference: NetId {container.ObjectId}");
+                Log.Error(this, "Client sent a null or despawned container to transfer into");
                 return;
             }
 
@@ -342,7 +561,9 @@ namespace SS3D.Systems.Inventory.Containers
                 return;
             }
 
-            itemContainer.TransferItemToOther(item, position, container);     
+            // Both ends may be placed containers whose saved contents change (object-setup-persistence Q14).
+            MapEditorSetupTracker.Track(Owner, () => itemContainer.TransferItemToOther(item, position, container),
+                itemContainer.gameObject, container.gameObject);
         }
 
 
@@ -367,11 +588,14 @@ namespace SS3D.Systems.Inventory.Containers
             }
 
             // If selected hand is empty and an item is present on the slot position in the container, transfer it to hand.
+            // Two-hand rifles auto-route to RequiredHand even when the other hand is selected.
             if (Hands.SelectedHand.IsEmpty())
             {
-                if (item != null)
+                if (item != null
+                    && TwoHandedWeaponRules.TryResolveHandForItem(Hands, item, Hands.SelectedHand, out Hand targetHand)
+                    && targetHand?.Container != null)
                 {
-                    ClientTransferItem(item, Vector2Int.zero, Hands.SelectedHand.Container);
+                    ClientTransferItem(item, Vector2Int.zero, targetHand.Container);
                 }
             }
             // If selected hand has an item and there's no item on the slot in the container, transfer it to container slot.
@@ -379,7 +603,11 @@ namespace SS3D.Systems.Inventory.Containers
             {
                 if (item == null)
                 {
-                    ClientTransferItem(Hands.SelectedHand.ItemInHand, position, container);
+                    Item handItem = Hands.SelectedHand.ItemInHand;
+                    if (handItem != null && container.CanContainItemAtPosition(handItem, position))
+                    {
+                        ClientTransferItem(handItem, position, container);
+                    }
                 }
             }
         }
@@ -387,18 +615,33 @@ namespace SS3D.Systems.Inventory.Containers
 
         public bool HasPermission(IDPermission permission)
         {
-            // This check only in the first identification containers, if there's multiple and the id is not in the first one it won't work.
-            if(!TryGetTypeContainer(ContainerType.Identification, 0, out AttachedContainer IDContainer))
+            if (permission == null)
+            {
+                return true;
+            }
+
+            if (!SubSystems.TryGet(out IdAccessSubSystem idAccess))
             {
                 return false;
             }
 
-            IIdentification id = IDContainer.Items.FirstOrDefault() as IIdentification;
-            if (id == null)
+            AccessMask required = IdAccessPermissionMapper.FromLegacyPermission(permission);
+            return idAccess.CheckAccess(this, required, device: null).Passed;
+        }
+
+        public bool HasAccess(AccessMask requiredAccess)
+        {
+            if (requiredAccess.IsNone)
+            {
+                return true;
+            }
+
+            if (!SubSystems.TryGet(out IdAccessSubSystem idAccess))
             {
                 return false;
             }
-            return id.HasPermission(permission);
+
+            return idAccess.CheckAccess(this, requiredAccess, device: null).Passed;
         }
 
         /// <summary>

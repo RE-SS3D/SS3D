@@ -1,7 +1,9 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using NUnit.Framework;
 using SS3D.Systems.Gamemodes;
 using SS3D.Systems.GameModes.Modes;
+using SS3D.Systems.Rounds;
 using SS3D.Tests;
 using UnityEditor;
 using UnityEngine;
@@ -74,9 +76,7 @@ namespace EditorTests
         /// status if the current status is not InProgress.
         /// </summary>
         [Test]
-        [TestCase(ObjectiveStatus.Cancelled)]
         [TestCase(ObjectiveStatus.Failed)]
-
         public void ObjectiveDoesNotSucceedUnlessItIsFirstInProgress(ObjectiveStatus startingStatus)
         {
 
@@ -97,7 +97,6 @@ namespace EditorTests
         /// status if the current status is not InProgress.
         /// </summary>
         [Test]
-        [TestCase(ObjectiveStatus.Cancelled)]
         [TestCase(ObjectiveStatus.Success)]
         public void ObjectiveDoesNotFailUnlessItIsFirstInProgress(ObjectiveStatus startingStatus)
         {
@@ -120,7 +119,6 @@ namespace EditorTests
         /// </summary>
         [Test]
         [TestCase(ObjectiveStatus.Failed)]
-        [TestCase(ObjectiveStatus.Cancelled)]
         [TestCase(ObjectiveStatus.Success)]
         public void InitializeObjectiveSetsStatusToInProgress(ObjectiveStatus startingStatus)
         {
@@ -203,13 +201,11 @@ namespace EditorTests
 
             // ACT
             sut.RoundObjectives[0].Succeed();
-            sut.RoundObjectives[1].Cancel();
             sut.FinalizeGamemode();
 
             // ASSERT
             Assert.IsTrue(sut.RoundObjectives[0].Succeeded);
-            Assert.IsTrue(sut.RoundObjectives[1].Cancelled);
-            for (int i = 2; i < sut.RoundObjectives.Count; i++)
+            for (int i = 1; i < sut.RoundObjectives.Count; i++)
             {
                 Assert.IsTrue(sut.RoundObjectives[i].Failed);
             }
@@ -291,25 +287,59 @@ namespace EditorTests
             Assert.IsTrue(sut.RoundObjectives.Count == 0);
         }
 
-        /// <summary>
-        /// Test to confirm that late joining players also get objectives.
-        /// </summary>
+        /// <summary>The squad shares one team objective: one per member, one id, one summary row (Decision 13).</summary>
         [Test]
-        public void LateJoiningPlayersGetObjectives()
+        public void NukeGamemodeGivesTheSquadOneSharedObjective()
         {
-            // ARRANGE
-            const int NUMBER_OF_PLAYERS_TO_TEST = 4;
-            const string lateJoinPlayerCkey = "lateJoinPlayer";
-            List<string> Ckeys = SampleCkeys(NUMBER_OF_PLAYERS_TO_TEST);
-            Gamemode sut = CreateGamemodeWithSingleObjective(CollaborationType.Individual);
-            sut.InitializeGamemode(Ckeys);
+            NukeGamemode sut = LoadNukeGamemode();
+            List<string> squad = SampleCkeys(3);
 
-            // ACT
-            sut.CreateLateJoinObjective(lateJoinPlayerCkey);
+            sut.InitializeGamemode(squad);
 
-            // ASSERT
-            Assert.IsTrue(sut.RoundObjectives[sut.RoundObjectives.Count - 1].AssigneeCkey.Equals(lateJoinPlayerCkey));
-            Assert.IsTrue(sut.RoundObjectives[sut.RoundObjectives.Count - 1].InProgress);
+            Assert.AreEqual(3, sut.RoundObjectives.Count);
+            Assert.AreEqual(1, sut.RoundObjectives.Select(objective => objective.Id).Distinct().Count());
+            foreach (string ckey in squad)
+                Assert.AreEqual(1, sut.GetPlayerObjectives(ckey).Count);
+            Assert.AreEqual(1, sut.OutcomeObjectives().Count());
+        }
+
+        [Test]
+        public void NukeGamemodeWithoutSquadHasNoObjectives()
+        {
+            NukeGamemode sut = LoadNukeGamemode();
+
+            sut.InitializeGamemode(new List<string>());
+
+            Assert.AreEqual(0, sut.RoundObjectives.Count);
+            Assert.AreEqual(0, sut.OutcomeObjectives().Count());
+        }
+
+        [Test]
+        public void NukeObjectiveIsMetWhenTheStationIsDestroyed()
+        {
+            NukeGamemode sut = LoadNukeGamemode();
+            sut.InitializeGamemode(SampleCkeys(2));
+
+            sut.ResolveObjectives(RoundEndRequest.Detonation);
+
+            Assert.IsTrue(sut.RoundObjectives.All(objective => objective.Succeeded));
+            Assert.AreEqual(ObjectiveResult.Met, sut.OutcomeObjectives().Single().Result);
+        }
+
+        [Test]
+        [TestCase(RoundEndTrigger.Timer)]
+        [TestCase(RoundEndTrigger.Admin)]
+        public void NukeObjectiveFailsWhenTheRoundEndsOtherwise(RoundEndTrigger trigger)
+        {
+            NukeGamemode sut = LoadNukeGamemode();
+            sut.InitializeGamemode(SampleCkeys(2));
+
+            sut.ResolveObjectives(new RoundEndRequest(trigger));
+            // A later finalize does not change the fixed result.
+            sut.FinalizeGamemode();
+
+            Assert.IsTrue(sut.RoundObjectives.All(objective => objective.Failed));
+            Assert.AreEqual(ObjectiveResult.Failed, sut.OutcomeObjectives().Single().Result);
         }
 
         /// <summary>
@@ -401,6 +431,9 @@ namespace EditorTests
             }
             return ckeys;
         }
+
+        private static NukeGamemode LoadNukeGamemode() =>
+            ScriptableObject.Instantiate(AssetDatabase.LoadAssetAtPath<NukeGamemode>("Assets/Content/Data/Gamemode/Nuke/NukeGamemode.asset"));
 
         private Gamemode CreateGamemodeWithSingleObjective(CollaborationType collaborationType, int maxAssigneesPerObjective = 1, int minAssigneesPerObjective = 1)
         {

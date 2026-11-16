@@ -93,9 +93,9 @@ namespace SS3D.Systems.Inventory.Containers
         /// </summary>
         private void CloseUis()
         {
-            if (attachedContainer.ContainerUi != null)
+            if (attachedContainer.OpenPanel != null)
             {
-                attachedContainer.ContainerUi.Close();
+                attachedContainer.OpenPanel.Close();
             }
 
             // We check for each item if they are interactive containers.

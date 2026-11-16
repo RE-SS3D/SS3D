@@ -1,0 +1,6 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:ss3d="SS3D.UI.MachineInterface.Components" editor-extension-mode="False">
+    <ui:Style src="project://database/Assets/Content/Systems/UI/MachineInterface/Components/MachineWindow.uss" />
+    <ss3d:MachineWindow name="machine-window" title="MACHINE" style="left: 50%; top: 50%; translate: -50% -50%;">
+        <ui:VisualElement name="content-slot" />
+    </ss3d:MachineWindow>
+</ui:UXML>

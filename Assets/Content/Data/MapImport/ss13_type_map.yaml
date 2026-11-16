@@ -1,0 +1,64 @@
+# SS13 type path -> SS3D TileObjectSo name. Longest match wins.
+# Extend this file as gap reports show frequent unmapped paths.
+
+defaults:
+  floor: TileGrey
+  wall: SteelWall
+  window: SteelWindow
+  door: CivillianAirlock
+
+prefixes:
+  - match: /turf/open/floor/plating
+    kind: floor
+    so: TilePlating
+  - match: /turf/open/floor/iron
+    kind: floor
+    so: TileGrey
+  - match: /turf/open/floor/steel
+    kind: floor
+    so: TileGrey
+  - match: /turf/open/floor/wood
+    kind: floor
+    so: TileWood
+  - match: /turf/open/floor/carpet
+    kind: floor
+    so: FancyCarpetRed
+  - match: /turf/open/floor/grass
+    kind: floor
+    so: TileGrass
+  - match: /turf/open/floor
+    kind: floor
+    so: TileGrey
+  - match: /turf/closed/wall/r_wall
+    kind: wall
+    so: SteelWallReinforced
+  - match: /turf/closed/indestructible
+    kind: wall
+    so: SteelWallReinforced
+  - match: /turf/closed/wall
+    kind: wall
+    so: SteelWall
+  - match: /obj/structure/window/reinforced
+    kind: window
+    so: SteelWindowReinforced
+  - match: /obj/structure/window
+    kind: window
+    so: SteelWindow
+  - match: /turf/closed/wall/mineral/titanium/nodiagonal
+    kind: wall
+    so: SteelWall
+  - match: /obj/machinery/door/airlock/security
+    kind: door
+    so: SecurityAirlock
+  - match: /obj/machinery/door/airlock/public
+    kind: door
+    so: CivillianAirlock
+  - match: /obj/machinery/door/airlock
+    kind: door
+    so: CivillianAirlock
+  - match: /obj/machinery/door/firedoor
+    kind: door
+    so: CivillianAirlock
+  - match: /obj/machinery/door
+    kind: door
+    so: CivillianAirlock

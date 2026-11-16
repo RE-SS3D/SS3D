@@ -1,4 +1,5 @@
-﻿using DG.Tweening;
+﻿using SS3D.Core.Debugging;
+using DG.Tweening;
 using SS3D.Core;
 using SS3D.Systems.Inputs;
 using UnityEngine;
@@ -27,25 +28,17 @@ namespace External.RuntimeInspector
 
         private void OnEnable()
         {
-            InputSubSystem inputSubSystem = SubSystems.Get<InputSubSystem>();
-
-            if (inputSubSystem)
-            {
-                inputSubSystem.Inputs.Other.ToggleRuntimeEditor.performed += HandleToggle;
-            }
+            DebugTool tool = DebugTools.Get(DebugToolNames.RuntimeEditor);
+            tool.Invoked += HandleToggle;
+            tool.IsOn = () => _isShowed;
         }
         
         private void OnDisable()
         {
-            InputSubSystem inputSubSystem = SubSystems.Get<InputSubSystem>();
-
-            if (inputSubSystem)
-            {
-                inputSubSystem.Inputs.Other.ToggleRuntimeEditor.performed -= HandleToggle;
-            }
+            DebugTools.Get(DebugToolNames.RuntimeEditor).Invoked -= HandleToggle;
         }
 
-        private void HandleToggle(InputAction.CallbackContext context)
+        private void HandleToggle()
         {
             _isShowed = !_isShowed;
         }

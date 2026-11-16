@@ -1,15 +1,13 @@
-using Unity.Collections;
 using UnityEditor;
 using UnityEngine;
 
 namespace SS3D.Systems.Vision
 {
     [CustomEditor(typeof(VisionSubSystem))]
-    public class VisionSystemEditor : Editor
+    public class VisionSystemEditor : UnityEditor.Editor
     {
         private VisionSubSystem _vision;
 
-        private SerializedProperty _detectionOffsetProp;
         private SerializedProperty _viewConeWidthProp;
         private SerializedProperty _viewRangeProp;
 
@@ -17,53 +15,50 @@ namespace SS3D.Systems.Vision
         {
             _vision = (VisionSubSystem)target;
 
-            _detectionOffsetProp = serializedObject.FindProperty("_detectionOffset");
-            _viewConeWidthProp = serializedObject.FindProperty("_viewConeWidth");
-            _viewRangeProp = serializedObject.FindProperty("_viewRange");
+            _viewConeWidthProp = serializedObject.FindProperty("viewConeWidth");
+            _viewRangeProp = serializedObject.FindProperty("viewRange");
         }
 
         protected void OnSceneGUI()
         {
-            if (!_vision.ShowDebug)
+            if (!_vision.showDebug || _vision.target == null)
+            {
+                return;
+            }
+
+            if (!_vision.viewPoints.IsCreated || _vision.stepCount <= 0)
             {
                 return;
             }
 
             serializedObject.Update();
 
-            GUIStyle labelStyle = new()
-            {
-                fontSize = 14,
-            };
-            NativeArray<Vector3> viewPoints = _vision.ViewPoints;
-
-            Vector3 viewAngleA = _vision.DirectionFromAngle(-_viewConeWidthProp.floatValue / 2, false);
-            Vector3 viewAngleB = _vision.DirectionFromAngle(_viewConeWidthProp.floatValue / 2, false);
-
-            Vector3 center = _vision.Target.position + _detectionOffsetProp.vector3Value;
+            float range = _viewRangeProp.floatValue;
+            float halfCone = _viewConeWidthProp.floatValue * 0.5f;
+            Vector3 center = _vision.DetectionCenter;
+            Vector3 edgeA = _vision.DirectionFromAngle(-halfCone, false);
+            Vector3 edgeB = _vision.DirectionFromAngle(halfCone, false);
 
             Handles.color = Color.green;
-            Handles.Label(center, "center");
+            Handles.Label(center, "ViewPoint");
+            Handles.DrawWireArc(center, Vector3.up, Vector3.forward, 360f, range);
+            Handles.DrawLine(center, center + (edgeA * range));
+            Handles.DrawLine(center, center + (edgeB * range));
 
-            labelStyle.normal.textColor = Color.green;
-            Handles.DrawWireArc(center, Vector3.up, Vector3.forward, 360, _viewRangeProp.floatValue);
-
-            Handles.DrawLine(center, center + (viewAngleA * _viewRangeProp.floatValue));
-            Handles.DrawLine(center, center + (viewAngleB * _viewRangeProp.floatValue));
-
-            // Draw Visual Vision outline;
             Handles.color = Color.yellow;
-            GUIStyle style = new();
-            style.normal.textColor = Color.red;
+            GUIStyle labelStyle = new GUIStyle { normal = { textColor = Color.red } };
+            Unity.Collections.NativeArray<Vector3> viewPoints = _vision.viewPoints;
+            int count = _vision.stepCount;
 
-            Handles.Label(viewPoints[0], "0", style);
-            for (int i = 1; i <= _vision.StepCount; i++)
+            Handles.Label(viewPoints[0], "0", labelStyle);
+            for (int i = 0; i < count; i++)
             {
-                Handles.Label(viewPoints[i % _vision.StepCount], i.ToString(), style);
+                int next = (i + 1) % count;
+                Handles.Label(viewPoints[i], i.ToString(), labelStyle);
                 Handles.color = Color.yellow;
-                Handles.DrawLine(viewPoints[i % _vision.StepCount], center);
+                Handles.DrawLine(center, viewPoints[i]);
                 Handles.color = Color.cyan;
-                Handles.DrawLine(viewPoints[i % _vision.StepCount], viewPoints[(i + 1) % _vision.StepCount]);
+                Handles.DrawLine(viewPoints[i], viewPoints[next]);
             }
         }
     }

@@ -1,0 +1,445 @@
+using System;
+using DG.Tweening;
+using SS3D.Interactions;
+using SS3D.UI.MainHud.Components;
+using UnityEngine;
+using UnityEngine.UIElements;
+
+namespace SS3D.UI.MainHud
+{
+    /// <summary>
+    /// Plain C# view for the always-on main HUD overlay - mirrors the Attach/Detach shape of
+    /// <c>RadialInteractionMenuView</c>/<c>ArmedInteractionOverlayView</c>. Builds its tree in code rather than
+    /// from an authored UXML template, same as <c>ArmedInteractionOverlayView</c> does.
+    /// </summary>
+    public sealed class MainHudView
+    {
+        private const float AnimDuration = 0.22f;
+        private const float ShowScaleFrom = 0.92f;
+        private const float ShowTranslateYFrom = 20f;
+        private const long NoticeDurationMs = 3500;
+
+        public event Action IntentToggleRequested;
+
+        /// <summary>The internals chip was clicked.</summary>
+        public event Action InternalsToggleRequested;
+        public event Action MagbootsToggleRequested;
+
+        /// <summary>
+        /// Fired when a hand well is clicked. Argument is true for the left (first) hand slot.
+        /// </summary>
+        public event Action<bool> HandSelectedRequested;
+
+        /// <summary>Fired when a gear-strip slot (belt/ID/pocket/back) is clicked.</summary>
+        public event Action<HandsGearStrip.GearSlot> GearSlotClicked;
+
+        /// <summary>Fired when an equipment-doll slot is clicked (equip/unequip vs active hand).</summary>
+        public event Action<EquipmentGrid.Slot> EquipmentSlotClicked;
+
+        public event Action<EquipmentGrid.Slot, Vector2> EquipmentDragStarted;
+        public event Action<EquipmentGrid.Slot, Vector2> EquipmentDragMoved;
+        public event Action<EquipmentGrid.Slot, Vector2> EquipmentDragEnded;
+
+        public event Action<HandsGearStrip.GearSlot, Vector2> GearDragStarted;
+        public event Action<HandsGearStrip.GearSlot, Vector2> GearDragMoved;
+        public event Action<HandsGearStrip.GearSlot, Vector2> GearDragEnded;
+
+        public event Action<HandsGearStrip.HandSlot, Vector2> HandDragStarted;
+        public event Action<HandsGearStrip.HandSlot, Vector2> HandDragMoved;
+        public event Action<HandsGearStrip.HandSlot, Vector2> HandDragEnded;
+
+        private readonly StyleSheet[] _styleSheets;
+        private readonly MainHudIconSet _icons;
+        private readonly AlertIconSet _alertIcons;
+
+        private VisualElement _root;
+        private Label _notice;
+        private IVisualElementScheduledItem _noticeHide;
+        private AlertIconStack _alertStack;
+        private GearToggleChip _internalsChip;
+        private GearToggleChip _magbootsChip;
+        private EquipmentGrid _equipmentGrid;
+        private HandsGearStrip _handsGearStrip;
+        private IntentModule _intentModule;
+        private ZoneTargetReticle _zoneReticle;
+        private ZoneReticleDriver _zoneReticleDriver;
+        private Sequence _visibilitySequence;
+        private bool _visible;
+        private float _scale = 1f;
+        private float _translateY;
+
+        public MainHudView(StyleSheet[] styleSheets, MainHudIconSet icons, AlertIconSet alertIcons)
+        {
+            _styleSheets = styleSheets;
+            _icons = icons;
+            _alertIcons = alertIcons;
+        }
+
+        public void Attach(VisualElement overlayRoot)
+        {
+            _root = new VisualElement();
+            _root.AddToClassList("main-hud");
+            _root.pickingMode = PickingMode.Ignore;
+
+            foreach (StyleSheet styleSheet in _styleSheets)
+            {
+                if (styleSheet != null)
+                {
+                    _root.styleSheets.Add(styleSheet);
+                }
+            }
+
+            BuildTree();
+            overlayRoot.Add(_root);
+            SetVisibleImmediate(false);
+            BuildNotice(overlayRoot);
+        }
+
+        public void Detach()
+        {
+            KillVisibilitySequence();
+            _noticeHide?.Pause();
+            _noticeHide = null;
+            _notice?.RemoveFromHierarchy();
+            _notice = null;
+            _root?.RemoveFromHierarchy();
+            _root = null;
+            _zoneReticle = null;
+            _zoneReticleDriver = null;
+        }
+
+        public void SetVisible(bool visible)
+        {
+            if (_root == null || _visible == visible)
+            {
+                return;
+            }
+
+            _visible = visible;
+            if (visible)
+            {
+                PlayShow();
+            }
+            else
+            {
+                PlayHide();
+            }
+        }
+
+        /// <summary>
+        /// Brief top-centre line for a refusal the player should hear about (e.g. the map editor
+        /// denied). Lives beside the HUD root, not inside it, so it shows while the HUD chrome is
+        /// hidden (ghosts, modal panels).
+        /// </summary>
+        public void ShowNotice(string message)
+        {
+            if (_notice == null || string.IsNullOrEmpty(message))
+            {
+                return;
+            }
+
+            _notice.text = message;
+            _notice.AddToClassList("main-hud-notice--visible");
+            _noticeHide?.Pause();
+            _noticeHide = _notice.schedule
+                .Execute(() => _notice?.RemoveFromClassList("main-hud-notice--visible"))
+                .StartingIn(NoticeDurationMs);
+        }
+
+        private void BuildNotice(VisualElement overlayRoot)
+        {
+            _notice = new Label();
+            _notice.AddToClassList("main-hud-notice");
+            _notice.AddToClassList("font-body");
+            _notice.pickingMode = PickingMode.Ignore;
+            foreach (StyleSheet styleSheet in _styleSheets)
+            {
+                if (styleSheet != null)
+                {
+                    _notice.styleSheets.Add(styleSheet);
+                }
+            }
+
+            overlayRoot.Add(_notice);
+        }
+
+        public void SetAlertState(AlertStackState state)
+        {
+            _alertStack.SetState(state);
+        }
+
+        public void SetInternals(bool available, bool on)
+        {
+            _internalsChip.SetState(available, on);
+        }
+
+        public void SetMagboots(bool available, bool on)
+        {
+            _magbootsChip.SetState(available, on);
+        }
+
+        /// <summary>Greys the EVA switches while the body cannot work them.</summary>
+        public void SetGearLocked(bool locked)
+        {
+            _internalsChip.SetLocked(locked);
+            _magbootsChip.SetLocked(locked);
+        }
+
+        public void SetIntent(IntentType intent)
+        {
+            _intentModule.SetIntent(intent);
+        }
+
+        /// <summary>
+        /// Pushes aim / recovery / visibility into the reticle driver and paints one composed frame.
+        /// </summary>
+        public void ApplyZoneReticle(
+            bool visible,
+            Vector2 screenPosition,
+            string zoneLabel,
+            bool inRange,
+            float lockReadyProgress01,
+            bool recharging,
+            float bloom01 = 0f)
+        {
+            if (_zoneReticle == null || _zoneReticleDriver == null)
+            {
+                return;
+            }
+
+            _zoneReticleDriver.SetVisible(visible);
+            _zoneReticleDriver.SetAimInput(screenPosition, zoneLabel, inRange);
+            _zoneReticleDriver.SetRecoveryInput(lockReadyProgress01, recharging);
+            _zoneReticleDriver.SetBloomInput(bloom01);
+            _zoneReticleDriver.Tick(out ZoneReticleFrame frame);
+            _zoneReticle.Apply(in frame);
+        }
+
+        public void NotifyZoneReticleConnectHit()
+        {
+            _zoneReticleDriver?.NotifyConnectHit();
+        }
+
+        public void SetEquipmentIcon(EquipmentGrid.Slot slot, UnityEngine.Sprite itemIcon)
+        {
+            SetEquipmentContents(slot, itemIcon, itemName: null);
+        }
+
+        public void SetEquipmentContents(EquipmentGrid.Slot slot, UnityEngine.Sprite itemIcon, string itemName)
+        {
+            _equipmentGrid.SetContents(slot, itemIcon, itemName);
+        }
+
+        public void SetGearIcon(HandsGearStrip.GearSlot slot, UnityEngine.Sprite itemIcon)
+        {
+            SetGearContents(slot, itemIcon, itemName: null);
+        }
+
+        public void SetGearContents(HandsGearStrip.GearSlot slot, UnityEngine.Sprite itemIcon, string itemName)
+        {
+            _handsGearStrip.SetGearContents(slot, itemIcon, itemName);
+        }
+
+        public void SetHandIcons(UnityEngine.Sprite leftItemIcon, UnityEngine.Sprite rightItemIcon)
+        {
+            _handsGearStrip.SetHandIcons(leftItemIcon, rightItemIcon);
+        }
+
+        public void SetHandContents(
+            HandsGearStrip.HandSlot slot,
+            UnityEngine.Sprite itemIcon,
+            string itemName)
+        {
+            _handsGearStrip.SetHandContents(slot, itemIcon, itemName);
+        }
+
+        public void SetHandStackCount(HandsGearStrip.HandSlot slot, int count) => _handsGearStrip.SetHandStackCount(slot, count);
+
+        public void SetGearStackCount(HandsGearStrip.GearSlot slot, int count) => _handsGearStrip.SetGearStackCount(slot, count);
+
+        public void SetHandReserved(HandsGearStrip.HandSlot slot, bool reserved)
+        {
+            _handsGearStrip.SetHandReserved(slot, reserved);
+        }
+
+        public void SetActiveHand(bool leftIsActive)
+        {
+            _handsGearStrip.SetActiveHand(leftIsActive);
+        }
+
+        /// <summary>Panel-space bounds of a gear slot, used to anchor its storage panel near the click.</summary>
+        public UnityEngine.Rect GetGearSlotWorldBound(HandsGearStrip.GearSlot slot)
+        {
+            return _handsGearStrip.GetGearSlotWorldBound(slot);
+        }
+
+        public EquipmentGrid Equipment => _equipmentGrid;
+
+        public HandsGearStrip HandsGear => _handsGearStrip;
+
+        private void SetVisibleImmediate(bool visible)
+        {
+            KillVisibilitySequence();
+            _visible = visible;
+            if (_root == null)
+            {
+                return;
+            }
+
+            _scale = 1f;
+            _translateY = 0f;
+            _root.style.opacity = visible ? 1f : 0f;
+            _root.style.scale = new Scale(Vector3.one);
+            _root.style.translate = new Translate(0f, 0f);
+            _root.style.display = visible ? DisplayStyle.Flex : DisplayStyle.None;
+        }
+
+        private void PlayShow()
+        {
+            KillVisibilitySequence();
+
+            _scale = ShowScaleFrom;
+            _translateY = ShowTranslateYFrom;
+            _root.style.display = DisplayStyle.Flex;
+            _root.style.opacity = 0f;
+            _root.style.scale = new Scale(new Vector3(_scale, _scale, 1f));
+            _root.style.translate = new Translate(0f, _translateY);
+
+            _visibilitySequence = DOTween.Sequence();
+            _visibilitySequence.Append(DOTween.To(
+                    () => _root.style.opacity.value,
+                    value => _root.style.opacity = value,
+                    1f,
+                    AnimDuration)
+                .SetEase(Ease.OutCirc));
+            _visibilitySequence.Join(DOTween.To(
+                    () => _scale,
+                    value =>
+                    {
+                        _scale = value;
+                        _root.style.scale = new Scale(new Vector3(value, value, 1f));
+                    },
+                    1f,
+                    AnimDuration)
+                .SetEase(Ease.OutCirc));
+            _visibilitySequence.Join(DOTween.To(
+                    () => _translateY,
+                    value =>
+                    {
+                        _translateY = value;
+                        _root.style.translate = new Translate(0f, value);
+                    },
+                    0f,
+                    AnimDuration)
+                .SetEase(Ease.OutCirc));
+        }
+
+        private void PlayHide()
+        {
+            KillVisibilitySequence();
+
+            _root.style.display = DisplayStyle.Flex;
+            _visibilitySequence = DOTween.Sequence();
+            _visibilitySequence.Append(DOTween.To(
+                    () => _root.style.opacity.value,
+                    value => _root.style.opacity = value,
+                    0f,
+                    AnimDuration)
+                .SetEase(Ease.OutCirc));
+            _visibilitySequence.Join(DOTween.To(
+                    () => _scale,
+                    value =>
+                    {
+                        _scale = value;
+                        _root.style.scale = new Scale(new Vector3(value, value, 1f));
+                    },
+                    ShowScaleFrom,
+                    AnimDuration)
+                .SetEase(Ease.OutCirc));
+            _visibilitySequence.Join(DOTween.To(
+                    () => _translateY,
+                    value =>
+                    {
+                        _translateY = value;
+                        _root.style.translate = new Translate(0f, value);
+                    },
+                    ShowTranslateYFrom,
+                    AnimDuration)
+                .SetEase(Ease.OutCirc));
+            _visibilitySequence.OnComplete(() =>
+            {
+                if (_root != null && !_visible)
+                {
+                    _root.style.display = DisplayStyle.None;
+                }
+            });
+        }
+
+        private void KillVisibilitySequence()
+        {
+            _visibilitySequence?.Kill();
+            _visibilitySequence = null;
+        }
+
+        private void BuildTree()
+        {
+            _alertStack = new AlertIconStack(_alertIcons);
+            VisualElement alertZone = BuildZone("main-hud__zone--alerts", _alertStack);
+
+            _equipmentGrid = new EquipmentGrid(_icons);
+            _equipmentGrid.SlotClicked += slot => EquipmentSlotClicked?.Invoke(slot);
+            _equipmentGrid.SlotDragStarted += (slot, pos) => EquipmentDragStarted?.Invoke(slot, pos);
+            _equipmentGrid.SlotDragMoved += (slot, pos) => EquipmentDragMoved?.Invoke(slot, pos);
+            _equipmentGrid.SlotDragEnded += (slot, pos) => EquipmentDragEnded?.Invoke(slot, pos);
+            VisualElement equipmentZone = BuildZone("main-hud__zone--equipment", _equipmentGrid);
+
+            _handsGearStrip = new HandsGearStrip(_icons);
+            _handsGearStrip.HandClickRequested += leftIsActive => HandSelectedRequested?.Invoke(leftIsActive);
+            _handsGearStrip.GearSlotClicked += slot => GearSlotClicked?.Invoke(slot);
+            _handsGearStrip.GearDragStarted += (slot, pos) => GearDragStarted?.Invoke(slot, pos);
+            _handsGearStrip.GearDragMoved += (slot, pos) => GearDragMoved?.Invoke(slot, pos);
+            _handsGearStrip.GearDragEnded += (slot, pos) => GearDragEnded?.Invoke(slot, pos);
+            _handsGearStrip.HandDragStarted += (slot, pos) => HandDragStarted?.Invoke(slot, pos);
+            _handsGearStrip.HandDragMoved += (slot, pos) => HandDragMoved?.Invoke(slot, pos);
+            _handsGearStrip.HandDragEnded += (slot, pos) => HandDragEnded?.Invoke(slot, pos);
+            VisualElement handsGearZone = BuildZone("main-hud__zone--hands-gear", _handsGearStrip);
+
+            _internalsChip = new GearToggleChip(_alertIcons.Internals, "Internals");
+            _internalsChip.Clicked += () => InternalsToggleRequested?.Invoke();
+
+            _magbootsChip = new GearToggleChip(_alertIcons.Magboots, "Magboots");
+            _magbootsChip.Clicked += () => MagbootsToggleRequested?.Invoke();
+
+            // Absolute, so the strip stays centered when a chip appears.
+            VisualElement gearToggles = new();
+            gearToggles.AddToClassList("gear-toggles");
+            gearToggles.pickingMode = PickingMode.Ignore;
+            gearToggles.Add(_internalsChip);
+            gearToggles.Add(_magbootsChip);
+            handsGearZone.Add(gearToggles);
+
+            _intentModule = new IntentModule();
+            _intentModule.ToggleRequested += () => IntentToggleRequested?.Invoke();
+            VisualElement intentZone = BuildZone("main-hud__zone--intent", _intentModule);
+
+            _zoneReticle = new ZoneTargetReticle();
+            _zoneReticleDriver = new ZoneReticleDriver();
+
+            _root.Add(alertZone);
+            _root.Add(equipmentZone);
+            _root.Add(handsGearZone);
+            _root.Add(intentZone);
+            _root.Add(_zoneReticle.Root);
+        }
+
+        private static VisualElement BuildZone(string className, VisualElement child)
+        {
+            VisualElement zone = new();
+            zone.AddToClassList("main-hud__zone");
+            zone.AddToClassList(className);
+            zone.pickingMode = PickingMode.Ignore;
+            zone.Add(child);
+            return zone;
+        }
+    }
+}
