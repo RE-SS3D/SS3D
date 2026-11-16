@@ -12,7 +12,7 @@ namespace SS3D.Systems.Electricity
     /// <summary>
     /// HV-grid solar producer. Output is peak kW × sun intensity × aim cosine (design electricity §2).
     /// </summary>
-    public class SolarPanel : BasicElectricDevice, IPowerProducer, IInteractionTarget
+    public class SolarPanel : BasicElectricDevice, IRatedPowerProducer, IInteractionTarget
     {
         [SerializeField]
         private float _peakPowerKw = 2f;
@@ -33,6 +33,9 @@ namespace SS3D.Systems.Electricity
             get => _peakPowerKw;
             set => _peakPowerKw = Mathf.Max(0f, value);
         }
+
+        /// <summary>Its output in full sun, aimed at it.</summary>
+        public float RatedPowerKw => _peakPowerKw;
 
         public float PowerProduction
         {

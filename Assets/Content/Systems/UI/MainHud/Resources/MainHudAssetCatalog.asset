@@ -32,6 +32,10 @@ MonoBehaviour:
   _iconId: {fileID: 21300000, guid: 64f4962d7f3e86a41b25ee48ce05e8ac, type: 3}
   _iconPocket: {fileID: 21300000, guid: 95d839a0c2741cb47aa6b0cbe40b3b26, type: 3}
   _iconBack: {fileID: 21300000, guid: e3f92c7c96d5c844e933479427109147, type: 3}
+  _iconSuit: {fileID: 21300000, guid: f324930803db07c4385a71a54f7ce617, type: 3}
+  _iconSuitStorage: {fileID: 21300000, guid: 4ab833fd8d2ca4b498e55107ffd80bc4, type: 3}
+  _iconEquipmentToggle: {fileID: 21300000, guid: c052ad542a9e58c498d52d71477c71c0, type: 3}
+  _iconOpenStorage: {fileID: 21300000, guid: 027975b3348c66642a80ec07756ce571, type: 3}
   _alertFire: {fileID: 21300000, guid: 352d4305acb44594925eaffe7f81e23b, type: 3}
   _alertHot: {fileID: 21300000, guid: 2c85abc5f7a34db3b9882961de2dfeb4, type: 3}
   _alertCold: {fileID: 21300000, guid: 868138d70fcf4fdb861a7c3390e27459, type: 3}

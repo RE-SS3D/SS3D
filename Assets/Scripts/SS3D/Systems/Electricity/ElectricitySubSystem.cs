@@ -65,12 +65,15 @@ namespace SS3D.Systems.Electricity
         private float _tickRate = 0.2f;
         private SimulationChannel _channel;
 
+        /// <summary>This process's electricity channel, kept after the subsystem stops (the map editor's pause lifts it then too).</summary>
+        public static SimulationChannel Channel { get; private set; }
+
         public override void OnStartNetwork()
         {
             base.OnStartNetwork();
             // World suspension (map load, clear, import) pauses this channel, so ticks never walk devices whose
             // despawn is still draining; the graph is rebuilt on the first tick after the last scope closes.
-            _channel = SimulationClock.GetOrCreate("electricity", _tickRate, pausedByWorldSuspension: true);
+            _channel = Channel = SimulationClock.GetOrCreate("electricity", _tickRate, pausedByWorldSuspension: true);
             _channel.Resumed -= HandleChannelResumed;
             _channel.Resumed += HandleChannelResumed;
             _channel.Subscribe(HandleChannelTick);
@@ -101,11 +104,13 @@ namespace SS3D.Systems.Electricity
             _circuits = new();
             SubSystems.Get<TileSubSystem>().RegisterTileMutationObserver(this);
             AwaitAreasThenMarkReady().Forget();
+            EnsureSystemsViewRegistered();
         }
 
         protected override void OnDestroyed()
         {
             UnsubscribeFromChannel();
+            UnregisterSystemsView();
 
             _readinessCts?.Cancel();
             _readinessCts?.Dispose();
@@ -236,6 +241,7 @@ namespace SS3D.Systems.Electricity
             _electricityGraph?.Clear();
             _graphIsDirty = true;
             _apcConsumerIndexDirty = true;
+            BumpSystemsViewTopology();
         }
 
         /// <summary>
@@ -245,9 +251,16 @@ namespace SS3D.Systems.Electricity
         public void InvalidateAreaConsumerIndex()
         {
             _apcConsumerIndexDirty = true;
+            BumpSystemsViewTopology();
         }
 
-        private void HandleChannelResumed() => _graphIsDirty = true;
+        // A template load ends in a resumption: the graph rebuilds on the next tick, and the Power view's structure is
+        // rebuilt now too, or it would keep the map from before the load (electricity map, Extension points: Systems view).
+        private void HandleChannelResumed()
+        {
+            _graphIsDirty = true;
+            BumpSystemsViewTopology();
+        }
 
         private void HandleChannelTick()
         {
@@ -258,6 +271,7 @@ namespace SS3D.Systems.Electricity
                 if (IsServer && _circuits != null)
                 {
                     HandleCircuitsUpdate();
+                    EnsureSystemsViewRegistered();
                 }
 
                 using (OnTickPerformanceMarker.Auto())
@@ -466,6 +480,7 @@ namespace SS3D.Systems.Electricity
 
             _graphIsDirty = true;
             _apcConsumerIndexDirty = true;
+            PowerStateVersion.Bump();
         }
 
         [Server]
@@ -496,6 +511,7 @@ namespace SS3D.Systems.Electricity
 
             _graphIsDirty = true;
             _apcConsumerIndexDirty = true;
+            PowerStateVersion.Bump();
         }
 
         [Server]
@@ -595,7 +611,10 @@ namespace SS3D.Systems.Electricity
                 return;
 
             if (placed.Connector is CablesAdjacencyConnector)
+            {
                 RefreshNeighbouringElectricDevices(placed);
+                BumpSystemsViewTopology();
+            }
         }
 
         [Server]
@@ -605,7 +624,10 @@ namespace SS3D.Systems.Electricity
                 return;
 
             if (placed.Connector is CablesAdjacencyConnector)
+            {
                 RefreshNeighbouringElectricDevices(placed);
+                BumpSystemsViewTopology();
+            }
         }
 
         public void OnChunkCreated(TileChunkRef chunk)
@@ -675,6 +697,8 @@ namespace SS3D.Systems.Electricity
                 circuit.SetCableDistributionFilter(consumer => !IsIndexedAreaScopedConsumer(consumer));
                 _circuits.Add(circuit);
             }
+
+            BumpSystemsViewTopology();
         }
 
         private ApcControlFlags ResolveEnabledChannelsForConsumer(Circuit circuit, IPowerConsumer consumer)

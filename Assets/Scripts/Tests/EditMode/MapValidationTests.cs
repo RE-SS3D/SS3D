@@ -1,10 +1,13 @@
 using System;
 using System.Linq;
 using NUnit.Framework;
+using SS3D.Systems.Atmospherics.SystemsView;
+using SS3D.Systems.Electricity.SystemsView;
 using SS3D.Systems.Tile;
 using SS3D.Systems.Tile.SpawnPoints;
 using SS3D.Systems.Tile.Validation;
 using SS3D.Systems.Tile.MapEditor;
+using SS3D.Systems.Tile.MapEditor.SystemsView;
 using SS3D.Systems.Tile.MapEditor.UI;
 using UnityEditor;
 using UnityEngine;
@@ -126,8 +129,8 @@ namespace EditorTests
             Assert.AreEqual("Nuclear device", nuclear.Checks.Single(check => !check.IsMet).Label);
         }
 
-        private static RoomDeviceRecord Device(RoomDeviceKind kind, float x, ushort area, string room = "Bar",
-            bool apc = true, bool pipe = true) => new(kind, new Vector3(x, 0, 2), area, room, apc, pipe);
+        private static RoomDeviceRecord Device(RoomDeviceKind kind, float x, ushort area, string room = "Bar") =>
+            new(kind, new Vector3(x, 0, 2), area, room);
 
         private static RoomDeviceRecord Vent(float x, ushort area, string room = "Bar") => Device(RoomDeviceKind.Vent, x, area, room);
 
@@ -201,58 +204,67 @@ namespace EditorTests
             Assert.IsTrue(issue.HasPosition);
         }
 
+        // A device on no pipe and a room with no APC are the systems views' problems since Phase 4; their tests are
+        // AtmosProblemAnalyzerTests and PowerProblemAnalyzerTests. Here: Map Check carries them as warnings with Locate.
         [Test]
-        public void PortWithoutAPipeWarnsEvenInACompleteRoom()
+        public void SystemsIssues_AreWarningsWithLocate_UnderTheAnalyzersIds_AndNeverBlockARound()
         {
-            MapValidationReport report = RoomChecks(Device(RoomDeviceKind.Vent, 1, 3, pipe: false), Scrubber(2, 3), Alarm(3, 3));
-            StringAssert.Contains("Vent at (1, 2) has no Supply or Mixed pipe on its tile", report.Issues.Single().Title);
+            AtmosProblemInput atmos = new();
+            atmos.Pipes.Add(new AtmosProblemPipe { Tile = new Vector2Int(5, 2), Line = 0, Links = 0, ViewId = 1 });
+            atmos.Devices.Add(new AtmosProblemDevice { Kind = AtmosProblemDeviceKind.Vent, Tile = new Vector2Int(1, 2),
+                Position = new Vector3(1, 0, 2), HasPipe = false });
+            PowerProblemInput power = new();
+            power.Devices.Add(new PowerProblemDevice { Kind = PowerSystemsViewCodes.KindApc, Key = new SystemsViewKey(new Vector2Int(7, 2)),
+                Position = new Vector3(7, 0, 2), AreaId = 3 });
+            power.Rooms.Add(new PowerProblemRoom { AreaId = 3, Name = "Bar", HasApc = true });
+
+            MapValidationReport report = MapValidator.Validate("Extended", new[] { "Assistant" }, new[] { Job("Assistant") }, false, false);
+            Assert.IsFalse(report.HasIssues);
+            MapValidator.AddSystemsIssues(report, AtmosProblemAnalyzer.Analyze(atmos).Concat(PowerProblemAnalyzer.Analyze(power)));
+
+            CollectionAssert.AreEquivalent(new[] { "open-end:0:5:2", "pipe:Vent:1:2", "apc-cable:7:2" }, report.Issues.Select(issue => issue.Id));
+            Assert.IsTrue(report.CanStart, "A systems problem is a warning, never a round-start block");
+            Assert.IsTrue(report.Issues.All(issue => issue.IsWarning && issue.HasPosition));
+            MapValidationIssue vent = report.Issues.Single(issue => issue.Id == "pipe:Vent:1:2");
+            Assert.AreEqual("Atmos", vent.Category);
+            Assert.AreEqual("Vent at (1, 2) has no Supply or Mixed pipe on its tile", vent.Title, "Map Check's wording from before Phase 4");
+            Assert.AreEqual(new Vector3(1, 0, 2), vent.Position, "Locate goes to the device");
+            Assert.AreEqual("Power", report.Issues.Single(issue => issue.Id == "apc-cable:7:2").Category);
+
+            // A second pass (Map Check re-run into the same report) adds nothing twice.
+            MapValidator.AddSystemsIssues(report, AtmosProblemAnalyzer.Analyze(atmos));
+            Assert.AreEqual(3, report.Issues.Count);
         }
 
         [Test]
-        public void LineFillWithoutItsPipeWarnsWithoutCountingAsARoomPort()
+        public void SystemsIssueIds_CoverEveryV1Problem()
         {
-            MapValidationReport report = RoomChecks(Device(RoomDeviceKind.LineFill, 1, 3, pipe: false));
-            StringAssert.Contains("Line fill at (1, 2) has no matching pipe on its tile", report.Issues.Single().Title);
-        }
+            // One input that raises every problem kind once, so a renamed id fails here as well as in the analyzer tests.
+            AtmosProblemInput atmos = new();
+            atmos.Pipes.Add(new AtmosProblemPipe { Tile = new Vector2Int(9, 9), Line = 3, Links = SystemsViewLinks.East, ViewId = 3 });
+            atmos.Devices.Add(new AtmosProblemDevice { Kind = AtmosProblemDeviceKind.Pump, Tile = new Vector2Int(1, 1), HasPipe = false });
+            atmos.Devices.Add(new AtmosProblemDevice { Kind = AtmosProblemDeviceKind.Vent, Tile = new Vector2Int(2, 1), HasPipe = true, BackViewId = 1,
+                NeedsPower = true, AreaId = 4, RoomName = "Bar" });
+            atmos.Devices.Add(new AtmosProblemDevice { Kind = AtmosProblemDeviceKind.Scrubber, Tile = new Vector2Int(3, 1), HasPipe = true, BackViewId = 2 });
+            PowerProblemInput power = new();
+            power.Devices.Add(new PowerProblemDevice { Kind = PowerSystemsViewCodes.KindApc, Key = new SystemsViewKey(new Vector2Int(1, 5)) });
+            power.Devices.Add(new PowerProblemDevice { Kind = PowerSystemsViewCodes.KindApc, Key = new SystemsViewKey(new Vector2Int(2, 5)), CircuitViewId = 1 });
+            power.Devices.Add(new PowerProblemDevice { Kind = PowerSystemsViewCodes.KindApc, Key = new SystemsViewKey(new Vector2Int(3, 5)), CircuitViewId = 2 });
+            power.Devices.Add(new PowerProblemDevice { Kind = PowerSystemsViewCodes.KindGenerator, Key = new SystemsViewKey(new Vector2Int(4, 5)),
+                CircuitViewId = 2, SupplyKw = 1f });
+            power.Devices.Add(new PowerProblemDevice { Kind = PowerSystemsViewCodes.KindConsumer, Key = new SystemsViewKey(new Vector2Int(5, 5)),
+                CircuitViewId = 2, AreaId = 6, DemandKw = 5f });
+            power.Devices.Add(new PowerProblemDevice { Kind = PowerSystemsViewCodes.KindSmes, Key = new SystemsViewKey(new Vector2Int(6, 5)) });
+            power.Rooms.Add(new PowerProblemRoom { AreaId = 6, Name = "Kitchen", HasApc = false });
 
-        [Test]
-        public void GasPumpWithoutSurfacePipesWarnsWithoutCountingAsARoomPort()
-        {
-            MapValidationReport report = RoomChecks(Device(RoomDeviceKind.GasPump, 1, 3, pipe: false), Alarm(2, 3));
-            StringAssert.Contains("Gas pump at (1, 2) needs a Surface pipe at both ports", report.Issues.Single().Title);
-        }
-
-        [Test]
-        public void ValveWithoutSurfacePipesWarns()
-        {
-            MapValidationReport report = RoomChecks(Device(RoomDeviceKind.Valve, 1, 3, pipe: false), Alarm(2, 3));
-            StringAssert.Contains("Valve at (1, 2) needs a Surface pipe at both ports", report.Issues.Single().Title);
-        }
-
-        [Test]
-        public void ThreeWayDevice_WithNoSingleLine_SaysWhatItNeeds()
-        {
-            var report = new MapValidationReport();
-
-            MapValidator.AddRoomDeviceChecks(
-                report,
-                new[] { new RoomDeviceRecord(RoomDeviceKind.ThreeWay, new Vector3(1, 0, 2), 1, "Atmos", hasPipe: false) },
-                paintedRooms: true);
-
-            Assert.That(report.Issues.Select(issue => issue.Title), Has.Some.Contains("Filter or mixer at (1, 2) can't tell which pipe line"));
-        }
-
-        [Test]
-        public void Meter_WithNoPipe_HasNoLineToWorkOn()
-        {
-            var report = new MapValidationReport();
-
-            MapValidator.AddRoomDeviceChecks(
-                report,
-                new[] { new RoomDeviceRecord(RoomDeviceKind.LineReader, new Vector3(1, 0, 2), 1, "Atmos", hasPipe: false) },
-                paintedRooms: true);
-
-            Assert.That(report.Issues.Select(issue => issue.Title), Has.Some.Contains("Meter or injector at (1, 2) has no gas pipe"));
+            MapValidationReport report = new();
+            MapValidator.AddSystemsIssues(report, AtmosProblemAnalyzer.Analyze(atmos).Concat(PowerProblemAnalyzer.Analyze(power)));
+            CollectionAssert.AreEquivalent(new[]
+            {
+                "open-end:3:9:9", "pipe:GasPump:1:1", "no-source:2:1", "no-sink:3:1", "atmos-power:4",
+                "apc-cable:1:5", "circuit-source:2:5", "circuit-demand:3:5", "no-apc:6", "smes-circuit:6:5",
+            }, report.Issues.Select(issue => issue.Id));
+            Assert.IsTrue(report.CanStart);
         }
 
         [Test]
@@ -260,14 +272,6 @@ namespace EditorTests
         {
             StringAssert.StartsWith("No scrubber in Bar", RoomChecks(Vent(1, 3), Alarm(2, 3)).Issues.Single().Title);
             StringAssert.StartsWith("No vent in Bar", RoomChecks(Scrubber(1, 3), Alarm(2, 3)).Issues.Single().Title);
-        }
-
-        [Test]
-        public void RoomWithoutAnApcWarnsOnlyWhenADeviceNeedsPower()
-        {
-            MapValidationIssue issue = RoomChecks(Device(RoomDeviceKind.Light, 1, 3, apc: false)).Issues.Single();
-            StringAssert.StartsWith("No APC in Bar", issue.Title);
-            Assert.IsFalse(RoomChecks(Device(RoomDeviceKind.Light, 1, 3)).HasIssues);
         }
 
         [Test]

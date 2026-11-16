@@ -452,6 +452,7 @@ namespace SS3D.UI.MachineInterface
 
         private void RefreshAfterChannelsChange()
         {
+            PowerStateVersion.Bump();
             if (SubSystems.TryGet(out AreaSubSystem areaSubSystem))
             {
                 areaSubSystem.RefreshAreaLightingStates();

@@ -46,7 +46,18 @@ namespace SS3D.Systems.Electricity
         public float MaxDeliverableKw(float tickSeconds) =>
             PowerStorageMath.MaxDeliverableKw(_storedEnergyKwh, _maxDischargeRateKw, tickSeconds, _isOn);
 
-        public bool IsOn { get => _isOn; set => _isOn = value; }
+        public bool IsOn
+        {
+            get => _isOn;
+            set
+            {
+                if (_isOn == value)
+                    return;
+
+                _isOn = value;
+                PowerStateVersion.Bump();
+            }
+        }
 
         public void Init(float maxDischargeRateKw, float maxCapacityKwh, float storedEnergyKwh, float maxChargeRateKw = -1f)
         {

@@ -1,19 +1,110 @@
+/* Worn-equipment doll: the character-examine paperdoll's look (Examine.uss) so your own gear and another
+   player's read the same — semi-transparent panel chrome, 64px inset wells, 2px gaps. Collapsed behind the
+   toggle by default. */
+
 .equipment-grid {
     flex-direction: column;
+    align-items: flex-start;
+    overflow: visible;
+}
+
+/* Painted chrome only, no overflow:hidden here (hover labels sit above the wells; UITK radius+clip pitfall). */
+.equipment-grid__panel {
+    flex-direction: column;
+    align-items: center;
+    padding: var(--ss3d-space-3);
+    padding-top: var(--ss3d-space-5);
+    margin-bottom: var(--ss3d-space-2);
+    background-color: rgba(23, 26, 30, 0.75);
+    border-radius: var(--ss3d-radius-md);
+    border-width: 1px;
+    border-color: var(--ss3d-border-subtle);
     overflow: visible;
 }
 
 .equipment-grid__row {
     flex-direction: row;
+    justify-content: center;
     overflow: visible;
 }
 
 .equipment-grid__row > .inventory-slot {
-    margin-right: var(--ss3d-space-1);
-    margin-bottom: var(--ss3d-space-1);
+    margin-right: 2px;
+    margin-bottom: 2px;
 }
 
 .equipment-grid__spacer {
-    width: 72px;
-    margin-right: var(--ss3d-space-1);
+    margin-right: 2px;
+}
+
+/* Same inset well as the paperdoll (beats `.main-hud .inventory-slot__well`). */
+.main-hud .equipment-grid__panel .inventory-slot__well {
+    background-color: var(--ss3d-diegetic-inset);
+}
+
+/* Show/hide toggle: same 64 px well as the belt/ID/pocket/back slots, Expand glyph, label chip above on hover. */
+.equipment-grid__toggle {
+    position: relative;
+    width: 64px;
+    height: 64px;
+    /* Level with the gear wells, which sit 4 px up in their strip. */
+    margin-bottom: 4px;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--ss3d-surface-hud);
+    border-radius: 10px;
+    border-width: 1px;
+    border-color: var(--ss3d-border-subtle);
+    overflow: visible;
+}
+
+.equipment-grid__toggle:hover {
+    border-color: var(--ss3d-text-secondary);
+}
+
+.equipment-grid__toggle--open {
+    border-width: 2px;
+    border-color: var(--ss3d-accent-rust);
+}
+
+.equipment-grid__toggle-glyph {
+    width: 34px;
+    height: 34px;
+    -unity-background-scale-mode: scale-to-fit;
+    -unity-background-image-tint-color: var(--ss3d-text-secondary);
+}
+
+.equipment-grid__toggle:hover .equipment-grid__toggle-glyph,
+.equipment-grid__toggle--open .equipment-grid__toggle-glyph {
+    -unity-background-image-tint-color: var(--ss3d-text-primary);
+}
+
+/* Same hover chip as the HUD slot labels (MainHud.uss): above the well, centred. The host is wider than the well
+   because a Label measures its text at most as wide as its parent. */
+.equipment-grid__toggle-label-host {
+    position: absolute;
+    left: -160px;
+    right: -160px;
+    bottom: 100%;
+    margin-bottom: var(--ss3d-space-2);
+    flex-direction: row;
+    justify-content: center;
+}
+
+.equipment-grid__toggle-label {
+    flex-shrink: 0;
+    white-space: nowrap;
+    opacity: 0;
+    background-color: var(--ss3d-surface-hud);
+    color: var(--ss3d-text-secondary);
+    border-radius: var(--ss3d-radius-sm);
+    border-width: 1px;
+    border-color: var(--ss3d-border-subtle);
+    padding: 2px 8px;
+    transition-property: opacity;
+    transition-duration: var(--ss3d-duration-fast);
+}
+
+.equipment-grid__toggle:hover .equipment-grid__toggle-label {
+    opacity: 1;
 }

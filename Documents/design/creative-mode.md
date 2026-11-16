@@ -74,6 +74,42 @@ Lower mirrors §4's three run types one for one, under the subfloor they all res
 
 Placing the wrong type where a builder meant another is a real, visible mistake, not something the tool smooths over. **Endpoints** (APC, SMES, vent, scrubber, chute) are ordinary devices from §2 — place the device, then route to it.
 
+### Seeing what's connected
+
+Pipes and cables are the hardest part of a map to get right, and the easiest to get wrong without noticing: a vent one tile off its pipe looks finished until a round shows the room never fills. The editor therefore has two **systems views**, **Atmos** and **Power**, that show the whole station's networks and what is happening in them. They answer "what is connected to what" first, and "what is it doing" on demand. Like the palette, they are out-of-fiction (§1) and exist only while the editor is open.
+
+**Who and when.** Anyone who can open the editor gets the views, including players building on an open server (`sandbox-server.md` §5). A view turns on by itself on Lower › Gas Pipes (Atmos) and Lower › Cables (Power), the way room painting shows rooms. A toolbar toggle (Off, Atmos, Power) keeps one on from any tab, so you can place vents from the machines tab while watching their network. While a view is on, floors and upper objects are dimmed so the runs underneath show through. Turning it off restores whatever layers you had visible, unless you changed them in the meantime.
+
+**Atmos view.**
+
+- **Every pipe network gets its own colour**, laid over the real pipes. One network is one connected run on one line; a valve, pump or filter sits between two networks. Colour per network, not per line, is what answers "is this vent on the same network as that pump?". Hovering a pipe names its line (Supply, Mixed, Waste, Surface).
+- **Every device shows its state**: vents and scrubbers on or off and their mode, valves open or closed, and an arrow on each pump, filter and mixer showing which way gas moves. A device between two networks shows both colours, one at each end. A pump fitted backwards is visible at a glance.
+- **Room air** is an optional sub-toggle that tints floors by pressure, which is how you see a vent actually filling its room. It is off by default so it doesn't bury the pipes.
+
+**Power view.** Power has two tiers (`electricity.md` §3, §4): cables join generators, SMES units and APCs, and every other machine draws from its room's APC with no cable at all.
+
+- **Every cable circuit gets its own colour**, and each APC shows which circuit it hangs off.
+- **Each room is tinted with its APC's circuit colour.** A room with no APC is hatched as unpowered.
+- **Every consumer shows a status dot**: powered, its channel switched off, or unpowered. "Why is this light off?" is answered by the room, not by a cable the light doesn't have.
+
+**Tracing.** With the Select tool, clicking a pipe, cable or device **traces** its network: everything else dims, the network gets a name label ("Supply 3", "Circuit 2") so nothing depends on colour alone, and a panel shows what it is doing:
+
+- **Atmos**: pressure, temperature, gas mix and volume, and every attached device with **Locate**. Clicking a device between two networks traces both and labels which side is which.
+- **Power**: supply against demand, each generator's output, each SMES's charge and rate in and out, and each APC's charge, channels and breaker. Clicking a room shows its APC and the machines it powers.
+
+**Live, and pausable.** The views show the station as it runs, so an author can watch a room fill or a battery drain during a playtest (§9). Admins can also **pause** atmospherics and power and **step** them one tick at a time. Open-server builders can't, because pausing stops the round for everyone else on it.
+
+**Colours stay put.** Networks split and merge as you edit. When they do, the larger side keeps its colour, so the picture doesn't reshuffle every time a pipe is placed.
+
+**The views point out problems.** A marker sits on each spot that will clearly not work:
+
+- **Atmos**: an open pipe end where gas leaks out; a device on no pipe; a vent or scrubber whose network has nothing feeding it or nowhere to send gas; a powered device in a room with no power.
+- **Power**: an APC on no cable; a circuit with no generator or storage; a circuit whose demand exceeds its supply; a room with machines but no APC; an SMES not on any circuit.
+
+These are the same findings the map check reports (§8), as warnings with Locate, so a problem is caught whether the author is looking at the view or at the check. Only certain mistakes get a marker; a guess about intent (a pump that *might* point the wrong way) stays out, because false alarms teach authors to ignore markers.
+
+**Plain words.** A collapsible legend explains every colour, badge, dot and marker in words a newcomer understands ("Open pipe end — gas leaks out here"). It is open the first time a view is used and stays how the author left it after that (§2's plain-words rule).
+
 ## 5. Bulk tools
 
 - **Rectangle-fill** — for floors, walls and repeated objects. Drag a rectangle; every tile inside gets the selected entry, exactly as if placed one by one.
@@ -124,7 +160,7 @@ An existing SS13 map can be imported as a **starting point**. The import convert
 
 ## 12. HUD touchpoints
 
-The editor's palette and fields are the one deliberate departure from "no abstract menu" in this project, and they appear only while the editor is open. Nothing about a normal round's HUD changes because the editor exists.
+The editor's palette, fields and systems views (§4) are the one deliberate departure from "no abstract menu" in this project, and they appear only while the editor is open. Nothing about a normal round's HUD changes because the editor exists.
 
 ## 13. Worked examples
 
@@ -162,12 +198,24 @@ The editor's palette and fields are the one deliberate departure from "no abstra
 | 2 | Gap report lists 40 unconverted object types | The author's to-do list |
 | 3 | Areas start from the APC default | Author repaints the vault and the maintenance tunnels |
 
+**E — Finding why a room won't fill:**
+
+| Step | What happens | System state |
+|---|---|---|
+| 1 | During a playtest the medbay stays at low pressure | The author opens the editor and turns on the Atmos view |
+| 2 | Medbay's vent is a different colour from the distribution line beside it | The vent sits on its own one-tile network; a marker says nothing feeds it |
+| 3 | The author clicks the distribution line to trace it | It ends one tile short of the vent; the open end has a leak marker |
+| 4 | The author places the missing pipe | The vent takes the line's colour, both markers clear, and the room fills while they watch |
+
 ## 14. Integration notes
 
 | Element | Touches existing / needed system |
 |---|---|
 | Areas painted with fields | `area.md` §2, §3, §5 |
 | Cables, gas pipes, disposal pipes | `electricity.md` §3, `atmospherics.md` §6, `disposal.md` §3 |
+| Atmos view: networks, devices, room air | `atmospherics.md` §2, §4, §6, §7 |
+| Power view: circuits, APCs, rooms, consumers | `electricity.md` §3, §4, §5; `area.md` §5 |
+| Who may pause the simulations | `admin-tools.md` §2; `sandbox-server.md` §5 |
 | Nuclear device, disk, operative spawn | `antagonist-content.md` §6 |
 | Picking a map for a round; start blocked by the fit check | `round-config.md` §2, §5 |
 | Job spawn points | `lobby.md` §5, §7 |
@@ -183,3 +231,6 @@ The editor's palette and fields are the one deliberate departure from "no abstra
 - **A persistent stamp/template library** across sessions — copy-paste is session-scoped (§5).
 - **Map metadata beyond a name** — author, tags, thumbnails.
 - **Griefing prevention while editing** — server policy, not a mechanic.
+- **A disposals view** alongside Atmos and Power (§4).
+- **Systems views outside the editor**: an admin toggle during a normal round, and in-world tools that show pipes and cables or read a pipe's gas. The in-world tools are gameplay and belong to `atmospherics.md` and `electricity.md`.
+- **Markers that guess at intent**, such as a pump that may point the wrong way (§4).

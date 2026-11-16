@@ -44,7 +44,9 @@ namespace SS3D.Systems.Atmospherics.Visualization
                 return;
             }
 
-            if (TileAoiVisibility.TryGetLocalAoiTileBounds(out int minX, out int minZ, out int maxX, out int maxZ))
+            // Room air tints every floor of the station, so it asks for all of it (AtmosRenderContext.FullAtlasRequested).
+            if (!AtmosRenderContext.FullAtlasRequested
+                && TileAoiVisibility.TryGetLocalAoiTileBounds(out int minX, out int minZ, out int maxX, out int maxZ))
                 _uploader.Refresh(_atmos.Simulation, minX, minZ, maxX, maxZ);
             else
                 _uploader.Refresh(_atmos.Simulation);

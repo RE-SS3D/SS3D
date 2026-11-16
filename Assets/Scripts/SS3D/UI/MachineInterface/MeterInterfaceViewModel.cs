@@ -25,6 +25,9 @@ namespace SS3D.UI.MachineInterface
 
         public string LineLabel { get; set; } = "NO LINE";
 
+        /// <summary>Whether the tile holds another line the meter can switch to.</summary>
+        public bool CanSwitchLine { get; set; }
+
         public string FooterText { get; set; } = "SS3D Atmospherics — Gas Meter Model GM-02";
 
         public MeterScenario Scenario { get; set; } = MeterScenario.Vacuum;
@@ -93,6 +96,7 @@ namespace SS3D.UI.MachineInterface
                 DeviceTitle = "GM-02",
                 LineLabel = "Supply line · 14 segments",
                 Connected = true,
+                LinesOnTile = 2,
                 TemperatureKelvin = 293.2f,
                 Moles = 28.8f,
                 VolumeLitres = 7000f,

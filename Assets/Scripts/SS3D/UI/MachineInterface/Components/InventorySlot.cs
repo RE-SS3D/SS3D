@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -6,7 +7,22 @@ namespace SS3D.UI.MachineInterface.Components
     [UxmlElement]
     public partial class InventorySlot : VisualElement
     {
+        /// <summary>
+        /// The corner open button was clicked (see <see cref="ShowOpenButton"/>). The slot's own click and drag
+        /// never see that press.
+        /// </summary>
+        public event Action OpenRequested;
+
+        /// <summary>
+        /// Right mouse button pressed on the slot (not on its open button, and not mid-drag): the host shows the
+        /// item's interactions. Position is panel-space.
+        /// </summary>
+        public event Action<Vector2> ContextRequested;
+
         private readonly VisualElement _well;
+        private readonly VisualElement _openButton;
+        private readonly VisualElement _openButtonIcon;
+        private Sprite _openButtonSprite;
         private readonly VisualElement _labelHost;
         private readonly Label _label;
         private readonly Label _unknownGlyph;
@@ -76,6 +92,21 @@ namespace SS3D.UI.MachineInterface.Components
             _stackCount.style.display = DisplayStyle.None;
             _well.Add(_stackCount);
 
+            // Small corner button that opens storage on the item, so the slot's own click stays take/put/use.
+            _openButton = new VisualElement();
+            _openButton.AddToClassList("inventory-slot__open-button");
+            _openButton.style.display = DisplayStyle.None;
+            _openButtonIcon = new VisualElement();
+            _openButtonIcon.AddToClassList("inventory-slot__open-button-icon");
+            _openButtonIcon.pickingMode = PickingMode.Ignore;
+            _openButton.Add(_openButtonIcon);
+            _openButton.RegisterCallback<PointerDownEvent>(OnOpenButtonPointerDown);
+            _openButton.RegisterCallback<PointerUpEvent>(evt => evt.StopPropagation());
+            _openButton.RegisterCallback<ClickEvent>(OnOpenButtonClick);
+            _well.Add(_openButton);
+
+            RegisterCallback<PointerDownEvent>(OnSlotPointerDown);
+
             // Host sizes to the slot and centers the chip; avoids UITK translate:-50% sticking to the
             // previous text width when SlotLabel changes (e.g. Head → Trucker Cap).
             _labelHost = new VisualElement();
@@ -135,6 +166,31 @@ namespace SS3D.UI.MachineInterface.Components
                 _itemIcon = value;
                 ApplyIcon();
             }
+        }
+
+        /// <summary>Glyph drawn on the corner open button.</summary>
+        public Sprite OpenButtonIcon
+        {
+            get => _openButtonSprite;
+            set
+            {
+                _openButtonSprite = value;
+                _openButtonIcon.style.backgroundImage = value != null ? new StyleBackground(value) : new StyleBackground(StyleKeyword.None);
+            }
+        }
+
+        /// <summary>Shows the corner open button; set it while the slot holds an item that is itself storage.</summary>
+        public bool ShowOpenButton
+        {
+            get => _openButton.style.display == DisplayStyle.Flex;
+            set => _openButton.style.display = value ? DisplayStyle.Flex : DisplayStyle.None;
+        }
+
+        /// <summary>Marks the open button while that storage's panel is open, so the button reads as a toggle.</summary>
+        public bool OpenButtonActive
+        {
+            get => _openButton.ClassListContains("inventory-slot__open-button--active");
+            set => _openButton.EnableInClassList("inventory-slot__open-button--active", value);
         }
 
         [UxmlAttribute]
@@ -213,6 +269,32 @@ namespace SS3D.UI.MachineInterface.Components
                 _reserved = value;
                 ApplyReserved(value);
             }
+        }
+
+        private void OnOpenButtonPointerDown(PointerDownEvent evt)
+        {
+            // Keep the press away from the slot: no drag capture, no take, no context menu.
+            evt.StopPropagation();
+        }
+
+        private void OnOpenButtonClick(ClickEvent evt)
+        {
+            evt.StopPropagation();
+            if (evt.button == (int)MouseButton.LeftMouse)
+            {
+                OpenRequested?.Invoke();
+            }
+        }
+
+        private void OnSlotPointerDown(PointerDownEvent evt)
+        {
+            // A right press while this slot holds a left-button drag capture belongs to that drag.
+            if (evt.button != (int)MouseButton.RightMouse || this.HasPointerCapture(evt.pointerId))
+            {
+                return;
+            }
+
+            ContextRequested?.Invoke((Vector2)evt.position);
         }
 
         private void ApplySize(float size)

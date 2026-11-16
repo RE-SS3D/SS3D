@@ -17,7 +17,7 @@ namespace SS3D.Systems.Atmospherics.Pipes
         [SyncVar]
         private int _flowRate = AtmosPortConstants.ScrubberNormalFlowRate;
 
-        // A chamber intake carries air, where a room scrubber must leave air alone.
+        // A chamber intake takes every gas (a chamber's whole contents), where a room scrubber must leave air alone.
         [SerializeField]
         private bool _isAirIntake;
 
@@ -27,6 +27,9 @@ namespace SS3D.Systems.Atmospherics.Pipes
         private bool _filterToxins;
 
         public int FlowRate => _flowRate;
+
+        /// <summary>A chamber intake: takes every gas, so it belongs on a gas chamber, never in a room.</summary>
+        public bool IsAirIntake => _isAirIntake;
 
         [System.Serializable]
         private sealed class ScrubberSetup : PortSetup
@@ -43,8 +46,8 @@ namespace SS3D.Systems.Atmospherics.Pipes
         {
             filterO2 = _isAirIntake,
             filterN2 = _isAirIntake,
-            filterCo2 = !_isAirIntake,
-            filterToxins = false,
+            filterCo2 = true,
+            filterToxins = _isAirIntake,
         };
 
         protected override PortSetup CurrentSetup() => new ScrubberSetup
@@ -80,7 +83,7 @@ namespace SS3D.Systems.Atmospherics.Pipes
         public void ServerApplyNormalSettings()
         {
             _flowRate = AtmosPortConstants.ScrubberNormalFlowRate;
-            ServerSetFilters(o2: _isAirIntake, n2: _isAirIntake, co2: !_isAirIntake, toxins: false);
+            ServerSetFilters(o2: _isAirIntake, n2: _isAirIntake, co2: true, toxins: _isAirIntake);
         }
 
         /// <summary>

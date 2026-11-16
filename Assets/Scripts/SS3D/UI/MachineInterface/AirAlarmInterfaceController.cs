@@ -229,30 +229,9 @@ namespace SS3D.UI.MachineInterface
             bool powerOk = PowerGate.IsPowered(_powerConsumer, NullConsumerPolicy.Allow);
             AirAlarmState alarmState = _airAlarm != null ? _airAlarm.AlarmState : AirAlarmState.None;
 
-            AirAlarmScenario scenario;
-            if (!powerOk)
-            {
-                scenario = AirAlarmScenario.Danger;
-            }
-            else if ((alarmState & AirAlarmState.HighPlasma) != 0)
-            {
-                scenario = AirAlarmScenario.Danger;
-            }
-            else if ((alarmState & AirAlarmState.LowOxygen) != 0
-                || (alarmState & AirAlarmState.HighCarbonDioxide) != 0
-                || (alarmState & AirAlarmState.HighTemperature) != 0)
-            {
-                scenario = AirAlarmScenario.Warning;
-            }
-            else if ((alarmState & AirAlarmState.HighPressure) != 0
-                || (alarmState & AirAlarmState.LowPressure) != 0)
-            {
-                scenario = AirAlarmScenario.Warning;
-            }
-            else
-            {
-                scenario = AirAlarmScenario.Normal;
-            }
+            AirAlarmIndicator indicator = _airAlarm != null ? _airAlarm.Indicator : AirAlarmIndicator.Off;
+            bool hasSample = _airAlarm != null && _airAlarm.HasSample;
+            AirAlarmScenario scenario = (AirAlarmScenario)AirAlarmStatusText.Describe(powerOk, hasSample, alarmState, indicator).Severity;
 
             List<AirAlarmDeviceSnapshot> connectedDevices = new();
             PopulateConnectedDevicesFromWorld(connectedDevices);
@@ -269,6 +248,8 @@ namespace SS3D.UI.MachineInterface
                 AreaName = areaName ?? string.Empty,
                 PowerOk = powerOk,
                 Scenario = (byte)scenario,
+                AlarmState = (byte)alarmState,
+                Indicator = (byte)indicator,
                 AccessGranted = AccessGranted,
                 AccessScanning = AccessScanning,
                 AccessDenied = AccessDenied,
@@ -278,7 +259,7 @@ namespace SS3D.UI.MachineInterface
                 NitrogenFraction = _airAlarm != null ? _airAlarm.SampleNitrogenFraction : 0f,
                 PlasmaFraction = _airAlarm != null ? _airAlarm.SamplePlasmaFraction : 0f,
                 TemperatureKelvin = _airAlarm != null ? _airAlarm.SampleTemperatureKelvin : 0f,
-                HasSample = _airAlarm != null && _airAlarm.HasSample,
+                HasSample = hasSample,
                 ActiveMode = (byte)(_airAlarm != null ? _airAlarm.ActiveMode : AirAlarmPresetMode.Filtering),
                 SelectedDeviceId = _selectedDeviceId ?? string.Empty,
                 ConnectedDevices = connectedDevices,

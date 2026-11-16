@@ -63,6 +63,7 @@ MPPM_SCENARIOS = {
     "blast": ("blast-host", ["blast-client"]),
     "downed": ("downed-host", ["downed-client"]),
     "action-line": ("action-line-host", ["action-line-client"]),
+    "systems-view": ("systems-view-host", ["systems-view-client"]),
 }
 # Scenario -> station fixture its host loads, copied in for the run: rounds read Data/StationTemplates.
 MPPM_STATIONS = {"breach-budget": "atmostest.json", "breach": "testroom.json"}
@@ -424,7 +425,12 @@ async def run_pilot(editor, menu, pattern, expected, timeout, screenshots=False)
 
 
 async def step_visual(editor, ctx):
-    return await run_pilot(editor, "SS3D/Testing/Run Lobby UI Pilot", "[0-9]*/status.json", 120, 300, screenshots=True)
+    lobby = await run_pilot(editor, "SS3D/Testing/Run Lobby UI Pilot", "[0-9]*/status.json", 120, 300, screenshots=True)
+    # Overlays of map-editor-systems-views (Tests): the Map Editor's Atmos and Power views on classic-ministation.
+    systems = await run_pilot(editor, "SS3D/Testing/Run Map Editor Systems Pilot", "systems-view-*/status.json", 150, 360,
+                              screenshots=True)
+    return Done(f"lobby {lobby.note}; map editor systems {systems.note} ({systems.report})", lobby.report,
+                lobby.pngs + systems.pngs)
 
 
 async def step_lifecycle(editor, ctx):

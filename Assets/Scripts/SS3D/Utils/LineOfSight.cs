@@ -74,5 +74,40 @@ namespace SS3D.Utils
             Vector3 dir = direction.sqrMagnitude > 0f ? direction.normalized : Vector3.forward;
             return Physics.Raycast(origin, dir, out hit, maxDistance, mask, triggers);
         }
+
+        private static readonly RaycastHit[] HitBuffer = new RaycastHit[32];
+
+        /// <summary>
+        /// <see cref="TryGetFirstHit"/> that passes through colliders under <paramref name="ignoreRoot"/> (the looker's own
+        /// body: a ray from the eyes to the floor nearby otherwise stops on the head or chest).
+        /// </summary>
+        public static bool TryGetFirstHitIgnoring(
+            Vector3 origin,
+            Vector3 direction,
+            float maxDistance,
+            LayerMask mask,
+            Transform ignoreRoot,
+            out RaycastHit hit,
+            QueryTriggerInteraction triggers = QueryTriggerInteraction.UseGlobal)
+        {
+            Vector3 dir = direction.sqrMagnitude > 0f ? direction.normalized : Vector3.forward;
+            int count = Physics.RaycastNonAlloc(origin, dir, HitBuffer, maxDistance, mask, triggers);
+            hit = default;
+            float nearest = float.PositiveInfinity;
+            for (int i = 0; i < count; i++)
+            {
+                RaycastHit candidate = HitBuffer[i];
+                if (candidate.distance >= nearest
+                    || (ignoreRoot != null && candidate.collider.transform.IsChildOf(ignoreRoot)))
+                {
+                    continue;
+                }
+
+                nearest = candidate.distance;
+                hit = candidate;
+            }
+
+            return nearest < float.PositiveInfinity;
+        }
     }
 }

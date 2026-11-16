@@ -236,6 +236,7 @@ namespace SS3D.Systems.Electricity
                 if (consumer.PowerStatus != target)
                 {
                     consumer.PowerStatus = target;
+                    PowerStateVersion.Bump();
                 }
             }
         }

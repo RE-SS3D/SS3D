@@ -249,6 +249,7 @@ namespace SS3D.UI.MainHud.Components
             Action<Vector2> ended)
         {
             Vector2 dragOrigin = default;
+            bool pressed = false;
 
             // Always clear the click-suppression flag on press — including empty wells. Otherwise a
             // prior drag leaves _dragMoved true and empty-hand clicks (which never re-enter the
@@ -268,6 +269,7 @@ namespace SS3D.UI.MainHud.Components
                 }
 
                 _dragMoved = false;
+                pressed = false;
                 dragOrigin = (Vector2)evt.position;
 
                 if (!canDrag())
@@ -275,28 +277,32 @@ namespace SS3D.UI.MainHud.Components
                     return;
                 }
 
-                onBegin();
+                // Hold the pointer, but only start the drag (ghost, drop highlights) once it has moved past the
+                // threshold: a plain click must stay a click (DragGesture).
+                pressed = true;
                 inventorySlot.CapturePointer(evt.pointerId);
-                started((Vector2)evt.position);
                 evt.StopPropagation();
             });
             inventorySlot.RegisterCallback<PointerMoveEvent>(evt =>
             {
-                if (!inventorySlot.HasPointerCapture(evt.pointerId))
+                if (!pressed || !inventorySlot.HasPointerCapture(evt.pointerId))
                 {
                     return;
                 }
 
-                Vector2 delta = (Vector2)evt.position - dragOrigin;
-                if (!_dragMoved && delta.sqrMagnitude >= DragThresholdSq)
+                if (!_dragMoved)
                 {
+                    if (!DragGesture.PastThreshold(dragOrigin, (Vector2)evt.position))
+                    {
+                        return;
+                    }
+
                     _dragMoved = true;
+                    onBegin();
+                    started(dragOrigin);
                 }
 
-                if (_dragMoved)
-                {
-                    moved((Vector2)evt.position);
-                }
+                moved((Vector2)evt.position);
             });
             inventorySlot.RegisterCallback<PointerUpEvent>(evt =>
             {
@@ -305,24 +311,24 @@ namespace SS3D.UI.MainHud.Components
                     return;
                 }
 
+                pressed = false;
                 inventorySlot.ReleasePointer(evt.pointerId);
-                ended((Vector2)evt.position);
-                _dragGear = null;
-                _dragHand = null;
-            });
-            inventorySlot.RegisterCallback<PointerCaptureOutEvent>(_ =>
-            {
-                if (_dragGear == null && _dragHand == null)
+                if (_dragMoved)
                 {
-                    return;
+                    ended((Vector2)evt.position);
                 }
 
                 _dragGear = null;
                 _dragHand = null;
             });
+            inventorySlot.RegisterCallback<PointerCaptureOutEvent>(_ =>
+            {
+                pressed = false;
+                _dragGear = null;
+                _dragHand = null;
+            });
         }
 
-        private const float DragThresholdSq = 25f;
 
         private static InventorySlot CreateSlot(string label, Sprite emptyIcon, float size)
         {

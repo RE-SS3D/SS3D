@@ -44,6 +44,7 @@ namespace SS3D.Systems.Interactions
 
         private Camera _camera;
         private RadialInteractionSubSystem _radialView;
+        private Action<IInteraction> _pendingRadialSelection;
         private ArmedInteractionSubSystem _armedSystem;
         private SelectionSubSystem _selectionSystem;
 
@@ -630,6 +631,22 @@ namespace SS3D.Systems.Interactions
         private void HandleUse(InputAction.CallbackContext callbackContext) => UseHeldItem();
 
         /// <summary>
+        /// One pending radial selection at a time. A menu closed without a pick leaves its handler subscribed; drop it
+        /// before the next menu so a later pick can't also run against the old menu's entries.
+        /// </summary>
+        [Client]
+        private void SubscribeRadialSelection(Action<IInteraction> handler)
+        {
+            if (_pendingRadialSelection != null)
+            {
+                _radialView.OnInteractionSelected -= _pendingRadialSelection;
+            }
+
+            _pendingRadialSelection = handler;
+            _radialView.OnInteractionSelected += handler;
+        }
+
+        /// <summary>
         /// The Use key (E): activates the item in the selected hand, running its highest-priority in-hand
         /// interaction (arm a minibomb, call down a bomb beacon, honk). Reload takes priority for firearms
         /// (including two-hand rifles still wielded while the off-hand is selected).
@@ -640,19 +657,42 @@ namespace SS3D.Systems.Interactions
         /// a held item.
         /// </remarks>
         [Client]
-        public void UseHeldItem()
+        public void UseHeldItem() => TryUseHeldItem();
+
+        /// <summary>
+        /// <see cref="UseHeldItem"/> that reports whether anything ran: false when the selected hand is empty or its item
+        /// has no in-hand interaction (a bag, say, which the HUD then opens instead).
+        /// </summary>
+        [Client]
+        public bool TryUseHeldItem()
         {
             if (GetCombatNetwork()?.TryRunRangedReloadPrimary() == true)
             {
-                return;
+                return true;
             }
 
             Hand hand = GetComponent<Hands>()?.SelectedHand;
             Item item = hand != null ? hand.ItemInHand : null;
-            if (item != null)
+            // Target-bound entries only: the source's own verbs are Drop (never a "use") and Reload (handled above).
+            return item != null && InteractInHand(item.gameObject, hand.gameObject, includeSourceOnly: false);
+        }
+
+        /// <summary>
+        /// Right-click on an inventory slot (HUD well or storage panel): the radial menu for that item, with the selected
+        /// hand as source, the same as right-clicking it in the world. For the held item this is its in-hand menu
+        /// (Drop included); for anything else only target-bound entries show, so the menu never offers the held item's
+        /// own verbs (Drop) as if they were the clicked item's.
+        /// </summary>
+        [Client]
+        public void ShowInventoryItemInteractions(Item item)
+        {
+            Hand hand = GetComponent<Hands>()?.SelectedHand;
+            if (item == null || hand == null || _radialView == null)
             {
-                InteractInHand(item.gameObject, hand.gameObject);
+                return;
             }
+
+            InteractInHand(item.gameObject, hand.gameObject, showMenu: true, includeSourceOnly: hand.ItemInHand == item);
         }
 
         /// <summary>
@@ -702,7 +742,7 @@ namespace SS3D.Systems.Interactions
             }
 
             _radialView.SetInteractions(interactions, interactionEvent, Mouse.current.position.ReadValue());
-            _radialView.OnInteractionSelected += handleInteractionSelected;
+            SubscribeRadialSelection(handleInteractionSelected);
             _radialView.ShowInteractionsMenu();
         }
 
@@ -712,22 +752,33 @@ namespace SS3D.Systems.Interactions
         /// <param name="target">The target clicked on</param>
         /// <param name="source">The current selected item or the hands</param>
         /// <param name="showMenu">If a selection menu should be shown</param>
+        /// <param name="includeSourceOnly">Keep the source's own verbs (Drop) in the list; off for items not in the source hand.</param>
+        /// <returns>True when an interaction ran or a menu opened.</returns>
         [Client]
-        public void InteractInHand(GameObject target, GameObject sourceObject, bool showMenu = false)
+        public bool InteractInHand(GameObject target, GameObject sourceObject, bool showMenu = false, bool includeSourceOnly = true)
         {
             if (!sourceObject.TryGetComponent(out IInteractionSource source))
             {
-                return;
+                return false;
             }
 
             InteractionEvent interactionEvent = new(source, null, source.GameObject.transform.position, Vector3.up);
 
             List<IInteractionTarget> targets = GetTargetsFromGameObject(source, target);
             List<InteractionEntry> entries = InteractionPipeline.GetViableInteractions(source, targets, interactionEvent, CurrentIntent);
+            if (!includeSourceOnly)
+            {
+                entries = entries.Where(entry => entry.Target != null).ToList();
+            }
+
+            if (showMenu)
+            {
+                entries = FilterRadialInteractions(entries);
+            }
 
             if (entries.Count < 1)
             {
-                return;
+                return false;
             }
 
             interactionEvent.Target = entries[0].Target;
@@ -735,9 +786,11 @@ namespace SS3D.Systems.Interactions
 
             if (showMenu && interactions.Count > 0)
             {
+                // The view keeps the wheel on screen (RadialInteractionMenuView.PositionAt).
                 Vector3 mousePosition = Mouse.current.position.ReadValue();
-                mousePosition.y = Mathf.Max(_radialView.MenuHeight, mousePosition.y);
 
+                // Same hold-right-button menu as the world radial (ViewTargetInteractions): left clicks pick a petal.
+                _radialView.SuppressLeftButtonForMenu();
                 _radialView.SetInteractions(interactions, interactionEvent, mousePosition);
 
                 void handleInteractionSelected(IInteraction interaction)
@@ -755,6 +808,7 @@ namespace SS3D.Systems.Interactions
                         return;
                     }
 
+                    interactionEvent.Target = entry.Target;
                     if (!BeginOwnerInteraction(entry.Interaction, interactionEvent))
                     {
                         return;
@@ -765,20 +819,23 @@ namespace SS3D.Systems.Interactions
                     CmdRunInventoryInteraction(target, sourceObject, entry.Id.GenericName, entry.Id.TargetComponentIndex);
                 }
 
-                _radialView.OnInteractionSelected += handleInteractionSelected;
+                SubscribeRadialSelection(handleInteractionSelected);
+                _radialView.ShowInteractionsMenu();
             }
             else
             {
                 InteractionEntry firstEntry = entries.First();
                 if (!BeginOwnerInteraction(firstEntry.Interaction, interactionEvent))
                 {
-                    return;
+                    return false;
                 }
 
                 InteractionOptimisticFeedback.TryBeginDelayed(firstEntry.Interaction, interactionEvent);
                 InteractionOutlineView.TryBeginPending(firstEntry.Interaction, interactionEvent);
                 CmdRunInventoryInteraction(target, sourceObject, firstEntry.Id.GenericName, firstEntry.Id.TargetComponentIndex);
             }
+
+            return true;
         }
 
         [ServerRpc]

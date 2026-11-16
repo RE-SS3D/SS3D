@@ -380,8 +380,20 @@ namespace SS3D.Systems.Tile.MapEditor
             if (MapEditorGasMarkerCatalog.TryDecode(assetName, out GasMarkerKind gasKind))
                 return MapEditorGasMarkerCatalog.DisplayName(gasKind);
 
+            if (RenamedLabels.TryGetValue(assetName, out string renamed))
+                return renamed;
+
             return PaletteLabel(assetName);
         }
+
+        /// <summary>
+        /// Palette names that differ from the asset name, which saved maps hold and so cannot change. "Scrubber
+        /// Intake" read as a room scrubber, so map makers placed it in rooms and it drained their air.
+        /// </summary>
+        private static readonly Dictionary<string, string> RenamedLabels = new(StringComparer.Ordinal)
+        {
+            ["ScrubberIntake"] = "Chamber Intake",
+        };
 
         /// <summary>
         /// What the cursor badge says while Edit holds <paramref name="entry"/>: "Office Chair (Blue)" for a variant,
@@ -463,6 +475,7 @@ namespace SS3D.Systems.Tile.MapEditor
         {
             // A family's label finds every variant ("office chair"), as each variant's own name does.
             if (entry.AssetName.Contains(term, StringComparison.OrdinalIgnoreCase)
+                || (RenamedLabels.TryGetValue(entry.AssetName, out string renamed) && renamed.Contains(term, StringComparison.OrdinalIgnoreCase))
                 || (!string.IsNullOrEmpty(entry.Family) && entry.Family.Contains(term, StringComparison.OrdinalIgnoreCase)))
                 return true;
 

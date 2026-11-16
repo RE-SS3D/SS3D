@@ -196,6 +196,16 @@ namespace SS3D.Systems.Atmospherics.Pipes
 
         protected virtual bool ShouldAnimateWhileIdle() => true;
 
+        /// <summary>
+        /// Drops the cached network so the next resolve looks again, for a device whose
+        /// <see cref="PipeLayers"/> just changed.
+        /// </summary>
+        protected void InvalidateConnectedNetwork()
+        {
+            _networkId = GasPipeNetworkId.None;
+            _resolvedTopologyVersion = -1;
+        }
+
         protected virtual void ResolveConnectedNetwork()
         {
             if (!TryGetPipeContext(out TileMap map, out GasPipeNetworkRegistry registry))
@@ -329,7 +339,11 @@ namespace SS3D.Systems.Atmospherics.Pipes
                 SetPortFlowing(false, force: true);
         }
 
-        protected bool IsPowered() => AtmosPortPower.IsPowered(_powerConsumer);
+        /// <summary>Whether its power consumer has power (a device with none always does); the systems view badges read it.</summary>
+        public bool IsPowered() => AtmosPortPower.IsPowered(_powerConsumer);
+
+        /// <summary>It has a power consumer, so without power it does nothing (Map Check and the Atmos view's room power problem).</summary>
+        public bool NeedsPower => _powerConsumer != null;
 
         private void SetAnimatorActive(bool active, bool force = false)
         {

@@ -184,3 +184,9 @@
 .gas-meter-gases {
     flex-direction: column;
 }
+
+.gas-meter-line-switch .steel-button__control {
+    min-height: 24px;
+    padding: 0 10px;
+    font-size: 10px;
+}

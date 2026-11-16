@@ -218,6 +218,15 @@ namespace SS3D.Systems.Interactions.UI
 
             Vector2 point = _overlayRoot.WorldToLocal(InputInterface.ScreenToPanel(_overlayRoot.panel, screenPosition));
             float half = MenuDiameter * 0.5f;
+
+            // Keep the whole wheel on screen: opened from a HUD slot at the bottom edge, half of it used to hang below.
+            Rect bounds = _overlayRoot.layout;
+            if (bounds.width >= MenuDiameter && bounds.height >= MenuDiameter)
+            {
+                point.x = Mathf.Clamp(point.x, half, bounds.width - half);
+                point.y = Mathf.Clamp(point.y, half, bounds.height - half);
+            }
+
             _menuRoot.style.left = point.x - half;
             _menuRoot.style.top = point.y - half;
             _menuRoot.style.bottom = StyleKeyword.Auto;
