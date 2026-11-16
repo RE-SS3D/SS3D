@@ -8,7 +8,7 @@
 param([string]$FromTag = '', [string]$WorkDir = '', [switch]$UseRepoUpdater)
 $ErrorActionPreference = 'Stop'
 Set-StrictMode -Version 2
-$repo = 'henkhooft/SS3D'
+$repo = 'RE-SS3D/SS3D'
 if (-not $WorkDir) { $WorkDir = Join-Path ([IO.Path]::GetTempPath()) 'ss3d-updater-e2e' }
 $hostScript = Join-Path $PSScriptRoot 'e2e-host.txt'
 

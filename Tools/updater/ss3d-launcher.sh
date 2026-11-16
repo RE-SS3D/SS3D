@@ -7,7 +7,7 @@
 #        [--install-dir DIR] [--tag TAG] [--no-launch] [-- extra game args]
 set -euo pipefail
 
-REPO="henkhooft/SS3D"
+REPO="RE-SS3D/SS3D"
 API="https://api.github.com/repos/$REPO"
 INSTALL_DIR="${SS3D_INSTALL_DIR:-$HOME/.local/share/ss3d}"
 SERVER="${SS3D_SERVER:-127.0.0.1}"

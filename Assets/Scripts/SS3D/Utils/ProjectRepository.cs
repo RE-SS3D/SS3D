@@ -9,7 +9,7 @@ namespace SS3D.Utils
     public static class ProjectRepository
     {
         /// <summary>Owner and name, cased exactly as GitHub returns them in release download URLs.</summary>
-        public const string Slug = "henkhooft/SS3D";
+        public const string Slug = "RE-SS3D/SS3D";
 
         public const string Url = "https://github.com/" + Slug;
 

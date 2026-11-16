@@ -2,7 +2,7 @@
 > Touches systems: networking-session (CI, releases, updaters), ui-shell-main-menu (release banner), application (bug reports), docs governance (`AGENTS.md`, `CLAUDE.md`, `Documents/SKILL.md`, `Documents/MERGE_GUIDE.md`, milestones)
 > Status: in-progress
 
-**Progress:** Phases 0–3 done on `upstream-prep`. Phases 4–5 open.
+**Progress:** Phases 0–4 done on `upstream-prep`; Phase 5 has the test prerelease left.
 
 # Upstream merge (Nov 2026)
 
@@ -120,16 +120,16 @@ Settled with the owner in a grilling session, 2026-11-15/16.
 - [x] Synced [2026-07_ci-develop-release-pipeline](2026-07_ci-develop-release-pipeline.md), [2026-07_multiplayer-testing-self-hosted-ci](2026-07_multiplayer-testing-self-hosted-ci.md) (new Pitfall), [networking-session-testing](systems/networking-session-testing.md), [project infrastructure](2026-11_project-infrastructure.md), `CONTRIBUTING.md` and the merge guide
 - Not run yet: these workflow changes are only checked by YAML parsing and by reading the expressions. The first PR from `upstream-prep` exercises the same-repo path; a fork PR, the notice jobs and the `pr` dispatch are checked on merge day (step 2)
 
-### Phase 4: the switch commit
+### Phase 4: the switch commit — done
 
-- [ ] Confirm the casing GitHub returns in upstream's `browser_download_url` (see Pitfalls)
-- [ ] `python3 Tools/updater/set_project_repo.py RE-SS3D/SS3D`, plus the remaining links phases 1–2 left pointing at the fork
-- [ ] `.fbx` export paths: same-length placeholder in all 21 files, reimport in Unity, confirm the models still load
+- [x] Upstream's `browser_download_url` is cased `RE-SS3D/SS3D` (checked 2026-11-16 against its releases API)
+- [x] `python3 Tools/updater/set_project_repo.py RE-SS3D/SS3D`; no other fork links were left after phases 1–2
+- [x] `.fbx` export paths: `rutger` → `ss3dev` (same length) in all 21 files, including two embedded `/tmp/claude-…` scratch paths; force-reimported in the editor with unchanged mesh, vertex and material counts and no new import errors
 
 ### Phase 5: checks before the PR opens
 
-- [ ] `Testing/ui/validate.sh --steps compile,editmode`; `updater-tests.yml` green (including the Windows PowerShell job)
-- [ ] The Phase 3 stray-link check passes
+- [x] `Testing/ui/validate.sh --steps compile,editmode` passes after the switch (5428/5429, 2026-11-16); the updater tests pass locally, the PowerShell one under `pwsh` (CI uses Windows PowerShell 5.1)
+- [x] The Phase 3 stray-link check passes
 - [ ] A `develop-<suffix>` prerelease cut from `upstream-prep` on the fork builds, and its updater finds nothing newer on upstream
 
 ## Merge day

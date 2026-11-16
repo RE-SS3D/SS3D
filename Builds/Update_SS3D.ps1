@@ -4,7 +4,7 @@ param([switch]$CheckOnly, [int]$WaitPid = 0, [switch]$Restart)
 $ErrorActionPreference = 'Stop'
 Set-StrictMode -Version 2
 # The project's GitHub repository. Change it with Tools/updater/set_project_repo.py, never by hand.
-$Repo = 'henkhooft/SS3D'
+$Repo = 'RE-SS3D/SS3D'
 
 function Get-SS3DRelease {
     # Only owner-promoted stable releases belong on the tester update channel.

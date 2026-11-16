@@ -20,7 +20,7 @@ import zipfile
 
 
 # The project's GitHub repository. Change it with Tools/updater/set_project_repo.py, never by hand.
-REPO = "henkhooft/SS3D"
+REPO = "RE-SS3D/SS3D"
 API = f"https://api.github.com/repos/{REPO}/releases"
 TAG = re.compile(r"v([0-9]+)\.([0-9]+)\.([0-9]+)\Z")
 # update_ss3d.py replaces itself so updater fixes reach existing installs; Python has already
