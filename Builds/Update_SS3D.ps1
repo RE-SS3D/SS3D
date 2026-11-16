@@ -3,6 +3,8 @@ param([switch]$CheckOnly, [int]$WaitPid = 0, [switch]$Restart)
 
 $ErrorActionPreference = 'Stop'
 Set-StrictMode -Version 2
+# The project's GitHub repository. Change it with Tools/updater/set_project_repo.py, never by hand.
+$Repo = 'henkhooft/SS3D'
 
 function Get-SS3DRelease {
     # Only owner-promoted stable releases belong on the tester update channel.
@@ -11,7 +13,7 @@ function Get-SS3DRelease {
     for ($page = 1; ; $page++) {
         # Windows PowerShell 5.1 emits a JSON array as ONE pipeline object, so @(Invoke-RestMethod ...)
         # would nest it (one item: the whole page). Assigning first unrolls it in 5.1 and 7 alike.
-        $response = Invoke-RestMethod -Uri "https://api.github.com/repos/henkhooft/SS3D/releases?per_page=100&page=$page" -Headers $headers -TimeoutSec 30 -UseBasicParsing
+        $response = Invoke-RestMethod -Uri "https://api.github.com/repos/$Repo/releases?per_page=100&page=$page" -Headers $headers -TimeoutSec 30 -UseBasicParsing
         $batch = @($response)
         $releases += $batch
         if ($batch.Count -lt 100) { break }
@@ -219,7 +221,7 @@ function Update-SS3D([string]$Root, [switch]$CheckOnly) {
         if ($asset.digest -notmatch '^sha256:[a-fA-F0-9]{64}$') {
             throw 'The release has no valid SHA-256 digest. Refusing to update.'
         }
-        $expectedUrl = "https://github.com/henkhooft/SS3D/releases/download/$tag/SS3D-Windows-$tag.zip"
+        $expectedUrl = "https://github.com/$Repo/releases/download/$tag/SS3D-Windows-$tag.zip"
         if ($asset.browser_download_url -cne $expectedUrl) { throw 'Unexpected release download URL.' }
         # Keep staging names short: release files sit several folders deep under it (MAX_PATH).
         $stage = Join-Path $Root ('.ss3d-update-' + [guid]::NewGuid().ToString('N').Substring(0, 8))

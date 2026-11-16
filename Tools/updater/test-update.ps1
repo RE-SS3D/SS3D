@@ -66,7 +66,7 @@ try {
     $release = [pscustomobject]@{
         draft = $false; prerelease = $false; tag_name = 'v0.3.0'
         assets = @([pscustomobject]@{ name = 'SS3D-Windows-v0.3.0.zip'; digest = $digest
-            browser_download_url = 'https://github.com/henkhooft/SS3D/releases/download/v0.3.0/SS3D-Windows-v0.3.0.zip' })
+            browser_download_url = "https://github.com/$Repo/releases/download/v0.3.0/SS3D-Windows-v0.3.0.zip" })
     }
     $script:releases = @(
         [pscustomobject]@{ draft = $false; prerelease = $false; tag_name = 'develop-nightly' },

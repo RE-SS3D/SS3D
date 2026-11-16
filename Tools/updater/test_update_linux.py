@@ -53,7 +53,7 @@ class UpdaterTests(unittest.TestCase):
         self.write(self.root, ".ss3d-release.json", json.dumps(self.metadata))
         self.release = {"tag_name": "v0.3.0", "draft": False, "prerelease": False, "assets": [{
             "name": "SS3D-Linux-Client-v0.3.0.zip", "digest": "sha256:" + updater.sha256(self.archive),
-            "browser_download_url": "https://github.com/henkhooft/SS3D/releases/download/v0.3.0/SS3D-Linux-Client-v0.3.0.zip"}]}
+            "browser_download_url": f"https://github.com/{updater.REPO}/releases/download/v0.3.0/SS3D-Linux-Client-v0.3.0.zip"}]}
         self.latest = self.patch("latest_release", return_value=self.release)
         self.closed = self.patch("assert_closed")
         self.download = self.patch("download", side_effect=lambda url, dest: shutil.copyfile(self.archive, dest))

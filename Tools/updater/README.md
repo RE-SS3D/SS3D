@@ -111,3 +111,16 @@ Installs under `%LOCALAPPDATA%\SS3D\versions\`. Parameters: `-InstallDir`, `-Tag
 - The launchers check GitHub's releases API on each start. The API is public and
   rate-limited; one check per launch is well within the unauthenticated limit.
 - `--tag` / `-Tag` is for testing a specific release. Normal use follows the stable channel.
+
+## Which repository
+
+The game's release banner and bug report link (`SS3D.Utils.ProjectRepository`), both updaters and
+both bootstrap launchers each name the project's GitHub repository once. Change them together:
+
+```bash
+python3 Tools/updater/set_project_repo.py owner/name
+```
+
+`test_project_repo.py` (run by `updater-tests.yml`) fails when the copies disagree. Use the casing
+GitHub returns in release download URLs: the updaters compare `browser_download_url` exactly and
+refuse to install on a mismatch.

@@ -19,7 +19,9 @@ import uuid
 import zipfile
 
 
-API = "https://api.github.com/repos/henkhooft/SS3D/releases"
+# The project's GitHub repository. Change it with Tools/updater/set_project_repo.py, never by hand.
+REPO = "henkhooft/SS3D"
+API = f"https://api.github.com/repos/{REPO}/releases"
 TAG = re.compile(r"v([0-9]+)\.([0-9]+)\.([0-9]+)\Z")
 # update_ss3d.py replaces itself so updater fixes reach existing installs; Python has already
 # read it. update_ss3d.sh is only a launcher and stays as is. play_ss3d_opengl.sh is replaced like the
@@ -249,7 +251,7 @@ def update(root, check_only=False):
             digest = asset.get("digest", "") or ""
             if not re.fullmatch(r"sha256:[a-fA-F0-9]{64}", digest):
                 raise RuntimeError("The release has no valid SHA-256 digest. Refusing to update.")
-            url = f"https://github.com/henkhooft/SS3D/releases/download/{tag}/{name}"
+            url = f"https://github.com/{REPO}/releases/download/{tag}/{name}"
             if asset["browser_download_url"] != url:
                 raise RuntimeError("Unexpected release download URL.")
             stage = Path(tempfile.mkdtemp(prefix=".ss3d-update-", dir=root))
