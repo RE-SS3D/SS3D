@@ -26,7 +26,7 @@ Plan and status of the merge itself: [2026-11_upstream-merge.md](architecture/20
   Built-in RP materials and shaders are gone; anything made for 2021.3 needs porting, not merging.
 - **Branches and PRs made before the merge cannot be rebased.** Assets, ProjectSettings, prefabs and most
   systems were rewritten. The open PRs from before the merge were closed; redo the change on the new `develop`.
-- **Read [AGENTS.md](../AGENTS.md) and [CONTRIBUTING.md](CONTRIBUTING.md) first.** Development is
+- **Read [AGENTS.md](../AGENTS.md) and [CONTRIBUTING.md](../CONTRIBUTING.md) first.** Development is
   docs-first and agent-assisted: design spec → architecture effort or plan → code → targeted validation →
   doc sync. [Documents/SKILL.md](SKILL.md) defines every doc layer.
 - **Releases continue the numbered line** (`v0.17.x` before the merge, `v0.18.0` the first from this

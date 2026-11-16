@@ -1,8 +1,8 @@
 blank_issues_enabled: false
 contact_links:
   - name: Questions and ideas
-    url: https://github.com/henkhooft/SS3D/discussions
+    url: https://github.com/RE-SS3D/SS3D/discussions
     about: Ask questions, propose ideas, or discuss design. Issues are for bugs only.
   - name: Roadmap
-    url: https://github.com/henkhooft/SS3D/blob/develop/ROADMAP.md
+    url: https://github.com/RE-SS3D/SS3D/blob/develop/ROADMAP.md
     about: What's done, what's being worked on, and what's planned.

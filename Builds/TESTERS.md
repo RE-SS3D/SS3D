@@ -61,7 +61,7 @@ The game keeps running, and the screenshot shows what you saw before the dialog 
 - Click **Save Report**. The report, your logs, the screenshot and the map go into one zip in
   `Game/Data/Exports/`.
 
-Then click **Open GitHub Issue** to file it at <https://github.com/henkhooft/SS3D/issues>
+Then click **Open GitHub Issue** to file it at <https://github.com/RE-SS3D/SS3D/issues>
 with the zip attached, or post the zip in Discord.
 
 If the game crashed and you can't press F8, report it the same way by hand: say what you did,

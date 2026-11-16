@@ -2,7 +2,7 @@
 > Touches systems: networking-session (CI, releases, updaters), ui-shell-main-menu (release banner), application (bug reports), docs governance (`AGENTS.md`, `CLAUDE.md`, `Documents/SKILL.md`, `Documents/MERGE_GUIDE.md`, milestones)
 > Status: in-progress
 
-**Progress:** Phases 0–1 done on `upstream-prep`. Phases 2–5 open.
+**Progress:** Phases 0–2 done on `upstream-prep`. Phases 3–5 open.
 
 # Upstream merge (Nov 2026)
 
@@ -100,12 +100,13 @@ Settled with the owner in a grilling session, 2026-11-15/16.
 - [x] MAJOR bumps described as a team decision (`AGENTS.md`, [2026-10_game-versioning](2026-10_game-versioning.md))
 - Left for the owner (design docs are owner-only): "fork" wording in `design/player-accounts.md` (lines 17, 44, 50) and `design/shuttles.md` (line 33)
 
-### Phase 2: repository pages
+### Phase 2: repository pages — done
 
-- [ ] Root `CONTRIBUTING.md`, agent-assisted (decision 14); remove `Documents/CONTRIBUTING.md` and retarget links
-- [ ] `.github/PULL_REQUEST_TEMPLATE.md`: networking checklist, docs-sync and agent items
-- [ ] `README.md` (decision 15); keep the generated roadmap block working with `Tools/generate_roadmap.py`
-- [ ] Restore `.github/FUNDING.yml` from upstream; issue template and `Config.yml` links; `Documents/CODE_OF_CONDUCT.md` contact
+- [x] Root [CONTRIBUTING.md](../../CONTRIBUTING.md), agent-assisted (decision 14): agent setup table, the seven-step loop with the skill for each step, what a mergeable PR looks like. `Documents/CONTRIBUTING.md` removed. Its "CI on your PR" paragraph describes the Phase 3 behaviour for fork PRs
+- [x] `.github/PULL_REQUEST_TEMPLATE.md`: validation, design-deviation, `update-system-docs` and versioning checklist; AI-assistance section; upstream's networking checklist kept
+- [x] `README.md` (decision 15): play-first layout pointed at upstream, upstream's intro, Community and Donate sections and a Discord badge; the generated roadmap block is unchanged
+- [x] `.github/FUNDING.yml` restored; issue form, `Config.yml` and `Builds/TESTERS.md` links point upstream; `Documents/CODE_OF_CONDUCT.md` is upstream's text again (the project email as contact)
+- [x] "Never add `Version-Bump: major`" now says it's a team decision
 
 ### Phase 3: CI for a public repository
 

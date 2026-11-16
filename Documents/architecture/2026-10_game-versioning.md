@@ -62,7 +62,7 @@ MAJOR is 0 (1.0 means a complete game, far off); nightlies and `develop-*` cuts 
 - **Add `Version-Bump: minor`** as a commit trailer (last paragraph of the message) when a change
   completes a player-visible feature end to end without tripping a signal above — e.g. a whole new
   role, gamemode or system becomes playable. Ordinary fixes, polish and refactors get no trailer.
-- **Never add `Version-Bump: major`.** That is the owner's call.
+- **Never add `Version-Bump: major`.** That is a team decision.
 
 ## Shipped
 
