@@ -15,6 +15,7 @@ namespace SS3D.Tests.EditMode
 
         [TestCase("CivillianAirlock.prefab")]
         [TestCase("SecurityAirlock.prefab")]
+        [TestCase("EngineeringAirlockGlass.prefab")]
         [TestCase("CivillianAirlockDouble.prefab")]
         public void Lintel_FillsTheGapFromTheDoorTopsToTheCeiling(string prefabName)
         {

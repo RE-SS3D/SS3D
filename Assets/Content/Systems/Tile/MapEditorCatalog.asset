@@ -29,6 +29,22 @@ MonoBehaviour:
     VariantLabel: 
     SearchTags:
     - wall mounts
+  - AssetName: Airlock
+    Mode: 0
+    Subcategory: 102
+    Heading: 
+    Family: Airlock
+    VariantLabel: Standard
+    SearchTags:
+    - doors
+  - AssetName: AirlockGlass
+    Mode: 0
+    Subcategory: 102
+    Heading: 
+    Family: Airlock
+    VariantLabel: Glass
+    SearchTags:
+    - doors
   - AssetName: AtmosFilterL
     Mode: 1
     Subcategory: 202
@@ -221,6 +237,22 @@ MonoBehaviour:
     VariantLabel: 
     SearchTags:
     - gas pipes
+  - AssetName: AtmosphericsAirlock
+    Mode: 0
+    Subcategory: 102
+    Heading: 
+    Family: Atmospherics Airlock
+    VariantLabel: Standard
+    SearchTags:
+    - doors
+  - AssetName: AtmosphericsAirlockGlass
+    Mode: 0
+    Subcategory: 102
+    Heading: 
+    Family: Atmospherics Airlock
+    VariantLabel: Glass
+    SearchTags:
+    - doors
   - AssetName: Backpack
     Mode: 2
     Subcategory: 302
@@ -316,12 +348,52 @@ MonoBehaviour:
     VariantLabel: 
     SearchTags:
     - machines
+  - AssetName: ChemistryAirlock
+    Mode: 0
+    Subcategory: 102
+    Heading: 
+    Family: Chemistry Airlock
+    VariantLabel: Standard
+    SearchTags:
+    - doors
+  - AssetName: ChemistryAirlockGlass
+    Mode: 0
+    Subcategory: 102
+    Heading: 
+    Family: Chemistry Airlock
+    VariantLabel: Glass
+    SearchTags:
+    - doors
   - AssetName: CivillianAirlock
     Mode: 0
     Subcategory: 102
     Heading: 
-    Family: 
-    VariantLabel: 
+    Family: Civilian Airlock
+    VariantLabel: Standard
+    SearchTags:
+    - doors
+  - AssetName: CivillianAirlockGlass
+    Mode: 0
+    Subcategory: 102
+    Heading: 
+    Family: Civilian Airlock
+    VariantLabel: Glass
+    SearchTags:
+    - doors
+  - AssetName: CommandAirlock
+    Mode: 0
+    Subcategory: 102
+    Heading: 
+    Family: Command Airlock
+    VariantLabel: Standard
+    SearchTags:
+    - doors
+  - AssetName: CommandAirlockGlass
+    Mode: 0
+    Subcategory: 102
+    Heading: 
+    Family: Command Airlock
+    VariantLabel: Glass
     SearchTags:
     - doors
   - AssetName: Crowbar
@@ -418,6 +490,22 @@ MonoBehaviour:
     SearchTags:
     - item
     - misc
+  - AssetName: EngineeringAirlock
+    Mode: 0
+    Subcategory: 102
+    Heading: 
+    Family: Engineering Airlock
+    VariantLabel: Standard
+    SearchTags:
+    - doors
+  - AssetName: EngineeringAirlockGlass
+    Mode: 0
+    Subcategory: 102
+    Heading: 
+    Family: Engineering Airlock
+    VariantLabel: Glass
+    SearchTags:
+    - doors
   - AssetName: FacewearGasMask
     Mode: 2
     Subcategory: 302
@@ -540,6 +628,22 @@ MonoBehaviour:
     SearchTags:
     - item
     - medical
+  - AssetName: GeneticsAirlock
+    Mode: 0
+    Subcategory: 102
+    Heading: 
+    Family: Genetics Airlock
+    VariantLabel: Standard
+    SearchTags:
+    - doors
+  - AssetName: GeneticsAirlockGlass
+    Mode: 0
+    Subcategory: 102
+    Heading: 
+    Family: Genetics Airlock
+    VariantLabel: Glass
+    SearchTags:
+    - doors
   - AssetName: Gibber
     Mode: 0
     Subcategory: 105
@@ -801,6 +905,22 @@ MonoBehaviour:
     VariantLabel: 
     SearchTags:
     - machines
+  - AssetName: MaintenanceAirlock
+    Mode: 0
+    Subcategory: 102
+    Heading: 
+    Family: Maintenance Airlock
+    VariantLabel: Standard
+    SearchTags:
+    - doors
+  - AssetName: MaintenanceAirlockGlass
+    Mode: 0
+    Subcategory: 102
+    Heading: 
+    Family: Maintenance Airlock
+    VariantLabel: Glass
+    SearchTags:
+    - doors
   - AssetName: MatterBin
     Mode: 2
     Subcategory: 301
@@ -810,6 +930,22 @@ MonoBehaviour:
     SearchTags:
     - item
     - materials & parts
+  - AssetName: MedicalAirlock
+    Mode: 0
+    Subcategory: 102
+    Heading: 
+    Family: Medical Airlock
+    VariantLabel: Standard
+    SearchTags:
+    - doors
+  - AssetName: MedicalAirlockGlass
+    Mode: 0
+    Subcategory: 102
+    Heading: 
+    Family: Medical Airlock
+    VariantLabel: Glass
+    SearchTags:
+    - doors
   - AssetName: MedicalPatch
     Mode: 2
     Subcategory: 303
@@ -1063,6 +1199,22 @@ MonoBehaviour:
     VariantLabel: 
     SearchTags:
     - machines
+  - AssetName: ScienceAirlock
+    Mode: 0
+    Subcategory: 102
+    Heading: 
+    Family: Science Airlock
+    VariantLabel: Standard
+    SearchTags:
+    - doors
+  - AssetName: ScienceAirlockGlass
+    Mode: 0
+    Subcategory: 102
+    Heading: 
+    Family: Science Airlock
+    VariantLabel: Glass
+    SearchTags:
+    - doors
   - AssetName: ScrewdriverBlue
     Mode: 2
     Subcategory: 300
@@ -1092,8 +1244,16 @@ MonoBehaviour:
     Mode: 0
     Subcategory: 102
     Heading: 
-    Family: 
-    VariantLabel: 
+    Family: Security Airlock
+    VariantLabel: Standard
+    SearchTags:
+    - doors
+  - AssetName: SecurityAirlockGlass
+    Mode: 0
+    Subcategory: 102
+    Heading: 
+    Family: Security Airlock
+    VariantLabel: Glass
     SearchTags:
     - doors
   - AssetName: SecurityIDCard
@@ -1363,6 +1523,38 @@ MonoBehaviour:
     SearchTags:
     - item
     - clothing
+  - AssetName: SupplyAirlock
+    Mode: 0
+    Subcategory: 102
+    Heading: 
+    Family: Supply Airlock
+    VariantLabel: Standard
+    SearchTags:
+    - doors
+  - AssetName: SupplyAirlockGlass
+    Mode: 0
+    Subcategory: 102
+    Heading: 
+    Family: Supply Airlock
+    VariantLabel: Glass
+    SearchTags:
+    - doors
+  - AssetName: SurgeryAirlock
+    Mode: 0
+    Subcategory: 102
+    Heading: 
+    Family: Surgery Airlock
+    VariantLabel: Standard
+    SearchTags:
+    - doors
+  - AssetName: SurgeryAirlockGlass
+    Mode: 0
+    Subcategory: 102
+    Heading: 
+    Family: Surgery Airlock
+    VariantLabel: Glass
+    SearchTags:
+    - doors
   - AssetName: SyndicateBomb
     Mode: 2
     Subcategory: 306
@@ -1629,6 +1821,22 @@ MonoBehaviour:
     VariantLabel: 
     SearchTags:
     - machines
+  - AssetName: VirologyAirlock
+    Mode: 0
+    Subcategory: 102
+    Heading: 
+    Family: Virology Airlock
+    VariantLabel: Standard
+    SearchTags:
+    - doors
+  - AssetName: VirologyAirlockGlass
+    Mode: 0
+    Subcategory: 102
+    Heading: 
+    Family: Virology Airlock
+    VariantLabel: Glass
+    SearchTags:
+    - doors
   - AssetName: WaterCooler
     Mode: 0
     Subcategory: 104

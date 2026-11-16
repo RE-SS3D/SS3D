@@ -61,7 +61,6 @@ namespace SS3D.Systems.Furniture
         /// <summary>Seconds between doorway checks while a close waits for a body to clear it.</summary>
         private const float BlockedCloseRetryInterval = 0.25f;
 
-        private const int DoorLightMaterialIndex = 1;
         private const int DenyBlinkPulseCount = 3;
         private const float DenyBlinkHalfPeriod = 0.22f;
 
@@ -95,6 +94,10 @@ namespace SS3D.Systems.Furniture
 
         [SerializeField]
         private List<SkinnedMeshRenderer> _skinnedMeshesToColor;
+
+        /// <summary>Material slot of the door light on <see cref="_meshesToColor"/>; glass airlock meshes put it after the glass.</summary>
+        [SerializeField]
+        private int _doorLightMaterialIndex = 1;
 
         [SyncVar(OnChange = nameof(OnOpenChanged))]
         private bool _isOpen;
@@ -233,9 +236,9 @@ namespace SS3D.Systems.Furniture
                             continue;
                         }
 
-                        renderer.GetPropertyBlock(_doorLightPropertyBlock, DoorLightMaterialIndex);
+                        renderer.GetPropertyBlock(_doorLightPropertyBlock, _doorLightMaterialIndex);
                         _doorLightPropertyBlock.SetColor(_doorLightColorPropertyId, color);
-                        renderer.SetPropertyBlock(_doorLightPropertyBlock, DoorLightMaterialIndex);
+                        renderer.SetPropertyBlock(_doorLightPropertyBlock, _doorLightMaterialIndex);
                     }
                 }
             }
@@ -294,12 +297,12 @@ namespace SS3D.Systems.Furniture
 
                 _sharedMaterialsScratch.Clear();
                 renderer.GetSharedMaterials(_sharedMaterialsScratch);
-                if (DoorLightMaterialIndex >= _sharedMaterialsScratch.Count)
+                if (_doorLightMaterialIndex >= _sharedMaterialsScratch.Count)
                 {
                     continue;
                 }
 
-                Material targetMaterial = _sharedMaterialsScratch[DoorLightMaterialIndex];
+                Material targetMaterial = _sharedMaterialsScratch[_doorLightMaterialIndex];
                 if (targetMaterial == null)
                 {
                     continue;
