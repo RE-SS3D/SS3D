@@ -590,7 +590,7 @@ namespace SS3D.Editor.Automation
         private static Button ReadyButton() => UnityEngine.Object.FindObjectsByType<UIDocument>(FindObjectsSortMode.None)
             .Select(d => d.rootVisualElement?.Q("lobby-shell-surface"))
             .FirstOrDefault(shell => shell != null && shell.resolvedStyle.display != DisplayStyle.None)
-            ?.Q<Button>(className: "lobby-shell__btn--ready");
+            ?.Q<Button>("lobby-ready");
 
         internal static void Settle(double seconds) => _settleUntil = EditorApplication.timeSinceStartup + seconds;
 
