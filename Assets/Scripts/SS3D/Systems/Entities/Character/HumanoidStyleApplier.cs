@@ -85,6 +85,17 @@ namespace SS3D.Systems.Entities.Character
             ApplyHairTint(socket, browColor);
         }
 
+        /// <summary>True for the spawned head hair: anything under the hair socket. Beards and eyebrows have their own sockets.</summary>
+        public static bool IsHeadHair(Transform transform)
+        {
+            for (Transform t = transform; t != null; t = t.parent)
+            {
+                if (t.name == HairSocketName) return true;
+            }
+
+            return false;
+        }
+
         private static Transform EnsureSocket(GameObject root, string socketName)
         {
             Transform existing = FindDescendant(root.transform, socketName);

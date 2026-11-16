@@ -56,6 +56,7 @@ namespace SS3D.Systems.Entities.Character
         private int _angleIndex;
         private float[] _morphs;
         private bool _hasMorphs;
+        private IReadOnlyList<Cloth> _worn;
 
         public RenderTexture PreviewTexture => _renderTexture;
 
@@ -147,6 +148,8 @@ namespace SS3D.Systems.Entities.Character
             }
 
             HumanoidStyleApplier.Apply(_dummy, hairPrefab, beardPrefab, hairColor, beardColor);
+            // The new hair is hidden again if the outfit has a hat.
+            ApplyOcclusion(_worn);
 
             // Hair prefabs are spawned after EnsureDummy, so their layer must be fixed up here.
             SetLayerRecursively(_dummy.transform, PreviewLayer);
@@ -199,6 +202,7 @@ namespace SS3D.Systems.Entities.Character
                 part.gameObject.SetActive(true);
             }
 
+            _worn = worn;
             ApplyOcclusion(worn);
             // A new sharedMesh starts with zero shape-key weights; keep it fitted to the body.
             if (_hasMorphs)
@@ -209,7 +213,7 @@ namespace SS3D.Systems.Entities.Character
             SetLayerRecursively(_dummy.transform, PreviewLayer);
         }
 
-        /// <summary>Opaque clothing hides the body renderers it names, as <c>ClothesDisplayer</c> does in game.</summary>
+        /// <summary>Opaque clothing hides the body renderers it names, and a hat the hair, as <c>ClothesDisplayer</c> does in game.</summary>
         private void ApplyOcclusion(IReadOnlyList<Cloth> worn)
         {
             foreach (Renderer renderer in _dummy.GetComponentsInChildren<Renderer>(true))
@@ -219,8 +223,7 @@ namespace SS3D.Systems.Entities.Character
                 {
                     foreach (Cloth cloth in worn)
                     {
-                        if (cloth != null && cloth.OccludedBodyRenderers != null
-                            && System.Array.IndexOf(cloth.OccludedBodyRenderers, renderer.name) >= 0)
+                        if (cloth != null && cloth.Occludes(renderer))
                         {
                             occluded = true;
                             break;

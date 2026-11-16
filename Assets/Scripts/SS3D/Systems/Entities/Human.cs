@@ -96,6 +96,8 @@ namespace SS3D.Systems.Entities
                 styles.GetBeardStyle(_appearance.BeardStyle),
                 _appearance.HairColor,
                 _appearance.BeardColor);
+            // The hair was just respawned; a hat already worn has to hide the new one.
+            if (TryGetComponent(out ClothesDisplayer clothes)) clothes.RefreshOcclusion();
         }
 
         /// <summary>
