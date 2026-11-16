@@ -20,6 +20,12 @@ Shader "Vision/VisionMask"
 
             #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
             #include "Vision.hlsl"
+            #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/DeclareRenderingLayerTexture.hlsl"
+
+            // 2026-11_fov-rework D9: people, items and wall mounts carry this rendering-layer bit. The culler has
+            // already decided they're in sight, so their pixels show whole instead of being cut at the edge.
+            int _VisionEntityLayer;
+            float _VisionUseRenderingLayers;
 
             struct Attributes
             {
@@ -47,6 +53,10 @@ Shader "Vision/VisionMask"
 
             half4 Frag(Varyings input) : SV_Target
             {
+                if (_VisionUseRenderingLayers > 0.5
+                    && (LoadSceneRenderingLayer(uint2(input.positionCS.xy)) & (uint)_VisionEntityLayer) != 0)
+                    return half4(1.0, 1.0, 1.0, 1.0);
+
                 return VisionIsVisibleScreenUV(input.uv)
                     ? half4(1.0, 1.0, 1.0, 1.0)
                     : half4(0.0, 0.0, 0.0, 0.0);

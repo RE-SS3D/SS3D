@@ -3,6 +3,7 @@ using Coimbra;
 using FishNet.Connection;
 using FishNet.Object;
 using FishNet.Object.Synchronizing;
+using SS3D.Core;
 using SS3D.Core.Behaviours;
 using SS3D.Systems.Entities.Events;
 using SS3D.Systems.Entities.Humanoid;
@@ -82,6 +83,19 @@ namespace SS3D.Systems.Entities
 
             _lastObserverGridCell = gridCell;
             ServerManager.Objects.RebuildObservers(owner, timedOnly: false);
+        }
+
+        public override void OnStartClient()
+        {
+            base.OnStartClient();
+            // Spawned bodies only: preview dummies never start, so the FOV culler never touches them.
+            SceneRegistry<Entity>.Register(this);
+        }
+
+        public override void OnStopClient()
+        {
+            SceneRegistry<Entity>.Unregister(this);
+            base.OnStopClient();
         }
 
         private void OnSpawn()

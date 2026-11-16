@@ -13,6 +13,8 @@ namespace SS3D.Rendering.URP
     public sealed class VisionMaskRenderPass : ScriptableRenderPass
     {
         static readonly int s_InvViewProjId = Shader.PropertyToID("_PlayerCameraInvViewProj");
+        static readonly int s_EntityLayerId = Shader.PropertyToID("_VisionEntityLayer");
+        static readonly int s_UseRenderingLayersId = Shader.PropertyToID("_VisionUseRenderingLayers");
 
         readonly Material _maskMaterial;
         VisionRendererFeature _feature;
@@ -51,6 +53,13 @@ namespace SS3D.Rendering.URP
             Matrix4x4 viewProjection = gpuProjection * camera.worldToCameraMatrix;
             _maskMaterial.SetMatrix(s_InvViewProjId, viewProjection.inverse);
 
+            // Written by the depth-normals prepass the Decal feature's rendering layers turn on; without it,
+            // culling alone keeps people whole (D9 fallback).
+            TextureHandle renderingLayers = resourceData.renderingLayersTexture;
+            bool useRenderingLayers = renderingLayers.IsValid();
+            _maskMaterial.SetInteger(s_EntityLayerId, (int)VisionRenderingLayers.Entity);
+            _maskMaterial.SetFloat(s_UseRenderingLayersId, useRenderingLayers ? 1f : 0f);
+
             TextureDesc colorDesc = resourceData.activeColorTexture.GetDescriptor(renderGraph);
             TextureDesc maskDesc = new(colorDesc.width, colorDesc.height)
             {
@@ -74,6 +83,8 @@ namespace SS3D.Rendering.URP
             using (var builder = renderGraph.AddBlitPass(blitParams, passName: "Vision Mask", returnBuilder: true))
             {
                 builder.UseTexture(resourceData.cameraDepthTexture, AccessFlags.Read);
+                if (useRenderingLayers)
+                    builder.UseTexture(renderingLayers, AccessFlags.Read);
             }
 
             if (_debugToScreen)

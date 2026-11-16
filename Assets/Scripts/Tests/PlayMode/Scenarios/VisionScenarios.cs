@@ -2,6 +2,8 @@ using System.Collections;
 using System.Linq;
 using NUnit.Framework;
 using SS3D.Core;
+using SS3D.Rendering.URP;
+using SS3D.Systems.Entities;
 using SS3D.Systems.Furniture;
 using SS3D.Systems.Tile.Connections;
 using SS3D.Systems.Vision;
@@ -99,6 +101,70 @@ namespace SS3D.Tests
             }
 
             yield return WaitFor(() => !door.IsOpen && !door.PanelsInMotion, "the door closes again", 5f);
+        }
+
+        // Guards: people shown whole or not at all, never cut at the edge of sight and with no shadow when hidden (VisionEntityCuller, the VisionEntity rendering layer, fov.md §4) · Not cheaper because: it needs a real spawned body, its clothes as separate items, and the live cast through a real doorway
+        [UnityTest]
+        public IEnumerator APersonHalfBehindAJamb_IsShownWhole_AndHiddenWhollyBehindTheWall()
+        {
+            VisionSubSystem vision = LiveVision();
+            AirLockOpener door = TheDoor();
+            Vector3 doorPosition = door.transform.position;
+            float towardMainRoom = Mathf.Sign(ScenarioAtmos.MainRoom.center.x - doorPosition.x);
+            float floor = Body.transform.position.y;
+
+            Entity dummy = SubSystems.Get<EntitySubSystem>().ServerSpawnCombatDummy(
+                new Vector3(doorPosition.x - (towardMainRoom * 1.5f), floor, doorPosition.z + 3f), Quaternion.identity);
+            Assert.IsNotNull(dummy, "A second person spawned");
+
+            try
+            {
+                Assert.IsTrue(door.ServerDebugHoldOpen(), "The door has power to open");
+                yield return WaitFor(() => door.IsOpen && !door.PanelsInMotion, "the door finishes opening", 5f);
+                yield return StandAt(new Vector3(doorPosition.x + (towardMainRoom * 3f), floor, doorPosition.z));
+                yield return new WaitForFixedUpdate();
+                yield return Hold(0.3f);
+
+                // Where sight through the doorway ends, a metre into the side room at chest height.
+                float sideX = doorPosition.x - (towardMainRoom * 1f);
+                float edge = doorPosition.z;
+                while (edge < doorPosition.z + 3f && vision.IsVisible(new Vector3(sideX, floor + 1f, edge)))
+                    edge += 0.02f;
+                Assume.That(edge, Is.LessThan(doorPosition.z + 2.9f), "Sight through the doorway ends inside the side room");
+
+                // Its middle just out of sight, a shoulder still in it.
+                Teleport(dummy, new Vector3(sideX, floor, edge + 0.1f));
+                yield return Hold(0.5f);
+                Assert.IsFalse(vision.IsVisible(new Vector3(sideX, floor + 1f, edge + 0.1f)), "The person's middle is out of sight");
+                AssertShown(dummy, true, "A shoulder past the jamb shows the whole person");
+
+                Teleport(dummy, new Vector3(sideX, floor, edge + 1.5f));
+                yield return Hold(0.5f);
+                AssertShown(dummy, false, "Fully behind the wall, nothing of them draws, so no shadow either");
+                AssertShown(Body, true, "The player's own body always draws");
+            }
+            finally
+            {
+                door.ServerCloseFromInteraction();
+            }
+
+            yield return WaitFor(() => !door.IsOpen && !door.PanelsInMotion, "the door closes again", 5f);
+        }
+
+        private static void AssertShown(Entity entity, bool shown, string message)
+        {
+            Renderer[] renderers = entity.GetComponentsInChildren<Renderer>(false)
+                .Where(renderer => renderer.enabled && renderer is SkinnedMeshRenderer or MeshRenderer)
+                .ToArray();
+            Assert.IsNotEmpty(renderers, $"{entity.name} has renderers");
+            int off = renderers.Count(renderer => renderer.forceRenderingOff && RendererHiding.IsHidden(renderer, RendererHiding.Reason.OutOfSight));
+            if (shown)
+                Assert.AreEqual(0, off, $"{message}: {off} of {renderers.Length} renderers are culled");
+            else
+                Assert.AreEqual(renderers.Length, off, $"{message}: {renderers.Length - off} of {renderers.Length} renderers still draw");
+
+            if (shown && renderers.Any(renderer => (renderer.renderingLayerMask & VisionRenderingLayers.Entity) == 0))
+                Assert.Fail($"{entity.name}: every renderer carries the VisionEntity rendering layer, so the mask never cuts them");
         }
 
         private static VisionSubSystem LiveVision()

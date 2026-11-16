@@ -66,6 +66,9 @@ namespace SS3D.Systems.Vision
 
         private static readonly ProfilerMarker CastMarker = new("Vision.ViewPoints");
         private static readonly ProfilerMarker MapMarker = new("Vision.VisionMap");
+        private static readonly ProfilerMarker CullMarker = new("Vision.Cull");
+
+        private readonly VisionEntityCuller _culler = new();
 
         [SerializeField]
         public bool showDebug;
@@ -293,6 +296,9 @@ namespace SS3D.Systems.Vision
         {
             if (state != VisionState.Active)
             {
+                if (State == VisionState.Active)
+                    _culler.ShowAll();
+
                 _hasCast = false;
                 Shader.SetGlobalFloat(ViewRangeId, 0f);
                 Shader.SetGlobalTexture(VisionMapId, Texture2D.blackTexture);
@@ -408,6 +414,9 @@ namespace SS3D.Systems.Vision
                 _castTileOrigin = _pendingTileOrigin;
                 _hasCast = true;
             }
+
+            using (CullMarker.Auto())
+                _culler.Cull(this, _targetEntity);
         }
 
         private void EnsureBuffers(int count)

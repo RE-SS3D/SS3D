@@ -2,7 +2,7 @@
 > Touches systems: rendering, tile, entities, examine, action-messages, map-editor-creative-hooks
 > Status: planned
 
-**Progress:** P0–P2 done 2026-11-16 (findings under each phase); P3 next. Grilled with the owner on 2026-11-16, after an architecture review of the FOV and playtest feedback that the black "shadows don't match the walls". The same grill produced [fov.md](../design/fov.md). Serves [mvp1-nuke-ops.md](../milestones/mvp1-nuke-ops.md) M12.
+**Progress:** P0–P3 done 2026-11-16 (findings under each phase); P4 next. Grilled with the owner on 2026-11-16, after an architecture review of the FOV and playtest feedback that the black "shadows don't match the walls". The same grill produced [fov.md](../design/fov.md). Serves [mvp1-nuke-ops.md](../milestones/mvp1-nuke-ops.md) M12.
 
 # Field of view rework: walls drawn whole, sharp edges, one raycast batch (Nov 2026)
 
@@ -103,10 +103,20 @@ Read directly from code and prefabs; the [rendering](systems/rendering.md) map i
 
 ### P3: people, items and wall mounts
 
-- [ ] `VisionRenderingLayers.Entity` bit stamped by recipe on character, item and wall-mount renderers (fallback per D9 if P0 said no)
-- [ ] Mask pass skips the bit
-- [ ] `VisionEntityCuller`: three-point check, wall mounts on their facing tile, `forceRenderingOff`
+- [x] `VisionRenderingLayers.Entity` bit stamped by recipe on character, item and wall-mount renderers (fallback per D9 if P0 said no)
+- [x] Mask pass skips the bit
+- [x] `VisionEntityCuller`: three-point check, wall mounts on their facing tile, `forceRenderingOff`
 - Validation: `compile,editmode,scenarios:Vision,visual`
+
+**As built (2026-11-16):**
+
+- **Stamped at runtime, not by recipe (deviation).** The culler ORs `VisionRenderingLayers.Entity` (named layer 2, `VisionEntity`) onto every renderer it tracks when it reads the renderer list, the way `PlacedTileObject` already stamps `ReceiveWorldDecals`. A recipe would have meant editing `Human.prefab` and every item prefab, and would miss clothes and items that join a body later.
+- **What is tracked.** Spawned entities (`SceneRegistry<Entity>`, registered in `Entity.OnStartClient`, so preview dummies never are), spawned items (`SceneRegistry<Item>` filtered by `IsSpawned`, so inventory icon previews keep drawing) and wall mounts (`ClientWallMounts`, filled from `PlacedTileObject.OnStartClient` for the `WallMountHigh`/`WallMountLow` layers). The local body is tracked for the bit but always shows.
+- **Rule.** Bodies and items: the bounds centre plus both sides across the line of sight at the bounds' horizontal radius (0.1–0.6 m), via `IsVisible`. Wall mounts: the floor tile in front (`ClientWallMounts.FacingFloor`, the wall tile plus the mount's `Direction`) 1 m up. Worn and held items, anything under an `Entity`, show or hide with their holder: a renderer belongs to exactly one tracked owner, so a holder and the item it drops never undo each other. Renderer lists are re-read every 30–37 frames, and at once when an item changes parent.
+- **`RendererHiding`** (rendering assembly) shares `forceRenderingOff` between reasons: `ClothesDisplayer` now hides covered body parts through it (`CoveredByClothes`), and the culler uses `OutOfSight`. Without it, showing a person would have un-hidden body parts under their clothes.
+- **Mask.** `VisionMask.shader` reads `_CameraRenderingLayersTexture` at the pixel and returns visible for the bit; the pass declares `renderingLayersTexture` and passes `_VisionUseRenderingLayers = 0` when it is missing (culling-only fallback).
+- **Checked:** the `person` shots (`vision-shots-20261116-144904`): a dummy standing with its middle just past the jamb of an open airlock draws identically with the FOV on and off, and the black stops at its outline.
+- **Cost:** `Vision.Cull` 0.34–0.39 ms mean in editor Play Mode for 3 entities, 32 items and 88 wall mounts (editor Mono; per-target interop and three `IsVisible` calls). The ray markers stayed at 0.04–0.13 ms each; they vary run to run on tomnas. If the Metastation's counts make the cull expensive, the per-target test is the part to move into a Burst job.
 
 ### P4: cleanup and docs
 

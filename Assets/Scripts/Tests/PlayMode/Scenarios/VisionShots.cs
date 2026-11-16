@@ -6,6 +6,7 @@ using System.Reflection;
 using System.Text;
 using NUnit.Framework;
 using SS3D.Core;
+using SS3D.Systems.Entities;
 using SS3D.Systems.Furniture;
 using SS3D.Systems.Screens;
 using SS3D.Systems.Vision;
@@ -66,15 +67,33 @@ namespace SS3D.Tests
             yield return Shoot(vision, follow, corner, height, through + (along * 0.6f), "corner", output);
             report.Append(Diagnose(vision, doorTransform.position, height));
 
+            // A person half behind the jamb of the open door, seen from the doorway (D9: drawn whole, not cut).
             Teleport(Body, new Vector3(doorway.x, height, doorway.z));
-            yield return Hold(0.5f);
-            yield return Profile(120, report);
+            Entity dummy = SubSystems.Get<EntitySubSystem>().ServerSpawnCombatDummy(doorTransform.position - (through * 3f), Quaternion.identity);
+            if (door.ServerDebugHoldOpen())
+            {
+                yield return WaitFor(() => door.IsOpen && !door.PanelsInMotion, "the door finishes opening", 5f);
+                yield return new WaitForFixedUpdate();
+                yield return Hold(0.3f);
+
+                Vector3 beyond = doorTransform.position - (through * 1f);
+                float edge = 0f;
+                while (edge < 3f && vision.IsVisible(beyond + (along * edge) + (Vector3.up * 1f)))
+                    edge += 0.02f;
+
+                Teleport(dummy, new Vector3(beyond.x, height, beyond.z) + (along * (edge + 0.1f)));
+                report.AppendLine($"person: sight ends {edge:F2} m along the jamb; standing 0.1 m past it");
+                yield return Shoot(vision, follow, doorway, height, through - (along * 0.4f), "person", output, () => door.ServerDebugHoldOpen());
+                report.AppendLine($"tracked: {SceneRegistry<Entity>.Count} entities, {SceneRegistry<SS3D.Systems.Inventory.Items.Item>.Count} items, {SS3D.Systems.Tile.ClientWallMounts.All.Count} wall mounts");
+                yield return Profile(120, report);
+                door.ServerCloseFromInteraction();
+            }
 
             File.WriteAllText(Path.Combine(output, "report.md"), report.ToString());
             Debug.Log($"[VisionShots] wrote {output}");
         }
 
-        private IEnumerator Shoot(VisionSubSystem vision, CameraFollow follow, Vector3 stand, float height, Vector3 towardCamera, string label, string output)
+        private IEnumerator Shoot(VisionSubSystem vision, CameraFollow follow, Vector3 stand, float height, Vector3 towardCamera, string label, string output, Action beforeEach = null)
         {
             Teleport(Body, new Vector3(stand.x, height, stand.z));
             towardCamera = Flat(towardCamera);
@@ -82,6 +101,7 @@ namespace SS3D.Tests
             float horizontal = Mathf.Atan2(-towardCamera.z, towardCamera.x) * Mathf.Rad2Deg;
             foreach (float tilt in Tilts)
             {
+                beforeEach?.Invoke();
                 SetField(follow, "_horizontalAngle", horizontal);
                 SetField(follow, "_verticalAngle", tilt);
                 yield return Hold(1.2f);
