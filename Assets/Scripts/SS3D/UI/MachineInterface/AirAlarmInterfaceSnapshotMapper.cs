@@ -31,9 +31,20 @@ namespace SS3D.UI.MachineInterface
             model.AccessDenied = snapshot.AccessDenied;
             model.Scenario = scenario;
 
+            // The templates carry preview text ("CO2 RISING"); live status comes from what actually tripped.
+            AirAlarmStatus status = AirAlarmStatusText.Describe(
+                snapshot.PowerOk, snapshot.HasSample, (AirAlarmState)snapshot.AlarmState, (AirAlarmIndicator)snapshot.Indicator);
+            model.StatusBadgeText = status.Badge;
+            model.StatusHeadline = status.Headline;
+            model.AlarmSubline = status.Subline;
+
             if (snapshot.HasSample)
             {
                 ApplyLiveReadings(model, snapshot);
+            }
+            else
+            {
+                ClearReadings(model);
             }
 
             model.ActiveMode = (AirAlarmPresetMode)snapshot.ActiveMode;
@@ -70,6 +81,22 @@ namespace SS3D.UI.MachineInterface
                 CreateGasReadout("N2", snapshot.NitrogenFraction),
                 CreateGasReadout("CO2", snapshot.CarbonDioxideFraction, AirAlarmConstants.HighCarbonDioxideMoleFraction, belowThresholdIsBad: false),
                 CreateGasReadout("Plasma", snapshot.PlasmaFraction, AirAlarmConstants.HighPlasmaMoleFraction, belowThresholdIsBad: false),
+            };
+        }
+
+        /// <summary>No sample: blank the template's preview numbers rather than show made-up air.</summary>
+        private static void ClearReadings(AirAlarmInterfaceViewModel model)
+        {
+            model.PressureText = "-- kPa";
+            model.PressureTone = StatusTone.Info;
+            model.TemperatureText = "--°C";
+            model.TemperatureTone = StatusTone.Info;
+            model.GasReadouts = new List<AirAlarmGasReadout>
+            {
+                CreateGasReadout("O2", 0f),
+                CreateGasReadout("N2", 0f),
+                CreateGasReadout("CO2", 0f),
+                CreateGasReadout("Plasma", 0f),
             };
         }
 

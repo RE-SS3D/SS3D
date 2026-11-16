@@ -11,14 +11,16 @@ namespace SS3D.Systems.Roles
     {
         public const string NuclearOperative = "nukeop";
 
-        public static readonly (string Key, string Name)[] All =
+        /// <summary>Key, display name and the character window's one-line description (lobby.md §4).</summary>
+        public static readonly (string Key, string Name, string Description)[] All =
         {
-            (NuclearOperative, "Nuclear Operative"),
+            (NuclearOperative, "Nuclear Operative",
+                "A member of a Syndicate strike team sent to destroy the station with a nuclear device."),
         };
 
         public static bool IsKnown(string key)
         {
-            foreach ((string known, string _) in All)
+            foreach ((string known, string _, string _) in All)
             {
                 if (known == key)
                 {
@@ -30,22 +32,34 @@ namespace SS3D.Systems.Roles
         }
 
         /// <summary>
-        /// Opt-in is on by default (round-end loop Decision 22): with no preferences sent
-        /// (<paramref name="sentOptIns"/> null) a player is in every known category; once sent, only the ticked ones.
+        /// Whether a player is in the pool for <paramref name="category"/>. An explicit opt-in or opt-out wins; a
+        /// category the character never set (or a player who never sent preferences, both lists null) takes
+        /// <paramref name="defaultOptIn"/>. That default is off (lobby.md §4) except on the <c>-nukeops</c> profile.
         /// </summary>
-        public static bool IsOptedIn(IReadOnlyCollection<string> sentOptIns, string category)
+        public static bool IsOptedIn(IReadOnlyCollection<string> optIns, IReadOnlyCollection<string> optOuts,
+            string category, bool defaultOptIn)
         {
             if (!IsKnown(category))
             {
                 return false;
             }
 
-            if (sentOptIns == null)
+            if (Contains(optIns, category))
             {
                 return true;
             }
 
-            foreach (string key in sentOptIns)
+            return !Contains(optOuts, category) && defaultOptIn;
+        }
+
+        private static bool Contains(IReadOnlyCollection<string> keys, string category)
+        {
+            if (keys == null)
+            {
+                return false;
+            }
+
+            foreach (string key in keys)
             {
                 if (key == category)
                 {

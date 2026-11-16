@@ -32,6 +32,7 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.UIElements;
 using UserPermissionsChangedEvent = SS3D.Permissions.Events.UserPermissionsChangedEvent;
+using RoundStateUpdated = SS3D.Systems.Rounds.Events.RoundStateUpdated;
 using InputSubSystem = SS3D.Systems.Inputs.InputSubSystem;
 
 namespace SS3D.Systems.Tile.MapEditor
@@ -228,6 +229,7 @@ namespace SS3D.Systems.Tile.MapEditor
             base.OnEnabled();
             AddHandle(UpdateEvent.AddListener(HandleUpdate));
             AddHandle(UserPermissionsChangedEvent.AddListener(HandleUserPermissionsChanged));
+            AddHandle(RoundStateUpdated.AddListener(HandleSystemsRoundState));
         }
 
         protected override void OnDestroyed()
@@ -246,6 +248,7 @@ namespace SS3D.Systems.Tile.MapEditor
             _mapEditorHandle?.Dispose();
             _mapEditorHandle = null;
             _areaOverlay.Dispose();
+            _systemsViewClient.Dispose();
             TeardownView();
             UnregisterDocument();
             if (_document != null)
@@ -299,6 +302,7 @@ namespace SS3D.Systems.Tile.MapEditor
 
         private void WireViewEvents()
         {
+            BindSystemsTraceView(true);
             _view.ValidationLocateRequested += OnValidationLocateRequested;
             _view.ValidationShowInPaletteRequested += OnValidationShowInPaletteRequested;
             _view.ToolSelected += OnToolSelected;
@@ -323,6 +327,7 @@ namespace SS3D.Systems.Tile.MapEditor
             _view.CameraRotateRequested += OnCameraRotateRequested;
             _view.CameraZoomRequested += OnCameraZoomRequested;
             _view.LayerCategoryVisibilityChanged += OnLayerCategoryVisibilityChanged;
+            _view.SystemsViewSelected += OnSystemsViewSelected;
             _view.ModeSelected += OnModeSelected;
             _view.SubcategorySelected += OnSubcategorySelected;
             _view.SearchChanged += OnSearchChanged;
@@ -482,6 +487,7 @@ namespace SS3D.Systems.Tile.MapEditor
                 _lighting.Restore();
                 CancelAreaStroke();
                 _areaOverlay.SetVisible(false);
+                _systemsViewClient.Stop(_viewModel);
                 MapEditorLayerVisibility.Deactivate();
                 SetGameplayInputBlocked(false);
                 _mapEditorHandle?.Dispose();
@@ -567,6 +573,7 @@ namespace SS3D.Systems.Tile.MapEditor
 
         private void HandleUpdate(ref EventContext context, in UpdateEvent updateEvent)
         {
+            HandleSystemsViewServerUpdate();
             if (!_active)
                 return;
 
@@ -582,6 +589,7 @@ namespace SS3D.Systems.Tile.MapEditor
             _areaOverlay.SetVisible(showAreas);
             SubSystems.TryGet(out AreaSubSystem labelAreas);
             _view?.UpdateAreaLabels(_areaOverlay.LabelPositions, labelAreas?.FloorVisualCache, PickCamera, showAreas);
+            UpdateSystemsViewClient();
 
             UpdatePendingValidation();
 
@@ -662,8 +670,10 @@ namespace SS3D.Systems.Tile.MapEditor
             if (TryPickGasMarker(MapEditorTool.Select))
                 return;
 
-            if (!MapEditorCursorPick.TryPick(PickCamera, _tileSystem.CurrentMap, _viewModel,
-                    out PlacedTileObject placed, out PlacedItemObject item))
+            bool picked = MapEditorCursorPick.TryPick(PickCamera, _tileSystem.CurrentMap, _viewModel,
+                out PlacedTileObject placed, out PlacedItemObject item);
+            TraceSystemsView(picked ? placed : null);
+            if (!picked)
                 return;
 
             if (placed != null)
@@ -778,6 +788,9 @@ namespace SS3D.Systems.Tile.MapEditor
                     label = PlacingLabel(_viewModel.SelectedEntry);
             }
 
+            if (!_viewModel.HideUI && !_mouseOverUI)
+                label = MapEditorSystemsViewClient.CursorLabel(label, SystemsViewHoverLabel());
+
             _examine.SetCursorLabelOverride(label);
         }
 
@@ -857,6 +870,7 @@ namespace SS3D.Systems.Tile.MapEditor
             if (_view == null)
                 return;
 
+            BindSystemsTraceView(false);
             _view.ValidationLocateRequested -= OnValidationLocateRequested;
             _view.ValidationShowInPaletteRequested -= OnValidationShowInPaletteRequested;
             _view.ToolSelected -= OnToolSelected;
@@ -881,6 +895,7 @@ namespace SS3D.Systems.Tile.MapEditor
             _view.CameraRotateRequested -= OnCameraRotateRequested;
             _view.CameraZoomRequested -= OnCameraZoomRequested;
             _view.LayerCategoryVisibilityChanged -= OnLayerCategoryVisibilityChanged;
+            _view.SystemsViewSelected -= OnSystemsViewSelected;
             _view.ModeSelected -= OnModeSelected;
             _view.SubcategorySelected -= OnSubcategorySelected;
             _view.SearchChanged -= OnSearchChanged;
@@ -1202,9 +1217,8 @@ namespace SS3D.Systems.Tile.MapEditor
 
         private void AfterSubTabChanged()
         {
-            TileLayerVisibilityService.SetGroupVisible(TileLayerCategory.Scripts,
-                _viewModel.IsLayerCategoryVisible(TileLayerCategory.Scripts));
-            SyncTurfsLayerVisibility();
+            // Scripts follows its tab, Turfs the Lower run tabs, the x-ray layers a systems view turning on or off.
+            MapEditorLayerVisibility.Sync(_viewModel);
             OnToolSelected(_viewModel.CurrentTool);
             SyncHologramToLibrarySelection();
             MapEditorLastTab.Save(_viewModel.CurrentSubcategory);
@@ -1251,14 +1265,6 @@ namespace SS3D.Systems.Tile.MapEditor
                 _catalog.TryGetAsset(entry.AssetName, _tileSystem.Loader, out asset);
             SelectAsset(entry, asset);
             _viewModel.NotifyChanged();
-        }
-
-        /// <summary>Lower run tabs (Cables, Gas Pipes, Disposal Pipes) toggle Turfs in the view model; only re-dim when it changed (walks the map).</summary>
-        private void SyncTurfsLayerVisibility()
-        {
-            bool visible = _viewModel.IsLayerCategoryVisible(TileLayerCategory.Turfs);
-            if (TileLayerVisibilityService.IsGroupVisible(TileLayerCategory.Turfs) != visible)
-                TileLayerVisibilityService.SetGroupVisible(TileLayerCategory.Turfs, visible);
         }
 
         /// <summary>
@@ -1456,6 +1462,7 @@ namespace SS3D.Systems.Tile.MapEditor
             string mode = SubSystems.Get<ServerSettingsService>().Current.Mode;
             Validation.MapValidationReport report = Validation.MapValidationService.Validate(_tileSystem, mode);
             TargetMapValidation(conn, report.Issues.ToArray(), mode, resetDismissed);
+            AwaitSystemsForValidation(conn);
         }
 
         [TargetRpc]

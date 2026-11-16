@@ -14,6 +14,7 @@ using SS3D.Logging;
 using SS3D.Networking;
 using SS3D.Networking.Settings;
 using SS3D.Networking.Status;
+using SS3D.Systems.Audio;
 using SS3D.Systems.Settings;
 using SS3D.UI.Shell;
 using SS3D.UI.Shell.Catalog;
@@ -64,7 +65,7 @@ namespace SS3D.Launcher
         private bool _updateCheckStarted;
         private DateTime? _checkedAt;
         private bool _presentPending;
-        private MainMenuMusic _music;
+        private MenuMusicSubSystem _music;
         private PlayerSettingsPanel _settingsPanel;
         private PlayerSettingsSubSystem _playerSettings;
         private (bool On, float Volume) _shownMusic;
@@ -137,7 +138,7 @@ namespace SS3D.Launcher
                 }
 
                 CompleteOperation();
-                Hide();
+                Hide(true);
             }
         }
 
@@ -146,7 +147,7 @@ namespace SS3D.Launcher
             if (_operation == Operation.Joining)
             {
                 CompleteOperation();
-                Hide();
+                Hide(true);
             }
         }
 
@@ -173,8 +174,6 @@ namespace SS3D.Launcher
 
         private void Update()
         {
-            // Music keeps fading out after the menu hides (Game loading).
-            bool trackChanged = _music != null && _music.Tick();
             if (_view == null)
             {
                 return;
@@ -184,11 +183,6 @@ namespace SS3D.Launcher
             {
                 _nextListenerCheck = Time.unscaledTime + 0.5f;
                 EnsureListener();
-            }
-
-            if (trackChanged)
-            {
-                RequestPresent();
             }
 
             TickWallpaper();
@@ -249,9 +243,14 @@ namespace SS3D.Launcher
             {
                 _rotation.Reveal(Time.unscaledTime);
             }
-            _music ??= new MainMenuMusic(gameObject, _catalog.Music);
-            // A fresh launcher visit starts the current track from the beginning.
-            _music.Stop();
+            // The music service outlives the menu (lobby effort Decision 15). A fresh launcher visit starts the
+            // current track from the beginning.
+            if (SubSystems.TryGet(out _music))
+            {
+                _music.Restart();
+                _music.TrackChanged += RequestPresent;
+            }
+
             EnsureListener();
             _query ??= new ServerStatusQuery();
             _query.Completed += HandleStatus;
@@ -265,10 +264,23 @@ namespace SS3D.Launcher
             Present();
         }
 
-        public void Hide()
+        public void Hide() => Hide(false);
+
+        /// <summary>
+        /// <paramref name="toSession"/>: the menu hides because a session loaded (hosted or joined). The music it was
+        /// playing then carries on into the lobby.
+        /// </summary>
+        private void Hide(bool toSession)
         {
             Unsubscribe();
-            _music?.SetAudible(false);
+            if (_music != null)
+            {
+                _music.TrackChanged -= RequestPresent;
+                if (toSession) _music.HandOverToLobby();
+                else _music.SetMainMenu(false);
+                _music = null;
+            }
+
             _video?.Stop();
             RemoveListener();
             if (_query != null)
@@ -894,10 +906,10 @@ namespace SS3D.Launcher
         private void UpdateMusic()
         {
             bool screen = _model.Screen is MainMenuScreen.Menu or MainMenuScreen.Servers or MainMenuScreen.Settings or MainMenuScreen.Connecting;
-            _music?.SetAudible(_view != null && MusicOn && screen);
+            _music?.SetMainMenu(_view != null && screen);
         }
 
-        /// <summary>Menu music on/off is a player setting (Audio › Main menu music), shared with the sidebar toggle.</summary>
+        /// <summary>Menu music on/off is a player setting (Audio › Menu music), shared with the sidebar toggle and the lobby.</summary>
         private bool MusicOn => _playerSettings == null || _playerSettings.Settings.Audio.MenuMusic;
 
         /// <summary>The shared Settings screen fills the settings panel; Back returns to the menu.</summary>

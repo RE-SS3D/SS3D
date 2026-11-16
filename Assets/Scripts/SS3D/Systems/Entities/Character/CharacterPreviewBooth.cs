@@ -37,6 +37,8 @@ namespace SS3D.Systems.Entities.Character
         /// <summary>Portrait crop height as a fraction of the full-body frame.</summary>
         private const float PortraitViewportHeight = 0.2f;
         private const float PortraitHeadOffset = 0.08f;
+        /// <summary>Space above the bare body that the framing keeps for hair.</summary>
+        private const float HairHeadroom = 0.15f;
 
         [SerializeField] private GameObject _humanPrefab;
         [SerializeField] private Camera _previewCamera;
@@ -52,6 +54,8 @@ namespace SS3D.Systems.Entities.Character
         private GameObject _dummy;
         private RenderTexture _renderTexture;
         private int _angleIndex;
+        private float[] _morphs;
+        private bool _hasMorphs;
 
         public RenderTexture PreviewTexture => _renderTexture;
 
@@ -122,6 +126,8 @@ namespace SS3D.Systems.Entities.Character
             }
 
             HumanoidMorphApplier.Apply(_dummy, female, breasts, fat, muscle, jaw, height);
+            _morphs = new[] { female, breasts, fat, muscle, jaw, height };
+            _hasMorphs = true;
             // Do not reframe — auto-fit would cancel height scale in the viewport.
         }
 
@@ -153,48 +159,93 @@ namespace SS3D.Systems.Entities.Character
             SetLayerRecursively(_dummy.transform, PreviewLayer);
         }
 
-        /// <summary>Apply worn meshes to the existing rig; never spawn networked clothing Items.</summary>
-        public void ApplyOutfit(Cloth jumpsuit, Cloth shoes)
+        /// <summary>
+        /// Dresses the dummy in <paramref name="worn"/> (lobby effort Decision 14): each clothed body part takes the mesh
+        /// of the first item that has one for it, and every other part is hidden, so an empty list strips the dummy.
+        /// Applies meshes to the existing rig; never spawns networked clothing Items.
+        /// </summary>
+        public void ApplyOutfit(IReadOnlyList<Cloth> worn)
         {
-            if (_dummy == null || jumpsuit == null || shoes == null)
+            if (_dummy == null)
             {
                 return;
             }
 
             foreach (ClothedBodyPart part in _dummy.GetComponentsInChildren<ClothedBodyPart>(true))
             {
-                Cloth source;
-                switch (part.Type)
+                Cloth source = null;
+                Mesh mesh = null;
+                if (worn != null)
                 {
-                    case ClothType.Jumpsuit:
+                    foreach (Cloth cloth in worn)
                     {
-                        source = jumpsuit;
-                        break;
+                        if (cloth != null && cloth.TryGetClothMesh(part.Type, out mesh))
+                        {
+                            source = cloth;
+                            break;
+                        }
                     }
-                    case ClothType.ShoeLeft:
-                    case ClothType.ShoeRight:
-                    {
-                        source = shoes;
-                        break;
-                    }
-                    default: continue;
                 }
-                Mesh mesh = source.GetClothMesh(part.Type);
-                if (mesh != null && part.TryGetComponent(out SkinnedMeshRenderer renderer))
+
+                if (source == null || !part.TryGetComponent(out SkinnedMeshRenderer renderer))
                 {
-                    renderer.sharedMesh = mesh;
-                    renderer.enabled = true;
-                    part.gameObject.SetActive(true);
+                    part.gameObject.SetActive(false);
+                    continue;
                 }
+
+                renderer.sharedMesh = mesh;
+                renderer.enabled = true;
+                part.ApplyMaterials(renderer, source.WornMaterials);
+                part.gameObject.SetActive(true);
             }
+
+            ApplyOcclusion(worn);
+            // A new sharedMesh starts with zero shape-key weights; keep it fitted to the body.
+            if (_hasMorphs)
+            {
+                HumanoidMorphApplier.Apply(_dummy, _morphs[0], _morphs[1], _morphs[2], _morphs[3], _morphs[4], _morphs[5]);
+            }
+
             SetLayerRecursively(_dummy.transform, PreviewLayer);
+        }
+
+        /// <summary>Opaque clothing hides the body renderers it names, as <c>ClothesDisplayer</c> does in game.</summary>
+        private void ApplyOcclusion(IReadOnlyList<Cloth> worn)
+        {
+            foreach (Renderer renderer in _dummy.GetComponentsInChildren<Renderer>(true))
+            {
+                bool occluded = false;
+                if (worn != null)
+                {
+                    foreach (Cloth cloth in worn)
+                    {
+                        if (cloth != null && cloth.OccludedBodyRenderers != null
+                            && System.Array.IndexOf(cloth.OccludedBodyRenderers, renderer.name) >= 0)
+                        {
+                            occluded = true;
+                            break;
+                        }
+                    }
+                }
+
+                renderer.forceRenderingOff = occluded;
+            }
         }
 
         /// <summary>
         /// Copies a square head crop of the last rendered frame into <paramref name="target"/>.
         /// Only the Front angle gives a usable portrait, so other angles return false.
         /// </summary>
-        public bool TryCapturePortrait(RenderTexture target)
+        public bool TryCapturePortrait(RenderTexture target) =>
+            CaptureHeadCrop(target, PortraitViewportHeight, PortraitHeadOffset, false);
+
+        /// <summary>
+        /// Copies a square crop around the head into <paramref name="target"/>: <paramref name="viewportHeight"/> is
+        /// the crop's height as a fraction of the frame, <paramref name="headOffset"/> lifts its centre above the head
+        /// bone in metres. <paramref name="renderNow"/> renders the camera first (the editor's style thumbnail baker,
+        /// which has no frame loop). Only the Front angle gives a usable crop, so other angles return false.
+        /// </summary>
+        public bool CaptureHeadCrop(RenderTexture target, float viewportHeight, float headOffset, bool renderNow)
         {
             if (target == null || _renderTexture == null || _previewCamera == null || !_previewCamera.enabled
                 || _dummy == null || _angleIndex != 0)
@@ -208,9 +259,14 @@ namespace SS3D.Systems.Entities.Character
                 return false;
             }
 
+            if (renderNow)
+            {
+                _previewCamera.Render();
+            }
+
             // Head bone sits at the skull base; aim slightly above it for the face.
-            Vector3 viewport = _previewCamera.WorldToViewportPoint(head.position + (Vector3.up * PortraitHeadOffset));
-            float height = PortraitViewportHeight;
+            Vector3 viewport = _previewCamera.WorldToViewportPoint(head.position + (Vector3.up * headOffset));
+            float height = viewportHeight;
             float width = height * _renderTexture.height / _renderTexture.width;
             Vector2 offset = new(
                 Mathf.Clamp(viewport.x - (width * 0.5f), 0f, 1f - width),
@@ -467,6 +523,8 @@ namespace SS3D.Systems.Entities.Character
                     animator.Update(0f);
             }
             Bounds bounds = CalculateBounds(_dummy);
+            // Framed on the bare body; leave room for tall hair (Afro 2 rises ~13 cm above the head).
+            bounds.Encapsulate(bounds.max + (Vector3.up * HairHeadroom));
             float height = Mathf.Max(bounds.size.y, 0.75f);
 
             // True body center — upper-torso bias pushed the dummy down and cropped the feet.

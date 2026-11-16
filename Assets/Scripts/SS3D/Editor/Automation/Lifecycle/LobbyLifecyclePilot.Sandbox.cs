@@ -158,7 +158,7 @@ namespace SS3D.Editor.Automation
                 $"Spawned network objects match the first reset ({_firstReset.networkObjects} → {entry.networkObjects})");
         }
 
-        private static string SidebarSub() => Shell()?.Q<Label>(className: "lobby-shell__countdown-sub")?.text;
+        private static string SidebarSub() => Shell()?.Q<Label>("lobby-round-caption")?.text;
 
         private static void VerifyAtmosReset()
         {
@@ -224,7 +224,7 @@ namespace SS3D.Editor.Automation
                     settings.RespawnCooldownSeconds = 8;
                     Settings().ApplyServerSettingsForTesting(settings);
                 },
-                Until = () => Rounds().AutoStartSecondsLeft > 0 && SidebarSub() == "Starting In",
+                Until = () => Rounds().AutoStartSecondsLeft > 0 && SidebarSub() == "Round starts in",
                 Verify = () =>
                 {
                     Require(!IsReady(), "Countdown started without anyone pressing Ready");

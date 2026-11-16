@@ -5,6 +5,7 @@ using NUnit.Framework;
 using SS3D.Launcher;
 using SS3D.Networking;
 using SS3D.Networking.Status;
+using SS3D.Systems.Audio;
 using SS3D.UI.Shell.MainMenu;
 using UnityEditor;
 using UnityEngine;
@@ -518,7 +519,7 @@ namespace SS3D.Tests.EditMode
         [TestCase("SpacemansLullaby", "Spaceman's Lullaby")]
         public void MusicTitle_IsReadableFromTheClipName(string clip, string title)
         {
-            Assert.AreEqual(title, MainMenuMusic.TitleOf(clip));
+            Assert.AreEqual(title, MenuMusicPlayer.TitleOf(clip));
         }
 
         private static ServerStatusResult Reply(int protocol, int players, int cap) =>

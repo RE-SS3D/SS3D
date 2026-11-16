@@ -22,7 +22,11 @@ namespace SS3D.Systems.Atmospherics.Visualization
         private readonly float[] _fireIntensity = new float[AtmosChunkPatch.CellCount];
         private readonly byte[] _mask = new byte[AtmosChunkPatch.CellCount];
 
-        public AtmosChunkPatch Build(AtmosSimulation simulation, int chunkIndex, Vector2Int chunkKey)
+        /// <param name="advanceFire">
+        /// The broadcast decays each cell's visual fire once per patch it sends. A one-off copy for a single client (Room air's
+        /// resync) passes false: it reads the fire as last broadcast and changes nothing, so it can't speed up everyone's decay.
+        /// </param>
+        public AtmosChunkPatch Build(AtmosSimulation simulation, int chunkIndex, Vector2Int chunkKey, bool advanceFire = true)
         {
             EnsureCapacity(simulation.CellCount);
 
@@ -51,22 +55,23 @@ namespace SS3D.Systems.Atmospherics.Visualization
                         chunkKey.x * AtmosConstants.ChunkSize + localX,
                         chunkKey.y * AtmosConstants.ChunkSize + localZ);
 
-                    BuildCell(simulation, patch, cellIndex, local);
+                    BuildCell(simulation, patch, cellIndex, local, advanceFire);
                 }
             }
 
             return patch;
         }
 
-        private void BuildCell(AtmosSimulation simulation, AtmosChunkPatch patch, int cellIndex, int local)
+        private void BuildCell(AtmosSimulation simulation, AtmosChunkPatch patch, int cellIndex, int local, bool advanceFire)
         {
             AtmosCellMeta meta = simulation.CellMeta[cellIndex];
             float pressure = simulation.GetCellPressure(cellIndex);
 
             float simFire = simulation.BurnIntensity.IsCreated ? simulation.BurnIntensity[cellIndex] : 0f;
-            float decayedFire = _visualFire[cellIndex] * AtmosVisualMetrics.VisualFireDecayPerTick;
+            float decayedFire = _visualFire[cellIndex] * (advanceFire ? AtmosVisualMetrics.VisualFireDecayPerTick : 1f);
             float visualFire = Mathf.Max(simFire, decayedFire);
-            _visualFire[cellIndex] = visualFire;
+            if (advanceFire)
+                _visualFire[cellIndex] = visualFire;
 
             patch.Pressure[local] = pressure;
             patch.Temperature[local] = meta.Temperature;

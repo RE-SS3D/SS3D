@@ -89,7 +89,6 @@ namespace SS3D.Editor.Bootstrap
             typeof(AreaSubSystem),
             typeof(AreaDebugGizmoDrawer),
             typeof(ElectricitySubSystem),
-            typeof(ElectricityDebugGizmoDrawer),
             typeof(AtmosSubSystem),
             typeof(DisposalSubSystem),
             typeof(ServerSettingsService),

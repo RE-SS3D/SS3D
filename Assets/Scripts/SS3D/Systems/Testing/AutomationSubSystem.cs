@@ -307,6 +307,7 @@ namespace SS3D.Systems.Testing
 
         private IEnumerator Finish(string signal, string reason = "")
         {
+            SystemsViewAutomation.Reset();
             TestSignal.Emit(this, signal, reason);
 
             if (UnityEngine.Application.isEditor)
@@ -707,6 +708,11 @@ namespace SS3D.Systems.Testing
                     yield return null;
                     yield return null;
                     TestSignal.Emit(this, "Screenshot", screenshotPath);
+                    break;
+
+                // mppm:systems-view's steps (SystemsViewAutomation.Opcodes).
+                case var systemsView when SystemsViewAutomation.Opcodes.Contains(systemsView):
+                    yield return SystemsViewAutomation.Run(this, instruction.Opcode, instruction.Args, _waitTimeoutSeconds);
                     break;
 
                 default:

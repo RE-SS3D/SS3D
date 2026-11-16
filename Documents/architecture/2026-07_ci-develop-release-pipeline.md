@@ -100,7 +100,9 @@ PowerShell 5.1 cannot create paths over Windows' MAX_PATH (259 characters per fi
 names stay short (`.ss3d-update-<8 hex>\x\`). Before unpacking, the script checks every archive path
 under both the staging folder and a future `.ss3d-backups/<id>/`, and refuses with "move SS3D to
 a shorter folder such as C:\SS3D" instead of failing halfway through. On the release side, the
-Windows packaging step fails if any path inside the release is over 130 characters.
+Windows packaging step fails if any path inside the release is over 130 characters and lists
+each one. Addressables names its built-in and monoscript bundles with the custom prefix `ss3d`,
+because the default 32-hex project hash pushed them to 145 characters.
 Launch scripts left by releases before the main menu replaced them move into the backup.
 `Game/Config`, local data and logs carry forward. `.ss3d-release.json` records tag and shipped
 map hashes so unchanged bundled maps refresh while custom/edited maps survive, including name

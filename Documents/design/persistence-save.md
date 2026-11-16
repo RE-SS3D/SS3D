@@ -59,7 +59,7 @@ Only what differs from an object's normal default is recorded, so an object nobo
 
 ## 5. Player meta
 
-**Scope:** playtime accumulated per role (feeding `lobby.md` §2's playtime-gated job display), job unlock state, a returning player's saved lobby preference defaults (so their ranked list doesn't start blank every session), and moderation notes/bans.
+**Scope:** playtime accumulated per role (feeding `lobby.md` §2's playtime-gated job display), job unlock state, a returning player's saved characters, each with its job preferences and antagonist opt-ins (`lobby.md` §3, §6), so nothing starts blank after a restart, and moderation notes/bans.
 
 **Keyed to a real player identity — which this doc doesn't invent.** Real authentication is designed in `player-accounts.md`; this doc treats "a stable per-player key exists" as a black box the same way crafting treats the material silo (`crafting.md` §3) or Area treats atmospherics (`area.md` §4) — an assumed dependency, not redesigned here. On a server that doesn't require the verification `player-accounts.md` §3 supplies, player meta is only as trustworthy as the connection claiming it — a known, stated limitation, not a silently-assumed one.
 
@@ -89,7 +89,7 @@ No new permanent chrome, same discipline as everywhere else in this project.
 
 - Round config's own admin config screen (`round-config.md` §5) is where the round history log actually renders — this doc only supplies the data it reads.
 - A crash-recovered round gets a plain, real line in that same log, not a special hidden flag only visible to someone who goes looking.
-- Player-facing footprint is zero: nobody sees "your data was saved." Playtime and preferences are simply *there* the next time they matter — a playtime-gated job shows correctly, a lobby session pre-fills a returning player's last ranked list — the same "the system already knows, no popup required" discipline examine and every other on-demand surface in this project already run.
+- Player-facing footprint is zero: nobody sees "your data was saved." Playtime and preferences are simply *there* the next time they matter — a playtime-gated job shows correctly, a returning player's characters are there with their rankings — the same "the system already knows, no popup required" discipline examine and every other on-demand surface in this project already run.
 
 ## 9. Worked examples
 
@@ -107,7 +107,7 @@ No new permanent chrome, same discipline as everywhere else in this project.
 |---|---|---|
 | 1 | A player who's logged 12 hours as Engineer connects | Player meta reads their accumulated playtime for that role |
 | 2 | Lobby's job list resolves | "Chief Engineer" (10-hour gate) now shows unlocked instead of grayed out, per `lobby.md` §2 |
-| 3 | Same player's saved preference defaults pre-fill their ranked list | No blank slate every session |
+| 3 | Same player's saved characters come back with their job rankings | No blank slate every session |
 
 **C — Server crash, automatic recovery:**
 
@@ -135,7 +135,7 @@ No new permanent chrome, same discipline as everywhere else in this project.
 | Round config settings, permissions | Server meta layer (this doc); admin settings screen reads it (`round-config.md` §2, §5) |
 | Round history log | Written here, rendered by round config's admin screen (`round-config.md` §5) |
 | Playtime / job unlocks | Feeds lobby's playtime-gated job display (`lobby.md` §2) |
-| Saved lobby preferences | Lobby's ranked-preference list (`lobby.md` §3) |
+| Saved characters and their preferences | Lobby's characters (`lobby.md` §3, §6) |
 | Stable player identity key | `player-accounts.md` §3 |
 | Moderation notes/bans | Storage only; workflow is `admin-tools.md` §7's job |
 | Crew record / ID card exclusion | `death-cloning-respawn.md` §4, `id-access.md` §2 — never a parallel save |

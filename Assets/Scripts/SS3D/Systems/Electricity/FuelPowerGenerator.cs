@@ -15,7 +15,7 @@ namespace SS3D.Systems.Electricity
     /// <summary>
     /// Script for the pacman generator, handling light and noise when turning it on and off. 
     /// </summary>
-    public class FuelPowerGenerator : BasicElectricDevice, IPowerProducer
+    public class FuelPowerGenerator : BasicElectricDevice, IRatedPowerProducer
     {
         [SerializeField]
         private float _powerProduction = 10f;
@@ -31,10 +31,19 @@ namespace SS3D.Systems.Electricity
         private bool _enabled = false; // If the generator is working.
         private float _onPowerProduction = 10f;
 
+        private bool _ratingCaptured;
+
+        /// <summary>
+        /// What it gives while running, off or on: the prefab's output, until starting copies it aside (toggling then
+        /// writes the serialized field to 0 while it is off).
+        /// </summary>
+        public float RatedPowerKw => _ratingCaptured ? _onPowerProduction : _powerProduction;
+
         public override void OnStartServer()
         {
             base.OnStartServer();
             _onPowerProduction = _powerProduction;
+            _ratingCaptured = true;
             // OnToggle is raised on the server only; subscribing in OnStartClient never ran on a dedicated server.
             GetComponent<GenericToggleInteractionTarget>().OnToggle += HandleGeneratorToggle;
         }
@@ -51,6 +60,7 @@ namespace SS3D.Systems.Electricity
         {
             base.OnStartClient();
             _onPowerProduction = _powerProduction;
+            _ratingCaptured = true;
             HandlePowerGenerated(false);
         }
 

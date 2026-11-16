@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using SS3D.Core;
 using SS3D.Systems.Tile.MapEditor.UI;
 using SS3D.Systems.Tile.TileMapCreator;
@@ -71,17 +72,69 @@ namespace SS3D.Systems.Tile.MapEditor
                 return false;
 
             // Prefer visible layer groups when the user has dimmed plenums/etc.
-            if (TryPickFromLayers(locations, viewModel, requireVisible: true, out placedTile))
-                return true;
-
-            return TryPickFromLayers(locations, viewModel, requireVisible: false, out placedTile);
+            return TryPickFromLocations(locations, viewModel, out placedTile);
         }
+
+        /// <summary>
+        /// The tile under the cursor on the plane at <paramref name="height"/>. A systems view draws on top of
+        /// everything at its own height, so this is the tile whose run the user sees under the cursor, even through a
+        /// wall that the raycast would stop at.
+        /// </summary>
+        public static bool TryGetPointedTile(Camera camera, float height, out Vector2Int tile)
+        {
+            tile = default;
+            if (camera == null || !new Plane(Vector3.up, new Vector3(0f, height, 0f)).Raycast(PointerRay(camera), out float distance))
+                return false;
+
+            Vector3 point = PointerRay(camera).GetPoint(distance);
+            tile = new Vector2Int(Mathf.RoundToInt(point.x), Mathf.RoundToInt(point.z));
+            return true;
+        }
+
+        /// <summary>
+        /// The layers a systems view trace tries on a pointed tile: the view's own layer category first (a pipe under a
+        /// table), then the usual pick order.
+        /// </summary>
+        public static IEnumerable<TileLayer> TraceLayerOrder(TileLayerCategory? ownLayer)
+        {
+            IReadOnlyList<TileLayer> own = ownLayer.HasValue ? TileLayerCategoryMapping.GetLayers(ownLayer.Value) : System.Array.Empty<TileLayer>();
+            foreach (TileLayer layer in LayerPickOrder)
+            {
+                if (Contains(own, layer))
+                    yield return layer;
+            }
+
+            foreach (TileLayer layer in own)
+            {
+                if (System.Array.IndexOf(LayerPickOrder, layer) < 0)
+                    yield return layer;
+            }
+
+            foreach (TileLayer layer in LayerPickOrder)
+            {
+                if (!Contains(own, layer))
+                    yield return layer;
+            }
+        }
+
+        private static bool Contains(IReadOnlyList<TileLayer> layers, TileLayer layer)
+        {
+            for (int i = 0; i < layers.Count; i++)
+            {
+                if (layers[i] == layer)
+                    return true;
+            }
+
+            return false;
+        }
+
+        private static Ray PointerRay(Camera camera) => camera.ScreenPointToRay(Mouse.current != null
+            ? Mouse.current.position.ReadValue()
+            : (Vector2)Input.mousePosition);
 
         private static bool TryRaycast(Camera camera, out Ray ray, out RaycastHit hit)
         {
-            ray = camera.ScreenPointToRay(Mouse.current != null
-                ? Mouse.current.position.ReadValue()
-                : (Vector2)Input.mousePosition);
+            ray = PointerRay(camera);
             return Physics.Raycast(ray, out hit, 500f, StationBounds.WithoutCeiling(Physics.DefaultRaycastLayers));
         }
 
@@ -134,6 +187,14 @@ namespace SS3D.Systems.Tile.MapEditor
             return mount != null;
         }
 
+        /// <summary>
+        /// The tile-grid half of <see cref="TryPick"/>: the first object in <see cref="LayerPickOrder"/> on these
+        /// locations, preferring pickable layers (<see cref="MapEditorViewModel.IsLayerPickable"/>).
+        /// </summary>
+        public static bool TryPickFromLocations(ITileLocation[] locations, MapEditorViewModel viewModel, out PlacedTileObject placed) =>
+            TryPickFromLayers(locations, viewModel, requireVisible: true, out placed)
+            || TryPickFromLayers(locations, viewModel, requireVisible: false, out placed);
+
         private static bool TryPickFromLayers(
             ITileLocation[] locations,
             MapEditorViewModel viewModel,
@@ -167,12 +228,13 @@ namespace SS3D.Systems.Tile.MapEditor
             return false;
         }
 
+        // Pickable, not merely visible: a systems view dims its own layer but keeps it first to pick.
         private static bool IsLayerVisible(MapEditorViewModel viewModel, TileLayer layer)
         {
             if (!TileLayerCategoryMapping.TryGetCategoryForLayer(layer, out TileLayerCategory category))
                 return true;
 
-            return viewModel.IsLayerCategoryVisible(category);
+            return viewModel.IsLayerPickable(category);
         }
     }
 }

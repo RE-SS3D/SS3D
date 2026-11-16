@@ -1,0 +1,35 @@
+# Guards: a pure client in the map editor gets the Atmos view's structure, traces a valve's two networks and sees their live pressures meet once the host opens it (map-editor-systems-views, Streams and Tracing); the client gets no pause and is refused one, while the host admin's pause shows Paused in the client's trace, a step moves its numbers and closing the host's editor resumes (Phase 5, Q6) · Not cheaper because: the per-connection structure and live TargetRpcs, the trace and pause ServerRpcs and FishNet's custom serializers only run between two processes
+# Main editor (host) side. Player2 runs scenarios/systems-view-client.txt.
+# The host lets clients open the editor for the run, shuts the station's valve and fills its two sides far apart
+# (back 400 kPa, front 5 kPa), waits until the client traces it, then opens it. Then, with its own editor open, it
+# pauses atmos and power, primes and opens the valve again while paused, steps ten ticks, and closes the editor, which
+# must resume both.
+wait_timeout 180
+wait_connected
+wait_clients 1
+editor_for_clients
+use_station classic-ministation Extended
+ready
+start_round
+wait_round Ongoing
+embark
+assert_embarked
+wait_players 2
+prime_valve
+wait_systems_trace
+wait_seconds 2
+open_primed_valve
+wait_seconds 45
+open_map_editor
+systems_simulation pause
+wait_seconds 3
+prime_valve
+wait_seconds 2
+open_primed_valve
+wait_seconds 5
+systems_steps 10
+wait_seconds 4
+close_map_editor
+assert_simulation_running
+wait_seconds 10
+restore_editor_access

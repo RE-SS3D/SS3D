@@ -18,6 +18,8 @@ namespace SS3D.UI.MachineInterface
             writer.WriteString(snapshot.AreaName);
             writer.WriteBoolean(snapshot.PowerOk);
             writer.WriteByte(snapshot.Scenario);
+            writer.WriteByte(snapshot.AlarmState);
+            writer.WriteByte(snapshot.Indicator);
             writer.WriteBoolean(snapshot.AccessGranted);
             writer.WriteBoolean(snapshot.AccessScanning);
             writer.WriteBoolean(snapshot.AccessDenied);
@@ -51,6 +53,8 @@ namespace SS3D.UI.MachineInterface
                 AreaName = reader.ReadString(),
                 PowerOk = reader.ReadBoolean(),
                 Scenario = reader.ReadByte(),
+                AlarmState = reader.ReadByte(),
+                Indicator = reader.ReadByte(),
                 AccessGranted = reader.ReadBoolean(),
                 AccessScanning = reader.ReadBoolean(),
                 AccessDenied = reader.ReadBoolean(),

@@ -615,8 +615,10 @@ jobs:
           # 130 leaves ~85 for the tester's install folder (e.g. C:\Users\<name>\Downloads\<zip name>\<zip name>).
           longest=$(cd "${WIN_ROOT}" && find . -mindepth 1 | sed 's|^\./||' | awk '{ print length($0) " " $0 }' | sort -n | tail -1)
           echo "Longest Windows release path (${longest%% *} chars): ${longest#* }"
+          # Addressables' built-in and monoscript bundles use the short "ss3d" prefix
+          # (AddressableAssetSettings, Custom naming); the default 32-hex prefix overshoots.
           if [ "${longest%% *}" -gt 130 ]; then
-            echo "::error::Windows release path is ${longest%% *} chars (max 130); testers in deep folders could not update: ${longest#* }"
+            (cd "${WIN_ROOT}" && find . -mindepth 1 | sed 's|^\./||' | awk 'length($0) > 130 { print "::error::Windows release path is " length($0) " chars (max 130); testers in deep folders could not update: " $0 }')
             exit 1
           fi
           (cd staging && zip -qq -r "../dist/SS3D-Windows-${TAG}.zip" "SS3D-Windows-${TAG}")

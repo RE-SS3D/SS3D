@@ -133,12 +133,13 @@ does (`main-hud.md` §13) — it is a summary surface, not a redesign of the HUD
 From the ended state, control returns to the pre-round flow **automatically**:
 
 - The summary stays up for a short, fixed beat so everyone can read it.
-- Every player returns to the lobby. Readiness resets; job preferences and antagonist opt-ins are
-  kept (`lobby.md` §3).
+- Every player returns to the lobby. Readiness resets; each saved character keeps its job preferences
+  and antagonist opt-ins (`lobby.md` §3, §6).
 - The next round uses the server's current settings (`round-config.md` §2), with the same secrecy
   re-established (`round-config.md` §4).
-- The countdown starts again once enough players are ready (`lobby.md` §7). No admin action is
-  needed at any step; an admin can still hold the countdown.
+- The pre-round countdown starts again once enough players are connected, and whoever is ready
+  when it ends spawns (`lobby.md` §7). No admin action is needed at any step; an admin can still
+  hold the countdown.
 
 The transition is a seam between two states both already designed elsewhere; this doc only defines
 that the seam exists and in what order it runs.

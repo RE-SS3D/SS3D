@@ -176,30 +176,53 @@ namespace SS3D.Tests.EditMode
         }
 
         [Test]
-        public void AutoStart_WaitsForMinimumReady()
+        public void AutoStart_WaitsForMinimumConnected()
         {
             AutoStartCountdown countdown = new();
-            countdown.Tick(enabled: true, idle: true, readyCount: 2, minimumReady: 3);
+            countdown.Tick(enabled: true, idle: true, connectedCount: 2, minimumConnected: 3);
             Assert.AreEqual(0, countdown.SecondsLeft);
 
             countdown.Tick(true, true, 3, 3);
-            Assert.AreEqual(AutoStartCountdown.CountdownSeconds, countdown.SecondsLeft);
+            Assert.AreEqual(ServerSettings.DefaultCountdownSeconds, countdown.SecondsLeft);
+        }
+
+        [Test]
+        public void AutoStart_RunsTheConfiguredLength()
+        {
+            AutoStartCountdown countdown = new();
+            countdown.Tick(true, true, 1, 1, countdownSeconds: 45);
+            Assert.AreEqual(45, countdown.SecondsLeft);
+            int ticks = 0;
+            while (!countdown.Tick(true, true, 1, 1, 45)) ticks++;
+            Assert.AreEqual(44, ticks, "Starts on the 45th second");
         }
 
         [Test]
         public void DedicatedServer_AutoStartsByDefault_ListenHostDoesNot()
         {
             Assert.IsFalse(ServerSettings.Default.AutoStart);
-            Assert.AreEqual(1, ServerSettings.Default.MinimumReady);
+            Assert.AreEqual(1, ServerSettings.Default.MinimumConnected);
+            Assert.AreEqual(120, ServerSettings.Default.CountdownSeconds);
             Assert.IsTrue(ServerSettings.ForDedicatedServer(ServerSettings.Default).AutoStart);
         }
 
         [Test]
-        public void Settings_RejectMinimumReadyBelowOne()
+        public void Settings_RejectMinimumConnectedBelowOne()
         {
             ServerSettings settings = ServerSettings.Default;
-            settings.MinimumReady = 0;
+            settings.MinimumConnected = 0;
             Assert.IsFalse(settings.IsValid);
+        }
+
+        [TestCase(4, false)]
+        [TestCase(5, true)]
+        [TestCase(3600, true)]
+        [TestCase(3601, false)]
+        public void Settings_CountdownBetweenFiveSecondsAndAnHour(int seconds, bool valid)
+        {
+            ServerSettings settings = ServerSettings.Default;
+            settings.CountdownSeconds = seconds;
+            Assert.AreEqual(valid, settings.IsValid);
         }
     }
 }
