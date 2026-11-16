@@ -864,6 +864,13 @@ removed. Plan: [clothing_world_presentation.plan.md](archive/plans/clothing_worl
 **Bright ObjectIcon HUD icons** (PR #65): full-toon inventory previews with white outlines via
 `IconPreviewGenerator` / ObjectIcon; item world rest orientation preserved (PR #64).
 
+**Inventory UI pass** (2026-11-16): equipment doll collapsed behind a toggle and laid out like the
+examine paperdoll; container slots (bags, boxes, pockets) get a corner open button instead of the
+design's double-click (divergence from inventory-storage.md §6, recorded in the system map); HUD
+drags start only after the pointer moves; right-click on any inventory slot opens the item's radial;
+clicking the active hand uses its item. Also fixed drag-to-world refusing drops near the feet (the
+line-of-sight ray hit the player's own head).
+
 Deferred: Play Mode verification, uniform-specific pocket variance, standalone "quick loot everything."
 
 ### Comms — local speech, feed, and crowd cap
