@@ -79,11 +79,20 @@
     -unity-background-image-tint-color: var(--ss3d-text-primary);
 }
 
-/* Same hover chip as the HUD slot labels (MainHud.uss): above the well, centred. */
-.equipment-grid__toggle-label {
+/* Same hover chip as the HUD slot labels (MainHud.uss): above the well, centred. The host is wider than the well
+   because a Label measures its text at most as wide as its parent. */
+.equipment-grid__toggle-label-host {
     position: absolute;
+    left: -160px;
+    right: -160px;
     bottom: 100%;
     margin-bottom: var(--ss3d-space-2);
+    flex-direction: row;
+    justify-content: center;
+}
+
+.equipment-grid__toggle-label {
+    flex-shrink: 0;
     white-space: nowrap;
     opacity: 0;
     background-color: var(--ss3d-surface-hud);

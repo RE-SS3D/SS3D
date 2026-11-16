@@ -91,8 +91,9 @@
 /* Full-width host + flex-center so the chip recenters when text changes (translate -50% does not). */
 .gear-chip__label-host {
     position: absolute;
-    left: 0;
-    right: 0;
+    /* Wider than the well: a Label measures its text at most as wide as its parent. */
+    left: -160px;
+    right: -160px;
     bottom: 100%;
     margin-bottom: var(--ss3d-space-2);
     align-items: center;

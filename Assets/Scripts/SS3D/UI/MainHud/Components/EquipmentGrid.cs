@@ -96,8 +96,13 @@ namespace SS3D.UI.MainHud.Components
             _toggleLabel.AddToClassList("equipment-grid__toggle-label");
             _toggleLabel.AddToClassList("font-body");
             _toggleLabel.pickingMode = PickingMode.Ignore;
+            // Host wider than the 64 px well, centred, so the chip fits its text (see EquipmentGrid.uss).
+            VisualElement toggleLabelHost = new();
+            toggleLabelHost.AddToClassList("equipment-grid__toggle-label-host");
+            toggleLabelHost.pickingMode = PickingMode.Ignore;
+            toggleLabelHost.Add(_toggleLabel);
             _toggle.Add(toggleGlyph);
-            _toggle.Add(_toggleLabel);
+            _toggle.Add(toggleLabelHost);
             _toggle.RegisterCallback<ClickEvent>(_ =>
             {
                 SetExpanded(!_expanded);
