@@ -134,20 +134,28 @@ Settled with the owner in a grilling session, 2026-11-15/16.
 
 ## Merge day
 
-1. Announce on Discord and freeze fork `develop`. Final `develop` → `upstream-prep` merge; rerun Phase 5.
+Players move only after an upstream build works: until v0.17.1 exists, they stay on the fork's v0.17.0,
+so a failed step 4 is undone by not continuing.
+
+1. Announce on Discord and freeze fork `develop` (frozen since 2026-11-16). If `develop` moved, merge it into
+   `upstream-prep` and rerun Phase 5.
 2. Prepare upstream: create the labels (`nightly-failure`, `weekly-failure`, `editmode-nightly-failure`,
    `test:multiplayer`, `map-authoring`, `visual`, `blocker`); set the secrets (decision 9); require approval for
-   outside contributors; register the self-hosted runner (the workflows keep fork PRs off it); open a test PR from a
-   fork and confirm the EditMode notice job, then dispatch `-f pr=<number>`; give the nightly release
-   dispatcher ([2026-11_project-infrastructure](2026-11_project-infrastructure.md)) a token for upstream.
-3. Push the fork's `v*` tags to upstream (see Pitfalls). Open the PR from `upstream-prep`, linking the reviewer
-   guide and stating the AI share; close #1525 in favour of it; close the outdated upstream PRs with a short note.
-4. Merge with **Create a merge commit**. Reopen #1494.
-5. Branch protection on upstream `develop` with the EditMode run as a required check.
-6. Fork: reset `develop` to upstream's (tag the old head `pre-upstream-merge` first) and cut **v0.17.1** from it
-   on the fork with `version_bump: patch`. Its updater and bug report link already point upstream.
-7. Fork: disable scheduled workflows and Actions, deregister the runner, disable Issues and Discussions.
-8. Upstream: cut **v0.18.0**. The central team points ss3d.space at upstream's releases page.
+   outside contributors; register the self-hosted runner (the workflows keep fork PRs off it); give the nightly
+   release dispatcher ([2026-11_project-infrastructure](2026-11_project-infrastructure.md)) a token for upstream;
+   push the fork's `v*` tags to upstream (see Pitfalls).
+3. Open the PR from `upstream-prep`, linking the reviewer guide and stating the AI share; close #1525 in favour
+   of it; close the outdated upstream PRs with a short note. Merge with **Create a merge commit**. Reopen #1494.
+4. Upstream test build: dispatch `develop-release.yml` with a `tag_suffix` (a prerelease claims no version). It
+   must build, and its updater must find no newer release. Open a test PR from a fork and confirm the EditMode
+   notice job, then dispatch `-f pr=<number>`. Fix anything here before players move.
+5. Move players: cut **v0.17.1 on the fork from `upstream-prep`** with `version_bump: patch` (that commit is in
+   upstream's history now). Push the `v0.17.1` tag to upstream.
+6. Upstream: cut **v0.18.0** with `version_bump: minor`. The central team points ss3d.space at upstream's
+   releases page.
+7. Branch protection on upstream `develop` with the EditMode run as a required check.
+8. Fork: tag the old `develop` head `pre-upstream-merge`, reset `develop` to upstream's; disable scheduled
+   workflows and Actions, deregister the runner, disable Issues and Discussions.
 9. The owner recreates the relevant fork issues upstream. Archive this effort and the reviewer guide; point
    `Tools/generate_roadmap.py`'s "what already works" link at the [coverage table](INDEX.md) and regenerate.
 
@@ -155,8 +163,9 @@ Settled with the owner in a grilling session, 2026-11-15/16.
 
 - **The first upstream release numbers itself v0.1.0** unless the fork's `v*` tags are on upstream:
   `next_version.py` and `BuildInfoGenerator` read local `v*` tags. Push them before cutting v0.18.0.
-- **`version_bump: auto` may skip v0.17.1.** Any `Version-Bump: minor` trailer or newly shipped milestone
-  slice since v0.17.0 makes `next_version.py` pick v0.18.0. Dispatch the redirect release with `patch`.
+- **Upstream's first stable release could claim v0.17.1.** Until the fork's `v0.17.1` tag is on upstream,
+  `auto` sees v0.17.0 plus unremarkable commits and picks a patch. Cut the redirect release on the fork with
+  `version_bump: patch`, push its tag, then cut v0.18.0 upstream with `version_bump: minor`.
 - **Slug casing is checked.** The updaters compare `browser_download_url` case-sensitively and refuse to install
   on a mismatch. Use the owner/name casing GitHub puts in upstream's release URLs, not a lowercase clone URL.
 - **A merge with history closes upstream #1494** via the quoted "closes #1494" in `bdd12c395`. Reopen it.
